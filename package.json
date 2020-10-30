@@ -1,0 +1,12 @@
+{
+  "name": "@anchor-protocol/anchor",
+  "version": "0.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "lerna": "^3.22.1"
+  },
+  "dependencies": {
+    "@terra-money/terra.js": "^0.5.12"
+  }
+}
