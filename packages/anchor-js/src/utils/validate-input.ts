@@ -1,4 +1,4 @@
-type InputEntry = [
+export type InputEntry = [
     // predicate
     boolean | (() => boolean),
 
