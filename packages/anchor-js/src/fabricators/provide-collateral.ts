@@ -37,8 +37,19 @@ export function fabricateProvideCollateral(
             `invalid address ${borrower}`
         ],
         [
-            () => !!parseInt(load_id, 10), // won't be triggered, rather thrown from this
-            `invalid number ${load_id}`,
+            () => !!parseInt(loan_id, 10), // won't be triggered, rather thrown from this
+            `invalid loan_id: ${loan_id}`,
+        ],
+        [
+            () => true, // TODO: check if bAsset symbol is whitelisted,
+            `unknown bAsset denom ${symbol}`,
         ]
     ])
+
+    return new MsgExecuteContract(
+        address,
+        "",
+        {},
+        null,
+    )
 }
