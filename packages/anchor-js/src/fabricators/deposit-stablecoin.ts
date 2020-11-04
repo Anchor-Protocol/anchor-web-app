@@ -1,37 +1,36 @@
 import { MsgExecuteContract } from "@terra-money/terra.js"
-import { validateAddress } from "../utils/validate-bech32"
+import { validateAddress } from "../utils/validation/address"
 import { validateInput } from "../utils/validate-input"
 
 import marketConstant from "../constants/market.json"
+import { validateWhitelistedMarket } from "../utils/validation/market"
+import { validateIsGreaterThanZero } from "../utils/validation/number"
 
-export function fabricateDepositStableCoin(
+/**
+ * 
+ * @param address Client’s Terra address.
+ * @param symbol Symbol of a stablecoin to deposit.
+ * @param amount Amount of a stablecoin to deposit.
+ */
+export function fabricateDepositStableCoin(opts: {
     address: string,
     market: string,
     amount: number,
-): MsgExecuteContract {
-    const denom = marketConstant[market]
-
+}): MsgExecuteContract {
     validateInput([
-        [
-            () => denom !== "undefined",
-            `unknown market ${market}.`
-        ],
-        [
-            () => validateAddress(address),
-            `invalid address ${address}.`
-        ],
-        [
-            () => amount > 0,
-            `amount must be > 0.`
-        ]
+        validateAddress(opts.address),
+        validateWhitelistedMarket(opts.market),
+        validateIsGreaterThanZero(opts.amount),
     ])
 
+    const denom = marketConstant[opts.market]
+
     return new MsgExecuteContract(
-        address,
+        opts.address,
         "",
         {},  // TODO: implement me
         {
-            [denom]: (amount * 1000000).toString()
+            [denom]: (opts.amount * 1000000).toString()
         }
     )
 }

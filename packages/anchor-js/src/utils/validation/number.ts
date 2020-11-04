@@ -7,7 +7,7 @@ export const validateIsNumber = (n: number | string): InputEntry => (
     ]
 )
 
-export const validateIsPositiveNumber = (n: number | string): InputEntry => (
+export const validateIsGreaterThanZero = (n: number | string): InputEntry => (
     [
         () => n > 0,
         `number should be > 0.`

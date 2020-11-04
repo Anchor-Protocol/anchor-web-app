@@ -1,8 +1,10 @@
 import { MsgExecuteContract } from "@terra-money/terra.js";
-import { validateAddress } from "../utils/validate-bech32";
+import { validateAddress } from "../utils/validation/address";
 import { validateInput } from "../utils/validate-input";
 
-import marketConstant from "../constants/market.json"
+import { validateWhitelistedMarket } from "../utils/validation/market";
+import { validateIsGreaterThanZero } from "../utils/validation/number";
+import { validateWhitelistedBAsset } from "../utils/validation/basset";
 
 /**
  * 
@@ -13,41 +15,23 @@ import marketConstant from "../constants/market.json"
  * @param symbol Symbol of collateral to deposit.
  * @param amount Amount of collateral to deposit.
  */
-export function fabricateProvideCollateral(
-    address: string, 
+export function fabricateProvideCollateral(opts: {
+    address: string,
     market: string,
-    borrower: string | null,
-    loan_id: string,
+    borrower?: string,
     symbol: string,
     amount: number
-): MsgExecuteContract {
-    const denom = marketConstant[market]
-
+}): MsgExecuteContract {
     validateInput([
-        [
-            () => validateAddress(address),
-            `invalid address ${address}.`
-        ],
-        [
-            () => typeof denom !== "undefined",
-            `unknown market ${market}`,
-        ],
-        [
-            () => borrower ? validateAddress(borrower) : true,
-            `invalid address ${borrower}`
-        ],
-        [
-            () => !!parseInt(loan_id, 10), // won't be triggered, rather thrown from this
-            `invalid loan_id: ${loan_id}`,
-        ],
-        [
-            () => true, // TODO: check if bAsset symbol is whitelisted,
-            `unknown bAsset denom ${symbol}`,
-        ]
+        validateAddress(opts.address),
+        validateWhitelistedMarket(opts.market),
+        validateAddress(opts.borrower),
+        validateWhitelistedBAsset(opts.symbol),
+        validateIsGreaterThanZero(opts.amount),
     ])
 
     return new MsgExecuteContract(
-        address,
+        opts.address,
         "",
         {},
         null,
