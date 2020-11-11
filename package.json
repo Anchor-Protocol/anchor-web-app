@@ -4,9 +4,11 @@
   "main": "index.js",
   "license": "MIT",
   "devDependencies": {
-    "lerna": "^3.22.1"
+    "lerna": "^3.22.1",
+    "typescript": "^4.0.5"
   },
   "dependencies": {
-    "@terra-money/terra.js": "^0.5.12"
+    "@terra-money/terra.js": "^0.5.12",
+    "@typescript-eslint/parser": "^4.6.1"
   }
 }

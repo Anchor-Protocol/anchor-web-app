@@ -1,10 +1,16 @@
-import { MsgExecuteContract } from "@terra-money/terra.js"
+import { Int, MsgExecuteContract } from "@terra-money/terra.js"
 import { validateAddress } from "../utils/validation/address"
 import { validateInput } from "../utils/validate-input"
 
-import marketConstant from "../constants/market.json"
-import { validateWhitelistedMarket } from "../utils/validation/market"
 import { validateIsGreaterThanZero } from "../utils/validation/number"
+import { AddressProvider } from "../address-provider/types"
+import { validateWhitelistedBAsset } from "../utils/validation/basset"
+
+interface Option {
+    address: string,
+    symbol: string,
+    amount: number
+}
 
 /**
  * 
@@ -12,25 +18,32 @@ import { validateIsGreaterThanZero } from "../utils/validation/number"
  * @param symbol Symbol of a stablecoin to deposit.
  * @param amount Amount of a stablecoin to deposit.
  */
-export function fabricateDepositStableCoin(opts: {
-    address: string,
-    market: string,
-    amount: number,
-}): MsgExecuteContract {
+export function fabricateDepositStableCoin(
+    { address, symbol, amount }: Option,
+    addressProvider: AddressProvider.Provider,    
+): MsgExecuteContract {
     validateInput([
-        validateAddress(opts.address),
-        validateWhitelistedMarket(opts.market),
-        validateIsGreaterThanZero(opts.amount),
+        validateAddress(address),
+        validateWhitelistedBAsset(symbol),
+        validateIsGreaterThanZero(amount),
     ])
 
-    const denom = marketConstant[opts.market]
+    const nativeTokenDenom = symbol
+    const bAssetTokenAddress = addressProvider.bAssetToken(symbol)
 
     return new MsgExecuteContract(
-        opts.address,
-        "",
-        {},  // TODO: implement me
+        address,
+        bAssetTokenAddress,
         {
-            [denom]: (opts.amount * 1000000).toString()
+            mint: {
+                recipient: address,
+                amount: new Int(amount).toString()
+            }
+        },
+
+        // coins
+        {
+            [nativeTokenDenom]: new Int(amount).toString()
         }
     )
 }

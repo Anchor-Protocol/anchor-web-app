@@ -19,17 +19,17 @@ export function fabricateBorrow(opts: {
     amount: number,
     withdrawTo?: string,
 }): MsgExecuteContract {
-    validateInput([
-        validateWhitelistedMarket(opts.market),
-        validateAddress(opts.address),
-        validateIsNumber(opts.amount),
-        validateIsGreaterThanZero(opts.amount),
-    ])
+  validateInput([
+    validateWhitelistedMarket(opts.market),
+    validateAddress(opts.address),
+    validateIsNumber(opts.amount),
+    validateIsGreaterThanZero(opts.amount),
+  ])
 
-    return new MsgExecuteContract(
-        opts.address,
-        "",
-        {},
-        null,
-    )
+  return new MsgExecuteContract(
+    opts.address,
+    "",
+    {},
+    null,
+  )
 }

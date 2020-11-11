@@ -1,9 +1,18 @@
-import { MsgExecuteContract } from "@terra-money/terra.js";
+import { Int, MsgExecuteContract } from "@terra-money/terra.js";
 import { validateAddress } from "../utils/validation/address";
 import { validateInput } from "../utils/validate-input";
 
 import { validateWhitelistedMarket } from "../utils/validation/market";
 import { validateWhitelistedBAsset } from "../utils/validation/basset";
+import { AddressProvider } from "../address-provider/types";
+
+interface Option {
+    address: string,
+    market: string,
+    borrower?: string,
+    symbol: string,
+    amount: number
+}
 
 /**
  * 
@@ -14,24 +23,46 @@ import { validateWhitelistedBAsset } from "../utils/validation/basset";
  * @param amount (optional) Amount of collateral to redeem. Set this to null if redeem_all is true.
  * @param withdraw_to (optional) Terra address to withdraw redeemed collateral. If null, withdraws to address.
  */
-export function fabricateRedeemCollateral(opts: {
-    address: string,
-    market: string,
-    borrower?: string,
-    symbol: string,
-    amount: number
-}): MsgExecuteContract {
+export function fabricateRedeemCollateral(
+    { address, market, borrower, symbol, amount }: Option,
+    addressProvider: AddressProvider.Provider,
+): MsgExecuteContract[] {
     validateInput([
-        validateAddress(opts.address),
-        validateWhitelistedMarket(opts.market),
-        opts.borrower ? validateAddress(opts.borrower) : null,
-        validateWhitelistedBAsset(opts.symbol),
+        validateAddress(address),
+        validateWhitelistedMarket(market),
+        borrower ? validateAddress(borrower) : null,
+        validateWhitelistedBAsset(symbol),
     ])
 
-    return new MsgExecuteContract(
-        opts.address,
-        "",
-        {},
-        null,
-    )
+    const bAssetTokenContract = addressProvider.bAssetToken(symbol.toLowerCase())
+    const mmOverseerContract = addressProvider.overseer(market.toLowerCase())
+    const custodyContract = addressProvider.custody(market.toLocaleLowerCase())
+
+    return [
+        // unlock collateral
+        new MsgExecuteContract(
+            address,
+            mmOverseerContract,
+            {
+                unlock_collateral: [
+                    [
+                        address,
+                        new Int(amount).toString(),
+                    ]
+                ]
+            }
+        ),
+
+        // withdraw from custody
+        new MsgExecuteContract(
+            address,
+            custodyContract,
+            {
+                burn: {
+                    amount: amount
+                }
+            },
+            null,
+        )
+    ]
 }
