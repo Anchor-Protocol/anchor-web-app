@@ -14,6 +14,10 @@ interface BassetClaimProps {
 const BassetClaim: React.FunctionComponent<BassetClaimProps> = ({
   children,
 }) => {
+
+
+
+
   return (
     <div className={style['basset-container']}>
       <BassetSelection/>
