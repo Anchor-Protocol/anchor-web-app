@@ -1,12 +1,12 @@
-import { Int, MsgExecuteContract } from "@terra-money/terra.js";
-import { validateAddress } from "../utils/validation/address";
-import { validateInput } from "../utils/validate-input";
+import { Int, MsgExecuteContract } from "@terra-money/terra.js"
+import { validateAddress } from "../utils/validation/address"
+import { validateInput } from "../utils/validate-input"
 
-import { validateWhitelistedMarket } from "../utils/validation/market";
-import { validateIsGreaterThanZero } from "../utils/validation/number";
-import { validateWhitelistedBAsset } from "../utils/validation/basset";
-import { AddressProvider } from "../address-provider/types";
-import { createHookMsg } from "../utils/cw20/create-hook-msg";
+import { validateWhitelistedMarket } from "../utils/validation/market"
+import { validateIsGreaterThanZero } from "../utils/validation/number"
+import { validateWhitelistedBAsset } from "../utils/validation/basset"
+import { AddressProvider } from "../address-provider/types"
+import { createHookMsg } from "../utils/cw20/create-hook-msg"
 
 interface Argument {
     address: string,
@@ -26,52 +26,52 @@ interface Argument {
  * @param amount Amount of collateral to deposit.
  */
 export function fabricateProvideCollateral(
-    { address, market, borrower, symbol, amount }: Argument,
-    addressProvider: AddressProvider.Provider
+  { address, market, borrower, symbol, amount }: Argument,
+  addressProvider: AddressProvider.Provider
 ): MsgExecuteContract[] {
-    validateInput([
-        validateAddress(address),
-        validateWhitelistedMarket(market),
-        validateAddress(borrower),
-        validateWhitelistedBAsset(symbol),
-        validateIsGreaterThanZero(amount),
-    ])
+  validateInput([
+    validateAddress(address),
+    validateWhitelistedMarket(market),
+    validateAddress(borrower),
+    validateWhitelistedBAsset(symbol),
+    validateIsGreaterThanZero(amount),
+  ])
 
-    const bAssetTokenContract = addressProvider.bAssetToken(symbol.toLowerCase())
-    const mmOverseerContract = addressProvider.overseer(market.toLowerCase())
-    const custodyContract = addressProvider.custody(market.toLocaleLowerCase())
+  const bAssetTokenContract = addressProvider.bAssetToken(symbol.toLowerCase())
+  const mmOverseerContract = addressProvider.overseer(market.toLowerCase())
+  const custodyContract = addressProvider.custody(market.toLocaleLowerCase())
 
-    // cw20 send + provide_collateral hook
-    return [
-        // provide_collateral call
-        new MsgExecuteContract(
-            address,
-            bAssetTokenContract,
-            {
-                send: {
-                    address: custodyContract,
-                    amount: new Int(amount).toString(),
-                    msg: createHookMsg({
-                        deposit_collateral: {}
-                    })
-                }
-            },
-            null,
-        ),
-        // lock_collateral call
-        new MsgExecuteContract(
-            address,
-            mmOverseerContract,
-            {
-                lock_collateral: {
-                    collaterals: [
-                        [
-                            address,
-                            new Int(amount).toString()
-                        ]
-                    ]
-                }
-            }
-        ),
-    ]
+  // cw20 send + provide_collateral hook
+  return [
+    // provide_collateral call
+    new MsgExecuteContract(
+      address,
+      bAssetTokenContract,
+      {
+        send: {
+          address: custodyContract,
+          amount: new Int(amount).toString(),
+          msg: createHookMsg({
+            deposit_collateral: {}
+          })
+        }
+      },
+      null,
+    ),
+    // lock_collateral call
+    new MsgExecuteContract(
+      address,
+      mmOverseerContract,
+      {
+        lock_collateral: {
+          collaterals: [
+            [
+              address,
+              new Int(amount).toString()
+            ]
+          ]
+        }
+      }
+    ),
+  ]
 }

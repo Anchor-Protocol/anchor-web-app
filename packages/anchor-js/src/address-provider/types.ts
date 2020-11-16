@@ -6,7 +6,7 @@ export namespace AddressProvider {
         market(denom: string): string
         custody(denom: string): string
         overseer(denom: string): string
-        aToken(): string
+        aToken(denom: string): string
         oracle(): string
     }
 }

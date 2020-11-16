@@ -1,0 +1,10 @@
+nav.navigation {
+
+  & > a {
+    margin-right: 16px;
+  }
+
+  & .active {
+    font-weight: 600
+  }
+}

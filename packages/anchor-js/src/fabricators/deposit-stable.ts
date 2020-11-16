@@ -19,31 +19,30 @@ interface Option {
  * @param amount Amount of a stablecoin to deposit.
  */
 export function fabricateDepositStableCoin(
-    { address, symbol, amount }: Option,
-    addressProvider: AddressProvider.Provider,    
+  { address, symbol, amount }: Option,
+  addressProvider: AddressProvider.Provider,    
 ): MsgExecuteContract {
-    validateInput([
-        validateAddress(address),
-        validateWhitelistedBAsset(symbol),
-        validateIsGreaterThanZero(amount),
-    ])
+  validateInput([
+    validateAddress(address),
+    validateWhitelistedBAsset(symbol),
+    validateIsGreaterThanZero(amount),
+  ])
 
-    const nativeTokenDenom = symbol
-    const bAssetTokenAddress = addressProvider.bAssetToken(symbol)
+  const nativeTokenDenom = symbol
+  const mmContractAddress = addressProvider.market(symbol)
 
-    return new MsgExecuteContract(
-        address,
-        bAssetTokenAddress,
-        {
-            mint: {
-                recipient: address,
-                amount: new Int(amount).toString()
-            }
-        },
+  return new MsgExecuteContract(
+    address,
+    mmContractAddress,
+    {
+      deposit_stable: {
+        deposit_amount: new Int(amount).toString()
+      }
+    },
 
-        // coins
-        {
-            [nativeTokenDenom]: new Int(amount).toString()
-        }
-    )
+    // coins
+    {
+      [nativeTokenDenom]: new Int(amount).toString()
+    }
+  )
 }

@@ -1,4 +1,5 @@
 import React from 'react'
+import style from './box.module.css'
 
 interface BoxProps {
   
@@ -8,7 +9,7 @@ const Box: React.FunctionComponent<BoxProps> = ({
   children,
 }) => {
   return (
-    <div>
+    <div className={style.box}>
       {children}
     </div>
   )

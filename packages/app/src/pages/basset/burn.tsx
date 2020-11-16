@@ -2,7 +2,9 @@ import React from 'react'
 import Box from '../../components/box'
 import Button, { ButtonTypes } from '../../components/button'
 import BassetInput from './components/basset-input'
-import BassetSelection, { Selections } from './components/selection'
+import BassetSelection from './components/selection'
+
+import style from './basset.module.css'
 
 interface BassetBurnProps {
 
@@ -12,9 +14,9 @@ const BassetBurn: React.FunctionComponent<BassetBurnProps> = ({
   children,
 }) => {
   return (
-    <div>
-      <BassetSelection selection={Selections.BURN} />
-      <article>
+    <div className={style['basset-container']}>
+      <BassetSelection/>
+      <article className={style.business}>
         <Box>
           <BassetInput
             caption="I want to burn"

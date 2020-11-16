@@ -3,6 +3,8 @@ import AnchorLogo from './anchor-logo'
 import Navigation from './navigation'
 import Wallet from '../components/wallet'
 
+import style from './default-layout.module.css'
+
 interface LayoutProps {
   currentRoute: string
 }
@@ -12,25 +14,25 @@ const DefaultLayout: React.FunctionComponent<LayoutProps> = ({
   children
 }) => {
   return ( 
-    <div>
+    <div className={style.layout}>
       {/* header */}
-      <section>
-        <div>
+      <section className={style.header}>
+        <div className={style.ci}>
           <AnchorLogo />
         </div>
-        <div>
+        <div className={style.navigation}>
           <Navigation currentRoute={currentRoute}/>
           <Wallet/>
         </div>
       </section>
       {/* header end */}
       {/* content */}
-      <section>
+      <section className={style.content}>
         {children}
       </section>
       {/* content end */}
       {/* footer */}
-      <section>
+      <section className={style.footer}>
         -
       </section>
       {/* footer end */}

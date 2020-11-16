@@ -7,6 +7,7 @@ interface BassetInputProps {
   exchangeRate: number
   amount: number
   allowed: boolean
+  onChange?: (nextValue: string) => boolean
 }
 
 const BassetInput: React.FunctionComponent<BassetInputProps> = ({
@@ -15,7 +16,8 @@ const BassetInput: React.FunctionComponent<BassetInputProps> = ({
   offerDenom,
   exchangeRate,
   amount,
-  allowed
+  allowed,
+  onChange = () => false,
 }) => {
   return (
     <>
@@ -23,7 +25,15 @@ const BassetInput: React.FunctionComponent<BassetInputProps> = ({
         {caption}
       </header>
       <div>
-        {amount} {offerDenom}
+        <input
+          type="text"
+          value={amount}
+          onChange={ev => onChange(ev.currentTarget.value)}
+          disabled={!allowed}
+        />
+        <aside>
+          {offerDenom}
+        </aside>
       </div>
       <footer>
         {1} {offerDenom} = {1 * exchangeRate} {askDenom}

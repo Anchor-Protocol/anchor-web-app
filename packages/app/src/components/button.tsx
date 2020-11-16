@@ -1,4 +1,5 @@
 import React from 'react'
+import style from './button.module.css'
 
 export enum ButtonTypes {
   DEFAULT,
@@ -24,7 +25,7 @@ const Button: React.FunctionComponent<ButtonProps> = ({
   children
 }) => {
   return (
-    <button onClick={onClick}>
+    <button className={style.button} onClick={onClick}>
       {children}
     </button>
   )

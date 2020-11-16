@@ -8,7 +8,8 @@ export function toAmount(amount: number): string[] {
 
 
 export function punctureAmount(amount: number): string[] {
-  const sp = (amount / 1000000).toString().split('.')
+  const sp = (amount / 1000000).toFixed(6).toString().split('.')
+  console.log((amount / 1000000).toFixed(6).toString())
   if (sp.length !== 2) {
     throw new Error("Invalid amount")
   }

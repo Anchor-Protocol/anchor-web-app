@@ -1,25 +1,27 @@
 import React from 'react'
+import { Link, useLocation } from 'react-router-dom'
+import style from './selection.module.css'
 
-export enum Selections {
-  MINT,
-  BURN,
-  CLAIM,
-}
 
 interface BassetSelectionProps {
-  selection: Selections
 }
 
-const BassetSelection: React.FunctionComponent<BassetSelectionProps> = ({
-  selection,
-}) => {
+const BassetSelection: React.FunctionComponent<BassetSelectionProps> = () => {
+  const location = useLocation()
+
   return (
-    <nav>
-      <a>Mint</a>
-      <a>Burn</a>
-      <a>Claim</a>
+    <nav className={style["basset-selection"]}>
+      <Link to="/basset/mint" className={highlightActive("/basset/mint", location.pathname)}>Mint</Link>
+      <Link to="/basset/burn" className={highlightActive("/basset/burn", location.pathname)}>Burn</Link>
+      <Link to="/basset/claim" className={highlightActive("/basset/claim", location.pathname)}>Claim</Link>
     </nav>
   )
+}
+
+function highlightActive(currentPath: string, path: string): string | undefined {
+  return path === currentPath
+    ? style.active
+    : undefined
 }
 
 export default BassetSelection

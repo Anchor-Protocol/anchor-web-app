@@ -1,5 +1,5 @@
 import React from 'react'
-import { toAmount } from '../utils/amount'
+import { toAmount } from '../libs/amount'
 
 interface AmountProps {
   amount: number,
