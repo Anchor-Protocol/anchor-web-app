@@ -9,13 +9,13 @@ interface Option {
   address: string
   amount: string
   bAsset: string
-  validator: string // validator address
 }
 
-export function bAssetBurn(
-  { address, amount, bAsset }: Option,
+export const fabricatebAssetBurn = (
+  { address, amount, bAsset }: Option
+) => (
   addressProvider: AddressProvider.Provider
-): MsgExecuteContract[] {
+): MsgExecuteContract[] => {
   validateInput([
     validateAddress(address),
     validateIsGreaterThanZero(amount)
@@ -40,6 +40,7 @@ export function bAssetBurn(
     )
   ]
 }
+
 
 // new MsgExecuteContract(
 //   address,

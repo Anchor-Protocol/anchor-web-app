@@ -1,16 +1,21 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { fabricateRedeemStable } from '../../../anchor-js/fabricators'
 import Box from '../../../components/box'
 import Button, { ButtonTypes } from '../../../components/button'
 import Input from '../../../components/input'
+import { ActionContainer } from '../../../containers/action'
+import { useWallet } from '../../../hooks/use-wallet'
 import { PopupChild } from '../../../layout/popup-container'
 
 interface EarnWithdrawPopupProps extends PopupChild {
-
 }
 
 const EarnWithdrawPopup: React.FunctionComponent<EarnWithdrawPopupProps> = ({
-  children,
+  close,
 }) => {
+  const { address } = useWallet()
+  const [withdrawState, setWithdrawState] = useState(0.00)
+
   return (
     <Box>
       <header>
@@ -23,7 +28,11 @@ const EarnWithdrawPopup: React.FunctionComponent<EarnWithdrawPopupProps> = ({
 
       <div>
         <div>
-          <Input textRight="UST" />
+          <Input
+            textRight="UST"
+            value={withdrawState}
+            onChange={next => setWithdrawState(Number.parseFloat(next))}
+          />
         </div>
         <aside>
           Wallet: <span>8390.38 UST</span>
@@ -31,7 +40,17 @@ const EarnWithdrawPopup: React.FunctionComponent<EarnWithdrawPopupProps> = ({
       </div>
 
       <footer>
-        <Button type={ButtonTypes.PRIMARY} disabled={true}>PROCEED</Button>
+        <ActionContainer render={execute => (
+          <Button
+            type={ButtonTypes.PRIMARY}
+            disabled={true}
+            onClick={() => execute(fabricateRedeemStable({
+              address,
+              symbol: "usd",
+              amount: withdrawState,
+            })).then(close)}
+          >PROCEED</Button>
+        )}/>
         <a>Withdraw to bank</a>
       </footer>
     </Box>

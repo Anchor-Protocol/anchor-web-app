@@ -1,8 +1,9 @@
 import React from 'react'
+import style from './popup-container.module.css'
 
 type PopupClose = () => void
 interface PopupContainerProps {
-  children: (close: PopupClose) => React.ReactElement
+  render: (close: PopupClose) => React.ReactElement
   onClose: () => void
 }
 
@@ -11,12 +12,23 @@ export interface PopupChild {
 }
 
 const PopupContainer: React.FunctionComponent<PopupContainerProps> = ({
-  children,
+  render,
   onClose,
 }) => {
   return (
-    <div>
-      {children(onClose)}
+    <div className={style["popup-container"]}>
+      <div>
+        <div>
+          <header>
+            <button onClick={() => onClose()}>
+              close
+            </button>
+          </header>
+          <article>
+            {render(onClose)}
+          </article>
+        </div>
+      </div>
     </div>
   )
 }

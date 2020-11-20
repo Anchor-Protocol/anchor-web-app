@@ -5,6 +5,7 @@ import { validateInput } from "../utils/validate-input"
 import { validateWhitelistedMarket } from "../utils/validation/market"
 import { validateWhitelistedBAsset } from "../utils/validation/basset"
 import { AddressProvider } from "../address-provider/types"
+import { validateTrue } from "../utils/validation/true"
 
 interface Option {
     address: string,
@@ -24,14 +25,15 @@ interface Option {
  * @param amount (optional) Amount of collateral to redeem. Set this to null if redeem_all is true.
  * @param withdraw_to (optional) Terra address to withdraw redeemed collateral. If null, withdraws to address.
  */
-export function fabricateRedeemCollateral(
+export const fabricateRedeemCollateral = (
   { address, market, borrower, symbol, redeem_all = true, amount = null }: Option,
+) => (
   addressProvider: AddressProvider.Provider,
-): MsgExecuteContract[] {
+): MsgExecuteContract[] => {
   validateInput([
     validateAddress(address),
     validateWhitelistedMarket(market),
-    borrower ? validateAddress(borrower) : null,
+    borrower ? validateAddress(borrower) : validateTrue,
     validateWhitelistedBAsset(symbol),
   ])
 
@@ -47,7 +49,7 @@ export function fabricateRedeemCollateral(
         unlock_collateral: [
           [
             address,
-            new Int(amount).toString(),
+            redeem_all ? undefined : new Int(amount as number).toString(),
           ]
         ]
       }
@@ -62,7 +64,6 @@ export function fabricateRedeemCollateral(
           amount: redeem_all ? undefined : amount
         }
       },
-      null,
     )
   ]
 }

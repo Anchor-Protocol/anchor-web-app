@@ -4,30 +4,32 @@ import { validateInput } from "../utils/validate-input"
 import { validateIsGreaterThanZero } from "../utils/validation/number"
 import { validateWhitelistedMarket } from "../utils/validation/market"
 import { AddressProvider } from "../address-provider/types"
+import { validateTrue } from "../utils/validation/true"
 
 interface Option {
   address: string
   market: string
   borrower?: string
   // repay_all: boolean
-  amount?: number
+  amount: number
 }
 
 /**
  * @param address Client’s Terra address.
  * @param market Type of stablecoin money market to repay.
  * @param borrower (optional) Terra address of the entity that created the loan position.If null, repays address‘s loan
- * @param amount (optional) Amount of stablecoin to repay.Set to null if repay_all is set to true.
+ * @param amount (optional) Amount of stablecoin to repay. Set to null if repay_all is set to true.
  */
 
-export function fabricateRepay(
+export const fabricateRepay = (
   { address, market, borrower, amount }: Option,
+) => (
   addressProvider: AddressProvider.Provider
-): MsgExecuteContract[] {
+): MsgExecuteContract[] => {
   validateInput([
     validateAddress(address),
     validateWhitelistedMarket(market),
-    validateAddress(borrower),
+    borrower ? validateAddress(borrower) : validateTrue,
     validateIsGreaterThanZero(amount),
   ])
 

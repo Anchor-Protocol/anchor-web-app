@@ -1,7 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { fabricateDepositStableCoin } from '../../../anchor-js/fabricators'
 import Box from '../../../components/box'
 import Button, { ButtonTypes } from '../../../components/button'
 import Input from '../../../components/input'
+import { ActionContainer } from '../../../containers/action'
+import { useWallet } from '../../../hooks/use-wallet'
 import { PopupChild } from '../../../layout/popup-container'
 
 interface EarnDepositPopupProps extends PopupChild {
@@ -9,8 +12,11 @@ interface EarnDepositPopupProps extends PopupChild {
 }
 
 const EarnDepositPopup: React.FunctionComponent<EarnDepositPopupProps> = ({
-  children,
+  close,
 }) => {
+  const { address } = useWallet()
+  const [depositState, setDepositState] = useState(0.00)
+
   return (
     <Box>
       <header>
@@ -26,7 +32,11 @@ const EarnDepositPopup: React.FunctionComponent<EarnDepositPopupProps> = ({
 
       <div>
         <div>
-          <Input textRight="UST"/>
+          <Input
+            textRight="UST"
+            value={depositState}
+            onChange={next => setDepositState(Number.parseFloat(next))}
+          />
         </div>
         <aside>
           Wallet: <span>8390.38 UST</span>
@@ -34,7 +44,17 @@ const EarnDepositPopup: React.FunctionComponent<EarnDepositPopupProps> = ({
       </div>
 
       <footer>
-        <Button type={ButtonTypes.PRIMARY} disabled={true}>PROCEED</Button>
+        <ActionContainer render={execute => (
+          <Button
+            type={ButtonTypes.PRIMARY}
+            disabled={depositState > 0.00}
+            onClick={() => execute(fabricateDepositStableCoin({
+              address,
+              amount: depositState,
+              symbol: "usd"
+            })).then(close)}
+          >PROCEED</Button>
+        )}/>
         <a>Deposit from bank</a>
       </footer>
     </Box>

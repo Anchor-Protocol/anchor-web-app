@@ -1,7 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { fabricateRedeemCollateral } from '../../../anchor-js/fabricators'
 import Box from '../../../components/box'
 import Button, { ButtonTypes } from '../../../components/button'
 import Input from '../../../components/input'
+import { ActionContainer } from '../../../containers/action'
+import { useWallet } from '../../../hooks/use-wallet'
 import { PopupChild } from '../../../layout/popup-container'
 
 interface PopupRedeemCollateralProps extends PopupChild {
@@ -9,8 +12,11 @@ interface PopupRedeemCollateralProps extends PopupChild {
 }
 
 const PopupRedeemCollateral: React.FunctionComponent<PopupRedeemCollateralProps> = ({
-  children,
+  close,
 }) => {
+  const { address } = useWallet()
+  const [redeemState, setRedeemState] = useState(0.00)
+
   return (
     <Box>
       <header>
@@ -25,7 +31,11 @@ const PopupRedeemCollateral: React.FunctionComponent<PopupRedeemCollateralProps>
             Redeem Amount
           </header>
           <div>
-            <Input textRight="bLUNA" />
+            <Input
+              textRight="bLUNA" 
+              value={redeemState}
+              onChange={next => setRedeemState(Number.parseFloat(next))}
+            />
           </div>
           <footer>
             Max: 234bLuna
@@ -36,7 +46,11 @@ const PopupRedeemCollateral: React.FunctionComponent<PopupRedeemCollateralProps>
             New Borrow Limit
           </header>
           <div>
-            <Input textRight="UST" />
+            <Input
+              textRight="UST"
+              disabled={true}
+              value={0.00}
+            />
           </div>
         </section>
 
@@ -45,7 +59,18 @@ const PopupRedeemCollateral: React.FunctionComponent<PopupRedeemCollateralProps>
       </div>
 
       <footer>
-        <Button type={ButtonTypes.PRIMARY} disabled={true}>Proceed</Button>
+        <ActionContainer render={execute => (
+          <Button
+            type={ButtonTypes.PRIMARY}
+            disabled={true}
+            onClick={() => execute(fabricateRedeemCollateral({
+              address,
+              market: 'ust',
+              redeem_all: false,
+              amount: redeemState,
+            })).then(close)}
+          >Proceed</Button>
+        )}/>
       </footer>
     </Box>
   )

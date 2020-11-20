@@ -1,7 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { fabricateProvideCollateral } from '../../../anchor-js/fabricators'
 import Box from '../../../components/box'
 import Button, { ButtonTypes } from '../../../components/button'
 import Input from '../../../components/input'
+import { ActionContainer } from '../../../containers/action'
+import { useWallet } from '../../../hooks/use-wallet'
 import { PopupChild } from '../../../layout/popup-container'
 
 interface PopupProvideCollateralProps extends PopupChild {
@@ -9,8 +12,11 @@ interface PopupProvideCollateralProps extends PopupChild {
 }
 
 const PopupProvideCollateral: React.FunctionComponent<PopupProvideCollateralProps> = ({
-  children,
+  close,
 }) => {
+  const { address } = useWallet()
+  const [depositState, setDepositState] = useState(0.00)
+
   return (
     <Box>
       <header>
@@ -25,7 +31,11 @@ const PopupProvideCollateral: React.FunctionComponent<PopupProvideCollateralProp
             Deposit Amount
           </header>
           <div>
-            <Input textRight="bATOM"/>
+            <Input
+              textRight="bLUNA"
+              value={depositState}
+              onChange={next => setDepositState(Number.parseFloat(next))}
+            />
           </div>
           <footer>
             Wallet: 234bATOM
@@ -36,7 +46,11 @@ const PopupProvideCollateral: React.FunctionComponent<PopupProvideCollateralProp
             New Borrow Limit
           </header>
           <div>
-            <Input textRight="UST" />
+            <Input
+              textRight="UST"
+              value={0.00}
+              disabled={true}
+            />
           </div>
         </section>
 
@@ -45,7 +59,18 @@ const PopupProvideCollateral: React.FunctionComponent<PopupProvideCollateralProp
       </div>
 
       <footer>
-        <Button type={ButtonTypes.PRIMARY} disabled={true}>Proceed</Button>
+        <ActionContainer render={execute => (
+          <Button
+            type={ButtonTypes.PRIMARY}
+            disabled={depositState > 0.00}
+            onClick={() => execute(fabricateProvideCollateral({
+              address,
+              market: 'ust',
+              symbol: 'ust',
+              amount: depositState
+            })).then(close)}
+          >Proceed</Button>
+        )}/>
       </footer>
     </Box>
   )

@@ -1,21 +1,21 @@
-import React from 'react'
+import { fabricatebAssetClaim } from '../../anchor-js/fabricators'
+import React, { useState } from 'react'
 import Amount from '../../components/amount'
 import Box from '../../components/box'
 import Button, { ButtonTypes } from '../../components/button'
-import PopupContainer from '../../layout/popup-container'
+import { ActionContainer } from '../../containers/action'
+import { useWallet } from '../../hooks/use-wallet'
+import { useAddressProvider } from '../../providers/address-provider'
 
 import style from './basset.module.css'
 import BassetSelection from './components/selection'
 
-interface BassetClaimProps {
-  
-}
+interface BassetClaimProps {}
 
-const BassetClaim: React.FunctionComponent<BassetClaimProps> = ({
-  children,
-}) => {
-
-
+const BassetClaim: React.FunctionComponent<BassetClaimProps> = () => {
+  const { address } = useWallet()
+  const addressProvider = useAddressProvider()
+  const [withdrawState, setWithdrawState] = useState({ amount: "0.00" })
 
 
   return (
@@ -28,7 +28,13 @@ const BassetClaim: React.FunctionComponent<BassetClaimProps> = ({
             <Amount amount={10000000000} denom="Luna" />
           </div>
           <footer>
-            <Button type={ButtonTypes.PRIMARY} transactional={true}>Withdraw</Button>
+            <ActionContainer render={execute => (
+              <Button
+                type={ButtonTypes.PRIMARY}
+                transactional={true}
+                onClick={() => alert('oops')}
+              >Withdraw</Button>
+            )}/>
           </footer>
         </Box>
         <Box>
@@ -37,14 +43,20 @@ const BassetClaim: React.FunctionComponent<BassetClaimProps> = ({
             <Amount amount={2444444444} denom="UST" />
           </div>
           <footer>
-            <Button type={ButtonTypes.PRIMARY} transactional={true}>Claim</Button>
+            <ActionContainer render={execute => (
+              <Button
+                type={ButtonTypes.PRIMARY}
+                onClick={() => execute(fabricatebAssetClaim({
+                  address,
+                  recipient: address,
+                  bAsset: addressProvider.bAssetToken('uluna'),
+                }))}
+                transactional={true}
+              >Claim</Button>
+            )}/>
           </footer>
         </Box>
       </article>
-
-      <PopupContainer onClose={() => void 0}>
-        {close => <div/>}
-      </PopupContainer>
     </div>
   )
 }

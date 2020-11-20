@@ -1,0 +1,11 @@
+{
+  "include": ["packages/*/src"],
+  "compilerOptions": {
+    "baseUrl": "packages",
+    "paths": {
+      "@anchor-protocol/anchor-js/*": ["anchor-js/src"]
+    },
+    "declaration": true,
+    "declarationMap": true,
+  }
+}

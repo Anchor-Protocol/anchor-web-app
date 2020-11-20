@@ -1,15 +1,23 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { AddressProviderFromEnvVar } from '../../../anchor-js/address-provider'
+import { fabricateRepay } from '../../../anchor-js/fabricators'
 import Box from '../../../components/box'
 import Button, { ButtonTypes } from '../../../components/button'
 import Input from '../../../components/input'
+import { ActionContainer } from '../../../containers/action'
+import { useWallet } from '../../../hooks/use-wallet'
+import { PopupChild } from '../../../layout/popup-container'
 
-interface PopupBorrowRepayProps {
+interface PopupBorrowRepayProps extends PopupChild {
 
 }
 
 const PopupBorrowRepay: React.FunctionComponent<PopupBorrowRepayProps> = ({
-  children,
+  close
 }) => {
+  const { address } = useWallet()
+  const [repayState, setRepayState] = useState(0.00)
+
   return (
     <Box>
       <header>
@@ -25,7 +33,11 @@ const PopupBorrowRepay: React.FunctionComponent<PopupBorrowRepayProps> = ({
             Repay Amount
           </header>
           <div>
-            <Input textRight="UST" />
+            <Input
+              textRight="UST"
+              value={repayState}
+              onChange={next => setRepayState(Number.parseFloat(next))}
+            />
           </div>
           <footer>
             Total Borrows: 10721UST
@@ -36,7 +48,11 @@ const PopupBorrowRepay: React.FunctionComponent<PopupBorrowRepayProps> = ({
             Borrow Limit Used
           </header>
           <div>
-            <Input textRight="%" />
+            <Input
+              textRight="%"
+              value={0.00}
+              disabled={true}
+            />
           </div>
         </section>
 
@@ -45,7 +61,19 @@ const PopupBorrowRepay: React.FunctionComponent<PopupBorrowRepayProps> = ({
       </div>
 
       <footer>
-        <Button type={ButtonTypes.PRIMARY} disabled={true}>Proceed</Button>
+        <ActionContainer render={execute => (
+          <Button
+            type={ButtonTypes.PRIMARY}
+            disabled={true}
+            onClick={() => execute(fabricateRepay({
+              address,
+              market: 'ust',
+              borrower: address,
+              amount: repayState,
+            })).then(close)}
+          >Proceed</Button>
+        )}>
+        </ActionContainer>
       </footer>
     </Box>
   )

@@ -4,6 +4,7 @@ interface InputProps {
   textLeft?: string
   textRight?: string
   disabled?: boolean
+  value: number | string
   onChange?: (nextValue: string) => void
   validation?: (input: string) => boolean | string // self-correcting if non-boolean is returned
 }
@@ -11,12 +12,18 @@ interface InputProps {
 const Input: React.FunctionComponent<InputProps> = ({
   textLeft,
   textRight,
+  value,
+  onChange = () => void 0,
   disabled = false,
 }) => {
   return (
     <div>
       <aside>{textLeft}</aside>
-      <input />
+      <input
+        disabled={disabled}
+        value={value}
+        onChange={ev => onChange(ev.currentTarget.value)}
+      />
       <aside>{textRight}</aside>
     </div>
   )

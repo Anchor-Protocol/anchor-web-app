@@ -13,10 +13,11 @@ interface Option {
   validator: string // validator address
 }
 
-export function bAssetMint(
+export const fabricatebAssetMint = (
   { address, amount, bAsset, validator }: Option,
+) => (
   addressProvider: AddressProvider.Provider
-): MsgExecuteContract[] {
+): MsgExecuteContract[] => {
   validateInput([
     validateAddress(address),
     validateValAddress(validator),

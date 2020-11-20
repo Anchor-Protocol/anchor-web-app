@@ -1,14 +1,24 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Box from '../../components/box'
 import Button, { ButtonTypes } from '../../components/button'
+import PopupContainer from '../../layout/popup-container'
+import PopupProvideCollateral from './popups/provide-collateral'
+import PopupRedeemCollateral from './popups/redeem-collateral'
 
 interface BorrowCollateralListProps {
   
 }
 
+enum PopupStates {
+  ADD,
+  WITHDRAW,
+}
+
 const BorrowCollateralList: React.FunctionComponent<BorrowCollateralListProps> = ({
   children,
 }) => {
+  const [popupState, setPopupState] = useState<PopupStates>()
+
   return (
     <Box>
       <header>
@@ -30,12 +40,24 @@ const BorrowCollateralList: React.FunctionComponent<BorrowCollateralListProps> =
               200k bLuna
             </td>
             <td>
-              <Button type={ButtonTypes.PRIMARY} transactional={false}>Add</Button>
-              <Button type={ButtonTypes.DEFAULT} transactional={false}>Withdraw</Button>
+              <Button type={ButtonTypes.PRIMARY} transactional={false} onClick={() => setPopupState(PopupStates.ADD)}>Add</Button>
+              <Button type={ButtonTypes.DEFAULT} transactional={false} onClick={() => setPopupState(PopupStates.WITHDRAW)}>Withdraw</Button>
             </td>
           </tr>
         </tbody>
       </table>
+
+      {popupState == PopupStates.ADD && (
+        <PopupContainer onClose={() => setPopupState(undefined)} render={close => (
+          <PopupProvideCollateral close={close}/>
+        )}/>
+      )}
+
+      {popupState == PopupStates.WITHDRAW && (
+        <PopupContainer onClose={() => setPopupState(undefined)} render={close => (
+          <PopupRedeemCollateral close={close}/>
+        )}/>
+      )}
     </Box>
   )
 }

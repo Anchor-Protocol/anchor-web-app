@@ -16,7 +16,7 @@
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.0",
+    "react-scripts": "3.4.4",
     "web-vitals": "^0.2.4"
   },
   "scripts": {
@@ -52,7 +52,7 @@
     "@typescript-eslint/eslint-plugin": "^4.6.1",
     "@typescript-eslint/parser": "^4.6.1",
     "autoprefixer": "^9.8.6",
-    "eslint": "^7.13.0",
+    "eslint": "^6.6.0",
     "postcss": "^7.0.35",
     "postcss-loader": "^4.0.4",
     "postcss-nested": "^4.2.3",

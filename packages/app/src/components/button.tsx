@@ -13,7 +13,8 @@ interface ButtonProps {
   disabled?: boolean,
   onClick?: (
     ((ev: React.SyntheticEvent) => Promise<boolean>) |
-    ((ev: React.SyntheticEvent) => boolean)
+    ((ev: React.SyntheticEvent) => boolean) |
+    ((ev: React.SyntheticEvent) => void)
   )
 }
 

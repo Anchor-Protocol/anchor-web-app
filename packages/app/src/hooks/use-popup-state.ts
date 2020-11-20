@@ -1,7 +1,7 @@
-type PopupItemsMap = { [key: string]: () => boolean }
+import { useState } from "react"
 
-const usePopupState = (items: PopupItemsMap) => {
-  const [popupState, setPopupState] = useState<number>(0)
+export type PopupItemsMap = { [key: string]: () => boolean }
 
-
+export const usePopupState = () => {
+  return useState<boolean>()
 }

@@ -1,0 +1,19 @@
+.popup-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #33333380;
+
+  & > div {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    & > * {
+      margin-left: -50%;
+      margin-top: -50%;
+    }
+  }
+}

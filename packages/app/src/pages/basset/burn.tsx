@@ -1,18 +1,24 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Box from '../../components/box'
 import Button, { ButtonTypes } from '../../components/button'
 import BassetInput from './components/basset-input'
 import BassetSelection from './components/selection'
 
 import style from './basset.module.css'
+import { useWallet } from '../../hooks/use-wallet'
+import { ActionContainer } from '../../containers/action'
+import { fabricatebAssetBurn } from '../../anchor-js/fabricators'
+import { useAddressProvider } from '../../providers/address-provider'
 
-interface BassetBurnProps {
+interface BassetBurnProps {}
 
-}
+const BassetBurn: React.FunctionComponent<BassetBurnProps> = () => {
+  const { address } = useWallet()
+  const addressProvider = useAddressProvider()
+  const [burnState, setBurnState] = useState(0.00)
 
-const BassetBurn: React.FunctionComponent<BassetBurnProps> = ({
-  children,
-}) => {
+  // TODO: get exchange rate
+
   return (
     <div className={style['basset-container']}>
       <BassetSelection/>
@@ -23,7 +29,8 @@ const BassetBurn: React.FunctionComponent<BassetBurnProps> = ({
             offerDenom="bLuna"
             askDenom="Luna"
             exchangeRate={0.99}
-            amount={200.00}
+            onChange={setBurnState}
+            amount={burnState}
             allowed={true}
           />
         </Box>
@@ -44,7 +51,17 @@ const BassetBurn: React.FunctionComponent<BassetBurnProps> = ({
       </article>
 
       <footer>
-        <Button type={ButtonTypes.PRIMARY} transactional={true}>Burn</Button>
+        <ActionContainer render={execute => (
+          <Button
+            type={ButtonTypes.PRIMARY}
+            transactional={true}
+            onClick={() => execute(fabricatebAssetBurn({
+              address,
+              amount: burnState.toString(),
+              bAsset: addressProvider.bAssetToken('uluna'),
+            }))}
+          >Burn</Button>
+        )}/>
       </footer>
     </div>
   )

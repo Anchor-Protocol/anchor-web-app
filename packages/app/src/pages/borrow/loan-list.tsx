@@ -1,14 +1,22 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Box from '../../components/box'
 import Button, { ButtonTypes } from '../../components/button'
+import PopupContainer from '../../layout/popup-container'
+import PopupBorrowBorrow from './popups/borrow'
+import PopupBorrowRepay from './popups/repay'
 
 interface BorrowLoanList {
 
 }
 
-const BorrowLoanList: React.FunctionComponent<BorrowLoanList> = ({
-  children,
-}) => {
+enum PopupStates {
+  BORROW,
+  REPAY,
+}
+
+const BorrowLoanList: React.FunctionComponent<BorrowLoanList> = () => {
+  const [popupState, setPopupState] = useState<PopupStates>()
+
   return (
     <Box>
       <header>
@@ -35,12 +43,24 @@ const BorrowLoanList: React.FunctionComponent<BorrowLoanList> = ({
               123k USD
             </td>
             <td>
-              <Button type={ButtonTypes.PRIMARY} transactional={false}>Borrow</Button>
-              <Button type={ButtonTypes.DEFAULT} transactional={false}>Repay</Button>
+              <Button type={ButtonTypes.PRIMARY} transactional={false} onClick={() => setPopupState(PopupStates.BORROW)}>Borrow</Button>
+              <Button type={ButtonTypes.DEFAULT} transactional={false} onClick={() => setPopupState(PopupStates.REPAY)}>Repay</Button>
             </td>
           </tr>
         </tbody>
       </table>
+
+      {popupState == PopupStates.BORROW && (
+        <PopupContainer onClose={() => setPopupState(undefined)} render={close => (
+          <PopupBorrowBorrow close={close}/>
+        )}/>
+      )}
+
+      {popupState == PopupStates.REPAY && (
+        <PopupContainer onClose={() => setPopupState(undefined)} render={close => (
+          <PopupBorrowRepay close={close}/>
+        )}/>
+      )}
     </Box>
   )
 }

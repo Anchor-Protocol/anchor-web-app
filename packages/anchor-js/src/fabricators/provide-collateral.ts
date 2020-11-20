@@ -1,6 +1,7 @@
 import { Int, MsgExecuteContract } from "@terra-money/terra.js"
 import { validateAddress } from "../utils/validation/address"
 import { validateInput } from "../utils/validate-input"
+import { validateTrue } from "../utils/validation/true"
 
 import { validateWhitelistedMarket } from "../utils/validation/market"
 import { validateIsGreaterThanZero } from "../utils/validation/number"
@@ -8,7 +9,7 @@ import { validateWhitelistedBAsset } from "../utils/validation/basset"
 import { AddressProvider } from "../address-provider/types"
 import { createHookMsg } from "../utils/cw20/create-hook-msg"
 
-interface Argument {
+interface Option {
     address: string,
     market: string,
     borrower?: string,
@@ -25,14 +26,15 @@ interface Argument {
  * @param symbol Symbol of collateral to deposit.
  * @param amount Amount of collateral to deposit.
  */
-export function fabricateProvideCollateral(
-  { address, market, borrower, symbol, amount }: Argument,
+export const fabricateProvideCollateral = (
+  { address, market, borrower, symbol, amount }: Option,
+) => (
   addressProvider: AddressProvider.Provider
-): MsgExecuteContract[] {
+): MsgExecuteContract[] => {
   validateInput([
     validateAddress(address),
     validateWhitelistedMarket(market),
-    validateAddress(borrower),
+    borrower ? validateAddress(borrower) : validateTrue,
     validateWhitelistedBAsset(symbol),
     validateIsGreaterThanZero(amount),
   ])
@@ -56,7 +58,6 @@ export function fabricateProvideCollateral(
           })
         }
       },
-      null,
     ),
     // lock_collateral call
     new MsgExecuteContract(

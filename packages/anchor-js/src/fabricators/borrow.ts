@@ -22,10 +22,11 @@ interface Option {
  * @param amount Amount of stablecoin to borrow.
  * @param withdraw_to (optional) Terra address to withdraw borrowed stablecoin. If null, withdraws to address
  */
-export function fabricateBorrow( 
+export const fabricateBorrow = (
   { address, market, amount, withdrawTo }: Option,
+) => (
   addressProvider: AddressProvider.Provider
-): MsgExecuteContract {
+): MsgExecuteContract[] => {
   validateInput([
     validateWhitelistedMarket(market),
     validateAddress(address),
@@ -35,7 +36,7 @@ export function fabricateBorrow(
 
   const mmContractAddress = addressProvider.market(market)
 
-  return new MsgExecuteContract(
+  return [new MsgExecuteContract(
     address,
     mmContractAddress,
     {
@@ -43,7 +44,6 @@ export function fabricateBorrow(
         borrow_amount: amount,
         to: withdrawTo || undefined,
       }
-    },
-    null,
-  )
+    }
+  )]
 }

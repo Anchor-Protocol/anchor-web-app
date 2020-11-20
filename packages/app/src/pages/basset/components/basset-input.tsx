@@ -1,5 +1,6 @@
 import React from 'react'
 
+// TODO: add validate
 interface BassetInputProps {
   caption: string
   askDenom: string
@@ -7,7 +8,7 @@ interface BassetInputProps {
   exchangeRate: number
   amount: number
   allowed: boolean
-  onChange?: (nextValue: string) => boolean
+  onChange?: (nextValue: number) => void | boolean
 }
 
 const BassetInput: React.FunctionComponent<BassetInputProps> = ({
@@ -26,9 +27,9 @@ const BassetInput: React.FunctionComponent<BassetInputProps> = ({
       </header>
       <div>
         <input
-          type="text"
+          type="number"
           value={amount}
-          onChange={ev => onChange(ev.currentTarget.value)}
+          onChange={ev => onChange(Number.parseFloat(ev.currentTarget.value))}
           disabled={!allowed}
         />
         <aside>

@@ -18,10 +18,11 @@ interface Option {
  * @param symbol Symbol of a stablecoin to deposit.
  * @param amount Amount of a stablecoin to deposit.
  */
-export function fabricateDepositStableCoin(
+export const fabricateDepositStableCoin = (
   { address, symbol, amount }: Option,
+) => (
   addressProvider: AddressProvider.Provider,    
-): MsgExecuteContract {
+): MsgExecuteContract[] => {
   validateInput([
     validateAddress(address),
     validateWhitelistedBAsset(symbol),
@@ -31,7 +32,7 @@ export function fabricateDepositStableCoin(
   const nativeTokenDenom = symbol
   const mmContractAddress = addressProvider.market(symbol)
 
-  return new MsgExecuteContract(
+  return [new MsgExecuteContract(
     address,
     mmContractAddress,
     {
@@ -44,5 +45,5 @@ export function fabricateDepositStableCoin(
     {
       [nativeTokenDenom]: new Int(amount).toString()
     }
-  )
+  )]
 }
