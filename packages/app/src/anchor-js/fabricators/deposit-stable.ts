@@ -37,13 +37,13 @@ export const fabricateDepositStableCoin = (
     mmContractAddress,
     {
       deposit_stable: {
-        deposit_amount: new Int(amount).toString()
+        deposit_amount: new Int(amount * 1000000).toString()
       }
     },
 
     // coins
     {
-      [nativeTokenDenom]: new Int(amount * 1000000).toString()
+      [`u${nativeTokenDenom}`]: new Int(amount * 1000000).toString()
     }
   )]
 }

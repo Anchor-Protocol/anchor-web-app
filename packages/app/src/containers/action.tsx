@@ -1,4 +1,4 @@
-import { Msg } from '@terra-money/terra.js'
+import { Msg, StdFee } from '@terra-money/terra.js'
 import React from 'react'
 import { useWallet } from '../hooks/use-wallet'
 import { useAddressProvider } from '../providers/address-provider'
@@ -20,13 +20,11 @@ export const ActionContainer: React.FunctionComponent<ActionContainerProps> = ({
 
   const submit = (fabricated: Fabricated) => new Promise<PostResponse>((resolve, reject) => {
     extension.post({
-      lcdClientConfig: network.lcd,
       msgs: fabricated(addressProviders),
-    }, {
-      gasPrice: network.fee.gasPrice,
-      amount: network.fee.amount,
+      fee: new StdFee(200000, "100000uluna"),
     },
     (response) => {
+      console.log(response)
       if(response.success) reject(response.error)
       else resolve(response)
     })

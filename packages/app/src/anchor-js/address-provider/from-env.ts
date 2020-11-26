@@ -1,5 +1,7 @@
 import { reactifyEnv } from "../../libs/react-app-prefix"
 
+console.log(process.env)
+
 export class AddressProviderFromEnvVar implements AddressProvider.Provider {
   bAssetReward(denom: string): string {
     return getFromEnv('bAssetReward')

@@ -33,7 +33,7 @@ export const useWalletState = (): Wallet => {
   // const client = useStatsClient()
   // const [connectToGraph] = useMutation(CONNECT, { client })
   const connect = () =>
-    extension.connect((address) => {
+    extension.connect(({ address }) => {
       setAddress(address)
       // connectToGraph({ variables: { address } })
     })
