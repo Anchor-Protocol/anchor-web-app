@@ -1,14 +1,11 @@
 import { Int, MsgExecuteContract } from "@terra-money/terra.js"
-import { AddressProvider } from "../address-provider/types"
 import { validateInput } from "../utils/validate-input"
 import { validateAddress, validateValAddress } from "../utils/validation/address"
 import { validateIsGreaterThanZero } from "../utils/validation/number"
 
-import bAssetToNative from '../constants/basset-to-native.json'
-
 interface Option {
   address: string
-  amount: string
+  amount: number
   bAsset: string
   validator: string // validator address
 }
@@ -24,7 +21,7 @@ export const fabricatebAssetMint = (
     validateIsGreaterThanZero(amount)
   ])
 
-  const nativeTokenDenom = bAssetToNative[bAsset.toLowerCase()]
+  // const nativeTokenDenom = bAssetToNative.bluna[bAsset.toLowerCase()]
   const bAssetContractAddress = addressProvider.bAssetGov(bAsset)
   
   return [
@@ -39,7 +36,7 @@ export const fabricatebAssetMint = (
 
       // send native token
       {
-        [nativeTokenDenom]: new Int(amount).toString()
+        "uluna": new Int(amount * 1000000).toString()
       }
     ),
   ]

@@ -3,7 +3,7 @@ import marketConstant from "../../constants/market.json"
 
 export const validateWhitelistedMarket = (market: string): InputEntry => (
   [
-    () => marketConstant[market],
+    () => !!marketConstant.ust && market === 'ust',
     `unknown market ${market}.`
   ]
 )

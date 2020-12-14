@@ -6,13 +6,12 @@ import { validateTrue } from "../utils/validation/true"
 import { validateWhitelistedMarket } from "../utils/validation/market"
 import { validateIsGreaterThanZero } from "../utils/validation/number"
 import { validateWhitelistedBAsset } from "../utils/validation/basset"
-import { AddressProvider } from "../address-provider/types"
 import { createHookMsg } from "../utils/cw20/create-hook-msg"
 
 interface Option {
     address: string,
     market: string,
-    borrower?: string,
+    // borrower?: string,
     symbol: string,
     amount: number
 }
@@ -21,20 +20,20 @@ interface Option {
  * 
  * @param address Client’s Terra address.
  * @param market Type of stablecoin money market to deposit collateral. Currently only supports UST and KRT.
- * @param borrower (optional) — Terra address of the entity that created the loan position. If null, adds collateral to address‘s loan position.
+//  * @param borrower (optional) — Terra address of the entity that created the loan position. If null, adds collateral to address‘s loan position.
  * @param loan_id ID of address’s loan position to add collateral. For each addresses, their first loan position is given ID = 0, second loan ID = 1, third ID = 2, etc.. If this field is [(address’s current highest loan_id) + 1], a new loan position is created.
  * @param symbol Symbol of collateral to deposit.
  * @param amount Amount of collateral to deposit.
  */
 export const fabricateProvideCollateral = (
-  { address, market, borrower, symbol, amount }: Option,
+  { address, market, symbol, amount }: Option,
 ) => (
   addressProvider: AddressProvider.Provider
 ): MsgExecuteContract[] => {
   validateInput([
     validateAddress(address),
     validateWhitelistedMarket(market),
-    borrower ? validateAddress(borrower) : validateTrue,
+    // borrower ? validateAddress(borrower) : validateTrue,
     validateWhitelistedBAsset(symbol),
     validateIsGreaterThanZero(amount),
   ])
@@ -52,7 +51,7 @@ export const fabricateProvideCollateral = (
       {
         send: {
           address: custodyContract,
-          amount: new Int(amount).toString(),
+          amount: new Int(amount * 1000000).toString(),
           msg: createHookMsg({
             deposit_collateral: {}
           })
@@ -68,7 +67,7 @@ export const fabricateProvideCollateral = (
           collaterals: [
             [
               address,
-              new Int(amount).toString()
+              new Int(amount * 1000000).toString()
             ]
           ]
         }

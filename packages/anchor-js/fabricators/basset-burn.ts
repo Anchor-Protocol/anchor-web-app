@@ -1,8 +1,7 @@
 import { Int, MsgExecuteContract } from "@terra-money/terra.js"
-import { AddressProvider } from "../address-provider/types"
 import { validateInput } from "../utils/validate-input"
 import { validateAddress } from "../utils/validation/address"
-import { validateIsGreaterThanZero } from "../utils/validation/number"
+import { validateIsGreaterThanZero, validateIsNumber } from "../utils/validation/number"
 import { createHookMsg } from "../utils/cw20/create-hook-msg"
 
 interface Option {
@@ -18,7 +17,8 @@ export const fabricatebAssetBurn = (
 ): MsgExecuteContract[] => {
   validateInput([
     validateAddress(address),
-    validateIsGreaterThanZero(amount)
+    validateIsNumber(+amount),
+    validateIsGreaterThanZero(+amount)
   ])
 
   const bAssetTokenAddress = addressProvider.bAssetToken(bAsset)
@@ -30,8 +30,8 @@ export const fabricatebAssetBurn = (
       bAssetTokenAddress,
       {
         send: {
-          address: bAssetGovAddress,
-          amount: new Int(amount).toString(),
+          contract: bAssetGovAddress,
+          amount: new Int(+amount * 1000000).toString(),
           msg: createHookMsg({
             init_burn: {}
           })

@@ -1,5 +1,3 @@
-import { AddressProvider } from './types'
-
 export class AddressProviderFromMantle implements AddressProvider.Provider {
   bAssetReward(denom: string): string {
     throw new Error('Method not implemented.')

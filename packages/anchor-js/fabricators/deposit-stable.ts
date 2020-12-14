@@ -3,8 +3,8 @@ import { validateAddress } from "../utils/validation/address"
 import { validateInput } from "../utils/validate-input"
 
 import { validateIsGreaterThanZero } from "../utils/validation/number"
-import { AddressProvider } from "../address-provider/types"
 import { validateWhitelistedBAsset } from "../utils/validation/basset"
+import { validateWhitelistedStable } from "../utils/validation/stable"
 
 interface Option {
     address: string,
@@ -25,7 +25,7 @@ export const fabricateDepositStableCoin = (
 ): MsgExecuteContract[] => {
   validateInput([
     validateAddress(address),
-    validateWhitelistedBAsset(symbol),
+    validateWhitelistedStable(symbol),
     validateIsGreaterThanZero(amount),
   ])
 
@@ -37,13 +37,13 @@ export const fabricateDepositStableCoin = (
     mmContractAddress,
     {
       deposit_stable: {
-        deposit_amount: new Int(amount).toString()
+        deposit_amount: new Int(amount * 1000000).toString()
       }
     },
 
     // coins
     {
-      [nativeTokenDenom]: new Int(amount).toString()
+      [`u${nativeTokenDenom}`]: new Int(amount * 1000000).toString()
     }
   )]
 }

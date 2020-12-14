@@ -3,7 +3,6 @@ import { validateAddress } from "../utils/validation/address"
 import { validateInput } from "../utils/validate-input"
 import { validateIsGreaterThanZero } from "../utils/validation/number"
 import { validateWhitelistedMarket } from "../utils/validation/market"
-import { AddressProvider } from "../address-provider/types"
 import { validateTrue } from "../utils/validation/true"
 
 interface Option {

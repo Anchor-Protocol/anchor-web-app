@@ -3,15 +3,14 @@ import { validateAddress } from "../utils/validation/address"
 import { validateInput } from "../utils/validate-input"
 
 import { validateWhitelistedMarket } from "../utils/validation/market"
-import { validateWhitelistedBAsset } from "../utils/validation/basset"
-import { AddressProvider } from "../address-provider/types"
 import { validateTrue } from "../utils/validation/true"
+import { validateIsGreaterThanZero } from "../utils/validation/number"
 
 interface Option {
     address: string,
     market: string,
     borrower?: string,
-    symbol: string,
+    // symbol: string,
     redeem_all: boolean,
     amount: number | null
 }
@@ -26,15 +25,16 @@ interface Option {
  * @param withdraw_to (optional) Terra address to withdraw redeemed collateral. If null, withdraws to address.
  */
 export const fabricateRedeemCollateral = (
-  { address, market, borrower, symbol, redeem_all = true, amount = null }: Option,
+  { address, market, redeem_all = true, amount = null }: Option,
 ) => (
   addressProvider: AddressProvider.Provider,
 ): MsgExecuteContract[] => {
   validateInput([
     validateAddress(address),
     validateWhitelistedMarket(market),
-    borrower ? validateAddress(borrower) : validateTrue,
-    validateWhitelistedBAsset(symbol),
+    amount ? validateIsGreaterThanZero(amount) : validateTrue,
+    // borrower ? validateAddress(borrower) : validateTrue,
+    // validateWhitelistedBAsset(symbol),
   ])
 
   const mmOverseerContract = addressProvider.overseer(market.toLowerCase())
