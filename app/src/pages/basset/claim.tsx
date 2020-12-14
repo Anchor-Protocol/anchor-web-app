@@ -7,7 +7,7 @@ import { ActionContainer } from '../../containers/action';
 import { useWallet } from '../../hooks/use-wallet';
 import { useAddressProvider } from '../../providers/address-provider';
 
-import style from './basset.module.css';
+import style from './basset.module.scss';
 import BassetSelection from './components/selection';
 import { fabricatebAssetUpdateGlobalIndex } from '@anchor-protocol/anchor-js/fabricators/basset-update-global-index';
 import { ready } from '../../components/ready';

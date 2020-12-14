@@ -3,7 +3,7 @@ import AnchorLogo from './anchor-logo';
 import Navigation from './navigation';
 import Wallet from '../components/wallet';
 
-import style from './default-layout.module.css';
+import style from './default-layout.module.scss';
 
 interface LayoutProps {
   currentRoute: string;

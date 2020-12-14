@@ -1,6 +1,6 @@
 module.exports = {
   extends: [
-    '@ssen',
+    'react-app',
     'prettier',
     'prettier/react',
     'prettier/@typescript-eslint',

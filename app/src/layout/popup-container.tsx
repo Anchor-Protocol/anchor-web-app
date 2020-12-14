@@ -1,5 +1,5 @@
 import React from 'react';
-import style from './popup-container.module.css';
+import style from './popup-container.module.scss';
 
 type PopupClose = () => void;
 interface PopupContainerProps {

@@ -1,6 +1,8 @@
-import { Coins, Extension, SyncTxBroadcastResult } from '@terra-money/terra.js';
-import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
-import { plus } from '../libs/math';
+import {
+  CreateTxOptions,
+  Extension,
+  SyncTxBroadcastResult,
+} from '@terra-money/terra.js';
 
 export type Result = SyncTxBroadcastResult.Data;
 export interface PostResponse {

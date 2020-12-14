@@ -9,7 +9,7 @@ module.exports = {
     'pre-commit': [
       `markdown-source-import README.md "templates/**/*.md" "examples/**/*.md" --git-add`,
       `lint-staged`,
-      ...precommit(`packages-template`),
+      //...precommit(`packages-template`),
     ].join(' && '),
   },
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import style from './box.module.css';
+import style from './box.module.scss';
 
 interface BoxProps {}
 

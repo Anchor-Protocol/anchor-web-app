@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import style from './navigation.module.css';
+import style from './navigation.module.scss';
 
 interface NavigationProps {
   currentRoute: string;

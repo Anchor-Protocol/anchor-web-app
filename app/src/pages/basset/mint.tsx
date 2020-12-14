@@ -4,7 +4,7 @@ import Button, { ButtonTypes } from '../../components/button';
 import BassetInput from './components/basset-input';
 import BassetSelection from './components/selection';
 
-import style from './basset.module.css';
+import style from './basset.module.scss';
 import { ActionContainer } from '../../containers/action';
 import { fabricatebAssetMint } from '@anchor-protocol/anchor-js/fabricators';
 import { useWallet } from '../../hooks/use-wallet';
