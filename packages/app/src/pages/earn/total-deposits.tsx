@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import Box from '../../components/box'
 import Button, { ButtonTypes } from '../../components/button'
+import { ready } from '../../components/ready'
 import { ActionContainer } from '../../containers/action'
+import useAnchorBalance from '../../hooks/mantle/use-anchor-balance'
 import PopupContainer from '../../layout/popup-container'
 import EarnDepositPopup from './popups/deposit'
 import EarnWithdrawPopup from './popups/withdraw'
@@ -19,14 +21,17 @@ const EarnTotalDeposits: React.FunctionComponent<EarnTotalDepositsProps> = ({
   children,
 }) => {
   const [popupState, setPopupState] = useState<PopupStates>()
+  const [loading, error, anchorBalance, r] = useAnchorBalance()
 
-  return (
+  const isReady = !loading && !error
+
+  return ready(isReady, () => 
     <Box>
       <header>
         Total Deposits
       </header>
       <article>
-        1234.5682 UST == 12342353125. aUST
+        1234.5682 UST == {(+anchorBalance!.balance) / 1000000 || 0} aUST
       </article>
       <footer>
         <Button
@@ -43,7 +48,10 @@ const EarnTotalDeposits: React.FunctionComponent<EarnTotalDepositsProps> = ({
 
       {popupState === PopupStates.DEPOSIT && (
         <PopupContainer
-          onClose={() => setPopupState(undefined)}
+          onClose={() => {
+            r()
+            setPopupState(undefined)
+          }}
           render={close => (
             <EarnDepositPopup close={close} />
           )}>

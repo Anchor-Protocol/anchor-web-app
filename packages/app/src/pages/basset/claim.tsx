@@ -9,6 +9,9 @@ import { useAddressProvider } from '../../providers/address-provider'
 
 import style from './basset.module.css'
 import BassetSelection from './components/selection'
+import { fabricatebAssetUpdateGlobalIndex } from '../../anchor-js/fabricators/basset-update-global-index'
+import { ready } from '../../components/ready'
+import useBassetClaimable from '../../hooks/mantle/use-basset-claimable'
 
 interface BassetClaimProps {}
 
@@ -17,15 +20,18 @@ const BassetClaim: React.FunctionComponent<BassetClaimProps> = () => {
   const addressProvider = useAddressProvider()
   const [withdrawState, setWithdrawState] = useState({ amount: "0.00" })
 
+  const [loading, error, claimable = "0"] = useBassetClaimable()
 
-  return (
+  const isReady = !loading && !error
+
+  return ready(isReady, () => (
     <div className={style['basset-container']}>
       <BassetSelection/>
       <article className={style.business}>
         <Box>
           <header>Available Luna</header>
           <div>
-            <Amount amount={10000000000} denom="Luna" />
+            <Amount amount={+claimable} denom="Luna" />
           </div>
           <footer>
             <ActionContainer render={execute => (
@@ -40,7 +46,7 @@ const BassetClaim: React.FunctionComponent<BassetClaimProps> = () => {
         <Box>
           <header>Claimable Rewards</header>
           <div>
-            <Amount amount={2444444444} denom="UST" />
+            <Amount amount={+claimable} denom="UST" />
           </div>
           <footer>
             <ActionContainer render={execute => (
@@ -57,8 +63,22 @@ const BassetClaim: React.FunctionComponent<BassetClaimProps> = () => {
           </footer>
         </Box>
       </article>
+
+      {/* owner operations */}
+      <div>
+        <ActionContainer render={execute => (
+          <Button
+          type={ButtonTypes.DEFAULT}
+          transactional={true} onClick={() => execute(fabricatebAssetUpdateGlobalIndex({
+            address,
+            bAsset: "bluna"
+          }))}>
+            Update Global Index
+          </Button>
+        )}/>
+      </div>
     </div>
-  )
+  ))
 }
 
 export default BassetClaim

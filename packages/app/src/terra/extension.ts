@@ -1,5 +1,6 @@
-import { Extension, SyncTxBroadcastResult } from "@terra-money/terra.js"
-import { CreateTxOptions } from "@terra-money/terra.js"
+import { Coins, Extension, SyncTxBroadcastResult } from "@terra-money/terra.js"
+import { CreateTxOptions, StdFee } from "@terra-money/terra.js"
+import { plus } from "../libs/math"
 
 export type Result = SyncTxBroadcastResult.Data
 export interface PostResponse {
@@ -13,6 +14,11 @@ export interface PostResponse {
 const ext = new Extension()
 export default {
   init: () => !!ext.isAvailable,
+
+  // info: (callback: (network?: ExtNetworkConfig) => void) => {
+  //   ext.info()
+  //   ext.on("onInfo", callback)
+  // },
 
   connect: (callback: (params: { address: string }) => void) => {
     ext.connect()

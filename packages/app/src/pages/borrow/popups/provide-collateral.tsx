@@ -3,7 +3,10 @@ import { fabricateProvideCollateral } from '../../../anchor-js/fabricators'
 import Box from '../../../components/box'
 import Button, { ButtonTypes } from '../../../components/button'
 import Input from '../../../components/input'
+import { ready } from '../../../components/ready'
 import { ActionContainer } from '../../../containers/action'
+import useAnchorBalance from '../../../hooks/mantle/use-anchor-balance'
+import useBAssetBalance from '../../../hooks/mantle/use-basset-balance'
 import { useWallet } from '../../../hooks/use-wallet'
 import { PopupChild } from '../../../layout/popup-container'
 
@@ -15,9 +18,19 @@ const PopupProvideCollateral: React.FunctionComponent<PopupProvideCollateralProp
   close,
 }) => {
   const { address } = useWallet()
+
+  // side effects
+  const [bAssetBalanceLoading, bAssetBalanceError, bAssetBalance] = useBAssetBalance()
+
+  // input states
   const [depositState, setDepositState] = useState(0.00)
 
-  return (
+  // derived states
+  const nextBorrowLimit = depositState * 123
+
+  const isReady = (!bAssetBalanceLoading && !bAssetBalanceError)
+
+  return ready(isReady, () => (
     <Box>
       <header>
         <dl>
@@ -38,7 +51,7 @@ const PopupProvideCollateral: React.FunctionComponent<PopupProvideCollateralProp
             />
           </div>
           <footer>
-            Wallet: 234bATOM
+            Wallet: {bAssetBalance.balance}bLUNA
           </footer>
         </section>
         <section>
@@ -48,7 +61,7 @@ const PopupProvideCollateral: React.FunctionComponent<PopupProvideCollateralProp
           <div>
             <Input
               textRight="UST"
-              value={0.00}
+              value={nextBorrowLimit}
               disabled={true}
             />
           </div>
@@ -73,7 +86,7 @@ const PopupProvideCollateral: React.FunctionComponent<PopupProvideCollateralProp
         )}/>
       </footer>
     </Box>
-  )
+  ))
 }
 
 export default PopupProvideCollateral

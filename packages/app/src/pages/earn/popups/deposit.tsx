@@ -3,7 +3,9 @@ import { fabricateDepositStableCoin } from '../../../anchor-js/fabricators'
 import Box from '../../../components/box'
 import Button, { ButtonTypes } from '../../../components/button'
 import Input from '../../../components/input'
+import { ready } from '../../../components/ready'
 import { ActionContainer } from '../../../containers/action'
+import useWalletBalance from '../../../hooks/mantle/use-wallet-balance'
 import { useWallet } from '../../../hooks/use-wallet'
 import { PopupChild } from '../../../layout/popup-container'
 
@@ -16,8 +18,14 @@ const EarnDepositPopup: React.FunctionComponent<EarnDepositPopupProps> = ({
 }) => {
   const { address } = useWallet()
   const [depositState, setDepositState] = useState(0.00)
+  const [loading, error, balance] = useWalletBalance()
 
-  return (
+  // UST balance
+
+  const ustBalance = balance?.find(e => e.Denom === 'uusd')?.Amount || '0'
+  const isReady = !loading && !error
+
+  return ready(isReady, () => (
     <Box>
       <header>
         // big fat arrow //
@@ -39,7 +47,7 @@ const EarnDepositPopup: React.FunctionComponent<EarnDepositPopupProps> = ({
           />
         </div>
         <aside>
-          Wallet: <span>8390.38 UST</span>
+          Wallet: <span>{+ustBalance / 1000000} UST</span>
         </aside>
       </div>
 
@@ -52,13 +60,13 @@ const EarnDepositPopup: React.FunctionComponent<EarnDepositPopupProps> = ({
               address,
               amount: depositState,
               symbol: "usd"
-            })).then(close)}
+            })).then(close).catch(console.log)}
           >PROCEED</Button>
         )}/>
         <a>Deposit from bank</a>
       </footer>
     </Box>
-  )
+  ))
 }
 
 export default EarnDepositPopup

@@ -2,8 +2,9 @@
   "name": "@anchor-protocol/app",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://3.34.69.106:1317/",
+  "proxy": "http://localhost:1337/",
   "dependencies": {
+    "@apollo/client": "^3.2.9",
     "@terra-money/terra.js": "^1.2.1",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
@@ -14,6 +15,7 @@
     "@typescript-eslint/eslint-plugin": "^4.6.1",
     "@typescript-eslint/parser": "^4.6.1",
     "bignumber.js": "^9.0.1",
+    "graphql": "^15.4.0",
     "ramda": "^0.27.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
