@@ -5,7 +5,8 @@
   "license": "MIT",
   "repository": "github:Anchor-Protocol/anchor",
   "workspaces": [
-    "app"
+    "app",
+    "design"
   ],
   "scripts": {
     "format": "prettier --write \"**/*.{js,ts,tsx}\"",
