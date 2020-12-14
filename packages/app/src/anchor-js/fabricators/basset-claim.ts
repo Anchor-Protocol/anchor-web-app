@@ -1,7 +1,6 @@
 import { MsgExecuteContract } from "@terra-money/terra.js"
 import { validateInput } from "../utils/validate-input"
-import { validateAddress, validateValAddress } from "../utils/validation/address"
-import { validateIsGreaterThanZero } from "../utils/validation/number"
+import { validateAddress } from "../utils/validation/address"
 
 interface Option {
   address: string
@@ -16,8 +15,6 @@ export const fabricatebAssetClaim = (
 ): MsgExecuteContract[] => {
   validateInput([
     validateAddress(address),
-    // validateValAddress(validator),
-    // validateIsGreaterThanZero(amount)
   ])
 
   const bAssetRewardAddress = addressProvider.bAssetReward(bAsset)

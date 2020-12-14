@@ -2,7 +2,7 @@ import { InputEntry } from "../validate-input"
 
 export const validateIsNumber = (n: number | string): InputEntry => (
   [
-    () => Number.isNaN(n),
+    () => !Number.isNaN(n),
     `invalid number ${n}`,
   ]
 )

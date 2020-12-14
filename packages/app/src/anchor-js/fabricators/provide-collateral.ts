@@ -51,7 +51,7 @@ export const fabricateProvideCollateral = (
       {
         send: {
           address: custodyContract,
-          amount: new Int(amount).toString(),
+          amount: new Int(amount * 1000000).toString(),
           msg: createHookMsg({
             deposit_collateral: {}
           })
@@ -67,7 +67,7 @@ export const fabricateProvideCollateral = (
           collaterals: [
             [
               address,
-              new Int(amount).toString()
+              new Int(amount * 1000000).toString()
             ]
           ]
         }

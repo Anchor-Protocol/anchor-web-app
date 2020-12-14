@@ -3,8 +3,6 @@ import { validateInput } from "../utils/validate-input"
 import { validateAddress, validateValAddress } from "../utils/validation/address"
 import { validateIsGreaterThanZero } from "../utils/validation/number"
 
-import bAssetToNative from '../constants/basset-to-native.json'
-
 interface Option {
   address: string
   amount: number
