@@ -15,7 +15,10 @@ Scripts in `/app` directory
 - `yarn run build` Build production files
 - `yarn run pack` Build packages
 - `yarn run publish` Publish built packages to NPM
+- `yarn run storybook` Start storybook development
 
 # Directory Structure
 
 - `/app` App directory
+  - `/src` Source directory
+    - `/@anchor-protocol/*` Packages (see the `yarn run pack` command and `.package.yaml` file)
