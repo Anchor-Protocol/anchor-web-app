@@ -19,24 +19,9 @@ export const Title = styled.h1`
 
 export const Box = styled.section`
   border-radius: 20px;
-  box-shadow: 6px 6px 10px 0 rgba(0, 0, 0, 0.2),
-    -6px -6px 10px 0 rgba(255, 255, 255, 0.03);
-  border-style: solid;
-  border-width: 1px;
-  border-image-source: linear-gradient(
-    111deg,
-    rgba(0, 0, 0, 0.05) 38%,
-    rgba(255, 255, 255, 0.05) 100%
-  );
-  border-image-slice: 1;
-  background-image: linear-gradient(to bottom, #1a1d2e, #1a1d2e),
-    linear-gradient(
-      111deg,
-      rgba(0, 0, 0, 0.05) 38%,
-      rgba(255, 255, 255, 0.05) 100%
-    );
-  background-origin: border-box;
-  background-clip: content-box, border-box;
+  background: #1a1d2e;
+  box-shadow: 6px 6px 10px rgba(0, 0, 0, 0.2),
+    -6px -6px 10px rgba(255, 255, 255, 0.03);
 `;
 
 export const BoxTitle = styled.h3`
@@ -59,21 +44,18 @@ export const HorizontalRuler = styled.hr`
   border-right: 0;
 `;
 
-export const Button = styled.button`
-  min-width: 100px;
+export const Button = styled.div`
   height: 42px;
-  padding: 11px 172px 11px 173px;
   border-radius: 21px;
-  border-style: solid;
-  border-width: 1px;
-  border-image-source: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.07),
-    rgba(0, 0, 0, 0.2) 78%
-  );
-  border-image-slice: 1;
-  background-origin: border-box;
-  background-color: #282d46;
+  background: #282d46;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2),
+    -2px -2px 5px rgba(255, 255, 255, 0.03);
+
+  &:active {
+  }
+
+  display: grid;
+  place-content: center;
 
   font-family: Gotham;
   font-size: 14px;

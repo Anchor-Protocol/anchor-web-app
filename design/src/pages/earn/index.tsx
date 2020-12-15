@@ -22,9 +22,16 @@ function EarnBase({ className }: EarnProps) {
         <Box className="total-deposit">
           <div>
             <BoxTitle>TOTAL DEPOSIT</BoxTitle>
+
+            <p className="total-deposit-amount">
+              2,320<span>.063700</span> UST
+            </p>
+
+            <p className="total-deposit-subamount">12,320.063 aUST</p>
+
             <HorizontalRuler />
 
-            <div>
+            <div className="total-deposit-buttons">
               <Button>Deposit</Button>
               <Button>Withdraw</Button>
             </div>
@@ -72,6 +79,40 @@ export const Earn = styled(EarnBase)`
     }
 
     .total-deposit {
+      .total-deposit-amount {
+        font-family: Gotham;
+        font-size: 64px;
+        font-weight: 200;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: normal;
+        letter-spacing: -3px;
+        color: #ffffff;
+      }
+
+      .total-deposit-subamount {
+        opacity: 0.4;
+        font-family: Gotham;
+        font-size: 14px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.5;
+        letter-spacing: -0.3px;
+        color: #ffffff;
+      }
+
+      .total-deposit-buttons {
+        display: flex;
+
+        > * {
+          flex: 1;
+        }
+
+        > :not(:last-child) {
+          margin-right: 20px;
+        }
+      }
     }
 
     .interest {
