@@ -1,8 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Earn } from './pages/earn';
+import './index.scss';
 
 function App() {
-  return <div>This app is a design preview</div>;
+  return (
+    <div>
+      <Earn />
+    </div>
+  );
 }
 
 ReactDOM.render(
