@@ -1,11 +1,13 @@
+import { Neumorphism } from './pages/neumorphism';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Earn } from './pages/earn';
 import './index.scss';
+import { Earn } from './pages/earn';
 
 function App() {
   return (
     <div>
+      <Neumorphism />
       <Earn />
     </div>
   );
