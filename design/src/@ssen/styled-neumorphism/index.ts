@@ -19,6 +19,7 @@ export function flat({
   const blur: number = 10 + 2 * (distance - 5);
 
   return `
+    transition: box-shadow 0.1s ease;
     background: ${color};
     box-shadow: ${distance}px
                 ${distance}px
@@ -39,8 +40,11 @@ export function concave({
   intensity,
 }: NeumorphismValues) {
   const blur: number = 10 + 2 * (distance - 5);
+  
+  // TODO find the weight ratio by color luminance
 
   return `
+    transition: box-shadow 0.1s ease;
     background: linear-gradient(
                   145deg,
                   ${c(color).darken(0.05).string()},
@@ -65,8 +69,11 @@ export function convex({
   intensity,
 }: NeumorphismValues) {
   const blur: number = 10 + 2 * (distance - 5);
+  
+  // TODO find the weight ratio by color luminance
 
   return `
+    transition: box-shadow 0.1s ease;
     background: linear-gradient(
                   145deg,
                   ${c(color).lighten(0.05).string()},
@@ -93,6 +100,7 @@ export function pressed({
   const blur: number = 10 + 2 * (distance - 5);
 
   return `
+    transition: box-shadow 0.1s ease;
     background: ${color};
     box-shadow: inset
                 ${distance}px
@@ -108,7 +116,23 @@ export function pressed({
   `;
 }
 
-export function horizontalRule({
+export function rulerLightColor({
+  intensity,
+  color,
+}: Pick<NeumorphismValues, 'intensity'> & { color: string }): string {
+  const ratio = c(color).isLight() ? intensity * 2 : intensity;
+  return c(color).lighten(ratio).string();
+}
+
+export function rulerShadowColor({
+  intensity,
+  color,
+}: Pick<NeumorphismValues, 'intensity'> & { color: string }) {
+  const ratio = c(color).isLight() ? intensity * 0.7 : intensity * 1.2;
+  return c(color).darken(ratio).string();
+}
+
+export function horizontalRuler({
   intensity,
   ...colors
 }: Pick<NeumorphismValues, 'intensity'> &
@@ -122,12 +146,11 @@ export function horizontalRule({
         };
   return `
     padding: 0;
-    border-top: 1px solid ${c(topColor)
-      .darken(intensity * 1.7)
-      .string()};
-    border-bottom: 1px solid ${c(bottomColor)
-      .lighten(intensity * 1.7)
-      .string()};
+    border-top: 1px solid ${rulerShadowColor({ intensity, color: topColor })};
+    border-bottom: 1px solid ${rulerLightColor({
+      intensity,
+      color: bottomColor,
+    })};
     border-left: 0;
     border-right: 0;
   `;

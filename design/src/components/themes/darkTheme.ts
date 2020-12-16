@@ -1,7 +1,7 @@
 import { DefaultTheme } from 'styled-components';
 
 export const darkTheme: DefaultTheme = {
-  intensity: 0.3,
+  intensity: 0.45,
 
   backgroundColor: '#1a1d2e',
   textColor: '#ffffff',

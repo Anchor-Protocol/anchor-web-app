@@ -1,4 +1,6 @@
-import { concave, flat, horizontalRule } from '@ssen/styled-neumorphism';
+import { ActionButton } from 'components/ui/ActionButton';
+import { HorizontalRuler } from 'components/ui/HorizontalRuler';
+import { Section } from 'components/ui/Section';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -12,7 +14,7 @@ function EarnBase({ className }: EarnProps) {
       <div className="layout">
         <Title>EARN</Title>
 
-        <Box className="total-deposit">
+        <Section className="total-deposit">
           <div>
             <BoxTitle>TOTAL DEPOSIT</BoxTitle>
 
@@ -25,30 +27,29 @@ function EarnBase({ className }: EarnProps) {
             <HorizontalRuler />
 
             <div className="total-deposit-buttons">
-              <Button>Deposit</Button>
-              <Button>Withdraw</Button>
+              <ActionButton>Deposit</ActionButton>
+              <ActionButton>Withdraw</ActionButton>
             </div>
           </div>
-        </Box>
+        </Section>
 
-        <Box className="interest">
+        <Section className="interest">
           <div>
             <BoxTitle>INTEREST</BoxTitle>
           </div>
-        </Box>
+        </Section>
 
-        <Box className="transaction-history">
+        <Section className="transaction-history">
           <div>
             <BoxTitle>TRANSACTION HISTORY</BoxTitle>
           </div>
-        </Box>
+        </Section>
       </div>
     </div>
   );
 }
 
 export const Title = styled.h1`
-  width: 101px;
   height: 41px;
   font-family: Gotham;
   font-size: 34px;
@@ -58,12 +59,6 @@ export const Title = styled.h1`
   line-height: normal;
   letter-spacing: normal;
   color: #f0f0f0;
-`;
-
-export const Box = styled.section`
-  border-radius: 20px;
-  
-  ${flat({ color: '#1a1d2e', distance: 6, intensity: 0.3 })};
 `;
 
 export const BoxTitle = styled.h3`
@@ -78,59 +73,8 @@ export const BoxTitle = styled.h3`
   color: #ffffff;
 `;
 
-export const HorizontalRuler = styled.hr`
-  ${horizontalRule({ color: '#1a1d2e', intensity: 0.3 })};
-`;
-
-export const Button = styled.button`
-  outline: none;
-
-  transition: box-shadow 0.25s ease;
-
-  border: 0;
-  width: 200px;
-  height: 42px;
-  border-radius: 21px;
-  margin-right: 15px;
-
-  font-family: Gotham;
-  font-size: 14px;
-  font-weight: 500;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.39;
-  letter-spacing: normal;
-  text-align: center;
-  color: #ffffff;
-
-  ${flat({
-    color: '#282d46',
-    backgroundColor: '#1a1d2e',
-    distance: 1,
-    intensity: 0.3,
-  })};
-
-  &:hover {
-    ${flat({
-      color: '#282d46',
-      backgroundColor: '#1a1d2e',
-      distance: 5,
-      intensity: 0.3,
-    })};
-  }
-
-  &:active {
-    ${concave({
-      color: '#282d46',
-      backgroundColor: '#1a1d2e',
-      distance: 2,
-      intensity: 0.3,
-    })};
-  }
-`;
-
 export const Earn = styled(EarnBase)`
-  background-color: #1a1d2e;
+  background-color: ${({ theme }) => theme.backgroundColor};
 
   padding: 100px 0;
 
@@ -141,7 +85,6 @@ export const Earn = styled(EarnBase)`
       margin: 0 0 50px 0;
 
       width: 101px;
-      height: 41px;
       font-family: Gotham;
       font-size: 34px;
       font-weight: 900;
@@ -149,7 +92,7 @@ export const Earn = styled(EarnBase)`
       font-style: normal;
       line-height: normal;
       letter-spacing: normal;
-      color: #f0f0f0;
+      color: ${({ theme }) => theme.textColor};
     }
 
     section {
@@ -173,11 +116,10 @@ export const Earn = styled(EarnBase)`
         font-style: normal;
         line-height: normal;
         letter-spacing: -3px;
-        color: #ffffff;
+        color: ${({ theme }) => theme.textColor};
       }
 
       .total-deposit-subamount {
-        opacity: 0.4;
         font-family: Gotham;
         font-size: 14px;
         font-weight: normal;
@@ -185,7 +127,7 @@ export const Earn = styled(EarnBase)`
         font-style: normal;
         line-height: 1.5;
         letter-spacing: -0.3px;
-        color: #ffffff;
+        color: ${({ theme }) => theme.dimTextColor};
       }
 
       .total-deposit-buttons {

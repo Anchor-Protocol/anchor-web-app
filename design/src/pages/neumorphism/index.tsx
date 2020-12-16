@@ -1,10 +1,9 @@
-import {
-  concave,
-  convex,
-  flat,
-  horizontalRule,
-  pressed,
-} from '@ssen/styled-neumorphism';
+import { concave, convex, flat, pressed } from '@ssen/styled-neumorphism';
+import { ActionButton } from 'components/ui/ActionButton';
+import { HorizontalRuler } from 'components/ui/HorizontalRuler';
+import { Section } from 'components/ui/Section';
+import { TextButton } from 'components/ui/TextButton';
+import { TextInput } from 'components/ui/TextInput';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -15,161 +14,99 @@ export interface NeumorphismProps {
 function NeumorphismBase({ className }: NeumorphismProps) {
   return (
     <div className={className}>
-      <section className="section-flat">Flat</section>
-      <section className="section-concave">Concave</section>
-      <section className="section-convex">Convex</section>
-      <section className="section-pressed">Pressed</section>
+      <div className="styles">
+        <section className="flat">FLAT</section>
+        <section className="concave">CONCAVE</section>
+        <section className="convex">CONVEX</section>
+        <section className="pressed">PRESSED</section>
+      </div>
 
-      <hr />
+      <Section className="section">
+        <TextButton>BUTTON</TextButton>
+        <ActionButton>BUTTON</ActionButton>
 
-      <hr />
+        <HorizontalRuler />
 
-      <button className="text-button">Button</button>
-      <button className="color-button">Button</button>
-
-      <hr />
-
-      <input type="text" className="input" />
+        <TextInput type="text" />
+      </Section>
     </div>
   );
 }
 
-const intensity = 0.3;
-
 export const Neumorphism = styled(NeumorphismBase)`
-  background-color: #1a1d2e;
+  background-color: ${({ theme }) => theme.backgroundColor};
 
   padding: 100px;
 
-  section {
+  .styles {
+    display: flex;
+
     margin-bottom: 30px;
-    
-    border-radius: 20px;
-    padding: 20px;
 
-    transition: box-shadow 0.1s ease;
+    section {
+      flex: 1;
 
-    text-align: center;
-    color: rgba(255, 255, 255, 0.3);
-
-    &.section-flat {
-      ${flat({ color: '#1a1d2e', distance: 6, intensity })};
-    }
-
-    &.section-concave {
-      ${concave({ color: '#1a1d2e', distance: 6, intensity })};
-    }
-
-    &.section-convex {
-      ${convex({ color: '#1a1d2e', distance: 6, intensity })};
-    }
-
-    &.section-pressed {
-      ${pressed({ color: '#1a1d2e', distance: 6, intensity })};
-    }
-  }
-
-  button {
-    outline: none;
-
-    transition: box-shadow 0.1s ease;
-
-    border: 0;
-    width: 200px;
-    height: 42px;
-    border-radius: 21px;
-    margin-right: 15px;
-
-    font-family: Gotham;
-    font-size: 14px;
-    font-weight: 500;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.39;
-    letter-spacing: normal;
-    text-align: center;
-    color: #ffffff;
-
-    &.text-button {
-      ${flat({
-        color: '#1a1d2e',
-        distance: 1,
-        intensity,
-      })};
-
-      &:hover {
-        ${flat({
-          color: '#1a1d2e',
-          distance: 5,
-          intensity,
-        })};
+      &:not(:last-child) {
+        margin-right: 30px;
       }
 
-      &:active {
-        ${concave({
-          color: '#1a1d2e',
-          distance: 2,
-          intensity,
-        })};
-      }
-    }
+      border-radius: 20px;
+      padding: 20px;
 
-    &.color-button {
-      ${flat({
-        color: '#282d46',
-        backgroundColor: '#1a1d2e',
-        distance: 1,
-        intensity,
-      })};
+      text-align: center;
+      color: ${({ theme }) => theme.textColor};
 
-      &:hover {
-        ${flat({
-          color: '#282d46',
-          backgroundColor: '#1a1d2e',
-          distance: 5,
-          intensity,
-        })};
+      &.flat {
+        ${({ theme }) =>
+          flat({
+            color: theme.backgroundColor,
+            distance: 6,
+            intensity: theme.intensity,
+          })};
       }
 
-      &:active {
-        ${concave({
-          color: '#282d46',
-          backgroundColor: '#1a1d2e',
-          distance: 2,
-          intensity,
-        })};
+      &.concave {
+        ${({ theme }) =>
+          concave({
+            color: theme.backgroundColor,
+            distance: 6,
+            intensity: theme.intensity,
+          })};
+      }
+
+      &.convex {
+        ${({ theme }) =>
+          convex({
+            color: theme.backgroundColor,
+            distance: 6,
+            intensity: theme.intensity,
+          })};
+      }
+
+      &.pressed {
+        ${({ theme }) =>
+          pressed({
+            color: theme.backgroundColor,
+            distance: 6,
+            intensity: theme.intensity,
+          })};
       }
     }
   }
 
-  hr {
-    margin: 30px 0;
+  .section {
+    margin-bottom: 30px;
+    padding: 50px;
 
-    ${horizontalRule({ color: '#1a1d2e', intensity })};
+    button {
+      width: 200px;
+      margin-right: 15px;
+    }
+
+    hr {
+      margin: 30px 0;
+    }
   }
 
-  input {
-    outline: none;
-    border: 0;
-    padding: 20px;
-    border-radius: 5px;
-
-    font-family: Gotham;
-    font-size: 18px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    color: rgba(255, 255, 255, 0.15);
-
-    ${pressed({
-      color: '#181b2b',
-      backgroundColor: '#1a1d2e',
-      distance: 1,
-      intensity: 0.3,
-    })};
-  }
-
-  margin-bottom: 10px;
+  margin-bottom: 1px;
 `;

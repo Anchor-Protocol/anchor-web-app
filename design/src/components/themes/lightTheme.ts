@@ -1,19 +1,19 @@
 import { DefaultTheme } from 'styled-components';
 
 export const lightTheme: DefaultTheme = {
-  intensity: 0.3,
+  intensity: 0.1,
 
   backgroundColor: '#f4f4f5',
   textColor: '#1f1f1f',
   dimTextColor: '#8a8a8a',
 
   actionButton: {
-    backgroundColor: '#282d46',
-    textColor: '#ffffff',
+    backgroundColor: '#94f3b8',
+    textColor: '#2c2c2e',
   },
 
   textInput: {
-    backgroundColor: '#181b2b',
-    textColor: '#ffffff',
+    backgroundColor: '#efefef',
+    textColor: '#2c2c2e',
   },
 };
