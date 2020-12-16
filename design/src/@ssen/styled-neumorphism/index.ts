@@ -10,7 +10,12 @@ interface NeumorphismValues {
   intensity: number;
 }
 
-export function flat({ color, backgroundColor = color, distance, intensity }: NeumorphismValues) {
+export function flat({
+  color,
+  backgroundColor = color,
+  distance,
+  intensity,
+}: NeumorphismValues) {
   const blur: number = 10 + 2 * (distance - 5);
 
   return `
@@ -27,7 +32,12 @@ export function flat({ color, backgroundColor = color, distance, intensity }: Ne
   `;
 }
 
-export function concave({ color, backgroundColor = color, distance, intensity }: NeumorphismValues) {
+export function concave({
+  color,
+  backgroundColor = color,
+  distance,
+  intensity,
+}: NeumorphismValues) {
   const blur: number = 10 + 2 * (distance - 5);
 
   return `
@@ -48,7 +58,12 @@ export function concave({ color, backgroundColor = color, distance, intensity }:
   `;
 }
 
-export function convex({ color, backgroundColor = color, distance, intensity }: NeumorphismValues) {
+export function convex({
+  color,
+  backgroundColor = color,
+  distance,
+  intensity,
+}: NeumorphismValues) {
   const blur: number = 10 + 2 * (distance - 5);
 
   return `
@@ -69,7 +84,12 @@ export function convex({ color, backgroundColor = color, distance, intensity }: 
   `;
 }
 
-export function pressed({ color, backgroundColor = color, distance, intensity }: NeumorphismValues) {
+export function pressed({
+  color,
+  backgroundColor = color,
+  distance,
+  intensity,
+}: NeumorphismValues) {
   const blur: number = 10 + 2 * (distance - 5);
 
   return `
@@ -85,5 +105,30 @@ export function pressed({ color, backgroundColor = color, distance, intensity }:
                 -${distance}px
                 ${blur}px
                 ${c(backgroundColor).lighten(intensity).string()};
+  `;
+}
+
+export function horizontalRule({
+  intensity,
+  ...colors
+}: Pick<NeumorphismValues, 'intensity'> &
+  ({ color: string } | { topColor: string; bottomColor: string })) {
+  const { topColor, bottomColor } =
+    'topColor' in colors
+      ? colors
+      : {
+          topColor: colors.color,
+          bottomColor: colors.color,
+        };
+  return `
+    padding: 0;
+    border-top: 1px solid ${c(topColor)
+      .darken(intensity * 1.7)
+      .string()};
+    border-bottom: 1px solid ${c(bottomColor)
+      .lighten(intensity * 1.7)
+      .string()};
+    border-left: 0;
+    border-right: 0;
   `;
 }

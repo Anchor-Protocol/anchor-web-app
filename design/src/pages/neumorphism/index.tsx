@@ -1,5 +1,10 @@
-import { concave, convex, flat, pressed } from '@ssen/styled-neumorphism';
-import { backgroundStyle } from 'components/style/dark';
+import {
+  concave,
+  convex,
+  flat,
+  horizontalRule,
+  pressed,
+} from '@ssen/styled-neumorphism';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -14,20 +19,29 @@ function NeumorphismBase({ className }: NeumorphismProps) {
       <section className="section-concave">Concave</section>
       <section className="section-convex">Convex</section>
       <section className="section-pressed">Pressed</section>
-      <button>Hello</button>
+
+      <hr />
+
+      <button className="text-button">Button</button>
+      <button className="color-button">Button</button>
+
+      <hr />
+
+      <input type="text" className="input" />
     </div>
   );
 }
 
+const intensity = 0.3;
+
 export const Neumorphism = styled(NeumorphismBase)`
-  ${backgroundStyle};
+  background-color: #1a1d2e;
 
   padding: 100px;
 
   section {
     border-radius: 20px;
     padding: 30px;
-    margin-bottom: 30px;
 
     transition: box-shadow 0.1s ease;
 
@@ -35,28 +49,24 @@ export const Neumorphism = styled(NeumorphismBase)`
     color: rgba(255, 255, 255, 0.3);
 
     &.section-flat {
-      ${flat({ color: '#1a1d2e', distance: 6, intensity: 0.15 })};
-
-      &:hover {
-        ${flat({ color: '#1a1d2e', distance: 3, intensity: 0.15 })};
-      }
-
-      &:active {
-        ${concave({ color: '#1a1d2e', distance: 1, intensity: 0.15 })};
-      }
+      ${flat({ color: '#1a1d2e', distance: 6, intensity })};
     }
 
     &.section-concave {
-      ${concave({ color: '#1a1d2e', distance: 6, intensity: 0.15 })};
+      ${concave({ color: '#1a1d2e', distance: 6, intensity })};
     }
 
     &.section-convex {
-      ${convex({ color: '#1a1d2e', distance: 6, intensity: 0.15 })};
+      ${convex({ color: '#1a1d2e', distance: 6, intensity })};
     }
 
     &.section-pressed {
-      ${pressed({ color: '#1a1d2e', distance: 6, intensity: 0.15 })};
+      ${pressed({ color: '#1a1d2e', distance: 6, intensity })};
     }
+  }
+
+  > section {
+    margin-bottom: 30px;
   }
 
   button {
@@ -68,6 +78,7 @@ export const Neumorphism = styled(NeumorphismBase)`
     width: 200px;
     height: 42px;
     border-radius: 21px;
+    margin-right: 15px;
 
     font-family: Gotham;
     font-size: 14px;
@@ -79,30 +90,85 @@ export const Neumorphism = styled(NeumorphismBase)`
     text-align: center;
     color: #ffffff;
 
-    ${flat({
-      color: '#282d46',
-      backgroundColor: '#1a1d2e',
-      distance: 1,
-      intensity: 0.15,
-    })};
+    &.text-button {
+      ${flat({
+        color: '#1a1d2e',
+        distance: 1,
+        intensity,
+      })};
 
-    &:hover {
+      &:hover {
+        ${flat({
+          color: '#1a1d2e',
+          distance: 5,
+          intensity,
+        })};
+      }
+
+      &:active {
+        ${concave({
+          color: '#1a1d2e',
+          distance: 2,
+          intensity,
+        })};
+      }
+    }
+
+    &.color-button {
       ${flat({
         color: '#282d46',
         backgroundColor: '#1a1d2e',
-        distance: 5,
-        intensity: 0.15,
+        distance: 1,
+        intensity,
       })};
-    }
 
-    &:active {
-      ${concave({
-        color: '#282d46',
-        backgroundColor: '#1a1d2e',
-        distance: 2,
-        intensity: 0.15,
-      })};
+      &:hover {
+        ${flat({
+          color: '#282d46',
+          backgroundColor: '#1a1d2e',
+          distance: 5,
+          intensity,
+        })};
+      }
+
+      &:active {
+        ${concave({
+          color: '#282d46',
+          backgroundColor: '#1a1d2e',
+          distance: 2,
+          intensity,
+        })};
+      }
     }
+  }
+
+  hr {
+    margin: 30px 0;
+
+    ${horizontalRule({ color: '#1a1d2e', intensity })};
+  }
+
+  input {
+    outline: none;
+    border: 0;
+    padding: 20px;
+    border-radius: 5px;
+
+    font-family: Gotham;
+    font-size: 18px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: rgba(255, 255, 255, 0.15);
+
+    ${pressed({
+      color: '#181b2b',
+      backgroundColor: '#1a1d2e',
+      distance: 1,
+      intensity: 0.3,
+    })};
   }
 
   margin-bottom: 10px;

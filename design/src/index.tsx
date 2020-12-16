@@ -1,8 +1,8 @@
-import { Neumorphism } from './pages/neumorphism';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.scss';
 import { Earn } from './pages/earn';
+import { Neumorphism } from './pages/neumorphism';
 
 function App() {
   return (
