@@ -7,9 +7,9 @@ export const truncate = (text = '', [h, t]: number[] = [6, 6]) => {
 export const escapeJSON = (json: object) =>
   JSON.stringify(json)
     .replace(/\n/g, '\\n')
-    .replace(/\'/g, "\\'")
-    .replace(/\"/g, '\\"')
-    .replace(/\&/g, '\\&')
+    .replace(/'/g, "\\'")
+    .replace(/"/g, '\\"')
+    .replace(/&/g, '\\&')
     .replace(/\r/g, '')
     .replace(/\t/g, '')
     .replace(/\b/g, '')

@@ -18,7 +18,7 @@ const EarnWithdrawPopup: React.FunctionComponent<EarnWithdrawPopupProps> = ({
   return (
     <Box>
       <header>
-        // big fat arrow //
+        {/* big fat arrow */}
         <dl>
           <dt>Withdraw</dt>
           <dd>Withdraw UST from anchor</dd>
@@ -58,7 +58,7 @@ const EarnWithdrawPopup: React.FunctionComponent<EarnWithdrawPopupProps> = ({
             </Button>
           )}
         />
-        <a>Withdraw to bank</a>
+        <button>Withdraw to bank</button>
       </footer>
     </Box>
   );

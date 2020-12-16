@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react';
 
-export default <A>(name: string) => {
+const fn = <A>(name: string) => {
   const ctx = createContext<A | undefined>(undefined);
 
   const useCtx = () => {
@@ -11,3 +11,5 @@ export default <A>(name: string) => {
 
   return [useCtx, ctx.Provider] as const;
 };
+
+export default fn;

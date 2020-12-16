@@ -14,7 +14,7 @@ export interface PostResponse {
 }
 
 const ext = new Extension();
-export default {
+const extension = {
   init: () => !!ext.isAvailable,
 
   // info: (callback: (network?: ExtNetworkConfig) => void) => {
@@ -40,3 +40,5 @@ export default {
     return id;
   },
 };
+
+export default extension;

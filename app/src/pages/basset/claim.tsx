@@ -1,24 +1,24 @@
 import { fabricatebAssetClaim } from '@anchor-protocol/anchor-js/fabricators';
-import React, { useState } from 'react';
+import { fabricatebAssetUpdateGlobalIndex } from '@anchor-protocol/anchor-js/fabricators/basset-update-global-index';
+import React from 'react';
 import Amount from '../../components/amount';
 import Box from '../../components/box';
 import Button, { ButtonTypes } from '../../components/button';
+import { ready } from '../../components/ready';
 import { ActionContainer } from '../../containers/action';
+import useBassetClaimable from '../../hooks/mantle/use-basset-claimable';
 import { useWallet } from '../../hooks/use-wallet';
 import { useAddressProvider } from '../../providers/address-provider';
 
 import style from './basset.module.scss';
 import BassetSelection from './components/selection';
-import { fabricatebAssetUpdateGlobalIndex } from '@anchor-protocol/anchor-js/fabricators/basset-update-global-index';
-import { ready } from '../../components/ready';
-import useBassetClaimable from '../../hooks/mantle/use-basset-claimable';
 
 interface BassetClaimProps {}
 
 const BassetClaim: React.FunctionComponent<BassetClaimProps> = () => {
   const { address } = useWallet();
   const addressProvider = useAddressProvider();
-  const [withdrawState, setWithdrawState] = useState({ amount: '0.00' });
+  //const [withdrawState, setWithdrawState] = useState({ amount: '0.00' });
 
   const [loading, error, claimable = '0'] = useBassetClaimable();
 
