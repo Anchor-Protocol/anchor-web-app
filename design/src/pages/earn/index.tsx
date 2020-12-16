@@ -1,11 +1,4 @@
-import {
-  backgroundStyle,
-  Box,
-  BoxTitle,
-  Button,
-  HorizontalRuler,
-  Title,
-} from 'components/style/dark';
+import { concave, flat, horizontalRule } from '@ssen/styled-neumorphism';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -54,8 +47,90 @@ function EarnBase({ className }: EarnProps) {
   );
 }
 
+export const Title = styled.h1`
+  width: 101px;
+  height: 41px;
+  font-family: Gotham;
+  font-size: 34px;
+  font-weight: 900;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  color: #f0f0f0;
+`;
+
+export const Box = styled.section`
+  border-radius: 20px;
+  
+  ${flat({ color: '#1a1d2e', distance: 6, intensity: 0.3 })};
+`;
+
+export const BoxTitle = styled.h3`
+  margin: 0;
+  font-family: Gotham;
+  font-size: 14px;
+  font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: -0.3px;
+  color: #ffffff;
+`;
+
+export const HorizontalRuler = styled.hr`
+  ${horizontalRule({ color: '#1a1d2e', intensity: 0.3 })};
+`;
+
+export const Button = styled.button`
+  outline: none;
+
+  transition: box-shadow 0.1s ease;
+
+  border: 0;
+  width: 200px;
+  height: 42px;
+  border-radius: 21px;
+  margin-right: 15px;
+
+  font-family: Gotham;
+  font-size: 14px;
+  font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.39;
+  letter-spacing: normal;
+  text-align: center;
+  color: #ffffff;
+
+  ${flat({
+    color: '#282d46',
+    backgroundColor: '#1a1d2e',
+    distance: 1,
+    intensity: 0.3,
+  })};
+
+  &:hover {
+    ${flat({
+      color: '#282d46',
+      backgroundColor: '#1a1d2e',
+      distance: 5,
+      intensity: 0.3,
+    })};
+  }
+
+  &:active {
+    ${concave({
+      color: '#282d46',
+      backgroundColor: '#1a1d2e',
+      distance: 2,
+      intensity: 0.3,
+    })};
+  }
+`;
+
 export const Earn = styled(EarnBase)`
-  ${backgroundStyle};
+  background-color: #1a1d2e;
 
   padding: 100px 0;
 
@@ -64,6 +139,17 @@ export const Earn = styled(EarnBase)`
 
     h1 {
       margin: 0 0 50px 0;
+
+      width: 101px;
+      height: 41px;
+      font-family: Gotham;
+      font-size: 34px;
+      font-weight: 900;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+      color: #f0f0f0;
     }
 
     section {
