@@ -22,6 +22,8 @@ function NeumorphismBase({ className }: NeumorphismProps) {
 
       <hr />
 
+      <hr />
+
       <button className="text-button">Button</button>
       <button className="color-button">Button</button>
 
@@ -40,8 +42,10 @@ export const Neumorphism = styled(NeumorphismBase)`
   padding: 100px;
 
   section {
+    margin-bottom: 30px;
+    
     border-radius: 20px;
-    padding: 30px;
+    padding: 20px;
 
     transition: box-shadow 0.1s ease;
 
@@ -63,10 +67,6 @@ export const Neumorphism = styled(NeumorphismBase)`
     &.section-pressed {
       ${pressed({ color: '#1a1d2e', distance: 6, intensity })};
     }
-  }
-
-  > section {
-    margin-bottom: 30px;
   }
 
   button {

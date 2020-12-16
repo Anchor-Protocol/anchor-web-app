@@ -85,7 +85,7 @@ export const HorizontalRuler = styled.hr`
 export const Button = styled.button`
   outline: none;
 
-  transition: box-shadow 0.1s ease;
+  transition: box-shadow 0.25s ease;
 
   border: 0;
   width: 200px;
