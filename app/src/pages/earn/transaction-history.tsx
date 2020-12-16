@@ -1,9 +1,9 @@
 import React from 'react';
 import Box from '../../components/box';
 
-interface EarnTransactionHistory {}
+interface EarnTransactionHistoryProps {}
 
-const EarnTransactionHistory: React.FunctionComponent<EarnTransactionHistory> = ({
+const EarnTransactionHistory: React.FunctionComponent<EarnTransactionHistoryProps> = ({
   children,
 }) => {
   return (

@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
 import { fabricateProvideCollateral } from '@anchor-protocol/anchor-js/fabricators';
+import React, { useState } from 'react';
 import Box from '../../../components/box';
 import Button, { ButtonTypes } from '../../../components/button';
 import Input from '../../../components/input';
 import { ready } from '../../../components/ready';
 import { ActionContainer } from '../../../containers/action';
-import useAnchorBalance from '../../../hooks/mantle/use-anchor-balance';
 import useBAssetBalance from '../../../hooks/mantle/use-basset-balance';
 import { useWallet } from '../../../hooks/use-wallet';
 import { PopupChild } from '../../../layout/popup-container';

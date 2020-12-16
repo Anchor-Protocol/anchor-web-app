@@ -4,13 +4,13 @@ import Button, { ButtonTypes } from '../../components/button';
 import PopupContainer from '../../layout/popup-container';
 import PopupProvideCollateral from './popups/provide-collateral';
 
-interface BorrowUnprovidedCollateralList {}
+interface BorrowUnprovidedCollateralListProps {}
 
 enum PopupStates {
   PROVIDE,
 }
 
-const BorrowUnprovidedCollateralList: React.FunctionComponent<BorrowUnprovidedCollateralList> = ({
+const BorrowUnprovidedCollateralList: React.FunctionComponent<BorrowUnprovidedCollateralListProps> = ({
   children,
 }) => {
   const [popupState, setPopupState] = useState<PopupStates>();

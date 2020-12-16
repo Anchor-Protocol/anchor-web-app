@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { AddressProviderFromEnvVar } from '@anchor-protocol/anchor-js/address-provider';
 import { fabricateRepay } from '@anchor-protocol/anchor-js/fabricators';
+import React, { useState } from 'react';
 import Box from '../../../components/box';
 import Button, { ButtonTypes } from '../../../components/button';
 import Input from '../../../components/input';

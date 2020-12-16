@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Box from '../../components/box';
 import Button, { ButtonTypes } from '../../components/button';
 import { ready } from '../../components/ready';
-import { ActionContainer } from '../../containers/action';
 import useAnchorBalance from '../../hooks/mantle/use-anchor-balance';
 import PopupContainer from '../../layout/popup-container';
 import EarnDepositPopup from './popups/deposit';

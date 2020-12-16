@@ -26,7 +26,7 @@ const EarnDepositPopup: React.FunctionComponent<EarnDepositPopupProps> = ({
   return ready(isReady, () => (
     <Box>
       <header>
-        // big fat arrow //
+        {/* big fat arrow */}
         <dl>
           <dt>DEPOSIT</dt>
           <dd>Deposit UST into anchor</dd>
@@ -69,7 +69,7 @@ const EarnDepositPopup: React.FunctionComponent<EarnDepositPopupProps> = ({
             </Button>
           )}
         />
-        <a>Deposit from bank</a>
+        <button>Deposit from bank</button>
       </footer>
     </Box>
   ));

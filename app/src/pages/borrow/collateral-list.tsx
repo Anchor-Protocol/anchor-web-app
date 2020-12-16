@@ -56,14 +56,14 @@ const BorrowCollateralList: React.FunctionComponent<BorrowCollateralListProps> =
         </tbody>
       </table>
 
-      {popupState == PopupStates.ADD && (
+      {popupState === PopupStates.ADD && (
         <PopupContainer
           onClose={() => setPopupState(undefined)}
           render={(close) => <PopupProvideCollateral close={close} />}
         />
       )}
 
-      {popupState == PopupStates.WITHDRAW && (
+      {popupState === PopupStates.WITHDRAW && (
         <PopupContainer
           onClose={() => setPopupState(undefined)}
           render={(close) => <PopupRedeemCollateral close={close} />}

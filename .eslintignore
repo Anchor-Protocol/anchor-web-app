@@ -3,3 +3,4 @@ fixtures
 out
 src/**/public
 /examples/**
+build

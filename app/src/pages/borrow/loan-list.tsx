@@ -5,14 +5,14 @@ import PopupContainer from '../../layout/popup-container';
 import PopupBorrowBorrow from './popups/borrow';
 import PopupBorrowRepay from './popups/repay';
 
-interface BorrowLoanList {}
+interface BorrowLoanListProps {}
 
 enum PopupStates {
   BORROW,
   REPAY,
 }
 
-const BorrowLoanList: React.FunctionComponent<BorrowLoanList> = () => {
+const BorrowLoanList: React.FunctionComponent<BorrowLoanListProps> = () => {
   const [popupState, setPopupState] = useState<PopupStates>();
 
   return (
@@ -59,14 +59,14 @@ const BorrowLoanList: React.FunctionComponent<BorrowLoanList> = () => {
         </tbody>
       </table>
 
-      {popupState == PopupStates.BORROW && (
+      {popupState === PopupStates.BORROW && (
         <PopupContainer
           onClose={() => setPopupState(undefined)}
           render={(close) => <PopupBorrowBorrow close={close} />}
         />
       )}
 
-      {popupState == PopupStates.REPAY && (
+      {popupState === PopupStates.REPAY && (
         <PopupContainer
           onClose={() => setPopupState(undefined)}
           render={(close) => <PopupBorrowRepay close={close} />}
