@@ -1,4 +1,24 @@
+# config
+.envrc
+
+# tools
+/.idea
+
+# node
+node_modules/
+
+# macos
 .DS_Store
-node_modules
-.vscode
-.idea
+
+# generated files
+*.tgz
+lerna-debug.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# output
+coverage/
+out/
+test/storage/
+.eslintcache

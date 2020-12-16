@@ -1,0 +1,13 @@
+{
+  "author": "Name <ian@terra.money>",
+  "license": "MIT",
+  "repository": "github:Anchor-Protocol/anchor",
+  "bugs": "https://github.com/Anchor-Protocol/anchor/issues",
+  "homepage": "https://github.com/Anchor-Protocol/anchor/tree/master/packages/src/{name}",
+  "engines": {
+    "node": ">=10"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
