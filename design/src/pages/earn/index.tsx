@@ -100,6 +100,10 @@ export const Earn = styled(EarnBase)`
     hr {
       margin: 30px 0;
     }
+    
+    .decimal-point {
+      color: ${({ theme }) => theme.dimTextColor};
+    }
 
     .total-deposit {
       .total-deposit-amount {
