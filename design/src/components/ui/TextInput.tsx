@@ -8,24 +8,20 @@ export interface TextInputProps
     HTMLInputElement
   > {}
 
-function TextInputBase({ type = 'text', ...inputProps }: TextInputProps) {
-  return <input {...inputProps} type={type} />;
+function TextInputBase({
+  className,
+  type = 'text',
+  ...inputProps
+}: TextInputProps) {
+  return (
+    <div className={className}>
+      <input {...inputProps} type={type} />
+    </div>
+  );
 }
 
 export const TextInput = styled(TextInputBase)`
-  outline: none;
-  border: 0;
-  padding: 20px;
   border-radius: 5px;
-
-  font-family: Gotham;
-  font-size: 18px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: ${({ theme }) => theme.textInput.textColor};
 
   ${({ theme }) =>
     pressed({
@@ -34,4 +30,21 @@ export const TextInput = styled(TextInputBase)`
       distance: 1,
       intensity: theme.intensity * 2,
     })};
+
+  input {
+    outline: none;
+    border: 0;
+    padding: 20px;
+    background-color: transparent;
+    width: 100%;
+
+    font-family: Gotham;
+    font-size: 18px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: ${({ theme }) => theme.textInput.textColor};
+  }
 `;

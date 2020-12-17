@@ -19,7 +19,7 @@ function EarnBase({ className }: EarnProps) {
             <BoxTitle>TOTAL DEPOSIT</BoxTitle>
 
             <p className="total-deposit-amount">
-              2,320<span>.063700</span> UST
+              2,320<span className="decimal-point">.063700</span> UST
             </p>
 
             <p className="total-deposit-subamount">12,320.063 aUST</p>
@@ -74,17 +74,15 @@ export const BoxTitle = styled.h3`
 `;
 
 export const Earn = styled(EarnBase)`
+  // ---------------------------------------------
+  // style
+  // ---------------------------------------------
   background-color: ${({ theme }) => theme.backgroundColor};
 
-  padding: 100px 0;
-
   .layout {
-    margin: 100px 100px;
-
     h1 {
       margin: 0 0 50px 0;
 
-      width: 101px;
       font-family: Gotham;
       font-size: 34px;
       font-weight: 900;
@@ -97,10 +95,6 @@ export const Earn = styled(EarnBase)`
 
     section {
       margin-bottom: 40px;
-
-      > div {
-        padding: 60px;
-      }
     }
 
     hr {
@@ -147,6 +141,62 @@ export const Earn = styled(EarnBase)`
     }
 
     .transaction-history {
+    }
+  }
+
+  // ---------------------------------------------
+  // layout
+  // ---------------------------------------------
+  // pc
+  @media (min-width: 832px) {
+    padding: 100px;
+
+    .layout {
+      section {
+        > div {
+          padding: 50px;
+        }
+      }
+    }
+  }
+
+  // tablet
+  @media (min-width: 512px) and (max-width: 831px) {
+    padding: 30px;
+
+    .decimal-point {
+      display: none;
+    }
+
+    .layout {
+      section {
+        > div {
+          padding: 30px;
+        }
+      }
+    }
+  }
+
+  // mobile
+  @media (max-width: 511px) {
+    padding: 30px 20px;
+
+    .decimal-point {
+      display: none;
+    }
+
+    .layout {
+      section {
+        > div {
+          padding: 20px;
+        }
+      }
+
+      .total-deposit {
+        .total-deposit-amount {
+          font-size: 50px;
+        }
+      }
     }
   }
 `;

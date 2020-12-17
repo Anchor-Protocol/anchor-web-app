@@ -22,8 +22,10 @@ function NeumorphismBase({ className }: NeumorphismProps) {
       </div>
 
       <Section className="section">
-        <TextButton>BUTTON</TextButton>
-        <ActionButton>BUTTON</ActionButton>
+        <div className="buttons">
+          <TextButton>BUTTON</TextButton>
+          <ActionButton>BUTTON</ActionButton>
+        </div>
 
         <HorizontalRuler />
 
@@ -34,22 +36,13 @@ function NeumorphismBase({ className }: NeumorphismProps) {
 }
 
 export const Neumorphism = styled(NeumorphismBase)`
+  // ---------------------------------------------
+  // style
+  // ---------------------------------------------
   background-color: ${({ theme }) => theme.backgroundColor};
 
-  padding: 100px;
-
   .styles {
-    display: flex;
-
-    margin-bottom: 30px;
-
     section {
-      flex: 1;
-
-      &:not(:last-child) {
-        margin-right: 30px;
-      }
-
       border-radius: 20px;
       padding: 20px;
 
@@ -94,13 +87,27 @@ export const Neumorphism = styled(NeumorphismBase)`
     }
   }
 
-  .section {
-    margin-bottom: 30px;
-    padding: 50px;
+  margin-bottom: 1px;
 
-    button {
-      width: 200px;
-      margin-right: 15px;
+  // ---------------------------------------------
+  // layout
+  // ---------------------------------------------
+  .styles {
+    display: flex;
+    margin-bottom: 30px;
+  }
+
+  .section {
+    .buttons {
+      display: flex;
+
+      button {
+        flex: 1;
+
+        &:first-child {
+          margin-right: 15px;
+        }
+      }
     }
 
     hr {
@@ -108,5 +115,60 @@ export const Neumorphism = styled(NeumorphismBase)`
     }
   }
 
-  margin-bottom: 1px;
+  // pc
+  @media (min-width: 832px) {
+    padding: 100px;
+    
+    .styles {
+      section {
+        flex: 1;
+        
+        &:not(:last-child) {
+          margin-right: 30px;
+        }
+      }
+    }
+    
+    .section {
+      padding: 50px;
+    }
+  }
+
+  // tablet
+  @media (min-width: 512px) and (max-width: 831px) {
+    padding: 30px;
+
+    .styles {
+      section {
+        flex: 1;
+        
+        &:not(:last-child) {
+          margin-right: 10px;
+        }
+      }
+    }
+    
+    .section {
+      padding: 30px;
+    }
+  }
+
+  // mobile
+  @media (max-width: 511px) {
+    padding: 30px 20px;
+
+    .styles {
+      flex-direction: column;
+
+      section {
+        &:not(:last-child) {
+          margin-bottom: 20px;
+        }
+      }
+    }
+    
+    .section {
+      padding: 20px;
+    }
+  }
 `;

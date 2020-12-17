@@ -10,6 +10,8 @@ export const buttonBaseStyle = css`
   
   cursor: pointer;
 
+  user-select: none;
+  
   font-family: Gotham;
   font-size: 14px;
   font-weight: 500;
