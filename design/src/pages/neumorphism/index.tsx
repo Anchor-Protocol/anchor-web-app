@@ -1,4 +1,5 @@
 import { concave, convex, flat, pressed } from '@ssen/styled-neumorphism';
+import { mediaQuery } from 'components/layout/mediaQuery';
 import { ActionButton } from 'components/ui/ActionButton';
 import { HorizontalRuler } from 'components/ui/HorizontalRuler';
 import { Section } from 'components/ui/Section';
@@ -116,45 +117,45 @@ export const Neumorphism = styled(NeumorphismBase)`
   }
 
   // pc
-  @media (min-width: 832px) {
+  @media (${mediaQuery.pc}) {
     padding: 100px;
-    
+
     .styles {
       section {
         flex: 1;
-        
+
         &:not(:last-child) {
           margin-right: 30px;
         }
       }
     }
-    
+
     .section {
       padding: 50px;
     }
   }
 
   // tablet
-  @media (min-width: 512px) and (max-width: 831px) {
+  @media (${mediaQuery.tablet}) {
     padding: 30px;
 
     .styles {
       section {
         flex: 1;
-        
+
         &:not(:last-child) {
           margin-right: 10px;
         }
       }
     }
-    
+
     .section {
       padding: 30px;
     }
   }
 
   // mobile
-  @media (max-width: 511px) {
+  @media (${mediaQuery.mobile}) {
     padding: 30px 20px;
 
     .styles {
@@ -166,7 +167,7 @@ export const Neumorphism = styled(NeumorphismBase)`
         }
       }
     }
-    
+
     .section {
       padding: 20px;
     }

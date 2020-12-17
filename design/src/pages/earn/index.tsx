@@ -1,3 +1,4 @@
+import { mediaQuery } from 'components/layout/mediaQuery';
 import { ActionButton } from 'components/ui/ActionButton';
 import { HorizontalRuler } from 'components/ui/HorizontalRuler';
 import { Section } from 'components/ui/Section';
@@ -150,9 +151,9 @@ export const Earn = styled(EarnBase)`
   // layout
   // ---------------------------------------------
   // pc
-  @media (min-width: 832px) {
+  @media (${mediaQuery.pc}) {
     padding: 100px;
-    
+
     .layout {
       .content {
         section {
@@ -164,7 +165,7 @@ export const Earn = styled(EarnBase)`
     }
   }
 
-  @media (min-width: 832px) and (max-width: 1439px) {
+  @media (${mediaQuery.pcSmall}) {
     .layout {
       .content {
         section {
@@ -174,7 +175,7 @@ export const Earn = styled(EarnBase)`
     }
   }
 
-  @media (min-width: 1440px) {
+  @media (${mediaQuery.pcHuge}) {
     .layout {
       max-width: 1440px;
       margin: 0 auto;
@@ -207,7 +208,7 @@ export const Earn = styled(EarnBase)`
   }
 
   // tablet
-  @media (min-width: 512px) and (max-width: 831px) {
+  @media (${mediaQuery.tablet}) {
     padding: 30px;
 
     .decimal-point {
@@ -228,7 +229,7 @@ export const Earn = styled(EarnBase)`
   }
 
   // mobile
-  @media (max-width: 511px) {
+  @media (${mediaQuery.mobile}) {
     padding: 30px 20px;
 
     .decimal-point {
