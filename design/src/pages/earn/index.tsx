@@ -14,36 +14,38 @@ function EarnBase({ className }: EarnProps) {
       <div className="layout">
         <Title>EARN</Title>
 
-        <Section className="total-deposit">
-          <div>
-            <BoxTitle>TOTAL DEPOSIT</BoxTitle>
+        <div className="content">
+          <Section className="total-deposit">
+            <div>
+              <BoxTitle>TOTAL DEPOSIT</BoxTitle>
 
-            <p className="total-deposit-amount">
-              2,320<span className="decimal-point">.063700</span> UST
-            </p>
+              <p className="total-deposit-amount">
+                2,320<span className="decimal-point">.063700</span> UST
+              </p>
 
-            <p className="total-deposit-subamount">12,320.063 aUST</p>
+              <p className="total-deposit-subamount">12,320.063 aUST</p>
 
-            <HorizontalRuler />
+              <HorizontalRuler />
 
-            <div className="total-deposit-buttons">
-              <ActionButton>Deposit</ActionButton>
-              <ActionButton>Withdraw</ActionButton>
+              <div className="total-deposit-buttons">
+                <ActionButton>Deposit</ActionButton>
+                <ActionButton>Withdraw</ActionButton>
+              </div>
             </div>
-          </div>
-        </Section>
+          </Section>
 
-        <Section className="interest">
-          <div>
-            <BoxTitle>INTEREST</BoxTitle>
-          </div>
-        </Section>
+          <Section className="interest">
+            <div>
+              <BoxTitle>INTEREST</BoxTitle>
+            </div>
+          </Section>
 
-        <Section className="transaction-history">
-          <div>
-            <BoxTitle>TRANSACTION HISTORY</BoxTitle>
-          </div>
-        </Section>
+          <Section className="transaction-history">
+            <div>
+              <BoxTitle>TRANSACTION HISTORY</BoxTitle>
+            </div>
+          </Section>
+        </div>
       </div>
     </div>
   );
@@ -93,14 +95,10 @@ export const Earn = styled(EarnBase)`
       color: ${({ theme }) => theme.textColor};
     }
 
-    section {
-      margin-bottom: 40px;
-    }
-
     hr {
       margin: 30px 0;
     }
-    
+
     .decimal-point {
       color: ${({ theme }) => theme.dimTextColor};
     }
@@ -154,14 +152,55 @@ export const Earn = styled(EarnBase)`
   // pc
   @media (min-width: 832px) {
     padding: 100px;
-
+    
     .layout {
-      max-width: 1200px;
+      .content {
+        section {
+          > div {
+            padding: 50px;
+          }
+        }
+      }
+    }
+  }
+
+  @media (min-width: 832px) and (max-width: 1439px) {
+    .layout {
+      .content {
+        section {
+          margin-bottom: 40px;
+        }
+      }
+    }
+  }
+
+  @media (min-width: 1440px) {
+    .layout {
+      max-width: 1440px;
       margin: 0 auto;
-      
-      section {
-        > div {
-          padding: 50px;
+
+      .content {
+        display: grid;
+
+        min-height: 800px;
+
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: auto 1fr;
+        grid-gap: 40px;
+
+        .total-deposit {
+          grid-column: 1/3;
+          grid-row: 1;
+        }
+
+        .interest {
+          grid-column: 3;
+          grid-row: 1/3;
+        }
+
+        .transaction-history {
+          grid-column: 1/3;
+          grid-row: 2/3;
         }
       }
     }
@@ -176,9 +215,13 @@ export const Earn = styled(EarnBase)`
     }
 
     .layout {
-      section {
-        > div {
-          padding: 30px;
+      .content {
+        section {
+          margin-bottom: 40px;
+
+          > div {
+            padding: 30px;
+          }
         }
       }
     }
@@ -193,15 +236,19 @@ export const Earn = styled(EarnBase)`
     }
 
     .layout {
-      section {
-        > div {
-          padding: 20px;
-        }
-      }
+      .content {
+        section {
+          margin-bottom: 40px;
 
-      .total-deposit {
-        .total-deposit-amount {
-          font-size: 50px;
+          > div {
+            padding: 20px;
+          }
+        }
+
+        .total-deposit {
+          .total-deposit-amount {
+            font-size: 50px;
+          }
         }
       }
     }
