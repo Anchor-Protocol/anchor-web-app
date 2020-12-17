@@ -156,6 +156,9 @@ export const Earn = styled(EarnBase)`
     padding: 100px;
 
     .layout {
+      max-width: 1200px;
+      margin: 0 auto;
+      
       section {
         > div {
           padding: 50px;
