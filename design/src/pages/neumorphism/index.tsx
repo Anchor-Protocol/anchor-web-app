@@ -2,6 +2,7 @@ import { concave, convex, flat, pressed } from '@ssen/styled-neumorphism';
 import { mediaQuery } from 'components/layout/mediaQuery';
 import { ActionButton } from 'components/ui/ActionButton';
 import { HorizontalRuler } from 'components/ui/HorizontalRuler';
+import { HorizontalScrollTable } from 'components/ui/HorizontalScrollTable';
 import { Section } from 'components/ui/Section';
 import { TextButton } from 'components/ui/TextButton';
 import { TextInput } from 'components/ui/TextInput';
@@ -32,6 +33,33 @@ function NeumorphismBase({ className }: NeumorphismProps) {
 
         <TextInput type="text" />
       </Section>
+
+      <HorizontalScrollTable>
+        <colgroup>
+          <col style={{ width: 300 }} />
+          <col style={{ width: 300 }} />
+          <col style={{ width: 300 }} />
+          <col style={{ width: 300 }} />
+        </colgroup>
+        <thead>
+          <tr>
+            <th>A</th>
+            <th>B</th>
+            <th>C</th>
+            <th>D</th>
+          </tr>
+        </thead>
+        <tbody>
+          {Array.from({ length: 10 }, (_, i) => (
+            <tr key={`row-${i}`}>
+              <td>A{i}</td>
+              <td>B{i}</td>
+              <td>C{i}</td>
+              <td>D{i}</td>
+            </tr>
+          ))}
+        </tbody>
+      </HorizontalScrollTable>
     </div>
   );
 }
