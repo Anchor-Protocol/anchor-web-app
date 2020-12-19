@@ -1,3 +1,5 @@
+import { InputAdornment } from '@material-ui/core';
+import { Warning } from '@material-ui/icons';
 import { concave, convex, flat, pressed } from '@ssen/styled-neumorphism';
 import { mediaQuery } from 'components/layout/mediaQuery';
 import { ActionButton } from 'components/ui/ActionButton';
@@ -31,7 +33,20 @@ function NeumorphismBase({ className }: NeumorphismProps) {
 
         <HorizontalRuler />
 
-        <TextInput type="text" />
+        <div className="text-fields">
+          <TextInput label="TEXT FIELD" />
+          <TextInput
+            label="ERROR"
+            error={true}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Warning />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </div>
       </Section>
 
       <Section className="table">
@@ -150,6 +165,12 @@ export const Neumorphism = styled(NeumorphismBase)`
         &:first-child {
           margin-right: 15px;
         }
+      }
+    }
+
+    .text-fields {
+      > * {
+        margin-right: 15px;
       }
     }
 

@@ -1,7 +1,9 @@
 import 'styled-components';
 
 declare module 'styled-components' {
-  export interface DefaultTheme {
+  import type { Theme as MuiTheme } from '@material-ui/core';
+
+  export interface DefaultTheme extends MuiTheme {
     // neumorphism
     intensity: number;
 
@@ -16,21 +18,28 @@ declare module 'styled-components' {
       textColor: string;
     };
     
+    // form control
+    formControl: {
+      labelColor: string;
+      labelFocusedColor: string;
+      labelErrorColor: string;
+    };
+
     // text input
     textInput: {
       backgroundColor: string;
       textColor: string;
-    }
-    
+    };
+
     // table
     table: {
       head: {
         textColor: string;
-      }
-      
+      };
+
       body: {
         textColor: string;
-      }
-    }
+      };
+    };
   }
 }

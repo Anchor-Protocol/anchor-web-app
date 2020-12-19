@@ -1,8 +1,9 @@
 import { darkTheme } from 'components/themes/darkTheme';
 import { lightTheme } from 'components/themes/lightTheme';
+import { ThemeProvider } from 'components/themes/ThemeProvider';
+import { MaterialUI } from 'pages/material';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { ThemeProvider } from 'styled-components';
 import './index.scss';
 import { Earn } from './pages/earn';
 import { Neumorphism } from './pages/neumorphism';
@@ -18,6 +19,9 @@ function App() {
       </ThemeProvider>
       <ThemeProvider theme={darkTheme}>
         <Earn />
+      </ThemeProvider>
+      <ThemeProvider theme={darkTheme}>
+        <MaterialUI />
       </ThemeProvider>
     </div>
   );

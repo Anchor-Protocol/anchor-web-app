@@ -1,3 +1,4 @@
+import { ButtonBase } from '@material-ui/core';
 import { concave, flat } from '@ssen/styled-neumorphism';
 import styled, { css } from 'styled-components';
 
@@ -7,11 +8,11 @@ export const buttonBaseStyle = css`
   border: 0;
   height: 42px;
   border-radius: 21px;
-  
+
   cursor: pointer;
 
   user-select: none;
-  
+
   font-size: 14px;
   font-weight: 500;
   font-stretch: normal;
@@ -22,7 +23,7 @@ export const buttonBaseStyle = css`
   color: ${({ theme }) => theme.actionButton.textColor};
 `;
 
-export const ActionButton = styled.button`
+export const ActionButton = styled(ButtonBase)`
   ${buttonBaseStyle};
 
   ${({ theme }) =>

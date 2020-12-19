@@ -1,6 +1,24 @@
+import { createMuiTheme } from '@material-ui/core/styles';
+import { muiThemeBase } from 'components/themes/muiThemeBase';
 import { DefaultTheme } from 'styled-components';
 
 export const darkTheme: DefaultTheme = {
+  ...createMuiTheme({
+    ...muiThemeBase,
+
+    palette: {
+      type: 'dark',
+    },
+
+    overrides: {
+      MuiTouchRipple: {
+        root: {
+          opacity: 0.15,
+        },
+      },
+    },
+  }),
+
   intensity: 0.45,
 
   backgroundColor: '#1a1d2e',
@@ -10,6 +28,12 @@ export const darkTheme: DefaultTheme = {
   actionButton: {
     backgroundColor: '#282d46',
     textColor: '#ffffff',
+  },
+  
+  formControl: {
+    labelColor: 'rgba(255, 255, 255, 0.4)',
+    labelFocusedColor: '#3867c4',
+    labelErrorColor: '#ac2b45',
   },
 
   textInput: {

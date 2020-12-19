@@ -1,8 +1,9 @@
+import { ButtonBase } from '@material-ui/core';
 import { concave, flat } from '@ssen/styled-neumorphism';
 import styled from 'styled-components';
 import { buttonBaseStyle } from './ActionButton';
 
-export const TextButton = styled.button`
+export const TextButton = styled(ButtonBase).attrs({ disableRipple: true })`
   ${buttonBaseStyle};
 
   ${({ theme }) =>

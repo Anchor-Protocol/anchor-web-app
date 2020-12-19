@@ -1,26 +1,8 @@
+import { TextField } from '@material-ui/core';
 import { pressed } from '@ssen/styled-neumorphism';
-import React, { DetailedHTMLProps, InputHTMLAttributes } from 'react';
 import styled from 'styled-components';
 
-export interface TextInputProps
-  extends DetailedHTMLProps<
-    InputHTMLAttributes<HTMLInputElement>,
-    HTMLInputElement
-  > {}
-
-function TextInputBase({
-  className,
-  type = 'text',
-  ...inputProps
-}: TextInputProps) {
-  return (
-    <div className={className}>
-      <input {...inputProps} type={type} />
-    </div>
-  );
-}
-
-export const TextInput = styled(TextInputBase)`
+export const TextInput = styled(TextField)`
   border-radius: 5px;
 
   ${({ theme }) =>
@@ -31,19 +13,39 @@ export const TextInput = styled(TextInputBase)`
       intensity: theme.intensity * 2,
     })};
 
-  input {
-    outline: none;
-    border: 0;
-    padding: 20px;
-    background-color: transparent;
-    width: 100%;
+  .MuiFormLabel-root {
+    opacity: 1;
+    color: ${({ theme }) => theme.formControl.labelColor};
+  }
 
-    font-size: 18px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: normal;
-    letter-spacing: normal;
+  .MuiFormLabel-root.Mui-focused {
+    opacity: 1;
+    color: ${({ theme }) => theme.formControl.labelFocusedColor};
+  }
+
+  .MuiFormLabel-root.Mui-error {
+    color: ${({ theme }) => theme.formControl.labelErrorColor};
+  }
+
+  .MuiInputLabel-formControl {
+    transform: translate(20px, 26px) scale(1);
+  }
+
+  .MuiInputLabel-shrink {
+    transform: translate(20px, -22px) scale(0.9);
+  }
+
+  .MuiInput-root {
+    margin: 20px;
     color: ${({ theme }) => theme.textInput.textColor};
+  }
+  
+  .MuiInput-root.Mui-error {
+    color: ${({ theme }) => theme.formControl.labelErrorColor};
+  }
+
+  .MuiInput-underline:before,
+  .MuiInput-underline:after {
+    display: none;
   }
 `;
