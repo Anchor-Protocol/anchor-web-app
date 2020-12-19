@@ -110,6 +110,9 @@ export const HorizontalScrollTable = styled(HorizontalScrollTableBase)`
     overflow-x: scroll;
 
     > table {
+      table-layout: auto;
+      width: 100%;
+      
       // ruler space over tbody
       thead:after,
       tfoot:before {
