@@ -23,7 +23,7 @@ function NeumorphismBase({ className }: NeumorphismProps) {
         <section className="pressed">PRESSED</section>
       </div>
 
-      <Section className="section">
+      <Section className="components">
         <div className="buttons">
           <TextButton>BUTTON</TextButton>
           <ActionButton>BUTTON</ActionButton>
@@ -34,32 +34,38 @@ function NeumorphismBase({ className }: NeumorphismProps) {
         <TextInput type="text" />
       </Section>
 
-      <HorizontalScrollTable>
-        <colgroup>
-          <col style={{ width: 300 }} />
-          <col style={{ width: 300 }} />
-          <col style={{ width: 300 }} />
-          <col style={{ width: 300 }} />
-        </colgroup>
-        <thead>
-          <tr>
-            <th>A</th>
-            <th>B</th>
-            <th>C</th>
-            <th>D</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Array.from({ length: 10 }, (_, i) => (
-            <tr key={`row-${i}`}>
-              <td>A{i}</td>
-              <td>B{i}</td>
-              <td>C{i}</td>
-              <td>D{i}</td>
+      <Section className="table">
+        <HorizontalScrollTable>
+          <colgroup>
+            <col style={{ width: 300 }} />
+            <col style={{ width: 300 }} />
+            <col style={{ width: 300 }} />
+            <col style={{ width: 300 }} />
+          </colgroup>
+          <thead>
+            <tr>
+              <th>A</th>
+              <th>B</th>
+              <th style={{ textAlign: 'right' }}>C</th>
+              <th style={{ textAlign: 'right' }}>D</th>
             </tr>
-          ))}
-        </tbody>
-      </HorizontalScrollTable>
+          </thead>
+          <tbody>
+            {Array.from({ length: 5 }, (_, i) => (
+              <tr key={`row-${i}`}>
+                <td>{'A'.repeat(i * 3 + 1)}</td>
+                <td>{'B'.repeat(i * 3 + 1)}</td>
+                <td style={{ textAlign: 'right' }}>
+                  {'C'.repeat(i * 3 + 1)}
+                  <br />
+                  {'C'.repeat(i * 2 + 1)}
+                </td>
+                <td style={{ textAlign: 'right' }}>{'D'.repeat(i * 3 + 1)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </HorizontalScrollTable>
+      </Section>
     </div>
   );
 }
@@ -126,7 +132,7 @@ export const Neumorphism = styled(NeumorphismBase)`
     margin-bottom: 30px;
   }
 
-  .section {
+  .components {
     .buttons {
       display: flex;
 
@@ -142,6 +148,12 @@ export const Neumorphism = styled(NeumorphismBase)`
     hr {
       margin: 30px 0;
     }
+
+    margin-bottom: 30px;
+  }
+
+  .table {
+    margin-bottom: 30px;
   }
 
   // pc
@@ -158,7 +170,8 @@ export const Neumorphism = styled(NeumorphismBase)`
       }
     }
 
-    .section {
+    .components,
+    .table {
       padding: 50px;
     }
   }
@@ -177,7 +190,8 @@ export const Neumorphism = styled(NeumorphismBase)`
       }
     }
 
-    .section {
+    .components,
+    .table {
       padding: 30px;
     }
   }
@@ -196,7 +210,8 @@ export const Neumorphism = styled(NeumorphismBase)`
       }
     }
 
-    .section {
+    .components,
+    .table {
       padding: 20px;
     }
   }

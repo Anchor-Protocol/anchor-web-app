@@ -33,6 +33,7 @@ function HorizontalScrollTableBase({
       return;
     }
 
+    // set separator y position to be under the thead bottom
     const thead = table.current.querySelector('thead');
 
     if (!thead) return;
@@ -64,6 +65,8 @@ function HorizontalScrollTableBase({
   );
 }
 
+const contentPadding: number = 15;
+
 export const HorizontalScrollTable = styled(HorizontalScrollTableBase)`
   position: relative;
 
@@ -71,9 +74,7 @@ export const HorizontalScrollTable = styled(HorizontalScrollTableBase)`
     overflow-x: scroll;
 
     > table {
-      width: 100%;
-      table-layout: fixed;
-
+      // separator space over tbody
       tbody:before {
         content: '-';
         display: block;
@@ -81,7 +82,48 @@ export const HorizontalScrollTable = styled(HorizontalScrollTableBase)`
         color: transparent;
       }
 
+      thead {
+        font-family: Gotham;
+        font-size: 12px;
+        font-weight: 500;
+        color: ${({ theme }) => theme.table.head.textColor};
+
+        th {
+          text-align: left;
+        }
+
+        th,
+        td {
+          padding: 0 ${contentPadding}px 20px ${contentPadding}px;
+
+          &:first-child {
+            padding-left: 0;
+          }
+
+          &:last-child {
+            padding-right: 0;
+          }
+        }
+      }
+
       tbody {
+        font-family: Gotham;
+        font-size: 18px;
+        color: ${({ theme }) => theme.table.body.textColor};
+
+        th,
+        td {
+          padding: 30px ${contentPadding}px;
+
+          &:first-child {
+            padding-left: 0;
+          }
+
+          &:last-child {
+            padding-right: 0;
+          }
+        }
+
         tr {
           th,
           td {
@@ -120,7 +162,7 @@ export const HorizontalScrollTable = styled(HorizontalScrollTableBase)`
   > .separator {
     user-select: none;
     pointer-events: none;
-    
+
     border-radius: 2px;
 
     top: -10px; // hidden
@@ -132,16 +174,8 @@ export const HorizontalScrollTable = styled(HorizontalScrollTableBase)`
     ${({ theme }) =>
       pressed({
         color: theme.backgroundColor,
-        distance: 2,
+        distance: 1,
         intensity: theme.intensity,
       })};
-  }
-
-  th {
-    padding: 25px 15px;
-  }
-  
-  td {
-    padding: 15px;
   }
 `;

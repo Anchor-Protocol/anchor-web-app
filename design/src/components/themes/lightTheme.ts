@@ -16,4 +16,13 @@ export const lightTheme: DefaultTheme = {
     backgroundColor: '#efefef',
     textColor: '#2c2c2e',
   },
+  
+  table: {
+    head: {
+      textColor: '#8a8a8a',
+    },
+    body: {
+      textColor: '#2c2c2e',
+    }
+  }
 };

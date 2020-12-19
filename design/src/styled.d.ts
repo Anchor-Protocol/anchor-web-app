@@ -21,5 +21,16 @@ declare module 'styled-components' {
       backgroundColor: string;
       textColor: string;
     }
+    
+    // table
+    table: {
+      head: {
+        textColor: string;
+      }
+      
+      body: {
+        textColor: string;
+      }
+    }
   }
 }

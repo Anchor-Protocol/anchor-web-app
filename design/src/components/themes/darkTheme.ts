@@ -16,4 +16,13 @@ export const darkTheme: DefaultTheme = {
     backgroundColor: '#181b2b',
     textColor: '#ffffff',
   },
+
+  table: {
+    head: {
+      textColor: 'rgba(255, 255, 255, 0.4)',
+    },
+    body: {
+      textColor: '#ffffff',
+    },
+  },
 };
