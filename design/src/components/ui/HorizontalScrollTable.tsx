@@ -18,49 +18,85 @@ export interface HorizontalScrollTableProps
     HTMLTableElement
   > {
   className?: string;
+  headRulerWeight?: number;
+  footRulerWeight?: number;
 }
+
+const defaultRulerWeight: number = 5;
 
 function HorizontalScrollTableBase({
   className,
+  headRulerWeight = defaultRulerWeight,
+  footRulerWeight = defaultRulerWeight,
   ...tableProps
 }: HorizontalScrollTableProps) {
   const container = useRef<HTMLDivElement>(null);
   const table = useRef<HTMLTableElement>(null);
-  const separator = useRef<HTMLDivElement>(null);
+  const headRuler = useRef<HTMLDivElement>(null);
+  const footRuler = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!container.current || !table.current) {
       return;
     }
 
-    // set separator y position to be under the thead bottom
     const thead = table.current.querySelector('thead');
-
-    if (!thead) return;
+    const tfoot = table.current.querySelector('tfoot');
 
     const observer = new ResizeObserver((entries: ResizeObserverEntry[]) => {
-      if (separator.current) {
-        separator.current.style.top = `${entries[0].contentRect.height}px`;
+      for (const { target } of entries) {
+        if (target.tagName.toLowerCase() === 'thead' && headRuler.current) {
+          headRuler.current.style.top = `${
+            (target as HTMLElement).offsetTop +
+            (target as HTMLElement).offsetHeight -
+            headRulerWeight
+          }px`;
+        }
+
+        if (target.tagName.toLowerCase() === 'tfoot' && footRuler.current) {
+          footRuler.current.style.top = `${
+            (target as HTMLElement).offsetTop
+          }px`;
+        }
       }
     });
 
-    observer.observe(thead);
+    if (headRuler.current) {
+      if (thead) {
+        headRuler.current.style.visibility = 'visible';
+        headRuler.current.style.top = `${
+          thead.offsetTop + thead.offsetHeight - headRulerWeight
+        }px`;
 
-    if (separator.current) {
-      separator.current.style.top = `${thead.getBoundingClientRect().height}px`;
+        observer.observe(thead);
+      } else {
+        headRuler.current.style.visibility = 'hidden';
+      }
+    }
+
+    if (footRuler.current) {
+      if (tfoot) {
+        footRuler.current.style.visibility = 'visible';
+        footRuler.current.style.top = `${tfoot.offsetTop}px`;
+
+        observer.observe(tfoot);
+      } else {
+        footRuler.current.style.visibility = 'hidden';
+      }
     }
 
     return () => {
       observer.disconnect();
     };
-  }, []);
+  }, [footRulerWeight, headRulerWeight]);
 
   return (
     <div ref={container} className={className}>
       <div className="scroll-container">
         <table ref={table} cellSpacing="0" cellPadding="0" {...tableProps} />
       </div>
-      <div ref={separator} className="separator" />
+      <div ref={headRuler} className="headRuler" />
+      <div ref={footRuler} className="footRuler" />
     </div>
   );
 }
@@ -74,11 +110,13 @@ export const HorizontalScrollTable = styled(HorizontalScrollTableBase)`
     overflow-x: scroll;
 
     > table {
-      // separator space over tbody
-      tbody:before {
+      // ruler space over tbody
+      thead:after,
+      tfoot:before {
         content: '-';
         display: block;
-        line-height: 5px;
+        line-height: ${({ headRulerWeight = defaultRulerWeight }) =>
+          headRulerWeight}px;
         color: transparent;
       }
 
@@ -106,7 +144,8 @@ export const HorizontalScrollTable = styled(HorizontalScrollTableBase)`
         }
       }
 
-      tbody {
+      tbody,
+      tfoot {
         font-family: Gotham;
         font-size: 18px;
         color: ${({ theme }) => theme.table.body.textColor};
@@ -159,16 +198,16 @@ export const HorizontalScrollTable = styled(HorizontalScrollTableBase)`
     }
   }
 
-  > .separator {
+  > .headRuler,
+  > .footRuler {
     user-select: none;
     pointer-events: none;
 
-    border-radius: 2px;
+    visibility: hidden;
 
-    top: -10px; // hidden
+    top: -10px;
     left: 0;
     right: 0;
-    height: 5px;
     position: absolute;
 
     ${({ theme }) =>
@@ -177,5 +216,15 @@ export const HorizontalScrollTable = styled(HorizontalScrollTableBase)`
         distance: 1,
         intensity: theme.intensity,
       })};
+  }
+
+  > .headRuler {
+    border-radius: ${({ headRulerWeight = defaultRulerWeight }) => headRulerWeight / 2}px;
+    height: ${({ headRulerWeight = defaultRulerWeight }) => headRulerWeight}px;
+  }
+
+  > .footRuler {
+    border-radius: ${({ footRulerWeight = defaultRulerWeight }) => footRulerWeight / 2}px;
+    height: ${({ footRulerWeight = defaultRulerWeight }) => footRulerWeight}px;
   }
 `;

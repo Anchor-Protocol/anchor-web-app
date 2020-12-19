@@ -64,6 +64,14 @@ function NeumorphismBase({ className }: NeumorphismProps) {
               </tr>
             ))}
           </tbody>
+          <tfoot>
+            <tr>
+              <td>A</td>
+              <td>B</td>
+              <td style={{ textAlign: 'right' }}>C</td>
+              <td style={{ textAlign: 'right' }}>D</td>
+            </tr>
+          </tfoot>
         </HorizontalScrollTable>
       </Section>
     </div>
