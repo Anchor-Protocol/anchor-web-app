@@ -1,8 +1,5 @@
 node_modules
 build
-fixtures
 out
-profiles
-dev
-apps
-src/**/public
+public
+coverage

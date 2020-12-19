@@ -6,7 +6,8 @@
   "scripts": {
     "start": "multiplerun start",
     "build": "CI=true react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --colors",
+    "coverage": "react-scripts test --colors --coverage",
     "eject": "react-scripts eject"
   },
   "multiplerun": {

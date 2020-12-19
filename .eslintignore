@@ -1,6 +1,5 @@
 node_modules
-fixtures
-out
-src/**/public
-/examples/**
 build
+out
+public
+coverage
