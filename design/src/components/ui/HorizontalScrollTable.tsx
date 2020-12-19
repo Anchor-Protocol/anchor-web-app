@@ -121,7 +121,6 @@ export const HorizontalScrollTable = styled(HorizontalScrollTableBase)`
       }
 
       thead {
-        font-family: Gotham;
         font-size: 12px;
         font-weight: 500;
         color: ${({ theme }) => theme.table.head.textColor};
@@ -146,7 +145,6 @@ export const HorizontalScrollTable = styled(HorizontalScrollTableBase)`
 
       tbody,
       tfoot {
-        font-family: Gotham;
         font-size: 18px;
         color: ${({ theme }) => theme.table.body.textColor};
 

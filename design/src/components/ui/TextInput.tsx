@@ -38,7 +38,6 @@ export const TextInput = styled(TextInputBase)`
     background-color: transparent;
     width: 100%;
 
-    font-family: Gotham;
     font-size: 18px;
     font-weight: normal;
     font-stretch: normal;

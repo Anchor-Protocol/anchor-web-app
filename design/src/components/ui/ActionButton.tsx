@@ -12,7 +12,6 @@ export const buttonBaseStyle = css`
 
   user-select: none;
   
-  font-family: Gotham;
   font-size: 14px;
   font-weight: 500;
   font-stretch: normal;

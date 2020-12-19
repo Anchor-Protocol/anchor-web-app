@@ -54,7 +54,6 @@ function EarnBase({ className }: EarnProps) {
 
 export const Title = styled.h1`
   height: 41px;
-  font-family: Gotham;
   font-size: 34px;
   font-weight: 900;
   font-stretch: normal;
@@ -66,7 +65,6 @@ export const Title = styled.h1`
 
 export const BoxTitle = styled.h3`
   margin: 0;
-  font-family: Gotham;
   font-size: 14px;
   font-weight: 500;
   font-stretch: normal;
@@ -86,7 +84,6 @@ export const Earn = styled(EarnBase)`
     h1 {
       margin: 0 0 50px 0;
 
-      font-family: Gotham;
       font-size: 34px;
       font-weight: 900;
       font-stretch: normal;
@@ -106,7 +103,6 @@ export const Earn = styled(EarnBase)`
 
     .total-deposit {
       .total-deposit-amount {
-        font-family: Gotham;
         font-size: 64px;
         font-weight: 200;
         font-stretch: normal;
@@ -117,7 +113,6 @@ export const Earn = styled(EarnBase)`
       }
 
       .total-deposit-subamount {
-        font-family: Gotham;
         font-size: 14px;
         font-weight: normal;
         font-stretch: normal;
