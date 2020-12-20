@@ -49,4 +49,4 @@ export const TextInput: ComponentType<TextFieldProps> = styled(TextField)`
   .MuiInput-underline:after {
     display: none;
   }
-`;
+` as any;

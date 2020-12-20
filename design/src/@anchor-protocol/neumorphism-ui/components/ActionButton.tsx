@@ -15,10 +15,6 @@ export const buttonBaseStyle = css`
 
   font-size: 14px;
   font-weight: 500;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.39;
-  letter-spacing: normal;
   text-align: center;
   color: ${({ theme }) => theme.actionButton.textColor};
 `;

@@ -1,8 +1,9 @@
+import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { concave, flat, pressed } from '@anchor-protocol/styled-neumorphism';
-import { ButtonBase, TextField } from '@material-ui/core';
+import { ButtonBase, TextField, Modal } from '@material-ui/core';
 import { mediaQuery } from 'components/layout/mediaQuery';
-import React from 'react';
+import React, { useState } from 'react';
 import styled, { css } from 'styled-components';
 
 export interface MaterialUIProps {
@@ -10,17 +11,30 @@ export interface MaterialUIProps {
 }
 
 function MaterialUIBase({ className }: MaterialUIProps) {
+  const [openModal, setOpenModal] = useState<boolean>(false);
+
   return (
     <div className={className}>
       <Section className="components">
         <div style={{ marginBottom: 80 }}>
-          <Button2>Hello</Button2>
+          <Button2 onClick={() => setOpenModal((prev) => !prev)}>Hello</Button2>
         </div>
 
         <div>
           <Input2 label="Text" />
         </div>
       </Section>
+      <Modal open={openModal} onClose={() => setOpenModal(false)}>
+        <Dialog
+          style={{
+            width: 600,
+            height: 400,
+          }}
+          onClose={() => setOpenModal(false)}
+        >
+          ???
+        </Dialog>
+      </Modal>
     </div>
   );
 }

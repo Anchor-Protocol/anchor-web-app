@@ -1,4 +1,5 @@
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
+import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
 import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/components/HorizontalScrollTable';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
@@ -10,10 +11,10 @@ import {
   flat,
   pressed,
 } from '@anchor-protocol/styled-neumorphism';
-import { InputAdornment } from '@material-ui/core';
+import { InputAdornment, Modal } from '@material-ui/core';
 import { Warning } from '@material-ui/icons';
 import { mediaQuery } from 'components/layout/mediaQuery';
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
 export interface NeumorphismProps {
@@ -21,6 +22,8 @@ export interface NeumorphismProps {
 }
 
 function NeumorphismBase({ className }: NeumorphismProps) {
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+
   return (
     <div className={className}>
       <div className="styles">
@@ -51,6 +54,23 @@ function NeumorphismBase({ className }: NeumorphismProps) {
               ),
             }}
           />
+        </div>
+
+        <HorizontalRuler />
+
+        <div className="buttons">
+          <ActionButton onClick={() => setModalOpen(true)}>
+            OPEN MODAL
+          </ActionButton>
+
+          <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+            <Dialog
+              style={{ width: 600, height: 400 }}
+              onClose={() => setModalOpen(false)}
+            >
+              <h1 style={{ textAlign: 'center', fontWeight: 300 }}>Title</h1>
+            </Dialog>
+          </Modal>
         </div>
       </Section>
 
