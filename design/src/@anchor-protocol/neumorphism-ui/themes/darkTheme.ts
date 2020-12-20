@@ -1,5 +1,5 @@
 import { createMuiTheme } from '@material-ui/core/styles';
-import { DefaultTheme } from 'styled-components';
+import type { DefaultTheme } from 'styled-components';
 import { muiThemeBase } from './muiThemeBase';
 
 export const darkTheme: DefaultTheme = {

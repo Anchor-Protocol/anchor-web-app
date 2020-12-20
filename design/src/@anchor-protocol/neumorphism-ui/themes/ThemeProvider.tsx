@@ -3,10 +3,8 @@ import {
   ThemeProvider as MuiThemeProvider,
 } from '@material-ui/styles';
 import React, { ReactNode } from 'react';
-import {
-  DefaultTheme,
-  ThemeProvider as StyledComponentsThemeProvider,
-} from 'styled-components';
+import type { DefaultTheme } from 'styled-components';
+import { ThemeProvider as StyledComponentsThemeProvider } from 'styled-components';
 
 export interface ThemeProviderProps {
   children: ReactNode;
