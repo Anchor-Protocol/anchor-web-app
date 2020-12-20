@@ -1,8 +1,9 @@
-import { TextField } from '@material-ui/core';
-import { pressed } from '@ssen/styled-neumorphism';
+import { pressed } from '@anchor-protocol/styled-neumorphism';
+import { TextField, TextFieldProps } from '@material-ui/core';
+import { ComponentType } from 'react';
 import styled from 'styled-components';
 
-export const TextInput = styled(TextField)`
+export const TextInput: ComponentType<TextFieldProps> = styled(TextField)`
   border-radius: 5px;
 
   ${({ theme }) =>
@@ -39,7 +40,7 @@ export const TextInput = styled(TextField)`
     margin: 20px;
     color: ${({ theme }) => theme.textInput.textColor};
   }
-  
+
   .MuiInput-root.Mui-error {
     color: ${({ theme }) => theme.formControl.labelErrorColor};
   }

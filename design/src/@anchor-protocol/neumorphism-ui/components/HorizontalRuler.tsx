@@ -1,13 +1,10 @@
-import { flat } from '@ssen/styled-neumorphism';
+import { horizontalRuler } from '@anchor-protocol/styled-neumorphism';
 import styled from 'styled-components';
 
-export const Section = styled.section`
-  border-radius: 20px;
-
+export const HorizontalRuler = styled.hr`
   ${({ theme }) =>
-    flat({
+    horizontalRuler({
       color: theme.backgroundColor,
-      distance: 6,
       intensity: theme.intensity,
     })};
 `;

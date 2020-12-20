@@ -1,7 +1,7 @@
+import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
+import { concave, flat, pressed } from '@anchor-protocol/styled-neumorphism';
 import { ButtonBase, TextField } from '@material-ui/core';
-import { concave, flat, pressed } from '@ssen/styled-neumorphism';
 import { mediaQuery } from 'components/layout/mediaQuery';
-import { Section } from 'components/ui/Section';
 import React from 'react';
 import styled, { css } from 'styled-components';
 
@@ -13,7 +13,7 @@ function MaterialUIBase({ className }: MaterialUIProps) {
   return (
     <div className={className}>
       <Section className="components">
-        <div style={{marginBottom: 80}}>
+        <div style={{ marginBottom: 80 }}>
           <Button2>Hello</Button2>
         </div>
 
@@ -35,24 +35,24 @@ export const Input2 = styled(TextField)`
       distance: 1,
       intensity: theme.intensity * 2,
     })};
-  
+
   .MuiFormLabel-root {
     opacity: 0.3;
   }
-  
+
   .MuiFormLabel-root.Mui-focused {
     opacity: 1;
     color: ${({ theme }) => theme.textInput.textColor};
   }
-  
+
   .MuiInputLabel-formControl {
     transform: translate(20px, 26px) scale(1);
   }
-  
+
   .MuiInputLabel-shrink {
     transform: translate(20px, -22px) scale(0.9);
   }
-  
+
   .MuiInput-root {
     margin: 20px 5px 20px 20px;
   }

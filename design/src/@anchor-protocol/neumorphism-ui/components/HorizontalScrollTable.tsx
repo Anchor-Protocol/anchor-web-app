@@ -2,7 +2,7 @@ import {
   pressed,
   rulerLightColor,
   rulerShadowColor,
-} from '@ssen/styled-neumorphism';
+} from '@anchor-protocol/styled-neumorphism';
 import React, {
   DetailedHTMLProps,
   TableHTMLAttributes,

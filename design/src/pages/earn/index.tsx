@@ -1,7 +1,7 @@
+import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
+import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
+import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { mediaQuery } from 'components/layout/mediaQuery';
-import { ActionButton } from 'components/ui/ActionButton';
-import { HorizontalRuler } from 'components/ui/HorizontalRuler';
-import { Section } from 'components/ui/Section';
 import React from 'react';
 import styled from 'styled-components';
 

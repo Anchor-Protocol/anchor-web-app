@@ -1,5 +1,5 @@
 import { ButtonBase } from '@material-ui/core';
-import { concave, flat } from '@ssen/styled-neumorphism';
+import { concave, flat } from '@anchor-protocol/styled-neumorphism';
 import styled, { css } from 'styled-components';
 
 export const buttonBaseStyle = css`

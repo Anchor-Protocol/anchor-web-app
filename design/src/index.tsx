@@ -1,10 +1,10 @@
-import { darkTheme } from 'components/themes/darkTheme';
-import { lightTheme } from 'components/themes/lightTheme';
-import { ThemeProvider } from 'components/themes/ThemeProvider';
+import { darkTheme } from '@anchor-protocol/neumorphism-ui/themes/darkTheme';
+import { GlobalStyle } from '@anchor-protocol/neumorphism-ui/themes/GlobalStyle';
+import { lightTheme } from '@anchor-protocol/neumorphism-ui/themes/lightTheme';
+import { ThemeProvider } from '@anchor-protocol/neumorphism-ui/themes/ThemeProvider';
 import { MaterialUI } from 'pages/material';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.scss';
 import { Earn } from './pages/earn';
 import { Neumorphism } from './pages/neumorphism';
 
@@ -29,6 +29,7 @@ function App() {
 
 ReactDOM.render(
   <React.StrictMode>
+    <GlobalStyle />
     <App />
   </React.StrictMode>,
   document.getElementById('root'),

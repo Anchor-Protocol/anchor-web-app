@@ -1,13 +1,18 @@
+import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
+import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
+import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/components/HorizontalScrollTable';
+import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
+import { TextButton } from '@anchor-protocol/neumorphism-ui/components/TextButton';
+import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
+import {
+  concave,
+  convex,
+  flat,
+  pressed,
+} from '@anchor-protocol/styled-neumorphism';
 import { InputAdornment } from '@material-ui/core';
 import { Warning } from '@material-ui/icons';
-import { concave, convex, flat, pressed } from '@ssen/styled-neumorphism';
 import { mediaQuery } from 'components/layout/mediaQuery';
-import { ActionButton } from 'components/ui/ActionButton';
-import { HorizontalRuler } from 'components/ui/HorizontalRuler';
-import { HorizontalScrollTable } from 'components/ui/HorizontalScrollTable';
-import { Section } from 'components/ui/Section';
-import { TextButton } from 'components/ui/TextButton';
-import { TextInput } from 'components/ui/TextInput';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -31,7 +36,7 @@ function NeumorphismBase({ className }: NeumorphismProps) {
           <ActionButton>BUTTON</ActionButton>
         </div>
 
-        <HorizontalRuler />
+        <HorizontalRuler style={{ marginBottom: 50 }} />
 
         <div className="text-fields">
           <TextInput label="TEXT FIELD" />
@@ -162,15 +167,21 @@ export const Neumorphism = styled(NeumorphismBase)`
       button {
         flex: 1;
 
-        &:first-child {
+        &:not(:last-child) {
           margin-right: 15px;
         }
       }
     }
 
     .text-fields {
+      display: flex;
+
       > * {
-        margin-right: 15px;
+        flex: 1;
+
+        &:not(:last-child) {
+          margin-right: 15px;
+        }
       }
     }
 

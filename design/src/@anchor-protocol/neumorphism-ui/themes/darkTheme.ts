@@ -1,6 +1,6 @@
 import { createMuiTheme } from '@material-ui/core/styles';
-import { muiThemeBase } from 'components/themes/muiThemeBase';
 import { DefaultTheme } from 'styled-components';
+import { muiThemeBase } from './muiThemeBase';
 
 export const darkTheme: DefaultTheme = {
   ...createMuiTheme({
@@ -29,7 +29,7 @@ export const darkTheme: DefaultTheme = {
     backgroundColor: '#282d46',
     textColor: '#ffffff',
   },
-  
+
   formControl: {
     labelColor: 'rgba(255, 255, 255, 0.4)',
     labelFocusedColor: '#3867c4',
