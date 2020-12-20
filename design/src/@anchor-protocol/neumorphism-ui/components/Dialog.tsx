@@ -47,26 +47,11 @@ export const Dialog = styled(DialogBase)`
   left: 50%;
   position: absolute;
   transform: translate(-50%, -50%);
-
+  
   border-radius: 20px;
-  border-style: solid;
-  border-width: 1px;
-  border-image-source: linear-gradient(
-    122deg,
-    rgba(0, 0, 0, 0.05) 38%,
-    rgba(255, 255, 255, 0.05) 100%
-  );
-  border-image-slice: 1;
-  background-image: linear-gradient(to bottom, #1a1d2e, #1a1d2e),
-    linear-gradient(
-      122deg,
-      rgba(0, 0, 0, 0.05) 38%,
-      rgba(255, 255, 255, 0.05) 100%
-    );
-  background-origin: border-box;
-  background-clip: content-box, border-box;
+  background-color: ${({theme}) => theme.dialog.backgroundColor};
 
-  color: ${({ theme }) => theme.textColor};
+  color: ${({ theme }) => theme.dialog.textColor};
 
   outline: none;
   box-shadow: 0 0 33px 8px rgba(0, 0, 0, 0.4);

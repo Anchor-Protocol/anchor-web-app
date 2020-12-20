@@ -38,4 +38,10 @@ export interface NeumorphismTheme extends Theme {
       textColor: string;
     };
   };
+  
+  // dialog
+  dialog: {
+    backgroundColor: string;
+    textColor: string;
+  }
 }

@@ -41,4 +41,9 @@ export const lightTheme: DefaultTheme = {
       textColor: '#2c2c2e',
     },
   },
+
+  dialog: {
+    backgroundColor: '#f4f4f5',
+    textColor: '#1f1f1f',
+  },
 };

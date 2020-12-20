@@ -49,4 +49,9 @@ export const darkTheme: DefaultTheme = {
       textColor: '#ffffff',
     },
   },
+
+  dialog: {
+    backgroundColor: '#1a1d2e',
+    textColor: '#ffffff',
+  },
 };
