@@ -58,7 +58,7 @@ export const TextInput: ComponentType<TextFieldProps> = styled(TextField)`
   
   .MuiFormHelperText-root {
     position: absolute;
-    right: 10px;
-    top: -24px;
+    right: 20px;
+    bottom: -20px;
   }
 ` as any;
