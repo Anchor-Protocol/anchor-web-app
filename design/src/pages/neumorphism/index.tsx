@@ -3,6 +3,7 @@ import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
 import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/components/HorizontalScrollTable';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
+import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
 import { TextButton } from '@anchor-protocol/neumorphism-ui/components/TextButton';
 import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
@@ -17,7 +18,7 @@ import {
   flat,
   pressed,
 } from '@anchor-protocol/styled-neumorphism';
-import { InputAdornment, Modal } from '@material-ui/core';
+import { Input, InputAdornment, Modal, NativeSelect } from '@material-ui/core';
 import { Warning } from '@material-ui/icons';
 import { mediaQuery } from 'components/layout/mediaQuery';
 import { useState, Fragment } from 'react';
@@ -152,13 +153,37 @@ function NeumorphismBase({ className }: NeumorphismProps) {
         <div className="buttons">
           <Selector
             items={selectorItems}
-            selectedItem={selectedItem['basic']}
+            selectedItem={selectedItem['selector']}
             onChange={(next) =>
-              setSelectedItem((prev) => ({ ...prev, basic: next }))
+              setSelectedItem((prev) => ({ ...prev, selector: next }))
             }
             labelFunction={(item) => item?.label ?? 'None'}
             keyFunction={(item) => item.value}
           />
+
+          <SelectAndTextInputContainer>
+            <NativeSelect
+              value={
+                selectedItem['nativeSelect']?.value ?? selectorItems[0].value
+              }
+              onChange={(evt) =>
+                setSelectedItem((prev) => ({
+                  ...prev,
+                  nativeSelect:
+                    selectorItems.find(
+                      ({ value }) => evt.target.value === value,
+                    ) ?? null,
+                }))
+              }
+            >
+              {selectorItems.map(({ label, value }) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </NativeSelect>
+            <Input placeholder="PLACEHOLDER" />
+          </SelectAndTextInputContainer>
         </div>
       </Section>
 
