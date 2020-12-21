@@ -61,12 +61,17 @@ function NeumorphismBase({ className }: NeumorphismProps) {
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <Tooltip color="error" title="Error Tooltip Content">
+                  <Tooltip
+                    color="error"
+                    title="Error Tooltip Content"
+                    placement="top"
+                  >
                     <Warning />
                   </Tooltip>
                 </InputAdornment>
               ),
             }}
+            helperText="Error Content"
           />
         </div>
 
@@ -109,12 +114,7 @@ function NeumorphismBase({ className }: NeumorphismProps) {
 
         <div className="buttons">
           {messageColors.map((color) => (
-            <Tooltip
-              key={color}
-              title={color}
-              color={color}
-              placement="top"
-            >
+            <Tooltip key={color} title={color} color={color} placement="top">
               <TextButton>{color.toUpperCase()} TOOLTIP</TextButton>
             </Tooltip>
           ))}

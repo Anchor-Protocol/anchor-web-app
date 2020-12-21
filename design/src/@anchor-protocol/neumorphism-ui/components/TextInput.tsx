@@ -55,4 +55,10 @@ export const TextInput: ComponentType<TextFieldProps> = styled(TextField)`
   .MuiInput-underline:after {
     display: none;
   }
+  
+  .MuiFormHelperText-root {
+    position: absolute;
+    right: 10px;
+    top: -24px;
+  }
 ` as any;
