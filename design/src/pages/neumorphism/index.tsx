@@ -26,6 +26,16 @@ export interface NeumorphismProps {
   className?: string;
 }
 
+const textFieldInputProps = {
+  endAdornment: (
+    <InputAdornment position="end">
+      <Tooltip color="error" title="Error Tooltip Content" placement="top">
+        <Warning />
+      </Tooltip>
+    </InputAdornment>
+  ),
+};
+
 function NeumorphismBase({ className }: NeumorphismProps) {
   const [dialogOpen, setDialogOpen] = useState<Record<MessageColor, boolean>>(
     () => ({
@@ -58,19 +68,18 @@ function NeumorphismBase({ className }: NeumorphismProps) {
           <TextInput
             label="ERROR"
             error={true}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <Tooltip
-                    color="error"
-                    title="Error Tooltip Content"
-                    placement="top"
-                  >
-                    <Warning />
-                  </Tooltip>
-                </InputAdornment>
-              ),
-            }}
+            InputProps={textFieldInputProps}
+            helperText="Error Content"
+          />
+        </div>
+        
+        <HorizontalRuler style={{ marginBottom: 50 }} />
+
+        <div className="text-fields">
+          <TextInput />
+          <TextInput
+            error={true}
+            InputProps={textFieldInputProps}
             helperText="Error Content"
           />
         </div>
