@@ -10,6 +10,7 @@ import {
   MessageColor,
   messageColors,
 } from '@anchor-protocol/neumorphism-ui/themes/Theme';
+import { Selector } from '@anchor-protocol/neumorphism-ui/components/Selector';
 import {
   concave,
   convex,
@@ -36,6 +37,19 @@ const textFieldInputProps = {
   ),
 };
 
+interface SelectorItem {
+  label: string;
+  value: string;
+}
+
+const selectorItems: SelectorItem[] = Array.from(
+  { length: Math.floor(Math.random() * 30) },
+  (_, i) => ({
+    label: 'Item ' + i,
+    value: 'item' + i,
+  }),
+);
+
 function NeumorphismBase({ className }: NeumorphismProps) {
   const [dialogOpen, setDialogOpen] = useState<Record<MessageColor, boolean>>(
     () => ({
@@ -45,6 +59,10 @@ function NeumorphismBase({ className }: NeumorphismProps) {
       success: false,
     }),
   );
+
+  const [selectedItem, setSelectedItem] = useState<
+    Record<string, SelectorItem | null>
+  >(() => ({}));
 
   return (
     <div className={className}>
@@ -127,6 +145,20 @@ function NeumorphismBase({ className }: NeumorphismProps) {
               <TextButton>{color.toUpperCase()} TOOLTIP</TextButton>
             </Tooltip>
           ))}
+        </div>
+
+        <HorizontalRuler />
+
+        <div className="buttons">
+          <Selector
+            items={selectorItems}
+            selectedItem={selectedItem['basic']}
+            onChange={(next) =>
+              setSelectedItem((prev) => ({ ...prev, basic: next }))
+            }
+            labelFunction={(item) => item?.label ?? 'None'}
+            keyFunction={(item) => item.value}
+          />
         </div>
       </Section>
 
@@ -263,7 +295,8 @@ export const Neumorphism = styled(NeumorphismBase)`
     }
 
     .components {
-      .buttons, .text-fields {
+      .buttons,
+      .text-fields {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         grid-gap: 15px;
@@ -291,7 +324,8 @@ export const Neumorphism = styled(NeumorphismBase)`
     }
 
     .components {
-      .buttons, .text-fields {
+      .buttons,
+      .text-fields {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         grid-gap: 15px;
@@ -319,12 +353,13 @@ export const Neumorphism = styled(NeumorphismBase)`
     }
 
     .components {
-      .buttons, .text-fields {
+      .buttons,
+      .text-fields {
         display: grid;
         grid-template-columns: repeat(1, 1fr);
         grid-gap: 15px;
       }
-      
+
       .text-fields {
         grid-gap: 40px;
       }

@@ -29,6 +29,11 @@ export const darkTheme: DefaultTheme = {
     backgroundColor: '#282d46',
     textColor: '#ffffff',
   },
+  
+  selector: {
+    backgroundColor: '#181b2b',
+    textColor: '#ffffff',
+  },
 
   formControl: {
     labelColor: 'rgba(255, 255, 255, 0.4)',

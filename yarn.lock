@@ -6524,7 +6524,7 @@ dotenv@^6.2.0:
   resolved "https://registry.npmjs.org/dotenv/-/dotenv-6.2.0.tgz#941c0410535d942c8becf28d3f357dbd9d476064"
   integrity sha512-HygQCKUBSFl8wKQZBSemMywRWcEDNidvNbjGVyZu3nbZ8qq9ubiPoGLMdRDpfSrpkkm9BXYFkpKxxFX38o/76w==
 
-downshift@^6.0.6:
+downshift@^6.0.6, downshift@^6.0.7:
   version "6.0.7"
   resolved "https://registry.npmjs.org/downshift/-/downshift-6.0.7.tgz#05ef58b991e4467cdb8cd36e7a87a011d0bada5c"
   integrity sha512-+rqgx3JTSs8b4V9q++hsLvaP8mhMOdX7u+jy5S2etg7+Y7uFLVzZaI0S7Xo2yEnNDmTcNnYZZ/vFjdWuJ2kZdg==

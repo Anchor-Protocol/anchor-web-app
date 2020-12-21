@@ -56,6 +56,7 @@
     "@types/testing-library__jest-dom": "^5.9.5",
     "bignumber.js": "^9.0.1",
     "color": "^3.1.3",
+    "downshift": "^6.0.7",
     "fastdom": "^1.0.9",
     "graphql": "^15.4.0",
     "multiplerun": "^1.1.2",

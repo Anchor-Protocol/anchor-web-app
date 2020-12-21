@@ -21,6 +21,11 @@ export const lightTheme: DefaultTheme = {
     backgroundColor: '#94f3b8',
     textColor: '#2c2c2e',
   },
+  
+  selector: {
+    backgroundColor: '#efefef',
+    textColor: '#2c2c2e',
+  },
 
   formControl: {
     labelColor: '#8a8a8a',

@@ -28,6 +28,12 @@ export interface NeumorphismTheme extends Theme {
     backgroundColor: string;
     textColor: string;
   };
+  
+  // selector
+  selector: {
+    backgroundColor: string;
+    textColor: string;
+  }
 
   // form control
   formControl: {
