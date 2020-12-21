@@ -51,7 +51,40 @@ export const darkTheme: DefaultTheme = {
   },
 
   dialog: {
-    backgroundColor: '#1a1d2e',
-    textColor: '#ffffff',
+    normal: {
+      backgroundColor: '#1a1d2e',
+      textColor: '#ffffff',
+    },
+    warning: {
+      backgroundColor: '#1a1d2e',
+      textColor: '#d69f34',
+    },
+    error: {
+      backgroundColor: '#1a1d2e',
+      textColor: '#ac2b45',
+    },
+    success: {
+      backgroundColor: '#1a1d2e',
+      textColor: '#3e9bba',
+    },
+  },
+  
+  tooltip: {
+    normal: {
+      backgroundColor: 'rgba(255, 255, 255, 0.4)',
+      textColor: '#ffffff',
+    },
+    warning: {
+      backgroundColor: '#d69f34',
+      textColor: '#ffffff',
+    },
+    error: {
+      backgroundColor: '#ac2b45',
+      textColor: '#ffffff',
+    },
+    success: {
+      backgroundColor: '#3e9bba',
+      textColor: '#ffffff',
+    },
   },
 };

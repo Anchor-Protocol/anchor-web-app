@@ -1,14 +1,21 @@
+import { MessageColor } from '@anchor-protocol/neumorphism-ui/themes/Theme';
 import type { DetailedHTMLProps, HTMLAttributes } from 'react';
 import styled, { keyframes } from 'styled-components';
 
 export interface DialogProps
   extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+  color?: MessageColor;
   onClose?: () => void;
 }
 
-function DialogBase({ onClose, children, ...divProps }: DialogProps) {
+function DialogBase({
+  onClose,
+  color = 'normal',
+  children,
+  ...divProps
+}: DialogProps) {
   return (
-    <div {...divProps}>
+    <div {...divProps} data-color={color}>
       <div className="dialog-content">{children}</div>
       {onClose && (
         <svg
@@ -47,11 +54,12 @@ export const Dialog = styled(DialogBase)`
   left: 50%;
   position: absolute;
   transform: translate(-50%, -50%);
-  
-  border-radius: 20px;
-  background-color: ${({theme}) => theme.dialog.backgroundColor};
 
-  color: ${({ theme }) => theme.dialog.textColor};
+  border-radius: 20px;
+  background-color: ${({ theme, color = 'normal' }) =>
+    theme.dialog[color].backgroundColor};
+
+  color: ${({ theme, color = 'normal' }) => theme.dialog[color].textColor};
 
   outline: none;
   box-shadow: 0 0 33px 8px rgba(0, 0, 0, 0.4);

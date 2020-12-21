@@ -41,9 +41,42 @@ export const lightTheme: DefaultTheme = {
       textColor: '#2c2c2e',
     },
   },
-
+  
   dialog: {
-    backgroundColor: '#f4f4f5',
-    textColor: '#1f1f1f',
+    normal: {
+      backgroundColor: '#f4f4f5',
+      textColor: '#1f1f1f',
+    },
+    warning: {
+      backgroundColor: '#f4f4f5',
+      textColor: '#dd8f5c',
+    },
+    error: {
+      backgroundColor: '#f4f4f5',
+      textColor: '#ef3158',
+    },
+    success: {
+      backgroundColor: '#f4f4f5',
+      textColor: '#3e9bba',
+    },
+  },
+  
+  tooltip: {
+    normal: {
+      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+      textColor: '#ffffff',
+    },
+    warning: {
+      backgroundColor: '#dd8f5c',
+      textColor: '#ffffff',
+    },
+    error: {
+      backgroundColor: '#ef3158',
+      textColor: '#ffffff',
+    },
+    success: {
+      backgroundColor: '#3e9bba',
+      textColor: '#ffffff',
+    },
   },
 };

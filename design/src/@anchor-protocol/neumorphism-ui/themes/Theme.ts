@@ -1,5 +1,19 @@
 import type { Theme } from '@material-ui/core';
 
+export const messageColors = ['normal', 'warning', 'error', 'success'] as const;
+
+export type MessageColor = typeof messageColors[number];
+
+export interface DialogTheme {
+  backgroundColor: string;
+  textColor: string;
+}
+
+export interface TooltipTheme {
+  backgroundColor: string;
+  textColor: string;
+}
+
 export interface NeumorphismTheme extends Theme {
   // neumorphism
   intensity: number;
@@ -38,10 +52,10 @@ export interface NeumorphismTheme extends Theme {
       textColor: string;
     };
   };
-  
+
   // dialog
-  dialog: {
-    backgroundColor: string;
-    textColor: string;
-  }
+  dialog: Record<MessageColor, DialogTheme>;
+
+  // tooltip
+  tooltip: Record<MessageColor, TooltipTheme>;
 }

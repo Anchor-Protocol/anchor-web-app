@@ -5,6 +5,11 @@ import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/component
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { TextButton } from '@anchor-protocol/neumorphism-ui/components/TextButton';
 import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
+import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
+import {
+  MessageColor,
+  messageColors,
+} from '@anchor-protocol/neumorphism-ui/themes/Theme';
 import {
   concave,
   convex,
@@ -14,7 +19,7 @@ import {
 import { InputAdornment, Modal } from '@material-ui/core';
 import { Warning } from '@material-ui/icons';
 import { mediaQuery } from 'components/layout/mediaQuery';
-import React, { useState } from 'react';
+import { useState, Fragment } from 'react';
 import styled from 'styled-components';
 
 export interface NeumorphismProps {
@@ -22,7 +27,14 @@ export interface NeumorphismProps {
 }
 
 function NeumorphismBase({ className }: NeumorphismProps) {
-  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [dialogOpen, setDialogOpen] = useState<Record<MessageColor, boolean>>(
+    () => ({
+      normal: false,
+      warning: false,
+      error: false,
+      success: false,
+    }),
+  );
 
   return (
     <div className={className}>
@@ -49,7 +61,9 @@ function NeumorphismBase({ className }: NeumorphismProps) {
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <Warning />
+                  <Tooltip color="error" title="Error Tooltip Content">
+                    <Warning />
+                  </Tooltip>
                 </InputAdornment>
               ),
             }}
@@ -59,18 +73,51 @@ function NeumorphismBase({ className }: NeumorphismProps) {
         <HorizontalRuler />
 
         <div className="buttons">
-          <ActionButton onClick={() => setModalOpen(true)}>
-            OPEN MODAL
-          </ActionButton>
+          {messageColors.map((color) => (
+            <Fragment key={color}>
+              <ActionButton
+                onClick={() =>
+                  setDialogOpen((prev) => ({ ...prev, [color]: true }))
+                }
+              >
+                OPEN {color.toUpperCase()} DIALOG
+              </ActionButton>
 
-          <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-            <Dialog
-              style={{ width: 600, height: 400 }}
-              onClose={() => setModalOpen(false)}
+              <Modal
+                open={dialogOpen[color]}
+                onClose={() =>
+                  setDialogOpen((prev) => ({ ...prev, [color]: false }))
+                }
+              >
+                <Dialog
+                  color={color}
+                  style={{ width: 600, height: 400 }}
+                  onClose={() =>
+                    setDialogOpen((prev) => ({ ...prev, [color]: false }))
+                  }
+                >
+                  <h1 style={{ textAlign: 'center', fontWeight: 300 }}>
+                    Title
+                  </h1>
+                </Dialog>
+              </Modal>
+            </Fragment>
+          ))}
+        </div>
+
+        <HorizontalRuler />
+
+        <div className="buttons">
+          {messageColors.map((color) => (
+            <Tooltip
+              key={color}
+              title={color}
+              color={color}
+              placement="top"
             >
-              <h1 style={{ textAlign: 'center', fontWeight: 300 }}>Title</h1>
-            </Dialog>
-          </Modal>
+              <TextButton>{color.toUpperCase()} TOOLTIP</TextButton>
+            </Tooltip>
+          ))}
         </div>
       </Section>
 
