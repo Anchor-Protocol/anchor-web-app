@@ -96,7 +96,7 @@ export const Selector: <T>(
   }
 
   hr {
-    margin: 5px 0 !important;
+    margin: 0 0 5px 0 !important;
   }
 
   ul {
@@ -106,7 +106,7 @@ export const Selector: <T>(
 
     color: ${({ theme }) => c(theme.selector.textColor).alpha(0.7).string()};
     
-    max-height: 500px;
+    max-height: 300px;
     overflow-y: auto;
 
     li {

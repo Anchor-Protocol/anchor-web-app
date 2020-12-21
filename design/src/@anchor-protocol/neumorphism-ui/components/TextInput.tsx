@@ -29,21 +29,21 @@ export const TextInput: ComponentType<TextFieldProps> = styled(TextField)`
   }
 
   .MuiInputLabel-formControl {
-    transform: translate(20px, 26px) scale(1);
+    transform: translate(20px, 22px) scale(1);
   }
 
   .MuiInputLabel-shrink {
-    transform: translate(20px, 14px) scale(0.7);
+    transform: translate(20px, 12px) scale(0.7);
   }
   
   .MuiInputLabel-shrink + .MuiInputBase-root {
     .MuiInputBase-input {
-      transform: translateY(10px);
+      transform: translateY(8px);
     }
   }
 
   .MuiInput-root {
-    margin: 20px;
+    margin: 14px 20px;
     color: ${({ theme }) => theme.textInput.textColor};
   }
 
