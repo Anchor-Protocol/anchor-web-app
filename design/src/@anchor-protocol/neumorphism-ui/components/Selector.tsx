@@ -47,8 +47,7 @@ function SelectorBase<T>({
         {isOpen &&
           items.map((item, index) => (
             <li
-              role="listitem"
-              aria-selected={highlightedIndex === index}
+              data-selected={highlightedIndex === index}
               key={`${keyFunction(item)}${index}`}
               {...getItemProps({ item, index })}
             >
@@ -114,7 +113,7 @@ export const Selector: <T>(
       padding: 10px 20px;
       user-select: none;
 
-      &[aria-selected='true'] {
+      &[data-selected='true'] {
         background-color: ${({ theme }) =>
           c(theme.selector.textColor).alpha(0.05).string()};
         color: ${({ theme }) => theme.selector.textColor};
