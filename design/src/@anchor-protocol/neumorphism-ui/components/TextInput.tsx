@@ -33,7 +33,13 @@ export const TextInput: ComponentType<TextFieldProps> = styled(TextField)`
   }
 
   .MuiInputLabel-shrink {
-    transform: translate(20px, -22px) scale(0.9);
+    transform: translate(20px, 14px) scale(0.7);
+  }
+  
+  .MuiInputLabel-shrink + .MuiInputBase-root {
+    .MuiInputBase-input {
+      transform: translateY(10px);
+    }
   }
 
   .MuiInput-root {
