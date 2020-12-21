@@ -72,7 +72,7 @@ function NeumorphismBase({ className }: NeumorphismProps) {
             helperText="Error Content"
           />
         </div>
-        
+
         <HorizontalRuler style={{ marginBottom: 50 }} />
 
         <div className="text-fields">
@@ -237,30 +237,6 @@ export const Neumorphism = styled(NeumorphismBase)`
   }
 
   .components {
-    .buttons {
-      display: flex;
-
-      button {
-        flex: 1;
-
-        &:not(:last-child) {
-          margin-right: 15px;
-        }
-      }
-    }
-
-    .text-fields {
-      display: flex;
-
-      > * {
-        flex: 1;
-
-        &:not(:last-child) {
-          margin-right: 15px;
-        }
-      }
-    }
-
     hr {
       margin: 30px 0;
     }
@@ -286,6 +262,14 @@ export const Neumorphism = styled(NeumorphismBase)`
       }
     }
 
+    .components {
+      .buttons, .text-fields {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 15px;
+      }
+    }
+
     .components,
     .table {
       padding: 50px;
@@ -306,6 +290,14 @@ export const Neumorphism = styled(NeumorphismBase)`
       }
     }
 
+    .components {
+      .buttons, .text-fields {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 15px;
+      }
+    }
+
     .components,
     .table {
       padding: 30px;
@@ -323,6 +315,18 @@ export const Neumorphism = styled(NeumorphismBase)`
         &:not(:last-child) {
           margin-bottom: 20px;
         }
+      }
+    }
+
+    .components {
+      .buttons, .text-fields {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        grid-gap: 15px;
+      }
+      
+      .text-fields {
+        grid-gap: 40px;
       }
     }
 

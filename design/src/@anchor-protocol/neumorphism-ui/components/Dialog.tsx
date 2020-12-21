@@ -49,23 +49,25 @@ const enter = keyframes`
   }
 `;
 
-export const Dialog = styled(DialogBase)`
-  top: 50%;
-  left: 50%;
-  position: absolute;
-  transform: translate(-50%, -50%);
+const slide = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(80%);
+  }
+  
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`
 
-  border-radius: 20px;
+export const Dialog = styled(DialogBase)`
   background-color: ${({ theme, color = 'normal' }) =>
     theme.dialog[color].backgroundColor};
 
   color: ${({ theme, color = 'normal' }) => theme.dialog[color].textColor};
 
   outline: none;
-  box-shadow: 0 0 33px 8px rgba(0, 0, 0, 0.4);
-
-  animation: ${enter} 0.2s ease-out;
-  transform-origin: center;
 
   .dialog-content {
     margin: 60px;
@@ -92,5 +94,35 @@ export const Dialog = styled(DialogBase)`
         stroke: ${({ theme }) => theme.textColor};
       }
     }
+  }
+
+  @media (min-width: 700px) {
+    top: 50%;
+    left: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+
+    border-radius: 20px;
+
+    box-shadow: 0 0 33px 8px rgba(0, 0, 0, 0.4);
+
+    animation: ${enter} 0.2s ease-out;
+    transform-origin: center;
+  }
+
+  @media (max-width: 699px) {
+    max-width: 100vw;
+    
+    bottom: 0;
+    left: 0;
+    right: 0;
+    position: absolute;
+    
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    
+    box-shadow: 0 0 33px 8px rgba(0, 0, 0, 0.4);
+    
+    animation: ${slide} 0.3s ease-out;
   }
 `;
