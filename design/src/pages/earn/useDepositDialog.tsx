@@ -32,7 +32,7 @@ function ComponentBase({
   closeDialog,
 }: DialogProps<FormParams, FormReturn>) {
   const [amount, setAmount] = useState('');
-  const [wallet, setWallet] = useState(8390.38);
+  const [wallet] = useState(8390.38);
 
   const errorText = useMemo<string | undefined>(() => {
     return parseInt(amount) > wallet ? 'Insufficient balance' : undefined;

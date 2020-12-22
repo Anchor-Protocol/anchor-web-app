@@ -31,7 +31,7 @@ function ComponentBase({
 }: DialogProps<FormParams, FormReturn>) {
   const [depositAmount, setDepositAmount] = useState('');
   const [borrowLimitUsed, setBorrowLimitUsed] = useState('');
-  const [safeMax, setSafeMax] = useState(8390.38);
+  const [safeMax] = useState(8390.38);
 
   return (
     <Modal open disableBackdropClick>
