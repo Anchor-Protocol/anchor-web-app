@@ -49,4 +49,8 @@ export const ActionButton = styled(ButtonBase)`
         intensity: theme.intensity,
       })};
   }
+  
+  &:disabled {
+    opacity: 0.3;
+  }
 `;

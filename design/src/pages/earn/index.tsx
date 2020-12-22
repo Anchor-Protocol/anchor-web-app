@@ -6,6 +6,7 @@ import {
   rulerShadowColor,
 } from '@anchor-protocol/styled-neumorphism';
 import { screen } from 'env';
+import { useDepositDialog } from './useDepositDialog';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -14,6 +15,8 @@ export interface EarnProps {
 }
 
 function EarnBase({ className }: EarnProps) {
+  const [openDepositDialog, depositDialogElement] = useDepositDialog();
+
   return (
     <div className={className}>
       <main>
@@ -32,7 +35,9 @@ function EarnBase({ className }: EarnProps) {
             <HorizontalRuler />
 
             <aside className="total-deposit-buttons">
-              <ActionButton>Deposit</ActionButton>
+              <ActionButton onClick={() => openDepositDialog({})}>
+                Deposit
+              </ActionButton>
               <ActionButton>Withdraw</ActionButton>
             </aside>
           </Section>
@@ -81,6 +86,8 @@ function EarnBase({ className }: EarnProps) {
           </Section>
         </div>
       </main>
+
+      {depositDialogElement}
     </div>
   );
 }
@@ -170,7 +177,7 @@ export const Earn = styled(EarnBase)`
           border-radius: 15px;
           border: 1px solid transparent;
           color: ${({ theme }) => theme.dimTextColor};
-          
+
           cursor: pointer;
           user-select: none;
 
@@ -189,15 +196,15 @@ export const Earn = styled(EarnBase)`
 
         margin-bottom: 90px;
       }
-      
+
       .amount {
         text-align: center;
         font-size: 32px;
-        
+
         p {
           margin-top: 10px;
           font-size: 14px;
-          color: ${({theme}) => theme.dimTextColor};
+          color: ${({ theme }) => theme.dimTextColor};
         }
       }
     }

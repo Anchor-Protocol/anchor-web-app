@@ -32,6 +32,16 @@ export const globalStyle = css`
   //::-webkit-scrollbar {
   //  display: none;
   //}
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  
+  input[type='number'] {
+    -moz-appearance: textfield;
+  }
 `;
 
 export const GlobalStyle = createGlobalStyle`
