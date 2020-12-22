@@ -2,11 +2,11 @@ import { darkTheme } from '@anchor-protocol/neumorphism-ui/themes/darkTheme';
 import { GlobalStyle } from '@anchor-protocol/neumorphism-ui/themes/GlobalStyle';
 import { lightTheme } from '@anchor-protocol/neumorphism-ui/themes/lightTheme';
 import { ThemeProvider } from '@anchor-protocol/neumorphism-ui/themes/ThemeProvider';
-import { MaterialUI } from 'pages/material';
+import { Market } from 'pages/market';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Earn } from './pages/earn';
-import { Neumorphism } from './pages/neumorphism';
+import { Earn } from 'pages/earn';
+import { Neumorphism } from 'pages/neumorphism';
 
 function App() {
   return (
@@ -20,8 +20,8 @@ function App() {
       <ThemeProvider theme={darkTheme}>
         <Earn />
       </ThemeProvider>
-      <ThemeProvider theme={darkTheme}>
-        <MaterialUI />
+      <ThemeProvider theme={lightTheme}>
+        <Market />
       </ThemeProvider>
     </div>
   );

@@ -29,9 +29,9 @@ export const globalStyle = css`
       sans-serif;
   }
 
-  ::-webkit-scrollbar {
-    display: none;
-  }
+  //::-webkit-scrollbar {
+  //  display: none;
+  //}
 `;
 
 export const GlobalStyle = createGlobalStyle`

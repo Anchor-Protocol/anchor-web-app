@@ -4,6 +4,7 @@ import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/Hori
 import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/components/HorizontalScrollTable';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
+import { Selector } from '@anchor-protocol/neumorphism-ui/components/Selector';
 import { TextButton } from '@anchor-protocol/neumorphism-ui/components/TextButton';
 import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
@@ -11,7 +12,6 @@ import {
   MessageColor,
   messageColors,
 } from '@anchor-protocol/neumorphism-ui/themes/Theme';
-import { Selector } from '@anchor-protocol/neumorphism-ui/components/Selector';
 import {
   concave,
   convex,
@@ -20,8 +20,8 @@ import {
 } from '@anchor-protocol/styled-neumorphism';
 import { Input, InputAdornment, Modal, NativeSelect } from '@material-ui/core';
 import { Warning } from '@material-ui/icons';
-import { mediaQuery } from 'components/layout/mediaQuery';
-import { useState, Fragment } from 'react';
+import { screen } from 'env';
+import { Fragment, useState } from 'react';
 import styled from 'styled-components';
 
 export interface NeumorphismProps {
@@ -75,14 +75,14 @@ function NeumorphismBase({ className }: NeumorphismProps) {
       </div>
 
       <Section className="components">
-        <div className="buttons">
+        <article className="buttons">
           <TextButton>BUTTON</TextButton>
           <ActionButton>BUTTON</ActionButton>
-        </div>
+        </article>
 
         <HorizontalRuler style={{ marginBottom: 50 }} />
 
-        <div className="text-fields">
+        <article className="text-fields">
           <TextInput label="TEXT FIELD" />
           <TextInput
             label="ERROR"
@@ -90,22 +90,22 @@ function NeumorphismBase({ className }: NeumorphismProps) {
             InputProps={textFieldInputProps}
             helperText="Error Content"
           />
-        </div>
+        </article>
 
         <HorizontalRuler style={{ marginBottom: 50 }} />
 
-        <div className="text-fields">
+        <article className="text-fields">
           <TextInput />
           <TextInput
             error={true}
             InputProps={textFieldInputProps}
             helperText="Error Content"
           />
-        </div>
+        </article>
 
         <HorizontalRuler />
 
-        <div className="buttons">
+        <article className="buttons">
           {messageColors.map((color) => (
             <Fragment key={color}>
               <ActionButton
@@ -136,21 +136,21 @@ function NeumorphismBase({ className }: NeumorphismProps) {
               </Modal>
             </Fragment>
           ))}
-        </div>
+        </article>
 
         <HorizontalRuler />
 
-        <div className="buttons">
+        <article className="buttons">
           {messageColors.map((color) => (
             <Tooltip key={color} title={color} color={color} placement="top">
               <TextButton>{color.toUpperCase()} TOOLTIP</TextButton>
             </Tooltip>
           ))}
-        </div>
+        </article>
 
         <HorizontalRuler />
 
-        <div className="buttons">
+        <article className="buttons">
           <Selector
             items={selectorItems}
             selectedItem={selectedItem['selector']}
@@ -184,7 +184,7 @@ function NeumorphismBase({ className }: NeumorphismProps) {
             </NativeSelect>
             <Input placeholder="PLACEHOLDER" />
           </SelectAndTextInputContainer>
-        </div>
+        </article>
       </Section>
 
       <Section className="table">
@@ -236,6 +236,7 @@ export const Neumorphism = styled(NeumorphismBase)`
   // style
   // ---------------------------------------------
   background-color: ${({ theme }) => theme.backgroundColor};
+  color: ${({ theme }) => theme.textColor};
 
   .styles {
     section {
@@ -306,7 +307,7 @@ export const Neumorphism = styled(NeumorphismBase)`
   }
 
   // pc
-  @media (${mediaQuery.pc}) {
+  @media (min-width: ${screen.pc.min}px) {
     padding: 100px;
 
     .styles {
@@ -327,15 +328,11 @@ export const Neumorphism = styled(NeumorphismBase)`
         grid-gap: 15px;
       }
     }
-
-    .components,
-    .table {
-      padding: 50px;
-    }
   }
 
   // tablet
-  @media (${mediaQuery.tablet}) {
+  @media (min-width: ${screen.tablet.min}px) and (max-width: ${screen.tablet
+      .max}px) {
     padding: 30px;
 
     .styles {
@@ -357,14 +354,13 @@ export const Neumorphism = styled(NeumorphismBase)`
       }
     }
 
-    .components,
-    .table {
+    .NeuSection-content {
       padding: 30px;
     }
   }
 
   // mobile
-  @media (${mediaQuery.mobile}) {
+  @media (max-width: ${screen.mobile.max}px) {
     padding: 30px 20px;
 
     .styles {
@@ -390,8 +386,7 @@ export const Neumorphism = styled(NeumorphismBase)`
       }
     }
 
-    .components,
-    .table {
+    .NeuSection-content {
       padding: 20px;
     }
   }
