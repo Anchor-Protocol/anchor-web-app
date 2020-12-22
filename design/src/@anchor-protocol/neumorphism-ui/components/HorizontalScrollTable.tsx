@@ -122,13 +122,17 @@ export const HorizontalScrollTable = styled(HorizontalScrollTableBase)`
           headRulerWeight}px;
         color: transparent;
       }
+      
+      th, td {
+        white-space: nowrap;
+      }
 
       thead {
-        font-size: 12px;
-        font-weight: 500;
+        font-size: 13px;
         color: ${({ theme }) => theme.table.head.textColor};
 
         th {
+          font-weight: 500;
           text-align: left;
         }
 

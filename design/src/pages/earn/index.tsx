@@ -23,11 +23,11 @@ function EarnBase({ className }: EarnProps) {
           <Section className="total-deposit">
             <h2>TOTAL DEPOSIT</h2>
 
-            <figure className="amount">
+            <div className="amount">
               2,320<span className="decimal-point">.063700</span> UST
-            </figure>
+            </div>
 
-            <figure className="amount-description">12,320.063 aUST</figure>
+            <div className="amount-description">12,320.063 aUST</div>
 
             <HorizontalRuler />
 
@@ -40,10 +40,10 @@ function EarnBase({ className }: EarnProps) {
           <Section className="interest">
             <h2>INTEREST</h2>
 
-            <figure className="apy">
+            <div className="apy">
               936%
               <p>APY</p>
-            </figure>
+            </div>
 
             <HorizontalRuler />
 
@@ -56,10 +56,10 @@ function EarnBase({ className }: EarnProps) {
                 <li>Day</li>
               </ul>
 
-              <figure className="amount">
+              <div className="amount">
                 2,320<span className="decimal-point">.063700</span> UST
                 <p>Interest earned</p>
-              </figure>
+              </div>
             </article>
           </Section>
 
@@ -69,10 +69,10 @@ function EarnBase({ className }: EarnProps) {
             <ul>
               {Array.from({ length: 20 }, (_, i) => (
                 <li key={'listitem' + i}>
-                  <figure>+200 UST</figure>
-                  <div>
+                  <div className="amount">+200 UST</div>
+                  <div className="detail">
                     <span>Deposit from terra1...52wpvt</span>
-                    <span>16:53 12 Oct 2020</span>
+                    <time>16:53 12 Oct 2020</time>
                   </div>
                 </li>
               ))}
@@ -104,7 +104,7 @@ export const Earn = styled(EarnBase)`
     font-size: 14px;
     font-weight: 700;
     letter-spacing: -0.3px;
-    color: #ffffff;
+    color: ${({ theme }) => theme.textColor};
   }
 
   hr {
@@ -135,28 +135,6 @@ export const Earn = styled(EarnBase)`
   }
 
   .transaction-history {
-  }
-
-  // ---------------------------------------------
-  // layout
-  // ---------------------------------------------
-  .total-deposit {
-    h2 {
-      margin-bottom: 15px;
-    }
-
-    aside {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      grid-gap: 20px;
-    }
-  }
-
-  .transaction-history {
-    h2 {
-      margin-bottom: 20px;
-    }
-
     ul {
       list-style: none;
       padding: 0;
@@ -164,12 +142,12 @@ export const Earn = styled(EarnBase)`
       li {
         padding: 20px 0;
 
-        figure {
+        .amount {
           font-size: 18px;
           color: ${({ theme }) => theme.textColor};
         }
 
-        div {
+        .detail {
           margin-top: 5px;
 
           display: flex;
@@ -197,6 +175,27 @@ export const Earn = styled(EarnBase)`
               })};
         }
       }
+    }
+  }
+
+  // ---------------------------------------------
+  // layout
+  // ---------------------------------------------
+  .total-deposit {
+    h2 {
+      margin-bottom: 15px;
+    }
+
+    aside {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-gap: 20px;
+    }
+  }
+
+  .transaction-history {
+    h2 {
+      margin-bottom: 20px;
     }
   }
 
@@ -241,7 +240,7 @@ export const Earn = styled(EarnBase)`
         }
       }
     }
-    
+
     .transaction-history {
       ul {
         max-height: 350px;
@@ -255,10 +254,6 @@ export const Earn = styled(EarnBase)`
       .max}px) {
     padding: 30px;
 
-    .decimal-point {
-      display: none;
-    }
-
     .NeuSection-root {
       margin-bottom: 40px;
 
@@ -266,15 +261,15 @@ export const Earn = styled(EarnBase)`
         padding: 30px;
       }
     }
+
+    .decimal-point {
+      display: none;
+    }
   }
 
   // mobile
   @media (max-width: ${screen.mobile.max}px) {
     padding: 30px 20px;
-
-    .decimal-point {
-      display: none;
-    }
 
     .NeuSection-root {
       margin-bottom: 40px;
@@ -282,6 +277,10 @@ export const Earn = styled(EarnBase)`
       .NeuSection-content {
         padding: 20px;
       }
+    }
+
+    .decimal-point {
+      display: none;
     }
 
     .total-deposit {
