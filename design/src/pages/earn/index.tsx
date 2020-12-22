@@ -41,15 +41,16 @@ function EarnBase({ className }: EarnProps) {
             <h2>INTEREST</h2>
 
             <div className="apy">
-              936%
-              <p>APY</p>
+              <div className="value">9.36%</div>
+              <p className="name">APY</p>
+              <figure></figure>
             </div>
 
             <HorizontalRuler />
 
             <article className="earn">
               <ul>
-                <li>Total</li>
+                <li data-selected="true">Total</li>
                 <li>Year</li>
                 <li>Month</li>
                 <li>Week</li>
@@ -132,6 +133,74 @@ export const Earn = styled(EarnBase)`
   }
 
   .interest {
+    .apy {
+      text-align: center;
+
+      .value {
+        font-size: 64px;
+        font-weight: 300;
+        color: ${({ theme }) => theme.textColor};
+      }
+
+      .name {
+        font-size: 14px;
+        color: ${({ theme }) => theme.dimTextColor};
+
+        margin-bottom: 10px;
+      }
+
+      figure {
+        width: 100%;
+        height: 200px;
+        border-radius: 10px;
+        border: 2px dashed white;
+      }
+    }
+
+    .earn {
+      ul {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+
+        li {
+          text-align: center;
+          font-size: 12px;
+          border-radius: 15px;
+          border: 1px solid transparent;
+          color: ${({ theme }) => theme.dimTextColor};
+          
+          cursor: pointer;
+          user-select: none;
+
+          width: 58px;
+          padding: 5px 0;
+
+          &:not(:last-child) {
+            margin-right: 5px;
+          }
+
+          &[data-selected='true'] {
+            border: 1px solid ${({ theme }) => theme.textColor};
+            color: ${({ theme }) => theme.textColor};
+          }
+        }
+
+        margin-bottom: 90px;
+      }
+      
+      .amount {
+        text-align: center;
+        font-size: 32px;
+        
+        p {
+          margin-top: 10px;
+          font-size: 14px;
+          color: ${({theme}) => theme.dimTextColor};
+        }
+      }
+    }
   }
 
   .transaction-history {
@@ -190,6 +259,12 @@ export const Earn = styled(EarnBase)`
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       grid-gap: 20px;
+    }
+  }
+
+  .interest {
+    h2 {
+      margin-bottom: 40px;
     }
   }
 
