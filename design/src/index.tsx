@@ -2,6 +2,7 @@ import { darkTheme } from '@anchor-protocol/neumorphism-ui/themes/darkTheme';
 import { GlobalStyle } from '@anchor-protocol/neumorphism-ui/themes/GlobalStyle';
 import { lightTheme } from '@anchor-protocol/neumorphism-ui/themes/lightTheme';
 import { ThemeProvider } from '@anchor-protocol/neumorphism-ui/themes/ThemeProvider';
+import { Borrow } from 'pages/borrow';
 import { Market } from 'pages/market';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -22,6 +23,9 @@ function App() {
       </ThemeProvider>
       <ThemeProvider theme={lightTheme}>
         <Market />
+      </ThemeProvider>
+      <ThemeProvider theme={darkTheme}>
+        <Borrow />
       </ThemeProvider>
     </div>
   );
