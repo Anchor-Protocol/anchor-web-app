@@ -2,6 +2,7 @@ import { darkTheme } from '@anchor-protocol/neumorphism-ui/themes/darkTheme';
 import { GlobalStyle } from '@anchor-protocol/neumorphism-ui/themes/GlobalStyle';
 import { lightTheme } from '@anchor-protocol/neumorphism-ui/themes/lightTheme';
 import { ThemeProvider } from '@anchor-protocol/neumorphism-ui/themes/ThemeProvider';
+import { Mint } from 'pages/basset/mint';
 import { Borrow } from 'pages/borrow';
 import { Earn } from 'pages/earn';
 import { Market } from 'pages/market';
@@ -25,6 +26,9 @@ function App() {
       </ThemeProvider>
       <ThemeProvider theme={darkTheme}>
         <Borrow />
+      </ThemeProvider>
+      <ThemeProvider theme={darkTheme}>
+        <Mint />
       </ThemeProvider>
     </div>
   );
