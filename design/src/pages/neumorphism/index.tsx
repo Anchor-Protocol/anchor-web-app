@@ -1,5 +1,6 @@
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
+import { HorizontalGraphBar } from '@anchor-protocol/neumorphism-ui/components/HorizontalGraphBar';
 import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
 import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/components/HorizontalScrollTable';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
@@ -205,6 +206,38 @@ function NeumorphismBase({ className }: NeumorphismProps) {
             labelFunction={(item) => item.label}
             keyFunction={(item) => item.value}
           />
+        </article>
+
+        <HorizontalRuler />
+
+        <article>
+          <HorizontalGraphBar
+            min={-100}
+            max={100}
+            values={[
+              { value: 50, color: '#4da3ee' },
+              { value: 0, color: '#ffffff' },
+              { value: -50, color: '#ff8a4b' },
+            ]}
+            colorFunction={({ color }) => color}
+            valueFunction={({ value }) => value}
+            labelRenderer={({ value }, rect) => {
+              return (
+                <span
+                  style={{
+                    top: -25,
+                    left: rect.x + rect.width,
+                    transform: 'translateX(-50%)',
+                  }}
+                >
+                  {value}
+                </span>
+              );
+            }}
+          >
+            <span style={{ top: 25, left: 0 }}>Borrow Limit</span>
+            <span style={{ top: 25, right: 0 }}>$246k</span>
+          </HorizontalGraphBar>
         </article>
       </Section>
 
