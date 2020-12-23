@@ -5,6 +5,7 @@ import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/component
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
 import { Selector } from '@anchor-protocol/neumorphism-ui/components/Selector';
+import { Tab } from '@anchor-protocol/neumorphism-ui/components/Tab';
 import { TextButton } from '@anchor-protocol/neumorphism-ui/components/TextButton';
 import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
@@ -38,18 +39,24 @@ const textFieldInputProps = {
   ),
 };
 
-interface SelectorItem {
+interface Item {
   label: string;
   value: string;
 }
 
-const selectorItems: SelectorItem[] = Array.from(
+const selectorItems: Item[] = Array.from(
   { length: Math.floor(Math.random() * 30) },
   (_, i) => ({
     label: 'Item ' + i,
     value: 'item' + i,
   }),
 );
+
+const tabItems: Item[] = [
+  { label: 'Mint', value: 'tab1' },
+  { label: 'Burn', value: 'tab2' },
+  { label: 'Claim', value: 'tab3' },
+];
 
 function NeumorphismBase({ className }: NeumorphismProps) {
   const [dialogOpen, setDialogOpen] = useState<Record<MessageColor, boolean>>(
@@ -61,9 +68,9 @@ function NeumorphismBase({ className }: NeumorphismProps) {
     }),
   );
 
-  const [selectedItem, setSelectedItem] = useState<
-    Record<string, SelectorItem | null>
-  >(() => ({}));
+  const [selectedItem, setSelectedItem] = useState<Record<string, Item | null>>(
+    () => ({}),
+  );
 
   return (
     <div className={className}>
@@ -80,7 +87,7 @@ function NeumorphismBase({ className }: NeumorphismProps) {
           <ActionButton>BUTTON</ActionButton>
         </article>
 
-        <HorizontalRuler style={{ marginBottom: 50 }} />
+        <HorizontalRuler />
 
         <article className="text-fields">
           <TextInput label="TEXT FIELD" />
@@ -92,7 +99,7 @@ function NeumorphismBase({ className }: NeumorphismProps) {
           />
         </article>
 
-        <HorizontalRuler style={{ marginBottom: 50 }} />
+        <HorizontalRuler />
 
         <article className="text-fields">
           <TextInput />
@@ -184,6 +191,20 @@ function NeumorphismBase({ className }: NeumorphismProps) {
             </NativeSelect>
             <Input placeholder="PLACEHOLDER" />
           </SelectAndTextInputContainer>
+        </article>
+
+        <HorizontalRuler />
+
+        <article>
+          <Tab
+            items={tabItems}
+            selectedItem={selectedItem['tab'] ?? tabItems[0]}
+            onChange={(next) =>
+              setSelectedItem((prev) => ({ ...prev, tab: next }))
+            }
+            labelFunction={(item) => item.label}
+            keyFunction={(item) => item.value}
+          />
         </article>
       </Section>
 
