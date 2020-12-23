@@ -302,6 +302,13 @@ export const Borrow = styled(BorrowBase)`
     }
   }
 
+  @media (min-width: ${screen.monitor.min}px) {
+    main {
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+  }
+
   // mobile
   @media (max-width: ${screen.mobile.max}px) {
     padding: 30px 20px;
