@@ -5,6 +5,27 @@ import {
 } from '@anchor-protocol/styled-neumorphism';
 import styled from 'styled-components';
 
+/**
+ * A container for combine the form components (e.g. `<NativeSelect/>`, `<Input/>`...)
+ *
+ * @example
+ *
+ * ```jsx
+ * <SelectAndTextInputContainer>
+ *   <NativeSelect
+ *     value={}
+ *     onChange={}
+ *   >
+ *     {items.map(({ label, value }) => (
+ *       <option key={value} value={value}>
+ *         {label}
+ *       </option>
+ *     ))}
+ *   </NativeSelect>
+ *   <Input placeholder="PLACEHOLDER" />
+ * </SelectAndTextInputContainer>
+ * ```
+ */
 export const SelectAndTextInputContainer = styled.div`
   border-radius: 5px;
 

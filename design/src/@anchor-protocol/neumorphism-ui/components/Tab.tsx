@@ -6,11 +6,23 @@ import useResizeObserver from 'use-resize-observer/polyfilled';
 
 export interface TabProps<T> {
   className?: string;
+  
+  /** Data */
   items: T[];
+  
+  /** Selected item of the items */
   selectedItem: T;
+  
+  /** Callback when an item selection */
   onChange: (nextItem: T) => void;
+  
+  /** Get the label string from the item */
   labelFunction: (item: T) => string;
+  
+  /** Get the primary key value from the item */
   keyFunction: (item: T) => string;
+  
+  /** height value to change look */
   height?: number;
 }
 

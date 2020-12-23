@@ -17,14 +17,31 @@ export interface Rect {
   height: number;
 }
 
+const padding: number = 1;
+
 export interface HorizontalGraphBarProps<T>
   extends DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement> {
+  /** Graph minimum value (bar start point) */
   min: number;
+
+  /** Graph maximum value (bar end point) */
   max: number;
-  padding?: number;
+
+  /** Data */
   values: T[];
+
+  /**
+   * Render labels (create label react elements) it will call after bar rendering
+   *
+   * @param value An item of the values
+   * @param rect Rectangle of the bar
+   */
   labelRenderer?: (value: T, rect: Rect) => ReactNode | null;
+
+  /** Get the numeric value from the value */
   valueFunction: (value: T) => number;
+
+  /** Get the color code from the value */
   colorFunction: (value: T) => string;
 }
 
@@ -32,7 +49,6 @@ function HorizontalGraphBarBase<T>({
   className,
   min,
   max,
-  padding = 1,
   children,
   values,
   valueFunction,

@@ -13,6 +13,9 @@ function SectionBase({ children, className, ...sectionProps }: SectionProps) {
   );
 }
 
+/**
+ * Styled `<div/>` tag
+ */
 export const Section = styled(SectionBase)`
   border-radius: 20px;
 

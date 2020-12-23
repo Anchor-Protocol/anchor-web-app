@@ -211,8 +211,8 @@ function NeumorphismBase({ className }: NeumorphismProps) {
         <HorizontalRuler />
 
         <article>
-          <HorizontalGraphBar
-            style={{margin: '50px 0'}}
+          <HorizontalGraphBar<{ value: number; color: string }>
+            style={{ margin: '50px 0' }}
             min={-100}
             max={100}
             values={[

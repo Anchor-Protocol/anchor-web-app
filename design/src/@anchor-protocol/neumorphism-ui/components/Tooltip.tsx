@@ -9,6 +9,11 @@ export interface TooltipProps extends MuiTooltipProps {
   color?: MessageColor;
 }
 
+/**
+ * Styled component of the `<Tooltip/>` of the Material-UI
+ *
+ * @see https://material-ui.com/api/tooltip/
+ */
 export function Tooltip({ arrow = true, ...props }: TooltipProps) {
   const classes = useTooltipStyle(props);
 

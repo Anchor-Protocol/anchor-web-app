@@ -5,7 +5,16 @@ import styled, { keyframes } from 'styled-components';
 
 export interface DialogProps
   extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+  /**
+   * Message level color (e.g. warning, error...)
+   *
+   * @default normal
+   */
   color?: MessageColor;
+  
+  /**
+   * Callback when the dialog is closed by outside click or esc key...
+   */
   onClose?: () => void;
 }
 
@@ -59,6 +68,20 @@ const slide = keyframes`
   }
 `;
 
+/**
+ * Dialog container component
+ *
+ * Please use with the `<Modal/>` component of the Material-UI
+ *
+ * ```jsx
+ * <Modal open={open} onClose={() => setOpen(false)}>
+ *   <Dialog onClose={() => setOpen(false)}>
+ *     <h1>Title</h1>
+ *     <div>Content...</div>
+ *   </Dialog>
+ * </Modal>
+ * ```
+ */
 export const Dialog = styled(DialogBase)`
   background-color: ${({ theme, color = 'normal' }) =>
     theme.dialog[color].backgroundColor};
@@ -122,5 +145,9 @@ export const Dialog = styled(DialogBase)`
     box-shadow: 0 0 33px 8px rgba(0, 0, 0, 0.4);
 
     animation: ${slide} 0.3s ease-out;
+    
+    .dialog-content {
+      margin: 30px;
+    }
   }
 `;

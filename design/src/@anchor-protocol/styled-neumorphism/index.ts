@@ -4,9 +4,24 @@ import c from 'color';
  * @see https://neumorphism.io/#7380c9
  */
 interface NeumorphismValues {
+  /** Base color ( background color and object background color ) */
   color: string;
+  
+  /** If object background color is different with outside background color */
   backgroundColor?: string;
+  
+  /**
+   * Distance
+   *
+   * @see https://neumorphism.io/#7380c9
+   */
   distance: number;
+  
+  /**
+   * Intensity
+   *
+   * @see https://neumorphism.io/#7380c9
+   */
   intensity: number;
 }
 

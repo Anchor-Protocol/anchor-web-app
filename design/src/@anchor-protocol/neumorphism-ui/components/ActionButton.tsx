@@ -19,6 +19,11 @@ export const buttonBaseStyle = css`
   color: ${({ theme }) => theme.actionButton.textColor};
 `;
 
+/**
+ * Styled component of the `<ButtonBase />` of the Material-UI
+ *
+ * @see https://material-ui.com/api/button-base/
+ */
 export const ActionButton = styled(ButtonBase)`
   ${buttonBaseStyle};
 

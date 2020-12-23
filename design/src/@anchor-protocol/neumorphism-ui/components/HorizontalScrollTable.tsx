@@ -17,17 +17,23 @@ export interface HorizontalScrollTableProps
     TableHTMLAttributes<HTMLTableElement>,
     HTMLTableElement
   > {
-  className?: string;
-  headRulerWeight?: number;
-  footRulerWeight?: number;
+  /**
+   * Line width under the table header
+   */
+  headRulerWidth?: number;
+  
+  /**
+   * Line width over the table footer
+   */
+  footRulerWidth?: number;
 }
 
-const defaultRulerWeight: number = 5;
+const defaultRulerWidth: number = 5;
 
 function HorizontalScrollTableBase({
   className,
-  headRulerWeight = defaultRulerWeight,
-  footRulerWeight = defaultRulerWeight,
+  headRulerWidth = defaultRulerWidth,
+  footRulerWidth = defaultRulerWidth,
   ...tableProps
 }: HorizontalScrollTableProps) {
   const container = useRef<HTMLDivElement>(null);
@@ -49,7 +55,7 @@ function HorizontalScrollTableBase({
           headRuler.current.style.top = `${
             (target as HTMLElement).offsetTop +
             (target as HTMLElement).offsetHeight -
-            headRulerWeight
+            headRulerWidth
           }px`;
         }
 
@@ -65,7 +71,7 @@ function HorizontalScrollTableBase({
       if (thead) {
         headRuler.current.style.visibility = 'visible';
         headRuler.current.style.top = `${
-          thead.offsetTop + thead.offsetHeight - headRulerWeight
+          thead.offsetTop + thead.offsetHeight - headRulerWidth
         }px`;
 
         observer.observe(thead);
@@ -88,7 +94,7 @@ function HorizontalScrollTableBase({
     return () => {
       observer.disconnect();
     };
-  }, [footRulerWeight, headRulerWeight]);
+  }, [footRulerWidth, headRulerWidth]);
 
   return (
     <div ref={container} className={className}>
@@ -118,8 +124,8 @@ export const HorizontalScrollTable = styled(HorizontalScrollTableBase)`
       tfoot:before {
         content: '-';
         display: block;
-        line-height: ${({ headRulerWeight = defaultRulerWeight }) =>
-          headRulerWeight}px;
+        line-height: ${({ headRulerWidth = defaultRulerWidth }) =>
+          headRulerWidth}px;
         color: transparent;
       }
       
@@ -224,12 +230,12 @@ export const HorizontalScrollTable = styled(HorizontalScrollTableBase)`
   }
 
   > .headRuler {
-    border-radius: ${({ headRulerWeight = defaultRulerWeight }) => headRulerWeight / 2}px;
-    height: ${({ headRulerWeight = defaultRulerWeight }) => headRulerWeight}px;
+    border-radius: ${({ headRulerWidth = defaultRulerWidth }) => headRulerWidth / 2}px;
+    height: ${({ headRulerWidth = defaultRulerWidth }) => headRulerWidth}px;
   }
 
   > .footRuler {
-    border-radius: ${({ footRulerWeight = defaultRulerWeight }) => footRulerWeight / 2}px;
-    height: ${({ footRulerWeight = defaultRulerWeight }) => footRulerWeight}px;
+    border-radius: ${({ footRulerWidth = defaultRulerWidth }) => footRulerWidth / 2}px;
+    height: ${({ footRulerWidth = defaultRulerWidth }) => footRulerWidth}px;
   }
 `;

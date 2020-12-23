@@ -8,10 +8,20 @@ import { ArrowDropDown, ArrowDropUp } from '@material-ui/icons';
 
 export interface SelectorProps<T> {
   className?: string;
+  
+  /** Data */
   items: T[];
+  
+  /** Selected item of the items */
   selectedItem: T | null;
+  
+  /** Callback when an item selection */
   onChange: (nextItem: T | null) => void;
+  
+  /** Get the label string from the item */
   labelFunction: (item: T | null) => string;
+  
+  /** Get the primary key value from the item */
   keyFunction: (item: T) => string;
 }
 
