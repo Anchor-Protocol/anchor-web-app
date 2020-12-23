@@ -1,5 +1,6 @@
 import { MessageColor } from '@anchor-protocol/neumorphism-ui/themes/Theme';
 import type { DetailedHTMLProps, HTMLAttributes } from 'react';
+import { forwardRef } from 'react';
 import styled, { keyframes } from 'styled-components';
 
 export interface DialogProps
@@ -8,34 +9,31 @@ export interface DialogProps
   onClose?: () => void;
 }
 
-function DialogBase({
-  onClose,
-  color = 'normal',
-  children,
-  ...divProps
-}: DialogProps) {
-  return (
-    <div {...divProps} data-color={color}>
-      <div className="dialog-content">{children}</div>
-      {onClose && (
-        <svg
-          className="dialog-close-button"
-          viewBox="0 0 16 16"
-          onClick={onClose}
-        >
-          <g transform="matrix(1,0,0,1,-953.896,-435.63)">
-            <g transform="matrix(0.405863,0.405863,-0.354409,0.354409,674.668,-219.158)">
-              <path d="M1152.39,529.839L1187.24,529.839" />
+const DialogBase = forwardRef<HTMLDivElement, DialogProps>(
+  ({ onClose, color = 'normal', children, ...divProps }: DialogProps, ref) => {
+    return (
+      <div {...divProps} ref={ref} data-color={color}>
+        <div className="dialog-content">{children}</div>
+        {onClose && (
+          <svg
+            className="dialog-close-button"
+            viewBox="0 0 16 16"
+            onClick={onClose}
+          >
+            <g transform="matrix(1,0,0,1,-953.896,-435.63)">
+              <g transform="matrix(0.405863,0.405863,-0.354409,0.354409,674.668,-219.158)">
+                <path d="M1152.39,529.839L1187.24,529.839" />
+              </g>
+              <g transform="matrix(-0.405863,0.405863,-0.354409,-0.354409,1624.24,156.402)">
+                <path d="M1152.39,529.839L1187.24,529.839" />
+              </g>
             </g>
-            <g transform="matrix(-0.405863,0.405863,-0.354409,-0.354409,1624.24,156.402)">
-              <path d="M1152.39,529.839L1187.24,529.839" />
-            </g>
-          </g>
-        </svg>
-      )}
-    </div>
-  );
-}
+          </svg>
+        )}
+      </div>
+    );
+  },
+);
 
 const enter = keyframes`
   from {
@@ -59,7 +57,7 @@ const slide = keyframes`
     opacity: 1;
     transform: translateY(0);
   }
-`
+`;
 
 export const Dialog = styled(DialogBase)`
   background-color: ${({ theme, color = 'normal' }) =>
@@ -112,17 +110,17 @@ export const Dialog = styled(DialogBase)`
 
   @media (max-width: 699px) {
     max-width: 100vw;
-    
+
     bottom: 0;
     left: 0;
     right: 0;
     position: absolute;
-    
+
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
-    
+
     box-shadow: 0 0 33px 8px rgba(0, 0, 0, 0.4);
-    
+
     animation: ${slide} 0.3s ease-out;
   }
 `;
