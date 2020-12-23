@@ -73,7 +73,7 @@ function HorizontalGraphBarBase<T>({
         height: height - padding * 2,
       };
     });
-  }, [height, max, padding, total, valueFunction, values, width]);
+  }, [height, max, total, valueFunction, values, width]);
 
   return (
     <div {...divProps} ref={ref} className={className}>
