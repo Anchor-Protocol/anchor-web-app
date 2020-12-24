@@ -23,7 +23,7 @@ export const lightTheme: DefaultTheme = {
   },
   
   selector: {
-    backgroundColor: '#efefef',
+    backgroundColor: '#f4f4f5',
     textColor: '#2c2c2e',
   },
 

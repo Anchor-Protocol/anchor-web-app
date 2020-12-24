@@ -133,7 +133,7 @@ export const Tab: <T>(props: TabProps<T>) => ReactElement<TabProps<T>> = styled(
       &:hover {
         color: ${({ theme }) => c(theme.textColor).alpha(0.7).string()};
         background-color: ${({ theme }) =>
-          c(theme.actionButton.backgroundColor).alpha(0.2).string()};
+          c(theme.actionButton.backgroundColor).alpha(0.05).string()};
       }
 
       &[aria-selected='true'] {

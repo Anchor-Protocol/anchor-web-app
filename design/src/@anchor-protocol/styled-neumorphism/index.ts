@@ -6,23 +6,40 @@ import c from 'color';
 interface NeumorphismValues {
   /** Base color ( background color and object background color ) */
   color: string;
-  
+
   /** If object background color is different with outside background color */
   backgroundColor?: string;
-  
+
   /**
    * Distance
    *
    * @see https://neumorphism.io/#7380c9
    */
   distance: number;
-  
+
   /**
    * Intensity
    *
    * @see https://neumorphism.io/#7380c9
    */
   intensity: number;
+}
+
+export function boxShadowColor({
+  intensity,
+  color,
+}: Pick<NeumorphismValues, 'intensity'> & { color: string }): string {
+  return c(color).darken(intensity).string();
+}
+
+export function boxLightColor({
+  intensity,
+  color,
+}: Pick<NeumorphismValues, 'intensity'> & { color: string }): string {
+  return c(color)
+    .lighten(intensity + 0.15)
+    .saturate(-0.2)
+    .string();
 }
 
 export function flat({
@@ -39,12 +56,12 @@ export function flat({
     box-shadow: ${distance}px
                 ${distance}px
                 ${blur}px
-                ${c(backgroundColor).darken(intensity).string()},
+                ${boxShadowColor({ intensity, color: backgroundColor })},
                 
                 -${distance}px
                 -${distance}px
                 ${blur}px
-                ${c(backgroundColor).lighten(intensity).string()};
+                ${boxLightColor({ intensity, color: backgroundColor })};
   `;
 }
 
@@ -55,7 +72,7 @@ export function concave({
   intensity,
 }: NeumorphismValues) {
   const blur: number = 10 + 2 * (distance - 5);
-  
+
   // TODO find the weight ratio by color luminance
 
   return `
@@ -68,12 +85,12 @@ export function concave({
     box-shadow: ${distance}px
                 ${distance}px
                 ${blur}px
-                ${c(backgroundColor).darken(intensity).string()},
+                ${boxShadowColor({ intensity, color: backgroundColor })},
                 
                 -${distance}px
                 -${distance}px
                 ${blur}px
-                ${c(backgroundColor).lighten(intensity).string()};
+                ${boxLightColor({ intensity, color: backgroundColor })};
   `;
 }
 
@@ -84,7 +101,7 @@ export function convex({
   intensity,
 }: NeumorphismValues) {
   const blur: number = 10 + 2 * (distance - 5);
-  
+
   // TODO find the weight ratio by color luminance
 
   return `
@@ -97,12 +114,12 @@ export function convex({
     box-shadow: ${distance}px
                 ${distance}px
                 ${blur}px
-                ${c(backgroundColor).darken(intensity).string()},
+                ${boxShadowColor({ intensity, color: backgroundColor })},
                 
                 -${distance}px
                 -${distance}px
                 ${blur}px
-                ${c(backgroundColor).lighten(intensity).string()};
+                ${boxLightColor({ intensity, color: backgroundColor })};
   `;
 }
 
@@ -121,13 +138,13 @@ export function pressed({
                 ${distance}px
                 ${distance}px
                 ${blur}px
-                ${c(backgroundColor).darken(intensity).string()},
+                ${boxShadowColor({ intensity, color: backgroundColor })},
                 
                 inset
                 -${distance}px
                 -${distance}px
                 ${blur}px
-                ${c(backgroundColor).lighten(intensity).string()};
+                ${boxLightColor({ intensity, color: backgroundColor })};
   `;
 }
 
