@@ -19,11 +19,12 @@ export const lightTheme: DefaultTheme = {
 
   actionButton: {
     backgroundColor: '#94f3b8',
+    backgroundHoverColor: '#84eaac',
     textColor: '#2c2c2e',
   },
   
   selector: {
-    backgroundColor: '#efefef',
+    backgroundColor: '#f4f4f5',
     textColor: '#2c2c2e',
   },
 

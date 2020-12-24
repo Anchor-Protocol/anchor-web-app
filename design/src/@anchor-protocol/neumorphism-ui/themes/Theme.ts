@@ -26,6 +26,7 @@ export interface NeumorphismTheme extends Theme {
   // action buttons
   actionButton: {
     backgroundColor: string;
+    backgroundHoverColor: string;
     textColor: string;
   };
   

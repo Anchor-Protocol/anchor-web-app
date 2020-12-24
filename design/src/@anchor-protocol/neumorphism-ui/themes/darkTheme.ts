@@ -21,34 +21,35 @@ export const darkTheme: DefaultTheme = {
 
   intensity: 0.45,
 
-  backgroundColor: '#1a1d2e',
+  backgroundColor: '#1f2237',
   textColor: '#ffffff',
-  dimTextColor: 'rgba(255, 255, 255, 0.4)',
+  dimTextColor: 'rgba(255, 255, 255, 0.5)',
 
   actionButton: {
-    backgroundColor: '#282d46',
+    backgroundColor: '#363c5f',
+    backgroundHoverColor: '#404872',
     textColor: '#ffffff',
   },
   
   selector: {
-    backgroundColor: '#181b2b',
+    backgroundColor: '#1b1e31',
     textColor: '#ffffff',
   },
 
   formControl: {
-    labelColor: 'rgba(255, 255, 255, 0.4)',
+    labelColor: 'rgba(255, 255, 255, 0.5)',
     labelFocusedColor: '#3867c4',
     labelErrorColor: '#ac2b45',
   },
 
   textInput: {
-    backgroundColor: '#181b2b',
+    backgroundColor: '#1b1e31',
     textColor: '#ffffff',
   },
 
   table: {
     head: {
-      textColor: 'rgba(255, 255, 255, 0.4)',
+      textColor: 'rgba(255, 255, 255, 0.5)',
     },
     body: {
       textColor: '#ffffff',
@@ -57,26 +58,26 @@ export const darkTheme: DefaultTheme = {
 
   dialog: {
     normal: {
-      backgroundColor: '#1a1d2e',
+      backgroundColor: '#1f2237',
       textColor: '#ffffff',
     },
     warning: {
-      backgroundColor: '#1a1d2e',
+      backgroundColor: '#1f2237',
       textColor: '#d69f34',
     },
     error: {
-      backgroundColor: '#1a1d2e',
+      backgroundColor: '#1f2237',
       textColor: '#ac2b45',
     },
     success: {
-      backgroundColor: '#1a1d2e',
+      backgroundColor: '#1f2237',
       textColor: '#3e9bba',
     },
   },
   
   tooltip: {
     normal: {
-      backgroundColor: 'rgba(255, 255, 255, 0.4)',
+      backgroundColor: 'rgba(255, 255, 255, 0.5)',
       textColor: '#ffffff',
     },
     warning: {

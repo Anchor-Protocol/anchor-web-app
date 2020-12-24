@@ -1,5 +1,6 @@
-import { concave, flat } from '@anchor-protocol/styled-neumorphism';
+import { flat, pressed } from '@anchor-protocol/styled-neumorphism';
 import { ButtonBase } from '@material-ui/core';
+import c from 'color';
 import styled from 'styled-components';
 import { buttonBaseStyle } from './ActionButton';
 
@@ -14,7 +15,7 @@ export const TextButton = styled(ButtonBase).attrs({ disableRipple: true })`
   ${({ theme }) =>
     flat({
       color: theme.backgroundColor,
-      distance: 1,
+      distance: 0.1,
       intensity: theme.intensity,
     })};
 
@@ -22,17 +23,21 @@ export const TextButton = styled(ButtonBase).attrs({ disableRipple: true })`
     ${({ theme }) =>
       flat({
         color: theme.backgroundColor,
-        distance: 5,
+        distance: 1,
         intensity: theme.intensity,
       })};
   }
 
   &:active {
     ${({ theme }) =>
-      concave({
-        color: theme.backgroundColor,
-        distance: 2,
+      pressed({
+        color: theme.textInput.backgroundColor,
+        distance: 1,
         intensity: theme.intensity,
       })};
+  }
+
+  &:disabled {
+    color: ${({ theme }) => c(theme.actionButton.textColor).alpha(0.3).string()};
   }
 `;

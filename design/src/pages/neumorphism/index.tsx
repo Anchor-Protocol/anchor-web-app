@@ -3,6 +3,7 @@ import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { HorizontalGraphBar } from '@anchor-protocol/neumorphism-ui/components/HorizontalGraphBar';
 import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
 import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/components/HorizontalScrollTable';
+import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
 import { Selector } from '@anchor-protocol/neumorphism-ui/components/Selector';
@@ -20,7 +21,12 @@ import {
   flat,
   pressed,
 } from '@anchor-protocol/styled-neumorphism';
-import { Input, InputAdornment, Modal, NativeSelect } from '@material-ui/core';
+import {
+  Input,
+  InputAdornment,
+  Modal,
+  NativeSelect as MuiNativeSelect,
+} from '@material-ui/core';
 import { Warning } from '@material-ui/icons';
 import { screen } from 'env';
 import { Fragment, useState } from 'react';
@@ -159,25 +165,37 @@ function NeumorphismBase({ className }: NeumorphismProps) {
         <HorizontalRuler />
 
         <article className="buttons">
-          <Selector
-            items={selectorItems}
-            selectedItem={selectedItem['selector']}
-            onChange={(next) =>
-              setSelectedItem((prev) => ({ ...prev, selector: next }))
+          <NativeSelect
+            value={
+              selectedItem['nativeSelect']?.value ?? selectorItems[0].value
             }
-            labelFunction={(item) => item?.label ?? 'None'}
-            keyFunction={(item) => item.value}
-          />
+            onChange={(evt) =>
+              setSelectedItem((prev) => ({
+                ...prev,
+                nativeSelect:
+                  selectorItems.find(
+                    ({ value }) => evt.target.value === value,
+                  ) ?? null,
+              }))
+            }
+          >
+            {selectorItems.map(({ label, value }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </NativeSelect>
 
           <SelectAndTextInputContainer>
-            <NativeSelect
+            <MuiNativeSelect
               value={
-                selectedItem['nativeSelect']?.value ?? selectorItems[0].value
+                selectedItem['selectAndTextInput']?.value ??
+                selectorItems[0].value
               }
               onChange={(evt) =>
                 setSelectedItem((prev) => ({
                   ...prev,
-                  nativeSelect:
+                  selectAndTextInput:
                     selectorItems.find(
                       ({ value }) => evt.target.value === value,
                     ) ?? null,
@@ -189,9 +207,19 @@ function NeumorphismBase({ className }: NeumorphismProps) {
                   {label}
                 </option>
               ))}
-            </NativeSelect>
+            </MuiNativeSelect>
             <Input placeholder="PLACEHOLDER" />
           </SelectAndTextInputContainer>
+          
+          <Selector
+            items={selectorItems}
+            selectedItem={selectedItem['selector']}
+            onChange={(next) =>
+              setSelectedItem((prev) => ({ ...prev, selector: next }))
+            }
+            labelFunction={(item) => item?.label ?? 'None'}
+            keyFunction={(item) => item.value}
+          />
         </article>
 
         <HorizontalRuler />

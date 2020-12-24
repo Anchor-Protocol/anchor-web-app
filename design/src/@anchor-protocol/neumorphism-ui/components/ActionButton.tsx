@@ -1,6 +1,7 @@
+import { pressed } from '@anchor-protocol/styled-neumorphism';
 import { ButtonBase } from '@material-ui/core';
-import { concave, flat } from '@anchor-protocol/styled-neumorphism';
 import styled, { css } from 'styled-components';
+import c from 'color';
 
 export const buttonBaseStyle = css`
   outline: none;
@@ -24,37 +25,25 @@ export const buttonBaseStyle = css`
  *
  * @see https://material-ui.com/api/button-base/
  */
-export const ActionButton = styled(ButtonBase)`
+export const ActionButton = styled(ButtonBase).attrs({ disableRipple: true })`
   ${buttonBaseStyle};
 
-  ${({ theme }) =>
-    flat({
-      color: theme.actionButton.backgroundColor,
-      backgroundColor: theme.backgroundColor,
-      distance: 1,
-      intensity: theme.intensity,
-    })};
+  background-color: ${({ theme }) => theme.actionButton.backgroundColor};
 
   &:hover {
-    ${({ theme }) =>
-      flat({
-        color: theme.actionButton.backgroundColor,
-        backgroundColor: theme.backgroundColor,
-        distance: 5,
-        intensity: theme.intensity,
-      })};
+    background-color: ${({ theme }) => theme.actionButton.backgroundHoverColor};
   }
 
   &:active {
     ${({ theme }) =>
-      concave({
-        color: theme.actionButton.backgroundColor,
+      pressed({
+        color: c(theme.actionButton.backgroundColor).darken(0.2).string(),
         backgroundColor: theme.backgroundColor,
-        distance: 2,
+        distance: 1,
         intensity: theme.intensity,
       })};
   }
-  
+
   &:disabled {
     opacity: 0.3;
   }

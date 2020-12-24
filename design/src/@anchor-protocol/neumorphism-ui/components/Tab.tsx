@@ -6,22 +6,22 @@ import useResizeObserver from 'use-resize-observer/polyfilled';
 
 export interface TabProps<T> {
   className?: string;
-  
+
   /** Data */
   items: T[];
-  
+
   /** Selected item of the items */
   selectedItem: T;
-  
+
   /** Callback when an item selection */
   onChange: (nextItem: T) => void;
-  
+
   /** Get the label string from the item */
   labelFunction: (item: T) => string;
-  
+
   /** Get the primary key value from the item */
   keyFunction: (item: T) => string;
-  
+
   /** height value to change look */
   height?: number;
 }
@@ -77,21 +77,7 @@ function TabBase<T>({
           transform: `translateX(${itemWidth * currentItemIndex}px)`,
         }}
       >
-        <ul>
-          {items.map((item, i) => (
-            <li
-              key={'display' + keyFunction(item)}
-              style={{
-                transform: `translateY(${
-                  (height - buttonPadding * 2) * currentItemIndex * -1
-                }px)`,
-                opacity: currentItemIndex === i ? 1 : 0.5,
-              }}
-            >
-              {labelFunction(item)}
-            </li>
-          ))}
-        </ul>
+        <div>{labelFunction(selectedItem)}</div>
       </div>
     </div>
   );
@@ -133,7 +119,7 @@ export const Tab: <T>(props: TabProps<T>) => ReactElement<TabProps<T>> = styled(
       &:hover {
         color: ${({ theme }) => c(theme.textColor).alpha(0.7).string()};
         background-color: ${({ theme }) =>
-          c(theme.actionButton.backgroundColor).alpha(0.2).string()};
+          c(theme.actionButton.backgroundColor).alpha(0.05).string()};
       }
 
       &[aria-selected='true'] {
@@ -157,10 +143,7 @@ export const Tab: <T>(props: TabProps<T>) => ReactElement<TabProps<T>> = styled(
 
     padding: ${buttonPadding}px;
 
-    > ul {
-      list-style: none;
-      padding: 0;
-
+    > div {
       width: 100%;
       height: 100%;
 
@@ -176,19 +159,11 @@ export const Tab: <T>(props: TabProps<T>) => ReactElement<TabProps<T>> = styled(
           intensity: theme.intensity,
         })};
 
-      li {
-        width: 100%;
-        height: 100%;
+      font-size: 20px;
+      font-weight: 700;
 
-        font-size: 20px;
-        font-weight: 700;
-
-        display: grid;
-        place-items: center;
-
-        will-change: transform;
-        transition: transform 0.5s ease-in-out;
-      }
+      display: grid;
+      place-items: center;
     }
   }
 `;
