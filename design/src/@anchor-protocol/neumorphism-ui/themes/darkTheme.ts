@@ -27,6 +27,7 @@ export const darkTheme: DefaultTheme = {
 
   actionButton: {
     backgroundColor: '#363c5f',
+    backgroundHoverColor: '#404872',
     textColor: '#ffffff',
   },
   
