@@ -4,23 +4,23 @@
   "private": true,
   "proxy": "http://localhost:1337/",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "storybook": "start-storybook -p 6006 -s public",
-    "build-storybook": "build-storybook -s public"
+    "start": "multiplerun start",
+    "build": "CI=true react-scripts build",
+    "test": "react-scripts test --colors",
+    "coverage": "react-scripts test --colors --coverage",
+    "eject": "react-scripts eject"
   },
-  "eslintConfig": {
-    "extends": [
-      "../.eslintrc.js"
+  "multiplerun": {
+    "start": [
+      "PORT=9433 BROWSER=none npx react-scripts start",
+      "PORT=9433 TS_NODE_PROJECT=tsconfig.script.json node -r ts-node/register -r tsconfig-paths/register scripts/start.ts"
     ]
   },
   "browserslist": {
     "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
+      "chrome > 60",
+      "firefox > 60",
+      "safari > 12"
     ],
     "development": [
       "last 1 chrome version",
@@ -30,11 +30,20 @@
   },
   "dependencies": {
     "@apollo/client": "^3.2.9",
+    "@material-ui/core": "^4.11.2",
+    "@material-ui/icons": "^4.11.2",
+    "@storybook/addon-actions": "^6.1.11",
+    "@storybook/addon-essentials": "^6.1.11",
+    "@storybook/addon-links": "^6.1.11",
+    "@storybook/node-logger": "^6.1.11",
+    "@storybook/preset-create-react-app": "^3.1.5",
+    "@storybook/react": "^6.1.11",
     "@terra-money/terra.js": "^1.2.1",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "@types/autoprefixer": "^9.7.2",
+    "@types/color": "^3.0.1",
     "@types/eslint": "^6.8.1",
     "@types/jest": "^26.0.15",
     "@types/node": "^12.0.0",
@@ -43,21 +52,29 @@
     "@types/react": "^16.9.53",
     "@types/react-dom": "^16.9.8",
     "@types/react-router-dom": "^5.1.6",
+    "@types/styled-components": "^5.1.5",
     "@types/testing-library__jest-dom": "^5.9.5",
     "bignumber.js": "^9.0.1",
+    "color": "^3.1.3",
+    "downshift": "^6.0.7",
+    "fastdom": "^1.0.9",
     "graphql": "^15.4.0",
+    "multiplerun": "^1.1.2",
+    "puppeteer": "^5.5.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
+    "resize-observer-polyfill": "^1.5.1",
     "rocket-punch": "^2.3.2",
+    "styled-components": "^5.2.1",
+    "ts-node": "^9.1.1",
+    "tsconfig-paths": "^3.9.0",
     "typescript": "^4.1.3",
-    "web-vitals": "^0.2.4",
-    "@storybook/addon-actions": "^6.1.11",
-    "@storybook/addon-essentials": "^6.1.11",
-    "@storybook/addon-links": "^6.1.11",
-    "@storybook/node-logger": "^6.1.11",
-    "@storybook/preset-create-react-app": "^3.1.5",
-    "@storybook/react": "^6.1.11"
+    "use-resize-observer": "^7.0.0",
+    "web-vitals": "^0.2.4"
+  },
+  "devDependencies": {
+    "@types/puppeteer": "^5.4.2"
   }
 }
