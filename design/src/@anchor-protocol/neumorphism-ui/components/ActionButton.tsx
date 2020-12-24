@@ -1,6 +1,7 @@
 import { pressed } from '@anchor-protocol/styled-neumorphism';
 import { ButtonBase } from '@material-ui/core';
 import styled, { css } from 'styled-components';
+import c from 'color';
 
 export const buttonBaseStyle = css`
   outline: none;
@@ -36,7 +37,7 @@ export const ActionButton = styled(ButtonBase).attrs({ disableRipple: true })`
   &:active {
     ${({ theme }) =>
       pressed({
-        color: theme.actionButton.backgroundHoverColor,
+        color: c(theme.actionButton.backgroundColor).darken(0.2).string(),
         backgroundColor: theme.backgroundColor,
         distance: 1,
         intensity: theme.intensity,

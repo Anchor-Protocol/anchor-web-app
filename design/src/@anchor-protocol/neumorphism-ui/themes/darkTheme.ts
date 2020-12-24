@@ -32,7 +32,7 @@ export const darkTheme: DefaultTheme = {
   },
   
   selector: {
-    backgroundColor: '#1f2237',
+    backgroundColor: '#1b1e31',
     textColor: '#ffffff',
   },
 
