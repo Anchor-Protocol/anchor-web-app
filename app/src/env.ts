@@ -9,3 +9,5 @@ export const screen = {
   // monitor : @media (min-width: ${screen.pc.min}px) and (max-width: ${screen.pc.max}px)
   // huge monitor : @media (min-width: ${screen.monitor.min}px)
 } as const;
+
+export const FINDER = 'https://finder.terra.money';

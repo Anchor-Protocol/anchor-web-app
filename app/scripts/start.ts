@@ -16,6 +16,7 @@ import { launch } from 'puppeteer';
       '--start-fullscreen',
       `--remote-debugging-port=${remoteDebuggingPort}`,
     ],
+    ignoreDefaultArgs: ['--disable-extensions'],
     devtools: true,
   });
 

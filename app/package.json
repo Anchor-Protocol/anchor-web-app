@@ -5,8 +5,10 @@
   "proxy": "http://localhost:1337/",
   "scripts": {
     "start": "multiplerun start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start:chrome": "multiplerun start:chrome",
+    "build": "CI=true react-scripts build",
+    "test": "react-scripts test --colors",
+    "coverage": "react-scripts test --colors --coverage",
     "eject": "react-scripts eject",
     "pack": "rocket-punch build",
     "publish": "rocket-punch publish",
@@ -17,6 +19,10 @@
     "start": [
       "PORT=9433 BROWSER=none npx react-scripts start",
       "PORT=9433 TS_NODE_PROJECT=tsconfig.script.json node -r ts-node/register -r tsconfig-paths/register scripts/start.ts"
+    ],
+    "start:chrome": [
+      "PORT=9433 BROWSER=none npx react-scripts start",
+      "open http://localhost:9433"
     ]
   },
   "eslintConfig": {

@@ -1,4 +1,4 @@
-import { FINDER } from '../constants';
+import { FINDER } from 'env';
 import useLocalStorage from './use-localstorage';
 import networks, { NetworkKey, NetworkConfig } from '../networks';
 import createContext from '../hooks/create-context';
