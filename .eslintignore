@@ -3,3 +3,4 @@ build
 out
 public
 coverage
+storybook-static

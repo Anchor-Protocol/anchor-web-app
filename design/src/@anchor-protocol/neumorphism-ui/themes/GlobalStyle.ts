@@ -5,7 +5,7 @@ export const globalStyle = css`
   body {
     margin: 0;
   }
-
+  
   html {
     font-family: Gotham, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
       'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
