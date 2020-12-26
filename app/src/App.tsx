@@ -7,7 +7,7 @@ import { Header } from 'components/Header';
 import BassetBurn from 'pages/basset/burn';
 import BassetClaim from 'pages/basset/claim';
 import BassetMint from 'pages/basset/mint';
-import Borrow from 'pages/borrow';
+import { Borrow } from 'pages/borrow';
 import Earn from 'pages/earn';
 import React from 'react';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
@@ -34,17 +34,15 @@ function AppBase({ className }: AppProps) {
               {/* Start Layout */}
               <div className={className}>
                 <Header />
-                <main>
-                  <Switch>
-                    <Route path="/earn" component={Earn} />
-                    <Route path="/borrow" component={Borrow} />
-                    <Redirect exact path="/basset" to="/basset/mint" />
-                    <Route path="/basset/mint" component={BassetMint} />
-                    <Route path="/basset/burn" component={BassetBurn} />
-                    <Route path="/basset/claim" component={BassetClaim} />
-                    <Redirect to="/earn" />
-                  </Switch>
-                </main>
+                <Switch>
+                  <Route path="/earn" component={Earn} />
+                  <Route path="/borrow" component={Borrow} />
+                  <Redirect exact path="/basset" to="/basset/mint" />
+                  <Route path="/basset/mint" component={BassetMint} />
+                  <Route path="/basset/burn" component={BassetBurn} />
+                  <Route path="/basset/claim" component={BassetClaim} />
+                  <Redirect to="/earn" />
+                </Switch>
                 <Footer />
               </div>
               {/* End Layout */}
@@ -56,6 +54,4 @@ function AppBase({ className }: AppProps) {
   );
 }
 
-export const App = styled(AppBase)`
-
-`;
+export const App = styled(AppBase)``;
