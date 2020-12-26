@@ -1,4 +1,4 @@
-import { MessageColor } from '@anchor-protocol/neumorphism-ui/themes/Theme';
+import { MessageColor } from '../themes/Theme';
 import { makeStyles } from '@material-ui/core/styles';
 import MuiTooltip, {
   TooltipProps as MuiTooltipProps,

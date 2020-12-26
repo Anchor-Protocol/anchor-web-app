@@ -1,4 +1,4 @@
-import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
+import { HorizontalRuler } from './HorizontalRuler';
 import { flat } from '@anchor-protocol/styled-neumorphism';
 import { useSelect } from 'downshift';
 import { ReactElement } from 'react';

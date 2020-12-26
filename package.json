@@ -6,7 +6,8 @@
   "repository": "github:Anchor-Protocol/anchor",
   "workspaces": [
     "app",
-    "design"
+    "design",
+    "packages"
   ],
   "scripts": {
     "format": "prettier --write \"**/*.{js,ts,tsx}\"",
@@ -17,6 +18,10 @@
       "prettier --write",
       "eslint"
     ]
+  },
+  "dependencies": {
+    "@material-ui/core": "^4.11.2",
+    "@material-ui/icons": "^4.11.2"
   },
   "devDependencies": {
     "@handbook/markdown-source-import": "^1.0.1",

@@ -1,4 +1,4 @@
-import { MessageColor } from '@anchor-protocol/neumorphism-ui/themes/Theme';
+import { MessageColor } from '../themes/Theme';
 import type { DetailedHTMLProps, HTMLAttributes } from 'react';
 import { forwardRef } from 'react';
 import styled, { keyframes } from 'styled-components';

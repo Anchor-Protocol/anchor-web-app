@@ -5,11 +5,12 @@ export const globalStyle = css`
   body {
     margin: 0;
   }
-  
-  body {
-    background-color: ${({theme}) => theme.backgroundColor};
-  }
-  
+
+  ${({ theme }) =>
+    theme?.backgroundColor
+      ? `body { background-color: ${theme.backgroundColor}; }`
+      : ''};
+
   html {
     font-family: Gotham, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
       'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -42,7 +43,7 @@ export const globalStyle = css`
     -webkit-appearance: none;
     margin: 0;
   }
-  
+
   input[type='number'] {
     -moz-appearance: textfield;
   }

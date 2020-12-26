@@ -1,7 +1,7 @@
 import {
   StylesProvider as MuiStylesProvider,
   ThemeProvider as MuiThemeProvider,
-} from '@material-ui/styles';
+} from '@material-ui/core/styles';
 import React, { ReactNode } from 'react';
 import type { DefaultTheme } from 'styled-components';
 import { ThemeProvider as StyledComponentsThemeProvider } from 'styled-components';
