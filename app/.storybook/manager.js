@@ -3,5 +3,4 @@ import { theme } from './theme';
 
 addons.setConfig({
   theme,
-  showRoots: false,
 });
