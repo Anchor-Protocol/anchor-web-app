@@ -10,9 +10,13 @@ import BassetMint from 'pages/basset/mint';
 import { Borrow } from 'pages/borrow';
 import Earn from 'pages/earn';
 import React from 'react';
-import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Redirect,
+  Route,
+  Switch,
+} from 'react-router-dom';
 import styled from 'styled-components';
-import './App.css';
 import { mantleConfig, MantleProvider } from './hooks/use-mantle';
 import { useWalletState, WalletProvider } from './hooks/use-wallet';
 import { AddressProviderProvider as ContractAddressProvider } from './providers/address-provider';
@@ -54,4 +58,6 @@ function AppBase({ className }: AppProps) {
   );
 }
 
-export const App = styled(AppBase)``;
+export const App = styled(AppBase)`
+  // TODO
+`;

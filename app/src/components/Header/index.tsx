@@ -1,8 +1,7 @@
 import { WalletSelector } from 'components/Header/WalletSelector';
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import styled from 'styled-components';
-import { Logo } from './Logo';
 
 export interface HeaderProps {
   className?: string;
@@ -11,17 +10,17 @@ export interface HeaderProps {
 function HeaderBase({ className }: HeaderProps) {
   return (
     <header className={className}>
-      <div>
-        <Logo />
-      </div>
+      <section>
+        <Link to="/">ANCHOR</Link>
+      </section>
       <nav>
         <NavLink to="/earn">EARN</NavLink>
         <NavLink to="/borrow">BORROW</NavLink>
         <NavLink to="/basset/mint">bASSET</NavLink>
       </nav>
-      <div>
+      <section>
         <WalletSelector />
-      </div>
+      </section>
     </header>
   );
 }
@@ -51,6 +50,12 @@ export const Header = styled(HeaderBase)`
         color: rgba(255, 255, 255, 0.8);
       }
     }
+  }
+
+  > :first-child {
+    font-size: 13px;
+    font-weight: 900;
+    color: rgba(255, 255, 255, 0.8);
   }
 
   // ---------------------------------------------

@@ -1,15 +1,28 @@
-import { createGlobalStyle, css } from 'styled-components';
+import { createGlobalStyle, css, DefaultTheme } from 'styled-components';
+
+function bodyStyleIfThemeExists(theme?: DefaultTheme): string {
+  if (!theme) return '';
+  
+  const styles = [];
+  
+  if (theme?.backgroundColor) {
+    styles.push(`background-color: ${theme.backgroundColor};`);
+  }
+  
+  if (theme?.textColor) {
+    styles.push(`color: ${theme.textColor};`);
+  }
+  
+  return `body { ${styles.join('')} }`;
+}
 
 export const globalStyle = css`
   html,
   body {
     margin: 0;
   }
-
-  ${({ theme }) =>
-    theme?.backgroundColor
-      ? `body { background-color: ${theme.backgroundColor}; }`
-      : ''};
+  
+  ${({theme}) => bodyStyleIfThemeExists(theme)};
 
   html {
     font-family: Gotham, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',

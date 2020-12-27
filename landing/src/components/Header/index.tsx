@@ -1,0 +1,157 @@
+import { WebAppButton } from 'components/Header/WebAppButton';
+import { Link, NavLink, useRouteMatch } from 'react-router-dom';
+import styled from 'styled-components';
+
+export interface HeaderProps {
+  className?: string;
+  theme?: 'dark' | 'light';
+}
+
+function HeaderBase({ className }: HeaderProps) {
+  const match = useRouteMatch({ path: '/', exact: true });
+
+  return (
+    <header className={className} data-dark={!!match}>
+      <section>
+        <Link to="/">ANCHOR</Link>
+      </section>
+      <nav>
+        <NavLink to="/market">MARKET</NavLink>
+        <a href="https://google.com" target="anchor-developers">
+          DEVELOPERS
+        </a>
+        <NavLink to="/contact">CONTACT</NavLink>
+      </nav>
+      <section>
+        <WebAppButton />
+      </section>
+    </header>
+  );
+}
+
+export const Header = styled(HeaderBase)`
+  // ---------------------------------------------
+  // style
+  // ---------------------------------------------
+  background-color: #ffffff;
+
+  transition: background-color 0.3s ease-out;
+  will-change: background-color;
+
+  a {
+    text-decoration: none;
+  }
+
+  // logo
+  > :first-child {
+    font-size: 16px;
+    font-weight: 900;
+
+    a {
+      color: #333333;
+
+      transition: color 0.2s ease-out;
+      will-change: color;
+    }
+  }
+
+  nav {
+    a {
+      font-size: 13px;
+      font-weight: 500;
+      color: #696969;
+
+      transition: color 0.2s ease-out;
+      will-change: color;
+
+      &:hover {
+        color: #515151;
+      }
+
+      &.active {
+        font-weight: 900;
+        color: #333333;
+      }
+    }
+  }
+
+  // webapp
+  > :last-child {
+    button {
+      color: #999999;
+      background-color: #f6f6f6;
+
+      will-change: color, background-color;
+      transition: color 0.2s ease-out, background-color 0.2s ease-out;
+
+      &:hover {
+        color: #7e7e7e;
+        background-color: #e9e9e9;
+      }
+    }
+  }
+
+  &[data-dark='true'] {
+    background-color: #000000;
+
+    > :first-child {
+      a {
+        color: rgba(255, 255, 255, 0.5);
+      }
+    }
+
+    nav {
+      a {
+        color: rgba(255, 255, 255, 0.35);
+
+        &:hover {
+          color: rgba(255, 255, 255, 0.5);
+        }
+
+        &.active {
+          color: rgba(255, 255, 255, 0.6);
+        }
+      }
+    }
+
+    > :last-child {
+      button {
+        color: rgba(255, 255, 255, 0.54);
+        background-color: #161616;
+
+        &:hover {
+          color: rgba(255, 255, 255, 0.65);
+          background-color: #242424;
+        }
+      }
+    }
+  }
+
+  // ---------------------------------------------
+  // layout
+  // ---------------------------------------------
+  // TODO responsive layout
+  //@media (min-width: {screen.tablet.max}px) {
+  height: 84px;
+  padding: 0 44px;
+
+  display: flex;
+  align-items: center;
+
+  > :first-child {
+    flex: 1;
+  }
+
+  nav {
+    a:not(:last-child) {
+      margin-right: 28px;
+    }
+
+    margin-right: 34px;
+  }
+
+  //}
+  //
+  //@media (max-width: {screen.tablet.max}px) {
+  //}
+`;
