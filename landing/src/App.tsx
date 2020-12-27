@@ -32,9 +32,9 @@ function AppBase({ className }: AppProps) {
             <Route exact path="/" component={Index} />
             <Route path="/market" component={Market} />
             <Redirect exact path="/stablecoins" to="/market" />
-            <Route path="/stablecoins/:coin" component={StableCoins} />
+            <Route path="/stablecoins/:stableCoinId" component={StableCoins} />
             <Redirect exact path="/bassets" to="/market" />
-            <Route path="/bassets/:asset" component={BAssets} />
+            <Route path="/bassets/:bAssetId" component={BAssets} />
             <Route path="/contact" component={Contact} />
             <Redirect to="/" />
           </Switch>

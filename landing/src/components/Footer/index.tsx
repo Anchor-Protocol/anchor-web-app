@@ -5,9 +5,15 @@ export interface FooterProps {
 }
 
 function FooterBase({ className }: FooterProps) {
-  return <div className={className}>...</div>;
+  return <div className={className}>Footer</div>;
 }
 
 export const Footer = styled(FooterBase)`
-  // TODO
+  background-color: #000000;
+  color: #ffffff;
+  
+  height: 50px;
+  
+  display: grid;
+  place-items: center;
 `;
