@@ -81,13 +81,6 @@ export const StableCoins = styled(StableCoinsBase)`
         }
       }
     }
-
-    .transaction-history {
-      ul {
-        max-height: 350px;
-        overflow-y: auto;
-      }
-    }
   }
 
   // tablet

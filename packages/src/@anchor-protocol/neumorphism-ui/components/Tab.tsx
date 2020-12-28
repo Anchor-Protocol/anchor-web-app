@@ -6,7 +6,7 @@ import useResizeObserver from 'use-resize-observer/polyfilled';
 
 export interface TabProps<T> {
   className?: string;
-  
+
   disabled?: boolean;
 
   /** Data */
@@ -26,10 +26,16 @@ export interface TabProps<T> {
 
   /** height value to change look */
   height?: number;
+
+  fontSize?: number;
+
+  borderRadius?: number;
 }
 
 const defaultHeight: number = 60;
 const buttonPadding: number = 8; // top + bottom
+const defaultFontSize: number = 20;
+const defualtBorderRadius: number = 22;
 
 function TabBase<T>({
   className,
@@ -52,7 +58,11 @@ function TabBase<T>({
   }, [items, selectedItem]);
 
   return (
-    <div className={className} ref={divRef} aria-disabled={disabled || undefined}>
+    <div
+      className={className}
+      ref={divRef}
+      aria-disabled={disabled || undefined}
+    >
       <ul>
         {items.map((item, i) => (
           <li
@@ -89,10 +99,10 @@ function TabBase<T>({
 export const Tab: <T>(props: TabProps<T>) => ReactElement<TabProps<T>> = styled(
   TabBase,
 )`
-  border-radius: 22px;
+  border-radius: ${({ borderRadius = defualtBorderRadius }) => borderRadius}px;
   height: ${({ height = defaultHeight }) => height}px;
-  
-  color: ${({theme}) => theme.textColor};
+
+  color: ${({ theme }) => theme.textColor};
 
   ${({ theme }) =>
     pressed({
@@ -118,7 +128,7 @@ export const Tab: <T>(props: TabProps<T>) => ReactElement<TabProps<T>> = styled(
       user-select: none;
       cursor: pointer;
 
-      font-size: 20px;
+      font-size: ${({ fontSize = defaultFontSize }) => fontSize}px;
       color: ${({ theme }) => c(theme.textColor).alpha(0.3).string()};
 
       &:hover {
@@ -132,7 +142,8 @@ export const Tab: <T>(props: TabProps<T>) => ReactElement<TabProps<T>> = styled(
         pointer-events: none;
       }
 
-      border-radius: 22px;
+      border-radius: ${({ borderRadius = defualtBorderRadius }) =>
+        borderRadius}px;
     }
   }
 
@@ -152,7 +163,8 @@ export const Tab: <T>(props: TabProps<T>) => ReactElement<TabProps<T>> = styled(
       width: 100%;
       height: 100%;
 
-      border-radius: 18px;
+      border-radius: ${({ borderRadius = defualtBorderRadius }) =>
+        borderRadius - buttonPadding / 2}px;
 
       overflow: hidden;
 
@@ -164,15 +176,15 @@ export const Tab: <T>(props: TabProps<T>) => ReactElement<TabProps<T>> = styled(
           intensity: theme.intensity,
         })};
 
-      font-size: 20px;
+      font-size: ${({ fontSize = defaultFontSize }) => fontSize}px;
       font-weight: 700;
 
       display: grid;
       place-items: center;
     }
   }
-  
-  &[aria-disabled="true"] {
+
+  &[aria-disabled='true'] {
     pointer-events: none;
     opacity: 0.3;
   }

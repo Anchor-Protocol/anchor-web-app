@@ -8,11 +8,11 @@ export interface ChartSectionProps {
   className?: string;
 }
 
-type TabItem = 'deposit' | 'borrow';
-const tabItems: TabItem[] = ['deposit', 'borrow'];
+type TabItem = 'collateral' | 'loan';
+const tabItems: TabItem[] = ['collateral', 'loan'];
 
 function ChartSectionBase({ className }: ChartSectionProps) {
-  const [tab, setTab] = useState<TabItem>(() => 'deposit');
+  const [tab, setTab] = useState<TabItem>(() => 'collateral');
 
   return (
     <Section className={className}>
@@ -27,19 +27,11 @@ function ChartSectionBase({ className }: ChartSectionProps) {
           borderRadius={32}
         />
         <div>
-          <h3>NET RATE</h3>
+          <h3>STAKING RETURN</h3>
           <p>11.16%</p>
         </div>
         <div>
-          <h3>DEPOSIT APY</h3>
-          <p>8.15%</p>
-        </div>
-        <div>
-          <h3>DISTRIBUTION APY</h3>
-          <p>3.01%</p>
-        </div>
-        <div>
-          <h3>TOTAL DEPOSIT</h3>
+          <h3>TOTAL COLLATERAL</h3>
           <p>$233.56M</p>
         </div>
       </nav>

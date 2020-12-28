@@ -18,32 +18,24 @@ function MarketDetailsSectionBase({ className }: MarketDetailsSectionProps) {
       <HorizontalHeavyRuler />
 
       <MultiColumnTable>
-        <MultiColumnTableCell label="Price">$1.00</MultiColumnTableCell>
-        <MultiColumnTableCell label="Marker Liquidity">
-          100,232,859 UST
-        </MultiColumnTableCell>
-        <MultiColumnTableCell label="# of Suppliers">
-          142,954
+        <MultiColumnTableCell label="Price">$5.95</MultiColumnTableCell>
+        <MultiColumnTableCell label="Exchange rate">
+          1ATOM = 1bATOM
         </MultiColumnTableCell>
         <MultiColumnTableCell label="# of Borrowers">
-          9,230
+          1,230
         </MultiColumnTableCell>
-        <MultiColumnTableCell label="Deposit APY">8.15%</MultiColumnTableCell>
-        <MultiColumnTableCell label="Borrow APR">12.32%</MultiColumnTableCell>
+        <MultiColumnTableCell label="Daily staking reward">
+          $40,209
+        </MultiColumnTableCell>
         <MultiColumnTableCell label="Daily interest">
-          $51,232
+          $24,931
         </MultiColumnTableCell>
-        <MultiColumnTableCell label="Interest from borrow">
-          $32,232
+        <MultiColumnTableCell label="Daily interest from borrow">
+          $16,042
         </MultiColumnTableCell>
-        <MultiColumnTableCell label="Interest from Staking Reward">
-          $20,000
-        </MultiColumnTableCell>
-        <MultiColumnTableCell label="aToken Supply">
-          349,119,129
-        </MultiColumnTableCell>
-        <MultiColumnTableCell label="Exchange Rate">
-          1 UST = 1.<sub>4294838294</sub> aUST
+        <MultiColumnTableCell label="Daily interest from staking reward">
+          $8,889
         </MultiColumnTableCell>
       </MultiColumnTable>
     </Section>
