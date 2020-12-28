@@ -3,6 +3,7 @@ import Box from '../../components/box';
 
 interface EarnTransactionHistoryProps {}
 
+/** @deprecated */
 const EarnTransactionHistory: React.FunctionComponent<EarnTransactionHistoryProps> = ({
   children,
 }) => {

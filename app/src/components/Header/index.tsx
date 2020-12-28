@@ -53,9 +53,11 @@ export const Header = styled(HeaderBase)`
   }
 
   > :first-child {
-    font-size: 13px;
-    font-weight: 900;
-    color: rgba(255, 255, 255, 0.8);
+    a {
+      font-size: 13px;
+      font-weight: 900;
+      color: rgba(255, 255, 255, 0.8);
+    }
   }
 
   // ---------------------------------------------

@@ -14,6 +14,7 @@ interface InterestEarnedProps {
   interestEarned: number;
 }
 
+/** @deprecated */
 const InterestEarned: React.FunctionComponent<InterestEarnedProps> = ({
   children,
 }) => {

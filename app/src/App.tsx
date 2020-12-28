@@ -8,7 +8,7 @@ import BassetBurn from 'pages/basset/burn';
 import BassetClaim from 'pages/basset/claim';
 import BassetMint from 'pages/basset/mint';
 import { Borrow } from 'pages/borrow';
-import Earn from 'pages/earn';
+import { Earn } from 'pages/earn';
 import React from 'react';
 import {
   BrowserRouter as Router,

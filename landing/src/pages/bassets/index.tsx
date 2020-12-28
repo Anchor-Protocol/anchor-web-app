@@ -1,8 +1,8 @@
 import { screen } from 'env';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { ChartSection } from './ChartSection';
-import { MarketDetailsSection } from './MarketDetailsSection';
+import { ChartSection } from './components/ChartSection';
+import { MarketDetailsSection } from './components/MarketDetailsSection';
 
 export interface BAssetsProps {
   className?: string;

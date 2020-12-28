@@ -7,6 +7,7 @@ import InterestEarned, {
 
 interface InterestHistoryProps {}
 
+/** @deprecated */
 const InterestHistory: React.FunctionComponent<InterestHistoryProps> = ({
   children,
 }) => {

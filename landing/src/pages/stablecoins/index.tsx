@@ -1,9 +1,9 @@
 import { screen } from 'env';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { ChartSection } from './ChartSection';
-import { InterestRateModelSection } from './InterestRateModelSection';
-import { MarketDetailsSection } from './MarketDetailsSection';
+import { ChartSection } from './components/ChartSection';
+import { InterestRateModelSection } from './components/InterestRateModelSection';
+import { MarketDetailsSection } from './components/MarketDetailsSection';
 
 export interface StableCoinsProps {
   className?: string;

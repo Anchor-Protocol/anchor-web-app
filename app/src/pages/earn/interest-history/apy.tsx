@@ -4,6 +4,7 @@ interface ApyProps {
   apy: number;
 }
 
+/** @deprecated */
 const Apy: React.FunctionComponent<ApyProps> = ({ children, apy }) => {
   return (
     <div>

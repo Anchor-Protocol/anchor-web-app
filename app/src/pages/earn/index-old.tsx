@@ -1,10 +1,11 @@
 import React from 'react';
-import InterestHistory from './earn/interest-history';
-import EarnTotalDeposits from './earn/total-deposits';
-import EarnTransactionHistory from './earn/transaction-history';
+import InterestHistory from './interest-history';
+import EarnTotalDeposits from './total-deposits';
+import EarnTransactionHistory from './transaction-history';
 
 interface EarnProps {}
 
+/** @deprecated */
 const Earn: React.FunctionComponent<EarnProps> = ({ children }) => {
   return (
     <main>
