@@ -1,38 +1,63 @@
+import { AddressProviderFromEnvVar } from '@anchor-protocol/anchor-js/address-provider';
+import { darkTheme } from '@anchor-protocol/neumorphism-ui/themes/darkTheme';
+import { GlobalStyle } from '@anchor-protocol/neumorphism-ui/themes/GlobalStyle';
+import { ThemeProvider } from '@anchor-protocol/neumorphism-ui/themes/ThemeProvider';
+import { Footer } from 'components/Footer';
+import { Header } from 'components/Header';
+import BassetBurn from 'pages/basset/burn';
+import BassetClaim from 'pages/basset/claim';
+import BassetMint from 'pages/basset/mint';
+import { Borrow } from 'pages/borrow';
+import { Earn } from 'pages/earn';
 import React from 'react';
-import './App.css';
-import { BrowserRouter as Router, useLocation } from 'react-router-dom';
-import Routes from './routes';
-import DefaultLayout from './layout/default-layout';
+import {
+  BrowserRouter as Router,
+  Redirect,
+  Route,
+  Switch,
+} from 'react-router-dom';
+import styled from 'styled-components';
+import { mantleConfig, MantleProvider } from './hooks/use-mantle';
 import { useWalletState, WalletProvider } from './hooks/use-wallet';
 import { AddressProviderProvider as ContractAddressProvider } from './providers/address-provider';
-import { AddressProviderFromEnvVar } from '@anchor-protocol/anchor-js/address-provider';
-import { mantleConfig, MantleProvider } from './hooks/use-mantle';
 
-const RoutedApp: React.FunctionComponent = ({ children }) => {
-  const location = useLocation();
+interface AppProps {
+  className?: string;
+}
+
+function AppBase({ className }: AppProps) {
   const wallet = useWalletState();
 
   return (
-    <ContractAddressProvider value={new AddressProviderFromEnvVar()}>
-      <WalletProvider value={wallet} key={wallet.address}>
-        <MantleProvider client={mantleConfig}>
-          <DefaultLayout currentRoute={location.pathname}>
-            {children}
-          </DefaultLayout>
-        </MantleProvider>
-      </WalletProvider>
-    </ContractAddressProvider>
-  );
-};
-
-function App() {
-  return (
     <Router>
-      <RoutedApp>
-        <Routes />
-      </RoutedApp>
+      <ContractAddressProvider value={new AddressProviderFromEnvVar()}>
+        <WalletProvider value={wallet} key={wallet.address}>
+          <MantleProvider client={mantleConfig}>
+            <ThemeProvider theme={darkTheme}>
+              <GlobalStyle />
+              {/* Start Layout */}
+              <div className={className}>
+                <Header />
+                <Switch>
+                  <Route path="/earn" component={Earn} />
+                  <Route path="/borrow" component={Borrow} />
+                  <Redirect exact path="/basset" to="/basset/mint" />
+                  <Route path="/basset/mint" component={BassetMint} />
+                  <Route path="/basset/burn" component={BassetBurn} />
+                  <Route path="/basset/claim" component={BassetClaim} />
+                  <Redirect to="/earn" />
+                </Switch>
+                <Footer />
+              </div>
+              {/* End Layout */}
+            </ThemeProvider>
+          </MantleProvider>
+        </WalletProvider>
+      </ContractAddressProvider>
     </Router>
   );
 }
 
-export default App;
+export const App = styled(AppBase)`
+  // TODO
+`;

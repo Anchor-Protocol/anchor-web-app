@@ -5,12 +5,12 @@ import { useAddressProvider } from '../providers/address-provider';
 import extension, { PostResponse } from '../terra/extension';
 
 interface ActionContainerProps {
-  render: (
-    execute: (fabricated: Fabricated) => Promise<PostResponse>,
-  ) => React.ReactElement;
+  render: (execute: ActionExecute) => React.ReactElement;
 }
 
-type Fabricated = (ap: AddressProvider.Provider) => Msg[];
+export type ActionExecute = (fabricated: Fabricated) => Promise<PostResponse>;
+
+export type Fabricated = (ap: AddressProvider.Provider) => Msg[];
 
 export const ActionContainer: React.FunctionComponent<ActionContainerProps> = ({
   render,

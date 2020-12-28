@@ -14,6 +14,7 @@ enum PopupStates {
   WITHDRAW,
 }
 
+/** @deprecated */
 const EarnTotalDeposits: React.FunctionComponent<EarnTotalDepositsProps> = ({
   children,
 }) => {

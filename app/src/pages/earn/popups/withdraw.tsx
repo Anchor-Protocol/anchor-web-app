@@ -9,6 +9,7 @@ import { PopupChild } from '../../../layout/popup-container';
 
 interface EarnWithdrawPopupProps extends PopupChild {}
 
+/** @deprecated */
 const EarnWithdrawPopup: React.FunctionComponent<EarnWithdrawPopupProps> = ({
   close,
 }) => {

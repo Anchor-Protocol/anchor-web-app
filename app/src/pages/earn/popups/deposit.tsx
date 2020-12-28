@@ -11,6 +11,7 @@ import { PopupChild } from '../../../layout/popup-container';
 
 interface EarnDepositPopupProps extends PopupChild {}
 
+/** @deprecated */
 const EarnDepositPopup: React.FunctionComponent<EarnDepositPopupProps> = ({
   close,
 }) => {

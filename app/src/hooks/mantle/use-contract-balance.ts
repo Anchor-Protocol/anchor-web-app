@@ -32,6 +32,8 @@ export default function useContractBalance(
       queryMsg: JSON.stringify({ balance: { address: wallet.address } }),
     },
   });
+  
+  console.log('use-contract-balance.ts..useContractBalance()', {loading, error, data});
 
   return [
     loading,
