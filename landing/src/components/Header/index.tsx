@@ -35,9 +35,6 @@ export const Header = styled(HeaderBase)`
   // ---------------------------------------------
   background-color: #ffffff;
 
-  transition: background-color 0.3s ease-out;
-  will-change: background-color;
-
   a {
     text-decoration: none;
   }
@@ -49,9 +46,6 @@ export const Header = styled(HeaderBase)`
 
     a {
       color: #333333;
-
-      transition: color 0.2s ease-out;
-      will-change: color;
     }
   }
 
@@ -60,9 +54,6 @@ export const Header = styled(HeaderBase)`
       font-size: 13px;
       font-weight: 500;
       color: #696969;
-
-      transition: color 0.2s ease-out;
-      will-change: color;
 
       &:hover {
         color: #515151;
@@ -80,9 +71,6 @@ export const Header = styled(HeaderBase)`
     button {
       color: #999999;
       background-color: #f6f6f6;
-
-      will-change: color, background-color;
-      transition: color 0.2s ease-out, background-color 0.2s ease-out;
 
       &:hover {
         color: #7e7e7e;

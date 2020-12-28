@@ -1,6 +1,7 @@
 import { GlobalStyle } from '@anchor-protocol/neumorphism-ui/themes/GlobalStyle';
 import { lightTheme } from '@anchor-protocol/neumorphism-ui/themes/lightTheme';
 import { ThemeProvider } from '@anchor-protocol/neumorphism-ui/themes/ThemeProvider';
+import { RouterScrollRestoration } from '@anchor-protocol/use-router-scroll-restoration';
 import { Footer } from 'components/Footer';
 import { Header } from 'components/Header';
 import { BAssets } from 'pages/bassets';
@@ -23,6 +24,7 @@ export interface AppProps {
 function AppBase({ className }: AppProps) {
   return (
     <Router>
+      <RouterScrollRestoration />
       <ThemeProvider theme={lightTheme}>
         <GlobalStyle />
         {/* Start Layout */}
