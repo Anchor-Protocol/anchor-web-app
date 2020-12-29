@@ -1,21 +1,24 @@
+import { fabricatebAssetMint } from '@anchor-protocol/anchor-js/fabricators';
+import { fabricateRegisterValidator } from '@anchor-protocol/anchor-js/fabricators/register-validator';
+import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import React, { useState } from 'react';
+import styled from 'styled-components';
 import Box from '../../components/box';
 import Button, { ButtonTypes } from '../../components/button';
-import BassetInput from './components/basset-input';
-import BassetSelection from './components/selection';
-
-import style from './basset.module.scss';
+import { ready } from '../../components/ready';
 import { ActionContainer } from '../../containers/action';
-import { fabricatebAssetMint } from '@anchor-protocol/anchor-js/fabricators';
+import useWhitelistedValidators from '../../hooks/mantle/use-whitelisted-validators';
 import { useWallet } from '../../hooks/use-wallet';
 import { useAddressProvider } from '../../providers/address-provider';
-import { fabricateRegisterValidator } from '@anchor-protocol/anchor-js/fabricators/register-validator';
-import useWhitelistedValidators from '../../hooks/mantle/use-whitelisted-validators';
-import { ready } from '../../components/ready';
 
-interface BassetMintProps {}
+import style from './basset.module.scss';
+import BassetInput from './components/basset-input';
 
-const BassetMint: React.FunctionComponent<BassetMintProps> = () => {
+export interface MintProps {
+  className?: string;
+}
+
+function MintBase({ className }: MintProps) {
   const { address } = useWallet();
   const addressProvider = useAddressProvider();
 
@@ -40,8 +43,7 @@ const BassetMint: React.FunctionComponent<BassetMintProps> = () => {
   const [addressToWhitelist, setAddressToWhitelist] = useState('');
 
   return ready(isReady, () => (
-    <div className={style['basset-container']}>
-      <BassetSelection />
+    <Section className={className}>
       <article className={style.business}>
         <Box>
           <BassetInput
@@ -129,8 +131,10 @@ const BassetMint: React.FunctionComponent<BassetMintProps> = () => {
           )}
         />
       </div>
-    </div>
+    </Section>
   ));
-};
+}
 
-export default BassetMint;
+export const Mint = styled(MintBase)`
+  // TODO
+`;

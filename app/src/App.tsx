@@ -6,9 +6,7 @@ import { ApolloProvider } from '@apollo/client';
 import { Footer } from 'components/Footer';
 import { Header } from 'components/Header';
 import { mantleClient } from 'env';
-import BassetBurn from 'pages/basset/burn';
-import BassetClaim from 'pages/basset/claim';
-import BassetMint from 'pages/basset/mint';
+import { BAsset } from 'pages/basset';
 import { Borrow } from 'pages/borrow';
 import { Earn } from 'pages/earn';
 import React from 'react';
@@ -38,7 +36,9 @@ function AppBase({ className }: AppProps) {
         <WalletProvider value={wallet} key={wallet.address}>
           {/* Set GraphQL environenments */}
           <ApolloProvider client={mantleClient}>
+            {/* Theme for Styled-Components and Material-UI */}
             <ThemeProvider theme={darkTheme}>
+              {/* Global CSS */}
               <GlobalStyle />
               {/* Start Layout */}
               <div className={className}>
@@ -46,10 +46,7 @@ function AppBase({ className }: AppProps) {
                 <Switch>
                   <Route path="/earn" component={Earn} />
                   <Route path="/borrow" component={Borrow} />
-                  <Redirect exact path="/basset" to="/basset/mint" />
-                  <Route path="/basset/mint" component={BassetMint} />
-                  <Route path="/basset/burn" component={BassetBurn} />
-                  <Route path="/basset/claim" component={BassetClaim} />
+                  <Route path="/basset" component={BAsset} />
                   <Redirect to="/earn" />
                 </Switch>
                 <Footer />

@@ -1,14 +1,13 @@
+import { fabricatebAssetBurn } from '@anchor-protocol/anchor-js/fabricators';
 import React, { useState } from 'react';
 import Box from '../../components/box';
 import Button, { ButtonTypes } from '../../components/button';
-import BassetInput from './components/basset-input';
-import BassetSelection from './components/selection';
+import { ActionContainer } from '../../containers/action';
+import { useWallet } from '../../hooks/use-wallet';
+import { useAddressProvider } from '../../providers/address-provider';
 
 import style from './basset.module.scss';
-import { useWallet } from '../../hooks/use-wallet';
-import { ActionContainer } from '../../containers/action';
-import { fabricatebAssetBurn } from '@anchor-protocol/anchor-js/fabricators';
-import { useAddressProvider } from '../../providers/address-provider';
+import BassetInput from './components/basset-input';
 
 interface BassetBurnProps {}
 
@@ -21,7 +20,6 @@ const BassetBurn: React.FunctionComponent<BassetBurnProps> = () => {
 
   return (
     <div className={style['basset-container']}>
-      <BassetSelection />
       <article className={style.business}>
         <Box>
           <BassetInput

@@ -11,7 +11,6 @@ import { useWallet } from '../../hooks/use-wallet';
 import { useAddressProvider } from '../../providers/address-provider';
 
 import style from './basset.module.scss';
-import BassetSelection from './components/selection';
 
 interface BassetClaimProps {}
 
@@ -26,7 +25,6 @@ const BassetClaim: React.FunctionComponent<BassetClaimProps> = () => {
 
   return ready(isReady, () => (
     <div className={style['basset-container']}>
-      <BassetSelection />
       <article className={style.business}>
         <Box>
           <header>Available Luna</header>
