@@ -39,6 +39,7 @@ export const fabricateBorrow = ({
 
   return [
     new MsgExecuteContract(address, mmContractAddress, {
+      // @see https://github.com/Anchor-Protocol/money-market-contracts/blob/master/contracts/market/src/msg.rs#L68
       borrow_stable: {
         borrow_amount: amount,
         to: withdrawTo || undefined,

@@ -27,6 +27,7 @@ export const fabricatebAssetBurn = ({ address, amount, bAsset }: Option) => (
 
   return [
     new MsgExecuteContract(address, bAssetTokenAddress, {
+      // @see https://github.com/Anchor-Protocol/anchor-bAsset-contracts/blob/master/contracts/anchor_basset_token/src/handler.rs#L101
       send: {
         contract: bAssetGovAddress,
         amount: new Int(+amount * 1000000).toString(),

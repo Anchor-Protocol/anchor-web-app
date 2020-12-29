@@ -46,6 +46,7 @@ export const fabricateRedeemCollateral = ({
   return [
     // unlock collateral
     new MsgExecuteContract(address, mmOverseerContract, {
+      // @see https://github.com/Anchor-Protocol/money-market-contracts/blob/master/contracts/overseer/src/msg.rs#L78
       unlock_collateral: [
         [
           address,
@@ -56,6 +57,7 @@ export const fabricateRedeemCollateral = ({
 
     // withdraw from custody
     new MsgExecuteContract(address, custodyContract, {
+      // @see https://github.com/Anchor-Protocol/money-market-contracts/blob/master/contracts/custody/src/msg.rs#L69
       withdraw_collateral: {
         amount: redeem_all ? undefined : amount,
       },
