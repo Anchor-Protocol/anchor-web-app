@@ -4,6 +4,7 @@ import style from './selection.module.scss';
 
 interface BassetSelectionProps {}
 
+/** @deprecated */
 const BassetSelection: React.FunctionComponent<BassetSelectionProps> = () => {
   const location = useLocation();
 

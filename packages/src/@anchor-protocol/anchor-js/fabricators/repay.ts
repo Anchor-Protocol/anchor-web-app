@@ -43,6 +43,7 @@ export const fabricateRepay = ({
       address,
       mmContractAddress,
       {
+        // @see https://github.com/Anchor-Protocol/money-market-contracts/blob/master/contracts/market/src/msg.rs#L74
         repay_stable: {
           // nothing for now
         },

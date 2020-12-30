@@ -24,6 +24,11 @@ export default function useContractBalance(
 ): [boolean, ApolloError | undefined, ContractBalanceResponse, MantleRefetch] {
   //const addressProvider = useAddressProvider();
   const wallet = useWallet();
+  console.log(
+    'use-contract-balance.ts..useContractBalance()',
+    contractAddress,
+    JSON.stringify({ balance: { address: wallet.address } }),
+  );
   const { loading, error, data, refetch } = useQuery<{
     contractBalance: MantleContractResponse;
   }>(queryAnchorBalance, {
@@ -32,8 +37,12 @@ export default function useContractBalance(
       queryMsg: JSON.stringify({ balance: { address: wallet.address } }),
     },
   });
-  
-  console.log('use-contract-balance.ts..useContractBalance()', {loading, error, data});
+
+  console.log('use-contract-balance.ts..useContractBalance()', {
+    loading,
+    error,
+    data,
+  });
 
   return [
     loading,

@@ -38,6 +38,7 @@ export const fabricateDepositStableCoin = ({
       address,
       mmContractAddress,
       {
+        // @see https://github.com/Anchor-Protocol/money-market-contracts/blob/master/contracts/market/src/msg.rs#L65
         deposit_stable: {
           deposit_amount: new Int(amount * 1000000).toString(),
         },

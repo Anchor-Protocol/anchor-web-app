@@ -41,10 +41,6 @@ export const SelectAndTextInputContainer = styled.div`
   padding: 2px 20px;
 
   display: flex;
-  
-  > :nth-child(2) {
-    flex: 1;
-  }
 
   .MuiInputBase-root {
     color: ${({ theme }) => theme.textInput.textColor};

@@ -58,6 +58,7 @@ export const fabricateProvideCollateral = ({
     }),
     // lock_collateral call
     new MsgExecuteContract(address, mmOverseerContract, {
+      // @see https://github.com/Anchor-Protocol/money-market-contracts/blob/master/contracts/overseer/src/msg.rs#L75
       lock_collateral: {
         collaterals: [[address, new Int(amount * 1000000).toString()]],
       },

@@ -21,6 +21,8 @@ export const fabricatebAssetClaim = ({
 
   return [
     new MsgExecuteContract(address, bAssetRewardAddress, {
+      // @see https://github.com/Anchor-Protocol/anchor-bAsset-contracts/blob/master/contracts/anchor_basset_reward/src/msg.rs#L46
+      // @see https://github.com/Anchor-Protocol/anchor-bAsset-contracts/blob/master/contracts/anchor_basset_reward/src/user.rs#L16
       claim_reward: {
         recipient: recipient, // always
       },

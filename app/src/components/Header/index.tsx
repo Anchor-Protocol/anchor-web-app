@@ -16,7 +16,7 @@ function HeaderBase({ className }: HeaderProps) {
       <nav>
         <NavLink to="/earn">EARN</NavLink>
         <NavLink to="/borrow">BORROW</NavLink>
-        <NavLink to="/basset/mint">bASSET</NavLink>
+        <NavLink to="/basset">bASSET</NavLink>
       </nav>
       <section>
         <WalletSelector />
