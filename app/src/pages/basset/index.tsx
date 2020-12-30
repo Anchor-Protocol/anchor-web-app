@@ -10,7 +10,7 @@ import {
 } from 'react-router-dom';
 import styled from 'styled-components';
 import { Burn } from './burn';
-import Claim from './claim';
+import { Claim } from './claim';
 import { Mint } from './mint';
 
 export interface BAssetProps extends RouteComponentProps {
