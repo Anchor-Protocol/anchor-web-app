@@ -1,17 +1,12 @@
-/**
- * @author Lorenzo Cadamuro / http://lorenzocadamuro.com
- */
-
-import {mat4} from 'gl-matrix'
-import {regl} from '../../../renderer'
-import gui from '../../../helpers/gui'
-import {positions, uv, elements} from './config'
-import frag from './shader.frag'
-import vert from './shader.vert'
+import { mat4 } from 'gl-matrix';
+import gui from '../../../helpers/gui';
+import { elements, positions, uv } from './config';
+import frag from './shader.frag';
+import vert from './shader.vert';
 
 const CONFIG = {
-  depthOpacity: 0.25
-}
+  depthOpacity: 0.25,
+};
 
 gui.get((gui) => {
   const folder = gui.addFolder('Reflector')
@@ -19,7 +14,7 @@ gui.get((gui) => {
   folder.add(CONFIG, 'depthOpacity', 0, 1).step(0.01)
 })
 
-export default regl({
+export default regl => regl({
   frag,
   vert,
   context: {

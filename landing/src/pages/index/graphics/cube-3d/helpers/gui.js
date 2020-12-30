@@ -1,7 +1,3 @@
-/**
- * @author Lorenzo Cadamuro / http://lorenzocadamuro.com
- */
-
 import * as dat from 'dat.gui';
 
 let gui;

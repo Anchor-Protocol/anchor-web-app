@@ -1,7 +1,3 @@
-/**
- * @author Lorenzo Cadamuro / http://lorenzocadamuro.com
- */
-
 export default (regl, src) => {
   const texture = regl.texture();
   

@@ -1,4 +1,4 @@
-//import { BetterSavings } from './components/BetterSavings';
+import { BetterSavings } from './components/BetterSavings';
 import styled from 'styled-components';
 
 export interface IndexProps {
@@ -8,14 +8,12 @@ export interface IndexProps {
 function IndexBase({ className }: IndexProps) {
   return (
     <div className={className}>
-      {/*<BetterSavings style={{ height: 500 }} />*/}
+      <BetterSavings />
     </div>
   );
 }
 
 export const Index = styled(IndexBase)`
-  height: 100vh;
-
   background-color: #000000;
   color: #ffffff;
 
