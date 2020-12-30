@@ -1,4 +1,4 @@
-export default (regl, src) => {
+export const Texture = (regl, src) => {
   const texture = regl.texture();
   
   const image = new Image();

@@ -1,25 +1,21 @@
 import * as dat from 'dat.gui';
 
-let gui;
-
-const init = () => {
-  if (!gui) {
-    gui = new dat.GUI({width: 300})
-  }
-}
-
-setTimeout(() => {
+function createGui() {
   if (process.env.NODE_ENV === 'development') {
-    init()
-  }
-})
+    const gui = new dat.GUI({ width: 300 });
 
-export default {
-  get: (callback) => {
-    setTimeout(() => {
-      if (gui) {
-        callback(gui)
-      }
-    })
-  },
+    return {
+      get: (callback) => {
+        setTimeout(() => {
+          return gui;
+        });
+      },
+    };
+  }
+
+  return {
+    get: () => {},
+  };
 }
+
+export const gui = createGui();

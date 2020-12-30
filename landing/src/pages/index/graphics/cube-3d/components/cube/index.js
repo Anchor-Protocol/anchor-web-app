@@ -1,9 +1,8 @@
 import { mat4 } from 'gl-matrix';
-import gui from '../../helpers/gui';
-import { positions, centers, uv, elements, colors } from './config';
+import { gui } from '../../helpers/gui';
+import { centers, colors, elements, positions, uv } from './config';
 import frag from './shader.frag';
 import vert from './shader.vert';
-
 
 const CONFIG = {
   translateX: 0,
@@ -22,8 +21,7 @@ const CONFIG = {
 
 gui.get((gui) => {
   const folder = gui.addFolder('Cube');
-  
-  
+
   folder.add(CONFIG, 'translateX', -30, 30).step(0.01);
   folder.add(CONFIG, 'translateY', -30, 30).step(0.01);
   folder.add(CONFIG, 'translateZ', -30, 30).step(0.01);
@@ -35,18 +33,18 @@ gui.get((gui) => {
   folder.add(CONFIG, 'borderWidth', 0, 0.1).step(0.01);
   folder.add(CONFIG, 'displacementLength', 0, 2).step(0.01);
   folder.add(CONFIG, 'reflectionOpacity', 0, 1).step(0.01);
-  folder.add(CONFIG, 'scene', {'Apple': 3, 'Mask': 2, 'Displacement': 1});
+  folder.add(CONFIG, 'scene', { Apple: 3, Mask: 2, Displacement: 1 });
 });
 
-export default (regl) => {
+export const cube = (regl) => {
   const emptyTexture = regl.texture();
   const emptyCube = regl.cube();
-  
+
   return regl({
     frag,
     vert,
     context: {
-      world: (context, {matrix}) => {
+      world: (context, { matrix }) => {
         const {
           translateX,
           translateY,
@@ -57,49 +55,49 @@ export default (regl) => {
           rotateZ,
           scale,
         } = CONFIG;
-        
+
         const world = mat4.create();
-        
+
         mat4.translate(world, world, [translateX, translateY, translateZ]);
         mat4.rotate(world, world, rotation, [rotateX, rotateY, rotateZ]);
         mat4.scale(world, world, [scale, scale, scale]);
-        
+
         if (matrix) {
           mat4.multiply(world, world, matrix);
         }
-        
+
         return world;
       },
-      face: (context, {cullFace}) => {
+      face: (context, { cullFace }) => {
         return cullFace === Faces.FRONT ? -1 : 1;
       },
-      texture: (context, {texture}) => {
+      texture: (context, { texture }) => {
         return texture || emptyTexture;
       },
-      reflection: (context, {reflection}) => {
+      reflection: (context, { reflection }) => {
         return reflection || emptyCube;
       },
-      textureMatrix: (context, {textureMatrix}) => {
+      textureMatrix: (context, { textureMatrix }) => {
         return textureMatrix;
       },
       borderWidth: () => {
-        const {borderWidth} = CONFIG;
-        
+        const { borderWidth } = CONFIG;
+
         return borderWidth;
       },
       displacementLength: () => {
-        const {displacementLength} = CONFIG;
-        
+        const { displacementLength } = CONFIG;
+
         return displacementLength;
       },
       reflectionOpacity: () => {
-        const {reflectionOpacity} = CONFIG;
-        
+        const { reflectionOpacity } = CONFIG;
+
         return reflectionOpacity;
       },
       scene: () => {
-        const {scene} = CONFIG;
-        
+        const { scene } = CONFIG;
+
         return parseFloat(scene);
       },
     },
@@ -148,7 +146,7 @@ export default (regl) => {
     count: 36,
     framebuffer: regl.prop('fbo'),
   });
-}
+};
 
 export const Types = {
   DISPLACEMENT: 1,

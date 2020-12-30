@@ -1,15 +1,19 @@
 import { mat4 } from 'gl-matrix';
-import _camera from './camera';
-import _content, { Types as ContentTypes } from './components/content';
-import _cube, {
+import { camera as _camera } from './camera';
+import {
+  content as _content,
+  Types as ContentTypes,
+} from './components/content';
+import {
+  cube as _cube,
   Faces as CubeFaces,
   Masks as CubeMasks,
   Types as CubeTypes,
 } from './components/cube';
-import _reflection from './components/reflection';
-import gui from './helpers/gui';
-import stats from './helpers/stats';
-import Texture from './helpers/Texture';
+import { reflection as _reflection } from './components/reflection';
+import { gui } from './helpers/gui';
+import { stats } from './helpers/stats';
+import { Texture } from './helpers/Texture';
 import { play } from './renderer';
 
 const CONFIG = {

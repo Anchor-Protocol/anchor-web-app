@@ -1,5 +1,5 @@
 import { mat4 } from 'gl-matrix';
-import gui from './helpers/gui';
+import { gui } from './helpers/gui';
 
 const CONFIG = {
   fov: 45,
@@ -9,7 +9,7 @@ const CONFIG = {
 
 gui.get((gui) => {
   const folder = gui.addFolder('Camera');
-  
+
   folder.add(CONFIG, 'fov', 0, 200);
 });
 
@@ -19,55 +19,39 @@ const cameraConfig = {
   up: [0, 1, 0],
 };
 
-export default (regl) => {
+export const camera = (regl) => {
   return regl({
     context: {
-      projection: ({
-                     viewportWidth,
-                     viewportHeight,
-                   }) => {
-        const {fov, near, far} = CONFIG;
+      projection: ({ viewportWidth, viewportHeight }) => {
+        const { fov, near, far } = CONFIG;
         const fovy = (fov * Math.PI) / 180;
         const aspect = viewportWidth / viewportHeight;
-        
-        return mat4.perspective(
-          [],
-          fovy,
-          aspect,
-          near,
-          far,
-        );
+
+        return mat4.perspective([], fovy, aspect, near, far);
       },
-      
+
       view: (context, props) => {
-        const config = Object.assign(
-          {},
-          cameraConfig,
-          props,
-        );
-        
-        const {eye, target, up} = config;
-        
+        const config = Object.assign({}, cameraConfig, props);
+
+        const { eye, target, up } = config;
+
         return mat4.lookAt([], eye, target, up);
       },
-      
+
       fov: () => {
-        const {fov} = CONFIG;
-        
+        const { fov } = CONFIG;
+
         return fov;
       },
     },
-    
+
     uniforms: {
       u_projection: regl.context('projection'),
       u_view: regl.context('view'),
       u_cameraPosition: regl.context('eye'),
-      u_resolution: ({
-                       viewportWidth,
-                       viewportHeight,
-                     }) => {
+      u_resolution: ({ viewportWidth, viewportHeight }) => {
         return [viewportWidth, viewportHeight];
       },
     },
   });
-}
+};

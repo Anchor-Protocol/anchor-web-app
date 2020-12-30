@@ -1,26 +1,27 @@
-import Stats from 'stats.js'
+import Stats from 'stats.js';
 
-let stats
+function createStats() {
+  if (process.env.NODE_ENV) {
+    const stats = new Stats();
 
-const init = () => {
-  stats = new Stats()
+    stats.showPanel(0);
 
-  stats.showPanel(0)
+    document.body.appendChild(stats.dom);
 
-  document.body.appendChild(stats.dom)
+    return {
+      begin: () => {
+        stats.begin();
+      },
+      end: () => {
+        stats.end();
+      },
+    };
+  }
+
+  return {
+    begin: () => {},
+    end: () => {},
+  };
 }
 
-process.env.NODE_ENV === 'development' && init()
-
-export default {
-  begin: () => {
-    if (stats) {
-      stats.begin()
-    }
-  },
-  end: () => {
-    if (stats) {
-      stats.end()
-    }
-  },
-}
+export const stats = createStats();

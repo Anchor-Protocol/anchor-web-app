@@ -3,7 +3,7 @@ import { positions } from './config';
 import frag from './shader.frag';
 import vert from './shader.vert';
 
-export default (regl) => {
+export const plane = (regl) => {
   return regl({
     vert,
     frag,
