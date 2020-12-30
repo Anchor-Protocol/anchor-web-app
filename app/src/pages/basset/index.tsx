@@ -9,7 +9,7 @@ import {
   useRouteMatch,
 } from 'react-router-dom';
 import styled from 'styled-components';
-import Burn from './burn';
+import { Burn } from './burn';
 import Claim from './claim';
 import { Mint } from './mint';
 
@@ -116,7 +116,7 @@ export const BAsset = styled(BAssetBase)`
     h1 {
       margin: 80px 0 60px 30px;
     }
-    
+
     .NeuSection-root {
       .NeuSection-content {
         padding: 30px;
@@ -129,7 +129,7 @@ export const BAsset = styled(BAssetBase)`
     h1 {
       margin: 50px 0 40px 20px;
     }
-    
+
     .NeuSection-root {
       .NeuSection-content {
         padding: 20px;

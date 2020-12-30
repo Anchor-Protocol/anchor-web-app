@@ -147,14 +147,6 @@ function MintBase({ className }: MintProps) {
           </option>
         ))}
       </NativeSelect>
-      {/*<Selector*/}
-      {/*  className="validator"*/}
-      {/*  items={validatorItems}*/}
-      {/*  selectedItem={validator}*/}
-      {/*  onChange={(next) => setValidator(next)}*/}
-      {/*  labelFunction={(item) => item?.label ?? 'Select Validator'}*/}
-      {/*  keyFunction={(item) => item.value}*/}
-      {/*/>*/}
 
       <ActionButton className="submit">Mint</ActionButton>
 
