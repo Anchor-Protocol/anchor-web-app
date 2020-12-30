@@ -42,9 +42,13 @@ function ClaimBase({ className }: ClaimProps) {
   const addressProvider = useAddressProvider();
   //const [withdrawState, setWithdrawState] = useState({ amount: '0.00' });
 
-  const [loading, error, claimable = '0'] = useBassetClaimable();
+  const [
+    //loading,
+    //error,
+    claimable = '0',
+  ] = useBassetClaimable();
 
-  const isReady = !loading && !error;
+  //const isReady = !loading && !error;
 
   // ---------------------------------------------
   //
@@ -85,7 +89,7 @@ function ClaimBase({ className }: ClaimProps) {
 
   useEffect(() => {
     updateHistory();
-  }, []);
+  }, [updateHistory]);
 
   return (
     <div className={className}>
@@ -280,7 +284,7 @@ export const Claim = styled(ClaimBase)`
 
       &:not(:last-child) {
         padding-bottom: 10px;
-        
+
         border-bottom: 1px solid
           ${({ theme }) =>
             rulerShadowColor({
@@ -291,7 +295,7 @@ export const Claim = styled(ClaimBase)`
 
       &:not(:first-child) {
         padding-top: 10px;
-        
+
         border-top: 1px solid
           ${({ theme }) =>
             rulerLightColor({
