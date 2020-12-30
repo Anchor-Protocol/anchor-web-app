@@ -70,8 +70,12 @@
     "@types/testing-library__jest-dom": "^5.9.5",
     "bignumber.js": "^9.0.1",
     "color": "^3.1.3",
+    "dat.gui": "^0.7.7",
     "downshift": "^6.0.7",
     "fastdom": "^1.0.9",
+    "gl-matrix": "^3.3.0",
+    "glslify": "^7.1.1",
+    "glslify-loader": "^2.0.0",
     "graphql": "^15.4.0",
     "multiplerun": "^1.1.2",
     "puppeteer": "^5.5.0",
@@ -81,13 +85,21 @@
     "react-dom": "^17.0.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
+    "regl": "^2.0.1",
     "resize-observer-polyfill": "^1.5.1",
+    "resl": "^1.0.3",
     "rocket-punch": "^2.3.2",
+    "stats.js": "^0.17.0",
     "styled-components": "^5.2.1",
     "ts-node": "^9.1.1",
     "tsconfig-paths": "^3.9.0",
     "typescript": "^4.1.3",
     "use-resize-observer": "^7.0.0",
     "web-vitals": "^0.2.4"
+  },
+  "devDependencies": {
+    "@types/dat.gui": "^0.7.6",
+    "@types/gl-matrix": "^3.2.0",
+    "@types/stats.js": "^0.17.0"
   }
 }
