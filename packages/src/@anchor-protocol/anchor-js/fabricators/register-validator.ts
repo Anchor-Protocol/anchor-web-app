@@ -18,12 +18,12 @@ export const fabricateRegisterValidator = ({
 ): MsgExecuteContract[] => {
   validateInput([validateValAddress(validatorAddress)]);
 
-  const bAssetGovAddress = addressProvider.bAssetGov('bluna');
+  const bAssetHubAddress = addressProvider.bAssetHub('bluna');
 
   return [
     new MsgExecuteContract(
       address,
-      bAssetGovAddress,
+      bAssetHubAddress,
       {
         register_validator: {
           validator: validatorAddress,

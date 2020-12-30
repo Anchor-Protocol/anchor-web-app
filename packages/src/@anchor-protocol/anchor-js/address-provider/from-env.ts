@@ -6,7 +6,7 @@ export class AddressProviderFromEnvVar implements AddressProvider.Provider {
   bAssetReward(denom: string): string {
     return getFromEnv('bAssetReward');
   }
-  bAssetGov(denom: string): string {
+  bAssetHub(denom: string): string {
     return getFromEnv('bLuna');
   }
   bAssetToken(denom: string): string {

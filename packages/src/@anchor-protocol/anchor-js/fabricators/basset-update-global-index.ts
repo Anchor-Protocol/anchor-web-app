@@ -15,10 +15,10 @@ export const fabricatebAssetUpdateGlobalIndex = ({
 ): MsgExecuteContract[] => {
   validateInput([validateAddress(address)]);
 
-  const bAssetRewardAddress = addressProvider.bAssetReward(bAsset);
+  const bAssetHubAddress = addressProvider.bAssetHub(bAsset);
 
   return [
-    new MsgExecuteContract(address, bAssetRewardAddress, {
+    new MsgExecuteContract(address, bAssetHubAddress, {
       update_global_index: {},
     }),
   ];

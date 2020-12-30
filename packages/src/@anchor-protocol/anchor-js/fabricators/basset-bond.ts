@@ -13,7 +13,7 @@ interface Option {
   validator: string; // validator address
 }
 
-export const fabricatebAssetMint = ({
+export const fabricatebAssetBond = ({
   address,
   amount,
   bAsset,
@@ -28,14 +28,14 @@ export const fabricatebAssetMint = ({
   ]);
 
   // const nativeTokenDenom = bAssetToNative.bluna[bAsset.toLowerCase()]
-  const bAssetContractAddress = addressProvider.bAssetGov(bAsset);
+  const bAssetContractAddress = addressProvider.bAssetHub(bAsset);
 
   return [
     new MsgExecuteContract(
       address,
       bAssetContractAddress,
       {
-        mint: {
+        bond: {
           validator, // validator must be whitelisted
         },
       },

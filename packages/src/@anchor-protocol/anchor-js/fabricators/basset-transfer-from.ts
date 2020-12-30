@@ -5,44 +5,42 @@ import {
   validateIsGreaterThanZero,
   validateIsNumber,
 } from '../utils/validation/number';
-import { createHookMsg } from '../utils/cw20/create-hook-msg';
 
 interface Option {
   address: string;
   amount: string;
   bAsset: string;
+  owner: string;
+  recipient: string;
 }
 
-export const fabricatebAssetBurn = ({ address, amount, bAsset }: Option) => (
+export const fabricatebAssetTransferFrom = ({
+  address,
+  amount,
+  bAsset,
+  owner,
+  recipient,
+}: Option) => (
   addressProvider: AddressProvider.Provider,
 ): MsgExecuteContract[] => {
   validateInput([
     validateAddress(address),
     validateIsNumber(+amount),
     validateIsGreaterThanZero(+amount),
+    validateAddress(owner),
+    validateAddress(recipient),
   ]);
 
   const bAssetTokenAddress = addressProvider.bAssetToken(bAsset);
-  const bAssetGovAddress = addressProvider.bAssetGov(bAsset);
 
   return [
     new MsgExecuteContract(address, bAssetTokenAddress, {
-      // @see https://github.com/Anchor-Protocol/anchor-bAsset-contracts/blob/master/contracts/anchor_basset_token/src/handler.rs#L101
-      send: {
-        contract: bAssetGovAddress,
+      // @see https://github.com/Anchor-Protocol/anchor-bAsset-contracts/blob/cce41e707c67ee2852c4929e17fb1472dbd2aa35/contracts/anchor_basset_token/src/handler.rs#L142
+      transfer_from: {
+        owner: owner,
+        recipient: recipient,
         amount: new Int(+amount * 1000000).toString(),
-        msg: createHookMsg({
-          init_burn: {},
-        }),
       },
     }),
   ];
 };
-
-// new MsgExecuteContract(
-//   address,
-//   bAssetGovAddress,
-//   {
-//     finish_burn: {}
-//   }
-// )
