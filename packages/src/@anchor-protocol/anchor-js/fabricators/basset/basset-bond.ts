@@ -1,4 +1,4 @@
-import { Dec, Int, MsgExecuteContract } from '@terra-money/terra.js';
+import { Int, MsgExecuteContract } from '@terra-money/terra.js';
 import { validateInput } from '../../utils/validate-input';
 import {
   validateAddress,

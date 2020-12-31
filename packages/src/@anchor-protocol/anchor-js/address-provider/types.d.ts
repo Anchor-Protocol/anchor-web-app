@@ -10,5 +10,7 @@ declare namespace AddressProvider {
     overseer(denom: string): string;
     aToken(denom: string): string;
     oracle(): string;
+    interest(): string;
+    liquidation(): string;
   }
 }

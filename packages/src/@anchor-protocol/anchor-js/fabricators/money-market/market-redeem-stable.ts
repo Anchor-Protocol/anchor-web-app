@@ -1,8 +1,8 @@
 import { Int, MsgExecuteContract } from '@terra-money/terra.js';
-import { validateAddress } from '../utils/validation/address';
-import { validateInput } from '../utils/validate-input';
-import { validateIsGreaterThanZero } from '../utils/validation/number';
-import { createHookMsg } from '../utils/cw20/create-hook-msg';
+import { validateAddress } from '../../utils/validation/address';
+import { validateInput } from '../../utils/validate-input';
+import { validateIsGreaterThanZero } from '../../utils/validation/number';
+import { createHookMsg } from '../../utils/cw20/create-hook-msg';
 
 interface Option {
   address: string;
@@ -24,18 +24,14 @@ export const fabricateRedeemStable = ({ address, symbol, amount }: Option) => (
   const aTokenAddress = addressProvider.aToken(symbol);
 
   return [
-    new MsgExecuteContract(
-      address,
-      aTokenAddress,
-      {
-        send: {
-          address: marketAddress,
-          amount: new Int(amount).toString(),
-          msg: createHookMsg({
-            redeem_stable: {},
-          }),
-        },
-      }, // TODO: implement me
-    ),
+    new MsgExecuteContract(address, aTokenAddress, {
+      send: {
+        address: marketAddress,
+        amount: new Int(amount).toString(),
+        msg: createHookMsg({
+          redeem_stable: {},
+        }),
+      },
+    }),
   ];
 };

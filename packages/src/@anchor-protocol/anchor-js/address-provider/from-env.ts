@@ -30,6 +30,12 @@ export class AddressProviderFromEnvVar implements AddressProvider.Provider {
   oracle(): string {
     return getFromEnv('mmOracle');
   }
+  interest(): string {
+    return getFromEnv('mmInterest');
+  }
+  liquidation(): string {
+    return getFromEnv('mmLiquidation');
+  }
 }
 
 function getFromEnv(key: string): string {
