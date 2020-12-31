@@ -1,4 +1,4 @@
-import { Int, MsgExecuteContract } from '@terra-money/terra.js';
+import { Dec, Int, MsgExecuteContract } from '@terra-money/terra.js';
 import { validateInput } from '../../utils/validate-input';
 import {
   validateAddress,
@@ -42,7 +42,7 @@ export const fabricatebAssetBond = ({
 
       // send native token
       {
-        uluna: new Int(amount * 1000000).toString(),
+        uluna: new Int(amount).mul(new Int(100000)).toString(),
       },
     ),
   ];

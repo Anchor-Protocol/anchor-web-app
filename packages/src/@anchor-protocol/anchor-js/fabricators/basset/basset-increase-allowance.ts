@@ -40,7 +40,7 @@ export const fabricatebAssetIncreaseAllowance = ({
       // @see https://github.com/Anchor-Protocol/anchor-bAsset-contracts/blob/cce41e707c67ee2852c4929e17fb1472dbd2aa35/contracts/anchor_basset_token/src/contract.rs#L57
       increase_allowance: {
         spender: spender,
-        amount: new Int(+amount * 1000000).toString(),
+        amount: new Int(amount).mul(1000000).toString(),
         expires: expires,
       },
     }),

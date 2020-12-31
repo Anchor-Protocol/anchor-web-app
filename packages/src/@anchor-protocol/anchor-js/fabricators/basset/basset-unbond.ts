@@ -30,7 +30,7 @@ export const fabricatebAssetBurn = ({ address, amount, bAsset }: Option) => (
       // @see https://github.com/Anchor-Protocol/anchor-bAsset-contracts/blob/cce41e707c67ee2852c4929e17fb1472dbd2aa35/contracts/anchor_basset_token/src/handler.rs#L101
       send: {
         contract: bAssetHubAddress,
-        amount: new Int(+amount * 1000000).toString(),
+        amount: new Int(amount).mul(1000000).toString(),
         msg: createHookMsg({
           unbond: {},
         }),

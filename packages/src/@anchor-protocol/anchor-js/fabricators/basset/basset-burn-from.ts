@@ -35,7 +35,7 @@ export const fabricatebAssetBurnFrom = ({
       // @see https://github.com/Anchor-Protocol/anchor-bAsset-contracts/blob/cce41e707c67ee2852c4929e17fb1472dbd2aa35/contracts/anchor_basset_token/src/handler.rs#L179
       burn_from: {
         owner: owner,
-        amount: new Int(+amount * 1000000).toString(),
+        amount: new Int(amount).mul(1000000).toString(),
       },
     }),
   ];

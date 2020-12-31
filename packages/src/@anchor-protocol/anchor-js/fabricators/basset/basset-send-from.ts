@@ -41,7 +41,7 @@ export const fabricatebAssetSendFrom = ({
       send_from: {
         owner: owner,
         contract: contract,
-        amount: new Int(+amount * 1000000).toString(),
+        amount: new Int(amount).mul(1000000).toString(),
         msg: msg,
       },
     }),
