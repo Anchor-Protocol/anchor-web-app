@@ -1,13 +1,13 @@
-import * as dat from 'dat.gui';
+import { GUI } from 'dat.gui';
 
 function createGui() {
   if (process.env.NODE_ENV === 'development') {
-    const gui = new dat.GUI({ width: 300 });
+    const gui = new GUI({ width: 300 });
 
     return {
-      get: (callback) => {
+      get: (callback: (gui: GUI) => void) => {
         setTimeout(() => {
-          return gui;
+          return callback(gui);
         });
       },
     };

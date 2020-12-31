@@ -1,20 +1,16 @@
 import { mat4 } from 'gl-matrix';
-import { camera as _camera } from './camera';
+import { createCamera } from './camera';
+import { createContent, Types as ContentTypes } from './components/content';
 import {
-  content as _content,
-  Types as ContentTypes,
-} from './components/content';
-import {
-  cube as _cube,
+  createCube,
   Faces as CubeFaces,
   Masks as CubeMasks,
   Types as CubeTypes,
 } from './components/cube';
-import { reflection as _reflection } from './components/reflection';
+import { createReflection } from './components/reflection';
 import { gui } from './helpers/gui';
 import { stats } from './helpers/stats';
-import { Texture } from './helpers/Texture';
-import { play } from './renderer';
+import { createTexture } from './helpers/Texture';
 
 const CONFIG = {
   cameraX: 0,
@@ -40,7 +36,7 @@ gui.get((gui) => {
   folder.add(CONFIG, 'velocity', 0, 0.05).step(0.0001);
 });
 
-const animate = (regl) => {
+export const animate = (regl) => {
   /**
    * Fbos
    */
@@ -54,36 +50,36 @@ const animate = (regl) => {
    */
   const textures = [
     {
-      texture: Texture(regl, require('./assets/logo.png').default),
+      texture: createTexture(regl, require('./assets/logo.png').default),
       typeId: ContentTypes.RAINBOW,
       maskId: CubeMasks.M1,
     },
     {
-      texture: Texture(regl, require('./assets/logo.png').default),
+      texture: createTexture(regl, require('./assets/logo.png').default),
       typeId: ContentTypes.BLUE,
       maskId: CubeMasks.M2,
     },
     {
-      texture: Texture(regl, require('./assets/logo.png').default),
+      texture: createTexture(regl, require('./assets/logo.png').default),
       typeId: ContentTypes.RED,
       maskId: CubeMasks.M3,
     },
     {
-      texture: Texture(regl, require('./assets/text-1.png').default),
+      texture: createTexture(regl, require('./assets/text-1.png').default),
       typeId: ContentTypes.BLUE,
       maskId: CubeMasks.M4,
     },
     {
-      texture: Texture(regl, require('./assets/text-2.png').default),
+      texture: createTexture(regl, require('./assets/text-2.png').default),
       typeId: ContentTypes.RED,
       maskId: CubeMasks.M5,
     },
   ];
 
-  const content = _content(regl);
-  const reflection = _reflection(regl);
-  const camera = _camera(regl);
-  const cube = _cube(regl);
+  const content = createContent(regl);
+  const reflection = createReflection(regl);
+  const camera = createCamera(regl);
+  const cube = createCube(regl);
 
   return ({ viewportWidth, viewportHeight, tick }) => {
     stats.begin();
@@ -206,6 +202,6 @@ const animate = (regl) => {
   };
 };
 
-export const init = (regl) => {
-  play(regl, animate(regl));
-};
+//export const init = (regl) => {
+//  play(regl, animate(regl));
+//};

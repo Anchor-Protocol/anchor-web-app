@@ -14,7 +14,7 @@ gui.get((gui) => {
   folder.add(CONFIG, 'depthOpacity', 0, 1).step(0.01);
 });
 
-export const reflector = (regl) =>
+export const createReflector = (regl) =>
   regl({
     frag,
     vert,

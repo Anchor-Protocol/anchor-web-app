@@ -1,4 +1,5 @@
-import { init } from 'pages/index/graphics/cube-3d';
+import { animate } from 'pages/index/graphics/cube-3d';
+import { play, stop } from 'pages/index/graphics/cube-3d/renderer';
 import { useEffect, useRef } from 'react';
 import Regl from 'regl';
 import styled from 'styled-components';
@@ -19,7 +20,11 @@ function BetterSavingsBase({ className }: BetterSavingsProps) {
       },
     });
 
-    init(regl);
+    play(regl, animate(regl));
+
+    return () => {
+      stop();
+    };
   }, []);
 
   return (
@@ -38,7 +43,7 @@ export const BetterSavings = styled(BetterSavingsBase)`
 
   display: grid;
   place-items: center;
-  
+
   height: 900px;
 
   > :first-child {
@@ -53,7 +58,7 @@ export const BetterSavings = styled(BetterSavingsBase)`
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    
+
     width: 600px;
     height: 600px;
   }

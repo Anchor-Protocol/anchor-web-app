@@ -36,7 +36,7 @@ gui.get((gui) => {
   folder.add(CONFIG, 'scene', { Apple: 3, Mask: 2, Displacement: 1 });
 });
 
-export const cube = (regl) => {
+export const createCube = (regl) => {
   const emptyTexture = regl.texture();
   const emptyCube = regl.cube();
 

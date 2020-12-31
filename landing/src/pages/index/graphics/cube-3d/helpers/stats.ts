@@ -1,7 +1,7 @@
 import Stats from 'stats.js';
 
 function createStats() {
-  if (process.env.NODE_ENV) {
+  if (process.env.NODE_ENV === 'development') {
     const stats = new Stats();
 
     stats.showPanel(0);

@@ -19,7 +19,7 @@ const cameraConfig = {
   up: [0, 1, 0],
 };
 
-export const camera = (regl) => {
+export const createCamera = (regl) => {
   return regl({
     context: {
       projection: ({ viewportWidth, viewportHeight }) => {

@@ -1,7 +1,7 @@
 import { mat4, vec3 } from 'gl-matrix';
-import { camera as _camera } from '../../camera';
-import { plane as _plane } from './plane';
-import { reflector as _reflector } from './reflector';
+import { createCamera } from '../../camera';
+import { createPlane } from './plane';
+import { createReflector } from './reflector';
 
 export const planes = [
   {
@@ -56,9 +56,9 @@ const reflect = (a, b) => {
   return vec3.sub([], a, vec3.mul([], dot2, b));
 };
 
-export const reflection = (regl) => {
-  const reflector = _reflector(regl);
-  const plane = _plane(regl);
+export const createReflection = (regl) => {
+  const reflector = createReflector(regl);
+  const plane = createPlane(regl);
 
   const renderTarget = regl.framebuffer();
   const setup = regl({
@@ -119,7 +119,7 @@ export const reflection = (regl) => {
     },
   });
 
-  const camera = _camera(regl);
+  const camera = createCamera(regl);
 
   return ({ reflectionFbo, cameraConfig, rotationMatrix, texture }) => {
     const props = new Array(6);

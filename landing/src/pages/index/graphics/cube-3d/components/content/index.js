@@ -28,7 +28,7 @@ gui.get((gui) => {
   folder.add(CONFIG, 'scale', 0, 10).step(0.01);
 });
 
-export const content = (regl) => {
+export const createContent = (regl) => {
   const emptyTexture = regl.texture();
 
   const draw = regl({
