@@ -1,11 +1,11 @@
 import { Int, MsgExecuteContract } from '@terra-money/terra.js';
-import { validateInput } from '../utils/validate-input';
-import { validateAddress } from '../utils/validation/address';
+import { validateInput } from '../../utils/validate-input';
+import { validateAddress } from '../../utils/validation/address';
 import {
   validateIsGreaterThanZero,
   validateIsNumber,
-} from '../utils/validation/number';
-import { createHookMsg } from '../utils/cw20/create-hook-msg';
+} from '../../utils/validation/number';
+import { createHookMsg } from '../../utils/cw20/create-hook-msg';
 
 interface Option {
   address: string;

@@ -1,22 +1,24 @@
 import { Int, MsgExecuteContract } from '@terra-money/terra.js';
-import { validateInput } from '../utils/validate-input';
-import { validateAddress } from '../utils/validation/address';
+import { validateInput } from '../../utils/validate-input';
+import { validateAddress } from '../../utils/validation/address';
 import {
   validateIsGreaterThanZero,
   validateIsNumber,
-} from '../utils/validation/number';
+} from '../../utils/validation/number';
 
 interface Option {
   address: string;
   amount: string;
   bAsset: string;
+  owner: string;
   recipient: string;
 }
 
-export const fabricatebAssetTransfer = ({
+export const fabricatebAssetTransferFrom = ({
   address,
   amount,
   bAsset,
+  owner,
   recipient,
 }: Option) => (
   addressProvider: AddressProvider.Provider,
@@ -25,6 +27,7 @@ export const fabricatebAssetTransfer = ({
     validateAddress(address),
     validateIsNumber(+amount),
     validateIsGreaterThanZero(+amount),
+    validateAddress(owner),
     validateAddress(recipient),
   ]);
 
@@ -32,8 +35,9 @@ export const fabricatebAssetTransfer = ({
 
   return [
     new MsgExecuteContract(address, bAssetTokenAddress, {
-      // @see https://github.com/Anchor-Protocol/anchor-bAsset-contracts/blob/cce41e707c67ee2852c4929e17fb1472dbd2aa35/contracts/anchor_basset_token/src/handler.rs#L17
-      transfer: {
+      // @see https://github.com/Anchor-Protocol/anchor-bAsset-contracts/blob/cce41e707c67ee2852c4929e17fb1472dbd2aa35/contracts/anchor_basset_token/src/handler.rs#L142
+      transfer_from: {
+        owner: owner,
         recipient: recipient,
         amount: new Int(+amount * 1000000).toString(),
       },

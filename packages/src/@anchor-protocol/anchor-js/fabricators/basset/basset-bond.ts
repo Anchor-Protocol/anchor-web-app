@@ -1,10 +1,10 @@
 import { Int, MsgExecuteContract } from '@terra-money/terra.js';
-import { validateInput } from '../utils/validate-input';
+import { validateInput } from '../../utils/validate-input';
 import {
   validateAddress,
   validateValAddress,
-} from '../utils/validation/address';
-import { validateIsGreaterThanZero } from '../utils/validation/number';
+} from '../../utils/validation/address';
+import { validateIsGreaterThanZero } from '../../utils/validation/number';
 
 interface Option {
   address: string;

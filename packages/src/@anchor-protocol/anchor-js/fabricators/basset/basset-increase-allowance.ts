@@ -1,10 +1,10 @@
 import { Int, MsgExecuteContract } from '@terra-money/terra.js';
-import { validateInput } from '../utils/validate-input';
-import { validateAddress } from '../utils/validation/address';
+import { validateInput } from '../../utils/validate-input';
+import { validateAddress } from '../../utils/validation/address';
 import {
   validateIsGreaterThanZero,
   validateIsNumber,
-} from '../utils/validation/number';
+} from '../../utils/validation/number';
 
 type Expire = { at_height: number } | { at_time: number } | { never: {} };
 
