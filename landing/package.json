@@ -83,6 +83,7 @@
     "react-app-rewire-alias": "^0.1.9",
     "react-app-rewired": "^2.1.8",
     "react-dom": "^17.0.1",
+    "react-responsive": "^8.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
     "regl": "^2.0.1",
@@ -100,6 +101,7 @@
   "devDependencies": {
     "@types/dat.gui": "^0.7.6",
     "@types/gl-matrix": "^3.2.0",
+    "@types/react-responsive": "^8.0.2",
     "@types/stats.js": "^0.17.0"
   }
 }

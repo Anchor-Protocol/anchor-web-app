@@ -1,34 +1,33 @@
 import { mat4 } from 'gl-matrix';
-import { gui } from '../../helpers/gui';
 import { elements, positions, uv } from './config';
 import frag from './shader.frag';
 import vert from './shader.vert';
 
-const CONFIG = {
-  translateX: 0,
-  translateY: 0,
-  translateZ: 0,
-  rotation: 0,
-  rotateX: 1,
-  rotateY: 1,
-  rotateZ: 1,
-  scale: 1.4,
-};
+export const createContent = (regl, gui) => {
+  const CONFIG = {
+    translateX: 0,
+    translateY: 0,
+    translateZ: 0,
+    rotation: 0,
+    rotateX: 1,
+    rotateY: 1,
+    rotateZ: 1,
+    scale: 1.4,
+  };
 
-gui.get((gui) => {
-  const folder = gui.addFolder('Content');
+  if (gui) {
+    const folder = gui.addFolder('Content');
+  
+    folder.add(CONFIG, 'translateX', -30, 30).step(0.01);
+    folder.add(CONFIG, 'translateY', -30, 30).step(0.01);
+    folder.add(CONFIG, 'translateZ', -30, 30).step(0.01);
+    folder.add(CONFIG, 'rotation', -5, 5).step(0.0001);
+    folder.add(CONFIG, 'rotateX', 0, 10).step(0.1);
+    folder.add(CONFIG, 'rotateY', 0, 10).step(0.1);
+    folder.add(CONFIG, 'rotateZ', 0, 10).step(0.1);
+    folder.add(CONFIG, 'scale', 0, 10).step(0.01);
+  }
 
-  folder.add(CONFIG, 'translateX', -30, 30).step(0.01);
-  folder.add(CONFIG, 'translateY', -30, 30).step(0.01);
-  folder.add(CONFIG, 'translateZ', -30, 30).step(0.01);
-  folder.add(CONFIG, 'rotation', -5, 5).step(0.0001);
-  folder.add(CONFIG, 'rotateX', 0, 10).step(0.1);
-  folder.add(CONFIG, 'rotateY', 0, 10).step(0.1);
-  folder.add(CONFIG, 'rotateZ', 0, 10).step(0.1);
-  folder.add(CONFIG, 'scale', 0, 10).step(0.01);
-});
-
-export const createContent = (regl) => {
   const emptyTexture = regl.texture();
 
   const draw = regl({

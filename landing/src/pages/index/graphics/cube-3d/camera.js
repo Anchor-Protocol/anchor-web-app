@@ -1,17 +1,4 @@
 import { mat4 } from 'gl-matrix';
-import { gui } from './helpers/gui';
-
-const CONFIG = {
-  fov: 45,
-  near: 0.01,
-  far: 1000,
-};
-
-gui.get((gui) => {
-  const folder = gui.addFolder('Camera');
-
-  folder.add(CONFIG, 'fov', 0, 200);
-});
 
 const cameraConfig = {
   eye: [0, 0, 6],
@@ -19,10 +6,23 @@ const cameraConfig = {
   up: [0, 1, 0],
 };
 
-export const createCamera = (regl) => {
+const CONFIG = {
+  fov: 45,
+  near: 0.01,
+  far: 1000,
+};
+
+export const createCamera = (regl, gui) => {
+  if (gui && !gui.__folders['Camera']) {
+    const folder = gui.addFolder('Camera');
+
+    folder.add(CONFIG, 'fov', 0, 200);
+  }
+
   return regl({
     context: {
       projection: ({ viewportWidth, viewportHeight }) => {
+        //console.log('camera.js..projection()', JSON.stringify(CONFIG));
         const { fov, near, far } = CONFIG;
         const fovy = (fov * Math.PI) / 180;
         const aspect = viewportWidth / viewportHeight;

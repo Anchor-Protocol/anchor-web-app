@@ -56,9 +56,10 @@ const reflect = (a, b) => {
   return vec3.sub([], a, vec3.mul([], dot2, b));
 };
 
-export const createReflection = (regl) => {
-  const reflector = createReflector(regl);
-  const plane = createPlane(regl);
+export const createReflection = (regl, gui) => {
+  const reflector = createReflector(regl, gui);
+  const plane = createPlane(regl, gui);
+  const camera = createCamera(regl, gui);
 
   const renderTarget = regl.framebuffer();
   const setup = regl({
@@ -118,8 +119,6 @@ export const createReflection = (regl) => {
       },
     },
   });
-
-  const camera = createCamera(regl);
 
   return ({ reflectionFbo, cameraConfig, rotationMatrix, texture }) => {
     const props = new Array(6);

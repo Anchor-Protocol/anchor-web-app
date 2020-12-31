@@ -1,40 +1,73 @@
-import { animate } from 'pages/index/graphics/cube-3d';
-import { play, stop } from 'pages/index/graphics/cube-3d/renderer';
-import { useEffect, useRef } from 'react';
+import { GUI } from 'dat.gui';
+import { useEffect, useRef, useState } from 'react';
 import Regl from 'regl';
+import Stats from 'stats.js';
 import styled from 'styled-components';
+import { animate } from '../graphics/cube-3d';
+import { play, stop } from '../graphics/cube-3d/renderer';
 
 export interface BetterSavingsProps {
   className?: string;
 }
 
+function getSize(): number {
+  return Math.max(500, Math.min(Math.floor(window.innerWidth * 0.6), 900));
+}
+
 function BetterSavingsBase({ className }: BetterSavingsProps) {
-  const ref = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [size, setSize] = useState<number>(() => getSize());
 
   useEffect(() => {
+    window.addEventListener('resize', () => setSize(getSize()));
+  }, []);
+
+  useEffect(() => {
+    let gui: GUI | null = null,
+      stats: Stats | null = null;
+
+    if (process.env.NODE_ENV === 'development') {
+      gui = new GUI({ width: 300 });
+
+      stats = new Stats();
+      stats.showPanel(0);
+
+      document.body.appendChild(stats.dom);
+    }
+
     const regl = Regl({
-      container: ref.current!,
+      canvas: canvasRef.current!,
       attributes: {
         antialias: true,
         alpha: true,
       },
     });
 
-    play(regl, animate(regl));
+    play(regl, animate(regl, gui, stats));
 
     return () => {
       stop();
+
+      if (!!gui) {
+        gui.destroy();
+      }
+
+      if (!!stats) {
+        document.body.removeChild(stats.dom);
+      }
     };
   }, []);
 
   return (
-    <figure className={className}>
-      <div>
-        <span>Better</span>
-        <span>Savings</span>
-      </div>
-      <div ref={ref} />
-    </figure>
+    <section className={className}>
+      <h2 className="title">Better Savings</h2>
+      <canvas
+        ref={canvasRef}
+        width={size * 2}
+        height={size * 2}
+        style={{ width: size, height: size }}
+      />
+    </section>
   );
 }
 
@@ -44,22 +77,35 @@ export const BetterSavings = styled(BetterSavingsBase)`
   display: grid;
   place-items: center;
 
-  height: 900px;
+  width: 100%;
+  height: max(450px, 80vh);
 
-  > :first-child {
+  > h2 {
     text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.2), 1px 1px 1px #000;
     color: #171717;
-    font-size: 156px;
+    font-size: clamp(80px, 10vw, 156px);
     font-weight: 900;
+    text-align: center;
+    word-spacing: 1em;
+    line-height: 1em;
   }
 
-  > :last-child {
+  > canvas {
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+  }
 
-    width: 600px;
-    height: 600px;
+  @media (max-width: 500px) {
+    height: 80vh;
+
+    > h2 {
+      margin-top: 40vh;
+    }
+
+    > canvas {
+      top: 40%;
+    }
   }
 `;

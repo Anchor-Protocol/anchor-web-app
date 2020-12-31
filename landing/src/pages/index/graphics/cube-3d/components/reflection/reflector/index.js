@@ -1,31 +1,27 @@
 import { mat4 } from 'gl-matrix';
-import { gui } from '../../../helpers/gui';
 import { elements, positions, uv } from './config';
 import frag from './shader.frag';
 import vert from './shader.vert';
 
-const CONFIG = {
-  depthOpacity: 0.25,
-};
+export const createReflector = (regl, gui) => {
+  const CONFIG = {
+    depthOpacity: 0.25,
+  };
 
-gui.get((gui) => {
-  const folder = gui.addFolder('Reflector');
+  if (gui) {
+    const folder = gui.addFolder('Reflector');
 
-  folder.add(CONFIG, 'depthOpacity', 0, 1).step(0.01);
-});
+    folder.add(CONFIG, 'depthOpacity', 0, 1).step(0.01);
+  }
 
-export const createReflector = (regl) =>
-  regl({
+  return regl({
     frag,
     vert,
     context: {
-      world: (
-        { viewportWidth, viewportHeight },
-        { cameraConfig: mainCameraConfig, fov },
-      ) => {
+      world: ({ viewportWidth, viewportHeight }, { cameraConfig, fov }) => {
         const fovy = (fov * Math.PI) / 180;
         const aspect = viewportWidth / viewportHeight;
-        const cameraHeight = Math.tan(fovy / 2) * mainCameraConfig.eye[2];
+        const cameraHeight = Math.tan(fovy / 2) * cameraConfig.eye[2];
         const cameraWidth = cameraHeight * aspect;
 
         const world = mat4.create();
@@ -71,3 +67,4 @@ export const createReflector = (regl) =>
     elements,
     count: 6,
   });
+};

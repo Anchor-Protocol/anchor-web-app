@@ -8,35 +8,33 @@ import {
   Types as CubeTypes,
 } from './components/cube';
 import { createReflection } from './components/reflection';
-import { gui } from './helpers/gui';
-import { stats } from './helpers/stats';
 import { createTexture } from './helpers/Texture';
 
-const CONFIG = {
-  cameraX: 0,
-  cameraY: 0,
-  cameraZ: 5.7,
-  rotation: 4.8,
-  rotateX: 1,
-  rotateY: 1,
-  rotateZ: 1,
-  velocity: 0.009,
-};
+export const animate = (regl, gui, stats) => {
+  const CONFIG = {
+    cameraX: 0,
+    cameraY: 0,
+    cameraZ: 5.7,
+    rotation: 4.8,
+    rotateX: 1,
+    rotateY: 1,
+    rotateZ: 1,
+    velocity: 0.009,
+  };
 
-gui.get((gui) => {
-  const folder = gui.addFolder('Main');
+  if (gui) {
+    const folder = gui.addFolder('Main');
 
-  folder.add(CONFIG, 'cameraX', -20, 20).step(0.1);
-  folder.add(CONFIG, 'cameraY', -20, 20).step(0.1);
-  folder.add(CONFIG, 'cameraZ', -20, 20).step(0.1);
-  folder.add(CONFIG, 'rotation', -5, 5).step(0.0001);
-  folder.add(CONFIG, 'rotateX', 0, 10).step(0.1);
-  folder.add(CONFIG, 'rotateY', 0, 10).step(0.1);
-  folder.add(CONFIG, 'rotateZ', 0, 10).step(0.1);
-  folder.add(CONFIG, 'velocity', 0, 0.05).step(0.0001);
-});
+    folder.add(CONFIG, 'cameraX', -20, 20).step(0.1);
+    folder.add(CONFIG, 'cameraY', -20, 20).step(0.1);
+    folder.add(CONFIG, 'cameraZ', -20, 20).step(0.1);
+    folder.add(CONFIG, 'rotation', -5, 5).step(0.0001);
+    folder.add(CONFIG, 'rotateX', 0, 10).step(0.1);
+    folder.add(CONFIG, 'rotateY', 0, 10).step(0.1);
+    folder.add(CONFIG, 'rotateZ', 0, 10).step(0.1);
+    folder.add(CONFIG, 'velocity', 0, 0.05).step(0.0001);
+  }
 
-export const animate = (regl) => {
   /**
    * Fbos
    */
@@ -76,13 +74,13 @@ export const animate = (regl) => {
     },
   ];
 
-  const content = createContent(regl);
-  const reflection = createReflection(regl);
-  const camera = createCamera(regl);
-  const cube = createCube(regl);
+  const content = createContent(regl, gui);
+  const reflection = createReflection(regl, gui);
+  const camera = createCamera(regl, gui);
+  const cube = createCube(regl, gui);
 
   return ({ viewportWidth, viewportHeight, tick }) => {
-    stats.begin();
+    stats?.begin();
 
     const {
       rotation,
@@ -198,7 +196,7 @@ export const animate = (regl) => {
       ]);
     });
 
-    stats.end();
+    stats?.end();
   };
 };
 

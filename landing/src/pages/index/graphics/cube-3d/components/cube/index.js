@@ -1,42 +1,41 @@
 import { mat4 } from 'gl-matrix';
-import { gui } from '../../helpers/gui';
 import { centers, colors, elements, positions, uv } from './config';
 import frag from './shader.frag';
 import vert from './shader.vert';
 
-const CONFIG = {
-  translateX: 0,
-  translateY: 0,
-  translateZ: 0,
-  rotation: 0,
-  rotateX: 1,
-  rotateY: 1,
-  rotateZ: 1,
-  scale: 1,
-  borderWidth: 0.008,
-  displacementLength: 0.028,
-  reflectionOpacity: 0.3,
-  scene: 3,
-};
+export const createCube = (regl, gui) => {
+  const CONFIG = {
+    translateX: 0,
+    translateY: 0,
+    translateZ: 0,
+    rotation: 0,
+    rotateX: 1,
+    rotateY: 1,
+    rotateZ: 1,
+    scale: 1,
+    borderWidth: 0.008,
+    displacementLength: 0.028,
+    reflectionOpacity: 0.3,
+    scene: 3,
+  };
 
-gui.get((gui) => {
-  const folder = gui.addFolder('Cube');
+  if (gui) {
+    const folder = gui.addFolder('Cube');
+  
+    folder.add(CONFIG, 'translateX', -30, 30).step(0.01);
+    folder.add(CONFIG, 'translateY', -30, 30).step(0.01);
+    folder.add(CONFIG, 'translateZ', -30, 30).step(0.01);
+    folder.add(CONFIG, 'rotation', -5, 5).step(0.0001);
+    folder.add(CONFIG, 'rotateX', 0, 10).step(0.1);
+    folder.add(CONFIG, 'rotateY', 0, 10).step(0.1);
+    folder.add(CONFIG, 'rotateZ', 0, 10).step(0.1);
+    folder.add(CONFIG, 'scale', 0, 10).step(0.01);
+    folder.add(CONFIG, 'borderWidth', 0, 0.1).step(0.01);
+    folder.add(CONFIG, 'displacementLength', 0, 2).step(0.01);
+    folder.add(CONFIG, 'reflectionOpacity', 0, 1).step(0.01);
+    folder.add(CONFIG, 'scene', {Apple: 3, Mask: 2, Displacement: 1});
+  }
 
-  folder.add(CONFIG, 'translateX', -30, 30).step(0.01);
-  folder.add(CONFIG, 'translateY', -30, 30).step(0.01);
-  folder.add(CONFIG, 'translateZ', -30, 30).step(0.01);
-  folder.add(CONFIG, 'rotation', -5, 5).step(0.0001);
-  folder.add(CONFIG, 'rotateX', 0, 10).step(0.1);
-  folder.add(CONFIG, 'rotateY', 0, 10).step(0.1);
-  folder.add(CONFIG, 'rotateZ', 0, 10).step(0.1);
-  folder.add(CONFIG, 'scale', 0, 10).step(0.01);
-  folder.add(CONFIG, 'borderWidth', 0, 0.1).step(0.01);
-  folder.add(CONFIG, 'displacementLength', 0, 2).step(0.01);
-  folder.add(CONFIG, 'reflectionOpacity', 0, 1).step(0.01);
-  folder.add(CONFIG, 'scene', { Apple: 3, Mask: 2, Displacement: 1 });
-});
-
-export const createCube = (regl) => {
   const emptyTexture = regl.texture();
   const emptyCube = regl.cube();
 
