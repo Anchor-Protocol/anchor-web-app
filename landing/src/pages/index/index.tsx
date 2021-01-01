@@ -9,6 +9,7 @@ function IndexBase({ className }: IndexProps) {
   return (
     <div className={className}>
       <BetterSavings />
+      <div style={{ height: 1500 }}>.</div>
     </div>
   );
 }

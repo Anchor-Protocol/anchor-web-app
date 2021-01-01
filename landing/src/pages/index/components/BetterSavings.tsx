@@ -1,3 +1,4 @@
+import { useElementIntersection } from '@anchor-protocol/use-element-intersection';
 import { GUI } from 'dat.gui';
 import { useEffect, useRef, useState } from 'react';
 import Regl from 'regl';
@@ -16,13 +17,28 @@ function getSize(): number {
 
 function BetterSavingsBase({ className }: BetterSavingsProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const intersection = useElementIntersection({ elementRef: canvasRef });
+
+  const isIntersecting = intersection?.isIntersecting ?? false;
+
   const [size, setSize] = useState<number>(() => getSize());
 
   useEffect(() => {
-    window.addEventListener('resize', () => setSize(getSize()));
+    function listener() {
+      setSize(getSize());
+    }
+
+    window.addEventListener('resize', listener);
+
+    return () => {
+      window.removeEventListener('resize', listener);
+    };
   }, []);
 
   useEffect(() => {
+    if (!isIntersecting) return;
+
     let gui: GUI | null = null,
       stats: Stats | null = null;
 
@@ -47,7 +63,7 @@ function BetterSavingsBase({ className }: BetterSavingsProps) {
 
     return () => {
       stop();
-
+      
       if (!!gui) {
         gui.destroy();
       }
@@ -56,7 +72,7 @@ function BetterSavingsBase({ className }: BetterSavingsProps) {
         document.body.removeChild(stats.dom);
       }
     };
-  }, []);
+  }, [isIntersecting]);
 
   return (
     <section className={className}>
@@ -65,7 +81,7 @@ function BetterSavingsBase({ className }: BetterSavingsProps) {
         ref={canvasRef}
         width={size * 2}
         height={size * 2}
-        style={{ width: size, height: size }}
+        style={{ width: size, height: size, opacity: isIntersecting ? 1 : 0 }}
       />
     </section>
   );
@@ -95,6 +111,8 @@ export const BetterSavings = styled(BetterSavingsBase)`
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+
+    transition: opacity 2s ease-out;
   }
 
   @media (max-width: 500px) {
