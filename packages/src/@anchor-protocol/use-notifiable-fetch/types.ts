@@ -5,7 +5,7 @@ export type NotifiableFetchResult<Params, Data, Error> =
   | {
       status: 'in-progress';
       params: Params;
-      abort: () => void;
+      abortController: AbortController;
     }
   | {
       status: 'done';

@@ -58,7 +58,7 @@ export function useNotifiableFetch<Params, Data, Error = unknown>({
         const inProgress: FetchResult = {
           status: 'in-progress',
           params,
-          abort: abortController.abort,
+          abortController,
         };
 
         if (transfer.current) {

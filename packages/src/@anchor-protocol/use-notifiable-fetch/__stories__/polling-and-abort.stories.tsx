@@ -5,12 +5,14 @@ import {
   NotifiableFetchProvider,
   useNotifiableFetch,
 } from '@anchor-protocol/use-notifiable-fetch';
+import { IconButton } from '@material-ui/core';
+import { Close } from '@material-ui/icons';
 import React, { ComponentType } from 'react';
 import { SnackbarContainer } from './components/SnackbarContainer';
 import { SnackbarContent } from './components/SnackbarContent';
 
 export default {
-  title: 'core/use-notifiable-fetch/Polling',
+  title: 'core/use-notifiable-fetch/Polling And Abort',
   decorators: [
     (Story: ComponentType) => (
       <NotifiableFetchProvider>
@@ -25,8 +27,12 @@ export default {
 
 const mockFetch = () =>
   new Promise<number>((resolve) =>
-    setTimeout(() => resolve(Math.random()), 500),
+    setTimeout(() => resolve(Math.random()), 1500),
   );
+
+class AbortError extends Error {}
+
+class TimeoutError extends Error {}
 
 const params: NotifiableFetchParams<
   { a: number; b: number },
@@ -34,11 +40,19 @@ const params: NotifiableFetchParams<
   Error
 > = {
   transferOn: 'always',
-  fetchFactory: async ({ a, b }) => {
-    while (true) {
+  fetchFactory: async ({ a, b }, signal) => {
+    // TODO Polling 1. timeout 10s
+    const timeout = Date.now() + 1000 * 10;
+
+    // TODO Polling 2. loop
+    while (Date.now() < timeout) {
+      // TODO Polling 3. fetch data
       const value = await mockFetch();
 
-      if (value > 0.9) {
+      // TODO Abort 2. catch aborted signal
+      if (signal.aborted) {
+        throw new AbortError();
+      } else if (value > 0.9) {
         return { c: a + b };
       } else if (value < 0.1) {
         throw new Error('Nooooooooooo....');
@@ -46,6 +60,9 @@ const params: NotifiableFetchParams<
         console.log('retry polling...');
       }
     }
+
+    // TODO Polling 4. polling timeout
+    throw new TimeoutError();
   },
   notificationFactory: (result) => {
     switch (result.status) {
@@ -53,6 +70,16 @@ const params: NotifiableFetchParams<
         return (
           <SnackbarContent
             message={`in progress: ${result.params.a} + ${result.params.b} = ?`}
+            action={[
+              <IconButton
+                key="close"
+                aria-label="close"
+                color="inherit"
+                onClick={() => result.abortController.abort()} // TODO Abort 1. user can abort the fetch
+              >
+                <Close />
+              </IconButton>,
+            ]}
           />
         );
       case 'done':
@@ -62,8 +89,14 @@ const params: NotifiableFetchParams<
           />
         );
       case 'error':
-        return (
-          <SnackbarContent message={`error: ${result.error.toString()}`} />
+        return result.error instanceof AbortError ? (
+          // TODO Abort 3. print aborted message
+          <SnackbarContent message={`aborted`} />
+        ) : result.error instanceof TimeoutError ? (
+          // TODO Polling 5. print timeout message
+          <SnackbarContent message={`timeout`} />
+        ) : (
+          <SnackbarContent message={`error: ${result.error.message}`} />
         );
       default:
         return <SnackbarContent message={`unknown case!!!`} />;
@@ -71,7 +104,7 @@ const params: NotifiableFetchParams<
   },
 };
 
-export const Polling = () => {
+export const Polling_And_Abort = () => {
   const [fetch] = useNotifiableFetch(params);
 
   return (
