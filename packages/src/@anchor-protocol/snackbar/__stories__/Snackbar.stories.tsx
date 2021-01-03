@@ -1,5 +1,6 @@
 import {
   Snackbar,
+  SnackbarControlRef,
   SnackbarProvider,
   useSnackbar,
 } from '@anchor-protocol/snackbar';
@@ -9,7 +10,7 @@ import {
   SnackbarContentProps,
 } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
-import React, { ComponentType } from 'react';
+import React, { ComponentType, useRef } from 'react';
 import styled from 'styled-components';
 
 let count: number = 0;
@@ -75,6 +76,54 @@ export const CustomElement = () => {
   );
 };
 
+export const Control = () => {
+  const { addSnackbar, snackbarContainerRef } = useSnackbar();
+
+  const controlRef = useRef<SnackbarControlRef>();
+
+  return (
+    <div>
+      <button
+        onClick={() => {
+          controlRef.current?.close();
+
+          count++;
+
+          addSnackbar(
+            <Snackbar controlRef={controlRef} autoClose={false}>
+              <MuiSnackbarContent message={`${count} HELLO SNACKBAR!`} />
+            </Snackbar>,
+          );
+        }}
+      >
+        Add a MUI Snackbar
+      </button>
+
+      <button
+        onClick={() => {
+          controlRef.current?.close();
+        }}
+      >
+        Close Snackbar
+      </button>
+
+      <button
+        onClick={() => {
+          controlRef.current?.updateContent(
+            <MuiSnackbarContent
+              message={`CHANAGED CONTENT! ${Math.floor(Math.random() * 1000)}`}
+            />,
+          );
+        }}
+      >
+        Update Snackbar content
+      </button>
+
+      <SnackbarContainer ref={snackbarContainerRef} />
+    </div>
+  );
+};
+
 const CustomElementSnackbar = styled.div`
   display: inline-block;
   padding: 10px;
@@ -108,7 +157,7 @@ export const With_Action = () => {
 };
 
 const ActionSnackbar = styled(
-  ({ onClose, ...props }: SnackbarContentProps & { onClose?: () => void }) => {
+  ({ close, ...props }: SnackbarContentProps & { close?: () => void }) => {
     return (
       <MuiSnackbarContent
         {...props}
@@ -117,7 +166,7 @@ const ActionSnackbar = styled(
             key="close"
             aria-label="close"
             color="inherit"
-            onClick={onClose}
+            onClick={close}
           >
             <Close />
           </IconButton>,

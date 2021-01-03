@@ -1,25 +1,55 @@
-import React, { Component, ComponentType, ReactElement } from 'react';
+import React, {
+  Component,
+  ComponentType,
+  ReactElement,
+  RefObject,
+} from 'react';
 import styled, { keyframes } from 'styled-components';
 import { MultiTimer } from './MultiTimer';
 
 export interface SnackbarProps {
-  children: ReactElement<{ close: () => void }>;
+  children: ReactElement;
   autoClose?: number | false;
   className?: string;
-  close?: () => void;
+  onClose?: () => void;
   primaryId?: number;
   timer?: MultiTimer;
+  controlRef?: RefObject<SnackbarControlRef | undefined>;
 }
 
-export class SnackbarBase extends Component<SnackbarProps> {
+interface SnackbarState {
+  content: ReactElement;
+}
+
+export interface SnackbarControlRef {
+  close: () => void;
+  updateContent: (children: ReactElement, resetTimer?: boolean) => void;
+}
+
+export class SnackbarBase extends Component<SnackbarProps, SnackbarState>
+  implements SnackbarControlRef {
   static defaultProps: Partial<SnackbarProps> = {
     autoClose: 5000,
   };
 
+  constructor(props: SnackbarProps) {
+    super(props);
+
+    this.state = {
+      content: props.children,
+    };
+  }
+
   render() {
     return (
-      <div className={this.props.className} onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
-        {React.cloneElement(this.props.children, { onClose: this.onClose })}
+      <div
+        className={this.props.className}
+        onMouseEnter={this.onMouseEnter}
+        onMouseLeave={this.onMouseLeave}
+      >
+        {React.cloneElement(this.state.content, {
+          close: this.onClose,
+        })}
       </div>
     );
   }
@@ -28,11 +58,40 @@ export class SnackbarBase extends Component<SnackbarProps> {
     if (typeof this.props.autoClose === 'number' && this.props.timer) {
       this.props.timer.start(this.props.autoClose, this.onClose);
     }
+
+    if (this.props.controlRef) {
+      //@ts-ignore
+      this.props.controlRef.current = this;
+    }
   }
 
   componentWillUnmount() {
     this.onClose();
+
+    if (this.props.controlRef) {
+      //@ts-ignore
+      this.props.controlRef.current = undefined;
+    }
   }
+
+  close = () => {
+    this.onClose();
+  };
+
+  updateContent = (children: ReactElement, resetTimer: boolean = true) => {
+    if (
+      resetTimer &&
+      typeof this.props.autoClose === 'number' &&
+      this.props.timer
+    ) {
+      this.props.timer.stop(this.onClose);
+      this.props.timer.start(this.props.autoClose, this.onClose);
+    }
+
+    this.setState({
+      content: children,
+    });
+  };
 
   private onMouseEnter = () => {
     this.props.timer?.pause();
@@ -45,8 +104,8 @@ export class SnackbarBase extends Component<SnackbarProps> {
   private onClose = () => {
     this.props.timer?.stop(this.onClose);
 
-    if (typeof this.props.close === 'function') {
-      this.props.close();
+    if (typeof this.props.onClose === 'function') {
+      this.props.onClose();
     }
   };
 }

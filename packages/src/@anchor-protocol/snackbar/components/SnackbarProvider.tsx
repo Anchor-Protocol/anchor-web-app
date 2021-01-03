@@ -28,6 +28,7 @@ export interface SnackbarProviderProps {
 export interface SnackbarState {
   snackbarContainerRef: RefObject<HTMLDivElement>;
   addSnackbar: (element: ReactElement<SnackbarProps>) => () => void;
+  removeAllSnackbars: () => void;
 }
 
 // @ts-ignore
@@ -43,15 +44,15 @@ export function SnackbarProvider({
 
   const [contents, setContents] = useState<ReactElement<SnackbarProps>[]>([]);
 
-  const snackbarContainerRef: RefObject<HTMLDivElement> = useRef<HTMLDivElement>(
-    null,
-  );
+  const snackbarContainerRef: RefObject<HTMLDivElement> = useRef<
+    HTMLDivElement
+  >(null);
 
   const addSnackbar = useCallback(
     (element: ReactElement<SnackbarProps>) => {
       const primaryId: number = count++;
 
-      const close = () => {
+      const onClose = () => {
         setContents((prevContents) => {
           const index = prevContents.findIndex(
             ({ props }) => props.primaryId === primaryId,
@@ -70,7 +71,12 @@ export function SnackbarProvider({
       const content = cloneElement(element, {
         key: primaryId,
         primaryId,
-        close,
+        onClose: () => {
+          if (typeof element.props.onClose === 'function') {
+            element.props.onClose();
+          }
+          onClose();
+        },
         timer,
       });
 
@@ -78,17 +84,23 @@ export function SnackbarProvider({
         return [...prevContents, content];
       });
 
-      return close;
+      return onClose;
     },
     [timer],
   );
 
+  const removeAllSnackbars = useCallback(() => {
+    timer.stopAll();
+    setContents([]);
+  }, [timer]);
+
   const state = useMemo<SnackbarState>(() => {
     return {
-      snackbarContainerRef: snackbarContainerRef,
+      snackbarContainerRef,
       addSnackbar,
+      removeAllSnackbars,
     };
-  }, [snackbarContainerRef, addSnackbar]);
+  }, [addSnackbar, removeAllSnackbars]);
 
   return (
     <SnackbarContext.Provider value={state}>
