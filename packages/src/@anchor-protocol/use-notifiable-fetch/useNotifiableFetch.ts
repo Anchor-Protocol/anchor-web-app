@@ -6,18 +6,18 @@ import {
   NotificationFactory,
 } from './types';
 
-export type NotifiableFetchTargets = 'notifier' | 'continuously';
+export type NotifiableFetchTransferOn = 'always' | 'unmount';
 
 interface NotifiableFetchParams<Params, Data, Error> {
   group?: string;
-  target: NotifiableFetchTargets;
+  transferOn?: NotifiableFetchTransferOn;
   fetchFactory: NotifiableFetch<Params, Data>;
   notificationFactory: NotificationFactory<Params, Data, Error>;
 }
 
 export function useNotifiableFetch<Params, Data, Error = unknown>({
   group: _group,
-  target,
+  transferOn = 'unmount',
   fetchFactory,
   notificationFactory,
 }: NotifiableFetchParams<Params, Data, Error>): [
@@ -38,7 +38,7 @@ export function useNotifiableFetch<Params, Data, Error = unknown>({
     removeAbortController,
   } = useNotifiableFetchInternal();
 
-  const broadcast = useRef<boolean>(target === 'notifier');
+  const transfer = useRef<boolean>(transferOn === 'always');
 
   const [result, setResult] = useState<FetchResult>(() => ({
     status: 'ready',
@@ -61,13 +61,13 @@ export function useNotifiableFetch<Params, Data, Error = unknown>({
           abort: abortController.abort,
         };
 
-        if (broadcast.current) {
+        if (transfer.current) {
           setNotification(id, notificationFactory(inProgress));
         } else {
           setResult(inProgress);
 
           intervalId = setInterval(() => {
-            if (broadcast.current) {
+            if (transfer.current) {
               setNotification(id, notificationFactory(inProgress));
               clearInterval(intervalId);
               intervalId = undefined;
@@ -88,7 +88,7 @@ export function useNotifiableFetch<Params, Data, Error = unknown>({
           data,
         };
 
-        if (broadcast.current) {
+        if (transfer.current) {
           setNotification(id, notificationFactory(done));
         } else {
           setResult(done);
@@ -105,7 +105,7 @@ export function useNotifiableFetch<Params, Data, Error = unknown>({
           error,
         };
 
-        if (broadcast.current) {
+        if (transfer.current) {
           setNotification(id, notificationFactory(fault));
         } else {
           setResult(fault);
@@ -127,9 +127,9 @@ export function useNotifiableFetch<Params, Data, Error = unknown>({
 
   useEffect(() => {
     return () => {
-      broadcast.current = true;
+      transfer.current = true;
     };
   }, []);
 
-  return [fetch, broadcast.current ? undefined : result];
+  return [fetch, transfer.current ? undefined : result];
 }
