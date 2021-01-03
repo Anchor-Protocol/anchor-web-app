@@ -8,7 +8,7 @@ import {
 
 export type NotifiableFetchTransferOn = 'always' | 'unmount';
 
-interface NotifiableFetchParams<Params, Data, Error> {
+export interface NotifiableFetchParams<Params, Data, Error> {
   group?: string;
   transferOn?: NotifiableFetchTransferOn;
   fetchFactory: NotifiableFetch<Params, Data>;

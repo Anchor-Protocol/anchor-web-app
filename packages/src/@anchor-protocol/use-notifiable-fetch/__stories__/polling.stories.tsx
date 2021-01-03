@@ -10,7 +10,7 @@ import { SnackbarContainer } from './components/SnackbarContainer';
 import { SnackbarContent } from './components/SnackbarContent';
 
 export default {
-  title: 'core/use-notifiable-fetch/Transfer On Always',
+  title: 'core/use-notifiable-fetch/Polling',
   decorators: [
     (Story: ComponentType) => (
       <NotifiableFetchProvider>
@@ -23,57 +23,72 @@ export default {
   ],
 };
 
+const mockFetch = () =>
+  new Promise<number>((resolve) =>
+    setTimeout(() => resolve(Math.random()), 500),
+  );
+
 const params: NotifiableFetchParams<
   { a: number; b: number },
   { c: number },
   Error
 > = {
   transferOn: 'always',
-  fetchFactory: ({ a, b }) => {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve({ c: a + b }), 3000);
-    });
+  fetchFactory: async ({ a, b }) => {
+    while (true) {
+      const value = await mockFetch();
+
+      if (value > 0.9) {
+        return { c: a + b };
+      } else if (value < 0.1) {
+        throw new Error('Nooooooooooo....');
+      } else {
+        console.log('retry polling...');
+      }
+    }
   },
   notificationFactory: (result) => {
     switch (result.status) {
       case 'in-progress':
         return (
           <SnackbarContent
-            message={`${result.status} : ${result.params.a} + ${result.params.b} = ?`}
+            message={`in progress: ${result.params.a} + ${result.params.b} = ?`}
           />
         );
       case 'done':
         return (
           <SnackbarContent
-            message={`${result.status} : ${result.params.a} + ${result.params.b} = ${result.data.c}`}
+            message={`done: ${result.params.a} + ${result.params.b} = ${result.data.c}`}
           />
         );
       case 'error':
-        return <SnackbarContent message={`${result.status} : Error!!!`} />;
-      default:
         return (
-          <SnackbarContent message={`${result.status} : Unknown case!!!`} />
+          <SnackbarContent message={`error: ${result.error.toString()}`} />
         );
+      default:
+        return <SnackbarContent message={`unknown case!!!`} />;
     }
   },
 };
 
-export const Transfer_On_Always = () => {
+export const Polling = () => {
   const [fetch] = useNotifiableFetch(params);
 
   return (
     <div>
-      <ActionButton
-        style={{ width: 200 }}
-        onClick={() =>
-          fetch({
-            a: Math.floor(Math.random() * 10),
-            b: Math.floor(Math.random() * 10),
-          })
-        }
-      >
-        Fetch
-      </ActionButton>
+      <nav>
+        <ActionButton
+          style={{ width: 200 }}
+          onClick={() =>
+            fetch({
+              a: Math.floor(Math.random() * 10),
+              b: Math.floor(Math.random() * 10),
+            })
+          }
+        >
+          Fetch
+        </ActionButton>
+      </nav>
     </div>
   );
 };

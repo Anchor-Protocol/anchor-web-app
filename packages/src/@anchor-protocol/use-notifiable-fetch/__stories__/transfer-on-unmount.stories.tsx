@@ -1,6 +1,7 @@
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { SnackbarProvider } from '@anchor-protocol/snackbar';
 import {
+  NotifiableFetchParams,
   NotifiableFetchProvider,
   useNotifiableFetch,
 } from '@anchor-protocol/use-notifiable-fetch';
@@ -9,7 +10,7 @@ import { SnackbarContainer } from './components/SnackbarContainer';
 import { SnackbarContent } from './components/SnackbarContent';
 
 export default {
-  title: 'core/use-notifiable-fetch',
+  title: 'core/use-notifiable-fetch/Transfer On Unmount',
   decorators: [
     (Story: ComponentType) => (
       <NotifiableFetchProvider>
@@ -22,40 +23,43 @@ export default {
   ],
 };
 
+const params: NotifiableFetchParams<
+  { a: number; b: number },
+  { c: number },
+  Error
+> = {
+  transferOn: 'unmount',
+  fetchFactory: ({ a, b }) => {
+    return new Promise((resolve) => {
+      setTimeout(() => resolve({ c: a + b }), 3000);
+    });
+  },
+  notificationFactory: (result) => {
+    switch (result.status) {
+      case 'in-progress':
+        return (
+          <SnackbarContent
+            message={`${result.status} : ${result.params.a} + ${result.params.b} = ?`}
+          />
+        );
+      case 'done':
+        return (
+          <SnackbarContent
+            message={`${result.status} : ${result.params.a} + ${result.params.b} = ${result.data.c}`}
+          />
+        );
+      case 'error':
+        return <SnackbarContent message={`${result.status} : Error!!!`} />;
+      default:
+        return (
+          <SnackbarContent message={`${result.status} : Unknown case!!!`} />
+        );
+    }
+  },
+};
+
 function NotificationHost({ onUnmount }: { onUnmount: () => void }) {
-  const [fetch, result] = useNotifiableFetch<
-    { a: number; b: number },
-    { c: number }
-  >({
-    transferOn: 'unmount',
-    fetchFactory: ({ a, b }) => {
-      return new Promise((resolve) => {
-        setTimeout(() => resolve({ c: a + b }), 3000);
-      });
-    },
-    notificationFactory: (result) => {
-      switch (result.status) {
-        case 'in-progress':
-          return (
-            <SnackbarContent
-              message={`${result.status} : ${result.params.a} + ${result.params.b} = ?`}
-            />
-          );
-        case 'done':
-          return (
-            <SnackbarContent
-              message={`${result.status} : ${result.params.a} + ${result.params.b} = ${result.data.c}`}
-            />
-          );
-        case 'error':
-          return <SnackbarContent message={`${result.status} : Error!!!`} />;
-        default:
-          return (
-            <SnackbarContent message={`${result.status} : Unknown case!!!`} />
-          );
-      }
-    },
-  });
+  const [fetch, result] = useNotifiableFetch(params);
 
   return (
     <section>
@@ -68,7 +72,12 @@ function NotificationHost({ onUnmount }: { onUnmount: () => void }) {
       >
         <ActionButton
           style={{ width: 200 }}
-          onClick={() => fetch({ a: 1, b: 2 })}
+          onClick={() =>
+            fetch({
+              a: Math.floor(Math.random() * 10),
+              b: Math.floor(Math.random() * 10),
+            })
+          }
         >
           Fetch
         </ActionButton>
