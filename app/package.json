@@ -73,6 +73,7 @@
     "downshift": "^6.0.7",
     "fastdom": "^1.0.9",
     "graphql": "^15.4.0",
+    "graphql-tag": "^2.11.0",
     "multiplerun": "^1.1.2",
     "puppeteer": "^5.5.0",
     "react": "^17.0.1",

@@ -3,6 +3,24 @@ const path = require('path');
 const { getWebpackAlias } = require('@rocket-scripts/utils');
 
 module.exports = function override(config) {
+  config.module.rules = config.module.rules.map((rule) => {
+    if (Array.isArray(rule.oneOf)) {
+      return {
+        ...rule,
+        oneOf: [
+          {
+            test: /\.(graphql|gql)$/,
+            exclude: /node_modules/,
+            use: [require.resolve('graphql-tag/loader')],
+          },
+          ...rule.oneOf,
+        ],
+      };
+    }
+
+    return rule;
+  });
+
   return alias({
     ...getWebpackAlias(path.resolve(__dirname, '../packages')),
     ...getWebpackAlias(__dirname),
