@@ -12,7 +12,20 @@
   ],
   "scripts": {
     "format": "prettier --write \"**/*.{js,ts,tsx}\"",
-    "lint": "eslint \"**/*.{js,ts,tsx}\""
+    "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "app:start": "yarn workspace @anchor-web-app/app run start",
+    "app:build": "yarn workspace @anchor-web-app/app run build",
+    "app:test": "yarn workspace @anchor-web-app/app run test",
+    "app:coverage": "yarn workspace @anchor-web-app/app run coverage",
+    "landing:start": "yarn workspace @anchor-web-app/landing run start",
+    "landing:build": "yarn workspace @anchor-web-app/landing run build",
+    "landing:test": "yarn workspace @anchor-web-app/landing run test",
+    "landing:coverage": "yarn workspace @anchor-web-app/landing run coverage",
+    "packages:build": "yarn workspace @anchor-web-app/packages run build",
+    "packages:publish": "yarn workspace @anchor-web-app/packages run publish",
+    "packages:storybook": "yarn workspace @anchor-web-app/packages run storybook",
+    "packages:build-storybook": "yarn workspace @anchor-web-app/packages run build-storybook",
+    "packages:test": "yarn workspace @anchor-web-app/packages run test"
   },
   "lint-staged": {
     "**/src/{**/*,*}.{ts,tsx}": [

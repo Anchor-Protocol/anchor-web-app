@@ -6,19 +6,20 @@ Initialize this project
 git clone https://github.com/Anchor-Protocol/anchor.git
 cd anchor
 yarn install
-cd app # go to app directory
 ```
 
-Scripts in `/app` directory
+And you can run scripts
 
-- `yarn run start` Start development
-- `yarn run build` Build production files
-- `yarn run pack` Build packages
-- `yarn run publish` Publish built packages to NPM
-- `yarn run storybook` Start storybook development
-
-# Directory Structure
-
-- `/app` App directory
-  - `/src` Source directory
-    - `/@anchor-protocol/*` Packages (see the `yarn run pack` command and `.package.yaml` file)
+- `yarn run app:start` Development run `/app` directory (web browser will open)
+- `yarn run app:build` Build `/app` directory (`/app/build` directory will created)
+- `yarn run app:test`
+- `yarn run app:coverage`
+- `yarn run landing:start` Development run `/landing` directory (web browser will open)
+- `yarn run landing:build` Build `/landing` directory (`/app/landing` directory will created)
+- `yarn run landing:test`
+- `yarn run landing:coverage`
+- `yarn run packages:build` Build `/packages/src/@anchor-protocol` packages (`/packages/out` directory will created)
+- `yarn run packages:publish` Publish `/packages/out` directory to the NPM registry (<https://www.npmjs.com/org/anchor-protocol>)
+- `yarn run packages:storybook` Development run Storybook
+- `yarn run packages:build-storybook`
+- `yarn run packages:test`
