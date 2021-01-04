@@ -21,7 +21,7 @@ export const Handle_Status = () => {
   return (
     <div>
       <section>
-        <p>Status: {JSON.stringify(status)}</p>
+        <pre>{JSON.stringify(status, null, 2)}</pre>
       </section>
       <section style={{ margin: '20px 0' }}>
         {status.status === 'not_installed' ? (

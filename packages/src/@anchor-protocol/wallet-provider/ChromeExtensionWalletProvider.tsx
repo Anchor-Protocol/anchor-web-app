@@ -1,12 +1,12 @@
 import { Extension } from '@terra-money/terra.js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { WalletStatus } from './types';
+import { StationNetworkInfo, WalletStatus } from './types';
 import { WalletContext, WalletProviderProps, WalletState } from './useWallet';
 
 const storage = localStorage;
 
-const ADDRESS: string = '__anchor_terra_station_wallet_address__';
-const INSTALL_COUNT: string = '__anchor_install_count__';
+const WALLET_ADDRESS: string = '__anchor_terra_station_wallet_address__';
+const STATION_INSTALL_COUNT: string = '__anchor_terra_station_install_count__';
 
 export function ChromeExtensionWalletProvider({
   children,
@@ -17,27 +17,36 @@ export function ChromeExtensionWalletProvider({
     status: 'initializing',
   }));
 
-  const checkStatus = useCallback(() => {
+  const checkStatus = useCallback(async () => {
     if (!extension.isAvailable) {
       setStatus({ status: 'not_installed' });
       return;
     }
 
-    const storedAddress: string | null = storage.getItem(ADDRESS);
+    const { payload } = await extension.request('info');
+    const network: StationNetworkInfo = payload as any;
 
-    if (storedAddress) {
-      if (storedAddress.trim().length > 0) {
-        setStatus({ status: 'ready', address: storedAddress });
+    const storedWalletAddress: string | null = storage.getItem(WALLET_ADDRESS);
+
+    if (storedWalletAddress) {
+      if (storedWalletAddress.trim().length > 0) {
+        setStatus({
+          status: 'ready',
+          network,
+          walletAddress: storedWalletAddress,
+        });
       } else {
-        storage.removeItem(ADDRESS);
+        storage.removeItem(WALLET_ADDRESS);
       }
     } else {
-      setStatus({ status: 'not_connected' });
+      setStatus({ status: 'not_connected', network });
     }
   }, [extension]);
 
   const install = useCallback(() => {
-    const count: number = parseInt(storage.getItem(INSTALL_COUNT) ?? '0');
+    const count: number = parseInt(
+      storage.getItem(STATION_INSTALL_COUNT) ?? '0',
+    );
 
     if (count > 3) {
       //const result = confirm(`You tried to install many times. Do you have some problem to install?`)
@@ -48,7 +57,7 @@ export function ChromeExtensionWalletProvider({
       //  storage.setItem(INSTALL_COUNT, '0');
       //}
     } else {
-      storage.setItem(INSTALL_COUNT, (count + 1).toString());
+      storage.setItem(STATION_INSTALL_COUNT, (count + 1).toString());
     }
 
     window.open(
@@ -61,16 +70,16 @@ export function ChromeExtensionWalletProvider({
     const { name, payload } = await extension.request('connect');
 
     if (name === 'onConnect' && 'address' in payload) {
-      const address: string = (payload as { address: string }).address;
+      const walletAddress: string = (payload as { address: string }).address;
 
-      storage.setItem(ADDRESS, address);
+      storage.setItem(WALLET_ADDRESS, walletAddress);
 
-      checkStatus();
+      await checkStatus();
     }
   }, [checkStatus, extension]);
 
   const disconnect = useCallback(() => {
-    storage.removeItem(ADDRESS);
+    storage.removeItem(WALLET_ADDRESS);
     checkStatus();
   }, [checkStatus]);
 
