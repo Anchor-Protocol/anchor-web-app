@@ -1,0 +1,9 @@
+{
+  repository(name: "rocket-scripts", owner: "rocket-hangar") {
+    name
+    owner {
+      id
+      avatarUrl
+    }
+  }
+}

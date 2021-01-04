@@ -23,3 +23,13 @@ And you can run scripts
 - `yarn run packages:storybook` Development run Storybook
 - `yarn run packages:build-storybook`
 - `yarn run packages:test`
+
+# Environments
+
+## GraphQL
+
+- See [schema.docs.graphql](schema.docs.graphql) file
+- See [.graphqlconfig](.graphqlconfig) file
+    - This configuration is the graphql-config v2 spec (IntelliJ only supports that legacy spec)
+    - See <https://github.com/kamilkisiela/graphql-config/tree/legacy>
+- If the GraphQL schema is updated. run `yarn run graphql:schema`

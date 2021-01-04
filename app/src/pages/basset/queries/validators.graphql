@@ -1,0 +1,20 @@
+query(
+    $bLunaHubContract: String!
+    $whitelistedValidatorsQuery: String!
+) {
+  validators: StakingValidators {
+    Result {
+      OperatorAddress
+      Description {
+        Moniker
+      }
+    }
+  }
+
+  whitelistedValidators: WasmContractsContractAddressStore(
+    ContractAddress: $bLunaHubContract,
+    QueryMsg: $whitelistedValidatorsQuery
+  ) {
+    Result
+  }
+}
