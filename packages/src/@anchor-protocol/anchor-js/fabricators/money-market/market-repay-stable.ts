@@ -1,9 +1,9 @@
-import { Int, MsgExecuteContract } from '@terra-money/terra.js';
-import { validateAddress } from '../utils/validation/address';
-import { validateInput } from '../utils/validate-input';
-import { validateIsGreaterThanZero } from '../utils/validation/number';
-import { validateWhitelistedMarket } from '../utils/validation/market';
-import { validateTrue } from '../utils/validation/true';
+import { Dec, Int, MsgExecuteContract } from '@terra-money/terra.js';
+import { validateAddress } from '../../utils/validation/address';
+import { validateInput } from '../../utils/validate-input';
+import { validateIsGreaterThanZero } from '../../utils/validation/number';
+import { validateWhitelistedMarket } from '../../utils/validation/market';
+import { validateTrue } from '../../utils/validation/true';
 
 interface Option {
   address: string;
@@ -44,14 +44,11 @@ export const fabricateRepay = ({
       mmContractAddress,
       {
         // @see https://github.com/Anchor-Protocol/money-market-contracts/blob/master/contracts/market/src/msg.rs#L74
-        repay_stable: {
-          // nothing for now
-        },
+        repay_stable: {},
       },
-
       // sending stablecoin
       {
-        [nativeTokenDenom]: new Int(amount).toString(),
+        [nativeTokenDenom]: new Int(new Dec(amount).mul(1000000)).toString(),
       },
     ),
   ];

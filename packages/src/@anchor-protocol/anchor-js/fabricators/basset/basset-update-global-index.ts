@@ -1,6 +1,6 @@
 import { MsgExecuteContract } from '@terra-money/terra.js';
-import { validateInput } from '../utils/validate-input';
-import { validateAddress } from '../utils/validation/address';
+import { validateInput } from '../../utils/validate-input';
+import { validateAddress } from '../../utils/validation/address';
 
 interface Option {
   address: string;
@@ -15,10 +15,10 @@ export const fabricatebAssetUpdateGlobalIndex = ({
 ): MsgExecuteContract[] => {
   validateInput([validateAddress(address)]);
 
-  const bAssetRewardAddress = addressProvider.bAssetReward(bAsset);
+  const bAssetHubAddress = addressProvider.bAssetHub(bAsset);
 
   return [
-    new MsgExecuteContract(address, bAssetRewardAddress, {
+    new MsgExecuteContract(address, bAssetHubAddress, {
       update_global_index: {},
     }),
   ];

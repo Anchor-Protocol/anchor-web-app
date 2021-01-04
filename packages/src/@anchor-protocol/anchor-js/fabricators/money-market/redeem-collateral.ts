@@ -1,10 +1,10 @@
-import { Int, MsgExecuteContract } from '@terra-money/terra.js';
-import { validateAddress } from '../utils/validation/address';
-import { validateInput } from '../utils/validate-input';
+import { Dec, Int, MsgExecuteContract } from '@terra-money/terra.js';
+import { validateAddress } from '../../utils/validation/address';
+import { validateInput } from '../../utils/validate-input';
 
-import { validateWhitelistedMarket } from '../utils/validation/market';
-import { validateTrue } from '../utils/validation/true';
-import { validateIsGreaterThanZero } from '../utils/validation/number';
+import { validateWhitelistedMarket } from '../../utils/validation/market';
+import { validateTrue } from '../../utils/validation/true';
+import { validateIsGreaterThanZero } from '../../utils/validation/number';
 
 interface Option {
   address: string;
@@ -50,7 +50,9 @@ export const fabricateRedeemCollateral = ({
       unlock_collateral: [
         [
           address,
-          redeem_all ? undefined : new Int(amount as number).toString(),
+          redeem_all
+            ? undefined
+            : new Int(new Dec(amount as number).mul(1000000)).toString(),
         ],
       ],
     }),

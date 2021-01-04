@@ -1,10 +1,10 @@
-import { Int, MsgExecuteContract } from '@terra-money/terra.js';
-import { validateInput } from '../utils/validate-input';
+import { Dec, Int, MsgExecuteContract } from '@terra-money/terra.js';
+import { validateInput } from '../../utils/validate-input';
 import {
   validateAddress,
   validateValAddress,
-} from '../utils/validation/address';
-import { validateIsGreaterThanZero } from '../utils/validation/number';
+} from '../../utils/validation/address';
+import { validateIsGreaterThanZero } from '../../utils/validation/number';
 
 interface Option {
   address: string;
@@ -13,7 +13,7 @@ interface Option {
   validator: string; // validator address
 }
 
-export const fabricatebAssetMint = ({
+export const fabricatebAssetBond = ({
   address,
   amount,
   bAsset,
@@ -28,21 +28,21 @@ export const fabricatebAssetMint = ({
   ]);
 
   // const nativeTokenDenom = bAssetToNative.bluna[bAsset.toLowerCase()]
-  const bAssetContractAddress = addressProvider.bAssetGov(bAsset);
+  const bAssetContractAddress = addressProvider.bAssetHub(bAsset);
 
   return [
     new MsgExecuteContract(
       address,
       bAssetContractAddress,
       {
-        mint: {
+        bond: {
           validator, // validator must be whitelisted
         },
       },
 
       // send native token
       {
-        uluna: new Int(amount * 1000000).toString(),
+        uluna: new Int(new Dec(amount).mul(1000000)).toString(),
       },
     ),
   ];
