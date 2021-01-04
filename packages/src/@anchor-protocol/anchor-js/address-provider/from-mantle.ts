@@ -26,4 +26,10 @@ export class AddressProviderFromMantle implements AddressProvider.Provider {
   oracle(): string {
     throw new Error('Method not implemented.');
   }
+  interest(): string {
+    throw new Error('Method not implemented.');
+  }
+  liquidation(): string {
+    throw new Error('Method not implemented.');
+  }
 }
