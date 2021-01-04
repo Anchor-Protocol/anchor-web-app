@@ -37,6 +37,7 @@ export const SnackbarContainer = styled(
 
           addSnackbar(
             <Snackbar
+              autoClose={1000 * 30}
               controlRef={controlRef}
               onClose={() => controlRefs.current.delete(id)}
             >
