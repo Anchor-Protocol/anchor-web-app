@@ -1,4 +1,4 @@
-import { Int, MsgExecuteContract } from '@terra-money/terra.js';
+import { Dec, Int, MsgExecuteContract } from '@terra-money/terra.js';
 import { validateAddress } from '../../utils/validation/address';
 import { validateInput } from '../../utils/validate-input';
 
@@ -50,7 +50,9 @@ export const fabricateRedeemCollateral = ({
       unlock_collateral: [
         [
           address,
-          redeem_all ? undefined : new Int(amount as number).toString(),
+          redeem_all
+            ? undefined
+            : new Int(new Dec(amount as number).mul(1000000)).toString(),
         ],
       ],
     }),

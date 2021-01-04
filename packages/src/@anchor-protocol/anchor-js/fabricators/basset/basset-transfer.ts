@@ -1,4 +1,4 @@
-import { Int, MsgExecuteContract } from '@terra-money/terra.js';
+import { Dec, Int, MsgExecuteContract } from '@terra-money/terra.js';
 import { validateInput } from '../../utils/validate-input';
 import { validateAddress } from '../../utils/validation/address';
 import {
@@ -35,7 +35,7 @@ export const fabricatebAssetTransfer = ({
       // @see https://github.com/Anchor-Protocol/anchor-bAsset-contracts/blob/cce41e707c67ee2852c4929e17fb1472dbd2aa35/contracts/anchor_basset_token/src/handler.rs#L17
       transfer: {
         recipient: recipient,
-        amount: new Int(amount).mul(1000000).toString(),
+        amount: new Int(new Dec(amount).mul(1000000)).toString(),
       },
     }),
   ];

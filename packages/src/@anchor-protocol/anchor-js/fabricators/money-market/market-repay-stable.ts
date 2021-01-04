@@ -1,4 +1,4 @@
-import { Int, MsgExecuteContract } from '@terra-money/terra.js';
+import { Dec, Int, MsgExecuteContract } from '@terra-money/terra.js';
 import { validateAddress } from '../../utils/validation/address';
 import { validateInput } from '../../utils/validate-input';
 import { validateIsGreaterThanZero } from '../../utils/validation/number';
@@ -48,7 +48,7 @@ export const fabricateRepay = ({
       },
       // sending stablecoin
       {
-        [nativeTokenDenom]: new Int(amount).toString(),
+        [nativeTokenDenom]: new Int(new Dec(amount).mul(1000000)).toString(),
       },
     ),
   ];

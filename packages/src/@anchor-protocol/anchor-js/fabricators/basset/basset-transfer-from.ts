@@ -1,4 +1,4 @@
-import { Int, MsgExecuteContract } from '@terra-money/terra.js';
+import { Dec, Int, MsgExecuteContract } from '@terra-money/terra.js';
 import { validateInput } from '../../utils/validate-input';
 import { validateAddress } from '../../utils/validation/address';
 import {
@@ -39,7 +39,7 @@ export const fabricatebAssetTransferFrom = ({
       transfer_from: {
         owner: owner,
         recipient: recipient,
-        amount: new Int(amount).mul(1000000).toString(),
+        amount: new Int(new Dec(amount).mul(1000000)).toString(),
       },
     }),
   ];

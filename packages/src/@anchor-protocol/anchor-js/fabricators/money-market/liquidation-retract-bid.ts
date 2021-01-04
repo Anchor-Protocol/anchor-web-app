@@ -1,4 +1,4 @@
-import { Int, MsgExecuteContract } from '@terra-money/terra.js';
+import { Dec, Int, MsgExecuteContract } from '@terra-money/terra.js';
 import { validateAddress } from '../../utils/validation/address';
 import { validateInput } from '../../utils/validate-input';
 import { validateIsNumber } from '../../utils/validation/number';
@@ -31,7 +31,7 @@ export const fabricateRetractBid = ({
       retract_bid: {
         collateral_token: collateral_token,
         amount:
-          new Int(amount as number).mul(new Int(100000)).toString() ||
+          new Int(new Dec(amount as number).mul(1000000)).toString() ||
           undefined,
       },
     }),

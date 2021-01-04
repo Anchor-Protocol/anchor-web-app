@@ -1,4 +1,4 @@
-import { Int, MsgExecuteContract } from '@terra-money/terra.js';
+import { Dec, Int, MsgExecuteContract } from '@terra-money/terra.js';
 import { validateAddress } from '../../utils/validation/address';
 import { validateInput } from '../../utils/validate-input';
 import { validateIsGreaterThanZero } from '../../utils/validation/number';
@@ -27,7 +27,7 @@ export const fabricateRedeemStable = ({ address, symbol, amount }: Option) => (
     new MsgExecuteContract(address, aTokenAddress, {
       send: {
         address: marketAddress,
-        amount: new Int(amount).toString(),
+        amount: new Int(new Dec(amount).mul(1000000)).toString(),
         msg: createHookMsg({
           redeem_stable: {},
         }),

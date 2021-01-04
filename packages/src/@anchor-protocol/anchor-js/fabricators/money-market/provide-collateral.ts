@@ -1,4 +1,4 @@
-import { Int, MsgExecuteContract } from '@terra-money/terra.js';
+import { Dec, Int, MsgExecuteContract } from '@terra-money/terra.js';
 import { createHookMsg } from '../../utils/cw20/create-hook-msg';
 import { validateInput } from '../../utils/validate-input';
 import { validateAddress } from '../../utils/validation/address';
@@ -49,7 +49,7 @@ export const fabricateProvideCollateral = ({
     new MsgExecuteContract(address, bAssetTokenContract, {
       send: {
         address: custodyContract,
-        amount: new Int(amount * 1000000).toString(),
+        amount: new Int(new Dec(amount).mul(1000000)).toString(),
         msg: createHookMsg({
           deposit_collateral: {},
         }),
@@ -59,7 +59,9 @@ export const fabricateProvideCollateral = ({
     new MsgExecuteContract(address, mmOverseerContract, {
       // @see https://github.com/Anchor-Protocol/money-market-contracts/blob/master/contracts/overseer/src/msg.rs#L75
       lock_collateral: {
-        collaterals: [[address, new Int(amount * 1000000).toString()]],
+        collaterals: [
+          [address, new Int(new Dec(amount).mul(1000000)).toString()],
+        ],
       },
     }),
   ];
