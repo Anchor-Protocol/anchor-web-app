@@ -16,6 +16,11 @@ module.exports = function override(config) {
               require.resolve('glslify-loader'),
             ],
           },
+          {
+            test: /\.(graphql|gql)$/,
+            exclude: /node_modules/,
+            use: [require.resolve('graphql-tag/loader')],
+          },
           ...rule.oneOf,
         ],
       };

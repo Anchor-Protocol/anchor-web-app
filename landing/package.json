@@ -77,6 +77,7 @@
     "glslify": "^7.1.1",
     "glslify-loader": "^2.0.0",
     "graphql": "^15.4.0",
+    "graphql-tag": "^2.11.0",
     "multiplerun": "^1.1.2",
     "puppeteer": "^5.5.0",
     "react": "^17.0.1",

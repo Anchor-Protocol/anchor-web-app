@@ -28,8 +28,15 @@ And you can run scripts
 
 ## GraphQL
 
-- See [schema.docs.graphql](schema.docs.graphql) file
+Configurations
+
 - See [.graphqlconfig](.graphqlconfig) file
     - This configuration is the graphql-config v2 spec (IntelliJ only supports that legacy spec)
     - See <https://github.com/kamilkisiela/graphql-config/tree/legacy>
-- If the GraphQL schema is updated. run `yarn run graphql:schema`
+- See [schema.graphql](schema.graphql) file
+  - When the schema file is updated. run `yarn run graphql:update-schema`
+
+IDE
+
+- JetBrains <https://plugins.jetbrains.com/plugin/8097-js-graphql>
+- VSCode <https://marketplace.visualstudio.com/items?itemName=GraphQL.vscode-graphql>
