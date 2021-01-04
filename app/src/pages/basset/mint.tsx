@@ -1,5 +1,7 @@
-import { fabricatebAssetMint } from '@anchor-protocol/anchor-js/fabricators';
-import { fabricateRegisterValidator } from '@anchor-protocol/anchor-js/fabricators/register-validator';
+//import { fabricatebAssetMint } from '@anchor-protocol/anchor-js/fabricators';
+import { fabricatebAssetBond } from '@anchor-protocol/anchor-js/fabricators/basset/basset-bond';
+//import { fabricateRegisterValidator } from '@anchor-protocol/anchor-js/fabricators/register-validator';
+import { fabricateRegisterValidator } from '@anchor-protocol/anchor-js/fabricators/basset/basset-register-validator';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { HorizontalHeavyRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalHeavyRuler';
 import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
@@ -199,7 +201,7 @@ function MintBase({ className }: MintProps) {
               transactional={true}
               onClick={() =>
                 execute(
-                  fabricatebAssetMint({
+                  fabricatebAssetBond({
                     address,
                     amount: mintState,
                     bAsset: addressProvider.bAssetToken('bluna'),

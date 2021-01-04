@@ -2,7 +2,7 @@ export class AddressProviderFromMantle implements AddressProvider.Provider {
   bAssetReward(denom: string): string {
     throw new Error('Method not implemented.');
   }
-  bAssetGov(denom: string): string {
+  bAssetHub(denom: string): string {
     throw new Error('Method not implemented.');
   }
   bAssetToken(denom: string): string {
@@ -24,6 +24,12 @@ export class AddressProviderFromMantle implements AddressProvider.Provider {
     throw new Error('Method not implemented.');
   }
   oracle(): string {
+    throw new Error('Method not implemented.');
+  }
+  interest(): string {
+    throw new Error('Method not implemented.');
+  }
+  liquidation(): string {
     throw new Error('Method not implemented.');
   }
 }

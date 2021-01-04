@@ -25,7 +25,7 @@ export default function useWhitelistedValidators(): [
     BAssetWhitelistedValidators: MantleContractResponse;
   }>(queryWhitelistedValidators, {
     variables: {
-      contractAddress: addressProvider.bAssetGov('bluna'),
+      contractAddress: addressProvider.bAssetHub('bluna'),
       queryMsg: JSON.stringify({ white_listed_validators: {} }),
     },
   });
