@@ -1,35 +1,35 @@
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { SnackbarProvider } from '@anchor-protocol/snackbar';
 import {
-  NotifiableFetchParams,
-  NotifiableFetchProvider,
-  useNotifiableFetch,
-} from '@anchor-protocol/use-notifiable-fetch';
+  BroadcastableQueryOptions,
+  QueryBroadcaster,
+  useBroadcastableQuery,
+} from '@anchor-protocol/use-broadcastable-query';
 import React, { ComponentType } from 'react';
 import { SnackbarContainer } from './components/SnackbarContainer';
 import { SnackbarContent } from './components/SnackbarContent';
 
 export default {
-  title: 'core/use-notifiable-fetch/Transfer On Always',
+  title: 'core/use-broadcastable-query/Always Broadcast',
   decorators: [
     (Story: ComponentType) => (
-      <NotifiableFetchProvider>
+      <QueryBroadcaster>
         <SnackbarProvider>
           <Story />
           <SnackbarContainer />
         </SnackbarProvider>
-      </NotifiableFetchProvider>
+      </QueryBroadcaster>
     ),
   ],
 };
 
-const params: NotifiableFetchParams<
+const params: BroadcastableQueryOptions<
   { a: number; b: number },
   { c: number },
   Error
 > = {
-  transferOn: 'always',
-  fetchFactory: ({ a, b }) => {
+  broadcastWhen: 'always',
+  fetchClient: ({ a, b }) => {
     return new Promise((resolve) => {
       setTimeout(() => resolve({ c: a + b }), 3000);
     });
@@ -58,8 +58,8 @@ const params: NotifiableFetchParams<
   },
 };
 
-export const Transfer_On_Always = () => {
-  const [fetch] = useNotifiableFetch(params);
+export const Always_Broadcast = () => {
+  const [fetch] = useBroadcastableQuery(params);
 
   return (
     <div>

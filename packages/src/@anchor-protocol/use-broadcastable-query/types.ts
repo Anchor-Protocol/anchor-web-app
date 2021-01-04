@@ -1,6 +1,6 @@
 import { ReactElement } from 'react';
 
-export type NotifiableFetchResult<Params, Data, Error> =
+export type BroadcastableQueryResult<Params, Data, Error> =
   | { status: 'ready' }
   | {
       status: 'in-progress';
@@ -18,11 +18,11 @@ export type NotifiableFetchResult<Params, Data, Error> =
       error: Error;
     };
 
-export type NotifiableFetch<Params, Data> = (
+export type BroadcatableQueryFetchClient<Params, Data> = (
   params: Params,
   signal: AbortSignal,
 ) => Promise<Data>;
 
 export type NotificationFactory<Params, Data, Error> = (
-  props: NotifiableFetchResult<Params, Data, Error>,
+  props: BroadcastableQueryResult<Params, Data, Error>,
 ) => ReactElement<{ close: () => void }>;

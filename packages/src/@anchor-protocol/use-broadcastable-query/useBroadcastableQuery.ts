@@ -1,30 +1,30 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNotifiableFetchInternal } from './NotifiableFetchProvider';
+import { useQueryBroadcaster } from './QueryBroadcaster';
 import {
-  NotifiableFetch,
-  NotifiableFetchResult,
+  BroadcastableQueryResult,
+  BroadcatableQueryFetchClient,
   NotificationFactory,
 } from './types';
 
-export type NotifiableFetchTransferOn = 'always' | 'unmount';
+export type BroadcastWhen = 'always' | 'unmounted';
 
-export interface NotifiableFetchParams<Params, Data, Error> {
+export interface BroadcastableQueryOptions<Params, Data, Error> {
   group?: string;
-  transferOn?: NotifiableFetchTransferOn;
-  fetchFactory: NotifiableFetch<Params, Data>;
+  broadcastWhen?: BroadcastWhen;
+  fetchClient: BroadcatableQueryFetchClient<Params, Data>;
   notificationFactory: NotificationFactory<Params, Data, Error>;
 }
 
-export function useNotifiableFetch<Params, Data, Error = unknown>({
+export function useBroadcastableQuery<Params, Data, Error = unknown>({
   group: _group,
-  transferOn = 'unmount',
-  fetchFactory,
+  broadcastWhen = 'unmounted',
+  fetchClient,
   notificationFactory,
-}: NotifiableFetchParams<Params, Data, Error>): [
+}: BroadcastableQueryOptions<Params, Data, Error>): [
   (params: Params) => Promise<Data | void>,
-  NotifiableFetchResult<Params, Data, Error> | undefined,
+  BroadcastableQueryResult<Params, Data, Error> | undefined,
 ] {
-  type FetchResult = NotifiableFetchResult<Params, Data, Error>;
+  type FetchResult = BroadcastableQueryResult<Params, Data, Error>;
 
   const id = useMemo<string>(
     () => _group ?? 'internal-' + Math.floor(Math.random() * 1000000000000000),
@@ -32,13 +32,13 @@ export function useNotifiableFetch<Params, Data, Error = unknown>({
   );
 
   const {
-    setNotification,
+    broadcast,
     getAbortController,
     setAbortController,
     removeAbortController,
-  } = useNotifiableFetchInternal();
+  } = useQueryBroadcaster();
 
-  const transfer = useRef<boolean>(transferOn === 'always');
+  const onBroadcast = useRef<boolean>(broadcastWhen === 'always');
 
   const [result, setResult] = useState<FetchResult>(() => ({
     status: 'ready',
@@ -61,21 +61,21 @@ export function useNotifiableFetch<Params, Data, Error = unknown>({
           abortController,
         };
 
-        if (transfer.current) {
-          setNotification(id, notificationFactory(inProgress));
+        if (onBroadcast.current) {
+          broadcast(id, notificationFactory(inProgress));
         } else {
           setResult(inProgress);
 
           intervalId = setInterval(() => {
-            if (transfer.current) {
-              setNotification(id, notificationFactory(inProgress));
+            if (onBroadcast.current) {
+              broadcast(id, notificationFactory(inProgress));
               clearInterval(intervalId);
               intervalId = undefined;
             }
           }, 100);
         }
 
-        const data = await fetchFactory(params, abortController.signal);
+        const data = await fetchClient(params, abortController.signal);
 
         if (typeof intervalId === 'number') {
           clearInterval(intervalId);
@@ -88,8 +88,8 @@ export function useNotifiableFetch<Params, Data, Error = unknown>({
           data,
         };
 
-        if (transfer.current) {
-          setNotification(id, notificationFactory(done));
+        if (onBroadcast.current) {
+          broadcast(id, notificationFactory(done));
         } else {
           setResult(done);
         }
@@ -105,8 +105,8 @@ export function useNotifiableFetch<Params, Data, Error = unknown>({
           error,
         };
 
-        if (transfer.current) {
-          setNotification(id, notificationFactory(fault));
+        if (onBroadcast.current) {
+          broadcast(id, notificationFactory(fault));
         } else {
           setResult(fault);
         }
@@ -115,21 +115,21 @@ export function useNotifiableFetch<Params, Data, Error = unknown>({
       }
     },
     [
-      fetchFactory,
+      fetchClient,
       getAbortController,
       id,
       notificationFactory,
       removeAbortController,
       setAbortController,
-      setNotification,
+      broadcast,
     ],
   );
 
   useEffect(() => {
     return () => {
-      transfer.current = true;
+      onBroadcast.current = true;
     };
   }, []);
 
-  return [fetch, transfer.current ? undefined : result];
+  return [fetch, onBroadcast.current ? undefined : result];
 }

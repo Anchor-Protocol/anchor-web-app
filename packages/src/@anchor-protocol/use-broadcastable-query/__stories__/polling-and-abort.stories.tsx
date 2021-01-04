@@ -1,10 +1,10 @@
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { SnackbarProvider } from '@anchor-protocol/snackbar';
 import {
-  NotifiableFetchParams,
-  NotifiableFetchProvider,
-  useNotifiableFetch,
-} from '@anchor-protocol/use-notifiable-fetch';
+  BroadcastableQueryOptions,
+  QueryBroadcaster,
+  useBroadcastableQuery,
+} from '@anchor-protocol/use-broadcastable-query';
 import { IconButton } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
 import React, { ComponentType } from 'react';
@@ -12,15 +12,15 @@ import { SnackbarContainer } from './components/SnackbarContainer';
 import { SnackbarContent } from './components/SnackbarContent';
 
 export default {
-  title: 'core/use-notifiable-fetch/Polling And Abort',
+  title: 'core/use-broadcastable-query/Polling And Abort',
   decorators: [
     (Story: ComponentType) => (
-      <NotifiableFetchProvider>
+      <QueryBroadcaster>
         <SnackbarProvider>
           <Story />
           <SnackbarContainer />
         </SnackbarProvider>
-      </NotifiableFetchProvider>
+      </QueryBroadcaster>
     ),
   ],
 };
@@ -34,13 +34,13 @@ class AbortError extends Error {}
 
 class TimeoutError extends Error {}
 
-const params: NotifiableFetchParams<
+const params: BroadcastableQueryOptions<
   { a: number; b: number },
   { c: number },
   Error
 > = {
-  transferOn: 'always',
-  fetchFactory: async ({ a, b }, signal) => {
+  broadcastWhen: 'always',
+  fetchClient: async ({ a, b }, signal) => {
     // TODO Polling 1. timeout 10s
     const timeout = Date.now() + 1000 * 10;
 
@@ -105,7 +105,7 @@ const params: NotifiableFetchParams<
 };
 
 export const Polling_And_Abort = () => {
-  const [fetch] = useNotifiableFetch(params);
+  const [fetch] = useBroadcastableQuery(params);
 
   return (
     <div>

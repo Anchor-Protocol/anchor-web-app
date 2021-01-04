@@ -3,7 +3,7 @@ import {
   SnackbarControlRef,
   useSnackbar,
 } from '@anchor-protocol/snackbar';
-import { useNotifiableFetchInternal } from '@anchor-protocol/use-notifiable-fetch';
+import { useQueryBroadcaster } from '@anchor-protocol/use-broadcastable-query';
 import React, {
   cloneElement,
   createRef,
@@ -16,14 +16,14 @@ import styled from 'styled-components';
 export const SnackbarContainer = styled(
   ({ className }: { className?: string }) => {
     const { addSnackbar, snackbarContainerRef } = useSnackbar();
-    const { subscribe } = useNotifiableFetchInternal();
+    const { watch } = useQueryBroadcaster();
 
     const controlRefs = useRef<Map<string, RefObject<SnackbarControlRef>>>(
       new Map(),
     );
 
     useEffect(() => {
-      const teardown = subscribe((id, notification) => {
+      const teardown = watch((id, notification) => {
         const controlRef = controlRefs.current.get(id);
 
         if (controlRef) {
@@ -49,7 +49,7 @@ export const SnackbarContainer = styled(
       return () => {
         teardown();
       };
-    }, [addSnackbar, subscribe]);
+    }, [addSnackbar, watch]);
 
     return <div ref={snackbarContainerRef} className={className} />;
   },
