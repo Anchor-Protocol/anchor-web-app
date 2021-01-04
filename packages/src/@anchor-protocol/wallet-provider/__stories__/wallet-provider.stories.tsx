@@ -15,7 +15,7 @@ export default {
   ],
 };
 
-export const Basic = () => {
+export const Handle_Status = () => {
   const { status, install, connect, disconnect } = useWallet();
 
   return (
