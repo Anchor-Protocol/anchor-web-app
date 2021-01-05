@@ -13,7 +13,7 @@ import {
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
 import Big from 'big.js';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import Box from '../../components/box';
 import Button, { ButtonTypes } from '../../components/button';
@@ -76,7 +76,7 @@ function MintBase({ className }: MintProps) {
     validators.Data['validators']['Result'][number] | null
   >(null);
 
-  const { data: validatorsData } = useQuery<
+  const { data: _validatorsData } = useQuery<
     validators.StringifiedData,
     validators.StringifiedVariables
   >(validators.query, {
@@ -85,6 +85,26 @@ function MintBase({ className }: MintProps) {
       bLunaHubContract: addressProvider.bAssetHub(mintCurrency.value),
     }),
   });
+
+  const validatorsData = _validatorsData
+    ? validators.parseData(_validatorsData)
+    : undefined;
+
+  const whitelistedValidators2 = useMemo<
+    validators.Data['validators']['Result']
+  >(() => {
+    if (!validatorsData) return [];
+
+    const set = new Set<string>(
+      validatorsData.whitelistedValidators.Result.validators,
+    );
+
+    return (
+      validatorsData.validators.Result.filter(({ OperatorAddress }) =>
+        set.has(OperatorAddress),
+      ) ?? []
+    );
+  }, [validatorsData]);
 
   const { data: _exchangeRateData } = useQuery<
     exchangeRate.StringifiedData,
@@ -174,20 +194,18 @@ function MintBase({ className }: MintProps) {
         value={validator?.Description.Moniker}
         onChange={({ target }) =>
           setValidator(
-            validatorsData?.validators.Result.find(
+            whitelistedValidators2.find(
               ({ OperatorAddress }) => target.value === OperatorAddress,
             ) ?? null,
           )
         }
-        disabled={!validatorsData}
+        disabled={whitelistedValidators2.length === 0}
       >
-        {validatorsData?.validators.Result.map(
-          ({ Description, OperatorAddress }) => (
-            <option key={OperatorAddress} value={OperatorAddress}>
-              {Description.Moniker}
-            </option>
-          ),
-        )}
+        {whitelistedValidators2.map(({ Description, OperatorAddress }) => (
+          <option key={OperatorAddress} value={OperatorAddress}>
+            {Description.Moniker}
+          </option>
+        ))}
       </NativeSelect>
 
       <ActionButton className="submit">Mint</ActionButton>

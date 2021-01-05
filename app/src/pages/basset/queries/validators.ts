@@ -9,12 +9,37 @@ export interface StringifiedData {
       };
     }[];
   };
+  whitelistedValidators: {
+    Result: string;
+  };
 }
 
-export type Data = StringifiedData;
+export interface Data {
+  validators: {
+    Result: {
+      OperatorAddress: string;
+      Description: {
+        Moniker: string;
+      };
+    }[];
+  };
+  whitelistedValidators: {
+    Result: {
+      validators: string[];
+    };
+  };
+}
 
-export function parseData(data: StringifiedData): Data {
-  return data;
+export function parseData({
+  validators,
+  whitelistedValidators,
+}: StringifiedData): Data {
+  return {
+    validators,
+    whitelistedValidators: {
+      Result: JSON.parse(whitelistedValidators.Result),
+    },
+  };
 }
 
 export interface StringifiedVariables {
