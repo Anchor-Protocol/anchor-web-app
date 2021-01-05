@@ -23,12 +23,14 @@ export const ActionContainer: React.FunctionComponent<ActionContainerProps> = ({
     new Promise<PostResponse>((resolve, reject) => {
       extension.post(
         {
-          gasPrices: '0.0015uusd',
+          //gasPrices: '0.0015uusd',
           msgs: fabricated(addressProviders),
-          fee: new StdFee(503333, '5000000000000uusd'),
+          //fee: new StdFee(503333, '5000000000000uusd'),
+          fee: new StdFee(6000000, '2000000uusd'),
           gasAdjustment: 1.4,
         },
         (response) => {
+          console.log('action.tsx..()', response);
           if (!response.success) reject(response.error);
           else resolve(response);
         },
