@@ -25,8 +25,11 @@ export interface Data {
   };
   whitelistedValidators: {
     Result: {
-      validators: string[];
-    };
+      OperatorAddress: string;
+      Description: {
+        Moniker: string;
+      };
+    }[];
   };
 }
 
@@ -34,10 +37,16 @@ export function parseData({
   validators,
   whitelistedValidators,
 }: StringifiedData): Data {
+  const set: Set<string> = new Set(
+    JSON.parse(whitelistedValidators.Result).validators,
+  );
+
   return {
     validators,
     whitelistedValidators: {
-      Result: JSON.parse(whitelistedValidators.Result),
+      Result: validators.Result.filter(({ OperatorAddress }) =>
+        set.has(OperatorAddress),
+      ),
     },
   };
 }

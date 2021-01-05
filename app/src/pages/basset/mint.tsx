@@ -92,22 +92,6 @@ function MintBase({ className }: MintProps) {
     ? validators.parseData(_validatorsData)
     : undefined;
 
-  const whitelistedValidators2 = useMemo<
-    validators.Data['validators']['Result']
-  >(() => {
-    if (!validatorsData) return [];
-
-    const set = new Set<string>(
-      validatorsData.whitelistedValidators.Result.validators,
-    );
-
-    return (
-      validatorsData.validators.Result.filter(({ OperatorAddress }) =>
-        set.has(OperatorAddress),
-      ) ?? []
-    );
-  }, [validatorsData]);
-
   const { data: _exchangeRateData } = useQuery<
     exchangeRate.StringifiedData,
     exchangeRate.StringifiedVariables
@@ -125,6 +109,7 @@ function MintBase({ className }: MintProps) {
     status,
     validatorsData,
     exchangeRateData,
+    validator,
   });
 
   return (
@@ -198,22 +183,24 @@ function MintBase({ className }: MintProps) {
 
       <NativeSelect
         className="validator"
-        value={validator?.Description.Moniker ?? ''}
+        value={validator?.OperatorAddress ?? ''}
         onChange={({ target }) =>
           setValidator(
-            whitelistedValidators2.find(
+            validatorsData?.whitelistedValidators.Result.find(
               ({ OperatorAddress }) => target.value === OperatorAddress,
             ) ?? null,
           )
         }
-        disabled={whitelistedValidators2.length === 0}
+        disabled={validatorsData?.whitelistedValidators.Result.length === 0}
       >
         <option value="">Please select validators...</option>
-        {whitelistedValidators2.map(({ Description, OperatorAddress }) => (
-          <option key={OperatorAddress} value={OperatorAddress}>
-            {Description.Moniker}
-          </option>
-        ))}
+        {validatorsData?.whitelistedValidators.Result.map(
+          ({ Description, OperatorAddress }) => (
+            <option key={OperatorAddress} value={OperatorAddress}>
+              {Description.Moniker}
+            </option>
+          ),
+        )}
       </NativeSelect>
 
       {status.status === 'ready' &&

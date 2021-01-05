@@ -1,7 +1,7 @@
 // import { useMutation } from "@apollo/client"
+import { useWallet as useWallet2 } from '@anchor-protocol/wallet-provider';
 // import { CONNECT } from "../statistics/gqldocs"
 // import { useStatsClient } from "../statistics/useStats"
-import createContext from './create-context';
 
 interface Wallet {
   /** Terra wallet address */
@@ -16,10 +16,22 @@ interface Wallet {
   disconnect: () => void;
 }
 
+//export const [useWallet] = createContext<Wallet>('useWallet');
+
 /**
  * @deprecated use instead of useWallet() of @anchor-protocol/wallet-provider
  */
-export const [useWallet] = createContext<Wallet>('useWallet');
+export function useWallet(): Wallet {
+  const { status, install, connect, disconnect } = useWallet2();
+  
+  return {
+    address: status.status === 'ready' ? status.walletAddress : '',
+    install,
+    connect,
+    disconnect,
+    installed: status.status !== 'not_installed',
+  };
+}
 
 ///* state */
 //export const useWalletState = (): Wallet => {
