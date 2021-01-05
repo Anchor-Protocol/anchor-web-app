@@ -15,6 +15,7 @@ export const screen = {
 export const FINDER = 'https://finder.terra.money';
 
 export const mantleClient = new ApolloClient({
-  uri: process.env.REACT_APP_MANTLE_ENDPOINT ?? '/',
+  uri:
+    process.env.REACT_APP_MANTLE_ENDPOINT ?? 'https://tequila-mantle.terra.dev',
   cache: new InMemoryCache(),
 });
