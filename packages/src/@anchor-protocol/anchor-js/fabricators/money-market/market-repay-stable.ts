@@ -9,7 +9,6 @@ interface Option {
   address: string;
   market: string;
   borrower?: string;
-  // repay_all: boolean
   amount: number;
 }
 
