@@ -3,7 +3,7 @@ import { Consumer, Context, createContext, useContext } from 'react';
 import { WalletStatus } from './types';
 
 export interface WalletProviderProps {
-  children: ReactNode;
+  children: ReactNode | ((state: WalletState) => ReactNode);
 }
 
 export interface WalletState {

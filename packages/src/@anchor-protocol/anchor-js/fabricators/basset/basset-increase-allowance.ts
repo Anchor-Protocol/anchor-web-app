@@ -5,6 +5,7 @@ import {
   validateIsGreaterThanZero,
   validateIsNumber,
 } from '../../utils/validation/number';
+import { AddressProvider } from '../../address-provider/provider';
 
 type Expire = { at_height: number } | { at_time: number } | { never: {} };
 
@@ -23,7 +24,7 @@ export const fabricatebAssetIncreaseAllowance = ({
   spender,
   expires,
 }: Option) => (
-  addressProvider: AddressProvider.Provider,
+  addressProvider: AddressProvider,
 ): MsgExecuteContract[] => {
   validateInput([
     validateAddress(address),

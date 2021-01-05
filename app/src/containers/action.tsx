@@ -3,6 +3,7 @@ import React from 'react';
 import { useWallet } from '../hooks/use-wallet';
 import { useAddressProvider } from '../providers/address-provider';
 import extension, { PostResponse } from '../terra/extension';
+import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider/provider';
 
 interface ActionContainerProps {
   render: (execute: ActionExecute) => React.ReactElement;
@@ -10,7 +11,7 @@ interface ActionContainerProps {
 
 export type ActionExecute = (fabricated: Fabricated) => Promise<PostResponse>;
 
-export type Fabricated = (ap: AddressProvider.Provider) => Msg[];
+export type Fabricated = (ap: AddressProvider) => Msg[];
 
 export const ActionContainer: React.FunctionComponent<ActionContainerProps> = ({
   render,

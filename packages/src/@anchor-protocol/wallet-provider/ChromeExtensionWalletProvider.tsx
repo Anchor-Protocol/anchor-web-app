@@ -107,6 +107,8 @@ export function ChromeExtensionWalletProvider({
   );
 
   return (
-    <WalletContext.Provider value={state}>{children}</WalletContext.Provider>
+    <WalletContext.Provider value={state}>
+      {typeof children === 'function' ? children(state) : children}
+    </WalletContext.Provider>
   );
 }

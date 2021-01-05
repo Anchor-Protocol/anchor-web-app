@@ -6,6 +6,7 @@ import {
   validateIsNumber,
 } from '../../utils/validation/number';
 import { createHookMsg } from '../../utils/cw20/create-hook-msg';
+import { AddressProvider } from '../../address-provider/provider';
 
 interface Option {
   address: string;
@@ -14,7 +15,7 @@ interface Option {
 }
 
 export const fabricatebAssetBurn = ({ address, amount, bAsset }: Option) => (
-  addressProvider: AddressProvider.Provider,
+  addressProvider: AddressProvider,
 ): MsgExecuteContract[] => {
   validateInput([
     validateAddress(address),

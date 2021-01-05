@@ -4,6 +4,7 @@ import { validateAddress } from '../../utils/validation/address';
 
 import { validateIsGreaterThanZero } from '../../utils/validation/number';
 import { validateWhitelistedStable } from '../../utils/validation/stable';
+import { AddressProvider } from '../../address-provider/provider';
 
 interface Option {
   address: string;
@@ -22,7 +23,7 @@ export const fabricateDepositStableCoin = ({
   symbol,
   amount,
 }: Option) => (
-  addressProvider: AddressProvider.Provider,
+  addressProvider: AddressProvider,
 ): MsgExecuteContract[] => {
   validateInput([
     validateAddress(address),
