@@ -66,6 +66,8 @@ function MintBase({ className }: MintProps) {
   // ---------------------------------------------
   //
   // ---------------------------------------------
+  const [bondAmount, setBondAmount] = useState<string>('');
+
   const [mintCurrency, setMintCurrency] = useState<Item>(
     () => mintCurrencies[0],
   );
@@ -146,7 +148,7 @@ function MintBase({ className }: MintProps) {
                 bondCurrencies[0],
             )
           }
-          IconComponent={bondCurrencies.length < 2 ? () => <div /> : undefined}
+          IconComponent={bondCurrencies.length < 2 ? BlankComponent : undefined}
           disabled={bondCurrencies.length < 2}
         >
           {bondCurrencies.map(({ label, value }) => (
@@ -155,7 +157,12 @@ function MintBase({ className }: MintProps) {
             </option>
           ))}
         </MuiNativeSelect>
-        <MuiInput placeholder="0.00" />
+        <MuiInput
+          type="number"
+          placeholder="0.00"
+          value={bondAmount}
+          onChange={({ target }) => setBondAmount(target.value)}
+        />
       </SelectAndTextInputContainer>
 
       <div className="mint-description">
@@ -175,7 +182,7 @@ function MintBase({ className }: MintProps) {
                 mintCurrencies[0],
             )
           }
-          IconComponent={mintCurrencies.length < 2 ? () => <div /> : undefined}
+          IconComponent={mintCurrencies.length < 2 ? BlankComponent : undefined}
           disabled={mintCurrencies.length < 2}
         >
           {mintCurrencies.map(({ label, value }) => (
@@ -191,7 +198,7 @@ function MintBase({ className }: MintProps) {
 
       <NativeSelect
         className="validator"
-        value={validator?.Description.Moniker}
+        value={validator?.Description.Moniker ?? ''}
         onChange={({ target }) =>
           setValidator(
             whitelistedValidators2.find(
@@ -201,6 +208,7 @@ function MintBase({ className }: MintProps) {
         }
         disabled={whitelistedValidators2.length === 0}
       >
+        <option value="">Please select validators...</option>
         {whitelistedValidators2.map(({ Description, OperatorAddress }) => (
           <option key={OperatorAddress} value={OperatorAddress}>
             {Description.Moniker}
@@ -208,7 +216,34 @@ function MintBase({ className }: MintProps) {
         ))}
       </NativeSelect>
 
-      <ActionButton className="submit">Mint</ActionButton>
+      {status.status === 'ready' &&
+      validator &&
+      bondAmount.length > 0 &&
+      Big(bondAmount).gt(0) ? (
+        <ActionContainer
+          render={(execute) => (
+            <ActionButton
+              className="submit"
+              onClick={() =>
+                execute(
+                  fabricatebAssetBond({
+                    address: status.walletAddress,
+                    amount: Big(bondAmount).toNumber(),
+                    bAsset: addressProvider.bAssetToken('bluna'),
+                    validator: validator.OperatorAddress,
+                  }),
+                )
+              }
+            >
+              Mint
+            </ActionButton>
+          )}
+        />
+      ) : (
+        <ActionButton className="submit" disabled>
+          Mint
+        </ActionButton>
+      )}
 
       <HorizontalHeavyRuler />
 
@@ -305,6 +340,10 @@ function MintBase({ className }: MintProps) {
   );
 }
 
+function BlankComponent() {
+  return <div />;
+}
+
 export const Mint = styled(MintBase)`
   .bond-description,
   .mint-description {
@@ -325,6 +364,10 @@ export const Mint = styled(MintBase)`
   .bond,
   .mint {
     margin-bottom: 30px;
+
+    select {
+      width: 50px;
+    }
   }
 
   hr {

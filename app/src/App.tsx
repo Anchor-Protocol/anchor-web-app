@@ -3,6 +3,8 @@ import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider/pro
 import { darkTheme } from '@anchor-protocol/neumorphism-ui/themes/darkTheme';
 import { GlobalStyle } from '@anchor-protocol/neumorphism-ui/themes/GlobalStyle';
 import { ThemeProvider } from '@anchor-protocol/neumorphism-ui/themes/ThemeProvider';
+import { SnackbarProvider } from '@anchor-protocol/snackbar';
+import { QueryBroadcaster } from '@anchor-protocol/use-broadcastable-query';
 import { ChromeExtensionWalletProvider } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 import { Footer } from 'components/Footer';
@@ -19,13 +21,14 @@ import {
 } from 'react-router-dom';
 import styled from 'styled-components';
 import { AddressProviderProvider as ContractAddressProvider } from './providers/address-provider';
+import { SnackbarContainer } from 'components/snackbar/SnackbarContainer';
 
 interface AppProps {
   className?: string;
 }
 
 function WalletConnectedProviders({ children }: { children: ReactNode }) {
-  //const {} = useWallet();
+  //const {} = useWallet(); // of @anchor-protocol/wallet-provider
 
   const addressProvider = useMemo<AddressProvider>(() => {
     // TODO create address provider by wallet info
@@ -54,7 +57,7 @@ function WalletConnectedProviders({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    // Smart Contract Address
+    /* Smart Contract Address */
     <ContractAddressProvider value={addressProvider}>
       {/* Set GraphQL environenments */}
       <ApolloProvider client={client}>{children}</ApolloProvider>
@@ -64,31 +67,37 @@ function WalletConnectedProviders({ children }: { children: ReactNode }) {
 
 function AppBase({ className }: AppProps) {
   return (
-    // React App routing
+    /* React App routing */
     <Router>
       {/* Terra Station Wallet Address */}
       <ChromeExtensionWalletProvider>
-        {/*<WalletProvider value={wallet} key={wallet.address}>*/}
         <WalletConnectedProviders>
-          {/* Theme for Styled-Components and Material-UI */}
-          <ThemeProvider theme={darkTheme}>
-            {/* Global CSS */}
-            <GlobalStyle />
-            {/* Start Layout */}
-            <div className={className}>
-              <Header />
-              <Switch>
-                <Route path="/earn" component={Earn} />
-                <Route path="/borrow" component={Borrow} />
-                <Route path="/basset" component={BAsset} />
-                <Redirect to="/earn" />
-              </Switch>
-              <Footer />
-            </div>
-            {/* End Layout */}
-          </ThemeProvider>
+          {/* Broadcastable Query Provider */}
+          <QueryBroadcaster>
+            {/* Snackbar Provider */}
+            <SnackbarProvider>
+              {/* Theme for Styled-Components and Material-UI */}
+              <ThemeProvider theme={darkTheme}>
+                {/* Global CSS */}
+                <GlobalStyle />
+                {/* SnackbarContainer */}
+                <SnackbarContainer />
+                {/* Start Layout */}
+                <div className={className}>
+                  <Header />
+                  <Switch>
+                    <Route path="/earn" component={Earn} />
+                    <Route path="/borrow" component={Borrow} />
+                    <Route path="/basset" component={BAsset} />
+                    <Redirect to="/earn" />
+                  </Switch>
+                  <Footer />
+                </div>
+                {/* End Layout */}
+              </ThemeProvider>
+            </SnackbarProvider>
+          </QueryBroadcaster>
         </WalletConnectedProviders>
-        {/*</WalletProvider>*/}
       </ChromeExtensionWalletProvider>
     </Router>
   );
