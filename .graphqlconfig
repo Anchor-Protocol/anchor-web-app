@@ -3,18 +3,9 @@
   "schemaPath": "./schema.graphql",
   "extensions": {
     "endpoints": {
-      "Testnet": {
-        "url": "https://api.github.com/graphql",
+      "Development": {
+        "url": "https://tequila-mantle.terra.dev",
         "headers": {
-          "Authorization": "Bearer ${env:GITHUB_TOKEN}",
-          "user-agent": "JS GraphQL"
-        },
-        "introspect": false
-      },
-      "Mainnet": {
-        "url": "https://api.github.com/graphql",
-        "headers": {
-          "Authorization": "Bearer ${env:GITHUB_TOKEN}",
           "user-agent": "JS GraphQL"
         },
         "introspect": false
