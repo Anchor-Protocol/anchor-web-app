@@ -1,6 +1,6 @@
 import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider/provider';
 import { useWallet } from '@anchor-protocol/wallet-provider';
-import { Msg, StdFee } from '@terra-money/terra.js';
+import { Msg } from '@terra-money/terra.js';
 import { transactionFee } from 'env';
 import React from 'react';
 import { useAddressProvider } from '../providers/address-provider';
@@ -22,11 +22,13 @@ export const ActionContainer: React.FunctionComponent<ActionContainerProps> = ({
 
   const execute = (fabricated: Fabricated) =>
     new Promise<PostResponse>((resolve, reject) => {
-      extension.post(
-        {
+      const options = {
           ...transactionFee,
           msgs: fabricated(addressProviders),
-        },
+      }
+      console.log('action.tsx..()', options);
+      extension.post(
+        options,
         (response) => {
           console.log('action.tsx..()', response);
           if (!response.success) reject(response.error);

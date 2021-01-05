@@ -5,19 +5,22 @@ import {
   StringifiedData,
   StringifiedVariables,
   stringifyVariables,
-} from '../userBankBalances';
+} from '../txInfos';
 
-describe('queries/userBankBalances', () => {
+describe('queries/txInfos', () => {
   test('should get result from query', async () => {
     const data = await mantleClient
       .query<StringifiedData, StringifiedVariables>({
         query,
         variables: stringifyVariables({
-          userAddress: 'terra1x46rqay4d3cssq8gxxvqz8xt6nwlz4td20k38v',
+          txHash:
+            '045445EAA0D898DC4120051C5967C6A03561321CAD09E3F2AB4655D0A9457625',
         }),
       })
       .then(({ data }) => parseData(data));
+    
+    console.log('txInfos.test.ts..()', data);
 
-    expect(typeof data.has('uluna')).toBeTruthy();
+    expect(data.length).toBeGreaterThan(0);
   });
 });

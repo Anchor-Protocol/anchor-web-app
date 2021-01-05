@@ -88,10 +88,13 @@ export function useBroadcastableQuery<Params, Data, Error = unknown>({
           data,
         };
 
+        removeAbortController(id);
+
         if (onBroadcast.current) {
           broadcast(id, notificationFactory(done));
         } else {
           setResult(done);
+          return data;
         }
       } catch (error) {
         if (typeof intervalId === 'number') {
@@ -105,13 +108,13 @@ export function useBroadcastableQuery<Params, Data, Error = unknown>({
           error,
         };
 
+        removeAbortController(id);
+
         if (onBroadcast.current) {
           broadcast(id, notificationFactory(fault));
         } else {
           setResult(fault);
         }
-      } finally {
-        removeAbortController(id);
       }
     },
     [
