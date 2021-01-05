@@ -56,8 +56,7 @@ const PopupRedeemCollateral: React.FunctionComponent<PopupRedeemCollateralProps>
                   fabricateRedeemCollateral({
                     address,
                     market: 'ust',
-                    redeem_all: false,
-                    amount: redeemState,
+                    amount: redeemState.toString(),
                   }),
                 ).then(close)
               }
