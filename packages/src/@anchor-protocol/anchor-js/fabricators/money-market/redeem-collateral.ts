@@ -61,7 +61,9 @@ export const fabricateRedeemCollateral = ({
     new MsgExecuteContract(address, custodyContract, {
       // @see https://github.com/Anchor-Protocol/money-market-contracts/blob/master/contracts/custody/src/msg.rs#L69
       withdraw_collateral: {
-        amount: redeem_all ? undefined : amount,
+        amount: redeem_all
+          ? undefined
+          : new Int(new Dec(amount as number).mul(1000000)).toString(),
       },
     }),
   ];
