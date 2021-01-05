@@ -4,19 +4,23 @@ import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/Hori
 import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
+import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { isConnected, useWallet } from '@anchor-protocol/wallet-provider';
 import { useQuery } from '@apollo/client';
 import {
   Input as MuiInput,
+  InputAdornment,
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
+import { Error } from '@material-ui/icons';
 import Big from 'big.js';
-import React, { useState } from 'react';
+import React, { ReactNode, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { ActionContainer } from '../../containers/action';
 import { useAddressProvider } from '../../providers/address-provider';
-import * as exchangeRate from './queries/exchangeRate';
-import * as validators from './queries/validators';
+import * as exc from './queries/exchangeRate';
+import * as bal from './queries/userBankBalances';
+import * as val from './queries/validators';
 
 export interface MintProps {
   className?: string;
@@ -28,68 +32,108 @@ interface Item {
 }
 
 const bondCurrencies: Item[] = [{ label: 'Luna', value: 'luna' }];
-
 const mintCurrencies: Item[] = [{ label: 'bLuna', value: 'bluna' }];
 
 function MintBase({ className }: MintProps) {
+  // ---------------------------------------------
+  // dependencies
+  // ---------------------------------------------
   const { status } = useWallet();
 
   const addressProvider = useAddressProvider();
 
+  // ---------------------------------------------
+  // states
+  // ---------------------------------------------
   const [bondAmount, setBondAmount] = useState<string>('');
 
   const [mintCurrency, setMintCurrency] = useState<Item>(
     () => mintCurrencies[0],
   );
+
   const [bondCurrency, setBondCurrency] = useState<Item>(
     () => bondCurrencies[0],
   );
-  const [validator, setValidator] = useState<
-    validators.Data['validators']['Result'][number] | null
+
+  const [selectedValidator, setSelectedValidator] = useState<
+    val.Data['validators']['Result'][number] | null
   >(null);
 
-  const { data: _validatorsData } = useQuery<
-    validators.StringifiedData,
-    validators.StringifiedVariables
-  >(validators.query, {
+  // ---------------------------------------------
+  // queries
+  // ---------------------------------------------
+  const { data: validatorsData } = useQuery<
+    val.StringifiedData,
+    val.StringifiedVariables
+  >(val.query, {
     skip: !isConnected(status),
-    variables: validators.stringifyVariables({
+    variables: val.stringifyVariables({
       bLunaHubContract: addressProvider.bAssetHub(mintCurrency.value),
     }),
   });
 
-  const validatorsData = _validatorsData
-    ? validators.parseData(_validatorsData)
-    : undefined;
-
-  const { data: _exchangeRateData } = useQuery<
-    exchangeRate.StringifiedData,
-    exchangeRate.StringifiedVariables
-  >(exchangeRate.query, {
-    variables: exchangeRate.stringifyVariables({
+  const { data: exchangeRateData } = useQuery<
+    exc.StringifiedData,
+    exc.StringifiedVariables
+  >(exc.query, {
+    variables: exc.stringifyVariables({
       bLunaHubContract: addressProvider.bAssetHub(mintCurrency.value),
     }),
   });
 
-  const exchangeRateData = _exchangeRateData
-    ? exchangeRate.parseData(_exchangeRateData)
-    : undefined;
-
-  console.log('mint.tsx..MintBase()', {
-    status,
-    validatorsData,
-    exchangeRateData,
-    validator,
+  const { data: userBankBalancesData } = useQuery<
+    bal.StringifiedData,
+    bal.StringifiedVariables
+  >(bal.query, {
+    skip: status.status !== 'ready',
+    variables: bal.stringifyVariables({
+      userAddress: status.status === 'ready' ? status.walletAddress : '',
+    }),
   });
 
+  const validators = useMemo(
+    () => (validatorsData ? val.parseData(validatorsData) : undefined),
+    [validatorsData],
+  );
+
+  const exchangeRate = useMemo(
+    () => (exchangeRateData ? exc.parseData(exchangeRateData) : undefined),
+    [exchangeRateData],
+  );
+
+  const userUlunaBalance = useMemo(() => {
+    return userBankBalancesData
+      ? bal.parseData(userBankBalancesData).get('uluna')?.Amount
+      : undefined;
+  }, [userBankBalancesData]);
+
+  // ---------------------------------------------
+  // compute
+  // ---------------------------------------------
+  const bondInputError = useMemo<ReactNode>(() => {
+    if (
+      Big(bondAmount.length > 0 ? bondAmount : 0)
+        .mul(1000000)
+        .gt(Big(userUlunaBalance ?? 0))
+    ) {
+      return `Insufficient balance: Not enough Assets\nYou have: ${Big(
+        userUlunaBalance ?? 0,
+      ).div(1000000)} Luna`;
+    }
+    return undefined;
+  }, [bondAmount, userUlunaBalance]);
+
+  // ---------------------------------------------
+  // presentation
+  // ---------------------------------------------
   return (
     <Section className={className}>
       <div className="bond-description">
         <p>I want to bond</p>
         <p>
-          {exchangeRateData &&
+          {exchangeRate &&
             `1 Luna = ${Big(1).div(
-              exchangeRateData.exchangeRate.Result.exchange_rate,
+              exchangeRate.exchangeRate.Result.exchange_rate,
             )} bLuna`}
         </p>
       </div>
@@ -112,9 +156,25 @@ function MintBase({ className }: MintProps) {
             </option>
           ))}
         </MuiNativeSelect>
+
         <MuiInput
           type="number"
           placeholder="0.00"
+          error={!!bondInputError}
+          endAdornment={
+            bondInputError ? (
+              <InputAdornment position="end">
+                <Tooltip
+                  open
+                  color="error"
+                  title={bondInputError}
+                  placement="top"
+                >
+                  <Error />
+                </Tooltip>
+              </InputAdornment>
+            ) : undefined
+          }
           value={bondAmount}
           onChange={({ target }) => setBondAmount(target.value)}
         />
@@ -123,8 +183,8 @@ function MintBase({ className }: MintProps) {
       <div className="mint-description">
         <p>and mint</p>
         <p>
-          {exchangeRateData &&
-            `1 bLuna = ${exchangeRateData.exchangeRate.Result.exchange_rate} Luna`}
+          {exchangeRate &&
+            `1 bLuna = ${exchangeRate.exchangeRate.Result.exchange_rate} Luna`}
         </p>
       </div>
 
@@ -146,25 +206,38 @@ function MintBase({ className }: MintProps) {
             </option>
           ))}
         </MuiNativeSelect>
-        <MuiInput placeholder="0.00" disabled />
+        <MuiInput
+          placeholder="0.00"
+          value={
+            bondAmount.length > 0
+              ? Big(bondAmount)
+                  .mul(
+                    Big(exchangeRate?.exchangeRate.Result.exchange_rate ?? 0),
+                  )
+                  .toString()
+              : ''
+          }
+          disabled
+        />
       </SelectAndTextInputContainer>
 
       <HorizontalRuler />
 
       <NativeSelect
         className="validator"
-        value={validator?.OperatorAddress ?? ''}
+        data-selected-value={selectedValidator?.OperatorAddress ?? ''}
+        value={selectedValidator?.OperatorAddress ?? ''}
         onChange={({ target }) =>
-          setValidator(
-            validatorsData?.whitelistedValidators.Result.find(
+          setSelectedValidator(
+            validators?.whitelistedValidators.Result.find(
               ({ OperatorAddress }) => target.value === OperatorAddress,
             ) ?? null,
           )
         }
-        disabled={validatorsData?.whitelistedValidators.Result.length === 0}
+        disabled={validators?.whitelistedValidators.Result.length === 0}
       >
-        <option value="">Please select validators...</option>
-        {validatorsData?.whitelistedValidators.Result.map(
+        <option value="">Select validator</option>
+        {validators?.whitelistedValidators.Result.map(
           ({ Description, OperatorAddress }) => (
             <option key={OperatorAddress} value={OperatorAddress}>
               {Description.Moniker}
@@ -174,9 +247,10 @@ function MintBase({ className }: MintProps) {
       </NativeSelect>
 
       {status.status === 'ready' &&
-      validator &&
+      selectedValidator &&
       bondAmount.length > 0 &&
-      Big(bondAmount).gt(0) ? (
+      Big(bondAmount).gt(0) &&
+      !bondInputError ? (
         <ActionContainer
           render={(execute) => (
             <ActionButton
@@ -187,7 +261,7 @@ function MintBase({ className }: MintProps) {
                     address: status.walletAddress,
                     amount: Big(bondAmount).toNumber(),
                     bAsset: addressProvider.bAssetToken('bluna'),
-                    validator: validator.OperatorAddress,
+                    validator: selectedValidator.OperatorAddress,
                   }),
                 )
               }
@@ -230,8 +304,12 @@ export const Mint = styled(MintBase)`
   .mint {
     margin-bottom: 30px;
 
-    select {
-      width: 50px;
+    > :first-child {
+      width: 100px;
+    }
+
+    > :nth-child(2) {
+      flex: 1;
     }
   }
 
@@ -242,6 +320,10 @@ export const Mint = styled(MintBase)`
   .validator {
     width: 100%;
     margin-bottom: 40px;
+
+    &[data-selected-value=''] {
+      color: ${({ theme }) => theme.dimTextColor};
+    }
   }
 
   .submit {

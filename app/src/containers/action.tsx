@@ -1,6 +1,7 @@
 import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider/provider';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { Msg, StdFee } from '@terra-money/terra.js';
+import { transactionFee } from 'env';
 import React from 'react';
 import { useAddressProvider } from '../providers/address-provider';
 import extension, { PostResponse } from '../terra/extension';
@@ -23,11 +24,8 @@ export const ActionContainer: React.FunctionComponent<ActionContainerProps> = ({
     new Promise<PostResponse>((resolve, reject) => {
       extension.post(
         {
-          //gasPrices: '0.0015uusd',
+          ...transactionFee,
           msgs: fabricated(addressProviders),
-          //fee: new StdFee(503333, '5000000000000uusd'),
-          fee: new StdFee(6000000, '2000000uusd'),
-          gasAdjustment: 1.4,
         },
         (response) => {
           console.log('action.tsx..()', response);

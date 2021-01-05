@@ -6,9 +6,6 @@ export interface StringifiedData {
   };
 }
 
-/**
- * TODO Origin contract address
- */
 export interface Data {
   exchangeRate: {
     Result: {
