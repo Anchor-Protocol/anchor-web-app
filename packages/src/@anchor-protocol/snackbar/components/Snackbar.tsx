@@ -91,6 +91,8 @@ export class SnackbarBase extends Component<SnackbarProps, SnackbarState>
     this.setState({
       content: children,
     });
+
+    this.forceUpdate();
   };
 
   private onMouseEnter = () => {

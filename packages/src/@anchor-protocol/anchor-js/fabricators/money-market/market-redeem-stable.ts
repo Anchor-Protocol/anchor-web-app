@@ -3,6 +3,7 @@ import { validateAddress } from '../../utils/validation/address';
 import { validateInput } from '../../utils/validate-input';
 import { validateIsGreaterThanZero } from '../../utils/validation/number';
 import { createHookMsg } from '../../utils/cw20/create-hook-msg';
+import { AddressProvider } from '../../address-provider/provider';
 
 interface Option {
   address: string;
@@ -16,7 +17,7 @@ interface Option {
  * @param amount Amount of a stablecoin to redeem, or amount of an aToken (aTerra) to redeem (specified by symbol).
  */
 export const fabricateRedeemStable = ({ address, symbol, amount }: Option) => (
-  addressProvider: AddressProvider.Provider,
+  addressProvider: AddressProvider,
 ): MsgExecuteContract[] => {
   validateInput([validateAddress(address), validateIsGreaterThanZero(amount)]);
 

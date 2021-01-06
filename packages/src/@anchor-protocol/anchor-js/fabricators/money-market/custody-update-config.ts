@@ -2,6 +2,7 @@ import { MsgExecuteContract } from '@terra-money/terra.js';
 import { validateInput } from '../../utils/validate-input';
 import { validateAddress } from '../../utils/validation/address';
 import { validateTrue } from '../../utils/validation/true';
+import { AddressProvider } from '../../address-provider/provider';
 
 interface Option {
   address: string;
@@ -14,7 +15,7 @@ export const fabricatebCustodyConfig = ({
   liquidation_contract,
   custody,
 }: Option) => (
-  addressProvider: AddressProvider.Provider,
+  addressProvider: AddressProvider,
 ): MsgExecuteContract[] => {
   validateInput([
     validateAddress(address),

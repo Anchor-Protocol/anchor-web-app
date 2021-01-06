@@ -1,6 +1,5 @@
-import { useWallet } from 'hooks/use-wallet';
+import { useWallet } from '@anchor-protocol/wallet-provider';
 import { truncate } from 'libs/text';
-import { useCallback } from 'react';
 import styled from 'styled-components';
 
 export interface WalletSelectorProps {
@@ -8,21 +7,34 @@ export interface WalletSelectorProps {
 }
 
 function WalletSelectorBase({ className }: WalletSelectorProps) {
-  const { address, connect, disconnect } = useWallet();
+  const { status, install, connect, disconnect } = useWallet();
 
-  const connectWallet = useCallback(() => {
-    if (address) {
-      disconnect();
-    } else {
-      connect();
-    }
-  }, [address, connect, disconnect]);
-
-  return (
-    <button className={className} onClick={connectWallet}>
-      {address ? truncate(address) : 'connect wallet'}
-    </button>
-  );
+  switch (status.status) {
+    case 'initializing':
+      return (
+        <button className={className} disabled>
+          Initialzing Wallet...
+        </button>
+      );
+    case 'not_connected':
+      return (
+        <button className={className} onClick={connect}>
+          Connect wallet
+        </button>
+      );
+    case 'ready':
+      return (
+        <button className={className} onClick={disconnect}>
+          {truncate(status.walletAddress)}
+        </button>
+      );
+    default:
+      return (
+        <button className={className} onClick={install}>
+          Please install Wallet...
+        </button>
+      );
+  }
 }
 
 export const WalletSelector = styled(WalletSelectorBase)`
@@ -31,11 +43,11 @@ export const WalletSelector = styled(WalletSelectorBase)`
   padding: 8px 20px;
   outline: none;
   background-color: transparent;
-  
+
   color: #ffffff;
-  
+
   cursor: pointer;
-  
+
   &:hover {
     border: 1px solid rgba(255, 255, 255, 0.3);
     background-color: rgba(255, 255, 255, 0.04);

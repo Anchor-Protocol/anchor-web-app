@@ -3,6 +3,7 @@ import { validateInput } from '../../utils/validate-input';
 import { validateAddress } from '../../utils/validation/address';
 import { validateIsNumber } from '../../utils/validation/number';
 import { validateTrue } from '../../utils/validation/true';
+import { AddressProvider } from '../../address-provider/provider';
 
 interface Option {
   address: string;
@@ -25,7 +26,7 @@ export const fabricatebAssetParams = ({
   reward_denom,
   bAsset,
 }: Option) => (
-  addressProvider: AddressProvider.Provider,
+  addressProvider: AddressProvider,
 ): MsgExecuteContract[] => {
   validateInput([
     validateAddress(address),
