@@ -320,7 +320,7 @@ function BurnBase({ className }: BurnProps) {
         </ActionButton>
       ) : (
         <ActionButton className="submit" disabled>
-          Mint
+          Burn
         </ActionButton>
       )}
     </Section>
