@@ -1,26 +1,40 @@
-import { fabricatebAssetClaim } from '@anchor-protocol/anchor-js/fabricators';
-import { fabricatebAssetUpdateGlobalIndex } from '@anchor-protocol/anchor-js/fabricators/basset/basset-update-global-index';
+import {
+  fabricatebAssetClaim,
+  fabricatebAssetWithdrawUnbonded,
+} from '@anchor-protocol/anchor-js/fabricators';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
-import { HorizontalHeavyRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalHeavyRuler';
 import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
+import { MICRO, toFixedNoRounding } from '@anchor-protocol/number-notation';
 import {
   pressed,
   rulerLightColor,
   rulerShadowColor,
 } from '@anchor-protocol/styled-neumorphism';
-import React, { ReactNode, useCallback, useEffect, useState } from 'react';
-
+import {
+  BroadcastableQueryOptions,
+  useBroadcastableQuery,
+} from '@anchor-protocol/use-broadcastable-query';
+import { useWallet } from '@anchor-protocol/wallet-provider';
+import { ApolloClient, useApolloClient, useQuery } from '@apollo/client';
+import { SnackbarContent as MuiSnackbarContent } from '@material-ui/core';
+import { CreateTxOptions } from '@terra-money/terra.js';
+import big from 'big.js';
+import { transactionFee } from 'env';
+import * as clm from 'pages/basset/queries/claimable';
+import * as txi from 'pages/basset/queries/txInfos';
+import * as wdw from 'pages/basset/queries/withdrawable';
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import styled from 'styled-components';
-import Amount from '../../components/amount';
-import Box from '../../components/box';
-import Button, { ButtonTypes } from '../../components/button';
-import { ActionContainer } from '../../containers/action';
-import useBassetClaimable from '../../hooks/mantle/use-basset-claimable';
-import { useWallet } from '../../hooks/use-wallet';
 import { useAddressProvider } from '../../providers/address-provider';
-
-import style from './basset.module.scss';
+import { queryOptions } from './transactions/queryOptions';
+import { parseResult, StringifiedTxResult, TxResult } from './transactions/tx';
 
 export interface ClaimProps {
   className?: string;
@@ -31,32 +45,95 @@ interface Item {
   value: string;
 }
 
-const bondItems: Item[] = [
-  { label: 'Luna', value: 'luna' },
-  { label: 'KRT', value: 'krt' },
-  { label: 'UST', value: 'ust' },
-];
+const currencies: Item[] = [{ label: 'Luna', value: 'luna' }];
 
 function ClaimBase({ className }: ClaimProps) {
-  const { address } = useWallet();
+  // ---------------------------------------------
+  // dependencies
+  // ---------------------------------------------
+  const { status, post } = useWallet();
+
   const addressProvider = useAddressProvider();
-  //const [withdrawState, setWithdrawState] = useState({ amount: '0.00' });
 
   const [
-    //loading,
-    //error,
-    claimable = '0',
-  ] = useBassetClaimable();
+    fetchWithdraw,
+    withdrawResult,
+    resetWithdrawResult,
+  ] = useBroadcastableQuery(withdrawQueryOptions);
 
-  //const isReady = !loading && !error;
+  const [fetchClaim, claimResult, resetClaimResult] = useBroadcastableQuery(
+    claimQueryOptions,
+  );
+
+  const client = useApolloClient();
 
   // ---------------------------------------------
-  //
+  // states
   // ---------------------------------------------
-  const [bond, setBond] = useState<Item>(() => bondItems[0]);
+  const [currency, setCurrency] = useState<Item>(() => currencies[0]);
 
   const [history, setHistory] = useState<ReactNode>(() => null);
 
+  // ---------------------------------------------
+  // queries
+  // ---------------------------------------------
+  const [now, setNow] = useState(() => Date.now());
+
+  const { data: withdrawableData } = useQuery<
+    wdw.StringifiedData,
+    wdw.StringifiedVariables
+  >(wdw.query, {
+    skip: status.status !== 'ready',
+    variables: wdw.stringifyVariables({
+      bLunaHubContract: addressProvider.bAssetHub('bluna'),
+      withdrawableAmountQuery: {
+        withdrawable_unbonded: {
+          address: status.status === 'ready' ? status.walletAddress : '',
+          block_time: now,
+        },
+      },
+      withdrawRequestsQuery: {
+        unbond_requests: {
+          address: status.status === 'ready' ? status.walletAddress : '',
+        },
+      },
+      exchangeRateQuery: {
+        state: {},
+      },
+    }),
+  });
+
+  const { data: claimableData } = useQuery<
+    clm.StringifiedData,
+    clm.StringifiedVariables
+  >(clm.query, {
+    skip: status.status !== 'ready',
+    variables: clm.stringifyVariables({
+      bAssetRewardContract: addressProvider.bAssetReward('bluna'),
+      rewardState: {
+        state: {},
+      },
+      claimableRewardQuery: {
+        holder: {
+          address: status.status === 'ready' ? status.walletAddress : '',
+        },
+      },
+    }),
+  });
+
+  const withdrawable = useMemo(
+    () => (withdrawableData ? wdw.parseData(withdrawableData) : undefined),
+    [withdrawableData],
+  );
+
+  const claimable = useMemo(
+    () => (claimableData ? clm.parseData(claimableData) : undefined),
+    [claimableData],
+  );
+
+  // ---------------------------------------------
+  // TODO remove
+  // ---------------------------------------------
   const updateHistory = useCallback(() => {
     setHistory(
       Math.random() > 0.5 ? (
@@ -91,34 +168,215 @@ function ClaimBase({ className }: ClaimProps) {
     updateHistory();
   }, [updateHistory]);
 
+  console.log('claim.tsx..ClaimBase()', { withdrawResult, claimResult });
+
+  // ---------------------------------------------
+  // presentation
+  // ---------------------------------------------
+  if (withdrawResult?.status === 'in-progress') {
+    return (
+      <div className={className}>
+        <Section>
+          <ul style={{ listStyle: 'none', padding: 0 }}>
+            <li>
+              Status:{' '}
+              {withdrawResult.data
+                ? '2. Wating Block Creation...'
+                : '1. Wating Terra Station Submit...'}
+            </li>
+            {withdrawResult.data?.txResult && (
+              <li>
+                Terra Station Transaction
+                <ul>
+                  <li>
+                    fee: {JSON.stringify(withdrawResult.data?.txResult.fee)}
+                  </li>
+                  <li>
+                    gasAdjustment: {withdrawResult.data?.txResult.gasAdjustment}
+                  </li>
+                  <li>height: {withdrawResult.data?.txResult.result.height}</li>
+                  <li>txhash: {withdrawResult.data?.txResult.result.txhash}</li>
+                </ul>
+              </li>
+            )}
+          </ul>
+          {!withdrawResult.data && (
+            <ActionButton
+              style={{ width: '100%' }}
+              onClick={() => {
+                withdrawResult.abortController.abort();
+                resetWithdrawResult && resetWithdrawResult();
+              }}
+            >
+              Disconnect with Terra Station (Stop Waiting Terra Station Result)
+            </ActionButton>
+          )}
+        </Section>
+      </div>
+    );
+  } else if (withdrawResult?.status === 'done') {
+    return (
+      <div className={className}>
+        <Section>
+          <ul style={{ listStyle: 'none', padding: 0 }}>
+            <li>Status: Done</li>
+            <li>
+              Terra Station Transaction
+              <ul>
+                <li>fee: {JSON.stringify(withdrawResult.data.txResult.fee)}</li>
+                <li>
+                  gasAdjustment: {withdrawResult.data.txResult.gasAdjustment}
+                </li>
+                <li>height: {withdrawResult.data.txResult.result.height}</li>
+                <li>txhash: {withdrawResult.data.txResult.result.txhash}</li>
+              </ul>
+            </li>
+          </ul>
+          <ActionButton
+            style={{ width: '100%' }}
+            onClick={() => {
+              resetWithdrawResult && resetWithdrawResult();
+            }}
+          >
+            Exit Result
+          </ActionButton>
+        </Section>
+      </div>
+    );
+  } else if (claimResult?.status === 'in-progress') {
+    return (
+      <div className={className}>
+        <Section>
+          <ul style={{ listStyle: 'none', padding: 0 }}>
+            <li>
+              Status:{' '}
+              {claimResult.data
+                ? '2. Wating Block Creation...'
+                : '1. Wating Terra Station Submit...'}
+            </li>
+            {claimResult.data?.txResult && (
+              <li>
+                Terra Station Transaction
+                <ul>
+                  <li>fee: {JSON.stringify(claimResult.data?.txResult.fee)}</li>
+                  <li>
+                    gasAdjustment: {claimResult.data?.txResult.gasAdjustment}
+                  </li>
+                  <li>height: {claimResult.data?.txResult.result.height}</li>
+                  <li>txhash: {claimResult.data?.txResult.result.txhash}</li>
+                </ul>
+              </li>
+            )}
+          </ul>
+          {!claimResult.data && (
+            <ActionButton
+              style={{ width: '100%' }}
+              onClick={() => {
+                claimResult.abortController.abort();
+                resetClaimResult && resetClaimResult();
+              }}
+            >
+              Disconnect with Terra Station (Stop Waiting Terra Station Result)
+            </ActionButton>
+          )}
+        </Section>
+      </div>
+    );
+  } else if (claimResult?.status === 'done') {
+    return (
+      <div className={className}>
+        <Section>
+          <ul style={{ listStyle: 'none', padding: 0 }}>
+            <li>Status: Done</li>
+            <li>
+              Terra Station Transaction
+              <ul>
+                <li>fee: {JSON.stringify(claimResult.data.txResult.fee)}</li>
+                <li>
+                  gasAdjustment: {claimResult.data.txResult.gasAdjustment}
+                </li>
+                <li>height: {claimResult.data.txResult.result.height}</li>
+                <li>txhash: {claimResult.data.txResult.result.txhash}</li>
+              </ul>
+            </li>
+          </ul>
+          <ActionButton
+            style={{ width: '100%' }}
+            onClick={() => {
+              resetClaimResult && resetClaimResult();
+            }}
+          >
+            Exit Result
+          </ActionButton>
+        </Section>
+      </div>
+    );
+  }
+
   return (
     <div className={className}>
       <Section>
-        <NativeSelect
-          className="bond"
-          value={bond.value}
-          onChange={({ target }) =>
-            setBond(
-              bondItems.find(({ value }) => target.value === value) ??
-                bondItems[0],
-            )
-          }
-        >
-          {bondItems.map(({ label, value }) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </NativeSelect>
+        {currencies.length > 1 && (
+          <NativeSelect
+            className="bond"
+            value={currency.value}
+            onChange={({ target }) =>
+              setCurrency(
+                currencies.find(({ value }) => target.value === value) ??
+                  currencies[0],
+              )
+            }
+          >
+            {currencies.map(({ label, value }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </NativeSelect>
+        )}
 
         <article className="withdrawable-amount">
           <h4>Withdrawable Amount</h4>
-          <p>48,000.00 Luna</p>
+          <p>
+            {toFixedNoRounding(
+              big(withdrawable?.withdrawableAmount.withdrawable ?? 0).div(
+                MICRO,
+              ),
+              2,
+            )}{' '}
+            Luna
+          </p>
         </article>
 
-        <ActionButton className="submit" onClick={updateHistory}>
-          Withdraw
-        </ActionButton>
+        {status.status === 'ready' ? (
+          <ActionButton
+            className="submit"
+            onClick={() =>
+              fetchWithdraw({
+                post: post<CreateTxOptions, StringifiedTxResult>({
+                  ...transactionFee,
+                  msgs: fabricatebAssetWithdrawUnbonded({
+                    address: status.walletAddress,
+                    bAsset: 'bluna',
+                  })(addressProvider),
+                })
+                  .then(({ payload }) => payload)
+                  .then(parseResult),
+                client,
+              }).then((data) => {
+                if (data) {
+                  setNow(Date.now());
+                }
+              })
+            }
+          >
+            Withdraw
+          </ActionButton>
+        ) : (
+          <ActionButton className="submit" disabled>
+            Withdraw
+          </ActionButton>
+        )}
 
         <ul className="withdraw-history">{history}</ul>
       </Section>
@@ -126,89 +384,91 @@ function ClaimBase({ className }: ClaimProps) {
       <Section>
         <article className="claimable-rewards">
           <h4>Claimable Rewards</h4>
-          <p>3,000.00 UST</p>
+          <p>
+            {claimable
+              ? toFixedNoRounding(
+                  big(
+                    big(
+                      big(claimable.claimableReward.balance).mul(
+                        big(claimable.rewardState.global_index).sub(
+                          claimable.claimableReward.index,
+                        ),
+                      ),
+                    ).add(claimable.claimableReward.pending_rewards),
+                  ).div(MICRO),
+                  2,
+                )
+              : '0'}{' '}
+            UST
+          </p>
         </article>
 
-        <ActionButton className="submit">Claim</ActionButton>
-      </Section>
-
-      <HorizontalHeavyRuler />
-
-      <Section>
-        <article className={style.business}>
-          <Box>
-            <header>Available Luna</header>
-            <div>
-              <Amount amount={+claimable} denom="Luna" />
-            </div>
-            <footer>
-              <ActionContainer
-                render={(execute) => (
-                  <Button
-                    type={ButtonTypes.PRIMARY}
-                    transactional={true}
-                    onClick={() => alert('oops')}
-                  >
-                    Withdraw
-                  </Button>
-                )}
-              />
-            </footer>
-          </Box>
-          <Box>
-            <header>Claimable Rewards</header>
-            <div>
-              <Amount amount={+claimable} denom="UST" />
-            </div>
-            <footer>
-              <ActionContainer
-                render={(execute) => (
-                  <Button
-                    type={ButtonTypes.PRIMARY}
-                    onClick={() =>
-                      execute(
-                        fabricatebAssetClaim({
-                          address,
-                          recipient: address,
-                          bAsset: addressProvider.bAssetToken('uluna'),
-                        }),
-                      )
-                    }
-                    transactional={true}
-                  >
-                    Claim
-                  </Button>
-                )}
-              />
-            </footer>
-          </Box>
-        </article>
-
-        {/* owner operations */}
-        <div>
-          <ActionContainer
-            render={(execute) => (
-              <Button
-                type={ButtonTypes.DEFAULT}
-                transactional={true}
-                onClick={() =>
-                  execute(
-                    fabricatebAssetUpdateGlobalIndex({
-                      address,
-                      bAsset: 'bluna',
-                    }),
-                  )
-                }
-              >
-                Update Global Index
-              </Button>
-            )}
-          />
-        </div>
+        {status.status === 'ready' ? (
+          <ActionButton
+            className="submit"
+            onClick={() =>
+              fetchClaim({
+                post: post<CreateTxOptions, StringifiedTxResult>({
+                  ...transactionFee,
+                  msgs: fabricatebAssetClaim({
+                    address: status.walletAddress,
+                    bAsset: 'bluna',
+                    recipient: undefined,
+                  })(addressProvider),
+                })
+                  .then(({ payload }) => payload)
+                  .then(parseResult),
+                client,
+              })
+            }
+          >
+            Claim
+          </ActionButton>
+        ) : (
+          <ActionButton className="submit" disabled>
+            Claim
+          </ActionButton>
+        )}
       </Section>
     </div>
   );
 }
+
+const withdrawQueryOptions: BroadcastableQueryOptions<
+  { post: Promise<TxResult>; client: ApolloClient<any> },
+  { txResult: TxResult } & { txInfos: txi.Data },
+  Error
+> = {
+  ...queryOptions,
+  group: 'basset/withdraw',
+  notificationFactory: (result) => {
+    return (
+      <MuiSnackbarContent
+        message={`${result.status}: ${
+          'data' in result ? Object.keys(result.data ?? {}).join(', ') : ''
+        }`}
+      />
+    );
+  },
+};
+
+const claimQueryOptions: BroadcastableQueryOptions<
+  { post: Promise<TxResult>; client: ApolloClient<any> },
+  { txResult: TxResult } & { txInfos: txi.Data },
+  Error
+> = {
+  ...queryOptions,
+  group: 'basset/claim',
+  notificationFactory: (result) => {
+    return (
+      <MuiSnackbarContent
+        message={`${result.status}: ${
+          'data' in result ? Object.keys(result.data ?? {}).join(', ') : ''
+        }`}
+      />
+    );
+  },
+};
 
 export const Claim = styled(ClaimBase)`
   > section {

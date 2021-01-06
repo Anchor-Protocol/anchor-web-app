@@ -6,7 +6,6 @@ import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { MICRO, toFixedNoRounding } from '@anchor-protocol/number-notation';
 import {
   BroadcastableQueryOptions,
-  stopWithAbortSignal,
   useBroadcastableQuery,
 } from '@anchor-protocol/use-broadcastable-query';
 import { useWallet } from '@anchor-protocol/wallet-provider';
@@ -24,10 +23,11 @@ import { transactionFee } from 'env';
 import * as exc from 'pages/basset/queries/exchangeRate';
 import * as txi from 'pages/basset/queries/txInfos';
 import * as bas from 'pages/basset/queries/userBAssetBalance';
-import * as burn from 'pages/basset/transactions/burn';
-import React, { ReactNode, useMemo, useState } from 'react';
+import { ReactNode, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { useAddressProvider } from '../../providers/address-provider';
+import { queryOptions } from './transactions/queryOptions';
+import { parseResult, StringifiedTxResult, TxResult } from './transactions/tx';
 
 export interface BurnProps {
   className?: string;
@@ -159,7 +159,7 @@ function BurnBase({ className }: BurnProps) {
         </ul>
         {!burnResult.data && (
           <ActionButton
-            style={{width: '100%'}}
+            style={{ width: '100%' }}
             onClick={() => {
               burnResult.abortController.abort();
               resetBurnResult && resetBurnResult();
@@ -186,7 +186,7 @@ function BurnBase({ className }: BurnProps) {
           </li>
         </ul>
         <ActionButton
-          style={{width: '100%'}}
+          style={{ width: '100%' }}
           onClick={() => {
             resetBurnResult && resetBurnResult();
           }}
@@ -297,16 +297,16 @@ function BurnBase({ className }: BurnProps) {
           className="submit"
           onClick={() =>
             fetchBurn({
-              post: post<CreateTxOptions, burn.StringifiedTxResult>({
+              post: post<CreateTxOptions, StringifiedTxResult>({
                 ...transactionFee,
                 msgs: fabricatebAssetBurn({
                   address: status.walletAddress,
                   amount: burnAmount,
-                  bAsset: addressProvider.bAssetToken('bluna'),
+                  bAsset: burnCurrency.value,
                 })(addressProvider),
               })
                 .then(({ payload }) => payload)
-                .then(burn.parseResult),
+                .then(parseResult),
               client,
             }).then((data) => {
               if (data) {
@@ -327,46 +327,13 @@ function BurnBase({ className }: BurnProps) {
   );
 }
 
-const timeout = (ms: number) =>
-  new Promise((resolve) => setTimeout(resolve, ms));
-
 const burnQueryOptions: BroadcastableQueryOptions<
-  { post: Promise<burn.TxResult>; client: ApolloClient<any> },
-  { txResult: burn.TxResult } & { txInfos: txi.Data },
+  { post: Promise<TxResult>; client: ApolloClient<any> },
+  { txResult: TxResult } & { txInfos: txi.Data },
   Error
 > = {
-  broadcastWhen: 'unmounted',
+  ...queryOptions,
   group: 'basset/burn',
-  fetchClient: async (
-    { post, client },
-    { signal, inProgressUpdate, stopSignal },
-  ) => {
-    const txResult = await stopWithAbortSignal(post, signal);
-
-    inProgressUpdate({ txResult });
-
-    while (true) {
-      if (signal.aborted) {
-        throw stopSignal;
-      }
-
-      const txInfos = await client
-        .query<txi.StringifiedData, txi.StringifiedVariables>({
-          query: txi.query,
-          fetchPolicy: 'network-only',
-          variables: txi.stringifyVariables({
-            txHash: txResult.result.txhash,
-          }),
-        })
-        .then(({ data }) => txi.parseData(data));
-
-      if (txInfos.length > 0) {
-        return { txResult, txInfos };
-      } else {
-        await timeout(500);
-      }
-    }
-  },
   notificationFactory: (result) => {
     return (
       <MuiSnackbarContent

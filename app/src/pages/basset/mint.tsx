@@ -8,7 +8,6 @@ import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { MICRO, toFixedNoRounding } from '@anchor-protocol/number-notation';
 import {
   BroadcastableQueryOptions,
-  stopWithAbortSignal,
   useBroadcastableQuery,
 } from '@anchor-protocol/use-broadcastable-query';
 import { isConnected, useWallet } from '@anchor-protocol/wallet-provider';
@@ -30,7 +29,8 @@ import * as exc from './queries/exchangeRate';
 import * as txi from './queries/txInfos';
 import * as bal from './queries/userBankBalances';
 import * as val from './queries/validators';
-import * as mint from './transactions/mint';
+import { queryOptions } from './transactions/queryOptions';
+import { parseResult, StringifiedTxResult, TxResult } from './transactions/tx';
 
 export interface MintProps {
   className?: string;
@@ -176,7 +176,7 @@ function MintBase({ className }: MintProps) {
         </ul>
         {!mintResult.data && (
           <ActionButton
-            style={{width: '100%'}}
+            style={{ width: '100%' }}
             onClick={() => {
               mintResult.abortController.abort();
               resetMintResult && resetMintResult();
@@ -203,7 +203,7 @@ function MintBase({ className }: MintProps) {
           </li>
         </ul>
         <ActionButton
-          style={{width: '100%'}}
+          style={{ width: '100%' }}
           onClick={() => {
             resetMintResult && resetMintResult();
           }}
@@ -339,17 +339,17 @@ function MintBase({ className }: MintProps) {
           className="submit"
           onClick={() =>
             fetchMint({
-              post: post<CreateTxOptions, mint.StringifiedTxResult>({
+              post: post<CreateTxOptions, StringifiedTxResult>({
                 ...transactionFee,
                 msgs: fabricatebAssetBond({
                   address: status.walletAddress,
                   amount: big(bondAmount).toNumber(),
-                  bAsset: addressProvider.bAssetToken('bluna'),
+                  bAsset: mintCurrency.value,
                   validator: selectedValidator.OperatorAddress,
                 })(addressProvider),
               })
                 .then(({ payload }) => payload)
-                .then(mint.parseResult),
+                .then(parseResult),
               client,
             }).then((data) => {
               if (data) {
@@ -371,46 +371,13 @@ function MintBase({ className }: MintProps) {
   );
 }
 
-const timeout = (ms: number) =>
-  new Promise((resolve) => setTimeout(resolve, ms));
-
 const mintQueryOptions: BroadcastableQueryOptions<
-  { post: Promise<mint.TxResult>; client: ApolloClient<any> },
-  { txResult: mint.TxResult } & { txInfos: txi.Data },
+  { post: Promise<TxResult>; client: ApolloClient<any> },
+  { txResult: TxResult } & { txInfos: txi.Data },
   Error
 > = {
-  broadcastWhen: 'unmounted',
+  ...queryOptions,
   group: 'basset/mint',
-  fetchClient: async (
-    { post, client },
-    { signal, inProgressUpdate, stopSignal },
-  ) => {
-    const txResult = await stopWithAbortSignal(post, signal);
-
-    inProgressUpdate({ txResult });
-
-    while (true) {
-      if (signal.aborted) {
-        throw stopSignal;
-      }
-
-      const txInfos = await client
-        .query<txi.StringifiedData, txi.StringifiedVariables>({
-          query: txi.query,
-          fetchPolicy: 'network-only',
-          variables: txi.stringifyVariables({
-            txHash: txResult.result.txhash,
-          }),
-        })
-        .then(({ data }) => txi.parseData(data));
-
-      if (txInfos.length > 0) {
-        return { txResult, txInfos };
-      } else {
-        await timeout(500);
-      }
-    }
-  },
   notificationFactory: (result) => {
     return (
       <MuiSnackbarContent

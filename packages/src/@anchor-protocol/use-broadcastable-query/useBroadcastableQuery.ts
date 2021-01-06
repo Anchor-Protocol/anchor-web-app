@@ -135,6 +135,10 @@ export function useBroadcastableQuery<Params, Data, Error = unknown>({
         if (error instanceof BroadcastableQueryStop) {
           return;
         }
+        
+        if (process.env.NODE_ENV === 'development') {
+          throw error;
+        }
 
         const fault: FetchResult = {
           status: 'error',

@@ -11,25 +11,37 @@ export interface StringifiedData {
 export type Data = {
   TxHash: string;
   Success: boolean;
-  RawLog: {
-    msg_index: number;
-    log: string;
-    events: {
-      type: string;
-      attributes: {
-        key: string;
-        value: string;
-      }[];
-    }[];
-  }[];
+  RawLog:
+    | {
+        msg_index: number;
+        log: string;
+        events: {
+          type: string;
+          attributes: {
+            key: string;
+            value: string;
+          }[];
+        }[];
+      }[]
+    | string;
 }[];
 
 export function parseData({ TxInfos }: StringifiedData): Data {
-  return TxInfos.map(({ TxHash, Success, RawLog }) => ({
-    TxHash,
-    Success,
-    RawLog: JSON.parse(RawLog),
-  }));
+  return TxInfos.map(({ TxHash, Success, RawLog }) => {
+    let rawLog: Data[number]['RawLog'] | string;
+
+    try {
+      rawLog = JSON.parse(RawLog);
+    } catch {
+      rawLog = RawLog;
+    }
+
+    return {
+      TxHash,
+      Success,
+      RawLog: rawLog,
+    };
+  });
 }
 
 export interface StringifiedVariables {

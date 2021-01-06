@@ -76,6 +76,7 @@
     "graphql": "^15.4.0",
     "graphql-tag": "^2.11.0",
     "multiplerun": "^1.1.2",
+    "numeral": "^2.0.6",
     "puppeteer": "^5.5.0",
     "react": "^17.0.1",
     "react-app-rewire-alias": "^0.1.9",
@@ -93,6 +94,7 @@
     "web-vitals": "^0.2.4"
   },
   "devDependencies": {
-    "@types/big.js": "^6.0.1"
+    "@types/big.js": "^6.0.1",
+    "@types/numeral": "^0.0.28"
   }
 }
