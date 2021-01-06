@@ -8,6 +8,7 @@ import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { MICRO, toFixedNoRounding } from '@anchor-protocol/number-notation';
 import {
   BroadcastableQueryOptions,
+  stopWithAbortSignal,
   useBroadcastableQuery,
 } from '@anchor-protocol/use-broadcastable-query';
 import { isConnected, useWallet } from '@anchor-protocol/wallet-provider';
@@ -343,31 +344,6 @@ function MintBase({ className }: MintProps) {
 const timeout = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
-function watchAbort(signal: AbortSignal): [Promise<void>, () => void] {
-  if (signal.aborted) {
-    return [Promise.resolve(), () => {}];
-  }
-
-  let resolver: (() => void) | null = null;
-
-  const promise = new Promise<void>((resolve) => {
-    resolver = resolve;
-  });
-
-  function listener() {
-    resolver && resolver();
-    signal.removeEventListener('abort', listener);
-  }
-
-  signal.addEventListener('abort', listener);
-
-  function unwatch() {
-    signal.removeEventListener('abort', listener);
-  }
-
-  return [promise, unwatch];
-}
-
 const mintQueryOptions: BroadcastableQueryOptions<
   { post: Promise<mint.TxResult>; client: ApolloClient<any> },
   { txResult: mint.TxResult } & { txInfos: txi.Data },
@@ -379,15 +355,7 @@ const mintQueryOptions: BroadcastableQueryOptions<
     { post, client },
     { signal, inProgressUpdate, stopSignal },
   ) => {
-    const [abort, unwatchAbort] = watchAbort(signal);
-
-    const txResult = await Promise.race([post, abort]);
-
-    if (!txResult) {
-      throw stopSignal;
-    }
-
-    unwatchAbort();
+    const txResult = await stopWithAbortSignal(post, signal);
 
     inProgressUpdate({ txResult });
 
