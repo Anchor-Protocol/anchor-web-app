@@ -1,4 +1,4 @@
-import { CreateTxOptions, Extension } from '@terra-money/terra.js';
+import { Extension } from '@terra-money/terra.js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { StationNetworkInfo, WalletStatus } from './types';
 import { WalletContext, WalletProviderProps, WalletState } from './useWallet';
@@ -86,7 +86,7 @@ export function ChromeExtensionWalletProvider({
   const post = useCallback<WalletState['post']>(
     (data) => {
       return new Promise((resolve) => {
-        const id = extension.post({ ...(data as any), purgeQueue: true });
+        extension.post({ ...(data as any), purgeQueue: true });
         extension.once('onPost', (payload) => {
           resolve({ name: 'onPost', payload });
         });

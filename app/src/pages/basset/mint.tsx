@@ -16,13 +16,15 @@ import {
   Input as MuiInput,
   InputAdornment,
   NativeSelect as MuiNativeSelect,
-  SnackbarContent as MuiSnackbarContent,
 } from '@material-ui/core';
 import { Error as ErrorIcon } from '@material-ui/icons';
 import { CreateTxOptions } from '@terra-money/terra.js';
 import big from 'big.js';
 import { transactionFee } from 'env';
-import { txNotificationFactory, TxResultRenderer } from 'pages/basset/transactions/TxResultRenderer';
+import {
+  txNotificationFactory,
+  TxResultRenderer,
+} from 'pages/basset/transactions/TxResultRenderer';
 import React, { ReactNode, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { useAddressProvider } from '../../providers/address-provider';

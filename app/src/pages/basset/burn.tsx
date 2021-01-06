@@ -14,7 +14,6 @@ import {
   Input as MuiInput,
   InputAdornment,
   NativeSelect as MuiNativeSelect,
-  SnackbarContent as MuiSnackbarContent,
 } from '@material-ui/core';
 import { Error as ErrorIcon } from '@material-ui/icons';
 import { CreateTxOptions } from '@terra-money/terra.js';
