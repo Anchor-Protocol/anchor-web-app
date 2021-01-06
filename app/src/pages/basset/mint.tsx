@@ -138,9 +138,9 @@ function MintBase({ className }: MintProps) {
         .mul(MICRO)
         .gt(big(userUlunaBalance ?? 0))
     ) {
-      return `Insufficient balance: Not enough Assets\nYou have: ${big(
+      return `Insufficient balance: Not enough Assets (${big(
         userUlunaBalance ?? 0,
-      ).div(MICRO)} Luna`;
+      ).div(MICRO)} Luna)`;
     }
     return undefined;
   }, [bondAmount, userUlunaBalance]);
@@ -153,33 +153,63 @@ function MintBase({ className }: MintProps) {
   if (mintResult?.status === 'in-progress') {
     return (
       <Section className={className}>
-        <p>{mintResult.status}:</p>
-        <p>See the terra station window...</p>
-        {Object.keys(mintResult.data ?? {}).map((key) => (
-          <p id={key}>{key}</p>
-        ))}
+        <ul style={{ listStyle: 'none', padding: 0 }}>
+          <li>
+            Status:{' '}
+            {mintResult.data
+              ? '2. Wating Block Creation...'
+              : '1. Wating Terra Station Submit...'}
+          </li>
+          {mintResult.data?.txResult && (
+            <li>
+              Terra Station Transaction
+              <ul>
+                <li>fee: {JSON.stringify(mintResult.data?.txResult.fee)}</li>
+                <li>
+                  gasAdjustment: {mintResult.data?.txResult.gasAdjustment}
+                </li>
+                <li>height: {mintResult.data?.txResult.result.height}</li>
+                <li>txhash: {mintResult.data?.txResult.result.txhash}</li>
+              </ul>
+            </li>
+          )}
+        </ul>
         {!mintResult.data && (
-          <button
+          <ActionButton
+            style={{width: '100%'}}
             onClick={() => {
               mintResult.abortController.abort();
               resetMintResult && resetMintResult();
             }}
           >
-            Reset
-          </button>
+            Disconnect with Terra Station (Stop Waiting Terra Station Result)
+          </ActionButton>
         )}
       </Section>
     );
   } else if (mintResult?.status === 'done') {
     return (
       <Section className={className}>
-        <p>{mintResult.status}:</p>
-        {Object.keys(mintResult.data ?? {}).map((key) => (
-          <p id={key}>{key}</p>
-        ))}
-        <button onClick={() => resetMintResult && resetMintResult()}>
-          Reset
-        </button>
+        <ul style={{ listStyle: 'none', padding: 0 }}>
+          <li>Status: Done</li>
+          <li>
+            Terra Station Transaction
+            <ul>
+              <li>fee: {JSON.stringify(mintResult.data.txResult.fee)}</li>
+              <li>gasAdjustment: {mintResult.data.txResult.gasAdjustment}</li>
+              <li>height: {mintResult.data.txResult.result.height}</li>
+              <li>txhash: {mintResult.data.txResult.result.txhash}</li>
+            </ul>
+          </li>
+        </ul>
+        <ActionButton
+          style={{width: '100%'}}
+          onClick={() => {
+            resetMintResult && resetMintResult();
+          }}
+        >
+          Exit Result
+        </ActionButton>
       </Section>
     );
   }
