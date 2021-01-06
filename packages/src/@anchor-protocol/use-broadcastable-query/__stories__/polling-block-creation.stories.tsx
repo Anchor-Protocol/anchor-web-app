@@ -5,7 +5,7 @@ import {
   QueryBroadcaster,
   useBroadcastableQuery,
 } from '@anchor-protocol/use-broadcastable-query';
-import { SnackbarContent } from '@anchor-protocol/use-broadcastable-query/__stories__/components/SnackbarContent';
+import { SnackbarContent } from './components/SnackbarContent';
 import React, { ComponentType, useCallback } from 'react';
 import { SnackbarContainer } from './components/SnackbarContainer';
 

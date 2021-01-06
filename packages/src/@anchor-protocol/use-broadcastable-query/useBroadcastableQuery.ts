@@ -46,7 +46,8 @@ export function useBroadcastableQuery<Params, Data, Error = unknown>({
 
   const fetch = useCallback<(params: Params) => Promise<Data | void>>(
     async (params) => {
-      let intervalId: number | undefined = undefined;
+      let unmountWatchInterval: number | undefined = undefined;
+      let progress: boolean = false;
 
       try {
         getAbortController(id)?.abort();
@@ -61,25 +62,47 @@ export function useBroadcastableQuery<Params, Data, Error = unknown>({
           abortController,
         };
 
+        progress = true;
+
         if (onBroadcast.current) {
           broadcast(id, notificationFactory(inProgress));
         } else {
           setResult(inProgress);
 
-          intervalId = setInterval(() => {
+          unmountWatchInterval = setInterval(() => {
             if (onBroadcast.current) {
               broadcast(id, notificationFactory(inProgress));
-              clearInterval(intervalId);
-              intervalId = undefined;
+              clearInterval(unmountWatchInterval);
+              unmountWatchInterval = undefined;
             }
           }, 100);
         }
 
-        const data = await fetchClient(params, abortController.signal);
+        const data = await fetchClient(params, {
+          signal: abortController.signal,
+          inProgressUpdate: (partialData) => {
+            if (!progress) return;
 
-        if (typeof intervalId === 'number') {
-          clearInterval(intervalId);
-          intervalId = undefined;
+            const inProgress: FetchResult = {
+              status: 'in-progress',
+              params,
+              abortController,
+              data: partialData,
+            };
+
+            if (onBroadcast.current) {
+              broadcast(id, notificationFactory(inProgress));
+            } else {
+              setResult(inProgress);
+            }
+          },
+        });
+
+        progress = false;
+
+        if (typeof unmountWatchInterval === 'number') {
+          clearInterval(unmountWatchInterval);
+          unmountWatchInterval = undefined;
         }
 
         const done: FetchResult = {
@@ -97,9 +120,9 @@ export function useBroadcastableQuery<Params, Data, Error = unknown>({
           return data;
         }
       } catch (error) {
-        if (typeof intervalId === 'number') {
-          clearInterval(intervalId);
-          intervalId = undefined;
+        if (typeof unmountWatchInterval === 'number') {
+          clearInterval(unmountWatchInterval);
+          unmountWatchInterval = undefined;
         }
 
         const fault: FetchResult = {

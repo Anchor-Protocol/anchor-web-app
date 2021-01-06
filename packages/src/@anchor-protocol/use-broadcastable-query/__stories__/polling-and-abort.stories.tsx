@@ -40,7 +40,7 @@ const params: BroadcastableQueryOptions<
   Error
 > = {
   broadcastWhen: 'always',
-  fetchClient: async ({ a, b }, signal) => {
+  fetchClient: async ({ a, b }, { signal }) => {
     // TODO Polling 1. timeout 10s
     const timeout = Date.now() + 1000 * 10;
 

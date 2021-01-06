@@ -290,7 +290,8 @@ function MintBase({ className }: MintProps) {
                 .then(mint.parseResult),
               client,
             }).then((data) => {
-              if (data) { // the meaning that data is exists is this component does not unmounted
+              if (data) {
+                // the meaning that data is exists is this component does not unmounted
                 setBondAmount('');
                 setSelectedValidator(null);
               }
@@ -305,10 +306,14 @@ function MintBase({ className }: MintProps) {
         </ActionButton>
       )}
 
-      {mintResult?.status === 'done' && (
+      {(mintResult?.status === 'in-progress' ||
+        mintResult?.status === 'done') && (
         <>
           <HorizontalHeavyRuler />
-          <pre>{JSON.stringify(mintResult.data, null, 2)}</pre>
+          <p>{mintResult.status}:</p>
+          {Object.keys(mintResult.data ?? {}).map((key) => (
+            <p id={key}>{key}</p>
+          ))}
         </>
       )}
     </Section>
@@ -325,8 +330,10 @@ const mintQueryOptions: BroadcastableQueryOptions<
 > = {
   broadcastWhen: 'unmounted',
   group: 'basset/mint',
-  fetchClient: async ({ post, client }) => {
+  fetchClient: async ({ post, client }, { inProgressUpdate }) => {
     const txResult = await post;
+
+    inProgressUpdate(txResult);
 
     while (true) {
       const txInfos = await client
@@ -347,7 +354,13 @@ const mintQueryOptions: BroadcastableQueryOptions<
     }
   },
   notificationFactory: (result) => {
-    return <MuiSnackbarContent message={result.status} />;
+    return (
+      <MuiSnackbarContent
+        message={`${result.status}: ${
+          'data' in result ? Object.keys(result.data ?? {}).join(', ') : ''
+        }`}
+      />
+    );
   },
 };
 

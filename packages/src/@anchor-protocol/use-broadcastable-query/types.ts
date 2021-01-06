@@ -5,6 +5,7 @@ export type BroadcastableQueryResult<Params, Data, Error> =
   | {
       status: 'in-progress';
       params: Params;
+      data?: Partial<Data>;
       abortController: AbortController;
     }
   | {
@@ -20,7 +21,10 @@ export type BroadcastableQueryResult<Params, Data, Error> =
 
 export type BroadcatableQueryFetchClient<Params, Data> = (
   params: Params,
-  signal: AbortSignal,
+  options: {
+    signal: AbortSignal;
+    inProgressUpdate: (data: Partial<Data>) => void;
+  },
 ) => Promise<Data>;
 
 export type NotificationFactory<Params, Data, Error> = (
