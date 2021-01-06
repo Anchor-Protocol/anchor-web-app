@@ -24,9 +24,12 @@ export type BroadcatableQueryFetchClient<Params, Data> = (
   options: {
     signal: AbortSignal;
     inProgressUpdate: (data: Partial<Data>) => void;
+    stopSignal: BroadcastableQueryStop;
   },
 ) => Promise<Data>;
 
 export type NotificationFactory<Params, Data, Error> = (
   props: BroadcastableQueryResult<Params, Data, Error>,
 ) => ReactElement<{ close: () => void }>;
+
+export class BroadcastableQueryStop extends Error {}

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useQueryBroadcaster } from './QueryBroadcaster';
 import {
   BroadcastableQueryResult,
+  BroadcastableQueryStop,
   BroadcatableQueryFetchClient,
   NotificationFactory,
 } from './types';
@@ -15,6 +16,8 @@ export interface BroadcastableQueryOptions<Params, Data, Error> {
   notificationFactory: NotificationFactory<Params, Data, Error>;
 }
 
+const stopSignal = new BroadcastableQueryStop();
+
 export function useBroadcastableQuery<Params, Data, Error = unknown>({
   group: _group,
   broadcastWhen = 'unmounted',
@@ -23,6 +26,7 @@ export function useBroadcastableQuery<Params, Data, Error = unknown>({
 }: BroadcastableQueryOptions<Params, Data, Error>): [
   (params: Params) => Promise<Data | void>,
   BroadcastableQueryResult<Params, Data, Error> | undefined,
+  (() => void) | undefined,
 ] {
   type FetchResult = BroadcastableQueryResult<Params, Data, Error>;
 
@@ -96,6 +100,7 @@ export function useBroadcastableQuery<Params, Data, Error = unknown>({
               setResult(inProgress);
             }
           },
+          stopSignal,
         });
 
         progress = false;
@@ -125,13 +130,17 @@ export function useBroadcastableQuery<Params, Data, Error = unknown>({
           unmountWatchInterval = undefined;
         }
 
+        removeAbortController(id);
+
+        if (error instanceof BroadcastableQueryStop) {
+          return;
+        }
+
         const fault: FetchResult = {
           status: 'error',
           params,
           error,
         };
-
-        removeAbortController(id);
 
         if (onBroadcast.current) {
           broadcast(id, notificationFactory(fault));
@@ -151,11 +160,21 @@ export function useBroadcastableQuery<Params, Data, Error = unknown>({
     ],
   );
 
+  const reset = useCallback(() => {
+    if (!onBroadcast.current) {
+      setResult({ status: 'ready' });
+    }
+  }, []);
+
   useEffect(() => {
+    onBroadcast.current = false;
+
     return () => {
       onBroadcast.current = true;
     };
   }, []);
 
-  return [fetch, onBroadcast.current ? undefined : result];
+  return onBroadcast.current
+    ? [fetch, undefined, undefined]
+    : [fetch, result, reset];
 }
