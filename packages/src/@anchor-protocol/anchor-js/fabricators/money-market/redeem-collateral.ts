@@ -11,9 +11,7 @@ interface Option {
   address: string;
   market: string;
   borrower?: string;
-  // symbol: string,
-  redeem_all: boolean;
-  amount: number | null;
+  amount?: string;
 }
 
 /**
@@ -21,15 +19,13 @@ interface Option {
  * @param address Client’s Terra address.
  * @param market Type of stablecoin money market to redeem collateral.
  * @param symbol Symbol of collateral to redeem.
- * @param redeem_all Set this to true to redeem all symbol collateral deposited to loan_id.
  * @param amount (optional) Amount of collateral to redeem. Set this to null if redeem_all is true.
  * @param withdraw_to (optional) Terra address to withdraw redeemed collateral. If null, withdraws to address.
  */
 export const fabricateRedeemCollateral = ({
   address,
   market,
-  redeem_all = true,
-  amount = null,
+  amount,
 }: Option) => (
   addressProvider: AddressProvider,
 ): MsgExecuteContract[] => {
@@ -37,8 +33,6 @@ export const fabricateRedeemCollateral = ({
     validateAddress(address),
     validateWhitelistedMarket(market),
     amount ? validateIsGreaterThanZero(amount) : validateTrue,
-    // borrower ? validateAddress(borrower) : validateTrue,
-    // validateWhitelistedBAsset(symbol),
   ]);
 
   const mmOverseerContract = addressProvider.overseer(market.toLowerCase());
@@ -51,9 +45,9 @@ export const fabricateRedeemCollateral = ({
       unlock_collateral: [
         [
           address,
-          redeem_all
-            ? undefined
-            : new Int(new Dec(amount as number).mul(1000000)).toString(),
+          isAmountSet(amount)
+            ? new Int(new Dec(amount).mul(1000000)).toString()
+            : undefined,
         ],
       ],
     }),
@@ -62,8 +56,14 @@ export const fabricateRedeemCollateral = ({
     new MsgExecuteContract(address, custodyContract, {
       // @see https://github.com/Anchor-Protocol/money-market-contracts/blob/master/contracts/custody/src/msg.rs#L69
       withdraw_collateral: {
-        amount: redeem_all ? undefined : amount,
+        amount: isAmountSet(amount)
+          ? new Int(new Dec(amount).mul(1000000)).toString()
+          : undefined,
       },
     }),
   ];
 };
+
+function isAmountSet(amount: string | undefined): amount is string {
+  return !!amount && !new Int(amount).isNaN();
+}
