@@ -80,8 +80,6 @@ function AppBase({ className }: AppProps) {
               <ThemeProvider theme={darkTheme}>
                 {/* Global CSS */}
                 <GlobalStyle />
-                {/* SnackbarContainer */}
-                <SnackbarContainer />
                 {/* Start Layout */}
                 <div className={className}>
                   <Header />
@@ -94,6 +92,8 @@ function AppBase({ className }: AppProps) {
                   <Footer />
                 </div>
                 {/* End Layout */}
+                {/* SnackbarContainer */}
+                <SnackbarContainer />
               </ThemeProvider>
             </SnackbarProvider>
           </QueryBroadcaster>

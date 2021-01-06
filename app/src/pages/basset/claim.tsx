@@ -17,13 +17,16 @@ import {
 } from '@anchor-protocol/use-broadcastable-query';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient, useQuery } from '@apollo/client';
-import { SnackbarContent as MuiSnackbarContent } from '@material-ui/core';
 import { CreateTxOptions } from '@terra-money/terra.js';
 import big from 'big.js';
 import { transactionFee } from 'env';
 import * as clm from 'pages/basset/queries/claimable';
 import * as txi from 'pages/basset/queries/txInfos';
 import * as wdw from 'pages/basset/queries/withdrawable';
+import {
+  txNotificationFactory,
+  TxResultRenderer,
+} from 'pages/basset/transactions/TxResultRenderer';
 import React, {
   ReactNode,
   useCallback,
@@ -173,141 +176,33 @@ function ClaimBase({ className }: ClaimProps) {
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
-  if (withdrawResult?.status === 'in-progress') {
+  if (
+    withdrawResult?.status === 'in-progress' ||
+    withdrawResult?.status === 'done' ||
+    withdrawResult?.status === 'error'
+  ) {
     return (
       <div className={className}>
         <Section>
-          <ul style={{ listStyle: 'none', padding: 0 }}>
-            <li>
-              Status:{' '}
-              {withdrawResult.data
-                ? '2. Wating Block Creation...'
-                : '1. Wating Terra Station Submit...'}
-            </li>
-            {withdrawResult.data?.txResult && (
-              <li>
-                Terra Station Transaction
-                <ul>
-                  <li>
-                    fee: {JSON.stringify(withdrawResult.data?.txResult.fee)}
-                  </li>
-                  <li>
-                    gasAdjustment: {withdrawResult.data?.txResult.gasAdjustment}
-                  </li>
-                  <li>height: {withdrawResult.data?.txResult.result.height}</li>
-                  <li>txhash: {withdrawResult.data?.txResult.result.txhash}</li>
-                </ul>
-              </li>
-            )}
-          </ul>
-          {!withdrawResult.data && (
-            <ActionButton
-              style={{ width: '100%' }}
-              onClick={() => {
-                withdrawResult.abortController.abort();
-                resetWithdrawResult && resetWithdrawResult();
-              }}
-            >
-              Disconnect with Terra Station (Stop Waiting Terra Station Result)
-            </ActionButton>
-          )}
+          <TxResultRenderer
+            result={withdrawResult}
+            resetResult={resetWithdrawResult}
+          />
         </Section>
       </div>
     );
-  } else if (withdrawResult?.status === 'done') {
+  } else if (
+    claimResult?.status === 'in-progress' ||
+    claimResult?.status === 'done' ||
+    claimResult?.status === 'error'
+  ) {
     return (
       <div className={className}>
         <Section>
-          <ul style={{ listStyle: 'none', padding: 0 }}>
-            <li>Status: Done</li>
-            <li>
-              Terra Station Transaction
-              <ul>
-                <li>fee: {JSON.stringify(withdrawResult.data.txResult.fee)}</li>
-                <li>
-                  gasAdjustment: {withdrawResult.data.txResult.gasAdjustment}
-                </li>
-                <li>height: {withdrawResult.data.txResult.result.height}</li>
-                <li>txhash: {withdrawResult.data.txResult.result.txhash}</li>
-              </ul>
-            </li>
-          </ul>
-          <ActionButton
-            style={{ width: '100%' }}
-            onClick={() => {
-              resetWithdrawResult && resetWithdrawResult();
-            }}
-          >
-            Exit Result
-          </ActionButton>
-        </Section>
-      </div>
-    );
-  } else if (claimResult?.status === 'in-progress') {
-    return (
-      <div className={className}>
-        <Section>
-          <ul style={{ listStyle: 'none', padding: 0 }}>
-            <li>
-              Status:{' '}
-              {claimResult.data
-                ? '2. Wating Block Creation...'
-                : '1. Wating Terra Station Submit...'}
-            </li>
-            {claimResult.data?.txResult && (
-              <li>
-                Terra Station Transaction
-                <ul>
-                  <li>fee: {JSON.stringify(claimResult.data?.txResult.fee)}</li>
-                  <li>
-                    gasAdjustment: {claimResult.data?.txResult.gasAdjustment}
-                  </li>
-                  <li>height: {claimResult.data?.txResult.result.height}</li>
-                  <li>txhash: {claimResult.data?.txResult.result.txhash}</li>
-                </ul>
-              </li>
-            )}
-          </ul>
-          {!claimResult.data && (
-            <ActionButton
-              style={{ width: '100%' }}
-              onClick={() => {
-                claimResult.abortController.abort();
-                resetClaimResult && resetClaimResult();
-              }}
-            >
-              Disconnect with Terra Station (Stop Waiting Terra Station Result)
-            </ActionButton>
-          )}
-        </Section>
-      </div>
-    );
-  } else if (claimResult?.status === 'done') {
-    return (
-      <div className={className}>
-        <Section>
-          <ul style={{ listStyle: 'none', padding: 0 }}>
-            <li>Status: Done</li>
-            <li>
-              Terra Station Transaction
-              <ul>
-                <li>fee: {JSON.stringify(claimResult.data.txResult.fee)}</li>
-                <li>
-                  gasAdjustment: {claimResult.data.txResult.gasAdjustment}
-                </li>
-                <li>height: {claimResult.data.txResult.result.height}</li>
-                <li>txhash: {claimResult.data.txResult.result.txhash}</li>
-              </ul>
-            </li>
-          </ul>
-          <ActionButton
-            style={{ width: '100%' }}
-            onClick={() => {
-              resetClaimResult && resetClaimResult();
-            }}
-          >
-            Exit Result
-          </ActionButton>
+          <TxResultRenderer
+            result={claimResult}
+            resetResult={resetClaimResult}
+          />
         </Section>
       </div>
     );
@@ -441,15 +336,7 @@ const withdrawQueryOptions: BroadcastableQueryOptions<
 > = {
   ...queryOptions,
   group: 'basset/withdraw',
-  notificationFactory: (result) => {
-    return (
-      <MuiSnackbarContent
-        message={`${result.status}: ${
-          'data' in result ? Object.keys(result.data ?? {}).join(', ') : ''
-        }`}
-      />
-    );
-  },
+  notificationFactory: txNotificationFactory,
 };
 
 const claimQueryOptions: BroadcastableQueryOptions<
@@ -459,15 +346,7 @@ const claimQueryOptions: BroadcastableQueryOptions<
 > = {
   ...queryOptions,
   group: 'basset/claim',
-  notificationFactory: (result) => {
-    return (
-      <MuiSnackbarContent
-        message={`${result.status}: ${
-          'data' in result ? Object.keys(result.data ?? {}).join(', ') : ''
-        }`}
-      />
-    );
-  },
+  notificationFactory: txNotificationFactory,
 };
 
 export const Claim = styled(ClaimBase)`

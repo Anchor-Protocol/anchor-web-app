@@ -22,6 +22,7 @@ import { Error as ErrorIcon } from '@material-ui/icons';
 import { CreateTxOptions } from '@terra-money/terra.js';
 import big from 'big.js';
 import { transactionFee } from 'env';
+import { txNotificationFactory, TxResultRenderer } from 'pages/basset/transactions/TxResultRenderer';
 import React, { ReactNode, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { useAddressProvider } from '../../providers/address-provider';
@@ -150,66 +151,14 @@ function MintBase({ className }: MintProps) {
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
-  if (mintResult?.status === 'in-progress') {
+  if (
+    mintResult?.status === 'in-progress' ||
+    mintResult?.status === 'done' ||
+    mintResult?.status === 'error'
+  ) {
     return (
       <Section className={className}>
-        <ul style={{ listStyle: 'none', padding: 0 }}>
-          <li>
-            Status:{' '}
-            {mintResult.data
-              ? '2. Wating Block Creation...'
-              : '1. Wating Terra Station Submit...'}
-          </li>
-          {mintResult.data?.txResult && (
-            <li>
-              Terra Station Transaction
-              <ul>
-                <li>fee: {JSON.stringify(mintResult.data?.txResult.fee)}</li>
-                <li>
-                  gasAdjustment: {mintResult.data?.txResult.gasAdjustment}
-                </li>
-                <li>height: {mintResult.data?.txResult.result.height}</li>
-                <li>txhash: {mintResult.data?.txResult.result.txhash}</li>
-              </ul>
-            </li>
-          )}
-        </ul>
-        {!mintResult.data && (
-          <ActionButton
-            style={{ width: '100%' }}
-            onClick={() => {
-              mintResult.abortController.abort();
-              resetMintResult && resetMintResult();
-            }}
-          >
-            Disconnect with Terra Station (Stop Waiting Terra Station Result)
-          </ActionButton>
-        )}
-      </Section>
-    );
-  } else if (mintResult?.status === 'done') {
-    return (
-      <Section className={className}>
-        <ul style={{ listStyle: 'none', padding: 0 }}>
-          <li>Status: Done</li>
-          <li>
-            Terra Station Transaction
-            <ul>
-              <li>fee: {JSON.stringify(mintResult.data.txResult.fee)}</li>
-              <li>gasAdjustment: {mintResult.data.txResult.gasAdjustment}</li>
-              <li>height: {mintResult.data.txResult.result.height}</li>
-              <li>txhash: {mintResult.data.txResult.result.txhash}</li>
-            </ul>
-          </li>
-        </ul>
-        <ActionButton
-          style={{ width: '100%' }}
-          onClick={() => {
-            resetMintResult && resetMintResult();
-          }}
-        >
-          Exit Result
-        </ActionButton>
+        <TxResultRenderer result={mintResult} resetResult={resetMintResult} />
       </Section>
     );
   }
@@ -378,15 +327,7 @@ const mintQueryOptions: BroadcastableQueryOptions<
 > = {
   ...queryOptions,
   group: 'basset/mint',
-  notificationFactory: (result) => {
-    return (
-      <MuiSnackbarContent
-        message={`${result.status}: ${
-          'data' in result ? Object.keys(result.data ?? {}).join(', ') : ''
-        }`}
-      />
-    );
-  },
+  notificationFactory: txNotificationFactory,
 };
 
 function BlankComponent() {
