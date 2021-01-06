@@ -1,3 +1,4 @@
+import { isConnected, useWallet } from '@anchor-protocol/wallet-provider';
 import { ApolloError, gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from '../../providers/address-provider';
 import {
@@ -5,7 +6,7 @@ import {
   MantleRefetch,
   pickContractResult,
 } from './types';
-import { useWallet } from '../use-wallet';
+//import { useWallet } from '../use-wallet';
 
 type ClaimableResponse = string;
 const querybAssetClaimable = gql`
@@ -27,14 +28,18 @@ export default function useBassetClaimable(): [
   MantleRefetch,
 ] {
   const addressProvider = useAddressProvider();
-  const wallet = useWallet();
+  const { status } = useWallet();
+
   const { loading, error, data, refetch } = useQuery<{
     Claimable: MantleContractResponse;
   }>(querybAssetClaimable, {
+    skip: !isConnected(status),
     variables: {
       contractAddress: addressProvider.bAssetReward('bluna'),
       queryMsg: JSON.stringify({
-        accrued_rewards: { address: wallet.address },
+        accrued_rewards: {
+          address: status.status === 'ready' ? status.walletAddress : '',
+        },
       }),
     },
   });

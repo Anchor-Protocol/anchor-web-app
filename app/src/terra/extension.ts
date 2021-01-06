@@ -14,6 +14,10 @@ export interface PostResponse {
 }
 
 const ext = new Extension();
+
+/**
+ * @deprecated use instead of @anchor-protocol/wallet-provider
+ */
 const extension = {
   init: () => !!ext.isAvailable,
 

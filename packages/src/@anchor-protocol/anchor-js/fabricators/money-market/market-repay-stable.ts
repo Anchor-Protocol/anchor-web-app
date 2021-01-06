@@ -4,6 +4,7 @@ import { validateInput } from '../../utils/validate-input';
 import { validateIsGreaterThanZero } from '../../utils/validation/number';
 import { validateWhitelistedMarket } from '../../utils/validation/market';
 import { validateTrue } from '../../utils/validation/true';
+import { AddressProvider } from '../../address-provider/provider';
 
 interface Option {
   address: string;
@@ -26,7 +27,7 @@ export const fabricateRepay = ({
   borrower,
   amount,
 }: Option) => (
-  addressProvider: AddressProvider.Provider,
+  addressProvider: AddressProvider,
 ): MsgExecuteContract[] => {
   validateInput([
     validateAddress(address),

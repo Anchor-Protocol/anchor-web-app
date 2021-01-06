@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useQueryBroadcaster } from './QueryBroadcaster';
 import {
   BroadcastableQueryResult,
+  BroadcastableQueryStop,
   BroadcatableQueryFetchClient,
   NotificationFactory,
 } from './types';
@@ -15,6 +16,8 @@ export interface BroadcastableQueryOptions<Params, Data, Error> {
   notificationFactory: NotificationFactory<Params, Data, Error>;
 }
 
+const stopSignal = new BroadcastableQueryStop();
+
 export function useBroadcastableQuery<Params, Data, Error = unknown>({
   group: _group,
   broadcastWhen = 'unmounted',
@@ -23,6 +26,7 @@ export function useBroadcastableQuery<Params, Data, Error = unknown>({
 }: BroadcastableQueryOptions<Params, Data, Error>): [
   (params: Params) => Promise<Data | void>,
   BroadcastableQueryResult<Params, Data, Error> | undefined,
+  (() => void) | undefined,
 ] {
   type FetchResult = BroadcastableQueryResult<Params, Data, Error>;
 
@@ -46,7 +50,8 @@ export function useBroadcastableQuery<Params, Data, Error = unknown>({
 
   const fetch = useCallback<(params: Params) => Promise<Data | void>>(
     async (params) => {
-      let intervalId: number | undefined = undefined;
+      let unmountWatchInterval: number | undefined = undefined;
+      let progress: boolean = false;
 
       try {
         getAbortController(id)?.abort();
@@ -61,25 +66,48 @@ export function useBroadcastableQuery<Params, Data, Error = unknown>({
           abortController,
         };
 
+        progress = true;
+
         if (onBroadcast.current) {
           broadcast(id, notificationFactory(inProgress));
         } else {
           setResult(inProgress);
 
-          intervalId = setInterval(() => {
+          unmountWatchInterval = setInterval(() => {
             if (onBroadcast.current) {
               broadcast(id, notificationFactory(inProgress));
-              clearInterval(intervalId);
-              intervalId = undefined;
+              clearInterval(unmountWatchInterval);
+              unmountWatchInterval = undefined;
             }
           }, 100);
         }
 
-        const data = await fetchClient(params, abortController.signal);
+        const data = await fetchClient(params, {
+          signal: abortController.signal,
+          inProgressUpdate: (partialData) => {
+            if (!progress) return;
 
-        if (typeof intervalId === 'number') {
-          clearInterval(intervalId);
-          intervalId = undefined;
+            const inProgress: FetchResult = {
+              status: 'in-progress',
+              params,
+              abortController,
+              data: partialData,
+            };
+
+            if (onBroadcast.current) {
+              broadcast(id, notificationFactory(inProgress));
+            } else {
+              setResult(inProgress);
+            }
+          },
+          stopSignal,
+        });
+
+        progress = false;
+
+        if (typeof unmountWatchInterval === 'number') {
+          clearInterval(unmountWatchInterval);
+          unmountWatchInterval = undefined;
         }
 
         const done: FetchResult = {
@@ -88,15 +116,24 @@ export function useBroadcastableQuery<Params, Data, Error = unknown>({
           data,
         };
 
+        removeAbortController(id);
+
         if (onBroadcast.current) {
           broadcast(id, notificationFactory(done));
         } else {
           setResult(done);
+          return data;
         }
       } catch (error) {
-        if (typeof intervalId === 'number') {
-          clearInterval(intervalId);
-          intervalId = undefined;
+        if (typeof unmountWatchInterval === 'number') {
+          clearInterval(unmountWatchInterval);
+          unmountWatchInterval = undefined;
+        }
+
+        removeAbortController(id);
+
+        if (error instanceof BroadcastableQueryStop) {
+          return;
         }
 
         const fault: FetchResult = {
@@ -110,8 +147,6 @@ export function useBroadcastableQuery<Params, Data, Error = unknown>({
         } else {
           setResult(fault);
         }
-      } finally {
-        removeAbortController(id);
       }
     },
     [
@@ -125,11 +160,21 @@ export function useBroadcastableQuery<Params, Data, Error = unknown>({
     ],
   );
 
+  const reset = useCallback(() => {
+    if (!onBroadcast.current) {
+      setResult({ status: 'ready' });
+    }
+  }, []);
+
   useEffect(() => {
+    onBroadcast.current = false;
+
     return () => {
       onBroadcast.current = true;
     };
   }, []);
 
-  return [fetch, onBroadcast.current ? undefined : result];
+  return onBroadcast.current
+    ? [fetch, undefined, undefined]
+    : [fetch, result, reset];
 }

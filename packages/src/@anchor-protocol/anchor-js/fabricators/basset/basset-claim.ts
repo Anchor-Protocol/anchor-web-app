@@ -1,3 +1,4 @@
+import { AddressProvider } from '../../address-provider/provider';
 import { MsgExecuteContract } from '@terra-money/terra.js';
 import { validateInput } from '../../utils/validate-input';
 import { validateAddress } from '../../utils/validation/address';
@@ -12,9 +13,7 @@ export const fabricatebAssetClaim = ({
   address,
   bAsset,
   recipient,
-}: Option) => (
-  addressProvider: AddressProvider.Provider,
-): MsgExecuteContract[] => {
+}: Option) => (addressProvider: AddressProvider): MsgExecuteContract[] => {
   validateInput([validateAddress(address)]);
 
   const bAssetRewardAddress = addressProvider.bAssetReward(bAsset);

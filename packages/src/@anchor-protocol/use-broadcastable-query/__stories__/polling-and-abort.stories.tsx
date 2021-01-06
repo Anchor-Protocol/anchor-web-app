@@ -40,7 +40,7 @@ const params: BroadcastableQueryOptions<
   Error
 > = {
   broadcastWhen: 'always',
-  fetchClient: async ({ a, b }, signal) => {
+  fetchClient: async ({ a, b }, { signal, stopSignal }) => {
     // TODO Polling 1. timeout 10s
     const timeout = Date.now() + 1000 * 10;
 
@@ -51,7 +51,7 @@ const params: BroadcastableQueryOptions<
 
       // TODO Abort 2. catch aborted signal
       if (signal.aborted) {
-        throw new AbortError();
+        throw stopSignal;
       } else if (value > 0.9) {
         return { c: a + b };
       } else if (value < 0.1) {

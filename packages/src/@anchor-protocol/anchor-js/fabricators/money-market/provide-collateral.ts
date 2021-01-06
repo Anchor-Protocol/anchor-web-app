@@ -6,6 +6,7 @@ import { validateWhitelistedBAsset } from '../../utils/validation/basset';
 
 import { validateWhitelistedMarket } from '../../utils/validation/market';
 import { validateIsGreaterThanZero } from '../../utils/validation/number';
+import { AddressProvider } from '../../address-provider/provider';
 
 interface Option {
   address: string;
@@ -29,7 +30,7 @@ export const fabricateProvideCollateral = ({
   symbol,
   amount,
 }: Option) => (
-  addressProvider: AddressProvider.Provider,
+  addressProvider: AddressProvider,
 ): MsgExecuteContract[] => {
   validateInput([
     validateAddress(address),

@@ -5,6 +5,7 @@ export type BroadcastableQueryResult<Params, Data, Error> =
   | {
       status: 'in-progress';
       params: Params;
+      data?: Partial<Data>;
       abortController: AbortController;
     }
   | {
@@ -20,9 +21,15 @@ export type BroadcastableQueryResult<Params, Data, Error> =
 
 export type BroadcatableQueryFetchClient<Params, Data> = (
   params: Params,
-  signal: AbortSignal,
+  options: {
+    signal: AbortSignal;
+    inProgressUpdate: (data: Partial<Data>) => void;
+    stopSignal: BroadcastableQueryStop;
+  },
 ) => Promise<Data>;
 
 export type NotificationFactory<Params, Data, Error> = (
   props: BroadcastableQueryResult<Params, Data, Error>,
 ) => ReactElement<{ close: () => void }>;
+
+export class BroadcastableQueryStop extends Error {}

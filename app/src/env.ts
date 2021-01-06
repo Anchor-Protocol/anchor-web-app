@@ -1,4 +1,5 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client';
+import { StdFee } from '@terra-money/terra.js';
 
 export const screen = {
   mobile: { max: 510 },
@@ -14,7 +15,18 @@ export const screen = {
 
 export const FINDER = 'https://finder.terra.money';
 
+/**
+ * @deprecated it will create on checking wallet connection
+ */
 export const mantleClient = new ApolloClient({
-  uri: process.env.REACT_APP_MANTLE_ENDPOINT ?? '/',
+  uri:
+    process.env.REACT_APP_MANTLE_ENDPOINT ?? 'https://tequila-mantle.terra.dev',
   cache: new InMemoryCache(),
 });
+
+export const transactionFee = {
+  //gasPrices: '0.0015uusd',
+  //fee: new StdFee(503333, '5000000000000uusd'),
+  fee: new StdFee(6000000, '2000000uusd'),
+  gasAdjustment: 1.4,
+};
