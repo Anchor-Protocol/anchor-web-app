@@ -27,7 +27,7 @@ export const fabricateRedeemStable = ({ address, symbol, amount }: Option) => (
   return [
     new MsgExecuteContract(address, aTokenAddress, {
       send: {
-        address: marketAddress,
+        contract: marketAddress,
         amount: new Int(new Dec(amount).mul(1000000)).toString(),
         msg: createHookMsg({
           redeem_stable: {},
