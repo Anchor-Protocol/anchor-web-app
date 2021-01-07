@@ -20,24 +20,19 @@ import { ApolloClient, useApolloClient, useQuery } from '@apollo/client';
 import { CreateTxOptions } from '@terra-money/terra.js';
 import big from 'big.js';
 import { transactionFee } from 'env';
-import * as clm from 'pages/basset/queries/claimable';
-import * as txi from 'pages/basset/queries/txInfos';
-import * as wdw from 'pages/basset/queries/withdrawable';
+import React, { useMemo, useState } from 'react';
+import styled from 'styled-components';
+import { useAddressProvider } from '../../providers/address-provider';
+import * as clm from './queries/claimable';
+import * as txi from './queries/txInfos';
+import * as wdw from './queries/withdrawable';
+import * as wdh from './queries/withdrawHistory';
+import { queryOptions } from './transactions/queryOptions';
+import { parseResult, StringifiedTxResult, TxResult } from './transactions/tx';
 import {
   txNotificationFactory,
   TxResultRenderer,
-} from 'pages/basset/transactions/TxResultRenderer';
-import React, {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
-import styled from 'styled-components';
-import { useAddressProvider } from '../../providers/address-provider';
-import { queryOptions } from './transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from './transactions/tx';
+} from './transactions/TxResultRenderer';
 
 export interface ClaimProps {
   className?: string;
@@ -74,8 +69,6 @@ function ClaimBase({ className }: ClaimProps) {
   // states
   // ---------------------------------------------
   const [currency, setCurrency] = useState<Item>(() => currencies[0]);
-
-  const [history, setHistory] = useState<ReactNode>(() => null);
 
   // ---------------------------------------------
   // queries
@@ -134,42 +127,75 @@ function ClaimBase({ className }: ClaimProps) {
     [claimableData],
   );
 
-  // ---------------------------------------------
-  // TODO remove
-  // ---------------------------------------------
-  const updateHistory = useCallback(() => {
-    setHistory(
-      Math.random() > 0.5 ? (
-        <li>
-          <p>
-            Requested time: <time>09:27, 2 Oct 2020</time>
-          </p>
-          <p>101 bLuna</p>
-          <p>
-            Claimable time: <time>09:27, 2 Oct 2020</time>
-          </p>
-          <p>101 Luna</p>
-        </li>
-      ) : (
-        Array.from({ length: Math.floor(Math.random() * 10) }, (_, i) => (
-          <li key={'history' + i}>
-            <p>
-              Requested time: <time>09:27, 2 Oct 2020</time>
-            </p>
-            <p>101 bLuna</p>
-            <p>
-              Claimable time: <time>09:27, 2 Oct 2020</time>
-            </p>
-            <p>101 Luna</p>
-          </li>
-        ))
-      ),
-    );
-  }, []);
+  const { data: withdrawAllHistoryData } = useQuery<
+    wdh.StringifiedData,
+    wdh.StringifiedVariables
+  >(wdh.query, {
+    skip: !withdrawable || withdrawable.withdrawRequestsStartFrom < 0,
+    variables: wdh.stringifyVariables({
+      bLunaHubContract: addressProvider.bAssetHub('bluna'),
+      allHistory: {
+        all_history: {
+          start_from: withdrawable?.withdrawRequestsStartFrom ?? 0,
+          limit: 100,
+        },
+      },
+      parameters: {
+        parameters: {},
+      },
+    }),
+  });
 
-  useEffect(() => {
-    updateHistory();
-  }, [updateHistory]);
+  const withdrawAllHistory = useMemo(
+    () =>
+      withdrawAllHistoryData
+        ? wdh.parseData(withdrawAllHistoryData)
+        : undefined,
+    [withdrawAllHistoryData],
+  );
+
+  interface History {
+    blunaAmount: string;
+    lunaAmount?: string;
+    requestTime?: Date;
+    claimableTime?: Date;
+  }
+
+  const withdrawHistory = useMemo<History[] | undefined>(() => {
+    if (
+      !withdrawable ||
+      withdrawable.withdrawRequestsStartFrom < 0 ||
+      !withdrawAllHistory
+    ) {
+      return undefined;
+    }
+
+    return withdrawable.withdrawRequests.requests.map<History>(
+      ([index, amount]) => {
+        const historyIndex: number =
+          index - withdrawable.withdrawRequestsStartFrom;
+        const matchingHistory =
+          withdrawAllHistory.allHistory.history[historyIndex];
+
+        if (!matchingHistory) {
+          return {
+            blunaAmount: amount,
+          };
+        }
+
+        return {
+          blunaAmount: amount,
+          lunaAmount: big(amount).mul(matchingHistory.withdraw_rate).toString(),
+          requestTime: new Date(matchingHistory.time * 1000),
+          claimableTime: new Date(
+            (matchingHistory.time +
+              withdrawAllHistory.parameters.unbonding_period) *
+              1000,
+          ),
+        };
+      },
+    );
+  }, [withdrawAllHistory, withdrawable]);
 
   console.log('claim.tsx..ClaimBase()', { withdrawResult, claimResult });
 
@@ -273,7 +299,35 @@ function ClaimBase({ className }: ClaimProps) {
           </ActionButton>
         )}
 
-        <ul className="withdraw-history">{history}</ul>
+        <ul className="withdraw-history">
+          {withdrawHistory &&
+            withdrawHistory.length > 0 &&
+            withdrawHistory.map(
+              ({ blunaAmount, lunaAmount, requestTime, claimableTime }) => (
+                <li>
+                  <p>
+                    Requested time:{' '}
+                    <time>{requestTime?.toLocaleString() ?? 'Pending'}</time>
+                  </p>
+                  <p>
+                    {toFixedNoRounding(big(blunaAmount).div(MICRO), 2)} bLuna
+                  </p>
+                  <p>
+                    Claimable time:{' '}
+                    <time>{claimableTime?.toLocaleString() ?? 'Pending'}</time>
+                  </p>
+                  <p>
+                    {lunaAmount
+                      ? `${toFixedNoRounding(
+                          big(lunaAmount).div(MICRO),
+                          2,
+                        )} Luna`
+                      : ''}
+                  </p>
+                </li>
+              ),
+            )}
+        </ul>
       </Section>
 
       <Section>

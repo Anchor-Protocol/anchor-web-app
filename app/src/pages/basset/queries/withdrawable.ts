@@ -17,15 +17,20 @@ export interface Data {
     address: string;
     requests: [number, string][];
   };
+  withdrawRequestsStartFrom: number;
 }
 
 export function parseData({
   withdrawableAmount,
   withdrawRequests,
 }: StringifiedData): Data {
+  const parsedWithdrawRequests: Data['withdrawRequests'] = JSON.parse(withdrawRequests.Result);
   return {
     withdrawableAmount: JSON.parse(withdrawableAmount.Result),
-    withdrawRequests: JSON.parse(withdrawRequests.Result),
+    withdrawRequests: parsedWithdrawRequests,
+    withdrawRequestsStartFrom: parsedWithdrawRequests.requests.length > 0
+      ? Math.min(...parsedWithdrawRequests.requests.map(([index]) => index))
+      : -1,
   };
 }
 
