@@ -20,17 +20,17 @@ import { CreateTxOptions } from '@terra-money/terra.js';
 import big from 'big.js';
 import { transactionFee } from 'env';
 import * as exc from 'pages/basset/queries/exchangeRate';
-import * as txi from 'pages/basset/queries/txInfos';
-import * as bas from 'pages/basset/queries/userBAssetBalance';
+import * as txi from 'queries/txInfos';
+import * as bas from 'queries/userBAssetBalance';
 import {
   txNotificationFactory,
   TxResultRenderer,
-} from 'pages/basset/transactions/TxResultRenderer';
+} from 'transactions/TxResultRenderer';
 import React, { ReactNode, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { useAddressProvider } from '../../providers/address-provider';
-import { queryOptions } from './transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from './transactions/tx';
+import { queryOptions } from 'transactions/queryOptions';
+import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 
 export interface BurnProps {
   className?: string;

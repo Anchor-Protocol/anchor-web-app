@@ -24,15 +24,15 @@ import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { useAddressProvider } from '../../providers/address-provider';
 import * as clm from './queries/claimable';
-import * as txi from './queries/txInfos';
+import * as txi from 'queries/txInfos';
 import * as wdw from './queries/withdrawable';
 import * as wdh from './queries/withdrawHistory';
-import { queryOptions } from './transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from './transactions/tx';
+import { queryOptions } from 'transactions/queryOptions';
+import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 import {
   txNotificationFactory,
   TxResultRenderer,
-} from './transactions/TxResultRenderer';
+} from 'transactions/TxResultRenderer';
 
 export interface ClaimProps {
   className?: string;

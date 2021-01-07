@@ -7,8 +7,8 @@ import {
   SnackbarContent as MuiSnackbarContent,
   SnackbarContentProps,
 } from '@material-ui/core';
-import * as txi from 'pages/basset/queries/txInfos';
-import { TxResult } from 'pages/basset/transactions/tx';
+import * as txi from 'queries/txInfos';
+import { TxResult } from 'transactions/tx';
 import React from 'react';
 import styled from 'styled-components';
 

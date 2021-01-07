@@ -1,15 +1,41 @@
 import { gql } from '@apollo/client';
+import big from 'big.js';
 
 export interface StringifiedData {
-  // TODO
+  aUSTBalance: {
+    Result: string;
+  };
+  exchangeRate: {
+    Result: string;
+  };
 }
 
 export interface Data {
-  // TODO
+  aUSTBalance: {
+    balance: string;
+  };
+  exchangeRate: {
+    a_token_supply: string;
+    exchange_rate: string;
+  };
+  totalDeposit: string;
 }
 
-export function parseData(data: StringifiedData): Data {
-  throw new Error('not implemented');
+export function parseData({
+  aUSTBalance,
+  exchangeRate,
+}: StringifiedData): Data {
+  const parsedAUSTBalance: Data['aUSTBalance'] = JSON.parse(aUSTBalance.Result);
+  const parsedExchangeRate: Data['exchangeRate'] = JSON.parse(
+    exchangeRate.Result,
+  );
+  return {
+    aUSTBalance: parsedAUSTBalance,
+    exchangeRate: parsedExchangeRate,
+    totalDeposit: big(parsedAUSTBalance.balance)
+      .mul(parsedExchangeRate.exchange_rate)
+      .toString(),
+  };
 }
 
 export interface StringifiedVariables {

@@ -24,16 +24,16 @@ import { transactionFee } from 'env';
 import {
   txNotificationFactory,
   TxResultRenderer,
-} from 'pages/basset/transactions/TxResultRenderer';
+} from 'transactions/TxResultRenderer';
 import React, { ReactNode, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { useAddressProvider } from '../../providers/address-provider';
 import * as exc from './queries/exchangeRate';
-import * as txi from './queries/txInfos';
-import * as bal from './queries/userBankBalances';
+import * as txi from 'queries/txInfos';
+import * as bal from 'queries/userBankBalances';
 import * as val from './queries/validators';
-import { queryOptions } from './transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from './transactions/tx';
+import { queryOptions } from 'transactions/queryOptions';
+import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 
 export interface MintProps {
   className?: string;

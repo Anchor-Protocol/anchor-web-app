@@ -10,8 +10,8 @@ import {
   StringifiedData,
   StringifiedVariables,
   stringifyVariables,
-} from '../queries/txInfos';
-import { TxResult } from './tx';
+} from 'queries/txInfos';
+import { TxResult } from 'transactions/tx';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 

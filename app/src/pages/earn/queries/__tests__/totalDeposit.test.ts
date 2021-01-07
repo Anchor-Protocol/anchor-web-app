@@ -1,4 +1,4 @@
-import { testClient, testAddressProvider } from 'env.test';
+import { testClient, testAddressProvider, testWalletAddress } from 'env.test';
 import {
   parseData,
   query,
@@ -15,7 +15,7 @@ describe('queries/totalDeposit', () => {
         anchorTokenContract: testAddressProvider.aToken(),
         anchorTokenBalanceQuery: {
           balance: {
-            address: 'terra1x46rqay4d3cssq8gxxvqz8xt6nwlz4td20k38v',
+            address: testWalletAddress,
           },
         },
         moneyMarketContract: testAddressProvider.market(''),
@@ -23,10 +23,8 @@ describe('queries/totalDeposit', () => {
           epoch_state: {},
         },
       }),
-    });
-    //  .then(({ data }) => parseData(data));
-    //
-    //expect(!!data.rewardState).toBeTruthy();
-    console.log('totalDeposit.test.ts..()', data);
+    }).then(({ data }) => parseData(data));
+
+    expect(typeof data.totalDeposit).toBe('string');
   });
 });

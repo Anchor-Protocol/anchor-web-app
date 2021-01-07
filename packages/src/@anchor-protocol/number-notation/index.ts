@@ -21,7 +21,7 @@ export function toFixedNoRounding(
 
 export function separateBasedOnDecimalPoints(
   n: number | string | { toString(): string },
-  fixed: number = 0,
+  fixed: number = DECIMAL_POINTS,
 ): [string, string] {
   const [i, d = ''] = n.toString().split('.');
   return [
