@@ -316,8 +316,11 @@ function ClaimBase({ className }: ClaimProps) {
           {withdrawHistory &&
             withdrawHistory.length > 0 &&
             withdrawHistory.map(
-              ({ blunaAmount, lunaAmount, requestTime, claimableTime }) => (
-                <li>
+              (
+                { blunaAmount, lunaAmount, requestTime, claimableTime },
+                index,
+              ) => (
+                <li key={`withdraw-history-${index}`}>
                   <p>
                     Requested time:{' '}
                     <time>{requestTime?.toLocaleString() ?? 'Pending'}</time>
