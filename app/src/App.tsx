@@ -33,17 +33,17 @@ function WalletConnectedProviders({ children }: { children: ReactNode }) {
   const addressProvider = useMemo<AddressProvider>(() => {
     // TODO create address provider by wallet info
     return new AddressProviderFromJson({
-      bLunaHub: 'terra10v2xm8wg8462sp8pukc5thc8udxtz6g0f9pym5',
-      bAssetToken: 'terra1gqu4yv2y8rkgnywmz8zckp3jv7pxpsaeck4wsh',
-      bAssetReward: 'terra1lt9eyey0s7c6umypa0nf86jwyv267c6hyxtxaq',
-      mmInterest: 'terra1mga5hxld0g7986j98xxqxzh9x4wzlzrrxj9geg',
-      mmOracle: 'terra1fs860v0ke5whgnuxlrz8l7l8hdaxc5akuvq78w',
-      mmMarket: 'terra1jnumeaevuvjtyac06mvtremyjjjp9qmhmg6yz6',
-      mmOverseer: 'terra1adlsj8e7839z7tqux5yqf5ym3rc96tu87dy4d9',
-      mmCustody: 'terra1whaadnzmd764zq2adwrw0ujj953d609ds5ag3g',
-      mmLiquidation: 'terra164ea72458h9sn65nnl6xd4qx0f0tgszxwxkx9u',
-      anchorToken: 'terra15atfsggre6ux67hwgrlx7fgxgdeq2h9l8anqp7',
-      terraswapFactory: 'terra1jfcl4m0cch6cthlpytah8dkhh8psju4xetx84s',
+      bLunaHub: 'terra1xhurqlwzfckncqkmgc7q864lytm6vynshfjel0',
+      bAssetToken: 'terra1ny767tknhj2cmz6uauc4ydcpdy647h925cxp7h',
+      bAssetReward: 'terra1ml2ryxrfxqf9ht7cfqywsrpq88f9dafr3p4yxl',
+      mmInterest: 'terra1gvf9k5tp9j2gdpdh5wems638x6trfvmcmytldp',
+      mmOracle: 'terra1czxwjwhv82mjch3sxhrm0rh2nczc4r9292sdx3',
+      mmMarket: 'terra1cg4nk8ze6mkqpqfh8z7k97dh6846zhhkv0sk94',
+      mmOverseer: 'terra1gm0d75qy6cdqke05ey29kynrcx0y2ezan2dru2',
+      mmCustody: 'terra1sspa69cw65ddx43npsng5fvrjq3q64urja3949',
+      mmLiquidation: 'terra1radgylfw9c8353dclxy8wckgekc5gsz48ndfl8',
+      anchorToken: 'terra1gdak9jc2chn6kql7tkuedyh689wt0nzsljm0ku',
+      terraswapFactory: 'terra10r7j8lkgpy89h8r8ydk0jzhrzn82jlfpgkdq7u',
       terraswapPair: 'unused',
     });
   }, []);
