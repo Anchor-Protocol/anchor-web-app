@@ -1,4 +1,4 @@
-import { mantleClient } from '../../../../env';
+import { testAddressProvider, testClient, testWalletAddress } from 'env.test';
 import {
   parseData,
   query,
@@ -7,19 +7,19 @@ import {
   stringifyVariables,
 } from '../claimable';
 
-describe('queries/claim', () => {
+describe('queries/claimable', () => {
   test('should get result from query', async () => {
-    const data = await mantleClient
+    const data = await testClient
       .query<StringifiedData, StringifiedVariables>({
         query,
         variables: stringifyVariables({
-          bAssetRewardContract: 'terra1lt9eyey0s7c6umypa0nf86jwyv267c6hyxtxaq',
+          bAssetRewardContract: testAddressProvider.bAssetReward(''),
           rewardState: {
             state: {},
           },
           claimableRewardQuery: {
             holder: {
-              address: 'terra1x46rqay4d3cssq8gxxvqz8xt6nwlz4td20k38v',
+              address: testWalletAddress,
             },
           },
         }),

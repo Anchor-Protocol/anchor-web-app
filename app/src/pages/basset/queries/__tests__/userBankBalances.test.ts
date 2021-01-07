@@ -1,4 +1,4 @@
-import { mantleClient } from '../../../../env';
+import { testClient, testWalletAddress } from 'env.test';
 import {
   parseData,
   query,
@@ -9,11 +9,11 @@ import {
 
 describe('queries/userBankBalances', () => {
   test('should get result from query', async () => {
-    const data = await mantleClient
+    const data = await testClient
       .query<StringifiedData, StringifiedVariables>({
         query,
         variables: stringifyVariables({
-          userAddress: 'terra1x46rqay4d3cssq8gxxvqz8xt6nwlz4td20k38v',
+          userAddress: testWalletAddress,
         }),
       })
       .then(({ data }) => parseData(data));

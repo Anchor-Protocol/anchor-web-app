@@ -1,4 +1,4 @@
-import { mantleClient } from '../../../../env';
+import { testClient } from 'env.test';
 import {
   parseData,
   query,
@@ -9,7 +9,7 @@ import {
 
 describe('queries/txInfos', () => {
   test('should get result from query', async () => {
-    const data = await mantleClient
+    const data = await testClient
       .query<StringifiedData, StringifiedVariables>({
         query,
         variables: stringifyVariables({
@@ -18,7 +18,7 @@ describe('queries/txInfos', () => {
         }),
       })
       .then(({ data }) => parseData(data));
-    
+
     console.log('txInfos.test.ts..()', data);
 
     expect(data.length).toBeGreaterThan(0);

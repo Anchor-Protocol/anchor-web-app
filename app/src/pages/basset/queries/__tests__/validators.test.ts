@@ -1,4 +1,4 @@
-import { mantleClient } from '../../../../env';
+import { testAddressProvider, testClient } from 'env.test';
 import {
   parseData,
   query,
@@ -9,11 +9,11 @@ import {
 
 describe('queries/validators', () => {
   test('should get result from query', async () => {
-    const data = await mantleClient
+    const data = await testClient
       .query<StringifiedData, StringifiedVariables>({
         query,
         variables: stringifyVariables({
-          bLunaHubContract: 'terra10v2xm8wg8462sp8pukc5thc8udxtz6g0f9pym5',
+          bLunaHubContract: testAddressProvider.bAssetHub(''),
         }),
       })
       .then(({ data }) => parseData(data));

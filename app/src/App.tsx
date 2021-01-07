@@ -9,6 +9,7 @@ import { ChromeExtensionWalletProvider } from '@anchor-protocol/wallet-provider'
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 import { Footer } from 'components/Footer';
 import { Header } from 'components/Header';
+import { contractAddresses } from 'env';
 import { BAsset } from 'pages/basset';
 import { Borrow } from 'pages/borrow';
 import { Earn } from 'pages/earn';
@@ -32,20 +33,7 @@ function WalletConnectedProviders({ children }: { children: ReactNode }) {
 
   const addressProvider = useMemo<AddressProvider>(() => {
     // TODO create address provider by wallet info
-    return new AddressProviderFromJson({
-      bLunaHub: 'terra1xhurqlwzfckncqkmgc7q864lytm6vynshfjel0',
-      bAssetToken: 'terra1ny767tknhj2cmz6uauc4ydcpdy647h925cxp7h',
-      bAssetReward: 'terra1ml2ryxrfxqf9ht7cfqywsrpq88f9dafr3p4yxl',
-      mmInterest: 'terra1gvf9k5tp9j2gdpdh5wems638x6trfvmcmytldp',
-      mmOracle: 'terra1czxwjwhv82mjch3sxhrm0rh2nczc4r9292sdx3',
-      mmMarket: 'terra1cg4nk8ze6mkqpqfh8z7k97dh6846zhhkv0sk94',
-      mmOverseer: 'terra1gm0d75qy6cdqke05ey29kynrcx0y2ezan2dru2',
-      mmCustody: 'terra1sspa69cw65ddx43npsng5fvrjq3q64urja3949',
-      mmLiquidation: 'terra1radgylfw9c8353dclxy8wckgekc5gsz48ndfl8',
-      anchorToken: 'terra1gdak9jc2chn6kql7tkuedyh689wt0nzsljm0ku',
-      terraswapFactory: 'terra10r7j8lkgpy89h8r8ydk0jzhrzn82jlfpgkdq7u',
-      terraswapPair: 'unused',
-    });
+    return new AddressProviderFromJson(contractAddresses);
   }, []);
 
   const client = useMemo<ApolloClient<any>>(() => {

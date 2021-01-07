@@ -1,4 +1,4 @@
-import { mantleClient } from '../../../../env';
+import { testAddressProvider, testClient, testWalletAddress } from 'env.test';
 import {
   parseData,
   query,
@@ -7,22 +7,22 @@ import {
   stringifyVariables,
 } from '../withdrawable';
 
-describe('queries/claim', () => {
+describe('queries/withdrawable', () => {
   test('should get result from query', async () => {
-    const data = await mantleClient
+    const data = await testClient
       .query<StringifiedData, StringifiedVariables>({
         query,
         variables: stringifyVariables({
-          bLunaHubContract: 'terra10v2xm8wg8462sp8pukc5thc8udxtz6g0f9pym5',
+          bLunaHubContract: testAddressProvider.bAssetHub(''),
           withdrawableAmountQuery: {
             withdrawable_unbonded: {
-              address: 'terra1x46rqay4d3cssq8gxxvqz8xt6nwlz4td20k38v',
-              block_time: new Date().getTime() - 1000 * 60 * 60 * 24 * 10,
+              address: testWalletAddress,
+              block_time: Date.now() - 1000 * 60 * 60 * 24 * 10,
             },
           },
           withdrawRequestsQuery: {
             unbond_requests: {
-              address: 'terra1x46rqay4d3cssq8gxxvqz8xt6nwlz4td20k38v',
+              address: testWalletAddress,
             },
           },
           exchangeRateQuery: {
