@@ -154,6 +154,9 @@ function ClaimBase({ className }: ClaimProps) {
     [withdrawAllHistoryData],
   );
 
+  // ---------------------------------------------
+  // compute
+  // ---------------------------------------------
   interface History {
     blunaAmount: string;
     lunaAmount?: string;
@@ -196,6 +199,24 @@ function ClaimBase({ className }: ClaimProps) {
       },
     );
   }, [withdrawAllHistory, withdrawable]);
+
+  const withdrawableAmount = useMemo(() => {
+    return big(withdrawable?.withdrawableAmount.withdrawable ?? 0);
+  }, [withdrawable?.withdrawableAmount.withdrawable]);
+
+  const claimableRewards = useMemo(() => {
+    return claimable
+      ? big(
+          big(
+            big(claimable.claimableReward.balance).mul(
+              big(claimable.rewardState.global_index).sub(
+                claimable.claimableReward.index,
+              ),
+            ),
+          ).add(claimable.claimableReward.pending_rewards),
+        )
+      : big(0);
+  }, [claimable]);
 
   console.log('claim.tsx..ClaimBase()', { withdrawResult, claimResult });
 
@@ -259,45 +280,37 @@ function ClaimBase({ className }: ClaimProps) {
         <article className="withdrawable-amount">
           <h4>Withdrawable Amount</h4>
           <p>
-            {toFixedNoRounding(
-              big(withdrawable?.withdrawableAmount.withdrawable ?? 0).div(
-                MICRO,
-              ),
-              2,
-            )}{' '}
-            Luna
+            {withdrawableAmount.gt(0)
+              ? toFixedNoRounding(withdrawableAmount.div(MICRO), 2) + ' Luna'
+              : '-'}
           </p>
         </article>
 
-        {status.status === 'ready' ? (
-          <ActionButton
-            className="submit"
-            onClick={() =>
-              fetchWithdraw({
-                post: post<CreateTxOptions, StringifiedTxResult>({
-                  ...transactionFee,
-                  msgs: fabricatebAssetWithdrawUnbonded({
-                    address: status.walletAddress,
-                    bAsset: 'bluna',
-                  })(addressProvider),
-                })
-                  .then(({ payload }) => payload)
-                  .then(parseResult),
-                client,
-              }).then((data) => {
-                if (data) {
-                  setNow(Date.now());
-                }
+        <ActionButton
+          className="submit"
+          disabled={status.status !== 'ready' || withdrawableAmount.lte(0)}
+          onClick={() =>
+            fetchWithdraw({
+              post: post<CreateTxOptions, StringifiedTxResult>({
+                ...transactionFee,
+                msgs: fabricatebAssetWithdrawUnbonded({
+                  address:
+                    status.status === 'ready' ? status.walletAddress : '',
+                  bAsset: 'bluna',
+                })(addressProvider),
               })
-            }
-          >
-            Withdraw
-          </ActionButton>
-        ) : (
-          <ActionButton className="submit" disabled>
-            Withdraw
-          </ActionButton>
-        )}
+                .then(({ payload }) => payload)
+                .then(parseResult),
+              client,
+            }).then((data) => {
+              if (data) {
+                setNow(Date.now());
+              }
+            })
+          }
+        >
+          Withdraw
+        </ActionButton>
 
         <ul className="withdraw-history">
           {withdrawHistory &&
@@ -334,50 +347,34 @@ function ClaimBase({ className }: ClaimProps) {
         <article className="claimable-rewards">
           <h4>Claimable Rewards</h4>
           <p>
-            {claimable
-              ? toFixedNoRounding(
-                  big(
-                    big(
-                      big(claimable.claimableReward.balance).mul(
-                        big(claimable.rewardState.global_index).sub(
-                          claimable.claimableReward.index,
-                        ),
-                      ),
-                    ).add(claimable.claimableReward.pending_rewards),
-                  ).div(MICRO),
-                  2,
-                )
-              : '0'}{' '}
-            UST
+            {claimableRewards.gt(0)
+              ? toFixedNoRounding(claimableRewards.div(MICRO), 2) + ' UST'
+              : '-'}
           </p>
         </article>
 
-        {status.status === 'ready' ? (
-          <ActionButton
-            className="submit"
-            onClick={() =>
-              fetchClaim({
-                post: post<CreateTxOptions, StringifiedTxResult>({
-                  ...transactionFee,
-                  msgs: fabricatebAssetClaim({
-                    address: status.walletAddress,
-                    bAsset: 'bluna',
-                    recipient: undefined,
-                  })(addressProvider),
-                })
-                  .then(({ payload }) => payload)
-                  .then(parseResult),
-                client,
+        <ActionButton
+          className="submit"
+          disabled={status.status !== 'ready' || claimableRewards.lte(0)}
+          onClick={() =>
+            fetchClaim({
+              post: post<CreateTxOptions, StringifiedTxResult>({
+                ...transactionFee,
+                msgs: fabricatebAssetClaim({
+                  address:
+                    status.status === 'ready' ? status.walletAddress : '',
+                  bAsset: 'bluna',
+                  recipient: undefined,
+                })(addressProvider),
               })
-            }
-          >
-            Claim
-          </ActionButton>
-        ) : (
-          <ActionButton className="submit" disabled>
-            Claim
-          </ActionButton>
-        )}
+                .then(({ payload }) => payload)
+                .then(parseResult),
+              client,
+            })
+          }
+        >
+          Claim
+        </ActionButton>
       </Section>
     </div>
   );
