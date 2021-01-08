@@ -1,6 +1,7 @@
 import { fabricateDepositStableCoin } from '@anchor-protocol/anchor-js/fabricators';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
+import { HorizontalDashedRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalDashedRuler';
 import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { MICRO, toFixedNoRounding } from '@anchor-protocol/number-notation';
@@ -17,7 +18,7 @@ import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient, useQuery } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
-import { Warning } from '@material-ui/icons';
+import { InfoOutlined } from '@material-ui/icons';
 import { CreateTxOptions } from '@terra-money/terra.js';
 import big from 'big.js';
 import { transactionFee } from 'env';
@@ -25,7 +26,7 @@ import { useAddressProvider } from 'providers/address-provider';
 import * as txi from 'queries/txInfos';
 import * as bal from 'queries/userBankBalances';
 import type { ReactNode } from 'react';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { queryOptions } from 'transactions/queryOptions';
 import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
@@ -52,6 +53,10 @@ export function useDepositDialog(): [
 const Template: DialogTemplate<FormParams, FormReturn> = (props) => {
   return <Component {...props} />;
 };
+
+const taxRate = 0.001;
+const maxTax = 0.1 * MICRO;
+const fixedGas = 0.001 * MICRO;
 
 function ComponentBase({
   className,
@@ -85,6 +90,7 @@ function ComponentBase({
     bal.StringifiedVariables
   >(bal.query, {
     skip: status.status !== 'ready',
+    fetchPolicy: 'cache-and-network',
     variables: bal.stringifyVariables({
       userAddress: status.status === 'ready' ? status.walletAddress : '',
     }),
@@ -99,18 +105,37 @@ function ComponentBase({
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
-  const amountInputError = useMemo<ReactNode>(() => {
+  const inputQualifiedError = useMemo(() => {
+    if (big(userUusdBalance ?? 0).lt(fixedGas)) {
+      return 'Not enough Tx Fee';
+    }
+
+    return undefined;
+  }, [userUusdBalance]);
+
+  const inputError = useMemo<ReactNode>(() => {
     if (
       big(amount.length > 0 ? amount : 0)
         .mul(MICRO)
         .gt(big(userUusdBalance ?? 0))
     ) {
-      return `Insufficient balance: Not enough Assets (${big(
-        userUusdBalance ?? 0,
-      ).div(MICRO)} UST)`;
+      return `Insufficient balance: Not enough Assets`;
     }
+
     return undefined;
   }, [amount, userUusdBalance]);
+
+  const txFee = useMemo(() => {
+    if (amount.length === 0) return undefined;
+
+    const ratioTxFee = big(amount).mul(MICRO).mul(taxRate);
+
+    if (ratioTxFee.gt(maxTax)) {
+      return big(maxTax).add(fixedGas).toString();
+    } else {
+      return ratioTxFee.add(fixedGas).toString();
+    }
+  }, [amount]);
 
   console.log('useDepositDialog.tsx..ComponentBase()', depositResult);
 
@@ -151,35 +176,55 @@ function ComponentBase({
           type="number"
           value={amount}
           label="AMOUNT"
+          disabled={!!inputQualifiedError}
           onChange={({ target }) => setAmount(target.value)}
+          helperText={inputQualifiedError || inputError}
           InputProps={{
-            endAdornment: !!amountInputError ? (
+            endAdornment: (
               <Tooltip
-                open
-                color="error"
-                title={amountInputError}
+                color={inputError ? 'error' : undefined}
+                title="Available you deposit"
                 placement="top"
               >
-                <Warning />
+                <InputAdornment position="end">
+                  / {toFixedNoRounding(big(userUusdBalance ?? 0).div(MICRO), 2)}{' '}
+                  UST
+                </InputAdornment>
               </Tooltip>
-            ) : (
-              <InputAdornment position="end">UST</InputAdornment>
             ),
             inputMode: 'numeric',
           }}
-          error={!!amountInputError}
+          error={!!inputError}
         />
 
-        <p className="wallet">
-          Wallet:{' '}
-          {toFixedNoRounding(
-            big(userUusdBalance ?? 0)
-              .div(MICRO)
-              .toString(),
-            2,
-          )}{' '}
-          UST
-        </p>
+        {/*<p className="wallet">*/}
+        {/*  Wallet:{' '}*/}
+        {/*  {toFixedNoRounding(*/}
+        {/*    big(userUusdBalance ?? 0)*/}
+        {/*      .div(MICRO)*/}
+        {/*      .toString(),*/}
+        {/*    2,*/}
+        {/*  )}{' '}*/}
+        {/*  UST*/}
+        {/*</p>*/}
+
+        <figure className="receipt">
+          <HorizontalDashedRuler />
+          <ul>
+            <li>
+              <span>
+                Tx Fee{' '}
+                <Tooltip title="Tx Fee Description" placement="top">
+                  <InfoOutlined />
+                </Tooltip>
+              </span>
+              <span>
+                {txFee ? toFixedNoRounding(big(txFee).div(MICRO)) + ' UST' : ''}
+              </span>
+            </li>
+          </ul>
+          <HorizontalDashedRuler />
+        </figure>
 
         <ActionButton
           className="proceed"
@@ -187,7 +232,7 @@ function ComponentBase({
             status.status !== 'ready' ||
             amount.length === 0 ||
             big(amount).lte(0) ||
-            !!amountInputError
+            !!inputError
           }
           onClick={() =>
             fetchDeposit({
@@ -223,7 +268,6 @@ const depositQueryOptions: BroadcastableQueryOptions<
 
 const Component = styled(ComponentBase)`
   width: 720px;
-  height: 455px;
 
   h1 {
     font-size: 27px;
@@ -243,15 +287,45 @@ const Component = styled(ComponentBase)`
 
     font-size: 12px;
     color: ${({ theme }) => theme.dimTextColor};
+  }
 
-    margin-bottom: 65px;
+  .receipt {
+    margin-top: 30px;
+
+    font-size: 12px;
+
+    ul {
+      list-style: none;
+      padding: 0;
+
+      li {
+        margin: 15px 0;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        > :first-child {
+          color: ${({ theme }) => theme.dimTextColor};
+        }
+
+        > :last-child {
+          color: ${({ theme }) => theme.textColor};
+        }
+
+        svg {
+          font-size: 1em;
+          transform: scale(1.2) translateY(0.08em);
+        }
+      }
+    }
   }
 
   .proceed {
+    margin-top: 45px;
+
     width: 100%;
     height: 60px;
     border-radius: 30px;
-
-    margin-bottom: 25px;
   }
 `;

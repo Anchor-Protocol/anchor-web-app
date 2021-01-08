@@ -187,3 +187,43 @@ export function horizontalRuler({
     border-right: 0;
   `;
 }
+
+export function horizontalDashedRuler({
+  intensity,
+  dash = 4,
+  gap = 4,
+  ...colors
+}: Pick<NeumorphismValues, 'intensity'> & { dash?: number; gap?: number } & (
+    | { color: string }
+    | { topColor: string; bottomColor: string }
+  )) {
+  const dashPercentage = (dash / (dash + gap)) * 100;
+
+  const { topColor, bottomColor } =
+    'topColor' in colors
+      ? colors
+      : {
+          topColor: colors.color,
+          bottomColor: colors.color,
+        };
+
+  return `
+    min-height: 2px;
+    max-height: 2px;
+    font-size: 0;
+    padding: 0;
+    
+    background-image: linear-gradient(to right, ${rulerShadowColor({
+      intensity,
+      color: topColor,
+    })} ${dashPercentage}%, rgba(255, 255, 255, 0) 0%), linear-gradient(to right, ${rulerLightColor(
+    {
+      intensity,
+      color: bottomColor,
+    },
+  )} ${dashPercentage}%, rgba(255, 255, 255, 0) 0%);
+    background-position: top, bottom;
+    background-size: ${dash + gap}px 1px;
+    background-repeat: repeat-x;
+  `;
+}

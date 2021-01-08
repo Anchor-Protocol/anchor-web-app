@@ -70,6 +70,7 @@ function ComponentBase({
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
+  // TODO how to get withdrawable balance
   const { data: userBankBalancesData } = useQuery<
     bal.StringifiedData,
     bal.StringifiedVariables
@@ -132,7 +133,7 @@ function ComponentBase({
         className={className}
         onClose={() => closeDialog({ refresh: false })}
       >
-        <h1>Deposit</h1>
+        <h1>Withdraw</h1>
 
         <TextInput
           className="amount"
