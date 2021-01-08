@@ -31,8 +31,8 @@ And you can run scripts
 Configurations
 
 - See [.graphqlconfig](.graphqlconfig) file
-    - This configuration is the graphql-config v2 spec (IntelliJ only supports that legacy spec)
-    - See <https://github.com/kamilkisiela/graphql-config/tree/legacy>
+  - This configuration is the graphql-config v2 spec (IntelliJ only supports that legacy spec)
+  - See <https://github.com/kamilkisiela/graphql-config/tree/legacy>
 - See [schema.graphql](schema.graphql) file
   - When the schema file is updated. run `yarn run graphql:update-schema`
 
