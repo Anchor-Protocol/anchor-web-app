@@ -5,15 +5,8 @@ import { HorizontalDashedRuler } from '@anchor-protocol/neumorphism-ui/component
 import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { MICRO, toFixedNoRounding } from '@anchor-protocol/number-notation';
-import {
-  BroadcastableQueryOptions,
-  useBroadcastableQuery,
-} from '@anchor-protocol/use-broadcastable-query';
-import type {
-  DialogProps,
-  DialogTemplate,
-  OpenDialog,
-} from '@anchor-protocol/use-dialog';
+import { BroadcastableQueryOptions, useBroadcastableQuery } from '@anchor-protocol/use-broadcastable-query';
+import type { DialogProps, DialogTemplate, OpenDialog } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient, useQuery } from '@apollo/client';
@@ -23,6 +16,7 @@ import { CreateTxOptions } from '@terra-money/terra.js';
 import big from 'big.js';
 import { transactionFee } from 'env';
 import { useAddressProvider } from 'providers/address-provider';
+import * as tax from 'queries/tax';
 import * as txi from 'queries/txInfos';
 import * as bal from 'queries/userBankBalances';
 import type { ReactNode } from 'react';
@@ -30,10 +24,7 @@ import { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { queryOptions } from 'transactions/queryOptions';
 import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
-import {
-  txNotificationFactory,
-  TxResultRenderer,
-} from 'transactions/TxResultRenderer';
+import { txNotificationFactory, TxResultRenderer } from 'transactions/TxResultRenderer';
 
 interface FormParams {
   className?: string;
@@ -54,8 +45,8 @@ const Template: DialogTemplate<FormParams, FormReturn> = (props) => {
   return <Component {...props} />;
 };
 
-const taxRate = 0.001;
-const maxTax = 10 * MICRO;
+//const taxRate = 0.001;
+//const maxTax = 10 * MICRO;
 const fixedGas = 0.001 * MICRO;
 
 function ComponentBase({
@@ -85,6 +76,16 @@ function ComponentBase({
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
+  const { data: taxData } = useQuery<
+    tax.StringifiedData,
+    tax.StringifiedVariables
+  >(tax.query, {
+    fetchPolicy: 'cache-and-network',
+    variables: tax.stringifyVariables({
+      Denom: 'uusd',
+    }),
+  });
+
   const { data: userBankBalancesData } = useQuery<
     bal.StringifiedData,
     bal.StringifiedVariables
@@ -126,16 +127,17 @@ function ComponentBase({
   }, [amount, userUusdBalance]);
 
   const txFee = useMemo(() => {
-    if (amount.length === 0) return undefined;
+    if (amount.length === 0 || !taxData) return undefined;
 
-    const ratioTxFee = big(amount).mul(MICRO).mul(taxRate);
+    const ratioTxFee = big(amount).mul(MICRO).mul(taxData.tax_rate.Result);
+    const maxTax = big(taxData.tax_cap_denom.Result);
 
     if (ratioTxFee.gt(maxTax)) {
       return big(maxTax).add(fixedGas).toString();
     } else {
       return ratioTxFee.add(fixedGas).toString();
     }
-  }, [amount]);
+  }, [amount, taxData]);
 
   console.log('useDepositDialog.tsx..ComponentBase()', depositResult);
 
