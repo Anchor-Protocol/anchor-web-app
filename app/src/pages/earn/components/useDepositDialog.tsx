@@ -55,7 +55,7 @@ const Template: DialogTemplate<FormParams, FormReturn> = (props) => {
 };
 
 const taxRate = 0.001;
-const maxTax = 0.1 * MICRO;
+const maxTax = 10 * MICRO;
 const fixedGas = 0.001 * MICRO;
 
 function ComponentBase({
@@ -177,8 +177,8 @@ function ComponentBase({
           value={amount}
           label="AMOUNT"
           disabled={!!inputQualifiedError}
+          error={!!inputQualifiedError || !!inputError}
           onChange={({ target }) => setAmount(target.value)}
-          helperText={inputQualifiedError || inputError}
           InputProps={{
             endAdornment: (
               <Tooltip
@@ -186,45 +186,47 @@ function ComponentBase({
                 title="Available you deposit"
                 placement="top"
               >
-                <InputAdornment position="end">
-                  / {toFixedNoRounding(big(userUusdBalance ?? 0).div(MICRO), 2)}{' '}
-                  UST
-                </InputAdornment>
+                <InputAdornment position="end">UST</InputAdornment>
               </Tooltip>
             ),
             inputMode: 'numeric',
           }}
-          error={!!inputError}
         />
 
-        {/*<p className="wallet">*/}
-        {/*  Wallet:{' '}*/}
-        {/*  {toFixedNoRounding(*/}
-        {/*    big(userUusdBalance ?? 0)*/}
-        {/*      .div(MICRO)*/}
-        {/*      .toString(),*/}
-        {/*    2,*/}
-        {/*  )}{' '}*/}
-        {/*  UST*/}
-        {/*</p>*/}
+        <div
+          className="wallet"
+          aria-invalid={!!inputQualifiedError || !!inputError}
+        >
+          <span>{inputQualifiedError || inputError}</span>
+          <span>
+            Wallet:{' '}
+            {toFixedNoRounding(
+              big(userUusdBalance ?? 0)
+                .div(MICRO)
+                .toString(),
+              2,
+            )}{' '}
+            UST
+          </span>
+        </div>
 
-        <figure className="receipt">
-          <HorizontalDashedRuler />
-          <ul>
-            <li>
-              <span>
-                Tx Fee{' '}
-                <Tooltip title="Tx Fee Description" placement="top">
-                  <InfoOutlined />
-                </Tooltip>
-              </span>
-              <span>
-                {txFee ? toFixedNoRounding(big(txFee).div(MICRO)) + ' UST' : ''}
-              </span>
-            </li>
-          </ul>
-          <HorizontalDashedRuler />
-        </figure>
+        {txFee && (
+          <figure className="receipt">
+            <HorizontalDashedRuler />
+            <ul>
+              <li>
+                <span>
+                  Tx Fee{' '}
+                  <Tooltip title="Tx Fee Description" placement="top">
+                    <InfoOutlined />
+                  </Tooltip>
+                </span>
+                <span>{toFixedNoRounding(big(txFee).div(MICRO))} UST</span>
+              </li>
+            </ul>
+            <HorizontalDashedRuler />
+          </figure>
+        )}
 
         <ActionButton
           className="proceed"
@@ -283,10 +285,15 @@ const Component = styled(ComponentBase)`
   }
 
   .wallet {
-    text-align: right;
+    display: flex;
+    justify-content: space-between;
 
     font-size: 12px;
     color: ${({ theme }) => theme.dimTextColor};
+
+    &[aria-invalid='true'] {
+      color: #f5356a;
+    }
   }
 
   .receipt {
