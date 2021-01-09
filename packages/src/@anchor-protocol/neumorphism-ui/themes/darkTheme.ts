@@ -24,6 +24,7 @@ export const darkTheme: DefaultTheme = {
   backgroundColor: '#1f2237',
   textColor: '#ffffff',
   dimTextColor: 'rgba(255, 255, 255, 0.5)',
+  errorTextColor: '#ac2b45',
 
   actionButton: {
     backgroundColor: '#363c5f',

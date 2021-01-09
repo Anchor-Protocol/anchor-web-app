@@ -4,20 +4,18 @@ import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/Hori
 import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
-import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { MICRO, toFixedNoRounding } from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
   useBroadcastableQuery,
 } from '@anchor-protocol/use-broadcastable-query';
-import { useWallet } from '@anchor-protocol/wallet-provider';
+import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient } from '@apollo/client';
 import {
   Input as MuiInput,
   InputAdornment,
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
-import { Error as ErrorIcon } from '@material-ui/icons';
 import { CreateTxOptions } from '@terra-money/terra.js';
 import * as txi from 'api/queries/txInfos';
 import { queryOptions } from 'api/transactions/queryOptions';
@@ -33,8 +31,8 @@ import {
 import big from 'big.js';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
-import { transactionFee } from 'env';
-import React, { ReactNode, useMemo, useState } from 'react';
+import { fixedGasUUSD, transactionFee } from 'env';
+import React, { ReactNode, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { useExchangeRate } from './queries/exchangeRate';
 import * as val from './queries/validators';
@@ -49,8 +47,8 @@ interface Item {
   value: string;
 }
 
-const bondCurrencies: Item[] = [{ label: 'Luna', value: 'luna' }];
-const mintCurrencies: Item[] = [{ label: 'bLuna', value: 'bluna' }];
+const assetCurrencies: Item[] = [{ label: 'Luna', value: 'luna' }];
+const bAssetCurrencies: Item[] = [{ label: 'bLuna', value: 'bluna' }];
 
 function MintBase({ className }: MintProps) {
   // ---------------------------------------------
@@ -60,7 +58,7 @@ function MintBase({ className }: MintProps) {
 
   const addressProvider = useAddressProvider();
 
-  const [fetchMint, mintResult, resetMintResult] = useBroadcastableQuery(
+  const [mint, mintResult, resetMintResult] = useBroadcastableQuery(
     mintQueryOptions,
   );
 
@@ -69,14 +67,14 @@ function MintBase({ className }: MintProps) {
   // ---------------------------------------------
   // states
   // ---------------------------------------------
-  const [bondAmount, setBondAmount] = useState<string>('');
+  const [assetAmount, setAssetAmount] = useState<string>('');
 
-  const [mintCurrency, setMintCurrency] = useState<Item>(
-    () => mintCurrencies[0],
+  const [bAssetCurrency, setBAssetCurrency] = useState<Item>(
+    () => bAssetCurrencies[0],
   );
 
-  const [bondCurrency, setBondCurrency] = useState<Item>(
-    () => bondCurrencies[0],
+  const [assetCurrency, setAssetCurrency] = useState<Item>(
+    () => assetCurrencies[0],
   );
 
   const [selectedValidator, setSelectedValidator] = useState<
@@ -89,18 +87,29 @@ function MintBase({ className }: MintProps) {
   const bank = useBank();
 
   const { parsedData: validators } = useValidators({
-    bAsset: mintCurrency.value,
+    bAsset: bAssetCurrency.value,
   });
   const { parsedData: exchangeRate } = useExchangeRate({
-    bAsset: mintCurrency.value,
+    bAsset: bAssetCurrency.value,
   });
 
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
-  const bondInputError = useMemo<ReactNode>(() => {
-    if (
-      big(bondAmount.length > 0 ? bondAmount : 0)
+  const invalidTxFee = useMemo<ReactNode>(() => {
+    if (bank.status === 'demo') {
+      return undefined;
+    } else if (big(bank.userBalances.uUSD).lt(fixedGasUUSD)) {
+      return 'Not Enough Tx Fee';
+    }
+    return undefined;
+  }, [bank.status, bank.userBalances.uUSD]);
+
+  const invalidAssetAmount = useMemo<ReactNode>(() => {
+    if (bank.status === 'demo') {
+      return undefined;
+    } else if (
+      big(assetAmount.length > 0 ? assetAmount : 0)
         .mul(MICRO)
         .gt(big(bank.userBalances.uLuna ?? 0))
     ) {
@@ -109,9 +118,55 @@ function MintBase({ className }: MintProps) {
       ).div(MICRO)} Luna)`;
     }
     return undefined;
-  }, [bank.userBalances.uLuna, bondAmount]);
+  }, [bank.status, bank.userBalances.uLuna, assetAmount]);
 
-  console.log('mint.tsx..MintBase()', {exchangeRate, mintResult});
+  // ---------------------------------------------
+  // callbacks
+  // ---------------------------------------------
+  const transact = useCallback(
+    async ({
+      status,
+      assetAmount,
+      selectedValidator,
+    }: {
+      status: WalletStatus;
+      assetAmount: string;
+      selectedValidator: string | undefined;
+    }) => {
+      if (status.status !== 'ready' || !selectedValidator) {
+        return;
+      }
+
+      const data = await mint({
+        post: post<CreateTxOptions, StringifiedTxResult>({
+          ...transactionFee,
+          msgs: fabricatebAssetBond({
+            address: status.walletAddress,
+            amount: big(assetAmount).toNumber(),
+            bAsset: bAssetCurrency.value,
+            validator: selectedValidator,
+          })(addressProvider),
+        })
+          .then(({ payload }) => payload)
+          .then(parseResult),
+        client,
+      });
+
+      // is this component does not unmounted
+      if (data) {
+        setAssetAmount('');
+        setSelectedValidator(null);
+      }
+    },
+    [addressProvider, client, mint, bAssetCurrency.value, post],
+  );
+
+  console.log('mint.tsx..MintBase()', {
+    exchangeRate,
+    mintResult,
+    invalidTxFee,
+    invalidAssetAmount,
+  });
 
   // ---------------------------------------------
   // presentation
@@ -123,6 +178,7 @@ function MintBase({ className }: MintProps) {
   ) {
     return (
       <Section className={className}>
+        {/* TODO implement messages */}
         <TxResultRenderer result={mintResult} resetResult={resetMintResult} />
       </Section>
     );
@@ -130,6 +186,7 @@ function MintBase({ className }: MintProps) {
 
   return (
     <Section className={className}>
+      {/* Bond (Asset) */}
       <div className="bond-description">
         <p>I want to bond</p>
         <p>
@@ -140,48 +197,47 @@ function MintBase({ className }: MintProps) {
         </p>
       </div>
 
-      <SelectAndTextInputContainer className="bond">
+      <SelectAndTextInputContainer
+        className="bond"
+        error={!!invalidTxFee || !!invalidAssetAmount}
+        helperText={invalidTxFee || invalidAssetAmount}
+      >
         <MuiNativeSelect
-          value={bondCurrency}
+          value={assetCurrency}
           onChange={(evt) =>
-            setBondCurrency(
-              bondCurrencies.find(({ value }) => evt.target.value === value) ??
-                bondCurrencies[0],
+            setAssetCurrency(
+              assetCurrencies.find(({ value }) => evt.target.value === value) ??
+                assetCurrencies[0],
             )
           }
-          IconComponent={bondCurrencies.length < 2 ? BlankComponent : undefined}
-          disabled={bondCurrencies.length < 2}
+          IconComponent={
+            assetCurrencies.length < 2 ? BlankComponent : undefined
+          }
+          disabled={assetCurrencies.length < 2}
         >
-          {bondCurrencies.map(({ label, value }) => (
+          {assetCurrencies.map(({ label, value }) => (
             <option key={value} value={value}>
               {label}
             </option>
           ))}
         </MuiNativeSelect>
 
+        {/* TODO bidirectional amount input */}
         <MuiInput
           type="number"
           placeholder="0.00"
-          error={!!bondInputError}
+          error={!!invalidTxFee || !!invalidAssetAmount}
           endAdornment={
-            bondInputError ? (
-              <InputAdornment position="end">
-                <Tooltip
-                  open
-                  color="error"
-                  title={bondInputError}
-                  placement="top"
-                >
-                  <ErrorIcon />
-                </Tooltip>
-              </InputAdornment>
-            ) : undefined
+            <InputAdornment position="end" style={{ opacity: 0.5 }}>
+              / {toFixedNoRounding(big(bank.userBalances.uUSD).div(MICRO), 2)}
+            </InputAdornment>
           }
-          value={bondAmount}
-          onChange={({ target }) => setBondAmount(target.value)}
+          value={assetAmount}
+          onChange={({ target }) => setAssetAmount(target.value)}
         />
       </SelectAndTextInputContainer>
 
+      {/* Mint (bAsset) */}
       <div className="mint-description">
         <p>and mint</p>
         <p>
@@ -190,19 +246,25 @@ function MintBase({ className }: MintProps) {
         </p>
       </div>
 
-      <SelectAndTextInputContainer className="mint">
+      <SelectAndTextInputContainer
+        className="mint"
+        error={!!invalidTxFee || !!invalidAssetAmount}
+      >
         <MuiNativeSelect
-          value={mintCurrency}
+          value={bAssetCurrency}
           onChange={(evt) =>
-            setMintCurrency(
-              mintCurrencies.find(({ value }) => evt.target.value === value) ??
-                mintCurrencies[0],
+            setBAssetCurrency(
+              bAssetCurrencies.find(
+                ({ value }) => evt.target.value === value,
+              ) ?? bAssetCurrencies[0],
             )
           }
-          IconComponent={mintCurrencies.length < 2 ? BlankComponent : undefined}
-          disabled={mintCurrencies.length < 2}
+          IconComponent={
+            bAssetCurrencies.length < 2 ? BlankComponent : undefined
+          }
+          disabled={bAssetCurrencies.length < 2}
         >
-          {mintCurrencies.map(({ label, value }) => (
+          {bAssetCurrencies.map(({ label, value }) => (
             <option key={value} value={value}>
               {label}
             </option>
@@ -210,9 +272,10 @@ function MintBase({ className }: MintProps) {
         </MuiNativeSelect>
         <MuiInput
           placeholder="0.00"
+          error={!!invalidTxFee || !!invalidAssetAmount}
           value={
-            bondAmount.length > 0
-              ? big(bondAmount)
+            assetAmount.length > 0
+              ? big(assetAmount)
                   .mul(big(exchangeRate?.exchange_rate ?? 0))
                   .toString()
               : ''
@@ -223,6 +286,7 @@ function MintBase({ className }: MintProps) {
 
       <HorizontalRuler />
 
+      {/* Validators */}
       <NativeSelect
         className="validator"
         data-selected-value={selectedValidator?.OperatorAddress ?? ''}
@@ -246,43 +310,26 @@ function MintBase({ className }: MintProps) {
         )}
       </NativeSelect>
 
-      {status.status === 'ready' &&
-      selectedValidator &&
-      bondAmount.length > 0 &&
-      big(bondAmount).gt(0) &&
-      !bondInputError ? (
-        <ActionButton
-          className="submit"
-          onClick={() =>
-            fetchMint({
-              post: post<CreateTxOptions, StringifiedTxResult>({
-                ...transactionFee,
-                msgs: fabricatebAssetBond({
-                  address: status.walletAddress,
-                  amount: big(bondAmount).toNumber(),
-                  bAsset: mintCurrency.value,
-                  validator: selectedValidator.OperatorAddress,
-                })(addressProvider),
-              })
-                .then(({ payload }) => payload)
-                .then(parseResult),
-              client,
-            }).then((data) => {
-              if (data) {
-                // the meaning that data is exists is this component does not unmounted
-                setBondAmount('');
-                setSelectedValidator(null);
-              }
-            })
-          }
-        >
-          Mint
-        </ActionButton>
-      ) : (
-        <ActionButton className="submit" disabled>
-          Mint
-        </ActionButton>
-      )}
+      {/* Submit */}
+      <ActionButton
+        className="submit"
+        disabled={
+          status.status !== 'ready' ||
+          bank.status !== 'connected' ||
+          !!invalidAssetAmount ||
+          !!invalidTxFee ||
+          !selectedValidator
+        }
+        onClick={() =>
+          transact({
+            assetAmount: assetAmount,
+            status,
+            selectedValidator: selectedValidator?.OperatorAddress,
+          })
+        }
+      >
+        Mint
+      </ActionButton>
     </Section>
   );
 }

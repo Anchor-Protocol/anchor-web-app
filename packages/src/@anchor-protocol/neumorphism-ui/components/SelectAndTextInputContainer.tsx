@@ -3,7 +3,28 @@ import {
   rulerLightColor,
   rulerShadowColor,
 } from '@anchor-protocol/styled-neumorphism';
+import { DetailedHTMLProps, HTMLAttributes, ReactNode } from 'react';
 import styled from 'styled-components';
+
+export interface SelectAndTextInputContainerProps
+  extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+  helperText?: ReactNode;
+  error?: boolean;
+}
+
+function SelectAndTextInputContainerBase({
+  helperText,
+  error,
+  children,
+  ...divProps
+}: SelectAndTextInputContainerProps) {
+  return (
+    <div {...divProps} aria-invalid={!!error}>
+      {children}
+      {helperText && <HelperText>{helperText}</HelperText>}
+    </div>
+  );
+}
 
 /**
  * A container for combine the form components (e.g. `<NativeSelect/>`, `<Input/>`...)
@@ -26,7 +47,9 @@ import styled from 'styled-components';
  * </SelectAndTextInputContainer>
  * ```
  */
-export const SelectAndTextInputContainer = styled.div`
+export const SelectAndTextInputContainer = styled(
+  SelectAndTextInputContainerBase,
+)`
   border-radius: 5px;
 
   ${({ theme }) =>
@@ -42,15 +65,20 @@ export const SelectAndTextInputContainer = styled.div`
 
   display: flex;
 
+  position: relative;
+
+  color: ${({ theme }) => theme.textInput.textColor};
+  
+  .MuiInputBase-input,
   .MuiInputBase-root {
     color: ${({ theme }) => theme.textInput.textColor};
   }
-  
+
   .MuiNativeSelect-icon {
     color: currentColor;
   }
 
-  > :not(:last-child) {
+  > div:not(:last-of-type) {
     padding-right: 20px;
     border-right: 1px solid
       ${({ theme }) =>
@@ -60,7 +88,7 @@ export const SelectAndTextInputContainer = styled.div`
         })};
   }
 
-  > :not(:first-child) {
+  > div:not(:first-of-type) {
     padding-left: 20px;
     border-left: 1px solid
       ${({ theme }) =>
@@ -74,16 +102,35 @@ export const SelectAndTextInputContainer = styled.div`
   .MuiInput-underline:after {
     display: none;
   }
-  
+
   .Mui-focused {
     .MuiNativeSelect-root {
       background-color: transparent;
     }
   }
 
-  &[aria-disabled="true"] {
+  &[aria-disabled='true'] {
     user-select: none;
     pointer-events: none;
     opacity: 0.3;
   }
+
+  &[aria-invalid='true'] {
+    color: ${({ theme }) => theme.errorTextColor};
+    
+    .MuiInputBase-input,
+    .MuiInputBase-root {
+      color: ${({ theme }) => theme.errorTextColor};
+    }
+  }
+`;
+
+const HelperText = styled.span`
+  font-size: 12px;
+  flex-shrink: 0;
+  position: absolute;
+  right: 0;
+  bottom: -20px;
+  
+  color: inherit;
 `;
