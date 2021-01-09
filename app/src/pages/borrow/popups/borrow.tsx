@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { fabricateBorrow } from '@anchor-protocol/anchor-js/fabricators';
-import Box from '../../../components/box';
-import Button, { ButtonTypes } from '../../../components/button';
-import Input from '../../../components/input';
-import { ActionContainer } from '../../../containers/action';
-import { useWallet } from '../../../hooks/use-wallet';
-import { PopupChild } from '../../../layout/popup-container';
+import Box from 'deprecated/components/box';
+import Button, { ButtonTypes } from 'deprecated/components/button';
+import Input from 'deprecated/components/input';
+import { ActionContainer } from '../../../deprecated/containers/action';
+import { useWallet } from '../../../deprecated/hooks/use-wallet';
+import { PopupChild } from '../../../deprecated/layout/popup-container';
 
 interface PopupBorrowBorrowProps extends PopupChild {}
 

@@ -1,4 +1,7 @@
-import { gql } from '@apollo/client';
+import { useWallet } from '@anchor-protocol/wallet-provider';
+import { gql, QueryResult, useQuery } from '@apollo/client';
+import { useAddressProvider } from 'contexts/contract';
+import { useCallback, useMemo, useState } from 'react';
 
 export interface StringifiedData {
   withdrawableAmount: {
@@ -24,13 +27,16 @@ export function parseData({
   withdrawableAmount,
   withdrawRequests,
 }: StringifiedData): Data {
-  const parsedWithdrawRequests: Data['withdrawRequests'] = JSON.parse(withdrawRequests.Result);
+  const parsedWithdrawRequests: Data['withdrawRequests'] = JSON.parse(
+    withdrawRequests.Result,
+  );
   return {
     withdrawableAmount: JSON.parse(withdrawableAmount.Result),
     withdrawRequests: parsedWithdrawRequests,
-    withdrawRequestsStartFrom: parsedWithdrawRequests.requests.length > 0
-      ? Math.min(...parsedWithdrawRequests.requests.map(([index]) => index))
-      : -1,
+    withdrawRequestsStartFrom:
+      parsedWithdrawRequests.requests.length > 0
+        ? Math.min(...parsedWithdrawRequests.requests.map(([index]) => index))
+        : -1,
   };
 }
 
@@ -94,3 +100,54 @@ export const query = gql`
     }
   }
 `;
+
+export function useWithdrawable({
+  bAsset,
+}: {
+  bAsset: string;
+}): QueryResult<StringifiedData, StringifiedVariables> & {
+  parsedData: Data | undefined;
+  updateWithdrawable: () => void;
+} {
+  const addressProvider = useAddressProvider();
+  const { status } = useWallet();
+
+  const [now, setNow] = useState(() => Date.now());
+
+  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
+    skip: status.status !== 'ready',
+    fetchPolicy: 'cache-and-network',
+    variables: stringifyVariables({
+      bLunaHubContract: addressProvider.bAssetHub(bAsset),
+      withdrawableAmountQuery: {
+        withdrawable_unbonded: {
+          block_time: now,
+          address: status.status === 'ready' ? status.walletAddress : '',
+        },
+      },
+      withdrawRequestsQuery: {
+        unbond_requests: {
+          address: status.status === 'ready' ? status.walletAddress : '',
+        },
+      },
+      exchangeRateQuery: {
+        state: {},
+      },
+    }),
+  });
+
+  const updateWithdrawable = useCallback(() => {
+    setNow(Date.now());
+  }, []);
+
+  const parsedData = useMemo(
+    () => (result.data ? parseData(result.data) : undefined),
+    [result.data],
+  );
+
+  return {
+    ...result,
+    parsedData,
+    updateWithdrawable,
+  };
+}

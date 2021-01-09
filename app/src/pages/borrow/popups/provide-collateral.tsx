@@ -1,13 +1,13 @@
 import { fabricateProvideCollateral } from '@anchor-protocol/anchor-js/fabricators';
 import React, { useState } from 'react';
-import Box from '../../../components/box';
-import Button, { ButtonTypes } from '../../../components/button';
-import Input from '../../../components/input';
-import { ready } from '../../../components/ready';
-import { ActionContainer } from '../../../containers/action';
-import useBAssetBalance from '../../../hooks/mantle/use-basset-balance';
-import { useWallet } from '../../../hooks/use-wallet';
-import { PopupChild } from '../../../layout/popup-container';
+import Box from 'deprecated/components/box';
+import Button, { ButtonTypes } from 'deprecated/components/button';
+import Input from 'deprecated/components/input';
+import { ready } from 'deprecated/components/ready';
+import { ActionContainer } from '../../../deprecated/containers/action';
+import useBAssetBalance from '../../../deprecated/hooks/mantle/use-basset-balance';
+import { useWallet } from '../../../deprecated/hooks/use-wallet';
+import { PopupChild } from '../../../deprecated/layout/popup-container';
 
 interface PopupProvideCollateralProps extends PopupChild {}
 

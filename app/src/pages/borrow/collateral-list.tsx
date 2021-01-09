@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import Box from '../../components/box';
-import Button, { ButtonTypes } from '../../components/button';
-import PopupContainer from '../../layout/popup-container';
+import Box from 'deprecated/components/box';
+import Button, { ButtonTypes } from 'deprecated/components/button';
+import PopupContainer from '../../deprecated/layout/popup-container';
 import PopupProvideCollateral from './popups/provide-collateral';
 import PopupRedeemCollateral from './popups/redeem-collateral';
 

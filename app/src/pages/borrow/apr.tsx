@@ -1,5 +1,5 @@
 import React from 'react';
-import Box from '../../components/box';
+import Box from 'deprecated/components/box';
 import BorrowAPRLimitInidicator from './apr/limit-indicator';
 
 interface BorrowAPRProps {}

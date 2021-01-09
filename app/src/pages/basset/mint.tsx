@@ -5,13 +5,13 @@ import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeS
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
-import { MICRO, toFixedNoRounding } from '@anchor-protocol/number-notation';
+import { MICRO, toFixedNoRounding } from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
   useBroadcastableQuery,
 } from '@anchor-protocol/use-broadcastable-query';
-import { isConnected, useWallet } from '@anchor-protocol/wallet-provider';
-import { ApolloClient, useApolloClient, useQuery } from '@apollo/client';
+import { useWallet } from '@anchor-protocol/wallet-provider';
+import { ApolloClient, useApolloClient } from '@apollo/client';
 import {
   Input as MuiInput,
   InputAdornment,
@@ -19,21 +19,26 @@ import {
 } from '@material-ui/core';
 import { Error as ErrorIcon } from '@material-ui/icons';
 import { CreateTxOptions } from '@terra-money/terra.js';
-import big from 'big.js';
-import { transactionFee } from 'env';
+import * as txi from 'api/queries/txInfos';
+import { queryOptions } from 'api/transactions/queryOptions';
+import {
+  parseResult,
+  StringifiedTxResult,
+  TxResult,
+} from 'api/transactions/tx';
 import {
   txNotificationFactory,
   TxResultRenderer,
-} from 'transactions/TxResultRenderer';
+} from 'api/transactions/TxResultRenderer';
+import big from 'big.js';
+import { useBank } from 'contexts/bank';
+import { useAddressProvider } from 'contexts/contract';
+import { transactionFee } from 'env';
 import React, { ReactNode, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { useAddressProvider } from '../../providers/address-provider';
-import * as exc from './queries/exchangeRate';
-import * as txi from 'queries/txInfos';
-import * as bal from 'queries/userBankBalances';
+import { useExchangeRate } from './queries/exchangeRate';
 import * as val from './queries/validators';
-import { queryOptions } from 'transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
+import { useValidators } from './queries/validators';
 
 export interface MintProps {
   className?: string;
@@ -75,62 +80,20 @@ function MintBase({ className }: MintProps) {
   );
 
   const [selectedValidator, setSelectedValidator] = useState<
-    val.Data['validators']['Result'][number] | null
+    val.Data['validators'][number] | null
   >(null);
 
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const { data: validatorsData } = useQuery<
-    val.StringifiedData,
-    val.StringifiedVariables
-  >(val.query, {
-    skip: !isConnected(status),
-    variables: val.stringifyVariables({
-      bLunaHubContract: addressProvider.bAssetHub(mintCurrency.value),
-    }),
+  const bank = useBank();
+
+  const { parsedData: validators } = useValidators({
+    bAsset: mintCurrency.value,
   });
-
-  const { data: exchangeRateData } = useQuery<
-    exc.StringifiedData,
-    exc.StringifiedVariables
-  >(exc.query, {
-    variables: exc.stringifyVariables({
-      bLunaHubContract: addressProvider.bAssetHub(mintCurrency.value),
-    }),
+  const { parsedData: exchangeRate } = useExchangeRate({
+    bAsset: mintCurrency.value,
   });
-
-  const { data: userBankBalancesData } = useQuery<
-    bal.StringifiedData,
-    bal.StringifiedVariables
-  >(bal.query, {
-    skip: status.status !== 'ready',
-    variables: bal.stringifyVariables({
-      userAddress: status.status === 'ready' ? status.walletAddress : '',
-    }),
-  });
-
-  const whitelistedValidators = useMemo(
-    () =>
-      validatorsData
-        ? val.parseData(validatorsData).whitelistedValidators.Result
-        : undefined,
-    [validatorsData],
-  );
-
-  const exchangeRate = useMemo(
-    () =>
-      exchangeRateData
-        ? exc.parseData(exchangeRateData).exchangeRate.Result
-        : undefined,
-    [exchangeRateData],
-  );
-
-  const userUlunaBalance = useMemo(() => {
-    return userBankBalancesData
-      ? bal.parseData(userBankBalancesData).get('uluna')?.Amount
-      : undefined;
-  }, [userBankBalancesData]);
 
   // ---------------------------------------------
   // compute
@@ -139,16 +102,16 @@ function MintBase({ className }: MintProps) {
     if (
       big(bondAmount.length > 0 ? bondAmount : 0)
         .mul(MICRO)
-        .gt(big(userUlunaBalance ?? 0))
+        .gt(big(bank.userBalances.uLuna ?? 0))
     ) {
       return `Insufficient balance: Not enough Assets (${big(
-        userUlunaBalance ?? 0,
+        bank.userBalances.uLuna ?? 0,
       ).div(MICRO)} Luna)`;
     }
     return undefined;
-  }, [bondAmount, userUlunaBalance]);
+  }, [bank.userBalances.uLuna, bondAmount]);
 
-  console.log('mint.tsx..MintBase()', mintResult);
+  console.log('mint.tsx..MintBase()', {exchangeRate, mintResult});
 
   // ---------------------------------------------
   // presentation
@@ -172,7 +135,7 @@ function MintBase({ className }: MintProps) {
         <p>
           {exchangeRate &&
             `1 Luna = ${toFixedNoRounding(
-              big(1).div(big(exchangeRate.exchange_rate)),
+              big(1).div(exchangeRate.exchange_rate),
             )} bLuna`}
         </p>
       </div>
@@ -266,19 +229,21 @@ function MintBase({ className }: MintProps) {
         value={selectedValidator?.OperatorAddress ?? ''}
         onChange={({ target }) =>
           setSelectedValidator(
-            whitelistedValidators?.find(
+            validators?.whitelistedValidators.find(
               ({ OperatorAddress }) => target.value === OperatorAddress,
             ) ?? null,
           )
         }
-        disabled={whitelistedValidators?.length === 0}
+        disabled={validators?.whitelistedValidators.length === 0}
       >
         <option value="">Select validator</option>
-        {whitelistedValidators?.map(({ Description, OperatorAddress }) => (
-          <option key={OperatorAddress} value={OperatorAddress}>
-            {Description.Moniker}
-          </option>
-        ))}
+        {validators?.whitelistedValidators.map(
+          ({ Description, OperatorAddress }) => (
+            <option key={OperatorAddress} value={OperatorAddress}>
+              {Description.Moniker}
+            </option>
+          ),
+        )}
       </NativeSelect>
 
       {status.status === 'ready' &&

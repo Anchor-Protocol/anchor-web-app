@@ -4,27 +4,41 @@ import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { HorizontalDashedRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalDashedRuler';
 import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
-import { MICRO, toFixedNoRounding } from '@anchor-protocol/number-notation';
-import { BroadcastableQueryOptions, useBroadcastableQuery } from '@anchor-protocol/use-broadcastable-query';
-import type { DialogProps, DialogTemplate, OpenDialog } from '@anchor-protocol/use-dialog';
+import { MICRO, toFixedNoRounding } from '@anchor-protocol/notation';
+import {
+  BroadcastableQueryOptions,
+  useBroadcastableQuery,
+} from '@anchor-protocol/use-broadcastable-query';
+import type {
+  DialogProps,
+  DialogTemplate,
+  OpenDialog,
+} from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet } from '@anchor-protocol/wallet-provider';
-import { ApolloClient, useApolloClient, useQuery } from '@apollo/client';
+import { ApolloClient, useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { InfoOutlined } from '@material-ui/icons';
 import { CreateTxOptions } from '@terra-money/terra.js';
+import { useTax } from 'api/queries/tax';
+import * as txi from 'api/queries/txInfos';
+import { queryOptions } from 'api/transactions/queryOptions';
+import {
+  parseResult,
+  StringifiedTxResult,
+  TxResult,
+} from 'api/transactions/tx';
+import {
+  txNotificationFactory,
+  TxResultRenderer,
+} from 'api/transactions/TxResultRenderer';
 import big from 'big.js';
-import { transactionFee } from 'env';
-import { useAddressProvider } from 'providers/address-provider';
-import * as tax from 'queries/tax';
-import * as txi from 'queries/txInfos';
-import * as bal from 'queries/userBankBalances';
+import { useBank } from 'contexts/bank';
+import { useAddressProvider } from 'contexts/contract';
+import { fixedGasUUSD, transactionFee } from 'env';
 import type { ReactNode } from 'react';
 import { useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { queryOptions } from 'transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
-import { txNotificationFactory, TxResultRenderer } from 'transactions/TxResultRenderer';
 
 interface FormParams {
   className?: string;
@@ -44,10 +58,6 @@ export function useDepositDialog(): [
 const Template: DialogTemplate<FormParams, FormReturn> = (props) => {
   return <Component {...props} />;
 };
-
-//const taxRate = 0.001;
-//const maxTax = 10 * MICRO;
-const fixedGas = 0.001 * MICRO;
 
 function ComponentBase({
   className,
@@ -76,68 +86,53 @@ function ComponentBase({
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const { data: taxData } = useQuery<
-    tax.StringifiedData,
-    tax.StringifiedVariables
-  >(tax.query, {
-    fetchPolicy: 'cache-and-network',
-    variables: tax.stringifyVariables({
-      Denom: 'uusd',
-    }),
-  });
-
-  const { data: userBankBalancesData } = useQuery<
-    bal.StringifiedData,
-    bal.StringifiedVariables
-  >(bal.query, {
-    skip: status.status !== 'ready',
-    fetchPolicy: 'cache-and-network',
-    variables: bal.stringifyVariables({
-      userAddress: status.status === 'ready' ? status.walletAddress : '',
-    }),
-  });
-
-  const userUusdBalance = useMemo(() => {
-    return userBankBalancesData
-      ? bal.parseData(userBankBalancesData).get('uusd')?.Amount
-      : undefined;
-  }, [userBankBalancesData]);
+  const bank = useBank();
+  const { parsedData: tax } = useTax();
 
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
+  // max amount to user input (uusd)
+  const balance = useMemo(() => {
+    return bank.userBalances.uUSD;
+  }, [bank.userBalances.uUSD]);
+
+  // if the user can't input amount
   const inputQualifiedError = useMemo(() => {
-    if (big(userUusdBalance ?? 0).lt(fixedGas)) {
+    // user's uusd balance is lower than fixed gas
+    if (big(balance ?? 0).lt(fixedGasUUSD)) {
       return 'Not enough Tx Fee';
     }
 
     return undefined;
-  }, [userUusdBalance]);
+  }, [balance]);
 
+  // if the user's amount input is an error
   const inputError = useMemo<ReactNode>(() => {
+    // user's input amount is greater than it's uusd balance
     if (
       big(amount.length > 0 ? amount : 0)
         .mul(MICRO)
-        .gt(big(userUusdBalance ?? 0))
+        .gt(big(balance ?? 0))
     ) {
       return `Insufficient balance: Not enough Assets`;
     }
 
     return undefined;
-  }, [amount, userUusdBalance]);
+  }, [amount, balance]);
 
   const txFee = useMemo(() => {
-    if (amount.length === 0 || !taxData) return undefined;
+    if (amount.length === 0 || !tax) return undefined;
 
-    const ratioTxFee = big(amount).mul(MICRO).mul(taxData.tax_rate.Result);
-    const maxTax = big(taxData.tax_cap_denom.Result);
+    const ratioTxFee = big(amount).mul(MICRO).mul(tax.taxRate);
+    const maxTax = big(tax.maxTaxUUSD);
 
     if (ratioTxFee.gt(maxTax)) {
-      return big(maxTax).add(fixedGas).toString();
+      return big(maxTax).add(fixedGasUUSD).toString();
     } else {
-      return ratioTxFee.add(fixedGas).toString();
+      return ratioTxFee.add(fixedGasUUSD).toString();
     }
-  }, [amount, taxData]);
+  }, [amount, tax]);
 
   console.log('useDepositDialog.tsx..ComponentBase()', depositResult);
 
@@ -203,7 +198,7 @@ function ComponentBase({
           <span>
             Wallet:{' '}
             {toFixedNoRounding(
-              big(userUusdBalance ?? 0)
+              big(balance ?? 0)
                 .div(MICRO)
                 .toString(),
               2,

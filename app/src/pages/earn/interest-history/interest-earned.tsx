@@ -1,5 +1,5 @@
 import React from 'react';
-import Amount from '../../../components/amount';
+import Amount from 'deprecated/components/amount';
 
 export enum InterestEarnedPeriod {
   TOTAL,

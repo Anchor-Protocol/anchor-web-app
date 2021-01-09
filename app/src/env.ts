@@ -14,10 +14,12 @@ export const screen = {
 
 export const FINDER = 'https://finder.terra.money';
 
+export const fixedGasUUSD = 2000000;
+
 export const transactionFee = {
   //gasPrices: '0.0015uusd',
   //fee: new StdFee(503333, '5000000000000uusd'),
-  fee: new StdFee(6000000, '2000000uusd'),
+  fee: new StdFee(6000000, fixedGasUUSD + 'uusd'),
   gasAdjustment: 1.4,
 };
 

@@ -5,14 +5,11 @@ import {
   MICRO,
   separateBasedOnDecimalPoints,
   toFixedNoRounding,
-} from '@anchor-protocol/number-notation';
-import { useWallet } from '@anchor-protocol/wallet-provider';
-import { useQuery } from '@apollo/client';
+} from '@anchor-protocol/notation';
 import big from 'big.js';
-import { useAddressProvider } from 'providers/address-provider';
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
-import * as tod from '../queries/totalDeposit';
+import { useTotalDeposit } from '../queries/totalDeposit';
 import { useDepositDialog } from './useDepositDialog';
 import { useWithdrawDialog } from './useWithdrawDialog';
 
@@ -22,37 +19,9 @@ export interface TotalDepositSectionProps {
 
 function TotalDepositSectionBase({ className }: TotalDepositSectionProps) {
   // ---------------------------------------------
-  // dependencies
-  // ---------------------------------------------
-  const { status } = useWallet();
-
-  const addressProvider = useAddressProvider();
-
-  // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const { refetch, data } = useQuery<
-    tod.StringifiedData,
-    tod.StringifiedVariables
-  >(tod.query, {
-    skip: status.status !== 'ready',
-    variables: tod.stringifyVariables({
-      anchorTokenContract: addressProvider.aToken(''),
-      anchorTokenBalanceQuery: {
-        balance: {
-          address: status.status === 'ready' ? status.walletAddress : '',
-        },
-      },
-      moneyMarketContract: addressProvider.market(''),
-      moneyMarketEpochQuery: {
-        epoch_state: {},
-      },
-    }),
-  });
-
-  const totalDeposit = useMemo(() => (data ? tod.parseData(data) : undefined), [
-    data,
-  ]);
+  const { parsedData: totalDeposit, refetch } = useTotalDeposit();
 
   // ---------------------------------------------
   // dialogs
@@ -107,7 +76,7 @@ function TotalDepositSectionBase({ className }: TotalDepositSectionProps) {
         <ActionButton onClick={() => openDeposit()}>Deposit</ActionButton>
         <ActionButton onClick={() => openWithdraw()}>Withdraw</ActionButton>
       </aside>
-      
+
       {depositDialogElement}
       {withdrawDialogElement}
     </Section>

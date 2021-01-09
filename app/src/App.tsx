@@ -9,6 +9,9 @@ import { ChromeExtensionWalletProvider } from '@anchor-protocol/wallet-provider'
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 import { Footer } from 'components/Footer';
 import { Header } from 'components/Header';
+import { SnackbarContainer } from 'components/snackbar/SnackbarContainer';
+import { BankProvider } from 'contexts/bank';
+import { ContractProvider } from 'contexts/contract';
 import { contractAddresses } from 'env';
 import { BAsset } from 'pages/basset';
 import { Borrow } from 'pages/borrow';
@@ -21,8 +24,6 @@ import {
   Switch,
 } from 'react-router-dom';
 import styled from 'styled-components';
-import { AddressProviderProvider as ContractAddressProvider } from './providers/address-provider';
-import { SnackbarContainer } from 'components/snackbar/SnackbarContainer';
 
 interface AppProps {
   className?: string;
@@ -45,45 +46,87 @@ function WalletConnectedProviders({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    /* Smart Contract Address */
-    <ContractAddressProvider value={addressProvider}>
-      {/* Set GraphQL environenments */}
+    /**
+     * Smart Contract Address
+     * useAddressProvider()
+     */
+    <ContractProvider addressProvider={addressProvider}>
+      {/**
+       * Set GraphQL environenments
+       * useQuery(), useApolloClient()...
+       */}
       <ApolloProvider client={client}>{children}</ApolloProvider>
-    </ContractAddressProvider>
+    </ContractProvider>
   );
 }
 
 function AppBase({ className }: AppProps) {
   return (
-    /* React App routing */
+    /**
+     * React App routing
+     * <Link>, <NavLink>, useLocation(), useRouteMatch()...
+     *
+     * @link https://reactrouter.com/web/guides/quick-start
+     */
     <Router>
-      {/* Terra Station Wallet Address */}
+      {/**
+       * Terra Station Wallet Address
+       * useWallet()
+       */}
       <ChromeExtensionWalletProvider>
         <WalletConnectedProviders>
-          {/* Broadcastable Query Provider */}
+          {/**
+           * Broadcastable Query Provider
+           * useBroadCastableQuery(), useQueryBroadCaster()
+           *
+           * @see ../../packages/src/@anchor-protocol/use-broadcastable-query
+           */}
           <QueryBroadcaster>
-            {/* Snackbar Provider */}
-            <SnackbarProvider>
-              {/* Theme for Styled-Components and Material-UI */}
+            {/**
+             * User Balances (uUSD, uLuna, ubLuna, uaUST...)
+             * useBank()
+             */}
+            <BankProvider>
+              {/**
+               * Theme Providing to Styled-Components and Material-UI
+               *
+               * @example
+               * ```
+               * styled.div`
+               *   color: ${({theme}) => theme.textColor}
+               * `
+               * ```
+               */}
               <ThemeProvider theme={darkTheme}>
-                {/* Global CSS */}
-                <GlobalStyle />
-                {/* Start Layout */}
-                <div className={className}>
-                  <Header />
-                  <Switch>
-                    <Route path="/earn" component={Earn} />
-                    <Route path="/borrow" component={Borrow} />
-                    <Route path="/basset" component={BAsset} />
-                    <Redirect to="/earn" />
-                  </Switch>
-                  <Footer />
-                </div>
-                {/* End Layout */}
-                {/* SnackbarContainer */}
-                <SnackbarContainer />
+                {/**
+                 * Snackbar Provider
+                 * useSnackbar()
+                 */}
+                <SnackbarProvider>
+                  {/**
+                   * Styled-Components Global CSS
+                   */}
+                  <GlobalStyle />
+                  {/** Start Layout */}
+                  <div className={className}>
+                    <Header />
+                    <Switch>
+                      <Route path="/earn" component={Earn} />
+                      <Route path="/borrow" component={Borrow} />
+                      <Route path="/basset" component={BAsset} />
+                      <Redirect to="/earn" />
+                    </Switch>
+                    <Footer />
+                  </div>
+                  {/**
+                   * Snackbar Container
+                   * Snackbar Floating (position: fixed) Container
+                   */}
+                  <SnackbarContainer />
+                  {/** End Layout */}
+                </SnackbarProvider>
               </ThemeProvider>
-            </SnackbarProvider>
+            </BankProvider>
           </QueryBroadcaster>
         </WalletConnectedProviders>
       </ChromeExtensionWalletProvider>

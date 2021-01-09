@@ -1,5 +1,8 @@
-import { gql } from '@apollo/client';
+import { useWallet } from '@anchor-protocol/wallet-provider';
+import { gql, QueryResult, useQuery } from '@apollo/client';
 import big from 'big.js';
+import { useAddressProvider } from 'contexts/contract';
+import { useMemo } from 'react';
 
 export interface StringifiedData {
   aUSTBalance: {
@@ -94,3 +97,37 @@ export const query = gql`
     }
   }
 `;
+
+export function useTotalDeposit(): QueryResult<
+  StringifiedData,
+  StringifiedVariables
+> & { parsedData: Data | undefined } {
+  const addressProvider = useAddressProvider();
+  const { status } = useWallet();
+
+  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
+    skip: status.status !== 'ready',
+    variables: stringifyVariables({
+      anchorTokenContract: addressProvider.aToken(''),
+      anchorTokenBalanceQuery: {
+        balance: {
+          address: status.status === 'ready' ? status.walletAddress : '',
+        },
+      },
+      moneyMarketContract: addressProvider.market(''),
+      moneyMarketEpochQuery: {
+        epoch_state: {},
+      },
+    }),
+  });
+
+  const parsedData = useMemo(
+    () => (result.data ? parseData(result.data) : undefined),
+    [result.data],
+  );
+
+  return {
+    ...result,
+    parsedData,
+  };
+}

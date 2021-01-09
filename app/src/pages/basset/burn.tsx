@@ -3,13 +3,13 @@ import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionB
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
-import { MICRO, toFixedNoRounding } from '@anchor-protocol/number-notation';
+import { MICRO, toFixedNoRounding } from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
   useBroadcastableQuery,
 } from '@anchor-protocol/use-broadcastable-query';
-import { useWallet } from '@anchor-protocol/wallet-provider';
-import { ApolloClient, useApolloClient, useQuery } from '@apollo/client';
+import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
+import { ApolloClient, useApolloClient } from '@apollo/client';
 import {
   Input as MuiInput,
   InputAdornment,
@@ -17,20 +17,24 @@ import {
 } from '@material-ui/core';
 import { Error as ErrorIcon } from '@material-ui/icons';
 import { CreateTxOptions } from '@terra-money/terra.js';
-import big from 'big.js';
-import { transactionFee } from 'env';
-import * as exc from 'pages/basset/queries/exchangeRate';
-import * as txi from 'queries/txInfos';
-import * as bas from 'queries/userBAssetBalance';
+import * as txi from 'api/queries/txInfos';
+import { queryOptions } from 'api/transactions/queryOptions';
+import {
+  parseResult,
+  StringifiedTxResult,
+  TxResult,
+} from 'api/transactions/tx';
 import {
   txNotificationFactory,
   TxResultRenderer,
-} from 'transactions/TxResultRenderer';
-import React, { ReactNode, useMemo, useState } from 'react';
+} from 'api/transactions/TxResultRenderer';
+import big from 'big.js';
+import { useBank } from 'contexts/bank';
+import { useAddressProvider } from 'contexts/contract';
+import { transactionFee } from 'env';
+import { useExchangeRate } from 'pages/basset/queries/exchangeRate';
+import React, { ReactNode, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { useAddressProvider } from '../../providers/address-provider';
-import { queryOptions } from 'transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 
 export interface BurnProps {
   className?: string;
@@ -77,43 +81,10 @@ function BurnBase({ className }: BurnProps) {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const { data: exchangeRateData } = useQuery<
-    exc.StringifiedData,
-    exc.StringifiedVariables
-  >(exc.query, {
-    variables: exc.stringifyVariables({
-      bLunaHubContract: addressProvider.bAssetHub(gettCurrency.value),
-    }),
+  const bank = useBank();
+  const { parsedData: exchangeRate } = useExchangeRate({
+    bAsset: gettCurrency.value,
   });
-
-  const { data: userBassetBalance } = useQuery<
-    bas.StringifiedData,
-    bas.StringifiedVariables
-  >(bas.query, {
-    skip: status.status !== 'ready',
-    variables: bas.stringifyVariables({
-      bAssetTokenContract: addressProvider.bAssetToken('ubluna'),
-      bAssetBalanceQuery: {
-        balance: {
-          address: status.status === 'ready' ? status.walletAddress : '',
-        },
-      },
-    }),
-  });
-
-  const exchangeRate = useMemo(
-    () =>
-      exchangeRateData
-        ? exc.parseData(exchangeRateData).exchangeRate.Result
-        : undefined,
-    [exchangeRateData],
-  );
-
-  const userUblunaBalance = useMemo(() => {
-    return userBassetBalance
-      ? bas.parseData(userBassetBalance).bAssetBalance.balance
-      : undefined;
-  }, [userBassetBalance]);
 
   // ---------------------------------------------
   // compute
@@ -122,14 +93,67 @@ function BurnBase({ className }: BurnProps) {
     if (
       big(burnAmount.length > 0 ? burnAmount : 0)
         .mul(MICRO)
-        .gt(big(userUblunaBalance ?? 0))
+        .gt(big(bank.userBalances?.ubLuna ?? 0))
     ) {
       return `Insufficient balance: Not enough bAssets (${big(
-        userUblunaBalance ?? 0,
+        bank.userBalances?.ubLuna ?? 0,
       ).div(MICRO)} bLuna)`;
     }
     return undefined;
-  }, [burnAmount, userUblunaBalance]);
+  }, [bank.userBalances?.ubLuna, burnAmount]);
+
+  // ---------------------------------------------
+  // callbacks
+  // ---------------------------------------------
+  const updateBurnCurrency = useCallback((nextBurnCurrencyValue: string) => {
+    setBurnCurrency(
+      burnCurrencies.find(({ value }) => nextBurnCurrencyValue === value) ??
+        burnCurrencies[0],
+    );
+  }, []);
+
+  const updateGettCurrency = useCallback((nextGettCurrencyValue: string) => {
+    setGettCurrency(
+      gettCurrencies.find(({ value }) => nextGettCurrencyValue === value) ??
+        gettCurrencies[0],
+    );
+  }, []);
+
+  const burn = useCallback(
+    async ({
+      status,
+      amount,
+      burnCurrencyValue,
+    }: {
+      status: WalletStatus;
+      amount: string;
+      burnCurrencyValue: string;
+    }) => {
+      if (status.status !== 'ready') {
+        return;
+      }
+
+      const data = await fetchBurn({
+        post: post<CreateTxOptions, StringifiedTxResult>({
+          ...transactionFee,
+          msgs: fabricatebAssetBurn({
+            address: status.walletAddress,
+            amount,
+            bAsset: burnCurrencyValue,
+          })(addressProvider),
+        })
+          .then(({ payload }) => payload)
+          .then(parseResult),
+        client,
+      });
+
+      // is this component not unmounted
+      if (data) {
+        setBurnAmount('');
+      }
+    },
+    [addressProvider, client, fetchBurn, post],
+  );
 
   console.log('burn.tsx..BurnBase()', burnResult);
 
@@ -161,12 +185,7 @@ function BurnBase({ className }: BurnProps) {
       <SelectAndTextInputContainer className="burn">
         <MuiNativeSelect
           value={burnCurrency}
-          onChange={(evt) =>
-            setBurnCurrency(
-              burnCurrencies.find(({ value }) => evt.target.value === value) ??
-                burnCurrencies[0],
-            )
-          }
+          onChange={({ target }) => updateBurnCurrency(target.value)}
           IconComponent={burnCurrencies.length < 2 ? BlankComponent : undefined}
           disabled={burnCurrencies.length < 2}
         >
@@ -212,12 +231,7 @@ function BurnBase({ className }: BurnProps) {
       <SelectAndTextInputContainer className="gett">
         <MuiNativeSelect
           value={gettCurrency}
-          onChange={(evt) =>
-            setGettCurrency(
-              gettCurrencies.find(({ value }) => evt.target.value === value) ??
-                gettCurrencies[0],
-            )
-          }
+          onChange={({ target }) => updateGettCurrency(target.value)}
           IconComponent={gettCurrencies.length < 2 ? BlankComponent : undefined}
           disabled={gettCurrencies.length < 2}
         >
@@ -240,40 +254,24 @@ function BurnBase({ className }: BurnProps) {
         />
       </SelectAndTextInputContainer>
 
-      {status.status === 'ready' &&
-      burnAmount.length > 0 &&
-      big(burnAmount).gt(0) &&
-      !burnInputError ? (
-        <ActionButton
-          className="submit"
-          onClick={() =>
-            fetchBurn({
-              post: post<CreateTxOptions, StringifiedTxResult>({
-                ...transactionFee,
-                msgs: fabricatebAssetBurn({
-                  address: status.walletAddress,
-                  amount: burnAmount,
-                  bAsset: burnCurrency.value,
-                })(addressProvider),
-              })
-                .then(({ payload }) => payload)
-                .then(parseResult),
-              client,
-            }).then((data) => {
-              if (data) {
-                // the meaning that data is exists is this component does not unmounted
-                setBurnAmount('');
-              }
-            })
-          }
-        >
-          Burn
-        </ActionButton>
-      ) : (
-        <ActionButton className="submit" disabled>
-          Burn
-        </ActionButton>
-      )}
+      <ActionButton
+        className="submit"
+        disabled={
+          status.status !== 'ready' ||
+          burnAmount.length === 0 ||
+          big(burnAmount).lte(0) ||
+          !!burnInputError
+        }
+        onClick={() =>
+          burn({
+            status,
+            amount: burnAmount,
+            burnCurrencyValue: burnCurrency.value,
+          })
+        }
+      >
+        Burn
+      </ActionButton>
     </Section>
   );
 }

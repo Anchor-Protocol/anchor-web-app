@@ -1,4 +1,4 @@
-import { testAddressProvider, testClient, testWalletAddress } from 'env.test';
+import { testAddressProvider, testClient, testWalletAddress } from 'test.env';
 import {
   parseData,
   query,

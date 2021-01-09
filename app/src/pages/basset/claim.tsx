@@ -5,7 +5,7 @@ import {
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
-import { MICRO, toFixedNoRounding } from '@anchor-protocol/number-notation';
+import { MICRO, toFixedNoRounding } from '@anchor-protocol/notation';
 import {
   pressed,
   rulerLightColor,
@@ -16,23 +16,27 @@ import {
   useBroadcastableQuery,
 } from '@anchor-protocol/use-broadcastable-query';
 import { useWallet } from '@anchor-protocol/wallet-provider';
-import { ApolloClient, useApolloClient, useQuery } from '@apollo/client';
+import { ApolloClient, useApolloClient } from '@apollo/client';
 import { CreateTxOptions } from '@terra-money/terra.js';
-import big from 'big.js';
-import { transactionFee } from 'env';
-import React, { useMemo, useState } from 'react';
-import styled from 'styled-components';
-import { useAddressProvider } from '../../providers/address-provider';
-import * as clm from './queries/claimable';
-import * as txi from 'queries/txInfos';
-import * as wdw from './queries/withdrawable';
-import * as wdh from './queries/withdrawHistory';
-import { queryOptions } from 'transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
+import * as txi from 'api/queries/txInfos';
+import { queryOptions } from 'api/transactions/queryOptions';
+import {
+  parseResult,
+  StringifiedTxResult,
+  TxResult,
+} from 'api/transactions/tx';
 import {
   txNotificationFactory,
   TxResultRenderer,
-} from 'transactions/TxResultRenderer';
+} from 'api/transactions/TxResultRenderer';
+import big from 'big.js';
+import { useAddressProvider } from 'contexts/contract';
+import { transactionFee } from 'env';
+import React, { useMemo, useState } from 'react';
+import styled from 'styled-components';
+import { useClaimable } from './queries/claimable';
+import { useWithdrawable } from './queries/withdrawable';
+import { useWithdrawHistory } from './queries/withdrawHistory';
 
 export interface ClaimProps {
   className?: string;
@@ -73,86 +77,13 @@ function ClaimBase({ className }: ClaimProps) {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const [now, setNow] = useState(() => Date.now());
-
-  const { data: withdrawableData } = useQuery<
-    wdw.StringifiedData,
-    wdw.StringifiedVariables
-  >(wdw.query, {
-    skip: status.status !== 'ready',
-    variables: wdw.stringifyVariables({
-      bLunaHubContract: addressProvider.bAssetHub('bluna'),
-      withdrawableAmountQuery: {
-        withdrawable_unbonded: {
-          address: status.status === 'ready' ? status.walletAddress : '',
-          block_time: now,
-        },
-      },
-      withdrawRequestsQuery: {
-        unbond_requests: {
-          address: status.status === 'ready' ? status.walletAddress : '',
-        },
-      },
-      exchangeRateQuery: {
-        state: {},
-      },
-    }),
+  const { parsedData: withdrawable, updateWithdrawable } = useWithdrawable({
+    bAsset: 'bluna',
   });
-
-  const { data: claimableData } = useQuery<
-    clm.StringifiedData,
-    clm.StringifiedVariables
-  >(clm.query, {
-    skip: status.status !== 'ready',
-    variables: clm.stringifyVariables({
-      bAssetRewardContract: addressProvider.bAssetReward('bluna'),
-      rewardState: {
-        state: {},
-      },
-      claimableRewardQuery: {
-        holder: {
-          address: status.status === 'ready' ? status.walletAddress : '',
-        },
-      },
-    }),
+  const { parsedData: claimable } = useClaimable();
+  const { parsedData: withdrawAllHistory } = useWithdrawHistory({
+    withdrawable,
   });
-
-  const withdrawable = useMemo(
-    () => (withdrawableData ? wdw.parseData(withdrawableData) : undefined),
-    [withdrawableData],
-  );
-
-  const claimable = useMemo(
-    () => (claimableData ? clm.parseData(claimableData) : undefined),
-    [claimableData],
-  );
-
-  const { data: withdrawAllHistoryData } = useQuery<
-    wdh.StringifiedData,
-    wdh.StringifiedVariables
-  >(wdh.query, {
-    skip: !withdrawable || withdrawable.withdrawRequestsStartFrom < 0,
-    variables: wdh.stringifyVariables({
-      bLunaHubContract: addressProvider.bAssetHub('bluna'),
-      allHistory: {
-        all_history: {
-          start_from: withdrawable?.withdrawRequestsStartFrom ?? 0,
-          limit: 100,
-        },
-      },
-      parameters: {
-        parameters: {},
-      },
-    }),
-  });
-
-  const withdrawAllHistory = useMemo(
-    () =>
-      withdrawAllHistoryData
-        ? wdh.parseData(withdrawAllHistoryData)
-        : undefined,
-    [withdrawAllHistoryData],
-  );
 
   // ---------------------------------------------
   // compute
@@ -304,7 +235,7 @@ function ClaimBase({ className }: ClaimProps) {
               client,
             }).then((data) => {
               if (data) {
-                setNow(Date.now());
+                updateWithdrawable();
               }
             })
           }

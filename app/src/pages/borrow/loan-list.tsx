@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import Box from '../../components/box';
-import Button, { ButtonTypes } from '../../components/button';
-import PopupContainer from '../../layout/popup-container';
+import Box from 'deprecated/components/box';
+import Button, { ButtonTypes } from 'deprecated/components/button';
+import PopupContainer from '../../deprecated/layout/popup-container';
 import PopupBorrowBorrow from './popups/borrow';
 import PopupBorrowRepay from './popups/repay';
 

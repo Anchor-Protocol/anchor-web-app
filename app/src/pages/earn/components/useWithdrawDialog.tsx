@@ -3,26 +3,41 @@ import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionB
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
-import { MICRO, toFixedNoRounding } from '@anchor-protocol/number-notation';
-import { BroadcastableQueryOptions, useBroadcastableQuery } from '@anchor-protocol/use-broadcastable-query';
-import type { DialogProps, DialogTemplate, OpenDialog } from '@anchor-protocol/use-dialog';
+import { MICRO, toFixedNoRounding } from '@anchor-protocol/notation';
+import {
+  BroadcastableQueryOptions,
+  useBroadcastableQuery,
+} from '@anchor-protocol/use-broadcastable-query';
+import type {
+  DialogProps,
+  DialogTemplate,
+  OpenDialog,
+} from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet } from '@anchor-protocol/wallet-provider';
-import { ApolloClient, useApolloClient, useQuery } from '@apollo/client';
+import { ApolloClient, useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { Warning } from '@material-ui/icons';
 import { CreateTxOptions } from '@terra-money/terra.js';
+import { useTax } from 'api/queries/tax';
+import * as txi from 'api/queries/txInfos';
+import { queryOptions } from 'api/transactions/queryOptions';
+import {
+  parseResult,
+  StringifiedTxResult,
+  TxResult,
+} from 'api/transactions/tx';
+import {
+  txNotificationFactory,
+  TxResultRenderer,
+} from 'api/transactions/TxResultRenderer';
 import big from 'big.js';
+import { useBank } from 'contexts/bank';
+import { useAddressProvider } from 'contexts/contract';
 import { transactionFee } from 'env';
-import { useAddressProvider } from 'providers/address-provider';
-import * as txi from 'queries/txInfos';
-import * as bal from 'queries/userBankBalances';
 import type { ReactNode } from 'react';
 import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { queryOptions } from 'transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
-import { txNotificationFactory, TxResultRenderer } from 'transactions/TxResultRenderer';
 
 interface FormParams {
   className?: string;
@@ -70,38 +85,29 @@ function ComponentBase({
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  // TODO how to get withdrawable balance
-  const { data: userBankBalancesData } = useQuery<
-    bal.StringifiedData,
-    bal.StringifiedVariables
-  >(bal.query, {
-    skip: status.status !== 'ready',
-    variables: bal.stringifyVariables({
-      userAddress: status.status === 'ready' ? status.walletAddress : '',
-    }),
-  });
-
-  const userUusdBalance = useMemo(() => {
-    return userBankBalancesData
-      ? bal.parseData(userBankBalancesData).get('uusd')?.Amount
-      : undefined;
-  }, [userBankBalancesData]);
+  const bank = useBank();
+  const { parsedData: tax } = useTax();
 
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
+  // max amount to user input (uusd)
+  const balance = useMemo(() => {
+    return bank.userBalances.uUSD;
+  }, [bank.userBalances.uUSD]);
+
   const amountInputError = useMemo<ReactNode>(() => {
-    if (
-      big(amount.length > 0 ? amount : 0)
-        .mul(MICRO)
-        .gt(big(userUusdBalance ?? 0))
-    ) {
-      return `Insufficient balance: Not enough Assets (${big(
-        userUusdBalance ?? 0,
-      ).div(MICRO)} UST)`;
-    }
+    //if (
+    //  big(amount.length > 0 ? amount : 0)
+    //    .mul(MICRO)
+    //    .gt(big(userUusdBalance ?? 0))
+    //) {
+    //  return `Insufficient balance: Not enough Assets (${big(
+    //    userUusdBalance ?? 0,
+    //  ).div(MICRO)} UST)`;
+    //}
     return undefined;
-  }, [amount, userUusdBalance]);
+  }, []);
 
   // ---------------------------------------------
   // presentation
@@ -162,7 +168,7 @@ function ComponentBase({
         <p className="wallet">
           Wallet:{' '}
           {toFixedNoRounding(
-            big(userUusdBalance ?? 0)
+            big(bank.userBalances.uaUST ?? 0)
               .div(MICRO)
               .toString(),
             2,

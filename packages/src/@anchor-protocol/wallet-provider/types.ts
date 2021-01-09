@@ -10,19 +10,26 @@ export interface StationNetworkInfo {
   ws: string;
 }
 
-type Initializing = { status: 'initializing' };
-type NotInstalled = { status: 'not_installed' };
-type NotConnected = { status: 'not_connected'; network: StationNetworkInfo };
-type Ready = {
+export type WalletInitializing = { status: 'initializing' };
+export type WalletNotInstalled = { status: 'not_installed' };
+export type WaletNotConnected = {
+  status: 'not_connected';
+  network: StationNetworkInfo;
+};
+export type WalletReady = {
   status: 'ready';
   network: StationNetworkInfo;
   walletAddress: string;
 };
 
-export type WalletStatus = Initializing | NotInstalled | NotConnected | Ready;
+export type WalletStatus =
+  | WalletInitializing
+  | WalletNotInstalled
+  | WaletNotConnected
+  | WalletReady;
 
 export function isConnected(
   status: WalletStatus,
-): status is NotConnected | Ready {
+): status is WaletNotConnected | WalletReady {
   return status.status === 'not_connected' || status.status === 'ready';
 }

@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { fabricateDepositStableCoin } from '@anchor-protocol/anchor-js/fabricators';
-import Box from '../../../components/box';
-import Button, { ButtonTypes } from '../../../components/button';
-import Input from '../../../components/input';
-import { ready } from '../../../components/ready';
-import { ActionContainer } from '../../../containers/action';
-import useWalletBalance from '../../../hooks/mantle/use-wallet-balance';
-import { useWallet } from '../../../hooks/use-wallet';
-import { PopupChild } from '../../../layout/popup-container';
+import Box from 'deprecated/components/box';
+import Button, { ButtonTypes } from 'deprecated/components/button';
+import Input from 'deprecated/components/input';
+import { ready } from 'deprecated/components/ready';
+import { ActionContainer } from '../../../deprecated/containers/action';
+import useWalletBalance from '../../../deprecated/hooks/mantle/use-wallet-balance';
+import { useWallet } from '../../../deprecated/hooks/use-wallet';
+import { PopupChild } from '../../../deprecated/layout/popup-container';
 
 interface EarnDepositPopupProps extends PopupChild {}
 

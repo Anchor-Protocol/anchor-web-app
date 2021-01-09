@@ -1,4 +1,7 @@
-import { gql } from '@apollo/client';
+import { useWallet } from '@anchor-protocol/wallet-provider';
+import { gql, QueryResult, useQuery } from '@apollo/client';
+import { useAddressProvider } from 'contexts/contract';
+import { useMemo } from 'react';
 
 export interface StringifiedData {
   rewardState: {
@@ -85,3 +88,37 @@ export const query = gql`
     }
   }
 `;
+
+export function useClaimable(): QueryResult<
+  StringifiedData,
+  StringifiedVariables
+> & { parsedData: Data | undefined } {
+  const addressProvider = useAddressProvider();
+  const { status } = useWallet();
+
+  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
+    skip: status.status !== 'ready',
+    fetchPolicy: 'cache-and-network',
+    variables: stringifyVariables({
+      bAssetRewardContract: addressProvider.bAssetReward(''),
+      rewardState: {
+        state: {},
+      },
+      claimableRewardQuery: {
+        holder: {
+          address: status.status === 'ready' ? status.walletAddress : '',
+        },
+      },
+    }),
+  });
+
+  const parsedData = useMemo(
+    () => (result.data ? parseData(result.data) : undefined),
+    [result.data],
+  );
+
+  return {
+    ...result,
+    parsedData,
+  };
+}

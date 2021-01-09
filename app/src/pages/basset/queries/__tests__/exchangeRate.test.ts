@@ -1,4 +1,4 @@
-import { testAddressProvider, testClient } from 'env.test';
+import { testAddressProvider, testClient } from 'test.env';
 import {
   parseData,
   query,
@@ -18,8 +18,6 @@ describe('queries/exchangeRate', () => {
       })
       .then(({ data }) => parseData(data));
 
-    expect(typeof data.exchangeRate.Result.actual_unbonded_amount).toBe(
-      'string',
-    );
+    expect(typeof data.actual_unbonded_amount).toBe('string');
   });
 });

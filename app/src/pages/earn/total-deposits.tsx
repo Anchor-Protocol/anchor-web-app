@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import Box from '../../components/box';
-import Button, { ButtonTypes } from '../../components/button';
-import { ready } from '../../components/ready';
-import useAnchorBalance from '../../hooks/mantle/use-anchor-balance';
-import PopupContainer from '../../layout/popup-container';
+import Box from 'deprecated/components/box';
+import Button, { ButtonTypes } from 'deprecated/components/button';
+import { ready } from 'deprecated/components/ready';
+import useAnchorBalance from '../../deprecated/hooks/mantle/use-anchor-balance';
+import PopupContainer from '../../deprecated/layout/popup-container';
 import EarnDepositPopup from './popups/deposit';
 import EarnWithdrawPopup from './popups/withdraw';
 

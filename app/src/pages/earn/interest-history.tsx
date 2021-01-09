@@ -1,5 +1,5 @@
 import React from 'react';
-import Box from '../../components/box';
+import Box from 'deprecated/components/box';
 import Apy from './interest-history/apy';
 import InterestEarned, {
   InterestEarnedPeriod,

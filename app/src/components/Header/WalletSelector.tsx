@@ -1,5 +1,5 @@
 import { useWallet } from '@anchor-protocol/wallet-provider';
-import { truncate } from 'libs/text';
+import { truncate } from '@anchor-protocol/notation';
 import styled from 'styled-components';
 
 export interface WalletSelectorProps {

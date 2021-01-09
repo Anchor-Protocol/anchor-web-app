@@ -1,4 +1,4 @@
-import { testAddressProvider, testClient } from 'env.test';
+import { testAddressProvider, testClient } from 'test.env';
 import {
   parseData,
   query,
@@ -18,6 +18,6 @@ describe('queries/validators', () => {
       })
       .then(({ data }) => parseData(data));
 
-    expect(Array.isArray(data.validators.Result)).toBeTruthy();
+    expect(Array.isArray(data.validators)).toBeTruthy();
   });
 });

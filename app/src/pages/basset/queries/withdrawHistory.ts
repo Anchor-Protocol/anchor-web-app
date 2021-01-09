@@ -1,4 +1,7 @@
-import { gql } from '@apollo/client';
+import { gql, QueryResult, useQuery } from '@apollo/client';
+import { useAddressProvider } from 'contexts/contract';
+import { useMemo } from 'react';
+import { Data as WithdrawableData } from './withdrawable';
 
 export interface StringifiedData {
   allHistory: {
@@ -88,3 +91,40 @@ export const query = gql`
     }
   }
 `;
+
+export function useWithdrawHistory({
+  withdrawable,
+}: {
+  withdrawable?: WithdrawableData;
+}): QueryResult<StringifiedData, StringifiedVariables> & {
+  parsedData: Data | undefined;
+} {
+  const addressProvider = useAddressProvider();
+
+  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
+    skip: !withdrawable || withdrawable.withdrawRequestsStartFrom < 0,
+    fetchPolicy: 'cache-and-network',
+    variables: stringifyVariables({
+      bLunaHubContract: addressProvider.bAssetHub('bluna'),
+      allHistory: {
+        all_history: {
+          start_from: withdrawable?.withdrawRequestsStartFrom ?? 0,
+          limit: 100,
+        },
+      },
+      parameters: {
+        parameters: {},
+      },
+    }),
+  });
+
+  const parsedData = useMemo(
+    () => (result.data ? parseData(result.data) : undefined),
+    [result.data],
+  );
+
+  return {
+    ...result,
+    parsedData,
+  };
+}
