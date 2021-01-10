@@ -58,7 +58,7 @@ function MintBase({ className }: MintProps) {
 
   const addressProvider = useAddressProvider();
 
-  const [mint, mintResult, resetMintResult] = useBroadcastableQuery(
+  const [queryMint, mintResult, resetMintResult] = useBroadcastableQuery(
     mintQueryOptions,
   );
 
@@ -90,6 +90,7 @@ function MintBase({ className }: MintProps) {
   const { parsedData: validators } = useValidators({
     bAsset: bAssetCurrency.value,
   });
+
   const { parsedData: exchangeRate } = useExchangeRate({
     bAsset: bAssetCurrency.value,
   });
@@ -124,6 +125,24 @@ function MintBase({ className }: MintProps) {
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
+  const updateAssetCurrency = useCallback((nextAssetCurrencyValue: string) => {
+    setAssetCurrency(
+      assetCurrencies.find(({ value }) => nextAssetCurrencyValue === value) ??
+        assetCurrencies[0],
+    );
+  }, []);
+
+  const updateBAssetCurrency = useCallback(
+    (nextBAssetCurrencyValue: string) => {
+      setBAssetCurrency(
+        bAssetCurrencies.find(
+          ({ value }) => nextBAssetCurrencyValue === value,
+        ) ?? bAssetCurrencies[0],
+      );
+    },
+    [],
+  );
+
   const updateAssetAmount = useCallback(
     (nextAssetAmount: string) => {
       setAssetAmount(nextAssetAmount);
@@ -152,7 +171,7 @@ function MintBase({ className }: MintProps) {
     [exchangeRate?.exchange_rate],
   );
 
-  const transactMint = useCallback(
+  const mint = useCallback(
     async ({
       status,
       assetAmount,
@@ -166,7 +185,7 @@ function MintBase({ className }: MintProps) {
         return;
       }
 
-      const data = await mint({
+      const data = await queryMint({
         post: post<CreateTxOptions, StringifiedTxResult>({
           ...transactionFee,
           msgs: fabricatebAssetBond({
@@ -184,10 +203,11 @@ function MintBase({ className }: MintProps) {
       // is this component does not unmounted
       if (data) {
         setAssetAmount('');
+        setBAssetAmount('');
         setSelectedValidator(null);
       }
     },
-    [addressProvider, client, mint, bAssetCurrency.value, post],
+    [addressProvider, client, queryMint, bAssetCurrency.value, post],
   );
 
   // ---------------------------------------------
@@ -226,12 +246,7 @@ function MintBase({ className }: MintProps) {
       >
         <MuiNativeSelect
           value={assetCurrency}
-          onChange={(evt) =>
-            setAssetCurrency(
-              assetCurrencies.find(({ value }) => evt.target.value === value) ??
-                assetCurrencies[0],
-            )
-          }
+          onChange={({ target }) => updateAssetCurrency(target.value)}
           IconComponent={
             assetCurrencies.length < 2 ? BlankComponent : undefined
           }
@@ -273,13 +288,7 @@ function MintBase({ className }: MintProps) {
       >
         <MuiNativeSelect
           value={bAssetCurrency}
-          onChange={(evt) =>
-            setBAssetCurrency(
-              bAssetCurrencies.find(
-                ({ value }) => evt.target.value === value,
-              ) ?? bAssetCurrencies[0],
-            )
-          }
+          onChange={({ target }) => updateBAssetCurrency(target.value)}
           IconComponent={
             bAssetCurrencies.length < 2 ? BlankComponent : undefined
           }
@@ -337,7 +346,7 @@ function MintBase({ className }: MintProps) {
           !selectedValidator
         }
         onClick={() =>
-          transactMint({
+          mint({
             assetAmount: assetAmount,
             status,
             selectedValidator: selectedValidator?.OperatorAddress,
