@@ -96,7 +96,9 @@ function ComponentBase({
     return bank.userBalances.uUSD;
   }, [bank.userBalances.uUSD]);
 
-  const amountInputError = useMemo<ReactNode>(() => {
+  console.log('useWithdrawDialog.tsx..ComponentBase()', { tax, balance });
+
+  const inputError = useMemo<ReactNode>(() => {
     //if (
     //  big(amount.length > 0 ? amount : 0)
     //    .mul(MICRO)
@@ -148,13 +150,8 @@ function ComponentBase({
           label="AMOUNT"
           onChange={({ target }) => setAmount(target.value)}
           InputProps={{
-            endAdornment: !!amountInputError ? (
-              <Tooltip
-                open
-                color="error"
-                title={amountInputError}
-                placement="right"
-              >
+            endAdornment: !!inputError ? (
+              <Tooltip open color="error" title={inputError} placement="right">
                 <Warning />
               </Tooltip>
             ) : (
@@ -162,7 +159,7 @@ function ComponentBase({
             ),
             inputMode: 'numeric',
           }}
-          error={!!amountInputError}
+          error={!!inputError}
         />
 
         <p className="wallet">
@@ -182,7 +179,7 @@ function ComponentBase({
             status.status !== 'ready' ||
             amount.length === 0 ||
             big(amount).lte(0) ||
-            !!amountInputError
+            !!inputError
           }
           onClick={() =>
             fetchWithdraw({

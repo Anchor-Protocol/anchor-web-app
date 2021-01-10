@@ -4,6 +4,7 @@ import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { HorizontalDashedRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalDashedRuler';
 import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
+import { useConfirm } from '@anchor-protocol/neumorphism-ui/components/useConfirm';
 import { MICRO, toFixedNoRounding } from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
@@ -15,7 +16,7 @@ import type {
   OpenDialog,
 } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
-import { useWallet } from '@anchor-protocol/wallet-provider';
+import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { InfoOutlined } from '@material-ui/icons';
@@ -37,7 +38,7 @@ import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { fixedGasUUSD, transactionFee } from 'env';
 import type { ReactNode } from 'react';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 interface FormParams {
@@ -71,60 +72,56 @@ function ComponentBase({
   const addressProvider = useAddressProvider();
 
   const [
-    fetchDeposit,
+    queryDeposit,
     depositResult,
     resetDepositResult,
   ] = useBroadcastableQuery(depositQueryOptions);
 
   const client = useApolloClient();
 
+  const [openConfirm, confirmElement] = useConfirm();
+
   // ---------------------------------------------
   // states
   // ---------------------------------------------
-  const [amount, setAmount] = useState<string>('');
+  const [assetAmount, setAssetAmount] = useState<string>('');
 
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
   const bank = useBank();
+
   const { parsedData: tax } = useTax();
 
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
-  // max amount to user input (uusd)
-  const balance = useMemo(() => {
-    return bank.userBalances.uUSD;
-  }, [bank.userBalances.uUSD]);
-
-  // if the user can't input amount
-  const inputQualifiedError = useMemo(() => {
-    // user's uusd balance is lower than fixed gas
-    if (big(balance ?? 0).lt(fixedGasUUSD)) {
+  const invalidTxFee = useMemo(() => {
+    if (bank.status === 'demo') {
+      return undefined;
+    } else if (big(bank.userBalances.uUSD ?? 0).lt(fixedGasUUSD)) {
       return 'Not enough Tx Fee';
     }
-
     return undefined;
-  }, [balance]);
+  }, [bank.status, bank.userBalances.uUSD]);
 
-  // if the user's amount input is an error
-  const inputError = useMemo<ReactNode>(() => {
-    // user's input amount is greater than it's uusd balance
-    if (
-      big(amount.length > 0 ? amount : 0)
+  const invalidAssetAmount = useMemo<ReactNode>(() => {
+    if (bank.status === 'demo') {
+      return undefined;
+    } else if (
+      big(assetAmount.length > 0 ? assetAmount : 0)
         .mul(MICRO)
-        .gt(big(balance ?? 0))
+        .gt(big(bank.userBalances.uUSD ?? 0))
     ) {
       return `Insufficient balance: Not enough Assets`;
     }
-
     return undefined;
-  }, [amount, balance]);
+  }, [assetAmount, bank.status, bank.userBalances.uUSD]);
 
   const txFee = useMemo(() => {
-    if (amount.length === 0 || !tax) return undefined;
+    if (assetAmount.length === 0 || !tax) return undefined;
 
-    const ratioTxFee = big(amount).mul(MICRO).mul(tax.taxRate);
+    const ratioTxFee = big(assetAmount).mul(MICRO).mul(tax.taxRate);
     const maxTax = big(tax.maxTaxUUSD);
 
     if (ratioTxFee.gt(maxTax)) {
@@ -132,9 +129,90 @@ function ComponentBase({
     } else {
       return ratioTxFee.add(fixedGasUUSD).toString();
     }
-  }, [amount, tax]);
+  }, [assetAmount, tax]);
 
-  console.log('useDepositDialog.tsx..ComponentBase()', depositResult);
+  const recommendationAssetAmount = useMemo<string | undefined>(() => {
+    if (bank.status === 'demo' || big(bank.userBalances.uUSD).lte(0)) {
+      return undefined;
+    }
+
+    return big(bank.userBalances.uUSD).minus(fixedGasUUSD).toString();
+  }, [bank.status, bank.userBalances.uUSD]);
+
+  const tooMuchAssetAmountWarning = useMemo<ReactNode>(() => {
+    if (bank.status === 'demo' || assetAmount.length === 0) {
+      return undefined;
+    }
+
+    const remainUUSD = big(bank.userBalances.uUSD)
+      .minus(big(assetAmount).mul(MICRO))
+      .toString();
+
+    if (big(remainUUSD).lt(fixedGasUUSD)) {
+      return `You may run out of USD balance needed for future transactions.`;
+    }
+
+    return undefined;
+  }, [assetAmount, bank.status, bank.userBalances.uUSD]);
+
+  // ---------------------------------------------
+  // callbacks
+  // ---------------------------------------------
+  const updateAssetAmount = useCallback((nextAssetAmount: string) => {
+    setAssetAmount(nextAssetAmount);
+  }, []);
+
+  const proceed = useCallback(
+    async ({
+      status,
+      assetAmount,
+      confirm,
+    }: {
+      status: WalletStatus;
+      assetAmount: string;
+      confirm: ReactNode;
+    }) => {
+      if (status.status !== 'ready' || bank.status !== 'connected') {
+        return;
+      }
+
+      if (confirm) {
+        const userConfirm = await openConfirm({
+          title: 'Confirm',
+          description: confirm,
+        });
+
+        if (!userConfirm) {
+          return;
+        }
+      }
+
+      const data = await queryDeposit({
+        post: post<CreateTxOptions, StringifiedTxResult>({
+          ...transactionFee,
+          msgs: fabricateDepositStableCoin({
+            address: status.status === 'ready' ? status.walletAddress : '',
+            amount: big(assetAmount).toNumber(),
+            symbol: 'usd',
+          })(addressProvider),
+        }).then(({ payload }) => parseResult(payload)),
+        client,
+      });
+
+      if (data) {
+        closeDialog({ refresh: true });
+      }
+    },
+    [
+      addressProvider,
+      bank.status,
+      client,
+      closeDialog,
+      openConfirm,
+      post,
+      queryDeposit,
+    ],
+  );
 
   // ---------------------------------------------
   // presentation
@@ -171,15 +249,15 @@ function ComponentBase({
         <TextInput
           className="amount"
           type="number"
-          value={amount}
+          value={assetAmount}
           label="AMOUNT"
-          disabled={!!inputQualifiedError}
-          error={!!inputQualifiedError || !!inputError}
-          onChange={({ target }) => setAmount(target.value)}
+          disabled={!!invalidTxFee}
+          error={!!invalidTxFee || !!invalidAssetAmount}
+          onChange={({ target }) => updateAssetAmount(target.value)}
           InputProps={{
             endAdornment: (
               <Tooltip
-                color={inputError ? 'error' : undefined}
+                color={invalidAssetAmount ? 'error' : undefined}
                 title="Available you deposit"
                 placement="top"
               >
@@ -192,18 +270,35 @@ function ComponentBase({
 
         <div
           className="wallet"
-          aria-invalid={!!inputQualifiedError || !!inputError}
+          aria-invalid={!!invalidTxFee || !!invalidAssetAmount}
         >
-          <span>{inputQualifiedError || inputError}</span>
+          <span>{invalidTxFee || invalidAssetAmount}</span>
           <span>
             Wallet:{' '}
-            {toFixedNoRounding(
-              big(balance ?? 0)
-                .div(MICRO)
-                .toString(),
-              2,
-            )}{' '}
-            UST
+            <span
+              style={
+                recommendationAssetAmount
+                  ? {
+                      textDecoration: 'underline',
+                      cursor: 'pointer',
+                    }
+                  : undefined
+              }
+              onClick={() =>
+                recommendationAssetAmount &&
+                updateAssetAmount(
+                  big(recommendationAssetAmount).div(MICRO).toString(),
+                )
+              }
+            >
+              {toFixedNoRounding(
+                big(bank.userBalances.uUSD ?? 0)
+                  .div(MICRO)
+                  .toString(),
+                2,
+              )}{' '}
+              UST
+            </span>
           </span>
         </div>
 
@@ -225,31 +320,50 @@ function ComponentBase({
           </figure>
         )}
 
+        {tooMuchAssetAmountWarning && recommendationAssetAmount && (
+          <div>
+            {tooMuchAssetAmountWarning}
+            <br />
+            <button
+              onClick={() =>
+                updateAssetAmount(
+                  big(recommendationAssetAmount).div(MICRO).toString(),
+                )
+              }
+            >
+              Set recommend amount
+            </button>
+          </div>
+        )}
+
         <ActionButton
           className="proceed"
+          style={
+            tooMuchAssetAmountWarning
+              ? {
+                  backgroundColor: '#f5356a',
+                }
+              : undefined
+          }
           disabled={
             status.status !== 'ready' ||
-            amount.length === 0 ||
-            big(amount).lte(0) ||
-            !!inputError
+            bank.status !== 'connected' ||
+            assetAmount.length === 0 ||
+            big(assetAmount).lte(0) ||
+            !!invalidAssetAmount
           }
           onClick={() =>
-            fetchDeposit({
-              post: post<CreateTxOptions, StringifiedTxResult>({
-                ...transactionFee,
-                msgs: fabricateDepositStableCoin({
-                  address:
-                    status.status === 'ready' ? status.walletAddress : '',
-                  amount: big(amount).toNumber(),
-                  symbol: 'usd',
-                })(addressProvider),
-              }).then(({ payload }) => parseResult(payload)),
-              client,
+            proceed({
+              assetAmount,
+              status,
+              confirm: tooMuchAssetAmountWarning,
             })
           }
         >
           Proceed
         </ActionButton>
+
+        {confirmElement}
       </Dialog>
     </Modal>
   );
@@ -279,6 +393,10 @@ const Component = styled(ComponentBase)`
   .amount {
     width: 100%;
     margin-bottom: 5px;
+
+    .MuiTypography-colorTextSecondary {
+      color: currentColor;
+    }
   }
 
   .wallet {
