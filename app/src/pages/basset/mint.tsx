@@ -181,7 +181,11 @@ function MintBase({ className }: MintProps) {
       assetAmount: string;
       selectedValidator: string | undefined;
     }) => {
-      if (status.status !== 'ready' || !selectedValidator) {
+      if (
+        status.status !== 'ready' ||
+        bank.status !== 'connected' ||
+        !selectedValidator
+      ) {
         return;
       }
 
@@ -207,7 +211,14 @@ function MintBase({ className }: MintProps) {
         setSelectedValidator(null);
       }
     },
-    [addressProvider, client, queryMint, bAssetCurrency.value, post],
+    [
+      bank.status,
+      queryMint,
+      post,
+      bAssetCurrency.value,
+      addressProvider,
+      client,
+    ],
   );
 
   // ---------------------------------------------
@@ -228,6 +239,8 @@ function MintBase({ className }: MintProps) {
 
   return (
     <Section className={className}>
+      {!!invalidTxFee && <div>{invalidTxFee}</div>}
+
       {/* Bond (Asset) */}
       <div className="bond-description">
         <p>I want to bond</p>
@@ -241,8 +254,8 @@ function MintBase({ className }: MintProps) {
 
       <SelectAndTextInputContainer
         className="bond"
-        error={!!invalidTxFee || !!invalidAssetAmount}
-        helperText={invalidTxFee || invalidAssetAmount}
+        error={!!invalidAssetAmount}
+        helperText={invalidAssetAmount}
       >
         <MuiNativeSelect
           value={assetCurrency}
@@ -262,7 +275,7 @@ function MintBase({ className }: MintProps) {
         <MuiInput
           type="number"
           placeholder="0.00"
-          error={!!invalidTxFee || !!invalidAssetAmount}
+          error={!!invalidAssetAmount}
           value={assetAmount}
           onChange={({ target }) => updateAssetAmount(target.value)}
           endAdornment={
@@ -284,7 +297,7 @@ function MintBase({ className }: MintProps) {
 
       <SelectAndTextInputContainer
         className="mint"
-        error={!!invalidTxFee || !!invalidAssetAmount}
+        error={!!invalidAssetAmount}
       >
         <MuiNativeSelect
           value={bAssetCurrency}
@@ -303,7 +316,7 @@ function MintBase({ className }: MintProps) {
         <MuiInput
           type="number"
           placeholder="0.00"
-          error={!!invalidTxFee || !!invalidAssetAmount}
+          error={!!invalidAssetAmount}
           value={bAssetAmount}
           onChange={({ target }) => updateBAssetAmount(target.value)}
         />

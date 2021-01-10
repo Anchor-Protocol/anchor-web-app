@@ -30,9 +30,10 @@ import {
   TxResultRenderer,
 } from 'api/transactions/TxResultRenderer';
 import big from 'big.js';
+import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
-import { transactionFee } from 'env';
-import React, { useMemo, useState } from 'react';
+import { fixedGasUUSD, transactionFee } from 'env';
+import React, { ReactNode, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { useClaimable } from './queries/claimable';
 import { useWithdrawable } from './queries/withdrawable';
@@ -47,7 +48,7 @@ interface Item {
   value: string;
 }
 
-const currencies: Item[] = [{ label: 'Luna', value: 'luna' }];
+const assetCurrencies: Item[] = [{ label: 'Luna', value: 'luna' }];
 
 function ClaimBase({ className }: ClaimProps) {
   // ---------------------------------------------
@@ -58,12 +59,12 @@ function ClaimBase({ className }: ClaimProps) {
   const addressProvider = useAddressProvider();
 
   const [
-    fetchWithdraw,
+    queryWithdraw,
     withdrawResult,
     resetWithdrawResult,
   ] = useBroadcastableQuery(withdrawQueryOptions);
 
-  const [fetchClaim, claimResult, resetClaimResult] = useBroadcastableQuery(
+  const [queryClaim, claimResult, resetClaimResult] = useBroadcastableQuery(
     claimQueryOptions,
   );
 
@@ -72,15 +73,21 @@ function ClaimBase({ className }: ClaimProps) {
   // ---------------------------------------------
   // states
   // ---------------------------------------------
-  const [currency, setCurrency] = useState<Item>(() => currencies[0]);
+  const [assetCurrency, setAssetCurrency] = useState<Item>(
+    () => assetCurrencies[0],
+  );
 
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const { parsedData: withdrawable, updateWithdrawable } = useWithdrawable({
+  const bank = useBank();
+
+  const { parsedData: withdrawable, refetchWithdrawable } = useWithdrawable({
     bAsset: 'bluna',
   });
-  const { parsedData: claimable } = useClaimable();
+
+  const { parsedData: claimable, refetch: refetchClaimable } = useClaimable();
+
   const { parsedData: withdrawAllHistory } = useWithdrawHistory({
     withdrawable,
   });
@@ -88,6 +95,15 @@ function ClaimBase({ className }: ClaimProps) {
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
+  const invalidTxFee = useMemo<ReactNode>(() => {
+    if (bank.status === 'demo') {
+      return undefined;
+    } else if (big(bank.userBalances.uUSD).lt(fixedGasUUSD)) {
+      return 'Not Enough Tx Fee';
+    }
+    return undefined;
+  }, [bank.status, bank.userBalances.uUSD]);
+
   interface History {
     blunaAmount: string;
     lunaAmount?: string;
@@ -149,7 +165,80 @@ function ClaimBase({ className }: ClaimProps) {
       : big(0);
   }, [claimable]);
 
-  console.log('claim.tsx..ClaimBase()', { withdrawResult, claimResult });
+  // ---------------------------------------------
+  // callbacks
+  // ---------------------------------------------
+  const updateAssetCurrency = useCallback((nextAssetCurrencyValue: string) => {
+    setAssetCurrency(
+      assetCurrencies.find(({ value }) => nextAssetCurrencyValue === value) ??
+        assetCurrencies[0],
+    );
+  }, []);
+
+  const withdraw = useCallback(async () => {
+    if (status.status !== 'ready' || bank.status !== 'connected') {
+      return;
+    }
+
+    const data = await queryWithdraw({
+      post: post<CreateTxOptions, StringifiedTxResult>({
+        ...transactionFee,
+        msgs: fabricatebAssetWithdrawUnbonded({
+          address: status.walletAddress,
+          bAsset: 'bluna',
+        })(addressProvider),
+      })
+        .then(({ payload }) => payload)
+        .then(parseResult),
+      client,
+    });
+
+    // is this component does not unmounted
+    if (data) {
+      refetchWithdrawable();
+    }
+  }, [
+    addressProvider,
+    bank.status,
+    client,
+    post,
+    queryWithdraw,
+    status,
+    refetchWithdrawable,
+  ]);
+
+  const claim = useCallback(async () => {
+    if (status.status !== 'ready' || bank.status !== 'connected') {
+      return;
+    }
+
+    const data = await queryClaim({
+      post: post<CreateTxOptions, StringifiedTxResult>({
+        ...transactionFee,
+        msgs: fabricatebAssetClaim({
+          address: status.status === 'ready' ? status.walletAddress : '',
+          bAsset: 'bluna',
+          recipient: undefined,
+        })(addressProvider),
+      })
+        .then(({ payload }) => payload)
+        .then(parseResult),
+      client,
+    });
+
+    // is this component does not unmounted
+    if (data) {
+      await refetchClaimable();
+    }
+  }, [
+    addressProvider,
+    bank.status,
+    client,
+    post,
+    queryClaim,
+    refetchClaimable,
+    status,
+  ]);
 
   // ---------------------------------------------
   // presentation
@@ -162,6 +251,7 @@ function ClaimBase({ className }: ClaimProps) {
     return (
       <div className={className}>
         <Section>
+          {/* TODO implement messages */}
           <TxResultRenderer
             result={withdrawResult}
             resetResult={resetWithdrawResult}
@@ -177,6 +267,7 @@ function ClaimBase({ className }: ClaimProps) {
     return (
       <div className={className}>
         <Section>
+          {/* TODO implement messages */}
           <TxResultRenderer
             result={claimResult}
             resetResult={resetClaimResult}
@@ -188,19 +279,17 @@ function ClaimBase({ className }: ClaimProps) {
 
   return (
     <div className={className}>
+      {/* Withdrawable */}
       <Section>
-        {currencies.length > 1 && (
+        {!!invalidTxFee && <div>{invalidTxFee}</div>}
+
+        {assetCurrencies.length > 1 && (
           <NativeSelect
             className="bond"
-            value={currency.value}
-            onChange={({ target }) =>
-              setCurrency(
-                currencies.find(({ value }) => target.value === value) ??
-                  currencies[0],
-              )
-            }
+            value={assetCurrency.value}
+            onChange={({ target }) => updateAssetCurrency(target.value)}
           >
-            {currencies.map(({ label, value }) => (
+            {assetCurrencies.map(({ label, value }) => (
               <option key={value} value={value}>
                 {label}
               </option>
@@ -219,34 +308,20 @@ function ClaimBase({ className }: ClaimProps) {
 
         <ActionButton
           className="submit"
-          disabled={status.status !== 'ready' || withdrawableAmount.lte(0)}
-          onClick={() =>
-            fetchWithdraw({
-              post: post<CreateTxOptions, StringifiedTxResult>({
-                ...transactionFee,
-                msgs: fabricatebAssetWithdrawUnbonded({
-                  address:
-                    status.status === 'ready' ? status.walletAddress : '',
-                  bAsset: 'bluna',
-                })(addressProvider),
-              })
-                .then(({ payload }) => payload)
-                .then(parseResult),
-              client,
-            }).then((data) => {
-              if (data) {
-                updateWithdrawable();
-              }
-            })
+          disabled={
+            status.status !== 'ready' ||
+            bank.status !== 'connected' ||
+            !!invalidTxFee ||
+            withdrawableAmount.lte(0)
           }
+          onClick={() => withdraw()}
         >
           Withdraw
         </ActionButton>
 
-        <ul className="withdraw-history">
-          {withdrawHistory &&
-            withdrawHistory.length > 0 &&
-            withdrawHistory.map(
+        {withdrawHistory && withdrawHistory.length > 0 && (
+          <ul className="withdraw-history">
+            {withdrawHistory.map(
               (
                 { blunaAmount, lunaAmount, requestTime, claimableTime },
                 index,
@@ -274,10 +349,14 @@ function ClaimBase({ className }: ClaimProps) {
                 </li>
               ),
             )}
-        </ul>
+          </ul>
+        )}
       </Section>
 
+      {/* Claimable */}
       <Section>
+        {!!invalidTxFee && <div>{invalidTxFee}</div>}
+
         <article className="claimable-rewards">
           <h4>Claimable Rewards</h4>
           <p>
@@ -289,23 +368,13 @@ function ClaimBase({ className }: ClaimProps) {
 
         <ActionButton
           className="submit"
-          disabled={status.status !== 'ready' || claimableRewards.lte(0)}
-          onClick={() =>
-            fetchClaim({
-              post: post<CreateTxOptions, StringifiedTxResult>({
-                ...transactionFee,
-                msgs: fabricatebAssetClaim({
-                  address:
-                    status.status === 'ready' ? status.walletAddress : '',
-                  bAsset: 'bluna',
-                  recipient: undefined,
-                })(addressProvider),
-              })
-                .then(({ payload }) => payload)
-                .then(parseResult),
-              client,
-            })
+          disabled={
+            status.status !== 'ready' ||
+            bank.status !== 'connected' ||
+            !!invalidTxFee ||
+            claimableRewards.lte(0)
           }
+          onClick={() => claim()}
         >
           Claim
         </ActionButton>

@@ -2,7 +2,6 @@ import { fabricatebAssetBurn } from '@anchor-protocol/anchor-js/fabricators';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
-import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { MICRO, toFixedNoRounding } from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
@@ -15,7 +14,6 @@ import {
   InputAdornment,
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
-import { Error as ErrorIcon } from '@material-ui/icons';
 import { CreateTxOptions } from '@terra-money/terra.js';
 import * as txi from 'api/queries/txInfos';
 import { queryOptions } from 'api/transactions/queryOptions';
@@ -169,7 +167,7 @@ function BurnBase({ className }: BurnProps) {
       status: WalletStatus;
       bAssetAmount: string;
     }) => {
-      if (status.status !== 'ready') {
+      if (status.status !== 'ready' || bank.status !== 'connected') {
         return;
       }
 
@@ -214,6 +212,8 @@ function BurnBase({ className }: BurnProps) {
 
   return (
     <Section className={className}>
+      {!!invalidTxFee && <div>{invalidTxFee}</div>}
+      
       {/* Burn (bAsset) */}
       <div className="burn-description">
         <p>I want to burn</p>
@@ -225,8 +225,8 @@ function BurnBase({ className }: BurnProps) {
 
       <SelectAndTextInputContainer
         className="burn"
-        error={!!invalidTxFee || !!invalidBAssetAmount}
-        helperText={invalidTxFee || invalidBAssetAmount}
+        error={!!invalidBAssetAmount}
+        helperText={invalidBAssetAmount}
       >
         <MuiNativeSelect
           value={bAssetCurrency}
@@ -245,7 +245,7 @@ function BurnBase({ className }: BurnProps) {
         <MuiInput
           type="number"
           placeholder="0.00"
-          error={!!invalidTxFee || !!invalidBAssetAmount}
+          error={!!invalidBAssetAmount}
           value={bAssetAmount}
           onChange={({ target }) => updateBAssetAmount(target.value)}
           endAdornment={
@@ -269,7 +269,7 @@ function BurnBase({ className }: BurnProps) {
 
       <SelectAndTextInputContainer
         className="gett"
-        error={!!invalidTxFee || !!invalidBAssetAmount}
+        error={!!invalidBAssetAmount}
       >
         <MuiNativeSelect
           value={assetCurrency}
@@ -288,7 +288,7 @@ function BurnBase({ className }: BurnProps) {
         <MuiInput
           type="number"
           placeholder="0.00"
-          error={!!invalidTxFee || !!invalidBAssetAmount}
+          error={!!invalidBAssetAmount}
           value={assetAmount}
           onChange={({ target }) => updateAssetAmount(target.value)}
         />

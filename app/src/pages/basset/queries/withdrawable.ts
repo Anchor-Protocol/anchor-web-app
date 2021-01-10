@@ -107,7 +107,7 @@ export function useWithdrawable({
   bAsset: string;
 }): QueryResult<StringifiedData, StringifiedVariables> & {
   parsedData: Data | undefined;
-  updateWithdrawable: () => void;
+  refetchWithdrawable: () => void;
 } {
   const addressProvider = useAddressProvider();
   const { status } = useWallet();
@@ -136,7 +136,7 @@ export function useWithdrawable({
     }),
   });
 
-  const updateWithdrawable = useCallback(() => {
+  const refetchWithdrawable = useCallback(() => {
     setNow(Date.now());
   }, []);
 
@@ -148,6 +148,6 @@ export function useWithdrawable({
   return {
     ...result,
     parsedData,
-    updateWithdrawable,
+    refetchWithdrawable,
   };
 }
