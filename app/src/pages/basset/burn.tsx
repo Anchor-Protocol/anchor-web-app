@@ -191,7 +191,14 @@ function BurnBase({ className }: BurnProps) {
         setBAssetAmount('');
       }
     },
-    [queryBurn, post, bAssetCurrency.value, addressProvider, client],
+    [
+      bank.status,
+      queryBurn,
+      post,
+      bAssetCurrency.value,
+      addressProvider,
+      client,
+    ],
   );
 
   // ---------------------------------------------
@@ -213,7 +220,7 @@ function BurnBase({ className }: BurnProps) {
   return (
     <Section className={className}>
       {!!invalidTxFee && <div>{invalidTxFee}</div>}
-      
+
       {/* Burn (bAsset) */}
       <div className="burn-description">
         <p>I want to burn</p>
