@@ -68,6 +68,7 @@ function MintBase({ className }: MintProps) {
   // states
   // ---------------------------------------------
   const [assetAmount, setAssetAmount] = useState<string>('');
+  const [bAssetAmount, setBAssetAmount] = useState<string>('');
 
   const [bAssetCurrency, setBAssetCurrency] = useState<Item>(
     () => bAssetCurrencies[0],
@@ -123,7 +124,35 @@ function MintBase({ className }: MintProps) {
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
-  const transact = useCallback(
+  const updateAssetAmount = useCallback(
+    (nextAssetAmount: string) => {
+      setAssetAmount(nextAssetAmount);
+      setBAssetAmount(
+        nextAssetAmount.length === 0
+          ? ''
+          : big(nextAssetAmount)
+              .div(exchangeRate?.exchange_rate ?? 0)
+              .toString(),
+      );
+    },
+    [exchangeRate?.exchange_rate],
+  );
+
+  const updateBAssetAmount = useCallback(
+    (nextBAssetAmount: string) => {
+      setAssetAmount(
+        nextBAssetAmount.length === 0
+          ? ''
+          : big(nextBAssetAmount)
+              .mul(exchangeRate?.exchange_rate ?? 0)
+              .toString(),
+      );
+      setBAssetAmount(nextBAssetAmount);
+    },
+    [exchangeRate?.exchange_rate],
+  );
+
+  const transactMint = useCallback(
     async ({
       status,
       assetAmount,
@@ -160,13 +189,6 @@ function MintBase({ className }: MintProps) {
     },
     [addressProvider, client, mint, bAssetCurrency.value, post],
   );
-
-  console.log('mint.tsx..MintBase()', {
-    exchangeRate,
-    mintResult,
-    invalidTxFee,
-    invalidAssetAmount,
-  });
 
   // ---------------------------------------------
   // presentation
@@ -222,18 +244,17 @@ function MintBase({ className }: MintProps) {
           ))}
         </MuiNativeSelect>
 
-        {/* TODO bidirectional amount input */}
         <MuiInput
           type="number"
           placeholder="0.00"
           error={!!invalidTxFee || !!invalidAssetAmount}
+          value={assetAmount}
+          onChange={({ target }) => updateAssetAmount(target.value)}
           endAdornment={
             <InputAdornment position="end" style={{ opacity: 0.5 }}>
               / {toFixedNoRounding(big(bank.userBalances.uUSD).div(MICRO), 2)}
             </InputAdornment>
           }
-          value={assetAmount}
-          onChange={({ target }) => setAssetAmount(target.value)}
         />
       </SelectAndTextInputContainer>
 
@@ -271,16 +292,11 @@ function MintBase({ className }: MintProps) {
           ))}
         </MuiNativeSelect>
         <MuiInput
+          type="number"
           placeholder="0.00"
           error={!!invalidTxFee || !!invalidAssetAmount}
-          value={
-            assetAmount.length > 0
-              ? big(assetAmount)
-                  .mul(big(exchangeRate?.exchange_rate ?? 0))
-                  .toString()
-              : ''
-          }
-          disabled
+          value={bAssetAmount}
+          onChange={({ target }) => updateBAssetAmount(target.value)}
         />
       </SelectAndTextInputContainer>
 
@@ -321,7 +337,7 @@ function MintBase({ className }: MintProps) {
           !selectedValidator
         }
         onClick={() =>
-          transact({
+          transactMint({
             assetAmount: assetAmount,
             status,
             selectedValidator: selectedValidator?.OperatorAddress,
