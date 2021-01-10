@@ -1,6 +1,7 @@
 import { fabricateRedeemStable } from '@anchor-protocol/anchor-js/fabricators';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
+import { HorizontalDashedRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalDashedRuler';
 import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { MICRO, toFixedNoRounding } from '@anchor-protocol/notation';
@@ -14,10 +15,10 @@ import type {
   OpenDialog,
 } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
-import { useWallet } from '@anchor-protocol/wallet-provider';
+import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
-import { Warning } from '@material-ui/icons';
+import { InfoOutlined } from '@material-ui/icons';
 import { CreateTxOptions } from '@terra-money/terra.js';
 import { useTax } from 'api/queries/tax';
 import * as txi from 'api/queries/txInfos';
@@ -34,9 +35,9 @@ import {
 import big from 'big.js';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
-import { transactionFee } from 'env';
+import { fixedGasUUSD, transactionFee } from 'env';
 import type { ReactNode } from 'react';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 interface FormParams {
@@ -80,36 +81,93 @@ function ComponentBase({
   // ---------------------------------------------
   // states
   // ---------------------------------------------
-  const [amount, setAmount] = useState<string>('');
+  const [aAssetAmount, setAAssetAmount] = useState<string>('');
 
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
   const bank = useBank();
+
   const { parsedData: tax } = useTax();
 
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
-  // max amount to user input (uusd)
-  const balance = useMemo(() => {
-    return bank.userBalances.uUSD;
-  }, [bank.userBalances.uUSD]);
-
-  console.log('useWithdrawDialog.tsx..ComponentBase()', { tax, balance });
-
-  const inputError = useMemo<ReactNode>(() => {
-    //if (
-    //  big(amount.length > 0 ? amount : 0)
-    //    .mul(MICRO)
-    //    .gt(big(userUusdBalance ?? 0))
-    //) {
-    //  return `Insufficient balance: Not enough Assets (${big(
-    //    userUusdBalance ?? 0,
-    //  ).div(MICRO)} UST)`;
-    //}
+  const invalidTxFee = useMemo(() => {
+    if (bank.status === 'demo') {
+      return undefined;
+    } else if (big(bank.userBalances.uUSD ?? 0).lt(fixedGasUUSD)) {
+      return 'Not enough Tx Fee';
+    }
     return undefined;
+  }, [bank.status, bank.userBalances.uUSD]);
+
+  const invalidAAsetAmount = useMemo<ReactNode>(() => {
+    if (bank.status === 'demo') {
+      return undefined;
+    } else if (
+      big(aAssetAmount.length > 0 ? aAssetAmount : 0)
+        .mul(MICRO)
+        .gt(bank.userBalances.uaUST ?? 0)
+    ) {
+      return `Insufficient balance: Not enough Assets`;
+    }
+    return undefined;
+  }, [aAssetAmount, bank.status, bank.userBalances.uaUST]);
+
+  const txFee = useMemo(() => {
+    if (aAssetAmount.length === 0 || !tax) return undefined;
+
+    // MIN((Withdrawable(User_input)- Withdrawable(User_input) / (1+Tax_rate)), Max_tax) + Fixed_Gas
+
+    const uAmount = big(aAssetAmount).mul(MICRO);
+    const ratioTxFee = uAmount.minus(uAmount.div(big(1).add(tax.taxRate)));
+    const maxTax = big(tax.maxTaxUUSD);
+
+    if (ratioTxFee.gt(maxTax)) {
+      return big(maxTax).add(fixedGasUUSD).toString();
+    } else {
+      return ratioTxFee.add(fixedGasUUSD).toString();
+    }
+  }, [aAssetAmount, tax]);
+
+  // ---------------------------------------------
+  // callbacks
+  // ---------------------------------------------
+  const updateAAssetAmount = useCallback((nextAAssetAmount: string) => {
+    setAAssetAmount(nextAAssetAmount);
   }, []);
+
+  const proceed = useCallback(
+    async ({
+      status,
+      aAssetAmount,
+    }: {
+      status: WalletStatus;
+      aAssetAmount: string;
+    }) => {
+      if (status.status !== 'ready' || bank.status !== 'connected') {
+        return;
+      }
+
+      const data = await fetchWithdraw({
+        post: post<CreateTxOptions, StringifiedTxResult>({
+          ...transactionFee,
+          msgs: fabricateRedeemStable({
+            address: status.status === 'ready' ? status.walletAddress : '',
+            amount: big(aAssetAmount).toNumber(),
+            symbol: 'usd',
+          })(addressProvider),
+        }).then(({ payload }) => parseResult(payload)),
+        client,
+      });
+
+      if (data) {
+        closeDialog({ refresh: true });
+      }
+    },
+    [addressProvider, bank.status, client, closeDialog, fetchWithdraw, post],
+  );
 
   // ---------------------------------------------
   // presentation
@@ -136,7 +194,7 @@ function ComponentBase({
   }
 
   return (
-    <Modal open disableBackdropClick>
+    <Modal open>
       <Dialog
         className={className}
         onClose={() => closeDialog({ refresh: false })}
@@ -146,53 +204,85 @@ function ComponentBase({
         <TextInput
           className="amount"
           type="number"
-          value={amount}
+          value={aAssetAmount}
           label="AMOUNT"
-          onChange={({ target }) => setAmount(target.value)}
+          disabled={!!invalidTxFee}
+          error={!!invalidTxFee || !!invalidAAsetAmount}
+          onChange={({ target }) => updateAAssetAmount(target.value)}
           InputProps={{
-            endAdornment: !!inputError ? (
-              <Tooltip open color="error" title={inputError} placement="right">
-                <Warning />
+            endAdornment: (
+              <Tooltip
+                color={invalidAAsetAmount ? 'error' : undefined}
+                title="Available you withdraw"
+                placement="top"
+              >
+                <InputAdornment position="end">UST</InputAdornment>
               </Tooltip>
-            ) : (
-              <InputAdornment position="end">UST</InputAdornment>
             ),
             inputMode: 'numeric',
           }}
-          error={!!inputError}
         />
 
-        <p className="wallet">
-          Wallet:{' '}
-          {toFixedNoRounding(
-            big(bank.userBalances.uaUST ?? 0)
-              .div(MICRO)
-              .toString(),
-            2,
-          )}{' '}
-          UST
-        </p>
+        <div
+          className="wallet"
+          aria-invalid={!!invalidTxFee || !!invalidAAsetAmount}
+        >
+          <span>{invalidTxFee || invalidAAsetAmount}</span>
+          <span>
+            Wallet:{' '}
+            <span
+              style={{
+                textDecoration: 'underline',
+                cursor: 'pointer',
+              }}
+              onClick={() =>
+                updateAAssetAmount(
+                  big(bank.userBalances.uaUST).div(MICRO).toString(),
+                )
+              }
+            >
+              {toFixedNoRounding(
+                big(bank.userBalances.uaUST ?? 0)
+                  .div(MICRO)
+                  .toString(),
+                2,
+              )}{' '}
+              UST
+            </span>
+          </span>
+        </div>
+
+        {txFee && (
+          <figure className="receipt">
+            <HorizontalDashedRuler />
+            <ul>
+              <li>
+                <span>
+                  Tx Fee{' '}
+                  <Tooltip title="Tx Fee Description" placement="top">
+                    <InfoOutlined />
+                  </Tooltip>
+                </span>
+                <span>{toFixedNoRounding(big(txFee).div(MICRO))} UST</span>
+              </li>
+            </ul>
+            <HorizontalDashedRuler />
+          </figure>
+        )}
 
         <ActionButton
           className="proceed"
           disabled={
             status.status !== 'ready' ||
-            amount.length === 0 ||
-            big(amount).lte(0) ||
-            !!inputError
+            bank.status !== 'connected' ||
+            aAssetAmount.length === 0 ||
+            big(aAssetAmount).lte(0) ||
+            !!invalidAAsetAmount
           }
           onClick={() =>
-            fetchWithdraw({
-              post: post<CreateTxOptions, StringifiedTxResult>({
-                ...transactionFee,
-                msgs: fabricateRedeemStable({
-                  address:
-                    status.status === 'ready' ? status.walletAddress : '',
-                  amount: big(amount).toNumber(),
-                  symbol: 'usd',
-                })(addressProvider),
-              }).then(({ payload }) => parseResult(payload)),
-              client,
+            proceed({
+              aAssetAmount,
+              status,
             })
           }
         >
@@ -215,7 +305,6 @@ const withdrawQueryOptions: BroadcastableQueryOptions<
 
 const Component = styled(ComponentBase)`
   width: 720px;
-  height: 455px;
 
   h1 {
     font-size: 27px;
@@ -228,22 +317,61 @@ const Component = styled(ComponentBase)`
   .amount {
     width: 100%;
     margin-bottom: 5px;
+
+    .MuiTypography-colorTextSecondary {
+      color: currentColor;
+    }
   }
 
   .wallet {
-    text-align: right;
+    display: flex;
+    justify-content: space-between;
 
     font-size: 12px;
     color: ${({ theme }) => theme.dimTextColor};
 
-    margin-bottom: 65px;
+    &[aria-invalid='true'] {
+      color: #f5356a;
+    }
+  }
+
+  .receipt {
+    margin-top: 30px;
+
+    font-size: 12px;
+
+    ul {
+      list-style: none;
+      padding: 0;
+
+      li {
+        margin: 15px 0;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        > :first-child {
+          color: ${({ theme }) => theme.dimTextColor};
+        }
+
+        > :last-child {
+          color: ${({ theme }) => theme.textColor};
+        }
+
+        svg {
+          font-size: 1em;
+          transform: scale(1.2) translateY(0.08em);
+        }
+      }
+    }
   }
 
   .proceed {
+    margin-top: 65px;
+
     width: 100%;
     height: 60px;
     border-radius: 30px;
-
-    margin-bottom: 25px;
   }
 `;

@@ -111,7 +111,7 @@ function ComponentBase({
     } else if (
       big(assetAmount.length > 0 ? assetAmount : 0)
         .mul(MICRO)
-        .gt(big(bank.userBalances.uUSD ?? 0))
+        .gt(bank.userBalances.uUSD ?? 0)
     ) {
       return `Insufficient balance: Not enough Assets`;
     }
@@ -120,6 +120,8 @@ function ComponentBase({
 
   const txFee = useMemo(() => {
     if (assetAmount.length === 0 || !tax) return undefined;
+    
+    // MIN((User_UST_Balance - fixed_gas)/(1+Tax_rate) * tax_rate , Max_tax) + Fixed_Gas
 
     const ratioTxFee = big(assetAmount).mul(MICRO).mul(tax.taxRate);
     const maxTax = big(tax.maxTaxUUSD);
