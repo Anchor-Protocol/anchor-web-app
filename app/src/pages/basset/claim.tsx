@@ -282,8 +282,6 @@ function ClaimBase({ className }: ClaimProps) {
     <div className={className}>
       {/* Withdrawable */}
       <Section>
-        {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
-
         {assetCurrencies.length > 1 && (
           <NativeSelect
             className="bond"
@@ -306,6 +304,10 @@ function ClaimBase({ className }: ClaimProps) {
               : '-'}
           </p>
         </article>
+
+        {!!invalidTxFee && big(withdrawableAmount).gt(0) && (
+          <WarningArticle>{invalidTxFee}</WarningArticle>
+        )}
 
         <ActionButton
           className="submit"
@@ -356,8 +358,6 @@ function ClaimBase({ className }: ClaimProps) {
 
       {/* Claimable */}
       <Section>
-        {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
-
         <article className="claimable-rewards">
           <h4>Claimable Rewards</h4>
           <p>
@@ -366,6 +366,10 @@ function ClaimBase({ className }: ClaimProps) {
               : '-'}
           </p>
         </article>
+
+        {!!invalidTxFee && big(claimableRewards).gt(0) && (
+          <WarningArticle>{invalidTxFee}</WarningArticle>
+        )}
 
         <ActionButton
           className="submit"
