@@ -19,7 +19,28 @@ export function ChromeExtensionWalletProvider({
 
   const checkStatus = useCallback(async () => {
     if (!extension.isAvailable) {
-      setStatus({ status: 'not_installed' });
+      setStatus((prev) => {
+        if (prev.status !== 'initializing' && prev.status !== 'not_installed') {
+          console.error(
+            [
+              `Abnormal Wallet status change to not_install`,
+              `===============================================`,
+              JSON.stringify(
+                {
+                  'window.isTerraExtensionAvailable':
+                    window.isTerraExtensionAvailable,
+                },
+                null,
+                2,
+              ),
+            ].join('\n'),
+          );
+        }
+
+        return prev.status !== 'not_installed'
+          ? { status: 'not_installed' }
+          : prev;
+      });
       return;
     }
 
@@ -30,16 +51,25 @@ export function ChromeExtensionWalletProvider({
 
     if (storedWalletAddress) {
       if (storedWalletAddress.trim().length > 0) {
-        setStatus({
-          status: 'ready',
-          network,
-          walletAddress: storedWalletAddress,
+        setStatus((prev) => {
+          return prev.status !== 'ready' ||
+            prev.walletAddress !== storedWalletAddress
+            ? {
+                status: 'ready',
+                network,
+                walletAddress: storedWalletAddress,
+              }
+            : prev;
         });
       } else {
         storage.removeItem(WALLET_ADDRESS);
       }
     } else {
-      setStatus({ status: 'not_connected', network });
+      setStatus((prev) => {
+        return prev.status !== 'not_connected'
+          ? { status: 'not_connected', network }
+          : prev;
+      });
     }
   }, [extension]);
 
@@ -99,6 +129,24 @@ export function ChromeExtensionWalletProvider({
   useEffect(() => {
     checkStatus();
   }, [checkStatus]);
+
+  useEffect(() => {
+    console.log(
+      [
+        `Wallet Status`,
+        `=======================================`,
+        JSON.stringify(status, null, 2),
+        JSON.stringify(
+          {
+            'window.isTerraExtensionAvailable':
+              window.isTerraExtensionAvailable,
+          },
+          null,
+          2,
+        ),
+      ].join('\n'),
+    );
+  }, [status]);
 
   const state = useMemo<WalletState>(
     () => ({

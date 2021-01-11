@@ -5,7 +5,11 @@ import { GlobalStyle } from '@anchor-protocol/neumorphism-ui/themes/GlobalStyle'
 import { ThemeProvider } from '@anchor-protocol/neumorphism-ui/themes/ThemeProvider';
 import { SnackbarProvider } from '@anchor-protocol/snackbar';
 import { QueryBroadcaster } from '@anchor-protocol/use-broadcastable-query';
-import { ChromeExtensionWalletProvider } from '@anchor-protocol/wallet-provider';
+import { RouterScrollRestoration } from '@anchor-protocol/use-router-scroll-restoration';
+import {
+  ChromeExtensionWalletProvider,
+  RouterWalletStatusRecheck,
+} from '@anchor-protocol/wallet-provider';
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 import { Banner } from 'components/Banner';
 import { Footer } from 'components/Footer';
@@ -71,10 +75,18 @@ function AppBase({ className }: AppProps) {
      */
     <Router>
       {/**
+       * Scroll Restore when basepath changed (page moved)
+       */}
+      <RouterScrollRestoration />
+      {/**
        * Terra Station Wallet Address
        * useWallet()
        */}
       <ChromeExtensionWalletProvider>
+        {/**
+         * Re-Check Terra Station Wallet Status when Router pathname changed
+         */}
+        <RouterWalletStatusRecheck />
         <WalletConnectedProviders>
           {/**
            * Broadcastable Query Provider

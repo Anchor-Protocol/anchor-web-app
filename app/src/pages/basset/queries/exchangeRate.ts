@@ -26,7 +26,6 @@ export interface Data {
 }
 
 export function parseData(data: StringifiedData): Data {
-  console.log('exchangeRate.ts..parseData()', data);
   return JSON.parse(data.exchangeRate.Result);
 }
 
