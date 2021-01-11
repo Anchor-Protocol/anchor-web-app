@@ -151,7 +151,7 @@ function MintBase({ className }: MintProps) {
         nextAssetAmount.length === 0
           ? ''
           : big(nextAssetAmount)
-              .div(exchangeRate?.exchange_rate ?? 0)
+              .div(exchangeRate?.exchange_rate ?? 1)
               .toString(),
       );
     },
@@ -164,7 +164,7 @@ function MintBase({ className }: MintProps) {
         nextBAssetAmount.length === 0
           ? ''
           : big(nextBAssetAmount)
-              .mul(exchangeRate?.exchange_rate ?? 0)
+              .mul(exchangeRate?.exchange_rate ?? 1)
               .toString(),
       );
       setBAssetAmount(nextBAssetAmount);

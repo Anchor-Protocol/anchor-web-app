@@ -27,6 +27,7 @@ import {
   TxResultRenderer,
 } from 'api/transactions/TxResultRenderer';
 import big from 'big.js';
+import { WarningArticle } from 'components/messages/WarningArticle';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { fixedGasUUSD, transactionFee } from 'env';
@@ -138,7 +139,7 @@ function BurnBase({ className }: BurnProps) {
         nextAssetAmount.length === 0
           ? ''
           : big(nextAssetAmount)
-              .div(exchangeRate?.exchange_rate ?? 0)
+              .div(exchangeRate?.exchange_rate ?? 1)
               .toString(),
       );
     },
@@ -151,7 +152,7 @@ function BurnBase({ className }: BurnProps) {
         nextBAssetAmount.length === 0
           ? ''
           : big(nextBAssetAmount)
-              .mul(exchangeRate?.exchange_rate ?? 0)
+              .mul(exchangeRate?.exchange_rate ?? 1)
               .toString(),
       );
       setBAssetAmount(nextBAssetAmount);
@@ -219,7 +220,7 @@ function BurnBase({ className }: BurnProps) {
 
   return (
     <Section className={className}>
-      {!!invalidTxFee && <div>{invalidTxFee}</div>}
+      {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
 
       {/* Burn (bAsset) */}
       <div className="burn-description">
