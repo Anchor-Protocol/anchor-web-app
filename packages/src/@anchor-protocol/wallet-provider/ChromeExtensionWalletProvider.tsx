@@ -6,7 +6,6 @@ import { WalletContext, WalletProviderProps, WalletState } from './useWallet';
 const storage = localStorage;
 
 const WALLET_ADDRESS: string = '__anchor_terra_station_wallet_address__';
-const STATION_INSTALL_COUNT: string = '__anchor_terra_station_install_count__';
 
 async function intervalCheck(
   count: number,
@@ -33,11 +32,12 @@ export function ChromeExtensionWalletProvider({
   }));
 
   const checkStatus = useCallback(
-    async (checkWithInterval: boolean = false) => {
-      const isExtensionNotInstalled = checkWithInterval
+    async (watingExtensionScriptInjection: boolean = false) => {
+      const isExtensionInstalled = watingExtensionScriptInjection
         ? await intervalCheck(20, () => extension.isAvailable)
         : extension.isAvailable;
-      if (!isExtensionNotInstalled) {
+
+      if (!isExtensionInstalled) {
         setStatus((prev) => {
           if (
             prev.status !== 'initializing' &&
@@ -100,22 +100,6 @@ export function ChromeExtensionWalletProvider({
   );
 
   const install = useCallback(() => {
-    const count: number = parseInt(
-      storage.getItem(STATION_INSTALL_COUNT) ?? '0',
-    );
-
-    if (count > 3) {
-      //const result = confirm(`You tried to install many times. Do you have some problem to install?`)
-      //
-      //if (result) {
-      //  // TODO
-      //} else {
-      //  storage.setItem(INSTALL_COUNT, '0');
-      //}
-    } else {
-      storage.setItem(STATION_INSTALL_COUNT, (count + 1).toString());
-    }
-
     window.open(
       'https://chrome.google.com/webstore/detail/terra-station/aiifbnbfobpmeekipheeijimdpnlpgpp',
       '_blank',
