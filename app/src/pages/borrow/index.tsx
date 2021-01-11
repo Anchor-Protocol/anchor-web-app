@@ -5,10 +5,9 @@ import {
 import { screen } from 'env';
 import React from 'react';
 import styled from 'styled-components';
-import BorrowAPR from './apr';
-import BorrowCollateralList from './collateral-list';
-import BorrowLoanList from './loan-list';
-import BorrowUnprovidedCollateralList from './unprovided-collateral-list';
+import { CollateralList } from './components/CollateralList';
+import { LoanList } from './components/LoanList';
+import { Summary } from './components/Summary';
 
 export interface BorrowProps {
   className?: string;
@@ -21,18 +20,9 @@ function BorrowBase({ className }: BorrowProps) {
         <h1>BORROW</h1>
 
         <div className="content-layout">
-          <section>
-            <BorrowAPR />
-          </section>
-          <section>
-            <div>
-              <BorrowCollateralList />
-              <BorrowUnprovidedCollateralList />
-            </div>
-            <div>
-              <BorrowLoanList />
-            </div>
-          </section>
+          <Summary />
+          <CollateralList />
+          <LoanList />
         </div>
       </main>
     </div>
