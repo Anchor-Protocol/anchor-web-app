@@ -78,7 +78,7 @@ function NotificationsBase({ className }: NotificationsProps) {
               <NotificationsNone />
             </Badge>
           ) : (
-            <NotificationsNone />
+            <NotificationsNone style={{opacity: 0.1}} />
           )}
         </IconButton>
         {open ? (
@@ -120,12 +120,6 @@ export const Notifications = styled(NotificationsBase)`
       &:not(:first-child) {
         border-top: 1px solid white;
       }
-    }
-  }
-
-  &[data-notifications] {
-    > :first-child {
-      color: ${({ theme }) => theme.errorTextColor};
     }
   }
 `;
