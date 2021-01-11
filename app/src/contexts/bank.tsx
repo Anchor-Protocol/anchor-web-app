@@ -6,7 +6,14 @@ import {
   useUserBalances,
 } from 'api/queries/userBalances';
 import type { ReactNode } from 'react';
-import { Consumer, Context, createContext, useContext, useMemo } from 'react';
+import {
+  Consumer,
+  Context,
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+} from 'react';
 
 export interface BankProviderProps {
   children: ReactNode;
@@ -65,6 +72,14 @@ export function BankProvider({ children }: BankProviderProps) {
     taxData,
     userBalancesData,
   ]);
+
+  useEffect(() => {
+    refetchTax();
+
+    if (status.status === 'ready') {
+      refetchUserBalances();
+    }
+  }, [refetchTax, refetchUserBalances, status.status]);
 
   return <BankContext.Provider value={state}>{children}</BankContext.Provider>;
 }
