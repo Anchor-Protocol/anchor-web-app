@@ -1,5 +1,7 @@
 import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
+import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
+import { useInterest } from 'pages/earn/queries/interest';
 import styled from 'styled-components';
 
 export interface InterestSectionProps {
@@ -7,12 +9,20 @@ export interface InterestSectionProps {
 }
 
 function InterestSectionBase({ className }: InterestSectionProps) {
+  // ---------------------------------------------
+  // queries
+  // ---------------------------------------------
+  const { parsedData: interest } = useInterest();
+
+  // ---------------------------------------------
+  // presentation
+  // ---------------------------------------------
   return (
     <Section className={className}>
       <h2>INTEREST</h2>
 
       <div className="apy">
-        <div className="value">9.36%</div>
+        <div className="value">{interest?.currentAPY}%</div>
         <p className="name">APY</p>
         <figure></figure>
       </div>
@@ -29,7 +39,11 @@ function InterestSectionBase({ className }: InterestSectionProps) {
         </ul>
 
         <div className="amount">
-          2,320<span className="decimal-point">.063700</span> UST
+          <Tooltip title="no real data" placement="top">
+            <span>
+              2,320<span className="decimal-point">.063700</span> UST
+            </span>
+          </Tooltip>
           <p>Interest earned</p>
         </div>
       </article>

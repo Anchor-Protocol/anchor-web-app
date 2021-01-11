@@ -67,31 +67,31 @@ export const query = gql`
   }
 `;
 
-//export function useInterest({}: Pick<Variables, ''>): QueryResult<
-//  StringifiedData,
-//  StringifiedVariables
-//> & { parsedData: Data | undefined } {
-//  const addressProvider = useAddressProvider();
-//  const { status } = useWallet();
-//
-//  const { data, ...result } = useQuery<StringifiedData, StringifiedVariables>(
-//    query,
-//    {
-//      skip: status.status !== 'ready',
-//      fetchPolicy: 'cache-and-network',
-//      variables: stringifyVariables({
-//        overseerContract
-//      }),
-//    },
-//  );
-//
-//  const parsedData = useMemo(
-//    () => (result.data ? parseData(result.data) : undefined),
-//    [result.data],
-//  );
-//
-//  return {
-//    ...result,
-//    parsedData,
-//  };
-//}
+export function useInterest(): QueryResult<
+  StringifiedData,
+  StringifiedVariables
+> & { parsedData: Data | undefined } {
+  const addressProvider = useAddressProvider();
+  const { status } = useWallet();
+
+  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
+    skip: status.status !== 'ready',
+    fetchPolicy: 'cache-and-network',
+    variables: stringifyVariables({
+      overseerContract: addressProvider.overseer(''),
+      overseerEpochState: {
+        epoch_state: {},
+      },
+    }),
+  });
+
+  const parsedData = useMemo(
+    () => (result.data ? parseData(result.data) : undefined),
+    [result.data],
+  );
+
+  return {
+    ...result,
+    parsedData,
+  };
+}
