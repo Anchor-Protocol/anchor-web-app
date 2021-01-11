@@ -5,7 +5,11 @@ import { HorizontalDashedRuler } from '@anchor-protocol/neumorphism-ui/component
 import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { useConfirm } from '@anchor-protocol/neumorphism-ui/components/useConfirm';
-import { MICRO, toFixedNoRounding } from '@anchor-protocol/notation';
+import {
+  discardDecimalPoints,
+  MICRO,
+  toFixedNoRounding,
+} from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
   useBroadcastableQuery,
@@ -120,7 +124,7 @@ function ComponentBase({
 
   const txFee = useMemo(() => {
     if (assetAmount.length === 0 || !tax) return undefined;
-    
+
     // MIN((User_UST_Balance - fixed_gas)/(1+Tax_rate) * tax_rate , Max_tax) + Fixed_Gas
 
     const ratioTxFee = big(assetAmount).mul(MICRO).mul(tax.taxRate);
@@ -161,7 +165,7 @@ function ComponentBase({
   // callbacks
   // ---------------------------------------------
   const updateAssetAmount = useCallback((nextAssetAmount: string) => {
-    setAssetAmount(nextAssetAmount);
+    setAssetAmount(discardDecimalPoints(nextAssetAmount));
   }, []);
 
   const proceed = useCallback(

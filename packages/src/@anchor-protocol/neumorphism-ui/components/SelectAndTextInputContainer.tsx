@@ -8,12 +8,14 @@ import styled from 'styled-components';
 
 export interface SelectAndTextInputContainerProps
   extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
-  helperText?: ReactNode;
+  leftHelperText?: ReactNode;
+  rightHelperText?: ReactNode;
   error?: boolean;
 }
 
 function SelectAndTextInputContainerBase({
-  helperText,
+  leftHelperText,
+  rightHelperText,
   error,
   children,
   ...divProps
@@ -21,7 +23,8 @@ function SelectAndTextInputContainerBase({
   return (
     <div {...divProps} aria-invalid={!!error}>
       {children}
-      {helperText && <HelperText>{helperText}</HelperText>}
+      {leftHelperText && <LeftHelperText>{leftHelperText}</LeftHelperText>}
+      {rightHelperText && <RightHelperText>{rightHelperText}</RightHelperText>}
     </div>
   );
 }
@@ -68,7 +71,7 @@ export const SelectAndTextInputContainer = styled(
   position: relative;
 
   color: ${({ theme }) => theme.textInput.textColor};
-  
+
   .MuiInputBase-input,
   .MuiInputBase-root {
     color: ${({ theme }) => theme.textInput.textColor};
@@ -117,7 +120,7 @@ export const SelectAndTextInputContainer = styled(
 
   &[aria-invalid='true'] {
     color: ${({ theme }) => theme.errorTextColor};
-    
+
     .MuiInputBase-input,
     .MuiInputBase-root {
       color: ${({ theme }) => theme.errorTextColor};
@@ -125,12 +128,22 @@ export const SelectAndTextInputContainer = styled(
   }
 `;
 
-const HelperText = styled.span`
+const LeftHelperText = styled.span`
+  font-size: 12px;
+  flex-shrink: 0;
+  position: absolute;
+  left: 0;
+  bottom: -20px;
+
+  color: inherit;
+`;
+
+const RightHelperText = styled.span`
   font-size: 12px;
   flex-shrink: 0;
   position: absolute;
   right: 0;
   bottom: -20px;
-  
+
   color: inherit;
 `;

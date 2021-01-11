@@ -1,3 +1,4 @@
+import big from 'big.js';
 import numeral from 'numeral';
 
 export const DECIMAL_POINTS = 6;
@@ -37,4 +38,24 @@ export function truncate(
   const head = text.slice(0, h);
   const tail = text.slice(-1 * t, text.length);
   return text.length > h + t ? [head, tail].join('...') : text;
+}
+
+export function discardDecimalPoints(
+  n: number | string | { toString(): string },
+  keepDecimalPoints: number = DECIMAL_POINTS,
+): string {
+  const [i, d = ''] = n.toString().split('.');
+  const dn = big(d.length > 0 ? d : 0);
+
+  if (dn.lte(0)) {
+    return i.toString();
+  }
+
+  const ds: string = dn.toFixed().substr(0, keepDecimalPoints);
+
+  if (big(ds).lte(0)) {
+    return i.toString();
+  }
+
+  return i + '.' + ds;
 }

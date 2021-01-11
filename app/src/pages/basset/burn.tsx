@@ -2,7 +2,11 @@ import { fabricatebAssetBurn } from '@anchor-protocol/anchor-js/fabricators';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
-import { MICRO, toFixedNoRounding } from '@anchor-protocol/notation';
+import {
+  discardDecimalPoints,
+  MICRO,
+  toFixedNoRounding,
+} from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
   useBroadcastableQuery,
@@ -101,7 +105,7 @@ function BurnBase({ className }: BurnProps) {
     } else if (
       big(bAssetAmount.length > 0 ? bAssetAmount : 0)
         .mul(MICRO)
-        .gt(big(bank.userBalances?.ubLuna ?? 0))
+        .gt(bank.userBalances?.ubLuna ?? 0)
     ) {
       return `Insufficient balance: Not enough bAssets (${big(
         bank.userBalances?.ubLuna ?? 0,
@@ -133,13 +137,22 @@ function BurnBase({ className }: BurnProps) {
 
   const updateAssetAmount = useCallback(
     (nextAssetAmount: string) => {
-      setAssetAmount(nextAssetAmount);
+      console.log('burn.tsx..()', discardDecimalPoints(nextAssetAmount), discardDecimalPoints(
+          nextAssetAmount.length === 0
+            ? ''
+            : big(nextAssetAmount)
+                .div(exchangeRate?.exchange_rate ?? 1)
+                .toString(),
+        ));
+      setAssetAmount(discardDecimalPoints(nextAssetAmount));
       setBAssetAmount(
-        nextAssetAmount.length === 0
-          ? ''
-          : big(nextAssetAmount)
-              .div(exchangeRate?.exchange_rate ?? 1)
-              .toString(),
+        discardDecimalPoints(
+          nextAssetAmount.length === 0
+            ? ''
+            : big(nextAssetAmount)
+                .div(exchangeRate?.exchange_rate ?? 1)
+                .toString(),
+        ),
       );
     },
     [exchangeRate?.exchange_rate],
@@ -148,13 +161,15 @@ function BurnBase({ className }: BurnProps) {
   const updateBAssetAmount = useCallback(
     (nextBAssetAmount: string) => {
       setAssetAmount(
-        nextBAssetAmount.length === 0
-          ? ''
-          : big(nextBAssetAmount)
-              .mul(exchangeRate?.exchange_rate ?? 1)
-              .toString(),
+        discardDecimalPoints(
+          nextBAssetAmount.length === 0
+            ? ''
+            : big(nextBAssetAmount)
+                .mul(exchangeRate?.exchange_rate ?? 1)
+                .toString(),
+        ),
       );
-      setBAssetAmount(nextBAssetAmount);
+      setBAssetAmount(discardDecimalPoints(nextBAssetAmount));
     },
     [exchangeRate?.exchange_rate],
   );
@@ -233,7 +248,22 @@ function BurnBase({ className }: BurnProps) {
       <SelectAndTextInputContainer
         className="burn"
         error={!!invalidBAssetAmount}
-        helperText={invalidBAssetAmount}
+        leftHelperText={invalidBAssetAmount}
+        rightHelperText={
+          <span>
+            Balance:{' '}
+            <span
+              style={{ textDecoration: 'underline', cursor: 'pointer' }}
+              onClick={() =>
+                updateAssetAmount(
+                  big(bank.userBalances.ubLuna).div(MICRO).toString(),
+                )
+              }
+            >
+              {big(bank.userBalances.ubLuna).div(MICRO).toString()} bLuna
+            </span>
+          </span>
+        }
       >
         <MuiNativeSelect
           value={bAssetCurrency}

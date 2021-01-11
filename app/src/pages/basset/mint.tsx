@@ -4,7 +4,11 @@ import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/Hori
 import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
-import { MICRO, toFixedNoRounding } from '@anchor-protocol/notation';
+import {
+  discardDecimalPoints,
+  MICRO,
+  toFixedNoRounding,
+} from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
   useBroadcastableQuery,
@@ -113,7 +117,7 @@ function MintBase({ className }: MintProps) {
     } else if (
       big(assetAmount.length > 0 ? assetAmount : 0)
         .mul(MICRO)
-        .gt(big(bank.userBalances.uLuna ?? 0))
+        .gt(bank.userBalances.uLuna ?? 0)
     ) {
       return `Insufficient balance: Not enough Assets (${big(
         bank.userBalances.uLuna ?? 0,
@@ -145,13 +149,15 @@ function MintBase({ className }: MintProps) {
 
   const updateAssetAmount = useCallback(
     (nextAssetAmount: string) => {
-      setAssetAmount(nextAssetAmount);
+      setAssetAmount(discardDecimalPoints(nextAssetAmount));
       setBAssetAmount(
-        nextAssetAmount.length === 0
-          ? ''
-          : big(nextAssetAmount)
-              .div(exchangeRate?.exchange_rate ?? 1)
-              .toString(),
+        discardDecimalPoints(
+          nextAssetAmount.length === 0
+            ? ''
+            : big(nextAssetAmount)
+                .div(exchangeRate?.exchange_rate ?? 1)
+                .toString(),
+        ),
       );
     },
     [exchangeRate?.exchange_rate],
@@ -160,13 +166,15 @@ function MintBase({ className }: MintProps) {
   const updateBAssetAmount = useCallback(
     (nextBAssetAmount: string) => {
       setAssetAmount(
-        nextBAssetAmount.length === 0
-          ? ''
-          : big(nextBAssetAmount)
-              .mul(exchangeRate?.exchange_rate ?? 1)
-              .toString(),
+        discardDecimalPoints(
+          nextBAssetAmount.length === 0
+            ? ''
+            : big(nextBAssetAmount)
+                .mul(exchangeRate?.exchange_rate ?? 1)
+                .toString(),
+        ),
       );
-      setBAssetAmount(nextBAssetAmount);
+      setBAssetAmount(discardDecimalPoints(nextBAssetAmount));
     },
     [exchangeRate?.exchange_rate],
   );
@@ -255,7 +263,22 @@ function MintBase({ className }: MintProps) {
       <SelectAndTextInputContainer
         className="bond"
         error={!!invalidAssetAmount}
-        helperText={invalidAssetAmount}
+        leftHelperText={invalidAssetAmount}
+        rightHelperText={
+          <span>
+            Balance:{' '}
+            <span
+              style={{ textDecoration: 'underline', cursor: 'pointer' }}
+              onClick={() =>
+                updateAssetAmount(
+                  big(bank.userBalances.uLuna).div(MICRO).toString(),
+                )
+              }
+            >
+              {big(bank.userBalances.uLuna).div(MICRO).toString()} Luna
+            </span>
+          </span>
+        }
       >
         <MuiNativeSelect
           value={assetCurrency}
