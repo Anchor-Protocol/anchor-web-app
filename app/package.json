@@ -5,7 +5,7 @@
   "proxy": "http://localhost:1337/",
   "scripts": {
     "start": "multiplerun start",
-    "start:chrome": "multiplerun start:chrome",
+    "start:chrome": "open http://localhost:9433; PORT=9433 BROWSER=none npx react-app-rewired start",
     "build": "CI=true react-app-rewired build",
     "test": "react-app-rewired test --colors",
     "coverage": "react-app-rewired test --colors --coverage"
@@ -16,8 +16,7 @@
       "PORT=9433 TS_NODE_PROJECT=tsconfig.script.json node -r ts-node/register -r tsconfig-paths/register scripts/start.ts"
     ],
     "start:chrome": [
-      "PORT=9433 BROWSER=none npx react-app-rewired start",
-      "open http://localhost:9433"
+      "PORT=9433 BROWSER=none npx react-app-rewired start"
     ]
   },
   "eslintConfig": {

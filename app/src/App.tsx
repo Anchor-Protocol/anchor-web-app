@@ -7,6 +7,7 @@ import { SnackbarProvider } from '@anchor-protocol/snackbar';
 import { QueryBroadcaster } from '@anchor-protocol/use-broadcastable-query';
 import { ChromeExtensionWalletProvider } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
+import { Banner } from 'components/Banner';
 import { Footer } from 'components/Footer';
 import { Header } from 'components/Header';
 import { SnackbarContainer } from 'components/snackbar/SnackbarContainer';
@@ -110,6 +111,7 @@ function AppBase({ className }: AppProps) {
                   {/** Start Layout */}
                   <div className={className}>
                     <Header />
+                    <Banner />
                     <Switch>
                       <Route path="/earn" component={Earn} />
                       <Route path="/borrow" component={Borrow} />

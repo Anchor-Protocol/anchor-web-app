@@ -1,3 +1,4 @@
+import { Notifications } from 'components/Header/Notifications';
 import { WalletSelector } from 'components/Header/WalletSelector';
 import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
@@ -19,6 +20,7 @@ function HeaderBase({ className }: HeaderProps) {
         <NavLink to="/basset">bASSET</NavLink>
       </nav>
       <section>
+        <Notifications />
         <WalletSelector />
       </section>
     </header>
