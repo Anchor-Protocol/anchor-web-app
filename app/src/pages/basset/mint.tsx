@@ -29,6 +29,7 @@ import {
   TxResultRenderer,
 } from 'api/transactions/TxResultRenderer';
 import big from 'big.js';
+import { WarningArticle } from 'components/messages/WarningArticle';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { fixedGasUUSD, transactionFee } from 'env';
@@ -102,7 +103,7 @@ function MintBase({ className }: MintProps) {
     if (bank.status === 'demo') {
       return undefined;
     } else if (big(bank.userBalances.uUSD).lt(fixedGasUUSD)) {
-      return 'Not Enough Tx Fee';
+      return 'Not Enough Tx Fee (Your USD Balance is lower than Fixed Gas)';
     }
     return undefined;
   }, [bank.status, bank.userBalances.uUSD]);
@@ -239,7 +240,7 @@ function MintBase({ className }: MintProps) {
 
   return (
     <Section className={className}>
-      {!!invalidTxFee && <div>{invalidTxFee}</div>}
+      {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
 
       {/* Bond (Asset) */}
       <div className="bond-description">
