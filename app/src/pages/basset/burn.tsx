@@ -256,11 +256,6 @@ function BurnBase({ className }: BurnProps) {
           error={!!invalidBAssetAmount}
           value={bAssetAmount}
           onChange={({ target }) => updateBAssetAmount(target.value)}
-          endAdornment={
-            <InputAdornment position="end" style={{ opacity: 0.5 }}>
-              / {toFixedNoRounding(big(bank.userBalances.ubLuna).div(MICRO), 2)}
-            </InputAdornment>
-          }
         />
       </SelectAndTextInputContainer>
 

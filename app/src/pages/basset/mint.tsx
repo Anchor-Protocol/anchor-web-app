@@ -279,11 +279,6 @@ function MintBase({ className }: MintProps) {
           error={!!invalidAssetAmount}
           value={assetAmount}
           onChange={({ target }) => updateAssetAmount(target.value)}
-          endAdornment={
-            <InputAdornment position="end" style={{ opacity: 0.5 }}>
-              / {toFixedNoRounding(big(bank.userBalances.uUSD).div(MICRO), 2)}
-            </InputAdornment>
-          }
         />
       </SelectAndTextInputContainer>
 
