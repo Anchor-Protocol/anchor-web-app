@@ -8,6 +8,21 @@ const storage = localStorage;
 const WALLET_ADDRESS: string = '__anchor_terra_station_wallet_address__';
 const STATION_INSTALL_COUNT: string = '__anchor_terra_station_install_count__';
 
+async function intervalCheck(
+  count: number,
+  fn: () => boolean,
+  intervalMs: number = 500,
+): Promise<boolean> {
+  let i: number = -1;
+  while (++i < count) {
+    if (fn()) {
+      return true;
+    }
+    await new Promise((resolve) => setTimeout(resolve, intervalMs));
+  }
+  return false;
+}
+
 export function ChromeExtensionWalletProvider({
   children,
 }: WalletProviderProps) {
@@ -17,61 +32,72 @@ export function ChromeExtensionWalletProvider({
     status: 'initializing',
   }));
 
-  const checkStatus = useCallback(async () => {
-    if (!extension.isAvailable) {
-      setStatus((prev) => {
-        if (prev.status !== 'initializing' && prev.status !== 'not_installed') {
-          console.error(
-            [
-              `Abnormal Wallet status change to not_install`,
-              `===============================================`,
-              JSON.stringify(
-                {
-                  'window.isTerraExtensionAvailable':
-                    window.isTerraExtensionAvailable,
-                },
-                null,
-                2,
-              ),
-            ].join('\n'),
-          );
-        }
-
-        return prev.status !== 'not_installed'
-          ? { status: 'not_installed' }
-          : prev;
-      });
-      return;
-    }
-
-    const { payload } = await extension.request('info');
-    const network: StationNetworkInfo = payload as any;
-
-    const storedWalletAddress: string | null = storage.getItem(WALLET_ADDRESS);
-
-    if (storedWalletAddress) {
-      if (storedWalletAddress.trim().length > 0) {
+  const checkStatus = useCallback(
+    async (checkWithInterval: boolean = false) => {
+      const isExtensionNotInstalled = checkWithInterval
+        ? await intervalCheck(20, () => extension.isAvailable)
+        : extension.isAvailable;
+      if (!isExtensionNotInstalled) {
         setStatus((prev) => {
-          return prev.status !== 'ready' ||
-            prev.walletAddress !== storedWalletAddress
-            ? {
-                status: 'ready',
-                network,
-                walletAddress: storedWalletAddress,
-              }
+          if (
+            prev.status !== 'initializing' &&
+            prev.status !== 'not_installed'
+          ) {
+            console.error(
+              [
+                `Abnormal Wallet status change to not_install`,
+                `===============================================`,
+                JSON.stringify(
+                  {
+                    'window.isTerraExtensionAvailable':
+                      window.isTerraExtensionAvailable,
+                  },
+                  null,
+                  2,
+                ),
+              ].join('\n'),
+            );
+          }
+
+          return prev.status !== 'not_installed'
+            ? { status: 'not_installed' }
             : prev;
         });
-      } else {
-        storage.removeItem(WALLET_ADDRESS);
+        return;
       }
-    } else {
-      setStatus((prev) => {
-        return prev.status !== 'not_connected'
-          ? { status: 'not_connected', network }
-          : prev;
-      });
-    }
-  }, [extension]);
+
+      const { payload } = await extension.request('info');
+      const network: StationNetworkInfo = payload as any;
+
+      const storedWalletAddress: string | null = storage.getItem(
+        WALLET_ADDRESS,
+      );
+
+      if (storedWalletAddress) {
+        if (storedWalletAddress.trim().length > 0) {
+          setStatus((prev) => {
+            return prev.status !== 'ready' ||
+              prev.walletAddress !== storedWalletAddress
+              ? {
+                  status: 'ready',
+                  network,
+                  walletAddress: storedWalletAddress,
+                }
+              : prev;
+          });
+        } else {
+          storage.removeItem(WALLET_ADDRESS);
+        }
+      } else {
+        setStatus((prev) => {
+          return prev.status !== 'not_connected'
+            ? { status: 'not_connected', network }
+            : prev;
+        });
+      }
+    },
+    [extension],
+  );
 
   const install = useCallback(() => {
     const count: number = parseInt(
@@ -127,7 +153,7 @@ export function ChromeExtensionWalletProvider({
   );
 
   useEffect(() => {
-    checkStatus();
+    checkStatus(true);
   }, [checkStatus]);
 
   useEffect(() => {
