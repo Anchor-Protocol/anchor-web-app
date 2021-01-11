@@ -98,15 +98,6 @@ export function ChromeExtensionWalletProvider({
 
   useEffect(() => {
     checkStatus();
-
-    // TODO remove interval check
-    const interval = setInterval(() => {
-      checkStatus();
-    }, 3000);
-
-    return () => {
-      clearInterval(interval);
-    };
   }, [checkStatus]);
 
   const state = useMemo<WalletState>(
