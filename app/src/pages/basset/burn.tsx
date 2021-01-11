@@ -11,7 +11,6 @@ import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient } from '@apollo/client';
 import {
   Input as MuiInput,
-  InputAdornment,
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
 import { CreateTxOptions } from '@terra-money/terra.js';
