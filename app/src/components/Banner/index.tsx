@@ -6,7 +6,7 @@ export interface BannerProps {
   className?: string;
 }
 
-const isChrome = matchesUA(navigator.userAgent, { browsers: ['Firefox > 60'] });
+const isChrome = matchesUA(navigator.userAgent, { browsers: ['Chrome > 60'] });
 
 function BannerBase({ className }: BannerProps) {
   const { status, install, connect } = useWallet();
