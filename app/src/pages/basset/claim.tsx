@@ -30,6 +30,7 @@ import {
   TxResultRenderer,
 } from 'api/transactions/TxResultRenderer';
 import big from 'big.js';
+import { WarningArticle } from 'components/messages/WarningArticle';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { fixedGasUUSD, transactionFee } from 'env';
@@ -281,7 +282,7 @@ function ClaimBase({ className }: ClaimProps) {
     <div className={className}>
       {/* Withdrawable */}
       <Section>
-        {!!invalidTxFee && <div>{invalidTxFee}</div>}
+        {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
 
         {assetCurrencies.length > 1 && (
           <NativeSelect
@@ -355,7 +356,7 @@ function ClaimBase({ className }: ClaimProps) {
 
       {/* Claimable */}
       <Section>
-        {!!invalidTxFee && <div>{invalidTxFee}</div>}
+        {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
 
         <article className="claimable-rewards">
           <h4>Claimable Rewards</h4>
