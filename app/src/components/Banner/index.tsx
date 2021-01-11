@@ -14,15 +14,10 @@ function BannerBase({ className }: BannerProps) {
   if (!isChrome) {
     return (
       <div className={className}>
-        <p>Demo Mode: No Chromium</p>
         <p>
-          Anchor App is only support{' '}
+          Anchor currently only supports{' '}
           <a href="https://www.google.com/chrome/?brand=CHBD&brand=BNSD&gclid=Cj0KCQiA6Or_BRC_ARIsAPzuer_951Qv_ycnWlDRowxEnDcORIo1XgAmLIH_qAl1HlugMzmhMsLvo8saAnDSEALw_wcB&gclsrc=aw.ds">
             Chrome
-          </a>{' '}
-          and{' '}
-          <a href="https://www.microsoft.com/en-us/edge/business/download">
-            Edge
           </a>
         </p>
       </div>
@@ -50,7 +45,7 @@ function BannerBase({ className }: BannerProps) {
 }
 
 export const Banner = styled(BannerBase)`
-  height: 100px;
+  height: 70px;
   background-color: #cfb673;
   display: grid;
   place-content: center;
