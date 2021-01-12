@@ -14,7 +14,7 @@ export const screen = {
 
 export const FINDER = 'https://finder.terra.money';
 
-export const fixedGasUUSD = 2000000;
+export const fixedGasUUSD = 3500000;
 
 export const transactionFee = {
   //gasPrices: '0.0015uusd',
