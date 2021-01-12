@@ -3,9 +3,9 @@ import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionB
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
 import {
-  discardDecimalPoints,
-  discardInputDecimalPoints,
   formatLuna,
+  formatLunaInput,
+  formatLunaUserInput,
   MICRO,
 } from '@anchor-protocol/notation';
 import {
@@ -142,14 +142,12 @@ function BurnBase({ className }: BurnProps) {
         setAssetAmount('');
         setBAssetAmount('');
       } else {
-        const assetAmount: string = discardInputDecimalPoints(nextAssetAmount);
+        const assetAmount: string = formatLunaUserInput(nextAssetAmount);
 
         setAssetAmount(assetAmount);
         setBAssetAmount(
-          discardDecimalPoints(
-            big(assetAmount)
-              .div(exchangeRate?.exchange_rate ?? 1)
-              .toFixed(),
+          formatLunaInput(
+            big(assetAmount).div(exchangeRate?.exchange_rate ?? 1),
           ),
         );
       }
@@ -163,15 +161,11 @@ function BurnBase({ className }: BurnProps) {
         setAssetAmount('');
         setBAssetAmount('');
       } else {
-        const bAssetAmount: string = discardInputDecimalPoints(
-          nextBAssetAmount,
-        );
+        const bAssetAmount: string = formatLunaUserInput(nextBAssetAmount);
 
         setAssetAmount(
-          discardDecimalPoints(
-            big(bAssetAmount)
-              .mul(exchangeRate?.exchange_rate ?? 1)
-              .toString(),
+          formatLunaInput(
+            big(bAssetAmount).mul(exchangeRate?.exchange_rate ?? 1),
           ),
         );
         setBAssetAmount(bAssetAmount);

@@ -5,7 +5,7 @@ import {
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
-import { MICRO, toFixedNoRounding } from '@anchor-protocol/notation';
+import { formatLuna, formatUST, MICRO } from '@anchor-protocol/notation';
 import {
   pressed,
   rulerLightColor,
@@ -300,7 +300,7 @@ function ClaimBase({ className }: ClaimProps) {
           <h4>Withdrawable Amount</h4>
           <p>
             {withdrawableAmount.gt(0)
-              ? toFixedNoRounding(withdrawableAmount.div(MICRO), 2) + ' Luna'
+              ? formatLuna(withdrawableAmount.div(MICRO)) + ' Luna'
               : '-'}
           </p>
         </article>
@@ -334,19 +334,14 @@ function ClaimBase({ className }: ClaimProps) {
                     Requested time:{' '}
                     <time>{requestTime?.toLocaleString() ?? 'Pending'}</time>
                   </p>
-                  <p>
-                    {toFixedNoRounding(big(blunaAmount).div(MICRO), 2)} bLuna
-                  </p>
+                  <p>{formatLuna(big(blunaAmount).div(MICRO))} bLuna</p>
                   <p>
                     Claimable time:{' '}
                     <time>{claimableTime?.toLocaleString() ?? 'Pending'}</time>
                   </p>
                   <p>
                     {lunaAmount
-                      ? `${toFixedNoRounding(
-                          big(lunaAmount).div(MICRO),
-                          2,
-                        )} Luna`
+                      ? `${formatLuna(big(lunaAmount).div(MICRO))} Luna`
                       : ''}
                   </p>
                 </li>
@@ -362,7 +357,7 @@ function ClaimBase({ className }: ClaimProps) {
           <h4>Claimable Rewards</h4>
           <p>
             {claimableRewards.gt(0)
-              ? toFixedNoRounding(claimableRewards.div(MICRO), 2) + ' UST'
+              ? formatUST(claimableRewards.div(MICRO)) + ' UST'
               : '-'}
           </p>
         </article>

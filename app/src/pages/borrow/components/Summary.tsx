@@ -1,5 +1,9 @@
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
-import { MICRO, toFixedNoRounding } from '@anchor-protocol/notation';
+import {
+  formatPercentage,
+  formatUSTWithPostfixUnits,
+  MICRO,
+} from '@anchor-protocol/notation';
 import big from 'big.js';
 import { BLOCKS_PER_YEAR } from 'constants/BLOCKS_PER_YEAR';
 import { useMemo } from 'react';
@@ -54,17 +58,17 @@ function SummaryBase({ className, marketOverview }: SummaryProps) {
       <article>
         <div>
           <label>APR</label>
-          <p>{toFixedNoRounding(apr, 2)}%</p>
+          <p>{formatPercentage(apr)}%</p>
         </div>
 
         <div>
           <label>Collateral Value</label>
-          <p>${toFixedNoRounding(collateralValue, 2)}</p>
+          <p>${formatUSTWithPostfixUnits(collateralValue)}</p>
         </div>
 
         <div>
           <label>Borrowed Value</label>
-          <p>${toFixedNoRounding(borrowedValue, 2)}</p>
+          <p>${formatUSTWithPostfixUnits(borrowedValue)}</p>
         </div>
       </article>
 

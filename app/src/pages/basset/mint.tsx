@@ -5,9 +5,10 @@ import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeS
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
 import {
-  discardDecimalPoints, discardInputDecimalPoints,
+  formatLuna,
+  formatLunaInput,
+  formatLunaUserInput,
   MICRO,
-  toFixedNoRounding,
 } from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
@@ -153,14 +154,12 @@ function MintBase({ className }: MintProps) {
         setAssetAmount('');
         setBAssetAmount('');
       } else {
-        const assetAmount: string = discardInputDecimalPoints(nextAssetAmount);
+        const assetAmount: string = formatLunaUserInput(nextAssetAmount);
 
         setAssetAmount(assetAmount);
         setBAssetAmount(
-          discardDecimalPoints(
-            big(assetAmount)
-              .div(exchangeRate?.exchange_rate ?? 1)
-              .toFixed(),
+          formatLunaInput(
+            big(assetAmount).div(exchangeRate?.exchange_rate ?? 1),
           ),
         );
       }
@@ -174,13 +173,11 @@ function MintBase({ className }: MintProps) {
         setAssetAmount('');
         setBAssetAmount('');
       } else {
-        const bAssetAmount: string = discardInputDecimalPoints(nextBAssetAmount);
+        const bAssetAmount: string = formatLunaUserInput(nextBAssetAmount);
 
         setAssetAmount(
-          discardDecimalPoints(
-            big(bAssetAmount)
-              .mul(exchangeRate?.exchange_rate ?? 1)
-              .toString(),
+          formatLunaInput(
+            big(bAssetAmount).mul(exchangeRate?.exchange_rate ?? 1),
           ),
         );
         setBAssetAmount(bAssetAmount);
@@ -264,7 +261,7 @@ function MintBase({ className }: MintProps) {
         <p>I want to bond</p>
         <p>
           {exchangeRate &&
-            `1 Luna = ${toFixedNoRounding(
+            `1 Luna = ${formatLuna(
               big(1).div(exchangeRate.exchange_rate),
             )} bLuna`}
         </p>
@@ -319,7 +316,7 @@ function MintBase({ className }: MintProps) {
         <p>and mint</p>
         <p>
           {exchangeRate &&
-            `1 bLuna = ${toFixedNoRounding(exchangeRate.exchange_rate)} Luna`}
+            `1 bLuna = ${formatLuna(exchangeRate.exchange_rate)} Luna`}
         </p>
       </div>
 

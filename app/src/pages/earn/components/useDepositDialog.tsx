@@ -6,9 +6,9 @@ import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput'
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { useConfirm } from '@anchor-protocol/neumorphism-ui/components/useConfirm';
 import {
-  discardInputDecimalPoints,
+  formatUST,
+  formatUSTUserInput,
   MICRO,
-  toFixedNoRounding,
 } from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
@@ -127,11 +127,12 @@ function ComponentBase({
 
     // MIN((User_UST_Balance - fixed_gas)/(1+Tax_rate) * tax_rate , Max_tax) + Fixed_Gas
 
-    const ratioTxFee = big(assetAmount).mul(MICRO).mul(tax.taxRate);
+    const uustAmount = big(assetAmount).mul(MICRO)
+    const ratioTxFee = big(uustAmount.minus(fixedGasUUSD)).div(big(1).add(tax.taxRate)).mul(tax.taxRate);
     const maxTax = big(tax.maxTaxUUSD);
 
     if (ratioTxFee.gt(maxTax)) {
-      return big(maxTax).add(fixedGasUUSD).toString();
+      return maxTax.add(fixedGasUUSD).toString();
     } else {
       return ratioTxFee.add(fixedGasUUSD).toString();
     }
@@ -165,7 +166,7 @@ function ComponentBase({
   // callbacks
   // ---------------------------------------------
   const updateAssetAmount = useCallback((nextAssetAmount: string) => {
-    setAssetAmount(discardInputDecimalPoints(nextAssetAmount));
+    setAssetAmount(formatUSTUserInput(nextAssetAmount));
   }, []);
 
   const proceed = useCallback(
@@ -297,13 +298,7 @@ function ComponentBase({
                 )
               }
             >
-              {toFixedNoRounding(
-                big(bank.userBalances.uUSD ?? 0)
-                  .div(MICRO)
-                  .toString(),
-                2,
-              )}{' '}
-              UST
+              {formatUST(big(bank.userBalances.uUSD ?? 0).div(MICRO))} UST
             </span>
           </span>
         </div>
@@ -319,7 +314,7 @@ function ComponentBase({
                     <InfoOutlined />
                   </Tooltip>
                 </span>
-                <span>{toFixedNoRounding(big(txFee).div(MICRO))} UST</span>
+                <span>{formatUST(big(txFee).div(MICRO))} UST</span>
               </li>
             </ul>
             <HorizontalDashedRuler />

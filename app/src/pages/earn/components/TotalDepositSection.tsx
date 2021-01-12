@@ -2,12 +2,12 @@ import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionB
 import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import {
+  formatUST,
+  mapDecimalPointBaseSeparatedNumbers,
   MICRO,
-  separateBasedOnDecimalPoints,
-  toFixedNoRounding,
 } from '@anchor-protocol/notation';
 import big from 'big.js';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { useTotalDeposit } from '../queries/totalDeposit';
 import { useDepositDialog } from './useDepositDialog';
@@ -48,26 +48,26 @@ function TotalDepositSectionBase({ className }: TotalDepositSectionProps) {
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
-  const [ust, ustDecimal] = useMemo(() => {
-    const value = big(totalDeposit?.totalDeposit ?? 0).div(MICRO);
-    return separateBasedOnDecimalPoints(value);
-  }, [totalDeposit?.totalDeposit]);
-
   return (
     <Section className={className}>
       <h2>TOTAL DEPOSIT</h2>
 
       <div className="amount">
-        {ust}
-        <span className="decimal-point">.{ustDecimal}</span> UST
+        {mapDecimalPointBaseSeparatedNumbers(
+          formatUST(big(totalDeposit?.totalDeposit ?? 0).div(MICRO)),
+          (i, d) => {
+            return (
+              <>
+                {i}
+                {d ? <span className="decimal-point">.{d}</span> : null} UST
+              </>
+            );
+          },
+        )}
       </div>
 
       <div className="amount-description">
-        {toFixedNoRounding(
-          big(totalDeposit?.aUSTBalance.balance ?? 0).div(MICRO),
-          3,
-        )}{' '}
-        aUST
+        {formatUST(big(totalDeposit?.aUSTBalance.balance ?? 0).div(MICRO))} aUST
       </div>
 
       <HorizontalRuler />

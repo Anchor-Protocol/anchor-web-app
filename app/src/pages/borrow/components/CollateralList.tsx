@@ -1,7 +1,11 @@
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/components/HorizontalScrollTable';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
-import { MICRO, postfixUnits } from '@anchor-protocol/notation';
+import {
+  formatLuna,
+  formatUSTWithPostfixUnits,
+  MICRO,
+} from '@anchor-protocol/notation';
 import { Error } from '@material-ui/icons';
 import big from 'big.js';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
@@ -68,9 +72,9 @@ function CollateralListBase({
             </td>
             <td>
               <div className="value">
-                {postfixUnits(collateralsInUST, 0)} UST
+                {formatUSTWithPostfixUnits(collateralsInUST)} UST
               </div>
-              <p className="volatility">{postfixUnits(collaterals, 0)} bLUNA</p>
+              <p className="volatility">{formatLuna(collaterals)} bLUNA</p>
             </td>
             <td>
               <ActionButton onClick={() => openBorrowDialog({})}>
