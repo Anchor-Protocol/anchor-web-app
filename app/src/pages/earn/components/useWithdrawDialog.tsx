@@ -4,7 +4,11 @@ import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { HorizontalDashedRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalDashedRuler';
 import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
-import { discardDecimalPoints, MICRO, toFixedNoRounding } from '@anchor-protocol/notation';
+import {
+  discardInputDecimalPoints,
+  MICRO,
+  toFixedNoRounding,
+} from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
   useBroadcastableQuery,
@@ -135,7 +139,7 @@ function ComponentBase({
   // callbacks
   // ---------------------------------------------
   const updateAAssetAmount = useCallback((nextAAssetAmount: string) => {
-    setAAssetAmount(discardDecimalPoints(nextAAssetAmount));
+    setAAssetAmount(discardInputDecimalPoints(nextAAssetAmount));
   }, []);
 
   const proceed = useCallback(

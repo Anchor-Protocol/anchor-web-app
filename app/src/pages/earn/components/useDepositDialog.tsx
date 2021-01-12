@@ -6,7 +6,7 @@ import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput'
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { useConfirm } from '@anchor-protocol/neumorphism-ui/components/useConfirm';
 import {
-  discardDecimalPoints,
+  discardInputDecimalPoints,
   MICRO,
   toFixedNoRounding,
 } from '@anchor-protocol/notation';
@@ -165,7 +165,7 @@ function ComponentBase({
   // callbacks
   // ---------------------------------------------
   const updateAssetAmount = useCallback((nextAssetAmount: string) => {
-    setAssetAmount(discardDecimalPoints(nextAssetAmount));
+    setAssetAmount(discardInputDecimalPoints(nextAssetAmount));
   }, []);
 
   const proceed = useCallback(
