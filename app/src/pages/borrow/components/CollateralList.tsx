@@ -1,16 +1,42 @@
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/components/HorizontalScrollTable';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
+import { MICRO, postfixUnits } from '@anchor-protocol/notation';
 import { Error } from '@material-ui/icons';
-import { useBorrowDialog } from './useBorrowDialog';
+import big from 'big.js';
+import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
+import { useMemo } from 'react';
 import styled from 'styled-components';
+import { useBorrowDialog } from './useBorrowDialog';
 
 export interface CollateralListProps {
   className?: string;
+  marketOverview: MarketOverview | undefined;
 }
 
-function CollateralListBase({ className }: CollateralListProps) {
+function CollateralListBase({
+  className,
+  marketOverview,
+}: CollateralListProps) {
   const [openBorrowDialog, borrowDialogElement] = useBorrowDialog();
+
+  //console.log('CollateralList.tsx..CollateralListBase()', );
+  const collaterals = useMemo(() => {
+    return big(
+      big(marketOverview?.borrowInfo.balance ?? 0).minus(
+        marketOverview?.borrowInfo.spendable ?? 0,
+      ),
+    ).div(MICRO);
+  }, [
+    marketOverview?.borrowInfo.balance,
+    marketOverview?.borrowInfo.spendable,
+  ]);
+
+  const collateralsInUST = useMemo(() => {
+    return big(big(collaterals).mul(marketOverview?.oraclePrice.rate ?? 1)).div(
+      MICRO,
+    );
+  }, [collaterals, marketOverview?.oraclePrice.rate]);
 
   return (
     <Section className={`collateral-list ${className}`}>
@@ -30,29 +56,29 @@ function CollateralListBase({ className }: CollateralListProps) {
           </tr>
         </thead>
         <tbody>
-          {Array.from({ length: 3 }, (_, i) => (
-            <tr key={'collateral-list' + i}>
-              <td>
-                <i>
-                  <Error />
-                </i>
-                <div>
-                  <div className="coin">bLuna</div>
-                  <p className="name">Bonded Luna</p>
-                </div>
-              </td>
-              <td>
-                <div className="value">240 UST</div>
-                <p className="volatility">200k bLUNA</p>
-              </td>
-              <td>
-                <ActionButton onClick={() => openBorrowDialog({})}>
-                  Add
-                </ActionButton>
-                <ActionButton>Withdraw</ActionButton>
-              </td>
-            </tr>
-          ))}
+          <tr>
+            <td>
+              <i>
+                <Error />
+              </i>
+              <div>
+                <div className="coin">bLuna</div>
+                <p className="name">Bonded Luna</p>
+              </div>
+            </td>
+            <td>
+              <div className="value">
+                {postfixUnits(collateralsInUST, 0)} UST
+              </div>
+              <p className="volatility">{postfixUnits(collaterals, 0)} bLUNA</p>
+            </td>
+            <td>
+              <ActionButton onClick={() => openBorrowDialog({})}>
+                Add
+              </ActionButton>
+              <ActionButton>Withdraw</ActionButton>
+            </td>
+          </tr>
         </tbody>
       </HorizontalScrollTable>
 

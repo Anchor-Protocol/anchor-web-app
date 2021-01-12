@@ -2,10 +2,12 @@ import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionB
 import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/components/HorizontalScrollTable';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { Error } from '@material-ui/icons';
+import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import styled from 'styled-components';
 
 export interface LoanListProps {
   className?: string;
+  marketOverview: MarketOverview | undefined;
 }
 
 function LoanListBase({ className }: LoanListProps) {

@@ -1,4 +1,4 @@
-import { MICRO, toFixedNoRounding } from '@anchor-protocol/notation';
+import { formatUST, MICRO } from '@anchor-protocol/notation';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { Badge, ClickAwayListener, IconButton } from '@material-ui/core';
 import { NotificationsNone } from '@material-ui/icons';
@@ -40,8 +40,8 @@ function NotificationsBase({ className }: NotificationsProps) {
           <p>Not enough uusd balance than fixed gas.</p>
           <p>
             your usd balance ={' '}
-            {toFixedNoRounding(big(bank.userBalances.uUSD).div(MICRO))} / fixed
-            gas = {toFixedNoRounding(big(fixedGasUUSD).div(MICRO))}
+            {formatUST(big(bank.userBalances.uUSD).div(MICRO))} / fixed gas ={' '}
+            {formatUST(big(fixedGasUUSD).div(MICRO))}
           </p>
         </li>,
       );
@@ -78,7 +78,7 @@ function NotificationsBase({ className }: NotificationsProps) {
               <NotificationsNone />
             </Badge>
           ) : (
-            <NotificationsNone style={{opacity: 0.1}} />
+            <NotificationsNone style={{ opacity: 0.1 }} />
           )}
         </IconButton>
         {open ? (

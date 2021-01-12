@@ -3,6 +3,7 @@ import {
   rulerShadowColor,
 } from '@anchor-protocol/styled-neumorphism';
 import { screen } from 'env';
+import { useMarketOverview } from 'pages/borrow/queries/marketOverview';
 import React from 'react';
 import styled from 'styled-components';
 import { CollateralList } from './components/CollateralList';
@@ -14,15 +15,17 @@ export interface BorrowProps {
 }
 
 function BorrowBase({ className }: BorrowProps) {
+  const { parsedData: marketOverview } = useMarketOverview();
+
   return (
     <div className={className}>
       <main>
         <h1>BORROW</h1>
 
         <div className="content-layout">
-          <Summary />
-          <CollateralList />
-          <LoanList />
+          <Summary marketOverview={marketOverview} />
+          <CollateralList marketOverview={marketOverview} />
+          <LoanList marketOverview={marketOverview} />
         </div>
       </main>
     </div>

@@ -3,9 +3,10 @@ import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionB
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
 import {
-  discardDecimalPoints, discardInputDecimalPoints,
+  discardDecimalPoints,
+  discardInputDecimalPoints,
+  formatLuna,
   MICRO,
-  toFixedNoRounding,
 } from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
@@ -162,7 +163,9 @@ function BurnBase({ className }: BurnProps) {
         setAssetAmount('');
         setBAssetAmount('');
       } else {
-        const bAssetAmount: string = discardInputDecimalPoints(nextBAssetAmount);
+        const bAssetAmount: string = discardInputDecimalPoints(
+          nextBAssetAmount,
+        );
 
         setAssetAmount(
           discardDecimalPoints(
@@ -244,7 +247,7 @@ function BurnBase({ className }: BurnProps) {
         <p>I want to burn</p>
         <p>
           {exchangeRate &&
-            `1 bLuna = ${toFixedNoRounding(exchangeRate.exchange_rate)} Luna`}
+            `1 bLuna = ${formatLuna(exchangeRate.exchange_rate)} Luna`}
         </p>
       </div>
 
@@ -296,7 +299,7 @@ function BurnBase({ className }: BurnProps) {
         <p>and get</p>
         <p>
           {exchangeRate &&
-            `1 Luna = ${toFixedNoRounding(
+            `1 Luna = ${formatLuna(
               big(1).div(big(exchangeRate.exchange_rate)),
             )} bLuna`}
         </p>
