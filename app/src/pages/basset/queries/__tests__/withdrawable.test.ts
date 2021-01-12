@@ -17,7 +17,7 @@ describe('queries/withdrawable', () => {
           withdrawableAmountQuery: {
             withdrawable_unbonded: {
               address: testWalletAddress,
-              block_time: Date.now() - 1000 * 60 * 60 * 24 * 10,
+              block_time: Math.floor(Date.now() / 1000) - 1000 * 60 * 60 * 24 * 10,
             },
           },
           withdrawRequestsQuery: {

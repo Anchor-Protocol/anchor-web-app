@@ -112,7 +112,7 @@ export function useWithdrawable({
   const addressProvider = useAddressProvider();
   const { status } = useWallet();
 
-  const [now, setNow] = useState(() => Date.now());
+  const [now, setNow] = useState(() => Math.floor(Date.now() / 1000));
 
   const result = useQuery<StringifiedData, StringifiedVariables>(query, {
     skip: status.status !== 'ready',
