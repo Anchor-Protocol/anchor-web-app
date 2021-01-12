@@ -40,18 +40,36 @@ export function truncate(
   return text.length > h + t ? [head, tail].join('...') : text;
 }
 
+export function discardInputDecimalPoints(
+  n: number | string | { toString(): string },
+  keepDecimalPoints: number = DECIMAL_POINTS,
+): string {
+  const [i, d = ''] = n.toString().split('.');
+
+  if (d.length === 0) {
+    return i.toString();
+  }
+
+  return i + '.' + d.substr(0, keepDecimalPoints);
+}
+
 export function discardDecimalPoints(
   n: number | string | { toString(): string },
   keepDecimalPoints: number = DECIMAL_POINTS,
 ): string {
   const [i, d = ''] = n.toString().split('.');
-  const dn = big(d.length > 0 ? d : 0);
 
-  if (dn.lte(0)) {
+  if (d.length === 0) {
     return i.toString();
   }
 
-  const ds: string = dn.toFixed().substr(0, keepDecimalPoints);
+  const ds: string = big(
+    big('0.' + d)
+      .toFixed()
+      .substr(0, keepDecimalPoints + 2),
+  )
+    .toString()
+    .substr(2);
 
   if (big(ds).lte(0)) {
     return i.toString();

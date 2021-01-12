@@ -5,7 +5,7 @@ import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeS
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
 import {
-  discardDecimalPoints,
+  discardDecimalPoints, discardInputDecimalPoints,
   MICRO,
   toFixedNoRounding,
 } from '@anchor-protocol/notation';
@@ -153,7 +153,7 @@ function MintBase({ className }: MintProps) {
         setAssetAmount('');
         setBAssetAmount('');
       } else {
-        const assetAmount: string = discardDecimalPoints(nextAssetAmount);
+        const assetAmount: string = discardInputDecimalPoints(nextAssetAmount);
 
         setAssetAmount(assetAmount);
         setBAssetAmount(
@@ -174,7 +174,7 @@ function MintBase({ className }: MintProps) {
         setAssetAmount('');
         setBAssetAmount('');
       } else {
-        const bAssetAmount: string = discardDecimalPoints(nextBAssetAmount);
+        const bAssetAmount: string = discardInputDecimalPoints(nextBAssetAmount);
 
         setAssetAmount(
           discardDecimalPoints(

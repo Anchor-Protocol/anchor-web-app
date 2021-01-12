@@ -3,7 +3,7 @@ import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionB
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
 import {
-  discardDecimalPoints,
+  discardDecimalPoints, discardInputDecimalPoints,
   MICRO,
   toFixedNoRounding,
 } from '@anchor-protocol/notation';
@@ -141,7 +141,7 @@ function BurnBase({ className }: BurnProps) {
         setAssetAmount('');
         setBAssetAmount('');
       } else {
-        const assetAmount: string = discardDecimalPoints(nextAssetAmount);
+        const assetAmount: string = discardInputDecimalPoints(nextAssetAmount);
 
         setAssetAmount(assetAmount);
         setBAssetAmount(
@@ -162,7 +162,7 @@ function BurnBase({ className }: BurnProps) {
         setAssetAmount('');
         setBAssetAmount('');
       } else {
-        const bAssetAmount: string = discardDecimalPoints(nextBAssetAmount);
+        const bAssetAmount: string = discardInputDecimalPoints(nextBAssetAmount);
 
         setAssetAmount(
           discardDecimalPoints(
