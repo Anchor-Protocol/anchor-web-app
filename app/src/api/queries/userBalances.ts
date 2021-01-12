@@ -41,15 +41,9 @@ export function parseData({
   const uLuna: string | undefined = bank.find(({ Denom }) => Denom === 'uluna')
     ?.Amount;
 
-  if (!uUSD || !uLuna) {
-    throw new Error(
-      `Can't get bank amount. "${JSON.stringify({ uUSD, uLuna })}"`,
-    );
-  }
-
   return {
-    uUSD,
-    uLuna,
+    uUSD: uUSD ?? '0',
+    uLuna: uLuna ?? '0',
     ubLuna: ubLuna.balance,
     uaUST: uaUST.balance,
   };
