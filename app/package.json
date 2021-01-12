@@ -2,7 +2,6 @@
   "name": "@anchor-web-app/app",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:1337/",
   "scripts": {
     "start": "multiplerun start",
     "start:chrome": "open http://localhost:9433; PORT=9433 BROWSER=none npx react-app-rewired start",

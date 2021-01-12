@@ -255,7 +255,7 @@ function BurnBase({ className }: BurnProps) {
             <span
               style={{ textDecoration: 'underline', cursor: 'pointer' }}
               onClick={() =>
-                updateAssetAmount(
+                updateBAssetAmount(
                   big(bank.userBalances.ubLuna).div(MICRO).toString(),
                 )
               }
