@@ -1,6 +1,7 @@
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { gql, QueryResult, useQuery } from '@apollo/client';
 import big from 'big.js';
+import { BLOCKS_PER_YEAR } from 'constants/BLOCKS_PER_YEAR';
 import { useAddressProvider } from 'contexts/contract';
 import { useMemo } from 'react';
 
@@ -24,7 +25,6 @@ export function parseData({ marketStatus }: StringifiedData): Data {
   const parsedMarketStatus: Data['marketStatus'] = JSON.parse(
     marketStatus.Result,
   );
-  const BLOCKS_PER_YEAR = 5256666;
 
   return {
     marketStatus: parsedMarketStatus,
