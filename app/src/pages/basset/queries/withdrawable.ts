@@ -35,7 +35,7 @@ export function parseData({
     withdrawRequests: parsedWithdrawRequests,
     withdrawRequestsStartFrom:
       parsedWithdrawRequests.requests.length > 0
-        ? Math.min(...parsedWithdrawRequests.requests.map(([index]) => index))
+        ? Math.max(0, Math.min(...parsedWithdrawRequests.requests.map(([index]) => index)) - 1)
         : -1,
   };
 }
