@@ -126,7 +126,7 @@ function ClaimBase({ className }: ClaimProps) {
         const historyIndex: number =
           index - withdrawable.withdrawRequestsStartFrom;
         const matchingHistory =
-          withdrawAllHistory.allHistory.history[historyIndex];
+          withdrawAllHistory.allHistory.history[historyIndex - 1];
 
         if (!matchingHistory) {
           return {
