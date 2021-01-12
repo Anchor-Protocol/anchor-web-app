@@ -149,32 +149,42 @@ function MintBase({ className }: MintProps) {
 
   const updateAssetAmount = useCallback(
     (nextAssetAmount: string) => {
-      setAssetAmount(discardDecimalPoints(nextAssetAmount));
-      setBAssetAmount(
-        discardDecimalPoints(
-          nextAssetAmount.length === 0
-            ? ''
-            : big(nextAssetAmount)
-                .div(exchangeRate?.exchange_rate ?? 1)
-                .toString(),
-        ),
-      );
+      if (nextAssetAmount.trim().length === 0) {
+        setAssetAmount('');
+        setBAssetAmount('');
+      } else {
+        const assetAmount: string = discardDecimalPoints(nextAssetAmount);
+
+        setAssetAmount(assetAmount);
+        setBAssetAmount(
+          discardDecimalPoints(
+            big(assetAmount)
+              .div(exchangeRate?.exchange_rate ?? 1)
+              .toFixed(),
+          ),
+        );
+      }
     },
     [exchangeRate?.exchange_rate],
   );
 
   const updateBAssetAmount = useCallback(
     (nextBAssetAmount: string) => {
-      setAssetAmount(
-        discardDecimalPoints(
-          nextBAssetAmount.length === 0
-            ? ''
-            : big(nextBAssetAmount)
-                .mul(exchangeRate?.exchange_rate ?? 1)
-                .toString(),
-        ),
-      );
-      setBAssetAmount(discardDecimalPoints(nextBAssetAmount));
+      if (nextBAssetAmount.trim().length === 0) {
+        setAssetAmount('');
+        setBAssetAmount('');
+      } else {
+        const bAssetAmount: string = discardDecimalPoints(nextBAssetAmount);
+
+        setAssetAmount(
+          discardDecimalPoints(
+            big(bAssetAmount)
+              .mul(exchangeRate?.exchange_rate ?? 1)
+              .toString(),
+          ),
+        );
+        setBAssetAmount(bAssetAmount);
+      }
     },
     [exchangeRate?.exchange_rate],
   );
