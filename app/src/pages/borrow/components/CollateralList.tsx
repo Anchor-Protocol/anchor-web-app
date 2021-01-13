@@ -10,6 +10,7 @@ import { useWallet } from '@anchor-protocol/wallet-provider';
 import { Error } from '@material-ui/icons';
 import big from 'big.js';
 import { useProvideCollateralDialog } from 'pages/borrow/components/useProvideCollateralDialog';
+import { useRedeemCollateralDialog } from 'pages/borrow/components/useRedeemCollateralDialog';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { useMemo } from 'react';
 import styled from 'styled-components';
@@ -33,6 +34,11 @@ function CollateralListBase({
     provideCollateralDialogElement,
   ] = useProvideCollateralDialog();
 
+  const [
+    openRedeemCollateralDialog,
+    redeemCollateralDialogElement,
+  ] = useRedeemCollateralDialog();
+
   const collaterals = useMemo(() => {
     return big(
       big(marketOverview?.borrowInfo.balance ?? 0).minus(
@@ -49,7 +55,7 @@ function CollateralListBase({
       MICRO,
     );
   }, [collaterals, marketOverview?.oraclePrice.rate]);
-  
+
   //console.log('CollateralList.tsx..CollateralListBase()', {marketOverview});
 
   return (
@@ -97,13 +103,23 @@ function CollateralListBase({
               >
                 Add
               </ActionButton>
-              <ActionButton>Withdraw</ActionButton>
+              <ActionButton
+                disabled={status.status !== 'ready' || !marketOverview}
+                onClick={() =>
+                  openRedeemCollateralDialog({
+                    marketOverview: marketOverview!,
+                  })
+                }
+              >
+                Withdraw
+              </ActionButton>
             </td>
           </tr>
         </tbody>
       </HorizontalScrollTable>
 
       {provideCollateralDialogElement}
+      {redeemCollateralDialogElement}
     </Section>
   );
 }

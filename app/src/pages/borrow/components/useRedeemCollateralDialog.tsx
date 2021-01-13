@@ -1,4 +1,4 @@
-import { fabricateProvideCollateral } from '@anchor-protocol/anchor-js/fabricators';
+import { fabricateRedeemCollateral } from '@anchor-protocol/anchor-js/fabricators';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
@@ -53,7 +53,7 @@ interface FormParams {
 
 type FormReturn = void;
 
-export function useProvideCollateralDialog(): [
+export function useRedeemCollateralDialog(): [
   OpenDialog<FormParams, FormReturn>,
   ReactNode,
 ] {
@@ -77,10 +77,10 @@ function ComponentBase({
   const addressProvider = useAddressProvider();
 
   const [
-    queryProvideCollateral,
-    provideCollateralResult,
-    resetProvideCollateralResult,
-  ] = useBroadcastableQuery(provideCollateralQueryOptions);
+    queryRedeemCollateral,
+    redeemCollateralResult,
+    resetRedeemCollateralResult,
+  ] = useBroadcastableQuery(redeemCollateralQueryOptions);
 
   const client = useApolloClient();
 
@@ -97,6 +97,12 @@ function ComponentBase({
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
+  const maxBAssetAmount = useMemo(() => {
+    return big(marketOverview.borrowInfo.balance)
+      .minus(marketOverview.borrowInfo.spendable)
+      .toString();
+  }, [marketOverview.borrowInfo.balance, marketOverview.borrowInfo.spendable]);
+
   const invalidTxFee = useMemo(() => {
     if (bank.status === 'demo') {
       return undefined;
@@ -112,12 +118,12 @@ function ComponentBase({
     } else if (
       big(bAssetAmount.length > 0 ? bAssetAmount : 0)
         .mul(MICRO)
-        .gt(bank.userBalances.ubLuna ?? 0)
+        .gt(maxBAssetAmount ?? 0)
     ) {
       return `Insufficient balance: Not enough Assets`;
     }
     return undefined;
-  }, [bAssetAmount, bank.status, bank.userBalances.ubLuna]);
+  }, [bAssetAmount, bank.status, maxBAssetAmount]);
 
   // ---------------------------------------------
   // callbacks
@@ -138,38 +144,37 @@ function ComponentBase({
         return;
       }
 
-      await queryProvideCollateral({
+      await queryRedeemCollateral({
         post: post<CreateTxOptions, StringifiedTxResult>({
           ...transactionFee,
-          msgs: fabricateProvideCollateral({
+          msgs: fabricateRedeemCollateral({
             address: status.status === 'ready' ? status.walletAddress : '',
             market: 'ust',
-            symbol: 'bluna',
-            amount: bAssetAmount.length > 0 ? +bAssetAmount : 0,
+            amount: bAssetAmount.length > 0 ? bAssetAmount : '0',
           })(addressProvider),
         }).then(({ payload }) => parseResult(payload)),
         client,
       });
     },
-    [addressProvider, bank.status, client, post, queryProvideCollateral],
+    [addressProvider, bank.status, client, post, queryRedeemCollateral],
   );
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
   if (
-    provideCollateralResult?.status === 'in-progress' ||
-    provideCollateralResult?.status === 'done' ||
-    provideCollateralResult?.status === 'error'
+    redeemCollateralResult?.status === 'in-progress' ||
+    redeemCollateralResult?.status === 'done' ||
+    redeemCollateralResult?.status === 'error'
   ) {
     return (
       <Modal open disableBackdropClick>
         <Dialog className={className}>
           <h1>Deposit</h1>
           <TxResultRenderer
-            result={provideCollateralResult}
+            result={redeemCollateralResult}
             resetResult={() => {
-              resetProvideCollateralResult && resetProvideCollateralResult();
+              resetRedeemCollateralResult && resetRedeemCollateralResult();
               closeDialog();
             }}
           />
@@ -181,7 +186,7 @@ function ComponentBase({
   return (
     <Modal open>
       <Dialog className={className} onClose={() => closeDialog()}>
-        <h1>Provide Collateral</h1>
+        <h1>Redeem Collateral</h1>
 
         {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
 
@@ -189,7 +194,7 @@ function ComponentBase({
           className="amount"
           type="number"
           value={bAssetAmount}
-          label="DEPOSIT AMOUNT"
+          label="REDEEM AMOUNT"
           error={!!invalidBAssetAmount}
           onChange={({ target }) => updateBAssetAmount(target.value)}
           InputProps={{
@@ -208,12 +213,10 @@ function ComponentBase({
                 cursor: 'pointer',
               }}
               onClick={() =>
-                updateBAssetAmount(
-                  big(bank.userBalances.ubLuna).div(MICRO).toString(),
-                )
+                updateBAssetAmount(big(maxBAssetAmount).div(MICRO).toString())
               }
             >
-              {formatLuna(big(bank.userBalances.ubLuna ?? 0).div(MICRO))} bLUNA
+              {formatLuna(big(maxBAssetAmount).div(MICRO))} bLUNA
             </span>
           </span>
         </div>
@@ -283,7 +286,7 @@ function ComponentBase({
   );
 }
 
-const provideCollateralQueryOptions: BroadcastableQueryOptions<
+const redeemCollateralQueryOptions: BroadcastableQueryOptions<
   { post: Promise<TxResult>; client: ApolloClient<any> },
   { txResult: TxResult } & { txInfos: txi.Data },
   Error
