@@ -26,9 +26,7 @@ export const fabricateRedeemCollateral = ({
   address,
   market,
   amount,
-}: Option) => (
-  addressProvider: AddressProvider,
-): MsgExecuteContract[] => {
+}: Option) => (addressProvider: AddressProvider): MsgExecuteContract[] => {
   validateInput([
     validateAddress(address),
     validateWhitelistedMarket(market),
@@ -36,6 +34,7 @@ export const fabricateRedeemCollateral = ({
   ]);
 
   const mmOverseerContract = addressProvider.overseer(market.toLowerCase());
+  const bAssetTokenContract = addressProvider.bAssetToken('ubluna'); // fixed to ubluna for now
   const custodyContract = addressProvider.custody(market.toLocaleLowerCase());
 
   return [
@@ -44,7 +43,7 @@ export const fabricateRedeemCollateral = ({
       // @see https://github.com/Anchor-Protocol/money-market-contracts/blob/master/contracts/overseer/src/msg.rs#L78
       unlock_collateral: [
         [
-          address,
+          bAssetTokenContract,
           isAmountSet(amount)
             ? new Int(new Dec(amount).mul(1000000)).toString()
             : undefined,
