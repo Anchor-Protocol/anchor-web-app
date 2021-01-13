@@ -16,16 +16,19 @@ export interface BorrowProps {
 
 function BorrowBase({ className }: BorrowProps) {
   const { parsedData: marketOverview } = useMarketOverview();
-  
+
   return (
     <div className={className}>
       <main>
         <h1>BORROW</h1>
 
         <div className="content-layout">
-          <Summary marketOverview={marketOverview} />
-          <CollateralList marketOverview={marketOverview} />
-          <LoanList marketOverview={marketOverview} />
+          <Summary className="borrow" marketOverview={marketOverview} />
+          <CollateralList
+            className="collateral-list"
+            marketOverview={marketOverview}
+          />
+          <LoanList className="loan-list" marketOverview={marketOverview} />
         </div>
       </main>
     </div>

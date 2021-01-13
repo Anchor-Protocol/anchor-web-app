@@ -61,7 +61,7 @@ function CollateralListBase({
   // presentation
   // ---------------------------------------------
   return (
-    <Section className={`collateral-list ${className}`}>
+    <Section className={className}>
       <h2>COLLATERAL LIST</h2>
 
       <HorizontalScrollTable>

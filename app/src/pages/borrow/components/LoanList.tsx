@@ -45,7 +45,7 @@ function LoanListBase({ className, marketOverview }: LoanListProps) {
   // presentation
   // ---------------------------------------------
   return (
-    <Section className={`loan-list ${className}`}>
+    <Section className={className}>
       <h2>LOAN LIST</h2>
 
       <HorizontalScrollTable>
@@ -76,7 +76,9 @@ function LoanListBase({ className, marketOverview }: LoanListProps) {
             </td>
             <td>
               <div className="value">{formatPercentage(apr)}%</div>
-              <p className="volatility">200 UST</p>
+              <p className="volatility">
+                <s>200 UST</s>
+              </p>
             </td>
             <td>
               <div className="value">

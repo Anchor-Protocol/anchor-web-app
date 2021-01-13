@@ -54,7 +54,7 @@ function SummaryBase({ className, marketOverview }: SummaryProps) {
   //);
 
   return (
-    <Section className={`borrow ${className}`}>
+    <Section className={className}>
       <article>
         <div>
           <label>APR</label>
