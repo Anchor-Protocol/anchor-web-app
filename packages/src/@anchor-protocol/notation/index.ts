@@ -95,8 +95,6 @@ export function formatUSTWithPostfixUnits(
 
   if (bn.gte(1000000)) {
     return formatFluidDecimalPoints(bn.div(1000000), 2, options) + 'M';
-  } else if (bn.gte(1000)) {
-    return formatFluidDecimalPoints(bn.div(1000), 2, options) + 'K';
   } else {
     return formatUST(n, options);
   }
