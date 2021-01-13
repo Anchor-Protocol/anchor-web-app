@@ -83,7 +83,7 @@ function ClaimBase({ className }: ClaimProps) {
   // ---------------------------------------------
   const bank = useBank();
 
-  const { parsedData: withdrawable, refetchWithdrawable } = useWithdrawable({
+  const { parsedData: withdrawable } = useWithdrawable({
     bAsset: 'bluna',
   });
 
@@ -181,7 +181,7 @@ function ClaimBase({ className }: ClaimProps) {
       return;
     }
 
-    const data = await queryWithdraw({
+    await queryWithdraw({
       post: post<CreateTxOptions, StringifiedTxResult>({
         ...transactionFee,
         msgs: fabricatebAssetWithdrawUnbonded({
@@ -193,20 +193,7 @@ function ClaimBase({ className }: ClaimProps) {
         .then(parseResult),
       client,
     });
-
-    // is this component does not unmounted
-    if (data) {
-      refetchWithdrawable();
-    }
-  }, [
-    addressProvider,
-    bank.status,
-    client,
-    post,
-    queryWithdraw,
-    status,
-    refetchWithdrawable,
-  ]);
+  }, [addressProvider, bank.status, client, post, queryWithdraw, status]);
 
   const claim = useCallback(async () => {
     if (status.status !== 'ready' || bank.status !== 'connected') {

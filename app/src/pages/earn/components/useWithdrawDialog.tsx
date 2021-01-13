@@ -1,7 +1,6 @@
 import { fabricateRedeemStable } from '@anchor-protocol/anchor-js/fabricators';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
-import { HorizontalDashedRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalDashedRuler';
 import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import {
@@ -37,6 +36,8 @@ import {
   TxResultRenderer,
 } from 'api/transactions/TxResultRenderer';
 import big from 'big.js';
+import { TxFeeList, TxFeeListItem } from 'components/messages/TxFeeList';
+import { WarningArticle } from 'components/messages/WarningArticle';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { fixedGasUUSD, transactionFee } from 'env';
@@ -48,9 +49,7 @@ interface FormParams {
   className?: string;
 }
 
-interface FormReturn {
-  refresh: boolean;
-}
+type FormReturn = void;
 
 export function useWithdrawDialog(): [
   OpenDialog<FormParams, FormReturn>,
@@ -125,7 +124,9 @@ function ComponentBase({
     // MIN((Withdrawable(User_input)- Withdrawable(User_input) / (1+Tax_rate)), Max_tax) + Fixed_Gas
 
     const uustAmount = big(aAssetAmount).mul(MICRO);
-    const ratioTxFee = uustAmount.minus(uustAmount.div(big(1).add(tax.taxRate)));
+    const ratioTxFee = uustAmount.minus(
+      uustAmount.div(big(1).add(tax.taxRate)),
+    );
     const maxTax = big(tax.maxTaxUUSD);
 
     if (ratioTxFee.gt(maxTax)) {
@@ -167,7 +168,7 @@ function ComponentBase({
       });
 
       if (data) {
-        closeDialog({ refresh: true });
+        closeDialog();
       }
     },
     [addressProvider, bank.status, client, closeDialog, fetchWithdraw, post],
@@ -189,7 +190,7 @@ function ComponentBase({
             result={withdrawResult}
             resetResult={() => {
               resetWithdrawResult && resetWithdrawResult();
-              closeDialog({ refresh: true });
+              closeDialog();
             }}
           />
         </Dialog>
@@ -199,39 +200,26 @@ function ComponentBase({
 
   return (
     <Modal open>
-      <Dialog
-        className={className}
-        onClose={() => closeDialog({ refresh: false })}
-      >
+      <Dialog className={className} onClose={() => closeDialog()}>
         <h1>Withdraw</h1>
+
+        {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
 
         <TextInput
           className="amount"
           type="number"
           value={aAssetAmount}
           label="AMOUNT"
-          disabled={!!invalidTxFee}
-          error={!!invalidTxFee || !!invalidAAsetAmount}
+          error={!!invalidAAsetAmount}
           onChange={({ target }) => updateAAssetAmount(target.value)}
           InputProps={{
-            endAdornment: (
-              <Tooltip
-                color={invalidAAsetAmount ? 'error' : undefined}
-                title="Available you withdraw"
-                placement="top"
-              >
-                <InputAdornment position="end">UST</InputAdornment>
-              </Tooltip>
-            ),
+            endAdornment: <InputAdornment position="end">UST</InputAdornment>,
             inputMode: 'numeric',
           }}
         />
 
-        <div
-          className="wallet"
-          aria-invalid={!!invalidTxFee || !!invalidAAsetAmount}
-        >
-          <span>{invalidTxFee || invalidAAsetAmount}</span>
+        <div className="wallet" aria-invalid={!!invalidAAsetAmount}>
+          <span>{invalidAAsetAmount}</span>
           <span>
             Wallet:{' '}
             <span
@@ -251,21 +239,20 @@ function ComponentBase({
         </div>
 
         {txFee && (
-          <figure className="receipt">
-            <HorizontalDashedRuler />
-            <ul>
-              <li>
-                <span>
+          <TxFeeList className="receipt">
+            <TxFeeListItem
+              label={
+                <>
                   Tx Fee{' '}
                   <Tooltip title="Tx Fee Description" placement="top">
                     <InfoOutlined />
                   </Tooltip>
-                </span>
-                <span>{formatUST(big(txFee).div(MICRO))} UST</span>
-              </li>
-            </ul>
-            <HorizontalDashedRuler />
-          </figure>
+                </>
+              }
+            >
+              {formatUST(big(txFee).div(MICRO))} UST
+            </TxFeeListItem>
+          </TxFeeList>
         )}
 
         <ActionButton
@@ -335,34 +322,6 @@ const Component = styled(ComponentBase)`
 
   .receipt {
     margin-top: 30px;
-
-    font-size: 12px;
-
-    ul {
-      list-style: none;
-      padding: 0;
-
-      li {
-        margin: 15px 0;
-
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-
-        > :first-child {
-          color: ${({ theme }) => theme.dimTextColor};
-        }
-
-        > :last-child {
-          color: ${({ theme }) => theme.textColor};
-        }
-
-        svg {
-          font-size: 1em;
-          transform: scale(1.2) translateY(0.08em);
-        }
-      }
-    }
   }
 
   .proceed {

@@ -4,10 +4,12 @@ import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/Hori
 import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
+import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import {
   formatLuna,
   formatLunaInput,
   formatLunaUserInput,
+  formatUST,
   MICRO,
 } from '@anchor-protocol/notation';
 import {
@@ -20,6 +22,7 @@ import {
   Input as MuiInput,
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
+import { InfoOutlined } from '@material-ui/icons';
 import { CreateTxOptions } from '@terra-money/terra.js';
 import * as txi from 'api/queries/txInfos';
 import { queryOptions } from 'api/transactions/queryOptions';
@@ -33,6 +36,7 @@ import {
   TxResultRenderer,
 } from 'api/transactions/TxResultRenderer';
 import big from 'big.js';
+import { TxFeeList, TxFeeListItem } from 'components/messages/TxFeeList';
 import { WarningArticle } from 'components/messages/WarningArticle';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
@@ -373,6 +377,23 @@ function MintBase({ className }: MintProps) {
         )}
       </NativeSelect>
 
+      {assetAmount.length > 0 && (
+        <TxFeeList className="receipt">
+          <TxFeeListItem
+            label={
+              <>
+                Tx Fee{' '}
+                <Tooltip title="Tx Fee Description" placement="top">
+                  <InfoOutlined />
+                </Tooltip>
+              </>
+            }
+          >
+            {formatUST(big(fixedGasUUSD).div(MICRO))} UST
+          </TxFeeListItem>
+        </TxFeeList>
+      )}
+
       {/* Submit */}
       <ActionButton
         className="submit"
@@ -452,6 +473,10 @@ export const Mint = styled(MintBase)`
     &[data-selected-value=''] {
       color: ${({ theme }) => theme.dimTextColor};
     }
+  }
+  
+  .receipt {
+    margin-bottom: 40px;
   }
 
   .submit {

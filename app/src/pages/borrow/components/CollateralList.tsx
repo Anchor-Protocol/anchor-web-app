@@ -6,12 +6,13 @@ import {
   formatUSTWithPostfixUnits,
   MICRO,
 } from '@anchor-protocol/notation';
+import { useWallet } from '@anchor-protocol/wallet-provider';
 import { Error } from '@material-ui/icons';
 import big from 'big.js';
+import { useProvideCollateralDialog } from 'pages/borrow/components/useProvideCollateralDialog';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { useMemo } from 'react';
 import styled from 'styled-components';
-import { useBorrowDialog } from './useBorrowDialog';
 
 export interface CollateralListProps {
   className?: string;
@@ -22,9 +23,16 @@ function CollateralListBase({
   className,
   marketOverview,
 }: CollateralListProps) {
-  const [openBorrowDialog, borrowDialogElement] = useBorrowDialog();
+  // ---------------------------------------------
+  // dependencies
+  // ---------------------------------------------
+  const { status } = useWallet();
 
-  //console.log('CollateralList.tsx..CollateralListBase()', );
+  const [
+    openProvideCollateralDialog,
+    provideCollateralDialogElement,
+  ] = useProvideCollateralDialog();
+
   const collaterals = useMemo(() => {
     return big(
       big(marketOverview?.borrowInfo.balance ?? 0).minus(
@@ -41,6 +49,8 @@ function CollateralListBase({
       MICRO,
     );
   }, [collaterals, marketOverview?.oraclePrice.rate]);
+  
+  //console.log('CollateralList.tsx..CollateralListBase()', {marketOverview});
 
   return (
     <Section className={`collateral-list ${className}`}>
@@ -77,7 +87,14 @@ function CollateralListBase({
               <p className="volatility">{formatLuna(collaterals)} bLUNA</p>
             </td>
             <td>
-              <ActionButton onClick={() => openBorrowDialog({})}>
+              <ActionButton
+                disabled={status.status !== 'ready' || !marketOverview}
+                onClick={() =>
+                  openProvideCollateralDialog({
+                    marketOverview: marketOverview!,
+                  })
+                }
+              >
                 Add
               </ActionButton>
               <ActionButton>Withdraw</ActionButton>
@@ -86,7 +103,7 @@ function CollateralListBase({
         </tbody>
       </HorizontalScrollTable>
 
-      {borrowDialogElement}
+      {provideCollateralDialogElement}
     </Section>
   );
 }

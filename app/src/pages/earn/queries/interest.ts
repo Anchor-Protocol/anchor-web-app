@@ -1,3 +1,4 @@
+import { useQuerySubscription } from '@anchor-protocol/use-broadcastable-query';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { gql, QueryResult, useQuery } from '@apollo/client';
 import big from 'big.js';
@@ -84,6 +85,15 @@ export function useInterest(): QueryResult<
       },
     }),
   });
+
+  useQuerySubscription(
+    (id, event) => {
+      if (event === 'done') {
+        result.refetch();
+      }
+    },
+    [result.refetch],
+  );
 
   const parsedData = useMemo(
     () => (result.data ? parseData(result.data) : undefined),

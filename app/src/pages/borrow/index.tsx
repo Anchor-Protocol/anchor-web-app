@@ -16,7 +16,7 @@ export interface BorrowProps {
 
 function BorrowBase({ className }: BorrowProps) {
   const { parsedData: marketOverview } = useMarketOverview();
-
+  
   return (
     <div className={className}>
       <main>

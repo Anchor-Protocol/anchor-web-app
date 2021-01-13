@@ -21,7 +21,7 @@ function TotalDepositSectionBase({ className }: TotalDepositSectionProps) {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const { parsedData: totalDeposit, refetch } = useTotalDeposit();
+  const { parsedData: totalDeposit } = useTotalDeposit();
 
   // ---------------------------------------------
   // dialogs
@@ -30,20 +30,12 @@ function TotalDepositSectionBase({ className }: TotalDepositSectionProps) {
   const [openWithdrawDialog, withdrawDialogElement] = useWithdrawDialog();
 
   const openDeposit = useCallback(async () => {
-    const { refresh } = await openDepositDialog({});
-
-    if (refresh) {
-      await refetch();
-    }
-  }, [openDepositDialog, refetch]);
+    await openDepositDialog({});
+  }, [openDepositDialog]);
 
   const openWithdraw = useCallback(async () => {
-    const { refresh } = await openWithdrawDialog({});
-
-    if (refresh) {
-      await refetch();
-    }
-  }, [openWithdrawDialog, refetch]);
+    await openWithdrawDialog({});
+  }, [openWithdrawDialog]);
 
   // ---------------------------------------------
   // presentation

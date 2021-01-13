@@ -1,7 +1,8 @@
+import { useQuerySubscription } from '@anchor-protocol/use-broadcastable-query';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { gql, QueryResult, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 export interface StringifiedData {
   withdrawableAmount: {
@@ -35,7 +36,12 @@ export function parseData({
     withdrawRequests: parsedWithdrawRequests,
     withdrawRequestsStartFrom:
       parsedWithdrawRequests.requests.length > 0
-        ? Math.max(0, Math.min(...parsedWithdrawRequests.requests.map(([index]) => index)) - 1)
+        ? Math.max(
+            0,
+            Math.min(
+              ...parsedWithdrawRequests.requests.map(([index]) => index),
+            ) - 1,
+          )
         : -1,
   };
 }
@@ -107,7 +113,6 @@ export function useWithdrawable({
   bAsset: string;
 }): QueryResult<StringifiedData, StringifiedVariables> & {
   parsedData: Data | undefined;
-  refetchWithdrawable: () => void;
 } {
   const addressProvider = useAddressProvider();
   const { status } = useWallet();
@@ -136,9 +141,14 @@ export function useWithdrawable({
     }),
   });
 
-  const refetchWithdrawable = useCallback(() => {
-    setNow(Date.now());
-  }, []);
+  useQuerySubscription(
+    (id, event) => {
+      if (event === 'done') {
+        setNow(Date.now());
+      }
+    },
+    [],
+  );
 
   const parsedData = useMemo(
     () => (result.data ? parseData(result.data) : undefined),
@@ -148,6 +158,5 @@ export function useWithdrawable({
   return {
     ...result,
     parsedData,
-    refetchWithdrawable,
   };
 }

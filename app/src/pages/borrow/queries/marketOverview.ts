@@ -1,3 +1,4 @@
+import { useQuerySubscription } from '@anchor-protocol/use-broadcastable-query';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { gql, QueryResult, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
@@ -235,7 +236,7 @@ export function useMarketOverview(): QueryResult<
       oracleContractAddress: addressProvider.oracle(),
       oracleQuery: {
         price: {
-          base: status.status === 'ready' ? status.walletAddress : '',
+          base: addressProvider.bAssetToken('ubluna'),
           quote: 'uusd',
         },
       },
@@ -253,6 +254,17 @@ export function useMarketOverview(): QueryResult<
       },
     }),
   });
+  
+  useQuerySubscription(
+    (id, event) => {
+      if (event === 'done') {
+        result.refetch();
+      }
+    },
+    [result.refetch],
+  );
+  
+  //console.log('marketOverview.ts..useMarketOverview()', {marketBalance, data: result.data, error: result.error});
 
   const parsedData = useMemo(
     () => (result.data ? parseData(result.data) : undefined),
