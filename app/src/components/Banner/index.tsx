@@ -1,12 +1,15 @@
 import { useWallet } from '@anchor-protocol/wallet-provider';
-import styled from 'styled-components';
 import { matchesUA } from 'browserslist-useragent';
+import styled from 'styled-components';
 
 export interface BannerProps {
   className?: string;
 }
 
-const isChrome = matchesUA(navigator.userAgent, { browsers: ['Chrome > 60'] });
+const isChrome = matchesUA(navigator.userAgent, {
+  browsers: ['Chrome > 60'],
+  allowHigherVersions: true,
+});
 
 function BannerBase({ className }: BannerProps) {
   const { status, install, connect } = useWallet();
@@ -16,9 +19,7 @@ function BannerBase({ className }: BannerProps) {
       <div className={className}>
         <p>
           Anchor currently only supports{' '}
-          <a href="https://www.google.com/chrome/?brand=CHBD&brand=BNSD&gclid=Cj0KCQiA6Or_BRC_ARIsAPzuer_951Qv_ycnWlDRowxEnDcORIo1XgAmLIH_qAl1HlugMzmhMsLvo8saAnDSEALw_wcB&gclsrc=aw.ds">
-            Chrome
-          </a>
+          <a href="https://www.google.com/chrome/">Chrome</a>
         </p>
       </div>
     );
