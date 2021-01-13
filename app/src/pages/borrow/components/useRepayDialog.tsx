@@ -105,17 +105,43 @@ function ComponentBase({
   }, [marketOverview.loanAmount.loan_amount]);
 
   const txFee = useMemo(() => {
-    return fixedGasUUSD;
-  }, []);
+    if (assetAmount.length === 0) {
+      return undefined;
+    }
+
+    const userAmount = big(assetAmount).mul(MICRO);
+
+    const userAmountTxFee = userAmount.mul(bank.tax.taxRate);
+
+    if (userAmountTxFee.gt(bank.tax.maxTaxUUSD)) {
+      return big(bank.tax.maxTaxUUSD).plus(fixedGasUUSD);
+    } else {
+      return userAmountTxFee.plus(fixedGasUUSD);
+    }
+  }, [assetAmount, bank.tax.maxTaxUUSD, bank.tax.taxRate]);
+
+  const totalOutstandingLoan = useMemo(() => {
+    return assetAmount.length > 0
+      ? big(marketOverview.loanAmount.loan_amount).minus(
+          big(assetAmount).mul(MICRO),
+        )
+      : undefined;
+  }, [assetAmount, marketOverview.loanAmount.loan_amount]);
+
+  const estimatedAmount = useMemo(() => {
+    return assetAmount.length > 0 && txFee
+      ? big(big(assetAmount).mul(MICRO)).plus(txFee)
+      : undefined;
+  }, [assetAmount, txFee]);
 
   const invalidTxFee = useMemo(() => {
     if (bank.status === 'demo') {
       return undefined;
-    } else if (big(bank.userBalances.uUSD ?? 0).lt(txFee)) {
+    } else if (big(bank.userBalances.uUSD ?? 0).lt(fixedGasUUSD)) {
       return 'Not enough Tx Fee';
     }
     return undefined;
-  }, [bank.status, bank.userBalances.uUSD, txFee]);
+  }, [bank.status, bank.userBalances.uUSD]);
 
   const invalidAssetAmount = useMemo<ReactNode>(() => {
     if (bank.status === 'demo') {
@@ -231,22 +257,13 @@ function ComponentBase({
           </span>
         </div>
 
-        <TextInput
-          className="limit"
-          type="number"
-          disabled
-          value="00"
-          label="NEW BORROW LIMIT"
-          InputProps={{
-            endAdornment: <InputAdornment position="end">%</InputAdornment>,
-            inputMode: 'numeric',
-          }}
-        />
-
         <figure className="graph">graph</figure>
 
-        {assetAmount.length > 0 && (
+        {totalOutstandingLoan && txFee && estimatedAmount && (
           <TxFeeList className="receipt">
+            <TxFeeListItem label="Total Outstanding Loan">
+              {formatUST(big(totalOutstandingLoan).div(MICRO))} UST
+            </TxFeeListItem>
             <TxFeeListItem
               label={
                 <>
@@ -258,6 +275,9 @@ function ComponentBase({
               }
             >
               {formatUST(big(txFee).div(MICRO))} UST
+            </TxFeeListItem>
+            <TxFeeListItem label="Estimated Amount">
+              {formatUST(big(estimatedAmount).div(MICRO))} UST
             </TxFeeListItem>
           </TxFeeList>
         )}
@@ -297,6 +317,11 @@ const Component = styled(ComponentBase)`
     font-size: 27px;
     text-align: center;
     font-weight: 300;
+
+    p {
+      font-size: 14px;
+      margin-top: 10px;
+    }
 
     margin-bottom: 50px;
   }
