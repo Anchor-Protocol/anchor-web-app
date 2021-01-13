@@ -1,4 +1,3 @@
-import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { StdFee } from '@terra-money/terra.js';
 
 export const screen = {
@@ -15,18 +14,31 @@ export const screen = {
 
 export const FINDER = 'https://finder.terra.money';
 
-/**
- * @deprecated it will create on checking wallet connection
- */
-export const mantleClient = new ApolloClient({
-  uri:
-    process.env.REACT_APP_MANTLE_ENDPOINT ?? 'https://tequila-mantle.terra.dev',
-  cache: new InMemoryCache(),
-});
+export const safeRatio = 0.7;
+
+export const fixedGasUUSD = 3500000;
 
 export const transactionFee = {
   //gasPrices: '0.0015uusd',
   //fee: new StdFee(503333, '5000000000000uusd'),
-  fee: new StdFee(6000000, '2000000uusd'),
+  fee: new StdFee(6000000, fixedGasUUSD + 'uusd'),
   gasAdjustment: 1.4,
+};
+
+/**
+ * @deprecated will remove
+ */
+export const contractAddresses = {
+  bLunaHub: 'terra1xhurqlwzfckncqkmgc7q864lytm6vynshfjel0',
+  bAssetToken: 'terra1ny767tknhj2cmz6uauc4ydcpdy647h925cxp7h',
+  bAssetReward: 'terra1ml2ryxrfxqf9ht7cfqywsrpq88f9dafr3p4yxl',
+  mmInterest: 'terra1gvf9k5tp9j2gdpdh5wems638x6trfvmcmytldp',
+  mmOracle: 'terra1czxwjwhv82mjch3sxhrm0rh2nczc4r9292sdx3',
+  mmMarket: 'terra1cg4nk8ze6mkqpqfh8z7k97dh6846zhhkv0sk94',
+  mmOverseer: 'terra1gm0d75qy6cdqke05ey29kynrcx0y2ezan2dru2',
+  mmCustody: 'terra1sspa69cw65ddx43npsng5fvrjq3q64urja3949',
+  mmLiquidation: 'terra1radgylfw9c8353dclxy8wckgekc5gsz48ndfl8',
+  anchorToken: 'terra1gdak9jc2chn6kql7tkuedyh689wt0nzsljm0ku',
+  terraswapFactory: 'terra10r7j8lkgpy89h8r8ydk0jzhrzn82jlfpgkdq7u',
+  terraswapPair: 'unused',
 };

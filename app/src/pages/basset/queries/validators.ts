@@ -1,4 +1,6 @@
-import { gql } from '@apollo/client';
+import { gql, QueryResult, useQuery } from '@apollo/client';
+import { useAddressProvider } from 'contexts/contract';
+import { useMemo } from 'react';
 
 export interface StringifiedData {
   validators: {
@@ -16,21 +18,17 @@ export interface StringifiedData {
 
 export interface Data {
   validators: {
-    Result: {
-      OperatorAddress: string;
-      Description: {
-        Moniker: string;
-      };
-    }[];
-  };
+    OperatorAddress: string;
+    Description: {
+      Moniker: string;
+    };
+  }[];
   whitelistedValidators: {
-    Result: {
-      OperatorAddress: string;
-      Description: {
-        Moniker: string;
-      };
-    }[];
-  };
+    OperatorAddress: string;
+    Description: {
+      Moniker: string;
+    };
+  }[];
 }
 
 export function parseData({
@@ -42,12 +40,10 @@ export function parseData({
   );
 
   return {
-    validators,
-    whitelistedValidators: {
-      Result: validators.Result.filter(({ OperatorAddress }) =>
-        set.has(OperatorAddress),
-      ),
-    },
+    validators: validators.Result,
+    whitelistedValidators: validators.Result.filter(({ OperatorAddress }) =>
+      set.has(OperatorAddress),
+    ),
   };
 }
 
@@ -92,3 +88,33 @@ export const query = gql`
     }
   }
 `;
+
+export function useValidators({
+  bAsset,
+}: {
+  bAsset: string;
+}): QueryResult<StringifiedData, StringifiedVariables> & {
+  parsedData: Data | undefined;
+} {
+  const addressProvider = useAddressProvider();
+
+  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
+    fetchPolicy: 'cache-and-network',
+    variables: stringifyVariables({
+      bLunaHubContract: addressProvider.bAssetHub(bAsset),
+      whitelistedValidatorsQuery: {
+        whitelisted_validators: {},
+      },
+    }),
+  });
+
+  const parsedData = useMemo(
+    () => (result.data ? parseData(result.data) : undefined),
+    [result.data],
+  );
+
+  return {
+    ...result,
+    parsedData,
+  };
+}

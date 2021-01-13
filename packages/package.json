@@ -63,6 +63,7 @@
     "fastdom": "^1.0.9",
     "graphql": "^15.4.0",
     "lodash.throttle": "^4.1.1",
+    "numeral": "^2.0.6",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-scripts": "4.0.1",

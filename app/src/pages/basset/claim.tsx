@@ -1,26 +1,44 @@
-import { fabricatebAssetClaim } from '@anchor-protocol/anchor-js/fabricators';
-import { fabricatebAssetUpdateGlobalIndex } from '@anchor-protocol/anchor-js/fabricators/basset/basset-update-global-index';
+import {
+  fabricatebAssetClaim,
+  fabricatebAssetWithdrawUnbonded,
+} from '@anchor-protocol/anchor-js/fabricators';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
-import { HorizontalHeavyRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalHeavyRuler';
 import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
+import { formatLuna, formatUST, MICRO } from '@anchor-protocol/notation';
 import {
   pressed,
   rulerLightColor,
   rulerShadowColor,
 } from '@anchor-protocol/styled-neumorphism';
-import React, { ReactNode, useCallback, useEffect, useState } from 'react';
-
+import {
+  BroadcastableQueryOptions,
+  useBroadcastableQuery,
+} from '@anchor-protocol/use-broadcastable-query';
+import { useWallet } from '@anchor-protocol/wallet-provider';
+import { ApolloClient, useApolloClient } from '@apollo/client';
+import { CreateTxOptions } from '@terra-money/terra.js';
+import * as txi from 'api/queries/txInfos';
+import { queryOptions } from 'api/transactions/queryOptions';
+import {
+  parseResult,
+  StringifiedTxResult,
+  TxResult,
+} from 'api/transactions/tx';
+import {
+  txNotificationFactory,
+  TxResultRenderer,
+} from 'api/transactions/TxResultRenderer';
+import big from 'big.js';
+import { WarningArticle } from 'components/messages/WarningArticle';
+import { useBank } from 'contexts/bank';
+import { useAddressProvider } from 'contexts/contract';
+import { fixedGasUUSD, transactionFee } from 'env';
+import React, { ReactNode, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import Amount from '../../components/amount';
-import Box from '../../components/box';
-import Button, { ButtonTypes } from '../../components/button';
-import { ActionContainer } from '../../containers/action';
-import useBassetClaimable from '../../hooks/mantle/use-basset-claimable';
-import { useWallet } from '../../hooks/use-wallet';
-import { useAddressProvider } from '../../providers/address-provider';
-
-import style from './basset.module.scss';
+import { useClaimable } from './queries/claimable';
+import { useWithdrawable } from './queries/withdrawable';
+import { useWithdrawHistory } from './queries/withdrawHistory';
 
 export interface ClaimProps {
   className?: string;
@@ -31,184 +49,346 @@ interface Item {
   value: string;
 }
 
-const bondItems: Item[] = [
-  { label: 'Luna', value: 'luna' },
-  { label: 'KRT', value: 'krt' },
-  { label: 'UST', value: 'ust' },
-];
+const assetCurrencies: Item[] = [{ label: 'Luna', value: 'luna' }];
 
 function ClaimBase({ className }: ClaimProps) {
-  const { address } = useWallet();
+  // ---------------------------------------------
+  // dependencies
+  // ---------------------------------------------
+  const { status, post } = useWallet();
+
   const addressProvider = useAddressProvider();
-  //const [withdrawState, setWithdrawState] = useState({ amount: '0.00' });
 
   const [
-    //loading,
-    //error,
-    claimable = '0',
-  ] = useBassetClaimable();
+    queryWithdraw,
+    withdrawResult,
+    resetWithdrawResult,
+  ] = useBroadcastableQuery(withdrawQueryOptions);
 
-  //const isReady = !loading && !error;
+  const [queryClaim, claimResult, resetClaimResult] = useBroadcastableQuery(
+    claimQueryOptions,
+  );
+
+  const client = useApolloClient();
 
   // ---------------------------------------------
-  //
+  // states
   // ---------------------------------------------
-  const [bond, setBond] = useState<Item>(() => bondItems[0]);
+  const [assetCurrency, setAssetCurrency] = useState<Item>(
+    () => assetCurrencies[0],
+  );
 
-  const [history, setHistory] = useState<ReactNode>(() => null);
+  // ---------------------------------------------
+  // queries
+  // ---------------------------------------------
+  const bank = useBank();
 
-  const updateHistory = useCallback(() => {
-    setHistory(
-      Math.random() > 0.5 ? (
-        <li>
-          <p>
-            Requested time: <time>09:27, 2 Oct 2020</time>
-          </p>
-          <p>101 bLuna</p>
-          <p>
-            Claimable time: <time>09:27, 2 Oct 2020</time>
-          </p>
-          <p>101 Luna</p>
-        </li>
-      ) : (
-        Array.from({ length: Math.floor(Math.random() * 10) }, (_, i) => (
-          <li key={'history' + i}>
-            <p>
-              Requested time: <time>09:27, 2 Oct 2020</time>
-            </p>
-            <p>101 bLuna</p>
-            <p>
-              Claimable time: <time>09:27, 2 Oct 2020</time>
-            </p>
-            <p>101 Luna</p>
-          </li>
-        ))
-      ),
+  const { parsedData: withdrawable } = useWithdrawable({
+    bAsset: 'bluna',
+  });
+
+  const { parsedData: claimable, refetch: refetchClaimable } = useClaimable();
+
+  const { parsedData: withdrawAllHistory } = useWithdrawHistory({
+    withdrawable,
+  });
+
+  // ---------------------------------------------
+  // compute
+  // ---------------------------------------------
+  const invalidTxFee = useMemo<ReactNode>(() => {
+    if (bank.status === 'demo') {
+      return undefined;
+    } else if (big(bank.userBalances.uUSD).lt(fixedGasUUSD)) {
+      return 'Not Enough Tx Fee';
+    }
+    return undefined;
+  }, [bank.status, bank.userBalances.uUSD]);
+
+  interface History {
+    blunaAmount: string;
+    lunaAmount?: string;
+    requestTime?: Date;
+    claimableTime?: Date;
+  }
+
+  const withdrawHistory = useMemo<History[] | undefined>(() => {
+    if (
+      !withdrawable ||
+      withdrawable.withdrawRequestsStartFrom < 0 ||
+      !withdrawAllHistory
+    ) {
+      return undefined;
+    }
+
+    return withdrawable.withdrawRequests.requests.map<History>(
+      ([index, amount]) => {
+        const historyIndex: number =
+          index - withdrawable.withdrawRequestsStartFrom;
+        const matchingHistory =
+          withdrawAllHistory.allHistory.history[historyIndex - 1];
+
+        if (!matchingHistory) {
+          return {
+            blunaAmount: amount,
+          };
+        }
+
+        return {
+          blunaAmount: amount,
+          lunaAmount: big(amount).mul(matchingHistory.withdraw_rate).toString(),
+          requestTime: new Date(matchingHistory.time * 1000),
+          claimableTime: new Date(
+            (matchingHistory.time +
+              withdrawAllHistory.parameters.unbonding_period) *
+              1000,
+          ),
+        };
+      },
+    );
+  }, [withdrawAllHistory, withdrawable]);
+
+  const withdrawableAmount = useMemo(() => {
+    return big(withdrawable?.withdrawableAmount.withdrawable ?? 0);
+  }, [withdrawable?.withdrawableAmount.withdrawable]);
+
+  const claimableRewards = useMemo(() => {
+    return claimable
+      ? big(
+          big(
+            big(claimable.claimableReward.balance).mul(
+              big(claimable.rewardState.global_index).sub(
+                claimable.claimableReward.index,
+              ),
+            ),
+          ).add(claimable.claimableReward.pending_rewards),
+        )
+      : big(0);
+  }, [claimable]);
+
+  // ---------------------------------------------
+  // callbacks
+  // ---------------------------------------------
+  const updateAssetCurrency = useCallback((nextAssetCurrencyValue: string) => {
+    setAssetCurrency(
+      assetCurrencies.find(({ value }) => nextAssetCurrencyValue === value) ??
+        assetCurrencies[0],
     );
   }, []);
 
-  useEffect(() => {
-    updateHistory();
-  }, [updateHistory]);
+  const withdraw = useCallback(async () => {
+    if (status.status !== 'ready' || bank.status !== 'connected') {
+      return;
+    }
+
+    await queryWithdraw({
+      post: post<CreateTxOptions, StringifiedTxResult>({
+        ...transactionFee,
+        msgs: fabricatebAssetWithdrawUnbonded({
+          address: status.walletAddress,
+          bAsset: 'bluna',
+        })(addressProvider),
+      })
+        .then(({ payload }) => payload)
+        .then(parseResult),
+      client,
+    });
+  }, [addressProvider, bank.status, client, post, queryWithdraw, status]);
+
+  const claim = useCallback(async () => {
+    if (status.status !== 'ready' || bank.status !== 'connected') {
+      return;
+    }
+
+    const data = await queryClaim({
+      post: post<CreateTxOptions, StringifiedTxResult>({
+        ...transactionFee,
+        msgs: fabricatebAssetClaim({
+          address: status.status === 'ready' ? status.walletAddress : '',
+          bAsset: 'bluna',
+          recipient: undefined,
+        })(addressProvider),
+      })
+        .then(({ payload }) => payload)
+        .then(parseResult),
+      client,
+    });
+
+    // is this component does not unmounted
+    if (data) {
+      await refetchClaimable();
+    }
+  }, [
+    addressProvider,
+    bank.status,
+    client,
+    post,
+    queryClaim,
+    refetchClaimable,
+    status,
+  ]);
+
+  // ---------------------------------------------
+  // presentation
+  // ---------------------------------------------
+  if (
+    withdrawResult?.status === 'in-progress' ||
+    withdrawResult?.status === 'done' ||
+    withdrawResult?.status === 'error'
+  ) {
+    return (
+      <div className={className}>
+        <Section>
+          {/* TODO implement messages */}
+          <TxResultRenderer
+            result={withdrawResult}
+            resetResult={resetWithdrawResult}
+          />
+        </Section>
+      </div>
+    );
+  } else if (
+    claimResult?.status === 'in-progress' ||
+    claimResult?.status === 'done' ||
+    claimResult?.status === 'error'
+  ) {
+    return (
+      <div className={className}>
+        <Section>
+          {/* TODO implement messages */}
+          <TxResultRenderer
+            result={claimResult}
+            resetResult={resetClaimResult}
+          />
+        </Section>
+      </div>
+    );
+  }
 
   return (
     <div className={className}>
+      {/* Withdrawable */}
       <Section>
-        <NativeSelect
-          className="bond"
-          value={bond.value}
-          onChange={({ target }) =>
-            setBond(
-              bondItems.find(({ value }) => target.value === value) ??
-                bondItems[0],
-            )
-          }
-        >
-          {bondItems.map(({ label, value }) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </NativeSelect>
+        {assetCurrencies.length > 1 && (
+          <NativeSelect
+            className="bond"
+            value={assetCurrency.value}
+            onChange={({ target }) => updateAssetCurrency(target.value)}
+          >
+            {assetCurrencies.map(({ label, value }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </NativeSelect>
+        )}
 
         <article className="withdrawable-amount">
           <h4>Withdrawable Amount</h4>
-          <p>48,000.00 Luna</p>
+          <p>
+            {withdrawableAmount.gt(0)
+              ? formatLuna(withdrawableAmount.div(MICRO)) + ' Luna'
+              : '-'}
+          </p>
         </article>
 
-        <ActionButton className="submit" onClick={updateHistory}>
+        {!!invalidTxFee && big(withdrawableAmount).gt(0) && (
+          <WarningArticle>{invalidTxFee}</WarningArticle>
+        )}
+
+        <ActionButton
+          className="submit"
+          disabled={
+            status.status !== 'ready' ||
+            bank.status !== 'connected' ||
+            !!invalidTxFee ||
+            withdrawableAmount.lte(0)
+          }
+          onClick={() => withdraw()}
+        >
           Withdraw
         </ActionButton>
 
-        <ul className="withdraw-history">{history}</ul>
+        {withdrawHistory && withdrawHistory.length > 0 && (
+          <ul className="withdraw-history">
+            {withdrawHistory.map(
+              (
+                { blunaAmount, lunaAmount, requestTime, claimableTime },
+                index,
+              ) => (
+                <li key={`withdraw-history-${index}`}>
+                  <p>
+                    Requested time:{' '}
+                    <time>{requestTime?.toLocaleString() ?? 'Pending'}</time>
+                  </p>
+                  <p>{formatLuna(big(blunaAmount).div(MICRO))} bLuna</p>
+                  <p>
+                    Claimable time:{' '}
+                    <time>{claimableTime?.toLocaleString() ?? 'Pending'}</time>
+                  </p>
+                  <p>
+                    {lunaAmount
+                      ? `${formatLuna(big(lunaAmount).div(MICRO))} Luna`
+                      : ''}
+                  </p>
+                </li>
+              ),
+            )}
+          </ul>
+        )}
       </Section>
 
+      {/* Claimable */}
       <Section>
         <article className="claimable-rewards">
           <h4>Claimable Rewards</h4>
-          <p>3,000.00 UST</p>
+          <p>
+            {claimableRewards.gt(0)
+              ? formatUST(claimableRewards.div(MICRO)) + ' UST'
+              : '-'}
+          </p>
         </article>
 
-        <ActionButton className="submit">Claim</ActionButton>
-      </Section>
+        {!!invalidTxFee && big(claimableRewards).gt(0) && (
+          <WarningArticle>{invalidTxFee}</WarningArticle>
+        )}
 
-      <HorizontalHeavyRuler />
-
-      <Section>
-        <article className={style.business}>
-          <Box>
-            <header>Available Luna</header>
-            <div>
-              <Amount amount={+claimable} denom="Luna" />
-            </div>
-            <footer>
-              <ActionContainer
-                render={(execute) => (
-                  <Button
-                    type={ButtonTypes.PRIMARY}
-                    transactional={true}
-                    onClick={() => alert('oops')}
-                  >
-                    Withdraw
-                  </Button>
-                )}
-              />
-            </footer>
-          </Box>
-          <Box>
-            <header>Claimable Rewards</header>
-            <div>
-              <Amount amount={+claimable} denom="UST" />
-            </div>
-            <footer>
-              <ActionContainer
-                render={(execute) => (
-                  <Button
-                    type={ButtonTypes.PRIMARY}
-                    onClick={() =>
-                      execute(
-                        fabricatebAssetClaim({
-                          address,
-                          recipient: address,
-                          bAsset: addressProvider.bAssetToken('uluna'),
-                        }),
-                      )
-                    }
-                    transactional={true}
-                  >
-                    Claim
-                  </Button>
-                )}
-              />
-            </footer>
-          </Box>
-        </article>
-
-        {/* owner operations */}
-        <div>
-          <ActionContainer
-            render={(execute) => (
-              <Button
-                type={ButtonTypes.DEFAULT}
-                transactional={true}
-                onClick={() =>
-                  execute(
-                    fabricatebAssetUpdateGlobalIndex({
-                      address,
-                      bAsset: 'bluna',
-                    }),
-                  )
-                }
-              >
-                Update Global Index
-              </Button>
-            )}
-          />
-        </div>
+        <ActionButton
+          className="submit"
+          disabled={
+            status.status !== 'ready' ||
+            bank.status !== 'connected' ||
+            !!invalidTxFee ||
+            claimableRewards.lte(0)
+          }
+          onClick={() => claim()}
+        >
+          Claim
+        </ActionButton>
       </Section>
     </div>
   );
 }
+
+const withdrawQueryOptions: BroadcastableQueryOptions<
+  { post: Promise<TxResult>; client: ApolloClient<any> },
+  { txResult: TxResult } & { txInfos: txi.Data },
+  Error
+> = {
+  ...queryOptions,
+  group: 'basset/withdraw',
+  notificationFactory: txNotificationFactory,
+};
+
+const claimQueryOptions: BroadcastableQueryOptions<
+  { post: Promise<TxResult>; client: ApolloClient<any> },
+  { txResult: TxResult } & { txInfos: txi.Data },
+  Error
+> = {
+  ...queryOptions,
+  group: 'basset/claim',
+  notificationFactory: txNotificationFactory,
+};
 
 export const Claim = styled(ClaimBase)`
   > section {

@@ -3,36 +3,29 @@ import {
   rulerShadowColor,
 } from '@anchor-protocol/styled-neumorphism';
 import { screen } from 'env';
+import { useMarketOverview } from 'pages/borrow/queries/marketOverview';
 import React from 'react';
 import styled from 'styled-components';
-import BorrowAPR from './apr';
-import BorrowCollateralList from './collateral-list';
-import BorrowLoanList from './loan-list';
-import BorrowUnprovidedCollateralList from './unprovided-collateral-list';
+import { CollateralList } from './components/CollateralList';
+import { LoanList } from './components/LoanList';
+import { Summary } from './components/Summary';
 
 export interface BorrowProps {
   className?: string;
 }
 
 function BorrowBase({ className }: BorrowProps) {
+  const { parsedData: marketOverview } = useMarketOverview();
+  
   return (
     <div className={className}>
       <main>
         <h1>BORROW</h1>
 
         <div className="content-layout">
-          <section>
-            <BorrowAPR />
-          </section>
-          <section>
-            <div>
-              <BorrowCollateralList />
-              <BorrowUnprovidedCollateralList />
-            </div>
-            <div>
-              <BorrowLoanList />
-            </div>
-          </section>
+          <Summary marketOverview={marketOverview} />
+          <CollateralList marketOverview={marketOverview} />
+          <LoanList marketOverview={marketOverview} />
         </div>
       </main>
     </div>

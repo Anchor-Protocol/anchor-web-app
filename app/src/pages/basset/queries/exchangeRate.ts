@@ -1,4 +1,6 @@
-import { gql } from '@apollo/client';
+import { gql, QueryResult, useQuery } from '@apollo/client';
+import { useAddressProvider } from 'contexts/contract';
+import { useMemo } from 'react';
 
 export interface StringifiedData {
   exchangeRate: {
@@ -7,32 +9,24 @@ export interface StringifiedData {
 }
 
 export interface Data {
-  exchangeRate: {
-    Result: {
-      /** number */
-      actual_unbonded_amount: string;
-      /** number */
-      exchange_rate: string;
-      /** datetime */
-      last_index_modification: number;
-      /** ? */
-      last_processed_batch: number;
-      /** datetime */
-      last_unbonded_time: number;
-      /** number */
-      prev_hub_balance: string;
-      /** number */
-      total_bond_amount: string;
-    };
-  };
+  /** number */
+  actual_unbonded_amount: string;
+  /** number */
+  exchange_rate: string;
+  /** datetime */
+  last_index_modification: number;
+  /** ? */
+  last_processed_batch: number;
+  /** datetime */
+  last_unbonded_time: number;
+  /** number */
+  prev_hub_balance: string;
+  /** number */
+  total_bond_amount: string;
 }
 
-export function parseData({ exchangeRate: { Result } }: StringifiedData): Data {
-  return {
-    exchangeRate: {
-      Result: JSON.parse(Result),
-    },
-  };
+export function parseData(data: StringifiedData): Data {
+  return JSON.parse(data.exchangeRate.Result);
 }
 
 export interface StringifiedVariables {
@@ -67,3 +61,33 @@ export const query = gql`
     }
   }
 `;
+
+export function useExchangeRate({
+  bAsset,
+}: {
+  bAsset: string;
+}): QueryResult<StringifiedData, StringifiedVariables> & {
+  parsedData: Data | undefined;
+} {
+  const addressProvider = useAddressProvider();
+
+  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
+    fetchPolicy: 'cache-and-network',
+    variables: stringifyVariables({
+      bLunaHubContract: addressProvider.bAssetHub(bAsset),
+      stateQuery: {
+        state: {},
+      },
+    }),
+  });
+
+  const parsedData = useMemo(
+    () => (result.data ? parseData(result.data) : undefined),
+    [result.data],
+  );
+
+  return {
+    ...result,
+    parsedData,
+  };
+}

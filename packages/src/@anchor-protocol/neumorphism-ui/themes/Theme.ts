@@ -22,6 +22,7 @@ export interface NeumorphismTheme extends Theme {
   backgroundColor: string;
   textColor: string;
   dimTextColor: string;
+  errorTextColor: string;
 
   // action buttons
   actionButton: {

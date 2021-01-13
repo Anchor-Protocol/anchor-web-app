@@ -37,6 +37,7 @@ export function useBroadcastableQuery<Params, Data, Error = unknown>({
 
   const {
     broadcast,
+    dispatch,
     getAbortController,
     setAbortController,
     removeAbortController,
@@ -118,6 +119,8 @@ export function useBroadcastableQuery<Params, Data, Error = unknown>({
 
         removeAbortController(id);
 
+        dispatch(id, 'done');
+
         if (onBroadcast.current) {
           broadcast(id, notificationFactory(done));
         } else {
@@ -136,6 +139,10 @@ export function useBroadcastableQuery<Params, Data, Error = unknown>({
           return;
         }
 
+        if (process.env.NODE_ENV === 'development') {
+          throw error;
+        }
+
         const fault: FetchResult = {
           status: 'error',
           params,
@@ -150,13 +157,14 @@ export function useBroadcastableQuery<Params, Data, Error = unknown>({
       }
     },
     [
-      fetchClient,
       getAbortController,
       id,
-      notificationFactory,
-      removeAbortController,
       setAbortController,
+      fetchClient,
+      removeAbortController,
+      dispatch,
       broadcast,
+      notificationFactory,
     ],
   );
 

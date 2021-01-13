@@ -16,6 +16,7 @@ export const lightTheme: DefaultTheme = {
   backgroundColor: '#f4f4f5',
   textColor: '#1f1f1f',
   dimTextColor: '#8a8a8a',
+  errorTextColor: '#ef3158',
 
   actionButton: {
     backgroundColor: '#94f3b8',

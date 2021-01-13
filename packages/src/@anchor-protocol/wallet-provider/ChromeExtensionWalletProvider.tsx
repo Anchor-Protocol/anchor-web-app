@@ -1,4 +1,4 @@
-import { CreateTxOptions, Extension } from '@terra-money/terra.js';
+import { Extension } from '@terra-money/terra.js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { StationNetworkInfo, WalletStatus } from './types';
 import { WalletContext, WalletProviderProps, WalletState } from './useWallet';
@@ -6,7 +6,21 @@ import { WalletContext, WalletProviderProps, WalletState } from './useWallet';
 const storage = localStorage;
 
 const WALLET_ADDRESS: string = '__anchor_terra_station_wallet_address__';
-const STATION_INSTALL_COUNT: string = '__anchor_terra_station_install_count__';
+
+async function intervalCheck(
+  count: number,
+  fn: () => boolean,
+  intervalMs: number = 500,
+): Promise<boolean> {
+  let i: number = -1;
+  while (++i < count) {
+    if (fn()) {
+      return true;
+    }
+    await new Promise((resolve) => setTimeout(resolve, intervalMs));
+  }
+  return false;
+}
 
 export function ChromeExtensionWalletProvider({
   children,
@@ -17,49 +31,75 @@ export function ChromeExtensionWalletProvider({
     status: 'initializing',
   }));
 
-  const checkStatus = useCallback(async () => {
-    if (!extension.isAvailable) {
-      setStatus({ status: 'not_installed' });
-      return;
-    }
+  const checkStatus = useCallback(
+    async (watingExtensionScriptInjection: boolean = false) => {
+      const isExtensionInstalled = watingExtensionScriptInjection
+        ? await intervalCheck(20, () => extension.isAvailable)
+        : extension.isAvailable;
 
-    const { payload } = await extension.request('info');
-    const network: StationNetworkInfo = payload as any;
+      if (!isExtensionInstalled) {
+        setStatus((prev) => {
+          if (
+            prev.status !== 'initializing' &&
+            prev.status !== 'not_installed'
+          ) {
+            console.error(
+              [
+                `Abnormal Wallet status change to not_install`,
+                `===============================================`,
+                JSON.stringify(
+                  {
+                    'window.isTerraExtensionAvailable':
+                      window.isTerraExtensionAvailable,
+                  },
+                  null,
+                  2,
+                ),
+              ].join('\n'),
+            );
+          }
 
-    const storedWalletAddress: string | null = storage.getItem(WALLET_ADDRESS);
-
-    if (storedWalletAddress) {
-      if (storedWalletAddress.trim().length > 0) {
-        setStatus({
-          status: 'ready',
-          network,
-          walletAddress: storedWalletAddress,
+          return prev.status !== 'not_installed'
+            ? { status: 'not_installed' }
+            : prev;
         });
-      } else {
-        storage.removeItem(WALLET_ADDRESS);
+        return;
       }
-    } else {
-      setStatus({ status: 'not_connected', network });
-    }
-  }, [extension]);
+
+      const { payload } = await extension.request('info');
+      const network: StationNetworkInfo = payload as any;
+
+      const storedWalletAddress: string | null = storage.getItem(
+        WALLET_ADDRESS,
+      );
+
+      if (storedWalletAddress) {
+        if (storedWalletAddress.trim().length > 0) {
+          setStatus((prev) => {
+            return prev.status !== 'ready' ||
+              prev.walletAddress !== storedWalletAddress
+              ? {
+                  status: 'ready',
+                  network,
+                  walletAddress: storedWalletAddress,
+                }
+              : prev;
+          });
+        } else {
+          storage.removeItem(WALLET_ADDRESS);
+        }
+      } else {
+        setStatus((prev) => {
+          return prev.status !== 'not_connected'
+            ? { status: 'not_connected', network }
+            : prev;
+        });
+      }
+    },
+    [extension],
+  );
 
   const install = useCallback(() => {
-    const count: number = parseInt(
-      storage.getItem(STATION_INSTALL_COUNT) ?? '0',
-    );
-
-    if (count > 3) {
-      //const result = confirm(`You tried to install many times. Do you have some problem to install?`)
-      //
-      //if (result) {
-      //  // TODO
-      //} else {
-      //  storage.setItem(INSTALL_COUNT, '0');
-      //}
-    } else {
-      storage.setItem(STATION_INSTALL_COUNT, (count + 1).toString());
-    }
-
     window.open(
       'https://chrome.google.com/webstore/detail/terra-station/aiifbnbfobpmeekipheeijimdpnlpgpp',
       '_blank',
@@ -86,7 +126,7 @@ export function ChromeExtensionWalletProvider({
   const post = useCallback<WalletState['post']>(
     (data) => {
       return new Promise((resolve) => {
-        const id = extension.post({ ...(data as any), purgeQueue: true });
+        extension.post({ ...(data as any), purgeQueue: true });
         extension.once('onPost', (payload) => {
           resolve({ name: 'onPost', payload });
         });
@@ -97,8 +137,26 @@ export function ChromeExtensionWalletProvider({
   );
 
   useEffect(() => {
-    checkStatus();
+    checkStatus(true);
   }, [checkStatus]);
+
+  useEffect(() => {
+    console.log(
+      [
+        `Wallet Status`,
+        `=======================================`,
+        JSON.stringify(status, null, 2),
+        JSON.stringify(
+          {
+            'window.isTerraExtensionAvailable':
+              window.isTerraExtensionAvailable,
+          },
+          null,
+          2,
+        ),
+      ].join('\n'),
+    );
+  }, [status]);
 
   const state = useMemo<WalletState>(
     () => ({

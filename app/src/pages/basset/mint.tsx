@@ -5,32 +5,47 @@ import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeS
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
-import { MICRO, toFixedNoRounding } from '@anchor-protocol/number-notation';
+import {
+  formatLuna,
+  formatLunaInput,
+  formatLunaUserInput,
+  formatUST,
+  MICRO,
+} from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
-  stopWithAbortSignal,
   useBroadcastableQuery,
 } from '@anchor-protocol/use-broadcastable-query';
-import { isConnected, useWallet } from '@anchor-protocol/wallet-provider';
-import { ApolloClient, useApolloClient, useQuery } from '@apollo/client';
+import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
+import { ApolloClient, useApolloClient } from '@apollo/client';
 import {
   Input as MuiInput,
-  InputAdornment,
   NativeSelect as MuiNativeSelect,
-  SnackbarContent as MuiSnackbarContent,
 } from '@material-ui/core';
-import { Error as ErrorIcon } from '@material-ui/icons';
+import { InfoOutlined } from '@material-ui/icons';
 import { CreateTxOptions } from '@terra-money/terra.js';
+import * as txi from 'api/queries/txInfos';
+import { queryOptions } from 'api/transactions/queryOptions';
+import {
+  parseResult,
+  StringifiedTxResult,
+  TxResult,
+} from 'api/transactions/tx';
+import {
+  txNotificationFactory,
+  TxResultRenderer,
+} from 'api/transactions/TxResultRenderer';
 import big from 'big.js';
-import { transactionFee } from 'env';
-import React, { ReactNode, useMemo, useState } from 'react';
+import { TxFeeList, TxFeeListItem } from 'components/messages/TxFeeList';
+import { WarningArticle } from 'components/messages/WarningArticle';
+import { useBank } from 'contexts/bank';
+import { useAddressProvider } from 'contexts/contract';
+import { fixedGasUUSD, transactionFee } from 'env';
+import React, { ReactNode, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { useAddressProvider } from '../../providers/address-provider';
-import * as exc from './queries/exchangeRate';
-import * as txi from './queries/txInfos';
-import * as bal from './queries/userBankBalances';
+import { useExchangeRate } from './queries/exchangeRate';
 import * as val from './queries/validators';
-import * as mint from './transactions/mint';
+import { useValidators } from './queries/validators';
 
 export interface MintProps {
   className?: string;
@@ -41,8 +56,8 @@ interface Item {
   value: string;
 }
 
-const bondCurrencies: Item[] = [{ label: 'Luna', value: 'luna' }];
-const mintCurrencies: Item[] = [{ label: 'bLuna', value: 'bluna' }];
+const assetCurrencies: Item[] = [{ label: 'Luna', value: 'luna' }];
+const bAssetCurrencies: Item[] = [{ label: 'bLuna', value: 'bluna' }];
 
 function MintBase({ className }: MintProps) {
   // ---------------------------------------------
@@ -52,7 +67,7 @@ function MintBase({ className }: MintProps) {
 
   const addressProvider = useAddressProvider();
 
-  const [fetchMint, mintResult, resetMintResult] = useBroadcastableQuery(
+  const [queryMint, mintResult, resetMintResult] = useBroadcastableQuery(
     mintQueryOptions,
   );
 
@@ -61,154 +76,230 @@ function MintBase({ className }: MintProps) {
   // ---------------------------------------------
   // states
   // ---------------------------------------------
-  const [bondAmount, setBondAmount] = useState<string>('');
+  const [assetAmount, setAssetAmount] = useState<string>('');
+  const [bAssetAmount, setBAssetAmount] = useState<string>('');
 
-  const [mintCurrency, setMintCurrency] = useState<Item>(
-    () => mintCurrencies[0],
+  const [bAssetCurrency, setBAssetCurrency] = useState<Item>(
+    () => bAssetCurrencies[0],
   );
 
-  const [bondCurrency, setBondCurrency] = useState<Item>(
-    () => bondCurrencies[0],
+  const [assetCurrency, setAssetCurrency] = useState<Item>(
+    () => assetCurrencies[0],
   );
 
   const [selectedValidator, setSelectedValidator] = useState<
-    val.Data['validators']['Result'][number] | null
+    val.Data['validators'][number] | null
   >(null);
 
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const { data: validatorsData } = useQuery<
-    val.StringifiedData,
-    val.StringifiedVariables
-  >(val.query, {
-    skip: !isConnected(status),
-    variables: val.stringifyVariables({
-      bLunaHubContract: addressProvider.bAssetHub(mintCurrency.value),
-    }),
+  const bank = useBank();
+
+  const { parsedData: validators } = useValidators({
+    bAsset: bAssetCurrency.value,
   });
 
-  const { data: exchangeRateData } = useQuery<
-    exc.StringifiedData,
-    exc.StringifiedVariables
-  >(exc.query, {
-    variables: exc.stringifyVariables({
-      bLunaHubContract: addressProvider.bAssetHub(mintCurrency.value),
-    }),
+  const { parsedData: exchangeRate } = useExchangeRate({
+    bAsset: bAssetCurrency.value,
   });
-
-  const { data: userBankBalancesData } = useQuery<
-    bal.StringifiedData,
-    bal.StringifiedVariables
-  >(bal.query, {
-    skip: status.status !== 'ready',
-    variables: bal.stringifyVariables({
-      userAddress: status.status === 'ready' ? status.walletAddress : '',
-    }),
-  });
-
-  const whitelistedValidators = useMemo(
-    () =>
-      validatorsData
-        ? val.parseData(validatorsData).whitelistedValidators.Result
-        : undefined,
-    [validatorsData],
-  );
-
-  const exchangeRate = useMemo(
-    () =>
-      exchangeRateData
-        ? exc.parseData(exchangeRateData).exchangeRate.Result
-        : undefined,
-    [exchangeRateData],
-  );
-
-  const userUlunaBalance = useMemo(() => {
-    return userBankBalancesData
-      ? bal.parseData(userBankBalancesData).get('uluna')?.Amount
-      : undefined;
-  }, [userBankBalancesData]);
 
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
-  const bondInputError = useMemo<ReactNode>(() => {
-    if (
-      big(bondAmount.length > 0 ? bondAmount : 0)
-        .mul(MICRO)
-        .gt(big(userUlunaBalance ?? 0))
-    ) {
-      return `Insufficient balance: Not enough Assets\nYou have: ${big(
-        userUlunaBalance ?? 0,
-      ).div(MICRO)} Luna`;
+  const invalidTxFee = useMemo<ReactNode>(() => {
+    if (bank.status === 'demo') {
+      return undefined;
+    } else if (big(bank.userBalances.uUSD).lt(fixedGasUUSD)) {
+      return 'Not Enough Tx Fee (Your USD Balance is lower than Fixed Gas)';
     }
     return undefined;
-  }, [bondAmount, userUlunaBalance]);
+  }, [bank.status, bank.userBalances.uUSD]);
 
-  console.log('mint.tsx..MintBase()', mintResult);
+  const invalidAssetAmount = useMemo<ReactNode>(() => {
+    if (bank.status === 'demo') {
+      return undefined;
+    } else if (
+      big(assetAmount.length > 0 ? assetAmount : 0)
+        .mul(MICRO)
+        .gt(bank.userBalances.uLuna ?? 0)
+    ) {
+      return `Insufficient balance: Not enough Assets (${big(
+        bank.userBalances.uLuna ?? 0,
+      ).div(MICRO)} Luna)`;
+    }
+    return undefined;
+  }, [bank.status, bank.userBalances.uLuna, assetAmount]);
+
+  // ---------------------------------------------
+  // callbacks
+  // ---------------------------------------------
+  const updateAssetCurrency = useCallback((nextAssetCurrencyValue: string) => {
+    setAssetCurrency(
+      assetCurrencies.find(({ value }) => nextAssetCurrencyValue === value) ??
+        assetCurrencies[0],
+    );
+  }, []);
+
+  const updateBAssetCurrency = useCallback(
+    (nextBAssetCurrencyValue: string) => {
+      setBAssetCurrency(
+        bAssetCurrencies.find(
+          ({ value }) => nextBAssetCurrencyValue === value,
+        ) ?? bAssetCurrencies[0],
+      );
+    },
+    [],
+  );
+
+  const updateAssetAmount = useCallback(
+    (nextAssetAmount: string) => {
+      if (nextAssetAmount.trim().length === 0) {
+        setAssetAmount('');
+        setBAssetAmount('');
+      } else {
+        const assetAmount: string = formatLunaUserInput(nextAssetAmount);
+
+        setAssetAmount(assetAmount);
+        setBAssetAmount(
+          formatLunaInput(
+            big(assetAmount).div(exchangeRate?.exchange_rate ?? 1),
+          ),
+        );
+      }
+    },
+    [exchangeRate?.exchange_rate],
+  );
+
+  const updateBAssetAmount = useCallback(
+    (nextBAssetAmount: string) => {
+      if (nextBAssetAmount.trim().length === 0) {
+        setAssetAmount('');
+        setBAssetAmount('');
+      } else {
+        const bAssetAmount: string = formatLunaUserInput(nextBAssetAmount);
+
+        setAssetAmount(
+          formatLunaInput(
+            big(bAssetAmount).mul(exchangeRate?.exchange_rate ?? 1),
+          ),
+        );
+        setBAssetAmount(bAssetAmount);
+      }
+    },
+    [exchangeRate?.exchange_rate],
+  );
+
+  const mint = useCallback(
+    async ({
+      status,
+      assetAmount,
+      selectedValidator,
+    }: {
+      status: WalletStatus;
+      assetAmount: string;
+      selectedValidator: string | undefined;
+    }) => {
+      if (
+        status.status !== 'ready' ||
+        bank.status !== 'connected' ||
+        !selectedValidator
+      ) {
+        return;
+      }
+
+      const data = await queryMint({
+        post: post<CreateTxOptions, StringifiedTxResult>({
+          ...transactionFee,
+          msgs: fabricatebAssetBond({
+            address: status.walletAddress,
+            amount: big(assetAmount).toNumber(),
+            bAsset: bAssetCurrency.value,
+            validator: selectedValidator,
+          })(addressProvider),
+        })
+          .then(({ payload }) => payload)
+          .then(parseResult),
+        client,
+      });
+
+      // is this component does not unmounted
+      if (data) {
+        setAssetAmount('');
+        setBAssetAmount('');
+        setSelectedValidator(null);
+      }
+    },
+    [
+      bank.status,
+      queryMint,
+      post,
+      bAssetCurrency.value,
+      addressProvider,
+      client,
+    ],
+  );
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
-  if (mintResult?.status === 'in-progress') {
+  if (
+    mintResult?.status === 'in-progress' ||
+    mintResult?.status === 'done' ||
+    mintResult?.status === 'error'
+  ) {
     return (
       <Section className={className}>
-        <p>{mintResult.status}:</p>
-        <p>See the terra station window...</p>
-        {Object.keys(mintResult.data ?? {}).map((key) => (
-          <p id={key}>{key}</p>
-        ))}
-        {!mintResult.data && (
-          <button
-            onClick={() => {
-              mintResult.abortController.abort();
-              resetMintResult && resetMintResult();
-            }}
-          >
-            Reset
-          </button>
-        )}
-      </Section>
-    );
-  } else if (mintResult?.status === 'done') {
-    return (
-      <Section className={className}>
-        <p>{mintResult.status}:</p>
-        {Object.keys(mintResult.data ?? {}).map((key) => (
-          <p id={key}>{key}</p>
-        ))}
-        <button onClick={() => resetMintResult && resetMintResult()}>
-          Reset
-        </button>
+        {/* TODO implement messages */}
+        <TxResultRenderer result={mintResult} resetResult={resetMintResult} />
       </Section>
     );
   }
 
   return (
     <Section className={className}>
+      {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
+
+      {/* Bond (Asset) */}
       <div className="bond-description">
         <p>I want to bond</p>
         <p>
           {exchangeRate &&
-            `1 Luna = ${toFixedNoRounding(
-              big(1).div(big(exchangeRate.exchange_rate)),
+            `1 Luna = ${formatLuna(
+              big(1).div(exchangeRate.exchange_rate),
             )} bLuna`}
         </p>
       </div>
 
-      <SelectAndTextInputContainer className="bond">
+      <SelectAndTextInputContainer
+        className="bond"
+        error={!!invalidAssetAmount}
+        leftHelperText={invalidAssetAmount}
+        rightHelperText={
+          <span>
+            Balance:{' '}
+            <span
+              style={{ textDecoration: 'underline', cursor: 'pointer' }}
+              onClick={() =>
+                updateAssetAmount(
+                  big(bank.userBalances.uLuna).div(MICRO).toString(),
+                )
+              }
+            >
+              {big(bank.userBalances.uLuna).div(MICRO).toString()} Luna
+            </span>
+          </span>
+        }
+      >
         <MuiNativeSelect
-          value={bondCurrency}
-          onChange={(evt) =>
-            setBondCurrency(
-              bondCurrencies.find(({ value }) => evt.target.value === value) ??
-                bondCurrencies[0],
-            )
+          value={assetCurrency}
+          onChange={({ target }) => updateAssetCurrency(target.value)}
+          IconComponent={
+            assetCurrencies.length < 2 ? BlankComponent : undefined
           }
-          IconComponent={bondCurrencies.length < 2 ? BlankComponent : undefined}
-          disabled={bondCurrencies.length < 2}
+          disabled={assetCurrencies.length < 2}
         >
-          {bondCurrencies.map(({ label, value }) => (
+          {assetCurrencies.map(({ label, value }) => (
             <option key={value} value={value}>
               {label}
             </option>
@@ -218,178 +309,123 @@ function MintBase({ className }: MintProps) {
         <MuiInput
           type="number"
           placeholder="0.00"
-          error={!!bondInputError}
-          endAdornment={
-            bondInputError ? (
-              <InputAdornment position="end">
-                <Tooltip
-                  open
-                  color="error"
-                  title={bondInputError}
-                  placement="top"
-                >
-                  <ErrorIcon />
-                </Tooltip>
-              </InputAdornment>
-            ) : undefined
-          }
-          value={bondAmount}
-          onChange={({ target }) => setBondAmount(target.value)}
+          error={!!invalidAssetAmount}
+          value={assetAmount}
+          onChange={({ target }) => updateAssetAmount(target.value)}
         />
       </SelectAndTextInputContainer>
 
+      {/* Mint (bAsset) */}
       <div className="mint-description">
         <p>and mint</p>
         <p>
           {exchangeRate &&
-            `1 bLuna = ${toFixedNoRounding(exchangeRate.exchange_rate)} Luna`}
+            `1 bLuna = ${formatLuna(exchangeRate.exchange_rate)} Luna`}
         </p>
       </div>
 
-      <SelectAndTextInputContainer className="mint">
+      <SelectAndTextInputContainer
+        className="mint"
+        error={!!invalidAssetAmount}
+      >
         <MuiNativeSelect
-          value={mintCurrency}
-          onChange={(evt) =>
-            setMintCurrency(
-              mintCurrencies.find(({ value }) => evt.target.value === value) ??
-                mintCurrencies[0],
-            )
+          value={bAssetCurrency}
+          onChange={({ target }) => updateBAssetCurrency(target.value)}
+          IconComponent={
+            bAssetCurrencies.length < 2 ? BlankComponent : undefined
           }
-          IconComponent={mintCurrencies.length < 2 ? BlankComponent : undefined}
-          disabled={mintCurrencies.length < 2}
+          disabled={bAssetCurrencies.length < 2}
         >
-          {mintCurrencies.map(({ label, value }) => (
+          {bAssetCurrencies.map(({ label, value }) => (
             <option key={value} value={value}>
               {label}
             </option>
           ))}
         </MuiNativeSelect>
         <MuiInput
+          type="number"
           placeholder="0.00"
-          value={
-            bondAmount.length > 0
-              ? big(bondAmount)
-                  .mul(big(exchangeRate?.exchange_rate ?? 0))
-                  .toString()
-              : ''
-          }
-          disabled
+          error={!!invalidAssetAmount}
+          value={bAssetAmount}
+          onChange={({ target }) => updateBAssetAmount(target.value)}
         />
       </SelectAndTextInputContainer>
 
       <HorizontalRuler />
 
+      {/* Validators */}
       <NativeSelect
         className="validator"
         data-selected-value={selectedValidator?.OperatorAddress ?? ''}
         value={selectedValidator?.OperatorAddress ?? ''}
         onChange={({ target }) =>
           setSelectedValidator(
-            whitelistedValidators?.find(
+            validators?.whitelistedValidators.find(
               ({ OperatorAddress }) => target.value === OperatorAddress,
             ) ?? null,
           )
         }
-        disabled={whitelistedValidators?.length === 0}
+        disabled={validators?.whitelistedValidators.length === 0}
       >
         <option value="">Select validator</option>
-        {whitelistedValidators?.map(({ Description, OperatorAddress }) => (
-          <option key={OperatorAddress} value={OperatorAddress}>
-            {Description.Moniker}
-          </option>
-        ))}
+        {validators?.whitelistedValidators.map(
+          ({ Description, OperatorAddress }) => (
+            <option key={OperatorAddress} value={OperatorAddress}>
+              {Description.Moniker}
+            </option>
+          ),
+        )}
       </NativeSelect>
 
-      {status.status === 'ready' &&
-      selectedValidator &&
-      bondAmount.length > 0 &&
-      big(bondAmount).gt(0) &&
-      !bondInputError ? (
-        <ActionButton
-          className="submit"
-          onClick={() =>
-            fetchMint({
-              post: post<CreateTxOptions, mint.StringifiedTxResult>({
-                ...transactionFee,
-                msgs: fabricatebAssetBond({
-                  address: status.walletAddress,
-                  amount: big(bondAmount).toNumber(),
-                  bAsset: addressProvider.bAssetToken('bluna'),
-                  validator: selectedValidator.OperatorAddress,
-                })(addressProvider),
-              })
-                .then(({ payload }) => payload)
-                .then(mint.parseResult),
-              client,
-            }).then((data) => {
-              if (data) {
-                // the meaning that data is exists is this component does not unmounted
-                setBondAmount('');
-                setSelectedValidator(null);
-              }
-            })
-          }
-        >
-          Mint
-        </ActionButton>
-      ) : (
-        <ActionButton className="submit" disabled>
-          Mint
-        </ActionButton>
+      {assetAmount.length > 0 && (
+        <TxFeeList className="receipt">
+          <TxFeeListItem
+            label={
+              <>
+                Tx Fee{' '}
+                <Tooltip title="Tx Fee Description" placement="top">
+                  <InfoOutlined />
+                </Tooltip>
+              </>
+            }
+          >
+            {formatUST(big(fixedGasUUSD).div(MICRO))} UST
+          </TxFeeListItem>
+        </TxFeeList>
       )}
+
+      {/* Submit */}
+      <ActionButton
+        className="submit"
+        disabled={
+          status.status !== 'ready' ||
+          bank.status !== 'connected' ||
+          !!invalidAssetAmount ||
+          !!invalidTxFee ||
+          !selectedValidator
+        }
+        onClick={() =>
+          mint({
+            assetAmount: assetAmount,
+            status,
+            selectedValidator: selectedValidator?.OperatorAddress,
+          })
+        }
+      >
+        Mint
+      </ActionButton>
     </Section>
   );
 }
 
-const timeout = (ms: number) =>
-  new Promise((resolve) => setTimeout(resolve, ms));
-
 const mintQueryOptions: BroadcastableQueryOptions<
-  { post: Promise<mint.TxResult>; client: ApolloClient<any> },
-  { txResult: mint.TxResult } & { txInfos: txi.Data },
+  { post: Promise<TxResult>; client: ApolloClient<any> },
+  { txResult: TxResult } & { txInfos: txi.Data },
   Error
 > = {
-  broadcastWhen: 'unmounted',
+  ...queryOptions,
   group: 'basset/mint',
-  fetchClient: async (
-    { post, client },
-    { signal, inProgressUpdate, stopSignal },
-  ) => {
-    const txResult = await stopWithAbortSignal(post, signal);
-
-    inProgressUpdate({ txResult });
-
-    while (true) {
-      if (signal.aborted) {
-        throw stopSignal;
-      }
-
-      const txInfos = await client
-        .query<txi.StringifiedData, txi.StringifiedVariables>({
-          query: txi.query,
-          fetchPolicy: 'network-only',
-          variables: txi.stringifyVariables({
-            txHash: txResult.result.txhash,
-          }),
-        })
-        .then(({ data }) => txi.parseData(data));
-
-      if (txInfos.length > 0) {
-        return { txResult, txInfos };
-      } else {
-        await timeout(500);
-      }
-    }
-  },
-  notificationFactory: (result) => {
-    return (
-      <MuiSnackbarContent
-        message={`${result.status}: ${
-          'data' in result ? Object.keys(result.data ?? {}).join(', ') : ''
-        }`}
-      />
-    );
-  },
+  notificationFactory: txNotificationFactory,
 };
 
 function BlankComponent() {
@@ -437,6 +473,10 @@ export const Mint = styled(MintBase)`
     &[data-selected-value=''] {
       color: ${({ theme }) => theme.dimTextColor};
     }
+  }
+  
+  .receipt {
+    margin-bottom: 40px;
   }
 
   .submit {

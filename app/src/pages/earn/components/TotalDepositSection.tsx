@@ -1,57 +1,65 @@
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
-import { SkeletonText } from '@anchor-protocol/neumorphism-ui/components/SkeletonText';
-import useAnchorBalance from 'hooks/mantle/use-anchor-balance';
+import {
+  formatUST,
+  mapDecimalPointBaseSeparatedNumbers,
+  MICRO,
+} from '@anchor-protocol/notation';
+import big from 'big.js';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
+import { useTotalDeposit } from '../queries/totalDeposit';
 import { useDepositDialog } from './useDepositDialog';
+import { useWithdrawDialog } from './useWithdrawDialog';
 
 export interface TotalDepositSectionProps {
   className?: string;
 }
 
 function TotalDepositSectionBase({ className }: TotalDepositSectionProps) {
-  const [loading, error, anchorBalance, refetch] = useAnchorBalance();
+  // ---------------------------------------------
+  // queries
+  // ---------------------------------------------
+  const { parsedData: totalDeposit } = useTotalDeposit();
 
-  console.log('TotalDepositSection.tsx..TotalDepositSectionBase()', { error });
-
+  // ---------------------------------------------
+  // dialogs
+  // ---------------------------------------------
   const [openDepositDialog, depositDialogElement] = useDepositDialog();
+  const [openWithdrawDialog, withdrawDialogElement] = useWithdrawDialog();
 
   const openDeposit = useCallback(async () => {
     await openDepositDialog({});
-    refetch();
-  }, [openDepositDialog, refetch]);
+  }, [openDepositDialog]);
 
   const openWithdraw = useCallback(async () => {
-    // await openWithdrawDialog({})
-    refetch();
-  }, [refetch]);
+    await openWithdrawDialog({});
+  }, [openWithdrawDialog]);
 
+  // ---------------------------------------------
+  // presentation
+  // ---------------------------------------------
   return (
     <Section className={className}>
-      {/*{error ? (*/}
-      {/*  <SectionCover height={300}>{error.message}</SectionCover>*/}
-      {/*) : (*/}
-      {/*  <>*/}
       <h2>TOTAL DEPOSIT</h2>
 
       <div className="amount">
-        {loading ? (
-          <SkeletonText>0000.000000 UST</SkeletonText>
-        ) : (
-          <>
-            2,320<span className="decimal-point">.063700</span> UST
-          </>
+        {mapDecimalPointBaseSeparatedNumbers(
+          formatUST(big(totalDeposit?.totalDeposit ?? 0).div(MICRO)),
+          (i, d) => {
+            return (
+              <>
+                {i}
+                {d ? <span className="decimal-point">.{d}</span> : null} UST
+              </>
+            );
+          },
         )}
       </div>
 
       <div className="amount-description">
-        {loading ? (
-          <SkeletonText>00000000 aUST</SkeletonText>
-        ) : (
-          <>{+anchorBalance!.balance / 1000000 || 0} aUST</>
-        )}
+        {formatUST(big(totalDeposit?.aUSTBalance.balance ?? 0).div(MICRO))} aUST
       </div>
 
       <HorizontalRuler />
@@ -60,9 +68,9 @@ function TotalDepositSectionBase({ className }: TotalDepositSectionProps) {
         <ActionButton onClick={() => openDeposit()}>Deposit</ActionButton>
         <ActionButton onClick={() => openWithdraw()}>Withdraw</ActionButton>
       </aside>
-      {/*  </>*/}
-      {/*)}*/}
+
       {depositDialogElement}
+      {withdrawDialogElement}
     </Section>
   );
 }

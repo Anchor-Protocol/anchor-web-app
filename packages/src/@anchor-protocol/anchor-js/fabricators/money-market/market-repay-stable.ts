@@ -25,9 +25,7 @@ export const fabricateRepay = ({
   market,
   borrower,
   amount,
-}: Option) => (
-  addressProvider: AddressProvider,
-): MsgExecuteContract[] => {
+}: Option) => (addressProvider: AddressProvider): MsgExecuteContract[] => {
   validateInput([
     validateAddress(address),
     validateWhitelistedMarket(market),
@@ -48,7 +46,7 @@ export const fabricateRepay = ({
       },
       // sending stablecoin
       {
-        [nativeTokenDenom]: new Int(new Dec(amount).mul(1000000)).toString(),
+        uusd: new Int(new Dec(amount).mul(1000000)).toString(),
       },
     ),
   ];
