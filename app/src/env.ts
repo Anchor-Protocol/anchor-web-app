@@ -12,7 +12,7 @@ export const screen = {
   // huge monitor : @media (min-width: ${screen.monitor.min}px)
 } as const;
 
-export const FINDER = 'https://finder.terra.money';
+//export const FINDER = 'https://finder.terra.money';
 
 export const safeRatio = 0.7;
 

@@ -3,771 +3,6 @@ schema {
 }
 
 #
-type GetOracleDenomsActivesPayload {
-  #
-  Height: String
-
-  #
-  Result: [String]
-}
-
-#
-type BlocksHeader {
-  #
-  AppHash: [Int]
-
-  #
-  ChainID: String
-
-  #
-  ConsensusHash: [Int]
-
-  #
-  DataHash: [Int]
-
-  #
-  EvidenceHash: [Int]
-
-  #
-  Height: Int
-
-  #
-  LastBlockID: BlocksHeaderLastBlockID
-
-  #
-  LastCommitHash: [Int]
-
-  #
-  LastResultsHash: [Int]
-
-  #
-  NextValidatorsHash: [Int]
-
-  #
-  ProposerAddress: [Int]
-
-  #
-  Time: Time
-
-  #
-  ValidatorsHash: [Int]
-
-  #
-  Version: BlocksHeaderVersion
-}
-
-#
-type BlockState {
-  #
-  Block: BlockStateBlock
-
-  #
-  Height: Int
-
-  #
-  ResponseBeginBlock: BlockStateResponseBeginBlock
-
-  #
-  ResponseDeliverTx: [BlockStateResponseDeliverTx]
-
-  #
-  ResponseEndBlock: BlockStateResponseEndBlock
-}
-
-#
-type BlockStateResponseBeginBlockEventsAttributes {
-  #
-  Key: Buffer
-
-  #
-  Value: Buffer
-}
-
-#
-type GetGovProposalsProposalIDProposerPayloadResult {
-  #
-  ProposalID: String
-
-  #
-  Proposer: String
-}
-
-#
-type GetStakingDelegatorsDelegatorAddrUnbondingDelegationsValidatorAddrPayloadResult {
-  #
-  DelegatorAddress: String
-
-  #
-  Entries: [GetStakingDelegatorsDelegatorAddrUnbondingDelegationsValidatorAddrPayloadResultEntries]
-
-  #
-  ValidatorAddress: String
-}
-
-#
-type GetAuthAccountsAddressPayloadResultAccountValueCoins {
-  #
-  Amount: String
-
-  #
-  Denom: String
-}
-
-#
-type GetStakingDelegatorsDelegatorAddrTxsPayloadTxsEvents {
-  #
-  Attributes: [GetStakingDelegatorsDelegatorAddrTxsPayloadTxsEventsAttributes]
-
-  #
-  Type: String
-}
-
-#
-type GetOracleVotersValidatorAggregateVotePayloadResult {
-  #
-  ExchangeRates: [GetOracleVotersValidatorAggregateVotePayloadResultExchangeRates]
-
-  #
-  Voter: String
-}
-
-#
-type BlocksTxsTxMsg {
-  #
-  Type: String
-
-  #
-  Value: String
-}
-
-#
-type GetOracleDenomsDenomExchangeRatePayload {
-  #
-  Height: String
-
-  #
-  Result: String
-}
-
-#
-type GetOracleDenomsDenomPrevotesPayloadResult {
-  #
-  Denom: String
-
-  #
-  Hash: String
-
-  #
-  SubmitBlock: String
-
-  #
-  Voter: String
-}
-
-#
-type GetGovProposalsProposalIDDepositsPayloadResult {
-  #
-  Amount: [GetGovProposalsProposalIDDepositsPayloadResultAmount]
-
-  #
-  Depositor: String
-
-  #
-  ProposalID: String
-}
-
-#
-type GetStakingDelegatorsDelegatorAddrTxsPayloadTxsTxValueFeeAmount {
-  #
-  Amount: String
-
-  #
-  Denom: String
-}
-
-#
-type BlockStateResponseEndBlockConsensusParamUpdatesEvidence {
-  #
-  MaxAgeDuration: Int
-
-  #
-  MaxAgeNumBlocks: Int
-}
-
-#
-type GetStakingDelegatorsDelegatorAddrUnbondingDelegationsValidatorAddrPayload {
-  #
-  Height: String
-
-  #
-  Result: GetStakingDelegatorsDelegatorAddrUnbondingDelegationsValidatorAddrPayloadResult
-}
-
-#
-scalar GetBlocksLatestPayloadBlockEvidence
-
-#
-type GetBlocksLatestPayloadBlockLastCommitPrecommitsBlockIDParts {
-  #
-  Hash: String
-
-  #
-  Total: String
-}
-
-#
-type GetBlocksHeightPayloadBlockHeader {
-  #
-  AppHash: String
-
-  #
-  ChainID: String
-
-  #
-  ConsensusHash: String
-
-  #
-  DataHash: String
-
-  #
-  EvidenceHash: String
-
-  #
-  Height: String
-
-  #
-  LastBlockID: GetBlocksHeightPayloadBlockHeaderLastBlockID
-
-  #
-  LastCommitHash: String
-
-  #
-  LastResultsHash: String
-
-  #
-  NextValidatorsHash: String
-
-  #
-  NumTxs: String
-
-  #
-  ProposerAddress: String
-
-  #
-  Time: String
-
-  #
-  TotalTxs: String
-
-  #
-  ValidatorsHash: String
-
-  #
-  Version: GetBlocksHeightPayloadBlockHeaderVersion
-}
-
-#
-type GetBlocksHeightPayloadBlockLastCommit {
-  #
-  BlockID: GetBlocksHeightPayloadBlockLastCommitBlockID
-
-  #
-  Precommits: [GetBlocksHeightPayloadBlockLastCommitPrecommits]
-}
-
-#
-type GetStakingDelegatorsDelegatorAddrTxsPayloadTxsTxValueFee {
-  #
-  Amount: [GetStakingDelegatorsDelegatorAddrTxsPayloadTxsTxValueFeeAmount]
-
-  #
-  Gas: String
-}
-
-#
-type GetDistributionDelegatorsDelegatorAddrRewardsPayloadResult {
-  #
-  Rewards: [GetDistributionDelegatorsDelegatorAddrRewardsPayloadResultRewards]
-
-  #
-  Total: [GetDistributionDelegatorsDelegatorAddrRewardsPayloadResultTotal]
-}
-
-#
-type GetDistributionValidatorsValidatorAddrPayloadResultValCommission {
-  #
-  Amount: String
-
-  #
-  Denom: String
-}
-
-#
-type GetOracleVotersValidatorPrevotesPayloadResult {
-  #
-  Denom: String
-
-  #
-  Hash: String
-
-  #
-  SubmitBlock: String
-
-  #
-  Voter: String
-}
-
-#
-type GetGovParametersTallyingPayloadResult {
-  #
-  Quorum: String
-
-  #
-  Threshold: String
-
-  #
-  Veto: String
-}
-
-#
-type GetTxsHashPayload {
-  #
-  Events: [GetTxsHashPayloadEvents]
-
-  #
-  GasUsed: String
-
-  #
-  GasWanted: String
-
-  #
-  Height: String
-
-  #
-  Logs: [GetTxsHashPayloadLogs]
-
-  #
-  RawLogs: String
-
-  #
-  Timestamp: String
-
-  #
-  Tx: GetTxsHashPayloadTx
-
-  #
-  Txhash: String
-}
-
-#
-type GetAuthAccountsAddressPayloadResultLazyGradedVestingAccountValueBaseVestingAccountDelegatedFree {
-  #
-  Amount: String
-
-  #
-  Denom: String
-}
-
-#
-type GetTreasuryParametersPayloadResultTaxPolicyCap {
-  #
-  Amount: String
-
-  #
-  Denom: String
-}
-
-#
-type GetSupplyTotalPayload {
-  #
-  Height: String
-
-  #
-  Result: [GetSupplyTotalPayloadResult]
-}
-
-#
-type GetTxsHashPayloadTxValueSignaturesPubKey {
-  #
-  Type: String
-
-  #
-  Value: GetTxsHashPayloadTxValueSignaturesPubKeyValue
-}
-
-#
-type BlocksTxs {
-  #
-  Code: Int
-
-  #
-  Events: [BlocksTxsEvents]
-
-  #
-  GasUsed: Int
-
-  #
-  GasWanted: Int
-
-  #
-  Height: Int
-
-  #
-  Logs: [BlocksTxsLogs]
-
-  #
-  RawLog: String
-
-  #
-  Success: Boolean
-
-  #
-  Timestamp: String
-
-  #
-  TimestampUTC: Int
-
-  #
-  Tx: BlocksTxsTx
-
-  #
-  TxHash: String
-}
-
-#
-type BlocksTxsLogsEvents {
-  #
-  Attributes: [BlocksTxsLogsEventsAttributes]
-
-  #
-  Type: String
-}
-
-#
-type BlocksTxsTxFee {
-  #
-  Amount: [BlocksTxsTxFeeAmount]
-
-  #
-  Gas: Int
-}
-
-#
-type GetTreasuryTaxRatePayload {
-  #
-  Height: String
-
-  #
-  Result: String
-}
-
-#
-type BlockStateResponseBeginBlock {
-  #
-  Events: [BlockStateResponseBeginBlockEvents]
-}
-
-#
-type GetStakingDelegatorsDelegatorAddrValidatorsValidatorAddrPayloadResultDescription {
-  #
-  Details: String
-
-  #
-  Identity: String
-
-  #
-  Moniker: String
-
-  #
-  Website: String
-}
-
-#
-type GetBlocksLatestPayloadBlockHeaderLastBlockIDParts {
-  #
-  Hash: String
-
-  #
-  Total: String
-}
-
-#
-type GetTxsHashPayloadTxValueMsg {
-  #
-  Type: String
-
-  #
-  Value: GetTxsHashPayloadTxValueMsgValue
-}
-
-#
-type GetAuthAccountsAddressPayloadResultLazyGradedVestingAccount {
-  #
-  Type: String
-
-  #
-  Value: GetAuthAccountsAddressPayloadResultLazyGradedVestingAccountValue
-}
-
-#
-type GetOracleVotersValidatorAggregateVotePayloadResultExchangeRates {
-  #
-  Amount: String
-
-  #
-  Denom: String
-}
-
-#
-type GetStakingDelegatorsDelegatorAddrDelegationsValidatorAddrPayloadResultBalance {
-  #
-  Amount: String
-
-  #
-  Denom: String
-}
-
-#
-type BlockStateResponseEndBlockValidatorUpdatesPubKey {
-  #
-  Data: Buffer
-
-  #
-  Type: String
-}
-
-#
-type GetStakingValidatorsValidatorAddrPayloadResultDescription {
-  #
-  Details: String
-
-  #
-  Identity: String
-
-  #
-  Moniker: String
-
-  #
-  Website: String
-}
-
-#
-type GetGovParametersVotingPayloadResult {
-  #
-  VotingPeriod: String
-}
-
-#
-type GetTreasuryParametersPayloadResultRewardPolicy {
-  #
-  Cap: GetTreasuryParametersPayloadResultRewardPolicyCap
-
-  #
-  ChangeMax: String
-
-  #
-  RateMax: String
-
-  #
-  RateMin: String
-}
-
-#
-type GetTreasuryParametersPayloadResultRewardPolicyCap {
-  #
-  Amount: String
-
-  #
-  Denom: String
-}
-
-#
-type BlocksTxsEvents {
-  #
-  Attributes: [BlocksTxsEventsAttributes]
-
-  #
-  Type: String
-}
-
-#
-type GetGovProposalsProposalIDDepositsDepositorPayloadResult {
-  #
-  Amount: [GetGovProposalsProposalIDDepositsDepositorPayloadResultAmount]
-
-  #
-  Depositor: String
-
-  #
-  ProposalID: String
-}
-
-#
-type GetBlocksLatestPayloadBlockHeaderLastBlockID {
-  #
-  Hash: String
-
-  #
-  Parts: GetBlocksLatestPayloadBlockHeaderLastBlockIDParts
-}
-
-#
-type GetTxsHashPayloadLogs {
-  #
-  Events: [GetTxsHashPayloadLogsEvents]
-
-  #
-  Log: String
-
-  #
-  MsgIndex: Float
-
-  #
-  Success: Boolean
-}
-
-#
-type GetMsgauthGrantersGranterAddressGranteesGranteeAddressGrantsPayloadSendGrantInfoAuthorization {
-  #
-  Type: String
-
-  #
-  Value: GetMsgauthGrantersGranterAddressGranteesGranteeAddressGrantsPayloadSendGrantInfoAuthorizationValue
-}
-
-#
-type GetTxsPayload {
-  #
-  Count: String
-
-  #
-  Limit: String
-
-  #
-  PageNumber: String
-
-  #
-  PageTotal: String
-
-  #
-  TotalCount: String
-
-  #
-  Txs: [GetTxsPayloadTxs]
-}
-
-#
-type GetBlocksLatestPayloadBlockData {
-  #
-  Txs: [String]
-}
-
-#
-type GetBlocksLatestPayloadBlockID {
-  #
-  Hash: String
-
-  #
-  Parts: GetBlocksLatestPayloadBlockIDParts
-}
-
-#
-type GetBlocksLatestPayloadBlockIDParts {
-  #
-  Hash: String
-
-  #
-  Total: String
-}
-
-#
-type GetBlocksHeightPayloadBlockLastCommitPrecommitsBlockID {
-  #
-  Hash: String
-
-  #
-  Parts: GetBlocksHeightPayloadBlockLastCommitPrecommitsBlockIDParts
-}
-
-#
-type GetTxsHashPayloadEvents {
-  #
-  Attributes: [GetTxsHashPayloadEventsAttributes]
-
-  #
-  Type: String
-}
-
-#
-type GetDistributionDelegatorsDelegatorAddrRewardsValidatorAddrPayload {
-  #
-  Height: String
-
-  #
-  Result: [GetDistributionDelegatorsDelegatorAddrRewardsValidatorAddrPayloadResult]
-}
-
-#
-type GetStakingValidatorsPayloadResultCommission {
-  #
-  MaxChangeRate: String
-
-  #
-  MaxRate: String
-
-  #
-  Rate: String
-
-  #
-  UpdateTime: String
-}
-
-#
-type TxInfosTx {
-  #
-  Fee: TxInfosTxFee
-
-  #
-  Memo: String
-
-  #
-  Msg: [TxInfosTxMsg]
-
-  #
-  Signatures: [TxInfosTxSignatures]
-}
-
-#
-type GetStakingValidatorsValidatorAddrUnbondingDelegationsPayload {
-  #
-  Height: String
-
-  #
-  Result: [GetStakingValidatorsValidatorAddrUnbondingDelegationsPayloadResult]
-}
-
-#
-type GetBlocksLatestPayloadBlockLastCommit {
-  #
-  BlockID: GetBlocksLatestPayloadBlockLastCommitBlockID
-
-  #
-  Precommits: [GetBlocksLatestPayloadBlockLastCommitPrecommits]
-}
-
-#
-type GetDistributionValidatorsValidatorAddrPayloadResultSelfBondRewards {
-  #
-  Amount: String
-
-  #
-  Denom: String
-}
-
-#
-scalar GetStakingDelegatorsDelegatorAddrTxsPayloadTxsTxValueSignaturesPubKeyValue
-
-#
 type GetSlashingSigningInfosPayloadResult {
   #
   Address: String
@@ -862,6 +97,9 @@ type GetTreasuryTaxProceedsPayloadResult {
   #
   Denom: String
 }
+
+#
+scalar GetStakingDelegatorsDelegatorAddrTxsPayloadTxsTxValueSignaturesPubKeyValue
 
 #
 type GetDistributionDelegatorsDelegatorAddrRewardsPayload {
@@ -1824,15 +1062,6 @@ type GetStakingValidatorsPayloadResultDescription {
 }
 
 #
-type GetTreasuryIndicatorsPayload {
-  #
-  Height: String
-
-  #
-  Result: GetTreasuryIndicatorsPayloadResult
-}
-
-#
 type GetTxsPayloadTxsLogsEventsAttributes {
   #
   Key: String
@@ -1920,6 +1149,15 @@ type GetGovProposalsPayloadResult {
 }
 
 #
+type GetTreasuryIndicatorsPayload {
+  #
+  Height: String
+
+  #
+  Result: GetTreasuryIndicatorsPayloadResult
+}
+
+#
 type TxInfos {
   #
   Code: Int
@@ -1993,9 +1231,6 @@ type GetMarketTerraPoolDeltaPayload {
   #
   Result: String
 }
-
-#
-scalar GetTxsHashPayloadTxValueMsgValue
 
 #
 type GetBankBalancesAddressPayloadResult {
@@ -2092,6 +1327,9 @@ type GetGovParametersVotingPayload {
 
 #
 scalar GetTxsHashPayloadTxValueSignaturesPubKeyValue
+
+#
+scalar GetTxsHashPayloadTxValueMsgValue
 
 #
 type GetAuthAccountsAddressPayloadResultLazyGradedVestingAccountValueBaseVestingAccountDelegatedVesting {
@@ -3180,15 +2418,6 @@ type GetStakingDelegatorsDelegatorAddrTxsPayloadTxsTx {
 }
 
 #
-type GetGovProposalsProposalIDDepositsPayload {
-  #
-  Height: String
-
-  #
-  Result: [GetGovProposalsProposalIDDepositsPayloadResult]
-}
-
-#
 type RootQuery {
   #
   AuthAccountsAddress(Address: String): GetAuthAccountsAddressPayload
@@ -3765,6 +2994,15 @@ type GetAuthAccountsAddressPayloadResultAccountValue {
 }
 
 #
+type GetGovProposalsProposalIDDepositsPayload {
+  #
+  Height: String
+
+  #
+  Result: [GetGovProposalsProposalIDDepositsPayloadResult]
+}
+
+#
 type GetMsgauthGrantersGranterAddressGranteesGranteeAddressGrantsPayloadSendGrantInfoAuthorizationValue {
   #
   SpendLimit: [GetMsgauthGrantersGranterAddressGranteesGranteeAddressGrantsPayloadSendGrantInfoAuthorizationValueSpendLimit]
@@ -3786,15 +3024,6 @@ type GetBlocksHeightPayloadBlockID {
 
   #
   Parts: GetBlocksHeightPayloadBlockIDParts
-}
-
-#
-type GetStakingDelegatorsDelegatorAddrUnbondingDelegationsPayload {
-  #
-  Height: String
-
-  #
-  Result: [GetStakingDelegatorsDelegatorAddrUnbondingDelegationsPayloadResult]
 }
 
 #
@@ -3867,6 +3096,15 @@ type GetMarketParametersPayloadResult {
 
   #
   MinSwapSpread: Float
+}
+
+#
+type GetStakingDelegatorsDelegatorAddrUnbondingDelegationsPayload {
+  #
+  Height: String
+
+  #
+  Result: [GetStakingDelegatorsDelegatorAddrUnbondingDelegationsPayloadResult]
 }
 
 #
@@ -4158,15 +3396,6 @@ type GetOracleDenomsDenomPrevotesValidatorPayload {
 }
 
 #
-type GetSupplyTotalPayloadResult {
-  #
-  Amount: String
-
-  #
-  Denom: String
-}
-
-#
 type GetOracleDenomsDenomVotesValidatorPayloadResult {
   #
   Denom: String
@@ -4245,6 +3474,15 @@ type GetBlocksHeightPayloadBlockHeaderVersion {
 
   #
   Block: String
+}
+
+#
+type GetSupplyTotalPayloadResult {
+  #
+  Amount: String
+
+  #
+  Denom: String
 }
 
 #
@@ -4425,4 +3663,766 @@ type GetNodeInfoPayloadApplicationVersion {
 
   #
   Version: String
+}
+
+#
+type BlocksHeader {
+  #
+  AppHash: [Int]
+
+  #
+  ChainID: String
+
+  #
+  ConsensusHash: [Int]
+
+  #
+  DataHash: [Int]
+
+  #
+  EvidenceHash: [Int]
+
+  #
+  Height: Int
+
+  #
+  LastBlockID: BlocksHeaderLastBlockID
+
+  #
+  LastCommitHash: [Int]
+
+  #
+  LastResultsHash: [Int]
+
+  #
+  NextValidatorsHash: [Int]
+
+  #
+  ProposerAddress: [Int]
+
+  #
+  Time: Time
+
+  #
+  ValidatorsHash: [Int]
+
+  #
+  Version: BlocksHeaderVersion
+}
+
+#
+type BlockState {
+  #
+  Block: BlockStateBlock
+
+  #
+  Height: Int
+
+  #
+  ResponseBeginBlock: BlockStateResponseBeginBlock
+
+  #
+  ResponseDeliverTx: [BlockStateResponseDeliverTx]
+
+  #
+  ResponseEndBlock: BlockStateResponseEndBlock
+}
+
+#
+type BlockStateResponseBeginBlockEventsAttributes {
+  #
+  Key: Buffer
+
+  #
+  Value: Buffer
+}
+
+#
+type GetGovProposalsProposalIDProposerPayloadResult {
+  #
+  ProposalID: String
+
+  #
+  Proposer: String
+}
+
+#
+type GetStakingDelegatorsDelegatorAddrUnbondingDelegationsValidatorAddrPayloadResult {
+  #
+  DelegatorAddress: String
+
+  #
+  Entries: [GetStakingDelegatorsDelegatorAddrUnbondingDelegationsValidatorAddrPayloadResultEntries]
+
+  #
+  ValidatorAddress: String
+}
+
+#
+type GetAuthAccountsAddressPayloadResultAccountValueCoins {
+  #
+  Amount: String
+
+  #
+  Denom: String
+}
+
+#
+type GetStakingDelegatorsDelegatorAddrTxsPayloadTxsEvents {
+  #
+  Attributes: [GetStakingDelegatorsDelegatorAddrTxsPayloadTxsEventsAttributes]
+
+  #
+  Type: String
+}
+
+#
+type GetOracleDenomsActivesPayload {
+  #
+  Height: String
+
+  #
+  Result: [String]
+}
+
+#
+type GetOracleVotersValidatorAggregateVotePayloadResult {
+  #
+  ExchangeRates: [GetOracleVotersValidatorAggregateVotePayloadResultExchangeRates]
+
+  #
+  Voter: String
+}
+
+#
+type BlocksTxsTxMsg {
+  #
+  Type: String
+
+  #
+  Value: String
+}
+
+#
+type GetOracleDenomsDenomExchangeRatePayload {
+  #
+  Height: String
+
+  #
+  Result: String
+}
+
+#
+type GetOracleDenomsDenomPrevotesPayloadResult {
+  #
+  Denom: String
+
+  #
+  Hash: String
+
+  #
+  SubmitBlock: String
+
+  #
+  Voter: String
+}
+
+#
+type GetGovProposalsProposalIDDepositsPayloadResult {
+  #
+  Amount: [GetGovProposalsProposalIDDepositsPayloadResultAmount]
+
+  #
+  Depositor: String
+
+  #
+  ProposalID: String
+}
+
+#
+type BlockStateResponseEndBlockConsensusParamUpdatesEvidence {
+  #
+  MaxAgeDuration: Int
+
+  #
+  MaxAgeNumBlocks: Int
+}
+
+#
+type GetStakingDelegatorsDelegatorAddrUnbondingDelegationsValidatorAddrPayload {
+  #
+  Height: String
+
+  #
+  Result: GetStakingDelegatorsDelegatorAddrUnbondingDelegationsValidatorAddrPayloadResult
+}
+
+#
+scalar GetBlocksLatestPayloadBlockEvidence
+
+#
+type GetBlocksLatestPayloadBlockLastCommitPrecommitsBlockIDParts {
+  #
+  Hash: String
+
+  #
+  Total: String
+}
+
+#
+type GetBlocksHeightPayloadBlockHeader {
+  #
+  AppHash: String
+
+  #
+  ChainID: String
+
+  #
+  ConsensusHash: String
+
+  #
+  DataHash: String
+
+  #
+  EvidenceHash: String
+
+  #
+  Height: String
+
+  #
+  LastBlockID: GetBlocksHeightPayloadBlockHeaderLastBlockID
+
+  #
+  LastCommitHash: String
+
+  #
+  LastResultsHash: String
+
+  #
+  NextValidatorsHash: String
+
+  #
+  NumTxs: String
+
+  #
+  ProposerAddress: String
+
+  #
+  Time: String
+
+  #
+  TotalTxs: String
+
+  #
+  ValidatorsHash: String
+
+  #
+  Version: GetBlocksHeightPayloadBlockHeaderVersion
+}
+
+#
+type GetBlocksHeightPayloadBlockLastCommit {
+  #
+  BlockID: GetBlocksHeightPayloadBlockLastCommitBlockID
+
+  #
+  Precommits: [GetBlocksHeightPayloadBlockLastCommitPrecommits]
+}
+
+#
+type GetStakingDelegatorsDelegatorAddrTxsPayloadTxsTxValueFee {
+  #
+  Amount: [GetStakingDelegatorsDelegatorAddrTxsPayloadTxsTxValueFeeAmount]
+
+  #
+  Gas: String
+}
+
+#
+type GetStakingDelegatorsDelegatorAddrTxsPayloadTxsTxValueFeeAmount {
+  #
+  Amount: String
+
+  #
+  Denom: String
+}
+
+#
+type GetDistributionDelegatorsDelegatorAddrRewardsPayloadResult {
+  #
+  Rewards: [GetDistributionDelegatorsDelegatorAddrRewardsPayloadResultRewards]
+
+  #
+  Total: [GetDistributionDelegatorsDelegatorAddrRewardsPayloadResultTotal]
+}
+
+#
+type GetDistributionValidatorsValidatorAddrPayloadResultValCommission {
+  #
+  Amount: String
+
+  #
+  Denom: String
+}
+
+#
+type GetOracleVotersValidatorPrevotesPayloadResult {
+  #
+  Denom: String
+
+  #
+  Hash: String
+
+  #
+  SubmitBlock: String
+
+  #
+  Voter: String
+}
+
+#
+type GetGovParametersTallyingPayloadResult {
+  #
+  Quorum: String
+
+  #
+  Threshold: String
+
+  #
+  Veto: String
+}
+
+#
+type GetTxsHashPayload {
+  #
+  Events: [GetTxsHashPayloadEvents]
+
+  #
+  GasUsed: String
+
+  #
+  GasWanted: String
+
+  #
+  Height: String
+
+  #
+  Logs: [GetTxsHashPayloadLogs]
+
+  #
+  RawLogs: String
+
+  #
+  Timestamp: String
+
+  #
+  Tx: GetTxsHashPayloadTx
+
+  #
+  Txhash: String
+}
+
+#
+type GetAuthAccountsAddressPayloadResultLazyGradedVestingAccountValueBaseVestingAccountDelegatedFree {
+  #
+  Amount: String
+
+  #
+  Denom: String
+}
+
+#
+type GetTreasuryParametersPayloadResultTaxPolicyCap {
+  #
+  Amount: String
+
+  #
+  Denom: String
+}
+
+#
+type GetSupplyTotalPayload {
+  #
+  Height: String
+
+  #
+  Result: [GetSupplyTotalPayloadResult]
+}
+
+#
+type BlocksTxs {
+  #
+  Code: Int
+
+  #
+  Events: [BlocksTxsEvents]
+
+  #
+  GasUsed: Int
+
+  #
+  GasWanted: Int
+
+  #
+  Height: Int
+
+  #
+  Logs: [BlocksTxsLogs]
+
+  #
+  RawLog: String
+
+  #
+  Success: Boolean
+
+  #
+  Timestamp: String
+
+  #
+  TimestampUTC: Int
+
+  #
+  Tx: BlocksTxsTx
+
+  #
+  TxHash: String
+}
+
+#
+type BlocksTxsLogsEvents {
+  #
+  Attributes: [BlocksTxsLogsEventsAttributes]
+
+  #
+  Type: String
+}
+
+#
+type BlocksTxsTxFee {
+  #
+  Amount: [BlocksTxsTxFeeAmount]
+
+  #
+  Gas: Int
+}
+
+#
+type GetTreasuryTaxRatePayload {
+  #
+  Height: String
+
+  #
+  Result: String
+}
+
+#
+type BlockStateResponseBeginBlock {
+  #
+  Events: [BlockStateResponseBeginBlockEvents]
+}
+
+#
+type GetStakingDelegatorsDelegatorAddrValidatorsValidatorAddrPayloadResultDescription {
+  #
+  Details: String
+
+  #
+  Identity: String
+
+  #
+  Moniker: String
+
+  #
+  Website: String
+}
+
+#
+type GetBlocksLatestPayloadBlockHeaderLastBlockIDParts {
+  #
+  Hash: String
+
+  #
+  Total: String
+}
+
+#
+type GetTxsHashPayloadTxValueSignaturesPubKey {
+  #
+  Type: String
+
+  #
+  Value: GetTxsHashPayloadTxValueSignaturesPubKeyValue
+}
+
+#
+type GetTxsHashPayloadTxValueMsg {
+  #
+  Type: String
+
+  #
+  Value: GetTxsHashPayloadTxValueMsgValue
+}
+
+#
+type GetAuthAccountsAddressPayloadResultLazyGradedVestingAccount {
+  #
+  Type: String
+
+  #
+  Value: GetAuthAccountsAddressPayloadResultLazyGradedVestingAccountValue
+}
+
+#
+type GetOracleVotersValidatorAggregateVotePayloadResultExchangeRates {
+  #
+  Amount: String
+
+  #
+  Denom: String
+}
+
+#
+type GetStakingDelegatorsDelegatorAddrDelegationsValidatorAddrPayloadResultBalance {
+  #
+  Amount: String
+
+  #
+  Denom: String
+}
+
+#
+type BlockStateResponseEndBlockValidatorUpdatesPubKey {
+  #
+  Data: Buffer
+
+  #
+  Type: String
+}
+
+#
+type GetStakingValidatorsValidatorAddrPayloadResultDescription {
+  #
+  Details: String
+
+  #
+  Identity: String
+
+  #
+  Moniker: String
+
+  #
+  Website: String
+}
+
+#
+type GetGovParametersVotingPayloadResult {
+  #
+  VotingPeriod: String
+}
+
+#
+type GetTreasuryParametersPayloadResultRewardPolicy {
+  #
+  Cap: GetTreasuryParametersPayloadResultRewardPolicyCap
+
+  #
+  ChangeMax: String
+
+  #
+  RateMax: String
+
+  #
+  RateMin: String
+}
+
+#
+type GetTreasuryParametersPayloadResultRewardPolicyCap {
+  #
+  Amount: String
+
+  #
+  Denom: String
+}
+
+#
+type BlocksTxsEvents {
+  #
+  Attributes: [BlocksTxsEventsAttributes]
+
+  #
+  Type: String
+}
+
+#
+type GetGovProposalsProposalIDDepositsDepositorPayloadResult {
+  #
+  Amount: [GetGovProposalsProposalIDDepositsDepositorPayloadResultAmount]
+
+  #
+  Depositor: String
+
+  #
+  ProposalID: String
+}
+
+#
+type GetBlocksLatestPayloadBlockHeaderLastBlockID {
+  #
+  Hash: String
+
+  #
+  Parts: GetBlocksLatestPayloadBlockHeaderLastBlockIDParts
+}
+
+#
+type GetMsgauthGrantersGranterAddressGranteesGranteeAddressGrantsPayloadSendGrantInfoAuthorization {
+  #
+  Type: String
+
+  #
+  Value: GetMsgauthGrantersGranterAddressGranteesGranteeAddressGrantsPayloadSendGrantInfoAuthorizationValue
+}
+
+#
+type GetTxsPayload {
+  #
+  Count: String
+
+  #
+  Limit: String
+
+  #
+  PageNumber: String
+
+  #
+  PageTotal: String
+
+  #
+  TotalCount: String
+
+  #
+  Txs: [GetTxsPayloadTxs]
+}
+
+#
+type GetBlocksLatestPayloadBlockData {
+  #
+  Txs: [String]
+}
+
+#
+type GetBlocksLatestPayloadBlockID {
+  #
+  Hash: String
+
+  #
+  Parts: GetBlocksLatestPayloadBlockIDParts
+}
+
+#
+type GetBlocksLatestPayloadBlockIDParts {
+  #
+  Hash: String
+
+  #
+  Total: String
+}
+
+#
+type GetBlocksHeightPayloadBlockLastCommitPrecommitsBlockID {
+  #
+  Hash: String
+
+  #
+  Parts: GetBlocksHeightPayloadBlockLastCommitPrecommitsBlockIDParts
+}
+
+#
+type GetTxsHashPayloadLogs {
+  #
+  Events: [GetTxsHashPayloadLogsEvents]
+
+  #
+  Log: String
+
+  #
+  MsgIndex: Float
+
+  #
+  Success: Boolean
+}
+
+#
+type GetTxsHashPayloadEvents {
+  #
+  Attributes: [GetTxsHashPayloadEventsAttributes]
+
+  #
+  Type: String
+}
+
+#
+type GetDistributionDelegatorsDelegatorAddrRewardsValidatorAddrPayload {
+  #
+  Height: String
+
+  #
+  Result: [GetDistributionDelegatorsDelegatorAddrRewardsValidatorAddrPayloadResult]
+}
+
+#
+type GetStakingValidatorsPayloadResultCommission {
+  #
+  MaxChangeRate: String
+
+  #
+  MaxRate: String
+
+  #
+  Rate: String
+
+  #
+  UpdateTime: String
+}
+
+#
+type TxInfosTx {
+  #
+  Fee: TxInfosTxFee
+
+  #
+  Memo: String
+
+  #
+  Msg: [TxInfosTxMsg]
+
+  #
+  Signatures: [TxInfosTxSignatures]
+}
+
+#
+type GetStakingValidatorsValidatorAddrUnbondingDelegationsPayload {
+  #
+  Height: String
+
+  #
+  Result: [GetStakingValidatorsValidatorAddrUnbondingDelegationsPayloadResult]
+}
+
+#
+type GetBlocksLatestPayloadBlockLastCommit {
+  #
+  BlockID: GetBlocksLatestPayloadBlockLastCommitBlockID
+
+  #
+  Precommits: [GetBlocksLatestPayloadBlockLastCommitPrecommits]
+}
+
+#
+type GetDistributionValidatorsValidatorAddrPayloadResultSelfBondRewards {
+  #
+  Amount: String
+
+  #
+  Denom: String
 }
