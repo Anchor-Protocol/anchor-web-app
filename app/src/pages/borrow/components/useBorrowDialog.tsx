@@ -4,9 +4,9 @@ import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import {
-  formatLunaUserInput,
   formatPercentage,
   formatUST,
+  formatUSTUserInput,
   MICRO,
 } from '@anchor-protocol/notation';
 import {
@@ -97,8 +97,7 @@ function ComponentBase({
   // compute
   // ---------------------------------------------
   const apr = useMemo(() => {
-    return big(marketOverview.borrowRate.rate ?? 0)
-      .mul(BLOCKS_PER_YEAR);
+    return big(marketOverview.borrowRate.rate ?? 0).mul(BLOCKS_PER_YEAR);
   }, [marketOverview.borrowRate.rate]);
 
   const safeMax = useMemo(() => {
@@ -121,17 +120,37 @@ function ComponentBase({
   ]);
 
   const txFee = useMemo(() => {
-    return fixedGasUUSD;
-  }, []);
+    if (assetAmount.length === 0) {
+      return undefined;
+    }
+
+    const userAmount = big(assetAmount).mul(MICRO);
+
+    const userAmountTxFee = big(
+      userAmount.minus(userAmount).div(big(1).plus(bank.tax.taxRate)),
+    ).mul(bank.tax.taxRate);
+
+    if (userAmountTxFee.gt(bank.tax.maxTaxUUSD)) {
+      return big(bank.tax.maxTaxUUSD).plus(fixedGasUUSD);
+    } else {
+      return userAmountTxFee.plus(fixedGasUUSD);
+    }
+  }, [assetAmount, bank.tax.maxTaxUUSD, bank.tax.taxRate]);
+
+  const estimatedAmount = useMemo(() => {
+    return assetAmount.length > 0 && txFee
+      ? big(assetAmount).mul(MICRO).minus(txFee)
+      : undefined;
+  }, [assetAmount, txFee]);
 
   const invalidTxFee = useMemo(() => {
     if (bank.status === 'demo') {
       return undefined;
-    } else if (big(bank.userBalances.uUSD ?? 0).lt(txFee)) {
+    } else if (big(bank.userBalances.uUSD ?? 0).lt(fixedGasUUSD)) {
       return 'Not enough Tx Fee';
     }
     return undefined;
-  }, [bank.status, bank.userBalances.uUSD, txFee]);
+  }, [bank.status, bank.userBalances.uUSD]);
 
   const invalidAssetAmount = useMemo<ReactNode>(() => {
     if (bank.status === 'demo') {
@@ -150,7 +169,7 @@ function ComponentBase({
   // callbacks
   // ---------------------------------------------
   const updateAssetAmount = useCallback((nextAssetAmount: string) => {
-    setAssetAmount(formatLunaUserInput(nextAssetAmount));
+    setAssetAmount(formatUSTUserInput(nextAssetAmount));
   }, []);
 
   const proceed = useCallback(
@@ -247,21 +266,9 @@ function ComponentBase({
           </span>
         </div>
 
-        <TextInput
-          className="limit"
-          type="number"
-          disabled
-          value="00"
-          label="NEW BORROW LIMIT"
-          InputProps={{
-            endAdornment: <InputAdornment position="end">%</InputAdornment>,
-            inputMode: 'numeric',
-          }}
-        />
-
         <figure className="graph">graph</figure>
 
-        {assetAmount.length > 0 && (
+        {txFee && estimatedAmount && (
           <TxFeeList className="receipt">
             <TxFeeListItem
               label={
@@ -273,7 +280,10 @@ function ComponentBase({
                 </>
               }
             >
-              {formatUST(big(txFee).div(MICRO))} UST
+              {formatUST(txFee.div(MICRO))} UST
+            </TxFeeListItem>
+            <TxFeeListItem label="Estimated Amount">
+              {formatUST(estimatedAmount.div(MICRO))} UST
             </TxFeeListItem>
           </TxFeeList>
         )}
@@ -313,6 +323,11 @@ const Component = styled(ComponentBase)`
     font-size: 27px;
     text-align: center;
     font-weight: 300;
+
+    p {
+      font-size: 14px;
+      margin-top: 10px;
+    }
 
     margin-bottom: 50px;
   }
