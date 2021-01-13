@@ -141,14 +141,11 @@ export function useWithdrawable({
     }),
   });
 
-  useQuerySubscription(
-    (id, event) => {
-      if (event === 'done') {
-        setNow(Date.now());
-      }
-    },
-    [],
-  );
+  useQuerySubscription((id, event) => {
+    if (event === 'done') {
+      setNow(Math.floor(Date.now() / 1000));
+    }
+  }, []);
 
   const parsedData = useMemo(
     () => (result.data ? parseData(result.data) : undefined),
