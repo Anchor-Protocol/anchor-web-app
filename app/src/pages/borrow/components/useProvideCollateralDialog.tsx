@@ -116,7 +116,6 @@ function ComponentBase({
     marketOverview.bLunaMaxLtv,
     marketOverview.borrowInfo.balance,
     marketOverview.borrowInfo.spendable,
-    marketOverview.loanAmount.loan_amount,
     marketOverview.oraclePrice.rate,
   ]);
 
