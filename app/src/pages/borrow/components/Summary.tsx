@@ -17,15 +17,11 @@ export interface SummaryProps {
 
 function SummaryBase({ className, marketOverview }: SummaryProps) {
   const apr = useMemo(() => {
-    return big(marketOverview?.borrowRate.rate ?? 0)
-      .mul(BLOCKS_PER_YEAR)
-      .toFixed();
+    return big(marketOverview?.borrowRate.rate ?? 0).mul(BLOCKS_PER_YEAR);
   }, [marketOverview?.borrowRate.rate]);
 
   const borrowedValue = useMemo(() => {
-    return big(marketOverview?.loanAmount.loan_amount ?? 0)
-      .div(MICRO)
-      .toFixed();
+    return big(marketOverview?.loanAmount.loan_amount ?? 0);
   }, [marketOverview?.loanAmount.loan_amount]);
 
   const collateralValue = useMemo(() => {
@@ -33,9 +29,7 @@ function SummaryBase({ className, marketOverview }: SummaryProps) {
       big(marketOverview?.borrowInfo.balance ?? 0).minus(
         marketOverview?.borrowInfo.spendable ?? 0,
       ),
-    )
-      .mul(marketOverview?.oraclePrice.rate ?? 1)
-      .toFixed();
+    ).mul(marketOverview?.oraclePrice.rate ?? 1);
   }, [
     marketOverview?.borrowInfo.balance,
     marketOverview?.borrowInfo.spendable,
@@ -58,17 +52,17 @@ function SummaryBase({ className, marketOverview }: SummaryProps) {
       <article>
         <div>
           <label>APR</label>
-          <p>{formatPercentage(apr)}%</p>
+          <p>{formatPercentage(apr.mul(100))}%</p>
         </div>
 
         <div>
           <label>Collateral Value</label>
-          <p>${formatUSTWithPostfixUnits(collateralValue)}</p>
+          <p>${formatUSTWithPostfixUnits(collateralValue.div(MICRO))}</p>
         </div>
 
         <div>
           <label>Borrowed Value</label>
-          <p>${formatUSTWithPostfixUnits(borrowedValue)}</p>
+          <p>${formatUSTWithPostfixUnits(borrowedValue.div(MICRO))}</p>
         </div>
       </article>
 

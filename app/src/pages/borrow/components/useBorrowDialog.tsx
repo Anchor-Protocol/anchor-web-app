@@ -98,8 +98,7 @@ function ComponentBase({
   // ---------------------------------------------
   const apr = useMemo(() => {
     return big(marketOverview.borrowRate.rate ?? 0)
-      .mul(BLOCKS_PER_YEAR)
-      .toFixed();
+      .mul(BLOCKS_PER_YEAR);
   }, [marketOverview.borrowRate.rate]);
 
   const safeMax = useMemo(() => {
@@ -194,7 +193,7 @@ function ComponentBase({
       <Modal open disableBackdropClick>
         <Dialog className={className}>
           <h1>
-            Borrow<p>Borrow APR: {formatPercentage(apr)}%</p>
+            Borrow<p>Borrow APR: {formatPercentage(apr.mul(100))}%</p>
           </h1>
           <TxResultRenderer
             result={borrowResult}
@@ -212,7 +211,7 @@ function ComponentBase({
     <Modal open>
       <Dialog className={className} onClose={() => closeDialog()}>
         <h1>
-          Borrow<p>Borrow APR: {formatPercentage(apr)}%</p>
+          Borrow<p>Borrow APR: {formatPercentage(apr.mul(100))}%</p>
         </h1>
 
         {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}

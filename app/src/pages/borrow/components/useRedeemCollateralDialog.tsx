@@ -64,6 +64,8 @@ const Template: DialogTemplate<FormParams, FormReturn> = (props) => {
   return <Component {...props} />;
 };
 
+const txFee = fixedGasUUSD;
+
 function ComponentBase({
   className,
   marketOverview,
@@ -98,15 +100,29 @@ function ComponentBase({
   // compute
   // ---------------------------------------------
   const maxBAssetAmount = useMemo(() => {
-    return big(marketOverview.borrowInfo.balance)
-      .minus(marketOverview.borrowInfo.spendable)
-      .toString();
+    return big(marketOverview.borrowInfo.balance).minus(
+      marketOverview.borrowInfo.spendable,
+    );
   }, [marketOverview.borrowInfo.balance, marketOverview.borrowInfo.spendable]);
+
+  const borrowLimit = useMemo(() => {
+    return bAssetAmount.length > 0
+      ? big(marketOverview.loanAmount.loan_amount)
+          .div(
+            big(
+              big(marketOverview.borrowInfo.balance)
+                .minus(marketOverview.borrowInfo.spendable)
+                .plus(big(bAssetAmount).mul(MICRO)),
+            ).mul(marketOverview.oraclePrice.rate),
+          )
+          .mul(marketOverview.bLunaMaxLtv)
+      : undefined;
+  }, []);
 
   const invalidTxFee = useMemo(() => {
     if (bank.status === 'demo') {
       return undefined;
-    } else if (big(bank.userBalances.uUSD ?? 0).lt(fixedGasUUSD)) {
+    } else if (big(bank.userBalances.uUSD ?? 0).lt(txFee)) {
       return 'Not enough Tx Fee';
     }
     return undefined;
@@ -263,7 +279,7 @@ function ComponentBase({
                 </>
               }
             >
-              {formatUST(big(fixedGasUUSD).div(MICRO))} UST
+              {formatUST(big(txFee).div(MICRO))} UST
             </TxFeeListItem>
           </TxFeeList>
         )}

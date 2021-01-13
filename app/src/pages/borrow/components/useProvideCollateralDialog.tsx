@@ -64,6 +64,8 @@ const Template: DialogTemplate<FormParams, FormReturn> = (props) => {
   return <Component {...props} />;
 };
 
+const txFee = fixedGasUUSD;
+
 function ComponentBase({
   className,
   marketOverview,
@@ -97,8 +99,6 @@ function ComponentBase({
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
-  const txFee = fixedGasUUSD;
-
   const borrowLimit = useMemo(() => {
     /* New Borrow Limit = ((Borrow_info.balance - Borrow_info.spendable + provided_collateral) * Oracleprice) * Max_LTV */
     return bAssetAmount.length > 0
@@ -128,7 +128,7 @@ function ComponentBase({
       return 'Not enough Tx Fee';
     }
     return undefined;
-  }, [bank.status, bank.userBalances.uUSD, txFee]);
+  }, [bank.status, bank.userBalances.uUSD]);
 
   const invalidBAssetAmount = useMemo<ReactNode>(() => {
     if (bank.status === 'demo') {

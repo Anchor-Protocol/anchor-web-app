@@ -75,7 +75,7 @@ function LoanListBase({ className, marketOverview }: LoanListProps) {
               </div>
             </td>
             <td>
-              <div className="value">{formatPercentage(apr)}%</div>
+              <div className="value">{formatPercentage(apr.mul(100))}%</div>
               <p className="volatility">
                 <s>200 UST</s>
               </p>

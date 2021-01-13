@@ -97,7 +97,7 @@ function ComponentBase({
   // compute
   // ---------------------------------------------
   const apr = useMemo(() => {
-    return big(marketOverview.borrowRate.rate).mul(BLOCKS_PER_YEAR).toFixed();
+    return big(marketOverview.borrowRate.rate).mul(BLOCKS_PER_YEAR);
   }, [marketOverview.borrowRate.rate]);
 
   const totalBorrows = useMemo(() => {
@@ -177,7 +177,7 @@ function ComponentBase({
       <Modal open disableBackdropClick>
         <Dialog className={className}>
           <h1>
-            Repay<p>Borrow APR: {formatPercentage(apr)}%</p>
+            Repay<p>Borrow APR: {formatPercentage(apr.mul(100))}%</p>
           </h1>
           <TxResultRenderer
             result={repayResult}
@@ -195,7 +195,7 @@ function ComponentBase({
     <Modal open>
       <Dialog className={className} onClose={() => closeDialog()}>
         <h1>
-          Repay<p>Borrow APR: {formatPercentage(apr)}%</p>
+          Repay<p>Borrow APR: {formatPercentage(apr.mul(100))}%</p>
         </h1>
 
         {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
