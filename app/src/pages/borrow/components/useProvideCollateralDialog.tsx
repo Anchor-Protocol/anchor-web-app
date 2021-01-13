@@ -97,14 +97,38 @@ function ComponentBase({
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
+  const txFee = fixedGasUUSD;
+
+  const borrowLimit = useMemo(() => {
+    /* New Borrow Limit = ((Borrow_info.balance - Borrow_info.spendable + provided_collateral) * Oracleprice) * Max_LTV */
+    return bAssetAmount.length > 0
+      ? big(marketOverview.loanAmount.loan_amount)
+          .div(
+            big(
+              big(marketOverview.borrowInfo.balance)
+                .minus(marketOverview.borrowInfo.spendable)
+                .plus(big(bAssetAmount).mul(MICRO)),
+            ).mul(marketOverview.oraclePrice.rate),
+          )
+          .mul(marketOverview.bLunaMaxLtv)
+      : undefined;
+  }, [
+    bAssetAmount,
+    marketOverview.bLunaMaxLtv,
+    marketOverview.borrowInfo.balance,
+    marketOverview.borrowInfo.spendable,
+    marketOverview.loanAmount.loan_amount,
+    marketOverview.oraclePrice.rate,
+  ]);
+
   const invalidTxFee = useMemo(() => {
     if (bank.status === 'demo') {
       return undefined;
-    } else if (big(bank.userBalances.uUSD ?? 0).lt(fixedGasUUSD)) {
+    } else if (big(bank.userBalances.uUSD ?? 0).lt(txFee)) {
       return 'Not enough Tx Fee';
     }
     return undefined;
-  }, [bank.status, bank.userBalances.uUSD]);
+  }, [bank.status, bank.userBalances.uUSD, txFee]);
 
   const invalidBAssetAmount = useMemo<ReactNode>(() => {
     if (bank.status === 'demo') {
@@ -218,31 +242,16 @@ function ComponentBase({
           </span>
         </div>
 
-        {/* New Borrow Limit = ((Borrow_info.balance - Borrow_info.spendable + provided_collateral) * Oracleprice) * Max_LTV */}
         <TextInput
           className="limit"
           type="number"
-          disabled
-          value={
-            bAssetAmount.length > 0
-              ? formatUST(
-                  big(marketOverview.loanAmount.loan_amount)
-                    .div(
-                      big(
-                        big(marketOverview.borrowInfo.balance)
-                          .minus(marketOverview.borrowInfo.spendable)
-                          .plus(big(bAssetAmount).mul(MICRO)),
-                      ).mul(marketOverview.oraclePrice.rate),
-                    )
-                    .mul(100),
-                )
-              : ''
-          }
+          value={borrowLimit ? formatUST(borrowLimit) : ''}
           label="NEW BORROW LIMIT"
           InputProps={{
             endAdornment: <InputAdornment position="end">UST</InputAdornment>,
             inputMode: 'numeric',
           }}
+          style={{ pointerEvents: 'none' }}
         />
 
         {/* Loan_amount / ((Borrow_info.balance - Borrow_info.spendable + provided_collateral) * Oracleprice) * 100 */}
@@ -260,7 +269,7 @@ function ComponentBase({
                 </>
               }
             >
-              {formatUST(big(fixedGasUUSD).div(MICRO))} UST
+              {formatUST(big(txFee).div(MICRO))} UST
             </TxFeeListItem>
           </TxFeeList>
         )}
