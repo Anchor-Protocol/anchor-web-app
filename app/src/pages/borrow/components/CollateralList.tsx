@@ -47,16 +47,14 @@ function CollateralListBase({
       big(marketOverview?.borrowInfo.balance ?? 0).minus(
         marketOverview?.borrowInfo.spendable ?? 0,
       ),
-    ).div(MICRO);
+    );
   }, [
     marketOverview?.borrowInfo.balance,
     marketOverview?.borrowInfo.spendable,
   ]);
 
   const collateralsInUST = useMemo(() => {
-    return big(big(collaterals).mul(marketOverview?.oraclePrice.rate ?? 1)).div(
-      MICRO,
-    );
+    return big(collaterals).mul(marketOverview?.oraclePrice.rate ?? 1);
   }, [collaterals, marketOverview?.oraclePrice.rate]);
 
   // ---------------------------------------------
@@ -92,9 +90,11 @@ function CollateralListBase({
             </td>
             <td>
               <div className="value">
-                {formatUSTWithPostfixUnits(collateralsInUST)} UST
+                {formatUSTWithPostfixUnits(collateralsInUST.div(MICRO))} UST
               </div>
-              <p className="volatility">{formatLuna(collaterals)} bLUNA</p>
+              <p className="volatility">
+                {formatLuna(collaterals.div(MICRO))} bLUNA
+              </p>
             </td>
             <td>
               <ActionButton
