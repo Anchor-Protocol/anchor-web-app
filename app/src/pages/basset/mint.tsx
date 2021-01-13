@@ -213,7 +213,7 @@ function MintBase({ className }: MintProps) {
           ...transactionFee,
           msgs: fabricatebAssetBond({
             address: status.walletAddress,
-            amount: big(assetAmount).toNumber(),
+            amount: assetAmount,
             bAsset: bAssetCurrency.value,
             validator: selectedValidator,
           })(addressProvider),
@@ -474,7 +474,7 @@ export const Mint = styled(MintBase)`
       color: ${({ theme }) => theme.dimTextColor};
     }
   }
-  
+
   .receipt {
     margin-bottom: 40px;
   }
