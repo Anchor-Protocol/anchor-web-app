@@ -1,4 +1,4 @@
-import { fabricateBorrow, fabricateProvideCollateral } from '@anchor-protocol/anchor-js/fabricators';
+import { fabricateBorrow } from '@anchor-protocol/anchor-js/fabricators';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
@@ -120,7 +120,7 @@ function ComponentBase({
     marketOverview.loanAmount.loan_amount,
     marketOverview.oraclePrice.rate,
   ]);
-  
+
   const txFee = useMemo(() => {
     return fixedGasUUSD;
   }, []);
