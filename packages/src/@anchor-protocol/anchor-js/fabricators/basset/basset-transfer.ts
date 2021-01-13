@@ -19,13 +19,11 @@ export const fabricatebAssetTransfer = ({
   amount,
   bAsset,
   recipient,
-}: Option) => (
-  addressProvider: AddressProvider,
-): MsgExecuteContract[] => {
+}: Option) => (addressProvider: AddressProvider): MsgExecuteContract[] => {
   validateInput([
     validateAddress(address),
-    validateIsNumber(+amount),
-    validateIsGreaterThanZero(+amount),
+    validateIsNumber(amount),
+    validateIsGreaterThanZero(amount),
     validateAddress(recipient),
   ]);
 

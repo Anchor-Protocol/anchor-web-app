@@ -8,7 +8,7 @@ import { AddressProvider } from '../../address-provider/provider';
 interface Option {
   address: string;
   symbol: string;
-  amount: number;
+  amount: string;
 }
 
 /**

@@ -10,7 +10,7 @@ interface Option {
   address: string;
   market: string;
   borrower?: string;
-  amount: number;
+  amount: string;
 }
 
 /**
@@ -33,7 +33,6 @@ export const fabricateRepay = ({
     validateIsGreaterThanZero(amount),
   ]);
 
-  const nativeTokenDenom = market;
   const mmContractAddress = addressProvider.market(market);
 
   return [

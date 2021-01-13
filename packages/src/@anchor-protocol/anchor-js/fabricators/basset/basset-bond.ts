@@ -9,7 +9,7 @@ import { validateIsGreaterThanZero } from '../../utils/validation/number';
 
 interface Option {
   address: string;
-  amount: number;
+  amount: string;
   bAsset: string;
   validator: string; // validator address
 }

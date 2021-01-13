@@ -6,6 +6,7 @@ import { validateWhitelistedMarket } from '../../utils/validation/market';
 import { validateTrue } from '../../utils/validation/true';
 import { validateIsGreaterThanZero } from '../../utils/validation/number';
 import { AddressProvider } from '../../address-provider/provider';
+import { isAmountSet } from '@anchor-protocol/anchor-js/utils/validation/amount';
 
 interface Option {
   address: string;
@@ -64,7 +65,3 @@ export const fabricateRedeemCollateral = ({
     }),
   ];
 };
-
-function isAmountSet(amount: string | undefined): amount is string {
-  return !!amount && !new Int(amount).isNaN();
-}

@@ -19,7 +19,7 @@ export const fabricatebAssetBurn = ({ address, amount, bAsset }: Option) => (
 ): MsgExecuteContract[] => {
   validateInput([
     validateAddress(address),
-    validateIsNumber(+amount),
+    validateIsNumber(amount),
     validateIsGreaterThanZero(+amount),
   ]);
 

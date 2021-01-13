@@ -9,7 +9,7 @@ import { AddressProvider } from '../../address-provider/provider';
 interface Option {
   address: string;
   symbol: string;
-  amount: number;
+  amount: string;
 }
 
 /**
@@ -22,9 +22,7 @@ export const fabricateDepositStableCoin = ({
   address,
   symbol,
   amount,
-}: Option) => (
-  addressProvider: AddressProvider,
-): MsgExecuteContract[] => {
+}: Option) => (addressProvider: AddressProvider): MsgExecuteContract[] => {
   validateInput([
     validateAddress(address),
     validateWhitelistedStable(symbol),
