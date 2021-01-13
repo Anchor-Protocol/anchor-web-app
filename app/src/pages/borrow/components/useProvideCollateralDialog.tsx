@@ -165,7 +165,7 @@ function ComponentBase({
     return (
       <Modal open disableBackdropClick>
         <Dialog className={className}>
-          <h1>Deposit</h1>
+          <h1>Provide Collateral</h1>
           <TxResultRenderer
             result={provideCollateralResult}
             resetResult={() => {
