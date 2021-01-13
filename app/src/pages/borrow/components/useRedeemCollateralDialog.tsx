@@ -6,7 +6,7 @@ import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import {
   formatLuna,
   formatLunaUserInput,
-  formatUST,
+  formatUST, formatUSTInput,
   MICRO,
 } from '@anchor-protocol/notation';
 import {
@@ -106,18 +106,23 @@ function ComponentBase({
   }, [marketOverview.borrowInfo.balance, marketOverview.borrowInfo.spendable]);
 
   const borrowLimit = useMemo(() => {
+    // New Borrow Limit = ((Borrow_info.balance - Borrow_info.spendable - redeemed_collateral) * Oracleprice) * Max_LTV
     return bAssetAmount.length > 0
-      ? big(marketOverview.loanAmount.loan_amount)
-          .div(
-            big(
-              big(marketOverview.borrowInfo.balance)
-                .minus(marketOverview.borrowInfo.spendable)
-                .plus(big(bAssetAmount).mul(MICRO)),
-            ).mul(marketOverview.oraclePrice.rate),
-          )
-          .mul(marketOverview.bLunaMaxLtv)
+      ? big(
+          big(
+            big(marketOverview.borrowInfo.balance)
+              .minus(marketOverview.borrowInfo.spendable)
+              .minus(big(bAssetAmount).mul(MICRO)),
+          ).mul(marketOverview.oraclePrice.rate),
+        ).mul(marketOverview.bLunaMaxLtv)
       : undefined;
-  }, []);
+  }, [
+    bAssetAmount,
+    marketOverview.bLunaMaxLtv,
+    marketOverview.borrowInfo.balance,
+    marketOverview.borrowInfo.spendable,
+    marketOverview.oraclePrice.rate,
+  ]);
 
   const invalidTxFee = useMemo(() => {
     if (bank.status === 'demo') {
@@ -222,7 +227,7 @@ function ComponentBase({
         <div className="wallet" aria-invalid={!!invalidBAssetAmount}>
           <span>{invalidBAssetAmount}</span>
           <span>
-            Wallet:{' '}
+            Withdrawable:{' '}
             <span
               style={{
                 textDecoration: 'underline',
@@ -237,31 +242,16 @@ function ComponentBase({
           </span>
         </div>
 
-        {/* New Borrow Limit = ((Borrow_info.balance - Borrow_info.spendable + provided_collateral) * Oracleprice) * Max_LTV */}
         <TextInput
           className="limit"
           type="number"
-          disabled
-          value={
-            bAssetAmount.length > 0
-              ? formatUST(
-                  big(marketOverview.loanAmount.loan_amount)
-                    .div(
-                      big(
-                        big(marketOverview.borrowInfo.balance)
-                          .minus(marketOverview.borrowInfo.spendable)
-                          .plus(big(bAssetAmount).mul(MICRO)),
-                      ).mul(marketOverview.oraclePrice.rate),
-                    )
-                    .mul(100),
-                )
-              : ''
-          }
+          value={borrowLimit ? formatUSTInput(borrowLimit.div(MICRO)) : ''}
           label="NEW BORROW LIMIT"
           InputProps={{
             endAdornment: <InputAdornment position="end">UST</InputAdornment>,
             inputMode: 'numeric',
           }}
+          style={{ pointerEvents: 'none' }}
         />
 
         {/* Loan_amount / ((Borrow_info.balance - Borrow_info.spendable + provided_collateral) * Oracleprice) * 100 */}

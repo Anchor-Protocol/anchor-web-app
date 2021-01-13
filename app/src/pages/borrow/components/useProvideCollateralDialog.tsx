@@ -7,6 +7,7 @@ import {
   formatLuna,
   formatLunaUserInput,
   formatUST,
+  formatUSTInput,
   MICRO,
 } from '@anchor-protocol/notation';
 import {
@@ -100,17 +101,15 @@ function ComponentBase({
   // compute
   // ---------------------------------------------
   const borrowLimit = useMemo(() => {
-    /* New Borrow Limit = ((Borrow_info.balance - Borrow_info.spendable + provided_collateral) * Oracleprice) * Max_LTV */
+    // New Borrow Limit = ((Borrow_info.balance - Borrow_info.spendable + provided_collateral) * Oracleprice) * Max_LTV
     return bAssetAmount.length > 0
-      ? big(marketOverview.loanAmount.loan_amount)
-          .div(
-            big(
-              big(marketOverview.borrowInfo.balance)
-                .minus(marketOverview.borrowInfo.spendable)
-                .plus(big(bAssetAmount).mul(MICRO)),
-            ).mul(marketOverview.oraclePrice.rate),
-          )
-          .mul(marketOverview.bLunaMaxLtv)
+      ? big(
+          big(
+            big(marketOverview.borrowInfo.balance)
+              .minus(marketOverview.borrowInfo.spendable)
+              .plus(big(bAssetAmount).mul(MICRO)),
+          ).mul(marketOverview.oraclePrice.rate),
+        ).mul(marketOverview.bLunaMaxLtv)
       : undefined;
   }, [
     bAssetAmount,
@@ -245,7 +244,7 @@ function ComponentBase({
         <TextInput
           className="limit"
           type="number"
-          value={borrowLimit ? formatUST(borrowLimit) : ''}
+          value={borrowLimit ? formatUSTInput(borrowLimit.div(MICRO)) : ''}
           label="NEW BORROW LIMIT"
           InputProps={{
             endAdornment: <InputAdornment position="end">UST</InputAdornment>,
