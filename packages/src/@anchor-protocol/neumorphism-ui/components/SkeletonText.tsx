@@ -3,30 +3,44 @@ import styled, { keyframes } from 'styled-components';
 export interface SkeletonTextProps {
   className?: string;
   children: string;
+  backgroundColor?: string;
+  highlightColor?: string;
 }
 
 function SkeletonTextBase({ className, children }: SkeletonTextProps) {
   return <span className={className}>{children}</span>;
 }
 
-const fade = keyframes`
+const shine = keyframes`
   0% {
-    opacity: 0.1;
+    background-position: 0 0, -60px 0;
   }
   
-  50% {
-    opacity: 0.3;
-  }
-  
-  100% {
-    opacity: 0.1;
+  40%, 100% {
+    background-position: 0 0, 600px 0;
   }
 `;
 
 export const SkeletonText = styled(SkeletonTextBase)`
-  user-select: none;
-  //color: transparent;
-  background-color: currentColor;
+  color: transparent;
 
-  animation: ${fade} 3s infinite;
+  background-image: linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.2),
+      rgba(255, 255, 255, 0.2)
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0),
+      rgba(255, 255, 255, 0.2) 50%,
+      rgba(255, 255, 255, 0) 80%
+    );
+
+  background-repeat: repeat, repeat-y;
+
+  background-size: 100% 100%, 60px 2em;
+
+  background-position: 0 0, 0 0;
+
+  animation: ${shine} 2s cubic-bezier(0.62, 0.01, 0.9, 0.17) infinite;
 `;
