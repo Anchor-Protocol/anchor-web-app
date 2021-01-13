@@ -1,4 +1,4 @@
-import { fabricateBorrow, fabricateProvideCollateral } from '@anchor-protocol/anchor-js/fabricators';
+import { fabricateRepay } from '@anchor-protocol/anchor-js/fabricators';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
@@ -41,7 +41,7 @@ import { WarningArticle } from 'components/messages/WarningArticle';
 import { BLOCKS_PER_YEAR } from 'constants/BLOCKS_PER_YEAR';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
-import { fixedGasUUSD, safeRatio, transactionFee } from 'env';
+import { fixedGasUUSD, transactionFee } from 'env';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -54,7 +54,7 @@ interface FormParams {
 
 type FormReturn = void;
 
-export function useBorrowDialog(): [
+export function useRepayDialog(): [
   OpenDialog<FormParams, FormReturn>,
   ReactNode,
 ] {
@@ -77,8 +77,8 @@ function ComponentBase({
 
   const addressProvider = useAddressProvider();
 
-  const [queryBorrow, borrowResult, resetBorrowResult] = useBroadcastableQuery(
-    borrowQueryOptions,
+  const [queryRepay, repayResult, resetRepayResult] = useBroadcastableQuery(
+    repayQueryOptions,
   );
 
   const client = useApolloClient();
@@ -97,30 +97,13 @@ function ComponentBase({
   // compute
   // ---------------------------------------------
   const apr = useMemo(() => {
-    return big(marketOverview.borrowRate.rate ?? 0)
-      .mul(BLOCKS_PER_YEAR)
-      .toFixed();
+    return big(marketOverview.borrowRate.rate).mul(BLOCKS_PER_YEAR).toFixed();
   }, [marketOverview.borrowRate.rate]);
 
-  const safeMax = useMemo(() => {
-    // SafeMax = MAX_LTV * Safe_Ratio * (borrow_info.balance - borrow_info.spendable) * oracle_price - Loan_amount
-    return big(marketOverview.bLunaMaxLtv)
-      .mul(safeRatio)
-      .mul(
-        big(marketOverview.borrowInfo.balance).minus(
-          marketOverview.borrowInfo.spendable,
-        ),
-      )
-      .mul(marketOverview.oraclePrice.rate)
-      .minus(marketOverview.loanAmount.loan_amount);
-  }, [
-    marketOverview.bLunaMaxLtv,
-    marketOverview.borrowInfo.balance,
-    marketOverview.borrowInfo.spendable,
-    marketOverview.loanAmount.loan_amount,
-    marketOverview.oraclePrice.rate,
-  ]);
-  
+  const totalBorrows = useMemo(() => {
+    return marketOverview.loanAmount.loan_amount;
+  }, [marketOverview.loanAmount.loan_amount]);
+
   const txFee = useMemo(() => {
     return fixedGasUUSD;
   }, []);
@@ -140,12 +123,12 @@ function ComponentBase({
     } else if (
       big(assetAmount.length > 0 ? assetAmount : 0)
         .mul(MICRO)
-        .gt(safeMax ?? 0)
+        .gt(totalBorrows)
     ) {
       return `Insufficient balance: Not enough Assets`;
     }
     return undefined;
-  }, [assetAmount, bank.status, safeMax]);
+  }, [assetAmount, bank.status, totalBorrows]);
 
   // ---------------------------------------------
   // callbacks
@@ -166,40 +149,40 @@ function ComponentBase({
         return;
       }
 
-      await queryBorrow({
+      await queryRepay({
         post: post<CreateTxOptions, StringifiedTxResult>({
           ...transactionFee,
-          msgs: fabricateBorrow({
+          msgs: fabricateRepay({
             address: status.status === 'ready' ? status.walletAddress : '',
             market: 'ust',
             amount: assetAmount.length > 0 ? +assetAmount : 0,
-            withdrawTo: undefined,
+            borrower: undefined,
           })(addressProvider),
         }).then(({ payload }) => parseResult(payload)),
         client,
       });
     },
-    [addressProvider, bank.status, client, post, queryBorrow],
+    [addressProvider, bank.status, client, post, queryRepay],
   );
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
   if (
-    borrowResult?.status === 'in-progress' ||
-    borrowResult?.status === 'done' ||
-    borrowResult?.status === 'error'
+    repayResult?.status === 'in-progress' ||
+    repayResult?.status === 'done' ||
+    repayResult?.status === 'error'
   ) {
     return (
       <Modal open disableBackdropClick>
         <Dialog className={className}>
           <h1>
-            Borrow<p>Borrow APR: {formatPercentage(apr)}%</p>
+            Repay<p>Borrow APR: {formatPercentage(apr)}%</p>
           </h1>
           <TxResultRenderer
-            result={borrowResult}
+            result={repayResult}
             resetResult={() => {
-              resetBorrowResult && resetBorrowResult();
+              resetRepayResult && resetRepayResult();
               closeDialog();
             }}
           />
@@ -212,7 +195,7 @@ function ComponentBase({
     <Modal open>
       <Dialog className={className} onClose={() => closeDialog()}>
         <h1>
-          Borrow<p>Borrow APR: {formatPercentage(apr)}%</p>
+          Repay<p>Borrow APR: {formatPercentage(apr)}%</p>
         </h1>
 
         {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
@@ -221,7 +204,7 @@ function ComponentBase({
           className="amount"
           type="number"
           value={assetAmount}
-          label="BORROW AMOUNT"
+          label="REPAY AMOUNT"
           error={!!invalidAssetAmount}
           onChange={({ target }) => updateAssetAmount(target.value)}
           InputProps={{
@@ -240,10 +223,10 @@ function ComponentBase({
                 cursor: 'pointer',
               }}
               onClick={() =>
-                updateAssetAmount(big(safeMax).div(MICRO).toString())
+                updateAssetAmount(big(totalBorrows).div(MICRO).toString())
               }
             >
-              {formatUST(big(safeMax ?? 0).div(MICRO))} UST
+              {formatUST(big(totalBorrows ?? 0).div(MICRO))} UST
             </span>
           </span>
         </div>
@@ -297,13 +280,13 @@ function ComponentBase({
   );
 }
 
-const borrowQueryOptions: BroadcastableQueryOptions<
+const repayQueryOptions: BroadcastableQueryOptions<
   { post: Promise<TxResult>; client: ApolloClient<any> },
   { txResult: TxResult } & { txInfos: txi.Data },
   Error
 > = {
   ...queryOptions,
-  group: 'borrow/borrow',
+  group: 'borrow/repay',
   notificationFactory: txNotificationFactory,
 };
 

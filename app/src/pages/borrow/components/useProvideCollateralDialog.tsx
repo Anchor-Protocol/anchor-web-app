@@ -289,7 +289,7 @@ const provideCollateralQueryOptions: BroadcastableQueryOptions<
   Error
 > = {
   ...queryOptions,
-  group: 'earn/deposit',
+  group: 'borrow/provide-collateral',
   notificationFactory: txNotificationFactory,
 };
 

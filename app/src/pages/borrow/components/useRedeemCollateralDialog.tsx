@@ -292,7 +292,7 @@ const redeemCollateralQueryOptions: BroadcastableQueryOptions<
   Error
 > = {
   ...queryOptions,
-  group: 'earn/deposit',
+  group: 'borrow/redeem-collateral',
   notificationFactory: txNotificationFactory,
 };
 

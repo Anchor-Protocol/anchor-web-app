@@ -39,6 +39,9 @@ function CollateralListBase({
     redeemCollateralDialogElement,
   ] = useRedeemCollateralDialog();
 
+  // ---------------------------------------------
+  // compute
+  // ---------------------------------------------
   const collaterals = useMemo(() => {
     return big(
       big(marketOverview?.borrowInfo.balance ?? 0).minus(
@@ -56,8 +59,9 @@ function CollateralListBase({
     );
   }, [collaterals, marketOverview?.oraclePrice.rate]);
 
-  //console.log('CollateralList.tsx..CollateralListBase()', {marketOverview});
-
+  // ---------------------------------------------
+  // presentation
+  // ---------------------------------------------
   return (
     <Section className={`collateral-list ${className}`}>
       <h2>COLLATERAL LIST</h2>
@@ -104,7 +108,14 @@ function CollateralListBase({
                 Add
               </ActionButton>
               <ActionButton
-                disabled={status.status !== 'ready' || !marketOverview}
+                disabled={
+                  status.status !== 'ready' ||
+                  !marketOverview ||
+                  (big(marketOverview.borrowInfo.balance)
+                    .minus(marketOverview.borrowInfo.spendable)
+                    .eq(0) &&
+                    big(marketOverview.loanAmount.loan_amount).lte(0))
+                }
                 onClick={() =>
                   openRedeemCollateralDialog({
                     marketOverview: marketOverview!,

@@ -6,9 +6,12 @@ import {
   formatUSTWithPostfixUnits,
   MICRO,
 } from '@anchor-protocol/notation';
+import { useWallet } from '@anchor-protocol/wallet-provider';
 import { Error } from '@material-ui/icons';
 import big from 'big.js';
 import { BLOCKS_PER_YEAR } from 'constants/BLOCKS_PER_YEAR';
+import { useBorrowDialog } from 'pages/borrow/components/useBorrowDialog';
+import { useRepayDialog } from 'pages/borrow/components/useRepayDialog';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { useMemo } from 'react';
 import styled from 'styled-components';
@@ -19,6 +22,17 @@ export interface LoanListProps {
 }
 
 function LoanListBase({ className, marketOverview }: LoanListProps) {
+  // ---------------------------------------------
+  // dependencies
+  // ---------------------------------------------
+  const { status } = useWallet();
+
+  const [openBorrowDialog, borrowDialogElement] = useBorrowDialog();
+  const [openRepayDialog, repayDialogElement] = useRepayDialog();
+
+  // ---------------------------------------------
+  // compute
+  // ---------------------------------------------
   const apr = useMemo(() => {
     return big(marketOverview?.borrowRate.rate ?? 0).mul(BLOCKS_PER_YEAR);
   }, [marketOverview?.borrowRate.rate]);
@@ -27,6 +41,9 @@ function LoanListBase({ className, marketOverview }: LoanListProps) {
     return big(marketOverview?.loanAmount.loan_amount ?? 0);
   }, [marketOverview?.loanAmount.loan_amount]);
 
+  // ---------------------------------------------
+  // presentation
+  // ---------------------------------------------
   return (
     <Section className={`loan-list ${className}`}>
       <h2>LOAN LIST</h2>
@@ -70,12 +87,35 @@ function LoanListBase({ className, marketOverview }: LoanListProps) {
               </p>
             </td>
             <td>
-              <ActionButton>Borrow</ActionButton>
-              <ActionButton>Repay</ActionButton>
+              <ActionButton
+                disabled={status.status !== 'ready' || !marketOverview}
+                onClick={() =>
+                  openBorrowDialog({
+                    marketOverview: marketOverview!,
+                  })
+                }
+              >
+                Borrow
+              </ActionButton>
+              <ActionButton
+                disabled={
+                  status.status !== 'ready' ||
+                  !marketOverview ||
+                  big(marketOverview.loanAmount.loan_amount).lte(0)
+                }
+                onClick={() =>
+                  openRepayDialog({ marketOverview: marketOverview! })
+                }
+              >
+                Repay
+              </ActionButton>
             </td>
           </tr>
         </tbody>
       </HorizontalScrollTable>
+
+      {borrowDialogElement}
+      {repayDialogElement}
     </Section>
   );
 }

@@ -5,6 +5,7 @@ import {
 import { ApolloClient } from '@apollo/client';
 import { Data, queryTxInfo } from 'api/queries/txInfos';
 import { TxResult } from 'api/transactions/tx';
+import { TxError } from 'api/transactions/TxError';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -22,6 +23,10 @@ export const queryOptions: Omit<
     { signal, inProgressUpdate, stopSignal },
   ) => {
     const txResult = await stopWithAbortSignal(post, signal);
+
+    if (!txResult.success) {
+      throw new TxError(txResult.msgs);
+    }
 
     inProgressUpdate({ txResult });
 

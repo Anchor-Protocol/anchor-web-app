@@ -1,3 +1,4 @@
+import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
 import { useQuerySubscription } from '@anchor-protocol/use-broadcastable-query';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { gql, QueryResult, useQuery } from '@apollo/client';
@@ -59,21 +60,39 @@ export interface Data {
       ltv: string;
     }[];
   };
+
+  bLunaMaxLtv: string;
 }
 
-export function parseData({
-  borrowRate,
-  loanAmount,
-  oraclePrice,
-  borrowInfo,
-  overseerWhitelist,
-}: StringifiedData): Data {
+export function parseData(
+  {
+    borrowRate,
+    loanAmount,
+    oraclePrice,
+    borrowInfo,
+    overseerWhitelist,
+  }: StringifiedData,
+  addressProvider: AddressProvider,
+): Data {
+  const parsedOverseerWhitelist: Data['overseerWhitelist'] = JSON.parse(
+    overseerWhitelist.Result,
+  );
+  const bLunaMaxLtv = parsedOverseerWhitelist.elems.find(
+    ({ collateral_token }) =>
+      collateral_token === addressProvider.bAssetToken('ubluna'),
+  )?.ltv;
+
+  if (!bLunaMaxLtv) {
+    throw new Error(`Undefined bLuna collateral token!`);
+  }
+
   return {
     borrowRate: JSON.parse(borrowRate.Result),
     loanAmount: JSON.parse(loanAmount.Result),
     oraclePrice: JSON.parse(oraclePrice.Result),
     borrowInfo: JSON.parse(borrowInfo.Result),
-    overseerWhitelist: JSON.parse(overseerWhitelist.Result),
+    overseerWhitelist: parsedOverseerWhitelist,
+    bLunaMaxLtv,
   };
 }
 
@@ -206,7 +225,10 @@ export const query = gql`
 export function useMarketOverview(): QueryResult<
   StringifiedData,
   StringifiedVariables
-> & { parsedData: Data | undefined, marketBalance: MarketBalanceData | undefined } {
+> & {
+  parsedData: Data | undefined;
+  marketBalance: MarketBalanceData | undefined;
+} {
   const addressProvider = useAddressProvider();
   const { status } = useWallet();
 
@@ -254,7 +276,7 @@ export function useMarketOverview(): QueryResult<
       },
     }),
   });
-  
+
   useQuerySubscription(
     (id, event) => {
       if (event === 'done') {
@@ -263,12 +285,12 @@ export function useMarketOverview(): QueryResult<
     },
     [result.refetch],
   );
-  
+
   //console.log('marketOverview.ts..useMarketOverview()', {marketBalance, data: result.data, error: result.error});
 
   const parsedData = useMemo(
-    () => (result.data ? parseData(result.data) : undefined),
-    [result.data],
+    () => (result.data ? parseData(result.data, addressProvider) : undefined),
+    [addressProvider, result.data],
   );
 
   return {
