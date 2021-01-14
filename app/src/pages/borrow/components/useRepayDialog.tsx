@@ -242,7 +242,7 @@ function ComponentBase({
         <div className="wallet" aria-invalid={!!invalidAssetAmount}>
           <span>{invalidAssetAmount}</span>
           <span>
-            Safe Max:{' '}
+            Total Borrows:{' '}
             <span
               style={{
                 textDecoration: 'underline',
