@@ -242,7 +242,7 @@ function ComponentBase({
         <div className="wallet" aria-invalid={!!invalidAssetAmount}>
           <span>{invalidAssetAmount}</span>
           <span>
-            Total Borrows:{' '}
+            Total Borrowed:{' '}
             <span
               style={{
                 textDecoration: 'underline',
