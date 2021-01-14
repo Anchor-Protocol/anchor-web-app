@@ -58,10 +58,10 @@ export function BankProvider({ children }: BankProviderProps) {
               },
           refetchTax,
           userBalances: {
-            uUSD: '1000000000',
-            uLuna: '1000000000',
-            ubLuna: '1000000000',
-            uaUST: '1000000000',
+            uUSD: '0',
+            uLuna: '0',
+            ubLuna: '0',
+            uaUST: '0',
           },
           refetchUserBalances,
         };
