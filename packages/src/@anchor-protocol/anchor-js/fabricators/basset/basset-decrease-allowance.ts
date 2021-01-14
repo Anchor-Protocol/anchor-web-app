@@ -26,8 +26,8 @@ export const fabricatebAssetdDecreaseAllowance = ({
 }: Option) => (addressProvider: AddressProvider): MsgExecuteContract[] => {
   validateInput([
     validateAddress(address),
-    validateIsNumber(+amount),
-    validateIsGreaterThanZero(+amount),
+    validateIsNumber(amount),
+    validateIsGreaterThanZero(amount),
     validateAddress(spender),
     //TODO: validate the expiration
   ]);

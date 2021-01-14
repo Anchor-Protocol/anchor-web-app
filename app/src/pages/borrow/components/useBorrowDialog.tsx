@@ -190,7 +190,7 @@ function ComponentBase({
           msgs: fabricateBorrow({
             address: status.status === 'ready' ? status.walletAddress : '',
             market: 'ust',
-            amount: assetAmount.length > 0 ? +assetAmount : 0,
+            amount: assetAmount,
             withdrawTo: undefined,
           })(addressProvider),
         }).then(({ payload }) => parseResult(payload)),

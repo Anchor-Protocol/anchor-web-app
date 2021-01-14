@@ -167,7 +167,7 @@ function ComponentBase({
             address: status.status === 'ready' ? status.walletAddress : '',
             market: 'ust',
             symbol: 'bluna',
-            amount: bAssetAmount.length > 0 ? +bAssetAmount : 0,
+            amount: bAssetAmount,
           })(addressProvider),
         }).then(({ payload }) => parseResult(payload)),
         client,

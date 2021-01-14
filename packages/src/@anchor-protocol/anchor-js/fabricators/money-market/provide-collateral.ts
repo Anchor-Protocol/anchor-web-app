@@ -12,7 +12,7 @@ interface Option {
   address: string;
   market: string;
   symbol: string;
-  amount: number;
+  amount: string;
 }
 
 /**

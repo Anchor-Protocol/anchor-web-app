@@ -1,16 +1,16 @@
 import { Dec, Int, MsgExecuteContract } from '@terra-money/terra.js';
-import { AddressProvider } from '../../address-provider/provider';
-import { validateInput } from '../../utils/validate-input';
 import { validateAddress } from '../../utils/validation/address';
-import { validateWhitelistedMarket } from '../../utils/validation/market';
+import { validateInput } from '../../utils/validate-input';
 import { validateIsGreaterThanZero } from '../../utils/validation/number';
+import { validateWhitelistedMarket } from '../../utils/validation/market';
 import { validateTrue } from '../../utils/validation/true';
+import { AddressProvider } from '../../address-provider/provider';
 
 interface Option {
   address: string;
   market: string;
   borrower?: string;
-  amount: number;
+  amount: string;
 }
 
 /**
@@ -33,7 +33,7 @@ export const fabricateRepay = ({
     validateIsGreaterThanZero(amount),
   ]);
 
-  //const nativeTokenDenom = market;
+  const nativeTokenDenom = market;
   const mmContractAddress = addressProvider.market(market);
 
   return [
