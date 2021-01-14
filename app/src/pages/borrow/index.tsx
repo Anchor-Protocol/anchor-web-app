@@ -2,6 +2,7 @@ import {
   rulerLightColor,
   rulerShadowColor,
 } from '@anchor-protocol/styled-neumorphism';
+import { Footer } from 'components/Footer';
 import { screen } from 'env';
 import { useMarketBalanceOverview } from 'pages/borrow/queries/marketBalanceOverview';
 import { useMarketOverview } from 'pages/borrow/queries/marketOverview';
@@ -45,6 +46,8 @@ function BorrowBase({ className }: BorrowProps) {
             marketUserOverview={marketUserOverview}
           />
         </div>
+        
+        <Footer />
       </main>
     </div>
   );

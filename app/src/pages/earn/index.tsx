@@ -2,7 +2,9 @@ import {
   rulerLightColor,
   rulerShadowColor,
 } from '@anchor-protocol/styled-neumorphism';
+import { Footer } from 'components/Footer';
 import { screen } from 'env';
+import React from 'react';
 import styled from 'styled-components';
 import { InterestSection } from './components/InterestSection';
 import { TotalDepositSection } from './components/TotalDepositSection';
@@ -23,6 +25,8 @@ function EarnBase({ className }: EarnProps) {
           <InterestSection className="interest" />
           <TransactionHistorySection className="transaction-history" />
         </div>
+
+        <Footer />
       </main>
     </div>
   );
