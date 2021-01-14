@@ -43,6 +43,7 @@ import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { fixedGasUUSD, safeRatio, transactionFee } from 'env';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
+import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
@@ -50,6 +51,7 @@ import styled from 'styled-components';
 interface FormParams {
   className?: string;
   marketOverview: MarketOverview;
+  marketUserOverview: MarketUserOverview;
 }
 
 type FormReturn = void;
@@ -68,6 +70,7 @@ const Template: DialogTemplate<FormParams, FormReturn> = (props) => {
 function ComponentBase({
   className,
   marketOverview,
+  marketUserOverview,
   closeDialog,
 }: DialogProps<FormParams, FormReturn>) {
   // ---------------------------------------------
@@ -105,18 +108,18 @@ function ComponentBase({
     return big(marketOverview.bLunaMaxLtv)
       .mul(safeRatio)
       .mul(
-        big(marketOverview.borrowInfo.balance).minus(
-          marketOverview.borrowInfo.spendable,
+        big(marketUserOverview.borrowInfo.balance).minus(
+          marketUserOverview.borrowInfo.spendable,
         ),
       )
       .mul(marketOverview.oraclePrice.rate)
-      .minus(marketOverview.loanAmount.loan_amount);
+      .minus(marketUserOverview.loanAmount.loan_amount);
   }, [
     marketOverview.bLunaMaxLtv,
-    marketOverview.borrowInfo.balance,
-    marketOverview.borrowInfo.spendable,
-    marketOverview.loanAmount.loan_amount,
     marketOverview.oraclePrice.rate,
+    marketUserOverview.borrowInfo.balance,
+    marketUserOverview.borrowInfo.spendable,
+    marketUserOverview.loanAmount.loan_amount,
   ]);
 
   const txFee = useMemo(() => {

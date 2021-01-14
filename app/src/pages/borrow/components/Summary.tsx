@@ -6,6 +6,7 @@ import {
 } from '@anchor-protocol/notation';
 import big from 'big.js';
 import { BLOCKS_PER_YEAR } from 'constants/BLOCKS_PER_YEAR';
+import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import { useMemo } from 'react';
 import styled from 'styled-components';
 import { Data as MarketOverview } from '../queries/marketOverview';
@@ -13,27 +14,32 @@ import { Data as MarketOverview } from '../queries/marketOverview';
 export interface SummaryProps {
   className?: string;
   marketOverview: MarketOverview | undefined;
+  marketUserOverview: MarketUserOverview | undefined;
 }
 
-function SummaryBase({ className, marketOverview }: SummaryProps) {
+function SummaryBase({
+  className,
+  marketOverview,
+  marketUserOverview,
+}: SummaryProps) {
   const apr = useMemo(() => {
     return big(marketOverview?.borrowRate.rate ?? 0).mul(BLOCKS_PER_YEAR);
   }, [marketOverview?.borrowRate.rate]);
 
   const borrowedValue = useMemo(() => {
-    return big(marketOverview?.loanAmount.loan_amount ?? 0);
-  }, [marketOverview?.loanAmount.loan_amount]);
+    return big(marketUserOverview?.loanAmount.loan_amount ?? 0);
+  }, [marketUserOverview?.loanAmount.loan_amount]);
 
   const collateralValue = useMemo(() => {
     return big(
-      big(marketOverview?.borrowInfo.balance ?? 0).minus(
-        marketOverview?.borrowInfo.spendable ?? 0,
+      big(marketUserOverview?.borrowInfo.balance ?? 0).minus(
+        marketUserOverview?.borrowInfo.spendable ?? 0,
       ),
     ).mul(marketOverview?.oraclePrice.rate ?? 1);
   }, [
-    marketOverview?.borrowInfo.balance,
-    marketOverview?.borrowInfo.spendable,
     marketOverview?.oraclePrice.rate,
+    marketUserOverview?.borrowInfo.balance,
+    marketUserOverview?.borrowInfo.spendable,
   ]);
 
   // TODO

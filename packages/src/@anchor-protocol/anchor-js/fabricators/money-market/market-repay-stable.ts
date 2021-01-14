@@ -33,7 +33,7 @@ export const fabricateRepay = ({
     validateIsGreaterThanZero(amount),
   ]);
 
-  const nativeTokenDenom = market;
+  //const nativeTokenDenom = market;
   const mmContractAddress = addressProvider.market(market);
 
   return [

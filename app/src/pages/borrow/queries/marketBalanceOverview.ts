@@ -1,5 +1,3 @@
-import { useQuerySubscription } from '@anchor-protocol/use-broadcastable-query';
-import { useWallet } from '@anchor-protocol/wallet-provider';
 import { gql, QueryResult, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
 import { useMemo } from 'react';
@@ -88,11 +86,10 @@ export function useMarketBalanceOverview(): QueryResult<
   StringifiedVariables
 > & { parsedData: Data | undefined } {
   const addressProvider = useAddressProvider();
-  const { status } = useWallet();
 
   const result = useQuery<StringifiedData, StringifiedVariables>(query, {
-    skip: status.status !== 'ready',
     fetchPolicy: 'cache-and-network',
+    pollInterval: 1000 * 60,
     variables: stringifyVariables({
       marketContractAddress: addressProvider.market('uusd'),
       marketStateQuery: {
@@ -100,15 +97,6 @@ export function useMarketBalanceOverview(): QueryResult<
       },
     }),
   });
-
-  useQuerySubscription(
-    (id, event) => {
-      if (event === 'done') {
-        result.refetch();
-      }
-    },
-    [result.refetch],
-  );
 
   const parsedData = useMemo(
     () => (result.data ? parseData(result.data) : undefined),

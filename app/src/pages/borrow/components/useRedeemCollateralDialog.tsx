@@ -3,22 +3,9 @@ import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionB
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
-import {
-  formatLuna,
-  formatLunaUserInput,
-  formatUST,
-  formatUSTInput,
-  MICRO,
-} from '@anchor-protocol/notation';
-import {
-  BroadcastableQueryOptions,
-  useBroadcastableQuery,
-} from '@anchor-protocol/use-broadcastable-query';
-import type {
-  DialogProps,
-  DialogTemplate,
-  OpenDialog,
-} from '@anchor-protocol/use-dialog';
+import { formatLuna, formatLunaUserInput, formatUST, formatUSTInput, MICRO } from '@anchor-protocol/notation';
+import { BroadcastableQueryOptions, useBroadcastableQuery } from '@anchor-protocol/use-broadcastable-query';
+import type { DialogProps, DialogTemplate, OpenDialog } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient } from '@apollo/client';
@@ -27,15 +14,8 @@ import { InfoOutlined } from '@material-ui/icons';
 import { CreateTxOptions } from '@terra-money/terra.js';
 import * as txi from 'api/queries/txInfos';
 import { queryOptions } from 'api/transactions/queryOptions';
-import {
-  parseResult,
-  StringifiedTxResult,
-  TxResult,
-} from 'api/transactions/tx';
-import {
-  txNotificationFactory,
-  TxResultRenderer,
-} from 'api/transactions/TxResultRenderer';
+import { parseResult, StringifiedTxResult, TxResult } from 'api/transactions/tx';
+import { txNotificationFactory, TxResultRenderer } from 'api/transactions/TxResultRenderer';
 import big from 'big.js';
 import { TxFeeList, TxFeeListItem } from 'components/messages/TxFeeList';
 import { WarningArticle } from 'components/messages/WarningArticle';
@@ -43,6 +23,7 @@ import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { fixedGasUUSD, transactionFee } from 'env';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
+import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
@@ -50,6 +31,7 @@ import styled from 'styled-components';
 interface FormParams {
   className?: string;
   marketOverview: MarketOverview;
+  marketUserOverview: MarketUserOverview;
 }
 
 type FormReturn = void;
@@ -70,6 +52,7 @@ const txFee = fixedGasUUSD;
 function ComponentBase({
   className,
   marketOverview,
+  marketUserOverview,
   closeDialog,
 }: DialogProps<FormParams, FormReturn>) {
   // ---------------------------------------------
@@ -101,18 +84,21 @@ function ComponentBase({
   // compute
   // ---------------------------------------------
   const maxBAssetAmount = useMemo(() => {
-    return big(marketOverview.borrowInfo.balance).minus(
-      marketOverview.borrowInfo.spendable,
+    return big(marketUserOverview.borrowInfo.balance).minus(
+      marketUserOverview.borrowInfo.spendable,
     );
-  }, [marketOverview.borrowInfo.balance, marketOverview.borrowInfo.spendable]);
+  }, [
+    marketUserOverview.borrowInfo.balance,
+    marketUserOverview.borrowInfo.spendable,
+  ]);
 
   const borrowLimit = useMemo(() => {
     // New Borrow Limit = ((Borrow_info.balance - Borrow_info.spendable - redeemed_collateral) * Oracleprice) * Max_LTV
     return bAssetAmount.length > 0
       ? big(
           big(
-            big(marketOverview.borrowInfo.balance)
-              .minus(marketOverview.borrowInfo.spendable)
+            big(marketUserOverview.borrowInfo.balance)
+              .minus(marketUserOverview.borrowInfo.spendable)
               .minus(big(bAssetAmount).mul(MICRO)),
           ).mul(marketOverview.oraclePrice.rate),
         ).mul(marketOverview.bLunaMaxLtv)
@@ -120,9 +106,9 @@ function ComponentBase({
   }, [
     bAssetAmount,
     marketOverview.bLunaMaxLtv,
-    marketOverview.borrowInfo.balance,
-    marketOverview.borrowInfo.spendable,
     marketOverview.oraclePrice.rate,
+    marketUserOverview.borrowInfo.balance,
+    marketUserOverview.borrowInfo.spendable,
   ]);
 
   const invalidTxFee = useMemo(() => {
