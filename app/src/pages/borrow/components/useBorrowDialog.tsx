@@ -3,7 +3,12 @@ import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionB
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
-import { formatPercentage, formatUST, MICRO, UST_INPUT_MAXIMUM_DECIMAL_POINTS } from '@anchor-protocol/notation';
+import {
+  formatPercentage,
+  formatUST,
+  MICRO,
+  UST_INPUT_MAXIMUM_DECIMAL_POINTS,
+} from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
   useBroadcastableQuery,
@@ -318,6 +323,7 @@ function ComponentBase({
             status.status !== 'ready' ||
             bank.status !== 'connected' ||
             assetAmount.length === 0 ||
+            big(assetAmount).lte(0) ||
             !!invalidTxFee ||
             !!invalidAssetAmount
           }

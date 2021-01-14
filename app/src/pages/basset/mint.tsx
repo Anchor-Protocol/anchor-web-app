@@ -72,7 +72,7 @@ function MintBase({ className }: MintProps) {
   );
 
   const client = useApolloClient();
-  
+
   const { onKeyPress: onLunaInputKeyPress } = useRestrictedNumberInput({
     maxDecimalPoints: 6,
   });
@@ -408,6 +408,8 @@ function MintBase({ className }: MintProps) {
         disabled={
           status.status !== 'ready' ||
           bank.status !== 'connected' ||
+          assetAmount.length === 0 ||
+          big(assetAmount).lte(0) ||
           !!invalidAssetAmount ||
           !!invalidTxFee ||
           !selectedValidator

@@ -3,9 +3,21 @@ import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionB
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
-import { formatPercentage, formatUST, MICRO, UST_INPUT_MAXIMUM_DECIMAL_POINTS } from '@anchor-protocol/notation';
-import { BroadcastableQueryOptions, useBroadcastableQuery } from '@anchor-protocol/use-broadcastable-query';
-import type { DialogProps, DialogTemplate, OpenDialog } from '@anchor-protocol/use-dialog';
+import {
+  formatPercentage,
+  formatUST,
+  MICRO,
+  UST_INPUT_MAXIMUM_DECIMAL_POINTS,
+} from '@anchor-protocol/notation';
+import {
+  BroadcastableQueryOptions,
+  useBroadcastableQuery,
+} from '@anchor-protocol/use-broadcastable-query';
+import type {
+  DialogProps,
+  DialogTemplate,
+  OpenDialog,
+} from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient } from '@apollo/client';
@@ -14,8 +26,15 @@ import { InfoOutlined } from '@material-ui/icons';
 import { CreateTxOptions } from '@terra-money/terra.js';
 import * as txi from 'api/queries/txInfos';
 import { queryOptions } from 'api/transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from 'api/transactions/tx';
-import { txNotificationFactory, TxResultRenderer } from 'api/transactions/TxResultRenderer';
+import {
+  parseResult,
+  StringifiedTxResult,
+  TxResult,
+} from 'api/transactions/tx';
+import {
+  txNotificationFactory,
+  TxResultRenderer,
+} from 'api/transactions/TxResultRenderer';
 import big from 'big.js';
 import { TxFeeList, TxFeeListItem } from 'components/messages/TxFeeList';
 import { WarningArticle } from 'components/messages/WarningArticle';
@@ -298,6 +317,7 @@ function ComponentBase({
             status.status !== 'ready' ||
             bank.status !== 'connected' ||
             assetAmount.length === 0 ||
+            big(assetAmount).lte(0) ||
             !!invalidTxFee ||
             !!invalidAssetAmount
           }

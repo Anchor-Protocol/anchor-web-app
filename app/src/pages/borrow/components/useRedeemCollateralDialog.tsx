@@ -324,6 +324,7 @@ function ComponentBase({
             status.status !== 'ready' ||
             bank.status !== 'connected' ||
             bAssetAmount.length === 0 ||
+            big(bAssetAmount).lte(0) ||
             !!invalidTxFee ||
             !!invalidBAssetAmount
           }
