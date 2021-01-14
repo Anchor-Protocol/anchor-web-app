@@ -44,9 +44,11 @@ import { fixedGasUUSD, transactionFee } from 'env';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { Data as TotalDepositData } from '../queries/totalDeposit';
 
 interface FormParams {
   className?: string;
+  totalDeposit: TotalDepositData;
 }
 
 type FormReturn = void;
@@ -65,6 +67,7 @@ const Template: DialogTemplate<FormParams, FormReturn> = (props) => {
 function ComponentBase({
   className,
   closeDialog,
+  totalDeposit,
 }: DialogProps<FormParams, FormReturn>) {
   // ---------------------------------------------
   // dependencies
@@ -111,12 +114,12 @@ function ComponentBase({
     } else if (
       big(aAssetAmount.length > 0 ? aAssetAmount : 0)
         .mul(MICRO)
-        .gt(bank.userBalances.uaUST ?? 0)
+        .gt(totalDeposit.totalDeposit ?? 0)
     ) {
       return `Insufficient balance: Not enough Assets`;
     }
     return undefined;
-  }, [aAssetAmount, bank.status, bank.userBalances.uaUST]);
+  }, [aAssetAmount, bank.status, totalDeposit.totalDeposit]);
 
   const txFee = useMemo(() => {
     if (aAssetAmount.length === 0 || !tax) return undefined;
@@ -235,11 +238,11 @@ function ComponentBase({
               }}
               onClick={() =>
                 updateAAssetAmount(
-                  big(bank.userBalances.uaUST).div(MICRO).toString(),
+                  big(totalDeposit.totalDeposit).div(MICRO).toString(),
                 )
               }
             >
-              {formatUST(big(bank.userBalances.uaUST ?? 0).div(MICRO))} UST
+              {formatUST(big(totalDeposit.totalDeposit).div(MICRO))} UST
             </span>
           </span>
         </div>
