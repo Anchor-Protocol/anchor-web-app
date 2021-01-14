@@ -22,6 +22,7 @@ import { WarningArticle } from 'components/messages/WarningArticle';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { fixedGasUUSD, transactionFee } from 'env';
+import { LTVGraph } from 'pages/borrow/components/LTVGraph';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import type { ReactNode } from 'react';
@@ -83,6 +84,28 @@ function ComponentBase({
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
+  const userLtv = useMemo(() => {
+    if (bAssetAmount.length === 0) {
+      return undefined;
+    }
+
+    const userAmount = big(bAssetAmount).mul(MICRO);
+
+    return big(marketUserOverview.loanAmount.loan_amount).div(
+      big(
+        big(marketUserOverview.borrowInfo.balance)
+          .minus(marketUserOverview.borrowInfo.spendable)
+          .plus(userAmount),
+      ).mul(marketOverview.oraclePrice.rate),
+    );
+  }, [
+    bAssetAmount,
+    marketOverview.oraclePrice.rate,
+    marketUserOverview.borrowInfo.balance,
+    marketUserOverview.borrowInfo.spendable,
+    marketUserOverview.loanAmount.loan_amount,
+  ]);
+
   const borrowLimit = useMemo(() => {
     // New Borrow Limit = ((Borrow_info.balance - Borrow_info.spendable + provided_collateral) * Oracleprice) * Max_LTV
     return bAssetAmount.length > 0
@@ -235,8 +258,9 @@ function ComponentBase({
           style={{ pointerEvents: 'none' }}
         />
 
-        {/* Loan_amount / ((Borrow_info.balance - Borrow_info.spendable + provided_collateral) * Oracleprice) * 100 */}
-        <figure className="graph">graph</figure>
+        <figure className="graph">
+          <LTVGraph maxLtv={marketOverview.bLunaMaxLtv} userLtv={userLtv} />
+        </figure>
 
         {bAssetAmount.length > 0 && (
           <TxFeeList className="receipt">
@@ -319,18 +343,11 @@ const Component = styled(ComponentBase)`
 
   .limit {
     width: 100%;
-    margin-bottom: 30px;
+    margin-bottom: 60px;
   }
 
   .graph {
-    height: 60px;
-    border-radius: 20px;
-    border: 2px dashed ${({ theme }) => theme.textColor};
-
-    display: grid;
-    place-content: center;
-
-    margin-bottom: 30px;
+    margin-bottom: 40px;
   }
 
   .receipt {

@@ -42,6 +42,7 @@ import { BLOCKS_PER_YEAR } from 'constants/BLOCKS_PER_YEAR';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { fixedGasUUSD, safeRatio, transactionFee } from 'env';
+import { LTVGraph } from 'pages/borrow/components/LTVGraph';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import type { ReactNode } from 'react';
@@ -99,6 +100,30 @@ function ComponentBase({
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
+  const userLtv = useMemo(() => {
+    if (assetAmount.length === 0) {
+      return undefined;
+    }
+
+    const userAmount = big(assetAmount).mul(MICRO);
+
+    return big(
+      big(marketUserOverview.loanAmount.loan_amount).plus(userAmount),
+    ).div(
+      big(
+        big(marketUserOverview.borrowInfo.balance)
+          .minus(marketUserOverview.borrowInfo.spendable)
+          .minus(userAmount),
+      ).mul(marketOverview.oraclePrice.rate),
+    );
+  }, [
+    assetAmount,
+    marketOverview.oraclePrice.rate,
+    marketUserOverview.borrowInfo.balance,
+    marketUserOverview.borrowInfo.spendable,
+    marketUserOverview.loanAmount.loan_amount,
+  ]);
+
   const apr = useMemo(() => {
     return big(marketOverview.borrowRate.rate ?? 0).mul(BLOCKS_PER_YEAR);
   }, [marketOverview.borrowRate.rate]);
@@ -269,7 +294,9 @@ function ComponentBase({
           </span>
         </div>
 
-        <figure className="graph">graph</figure>
+        <figure className="graph">
+          <LTVGraph maxLtv={marketOverview.bLunaMaxLtv} userLtv={userLtv} />
+        </figure>
 
         {txFee && estimatedAmount && (
           <TxFeeList className="receipt">
@@ -355,23 +382,11 @@ const Component = styled(ComponentBase)`
       color: #f5356a;
     }
 
-    margin-bottom: 25px;
-  }
-
-  .limit {
-    width: 100%;
-    margin-bottom: 30px;
+    margin-bottom: 45px;
   }
 
   .graph {
-    height: 60px;
-    border-radius: 20px;
-    border: 2px dashed ${({ theme }) => theme.textColor};
-
-    display: grid;
-    place-content: center;
-
-    margin-bottom: 30px;
+    margin-bottom: 40px;
   }
 
   .receipt {

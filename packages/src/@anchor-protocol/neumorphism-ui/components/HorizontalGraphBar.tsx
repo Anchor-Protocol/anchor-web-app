@@ -69,7 +69,7 @@ function HorizontalGraphBarBase<T>({
 
   const rects = useMemo<Rect[]>(() => {
     return values.map((value) => {
-      const r: number = (max + valueFunction(value)) / total;
+      const r: number = (valueFunction(value) - min) / total;
 
       return {
         x: padding,
@@ -78,7 +78,7 @@ function HorizontalGraphBarBase<T>({
         height: barHeight - padding * 2,
       };
     });
-  }, [barHeight, max, total, valueFunction, values, width]);
+  }, [barHeight, min, total, valueFunction, values, width]);
 
   return (
     <div {...divProps} ref={ref} className={className}>
