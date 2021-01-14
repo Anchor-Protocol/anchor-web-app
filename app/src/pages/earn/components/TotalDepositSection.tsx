@@ -67,7 +67,9 @@ function TotalDepositSectionBase({ className }: TotalDepositSectionProps) {
       <HorizontalRuler />
 
       <aside className="total-deposit-buttons">
-        <ActionButton onClick={() => openDeposit()}>Deposit</ActionButton>
+        <ActionButton disabled={!totalDeposit} onClick={() => openDeposit()}>
+          Deposit
+        </ActionButton>
         <ActionButton disabled={!totalDeposit} onClick={() => openWithdraw()}>
           Withdraw
         </ActionButton>
