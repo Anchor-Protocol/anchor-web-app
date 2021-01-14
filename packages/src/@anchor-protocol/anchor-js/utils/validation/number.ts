@@ -1,13 +1,13 @@
-import { Int } from '@terra-money/terra.js';
+import { Dec, Int } from '@terra-money/terra.js';
 import { InputEntry } from '../validate-input';
 
 export const validateIsNumber = (n: number | string): InputEntry => [
-  () => !new Int(n).isNaN(),
+  () => !new Dec(n).isNaN(),
   `invalid number ${n}`,
 ];
 
 export const validateIsGreaterThanZero = (n: number | string): InputEntry => [
-  () => new Int(n).greaterThan(0),
+  () => new Dec(n).greaterThan(0),
   `number should be > 0.`,
 ];
 

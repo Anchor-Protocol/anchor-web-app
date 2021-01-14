@@ -9,7 +9,7 @@ import { AddressProvider } from '../../address-provider/provider';
 interface Option {
   address: string;
   market: string;
-  amount: number;
+  amount: string;
   withdrawTo?: string;
 }
 
@@ -26,9 +26,7 @@ export const fabricateBorrow = ({
   market,
   amount,
   withdrawTo,
-}: Option) => (
-  addressProvider: AddressProvider,
-): MsgExecuteContract[] => {
+}: Option) => (addressProvider: AddressProvider): MsgExecuteContract[] => {
   validateInput([
     validateWhitelistedMarket(market),
     validateAddress(address),

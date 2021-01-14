@@ -160,7 +160,7 @@ function ComponentBase({
           ...transactionFee,
           msgs: fabricateRedeemStable({
             address: status.status === 'ready' ? status.walletAddress : '',
-            amount: big(aAssetAmount).toNumber(),
+            amount: aAssetAmount,
             symbol: 'usd',
           })(addressProvider),
         }).then(({ payload }) => parseResult(payload)),

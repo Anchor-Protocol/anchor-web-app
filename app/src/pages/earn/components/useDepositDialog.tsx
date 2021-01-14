@@ -200,7 +200,7 @@ function ComponentBase({
           ...transactionFee,
           msgs: fabricateDepositStableCoin({
             address: status.status === 'ready' ? status.walletAddress : '',
-            amount: big(assetAmount).toNumber(),
+            amount: assetAmount,
             symbol: 'usd',
           })(addressProvider),
         }).then(({ payload }) => parseResult(payload)),

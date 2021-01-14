@@ -155,7 +155,7 @@ function ComponentBase({
           msgs: fabricateRepay({
             address: status.status === 'ready' ? status.walletAddress : '',
             market: 'ust',
-            amount: assetAmount.length > 0 ? +assetAmount : 0,
+            amount: assetAmount,
             borrower: undefined,
           })(addressProvider),
         }).then(({ payload }) => parseResult(payload)),
