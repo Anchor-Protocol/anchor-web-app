@@ -16,4 +16,5 @@ export const WarningArticle = styled(WarningArticleBase)`
   color: ${({ theme }) => theme.errorTextColor};
   padding: 10px;
   margin: 20px 0;
+  text-align: center;
 `;
