@@ -4,7 +4,10 @@ import numeral from 'numeral';
 export const DECIMAL_POINTS = 6;
 export const MICRO = 1000000;
 
-export function mapDecimalPointBaseSeparatedNumbers<T>(n: string, mapper: (i: string, d: string | undefined) => T): T {
+export function mapDecimalPointBaseSeparatedNumbers<T>(
+  n: string,
+  mapper: (i: string, d: string | undefined) => T,
+): T {
   const [i, d] = n.toString().split('.');
   return mapper(i, d);
 }
@@ -56,28 +59,19 @@ export function formatFluidDecimalPoints(
   );
 }
 
-export function formatUSTUserInput(
-  n: string,
-): string {
-  return discardInputDecimalPoints(n, 3);
-}
-
-export function formatLunaUserInput(
-  n: string,
-): string {
-  return discardInputDecimalPoints(n, 6);
-}
+export const UST_INPUT_MAXIMUM_DECIMAL_POINTS = 3;
+export const LUNA_INPUT_MAXIMUM_DECIMAL_POINTS = 6;
 
 export function formatUSTInput(
   n: number | string | { toString(): string },
 ): string {
-  return formatFluidDecimalPoints(n, 3, {delimiter: false});
+  return formatFluidDecimalPoints(n, 3, { delimiter: false });
 }
 
 export function formatLunaInput(
   n: number | string | { toString(): string },
 ): string {
-  return formatFluidDecimalPoints(n, 6, {delimiter: false});
+  return formatFluidDecimalPoints(n, 6, { delimiter: false });
 }
 
 export function formatUST(

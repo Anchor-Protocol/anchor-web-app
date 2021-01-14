@@ -1,14 +1,10 @@
 import { fabricateDepositStableCoin } from '@anchor-protocol/anchor-js/fabricators';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
-import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
+import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { useConfirm } from '@anchor-protocol/neumorphism-ui/components/useConfirm';
-import {
-  formatUST,
-  formatUSTUserInput,
-  MICRO,
-} from '@anchor-protocol/notation';
+import { formatUST, MICRO, UST_INPUT_MAXIMUM_DECIMAL_POINTS } from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
   useBroadcastableQuery,
@@ -177,7 +173,7 @@ function ComponentBase({
   // callbacks
   // ---------------------------------------------
   const updateAssetAmount = useCallback((nextAssetAmount: string) => {
-    setAssetAmount(formatUSTUserInput(nextAssetAmount));
+    setAssetAmount(nextAssetAmount);
   }, []);
 
   const proceed = useCallback(
@@ -263,16 +259,15 @@ function ComponentBase({
 
         {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
 
-        <TextInput
+        <NumberInput
           className="amount"
-          type="number"
           value={assetAmount}
+          maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="AMOUNT"
           error={!!invalidAssetAmount}
           onChange={({ target }) => updateAssetAmount(target.value)}
           InputProps={{
             endAdornment: <InputAdornment position="end">UST</InputAdornment>,
-            inputMode: 'numeric',
           }}
         />
 

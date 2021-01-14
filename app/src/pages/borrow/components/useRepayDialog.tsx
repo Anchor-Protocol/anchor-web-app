@@ -1,23 +1,11 @@
 import { fabricateRepay } from '@anchor-protocol/anchor-js/fabricators';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
-import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
+import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
-import {
-  formatLunaUserInput,
-  formatPercentage,
-  formatUST,
-  MICRO,
-} from '@anchor-protocol/notation';
-import {
-  BroadcastableQueryOptions,
-  useBroadcastableQuery,
-} from '@anchor-protocol/use-broadcastable-query';
-import type {
-  DialogProps,
-  DialogTemplate,
-  OpenDialog,
-} from '@anchor-protocol/use-dialog';
+import { formatPercentage, formatUST, MICRO, UST_INPUT_MAXIMUM_DECIMAL_POINTS } from '@anchor-protocol/notation';
+import { BroadcastableQueryOptions, useBroadcastableQuery } from '@anchor-protocol/use-broadcastable-query';
+import type { DialogProps, DialogTemplate, OpenDialog } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient } from '@apollo/client';
@@ -26,15 +14,8 @@ import { InfoOutlined } from '@material-ui/icons';
 import { CreateTxOptions } from '@terra-money/terra.js';
 import * as txi from 'api/queries/txInfos';
 import { queryOptions } from 'api/transactions/queryOptions';
-import {
-  parseResult,
-  StringifiedTxResult,
-  TxResult,
-} from 'api/transactions/tx';
-import {
-  txNotificationFactory,
-  TxResultRenderer,
-} from 'api/transactions/TxResultRenderer';
+import { parseResult, StringifiedTxResult, TxResult } from 'api/transactions/tx';
+import { txNotificationFactory, TxResultRenderer } from 'api/transactions/TxResultRenderer';
 import big from 'big.js';
 import { TxFeeList, TxFeeListItem } from 'components/messages/TxFeeList';
 import { WarningArticle } from 'components/messages/WarningArticle';
@@ -188,7 +169,7 @@ function ComponentBase({
   // callbacks
   // ---------------------------------------------
   const updateAssetAmount = useCallback((nextAssetAmount: string) => {
-    setAssetAmount(formatLunaUserInput(nextAssetAmount));
+    setAssetAmount(nextAssetAmount);
   }, []);
 
   const proceed = useCallback(
@@ -254,16 +235,15 @@ function ComponentBase({
 
         {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
 
-        <TextInput
+        <NumberInput
           className="amount"
-          type="number"
           value={assetAmount}
+          maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="REPAY AMOUNT"
           error={!!invalidAssetAmount}
           onChange={({ target }) => updateAssetAmount(target.value)}
           InputProps={{
             endAdornment: <InputAdornment position="end">UST</InputAdornment>,
-            inputMode: 'numeric',
           }}
         />
 

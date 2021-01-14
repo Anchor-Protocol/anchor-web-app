@@ -1,13 +1,13 @@
 import { fabricateRedeemCollateral } from '@anchor-protocol/anchor-js/fabricators';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
-import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
+import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import {
   formatLuna,
-  formatLunaUserInput,
   formatUST,
   formatUSTInput,
+  LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   MICRO,
 } from '@anchor-protocol/notation';
 import {
@@ -197,7 +197,7 @@ function ComponentBase({
   // callbacks
   // ---------------------------------------------
   const updateBAssetAmount = useCallback((nextBAssetAmount: string) => {
-    setBAssetAmount(formatLunaUserInput(nextBAssetAmount));
+    setBAssetAmount(nextBAssetAmount);
   }, []);
 
   const proceed = useCallback(
@@ -258,16 +258,15 @@ function ComponentBase({
 
         {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
 
-        <TextInput
+        <NumberInput
           className="amount"
-          type="number"
           value={bAssetAmount}
+          maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="REDEEM AMOUNT"
           error={!!invalidBAssetAmount}
           onChange={({ target }) => updateBAssetAmount(target.value)}
           InputProps={{
             endAdornment: <InputAdornment position="end">bLUNA</InputAdornment>,
-            inputMode: 'numeric',
           }}
         />
 
@@ -289,14 +288,12 @@ function ComponentBase({
           </span>
         </div>
 
-        <TextInput
+        <NumberInput
           className="limit"
-          type="number"
           value={borrowLimit ? formatUSTInput(borrowLimit.div(MICRO)) : ''}
           label="NEW BORROW LIMIT"
           InputProps={{
             endAdornment: <InputAdornment position="end">UST</InputAdornment>,
-            inputMode: 'numeric',
           }}
           style={{ pointerEvents: 'none' }}
         />
