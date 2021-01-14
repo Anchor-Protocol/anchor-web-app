@@ -126,13 +126,12 @@ function ComponentBase({
     marketUserOverview.loanAmount.loan_amount,
   ]);
 
-  // TODO
-  // If user_ltv <= 0.35:
+  // If user_ltv >= 0.35:
   //   withdrawable = borrow_info.spendable
   // else:
   //   withdrawable = borrow_info.balance - borrow_info.spendable - 100 * loan_amount / 35 * oracle_price + borrow_info.spendable
   const maxBAssetAmount = useMemo(() => {
-    return userLtv && userLtv.lte(0.35)
+    return userLtv && userLtv.gte(0.35)
       ? big(marketUserOverview.borrowInfo.spendable)
       : big(marketUserOverview.borrowInfo.balance)
           .minus(marketUserOverview.borrowInfo.spendable)
