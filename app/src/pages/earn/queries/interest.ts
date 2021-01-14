@@ -1,5 +1,3 @@
-import { useQuerySubscription } from '@anchor-protocol/use-broadcastable-query';
-import { useWallet } from '@anchor-protocol/wallet-provider';
 import { gql, QueryResult, useQuery } from '@apollo/client';
 import big from 'big.js';
 import { BLOCKS_PER_YEAR } from 'constants/BLOCKS_PER_YEAR';
@@ -73,11 +71,10 @@ export function useInterest(): QueryResult<
   StringifiedVariables
 > & { parsedData: Data | undefined } {
   const addressProvider = useAddressProvider();
-  const { status } = useWallet();
 
   const result = useQuery<StringifiedData, StringifiedVariables>(query, {
-    skip: status.status !== 'ready',
     fetchPolicy: 'cache-and-network',
+    pollInterval: 1000 * 60,
     variables: stringifyVariables({
       overseerContract: addressProvider.overseer(''),
       overseerEpochState: {
@@ -85,15 +82,6 @@ export function useInterest(): QueryResult<
       },
     }),
   });
-
-  useQuerySubscription(
-    (id, event) => {
-      if (event === 'done') {
-        result.refetch();
-      }
-    },
-    [result.refetch],
-  );
 
   const parsedData = useMemo(
     () => (result.data ? parseData(result.data) : undefined),
