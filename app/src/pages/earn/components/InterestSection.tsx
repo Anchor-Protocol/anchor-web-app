@@ -1,6 +1,8 @@
 import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
+import { formatPercentage } from '@anchor-protocol/notation';
+import big from 'big.js';
 import { useInterest } from 'pages/earn/queries/interest';
 import styled from 'styled-components';
 
@@ -22,7 +24,9 @@ function InterestSectionBase({ className }: InterestSectionProps) {
       <h2>INTEREST</h2>
 
       <div className="apy">
-        <div className="value">{interest?.currentAPY}%</div>
+        <div className="value">
+          {formatPercentage(big(interest?.currentAPY ?? 0).mul(100))}%
+        </div>
         <p className="name">APY</p>
         <figure></figure>
       </div>
