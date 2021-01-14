@@ -17,7 +17,9 @@ export interface Rect {
   height: number;
 }
 
-const padding: number = 1;
+const padding: number = 2;
+const defaultBarHeight: number = 14;
+const defaultBoxRadius: number = 7;
 
 export interface HorizontalGraphBarProps<T>
   extends DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement> {
@@ -43,6 +45,9 @@ export interface HorizontalGraphBarProps<T>
 
   /** Get the color code from the value */
   colorFunction: (value: T) => string;
+
+  barHeight?: number;
+  boxRadis?: number;
 }
 
 function HorizontalGraphBarBase<T>({
@@ -54,11 +59,11 @@ function HorizontalGraphBarBase<T>({
   valueFunction,
   colorFunction,
   labelRenderer,
+  barHeight = defaultBarHeight,
+  boxRadis = defaultBoxRadius,
   ...divProps
 }: HorizontalGraphBarProps<T>) {
-  const { ref, width = 500, height = 10 } = useResizeObserver<HTMLDivElement>(
-    {},
-  );
+  const { ref, width = 500 } = useResizeObserver<HTMLDivElement>({});
 
   const total = max - min;
 
@@ -70,17 +75,22 @@ function HorizontalGraphBarBase<T>({
         x: padding,
         y: padding,
         width: r * (width - padding * 2),
-        height: height - padding * 2,
+        height: barHeight - padding * 2,
       };
     });
-  }, [height, max, total, valueFunction, values, width]);
+  }, [barHeight, max, total, valueFunction, values, width]);
 
   return (
     <div {...divProps} ref={ref} className={className}>
-      <svg width={width} height={height}>
+      <svg width={width} height={barHeight}>
         {Children.toArray(
           rects.map((rect, i) => (
-            <rect {...rect} rx={5} ry={5} fill={colorFunction(values[i])} />
+            <rect
+              {...rect}
+              rx={boxRadis - padding}
+              ry={boxRadis - padding}
+              fill={colorFunction(values[i])}
+            />
           )),
         )}
       </svg>
@@ -97,20 +107,19 @@ export const HorizontalGraphBar: <T>(
   props: HorizontalGraphBarProps<T>,
 ) => ReactElement<HorizontalGraphBarProps<T>> = styled(HorizontalGraphBarBase)`
   width: 100%;
-  height: 10px;
+  height: ${({ barHeight = defaultBarHeight }) => barHeight}px;
 
   padding: 0;
   margin: 0;
 
-  border-radius: 5px;
+  border-radius: ${({ boxRadis = defaultBoxRadius }) => boxRadis}px;
 
   position: relative;
   font-size: 0;
+  color: ${({ theme }) => theme.textColor};
 
   > span {
     position: absolute;
-    font-size: 16px;
-    color: ${({ theme }) => theme.textColor};
   }
 
   ${({ theme }) =>
