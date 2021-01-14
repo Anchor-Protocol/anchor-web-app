@@ -45,7 +45,7 @@ function InterestSectionBase({ className }: InterestSectionProps) {
         <div className="amount">
           <Tooltip title="no real data" placement="top">
             <span>
-              2,320<span className="decimal-point">.063700</span> UST
+              <s>2,320<span className="decimal-point">.063700</span> UST</s>
             </span>
           </Tooltip>
           <p>Interest earned</p>
