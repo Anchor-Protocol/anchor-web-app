@@ -1,14 +1,10 @@
 import { fabricateDepositStableCoin } from '@anchor-protocol/anchor-js/fabricators';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
-import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
+import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { useConfirm } from '@anchor-protocol/neumorphism-ui/components/useConfirm';
-import {
-  formatUST,
-  formatUSTUserInput,
-  MICRO,
-} from '@anchor-protocol/notation';
+import { formatUST, MICRO, UST_INPUT_MAXIMUM_DECIMAL_POINTS } from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
   useBroadcastableQuery,
@@ -133,11 +129,17 @@ function ComponentBase({
     const maxTax = big(tax.maxTaxUUSD);
 
     if (ratioTxFee.gt(maxTax)) {
-      return maxTax.add(fixedGasUUSD).toString();
+      return maxTax.add(fixedGasUUSD);
     } else {
-      return ratioTxFee.add(fixedGasUUSD).toString();
+      return ratioTxFee.add(fixedGasUUSD);
     }
   }, [assetAmount, tax]);
+
+  const estimatedAmount = useMemo(() => {
+    return assetAmount.length > 0 && txFee
+      ? big(assetAmount).mul(MICRO).plus(txFee)
+      : undefined;
+  }, [assetAmount, txFee]);
 
   const recommendationAssetAmount = useMemo<string | undefined>(() => {
     if (bank.status === 'demo' || big(bank.userBalances.uUSD).lte(0)) {
@@ -148,26 +150,30 @@ function ComponentBase({
   }, [bank.status, bank.userBalances.uUSD]);
 
   const tooMuchAssetAmountWarning = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo' || assetAmount.length === 0) {
+    if (
+      bank.status === 'demo' ||
+      assetAmount.length === 0 ||
+      !!invalidAssetAmount
+    ) {
       return undefined;
     }
 
-    const remainUUSD = big(bank.userBalances.uUSD)
-      .minus(big(assetAmount).mul(MICRO))
-      .toString();
+    const remainUUSD = big(bank.userBalances.uUSD).minus(
+      big(assetAmount).mul(MICRO),
+    );
 
-    if (big(remainUUSD).lt(fixedGasUUSD)) {
+    if (remainUUSD.lt(fixedGasUUSD)) {
       return `You may run out of USD balance needed for future transactions.`;
     }
 
     return undefined;
-  }, [assetAmount, bank.status, bank.userBalances.uUSD]);
+  }, [assetAmount, bank.status, bank.userBalances.uUSD, invalidAssetAmount]);
 
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
   const updateAssetAmount = useCallback((nextAssetAmount: string) => {
-    setAssetAmount(formatUSTUserInput(nextAssetAmount));
+    setAssetAmount(nextAssetAmount);
   }, []);
 
   const proceed = useCallback(
@@ -253,16 +259,15 @@ function ComponentBase({
 
         {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
 
-        <TextInput
+        <NumberInput
           className="amount"
-          type="number"
           value={assetAmount}
+          maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="AMOUNT"
           error={!!invalidAssetAmount}
           onChange={({ target }) => updateAssetAmount(target.value)}
           InputProps={{
             endAdornment: <InputAdornment position="end">UST</InputAdornment>,
-            inputMode: 'numeric',
           }}
         />
 
@@ -291,7 +296,7 @@ function ComponentBase({
           </span>
         </div>
 
-        {txFee && (
+        {txFee && estimatedAmount && (
           <TxFeeList className="receipt">
             <TxFeeListItem
               label={
@@ -305,13 +310,16 @@ function ComponentBase({
             >
               {formatUST(big(txFee).div(MICRO))} UST
             </TxFeeListItem>
+            <TxFeeListItem label="Estimated Amount">
+              {formatUST(estimatedAmount.div(MICRO))} UST
+            </TxFeeListItem>
           </TxFeeList>
         )}
 
         {tooMuchAssetAmountWarning && recommendationAssetAmount && (
-          <div>
-            {tooMuchAssetAmountWarning}
-            <br />
+          <WarningArticle>
+            <p style={{ marginBottom: 10 }}>{tooMuchAssetAmountWarning}</p>
+
             <button
               onClick={() =>
                 updateAssetAmount(
@@ -321,7 +329,7 @@ function ComponentBase({
             >
               Set recommend amount
             </button>
-          </div>
+          </WarningArticle>
         )}
 
         <ActionButton

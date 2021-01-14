@@ -15,7 +15,7 @@ function TransactionHistorySectionBase({
       <ul>
         {Array.from({ length: 20 }, (_, i) => (
           <li key={'listitem' + i}>
-            <div className="amount">+200 UST</div>
+            <div className="amount"><s>+200 UST</s></div>
             <div className="detail">
               <span>Deposit from terra1...52wpvt</span>
               <time>16:53 12 Oct 2020</time>

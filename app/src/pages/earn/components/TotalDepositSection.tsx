@@ -34,8 +34,10 @@ function TotalDepositSectionBase({ className }: TotalDepositSectionProps) {
   }, [openDepositDialog]);
 
   const openWithdraw = useCallback(async () => {
-    await openWithdrawDialog({});
-  }, [openWithdrawDialog]);
+    if (totalDeposit) {
+      await openWithdrawDialog({ totalDeposit });
+    }
+  }, [openWithdrawDialog, totalDeposit]);
 
   // ---------------------------------------------
   // presentation
@@ -65,8 +67,12 @@ function TotalDepositSectionBase({ className }: TotalDepositSectionProps) {
       <HorizontalRuler />
 
       <aside className="total-deposit-buttons">
-        <ActionButton onClick={() => openDeposit()}>Deposit</ActionButton>
-        <ActionButton onClick={() => openWithdraw()}>Withdraw</ActionButton>
+        <ActionButton disabled={!totalDeposit} onClick={() => openDeposit()}>
+          Deposit
+        </ActionButton>
+        <ActionButton disabled={!totalDeposit} onClick={() => openWithdraw()}>
+          Withdraw
+        </ActionButton>
       </aside>
 
       {depositDialogElement}

@@ -13,15 +13,21 @@ import { BLOCKS_PER_YEAR } from 'constants/BLOCKS_PER_YEAR';
 import { useBorrowDialog } from 'pages/borrow/components/useBorrowDialog';
 import { useRepayDialog } from 'pages/borrow/components/useRepayDialog';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
+import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import { useMemo } from 'react';
 import styled from 'styled-components';
 
 export interface LoanListProps {
   className?: string;
   marketOverview: MarketOverview | undefined;
+  marketUserOverview: MarketUserOverview | undefined;
 }
 
-function LoanListBase({ className, marketOverview }: LoanListProps) {
+function LoanListBase({
+  className,
+  marketOverview,
+  marketUserOverview,
+}: LoanListProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
@@ -38,14 +44,14 @@ function LoanListBase({ className, marketOverview }: LoanListProps) {
   }, [marketOverview?.borrowRate.rate]);
 
   const borrowed = useMemo(() => {
-    return big(marketOverview?.loanAmount.loan_amount ?? 0);
-  }, [marketOverview?.loanAmount.loan_amount]);
+    return big(marketUserOverview?.loanAmount.loan_amount ?? 0);
+  }, [marketUserOverview?.loanAmount.loan_amount]);
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
   return (
-    <Section className={`loan-list ${className}`}>
+    <Section className={className}>
       <h2>LOAN LIST</h2>
 
       <HorizontalScrollTable>
@@ -75,8 +81,10 @@ function LoanListBase({ className, marketOverview }: LoanListProps) {
               </div>
             </td>
             <td>
-              <div className="value">{formatPercentage(apr)}%</div>
-              <p className="volatility">200 UST</p>
+              <div className="value">{formatPercentage(apr.mul(100))}%</div>
+              <p className="volatility">
+                <s>200 UST</s>
+              </p>
             </td>
             <td>
               <div className="value">
@@ -88,10 +96,15 @@ function LoanListBase({ className, marketOverview }: LoanListProps) {
             </td>
             <td>
               <ActionButton
-                disabled={status.status !== 'ready' || !marketOverview}
+                disabled={
+                  status.status !== 'ready' ||
+                  !marketOverview ||
+                  !marketUserOverview
+                }
                 onClick={() =>
                   openBorrowDialog({
                     marketOverview: marketOverview!,
+                    marketUserOverview: marketUserOverview!,
                   })
                 }
               >
@@ -101,10 +114,14 @@ function LoanListBase({ className, marketOverview }: LoanListProps) {
                 disabled={
                   status.status !== 'ready' ||
                   !marketOverview ||
-                  big(marketOverview.loanAmount.loan_amount).lte(0)
+                  !marketUserOverview ||
+                  big(marketUserOverview.loanAmount.loan_amount).lte(0)
                 }
                 onClick={() =>
-                  openRepayDialog({ marketOverview: marketOverview! })
+                  openRepayDialog({
+                    marketOverview: marketOverview!,
+                    marketUserOverview: marketUserOverview!,
+                  })
                 }
               >
                 Repay

@@ -9,20 +9,23 @@ import {
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { Error } from '@material-ui/icons';
 import big from 'big.js';
-import { useProvideCollateralDialog } from 'pages/borrow/components/useProvideCollateralDialog';
-import { useRedeemCollateralDialog } from 'pages/borrow/components/useRedeemCollateralDialog';
-import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { useMemo } from 'react';
 import styled from 'styled-components';
+import { Data as MarketOverview } from '../queries/marketOverview';
+import { Data as MarketUserOverview } from '../queries/marketUserOverview';
+import { useProvideCollateralDialog } from './useProvideCollateralDialog';
+import { useRedeemCollateralDialog } from './useRedeemCollateralDialog';
 
 export interface CollateralListProps {
   className?: string;
   marketOverview: MarketOverview | undefined;
+  marketUserOverview: MarketUserOverview | undefined;
 }
 
 function CollateralListBase({
   className,
   marketOverview,
+  marketUserOverview,
 }: CollateralListProps) {
   // ---------------------------------------------
   // dependencies
@@ -44,26 +47,24 @@ function CollateralListBase({
   // ---------------------------------------------
   const collaterals = useMemo(() => {
     return big(
-      big(marketOverview?.borrowInfo.balance ?? 0).minus(
-        marketOverview?.borrowInfo.spendable ?? 0,
+      big(marketUserOverview?.borrowInfo.balance ?? 0).minus(
+        marketUserOverview?.borrowInfo.spendable ?? 0,
       ),
-    ).div(MICRO);
+    );
   }, [
-    marketOverview?.borrowInfo.balance,
-    marketOverview?.borrowInfo.spendable,
+    marketUserOverview?.borrowInfo.balance,
+    marketUserOverview?.borrowInfo.spendable,
   ]);
 
   const collateralsInUST = useMemo(() => {
-    return big(big(collaterals).mul(marketOverview?.oraclePrice.rate ?? 1)).div(
-      MICRO,
-    );
+    return big(collaterals).mul(marketOverview?.oraclePrice.rate ?? 1);
   }, [collaterals, marketOverview?.oraclePrice.rate]);
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
   return (
-    <Section className={`collateral-list ${className}`}>
+    <Section className={className}>
       <h2>COLLATERAL LIST</h2>
 
       <HorizontalScrollTable>
@@ -92,16 +93,23 @@ function CollateralListBase({
             </td>
             <td>
               <div className="value">
-                {formatUSTWithPostfixUnits(collateralsInUST)} UST
+                {formatUSTWithPostfixUnits(collateralsInUST.div(MICRO))} UST
               </div>
-              <p className="volatility">{formatLuna(collaterals)} bLUNA</p>
+              <p className="volatility">
+                {formatLuna(collaterals.div(MICRO))} bLUNA
+              </p>
             </td>
             <td>
               <ActionButton
-                disabled={status.status !== 'ready' || !marketOverview}
+                disabled={
+                  status.status !== 'ready' ||
+                  !marketOverview ||
+                  !marketUserOverview
+                }
                 onClick={() =>
                   openProvideCollateralDialog({
                     marketOverview: marketOverview!,
+                    marketUserOverview: marketUserOverview!,
                   })
                 }
               >
@@ -111,14 +119,16 @@ function CollateralListBase({
                 disabled={
                   status.status !== 'ready' ||
                   !marketOverview ||
-                  (big(marketOverview.borrowInfo.balance)
-                    .minus(marketOverview.borrowInfo.spendable)
+                  !marketUserOverview ||
+                  (big(marketUserOverview.borrowInfo.balance)
+                    .minus(marketUserOverview.borrowInfo.spendable)
                     .eq(0) &&
-                    big(marketOverview.loanAmount.loan_amount).lte(0))
+                    big(marketUserOverview.loanAmount.loan_amount).lte(0))
                 }
                 onClick={() =>
                   openRedeemCollateralDialog({
                     marketOverview: marketOverview!,
+                    marketUserOverview: marketUserOverview!,
                   })
                 }
               >

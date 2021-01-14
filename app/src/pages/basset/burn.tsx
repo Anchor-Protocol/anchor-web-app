@@ -6,13 +6,14 @@ import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import {
   formatLuna,
   formatLunaInput,
-  formatLunaUserInput, formatUST,
+  formatUST,
   MICRO,
 } from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
   useBroadcastableQuery,
 } from '@anchor-protocol/use-broadcastable-query';
+import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient } from '@apollo/client';
 import {
@@ -67,6 +68,10 @@ function BurnBase({ className }: BurnProps) {
   );
 
   const client = useApolloClient();
+
+  const { onKeyPress: onLunaInputKeyPress } = useRestrictedNumberInput({
+    maxDecimalPoints: 6,
+  });
 
   // ---------------------------------------------
   // states
@@ -145,7 +150,7 @@ function BurnBase({ className }: BurnProps) {
         setAssetAmount('');
         setBAssetAmount('');
       } else {
-        const assetAmount: string = formatLunaUserInput(nextAssetAmount);
+        const assetAmount: string = nextAssetAmount;
 
         setAssetAmount(assetAmount);
         setBAssetAmount(
@@ -164,7 +169,7 @@ function BurnBase({ className }: BurnProps) {
         setAssetAmount('');
         setBAssetAmount('');
       } else {
-        const bAssetAmount: string = formatLunaUserInput(nextBAssetAmount);
+        const bAssetAmount: string = nextBAssetAmount;
 
         setAssetAmount(
           formatLunaInput(
@@ -253,19 +258,21 @@ function BurnBase({ className }: BurnProps) {
         error={!!invalidBAssetAmount}
         leftHelperText={invalidBAssetAmount}
         rightHelperText={
-          <span>
-            Balance:{' '}
-            <span
-              style={{ textDecoration: 'underline', cursor: 'pointer' }}
-              onClick={() =>
-                updateBAssetAmount(
-                  big(bank.userBalances.ubLuna).div(MICRO).toString(),
-                )
-              }
-            >
-              {big(bank.userBalances.ubLuna).div(MICRO).toString()} bLuna
+          status.status === 'ready' && (
+            <span>
+              Balance:{' '}
+              <span
+                style={{ textDecoration: 'underline', cursor: 'pointer' }}
+                onClick={() =>
+                  updateBAssetAmount(
+                    big(bank.userBalances.ubLuna).div(MICRO).toString(),
+                  )
+                }
+              >
+                {big(bank.userBalances.ubLuna).div(MICRO).toString()} bLuna
+              </span>
             </span>
-          </span>
+          )
         }
       >
         <MuiNativeSelect
@@ -283,10 +290,10 @@ function BurnBase({ className }: BurnProps) {
           ))}
         </MuiNativeSelect>
         <MuiInput
-          type="number"
           placeholder="0.00"
           error={!!invalidBAssetAmount}
           value={bAssetAmount}
+          onKeyPress={onLunaInputKeyPress as any}
           onChange={({ target }) => updateBAssetAmount(target.value)}
         />
       </SelectAndTextInputContainer>
@@ -321,14 +328,14 @@ function BurnBase({ className }: BurnProps) {
           ))}
         </MuiNativeSelect>
         <MuiInput
-          type="number"
           placeholder="0.00"
           error={!!invalidBAssetAmount}
           value={assetAmount}
+          onKeyPress={onLunaInputKeyPress as any}
           onChange={({ target }) => updateAssetAmount(target.value)}
         />
       </SelectAndTextInputContainer>
-      
+
       {bAssetAmount.length > 0 && (
         <TxFeeList className="receipt">
           <TxFeeListItem
@@ -352,6 +359,8 @@ function BurnBase({ className }: BurnProps) {
         disabled={
           status.status !== 'ready' ||
           bank.status !== 'connected' ||
+          bAssetAmount.length === 0 ||
+          big(bAssetAmount).lte(0) ||
           !!invalidTxFee ||
           !!invalidBAssetAmount
         }
@@ -424,7 +433,7 @@ export const Burn = styled(BurnBase)`
       color: ${({ theme }) => theme.dimTextColor};
     }
   }
-  
+
   .receipt {
     margin-bottom: 40px;
   }

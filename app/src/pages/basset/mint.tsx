@@ -8,7 +8,6 @@ import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import {
   formatLuna,
   formatLunaInput,
-  formatLunaUserInput,
   formatUST,
   MICRO,
 } from '@anchor-protocol/notation';
@@ -16,6 +15,7 @@ import {
   BroadcastableQueryOptions,
   useBroadcastableQuery,
 } from '@anchor-protocol/use-broadcastable-query';
+import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient } from '@apollo/client';
 import {
@@ -72,6 +72,10 @@ function MintBase({ className }: MintProps) {
   );
 
   const client = useApolloClient();
+
+  const { onKeyPress: onLunaInputKeyPress } = useRestrictedNumberInput({
+    maxDecimalPoints: 6,
+  });
 
   // ---------------------------------------------
   // states
@@ -158,7 +162,7 @@ function MintBase({ className }: MintProps) {
         setAssetAmount('');
         setBAssetAmount('');
       } else {
-        const assetAmount: string = formatLunaUserInput(nextAssetAmount);
+        const assetAmount: string = nextAssetAmount;
 
         setAssetAmount(assetAmount);
         setBAssetAmount(
@@ -177,7 +181,7 @@ function MintBase({ className }: MintProps) {
         setAssetAmount('');
         setBAssetAmount('');
       } else {
-        const bAssetAmount: string = formatLunaUserInput(nextBAssetAmount);
+        const bAssetAmount: string = nextBAssetAmount;
 
         setAssetAmount(
           formatLunaInput(
@@ -276,19 +280,21 @@ function MintBase({ className }: MintProps) {
         error={!!invalidAssetAmount}
         leftHelperText={invalidAssetAmount}
         rightHelperText={
-          <span>
-            Balance:{' '}
-            <span
-              style={{ textDecoration: 'underline', cursor: 'pointer' }}
-              onClick={() =>
-                updateAssetAmount(
-                  big(bank.userBalances.uLuna).div(MICRO).toString(),
-                )
-              }
-            >
-              {big(bank.userBalances.uLuna).div(MICRO).toString()} Luna
+          status.status === 'ready' && (
+            <span>
+              Balance:{' '}
+              <span
+                style={{ textDecoration: 'underline', cursor: 'pointer' }}
+                onClick={() =>
+                  updateAssetAmount(
+                    big(bank.userBalances.uLuna).div(MICRO).toString(),
+                  )
+                }
+              >
+                {big(bank.userBalances.uLuna).div(MICRO).toString()} Luna
+              </span>
             </span>
-          </span>
+          )
         }
       >
         <MuiNativeSelect
@@ -311,6 +317,7 @@ function MintBase({ className }: MintProps) {
           placeholder="0.00"
           error={!!invalidAssetAmount}
           value={assetAmount}
+          onKeyPress={onLunaInputKeyPress as any}
           onChange={({ target }) => updateAssetAmount(target.value)}
         />
       </SelectAndTextInputContainer>
@@ -347,6 +354,7 @@ function MintBase({ className }: MintProps) {
           placeholder="0.00"
           error={!!invalidAssetAmount}
           value={bAssetAmount}
+          onKeyPress={onLunaInputKeyPress as any}
           onChange={({ target }) => updateBAssetAmount(target.value)}
         />
       </SelectAndTextInputContainer>
@@ -400,6 +408,8 @@ function MintBase({ className }: MintProps) {
         disabled={
           status.status !== 'ready' ||
           bank.status !== 'connected' ||
+          assetAmount.length === 0 ||
+          big(assetAmount).lte(0) ||
           !!invalidAssetAmount ||
           !!invalidTxFee ||
           !selectedValidator

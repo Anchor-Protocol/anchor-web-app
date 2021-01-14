@@ -1,8 +1,8 @@
-import { useQuerySubscription } from '@anchor-protocol/use-broadcastable-query';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { gql, QueryResult, useQuery } from '@apollo/client';
 import big from 'big.js';
 import { useAddressProvider } from 'contexts/contract';
+import { useLastSyncedHeight } from 'pages/earn/queries/lastSyncedHeight';
 import { useMemo } from 'react';
 
 export interface StringifiedData {
@@ -58,7 +58,9 @@ export interface Variables {
   };
   moneyMarketContract: string;
   moneyMarketEpochQuery: {
-    epoch_state: {};
+    epoch_state: {
+      lastSyncedHeight: number;
+    };
   };
 }
 
@@ -106,8 +108,10 @@ export function useTotalDeposit(): QueryResult<
   const addressProvider = useAddressProvider();
   const { status } = useWallet();
 
+  const { parsedData: lastSyncedHeight } = useLastSyncedHeight();
+
   const result = useQuery<StringifiedData, StringifiedVariables>(query, {
-    skip: status.status !== 'ready',
+    skip: status.status !== 'ready' || typeof lastSyncedHeight !== 'number',
     variables: stringifyVariables({
       anchorTokenContract: addressProvider.aToken(''),
       anchorTokenBalanceQuery: {
@@ -117,19 +121,13 @@ export function useTotalDeposit(): QueryResult<
       },
       moneyMarketContract: addressProvider.market(''),
       moneyMarketEpochQuery: {
-        epoch_state: {},
+        epoch_state: {
+          lastSyncedHeight:
+            typeof lastSyncedHeight === 'number' ? lastSyncedHeight : 0,
+        },
       },
     }),
   });
-
-  useQuerySubscription(
-    (id, event) => {
-      if (event === 'done') {
-        result.refetch();
-      }
-    },
-    [result.refetch],
-  );
 
   const parsedData = useMemo(
     () => (result.data ? parseData(result.data) : undefined),

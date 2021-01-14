@@ -1,10 +1,10 @@
-import { testAddressProvider, testClient, testWalletAddress } from 'test.env';
+import { testAddressProvider, testClient } from 'test.env';
 import {
+  parseData,
   query,
   StringifiedData,
   StringifiedVariables,
   stringifyVariables,
-  parseData,
 } from '../marketOverview';
 import { getMarketBalance } from './marketBalanceOverview.test';
 
@@ -32,24 +32,11 @@ describe('queries/marketOverview', () => {
               total_reserves: marketBalance.marketState.total_reserves ?? '',
             },
           },
-          marketContractAddress: testAddressProvider.market('uusd'),
-          marketLoanQuery: {
-            loan_amount: {
-              borrower: testWalletAddress,
-              block_height: marketBalance.currentBlock ?? 0,
-            },
-          },
           oracleContractAddress: testAddressProvider.oracle(),
           oracleQuery: {
             price: {
               base: testAddressProvider.bAssetToken('ubluna'),
               quote: 'uusd',
-            },
-          },
-          custodyContractAddress: testAddressProvider.custody(),
-          custodyBorrowerQuery: {
-            borrower: {
-              address: testWalletAddress,
             },
           },
           overseerContractAddress: testAddressProvider.overseer(),
@@ -60,12 +47,10 @@ describe('queries/marketOverview', () => {
           },
         }),
       })
-      .then(({ data }) => parseData(data));
+      .then(({ data }) => parseData(data, testAddressProvider));
 
     expect(!!data.borrowRate).toBeTruthy();
-    expect(!!data.loanAmount).toBeTruthy();
     expect(!!data.oraclePrice).toBeTruthy();
-    expect(!!data.borrowInfo).toBeTruthy();
     expect(!!data.overseerWhitelist).toBeTruthy();
   });
 });

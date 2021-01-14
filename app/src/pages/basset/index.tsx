@@ -1,4 +1,5 @@
 import { Tab } from '@anchor-protocol/neumorphism-ui/components/Tab';
+import { Footer } from 'components/Footer';
 import { screen } from 'env';
 import { useCallback, useMemo } from 'react';
 import {
@@ -67,6 +68,8 @@ function BAssetBase({ className, match, history }: BAssetProps) {
             <Redirect path={`${match.path}/*`} to={`${match.path}/mint`} />
           </Switch>
         </div>
+
+        <Footer style={{margin: '60px 40px'}} />
       </main>
     </div>
   );
@@ -92,8 +95,6 @@ export const BAsset = styled(BAssetBase)`
   // ---------------------------------------------
   // layout
   // ---------------------------------------------
-  padding-bottom: 100px;
-
   main {
     .content-layout {
       max-width: 720px;

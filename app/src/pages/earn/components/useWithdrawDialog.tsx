@@ -1,12 +1,12 @@
 import { fabricateRedeemStable } from '@anchor-protocol/anchor-js/fabricators';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
-import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
+import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import {
   formatUST,
-  formatUSTUserInput,
   MICRO,
+  UST_INPUT_MAXIMUM_DECIMAL_POINTS,
 } from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
@@ -44,9 +44,11 @@ import { fixedGasUUSD, transactionFee } from 'env';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { Data as TotalDepositData } from '../queries/totalDeposit';
 
 interface FormParams {
   className?: string;
+  totalDeposit: TotalDepositData;
 }
 
 type FormReturn = void;
@@ -65,6 +67,7 @@ const Template: DialogTemplate<FormParams, FormReturn> = (props) => {
 function ComponentBase({
   className,
   closeDialog,
+  totalDeposit,
 }: DialogProps<FormParams, FormReturn>) {
   // ---------------------------------------------
   // dependencies
@@ -111,12 +114,12 @@ function ComponentBase({
     } else if (
       big(aAssetAmount.length > 0 ? aAssetAmount : 0)
         .mul(MICRO)
-        .gt(bank.userBalances.uaUST ?? 0)
+        .gt(totalDeposit.totalDeposit ?? 0)
     ) {
       return `Insufficient balance: Not enough Assets`;
     }
     return undefined;
-  }, [aAssetAmount, bank.status, bank.userBalances.uaUST]);
+  }, [aAssetAmount, bank.status, totalDeposit.totalDeposit]);
 
   const txFee = useMemo(() => {
     if (aAssetAmount.length === 0 || !tax) return undefined;
@@ -136,11 +139,17 @@ function ComponentBase({
     }
   }, [aAssetAmount, tax]);
 
+  const estimatedAmount = useMemo(() => {
+    return aAssetAmount.length > 0 && txFee
+      ? big(aAssetAmount).mul(MICRO).minus(txFee)
+      : undefined;
+  }, [aAssetAmount, txFee]);
+
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
   const updateAAssetAmount = useCallback((nextAAssetAmount: string) => {
-    setAAssetAmount(formatUSTUserInput(nextAAssetAmount));
+    setAAssetAmount(nextAAssetAmount);
   }, []);
 
   const proceed = useCallback(
@@ -205,16 +214,15 @@ function ComponentBase({
 
         {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
 
-        <TextInput
+        <NumberInput
           className="amount"
-          type="number"
           value={aAssetAmount}
+          maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="AMOUNT"
           error={!!invalidAAsetAmount}
           onChange={({ target }) => updateAAssetAmount(target.value)}
           InputProps={{
             endAdornment: <InputAdornment position="end">UST</InputAdornment>,
-            inputMode: 'numeric',
           }}
         />
 
@@ -229,16 +237,16 @@ function ComponentBase({
               }}
               onClick={() =>
                 updateAAssetAmount(
-                  big(bank.userBalances.uaUST).div(MICRO).toString(),
+                  big(totalDeposit.totalDeposit).div(MICRO).toString(),
                 )
               }
             >
-              {formatUST(big(bank.userBalances.uaUST ?? 0).div(MICRO))} UST
+              {formatUST(big(totalDeposit.totalDeposit).div(MICRO))} UST
             </span>
           </span>
         </div>
 
-        {txFee && (
+        {txFee && estimatedAmount && (
           <TxFeeList className="receipt">
             <TxFeeListItem
               label={
@@ -251,6 +259,9 @@ function ComponentBase({
               }
             >
               {formatUST(big(txFee).div(MICRO))} UST
+            </TxFeeListItem>
+            <TxFeeListItem label="Estimated Amount">
+              {formatUST(estimatedAmount.div(MICRO))} UST
             </TxFeeListItem>
           </TxFeeList>
         )}

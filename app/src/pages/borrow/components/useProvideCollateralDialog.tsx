@@ -1,12 +1,13 @@
 import { fabricateProvideCollateral } from '@anchor-protocol/anchor-js/fabricators';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
-import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
+import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import {
   formatLuna,
-  formatLunaUserInput,
   formatUST,
+  formatUSTInput,
+  LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   MICRO,
 } from '@anchor-protocol/notation';
 import {
@@ -41,7 +42,9 @@ import { WarningArticle } from 'components/messages/WarningArticle';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { fixedGasUUSD, transactionFee } from 'env';
+import { LTVGraph } from 'pages/borrow/components/LTVGraph';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
+import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
@@ -49,6 +52,7 @@ import styled from 'styled-components';
 interface FormParams {
   className?: string;
   marketOverview: MarketOverview;
+  marketUserOverview: MarketUserOverview;
 }
 
 type FormReturn = void;
@@ -64,9 +68,12 @@ const Template: DialogTemplate<FormParams, FormReturn> = (props) => {
   return <Component {...props} />;
 };
 
+const txFee = fixedGasUUSD;
+
 function ComponentBase({
   className,
   marketOverview,
+  marketUserOverview,
   closeDialog,
 }: DialogProps<FormParams, FormReturn>) {
   // ---------------------------------------------
@@ -97,6 +104,47 @@ function ComponentBase({
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
+  const userLtv = useMemo(() => {
+    if (bAssetAmount.length === 0) {
+      return undefined;
+    }
+
+    const userAmount = big(bAssetAmount).mul(MICRO);
+
+    return big(marketUserOverview.loanAmount.loan_amount).div(
+      big(
+        big(marketUserOverview.borrowInfo.balance)
+          .minus(marketUserOverview.borrowInfo.spendable)
+          .plus(userAmount),
+      ).mul(marketOverview.oraclePrice.rate),
+    );
+  }, [
+    bAssetAmount,
+    marketOverview.oraclePrice.rate,
+    marketUserOverview.borrowInfo.balance,
+    marketUserOverview.borrowInfo.spendable,
+    marketUserOverview.loanAmount.loan_amount,
+  ]);
+
+  const borrowLimit = useMemo(() => {
+    // New Borrow Limit = ((Borrow_info.balance - Borrow_info.spendable + provided_collateral) * Oracleprice) * Max_LTV
+    return bAssetAmount.length > 0
+      ? big(
+          big(
+            big(marketUserOverview.borrowInfo.balance)
+              .minus(marketUserOverview.borrowInfo.spendable)
+              .plus(big(bAssetAmount).mul(MICRO)),
+          ).mul(marketOverview.oraclePrice.rate),
+        ).mul(marketOverview.bLunaMaxLtv)
+      : undefined;
+  }, [
+    bAssetAmount,
+    marketOverview.bLunaMaxLtv,
+    marketOverview.oraclePrice.rate,
+    marketUserOverview.borrowInfo.balance,
+    marketUserOverview.borrowInfo.spendable,
+  ]);
+
   const invalidTxFee = useMemo(() => {
     if (bank.status === 'demo') {
       return undefined;
@@ -123,7 +171,7 @@ function ComponentBase({
   // callbacks
   // ---------------------------------------------
   const updateBAssetAmount = useCallback((nextBAssetAmount: string) => {
-    setBAssetAmount(formatLunaUserInput(nextBAssetAmount));
+    setBAssetAmount(nextBAssetAmount);
   }, []);
 
   const proceed = useCallback(
@@ -185,16 +233,15 @@ function ComponentBase({
 
         {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
 
-        <TextInput
+        <NumberInput
           className="amount"
-          type="number"
           value={bAssetAmount}
+          maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="DEPOSIT AMOUNT"
           error={!!invalidBAssetAmount}
           onChange={({ target }) => updateBAssetAmount(target.value)}
           InputProps={{
             endAdornment: <InputAdornment position="end">bLUNA</InputAdornment>,
-            inputMode: 'numeric',
           }}
         />
 
@@ -218,35 +265,20 @@ function ComponentBase({
           </span>
         </div>
 
-        {/* New Borrow Limit = ((Borrow_info.balance - Borrow_info.spendable + provided_collateral) * Oracleprice) * Max_LTV */}
-        <TextInput
+        <NumberInput
           className="limit"
-          type="number"
-          disabled
-          value={
-            bAssetAmount.length > 0
-              ? formatUST(
-                  big(marketOverview.loanAmount.loan_amount)
-                    .div(
-                      big(
-                        big(marketOverview.borrowInfo.balance)
-                          .minus(marketOverview.borrowInfo.spendable)
-                          .plus(big(bAssetAmount).mul(MICRO)),
-                      ).mul(marketOverview.oraclePrice.rate),
-                    )
-                    .mul(100),
-                )
-              : ''
-          }
+          value={borrowLimit ? formatUSTInput(borrowLimit.div(MICRO)) : ''}
           label="NEW BORROW LIMIT"
           InputProps={{
             endAdornment: <InputAdornment position="end">UST</InputAdornment>,
             inputMode: 'numeric',
           }}
+          style={{ pointerEvents: 'none' }}
         />
 
-        {/* Loan_amount / ((Borrow_info.balance - Borrow_info.spendable + provided_collateral) * Oracleprice) * 100 */}
-        <figure className="graph">graph</figure>
+        <figure className="graph">
+          <LTVGraph maxLtv={marketOverview.bLunaMaxLtv} userLtv={userLtv} />
+        </figure>
 
         {bAssetAmount.length > 0 && (
           <TxFeeList className="receipt">
@@ -260,7 +292,7 @@ function ComponentBase({
                 </>
               }
             >
-              {formatUST(big(fixedGasUUSD).div(MICRO))} UST
+              {formatUST(big(txFee).div(MICRO))} UST
             </TxFeeListItem>
           </TxFeeList>
         )}
@@ -271,6 +303,7 @@ function ComponentBase({
             status.status !== 'ready' ||
             bank.status !== 'connected' ||
             bAssetAmount.length === 0 ||
+            big(bAssetAmount).lte(0) ||
             !!invalidTxFee ||
             !!invalidBAssetAmount
           }
@@ -329,18 +362,11 @@ const Component = styled(ComponentBase)`
 
   .limit {
     width: 100%;
-    margin-bottom: 30px;
+    margin-bottom: 60px;
   }
 
   .graph {
-    height: 60px;
-    border-radius: 20px;
-    border: 2px dashed ${({ theme }) => theme.textColor};
-
-    display: grid;
-    place-content: center;
-
-    margin-bottom: 30px;
+    margin-bottom: 40px;
   }
 
   .receipt {

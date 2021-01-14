@@ -24,11 +24,11 @@ describe('notation', () => {
     expect(formatUSTWithPostfixUnits('1000345')).toBe('1M');
     expect(formatUSTWithPostfixUnits('1000345000')).toBe('1,000.34M');
     expect(formatUSTWithPostfixUnits('10003450')).toBe('10M');
-    expect(formatUSTWithPostfixUnits('1120.33434')).toBe('1.12K');
-    expect(formatUSTWithPostfixUnits('1123.4000')).toBe('1.12K');
-    expect(formatUSTWithPostfixUnits('1120.000')).toBe('1.12K');
-    expect(formatUSTWithPostfixUnits('1000')).toBe('1K');
-    expect(formatUSTWithPostfixUnits('1010')).toBe('1.01K');
+    expect(formatUSTWithPostfixUnits('1120.33434')).toBe('1,120.334');
+    expect(formatUSTWithPostfixUnits('1123.4000')).toBe('1,123.4');
+    expect(formatUSTWithPostfixUnits('1120.000')).toBe('1,120');
+    expect(formatUSTWithPostfixUnits('1000')).toBe('1,000');
+    expect(formatUSTWithPostfixUnits('1010')).toBe('1,010');
     
     expect(formatLuna('1.342131')).toBe('1.342131');
     expect(formatLuna('1.12049312')).toBe('1.120493');

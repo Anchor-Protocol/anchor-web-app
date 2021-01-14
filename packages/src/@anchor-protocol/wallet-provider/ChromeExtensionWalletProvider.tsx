@@ -1,5 +1,5 @@
 import { Extension } from '@terra-money/terra.js';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StationNetworkInfo, WalletStatus } from './types';
 import { WalletContext, WalletProviderProps, WalletState } from './useWallet';
 
@@ -30,12 +30,20 @@ export function ChromeExtensionWalletProvider({
   const [status, setStatus] = useState<WalletStatus>(() => ({
     status: 'initializing',
   }));
+  
+  const firstCheck = useRef<boolean>(false);
 
   const checkStatus = useCallback(
     async (watingExtensionScriptInjection: boolean = false) => {
+      if (!watingExtensionScriptInjection && !firstCheck.current) {
+        return;
+      }
+      
       const isExtensionInstalled = watingExtensionScriptInjection
         ? await intervalCheck(20, () => extension.isAvailable)
         : extension.isAvailable;
+      
+      firstCheck.current = true;
 
       if (!isExtensionInstalled) {
         setStatus((prev) => {
