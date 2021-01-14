@@ -6,7 +6,8 @@ import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import {
   formatLuna,
   formatLunaUserInput,
-  formatUST, formatUSTInput,
+  formatUST,
+  formatUSTInput,
   MICRO,
 } from '@anchor-protocol/notation';
 import {
@@ -127,7 +128,7 @@ function ComponentBase({
   const invalidTxFee = useMemo(() => {
     if (bank.status === 'demo') {
       return undefined;
-    } else if (big(bank.userBalances.uUSD ?? 0).lt(txFee)) {
+    } else if (big(bank.userBalances.uUSD ?? 0).lt(fixedGasUUSD)) {
       return 'Not enough Tx Fee';
     }
     return undefined;

@@ -122,7 +122,7 @@ function ComponentBase({
   const invalidTxFee = useMemo(() => {
     if (bank.status === 'demo') {
       return undefined;
-    } else if (big(bank.userBalances.uUSD ?? 0).lt(txFee)) {
+    } else if (big(bank.userBalances.uUSD ?? 0).lt(fixedGasUUSD)) {
       return 'Not enough Tx Fee';
     }
     return undefined;
