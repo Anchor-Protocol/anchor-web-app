@@ -276,19 +276,21 @@ function MintBase({ className }: MintProps) {
         error={!!invalidAssetAmount}
         leftHelperText={invalidAssetAmount}
         rightHelperText={
-          <span>
-            Balance:{' '}
-            <span
-              style={{ textDecoration: 'underline', cursor: 'pointer' }}
-              onClick={() =>
-                updateAssetAmount(
-                  big(bank.userBalances.uLuna).div(MICRO).toString(),
-                )
-              }
-            >
-              {big(bank.userBalances.uLuna).div(MICRO).toString()} Luna
+          status.status === 'ready' && (
+            <span>
+              Balance:{' '}
+              <span
+                style={{ textDecoration: 'underline', cursor: 'pointer' }}
+                onClick={() =>
+                  updateAssetAmount(
+                    big(bank.userBalances.uLuna).div(MICRO).toString(),
+                  )
+                }
+              >
+                {big(bank.userBalances.uLuna).div(MICRO).toString()} Luna
+              </span>
             </span>
-          </span>
+          )
         }
       >
         <MuiNativeSelect

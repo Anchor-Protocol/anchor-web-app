@@ -6,7 +6,8 @@ import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import {
   formatLuna,
   formatLunaInput,
-  formatLunaUserInput, formatUST,
+  formatLunaUserInput,
+  formatUST,
   MICRO,
 } from '@anchor-protocol/notation';
 import {
@@ -253,19 +254,21 @@ function BurnBase({ className }: BurnProps) {
         error={!!invalidBAssetAmount}
         leftHelperText={invalidBAssetAmount}
         rightHelperText={
-          <span>
-            Balance:{' '}
-            <span
-              style={{ textDecoration: 'underline', cursor: 'pointer' }}
-              onClick={() =>
-                updateBAssetAmount(
-                  big(bank.userBalances.ubLuna).div(MICRO).toString(),
-                )
-              }
-            >
-              {big(bank.userBalances.ubLuna).div(MICRO).toString()} bLuna
+          status.status === 'ready' && (
+            <span>
+              Balance:{' '}
+              <span
+                style={{ textDecoration: 'underline', cursor: 'pointer' }}
+                onClick={() =>
+                  updateBAssetAmount(
+                    big(bank.userBalances.ubLuna).div(MICRO).toString(),
+                  )
+                }
+              >
+                {big(bank.userBalances.ubLuna).div(MICRO).toString()} bLuna
+              </span>
             </span>
-          </span>
+          )
         }
       >
         <MuiNativeSelect
@@ -328,7 +331,7 @@ function BurnBase({ className }: BurnProps) {
           onChange={({ target }) => updateAssetAmount(target.value)}
         />
       </SelectAndTextInputContainer>
-      
+
       {bAssetAmount.length > 0 && (
         <TxFeeList className="receipt">
           <TxFeeListItem
@@ -424,7 +427,7 @@ export const Burn = styled(BurnBase)`
       color: ${({ theme }) => theme.dimTextColor};
     }
   }
-  
+
   .receipt {
     margin-bottom: 40px;
   }
