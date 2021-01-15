@@ -4,7 +4,6 @@ import {
 } from '@anchor-protocol/neumorphism-ui/components/HorizontalGraphBar';
 import { formatPercentage } from '@anchor-protocol/notation';
 import big, { Big, BigSource } from 'big.js';
-import { safeRatio } from 'env';
 import React, { useMemo } from 'react';
 import { GraphLabel } from './GraphLabel';
 import { GraphTick } from './GraphTick';
@@ -18,7 +17,9 @@ export interface Data {
 
 export interface LTVGraphProps {
   maxLtv: BigSource;
-  userLtv: Big | undefined;
+  safeLtv: BigSource;
+  currentLtv: Big | undefined;
+  nextLtv: Big | undefined;
 }
 
 const colorFunction = ({ color }: Data) => color;
@@ -31,19 +32,25 @@ const labelRenderer = ({ position, label }: Data, rect: Rect) => {
   );
 };
 
-export function LTVGraph({ maxLtv, userLtv }: LTVGraphProps) {
+export function LTVGraph({
+  maxLtv,
+  safeLtv,
+  currentLtv,
+  nextLtv,
+}: LTVGraphProps) {
   const ltvs = useMemo(() => {
     return {
-      user: userLtv,
+      current: currentLtv,
+      next: nextLtv,
       max: big(maxLtv),
-      safe: big(maxLtv).mul(safeRatio),
+      safe: big(safeLtv),
     };
-  }, [maxLtv, userLtv]);
+  }, [currentLtv, maxLtv, nextLtv, safeLtv]);
 
   return (
     <HorizontalGraphBar<Data>
       min={0}
-      max={ltvs.max.toNumber() * 2}
+      max={ltvs.max.toNumber()}
       values={[
         {
           position: 'top',
@@ -57,15 +64,22 @@ export function LTVGraph({ maxLtv, userLtv }: LTVGraphProps) {
           color: 'rgba(0, 0, 0, 0)',
           value: ltvs.safe.toNumber(),
         },
+        //{
+        //  position: 'top',
+        //  label: ltvs.current
+        //    ? `CURRENT LTV: ${formatPercentage(ltvs.safe.mul(100))}%`
+        //    : '',
+        //  color: 'rgba(0, 0, 0, 0)',
+        //  value: ltvs.current
+        //    ? Math.max(Math.min(ltvs.safe.toNumber(), ltvs.max.toNumber()), 0)
+        //    : 0,
+        //},
         {
           position: 'bottom',
-          label: ltvs.user ? `${formatPercentage(ltvs.user.mul(100))}%` : '',
+          label: ltvs.next ? `${formatPercentage(ltvs.next.mul(100))}%` : '',
           color: '#ffffff',
-          value: ltvs.user
-            ? Math.max(
-                Math.min(ltvs.user.toNumber(), ltvs.max.toNumber() * 2),
-                0,
-              )
+          value: ltvs.next
+            ? Math.max(Math.min(ltvs.next.toNumber(), ltvs.max.toNumber()), 0)
             : 0,
         },
       ]}

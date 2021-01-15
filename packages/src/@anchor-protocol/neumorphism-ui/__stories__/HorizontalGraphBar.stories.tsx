@@ -39,6 +39,29 @@ export const Basic = () => {
   );
 };
 
+export const MaxTick = () => {
+  return (
+    <HorizontalGraphBar
+      style={{ margin: '50px 0' }}
+      min={-100}
+      max={0}
+      values={data}
+      colorFunction={colorFunction}
+      valueFunction={valueFunction}
+      labelRenderer={({ value }, rect) => {
+        return (
+          <GraphTick style={{ left: rect.x + rect.width }}>
+            VALUE: {value}
+          </GraphTick>
+        );
+      }}
+    >
+      <GraphLabel style={{ left: 0 }}>Borrow Limit</GraphLabel>
+      <GraphLabel style={{ right: 0 }}>$246k</GraphLabel>
+    </HorizontalGraphBar>
+  );
+};
+
 export const CustomShape = () => {
   return (
     <HorizontalGraphBar
@@ -71,6 +94,9 @@ const GraphTick = styled.span`
 
   top: -28px;
   transform: translateX(-50%);
+  
+  word-break: keep-all;
+  white-space: nowrap;
 
   &::before {
     content: '';

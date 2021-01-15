@@ -29,6 +29,7 @@ import { WarningArticle } from 'components/messages/WarningArticle';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { fixedGasUUSD, transactionFee } from 'env';
+import { useCurrentLtv } from 'pages/borrow/components/useCurrentLtv';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
@@ -91,9 +92,12 @@ function ComponentBase({
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
-  const userLtv = useMemo(() => {
+  const currentLtv = useCurrentLtv({ marketOverview, marketUserOverview });
+
+  // Loan_amount / ((Borrow_info.balance - Borrow_info.spendable - redeemed_collateral) * Oracleprice)
+  const nextLtv = useMemo(() => {
     if (bAssetAmount.length === 0) {
-      return undefined;
+      return currentLtv;
     }
 
     const userAmount = big(bAssetAmount).mul(MICRO);
@@ -107,68 +111,41 @@ function ComponentBase({
         ).mul(marketOverview.oraclePrice.rate),
       );
     } catch {
-      return undefined;
+      return currentLtv;
     }
   }, [
     bAssetAmount,
+    currentLtv,
     marketOverview.oraclePrice.rate,
     marketUserOverview.borrowInfo.balance,
     marketUserOverview.borrowInfo.spendable,
     marketUserOverview.loanAmount.loan_amount,
   ]);
 
-  // If user_ltv >= 0.35:
+  // If user_ltv >= 0.35 or user_ltv == Null:
   //   withdrawable = borrow_info.spendable
   // else:
-  //   withdrawable = borrow_info.balance - borrow_info.spendable - 100 * loan_amount / 35 * oracle_price + borrow_info.spendable
+  //   withdrawable = borrow_info.balance - borrow_info.loan_amount / 0.35 / oracle_price
   const maxBAssetAmount = useMemo(() => {
-    const withdrawable =
-      !userLtv || userLtv.gte(0.35)
-        ? big(marketUserOverview.borrowInfo.spendable)
-        : big(marketUserOverview.borrowInfo.balance)
-            .minus(marketUserOverview.borrowInfo.spendable)
-            .minus(
-              big(big(100).mul(marketUserOverview.loanAmount.loan_amount))
-                .div(35)
-                .mul(marketOverview.oraclePrice.rate),
-            )
-            .plus(marketUserOverview.borrowInfo.spendable);
-
-    //console.log(
-    //  JSON.stringify(
-    //    {
-    //      userLtv,
-    //      withdrawable,
-    //      borrowInfo: marketUserOverview.borrowInfo,
-    //      loanAmount: marketUserOverview.loanAmount,
-    //      oraclePrice: marketOverview.oraclePrice.rate,
-    //    },
-    //    null,
-    //    2,
-    //  ),
-    //);
-    //
-    //console.log(
-    //  +marketUserOverview.borrowInfo.balance -
-    //    +marketUserOverview.borrowInfo.spendable -
-    //    ((100 * +marketUserOverview.loanAmount.loan_amount) / 35) *
-    //      +marketOverview.oraclePrice.rate +
-    //    +marketUserOverview.borrowInfo.spendable,
-    //);
-
-    return withdrawable;
-    //return big(marketUserOverview.borrowInfo.balance).minus(
-    //  marketUserOverview.borrowInfo.spendable,
-    //);
+    return !nextLtv || nextLtv.gte(marketOverview.bLunaMaxLtv)
+      ? big(marketUserOverview.borrowInfo.spendable)
+      : big(marketUserOverview.borrowInfo.balance).minus(
+          big(marketUserOverview.loanAmount.loan_amount)
+            .div(marketOverview.bLunaSafeLtv)
+            .div(marketOverview.oraclePrice.rate),
+        );
   }, [
+    marketOverview.bLunaMaxLtv,
+    marketOverview.bLunaSafeLtv,
     marketOverview.oraclePrice.rate,
-    marketUserOverview.borrowInfo,
-    marketUserOverview.loanAmount,
-    userLtv,
+    marketUserOverview.borrowInfo.balance,
+    marketUserOverview.borrowInfo.spendable,
+    marketUserOverview.loanAmount.loan_amount,
+    nextLtv,
   ]);
 
+  // New Borrow Limit = ((Borrow_info.balance - Borrow_info.spendable - redeemed_collateral) * Oracleprice) * Max_LTV
   const borrowLimit = useMemo(() => {
-    // New Borrow Limit = ((Borrow_info.balance - Borrow_info.spendable - redeemed_collateral) * Oracleprice) * Max_LTV
     return bAssetAmount.length > 0
       ? big(
           big(
@@ -316,7 +293,12 @@ function ComponentBase({
         />
 
         <figure className="graph">
-          <LTVGraph maxLtv={marketOverview.bLunaMaxLtv} userLtv={userLtv} />
+          <LTVGraph
+            maxLtv={marketOverview.bLunaMaxLtv}
+            safeLtv={marketOverview.bLunaSafeLtv}
+            currentLtv={currentLtv}
+            nextLtv={nextLtv}
+          />
         </figure>
 
         {bAssetAmount.length > 0 && (

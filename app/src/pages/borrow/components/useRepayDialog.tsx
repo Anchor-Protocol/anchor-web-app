@@ -43,6 +43,7 @@ import { BLOCKS_PER_YEAR } from 'constants/BLOCKS_PER_YEAR';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { fixedGasUUSD, transactionFee } from 'env';
+import { useCurrentLtv } from 'pages/borrow/components/useCurrentLtv';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
@@ -101,9 +102,12 @@ function ComponentBase({
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
+  const currentLtv = useCurrentLtv({ marketOverview, marketUserOverview });
+
+  // (Loan_amount - repay_amount) / ((Borrow_info.balance - Borrow_info.spendable) * Oracleprice)
   const userLtv = useMemo(() => {
     if (assetAmount.length === 0) {
-      return undefined;
+      return currentLtv;
     }
 
     const userAmount = big(assetAmount).mul(MICRO);
@@ -119,10 +123,11 @@ function ComponentBase({
         ).mul(marketOverview.oraclePrice.rate),
       );
     } catch {
-      return undefined;
+      return currentLtv;
     }
   }, [
     assetAmount,
+    currentLtv,
     marketOverview.oraclePrice.rate,
     marketUserOverview.borrowInfo.balance,
     marketUserOverview.borrowInfo.spendable,
@@ -290,7 +295,12 @@ function ComponentBase({
         </div>
 
         <figure className="graph">
-          <LTVGraph maxLtv={marketOverview.bLunaMaxLtv} userLtv={userLtv} />
+          <LTVGraph
+            maxLtv={marketOverview.bLunaMaxLtv}
+            safeLtv={marketOverview.bLunaSafeLtv}
+            currentLtv={currentLtv}
+            nextLtv={userLtv}
+          />
         </figure>
 
         {totalOutstandingLoan && txFee && estimatedAmount && (

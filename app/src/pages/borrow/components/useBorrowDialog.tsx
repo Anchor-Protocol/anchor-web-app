@@ -10,15 +10,8 @@ import {
   MICRO,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
 } from '@anchor-protocol/notation';
-import {
-  BroadcastableQueryOptions,
-  useBroadcastableQuery,
-} from '@anchor-protocol/use-broadcastable-query';
-import type {
-  DialogProps,
-  DialogTemplate,
-  OpenDialog,
-} from '@anchor-protocol/use-dialog';
+import { BroadcastableQueryOptions, useBroadcastableQuery } from '@anchor-protocol/use-broadcastable-query';
+import type { DialogProps, DialogTemplate, OpenDialog } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient } from '@apollo/client';
@@ -27,23 +20,17 @@ import { InfoOutlined } from '@material-ui/icons';
 import { CreateTxOptions } from '@terra-money/terra.js';
 import * as txi from 'api/queries/txInfos';
 import { queryOptions } from 'api/transactions/queryOptions';
-import {
-  parseResult,
-  StringifiedTxResult,
-  TxResult,
-} from 'api/transactions/tx';
-import {
-  txNotificationFactory,
-  TxResultRenderer,
-} from 'api/transactions/TxResultRenderer';
+import { parseResult, StringifiedTxResult, TxResult } from 'api/transactions/tx';
+import { txNotificationFactory, TxResultRenderer } from 'api/transactions/TxResultRenderer';
 import big from 'big.js';
 import { TxFeeList, TxFeeListItem } from 'components/messages/TxFeeList';
 import { WarningArticle } from 'components/messages/WarningArticle';
 import { BLOCKS_PER_YEAR } from 'constants/BLOCKS_PER_YEAR';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
-import { fixedGasUUSD, safeRatio, transactionFee } from 'env';
+import { fixedGasUUSD, transactionFee } from 'env';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
+import { useCurrentLtv } from 'pages/borrow/components/useCurrentLtv';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import type { ReactNode } from 'react';
@@ -101,9 +88,12 @@ function ComponentBase({
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
-  const userLtv = useMemo(() => {
+  const currentLtv = useCurrentLtv({ marketOverview, marketUserOverview });
+
+  // (Loan_amount + borrow_amount) / ((Borrow_info.balance - Borrow_info.spendable - redeemed_collateral) * Oracleprice)
+  const nextLtv = useMemo(() => {
     if (assetAmount.length === 0) {
-      return undefined;
+      return currentLtv;
     }
 
     const userAmount = big(assetAmount).mul(MICRO);
@@ -119,10 +109,11 @@ function ComponentBase({
         ).mul(marketOverview.oraclePrice.rate),
       );
     } catch {
-      return undefined;
+      return currentLtv;
     }
   }, [
     assetAmount,
+    currentLtv,
     marketOverview.oraclePrice.rate,
     marketUserOverview.borrowInfo.balance,
     marketUserOverview.borrowInfo.spendable,
@@ -133,19 +124,24 @@ function ComponentBase({
     return big(marketOverview.borrowRate.rate ?? 0).mul(BLOCKS_PER_YEAR);
   }, [marketOverview.borrowRate.rate]);
 
+  // If user_ltv >= 0.35 or user_ltv == Null:
+  //   SafeMax = 0
+  // else:
+  //   safemax = 0.35 * (balance - spendable) * oracle_price - loan_amount
   const safeMax = useMemo(() => {
-    // SafeMax = MAX_LTV * Safe_Ratio * (borrow_info.balance - borrow_info.spendable) * oracle_price - Loan_amount
-    return big(marketOverview.bLunaMaxLtv)
-      .mul(safeRatio)
-      .mul(
-        big(marketUserOverview.borrowInfo.balance).minus(
-          marketUserOverview.borrowInfo.spendable,
-        ),
-      )
-      .mul(marketOverview.oraclePrice.rate)
-      .minus(marketUserOverview.loanAmount.loan_amount);
+    return !currentLtv || currentLtv.gte(marketOverview.bLunaSafeLtv)
+      ? big(0)
+      : big(marketOverview.bLunaSafeLtv)
+          .mul(
+            big(marketUserOverview.borrowInfo.balance).minus(
+              marketUserOverview.borrowInfo.spendable,
+            ),
+          )
+          .mul(marketOverview.oraclePrice.rate)
+          .minus(marketUserOverview.loanAmount.loan_amount);
   }, [
-    marketOverview.bLunaMaxLtv,
+    currentLtv,
+    marketOverview.bLunaSafeLtv,
     marketOverview.oraclePrice.rate,
     marketUserOverview.borrowInfo.balance,
     marketUserOverview.borrowInfo.spendable,
@@ -299,7 +295,12 @@ function ComponentBase({
         </div>
 
         <figure className="graph">
-          <LTVGraph maxLtv={marketOverview.bLunaMaxLtv} userLtv={userLtv} />
+          <LTVGraph
+            maxLtv={marketOverview.bLunaMaxLtv}
+            safeLtv={marketOverview.bLunaSafeLtv}
+            currentLtv={currentLtv}
+            nextLtv={nextLtv}
+          />
         </figure>
 
         {txFee && estimatedAmount && (

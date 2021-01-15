@@ -5,4 +5,7 @@ export const GraphLabel = styled.span`
   color: ${({ theme }) => theme.textColor};
   top: 22px;
   transform: translateX(-50%);
+  
+  word-break: keep-all;
+  white-space: nowrap;
 `;
