@@ -1,5 +1,6 @@
 import { IconButton } from '@material-ui/core';
 import { Discord } from 'components/icons/Discord';
+import { screen } from 'env';
 import { CSSProperties } from 'react';
 import styled from 'styled-components';
 import {
@@ -39,10 +40,6 @@ function FooterBase({ className, style }: FooterProps) {
 }
 
 export const Footer = styled(FooterBase)`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
   font-size: 12px;
   color: rgba(255, 255, 255, 0.3);
 
@@ -65,5 +62,16 @@ export const Footer = styled(FooterBase)`
     > :not(:first-child) {
       margin-left: 0.7em;
     }
+  }
+
+  // ---------------------------------------------
+  // layout
+  // ---------------------------------------------
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  @media (max-width: ${screen.mobile.max}px) {
+    flex-direction: column;
   }
 `;
