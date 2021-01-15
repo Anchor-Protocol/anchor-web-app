@@ -37,6 +37,9 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
+const desktopLayoutBreak = 1180;
+const mobileLayoutBreak = 550;
+
 export const Header = styled(HeaderBase)`
   // ---------------------------------------------
   // style
@@ -75,7 +78,7 @@ export const Header = styled(HeaderBase)`
   // ---------------------------------------------
   // layout
   // ---------------------------------------------
-  @media (min-width: ${screen.tablet.max}px) {
+  @media (min-width: ${desktopLayoutBreak}px) {
     height: 74px;
     padding: 0 80px;
 
@@ -101,11 +104,13 @@ export const Header = styled(HeaderBase)`
     }
   }
 
-  @media (max-width: ${screen.tablet.max}px) {
-    height: 60px;
-
-    display: grid;
-    place-content: center;
+  @media (max-width: ${desktopLayoutBreak}px) {
+    height: 74px;
+    padding: 0 80px;
+    
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
     .menu {
       position: fixed;
@@ -113,8 +118,10 @@ export const Header = styled(HeaderBase)`
       right: 0;
       bottom: 0;
 
-      height: 60px;
+      height: 50px;
       z-index: 10000;
+      
+      font-size: 13px;
 
       background-color: black;
 
@@ -123,7 +130,11 @@ export const Header = styled(HeaderBase)`
       justify-content: space-evenly;
       align-items: center;
     }
-
+  }
+  
+  @media (max-width: ${mobileLayoutBreak}px) {
+    justify-content: center;
+    
     .wallet {
       display: none;
     }
