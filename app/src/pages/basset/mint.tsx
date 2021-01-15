@@ -9,7 +9,6 @@ import {
   formatLuna,
   formatLunaInput,
   formatUST,
-  formatUSTInput,
   MICRO,
 } from '@anchor-protocol/notation';
 import {
