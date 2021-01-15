@@ -56,14 +56,32 @@ export function useRestrictedNumberInput({
         return;
       }
 
-      //@ts-ignore
-      const value = event.target.value + event.key;
+      const {
+        value,
+        selectionStart,
+        selectionEnd,
+      } = event.target as HTMLInputElement;
 
       if (
-        Number.isNaN(+value) ||
+        typeof selectionStart !== 'number' ||
+        typeof selectionEnd !== 'number'
+      ) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+
+      const char = event.key;
+      const nextValue =
+        value.substring(0, selectionStart) +
+        char +
+        value.substring(selectionEnd);
+
+      if (
+        Number.isNaN(+nextValue) ||
         (type === 'decimal' &&
           typeof maxDecimalPoints === 'number' &&
-          new RegExp(`\\.[0-9]{${maxDecimalPoints + 1},}$`).test(value))
+          new RegExp(`\\.[0-9]{${maxDecimalPoints + 1},}$`).test(nextValue))
       ) {
         event.preventDefault();
         event.stopPropagation();

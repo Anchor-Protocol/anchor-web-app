@@ -46,10 +46,10 @@ export const globalStyle = css`
       'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
       sans-serif;
   }
-
-  //::-webkit-scrollbar {
-  //  display: none;
-  //}
+  
+  ::-webkit-scrollbar {
+    display: none;
+  }
 
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {
