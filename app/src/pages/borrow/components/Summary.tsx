@@ -6,6 +6,7 @@ import {
 } from '@anchor-protocol/notation';
 import big from 'big.js';
 import { BLOCKS_PER_YEAR } from 'constants/BLOCKS_PER_YEAR';
+import { BorrowLimitGraph } from 'pages/borrow/components/BorrowLimitGraph';
 import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import { useMemo } from 'react';
 import styled from 'styled-components';
@@ -72,7 +73,13 @@ function SummaryBase({
         </div>
       </article>
 
-      <figure></figure>
+      <figure>
+        <BorrowLimitGraph
+          bLunaMaxLtv={marketOverview?.bLunaMaxLtv ?? 0}
+          collateralValue={collateralValue}
+          loanAmount={marketUserOverview?.loanAmount.loan_amount ?? 0}
+        />
+      </figure>
     </Section>
   );
 }
