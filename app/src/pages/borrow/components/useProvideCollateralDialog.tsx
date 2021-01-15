@@ -112,13 +112,15 @@ function ComponentBase({
 
     const userAmount = big(bAssetAmount).mul(MICRO);
 
-    return big(marketUserOverview.loanAmount.loan_amount).div(
-      big(
+    try {
+      return big(marketUserOverview.loanAmount.loan_amount).div(big(
         big(marketUserOverview.borrowInfo.balance)
           .minus(marketUserOverview.borrowInfo.spendable)
           .plus(userAmount),
-      ).mul(marketOverview.oraclePrice.rate),
-    );
+      ).mul(marketOverview.oraclePrice.rate))
+    } catch {
+      return undefined;
+    }
   }, [
     bAssetAmount,
     marketOverview.oraclePrice.rate,

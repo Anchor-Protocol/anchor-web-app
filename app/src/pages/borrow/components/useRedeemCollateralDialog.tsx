@@ -11,8 +11,15 @@ import {
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   MICRO,
 } from '@anchor-protocol/notation';
-import { BroadcastableQueryOptions, useBroadcastableQuery } from '@anchor-protocol/use-broadcastable-query';
-import type { DialogProps, DialogTemplate, OpenDialog } from '@anchor-protocol/use-dialog';
+import {
+  BroadcastableQueryOptions,
+  useBroadcastableQuery,
+} from '@anchor-protocol/use-broadcastable-query';
+import type {
+  DialogProps,
+  DialogTemplate,
+  OpenDialog,
+} from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient } from '@apollo/client';
@@ -21,8 +28,15 @@ import { InfoOutlined } from '@material-ui/icons';
 import { CreateTxOptions } from '@terra-money/terra.js';
 import * as txi from 'api/queries/txInfos';
 import { queryOptions } from 'api/transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from 'api/transactions/tx';
-import { txNotificationFactory, TxResultRenderer } from 'api/transactions/TxResultRenderer';
+import {
+  parseResult,
+  StringifiedTxResult,
+  TxResult,
+} from 'api/transactions/tx';
+import {
+  txNotificationFactory,
+  TxResultRenderer,
+} from 'api/transactions/TxResultRenderer';
 import big from 'big.js';
 import { TxFeeList, TxFeeListItem } from 'components/messages/TxFeeList';
 import { WarningArticle } from 'components/messages/WarningArticle';
@@ -98,13 +112,17 @@ function ComponentBase({
 
     const userAmount = big(bAssetAmount).mul(MICRO);
 
-    return big(marketUserOverview.loanAmount.loan_amount).div(
-      big(
-        big(marketUserOverview.borrowInfo.balance)
-          .minus(marketUserOverview.borrowInfo.spendable)
-          .minus(userAmount),
-      ).mul(marketOverview.oraclePrice.rate),
-    );
+    try {
+      return big(marketUserOverview.loanAmount.loan_amount).div(
+        big(
+          big(marketUserOverview.borrowInfo.balance)
+            .minus(marketUserOverview.borrowInfo.spendable)
+            .minus(userAmount),
+        ).mul(marketOverview.oraclePrice.rate),
+      );
+    } catch {
+      return undefined;
+    }
   }, [
     bAssetAmount,
     marketOverview.oraclePrice.rate,
@@ -113,33 +131,43 @@ function ComponentBase({
     marketUserOverview.loanAmount.loan_amount,
   ]);
 
-  console.log(
-    'useRedeemCollateralDialog.tsx..ComponentBase()',
-    bank.userBalances,
-  );
-
   // If user_ltv >= 0.35:
   //   withdrawable = borrow_info.spendable
   // else:
   //   withdrawable = borrow_info.balance - borrow_info.spendable - 100 * loan_amount / 35 * oracle_price + borrow_info.spendable
   const maxBAssetAmount = useMemo(() => {
-    return userLtv && userLtv.gte(0.35)
-      ? big(marketUserOverview.borrowInfo.spendable)
-      : big(marketUserOverview.borrowInfo.balance)
-          .minus(marketUserOverview.borrowInfo.spendable)
-          .minus(100)
-          .mul(marketUserOverview.loanAmount.loan_amount)
-          .div(35)
-          .mul(marketOverview.oraclePrice.rate)
-          .plus(marketUserOverview.borrowInfo.spendable);
+    const withdrawable =
+      !userLtv || userLtv.gte(0.35)
+        ? big(marketUserOverview.borrowInfo.spendable)
+        : big(marketUserOverview.borrowInfo.balance)
+            .minus(marketUserOverview.borrowInfo.spendable)
+            .minus(100)
+            .mul(marketUserOverview.loanAmount.loan_amount)
+            .div(35)
+            .mul(marketOverview.oraclePrice.rate)
+            .plus(marketUserOverview.borrowInfo.spendable);
+
+    console.log(
+      JSON.stringify(
+        {
+          userLtv,
+          withdrawable,
+          borrowInfo: marketUserOverview.borrowInfo,
+          loanAmount: marketUserOverview.loanAmount,
+        },
+        null,
+        2,
+      ),
+    );
+
+    return withdrawable;
     //return big(marketUserOverview.borrowInfo.balance).minus(
     //  marketUserOverview.borrowInfo.spendable,
     //);
   }, [
     marketOverview.oraclePrice.rate,
-    marketUserOverview.borrowInfo.balance,
-    marketUserOverview.borrowInfo.spendable,
-    marketUserOverview.loanAmount.loan_amount,
+    marketUserOverview.borrowInfo,
+    marketUserOverview.loanAmount,
     userLtv,
   ]);
 
