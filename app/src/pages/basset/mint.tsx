@@ -313,7 +313,6 @@ function MintBase({ className }: MintProps) {
         </MuiNativeSelect>
 
         <MuiInput
-          type="number"
           placeholder="0.00"
           error={!!invalidAssetAmount}
           value={assetAmount}
@@ -350,7 +349,6 @@ function MintBase({ className }: MintProps) {
           ))}
         </MuiNativeSelect>
         <MuiInput
-          type="number"
           placeholder="0.00"
           error={!!invalidAssetAmount}
           value={bAssetAmount}
