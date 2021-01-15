@@ -63,7 +63,7 @@ export function useRestrictedNumberInput({
         Number.isNaN(+value) ||
         (type === 'decimal' &&
           typeof maxDecimalPoints === 'number' &&
-          new RegExp(`.[0-9]{${maxDecimalPoints + 1},}$`).test(value))
+          new RegExp(`\\.[0-9]{${maxDecimalPoints + 1},}$`).test(value))
       ) {
         event.preventDefault();
         event.stopPropagation();
