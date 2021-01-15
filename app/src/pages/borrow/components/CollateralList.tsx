@@ -46,11 +46,9 @@ function CollateralListBase({
   // compute
   // ---------------------------------------------
   const collaterals = useMemo(() => {
-    return big(
-      big(marketUserOverview?.borrowInfo.balance ?? 0).minus(
+    return big(marketUserOverview?.borrowInfo.balance ?? 0).minus(
         marketUserOverview?.borrowInfo.spendable ?? 0,
-      ),
-    );
+      );
   }, [
     marketUserOverview?.borrowInfo.balance,
     marketUserOverview?.borrowInfo.spendable,
