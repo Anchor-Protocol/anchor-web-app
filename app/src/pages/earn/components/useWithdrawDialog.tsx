@@ -5,6 +5,7 @@ import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberIn
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import {
   formatUST,
+  formatUSTInput,
   MICRO,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
 } from '@anchor-protocol/notation';
@@ -237,7 +238,7 @@ function ComponentBase({
               }}
               onClick={() =>
                 updateAAssetAmount(
-                  big(totalDeposit.totalDeposit).div(MICRO).toString(),
+                  formatUSTInput(big(totalDeposit.totalDeposit).div(MICRO)),
                 )
               }
             >

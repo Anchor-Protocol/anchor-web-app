@@ -5,6 +5,7 @@ import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberIn
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import {
   formatLuna,
+  formatLunaInput,
   formatUST,
   formatUSTInput,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
@@ -256,7 +257,7 @@ function ComponentBase({
               }}
               onClick={() =>
                 updateBAssetAmount(
-                  big(bank.userBalances.ubLuna).div(MICRO).toString(),
+                  formatLunaInput(big(bank.userBalances.ubLuna).div(MICRO)),
                 )
               }
             >

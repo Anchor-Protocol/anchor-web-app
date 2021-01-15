@@ -4,7 +4,12 @@ import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { useConfirm } from '@anchor-protocol/neumorphism-ui/components/useConfirm';
-import { formatUST, MICRO, UST_INPUT_MAXIMUM_DECIMAL_POINTS } from '@anchor-protocol/notation';
+import {
+  formatUST,
+  formatUSTInput,
+  MICRO,
+  UST_INPUT_MAXIMUM_DECIMAL_POINTS,
+} from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
   useBroadcastableQuery,
@@ -287,7 +292,7 @@ function ComponentBase({
               onClick={() =>
                 recommendationAssetAmount &&
                 updateAssetAmount(
-                  big(recommendationAssetAmount).div(MICRO).toString(),
+                  formatUSTInput(big(recommendationAssetAmount).div(MICRO)),
                 )
               }
             >
