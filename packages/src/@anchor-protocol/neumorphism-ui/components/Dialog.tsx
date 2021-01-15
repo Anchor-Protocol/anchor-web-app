@@ -138,6 +138,8 @@ export const Dialog = styled(DialogBase)`
     left: 0;
     right: 0;
     position: absolute;
+    
+    padding-bottom: 80px;
 
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;

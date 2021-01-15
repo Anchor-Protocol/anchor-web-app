@@ -129,6 +129,8 @@ export const Header = styled(HeaderBase)`
       grid-template-columns: repeat(3, auto);
       justify-content: space-evenly;
       align-items: center;
+      
+      box-shadow: 0px 0px 21px 5px rgba(0,0,0,0.18);
     }
   }
   
