@@ -6,7 +6,11 @@ import { ThemeProvider } from '@anchor-protocol/neumorphism-ui/themes/ThemeProvi
 import { SnackbarProvider } from '@anchor-protocol/snackbar';
 import { QueryBroadcaster } from '@anchor-protocol/use-broadcastable-query';
 import { RouterScrollRestoration } from '@anchor-protocol/use-router-scroll-restoration';
-import { ChromeExtensionWalletProvider, RouterWalletStatusRecheck } from '@anchor-protocol/wallet-provider';
+import { useWasm } from '@anchor-protocol/use-wasm';
+import {
+  ChromeExtensionWalletProvider,
+  RouterWalletStatusRecheck,
+} from '@anchor-protocol/wallet-provider';
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 import { Banner } from 'components/Banner';
 import { Header } from 'components/Header';
@@ -17,16 +21,33 @@ import { contractAddresses } from 'env';
 import { BAsset } from 'pages/basset';
 import { Borrow } from 'pages/borrow';
 import { Earn } from 'pages/earn';
-import { ReactNode, useMemo } from 'react';
-import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
+import { ReactNode, useEffect, useMemo } from 'react';
+import {
+  BrowserRouter as Router,
+  Redirect,
+  Route,
+  Switch,
+} from 'react-router-dom';
 import styled from 'styled-components';
 
 interface AppProps {
   className?: string;
 }
 
+export function useLibrary(): typeof import('my-library') | undefined {
+  const libImport = useMemo(() => import('my-library'), []);
+  return useWasm(libImport);
+}
+
 function WalletConnectedProviders({ children }: { children: ReactNode }) {
   //const {} = useWallet(); // of @anchor-protocol/wallet-provider
+
+  const lib = useLibrary();
+
+  useEffect(() => {
+    if (!lib) return;
+    console.log('Wasm Library:', lib.plus(10, 20), lib.minus(10, 20));
+  }, [lib]);
 
   const addressProvider = useMemo<AddressProvider>(() => {
     // TODO create address provider by wallet info

@@ -75,6 +75,7 @@
     "graphql": "^15.4.0",
     "graphql-tag": "^2.11.0",
     "multiplerun": "^1.1.2",
+    "my-library": "0.1.0",
     "numeral": "^2.0.6",
     "puppeteer": "^5.5.0",
     "react": "^17.0.1",
