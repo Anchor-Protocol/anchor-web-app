@@ -1,0 +1,21 @@
+{
+  "name": "my-library",
+  "collaborators": [
+    "SSen <i@ssen.name>"
+  ],
+  "description": "Test wasm pack",
+  "version": "0.1.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Anchor-Protocol/anchor-web-app"
+  },
+  "files": [
+    "my_library_bg.wasm",
+    "my_library.js",
+    "my_library.d.ts"
+  ],
+  "module": "my_library.js",
+  "types": "my_library.d.ts",
+  "sideEffects": false
+}
