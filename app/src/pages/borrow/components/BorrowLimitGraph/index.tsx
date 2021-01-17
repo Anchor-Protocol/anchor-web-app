@@ -54,7 +54,7 @@ export function BorrowLimitGraph({
     <HorizontalGraphBar<Data>
       min={0}
       max={1}
-      values={
+      data={
         borrowLimitRatio.gt(0)
           ? [
               {

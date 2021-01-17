@@ -243,7 +243,7 @@ function NeumorphismBase({ className }: NeumorphismProps) {
             style={{ margin: '50px 0' }}
             min={-100}
             max={100}
-            values={[
+            data={[
               { value: 50, color: '#4da3ee' },
               { value: 0, color: '#ffffff' },
               { value: -50, color: '#ff8a4b' },

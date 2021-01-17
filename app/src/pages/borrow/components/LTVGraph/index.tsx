@@ -51,7 +51,7 @@ export function LTVGraph({
     <HorizontalGraphBar<Data>
       min={0}
       max={ltvs.max.toNumber()}
-      values={[
+      data={[
         {
           position: 'top',
           label: `MAX LTV: ${formatPercentage(ltvs.max.mul(100))}%`,
