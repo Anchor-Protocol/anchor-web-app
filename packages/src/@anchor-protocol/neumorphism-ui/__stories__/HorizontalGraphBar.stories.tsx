@@ -1,5 +1,6 @@
 import { HorizontalGraphBar } from '@anchor-protocol/neumorphism-ui/components/HorizontalGraphBar';
 import { HorizontalGraphSlider } from '@anchor-protocol/neumorphism-ui/components/HorizontalGraphSlider';
+import { sliderStep } from '@anchor-protocol/neumorphism-ui/components/sliderStep';
 import { useState } from 'react';
 import styled from 'styled-components';
 
@@ -170,7 +171,7 @@ export const SliderStep = () => {
         <>
           <HorizontalGraphSlider
             coordinateSpace={coordinateSpace}
-            stepFunction={(v) => v - (v % 10)}
+            stepFunction={sliderStep(10)}
             min={min}
             max={max}
             start={-50}
