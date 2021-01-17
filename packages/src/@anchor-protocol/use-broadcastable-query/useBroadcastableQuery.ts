@@ -175,8 +175,6 @@ export function useBroadcastableQuery<Params, Data, Error = unknown>({
   }, []);
 
   useEffect(() => {
-    onBroadcast.current = false;
-
     return () => {
       onBroadcast.current = true;
     };
