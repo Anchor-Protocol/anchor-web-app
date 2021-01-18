@@ -144,6 +144,24 @@ function ComponentBase({
     ],
   );
 
+  const amountToBorrowLimit = useCallback(
+    (amount: Big) => {
+      return big(
+        big(
+          big(marketUserOverview.borrowInfo.balance)
+            .minus(marketUserOverview.borrowInfo.spendable)
+            .plus(amount),
+        ).mul(marketOverview.oraclePrice.rate),
+      ).mul(marketOverview.bLunaMaxLtv);
+    },
+    [
+      marketOverview.bLunaMaxLtv,
+      marketOverview.oraclePrice.rate,
+      marketUserOverview.borrowInfo.balance,
+      marketUserOverview.borrowInfo.spendable,
+    ],
+  );
+
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
@@ -168,21 +186,9 @@ function ComponentBase({
   // New Borrow Limit = ((Borrow_info.balance - Borrow_info.spendable + provided_collateral) * Oracleprice) * Max_LTV
   const borrowLimit = useMemo(() => {
     return bAssetAmount.length > 0
-      ? big(
-          big(
-            big(marketUserOverview.borrowInfo.balance)
-              .minus(marketUserOverview.borrowInfo.spendable)
-              .plus(big(bAssetAmount).mul(MICRO)),
-          ).mul(marketOverview.oraclePrice.rate),
-        ).mul(marketOverview.bLunaMaxLtv)
+      ? amountToBorrowLimit(big(bAssetAmount).mul(MICRO))
       : undefined;
-  }, [
-    bAssetAmount,
-    marketOverview.bLunaMaxLtv,
-    marketOverview.oraclePrice.rate,
-    marketUserOverview.borrowInfo.balance,
-    marketUserOverview.borrowInfo.spendable,
-  ]);
+  }, [amountToBorrowLimit, bAssetAmount]);
 
   const invalidTxFee = useMemo(() => {
     if (bank.status === 'demo') {
@@ -201,7 +207,7 @@ function ComponentBase({
         .mul(MICRO)
         .gt(bank.userBalances.ubLuna ?? 0)
     ) {
-      return `Insufficient balance: Not enough Assets`;
+      return `Insufficient balance: Not enough bAsset in user's wallet`;
     }
     return undefined;
   }, [bAssetAmount, bank.status, bank.userBalances.ubLuna]);

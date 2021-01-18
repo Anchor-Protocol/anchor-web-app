@@ -165,13 +165,16 @@ function ComponentBase({
   // else:
   //   withdrawable = borrow_info.balance - borrow_info.loan_amount / 0.35 / oracle_price
   const maxBAssetAmount = useMemo(() => {
-    return !nextLtv || nextLtv.gte(marketOverview.bLunaMaxLtv)
-      ? big(marketUserOverview.borrowInfo.spendable)
-      : big(marketUserOverview.borrowInfo.balance).minus(
-          big(marketUserOverview.loanAmount.loan_amount)
-            .div(marketOverview.bLunaSafeLtv)
-            .div(marketOverview.oraclePrice.rate),
-        );
+    const withdrawable =
+      !nextLtv || nextLtv.gte(marketOverview.bLunaMaxLtv)
+        ? big(marketUserOverview.borrowInfo.spendable)
+        : big(marketUserOverview.borrowInfo.balance).minus(
+            big(marketUserOverview.loanAmount.loan_amount)
+              .div(marketOverview.bLunaSafeLtv)
+              .div(marketOverview.oraclePrice.rate),
+          );
+
+    return withdrawable.lt(0) ? big(0) : withdrawable;
   }, [
     marketOverview.bLunaMaxLtv,
     marketOverview.bLunaSafeLtv,
