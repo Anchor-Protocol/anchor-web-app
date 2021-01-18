@@ -215,12 +215,14 @@ function ComponentBase({
     } else if (
       big(assetAmount.length > 0 ? assetAmount : 0)
         .mul(MICRO)
-        .gt(totalBorrows)
+        .gt(bank.userBalances.uUSD)
     ) {
-      return `Insufficient balance: Not enough Assets`;
+      return `Insufficient balance: Not enough Assets (You have ${formatUST(
+        big(bank.userBalances.uUSD).div(MICRO).toString(),
+      )} UST)`;
     }
     return undefined;
-  }, [assetAmount, bank.status, totalBorrows]);
+  }, [assetAmount, bank.status, bank.userBalances.uUSD]);
 
   // ---------------------------------------------
   // callbacks
