@@ -156,7 +156,8 @@ function ComponentBase({
     const userAmount = big(assetAmount).mul(MICRO);
 
     try {
-      return amountToLtv(userAmount);
+      const ltv = amountToLtv(userAmount);
+      return ltv.lt(0) ? big(0) : ltv;
     } catch {
       return currentLtv;
     }
@@ -362,7 +363,10 @@ function ComponentBase({
         {totalOutstandingLoan && txFee && estimatedAmount && (
           <TxFeeList className="receipt">
             <TxFeeListItem label="Total Outstanding Loan">
-              {formatUST(big(totalOutstandingLoan).div(MICRO))} UST
+              {totalOutstandingLoan.lt(0)
+                ? big(0).toString()
+                : formatUST(totalOutstandingLoan.div(MICRO))}{' '}
+              UST
             </TxFeeListItem>
             <TxFeeListItem
               label={

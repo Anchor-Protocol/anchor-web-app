@@ -154,7 +154,8 @@ function ComponentBase({
     const userAmount = big(assetAmount).mul(MICRO);
 
     try {
-      return amountToLtv(userAmount);
+      const ltv = amountToLtv(userAmount);
+      return ltv.lt(0) ? big(0) : ltv;
     } catch {
       return currentLtv;
     }
