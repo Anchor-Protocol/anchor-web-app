@@ -37,9 +37,14 @@ class HorizontalGraphSliderBase extends Component<
     super(props);
 
     this.state = {
-      position:
-        ((props.value - props.min) / (props.max - props.min)) *
-        props.coordinateSpace.width,
+      position: Math.max(
+        Math.min(
+          ((props.value - props.min) / (props.max - props.min)) *
+            props.coordinateSpace.width,
+          props.coordinateSpace.width,
+        ),
+        0,
+      ),
     };
   }
 
@@ -89,10 +94,15 @@ class HorizontalGraphSliderBase extends Component<
       prevProps.coordinateSpace.width !== this.props.coordinateSpace.width
     ) {
       this.setState({
-        position:
-          ((this.props.value - this.props.min) /
-            (this.props.max - this.props.min)) *
-          this.props.coordinateSpace.width,
+        position: Math.max(
+          Math.min(
+            ((this.props.value - this.props.min) /
+              (this.props.max - this.props.min)) *
+              this.props.coordinateSpace.width,
+            this.props.coordinateSpace.width,
+          ),
+          0,
+        ),
       });
     }
   }
@@ -148,7 +158,7 @@ class HorizontalGraphSliderBase extends Component<
     }
 
     const nextRatio = moveTo / this.props.coordinateSpace.width;
-    
+
     let nextValue =
       (this.props.max - this.props.min) * nextRatio + this.props.min;
 
