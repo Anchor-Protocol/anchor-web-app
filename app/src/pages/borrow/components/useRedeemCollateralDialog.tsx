@@ -362,7 +362,7 @@ function ComponentBase({
             currentLtv={currentLtv}
             nextLtv={nextLtv}
             userMinLtv={currentLtv}
-            userMaxLtv={marketOverview.bLunaSafeLtv}
+            userMaxLtv={marketOverview.bLunaMaxLtv}
             onStep={ltvStepFunction}
             onChange={onLtvChange}
           />
