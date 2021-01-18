@@ -178,7 +178,15 @@ function ComponentBase({
         closeDialog();
       }
     },
-    [addressProvider, bank.status, client, closeDialog, fetchWithdraw, post],
+    [
+      addressProvider,
+      bank.oraclePrice,
+      bank.status,
+      client,
+      closeDialog,
+      fetchWithdraw,
+      post,
+    ],
   );
 
   // ---------------------------------------------
