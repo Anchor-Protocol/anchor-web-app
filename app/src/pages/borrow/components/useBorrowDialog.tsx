@@ -189,6 +189,23 @@ function ComponentBase({
     marketUserOverview.loanAmount.loan_amount,
   ]);
 
+  const max = useMemo(() => {
+    return big(marketOverview.bLunaMaxLtv)
+      .mul(
+        big(marketUserOverview.borrowInfo.balance).minus(
+          marketUserOverview.borrowInfo.spendable,
+        ),
+      )
+      .mul(marketOverview.oraclePrice.rate)
+      .minus(marketUserOverview.loanAmount.loan_amount);
+  }, [
+    marketOverview.bLunaMaxLtv,
+    marketOverview.oraclePrice.rate,
+    marketUserOverview.borrowInfo.balance,
+    marketUserOverview.borrowInfo.spendable,
+    marketUserOverview.loanAmount.loan_amount,
+  ]);
+
   const txFee = useMemo(() => {
     if (assetAmount.length === 0) {
       return undefined;
@@ -228,12 +245,12 @@ function ComponentBase({
     } else if (
       big(assetAmount.length > 0 ? assetAmount : 0)
         .mul(MICRO)
-        .gt(safeMax ?? 0)
+        .gt(max ?? 0)
     ) {
       return `Insufficient balance: Not enough Assets`;
     }
     return undefined;
-  }, [assetAmount, bank.status, safeMax]);
+  }, [assetAmount, bank.status, max]);
 
   // ---------------------------------------------
   // callbacks
