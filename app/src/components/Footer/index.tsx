@@ -19,7 +19,7 @@ function FooterBase({ className, style }: FooterProps) {
   return (
     <footer className={className} style={style}>
       <div>
-        <FiberManualRecord /> Latest Block: 233333
+        <FiberManualRecord /> <s>Latest Block: 233333</s>
       </div>
       <div>
         <IconButton>
