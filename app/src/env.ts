@@ -29,16 +29,16 @@ export const transactionFee = {
  * @deprecated will remove
  */
 export const contractAddresses = {
-  bLunaHub: 'terra1kvptfs0ajnngxtz32dlt2utqg7fcuxuzv4w76n',
-  bAssetToken: 'terra12vxmfgkwk9e3qa2ckyfltqud8qfem2q3amsw3h',
-  bAssetReward: 'terra182wkzv7hzx5wxhau3gh6rkqmzx7eek6uhmjsn0',
-  mmInterest: 'terra1794fjrla8g0s42rvtjw4r52yqs2ef943m4zxcq',
-  mmOracle: 'terra1uus0w8wqhx8gcwxtly2d49d5w87aaqu79jmstu',
-  mmMarket: 'terra1jfy5843ct9qf34h36su5qajtn7m9pa3l99rtvd',
-  mmOverseer: 'terra1ujjhrmxhk9clvlcslmzfdrr7hqfwwxadpjsmdw',
-  mmCustody: 'terra1pxgnruc3xt5ncpvsjlz8ckkqgjxd3n5xjcsvga',
-  mmLiquidation: 'terra1646hpgqurgxecgguq6szty8jsahy6nrd7z04jl',
-  anchorToken: 'terra1y02q4j9dwuh448n5u954ku9yk2lrfeuwmcqstw',
-  terraswapFactory: 'terra1cnzqa8m6lq48242dks6zujz2z5sqtg9jcmynpl',
-  terraswapPair: 'unused',
+  bLunaHub: 'terra1kzx23xs8v9yggf6lqpwgerg455e8xzsv0s0glf',
+  bAssetToken: 'terra12kz7ehjh9m2aexmyumlt29qjuc9j5mjcdp0d5k',
+  bAssetReward: 'terra1pjpzktukkd20amfwc0d8mahjg5na2pgu3swdu4',
+  mmInterest: 'terra16f3lv77yu4ga4w8m7jl0xg2xkavqe347dz30v9',
+  mmOracle: 'terra1enud48d754pau5rce79xsdx9gfschw2eelwcuj',
+  mmMarket: 'terra1r8vmgf3mf5m5gcp09fnj2ewsyaqppr6ke50mf2',
+  mmOverseer: 'terra1t6zjqmqjvsfrszr65cppug4gd4xkqm33vugwl2',
+  mmCustody: 'terra1usycpap7j0mz4ynrgmtv7jc7uwqka345ushknz',
+  mmLiquidation: 'terra14pdcpx6szzfvhz4g6dfddkx82f5ssf8llmzpw4',
+  anchorToken: 'terra10c0q6qyk2634tfx2nw9v4gxqlm7a0luk9huhy8',
+  terraswapFactory: 'terra1mtvsarza55hehpmyjgw7edqwvxpq5qquvttz9n',
+  terraswapPair: 'unused'
 };
