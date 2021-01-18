@@ -18,7 +18,7 @@ export interface Data {
 
 export function parseData({ oraclePrice }: StringifiedData): Data {
   return {
-    oraclePrice: JSON.parse(oraclePrice.Result).rate,
+    oraclePrice: JSON.parse(oraclePrice.Result),
   };
 }
 
