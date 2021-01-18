@@ -205,7 +205,7 @@ function ComponentBase({
     if (bank.status === 'demo') {
       return undefined;
     } else if (big(bank.userBalances.uUSD ?? 0).lt(fixedGasUUSD)) {
-      return 'Not enough Tx Fee';
+      return 'Not enough Transaction fee: User wallet might lack of Tx fee (Tax, Gas)';
     }
     return undefined;
   }, [bank.status, bank.userBalances.uUSD]);

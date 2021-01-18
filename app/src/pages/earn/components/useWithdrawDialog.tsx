@@ -101,7 +101,7 @@ function ComponentBase({
     if (bank.status === 'demo') {
       return undefined;
     } else if (big(bank.userBalances.uUSD ?? 0).lt(fixedGasUUSD)) {
-      return 'Not enough Tx Fee';
+      return 'Not enough Transaction fee: User wallet might lack of Tx fee (Tax, Gas)';
     }
     return undefined;
   }, [bank.status, bank.userBalances.uUSD]);
@@ -114,7 +114,7 @@ function ComponentBase({
         .mul(MICRO)
         .gt(totalDeposit.totalDeposit ?? 0)
     ) {
-      return `Insufficient balance: Not enough Assets`;
+      return `Insufficient balance: Not enough user's aUST balance`;
     }
     return undefined;
   }, [aAssetAmount, bank.status, totalDeposit.totalDeposit]);
@@ -167,7 +167,9 @@ function ComponentBase({
           ...transactionFee,
           msgs: fabricateRedeemStable({
             address: status.status === 'ready' ? status.walletAddress : '',
-            amount: big(aAssetAmount).div(bank.oraclePrice).toString(),
+            amount: big(aAssetAmount)
+              .div(totalDeposit.exchangeRate.exchange_rate)
+              .toString(),
             symbol: 'usd',
           })(addressProvider),
         }).then(({ payload }) => parseResult(payload)),
@@ -180,12 +182,12 @@ function ComponentBase({
     },
     [
       addressProvider,
-      bank.oraclePrice,
       bank.status,
       client,
       closeDialog,
       fetchWithdraw,
       post,
+      totalDeposit.exchangeRate.exchange_rate,
     ],
   );
 
