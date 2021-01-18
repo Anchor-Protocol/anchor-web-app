@@ -37,18 +37,18 @@ import {
   txNotificationFactory,
   TxResultRenderer,
 } from 'api/transactions/TxResultRenderer';
-import big from 'big.js';
+import big, { Big } from 'big.js';
 import { TxFeeList, TxFeeListItem } from 'components/messages/TxFeeList';
 import { WarningArticle } from 'components/messages/WarningArticle';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { fixedGasUUSD, transactionFee } from 'env';
-import { useCurrentLtv } from 'pages/borrow/components/useCurrentLtv';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
+import { useCurrentLtv } from 'pages/borrow/components/useCurrentLtv';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import type { ReactNode } from 'react';
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 interface FormParams {
@@ -104,6 +104,47 @@ function ComponentBase({
   const bank = useBank();
 
   // ---------------------------------------------
+  // calculate
+  // ---------------------------------------------
+  const amountToLtv = useCallback(
+    (amount: Big) => {
+      return big(marketUserOverview.loanAmount.loan_amount).div(
+        big(
+          big(marketUserOverview.borrowInfo.balance)
+            .minus(marketUserOverview.borrowInfo.spendable)
+            .plus(amount),
+        ).mul(marketOverview.oraclePrice.rate),
+      );
+    },
+    [
+      marketOverview.oraclePrice.rate,
+      marketUserOverview.borrowInfo.balance,
+      marketUserOverview.borrowInfo.spendable,
+      marketUserOverview.loanAmount.loan_amount,
+    ],
+  );
+
+  const ltvToAmount = useCallback(
+    (nextLtv: Big) => {
+      // ltv = loanAmount / ((balance - spendable + <amount>) * oracle)
+      // amount = (loanAmount / (<ltv> * oracle)) + spendable - balance
+      return big(
+        big(marketUserOverview.loanAmount.loan_amount).div(
+          nextLtv.mul(marketOverview.oraclePrice.rate),
+        ),
+      )
+        .plus(marketUserOverview.borrowInfo.spendable)
+        .minus(marketUserOverview.borrowInfo.balance);
+    },
+    [
+      marketOverview.oraclePrice.rate,
+      marketUserOverview.borrowInfo.balance,
+      marketUserOverview.borrowInfo.spendable,
+      marketUserOverview.loanAmount.loan_amount,
+    ],
+  );
+
+  // ---------------------------------------------
   // compute
   // ---------------------------------------------
   const currentLtv = useCurrentLtv({ marketOverview, marketUserOverview });
@@ -117,24 +158,11 @@ function ComponentBase({
     const userAmount = big(bAssetAmount).mul(MICRO);
 
     try {
-      return big(marketUserOverview.loanAmount.loan_amount).div(
-        big(
-          big(marketUserOverview.borrowInfo.balance)
-            .minus(marketUserOverview.borrowInfo.spendable)
-            .plus(userAmount),
-        ).mul(marketOverview.oraclePrice.rate),
-      );
+      return amountToLtv(userAmount);
     } catch {
       return currentLtv;
     }
-  }, [
-    bAssetAmount,
-    currentLtv,
-    marketOverview.oraclePrice.rate,
-    marketUserOverview.borrowInfo.balance,
-    marketUserOverview.borrowInfo.spendable,
-    marketUserOverview.loanAmount.loan_amount,
-  ]);
+  }, [bAssetAmount, amountToLtv, currentLtv]);
 
   // New Borrow Limit = ((Borrow_info.balance - Borrow_info.spendable + provided_collateral) * Oracleprice) * Max_LTV
   const borrowLimit = useMemo(() => {
@@ -210,6 +238,28 @@ function ComponentBase({
       });
     },
     [addressProvider, bank.status, client, post, queryProvideCollateral],
+  );
+
+  const onLtvChange = useCallback(
+    (nextLtv: Big) => {
+      try {
+        const nextAmount = ltvToAmount(nextLtv);
+        updateBAssetAmount(formatLunaInput(big(nextAmount).div(MICRO)));
+      } catch {}
+    },
+    [ltvToAmount, updateBAssetAmount],
+  );
+
+  const ltvStepFunction = useCallback(
+    (draftLtv: Big) => {
+      try {
+        const draftAmount = ltvToAmount(draftLtv);
+        return amountToLtv(big(draftAmount));
+      } catch {
+        return draftLtv;
+      }
+    },
+    [ltvToAmount, amountToLtv],
   );
 
   // ---------------------------------------------
@@ -292,6 +342,10 @@ function ComponentBase({
             safeLtv={marketOverview.bLunaSafeLtv}
             currentLtv={currentLtv}
             nextLtv={nextLtv}
+            userMinLtv={0}
+            userMaxLtv={currentLtv}
+            onStep={ltvStepFunction}
+            onChange={onLtvChange}
           />
         </figure>
 

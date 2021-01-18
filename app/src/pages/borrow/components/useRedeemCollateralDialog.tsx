@@ -11,8 +11,15 @@ import {
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   MICRO,
 } from '@anchor-protocol/notation';
-import { BroadcastableQueryOptions, useBroadcastableQuery } from '@anchor-protocol/use-broadcastable-query';
-import type { DialogProps, DialogTemplate, OpenDialog } from '@anchor-protocol/use-dialog';
+import {
+  BroadcastableQueryOptions,
+  useBroadcastableQuery,
+} from '@anchor-protocol/use-broadcastable-query';
+import type {
+  DialogProps,
+  DialogTemplate,
+  OpenDialog,
+} from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient } from '@apollo/client';
@@ -21,16 +28,23 @@ import { InfoOutlined } from '@material-ui/icons';
 import { CreateTxOptions } from '@terra-money/terra.js';
 import * as txi from 'api/queries/txInfos';
 import { queryOptions } from 'api/transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from 'api/transactions/tx';
-import { txNotificationFactory, TxResultRenderer } from 'api/transactions/TxResultRenderer';
-import big from 'big.js';
+import {
+  parseResult,
+  StringifiedTxResult,
+  TxResult,
+} from 'api/transactions/tx';
+import {
+  txNotificationFactory,
+  TxResultRenderer,
+} from 'api/transactions/TxResultRenderer';
+import big, { Big } from 'big.js';
 import { TxFeeList, TxFeeListItem } from 'components/messages/TxFeeList';
 import { WarningArticle } from 'components/messages/WarningArticle';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { fixedGasUUSD, transactionFee } from 'env';
-import { useCurrentLtv } from 'pages/borrow/components/useCurrentLtv';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
+import { useCurrentLtv } from 'pages/borrow/components/useCurrentLtv';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import type { ReactNode } from 'react';
@@ -90,6 +104,42 @@ function ComponentBase({
   const bank = useBank();
 
   // ---------------------------------------------
+  // calculate
+  // ---------------------------------------------
+  const amountToLtv = useCallback(
+    (amount: Big) => {
+      return big(marketUserOverview.loanAmount.loan_amount).div(
+        big(
+          big(marketUserOverview.borrowInfo.balance)
+            .minus(marketUserOverview.borrowInfo.spendable)
+            .minus(amount),
+        ).mul(marketOverview.oraclePrice.rate),
+      );
+    },
+    [
+      marketOverview.oraclePrice.rate,
+      marketUserOverview.borrowInfo.balance,
+      marketUserOverview.borrowInfo.spendable,
+      marketUserOverview.loanAmount.loan_amount,
+    ],
+  );
+
+  const ltvToAmount = useCallback(
+    (ltv: Big) => {
+      return big(marketUserOverview.borrowInfo.balance).minus(
+        big(marketUserOverview.loanAmount.loan_amount).div(
+          ltv.mul(marketOverview.oraclePrice.rate),
+        ),
+      );
+    },
+    [
+      marketOverview.oraclePrice.rate,
+      marketUserOverview.borrowInfo.balance,
+      marketUserOverview.loanAmount.loan_amount,
+    ],
+  );
+
+  // ---------------------------------------------
   // compute
   // ---------------------------------------------
   const currentLtv = useCurrentLtv({ marketOverview, marketUserOverview });
@@ -103,24 +153,11 @@ function ComponentBase({
     const userAmount = big(bAssetAmount).mul(MICRO);
 
     try {
-      return big(marketUserOverview.loanAmount.loan_amount).div(
-        big(
-          big(marketUserOverview.borrowInfo.balance)
-            .minus(marketUserOverview.borrowInfo.spendable)
-            .minus(userAmount),
-        ).mul(marketOverview.oraclePrice.rate),
-      );
+      return amountToLtv(userAmount);
     } catch {
       return currentLtv;
     }
-  }, [
-    bAssetAmount,
-    currentLtv,
-    marketOverview.oraclePrice.rate,
-    marketUserOverview.borrowInfo.balance,
-    marketUserOverview.borrowInfo.spendable,
-    marketUserOverview.loanAmount.loan_amount,
-  ]);
+  }, [amountToLtv, bAssetAmount, currentLtv]);
 
   // If user_ltv >= 0.35 or user_ltv == Null:
   //   withdrawable = borrow_info.spendable
@@ -219,6 +256,28 @@ function ComponentBase({
     [addressProvider, bank.status, client, post, queryRedeemCollateral],
   );
 
+  const onLtvChange = useCallback(
+    (nextLtv: Big) => {
+      try {
+        const nextAmount = ltvToAmount(nextLtv);
+        updateBAssetAmount(formatLunaInput(big(nextAmount).div(MICRO)));
+      } catch {}
+    },
+    [ltvToAmount, updateBAssetAmount],
+  );
+
+  const ltvStepFunction = useCallback(
+    (draftLtv: Big) => {
+      try {
+        const draftAmount = ltvToAmount(draftLtv);
+        return amountToLtv(big(draftAmount));
+      } catch {
+        return draftLtv;
+      }
+    },
+    [ltvToAmount, amountToLtv],
+  );
+
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
@@ -298,6 +357,10 @@ function ComponentBase({
             safeLtv={marketOverview.bLunaSafeLtv}
             currentLtv={currentLtv}
             nextLtv={nextLtv}
+            userMinLtv={currentLtv}
+            userMaxLtv={marketOverview.bLunaSafeLtv}
+            onStep={ltvStepFunction}
+            onChange={onLtvChange}
           />
         </figure>
 

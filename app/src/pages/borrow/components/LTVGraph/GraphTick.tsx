@@ -10,6 +10,8 @@ export const GraphTick = styled.span`
   
   word-break: keep-all;
   white-space: nowrap;
+  
+  user-select: none;
 
   &::before {
     content: '';

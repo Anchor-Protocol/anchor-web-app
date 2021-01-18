@@ -6,6 +6,8 @@ export const GraphLabel = styled.span`
   top: 22px;
   transform: translateX(-50%);
   
+  user-select: none;
+  
   word-break: keep-all;
   white-space: nowrap;
 `;
