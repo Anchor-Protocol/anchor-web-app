@@ -25,7 +25,6 @@ import { ApolloClient, useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { InfoOutlined } from '@material-ui/icons';
 import { CreateTxOptions } from '@terra-money/terra.js';
-import { useTax } from 'api/queries/tax';
 import * as txi from 'api/queries/txInfos';
 import { queryOptions } from 'api/transactions/queryOptions';
 import {
@@ -95,8 +94,6 @@ function ComponentBase({
   // ---------------------------------------------
   const bank = useBank();
 
-  const { parsedData: tax } = useTax();
-
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
@@ -123,22 +120,22 @@ function ComponentBase({
   }, [assetAmount, bank.status, bank.userBalances.uUSD]);
 
   const txFee = useMemo(() => {
-    if (assetAmount.length === 0 || !tax) return undefined;
+    if (assetAmount.length === 0) return undefined;
 
     // MIN((User_UST_Balance - fixed_gas)/(1+Tax_rate) * tax_rate , Max_tax) + Fixed_Gas
 
     const uustAmount = big(assetAmount).mul(MICRO);
     const ratioTxFee = big(uustAmount.minus(fixedGasUUSD))
-      .div(big(1).add(tax.taxRate))
-      .mul(tax.taxRate);
-    const maxTax = big(tax.maxTaxUUSD);
+      .div(big(1).add(bank.tax.taxRate))
+      .mul(bank.tax.taxRate);
+    const maxTax = big(bank.tax.maxTaxUUSD);
 
     if (ratioTxFee.gt(maxTax)) {
       return maxTax.add(fixedGasUUSD);
     } else {
       return ratioTxFee.add(fixedGasUUSD);
     }
-  }, [assetAmount, tax]);
+  }, [assetAmount, bank.tax.maxTaxUUSD, bank.tax.taxRate]);
 
   const estimatedAmount = useMemo(() => {
     return assetAmount.length > 0 && txFee

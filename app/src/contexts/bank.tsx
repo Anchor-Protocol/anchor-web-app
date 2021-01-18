@@ -1,5 +1,6 @@
 import { MICRO } from '@anchor-protocol/notation';
 import { useWallet } from '@anchor-protocol/wallet-provider';
+import { useOracle } from 'api/queries/oracle';
 import { Data as TaxData, useTax } from 'api/queries/tax';
 import {
   Data as UserBalancesData,
@@ -24,6 +25,7 @@ export interface BankState {
   tax: TaxData;
   refetchTax: () => void;
   userBalances: UserBalancesData;
+  oraclePrice: string;
   refetchUserBalances: () => void;
 }
 
@@ -34,19 +36,26 @@ export function BankProvider({ children }: BankProviderProps) {
   const { status } = useWallet();
 
   const { parsedData: taxData, refetch: refetchTax } = useTax();
+
   const {
     parsedData: userBalancesData,
     refetch: refetchUserBalances,
   } = useUserBalances();
 
+  const { parsedData: oracleData } = useOracle();
+
   const state = useMemo<BankState>(() => {
-    return status.status === 'ready' && !!taxData && !!userBalancesData
+    return status.status === 'ready' &&
+      !!taxData &&
+      !!userBalancesData &&
+      !!oracleData
       ? {
           status: 'connected',
           tax: taxData,
           refetchTax,
           userBalances: userBalancesData,
           refetchUserBalances,
+          oraclePrice: oracleData.oraclePrice.rate,
         }
       : {
           status: 'demo',
@@ -64,8 +73,10 @@ export function BankProvider({ children }: BankProviderProps) {
             uaUST: '0',
           },
           refetchUserBalances,
+          oraclePrice: '0.5',
         };
   }, [
+    oracleData,
     refetchTax,
     refetchUserBalances,
     status.status,
