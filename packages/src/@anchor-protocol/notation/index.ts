@@ -43,20 +43,22 @@ export function formatFluidDecimalPoints(
   numDecimalPoints: number,
   { delimiter }: FormatOptions = { delimiter: true },
 ): string {
-  return numeral(
-    big(
-      big(n.toString())
-        .mul(10 ** numDecimalPoints)
-        .toFixed()
-        .split('.')[0],
-    )
-      .div(10 ** numDecimalPoints)
-      .toFixed(),
-  ).format(
+  const num = big(
+    big(n.toString())
+      .mul(10 ** numDecimalPoints)
+      .toFixed()
+      .split('.')[0],
+  )
+    .div(10 ** numDecimalPoints)
+    .toFixed();
+
+  const str = numeral(num).format(
     delimiter
       ? `0,0.[${'0'.repeat(numDecimalPoints)}]`
       : `0.[${'0'.repeat(numDecimalPoints)}]`,
   );
+
+  return str === 'NaN' ? '' : str;
 }
 
 export const UST_INPUT_MAXIMUM_DECIMAL_POINTS = 3;
