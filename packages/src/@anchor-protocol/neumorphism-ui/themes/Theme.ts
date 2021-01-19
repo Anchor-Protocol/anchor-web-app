@@ -60,6 +60,20 @@ export interface NeumorphismTheme extends Theme {
       textColor: string;
     };
   };
+  
+  // slider
+  slider: {
+    thumb: {
+      shadowColor: string;
+      thumbColor: string;
+    }
+  }
+  
+  // skeleton
+  skeleton: {
+    backgroundColor: string;
+    lightColor: string;
+  }
 
   // dialog
   dialog: Record<MessageColor, DialogTheme>;

@@ -23,7 +23,7 @@ export const lightTheme: DefaultTheme = {
     backgroundHoverColor: '#84eaac',
     textColor: '#2c2c2e',
   },
-  
+
   selector: {
     backgroundColor: '#f4f4f5',
     textColor: '#2c2c2e',
@@ -48,7 +48,19 @@ export const lightTheme: DefaultTheme = {
       textColor: '#2c2c2e',
     },
   },
+
+  slider: {
+    thumb: {
+      shadowColor: 'rgba(0, 0, 0, 0.1)',
+      thumbColor: '#ffffff',
+    },
+  },
   
+  skeleton: {
+    backgroundColor: 'rgba(0, 0, 0, 0.15)',
+    lightColor: 'rgba(255, 255, 255, 0.8)'
+  },
+
   dialog: {
     normal: {
       backgroundColor: '#f4f4f5',
@@ -67,7 +79,7 @@ export const lightTheme: DefaultTheme = {
       textColor: '#3e9bba',
     },
   },
-  
+
   tooltip: {
     normal: {
       backgroundColor: 'rgba(0, 0, 0, 0.6)',

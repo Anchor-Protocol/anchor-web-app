@@ -56,6 +56,18 @@ export const darkTheme: DefaultTheme = {
       textColor: '#ffffff',
     },
   },
+  
+  slider: {
+    thumb: {
+      shadowColor: 'rgba(0, 0, 0, 0.3)',
+      thumbColor: '#ffffff',
+    },
+  },
+  
+  skeleton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    lightColor: 'rgba(255, 255, 255, 0.2)'
+  },
 
   dialog: {
     normal: {

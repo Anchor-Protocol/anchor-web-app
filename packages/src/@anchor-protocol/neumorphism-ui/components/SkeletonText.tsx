@@ -26,13 +26,13 @@ export const SkeletonText = styled(SkeletonTextBase)`
 
   background-image: linear-gradient(
       0deg,
-      rgba(255, 255, 255, 0.2),
-      rgba(255, 255, 255, 0.2)
+      ${({theme}) => theme.skeleton.backgroundColor},
+      ${({theme}) => theme.skeleton.backgroundColor}
     ),
     linear-gradient(
       90deg,
       rgba(255, 255, 255, 0),
-      rgba(255, 255, 255, 0.2) 50%,
+      ${({theme}) => theme.skeleton.lightColor} 50%,
       rgba(255, 255, 255, 0) 80%
     );
 
