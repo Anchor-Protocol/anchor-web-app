@@ -1,8 +1,9 @@
 import { fabricateDepositStableCoin } from '@anchor-protocol/anchor-js/fabricators';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
+import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
-import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { useConfirm } from '@anchor-protocol/neumorphism-ui/components/useConfirm';
 import {
   formatUST,
@@ -23,7 +24,6 @@ import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
-import { InfoOutlined } from '@material-ui/icons';
 import { CreateTxOptions } from '@terra-money/terra.js';
 import * as txi from 'api/queries/txInfos';
 import { queryOptions } from 'api/transactions/queryOptions';
@@ -101,7 +101,7 @@ function ComponentBase({
     if (bank.status === 'demo') {
       return undefined;
     } else if (big(bank.userBalances.uUSD ?? 0).lt(fixedGasUUSD)) {
-      return 'Not enough Transaction fee: User wallet might lack of Tx fee (Tax, Gas)';
+      return 'Not enough transaction fees';
     }
     return undefined;
   }, [bank.status, bank.userBalances.uUSD]);
@@ -114,7 +114,7 @@ function ComponentBase({
         .mul(MICRO)
         .gt(bank.userBalances.uUSD ?? 0)
     ) {
-      return `Insufficient balance: Not enough user's UST balance`;
+      return `Not enough UST`;
     }
     return undefined;
   }, [assetAmount, bank.status, bank.userBalances.uUSD]);
@@ -194,8 +194,9 @@ function ComponentBase({
 
       if (confirm) {
         const userConfirm = await openConfirm({
-          title: 'Confirm',
           description: confirm,
+          agree: 'Proceed',
+          disagree: 'Cancel',
         });
 
         if (!userConfirm) {
@@ -302,12 +303,9 @@ function ComponentBase({
           <TxFeeList className="receipt">
             <TxFeeListItem
               label={
-                <>
-                  Tx Fee{' '}
-                  <Tooltip title="Tx Fee Description" placement="top">
-                    <InfoOutlined />
-                  </Tooltip>
-                </>
+                <IconSpan>
+                  Tx Fee <InfoTooltip>Tx Fee Description</InfoTooltip>
+                </IconSpan>
               }
             >
               {formatUST(big(txFee).div(MICRO))} UST
@@ -319,18 +317,19 @@ function ComponentBase({
         )}
 
         {tooMuchAssetAmountWarning && recommendationAssetAmount && (
-          <WarningArticle>
+          <WarningArticle style={{ marginTop: 30, marginBottom: 0 }}>
             <p style={{ marginBottom: 10 }}>{tooMuchAssetAmountWarning}</p>
 
-            <button
+            <ActionButton
+              style={{ width: '70%' }}
               onClick={() =>
                 updateAssetAmount(
-                  big(recommendationAssetAmount).div(MICRO).toString(),
+                  formatUSTInput(big(recommendationAssetAmount).div(MICRO)),
                 )
               }
             >
               Set recommend amount
-            </button>
+            </ActionButton>
           </WarningArticle>
         )}
 
@@ -339,7 +338,7 @@ function ComponentBase({
           style={
             tooMuchAssetAmountWarning
               ? {
-                  backgroundColor: '#f5356a',
+                  backgroundColor: '#c12535',
                 }
               : undefined
           }

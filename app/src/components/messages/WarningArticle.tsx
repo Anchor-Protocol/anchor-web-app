@@ -1,13 +1,22 @@
-import { ReactNode } from 'react';
+import { CSSProperties, ReactNode } from 'react';
 import styled from 'styled-components';
 
 export interface WarningArticleProps {
   className?: string;
   children: ReactNode;
+  style?: CSSProperties;
 }
 
-function WarningArticleBase({ className, children }: WarningArticleProps) {
-  return <article className={className}>{children}</article>;
+function WarningArticleBase({
+  className,
+  style,
+  children,
+}: WarningArticleProps) {
+  return (
+    <article className={className} style={style}>
+      {children}
+    </article>
+  );
 }
 
 export const WarningArticle = styled(WarningArticleBase)`

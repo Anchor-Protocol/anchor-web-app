@@ -1,8 +1,8 @@
 import { fabricateRedeemStable } from '@anchor-protocol/anchor-js/fabricators';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
+import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
-import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import {
   formatUST,
   formatUSTInput,
@@ -22,7 +22,6 @@ import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
-import { InfoOutlined } from '@material-ui/icons';
 import { CreateTxOptions } from '@terra-money/terra.js';
 import * as txi from 'api/queries/txInfos';
 import { queryOptions } from 'api/transactions/queryOptions';
@@ -36,6 +35,7 @@ import {
   TxResultRenderer,
 } from 'api/transactions/TxResultRenderer';
 import big from 'big.js';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { TxFeeList, TxFeeListItem } from 'components/messages/TxFeeList';
 import { WarningArticle } from 'components/messages/WarningArticle';
 import { useBank } from 'contexts/bank';
@@ -258,12 +258,9 @@ function ComponentBase({
           <TxFeeList className="receipt">
             <TxFeeListItem
               label={
-                <>
-                  Tx Fee{' '}
-                  <Tooltip title="Tx Fee Description" placement="top">
-                    <InfoOutlined />
-                  </Tooltip>
-                </>
+                <IconSpan>
+                  Tx Fee <InfoTooltip>Tx Fee Description</InfoTooltip>
+                </IconSpan>
               }
             >
               {formatUST(big(txFee).div(MICRO))} UST

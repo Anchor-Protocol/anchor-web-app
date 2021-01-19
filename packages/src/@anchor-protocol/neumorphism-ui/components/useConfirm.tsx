@@ -1,5 +1,5 @@
-import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import {
+  DialogProps,
   DialogTemplate,
   OpenDialog,
   useDialog,
@@ -12,9 +12,11 @@ import {
   DialogTitle,
 } from '@material-ui/core';
 import React, { ReactNode } from 'react';
+import { ActionButton } from './ActionButton';
+import { useAlertStyles } from './useAlert';
 
 export function useConfirm(): [OpenDialog<ConfirmParams, boolean>, ReactNode] {
-  return useDialog(ConfirmDialogTemplate);
+  return useDialog(Template);
 }
 
 export interface ConfirmParams {
@@ -24,16 +26,23 @@ export interface ConfirmParams {
   disagree?: string;
 }
 
-export const ConfirmDialogTemplate: DialogTemplate<ConfirmParams, boolean> = ({
+export const Template: DialogTemplate<ConfirmParams, boolean> = (props) => {
+  return <Component {...props} />;
+};
+
+export function Component({
   closeDialog,
   title,
   description,
   agree = 'Agree',
   disagree = 'Disagree',
-}) => {
+}: DialogProps<ConfirmParams, boolean>) {
+  const classes = useAlertStyles();
+
   return (
     <Dialog
       open
+      classes={classes}
       onClose={() => closeDialog(false)}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
@@ -60,4 +69,4 @@ export const ConfirmDialogTemplate: DialogTemplate<ConfirmParams, boolean> = ({
       </DialogActions>
     </Dialog>
   );
-};
+}

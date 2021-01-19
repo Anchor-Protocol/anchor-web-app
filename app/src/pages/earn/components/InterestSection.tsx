@@ -1,8 +1,10 @@
 import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
+import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { formatPercentage } from '@anchor-protocol/notation';
 import big from 'big.js';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { useInterest } from 'pages/earn/queries/interest';
 import styled from 'styled-components';
 
@@ -27,7 +29,11 @@ function InterestSectionBase({ className }: InterestSectionProps) {
         <div className="value">
           {formatPercentage(big(interest?.currentAPY ?? 0).mul(100))}%
         </div>
-        <p className="name">APY</p>
+        <p className="name">
+          <IconSpan>
+            APY <InfoTooltip>Annual Percentage Yield</InfoTooltip>
+          </IconSpan>
+        </p>
         <figure></figure>
       </div>
 
@@ -45,7 +51,9 @@ function InterestSectionBase({ className }: InterestSectionProps) {
         <div className="amount">
           <Tooltip title="no real data" placement="top">
             <span>
-              <s>2,320<span className="decimal-point">.063700</span> UST</s>
+              <s>
+                2,320<span className="decimal-point">.063700</span> UST
+              </s>
             </span>
           </Tooltip>
           <p>Interest earned</p>

@@ -62,11 +62,6 @@ export const TxFeeList = styled(TxFeeListBase)`
       > :last-child {
         color: ${({ theme }) => theme.textColor};
       }
-
-      svg {
-        font-size: 1em;
-        transform: scale(1.2) translateY(0.08em);
-      }
     }
   }
 `;
