@@ -2,6 +2,7 @@ import { fabricatebAssetBond } from '@anchor-protocol/anchor-js/fabricators/bass
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
@@ -35,7 +36,6 @@ import {
   TxResultRenderer,
 } from 'api/transactions/TxResultRenderer';
 import big from 'big.js';
-import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { TxFeeList, TxFeeListItem } from 'components/messages/TxFeeList';
 import { WarningArticle } from 'components/messages/WarningArticle';
 import { useBank } from 'contexts/bank';
@@ -115,7 +115,7 @@ function MintBase({ className }: MintProps) {
     if (bank.status === 'demo') {
       return undefined;
     } else if (big(bank.userBalances.uUSD).lt(fixedGasUUSD)) {
-      return 'Not Enough Tx Fee (Your USD Balance is lower than Fixed Gas)';
+      return 'Not enough transaction fees';
     }
     return undefined;
   }, [bank.status, bank.userBalances.uUSD]);
@@ -128,9 +128,7 @@ function MintBase({ className }: MintProps) {
         .mul(MICRO)
         .gt(bank.userBalances.uLuna ?? 0)
     ) {
-      return `Insufficient balance: Not enough Assets (${big(
-        bank.userBalances.uLuna ?? 0,
-      ).div(MICRO)} Luna)`;
+      return `Not enough assets`;
     }
     return undefined;
   }, [bank.status, bank.userBalances.uLuna, assetAmount]);

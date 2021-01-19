@@ -21,12 +21,22 @@ export interface BAssetProps extends RouteComponentProps {
 interface Item {
   label: string;
   value: string;
+  tooltip: string;
 }
 
 const tabItems: Item[] = [
-  { label: 'Mint', value: 'mint' },
-  { label: 'Burn', value: 'burn' },
-  { label: 'Claim', value: 'claim' },
+  { label: 'Mint', value: 'mint', tooltip: 'Bond assets to mint bAssets' },
+  {
+    label: 'Burn',
+    value: 'burn',
+    tooltip: 'Unbond bassets to redeem previously bonded assets.',
+  },
+  {
+    label: 'Claim',
+    value: 'claim',
+    tooltip:
+      'Instantly claim withdrawable bAssets that have been burned/ earned as staking rewards.',
+  },
 ];
 
 function BAssetBase({ className, match, history }: BAssetProps) {
@@ -58,6 +68,7 @@ function BAssetBase({ className, match, history }: BAssetProps) {
             onChange={tabChange}
             labelFunction={({ label }) => label}
             keyFunction={({ value }) => value}
+            tooltipFunction={({ tooltip }) => tooltip}
           />
 
           <Switch>
@@ -69,7 +80,7 @@ function BAssetBase({ className, match, history }: BAssetProps) {
           </Switch>
         </div>
 
-        <Footer style={{margin: '60px 40px'}} />
+        <Footer style={{ margin: '60px 40px' }} />
       </main>
     </div>
   );

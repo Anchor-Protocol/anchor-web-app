@@ -1,6 +1,7 @@
 import { fabricatebAssetBurn } from '@anchor-protocol/anchor-js/fabricators';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
 import {
@@ -33,7 +34,6 @@ import {
   TxResultRenderer,
 } from 'api/transactions/TxResultRenderer';
 import big from 'big.js';
-import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { TxFeeList, TxFeeListItem } from 'components/messages/TxFeeList';
 import { WarningArticle } from 'components/messages/WarningArticle';
 import { useBank } from 'contexts/bank';
@@ -103,7 +103,7 @@ function BurnBase({ className }: BurnProps) {
     if (bank.status === 'demo') {
       return undefined;
     } else if (big(bank.userBalances.uUSD).lt(fixedGasUUSD)) {
-      return 'Not Enough Tx Fee';
+      return 'Not enough transaction fees';
     }
     return undefined;
   }, [bank.status, bank.userBalances.uUSD]);
@@ -116,9 +116,7 @@ function BurnBase({ className }: BurnProps) {
         .mul(MICRO)
         .gt(bank.userBalances?.ubLuna ?? 0)
     ) {
-      return `Insufficient balance: Not enough bAssets (${big(
-        bank.userBalances?.ubLuna ?? 0,
-      ).div(MICRO)} bLuna)`;
+      return `Not enough bAssets`;
     }
     return undefined;
   }, [bank.status, bank.userBalances?.ubLuna, bAssetAmount]);
