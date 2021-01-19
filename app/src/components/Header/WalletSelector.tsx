@@ -9,7 +9,7 @@ import {
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { ClickAwayListener } from '@material-ui/core';
 import big from 'big.js';
-import { Wallet } from 'components/icons/Wallet';
+import { Wallet } from '@anchor-protocol/icons';
 import { useBank } from 'contexts/bank';
 import { useCallback, useState } from 'react';
 import useClipboard from 'react-use-clipboard';
@@ -142,7 +142,7 @@ export const WalletSelector = styled(WalletSelectorBase)`
   display: inline-block;
 
   position: relative;
-  
+
   text-align: left;
 
   > button {

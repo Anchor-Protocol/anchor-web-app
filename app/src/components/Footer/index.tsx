@@ -1,5 +1,5 @@
 import { IconButton } from '@material-ui/core';
-import { Discord } from 'components/icons/Discord';
+import { Discord } from '@anchor-protocol/icons';
 import { screen } from 'env';
 import { CSSProperties } from 'react';
 import styled from 'styled-components';
