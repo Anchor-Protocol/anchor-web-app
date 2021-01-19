@@ -23,7 +23,14 @@ function InterestSectionBase({ className }: InterestSectionProps) {
   // ---------------------------------------------
   return (
     <Section className={className}>
-      <h2>INTEREST</h2>
+      <h2>
+        <IconSpan>
+          INTEREST{' '}
+          <InfoTooltip>
+            Total amount of interest accrued for the past selected time period
+          </InfoTooltip>
+        </IconSpan>
+      </h2>
 
       <div className="apy">
         <div className="value">
