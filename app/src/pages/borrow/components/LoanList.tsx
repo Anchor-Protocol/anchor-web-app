@@ -1,5 +1,7 @@
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/components/HorizontalScrollTable';
+import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import {
   formatPercentage,
@@ -64,7 +66,15 @@ function LoanListBase({
         <thead>
           <tr>
             <th>Name</th>
-            <th>APR / Interest Accrued</th>
+            <th>
+              <IconSpan>
+                APR / Interest Accrued{' '}
+                <InfoTooltip>
+                  Current rate of borrowing interest applied on loans of this
+                  specific Terra / The amount of interest accrued on open loans
+                </InfoTooltip>
+              </IconSpan>
+            </th>
             <th>Borrowed</th>
             <th>Actions</th>
           </tr>

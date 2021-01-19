@@ -1,3 +1,5 @@
+import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import {
   formatPercentage,
@@ -12,17 +14,17 @@ import { useMemo } from 'react';
 import styled from 'styled-components';
 import { Data as MarketOverview } from '../queries/marketOverview';
 
-export interface SummaryProps {
+export interface OverviewProps {
   className?: string;
   marketOverview: MarketOverview | undefined;
   marketUserOverview: MarketUserOverview | undefined;
 }
 
-function SummaryBase({
+function OverviewBase({
   className,
   marketOverview,
   marketUserOverview,
-}: SummaryProps) {
+}: OverviewProps) {
   const apr = useMemo(() => {
     return big(marketOverview?.borrowRate.rate ?? 0).mul(BLOCKS_PER_YEAR);
   }, [marketOverview?.borrowRate.rate]);
@@ -58,17 +60,36 @@ function SummaryBase({
     <Section className={className}>
       <article>
         <div>
-          <label>APR</label>
+          <label>
+            <IconSpan>
+              APR{' '}
+              <InfoTooltip>
+                Annual Percentage Rate. Current rate of interest on UST loans
+              </InfoTooltip>
+            </IconSpan>
+          </label>
           <p>{formatPercentage(apr.mul(100))}%</p>
         </div>
 
         <div>
-          <label>Collateral Value</label>
+          <label>
+            <IconSpan>
+              Collateral Value{' '}
+              <InfoTooltip>
+                The sum of all deposited collaterals denominated in UST
+              </InfoTooltip>
+            </IconSpan>
+          </label>
           <p>${formatUSTWithPostfixUnits(collateralValue.div(MICRO))}</p>
         </div>
 
         <div>
-          <label>Borrowed Value</label>
+          <label>
+            <IconSpan>
+              Borrowed Value{' '}
+              <InfoTooltip>The sum of all UST borrowed from Anchor</InfoTooltip>
+            </IconSpan>
+          </label>
           <p>${formatUSTWithPostfixUnits(borrowedValue.div(MICRO))}</p>
         </div>
       </article>
@@ -84,6 +105,6 @@ function SummaryBase({
   );
 }
 
-export const Summary = styled(SummaryBase)`
+export const Overview = styled(OverviewBase)`
   // TODO
 `;

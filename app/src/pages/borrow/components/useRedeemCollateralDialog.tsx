@@ -208,7 +208,7 @@ function ComponentBase({
     if (bank.status === 'demo') {
       return undefined;
     } else if (big(bank.userBalances.uUSD ?? 0).lt(fixedGasUUSD)) {
-      return 'Not enough Transaction fee: User wallet might lack of Tx fee (Tax, Gas)';
+      return 'Not enough transaction fees';
     }
     return undefined;
   }, [bank.status, bank.userBalances.uUSD]);
@@ -221,7 +221,7 @@ function ComponentBase({
         .mul(MICRO)
         .gt(maxBAssetAmount ?? 0)
     ) {
-      return `Insufficient balance: Not enough Assets`;
+      return `Cannot withdraw more than collateralized amount`;
     }
     return undefined;
   }, [bAssetAmount, bank.status, maxBAssetAmount]);

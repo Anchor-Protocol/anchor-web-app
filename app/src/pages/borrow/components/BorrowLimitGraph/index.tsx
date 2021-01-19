@@ -2,6 +2,8 @@ import {
   HorizontalGraphBar,
   Rect,
 } from '@anchor-protocol/neumorphism-ui/components/HorizontalGraphBar';
+import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import {
   formatPercentage,
   formatUSTWithPostfixUnits,
@@ -70,7 +72,14 @@ export function BorrowLimitGraph({
       valueFunction={valueFunction}
       labelRenderer={labelRenderer}
     >
-      <GraphLabel style={{ left: 0 }}>Borrow Limit</GraphLabel>
+      <GraphLabel style={{ left: 0 }}>
+        <IconSpan>
+          Borrow Limit{' '}
+          <InfoTooltip>
+            Maximum amount of loans permitted from deposited collaterals
+          </InfoTooltip>
+        </IconSpan>
+      </GraphLabel>
       <GraphLabel style={{ right: 0 }}>
         ${formatUSTWithPostfixUnits(borrowLimit.div(MICRO))}
       </GraphLabel>

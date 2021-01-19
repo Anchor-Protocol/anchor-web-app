@@ -205,7 +205,7 @@ function ComponentBase({
     if (bank.status === 'demo') {
       return undefined;
     } else if (big(bank.userBalances.uUSD ?? 0).lt(fixedGasUUSD)) {
-      return 'Not enough Transaction fee: User wallet might lack of Tx fee (Tax, Gas)';
+      return 'Not enough transaction fees';
     }
     return undefined;
   }, [bank.status, bank.userBalances.uUSD]);
@@ -218,9 +218,7 @@ function ComponentBase({
         .mul(MICRO)
         .gt(bank.userBalances.uUSD)
     ) {
-      return `Insufficient balance: Not enough Assets (You have ${formatUST(
-        big(bank.userBalances.uUSD).div(MICRO).toString(),
-      )} UST)`;
+      return `Cannot repay more than borrowed amount`;
     }
     return undefined;
   }, [assetAmount, bank.status, bank.userBalances.uUSD]);
