@@ -1,5 +1,5 @@
 import { Extension } from '@terra-money/terra.js';
-import { matchesUA } from 'browserslist-useragent';
+import { getParser } from 'bowser';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { UserDeniedError } from './errors';
 import { StationNetworkInfo, WalletStatus } from './types';
@@ -24,15 +24,17 @@ async function intervalCheck(
   return false;
 }
 
-const isChrome = matchesUA(navigator.userAgent, {
-  browsers: ['Chrome > 60'],
-  allowHigherVersions: true,
-});
-
 export function ChromeExtensionWalletProvider({
   children,
   defaultNetwork,
 }: WalletProviderProps) {
+  const isChrome = useMemo(() => {
+    const browser = getParser(navigator.userAgent);
+    return browser.satisfies({
+      chrome: '>60',
+    });
+  }, []);
+
   const extension = useMemo<Extension>(() => new Extension(), []);
 
   const [status, setStatus] = useState<WalletStatus>(() => ({
