@@ -14,6 +14,7 @@ export interface BroadcastableQueryOptions<Params, Data, Error> {
   broadcastWhen?: BroadcastWhen;
   fetchClient: BroadcatableQueryFetchClient<Params, Data>;
   notificationFactory: NotificationFactory<Params, Data, Error>;
+  breakOnError?: true | ((error: unknown) => boolean);
 }
 
 const stopSignal = new BroadcastableQueryStop();
@@ -23,6 +24,7 @@ export function useBroadcastableQuery<Params, Data, Error = unknown>({
   broadcastWhen = 'unmounted',
   fetchClient,
   notificationFactory,
+  breakOnError,
 }: BroadcastableQueryOptions<Params, Data, Error>): [
   (params: Params) => Promise<Data | void>,
   BroadcastableQueryResult<Params, Data, Error> | undefined,
@@ -139,7 +141,10 @@ export function useBroadcastableQuery<Params, Data, Error = unknown>({
           return;
         }
 
-        if (process.env.NODE_ENV === 'development') {
+        if (
+          breakOnError === true ||
+          (typeof breakOnError === 'function' && breakOnError(error))
+        ) {
           throw error;
         }
 

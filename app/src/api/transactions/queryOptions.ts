@@ -18,6 +18,7 @@ export const queryOptions: Omit<
   'notificationFactory'
 > = {
   broadcastWhen: 'unmounted',
+  //breakOnError: true,
   fetchClient: async (
     { post, client },
     { signal, inProgressUpdate, stopSignal },

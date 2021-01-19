@@ -1,5 +1,5 @@
 import { Component, ReactElement } from 'react';
-import styled from 'styled-components';
+import styled, { DefaultTheme, withTheme } from 'styled-components';
 import { Rect } from './HorizontalGraphBar';
 
 export interface HorizontalGraphSliderProps {
@@ -52,10 +52,7 @@ class HorizontalGraphSliderBase extends Component<
     const thumb = this.props.children ? (
       this.props.children
     ) : (
-      <svg width={22} height={22}>
-        <circle cx={11} cy={11} r={11} fill="rgba(0, 0, 0, 0.3)" />
-        <circle cx={11} cy={11} r={8} fill="rgba(255, 255, 255, 1)" />
-      </svg>
+      <HorizontalGraphSliderThumb />
     );
 
     return (
@@ -179,6 +176,15 @@ class HorizontalGraphSliderBase extends Component<
     event.stopImmediatePropagation();
   };
 }
+
+export const HorizontalGraphSliderThumb = withTheme(
+  ({ theme }: { theme: DefaultTheme }) => (
+    <svg width={22} height={22}>
+      <circle cx={11} cy={11} r={11} fill={theme.slider.thumb.shadowColor} />
+      <circle cx={11} cy={11} r={8} fill={theme.slider.thumb.thumbColor} />
+    </svg>
+  ),
+);
 
 export const HorizontalGraphSlider = styled(HorizontalGraphSliderBase)`
   position: absolute;

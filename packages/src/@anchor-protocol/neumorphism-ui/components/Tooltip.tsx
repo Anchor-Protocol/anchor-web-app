@@ -24,7 +24,7 @@ export const useTooltipStyle = makeStyles<DefaultTheme, TooltipProps>(
   (theme) => ({
     tooltip: ({ color = 'normal' }) => ({
       position: 'relative',
-      borderRadius: 0,
+      borderRadius: 3,
       color: theme.tooltip[color].textColor,
       backgroundColor: theme.tooltip[color].backgroundColor,
       fontSize: '0.9em',

@@ -14,6 +14,11 @@ export interface TooltipTheme {
   textColor: string;
 }
 
+export interface SnackbarTheme {
+  backgroundColor: string;
+  textColor: string;
+}
+
 export interface NeumorphismTheme extends Theme {
   // neumorphism
   intensity: number;
@@ -60,10 +65,27 @@ export interface NeumorphismTheme extends Theme {
       textColor: string;
     };
   };
+  
+  // slider
+  slider: {
+    thumb: {
+      shadowColor: string;
+      thumbColor: string;
+    }
+  }
+  
+  // skeleton
+  skeleton: {
+    backgroundColor: string;
+    lightColor: string;
+  }
 
   // dialog
   dialog: Record<MessageColor, DialogTheme>;
 
   // tooltip
   tooltip: Record<MessageColor, TooltipTheme>;
+  
+  // snackbar
+  snackbar: Record<MessageColor, SnackbarTheme>;
 }
