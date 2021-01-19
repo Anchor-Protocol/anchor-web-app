@@ -17,7 +17,10 @@ function HeaderBase({ className }: HeaderProps) {
       </section>
       <nav>
         <NavLink to="/market">MARKET</NavLink>
-        <a href="https://google.com" target="anchor-developers">
+        <a
+          href="https://anchor-protocol.gitbook.io/anchor-1/"
+          target="anchor-developers"
+        >
           DEVELOPERS
         </a>
         <NavLink to="/contact">CONTACT</NavLink>
