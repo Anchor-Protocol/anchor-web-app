@@ -119,7 +119,7 @@ export function ChromeExtensionWalletProvider({
         });
       }
     },
-    [defaultNetwork, extension],
+    [defaultNetwork, extension, isChrome],
   );
 
   const install = useCallback(() => {
@@ -167,7 +167,7 @@ export function ChromeExtensionWalletProvider({
     if (isChrome) {
       checkStatus(true);
     }
-  }, [checkStatus]);
+  }, [checkStatus, isChrome]);
 
   useEffect(() => {
     console.log(

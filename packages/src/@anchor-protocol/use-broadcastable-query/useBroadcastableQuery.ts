@@ -170,6 +170,7 @@ export function useBroadcastableQuery<Params, Data, Error = unknown>({
       dispatch,
       broadcast,
       notificationFactory,
+      breakOnError,
     ],
   );
 
