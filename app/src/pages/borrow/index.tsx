@@ -90,13 +90,11 @@ export const Borrow = styled(BorrowBase)`
         font-size: 48px;
       }
 
-      margin-bottom: 65px;
+      margin-bottom: 80px;
     }
 
     figure {
-      height: 100px;
-      border-radius: 20px;
-      border: 2px dashed ${({ theme }) => theme.textColor};
+      height: 53px;
     }
   }
 

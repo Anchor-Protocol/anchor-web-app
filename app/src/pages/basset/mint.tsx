@@ -287,11 +287,11 @@ function MintBase({ className }: MintProps) {
                 style={{ textDecoration: 'underline', cursor: 'pointer' }}
                 onClick={() =>
                   updateAssetAmount(
-                    big(bank.userBalances.uLuna).div(MICRO).toString(),
+                    formatLunaInput(big(bank.userBalances.uLuna).div(MICRO)),
                   )
                 }
               >
-                {big(bank.userBalances.uLuna).div(MICRO).toString()} Luna
+                {formatLuna(big(bank.userBalances.uLuna).div(MICRO))} Luna
               </span>
             </span>
           )
@@ -313,7 +313,6 @@ function MintBase({ className }: MintProps) {
         </MuiNativeSelect>
 
         <MuiInput
-          type="number"
           placeholder="0.00"
           error={!!invalidAssetAmount}
           value={assetAmount}
@@ -350,7 +349,6 @@ function MintBase({ className }: MintProps) {
           ))}
         </MuiNativeSelect>
         <MuiInput
-          type="number"
           placeholder="0.00"
           error={!!invalidAssetAmount}
           value={bAssetAmount}

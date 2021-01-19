@@ -1,8 +1,9 @@
 import { Notifications } from 'components/Header/Notifications';
 import { WalletSelector } from 'components/Header/WalletSelector';
+import { screen } from 'env';
 import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 
 export interface HeaderProps {
   className?: string;
@@ -11,21 +12,33 @@ export interface HeaderProps {
 function HeaderBase({ className }: HeaderProps) {
   return (
     <header className={className}>
-      <section>
+      <section className="logo">
         <Link to="/">ANCHOR</Link>
       </section>
-      <nav>
+      <nav className="menu">
         <NavLink to="/earn">EARN</NavLink>
         <NavLink to="/borrow">BORROW</NavLink>
         <NavLink to="/basset">bASSET</NavLink>
       </nav>
-      <section>
+      <section className="wallet">
         <Notifications />
         <WalletSelector />
       </section>
+      <GlobalStyle />
     </header>
   );
 }
+
+const GlobalStyle = createGlobalStyle`
+  @media (max-width: ${screen.tablet.max}px) {
+    body {
+      padding-bottom: 60px;
+    }
+  }
+`;
+
+const desktopLayoutBreak = 1180;
+const mobileLayoutBreak = 550;
 
 export const Header = styled(HeaderBase)`
   // ---------------------------------------------
@@ -38,7 +51,7 @@ export const Header = styled(HeaderBase)`
     text-decoration: none;
   }
 
-  nav {
+  .menu {
     a {
       font-weight: 500;
       color: rgba(255, 255, 255, 0.3);
@@ -54,7 +67,7 @@ export const Header = styled(HeaderBase)`
     }
   }
 
-  > :first-child {
+  .logo {
     a {
       font-size: 13px;
       font-weight: 900;
@@ -65,34 +78,67 @@ export const Header = styled(HeaderBase)`
   // ---------------------------------------------
   // layout
   // ---------------------------------------------
-  // TODO responsive layout
-  //@media (min-width: {screen.tablet.max}px) {
-  height: 74px;
-  padding: 0 80px;
+  @media (min-width: ${desktopLayoutBreak}px) {
+    height: 74px;
+    padding: 0 80px;
 
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  align-items: center;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: center;
 
-  nav {
-    display: flex;
-    justify-content: center;
+    .menu {
+      display: flex;
+      justify-content: center;
 
-    a {
-      &:not(:last-child) {
-        margin-right: 54px;
+      a {
+        &:not(:last-child) {
+          margin-right: 54px;
+        }
+
+        font-size: 13px;
       }
+    }
 
-      font-size: 13px;
+    .wallet {
+      text-align: right;
     }
   }
 
-  > :last-child {
-    text-align: right;
-  }
+  @media (max-width: ${desktopLayoutBreak}px) {
+    height: 74px;
+    padding: 0 80px;
+    
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
-  //}
-  //
-  //@media (max-width: {screen.tablet.max}px) {
-  //}
+    .menu {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+
+      height: 50px;
+      z-index: 10000;
+      
+      font-size: 13px;
+
+      background-color: black;
+
+      display: grid;
+      grid-template-columns: repeat(3, auto);
+      justify-content: space-evenly;
+      align-items: center;
+      
+      box-shadow: 0px 0px 21px 5px rgba(0,0,0,0.18);
+    }
+  }
+  
+  @media (max-width: ${mobileLayoutBreak}px) {
+    justify-content: center;
+    
+    .wallet {
+      display: none;
+    }
+  }
 `;

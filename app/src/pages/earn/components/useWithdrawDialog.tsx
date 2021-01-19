@@ -5,6 +5,7 @@ import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberIn
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import {
   formatUST,
+  formatUSTInput,
   MICRO,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
 } from '@anchor-protocol/notation';
@@ -23,7 +24,6 @@ import { ApolloClient, useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { InfoOutlined } from '@material-ui/icons';
 import { CreateTxOptions } from '@terra-money/terra.js';
-import { useTax } from 'api/queries/tax';
 import * as txi from 'api/queries/txInfos';
 import { queryOptions } from 'api/transactions/queryOptions';
 import {
@@ -94,8 +94,6 @@ function ComponentBase({
   // ---------------------------------------------
   const bank = useBank();
 
-  const { parsedData: tax } = useTax();
-
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
@@ -103,7 +101,7 @@ function ComponentBase({
     if (bank.status === 'demo') {
       return undefined;
     } else if (big(bank.userBalances.uUSD ?? 0).lt(fixedGasUUSD)) {
-      return 'Not enough Tx Fee';
+      return 'Not enough Transaction fee: User wallet might lack of Tx fee (Tax, Gas)';
     }
     return undefined;
   }, [bank.status, bank.userBalances.uUSD]);
@@ -116,28 +114,28 @@ function ComponentBase({
         .mul(MICRO)
         .gt(totalDeposit.totalDeposit ?? 0)
     ) {
-      return `Insufficient balance: Not enough Assets`;
+      return `Insufficient balance: Not enough user's aUST balance`;
     }
     return undefined;
   }, [aAssetAmount, bank.status, totalDeposit.totalDeposit]);
 
   const txFee = useMemo(() => {
-    if (aAssetAmount.length === 0 || !tax) return undefined;
+    if (aAssetAmount.length === 0) return undefined;
 
     // MIN((Withdrawable(User_input)- Withdrawable(User_input) / (1+Tax_rate)), Max_tax) + Fixed_Gas
 
     const uustAmount = big(aAssetAmount).mul(MICRO);
     const ratioTxFee = uustAmount.minus(
-      uustAmount.div(big(1).add(tax.taxRate)),
+      uustAmount.div(big(1).add(bank.tax.taxRate)),
     );
-    const maxTax = big(tax.maxTaxUUSD);
+    const maxTax = big(bank.tax.maxTaxUUSD);
 
     if (ratioTxFee.gt(maxTax)) {
       return maxTax.add(fixedGasUUSD).toString();
     } else {
       return ratioTxFee.add(fixedGasUUSD).toString();
     }
-  }, [aAssetAmount, tax]);
+  }, [aAssetAmount, bank.tax.maxTaxUUSD, bank.tax.taxRate]);
 
   const estimatedAmount = useMemo(() => {
     return aAssetAmount.length > 0 && txFee
@@ -169,7 +167,9 @@ function ComponentBase({
           ...transactionFee,
           msgs: fabricateRedeemStable({
             address: status.status === 'ready' ? status.walletAddress : '',
-            amount: aAssetAmount,
+            amount: big(aAssetAmount)
+              .div(totalDeposit.exchangeRate.exchange_rate)
+              .toString(),
             symbol: 'usd',
           })(addressProvider),
         }).then(({ payload }) => parseResult(payload)),
@@ -180,7 +180,15 @@ function ComponentBase({
         closeDialog();
       }
     },
-    [addressProvider, bank.status, client, closeDialog, fetchWithdraw, post],
+    [
+      addressProvider,
+      bank.status,
+      client,
+      closeDialog,
+      fetchWithdraw,
+      post,
+      totalDeposit.exchangeRate.exchange_rate,
+    ],
   );
 
   // ---------------------------------------------
@@ -237,7 +245,7 @@ function ComponentBase({
               }}
               onClick={() =>
                 updateAAssetAmount(
-                  big(totalDeposit.totalDeposit).div(MICRO).toString(),
+                  formatUSTInput(big(totalDeposit.totalDeposit).div(MICRO)),
                 )
               }
             >

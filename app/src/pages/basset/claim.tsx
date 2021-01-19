@@ -155,14 +155,12 @@ function ClaimBase({ className }: ClaimProps) {
   const claimableRewards = useMemo(() => {
     return claimable
       ? big(
-          big(
-            big(claimable.claimableReward.balance).mul(
-              big(claimable.rewardState.global_index).sub(
-                claimable.claimableReward.index,
-              ),
+          big(claimable.claimableReward.balance).mul(
+            big(claimable.rewardState.global_index).sub(
+              claimable.claimableReward.index,
             ),
-          ).add(claimable.claimableReward.pending_rewards),
-        )
+          ),
+        ).add(claimable.claimableReward.pending_rewards)
       : big(0);
   }, [claimable]);
 

@@ -1,6 +1,8 @@
 import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
 import { gql, QueryResult, useQuery } from '@apollo/client';
+import big from 'big.js';
 import { useAddressProvider } from 'contexts/contract';
+import { safeRatio } from 'env';
 import { useMemo } from 'react';
 import { Data as MarketBalanceOverviewData } from './marketBalanceOverview';
 
@@ -38,6 +40,7 @@ export interface Data {
   };
 
   bLunaMaxLtv: string;
+  bLunaSafeLtv: string;
 }
 
 export function parseData(
@@ -61,6 +64,7 @@ export function parseData(
     oraclePrice: JSON.parse(oraclePrice.Result),
     overseerWhitelist: parsedOverseerWhitelist,
     bLunaMaxLtv,
+    bLunaSafeLtv: big(bLunaMaxLtv).mul(safeRatio).toString(),
   };
 }
 

@@ -81,7 +81,7 @@ function NotificationsBase({ className }: NotificationsProps) {
             <NotificationsNone style={{ opacity: 0.1 }} />
           )}
         </IconButton>
-        {open ? (
+        {open && (
           <ul className="dropdown">
             {notifications.length > 0 ? (
               Children.toArray(notifications)
@@ -89,7 +89,7 @@ function NotificationsBase({ className }: NotificationsProps) {
               <li>No Alram</li>
             )}
           </ul>
-        ) : null}
+        )}
       </div>
     </ClickAwayListener>
   ) : null;

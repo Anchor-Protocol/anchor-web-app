@@ -3,7 +3,7 @@
  */
 export interface StationNetworkInfo {
   name: string;
-  chainId: string;
+  chainID: string;
   lcd: string;
   fcd: string;
   /** WebSocket Address */

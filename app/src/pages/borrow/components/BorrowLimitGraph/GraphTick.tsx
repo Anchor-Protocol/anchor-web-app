@@ -1,17 +1,12 @@
 import styled from 'styled-components';
 
 export const GraphTick = styled.span`
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 300;
-  color: ${({ theme }) => theme.dimTextColor};
+  color: ${({ theme }) => theme.textColor};
 
-  top: -28px;
+  top: -30px;
   transform: translateX(-50%);
-  
-  word-break: keep-all;
-  white-space: nowrap;
-  
-  user-select: none;
 
   &::before {
     content: '';

@@ -22,7 +22,10 @@ const defaultBarHeight: number = 14;
 const defaultBoxRadius: number = 7;
 
 export interface HorizontalGraphBarProps<T>
-  extends DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement> {
+  extends Omit<
+    DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>,
+    'children'
+  > {
   /** Graph minimum value (bar start point) */
   min: number;
 
@@ -30,7 +33,7 @@ export interface HorizontalGraphBarProps<T>
   max: number;
 
   /** Data */
-  values: T[];
+  data: T[];
 
   /**
    * Render labels (create label react elements) it will call after bar rendering
@@ -46,6 +49,8 @@ export interface HorizontalGraphBarProps<T>
   /** Get the color code from the value */
   colorFunction: (value: T) => string;
 
+  children?: ReactNode | ((coordinateSpace: Rect) => ReactNode);
+
   barHeight?: number;
   boxRadis?: number;
 }
@@ -55,7 +60,7 @@ function HorizontalGraphBarBase<T>({
   min,
   max,
   children,
-  values,
+  data,
   valueFunction,
   colorFunction,
   labelRenderer,
@@ -67,9 +72,18 @@ function HorizontalGraphBarBase<T>({
 
   const total = max - min;
 
-  const rects = useMemo<Rect[]>(() => {
-    return values.map((value) => {
-      const r: number = (valueFunction(value) - min) / total;
+  const coordinateSpace = useMemo<Rect>(() => {
+    return {
+      x: padding,
+      y: padding,
+      width: width - padding * 2,
+      height: barHeight - padding * 2,
+    };
+  }, [barHeight, width]);
+
+  const graphRects = useMemo<Rect[]>(() => {
+    return data.map((item) => {
+      const r: number = (valueFunction(item) - min) / total;
 
       return {
         x: padding,
@@ -78,27 +92,29 @@ function HorizontalGraphBarBase<T>({
         height: barHeight - padding * 2,
       };
     });
-  }, [barHeight, min, total, valueFunction, values, width]);
+  }, [barHeight, min, total, valueFunction, data, width]);
 
   return (
     <div {...divProps} ref={ref} className={className}>
       <svg width={width} height={barHeight}>
         {Children.toArray(
-          rects.map((rect, i) => (
+          graphRects.map((rect, i) => (
             <rect
               {...rect}
               rx={boxRadis - padding}
               ry={boxRadis - padding}
-              fill={colorFunction(values[i])}
+              fill={colorFunction(data[i])}
             />
           )),
         )}
       </svg>
+
       {typeof labelRenderer === 'function' &&
         Children.toArray(
-          rects.map((rect, i) => labelRenderer(values[i], rect)),
+          graphRects.map((rect, i) => labelRenderer(data[i], rect)),
         )}
-      {children}
+
+      {typeof children === 'function' ? children(coordinateSpace) : children}
     </div>
   );
 }

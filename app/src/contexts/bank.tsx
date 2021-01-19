@@ -34,6 +34,7 @@ export function BankProvider({ children }: BankProviderProps) {
   const { status } = useWallet();
 
   const { parsedData: taxData, refetch: refetchTax } = useTax();
+
   const {
     parsedData: userBalancesData,
     refetch: refetchUserBalances,
