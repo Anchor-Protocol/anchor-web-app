@@ -24,6 +24,16 @@ And you can run scripts
 - `yarn run packages:build-storybook`
 - `yarn run packages:test`
 
+# Domains
+
+## `/app`
+
+|master                              |develop                                |
+|------------------------------------|---------------------------------------|
+|<https://app.anchorprotocol.com>    |<https://app-dev.anchorprotocol.com>   |
+|<https://app.anchor.money>          |<https://app-dev.anchor.money>         |
+|<https://app.anchor.market>         |<https://app-dev.anchor.>              |
+
 # Environments
 
 ## GraphQL
