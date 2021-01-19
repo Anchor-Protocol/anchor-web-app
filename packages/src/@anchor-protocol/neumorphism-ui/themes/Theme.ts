@@ -14,6 +14,11 @@ export interface TooltipTheme {
   textColor: string;
 }
 
+export interface SnackbarTheme {
+  backgroundColor: string;
+  textColor: string;
+}
+
 export interface NeumorphismTheme extends Theme {
   // neumorphism
   intensity: number;
@@ -80,4 +85,7 @@ export interface NeumorphismTheme extends Theme {
 
   // tooltip
   tooltip: Record<MessageColor, TooltipTheme>;
+  
+  // snackbar
+  snackbar: Record<MessageColor, SnackbarTheme>;
 }

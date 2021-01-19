@@ -1,9 +1,9 @@
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import {
   ErrorSnackbarContent,
-  InfoSnackbarContent,
   NormalSnackbarContent,
   SnackbarContent,
+  SuccessSnackbarContent,
   WarningSnackbarContent,
 } from '@anchor-protocol/neumorphism-ui/components/Snackbar';
 import {
@@ -29,7 +29,7 @@ export default {
 
 let count: number = 0;
 
-const autoClose = undefined;
+const autoClose = 1000 * 60;
 
 export const Basic = () => {
   const { addSnackbar, snackbarContainerRef } = useSnackbar();
@@ -90,7 +90,7 @@ export const Basic = () => {
 
           addSnackbar(
             <Snackbar autoClose={autoClose}>
-              <InfoSnackbarContent
+              <SuccessSnackbarContent
                 message={`${count} HELLO SNACKBAR!`}
                 action={[
                   <Button key="undo" color="inherit" size="small">
@@ -105,7 +105,7 @@ export const Basic = () => {
           );
         }}
       >
-        Info
+        Success
       </ActionButton>
 
       <ActionButton

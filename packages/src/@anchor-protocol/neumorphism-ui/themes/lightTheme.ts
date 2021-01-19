@@ -82,12 +82,31 @@ export const lightTheme: DefaultTheme = {
 
   tooltip: {
     normal: {
-      backgroundColor: 'rgba(0, 0, 0, 0.6)',
-      textColor: '#ffffff',
+      backgroundColor: '#94f3b8',
+      textColor: '#1f1f1f',
     },
     warning: {
       backgroundColor: '#dd8f5c',
       textColor: '#ffffff',
+    },
+    error: {
+      backgroundColor: '#ef3158',
+      textColor: '#ffffff',
+    },
+    success: {
+      backgroundColor: '#3e9bba',
+      textColor: '#ffffff',
+    },
+  },
+  
+  snackbar: {
+    normal: {
+      backgroundColor: '#94f3b8',
+      textColor: '#1f1f1f',
+    },
+    warning: {
+      backgroundColor: '#dd8f5c',
+      textColor: '#1f1f1f',
     },
     error: {
       backgroundColor: '#ef3158',

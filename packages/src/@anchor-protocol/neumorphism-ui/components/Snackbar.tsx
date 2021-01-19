@@ -4,9 +4,7 @@ import styled from 'styled-components';
 
 export const SnackbarContent: ComponentType<SnackbarContentProps> = styled(MuiSnackbarContent)`
   && {
-    border-radius: 0;
-    background-color: var(--snackbar-background-color);
-    color: var(--snackbar-label-color);
+    border-radius: 5px;
 
     .MuiButton-label,
     .MuiIconButton-label {
@@ -16,21 +14,29 @@ export const SnackbarContent: ComponentType<SnackbarContentProps> = styled(MuiSn
 `;
 
 export const NormalSnackbarContent: ComponentType<SnackbarContentProps> = styled(SnackbarContent)`
-  --snackbar-background-color: rgba(255, 255, 255, 0.6);
-  --snackbar-label-color: #030a18;
+  && {
+    background-color: ${({theme}) => theme.snackbar.normal.backgroundColor};
+    color: ${({theme}) => theme.snackbar.normal.textColor};
+  }
 `;
 
-export const InfoSnackbarContent: ComponentType<SnackbarContentProps> = styled(SnackbarContent)`
-  --snackbar-background-color: #00a4c8;
-  --snackbar-label-color: #ffffff;
+export const SuccessSnackbarContent: ComponentType<SnackbarContentProps> = styled(SnackbarContent)`
+  && {
+    background-color: ${({theme}) => theme.snackbar.success.backgroundColor};
+    color: ${({theme}) => theme.snackbar.success.textColor};
+  }
 `;
 
 export const WarningSnackbarContent: ComponentType<SnackbarContentProps> = styled(SnackbarContent)`
-  --snackbar-background-color: #d6ae41;
-  --snackbar-label-color: #ffffff;
+  && {
+    background-color: ${({theme}) => theme.snackbar.warning.backgroundColor};
+    color: ${({theme}) => theme.snackbar.warning.textColor};
+  }
 `;
 
 export const ErrorSnackbarContent: ComponentType<SnackbarContentProps> = styled(SnackbarContent)`
-  --snackbar-background-color: #c9434b;
-  --snackbar-label-color: #ffffff;
+  && {
+    background-color: ${({theme}) => theme.snackbar.error.backgroundColor};
+    color: ${({theme}) => theme.snackbar.error.textColor};
+  }
 `;

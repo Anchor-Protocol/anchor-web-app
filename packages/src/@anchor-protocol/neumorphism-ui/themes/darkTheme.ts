@@ -90,7 +90,26 @@ export const darkTheme: DefaultTheme = {
   
   tooltip: {
     normal: {
-      backgroundColor: 'rgba(255, 255, 255, 0.5)',
+      backgroundColor: '#363d5e',
+      textColor: '#ffffff',
+    },
+    warning: {
+      backgroundColor: '#d69f34',
+      textColor: '#ffffff',
+    },
+    error: {
+      backgroundColor: '#ac2b45',
+      textColor: '#ffffff',
+    },
+    success: {
+      backgroundColor: '#3e9bba',
+      textColor: '#ffffff',
+    },
+  },
+  
+  snackbar: {
+    normal: {
+      backgroundColor: '#363d5e',
       textColor: '#ffffff',
     },
     warning: {
