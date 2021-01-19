@@ -1,4 +1,5 @@
 import { Extension } from '@terra-money/terra.js';
+import { matchesUA } from 'browserslist-useragent';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { UserDeniedError } from './errors';
 import { StationNetworkInfo, WalletStatus } from './types';
@@ -23,19 +24,30 @@ async function intervalCheck(
   return false;
 }
 
+const isChrome = matchesUA(navigator.userAgent, {
+  browsers: ['Chrome > 60'],
+  allowHigherVersions: true,
+});
+
 export function ChromeExtensionWalletProvider({
   children,
+  defaultNetwork,
 }: WalletProviderProps) {
   const extension = useMemo<Extension>(() => new Extension(), []);
 
   const [status, setStatus] = useState<WalletStatus>(() => ({
-    status: 'initializing',
+    status: isChrome ? 'initializing' : 'unavailable',
+    network: defaultNetwork,
   }));
 
   const firstCheck = useRef<boolean>(false);
 
   const checkStatus = useCallback(
     async (watingExtensionScriptInjection: boolean = false) => {
+      if (!isChrome) {
+        return;
+      }
+
       if (!watingExtensionScriptInjection && !firstCheck.current) {
         return;
       }
@@ -69,7 +81,7 @@ export function ChromeExtensionWalletProvider({
           }
 
           return prev.status !== 'not_installed'
-            ? { status: 'not_installed' }
+            ? { status: 'not_installed', network: defaultNetwork }
             : prev;
         });
         return;
@@ -105,7 +117,7 @@ export function ChromeExtensionWalletProvider({
         });
       }
     },
-    [extension],
+    [defaultNetwork, extension],
   );
 
   const install = useCallback(() => {
@@ -150,7 +162,9 @@ export function ChromeExtensionWalletProvider({
   );
 
   useEffect(() => {
-    checkStatus(true);
+    if (isChrome) {
+      checkStatus(true);
+    }
   }, [checkStatus]);
 
   useEffect(() => {

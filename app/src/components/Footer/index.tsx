@@ -1,4 +1,5 @@
 import { IconButton } from '@material-ui/core';
+import { WifiTethering } from '@material-ui/icons';
 import { Discord } from '@anchor-protocol/icons';
 import { screen } from 'env';
 import { CSSProperties } from 'react';

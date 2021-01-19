@@ -25,6 +25,27 @@ export const transactionFee = {
   gasAdjustment: 1.4,
 };
 
+export const onProduction =
+  global.location.host === 'app.anchorprotocol.com' ||
+  global.location.host === 'app.anchor.money' ||
+  global.location.host === 'app.anchor.market';
+
+export const defaultNetwork = onProduction
+  ? {
+      chainID: 'columbus-4',
+      fcd: 'https://fcd.terra.dev',
+      lcd: 'https://lcd.terra.dev',
+      name: 'mainnet',
+      ws: 'wss://fcd.terra.dev',
+    }
+  : {
+      chainID: 'tequila-0004',
+      fcd: 'https://tequila-fcd.terra.dev',
+      lcd: 'https://tequila-lcd.terra.dev',
+      name: 'testnet',
+      ws: 'wss://tequila-ws.terra.dev',
+    };
+
 /**
  * @deprecated will remove
  */
@@ -40,5 +61,5 @@ export const contractAddresses = {
   mmLiquidation: 'terra14pdcpx6szzfvhz4g6dfddkx82f5ssf8llmzpw4',
   anchorToken: 'terra10c0q6qyk2634tfx2nw9v4gxqlm7a0luk9huhy8',
   terraswapFactory: 'terra1mtvsarza55hehpmyjgw7edqwvxpq5qquvttz9n',
-  terraswapPair: 'unused'
+  terraswapPair: 'unused',
 };
