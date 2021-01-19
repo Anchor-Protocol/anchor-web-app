@@ -2,6 +2,7 @@ import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionB
 import { darkTheme } from '@anchor-protocol/neumorphism-ui/themes/darkTheme';
 import { ThemeProvider } from '@anchor-protocol/neumorphism-ui/themes/ThemeProvider';
 import { BroadcastableQueryResult } from '@anchor-protocol/use-broadcastable-query';
+import { UserDeniedError } from '@anchor-protocol/wallet-provider';
 import { ApolloClient } from '@apollo/client';
 import {
   SnackbarContent as MuiSnackbarContent,
@@ -89,12 +90,16 @@ export function TxResultRenderer({
       <>
         <ul style={{ listStyle: 'none', padding: 0, color: 'red' }}>
           <li>Status: Error</li>
-          <li>
-            Error
-            <ul>
-              <li>error: {result.error.toString()}</li>
-            </ul>
-          </li>
+          {result.error instanceof UserDeniedError ? (
+            <li>User Denied</li>
+          ) : (
+            <li>
+              Error
+              <ul>
+                <li>error: {result.error.toString()}</li>
+              </ul>
+            </li>
+          )}
         </ul>
         <ActionButton
           style={{ width: '100%' }}

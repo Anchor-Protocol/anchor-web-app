@@ -1,5 +1,6 @@
 import { Extension } from '@terra-money/terra.js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { UserDeniedError } from './errors';
 import { StationNetworkInfo, WalletStatus } from './types';
 import { WalletContext, WalletProviderProps, WalletState } from './useWallet';
 
@@ -30,7 +31,7 @@ export function ChromeExtensionWalletProvider({
   const [status, setStatus] = useState<WalletStatus>(() => ({
     status: 'initializing',
   }));
-  
+
   const firstCheck = useRef<boolean>(false);
 
   const checkStatus = useCallback(
@@ -38,11 +39,11 @@ export function ChromeExtensionWalletProvider({
       if (!watingExtensionScriptInjection && !firstCheck.current) {
         return;
       }
-      
+
       const isExtensionInstalled = watingExtensionScriptInjection
         ? await intervalCheck(20, () => extension.isAvailable)
         : extension.isAvailable;
-      
+
       firstCheck.current = true;
 
       if (!isExtensionInstalled) {
@@ -133,10 +134,14 @@ export function ChromeExtensionWalletProvider({
 
   const post = useCallback<WalletState['post']>(
     (data) => {
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         extension.post({ ...(data as any), purgeQueue: true });
-        extension.once('onPost', (payload) => {
-          resolve({ name: 'onPost', payload });
+        extension.once('onPost', ({ error, ...payload }) => {
+          if (error && 'code' in error && error.code === 1) {
+            reject(new UserDeniedError());
+          } else {
+            resolve({ name: 'onPost', payload });
+          }
         });
       });
       //return extension.request('post', data) as any;
