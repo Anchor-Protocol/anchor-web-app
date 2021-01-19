@@ -1,5 +1,6 @@
 import { Wallet } from '@anchor-protocol/icons';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
+import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { TextButton } from '@anchor-protocol/neumorphism-ui/components/TextButton';
 import {
   formatLuna,
@@ -89,20 +90,24 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
         <ClickAwayListener onClickAway={onClickAway}>
           <div className={className}>
             <WalletButton onClick={toggleOpen}>
-              <Wallet /> {truncate(status.walletAddress)}
-              {bank.status === 'connected' && (
-                <div>
-                  {formatUSTWithPostfixUnits(
-                    big(bank.userBalances.uUSD).div(MICRO),
-                  )}{' '}
-                  UST
-                </div>
-              )}
+              <IconSpan>
+                <Wallet /> {truncate(status.walletAddress)}
+                {bank.status === 'connected' && (
+                  <div>
+                    {formatUSTWithPostfixUnits(
+                      big(bank.userBalances.uUSD).div(MICRO),
+                    )}{' '}
+                    UST
+                  </div>
+                )}
+              </IconSpan>
             </WalletButton>
             {open && (
               <WalletDropdown>
                 <h2>
-                  <Wallet /> {truncate(status.walletAddress)}
+                  <IconSpan>
+                    <Wallet /> {truncate(status.walletAddress)}
+                  </IconSpan>
                 </h2>
                 <ActionButton onClick={disconnect}>Disconnect</ActionButton>
                 <TextButton onClick={setCopied}>
@@ -170,12 +175,6 @@ export const WalletButton = styled.button`
   color: #ffffff;
 
   cursor: pointer;
-
-  svg {
-    font-size: 1em;
-    transform: translateY(0.15em);
-    margin-right: 0.1em;
-  }
 
   div {
     position: relative;
