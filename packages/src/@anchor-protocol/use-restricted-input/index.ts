@@ -38,11 +38,13 @@ export default function useRestrictedInput(
 export interface RestrictedNumberInputParams {
   type?: 'decimal' | 'integer';
   maxDecimalPoints?: number;
+  maxIntegerPoinsts?: number;
 }
 
 export function useRestrictedNumberInput({
   type = 'decimal',
   maxDecimalPoints,
+  maxIntegerPoinsts,
 }: RestrictedNumberInputParams): RestrictedInputReturn {
   const { onKeyPress: restrictCharacters } = useRestrictedInput(
     type === 'integer' ? '0-9' : '0-9.',
@@ -79,6 +81,8 @@ export function useRestrictedNumberInput({
 
       if (
         Number.isNaN(+nextValue) ||
+        (typeof maxIntegerPoinsts === 'number' &&
+          new RegExp(`^[0-9]{${maxIntegerPoinsts + 1},}`)) ||
         (type === 'decimal' &&
           typeof maxDecimalPoints === 'number' &&
           new RegExp(`\\.[0-9]{${maxDecimalPoints + 1},}$`).test(nextValue))
@@ -87,7 +91,7 @@ export function useRestrictedNumberInput({
         event.stopPropagation();
       }
     },
-    [maxDecimalPoints, restrictCharacters, type],
+    [maxDecimalPoints, maxIntegerPoinsts, restrictCharacters, type],
   );
 
   return { onKeyPress };
