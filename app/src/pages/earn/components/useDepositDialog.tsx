@@ -256,7 +256,7 @@ function ComponentBase({
   }
 
   return (
-    <Modal open>
+    <Modal open onClose={() => closeDialog()}>
       <Dialog className={className} onClose={() => closeDialog()}>
         <h1>Deposit</h1>
 
