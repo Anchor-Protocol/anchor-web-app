@@ -1,4 +1,4 @@
-import { TxResult } from './tx';
+import { TxResult } from 'transactions/tx';
 
 export class TxError extends Error {
   constructor(readonly msgs: TxResult['msgs']) {

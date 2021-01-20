@@ -5,7 +5,7 @@ import {
   StringifiedData,
   StringifiedVariables,
   stringifyVariables,
-} from '../userBalances';
+} from 'queries/userBalances';
 
 describe('queries/userBalances', () => {
   test('should get result from query', async () => {
@@ -19,7 +19,7 @@ describe('queries/userBalances', () => {
         }),
       })
       .then(({ data }) => parseData(data));
-    
+
     expect(+data.uUSD).not.toBeNaN();
     expect(+data.uLuna).not.toBeNaN();
     expect(+data.ubLuna).not.toBeNaN();

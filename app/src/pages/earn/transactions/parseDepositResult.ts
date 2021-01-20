@@ -1,6 +1,6 @@
-import { Data } from 'api/queries/txInfos';
-import { TxResult } from 'api/transactions/tx';
 import big from 'big.js';
+import { Data } from 'queries/txInfos';
+import { TxResult } from 'transactions/tx';
 
 interface Result {
   depositAmount: string | undefined;
@@ -8,10 +8,9 @@ interface Result {
   exchangeRate: string | undefined;
   txFee: string;
   txHash: string;
-  rawLog: string;
 }
 
-export function pickDepositResult({
+export function parseDepositResult({
   txInfos,
   txResult,
 }: { txResult: TxResult } & { txInfos: Data }): Result {
@@ -42,14 +41,11 @@ export function pickDepositResult({
 
   const txHash = txResult.result.txhash;
 
-  const rawLog = JSON.stringify({ txInfos, txResult }, null, 2);
-
   return {
     depositAmount,
     receivedAmount,
     exchangeRate,
     txFee,
     txHash,
-    rawLog,
   };
 }

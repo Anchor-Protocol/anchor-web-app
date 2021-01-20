@@ -3,9 +3,9 @@ import {
   stopWithAbortSignal,
 } from '@anchor-protocol/use-broadcastable-query';
 import { ApolloClient } from '@apollo/client';
-import { Data, queryTxInfo } from 'api/queries/txInfos';
-import { TxResult } from 'api/transactions/tx';
-import { TxError } from 'api/transactions/TxError';
+import { Data, queryTxInfo } from 'queries/txInfos';
+import { TxResult } from 'transactions/tx';
+import { TxError } from 'transactions/TxError';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 

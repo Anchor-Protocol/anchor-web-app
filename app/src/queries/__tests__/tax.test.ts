@@ -1,26 +1,21 @@
+import big from 'big.js';
 import { testClient } from 'test.env';
 import {
   parseData,
   query,
   StringifiedData,
   StringifiedVariables,
-  stringifyVariables,
-} from 'api/queries/txInfos';
+} from 'queries/tax';
 
-describe('queries/txInfos', () => {
+describe('queries/tax', () => {
   test('should get result from query', async () => {
     const data = await testClient
       .query<StringifiedData, StringifiedVariables>({
         query,
-        variables: stringifyVariables({
-          txHash:
-            '045445EAA0D898DC4120051C5967C6A03561321CAD09E3F2AB4655D0A9457625',
-        }),
       })
       .then(({ data }) => parseData(data));
 
-    console.log('txInfos.test.ts..()', data);
-
-    expect(data.length).toBeGreaterThan(0);
+    expect(big(data.taxRate).gt(0)).toBeTruthy();
+    expect(big(data.maxTaxUUSD).gt(0)).toBeTruthy();
   });
 });

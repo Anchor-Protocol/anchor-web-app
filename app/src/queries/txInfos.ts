@@ -67,9 +67,7 @@ export const query = gql`
 export function queryTxInfo(
   client: ApolloClient<any>,
   txHash: string,
-): Promise<
-  ApolloQueryResult<StringifiedData> & { parsedData: Data }
-> {
+): Promise<ApolloQueryResult<StringifiedData> & { parsedData: Data }> {
   return client
     .query<StringifiedData, StringifiedVariables>({
       query,

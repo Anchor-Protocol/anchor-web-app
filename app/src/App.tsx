@@ -13,7 +13,7 @@ import {
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 import { Banner } from 'components/Banner';
 import { Header } from 'components/Header';
-import { SnackbarContainer } from 'components/snackbar/SnackbarContainer';
+import { SnackbarContainer } from 'components/SnackbarContainer';
 import { BankProvider } from 'contexts/bank';
 import { ContractProvider } from 'contexts/contract';
 import { contractAddresses, defaultNetwork } from 'env';
