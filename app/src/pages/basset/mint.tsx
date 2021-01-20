@@ -307,7 +307,7 @@ function MintBase({ className }: MintProps) {
         </MuiNativeSelect>
 
         <MuiInput
-          placeholder="0.00"
+          placeholder="0"
           error={!!invalidAssetAmount}
           value={assetAmount}
           onKeyPress={onLunaInputKeyPress as any}
@@ -343,7 +343,7 @@ function MintBase({ className }: MintProps) {
           ))}
         </MuiNativeSelect>
         <MuiInput
-          placeholder="0.00"
+          placeholder="0"
           error={!!invalidAssetAmount}
           value={bAssetAmount}
           onKeyPress={onLunaInputKeyPress as any}

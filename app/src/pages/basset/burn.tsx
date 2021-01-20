@@ -284,7 +284,7 @@ function BurnBase({ className }: BurnProps) {
           ))}
         </MuiNativeSelect>
         <MuiInput
-          placeholder="0.00"
+          placeholder="0"
           error={!!invalidBAssetAmount}
           value={bAssetAmount}
           onKeyPress={onLunaInputKeyPress as any}
@@ -322,7 +322,7 @@ function BurnBase({ className }: BurnProps) {
           ))}
         </MuiNativeSelect>
         <MuiInput
-          placeholder="0.00"
+          placeholder="0"
           error={!!invalidBAssetAmount}
           value={assetAmount}
           onKeyPress={onLunaInputKeyPress as any}
