@@ -25,7 +25,7 @@ export class SingleTimer extends EventTarget {
     if (this._started) return;
 
     this._lastTime = Date.now();
-    this._intervalId = setInterval(this.intervalCallback, this.interval);
+    this._intervalId = setInterval(this.intervalCallback, this.interval) as any;
     this._started = true;
   };
 
@@ -49,7 +49,7 @@ export class SingleTimer extends EventTarget {
     if (!this._started || !this._paused) return;
 
     this._lastTime = Date.now();
-    this._intervalId = setInterval(this.intervalCallback, this.interval);
+    this._intervalId = setInterval(this.intervalCallback, this.interval) as any;
     this._paused = false;
   };
 

@@ -16,7 +16,7 @@ export class MultiTimer extends EventTarget {
 
     if (!this.started) {
       this.lastTime = Date.now();
-      this.intervalId = setInterval(this.intervalLoop, this.interval);
+      this.intervalId = setInterval(this.intervalLoop, this.interval) as any;
       this.started = true;
     }
   };
@@ -55,7 +55,7 @@ export class MultiTimer extends EventTarget {
     if (!this.started || !this.paused) return;
 
     this.lastTime = Date.now();
-    this.intervalId = setInterval(this.intervalLoop, this.interval);
+    this.intervalId = setInterval(this.intervalLoop, this.interval) as any;
     this.paused = false;
   };
 
