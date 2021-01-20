@@ -80,6 +80,7 @@
     "graphql-tag": "^2.11.0",
     "multiplerun": "^1.1.2",
     "puppeteer": "^5.5.0",
+    "raw-loader": "^4.0.2",
     "react": "^17.0.1",
     "react-app-rewire-alias": "^0.1.9",
     "react-app-rewired": "^2.1.8",

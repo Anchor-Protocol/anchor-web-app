@@ -85,7 +85,10 @@ export const Polling_Block_Creation = () => {
   const transct = useCallback(async () => {
     // transact to terra station
     const txHash: string = await new Promise((resolve) =>
-      setTimeout(resolve('Block' + Math.floor(Math.random() * 1000000)), 3000),
+      setTimeout(
+        () => resolve('Block' + Math.floor(Math.random() * 1000000)),
+        3000,
+      ),
     );
 
     await fetch({ txHash });
