@@ -7,7 +7,6 @@
   "workspaces": [
     "app",
     "landing",
-    "design",
     "packages"
   ],
   "scripts": {
