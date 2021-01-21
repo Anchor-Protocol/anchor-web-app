@@ -63,6 +63,7 @@
     "event-target-shim": "^6.0.2",
     "fastdom": "^1.0.10",
     "graphql": "^15.4.0",
+    "immer": "^8.0.1",
     "lodash.throttle": "^4.1.1",
     "numeral": "^2.0.6",
     "react": "^17.0.1",

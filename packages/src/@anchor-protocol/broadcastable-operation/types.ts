@@ -1,13 +1,15 @@
 import type { ReactNode } from 'react';
 
-export type Operator<T, R> = (param: T) => Promise<R> | R;
-
+// ---------------------------------------------
+// result types
+// ---------------------------------------------
 export type Ready = {
   status: 'ready';
 };
 
-export type InProgress = {
+export type InProgress<Snapshot extends Array<any>> = {
   status: 'in-progress';
+  snapshots: Snapshot;
   abort: () => void;
 };
 
@@ -20,8 +22,13 @@ export type Done<Data, Snapshot extends Array<any>> = {
 
 export type OperationResult<Data, Snapshot extends Array<any>> =
   | Ready
-  | InProgress
+  | InProgress<Snapshot>
   | Done<Data, Snapshot>;
+
+// ---------------------------------------------
+// developer interfaces
+// ---------------------------------------------
+export type Operator<T, R> = (param: T) => Promise<R> | R;
 
 export interface OperationOptions<
   Data,
@@ -30,11 +37,9 @@ export interface OperationOptions<
 > {
   id?: string;
   broadcastableWhen?: 'always' | 'unmounted' | 'none';
-  timeout?: number;
   pipe: Pipe;
-  renderBroadcast: (
-    props: Ready | InProgress | Done<Data, Snapshot>,
-  ) => ReactNode;
+  renderBroadcast: (props: OperationResult<Data, Snapshot>) => ReactNode;
+  timeout?: number;
 }
 
 export type OperationReturn<T, Data, Snapshot extends Array<any>> = [
