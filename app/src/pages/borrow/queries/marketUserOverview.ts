@@ -10,6 +10,10 @@ export interface StringifiedData {
     Result: string;
   };
 
+  liability: {
+    Result: string;
+  };
+
   borrowInfo: {
     Result: string;
   };
@@ -21,6 +25,12 @@ export interface Data {
     loan_amount: string;
   };
 
+  liability: {
+    borrower: string;
+    loan_amount: string;
+    interest_index: string;
+  };
+
   borrowInfo: {
     borrower: string;
     balance: string;
@@ -28,9 +38,14 @@ export interface Data {
   };
 }
 
-export function parseData({ loanAmount, borrowInfo }: StringifiedData): Data {
+export function parseData({
+  loanAmount,
+  liability,
+  borrowInfo,
+}: StringifiedData): Data {
   return {
     loanAmount: JSON.parse(loanAmount.Result),
+    liability: JSON.parse(liability.Result),
     borrowInfo: JSON.parse(borrowInfo.Result),
   };
 }
@@ -38,6 +53,7 @@ export function parseData({ loanAmount, borrowInfo }: StringifiedData): Data {
 export interface StringifiedVariables {
   marketContractAddress: string;
   marketLoanQuery: string;
+  marketLiabilityQuery: string;
   custodyContractAddress: string;
   custodyBorrowerQuery: string;
 }
@@ -67,6 +83,11 @@ export function stringifyVariables({
   return {
     marketContractAddress,
     marketLoanQuery: JSON.stringify(marketLoanQuery),
+    marketLiabilityQuery: JSON.stringify({
+      liability: {
+        borrower: marketLoanQuery.loan_amount.borrower,
+      },
+    }),
     custodyContractAddress,
     custodyBorrowerQuery: JSON.stringify(custodyBorrowerQuery),
   };
@@ -76,12 +97,20 @@ export const query = gql`
   query(
     $marketContractAddress: String!
     $marketLoanQuery: String!
+    $marketLiabilityQuery: String!
     $custodyContractAddress: String!
     $custodyBorrowerQuery: String!
   ) {
     loanAmount: WasmContractsContractAddressStore(
       ContractAddress: $marketContractAddress
       QueryMsg: $marketLoanQuery
+    ) {
+      Result
+    }
+
+    liability: WasmContractsContractAddressStore(
+      ContractAddress: $marketContractAddress
+      QueryMsg: $marketLiabilityQuery
     ) {
       Result
     }

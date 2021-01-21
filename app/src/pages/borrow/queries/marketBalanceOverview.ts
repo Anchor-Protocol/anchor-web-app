@@ -18,7 +18,7 @@ export interface Data {
   marketState: {
     total_liabilities: string;
     total_reserves: string;
-    last_interest_updated: 123456789;
+    last_interest_updated: number;
     global_interest_index: string;
   };
 }

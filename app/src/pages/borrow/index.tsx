@@ -42,11 +42,12 @@ function BorrowBase({ className }: BorrowProps) {
           />
           <LoanList
             className="loan-list"
+            marketBalance={marketBalance}
             marketOverview={marketOverview}
             marketUserOverview={marketUserOverview}
           />
         </div>
-        
+
         <Footer />
       </main>
     </div>

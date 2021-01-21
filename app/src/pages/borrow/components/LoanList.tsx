@@ -16,17 +16,20 @@ import { useBorrowDialog } from 'pages/borrow/components/useBorrowDialog';
 import { useRepayDialog } from 'pages/borrow/components/useRepayDialog';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
+import { Data as MarketBalance } from 'pages/borrow/queries/marketBalanceOverview';
 import { useMemo } from 'react';
 import styled from 'styled-components';
 
 export interface LoanListProps {
   className?: string;
+  marketBalance: MarketBalance | undefined;
   marketOverview: MarketOverview | undefined;
   marketUserOverview: MarketUserOverview | undefined;
 }
 
 function LoanListBase({
   className,
+  marketBalance,
   marketOverview,
   marketUserOverview,
 }: LoanListProps) {
@@ -123,12 +126,14 @@ function LoanListBase({
               <ActionButton
                 disabled={
                   status.status !== 'ready' ||
+                  !marketBalance ||
                   !marketOverview ||
                   !marketUserOverview ||
                   big(marketUserOverview.loanAmount.loan_amount).lte(0)
                 }
                 onClick={() =>
                   openRepayDialog({
+                    marketBalance: marketBalance!,
                     marketOverview: marketOverview!,
                     marketUserOverview: marketUserOverview!,
                   })

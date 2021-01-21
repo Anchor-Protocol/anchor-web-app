@@ -25,6 +25,7 @@ import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { CreateTxOptions } from '@terra-money/terra.js';
+import { Data as MarketBalance } from 'pages/borrow/queries/marketBalanceOverview';
 import * as txi from 'queries/txInfos';
 import { queryOptions } from 'transactions/queryOptions';
 import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
@@ -50,6 +51,7 @@ import styled from 'styled-components';
 
 interface FormParams {
   className?: string;
+  marketBalance: MarketBalance;
   marketOverview: MarketOverview;
   marketUserOverview: MarketUserOverview;
 }
@@ -69,6 +71,7 @@ const Template: DialogTemplate<FormParams, FormReturn> = (props) => {
 
 function ComponentBase({
   className,
+  marketBalance,
   marketOverview,
   marketUserOverview,
   closeDialog,
@@ -165,8 +168,45 @@ function ComponentBase({
   }, [marketOverview.borrowRate.rate]);
 
   const totalBorrows = useMemo(() => {
-    return marketUserOverview.loanAmount.loan_amount;
-  }, [marketUserOverview.loanAmount.loan_amount]);
+    const bufferBlocks = 20;
+
+    //- block_height = marketBalanceOverview.ts / currentBlock
+    //- global_index = marketBalanceOverview.ts / marketState.global_interest_index
+    //- last_interest_updated = marketBalanceOverview.ts / marketState.last_interest_updated
+    //- borrowRate = marketOverview.ts / borrowRate.rate
+    //- loan_amount = marketUserOverview.ts / loanAmont.loan_amount
+    //- interest_index = marketUserOverview.ts / loanAmont.interest_index
+
+    const passedBlock = big(marketBalance.currentBlock).minus(
+      marketBalance.marketState.last_interest_updated,
+    );
+    const interestFactor = passedBlock.mul(marketOverview.borrowRate.rate);
+    const globalInterestIndex = big(
+      marketBalance.marketState.global_interest_index,
+    ).mul(big(1).plus(interestFactor));
+    const bufferInterestFactor = big(marketOverview.borrowRate.rate).mul(
+      bufferBlocks,
+    );
+    const totalBorrowsWithoutBuffer = big(
+      marketUserOverview.loanAmount.loan_amount,
+    ).mul(
+      big(globalInterestIndex).div(marketUserOverview.liability.interest_index),
+    );
+    const totalBorrows = totalBorrowsWithoutBuffer.mul(
+      big(1).plus(bufferInterestFactor),
+    );
+
+    //console.log('useRepayDialog.tsx..()', totalBorrows.toString(), marketUserOverview.loanAmount.loan_amount);
+
+    return totalBorrows.lt(0.001) ? big(0.001) : totalBorrows;
+  }, [
+    marketBalance.currentBlock,
+    marketBalance.marketState.global_interest_index,
+    marketBalance.marketState.last_interest_updated,
+    marketOverview.borrowRate.rate,
+    marketUserOverview.liability.interest_index,
+    marketUserOverview.loanAmount,
+  ]);
 
   const txFee = useMemo(() => {
     if (assetAmount.length === 0) {
