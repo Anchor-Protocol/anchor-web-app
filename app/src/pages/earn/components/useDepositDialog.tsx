@@ -1,4 +1,5 @@
 import { fabricateDepositStableCoin } from '@anchor-protocol/anchor-js/fabricators';
+import { min } from '@anchor-protocol/big-math';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
@@ -151,16 +152,12 @@ function ComponentBase({
     // without_tax_fee = if (tax_fee < max_tax) without_fixed_gas - tax_fee
     //                   else without_fixed_gas - max_tax
 
-    const uusd = big(bank.userBalances.uUSD);
-    const withoutFixedGas = uusd.minus(fixedGasUUSD);
+    const userUUSD = big(bank.userBalances.uUSD);
+    const withoutFixedGas = userUUSD.minus(fixedGasUUSD);
     const txFee = withoutFixedGas.mul(bank.tax.taxRate);
-    const result = txFee.lt(bank.tax.maxTaxUUSD)
-      ? withoutFixedGas.minus(txFee)
-      : withoutFixedGas.minus(bank.tax.maxTaxUUSD);
+    const result = withoutFixedGas.minus(min(txFee, bank.tax.maxTaxUUSD));
 
     return result.lte(0) ? undefined : result.minus(fixedGasUUSD).toString();
-
-    //return big(bank.userBalances.uUSD).minus(fixedGasUUSD).toString();
   }, [
     bank.status,
     bank.tax.maxTaxUUSD,
