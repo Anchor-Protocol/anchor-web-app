@@ -94,6 +94,24 @@ function ComponentBase({
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
+  const txFee = useMemo(() => {
+    if (aAssetAmount.length === 0) return undefined;
+
+    // MIN((Withdrawable(User_input)- Withdrawable(User_input) / (1+Tax_rate)), Max_tax) + Fixed_Gas
+
+    const uustAmount = big(aAssetAmount).mul(MICRO);
+    const ratioTxFee = uustAmount.minus(
+      uustAmount.div(big(1).add(bank.tax.taxRate)),
+    );
+    const maxTax = big(bank.tax.maxTaxUUSD);
+
+    if (ratioTxFee.gt(maxTax)) {
+      return maxTax.add(fixedGasUUSD).toString();
+    } else {
+      return ratioTxFee.add(fixedGasUUSD).toString();
+    }
+  }, [aAssetAmount, bank.tax.maxTaxUUSD, bank.tax.taxRate]);
+
   const invalidTxFee = useMemo(() => {
     if (bank.status === 'demo') {
       return undefined;
@@ -112,27 +130,17 @@ function ComponentBase({
         .gt(totalDeposit.totalDeposit ?? 0)
     ) {
       return `Not enough aUST`;
+    } else if (txFee && big(bank.userBalances.uUSD).lt(txFee)) {
+      return `Not enough UST`;
     }
     return undefined;
-  }, [aAssetAmount, bank.status, totalDeposit.totalDeposit]);
-
-  const txFee = useMemo(() => {
-    if (aAssetAmount.length === 0) return undefined;
-
-    // MIN((Withdrawable(User_input)- Withdrawable(User_input) / (1+Tax_rate)), Max_tax) + Fixed_Gas
-
-    const uustAmount = big(aAssetAmount).mul(MICRO);
-    const ratioTxFee = uustAmount.minus(
-      uustAmount.div(big(1).add(bank.tax.taxRate)),
-    );
-    const maxTax = big(bank.tax.maxTaxUUSD);
-
-    if (ratioTxFee.gt(maxTax)) {
-      return maxTax.add(fixedGasUUSD).toString();
-    } else {
-      return ratioTxFee.add(fixedGasUUSD).toString();
-    }
-  }, [aAssetAmount, bank.tax.maxTaxUUSD, bank.tax.taxRate]);
+  }, [
+    aAssetAmount,
+    bank.status,
+    bank.userBalances.uUSD,
+    totalDeposit.totalDeposit,
+    txFee,
+  ]);
 
   const receiveAmount = useMemo(() => {
     return aAssetAmount.length > 0 && txFee
@@ -235,7 +243,7 @@ function ComponentBase({
         <div className="wallet" aria-invalid={!!invalidAAsetAmount}>
           <span>{invalidAAsetAmount}</span>
           <span>
-            Wallet:{' '}
+            Withdrawable:{' '}
             <span
               style={{
                 textDecoration: 'underline',
