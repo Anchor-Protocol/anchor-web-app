@@ -1,14 +1,15 @@
 import { fabricateRedeemCollateral } from '@anchor-protocol/anchor-js/fabricators';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
+import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
-import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import {
   formatLuna,
   formatLunaInput,
   formatUST,
   formatUSTInput,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
+  LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
   MICRO,
 } from '@anchor-protocol/notation';
 import {
@@ -24,22 +25,18 @@ import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
-import { InfoOutlined } from '@material-ui/icons';
 import { CreateTxOptions } from '@terra-money/terra.js';
-import * as txi from 'api/queries/txInfos';
-import { queryOptions } from 'api/transactions/queryOptions';
-import {
-  parseResult,
-  StringifiedTxResult,
-  TxResult,
-} from 'api/transactions/tx';
+import * as txi from 'queries/txInfos';
+import { queryOptions } from 'transactions/queryOptions';
+import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 import {
   txNotificationFactory,
   TxResultRenderer,
-} from 'api/transactions/TxResultRenderer';
+} from 'components/TxResultRenderer';
 import big, { Big } from 'big.js';
-import { TxFeeList, TxFeeListItem } from 'components/messages/TxFeeList';
-import { WarningArticle } from 'components/messages/WarningArticle';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
+import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { WarningArticle } from 'components/WarningArticle';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { fixedGasUUSD, transactionFee } from 'env';
@@ -187,15 +184,19 @@ function ComponentBase({
 
   // New Borrow Limit = ((Borrow_info.balance - Borrow_info.spendable - redeemed_collateral) * Oracleprice) * Max_LTV
   const borrowLimit = useMemo(() => {
-    return bAssetAmount.length > 0
-      ? big(
-          big(
-            big(marketUserOverview.borrowInfo.balance)
-              .minus(marketUserOverview.borrowInfo.spendable)
-              .minus(big(bAssetAmount).mul(MICRO)),
-          ).mul(marketOverview.oraclePrice.rate),
-        ).mul(marketOverview.bLunaMaxLtv)
-      : undefined;
+    if (bAssetAmount.length === 0) {
+      return undefined;
+    }
+
+    const borrowLimit = big(
+      big(
+        big(marketUserOverview.borrowInfo.balance)
+          .minus(marketUserOverview.borrowInfo.spendable)
+          .minus(big(bAssetAmount).mul(MICRO)),
+      ).mul(marketOverview.oraclePrice.rate),
+    ).mul(marketOverview.bLunaMaxLtv);
+
+    return borrowLimit.lt(0) ? undefined : borrowLimit;
   }, [
     bAssetAmount,
     marketOverview.bLunaMaxLtv,
@@ -208,7 +209,7 @@ function ComponentBase({
     if (bank.status === 'demo') {
       return undefined;
     } else if (big(bank.userBalances.uUSD ?? 0).lt(fixedGasUUSD)) {
-      return 'Not enough Transaction fee: User wallet might lack of Tx fee (Tax, Gas)';
+      return 'Not enough transaction fees';
     }
     return undefined;
   }, [bank.status, bank.userBalances.uUSD]);
@@ -221,7 +222,7 @@ function ComponentBase({
         .mul(MICRO)
         .gt(maxBAssetAmount ?? 0)
     ) {
-      return `Insufficient balance: Not enough Assets`;
+      return `Cannot withdraw more than collateralized amount`;
     }
     return undefined;
   }, [bAssetAmount, bank.status, maxBAssetAmount]);
@@ -316,6 +317,7 @@ function ComponentBase({
         <NumberInput
           className="amount"
           value={bAssetAmount}
+          maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="REDEEM AMOUNT"
           error={!!invalidBAssetAmount}
@@ -372,12 +374,9 @@ function ComponentBase({
           <TxFeeList className="receipt">
             <TxFeeListItem
               label={
-                <>
-                  Tx Fee{' '}
-                  <Tooltip title="Tx Fee Description" placement="top">
-                    <InfoOutlined />
-                  </Tooltip>
-                </>
+                <IconSpan>
+                  Tx Fee <InfoTooltip>Tx Fee Description</InfoTooltip>
+                </IconSpan>
               }
             >
               {formatUST(big(txFee).div(MICRO))} UST

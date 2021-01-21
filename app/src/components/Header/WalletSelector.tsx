@@ -1,4 +1,6 @@
+import { Wallet } from '@anchor-protocol/icons';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
+import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { TextButton } from '@anchor-protocol/neumorphism-ui/components/TextButton';
 import {
   formatLuna,
@@ -9,7 +11,6 @@ import {
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { ClickAwayListener } from '@material-ui/core';
 import big from 'big.js';
-import { Wallet } from 'components/icons/Wallet';
 import { useBank } from 'contexts/bank';
 import { useCallback, useState } from 'react';
 import useClipboard from 'react-use-clipboard';
@@ -40,9 +41,16 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
     { successDuration: 1000 * 5 },
   );
 
+  const connectWallet = useCallback(() => {
+    connect();
+    setOpen(false);
+  }, [connect]);
+
   const toggleOpen = useCallback(() => {
-    setOpen((prev) => !prev);
-  }, []);
+    if (status.status === 'ready') {
+      setOpen((prev) => !prev);
+    }
+  }, [status.status]);
 
   const onClickAway = useCallback(() => {
     setOpen(false);
@@ -64,34 +72,42 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
     case 'initializing':
       return (
         <div className={className}>
-          <button disabled>Initialzing Wallet...</button>
+          <WalletConnectButton disabled>
+            Initialzing Wallet...
+          </WalletConnectButton>
         </div>
       );
     case 'not_connected':
       return (
         <div className={className}>
-          <button onClick={connect}>Connect Wallet</button>
+          <WalletConnectButton onClick={connectWallet}>
+            Connect Wallet
+          </WalletConnectButton>
         </div>
       );
     case 'ready':
       return (
         <ClickAwayListener onClickAway={onClickAway}>
           <div className={className}>
-            <button onClick={toggleOpen}>
-              <Wallet /> {truncate(status.walletAddress)}
-              {bank.status === 'connected' && (
-                <div>
-                  {formatUSTWithPostfixUnits(
-                    big(bank.userBalances.uUSD).div(MICRO),
-                  )}{' '}
-                  UST
-                </div>
-              )}
-            </button>
+            <WalletButton onClick={toggleOpen}>
+              <IconSpan>
+                <Wallet /> {truncate(status.walletAddress)}
+                {bank.status === 'connected' && (
+                  <div>
+                    {formatUSTWithPostfixUnits(
+                      big(bank.userBalances.uUSD).div(MICRO),
+                    )}{' '}
+                    UST
+                  </div>
+                )}
+              </IconSpan>
+            </WalletButton>
             {open && (
-              <div>
+              <WalletDropdown>
                 <h2>
-                  <Wallet /> {truncate(status.walletAddress)}
+                  <IconSpan>
+                    <Wallet /> {truncate(status.walletAddress)}
+                  </IconSpan>
                 </h2>
                 <ActionButton onClick={disconnect}>Disconnect</ActionButton>
                 <TextButton onClick={setCopied}>
@@ -122,91 +138,94 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                     {formatLuna(big(bank.userBalances.ubLuna).div(MICRO))}
                   </li>
                 </ul>
-              </div>
+              </WalletDropdown>
             )}
           </div>
         </ClickAwayListener>
       );
-    default:
+    case 'not_installed':
       return (
-        <div className={className}>
+        <WalletConnectButton className={className}>
           <button className={className} onClick={install}>
             Please Install Wallet
           </button>
-        </div>
+        </WalletConnectButton>
       );
+    default:
+      return null;
   }
 }
 
-export const WalletSelector = styled(WalletSelectorBase)`
-  display: inline-block;
+export const WalletConnectButton = styled(ActionButton)`
+  border-radius: 20px;
+  padding: 8px 20px;
 
-  position: relative;
-  
-  text-align: left;
+  height: 34px;
+`;
 
-  > button {
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    padding: 8px 20px;
-    outline: none;
-    background-color: transparent;
+export const WalletButton = styled.button`
+  height: 34px;
 
-    color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 8px 20px;
+  outline: none;
+  background-color: transparent;
 
-    cursor: pointer;
+  color: #ffffff;
 
-    svg {
-      font-size: 1em;
-      transform: translateY(0.15em);
-      margin-right: 0.1em;
+  cursor: pointer;
+
+  div {
+    position: relative;
+    display: inline-block;
+    height: 100%;
+    margin-left: 1em;
+    padding-left: 1em;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: -9px;
+      bottom: -8px;
+      left: 0;
+      border-left: 1px solid rgba(255, 255, 255, 0.1);
     }
+  }
+
+  &:hover {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.04);
 
     div {
-      position: relative;
-      display: inline-block;
-      height: 100%;
-      margin-left: 1em;
-      padding-left: 1em;
-
       &::before {
-        content: '';
-        position: absolute;
-        top: -9px;
-        bottom: -8px;
-        left: 0;
-        border-left: 1px solid rgba(255, 255, 255, 0.1);
-      }
-    }
-
-    &:hover {
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      background-color: rgba(255, 255, 255, 0.04);
-
-      div {
-        &::before {
-          border-left: 1px solid rgba(255, 255, 255, 0.2);
-        }
+        border-left: 1px solid rgba(255, 255, 255, 0.2);
       }
     }
   }
+`;
 
-  > div {
-    position: absolute;
-    display: block;
-    top: 40px;
-    right: 0;
-    padding: 20px;
-    z-index: 1000;
-    border: 1px solid white;
-    background-color: ${({ theme }) => theme.backgroundColor};
+export const WalletDropdown = styled.div`
+  position: absolute;
+  display: block;
+  top: 40px;
+  right: 0;
+  padding: 20px;
+  z-index: 1000;
+  border: 1px solid white;
+  background-color: ${({ theme }) => theme.backgroundColor};
 
-    > * {
-      margin-bottom: 10px;
-    }
-
-    button {
-      width: 100%;
-    }
+  > * {
+    margin-bottom: 10px;
   }
+
+  button {
+    width: 100%;
+  }
+`;
+
+export const WalletSelector = styled(WalletSelectorBase)`
+  display: inline-block;
+  position: relative;
+  text-align: left;
 `;

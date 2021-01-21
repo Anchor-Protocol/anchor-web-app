@@ -1,14 +1,17 @@
 import { fabricatebAssetBond } from '@anchor-protocol/anchor-js/fabricators/basset/basset-bond';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
+import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
-import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import {
   formatLuna,
   formatLunaInput,
   formatUST,
+  LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
+  LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
   MICRO,
 } from '@anchor-protocol/notation';
 import {
@@ -22,22 +25,17 @@ import {
   Input as MuiInput,
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
-import { InfoOutlined } from '@material-ui/icons';
 import { CreateTxOptions } from '@terra-money/terra.js';
-import * as txi from 'api/queries/txInfos';
-import { queryOptions } from 'api/transactions/queryOptions';
-import {
-  parseResult,
-  StringifiedTxResult,
-  TxResult,
-} from 'api/transactions/tx';
+import * as txi from 'queries/txInfos';
+import { queryOptions } from 'transactions/queryOptions';
+import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 import {
   txNotificationFactory,
   TxResultRenderer,
-} from 'api/transactions/TxResultRenderer';
+} from 'components/TxResultRenderer';
 import big from 'big.js';
-import { TxFeeList, TxFeeListItem } from 'components/messages/TxFeeList';
-import { WarningArticle } from 'components/messages/WarningArticle';
+import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { WarningArticle } from 'components/WarningArticle';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { fixedGasUUSD, transactionFee } from 'env';
@@ -74,7 +72,8 @@ function MintBase({ className }: MintProps) {
   const client = useApolloClient();
 
   const { onKeyPress: onLunaInputKeyPress } = useRestrictedNumberInput({
-    maxDecimalPoints: 6,
+    maxIntegerPoinsts: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
+    maxDecimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   });
 
   // ---------------------------------------------
@@ -115,7 +114,7 @@ function MintBase({ className }: MintProps) {
     if (bank.status === 'demo') {
       return undefined;
     } else if (big(bank.userBalances.uUSD).lt(fixedGasUUSD)) {
-      return 'Not Enough Tx Fee (Your USD Balance is lower than Fixed Gas)';
+      return 'Not enough transaction fees';
     }
     return undefined;
   }, [bank.status, bank.userBalances.uUSD]);
@@ -128,9 +127,7 @@ function MintBase({ className }: MintProps) {
         .mul(MICRO)
         .gt(bank.userBalances.uLuna ?? 0)
     ) {
-      return `Insufficient balance: Not enough Assets (${big(
-        bank.userBalances.uLuna ?? 0,
-      ).div(MICRO)} Luna)`;
+      return `Not enough assets`;
     }
     return undefined;
   }, [bank.status, bank.userBalances.uLuna, assetAmount]);
@@ -313,7 +310,7 @@ function MintBase({ className }: MintProps) {
         </MuiNativeSelect>
 
         <MuiInput
-          placeholder="0.00"
+          placeholder="0"
           error={!!invalidAssetAmount}
           value={assetAmount}
           onKeyPress={onLunaInputKeyPress as any}
@@ -349,7 +346,7 @@ function MintBase({ className }: MintProps) {
           ))}
         </MuiNativeSelect>
         <MuiInput
-          placeholder="0.00"
+          placeholder="0"
           error={!!invalidAssetAmount}
           value={bAssetAmount}
           onKeyPress={onLunaInputKeyPress as any}
@@ -387,12 +384,9 @@ function MintBase({ className }: MintProps) {
         <TxFeeList className="receipt">
           <TxFeeListItem
             label={
-              <>
-                Tx Fee{' '}
-                <Tooltip title="Tx Fee Description" placement="top">
-                  <InfoOutlined />
-                </Tooltip>
-              </>
+              <IconSpan>
+                Tx Fee <InfoTooltip>Tx Fee Description</InfoTooltip>
+              </IconSpan>
             }
           >
             {formatUST(big(fixedGasUUSD).div(MICRO))} UST

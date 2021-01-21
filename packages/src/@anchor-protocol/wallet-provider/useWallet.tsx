@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react';
 import { Consumer, Context, createContext, useContext } from 'react';
-import { WalletStatus } from './types';
+import { StationNetworkInfo, WalletStatus } from './types';
 
 export interface WalletProviderProps {
+  defaultNetwork: StationNetworkInfo;
   children: ReactNode | ((state: WalletState) => ReactNode);
 }
 

@@ -1,18 +1,21 @@
 import { useWallet } from '@anchor-protocol/wallet-provider';
-import { matchesUA } from 'browserslist-useragent';
+import { getParser } from 'bowser';
+import { useMemo } from 'react';
 import styled from 'styled-components';
 
 export interface BannerProps {
   className?: string;
 }
 
-const isChrome = matchesUA(navigator.userAgent, {
-  browsers: ['Chrome > 60'],
-  allowHigherVersions: true,
-});
-
 function BannerBase({ className }: BannerProps) {
   const { status, install, connect } = useWallet();
+
+  const isChrome = useMemo(() => {
+    const browser = getParser(navigator.userAgent);
+    return browser.satisfies({
+      chrome: '>60',
+    });
+  }, []);
 
   if (!isChrome) {
     return (

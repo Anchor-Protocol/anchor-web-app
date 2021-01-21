@@ -28,11 +28,11 @@ And you can run scripts
 
 ## `/app`
 
-|master                              |develop                                |
-|------------------------------------|---------------------------------------|
-|<https://app.anchorprotocol.com>    |<https://app-dev.anchorprotocol.com>   |
-|<https://app.anchor.money>          |<https://app-dev.anchor.money>         |
-|<https://app.anchor.market>         |<https://app-dev.anchor.>              |
+| master                           | develop                              |
+| -------------------------------- | ------------------------------------ |
+| <https://app.anchorprotocol.com> | <https://app-dev.anchorprotocol.com> |
+| <https://app.anchor.money>       | <https://app-dev.anchor.money>       |
+| <https://app.anchor.market>      | <https://app-dev.anchor.>            |
 
 # Environments
 

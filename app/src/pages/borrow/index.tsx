@@ -11,7 +11,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { CollateralList } from './components/CollateralList';
 import { LoanList } from './components/LoanList';
-import { Summary } from './components/Summary';
+import { Overview } from 'pages/borrow/components/Overview';
 
 export interface BorrowProps {
   className?: string;
@@ -30,7 +30,7 @@ function BorrowBase({ className }: BorrowProps) {
         <h1>BORROW</h1>
 
         <div className="content-layout">
-          <Summary
+          <Overview
             className="borrow"
             marketOverview={marketOverview}
             marketUserOverview={marketUserOverview}

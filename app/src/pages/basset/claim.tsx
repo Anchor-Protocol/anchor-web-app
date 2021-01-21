@@ -18,19 +18,15 @@ import {
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient } from '@apollo/client';
 import { CreateTxOptions } from '@terra-money/terra.js';
-import * as txi from 'api/queries/txInfos';
-import { queryOptions } from 'api/transactions/queryOptions';
-import {
-  parseResult,
-  StringifiedTxResult,
-  TxResult,
-} from 'api/transactions/tx';
+import * as txi from 'queries/txInfos';
+import { queryOptions } from 'transactions/queryOptions';
+import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 import {
   txNotificationFactory,
   TxResultRenderer,
-} from 'api/transactions/TxResultRenderer';
+} from 'components/TxResultRenderer';
 import big from 'big.js';
-import { WarningArticle } from 'components/messages/WarningArticle';
+import { WarningArticle } from 'components/WarningArticle';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { fixedGasUUSD, transactionFee } from 'env';

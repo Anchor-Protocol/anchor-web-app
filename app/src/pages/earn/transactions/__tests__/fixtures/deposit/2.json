@@ -1,0 +1,149 @@
+{
+  "txResult": {
+    "fee": {
+      "amount": [
+        {
+          "amount": "3500000",
+          "denom": "uusd"
+        }
+      ],
+      "gas": "6000000"
+    },
+    "gasAdjustment": "1.4",
+    "id": 1611111622952,
+    "msgs": [
+      {
+        "type": "wasm/MsgExecuteContract",
+        "value": {
+          "coins": [
+            {
+              "amount": "20000000",
+              "denom": "uusd"
+            }
+          ],
+          "contract": "terra1r8vmgf3mf5m5gcp09fnj2ewsyaqppr6ke50mf2",
+          "execute_msg": "eyJkZXBvc2l0X3N0YWJsZSI6e319",
+          "sender": "terra1x46rqay4d3cssq8gxxvqz8xt6nwlz4td20k38v"
+        }
+      }
+    ],
+    "origin": "http://localhost:9433",
+    "purgeQueue": true,
+    "result": {
+      "height": 0,
+      "raw_log": "[]",
+      "txhash": "CC14A2FDF6CD7B9DC084E6E6A360A3C24F823D969026A868A9CB0684F3E37BEB"
+    },
+    "success": true
+  },
+  "txInfos": [
+    {
+      "TxHash": "CC14A2FDF6CD7B9DC084E6E6A360A3C24F823D969026A868A9CB0684F3E37BEB",
+      "Success": true,
+      "RawLog": [
+        {
+          "msg_index": 0,
+          "log": "",
+          "events": [
+            {
+              "type": "execute_contract",
+              "attributes": [
+                {
+                  "key": "sender",
+                  "value": "terra1r8vmgf3mf5m5gcp09fnj2ewsyaqppr6ke50mf2"
+                },
+                {
+                  "key": "contract_address",
+                  "value": "terra10c0q6qyk2634tfx2nw9v4gxqlm7a0luk9huhy8"
+                },
+                {
+                  "key": "sender",
+                  "value": "terra1x46rqay4d3cssq8gxxvqz8xt6nwlz4td20k38v"
+                },
+                {
+                  "key": "contract_address",
+                  "value": "terra1r8vmgf3mf5m5gcp09fnj2ewsyaqppr6ke50mf2"
+                }
+              ]
+            },
+            {
+              "type": "from_contract",
+              "attributes": [
+                {
+                  "key": "contract_address",
+                  "value": "terra1r8vmgf3mf5m5gcp09fnj2ewsyaqppr6ke50mf2"
+                },
+                {
+                  "key": "action",
+                  "value": "deposit_stable"
+                },
+                {
+                  "key": "depositor",
+                  "value": "terra1x46rqay4d3cssq8gxxvqz8xt6nwlz4td20k38v"
+                },
+                {
+                  "key": "mint_amount",
+                  "value": "19991934"
+                },
+                {
+                  "key": "deposit_amount",
+                  "value": "20000000"
+                },
+                {
+                  "key": "contract_address",
+                  "value": "terra10c0q6qyk2634tfx2nw9v4gxqlm7a0luk9huhy8"
+                },
+                {
+                  "key": "action",
+                  "value": "mint"
+                },
+                {
+                  "key": "to",
+                  "value": "terra1x46rqay4d3cssq8gxxvqz8xt6nwlz4td20k38v"
+                },
+                {
+                  "key": "amount",
+                  "value": "19991934"
+                }
+              ]
+            },
+            {
+              "type": "message",
+              "attributes": [
+                {
+                  "key": "action",
+                  "value": "execute_contract"
+                },
+                {
+                  "key": "module",
+                  "value": "wasm"
+                },
+                {
+                  "key": "sender",
+                  "value": "terra1x46rqay4d3cssq8gxxvqz8xt6nwlz4td20k38v"
+                }
+              ]
+            },
+            {
+              "type": "transfer",
+              "attributes": [
+                {
+                  "key": "recipient",
+                  "value": "terra1r8vmgf3mf5m5gcp09fnj2ewsyaqppr6ke50mf2"
+                },
+                {
+                  "key": "sender",
+                  "value": "terra1x46rqay4d3cssq8gxxvqz8xt6nwlz4td20k38v"
+                },
+                {
+                  "key": "amount",
+                  "value": "20000000uusd"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

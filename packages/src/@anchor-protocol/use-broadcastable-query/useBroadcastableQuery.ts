@@ -82,7 +82,7 @@ export function useBroadcastableQuery<Params, Data, Error = unknown>({
               clearInterval(unmountWatchInterval);
               unmountWatchInterval = undefined;
             }
-          }, 100);
+          }, 100) as any;
         }
 
         const data = await fetchClient(params, {
@@ -170,6 +170,7 @@ export function useBroadcastableQuery<Params, Data, Error = unknown>({
       dispatch,
       broadcast,
       notificationFactory,
+      breakOnError,
     ],
   );
 

@@ -1,6 +1,7 @@
+import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { flat, pressed } from '@anchor-protocol/styled-neumorphism';
 import c from 'color';
-import { ReactElement, useMemo } from 'react';
+import { ReactElement, ReactNode, useMemo } from 'react';
 import styled from 'styled-components';
 import useResizeObserver from 'use-resize-observer/polyfilled';
 
@@ -24,6 +25,8 @@ export interface TabProps<T> {
   /** Get the primary key value from the item */
   keyFunction: (item: T) => string;
 
+  tooltipFunction?: (item: T) => ReactNode;
+
   /** height value to change look */
   height?: number;
 
@@ -45,6 +48,7 @@ function TabBase<T>({
   onChange,
   keyFunction,
   labelFunction,
+  tooltipFunction,
   height = defaultHeight,
 }: TabProps<T>) {
   const { ref: divRef, width = 500 } = useResizeObserver<HTMLDivElement>({});
@@ -64,21 +68,43 @@ function TabBase<T>({
       aria-disabled={disabled || undefined}
     >
       <ul>
-        {items.map((item, i) => (
-          <li
-            key={'tab-button' + keyFunction(item)}
-            role="tab"
-            style={{ width: itemWidth, height, left: itemWidth * i, top: 0 }}
-            aria-selected={
-              selectedItem
-                ? keyFunction(item) === keyFunction(selectedItem)
-                : undefined
-            }
-            onClick={() => onChange(item)}
-          >
-            {labelFunction(item)}
-          </li>
-        ))}
+        {items.map((item, i) => {
+          const button = (
+            <li
+              key={'tab-button' + keyFunction(item)}
+              role="tab"
+              style={{
+                width: itemWidth,
+                height,
+                left: itemWidth * i,
+                top: 0,
+              }}
+              aria-selected={
+                selectedItem === item
+                  ? keyFunction(item) === keyFunction(selectedItem)
+                  : undefined
+              }
+              onClick={selectedItem === item ? undefined : () => onChange(item)}
+            >
+              {labelFunction(item)}
+            </li>
+          );
+
+          const tooltipContent: ReactNode =
+            tooltipFunction && tooltipFunction(item);
+
+          return tooltipContent ? (
+            <Tooltip
+              key={'tab-button-tooltip' + keyFunction(item)}
+              title={tooltipContent}
+              placement="top"
+            >
+              {button}
+            </Tooltip>
+          ) : (
+            button
+          );
+        })}
       </ul>
 
       <div
@@ -138,8 +164,8 @@ export const Tab: <T>(props: TabProps<T>) => ReactElement<TabProps<T>> = styled(
       }
 
       &[aria-selected='true'] {
-        cursor: none;
-        pointer-events: none;
+        //cursor: ;
+        //pointer-events: none;
       }
 
       border-radius: ${({ borderRadius = defualtBorderRadius }) =>

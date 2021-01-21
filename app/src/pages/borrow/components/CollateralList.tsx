@@ -1,5 +1,7 @@
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/components/HorizontalScrollTable';
+import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import {
   formatLuna,
@@ -47,8 +49,8 @@ function CollateralListBase({
   // ---------------------------------------------
   const collaterals = useMemo(() => {
     return big(marketUserOverview?.borrowInfo.balance ?? 0).minus(
-        marketUserOverview?.borrowInfo.spendable ?? 0,
-      );
+      marketUserOverview?.borrowInfo.spendable ?? 0,
+    );
   }, [
     marketUserOverview?.borrowInfo.balance,
     marketUserOverview?.borrowInfo.spendable,
@@ -74,7 +76,15 @@ function CollateralListBase({
         <thead>
           <tr>
             <th>Name</th>
-            <th>Balance</th>
+            <th>
+              <IconSpan>
+                Balance{' '}
+                <InfoTooltip>
+                  Amount of bAsset collateral deposited by user in USD / Amount
+                  of bAsset collateral deposited by user
+                </InfoTooltip>
+              </IconSpan>
+            </th>
             <th>Actions</th>
           </tr>
         </thead>

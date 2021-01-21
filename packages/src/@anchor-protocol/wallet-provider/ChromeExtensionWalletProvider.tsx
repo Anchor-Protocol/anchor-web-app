@@ -1,4 +1,5 @@
 import { Extension } from '@terra-money/terra.js';
+import { getParser } from 'bowser';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { UserDeniedError } from './errors';
 import { StationNetworkInfo, WalletStatus } from './types';
@@ -25,17 +26,30 @@ async function intervalCheck(
 
 export function ChromeExtensionWalletProvider({
   children,
+  defaultNetwork,
 }: WalletProviderProps) {
+  const isChrome = useMemo(() => {
+    const browser = getParser(navigator.userAgent);
+    return browser.satisfies({
+      chrome: '>60',
+    });
+  }, []);
+
   const extension = useMemo<Extension>(() => new Extension(), []);
 
   const [status, setStatus] = useState<WalletStatus>(() => ({
-    status: 'initializing',
+    status: isChrome ? 'initializing' : 'unavailable',
+    network: defaultNetwork,
   }));
 
   const firstCheck = useRef<boolean>(false);
 
   const checkStatus = useCallback(
     async (watingExtensionScriptInjection: boolean = false) => {
+      if (!isChrome) {
+        return;
+      }
+
       if (!watingExtensionScriptInjection && !firstCheck.current) {
         return;
       }
@@ -69,7 +83,7 @@ export function ChromeExtensionWalletProvider({
           }
 
           return prev.status !== 'not_installed'
-            ? { status: 'not_installed' }
+            ? { status: 'not_installed', network: defaultNetwork }
             : prev;
         });
         return;
@@ -105,7 +119,7 @@ export function ChromeExtensionWalletProvider({
         });
       }
     },
-    [extension],
+    [defaultNetwork, extension, isChrome],
   );
 
   const install = useCallback(() => {
@@ -150,8 +164,10 @@ export function ChromeExtensionWalletProvider({
   );
 
   useEffect(() => {
-    checkStatus(true);
-  }, [checkStatus]);
+    if (isChrome) {
+      checkStatus(true);
+    }
+  }, [checkStatus, isChrome]);
 
   useEffect(() => {
     console.log(

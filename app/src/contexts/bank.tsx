@@ -1,10 +1,10 @@
 import { MICRO } from '@anchor-protocol/notation';
 import { useWallet } from '@anchor-protocol/wallet-provider';
-import { Data as TaxData, useTax } from 'api/queries/tax';
+import { Data as TaxData, useTax } from 'queries/tax';
 import {
   Data as UserBalancesData,
   useUserBalances,
-} from 'api/queries/userBalances';
+} from 'queries/userBalances';
 import type { ReactNode } from 'react';
 import {
   Consumer,

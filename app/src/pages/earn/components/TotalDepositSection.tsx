@@ -1,5 +1,6 @@
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
+import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import {
   formatUST,
@@ -7,6 +8,7 @@ import {
   MICRO,
 } from '@anchor-protocol/notation';
 import big from 'big.js';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { useTotalDeposit } from '../queries/totalDeposit';
@@ -44,7 +46,12 @@ function TotalDepositSectionBase({ className }: TotalDepositSectionProps) {
   // ---------------------------------------------
   return (
     <Section className={className}>
-      <h2>TOTAL DEPOSIT</h2>
+      <h2>
+        <IconSpan>
+          TOTAL DEPOSIT{' '}
+          <InfoTooltip>The sum of current deposits on Anchor</InfoTooltip>
+        </IconSpan>
+      </h2>
 
       <div className="amount">
         {mapDecimalPointBaseSeparatedNumbers(
@@ -59,11 +66,7 @@ function TotalDepositSectionBase({ className }: TotalDepositSectionProps) {
           },
         )}
       </div>
-
-      <div className="amount-description">
-        {formatUST(big(totalDeposit?.aUSTBalance.balance ?? 0).div(MICRO))} aUST
-      </div>
-
+      
       <HorizontalRuler />
 
       <aside className="total-deposit-buttons">

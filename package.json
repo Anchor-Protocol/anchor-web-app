@@ -7,7 +7,6 @@
   "workspaces": [
     "app",
     "landing",
-    "design",
     "packages"
   ],
   "scripts": {
@@ -42,12 +41,14 @@
     "@handbook/markdown-source-import": "^1.0.1",
     "@ssen/prettier-config": "^1.2.0",
     "@types/eslint": "^7.2.6",
-    "@types/prettier": "^2.1.5",
-    "eslint": "^7.8.1",
-    "eslint-config-prettier": "^6.11.0",
-    "husky": "^4.3.0",
+    "@types/prettier": "^2.1.6",
+    "eslint": "^7.18.0",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-config-react-app": "^6.0.0",
+    "husky": "^4.3.8",
     "lint-staged": "^10.3.0",
-    "prettier": "^2.1.1"
+    "prettier": "^2.1.1",
+    "react-scripts": "4.0.1"
   },
   "peerDependencies": {
     "eslint-config-react-app": "6.0.0"

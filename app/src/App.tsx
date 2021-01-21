@@ -6,19 +6,27 @@ import { ThemeProvider } from '@anchor-protocol/neumorphism-ui/themes/ThemeProvi
 import { SnackbarProvider } from '@anchor-protocol/snackbar';
 import { QueryBroadcaster } from '@anchor-protocol/use-broadcastable-query';
 import { RouterScrollRestoration } from '@anchor-protocol/use-router-scroll-restoration';
-import { ChromeExtensionWalletProvider, RouterWalletStatusRecheck } from '@anchor-protocol/wallet-provider';
+import {
+  ChromeExtensionWalletProvider,
+  RouterWalletStatusRecheck,
+} from '@anchor-protocol/wallet-provider';
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 import { Banner } from 'components/Banner';
 import { Header } from 'components/Header';
-import { SnackbarContainer } from 'components/snackbar/SnackbarContainer';
+import { SnackbarContainer } from 'components/SnackbarContainer';
 import { BankProvider } from 'contexts/bank';
 import { ContractProvider } from 'contexts/contract';
-import { contractAddresses } from 'env';
+import { contractAddresses, defaultNetwork } from 'env';
 import { BAsset } from 'pages/basset';
 import { Borrow } from 'pages/borrow';
 import { Earn } from 'pages/earn';
 import { ReactNode, useMemo } from 'react';
-import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Redirect,
+  Route,
+  Switch,
+} from 'react-router-dom';
 import styled from 'styled-components';
 
 interface AppProps {
@@ -26,7 +34,7 @@ interface AppProps {
 }
 
 function WalletConnectedProviders({ children }: { children: ReactNode }) {
-  //const {} = useWallet(); // of @anchor-protocol/wallet-provider
+  //const {status} = useWallet(); // of @anchor-protocol/wallet-provider
 
   const addressProvider = useMemo<AddressProvider>(() => {
     // TODO create address provider by wallet info
@@ -73,7 +81,7 @@ function AppBase({ className }: AppProps) {
        * Terra Station Wallet Address
        * useWallet()
        */}
-      <ChromeExtensionWalletProvider>
+      <ChromeExtensionWalletProvider defaultNetwork={defaultNetwork}>
         {/**
          * Re-Check Terra Station Wallet Status when Router pathname changed
          */}

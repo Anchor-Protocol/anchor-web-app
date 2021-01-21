@@ -1,4 +1,3 @@
-import { Notifications } from 'components/Header/Notifications';
 import { WalletSelector } from 'components/Header/WalletSelector';
 import { screen } from 'env';
 import React from 'react';
@@ -21,7 +20,7 @@ function HeaderBase({ className }: HeaderProps) {
         <NavLink to="/basset">bASSET</NavLink>
       </nav>
       <section className="wallet">
-        <Notifications />
+        {/*<Notifications />*/}
         <WalletSelector />
       </section>
       <GlobalStyle />
@@ -107,7 +106,7 @@ export const Header = styled(HeaderBase)`
   @media (max-width: ${desktopLayoutBreak}px) {
     height: 74px;
     padding: 0 80px;
-    
+
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -120,7 +119,7 @@ export const Header = styled(HeaderBase)`
 
       height: 50px;
       z-index: 10000;
-      
+
       font-size: 13px;
 
       background-color: black;
@@ -129,14 +128,14 @@ export const Header = styled(HeaderBase)`
       grid-template-columns: repeat(3, auto);
       justify-content: space-evenly;
       align-items: center;
-      
-      box-shadow: 0px 0px 21px 5px rgba(0,0,0,0.18);
+
+      box-shadow: 0px 0px 21px 5px rgba(0, 0, 0, 0.18);
     }
   }
-  
+
   @media (max-width: ${mobileLayoutBreak}px) {
     justify-content: center;
-    
+
     .wallet {
       display: none;
     }

@@ -4,11 +4,19 @@ import {
 } from '@anchor-protocol/wallet-provider';
 import React, { ComponentType } from 'react';
 
+const network = {
+  chainID: 'tequila-0004',
+  fcd: 'https://tequila-fcd.terra.dev',
+  lcd: 'https://tequila-lcd.terra.dev',
+  name: 'testnet',
+  ws: 'wss://tequila-ws.terra.dev',
+};
+
 export default {
   title: 'core/wallet-provider',
   decorators: [
     (Story: ComponentType) => (
-      <ChromeExtensionWalletProvider>
+      <ChromeExtensionWalletProvider defaultNetwork={network}>
         <Story />
       </ChromeExtensionWalletProvider>
     ),

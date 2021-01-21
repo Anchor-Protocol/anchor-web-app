@@ -1,14 +1,15 @@
 import { fabricateBorrow } from '@anchor-protocol/anchor-js/fabricators';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
+import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
-import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import {
   formatPercentage,
   formatUST,
   formatUSTInput,
   MICRO,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
+  UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
@@ -23,22 +24,18 @@ import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
-import { InfoOutlined } from '@material-ui/icons';
 import { CreateTxOptions } from '@terra-money/terra.js';
-import * as txi from 'api/queries/txInfos';
-import { queryOptions } from 'api/transactions/queryOptions';
-import {
-  parseResult,
-  StringifiedTxResult,
-  TxResult,
-} from 'api/transactions/tx';
+import * as txi from 'queries/txInfos';
+import { queryOptions } from 'transactions/queryOptions';
+import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 import {
   txNotificationFactory,
   TxResultRenderer,
-} from 'api/transactions/TxResultRenderer';
+} from 'components/TxResultRenderer';
 import big, { Big } from 'big.js';
-import { TxFeeList, TxFeeListItem } from 'components/messages/TxFeeList';
-import { WarningArticle } from 'components/messages/WarningArticle';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
+import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { WarningArticle } from 'components/WarningArticle';
 import { BLOCKS_PER_YEAR } from 'constants/BLOCKS_PER_YEAR';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
@@ -234,7 +231,7 @@ function ComponentBase({
     if (bank.status === 'demo') {
       return undefined;
     } else if (big(bank.userBalances.uUSD ?? 0).lt(fixedGasUUSD)) {
-      return 'Not enough Transaction fee: User wallet might lack of Tx fee (Tax, Gas)';
+      return 'Not enough transaction fees';
     }
     return undefined;
   }, [bank.status, bank.userBalances.uUSD]);
@@ -247,7 +244,7 @@ function ComponentBase({
         .mul(MICRO)
         .gt(max ?? 0)
     ) {
-      return `Insufficient balance: Not enough Assets`;
+      return `Cannot borrow more than the borrow limit.`;
     }
     return undefined;
   }, [assetAmount, bank.status, max]);
@@ -347,6 +344,7 @@ function ComponentBase({
         <NumberInput
           className="amount"
           value={assetAmount}
+          maxIntegerPoinsts={UST_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="BORROW AMOUNT"
           error={!!invalidAssetAmount}
@@ -391,12 +389,9 @@ function ComponentBase({
           <TxFeeList className="receipt">
             <TxFeeListItem
               label={
-                <>
-                  Tx Fee{' '}
-                  <Tooltip title="Tx Fee Description" placement="top">
-                    <InfoOutlined />
-                  </Tooltip>
-                </>
+                <IconSpan>
+                  Tx Fee <InfoTooltip>Tx Fee Description</InfoTooltip>
+                </IconSpan>
               }
             >
               {formatUST(txFee.div(MICRO))} UST
