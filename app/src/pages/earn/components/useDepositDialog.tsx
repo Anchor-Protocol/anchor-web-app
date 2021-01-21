@@ -94,28 +94,6 @@ function ComponentBase({
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
-  const invalidTxFee = useMemo(() => {
-    if (bank.status === 'demo') {
-      return undefined;
-    } else if (big(bank.userBalances.uUSD ?? 0).lt(fixedGasUUSD)) {
-      return 'Not enough transaction fees';
-    }
-    return undefined;
-  }, [bank.status, bank.userBalances.uUSD]);
-
-  const invalidAssetAmount = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo' || assetAmount.length === 0) {
-      return undefined;
-    } else if (
-      big(assetAmount)
-        .mul(MICRO)
-        .gt(bank.userBalances.uUSD ?? 0)
-    ) {
-      return `Not enough UST`;
-    }
-    return undefined;
-  }, [assetAmount, bank.status, bank.userBalances.uUSD]);
-
   const txFee = useMemo(() => {
     if (assetAmount.length === 0) return undefined;
 
@@ -134,6 +112,28 @@ function ComponentBase({
     }
   }, [assetAmount, bank.tax.maxTaxUUSD, bank.tax.taxRate]);
 
+  const invalidTxFee = useMemo(() => {
+    if (bank.status === 'demo') {
+      return undefined;
+    } else if (big(bank.userBalances.uUSD ?? 0).lt(fixedGasUUSD)) {
+      return 'Not enough transaction fees';
+    }
+    return undefined;
+  }, [bank.status, bank.userBalances.uUSD]);
+
+  const invalidAssetAmount = useMemo<ReactNode>(() => {
+    if (bank.status === 'demo' || assetAmount.length === 0) {
+      return undefined;
+    } else if (
+      big(big(assetAmount).mul(MICRO))
+        .plus(txFee ?? 0)
+        .gt(bank.userBalances.uUSD ?? 0)
+    ) {
+      return `Not enough UST`;
+    }
+    return undefined;
+  }, [assetAmount, bank.status, bank.userBalances.uUSD, txFee]);
+
   const sendAmount = useMemo(() => {
     return assetAmount.length > 0 && txFee
       ? big(assetAmount).mul(MICRO).plus(txFee)
@@ -145,8 +145,28 @@ function ComponentBase({
       return undefined;
     }
 
-    return big(bank.userBalances.uUSD).minus(fixedGasUUSD).toString();
-  }, [bank.status, bank.userBalances.uUSD]);
+    // MIN((User_UST_Balance - fixed_gas)/(1+Tax_rate) * tax_rate , Max_tax) + Fixed_Gas
+    // without_fixed_gas = (uusd balance - fixed_gas)
+    // tax_fee = without_fixed_gas * tax_rate
+    // without_tax_fee = if (tax_fee < max_tax) without_fixed_gas - tax_fee
+    //                   else without_fixed_gas - max_tax
+
+    const uusd = big(bank.userBalances.uUSD);
+    const withoutFixedGas = uusd.minus(fixedGasUUSD);
+    const txFee = withoutFixedGas.mul(bank.tax.taxRate);
+    const result = txFee.lt(bank.tax.maxTaxUUSD)
+      ? withoutFixedGas.minus(txFee)
+      : withoutFixedGas.minus(bank.tax.maxTaxUUSD);
+
+    return result.lte(0) ? undefined : result.minus(fixedGasUUSD).toString();
+
+    //return big(bank.userBalances.uUSD).minus(fixedGasUUSD).toString();
+  }, [
+    bank.status,
+    bank.tax.maxTaxUUSD,
+    bank.tax.taxRate,
+    bank.userBalances.uUSD,
+  ]);
 
   const tooMuchAssetAmountWarning = useMemo<ReactNode>(() => {
     if (
@@ -157,16 +177,22 @@ function ComponentBase({
       return undefined;
     }
 
-    const remainUUSD = big(bank.userBalances.uUSD).minus(
-      big(assetAmount).mul(MICRO),
-    );
+    const remainUUSD = big(bank.userBalances.uUSD)
+      .minus(big(assetAmount).mul(MICRO))
+      .minus(txFee ?? 0);
 
     if (remainUUSD.lt(fixedGasUUSD)) {
       return `You may run out of USD balance needed for future transactions.`;
     }
 
     return undefined;
-  }, [assetAmount, bank.status, bank.userBalances.uUSD, invalidAssetAmount]);
+  }, [
+    assetAmount,
+    bank.status,
+    bank.userBalances.uUSD,
+    invalidAssetAmount,
+    txFee,
+  ]);
 
   // ---------------------------------------------
   // callbacks
@@ -316,18 +342,7 @@ function ComponentBase({
 
         {tooMuchAssetAmountWarning && recommendationAssetAmount && (
           <WarningArticle style={{ marginTop: 30, marginBottom: 0 }}>
-            <p style={{ marginBottom: 10 }}>{tooMuchAssetAmountWarning}</p>
-
-            <ActionButton
-              style={{ width: '70%' }}
-              onClick={() =>
-                updateAssetAmount(
-                  formatUSTInput(big(recommendationAssetAmount).div(MICRO)),
-                )
-              }
-            >
-              Set recommend amount
-            </ActionButton>
+            {tooMuchAssetAmountWarning}
           </WarningArticle>
         )}
 
