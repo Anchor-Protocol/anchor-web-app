@@ -104,10 +104,10 @@ function ComponentBase({
   }, [bank.status, bank.userBalances.uUSD]);
 
   const invalidAssetAmount = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo') {
+    if (bank.status === 'demo' || assetAmount.length === 0) {
       return undefined;
     } else if (
-      big(assetAmount.length > 0 ? assetAmount : 0)
+      big(assetAmount)
         .mul(MICRO)
         .gt(bank.userBalances.uUSD ?? 0)
     ) {

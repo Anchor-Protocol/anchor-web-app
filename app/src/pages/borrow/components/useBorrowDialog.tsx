@@ -237,10 +237,10 @@ function ComponentBase({
   }, [bank.status, bank.userBalances.uUSD]);
 
   const invalidAssetAmount = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo') {
+    if (bank.status === 'demo' || assetAmount.length === 0) {
       return undefined;
     } else if (
-      big(assetAmount.length > 0 ? assetAmount : 0)
+      big(assetAmount)
         .mul(MICRO)
         .gt(max ?? 0)
     ) {
@@ -333,7 +333,7 @@ function ComponentBase({
   }
 
   return (
-    <Modal open>
+    <Modal open onClose={() => closeDialog()}>
       <Dialog className={className} onClose={() => closeDialog()}>
         <h1>
           Borrow<p>Borrow APR: {formatPercentage(apr.mul(100))}%</p>

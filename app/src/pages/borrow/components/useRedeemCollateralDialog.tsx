@@ -215,10 +215,10 @@ function ComponentBase({
   }, [bank.status, bank.userBalances.uUSD]);
 
   const invalidBAssetAmount = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo') {
+    if (bank.status === 'demo' || bAssetAmount.length === 0) {
       return undefined;
     } else if (
-      big(bAssetAmount.length > 0 ? bAssetAmount : 0)
+      big(bAssetAmount)
         .mul(MICRO)
         .gt(maxBAssetAmount ?? 0)
     ) {
@@ -308,7 +308,7 @@ function ComponentBase({
   }
 
   return (
-    <Modal open>
+    <Modal open onClose={() => closeDialog()}>
       <Dialog className={className} onClose={() => closeDialog()}>
         <h1>Redeem Collateral</h1>
 

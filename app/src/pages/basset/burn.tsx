@@ -108,10 +108,10 @@ function BurnBase({ className }: BurnProps) {
   }, [bank.status, bank.userBalances.uUSD]);
 
   const invalidBAssetAmount = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo') {
+    if (bank.status === 'demo' || bAssetAmount.length === 0) {
       return undefined;
     } else if (
-      big(bAssetAmount.length > 0 ? bAssetAmount : 0)
+      big(bAssetAmount)
         .mul(MICRO)
         .gt(bank.userBalances?.ubLuna ?? 0)
     ) {

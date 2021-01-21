@@ -104,10 +104,10 @@ function ComponentBase({
   }, [bank.status, bank.userBalances.uUSD]);
 
   const invalidAAsetAmount = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo') {
+    if (bank.status === 'demo' || aAssetAmount.length === 0) {
       return undefined;
     } else if (
-      big(aAssetAmount.length > 0 ? aAssetAmount : 0)
+      big(aAssetAmount)
         .mul(MICRO)
         .gt(totalDeposit.totalDeposit ?? 0)
     ) {
@@ -213,7 +213,7 @@ function ComponentBase({
   }
 
   return (
-    <Modal open>
+    <Modal open onClose={() => closeDialog()}>
       <Dialog className={className} onClose={() => closeDialog()}>
         <h1>Withdraw</h1>
 

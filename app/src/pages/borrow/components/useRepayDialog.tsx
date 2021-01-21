@@ -207,6 +207,15 @@ function ComponentBase({
     return undefined;
   }, [bank.status, bank.userBalances.uUSD]);
 
+  const invalidAssetAmount = useMemo<ReactNode>(() => {
+    if (bank.status === 'demo' || assetAmount.length === 0) {
+      return undefined;
+    } else if (big(assetAmount).mul(MICRO).gt(bank.userBalances.uUSD)) {
+      return `Not enough assets`;
+    }
+    return undefined;
+  }, [assetAmount, bank.status, bank.userBalances.uUSD]);
+
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
@@ -291,7 +300,7 @@ function ComponentBase({
   }
 
   return (
-    <Modal open>
+    <Modal open onClose={() => closeDialog()}>
       <Dialog className={className} onClose={() => closeDialog()}>
         <h1>
           Repay<p>Borrow APR: {formatPercentage(apr.mul(100))}%</p>
@@ -305,14 +314,15 @@ function ComponentBase({
           maxIntegerPoinsts={UST_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="REPAY AMOUNT"
+          error={!!invalidAssetAmount}
           onChange={({ target }) => updateAssetAmount(target.value)}
           InputProps={{
             endAdornment: <InputAdornment position="end">UST</InputAdornment>,
           }}
         />
 
-        <div className="wallet">
-          <span> </span>
+        <div className="wallet" aria-invalid={!!invalidAssetAmount}>
+          <span>{invalidAssetAmount}</span>
           <span>
             Total Borrowed:{' '}
             <span
@@ -372,7 +382,8 @@ function ComponentBase({
             bank.status !== 'connected' ||
             assetAmount.length === 0 ||
             big(assetAmount).lte(0) ||
-            !!invalidTxFee
+            !!invalidTxFee ||
+            !!invalidAssetAmount
           }
           onClick={() => proceed({ status, assetAmount: assetAmount })}
         >
