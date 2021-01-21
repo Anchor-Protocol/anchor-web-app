@@ -8,12 +8,25 @@ export default {
 export const Basic = () => {
   return (
     <Layout>
-      <NumberInput />
-      <NumberInput disabled />
-      <NumberInput maxDecimalPoints={6} />
-      <NumberInput maxDecimalPoints={6} disabled />
-      <NumberInput type="integer" />
-      <NumberInput type="integer" disabled />
+      <NumberInput label="NO OPTIONS" />
+      <NumberInput label="NO OPTIONS" disabled />
+      <NumberInput label="MAX INTEGER = 6" maxIntegerPoinsts={6} />
+      <NumberInput label="MAX INTEGER = 6" maxIntegerPoinsts={6} disabled />
+      <NumberInput label="MAX DECIMAL = 6" maxDecimalPoints={6} />
+      <NumberInput label="MAX DECIMAL = 6" maxDecimalPoints={6} disabled />
+      <NumberInput
+        label="MAX INTEGER = 6, DECIMAL = 6"
+        maxIntegerPoinsts={6}
+        maxDecimalPoints={6}
+      />
+      <NumberInput
+        label="MAX INTEGER = 6, DECIMAL = 6"
+        maxIntegerPoinsts={6}
+        maxDecimalPoints={6}
+        disabled
+      />
+      <NumberInput label="ONLY INTEGER" type="integer" />
+      <NumberInput label="ONLY INTEGER" type="integer" disabled />
     </Layout>
   );
 };

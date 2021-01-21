@@ -10,6 +10,7 @@ import {
   formatUSTInput,
   MICRO,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
+  UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
@@ -25,22 +26,22 @@ import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { CreateTxOptions } from '@terra-money/terra.js';
-import * as txi from 'queries/txInfos';
-import { queryOptions } from 'transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
+import big from 'big.js';
+import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import {
   txNotificationFactory,
   TxResultRenderer,
 } from 'components/TxResultRenderer';
-import big from 'big.js';
-import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningArticle } from 'components/WarningArticle';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { fixedGasUUSD, transactionFee } from 'env';
+import * as txi from 'queries/txInfos';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { queryOptions } from 'transactions/queryOptions';
+import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 
 interface FormParams {
   className?: string;
@@ -261,6 +262,7 @@ function ComponentBase({
         <NumberInput
           className="amount"
           value={assetAmount}
+          maxIntegerPoinsts={UST_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="AMOUNT"
           error={!!invalidAssetAmount}

@@ -9,6 +9,7 @@ import {
   formatUSTInput,
   MICRO,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
+  UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
@@ -314,6 +315,7 @@ function ComponentBase({
         <NumberInput
           className="amount"
           value={assetAmount}
+          maxIntegerPoinsts={UST_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="REPAY AMOUNT"
           error={!!invalidAssetAmount}

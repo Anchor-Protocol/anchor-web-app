@@ -2,6 +2,7 @@ import { fabricateProvideCollateral } from '@anchor-protocol/anchor-js/fabricato
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import {
   formatLuna,
@@ -9,6 +10,7 @@ import {
   formatUST,
   formatUSTInput,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
+  LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
   MICRO,
 } from '@anchor-protocol/notation';
 import {
@@ -25,16 +27,12 @@ import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { CreateTxOptions } from '@terra-money/terra.js';
-import * as txi from 'queries/txInfos';
-import { queryOptions } from 'transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
+import big, { Big } from 'big.js';
+import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import {
   txNotificationFactory,
   TxResultRenderer,
 } from 'components/TxResultRenderer';
-import big, { Big } from 'big.js';
-import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
-import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningArticle } from 'components/WarningArticle';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
@@ -43,9 +41,12 @@ import { LTVGraph } from 'pages/borrow/components/LTVGraph';
 import { useCurrentLtv } from 'pages/borrow/components/useCurrentLtv';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
+import * as txi from 'queries/txInfos';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { queryOptions } from 'transactions/queryOptions';
+import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 
 interface FormParams {
   className?: string;
@@ -299,6 +300,7 @@ function ComponentBase({
         <NumberInput
           className="amount"
           value={bAssetAmount}
+          maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="DEPOSIT AMOUNT"
           error={!!invalidBAssetAmount}

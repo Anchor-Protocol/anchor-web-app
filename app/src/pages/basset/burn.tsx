@@ -8,6 +8,8 @@ import {
   formatLuna,
   formatLunaInput,
   formatUST,
+  LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
+  LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
   MICRO,
 } from '@anchor-protocol/notation';
 import {
@@ -66,7 +68,8 @@ function BurnBase({ className }: BurnProps) {
   const client = useApolloClient();
 
   const { onKeyPress: onLunaInputKeyPress } = useRestrictedNumberInput({
-    maxDecimalPoints: 6,
+    maxIntegerPoinsts: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
+    maxDecimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   });
 
   // ---------------------------------------------

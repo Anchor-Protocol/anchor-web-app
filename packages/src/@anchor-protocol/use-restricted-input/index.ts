@@ -82,7 +82,7 @@ export function useRestrictedNumberInput({
       if (
         Number.isNaN(+nextValue) ||
         (typeof maxIntegerPoinsts === 'number' &&
-          new RegExp(`^[0-9]{${maxIntegerPoinsts + 1},}`)) ||
+          new RegExp(`^[0-9]{${maxIntegerPoinsts + 1},}`).test(nextValue)) ||
         (type === 'decimal' &&
           typeof maxDecimalPoints === 'number' &&
           new RegExp(`\\.[0-9]{${maxDecimalPoints + 1},}$`).test(nextValue))
