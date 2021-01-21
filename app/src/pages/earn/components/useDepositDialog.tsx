@@ -298,7 +298,7 @@ function ComponentBase({
         <div className="wallet" aria-invalid={!!invalidAssetAmount}>
           <span>{invalidAssetAmount}</span>
           <span>
-            Wallet:{' '}
+            Max:{' '}
             <span
               style={
                 recommendationAssetAmount
@@ -315,7 +315,7 @@ function ComponentBase({
                 )
               }
             >
-              {formatUST(big(bank.userBalances.uUSD ?? 0).div(MICRO))} UST
+              {formatUST(big(recommendationAssetAmount ?? 0).div(MICRO))} UST
             </span>
           </span>
         </div>

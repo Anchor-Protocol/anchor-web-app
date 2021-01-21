@@ -243,7 +243,7 @@ function ComponentBase({
         <div className="wallet" aria-invalid={!!invalidAAsetAmount}>
           <span>{invalidAAsetAmount}</span>
           <span>
-            Withdrawable:{' '}
+            Max:{' '}
             <span
               style={{
                 textDecoration: 'underline',
