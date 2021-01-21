@@ -192,7 +192,7 @@ function ComponentBase({
       : undefined;
   }, [assetAmount, marketUserOverview.loanAmount.loan_amount]);
 
-  const estimatedAmount = useMemo(() => {
+  const sendAmount = useMemo(() => {
     return assetAmount.length > 0 && txFee
       ? big(big(assetAmount).mul(MICRO)).plus(txFee)
       : undefined;
@@ -342,7 +342,7 @@ function ComponentBase({
           />
         </figure>
 
-        {totalOutstandingLoan && txFee && estimatedAmount && (
+        {totalOutstandingLoan && txFee && sendAmount && (
           <TxFeeList className="receipt">
             <TxFeeListItem label="Total Outstanding Loan">
               {totalOutstandingLoan.lt(0)
@@ -359,8 +359,8 @@ function ComponentBase({
             >
               {formatUST(big(txFee).div(MICRO))} UST
             </TxFeeListItem>
-            <TxFeeListItem label="Estimated Amount">
-              {formatUST(big(estimatedAmount).div(MICRO))} UST
+            <TxFeeListItem label="Send Amount">
+              {formatUST(big(sendAmount).div(MICRO))} UST
             </TxFeeListItem>
           </TxFeeList>
         )}

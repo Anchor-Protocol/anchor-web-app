@@ -221,7 +221,7 @@ function ComponentBase({
     }
   }, [assetAmount, bank.tax.maxTaxUUSD, bank.tax.taxRate]);
 
-  const estimatedAmount = useMemo(() => {
+  const receiveAmount = useMemo(() => {
     return assetAmount.length > 0 && txFee
       ? big(assetAmount).mul(MICRO).minus(txFee)
       : undefined;
@@ -385,7 +385,7 @@ function ComponentBase({
           />
         </figure>
 
-        {txFee && estimatedAmount && (
+        {txFee && receiveAmount && (
           <TxFeeList className="receipt">
             <TxFeeListItem
               label={
@@ -396,8 +396,8 @@ function ComponentBase({
             >
               {formatUST(txFee.div(MICRO))} UST
             </TxFeeListItem>
-            <TxFeeListItem label="Estimated Amount">
-              {formatUST(estimatedAmount.div(MICRO))} UST
+            <TxFeeListItem label="Receive Amount">
+              {formatUST(receiveAmount.div(MICRO))} UST
             </TxFeeListItem>
           </TxFeeList>
         )}
