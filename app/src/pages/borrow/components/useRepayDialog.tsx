@@ -207,19 +207,6 @@ function ComponentBase({
     return undefined;
   }, [bank.status, bank.userBalances.uUSD]);
 
-  const invalidAssetAmount = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo') {
-      return undefined;
-    } else if (
-      big(assetAmount.length > 0 ? assetAmount : 0)
-        .mul(MICRO)
-        .gt(bank.userBalances.uUSD)
-    ) {
-      return `Cannot repay more than borrowed amount`;
-    }
-    return undefined;
-  }, [assetAmount, bank.status, bank.userBalances.uUSD]);
-
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
@@ -318,15 +305,14 @@ function ComponentBase({
           maxIntegerPoinsts={UST_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="REPAY AMOUNT"
-          error={!!invalidAssetAmount}
           onChange={({ target }) => updateAssetAmount(target.value)}
           InputProps={{
             endAdornment: <InputAdornment position="end">UST</InputAdornment>,
           }}
         />
 
-        <div className="wallet" aria-invalid={!!invalidAssetAmount}>
-          <span>{invalidAssetAmount}</span>
+        <div className="wallet">
+          <span> </span>
           <span>
             Total Borrowed:{' '}
             <span
@@ -386,8 +372,7 @@ function ComponentBase({
             bank.status !== 'connected' ||
             assetAmount.length === 0 ||
             big(assetAmount).lte(0) ||
-            !!invalidTxFee ||
-            !!invalidAssetAmount
+            !!invalidTxFee
           }
           onClick={() => proceed({ status, assetAmount: assetAmount })}
         >
