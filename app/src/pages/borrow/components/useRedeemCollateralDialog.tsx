@@ -184,15 +184,19 @@ function ComponentBase({
 
   // New Borrow Limit = ((Borrow_info.balance - Borrow_info.spendable - redeemed_collateral) * Oracleprice) * Max_LTV
   const borrowLimit = useMemo(() => {
-    return bAssetAmount.length > 0
-      ? big(
-          big(
-            big(marketUserOverview.borrowInfo.balance)
-              .minus(marketUserOverview.borrowInfo.spendable)
-              .minus(big(bAssetAmount).mul(MICRO)),
-          ).mul(marketOverview.oraclePrice.rate),
-        ).mul(marketOverview.bLunaMaxLtv)
-      : undefined;
+    if (bAssetAmount.length === 0) {
+      return undefined;
+    }
+
+    const borrowLimit = big(
+      big(
+        big(marketUserOverview.borrowInfo.balance)
+          .minus(marketUserOverview.borrowInfo.spendable)
+          .minus(big(bAssetAmount).mul(MICRO)),
+      ).mul(marketOverview.oraclePrice.rate),
+    ).mul(marketOverview.bLunaMaxLtv);
+
+    return borrowLimit.lt(0) ? undefined : borrowLimit;
   }, [
     bAssetAmount,
     marketOverview.bLunaMaxLtv,
