@@ -1,3 +1,4 @@
+import { Num, Ratio, uaUST, uUST } from '@anchor-protocol/notation';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { gql, QueryResult, useQuery } from '@apollo/client';
 import big from 'big.js';
@@ -16,13 +17,13 @@ export interface StringifiedData {
 
 export interface Data {
   aUSTBalance: {
-    balance: string;
+    balance: uaUST<string>;
   };
   exchangeRate: {
-    a_token_supply: string;
-    exchange_rate: string;
+    a_token_supply: Num<string>;
+    exchange_rate: Ratio<string>;
   };
-  totalDeposit: string;
+  totalDeposit: uUST<string>;
 }
 
 export function parseData({
@@ -38,7 +39,7 @@ export function parseData({
     exchangeRate: parsedExchangeRate,
     totalDeposit: big(parsedAUSTBalance.balance)
       .mul(parsedExchangeRate.exchange_rate)
-      .toString(),
+      .toString() as uUST,
   };
 }
 

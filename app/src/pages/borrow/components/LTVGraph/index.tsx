@@ -3,7 +3,7 @@ import {
   Rect,
 } from '@anchor-protocol/neumorphism-ui/components/HorizontalGraphBar';
 import { HorizontalGraphSlider } from '@anchor-protocol/neumorphism-ui/components/HorizontalGraphSlider';
-import { formatPercentage } from '@anchor-protocol/notation';
+import { formatPercentage, Ratio } from '@anchor-protocol/notation';
 import big, { Big, BigSource } from 'big.js';
 import React, { useCallback } from 'react';
 import { GraphLabel } from './GraphLabel';
@@ -17,15 +17,15 @@ export interface Data {
 }
 
 export interface LTVGraphProps {
-  maxLtv: BigSource;
-  safeLtv: BigSource;
-  currentLtv: Big | undefined;
-  nextLtv: Big | undefined;
+  maxLtv: Ratio<BigSource>;
+  safeLtv: Ratio<BigSource>;
+  currentLtv: Ratio<Big> | undefined;
+  nextLtv: Ratio<Big> | undefined;
   // draftLtv => (fix with amount format 0.000 -> fixed ltv)
-  userMinLtv: BigSource | undefined;
-  userMaxLtv: BigSource | undefined;
-  onStep: (draftLtv: Big) => Big;
-  onChange: (nextLtv: Big) => void;
+  userMinLtv: Ratio<BigSource> | undefined;
+  userMaxLtv: Ratio<BigSource> | undefined;
+  onStep: (draftLtv: Ratio<Big>) => Ratio<Big>;
+  onChange: (nextLtv: Ratio<Big>) => void;
 }
 
 const colorFunction = ({ color }: Data) => color;
@@ -49,14 +49,14 @@ export function LTVGraph({
 }: LTVGraphProps) {
   const step = useCallback(
     (draftLtv: number) => {
-      return onStep(big(draftLtv)).toNumber();
+      return onStep(big(draftLtv) as Ratio<Big>).toNumber();
     },
     [onStep],
   );
 
   const change = useCallback(
     (nextLtv: number) => {
-      onChange(big(nextLtv));
+      onChange(big(nextLtv) as Ratio<Big>);
     },
     [onChange],
   );

@@ -5,12 +5,15 @@ import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTool
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
 import {
+  bLuna,
+  demicrofy,
   formatLuna,
   formatLunaInput,
   formatUST,
+  Luna,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
-  MICRO,
+  microfy,
 } from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
@@ -24,22 +27,22 @@ import {
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
 import { CreateTxOptions } from '@terra-money/terra.js';
-import * as txi from 'queries/txInfos';
-import { queryOptions } from 'transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
+import big from 'big.js';
+import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import {
   txNotificationFactory,
   TxResultRenderer,
 } from 'components/TxResultRenderer';
-import big from 'big.js';
-import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningArticle } from 'components/WarningArticle';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { fixedGasUUSD, transactionFee } from 'env';
 import { useExchangeRate } from 'pages/basset/queries/exchangeRate';
+import * as txi from 'queries/txInfos';
 import React, { ReactNode, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { queryOptions } from 'transactions/queryOptions';
+import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 
 export interface BurnProps {
   className?: string;
@@ -75,15 +78,14 @@ function BurnBase({ className }: BurnProps) {
   // ---------------------------------------------
   // states
   // ---------------------------------------------
-  const [assetAmount, setAssetAmount] = useState<string>('');
-  const [bAssetAmount, setBAssetAmount] = useState<string>('');
+  const [burnAmount, setBurnAmount] = useState<bLuna>('' as bLuna);
+  const [getAmount, setGetAmount] = useState<Luna>('' as Luna);
 
-  const [assetCurrency, setAssetCurrency] = useState<Item>(
-    () => assetCurrencies[0],
-  );
-
-  const [bAssetCurrency, setBAssetCurrency] = useState<Item>(
+  const [burnCurrency, setBurnCurrency] = useState<Item>(
     () => bAssetCurrencies[0],
+  );
+  const [getCurrency, setGetCurrency] = useState<Item>(
+    () => assetCurrencies[0],
   );
 
   // ---------------------------------------------
@@ -92,7 +94,7 @@ function BurnBase({ className }: BurnProps) {
   const bank = useBank();
 
   const { parsedData: exchangeRate } = useExchangeRate({
-    bAsset: assetCurrency.value,
+    bAsset: getCurrency.value,
   });
 
   // ---------------------------------------------
@@ -107,73 +109,63 @@ function BurnBase({ className }: BurnProps) {
     return undefined;
   }, [bank.status, bank.userBalances.uUSD]);
 
-  const invalidBAssetAmount = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo' || bAssetAmount.length === 0) {
+  const invalidBurnAmount = useMemo<ReactNode>(() => {
+    if (bank.status === 'demo' || burnAmount.length === 0) {
       return undefined;
-    } else if (
-      big(bAssetAmount)
-        .mul(MICRO)
-        .gt(bank.userBalances?.ubLuna ?? 0)
-    ) {
+    } else if (microfy(burnAmount).gt(bank.userBalances.ubLuna ?? 0)) {
       return `Not enough bAssets`;
     }
     return undefined;
-  }, [bank.status, bank.userBalances?.ubLuna, bAssetAmount]);
+  }, [bank.status, bank.userBalances.ubLuna, burnAmount]);
 
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
-  const updateAssetCurrency = useCallback((nextAssetCurrencyValue: string) => {
-    setAssetCurrency(
-      assetCurrencies.find(({ value }) => nextAssetCurrencyValue === value) ??
+  const updateBurnCurrency = useCallback((nextBurnCurrencyValue: string) => {
+    setBurnCurrency(
+      bAssetCurrencies.find(({ value }) => nextBurnCurrencyValue === value) ??
+        bAssetCurrencies[0],
+    );
+  }, []);
+
+  const updateGetCurrency = useCallback((nextGetCurrencyValue: string) => {
+    setGetCurrency(
+      assetCurrencies.find(({ value }) => nextGetCurrencyValue === value) ??
         assetCurrencies[0],
     );
   }, []);
 
-  const updateBAssetCurrency = useCallback(
-    (nextBAssetCurrencyValue: string) => {
-      setBAssetCurrency(
-        bAssetCurrencies.find(
-          ({ value }) => nextBAssetCurrencyValue === value,
-        ) ?? bAssetCurrencies[0],
-      );
-    },
-    [],
-  );
-
-  const updateAssetAmount = useCallback(
-    (nextAssetAmount: string) => {
-      if (nextAssetAmount.trim().length === 0) {
-        setAssetAmount('');
-        setBAssetAmount('');
+  const updateBurnAmount = useCallback(
+    (nextBurnAmount: string) => {
+      if (nextBurnAmount.trim().length === 0) {
+        setGetAmount('' as Luna);
+        setBurnAmount('' as bLuna);
       } else {
-        const assetAmount: string = nextAssetAmount;
+        const burnAmount: bLuna = nextBurnAmount as bLuna;
+        const getAmount: Luna = formatLunaInput(
+          big(burnAmount).mul(exchangeRate?.exchange_rate ?? 1),
+        ) as Luna;
 
-        setAssetAmount(assetAmount);
-        setBAssetAmount(
-          formatLunaInput(
-            big(assetAmount).div(exchangeRate?.exchange_rate ?? 1),
-          ),
-        );
+        setGetAmount(getAmount);
+        setBurnAmount(burnAmount);
       }
     },
     [exchangeRate?.exchange_rate],
   );
 
-  const updateBAssetAmount = useCallback(
-    (nextBAssetAmount: string) => {
-      if (nextBAssetAmount.trim().length === 0) {
-        setAssetAmount('');
-        setBAssetAmount('');
+  const updateGetAmount = useCallback(
+    (nextGetAmount: string) => {
+      if (nextGetAmount.trim().length === 0) {
+        setBurnAmount('' as bLuna);
+        setGetAmount('' as Luna);
       } else {
-        const bAssetAmount: string = nextBAssetAmount;
+        const getAmount: Luna = nextGetAmount as Luna;
+        const burnAmount: bLuna = formatLunaInput(
+          big(getAmount).div(exchangeRate?.exchange_rate ?? 1),
+        ) as bLuna;
 
-        setAssetAmount(
-          formatLunaInput(
-            big(bAssetAmount).mul(exchangeRate?.exchange_rate ?? 1),
-          ),
-        );
-        setBAssetAmount(bAssetAmount);
+        setBurnAmount(burnAmount);
+        setGetAmount(getAmount);
       }
     },
     [exchangeRate?.exchange_rate],
@@ -182,10 +174,10 @@ function BurnBase({ className }: BurnProps) {
   const burn = useCallback(
     async ({
       status,
-      bAssetAmount,
+      burnAmount,
     }: {
       status: WalletStatus;
-      bAssetAmount: string;
+      burnAmount: bLuna;
     }) => {
       if (status.status !== 'ready' || bank.status !== 'connected') {
         return;
@@ -196,8 +188,8 @@ function BurnBase({ className }: BurnProps) {
           ...transactionFee,
           msgs: fabricatebAssetBurn({
             address: status.walletAddress,
-            amount: bAssetAmount,
-            bAsset: bAssetCurrency.value,
+            amount: burnAmount,
+            bAsset: burnCurrency.value,
           })(addressProvider),
         })
           .then(({ payload }) => payload)
@@ -207,18 +199,11 @@ function BurnBase({ className }: BurnProps) {
 
       // is this component not unmounted
       if (data) {
-        setAssetAmount('');
-        setBAssetAmount('');
+        setGetAmount('' as Luna);
+        setBurnAmount('' as bLuna);
       }
     },
-    [
-      bank.status,
-      queryBurn,
-      post,
-      bAssetCurrency.value,
-      addressProvider,
-      client,
-    ],
+    [bank.status, queryBurn, post, burnCurrency.value, addressProvider, client],
   );
 
   // ---------------------------------------------
@@ -246,14 +231,16 @@ function BurnBase({ className }: BurnProps) {
         <p>I want to burn</p>
         <p>
           {exchangeRate &&
-            `1 bLuna = ${formatLuna(exchangeRate.exchange_rate)} Luna`}
+            `1 ${burnCurrency.label} = ${formatLuna(
+              exchangeRate.exchange_rate,
+            )} ${getCurrency.label}`}
         </p>
       </div>
 
       <SelectAndTextInputContainer
         className="burn"
-        error={!!invalidBAssetAmount}
-        leftHelperText={invalidBAssetAmount}
+        error={!!invalidBurnAmount}
+        leftHelperText={invalidBurnAmount}
         rightHelperText={
           status.status === 'ready' && (
             <span>
@@ -261,20 +248,21 @@ function BurnBase({ className }: BurnProps) {
               <span
                 style={{ textDecoration: 'underline', cursor: 'pointer' }}
                 onClick={() =>
-                  updateBAssetAmount(
-                    formatLunaInput(big(bank.userBalances.ubLuna).div(MICRO)),
+                  updateBurnAmount(
+                    formatLunaInput(demicrofy(bank.userBalances.ubLuna)),
                   )
                 }
               >
-                {formatLuna(big(bank.userBalances.ubLuna).div(MICRO))} bLuna
+                {formatLuna(demicrofy(bank.userBalances.ubLuna))}{' '}
+                {burnCurrency.label}
               </span>
             </span>
           )
         }
       >
         <MuiNativeSelect
-          value={bAssetCurrency}
-          onChange={({ target }) => updateBAssetCurrency(target.value)}
+          value={burnCurrency}
+          onChange={({ target }) => updateBurnCurrency(target.value)}
           IconComponent={
             bAssetCurrencies.length < 2 ? BlankComponent : undefined
           }
@@ -288,10 +276,10 @@ function BurnBase({ className }: BurnProps) {
         </MuiNativeSelect>
         <MuiInput
           placeholder="0"
-          error={!!invalidBAssetAmount}
-          value={bAssetAmount}
+          error={!!invalidBurnAmount}
+          value={burnAmount}
           onKeyPress={onLunaInputKeyPress as any}
-          onChange={({ target }) => updateBAssetAmount(target.value)}
+          onChange={({ target }) => updateBurnAmount(target.value)}
         />
       </SelectAndTextInputContainer>
 
@@ -300,19 +288,16 @@ function BurnBase({ className }: BurnProps) {
         <p>and get</p>
         <p>
           {exchangeRate &&
-            `1 Luna = ${formatLuna(
+            `1 ${getCurrency.label} = ${formatLuna(
               big(1).div(big(exchangeRate.exchange_rate)),
-            )} bLuna`}
+            )} ${burnCurrency.label}`}
         </p>
       </div>
 
-      <SelectAndTextInputContainer
-        className="gett"
-        error={!!invalidBAssetAmount}
-      >
+      <SelectAndTextInputContainer className="gett" error={!!invalidBurnAmount}>
         <MuiNativeSelect
-          value={assetCurrency}
-          onChange={({ target }) => updateAssetCurrency(target.value)}
+          value={getCurrency}
+          onChange={({ target }) => updateGetCurrency(target.value)}
           IconComponent={
             assetCurrencies.length < 2 ? BlankComponent : undefined
           }
@@ -326,14 +311,14 @@ function BurnBase({ className }: BurnProps) {
         </MuiNativeSelect>
         <MuiInput
           placeholder="0"
-          error={!!invalidBAssetAmount}
-          value={assetAmount}
+          error={!!invalidBurnAmount}
+          value={getAmount}
           onKeyPress={onLunaInputKeyPress as any}
-          onChange={({ target }) => updateAssetAmount(target.value)}
+          onChange={({ target }) => updateGetAmount(target.value)}
         />
       </SelectAndTextInputContainer>
 
-      {bAssetAmount.length > 0 && (
+      {burnAmount.length > 0 && (
         <TxFeeList className="receipt">
           <TxFeeListItem
             label={
@@ -342,7 +327,7 @@ function BurnBase({ className }: BurnProps) {
               </IconSpan>
             }
           >
-            {formatUST(big(fixedGasUUSD).div(MICRO))} UST
+            {formatUST(demicrofy(fixedGasUUSD))} UST
           </TxFeeListItem>
         </TxFeeList>
       )}
@@ -353,15 +338,15 @@ function BurnBase({ className }: BurnProps) {
         disabled={
           status.status !== 'ready' ||
           bank.status !== 'connected' ||
-          bAssetAmount.length === 0 ||
-          big(bAssetAmount).lte(0) ||
+          burnAmount.length === 0 ||
+          big(burnAmount).lte(0) ||
           !!invalidTxFee ||
-          !!invalidBAssetAmount
+          !!invalidBurnAmount
         }
         onClick={() =>
           burn({
             status,
-            bAssetAmount: bAssetAmount,
+            burnAmount,
           })
         }
       >

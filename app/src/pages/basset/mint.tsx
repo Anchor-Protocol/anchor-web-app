@@ -7,12 +7,15 @@ import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeS
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
 import {
+  bLuna,
+  demicrofy,
   formatLuna,
   formatLunaInput,
   formatUST,
+  Luna,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
-  MICRO,
+  microfy,
 } from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
@@ -26,21 +29,21 @@ import {
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
 import { CreateTxOptions } from '@terra-money/terra.js';
-import * as txi from 'queries/txInfos';
-import { queryOptions } from 'transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
+import big from 'big.js';
+import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import {
   txNotificationFactory,
   TxResultRenderer,
 } from 'components/TxResultRenderer';
-import big from 'big.js';
-import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningArticle } from 'components/WarningArticle';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { fixedGasUUSD, transactionFee } from 'env';
+import * as txi from 'queries/txInfos';
 import React, { ReactNode, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { queryOptions } from 'transactions/queryOptions';
+import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 import { useExchangeRate } from './queries/exchangeRate';
 import * as val from './queries/validators';
 import { useValidators } from './queries/validators';
@@ -79,15 +82,14 @@ function MintBase({ className }: MintProps) {
   // ---------------------------------------------
   // states
   // ---------------------------------------------
-  const [assetAmount, setAssetAmount] = useState<string>('');
-  const [bAssetAmount, setBAssetAmount] = useState<string>('');
+  const [bondAmount, setBondAmount] = useState<Luna>('' as Luna);
+  const [mintAmount, setMintAmount] = useState<bLuna>('' as bLuna);
 
-  const [bAssetCurrency, setBAssetCurrency] = useState<Item>(
-    () => bAssetCurrencies[0],
-  );
-
-  const [assetCurrency, setAssetCurrency] = useState<Item>(
+  const [bondCurrency, setBondCurrency] = useState<Item>(
     () => assetCurrencies[0],
+  );
+  const [mintCurrency, setMintCurrency] = useState<Item>(
+    () => bAssetCurrencies[0],
   );
 
   const [selectedValidator, setSelectedValidator] = useState<
@@ -100,11 +102,11 @@ function MintBase({ className }: MintProps) {
   const bank = useBank();
 
   const { parsedData: validators } = useValidators({
-    bAsset: bAssetCurrency.value,
+    bAsset: mintCurrency.value,
   });
 
   const { parsedData: exchangeRate } = useExchangeRate({
-    bAsset: bAssetCurrency.value,
+    bAsset: mintCurrency.value,
   });
 
   // ---------------------------------------------
@@ -119,73 +121,63 @@ function MintBase({ className }: MintProps) {
     return undefined;
   }, [bank.status, bank.userBalances.uUSD]);
 
-  const invalidAssetAmount = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo' || assetAmount.length === 0) {
+  const invalidBondAmount = useMemo<ReactNode>(() => {
+    if (bank.status === 'demo' || bondAmount.length === 0) {
       return undefined;
-    } else if (
-      big(assetAmount)
-        .mul(MICRO)
-        .gt(bank.userBalances.uLuna ?? 0)
-    ) {
+    } else if (microfy(bondAmount).gt(bank.userBalances.uLuna ?? 0)) {
       return `Not enough assets`;
     }
     return undefined;
-  }, [bank.status, bank.userBalances.uLuna, assetAmount]);
+  }, [bank.status, bank.userBalances.uLuna, bondAmount]);
 
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
-  const updateAssetCurrency = useCallback((nextAssetCurrencyValue: string) => {
-    setAssetCurrency(
+  const updateBondCurrency = useCallback((nextAssetCurrencyValue: string) => {
+    setBondCurrency(
       assetCurrencies.find(({ value }) => nextAssetCurrencyValue === value) ??
         assetCurrencies[0],
     );
   }, []);
 
-  const updateBAssetCurrency = useCallback(
-    (nextBAssetCurrencyValue: string) => {
-      setBAssetCurrency(
-        bAssetCurrencies.find(
-          ({ value }) => nextBAssetCurrencyValue === value,
-        ) ?? bAssetCurrencies[0],
-      );
-    },
-    [],
-  );
+  const updateMintCurrency = useCallback((nextBAssetCurrencyValue: string) => {
+    setMintCurrency(
+      bAssetCurrencies.find(({ value }) => nextBAssetCurrencyValue === value) ??
+        bAssetCurrencies[0],
+    );
+  }, []);
 
-  const updateAssetAmount = useCallback(
-    (nextAssetAmount: string) => {
-      if (nextAssetAmount.trim().length === 0) {
-        setAssetAmount('');
-        setBAssetAmount('');
+  const updateBondAmount = useCallback(
+    (nextBondAmount: string) => {
+      if (nextBondAmount.trim().length === 0) {
+        setBondAmount('' as Luna);
+        setMintAmount('' as bLuna);
       } else {
-        const assetAmount: string = nextAssetAmount;
+        const bondAmount: Luna = nextBondAmount as Luna;
+        const mintAmount: bLuna = formatLunaInput(
+          big(bondAmount).div(exchangeRate?.exchange_rate ?? 1),
+        ) as bLuna;
 
-        setAssetAmount(assetAmount);
-        setBAssetAmount(
-          formatLunaInput(
-            big(assetAmount).div(exchangeRate?.exchange_rate ?? 1),
-          ),
-        );
+        setBondAmount(bondAmount);
+        setMintAmount(mintAmount);
       }
     },
     [exchangeRate?.exchange_rate],
   );
 
-  const updateBAssetAmount = useCallback(
-    (nextBAssetAmount: string) => {
-      if (nextBAssetAmount.trim().length === 0) {
-        setAssetAmount('');
-        setBAssetAmount('');
+  const updateMintAmount = useCallback(
+    (nextMintAmount: string) => {
+      if (nextMintAmount.trim().length === 0) {
+        setBondAmount('' as Luna);
+        setMintAmount('' as bLuna);
       } else {
-        const bAssetAmount: string = nextBAssetAmount;
+        const mintAmount: bLuna = nextMintAmount as bLuna;
+        const bondAmount: Luna = formatLunaInput(
+          big(mintAmount).mul(exchangeRate?.exchange_rate ?? 1),
+        ) as Luna;
 
-        setAssetAmount(
-          formatLunaInput(
-            big(bAssetAmount).mul(exchangeRate?.exchange_rate ?? 1),
-          ),
-        );
-        setBAssetAmount(bAssetAmount);
+        setBondAmount(bondAmount);
+        setMintAmount(mintAmount);
       }
     },
     [exchangeRate?.exchange_rate],
@@ -194,11 +186,11 @@ function MintBase({ className }: MintProps) {
   const mint = useCallback(
     async ({
       status,
-      assetAmount,
+      bondAmount,
       selectedValidator,
     }: {
       status: WalletStatus;
-      assetAmount: string;
+      bondAmount: Luna;
       selectedValidator: string | undefined;
     }) => {
       if (
@@ -214,8 +206,8 @@ function MintBase({ className }: MintProps) {
           ...transactionFee,
           msgs: fabricatebAssetBond({
             address: status.walletAddress,
-            amount: assetAmount,
-            bAsset: bAssetCurrency.value,
+            amount: bondAmount,
+            bAsset: mintCurrency.value,
             validator: selectedValidator,
           })(addressProvider),
         })
@@ -226,19 +218,12 @@ function MintBase({ className }: MintProps) {
 
       // is this component does not unmounted
       if (data) {
-        setAssetAmount('');
-        setBAssetAmount('');
+        setBondAmount('' as Luna);
+        setMintAmount('' as bLuna);
         setSelectedValidator(null);
       }
     },
-    [
-      bank.status,
-      queryMint,
-      post,
-      bAssetCurrency.value,
-      addressProvider,
-      client,
-    ],
+    [bank.status, queryMint, post, mintCurrency.value, addressProvider, client],
   );
 
   // ---------------------------------------------
@@ -266,16 +251,16 @@ function MintBase({ className }: MintProps) {
         <p>I want to bond</p>
         <p>
           {exchangeRate &&
-            `1 Luna = ${formatLuna(
+            `1 ${bondCurrency.label} = ${formatLuna(
               big(1).div(exchangeRate.exchange_rate),
-            )} bLuna`}
+            )} ${mintCurrency.label}`}
         </p>
       </div>
 
       <SelectAndTextInputContainer
         className="bond"
-        error={!!invalidAssetAmount}
-        leftHelperText={invalidAssetAmount}
+        error={!!invalidBondAmount}
+        leftHelperText={invalidBondAmount}
         rightHelperText={
           status.status === 'ready' && (
             <span>
@@ -283,20 +268,21 @@ function MintBase({ className }: MintProps) {
               <span
                 style={{ textDecoration: 'underline', cursor: 'pointer' }}
                 onClick={() =>
-                  updateAssetAmount(
-                    formatLunaInput(big(bank.userBalances.uLuna).div(MICRO)),
+                  updateBondAmount(
+                    formatLunaInput(demicrofy(bank.userBalances.uLuna)),
                   )
                 }
               >
-                {formatLuna(big(bank.userBalances.uLuna).div(MICRO))} Luna
+                {formatLuna(demicrofy(bank.userBalances.uLuna))}{' '}
+                {bondCurrency.label}
               </span>
             </span>
           )
         }
       >
         <MuiNativeSelect
-          value={assetCurrency}
-          onChange={({ target }) => updateAssetCurrency(target.value)}
+          value={bondCurrency}
+          onChange={({ target }) => updateBondCurrency(target.value)}
           IconComponent={
             assetCurrencies.length < 2 ? BlankComponent : undefined
           }
@@ -311,10 +297,10 @@ function MintBase({ className }: MintProps) {
 
         <MuiInput
           placeholder="0"
-          error={!!invalidAssetAmount}
-          value={assetAmount}
+          error={!!invalidBondAmount}
+          value={bondAmount}
           onKeyPress={onLunaInputKeyPress as any}
-          onChange={({ target }) => updateAssetAmount(target.value)}
+          onChange={({ target }) => updateBondAmount(target.value)}
         />
       </SelectAndTextInputContainer>
 
@@ -323,17 +309,16 @@ function MintBase({ className }: MintProps) {
         <p>and mint</p>
         <p>
           {exchangeRate &&
-            `1 bLuna = ${formatLuna(exchangeRate.exchange_rate)} Luna`}
+            `1 ${mintCurrency.label} = ${formatLuna(
+              exchangeRate.exchange_rate,
+            )} ${bondCurrency.label}`}
         </p>
       </div>
 
-      <SelectAndTextInputContainer
-        className="mint"
-        error={!!invalidAssetAmount}
-      >
+      <SelectAndTextInputContainer className="mint" error={!!invalidBondAmount}>
         <MuiNativeSelect
-          value={bAssetCurrency}
-          onChange={({ target }) => updateBAssetCurrency(target.value)}
+          value={mintCurrency}
+          onChange={({ target }) => updateMintCurrency(target.value)}
           IconComponent={
             bAssetCurrencies.length < 2 ? BlankComponent : undefined
           }
@@ -347,10 +332,10 @@ function MintBase({ className }: MintProps) {
         </MuiNativeSelect>
         <MuiInput
           placeholder="0"
-          error={!!invalidAssetAmount}
-          value={bAssetAmount}
+          error={!!invalidBondAmount}
+          value={mintAmount}
           onKeyPress={onLunaInputKeyPress as any}
-          onChange={({ target }) => updateBAssetAmount(target.value)}
+          onChange={({ target }) => updateMintAmount(target.value)}
         />
       </SelectAndTextInputContainer>
 
@@ -380,7 +365,7 @@ function MintBase({ className }: MintProps) {
         )}
       </NativeSelect>
 
-      {assetAmount.length > 0 && (
+      {bondAmount.length > 0 && (
         <TxFeeList className="receipt">
           <TxFeeListItem
             label={
@@ -389,7 +374,7 @@ function MintBase({ className }: MintProps) {
               </IconSpan>
             }
           >
-            {formatUST(big(fixedGasUUSD).div(MICRO))} UST
+            {formatUST(demicrofy(fixedGasUUSD))} UST
           </TxFeeListItem>
         </TxFeeList>
       )}
@@ -400,15 +385,15 @@ function MintBase({ className }: MintProps) {
         disabled={
           status.status !== 'ready' ||
           bank.status !== 'connected' ||
-          assetAmount.length === 0 ||
-          big(assetAmount).lte(0) ||
-          !!invalidAssetAmount ||
+          bondAmount.length === 0 ||
+          big(bondAmount).lte(0) ||
+          !!invalidBondAmount ||
           !!invalidTxFee ||
           !selectedValidator
         }
         onClick={() =>
           mint({
-            assetAmount: assetAmount,
+            bondAmount,
             status,
             selectedValidator: selectedValidator?.OperatorAddress,
           })

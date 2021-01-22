@@ -1,5 +1,14 @@
-import { MICRO } from '@anchor-protocol/notation';
+import {
+  microfy,
+  Ratio,
+  uaUST,
+  ubLuna,
+  uLuna,
+  UST,
+  uUST,
+} from '@anchor-protocol/notation';
 import { useWallet } from '@anchor-protocol/wallet-provider';
+import { BigSource } from 'big.js';
 import { Data as TaxData, useTax } from 'queries/tax';
 import {
   Data as UserBalancesData,
@@ -54,15 +63,15 @@ export function BankProvider({ children }: BankProviderProps) {
           tax: taxData
             ? taxData
             : {
-                taxRate: '0.1',
-                maxTaxUUSD: (0.1 * MICRO).toString(),
+                taxRate: '0.1' as Ratio,
+                maxTaxUUSD: microfy(0.1 as UST<BigSource>).toString() as uUST,
               },
           refetchTax,
           userBalances: {
-            uUSD: '0',
-            uLuna: '0',
-            ubLuna: '0',
-            uaUST: '0',
+            uUSD: '0' as uUST,
+            uLuna: '0' as uLuna,
+            ubLuna: '0' as ubLuna,
+            uaUST: '0' as uaUST,
           },
           refetchUserBalances,
         };

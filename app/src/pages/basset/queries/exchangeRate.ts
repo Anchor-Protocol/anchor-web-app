@@ -1,3 +1,4 @@
+import { DateTime, Ratio, uLuna } from '@anchor-protocol/notation';
 import { gql, QueryResult, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
 import { useMemo } from 'react';
@@ -9,20 +10,13 @@ export interface StringifiedData {
 }
 
 export interface Data {
-  /** number */
-  actual_unbonded_amount: string;
-  /** number */
-  exchange_rate: string;
-  /** datetime */
-  last_index_modification: number;
-  /** ? */
+  actual_unbonded_amount: uLuna<string>;
+  exchange_rate: Ratio<string>;
+  last_index_modification: DateTime;
   last_processed_batch: number;
-  /** datetime */
-  last_unbonded_time: number;
-  /** number */
-  prev_hub_balance: string;
-  /** number */
-  total_bond_amount: string;
+  last_unbonded_time: DateTime;
+  prev_hub_balance: uLuna<string>;
+  total_bond_amount: uLuna<string>;
 }
 
 export function parseData(data: StringifiedData): Data {

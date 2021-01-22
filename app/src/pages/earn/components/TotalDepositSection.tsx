@@ -1,14 +1,13 @@
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import {
+  demicrofy,
   formatUST,
   mapDecimalPointBaseSeparatedNumbers,
-  MICRO,
 } from '@anchor-protocol/notation';
-import big from 'big.js';
-import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { useTotalDeposit } from '../queries/totalDeposit';
@@ -54,19 +53,21 @@ function TotalDepositSectionBase({ className }: TotalDepositSectionProps) {
       </h2>
 
       <div className="amount">
-        {mapDecimalPointBaseSeparatedNumbers(
-          formatUST(big(totalDeposit?.totalDeposit ?? 0).div(MICRO)),
-          (i, d) => {
-            return (
-              <>
-                {i}
-                {d ? <span className="decimal-point">.{d}</span> : null} UST
-              </>
-            );
-          },
-        )}
+        {totalDeposit?.totalDeposit
+          ? mapDecimalPointBaseSeparatedNumbers(
+              formatUST(demicrofy(totalDeposit.totalDeposit)),
+              (i, d) => {
+                return (
+                  <>
+                    {i}
+                    {d ? <span className="decimal-point">.{d}</span> : null} UST
+                  </>
+                );
+              },
+            )
+          : `0 UST`}
       </div>
-      
+
       <HorizontalRuler />
 
       <aside className="total-deposit-buttons">

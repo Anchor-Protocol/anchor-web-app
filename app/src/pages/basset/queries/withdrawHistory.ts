@@ -1,3 +1,4 @@
+import { DateTime, Ratio, ubLuna } from '@anchor-protocol/notation';
 import { useQuerySubscription } from '@anchor-protocol/use-broadcastable-query';
 import { gql, QueryResult, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
@@ -17,9 +18,9 @@ export interface Data {
   allHistory: {
     history: {
       batch_id: number;
-      time: number;
-      amount: string;
-      withdraw_rate: number;
+      time: DateTime;
+      amount: ubLuna<string>;
+      withdraw_rate: Ratio<string>;
       released: boolean;
     }[];
   };
@@ -27,8 +28,8 @@ export interface Data {
     epoch_period: number;
     underlying_coin_denom: string;
     unbonding_period: number;
-    peg_recovery_fee: string;
-    er_threshold: string;
+    peg_recovery_fee: ubLuna<string>;
+    er_threshold: Ratio<string>;
     reward_denom: string;
   };
 }
@@ -118,7 +119,7 @@ export function useWithdrawHistory({
       },
     }),
   });
-  
+
   useQuerySubscription(
     (id, event) => {
       if (event === 'done') {

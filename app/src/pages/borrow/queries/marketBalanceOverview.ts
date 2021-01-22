@@ -1,3 +1,4 @@
+import { Num, uaUST, uUST } from '@anchor-protocol/notation';
 import { gql, QueryResult, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
 import { useMemo } from 'react';
@@ -5,7 +6,7 @@ import { useMemo } from 'react';
 export interface StringifiedData {
   currentBlock: number;
   marketBalance: {
-    Result: { Denom: string; Amount: string }[];
+    Result: { Denom: string; Amount: Num<string> }[];
   };
   marketState: {
     Result: string;
@@ -14,12 +15,12 @@ export interface StringifiedData {
 
 export interface Data {
   currentBlock: number;
-  marketBalance: { Denom: string; Amount: string }[];
+  marketBalance: { Denom: string; Amount: Num<string> }[];
   marketState: {
-    total_liabilities: string;
-    total_reserves: string;
+    total_liabilities: uUST<string>;
+    total_reserves: uaUST<string>;
     last_interest_updated: number;
-    global_interest_index: string;
+    global_interest_index: Num<string>;
   };
 }
 

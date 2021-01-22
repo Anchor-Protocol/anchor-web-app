@@ -7,11 +7,14 @@ import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTool
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import { useConfirm } from '@anchor-protocol/neumorphism-ui/components/useConfirm';
 import {
+  demicrofy,
   formatUST,
   formatUSTInput,
-  MICRO,
+  microfy,
+  UST,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
+  uUST,
 } from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
@@ -27,7 +30,7 @@ import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { CreateTxOptions } from '@terra-money/terra.js';
-import big from 'big.js';
+import big, { Big } from 'big.js';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import {
   txNotificationFactory,
@@ -85,7 +88,7 @@ function ComponentBase({
   // ---------------------------------------------
   // states
   // ---------------------------------------------
-  const [assetAmount, setAssetAmount] = useState<string>('');
+  const [depositAmount, setDepositAmount] = useState<UST>('' as UST);
 
   // ---------------------------------------------
   // queries
@@ -95,23 +98,23 @@ function ComponentBase({
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
-  const txFee = useMemo(() => {
-    if (assetAmount.length === 0) return undefined;
+  const txFee = useMemo<uUST<Big> | undefined>(() => {
+    if (depositAmount.length === 0) return undefined;
 
     // MIN((User_UST_Balance - fixed_gas)/(1+Tax_rate) * tax_rate , Max_tax) + Fixed_Gas
 
-    const uustAmount = big(assetAmount).mul(MICRO);
-    const ratioTxFee = big(uustAmount.minus(fixedGasUUSD))
+    const uAmount = microfy(depositAmount);
+    const ratioTxFee = big(uAmount.minus(fixedGasUUSD))
       .div(big(1).add(bank.tax.taxRate))
       .mul(bank.tax.taxRate);
     const maxTax = big(bank.tax.maxTaxUUSD);
 
     if (ratioTxFee.gt(maxTax)) {
-      return maxTax.add(fixedGasUUSD);
+      return maxTax.add(fixedGasUUSD) as uUST<Big>;
     } else {
-      return ratioTxFee.add(fixedGasUUSD);
+      return ratioTxFee.add(fixedGasUUSD) as uUST<Big>;
     }
-  }, [assetAmount, bank.tax.maxTaxUUSD, bank.tax.taxRate]);
+  }, [depositAmount, bank.tax.maxTaxUUSD, bank.tax.taxRate]);
 
   const invalidTxFee = useMemo(() => {
     if (bank.status === 'demo') {
@@ -122,26 +125,26 @@ function ComponentBase({
     return undefined;
   }, [bank.status, bank.userBalances.uUSD]);
 
-  const invalidAssetAmount = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo' || assetAmount.length === 0) {
+  const invalidDepositAmount = useMemo<ReactNode>(() => {
+    if (bank.status === 'demo' || depositAmount.length === 0) {
       return undefined;
     } else if (
-      big(big(assetAmount).mul(MICRO))
+      microfy(depositAmount)
         .plus(txFee ?? 0)
         .gt(bank.userBalances.uUSD ?? 0)
     ) {
       return `Not enough UST`;
     }
     return undefined;
-  }, [assetAmount, bank.status, bank.userBalances.uUSD, txFee]);
+  }, [depositAmount, bank.status, bank.userBalances.uUSD, txFee]);
 
-  const sendAmount = useMemo(() => {
-    return assetAmount.length > 0 && txFee
-      ? big(assetAmount).mul(MICRO).plus(txFee)
+  const sendAmount = useMemo<uUST<Big> | undefined>(() => {
+    return depositAmount.length > 0 && txFee
+      ? (microfy(depositAmount).plus(txFee) as uUST<Big>)
       : undefined;
-  }, [assetAmount, txFee]);
+  }, [depositAmount, txFee]);
 
-  const recommendationAssetAmount = useMemo<string | undefined>(() => {
+  const recommendationAssetAmount = useMemo<uUST<Big> | undefined>(() => {
     if (bank.status === 'demo' || big(bank.userBalances.uUSD).lte(0)) {
       return undefined;
     }
@@ -157,7 +160,9 @@ function ComponentBase({
     const txFee = withoutFixedGas.mul(bank.tax.taxRate);
     const result = withoutFixedGas.minus(min(txFee, bank.tax.maxTaxUUSD));
 
-    return result.lte(0) ? undefined : result.minus(fixedGasUUSD).toString();
+    return result.lte(0)
+      ? undefined
+      : (result.minus(fixedGasUUSD) as uUST<Big>);
   }, [
     bank.status,
     bank.tax.maxTaxUUSD,
@@ -168,14 +173,14 @@ function ComponentBase({
   const tooMuchAssetAmountWarning = useMemo<ReactNode>(() => {
     if (
       bank.status === 'demo' ||
-      assetAmount.length === 0 ||
-      !!invalidAssetAmount
+      depositAmount.length === 0 ||
+      !!invalidDepositAmount
     ) {
       return undefined;
     }
 
     const remainUUSD = big(bank.userBalances.uUSD)
-      .minus(big(assetAmount).mul(MICRO))
+      .minus(microfy(depositAmount))
       .minus(txFee ?? 0);
 
     if (remainUUSD.lt(fixedGasUUSD)) {
@@ -184,18 +189,18 @@ function ComponentBase({
 
     return undefined;
   }, [
-    assetAmount,
+    depositAmount,
     bank.status,
     bank.userBalances.uUSD,
-    invalidAssetAmount,
+    invalidDepositAmount,
     txFee,
   ]);
 
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
-  const updateAssetAmount = useCallback((nextAssetAmount: string) => {
-    setAssetAmount(nextAssetAmount);
+  const updateDepositAmount = useCallback((nextDepositAmount: string) => {
+    setDepositAmount(nextDepositAmount as UST);
   }, []);
 
   const proceed = useCallback(
@@ -284,19 +289,19 @@ function ComponentBase({
 
         <NumberInput
           className="amount"
-          value={assetAmount}
+          value={depositAmount}
           maxIntegerPoinsts={UST_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="AMOUNT"
-          error={!!invalidAssetAmount}
-          onChange={({ target }) => updateAssetAmount(target.value)}
+          error={!!invalidDepositAmount}
+          onChange={({ target }) => updateDepositAmount(target.value)}
           InputProps={{
             endAdornment: <InputAdornment position="end">UST</InputAdornment>,
           }}
         />
 
-        <div className="wallet" aria-invalid={!!invalidAssetAmount}>
-          <span>{invalidAssetAmount}</span>
+        <div className="wallet" aria-invalid={!!invalidDepositAmount}>
+          <span>{invalidDepositAmount}</span>
           <span>
             Max:{' '}
             <span
@@ -310,12 +315,15 @@ function ComponentBase({
               }
               onClick={() =>
                 recommendationAssetAmount &&
-                updateAssetAmount(
-                  formatUSTInput(big(recommendationAssetAmount).div(MICRO)),
+                updateDepositAmount(
+                  formatUSTInput(demicrofy(recommendationAssetAmount)),
                 )
               }
             >
-              {formatUST(big(recommendationAssetAmount ?? 0).div(MICRO))} UST
+              {recommendationAssetAmount
+                ? formatUST(demicrofy(recommendationAssetAmount))
+                : 0}{' '}
+              UST
             </span>
           </span>
         </div>
@@ -329,10 +337,10 @@ function ComponentBase({
                 </IconSpan>
               }
             >
-              {formatUST(big(txFee).div(MICRO))} UST
+              {formatUST(demicrofy(txFee))} UST
             </TxFeeListItem>
             <TxFeeListItem label="Send Amount">
-              {formatUST(sendAmount.div(MICRO))} UST
+              {formatUST(demicrofy(sendAmount))} UST
             </TxFeeListItem>
           </TxFeeList>
         )}
@@ -355,13 +363,13 @@ function ComponentBase({
           disabled={
             status.status !== 'ready' ||
             bank.status !== 'connected' ||
-            assetAmount.length === 0 ||
-            big(assetAmount).lte(0) ||
-            !!invalidAssetAmount
+            depositAmount.length === 0 ||
+            big(depositAmount).lte(0) ||
+            !!invalidDepositAmount
           }
           onClick={() =>
             proceed({
-              assetAmount,
+              assetAmount: depositAmount,
               status,
               confirm: tooMuchAssetAmountWarning,
             })

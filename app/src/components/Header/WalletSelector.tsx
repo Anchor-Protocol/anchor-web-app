@@ -3,14 +3,13 @@ import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionB
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { TextButton } from '@anchor-protocol/neumorphism-ui/components/TextButton';
 import {
+  demicrofy,
   formatLuna,
   formatUSTWithPostfixUnits,
-  MICRO,
   truncate,
 } from '@anchor-protocol/notation';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { ClickAwayListener } from '@material-ui/core';
-import big from 'big.js';
 import { useBank } from 'contexts/bank';
 import { useCallback, useState } from 'react';
 import useClipboard from 'react-use-clipboard';
@@ -95,7 +94,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                 {bank.status === 'connected' && (
                   <div>
                     {formatUSTWithPostfixUnits(
-                      big(bank.userBalances.uUSD).div(MICRO),
+                      demicrofy(bank.userBalances.uUSD),
                     )}{' '}
                     UST
                   </div>
@@ -121,21 +120,20 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                   <li>
                     UST:{' '}
                     {formatUSTWithPostfixUnits(
-                      big(bank.userBalances.uUSD).div(MICRO),
+                      demicrofy(bank.userBalances.uUSD),
                     )}
                   </li>
                   <li>
                     aUST:{' '}
                     {formatUSTWithPostfixUnits(
-                      big(bank.userBalances.uaUST).div(MICRO),
+                      demicrofy(bank.userBalances.uaUST),
                     )}
                   </li>
                   <li>
-                    Luna: {formatLuna(big(bank.userBalances.uLuna).div(MICRO))}
+                    Luna: {formatLuna(demicrofy(bank.userBalances.uLuna))}
                   </li>
                   <li>
-                    bLuna:{' '}
-                    {formatLuna(big(bank.userBalances.ubLuna).div(MICRO))}
+                    bLuna: {formatLuna(demicrofy(bank.userBalances.ubLuna))}
                   </li>
                 </ul>
               </WalletDropdown>

@@ -19,8 +19,6 @@ describe('queries/txInfos', () => {
       })
       .then(({ data }) => parseData(data));
 
-    console.log('txInfos.test.ts..()', data);
-
     expect(data.length).toBeGreaterThan(0);
   });
 });

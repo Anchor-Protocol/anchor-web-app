@@ -1,3 +1,4 @@
+import { Ratio, uUST } from '@anchor-protocol/notation';
 import { gql, QueryResult, useQuery } from '@apollo/client';
 import { useMemo } from 'react';
 
@@ -13,14 +14,14 @@ export interface StringifiedData {
 }
 
 export interface Data {
-  taxRate: string;
-  maxTaxUUSD: string;
+  taxRate: Ratio;
+  maxTaxUUSD: uUST;
 }
 
 export function parseData({ tax_rate, tax_cap_denom }: StringifiedData): Data {
   return {
-    taxRate: tax_rate.Result,
-    maxTaxUUSD: tax_cap_denom.Result,
+    taxRate: tax_rate.Result as Ratio,
+    maxTaxUUSD: tax_cap_denom.Result as uUST,
   };
 }
 

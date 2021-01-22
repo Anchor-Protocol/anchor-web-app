@@ -1,3 +1,4 @@
+import { uaUST, ubLuna, uLuna, uUST } from '@anchor-protocol/notation';
 import { useQuerySubscription } from '@anchor-protocol/use-broadcastable-query';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { gql, QueryResult, useQuery } from '@apollo/client';
@@ -19,13 +20,13 @@ export interface StringifiedData {
 }
 
 export interface Data {
-  uUSD: string;
+  uUSD: uUST<string>;
 
-  uLuna: string;
+  uLuna: uLuna<string>;
 
-  ubLuna: string;
+  ubLuna: ubLuna<string>;
 
-  uaUST: string;
+  uaUST: uaUST<string>;
 }
 
 export function parseData({
@@ -34,19 +35,19 @@ export function parseData({
   ubLunaBalance,
 }: StringifiedData): Data {
   const bank = bankBalances.Result;
-  const ubLuna: { balance: string } = JSON.parse(ubLunaBalance.Result);
-  const uaUST: { balance: string } = JSON.parse(uaUSTBalance.Result);
 
-  const uUSD: string | undefined = bank.find(({ Denom }) => Denom === 'uusd')
+  const bluna: { balance: string } = JSON.parse(ubLunaBalance.Result);
+  const aust: { balance: string } = JSON.parse(uaUSTBalance.Result);
+  const usd: string | undefined = bank.find(({ Denom }) => Denom === 'uusd')
     ?.Amount;
-  const uLuna: string | undefined = bank.find(({ Denom }) => Denom === 'uluna')
+  const luna: string | undefined = bank.find(({ Denom }) => Denom === 'uluna')
     ?.Amount;
 
   return {
-    uUSD: uUSD ?? '0',
-    uLuna: uLuna ?? '0',
-    ubLuna: ubLuna.balance,
-    uaUST: uaUST.balance,
+    uUSD: (usd ?? '0') as uUST,
+    uLuna: (luna ?? '0') as uLuna,
+    ubLuna: bluna.balance as ubLuna,
+    uaUST: aust.balance as uaUST,
   };
 }
 

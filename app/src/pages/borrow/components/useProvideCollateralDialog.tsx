@@ -5,13 +5,18 @@ import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import {
+  bLuna,
+  demicrofy,
   formatLuna,
   formatLunaInput,
   formatUST,
   formatUSTInput,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
-  MICRO,
+  microfy,
+  Ratio,
+  ubLuna,
+  uUST,
 } from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
@@ -27,7 +32,7 @@ import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { CreateTxOptions } from '@terra-money/terra.js';
-import big, { Big } from 'big.js';
+import big, { Big, BigSource } from 'big.js';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import {
   txNotificationFactory,
@@ -93,7 +98,7 @@ function ComponentBase({
   // ---------------------------------------------
   // states
   // ---------------------------------------------
-  const [bAssetAmount, setBAssetAmount] = useState('');
+  const [depositAmount, setDepositAmount] = useState<bLuna>('' as bLuna);
 
   // ---------------------------------------------
   // queries
@@ -104,14 +109,14 @@ function ComponentBase({
   // calculate
   // ---------------------------------------------
   const amountToLtv = useCallback(
-    (amount: Big) => {
+    (depositAmount: ubLuna<Big>): Ratio<Big> => {
       return big(marketUserOverview.loanAmount.loan_amount).div(
         big(
           big(marketUserOverview.borrowInfo.balance)
             .minus(marketUserOverview.borrowInfo.spendable)
-            .plus(amount),
+            .plus(depositAmount),
         ).mul(marketOverview.oraclePrice.rate),
-      );
+      ) as Ratio<Big>;
     },
     [
       marketOverview.oraclePrice.rate,
@@ -122,16 +127,16 @@ function ComponentBase({
   );
 
   const ltvToAmount = useCallback(
-    (nextLtv: Big) => {
+    (ltv: Ratio<Big>): ubLuna<Big> => {
       // ltv = loanAmount / ((balance - spendable + <amount>) * oracle)
       // amount = (loanAmount / (<ltv> * oracle)) + spendable - balance
       return big(
         big(marketUserOverview.loanAmount.loan_amount).div(
-          nextLtv.mul(marketOverview.oraclePrice.rate),
+          ltv.mul(marketOverview.oraclePrice.rate),
         ),
       )
         .plus(marketUserOverview.borrowInfo.spendable)
-        .minus(marketUserOverview.borrowInfo.balance);
+        .minus(marketUserOverview.borrowInfo.balance) as ubLuna<Big>;
     },
     [
       marketOverview.oraclePrice.rate,
@@ -142,14 +147,14 @@ function ComponentBase({
   );
 
   const amountToBorrowLimit = useCallback(
-    (amount: Big) => {
+    (depositAmount: ubLuna<Big>): uUST<Big> => {
       return big(
         big(
           big(marketUserOverview.borrowInfo.balance)
             .minus(marketUserOverview.borrowInfo.spendable)
-            .plus(amount),
+            .plus(depositAmount),
         ).mul(marketOverview.oraclePrice.rate),
-      ).mul(marketOverview.bLunaMaxLtv);
+      ).mul(marketOverview.bLunaMaxLtv) as uUST<Big>;
     },
     [
       marketOverview.bLunaMaxLtv,
@@ -165,27 +170,27 @@ function ComponentBase({
   const currentLtv = useCurrentLtv({ marketOverview, marketUserOverview });
 
   // Loan_amount / ((Borrow_info.balance - Borrow_info.spendable + provided_collateral) * Oracleprice)
-  const nextLtv = useMemo(() => {
-    if (bAssetAmount.length === 0) {
+  const nextLtv = useMemo<Ratio<Big> | undefined>(() => {
+    if (depositAmount.length === 0) {
       return currentLtv;
     }
 
-    const userAmount = big(bAssetAmount).mul(MICRO);
+    const amount = microfy(depositAmount);
 
     try {
-      const ltv = amountToLtv(userAmount);
-      return ltv.lt(0) ? big(0) : ltv;
+      const ltv = amountToLtv(amount);
+      return ltv.lt(0) ? (big(0) as Ratio<Big>) : ltv;
     } catch {
       return currentLtv;
     }
-  }, [bAssetAmount, amountToLtv, currentLtv]);
+  }, [depositAmount, amountToLtv, currentLtv]);
 
   // New Borrow Limit = ((Borrow_info.balance - Borrow_info.spendable + provided_collateral) * Oracleprice) * Max_LTV
-  const borrowLimit = useMemo(() => {
-    return bAssetAmount.length > 0
-      ? amountToBorrowLimit(big(bAssetAmount).mul(MICRO))
+  const borrowLimit = useMemo<uUST<Big> | undefined>(() => {
+    return depositAmount.length > 0
+      ? amountToBorrowLimit(microfy(depositAmount))
       : undefined;
-  }, [amountToBorrowLimit, bAssetAmount]);
+  }, [amountToBorrowLimit, depositAmount]);
 
   const invalidTxFee = useMemo(() => {
     if (bank.status === 'demo') {
@@ -196,33 +201,29 @@ function ComponentBase({
     return undefined;
   }, [bank.status, bank.userBalances.uUSD]);
 
-  const invalidBAssetAmount = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo' || bAssetAmount.length === 0) {
+  const invalidDepositAmount = useMemo<ReactNode>(() => {
+    if (bank.status === 'demo' || depositAmount.length === 0) {
       return undefined;
-    } else if (
-      big(bAssetAmount)
-        .mul(MICRO)
-        .gt(bank.userBalances.ubLuna ?? 0)
-    ) {
+    } else if (microfy(depositAmount).gt(bank.userBalances.ubLuna ?? 0)) {
       return `Not enough assets`;
     }
     return undefined;
-  }, [bAssetAmount, bank.status, bank.userBalances.ubLuna]);
+  }, [depositAmount, bank.status, bank.userBalances.ubLuna]);
 
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
-  const updateBAssetAmount = useCallback((nextBAssetAmount: string) => {
-    setBAssetAmount(nextBAssetAmount);
+  const updateDepositAmount = useCallback((nextDepositAmount: string) => {
+    setDepositAmount(nextDepositAmount as bLuna);
   }, []);
 
   const proceed = useCallback(
     async ({
       status,
-      bAssetAmount,
+      depositAmount,
     }: {
       status: WalletStatus;
-      bAssetAmount: string;
+      depositAmount: bLuna;
     }) => {
       if (status.status !== 'ready' || bank.status !== 'connected') {
         return;
@@ -235,7 +236,7 @@ function ComponentBase({
             address: status.status === 'ready' ? status.walletAddress : '',
             market: 'ust',
             symbol: 'bluna',
-            amount: bAssetAmount,
+            amount: depositAmount,
           })(addressProvider),
         }).then(({ payload }) => parseResult(payload)),
         client,
@@ -245,20 +246,20 @@ function ComponentBase({
   );
 
   const onLtvChange = useCallback(
-    (nextLtv: Big) => {
+    (nextLtv: Ratio<Big>) => {
       try {
         const nextAmount = ltvToAmount(nextLtv);
-        updateBAssetAmount(formatLunaInput(big(nextAmount).div(MICRO)));
+        updateDepositAmount(formatLunaInput(demicrofy(nextAmount)));
       } catch {}
     },
-    [ltvToAmount, updateBAssetAmount],
+    [ltvToAmount, updateDepositAmount],
   );
 
   const ltvStepFunction = useCallback(
-    (draftLtv: Big) => {
+    (draftLtv: Ratio<Big>): Ratio<Big> => {
       try {
         const draftAmount = ltvToAmount(draftLtv);
-        return amountToLtv(big(draftAmount));
+        return amountToLtv(draftAmount);
       } catch {
         return draftLtv;
       }
@@ -299,19 +300,19 @@ function ComponentBase({
 
         <NumberInput
           className="amount"
-          value={bAssetAmount}
+          value={depositAmount}
           maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="DEPOSIT AMOUNT"
-          error={!!invalidBAssetAmount}
-          onChange={({ target }) => updateBAssetAmount(target.value)}
+          error={!!invalidDepositAmount}
+          onChange={({ target }) => updateDepositAmount(target.value)}
           InputProps={{
             endAdornment: <InputAdornment position="end">bLUNA</InputAdornment>,
           }}
         />
 
-        <div className="wallet" aria-invalid={!!invalidBAssetAmount}>
-          <span>{invalidBAssetAmount}</span>
+        <div className="wallet" aria-invalid={!!invalidDepositAmount}>
+          <span>{invalidDepositAmount}</span>
           <span>
             Wallet:{' '}
             <span
@@ -320,19 +321,19 @@ function ComponentBase({
                 cursor: 'pointer',
               }}
               onClick={() =>
-                updateBAssetAmount(
-                  formatLunaInput(big(bank.userBalances.ubLuna).div(MICRO)),
+                updateDepositAmount(
+                  formatLunaInput(demicrofy(bank.userBalances.ubLuna)),
                 )
               }
             >
-              {formatLuna(big(bank.userBalances.ubLuna ?? 0).div(MICRO))} bLUNA
+              {formatLuna(demicrofy(bank.userBalances.ubLuna))} bLUNA
             </span>
           </span>
         </div>
 
         <NumberInput
           className="limit"
-          value={borrowLimit ? formatUSTInput(borrowLimit.div(MICRO)) : ''}
+          value={borrowLimit ? formatUSTInput(demicrofy(borrowLimit)) : ''}
           label="NEW BORROW LIMIT"
           InputProps={{
             endAdornment: <InputAdornment position="end">UST</InputAdornment>,
@@ -347,14 +348,14 @@ function ComponentBase({
             safeLtv={marketOverview.bLunaSafeLtv}
             currentLtv={currentLtv}
             nextLtv={nextLtv}
-            userMinLtv={0}
+            userMinLtv={0 as Ratio<BigSource>}
             userMaxLtv={currentLtv}
             onStep={ltvStepFunction}
             onChange={onLtvChange}
           />
         </figure>
 
-        {bAssetAmount.length > 0 && (
+        {depositAmount.length > 0 && (
           <TxFeeList className="receipt">
             <TxFeeListItem
               label={
@@ -363,7 +364,7 @@ function ComponentBase({
                 </IconSpan>
               }
             >
-              {formatUST(big(txFee).div(MICRO))} UST
+              {formatUST(demicrofy(txFee))} UST
             </TxFeeListItem>
           </TxFeeList>
         )}
@@ -373,12 +374,12 @@ function ComponentBase({
           disabled={
             status.status !== 'ready' ||
             bank.status !== 'connected' ||
-            bAssetAmount.length === 0 ||
-            big(bAssetAmount).lte(0) ||
+            depositAmount.length === 0 ||
+            big(depositAmount).lte(0) ||
             !!invalidTxFee ||
-            !!invalidBAssetAmount
+            !!invalidDepositAmount
           }
-          onClick={() => proceed({ status, bAssetAmount })}
+          onClick={() => proceed({ status, depositAmount: depositAmount })}
         >
           Proceed
         </ActionButton>

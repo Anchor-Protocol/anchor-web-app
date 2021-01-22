@@ -4,13 +4,14 @@ import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import {
+  demicrofy,
   formatLuna,
   formatUSTWithPostfixUnits,
-  MICRO,
+  uUST,
 } from '@anchor-protocol/notation';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { Error } from '@material-ui/icons';
-import big from 'big.js';
+import big, { Big } from 'big.js';
 import { useMemo } from 'react';
 import styled from 'styled-components';
 import { Data as MarketOverview } from '../queries/marketOverview';
@@ -47,17 +48,19 @@ function CollateralListBase({
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
-  const collaterals = useMemo(() => {
+  const collaterals = useMemo<uUST<Big>>(() => {
     return big(marketUserOverview?.borrowInfo.balance ?? 0).minus(
       marketUserOverview?.borrowInfo.spendable ?? 0,
-    );
+    ) as uUST<Big>;
   }, [
     marketUserOverview?.borrowInfo.balance,
     marketUserOverview?.borrowInfo.spendable,
   ]);
 
-  const collateralsInUST = useMemo(() => {
-    return big(collaterals).mul(marketOverview?.oraclePrice.rate ?? 1);
+  const collateralsInUST = useMemo<uUST<Big>>(() => {
+    return big(collaterals).mul(
+      marketOverview?.oraclePrice.rate ?? 1,
+    ) as uUST<Big>;
   }, [collaterals, marketOverview?.oraclePrice.rate]);
 
   // ---------------------------------------------
@@ -101,10 +104,10 @@ function CollateralListBase({
             </td>
             <td>
               <div className="value">
-                {formatUSTWithPostfixUnits(collateralsInUST.div(MICRO))} UST
+                {formatUSTWithPostfixUnits(demicrofy(collateralsInUST))} UST
               </div>
               <p className="volatility">
-                {formatLuna(collaterals.div(MICRO))} bLUNA
+                {formatLuna(demicrofy(collaterals))} bLUNA
               </p>
             </td>
             <td>
