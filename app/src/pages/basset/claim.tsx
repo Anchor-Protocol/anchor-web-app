@@ -5,7 +5,14 @@ import {
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
-import { formatLuna, formatUST, MICRO } from '@anchor-protocol/notation';
+import {
+  demicrofy,
+  formatLuna,
+  formatUST,
+  ubLuna,
+  uLuna,
+  uUST,
+} from '@anchor-protocol/notation';
 import {
   pressed,
   rulerLightColor,
@@ -18,20 +25,20 @@ import {
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient } from '@apollo/client';
 import { CreateTxOptions, Dec, Int } from '@terra-money/terra.js';
-import * as txi from 'queries/txInfos';
-import { queryOptions } from 'transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
+import big, { Big } from 'big.js';
 import {
   txNotificationFactory,
   TxResultRenderer,
 } from 'components/TxResultRenderer';
-import big from 'big.js';
 import { WarningArticle } from 'components/WarningArticle';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { fixedGasUUSD, transactionFee } from 'env';
+import * as txi from 'queries/txInfos';
 import React, { ReactNode, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { queryOptions } from 'transactions/queryOptions';
+import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 import { useClaimable } from './queries/claimable';
 import { useWithdrawable } from './queries/withdrawable';
 import { useWithdrawHistory } from './queries/withdrawHistory';
@@ -70,7 +77,7 @@ function ClaimBase({ className }: ClaimProps) {
   // ---------------------------------------------
   // states
   // ---------------------------------------------
-  const [assetCurrency, setAssetCurrency] = useState<Item>(
+  const [withdrawableCurrency, setWithdrawableCurrency] = useState<Item>(
     () => assetCurrencies[0],
   );
 
@@ -102,8 +109,8 @@ function ClaimBase({ className }: ClaimProps) {
   }, [bank.status, bank.userBalances.uUSD]);
 
   interface History {
-    blunaAmount: string;
-    lunaAmount?: string;
+    blunaAmount: ubLuna<Big>;
+    lunaAmount?: uLuna<Big>;
     requestTime?: Date;
     claimableTime?: Date;
   }
@@ -124,15 +131,19 @@ function ClaimBase({ className }: ClaimProps) {
         const matchingHistory =
           withdrawAllHistory.allHistory.history[historyIndex - 1];
 
+        const blunaAmount = big(amount) as ubLuna<Big>;
+
         if (!matchingHistory) {
           return {
-            blunaAmount: amount,
+            blunaAmount,
           };
         }
 
         return {
-          blunaAmount: amount,
-          lunaAmount: big(amount).mul(matchingHistory.withdraw_rate).toString(),
+          blunaAmount,
+          lunaAmount: blunaAmount.mul(
+            matchingHistory.withdraw_rate,
+          ) as uLuna<Big>,
           requestTime: new Date(matchingHistory.time * 1000),
           claimableTime: new Date(
             (matchingHistory.time +
@@ -144,13 +155,15 @@ function ClaimBase({ className }: ClaimProps) {
     );
   }, [withdrawAllHistory, withdrawable]);
 
-  const withdrawableAmount = useMemo(() => {
-    return big(withdrawable?.withdrawableAmount.withdrawable ?? 0);
+  const withdrawableAmount = useMemo<uLuna<Big>>(() => {
+    return big(
+      withdrawable?.withdrawableAmount.withdrawable ?? 0,
+    ) as uLuna<Big>;
   }, [withdrawable?.withdrawableAmount.withdrawable]);
 
-  const claimableRewards = useMemo(() => {
+  const claimableRewards = useMemo<uUST<Big>>(() => {
     return claimable
-      ? big(
+      ? (big(
           new Int(
             new Int(claimable.claimableReward.balance).mul(
               new Dec(claimable.rewardState.global_index).sub(
@@ -160,19 +173,23 @@ function ClaimBase({ className }: ClaimProps) {
           )
             .add(new Int(claimable.claimableReward.pending_rewards))
             .toString(),
-        )
-      : big(0);
+        ) as uUST<Big>)
+      : (big(0) as uUST<Big>);
   }, [claimable]);
 
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
-  const updateAssetCurrency = useCallback((nextAssetCurrencyValue: string) => {
-    setAssetCurrency(
-      assetCurrencies.find(({ value }) => nextAssetCurrencyValue === value) ??
-        assetCurrencies[0],
-    );
-  }, []);
+  const updateWithdrawableCurrency = useCallback(
+    (nextWithdrawableCurrencyValue: string) => {
+      setWithdrawableCurrency(
+        assetCurrencies.find(
+          ({ value }) => nextWithdrawableCurrencyValue === value,
+        ) ?? assetCurrencies[0],
+      );
+    },
+    [],
+  );
 
   const withdraw = useCallback(async () => {
     if (status.status !== 'ready' || bank.status !== 'connected') {
@@ -270,8 +287,8 @@ function ClaimBase({ className }: ClaimProps) {
         {assetCurrencies.length > 1 && (
           <NativeSelect
             className="bond"
-            value={assetCurrency.value}
-            onChange={({ target }) => updateAssetCurrency(target.value)}
+            value={withdrawableCurrency.value}
+            onChange={({ target }) => updateWithdrawableCurrency(target.value)}
           >
             {assetCurrencies.map(({ label, value }) => (
               <option key={value} value={value}>
@@ -285,12 +302,14 @@ function ClaimBase({ className }: ClaimProps) {
           <h4>Withdrawable Amount</h4>
           <p>
             {withdrawableAmount.gt(0)
-              ? formatLuna(withdrawableAmount.div(MICRO)) + ' Luna'
+              ? formatLuna(demicrofy(withdrawableAmount)) +
+                ' ' +
+                withdrawableCurrency.label
               : '-'}
           </p>
         </article>
 
-        {!!invalidTxFee && big(withdrawableAmount).gt(0) && (
+        {!!invalidTxFee && withdrawableAmount.gt(0) && (
           <WarningArticle>{invalidTxFee}</WarningArticle>
         )}
 
@@ -319,14 +338,14 @@ function ClaimBase({ className }: ClaimProps) {
                     Requested time:{' '}
                     <time>{requestTime?.toLocaleString() ?? 'Pending'}</time>
                   </p>
-                  <p>{formatLuna(big(blunaAmount).div(MICRO))} bLuna</p>
+                  <p>{formatLuna(demicrofy(blunaAmount))} bLuna</p>
                   <p>
                     Claimable time:{' '}
                     <time>{claimableTime?.toLocaleString() ?? 'Pending'}</time>
                   </p>
                   <p>
                     {lunaAmount
-                      ? `${formatLuna(big(lunaAmount).div(MICRO))} Luna`
+                      ? `${formatLuna(demicrofy(lunaAmount))} Luna`
                       : ''}
                   </p>
                 </li>
@@ -342,7 +361,7 @@ function ClaimBase({ className }: ClaimProps) {
           <h4>Claimable Rewards</h4>
           <p>
             {claimableRewards.gt(0)
-              ? formatUST(claimableRewards.div(MICRO)) + ' UST'
+              ? formatUST(demicrofy(claimableRewards)) + ' UST'
               : '-'}
           </p>
         </article>

@@ -1,3 +1,4 @@
+import { ubLuna, uLuna } from '@anchor-protocol/notation';
 import { useQuerySubscription } from '@anchor-protocol/use-broadcastable-query';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { gql, QueryResult, useQuery } from '@apollo/client';
@@ -15,11 +16,11 @@ export interface StringifiedData {
 
 export interface Data {
   withdrawableAmount: {
-    withdrawable: string;
+    withdrawable: uLuna<string>;
   };
   withdrawRequests: {
     address: string;
-    requests: [number, string][];
+    requests: [number, ubLuna<string>][];
   };
   withdrawRequestsStartFrom: number;
 }

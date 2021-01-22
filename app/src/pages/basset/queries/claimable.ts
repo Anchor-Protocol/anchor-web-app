@@ -1,3 +1,4 @@
+import { Num, ubLuna } from '@anchor-protocol/notation';
 import { useQuerySubscription } from '@anchor-protocol/use-broadcastable-query';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { gql, QueryResult, useQuery } from '@apollo/client';
@@ -16,15 +17,15 @@ export interface StringifiedData {
 
 export interface Data {
   rewardState: {
-    global_index: string;
-    total_balance: string;
+    global_index: Num<string>;
+    total_balance: ubLuna<string>;
   };
 
   claimableReward: {
     address: string;
-    balance: string;
-    index: string;
-    pending_rewards: string;
+    balance: ubLuna<string>;
+    index: Num<string>;
+    pending_rewards: ubLuna<string>;
   };
 }
 
@@ -112,7 +113,7 @@ export function useClaimable(): QueryResult<
       },
     }),
   });
-  
+
   useQuerySubscription(
     (id, event) => {
       if (event === 'done') {
