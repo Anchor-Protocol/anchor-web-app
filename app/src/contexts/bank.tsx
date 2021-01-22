@@ -1,4 +1,11 @@
-import { MICRO } from '@anchor-protocol/notation';
+import {
+  MICRO,
+  Ratio,
+  uaUST,
+  ubLuna,
+  uLuna,
+  uUST,
+} from '@anchor-protocol/notation';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { Data as TaxData, useTax } from 'queries/tax';
 import {
@@ -54,15 +61,15 @@ export function BankProvider({ children }: BankProviderProps) {
           tax: taxData
             ? taxData
             : {
-                taxRate: '0.1',
-                maxTaxUUSD: (0.1 * MICRO).toString(),
+                taxRate: '0.1' as Ratio,
+                maxTaxUUSD: (0.1 * MICRO).toString() as uUST,
               },
           refetchTax,
           userBalances: {
-            uUSD: '0',
-            uLuna: '0',
-            ubLuna: '0',
-            uaUST: '0',
+            uUSD: '0' as uUST,
+            uLuna: '0' as uLuna,
+            ubLuna: '0' as ubLuna,
+            uaUST: '0' as uaUST,
           },
           refetchUserBalances,
         };
