@@ -1,3 +1,4 @@
+import { Ratio, uUST } from '@anchor-protocol/notation';
 import { StdFee } from '@terra-money/terra.js';
 
 export const screen = {
@@ -14,9 +15,9 @@ export const screen = {
 
 //export const FINDER = 'https://finder.terra.money';
 
-export const safeRatio = 0.7;
+export const safeRatio: Ratio<number> = 0.7 as Ratio<number>;
 
-export const fixedGasUUSD = 3500000;
+export const fixedGasUUSD: uUST<number> = 3500000 as uUST<number>;
 
 export const transactionFee = {
   //gasPrices: '0.0015uusd',

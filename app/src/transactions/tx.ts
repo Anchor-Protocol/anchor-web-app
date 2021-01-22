@@ -1,3 +1,5 @@
+import { Ratio, uUST } from '@anchor-protocol/notation';
+
 export interface StringifiedTxResult {
   fee: string;
   gasAdjustment: string;
@@ -15,13 +17,16 @@ export interface StringifiedTxResult {
 
 export interface TxResult {
   fee: {
-    amount: {
-      amount: string;
-      denom: string;
-    }[];
-    gas: string;
+    // FIXME currently txfee is only uusd
+    amount: [
+      {
+        amount: uUST<string>;
+        denom: 'uusd';
+      },
+    ];
+    gas: uUST<string>;
   };
-  gasAdjustment: string;
+  gasAdjustment: Ratio<string>;
   id: number;
   msgs: {
     type: string;
@@ -49,7 +54,7 @@ export function parseResult({
 }: StringifiedTxResult): TxResult {
   return {
     fee: JSON.parse(fee),
-    gasAdjustment,
+    gasAdjustment: gasAdjustment as Ratio,
     id,
     msgs: msgs.map((msg) => JSON.parse(msg)),
     origin,

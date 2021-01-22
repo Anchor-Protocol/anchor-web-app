@@ -2,13 +2,17 @@ import { fabricateRedeemStable } from '@anchor-protocol/anchor-js/fabricators';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import {
+  demicrofy,
   formatUST,
   formatUSTInput,
-  MICRO,
+  microfy,
+  UST,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
+  uUST,
 } from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
@@ -24,23 +28,22 @@ import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { CreateTxOptions } from '@terra-money/terra.js';
-import * as txi from 'queries/txInfos';
-import { queryOptions } from 'transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
+import big, { Big } from 'big.js';
+import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import {
   txNotificationFactory,
   TxResultRenderer,
 } from 'components/TxResultRenderer';
-import big from 'big.js';
-import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
-import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningArticle } from 'components/WarningArticle';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { fixedGasUUSD, transactionFee } from 'env';
+import * as txi from 'queries/txInfos';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { queryOptions } from 'transactions/queryOptions';
+import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 import { Data as TotalDepositData } from '../queries/totalDeposit';
 
 interface FormParams {
@@ -84,7 +87,7 @@ function ComponentBase({
   // ---------------------------------------------
   // states
   // ---------------------------------------------
-  const [aAssetAmount, setAAssetAmount] = useState<string>('');
+  const [withdrawAmount, setWithdrawAmount] = useState<UST>('' as UST);
 
   // ---------------------------------------------
   // queries
@@ -94,23 +97,23 @@ function ComponentBase({
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
-  const txFee = useMemo(() => {
-    if (aAssetAmount.length === 0) return undefined;
+  const txFee = useMemo<uUST<Big> | undefined>(() => {
+    if (withdrawAmount.length === 0) return undefined;
 
     // MIN((Withdrawable(User_input)- Withdrawable(User_input) / (1+Tax_rate)), Max_tax) + Fixed_Gas
 
-    const uustAmount = big(aAssetAmount).mul(MICRO);
+    const uustAmount = microfy(withdrawAmount);
     const ratioTxFee = uustAmount.minus(
       uustAmount.div(big(1).add(bank.tax.taxRate)),
     );
     const maxTax = big(bank.tax.maxTaxUUSD);
 
     if (ratioTxFee.gt(maxTax)) {
-      return maxTax.add(fixedGasUUSD).toString();
+      return maxTax.add(fixedGasUUSD) as uUST<Big>;
     } else {
-      return ratioTxFee.add(fixedGasUUSD).toString();
+      return ratioTxFee.add(fixedGasUUSD) as uUST<Big>;
     }
-  }, [aAssetAmount, bank.tax.maxTaxUUSD, bank.tax.taxRate]);
+  }, [withdrawAmount, bank.tax.maxTaxUUSD, bank.tax.taxRate]);
 
   const invalidTxFee = useMemo(() => {
     if (bank.status === 'demo') {
@@ -121,38 +124,34 @@ function ComponentBase({
     return undefined;
   }, [bank.status, bank.userBalances.uUSD]);
 
-  const invalidAAsetAmount = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo' || aAssetAmount.length === 0) {
+  const invalidWithdrawAmount = useMemo<ReactNode>(() => {
+    if (bank.status === 'demo' || withdrawAmount.length === 0) {
       return undefined;
-    } else if (
-      big(aAssetAmount)
-        .mul(MICRO)
-        .gt(totalDeposit.totalDeposit ?? 0)
-    ) {
+    } else if (microfy(withdrawAmount).gt(totalDeposit.totalDeposit ?? 0)) {
       return `Not enough aUST`;
     } else if (txFee && big(bank.userBalances.uUSD).lt(txFee)) {
       return `Not enough UST`;
     }
     return undefined;
   }, [
-    aAssetAmount,
+    withdrawAmount,
     bank.status,
     bank.userBalances.uUSD,
     totalDeposit.totalDeposit,
     txFee,
   ]);
 
-  const receiveAmount = useMemo(() => {
-    return aAssetAmount.length > 0 && txFee
-      ? big(aAssetAmount).mul(MICRO).minus(txFee)
+  const receiveAmount = useMemo<uUST<Big> | undefined>(() => {
+    return withdrawAmount.length > 0 && txFee
+      ? (microfy(withdrawAmount).minus(txFee) as uUST<Big>)
       : undefined;
-  }, [aAssetAmount, txFee]);
+  }, [withdrawAmount, txFee]);
 
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
-  const updateAAssetAmount = useCallback((nextAAssetAmount: string) => {
-    setAAssetAmount(nextAAssetAmount);
+  const updateWithdrawAmount = useCallback((nextWithdrawAmount: string) => {
+    setWithdrawAmount(nextWithdrawAmount as UST);
   }, []);
 
   const proceed = useCallback(
@@ -229,19 +228,19 @@ function ComponentBase({
 
         <NumberInput
           className="amount"
-          value={aAssetAmount}
+          value={withdrawAmount}
           maxIntegerPoinsts={UST_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="AMOUNT"
-          error={!!invalidAAsetAmount}
-          onChange={({ target }) => updateAAssetAmount(target.value)}
+          error={!!invalidWithdrawAmount}
+          onChange={({ target }) => updateWithdrawAmount(target.value)}
           InputProps={{
             endAdornment: <InputAdornment position="end">UST</InputAdornment>,
           }}
         />
 
-        <div className="wallet" aria-invalid={!!invalidAAsetAmount}>
-          <span>{invalidAAsetAmount}</span>
+        <div className="wallet" aria-invalid={!!invalidWithdrawAmount}>
+          <span>{invalidWithdrawAmount}</span>
           <span>
             Max:{' '}
             <span
@@ -250,12 +249,12 @@ function ComponentBase({
                 cursor: 'pointer',
               }}
               onClick={() =>
-                updateAAssetAmount(
-                  formatUSTInput(big(totalDeposit.totalDeposit).div(MICRO)),
+                updateWithdrawAmount(
+                  formatUSTInput(demicrofy(totalDeposit.totalDeposit)),
                 )
               }
             >
-              {formatUST(big(totalDeposit.totalDeposit).div(MICRO))} UST
+              {formatUST(demicrofy(totalDeposit.totalDeposit))} UST
             </span>
           </span>
         </div>
@@ -269,10 +268,10 @@ function ComponentBase({
                 </IconSpan>
               }
             >
-              {formatUST(big(txFee).div(MICRO))} UST
+              {formatUST(demicrofy(txFee))} UST
             </TxFeeListItem>
             <TxFeeListItem label="Receive Amount">
-              {formatUST(receiveAmount.div(MICRO))} UST
+              {formatUST(demicrofy(receiveAmount))} UST
             </TxFeeListItem>
           </TxFeeList>
         )}
@@ -282,13 +281,13 @@ function ComponentBase({
           disabled={
             status.status !== 'ready' ||
             bank.status !== 'connected' ||
-            aAssetAmount.length === 0 ||
-            big(aAssetAmount).lte(0) ||
-            !!invalidAAsetAmount
+            withdrawAmount.length === 0 ||
+            big(withdrawAmount).lte(0) ||
+            !!invalidWithdrawAmount
           }
           onClick={() =>
             proceed({
-              aAssetAmount,
+              aAssetAmount: withdrawAmount,
               status,
             })
           }

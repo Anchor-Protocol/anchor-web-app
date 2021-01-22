@@ -1,3 +1,4 @@
+import { Num, Ratio } from '@anchor-protocol/notation';
 import { gql, QueryResult, useQuery } from '@apollo/client';
 import big from 'big.js';
 import { BLOCKS_PER_YEAR } from 'constants/BLOCKS_PER_YEAR';
@@ -12,12 +13,12 @@ export interface StringifiedData {
 
 export interface Data {
   marketStatus: {
-    deposit_rate: string;
+    deposit_rate: Ratio<string>;
     last_executed_height: number;
-    prev_a_token_supply: string;
-    prev_exchange_rate: string;
+    prev_a_token_supply: Num<string>;
+    prev_exchange_rate: Ratio<string>;
   };
-  currentAPY: string;
+  currentAPY: Ratio<string>;
 }
 
 export function parseData({ marketStatus }: StringifiedData): Data {
@@ -29,7 +30,7 @@ export function parseData({ marketStatus }: StringifiedData): Data {
     marketStatus: parsedMarketStatus,
     currentAPY: big(parsedMarketStatus.deposit_rate)
       .mul(BLOCKS_PER_YEAR)
-      .toString(),
+      .toString() as Ratio,
   };
 }
 

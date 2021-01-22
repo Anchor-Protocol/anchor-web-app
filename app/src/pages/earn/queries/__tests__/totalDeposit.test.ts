@@ -1,4 +1,4 @@
-import { testClient, testAddressProvider, testWalletAddress } from 'test.env';
+import { testAddressProvider, testClient, testWalletAddress } from 'test.env';
 import {
   parseData,
   query,
@@ -9,21 +9,25 @@ import {
 
 describe('queries/totalDeposit', () => {
   test('should get result from query', async () => {
-    const data = await testClient.query<StringifiedData, StringifiedVariables>({
-      query,
-      variables: stringifyVariables({
-        anchorTokenContract: testAddressProvider.aToken(),
-        anchorTokenBalanceQuery: {
-          balance: {
-            address: testWalletAddress,
+    const data = await testClient
+      .query<StringifiedData, StringifiedVariables>({
+        query,
+        variables: stringifyVariables({
+          anchorTokenContract: testAddressProvider.aToken(),
+          anchorTokenBalanceQuery: {
+            balance: {
+              address: testWalletAddress,
+            },
           },
-        },
-        moneyMarketContract: testAddressProvider.market(''),
-        moneyMarketEpochQuery: {
-          epoch_state: {},
-        },
-      }),
-    }).then(({ data }) => parseData(data));
+          moneyMarketContract: testAddressProvider.market(''),
+          moneyMarketEpochQuery: {
+            epoch_state: {
+              lastSyncedHeight: 0,
+            },
+          },
+        }),
+      })
+      .then(({ data }) => parseData(data));
 
     expect(typeof data.totalDeposit).toBe('string');
   });
