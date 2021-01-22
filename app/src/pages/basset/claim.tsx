@@ -17,7 +17,7 @@ import {
 } from '@anchor-protocol/use-broadcastable-query';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient } from '@apollo/client';
-import { CreateTxOptions } from '@terra-money/terra.js';
+import { CreateTxOptions, Dec, Int } from '@terra-money/terra.js';
 import * as txi from 'queries/txInfos';
 import { queryOptions } from 'transactions/queryOptions';
 import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
@@ -151,12 +151,16 @@ function ClaimBase({ className }: ClaimProps) {
   const claimableRewards = useMemo(() => {
     return claimable
       ? big(
-          big(claimable.claimableReward.balance).mul(
-            big(claimable.rewardState.global_index).sub(
-              claimable.claimableReward.index,
+          new Int(
+            new Int(claimable.claimableReward.balance).mul(
+              new Dec(claimable.rewardState.global_index).sub(
+                new Dec(claimable.claimableReward.index),
+              ),
             ),
-          ),
-        ).add(claimable.claimableReward.pending_rewards)
+          )
+            .add(new Int(claimable.claimableReward.pending_rewards))
+            .toString(),
+        )
       : big(0);
   }, [claimable]);
 
