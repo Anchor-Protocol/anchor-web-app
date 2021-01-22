@@ -27,7 +27,7 @@ import {
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
 import { CreateTxOptions } from '@terra-money/terra.js';
-import big from 'big.js';
+import big, { Big } from 'big.js';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import {
   txNotificationFactory,
@@ -143,8 +143,8 @@ function BurnBase({ className }: BurnProps) {
       } else {
         const burnAmount: bLuna = nextBurnAmount as bLuna;
         const getAmount: Luna = formatLunaInput(
-          big(burnAmount).mul(exchangeRate?.exchange_rate ?? 1),
-        ) as Luna;
+          big(burnAmount).mul(exchangeRate?.exchange_rate ?? 1) as Luna<Big>,
+        );
 
         setGetAmount(getAmount);
         setBurnAmount(burnAmount);
@@ -161,8 +161,8 @@ function BurnBase({ className }: BurnProps) {
       } else {
         const getAmount: Luna = nextGetAmount as Luna;
         const burnAmount: bLuna = formatLunaInput(
-          big(getAmount).div(exchangeRate?.exchange_rate ?? 1),
-        ) as bLuna;
+          big(getAmount).div(exchangeRate?.exchange_rate ?? 1) as bLuna<Big>,
+        );
 
         setBurnAmount(burnAmount);
         setGetAmount(getAmount);
@@ -232,7 +232,7 @@ function BurnBase({ className }: BurnProps) {
         <p>
           {exchangeRate &&
             `1 ${burnCurrency.label} = ${formatLuna(
-              exchangeRate.exchange_rate,
+              (exchangeRate.exchange_rate as string) as Luna,
             )} ${getCurrency.label}`}
         </p>
       </div>
@@ -289,7 +289,7 @@ function BurnBase({ className }: BurnProps) {
         <p>
           {exchangeRate &&
             `1 ${getCurrency.label} = ${formatLuna(
-              big(1).div(big(exchangeRate.exchange_rate)),
+              (big(1).div(exchangeRate.exchange_rate) as Big) as Luna<Big>,
             )} ${burnCurrency.label}`}
         </p>
       </div>

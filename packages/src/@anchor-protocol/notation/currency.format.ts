@@ -21,31 +21,31 @@ export const LUNA_INPUT_MAXIMUM_INTEGER_POINTS = 14;
 export const UST_INPUT_MAXIMUM_DECIMAL_POINTS = 3;
 export const LUNA_INPUT_MAXIMUM_DECIMAL_POINTS = 6;
 
-export function formatUSTInput(
-  // TODO disallow BigSource
-  n: UST<BigSource> | aUST<BigSource> | BigSource,
-): string {
-  return formatFluidDecimalPoints(n, 3, { delimiter: false });
+export function formatUSTInput<C extends UST<BigSource> | aUST<BigSource>>(
+  n: C,
+): C extends UST<BigSource> ? UST : C extends aUST<BigSource> ? aUST : never {
+  return formatFluidDecimalPoints(n, 3, { delimiter: false }) as any;
 }
 
-export function formatLunaInput(
-  // TODO disallow BigSource
-  n: Luna<BigSource> | bLuna<BigSource> | BigSource,
-): string {
-  return formatFluidDecimalPoints(n, 6, { delimiter: false });
+export function formatLunaInput<C extends Luna<BigSource> | bLuna<BigSource>>(
+  n: C,
+): C extends Luna<BigSource>
+  ? Luna
+  : C extends bLuna<BigSource>
+  ? bLuna
+  : never {
+  return formatFluidDecimalPoints(n, 6, { delimiter: false }) as any;
 }
 
 export function formatUST(
-  // TODO disallow BigSource
-  n: UST<BigSource> | aUST<BigSource> | BigSource,
+  n: UST<BigSource> | aUST<BigSource>,
   options: FormatOptions = { delimiter: true },
 ): string {
   return formatFluidDecimalPoints(n, 3, options);
 }
 
 export function formatUSTWithPostfixUnits(
-  // TODO disallow BigSource
-  n: UST<BigSource> | aUST<BigSource> | BigSource,
+  n: UST<BigSource> | aUST<BigSource>,
   options: FormatOptions = { delimiter: true },
 ): string {
   const bn = big(n);
@@ -58,8 +58,7 @@ export function formatUSTWithPostfixUnits(
 }
 
 export function formatLuna(
-  // TODO disallow BigSource
-  n: Luna<BigSource> | bLuna<BigSource> | BigSource,
+  n: Luna<BigSource> | bLuna<BigSource>,
   options: FormatOptions = { delimiter: true },
 ): string {
   return formatFluidDecimalPoints(n, 6, options);

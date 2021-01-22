@@ -29,7 +29,7 @@ import {
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
 import { CreateTxOptions } from '@terra-money/terra.js';
-import big from 'big.js';
+import big, { Big } from 'big.js';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import {
   txNotificationFactory,
@@ -155,8 +155,8 @@ function MintBase({ className }: MintProps) {
       } else {
         const bondAmount: Luna = nextBondAmount as Luna;
         const mintAmount: bLuna = formatLunaInput(
-          big(bondAmount).div(exchangeRate?.exchange_rate ?? 1),
-        ) as bLuna;
+          big(bondAmount).div(exchangeRate?.exchange_rate ?? 1) as bLuna<Big>,
+        );
 
         setBondAmount(bondAmount);
         setMintAmount(mintAmount);
@@ -173,8 +173,8 @@ function MintBase({ className }: MintProps) {
       } else {
         const mintAmount: bLuna = nextMintAmount as bLuna;
         const bondAmount: Luna = formatLunaInput(
-          big(mintAmount).mul(exchangeRate?.exchange_rate ?? 1),
-        ) as Luna;
+          big(mintAmount).mul(exchangeRate?.exchange_rate ?? 1) as Luna<Big>,
+        );
 
         setBondAmount(bondAmount);
         setMintAmount(mintAmount);
@@ -252,7 +252,7 @@ function MintBase({ className }: MintProps) {
         <p>
           {exchangeRate &&
             `1 ${bondCurrency.label} = ${formatLuna(
-              big(1).div(exchangeRate.exchange_rate),
+              (big(1).div(exchangeRate.exchange_rate) as Big) as Luna<Big>,
             )} ${mintCurrency.label}`}
         </p>
       </div>
@@ -310,7 +310,7 @@ function MintBase({ className }: MintProps) {
         <p>
           {exchangeRate &&
             `1 ${mintCurrency.label} = ${formatLuna(
-              exchangeRate.exchange_rate,
+              (exchangeRate.exchange_rate as string) as Luna,
             )} ${bondCurrency.label}`}
         </p>
       </div>
