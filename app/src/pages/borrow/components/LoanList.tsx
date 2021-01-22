@@ -4,19 +4,21 @@ import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import {
-  formatPercentage,
+  demicrofy,
+  formatRatioToPercentage,
   formatUSTWithPostfixUnits,
-  MICRO,
+  Ratio,
+  uUST,
 } from '@anchor-protocol/notation';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { Error } from '@material-ui/icons';
-import big from 'big.js';
+import big, { Big } from 'big.js';
 import { BLOCKS_PER_YEAR } from 'constants/BLOCKS_PER_YEAR';
 import { useBorrowDialog } from 'pages/borrow/components/useBorrowDialog';
 import { useRepayDialog } from 'pages/borrow/components/useRepayDialog';
+import { Data as MarketBalance } from 'pages/borrow/queries/marketBalanceOverview';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
-import { Data as MarketBalance } from 'pages/borrow/queries/marketBalanceOverview';
 import { useMemo } from 'react';
 import styled from 'styled-components';
 
@@ -44,12 +46,14 @@ function LoanListBase({
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
-  const apr = useMemo(() => {
-    return big(marketOverview?.borrowRate.rate ?? 0).mul(BLOCKS_PER_YEAR);
+  const apr = useMemo<Ratio<Big>>(() => {
+    return big(marketOverview?.borrowRate.rate ?? 0).mul(
+      BLOCKS_PER_YEAR,
+    ) as Ratio<Big>;
   }, [marketOverview?.borrowRate.rate]);
 
-  const borrowed = useMemo(() => {
-    return big(marketUserOverview?.loanAmount.loan_amount ?? 0);
+  const borrowed = useMemo<uUST<Big>>(() => {
+    return big(marketUserOverview?.loanAmount.loan_amount ?? 0) as uUST<Big>;
   }, [marketUserOverview?.loanAmount.loan_amount]);
 
   // ---------------------------------------------
@@ -94,17 +98,17 @@ function LoanListBase({
               </div>
             </td>
             <td>
-              <div className="value">{formatPercentage(apr.mul(100))}%</div>
+              <div className="value">{formatRatioToPercentage(apr)}%</div>
               <p className="volatility">
                 <s>200 UST</s>
               </p>
             </td>
             <td>
               <div className="value">
-                {formatUSTWithPostfixUnits(borrowed.div(MICRO))} UST
+                {formatUSTWithPostfixUnits(demicrofy(borrowed))} UST
               </div>
               <p className="volatility">
-                {formatUSTWithPostfixUnits(borrowed.div(MICRO))} USD
+                {formatUSTWithPostfixUnits(demicrofy(borrowed))} USD
               </p>
             </td>
             <td>

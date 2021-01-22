@@ -1,4 +1,5 @@
 import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
+import { Ratio } from '@anchor-protocol/notation';
 import { gql, QueryResult, useQuery } from '@apollo/client';
 import big from 'big.js';
 import { useAddressProvider } from 'contexts/contract';
@@ -22,11 +23,11 @@ export interface StringifiedData {
 
 export interface Data {
   borrowRate: {
-    rate: string;
+    rate: Ratio<string>;
   };
 
   oraclePrice: {
-    rate: string;
+    rate: Ratio<string>;
     last_updated_base: number;
     last_updated_quote: number;
   };
@@ -35,12 +36,12 @@ export interface Data {
     elems: {
       collateral_token: string;
       custody_contract: string;
-      ltv: string;
+      ltv: Ratio<string>;
     }[];
   };
 
-  bLunaMaxLtv: string;
-  bLunaSafeLtv: string;
+  bLunaMaxLtv: Ratio<string>;
+  bLunaSafeLtv: Ratio<string>;
 }
 
 export function parseData(
@@ -64,7 +65,7 @@ export function parseData(
     oraclePrice: JSON.parse(oraclePrice.Result),
     overseerWhitelist: parsedOverseerWhitelist,
     bLunaMaxLtv,
-    bLunaSafeLtv: big(bLunaMaxLtv).mul(safeRatio).toString(),
+    bLunaSafeLtv: big(bLunaMaxLtv).mul(safeRatio).toString() as Ratio,
   };
 }
 

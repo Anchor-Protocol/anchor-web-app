@@ -1,3 +1,4 @@
+import { Num, uUST } from '@anchor-protocol/notation';
 import { useQuerySubscription } from '@anchor-protocol/use-broadcastable-query';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { gql, QueryResult, useQuery } from '@apollo/client';
@@ -22,19 +23,19 @@ export interface StringifiedData {
 export interface Data {
   loanAmount: {
     borrower: string;
-    loan_amount: string;
+    loan_amount: uUST<string>;
   };
 
   liability: {
     borrower: string;
-    loan_amount: string;
-    interest_index: string;
+    loan_amount: uUST<string>;
+    interest_index: Num<string>;
   };
 
   borrowInfo: {
     borrower: string;
-    balance: string;
-    spendable: string;
+    balance: uUST<string>;
+    spendable: uUST<string>;
   };
 }
 

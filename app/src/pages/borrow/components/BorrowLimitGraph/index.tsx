@@ -5,11 +5,13 @@ import {
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import {
+  demicrofy,
   formatPercentage,
   formatUSTWithPostfixUnits,
-  MICRO,
+  Ratio,
+  uUST,
 } from '@anchor-protocol/notation';
-import big, { BigSource } from 'big.js';
+import big, { Big, BigSource } from 'big.js';
 import React, { useMemo } from 'react';
 import { GraphLabel } from './GraphLabel';
 import { GraphTick } from './GraphTick';
@@ -22,9 +24,9 @@ export interface Data {
 }
 
 export interface BorrowLimitGraphProps {
-  bLunaMaxLtv: BigSource;
-  collateralValue: BigSource;
-  loanAmount: BigSource;
+  bLunaMaxLtv: Ratio<BigSource>;
+  collateralValue: uUST<BigSource>;
+  loanAmount: uUST<BigSource>;
 }
 
 const colorFunction = ({ color }: Data) => color;
@@ -43,12 +45,12 @@ export function BorrowLimitGraph({
   loanAmount,
 }: BorrowLimitGraphProps) {
   const { borrowLimit, borrowLimitRatio } = useMemo(() => {
-    const borrowLimit = big(collateralValue).mul(bLunaMaxLtv);
+    const borrowLimit = big(collateralValue).mul(bLunaMaxLtv) as uUST<Big>;
     return {
       borrowLimit,
       borrowLimitRatio: big(loanAmount).div(
         borrowLimit.eq(0) ? 1 : borrowLimit,
-      ),
+      ) as Ratio<Big>,
     };
   }, [bLunaMaxLtv, collateralValue, loanAmount]);
 
@@ -81,7 +83,7 @@ export function BorrowLimitGraph({
         </IconSpan>
       </GraphLabel>
       <GraphLabel style={{ right: 0 }}>
-        ${formatUSTWithPostfixUnits(borrowLimit.div(MICRO))}
+        ${formatUSTWithPostfixUnits(demicrofy(borrowLimit))}
       </GraphLabel>
     </HorizontalGraphBar>
   );

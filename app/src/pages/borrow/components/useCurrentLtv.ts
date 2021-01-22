@@ -1,3 +1,4 @@
+import { Ratio } from '@anchor-protocol/notation';
 import big, { Big } from 'big.js';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
@@ -11,7 +12,7 @@ interface Params {
 export function useCurrentLtv({
   marketOverview,
   marketUserOverview,
-}: Params): Big | undefined {
+}: Params): Ratio<Big> | undefined {
   // loan_amount / ( (borrow_info.balance - borrow_info.spendable) * oracle_price )
   return useMemo(() => {
     try {
@@ -21,7 +22,7 @@ export function useCurrentLtv({
             marketUserOverview.borrowInfo.spendable,
           ),
         ).mul(marketOverview.oraclePrice.rate),
-      );
+      ) as Ratio<Big>;
     } catch {
       return undefined;
     }

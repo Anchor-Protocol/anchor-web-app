@@ -2,14 +2,20 @@ import { fabricateBorrow } from '@anchor-protocol/anchor-js/fabricators';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import {
+  demicrofy,
   formatPercentage,
+  formatRatioToPercentage,
   formatUST,
   formatUSTInput,
-  MICRO,
+  microfy,
+  Ratio,
+  UST,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
+  uUST,
 } from '@anchor-protocol/notation';
 import {
   BroadcastableQueryOptions,
@@ -25,16 +31,12 @@ import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { CreateTxOptions } from '@terra-money/terra.js';
-import * as txi from 'queries/txInfos';
-import { queryOptions } from 'transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
+import big, { Big } from 'big.js';
+import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import {
   txNotificationFactory,
   TxResultRenderer,
 } from 'components/TxResultRenderer';
-import big, { Big } from 'big.js';
-import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
-import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningArticle } from 'components/WarningArticle';
 import { BLOCKS_PER_YEAR } from 'constants/BLOCKS_PER_YEAR';
 import { useBank } from 'contexts/bank';
@@ -44,9 +46,12 @@ import { LTVGraph } from 'pages/borrow/components/LTVGraph';
 import { useCurrentLtv } from 'pages/borrow/components/useCurrentLtv';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
+import * as txi from 'queries/txInfos';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { queryOptions } from 'transactions/queryOptions';
+import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 
 interface FormParams {
   className?: string;
@@ -89,7 +94,7 @@ function ComponentBase({
   // ---------------------------------------------
   // states
   // ---------------------------------------------
-  const [assetAmount, setAssetAmount] = useState('');
+  const [borrowAmount, setBorrowAmount] = useState<UST>('' as UST);
 
   // ---------------------------------------------
   // queries
@@ -100,16 +105,16 @@ function ComponentBase({
   // calculate
   // ---------------------------------------------
   const amountToLtv = useCallback(
-    (amount: Big) => {
+    (borrowAmount: uUST<Big>): Ratio<Big> => {
       return big(
-        big(marketUserOverview.loanAmount.loan_amount).plus(amount),
+        big(marketUserOverview.loanAmount.loan_amount).plus(borrowAmount),
       ).div(
         big(
           big(marketUserOverview.borrowInfo.balance).minus(
             marketUserOverview.borrowInfo.spendable,
           ),
         ).mul(marketOverview.oraclePrice.rate),
-      );
+      ) as Ratio<Big>;
     },
     [
       marketOverview.oraclePrice.rate,
@@ -120,14 +125,14 @@ function ComponentBase({
   );
 
   const ltvToAmount = useCallback(
-    (ltv: Big) => {
+    (ltv: Ratio<Big>): uUST<Big> => {
       return ltv
         .mul(
           big(marketUserOverview.borrowInfo.balance)
             .minus(marketUserOverview.borrowInfo.spendable)
             .mul(marketOverview.oraclePrice.rate),
         )
-        .minus(marketUserOverview.loanAmount.loan_amount);
+        .minus(marketUserOverview.loanAmount.loan_amount) as uUST<Big>;
     },
     [
       marketOverview.oraclePrice.rate,
@@ -143,40 +148,42 @@ function ComponentBase({
   const currentLtv = useCurrentLtv({ marketOverview, marketUserOverview });
 
   // (Loan_amount + borrow_amount) / ((Borrow_info.balance - Borrow_info.spendable - redeemed_collateral) * Oracleprice)
-  const nextLtv = useMemo(() => {
-    if (assetAmount.length === 0) {
+  const nextLtv = useMemo<Ratio<Big> | undefined>(() => {
+    if (borrowAmount.length === 0) {
       return currentLtv;
     }
 
-    const userAmount = big(assetAmount).mul(MICRO);
+    const amount = microfy(borrowAmount);
 
     try {
-      const ltv = amountToLtv(userAmount);
-      return ltv.lt(0) ? big(0) : ltv;
+      const ltv = amountToLtv(amount);
+      return ltv.lt(0) ? (big(0) as Ratio<Big>) : ltv;
     } catch {
       return currentLtv;
     }
-  }, [amountToLtv, assetAmount, currentLtv]);
+  }, [amountToLtv, borrowAmount, currentLtv]);
 
-  const apr = useMemo(() => {
-    return big(marketOverview.borrowRate.rate ?? 0).mul(BLOCKS_PER_YEAR);
+  const apr = useMemo<Ratio<Big>>(() => {
+    return big(marketOverview.borrowRate.rate ?? 0).mul(
+      BLOCKS_PER_YEAR,
+    ) as Ratio<Big>;
   }, [marketOverview.borrowRate.rate]);
 
   // If user_ltv >= 0.35 or user_ltv == Null:
   //   SafeMax = 0
   // else:
   //   safemax = 0.35 * (balance - spendable) * oracle_price - loan_amount
-  const safeMax = useMemo(() => {
+  const safeMax = useMemo<uUST<Big>>(() => {
     return !currentLtv || currentLtv.gte(marketOverview.bLunaSafeLtv)
-      ? big(0)
-      : big(marketOverview.bLunaSafeLtv)
+      ? (big(0) as uUST<Big>)
+      : (big(marketOverview.bLunaSafeLtv)
           .mul(
             big(marketUserOverview.borrowInfo.balance).minus(
               marketUserOverview.borrowInfo.spendable,
             ),
           )
           .mul(marketOverview.oraclePrice.rate)
-          .minus(marketUserOverview.loanAmount.loan_amount);
+          .minus(marketUserOverview.loanAmount.loan_amount) as uUST<Big>);
   }, [
     currentLtv,
     marketOverview.bLunaSafeLtv,
@@ -186,7 +193,7 @@ function ComponentBase({
     marketUserOverview.loanAmount.loan_amount,
   ]);
 
-  const max = useMemo(() => {
+  const max = useMemo<uUST<Big>>(() => {
     return big(marketOverview.bLunaMaxLtv)
       .mul(
         big(marketUserOverview.borrowInfo.balance).minus(
@@ -194,7 +201,7 @@ function ComponentBase({
         ),
       )
       .mul(marketOverview.oraclePrice.rate)
-      .minus(marketUserOverview.loanAmount.loan_amount);
+      .minus(marketUserOverview.loanAmount.loan_amount) as uUST<Big>;
   }, [
     marketOverview.bLunaMaxLtv,
     marketOverview.oraclePrice.rate,
@@ -203,31 +210,31 @@ function ComponentBase({
     marketUserOverview.loanAmount.loan_amount,
   ]);
 
-  const txFee = useMemo(() => {
-    if (assetAmount.length === 0) {
+  const txFee = useMemo<uUST<Big> | undefined>(() => {
+    if (borrowAmount.length === 0) {
       return undefined;
     }
 
-    const userAmount = big(assetAmount).mul(MICRO);
+    const amount = microfy(borrowAmount);
 
     const userAmountTxFee = big(
-      userAmount.minus(userAmount).div(big(1).plus(bank.tax.taxRate)),
+      amount.minus(amount).div(big(1).plus(bank.tax.taxRate)),
     ).mul(bank.tax.taxRate);
 
     if (userAmountTxFee.gt(bank.tax.maxTaxUUSD)) {
-      return big(bank.tax.maxTaxUUSD).plus(fixedGasUUSD);
+      return big(bank.tax.maxTaxUUSD).plus(fixedGasUUSD) as uUST<Big>;
     } else {
-      return userAmountTxFee.plus(fixedGasUUSD);
+      return userAmountTxFee.plus(fixedGasUUSD) as uUST<Big>;
     }
-  }, [assetAmount, bank.tax.maxTaxUUSD, bank.tax.taxRate]);
+  }, [borrowAmount, bank.tax.maxTaxUUSD, bank.tax.taxRate]);
 
-  const receiveAmount = useMemo(() => {
-    return assetAmount.length > 0 && txFee
-      ? big(assetAmount).mul(MICRO).minus(txFee)
+  const receiveAmount = useMemo<uUST<Big> | undefined>(() => {
+    return borrowAmount.length > 0 && txFee
+      ? (microfy(borrowAmount).minus(txFee) as uUST<Big>)
       : undefined;
-  }, [assetAmount, txFee]);
+  }, [borrowAmount, txFee]);
 
-  const invalidTxFee = useMemo(() => {
+  const invalidTxFee = useMemo<ReactNode>(() => {
     if (bank.status === 'demo') {
       return undefined;
     } else if (big(bank.userBalances.uUSD ?? 0).lt(fixedGasUUSD)) {
@@ -237,32 +244,28 @@ function ComponentBase({
   }, [bank.status, bank.userBalances.uUSD]);
 
   const invalidAssetAmount = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo' || assetAmount.length === 0) {
+    if (bank.status === 'demo' || borrowAmount.length === 0) {
       return undefined;
-    } else if (
-      big(assetAmount)
-        .mul(MICRO)
-        .gt(max ?? 0)
-    ) {
+    } else if (microfy(borrowAmount).gt(max ?? 0)) {
       return `Cannot borrow more than the borrow limit.`;
     }
     return undefined;
-  }, [assetAmount, bank.status, max]);
+  }, [borrowAmount, bank.status, max]);
 
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
-  const updateAssetAmount = useCallback((nextAssetAmount: string) => {
-    setAssetAmount(nextAssetAmount);
+  const updateBorrowAmount = useCallback((nextBorrowAmount: string) => {
+    setBorrowAmount(nextBorrowAmount as UST);
   }, []);
 
   const proceed = useCallback(
     async ({
       status,
-      assetAmount,
+      borrowAmount,
     }: {
       status: WalletStatus;
-      assetAmount: string;
+      borrowAmount: UST;
     }) => {
       if (status.status !== 'ready' || bank.status !== 'connected') {
         return;
@@ -274,7 +277,7 @@ function ComponentBase({
           msgs: fabricateBorrow({
             address: status.status === 'ready' ? status.walletAddress : '',
             market: 'ust',
-            amount: assetAmount,
+            amount: borrowAmount,
             withdrawTo: undefined,
           })(addressProvider),
         }).then(({ payload }) => parseResult(payload)),
@@ -285,20 +288,20 @@ function ComponentBase({
   );
 
   const onLtvChange = useCallback(
-    (nextLtv: Big) => {
+    (nextLtv: Ratio<Big>) => {
       try {
         const nextAmount = ltvToAmount(nextLtv);
-        updateAssetAmount(formatUSTInput(big(nextAmount).div(MICRO)));
+        updateBorrowAmount(formatUSTInput(demicrofy(nextAmount)));
       } catch {}
     },
-    [ltvToAmount, updateAssetAmount],
+    [ltvToAmount, updateBorrowAmount],
   );
 
   const ltvStepFunction = useCallback(
-    (draftLtv: Big) => {
+    (draftLtv: Ratio<Big>): Ratio<Big> => {
       try {
         const draftAmount = ltvToAmount(draftLtv);
-        return amountToLtv(big(draftAmount));
+        return amountToLtv(draftAmount);
       } catch {
         return draftLtv;
       }
@@ -336,19 +339,19 @@ function ComponentBase({
     <Modal open onClose={() => closeDialog()}>
       <Dialog className={className} onClose={() => closeDialog()}>
         <h1>
-          Borrow<p>Borrow APR: {formatPercentage(apr.mul(100))}%</p>
+          Borrow<p>Borrow APR: {formatRatioToPercentage(apr)}%</p>
         </h1>
 
         {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
 
         <NumberInput
           className="amount"
-          value={assetAmount}
+          value={borrowAmount}
           maxIntegerPoinsts={UST_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="BORROW AMOUNT"
           error={!!invalidAssetAmount}
-          onChange={({ target }) => updateAssetAmount(target.value)}
+          onChange={({ target }) => updateBorrowAmount(target.value)}
           InputProps={{
             endAdornment: <InputAdornment position="end">UST</InputAdornment>,
           }}
@@ -364,10 +367,10 @@ function ComponentBase({
                 cursor: 'pointer',
               }}
               onClick={() =>
-                updateAssetAmount(formatUSTInput(big(safeMax).div(MICRO)))
+                updateBorrowAmount(formatUSTInput(demicrofy(safeMax)))
               }
             >
-              {formatUST(big(safeMax ?? 0).div(MICRO))} UST
+              {formatUST(demicrofy(safeMax))} UST
             </span>
           </span>
         </div>
@@ -394,10 +397,10 @@ function ComponentBase({
                 </IconSpan>
               }
             >
-              {formatUST(txFee.div(MICRO))} UST
+              {formatUST(demicrofy(txFee))} UST
             </TxFeeListItem>
             <TxFeeListItem label="Receive Amount">
-              {formatUST(receiveAmount.div(MICRO))} UST
+              {formatUST(demicrofy(receiveAmount))} UST
             </TxFeeListItem>
           </TxFeeList>
         )}
@@ -407,12 +410,12 @@ function ComponentBase({
           disabled={
             status.status !== 'ready' ||
             bank.status !== 'connected' ||
-            assetAmount.length === 0 ||
-            big(assetAmount).lte(0) ||
+            borrowAmount.length === 0 ||
+            big(borrowAmount).lte(0) ||
             !!invalidTxFee ||
             !!invalidAssetAmount
           }
-          onClick={() => proceed({ status, assetAmount: assetAmount })}
+          onClick={() => proceed({ status, borrowAmount })}
         >
           Proceed
         </ActionButton>
