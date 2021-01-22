@@ -30,16 +30,14 @@ export function formatFluidDecimalPoints(
 }
 
 export function formatPercentage(
-  // TODO disallow BigSource
-  n: Percent<BigSource> | BigSource,
+  n: Percent<BigSource>,
   options: FormatOptions = { delimiter: true },
 ): string {
   return formatFluidDecimalPoints(n, 2, options);
 }
 
 export function formatRatioToPercentage(
-  // TODO disallow BigSource
-  n: Ratio<BigSource> | BigSource,
+  n: Ratio<BigSource>,
   options: FormatOptions = { delimiter: true },
 ): string {
   return formatFluidDecimalPoints(big(n).mul(100), 2, options);

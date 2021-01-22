@@ -1,10 +1,9 @@
 import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
-import { formatPercentage } from '@anchor-protocol/notation';
-import big from 'big.js';
-import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
+import { formatRatioToPercentage } from '@anchor-protocol/notation';
 import { useInterest } from 'pages/earn/queries/interest';
 import styled from 'styled-components';
 
@@ -34,7 +33,10 @@ function InterestSectionBase({ className }: InterestSectionProps) {
 
       <div className="apy">
         <div className="value">
-          {formatPercentage(big(interest?.currentAPY ?? 0).mul(100))}%
+          {interest?.currentAPY
+            ? formatRatioToPercentage(interest.currentAPY)
+            : 0}
+          %
         </div>
         <p className="name">
           <IconSpan>

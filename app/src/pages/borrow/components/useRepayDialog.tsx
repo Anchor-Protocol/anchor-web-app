@@ -6,7 +6,6 @@ import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTool
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import {
   demicrofy,
-  formatPercentage,
   formatRatioToPercentage,
   formatUST,
   formatUSTInput,
@@ -332,7 +331,7 @@ function ComponentBase({
       <Modal open disableBackdropClick>
         <Dialog className={className}>
           <h1>
-            Repay<p>Borrow APR: {formatPercentage(apr.mul(100))}%</p>
+            Repay<p>Borrow APR: {formatRatioToPercentage(apr)}%</p>
           </h1>
           <TxResultRenderer
             result={repayResult}

@@ -6,7 +6,7 @@ import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import {
   demicrofy,
-  formatPercentage,
+  formatRatioToPercentage,
   formatUSTWithPostfixUnits,
   Ratio,
   uUST,
@@ -63,7 +63,7 @@ export function BorrowLimitGraph({
           ? [
               {
                 position: 'top',
-                label: `${formatPercentage(borrowLimitRatio.mul(100))}%`,
+                label: `${formatRatioToPercentage(borrowLimitRatio)}%`,
                 color: '#ffffff',
                 value: borrowLimitRatio.toNumber(),
               },

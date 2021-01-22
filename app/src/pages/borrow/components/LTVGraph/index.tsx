@@ -3,7 +3,7 @@ import {
   Rect,
 } from '@anchor-protocol/neumorphism-ui/components/HorizontalGraphBar';
 import { HorizontalGraphSlider } from '@anchor-protocol/neumorphism-ui/components/HorizontalGraphSlider';
-import { formatPercentage, Ratio } from '@anchor-protocol/notation';
+import { formatRatioToPercentage, Ratio } from '@anchor-protocol/notation';
 import big, { Big, BigSource } from 'big.js';
 import React, { useCallback } from 'react';
 import { GraphLabel } from './GraphLabel';
@@ -68,13 +68,13 @@ export function LTVGraph({
       data={[
         {
           position: 'top',
-          label: `MAX LTV: ${formatPercentage(big(maxLtv).mul(100))}%`,
+          label: `MAX LTV: ${formatRatioToPercentage(maxLtv)}%`,
           color: 'rgba(0, 0, 0, 0)',
           value: big(maxLtv).toNumber(),
         },
         {
           position: 'top',
-          label: `SAFE LTV: ${formatPercentage(big(safeLtv).mul(100))}%`,
+          label: `SAFE LTV: ${formatRatioToPercentage(safeLtv)}%`,
           color: 'rgba(0, 0, 0, 0)',
           value: big(safeLtv).toNumber(),
         },
@@ -90,7 +90,7 @@ export function LTVGraph({
         //},
         {
           position: 'bottom',
-          label: nextLtv ? `${formatPercentage(nextLtv.mul(100))}%` : '',
+          label: nextLtv ? `${formatRatioToPercentage(nextLtv)}%` : '',
           color: '#ffffff',
           value: nextLtv
             ? Math.max(Math.min(nextLtv.toNumber(), big(maxLtv).toNumber()), 0)
