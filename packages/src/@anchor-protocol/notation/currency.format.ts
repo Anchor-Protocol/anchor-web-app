@@ -1,6 +1,6 @@
 import big, { BigSource } from 'big.js';
-import numeral from 'numeral';
 import { aUST, bLuna, Luna, UST } from './currency';
+import { formatFluidDecimalPoints, FormatOptions } from './unit.format';
 
 // ---------------------------------------------
 // render
@@ -20,33 +20,6 @@ export const UST_INPUT_MAXIMUM_INTEGER_POINTS = 14;
 export const LUNA_INPUT_MAXIMUM_INTEGER_POINTS = 14;
 export const UST_INPUT_MAXIMUM_DECIMAL_POINTS = 3;
 export const LUNA_INPUT_MAXIMUM_DECIMAL_POINTS = 6;
-
-export interface FormatOptions {
-  delimiter?: boolean;
-}
-
-export function formatFluidDecimalPoints(
-  n: BigSource,
-  numDecimalPoints: number,
-  { delimiter }: FormatOptions = { delimiter: true },
-): string {
-  const num = big(
-    big(n)
-      .mul(10 ** numDecimalPoints)
-      .toFixed()
-      .split('.')[0],
-  )
-    .div(10 ** numDecimalPoints)
-    .toFixed();
-
-  const str = numeral(num).format(
-    delimiter
-      ? `0,0.[${'0'.repeat(numDecimalPoints)}]`
-      : `0.[${'0'.repeat(numDecimalPoints)}]`,
-  );
-
-  return str === 'NaN' ? '' : str;
-}
 
 export function formatUSTInput(
   // TODO disallow BigSource
@@ -90,12 +63,4 @@ export function formatLuna(
   options: FormatOptions = { delimiter: true },
 ): string {
   return formatFluidDecimalPoints(n, 6, options);
-}
-
-export function formatPercentage(
-  // TODO disallow BigSource
-  n: Luna<BigSource> | bLuna<BigSource> | BigSource,
-  options: FormatOptions = { delimiter: true },
-): string {
-  return formatFluidDecimalPoints(n, 2, options);
 }
