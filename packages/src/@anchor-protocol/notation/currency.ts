@@ -15,14 +15,17 @@ export type Currency<
     | 'aust'
 > = { __nominal: T };
 
-export type uLuna<T = string> = T & Currency<'uluna'>;
-export type ubLuna<T = string> = T & Currency<'ubluna'>;
 export type uaUST<T = string> = T & Currency<'uaust'>;
-export type uUST<T = string> = T & Currency<'uust'>;
-export type Luna<T = string> = T & Currency<'luna'>;
-export type bLuna<T = string> = T & Currency<'bluna'>;
 export type aUST<T = string> = T & Currency<'aust'>;
-export type UST<T = string> = T & Currency<'aust'>;
+
+export type uUST<T = string> = T & Currency<'uust'>;
+export type UST<T = string> = T & Currency<'ust'>;
+
+export type uLuna<T = string> = T & Currency<'uluna'>;
+export type Luna<T = string> = T & Currency<'luna'>;
+
+export type ubLuna<T = string> = T & Currency<'ubluna'>;
+export type bLuna<T = string> = T & Currency<'bluna'>;
 
 // ---------------------------------------------
 // micro
