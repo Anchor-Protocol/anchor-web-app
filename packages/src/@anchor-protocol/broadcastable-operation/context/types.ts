@@ -1,5 +1,9 @@
 import type { ReactNode } from 'react';
 
+export type EventType = 'done';
+export type Subscriber = (id: string, event: EventType) => void;
+export type Rendering = { id: string; rendering: ReactNode };
+
 // ---------------------------------------------
 // result types
 // ---------------------------------------------
@@ -17,13 +21,21 @@ export type Done<Data, Snapshot extends Array<any>> = {
   status: 'done';
   data: Data;
   snapshots: Snapshot;
-  close: () => void;
+  reset: () => void;
+};
+
+export type Fault<Snapshot extends Array<any>> = {
+  status: 'fault';
+  sanpshots: Snapshot;
+  error: unknown;
+  reset: () => void;
 };
 
 export type OperationResult<Data, Snapshot extends Array<any>> =
   | Ready
   | InProgress<Snapshot>
-  | Done<Data, Snapshot>;
+  | Done<Data, Snapshot>
+  | Fault<Snapshot>;
 
 // ---------------------------------------------
 // developer interfaces
@@ -35,11 +47,11 @@ export interface OperationOptions<
   Pipe extends Operator<any, any>[],
   Snapshot extends Array<any>
 > {
-  id?: string;
-  broadcastableWhen?: 'always' | 'unmounted' | 'none';
+  id?: string | ((id: number) => string);
+  broadcastWhen?: 'always' | 'unmounted' | 'none';
   pipe: Pipe;
   renderBroadcast: (props: OperationResult<Data, Snapshot>) => ReactNode;
-  timeout?: number;
+  breakOnError?: true | ((error: unknown) => boolean);
 }
 
 export type OperationReturn<T, Data, Snapshot extends Array<any>> = [

@@ -2,23 +2,18 @@ import { produce } from 'immer';
 import {
   Context,
   createContext,
-  DependencyList,
   ReactNode,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
+import { EventType, Rendering, Subscriber } from './types';
 
 export interface OperationBroadcasterProps {
   children: ReactNode;
 }
-
-type EventType = 'done';
-type Subscriber = (id: string, event: EventType) => void;
-type Rendering = { id: string; rendering: ReactNode };
 
 export interface OperationBroadcasterState {
   // broadcast
@@ -130,20 +125,4 @@ export function OperationBroadcaster({ children }: OperationBroadcasterProps) {
 
 export function useOperationBroadcaster(): OperationBroadcasterState {
   return useContext(OperationBroadcasterContext);
-}
-
-export function useSubscribe(
-  subscriber: (id: string, event: EventType) => void,
-  deps: DependencyList,
-) {
-  const { subscribe } = useContext(OperationBroadcasterContext);
-
-  useEffect(() => {
-    const teardown = subscribe(subscriber);
-
-    return () => {
-      teardown();
-    };
-    //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps);
 }

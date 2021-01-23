@@ -1,9 +1,9 @@
-import { OperationTimeoutError } from './errors';
-import { Operator } from './types';
+import { Operator } from '../context/types';
+import { OperationTimeoutError } from '../errors';
 
-const Timeout = Symbol('TIMEOUT');
+const Timeout = '__operation_timeout__' as const;
 
-export function withTimeout<O extends Operator<any, any>>(
+export function timeout<O extends Operator<any, any>>(
   operator: O,
   timeout: number,
 ): O {
