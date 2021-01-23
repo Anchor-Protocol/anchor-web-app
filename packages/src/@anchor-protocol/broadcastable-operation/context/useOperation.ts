@@ -1,10 +1,7 @@
-import {
-  aborted,
-  subscribeAbort,
-} from '@anchor-protocol/broadcastable-operation/context/internal/subscribeAbort';
-import { useOperationBroadcaster } from '@anchor-protocol/broadcastable-operation/context/OperationBroadcaster';
-import { OperationStop } from '@anchor-protocol/broadcastable-operation/errors';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { OperationStop } from '../errors';
+import { aborted, subscribeAbort } from './internal/subscribeAbort';
+import { useOperationBroadcaster } from './OperationBroadcaster';
 import type { OperationOptions, OperationResult, Operator } from './types';
 
 export function useOperation<T1, R>(
@@ -164,7 +161,7 @@ export function useOperation({
   const updateResult = useCallback(
     (result: OperationResult<any, any>) => {
       if (onBroadcast.current && broadcastWhen !== 'none') {
-        broadcast(id, renderBroadcast(result));
+        broadcast(id, result, renderBroadcast(result));
       } else {
         setResult(result);
       }

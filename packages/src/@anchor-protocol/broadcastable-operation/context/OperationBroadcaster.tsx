@@ -9,7 +9,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { EventType, Rendering, Subscriber } from './types';
+import { Broadcasting, EventType, OperationResult, Subscriber } from './types';
 
 export interface OperationBroadcasterProps {
   children: ReactNode;
@@ -17,9 +17,13 @@ export interface OperationBroadcasterProps {
 
 export interface OperationBroadcasterState {
   // broadcast
-  broadcast: (id: string, rendering: ReactNode) => void;
+  broadcast: (
+    id: string,
+    result: OperationResult<any, any>,
+    rendering: ReactNode,
+  ) => void;
   stopBroadcast: (id: string) => void;
-  broadcastedRenderings: Rendering[];
+  broadcasting: Broadcasting[];
   // events
   dispatch: (id: string, event: EventType) => void;
   subscribe: (subscriber: Subscriber) => () => void;
@@ -36,24 +40,27 @@ export function OperationBroadcaster({ children }: OperationBroadcasterProps) {
   const abortControllers = useRef<Map<string, AbortController>>(new Map());
   const subscribers = useRef<Set<Subscriber>>(new Set());
 
-  const [renderings, setRenderings] = useState<Rendering[]>(() => []);
+  const [broadcasting, setBroadcasting] = useState<Broadcasting[]>(() => []);
 
-  const broadcast = useCallback((id: string, rendering: ReactNode) => {
-    setRenderings((prev) => {
-      const index = prev.findIndex((r) => r.id === id);
+  const broadcast = useCallback(
+    (id: string, result: OperationResult<any, any>, rendering: ReactNode) => {
+      setBroadcasting((prev) => {
+        const index = prev.findIndex((r) => r.id === id);
 
-      return produce(prev, (draft) => {
-        if (index > -1) {
-          draft[index] = { id, rendering };
-        } else {
-          draft.push({ id, rendering });
-        }
+        return produce(prev, (draft) => {
+          if (index > -1) {
+            draft[index] = { id, result, rendering };
+          } else {
+            draft.push({ id, result, rendering });
+          }
+        });
       });
-    });
-  }, []);
+    },
+    [],
+  );
 
   const stopBroadcast = useCallback((id: string) => {
-    setRenderings((prev) => {
+    setBroadcasting((prev) => {
       const index = prev.findIndex((r) => r.id === id);
 
       return index > -1
@@ -97,7 +104,7 @@ export function OperationBroadcaster({ children }: OperationBroadcasterProps) {
     () => ({
       broadcast,
       stopBroadcast,
-      broadcastedRenderings: renderings,
+      broadcasting: broadcasting,
       subscribe,
       dispatch,
       getAbortController,
@@ -109,7 +116,7 @@ export function OperationBroadcaster({ children }: OperationBroadcasterProps) {
       dispatch,
       getAbortController,
       removeAbortController,
-      renderings,
+      broadcasting,
       setAbortController,
       stopBroadcast,
       subscribe,

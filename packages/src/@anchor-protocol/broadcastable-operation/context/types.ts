@@ -2,7 +2,11 @@ import type { ReactNode } from 'react';
 
 export type EventType = 'done';
 export type Subscriber = (id: string, event: EventType) => void;
-export type Rendering = { id: string; rendering: ReactNode };
+export type Broadcasting = {
+  id: string;
+  result: OperationResult<any, any>;
+  rendering: ReactNode;
+};
 
 // ---------------------------------------------
 // result types
@@ -53,9 +57,3 @@ export interface OperationOptions<
   renderBroadcast: (props: OperationResult<Data, Snapshot>) => ReactNode;
   breakOnError?: true | ((error: unknown) => boolean);
 }
-
-export type OperationReturn<T, Data, Snapshot extends Array<any>> = [
-  exec: (param: T) => void,
-  result: OperationResult<Data, Snapshot> | undefined,
-  reset: (() => void) | undefined,
-];
