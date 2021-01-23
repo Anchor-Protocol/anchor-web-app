@@ -1,26 +1,28 @@
 import {
+  createBroadcastingOption,
   createOperationOptions,
   OperationBroadcaster,
+  useBroadcasting,
   useOperation,
 } from '@anchor-protocol/broadcastable-operation';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import React, { ComponentType } from 'react';
-import { BroadcastingContainer } from './fixtures/BroadcastingContainer';
+import { FloatingContainer } from './fixtures/FloatingContainer';
 import { lazy } from './fixtures/lazy';
 
 export default {
-  title: 'core/broadcastable-operation/Always Broadcast',
+  title: 'core/broadcastable-operation',
   decorators: [
     (Story: ComponentType) => (
       <OperationBroadcaster>
         <Story />
-        <BroadcastingContainer />
+        <Container />
       </OperationBroadcaster>
     ),
   ],
 };
 
-const operation = createOperationOptions({
+const operationOptions = createOperationOptions({
   broadcastWhen: 'always',
   pipe: [
     (x: number) => lazy(x.toString(), 3000),
@@ -32,9 +34,19 @@ const operation = createOperationOptions({
   },
 });
 
+const broadcastingOptions = createBroadcastingOption({
+  map: ({ id, rendering }) => <li key={id}>{rendering}</li>,
+  displayTime: 5000,
+});
+
+function Container() {
+  const renderings = useBroadcasting(broadcastingOptions);
+  return <FloatingContainer>{renderings}</FloatingContainer>;
+}
+
 export const Always_Broadcast = () => {
-  const [operate1] = useOperation(operation);
-  const [operate2] = useOperation(operation);
+  const [operate1] = useOperation(operationOptions);
+  const [operate2] = useOperation(operationOptions);
 
   return (
     <div style={{ display: 'flex', gap: 10 }}>

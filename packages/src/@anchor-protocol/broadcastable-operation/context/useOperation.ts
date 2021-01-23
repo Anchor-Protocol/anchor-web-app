@@ -204,7 +204,9 @@ export function useOperation({
           ]);
 
           if (result === aborted) {
-            return undefined;
+            stopBroadcast(id);
+            setResult({ status: 'ready' });
+            return;
           }
 
           snapshots.push(result);
@@ -243,6 +245,7 @@ export function useOperation({
 
         if (error instanceof OperationStop) {
           stopBroadcast(id);
+          setResult({ status: 'ready' });
           return;
         }
 

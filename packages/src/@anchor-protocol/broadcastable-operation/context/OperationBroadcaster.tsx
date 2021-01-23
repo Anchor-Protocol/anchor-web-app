@@ -22,7 +22,7 @@ export interface OperationBroadcasterState {
     result: OperationResult<any, any>,
     rendering: ReactNode,
   ) => void;
-  stopBroadcast: (id: string) => void;
+  stopBroadcast: (...ids: string[]) => void;
   broadcasting: Broadcasting[];
   // events
   dispatch: (id: string, event: EventType) => void;
@@ -48,10 +48,12 @@ export function OperationBroadcaster({ children }: OperationBroadcasterProps) {
         const index = prev.findIndex((r) => r.id === id);
 
         return produce(prev, (draft) => {
+          const b: Broadcasting = { id, result, rendering, from: Date.now() };
+
           if (index > -1) {
-            draft[index] = { id, result, rendering };
+            draft[index] = b;
           } else {
-            draft.push({ id, result, rendering });
+            draft.push(b);
           }
         });
       });
@@ -59,15 +61,14 @@ export function OperationBroadcaster({ children }: OperationBroadcasterProps) {
     [],
   );
 
-  const stopBroadcast = useCallback((id: string) => {
-    setBroadcasting((prev) => {
-      const index = prev.findIndex((r) => r.id === id);
+  const stopBroadcast = useCallback((...ids: string[]) => {
+    if (ids.length === 0) return;
 
-      return index > -1
-        ? produce(prev, (draft) => {
-            draft.splice(index, 1);
-          })
-        : prev;
+    setBroadcasting((prev) => {
+      const deleteList = new Set(ids);
+      const next = prev.filter(({ id }) => !deleteList.has(id));
+
+      return next.length !== prev.length ? next : prev;
     });
   }, []);
 

@@ -6,6 +6,8 @@ export type Broadcasting = {
   id: string;
   result: OperationResult<any, any>;
   rendering: ReactNode;
+  /** JS Time (e.g. Date.getTime()) */
+  from: number;
 };
 
 // ---------------------------------------------
