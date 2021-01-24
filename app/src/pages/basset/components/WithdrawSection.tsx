@@ -74,10 +74,14 @@ export function WithdrawSection({
   const invalidTxFee = useInvalidTxFee(bank);
 
   const withdrawHistory = useWithdrawAllHistory(
-    withdrawable,
-    withdrawAllHistory,
+    withdrawable?.withdrawRequestsStartFrom,
+    withdrawable?.withdrawRequests.requests,
+    withdrawAllHistory?.allHistory,
+    withdrawAllHistory?.parameters,
   );
-  const withdrawableAmount = useWithdrawableAmount(withdrawable);
+  const withdrawableAmount = useWithdrawableAmount(
+    withdrawable?.withdrawableAmount.withdrawable,
+  );
 
   // ---------------------------------------------
   // callbacks

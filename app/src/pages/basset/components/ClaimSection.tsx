@@ -46,7 +46,12 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const claimableRewards = useClaimableRewards(claimable);
+  const claimableRewards = useClaimableRewards(
+    claimable?.claimableReward.balance,
+    claimable?.rewardState.global_index,
+    claimable?.claimableReward.index,
+    claimable?.claimableReward.pending_rewards,
+  );
 
   const invalidTxFee = useInvalidTxFee(bank);
 
