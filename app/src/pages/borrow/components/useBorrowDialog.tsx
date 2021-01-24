@@ -1,4 +1,4 @@
-import { fabricateBorrow } from '@anchor-protocol/anchor-js/fabricators';
+import { useOperation } from '@anchor-protocol/broadcastable-operation';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
@@ -16,10 +16,6 @@ import {
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
   uUST,
 } from '@anchor-protocol/notation';
-import {
-  BroadcastableQueryOptions,
-  useBroadcastableQuery,
-} from '@anchor-protocol/use-broadcastable-query';
 import type {
   DialogProps,
   DialogTemplate,
@@ -27,29 +23,23 @@ import type {
 } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
-import { ApolloClient, useApolloClient } from '@apollo/client';
+import { useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
-import { CreateTxOptions } from '@terra-money/terra.js';
 import big, { Big } from 'big.js';
+import { OperationRenderer } from 'components/OperationRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import {
-  txNotificationFactory,
-  TxResultRenderer,
-} from 'components/TxResultRenderer';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
-import { BLOCKS_PER_YEAR, FIXED_GAS, TRANSACTION_FEE } from 'env';
+import { BLOCKS_PER_YEAR, FIXED_GAS } from 'env';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
 import { useCurrentLtv } from 'pages/borrow/components/useCurrentLtv';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
-import * as txi from 'queries/txInfos';
+import { borrowOptions } from 'pages/borrow/transactions/borrowOptions';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { queryOptions } from 'transactions/queryOptions';
-import { parseTxResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 
 interface FormParams {
   className?: string;
@@ -83,11 +73,13 @@ function ComponentBase({
 
   const addressProvider = useAddressProvider();
 
-  const [queryBorrow, borrowResult, resetBorrowResult] = useBroadcastableQuery(
-    borrowQueryOptions,
-  );
-
   const client = useApolloClient();
+
+  const [borrow, borrowResult] = useOperation(borrowOptions, {
+    addressProvider,
+    post,
+    client,
+  });
 
   // ---------------------------------------------
   // states
@@ -258,31 +250,19 @@ function ComponentBase({
   }, []);
 
   const proceed = useCallback(
-    async ({
-      status,
-      borrowAmount,
-    }: {
-      status: WalletStatus;
-      borrowAmount: UST;
-    }) => {
+    async (status: WalletStatus, borrowAmount: UST) => {
       if (status.status !== 'ready' || bank.status !== 'connected') {
         return;
       }
 
-      await queryBorrow({
-        post: post<CreateTxOptions, StringifiedTxResult>({
-          ...TRANSACTION_FEE,
-          msgs: fabricateBorrow({
-            address: status.status === 'ready' ? status.walletAddress : '',
-            market: 'ust',
-            amount: borrowAmount,
-            withdrawTo: undefined,
-          })(addressProvider),
-        }).then(({ payload }) => parseTxResult(payload)),
-        client,
+      await borrow({
+        address: status.walletAddress,
+        market: 'ust',
+        amount: borrowAmount,
+        withdrawTo: undefined,
       });
     },
-    [addressProvider, bank.status, client, post, queryBorrow],
+    [bank.status, borrow],
   );
 
   const onLtvChange = useCallback(
@@ -313,7 +293,7 @@ function ComponentBase({
   if (
     borrowResult?.status === 'in-progress' ||
     borrowResult?.status === 'done' ||
-    borrowResult?.status === 'error'
+    borrowResult?.status === 'fault'
   ) {
     return (
       <Modal open disableBackdropClick>
@@ -321,13 +301,19 @@ function ComponentBase({
           <h1>
             Borrow<p>Borrow APR: {formatRatioToPercentage(apr)}%</p>
           </h1>
-          <TxResultRenderer
-            result={borrowResult}
-            resetResult={() => {
-              resetBorrowResult && resetBorrowResult();
-              closeDialog();
-            }}
-          />
+          {borrowResult.status === 'done' ? (
+            <div>
+              <pre>{JSON.stringify(borrowResult.data, null, 2)}</pre>
+              <ActionButton
+                style={{ width: 200 }}
+                onClick={() => closeDialog()}
+              >
+                Close
+              </ActionButton>
+            </div>
+          ) : (
+            <OperationRenderer result={borrowResult} />
+          )}
         </Dialog>
       </Modal>
     );
@@ -413,7 +399,7 @@ function ComponentBase({
             !!invalidTxFee ||
             !!invalidAssetAmount
           }
-          onClick={() => proceed({ status, borrowAmount })}
+          onClick={() => proceed(status, borrowAmount)}
         >
           Proceed
         </ActionButton>
@@ -421,16 +407,6 @@ function ComponentBase({
     </Modal>
   );
 }
-
-const borrowQueryOptions: BroadcastableQueryOptions<
-  { post: Promise<TxResult>; client: ApolloClient<any> },
-  { txResult: TxResult } & { txInfos: txi.Data },
-  Error
-> = {
-  ...queryOptions,
-  group: 'borrow/borrow',
-  notificationFactory: txNotificationFactory,
-};
 
 const Component = styled(ComponentBase)`
   width: 720px;

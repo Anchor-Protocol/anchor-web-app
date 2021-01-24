@@ -1,4 +1,4 @@
-import { fabricateRepay } from '@anchor-protocol/anchor-js/fabricators';
+import { useOperation } from '@anchor-protocol/broadcastable-operation';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
@@ -16,10 +16,6 @@ import {
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
   uUST,
 } from '@anchor-protocol/notation';
-import {
-  BroadcastableQueryOptions,
-  useBroadcastableQuery,
-} from '@anchor-protocol/use-broadcastable-query';
 import type {
   DialogProps,
   DialogTemplate,
@@ -27,30 +23,25 @@ import type {
 } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
-import { ApolloClient, useApolloClient } from '@apollo/client';
+import { useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
-import { CreateTxOptions } from '@terra-money/terra.js';
 import big, { Big, BigSource } from 'big.js';
+import { OperationRenderer } from 'components/OperationRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import {
-  txNotificationFactory,
-  TxResultRenderer,
-} from 'components/TxResultRenderer';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
-import { BLOCKS_PER_YEAR, FIXED_GAS, TRANSACTION_FEE } from 'env';
+import { BLOCKS_PER_YEAR, FIXED_GAS } from 'env';
+import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
 import { useCurrentLtv } from 'pages/borrow/components/useCurrentLtv';
 import { Data as MarketBalance } from 'pages/borrow/queries/marketBalanceOverview';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
-import * as txi from 'queries/txInfos';
+import { repayOptions } from 'pages/borrow/transactions/repayOptions';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { queryOptions } from 'transactions/queryOptions';
-import { parseTxResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 
 interface FormParams {
   className?: string;
@@ -86,11 +77,13 @@ function ComponentBase({
 
   const addressProvider = useAddressProvider();
 
-  const [queryRepay, repayResult, resetRepayResult] = useBroadcastableQuery(
-    repayQueryOptions,
-  );
-
   const client = useApolloClient();
+
+  const [repay, repayResult] = useOperation(repayOptions, {
+    addressProvider,
+    post,
+    client,
+  });
 
   // ---------------------------------------------
   // states
@@ -243,14 +236,7 @@ function ComponentBase({
       : undefined;
   }, [repayAmount, txFee]);
 
-  const invalidTxFee = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo') {
-      return undefined;
-    } else if (big(bank.userBalances.uUSD ?? 0).lt(FIXED_GAS)) {
-      return 'Not enough transaction fees';
-    }
-    return undefined;
-  }, [bank.status, bank.userBalances.uUSD]);
+  const invalidTxFee = useInvalidTxFee(bank);
 
   const invalidAssetAmount = useMemo<ReactNode>(() => {
     if (bank.status === 'demo' || repayAmount.length === 0) {
@@ -269,31 +255,19 @@ function ComponentBase({
   }, []);
 
   const proceed = useCallback(
-    async ({
-      status,
-      repayAmount,
-    }: {
-      status: WalletStatus;
-      repayAmount: UST;
-    }) => {
+    async (status: WalletStatus, repayAmount: UST) => {
       if (status.status !== 'ready' || bank.status !== 'connected') {
         return;
       }
 
-      await queryRepay({
-        post: post<CreateTxOptions, StringifiedTxResult>({
-          ...TRANSACTION_FEE,
-          msgs: fabricateRepay({
-            address: status.status === 'ready' ? status.walletAddress : '',
-            market: 'ust',
-            amount: repayAmount,
-            borrower: undefined,
-          })(addressProvider),
-        }).then(({ payload }) => parseTxResult(payload)),
-        client,
+      await repay({
+        address: status.walletAddress,
+        market: 'ust',
+        amount: repayAmount,
+        borrower: undefined,
       });
     },
-    [addressProvider, bank.status, client, post, queryRepay],
+    [bank.status, repay],
   );
 
   const onLtvChange = useCallback(
@@ -324,7 +298,7 @@ function ComponentBase({
   if (
     repayResult?.status === 'in-progress' ||
     repayResult?.status === 'done' ||
-    repayResult?.status === 'error'
+    repayResult?.status === 'fault'
   ) {
     return (
       <Modal open disableBackdropClick>
@@ -332,13 +306,19 @@ function ComponentBase({
           <h1>
             Repay<p>Borrow APR: {formatRatioToPercentage(apr)}%</p>
           </h1>
-          <TxResultRenderer
-            result={repayResult}
-            resetResult={() => {
-              resetRepayResult && resetRepayResult();
-              closeDialog();
-            }}
-          />
+          {repayResult.status === 'done' ? (
+            <div>
+              <pre>{JSON.stringify(repayResult.data, null, 2)}</pre>
+              <ActionButton
+                style={{ width: 200 }}
+                onClick={() => closeDialog()}
+              >
+                Close
+              </ActionButton>
+            </div>
+          ) : (
+            <OperationRenderer result={repayResult} />
+          )}
         </Dialog>
       </Modal>
     );
@@ -430,7 +410,7 @@ function ComponentBase({
             !!invalidTxFee ||
             !!invalidAssetAmount
           }
-          onClick={() => proceed({ status, repayAmount: repayAmount })}
+          onClick={() => proceed(status, repayAmount)}
         >
           Proceed
         </ActionButton>
@@ -438,16 +418,6 @@ function ComponentBase({
     </Modal>
   );
 }
-
-const repayQueryOptions: BroadcastableQueryOptions<
-  { post: Promise<TxResult>; client: ApolloClient<any> },
-  { txResult: TxResult } & { txInfos: txi.Data },
-  Error
-> = {
-  ...queryOptions,
-  group: 'borrow/repay',
-  notificationFactory: txNotificationFactory,
-};
 
 const Component = styled(ComponentBase)`
   width: 720px;

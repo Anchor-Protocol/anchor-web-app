@@ -1,4 +1,4 @@
-import { fabricateRedeemCollateral } from '@anchor-protocol/anchor-js/fabricators';
+import { useOperation } from '@anchor-protocol/broadcastable-operation';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
@@ -18,10 +18,6 @@ import {
   ubLuna,
   uUST,
 } from '@anchor-protocol/notation';
-import {
-  BroadcastableQueryOptions,
-  useBroadcastableQuery,
-} from '@anchor-protocol/use-broadcastable-query';
 import type {
   DialogProps,
   DialogTemplate,
@@ -29,29 +25,23 @@ import type {
 } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
-import { ApolloClient, useApolloClient } from '@apollo/client';
+import { useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
-import { CreateTxOptions } from '@terra-money/terra.js';
 import big, { Big } from 'big.js';
+import { OperationRenderer } from 'components/OperationRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import {
-  txNotificationFactory,
-  TxResultRenderer,
-} from 'components/TxResultRenderer';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
-import { FIXED_GAS, TRANSACTION_FEE } from 'env';
+import { FIXED_GAS } from 'env';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
 import { useCurrentLtv } from 'pages/borrow/components/useCurrentLtv';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
-import * as txi from 'queries/txInfos';
+import { redeemCollateralOptions } from 'pages/borrow/transactions/redeemCollateralOptions';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { queryOptions } from 'transactions/queryOptions';
-import { parseTxResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 
 interface FormParams {
   className?: string;
@@ -87,13 +77,16 @@ function ComponentBase({
 
   const addressProvider = useAddressProvider();
 
-  const [
-    queryRedeemCollateral,
-    redeemCollateralResult,
-    resetRedeemCollateralResult,
-  ] = useBroadcastableQuery(redeemCollateralQueryOptions);
-
   const client = useApolloClient();
+
+  const [redeemCollateral, redeemCollateralResult] = useOperation(
+    redeemCollateralOptions,
+    {
+      addressProvider,
+      post,
+      client,
+    },
+  );
 
   // ---------------------------------------------
   // states
@@ -236,30 +229,18 @@ function ComponentBase({
   }, []);
 
   const proceed = useCallback(
-    async ({
-      status,
-      redeemAmount,
-    }: {
-      status: WalletStatus;
-      redeemAmount: bLuna;
-    }) => {
+    async (status: WalletStatus, redeemAmount: bLuna) => {
       if (status.status !== 'ready' || bank.status !== 'connected') {
         return;
       }
 
-      await queryRedeemCollateral({
-        post: post<CreateTxOptions, StringifiedTxResult>({
-          ...TRANSACTION_FEE,
-          msgs: fabricateRedeemCollateral({
-            address: status.status === 'ready' ? status.walletAddress : '',
-            market: 'ust',
-            amount: redeemAmount.length > 0 ? redeemAmount : '0',
-          })(addressProvider),
-        }).then(({ payload }) => parseTxResult(payload)),
-        client,
+      await redeemCollateral({
+        address: status.walletAddress,
+        market: 'ust',
+        amount: redeemAmount.length > 0 ? redeemAmount : '0',
       });
     },
-    [addressProvider, bank.status, client, post, queryRedeemCollateral],
+    [bank.status, redeemCollateral],
   );
 
   const onLtvChange = useCallback(
@@ -290,19 +271,25 @@ function ComponentBase({
   if (
     redeemCollateralResult?.status === 'in-progress' ||
     redeemCollateralResult?.status === 'done' ||
-    redeemCollateralResult?.status === 'error'
+    redeemCollateralResult?.status === 'fault'
   ) {
     return (
       <Modal open disableBackdropClick>
         <Dialog className={className}>
           <h1>Redeem Collateral</h1>
-          <TxResultRenderer
-            result={redeemCollateralResult}
-            resetResult={() => {
-              resetRedeemCollateralResult && resetRedeemCollateralResult();
-              closeDialog();
-            }}
-          />
+          {redeemCollateralResult.status === 'done' ? (
+            <div>
+              <pre>{JSON.stringify(redeemCollateralResult.data, null, 2)}</pre>
+              <ActionButton
+                style={{ width: 200 }}
+                onClick={() => closeDialog()}
+              >
+                Close
+              </ActionButton>
+            </div>
+          ) : (
+            <OperationRenderer result={redeemCollateralResult} />
+          )}
         </Dialog>
       </Modal>
     );
@@ -395,7 +382,7 @@ function ComponentBase({
             !!invalidTxFee ||
             !!invalidBAssetAmount
           }
-          onClick={() => proceed({ status, redeemAmount })}
+          onClick={() => proceed(status, redeemAmount)}
         >
           Proceed
         </ActionButton>
@@ -403,16 +390,6 @@ function ComponentBase({
     </Modal>
   );
 }
-
-const redeemCollateralQueryOptions: BroadcastableQueryOptions<
-  { post: Promise<TxResult>; client: ApolloClient<any> },
-  { txResult: TxResult } & { txInfos: txi.Data },
-  Error
-> = {
-  ...queryOptions,
-  group: 'borrow/redeem-collateral',
-  notificationFactory: txNotificationFactory,
-};
 
 const Component = styled(ComponentBase)`
   width: 720px;
