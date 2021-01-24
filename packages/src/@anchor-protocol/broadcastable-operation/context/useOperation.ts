@@ -7,10 +7,7 @@ import type { OperationOptions, OperationResult, Operator } from './types';
 export function useOperation<T1, R, D>(
   params: OperationOptions<R, D, [Operator<T1, R>], [T1, R]>,
   deps: D,
-): [
-  (params: T1) => Promise<R | undefined>,
-  OperationResult<R, [T1, R]> | undefined,
-];
+): [(params: T1) => Promise<boolean>, OperationResult<R, [T1, R]> | undefined];
 
 export function useOperation<T1, T2, R, D>(
   params: OperationOptions<
@@ -21,7 +18,7 @@ export function useOperation<T1, T2, R, D>(
   >,
   deps: D,
 ): [
-  (params: T1) => Promise<R | undefined>,
+  (params: T1) => Promise<boolean>,
   OperationResult<R, [T1, T2, R]> | undefined,
 ];
 
@@ -34,7 +31,7 @@ export function useOperation<T1, T2, T3, R, D>(
   >,
   deps: D,
 ): [
-  (params: T1) => Promise<R | undefined>,
+  (params: T1) => Promise<boolean>,
   OperationResult<R, [T1, T2, T3, R]> | undefined,
 ];
 
@@ -47,7 +44,7 @@ export function useOperation<T1, T2, T3, T4, R, D>(
   >,
   deps: D,
 ): [
-  (params: T1) => Promise<R | undefined>,
+  (params: T1) => Promise<boolean>,
   OperationResult<R, [T1, T2, T3, T4, R]> | undefined,
 ];
 
@@ -66,7 +63,7 @@ export function useOperation<T1, T2, T3, T4, T5, R, D>(
   >,
   deps: D,
 ): [
-  (params: T1) => Promise<R | undefined>,
+  (params: T1) => Promise<boolean>,
   OperationResult<R, [T1, T2, T3, T4, T5, R]> | undefined,
 ];
 
@@ -86,7 +83,7 @@ export function useOperation<T1, T2, T3, T4, T5, T6, R, D>(
   >,
   deps: D,
 ): [
-  (params: T1) => Promise<R | undefined>,
+  (params: T1) => Promise<boolean>,
   OperationResult<R, [T1, T2, T3, T4, T5, T6, R]> | undefined,
 ];
 
@@ -107,7 +104,7 @@ export function useOperation<T1, T2, T3, T4, T5, T6, T7, R, D>(
   >,
   deps: D,
 ): [
-  (params: T1) => Promise<R | undefined>,
+  (params: T1) => Promise<boolean>,
   OperationResult<R, [T1, T2, T3, T4, T5, T6, T7, R]> | undefined,
 ];
 
@@ -129,7 +126,7 @@ export function useOperation<T1, T2, T3, T4, T5, T6, T7, T8, R, D>(
   >,
   deps: D,
 ): [
-  (params: T1) => Promise<R | undefined>,
+  (params: T1) => Promise<boolean>,
   OperationResult<R, [T1, T2, T3, T4, T5, T6, T7, T8, R]> | undefined,
 ];
 
@@ -298,6 +295,8 @@ export function useOperation(
           },
         });
       }
+
+      return onBroadcast.current;
     },
     [
       breakOnError,

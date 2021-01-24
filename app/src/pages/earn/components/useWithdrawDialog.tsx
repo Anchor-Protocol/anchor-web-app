@@ -138,7 +138,10 @@ function ComponentBase({
           {withdrawResult.status === 'done' ? (
             <div>
               <pre>{JSON.stringify(withdrawResult.data, null, 2)}</pre>
-              <ActionButton style={{}} onClick={() => closeDialog()}>
+              <ActionButton
+                style={{ width: 200 }}
+                onClick={() => closeDialog()}
+              >
                 Close
               </ActionButton>
             </div>

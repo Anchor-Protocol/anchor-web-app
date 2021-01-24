@@ -1,4 +1,4 @@
-import { fabricatebAssetBond } from '@anchor-protocol/anchor-js/fabricators/basset/basset-bond';
+import { useOperation } from '@anchor-protocol/broadcastable-operation';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
@@ -15,38 +15,29 @@ import {
   Luna,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
-  microfy,
 } from '@anchor-protocol/notation';
-import {
-  BroadcastableQueryOptions,
-  useBroadcastableQuery,
-} from '@anchor-protocol/use-broadcastable-query';
 import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
-import { ApolloClient, useApolloClient } from '@apollo/client';
+import { useApolloClient } from '@apollo/client';
 import {
   Input as MuiInput,
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
-import { CreateTxOptions } from '@terra-money/terra.js';
 import big, { Big } from 'big.js';
+import { OperationRenderer } from 'components/OperationRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import {
-  txNotificationFactory,
-  TxResultRenderer,
-} from 'components/TxResultRenderer';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
-import { FIXED_GAS, TRANSACTION_FEE } from 'env';
-import * as txi from 'queries/txInfos';
-import React, { ReactNode, useCallback, useMemo, useState } from 'react';
+import { FIXED_GAS } from 'env';
+import { useInvalidTxFee } from 'logics/useInvalidTxFee';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
-import { queryOptions } from 'transactions/queryOptions';
-import { parseTxResult, StringifiedTxResult, TxResult } from 'transactions/tx';
+import { useInvalidBondAmount } from './logics/useInvalidBondAmount';
 import { useExchangeRate } from './queries/exchangeRate';
 import * as val from './queries/validators';
 import { useValidators } from './queries/validators';
+import { mintOptions } from './transactions/mintOptions';
 
 export interface MintProps {
   className?: string;
@@ -68,11 +59,13 @@ function MintBase({ className }: MintProps) {
 
   const addressProvider = useAddressProvider();
 
-  const [queryMint, mintResult, resetMintResult] = useBroadcastableQuery(
-    mintQueryOptions,
-  );
-
   const client = useApolloClient();
+
+  const [mint, mintResult] = useOperation(mintOptions, {
+    addressProvider,
+    post,
+    client,
+  });
 
   const { onKeyPress: onLunaInputKeyPress } = useRestrictedNumberInput({
     maxIntegerPoinsts: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
@@ -110,25 +103,10 @@ function MintBase({ className }: MintProps) {
   });
 
   // ---------------------------------------------
-  // compute
+  // logics
   // ---------------------------------------------
-  const invalidTxFee = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo') {
-      return undefined;
-    } else if (big(bank.userBalances.uUSD).lt(FIXED_GAS)) {
-      return 'Not enough transaction fees';
-    }
-    return undefined;
-  }, [bank.status, bank.userBalances.uUSD]);
-
-  const invalidBondAmount = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo' || bondAmount.length === 0) {
-      return undefined;
-    } else if (microfy(bondAmount).gt(bank.userBalances.uLuna ?? 0)) {
-      return `Not enough assets`;
-    }
-    return undefined;
-  }, [bank.status, bank.userBalances.uLuna, bondAmount]);
+  const invalidTxFee = useInvalidTxFee(bank);
+  const invalidBondAmount = useInvalidBondAmount(bondAmount, bank);
 
   // ---------------------------------------------
   // callbacks
@@ -183,7 +161,13 @@ function MintBase({ className }: MintProps) {
     [exchangeRate?.exchange_rate],
   );
 
-  const mint = useCallback(
+  const init = useCallback(() => {
+    setBondAmount('' as Luna);
+    setMintAmount('' as bLuna);
+    setSelectedValidator(null);
+  }, []);
+
+  const proceed = useCallback(
     async ({
       status,
       bondAmount,
@@ -201,29 +185,18 @@ function MintBase({ className }: MintProps) {
         return;
       }
 
-      const data = await queryMint({
-        post: post<CreateTxOptions, StringifiedTxResult>({
-          ...TRANSACTION_FEE,
-          msgs: fabricatebAssetBond({
-            address: status.walletAddress,
-            amount: bondAmount,
-            bAsset: mintCurrency.value,
-            validator: selectedValidator,
-          })(addressProvider),
-        })
-          .then(({ payload }) => payload)
-          .then(parseTxResult),
-        client,
+      const broadcasted = await mint({
+        address: status.walletAddress,
+        amount: bondAmount,
+        bAsset: mintCurrency.value,
+        validator: selectedValidator,
       });
 
-      // is this component does not unmounted
-      if (data) {
-        setBondAmount('' as Luna);
-        setMintAmount('' as bLuna);
-        setSelectedValidator(null);
+      if (!broadcasted) {
+        init();
       }
     },
-    [bank.status, queryMint, post, mintCurrency.value, addressProvider, client],
+    [bank.status, init, mint, mintCurrency.value],
   );
 
   // ---------------------------------------------
@@ -232,12 +205,26 @@ function MintBase({ className }: MintProps) {
   if (
     mintResult?.status === 'in-progress' ||
     mintResult?.status === 'done' ||
-    mintResult?.status === 'error'
+    mintResult?.status === 'fault'
   ) {
     return (
       <Section className={className}>
-        {/* TODO implement messages */}
-        <TxResultRenderer result={mintResult} resetResult={resetMintResult} />
+        {mintResult.status === 'done' ? (
+          <div>
+            <pre>{JSON.stringify(mintResult.data, null, 2)}</pre>
+            <ActionButton
+              style={{ width: 200 }}
+              onClick={() => {
+                init();
+                mintResult.reset();
+              }}
+            >
+              Exit
+            </ActionButton>
+          </div>
+        ) : (
+          <OperationRenderer result={mintResult} />
+        )}
       </Section>
     );
   }
@@ -392,7 +379,7 @@ function MintBase({ className }: MintProps) {
           !selectedValidator
         }
         onClick={() =>
-          mint({
+          proceed({
             bondAmount,
             status,
             selectedValidator: selectedValidator?.OperatorAddress,
@@ -404,16 +391,6 @@ function MintBase({ className }: MintProps) {
     </Section>
   );
 }
-
-const mintQueryOptions: BroadcastableQueryOptions<
-  { post: Promise<TxResult>; client: ApolloClient<any> },
-  { txResult: TxResult } & { txInfos: txi.Data },
-  Error
-> = {
-  ...queryOptions,
-  group: 'basset/mint',
-  notificationFactory: txNotificationFactory,
-};
 
 function BlankComponent() {
   return <div />;

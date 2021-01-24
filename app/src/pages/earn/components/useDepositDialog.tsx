@@ -156,7 +156,10 @@ function ComponentBase({
           {depositResult.status === 'done' ? (
             <div>
               <pre>{JSON.stringify(depositResult.data, null, 2)}</pre>
-              <ActionButton style={{}} onClick={() => closeDialog()}>
+              <ActionButton
+                style={{ width: 200 }}
+                onClick={() => closeDialog()}
+              >
                 Close
               </ActionButton>
             </div>
