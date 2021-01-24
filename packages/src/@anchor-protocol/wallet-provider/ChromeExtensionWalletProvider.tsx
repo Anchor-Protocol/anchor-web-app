@@ -146,17 +146,49 @@ export function ChromeExtensionWalletProvider({
     checkStatus();
   }, [checkStatus]);
 
+  const postResolvers = useRef(
+    new Map<number, [(data: any) => void, (error: any) => void]>(),
+  );
+
+  useEffect(() => {
+    extension.on('onPost', ({ error, ...payload }) => {
+      if (!postResolvers.current.has(payload.id)) {
+        return;
+      }
+
+      const [resolve, reject] = postResolvers.current.get(payload.id)!;
+
+      if (error && 'code' in error && error.code === 1 && reject) {
+        reject(new UserDeniedError());
+      } else if (resolve) {
+        resolve({ name: 'onPost', payload });
+      }
+
+      postResolvers.current.delete(payload.id);
+    });
+  }, [extension]);
+
   const post = useCallback<WalletState['post']>(
     (data) => {
-      return new Promise((resolve, reject) => {
-        extension.post({ ...(data as any), purgeQueue: true });
-        extension.once('onPost', ({ error, ...payload }) => {
-          if (error && 'code' in error && error.code === 1) {
-            reject(new UserDeniedError());
-          } else {
-            resolve({ name: 'onPost', payload });
-          }
+      return new Promise((...resolver) => {
+        const id = extension.post({
+          ...(data as any),
+          purgeQueue: true,
         });
+
+        postResolvers.current.set(id, resolver);
+
+        //extension.once('onPost', ({ error, ...payload }) => {
+        //  console.log('ChromeExtensionWalletProvider.tsx..()', {
+        //    error,
+        //    ...payload,
+        //  });
+        //  if (error && 'code' in error && error.code === 1) {
+        //    reject(new UserDeniedError());
+        //  } else {
+        //    resolve({ name: 'onPost', payload });
+        //  }
+        //});
       });
       //return extension.request('post', data) as any;
     },

@@ -1,6 +1,5 @@
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { Num, ubLuna } from '@anchor-protocol/notation';
-import { useQuerySubscription } from '@anchor-protocol/use-broadcastable-query';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { gql, QueryResult, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
@@ -120,15 +119,6 @@ export function useClaimable(): QueryResult<
       result.refetch();
     }
   });
-
-  useQuerySubscription(
-    (id, event) => {
-      if (event === 'done') {
-        result.refetch();
-      }
-    },
-    [result.refetch],
-  );
 
   const parsedData = useMemo(
     () => (result.data ? parseData(result.data) : undefined),

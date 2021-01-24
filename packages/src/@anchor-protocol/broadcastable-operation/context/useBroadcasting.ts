@@ -52,11 +52,5 @@ export function useBroadcasting<T = Broadcasting>({
     return (map ? filtered.map<T>(map) : filtered) as T[];
   }, [broadcasting, filter, map]);
 
-  console.log(
-    'useBroadcasting.ts..useBroadcasting()',
-    broadcasting.length,
-    renderings.length,
-  );
-
   return renderings;
 }

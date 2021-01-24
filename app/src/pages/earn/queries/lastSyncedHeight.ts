@@ -1,5 +1,4 @@
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
-import { useQuerySubscription } from '@anchor-protocol/use-broadcastable-query';
 import { gql, QueryResult, useQuery } from '@apollo/client';
 import { useMemo } from 'react';
 
@@ -31,15 +30,6 @@ export function useLastSyncedHeight(): QueryResult<StringifiedData> & {
       result.refetch();
     }
   });
-
-  useQuerySubscription(
-    (id, event) => {
-      if (event === 'done') {
-        result.refetch();
-      }
-    },
-    [result.refetch],
-  );
 
   const parsedData = useMemo(
     () => (result.data ? parseData(result.data) : undefined),

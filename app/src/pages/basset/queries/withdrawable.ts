@@ -1,6 +1,5 @@
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { ubLuna, uLuna } from '@anchor-protocol/notation';
-import { useQuerySubscription } from '@anchor-protocol/use-broadcastable-query';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { gql, QueryResult, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
@@ -145,15 +144,9 @@ export function useWithdrawable({
 
   useSubscription((id, event) => {
     if (event === 'done') {
-      result.refetch();
-    }
-  });
-
-  useQuerySubscription((id, event) => {
-    if (event === 'done') {
       setNow(Math.floor(Date.now() / 1000));
     }
-  }, []);
+  });
 
   const parsedData = useMemo(
     () => (result.data ? parseData(result.data) : undefined),

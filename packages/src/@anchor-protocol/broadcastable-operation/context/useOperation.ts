@@ -191,6 +191,14 @@ export function useOperation(
     [broadcast, broadcastWhen, id, renderBroadcast],
   );
 
+  const initResult = useCallback(() => {
+    if (onBroadcast.current) {
+      stopBroadcast(id);
+    } else {
+      setResult({ status: 'ready' });
+    }
+  }, [id, stopBroadcast]);
+
   const exec = useCallback(
     async (params) => {
       const snapshots = [params];
@@ -229,8 +237,7 @@ export function useOperation(
           ]);
 
           if (result === aborted) {
-            stopBroadcast(id);
-            setResult({ status: 'ready' });
+            initResult();
             return;
           }
 
@@ -246,11 +253,7 @@ export function useOperation(
                   snapshots: snapshots.slice(),
                   data: result,
                   reset: () => {
-                    if (!onBroadcast.current) {
-                      setResult({
-                        status: 'ready',
-                      });
-                    }
+                    initResult();
                   },
                 }
               : {
@@ -270,8 +273,7 @@ export function useOperation(
         removeAbortController(id);
 
         if (error instanceof OperationStop) {
-          stopBroadcast(id);
-          setResult({ status: 'ready' });
+          initResult();
           return;
         }
 
@@ -287,11 +289,7 @@ export function useOperation(
           sanpshots: snapshots.slice(),
           error,
           reset: () => {
-            if (!onBroadcast.current) {
-              setResult({
-                status: 'ready',
-              });
-            }
+            initResult();
           },
         });
       }
@@ -303,10 +301,10 @@ export function useOperation(
       dispatch,
       getAbortController,
       id,
+      initResult,
       pipe,
       removeAbortController,
       setAbortController,
-      stopBroadcast,
       updateResult,
     ],
   );
