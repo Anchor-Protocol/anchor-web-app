@@ -1,5 +1,6 @@
 import { ReactElement } from 'react';
 
+/** @deprecated */
 export type BroadcastableQueryResult<Params, Data, Error> =
   | { status: 'ready' }
   | {
@@ -19,6 +20,7 @@ export type BroadcastableQueryResult<Params, Data, Error> =
       error: Error;
     };
 
+/** @deprecated */
 export type BroadcatableQueryFetchClient<Params, Data> = (
   params: Params,
   options: {
@@ -28,8 +30,10 @@ export type BroadcatableQueryFetchClient<Params, Data> = (
   },
 ) => Promise<Data>;
 
+/** @deprecated */
 export type NotificationFactory<Params, Data, Error> = (
   props: BroadcastableQueryResult<Params, Data, Error>,
 ) => ReactElement<{ close: () => void }>;
 
+/** @deprecated */
 export class BroadcastableQueryStop extends Error {}

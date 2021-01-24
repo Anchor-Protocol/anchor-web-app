@@ -36,7 +36,7 @@ import {
   txNotificationFactory,
   TxResultRenderer,
 } from 'components/TxResultRenderer';
-import { WarningArticle } from 'components/WarningArticle';
+import { WarningMessage } from 'components/WarningMessage';
 import { BLOCKS_PER_YEAR } from 'constants/BLOCKS_PER_YEAR';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
@@ -51,7 +51,7 @@ import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { queryOptions } from 'transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
+import { parseTxResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 
 interface FormParams {
   className?: string;
@@ -290,7 +290,7 @@ function ComponentBase({
             amount: repayAmount,
             borrower: undefined,
           })(addressProvider),
-        }).then(({ payload }) => parseResult(payload)),
+        }).then(({ payload }) => parseTxResult(payload)),
         client,
       });
     },
@@ -352,7 +352,7 @@ function ComponentBase({
           Repay<p>Borrow APR: {formatRatioToPercentage(apr)}%</p>
         </h1>
 
-        {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
+        {!!invalidTxFee && <WarningMessage>{invalidTxFee}</WarningMessage>}
 
         <NumberInput
           className="amount"

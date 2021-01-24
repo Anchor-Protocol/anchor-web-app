@@ -1,5 +1,6 @@
 import { BroadcastableQueryStop } from '@anchor-protocol/use-broadcastable-query/types';
 
+/** @deprecated */
 export function stopWithAbortSignal<T>(
   promise: Promise<T>,
   signal: AbortSignal,

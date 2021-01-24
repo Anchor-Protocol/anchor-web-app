@@ -1,17 +1,17 @@
 import { CSSProperties, ReactNode } from 'react';
 import styled from 'styled-components';
 
-export interface WarningArticleProps {
+export interface WarningMessageProps {
   className?: string;
   children: ReactNode;
   style?: CSSProperties;
 }
 
-function WarningArticleBase({
+function WarningMessageBase({
   className,
   style,
   children,
-}: WarningArticleProps) {
+}: WarningMessageProps) {
   return (
     <article className={className} style={style}>
       {children}
@@ -19,7 +19,7 @@ function WarningArticleBase({
   );
 }
 
-export const WarningArticle = styled(WarningArticleBase)`
+export const WarningMessage = styled(WarningMessageBase)`
   border: 1px solid ${({ theme }) => theme.errorTextColor};
   border-radius: 10px;
   color: ${({ theme }) => theme.errorTextColor};

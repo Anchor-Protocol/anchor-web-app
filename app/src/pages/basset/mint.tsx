@@ -35,7 +35,7 @@ import {
   txNotificationFactory,
   TxResultRenderer,
 } from 'components/TxResultRenderer';
-import { WarningArticle } from 'components/WarningArticle';
+import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { fixedGasUUSD, transactionFee } from 'env';
@@ -43,7 +43,7 @@ import * as txi from 'queries/txInfos';
 import React, { ReactNode, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { queryOptions } from 'transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
+import { parseTxResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 import { useExchangeRate } from './queries/exchangeRate';
 import * as val from './queries/validators';
 import { useValidators } from './queries/validators';
@@ -212,7 +212,7 @@ function MintBase({ className }: MintProps) {
           })(addressProvider),
         })
           .then(({ payload }) => payload)
-          .then(parseResult),
+          .then(parseTxResult),
         client,
       });
 
@@ -244,7 +244,7 @@ function MintBase({ className }: MintProps) {
 
   return (
     <Section className={className}>
-      {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
+      {!!invalidTxFee && <WarningMessage>{invalidTxFee}</WarningMessage>}
 
       {/* Bond (Asset) */}
       <div className="bond-description">

@@ -9,6 +9,7 @@ import {
 
 export type BroadcastWhen = 'always' | 'unmounted';
 
+/** @deprecated */
 export interface BroadcastableQueryOptions<Params, Data, Error> {
   group?: string;
   broadcastWhen?: BroadcastWhen;
@@ -19,6 +20,7 @@ export interface BroadcastableQueryOptions<Params, Data, Error> {
 
 const stopSignal = new BroadcastableQueryStop();
 
+/** @deprecated */
 export function useBroadcastableQuery<Params, Data, Error = unknown>({
   group: _group,
   broadcastWhen = 'unmounted',

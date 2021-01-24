@@ -33,7 +33,7 @@ import {
   txNotificationFactory,
   TxResultRenderer,
 } from 'components/TxResultRenderer';
-import { WarningArticle } from 'components/WarningArticle';
+import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { fixedGasUUSD, transactionFee } from 'env';
@@ -42,7 +42,7 @@ import * as txi from 'queries/txInfos';
 import React, { ReactNode, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { queryOptions } from 'transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
+import { parseTxResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 
 export interface BurnProps {
   className?: string;
@@ -193,7 +193,7 @@ function BurnBase({ className }: BurnProps) {
           })(addressProvider),
         })
           .then(({ payload }) => payload)
-          .then(parseResult),
+          .then(parseTxResult),
         client,
       });
 
@@ -224,7 +224,7 @@ function BurnBase({ className }: BurnProps) {
 
   return (
     <Section className={className}>
-      {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
+      {!!invalidTxFee && <WarningMessage>{invalidTxFee}</WarningMessage>}
 
       {/* Burn (bAsset) */}
       <div className="burn-description">

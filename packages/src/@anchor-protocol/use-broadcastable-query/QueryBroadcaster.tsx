@@ -30,6 +30,7 @@ export interface QueryBroadcasterState {
 // @ts-ignore
 const QueryBroadcasterContext: Context<QueryBroadcasterState> = createContext<QueryBroadcasterState>();
 
+/** @deprecated */
 export function QueryBroadcaster({ children }: QueryBroadcasterProps) {
   const abortControllers = useRef<Map<string, AbortController>>(new Map());
   const watchCallbacks = useRef<Set<WatchCallback>>(new Set());
@@ -106,10 +107,12 @@ export function QueryBroadcaster({ children }: QueryBroadcasterProps) {
   );
 }
 
+/** @deprecated */
 export function useQueryBroadcaster(): QueryBroadcasterState {
   return useContext(QueryBroadcasterContext);
 }
 
+/** @deprecated */
 export function useQuerySubscription(
   subscriber: (id: string, event: EventTypes) => void,
   deps: DependencyList,

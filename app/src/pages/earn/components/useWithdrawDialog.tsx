@@ -34,7 +34,7 @@ import {
   txNotificationFactory,
   TxResultRenderer,
 } from 'components/TxResultRenderer';
-import { WarningArticle } from 'components/WarningArticle';
+import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { fixedGasUUSD, transactionFee } from 'env';
@@ -43,7 +43,7 @@ import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { queryOptions } from 'transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
+import { parseTxResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 import { Data as TotalDepositData } from '../queries/totalDeposit';
 
 interface FormParams {
@@ -176,7 +176,7 @@ function ComponentBase({
               .toString(),
             symbol: 'usd',
           })(addressProvider),
-        }).then(({ payload }) => parseResult(payload)),
+        }).then(({ payload }) => parseTxResult(payload)),
         client,
       });
 
@@ -224,7 +224,7 @@ function ComponentBase({
       <Dialog className={className} onClose={() => closeDialog()}>
         <h1>Withdraw</h1>
 
-        {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
+        {!!invalidTxFee && <WarningMessage>{invalidTxFee}</WarningMessage>}
 
         <NumberInput
           className="amount"

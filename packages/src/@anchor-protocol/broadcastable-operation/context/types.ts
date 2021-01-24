@@ -46,16 +46,24 @@ export type OperationResult<Data, Snapshot extends Array<any>> =
 // ---------------------------------------------
 // developer interfaces
 // ---------------------------------------------
-export type Operator<T, R> = (param: T) => Promise<R> | R;
+export type OperatorOption = {
+  signal: AbortSignal;
+};
+
+export type Operator<T, R> = (
+  param: T,
+  option: OperatorOption,
+) => Promise<R> | R;
 
 export interface OperationOptions<
   Data,
+  DependdencyList extends {},
   Pipe extends Operator<any, any>[],
   Snapshot extends Array<any>
 > {
   id?: string | ((id: number) => string);
   broadcastWhen?: 'always' | 'unmounted' | 'none';
-  pipe: Pipe;
+  pipe: (deps: DependdencyList) => Pipe;
   renderBroadcast: (props: OperationResult<Data, Snapshot>) => ReactNode;
   breakOnError?: true | ((error: unknown) => boolean);
 }

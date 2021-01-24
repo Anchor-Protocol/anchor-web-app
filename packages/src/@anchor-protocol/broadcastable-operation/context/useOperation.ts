@@ -4,45 +4,57 @@ import { aborted, subscribeAbort } from './internal/subscribeAbort';
 import { useOperationBroadcaster } from './OperationBroadcaster';
 import type { OperationOptions, OperationResult, Operator } from './types';
 
-export function useOperation<T1, R>(
-  params: OperationOptions<R, [Operator<T1, R>], [T1, R]>,
+export function useOperation<T1, R, D>(
+  params: OperationOptions<R, D, [Operator<T1, R>], [T1, R]>,
+  deps: D,
 ): [
   (params: T1) => Promise<R | undefined>,
   OperationResult<R, [T1, R]> | undefined,
 ];
 
-export function useOperation<T1, T2, R>(
-  params: OperationOptions<R, [Operator<T1, T2>, Operator<T2, R>], [T1, T2, R]>,
+export function useOperation<T1, T2, R, D>(
+  params: OperationOptions<
+    R,
+    D,
+    [Operator<T1, T2>, Operator<T2, R>],
+    [T1, T2, R]
+  >,
+  deps: D,
 ): [
   (params: T1) => Promise<R | undefined>,
   OperationResult<R, [T1, T2, R]> | undefined,
 ];
 
-export function useOperation<T1, T2, T3, R>(
+export function useOperation<T1, T2, T3, R, D>(
   params: OperationOptions<
     R,
+    D,
     [Operator<T1, T2>, Operator<T2, T3>, Operator<T3, R>],
     [T1, T2, T3, R]
   >,
+  deps: D,
 ): [
   (params: T1) => Promise<R | undefined>,
   OperationResult<R, [T1, T2, T3, R]> | undefined,
 ];
 
-export function useOperation<T1, T2, T3, T4, R>(
+export function useOperation<T1, T2, T3, T4, R, D>(
   params: OperationOptions<
     R,
+    D,
     [Operator<T1, T2>, Operator<T2, T3>, Operator<T3, T4>, Operator<T4, R>],
     [T1, T2, T3, T4, R]
   >,
+  deps: D,
 ): [
   (params: T1) => Promise<R | undefined>,
   OperationResult<R, [T1, T2, T3, T4, R]> | undefined,
 ];
 
-export function useOperation<T1, T2, T3, T4, T5, R>(
+export function useOperation<T1, T2, T3, T4, T5, R, D>(
   params: OperationOptions<
     R,
+    D,
     [
       Operator<T1, T2>,
       Operator<T2, T3>,
@@ -52,14 +64,16 @@ export function useOperation<T1, T2, T3, T4, T5, R>(
     ],
     [T1, T2, T3, T4, T5, R]
   >,
+  deps: D,
 ): [
   (params: T1) => Promise<R | undefined>,
   OperationResult<R, [T1, T2, T3, T4, T5, R]> | undefined,
 ];
 
-export function useOperation<T1, T2, T3, T4, T5, T6, R>(
+export function useOperation<T1, T2, T3, T4, T5, T6, R, D>(
   params: OperationOptions<
     R,
+    D,
     [
       Operator<T1, T2>,
       Operator<T2, T3>,
@@ -70,14 +84,16 @@ export function useOperation<T1, T2, T3, T4, T5, T6, R>(
     ],
     [T1, T2, T3, T4, T5, T6, R]
   >,
+  deps: D,
 ): [
   (params: T1) => Promise<R | undefined>,
   OperationResult<R, [T1, T2, T3, T4, T5, T6, R]> | undefined,
 ];
 
-export function useOperation<T1, T2, T3, T4, T5, T6, T7, R>(
+export function useOperation<T1, T2, T3, T4, T5, T6, T7, R, D>(
   params: OperationOptions<
     R,
+    D,
     [
       Operator<T1, T2>,
       Operator<T2, T3>,
@@ -89,14 +105,16 @@ export function useOperation<T1, T2, T3, T4, T5, T6, T7, R>(
     ],
     [T1, T2, T3, T4, T5, T6, T7, R]
   >,
+  deps: D,
 ): [
   (params: T1) => Promise<R | undefined>,
   OperationResult<R, [T1, T2, T3, T4, T5, T6, T7, R]> | undefined,
 ];
 
-export function useOperation<T1, T2, T3, T4, T5, T6, T7, T8, R>(
+export function useOperation<T1, T2, T3, T4, T5, T6, T7, T8, R, D>(
   params: OperationOptions<
     R,
+    D,
     [
       Operator<T1, T2>,
       Operator<T2, T3>,
@@ -109,21 +127,22 @@ export function useOperation<T1, T2, T3, T4, T5, T6, T7, T8, R>(
     ],
     [T1, T2, T3, T4, T5, T6, T7, T8, R]
   >,
+  deps: D,
 ): [
   (params: T1) => Promise<R | undefined>,
   OperationResult<R, [T1, T2, T3, T4, T5, T6, T7, T8, R]> | undefined,
 ];
 
-export function useOperation({
-  id: _id,
-  broadcastWhen = 'unmounted',
-  pipe,
-  renderBroadcast,
-  breakOnError,
-}: OperationOptions<Operator<any, any>[], any, any>): [
-  (params: any) => Promise<any>,
-  OperationResult<any, any> | undefined,
-] {
+export function useOperation(
+  {
+    id: _id,
+    broadcastWhen = 'unmounted',
+    pipe,
+    renderBroadcast,
+    breakOnError,
+  }: OperationOptions<Operator<any, any>[], any, any, any>,
+  deps: any = {},
+): [(params: any) => Promise<any>, OperationResult<any, any> | undefined] {
   type R = OperationResult<any, any>;
 
   // ---------------------------------------------
@@ -137,6 +156,12 @@ export function useOperation({
     removeAbortController,
     dispatch,
   } = useOperationBroadcaster();
+
+  const dependencyList = useRef(deps);
+
+  useEffect(() => {
+    dependencyList.current = deps;
+  }, [deps]);
 
   // ---------------------------------------------
   // states
@@ -194,12 +219,15 @@ export function useOperation({
       try {
         let value = params;
 
+        const operators = pipe(dependencyList.current);
+        const operatorOption = { signal: abortController.signal };
+
         let i: number = -1;
-        const max: number = pipe.length;
+        const max: number = operators.length;
 
         while (++i < max) {
           const result = await Promise.race([
-            pipe[i](value),
+            operators[i](value, operatorOption),
             abortSubscription,
           ]);
 
@@ -210,6 +238,7 @@ export function useOperation({
           }
 
           snapshots.push(result);
+          value = result;
 
           const isDone = i + 1 === max;
 

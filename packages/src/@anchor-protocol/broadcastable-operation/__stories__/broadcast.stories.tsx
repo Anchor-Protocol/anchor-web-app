@@ -24,9 +24,9 @@ export default {
 
 const operationOptions = createOperationOptions({
   broadcastWhen: 'always',
-  pipe: [
+  pipe: ({ a }: { a: number }) => [
     (x: number) => lazy(x.toString(), 3000),
-    (y: string) => lazy(parseInt(y), 3000),
+    (y: string) => lazy(parseInt(y) + a, 3000),
     (z: number) => lazy(z.toString(), 3000),
   ],
   renderBroadcast: (result) => {
@@ -45,8 +45,8 @@ function Container() {
 }
 
 export const Always_Broadcast = () => {
-  const [operate1] = useOperation(operationOptions);
-  const [operate2] = useOperation(operationOptions);
+  const [operate1] = useOperation(operationOptions, { a: 30 });
+  const [operate2] = useOperation(operationOptions, { a: 50 });
 
   return (
     <div style={{ display: 'flex', gap: 10 }}>

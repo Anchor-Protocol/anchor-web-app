@@ -30,7 +30,7 @@ import {
   txNotificationFactory,
   TxResultRenderer,
 } from 'components/TxResultRenderer';
-import { WarningArticle } from 'components/WarningArticle';
+import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { fixedGasUUSD, transactionFee } from 'env';
@@ -38,7 +38,7 @@ import * as txi from 'queries/txInfos';
 import React, { ReactNode, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { queryOptions } from 'transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
+import { parseTxResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 import { useClaimable } from './queries/claimable';
 import { useWithdrawable } from './queries/withdrawable';
 import { useWithdrawHistory } from './queries/withdrawHistory';
@@ -205,7 +205,7 @@ function ClaimBase({ className }: ClaimProps) {
         })(addressProvider),
       })
         .then(({ payload }) => payload)
-        .then(parseResult),
+        .then(parseTxResult),
       client,
     });
   }, [addressProvider, bank.status, client, post, queryWithdraw, status]);
@@ -225,7 +225,7 @@ function ClaimBase({ className }: ClaimProps) {
         })(addressProvider),
       })
         .then(({ payload }) => payload)
-        .then(parseResult),
+        .then(parseTxResult),
       client,
     });
 
@@ -310,7 +310,7 @@ function ClaimBase({ className }: ClaimProps) {
         </article>
 
         {!!invalidTxFee && withdrawableAmount.gt(0) && (
-          <WarningArticle>{invalidTxFee}</WarningArticle>
+          <WarningMessage>{invalidTxFee}</WarningMessage>
         )}
 
         <ActionButton
@@ -367,7 +367,7 @@ function ClaimBase({ className }: ClaimProps) {
         </article>
 
         {!!invalidTxFee && big(claimableRewards).gt(0) && (
-          <WarningArticle>{invalidTxFee}</WarningArticle>
+          <WarningMessage>{invalidTxFee}</WarningMessage>
         )}
 
         <ActionButton

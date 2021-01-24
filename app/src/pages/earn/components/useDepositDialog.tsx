@@ -1,5 +1,5 @@
-import { fabricateDepositStableCoin } from '@anchor-protocol/anchor-js/fabricators';
 import { min } from '@anchor-protocol/big-math';
+import { useOperation } from '@anchor-protocol/broadcastable-operation';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
@@ -16,10 +16,6 @@ import {
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
   uUST,
 } from '@anchor-protocol/notation';
-import {
-  BroadcastableQueryOptions,
-  useBroadcastableQuery,
-} from '@anchor-protocol/use-broadcastable-query';
 import type {
   DialogProps,
   DialogTemplate,
@@ -27,25 +23,19 @@ import type {
 } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
-import { ApolloClient, useApolloClient } from '@apollo/client';
+import { useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
-import { CreateTxOptions } from '@terra-money/terra.js';
 import big, { Big } from 'big.js';
+import { OperationRenderer } from 'components/OperationRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import {
-  txNotificationFactory,
-  TxResultRenderer,
-} from 'components/TxResultRenderer';
-import { WarningArticle } from 'components/WarningArticle';
+import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
-import { fixedGasUUSD, transactionFee } from 'env';
-import * as txi from 'queries/txInfos';
+import { fixedGasUUSD } from 'env';
+import { depositOptions } from 'pages/earn/operations/depositOptions';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { queryOptions } from 'transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 
 interface FormParams {
   className?: string;
@@ -75,13 +65,13 @@ function ComponentBase({
 
   const addressProvider = useAddressProvider();
 
-  const [
-    queryDeposit,
-    depositResult,
-    resetDepositResult,
-  ] = useBroadcastableQuery(depositQueryOptions);
-
   const client = useApolloClient();
+
+  const [deposit, depositResult] = useOperation(depositOptions, {
+    addressProvider,
+    post,
+    client,
+  });
 
   const [openConfirm, confirmElement] = useConfirm();
 
@@ -229,31 +219,13 @@ function ComponentBase({
         }
       }
 
-      const data = await queryDeposit({
-        post: post<CreateTxOptions, StringifiedTxResult>({
-          ...transactionFee,
-          msgs: fabricateDepositStableCoin({
-            address: status.status === 'ready' ? status.walletAddress : '',
-            amount: assetAmount,
-            symbol: 'usd',
-          })(addressProvider),
-        }).then(({ payload }) => parseResult(payload)),
-        client,
+      await deposit({
+        address: status.status === 'ready' ? status.walletAddress : '',
+        amount: assetAmount,
+        symbol: 'usd',
       });
-
-      if (data) {
-        closeDialog();
-      }
     },
-    [
-      addressProvider,
-      bank.status,
-      client,
-      closeDialog,
-      openConfirm,
-      post,
-      queryDeposit,
-    ],
+    [bank.status, deposit, openConfirm],
   );
 
   // ---------------------------------------------
@@ -262,19 +234,22 @@ function ComponentBase({
   if (
     depositResult?.status === 'in-progress' ||
     depositResult?.status === 'done' ||
-    depositResult?.status === 'error'
+    depositResult?.status === 'fault'
   ) {
     return (
       <Modal open disableBackdropClick>
         <Dialog className={className}>
           <h1>Deposit</h1>
-          <TxResultRenderer
-            result={depositResult}
-            resetResult={() => {
-              resetDepositResult && resetDepositResult();
-              closeDialog();
-            }}
-          />
+          {depositResult.status === 'done' ? (
+            <div>
+              <pre>{JSON.stringify(depositResult.data, null, 2)}</pre>
+              <ActionButton style={{}} onClick={() => closeDialog()}>
+                Close
+              </ActionButton>
+            </div>
+          ) : (
+            <OperationRenderer result={depositResult} />
+          )}
         </Dialog>
       </Modal>
     );
@@ -285,7 +260,7 @@ function ComponentBase({
       <Dialog className={className} onClose={() => closeDialog()}>
         <h1>Deposit</h1>
 
-        {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
+        {!!invalidTxFee && <WarningMessage>{invalidTxFee}</WarningMessage>}
 
         <NumberInput
           className="amount"
@@ -346,9 +321,9 @@ function ComponentBase({
         )}
 
         {tooMuchAssetAmountWarning && recommendationAssetAmount && (
-          <WarningArticle style={{ marginTop: 30, marginBottom: 0 }}>
+          <WarningMessage style={{ marginTop: 30, marginBottom: 0 }}>
             {tooMuchAssetAmountWarning}
-          </WarningArticle>
+          </WarningMessage>
         )}
 
         <ActionButton
@@ -383,16 +358,6 @@ function ComponentBase({
     </Modal>
   );
 }
-
-const depositQueryOptions: BroadcastableQueryOptions<
-  { post: Promise<TxResult>; client: ApolloClient<any> },
-  { txResult: TxResult } & { txInfos: txi.Data },
-  Error
-> = {
-  ...queryOptions,
-  group: 'earn/deposit',
-  notificationFactory: txNotificationFactory,
-};
 
 const Component = styled(ComponentBase)`
   width: 720px;

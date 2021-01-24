@@ -9,6 +9,9 @@ import { TxError } from 'transactions/TxError';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+/**
+ * @deprecated
+ */
 export const queryOptions: Omit<
   BroadcastableQueryOptions<
     { post: Promise<TxResult>; client: ApolloClient<any> },

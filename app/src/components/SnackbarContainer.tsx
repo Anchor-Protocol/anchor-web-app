@@ -13,6 +13,9 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 
+/**
+ * @deprecated
+ */
 export const SnackbarContainer = styled(
   ({ className }: { className?: string }) => {
     const { addSnackbar, snackbarContainerRef } = useSnackbar();

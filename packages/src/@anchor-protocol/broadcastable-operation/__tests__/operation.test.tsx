@@ -15,7 +15,7 @@ const wrapper = ({ children }: { children: ReactNode }) => (
 );
 
 const options = createOperationOptions({
-  pipe: [
+  pipe: () => [
     (x: number) => lazy(x.toString()),
     (y: string) => lazy(parseInt(y)),
     (z: number) => lazy(z.toString()),
@@ -35,7 +35,7 @@ const options = createOperationOptions({
 describe('broadcastable-operation', () => {
   test('should get result', async () => {
     const { result, waitForNextUpdate } = renderHook(
-      () => useOperation(options),
+      () => useOperation(options, {}),
       { wrapper },
     );
 

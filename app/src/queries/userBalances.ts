@@ -1,3 +1,4 @@
+import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { uaUST, ubLuna, uLuna, uUST } from '@anchor-protocol/notation';
 import { useQuerySubscription } from '@anchor-protocol/use-broadcastable-query';
 import { useWallet } from '@anchor-protocol/wallet-provider';
@@ -138,6 +139,12 @@ export function useUserBalances(): QueryResult<
       bAssetTokenAddress: addressProvider.bAssetToken('bluna'),
       aTokenAddress: addressProvider.aToken('usd'),
     }),
+  });
+
+  useSubscription((id, event) => {
+    if (event === 'done') {
+      result.refetch();
+    }
   });
 
   useQuerySubscription(

@@ -38,7 +38,7 @@ import {
   txNotificationFactory,
   TxResultRenderer,
 } from 'components/TxResultRenderer';
-import { WarningArticle } from 'components/WarningArticle';
+import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { fixedGasUUSD, transactionFee } from 'env';
@@ -51,7 +51,7 @@ import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { queryOptions } from 'transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
+import { parseTxResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 
 interface FormParams {
   className?: string;
@@ -255,7 +255,7 @@ function ComponentBase({
             market: 'ust',
             amount: redeemAmount.length > 0 ? redeemAmount : '0',
           })(addressProvider),
-        }).then(({ payload }) => parseResult(payload)),
+        }).then(({ payload }) => parseTxResult(payload)),
         client,
       });
     },
@@ -313,7 +313,7 @@ function ComponentBase({
       <Dialog className={className} onClose={() => closeDialog()}>
         <h1>Redeem Collateral</h1>
 
-        {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
+        {!!invalidTxFee && <WarningMessage>{invalidTxFee}</WarningMessage>}
 
         <NumberInput
           className="amount"

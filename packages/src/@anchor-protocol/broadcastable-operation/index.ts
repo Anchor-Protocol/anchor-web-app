@@ -7,6 +7,7 @@ export * from './context/useSubscription';
 
 export * from './operators/all';
 export * from './operators/race';
+export * from './operators/effect';
 export * from './operators/timeout';
 
 export * from './errors';

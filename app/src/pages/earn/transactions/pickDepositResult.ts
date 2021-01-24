@@ -3,7 +3,12 @@ import big from 'big.js';
 import { Data } from 'queries/txInfos';
 import { TxResult } from 'transactions/tx';
 
-interface Result {
+interface Params {
+  txResult: TxResult;
+  txInfo: Data;
+}
+
+export interface DepositResult {
   depositAmount: uUST<string> | undefined;
   receivedAmount: uaUST<string> | undefined;
   exchangeRate: Ratio<string> | undefined;
@@ -11,15 +16,12 @@ interface Result {
   txHash: string;
 }
 
-export function parseDepositResult({
-  txInfos,
-  txResult,
-}: { txResult: TxResult } & { txInfos: Data }): Result {
+export function pickDepositResult({ txInfo, txResult }: Params): DepositResult {
   const fromContract =
-    Array.isArray(txInfos[0].RawLog) && txInfos[0].RawLog[0].events[1];
+    Array.isArray(txInfo[0].RawLog) && txInfo[0].RawLog[0].events[1];
 
   if (!fromContract) {
-    console.error({ txInfos, txResult });
+    console.error({ txInfo, txResult });
     throw new Error(`Failed contract result parse`);
   }
 

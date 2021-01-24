@@ -21,6 +21,12 @@ export interface TxResultRendererProps {
   resetResult: (() => void) | undefined;
 }
 
+/**
+ * @deprecated
+ * @param result
+ * @param resetResult
+ * @constructor
+ */
 export function TxResultRenderer({
   result,
   resetResult,
@@ -134,6 +140,10 @@ const ActionSnackbar = styled(
   },
 )``;
 
+/**
+ * @deprecated
+ * @param result
+ */
 export function txNotificationFactory(
   result: BroadcastableQueryResult<Params, Data, Error>,
 ) {

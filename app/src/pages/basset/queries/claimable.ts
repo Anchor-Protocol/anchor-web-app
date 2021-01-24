@@ -1,3 +1,4 @@
+import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { Num, ubLuna } from '@anchor-protocol/notation';
 import { useQuerySubscription } from '@anchor-protocol/use-broadcastable-query';
 import { useWallet } from '@anchor-protocol/wallet-provider';
@@ -112,6 +113,12 @@ export function useClaimable(): QueryResult<
         },
       },
     }),
+  });
+
+  useSubscription((id, event) => {
+    if (event === 'done') {
+      result.refetch();
+    }
   });
 
   useQuerySubscription(

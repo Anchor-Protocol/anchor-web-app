@@ -1,3 +1,4 @@
+import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { ubLuna, uLuna } from '@anchor-protocol/notation';
 import { useQuerySubscription } from '@anchor-protocol/use-broadcastable-query';
 import { useWallet } from '@anchor-protocol/wallet-provider';
@@ -140,6 +141,12 @@ export function useWithdrawable({
         state: {},
       },
     }),
+  });
+
+  useSubscription((id, event) => {
+    if (event === 'done') {
+      result.refetch();
+    }
   });
 
   useQuerySubscription((id, event) => {
