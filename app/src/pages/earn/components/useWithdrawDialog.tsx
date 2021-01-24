@@ -8,11 +8,9 @@ import {
   demicrofy,
   formatUST,
   formatUSTInput,
-  microfy,
   UST,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
-  uUST,
 } from '@anchor-protocol/notation';
 import type {
   DialogProps,
@@ -23,18 +21,21 @@ import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
-import big, { Big } from 'big.js';
+import big from 'big.js';
 import { OperationRenderer } from 'components/OperationRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
-import { FIXED_GAS } from 'env';
-import { withdrawOptions } from 'pages/earn/transactions/withdrawOptions';
+import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import type { ReactNode } from 'react';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
+import { useInvalidWithdrawAmount } from '../logics/useInvalidWithdrawAmount';
+import { useWithdrawReceiveAmount } from '../logics/useWithdrawReceiveAmount';
+import { useWithdrawTxFee } from '../logics/useWithdrawTxFee';
 import { Data as TotalDepositData } from '../queries/totalDeposit';
+import { withdrawOptions } from '../transactions/withdrawOptions';
 
 interface FormParams {
   className?: string;
@@ -85,57 +86,18 @@ function ComponentBase({
   const bank = useBank();
 
   // ---------------------------------------------
-  // compute
+  // logics
   // ---------------------------------------------
-  const txFee = useMemo<uUST<Big> | undefined>(() => {
-    if (withdrawAmount.length === 0) return undefined;
+  const txFee = useWithdrawTxFee(withdrawAmount, bank);
+  const receiveAmount = useWithdrawReceiveAmount(withdrawAmount, txFee);
 
-    // MIN((Withdrawable(User_input)- Withdrawable(User_input) / (1+Tax_rate)), Max_tax) + Fixed_Gas
-
-    const uustAmount = microfy(withdrawAmount);
-    const ratioTxFee = uustAmount.minus(
-      uustAmount.div(big(1).add(bank.tax.taxRate)),
-    );
-    const maxTax = big(bank.tax.maxTaxUUSD);
-
-    if (ratioTxFee.gt(maxTax)) {
-      return maxTax.add(FIXED_GAS) as uUST<Big>;
-    } else {
-      return ratioTxFee.add(FIXED_GAS) as uUST<Big>;
-    }
-  }, [withdrawAmount, bank.tax.maxTaxUUSD, bank.tax.taxRate]);
-
-  const invalidTxFee = useMemo(() => {
-    if (bank.status === 'demo') {
-      return undefined;
-    } else if (big(bank.userBalances.uUSD ?? 0).lt(FIXED_GAS)) {
-      return 'Not enough transaction fees';
-    }
-    return undefined;
-  }, [bank.status, bank.userBalances.uUSD]);
-
-  const invalidWithdrawAmount = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo' || withdrawAmount.length === 0) {
-      return undefined;
-    } else if (microfy(withdrawAmount).gt(totalDeposit.totalDeposit ?? 0)) {
-      return `Not enough aUST`;
-    } else if (txFee && big(bank.userBalances.uUSD).lt(txFee)) {
-      return `Not enough UST`;
-    }
-    return undefined;
-  }, [
+  const invalidTxFee = useInvalidTxFee(bank);
+  const invalidWithdrawAmount = useInvalidWithdrawAmount(
     withdrawAmount,
-    bank.status,
-    bank.userBalances.uUSD,
+    bank,
     totalDeposit.totalDeposit,
     txFee,
-  ]);
-
-  const receiveAmount = useMemo<uUST<Big> | undefined>(() => {
-    return withdrawAmount.length > 0 && txFee
-      ? (microfy(withdrawAmount).minus(txFee) as uUST<Big>)
-      : undefined;
-  }, [withdrawAmount, txFee]);
+  );
 
   // ---------------------------------------------
   // callbacks
