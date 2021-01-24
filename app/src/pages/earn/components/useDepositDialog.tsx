@@ -32,7 +32,7 @@ import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { FIXED_GAS } from 'env';
-import { depositOperation } from 'pages/earn/transactions/depositOperation';
+import { depositOptions } from 'pages/earn/transactions/depositOptions';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
@@ -67,7 +67,7 @@ function ComponentBase({
 
   const client = useApolloClient();
 
-  const [deposit, depositResult] = useOperation(depositOperation, {
+  const [deposit, depositResult] = useOperation(depositOptions, {
     addressProvider,
     post,
     client,

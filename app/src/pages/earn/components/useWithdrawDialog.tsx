@@ -1,4 +1,4 @@
-import { fabricateRedeemStable } from '@anchor-protocol/anchor-js/fabricators';
+import { useOperation } from '@anchor-protocol/broadcastable-operation';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
@@ -14,10 +14,6 @@ import {
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
   uUST,
 } from '@anchor-protocol/notation';
-import {
-  BroadcastableQueryOptions,
-  useBroadcastableQuery,
-} from '@anchor-protocol/use-broadcastable-query';
 import type {
   DialogProps,
   DialogTemplate,
@@ -25,25 +21,19 @@ import type {
 } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
-import { ApolloClient, useApolloClient } from '@apollo/client';
+import { useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
-import { CreateTxOptions } from '@terra-money/terra.js';
 import big, { Big } from 'big.js';
+import { OperationRenderer } from 'components/OperationRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import {
-  txNotificationFactory,
-  TxResultRenderer,
-} from 'components/TxResultRenderer';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
-import { FIXED_GAS, TRANSACTION_FEE } from 'env';
-import * as txi from 'queries/txInfos';
+import { FIXED_GAS } from 'env';
+import { withdrawOptions } from 'pages/earn/transactions/withdrawOptions';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { queryOptions } from 'transactions/queryOptions';
-import { parseTxResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 import { Data as TotalDepositData } from '../queries/totalDeposit';
 
 interface FormParams {
@@ -76,13 +66,13 @@ function ComponentBase({
 
   const addressProvider = useAddressProvider();
 
-  const [
-    fetchWithdraw,
-    withdrawResult,
-    resetWithdrawResult,
-  ] = useBroadcastableQuery(withdrawQueryOptions);
-
   const client = useApolloClient();
+
+  const [withdraw, withdrawResult] = useOperation(withdrawOptions, {
+    addressProvider,
+    post,
+    client,
+  });
 
   // ---------------------------------------------
   // states
@@ -166,33 +156,15 @@ function ComponentBase({
         return;
       }
 
-      const data = await fetchWithdraw({
-        post: post<CreateTxOptions, StringifiedTxResult>({
-          ...TRANSACTION_FEE,
-          msgs: fabricateRedeemStable({
-            address: status.status === 'ready' ? status.walletAddress : '',
-            amount: big(aAssetAmount)
-              .div(totalDeposit.exchangeRate.exchange_rate)
-              .toString(),
-            symbol: 'usd',
-          })(addressProvider),
-        }).then(({ payload }) => parseTxResult(payload)),
-        client,
+      await withdraw({
+        address: status.status === 'ready' ? status.walletAddress : '',
+        amount: big(aAssetAmount)
+          .div(totalDeposit.exchangeRate.exchange_rate)
+          .toString(),
+        symbol: 'usd',
       });
-
-      if (data) {
-        closeDialog();
-      }
     },
-    [
-      addressProvider,
-      bank.status,
-      client,
-      closeDialog,
-      fetchWithdraw,
-      post,
-      totalDeposit.exchangeRate.exchange_rate,
-    ],
+    [bank.status, totalDeposit.exchangeRate.exchange_rate, withdraw],
   );
 
   // ---------------------------------------------
@@ -201,19 +173,22 @@ function ComponentBase({
   if (
     withdrawResult?.status === 'in-progress' ||
     withdrawResult?.status === 'done' ||
-    withdrawResult?.status === 'error'
+    withdrawResult?.status === 'fault'
   ) {
     return (
       <Modal open disableBackdropClick>
         <Dialog className={className}>
           <h1>Withdraw</h1>
-          <TxResultRenderer
-            result={withdrawResult}
-            resetResult={() => {
-              resetWithdrawResult && resetWithdrawResult();
-              closeDialog();
-            }}
-          />
+          {withdrawResult.status === 'done' ? (
+            <div>
+              <pre>{JSON.stringify(withdrawResult.data, null, 2)}</pre>
+              <ActionButton style={{}} onClick={() => closeDialog()}>
+                Close
+              </ActionButton>
+            </div>
+          ) : (
+            <OperationRenderer result={withdrawResult} />
+          )}
         </Dialog>
       </Modal>
     );
@@ -298,16 +273,6 @@ function ComponentBase({
     </Modal>
   );
 }
-
-const withdrawQueryOptions: BroadcastableQueryOptions<
-  { post: Promise<TxResult>; client: ApolloClient<any> },
-  { txResult: TxResult } & { txInfos: txi.Data },
-  Error
-> = {
-  ...queryOptions,
-  group: 'earn/withdraw',
-  notificationFactory: txNotificationFactory,
-};
 
 const Component = styled(ComponentBase)`
   width: 720px;
