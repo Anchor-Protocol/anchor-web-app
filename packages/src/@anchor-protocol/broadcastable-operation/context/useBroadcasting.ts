@@ -1,3 +1,4 @@
+import { useInterval } from '@anchor-protocol/use-interval';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useOperationBroadcaster } from './OperationBroadcaster';
 import { Broadcasting } from './types';
@@ -46,27 +47,16 @@ export function useBroadcasting<T = Broadcasting>({
 
   useInterval(tick, broadcasting.length > 0 ? displayTime : 0);
 
-  return useMemo<T[]>(() => {
+  const renderings = useMemo<T[]>(() => {
     const filtered = filter ? broadcasting.filter(filter) : broadcasting;
     return (map ? filtered.map<T>(map) : filtered) as T[];
   }, [broadcasting, filter, map]);
-}
 
-function useInterval(callback: () => void, delay: number) {
-  const callbackRef = useRef(callback);
+  console.log(
+    'useBroadcasting.ts..useBroadcasting()',
+    broadcasting.length,
+    renderings.length,
+  );
 
-  useEffect(() => {
-    callbackRef.current = callback;
-  }, [callback]);
-
-  useEffect(() => {
-    function tick() {
-      callbackRef.current();
-    }
-
-    if (delay > 0) {
-      const id = setInterval(tick, delay);
-      return () => clearInterval(id);
-    }
-  }, [delay]);
+  return renderings;
 }
