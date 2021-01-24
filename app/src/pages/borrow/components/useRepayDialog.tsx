@@ -37,10 +37,9 @@ import {
   TxResultRenderer,
 } from 'components/TxResultRenderer';
 import { WarningMessage } from 'components/WarningMessage';
-import { BLOCKS_PER_YEAR } from 'constants/BLOCKS_PER_YEAR';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
-import { fixedGasUUSD, transactionFee } from 'env';
+import { BLOCKS_PER_YEAR, FIXED_GAS, TRANSACTION_FEE } from 'env';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
 import { useCurrentLtv } from 'pages/borrow/components/useCurrentLtv';
 import { Data as MarketBalance } from 'pages/borrow/queries/marketBalanceOverview';
@@ -224,9 +223,9 @@ function ComponentBase({
     const userAmountTxFee = userAmount.mul(bank.tax.taxRate);
 
     if (userAmountTxFee.gt(bank.tax.maxTaxUUSD)) {
-      return big(bank.tax.maxTaxUUSD).plus(fixedGasUUSD) as uUST<Big>;
+      return big(bank.tax.maxTaxUUSD).plus(FIXED_GAS) as uUST<Big>;
     } else {
-      return userAmountTxFee.plus(fixedGasUUSD) as uUST<Big>;
+      return userAmountTxFee.plus(FIXED_GAS) as uUST<Big>;
     }
   }, [repayAmount, bank.tax.maxTaxUUSD, bank.tax.taxRate]);
 
@@ -247,7 +246,7 @@ function ComponentBase({
   const invalidTxFee = useMemo<ReactNode>(() => {
     if (bank.status === 'demo') {
       return undefined;
-    } else if (big(bank.userBalances.uUSD ?? 0).lt(fixedGasUUSD)) {
+    } else if (big(bank.userBalances.uUSD ?? 0).lt(FIXED_GAS)) {
       return 'Not enough transaction fees';
     }
     return undefined;
@@ -283,7 +282,7 @@ function ComponentBase({
 
       await queryRepay({
         post: post<CreateTxOptions, StringifiedTxResult>({
-          ...transactionFee,
+          ...TRANSACTION_FEE,
           msgs: fabricateRepay({
             address: status.status === 'ready' ? status.walletAddress : '',
             market: 'ust',

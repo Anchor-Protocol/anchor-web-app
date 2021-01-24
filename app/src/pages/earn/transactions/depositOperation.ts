@@ -18,7 +18,7 @@ interface DependencyList {
   client: ApolloClient<any>;
 }
 
-export const depositOptions = createOperationOptions({
+export const depositOperation = createOperationOptions({
   id: 'earn/deposit',
   pipe: ({ addressProvider, post, client }: DependencyList) => [
     fabricateDepositStableCoin, // Option -> ((AddressProvider) -> MsgExecuteContract[])
@@ -31,5 +31,5 @@ export const depositOptions = createOperationOptions({
   renderBroadcast: (props) => {
     return JSON.stringify(props, null, 2);
   },
-  breakOnError: true,
+  //breakOnError: true,
 });

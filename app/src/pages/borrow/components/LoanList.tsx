@@ -13,7 +13,7 @@ import {
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { Error } from '@material-ui/icons';
 import big, { Big } from 'big.js';
-import { BLOCKS_PER_YEAR } from 'constants/BLOCKS_PER_YEAR';
+import { BLOCKS_PER_YEAR } from 'env';
 import { useBorrowDialog } from 'pages/borrow/components/useBorrowDialog';
 import { useRepayDialog } from 'pages/borrow/components/useRepayDialog';
 import { Data as MarketBalance } from 'pages/borrow/queries/marketBalanceOverview';

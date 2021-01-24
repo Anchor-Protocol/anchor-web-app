@@ -33,7 +33,7 @@ import {
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
-import { fixedGasUUSD, transactionFee } from 'env';
+import { FIXED_GAS, TRANSACTION_FEE } from 'env';
 import * as txi from 'queries/txInfos';
 import React, { ReactNode, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
@@ -102,7 +102,7 @@ function ClaimBase({ className }: ClaimProps) {
   const invalidTxFee = useMemo<ReactNode>(() => {
     if (bank.status === 'demo') {
       return undefined;
-    } else if (big(bank.userBalances.uUSD).lt(fixedGasUUSD)) {
+    } else if (big(bank.userBalances.uUSD).lt(FIXED_GAS)) {
       return 'Not Enough Tx Fee';
     }
     return undefined;
@@ -198,7 +198,7 @@ function ClaimBase({ className }: ClaimProps) {
 
     await queryWithdraw({
       post: post<CreateTxOptions, StringifiedTxResult>({
-        ...transactionFee,
+        ...TRANSACTION_FEE,
         msgs: fabricatebAssetWithdrawUnbonded({
           address: status.walletAddress,
           bAsset: 'bluna',
@@ -217,7 +217,7 @@ function ClaimBase({ className }: ClaimProps) {
 
     const data = await queryClaim({
       post: post<CreateTxOptions, StringifiedTxResult>({
-        ...transactionFee,
+        ...TRANSACTION_FEE,
         msgs: fabricatebAssetClaim({
           address: status.status === 'ready' ? status.walletAddress : '',
           bAsset: 'bluna',

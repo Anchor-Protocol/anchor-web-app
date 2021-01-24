@@ -36,7 +36,7 @@ import {
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
-import { fixedGasUUSD, transactionFee } from 'env';
+import { FIXED_GAS, TRANSACTION_FEE } from 'env';
 import { useExchangeRate } from 'pages/basset/queries/exchangeRate';
 import * as txi from 'queries/txInfos';
 import React, { ReactNode, useCallback, useMemo, useState } from 'react';
@@ -103,7 +103,7 @@ function BurnBase({ className }: BurnProps) {
   const invalidTxFee = useMemo<ReactNode>(() => {
     if (bank.status === 'demo') {
       return undefined;
-    } else if (big(bank.userBalances.uUSD).lt(fixedGasUUSD)) {
+    } else if (big(bank.userBalances.uUSD).lt(FIXED_GAS)) {
       return 'Not enough transaction fees';
     }
     return undefined;
@@ -185,7 +185,7 @@ function BurnBase({ className }: BurnProps) {
 
       const data = await queryBurn({
         post: post<CreateTxOptions, StringifiedTxResult>({
-          ...transactionFee,
+          ...TRANSACTION_FEE,
           msgs: fabricatebAssetBurn({
             address: status.walletAddress,
             amount: burnAmount,
@@ -327,7 +327,7 @@ function BurnBase({ className }: BurnProps) {
               </IconSpan>
             }
           >
-            {formatUST(demicrofy(fixedGasUUSD))} UST
+            {formatUST(demicrofy(FIXED_GAS))} UST
           </TxFeeListItem>
         </TxFeeList>
       )}

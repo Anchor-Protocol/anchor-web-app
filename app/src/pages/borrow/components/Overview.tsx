@@ -9,7 +9,7 @@ import {
   uUST,
 } from '@anchor-protocol/notation';
 import big, { Big, BigSource } from 'big.js';
-import { BLOCKS_PER_YEAR } from 'constants/BLOCKS_PER_YEAR';
+import { BLOCKS_PER_YEAR } from 'env';
 import { BorrowLimitGraph } from 'pages/borrow/components/BorrowLimitGraph';
 import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import { useMemo } from 'react';

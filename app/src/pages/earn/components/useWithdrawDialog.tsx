@@ -37,7 +37,7 @@ import {
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
-import { fixedGasUUSD, transactionFee } from 'env';
+import { FIXED_GAS, TRANSACTION_FEE } from 'env';
 import * as txi from 'queries/txInfos';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -109,16 +109,16 @@ function ComponentBase({
     const maxTax = big(bank.tax.maxTaxUUSD);
 
     if (ratioTxFee.gt(maxTax)) {
-      return maxTax.add(fixedGasUUSD) as uUST<Big>;
+      return maxTax.add(FIXED_GAS) as uUST<Big>;
     } else {
-      return ratioTxFee.add(fixedGasUUSD) as uUST<Big>;
+      return ratioTxFee.add(FIXED_GAS) as uUST<Big>;
     }
   }, [withdrawAmount, bank.tax.maxTaxUUSD, bank.tax.taxRate]);
 
   const invalidTxFee = useMemo(() => {
     if (bank.status === 'demo') {
       return undefined;
-    } else if (big(bank.userBalances.uUSD ?? 0).lt(fixedGasUUSD)) {
+    } else if (big(bank.userBalances.uUSD ?? 0).lt(FIXED_GAS)) {
       return 'Not enough transaction fees';
     }
     return undefined;
@@ -168,7 +168,7 @@ function ComponentBase({
 
       const data = await fetchWithdraw({
         post: post<CreateTxOptions, StringifiedTxResult>({
-          ...transactionFee,
+          ...TRANSACTION_FEE,
           msgs: fabricateRedeemStable({
             address: status.status === 'ready' ? status.walletAddress : '',
             amount: big(aAssetAmount)

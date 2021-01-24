@@ -41,7 +41,7 @@ import {
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
-import { fixedGasUUSD, transactionFee } from 'env';
+import { FIXED_GAS, TRANSACTION_FEE } from 'env';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
 import { useCurrentLtv } from 'pages/borrow/components/useCurrentLtv';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
@@ -72,7 +72,7 @@ const Template: DialogTemplate<FormParams, FormReturn> = (props) => {
   return <Component {...props} />;
 };
 
-const txFee = fixedGasUUSD;
+const txFee = FIXED_GAS;
 
 function ComponentBase({
   className,
@@ -195,7 +195,7 @@ function ComponentBase({
   const invalidTxFee = useMemo(() => {
     if (bank.status === 'demo') {
       return undefined;
-    } else if (big(bank.userBalances.uUSD ?? 0).lt(fixedGasUUSD)) {
+    } else if (big(bank.userBalances.uUSD ?? 0).lt(FIXED_GAS)) {
       return 'Not enough transaction fees';
     }
     return undefined;
@@ -231,7 +231,7 @@ function ComponentBase({
 
       await queryProvideCollateral({
         post: post<CreateTxOptions, StringifiedTxResult>({
-          ...transactionFee,
+          ...TRANSACTION_FEE,
           msgs: fabricateProvideCollateral({
             address: status.status === 'ready' ? status.walletAddress : '',
             market: 'ust',

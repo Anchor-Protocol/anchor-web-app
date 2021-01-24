@@ -31,8 +31,8 @@ import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
-import { fixedGasUUSD } from 'env';
-import { depositOptions } from 'pages/earn/operations/depositOptions';
+import { FIXED_GAS } from 'env';
+import { depositOperation } from 'pages/earn/transactions/depositOperation';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
@@ -67,7 +67,7 @@ function ComponentBase({
 
   const client = useApolloClient();
 
-  const [deposit, depositResult] = useOperation(depositOptions, {
+  const [deposit, depositResult] = useOperation(depositOperation, {
     addressProvider,
     post,
     client,
@@ -94,22 +94,22 @@ function ComponentBase({
     // MIN((User_UST_Balance - fixed_gas)/(1+Tax_rate) * tax_rate , Max_tax) + Fixed_Gas
 
     const uAmount = microfy(depositAmount);
-    const ratioTxFee = big(uAmount.minus(fixedGasUUSD))
+    const ratioTxFee = big(uAmount.minus(FIXED_GAS))
       .div(big(1).add(bank.tax.taxRate))
       .mul(bank.tax.taxRate);
     const maxTax = big(bank.tax.maxTaxUUSD);
 
     if (ratioTxFee.gt(maxTax)) {
-      return maxTax.add(fixedGasUUSD) as uUST<Big>;
+      return maxTax.add(FIXED_GAS) as uUST<Big>;
     } else {
-      return ratioTxFee.add(fixedGasUUSD) as uUST<Big>;
+      return ratioTxFee.add(FIXED_GAS) as uUST<Big>;
     }
   }, [depositAmount, bank.tax.maxTaxUUSD, bank.tax.taxRate]);
 
   const invalidTxFee = useMemo(() => {
     if (bank.status === 'demo') {
       return undefined;
-    } else if (big(bank.userBalances.uUSD ?? 0).lt(fixedGasUUSD)) {
+    } else if (big(bank.userBalances.uUSD ?? 0).lt(FIXED_GAS)) {
       return 'Not enough transaction fees';
     }
     return undefined;
@@ -146,13 +146,11 @@ function ComponentBase({
     //                   else without_fixed_gas - max_tax
 
     const userUUSD = big(bank.userBalances.uUSD);
-    const withoutFixedGas = userUUSD.minus(fixedGasUUSD);
+    const withoutFixedGas = userUUSD.minus(FIXED_GAS);
     const txFee = withoutFixedGas.mul(bank.tax.taxRate);
     const result = withoutFixedGas.minus(min(txFee, bank.tax.maxTaxUUSD));
 
-    return result.lte(0)
-      ? undefined
-      : (result.minus(fixedGasUUSD) as uUST<Big>);
+    return result.lte(0) ? undefined : (result.minus(FIXED_GAS) as uUST<Big>);
   }, [
     bank.status,
     bank.tax.maxTaxUUSD,
@@ -173,7 +171,7 @@ function ComponentBase({
       .minus(microfy(depositAmount))
       .minus(txFee ?? 0);
 
-    if (remainUUSD.lt(fixedGasUUSD)) {
+    if (remainUUSD.lt(FIXED_GAS)) {
       return `You may run out of USD balance needed for future transactions.`;
     }
 

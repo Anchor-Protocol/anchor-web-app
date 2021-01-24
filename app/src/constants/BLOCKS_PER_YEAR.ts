@@ -1,1 +1,0 @@
-export const BLOCKS_PER_YEAR = 5256666;

@@ -38,7 +38,7 @@ import {
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
-import { fixedGasUUSD, transactionFee } from 'env';
+import { FIXED_GAS, TRANSACTION_FEE } from 'env';
 import * as txi from 'queries/txInfos';
 import React, { ReactNode, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
@@ -115,7 +115,7 @@ function MintBase({ className }: MintProps) {
   const invalidTxFee = useMemo<ReactNode>(() => {
     if (bank.status === 'demo') {
       return undefined;
-    } else if (big(bank.userBalances.uUSD).lt(fixedGasUUSD)) {
+    } else if (big(bank.userBalances.uUSD).lt(FIXED_GAS)) {
       return 'Not enough transaction fees';
     }
     return undefined;
@@ -203,7 +203,7 @@ function MintBase({ className }: MintProps) {
 
       const data = await queryMint({
         post: post<CreateTxOptions, StringifiedTxResult>({
-          ...transactionFee,
+          ...TRANSACTION_FEE,
           msgs: fabricatebAssetBond({
             address: status.walletAddress,
             amount: bondAmount,
@@ -374,7 +374,7 @@ function MintBase({ className }: MintProps) {
               </IconSpan>
             }
           >
-            {formatUST(demicrofy(fixedGasUUSD))} UST
+            {formatUST(demicrofy(FIXED_GAS))} UST
           </TxFeeListItem>
         </TxFeeList>
       )}

@@ -3,7 +3,7 @@ import { Ratio } from '@anchor-protocol/notation';
 import { gql, QueryResult, useQuery } from '@apollo/client';
 import big from 'big.js';
 import { useAddressProvider } from 'contexts/contract';
-import { safeRatio } from 'env';
+import { SAFE_RATIO } from 'env';
 import { useMemo } from 'react';
 import { Data as MarketBalanceOverviewData } from './marketBalanceOverview';
 
@@ -65,7 +65,7 @@ export function parseData(
     oraclePrice: JSON.parse(oraclePrice.Result),
     overseerWhitelist: parsedOverseerWhitelist,
     bLunaMaxLtv,
-    bLunaSafeLtv: big(bLunaMaxLtv).mul(safeRatio).toString() as Ratio,
+    bLunaSafeLtv: big(bLunaMaxLtv).mul(SAFE_RATIO).toString() as Ratio,
   };
 }
 
