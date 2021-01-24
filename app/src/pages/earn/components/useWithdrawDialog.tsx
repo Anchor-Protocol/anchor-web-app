@@ -107,20 +107,14 @@ function ComponentBase({
   }, []);
 
   const proceed = useCallback(
-    async ({
-      status,
-      aAssetAmount,
-    }: {
-      status: WalletStatus;
-      aAssetAmount: string;
-    }) => {
+    async (status: WalletStatus, withdrawAmount: string) => {
       if (status.status !== 'ready' || bank.status !== 'connected') {
         return;
       }
 
       await withdraw({
-        address: status.status === 'ready' ? status.walletAddress : '',
-        amount: big(aAssetAmount)
+        address: status.walletAddress,
+        amount: big(withdrawAmount)
           .div(totalDeposit.exchangeRate.exchange_rate)
           .toString(),
         symbol: 'usd',
@@ -222,12 +216,7 @@ function ComponentBase({
             big(withdrawAmount).lte(0) ||
             !!invalidWithdrawAmount
           }
-          onClick={() =>
-            proceed({
-              aAssetAmount: withdrawAmount,
-              status,
-            })
-          }
+          onClick={() => proceed(status, withdrawAmount)}
         >
           Proceed
         </ActionButton>

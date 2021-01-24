@@ -133,7 +133,7 @@ function ComponentBase({
       }
 
       await deposit({
-        address: status.status === 'ready' ? status.walletAddress : '',
+        address: status.walletAddress,
         amount: depositAmount,
         symbol: 'usd',
       });
