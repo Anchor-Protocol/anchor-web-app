@@ -6,9 +6,9 @@ import { AddressProvider } from '../../address-provider/provider';
 interface Option {
   address: string;
   bAsset: string;
-  contractAddress: string;
   asset: Asset[];
   amount: string;
+  quote: string;
   slippageTolerance: string;
 }
 
@@ -29,17 +29,18 @@ export interface Asset {
 
 export const fabricateTerraSwapProvideLiquidity = ({
   address,
-  contractAddress,
   slippageTolerance,
   asset,
-}: Option): MsgExecuteContract[] => {
+  quote,
+}: Option) => (addressProvider: AddressProvider): MsgExecuteContract[] => {
   validateInput([validateAddress(address)]);
 
+  const pairAddress = addressProvider.blunaBurn(quote);
   return [
-    new MsgExecuteContract(address, contractAddress, {
+    new MsgExecuteContract(address, pairAddress, {
       provide_liquidity: {
         assets: asset,
-        slippage_tolerance: slippageTolerance, // set to 1% just in case
+        slippage_tolerance: slippageTolerance,
       },
     }),
   ];

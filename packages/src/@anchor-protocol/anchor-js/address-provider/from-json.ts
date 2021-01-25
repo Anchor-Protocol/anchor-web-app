@@ -63,7 +63,11 @@ export class AddressProviderFromJson implements AddressProvider {
     return this.data.terraswapFactory;
   }
 
-  blunaBurn(denom: string): string {
-    return this.data.blunaBurn[denom];
+  blunaBurn(quote: string): string {
+    const address = this.data.blunaBurn[quote];
+    if (typeof address === 'undefined') {
+      throw new Error(`there is not address for ${quote}`);
+    }
+    return address;
   }
 }

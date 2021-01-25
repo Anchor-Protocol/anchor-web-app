@@ -6,21 +6,21 @@ import { AddressProvider } from '../../address-provider/provider';
 interface Option {
   address: string;
   bAsset: string;
-  contractAddress: string;
   nativeToken: string;
 }
 
 export const fabricatebTerraSwapCreatePair = ({
   address,
   bAsset,
-  contractAddress,
   nativeToken,
 }: Option) => (addressProvider: AddressProvider): MsgExecuteContract[] => {
   validateInput([validateAddress(address)]);
 
   const bAssetTokenAddress = addressProvider.bAssetToken(bAsset);
+  const terrawswapFactory = addressProvider.terraswapFactory();
+
   return [
-    new MsgExecuteContract(address, contractAddress, {
+    new MsgExecuteContract(address, terrawswapFactory, {
       create_pair: {
         asset_infos: [
           {
