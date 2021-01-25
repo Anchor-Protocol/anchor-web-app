@@ -1,8 +1,8 @@
 import { Num, Ratio } from '@anchor-protocol/notation';
 import { gql, QueryResult, useQuery } from '@apollo/client';
 import big from 'big.js';
-import { BLOCKS_PER_YEAR } from 'constants/BLOCKS_PER_YEAR';
 import { useAddressProvider } from 'contexts/contract';
+import { BLOCKS_PER_YEAR } from 'env';
 import { useMemo } from 'react';
 
 export interface StringifiedData {

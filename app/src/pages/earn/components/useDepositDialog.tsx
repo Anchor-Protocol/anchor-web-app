@@ -1,5 +1,4 @@
-import { fabricateDepositStableCoin } from '@anchor-protocol/anchor-js/fabricators';
-import { min } from '@anchor-protocol/big-math';
+import { useOperation } from '@anchor-protocol/broadcastable-operation';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
@@ -10,16 +9,10 @@ import {
   demicrofy,
   formatUST,
   formatUSTInput,
-  microfy,
   UST,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
-  uUST,
 } from '@anchor-protocol/notation';
-import {
-  BroadcastableQueryOptions,
-  useBroadcastableQuery,
-} from '@anchor-protocol/use-broadcastable-query';
 import type {
   DialogProps,
   DialogTemplate,
@@ -27,25 +20,24 @@ import type {
 } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
-import { ApolloClient, useApolloClient } from '@apollo/client';
+import { useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
-import { CreateTxOptions } from '@terra-money/terra.js';
-import big, { Big } from 'big.js';
+import big from 'big.js';
+import { OperationRenderer } from 'components/OperationRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import {
-  txNotificationFactory,
-  TxResultRenderer,
-} from 'components/TxResultRenderer';
-import { WarningArticle } from 'components/WarningArticle';
+import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
-import { fixedGasUUSD, transactionFee } from 'env';
-import * as txi from 'queries/txInfos';
+import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import type { ReactNode } from 'react';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
-import { queryOptions } from 'transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
+import { useDepositRecommentationAmount } from '../logics/useDepositRecommentationAmount';
+import { useDepositSendAmount } from '../logics/useDepositSendAmount';
+import { useDepositTxFee } from '../logics/useDepositTxFee';
+import { useInvalidDepositAmount } from '../logics/useInvalidDepositAmount';
+import { useInvalidDepositNextTransaction } from '../logics/useInvalidDepositNextTransaction';
+import { depositOptions } from '../transactions/depositOptions';
 
 interface FormParams {
   className?: string;
@@ -75,13 +67,13 @@ function ComponentBase({
 
   const addressProvider = useAddressProvider();
 
-  const [
-    queryDeposit,
-    depositResult,
-    resetDepositResult,
-  ] = useBroadcastableQuery(depositQueryOptions);
-
   const client = useApolloClient();
+
+  const [deposit, depositResult] = useOperation(depositOptions, {
+    addressProvider,
+    post,
+    client,
+  });
 
   const [openConfirm, confirmElement] = useConfirm();
 
@@ -96,105 +88,24 @@ function ComponentBase({
   const bank = useBank();
 
   // ---------------------------------------------
-  // compute
+  // logics
   // ---------------------------------------------
-  const txFee = useMemo<uUST<Big> | undefined>(() => {
-    if (depositAmount.length === 0) return undefined;
+  const txFee = useDepositTxFee(depositAmount, bank);
+  const sendAmount = useDepositSendAmount(depositAmount, txFee);
+  const recommendationAssetAmount = useDepositRecommentationAmount(bank);
 
-    // MIN((User_UST_Balance - fixed_gas)/(1+Tax_rate) * tax_rate , Max_tax) + Fixed_Gas
-
-    const uAmount = microfy(depositAmount);
-    const ratioTxFee = big(uAmount.minus(fixedGasUUSD))
-      .div(big(1).add(bank.tax.taxRate))
-      .mul(bank.tax.taxRate);
-    const maxTax = big(bank.tax.maxTaxUUSD);
-
-    if (ratioTxFee.gt(maxTax)) {
-      return maxTax.add(fixedGasUUSD) as uUST<Big>;
-    } else {
-      return ratioTxFee.add(fixedGasUUSD) as uUST<Big>;
-    }
-  }, [depositAmount, bank.tax.maxTaxUUSD, bank.tax.taxRate]);
-
-  const invalidTxFee = useMemo(() => {
-    if (bank.status === 'demo') {
-      return undefined;
-    } else if (big(bank.userBalances.uUSD ?? 0).lt(fixedGasUUSD)) {
-      return 'Not enough transaction fees';
-    }
-    return undefined;
-  }, [bank.status, bank.userBalances.uUSD]);
-
-  const invalidDepositAmount = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo' || depositAmount.length === 0) {
-      return undefined;
-    } else if (
-      microfy(depositAmount)
-        .plus(txFee ?? 0)
-        .gt(bank.userBalances.uUSD ?? 0)
-    ) {
-      return `Not enough UST`;
-    }
-    return undefined;
-  }, [depositAmount, bank.status, bank.userBalances.uUSD, txFee]);
-
-  const sendAmount = useMemo<uUST<Big> | undefined>(() => {
-    return depositAmount.length > 0 && txFee
-      ? (microfy(depositAmount).plus(txFee) as uUST<Big>)
-      : undefined;
-  }, [depositAmount, txFee]);
-
-  const recommendationAssetAmount = useMemo<uUST<Big> | undefined>(() => {
-    if (bank.status === 'demo' || big(bank.userBalances.uUSD).lte(0)) {
-      return undefined;
-    }
-
-    // MIN((User_UST_Balance - fixed_gas)/(1+Tax_rate) * tax_rate , Max_tax) + Fixed_Gas
-    // without_fixed_gas = (uusd balance - fixed_gas)
-    // tax_fee = without_fixed_gas * tax_rate
-    // without_tax_fee = if (tax_fee < max_tax) without_fixed_gas - tax_fee
-    //                   else without_fixed_gas - max_tax
-
-    const userUUSD = big(bank.userBalances.uUSD);
-    const withoutFixedGas = userUUSD.minus(fixedGasUUSD);
-    const txFee = withoutFixedGas.mul(bank.tax.taxRate);
-    const result = withoutFixedGas.minus(min(txFee, bank.tax.maxTaxUUSD));
-
-    return result.lte(0)
-      ? undefined
-      : (result.minus(fixedGasUUSD) as uUST<Big>);
-  }, [
-    bank.status,
-    bank.tax.maxTaxUUSD,
-    bank.tax.taxRate,
-    bank.userBalances.uUSD,
-  ]);
-
-  const tooMuchAssetAmountWarning = useMemo<ReactNode>(() => {
-    if (
-      bank.status === 'demo' ||
-      depositAmount.length === 0 ||
-      !!invalidDepositAmount
-    ) {
-      return undefined;
-    }
-
-    const remainUUSD = big(bank.userBalances.uUSD)
-      .minus(microfy(depositAmount))
-      .minus(txFee ?? 0);
-
-    if (remainUUSD.lt(fixedGasUUSD)) {
-      return `You may run out of USD balance needed for future transactions.`;
-    }
-
-    return undefined;
-  }, [
+  const invalidTxFee = useInvalidTxFee(bank);
+  const invalidDepositAmount = useInvalidDepositAmount(
     depositAmount,
-    bank.status,
-    bank.userBalances.uUSD,
-    invalidDepositAmount,
+    bank,
     txFee,
-  ]);
+  );
+  const invalidNextTransaction = useInvalidDepositNextTransaction(
+    depositAmount,
+    bank,
+    txFee,
+    !!invalidDepositAmount,
+  );
 
   // ---------------------------------------------
   // callbacks
@@ -204,15 +115,7 @@ function ComponentBase({
   }, []);
 
   const proceed = useCallback(
-    async ({
-      status,
-      assetAmount,
-      confirm,
-    }: {
-      status: WalletStatus;
-      assetAmount: string;
-      confirm: ReactNode;
-    }) => {
+    async (status: WalletStatus, depositAmount: string, confirm: ReactNode) => {
       if (status.status !== 'ready' || bank.status !== 'connected') {
         return;
       }
@@ -229,31 +132,13 @@ function ComponentBase({
         }
       }
 
-      const data = await queryDeposit({
-        post: post<CreateTxOptions, StringifiedTxResult>({
-          ...transactionFee,
-          msgs: fabricateDepositStableCoin({
-            address: status.status === 'ready' ? status.walletAddress : '',
-            amount: assetAmount,
-            symbol: 'usd',
-          })(addressProvider),
-        }).then(({ payload }) => parseResult(payload)),
-        client,
+      await deposit({
+        address: status.walletAddress,
+        amount: depositAmount,
+        symbol: 'usd',
       });
-
-      if (data) {
-        closeDialog();
-      }
     },
-    [
-      addressProvider,
-      bank.status,
-      client,
-      closeDialog,
-      openConfirm,
-      post,
-      queryDeposit,
-    ],
+    [bank.status, deposit, openConfirm],
   );
 
   // ---------------------------------------------
@@ -262,19 +147,25 @@ function ComponentBase({
   if (
     depositResult?.status === 'in-progress' ||
     depositResult?.status === 'done' ||
-    depositResult?.status === 'error'
+    depositResult?.status === 'fault'
   ) {
     return (
       <Modal open disableBackdropClick>
         <Dialog className={className}>
           <h1>Deposit</h1>
-          <TxResultRenderer
-            result={depositResult}
-            resetResult={() => {
-              resetDepositResult && resetDepositResult();
-              closeDialog();
-            }}
-          />
+          {depositResult.status === 'done' ? (
+            <div>
+              <pre>{JSON.stringify(depositResult.data, null, 2)}</pre>
+              <ActionButton
+                style={{ width: 200 }}
+                onClick={() => closeDialog()}
+              >
+                Close
+              </ActionButton>
+            </div>
+          ) : (
+            <OperationRenderer result={depositResult} />
+          )}
         </Dialog>
       </Modal>
     );
@@ -285,7 +176,7 @@ function ComponentBase({
       <Dialog className={className} onClose={() => closeDialog()}>
         <h1>Deposit</h1>
 
-        {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
+        {!!invalidTxFee && <WarningMessage>{invalidTxFee}</WarningMessage>}
 
         <NumberInput
           className="amount"
@@ -345,16 +236,16 @@ function ComponentBase({
           </TxFeeList>
         )}
 
-        {tooMuchAssetAmountWarning && recommendationAssetAmount && (
-          <WarningArticle style={{ marginTop: 30, marginBottom: 0 }}>
-            {tooMuchAssetAmountWarning}
-          </WarningArticle>
+        {invalidNextTransaction && recommendationAssetAmount && (
+          <WarningMessage style={{ marginTop: 30, marginBottom: 0 }}>
+            {invalidNextTransaction}
+          </WarningMessage>
         )}
 
         <ActionButton
           className="proceed"
           style={
-            tooMuchAssetAmountWarning
+            invalidNextTransaction
               ? {
                   backgroundColor: '#c12535',
                 }
@@ -367,13 +258,7 @@ function ComponentBase({
             big(depositAmount).lte(0) ||
             !!invalidDepositAmount
           }
-          onClick={() =>
-            proceed({
-              assetAmount: depositAmount,
-              status,
-              confirm: tooMuchAssetAmountWarning,
-            })
-          }
+          onClick={() => proceed(status, depositAmount, invalidNextTransaction)}
         >
           Proceed
         </ActionButton>
@@ -383,16 +268,6 @@ function ComponentBase({
     </Modal>
   );
 }
-
-const depositQueryOptions: BroadcastableQueryOptions<
-  { post: Promise<TxResult>; client: ApolloClient<any> },
-  { txResult: TxResult } & { txInfos: txi.Data },
-  Error
-> = {
-  ...queryOptions,
-  group: 'earn/deposit',
-  notificationFactory: txNotificationFactory,
-};
 
 const Component = styled(ComponentBase)`
   width: 720px;

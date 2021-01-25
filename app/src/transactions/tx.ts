@@ -42,7 +42,23 @@ export interface TxResult {
   success: boolean;
 }
 
-export function parseResult({
+export function findTxResult(values: any[]): TxResult | undefined {
+  return values.find((value) => {
+    return (
+      value &&
+      Array.isArray(value.msgs) &&
+      'fee' in value &&
+      'gasAdjustment' in value &&
+      'id' in value &&
+      'origin' in value &&
+      'purgeQueue' in value &&
+      'result' in value &&
+      'success' in value
+    );
+  }) as TxResult | undefined;
+}
+
+export function parseTxResult({
   fee,
   gasAdjustment,
   id,

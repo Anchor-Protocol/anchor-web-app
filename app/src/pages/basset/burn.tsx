@@ -1,4 +1,4 @@
-import { fabricatebAssetBurn } from '@anchor-protocol/anchor-js/fabricators';
+import { useOperation } from '@anchor-protocol/broadcastable-operation';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
@@ -13,36 +13,27 @@ import {
   Luna,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
-  microfy,
 } from '@anchor-protocol/notation';
-import {
-  BroadcastableQueryOptions,
-  useBroadcastableQuery,
-} from '@anchor-protocol/use-broadcastable-query';
 import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
-import { ApolloClient, useApolloClient } from '@apollo/client';
+import { useApolloClient } from '@apollo/client';
 import {
   Input as MuiInput,
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
-import { CreateTxOptions } from '@terra-money/terra.js';
 import big, { Big } from 'big.js';
+import { OperationRenderer } from 'components/OperationRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import {
-  txNotificationFactory,
-  TxResultRenderer,
-} from 'components/TxResultRenderer';
-import { WarningArticle } from 'components/WarningArticle';
+import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
-import { fixedGasUUSD, transactionFee } from 'env';
-import { useExchangeRate } from 'pages/basset/queries/exchangeRate';
-import * as txi from 'queries/txInfos';
-import React, { ReactNode, useCallback, useMemo, useState } from 'react';
+import { FIXED_GAS } from 'env';
+import { useInvalidTxFee } from 'logics/useInvalidTxFee';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
-import { queryOptions } from 'transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
+import { useInvalidBurnAmount } from './logics/useInvalidBurnAmount';
+import { useExchangeRate } from './queries/exchangeRate';
+import { burnOptions } from './transactions/burnOptions';
 
 export interface BurnProps {
   className?: string;
@@ -64,11 +55,13 @@ function BurnBase({ className }: BurnProps) {
 
   const addressProvider = useAddressProvider();
 
-  const [queryBurn, burnResult, resetBurnResult] = useBroadcastableQuery(
-    burnQueryOptions,
-  );
-
   const client = useApolloClient();
+
+  const [burn, burnResult] = useOperation(burnOptions, {
+    addressProvider,
+    post,
+    client,
+  });
 
   const { onKeyPress: onLunaInputKeyPress } = useRestrictedNumberInput({
     maxIntegerPoinsts: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
@@ -98,25 +91,10 @@ function BurnBase({ className }: BurnProps) {
   });
 
   // ---------------------------------------------
-  // compute
+  // logics
   // ---------------------------------------------
-  const invalidTxFee = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo') {
-      return undefined;
-    } else if (big(bank.userBalances.uUSD).lt(fixedGasUUSD)) {
-      return 'Not enough transaction fees';
-    }
-    return undefined;
-  }, [bank.status, bank.userBalances.uUSD]);
-
-  const invalidBurnAmount = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo' || burnAmount.length === 0) {
-      return undefined;
-    } else if (microfy(burnAmount).gt(bank.userBalances.ubLuna ?? 0)) {
-      return `Not enough bAssets`;
-    }
-    return undefined;
-  }, [bank.status, bank.userBalances.ubLuna, burnAmount]);
+  const invalidTxFee = useInvalidTxFee(bank);
+  const invalidBurnAmount = useInvalidBurnAmount(burnAmount, bank);
 
   // ---------------------------------------------
   // callbacks
@@ -171,7 +149,12 @@ function BurnBase({ className }: BurnProps) {
     [exchangeRate?.exchange_rate],
   );
 
-  const burn = useCallback(
+  const init = useCallback(() => {
+    setGetAmount('' as Luna);
+    setBurnAmount('' as bLuna);
+  }, []);
+
+  const proceed = useCallback(
     async ({
       status,
       burnAmount,
@@ -183,27 +166,17 @@ function BurnBase({ className }: BurnProps) {
         return;
       }
 
-      const data = await queryBurn({
-        post: post<CreateTxOptions, StringifiedTxResult>({
-          ...transactionFee,
-          msgs: fabricatebAssetBurn({
-            address: status.walletAddress,
-            amount: burnAmount,
-            bAsset: burnCurrency.value,
-          })(addressProvider),
-        })
-          .then(({ payload }) => payload)
-          .then(parseResult),
-        client,
+      const broadcasted = await burn({
+        address: status.walletAddress,
+        amount: burnAmount,
+        bAsset: burnCurrency.value,
       });
 
-      // is this component not unmounted
-      if (data) {
-        setGetAmount('' as Luna);
-        setBurnAmount('' as bLuna);
+      if (!broadcasted) {
+        init();
       }
     },
-    [bank.status, queryBurn, post, burnCurrency.value, addressProvider, client],
+    [bank.status, burn, burnCurrency.value, init],
   );
 
   // ---------------------------------------------
@@ -212,19 +185,33 @@ function BurnBase({ className }: BurnProps) {
   if (
     burnResult?.status === 'in-progress' ||
     burnResult?.status === 'done' ||
-    burnResult?.status === 'error'
+    burnResult?.status === 'fault'
   ) {
     return (
       <Section className={className}>
-        {/* TODO implement messages */}
-        <TxResultRenderer result={burnResult} resetResult={resetBurnResult} />
+        {burnResult.status === 'done' ? (
+          <div>
+            <pre>{JSON.stringify(burnResult.data, null, 2)}</pre>
+            <ActionButton
+              style={{ width: 200 }}
+              onClick={() => {
+                init();
+                burnResult.reset();
+              }}
+            >
+              Exit
+            </ActionButton>
+          </div>
+        ) : (
+          <OperationRenderer result={burnResult} />
+        )}
       </Section>
     );
   }
 
   return (
     <Section className={className}>
-      {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
+      {!!invalidTxFee && <WarningMessage>{invalidTxFee}</WarningMessage>}
 
       {/* Burn (bAsset) */}
       <div className="burn-description">
@@ -327,7 +314,7 @@ function BurnBase({ className }: BurnProps) {
               </IconSpan>
             }
           >
-            {formatUST(demicrofy(fixedGasUUSD))} UST
+            {formatUST(demicrofy(FIXED_GAS))} UST
           </TxFeeListItem>
         </TxFeeList>
       )}
@@ -344,7 +331,7 @@ function BurnBase({ className }: BurnProps) {
           !!invalidBurnAmount
         }
         onClick={() =>
-          burn({
+          proceed({
             status,
             burnAmount,
           })
@@ -355,16 +342,6 @@ function BurnBase({ className }: BurnProps) {
     </Section>
   );
 }
-
-const burnQueryOptions: BroadcastableQueryOptions<
-  { post: Promise<TxResult>; client: ApolloClient<any> },
-  { txResult: TxResult } & { txInfos: txi.Data },
-  Error
-> = {
-  ...queryOptions,
-  group: 'basset/burn',
-  notificationFactory: txNotificationFactory,
-};
 
 function BlankComponent() {
   return <div />;

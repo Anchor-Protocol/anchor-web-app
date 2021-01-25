@@ -1,5 +1,5 @@
+import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { DateTime, Ratio, ubLuna } from '@anchor-protocol/notation';
-import { useQuerySubscription } from '@anchor-protocol/use-broadcastable-query';
 import { gql, QueryResult, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
 import { useMemo } from 'react';
@@ -120,14 +120,11 @@ export function useWithdrawHistory({
     }),
   });
 
-  useQuerySubscription(
-    (id, event) => {
-      if (event === 'done') {
-        result.refetch();
-      }
-    },
-    [result.refetch],
-  );
+  useSubscription((id, event) => {
+    if (event === 'done') {
+      result.refetch();
+    }
+  });
 
   const parsedData = useMemo(
     () => (result.data ? parseData(result.data) : undefined),

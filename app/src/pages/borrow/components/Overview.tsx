@@ -8,11 +8,12 @@ import {
   Ratio,
   uUST,
 } from '@anchor-protocol/notation';
-import big, { Big, BigSource } from 'big.js';
-import { BLOCKS_PER_YEAR } from 'constants/BLOCKS_PER_YEAR';
+import { BigSource } from 'big.js';
 import { BorrowLimitGraph } from 'pages/borrow/components/BorrowLimitGraph';
+import { useAPR } from 'pages/borrow/logics/useAPR';
+import { useBorrowed } from 'pages/borrow/logics/useBorrowed';
+import { useCollaterals } from 'pages/borrow/logics/useCollaterals';
 import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
-import { useMemo } from 'react';
 import styled from 'styled-components';
 import { Data as MarketOverview } from '../queries/marketOverview';
 
@@ -27,27 +28,13 @@ function OverviewBase({
   marketOverview,
   marketUserOverview,
 }: OverviewProps) {
-  const apr = useMemo<Ratio<Big>>(() => {
-    return big(marketOverview?.borrowRate.rate ?? 0).mul(
-      BLOCKS_PER_YEAR,
-    ) as Ratio<Big>;
-  }, [marketOverview?.borrowRate.rate]);
-
-  const borrowedValue = useMemo<uUST<Big>>(() => {
-    return big(marketUserOverview?.loanAmount.loan_amount ?? 0) as uUST<Big>;
-  }, [marketUserOverview?.loanAmount.loan_amount]);
-
-  const collateralValue = useMemo<uUST<Big>>(() => {
-    return big(
-      big(marketUserOverview?.borrowInfo.balance ?? 0).minus(
-        marketUserOverview?.borrowInfo.spendable ?? 0,
-      ),
-    ).mul(marketOverview?.oraclePrice.rate ?? 1) as uUST<Big>;
-  }, [
-    marketOverview?.oraclePrice.rate,
+  const apr = useAPR(marketOverview?.borrowRate.rate);
+  const borrowed = useBorrowed(marketUserOverview?.loanAmount.loan_amount);
+  const collaterals = useCollaterals(
     marketUserOverview?.borrowInfo.balance,
     marketUserOverview?.borrowInfo.spendable,
-  ]);
+    marketOverview?.oraclePrice.rate,
+  );
 
   // TODO
   //const bLunaWhitelistElem = overseerWhitelist.Result.elems.find(
@@ -84,7 +71,7 @@ function OverviewBase({
               </InfoTooltip>
             </IconSpan>
           </label>
-          <p>${formatUSTWithPostfixUnits(demicrofy(collateralValue))}</p>
+          <p>${formatUSTWithPostfixUnits(demicrofy(collaterals))}</p>
         </div>
 
         <div>
@@ -94,14 +81,14 @@ function OverviewBase({
               <InfoTooltip>The sum of all UST borrowed from Anchor</InfoTooltip>
             </IconSpan>
           </label>
-          <p>${formatUSTWithPostfixUnits(demicrofy(borrowedValue))}</p>
+          <p>${formatUSTWithPostfixUnits(demicrofy(borrowed))}</p>
         </div>
       </article>
 
       <figure>
         <BorrowLimitGraph
           bLunaMaxLtv={marketOverview?.bLunaMaxLtv ?? (0 as Ratio<BigSource>)}
-          collateralValue={collateralValue}
+          collateralValue={collaterals}
           loanAmount={
             marketUserOverview?.loanAmount.loan_amount ?? (0 as uUST<BigSource>)
           }

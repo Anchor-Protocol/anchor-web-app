@@ -36,7 +36,7 @@
     },
     "success": true
   },
-  "txInfos": [
+  "txInfo": [
     {
       "TxHash": "CC14A2FDF6CD7B9DC084E6E6A360A3C24F823D969026A868A9CB0684F3E37BEB",
       "Success": true,

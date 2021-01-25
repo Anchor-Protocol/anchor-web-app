@@ -1,5 +1,5 @@
+import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { uaUST, ubLuna, uLuna, uUST } from '@anchor-protocol/notation';
-import { useQuerySubscription } from '@anchor-protocol/use-broadcastable-query';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { gql, QueryResult, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
@@ -140,14 +140,11 @@ export function useUserBalances(): QueryResult<
     }),
   });
 
-  useQuerySubscription(
-    (id, event) => {
-      if (event === 'done') {
-        result.refetch();
-      }
-    },
-    [result.refetch],
-  );
+  useSubscription((id, event) => {
+    if (event === 'done') {
+      result.refetch();
+    }
+  });
 
   const parsedData = useMemo(
     () => (result.data ? parseData(result.data) : undefined),

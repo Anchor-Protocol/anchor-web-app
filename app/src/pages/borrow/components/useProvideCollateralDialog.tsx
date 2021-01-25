@@ -1,4 +1,4 @@
-import { fabricateProvideCollateral } from '@anchor-protocol/anchor-js/fabricators';
+import { useOperation } from '@anchor-protocol/broadcastable-operation';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
@@ -13,15 +13,8 @@ import {
   formatUSTInput,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
-  microfy,
   Ratio,
-  ubLuna,
-  uUST,
 } from '@anchor-protocol/notation';
-import {
-  BroadcastableQueryOptions,
-  useBroadcastableQuery,
-} from '@anchor-protocol/use-broadcastable-query';
 import type {
   DialogProps,
   DialogTemplate,
@@ -29,29 +22,30 @@ import type {
 } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
-import { ApolloClient, useApolloClient } from '@apollo/client';
+import { useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
-import { CreateTxOptions } from '@terra-money/terra.js';
 import big, { Big, BigSource } from 'big.js';
+import { OperationRenderer } from 'components/OperationRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import {
-  txNotificationFactory,
-  TxResultRenderer,
-} from 'components/TxResultRenderer';
-import { WarningArticle } from 'components/WarningArticle';
+import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
-import { fixedGasUUSD, transactionFee } from 'env';
+import { FIXED_GAS } from 'env';
+import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
-import { useCurrentLtv } from 'pages/borrow/components/useCurrentLtv';
+import { depositAmountToBorrowLimit } from 'pages/borrow/logics/depositAmountToBorrowLimit';
+import { depositAmountToLtv } from 'pages/borrow/logics/depositAmountToLtv';
+import { ltvToDepositAmount } from 'pages/borrow/logics/ltvToDepositAmount';
+import { useCurrentLtv } from 'pages/borrow/logics/useCurrentLtv';
+import { useInvalidDepositAmount } from 'pages/borrow/logics/useInvalidDepositAmount';
+import { useProvideCollateralBorrowLimit } from 'pages/borrow/logics/useProvideCollateralBorrowLimit';
+import { useProvideCollateralNextLtv } from 'pages/borrow/logics/useProvideCollateralNextLtv';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
-import * as txi from 'queries/txInfos';
+import { provideCollateralOptions } from 'pages/borrow/transactions/provideCollateralOptions';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { queryOptions } from 'transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 
 interface FormParams {
   className?: string;
@@ -72,7 +66,7 @@ const Template: DialogTemplate<FormParams, FormReturn> = (props) => {
   return <Component {...props} />;
 };
 
-const txFee = fixedGasUUSD;
+const txFee = FIXED_GAS;
 
 function ComponentBase({
   className,
@@ -87,13 +81,16 @@ function ComponentBase({
 
   const addressProvider = useAddressProvider();
 
-  const [
-    queryProvideCollateral,
-    provideCollateralResult,
-    resetProvideCollateralResult,
-  ] = useBroadcastableQuery(provideCollateralQueryOptions);
-
   const client = useApolloClient();
+
+  const [provideCollateral, provideCollateralResult] = useOperation(
+    provideCollateralOptions,
+    {
+      addressProvider,
+      post,
+      client,
+    },
+  );
 
   // ---------------------------------------------
   // states
@@ -108,16 +105,14 @@ function ComponentBase({
   // ---------------------------------------------
   // calculate
   // ---------------------------------------------
-  const amountToLtv = useCallback(
-    (depositAmount: ubLuna<Big>): Ratio<Big> => {
-      return big(marketUserOverview.loanAmount.loan_amount).div(
-        big(
-          big(marketUserOverview.borrowInfo.balance)
-            .minus(marketUserOverview.borrowInfo.spendable)
-            .plus(depositAmount),
-        ).mul(marketOverview.oraclePrice.rate),
-      ) as Ratio<Big>;
-    },
+  const amountToLtv = useMemo(
+    () =>
+      depositAmountToLtv(
+        marketUserOverview.loanAmount.loan_amount,
+        marketUserOverview.borrowInfo.balance,
+        marketUserOverview.borrowInfo.spendable,
+        marketOverview.oraclePrice.rate,
+      ),
     [
       marketOverview.oraclePrice.rate,
       marketUserOverview.borrowInfo.balance,
@@ -126,18 +121,14 @@ function ComponentBase({
     ],
   );
 
-  const ltvToAmount = useCallback(
-    (ltv: Ratio<Big>): ubLuna<Big> => {
-      // ltv = loanAmount / ((balance - spendable + <amount>) * oracle)
-      // amount = (loanAmount / (<ltv> * oracle)) + spendable - balance
-      return big(
-        big(marketUserOverview.loanAmount.loan_amount).div(
-          ltv.mul(marketOverview.oraclePrice.rate),
-        ),
-      )
-        .plus(marketUserOverview.borrowInfo.spendable)
-        .minus(marketUserOverview.borrowInfo.balance) as ubLuna<Big>;
-    },
+  const ltvToAmount = useMemo(
+    () =>
+      ltvToDepositAmount(
+        marketUserOverview.loanAmount.loan_amount,
+        marketUserOverview.borrowInfo.balance,
+        marketUserOverview.borrowInfo.spendable,
+        marketOverview.oraclePrice.rate,
+      ),
     [
       marketOverview.oraclePrice.rate,
       marketUserOverview.borrowInfo.balance,
@@ -146,16 +137,14 @@ function ComponentBase({
     ],
   );
 
-  const amountToBorrowLimit = useCallback(
-    (depositAmount: ubLuna<Big>): uUST<Big> => {
-      return big(
-        big(
-          big(marketUserOverview.borrowInfo.balance)
-            .minus(marketUserOverview.borrowInfo.spendable)
-            .plus(depositAmount),
-        ).mul(marketOverview.oraclePrice.rate),
-      ).mul(marketOverview.bLunaMaxLtv) as uUST<Big>;
-    },
+  const amountToBorrowLimit = useMemo(
+    () =>
+      depositAmountToBorrowLimit(
+        marketUserOverview.borrowInfo.balance,
+        marketUserOverview.borrowInfo.spendable,
+        marketOverview.oraclePrice.rate,
+        marketOverview.bLunaMaxLtv,
+      ),
     [
       marketOverview.bLunaMaxLtv,
       marketOverview.oraclePrice.rate,
@@ -165,50 +154,26 @@ function ComponentBase({
   );
 
   // ---------------------------------------------
-  // compute
+  // logics
   // ---------------------------------------------
-  const currentLtv = useCurrentLtv({ marketOverview, marketUserOverview });
+  const currentLtv = useCurrentLtv(
+    marketUserOverview.loanAmount.loan_amount,
+    marketUserOverview.borrowInfo.balance,
+    marketUserOverview.borrowInfo.spendable,
+    marketOverview.oraclePrice.rate,
+  );
+  const nextLtv = useProvideCollateralNextLtv(
+    depositAmount,
+    currentLtv,
+    amountToLtv,
+  );
+  const borrowLimit = useProvideCollateralBorrowLimit(
+    depositAmount,
+    amountToBorrowLimit,
+  );
 
-  // Loan_amount / ((Borrow_info.balance - Borrow_info.spendable + provided_collateral) * Oracleprice)
-  const nextLtv = useMemo<Ratio<Big> | undefined>(() => {
-    if (depositAmount.length === 0) {
-      return currentLtv;
-    }
-
-    const amount = microfy(depositAmount);
-
-    try {
-      const ltv = amountToLtv(amount);
-      return ltv.lt(0) ? (big(0) as Ratio<Big>) : ltv;
-    } catch {
-      return currentLtv;
-    }
-  }, [depositAmount, amountToLtv, currentLtv]);
-
-  // New Borrow Limit = ((Borrow_info.balance - Borrow_info.spendable + provided_collateral) * Oracleprice) * Max_LTV
-  const borrowLimit = useMemo<uUST<Big> | undefined>(() => {
-    return depositAmount.length > 0
-      ? amountToBorrowLimit(microfy(depositAmount))
-      : undefined;
-  }, [amountToBorrowLimit, depositAmount]);
-
-  const invalidTxFee = useMemo(() => {
-    if (bank.status === 'demo') {
-      return undefined;
-    } else if (big(bank.userBalances.uUSD ?? 0).lt(fixedGasUUSD)) {
-      return 'Not enough transaction fees';
-    }
-    return undefined;
-  }, [bank.status, bank.userBalances.uUSD]);
-
-  const invalidDepositAmount = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo' || depositAmount.length === 0) {
-      return undefined;
-    } else if (microfy(depositAmount).gt(bank.userBalances.ubLuna ?? 0)) {
-      return `Not enough assets`;
-    }
-    return undefined;
-  }, [depositAmount, bank.status, bank.userBalances.ubLuna]);
+  const invalidTxFee = useInvalidTxFee(bank);
+  const invalidDepositAmount = useInvalidDepositAmount(depositAmount, bank);
 
   // ---------------------------------------------
   // callbacks
@@ -218,31 +183,19 @@ function ComponentBase({
   }, []);
 
   const proceed = useCallback(
-    async ({
-      status,
-      depositAmount,
-    }: {
-      status: WalletStatus;
-      depositAmount: bLuna;
-    }) => {
+    async (status: WalletStatus, depositAmount: bLuna) => {
       if (status.status !== 'ready' || bank.status !== 'connected') {
         return;
       }
 
-      await queryProvideCollateral({
-        post: post<CreateTxOptions, StringifiedTxResult>({
-          ...transactionFee,
-          msgs: fabricateProvideCollateral({
-            address: status.status === 'ready' ? status.walletAddress : '',
-            market: 'ust',
-            symbol: 'bluna',
-            amount: depositAmount,
-          })(addressProvider),
-        }).then(({ payload }) => parseResult(payload)),
-        client,
+      await provideCollateral({
+        address: status.status === 'ready' ? status.walletAddress : '',
+        market: 'ust',
+        symbol: 'bluna',
+        amount: depositAmount,
       });
     },
-    [addressProvider, bank.status, client, post, queryProvideCollateral],
+    [bank.status, provideCollateral],
   );
 
   const onLtvChange = useCallback(
@@ -273,19 +226,25 @@ function ComponentBase({
   if (
     provideCollateralResult?.status === 'in-progress' ||
     provideCollateralResult?.status === 'done' ||
-    provideCollateralResult?.status === 'error'
+    provideCollateralResult?.status === 'fault'
   ) {
     return (
       <Modal open disableBackdropClick>
         <Dialog className={className}>
           <h1>Provide Collateral</h1>
-          <TxResultRenderer
-            result={provideCollateralResult}
-            resetResult={() => {
-              resetProvideCollateralResult && resetProvideCollateralResult();
-              closeDialog();
-            }}
-          />
+          {provideCollateralResult.status === 'done' ? (
+            <div>
+              <pre>{JSON.stringify(provideCollateralResult.data, null, 2)}</pre>
+              <ActionButton
+                style={{ width: 200 }}
+                onClick={() => closeDialog()}
+              >
+                Close
+              </ActionButton>
+            </div>
+          ) : (
+            <OperationRenderer result={provideCollateralResult} />
+          )}
         </Dialog>
       </Modal>
     );
@@ -296,7 +255,7 @@ function ComponentBase({
       <Dialog className={className} onClose={() => closeDialog()}>
         <h1>Provide Collateral</h1>
 
-        {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
+        {!!invalidTxFee && <WarningMessage>{invalidTxFee}</WarningMessage>}
 
         <NumberInput
           className="amount"
@@ -379,7 +338,7 @@ function ComponentBase({
             !!invalidTxFee ||
             !!invalidDepositAmount
           }
-          onClick={() => proceed({ status, depositAmount: depositAmount })}
+          onClick={() => proceed(status, depositAmount)}
         >
           Proceed
         </ActionButton>
@@ -387,16 +346,6 @@ function ComponentBase({
     </Modal>
   );
 }
-
-const provideCollateralQueryOptions: BroadcastableQueryOptions<
-  { post: Promise<TxResult>; client: ApolloClient<any> },
-  { txResult: TxResult } & { txInfos: txi.Data },
-  Error
-> = {
-  ...queryOptions,
-  group: 'borrow/provide-collateral',
-  notificationFactory: txNotificationFactory,
-};
 
 const Component = styled(ComponentBase)`
   width: 720px;

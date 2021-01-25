@@ -1,4 +1,4 @@
-import { fabricateRedeemStable } from '@anchor-protocol/anchor-js/fabricators';
+import { useOperation } from '@anchor-protocol/broadcastable-operation';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
@@ -8,16 +8,10 @@ import {
   demicrofy,
   formatUST,
   formatUSTInput,
-  microfy,
   UST,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
-  uUST,
 } from '@anchor-protocol/notation';
-import {
-  BroadcastableQueryOptions,
-  useBroadcastableQuery,
-} from '@anchor-protocol/use-broadcastable-query';
 import type {
   DialogProps,
   DialogTemplate,
@@ -25,26 +19,23 @@ import type {
 } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
-import { ApolloClient, useApolloClient } from '@apollo/client';
+import { useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
-import { CreateTxOptions } from '@terra-money/terra.js';
-import big, { Big } from 'big.js';
+import big from 'big.js';
+import { OperationRenderer } from 'components/OperationRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import {
-  txNotificationFactory,
-  TxResultRenderer,
-} from 'components/TxResultRenderer';
-import { WarningArticle } from 'components/WarningArticle';
+import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
-import { fixedGasUUSD, transactionFee } from 'env';
-import * as txi from 'queries/txInfos';
+import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import type { ReactNode } from 'react';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
-import { queryOptions } from 'transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
+import { useInvalidWithdrawAmount } from '../logics/useInvalidWithdrawAmount';
+import { useWithdrawReceiveAmount } from '../logics/useWithdrawReceiveAmount';
+import { useWithdrawTxFee } from '../logics/useWithdrawTxFee';
 import { Data as TotalDepositData } from '../queries/totalDeposit';
+import { withdrawOptions } from '../transactions/withdrawOptions';
 
 interface FormParams {
   className?: string;
@@ -76,13 +67,13 @@ function ComponentBase({
 
   const addressProvider = useAddressProvider();
 
-  const [
-    fetchWithdraw,
-    withdrawResult,
-    resetWithdrawResult,
-  ] = useBroadcastableQuery(withdrawQueryOptions);
-
   const client = useApolloClient();
+
+  const [withdraw, withdrawResult] = useOperation(withdrawOptions, {
+    addressProvider,
+    post,
+    client,
+  });
 
   // ---------------------------------------------
   // states
@@ -95,57 +86,18 @@ function ComponentBase({
   const bank = useBank();
 
   // ---------------------------------------------
-  // compute
+  // logics
   // ---------------------------------------------
-  const txFee = useMemo<uUST<Big> | undefined>(() => {
-    if (withdrawAmount.length === 0) return undefined;
+  const txFee = useWithdrawTxFee(withdrawAmount, bank);
+  const receiveAmount = useWithdrawReceiveAmount(withdrawAmount, txFee);
 
-    // MIN((Withdrawable(User_input)- Withdrawable(User_input) / (1+Tax_rate)), Max_tax) + Fixed_Gas
-
-    const uustAmount = microfy(withdrawAmount);
-    const ratioTxFee = uustAmount.minus(
-      uustAmount.div(big(1).add(bank.tax.taxRate)),
-    );
-    const maxTax = big(bank.tax.maxTaxUUSD);
-
-    if (ratioTxFee.gt(maxTax)) {
-      return maxTax.add(fixedGasUUSD) as uUST<Big>;
-    } else {
-      return ratioTxFee.add(fixedGasUUSD) as uUST<Big>;
-    }
-  }, [withdrawAmount, bank.tax.maxTaxUUSD, bank.tax.taxRate]);
-
-  const invalidTxFee = useMemo(() => {
-    if (bank.status === 'demo') {
-      return undefined;
-    } else if (big(bank.userBalances.uUSD ?? 0).lt(fixedGasUUSD)) {
-      return 'Not enough transaction fees';
-    }
-    return undefined;
-  }, [bank.status, bank.userBalances.uUSD]);
-
-  const invalidWithdrawAmount = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo' || withdrawAmount.length === 0) {
-      return undefined;
-    } else if (microfy(withdrawAmount).gt(totalDeposit.totalDeposit ?? 0)) {
-      return `Not enough aUST`;
-    } else if (txFee && big(bank.userBalances.uUSD).lt(txFee)) {
-      return `Not enough UST`;
-    }
-    return undefined;
-  }, [
+  const invalidTxFee = useInvalidTxFee(bank);
+  const invalidWithdrawAmount = useInvalidWithdrawAmount(
     withdrawAmount,
-    bank.status,
-    bank.userBalances.uUSD,
+    bank,
     totalDeposit.totalDeposit,
     txFee,
-  ]);
-
-  const receiveAmount = useMemo<uUST<Big> | undefined>(() => {
-    return withdrawAmount.length > 0 && txFee
-      ? (microfy(withdrawAmount).minus(txFee) as uUST<Big>)
-      : undefined;
-  }, [withdrawAmount, txFee]);
+  );
 
   // ---------------------------------------------
   // callbacks
@@ -155,44 +107,20 @@ function ComponentBase({
   }, []);
 
   const proceed = useCallback(
-    async ({
-      status,
-      aAssetAmount,
-    }: {
-      status: WalletStatus;
-      aAssetAmount: string;
-    }) => {
+    async (status: WalletStatus, withdrawAmount: string) => {
       if (status.status !== 'ready' || bank.status !== 'connected') {
         return;
       }
 
-      const data = await fetchWithdraw({
-        post: post<CreateTxOptions, StringifiedTxResult>({
-          ...transactionFee,
-          msgs: fabricateRedeemStable({
-            address: status.status === 'ready' ? status.walletAddress : '',
-            amount: big(aAssetAmount)
-              .div(totalDeposit.exchangeRate.exchange_rate)
-              .toString(),
-            symbol: 'usd',
-          })(addressProvider),
-        }).then(({ payload }) => parseResult(payload)),
-        client,
+      await withdraw({
+        address: status.walletAddress,
+        amount: big(withdrawAmount)
+          .div(totalDeposit.exchangeRate.exchange_rate)
+          .toString(),
+        symbol: 'usd',
       });
-
-      if (data) {
-        closeDialog();
-      }
     },
-    [
-      addressProvider,
-      bank.status,
-      client,
-      closeDialog,
-      fetchWithdraw,
-      post,
-      totalDeposit.exchangeRate.exchange_rate,
-    ],
+    [bank.status, totalDeposit.exchangeRate.exchange_rate, withdraw],
   );
 
   // ---------------------------------------------
@@ -201,19 +129,25 @@ function ComponentBase({
   if (
     withdrawResult?.status === 'in-progress' ||
     withdrawResult?.status === 'done' ||
-    withdrawResult?.status === 'error'
+    withdrawResult?.status === 'fault'
   ) {
     return (
       <Modal open disableBackdropClick>
         <Dialog className={className}>
           <h1>Withdraw</h1>
-          <TxResultRenderer
-            result={withdrawResult}
-            resetResult={() => {
-              resetWithdrawResult && resetWithdrawResult();
-              closeDialog();
-            }}
-          />
+          {withdrawResult.status === 'done' ? (
+            <div>
+              <pre>{JSON.stringify(withdrawResult.data, null, 2)}</pre>
+              <ActionButton
+                style={{ width: 200 }}
+                onClick={() => closeDialog()}
+              >
+                Close
+              </ActionButton>
+            </div>
+          ) : (
+            <OperationRenderer result={withdrawResult} />
+          )}
         </Dialog>
       </Modal>
     );
@@ -224,7 +158,7 @@ function ComponentBase({
       <Dialog className={className} onClose={() => closeDialog()}>
         <h1>Withdraw</h1>
 
-        {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
+        {!!invalidTxFee && <WarningMessage>{invalidTxFee}</WarningMessage>}
 
         <NumberInput
           className="amount"
@@ -285,12 +219,7 @@ function ComponentBase({
             big(withdrawAmount).lte(0) ||
             !!invalidWithdrawAmount
           }
-          onClick={() =>
-            proceed({
-              aAssetAmount: withdrawAmount,
-              status,
-            })
-          }
+          onClick={() => proceed(status, withdrawAmount)}
         >
           Proceed
         </ActionButton>
@@ -298,16 +227,6 @@ function ComponentBase({
     </Modal>
   );
 }
-
-const withdrawQueryOptions: BroadcastableQueryOptions<
-  { post: Promise<TxResult>; client: ApolloClient<any> },
-  { txResult: TxResult } & { txInfos: txi.Data },
-  Error
-> = {
-  ...queryOptions,
-  group: 'earn/withdraw',
-  notificationFactory: txNotificationFactory,
-};
 
 const Component = styled(ComponentBase)`
   width: 720px;

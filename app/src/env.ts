@@ -15,16 +15,18 @@ export const screen = {
 
 //export const FINDER = 'https://finder.terra.money';
 
-export const safeRatio: Ratio<number> = 0.7 as Ratio<number>;
+export const SAFE_RATIO: Ratio<number> = 0.7 as Ratio<number>;
 
-export const fixedGasUUSD: uUST<number> = 3500000 as uUST<number>;
+export const FIXED_GAS: uUST<number> = 3500000 as uUST<number>;
 
-export const transactionFee = {
+export const TRANSACTION_FEE = {
   //gasPrices: '0.0015uusd',
   //fee: new StdFee(503333, '5000000000000uusd'),
-  fee: new StdFee(6000000, fixedGasUUSD + 'uusd'),
+  fee: new StdFee(6000000, FIXED_GAS + 'uusd'),
   gasAdjustment: 1.4,
 };
+
+export const BLOCKS_PER_YEAR = 5256666;
 
 export const onProduction =
   global.location.host === 'app.anchorprotocol.com' ||

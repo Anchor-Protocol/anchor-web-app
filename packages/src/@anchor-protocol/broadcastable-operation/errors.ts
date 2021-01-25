@@ -5,9 +5,9 @@ export class OperationTimeoutError extends Error {
   }
 }
 
-export class OperationAbort extends Error {
+export class OperationStop extends Error {
   constructor() {
     super();
-    this.name = 'Abort';
+    this.name = 'OperationStop';
   }
 }

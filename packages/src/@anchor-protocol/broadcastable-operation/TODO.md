@@ -23,6 +23,25 @@ function useOperation(params: {
 })
 ```
 
+```ts
+const operationOption = createOperationOptions({ ... })
+
+const [ exec, result,  ] = useOperation(operationOption);
+
+const renderings = useBroadcasting({ 
+  ...broadcastingOption,
+  render: (broadcasting) => ReactNode,  
+})
+```
+
+# 개발자 사용
+
+1. `option = createOperationOptions()` 를 통해서 번거로운 Generic 기입 대신 Type Inference로 입력
+   1. `pipe: [ A => B, B => C, C => D ]` 형태로 Operators 입력
+   2. helper 로 `timeout(1000)(A => B)`, `stopWhen(() => boolean)`, `race(A => B, A => B...)`, `all(A => B1, A => B2)` 등을 복합적으로 사용
+2. `[ exec, result, reset ] = useOperation(option)`
+3. `useSubscription((id: string, event: EventType) => { }, [...deps])` 로 Broadcast 되는 Event들을 수신
+
 # 사용자 중단 시나리오 (사용자에게 알리지 않고, 종료 및 초기화)
 
 1. 사용자가 abort() 를 누름
@@ -77,4 +96,13 @@ const [ query ] = useOperation({
 })
 
 query(...FabricateRepayArguments)
+```
+
+# Display Time
+
+```ts
+const broadcasting = useBroadcasting({
+   filter: ({ result }) => result.status === 'done',
+   displayTime: 1000, // ( broadcasting ) => number
+})
 ```

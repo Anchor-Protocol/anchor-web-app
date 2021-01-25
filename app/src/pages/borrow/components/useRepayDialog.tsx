@@ -1,4 +1,4 @@
-import { fabricateRepay } from '@anchor-protocol/anchor-js/fabricators';
+import { useOperation } from '@anchor-protocol/broadcastable-operation';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
@@ -9,17 +9,11 @@ import {
   formatRatioToPercentage,
   formatUST,
   formatUSTInput,
-  microfy,
   Ratio,
   UST,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
-  uUST,
 } from '@anchor-protocol/notation';
-import {
-  BroadcastableQueryOptions,
-  useBroadcastableQuery,
-} from '@anchor-protocol/use-broadcastable-query';
 import type {
   DialogProps,
   DialogTemplate,
@@ -27,31 +21,33 @@ import type {
 } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
-import { ApolloClient, useApolloClient } from '@apollo/client';
+import { useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
-import { CreateTxOptions } from '@terra-money/terra.js';
 import big, { Big, BigSource } from 'big.js';
+import { OperationRenderer } from 'components/OperationRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import {
-  txNotificationFactory,
-  TxResultRenderer,
-} from 'components/TxResultRenderer';
-import { WarningArticle } from 'components/WarningArticle';
-import { BLOCKS_PER_YEAR } from 'constants/BLOCKS_PER_YEAR';
+import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
-import { fixedGasUUSD, transactionFee } from 'env';
+import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
-import { useCurrentLtv } from 'pages/borrow/components/useCurrentLtv';
+import { ltvToRepayAmount } from 'pages/borrow/logics/ltvToRepayAmount';
+import { repayAmountToLtv } from 'pages/borrow/logics/repayAmountToLtv';
+import { useAPR } from 'pages/borrow/logics/useAPR';
+import { useCurrentLtv } from 'pages/borrow/logics/useCurrentLtv';
+import { useInvalidRepayAmount } from 'pages/borrow/logics/useInvalidRepayAmount';
+import { useRepayNextLtv } from 'pages/borrow/logics/useRepayNextLtv';
+import { useRepaySendAmount } from 'pages/borrow/logics/useRepaySendAmount';
+import { useRepayTotalBorrows } from 'pages/borrow/logics/useRepayTotalBorrows';
+import { useRepayTotalOutstandingLoan } from 'pages/borrow/logics/useRepayTotalOutstandingLoan';
+import { useRepayTxFee } from 'pages/borrow/logics/useRepayTxFee';
 import { Data as MarketBalance } from 'pages/borrow/queries/marketBalanceOverview';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
-import * as txi from 'queries/txInfos';
+import { repayOptions } from 'pages/borrow/transactions/repayOptions';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { queryOptions } from 'transactions/queryOptions';
-import { parseResult, StringifiedTxResult, TxResult } from 'transactions/tx';
 
 interface FormParams {
   className?: string;
@@ -87,11 +83,13 @@ function ComponentBase({
 
   const addressProvider = useAddressProvider();
 
-  const [queryRepay, repayResult, resetRepayResult] = useBroadcastableQuery(
-    repayQueryOptions,
-  );
-
   const client = useApolloClient();
+
+  const [repay, repayResult] = useOperation(repayOptions, {
+    addressProvider,
+    post,
+    client,
+  });
 
   // ---------------------------------------------
   // states
@@ -106,18 +104,14 @@ function ComponentBase({
   // ---------------------------------------------
   // calculate
   // ---------------------------------------------
-  const amountToLtv = useCallback(
-    (amount: uUST<Big>): Ratio<Big> => {
-      return big(
-        big(marketUserOverview.loanAmount.loan_amount).minus(amount),
-      ).div(
-        big(
-          big(marketUserOverview.borrowInfo.balance).minus(
-            marketUserOverview.borrowInfo.spendable,
-          ),
-        ).mul(marketOverview.oraclePrice.rate),
-      ) as Ratio<Big>;
-    },
+  const amountToLtv = useMemo(
+    () =>
+      repayAmountToLtv(
+        marketUserOverview.loanAmount.loan_amount,
+        marketUserOverview.borrowInfo.balance,
+        marketUserOverview.borrowInfo.spendable,
+        marketOverview.oraclePrice.rate,
+      ),
     [
       marketOverview.oraclePrice.rate,
       marketUserOverview.borrowInfo.balance,
@@ -126,18 +120,14 @@ function ComponentBase({
     ],
   );
 
-  const ltvToAmount = useCallback(
-    (ltv: Ratio<Big>): uUST<Big> => {
-      return big(marketUserOverview.loanAmount.loan_amount).minus(
-        ltv.mul(
-          big(
-            big(marketUserOverview.borrowInfo.balance).minus(
-              marketUserOverview.borrowInfo.spendable,
-            ),
-          ).mul(marketOverview.oraclePrice.rate),
-        ),
-      ) as uUST<Big>;
-    },
+  const ltvToAmount = useMemo(
+    () =>
+      ltvToRepayAmount(
+        marketUserOverview.loanAmount.loan_amount,
+        marketUserOverview.borrowInfo.balance,
+        marketUserOverview.borrowInfo.spendable,
+        marketOverview.oraclePrice.rate,
+      ),
     [
       marketOverview.oraclePrice.rate,
       marketUserOverview.borrowInfo.balance,
@@ -149,118 +139,31 @@ function ComponentBase({
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
-  const currentLtv = useCurrentLtv({ marketOverview, marketUserOverview });
-
-  // (Loan_amount - repay_amount) / ((Borrow_info.balance - Borrow_info.spendable) * Oracleprice)
-  const userLtv = useMemo<Ratio<Big> | undefined>(() => {
-    if (repayAmount.length === 0) {
-      return currentLtv;
-    }
-
-    const userAmount = microfy(repayAmount);
-
-    try {
-      const ltv = amountToLtv(userAmount);
-      return ltv.lt(0) ? (big(0) as Ratio<Big>) : ltv;
-    } catch {
-      return currentLtv;
-    }
-  }, [amountToLtv, repayAmount, currentLtv]);
-
-  const apr = useMemo<Ratio<Big>>(() => {
-    return big(marketOverview.borrowRate.rate).mul(
-      BLOCKS_PER_YEAR,
-    ) as Ratio<Big>;
-  }, [marketOverview.borrowRate.rate]);
-
-  const totalBorrows = useMemo<uUST<Big>>(() => {
-    const bufferBlocks = 20;
-
-    //- block_height = marketBalanceOverview.ts / currentBlock
-    //- global_index = marketBalanceOverview.ts / marketState.global_interest_index
-    //- last_interest_updated = marketBalanceOverview.ts / marketState.last_interest_updated
-    //- borrowRate = marketOverview.ts / borrowRate.rate
-    //- loan_amount = marketUserOverview.ts / loanAmont.loan_amount
-    //- interest_index = marketUserOverview.ts / loanAmont.interest_index
-
-    const passedBlock = big(marketBalance.currentBlock).minus(
-      marketBalance.marketState.last_interest_updated,
-    );
-    const interestFactor = passedBlock.mul(marketOverview.borrowRate.rate);
-    const globalInterestIndex = big(
-      marketBalance.marketState.global_interest_index,
-    ).mul(big(1).plus(interestFactor));
-    const bufferInterestFactor = big(marketOverview.borrowRate.rate).mul(
-      bufferBlocks,
-    );
-    const totalBorrowsWithoutBuffer = big(
-      marketUserOverview.loanAmount.loan_amount,
-    ).mul(
-      big(globalInterestIndex).div(marketUserOverview.liability.interest_index),
-    );
-    const totalBorrows = totalBorrowsWithoutBuffer.mul(
-      big(1).plus(bufferInterestFactor),
-    );
-
-    //console.log('useRepayDialog.tsx..()', totalBorrows.toString(), marketUserOverview.loanAmount.loan_amount);
-
-    return (totalBorrows.lt(0.001) ? big(0.001) : totalBorrows) as uUST<Big>;
-  }, [
-    marketBalance.currentBlock,
-    marketBalance.marketState.global_interest_index,
-    marketBalance.marketState.last_interest_updated,
+  const currentLtv = useCurrentLtv(
+    marketUserOverview.loanAmount.loan_amount,
+    marketUserOverview.borrowInfo.balance,
+    marketUserOverview.borrowInfo.spendable,
+    marketOverview.oraclePrice.rate,
+  );
+  const nextLtv = useRepayNextLtv(repayAmount, currentLtv, amountToLtv);
+  const apr = useAPR(marketOverview.borrowRate.rate);
+  const totalBorrows = useRepayTotalBorrows(
+    marketUserOverview.loanAmount.loan_amount,
     marketOverview.borrowRate.rate,
+    marketBalance.currentBlock,
+    marketBalance.marketState.last_interest_updated,
+    marketBalance.marketState.global_interest_index,
     marketUserOverview.liability.interest_index,
-    marketUserOverview.loanAmount,
-  ]);
+  );
+  const txFee = useRepayTxFee(repayAmount, bank);
+  const totalOutstandingLoan = useRepayTotalOutstandingLoan(
+    repayAmount,
+    marketUserOverview.loanAmount.loan_amount,
+  );
+  const sendAmount = useRepaySendAmount(repayAmount, txFee);
 
-  const txFee = useMemo<uUST<Big> | undefined>(() => {
-    if (repayAmount.length === 0) {
-      return undefined;
-    }
-
-    const userAmount = microfy(repayAmount);
-
-    const userAmountTxFee = userAmount.mul(bank.tax.taxRate);
-
-    if (userAmountTxFee.gt(bank.tax.maxTaxUUSD)) {
-      return big(bank.tax.maxTaxUUSD).plus(fixedGasUUSD) as uUST<Big>;
-    } else {
-      return userAmountTxFee.plus(fixedGasUUSD) as uUST<Big>;
-    }
-  }, [repayAmount, bank.tax.maxTaxUUSD, bank.tax.taxRate]);
-
-  const totalOutstandingLoan = useMemo<uUST<Big> | undefined>(() => {
-    return repayAmount.length > 0
-      ? (big(marketUserOverview.loanAmount.loan_amount).minus(
-          microfy(repayAmount),
-        ) as uUST<Big>)
-      : undefined;
-  }, [repayAmount, marketUserOverview.loanAmount.loan_amount]);
-
-  const sendAmount = useMemo<uUST<Big> | undefined>(() => {
-    return repayAmount.length > 0 && txFee
-      ? (microfy(repayAmount).plus(txFee) as uUST<Big>)
-      : undefined;
-  }, [repayAmount, txFee]);
-
-  const invalidTxFee = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo') {
-      return undefined;
-    } else if (big(bank.userBalances.uUSD ?? 0).lt(fixedGasUUSD)) {
-      return 'Not enough transaction fees';
-    }
-    return undefined;
-  }, [bank.status, bank.userBalances.uUSD]);
-
-  const invalidAssetAmount = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo' || repayAmount.length === 0) {
-      return undefined;
-    } else if (microfy(repayAmount).gt(bank.userBalances.uUSD)) {
-      return `Not enough assets`;
-    }
-    return undefined;
-  }, [repayAmount, bank.status, bank.userBalances.uUSD]);
+  const invalidTxFee = useInvalidTxFee(bank);
+  const invalidAssetAmount = useInvalidRepayAmount(repayAmount, bank);
 
   // ---------------------------------------------
   // callbacks
@@ -270,31 +173,19 @@ function ComponentBase({
   }, []);
 
   const proceed = useCallback(
-    async ({
-      status,
-      repayAmount,
-    }: {
-      status: WalletStatus;
-      repayAmount: UST;
-    }) => {
+    async (status: WalletStatus, repayAmount: UST) => {
       if (status.status !== 'ready' || bank.status !== 'connected') {
         return;
       }
 
-      await queryRepay({
-        post: post<CreateTxOptions, StringifiedTxResult>({
-          ...transactionFee,
-          msgs: fabricateRepay({
-            address: status.status === 'ready' ? status.walletAddress : '',
-            market: 'ust',
-            amount: repayAmount,
-            borrower: undefined,
-          })(addressProvider),
-        }).then(({ payload }) => parseResult(payload)),
-        client,
+      await repay({
+        address: status.walletAddress,
+        market: 'ust',
+        amount: repayAmount,
+        borrower: undefined,
       });
     },
-    [addressProvider, bank.status, client, post, queryRepay],
+    [bank.status, repay],
   );
 
   const onLtvChange = useCallback(
@@ -325,7 +216,7 @@ function ComponentBase({
   if (
     repayResult?.status === 'in-progress' ||
     repayResult?.status === 'done' ||
-    repayResult?.status === 'error'
+    repayResult?.status === 'fault'
   ) {
     return (
       <Modal open disableBackdropClick>
@@ -333,13 +224,19 @@ function ComponentBase({
           <h1>
             Repay<p>Borrow APR: {formatRatioToPercentage(apr)}%</p>
           </h1>
-          <TxResultRenderer
-            result={repayResult}
-            resetResult={() => {
-              resetRepayResult && resetRepayResult();
-              closeDialog();
-            }}
-          />
+          {repayResult.status === 'done' ? (
+            <div>
+              <pre>{JSON.stringify(repayResult.data, null, 2)}</pre>
+              <ActionButton
+                style={{ width: 200 }}
+                onClick={() => closeDialog()}
+              >
+                Close
+              </ActionButton>
+            </div>
+          ) : (
+            <OperationRenderer result={repayResult} />
+          )}
         </Dialog>
       </Modal>
     );
@@ -352,7 +249,7 @@ function ComponentBase({
           Repay<p>Borrow APR: {formatRatioToPercentage(apr)}%</p>
         </h1>
 
-        {!!invalidTxFee && <WarningArticle>{invalidTxFee}</WarningArticle>}
+        {!!invalidTxFee && <WarningMessage>{invalidTxFee}</WarningMessage>}
 
         <NumberInput
           className="amount"
@@ -390,7 +287,7 @@ function ComponentBase({
             maxLtv={marketOverview.bLunaMaxLtv}
             safeLtv={marketOverview.bLunaSafeLtv}
             currentLtv={currentLtv}
-            nextLtv={userLtv}
+            nextLtv={nextLtv}
             userMinLtv={0 as Ratio<BigSource>}
             userMaxLtv={currentLtv}
             onStep={ltvStepFunction}
@@ -431,7 +328,7 @@ function ComponentBase({
             !!invalidTxFee ||
             !!invalidAssetAmount
           }
-          onClick={() => proceed({ status, repayAmount: repayAmount })}
+          onClick={() => proceed(status, repayAmount)}
         >
           Proceed
         </ActionButton>
@@ -439,16 +336,6 @@ function ComponentBase({
     </Modal>
   );
 }
-
-const repayQueryOptions: BroadcastableQueryOptions<
-  { post: Promise<TxResult>; client: ApolloClient<any> },
-  { txResult: TxResult } & { txInfos: txi.Data },
-  Error
-> = {
-  ...queryOptions,
-  group: 'borrow/repay',
-  notificationFactory: txNotificationFactory,
-};
 
 const Component = styled(ComponentBase)`
   width: 720px;

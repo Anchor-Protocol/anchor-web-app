@@ -28,7 +28,7 @@ export interface BankProviderProps {
   children: ReactNode;
 }
 
-export interface BankState {
+export interface Bank {
   status: 'demo' | 'connected';
   tax: TaxData;
   refetchTax: () => void;
@@ -37,7 +37,7 @@ export interface BankState {
 }
 
 // @ts-ignore
-const BankContext: Context<BankState> = createContext<BankState>();
+const BankContext: Context<Bank> = createContext<Bank>();
 
 export function BankProvider({ children }: BankProviderProps) {
   const { status } = useWallet();
@@ -49,7 +49,7 @@ export function BankProvider({ children }: BankProviderProps) {
     refetch: refetchUserBalances,
   } = useUserBalances();
 
-  const state = useMemo<BankState>(() => {
+  const state = useMemo<Bank>(() => {
     return status.status === 'ready' && !!taxData && !!userBalancesData
       ? {
           status: 'connected',
@@ -94,8 +94,8 @@ export function BankProvider({ children }: BankProviderProps) {
   return <BankContext.Provider value={state}>{children}</BankContext.Provider>;
 }
 
-export function useBank(): BankState {
+export function useBank(): Bank {
   return useContext(BankContext);
 }
 
-export const BankConsumer: Consumer<BankState> = BankContext.Consumer;
+export const BankConsumer: Consumer<Bank> = BankContext.Consumer;

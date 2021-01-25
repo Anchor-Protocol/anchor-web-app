@@ -1,10 +1,10 @@
 import { AddressProviderFromJson } from '@anchor-protocol/anchor-js/address-provider';
 import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider/provider';
+import { OperationBroadcaster } from '@anchor-protocol/broadcastable-operation';
 import { darkTheme } from '@anchor-protocol/neumorphism-ui/themes/darkTheme';
 import { GlobalStyle } from '@anchor-protocol/neumorphism-ui/themes/GlobalStyle';
 import { ThemeProvider } from '@anchor-protocol/neumorphism-ui/themes/ThemeProvider';
 import { SnackbarProvider } from '@anchor-protocol/snackbar';
-import { QueryBroadcaster } from '@anchor-protocol/use-broadcastable-query';
 import { RouterScrollRestoration } from '@anchor-protocol/use-router-scroll-restoration';
 import {
   ChromeExtensionWalletProvider,
@@ -12,8 +12,8 @@ import {
 } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 import { Banner } from 'components/Banner';
+import { BroadcastingContainer } from 'components/BroadcastingContainer';
 import { Header } from 'components/Header';
-import { SnackbarContainer } from 'components/SnackbarContainer';
 import { BankProvider } from 'contexts/bank';
 import { ContractProvider } from 'contexts/contract';
 import { contractAddresses, defaultNetwork } from 'env';
@@ -93,7 +93,7 @@ function AppBase({ className }: AppProps) {
            *
            * @see ../../packages/src/@anchor-protocol/use-broadcastable-query
            */}
-          <QueryBroadcaster>
+          <OperationBroadcaster>
             {/**
              * User Balances (uUSD, uLuna, ubLuna, uaUST...)
              * useBank()
@@ -134,12 +134,12 @@ function AppBase({ className }: AppProps) {
                    * Snackbar Container
                    * Snackbar Floating (position: fixed) Container
                    */}
-                  <SnackbarContainer />
+                  <BroadcastingContainer />
                   {/** End Layout */}
                 </SnackbarProvider>
               </ThemeProvider>
             </BankProvider>
-          </QueryBroadcaster>
+          </OperationBroadcaster>
         </WalletConnectedProviders>
       </ChromeExtensionWalletProvider>
     </Router>
