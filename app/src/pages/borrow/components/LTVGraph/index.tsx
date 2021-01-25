@@ -4,7 +4,6 @@ import {
 } from '@anchor-protocol/neumorphism-ui/components/HorizontalGraphBar';
 import { HorizontalGraphSlider } from '@anchor-protocol/neumorphism-ui/components/HorizontalGraphSlider';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { formatRatioToPercentage, Ratio } from '@anchor-protocol/notation';
 import big, { Big, BigSource } from 'big.js';
