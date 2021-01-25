@@ -1,59 +1,55 @@
-import { Ratio, uaUST, uUST } from '@anchor-protocol/notation';
-import big from 'big.js';
-import { Data } from 'queries/txInfos';
-import { TxResult } from 'transactions/tx';
+import { demicrofy, formatLuna, uLuna } from '@anchor-protocol/notation';
+import { TxInfoParseError } from 'errors/TxInfoParseError';
+import { TransactionResult } from 'models/transaction';
+import {
+  Data,
+  pickAttributeValue,
+  pickEvent,
+  pickRawLog,
+} from 'queries/txInfos';
+import { pickTxFee, TxResult } from 'transactions/tx';
 
 interface Params {
   txResult: TxResult;
   txInfo: Data;
 }
 
-export interface WithdrawResult {
-  depositAmount: uUST<string> | undefined;
-  receivedAmount: uaUST<string> | undefined;
-  exchangeRate: Ratio<string> | undefined;
-  txFee: uUST<string>;
-  txHash: string;
-}
-
 export function pickWithdrawResult({
   txInfo,
   txResult,
-}: Params): WithdrawResult {
-  const fromContract =
-    Array.isArray(txInfo[0].RawLog) && txInfo[0].RawLog[0].events[1];
+}: Params): TransactionResult {
+  const rawLog = pickRawLog(txInfo, 0);
 
-  if (!fromContract) {
-    console.error({ txInfo, txResult });
-    throw new Error(`Failed contract result parse`);
+  if (!rawLog) {
+    throw new TxInfoParseError(txResult, txInfo, 'Undefined the RawLog');
   }
 
-  // TODO
+  const transfer = pickEvent(rawLog, 'transfer');
 
-  const depositAmount = fromContract.attributes.find(
-    ({ key }: { key: string }) => key === 'deposit_amount',
-  )?.value as uUST | undefined;
+  if (!transfer) {
+    throw new TxInfoParseError(
+      txResult,
+      txInfo,
+      'Undefined the transfer event',
+    );
+  }
 
-  const receivedAmount = fromContract.attributes.find(
-    ({ key }: { key: string }) => key === 'mint_amount',
-  )?.value as uaUST | undefined;
+  const unbondedAmount = pickAttributeValue<uLuna>(transfer, 2);
 
-  const exchangeRate =
-    depositAmount &&
-    receivedAmount &&
-    (big(receivedAmount).div(depositAmount).toFixed() as Ratio | undefined);
-
-  const txFee = big(txResult.fee.amount[0].amount)
-    .plus(txResult.fee.gas)
-    .toFixed() as uUST;
+  const txFee = pickTxFee(txResult);
 
   const txHash = txResult.result.txhash;
 
   return {
-    depositAmount,
-    receivedAmount,
-    exchangeRate,
+    txInfo,
+    txResult,
     txFee,
     txHash,
+    details: [
+      unbondedAmount && {
+        name: 'Unbonded Amount',
+        value: formatLuna(demicrofy(unbondedAmount)) + ' Luna',
+      },
+    ],
   };
 }

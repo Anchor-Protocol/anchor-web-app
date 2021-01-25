@@ -24,7 +24,7 @@ import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
 import big, { Big, BigSource } from 'big.js';
-import { OperationRenderer } from 'components/OperationRenderer';
+import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
@@ -89,6 +89,7 @@ function ComponentBase({
     addressProvider,
     post,
     client,
+    walletStatus: status,
   });
 
   // ---------------------------------------------
@@ -215,7 +216,7 @@ function ComponentBase({
   // ---------------------------------------------
   const title = (
     <h1>
-      Borrow{' '}
+      Repay{' '}
       <p>
         <IconSpan>
           Borrow APR : {formatRatioToPercentage(apr)}%{' '}
@@ -237,20 +238,7 @@ function ComponentBase({
       <Modal open disableBackdropClick>
         <Dialog className={className}>
           {title}
-
-          {repayResult.status === 'done' ? (
-            <div>
-              <pre>{JSON.stringify(repayResult.data, null, 2)}</pre>
-              <ActionButton
-                style={{ width: 200 }}
-                onClick={() => closeDialog()}
-              >
-                Close
-              </ActionButton>
-            </div>
-          ) : (
-            <OperationRenderer result={repayResult} />
-          )}
+          <TransactionRenderer result={repayResult} onExit={closeDialog} />
         </Dialog>
       </Modal>
     );

@@ -7,7 +7,7 @@ import {
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { WalletState } from '@anchor-protocol/wallet-provider';
 import { ApolloClient } from '@apollo/client';
-import { OperationRenderer } from 'components/OperationRenderer';
+import { TransactionRenderer } from 'components/TransactionRenderer';
 import { pickMintResult } from 'pages/basset/transactions/pickMintResult';
 import React from 'react';
 import { createContractMsg } from 'transactions/createContractMsg';
@@ -27,12 +27,9 @@ export const mintOptions = createOperationOptions({
     fabricatebAssetBond, // Option -> ((AddressProvider) -> MsgExecuteContract[])
     createContractMsg(addressProvider), // ((AddressProvider) -> MsgExecuteContract[]) -> MsgExecuteContract[]
     timeout(postContractMsg(post), 1000 * 60 * 2), // MsgExecuteContract[] -> Promise<StringifiedTxResult>
-    //effect((result: StringifiedTxResult) => {
-    //  console.log('mintOptions.tsx..()', result);
-    //}),
     parseTxResult, // StringifiedTxResult -> TxResult
     getTxInfo(client), // TxResult -> { TxResult, TxInfo }
-    pickMintResult, // { TxResult, TxInfo } -> MintResult
+    pickMintResult, // { TxResult, TxInfo } -> TransactionResult
   ],
   renderBroadcast: (mintResult) => {
     if (
@@ -55,7 +52,7 @@ export const mintOptions = createOperationOptions({
               </ActionButton>
             </div>
           ) : (
-            <OperationRenderer result={mintResult} />
+            <TransactionRenderer result={mintResult} />
           )}
         </>
       );

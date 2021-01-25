@@ -1,7 +1,14 @@
+import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { Num, uUST } from '@anchor-protocol/notation';
-import { useWallet } from '@anchor-protocol/wallet-provider';
-import { gql, QueryResult, useQuery } from '@apollo/client';
+import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
+import {
+  ApolloClient,
+  ApolloQueryResult,
+  gql,
+  QueryResult,
+  useQuery,
+} from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
 import { useMemo } from 'react';
 import { Data as MarketBalanceOverviewData } from './marketBalanceOverview';
@@ -170,4 +177,42 @@ export function useMarketUserOverview({
     ...result,
     parsedData,
   };
+}
+
+export function queryMarketUserOverview(
+  client: ApolloClient<any>,
+  addressProvider: AddressProvider,
+  walletStatus: WalletStatus,
+  marketBalance: MarketBalanceOverviewData,
+): Promise<ApolloQueryResult<StringifiedData> & { parsedData: Data }> {
+  if (walletStatus.status !== 'ready') {
+    throw new Error(`Wallet is not ready`);
+  }
+
+  return client
+    .query<StringifiedData, StringifiedVariables>({
+      query,
+      fetchPolicy: 'network-only',
+      variables: stringifyVariables({
+        marketContractAddress: addressProvider.market('uusd'),
+        marketLoanQuery: {
+          loan_amount: {
+            borrower: walletStatus.walletAddress,
+            block_height: marketBalance.currentBlock,
+          },
+        },
+        custodyContractAddress: addressProvider.custody('ubluna'),
+        custodyBorrowerQuery: {
+          borrower: {
+            address: walletStatus.walletAddress,
+          },
+        },
+      }),
+    })
+    .then((result) => {
+      return {
+        ...result,
+        parsedData: parseData(result.data),
+      };
+    });
 }

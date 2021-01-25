@@ -26,7 +26,7 @@ export const claimOptions = createOperationOptions({
     timeout(postContractMsg(post), 1000 * 60 * 2), // MsgExecuteContract[] -> Promise<StringifiedTxResult>
     parseTxResult, // StringifiedTxResult -> TxResult
     getTxInfo(client), // TxResult -> { TxResult, TxInfo }
-    pickClaimResult, // { TxResult, TxInfo } -> ClaimResult
+    pickClaimResult, // { TxResult, TxInfo } -> TransactionResult
   ],
   renderBroadcast: (props) => {
     return JSON.stringify(props, null, 2);

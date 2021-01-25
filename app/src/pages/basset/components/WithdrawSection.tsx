@@ -7,7 +7,7 @@ import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { demicrofy, formatLuna } from '@anchor-protocol/notation';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { useApolloClient } from '@apollo/client';
-import { OperationRenderer } from 'components/OperationRenderer';
+import { TransactionRenderer } from 'components/TransactionRenderer';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
@@ -127,16 +127,7 @@ export function WithdrawSection({
   ) {
     return (
       <Section>
-        {withdrawResult.status === 'done' ? (
-          <div>
-            <pre>{JSON.stringify(withdrawResult.data, null, 2)}</pre>
-            <ActionButton style={{ width: 200 }} onClick={withdrawResult.reset}>
-              Exit
-            </ActionButton>
-          </div>
-        ) : (
-          <OperationRenderer result={withdrawResult} />
-        )}
+        <TransactionRenderer result={withdrawResult} />
       </Section>
     );
   }

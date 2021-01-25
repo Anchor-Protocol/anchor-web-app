@@ -1,4 +1,5 @@
 import { Ratio, uUST } from '@anchor-protocol/notation';
+import big from 'big.js';
 
 export interface StringifiedTxResult {
   fee: string;
@@ -78,4 +79,9 @@ export function parseTxResult({
     result,
     success,
   };
+}
+
+export function pickTxFee(txResult: TxResult): uUST {
+  const uusd = txResult.fee.amount[0];
+  return big(uusd.amount).plus(txResult.fee.gas).toFixed() as uUST;
 }
