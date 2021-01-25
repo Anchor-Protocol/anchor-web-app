@@ -29,13 +29,12 @@ const tabItems: Item[] = [
   {
     label: 'Burn',
     value: 'burn',
-    tooltip: 'Unbond bassets to redeem previously bonded assets.',
+    tooltip: 'Burn previously minted bAssets to unbond your assets',
   },
   {
     label: 'Claim',
     value: 'claim',
-    tooltip:
-      'Instantly claim withdrawable bAssets that have been burned/ earned as staking rewards.',
+    tooltip: 'Claim burned bAssets or Staking Rewards',
   },
 ];
 

@@ -220,6 +220,15 @@ function ComponentBase({
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
+  const title = (
+    <h1>
+      <IconSpan>
+        Redeem Collateral{' '}
+        <InfoTooltip>Redeem bAsset to your wallet</InfoTooltip>
+      </IconSpan>
+    </h1>
+  );
+
   if (
     redeemCollateralResult?.status === 'in-progress' ||
     redeemCollateralResult?.status === 'done' ||
@@ -228,7 +237,8 @@ function ComponentBase({
     return (
       <Modal open disableBackdropClick>
         <Dialog className={className}>
-          <h1>Redeem Collateral</h1>
+          {title}
+
           {redeemCollateralResult.status === 'done' ? (
             <div>
               <pre>{JSON.stringify(redeemCollateralResult.data, null, 2)}</pre>
@@ -250,7 +260,7 @@ function ComponentBase({
   return (
     <Modal open onClose={() => closeDialog()}>
       <Dialog className={className} onClose={() => closeDialog()}>
-        <h1>Redeem Collateral</h1>
+        {title}
 
         {!!invalidTxFee && <WarningMessage>{invalidTxFee}</WarningMessage>}
 

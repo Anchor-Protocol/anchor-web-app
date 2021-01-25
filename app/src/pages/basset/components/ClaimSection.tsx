@@ -1,5 +1,7 @@
 import { useOperation } from '@anchor-protocol/broadcastable-operation';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
+import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { demicrofy, formatUST } from '@anchor-protocol/notation';
 import { useWallet } from '@anchor-protocol/wallet-provider';
@@ -104,7 +106,15 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
   return (
     <Section>
       <article className="claimable-rewards">
-        <h4>Claimable Rewards</h4>
+        <h4>
+          <IconSpan>
+            Claimable Rewards{' '}
+            <InfoTooltip>
+              Claim staking rewards from minted bAssets that have not been
+              provided as collateral
+            </InfoTooltip>
+          </IconSpan>
+        </h4>
         <p>
           {claimableRewards.gt(0)
             ? formatUST(demicrofy(claimableRewards)) + ' UST'

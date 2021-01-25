@@ -78,7 +78,7 @@ export function BorrowLimitGraph({
         <IconSpan>
           Borrow Limit{' '}
           <InfoTooltip>
-            Maximum amount of loans permitted from deposited collaterals
+            The maximum amount of liability permitted from deposited collaterals
           </InfoTooltip>
         </IconSpan>
       </GraphLabel>

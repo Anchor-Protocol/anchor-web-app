@@ -213,6 +213,21 @@ function ComponentBase({
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
+  const title = (
+    <h1>
+      Borrow{' '}
+      <p>
+        <IconSpan>
+          Borrow APR : {formatRatioToPercentage(apr)}%{' '}
+          <InfoTooltip>
+            Current rate of annualized borrowing interest applied for this
+            stablecoin
+          </InfoTooltip>
+        </IconSpan>
+      </p>
+    </h1>
+  );
+
   if (
     borrowResult?.status === 'in-progress' ||
     borrowResult?.status === 'done' ||
@@ -221,9 +236,8 @@ function ComponentBase({
     return (
       <Modal open disableBackdropClick>
         <Dialog className={className}>
-          <h1>
-            Borrow<p>Borrow APR: {formatRatioToPercentage(apr)}%</p>
-          </h1>
+          {title}
+
           {borrowResult.status === 'done' ? (
             <div>
               <pre>{JSON.stringify(borrowResult.data, null, 2)}</pre>
@@ -245,9 +259,7 @@ function ComponentBase({
   return (
     <Modal open onClose={() => closeDialog()}>
       <Dialog className={className} onClose={() => closeDialog()}>
-        <h1>
-          Borrow<p>Borrow APR: {formatRatioToPercentage(apr)}%</p>
-        </h1>
+        {title}
 
         {!!invalidTxFee && <WarningMessage>{invalidTxFee}</WarningMessage>}
 

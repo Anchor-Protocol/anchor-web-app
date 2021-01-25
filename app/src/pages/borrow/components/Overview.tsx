@@ -55,7 +55,9 @@ function OverviewBase({
             <IconSpan>
               APR{' '}
               <InfoTooltip>
-                Annual Percentage Rate. Current rate of interest on UST loans
+                Annual Percentage Rate.
+                <br />
+                The annualized rate of current interest on loans in USD
               </InfoTooltip>
             </IconSpan>
           </label>
@@ -67,7 +69,7 @@ function OverviewBase({
             <IconSpan>
               Collateral Value{' '}
               <InfoTooltip>
-                The sum of all deposited collaterals denominated in UST
+                The sum of all collaterals deposited by the user, in USD
               </InfoTooltip>
             </IconSpan>
           </label>
@@ -78,7 +80,9 @@ function OverviewBase({
           <label>
             <IconSpan>
               Borrowed Value{' '}
-              <InfoTooltip>The sum of all UST borrowed from Anchor</InfoTooltip>
+              <InfoTooltip>
+                The sum of all loans borrowed by the user, in USD
+              </InfoTooltip>
             </IconSpan>
           </label>
           <p>${formatUSTWithPostfixUnits(demicrofy(borrowed))}</p>

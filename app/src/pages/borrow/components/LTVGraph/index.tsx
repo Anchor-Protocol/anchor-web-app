@@ -3,6 +3,9 @@ import {
   Rect,
 } from '@anchor-protocol/neumorphism-ui/components/HorizontalGraphBar';
 import { HorizontalGraphSlider } from '@anchor-protocol/neumorphism-ui/components/HorizontalGraphSlider';
+import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
+import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { formatRatioToPercentage, Ratio } from '@anchor-protocol/notation';
 import big, { Big, BigSource } from 'big.js';
 import React, { useCallback } from 'react';
@@ -14,6 +17,7 @@ export interface Data {
   label: string;
   value: number;
   color: string;
+  tooltip?: string;
 }
 
 export interface LTVGraphProps {
@@ -30,9 +34,17 @@ export interface LTVGraphProps {
 
 const colorFunction = ({ color }: Data) => color;
 const valueFunction = ({ value }: Data) => value;
-const labelRenderer = ({ position, label }: Data, rect: Rect) => {
+const labelRenderer = ({ position, label, tooltip }: Data, rect: Rect) => {
   return position === 'top' ? (
-    <GraphTick style={{ left: rect.x + rect.width }}>{label}</GraphTick>
+    <GraphTick style={{ left: rect.x + rect.width }}>
+      {tooltip ? (
+        <Tooltip title={tooltip} placement="top">
+          <IconSpan>{label}</IconSpan>
+        </Tooltip>
+      ) : (
+        label
+      )}
+    </GraphTick>
   ) : (
     <GraphLabel style={{ left: rect.x + rect.width }}>{label}</GraphLabel>
   );
@@ -71,12 +83,15 @@ export function LTVGraph({
           label: `MAX LTV: ${formatRatioToPercentage(maxLtv)}%`,
           color: 'rgba(0, 0, 0, 0)',
           value: big(maxLtv).toNumber(),
+          tooltip:
+            'Maximum allowed loan to value (LTV) ratio, collaterals will be liquidated when the LTV is bigger than this value.',
         },
         {
           position: 'top',
           label: `SAFE LTV: ${formatRatioToPercentage(safeLtv)}%`,
           color: 'rgba(0, 0, 0, 0)',
           value: big(safeLtv).toNumber(),
+          tooltip: 'Recommended LTV',
         },
         //{
         //  position: 'top',

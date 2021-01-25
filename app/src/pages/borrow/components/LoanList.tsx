@@ -68,12 +68,20 @@ function LoanListBase({
               <IconSpan>
                 APR / Interest Accrued{' '}
                 <InfoTooltip>
-                  Current rate of borrowing interest applied on loans of this
-                  specific Terra / The amount of interest accrued on open loans
+                  Current rate of annualized borrowing interest applied for this
+                  stablecoin / The amount of interest accrued on open loans
                 </InfoTooltip>
               </IconSpan>
             </th>
-            <th>Borrowed</th>
+            <th>
+              <IconSpan>
+                Borrowed{' '}
+                <InfoTooltip>
+                  The borrow amount for this specific stablecoin / The borrow
+                  amount for this specific stablecoin in USD
+                </InfoTooltip>
+              </IconSpan>
+            </th>
             <th>Actions</th>
           </tr>
         </thead>

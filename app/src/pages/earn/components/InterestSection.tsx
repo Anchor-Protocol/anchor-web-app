@@ -24,10 +24,7 @@ function InterestSectionBase({ className }: InterestSectionProps) {
     <Section className={className}>
       <h2>
         <IconSpan>
-          INTEREST{' '}
-          <InfoTooltip>
-            Total amount of interest accrued for the past selected time period
-          </InfoTooltip>
+          INTEREST <InfoTooltip>Current annualized deposit rate</InfoTooltip>
         </IconSpan>
       </h2>
 
@@ -65,7 +62,14 @@ function InterestSectionBase({ className }: InterestSectionProps) {
               </s>
             </span>
           </Tooltip>
-          <p>Interest earned</p>
+          <p>
+            <IconSpan>
+              Interest earned{' '}
+              <InfoTooltip>
+                Total amount of interest accrued for the selected time period
+              </InfoTooltip>
+            </IconSpan>
+          </p>
         </div>
       </article>
     </Section>

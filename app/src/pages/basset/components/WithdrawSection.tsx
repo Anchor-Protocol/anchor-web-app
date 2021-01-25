@@ -1,5 +1,7 @@
 import { useOperation } from '@anchor-protocol/broadcastable-operation';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
+import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { demicrofy, formatLuna } from '@anchor-protocol/notation';
@@ -156,7 +158,15 @@ export function WithdrawSection({
       )}
 
       <article className="withdrawable-amount">
-        <h4>Withdrawable Amount</h4>
+        <h4>
+          <IconSpan>
+            Withdrawable Amount{' '}
+            <InfoTooltip>
+              bAssets that have been burned and have surpassed the undelegation
+              period can be withdrawn
+            </InfoTooltip>
+          </IconSpan>
+        </h4>
         <p>
           {withdrawableAmount.gt(0)
             ? formatLuna(demicrofy(withdrawableAmount)) +

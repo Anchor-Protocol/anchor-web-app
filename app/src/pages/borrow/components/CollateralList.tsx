@@ -79,7 +79,7 @@ function CollateralListBase({
               <IconSpan>
                 Balance{' '}
                 <InfoTooltip>
-                  Amount of bAsset collateral deposited by user in USD / Amount
+                  Amount of bAsset collateral deposited by user, in USD / Amount
                   of bAsset collateral deposited by user
                 </InfoTooltip>
               </IconSpan>

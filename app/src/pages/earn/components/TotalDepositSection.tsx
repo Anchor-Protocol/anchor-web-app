@@ -48,7 +48,9 @@ function TotalDepositSectionBase({ className }: TotalDepositSectionProps) {
       <h2>
         <IconSpan>
           TOTAL DEPOSIT{' '}
-          <InfoTooltip>The sum of current deposits on Anchor</InfoTooltip>
+          <InfoTooltip>
+            Total amount of UST deposited and interest earned by the user
+          </InfoTooltip>
         </IconSpan>
       </h2>
 

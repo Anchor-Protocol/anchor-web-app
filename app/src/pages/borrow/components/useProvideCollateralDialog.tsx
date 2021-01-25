@@ -223,6 +223,17 @@ function ComponentBase({
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
+  const title = (
+    <h1>
+      <IconSpan>
+        Provide Collateral{' '}
+        <InfoTooltip>
+          Provide bAssets as collateral to borrow stablecoins
+        </InfoTooltip>
+      </IconSpan>
+    </h1>
+  );
+
   if (
     provideCollateralResult?.status === 'in-progress' ||
     provideCollateralResult?.status === 'done' ||
@@ -231,7 +242,7 @@ function ComponentBase({
     return (
       <Modal open disableBackdropClick>
         <Dialog className={className}>
-          <h1>Provide Collateral</h1>
+          {title}
           {provideCollateralResult.status === 'done' ? (
             <div>
               <pre>{JSON.stringify(provideCollateralResult.data, null, 2)}</pre>
@@ -253,7 +264,7 @@ function ComponentBase({
   return (
     <Modal open onClose={() => closeDialog()}>
       <Dialog className={className} onClose={() => closeDialog()}>
-        <h1>Provide Collateral</h1>
+        {title}
 
         {!!invalidTxFee && <WarningMessage>{invalidTxFee}</WarningMessage>}
 
