@@ -13,6 +13,7 @@ interface JsonData {
   anchorToken: string;
   terraswapFactory: string;
   terraswapPair: string;
+  blunaBurn: { [nativeDenom: string]: string };
 }
 
 export class AddressProviderFromJson implements AddressProvider {
@@ -56,5 +57,13 @@ export class AddressProviderFromJson implements AddressProvider {
 
   liquidation(): string {
     return this.data.mmLiquidation;
+  }
+
+  terraswapFactory(): string {
+    return this.data.terraswapFactory;
+  }
+
+  blunaBurn(denom: string): string {
+    return this.data.blunaBurn[denom];
   }
 }

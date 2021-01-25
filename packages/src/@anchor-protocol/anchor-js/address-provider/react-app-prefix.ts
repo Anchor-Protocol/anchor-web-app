@@ -1,1 +1,1 @@
-export const reactifyEnv = (key: string): string => `REACT_APP_${key}`;
+export const dreactifyEnv = (key: string): string => `REACT_APP_${key}`;
