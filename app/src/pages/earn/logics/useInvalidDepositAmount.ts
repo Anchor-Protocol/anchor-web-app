@@ -1,11 +1,11 @@
 import { microfy, UST, uUST } from '@anchor-protocol/notation';
 import { Big } from 'big.js';
-import { BankState } from 'contexts/bank';
+import { Bank } from 'contexts/bank';
 import { ReactNode, useMemo } from 'react';
 
 export function useInvalidDepositAmount(
   depositAmount: UST,
-  bank: BankState,
+  bank: Bank,
   txFee: uUST<Big> | undefined,
 ): ReactNode {
   return useMemo(() => {
@@ -14,7 +14,7 @@ export function useInvalidDepositAmount(
     } else if (
       microfy(depositAmount)
         .plus(txFee ?? 0)
-        .gt(bank.userBalances.uUSD ?? 0)
+        .gt(bank.userBalances.uUSD)
     ) {
       return `Not enough UST`;
     }

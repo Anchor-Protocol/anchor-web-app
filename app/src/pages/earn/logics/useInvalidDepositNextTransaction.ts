@@ -1,12 +1,12 @@
 import { microfy, UST, uUST } from '@anchor-protocol/notation';
 import big, { Big } from 'big.js';
-import { BankState } from 'contexts/bank';
+import { Bank } from 'contexts/bank';
 import { FIXED_GAS } from 'env';
 import { ReactNode, useMemo } from 'react';
 
 export function useInvalidDepositNextTransaction(
   depositAmount: UST,
-  bank: BankState,
+  bank: Bank,
   txFee: uUST<Big> | undefined,
   skip: boolean,
 ): ReactNode {

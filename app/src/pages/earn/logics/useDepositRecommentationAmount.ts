@@ -1,12 +1,12 @@
 import { min } from '@anchor-protocol/big-math';
 import { uUST } from '@anchor-protocol/notation';
 import big, { Big } from 'big.js';
-import { BankState } from 'contexts/bank';
+import { Bank } from 'contexts/bank';
 import { FIXED_GAS } from 'env';
 import { useMemo } from 'react';
 
 export function useDepositRecommentationAmount(
-  bank: BankState,
+  bank: Bank,
 ): uUST<Big> | undefined {
   return useMemo(() => {
     if (bank.status === 'demo' || big(bank.userBalances.uUSD).lte(0)) {

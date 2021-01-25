@@ -1,11 +1,8 @@
 import { bLuna, microfy } from '@anchor-protocol/notation';
-import { BankState } from 'contexts/bank';
+import { Bank } from 'contexts/bank';
 import { ReactNode, useMemo } from 'react';
 
-export function useInvalidBurnAmount(
-  burnAmount: bLuna,
-  bank: BankState,
-): ReactNode {
+export function useInvalidBurnAmount(burnAmount: bLuna, bank: Bank): ReactNode {
   return useMemo<ReactNode>(() => {
     if (bank.status === 'demo' || burnAmount.length === 0) {
       return undefined;

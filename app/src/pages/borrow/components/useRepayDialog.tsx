@@ -9,12 +9,10 @@ import {
   formatRatioToPercentage,
   formatUST,
   formatUSTInput,
-  microfy,
   Ratio,
   UST,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
-  uUST,
 } from '@anchor-protocol/notation';
 import type {
   DialogProps,
@@ -31,10 +29,18 @@ import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
-import { BLOCKS_PER_YEAR, FIXED_GAS } from 'env';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
-import { useCurrentLtv } from 'pages/borrow/components/useCurrentLtv';
+import { ltvToRepayAmount } from 'pages/borrow/logics/ltvToRepayAmount';
+import { repayAmountToLtv } from 'pages/borrow/logics/repayAmountToLtv';
+import { useAPR } from 'pages/borrow/logics/useAPR';
+import { useCurrentLtv } from 'pages/borrow/logics/useCurrentLtv';
+import { useInvalidRepayAmount } from 'pages/borrow/logics/useInvalidRepayAmount';
+import { useRepayNextLtv } from 'pages/borrow/logics/useRepayNextLtv';
+import { useRepaySendAmount } from 'pages/borrow/logics/useRepaySendAmount';
+import { useRepayTotalBorrows } from 'pages/borrow/logics/useRepayTotalBorrows';
+import { useRepayTotalOutstandingLoan } from 'pages/borrow/logics/useRepayTotalOutstandingLoan';
+import { useRepayTxFee } from 'pages/borrow/logics/useRepayTxFee';
 import { Data as MarketBalance } from 'pages/borrow/queries/marketBalanceOverview';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
@@ -98,18 +104,14 @@ function ComponentBase({
   // ---------------------------------------------
   // calculate
   // ---------------------------------------------
-  const amountToLtv = useCallback(
-    (amount: uUST<Big>): Ratio<Big> => {
-      return big(
-        big(marketUserOverview.loanAmount.loan_amount).minus(amount),
-      ).div(
-        big(
-          big(marketUserOverview.borrowInfo.balance).minus(
-            marketUserOverview.borrowInfo.spendable,
-          ),
-        ).mul(marketOverview.oraclePrice.rate),
-      ) as Ratio<Big>;
-    },
+  const amountToLtv = useMemo(
+    () =>
+      repayAmountToLtv(
+        marketUserOverview.loanAmount.loan_amount,
+        marketUserOverview.borrowInfo.balance,
+        marketUserOverview.borrowInfo.spendable,
+        marketOverview.oraclePrice.rate,
+      ),
     [
       marketOverview.oraclePrice.rate,
       marketUserOverview.borrowInfo.balance,
@@ -118,18 +120,14 @@ function ComponentBase({
     ],
   );
 
-  const ltvToAmount = useCallback(
-    (ltv: Ratio<Big>): uUST<Big> => {
-      return big(marketUserOverview.loanAmount.loan_amount).minus(
-        ltv.mul(
-          big(
-            big(marketUserOverview.borrowInfo.balance).minus(
-              marketUserOverview.borrowInfo.spendable,
-            ),
-          ).mul(marketOverview.oraclePrice.rate),
-        ),
-      ) as uUST<Big>;
-    },
+  const ltvToAmount = useMemo(
+    () =>
+      ltvToRepayAmount(
+        marketUserOverview.loanAmount.loan_amount,
+        marketUserOverview.borrowInfo.balance,
+        marketUserOverview.borrowInfo.spendable,
+        marketOverview.oraclePrice.rate,
+      ),
     [
       marketOverview.oraclePrice.rate,
       marketUserOverview.borrowInfo.balance,
@@ -141,111 +139,31 @@ function ComponentBase({
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
-  const currentLtv = useCurrentLtv({ marketOverview, marketUserOverview });
-
-  // (Loan_amount - repay_amount) / ((Borrow_info.balance - Borrow_info.spendable) * Oracleprice)
-  const userLtv = useMemo<Ratio<Big> | undefined>(() => {
-    if (repayAmount.length === 0) {
-      return currentLtv;
-    }
-
-    const userAmount = microfy(repayAmount);
-
-    try {
-      const ltv = amountToLtv(userAmount);
-      return ltv.lt(0) ? (big(0) as Ratio<Big>) : ltv;
-    } catch {
-      return currentLtv;
-    }
-  }, [amountToLtv, repayAmount, currentLtv]);
-
-  const apr = useMemo<Ratio<Big>>(() => {
-    return big(marketOverview.borrowRate.rate).mul(
-      BLOCKS_PER_YEAR,
-    ) as Ratio<Big>;
-  }, [marketOverview.borrowRate.rate]);
-
-  const totalBorrows = useMemo<uUST<Big>>(() => {
-    const bufferBlocks = 20;
-
-    //- block_height = marketBalanceOverview.ts / currentBlock
-    //- global_index = marketBalanceOverview.ts / marketState.global_interest_index
-    //- last_interest_updated = marketBalanceOverview.ts / marketState.last_interest_updated
-    //- borrowRate = marketOverview.ts / borrowRate.rate
-    //- loan_amount = marketUserOverview.ts / loanAmont.loan_amount
-    //- interest_index = marketUserOverview.ts / loanAmont.interest_index
-
-    const passedBlock = big(marketBalance.currentBlock).minus(
-      marketBalance.marketState.last_interest_updated,
-    );
-    const interestFactor = passedBlock.mul(marketOverview.borrowRate.rate);
-    const globalInterestIndex = big(
-      marketBalance.marketState.global_interest_index,
-    ).mul(big(1).plus(interestFactor));
-    const bufferInterestFactor = big(marketOverview.borrowRate.rate).mul(
-      bufferBlocks,
-    );
-    const totalBorrowsWithoutBuffer = big(
-      marketUserOverview.loanAmount.loan_amount,
-    ).mul(
-      big(globalInterestIndex).div(marketUserOverview.liability.interest_index),
-    );
-    const totalBorrows = totalBorrowsWithoutBuffer.mul(
-      big(1).plus(bufferInterestFactor),
-    );
-
-    //console.log('useRepayDialog.tsx..()', totalBorrows.toString(), marketUserOverview.loanAmount.loan_amount);
-
-    return (totalBorrows.lt(0.001) ? big(0.001) : totalBorrows) as uUST<Big>;
-  }, [
-    marketBalance.currentBlock,
-    marketBalance.marketState.global_interest_index,
-    marketBalance.marketState.last_interest_updated,
+  const currentLtv = useCurrentLtv(
+    marketUserOverview.loanAmount.loan_amount,
+    marketUserOverview.borrowInfo.balance,
+    marketUserOverview.borrowInfo.spendable,
+    marketOverview.oraclePrice.rate,
+  );
+  const nextLtv = useRepayNextLtv(repayAmount, currentLtv, amountToLtv);
+  const apr = useAPR(marketOverview.borrowRate.rate);
+  const totalBorrows = useRepayTotalBorrows(
+    marketUserOverview.loanAmount.loan_amount,
     marketOverview.borrowRate.rate,
+    marketBalance.currentBlock,
+    marketBalance.marketState.last_interest_updated,
+    marketBalance.marketState.global_interest_index,
     marketUserOverview.liability.interest_index,
-    marketUserOverview.loanAmount,
-  ]);
-
-  const txFee = useMemo<uUST<Big> | undefined>(() => {
-    if (repayAmount.length === 0) {
-      return undefined;
-    }
-
-    const userAmount = microfy(repayAmount);
-
-    const userAmountTxFee = userAmount.mul(bank.tax.taxRate);
-
-    if (userAmountTxFee.gt(bank.tax.maxTaxUUSD)) {
-      return big(bank.tax.maxTaxUUSD).plus(FIXED_GAS) as uUST<Big>;
-    } else {
-      return userAmountTxFee.plus(FIXED_GAS) as uUST<Big>;
-    }
-  }, [repayAmount, bank.tax.maxTaxUUSD, bank.tax.taxRate]);
-
-  const totalOutstandingLoan = useMemo<uUST<Big> | undefined>(() => {
-    return repayAmount.length > 0
-      ? (big(marketUserOverview.loanAmount.loan_amount).minus(
-          microfy(repayAmount),
-        ) as uUST<Big>)
-      : undefined;
-  }, [repayAmount, marketUserOverview.loanAmount.loan_amount]);
-
-  const sendAmount = useMemo<uUST<Big> | undefined>(() => {
-    return repayAmount.length > 0 && txFee
-      ? (microfy(repayAmount).plus(txFee) as uUST<Big>)
-      : undefined;
-  }, [repayAmount, txFee]);
+  );
+  const txFee = useRepayTxFee(repayAmount, bank);
+  const totalOutstandingLoan = useRepayTotalOutstandingLoan(
+    repayAmount,
+    marketUserOverview.loanAmount.loan_amount,
+  );
+  const sendAmount = useRepaySendAmount(repayAmount, txFee);
 
   const invalidTxFee = useInvalidTxFee(bank);
-
-  const invalidAssetAmount = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo' || repayAmount.length === 0) {
-      return undefined;
-    } else if (microfy(repayAmount).gt(bank.userBalances.uUSD)) {
-      return `Not enough assets`;
-    }
-    return undefined;
-  }, [repayAmount, bank.status, bank.userBalances.uUSD]);
+  const invalidAssetAmount = useInvalidRepayAmount(repayAmount, bank);
 
   // ---------------------------------------------
   // callbacks
@@ -369,7 +287,7 @@ function ComponentBase({
             maxLtv={marketOverview.bLunaMaxLtv}
             safeLtv={marketOverview.bLunaSafeLtv}
             currentLtv={currentLtv}
-            nextLtv={userLtv}
+            nextLtv={nextLtv}
             userMinLtv={0 as Ratio<BigSource>}
             userMaxLtv={currentLtv}
             onStep={ltvStepFunction}

@@ -7,19 +7,17 @@ import {
   demicrofy,
   formatRatioToPercentage,
   formatUSTWithPostfixUnits,
-  Ratio,
-  uUST,
 } from '@anchor-protocol/notation';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { Error } from '@material-ui/icons';
-import big, { Big } from 'big.js';
-import { BLOCKS_PER_YEAR } from 'env';
+import big from 'big.js';
 import { useBorrowDialog } from 'pages/borrow/components/useBorrowDialog';
 import { useRepayDialog } from 'pages/borrow/components/useRepayDialog';
+import { useAPR } from 'pages/borrow/logics/useAPR';
+import { useBorrowed } from 'pages/borrow/logics/useBorrowed';
 import { Data as MarketBalance } from 'pages/borrow/queries/marketBalanceOverview';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
-import { useMemo } from 'react';
 import styled from 'styled-components';
 
 export interface LoanListProps {
@@ -46,15 +44,8 @@ function LoanListBase({
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
-  const apr = useMemo<Ratio<Big>>(() => {
-    return big(marketOverview?.borrowRate.rate ?? 0).mul(
-      BLOCKS_PER_YEAR,
-    ) as Ratio<Big>;
-  }, [marketOverview?.borrowRate.rate]);
-
-  const borrowed = useMemo<uUST<Big>>(() => {
-    return big(marketUserOverview?.loanAmount.loan_amount ?? 0) as uUST<Big>;
-  }, [marketUserOverview?.loanAmount.loan_amount]);
+  const apr = useAPR(marketOverview?.borrowRate.rate);
+  const borrowed = useBorrowed(marketUserOverview?.loanAmount.loan_amount);
 
   // ---------------------------------------------
   // presentation

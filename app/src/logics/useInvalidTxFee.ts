@@ -1,9 +1,9 @@
 import big from 'big.js';
-import { BankState } from 'contexts/bank';
+import { Bank } from 'contexts/bank';
 import { FIXED_GAS } from 'env';
 import { ReactNode, useMemo } from 'react';
 
-export function useInvalidTxFee(bank: BankState): ReactNode {
+export function useInvalidTxFee(bank: Bank): ReactNode {
   return useMemo(() => {
     if (bank.status === 'demo') {
       return undefined;

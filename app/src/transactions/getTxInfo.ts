@@ -3,6 +3,7 @@ import {
   OperatorOption,
 } from '@anchor-protocol/broadcastable-operation';
 import { ApolloClient } from '@apollo/client';
+import { TxInfoError } from 'errors/TxInfoError';
 import { Data, queryTxInfo } from 'queries/txInfos';
 import { TxResult } from 'transactions/tx';
 
@@ -26,7 +27,7 @@ export const getTxInfo = (client: ApolloClient<any>) => async (
       const fail = txInfo.find(({ Success }) => !Success);
 
       if (fail) {
-        throw new Error(fail.RawLog.toString());
+        throw new TxInfoError(fail.RawLog);
       }
 
       return { txResult, txInfo };

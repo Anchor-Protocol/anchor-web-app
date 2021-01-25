@@ -39,15 +39,18 @@ export function useWithdrawAllHistory(
         };
       }
 
+      const { time, withdraw_rate } = matchingHistory;
+      const { unbonding_period } = parameters;
+
+      const lunaAmount = blunaAmount.mul(withdraw_rate) as uLuna<Big>;
+      const requestTime = new Date(time * 1000);
+      const claimableTime = new Date((time + unbonding_period) * 1000);
+
       return {
         blunaAmount,
-        lunaAmount: blunaAmount.mul(
-          matchingHistory.withdraw_rate,
-        ) as uLuna<Big>,
-        requestTime: new Date(matchingHistory.time * 1000),
-        claimableTime: new Date(
-          (matchingHistory.time + parameters.unbonding_period) * 1000,
-        ),
+        lunaAmount,
+        requestTime,
+        claimableTime,
       };
     });
   }, [allHistory, parameters, requests, withdrawRequestsStartFrom]);

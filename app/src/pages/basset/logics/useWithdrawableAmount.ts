@@ -5,7 +5,5 @@ import { useMemo } from 'react';
 export function useWithdrawableAmount(
   withdrawable: uLuna | undefined,
 ): uLuna<Big> {
-  return useMemo<uLuna<Big>>(() => {
-    return big(withdrawable ?? 0) as uLuna<Big>;
-  }, [withdrawable]);
+  return useMemo(() => big(withdrawable ?? 0) as uLuna<Big>, [withdrawable]);
 }

@@ -13,10 +13,7 @@ import {
   formatUSTInput,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
-  microfy,
   Ratio,
-  ubLuna,
-  uUST,
 } from '@anchor-protocol/notation';
 import type {
   DialogProps,
@@ -34,8 +31,15 @@ import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { FIXED_GAS } from 'env';
+import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
-import { useCurrentLtv } from 'pages/borrow/components/useCurrentLtv';
+import { depositAmountToBorrowLimit } from 'pages/borrow/logics/depositAmountToBorrowLimit';
+import { depositAmountToLtv } from 'pages/borrow/logics/depositAmountToLtv';
+import { ltvToDepositAmount } from 'pages/borrow/logics/ltvToDepositAmount';
+import { useCurrentLtv } from 'pages/borrow/logics/useCurrentLtv';
+import { useInvalidDepositAmount } from 'pages/borrow/logics/useInvalidDepositAmount';
+import { useProvideCollateralBorrowLimit } from 'pages/borrow/logics/useProvideCollateralBorrowLimit';
+import { useProvideCollateralNextLtv } from 'pages/borrow/logics/useProvideCollateralNextLtv';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import { provideCollateralOptions } from 'pages/borrow/transactions/provideCollateralOptions';
@@ -101,16 +105,14 @@ function ComponentBase({
   // ---------------------------------------------
   // calculate
   // ---------------------------------------------
-  const amountToLtv = useCallback(
-    (depositAmount: ubLuna<Big>): Ratio<Big> => {
-      return big(marketUserOverview.loanAmount.loan_amount).div(
-        big(
-          big(marketUserOverview.borrowInfo.balance)
-            .minus(marketUserOverview.borrowInfo.spendable)
-            .plus(depositAmount),
-        ).mul(marketOverview.oraclePrice.rate),
-      ) as Ratio<Big>;
-    },
+  const amountToLtv = useMemo(
+    () =>
+      depositAmountToLtv(
+        marketUserOverview.loanAmount.loan_amount,
+        marketUserOverview.borrowInfo.balance,
+        marketUserOverview.borrowInfo.spendable,
+        marketOverview.oraclePrice.rate,
+      ),
     [
       marketOverview.oraclePrice.rate,
       marketUserOverview.borrowInfo.balance,
@@ -119,18 +121,14 @@ function ComponentBase({
     ],
   );
 
-  const ltvToAmount = useCallback(
-    (ltv: Ratio<Big>): ubLuna<Big> => {
-      // ltv = loanAmount / ((balance - spendable + <amount>) * oracle)
-      // amount = (loanAmount / (<ltv> * oracle)) + spendable - balance
-      return big(
-        big(marketUserOverview.loanAmount.loan_amount).div(
-          ltv.mul(marketOverview.oraclePrice.rate),
-        ),
-      )
-        .plus(marketUserOverview.borrowInfo.spendable)
-        .minus(marketUserOverview.borrowInfo.balance) as ubLuna<Big>;
-    },
+  const ltvToAmount = useMemo(
+    () =>
+      ltvToDepositAmount(
+        marketUserOverview.loanAmount.loan_amount,
+        marketUserOverview.borrowInfo.balance,
+        marketUserOverview.borrowInfo.spendable,
+        marketOverview.oraclePrice.rate,
+      ),
     [
       marketOverview.oraclePrice.rate,
       marketUserOverview.borrowInfo.balance,
@@ -139,16 +137,14 @@ function ComponentBase({
     ],
   );
 
-  const amountToBorrowLimit = useCallback(
-    (depositAmount: ubLuna<Big>): uUST<Big> => {
-      return big(
-        big(
-          big(marketUserOverview.borrowInfo.balance)
-            .minus(marketUserOverview.borrowInfo.spendable)
-            .plus(depositAmount),
-        ).mul(marketOverview.oraclePrice.rate),
-      ).mul(marketOverview.bLunaMaxLtv) as uUST<Big>;
-    },
+  const amountToBorrowLimit = useMemo(
+    () =>
+      depositAmountToBorrowLimit(
+        marketUserOverview.borrowInfo.balance,
+        marketUserOverview.borrowInfo.spendable,
+        marketOverview.oraclePrice.rate,
+        marketOverview.bLunaMaxLtv,
+      ),
     [
       marketOverview.bLunaMaxLtv,
       marketOverview.oraclePrice.rate,
@@ -158,50 +154,26 @@ function ComponentBase({
   );
 
   // ---------------------------------------------
-  // compute
+  // logics
   // ---------------------------------------------
-  const currentLtv = useCurrentLtv({ marketOverview, marketUserOverview });
+  const currentLtv = useCurrentLtv(
+    marketUserOverview.loanAmount.loan_amount,
+    marketUserOverview.borrowInfo.balance,
+    marketUserOverview.borrowInfo.spendable,
+    marketOverview.oraclePrice.rate,
+  );
+  const nextLtv = useProvideCollateralNextLtv(
+    depositAmount,
+    currentLtv,
+    amountToLtv,
+  );
+  const borrowLimit = useProvideCollateralBorrowLimit(
+    depositAmount,
+    amountToBorrowLimit,
+  );
 
-  // Loan_amount / ((Borrow_info.balance - Borrow_info.spendable + provided_collateral) * Oracleprice)
-  const nextLtv = useMemo<Ratio<Big> | undefined>(() => {
-    if (depositAmount.length === 0) {
-      return currentLtv;
-    }
-
-    const amount = microfy(depositAmount);
-
-    try {
-      const ltv = amountToLtv(amount);
-      return ltv.lt(0) ? (big(0) as Ratio<Big>) : ltv;
-    } catch {
-      return currentLtv;
-    }
-  }, [depositAmount, amountToLtv, currentLtv]);
-
-  // New Borrow Limit = ((Borrow_info.balance - Borrow_info.spendable + provided_collateral) * Oracleprice) * Max_LTV
-  const borrowLimit = useMemo<uUST<Big> | undefined>(() => {
-    return depositAmount.length > 0
-      ? amountToBorrowLimit(microfy(depositAmount))
-      : undefined;
-  }, [amountToBorrowLimit, depositAmount]);
-
-  const invalidTxFee = useMemo(() => {
-    if (bank.status === 'demo') {
-      return undefined;
-    } else if (big(bank.userBalances.uUSD ?? 0).lt(FIXED_GAS)) {
-      return 'Not enough transaction fees';
-    }
-    return undefined;
-  }, [bank.status, bank.userBalances.uUSD]);
-
-  const invalidDepositAmount = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo' || depositAmount.length === 0) {
-      return undefined;
-    } else if (microfy(depositAmount).gt(bank.userBalances.ubLuna ?? 0)) {
-      return `Not enough assets`;
-    }
-    return undefined;
-  }, [depositAmount, bank.status, bank.userBalances.ubLuna]);
+  const invalidTxFee = useInvalidTxFee(bank);
+  const invalidDepositAmount = useInvalidDepositAmount(depositAmount, bank);
 
   // ---------------------------------------------
   // callbacks

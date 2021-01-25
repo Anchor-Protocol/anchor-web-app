@@ -9,12 +9,10 @@ import {
   formatRatioToPercentage,
   formatUST,
   formatUSTInput,
-  microfy,
   Ratio,
   UST,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
-  uUST,
 } from '@anchor-protocol/notation';
 import type {
   DialogProps,
@@ -31,9 +29,18 @@ import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
-import { BLOCKS_PER_YEAR, FIXED_GAS } from 'env';
+import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
-import { useCurrentLtv } from 'pages/borrow/components/useCurrentLtv';
+import { borrowAmountToLtv } from 'pages/borrow/logics/borrowAmountToLtv';
+import { ltvToBorrowAmount } from 'pages/borrow/logics/ltvToBorrowAmount';
+import { useAPR } from 'pages/borrow/logics/useAPR';
+import { useBorrowMax } from 'pages/borrow/logics/useBorrowMax';
+import { useBorrowNextLtv } from 'pages/borrow/logics/useBorrowNextLtv';
+import { useBorrowReceiveAmount } from 'pages/borrow/logics/useBorrowReceiveAmount';
+import { useBorrowSafeMax } from 'pages/borrow/logics/useBorrowSafeMax';
+import { useBorrowTxFee } from 'pages/borrow/logics/useBorrowTxFee';
+import { useCurrentLtv } from 'pages/borrow/logics/useCurrentLtv';
+import { useInvalidBorrowAmount } from 'pages/borrow/logics/useInvalidBorrowAmount';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import { borrowOptions } from 'pages/borrow/transactions/borrowOptions';
@@ -94,18 +101,14 @@ function ComponentBase({
   // ---------------------------------------------
   // calculate
   // ---------------------------------------------
-  const amountToLtv = useCallback(
-    (borrowAmount: uUST<Big>): Ratio<Big> => {
-      return big(
-        big(marketUserOverview.loanAmount.loan_amount).plus(borrowAmount),
-      ).div(
-        big(
-          big(marketUserOverview.borrowInfo.balance).minus(
-            marketUserOverview.borrowInfo.spendable,
-          ),
-        ).mul(marketOverview.oraclePrice.rate),
-      ) as Ratio<Big>;
-    },
+  const amountToLtv = useMemo(
+    () =>
+      borrowAmountToLtv(
+        marketUserOverview.loanAmount.loan_amount,
+        marketUserOverview.borrowInfo.balance,
+        marketUserOverview.borrowInfo.spendable,
+        marketOverview.oraclePrice.rate,
+      ),
     [
       marketOverview.oraclePrice.rate,
       marketUserOverview.borrowInfo.balance,
@@ -114,16 +117,14 @@ function ComponentBase({
     ],
   );
 
-  const ltvToAmount = useCallback(
-    (ltv: Ratio<Big>): uUST<Big> => {
-      return ltv
-        .mul(
-          big(marketUserOverview.borrowInfo.balance)
-            .minus(marketUserOverview.borrowInfo.spendable)
-            .mul(marketOverview.oraclePrice.rate),
-        )
-        .minus(marketUserOverview.loanAmount.loan_amount) as uUST<Big>;
-    },
+  const ltvToAmount = useMemo(
+    () =>
+      ltvToBorrowAmount(
+        marketUserOverview.loanAmount.loan_amount,
+        marketUserOverview.borrowInfo.balance,
+        marketUserOverview.borrowInfo.spendable,
+        marketOverview.oraclePrice.rate,
+      ),
     [
       marketOverview.oraclePrice.rate,
       marketUserOverview.borrowInfo.balance,
@@ -133,114 +134,36 @@ function ComponentBase({
   );
 
   // ---------------------------------------------
-  // compute
+  // logics
   // ---------------------------------------------
-  const currentLtv = useCurrentLtv({ marketOverview, marketUserOverview });
-
-  // (Loan_amount + borrow_amount) / ((Borrow_info.balance - Borrow_info.spendable - redeemed_collateral) * Oracleprice)
-  const nextLtv = useMemo<Ratio<Big> | undefined>(() => {
-    if (borrowAmount.length === 0) {
-      return currentLtv;
-    }
-
-    const amount = microfy(borrowAmount);
-
-    try {
-      const ltv = amountToLtv(amount);
-      return ltv.lt(0) ? (big(0) as Ratio<Big>) : ltv;
-    } catch {
-      return currentLtv;
-    }
-  }, [amountToLtv, borrowAmount, currentLtv]);
-
-  const apr = useMemo<Ratio<Big>>(() => {
-    return big(marketOverview.borrowRate.rate ?? 0).mul(
-      BLOCKS_PER_YEAR,
-    ) as Ratio<Big>;
-  }, [marketOverview.borrowRate.rate]);
-
-  // If user_ltv >= 0.35 or user_ltv == Null:
-  //   SafeMax = 0
-  // else:
-  //   safemax = 0.35 * (balance - spendable) * oracle_price - loan_amount
-  const safeMax = useMemo<uUST<Big>>(() => {
-    return !currentLtv || currentLtv.gte(marketOverview.bLunaSafeLtv)
-      ? (big(0) as uUST<Big>)
-      : (big(marketOverview.bLunaSafeLtv)
-          .mul(
-            big(marketUserOverview.borrowInfo.balance).minus(
-              marketUserOverview.borrowInfo.spendable,
-            ),
-          )
-          .mul(marketOverview.oraclePrice.rate)
-          .minus(marketUserOverview.loanAmount.loan_amount) as uUST<Big>);
-  }, [
-    currentLtv,
+  const currentLtv = useCurrentLtv(
+    marketUserOverview.loanAmount.loan_amount,
+    marketUserOverview.borrowInfo.balance,
+    marketUserOverview.borrowInfo.spendable,
+    marketOverview.oraclePrice.rate,
+  );
+  const nextLtv = useBorrowNextLtv(borrowAmount, currentLtv, amountToLtv);
+  const apr = useAPR(marketOverview.borrowRate.rate);
+  const safeMax = useBorrowSafeMax(
+    marketUserOverview.loanAmount.loan_amount,
+    marketUserOverview.borrowInfo.balance,
+    marketUserOverview.borrowInfo.spendable,
+    marketOverview.oraclePrice.rate,
     marketOverview.bLunaSafeLtv,
-    marketOverview.oraclePrice.rate,
+    currentLtv,
+  );
+  const max = useBorrowMax(
+    marketUserOverview.loanAmount.loan_amount,
     marketUserOverview.borrowInfo.balance,
     marketUserOverview.borrowInfo.spendable,
-    marketUserOverview.loanAmount.loan_amount,
-  ]);
-
-  const max = useMemo<uUST<Big>>(() => {
-    return big(marketOverview.bLunaMaxLtv)
-      .mul(
-        big(marketUserOverview.borrowInfo.balance).minus(
-          marketUserOverview.borrowInfo.spendable,
-        ),
-      )
-      .mul(marketOverview.oraclePrice.rate)
-      .minus(marketUserOverview.loanAmount.loan_amount) as uUST<Big>;
-  }, [
+    marketOverview.oraclePrice.rate,
     marketOverview.bLunaMaxLtv,
-    marketOverview.oraclePrice.rate,
-    marketUserOverview.borrowInfo.balance,
-    marketUserOverview.borrowInfo.spendable,
-    marketUserOverview.loanAmount.loan_amount,
-  ]);
+  );
+  const txFee = useBorrowTxFee(borrowAmount, bank);
+  const receiveAmount = useBorrowReceiveAmount(borrowAmount, txFee);
 
-  const txFee = useMemo<uUST<Big> | undefined>(() => {
-    if (borrowAmount.length === 0) {
-      return undefined;
-    }
-
-    const amount = microfy(borrowAmount);
-
-    const userAmountTxFee = big(
-      amount.minus(amount).div(big(1).plus(bank.tax.taxRate)),
-    ).mul(bank.tax.taxRate);
-
-    if (userAmountTxFee.gt(bank.tax.maxTaxUUSD)) {
-      return big(bank.tax.maxTaxUUSD).plus(FIXED_GAS) as uUST<Big>;
-    } else {
-      return userAmountTxFee.plus(FIXED_GAS) as uUST<Big>;
-    }
-  }, [borrowAmount, bank.tax.maxTaxUUSD, bank.tax.taxRate]);
-
-  const receiveAmount = useMemo<uUST<Big> | undefined>(() => {
-    return borrowAmount.length > 0 && txFee
-      ? (microfy(borrowAmount).minus(txFee) as uUST<Big>)
-      : undefined;
-  }, [borrowAmount, txFee]);
-
-  const invalidTxFee = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo') {
-      return undefined;
-    } else if (big(bank.userBalances.uUSD ?? 0).lt(FIXED_GAS)) {
-      return 'Not enough transaction fees';
-    }
-    return undefined;
-  }, [bank.status, bank.userBalances.uUSD]);
-
-  const invalidAssetAmount = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo' || borrowAmount.length === 0) {
-      return undefined;
-    } else if (microfy(borrowAmount).gt(max ?? 0)) {
-      return `Cannot borrow more than the borrow limit.`;
-    }
-    return undefined;
-  }, [borrowAmount, bank.status, max]);
+  const invalidTxFee = useInvalidTxFee(bank);
+  const invalidBorrowAmount = useInvalidBorrowAmount(borrowAmount, bank, max);
 
   // ---------------------------------------------
   // callbacks
@@ -334,15 +257,15 @@ function ComponentBase({
           maxIntegerPoinsts={UST_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="BORROW AMOUNT"
-          error={!!invalidAssetAmount}
+          error={!!invalidBorrowAmount}
           onChange={({ target }) => updateBorrowAmount(target.value)}
           InputProps={{
             endAdornment: <InputAdornment position="end">UST</InputAdornment>,
           }}
         />
 
-        <div className="wallet" aria-invalid={!!invalidAssetAmount}>
-          <span>{invalidAssetAmount}</span>
+        <div className="wallet" aria-invalid={!!invalidBorrowAmount}>
+          <span>{invalidBorrowAmount}</span>
           <span>
             Safe Max:{' '}
             <span
@@ -397,7 +320,7 @@ function ComponentBase({
             borrowAmount.length === 0 ||
             big(borrowAmount).lte(0) ||
             !!invalidTxFee ||
-            !!invalidAssetAmount
+            !!invalidBorrowAmount
           }
           onClick={() => proceed(status, borrowAmount)}
         >

@@ -13,10 +13,7 @@ import {
   formatUSTInput,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
-  microfy,
   Ratio,
-  ubLuna,
-  uUST,
 } from '@anchor-protocol/notation';
 import type {
   DialogProps,
@@ -34,8 +31,15 @@ import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { FIXED_GAS } from 'env';
+import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
-import { useCurrentLtv } from 'pages/borrow/components/useCurrentLtv';
+import { ltvToRedeemAmount } from 'pages/borrow/logics/ltvToRedeemAmount';
+import { redeemAmountToLtv } from 'pages/borrow/logics/redeemAmountToLtv';
+import { useCurrentLtv } from 'pages/borrow/logics/useCurrentLtv';
+import { useInvalidRedeemAmount } from 'pages/borrow/logics/useInvalidRedeemAmount';
+import { useRedeemCollateralBorrowLimit } from 'pages/borrow/logics/useRedeemCollateralBorrowLimit';
+import { useRedeemCollateralNextLtv } from 'pages/borrow/logics/useRedeemCollateralNextLtv';
+import { useRedeemCollateralWithdrawableAmount } from 'pages/borrow/logics/useRedeemCollateralWithdrawableAmount';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import { redeemCollateralOptions } from 'pages/borrow/transactions/redeemCollateralOptions';
@@ -101,16 +105,14 @@ function ComponentBase({
   // ---------------------------------------------
   // calculate
   // ---------------------------------------------
-  const amountToLtv = useCallback(
-    (amount: ubLuna<Big>): Ratio<Big> => {
-      return big(marketUserOverview.loanAmount.loan_amount).div(
-        big(
-          big(marketUserOverview.borrowInfo.balance)
-            .minus(marketUserOverview.borrowInfo.spendable)
-            .minus(amount),
-        ).mul(marketOverview.oraclePrice.rate),
-      ) as Ratio<Big>;
-    },
+  const amountToLtv = useMemo(
+    () =>
+      redeemAmountToLtv(
+        marketUserOverview.loanAmount.loan_amount,
+        marketUserOverview.borrowInfo.balance,
+        marketUserOverview.borrowInfo.spendable,
+        marketOverview.oraclePrice.rate,
+      ),
     [
       marketOverview.oraclePrice.rate,
       marketUserOverview.borrowInfo.balance,
@@ -119,14 +121,13 @@ function ComponentBase({
     ],
   );
 
-  const ltvToAmount = useCallback(
-    (ltv: Ratio<Big>): ubLuna<Big> => {
-      return big(marketUserOverview.borrowInfo.balance).minus(
-        big(marketUserOverview.loanAmount.loan_amount).div(
-          ltv.mul(marketOverview.oraclePrice.rate),
-        ),
-      ) as ubLuna<Big>;
-    },
+  const ltvToAmount = useMemo(
+    () =>
+      ltvToRedeemAmount(
+        marketUserOverview.loanAmount.loan_amount,
+        marketUserOverview.borrowInfo.balance,
+        marketOverview.oraclePrice.rate,
+      ),
     [
       marketOverview.oraclePrice.rate,
       marketUserOverview.borrowInfo.balance,
@@ -135,91 +136,42 @@ function ComponentBase({
   );
 
   // ---------------------------------------------
-  // compute
+  // logics
   // ---------------------------------------------
-  const currentLtv = useCurrentLtv({ marketOverview, marketUserOverview });
-
-  // Loan_amount / ((Borrow_info.balance - Borrow_info.spendable - redeemed_collateral) * Oracleprice)
-  const nextLtv = useMemo<Ratio<Big> | undefined>(() => {
-    if (redeemAmount.length === 0) {
-      return currentLtv;
-    }
-
-    const amount = microfy(redeemAmount);
-
-    try {
-      const ltv = amountToLtv(amount);
-      return ltv.lt(0) ? (big(0) as Ratio<Big>) : ltv;
-    } catch {
-      return currentLtv;
-    }
-  }, [amountToLtv, redeemAmount, currentLtv]);
-
-  // If user_ltv >= 0.35 or user_ltv == Null:
-  //   withdrawable = borrow_info.spendable
-  // else:
-  //   withdrawable = borrow_info.balance - borrow_info.loan_amount / 0.35 / oracle_price
-  const withdrawableAmount = useMemo<ubLuna<Big>>(() => {
-    const withdrawable =
-      !nextLtv || nextLtv.gte(marketOverview.bLunaMaxLtv)
-        ? big(marketUserOverview.borrowInfo.spendable)
-        : big(marketUserOverview.borrowInfo.balance).minus(
-            big(marketUserOverview.loanAmount.loan_amount)
-              .div(marketOverview.bLunaSafeLtv)
-              .div(marketOverview.oraclePrice.rate),
-          );
-
-    return (withdrawable.lt(0) ? big(0) : withdrawable) as ubLuna<Big>;
-  }, [
-    marketOverview.bLunaMaxLtv,
-    marketOverview.bLunaSafeLtv,
-    marketOverview.oraclePrice.rate,
-    marketUserOverview.borrowInfo.balance,
-    marketUserOverview.borrowInfo.spendable,
+  const currentLtv = useCurrentLtv(
     marketUserOverview.loanAmount.loan_amount,
-    nextLtv,
-  ]);
-
-  // New Borrow Limit = ((Borrow_info.balance - Borrow_info.spendable - redeemed_collateral) * Oracleprice) * Max_LTV
-  const borrowLimit = useMemo<uUST<Big> | undefined>(() => {
-    if (redeemAmount.length === 0) {
-      return undefined;
-    }
-
-    const borrowLimit = big(
-      big(
-        big(marketUserOverview.borrowInfo.balance)
-          .minus(marketUserOverview.borrowInfo.spendable)
-          .minus(microfy(redeemAmount)),
-      ).mul(marketOverview.oraclePrice.rate),
-    ).mul(marketOverview.bLunaMaxLtv) as uUST<Big>;
-
-    return borrowLimit.lt(0) ? undefined : borrowLimit;
-  }, [
-    redeemAmount,
-    marketOverview.bLunaMaxLtv,
-    marketOverview.oraclePrice.rate,
     marketUserOverview.borrowInfo.balance,
     marketUserOverview.borrowInfo.spendable,
-  ]);
+    marketOverview.oraclePrice.rate,
+  );
+  const nextLtv = useRedeemCollateralNextLtv(
+    redeemAmount,
+    currentLtv,
+    amountToLtv,
+  );
+  const withdrawableAmount = useRedeemCollateralWithdrawableAmount(
+    marketUserOverview.loanAmount.loan_amount,
+    marketUserOverview.borrowInfo.balance,
+    marketUserOverview.borrowInfo.spendable,
+    marketOverview.oraclePrice.rate,
+    marketOverview.bLunaSafeLtv,
+    marketOverview.bLunaMaxLtv,
+    nextLtv,
+  );
+  const borrowLimit = useRedeemCollateralBorrowLimit(
+    redeemAmount,
+    marketUserOverview.borrowInfo.balance,
+    marketUserOverview.borrowInfo.spendable,
+    marketOverview.oraclePrice.rate,
+    marketOverview.bLunaMaxLtv,
+  );
 
-  const invalidTxFee = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo') {
-      return undefined;
-    } else if (big(bank.userBalances.uUSD ?? 0).lt(FIXED_GAS)) {
-      return 'Not enough transaction fees';
-    }
-    return undefined;
-  }, [bank.status, bank.userBalances.uUSD]);
-
-  const invalidBAssetAmount = useMemo<ReactNode>(() => {
-    if (bank.status === 'demo' || redeemAmount.length === 0) {
-      return undefined;
-    } else if (microfy(redeemAmount).gt(withdrawableAmount ?? 0)) {
-      return `Cannot withdraw more than collateralized amount`;
-    }
-    return undefined;
-  }, [redeemAmount, bank.status, withdrawableAmount]);
+  const invalidTxFee = useInvalidTxFee(bank);
+  const invalidRedeemAmount = useInvalidRedeemAmount(
+    redeemAmount,
+    bank,
+    withdrawableAmount,
+  );
 
   // ---------------------------------------------
   // callbacks
@@ -308,15 +260,15 @@ function ComponentBase({
           maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="REDEEM AMOUNT"
-          error={!!invalidBAssetAmount}
+          error={!!invalidRedeemAmount}
           onChange={({ target }) => updateRedeemAmount(target.value)}
           InputProps={{
             endAdornment: <InputAdornment position="end">bLUNA</InputAdornment>,
           }}
         />
 
-        <div className="wallet" aria-invalid={!!invalidBAssetAmount}>
-          <span>{invalidBAssetAmount}</span>
+        <div className="wallet" aria-invalid={!!invalidRedeemAmount}>
+          <span>{invalidRedeemAmount}</span>
           <span>
             Withdrawable:{' '}
             <span
@@ -380,7 +332,7 @@ function ComponentBase({
             redeemAmount.length === 0 ||
             big(redeemAmount).lte(0) ||
             !!invalidTxFee ||
-            !!invalidBAssetAmount
+            !!invalidRedeemAmount
           }
           onClick={() => proceed(status, redeemAmount)}
         >

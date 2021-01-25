@@ -7,12 +7,12 @@ import {
   demicrofy,
   formatLuna,
   formatUSTWithPostfixUnits,
-  uUST,
+  Ratio,
 } from '@anchor-protocol/notation';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { Error } from '@material-ui/icons';
-import big, { Big } from 'big.js';
-import { useMemo } from 'react';
+import big from 'big.js';
+import { useCollaterals } from 'pages/borrow/logics/useCollaterals';
 import styled from 'styled-components';
 import { Data as MarketOverview } from '../queries/marketOverview';
 import { Data as MarketUserOverview } from '../queries/marketUserOverview';
@@ -48,20 +48,16 @@ function CollateralListBase({
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
-  const collaterals = useMemo<uUST<Big>>(() => {
-    return big(marketUserOverview?.borrowInfo.balance ?? 0).minus(
-      marketUserOverview?.borrowInfo.spendable ?? 0,
-    ) as uUST<Big>;
-  }, [
+  const collaterals = useCollaterals(
     marketUserOverview?.borrowInfo.balance,
     marketUserOverview?.borrowInfo.spendable,
-  ]);
-
-  const collateralsInUST = useMemo<uUST<Big>>(() => {
-    return big(collaterals).mul(
-      marketOverview?.oraclePrice.rate ?? 1,
-    ) as uUST<Big>;
-  }, [collaterals, marketOverview?.oraclePrice.rate]);
+    1 as Ratio<number>,
+  );
+  const collateralsInUST = useCollaterals(
+    marketUserOverview?.borrowInfo.balance,
+    marketUserOverview?.borrowInfo.spendable,
+    marketOverview?.oraclePrice.rate,
+  );
 
   // ---------------------------------------------
   // presentation
