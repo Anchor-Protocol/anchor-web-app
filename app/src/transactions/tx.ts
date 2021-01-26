@@ -1,5 +1,4 @@
 import { Ratio, uUST } from '@anchor-protocol/notation';
-import big from 'big.js';
 import { TxFailedError } from 'errors/TxFailedError';
 
 export interface StringifiedTxResult {
