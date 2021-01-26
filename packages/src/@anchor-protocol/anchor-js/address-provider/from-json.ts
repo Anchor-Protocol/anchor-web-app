@@ -63,6 +63,10 @@ export class AddressProviderFromJson implements AddressProvider {
     return this.data.terraswapFactory;
   }
 
+  terraswapPair(): string {
+    return this.data.terraswapPair;
+  }
+
   blunaBurn(quote: string): string {
     const address = this.data.blunaBurn[quote];
     if (typeof address === 'undefined') {

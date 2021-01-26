@@ -52,6 +52,10 @@ export class AddressProviderFromEnvVar implements AddressProvider {
     return getFromEnv('terraswapFactory');
   }
 
+  terraswapPair(): string {
+    return getFromEnv('terraswapPair');
+  }
+
   blunaBurn(nativeDenom: string): string {
     return JSON.parse(getFromEnv('bLunaBurn'))[nativeDenom];
   }

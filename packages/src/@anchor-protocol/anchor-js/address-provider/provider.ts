@@ -23,5 +23,7 @@ export interface AddressProvider {
 
   terraswapFactory(): string;
 
+  terraswapPair(): string;
+
   blunaBurn(quote: string): string;
 }

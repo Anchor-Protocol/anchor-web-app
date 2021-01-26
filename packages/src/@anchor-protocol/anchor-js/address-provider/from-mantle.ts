@@ -49,6 +49,10 @@ export class AddressProviderFromMantle implements AddressProvider {
     throw new Error('Method not implemented.');
   }
 
+  terraswapPair(): string {
+    throw new Error('Method not implemented.');
+  }
+
   blunaBurn(quote: string): string {
     throw new Error('Method not implemented.');
   }
