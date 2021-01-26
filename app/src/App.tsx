@@ -1,7 +1,6 @@
 import { AddressProviderFromJson } from '@anchor-protocol/anchor-js/address-provider';
 import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider/provider';
 import { OperationBroadcaster } from '@anchor-protocol/broadcastable-operation';
-import { darkTheme } from '@anchor-protocol/neumorphism-ui/themes/darkTheme';
 import { GlobalStyle } from '@anchor-protocol/neumorphism-ui/themes/GlobalStyle';
 import { lightTheme } from '@anchor-protocol/neumorphism-ui/themes/lightTheme';
 import { ThemeProvider } from '@anchor-protocol/neumorphism-ui/themes/ThemeProvider';
