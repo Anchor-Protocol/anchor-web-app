@@ -116,7 +116,13 @@ class HorizontalGraphSliderBase extends Component<
     this.thumbMax =
       ((this.props.end - this.props.min) / (this.props.max - this.props.min)) *
       this.props.coordinateSpace.width;
-    
+
+    console.warn('HorizontalGraphSlider.tsx..onDown()', JSON.stringify({
+      thumbStart: this.thumbStart,
+      thumbMin: this.thumbMin,
+      thumbMax: this.thumbMax,
+    }, null, 2));
+
     if (this.thumbMax - this.thumbMin < 1) {
       return;
     }
