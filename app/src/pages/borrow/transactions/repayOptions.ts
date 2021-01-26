@@ -6,6 +6,7 @@ import {
 } from '@anchor-protocol/broadcastable-operation';
 import { WalletState, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient } from '@apollo/client';
+import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { pickRepayResult } from 'pages/borrow/transactions/pickRepayResult';
 import { refetchMarket } from 'pages/borrow/transactions/refetchMarket';
 import { createContractMsg } from 'transactions/createContractMsg';
@@ -31,8 +32,6 @@ export const repayOptions = createOperationOptions({
     refetchMarket(addressProvider, client, walletStatus), // { TxResult, TxInfo } -> { TxResult, TxInfo, MarketBalanceOverview, MarketOverview, MarketUserOverview }
     pickRepayResult, // { TxResult, TxInfo, MarketBalanceOverview, MarketOverview, MarketUserOverview } -> TransactionResult
   ],
-  renderBroadcast: (props) => {
-    return JSON.stringify(props, null, 2);
-  },
+  renderBroadcast: renderBroadcastTransaction,
   //breakOnError: true,
 });

@@ -4,12 +4,10 @@ import {
   createOperationOptions,
   timeout,
 } from '@anchor-protocol/broadcastable-operation';
-import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { WalletState } from '@anchor-protocol/wallet-provider';
 import { ApolloClient } from '@apollo/client';
-import { TransactionRenderer } from 'components/TransactionRenderer';
+import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { pickMintResult } from 'pages/basset/transactions/pickMintResult';
-import React from 'react';
 import { createContractMsg } from 'transactions/createContractMsg';
 import { getTxInfo } from 'transactions/getTxInfo';
 import { postContractMsg } from 'transactions/postContractMsg';
@@ -31,33 +29,6 @@ export const mintOptions = createOperationOptions({
     getTxInfo(client), // TxResult -> { TxResult, TxInfo }
     pickMintResult, // { TxResult, TxInfo } -> TransactionResult
   ],
-  renderBroadcast: (mintResult) => {
-    if (
-      mintResult?.status === 'in-progress' ||
-      mintResult?.status === 'done' ||
-      mintResult?.status === 'fault'
-    ) {
-      return (
-        <>
-          {mintResult.status === 'done' ? (
-            <div>
-              <pre>{JSON.stringify(mintResult.data, null, 2)}</pre>
-              <ActionButton
-                style={{ width: 200 }}
-                onClick={() => {
-                  mintResult.reset();
-                }}
-              >
-                Exit
-              </ActionButton>
-            </div>
-          ) : (
-            <TransactionRenderer result={mintResult} />
-          )}
-        </>
-      );
-    }
-    return null;
-  },
+  renderBroadcast: renderBroadcastTransaction,
   //breakOnError: true,
 });

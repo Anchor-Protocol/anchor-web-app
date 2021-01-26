@@ -1,10 +1,5 @@
 import { HorizontalDashedRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalDashedRuler';
-import {
-  DetailedHTMLProps,
-  HTMLAttributes,
-  ReactElement,
-  ReactNode,
-} from 'react';
+import { DetailedHTMLProps, HTMLAttributes, ReactNode } from 'react';
 import styled from 'styled-components';
 
 export interface TxFeeListItemProps {
@@ -13,14 +8,10 @@ export interface TxFeeListItemProps {
 }
 
 export interface TxFeeListProps
-  extends Omit<
-    DetailedHTMLProps<HTMLAttributes<HTMLUListElement>, HTMLUListElement>,
-    'children'
-  > {
-  children:
-    | ReactElement<TxFeeListItemProps>
-    | ReactElement<TxFeeListItemProps>[];
-}
+  extends DetailedHTMLProps<
+    HTMLAttributes<HTMLUListElement>,
+    HTMLUListElement
+  > {}
 
 function TxFeeListBase({ className, ...ulProps }: TxFeeListProps) {
   return (

@@ -6,11 +6,18 @@ import { WaitingReceipt } from 'components/TransactionRenderer/WaitingReceipt';
 import { WaitingTransaction } from 'components/TransactionRenderer/WaitingTransaction';
 import { TransactionResult } from 'models/transaction';
 import React from 'react';
+import styled from 'styled-components';
 import { findTxResult } from 'transactions/tx';
 
 export interface TransactionRendererProps {
   result: OperationResult<TransactionResult, unknown[]>;
   onExit?: () => void;
+}
+
+export function renderBroadcastTransaction(
+  result: OperationResult<TransactionResult, unknown[]>,
+) {
+  return <TransactionRenderer result={result} />;
 }
 
 export function TransactionRenderer({
@@ -22,11 +29,11 @@ export function TransactionRenderer({
       const txResult = findTxResult(result.snapshots);
 
       return txResult ? (
-        <div>
+        <Layout>
           <WaitingReceipt result={result} txResult={txResult} />
-        </div>
+        </Layout>
       ) : (
-        <div>
+        <Layout>
           <WaitingTransaction result={result} />
           <ActionButton
             style={{ width: '100%' }}
@@ -35,13 +42,13 @@ export function TransactionRenderer({
               onExit && onExit();
             }}
           >
-            Disconnect with Terra Station (Stop Waiting Terra Station Result)
+            Stop Waiting Terra Station
           </ActionButton>
-        </div>
+        </Layout>
       );
     case 'fault':
       return (
-        <div>
+        <Layout>
           <Fault result={result} />
           <ActionButton
             style={{ width: '100%' }}
@@ -50,13 +57,13 @@ export function TransactionRenderer({
               onExit && onExit();
             }}
           >
-            Exit
+            OK
           </ActionButton>
-        </div>
+        </Layout>
       );
     case 'done':
       return (
-        <div>
+        <Layout>
           <Done result={result} />
           <ActionButton
             style={{ width: '100%' }}
@@ -65,11 +72,41 @@ export function TransactionRenderer({
               onExit && onExit();
             }}
           >
-            Exit
+            OK
           </ActionButton>
-        </div>
+        </Layout>
       );
     default:
       return null;
   }
 }
+
+const Layout = styled.section`
+  > article {
+    > figure:first-child {
+      margin: 0 auto;
+      width: 6em;
+      height: 6em;
+      border-radius: 50%;
+      border: 3px solid ${({ theme }) => theme.textColor};
+      display: grid;
+      place-content: center;
+
+      svg {
+        font-size: 3em;
+      }
+    }
+
+    > h2 {
+      font-weight: 500;
+      font-size: 1.3em;
+      text-align: center;
+      margin-top: 1em;
+      margin-bottom: 2em;
+    }
+  }
+
+  > button:last-child {
+    margin-top: 5em;
+  }
+`;

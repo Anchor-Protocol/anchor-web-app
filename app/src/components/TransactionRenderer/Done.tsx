@@ -4,6 +4,8 @@ import {
   formatUSTWithPostfixUnits,
   truncate,
 } from '@anchor-protocol/notation';
+import { Done as DoneIcon } from '@material-ui/icons';
+import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TransactionDetail, TransactionResult } from 'models/transaction';
 import React from 'react';
 
@@ -13,19 +15,26 @@ export interface DoneProps {
 
 export function Done({ result: { data } }: DoneProps) {
   return (
-    <div>
+    <article>
+      <figure>
+        <DoneIcon />
+      </figure>
+
       <h2>Complete!</h2>
-      <ul>
-        <li>Tx Hash: {truncate(data.txHash)}</li>
-        <li>Tx Fee: {formatUSTWithPostfixUnits(demicrofy(data.txFee))} UST</li>
+
+      <TxFeeList>
         {data.details
           .filter((detail): detail is TransactionDetail => !!detail)
           .map(({ name, value }, i) => (
-            <li key={'detail' + i}>
-              {name}: {value}
-            </li>
+            <TxFeeListItem key={'detail' + i} label={name}>
+              {value}
+            </TxFeeListItem>
           ))}
-      </ul>
-    </div>
+        <TxFeeListItem label="Tx Hash">{truncate(data.txHash)}</TxFeeListItem>
+        <TxFeeListItem label="Tx Fee">
+          {formatUSTWithPostfixUnits(demicrofy(data.txFee))} UST
+        </TxFeeListItem>
+      </TxFeeList>
+    </article>
   );
 }
