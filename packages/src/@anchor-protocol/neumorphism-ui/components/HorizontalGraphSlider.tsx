@@ -1,4 +1,4 @@
-import { Component, ReactElement } from 'react';
+import { Component, CSSProperties, ReactElement } from 'react';
 import styled, { DefaultTheme, withTheme } from 'styled-components';
 import { Rect } from './HorizontalGraphBar';
 
@@ -15,6 +15,7 @@ export interface HorizontalGraphSliderProps {
   onLeave?: () => void;
   className?: string;
   children?: ReactElement;
+  style?: CSSProperties;
 }
 
 interface HorizontalGraphSliderState {
@@ -56,7 +57,7 @@ class HorizontalGraphSliderBase extends Component<
     );
 
     return (
-      <div className={this.props.className}>
+      <div className={this.props.className} style={this.props.style}>
         <div ref={this.takeThumb} style={{ left: this.state.position }}>
           {thumb}
         </div>
@@ -115,6 +116,10 @@ class HorizontalGraphSliderBase extends Component<
     this.thumbMax =
       ((this.props.end - this.props.min) / (this.props.max - this.props.min)) *
       this.props.coordinateSpace.width;
+    
+    if (this.thumbMax - this.thumbMin < 1) {
+      return;
+    }
 
     this.thumb.removeEventListener('pointerdown', this.onDown);
     window.addEventListener('pointerup', this.onUp);

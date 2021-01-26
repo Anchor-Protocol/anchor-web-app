@@ -33,7 +33,7 @@ export function useRepayTotalBorrows(
 
   //console.log('useRepayDialog.tsx..()', totalBorrows.toString(), marketUserOverview.loanAmount.loan_amount);
 
-  return (totalBorrows.lt(100)
-    ? big(100)
-    : totalBorrows.plus(100)) as uUST<Big>;
+  return (totalBorrows.lt(1000)
+    ? big(1000)
+    : totalBorrows.plus(1000)) as uUST<Big>;
 }

@@ -214,6 +214,8 @@ function ComponentBase({
     },
     [ltvToAmount, amountToLtv],
   );
+  
+  console.log('useRepayDialog.tsx..ComponentBase()', totalBorrows.toString());
 
   // ---------------------------------------------
   // presentation
