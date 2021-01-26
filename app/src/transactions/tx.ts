@@ -1,5 +1,6 @@
 import { Ratio, uUST } from '@anchor-protocol/notation';
 import big from 'big.js';
+import { TxFailedError } from 'errors/TxFailedError';
 
 export interface StringifiedTxResult {
   fee: string;
@@ -69,7 +70,7 @@ export function parseTxResult({
   result,
   success,
 }: StringifiedTxResult): TxResult {
-  return {
+  const txResult: TxResult = {
     fee: JSON.parse(fee),
     gasAdjustment: gasAdjustment as Ratio,
     id,
@@ -79,6 +80,12 @@ export function parseTxResult({
     result,
     success,
   };
+
+  if (!success) {
+    throw new TxFailedError(txResult);
+  }
+
+  return txResult;
 }
 
 export function pickTxFee(txResult: TxResult): uUST {

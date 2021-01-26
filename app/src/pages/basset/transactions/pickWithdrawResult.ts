@@ -26,6 +26,8 @@ export function pickWithdrawResult({
 
   const transfer = pickEvent(rawLog, 'transfer');
 
+  console.log('pickWithdrawResult.ts..pickWithdrawResult()', transfer);
+
   if (!transfer) {
     throw new TxInfoParseError(
       txResult,

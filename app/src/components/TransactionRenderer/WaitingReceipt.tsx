@@ -8,7 +8,7 @@ export interface WaitingReceiptProps {
   txResult: TxResult;
 }
 
-export function WaitingReceipt({ result, txResult }: WaitingReceiptProps) {
+export function WaitingReceipt({ txResult }: WaitingReceiptProps) {
   return (
     <section>
       <h2>Waiting for receipt...</h2>

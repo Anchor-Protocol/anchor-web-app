@@ -202,6 +202,7 @@ export function ChromeExtensionWalletProvider({
   }, [checkStatus, isChrome]);
 
   useEffect(() => {
+    // TODO disable process.env.NODE !== development
     console.log(
       [
         `Wallet Status`,

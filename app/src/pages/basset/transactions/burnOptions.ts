@@ -31,5 +31,5 @@ export const burnOptions = createOperationOptions({
   renderBroadcast: (props) => {
     return JSON.stringify(props, null, 2);
   },
-  breakOnError: true,
+  //breakOnError: true,
 });

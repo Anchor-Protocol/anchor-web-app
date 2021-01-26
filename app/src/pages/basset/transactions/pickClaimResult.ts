@@ -39,6 +39,8 @@ export function pickClaimResult({
     );
   }
 
+  console.log('pickClaimResult.ts..pickClaimResult()', transfer);
+
   const claimedReward = pickAttributeValue<string>(transfer, 5);
 
   const txFee = pickAttributeValue<string>(transfer, 2);

@@ -168,7 +168,7 @@ export function useOperation(
       ? _id(Math.floor(Math.random() * 100000000))
       : typeof _id === 'string'
       ? _id
-      : 'operation!' + Math.floor(Math.floor(Math.random() * 1000000000));
+      : 'operation?' + Math.floor(Math.floor(Math.random() * 1000000000));
   });
 
   const onBroadcast = useRef<boolean>(broadcastWhen === 'always');
@@ -237,6 +237,7 @@ export function useOperation(
           ]);
 
           if (result === aborted) {
+            removeAbortController(id);
             initResult();
             return;
           }
@@ -269,6 +270,10 @@ export function useOperation(
 
         dispatch(id, 'done');
       } catch (error) {
+        if (!abortController.signal.aborted) {
+          abortController.abort();
+        }
+
         teardownAbortSubscription();
         removeAbortController(id);
 
@@ -278,8 +283,9 @@ export function useOperation(
         }
 
         if (
-          breakOnError === true ||
-          (typeof breakOnError === 'function' && breakOnError(error))
+          process.env.NODE_ENV === 'development' &&
+          (breakOnError === true ||
+            (typeof breakOnError === 'function' && breakOnError(error)))
         ) {
           throw error;
         }

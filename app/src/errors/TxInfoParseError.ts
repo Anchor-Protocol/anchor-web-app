@@ -12,7 +12,7 @@ export class TxInfoParseError extends Error {
   }
 
   toString = () => {
-    return `[${this.name}]\n${JSON.stringify(
+    return `[${this.name}: ${this.message}]\n${JSON.stringify(
       {
         txResult: this.txResult,
         txInfo: this.txInfo,
