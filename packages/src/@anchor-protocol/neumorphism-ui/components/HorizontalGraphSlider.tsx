@@ -106,6 +106,10 @@ class HorizontalGraphSliderBase extends Component<
   }
 
   onDown = (event: PointerEvent) => {
+    if (this.props.min === this.props.max) {
+      return;
+    }
+
     this.active = true;
     this.cursorStart = event.screenX;
     this.thumbStart = this.thumb.offsetLeft;
@@ -117,11 +121,13 @@ class HorizontalGraphSliderBase extends Component<
       ((this.props.end - this.props.min) / (this.props.max - this.props.min)) *
       this.props.coordinateSpace.width;
 
-    console.warn('HorizontalGraphSlider.tsx..onDown()', JSON.stringify({
-      thumbStart: this.thumbStart,
-      thumbMin: this.thumbMin,
-      thumbMax: this.thumbMax,
-    }, null, 2));
+    //console.warn('HorizontalGraphSlider.tsx..onDown()', JSON.stringify({
+    //  min: this.props.min,
+    //  max: this.props.max,
+    //  thumbStart: this.thumbStart,
+    //  thumbMin: this.thumbMin,
+    //  thumbMax: this.thumbMax,
+    //}, null, 2));
 
     if (this.thumbMax - this.thumbMin < 1) {
       return;

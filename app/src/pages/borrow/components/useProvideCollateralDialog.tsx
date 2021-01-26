@@ -16,7 +16,11 @@ import {
   Ratio,
   uUST,
 } from '@anchor-protocol/notation';
-import type { DialogProps, DialogTemplate, OpenDialog } from '@anchor-protocol/use-dialog';
+import type {
+  DialogProps,
+  DialogTemplate,
+  OpenDialog,
+} from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { useApolloClient } from '@apollo/client';
@@ -303,18 +307,20 @@ function ComponentBase({
           style={{ pointerEvents: 'none' }}
         />
 
-        <figure className="graph">
-          <LTVGraph
-            maxLtv={marketOverview.bLunaMaxLtv}
-            safeLtv={marketOverview.bLunaSafeLtv}
-            currentLtv={currentLtv}
-            nextLtv={nextLtv}
-            userMinLtv={0 as Ratio<BigSource>}
-            userMaxLtv={currentLtv}
-            onStep={ltvStepFunction}
-            onChange={onLtvChange}
-          />
-        </figure>
+        {big(currentLtv ?? 0).gt(0) && (
+          <figure className="graph">
+            <LTVGraph
+              maxLtv={marketOverview.bLunaMaxLtv}
+              safeLtv={marketOverview.bLunaSafeLtv}
+              currentLtv={currentLtv}
+              nextLtv={nextLtv}
+              userMinLtv={0 as Ratio<BigSource>}
+              userMaxLtv={currentLtv}
+              onStep={ltvStepFunction}
+              onChange={onLtvChange}
+            />
+          </figure>
+        )}
 
         {depositAmount.length > 0 && (
           <TxFeeList className="receipt">

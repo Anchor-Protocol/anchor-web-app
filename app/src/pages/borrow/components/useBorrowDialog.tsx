@@ -287,6 +287,7 @@ function ComponentBase({
 
         <figure className="graph">
           <LTVGraph
+            disabled={max.lte(0)}
             maxLtv={marketOverview.bLunaMaxLtv}
             safeLtv={marketOverview.bLunaSafeLtv}
             currentLtv={currentLtv}
