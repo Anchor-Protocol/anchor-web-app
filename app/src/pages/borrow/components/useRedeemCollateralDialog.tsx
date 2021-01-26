@@ -34,6 +34,7 @@ import { useAddressProvider } from 'contexts/contract';
 import { FIXED_GAS } from 'env';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
+import { useMarketNotNullable } from 'pages/borrow/context/market';
 import { ltvToRedeemAmount } from 'pages/borrow/logics/ltvToRedeemAmount';
 import { redeemAmountToLtv } from 'pages/borrow/logics/redeemAmountToLtv';
 import { useCurrentLtv } from 'pages/borrow/logics/useCurrentLtv';
@@ -41,8 +42,6 @@ import { useInvalidRedeemAmount } from 'pages/borrow/logics/useInvalidRedeemAmou
 import { useRedeemCollateralBorrowLimit } from 'pages/borrow/logics/useRedeemCollateralBorrowLimit';
 import { useRedeemCollateralNextLtv } from 'pages/borrow/logics/useRedeemCollateralNextLtv';
 import { useRedeemCollateralWithdrawableAmount } from 'pages/borrow/logics/useRedeemCollateralWithdrawableAmount';
-import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
-import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import { redeemCollateralOptions } from 'pages/borrow/transactions/redeemCollateralOptions';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -50,8 +49,6 @@ import styled from 'styled-components';
 
 interface FormParams {
   className?: string;
-  marketOverview: MarketOverview;
-  marketUserOverview: MarketUserOverview;
 }
 
 type FormReturn = void;
@@ -71,13 +68,13 @@ const txFee = FIXED_GAS;
 
 function ComponentBase({
   className,
-  marketOverview,
-  marketUserOverview,
   closeDialog,
 }: DialogProps<FormParams, FormReturn>) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
+  const { marketUserOverview, marketOverview } = useMarketNotNullable();
+
   const { status, post } = useWallet();
 
   const addressProvider = useAddressProvider();

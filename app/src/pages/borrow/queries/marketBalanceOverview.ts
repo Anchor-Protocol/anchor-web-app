@@ -1,5 +1,6 @@
 import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
 import { Num, uaUST, uUST } from '@anchor-protocol/notation';
+import { useMap } from '@anchor-protocol/use-map';
 import {
   ApolloClient,
   ApolloQueryResult,
@@ -106,9 +107,11 @@ export function useMarketBalanceOverview(): QueryResult<
     }),
   });
 
-  const parsedData = useMemo(
-    () => (result.data ? parseData(result.data) : undefined),
-    [result.data],
+  const parsedData = useMap<StringifiedData | undefined, Data>(
+    result.data,
+    (next, prev) => {
+      return !!next ? parseData(next) : prev;
+    },
   );
 
   return {

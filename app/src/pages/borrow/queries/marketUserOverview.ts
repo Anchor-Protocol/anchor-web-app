@@ -1,6 +1,7 @@
 import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { Num, uUST } from '@anchor-protocol/notation';
+import { useMap } from '@anchor-protocol/use-map';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import {
   ApolloClient,
@@ -10,7 +11,6 @@ import {
   useQuery,
 } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
-import { useMemo } from 'react';
 import { Data as MarketBalanceOverviewData } from './marketBalanceOverview';
 
 export interface StringifiedData {
@@ -168,9 +168,11 @@ export function useMarketUserOverview({
     }
   });
 
-  const parsedData = useMemo(
-    () => (result.data ? parseData(result.data) : undefined),
-    [result.data],
+  const parsedData = useMap<StringifiedData | undefined, Data>(
+    result.data,
+    (next, prev) => {
+      return !!next ? parseData(next) : prev;
+    },
   );
 
   return {

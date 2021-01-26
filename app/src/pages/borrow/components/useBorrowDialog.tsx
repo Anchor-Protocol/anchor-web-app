@@ -32,6 +32,7 @@ import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
+import { useMarketNotNullable } from 'pages/borrow/context/market';
 import { borrowAmountToLtv } from 'pages/borrow/logics/borrowAmountToLtv';
 import { ltvToBorrowAmount } from 'pages/borrow/logics/ltvToBorrowAmount';
 import { useAPR } from 'pages/borrow/logics/useAPR';
@@ -42,8 +43,6 @@ import { useBorrowSafeMax } from 'pages/borrow/logics/useBorrowSafeMax';
 import { useBorrowTxFee } from 'pages/borrow/logics/useBorrowTxFee';
 import { useCurrentLtv } from 'pages/borrow/logics/useCurrentLtv';
 import { useInvalidBorrowAmount } from 'pages/borrow/logics/useInvalidBorrowAmount';
-import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
-import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import { borrowOptions } from 'pages/borrow/transactions/borrowOptions';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -51,8 +50,6 @@ import styled from 'styled-components';
 
 interface FormParams {
   className?: string;
-  marketOverview: MarketOverview;
-  marketUserOverview: MarketUserOverview;
 }
 
 type FormReturn = void;
@@ -70,13 +67,13 @@ const Template: DialogTemplate<FormParams, FormReturn> = (props) => {
 
 function ComponentBase({
   className,
-  marketOverview,
-  marketUserOverview,
   closeDialog,
 }: DialogProps<FormParams, FormReturn>) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
+  const { marketUserOverview, marketOverview } = useMarketNotNullable();
+
   const { status, post } = useWallet();
 
   const addressProvider = useAddressProvider();

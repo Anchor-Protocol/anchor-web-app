@@ -32,6 +32,7 @@ import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
+import { useMarketNotNullable } from 'pages/borrow/context/market';
 import { ltvToRepayAmount } from 'pages/borrow/logics/ltvToRepayAmount';
 import { repayAmountToLtv } from 'pages/borrow/logics/repayAmountToLtv';
 import { useAPR } from 'pages/borrow/logics/useAPR';
@@ -42,9 +43,6 @@ import { useRepaySendAmount } from 'pages/borrow/logics/useRepaySendAmount';
 import { useRepayTotalBorrows } from 'pages/borrow/logics/useRepayTotalBorrows';
 import { useRepayTotalOutstandingLoan } from 'pages/borrow/logics/useRepayTotalOutstandingLoan';
 import { useRepayTxFee } from 'pages/borrow/logics/useRepayTxFee';
-import { Data as MarketBalance } from 'pages/borrow/queries/marketBalanceOverview';
-import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
-import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import { repayOptions } from 'pages/borrow/transactions/repayOptions';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -52,9 +50,6 @@ import styled from 'styled-components';
 
 interface FormParams {
   className?: string;
-  marketBalance: MarketBalance;
-  marketOverview: MarketOverview;
-  marketUserOverview: MarketUserOverview;
 }
 
 type FormReturn = void;
@@ -72,14 +67,17 @@ const Template: DialogTemplate<FormParams, FormReturn> = (props) => {
 
 function ComponentBase({
   className,
-  marketBalance,
-  marketOverview,
-  marketUserOverview,
   closeDialog,
 }: DialogProps<FormParams, FormReturn>) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
+  const {
+    marketBalance,
+    marketUserOverview,
+    marketOverview,
+  } = useMarketNotNullable();
+
   const { status, post } = useWallet();
 
   const addressProvider = useAddressProvider();

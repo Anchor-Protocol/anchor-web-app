@@ -16,11 +16,7 @@ import {
   Ratio,
   uUST,
 } from '@anchor-protocol/notation';
-import type {
-  DialogProps,
-  DialogTemplate,
-  OpenDialog,
-} from '@anchor-protocol/use-dialog';
+import type { DialogProps, DialogTemplate, OpenDialog } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { useApolloClient } from '@apollo/client';
@@ -34,6 +30,7 @@ import { useAddressProvider } from 'contexts/contract';
 import { FIXED_GAS } from 'env';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
+import { useMarketNotNullable } from 'pages/borrow/context/market';
 import { depositAmountToBorrowLimit } from 'pages/borrow/logics/depositAmountToBorrowLimit';
 import { depositAmountToLtv } from 'pages/borrow/logics/depositAmountToLtv';
 import { ltvToDepositAmount } from 'pages/borrow/logics/ltvToDepositAmount';
@@ -41,8 +38,6 @@ import { useCurrentLtv } from 'pages/borrow/logics/useCurrentLtv';
 import { useInvalidDepositAmount } from 'pages/borrow/logics/useInvalidDepositAmount';
 import { useProvideCollateralBorrowLimit } from 'pages/borrow/logics/useProvideCollateralBorrowLimit';
 import { useProvideCollateralNextLtv } from 'pages/borrow/logics/useProvideCollateralNextLtv';
-import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
-import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import { provideCollateralOptions } from 'pages/borrow/transactions/provideCollateralOptions';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -50,8 +45,6 @@ import styled from 'styled-components';
 
 interface FormParams {
   className?: string;
-  marketOverview: MarketOverview;
-  marketUserOverview: MarketUserOverview;
 }
 
 type FormReturn = void;
@@ -71,13 +64,13 @@ const txFee = FIXED_GAS;
 
 function ComponentBase({
   className,
-  marketOverview,
-  marketUserOverview,
   closeDialog,
 }: DialogProps<FormParams, FormReturn>) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
+  const { marketUserOverview, marketOverview } = useMarketNotNullable();
+
   const { status, post } = useWallet();
 
   const addressProvider = useAddressProvider();

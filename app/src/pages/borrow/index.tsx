@@ -4,53 +4,34 @@ import {
 } from '@anchor-protocol/styled-neumorphism';
 import { Footer } from 'components/Footer';
 import { screen } from 'env';
-import { useMarketBalanceOverview } from 'pages/borrow/queries/marketBalanceOverview';
-import { useMarketOverview } from 'pages/borrow/queries/marketOverview';
-import { useMarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
+import { Overview } from 'pages/borrow/components/Overview';
+import { MarketProvider } from 'pages/borrow/context/market';
 import React from 'react';
 import styled from 'styled-components';
 import { CollateralList } from './components/CollateralList';
 import { LoanList } from './components/LoanList';
-import { Overview } from 'pages/borrow/components/Overview';
 
 export interface BorrowProps {
   className?: string;
 }
 
 function BorrowBase({ className }: BorrowProps) {
-  const { parsedData: marketBalance } = useMarketBalanceOverview();
-  const { parsedData: marketOverview } = useMarketOverview({ marketBalance });
-  const { parsedData: marketUserOverview } = useMarketUserOverview({
-    marketBalance,
-  });
-
   return (
-    <div className={className}>
-      <main>
-        <h1>BORROW</h1>
+    <MarketProvider>
+      <div className={className}>
+        <main>
+          <h1>BORROW</h1>
 
-        <div className="content-layout">
-          <Overview
-            className="borrow"
-            marketOverview={marketOverview}
-            marketUserOverview={marketUserOverview}
-          />
-          <CollateralList
-            className="collateral-list"
-            marketOverview={marketOverview}
-            marketUserOverview={marketUserOverview}
-          />
-          <LoanList
-            className="loan-list"
-            marketBalance={marketBalance}
-            marketOverview={marketOverview}
-            marketUserOverview={marketUserOverview}
-          />
-        </div>
+          <div className="content-layout">
+            <Overview className="borrow" />
+            <CollateralList className="collateral-list" />
+            <LoanList className="loan-list" />
+          </div>
 
-        <Footer />
-      </main>
-    </div>
+          <Footer />
+        </main>
+      </div>
+    </MarketProvider>
   );
 }
 

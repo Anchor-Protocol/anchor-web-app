@@ -13,29 +13,26 @@ import { Error } from '@material-ui/icons';
 import big from 'big.js';
 import { useBorrowDialog } from 'pages/borrow/components/useBorrowDialog';
 import { useRepayDialog } from 'pages/borrow/components/useRepayDialog';
+import { useMarket } from 'pages/borrow/context/market';
 import { useAPR } from 'pages/borrow/logics/useAPR';
 import { useBorrowed } from 'pages/borrow/logics/useBorrowed';
-import { Data as MarketBalance } from 'pages/borrow/queries/marketBalanceOverview';
-import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
-import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import styled from 'styled-components';
 
 export interface LoanListProps {
   className?: string;
-  marketBalance: MarketBalance | undefined;
-  marketOverview: MarketOverview | undefined;
-  marketUserOverview: MarketUserOverview | undefined;
 }
 
-function LoanListBase({
-  className,
-  marketBalance,
-  marketOverview,
-  marketUserOverview,
-}: LoanListProps) {
+function LoanListBase({ className }: LoanListProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
+  const {
+    marketBalance,
+    marketOverview,
+    marketUserOverview,
+    refetch,
+  } = useMarket();
+
   const { status } = useWallet();
 
   const [openBorrowDialog, borrowDialogElement] = useBorrowDialog();
@@ -117,12 +114,10 @@ function LoanListBase({
                   !marketOverview ||
                   !marketUserOverview
                 }
-                onClick={() =>
-                  openBorrowDialog({
-                    marketOverview: marketOverview!,
-                    marketUserOverview: marketUserOverview!,
-                  })
-                }
+                onClick={() => {
+                  refetch();
+                  openBorrowDialog({});
+                }}
               >
                 Borrow
               </ActionButton>
@@ -134,13 +129,10 @@ function LoanListBase({
                   !marketUserOverview ||
                   big(marketUserOverview.loanAmount.loan_amount).lte(0)
                 }
-                onClick={() =>
-                  openRepayDialog({
-                    marketBalance: marketBalance!,
-                    marketOverview: marketOverview!,
-                    marketUserOverview: marketUserOverview!,
-                  })
-                }
+                onClick={() => {
+                  refetch();
+                  openRepayDialog({});
+                }}
               >
                 Repay
               </ActionButton>
