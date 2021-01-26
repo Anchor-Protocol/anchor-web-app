@@ -42,7 +42,14 @@ function LoanListBase({ className }: LoanListProps) {
   // compute
   // ---------------------------------------------
   const apr = useAPR(marketOverview?.borrowRate.rate);
-  const borrowed = useBorrowed(marketUserOverview?.loanAmount.loan_amount);
+  const borrowed = useBorrowed(
+    marketUserOverview?.loanAmount.loan_amount,
+    marketOverview?.borrowRate.rate,
+    marketBalance?.currentBlock,
+    marketBalance?.marketState.last_interest_updated,
+    marketBalance?.marketState.global_interest_index,
+    marketUserOverview?.liability.interest_index,
+  );
 
   // ---------------------------------------------
   // presentation

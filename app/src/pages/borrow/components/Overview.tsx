@@ -21,10 +21,17 @@ export interface OverviewProps {
 }
 
 function OverviewBase({ className }: OverviewProps) {
-  const { marketOverview, marketUserOverview } = useMarket();
+  const { marketOverview, marketUserOverview, marketBalance } = useMarket();
 
   const apr = useAPR(marketOverview?.borrowRate.rate);
-  const borrowed = useBorrowed(marketUserOverview?.loanAmount.loan_amount);
+  const borrowed = useBorrowed(
+    marketUserOverview?.loanAmount.loan_amount,
+    marketOverview?.borrowRate.rate,
+    marketBalance?.currentBlock,
+    marketBalance?.marketState.last_interest_updated,
+    marketBalance?.marketState.global_interest_index,
+    marketUserOverview?.liability.interest_index,
+  );
   const collaterals = useCollaterals(
     marketUserOverview?.borrowInfo.balance,
     marketUserOverview?.borrowInfo.spendable,
