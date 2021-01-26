@@ -10,7 +10,6 @@ import {
 } from '@anchor-protocol/notation';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { Error } from '@material-ui/icons';
-import big from 'big.js';
 import { useBorrowDialog } from 'pages/borrow/components/useBorrowDialog';
 import { useRepayDialog } from 'pages/borrow/components/useRepayDialog';
 import { useMarket } from 'pages/borrow/context/market';
@@ -134,7 +133,7 @@ function LoanListBase({ className }: LoanListProps) {
                   !marketBalance ||
                   !marketOverview ||
                   !marketUserOverview ||
-                  big(marketUserOverview.loanAmount.loan_amount).lte(0)
+                  borrowed.lte(0)
                 }
                 onClick={() => {
                   refetch();
