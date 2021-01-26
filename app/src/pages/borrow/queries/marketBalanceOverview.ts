@@ -9,7 +9,6 @@ import {
   useQuery,
 } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
-import { useMemo } from 'react';
 
 export interface StringifiedData {
   currentBlock: number;
