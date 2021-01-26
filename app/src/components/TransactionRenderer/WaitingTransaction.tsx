@@ -13,7 +13,7 @@ export function WaitingTransaction({ result }: WaitingTransactionProps) {
         <HourglassEmpty />
       </figure>
 
-      <h2>Wating for Terra Station...</h2>
+      <h2>Waiting for Terra Station...</h2>
     </article>
   );
 }

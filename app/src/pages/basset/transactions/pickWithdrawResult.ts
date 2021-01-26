@@ -1,4 +1,9 @@
-import { demicrofy, formatLuna, uLuna } from '@anchor-protocol/notation';
+import {
+  demicrofy,
+  formatLuna,
+  stripULuna,
+  uLuna,
+} from '@anchor-protocol/notation';
 import { TxInfoParseError } from 'errors/TxInfoParseError';
 import { TransactionResult } from 'models/transaction';
 import {
@@ -28,6 +33,11 @@ export function pickWithdrawResult({
 
   console.log('pickWithdrawResult.ts..pickWithdrawResult()', transfer);
 
+  console.log(
+    'pickWithdrawResult.ts..pickWithdrawResult()',
+    JSON.stringify(transfer, null, 2),
+  );
+
   if (!transfer) {
     throw new TxInfoParseError(
       txResult,
@@ -36,7 +46,27 @@ export function pickWithdrawResult({
     );
   }
 
-  const unbondedAmount = pickAttributeValue<uLuna>(transfer, 2);
+  /**
+   {
+     "type": "transfer",
+     "attributes": [
+       {
+         "key": "recipient",
+         "value": "terra1x46rqay4d3cssq8gxxvqz8xt6nwlz4td20k38v"
+       },
+       {
+         "key": "sender",
+         "value": "terra1kzx23xs8v9yggf6lqpwgerg455e8xzsv0s0glf"
+       },
+       {
+         "key": "amount",
+         "value": "20000000uluna"
+       }
+     ]
+   }
+   */
+
+  const unbondedAmount = pickAttributeValue<string>(transfer, 2);
 
   const txFee = pickTxFee(txResult);
 
@@ -48,9 +78,9 @@ export function pickWithdrawResult({
     txFee,
     txHash,
     details: [
-      unbondedAmount && {
+      !!unbondedAmount && {
         name: 'Unbonded Amount',
-        value: formatLuna(demicrofy(unbondedAmount)) + ' Luna',
+        value: formatLuna(demicrofy(stripULuna(unbondedAmount))) + ' Luna',
       },
     ],
   };
