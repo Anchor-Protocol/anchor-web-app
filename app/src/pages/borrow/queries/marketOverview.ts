@@ -1,6 +1,12 @@
 import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
 import { Ratio } from '@anchor-protocol/notation';
-import { gql, QueryResult, useQuery } from '@apollo/client';
+import {
+  ApolloClient,
+  ApolloQueryResult,
+  gql,
+  QueryResult,
+  useQuery,
+} from '@apollo/client';
 import big from 'big.js';
 import { useAddressProvider } from 'contexts/contract';
 import { SAFE_RATIO } from 'env';
@@ -200,4 +206,47 @@ export function useMarketOverview({
     ...result,
     parsedData,
   };
+}
+
+export function queryMarketOverview(
+  client: ApolloClient<any>,
+  addressProvider: AddressProvider,
+  marketBalance: MarketBalanceOverviewData,
+): Promise<ApolloQueryResult<StringifiedData> & { parsedData: Data }> {
+  return client
+    .query<StringifiedData, StringifiedVariables>({
+      query,
+      fetchPolicy: 'network-only',
+      variables: stringifyVariables({
+        interestContractAddress: addressProvider.interest(),
+        interestBorrowRateQuery: {
+          borrow_rate: {
+            market_balance:
+              marketBalance.marketBalance.find(({ Denom }) => Denom === 'uusd')
+                ?.Amount ?? '',
+            total_liabilities: marketBalance.marketState.total_liabilities,
+            total_reserves: marketBalance.marketState.total_reserves,
+          },
+        },
+        oracleContractAddress: addressProvider.oracle(),
+        oracleQuery: {
+          price: {
+            base: addressProvider.bAssetToken('ubluna'),
+            quote: 'uusd',
+          },
+        },
+        overseerContractAddress: addressProvider.overseer('ubluna'),
+        overseerWhitelistQuery: {
+          whitelist: {
+            collateral_token: addressProvider.bAssetToken('ubluna'),
+          },
+        },
+      }),
+    })
+    .then((result) => {
+      return {
+        ...result,
+        parsedData: parseData(result.data, addressProvider),
+      };
+    });
 }

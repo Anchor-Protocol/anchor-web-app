@@ -22,7 +22,7 @@ import {
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
 import big, { Big } from 'big.js';
-import { OperationRenderer } from 'components/OperationRenderer';
+import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
@@ -189,22 +189,7 @@ function BurnBase({ className }: BurnProps) {
   ) {
     return (
       <Section className={className}>
-        {burnResult.status === 'done' ? (
-          <div>
-            <pre>{JSON.stringify(burnResult.data, null, 2)}</pre>
-            <ActionButton
-              style={{ width: 200 }}
-              onClick={() => {
-                init();
-                burnResult.reset();
-              }}
-            >
-              Exit
-            </ActionButton>
-          </div>
-        ) : (
-          <OperationRenderer result={burnResult} />
-        )}
+        <TransactionRenderer result={burnResult} onExit={init} />
       </Section>
     );
   }

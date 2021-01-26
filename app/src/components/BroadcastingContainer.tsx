@@ -11,7 +11,7 @@ export interface BroadcastingContainerProps {
 
 const broadcastingOptions = createBroadcastingOption({
   map: ({ id, rendering }) => <div key={id}>{rendering}</div>,
-  displayTime: 5000,
+  //displayTime: 5000,
 });
 
 function BroadcastingContainerBase({ className }: BroadcastingContainerProps) {
@@ -44,9 +44,14 @@ export const BroadcastingContainer = styled(BroadcastingContainerBase)`
   gap: 1em;
 
   > div {
+    font-size: 10px;
+
     min-width: 300px;
-    border: 5px solid deepskyblue;
-    padding: 1em;
+    background-color: ${({ theme }) => theme.backgroundColor};
+    padding: 3em;
+    border-radius: 1em;
+
+    box-shadow: 0px 0px 21px 4px rgba(0, 0, 0, 0.3);
 
     animation: ${enter} 0.5s ease-in-out;
   }

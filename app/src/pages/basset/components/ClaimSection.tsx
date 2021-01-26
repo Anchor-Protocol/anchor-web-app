@@ -7,7 +7,7 @@ import { demicrofy, formatUST } from '@anchor-protocol/notation';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { useApolloClient } from '@apollo/client';
 import big from 'big.js';
-import { OperationRenderer } from 'components/OperationRenderer';
+import { TransactionRenderer } from 'components/TransactionRenderer';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
@@ -89,16 +89,7 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
   ) {
     return (
       <Section>
-        {claimResult.status === 'done' ? (
-          <div>
-            <pre>{JSON.stringify(claimResult.data, null, 2)}</pre>
-            <ActionButton style={{ width: 200 }} onClick={claimResult.reset}>
-              Exit
-            </ActionButton>
-          </div>
-        ) : (
-          <OperationRenderer result={claimResult} />
-        )}
+        <TransactionRenderer result={claimResult} />
       </Section>
     );
   }

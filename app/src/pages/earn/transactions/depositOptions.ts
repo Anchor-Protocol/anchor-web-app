@@ -6,6 +6,7 @@ import {
 } from '@anchor-protocol/broadcastable-operation';
 import { WalletState } from '@anchor-protocol/wallet-provider';
 import { ApolloClient } from '@apollo/client';
+import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { pickDepositResult } from 'pages/earn/transactions/pickDepositResult';
 import { createContractMsg } from 'transactions/createContractMsg';
 import { getTxInfo } from 'transactions/getTxInfo';
@@ -26,10 +27,8 @@ export const depositOptions = createOperationOptions({
     timeout(postContractMsg(post), 1000 * 60 * 2), // MsgExecuteContract[] -> Promise<StringifiedTxResult>
     parseTxResult, // StringifiedTxResult -> TxResult
     getTxInfo(client), // TxResult -> { TxResult, TxInfo }
-    pickDepositResult, // { TxResult, TxInfo } -> DepositResult
+    pickDepositResult, // { TxResult, TxInfo } -> TransactionResult
   ],
-  renderBroadcast: (props) => {
-    return JSON.stringify(props, null, 2);
-  },
+  renderBroadcast: renderBroadcastTransaction,
   //breakOnError: true,
 });

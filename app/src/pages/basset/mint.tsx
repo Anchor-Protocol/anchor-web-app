@@ -24,7 +24,7 @@ import {
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
 import big, { Big } from 'big.js';
-import { OperationRenderer } from 'components/OperationRenderer';
+import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
@@ -209,22 +209,7 @@ function MintBase({ className }: MintProps) {
   ) {
     return (
       <Section className={className}>
-        {mintResult.status === 'done' ? (
-          <div>
-            <pre>{JSON.stringify(mintResult.data, null, 2)}</pre>
-            <ActionButton
-              style={{ width: 200 }}
-              onClick={() => {
-                init();
-                mintResult.reset();
-              }}
-            >
-              Exit
-            </ActionButton>
-          </div>
-        ) : (
-          <OperationRenderer result={mintResult} />
-        )}
+        <TransactionRenderer result={mintResult} onExit={init} />
       </Section>
     );
   }
