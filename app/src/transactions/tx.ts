@@ -87,8 +87,3 @@ export function parseTxResult({
 
   return txResult;
 }
-
-export function pickTxFee(txResult: TxResult): uUST {
-  const uusd = txResult.fee.amount[0];
-  return big(uusd.amount).plus(txResult.fee.gas).toFixed() as uUST;
-}

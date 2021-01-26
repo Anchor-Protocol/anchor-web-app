@@ -16,11 +16,12 @@ import {
   pickEvent,
   pickRawLog,
 } from 'queries/txInfos';
-import { pickTxFee, TxResult } from 'transactions/tx';
+import { TxResult } from 'transactions/tx';
 
 interface Params {
   txResult: TxResult;
   txInfo: Data;
+  txFee: uUST;
   marketBalance: MarketBalance;
   marketOverview: MarketOverview;
   marketUserOverview: MarketUserOverview;
@@ -29,6 +30,7 @@ interface Params {
 export function pickRepayResult({
   txInfo,
   txResult,
+  txFee,
   marketOverview,
   marketUserOverview,
 }: Params): TransactionResult {
@@ -58,8 +60,6 @@ export function pickRepayResult({
   );
 
   const outstandingLoan = marketUserOverview.loanAmount.loan_amount;
-
-  const txFee = pickTxFee(txResult);
 
   const txHash = txResult.result.txhash;
 

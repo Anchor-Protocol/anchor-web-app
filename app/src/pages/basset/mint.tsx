@@ -15,6 +15,7 @@ import {
   Luna,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
+  uUST,
 } from '@anchor-protocol/notation';
 import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
@@ -190,6 +191,7 @@ function MintBase({ className }: MintProps) {
         amount: bondAmount,
         bAsset: mintCurrency.value,
         validator: selectedValidator,
+        txFee: FIXED_GAS.toString() as uUST,
       });
 
       if (!broadcasted) {

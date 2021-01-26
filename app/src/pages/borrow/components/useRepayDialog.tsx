@@ -13,6 +13,7 @@ import {
   UST,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
+  uUST,
 } from '@anchor-protocol/notation';
 import type {
   DialogProps,
@@ -174,7 +175,11 @@ function ComponentBase({
   }, []);
 
   const proceed = useCallback(
-    async (status: WalletStatus, repayAmount: UST) => {
+    async (
+      status: WalletStatus,
+      repayAmount: UST,
+      txFee: uUST<BigSource> | undefined,
+    ) => {
       if (status.status !== 'ready' || bank.status !== 'connected') {
         return;
       }
@@ -184,6 +189,7 @@ function ComponentBase({
         market: 'ust',
         amount: repayAmount,
         borrower: undefined,
+        txFee: txFee!.toString() as uUST,
       });
     },
     [bank.status, repay],
@@ -328,7 +334,7 @@ function ComponentBase({
             !!invalidTxFee ||
             !!invalidAssetAmount
           }
-          onClick={() => proceed(status, repayAmount)}
+          onClick={() => proceed(status, repayAmount, txFee)}
         >
           Proceed
         </ActionButton>

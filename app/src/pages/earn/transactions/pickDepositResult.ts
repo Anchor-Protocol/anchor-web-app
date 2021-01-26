@@ -15,16 +15,18 @@ import {
   pickEvent,
   pickRawLog,
 } from 'queries/txInfos';
-import { pickTxFee, TxResult } from 'transactions/tx';
+import { TxResult } from 'transactions/tx';
 
 interface Params {
   txResult: TxResult;
   txInfo: Data;
+  txFee: uUST;
 }
 
 export function pickDepositResult({
   txInfo,
   txResult,
+  txFee,
 }: Params): TransactionResult {
   const rawLog = pickRawLog(txInfo, 0);
 
@@ -51,7 +53,7 @@ export function pickDepositResult({
     receivedAmount &&
     (big(depositAmount).div(receivedAmount) as Ratio<BigSource> | undefined);
 
-  const txFee = pickTxFee(txResult);
+  //const txFee = pickTxFee(txResult);
 
   const txHash = txResult.result.txhash;
 

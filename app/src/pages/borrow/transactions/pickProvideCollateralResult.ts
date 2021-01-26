@@ -3,6 +3,7 @@ import {
   formatLuna,
   formatRatioToPercentage,
   ubLuna,
+  uUST,
 } from '@anchor-protocol/notation';
 import { TxInfoParseError } from 'errors/TxInfoParseError';
 import { TransactionResult } from 'models/transaction';
@@ -16,11 +17,12 @@ import {
   pickEvent,
   pickRawLog,
 } from 'queries/txInfos';
-import { pickTxFee, TxResult } from 'transactions/tx';
+import { TxResult } from 'transactions/tx';
 
 interface Params {
   txResult: TxResult;
   txInfo: Data;
+  txFee: uUST;
   marketBalance: MarketBalance;
   marketOverview: MarketOverview;
   marketUserOverview: MarketUserOverview;
@@ -29,6 +31,7 @@ interface Params {
 export function pickProvideCollateralResult({
   txInfo,
   txResult,
+  txFee,
   marketOverview,
   marketUserOverview,
 }: Params): TransactionResult {
@@ -56,8 +59,6 @@ export function pickProvideCollateralResult({
     marketUserOverview.borrowInfo.spendable,
     marketOverview.oraclePrice.rate,
   );
-
-  const txFee = pickTxFee(txResult);
 
   const txHash = txResult.result.txhash;
 

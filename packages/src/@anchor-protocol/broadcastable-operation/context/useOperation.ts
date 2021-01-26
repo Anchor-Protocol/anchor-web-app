@@ -221,10 +221,12 @@ export function useOperation(
         abort,
       });
 
+      const storage = new Map<string, any>();
+
       try {
         let value = params;
 
-        const operators = pipe(dependencyList.current);
+        const operators = pipe(dependencyList.current, storage);
         const operatorOption = { signal: abortController.signal };
 
         let i: number = -1;

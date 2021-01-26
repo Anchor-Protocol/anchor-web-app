@@ -11,6 +11,7 @@ import {
   UST,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
+  uUST,
 } from '@anchor-protocol/notation';
 import type {
   DialogProps,
@@ -21,7 +22,7 @@ import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
-import big from 'big.js';
+import big, { BigSource } from 'big.js';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
@@ -107,7 +108,11 @@ function ComponentBase({
   }, []);
 
   const proceed = useCallback(
-    async (status: WalletStatus, withdrawAmount: string) => {
+    async (
+      status: WalletStatus,
+      withdrawAmount: string,
+      txFee: uUST<BigSource> | undefined,
+    ) => {
       if (status.status !== 'ready' || bank.status !== 'connected') {
         return;
       }
@@ -118,6 +123,7 @@ function ComponentBase({
           .div(totalDeposit.exchangeRate.exchange_rate)
           .toString(),
         symbol: 'usd',
+        txFee: txFee!.toString() as uUST,
       });
     },
     [bank.status, totalDeposit.exchangeRate.exchange_rate, withdraw],
@@ -207,7 +213,7 @@ function ComponentBase({
             big(withdrawAmount).lte(0) ||
             !!invalidWithdrawAmount
           }
-          onClick={() => proceed(status, withdrawAmount)}
+          onClick={() => proceed(status, withdrawAmount, txFee)}
         >
           Proceed
         </ActionButton>

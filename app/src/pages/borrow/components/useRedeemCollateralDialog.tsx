@@ -14,6 +14,7 @@ import {
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
   Ratio,
+  uUST,
 } from '@anchor-protocol/notation';
 import type {
   DialogProps,
@@ -24,7 +25,7 @@ import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
-import big, { Big } from 'big.js';
+import big, { Big, BigSource } from 'big.js';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
@@ -182,7 +183,11 @@ function ComponentBase({
   }, []);
 
   const proceed = useCallback(
-    async (status: WalletStatus, redeemAmount: bLuna) => {
+    async (
+      status: WalletStatus,
+      redeemAmount: bLuna,
+      txFee: uUST<BigSource> | undefined,
+    ) => {
       if (status.status !== 'ready' || bank.status !== 'connected') {
         return;
       }
@@ -191,6 +196,7 @@ function ComponentBase({
         address: status.walletAddress,
         market: 'ust',
         amount: redeemAmount.length > 0 ? redeemAmount : '0',
+        txFee: txFee!.toString() as uUST,
       });
     },
     [bank.status, redeemCollateral],
@@ -335,7 +341,7 @@ function ComponentBase({
             !!invalidTxFee ||
             !!invalidRedeemAmount
           }
-          onClick={() => proceed(status, redeemAmount)}
+          onClick={() => proceed(status, redeemAmount, txFee)}
         >
           Proceed
         </ActionButton>

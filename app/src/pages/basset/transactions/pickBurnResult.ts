@@ -5,6 +5,7 @@ import {
   Ratio,
   ubLuna,
   uLuna,
+  uUST,
 } from '@anchor-protocol/notation';
 import big, { BigSource } from 'big.js';
 import { TxInfoParseError } from 'errors/TxInfoParseError';
@@ -15,16 +16,18 @@ import {
   pickEvent,
   pickRawLog,
 } from 'queries/txInfos';
-import { pickTxFee, TxResult } from 'transactions/tx';
+import { TxResult } from 'transactions/tx';
 
 interface Params {
   txResult: TxResult;
   txInfo: Data;
+  txFee: uUST;
 }
 
 export function pickBurnResult({
   txInfo,
   txResult,
+  txFee,
 }: Params): TransactionResult {
   const rawLog = pickRawLog(txInfo, 0);
 
@@ -61,8 +64,6 @@ export function pickBurnResult({
     burnedAmount &&
     expectedAmount &&
     (big(expectedAmount).div(burnedAmount) as Ratio<BigSource> | undefined);
-
-  const txFee = pickTxFee(txResult);
 
   const txHash = txResult.result.txhash;
 

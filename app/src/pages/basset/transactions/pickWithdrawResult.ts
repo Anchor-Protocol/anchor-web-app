@@ -1,4 +1,9 @@
-import { demicrofy, formatLuna, stripULuna } from '@anchor-protocol/notation';
+import {
+  demicrofy,
+  formatLuna,
+  stripULuna,
+  uUST,
+} from '@anchor-protocol/notation';
 import { TxInfoParseError } from 'errors/TxInfoParseError';
 import { TransactionResult } from 'models/transaction';
 import {
@@ -7,16 +12,18 @@ import {
   pickEvent,
   pickRawLog,
 } from 'queries/txInfos';
-import { pickTxFee, TxResult } from 'transactions/tx';
+import { TxResult } from 'transactions/tx';
 
 interface Params {
   txResult: TxResult;
   txInfo: Data;
+  txFee: uUST;
 }
 
 export function pickWithdrawResult({
   txInfo,
   txResult,
+  txFee,
 }: Params): TransactionResult {
   const rawLog = pickRawLog(txInfo, 0);
 
@@ -62,8 +69,6 @@ export function pickWithdrawResult({
    */
 
   const unbondedAmount = pickAttributeValue<string>(transfer, 2);
-
-  const txFee = pickTxFee(txResult);
 
   const txHash = txResult.result.txhash;
 

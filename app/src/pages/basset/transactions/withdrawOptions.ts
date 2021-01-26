@@ -11,6 +11,7 @@ import { pickWithdrawResult } from 'pages/basset/transactions/pickWithdrawResult
 import { createContractMsg } from 'transactions/createContractMsg';
 import { getTxInfo } from 'transactions/getTxInfo';
 import { postContractMsg } from 'transactions/postContractMsg';
+import { injectTxFee, takeTxFee } from 'transactions/takeTxFee';
 import { parseTxResult } from 'transactions/tx';
 
 interface DependencyList {
@@ -21,12 +22,12 @@ interface DependencyList {
 
 export const withdrawOptions = createOperationOptions({
   id: 'basset/withdraw',
-  pipe: ({ addressProvider, post, client }: DependencyList) => [
-    fabricatebAssetWithdrawUnbonded, // Option -> ((AddressProvider) -> MsgExecuteContract[])
+  pipe: ({ addressProvider, post, client }: DependencyList, storage) => [
+    takeTxFee(storage, fabricatebAssetWithdrawUnbonded), // Option -> ((AddressProvider) -> MsgExecuteContract[])
     createContractMsg(addressProvider), // ((AddressProvider) -> MsgExecuteContract[]) -> MsgExecuteContract[]
     timeout(postContractMsg(post), 1000 * 60 * 2), // MsgExecuteContract[] -> Promise<StringifiedTxResult>
     parseTxResult, // StringifiedTxResult -> TxResult
-    getTxInfo(client), // TxResult -> { TxResult, TxInfo }
+    injectTxFee(storage, getTxInfo(client)), // TxResult -> { TxResult, TxInfo }
     pickWithdrawResult, // { TxResult, TxInfo } -> TransactionResult
   ],
   renderBroadcast: renderBroadcastTransaction,

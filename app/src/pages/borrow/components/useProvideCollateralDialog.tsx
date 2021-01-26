@@ -14,6 +14,7 @@ import {
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
   Ratio,
+  uUST,
 } from '@anchor-protocol/notation';
 import type {
   DialogProps,
@@ -184,7 +185,11 @@ function ComponentBase({
   }, []);
 
   const proceed = useCallback(
-    async (status: WalletStatus, depositAmount: bLuna) => {
+    async (
+      status: WalletStatus,
+      depositAmount: bLuna,
+      txFee: uUST<BigSource> | undefined,
+    ) => {
       if (status.status !== 'ready' || bank.status !== 'connected') {
         return;
       }
@@ -194,6 +199,7 @@ function ComponentBase({
         market: 'ust',
         symbol: 'bluna',
         amount: depositAmount,
+        txFee: txFee!.toString() as uUST,
       });
     },
     [bank.status, provideCollateral],
@@ -341,7 +347,7 @@ function ComponentBase({
             !!invalidTxFee ||
             !!invalidDepositAmount
           }
-          onClick={() => proceed(status, depositAmount)}
+          onClick={() => proceed(status, depositAmount, txFee)}
         >
           Proceed
         </ActionButton>

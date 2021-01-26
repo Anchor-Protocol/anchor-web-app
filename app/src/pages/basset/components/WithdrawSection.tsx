@@ -4,13 +4,14 @@ import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
-import { demicrofy, formatLuna } from '@anchor-protocol/notation';
+import { demicrofy, formatLuna, uUST } from '@anchor-protocol/notation';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { useApolloClient } from '@apollo/client';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
+import { FIXED_GAS } from 'env';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { useWithdrawableAmount } from 'pages/basset/logics/useWithdrawableAmount';
 import { useWithdrawAllHistory } from 'pages/basset/logics/useWithdrawAllHistory';
@@ -107,6 +108,7 @@ export function WithdrawSection({
     await withdraw({
       address: status.walletAddress,
       bAsset: 'bluna',
+      txFee: FIXED_GAS.toString() as uUST,
     });
   }, [bank.status, status, withdraw]);
 
