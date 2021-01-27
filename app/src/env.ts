@@ -64,8 +64,8 @@ export const contractAddresses = {
   mmLiquidation: 'terra14pdcpx6szzfvhz4g6dfddkx82f5ssf8llmzpw4',
   anchorToken: 'terra10c0q6qyk2634tfx2nw9v4gxqlm7a0luk9huhy8',
   terraswapFactory: 'terra1mtvsarza55hehpmyjgw7edqwvxpq5qquvttz9n',
-  terraswapPair: 'unused',
+    blunaBurnPair: "terra1w6qcjvcwe8ljafp2859kmmcfern35ap9sngm3q",
   blunaBurn: {
-    uluna: 'unused',
+    uluna: "terra12y3emkv22ug94wnq5zpmhws6fgtr929rtaq6je",
   },
 };

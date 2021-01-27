@@ -10,7 +10,7 @@ import { AddressProvider } from '../../address-provider/provider';
 
 interface Option {
   address: string;
-  amount: string;
+  amount: number;
   bAsset: string;
   to?: string;
   beliefPrice?: string;
@@ -32,7 +32,7 @@ export const fabricatebSwapbLuna = ({
   ]);
 
   const bAssetTokenAddress = addressProvider.bAssetToken(bAsset);
-  const pairAddress = addressProvider.terraswapPair();
+  const pairAddress = addressProvider.blunaBurnPair();
 
   return [
     new MsgExecuteContract(address, bAssetTokenAddress, {

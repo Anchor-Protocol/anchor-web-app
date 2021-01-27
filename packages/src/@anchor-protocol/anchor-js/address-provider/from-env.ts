@@ -52,7 +52,7 @@ export class AddressProviderFromEnvVar implements AddressProvider {
     return getFromEnv('terraswapFactory');
   }
 
-  terraswapPair(): string {
+  blunaBurnPair(): string {
     return getFromEnv('terraswapPair');
   }
 

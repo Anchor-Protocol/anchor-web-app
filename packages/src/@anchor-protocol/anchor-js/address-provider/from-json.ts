@@ -12,7 +12,7 @@ interface JsonData {
   mmLiquidation: string;
   anchorToken: string;
   terraswapFactory: string;
-  terraswapPair: string;
+  blunaBurnPair: string;
   blunaBurn: { [nativeDenom: string]: string };
 }
 
@@ -63,8 +63,8 @@ export class AddressProviderFromJson implements AddressProvider {
     return this.data.terraswapFactory;
   }
 
-  terraswapPair(): string {
-    return this.data.terraswapPair;
+  blunaBurnPair(): string {
+    return this.data.blunaBurnPair;
   }
 
   blunaBurn(quote: string): string {
