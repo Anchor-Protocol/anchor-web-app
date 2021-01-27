@@ -65,7 +65,5 @@ export const contractAddresses = {
   anchorToken: 'terra10c0q6qyk2634tfx2nw9v4gxqlm7a0luk9huhy8',
   terraswapFactory: 'terra1mtvsarza55hehpmyjgw7edqwvxpq5qquvttz9n',
     blunaBurnPair: "terra1w6qcjvcwe8ljafp2859kmmcfern35ap9sngm3q",
-  blunaBurn: {
-    uluna: "terra12y3emkv22ug94wnq5zpmhws6fgtr929rtaq6je",
-  },
+  blunaBurnuluna: "terra12y3emkv22ug94wnq5zpmhws6fgtr929rtaq6je"
 };

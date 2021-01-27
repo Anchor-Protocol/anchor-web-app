@@ -13,7 +13,7 @@ interface JsonData {
   anchorToken: string;
   terraswapFactory: string;
   blunaBurnPair: string;
-  blunaBurn: { [nativeDenom: string]: string };
+  blunaBurnuluna: string;
 }
 
 export class AddressProviderFromJson implements AddressProvider {
@@ -68,10 +68,6 @@ export class AddressProviderFromJson implements AddressProvider {
   }
 
   blunaBurn(quote: string): string {
-    const address = this.data.blunaBurn[quote];
-    if (typeof address === 'undefined') {
-      throw new Error(`there is not address for ${quote}`);
-    }
-    return address;
+    return this.data.blunaBurnuluna
   }
 }

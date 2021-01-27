@@ -10,7 +10,7 @@ import { AddressProvider } from '../../address-provider/provider';
 
 interface Option {
   address: string;
-  amount: number;
+  amount: string;
   bAsset: string;
   to?: string;
   beliefPrice?: string;
