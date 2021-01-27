@@ -12,7 +12,8 @@ interface JsonData {
   mmLiquidation: string;
   anchorToken: string;
   terraswapFactory: string;
-  terraswapPair: string;
+  blunaBurnPair: string;
+  blunaBurnuluna: string;
 }
 
 export class AddressProviderFromJson implements AddressProvider {
@@ -56,5 +57,17 @@ export class AddressProviderFromJson implements AddressProvider {
 
   liquidation(): string {
     return this.data.mmLiquidation;
+  }
+
+  terraswapFactory(): string {
+    return this.data.terraswapFactory;
+  }
+
+  blunaBurnPair(): string {
+    return this.data.blunaBurnPair;
+  }
+
+  blunaBurn(quote: string): string {
+    return this.data.blunaBurnuluna
   }
 }

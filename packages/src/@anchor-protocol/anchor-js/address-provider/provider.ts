@@ -20,4 +20,10 @@ export interface AddressProvider {
   interest(): string;
 
   liquidation(): string;
+
+  terraswapFactory(): string;
+
+  blunaBurnPair(): string;
+
+  blunaBurn(quote: string): string;
 }

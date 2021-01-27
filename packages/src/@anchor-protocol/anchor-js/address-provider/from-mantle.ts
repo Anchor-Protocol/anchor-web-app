@@ -44,4 +44,16 @@ export class AddressProviderFromMantle implements AddressProvider {
   liquidation(): string {
     throw new Error('Method not implemented.');
   }
+
+  terraswapFactory(): string {
+    throw new Error('Method not implemented.');
+  }
+
+  blunaBurnPair(): string {
+    throw new Error('Method not implemented.');
+  }
+
+  blunaBurn(quote: string): string {
+    throw new Error('Method not implemented.');
+  }
 }

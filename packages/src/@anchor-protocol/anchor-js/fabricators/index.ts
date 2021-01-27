@@ -28,3 +28,6 @@ export * from './money-market/overseer-execute-epoch';
 export * from './money-market/oracle-feed-price';
 export * from './money-market/oracle-update-config';
 export * from './money-market/liquidation-update-config';
+export * from './terraswap/create-pair';
+export * from './terraswap/provide-liquidity';
+export * from './terraswap/swap';

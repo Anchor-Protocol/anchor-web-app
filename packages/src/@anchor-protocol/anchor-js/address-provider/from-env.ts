@@ -47,6 +47,18 @@ export class AddressProviderFromEnvVar implements AddressProvider {
   liquidation(): string {
     return getFromEnv('mmLiquidation');
   }
+
+  terraswapFactory(): string {
+    return getFromEnv('terraswapFactory');
+  }
+
+  blunaBurnPair(): string {
+    return getFromEnv('bLunaBurnPair');
+  }
+
+  blunaBurn(nativeDenom: string): string {
+    return getFromEnv(`bLunaBurn${nativeDenom}`);
+  }
 }
 
 function getFromEnv(key: string): string {
