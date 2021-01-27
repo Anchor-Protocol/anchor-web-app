@@ -1,57 +1,78 @@
-import { Ratio, uaUST, uUST } from '@anchor-protocol/notation';
-import big from 'big.js';
-import { Data } from 'queries/txInfos';
+import {
+  demicrofy,
+  formatFluidDecimalPoints,
+  formatUSTWithPostfixUnits,
+  Ratio,
+  uaUST,
+  uUST,
+} from '@anchor-protocol/notation';
+import big, { BigSource } from 'big.js';
+import { TxInfoParseError } from 'errors/TxInfoParseError';
+import { TransactionResult } from 'models/transaction';
+import {
+  Data,
+  pickAttributeValue,
+  pickEvent,
+  pickRawLog,
+} from 'queries/txInfos';
 import { TxResult } from 'transactions/tx';
 
 interface Params {
   txResult: TxResult;
   txInfo: Data;
-}
-
-export interface WithdrawResult {
-  redeemAmount: uUST<string> | undefined;
-  burnAmount: uaUST<string> | undefined;
-  exchangeRate: Ratio<string> | undefined;
-  txFee: uUST<string>;
-  txHash: string;
+  txFee: uUST;
 }
 
 export function pickWithdrawResult({
   txInfo,
   txResult,
-}: Params): WithdrawResult {
-  const fromContract =
-    Array.isArray(txInfo[0].RawLog) && txInfo[0].RawLog[0].events[1];
+  txFee,
+}: Params): TransactionResult {
+  const rawLog = pickRawLog(txInfo, 0);
 
-  if (!fromContract) {
-    console.error({ txInfo, txResult });
-    throw new Error(`Failed contract result parse`);
+  if (!rawLog) {
+    throw new TxInfoParseError(txResult, txInfo, 'Undefined the RawLog');
   }
 
-  const redeemAmount = fromContract.attributes.find(
-    ({ key }: { key: string }) => key === 'redeem_amount',
-  )?.value as uUST | undefined;
+  const fromContract = pickEvent(rawLog, 'from_contract');
 
-  const burnAmount = fromContract.attributes.find(
-    ({ key }: { key: string }) => key === 'burn_amount',
-  )?.value as uaUST | undefined;
+  if (!fromContract) {
+    throw new TxInfoParseError(
+      txResult,
+      txInfo,
+      'Undefined the from_contract event',
+    );
+  }
+
+  const redeemAmount = pickAttributeValue<uUST>(fromContract, 8);
+
+  const burnAmount = pickAttributeValue<uaUST>(fromContract, 7);
 
   const exchangeRate =
     redeemAmount &&
     burnAmount &&
-    (big(redeemAmount).div(burnAmount).toFixed() as Ratio | undefined);
-
-  const txFee = big(txResult.fee.amount[0].amount)
-    .plus(txResult.fee.gas)
-    .toFixed() as uUST;
+    (big(redeemAmount).div(burnAmount) as Ratio<BigSource> | undefined);
 
   const txHash = txResult.result.txhash;
 
   return {
-    redeemAmount,
-    burnAmount,
-    exchangeRate,
+    txInfo,
+    txResult,
     txFee,
     txHash,
+    details: [
+      redeemAmount && {
+        name: 'Withdraw Amount',
+        value: formatUSTWithPostfixUnits(demicrofy(redeemAmount)) + ' UST',
+      },
+      burnAmount && {
+        name: 'Returned Amount',
+        value: formatUSTWithPostfixUnits(demicrofy(burnAmount)) + ' aUST',
+      },
+      exchangeRate && {
+        name: 'Exchange Rate',
+        value: formatFluidDecimalPoints(exchangeRate, 2),
+      },
+    ],
   };
 }

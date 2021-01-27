@@ -1,3 +1,4 @@
+import { LineChart } from '@anchor-protocol/app-charts/LineChart';
 import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
@@ -40,7 +41,16 @@ function InterestSectionBase({ className }: InterestSectionProps) {
             APY <InfoTooltip>Annual Percentage Yield</InfoTooltip>
           </IconSpan>
         </p>
-        <figure></figure>
+        <LineChart
+          data={[
+            { label: 'A', date: 0, value: 100 },
+            { label: 'B', date: 1, value: 10 },
+            { label: 'C', date: 2, value: 70 },
+            { label: 'D', date: 3, value: 130 },
+            { label: 'E', date: 4, value: 60 },
+            { label: 'F', date: 5, value: 170 },
+          ]}
+        />
       </div>
 
       <HorizontalRuler />

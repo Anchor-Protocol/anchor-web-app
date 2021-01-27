@@ -63,7 +63,7 @@ export interface OperationOptions<
 > {
   id?: string | ((id: number) => string);
   broadcastWhen?: 'always' | 'unmounted' | 'none';
-  pipe: (deps: DependdencyList) => Pipe;
+  pipe: (deps: DependdencyList, storage: Map<string, any>) => Pipe;
   renderBroadcast: (props: OperationResult<Data, Snapshot>) => ReactNode;
   breakOnError?: true | ((error: unknown) => boolean);
 }

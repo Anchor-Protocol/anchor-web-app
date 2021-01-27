@@ -12,27 +12,22 @@ import {
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { Error } from '@material-ui/icons';
 import big from 'big.js';
+import { useMarket } from 'pages/borrow/context/market';
 import { useCollaterals } from 'pages/borrow/logics/useCollaterals';
 import styled from 'styled-components';
-import { Data as MarketOverview } from '../queries/marketOverview';
-import { Data as MarketUserOverview } from '../queries/marketUserOverview';
 import { useProvideCollateralDialog } from './useProvideCollateralDialog';
 import { useRedeemCollateralDialog } from './useRedeemCollateralDialog';
 
 export interface CollateralListProps {
   className?: string;
-  marketOverview: MarketOverview | undefined;
-  marketUserOverview: MarketUserOverview | undefined;
 }
 
-function CollateralListBase({
-  className,
-  marketOverview,
-  marketUserOverview,
-}: CollateralListProps) {
+function CollateralListBase({ className }: CollateralListProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
+  const { marketOverview, marketUserOverview, refetch } = useMarket();
+
   const { status } = useWallet();
 
   const [
@@ -113,12 +108,10 @@ function CollateralListBase({
                   !marketOverview ||
                   !marketUserOverview
                 }
-                onClick={() =>
-                  openProvideCollateralDialog({
-                    marketOverview: marketOverview!,
-                    marketUserOverview: marketUserOverview!,
-                  })
-                }
+                onClick={() => {
+                  refetch();
+                  openProvideCollateralDialog({});
+                }}
               >
                 Add
               </ActionButton>
@@ -132,12 +125,10 @@ function CollateralListBase({
                     .eq(0) &&
                     big(marketUserOverview.loanAmount.loan_amount).lte(0))
                 }
-                onClick={() =>
-                  openRedeemCollateralDialog({
-                    marketOverview: marketOverview!,
-                    marketUserOverview: marketUserOverview!,
-                  })
-                }
+                onClick={() => {
+                  refetch();
+                  openRedeemCollateralDialog({});
+                }}
               >
                 Withdraw
               </ActionButton>

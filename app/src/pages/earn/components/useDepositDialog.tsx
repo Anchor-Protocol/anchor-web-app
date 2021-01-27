@@ -12,6 +12,7 @@ import {
   UST,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
+  uUST,
 } from '@anchor-protocol/notation';
 import type {
   DialogProps,
@@ -22,8 +23,8 @@ import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
-import big from 'big.js';
-import { OperationRenderer } from 'components/OperationRenderer';
+import big, { BigSource } from 'big.js';
+import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
@@ -115,7 +116,12 @@ function ComponentBase({
   }, []);
 
   const proceed = useCallback(
-    async (status: WalletStatus, depositAmount: string, confirm: ReactNode) => {
+    async (
+      status: WalletStatus,
+      depositAmount: string,
+      txFee: uUST<BigSource> | undefined,
+      confirm: ReactNode,
+    ) => {
       if (status.status !== 'ready' || bank.status !== 'connected') {
         return;
       }
@@ -136,6 +142,7 @@ function ComponentBase({
         address: status.walletAddress,
         amount: depositAmount,
         symbol: 'usd',
+        txFee: txFee!.toString() as uUST,
       });
     },
     [bank.status, deposit, openConfirm],
@@ -153,19 +160,7 @@ function ComponentBase({
       <Modal open disableBackdropClick>
         <Dialog className={className}>
           <h1>Deposit</h1>
-          {depositResult.status === 'done' ? (
-            <div>
-              <pre>{JSON.stringify(depositResult.data, null, 2)}</pre>
-              <ActionButton
-                style={{ width: 200 }}
-                onClick={() => closeDialog()}
-              >
-                Close
-              </ActionButton>
-            </div>
-          ) : (
-            <OperationRenderer result={depositResult} />
-          )}
+          <TransactionRenderer result={depositResult} onExit={closeDialog} />
         </Dialog>
       </Modal>
     );
@@ -258,7 +253,9 @@ function ComponentBase({
             big(depositAmount).lte(0) ||
             !!invalidDepositAmount
           }
-          onClick={() => proceed(status, depositAmount, invalidNextTransaction)}
+          onClick={() =>
+            proceed(status, depositAmount, txFee, invalidNextTransaction)
+          }
         >
           Proceed
         </ActionButton>

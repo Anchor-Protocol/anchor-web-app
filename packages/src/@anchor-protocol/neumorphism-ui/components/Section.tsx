@@ -19,6 +19,8 @@ function SectionBase({ children, className, ...sectionProps }: SectionProps) {
 export const Section = styled(SectionBase)`
   border-radius: 20px;
   
+  min-width: 0;
+  
   color: ${({theme}) => theme.textColor};
 
   ${({ theme }) =>

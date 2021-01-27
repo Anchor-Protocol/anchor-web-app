@@ -14,6 +14,7 @@ import {
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
   Ratio,
+  uUST,
 } from '@anchor-protocol/notation';
 import type {
   DialogProps,
@@ -24,8 +25,8 @@ import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
-import big, { Big } from 'big.js';
-import { OperationRenderer } from 'components/OperationRenderer';
+import big, { Big, BigSource } from 'big.js';
+import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
@@ -33,6 +34,7 @@ import { useAddressProvider } from 'contexts/contract';
 import { FIXED_GAS } from 'env';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
+import { useMarketNotNullable } from 'pages/borrow/context/market';
 import { ltvToRedeemAmount } from 'pages/borrow/logics/ltvToRedeemAmount';
 import { redeemAmountToLtv } from 'pages/borrow/logics/redeemAmountToLtv';
 import { useCurrentLtv } from 'pages/borrow/logics/useCurrentLtv';
@@ -40,8 +42,6 @@ import { useInvalidRedeemAmount } from 'pages/borrow/logics/useInvalidRedeemAmou
 import { useRedeemCollateralBorrowLimit } from 'pages/borrow/logics/useRedeemCollateralBorrowLimit';
 import { useRedeemCollateralNextLtv } from 'pages/borrow/logics/useRedeemCollateralNextLtv';
 import { useRedeemCollateralWithdrawableAmount } from 'pages/borrow/logics/useRedeemCollateralWithdrawableAmount';
-import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
-import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import { redeemCollateralOptions } from 'pages/borrow/transactions/redeemCollateralOptions';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -49,8 +49,6 @@ import styled from 'styled-components';
 
 interface FormParams {
   className?: string;
-  marketOverview: MarketOverview;
-  marketUserOverview: MarketUserOverview;
 }
 
 type FormReturn = void;
@@ -70,13 +68,13 @@ const txFee = FIXED_GAS;
 
 function ComponentBase({
   className,
-  marketOverview,
-  marketUserOverview,
   closeDialog,
 }: DialogProps<FormParams, FormReturn>) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
+  const { marketUserOverview, marketOverview } = useMarketNotNullable();
+
   const { status, post } = useWallet();
 
   const addressProvider = useAddressProvider();
@@ -89,6 +87,7 @@ function ComponentBase({
       addressProvider,
       post,
       client,
+      walletStatus: status,
     },
   );
 
@@ -181,7 +180,11 @@ function ComponentBase({
   }, []);
 
   const proceed = useCallback(
-    async (status: WalletStatus, redeemAmount: bLuna) => {
+    async (
+      status: WalletStatus,
+      redeemAmount: bLuna,
+      txFee: uUST<BigSource> | undefined,
+    ) => {
       if (status.status !== 'ready' || bank.status !== 'connected') {
         return;
       }
@@ -190,6 +193,7 @@ function ComponentBase({
         address: status.walletAddress,
         market: 'ust',
         amount: redeemAmount.length > 0 ? redeemAmount : '0',
+        txFee: txFee!.toString() as uUST,
       });
     },
     [bank.status, redeemCollateral],
@@ -238,20 +242,10 @@ function ComponentBase({
       <Modal open disableBackdropClick>
         <Dialog className={className}>
           {title}
-
-          {redeemCollateralResult.status === 'done' ? (
-            <div>
-              <pre>{JSON.stringify(redeemCollateralResult.data, null, 2)}</pre>
-              <ActionButton
-                style={{ width: 200 }}
-                onClick={() => closeDialog()}
-              >
-                Close
-              </ActionButton>
-            </div>
-          ) : (
-            <OperationRenderer result={redeemCollateralResult} />
-          )}
+          <TransactionRenderer
+            result={redeemCollateralResult}
+            onExit={closeDialog}
+          />
         </Dialog>
       </Modal>
     );
@@ -344,7 +338,7 @@ function ComponentBase({
             !!invalidTxFee ||
             !!invalidRedeemAmount
           }
-          onClick={() => proceed(status, redeemAmount)}
+          onClick={() => proceed(status, redeemAmount, txFee)}
         >
           Proceed
         </ActionButton>

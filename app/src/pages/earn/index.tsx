@@ -99,8 +99,6 @@ export const Earn = styled(EarnBase)`
       figure {
         width: 100%;
         height: 200px;
-        border-radius: 10px;
-        border: 2px dashed white;
       }
     }
 

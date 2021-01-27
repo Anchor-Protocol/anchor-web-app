@@ -4,32 +4,38 @@ import {
   createOperationOptions,
   timeout,
 } from '@anchor-protocol/broadcastable-operation';
-import { WalletState } from '@anchor-protocol/wallet-provider';
+import { WalletState, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient } from '@apollo/client';
+import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { pickProvideCollateralResult } from 'pages/borrow/transactions/pickProvideCollateralResult';
+import { refetchMarket } from 'pages/borrow/transactions/refetchMarket';
 import { createContractMsg } from 'transactions/createContractMsg';
 import { getTxInfo } from 'transactions/getTxInfo';
 import { postContractMsg } from 'transactions/postContractMsg';
+import { injectTxFee, takeTxFee } from 'transactions/takeTxFee';
 import { parseTxResult } from 'transactions/tx';
 
 interface DependencyList {
   addressProvider: AddressProvider;
   post: WalletState['post'];
   client: ApolloClient<any>;
+  walletStatus: WalletStatus;
 }
 
 export const provideCollateralOptions = createOperationOptions({
   id: 'borrow/provide-collateral',
-  pipe: ({ addressProvider, post, client }: DependencyList) => [
-    fabricateProvideCollateral, // Option -> ((AddressProvider) -> MsgExecuteContract[])
+  pipe: (
+    { addressProvider, post, client, walletStatus }: DependencyList,
+    storage,
+  ) => [
+    takeTxFee(storage, fabricateProvideCollateral), // Option -> ((AddressProvider) -> MsgExecuteContract[])
     createContractMsg(addressProvider), // ((AddressProvider) -> MsgExecuteContract[]) -> MsgExecuteContract[]
     timeout(postContractMsg(post), 1000 * 60 * 2), // MsgExecuteContract[] -> Promise<StringifiedTxResult>
     parseTxResult, // StringifiedTxResult -> TxResult
     getTxInfo(client), // TxResult -> { TxResult, TxInfo }
-    pickProvideCollateralResult, // { TxResult, TxInfo } -> ProvideCollateralResult
+    injectTxFee(storage, refetchMarket(addressProvider, client, walletStatus)), // { TxResult, TxInfo } -> { TxResult, TxInfo, MarketBalanceOverview, MarketOverview, MarketUserOverview }
+    pickProvideCollateralResult, // { TxResult, TxInfo, MarketBalanceOverview, MarketOverview, MarketUserOverview } -> TransactionResult
   ],
-  renderBroadcast: (props) => {
-    return JSON.stringify(props, null, 2);
-  },
+  renderBroadcast: renderBroadcastTransaction,
   //breakOnError: true,
 });

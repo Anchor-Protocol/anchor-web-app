@@ -13,6 +13,7 @@ import {
   Luna,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
+  uUST,
 } from '@anchor-protocol/notation';
 import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
@@ -22,7 +23,7 @@ import {
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
 import big, { Big } from 'big.js';
-import { OperationRenderer } from 'components/OperationRenderer';
+import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
@@ -155,13 +156,7 @@ function BurnBase({ className }: BurnProps) {
   }, []);
 
   const proceed = useCallback(
-    async ({
-      status,
-      burnAmount,
-    }: {
-      status: WalletStatus;
-      burnAmount: bLuna;
-    }) => {
+    async (status: WalletStatus, burnAmount: bLuna) => {
       if (status.status !== 'ready' || bank.status !== 'connected') {
         return;
       }
@@ -170,6 +165,7 @@ function BurnBase({ className }: BurnProps) {
         address: status.walletAddress,
         amount: burnAmount,
         bAsset: burnCurrency.value,
+        txFee: FIXED_GAS.toString() as uUST,
       });
 
       if (!broadcasted) {
@@ -189,22 +185,7 @@ function BurnBase({ className }: BurnProps) {
   ) {
     return (
       <Section className={className}>
-        {burnResult.status === 'done' ? (
-          <div>
-            <pre>{JSON.stringify(burnResult.data, null, 2)}</pre>
-            <ActionButton
-              style={{ width: 200 }}
-              onClick={() => {
-                init();
-                burnResult.reset();
-              }}
-            >
-              Exit
-            </ActionButton>
-          </div>
-        ) : (
-          <OperationRenderer result={burnResult} />
-        )}
+        <TransactionRenderer result={burnResult} onExit={init} />
       </Section>
     );
   }
@@ -330,12 +311,7 @@ function BurnBase({ className }: BurnProps) {
           !!invalidTxFee ||
           !!invalidBurnAmount
         }
-        onClick={() =>
-          proceed({
-            status,
-            burnAmount,
-          })
-        }
+        onClick={() => proceed(status, burnAmount)}
       >
         Burn
       </ActionButton>

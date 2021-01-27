@@ -6,10 +6,12 @@ import {
 } from '@anchor-protocol/broadcastable-operation';
 import { WalletState } from '@anchor-protocol/wallet-provider';
 import { ApolloClient } from '@apollo/client';
+import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { pickWithdrawResult } from 'pages/earn/transactions/pickWithdrawResult';
 import { createContractMsg } from 'transactions/createContractMsg';
 import { getTxInfo } from 'transactions/getTxInfo';
 import { postContractMsg } from 'transactions/postContractMsg';
+import { injectTxFee, takeTxFee } from 'transactions/takeTxFee';
 import { parseTxResult } from 'transactions/tx';
 
 interface DependencyList {
@@ -20,16 +22,14 @@ interface DependencyList {
 
 export const withdrawOptions = createOperationOptions({
   id: 'earn/withdarw',
-  pipe: ({ addressProvider, post, client }: DependencyList) => [
-    fabricateRedeemStable, // Option -> ((AddressProvider) -> MsgExecuteContract[])
+  pipe: ({ addressProvider, post, client }: DependencyList, storage) => [
+    takeTxFee(storage, fabricateRedeemStable), // Option -> ((AddressProvider) -> MsgExecuteContract[])
     createContractMsg(addressProvider), // ((AddressProvider) -> MsgExecuteContract[]) -> MsgExecuteContract[]
     timeout(postContractMsg(post), 1000 * 60 * 2), // MsgExecuteContract[] -> Promise<StringifiedTxResult>
     parseTxResult, // StringifiedTxResult -> TxResult
-    getTxInfo(client), // TxResult -> { TxResult, TxInfo }
-    pickWithdrawResult, // { TxResult, TxInfo } -> WithdrawResult
+    injectTxFee(storage, getTxInfo(client)), // TxResult -> { TxResult, TxInfo }
+    pickWithdrawResult, // { TxResult, TxInfo } -> TransactionResult
   ],
-  renderBroadcast: (props) => {
-    return JSON.stringify(props, null, 2);
-  },
+  renderBroadcast: renderBroadcastTransaction,
   //breakOnError: true,
 });

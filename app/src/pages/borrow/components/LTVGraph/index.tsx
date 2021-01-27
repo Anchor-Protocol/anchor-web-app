@@ -29,6 +29,7 @@ export interface LTVGraphProps {
   userMaxLtv: Ratio<BigSource> | undefined;
   onStep: (draftLtv: Ratio<Big>) => Ratio<Big>;
   onChange: (nextLtv: Ratio<Big>) => void;
+  disabled?: boolean;
 }
 
 const colorFunction = ({ color }: Data) => color;
@@ -57,6 +58,7 @@ export function LTVGraph({
   userMinLtv,
   onChange,
   onStep,
+  disabled,
 }: LTVGraphProps) {
   const step = useCallback(
     (draftLtv: number) => {
@@ -105,7 +107,7 @@ export function LTVGraph({
         {
           position: 'bottom',
           label: nextLtv ? `${formatRatioToPercentage(nextLtv)}%` : '',
-          color: '#ffffff',
+          color: nextLtv && nextLtv.gt(safeLtv) ? '#f5356a' : '#ffffff',
           value: nextLtv
             ? Math.max(Math.min(nextLtv.toNumber(), big(maxLtv).toNumber()), 0)
             : 0,
@@ -115,18 +117,20 @@ export function LTVGraph({
       valueFunction={valueFunction}
       labelRenderer={labelRenderer}
     >
-      {(coordinateSpace) => (
-        <HorizontalGraphSlider
-          coordinateSpace={coordinateSpace}
-          min={0}
-          max={big(maxLtv).toNumber()}
-          start={big(userMinLtv ?? 0).toNumber()}
-          end={big(userMaxLtv ?? maxLtv).toNumber()}
-          value={big(nextLtv ?? 0).toNumber()}
-          onChange={change}
-          stepFunction={step}
-        />
-      )}
+      {(coordinateSpace) =>
+        disabled === true ? null : (
+          <HorizontalGraphSlider
+            coordinateSpace={coordinateSpace}
+            min={0}
+            max={big(maxLtv).toNumber()}
+            start={big(userMinLtv ?? 0).toNumber()}
+            end={big(userMaxLtv ?? maxLtv).toNumber()}
+            value={big(nextLtv ?? 0).toNumber()}
+            onChange={change}
+            stepFunction={step}
+          />
+        )
+      }
     </HorizontalGraphBar>
   );
 }

@@ -14,6 +14,7 @@ import {
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
   Ratio,
+  uUST,
 } from '@anchor-protocol/notation';
 import type {
   DialogProps,
@@ -25,7 +26,7 @@ import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
 import big, { Big, BigSource } from 'big.js';
-import { OperationRenderer } from 'components/OperationRenderer';
+import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
@@ -33,6 +34,7 @@ import { useAddressProvider } from 'contexts/contract';
 import { FIXED_GAS } from 'env';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
+import { useMarketNotNullable } from 'pages/borrow/context/market';
 import { depositAmountToBorrowLimit } from 'pages/borrow/logics/depositAmountToBorrowLimit';
 import { depositAmountToLtv } from 'pages/borrow/logics/depositAmountToLtv';
 import { ltvToDepositAmount } from 'pages/borrow/logics/ltvToDepositAmount';
@@ -40,8 +42,6 @@ import { useCurrentLtv } from 'pages/borrow/logics/useCurrentLtv';
 import { useInvalidDepositAmount } from 'pages/borrow/logics/useInvalidDepositAmount';
 import { useProvideCollateralBorrowLimit } from 'pages/borrow/logics/useProvideCollateralBorrowLimit';
 import { useProvideCollateralNextLtv } from 'pages/borrow/logics/useProvideCollateralNextLtv';
-import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
-import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import { provideCollateralOptions } from 'pages/borrow/transactions/provideCollateralOptions';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -49,8 +49,6 @@ import styled from 'styled-components';
 
 interface FormParams {
   className?: string;
-  marketOverview: MarketOverview;
-  marketUserOverview: MarketUserOverview;
 }
 
 type FormReturn = void;
@@ -70,13 +68,13 @@ const txFee = FIXED_GAS;
 
 function ComponentBase({
   className,
-  marketOverview,
-  marketUserOverview,
   closeDialog,
 }: DialogProps<FormParams, FormReturn>) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
+  const { marketUserOverview, marketOverview } = useMarketNotNullable();
+
   const { status, post } = useWallet();
 
   const addressProvider = useAddressProvider();
@@ -89,6 +87,7 @@ function ComponentBase({
       addressProvider,
       post,
       client,
+      walletStatus: status,
     },
   );
 
@@ -183,7 +182,11 @@ function ComponentBase({
   }, []);
 
   const proceed = useCallback(
-    async (status: WalletStatus, depositAmount: bLuna) => {
+    async (
+      status: WalletStatus,
+      depositAmount: bLuna,
+      txFee: uUST<BigSource> | undefined,
+    ) => {
       if (status.status !== 'ready' || bank.status !== 'connected') {
         return;
       }
@@ -193,6 +196,7 @@ function ComponentBase({
         market: 'ust',
         symbol: 'bluna',
         amount: depositAmount,
+        txFee: txFee!.toString() as uUST,
       });
     },
     [bank.status, provideCollateral],
@@ -243,19 +247,10 @@ function ComponentBase({
       <Modal open disableBackdropClick>
         <Dialog className={className}>
           {title}
-          {provideCollateralResult.status === 'done' ? (
-            <div>
-              <pre>{JSON.stringify(provideCollateralResult.data, null, 2)}</pre>
-              <ActionButton
-                style={{ width: 200 }}
-                onClick={() => closeDialog()}
-              >
-                Close
-              </ActionButton>
-            </div>
-          ) : (
-            <OperationRenderer result={provideCollateralResult} />
-          )}
+          <TransactionRenderer
+            result={provideCollateralResult}
+            onExit={closeDialog}
+          />
         </Dialog>
       </Modal>
     );
@@ -312,18 +307,20 @@ function ComponentBase({
           style={{ pointerEvents: 'none' }}
         />
 
-        <figure className="graph">
-          <LTVGraph
-            maxLtv={marketOverview.bLunaMaxLtv}
-            safeLtv={marketOverview.bLunaSafeLtv}
-            currentLtv={currentLtv}
-            nextLtv={nextLtv}
-            userMinLtv={0 as Ratio<BigSource>}
-            userMaxLtv={currentLtv}
-            onStep={ltvStepFunction}
-            onChange={onLtvChange}
-          />
-        </figure>
+        {big(currentLtv ?? 0).gt(0) && (
+          <figure className="graph">
+            <LTVGraph
+              maxLtv={marketOverview.bLunaMaxLtv}
+              safeLtv={marketOverview.bLunaSafeLtv}
+              currentLtv={currentLtv}
+              nextLtv={nextLtv}
+              userMinLtv={0 as Ratio<BigSource>}
+              userMaxLtv={currentLtv}
+              onStep={ltvStepFunction}
+              onChange={onLtvChange}
+            />
+          </figure>
+        )}
 
         {depositAmount.length > 0 && (
           <TxFeeList className="receipt">
@@ -349,7 +346,7 @@ function ComponentBase({
             !!invalidTxFee ||
             !!invalidDepositAmount
           }
-          onClick={() => proceed(status, depositAmount)}
+          onClick={() => proceed(status, depositAmount, txFee)}
         >
           Proceed
         </ActionButton>

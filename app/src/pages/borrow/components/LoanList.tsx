@@ -13,29 +13,26 @@ import { Error } from '@material-ui/icons';
 import big from 'big.js';
 import { useBorrowDialog } from 'pages/borrow/components/useBorrowDialog';
 import { useRepayDialog } from 'pages/borrow/components/useRepayDialog';
+import { useMarket } from 'pages/borrow/context/market';
 import { useAPR } from 'pages/borrow/logics/useAPR';
 import { useBorrowed } from 'pages/borrow/logics/useBorrowed';
-import { Data as MarketBalance } from 'pages/borrow/queries/marketBalanceOverview';
-import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
-import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import styled from 'styled-components';
 
 export interface LoanListProps {
   className?: string;
-  marketBalance: MarketBalance | undefined;
-  marketOverview: MarketOverview | undefined;
-  marketUserOverview: MarketUserOverview | undefined;
 }
 
-function LoanListBase({
-  className,
-  marketBalance,
-  marketOverview,
-  marketUserOverview,
-}: LoanListProps) {
+function LoanListBase({ className }: LoanListProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
+  const {
+    marketBalance,
+    marketOverview,
+    marketUserOverview,
+    refetch,
+  } = useMarket();
+
   const { status } = useWallet();
 
   const [openBorrowDialog, borrowDialogElement] = useBorrowDialog();
@@ -45,7 +42,14 @@ function LoanListBase({
   // compute
   // ---------------------------------------------
   const apr = useAPR(marketOverview?.borrowRate.rate);
-  const borrowed = useBorrowed(marketUserOverview?.loanAmount.loan_amount);
+  const borrowed = useBorrowed(
+    marketUserOverview?.loanAmount.loan_amount,
+    marketOverview?.borrowRate.rate,
+    marketBalance?.currentBlock,
+    marketBalance?.marketState.last_interest_updated,
+    marketBalance?.marketState.global_interest_index,
+    marketUserOverview?.liability.interest_index,
+  );
 
   // ---------------------------------------------
   // presentation
@@ -115,14 +119,13 @@ function LoanListBase({
                 disabled={
                   status.status !== 'ready' ||
                   !marketOverview ||
-                  !marketUserOverview
+                  !marketUserOverview ||
+                  big(marketUserOverview?.borrowInfo.balance ?? 0).lte(0)
                 }
-                onClick={() =>
-                  openBorrowDialog({
-                    marketOverview: marketOverview!,
-                    marketUserOverview: marketUserOverview!,
-                  })
-                }
+                onClick={() => {
+                  refetch();
+                  openBorrowDialog({});
+                }}
               >
                 Borrow
               </ActionButton>
@@ -132,15 +135,12 @@ function LoanListBase({
                   !marketBalance ||
                   !marketOverview ||
                   !marketUserOverview ||
-                  big(marketUserOverview.loanAmount.loan_amount).lte(0)
+                  borrowed.lte(0)
                 }
-                onClick={() =>
-                  openRepayDialog({
-                    marketBalance: marketBalance!,
-                    marketOverview: marketOverview!,
-                    marketUserOverview: marketUserOverview!,
-                  })
-                }
+                onClick={() => {
+                  refetch();
+                  openRepayDialog({});
+                }}
               >
                 Repay
               </ActionButton>

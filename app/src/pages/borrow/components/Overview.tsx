@@ -10,26 +10,28 @@ import {
 } from '@anchor-protocol/notation';
 import { BigSource } from 'big.js';
 import { BorrowLimitGraph } from 'pages/borrow/components/BorrowLimitGraph';
+import { useMarket } from 'pages/borrow/context/market';
 import { useAPR } from 'pages/borrow/logics/useAPR';
 import { useBorrowed } from 'pages/borrow/logics/useBorrowed';
 import { useCollaterals } from 'pages/borrow/logics/useCollaterals';
-import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import styled from 'styled-components';
-import { Data as MarketOverview } from '../queries/marketOverview';
 
 export interface OverviewProps {
   className?: string;
-  marketOverview: MarketOverview | undefined;
-  marketUserOverview: MarketUserOverview | undefined;
 }
 
-function OverviewBase({
-  className,
-  marketOverview,
-  marketUserOverview,
-}: OverviewProps) {
+function OverviewBase({ className }: OverviewProps) {
+  const { marketOverview, marketUserOverview, marketBalance } = useMarket();
+
   const apr = useAPR(marketOverview?.borrowRate.rate);
-  const borrowed = useBorrowed(marketUserOverview?.loanAmount.loan_amount);
+  const borrowed = useBorrowed(
+    marketUserOverview?.loanAmount.loan_amount,
+    marketOverview?.borrowRate.rate,
+    marketBalance?.currentBlock,
+    marketBalance?.marketState.last_interest_updated,
+    marketBalance?.marketState.global_interest_index,
+    marketUserOverview?.liability.interest_index,
+  );
   const collaterals = useCollaterals(
     marketUserOverview?.borrowInfo.balance,
     marketUserOverview?.borrowInfo.spendable,

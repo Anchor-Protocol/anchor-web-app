@@ -1,59 +1,87 @@
-import { Ratio, uaUST, uUST } from '@anchor-protocol/notation';
-import big from 'big.js';
-import { Data } from 'queries/txInfos';
+import {
+  demicrofy,
+  formatLuna,
+  stripULuna,
+  uUST,
+} from '@anchor-protocol/notation';
+import { TxInfoParseError } from 'errors/TxInfoParseError';
+import { TransactionResult } from 'models/transaction';
+import {
+  Data,
+  pickAttributeValue,
+  pickEvent,
+  pickRawLog,
+} from 'queries/txInfos';
 import { TxResult } from 'transactions/tx';
 
 interface Params {
   txResult: TxResult;
   txInfo: Data;
-}
-
-export interface WithdrawResult {
-  depositAmount: uUST<string> | undefined;
-  receivedAmount: uaUST<string> | undefined;
-  exchangeRate: Ratio<string> | undefined;
-  txFee: uUST<string>;
-  txHash: string;
+  txFee: uUST;
 }
 
 export function pickWithdrawResult({
   txInfo,
   txResult,
-}: Params): WithdrawResult {
-  const fromContract =
-    Array.isArray(txInfo[0].RawLog) && txInfo[0].RawLog[0].events[1];
+  txFee,
+}: Params): TransactionResult {
+  const rawLog = pickRawLog(txInfo, 0);
 
-  if (!fromContract) {
-    console.error({ txInfo, txResult });
-    throw new Error(`Failed contract result parse`);
+  if (!rawLog) {
+    throw new TxInfoParseError(txResult, txInfo, 'Undefined the RawLog');
   }
 
-  // TODO
+  const transfer = pickEvent(rawLog, 'transfer');
 
-  const depositAmount = fromContract.attributes.find(
-    ({ key }: { key: string }) => key === 'deposit_amount',
-  )?.value as uUST | undefined;
+  console.log('pickWithdrawResult.ts..pickWithdrawResult()', transfer);
 
-  const receivedAmount = fromContract.attributes.find(
-    ({ key }: { key: string }) => key === 'mint_amount',
-  )?.value as uaUST | undefined;
+  console.log(
+    'pickWithdrawResult.ts..pickWithdrawResult()',
+    JSON.stringify(transfer, null, 2),
+  );
 
-  const exchangeRate =
-    depositAmount &&
-    receivedAmount &&
-    (big(receivedAmount).div(depositAmount).toFixed() as Ratio | undefined);
+  if (!transfer) {
+    throw new TxInfoParseError(
+      txResult,
+      txInfo,
+      'Undefined the transfer event',
+    );
+  }
 
-  const txFee = big(txResult.fee.amount[0].amount)
-    .plus(txResult.fee.gas)
-    .toFixed() as uUST;
+  /**
+   {
+     "type": "transfer",
+     "attributes": [
+       {
+         "key": "recipient",
+         "value": "terra1x46rqay4d3cssq8gxxvqz8xt6nwlz4td20k38v"
+       },
+       {
+         "key": "sender",
+         "value": "terra1kzx23xs8v9yggf6lqpwgerg455e8xzsv0s0glf"
+       },
+       {
+         "key": "amount",
+         "value": "20000000uluna"
+       }
+     ]
+   }
+   */
+
+  const unbondedAmount = pickAttributeValue<string>(transfer, 2);
 
   const txHash = txResult.result.txhash;
 
   return {
-    depositAmount,
-    receivedAmount,
-    exchangeRate,
+    txInfo,
+    txResult,
     txFee,
     txHash,
+    details: [
+      !!unbondedAmount && {
+        name: 'Unbonded Amount',
+        value: formatLuna(demicrofy(stripULuna(unbondedAmount))) + ' Luna',
+      },
+    ],
   };
 }

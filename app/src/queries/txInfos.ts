@@ -8,22 +8,26 @@ export interface StringifiedData {
   }[];
 }
 
+export type RawLogAttribute = {
+  key: string;
+  value: string;
+};
+
+export type RawLogEvent = {
+  type: string;
+  attributes: RawLogAttribute[];
+};
+
+export type RawLogMsg = {
+  msg_index: number;
+  log: string;
+  events: RawLogEvent[];
+};
+
 export type Data = {
   TxHash: string;
   Success: boolean;
-  RawLog:
-    | {
-        msg_index: number;
-        log: string;
-        events: {
-          type: string;
-          attributes: {
-            key: string;
-            value: string;
-          }[];
-        }[];
-      }[]
-    | string;
+  RawLog: RawLogMsg[] | string;
 }[];
 
 export function parseData({ TxInfos }: StringifiedData): Data {
@@ -82,4 +86,23 @@ export function queryTxInfo(
         parsedData: result.data ? parseData(result.data) : [],
       };
     });
+}
+
+export function pickRawLog(txInfo: Data, index: number): RawLogMsg | undefined {
+  return Array.isArray(txInfo[0].RawLog) ? txInfo[0].RawLog[index] : undefined;
+}
+
+export function pickEvent(
+  rawLog: RawLogMsg,
+  type: string,
+): RawLogEvent | undefined {
+  return rawLog.events.find((event) => event.type === type);
+}
+
+export function pickAttributeValue<T extends string>(
+  fromContract: RawLogEvent,
+  index: number,
+): T | undefined {
+  const attr = fromContract.attributes[index];
+  return attr ? (attr.value as T) : undefined;
 }

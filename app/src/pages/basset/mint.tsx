@@ -15,6 +15,7 @@ import {
   Luna,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
+  uUST,
 } from '@anchor-protocol/notation';
 import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
@@ -24,7 +25,7 @@ import {
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
 import big, { Big } from 'big.js';
-import { OperationRenderer } from 'components/OperationRenderer';
+import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
@@ -190,6 +191,7 @@ function MintBase({ className }: MintProps) {
         amount: bondAmount,
         bAsset: mintCurrency.value,
         validator: selectedValidator,
+        txFee: FIXED_GAS.toString() as uUST,
       });
 
       if (!broadcasted) {
@@ -209,22 +211,7 @@ function MintBase({ className }: MintProps) {
   ) {
     return (
       <Section className={className}>
-        {mintResult.status === 'done' ? (
-          <div>
-            <pre>{JSON.stringify(mintResult.data, null, 2)}</pre>
-            <ActionButton
-              style={{ width: 200 }}
-              onClick={() => {
-                init();
-                mintResult.reset();
-              }}
-            >
-              Exit
-            </ActionButton>
-          </div>
-        ) : (
-          <OperationRenderer result={mintResult} />
-        )}
+        <TransactionRenderer result={mintResult} onExit={init} />
       </Section>
     );
   }

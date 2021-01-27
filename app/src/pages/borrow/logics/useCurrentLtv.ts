@@ -1,5 +1,6 @@
 import { Ratio, uUST } from '@anchor-protocol/notation';
-import big, { Big, BigSource } from 'big.js';
+import { Big, BigSource } from 'big.js';
+import { currentLtv } from 'pages/borrow/logics/currentLtv';
 import { useMemo } from 'react';
 
 export function useCurrentLtv(
@@ -9,13 +10,8 @@ export function useCurrentLtv(
   oraclePrice: Ratio<BigSource>,
 ): Ratio<Big> | undefined {
   // loan_amount / ( (borrow_info.balance - borrow_info.spendable) * oracle_price )
-  return useMemo(() => {
-    try {
-      return big(loanAmount).div(
-        big(big(balance).minus(spendable)).mul(oraclePrice),
-      ) as Ratio<Big>;
-    } catch {
-      return undefined;
-    }
-  }, [balance, loanAmount, oraclePrice, spendable]);
+  return useMemo(
+    () => currentLtv(loanAmount, balance, spendable, oraclePrice),
+    [balance, loanAmount, oraclePrice, spendable],
+  );
 }

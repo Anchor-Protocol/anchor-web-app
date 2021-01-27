@@ -13,6 +13,7 @@ import {
   UST,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
+  uUST,
 } from '@anchor-protocol/notation';
 import type {
   DialogProps,
@@ -24,13 +25,14 @@ import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
 import big, { Big, BigSource } from 'big.js';
-import { OperationRenderer } from 'components/OperationRenderer';
+import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
+import { useMarketNotNullable } from 'pages/borrow/context/market';
 import { ltvToRepayAmount } from 'pages/borrow/logics/ltvToRepayAmount';
 import { repayAmountToLtv } from 'pages/borrow/logics/repayAmountToLtv';
 import { useAPR } from 'pages/borrow/logics/useAPR';
@@ -41,9 +43,6 @@ import { useRepaySendAmount } from 'pages/borrow/logics/useRepaySendAmount';
 import { useRepayTotalBorrows } from 'pages/borrow/logics/useRepayTotalBorrows';
 import { useRepayTotalOutstandingLoan } from 'pages/borrow/logics/useRepayTotalOutstandingLoan';
 import { useRepayTxFee } from 'pages/borrow/logics/useRepayTxFee';
-import { Data as MarketBalance } from 'pages/borrow/queries/marketBalanceOverview';
-import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
-import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import { repayOptions } from 'pages/borrow/transactions/repayOptions';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -51,9 +50,6 @@ import styled from 'styled-components';
 
 interface FormParams {
   className?: string;
-  marketBalance: MarketBalance;
-  marketOverview: MarketOverview;
-  marketUserOverview: MarketUserOverview;
 }
 
 type FormReturn = void;
@@ -71,14 +67,17 @@ const Template: DialogTemplate<FormParams, FormReturn> = (props) => {
 
 function ComponentBase({
   className,
-  marketBalance,
-  marketOverview,
-  marketUserOverview,
   closeDialog,
 }: DialogProps<FormParams, FormReturn>) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
+  const {
+    marketBalance,
+    marketUserOverview,
+    marketOverview,
+  } = useMarketNotNullable();
+
   const { status, post } = useWallet();
 
   const addressProvider = useAddressProvider();
@@ -89,6 +88,7 @@ function ComponentBase({
     addressProvider,
     post,
     client,
+    walletStatus: status,
   });
 
   // ---------------------------------------------
@@ -173,7 +173,11 @@ function ComponentBase({
   }, []);
 
   const proceed = useCallback(
-    async (status: WalletStatus, repayAmount: UST) => {
+    async (
+      status: WalletStatus,
+      repayAmount: UST,
+      txFee: uUST<BigSource> | undefined,
+    ) => {
       if (status.status !== 'ready' || bank.status !== 'connected') {
         return;
       }
@@ -183,6 +187,7 @@ function ComponentBase({
         market: 'ust',
         amount: repayAmount,
         borrower: undefined,
+        txFee: txFee!.toString() as uUST,
       });
     },
     [bank.status, repay],
@@ -215,7 +220,7 @@ function ComponentBase({
   // ---------------------------------------------
   const title = (
     <h1>
-      Borrow{' '}
+      Repay{' '}
       <p>
         <IconSpan>
           Borrow APR : {formatRatioToPercentage(apr)}%{' '}
@@ -237,20 +242,7 @@ function ComponentBase({
       <Modal open disableBackdropClick>
         <Dialog className={className}>
           {title}
-
-          {repayResult.status === 'done' ? (
-            <div>
-              <pre>{JSON.stringify(repayResult.data, null, 2)}</pre>
-              <ActionButton
-                style={{ width: 200 }}
-                onClick={() => closeDialog()}
-              >
-                Close
-              </ActionButton>
-            </div>
-          ) : (
-            <OperationRenderer result={repayResult} />
-          )}
+          <TransactionRenderer result={repayResult} onExit={closeDialog} />
         </Dialog>
       </Modal>
     );
@@ -340,7 +332,7 @@ function ComponentBase({
             !!invalidTxFee ||
             !!invalidAssetAmount
           }
-          onClick={() => proceed(status, repayAmount)}
+          onClick={() => proceed(status, repayAmount, txFee)}
         >
           Proceed
         </ActionButton>

@@ -13,6 +13,7 @@ import {
   UST,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
+  uUST,
 } from '@anchor-protocol/notation';
 import type {
   DialogProps,
@@ -23,14 +24,15 @@ import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
-import big, { Big } from 'big.js';
-import { OperationRenderer } from 'components/OperationRenderer';
+import big, { Big, BigSource } from 'big.js';
+import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
+import { useMarketNotNullable } from 'pages/borrow/context/market';
 import { borrowAmountToLtv } from 'pages/borrow/logics/borrowAmountToLtv';
 import { ltvToBorrowAmount } from 'pages/borrow/logics/ltvToBorrowAmount';
 import { useAPR } from 'pages/borrow/logics/useAPR';
@@ -41,8 +43,6 @@ import { useBorrowSafeMax } from 'pages/borrow/logics/useBorrowSafeMax';
 import { useBorrowTxFee } from 'pages/borrow/logics/useBorrowTxFee';
 import { useCurrentLtv } from 'pages/borrow/logics/useCurrentLtv';
 import { useInvalidBorrowAmount } from 'pages/borrow/logics/useInvalidBorrowAmount';
-import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
-import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import { borrowOptions } from 'pages/borrow/transactions/borrowOptions';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -50,8 +50,6 @@ import styled from 'styled-components';
 
 interface FormParams {
   className?: string;
-  marketOverview: MarketOverview;
-  marketUserOverview: MarketUserOverview;
 }
 
 type FormReturn = void;
@@ -69,13 +67,13 @@ const Template: DialogTemplate<FormParams, FormReturn> = (props) => {
 
 function ComponentBase({
   className,
-  marketOverview,
-  marketUserOverview,
   closeDialog,
 }: DialogProps<FormParams, FormReturn>) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
+  const { marketUserOverview, marketOverview } = useMarketNotNullable();
+
   const { status, post } = useWallet();
 
   const addressProvider = useAddressProvider();
@@ -86,6 +84,7 @@ function ComponentBase({
     addressProvider,
     post,
     client,
+    walletStatus: status,
   });
 
   // ---------------------------------------------
@@ -173,7 +172,11 @@ function ComponentBase({
   }, []);
 
   const proceed = useCallback(
-    async (status: WalletStatus, borrowAmount: UST) => {
+    async (
+      status: WalletStatus,
+      borrowAmount: UST,
+      txFee: uUST<BigSource> | undefined,
+    ) => {
       if (status.status !== 'ready' || bank.status !== 'connected') {
         return;
       }
@@ -183,6 +186,7 @@ function ComponentBase({
         market: 'ust',
         amount: borrowAmount,
         withdrawTo: undefined,
+        txFee: txFee!.toString() as uUST,
       });
     },
     [bank.status, borrow],
@@ -237,20 +241,7 @@ function ComponentBase({
       <Modal open disableBackdropClick>
         <Dialog className={className}>
           {title}
-
-          {borrowResult.status === 'done' ? (
-            <div>
-              <pre>{JSON.stringify(borrowResult.data, null, 2)}</pre>
-              <ActionButton
-                style={{ width: 200 }}
-                onClick={() => closeDialog()}
-              >
-                Close
-              </ActionButton>
-            </div>
-          ) : (
-            <OperationRenderer result={borrowResult} />
-          )}
+          <TransactionRenderer result={borrowResult} onExit={closeDialog} />
         </Dialog>
       </Modal>
     );
@@ -296,6 +287,7 @@ function ComponentBase({
 
         <figure className="graph">
           <LTVGraph
+            disabled={max.lte(0)}
             maxLtv={marketOverview.bLunaMaxLtv}
             safeLtv={marketOverview.bLunaSafeLtv}
             currentLtv={currentLtv}
@@ -334,7 +326,7 @@ function ComponentBase({
             !!invalidTxFee ||
             !!invalidBorrowAmount
           }
-          onClick={() => proceed(status, borrowAmount)}
+          onClick={() => proceed(status, borrowAmount, txFee)}
         >
           Proceed
         </ActionButton>

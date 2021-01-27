@@ -1,7 +1,7 @@
 import { Wallet } from '@anchor-protocol/icons';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
+import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
-import { TextButton } from '@anchor-protocol/neumorphism-ui/components/TextButton';
 import {
   demicrofy,
   formatLuna,
@@ -10,6 +10,7 @@ import {
 } from '@anchor-protocol/notation';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { ClickAwayListener } from '@material-ui/core';
+import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from 'contexts/bank';
 import { useCallback, useState } from 'react';
 import useClipboard from 'react-use-clipboard';
@@ -109,33 +110,44 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                   </IconSpan>
                 </h2>
                 <ActionButton onClick={disconnect}>Disconnect</ActionButton>
-                <TextButton onClick={setCopied}>
+                <ActionButton onClick={setCopied}>
                   Copy Address {isCopied && `(Copied!)`}
-                </TextButton>
-                <TextButton onClick={viewOnTerraFinder}>
+                </ActionButton>
+                <ActionButton onClick={viewOnTerraFinder}>
                   View on Terra Finder
-                </TextButton>
+                </ActionButton>
+                {process.env.NODE_ENV === 'development' && (
+                  <ActionButton
+                    // @ts-ignore
+                    component="a"
+                    href="https://faucet.terra.money/"
+                    target="_blank"
+                  >
+                    [Dev] Faucet
+                  </ActionButton>
+                )}
+
+                <HorizontalRuler style={{ margin: '2em 0' }} />
+
                 <h2>Balances</h2>
-                <ul>
-                  <li>
-                    UST:{' '}
+                <TxFeeList>
+                  <TxFeeListItem label="UST">
                     {formatUSTWithPostfixUnits(
                       demicrofy(bank.userBalances.uUSD),
                     )}
-                  </li>
-                  <li>
-                    aUST:{' '}
+                  </TxFeeListItem>
+                  <TxFeeListItem label="aUST">
                     {formatUSTWithPostfixUnits(
                       demicrofy(bank.userBalances.uaUST),
                     )}
-                  </li>
-                  <li>
-                    Luna: {formatLuna(demicrofy(bank.userBalances.uLuna))}
-                  </li>
-                  <li>
-                    bLuna: {formatLuna(demicrofy(bank.userBalances.ubLuna))}
-                  </li>
-                </ul>
+                  </TxFeeListItem>
+                  <TxFeeListItem label="Luna">
+                    {formatLuna(demicrofy(bank.userBalances.uLuna))}
+                  </TxFeeListItem>
+                  <TxFeeListItem label="bLuna">
+                    {formatLuna(demicrofy(bank.userBalances.ubLuna))}
+                  </TxFeeListItem>
+                </TxFeeList>
               </WalletDropdown>
             )}
           </div>
@@ -208,16 +220,23 @@ export const WalletDropdown = styled.div`
   display: block;
   top: 40px;
   right: 0;
-  padding: 20px;
+  padding: 30px;
   z-index: 1000;
-  border: 1px solid white;
   background-color: ${({ theme }) => theme.backgroundColor};
+  box-shadow: 0px 0px 21px 4px rgba(0, 0, 0, 0.3);
+  border-radius: 1em;
 
   > * {
     margin-bottom: 10px;
   }
 
-  button {
+  h2 {
+    font-size: 1.2em;
+    font-weight: 500;
+  }
+
+  button,
+  a {
     width: 100%;
   }
 `;

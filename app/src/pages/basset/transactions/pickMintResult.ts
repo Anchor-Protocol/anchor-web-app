@@ -1,56 +1,79 @@
-import { Ratio, uaUST, uUST } from '@anchor-protocol/notation';
-import big from 'big.js';
-import { Data } from 'queries/txInfos';
+import {
+  demicrofy,
+  formatFluidDecimalPoints,
+  formatLuna,
+  Ratio,
+  ubLuna,
+  uLuna,
+  uUST,
+} from '@anchor-protocol/notation';
+import big, { BigSource } from 'big.js';
+import { TxInfoParseError } from 'errors/TxInfoParseError';
+import { TransactionResult } from 'models/transaction';
+import {
+  Data,
+  pickAttributeValue,
+  pickEvent,
+  pickRawLog,
+} from 'queries/txInfos';
 import { TxResult } from 'transactions/tx';
 
 interface Params {
   txResult: TxResult;
   txInfo: Data;
+  txFee: uUST;
 }
 
-export interface MintResult {
-  depositAmount: uUST<string> | undefined;
-  receivedAmount: uaUST<string> | undefined;
-  exchangeRate: Ratio<string> | undefined;
-  txFee: uUST<string>;
-  txHash: string;
-}
+export function pickMintResult({
+  txInfo,
+  txResult,
+  txFee,
+}: Params): TransactionResult {
+  const rawLog = pickRawLog(txInfo, 0);
 
-export function pickMintResult({ txInfo, txResult }: Params): MintResult {
-  const fromContract =
-    Array.isArray(txInfo[0].RawLog) && txInfo[0].RawLog[0].events[1];
-
-  if (!fromContract) {
-    console.error({ txInfo, txResult });
-    throw new Error(`Failed contract result parse`);
+  if (!rawLog) {
+    throw new TxInfoParseError(txResult, txInfo, 'Undefined the RawLog');
   }
 
-  // TODO
+  const fromContract = pickEvent(rawLog, 'from_contract');
 
-  const depositAmount = fromContract.attributes.find(
-    ({ key }: { key: string }) => key === 'deposit_amount',
-  )?.value as uUST | undefined;
+  if (!fromContract) {
+    throw new TxInfoParseError(
+      txResult,
+      txInfo,
+      'Undefined the from_contract event',
+    );
+  }
 
-  const receivedAmount = fromContract.attributes.find(
-    ({ key }: { key: string }) => key === 'mint_amount',
-  )?.value as uaUST | undefined;
+  const bondedAmount = pickAttributeValue<uLuna>(fromContract, 3);
+
+  const mintedAmount = pickAttributeValue<ubLuna>(fromContract, 4);
 
   const exchangeRate =
-    depositAmount &&
-    receivedAmount &&
-    (big(receivedAmount).div(depositAmount).toFixed() as Ratio | undefined);
-
-  const txFee = big(txResult.fee.amount[0].amount)
-    .plus(txResult.fee.gas)
-    .toFixed() as uUST;
+    bondedAmount &&
+    mintedAmount &&
+    (big(bondedAmount).div(mintedAmount) as Ratio<BigSource> | undefined);
 
   const txHash = txResult.result.txhash;
 
   return {
-    depositAmount,
-    receivedAmount,
-    exchangeRate,
+    txInfo,
+    txResult,
     txFee,
     txHash,
+    details: [
+      bondedAmount && {
+        name: 'Bonded Amount',
+        value: formatLuna(demicrofy(bondedAmount)) + ' Luna',
+      },
+      mintedAmount && {
+        name: 'Minted Amount',
+        value: formatLuna(demicrofy(mintedAmount)) + ' bLuna',
+      },
+      exchangeRate && {
+        name: 'Exchange Rate',
+        value: formatFluidDecimalPoints(exchangeRate, 2),
+      },
+    ],
   };
 }
