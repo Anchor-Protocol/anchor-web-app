@@ -116,6 +116,16 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                 <ActionButton onClick={viewOnTerraFinder}>
                   View on Terra Finder
                 </ActionButton>
+                {process.env.NODE_ENV === 'development' && (
+                  <ActionButton
+                    // @ts-ignore
+                    component="a"
+                    href="https://faucet.terra.money/"
+                    target="_blank"
+                  >
+                    [Dev] Faucet
+                  </ActionButton>
+                )}
 
                 <HorizontalRuler style={{ margin: '2em 0' }} />
 
@@ -225,7 +235,8 @@ export const WalletDropdown = styled.div`
     font-weight: 500;
   }
 
-  button {
+  button,
+  a {
     width: 100%;
   }
 `;
