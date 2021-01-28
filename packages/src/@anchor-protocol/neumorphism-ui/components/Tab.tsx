@@ -1,7 +1,7 @@
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { flat, softPressed } from '@anchor-protocol/styled-neumorphism';
 import c from 'color';
-import { ReactElement, ReactNode, useMemo } from 'react';
+import { CSSProperties, ReactElement, ReactNode, useMemo } from 'react';
 import styled from 'styled-components';
 import useResizeObserver from 'use-resize-observer/polyfilled';
 
@@ -33,6 +33,8 @@ export interface TabProps<T> {
   fontSize?: number;
 
   borderRadius?: number;
+
+  style?: CSSProperties;
 }
 
 const defaultHeight: number = 60;
@@ -50,6 +52,7 @@ function TabBase<T>({
   labelFunction,
   tooltipFunction,
   height = defaultHeight,
+  style,
 }: TabProps<T>) {
   const { ref: divRef, width = 500 } = useResizeObserver<HTMLDivElement>({});
 
@@ -64,6 +67,7 @@ function TabBase<T>({
   return (
     <div
       className={className}
+      style={style}
       ref={divRef}
       aria-disabled={disabled || undefined}
     >

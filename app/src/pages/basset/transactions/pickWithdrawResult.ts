@@ -1,7 +1,9 @@
 import {
   demicrofy,
   formatLuna,
+  formatUSTWithPostfixUnits,
   stripULuna,
+  truncate,
   uUST,
 } from '@anchor-protocol/notation';
 import { TxInfoParseError } from 'errors/TxInfoParseError';
@@ -75,12 +77,20 @@ export function pickWithdrawResult({
   return {
     txInfo,
     txResult,
-    txFee,
-    txHash,
+    //txFee,
+    //txHash,
     details: [
       !!unbondedAmount && {
         name: 'Unbonded Amount',
         value: formatLuna(demicrofy(stripULuna(unbondedAmount))) + ' Luna',
+      },
+      {
+        name: 'Tx Hash',
+        value: truncate(txHash),
+      },
+      {
+        name: 'Tx Fee',
+        value: formatUSTWithPostfixUnits(demicrofy(txFee)) + ' UST',
       },
     ],
   };

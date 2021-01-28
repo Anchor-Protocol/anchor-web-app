@@ -3,6 +3,7 @@ import {
   formatFluidDecimalPoints,
   formatUSTWithPostfixUnits,
   Ratio,
+  truncate,
   uaUST,
   uUST,
 } from '@anchor-protocol/notation';
@@ -60,8 +61,8 @@ export function pickDepositResult({
   return {
     txInfo,
     txResult,
-    txFee,
-    txHash,
+    //txFee,
+    //txHash,
     details: [
       depositAmount && {
         name: 'Deposit Amount',
@@ -74,6 +75,14 @@ export function pickDepositResult({
       exchangeRate && {
         name: 'Exchange Rate',
         value: formatFluidDecimalPoints(exchangeRate, 2),
+      },
+      {
+        name: 'Tx Hash',
+        value: truncate(txHash),
+      },
+      {
+        name: 'Tx Fee',
+        value: formatUSTWithPostfixUnits(demicrofy(txFee)) + ' UST',
       },
     ],
   };

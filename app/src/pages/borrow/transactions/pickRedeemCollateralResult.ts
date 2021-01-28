@@ -1,7 +1,7 @@
 import {
   demicrofy,
   formatLuna,
-  formatRatioToPercentage,
+  formatRatioToPercentage, formatUSTWithPostfixUnits, truncate,
   ubLuna,
   uUST,
 } from '@anchor-protocol/notation';
@@ -65,8 +65,8 @@ export function pickRedeemCollateralResult({
   return {
     txInfo,
     txResult,
-    txFee,
-    txHash,
+    //txFee,
+    //txHash,
     details: [
       redeemedAmount && {
         name: 'Redeemed Amount',
@@ -75,6 +75,14 @@ export function pickRedeemCollateralResult({
       newLtv && {
         name: 'New LTV',
         value: formatRatioToPercentage(newLtv) + ' %',
+      },
+      {
+        name: 'Tx Hash',
+        value: truncate(txHash),
+      },
+      {
+        name: 'Tx Fee',
+        value: formatUSTWithPostfixUnits(demicrofy(txFee)) + ' UST',
       },
     ],
   };

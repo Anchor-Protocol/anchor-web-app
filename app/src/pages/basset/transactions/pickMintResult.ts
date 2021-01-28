@@ -1,8 +1,8 @@
 import {
   demicrofy,
   formatFluidDecimalPoints,
-  formatLuna,
-  Ratio,
+  formatLuna, formatUSTWithPostfixUnits,
+  Ratio, truncate,
   ubLuna,
   uLuna,
   uUST,
@@ -59,8 +59,8 @@ export function pickMintResult({
   return {
     txInfo,
     txResult,
-    txFee,
-    txHash,
+    //txFee,
+    //txHash,
     details: [
       bondedAmount && {
         name: 'Bonded Amount',
@@ -73,6 +73,14 @@ export function pickMintResult({
       exchangeRate && {
         name: 'Exchange Rate',
         value: formatFluidDecimalPoints(exchangeRate, 2),
+      },
+      {
+        name: 'Tx Hash',
+        value: truncate(txHash),
+      },
+      {
+        name: 'Tx Fee',
+        value: formatUSTWithPostfixUnits(demicrofy(txFee)) + ' UST',
       },
     ],
   };

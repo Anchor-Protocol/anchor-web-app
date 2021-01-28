@@ -20,8 +20,6 @@ export function useDepositTxFee(
       .mul(bank.tax.taxRate);
     const maxTax = big(bank.tax.maxTaxUUSD);
 
-    console.log('useDepositTxFee.ts..()', ratioTxFee.toString());
-
     return max(min(ratioTxFee, maxTax), 0).plus(FIXED_GAS) as uUST<Big>;
 
     //if (ratioTxFee.gt(maxTax)) {
