@@ -1,18 +1,53 @@
 import { LineChart } from '@anchor-protocol/app-charts/LineChart';
-import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
+import { Label } from '@anchor-protocol/neumorphism-ui/components/Label';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
+import { Tab } from '@anchor-protocol/neumorphism-ui/components/Tab';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { formatRatioToPercentage } from '@anchor-protocol/notation';
 import { useInterest } from 'pages/earn/queries/interest';
+import { useState } from 'react';
 import styled from 'styled-components';
 
 export interface InterestSectionProps {
   className?: string;
 }
 
+interface Item {
+  label: string;
+  value: string;
+}
+
+const tabItems: Item[] = [
+  {
+    label: 'TOTAL',
+    value: 'total',
+  },
+  {
+    label: 'YEAR',
+    value: 'year',
+  },
+  {
+    label: 'MONTH',
+    value: 'month',
+  },
+  {
+    label: 'WEEK',
+    value: 'week',
+  },
+  {
+    label: 'DAY',
+    value: 'day',
+  },
+];
+
 function InterestSectionBase({ className }: InterestSectionProps) {
+  // ---------------------------------------------
+  // states
+  // ---------------------------------------------
+  const [tab, setTab] = useState<Item>(() => tabItems[0]);
+
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
@@ -30,17 +65,15 @@ function InterestSectionBase({ className }: InterestSectionProps) {
       </h2>
 
       <div className="apy">
+        <Tooltip title="Annual Percentage Yield" placement="top">
+          <Label className="name">APY</Label>
+        </Tooltip>
         <div className="value">
           {interest?.currentAPY
             ? formatRatioToPercentage(interest.currentAPY)
             : 0}
           %
         </div>
-        <p className="name">
-          <IconSpan>
-            APY <InfoTooltip>Annual Percentage Yield</InfoTooltip>
-          </IconSpan>
-        </p>
         <LineChart
           data={[
             { label: 'A', date: 0, value: 100 },
@@ -53,25 +86,25 @@ function InterestSectionBase({ className }: InterestSectionProps) {
         />
       </div>
 
-      <HorizontalRuler />
-
       <article className="earn">
-        <ul>
-          <li data-selected="true">Total</li>
-          <li>Year</li>
-          <li>Month</li>
-          <li>Week</li>
-          <li>Day</li>
-        </ul>
+        <Tab
+          className="tab"
+          items={tabItems}
+          selectedItem={tab ?? tabItems[0]}
+          onChange={setTab}
+          labelFunction={({ label }) => label}
+          keyFunction={({ value }) => value}
+          height={46}
+          borderRadius={30}
+          fontSize={12}
+        />
 
         <div className="amount">
-          <Tooltip title="no real data" placement="top">
-            <span>
-              <s>
-                2,320<span className="decimal-point">.063700</span> UST
-              </s>
-            </span>
-          </Tooltip>
+          <span>
+            <s>
+              2,320<span className="decimal-point">.063700</span> UST
+            </s>
+          </span>
           <p>
             <IconSpan>
               Interest earned{' '}

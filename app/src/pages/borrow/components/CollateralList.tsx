@@ -59,8 +59,6 @@ function CollateralListBase({ className }: CollateralListProps) {
   // ---------------------------------------------
   return (
     <Section className={className}>
-      <h2>COLLATERAL LIST</h2>
-
       <HorizontalScrollTable>
         <colgroup>
           <col style={{ width: 300 }} />
@@ -69,10 +67,10 @@ function CollateralListBase({ className }: CollateralListProps) {
         </colgroup>
         <thead>
           <tr>
-            <th>Name</th>
+            <th>COLLATERAL LIST</th>
             <th>
               <IconSpan>
-                Balance{' '}
+                Provided{' '}
                 <InfoTooltip>
                   Amount of bAsset collateral deposited by user, in USD / Amount
                   of bAsset collateral deposited by user
@@ -113,7 +111,7 @@ function CollateralListBase({ className }: CollateralListProps) {
                   openProvideCollateralDialog({});
                 }}
               >
-                Add
+                Provide
               </ActionButton>
               <ActionButton
                 disabled={

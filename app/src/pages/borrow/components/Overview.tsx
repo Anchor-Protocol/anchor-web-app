@@ -1,6 +1,8 @@
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
+import { Label } from '@anchor-protocol/neumorphism-ui/components/Label';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
+import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import {
   demicrofy,
   formatRatioToPercentage,
@@ -53,41 +55,51 @@ function OverviewBase({ className }: OverviewProps) {
     <Section className={className}>
       <article>
         <div>
-          <label>
-            <IconSpan>
-              APR{' '}
-              <InfoTooltip>
-                Annual Percentage Rate.
-                <br />
-                The annualized rate of current interest on loans in USD
-              </InfoTooltip>
-            </IconSpan>
-          </label>
-          <p>{formatRatioToPercentage(apr)}%</p>
-        </div>
-
-        <div>
-          <label>
-            <IconSpan>
-              Collateral Value{' '}
-              <InfoTooltip>
-                The sum of all collaterals deposited by the user, in USD
-              </InfoTooltip>
-            </IconSpan>
-          </label>
+          <Tooltip
+            title="The sum of all collaterals deposited by the user, in USD"
+            placement="top"
+          >
+            <Label>Collateral Value</Label>
+          </Tooltip>
           <p>${formatUSTWithPostfixUnits(demicrofy(collaterals))}</p>
         </div>
 
         <div>
-          <label>
-            <IconSpan>
-              Borrowed Value{' '}
-              <InfoTooltip>
-                The sum of all loans borrowed by the user, in USD
-              </InfoTooltip>
-            </IconSpan>
-          </label>
+          <Tooltip
+            title="The sum of all loans borrowed by the user, in USD"
+            placement="top"
+          >
+            <Label>Borrowed Value</Label>
+          </Tooltip>
           <p>${formatUSTWithPostfixUnits(demicrofy(borrowed))}</p>
+          <p>
+            <IconSpan>
+              <InfoTooltip>
+                The borrow amount for this specific stablecoin / The borrow
+                amount for this specific stablecoin in USD
+              </InfoTooltip>{' '}
+              Borrowed: {formatUSTWithPostfixUnits(demicrofy(borrowed))} UST
+            </IconSpan>
+          </p>
+        </div>
+
+        <div>
+          <Tooltip
+            title="Annual Percentage Rate. The annualized rate of current interest on loans in USD"
+            placement="top"
+          >
+            <Label>APR</Label>
+          </Tooltip>
+          <p>{formatRatioToPercentage(apr)}%</p>
+          <p>
+            <IconSpan>
+              <InfoTooltip>
+                Current rate of annualized borrowing interest applied for this
+                stablecoin / The amount of interest accrued on open loans
+              </InfoTooltip>{' '}
+              Accrued: {formatUSTWithPostfixUnits(demicrofy(borrowed))} UST
+            </IconSpan>
+          </p>
         </div>
       </article>
 

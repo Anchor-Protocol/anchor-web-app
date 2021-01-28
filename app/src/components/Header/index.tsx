@@ -43,8 +43,7 @@ export const Header = styled(HeaderBase)`
   // ---------------------------------------------
   // style
   // ---------------------------------------------
-  background-color: rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  background-color: #000000;
 
   a {
     text-decoration: none;

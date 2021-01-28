@@ -240,7 +240,6 @@ function ComponentBase({
     return (
       <Modal open disableBackdropClick>
         <Dialog className={className}>
-          {title}
           <TransactionRenderer result={borrowResult} onExit={closeDialog} />
         </Dialog>
       </Modal>

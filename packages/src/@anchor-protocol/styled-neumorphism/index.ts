@@ -23,6 +23,13 @@ interface NeumorphismValues {
    * @see https://neumorphism.io/#7380c9
    */
   intensity: number;
+
+  /**
+   * Blur ratio
+   *
+   * @default 1
+   */
+  blurWeight?: number;
 }
 
 export function boxShadowColor({
@@ -47,8 +54,9 @@ export function flat({
   backgroundColor = color,
   distance,
   intensity,
+  blurWeight = 1,
 }: NeumorphismValues) {
-  const blur: number = 10 + 2 * (distance - 5);
+  const blur: number = (10 + 2 * (distance - 5)) * blurWeight;
 
   return `
     transition: box-shadow 0.1s ease;
@@ -70,8 +78,9 @@ export function concave({
   backgroundColor = color,
   distance,
   intensity,
+  blurWeight = 1,
 }: NeumorphismValues) {
-  const blur: number = 10 + 2 * (distance - 5);
+  const blur: number = (10 + 2 * (distance - 5)) * blurWeight;
 
   // TODO find the weight ratio by color luminance
 
@@ -99,8 +108,9 @@ export function convex({
   backgroundColor = color,
   distance,
   intensity,
+  blurWeight = 1,
 }: NeumorphismValues) {
-  const blur: number = 10 + 2 * (distance - 5);
+  const blur: number = (10 + 2 * (distance - 5)) * blurWeight;
 
   // TODO find the weight ratio by color luminance
 
@@ -128,8 +138,9 @@ export function pressed({
   backgroundColor = color,
   distance,
   intensity,
+  blurWeight = 1,
 }: NeumorphismValues) {
-  const blur: number = 10 + 2 * (distance - 5);
+  const blur: number = (10 + 2 * (distance - 5)) * blurWeight;
 
   return `
     transition: box-shadow 0.1s ease;
@@ -143,6 +154,30 @@ export function pressed({
                 inset
                 -${distance}px
                 -${distance}px
+                ${blur}px
+                ${boxLightColor({ intensity, color: backgroundColor })};
+  `;
+}
+
+export function softPressed({
+  color,
+  backgroundColor = color,
+  distance,
+  intensity,
+  blurWeight = 1,
+}: NeumorphismValues) {
+  const blur: number = (10 + 2 * (distance - 5)) * blurWeight;
+
+  return `
+    transition: box-shadow 0.1s ease;
+    background: ${color};
+    box-shadow: -${distance}px
+                -${distance}px
+                ${blur}px
+                ${boxShadowColor({ intensity, color: backgroundColor })},
+                
+                ${distance}px
+                ${distance}px
                 ${blur}px
                 ${boxLightColor({ intensity, color: backgroundColor })};
   `;

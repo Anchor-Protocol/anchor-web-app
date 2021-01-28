@@ -1,4 +1,4 @@
-import { pressed } from '@anchor-protocol/styled-neumorphism';
+import { softPressed } from '@anchor-protocol/styled-neumorphism';
 import { TextField, TextFieldProps } from '@material-ui/core';
 import { ComponentType } from 'react';
 import styled from 'styled-components';
@@ -12,7 +12,7 @@ export const TextInput: ComponentType<TextFieldProps> = styled(TextField)`
   border-radius: 5px;
 
   ${({ theme }) =>
-    pressed({
+    softPressed({
       color: theme.textInput.backgroundColor,
       backgroundColor: theme.backgroundColor,
       distance: 1,

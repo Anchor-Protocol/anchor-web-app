@@ -64,7 +64,7 @@ export function BorrowLimitGraph({
               {
                 position: 'top',
                 label: `${formatRatioToPercentage(borrowLimitRatio)}%`,
-                color: '#ffffff',
+                color: '#15cc93',
                 value: borrowLimitRatio.toNumber(),
               },
             ]
