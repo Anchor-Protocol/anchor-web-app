@@ -59,7 +59,6 @@ export function flat({
   const blur: number = (10 + 2 * (distance - 5)) * blurWeight;
 
   return `
-    transition: box-shadow 0.1s ease;
     background: ${color};
     box-shadow: ${distance}px
                 ${distance}px
@@ -85,7 +84,6 @@ export function concave({
   // TODO find the weight ratio by color luminance
 
   return `
-    transition: box-shadow 0.1s ease;
     background: linear-gradient(
                   145deg,
                   ${c(color).darken(0.05).string()},
@@ -115,7 +113,6 @@ export function convex({
   // TODO find the weight ratio by color luminance
 
   return `
-    transition: box-shadow 0.1s ease;
     background: linear-gradient(
                   145deg,
                   ${c(color).lighten(0.05).string()},
@@ -143,7 +140,6 @@ export function pressed({
   const blur: number = (10 + 2 * (distance - 5)) * blurWeight;
 
   return `
-    transition: box-shadow 0.1s ease;
     background: ${color};
     box-shadow: inset
                 ${distance}px
@@ -169,7 +165,6 @@ export function softPressed({
   const blur: number = (10 + 2 * (distance - 5)) * blurWeight;
 
   return `
-    transition: box-shadow 0.1s ease;
     background: ${color};
     box-shadow: -${distance}px
                 -${distance}px
