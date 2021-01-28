@@ -31,6 +31,6 @@ export const Section = styled(SectionBase)`
     })};
 
   .NeuSection-content {
-    padding: 50px;
+    padding: 60px;
   }
 `;

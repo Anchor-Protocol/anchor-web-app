@@ -25,14 +25,14 @@ interface Item {
 }
 
 const tabItems: Item[] = [
-  { label: 'Mint', value: 'mint', tooltip: 'Bond assets to mint bAssets' },
+  { label: 'MINT', value: 'mint', tooltip: 'Bond assets to mint bAssets' },
   {
-    label: 'Burn',
+    label: 'BURN',
     value: 'burn',
     tooltip: 'Burn previously minted bAssets to unbond your assets',
   },
   {
-    label: 'Claim',
+    label: 'CLAIM',
     value: 'claim',
     tooltip: 'Claim burned bAssets or Staking Rewards',
   },
@@ -107,7 +107,7 @@ export const BAsset = styled(BAssetBase)`
   // ---------------------------------------------
   main {
     .content-layout {
-      max-width: 720px;
+      max-width: 940px;
       margin: 0 auto;
       padding: 0 20px;
       border-radius: 30px;

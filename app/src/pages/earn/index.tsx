@@ -18,8 +18,6 @@ function EarnBase({ className }: EarnProps) {
   return (
     <div className={className}>
       <main>
-        <h1>EARN</h1>
-
         <div className="content-layout">
           <TotalDepositSection className="total-deposit" />
           <InterestSection className="interest" />
@@ -39,18 +37,10 @@ export const Earn = styled(EarnBase)`
   background-color: ${({ theme }) => theme.backgroundColor};
   color: ${({ theme }) => theme.textColor};
 
-  h1 {
-    margin: 0 0 50px 0;
-
-    font-size: 34px;
-    font-weight: 900;
-    color: ${({ theme }) => theme.textColor};
-  }
-
   h2 {
     margin: 0;
-    font-size: 14px;
-    font-weight: 700;
+    font-size: 15px;
+    font-weight: 500;
     letter-spacing: -0.3px;
     color: ${({ theme }) => theme.textColor};
   }
@@ -65,17 +55,14 @@ export const Earn = styled(EarnBase)`
 
   .total-deposit {
     .amount {
-      font-size: 64px;
+      font-size: 50px;
       font-weight: 200;
-      letter-spacing: -3px;
+      letter-spacing: -1.5px;
       color: ${({ theme }) => theme.textColor};
     }
 
-    .amount-description {
-      font-size: 14px;
-      line-height: 1.5;
-      letter-spacing: -0.3px;
-      color: ${({ theme }) => theme.dimTextColor};
+    .total-deposit-buttons {
+      margin-top: 72px;
     }
   }
 
@@ -83,17 +70,15 @@ export const Earn = styled(EarnBase)`
     .apy {
       text-align: center;
 
-      .value {
-        font-size: 64px;
-        font-weight: 300;
-        color: ${({ theme }) => theme.textColor};
+      .name {
+        margin-bottom: 5px;
       }
 
-      .name {
-        font-size: 14px;
-        color: ${({ theme }) => theme.dimTextColor};
-
-        margin-bottom: 10px;
+      .value {
+        font-size: 50px;
+        font-weight: 300;
+        color: ${({ theme }) => theme.textColor};
+        margin-bottom: 40px;
       }
 
       figure {
@@ -103,39 +88,11 @@ export const Earn = styled(EarnBase)`
     }
 
     .earn {
-      ul {
-        list-style: none;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-
-        li {
-          text-align: center;
-          font-size: 12px;
-          border-radius: 15px;
-          border: 1px solid transparent;
-          color: ${({ theme }) => theme.dimTextColor};
-
-          cursor: pointer;
-          user-select: none;
-
-          width: 58px;
-          padding: 5px 0;
-
-          &:not(:last-child) {
-            margin-right: 5px;
-          }
-
-          &[data-selected='true'] {
-            border: 1px solid ${({ theme }) => theme.textColor};
-            color: ${({ theme }) => theme.textColor};
-          }
-        }
-
-        margin-bottom: 90px;
-      }
+      margin-top: 33px;
 
       .amount {
+        margin-top: 80px;
+
         text-align: center;
         font-size: 32px;
 
@@ -200,9 +157,10 @@ export const Earn = styled(EarnBase)`
       margin-bottom: 15px;
     }
 
-    aside {
+    .total-deposit-buttons {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, 142px);
+      justify-content: end;
       grid-gap: 20px;
     }
   }
@@ -240,7 +198,7 @@ export const Earn = styled(EarnBase)`
 
         min-height: 800px;
 
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr 460px;
         grid-template-rows: auto 1fr;
         grid-gap: 40px;
 
@@ -258,6 +216,14 @@ export const Earn = styled(EarnBase)`
           grid-column: 1/3;
           grid-row: 2/3;
         }
+
+        margin-bottom: 30px;
+      }
+    }
+
+    .interest {
+      .NeuSection-content {
+        padding: 60px 40px;
       }
     }
 
@@ -280,10 +246,6 @@ export const Earn = styled(EarnBase)`
       .NeuSection-content {
         padding: 30px;
       }
-    }
-
-    .decimal-point {
-      display: none;
     }
   }
 
@@ -312,7 +274,8 @@ export const Earn = styled(EarnBase)`
         font-size: 50px;
       }
 
-      aside {
+      .total-deposit-buttons {
+        margin-top: 40px;
         display: grid;
         grid-template-columns: 1fr;
         grid-gap: 15px;

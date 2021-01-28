@@ -36,7 +36,7 @@ export function APYChartBase({ data, ...divProps }: APYChartProps) {
 
     return (
       <>
-        <path d={drawPath(data)!} stroke="white" strokeWidth={4} fill="none" />
+        <path d={drawPath(data)!} stroke="#15cc93" strokeWidth={4} fill="none" />
       </>
     );
   }, [data, height, width]);

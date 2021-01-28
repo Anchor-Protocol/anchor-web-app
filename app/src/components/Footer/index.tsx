@@ -10,6 +10,7 @@ import {
 import { screen } from 'env';
 import { CSSProperties } from 'react';
 import styled from 'styled-components';
+import c from 'color';
 
 export interface FooterProps {
   className?: string;
@@ -44,13 +45,13 @@ function FooterBase({ className, style }: FooterProps) {
 
 export const Footer = styled(FooterBase)`
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.3);
+  color: ${({ theme }) => c(theme.dimTextColor).alpha(0.5).toString()};
 
   .MuiIconButton-root {
-    color: rgba(255, 255, 255, 0.3);
+    color: ${({ theme }) => c(theme.dimTextColor).alpha(0.5).toString()};
 
     &:hover {
-      color: rgba(255, 255, 255, 0.6);
+      color: ${({ theme }) => theme.dimTextColor};
     }
   }
 

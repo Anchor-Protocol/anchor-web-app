@@ -15,37 +15,44 @@ export const lightTheme: DefaultTheme = {
 
   backgroundColor: '#f4f4f5',
   textColor: '#1f1f1f',
-  dimTextColor: '#8a8a8a',
+  dimTextColor: '#999999',
   errorTextColor: '#ef3158',
+  highlightBackgroundColor: '#ffffff',
+  
+  label: {
+    backgroundColor: '#ffffff',
+    textColor: '#1f1f1f',
+    borderColor: '#e8e8e8',
+  },
 
   actionButton: {
-    backgroundColor: '#94f3b8',
-    backgroundHoverColor: '#84eaac',
-    textColor: '#2c2c2e',
+    backgroundColor: '#2c2c2c',
+    backgroundHoverColor: '#2c2c2c',
+    textColor: '#ffffff',
   },
 
   selector: {
-    backgroundColor: '#f4f4f5',
+    backgroundColor: '#efefef',
     textColor: '#2c2c2e',
   },
 
   formControl: {
-    labelColor: '#8a8a8a',
+    labelColor: '#999999',
     labelFocusedColor: '#3867c4',
     labelErrorColor: '#ef3158',
   },
 
   textInput: {
     backgroundColor: '#efefef',
-    textColor: '#2c2c2e',
+    textColor: '#2c2c2c',
   },
 
   table: {
     head: {
-      textColor: '#8a8a8a',
+      textColor: '#999999',
     },
     body: {
-      textColor: '#2c2c2e',
+      textColor: '#2c2c2c',
     },
   },
 

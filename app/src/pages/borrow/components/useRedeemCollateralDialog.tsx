@@ -241,7 +241,6 @@ function ComponentBase({
     return (
       <Modal open disableBackdropClick>
         <Dialog className={className}>
-          {title}
           <TransactionRenderer
             result={redeemCollateralResult}
             onExit={closeDialog}

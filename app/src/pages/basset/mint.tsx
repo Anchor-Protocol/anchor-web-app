@@ -1,6 +1,6 @@
 import { useOperation } from '@anchor-protocol/broadcastable-operation';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
-import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
+import { HorizontalHeavyRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalHeavyRuler';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
@@ -313,7 +313,7 @@ function MintBase({ className }: MintProps) {
         />
       </SelectAndTextInputContainer>
 
-      <HorizontalRuler />
+      <HorizontalHeavyRuler />
 
       {/* Validators */}
       <NativeSelect

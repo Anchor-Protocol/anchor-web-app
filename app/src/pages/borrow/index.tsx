@@ -4,12 +4,12 @@ import {
 } from '@anchor-protocol/styled-neumorphism';
 import { Footer } from 'components/Footer';
 import { screen } from 'env';
+import { LoanButtons } from 'pages/borrow/components/LoanButtons';
 import { Overview } from 'pages/borrow/components/Overview';
 import { MarketProvider } from 'pages/borrow/context/market';
 import React from 'react';
 import styled from 'styled-components';
 import { CollateralList } from './components/CollateralList';
-import { LoanList } from './components/LoanList';
 
 export interface BorrowProps {
   className?: string;
@@ -20,12 +20,16 @@ function BorrowBase({ className }: BorrowProps) {
     <MarketProvider>
       <div className={className}>
         <main>
-          <h1>BORROW</h1>
+          <div className="market">
+            <h1>UST</h1>
+            <div className="loan-buttons">
+              <LoanButtons />
+            </div>
+          </div>
 
           <div className="content-layout">
             <Overview className="borrow" />
             <CollateralList className="collateral-list" />
-            <LoanList className="loan-list" />
           </div>
 
           <Footer />
@@ -42,12 +46,27 @@ export const Borrow = styled(BorrowBase)`
   background-color: ${({ theme }) => theme.backgroundColor};
   color: ${({ theme }) => theme.textColor};
 
-  h1 {
-    margin: 0 0 50px 0;
+  .market {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
 
-    font-size: 34px;
-    font-weight: 900;
-    color: ${({ theme }) => theme.textColor};
+    h1 {
+      font-size: 44px;
+      font-weight: 900;
+      color: ${({ theme }) => theme.textColor};
+    }
+
+    .loan-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 180px);
+      grid-gap: 10px;
+
+      button {
+        height: 48px;
+        border-radius: 26px;
+      }
+    }
   }
 
   h2 {
@@ -62,14 +81,21 @@ export const Borrow = styled(BorrowBase)`
     article {
       text-align: center;
 
-      label {
-        font-size: 14px;
-        color: ${({ theme }) => theme.dimTextColor};
-      }
+      > div {
+        padding: 20px 0;
 
-      p {
-        font-weight: 300;
-        font-size: 48px;
+        p:nth-child(2) {
+          margin-top: 18px;
+          font-weight: 300;
+          font-size: 40px;
+        }
+
+        p:nth-child(3) {
+          margin-top: 5px;
+          font-weight: 300;
+          font-size: 13px;
+          color: ${({ theme }) => theme.dimTextColor};
+        }
       }
 
       margin-bottom: 80px;
@@ -177,10 +203,28 @@ export const Borrow = styled(BorrowBase)`
     }
   }
 
+  @media (min-width: ${screen.monitor.min}px) {
+    main {
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+  }
+
   // tablet
   @media (min-width: ${screen.tablet.min}px) and (max-width: ${screen.tablet
       .max}px) {
     padding: 30px;
+
+    .market {
+      flex-direction: column;
+      align-items: center;
+
+      .loan-buttons {
+        width: 500px;
+        margin-top: 20px;
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
 
     .NeuSection-root {
       margin-bottom: 40px;
@@ -191,16 +235,20 @@ export const Borrow = styled(BorrowBase)`
     }
   }
 
-  @media (min-width: ${screen.monitor.min}px) {
-    main {
-      max-width: 1440px;
-      margin: 0 auto;
-    }
-  }
-
   // mobile
   @media (max-width: ${screen.mobile.max}px) {
     padding: 30px 20px;
+
+    .market {
+      flex-direction: column;
+      align-items: center;
+
+      .loan-buttons {
+        width: 100%;
+        margin-top: 20px;
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
 
     .NeuSection-root {
       margin-bottom: 40px;

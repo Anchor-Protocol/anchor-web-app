@@ -1,5 +1,5 @@
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
-import { flat, pressed } from '@anchor-protocol/styled-neumorphism';
+import { flat, softPressed } from '@anchor-protocol/styled-neumorphism';
 import c from 'color';
 import { ReactElement, ReactNode, useMemo } from 'react';
 import styled from 'styled-components';
@@ -36,9 +36,9 @@ export interface TabProps<T> {
 }
 
 const defaultHeight: number = 60;
-const buttonPadding: number = 8; // top + bottom
-const defaultFontSize: number = 20;
-const defualtBorderRadius: number = 22;
+const buttonPadding: number = 4; // top + bottom
+const defaultFontSize: number = 14;
+const defualtBorderRadius: number = 25;
 
 function TabBase<T>({
   className,
@@ -131,11 +131,10 @@ export const Tab: <T>(props: TabProps<T>) => ReactElement<TabProps<T>> = styled(
   color: ${({ theme }) => theme.textColor};
 
   ${({ theme }) =>
-    pressed({
-      color: theme.textInput.backgroundColor,
-      backgroundColor: theme.backgroundColor,
+    softPressed({
+      color: theme.backgroundColor,
       intensity: theme.intensity,
-      distance: 1,
+      distance: 2,
     })};
 
   position: relative;
@@ -168,8 +167,10 @@ export const Tab: <T>(props: TabProps<T>) => ReactElement<TabProps<T>> = styled(
         //pointer-events: none;
       }
 
+      font-weight: 500;
+
       border-radius: ${({ borderRadius = defualtBorderRadius }) =>
-        borderRadius}px;
+        borderRadius - buttonPadding / 2}px;
     }
   }
 

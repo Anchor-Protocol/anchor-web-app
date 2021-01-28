@@ -1,7 +1,7 @@
 import {
-  pressed,
   rulerLightColor,
   rulerShadowColor,
+  softPressed,
 } from '@anchor-protocol/styled-neumorphism';
 import { DetailedHTMLProps, HTMLAttributes, ReactNode } from 'react';
 import styled from 'styled-components';
@@ -56,7 +56,7 @@ export const SelectAndTextInputContainer = styled(
   border-radius: 5px;
 
   ${({ theme }) =>
-    pressed({
+    softPressed({
       color: theme.textInput.backgroundColor,
       backgroundColor: theme.backgroundColor,
       distance: 1,

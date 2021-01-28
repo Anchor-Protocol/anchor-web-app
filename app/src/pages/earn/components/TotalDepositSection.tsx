@@ -1,5 +1,4 @@
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
-import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
@@ -69,8 +68,6 @@ function TotalDepositSectionBase({ className }: TotalDepositSectionProps) {
             )
           : `0 UST`}
       </div>
-
-      <HorizontalRuler />
 
       <aside className="total-deposit-buttons">
         <ActionButton disabled={!totalDeposit} onClick={() => openDeposit()}>
