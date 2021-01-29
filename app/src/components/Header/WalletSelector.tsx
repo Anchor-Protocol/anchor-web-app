@@ -201,7 +201,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
 export const WalletConnectButton = styled(ActionButton)`
   border-radius: 20px;
   padding: 8px 20px;
-  
+
   font-size: 12px;
 
   height: 34px;

@@ -2,6 +2,7 @@ import {
   demicrofy,
   formatUSTWithPostfixUnits,
   stripUUSD,
+  truncate,
   uUST,
 } from '@anchor-protocol/notation';
 import { TxInfoParseError } from 'errors/TxInfoParseError';
@@ -50,14 +51,25 @@ export function pickClaimResult({
   return {
     txInfo,
     txResult,
-    txFee: txFee ? stripUUSD(txFee) : ('0' as uUST),
-    txHash,
+    //txFee: txFee ? stripUUSD(txFee) : ('0' as uUST),
+    //txHash,
     details: [
       !!claimedReward && {
         name: 'Claimed Reward',
         value:
           formatUSTWithPostfixUnits(demicrofy(stripUUSD(claimedReward))) +
           ' UST',
+      },
+      {
+        name: 'Tx Hash',
+        value: truncate(txHash),
+      },
+      {
+        name: 'Tx Fee',
+        value:
+          formatUSTWithPostfixUnits(
+            demicrofy(txFee ? stripUUSD(txFee) : ('0' as uUST)),
+          ) + ' UST',
       },
     ],
   };

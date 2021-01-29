@@ -1,7 +1,7 @@
 import {
   demicrofy,
   formatRatioToPercentage,
-  formatUSTWithPostfixUnits,
+  formatUSTWithPostfixUnits, truncate,
   uUST,
 } from '@anchor-protocol/notation';
 import { TxInfoParseError } from 'errors/TxInfoParseError';
@@ -66,8 +66,8 @@ export function pickBorrowResult({
   return {
     txInfo,
     txResult,
-    txFee,
-    txHash,
+    //txFee,
+    //txHash,
     details: [
       borrowedAmount && {
         name: 'Borrowed Amount',
@@ -80,6 +80,14 @@ export function pickBorrowResult({
       outstandingLoan && {
         name: 'Outstanding Loan',
         value: formatUSTWithPostfixUnits(demicrofy(outstandingLoan)) + ' UST',
+      },
+      {
+        name: 'Tx Hash',
+        value: truncate(txHash),
+      },
+      {
+        name: 'Tx Fee',
+        value: formatUSTWithPostfixUnits(demicrofy(txFee)) + ' UST',
       },
     ],
   };

@@ -2,7 +2,9 @@ import {
   demicrofy,
   formatFluidDecimalPoints,
   formatLuna,
+  formatUSTWithPostfixUnits,
   Ratio,
+  truncate,
   ubLuna,
   uLuna,
   uUST,
@@ -70,8 +72,8 @@ export function pickBurnResult({
   return {
     txInfo,
     txResult,
-    txFee,
-    txHash,
+    //txFee,
+    //txHash,
     details: [
       burnedAmount && {
         name: 'Burned Amount',
@@ -84,6 +86,14 @@ export function pickBurnResult({
       exchangeRate && {
         name: 'Exchange Rate',
         value: formatFluidDecimalPoints(exchangeRate, 2),
+      },
+      {
+        name: 'Tx Hash',
+        value: truncate(txHash),
+      },
+      {
+        name: 'Tx Fee',
+        value: formatUSTWithPostfixUnits(demicrofy(txFee)) + ' UST',
       },
     ],
   };

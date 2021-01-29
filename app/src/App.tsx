@@ -2,8 +2,6 @@ import { AddressProviderFromJson } from '@anchor-protocol/anchor-js/address-prov
 import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider/provider';
 import { OperationBroadcaster } from '@anchor-protocol/broadcastable-operation';
 import { GlobalStyle } from '@anchor-protocol/neumorphism-ui/themes/GlobalStyle';
-import { lightTheme } from '@anchor-protocol/neumorphism-ui/themes/lightTheme';
-import { ThemeProvider } from '@anchor-protocol/neumorphism-ui/themes/ThemeProvider';
 import { SnackbarProvider } from '@anchor-protocol/snackbar';
 import { RouterScrollRestoration } from '@anchor-protocol/use-router-scroll-restoration';
 import {
@@ -16,6 +14,7 @@ import { BroadcastingContainer } from 'components/BroadcastingContainer';
 import { Header } from 'components/Header';
 import { BankProvider } from 'contexts/bank';
 import { ContractProvider } from 'contexts/contract';
+import { ThemeProvider } from 'contexts/theme';
 import { contractAddresses, defaultNetwork } from 'env';
 import { BAsset } from 'pages/basset';
 import { Borrow } from 'pages/borrow';
@@ -109,7 +108,7 @@ function AppBase({ className }: AppProps) {
                * `
                * ```
                */}
-              <ThemeProvider theme={lightTheme}>
+              <ThemeProvider initialTheme="light">
                 {/**
                  * Snackbar Provider
                  * useSnackbar()

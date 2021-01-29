@@ -1,3 +1,4 @@
+import { max, min } from '@anchor-protocol/big-math';
 import { microfy, UST, uUST } from '@anchor-protocol/notation';
 import big, { Big } from 'big.js';
 import { Bank } from 'contexts/bank';
@@ -19,10 +20,12 @@ export function useDepositTxFee(
       .mul(bank.tax.taxRate);
     const maxTax = big(bank.tax.maxTaxUUSD);
 
-    if (ratioTxFee.gt(maxTax)) {
-      return maxTax.add(FIXED_GAS) as uUST<Big>;
-    } else {
-      return ratioTxFee.add(FIXED_GAS) as uUST<Big>;
-    }
+    return max(min(ratioTxFee, maxTax), 0).plus(FIXED_GAS) as uUST<Big>;
+
+    //if (ratioTxFee.gt(maxTax)) {
+    //  return maxTax.add(FIXED_GAS) as uUST<Big>;
+    //} else {
+    //  return ratioTxFee.add(FIXED_GAS) as uUST<Big>;
+    //}
   }, [bank.tax.maxTaxUUSD, bank.tax.taxRate, depositAmount]);
 }

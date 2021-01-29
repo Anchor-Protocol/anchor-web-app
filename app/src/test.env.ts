@@ -11,4 +11,4 @@ export const testAddressProvider = new AddressProviderFromJson(
   contractAddresses,
 );
 
-export const testWalletAddress = 'terra1x46rqay4d3cssq8gxxvqz8xt6nwlz4td20k38v';
+export const testWalletAddress = 'terra12hnhh5vtyg5juqnzm43970nh4fw42pt27nw9g9';

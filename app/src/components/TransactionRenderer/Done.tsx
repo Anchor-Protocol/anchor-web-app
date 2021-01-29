@@ -1,9 +1,4 @@
 import { Done as DoneResult } from '@anchor-protocol/broadcastable-operation';
-import {
-  demicrofy,
-  formatUSTWithPostfixUnits,
-  truncate,
-} from '@anchor-protocol/notation';
 import { Done as DoneIcon } from '@material-ui/icons';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TransactionDetail, TransactionResult } from 'models/transaction';
@@ -30,10 +25,12 @@ export function Done({ result: { data } }: DoneProps) {
               {value}
             </TxFeeListItem>
           ))}
-        <TxFeeListItem label="Tx Hash">{truncate(data.txHash)}</TxFeeListItem>
-        <TxFeeListItem label="Tx Fee">
-          {formatUSTWithPostfixUnits(demicrofy(data.txFee))} UST
-        </TxFeeListItem>
+        {/*<TxFeeListItem label="Tx Hash">{truncate(data.txHash)}</TxFeeListItem>*/}
+        {/*{data.txFee && (*/}
+        {/*  <TxFeeListItem label="Tx Fee">*/}
+        {/*    {formatUSTWithPostfixUnits(demicrofy(data.txFee))} UST*/}
+        {/*  </TxFeeListItem>*/}
+        {/*)}*/}
       </TxFeeList>
     </article>
   );
