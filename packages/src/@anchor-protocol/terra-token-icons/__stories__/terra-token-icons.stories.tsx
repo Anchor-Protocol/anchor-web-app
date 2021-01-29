@@ -1,21 +1,21 @@
 import { Children, ReactElement } from 'react';
 import styled from 'styled-components';
 import {
-  AUT,
-  CAT,
-  CHT,
-  CNT,
-  EUT,
-  GBT,
-  HKT,
-  INT,
-  JPT,
-  KRT,
-  Luna,
-  MNT,
-  SDT,
-  SGT,
-  UST,
+  AUTIcon,
+  CATIcon,
+  CHTIcon,
+  CNTIcon,
+  EUTIcon,
+  GBTIcon,
+  HKTIcon,
+  INTIcon,
+  JPTIcon,
+  KRTIcon,
+  LunaIcon,
+  MNTIcon,
+  SDTIcon,
+  SGTIcon,
+  USTIcon,
 } from '../';
 
 export default {
@@ -25,21 +25,21 @@ export default {
 export const Terra_Token_Icons = () => {
   return (
     <Grid size={100}>
-      <AUT />
-      <CAT />
-      <CHT />
-      <CNT />
-      <EUT />
-      <GBT />
-      <HKT />
-      <INT />
-      <JPT />
-      <KRT />
-      <Luna />
-      <MNT />
-      <SDT />
-      <SGT />
-      <UST />
+      <AUTIcon />
+      <CATIcon />
+      <CHTIcon />
+      <CNTIcon />
+      <EUTIcon />
+      <GBTIcon />
+      <HKTIcon />
+      <INTIcon />
+      <JPTIcon />
+      <KRTIcon />
+      <LunaIcon />
+      <MNTIcon />
+      <SDTIcon />
+      <SGTIcon />
+      <USTIcon />
     </Grid>
   );
 };
