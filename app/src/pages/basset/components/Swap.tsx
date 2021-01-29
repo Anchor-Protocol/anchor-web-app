@@ -10,6 +10,7 @@ import {
   Luna,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
+  Ratio,
   uLuna,
 } from '@anchor-protocol/notation';
 import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
@@ -154,17 +155,33 @@ export function Swap() {
   }, []);
 
   const proceed = useCallback(
-    async (status: WalletStatus, burnAmount: bLuna, swapFee: uLuna) => {
+    async (
+      status: WalletStatus,
+      burnAmount: bLuna,
+      swapFee: uLuna,
+      beliefPrice: Ratio,
+      maxSpread: Ratio,
+    ) => {
       if (status.status !== 'ready' || bank.status !== 'connected') {
         return;
       }
+
+      console.log('Swap.tsx..()', {
+        address: status.walletAddress,
+        amount: burnAmount,
+        bAsset: burnCurrency.value,
+        swapFee,
+        beliefPrice,
+        maxSpread,
+      });
 
       const broadcasted = await swap({
         address: status.walletAddress,
         amount: burnAmount,
         bAsset: burnCurrency.value,
         swapFee,
-        //txFee: FIXED_GAS.toString() as uUST,
+        beliefPrice,
+        maxSpread,
       });
 
       if (!broadcasted) {
@@ -195,7 +212,7 @@ export function Swap() {
         <p>
           {bLunaPrice?.bLunaPrice &&
             `1 ${burnCurrency.label} = ${formatLuna(
-              (bLunaPrice?.bLunaPrice as string) as Luna,
+              (big(1).div(bLunaPrice?.bLunaPrice) as Big) as Luna<Big>,
             )} ${getCurrency.label}`}
         </p>
       </div>
@@ -252,7 +269,7 @@ export function Swap() {
         <p>
           {bLunaPrice?.bLunaPrice &&
             `1 ${getCurrency.label} = ${formatLuna(
-              (big(1).div(bLunaPrice?.bLunaPrice) as Big) as Luna<Big>,
+              (bLunaPrice?.bLunaPrice as string) as Luna,
             )} ${burnCurrency.label}`}
         </p>
       </div>
@@ -308,7 +325,15 @@ export function Swap() {
           !!invalidBurnAmount ||
           big(offerSimulation?.swapFee ?? 0).lte(0)
         }
-        onClick={() => proceed(status, burnAmount, offerSimulation!.swapFee)}
+        onClick={() =>
+          proceed(
+            status,
+            burnAmount,
+            offerSimulation!.swapFee,
+            offerSimulation!.beliefPrice,
+            offerSimulation!.maxSpread,
+          )
+        }
       >
         Burn
       </ActionButton>

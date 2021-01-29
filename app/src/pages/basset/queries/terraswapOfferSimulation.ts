@@ -33,6 +33,8 @@ export interface Data {
   spread_amount: uLuna;
   minimumReceived: uLuna;
   swapFee: uLuna;
+  beliefPrice: Ratio;
+  maxSpread: Ratio;
 }
 
 export function parseData(
@@ -63,6 +65,8 @@ export function parseData(
     ...data,
     minimumReceived,
     swapFee,
+    beliefPrice: beliefPrice.toString() as Ratio,
+    maxSpread: maxSpread.toString() as Ratio,
   };
 }
 
