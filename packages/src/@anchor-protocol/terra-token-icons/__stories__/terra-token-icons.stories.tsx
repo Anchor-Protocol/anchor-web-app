@@ -19,7 +19,7 @@ import {
 } from '../';
 
 export default {
-  title: 'assets/TerraTokenIcons',
+  title: 'assets/Terra Token Icons',
 };
 
 export const Terra_Token_Icons = () => {
