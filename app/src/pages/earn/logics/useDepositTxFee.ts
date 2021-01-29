@@ -12,7 +12,7 @@ export function useDepositTxFee(
   return useMemo(() => {
     if (depositAmount.length === 0) return undefined;
 
-    // MIN((User_UST_Balance - fixed_gas)/(1+Tax_rate) * tax_rate , Max_tax) + Fixed_Gas
+    // MIN( MAX((User_UST_Balance - fixed_gas)/(1+Tax_rate) * tax_rate, 0 ) , Max_tax) + Fixed_Gas
 
     const uAmount = microfy(depositAmount);
     const ratioTxFee = big(uAmount.minus(FIXED_GAS))
