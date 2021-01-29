@@ -10,9 +10,13 @@ export interface InfoTooltipProps
   children: NonNullable<ReactNode>;
 }
 
-export function InfoTooltip({ children, placement = 'top', ...tooltipProps }: InfoTooltipProps) {
+export function InfoTooltip({
+  children,
+  placement = 'top',
+  ...tooltipProps
+}: InfoTooltipProps) {
   return (
-    <sup>
+    <sup style={{ cursor: 'help' }}>
       <Tooltip {...tooltipProps} title={children} placement={placement}>
         <InfoOutlined />
       </Tooltip>
