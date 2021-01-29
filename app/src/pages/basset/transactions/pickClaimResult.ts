@@ -5,6 +5,8 @@ import {
   truncate,
   uUST,
 } from '@anchor-protocol/notation';
+import big, { Big } from 'big.js';
+import { FIXED_GAS } from 'env';
 import { TxInfoParseError } from 'errors/TxInfoParseError';
 import { TransactionResult } from 'models/transaction';
 import {
@@ -68,7 +70,9 @@ export function pickClaimResult({
         name: 'Tx Fee',
         value:
           formatUSTWithPostfixUnits(
-            demicrofy(txFee ? stripUUSD(txFee) : ('0' as uUST)),
+            demicrofy(
+              big(txFee ? stripUUSD(txFee) : '0').plus(FIXED_GAS) as uUST<Big>,
+            ),
           ) + ' UST',
       },
     ],
