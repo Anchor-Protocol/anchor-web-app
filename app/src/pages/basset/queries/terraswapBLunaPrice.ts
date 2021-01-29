@@ -1,7 +1,7 @@
 import { bLuna, Num } from '@anchor-protocol/notation';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { gql, QueryResult, useQuery } from '@apollo/client';
-import { Dec, Int } from '@terra-money/terra.js';
+import big from 'big.js';
 import { useAddressProvider } from 'contexts/contract';
 import { useMemo } from 'react';
 
@@ -38,9 +38,9 @@ export function parseData({ terraswapPoolInfo }: StringifiedData): Data {
   const data = JSON.parse(terraswapPoolInfo.Result) as Omit<Data, 'bLunaPrice'>;
   return {
     ...data,
-    bLunaPrice: new Int(
-      new Dec(data.assets[0].amount).div(data.assets[1].amount),
-    ).toString() as bLuna,
+    bLunaPrice: big(data.assets[0].amount)
+      .div(data.assets[1].amount)
+      .toFixed() as bLuna,
   };
 }
 
