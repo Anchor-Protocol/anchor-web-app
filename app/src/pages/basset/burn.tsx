@@ -35,7 +35,7 @@ function BurnBase({ className }: BurnProps) {
     <Section className={className}>
       <Tab
         className="tab"
-        style={{width: 400}}
+        style={{maxWidth: 400}}
         items={tabItems}
         selectedItem={tab ?? tabItems[0]}
         onChange={setTab}
