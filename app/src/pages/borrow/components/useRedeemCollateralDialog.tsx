@@ -40,6 +40,7 @@ import { redeemAmountToLtv } from 'pages/borrow/logics/redeemAmountToLtv';
 import { useCurrentLtv } from 'pages/borrow/logics/useCurrentLtv';
 import { useInvalidRedeemAmount } from 'pages/borrow/logics/useInvalidRedeemAmount';
 import { useRedeemCollateralBorrowLimit } from 'pages/borrow/logics/useRedeemCollateralBorrowLimit';
+import { useRedeemCollateralMaxAmount } from 'pages/borrow/logics/useRedeemCollateralMaxAmount';
 import { useRedeemCollateralNextLtv } from 'pages/borrow/logics/useRedeemCollateralNextLtv';
 import { useRedeemCollateralWithdrawableAmount } from 'pages/borrow/logics/useRedeemCollateralWithdrawableAmount';
 import { redeemCollateralOptions } from 'pages/borrow/transactions/redeemCollateralOptions';
@@ -157,6 +158,12 @@ function ComponentBase({
     marketOverview.bLunaMaxLtv,
     nextLtv,
   );
+  const withdrawableMaxAmount = useRedeemCollateralMaxAmount(
+    marketUserOverview.loanAmount.loan_amount,
+    marketUserOverview.borrowInfo.balance,
+    marketOverview.oraclePrice.rate,
+    marketOverview.bLunaMaxLtv,
+  );
   const borrowLimit = useRedeemCollateralBorrowLimit(
     redeemAmount,
     marketUserOverview.borrowInfo.balance,
@@ -169,7 +176,7 @@ function ComponentBase({
   const invalidRedeemAmount = useInvalidRedeemAmount(
     redeemAmount,
     bank,
-    withdrawableAmount,
+    withdrawableMaxAmount,
   );
 
   // ---------------------------------------------

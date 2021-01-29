@@ -6,14 +6,14 @@ import { ReactNode, useMemo } from 'react';
 export function useInvalidRedeemAmount(
   redeemAmount: bLuna,
   bank: Bank,
-  withdrawableAmount: ubLuna<BigSource>,
+  withdrawableMaxAmount: ubLuna<BigSource>,
 ): ReactNode {
   return useMemo<ReactNode>(() => {
     if (bank.status === 'demo' || redeemAmount.length === 0) {
       return undefined;
-    } else if (microfy(redeemAmount).gt(withdrawableAmount ?? 0)) {
+    } else if (microfy(redeemAmount).gt(withdrawableMaxAmount ?? 0)) {
       return `Cannot withdraw more than collateralized amount`;
     }
     return undefined;
-  }, [redeemAmount, bank.status, withdrawableAmount]);
+  }, [redeemAmount, bank.status, withdrawableMaxAmount]);
 }
