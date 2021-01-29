@@ -57,8 +57,6 @@ function BAssetBase({ className, match, history }: BAssetProps) {
   return (
     <div className={className}>
       <main>
-        <h1>bASSET</h1>
-
         <div className="content-layout">
           <Tab
             className="tab"
@@ -116,16 +114,16 @@ export const BAsset = styled(BAssetBase)`
 
   // pc
   @media (min-width: ${screen.pc.min}px) {
-    h1 {
-      margin: 100px 0 80px 40px;
+    main {
+      padding-top: 100px;
     }
   }
 
   // tablet
   @media (min-width: ${screen.tablet.min}px) and (max-width: ${screen.tablet
       .max}px) {
-    h1 {
-      margin: 80px 0 60px 30px;
+    main {
+      padding-top: 30px;
     }
 
     .NeuSection-root {
@@ -137,8 +135,8 @@ export const BAsset = styled(BAssetBase)`
 
   // mobile
   @media (max-width: ${screen.mobile.max}px) {
-    h1 {
-      margin: 50px 0 40px 20px;
+    main {
+      padding-top: 30px;
     }
 
     .NeuSection-root {
