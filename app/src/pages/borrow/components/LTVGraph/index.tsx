@@ -106,7 +106,9 @@ export function LTVGraph({
         //},
         {
           position: 'bottom',
-          label: nextLtv ? `${formatRatioToPercentage(nextLtv)}%` : '',
+          label: nextLtv
+            ? `${nextLtv.lt(1) ? formatRatioToPercentage(nextLtv) : '>100'}%`
+            : '',
           color: nextLtv?.gt(maxLtv)
             ? '#e95979'
             : nextLtv?.gt(safeLtv)
