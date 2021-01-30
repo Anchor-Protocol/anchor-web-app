@@ -7,7 +7,7 @@ function precommit(...workspaces) {
 module.exports = {
   hooks: {
     'pre-commit': [
-      `markdown-source-import README.md "templates/**/*.md" "examples/**/*.md" --git-add`,
+      `markdown-source-import README.md "docs/*.md" "app/**/*.md" "packages/**/*.md" --git-add`,
       `lint-staged`,
       //...precommit(`packages-template`),
     ].join(' && '),
