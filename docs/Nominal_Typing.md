@@ -4,7 +4,7 @@ Anchor 내부에서 `string` 으로 유통되는 uluna, luna, uust, ust... 과 �
 Currency Type 들에 의한 혼란을 막기 위해서 Nominal Type을 사용한다.
 
 물리적 자료형이라 할 수 있는 `string | BigSource | Big | ...` 에 더해서,
-논리적 자료형인 `uLuna | Luna | uUST | UST | ...` 을 추가한다.
+논리적 자료형인 `uLuna | Luna | uUST | UST | ...` 을 조합한다.
 
 ```ts
 export type Currency<
@@ -37,7 +37,7 @@ Union Type 을 사용해서 Nominal Type을 직접 만든다.
 [@anchor-protocol/notation](../packages/src/@anchor-protocol/notation) 에 구현되어 있다.
 
 ```ts
-const uluna = '10000000' as uLuna;
+const uluna = '10000000' as uLuna; // uLuna<string>
 
 // @ts-expect-error uLuna ⊅ uUST 이기 때문에 에러가 된다
 const uust: uUST = uluna;

@@ -1,11 +1,11 @@
 import { fabricateDepositStableCoin } from '@anchor-protocol/anchor-js/fabricators';
 import {
   createOperationOptions,
+  effect,
+  merge,
   OperationDependency,
   timeout,
 } from '@anchor-protocol/broadcastable-operation';
-import { effect } from '@anchor-protocol/broadcastable-operation/operators/effect';
-import { merge } from '@anchor-protocol/broadcastable-operation/operators/merge';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { pickDepositResult } from 'pages/earn/transactions/pickDepositResult';
 import { createContractMsg } from 'transactions/createContractMsg';
