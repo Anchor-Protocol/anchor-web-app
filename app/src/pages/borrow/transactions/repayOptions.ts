@@ -1,6 +1,8 @@
 import { fabricateRepay } from '@anchor-protocol/anchor-js/fabricators';
 import {
   createOperationOptions,
+  effect,
+  merge,
   OperationDependency,
   timeout,
 } from '@anchor-protocol/broadcastable-operation';
@@ -28,13 +30,16 @@ export const repayOptions = createOperationOptions({
     storage,
     signal,
   }: OperationDependency<DependencyList>) => [
-    takeTxFee(storage, fabricateRepay), // Option -> ((AddressProvider) -> MsgExecuteContract[])
-    createContractMsg(addressProvider), // ((AddressProvider) -> MsgExecuteContract[]) -> MsgExecuteContract[]
-    timeout(postContractMsg(post), 1000 * 60 * 2), // MsgExecuteContract[] -> Promise<StringifiedTxResult>
-    parseTxResult, // StringifiedTxResult -> TxResult
-    getTxInfo(client, signal), // TxResult -> { TxResult, TxInfo }
-    injectTxFee(storage, refetchMarket(addressProvider, client, walletStatus)), // { TxResult, TxInfo } -> { TxResult, TxInfo, MarketBalanceOverview, MarketOverview, MarketUserOverview }
-    pickRepayResult, // { TxResult, TxInfo, MarketBalanceOverview, MarketOverview, MarketUserOverview } -> TransactionResult
+    effect(fabricateRepay, takeTxFee(storage)), // Option -> ((AddressProvider) -> MsgExecuteContract[])
+    createContractMsg(addressProvider), // -> MsgExecuteContract[]
+    timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<StringifiedTxResult>
+    parseTxResult, // -> TxResult
+    getTxInfo(client, signal), // -> { TxResult, TxInfo }
+    merge(
+      refetchMarket(addressProvider, client, walletStatus),
+      injectTxFee(storage),
+    ), // -> { TxResult, TxInfo, MarketBalanceOverview, MarketOverview, MarketUserOverview, txFee }
+    pickRepayResult, // -> TransactionResult
   ],
   renderBroadcast: renderBroadcastTransaction,
   //breakOnError: true,

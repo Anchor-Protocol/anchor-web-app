@@ -20,11 +20,11 @@ export const claimOptions = createOperationOptions({
     signal,
   }: OperationDependency<{}>) => [
     fabricatebAssetClaim, // Option -> ((AddressProvider) -> MsgExecuteContract[])
-    createContractMsg(addressProvider), // ((AddressProvider) -> MsgExecuteContract[]) -> MsgExecuteContract[]
-    timeout(postContractMsg(post), 1000 * 60 * 2), // MsgExecuteContract[] -> Promise<StringifiedTxResult>
-    parseTxResult, // StringifiedTxResult -> TxResult
-    getTxInfo(client, signal), // TxResult -> { TxResult, TxInfo }
-    pickClaimResult, // { TxResult, TxInfo } -> TransactionResult
+    createContractMsg(addressProvider), // -> MsgExecuteContract[]
+    timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<StringifiedTxResult>
+    parseTxResult, // -> TxResult
+    getTxInfo(client, signal), // -> { TxResult, TxInfo }
+    pickClaimResult, // -> TransactionResult
   ],
   renderBroadcast: renderBroadcastTransaction,
   breakOnError: true,

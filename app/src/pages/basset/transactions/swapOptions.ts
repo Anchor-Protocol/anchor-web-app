@@ -1,6 +1,8 @@
 import { fabricatebSwapbLuna } from '@anchor-protocol/anchor-js/fabricators';
 import {
   createOperationOptions,
+  effect,
+  merge,
   OperationDependency,
   timeout,
 } from '@anchor-protocol/broadcastable-operation';
@@ -25,12 +27,12 @@ export const swapOptions = createOperationOptions({
     signal,
     storage,
   }: OperationDependency<{}>) => [
-    takeSwapFee(storage, fabricatebSwapbLuna), // Option -> ((AddressProvider) -> MsgExecuteContract[])
-    createContractMsg(addressProvider), // ((AddressProvider) -> MsgExecuteContract[]) -> MsgExecuteContract[]
-    timeout(postContractMsg(post), 1000 * 60 * 20), // MsgExecuteContract[] -> Promise<StringifiedTxResult>
-    parseTxResult, // StringifiedTxResult -> TxResult
-    injectSwapFee(storage, getTxInfo(client, signal)), // TxResult -> { TxResult, TxInfo }
-    pickSwapResult, // { TxResult, TxInfo } -> TransactionResult
+    effect(fabricatebSwapbLuna, takeSwapFee(storage)), // Option -> ((AddressProvider) -> MsgExecuteContract[])
+    createContractMsg(addressProvider), // -> MsgExecuteContract[]
+    timeout(postContractMsg(post), 1000 * 60 * 20), // -> Promise<StringifiedTxResult>
+    parseTxResult, // -> TxResult
+    merge(getTxInfo(client, signal), injectSwapFee(storage)), // -> { TxResult, TxInfo, swapFee }
+    pickSwapResult, // -> TransactionResult
   ],
   renderBroadcast: renderBroadcastTransaction,
   //breakOnError: true,

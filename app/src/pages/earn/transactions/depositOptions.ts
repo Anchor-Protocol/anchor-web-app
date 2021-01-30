@@ -4,6 +4,8 @@ import {
   OperationDependency,
   timeout,
 } from '@anchor-protocol/broadcastable-operation';
+import { effect } from '@anchor-protocol/broadcastable-operation/operators/effect';
+import { merge } from '@anchor-protocol/broadcastable-operation/operators/merge';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { pickDepositResult } from 'pages/earn/transactions/pickDepositResult';
 import { createContractMsg } from 'transactions/createContractMsg';
@@ -21,13 +23,13 @@ export const depositOptions = createOperationOptions({
     storage,
     signal,
   }: OperationDependency<{}>) => [
-    takeTxFee(storage, fabricateDepositStableCoin), // Option -> ((AddressProvider) -> MsgExecuteContract[])
-    createContractMsg(addressProvider), // ((AddressProvider) -> MsgExecuteContract[]) -> MsgExecuteContract[]
-    timeout(postContractMsg(post), 1000 * 60 * 2), // MsgExecuteContract[] -> Promise<StringifiedTxResult>
-    parseTxResult, // StringifiedTxResult -> TxResult
-    injectTxFee(storage, getTxInfo(client, signal)), // TxResult -> { TxResult, TxInfo }
-    pickDepositResult, // { TxResult, TxInfo } -> TransactionResult
+    effect(fabricateDepositStableCoin, takeTxFee(storage)), // Option -> ((AddressProvider) -> MsgExecuteContract[])
+    createContractMsg(addressProvider), // -> MsgExecuteContract[]
+    timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<StringifiedTxResult>
+    parseTxResult, // -> TxResult
+    merge(getTxInfo(client, signal), injectTxFee(storage)), // -> { TxResult, TxInfo, txFee }
+    pickDepositResult, // -> TransactionResult
   ],
   renderBroadcast: renderBroadcastTransaction,
-  //breakOnError: true,
+  breakOnError: true,
 });

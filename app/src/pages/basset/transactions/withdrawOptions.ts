@@ -1,6 +1,8 @@
 import { fabricatebAssetWithdrawUnbonded } from '@anchor-protocol/anchor-js/fabricators';
 import {
   createOperationOptions,
+  effect,
+  merge,
   OperationDependency,
   timeout,
 } from '@anchor-protocol/broadcastable-operation';
@@ -21,12 +23,12 @@ export const withdrawOptions = createOperationOptions({
     storage,
     signal,
   }: OperationDependency<{}>) => [
-    takeTxFee(storage, fabricatebAssetWithdrawUnbonded), // Option -> ((AddressProvider) -> MsgExecuteContract[])
-    createContractMsg(addressProvider), // ((AddressProvider) -> MsgExecuteContract[]) -> MsgExecuteContract[]
-    timeout(postContractMsg(post), 1000 * 60 * 2), // MsgExecuteContract[] -> Promise<StringifiedTxResult>
-    parseTxResult, // StringifiedTxResult -> TxResult
-    injectTxFee(storage, getTxInfo(client, signal)), // TxResult -> { TxResult, TxInfo }
-    pickWithdrawResult, // { TxResult, TxInfo } -> TransactionResult
+    effect(fabricatebAssetWithdrawUnbonded, takeTxFee(storage)), // Option -> ((AddressProvider) -> MsgExecuteContract[])
+    createContractMsg(addressProvider), // -> MsgExecuteContract[]
+    timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<StringifiedTxResult>
+    parseTxResult, // -> TxResult
+    merge(getTxInfo(client, signal), injectTxFee(storage)), // -> { TxResult, TxInfo, txFee }
+    pickWithdrawResult, // -> TransactionResult
   ],
   renderBroadcast: renderBroadcastTransaction,
   //breakOnError: true,

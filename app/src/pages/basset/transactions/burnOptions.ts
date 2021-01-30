@@ -1,6 +1,8 @@
 import { fabricatebAssetBurn } from '@anchor-protocol/anchor-js/fabricators';
 import {
   createOperationOptions,
+  effect,
+  merge,
   OperationDependency,
   timeout,
 } from '@anchor-protocol/broadcastable-operation';
@@ -22,12 +24,12 @@ export const burnOptions = createOperationOptions({
     storage,
     signal,
   }: OperationDependency<{}>) => [
-    takeTxFee(storage, fabricatebAssetBurn), // Option -> ((AddressProvider) -> MsgExecuteContract[])
-    createContractMsg(addressProvider), // ((AddressProvider) -> MsgExecuteContract[]) -> MsgExecuteContract[]
-    timeout(postContractMsg(post), 1000 * 60 * 20), // MsgExecuteContract[] -> Promise<StringifiedTxResult>
-    parseTxResult, // StringifiedTxResult -> TxResult
-    injectTxFee(storage, getTxInfo(client, signal)), // TxResult -> { TxResult, TxInfo }
-    pickBurnResult, // { TxResult, TxInfo } -> TransactionResult
+    effect(fabricatebAssetBurn, takeTxFee(storage)), // Option -> ((AddressProvider) -> MsgExecuteContract[])
+    createContractMsg(addressProvider), // -> MsgExecuteContract[]
+    timeout(postContractMsg(post), 1000 * 60 * 20), // -> Promise<StringifiedTxResult>
+    parseTxResult, // -> TxResult
+    merge(getTxInfo(client, signal), injectTxFee(storage)), // -> { TxResult, TxInfo, txFee }
+    pickBurnResult, // -> TransactionResult
   ],
   renderBroadcast: renderBroadcastTransaction,
   //breakOnError: true,
