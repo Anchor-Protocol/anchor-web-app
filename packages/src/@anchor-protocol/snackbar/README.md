@@ -17,13 +17,13 @@ function App() {
 2. Assign the `snackbarContainer` ref object to some `<div>` to use as the snackbar container.
 
 ```jsx
-function Component({children}) {
-  const {snackbarContainerRef} = useSnackbar();
-  
+function Component({ children }) {
+  const { snackbarContainerRef } = useSnackbar();
+
   return (
     <Container>
       {children}
-      <SnackbarContainer ref={snackbarContainerRef}/>
+      <SnackbarContainer ref={snackbarContainerRef} />
     </Container>
   );
 }
@@ -73,7 +73,11 @@ function Component() {
 ### \_\_stories\_\_/Snackbar.stories.tsx
 
 ```tsx
-import { IconButton, SnackbarContent as MuiSnackbarContent, SnackbarContentProps } from '@material-ui/core';
+import {
+  IconButton,
+  SnackbarContent as MuiSnackbarContent,
+  SnackbarContentProps,
+} from '@material-ui/core';
 import { Close } from '@material-ui/icons';
 import { Snackbar, SnackbarProvider, useSnackbar } from '@ssen/snackbar';
 import { storiesOf } from '@storybook/react';
@@ -181,18 +185,25 @@ const CustomElement = styled.div`
   color: red;
 `;
 
-const ActionSnackbar = styled(({ onClose, ...props }: SnackbarContentProps & { onClose?: () => void }) => {
-  return (
-    <MuiSnackbarContent
-      {...props}
-      action={[
-        <IconButton key="close" aria-label="close" color="inherit" onClick={onClose}>
-          <Close />
-        </IconButton>,
-      ]}
-    />
-  );
-})``;
+const ActionSnackbar = styled(
+  ({ onClose, ...props }: SnackbarContentProps & { onClose?: () => void }) => {
+    return (
+      <MuiSnackbarContent
+        {...props}
+        action={[
+          <IconButton
+            key="close"
+            aria-label="close"
+            color="inherit"
+            onClick={onClose}
+          >
+            <Close />
+          </IconButton>,
+        ]}
+      />
+    );
+  },
+)``;
 ```
 
 <!-- importend -->

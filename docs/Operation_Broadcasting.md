@@ -1,6 +1,6 @@
 # Operation Broadcasting
 
-1. 화면 내에서 Transaction 요청 
+1. 화면 내에서 Transaction 요청
 2. 화면 내에서 Chrome Extension의 Transaction 결과 대기
 3. 화면 이탈, 대기 상태 해제됨
 4. Chrome Extension 에서 Transaction 처리됨
@@ -11,4 +11,7 @@
 이왕 Library를 만드는 김에 기능 단위를 Pure Function으로 만들고 Pipe Composition 할 수 있는 형태로 제작되었다.
 
 <!-- import ../packages/src/@anchor-protocol/broadcastable-operation/__stories__/broadcast.stories.tsx -->
+
 <!-- /import -->
+
+# ??? husky test...

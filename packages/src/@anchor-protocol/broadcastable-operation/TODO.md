@@ -1,26 +1,29 @@
 ```ts
 function useOperation(params: {
-  id: string,
-  broadcastWhen: 'always' | 'unmounted' | 'none',
+  id: string;
+  broadcastWhen: 'always' | 'unmounted' | 'none';
   pipe: [
     (T1, { AbortSignal }) => T2,
     (T2, { AbortSignal }) => Promise<T3>,
     (T3, { AbortSignal }) => Observable<T4>,
-    [ (T4, { AbortSignal }) => Promise<T5>, (T4, { AbortSignal }) => Promise<T6> ],
-    ([ T5, T6 ], { AbortSignal }) => T7,
+    [
+      (T4, { AbortSignal }) => Promise<T5>,
+      (T4, { AbortSignal }) => Promise<T6>,
+    ],
+    ([T5, T6], { AbortSignal }) => T7,
     (T7, { AbortSignal }) => AsyncIterator<Partial<T8>, T8>,
-  ],
-  renderBroadcast: (props: { 
-    status: 'ready' | 'in-progress' | 'done' | 'error',
+  ];
+  renderBroadcast: (props: {
+    status: 'ready' | 'in-progress' | 'done' | 'error';
     // in-progress
-    abort: () => void, // timer stop, stop process, remove render
+    abort: () => void; // timer stop, stop process, remove render
     // done
-    data: T8,
-    snapshot: [T1, T2, T3, T4, [T5, T6], T7, T8],
-    close: () => void, // timer stop, remove render
-  }) => ReactNode,
-  breakOnError?: true | ((error: unknown) => boolean),
-})
+    data: T8;
+    snapshot: [T1, T2, T3, T4, [T5, T6], T7, T8];
+    close: () => void; // timer stop, remove render
+  }) => ReactNode;
+  breakOnError?: true | ((error: unknown) => boolean);
+});
 ```
 
 ```ts
@@ -28,9 +31,9 @@ const operationOption = createOperationOptions({ ... })
 
 const [ exec, result,  ] = useOperation(operationOption);
 
-const renderings = useBroadcasting({ 
+const renderings = useBroadcasting({
   ...broadcastingOption,
-  render: (broadcasting) => ReactNode,  
+  render: (broadcasting) => ReactNode,
 })
 ```
 
@@ -57,7 +60,7 @@ const renderings = useBroadcasting({
 2. useOperatin() 에서 catch
    1. Context 쪽으로 stopBroadcast(id) 실행
    2. Context 에서 이미 broadcating 된 rendering이 있다면 제거
-4. useOperation() 의 catch 블록에서 모든 state를 초기화 하면서 종료
+3. useOperation() 의 catch 블록에서 모든 state를 초기화 하면서 종료
 
 # Operator 에러 시나리오 (사용자에게 알림)
 
@@ -73,36 +76,36 @@ const renderings = useBroadcasting({
 # Operation Timeout
 
 ```ts
-const [ query ] = useOperation({
+const [query] = useOperation({
   pipe: [
     fabricateRepay,
     withTimeout(postWallet, 1000), // OperationTimeoutError
     waitForBlockCreation,
     parseTxInfo,
-  ]
-})
+  ],
+});
 ```
 
 # Sample Operators Composition
 
 ```ts
-const [ query ] = useOperation({
+const [query] = useOperation({
   pipe: [
     fabricateRepay, // Param => Msg[] throws Error
     postWallet, // Msg[] => TxResult throws UserDenied, Error
     waitForBlockCreation, // TxResult => TxInfo throws TxFailed
     parseTxInfo, // TxInfo => Result
-  ]
-})
+  ],
+});
 
-query(...FabricateRepayArguments)
+query(...FabricateRepayArguments);
 ```
 
 # Display Time
 
 ```ts
 const broadcasting = useBroadcasting({
-   filter: ({ result }) => result.status === 'done',
-   displayTime: 1000, // ( broadcasting ) => number
-})
+  filter: ({ result }) => result.status === 'done',
+  displayTime: 1000, // ( broadcasting ) => number
+});
 ```
