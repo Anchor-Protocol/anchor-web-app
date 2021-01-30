@@ -1,38 +1,41 @@
-import type { ReactNode } from 'react';
-import { useCallback, useMemo, useState } from 'react';
+import type { ComponentType, ReactNode } from 'react';
+import { createElement, useCallback, useMemo, useState } from 'react';
 
-export type DialogProps<P, R> = P & {
-  closeDialog: (returnValue: R) => void;
+export type DialogProps<Param, Return> = Param & {
+  closeDialog: (returnValue: Return) => void;
 };
 
-export type OpenDialog<P, R> = (p: P) => Promise<R>;
+export type OpenDialog<Param, Return> = (p: Param) => Promise<Return>;
 
-export type DialogTemplate<P = {}, R = void> = (
-  props: DialogProps<P, R>,
-) => ReactNode;
+export function useDialog<Param = {}, Return = void>(
+  DialogComponent: ComponentType<DialogProps<Param, Return>>,
+): [
+  OpenDialog<Param extends DialogProps<infer P, any> ? P : Param, Return>,
+  ReactNode,
+] {
+  const [dialogProps, setDialogProps] = useState<DialogProps<
+    Param,
+    Return
+  > | null>(null);
 
-export function useDialog<P = {}, R = void>(
-  dialogTemplate: DialogTemplate<P, R>,
-): [OpenDialog<P, R>, ReactNode] {
-  const [dialogProps, setDialogProps] = useState<DialogProps<P, R> | null>(
-    null,
+  const openDialog: OpenDialog<Param, Return> = useCallback(
+    async (props: Param) => {
+      return new Promise<Return>((resolve) => {
+        setDialogProps({
+          ...props,
+          closeDialog: (returnValue: Return) => {
+            resolve(returnValue);
+            setDialogProps(null);
+          },
+        });
+      });
+    },
+    [],
   );
 
-  const openDialog: OpenDialog<P, R> = useCallback(async (props: P) => {
-    return new Promise<R>((resolve) => {
-      setDialogProps({
-        ...props,
-        closeDialog: (returnValue: R) => {
-          resolve(returnValue);
-          setDialogProps(null);
-        },
-      });
-    });
-  }, []);
-
   const dialog = useMemo<ReactNode>(() => {
-    return dialogProps ? dialogTemplate(dialogProps) : null;
-  }, [dialogProps, dialogTemplate]);
+    return dialogProps ? createElement(DialogComponent, dialogProps) : null;
+  }, [DialogComponent, dialogProps]);
 
   return [openDialog, dialog];
 }

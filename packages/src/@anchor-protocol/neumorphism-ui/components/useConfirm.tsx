@@ -1,9 +1,4 @@
-import {
-  DialogProps,
-  DialogTemplate,
-  OpenDialog,
-  useDialog,
-} from '@anchor-protocol/use-dialog';
+import { DialogProps, useDialog } from '@anchor-protocol/use-dialog';
 import {
   Dialog,
   DialogActions,
@@ -15,8 +10,8 @@ import React, { ReactNode } from 'react';
 import { ActionButton } from './ActionButton';
 import { useAlertStyles } from './useAlert';
 
-export function useConfirm(): [OpenDialog<ConfirmParams, boolean>, ReactNode] {
-  return useDialog(Template);
+export function useConfirm() {
+  return useDialog(Component);
 }
 
 export interface ConfirmParams {
@@ -25,10 +20,6 @@ export interface ConfirmParams {
   agree?: string;
   disagree?: string;
 }
-
-export const Template: DialogTemplate<ConfirmParams, boolean> = (props) => {
-  return <Component {...props} />;
-};
 
 export function Component({
   closeDialog,
