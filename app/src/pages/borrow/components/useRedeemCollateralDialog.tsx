@@ -23,14 +23,12 @@ import type {
 } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
-import { useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
 import big, { Big, BigSource } from 'big.js';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
-import { useAddressProvider } from 'contexts/contract';
 import { FIXED_GAS } from 'env';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
@@ -76,18 +74,11 @@ function ComponentBase({
   // ---------------------------------------------
   const { marketUserOverview, marketOverview } = useMarketNotNullable();
 
-  const { status, post } = useWallet();
-
-  const addressProvider = useAddressProvider();
-
-  const client = useApolloClient();
+  const { status } = useWallet();
 
   const [redeemCollateral, redeemCollateralResult] = useOperation(
     redeemCollateralOptions,
     {
-      addressProvider,
-      post,
-      client,
       walletStatus: status,
     },
   );

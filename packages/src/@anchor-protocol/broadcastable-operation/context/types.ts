@@ -1,3 +1,4 @@
+import type { GlobalDependency } from '@anchor-protocol/broadcastable-operation/global';
 import type { ReactNode } from 'react';
 
 export type EventType = 'done';
@@ -46,14 +47,21 @@ export type OperationResult<Data, Snapshot extends Array<any>> =
 // ---------------------------------------------
 // developer interfaces
 // ---------------------------------------------
-export type OperatorOption = {
+//export type OperatorOption = {
+//  signal: AbortSignal;
+//};
+
+export type InternalDependency = {
   signal: AbortSignal;
+  storage: Map<string, any>;
 };
 
-export type Operator<T, R> = (
-  param: T,
-  option: OperatorOption,
-) => Promise<R> | R;
+//option: OperatorOption,
+export type Operator<T, R> = (param: T) => Promise<R> | R;
+
+export type OperationDependency<D extends {}> = D &
+  GlobalDependency &
+  InternalDependency;
 
 export interface OperationOptions<
   Data,
@@ -63,7 +71,7 @@ export interface OperationOptions<
 > {
   id?: string | ((id: number) => string);
   broadcastWhen?: 'always' | 'unmounted' | 'none';
-  pipe: (deps: DependdencyList, storage: Map<string, any>) => Pipe;
+  pipe: (deps: OperationDependency<DependdencyList>) => Pipe;
   renderBroadcast: (props: OperationResult<Data, Snapshot>) => ReactNode;
   breakOnError?: true | ((error: unknown) => boolean);
 }

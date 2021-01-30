@@ -1,10 +1,10 @@
-import { Operator, OperatorOption } from '../context/types';
+import { Operator } from '../context/types';
 
 export const effect = <T>(
-  fn: (params: T, option: OperatorOption) => void | Promise<void>,
+  fn: (params: T) => void | Promise<void>,
 ): Operator<T, T> => {
-  return async (value: T, option: OperatorOption) => {
-    await fn(value, option);
+  return async (value: T) => {
+    await fn(value);
     return value;
   };
 };

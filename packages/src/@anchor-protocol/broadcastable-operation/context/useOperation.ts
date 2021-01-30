@@ -152,6 +152,7 @@ export function useOperation(
     setAbortController,
     removeAbortController,
     dispatch,
+    globalDependency,
   } = useOperationBroadcaster();
 
   const dependencyList = useRef(deps);
@@ -221,20 +222,22 @@ export function useOperation(
         abort,
       });
 
-      const storage = new Map<string, any>();
-
       try {
         let value = params;
 
-        const operators = pipe(dependencyList.current, storage);
-        const operatorOption = { signal: abortController.signal };
+        const operators = pipe({
+          ...dependencyList.current,
+          ...globalDependency.current,
+          signal: abortController.signal,
+          storage: new Map<string, any>(),
+        });
 
         let i: number = -1;
         const max: number = operators.length;
 
         while (++i < max) {
           const result = await Promise.race([
-            operators[i](value, operatorOption),
+            operators[i](value),
             abortSubscription,
           ]);
 
@@ -308,6 +311,7 @@ export function useOperation(
       breakOnError,
       dispatch,
       getAbortController,
+      globalDependency,
       id,
       initResult,
       pipe,

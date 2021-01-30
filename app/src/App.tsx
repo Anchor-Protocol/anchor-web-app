@@ -7,6 +7,7 @@ import { RouterScrollRestoration } from '@anchor-protocol/use-router-scroll-rest
 import {
   ChromeExtensionWalletProvider,
   RouterWalletStatusRecheck,
+  useWallet,
 } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 import { Banner } from 'components/Banner';
@@ -33,7 +34,7 @@ interface AppProps {
 }
 
 function WalletConnectedProviders({ children }: { children: ReactNode }) {
-  //const {status} = useWallet(); // of @anchor-protocol/wallet-provider
+  const { post } = useWallet();
 
   const addressProvider = useMemo<AddressProvider>(() => {
     // TODO create address provider by wallet info
@@ -58,7 +59,17 @@ function WalletConnectedProviders({ children }: { children: ReactNode }) {
        * Set GraphQL environenments
        * useQuery(), useApolloClient()...
        */}
-      <ApolloProvider client={client}>{children}</ApolloProvider>
+      <ApolloProvider client={client}>
+        {/**
+         * Broadcastable Query Provider
+         * useBroadCastableQuery(), useQueryBroadCaster()
+         *
+         * @see ../../packages/src/@anchor-protocol/use-broadcastable-query
+         */}
+        <OperationBroadcaster dependency={{ addressProvider, client, post }}>
+          {children}
+        </OperationBroadcaster>
+      </ApolloProvider>
     </ContractProvider>
   );
 }
@@ -87,58 +98,50 @@ function AppBase({ className }: AppProps) {
         <RouterWalletStatusRecheck />
         <WalletConnectedProviders>
           {/**
-           * Broadcastable Query Provider
-           * useBroadCastableQuery(), useQueryBroadCaster()
-           *
-           * @see ../../packages/src/@anchor-protocol/use-broadcastable-query
+           * User Balances (uUSD, uLuna, ubLuna, uaUST...)
+           * useBank()
            */}
-          <OperationBroadcaster>
+          <BankProvider>
             {/**
-             * User Balances (uUSD, uLuna, ubLuna, uaUST...)
-             * useBank()
+             * Theme Providing to Styled-Components and Material-UI
+             *
+             * @example
+             * ```
+             * styled.div`
+             *   color: ${({theme}) => theme.textColor}
+             * `
+             * ```
              */}
-            <BankProvider>
+            <ThemeProvider initialTheme="light">
               {/**
-               * Theme Providing to Styled-Components and Material-UI
-               *
-               * @example
-               * ```
-               * styled.div`
-               *   color: ${({theme}) => theme.textColor}
-               * `
-               * ```
+               * Snackbar Provider
+               * useSnackbar()
                */}
-              <ThemeProvider initialTheme="light">
+              <SnackbarProvider>
                 {/**
-                 * Snackbar Provider
-                 * useSnackbar()
+                 * Styled-Components Global CSS
                  */}
-                <SnackbarProvider>
-                  {/**
-                   * Styled-Components Global CSS
-                   */}
-                  <GlobalStyle />
-                  {/** Start Layout */}
-                  <div className={className}>
-                    <Header />
-                    <Banner />
-                    <Switch>
-                      <Route path="/earn" component={Earn} />
-                      <Route path="/borrow" component={Borrow} />
-                      <Route path="/basset" component={BAsset} />
-                      <Redirect to="/earn" />
-                    </Switch>
-                  </div>
-                  {/**
-                   * Snackbar Container
-                   * Snackbar Floating (position: fixed) Container
-                   */}
-                  <BroadcastingContainer />
-                  {/** End Layout */}
-                </SnackbarProvider>
-              </ThemeProvider>
-            </BankProvider>
-          </OperationBroadcaster>
+                <GlobalStyle />
+                {/** Start Layout */}
+                <div className={className}>
+                  <Header />
+                  <Banner />
+                  <Switch>
+                    <Route path="/earn" component={Earn} />
+                    <Route path="/borrow" component={Borrow} />
+                    <Route path="/basset" component={BAsset} />
+                    <Redirect to="/earn" />
+                  </Switch>
+                </div>
+                {/**
+                 * Snackbar Container
+                 * Snackbar Floating (position: fixed) Container
+                 */}
+                <BroadcastingContainer />
+                {/** End Layout */}
+              </SnackbarProvider>
+            </ThemeProvider>
+          </BankProvider>
         </WalletConnectedProviders>
       </ChromeExtensionWalletProvider>
     </Router>

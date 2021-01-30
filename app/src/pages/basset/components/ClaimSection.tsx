@@ -5,12 +5,10 @@ import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTool
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { demicrofy, formatUST } from '@anchor-protocol/notation';
 import { useWallet } from '@anchor-protocol/wallet-provider';
-import { useApolloClient } from '@apollo/client';
 import big from 'big.js';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
-import { useAddressProvider } from 'contexts/contract';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { useClaimableRewards } from 'pages/basset/logics/useClaimableRewards';
 import { useClaimable } from 'pages/basset/queries/claimable';
@@ -26,17 +24,9 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { status, post } = useWallet();
+  const { status } = useWallet();
 
-  const addressProvider = useAddressProvider();
-
-  const client = useApolloClient();
-
-  const [claim, claimResult] = useOperation(claimOptions, {
-    addressProvider,
-    client,
-    post,
-  });
+  const [claim, claimResult] = useOperation(claimOptions, {});
 
   // ---------------------------------------------
   // queries

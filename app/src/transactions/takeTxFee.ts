@@ -1,7 +1,4 @@
-import {
-  Operator,
-  OperatorOption,
-} from '@anchor-protocol/broadcastable-operation';
+import { Operator } from '@anchor-protocol/broadcastable-operation';
 import { uUST } from '@anchor-protocol/notation';
 
 export const takeTxFee = <O extends Operator<any, any>>(
@@ -10,9 +7,9 @@ export const takeTxFee = <O extends Operator<any, any>>(
 ): O extends Operator<infer T, infer R>
   ? Operator<T & { txFee: uUST }, R>
   : never => {
-  return ((param: { txFee: uUST }, option: OperatorOption) => {
+  return ((param: { txFee: uUST }) => {
     storage.set('txFee', param.txFee);
-    return operator(param, option);
+    return operator(param);
   }) as any;
 };
 
@@ -22,9 +19,9 @@ export function injectTxFee<O extends Operator<any, any>>(
 ): O extends Operator<infer T, infer R>
   ? Operator<T, R & { txFee: uUST }>
   : never {
-  return (async (param: any, option: OperatorOption) => {
+  return (async (param: any) => {
     const txFee = storage.get('txFee');
-    const value = await operator(param, option);
+    const value = await operator(param);
     return { ...value, txFee };
   }) as any;
 }

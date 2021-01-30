@@ -1,4 +1,4 @@
-import { Operator, OperatorOption } from '../context/types';
+import { Operator } from '../context/types';
 import { OperationTimeoutError } from '../errors';
 
 const Timeout = '__operation_timeout__' as const;
@@ -7,9 +7,9 @@ export function timeout<O extends Operator<any, any>>(
   operator: O,
   timeout: number,
 ): O {
-  return (async (param: any, option: OperatorOption) => {
+  return (async (param: any) => {
     const value = await Promise.race([
-      operator(param, option),
+      operator(param),
       new Promise((resolve) =>
         setTimeout(() => {
           resolve(Timeout);
