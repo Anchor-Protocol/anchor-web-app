@@ -1,4 +1,4 @@
-import { fabricateBorrow } from '@anchor-protocol/anchor-js/fabricators';
+import { fabricateBorrow } from '@anchor-protocol/anchor.js/fabricators';
 import {
   createOperationOptions,
   effect,

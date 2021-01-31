@@ -1,4 +1,4 @@
-import { fabricateRedeemCollateral } from '@anchor-protocol/anchor-js/fabricators';
+import { fabricateRedeemCollateral } from '@anchor-protocol/anchor.js/fabricators';
 import {
   createOperationOptions,
   effect,

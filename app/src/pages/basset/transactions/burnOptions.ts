@@ -1,4 +1,4 @@
-import { fabricatebAssetBurn } from '@anchor-protocol/anchor-js/fabricators';
+import { fabricatebAssetBurn } from '@anchor-protocol/anchor.js/fabricators';
 import {
   createOperationOptions,
   effect,

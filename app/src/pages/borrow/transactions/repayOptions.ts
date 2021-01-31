@@ -1,4 +1,4 @@
-import { fabricateRepay } from '@anchor-protocol/anchor-js/fabricators';
+import { fabricateRepay } from '@anchor-protocol/anchor.js/fabricators';
 import {
   createOperationOptions,
   effect,

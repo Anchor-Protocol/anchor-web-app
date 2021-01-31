@@ -1,0 +1,4 @@
+[submodule "modules/anchor.js"]
+	path = modules/anchor.js
+	url = https://github.com/Anchor-Protocol/anchor.js.git
+	branch = develop

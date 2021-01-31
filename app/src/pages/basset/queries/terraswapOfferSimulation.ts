@@ -1,4 +1,4 @@
-import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
+import { AddressProvider } from '@anchor-protocol/anchor.js/address-provider';
 import { min } from '@anchor-protocol/big-math';
 import {
   bLuna,

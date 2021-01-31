@@ -1,4 +1,4 @@
-import { fabricateProvideCollateral } from '@anchor-protocol/anchor-js/fabricators';
+import { fabricateProvideCollateral } from '@anchor-protocol/anchor.js/fabricators';
 import {
   createOperationOptions,
   effect,

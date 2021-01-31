@@ -7,7 +7,8 @@
   "workspaces": [
     "app",
     "landing",
-    "packages"
+    "packages",
+    "modules/*"
   ],
   "scripts": {
     "format": "prettier --write \"**/*.{js,ts,tsx}\"",

@@ -1,4 +1,4 @@
-import { fabricatebSwapbLuna } from '@anchor-protocol/anchor-js/fabricators';
+import { fabricatebSwapbLuna } from '@anchor-protocol/anchor.js/fabricators';
 import {
   createOperationOptions,
   effect,

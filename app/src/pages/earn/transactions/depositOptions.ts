@@ -1,4 +1,4 @@
-import { fabricateDepositStableCoin } from '@anchor-protocol/anchor-js/fabricators';
+import { fabricateDepositStableCoin } from '@anchor-protocol/anchor.js/fabricators';
 import {
   createOperationOptions,
   effect,

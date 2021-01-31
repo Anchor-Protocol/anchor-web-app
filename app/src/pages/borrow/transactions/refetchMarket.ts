@@ -1,4 +1,4 @@
-import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
+import { AddressProvider } from '@anchor-protocol/anchor.js/address-provider';
 import { WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient } from '@apollo/client';
 import {

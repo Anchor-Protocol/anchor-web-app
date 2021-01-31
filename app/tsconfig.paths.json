@@ -4,6 +4,9 @@
     "paths": {
       "@anchor-protocol/*": [
         "../../packages/src/@anchor-protocol/*"
+      ],
+      "@anchor-protocol/anchor.js/*": [
+        "../../modules/anchor.js/src/*"
       ]
     }
   }

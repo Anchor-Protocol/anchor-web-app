@@ -25,41 +25,15 @@ module.exports = {
     return alias({
       ...getWebpackAlias(path.resolve(__dirname, '../packages')),
       ...getWebpackAlias(__dirname),
+      '@anchor-protocol/anchor.js': path.resolve(
+        __dirname,
+        '../modules/anchor.js/src',
+      ),
       env: path.join(__dirname, 'src/env.ts'),
     })(config);
   },
   jest: (config) => {
-    //const fs = require('fs');
-    
-    //const alias = {
-    //  ...getWebpackAlias(path.resolve(__dirname, '../packages')),
-    //  ...getWebpackAlias(__dirname),
-    //};
-
-    //config.moduleNameMapper = {
-    //  ...config.moduleNameMapper,
-    //  ...Object.keys(alias).reduce((mapper, dirname) => {
-    //    mapper[`^${dirname}(.*)$`] = `${alias[dirname]}/$1`;
-    //    return mapper;
-    //  }, {}),
-    //};
     config.modulePaths.push('<rootDir>/src/', '<rootDir>/../packages/src/');
-    
-    //fs.writeFileSync(
-    //  path.resolve(__dirname, 'what.json'),
-    //  JSON.stringify(
-    //    {
-    //      moduleNameMapper: config.moduleNameMapper,
-    //      alias: {
-    //        ...getWebpackAlias(path.resolve(__dirname, '../packages')),
-    //        ...getWebpackAlias(__dirname),
-    //      },
-    //    },
-    //    null,
-    //    2,
-    //  ),
-    //);
-    
     return config;
   },
 };

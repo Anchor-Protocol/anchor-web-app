@@ -1,5 +1,5 @@
-import { AddressProviderFromJson } from '@anchor-protocol/anchor-js/address-provider';
-import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider/provider';
+import { AddressProviderFromJson } from '@anchor-protocol/anchor.js/address-provider';
+import { AddressProvider } from '@anchor-protocol/anchor.js/address-provider/provider';
 import { OperationBroadcaster } from '@anchor-protocol/broadcastable-operation';
 import { GlobalStyle } from '@anchor-protocol/neumorphism-ui/themes/GlobalStyle';
 import { SnackbarProvider } from '@anchor-protocol/snackbar';

@@ -1,4 +1,4 @@
-import { AddressProviderFromJson } from '@anchor-protocol/anchor-js/address-provider';
+import { AddressProviderFromJson } from '@anchor-protocol/anchor.js/address-provider';
 import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { contractAddresses } from 'env';
 
