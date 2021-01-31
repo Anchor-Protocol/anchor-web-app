@@ -15,21 +15,15 @@ import {
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
   uUST,
 } from '@anchor-protocol/notation';
-import type {
-  DialogProps,
-  DialogTemplate,
-  OpenDialog,
-} from '@anchor-protocol/use-dialog';
+import type { DialogProps, OpenDialog } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
-import { useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
 import big, { Big, BigSource } from 'big.js';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
-import { useAddressProvider } from 'contexts/contract';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
 import { useMarketNotNullable } from 'pages/borrow/context/market';
@@ -58,12 +52,8 @@ export function useRepayDialog(): [
   OpenDialog<FormParams, FormReturn>,
   ReactNode,
 ] {
-  return useDialog(Template);
+  return useDialog(Component);
 }
-
-const Template: DialogTemplate<FormParams, FormReturn> = (props) => {
-  return <Component {...props} />;
-};
 
 function ComponentBase({
   className,
@@ -78,16 +68,9 @@ function ComponentBase({
     marketOverview,
   } = useMarketNotNullable();
 
-  const { status, post } = useWallet();
-
-  const addressProvider = useAddressProvider();
-
-  const client = useApolloClient();
+  const { status } = useWallet();
 
   const [repay, repayResult] = useOperation(repayOptions, {
-    addressProvider,
-    post,
-    client,
     walletStatus: status,
   });
 

@@ -14,7 +14,7 @@ export default {
   title: 'core/broadcastable-operation',
   decorators: [
     (Story: ComponentType) => (
-      <OperationBroadcaster>
+      <OperationBroadcaster dependency={{}}>
         <Story />
         <Container />
       </OperationBroadcaster>

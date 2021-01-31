@@ -19,7 +19,6 @@ import {
 } from '@anchor-protocol/notation';
 import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
-import { useApolloClient } from '@apollo/client';
 import {
   Input as MuiInput,
   NativeSelect as MuiNativeSelect,
@@ -29,7 +28,6 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
-import { useAddressProvider } from 'contexts/contract';
 import { FIXED_GAS } from 'env';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import React, { useCallback, useState } from 'react';
@@ -56,17 +54,9 @@ function MintBase({ className }: MintProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { status, post } = useWallet();
+  const { status } = useWallet();
 
-  const addressProvider = useAddressProvider();
-
-  const client = useApolloClient();
-
-  const [mint, mintResult] = useOperation(mintOptions, {
-    addressProvider,
-    post,
-    client,
-  });
+  const [mint, mintResult] = useOperation(mintOptions, {});
 
   const { onKeyPress: onLunaInputKeyPress } = useRestrictedNumberInput({
     maxIntegerPoinsts: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,

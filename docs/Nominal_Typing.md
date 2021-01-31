@@ -1,0 +1,112 @@
+# Nominal Typing
+
+Anchor 내부에서 `string` 으로 유통되는 uluna, luna, uust, ust... 과 같은
+Currency Type 들에 의한 혼란을 막기 위해서 Nominal Type을 사용한다.
+
+물리적 자료형이라 할 수 있는 `string | BigSource | Big | ...` 에 더해서,
+논리적 자료형인 `uLuna | Luna | uUST | UST | ...` 을 조합한다.
+
+```ts
+export type Currency<
+  T extends
+    | 'uluna'
+    | 'ubluna'
+    | 'uaust'
+    | 'uust'
+    | 'luna'
+    | 'bluna'
+    | 'ust'
+    | 'aust'
+> = { __nominal: T };
+
+export type uaUST<T = string> = T & Currency<'uaust'>;
+export type aUST<T = string> = T & Currency<'aust'>;
+
+export type uUST<T = string> = T & Currency<'uust'>;
+export type UST<T = string> = T & Currency<'ust'>;
+
+export type uLuna<T = string> = T & Currency<'uluna'>;
+export type Luna<T = string> = T & Currency<'luna'>;
+
+export type ubLuna<T = string> = T & Currency<'ubluna'>;
+export type bLuna<T = string> = T & Currency<'bluna'>;
+```
+
+TypeScript 자체적으로 지원되는 Nominal Type 기능이 없으므로,
+Union Type 을 사용해서 Nominal Type을 직접 만든다.
+[@anchor-protocol/notation](../packages/src/@anchor-protocol/notation) 에 구현되어 있다.
+
+```ts
+const uluna = '10000000' as uLuna; // uLuna<string>
+
+// @ts-expect-error uLuna ⊅ uUST 이기 때문에 에러가 된다
+const uust: uUST = uluna;
+
+// @ts-expect-error uLuna ⊅ Luna 이기 때문에 에러가 된다
+const luna: Luna = uluna;
+
+// @ts-expect-error uLuna ⊅ Luna 이기 때문에 에러가 된다
+function fn1(amount: Luna) {}
+fn1(uluna);
+
+// uLuna<string> ⊃ string 이기 때문에 허용된다
+function fn2(str: string) {}
+fn2(uluna);
+
+// uLuna<string | number | Big> ⊃ uLuna<string> 이기 때문에 허용된다
+function fn3(amount: uLuna<BigSource>) {}
+fn3(uluna);
+
+// @ts-expect-error uLuna<Big> ⊅ uLuna<string> 이기 때문에 에러가 된다
+function fn3(amount: uLuna<Big>) {}
+fn3(uluna);
+```
+
+## Big.js 와 함께 사용하기
+
+Big.js 는 `type BigSource = string | number | Big` 로 허용하는 Type의 범위가 넓은 편이므로,
+계산에 사용되는 Function의 Parameter Type을 좀 더 유연하게 설정할 수 있다.
+
+```ts
+function plusLunaAndULuna(
+  luna: Luna<BigSource>,
+  uluna: uLuna<BigSource>,
+): uLuna<Big> {
+  return big(luna).mul(1000000).plus(uluna);
+}
+```
+
+## Conditional Return Type 사용
+
+TypeScript Conditional Type을 사용해서 유연함과 견고함을 동시에 가진 함수를 만들 수 있다.
+
+```ts
+export function microfy<
+  C extends
+    | Luna<BigSource>
+    | bLuna<BigSource>
+    | UST<BigSource>
+    | aUST<BigSource>
+    | Token<BigSource>
+>(
+  amount: C,
+): C extends Luna
+  ? uLuna<Big>
+  : C extends bLuna
+  ? ubLuna<Big>
+  : C extends UST
+  ? uUST<Big>
+  : C extends aUST
+  ? uaUST<Big>
+  : C extends Token
+  ? uToken<Big>
+  : never {
+  return big(amount).mul(1000000) as any;
+}
+
+// Luna, bLuna, UST, aUST... 와 같은 0.000000 이 적용된 Type만 받아들이게 된다
+const uluna = microfy('100' as Luna);
+
+// @ts-expect-error uluna 는 Conditional Type 에 의해 uLuna<Big> 으로 추정되었기 때문에 에러가 된다.
+const uust: uUST<Big> = uluna;
+```

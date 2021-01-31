@@ -1,9 +1,4 @@
-import {
-  DialogProps,
-  DialogTemplate,
-  OpenDialog,
-  useDialog,
-} from '@anchor-protocol/use-dialog';
+import { DialogProps, useDialog } from '@anchor-protocol/use-dialog';
 import {
   createStyles,
   Dialog,
@@ -26,9 +21,7 @@ export const useAlertStyles = makeStyles((theme: DefaultTheme) =>
   }),
 );
 
-export function useAlert(): [OpenDialog<AlertParams, void>, ReactNode] {
-  return useDialog(Template);
-}
+type FormReturn = void;
 
 export interface AlertParams {
   title?: ReactNode;
@@ -36,16 +29,16 @@ export interface AlertParams {
   agree?: string;
 }
 
-export const Template: DialogTemplate<AlertParams> = (props) => {
-  return <Component {...props} />;
-};
+export function useAlert() {
+  return useDialog(Component);
+}
 
 export function Component({
   closeDialog,
   title,
   description,
   agree = 'Agree',
-}: DialogProps<AlertParams, void>) {
+}: DialogProps<AlertParams, FormReturn>) {
   const classes = useAlertStyles();
 
   return (

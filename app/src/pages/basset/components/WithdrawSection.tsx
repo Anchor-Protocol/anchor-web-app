@@ -6,11 +6,9 @@ import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeS
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { demicrofy, formatLuna, uUST } from '@anchor-protocol/notation';
 import { useWallet } from '@anchor-protocol/wallet-provider';
-import { useApolloClient } from '@apollo/client';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
-import { useAddressProvider } from 'contexts/contract';
 import { FIXED_GAS } from 'env';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { useWithdrawableAmount } from 'pages/basset/logics/useWithdrawableAmount';
@@ -39,17 +37,9 @@ export function WithdrawSection({
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { status, post } = useWallet();
+  const { status } = useWallet();
 
-  const addressProvider = useAddressProvider();
-
-  const client = useApolloClient();
-
-  const [withdraw, withdrawResult] = useOperation(withdrawOptions, {
-    addressProvider,
-    client,
-    post,
-  });
+  const [withdraw, withdrawResult] = useOperation(withdrawOptions, {});
 
   // ---------------------------------------------
   // states

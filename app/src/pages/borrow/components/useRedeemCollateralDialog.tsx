@@ -16,21 +16,15 @@ import {
   Ratio,
   uUST,
 } from '@anchor-protocol/notation';
-import type {
-  DialogProps,
-  DialogTemplate,
-  OpenDialog,
-} from '@anchor-protocol/use-dialog';
+import type { DialogProps, OpenDialog } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
-import { useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
 import big, { Big, BigSource } from 'big.js';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
-import { useAddressProvider } from 'contexts/contract';
 import { FIXED_GAS } from 'env';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
@@ -58,12 +52,8 @@ export function useRedeemCollateralDialog(): [
   OpenDialog<FormParams, FormReturn>,
   ReactNode,
 ] {
-  return useDialog(Template);
+  return useDialog(Component);
 }
-
-const Template: DialogTemplate<FormParams, FormReturn> = (props) => {
-  return <Component {...props} />;
-};
 
 const txFee = FIXED_GAS;
 
@@ -76,18 +66,11 @@ function ComponentBase({
   // ---------------------------------------------
   const { marketUserOverview, marketOverview } = useMarketNotNullable();
 
-  const { status, post } = useWallet();
-
-  const addressProvider = useAddressProvider();
-
-  const client = useApolloClient();
+  const { status } = useWallet();
 
   const [redeemCollateral, redeemCollateralResult] = useOperation(
     redeemCollateralOptions,
     {
-      addressProvider,
-      post,
-      client,
       walletStatus: status,
     },
   );

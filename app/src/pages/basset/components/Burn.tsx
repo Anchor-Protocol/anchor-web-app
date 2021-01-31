@@ -16,7 +16,6 @@ import {
 } from '@anchor-protocol/notation';
 import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
-import { useApolloClient } from '@apollo/client';
 import {
   Input as MuiInput,
   NativeSelect as MuiNativeSelect,
@@ -26,7 +25,6 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
-import { useAddressProvider } from 'contexts/contract';
 import { FIXED_GAS } from 'env';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { useInvalidBurnAmount } from 'pages/basset/logics/useInvalidBurnAmount';
@@ -46,17 +44,9 @@ export function Burn() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { status, post } = useWallet();
+  const { status } = useWallet();
 
-  const addressProvider = useAddressProvider();
-
-  const client = useApolloClient();
-
-  const [burn, burnResult] = useOperation(burnOptions, {
-    addressProvider,
-    post,
-    client,
-  });
+  const [burn, burnResult] = useOperation(burnOptions, {});
 
   const { onKeyPress: onLunaInputKeyPress } = useRestrictedNumberInput({
     maxIntegerPoinsts: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,

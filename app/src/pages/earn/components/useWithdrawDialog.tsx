@@ -13,21 +13,15 @@ import {
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
   uUST,
 } from '@anchor-protocol/notation';
-import type {
-  DialogProps,
-  DialogTemplate,
-  OpenDialog,
-} from '@anchor-protocol/use-dialog';
+import type { DialogProps, OpenDialog } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
-import { useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
 import big, { BigSource } from 'big.js';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
-import { useAddressProvider } from 'contexts/contract';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import type { ReactNode } from 'react';
 import React, { useCallback, useState } from 'react';
@@ -49,12 +43,8 @@ export function useWithdrawDialog(): [
   OpenDialog<FormParams, FormReturn>,
   ReactNode,
 ] {
-  return useDialog(Template);
+  return useDialog(Component);
 }
-
-const Template: DialogTemplate<FormParams, FormReturn> = (props) => {
-  return <Component {...props} />;
-};
 
 function ComponentBase({
   className,
@@ -64,17 +54,9 @@ function ComponentBase({
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { status, post } = useWallet();
+  const { status } = useWallet();
 
-  const addressProvider = useAddressProvider();
-
-  const client = useApolloClient();
-
-  const [withdraw, withdrawResult] = useOperation(withdrawOptions, {
-    addressProvider,
-    post,
-    client,
-  });
+  const [withdraw, withdrawResult] = useOperation(withdrawOptions, {});
 
   // ---------------------------------------------
   // states

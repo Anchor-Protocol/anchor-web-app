@@ -1,10 +1,13 @@
+import type { GlobalDependency } from '@anchor-protocol/broadcastable-operation/global';
 import { produce } from 'immer';
 import {
   Context,
   createContext,
+  MutableRefObject,
   ReactNode,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -13,6 +16,7 @@ import { Broadcasting, EventType, OperationResult, Subscriber } from './types';
 
 export interface OperationBroadcasterProps {
   children: ReactNode;
+  dependency: GlobalDependency;
 }
 
 export interface OperationBroadcasterState {
@@ -31,14 +35,24 @@ export interface OperationBroadcasterState {
   getAbortController: (id: string) => AbortController | undefined;
   setAbortController: (id: string, abortController: AbortController) => void;
   removeAbortController: (id: string) => void;
+  // deps
+  globalDependency: MutableRefObject<GlobalDependency>;
 }
 
 // @ts-ignore
 const OperationBroadcasterContext: Context<OperationBroadcasterState> = createContext<OperationBroadcasterState>();
 
-export function OperationBroadcaster({ children }: OperationBroadcasterProps) {
+export function OperationBroadcaster({
+  children,
+  dependency,
+}: OperationBroadcasterProps) {
   const abortControllers = useRef<Map<string, AbortController>>(new Map());
   const subscribers = useRef<Set<Subscriber>>(new Set());
+  const globalDependency = useRef<GlobalDependency>(dependency);
+
+  useEffect(() => {
+    globalDependency.current = dependency;
+  }, [dependency]);
 
   const [broadcasting, setBroadcasting] = useState<Broadcasting[]>(() => []);
 
@@ -111,16 +125,17 @@ export function OperationBroadcaster({ children }: OperationBroadcasterProps) {
       getAbortController,
       setAbortController,
       removeAbortController,
+      globalDependency,
     }),
     [
       broadcast,
+      stopBroadcast,
+      broadcasting,
+      subscribe,
       dispatch,
       getAbortController,
-      removeAbortController,
-      broadcasting,
       setAbortController,
-      stopBroadcast,
-      subscribe,
+      removeAbortController,
     ],
   );
 

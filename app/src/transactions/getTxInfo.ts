@@ -1,7 +1,4 @@
-import {
-  OperationStop,
-  OperatorOption,
-} from '@anchor-protocol/broadcastable-operation';
+import { OperationStop } from '@anchor-protocol/broadcastable-operation';
 import { ApolloClient } from '@apollo/client';
 import { TxInfoError } from 'errors/TxInfoError';
 import { Data, queryTxInfo } from 'queries/txInfos';
@@ -9,9 +6,11 @@ import { TxResult } from 'transactions/tx';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-export const getTxInfo = (client: ApolloClient<any>) => async (
+export const getTxInfo = (
+  client: ApolloClient<any>,
+  signal: AbortSignal,
+) => async (
   txResult: TxResult,
-  { signal }: OperatorOption,
 ): Promise<{ txResult: TxResult; txInfo: Data }> => {
   while (true) {
     if (signal.aborted) {
