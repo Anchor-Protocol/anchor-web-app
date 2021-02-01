@@ -16,12 +16,12 @@ interface Item {
 
 const tabItems: Item[] = [
   {
-    label: 'DEFAULT',
-    value: 'anchor',
+    label: 'BURN',
+    value: 'burn',
   },
   {
-    label: 'TERRASWAP',
-    value: 'terraswap',
+    label: 'INSTANT BURN',
+    value: 'instant_burn',
   },
 ];
 
@@ -35,7 +35,7 @@ function BurnBase({ className }: BurnProps) {
     <Section className={className}>
       <Tab
         className="tab"
-        style={{maxWidth: 400}}
+        style={{ maxWidth: 400 }}
         items={tabItems}
         selectedItem={tab ?? tabItems[0]}
         onChange={setTab}
