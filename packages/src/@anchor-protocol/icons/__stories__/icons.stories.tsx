@@ -1,6 +1,6 @@
 import { Children, ReactElement } from 'react';
 import styled from 'styled-components';
-import { Discord, Wallet } from '../';
+import { Discord, Wallet, ArrowDown } from '../';
 
 export default {
   title: 'assets/Icons',
@@ -11,6 +11,7 @@ export const Icons = () => {
     <Grid size={60}>
       <Wallet />
       <Discord />
+      <ArrowDown />
     </Grid>
   );
 };

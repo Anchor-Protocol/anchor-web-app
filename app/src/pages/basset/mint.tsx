@@ -24,6 +24,7 @@ import {
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
 import big, { Big } from 'big.js';
+import { ArrowDownLine } from 'components/ArrowDownLine';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
@@ -37,6 +38,7 @@ import { useExchangeRate } from './queries/exchangeRate';
 import * as val from './queries/validators';
 import { useValidators } from './queries/validators';
 import { mintOptions } from './transactions/mintOptions';
+import { ArrowDown } from '@anchor-protocol/icons';
 
 export interface MintProps {
   className?: string;
@@ -267,6 +269,8 @@ function MintBase({ className }: MintProps) {
           onChange={({ target }) => updateBondAmount(target.value)}
         />
       </SelectAndTextInputContainer>
+
+      <ArrowDownLine />
 
       {/* Mint (bAsset) */}
       <div className="mint-description">

@@ -21,6 +21,7 @@ import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import big, { Big, BigSource } from 'big.js';
+import { ArrowDownLine } from 'components/ArrowDownLine';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
@@ -280,6 +281,8 @@ function ComponentBase({
           </span>
         </div>
 
+        <ArrowDownLine style={{ margin: '10px 0' }} />
+
         <NumberInput
           className="limit"
           value={borrowLimit ? formatUSTInput(demicrofy(borrowLimit)) : ''}
@@ -366,8 +369,6 @@ const Component = styled(ComponentBase)`
     &[aria-invalid='true'] {
       color: #f5356a;
     }
-
-    margin-bottom: 25px;
   }
 
   .limit {

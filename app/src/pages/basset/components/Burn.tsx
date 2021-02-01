@@ -21,6 +21,7 @@ import {
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
 import big, { Big } from 'big.js';
+import { ArrowDownLine } from 'components/ArrowDownLine';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
@@ -230,6 +231,8 @@ export function Burn() {
           onChange={({ target }) => updateBurnAmount(target.value)}
         />
       </SelectAndTextInputContainer>
+
+      <ArrowDownLine />
 
       {/* Get (Asset) */}
       <div className="gett-description">
