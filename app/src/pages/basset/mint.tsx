@@ -38,7 +38,6 @@ import { useExchangeRate } from './queries/exchangeRate';
 import * as val from './queries/validators';
 import { useValidators } from './queries/validators';
 import { mintOptions } from './transactions/mintOptions';
-import { ArrowDown } from '@anchor-protocol/icons';
 
 export interface MintProps {
   className?: string;
