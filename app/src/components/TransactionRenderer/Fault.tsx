@@ -8,6 +8,7 @@ import { TxFailedError } from 'errors/TxFailedError';
 import { TxInfoError } from 'errors/TxInfoError';
 import { TxInfoParseError } from 'errors/TxInfoParseError';
 import React from 'react';
+import styled from 'styled-components';
 
 export interface FaultProps {
   result: FaultResult<unknown[]>;
@@ -34,27 +35,41 @@ export function Fault({ result: { error } }: FaultProps) {
         error instanceof TxFailedError ? (
           <>
             <h2>Transaction Failed</h2>
-            <pre>{error.toString()}</pre>
+            <ErrorView>
+              <pre>{error.toString()}</pre>
+            </ErrorView>
           </>
         ) : // getTxInfo
         error instanceof TxInfoError ? (
           <>
             <h2>Tx Failed</h2>
-            <pre>{error.toString()}</pre>
+            <ErrorView>
+              <pre>{error.toString()}</pre>
+            </ErrorView>
           </>
         ) : error instanceof TxInfoParseError ? (
           <>
             <h2>Parse TxInfo Failed</h2>
-            <pre>{error.toString()}</pre>
+            <ErrorView>
+              <pre>{error.toString()}</pre>
+            </ErrorView>
           </>
         ) : (
           // uncaught errors...
           <>
             <h2>Failure</h2>
-            <pre>{String(error)}</pre>
+            <ErrorView>
+              <pre>{String(error)}</pre>
+            </ErrorView>
           </>
         )
       }
     </article>
   );
 }
+
+const ErrorView = styled.div`
+  overflow: auto;
+  font-size: 12px;
+  max-height: 400px;
+`;
