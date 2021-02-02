@@ -85,7 +85,7 @@ export function pickBurnResult({
       },
       exchangeRate && {
         name: 'Exchange Rate',
-        value: formatFluidDecimalPoints(exchangeRate, 2),
+        value: formatFluidDecimalPoints(exchangeRate, 6),
       },
       {
         name: 'Tx Hash',

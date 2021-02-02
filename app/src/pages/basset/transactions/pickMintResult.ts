@@ -1,8 +1,10 @@
 import {
   demicrofy,
   formatFluidDecimalPoints,
-  formatLuna, formatUSTWithPostfixUnits,
-  Ratio, truncate,
+  formatLuna,
+  formatUSTWithPostfixUnits,
+  Ratio,
+  truncate,
   ubLuna,
   uLuna,
   uUST,
@@ -72,7 +74,7 @@ export function pickMintResult({
       },
       exchangeRate && {
         name: 'Exchange Rate',
-        value: formatFluidDecimalPoints(exchangeRate, 2),
+        value: formatFluidDecimalPoints(exchangeRate, 6),
       },
       {
         name: 'Tx Hash',
