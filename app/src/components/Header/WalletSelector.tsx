@@ -31,7 +31,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   // ---------------------------------------------
   // states
   // ---------------------------------------------
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   // ---------------------------------------------
   // callbacks
