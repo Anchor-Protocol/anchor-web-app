@@ -112,7 +112,7 @@ export function Swap() {
       } else {
         const burnAmount: bLuna = nextBurnAmount as bLuna;
         const getAmount: Luna = formatLunaInput(
-          big(burnAmount).mul(bLunaPrice?.bLunaPrice ?? 1) as Luna<Big>,
+          big(burnAmount).div(bLunaPrice?.bLunaPrice ?? 1) as Luna<Big>,
         );
 
         setGetAmount(getAmount);
@@ -130,7 +130,7 @@ export function Swap() {
       } else {
         const getAmount: Luna = nextGetAmount as Luna;
         const burnAmount: bLuna = formatLunaInput(
-          big(getAmount).div(bLunaPrice?.bLunaPrice ?? 1) as bLuna<Big>,
+          big(getAmount).mul(bLunaPrice?.bLunaPrice ?? 1) as bLuna<Big>,
         );
 
         setBurnAmount(burnAmount);
