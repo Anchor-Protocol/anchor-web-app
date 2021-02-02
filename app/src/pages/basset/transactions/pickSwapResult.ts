@@ -64,14 +64,14 @@ export function pickSwapResult({
     paidAmount &&
     (big(boughtAmount).div(paidAmount) as Ratio<BigSource> | undefined);
 
-  console.log('pickSwapResult.ts..pickSwapResult()', rawLog);
-
-  console.log('pickSwapResult.ts..pickSwapResult()', {
-    boughtAmount,
-    paidAmount,
-    tradingFee1,
-    tradingFee2,
-  });
+  //console.log('pickSwapResult.ts..pickSwapResult()', rawLog);
+  //
+  //console.log('pickSwapResult.ts..pickSwapResult()', {
+  //  boughtAmount,
+  //  paidAmount,
+  //  tradingFee1,
+  //  tradingFee2,
+  //});
 
   const txHash = txResult.result.txhash;
 
