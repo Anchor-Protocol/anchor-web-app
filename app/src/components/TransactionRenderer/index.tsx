@@ -107,6 +107,11 @@ const Layout = styled.section`
       &[data-state='done'] {
         color: #15cc93;
       }
+
+      &[data-state='in-progress'] {
+        border: none;
+        transform: scale(1.3);
+      }
     }
 
     > h2 {

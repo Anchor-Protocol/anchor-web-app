@@ -1,9 +1,9 @@
 import { InProgress } from '@anchor-protocol/broadcastable-operation';
 import { HorizontalHeavyRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalHeavyRuler';
 import { truncate } from '@anchor-protocol/notation';
-import { HourglassEmpty } from '@material-ui/icons';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import React from 'react';
+import { GuardSpinner } from 'react-spinners-kit';
 import { TxResult } from 'transactions/tx';
 
 export interface WaitingReceiptProps {
@@ -15,7 +15,7 @@ export function WaitingReceipt({ txResult }: WaitingReceiptProps) {
   return (
     <article>
       <figure data-state="in-progress">
-        <HourglassEmpty />
+        <GuardSpinner />
       </figure>
 
       <h2>Waiting for receipt...</h2>

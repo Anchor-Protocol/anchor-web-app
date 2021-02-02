@@ -1,16 +1,19 @@
 import { InProgress } from '@anchor-protocol/broadcastable-operation';
 import React from 'react';
-import { HourglassEmpty } from '@material-ui/icons';
+import { PushSpinner } from 'react-spinners-kit';
+import { useTheme } from 'styled-components';
 
 export interface WaitingTransactionProps {
   result: InProgress<unknown[]>;
 }
 
 export function WaitingTransaction({ result }: WaitingTransactionProps) {
+  const { dimTextColor } = useTheme();
+
   return (
     <article>
       <figure data-state="in-progress">
-        <HourglassEmpty />
+        <PushSpinner color={dimTextColor} />
       </figure>
 
       <h2>Waiting for Terra Station...</h2>
