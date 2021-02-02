@@ -1,10 +1,11 @@
+import logoUrl from '@anchor-protocol/icons/assets/Anchor.svg';
 import { IconButton } from '@material-ui/core';
 import { Brightness3, Brightness5 } from '@material-ui/icons';
 import { WalletSelector } from 'components/Header/WalletSelector';
 import { useTheme } from 'contexts/theme';
 import { screen } from 'env';
 import React from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
 
 export interface HeaderProps {
@@ -16,16 +17,13 @@ function HeaderBase({ className }: HeaderProps) {
 
   return (
     <header className={className}>
-      <section className="logo">
-        <Link to="/">ANCHOR</Link>
-      </section>
       <nav className="menu">
         <NavLink to="/earn">EARN</NavLink>
         <NavLink to="/borrow">BORROW</NavLink>
         <NavLink to="/basset">bASSET</NavLink>
       </nav>
+
       <section className="wallet">
-        {/*<Notifications />*/}
         <WalletSelector />
         <IconButton
           style={{ color: 'white' }}
@@ -34,6 +32,7 @@ function HeaderBase({ className }: HeaderProps) {
           {themeColor === 'light' ? <Brightness5 /> : <Brightness3 />}
         </IconButton>
       </section>
+
       <GlobalStyle />
     </header>
   );
@@ -48,7 +47,7 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 const desktopLayoutBreak = 1180;
-const mobileLayoutBreak = 550;
+const mobileLayoutBreak = 860;
 
 export const Header = styled(HeaderBase)`
   // ---------------------------------------------
@@ -62,89 +61,123 @@ export const Header = styled(HeaderBase)`
 
   .menu {
     a {
-      font-weight: 500;
-      color: rgba(255, 255, 255, 0.3);
+      display: inline-block;
+
+      font-weight: 900;
+
+      color: rgba(255, 255, 255, 0.12);
+
+      border-bottom-color: transparent;
+
+      position: relative;
+
+      transition: color 0.3s ease-out, border-bottom-color 0.4s ease-out;
 
       &:hover {
-        color: rgba(255, 255, 255, 0.6);
+        color: rgba(255, 255, 255, 0.3);
       }
 
       &.active {
-        font-weight: 900;
-        color: rgba(255, 255, 255, 0.8);
-      }
-    }
-  }
+        color: #ffffff;
 
-  .logo {
-    a {
-      font-size: 13px;
-      font-weight: 900;
-      color: rgba(255, 255, 255, 0.8);
+        border-bottom-color: #ffffff;
+      }
     }
   }
 
   // ---------------------------------------------
   // layout
   // ---------------------------------------------
-  @media (min-width: ${desktopLayoutBreak}px) {
-    height: 74px;
-    padding: 0 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
 
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    align-items: center;
+  @media (min-width: ${desktopLayoutBreak}px) {
+    height: 144px;
+    padding: 0 100px;
 
     .menu {
-      display: flex;
-      justify-content: center;
+      word-break: keep-all;
+      white-space: nowrap;
 
       a {
+        border-bottom-style: solid;
+        border-bottom-width: 7px;
+
+        padding-bottom: 13px;
+
         &:not(:last-child) {
-          margin-right: 54px;
+          margin-right: 38px;
         }
 
-        font-size: 13px;
+        font-size: 34px;
+
+        &.active {
+          &::before {
+            position: absolute;
+            left: 0;
+            top: -54px;
+            content: '';
+            width: 100px;
+            height: 100px;
+            background: url('${logoUrl}') no-repeat;
+          }
+        }
       }
     }
 
     .wallet {
+      padding-bottom: 15px;
       text-align: right;
     }
   }
 
   @media (max-width: ${desktopLayoutBreak}px) {
-    height: 74px;
+    height: 80px;
     padding: 0 80px;
 
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
     .menu {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      a {
+        border-bottom-style: solid;
+        border-bottom-width: 7px;
 
-      height: 50px;
-      z-index: 10000;
+        padding-bottom: 13px;
 
-      font-size: 13px;
+        &:not(:last-child) {
+          margin-right: 28px;
+        }
 
-      background-color: black;
+        font-size: 27px;
+      }
+    }
 
-      display: grid;
-      grid-template-columns: repeat(3, auto);
-      justify-content: space-evenly;
-      align-items: center;
-
-      box-shadow: 0px 0px 21px 5px rgba(0, 0, 0, 0.18);
+    .wallet {
+      padding-bottom: 12px;
+      text-align: right;
     }
   }
 
   @media (max-width: ${mobileLayoutBreak}px) {
-    justify-content: center;
+    align-items: center;
+
+    height: 60px;
+    padding: 0;
+
+    .menu {
+      display: flex;
+      justify-content: space-evenly;
+      width: 100%;
+
+      a {
+        border: none;
+        padding-bottom: 0;
+        font-size: 18px;
+
+        &:not(:last-child) {
+          margin-right: 0;
+        }
+      }
+    }
 
     .wallet {
       display: none;

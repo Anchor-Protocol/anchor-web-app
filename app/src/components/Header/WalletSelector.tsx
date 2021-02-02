@@ -14,6 +14,7 @@ import { useBank } from 'contexts/bank';
 import { useCallback, useState } from 'react';
 import useClipboard from 'react-use-clipboard';
 import styled from 'styled-components';
+import c from 'color';
 
 export interface WalletSelectorProps {
   className?: string;
@@ -30,7 +31,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   // ---------------------------------------------
   // states
   // ---------------------------------------------
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
 
   // ---------------------------------------------
   // callbacks
@@ -288,7 +289,7 @@ export const WalletDropdown = styled.div`
     .wallet-icon {
       width: 38px;
       height: 38px;
-      background-color: ${({ theme }) => theme.textColor};
+      background-color: #000000;
       border-radius: 50%;
       color: #ffffff;
 
@@ -317,11 +318,13 @@ export const WalletDropdown = styled.div`
       font-size: 9px;
       padding: 5px 10px;
 
-      background-color: #f1f1f1;
+      background-color: ${({ theme }) =>
+        theme.palette.type === 'light' ? '#f1f1f1' : 'rgba(0, 0, 0, 0.15)'};
       color: ${({ theme }) => theme.dimTextColor};
 
       &:hover {
-        background-color: #e1e1e1;
+        background-color: ${({ theme }) =>
+          theme.palette.type === 'light' ? '#e1e1e1' : 'rgba(0, 0, 0, 0.2)'};
         color: ${({ theme }) => theme.textColor};
       }
     }
@@ -333,16 +336,16 @@ export const WalletDropdown = styled.div`
       list-style: none;
 
       font-size: 12px;
-      color: ${({ theme }) => theme.dimTextColor};
+      color: ${({ theme }) => theme.textColor};
 
-      border-top: 1px solid #e5e5e5;
+      border-top: 1px solid ${({ theme }) => theme.dimTextColor};
 
       li {
         display: flex;
         justify-content: space-between;
         align-items: center;
         height: 35px;
-        border-bottom: 1px dashed #e5e5e5;
+        border-bottom: 1px dashed ${({ theme }) => theme.dimTextColor};
       }
 
       margin-bottom: 20px;
@@ -373,11 +376,15 @@ export const WalletDropdown = styled.div`
             transform: translateY(1px);
           }
 
-          background-color: #f1f1f1;
+          background-color: ${({ theme }) =>
+            theme.palette.type === 'light' ? '#f1f1f1' : 'rgba(0, 0, 0, 0.15)'};
           color: ${({ theme }) => theme.dimTextColor};
 
           &:hover {
-            background-color: #e1e1e1;
+            background-color: ${({ theme }) =>
+              theme.palette.type === 'light'
+                ? '#e1e1e1'
+                : 'rgba(0, 0, 0, 0.2)'};
             color: ${({ theme }) => theme.textColor};
           }
         }
@@ -389,12 +396,17 @@ export const WalletDropdown = styled.div`
     border: none;
     outline: none;
 
-    background-color: #e0e0e0;
-    color: #ffffff;
+    background-color: ${({ theme }) =>
+      theme.palette.type === 'light'
+        ? theme.actionButton.backgroundColor
+        : c(theme.actionButton.backgroundColor).darken(0.3).toString()};
+    color: ${({ theme }) => theme.actionButton.textColor};
 
     &:hover {
-      background-color: #d9d9d9;
-      color: ${({ theme }) => theme.textColor};
+      background-color: ${({ theme }) =>
+        theme.palette.type === 'light'
+          ? theme.actionButton.backgroundHoverColor
+          : c(theme.actionButton.backgroundHoverColor).darken(0.3).toString()};
     }
 
     font-size: 12px;
