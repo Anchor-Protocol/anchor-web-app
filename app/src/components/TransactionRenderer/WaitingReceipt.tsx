@@ -1,7 +1,7 @@
 import { InProgress } from '@anchor-protocol/broadcastable-operation';
 import { HorizontalHeavyRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalHeavyRuler';
-import { truncate } from '@anchor-protocol/notation';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { TxHashLink } from 'components/TxHashLink';
 import React from 'react';
 import { GuardSpinner } from 'react-spinners-kit';
 import { TxResult } from 'transactions/tx';
@@ -24,7 +24,7 @@ export function WaitingReceipt({ txResult }: WaitingReceiptProps) {
 
       <TxFeeList showRuler={false}>
         <TxFeeListItem label="Tx Hash">
-          {truncate(txResult.result.txhash)}
+          <TxHashLink txHash={txResult.result.txhash} />
         </TxFeeListItem>
       </TxFeeList>
     </article>
