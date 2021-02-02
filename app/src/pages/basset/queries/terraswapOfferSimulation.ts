@@ -2,6 +2,7 @@ import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
 import { min } from '@anchor-protocol/big-math';
 import {
   bLuna,
+  formatFluidDecimalPoints,
   microfy,
   Ratio,
   ubLuna,
@@ -47,7 +48,11 @@ export function parseData(
     'commission_amount' | 'return_amount' | 'spread_amount'
   >;
 
-  const beliefPrice = big(data.return_amount).div(burnAmount) as Ratio<Big>;
+  const beliefPrice = big(
+    formatFluidDecimalPoints(big(data.return_amount).div(burnAmount), 18, {
+      delimiter: false,
+    }),
+  ) as Ratio<Big>;
   const maxSpread = 0.1;
 
   const tax = min(
