@@ -1,4 +1,5 @@
 import { Done as DoneResult } from '@anchor-protocol/broadcastable-operation';
+import { HorizontalHeavyRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalHeavyRuler';
 import { Done as DoneIcon } from '@material-ui/icons';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TransactionDetail, TransactionResult } from 'models/transaction';
@@ -11,13 +12,15 @@ export interface DoneProps {
 export function Done({ result: { data } }: DoneProps) {
   return (
     <article>
-      <figure>
+      <figure data-state="done">
         <DoneIcon />
       </figure>
 
       <h2>Complete!</h2>
 
-      <TxFeeList>
+      <HorizontalHeavyRuler />
+
+      <TxFeeList showRuler={false}>
         {data.details
           .filter((detail): detail is TransactionDetail => !!detail)
           .map(({ name, value }, i) => (
@@ -25,12 +28,6 @@ export function Done({ result: { data } }: DoneProps) {
               {value}
             </TxFeeListItem>
           ))}
-        {/*<TxFeeListItem label="Tx Hash">{truncate(data.txHash)}</TxFeeListItem>*/}
-        {/*{data.txFee && (*/}
-        {/*  <TxFeeListItem label="Tx Fee">*/}
-        {/*    {formatUSTWithPostfixUnits(demicrofy(data.txFee))} UST*/}
-        {/*  </TxFeeListItem>*/}
-        {/*)}*/}
       </TxFeeList>
     </article>
   );

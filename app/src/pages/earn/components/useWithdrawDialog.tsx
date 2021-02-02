@@ -122,7 +122,6 @@ function ComponentBase({
     return (
       <Modal open disableBackdropClick>
         <Dialog className={className}>
-          <h1>Withdraw</h1>
           <TransactionRenderer result={withdrawResult} onExit={closeDialog} />
         </Dialog>
       </Modal>

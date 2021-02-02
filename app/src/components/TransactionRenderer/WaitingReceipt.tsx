@@ -1,4 +1,5 @@
 import { InProgress } from '@anchor-protocol/broadcastable-operation';
+import { HorizontalHeavyRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalHeavyRuler';
 import { truncate } from '@anchor-protocol/notation';
 import { HourglassEmpty } from '@material-ui/icons';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
@@ -13,13 +14,15 @@ export interface WaitingReceiptProps {
 export function WaitingReceipt({ txResult }: WaitingReceiptProps) {
   return (
     <article>
-      <figure>
+      <figure data-state="in-progress">
         <HourglassEmpty />
       </figure>
 
       <h2>Waiting for receipt...</h2>
 
-      <TxFeeList>
+      <HorizontalHeavyRuler />
+
+      <TxFeeList showRuler={false}>
         <TxFeeListItem label="Tx Hash">
           {truncate(txResult.result.txhash)}
         </TxFeeListItem>

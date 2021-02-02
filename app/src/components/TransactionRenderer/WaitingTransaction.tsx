@@ -9,7 +9,7 @@ export interface WaitingTransactionProps {
 export function WaitingTransaction({ result }: WaitingTransactionProps) {
   return (
     <article>
-      <figure>
+      <figure data-state="in-progress">
         <HourglassEmpty />
       </figure>
 

@@ -11,14 +11,20 @@ export interface TxFeeListProps
   extends DetailedHTMLProps<
     HTMLAttributes<HTMLUListElement>,
     HTMLUListElement
-  > {}
+  > {
+  showRuler?: boolean;
+}
 
-function TxFeeListBase({ className, ...ulProps }: TxFeeListProps) {
+function TxFeeListBase({
+  className,
+  showRuler = true,
+  ...ulProps
+}: TxFeeListProps) {
   return (
     <figure className={className}>
-      <HorizontalDashedRuler />
+      {showRuler && <HorizontalDashedRuler />}
       <ul {...ulProps} />
-      <HorizontalDashedRuler />
+      {showRuler && <HorizontalDashedRuler />}
     </figure>
   );
 }

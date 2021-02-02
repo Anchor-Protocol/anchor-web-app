@@ -31,5 +31,5 @@ export const depositOptions = createOperationOptions({
     pickDepositResult, // -> TransactionResult
   ],
   renderBroadcast: renderBroadcastTransaction,
-  breakOnError: true,
+  //breakOnError: true,
 });

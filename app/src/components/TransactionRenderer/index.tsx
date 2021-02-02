@@ -35,45 +35,42 @@ export function TransactionRenderer({
       ) : (
         <Layout>
           <WaitingTransaction result={result} />
-          <ActionButton
-            style={{ width: '100%' }}
+          <SubmitButton
             onClick={() => {
               result.abort();
               onExit && onExit();
             }}
           >
-            Stop Waiting Terra Station
-          </ActionButton>
+            Stop
+          </SubmitButton>
         </Layout>
       );
     case 'fault':
       return (
         <Layout>
           <Fault result={result} />
-          <ActionButton
-            style={{ width: '100%' }}
+          <SubmitButton
             onClick={() => {
               result.reset();
               onExit && onExit();
             }}
           >
             OK
-          </ActionButton>
+          </SubmitButton>
         </Layout>
       );
     case 'done':
       return (
         <Layout>
           <Done result={result} />
-          <ActionButton
-            style={{ width: '100%' }}
+          <SubmitButton
             onClick={() => {
               result.reset();
               onExit && onExit();
             }}
           >
             OK
-          </ActionButton>
+          </SubmitButton>
         </Layout>
       );
     default:
@@ -81,19 +78,34 @@ export function TransactionRenderer({
   }
 }
 
+const SubmitButton = styled(ActionButton)`
+  height: 4.1em;
+  width: 100%;
+`;
+
 const Layout = styled.section`
   > article {
     > figure:first-child {
+      color: ${({ theme }) => theme.textColor};
+
       margin: 0 auto;
       width: 6em;
       height: 6em;
       border-radius: 50%;
-      border: 3px solid ${({ theme }) => theme.textColor};
+      border: 3px solid currentColor;
       display: grid;
       place-content: center;
 
       svg {
         font-size: 3em;
+      }
+
+      &[data-state='fault'] {
+        color: #e95979;
+      }
+
+      &[data-state='done'] {
+        color: #15cc93;
       }
     }
 
@@ -104,9 +116,13 @@ const Layout = styled.section`
       margin-top: 1em;
       margin-bottom: 2em;
     }
+
+    > hr {
+      margin-bottom: 2em;
+    }
   }
 
   > button:last-child {
-    margin-top: 5em;
+    margin-top: 3em;
   }
 `;

@@ -17,7 +17,8 @@ export const screen = {
 
 export const SAFE_RATIO: Ratio<number> = 0.7 as Ratio<number>;
 
-export const FIXED_GAS: uUST<number> = 3500000 as uUST<number>;
+//export const FIXED_GAS: uUST<number> = 3500000 as uUST<number>;
+export const FIXED_GAS: uUST<number> = 35000 as uUST<number>;
 
 export const TRANSACTION_FEE = {
   //gasPrices: '0.0015uusd',
