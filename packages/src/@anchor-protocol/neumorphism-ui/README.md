@@ -1,3 +1,9 @@
+# `@anchor-protocol/neumorphism-ui`
+
+[Material-UI](https://material-ui.com/) based the neumorphism look implementation components.
+
+<https://anchor-storybook.vercel.app/>
+
 # Setup
 
 ## Setup fonts
@@ -49,7 +55,7 @@
 }
 ```
 
-> If you want to use the other fonts. please use customized `<GlobalStyle/>`
+> If you want to use the other fonts. please use your own customized `<GlobalStyle/>`
 
 ## Setup styles and themes
 
