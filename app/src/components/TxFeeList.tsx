@@ -59,6 +59,10 @@ export const TxFeeList = styled(TxFeeListBase)`
       > :last-child {
         color: ${({ theme }) => theme.textColor};
       }
+
+      a {
+        color: ${({ theme }) => theme.textColor};
+      }
     }
   }
 `;

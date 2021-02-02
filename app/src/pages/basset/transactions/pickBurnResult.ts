@@ -4,12 +4,12 @@ import {
   formatLuna,
   formatUSTWithPostfixUnits,
   Ratio,
-  truncate,
   ubLuna,
   uLuna,
   uUST,
 } from '@anchor-protocol/notation';
 import big, { BigSource } from 'big.js';
+import { TxHashLink } from 'components/TxHashLink';
 import { TxInfoParseError } from 'errors/TxInfoParseError';
 import { TransactionResult } from 'models/transaction';
 import {
@@ -18,6 +18,7 @@ import {
   pickEvent,
   pickRawLog,
 } from 'queries/txInfos';
+import { createElement } from 'react';
 import { TxResult } from 'transactions/tx';
 
 interface Params {
@@ -89,7 +90,7 @@ export function pickBurnResult({
       },
       {
         name: 'Tx Hash',
-        value: truncate(txHash),
+        value: createElement(TxHashLink, { txHash }),
       },
       {
         name: 'Tx Fee',

@@ -2,9 +2,9 @@ import {
   demicrofy,
   formatRatioToPercentage,
   formatUSTWithPostfixUnits,
-  truncate,
   uUST,
 } from '@anchor-protocol/notation';
+import { TxHashLink } from 'components/TxHashLink';
 import { TxInfoParseError } from 'errors/TxInfoParseError';
 import { TransactionResult } from 'models/transaction';
 import { currentLtv } from 'pages/borrow/logics/currentLtv';
@@ -17,6 +17,7 @@ import {
   pickEvent,
   pickRawLog,
 } from 'queries/txInfos';
+import { createElement } from 'react';
 import { TxResult } from 'transactions/tx';
 
 interface Params {
@@ -84,7 +85,7 @@ export function pickRepayResult({
       },
       {
         name: 'Tx Hash',
-        value: truncate(txHash),
+        value: createElement(TxHashLink, { txHash }),
       },
       {
         name: 'Tx Fee',

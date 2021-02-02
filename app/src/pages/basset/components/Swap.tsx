@@ -11,7 +11,6 @@ import {
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
   Ratio,
-  uLuna,
 } from '@anchor-protocol/notation';
 import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
@@ -149,7 +148,6 @@ export function Swap() {
     async (
       status: WalletStatus,
       burnAmount: bLuna,
-      swapFee: uLuna,
       beliefPrice: Ratio,
       maxSpread: Ratio,
     ) => {
@@ -161,7 +159,6 @@ export function Swap() {
         address: status.walletAddress,
         amount: burnAmount,
         bAsset: burnCurrency.value,
-        swapFee,
         beliefPrice,
         maxSpread,
       });
@@ -170,7 +167,6 @@ export function Swap() {
         address: status.walletAddress,
         amount: burnAmount,
         bAsset: burnCurrency.value,
-        swapFee,
         beliefPrice,
         maxSpread,
       });
@@ -299,8 +295,10 @@ export function Swap() {
           <TxFeeListItem label="Minimum Received">
             {formatLuna(demicrofy(offerSimulation.minimumReceived))} Luna
           </TxFeeListItem>
-          <TxFeeListItem label="Swap Fee">
-            {formatLuna(demicrofy(offerSimulation.swapFee))} Luna +{' '}
+          <TxFeeListItem label="Trading Fee">
+            {formatLuna(demicrofy(offerSimulation.swapFee))} Luna
+          </TxFeeListItem>
+          <TxFeeListItem label="Tx Fee">
             {formatUST(demicrofy(FIXED_GAS))} UST
           </TxFeeListItem>
         </TxFeeList>
@@ -322,7 +320,6 @@ export function Swap() {
           proceed(
             status,
             burnAmount,
-            offerSimulation!.swapFee,
             offerSimulation!.beliefPrice,
             offerSimulation!.maxSpread,
           )
