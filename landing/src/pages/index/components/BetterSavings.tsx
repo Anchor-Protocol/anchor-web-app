@@ -1,5 +1,6 @@
 import { useElementIntersection } from '@anchor-protocol/use-element-intersection';
 import { GUI } from 'dat.gui';
+import { landingMobileLayout } from 'env';
 import { useEffect, useRef, useState } from 'react';
 import Regl from 'regl';
 import Stats from 'stats.js';
@@ -63,7 +64,7 @@ function BetterSavingsBase({ className }: BetterSavingsProps) {
 
     return () => {
       stop();
-      
+
       if (!!gui) {
         gui.destroy();
       }
@@ -115,7 +116,7 @@ export const BetterSavings = styled(BetterSavingsBase)`
     transition: opacity 2s ease-out;
   }
 
-  @media (max-width: 500px) {
+  @media (max-width: ${landingMobileLayout}px) {
     height: 80vh;
 
     > h2 {

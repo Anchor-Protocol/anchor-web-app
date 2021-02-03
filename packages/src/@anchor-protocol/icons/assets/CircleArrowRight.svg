@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+    <g id="Landing" transform="translate(-358.000000, -1670.000000)">
+      <g id="01" transform="translate(40.000000, 1072.000000)">
+        <g id="txt" transform="translate(230.000000, 279.000000)" stroke="currentColor" stroke-width="1.5">
+          <g id="Group-7" transform="translate(4.000000, 320.000000)">
+            <circle id="Oval" cx="96" cy="11" r="11"></circle>
+            <polyline id="Path-2" stroke-linecap="round" stroke-linejoin="round"
+                      points="95.2 8.3 97.9 11 95.2 13.7"></polyline>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
