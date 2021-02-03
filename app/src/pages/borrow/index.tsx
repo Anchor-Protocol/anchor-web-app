@@ -2,7 +2,7 @@ import {
   rulerLightColor,
   rulerShadowColor,
 } from '@anchor-protocol/styled-neumorphism';
-import { USTIcon } from '@anchor-protocol/terra-token-icons';
+import { TokenIcon } from '@anchor-protocol/token-icons';
 import { Footer } from 'components/Footer';
 import { screen } from 'env';
 import { LoanButtons } from 'pages/borrow/components/LoanButtons';
@@ -23,7 +23,7 @@ function BorrowBase({ className }: BorrowProps) {
         <main>
           <div className="market">
             <h1>
-              <USTIcon /> UST
+              <TokenIcon token="ust" /> UST
             </h1>
             <div className="loan-buttons">
               <LoanButtons />
@@ -58,7 +58,7 @@ export const Borrow = styled(BorrowBase)`
       font-size: 44px;
       font-weight: 900;
       color: ${({ theme }) => theme.textColor};
-      
+
       img {
         transform: scale(1.3) translateY(3px);
         margin-right: 5px;
@@ -157,7 +157,8 @@ export const Borrow = styled(BorrowBase)`
 
               margin-right: 15px;
 
-              svg {
+              svg,
+              img {
                 display: block;
                 width: 60px;
                 height: 60px;

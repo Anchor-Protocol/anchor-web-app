@@ -9,8 +9,8 @@ import {
   formatUSTWithPostfixUnits,
   Ratio,
 } from '@anchor-protocol/notation';
+import { TokenIcon } from '@anchor-protocol/token-icons';
 import { useWallet } from '@anchor-protocol/wallet-provider';
-import { Error } from '@material-ui/icons';
 import big from 'big.js';
 import { useMarket } from 'pages/borrow/context/market';
 import { useCollaterals } from 'pages/borrow/logics/useCollaterals';
@@ -84,7 +84,7 @@ function CollateralListBase({ className }: CollateralListProps) {
           <tr>
             <td>
               <i>
-                <Error />
+                <TokenIcon token="bluna" variant="@2x" />
               </i>
               <div>
                 <div className="coin">bLuna</div>
