@@ -19,5 +19,5 @@ export function useInvalidDepositAmount(
       return `Not enough UST`;
     }
     return undefined;
-  }, [depositAmount, bank.status, bank.userBalances.uUSD, txFee]);
+  }, [bank.status, bank.userBalances.uUSD, depositAmount, txFee]);
 }

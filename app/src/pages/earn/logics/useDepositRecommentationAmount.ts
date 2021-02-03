@@ -24,7 +24,9 @@ export function useDepositRecommentationAmount(
     const txFee = withoutFixedGas.mul(bank.tax.taxRate);
     const result = withoutFixedGas.minus(min(txFee, bank.tax.maxTaxUUSD));
 
-    return result.lte(0) ? undefined : (result.minus(FIXED_GAS) as uUST<Big>);
+    return result.minus(FIXED_GAS).lte(0)
+      ? undefined
+      : (result.minus(FIXED_GAS) as uUST<Big>);
   }, [
     bank.status,
     bank.tax.maxTaxUUSD,

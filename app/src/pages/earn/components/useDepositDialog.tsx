@@ -75,7 +75,7 @@ function ComponentBase({
   // ---------------------------------------------
   const txFee = useDepositTxFee(depositAmount, bank);
   const sendAmount = useDepositSendAmount(depositAmount, txFee);
-  const recommendationAssetAmount = useDepositRecommentationAmount(bank);
+  const maxAmount = useDepositRecommentationAmount(bank);
 
   const invalidTxFee = useInvalidTxFee(bank);
   const invalidDepositAmount = useInvalidDepositAmount(
@@ -87,7 +87,7 @@ function ComponentBase({
     depositAmount,
     bank,
     txFee,
-    !!invalidDepositAmount,
+    !!invalidDepositAmount || !maxAmount,
   );
 
   // ---------------------------------------------
@@ -173,7 +173,7 @@ function ComponentBase({
             Max:{' '}
             <span
               style={
-                recommendationAssetAmount
+                maxAmount
                   ? {
                       textDecoration: 'underline',
                       cursor: 'pointer',
@@ -181,16 +181,11 @@ function ComponentBase({
                   : undefined
               }
               onClick={() =>
-                recommendationAssetAmount &&
-                updateDepositAmount(
-                  formatUSTInput(demicrofy(recommendationAssetAmount)),
-                )
+                maxAmount &&
+                updateDepositAmount(formatUSTInput(demicrofy(maxAmount)))
               }
             >
-              {recommendationAssetAmount
-                ? formatUST(demicrofy(recommendationAssetAmount))
-                : 0}{' '}
-              UST
+              {maxAmount ? formatUST(demicrofy(maxAmount)) : 0} UST
             </span>
           </span>
         </div>
@@ -212,7 +207,7 @@ function ComponentBase({
           </TxFeeList>
         )}
 
-        {invalidNextTransaction && recommendationAssetAmount && (
+        {invalidNextTransaction && maxAmount && (
           <WarningMessage style={{ marginTop: 30, marginBottom: 0 }}>
             {invalidNextTransaction}
           </WarningMessage>
