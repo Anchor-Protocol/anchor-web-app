@@ -1,3 +1,4 @@
+import { ErrorBoundary } from '@anchor-protocol/neumorphism-ui/components/ErrorBoundary';
 import { flat } from '@anchor-protocol/styled-neumorphism';
 import { DetailedHTMLProps, HTMLAttributes } from 'react';
 import styled from 'styled-components';
@@ -8,7 +9,9 @@ export interface SectionProps
 function SectionBase({ children, className, ...sectionProps }: SectionProps) {
   return (
     <section className={`NeuSection-root ${className}`} {...sectionProps}>
-      <div className="NeuSection-content">{children}</div>
+      <div className="NeuSection-content">
+        <ErrorBoundary>{children}</ErrorBoundary>
+      </div>
     </section>
   );
 }
@@ -18,10 +21,10 @@ function SectionBase({ children, className, ...sectionProps }: SectionProps) {
  */
 export const Section = styled(SectionBase)`
   border-radius: 20px;
-  
+
   min-width: 0;
-  
-  color: ${({theme}) => theme.textColor};
+
+  color: ${({ theme }) => theme.textColor};
 
   ${({ theme }) =>
     flat({

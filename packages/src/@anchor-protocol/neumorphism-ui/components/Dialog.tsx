@@ -1,3 +1,4 @@
+import { ErrorBoundary } from '@anchor-protocol/neumorphism-ui/components/ErrorBoundary';
 import { MessageColor } from '../themes/Theme';
 import type { DetailedHTMLProps, HTMLAttributes } from 'react';
 import { forwardRef } from 'react';
@@ -11,7 +12,7 @@ export interface DialogProps
    * @default normal
    */
   color?: MessageColor;
-  
+
   /**
    * Callback when the dialog is closed by outside click or esc key...
    */
@@ -22,7 +23,9 @@ const DialogBase = forwardRef<HTMLDivElement, DialogProps>(
   ({ onClose, color = 'normal', children, ...divProps }: DialogProps, ref) => {
     return (
       <div {...divProps} ref={ref} data-color={color}>
-        <div className="dialog-content">{children}</div>
+        <div className="dialog-content">
+          <ErrorBoundary>{children}</ErrorBoundary>
+        </div>
         {onClose && (
           <svg
             className="dialog-close-button"
@@ -138,7 +141,7 @@ export const Dialog = styled(DialogBase)`
     left: 0;
     right: 0;
     position: absolute;
-    
+
     padding-bottom: 80px;
 
     border-top-left-radius: 20px;
@@ -147,7 +150,7 @@ export const Dialog = styled(DialogBase)`
     box-shadow: 0 0 33px 8px rgba(0, 0, 0, 0.4);
 
     animation: ${slide} 0.3s ease-out;
-    
+
     .dialog-content {
       margin: 30px;
     }

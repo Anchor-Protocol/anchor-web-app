@@ -48,11 +48,7 @@ export function parseData(
     'commission_amount' | 'return_amount' | 'spread_amount'
   >;
 
-  const beliefPrice = big(
-    formatFluidDecimalPoints(big(data.return_amount).div(burnAmount), 18, {
-      delimiter: false,
-    }),
-  ) as Ratio<Big>;
+  const beliefPrice = big(data.return_amount).div(burnAmount);
   const maxSpread = 0.1;
 
   const tax = min(
@@ -70,7 +66,9 @@ export function parseData(
     ...data,
     minimumReceived,
     swapFee,
-    beliefPrice: beliefPrice.toString() as Ratio,
+    beliefPrice: formatFluidDecimalPoints(beliefPrice, 18, {
+      fallbackValue: '0',
+    }) as Ratio,
     maxSpread: maxSpread.toString() as Ratio,
   };
 }

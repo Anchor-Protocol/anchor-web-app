@@ -4,12 +4,13 @@ import { Percent, Ratio } from './unit';
 
 export interface FormatOptions {
   delimiter?: boolean;
+  fallbackValue?: string;
 }
 
 export function formatFluidDecimalPoints(
   n: BigSource,
   numDecimalPoints: number,
-  { delimiter }: FormatOptions = { delimiter: true },
+  { delimiter = true, fallbackValue = '' }: FormatOptions = {},
 ): string {
   const num = big(
     big(n)
@@ -26,7 +27,7 @@ export function formatFluidDecimalPoints(
       : `0.[${'0'.repeat(numDecimalPoints)}]`,
   );
 
-  return str === 'NaN' ? '' : str;
+  return str === 'NaN' ? fallbackValue : str;
 }
 
 export function formatPercentage(
