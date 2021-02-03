@@ -1,3 +1,4 @@
+import { TokenIcon, tokens, Tokens } from '@anchor-protocol/token-icons';
 import { screen } from 'env';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -14,7 +15,17 @@ function BAssetsBase({ className }: BAssetsProps) {
   return (
     <div className={className}>
       <main>
-        <h1>{bAssetId}</h1>
+        <h1>
+          <TokenIcon
+            token={
+              tokens.indexOf(bAssetId.toLowerCase() as Tokens) > -1
+                ? (bAssetId.toLowerCase() as Tokens)
+                : 'aust'
+            }
+            variant="@2x"
+          />{' '}
+          {bAssetId}
+        </h1>
 
         <div className="content-layout">
           <ChartSection className="chart" />
@@ -35,6 +46,11 @@ export const BAssets = styled(BAssetsBase)`
     font-size: 44px;
     font-weight: 900;
     color: #1f1f1f;
+
+    img {
+      transform: scale(1.3) translateY(3px);
+      margin-right: 3px;
+    }
   }
 
   // ---------------------------------------------

@@ -1,7 +1,7 @@
 import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
 import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/components/HorizontalScrollTable';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
-import { Error } from '@material-ui/icons';
+import { TokenIcon, tokens, Tokens } from '@anchor-protocol/token-icons';
 import { screen } from 'env';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -83,7 +83,9 @@ function MarketBase({ className }: MarketProps) {
                     <td>
                       <Link to={`/stablecoins/${stableCoinId}`}>
                         <i>
-                          <Error />
+                          <TokenIcon
+                            token={stableCoinId.toLowerCase() as Tokens}
+                          />
                         </i>
                         <div>
                           <div className="coin">{stableCoinId}</div>
@@ -135,7 +137,15 @@ function MarketBase({ className }: MarketProps) {
                     <td>
                       <Link to={`/bassets/${bAssetId}`}>
                         <i>
-                          <Error />
+                          <TokenIcon
+                            token={
+                              tokens.indexOf(bAssetId.toLowerCase() as Tokens) >
+                              -1
+                                ? (bAssetId.toLowerCase() as Tokens)
+                                : 'aust'
+                            }
+                            variant="@2x"
+                          />
                         </i>
                         <div>
                           <div className="coin">{bAssetId}</div>
@@ -294,14 +304,12 @@ export const Market = styled(MarketBase)`
 
               margin-right: 15px;
 
-              svg {
+              svg,
+              img {
                 display: block;
                 width: 60px;
                 height: 60px;
               }
-
-              will-change: transform;
-              transition: transform 0.12s ease-in-out;
             }
 
             .coin {
@@ -314,12 +322,6 @@ export const Market = styled(MarketBase)`
             .name {
               grid-column: 2;
               grid-row: 2;
-            }
-
-            &:hover {
-              i {
-                transform: scale(1.1);
-              }
             }
           }
         }
