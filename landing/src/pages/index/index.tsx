@@ -1,4 +1,5 @@
 import { landingMobileLayout } from 'env';
+import { FrictionlessAcess } from 'pages/index/components/FrictionlessAcess';
 import styled from 'styled-components';
 import { BetterSavings } from './components/BetterSavings';
 import { BetterYield } from './components/BetterYield';
@@ -15,6 +16,7 @@ function IndexBase({ className }: IndexProps) {
       <ResponsiveContainer>
         <BetterYield />
         <EasierIntegrations />
+        <FrictionlessAcess />
       </ResponsiveContainer>
     </div>
   );
@@ -22,6 +24,7 @@ function IndexBase({ className }: IndexProps) {
 
 export const ResponsiveContainer = styled.div`
   width: 100%;
+  min-width: 0;
 
   background-color: #ffffff;
   padding: 60px 40px;

@@ -8,7 +8,9 @@ export interface EasierIntegrationsProps {
 function EasierIntegrationsBase({ className }: EasierIntegrationsProps) {
   return (
     <section className={className}>
-      <figure></figure>
+      <figure>
+        <div>hello world?</div>
+      </figure>
 
       <article>
         <h2>
@@ -44,8 +46,10 @@ export const EasierIntegrations = styled(EasierIntegrationsBase)`
     min-width: 401px;
     max-width: 401px;
 
+    font-size: 17px;
+
     h2 {
-      font-size: 58px;
+      font-size: 3.5em;
       line-height: 1.1;
       letter-spacing: -1px;
       color: #171717;
@@ -54,7 +58,7 @@ export const EasierIntegrations = styled(EasierIntegrationsBase)`
     p {
       margin-top: 40px;
 
-      font-size: 17px;
+      font-size: 1em;
       line-height: 1.41;
       color: rgba(0, 0, 0, 0.7);
       letter-spacing: -0.28px;
@@ -82,22 +86,33 @@ export const EasierIntegrations = styled(EasierIntegrationsBase)`
   }
 
   figure {
-    width: 40vw;
-    height: 40vw;
-    max-width: 598px;
-    max-height: 598px;
-    border-radius: 50%;
-    box-shadow: 32px 76px 84px -42px rgba(0, 0, 0, 0.14),
-      inset -2px -2px 4px 0 rgba(0, 0, 0, 0.05), inset 2px 2px 4px 0 #ffffff;
-    background-image: linear-gradient(145deg, #fbfbfb 14%, #f3f3f3 89%);
+    width: 50vw;
+    height: 58vw;
+    max-width: 597px;
+    max-height: 728px;
+    border-radius: 43px;
+    box-shadow: inset 2px 3px 3px 0 rgba(0, 0, 0, 0.06),
+      inset -2px -3px 3px 0 #ffffff;
+    background-color: #f8f8f8;
+    padding: 28px;
+
+    > div {
+      width: 100%;
+      height: 100%;
+      border-radius: 30px;
+      box-shadow: inset 0 0 16px 0 rgba(0, 0, 0, 0.09);
+      background-image: linear-gradient(219deg, #585858 0%, #252525 100%);
+    }
   }
 
-  @media (max-width: 1000px) {
-    flex-direction: column-reverse;
+  @media (max-width: 1100px) {
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 
     padding: 100px 58px;
+
+    background-image: linear-gradient(219deg, #585858 0%, #252525 100%);
 
     article {
       margin-top: 64px;
@@ -105,7 +120,12 @@ export const EasierIntegrations = styled(EasierIntegrationsBase)`
       min-width: 0;
       max-width: 100%;
 
+      h2 {
+        color: #ffffff;
+      }
+
       p {
+        color: rgba(255, 255, 255, 0.7);
         max-width: 401px;
       }
     }
@@ -115,7 +135,21 @@ export const EasierIntegrations = styled(EasierIntegrationsBase)`
       height: 70vw;
       max-width: 400px;
       max-height: 400px;
-      border-radius: 50%;
+
+      box-shadow: none;
+      background-color: transparent;
+      padding: 0;
+
+      > div {
+        box-shadow: none;
+        background-image: none;
+      }
+    }
+  }
+
+  @media (max-width: 600px) {
+    article {
+      font-size: 14px;
     }
   }
 `;
