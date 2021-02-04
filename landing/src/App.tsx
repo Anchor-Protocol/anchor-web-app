@@ -2,7 +2,6 @@ import { GlobalStyle } from '@anchor-protocol/neumorphism-ui/themes/GlobalStyle'
 import { lightTheme } from '@anchor-protocol/neumorphism-ui/themes/lightTheme';
 import { ThemeProvider } from '@anchor-protocol/neumorphism-ui/themes/ThemeProvider';
 import { RouterScrollRestoration } from '@anchor-protocol/use-router-scroll-restoration';
-import { Footer } from 'components/Footer';
 import { Header } from 'components/Header';
 import { BAssets } from 'pages/bassets';
 import { Contact } from 'pages/contact';
@@ -40,7 +39,7 @@ function AppBase({ className }: AppProps) {
             <Route path="/contact" component={Contact} />
             <Redirect to="/" />
           </Switch>
-          <Footer />
+          {/*<Footer />*/}
         </div>
         {/* End Layout */}
       </ThemeProvider>

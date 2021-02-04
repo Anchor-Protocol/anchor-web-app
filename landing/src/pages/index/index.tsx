@@ -1,5 +1,6 @@
 import { landingMobileLayout } from 'env';
 import { FrictionlessAcess } from 'pages/index/components/FrictionlessAcess';
+import { Subscribe } from 'pages/index/components/Subscribe';
 import styled from 'styled-components';
 import { BetterSavings } from './components/BetterSavings';
 import { BetterYield } from './components/BetterYield';
@@ -17,6 +18,7 @@ function IndexBase({ className }: IndexProps) {
         <BetterYield />
         <EasierIntegrations />
         <FrictionlessAcess />
+        <Subscribe />
       </ResponsiveContainer>
     </div>
   );
