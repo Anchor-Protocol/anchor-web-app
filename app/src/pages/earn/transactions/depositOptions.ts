@@ -1,4 +1,5 @@
 import { fabricateDepositStableCoin } from '@anchor-protocol/anchor-js/fabricators';
+import { floor } from '@anchor-protocol/big-math';
 import {
   createOperationOptions,
   effect,
@@ -6,9 +7,12 @@ import {
   OperationDependency,
   timeout,
 } from '@anchor-protocol/broadcastable-operation';
+import { StdFee } from '@terra-money/terra.js';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
+import { GAS_FEE } from 'env';
 import { pickDepositResult } from 'pages/earn/transactions/pickDepositResult';
 import { createContractMsg } from 'transactions/createContractMsg';
+import { createOptions } from 'transactions/createOptions';
 import { getTxInfo } from 'transactions/getTxInfo';
 import { postContractMsg } from 'transactions/postContractMsg';
 import { injectTxFee, takeTxFee } from 'transactions/takeTxFee';
@@ -25,6 +29,9 @@ export const depositOptions = createOperationOptions({
   }: OperationDependency<{}>) => [
     effect(fabricateDepositStableCoin, takeTxFee(storage)), // Option -> ((AddressProvider) -> MsgExecuteContract[])
     createContractMsg(addressProvider), // -> MsgExecuteContract[]
+    createOptions(() => ({
+      fee: new StdFee(GAS_FEE, floor(storage.get('txFee')) + 'uusd'),
+    })), // -> CreateTxOptions
     timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<StringifiedTxResult>
     parseTxResult, // -> TxResult
     merge(getTxInfo(client, signal), injectTxFee(storage)), // -> { TxResult, TxInfo, txFee }

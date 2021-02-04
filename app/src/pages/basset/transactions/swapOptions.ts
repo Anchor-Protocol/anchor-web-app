@@ -7,6 +7,7 @@ import {
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { pickSwapResult } from 'pages/basset/transactions/pickSwapResult';
 import { createContractMsg } from 'transactions/createContractMsg';
+import { createOptions } from 'transactions/createOptions';
 import { getTxInfo } from 'transactions/getTxInfo';
 import { postContractMsg } from 'transactions/postContractMsg';
 import { parseTxResult } from 'transactions/tx';
@@ -22,6 +23,7 @@ export const swapOptions = createOperationOptions({
   }: OperationDependency<{}>) => [
     fabricatebSwapbLuna, // Option -> ((AddressProvider) -> MsgExecuteContract[])
     createContractMsg(addressProvider), // -> MsgExecuteContract[]
+    createOptions(), // -> CreateTxOptions
     timeout(postContractMsg(post), 1000 * 60 * 20), // -> Promise<StringifiedTxResult>
     parseTxResult, // -> TxResult
     getTxInfo(client, signal), // -> { TxResult, TxInfo }

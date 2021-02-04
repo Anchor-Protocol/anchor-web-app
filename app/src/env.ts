@@ -20,10 +20,12 @@ export const SAFE_RATIO: Ratio<number> = 0.7 as Ratio<number>;
 export const FIXED_GAS: uUST<number> = 3500000 as uUST<number>;
 //export const FIXED_GAS: uUST<number> = 35000 as uUST<number>; // when need to occur transaction failed
 
+export const GAS_FEE = 6000000 as uUST<number>;
+
 export const TRANSACTION_FEE = {
   //gasPrices: '0.0015uusd',
   //fee: new StdFee(503333, '5000000000000uusd'),
-  fee: new StdFee(6000000, FIXED_GAS + 'uusd'),
+  fee: new StdFee(GAS_FEE, FIXED_GAS + 'uusd'),
   gasAdjustment: 1.4,
 };
 

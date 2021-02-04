@@ -9,6 +9,7 @@ import {
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { pickWithdrawResult } from 'pages/basset/transactions/pickWithdrawResult';
 import { createContractMsg } from 'transactions/createContractMsg';
+import { createOptions } from 'transactions/createOptions';
 import { getTxInfo } from 'transactions/getTxInfo';
 import { postContractMsg } from 'transactions/postContractMsg';
 import { injectTxFee, takeTxFee } from 'transactions/takeTxFee';
@@ -25,6 +26,7 @@ export const withdrawOptions = createOperationOptions({
   }: OperationDependency<{}>) => [
     effect(fabricatebAssetWithdrawUnbonded, takeTxFee(storage)), // Option -> ((AddressProvider) -> MsgExecuteContract[])
     createContractMsg(addressProvider), // -> MsgExecuteContract[]
+    createOptions(), // -> CreateTxOptions
     timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<StringifiedTxResult>
     parseTxResult, // -> TxResult
     merge(getTxInfo(client, signal), injectTxFee(storage)), // -> { TxResult, TxInfo, txFee }

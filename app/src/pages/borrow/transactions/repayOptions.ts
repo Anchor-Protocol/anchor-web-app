@@ -11,6 +11,7 @@ import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { pickRepayResult } from 'pages/borrow/transactions/pickRepayResult';
 import { refetchMarket } from 'pages/borrow/transactions/refetchMarket';
 import { createContractMsg } from 'transactions/createContractMsg';
+import { createOptions } from 'transactions/createOptions';
 import { getTxInfo } from 'transactions/getTxInfo';
 import { postContractMsg } from 'transactions/postContractMsg';
 import { injectTxFee, takeTxFee } from 'transactions/takeTxFee';
@@ -32,6 +33,7 @@ export const repayOptions = createOperationOptions({
   }: OperationDependency<DependencyList>) => [
     effect(fabricateRepay, takeTxFee(storage)), // Option -> ((AddressProvider) -> MsgExecuteContract[])
     createContractMsg(addressProvider), // -> MsgExecuteContract[]
+    createOptions(), // -> CreateTxOptions
     timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<StringifiedTxResult>
     parseTxResult, // -> TxResult
     getTxInfo(client, signal), // -> { TxResult, TxInfo }
