@@ -1,5 +1,4 @@
 import { fabricateRedeemStable } from '@anchor-protocol/anchor-js/fabricators';
-import { floor } from '@anchor-protocol/big-math';
 import {
   createOperationOptions,
   effect,
@@ -27,11 +26,12 @@ export const withdrawOptions = createOperationOptions({
     signal,
     gasAdjustment,
     gasFee,
+    fixedGas,
   }: OperationDependency<{}>) => [
     effect(fabricateRedeemStable, takeTxFee(storage)), // Option -> ((AddressProvider) -> MsgExecuteContract[])
     createContractMsg(addressProvider), // -> MsgExecuteContract[]
     createOptions(() => ({
-      fee: new StdFee(gasFee, floor(storage.get('txFee')) + 'uusd'),
+      fee: new StdFee(gasFee, fixedGas + 'uusd'),
       gasAdjustment,
     })), // -> CreateTxOptions
     timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<StringifiedTxResult>
