@@ -1,13 +1,13 @@
 import { microfy, UST, uUST } from '@anchor-protocol/notation';
-import big, { Big } from 'big.js';
+import big, { Big, BigSource } from 'big.js';
 import { Bank } from 'contexts/bank';
-import { FIXED_GAS } from 'env';
 import { ReactNode, useMemo } from 'react';
 
 export function useInvalidDepositNextTransaction(
   depositAmount: UST,
   bank: Bank,
   txFee: uUST<Big> | undefined,
+  fixedGas: uUST<BigSource>,
   skip: boolean,
 ): ReactNode {
   return useMemo(() => {
@@ -19,10 +19,17 @@ export function useInvalidDepositNextTransaction(
       .minus(microfy(depositAmount))
       .minus(txFee ?? 0);
 
-    if (remainUUSD.lt(FIXED_GAS)) {
+    if (remainUUSD.lt(fixedGas)) {
       return `You may run out of USD balance needed for future transactions.`;
     }
 
     return undefined;
-  }, [bank.status, bank.userBalances.uUSD, depositAmount, skip, txFee]);
+  }, [
+    bank.status,
+    bank.userBalances.uUSD,
+    depositAmount,
+    fixedGas,
+    skip,
+    txFee,
+  ]);
 }

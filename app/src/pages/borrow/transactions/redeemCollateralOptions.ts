@@ -1,4 +1,5 @@
 import { fabricateRedeemCollateral } from '@anchor-protocol/anchor-js/fabricators';
+import { floor } from '@anchor-protocol/big-math';
 import {
   createOperationOptions,
   effect,
@@ -7,6 +8,7 @@ import {
   timeout,
 } from '@anchor-protocol/broadcastable-operation';
 import { WalletStatus } from '@anchor-protocol/wallet-provider';
+import { StdFee } from '@terra-money/terra.js';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { pickRedeemCollateralResult } from 'pages/borrow/transactions/pickRedeemCollateralResult';
 import { refetchMarket } from 'pages/borrow/transactions/refetchMarket';
@@ -30,10 +32,15 @@ export const redeemCollateralOptions = createOperationOptions({
     walletStatus,
     storage,
     signal,
+    gasAdjustment,
+    gasFee,
   }: OperationDependency<DependencyList>) => [
     effect(fabricateRedeemCollateral, takeTxFee(storage)), // Option -> ((AddressProvider) -> MsgExecuteContract[])
     createContractMsg(addressProvider), // -> MsgExecuteContract[]
-    createOptions(), // -> CreateTxOptions
+    createOptions(() => ({
+      fee: new StdFee(gasFee, floor(storage.get('txFee')) + 'uusd'),
+      gasAdjustment,
+    })), // -> CreateTxOptions
     timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<StringifiedTxResult>
     parseTxResult, // -> TxResult
     getTxInfo(client, signal), // -> { TxResult, TxInfo }

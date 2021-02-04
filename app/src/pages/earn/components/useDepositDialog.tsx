@@ -23,6 +23,7 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
+import { useNetConstants } from 'contexts/net-contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import type { ReactNode } from 'react';
 import React, { useCallback, useState } from 'react';
@@ -56,6 +57,8 @@ function ComponentBase({
   // ---------------------------------------------
   const { status } = useWallet();
 
+  const { fixedGas } = useNetConstants();
+
   const [deposit, depositResult] = useOperation(depositOptions, {});
 
   const [openConfirm, confirmElement] = useConfirm();
@@ -73,11 +76,11 @@ function ComponentBase({
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const txFee = useDepositTxFee(depositAmount, bank);
+  const txFee = useDepositTxFee(depositAmount, bank, fixedGas);
   const sendAmount = useDepositSendAmount(depositAmount, txFee);
-  const maxAmount = useDepositRecommentationAmount(bank);
+  const maxAmount = useDepositRecommentationAmount(bank, fixedGas);
 
-  const invalidTxFee = useInvalidTxFee(bank);
+  const invalidTxFee = useInvalidTxFee(bank, fixedGas);
   const invalidDepositAmount = useInvalidDepositAmount(
     depositAmount,
     bank,
@@ -87,6 +90,7 @@ function ComponentBase({
     depositAmount,
     bank,
     txFee,
+    fixedGas,
     !!invalidDepositAmount || !maxAmount,
   );
 

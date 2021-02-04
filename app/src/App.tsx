@@ -2,6 +2,7 @@ import { AddressProviderFromJson } from '@anchor-protocol/anchor-js/address-prov
 import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider/provider';
 import { OperationBroadcaster } from '@anchor-protocol/broadcastable-operation';
 import { GlobalStyle } from '@anchor-protocol/neumorphism-ui/themes/GlobalStyle';
+import { Ratio, uUST } from '@anchor-protocol/notation';
 import { SnackbarProvider } from '@anchor-protocol/snackbar';
 import { RouterScrollRestoration } from '@anchor-protocol/use-router-scroll-restoration';
 import {
@@ -15,6 +16,7 @@ import { BroadcastingContainer } from 'components/BroadcastingContainer';
 import { Header } from 'components/Header';
 import { BankProvider } from 'contexts/bank';
 import { ContractProvider } from 'contexts/contract';
+import { NetConstants, NetConstantsProvider } from 'contexts/net-contants';
 import { ThemeProvider } from 'contexts/theme';
 import { contractAddresses, defaultNetwork } from 'env';
 import { BAsset } from 'pages/basset';
@@ -49,28 +51,46 @@ function WalletConnectedProviders({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const netConstants = useMemo<NetConstants>(
+    () => ({
+      gasFee: 6000000 as uUST<number>,
+      fixedGas: 3500000 as uUST<number>,
+      blocksPerYear: 5256666,
+      gasAdjustment: 1.4 as Ratio<number>,
+    }),
+    [],
+  );
+
   return (
-    /**
-     * Smart Contract Address
-     * useAddressProvider()
-     */
-    <ContractProvider addressProvider={addressProvider}>
+    <NetConstantsProvider {...netConstants}>
       {/**
-       * Set GraphQL environenments
-       * useQuery(), useApolloClient()...
+       * Smart Contract Address * useAddressProvider()
        */}
-      <ApolloProvider client={client}>
+      <ContractProvider addressProvider={addressProvider}>
         {/**
-         * Broadcastable Query Provider
-         * useBroadCastableQuery(), useQueryBroadCaster()
-         *
-         * @see ../../packages/src/@anchor-protocol/use-broadcastable-query
+         * Set GraphQL environenments
+         * useQuery(), useApolloClient()...
          */}
-        <OperationBroadcaster dependency={{ addressProvider, client, post }}>
-          {children}
-        </OperationBroadcaster>
-      </ApolloProvider>
-    </ContractProvider>
+        <ApolloProvider client={client}>
+          {/**
+           * Broadcastable Query Provider
+           * useBroadCastableQuery(), useQueryBroadCaster()
+           *
+           * @see ../../packages/src/@anchor-protocol/use-broadcastable-query
+           */}
+          <OperationBroadcaster
+            dependency={{
+              addressProvider,
+              client,
+              post,
+              ...netConstants,
+            }}
+          >
+            {children}
+          </OperationBroadcaster>
+        </ApolloProvider>
+      </ContractProvider>
+    </NetConstantsProvider>
   );
 }
 

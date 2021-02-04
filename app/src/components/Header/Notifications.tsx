@@ -4,7 +4,7 @@ import { Badge, ClickAwayListener, IconButton } from '@material-ui/core';
 import { NotificationsNone } from '@material-ui/icons';
 import big from 'big.js';
 import { useBank } from 'contexts/bank';
-import { FIXED_GAS } from 'env';
+import { useNetConstants } from 'contexts/net-contants';
 import { Children, ReactNode, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
@@ -18,6 +18,7 @@ function NotificationsBase({ className }: NotificationsProps) {
   // ---------------------------------------------
   const { status } = useWallet();
   const bank = useBank();
+  const { fixedGas } = useNetConstants();
 
   // ---------------------------------------------
   // states
@@ -34,13 +35,13 @@ function NotificationsBase({ className }: NotificationsProps) {
 
     const notifications: ReactNode[] = [];
 
-    if (big(bank.userBalances.uUSD).lt(FIXED_GAS)) {
+    if (big(bank.userBalances.uUSD).lt(fixedGas)) {
       notifications.push(
         <li>
           <p>Not enough uusd balance than fixed gas.</p>
           <p>
             your usd balance = {formatUST(demicrofy(bank.userBalances.uUSD))} /
-            fixed gas = {formatUST(demicrofy(FIXED_GAS))}
+            fixed gas = {formatUST(demicrofy(fixedGas))}
           </p>
         </li>,
       );

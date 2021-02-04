@@ -6,10 +6,10 @@ import {
   Ratio,
   ubLuna,
   uLuna,
+  uUST,
 } from '@anchor-protocol/notation';
 import big, { Big, BigSource } from 'big.js';
 import { TxHashLink } from 'components/TxHashLink';
-import { FIXED_GAS } from 'env';
 import { TxInfoParseError } from 'errors/TxInfoParseError';
 import { TransactionResult } from 'models/transaction';
 import {
@@ -24,11 +24,13 @@ import { TxResult } from 'transactions/tx';
 interface Params {
   txResult: TxResult;
   txInfo: Data;
+  fixedGas: uUST<BigSource>;
 }
 
 export function pickSwapResult({
   txInfo,
   txResult,
+  fixedGas,
 }: Params): TransactionResult {
   const rawLog = pickRawLog(txInfo, 0);
 
@@ -107,7 +109,7 @@ export function pickSwapResult({
         },
       {
         name: 'Tx Fee',
-        value: formatUSTWithPostfixUnits(demicrofy(FIXED_GAS)) + ' UST',
+        value: formatUSTWithPostfixUnits(demicrofy(fixedGas)) + ' UST',
       },
     ],
   };

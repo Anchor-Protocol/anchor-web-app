@@ -1,12 +1,12 @@
 import { microfy, UST, uUST } from '@anchor-protocol/notation';
-import big, { Big } from 'big.js';
+import big, { Big, BigSource } from 'big.js';
 import { Bank } from 'contexts/bank';
-import { FIXED_GAS } from 'env';
 import { useMemo } from 'react';
 
 export function useWithdrawTxFee(
   withdrawAmount: UST,
   bank: Bank,
+  fixedGas: uUST<BigSource>,
 ): uUST<Big> | undefined {
   return useMemo(() => {
     if (withdrawAmount.length === 0) return undefined;
@@ -20,9 +20,9 @@ export function useWithdrawTxFee(
     const maxTax = big(bank.tax.maxTaxUUSD);
 
     if (ratioTxFee.gt(maxTax)) {
-      return maxTax.add(FIXED_GAS) as uUST<Big>;
+      return maxTax.add(fixedGas) as uUST<Big>;
     } else {
-      return ratioTxFee.add(FIXED_GAS) as uUST<Big>;
+      return ratioTxFee.add(fixedGas) as uUST<Big>;
     }
-  }, [withdrawAmount, bank.tax.maxTaxUUSD, bank.tax.taxRate]);
+  }, [withdrawAmount, bank.tax.taxRate, bank.tax.maxTaxUUSD, fixedGas]);
 }

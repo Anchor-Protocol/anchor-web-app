@@ -1,9 +1,11 @@
 import { fabricatebAssetClaim } from '@anchor-protocol/anchor-js/fabricators';
 import {
   createOperationOptions,
+  merge,
   OperationDependency,
   timeout,
 } from '@anchor-protocol/broadcastable-operation';
+import { StdFee } from '@terra-money/terra.js';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { pickClaimResult } from 'pages/basset/transactions/pickClaimResult';
 import { createContractMsg } from 'transactions/createContractMsg';
@@ -19,13 +21,19 @@ export const claimOptions = createOperationOptions({
     post,
     client,
     signal,
+    fixedGas,
+    gasFee,
+    gasAdjustment,
   }: OperationDependency<{}>) => [
     fabricatebAssetClaim, // Option -> ((AddressProvider) -> MsgExecuteContract[])
     createContractMsg(addressProvider), // -> MsgExecuteContract[]
-    createOptions(), // -> CreateTxOptions
+    createOptions(() => ({
+      fee: new StdFee(gasFee, fixedGas + 'uusd'),
+      gasAdjustment,
+    })), // -> CreateTxOptions
     timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<StringifiedTxResult>
     parseTxResult, // -> TxResult
-    getTxInfo(client, signal), // -> { TxResult, TxInfo }
+    merge(getTxInfo(client, signal), () => ({ fixedGas })), // -> { TxResult, TxInfo, fixedGas }
     pickClaimResult, // -> TransactionResult
   ],
   renderBroadcast: renderBroadcastTransaction,

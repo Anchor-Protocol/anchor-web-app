@@ -9,7 +9,6 @@ import {
 } from '@anchor-protocol/broadcastable-operation';
 import { StdFee } from '@terra-money/terra.js';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
-import { GAS_FEE } from 'env';
 import { pickDepositResult } from 'pages/earn/transactions/pickDepositResult';
 import { createContractMsg } from 'transactions/createContractMsg';
 import { createOptions } from 'transactions/createOptions';
@@ -26,11 +25,14 @@ export const depositOptions = createOperationOptions({
     client,
     storage,
     signal,
+    gasFee,
+    gasAdjustment,
   }: OperationDependency<{}>) => [
     effect(fabricateDepositStableCoin, takeTxFee(storage)), // Option -> ((AddressProvider) -> MsgExecuteContract[])
     createContractMsg(addressProvider), // -> MsgExecuteContract[]
     createOptions(() => ({
-      fee: new StdFee(GAS_FEE, floor(storage.get('txFee')) + 'uusd'),
+      fee: new StdFee(gasFee, floor(storage.get('txFee')) + 'uusd'),
+      gasAdjustment,
     })), // -> CreateTxOptions
     timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<StringifiedTxResult>
     parseTxResult, // -> TxResult

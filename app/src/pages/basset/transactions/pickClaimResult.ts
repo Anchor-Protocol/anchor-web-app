@@ -4,9 +4,8 @@ import {
   stripUUSD,
   uUST,
 } from '@anchor-protocol/notation';
-import big, { Big } from 'big.js';
+import big, { Big, BigSource } from 'big.js';
 import { TxHashLink } from 'components/TxHashLink';
-import { FIXED_GAS } from 'env';
 import { TxInfoParseError } from 'errors/TxInfoParseError';
 import { TransactionResult } from 'models/transaction';
 import {
@@ -21,11 +20,13 @@ import { TxResult } from 'transactions/tx';
 interface Params {
   txResult: TxResult;
   txInfo: Data;
+  fixedGas: uUST<BigSource>;
 }
 
 export function pickClaimResult({
   txInfo,
   txResult,
+  fixedGas,
 }: Params): TransactionResult {
   const rawLog = pickRawLog(txInfo, 0);
 
@@ -72,7 +73,7 @@ export function pickClaimResult({
         value:
           formatUSTWithPostfixUnits(
             demicrofy(
-              big(txFee ? stripUUSD(txFee) : '0').plus(FIXED_GAS) as uUST<Big>,
+              big(txFee ? stripUUSD(txFee) : '0').plus(fixedGas) as uUST<Big>,
             ),
           ) + ' UST',
       },

@@ -22,6 +22,7 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
+import { useNetConstants } from 'contexts/net-contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import type { ReactNode } from 'react';
 import React, { useCallback, useState } from 'react';
@@ -56,6 +57,8 @@ function ComponentBase({
   // ---------------------------------------------
   const { status } = useWallet();
 
+  const { fixedGas } = useNetConstants();
+
   const [withdraw, withdrawResult] = useOperation(withdrawOptions, {});
 
   // ---------------------------------------------
@@ -71,10 +74,10 @@ function ComponentBase({
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const txFee = useWithdrawTxFee(withdrawAmount, bank);
+  const txFee = useWithdrawTxFee(withdrawAmount, bank, fixedGas);
   const receiveAmount = useWithdrawReceiveAmount(withdrawAmount, txFee);
 
-  const invalidTxFee = useInvalidTxFee(bank);
+  const invalidTxFee = useInvalidTxFee(bank, fixedGas);
   const invalidWithdrawAmount = useInvalidWithdrawAmount(
     withdrawAmount,
     bank,

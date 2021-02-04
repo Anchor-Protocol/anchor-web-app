@@ -24,7 +24,7 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
-import { FIXED_GAS } from 'env';
+import { useNetConstants } from 'contexts/net-contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { useInvalidBurnAmount } from 'pages/basset/logics/useInvalidBurnAmount';
 import { useTerraswapBLunaPrice } from 'pages/basset/queries/terraswapBLunaPrice';
@@ -45,6 +45,8 @@ export function Swap() {
   // dependencies
   // ---------------------------------------------
   const { status } = useWallet();
+
+  const { fixedGas } = useNetConstants();
 
   const [swap, swapResult] = useOperation(swapOptions, {});
 
@@ -83,7 +85,7 @@ export function Swap() {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const invalidTxFee = useInvalidTxFee(bank);
+  const invalidTxFee = useInvalidTxFee(bank, fixedGas);
   const invalidBurnAmount = useInvalidBurnAmount(burnAmount, bank);
 
   // ---------------------------------------------
@@ -299,7 +301,7 @@ export function Swap() {
             {formatLuna(demicrofy(offerSimulation.swapFee))} Luna
           </TxFeeListItem>
           <TxFeeListItem label="Tx Fee">
-            {formatUST(demicrofy(FIXED_GAS))} UST
+            {formatUST(demicrofy(fixedGas))} UST
           </TxFeeListItem>
         </TxFeeList>
       )}

@@ -24,6 +24,7 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
+import { useNetConstants } from 'contexts/net-contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
 import { useMarketNotNullable } from 'pages/borrow/context/market';
@@ -69,6 +70,8 @@ function ComponentBase({
   } = useMarketNotNullable();
 
   const { status } = useWallet();
+
+  const { fixedGas, blocksPerYear } = useNetConstants();
 
   const [repay, repayResult] = useOperation(repayOptions, {
     walletStatus: status,
@@ -129,7 +132,7 @@ function ComponentBase({
     marketOverview.oraclePrice.rate,
   );
   const nextLtv = useRepayNextLtv(repayAmount, currentLtv, amountToLtv);
-  const apr = useAPR(marketOverview.borrowRate.rate);
+  const apr = useAPR(marketOverview.borrowRate.rate, blocksPerYear);
   const totalBorrows = useRepayTotalBorrows(
     marketUserOverview.loanAmount.loan_amount,
     marketOverview.borrowRate.rate,
@@ -138,14 +141,14 @@ function ComponentBase({
     marketBalance.marketState.global_interest_index,
     marketUserOverview.liability.interest_index,
   );
-  const txFee = useRepayTxFee(repayAmount, bank);
+  const txFee = useRepayTxFee(repayAmount, bank, fixedGas);
   const totalOutstandingLoan = useRepayTotalOutstandingLoan(
     repayAmount,
     marketUserOverview.loanAmount.loan_amount,
   );
   const sendAmount = useRepaySendAmount(repayAmount, txFee);
 
-  const invalidTxFee = useInvalidTxFee(bank);
+  const invalidTxFee = useInvalidTxFee(bank, fixedGas);
   const invalidAssetAmount = useInvalidRepayAmount(repayAmount, bank);
 
   // ---------------------------------------------

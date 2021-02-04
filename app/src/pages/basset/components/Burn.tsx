@@ -26,7 +26,7 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
-import { FIXED_GAS } from 'env';
+import { useNetConstants } from 'contexts/net-contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { useInvalidBurnAmount } from 'pages/basset/logics/useInvalidBurnAmount';
 import { useExchangeRate } from 'pages/basset/queries/exchangeRate';
@@ -46,6 +46,8 @@ export function Burn() {
   // dependencies
   // ---------------------------------------------
   const { status } = useWallet();
+
+  const { fixedGas } = useNetConstants();
 
   const [burn, burnResult] = useOperation(burnOptions, {});
 
@@ -79,7 +81,7 @@ export function Burn() {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const invalidTxFee = useInvalidTxFee(bank);
+  const invalidTxFee = useInvalidTxFee(bank, fixedGas);
   const invalidBurnAmount = useInvalidBurnAmount(burnAmount, bank);
 
   // ---------------------------------------------
@@ -150,14 +152,14 @@ export function Burn() {
         address: status.walletAddress,
         amount: burnAmount,
         bAsset: burnCurrency.value,
-        txFee: FIXED_GAS.toString() as uUST,
+        txFee: fixedGas.toString() as uUST,
       });
 
       if (!broadcasted) {
         init();
       }
     },
-    [bank.status, burn, burnCurrency.value, init],
+    [bank.status, burn, burnCurrency.value, fixedGas, init],
   );
 
   // ---------------------------------------------
@@ -278,7 +280,7 @@ export function Burn() {
               </IconSpan>
             }
           >
-            {formatUST(demicrofy(FIXED_GAS))} UST
+            {formatUST(demicrofy(fixedGas))} UST
           </TxFeeListItem>
         </TxFeeList>
       )}

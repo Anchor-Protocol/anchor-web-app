@@ -9,7 +9,7 @@ import { useWallet } from '@anchor-protocol/wallet-provider';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
-import { FIXED_GAS } from 'env';
+import { useNetConstants } from 'contexts/net-contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { useWithdrawableAmount } from 'pages/basset/logics/useWithdrawableAmount';
 import { useWithdrawAllHistory } from 'pages/basset/logics/useWithdrawAllHistory';
@@ -39,6 +39,8 @@ export function WithdrawSection({
   // ---------------------------------------------
   const { status } = useWallet();
 
+  const { fixedGas } = useNetConstants();
+
   const [withdraw, withdrawResult] = useOperation(withdrawOptions, {});
 
   // ---------------------------------------------
@@ -64,7 +66,7 @@ export function WithdrawSection({
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const invalidTxFee = useInvalidTxFee(bank);
+  const invalidTxFee = useInvalidTxFee(bank, fixedGas);
 
   const withdrawHistory = useWithdrawAllHistory(
     withdrawable?.withdrawRequestsStartFrom,
@@ -98,9 +100,9 @@ export function WithdrawSection({
     await withdraw({
       address: status.walletAddress,
       bAsset: 'bluna',
-      txFee: FIXED_GAS.toString() as uUST,
+      txFee: fixedGas.toString() as uUST,
     });
-  }, [bank.status, status, withdraw]);
+  }, [bank.status, fixedGas, status, withdraw]);
 
   // ---------------------------------------------
   // effects

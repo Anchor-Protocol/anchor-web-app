@@ -9,6 +9,7 @@ import big from 'big.js';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
+import { useNetConstants } from 'contexts/net-contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { useClaimableRewards } from 'pages/basset/logics/useClaimableRewards';
 import { useClaimable } from 'pages/basset/queries/claimable';
@@ -25,6 +26,8 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
   // dependencies
   // ---------------------------------------------
   const { status } = useWallet();
+
+  const { fixedGas } = useNetConstants();
 
   const [claim, claimResult] = useOperation(claimOptions, {});
 
@@ -45,7 +48,7 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
     claimable?.claimableReward.pending_rewards,
   );
 
-  const invalidTxFee = useInvalidTxFee(bank);
+  const invalidTxFee = useInvalidTxFee(bank, fixedGas);
 
   // ---------------------------------------------
   // callbacks

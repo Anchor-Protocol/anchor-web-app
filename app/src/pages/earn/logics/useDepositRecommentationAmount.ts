@@ -1,12 +1,12 @@
 import { min } from '@anchor-protocol/big-math';
 import { uUST } from '@anchor-protocol/notation';
-import big, { Big } from 'big.js';
+import big, { Big, BigSource } from 'big.js';
 import { Bank } from 'contexts/bank';
-import { FIXED_GAS } from 'env';
 import { useMemo } from 'react';
 
 export function useDepositRecommentationAmount(
   bank: Bank,
+  fixedGas: uUST<BigSource>,
 ): uUST<Big> | undefined {
   return useMemo(() => {
     if (bank.status === 'demo' || big(bank.userBalances.uUSD).lte(0)) {
@@ -20,17 +20,18 @@ export function useDepositRecommentationAmount(
     //                   else without_fixed_gas - max_tax
 
     const userUUSD = big(bank.userBalances.uUSD);
-    const withoutFixedGas = userUUSD.minus(FIXED_GAS);
+    const withoutFixedGas = userUUSD.minus(fixedGas);
     const txFee = withoutFixedGas.mul(bank.tax.taxRate);
     const result = withoutFixedGas.minus(min(txFee, bank.tax.maxTaxUUSD));
 
-    return result.minus(FIXED_GAS).lte(0)
+    return result.minus(fixedGas).lte(0)
       ? undefined
-      : (result.minus(FIXED_GAS) as uUST<Big>);
+      : (result.minus(fixedGas) as uUST<Big>);
   }, [
     bank.status,
     bank.tax.maxTaxUUSD,
     bank.tax.taxRate,
     bank.userBalances.uUSD,
+    fixedGas,
   ]);
 }

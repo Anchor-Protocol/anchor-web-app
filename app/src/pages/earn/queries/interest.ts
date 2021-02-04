@@ -2,7 +2,7 @@ import { Num, Ratio } from '@anchor-protocol/notation';
 import { gql, QueryResult, useQuery } from '@apollo/client';
 import big from 'big.js';
 import { useAddressProvider } from 'contexts/contract';
-import { BLOCKS_PER_YEAR } from 'env';
+import { useNetConstants } from 'contexts/net-contants';
 import { useMemo } from 'react';
 
 export interface StringifiedData {
@@ -21,7 +21,10 @@ export interface Data {
   currentAPY: Ratio<string>;
 }
 
-export function parseData({ marketStatus }: StringifiedData): Data {
+export function parseData(
+  { marketStatus }: StringifiedData,
+  blocksPerYear: number,
+): Data {
   const parsedMarketStatus: Data['marketStatus'] = JSON.parse(
     marketStatus.Result,
   );
@@ -29,7 +32,7 @@ export function parseData({ marketStatus }: StringifiedData): Data {
   return {
     marketStatus: parsedMarketStatus,
     currentAPY: big(parsedMarketStatus.deposit_rate)
-      .mul(BLOCKS_PER_YEAR)
+      .mul(blocksPerYear)
       .toString() as Ratio,
   };
 }
@@ -73,6 +76,8 @@ export function useInterest(): QueryResult<
 > & { parsedData: Data | undefined } {
   const addressProvider = useAddressProvider();
 
+  const { blocksPerYear } = useNetConstants();
+
   const result = useQuery<StringifiedData, StringifiedVariables>(query, {
     fetchPolicy: 'cache-and-network',
     pollInterval: 1000 * 60,
@@ -85,8 +90,8 @@ export function useInterest(): QueryResult<
   });
 
   const parsedData = useMemo(
-    () => (result.data ? parseData(result.data) : undefined),
-    [result.data],
+    () => (result.data ? parseData(result.data, blocksPerYear) : undefined),
+    [blocksPerYear, result.data],
   );
 
   return {

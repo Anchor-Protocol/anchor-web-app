@@ -26,7 +26,7 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
-import { FIXED_GAS } from 'env';
+import { useNetConstants } from 'contexts/net-contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
 import { useMarketNotNullable } from 'pages/borrow/context/market';
@@ -56,8 +56,6 @@ export function useRedeemCollateralDialog(): [
   return useDialog(Component);
 }
 
-const txFee = FIXED_GAS;
-
 function ComponentBase({
   className,
   closeDialog,
@@ -68,6 +66,10 @@ function ComponentBase({
   const { marketUserOverview, marketOverview } = useMarketNotNullable();
 
   const { status } = useWallet();
+
+  const { fixedGas } = useNetConstants();
+
+  const txFee = fixedGas;
 
   const [redeemCollateral, redeemCollateralResult] = useOperation(
     redeemCollateralOptions,
@@ -156,7 +158,7 @@ function ComponentBase({
     marketOverview.bLunaMaxLtv,
   );
 
-  const invalidTxFee = useInvalidTxFee(bank);
+  const invalidTxFee = useInvalidTxFee(bank, fixedGas);
   const invalidRedeemAmount = useInvalidRedeemAmount(
     redeemAmount,
     bank,

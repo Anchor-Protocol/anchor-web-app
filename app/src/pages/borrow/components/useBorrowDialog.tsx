@@ -24,6 +24,7 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
+import { useNetConstants } from 'contexts/net-contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
 import { useMarketNotNullable } from 'pages/borrow/context/market';
@@ -65,6 +66,8 @@ function ComponentBase({
   const { marketUserOverview, marketOverview } = useMarketNotNullable();
 
   const { status } = useWallet();
+
+  const { fixedGas, blocksPerYear } = useNetConstants();
 
   const [borrow, borrowResult] = useOperation(borrowOptions, {
     walletStatus: status,
@@ -125,7 +128,7 @@ function ComponentBase({
     marketOverview.oraclePrice.rate,
   );
   const nextLtv = useBorrowNextLtv(borrowAmount, currentLtv, amountToLtv);
-  const apr = useAPR(marketOverview.borrowRate.rate);
+  const apr = useAPR(marketOverview.borrowRate.rate, blocksPerYear);
   const safeMax = useBorrowSafeMax(
     marketUserOverview.loanAmount.loan_amount,
     marketUserOverview.borrowInfo.balance,
@@ -141,10 +144,10 @@ function ComponentBase({
     marketOverview.oraclePrice.rate,
     marketOverview.bLunaMaxLtv,
   );
-  const txFee = useBorrowTxFee(borrowAmount, bank);
+  const txFee = useBorrowTxFee(borrowAmount, bank, fixedGas);
   const receiveAmount = useBorrowReceiveAmount(borrowAmount, txFee);
 
-  const invalidTxFee = useInvalidTxFee(bank);
+  const invalidTxFee = useInvalidTxFee(bank, fixedGas);
   const invalidBorrowAmount = useInvalidBorrowAmount(borrowAmount, bank, max);
 
   // ---------------------------------------------

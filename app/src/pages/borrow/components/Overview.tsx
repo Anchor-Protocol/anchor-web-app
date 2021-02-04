@@ -11,6 +11,7 @@ import {
   uUST,
 } from '@anchor-protocol/notation';
 import { BigSource } from 'big.js';
+import { useNetConstants } from 'contexts/net-contants';
 import { BorrowLimitGraph } from 'pages/borrow/components/BorrowLimitGraph';
 import { useMarket } from 'pages/borrow/context/market';
 import { useAPR } from 'pages/borrow/logics/useAPR';
@@ -25,7 +26,9 @@ export interface OverviewProps {
 function OverviewBase({ className }: OverviewProps) {
   const { marketOverview, marketUserOverview, marketBalance } = useMarket();
 
-  const apr = useAPR(marketOverview?.borrowRate.rate);
+  const { blocksPerYear } = useNetConstants();
+
+  const apr = useAPR(marketOverview?.borrowRate.rate, blocksPerYear);
   const borrowed = useBorrowed(
     marketUserOverview?.loanAmount.loan_amount,
     marketOverview?.borrowRate.rate,
