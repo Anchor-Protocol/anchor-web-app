@@ -1,5 +1,6 @@
 import { CircleArrowRight } from '@anchor-protocol/icons';
 import styled from 'styled-components';
+import codeImage from './assets/code.svg';
 
 export interface EasierIntegrationsProps {
   className?: string;
@@ -9,7 +10,9 @@ function EasierIntegrationsBase({ className }: EasierIntegrationsProps) {
   return (
     <section className={className}>
       <figure>
-        <div>hello world?</div>
+        <div>
+          <img src={codeImage} alt="code" />
+        </div>
       </figure>
 
       <article>
@@ -102,6 +105,12 @@ export const EasierIntegrations = styled(EasierIntegrationsBase)`
       border-radius: 30px;
       box-shadow: inset 0 0 16px 0 rgba(0, 0, 0, 0.09);
       background-image: linear-gradient(219deg, #585858 0%, #252525 100%);
+
+      padding: 30px;
+
+      img {
+        width: 100%;
+      }
     }
   }
 
@@ -143,6 +152,11 @@ export const EasierIntegrations = styled(EasierIntegrationsBase)`
       > div {
         box-shadow: none;
         background-image: none;
+        padding: 0;
+
+        img {
+          transform: scale(1.1);
+        }
       }
     }
   }

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="315px" height="183px" viewBox="0 0 315 183" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>img</title>
+    <defs>
+        <rect id="path-2" x="105" y="73.5" width="1" height="18"></rect>
+        <filter x="-600.0%" y="-27.8%" width="1900.0%" height="211.1%" filterUnits="objectBoundingBox" id="filter-3">
+            <feOffset dx="3" dy="6" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <rect id="path-4" x="0" y="0" width="85" height="84"></rect>
+        <filter x="-25.3%" y="-25.6%" width="169.4%" height="170.2%" filterUnits="objectBoundingBox" id="filter-5">
+            <feOffset dx="8" dy="8" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="8.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.30935861 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <rect id="path-6" x="0" y="0" width="295" height="36" rx="2"></rect>
+        <filter x="-11.7%" y="-81.9%" width="134.9%" height="386.1%" filterUnits="objectBoundingBox" id="filter-7">
+            <feOffset dx="17" dy="22" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="13.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.136964598 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Landing_Mobile" transform="translate(-30.000000, -1705.000000)">
+            <g id="CON_02" transform="translate(0.000000, 1610.000000)">
+                <g id="img" transform="translate(40.000000, 100.000000)">
+                    <rect id="Rectangle" fill="#232323" x="106" y="75" width="44" height="15"></rect>
+                    <g id="Rectangle">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-3)" xlink:href="#path-2"></use>
+                        <use fill="#35FFF4" fill-rule="evenodd" xlink:href="#path-2"></use>
+                    </g>
+                    <text id="1.-2.-3.-4.-5." font-family="Helvetica" font-size="9" font-weight="normal" line-spacing="20" fill="#C8C8C8">
+                        <tspan x="11.2470703" y="61">1.</tspan>
+                        <tspan x="11.2470703" y="81">2.</tspan>
+                        <tspan x="11.2470703" y="101">3.</tspan>
+                        <tspan x="11.2470703" y="121">4.</tspan>
+                        <tspan x="11.2470703" y="141">5.</tspan>
+                    </text>
+                    <text id="&lt;git-clone-https://g" font-family="Helvetica" font-size="9" font-weight="normal" line-spacing="20" fill="#C8C8C8">
+                        <tspan x="25" y="61">&lt;git clone https://github.com/ter ra-project/station&gt;</tspan>
+                        <tspan x="25" y="81">	&lt;cd station-electron&gt;</tspan>
+                        <tspan x="25" y="101">	&lt;git checkout -t origin/local&gt;</tspan>
+                        <tspan x="25" y="121">	&lt;yarn&gt;</tspan>
+                        <tspan x="25" y="141">&lt;yarn start&gt;</tspan>
+                    </text>
+                    <g id="Group-2" transform="translate(151.000000, 69.000000)">
+                        <g id="Rectangle" opacity="0.849999964">
+                            <use fill="black" fill-opacity="1" filter="url(#filter-5)" xlink:href="#path-4"></use>
+                            <use fill="#232323" fill-rule="evenodd" xlink:href="#path-4"></use>
+                        </g>
+                        <rect id="Rectangle" fill="#151515" x="0" y="0" width="85" height="26"></rect>
+                        <text id="electron" font-family="Helvetica" font-size="10" font-weight="normal" fill="#EEEEEE">
+                            <tspan x="13" y="17">electron</tspan>
+                        </text>
+                    </g>
+                    <g id="Group">
+                        <g id="1600x900">
+                            <use fill="black" fill-opacity="1" filter="url(#filter-7)" xlink:href="#path-6"></use>
+                            <use fill="#535353" fill-rule="evenodd" xlink:href="#path-6"></use>
+                        </g>
+                        <text id="index.html" opacity="0.5" font-family="Helvetica" font-size="8" font-weight="normal" letter-spacing="-0.4" fill="#FFFFFF">
+                            <tspan x="117.5" y="21">index.html</tspan>
+                        </text>
+                        <polyline id="&gt;" stroke="#717171" stroke-linecap="round" stroke-linejoin="round" points="105.410565 16.1499896 107.260576 18 105.410565 19.8500104"></polyline>
+                        <text id="web" opacity="0.5" font-family="Helvetica" font-size="8" font-weight="normal" letter-spacing="-0.4" fill="#FFFFFF">
+                            <tspan x="78.5" y="21">web</tspan>
+                        </text>
+                        <polyline id="&gt;" stroke="#717171" stroke-linecap="round" stroke-linejoin="round" points="66.4105652 16.1499896 68.2605755 18 66.4105652 19.8500104"></polyline>
+                        <text id="Anchor" opacity="0.5" font-family="Helvetica" font-size="8" font-weight="normal" letter-spacing="-0.4" fill="#FFFFFF">
+                            <tspan x="29" y="21">Anchor</tspan>
+                        </text>
+                        <g id="icon" transform="translate(12.000000, 13.000000)">
+                            <path d="M9,3.02014636 L9,9 C9,9.55228475 8.55228475,10 8,10 L1,10 C0.44771525,10 6.76353751e-17,9.55228475 0,9 L0,1 C-1.78657678e-16,0.44771525 0.44771525,-9.5692398e-18 1,0 L5.97951575,0 L5.97951575,0 L9,3.02014636 Z" id="Path" fill="#737373"></path>
+                            <polyline id="Path-6" stroke="#535353" points="6 -6.82121026e-13 6 3 9 3"></polyline>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
