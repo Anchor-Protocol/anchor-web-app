@@ -1,13 +1,47 @@
 import { CircleArrowRight } from '@anchor-protocol/icons';
+import { scaleLinear } from 'd3-scale';
+import { arc } from 'd3-shape';
+import { useRef } from 'react';
+import { animated, useSpring } from 'react-spring';
 import styled from 'styled-components';
+import circleBackground from './assets/circleBackground.png';
+import textBackground from './assets/textBackground.png';
+import { useElementIntersection } from '@anchor-protocol/use-element-intersection';
+import numeral from 'numeral';
 
 export interface BetterYieldProps {
   className?: string;
 }
 
+type Value = { ratio: number };
+
+const radialScale = scaleLinear()
+  .domain([0, 1])
+  .range([Math.PI * -0.75, Math.PI * 0.75]);
+
+const amountScale = scaleLinear().domain([0, 1]).range([0, 1000]);
+
+const pathGenerator = arc<Value>()
+  .innerRadius(274)
+  .outerRadius(278)
+  .cornerRadius(2)
+  .startAngle(radialScale(0))
+  .endAngle(({ ratio }) => radialScale(ratio));
+
 function BetterYieldBase({ className }: BetterYieldProps) {
+  const elementRef = useRef<HTMLElement>(null);
+
+  const intersectionX = useElementIntersection({ elementRef, threshold: 0.8 });
+
+  const intersection = useSpring<Value>({
+    ratio: intersectionX?.isIntersecting === true ? 1 : 0,
+    config: {
+      friction: 60,
+    },
+  });
+
   return (
-    <section className={className}>
+    <section ref={elementRef} className={className}>
       <article>
         <h2>
           Anchor
@@ -26,10 +60,68 @@ function BetterYieldBase({ className }: BetterYieldProps) {
         </p>
       </article>
 
-      <figure></figure>
+      <figure>
+        <Circle ratio={intersection.ratio} />
+      </figure>
     </section>
   );
 }
+
+const Circle = animated((props: Value) => {
+  return (
+    <svg width="100%" height="100%" viewBox="0 0 598 598">
+      <defs>
+        <pattern
+          id="pattern"
+          patternUnits="userSpaceOnUse"
+          width="3"
+          height="3"
+        >
+          <image xlinkHref={textBackground} width="3" height="3" />
+        </pattern>
+        <linearGradient id="gradient" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" style={{ stopColor: '#cccccc', stopOpacity: 1 }} />
+          <stop offset="20%" style={{ stopColor: '#cccccc', stopOpacity: 1 }} />
+          <stop
+            offset="100%"
+            style={{ stopColor: '#555555', stopOpacity: 1 }}
+          />
+        </linearGradient>
+      </defs>
+      {props.ratio > 0 && (
+        <path
+          d={pathGenerator(props) ?? ''}
+          strokeLinecap="round"
+          fill="url(#gradient)"
+          transform="translate(299, 299)"
+        />
+      )}
+      <text opacity="0.4" fontSize="10" fill="#373737">
+        <tspan x="114" y="505">
+          BANK
+        </tspan>
+      </text>
+      <text opacity="0.4" fontSize="10" fill="#373737">
+        <tspan x="440" y="505">
+          ANCHOR
+        </tspan>
+      </text>
+      <text>
+        <tspan
+          x="299"
+          y="340"
+          textAnchor="middle"
+          fontSize="120"
+          fontWeight="900"
+          letterSpacing="-4"
+          fill="url(#pattern)"
+        >
+          ${numeral(amountScale(props.ratio)).format('0,0')}
+        </tspan>
+      </text>
+    </svg>
+  );
+});
 
 export const BetterYield = styled(BetterYieldBase)`
   display: flex;
@@ -91,7 +183,9 @@ export const BetterYield = styled(BetterYieldBase)`
     border-radius: 50%;
     box-shadow: 32px 76px 84px -42px rgba(0, 0, 0, 0.14),
       inset -2px -2px 4px 0 rgba(0, 0, 0, 0.05), inset 2px 2px 4px 0 #ffffff;
-    background-image: linear-gradient(145deg, #fbfbfb 14%, #f3f3f3 89%);
+    background-image: url('${circleBackground}'),
+      linear-gradient(145deg, #fbfbfb 14%, #f3f3f3 89%);
+    background-size: cover;
   }
 
   @media (max-width: 1100px) {
