@@ -36,11 +36,21 @@ function SubscribeBase({ className }: SubscribeProps) {
         </button>
       </div>
       <div className="links">
-        <a href="#">CONTACT</a>
-        <a href="#">WHITE PAPER</a>
-        <a href="#">DISCORD</a>
-        <a href="#">AGORA</a>
-        <a href="#">Terra WEBSITE</a>
+        <a href="https://anchorprotocol.com" target="_blank" rel="noreferrer">
+          CONTACT
+        </a>
+        <a href="https://anchorprotocol.com" target="_blank" rel="noreferrer">
+          WHITE PAPER
+        </a>
+        <a href="https://anchorprotocol.com" target="_blank" rel="noreferrer">
+          DISCORD
+        </a>
+        <a href="https://anchorprotocol.com" target="_blank" rel="noreferrer">
+          AGORA
+        </a>
+        <a href="https://anchorprotocol.com" target="_blank" rel="noreferrer">
+          Terra WEBSITE
+        </a>
       </div>
     </section>
   );
