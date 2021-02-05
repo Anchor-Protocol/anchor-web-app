@@ -55,7 +55,7 @@ export function parseData(
     big(burnAmount).mul(beliefPrice).mul(taxRate),
     maxTaxUUSD,
   ) as uUST<Big>;
-  const expectedAmount = big(burnAmount).div(beliefPrice).minus(tax);
+  const expectedAmount = big(burnAmount).mul(beliefPrice).minus(tax);
   const rate = big(1).minus(maxSpread);
   const minimumReceived = expectedAmount.mul(rate).toFixed() as uLuna;
   const swapFee = big(data.commission_amount)
