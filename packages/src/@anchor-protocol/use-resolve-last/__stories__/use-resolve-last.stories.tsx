@@ -1,0 +1,28 @@
+import { useResolveLast } from '@anchor-protocol/use-resolve-last/index';
+
+export default {
+  title: 'core/use-resolve-last',
+};
+
+const someFetch = (value: string) =>
+  new Promise<number>((resolve) =>
+    setTimeout(() => {
+      console.log('fetch result is', value);
+      resolve(parseInt(value));
+    }, Math.random() * 3000),
+  );
+
+export const Basic = () => {
+  const [resolve, result] = useResolveLast<number>(() => 0);
+
+  return (
+    <div>
+      <input
+        type="number"
+        defaultValue={0}
+        onChange={({ target }) => resolve(someFetch(target.value))}
+      />
+      <p>the latest resolve value is "{result}"</p>
+    </div>
+  );
+};
