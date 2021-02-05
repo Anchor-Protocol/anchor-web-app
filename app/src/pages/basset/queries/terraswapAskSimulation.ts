@@ -1,20 +1,16 @@
 import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
-import { min } from '@anchor-protocol/big-math';
 import {
   formatFluidDecimalPoints,
   Ratio,
   ubLuna,
   uLuna,
-  uUST,
 } from '@anchor-protocol/notation';
 import { ApolloClient, ApolloQueryResult, gql } from '@apollo/client';
-import big, { Big } from 'big.js';
-import { Bank } from 'contexts/bank';
+import big from 'big.js';
 import { SwapSimulation } from 'pages/basset/models/swapSimulation';
-import { Data as TaxData } from 'queries/tax';
 
 export interface StringifiedData {
-  terraswapOfferSimulation: {
+  terraswapAskSimulation: {
     Result: string;
   };
 }
@@ -26,23 +22,18 @@ export interface Data extends SwapSimulation {
 }
 
 export function parseData(
-  { terraswapOfferSimulation }: StringifiedData,
-  burnAmount: ubLuna,
-  { taxRate, maxTaxUUSD }: TaxData,
+  { terraswapAskSimulation }: StringifiedData,
+  getAmount: uLuna,
 ): Data {
-  const data = JSON.parse(terraswapOfferSimulation.Result) as Pick<
+  const data = JSON.parse(terraswapAskSimulation.Result) as Pick<
     Data,
     'commission_amount' | 'return_amount' | 'spread_amount'
   >;
 
-  const beliefPrice = big(data.return_amount).div(burnAmount);
+  const beliefPrice = big(data.return_amount).div(getAmount);
   const maxSpread = 0.1;
 
-  const tax = min(
-    big(burnAmount).mul(beliefPrice).mul(taxRate),
-    maxTaxUUSD,
-  ) as uUST<Big>;
-  const expectedAmount = big(burnAmount).mul(beliefPrice).minus(tax);
+  const expectedAmount = big(getAmount).div(beliefPrice);
   const rate = big(1).minus(maxSpread);
   const minimumReceived = expectedAmount.mul(rate).toFixed() as uLuna;
   const swapFee = big(data.commission_amount)
@@ -58,26 +49,26 @@ export function parseData(
     }) as Ratio,
     maxSpread: maxSpread.toString() as Ratio,
 
-    lunaAmount: big(burnAmount).mul(beliefPrice).toString() as uLuna,
+    bLunaAmount: big(getAmount).div(beliefPrice).toString() as ubLuna,
   };
 }
 
 export interface StringifiedVariables {
   bLunaTerraswap: string;
-  offerSimulationQuery: string;
+  askSimulationQuery: string;
 }
 
 export interface Variables {
   bLunaTerraswap: string;
-  offerSimulationQuery: {
+  askSimulationQuery: {
     simulation: {
       offer_asset: {
         info: {
-          token: {
-            contract_addr: string;
+          native_token: {
+            denom: 'uluna';
           };
         };
-        amount: ubLuna;
+        amount: uLuna;
       };
     };
   };
@@ -85,30 +76,29 @@ export interface Variables {
 
 export function stringifyVariables({
   bLunaTerraswap,
-  offerSimulationQuery,
+  askSimulationQuery,
 }: Variables): StringifiedVariables {
   return {
     bLunaTerraswap,
-    offerSimulationQuery: JSON.stringify(offerSimulationQuery),
+    askSimulationQuery: JSON.stringify(askSimulationQuery),
   };
 }
 
 export const query = gql`
-  query($bLunaTerraswap: String!, $offerSimulationQuery: String!) {
-    terraswapOfferSimulation: WasmContractsContractAddressStore(
+  query($bLunaTerraswap: String!, $askSimulationQuery: String!) {
+    terraswapAskSimulation: WasmContractsContractAddressStore(
       ContractAddress: $bLunaTerraswap
-      QueryMsg: $offerSimulationQuery
+      QueryMsg: $askSimulationQuery
     ) {
       Result
     }
   }
 `;
 
-export function queryTerraswapOfferSimulation(
+export function queryTerraswapAskSimulation(
   client: ApolloClient<any>,
   addressProvider: AddressProvider,
-  burnAmount: ubLuna,
-  bank: Bank,
+  getAmount: uLuna,
 ): Promise<ApolloQueryResult<StringifiedData> & { parsedData: Data }> {
   return client
     .query<StringifiedData, StringifiedVariables>({
@@ -116,15 +106,15 @@ export function queryTerraswapOfferSimulation(
       fetchPolicy: 'network-only',
       variables: stringifyVariables({
         bLunaTerraswap: addressProvider.blunaBurnPair(),
-        offerSimulationQuery: {
+        askSimulationQuery: {
           simulation: {
             offer_asset: {
               info: {
-                token: {
-                  contract_addr: addressProvider.bAssetToken('bluna'),
+                native_token: {
+                  denom: 'uluna',
                 },
               },
-              amount: burnAmount,
+              amount: getAmount,
             },
           },
         },
@@ -133,7 +123,7 @@ export function queryTerraswapOfferSimulation(
     .then((result) => {
       return {
         ...result,
-        parsedData: parseData(result.data, burnAmount, bank.tax),
+        parsedData: parseData(result.data, getAmount),
       };
     });
 }

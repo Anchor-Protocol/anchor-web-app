@@ -4,16 +4,22 @@ import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/com
 import {
   bLuna,
   demicrofy,
+  formatFluidDecimalPoints,
   formatLuna,
   formatLunaInput,
   formatUST,
   Luna,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
+  microfy,
   Ratio,
+  ubLuna,
+  uLuna,
 } from '@anchor-protocol/notation';
+import { useResolveLast } from '@anchor-protocol/use-resolve-last';
 import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
+import { useApolloClient } from '@apollo/client';
 import {
   Input as MuiInput,
   NativeSelect as MuiNativeSelect,
@@ -24,13 +30,16 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
+import { useAddressProvider } from 'contexts/contract';
 import { useNetConstants } from 'contexts/net-contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { useInvalidBurnAmount } from 'pages/basset/logics/useInvalidBurnAmount';
+import { SwapSimulation } from 'pages/basset/models/swapSimulation';
+import { queryTerraswapAskSimulation } from 'pages/basset/queries/terraswapAskSimulation';
 import { useTerraswapBLunaPrice } from 'pages/basset/queries/terraswapBLunaPrice';
-import { useTerraswapOfferSimulation } from 'pages/basset/queries/terraswapOfferSimulation';
+import { queryTerraswapOfferSimulation } from 'pages/basset/queries/terraswapOfferSimulation';
 import { swapOptions } from 'pages/basset/transactions/swapOptions';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 interface Item {
   label: string;
@@ -48,6 +57,10 @@ export function Swap() {
 
   const { fixedGas } = useNetConstants();
 
+  const client = useApolloClient();
+
+  const addressProvider = useAddressProvider();
+
   const [swap, swapResult] = useOperation(swapOptions, {});
 
   const { onKeyPress: onLunaInputKeyPress } = useRestrictedNumberInput({
@@ -60,6 +73,10 @@ export function Swap() {
   // ---------------------------------------------
   const [burnAmount, setBurnAmount] = useState<bLuna>('' as bLuna);
   const [getAmount, setGetAmount] = useState<Luna>('' as Luna);
+
+  const [resolveSimulation, simulation] = useResolveLast<SwapSimulation | null>(
+    () => null,
+  );
 
   const [burnCurrency, setBurnCurrency] = useState<Item>(
     () => bAssetCurrencies[0],
@@ -75,18 +92,26 @@ export function Swap() {
 
   const { parsedData: bLunaPrice } = useTerraswapBLunaPrice();
 
-  const { parsedData: offerSimulation } = useTerraswapOfferSimulation({
-    burnAmount,
-  });
-  //const { parsedData: exchangeRate } = useExchangeRate({
-  //  bAsset: getCurrency.value,
-  //});
-
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
   const invalidTxFee = useInvalidTxFee(bank, fixedGas);
   const invalidBurnAmount = useInvalidBurnAmount(burnAmount, bank);
+
+  // ---------------------------------------------
+  // effects
+  // ---------------------------------------------
+  useEffect(() => {
+    if (simulation?.lunaAmount) {
+      setGetAmount(formatLunaInput(demicrofy(simulation.lunaAmount)));
+    }
+  }, [simulation?.lunaAmount]);
+
+  useEffect(() => {
+    if (simulation?.bLunaAmount) {
+      setBurnAmount(formatLunaInput(demicrofy(simulation.bLunaAmount)));
+    }
+  }, [simulation?.bLunaAmount]);
 
   // ---------------------------------------------
   // callbacks
@@ -106,21 +131,28 @@ export function Swap() {
   }, []);
 
   const updateBurnAmount = useCallback(
-    (nextBurnAmount: string) => {
+    async (nextBurnAmount: string) => {
+      console.log('Swap.tsx..()', nextBurnAmount);
       if (nextBurnAmount.trim().length === 0) {
         setGetAmount('' as Luna);
         setBurnAmount('' as bLuna);
+
+        resolveSimulation(null);
       } else {
         const burnAmount: bLuna = nextBurnAmount as bLuna;
-        const getAmount: Luna = formatLunaInput(
-          big(burnAmount).div(bLunaPrice?.bLunaPrice ?? 1) as Luna<Big>,
-        );
-
-        setGetAmount(getAmount);
         setBurnAmount(burnAmount);
+
+        resolveSimulation(
+          queryTerraswapOfferSimulation(
+            client,
+            addressProvider,
+            microfy(burnAmount).toString() as ubLuna,
+            bank,
+          ).then(({ parsedData }) => parsedData),
+        );
       }
     },
-    [bLunaPrice?.bLunaPrice],
+    [addressProvider, bank, client, resolveSimulation],
   );
 
   const updateGetAmount = useCallback(
@@ -128,17 +160,22 @@ export function Swap() {
       if (nextGetAmount.trim().length === 0) {
         setBurnAmount('' as bLuna);
         setGetAmount('' as Luna);
+
+        resolveSimulation(null);
       } else {
         const getAmount: Luna = nextGetAmount as Luna;
-        const burnAmount: bLuna = formatLunaInput(
-          big(getAmount).mul(bLunaPrice?.bLunaPrice ?? 1) as bLuna<Big>,
-        );
-
-        setBurnAmount(burnAmount);
         setGetAmount(getAmount);
+
+        resolveSimulation(
+          queryTerraswapAskSimulation(
+            client,
+            addressProvider,
+            microfy(getAmount).toString() as uLuna,
+          ).then(({ parsedData }) => parsedData),
+        );
       }
     },
-    [bLunaPrice?.bLunaPrice],
+    [addressProvider, client, resolveSimulation],
   );
 
   const init = useCallback(() => {
@@ -156,14 +193,6 @@ export function Swap() {
       if (status.status !== 'ready' || bank.status !== 'connected') {
         return;
       }
-
-      console.log('Swap.tsx..()', {
-        address: status.walletAddress,
-        amount: burnAmount,
-        bAsset: burnCurrency.value,
-        beliefPrice,
-        maxSpread,
-      });
 
       const broadcasted = await swap({
         address: status.walletAddress,
@@ -289,16 +318,21 @@ export function Swap() {
         />
       </SelectAndTextInputContainer>
 
-      {burnAmount.length > 0 && bLunaPrice && offerSimulation && (
+      {burnAmount.length > 0 && bLunaPrice && simulation && (
         <TxFeeList className="receipt">
           <TxFeeListItem label="Price">
-            {formatLuna(bLunaPrice.bLunaPrice)} Luna per bLuna
+            {formatFluidDecimalPoints(
+              simulation.beliefPrice,
+              LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
+              { delimiter: true },
+            )}{' '}
+            Luna per bLuna
           </TxFeeListItem>
           <TxFeeListItem label="Minimum Received">
-            {formatLuna(demicrofy(offerSimulation.minimumReceived))} Luna
+            {formatLuna(demicrofy(simulation.minimumReceived))} Luna
           </TxFeeListItem>
           <TxFeeListItem label="Trading Fee">
-            {formatLuna(demicrofy(offerSimulation.swapFee))} Luna
+            {formatLuna(demicrofy(simulation.swapFee))} Luna
           </TxFeeListItem>
           <TxFeeListItem label="Tx Fee">
             {formatUST(demicrofy(fixedGas))} UST
@@ -316,14 +350,14 @@ export function Swap() {
           big(burnAmount).lte(0) ||
           !!invalidTxFee ||
           !!invalidBurnAmount ||
-          big(offerSimulation?.swapFee ?? 0).lte(0)
+          big(simulation?.swapFee ?? 0).lte(0)
         }
         onClick={() =>
           proceed(
             status,
             burnAmount,
-            offerSimulation!.beliefPrice,
-            offerSimulation!.maxSpread,
+            simulation!.beliefPrice,
+            simulation!.maxSpread,
           )
         }
       >
