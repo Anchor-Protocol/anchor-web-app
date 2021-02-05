@@ -31,7 +31,11 @@ const pathGenerator = arc<Value>()
 function BetterYieldBase({ className }: BetterYieldProps) {
   const elementRef = useRef<HTMLElement>(null);
 
-  const intersectionX = useElementIntersection({ elementRef, threshold: 0.8 });
+  const intersectionX = useElementIntersection({
+    elementRef,
+    threshold: 0.8,
+    observeOnce: true,
+  });
 
   const intersection = useSpring<Value>({
     ratio: intersectionX?.isIntersecting === true ? 1 : 0,
@@ -186,6 +190,7 @@ export const BetterYield = styled(BetterYieldBase)`
     background-image: url('${circleBackground}'),
       linear-gradient(145deg, #fbfbfb 14%, #f3f3f3 89%);
     background-size: cover;
+    transform: scale(1.2);
   }
 
   @media (max-width: 1100px) {

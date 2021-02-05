@@ -28,6 +28,32 @@ export const Basic = () => {
   );
 };
 
+export const Observe_Once = () => {
+  const elementRef = useRef<HTMLElement>(null);
+
+  const intersection = useElementIntersection({
+    elementRef,
+    threshold: 0.5,
+    observeOnce: true,
+  });
+
+  return (
+    <div>
+      <div style={{ backgroundColor: 'red', height: 1500 }} />
+      <div
+        ref={elementRef as any}
+        style={{ backgroundColor: 'white', height: 500 }}
+      />
+      <div style={{ backgroundColor: 'blue', height: 1500 }} />
+      <Intersecting>
+        {intersection?.isIntersecting
+          ? 'White block is appeared'
+          : 'White block is still not appeared'}
+      </Intersecting>
+    </div>
+  );
+};
+
 const Intersecting = styled.div`
   position: fixed;
   top: 20px;

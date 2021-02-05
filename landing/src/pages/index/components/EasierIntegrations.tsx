@@ -141,9 +141,9 @@ export const EasierIntegrations = styled(EasierIntegrationsBase)`
 
     figure {
       width: 70vw;
-      height: 70vw;
+      height: 50vw;
       max-width: 400px;
-      max-height: 400px;
+      max-height: 300px;
 
       box-shadow: none;
       background-color: transparent;
@@ -153,11 +153,9 @@ export const EasierIntegrations = styled(EasierIntegrationsBase)`
         box-shadow: none;
         background-image: none;
         padding: 0;
-
-        img {
-          transform: scale(1.1);
-        }
       }
+
+      transform: scale(1.2);
     }
   }
 

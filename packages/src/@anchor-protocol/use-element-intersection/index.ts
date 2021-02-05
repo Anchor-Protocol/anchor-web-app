@@ -1,7 +1,8 @@
-import { RefObject, useCallback, useEffect, useState } from 'react';
+import { RefObject, useEffect, useState } from 'react';
 
 interface Params extends IntersectionObserverInit {
   elementRef: RefObject<HTMLElement>;
+  observeOnce?: boolean;
 }
 
 export function useElementIntersection({
@@ -9,29 +10,38 @@ export function useElementIntersection({
   threshold,
   root,
   rootMargin,
+  observeOnce = false,
 }: Params) {
   const [entry, setEntry] = useState<IntersectionObserverEntry | null>(null);
-
-  const onScroll = useCallback(([entry]: IntersectionObserverEntry[]) => {
-    setEntry(entry);
-  }, []);
 
   useEffect(() => {
     if (!elementRef.current) {
       return;
     }
 
-    const observer: IntersectionObserver = new IntersectionObserver(onScroll, {
-      threshold,
-      root,
-      rootMargin,
-    });
+    function observerCallback([entry]: IntersectionObserverEntry[]) {
+      setEntry(entry);
+
+      if (entry.isIntersecting && observeOnce === true && elementRef.current) {
+        observer.unobserve(elementRef.current);
+      }
+    }
+
+    const observer: IntersectionObserver = new IntersectionObserver(
+      observerCallback,
+      {
+        threshold,
+        root,
+        rootMargin,
+      },
+    );
+
     observer.observe(elementRef.current);
 
     return () => {
       observer && observer.disconnect();
     };
-  }, [elementRef, onScroll, root, rootMargin, threshold]);
+  }, [elementRef, observeOnce, root, rootMargin, threshold]);
 
   return entry;
 }
