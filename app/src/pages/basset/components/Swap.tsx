@@ -171,11 +171,12 @@ export function Swap() {
             client,
             addressProvider,
             microfy(getAmount).toString() as uLuna,
+            bank,
           ).then(({ parsedData }) => parsedData),
         );
       }
     },
-    [addressProvider, client, resolveSimulation],
+    [addressProvider, bank, client, resolveSimulation],
   );
 
   const init = useCallback(() => {
