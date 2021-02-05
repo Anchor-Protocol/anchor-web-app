@@ -75,7 +75,7 @@ export function TokenIconBase({
   variant = 'svg',
   ...imgProps
 }: IconProps) {
-  return <img {...imgProps} src={tokenImages[token][variant].src} />;
+  return <img alt="" {...imgProps} src={tokenImages[token][variant].src} />;
 }
 
 export const TokenIcon = styled(TokenIconBase)`

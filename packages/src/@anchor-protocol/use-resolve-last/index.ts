@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export class Resolver<T> {
   latestId: number = -1;
@@ -35,19 +35,22 @@ export function useResolveLast<T>(
 ): [resolve: (value: Promise<T> | T) => void, result: T] {
   const [state, setState] = useState<T>(init);
 
-  const resolver = useRef<Resolver<T>>(new Resolver<T>());
+  const resolver = useMemo<Resolver<T>>(() => new Resolver<T>(), []);
 
-  const resolve = useCallback((value: Promise<T> | T) => {
-    resolver.current.next(value);
-  }, []);
+  const resolve = useCallback(
+    (value: Promise<T> | T) => {
+      resolver.next(value);
+    },
+    [resolver],
+  );
 
   useEffect(() => {
-    resolver.current.subscribe(setState);
+    resolver.subscribe(setState);
 
     return () => {
-      resolver.current.destroy();
+      resolver.destroy();
     };
-  }, []);
+  }, [resolver]);
 
   return [resolve, state];
 }

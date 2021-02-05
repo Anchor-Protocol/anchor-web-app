@@ -48,7 +48,7 @@ function NotificationsBase({ className }: NotificationsProps) {
     }
 
     return notifications;
-  }, [bank.userBalances.uUSD, status.status]);
+  }, [bank.userBalances.uUSD, fixedGas, status.status]);
 
   // ---------------------------------------------
   // callbacks

@@ -35,7 +35,6 @@ function IconToggleButtonBase({
         onClick && onClick(event);
         onChange(!on);
       }}
-      aria-selected={on}
     >
       {on ? createElement(onIcon) : createElement(offIcon)}
     </button>
