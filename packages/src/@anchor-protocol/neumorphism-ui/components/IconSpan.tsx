@@ -1,6 +1,9 @@
 import styled from 'styled-components';
 
 export const IconSpan = styled.span`
+  word-break: keep-all;
+  white-space: nowrap;
+
   svg,
   .MuiSvgIcon-root {
     font-size: 1em;

@@ -6,6 +6,7 @@ import { HorizontalGraphSlider } from '@anchor-protocol/neumorphism-ui/component
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { formatRatioToPercentage, Ratio } from '@anchor-protocol/notation';
+import { InfoOutlined } from '@material-ui/icons';
 import big, { Big, BigSource } from 'big.js';
 import React, { useCallback } from 'react';
 import { GraphLabel } from './GraphLabel';
@@ -39,7 +40,12 @@ const labelRenderer = ({ position, label, tooltip }: Data, rect: Rect) => {
     <GraphTick style={{ left: rect.x + rect.width }}>
       {tooltip ? (
         <Tooltip title={tooltip} placement="top">
-          <IconSpan>{label}</IconSpan>
+          <IconSpan style={{ cursor: 'help' }}>
+            <sup>
+              <InfoOutlined />
+            </sup>{' '}
+            {label}
+          </IconSpan>
         </Tooltip>
       ) : (
         label
@@ -109,9 +115,9 @@ export function LTVGraph({
           label: nextLtv
             ? `${nextLtv.lt(1) ? formatRatioToPercentage(nextLtv) : '>100'}%`
             : '',
-          color: nextLtv?.gt(maxLtv)
+          color: nextLtv?.gte(maxLtv)
             ? '#e95979'
-            : nextLtv?.gt(safeLtv)
+            : nextLtv?.gte(safeLtv)
             ? '#ff9a63'
             : '#15cc93',
           value: nextLtv
