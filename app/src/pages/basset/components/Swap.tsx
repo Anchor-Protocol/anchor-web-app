@@ -132,7 +132,6 @@ export function Swap() {
 
   const updateBurnAmount = useCallback(
     async (nextBurnAmount: string) => {
-      console.log('Swap.tsx..()', nextBurnAmount);
       if (nextBurnAmount.trim().length === 0) {
         setGetAmount('' as Luna);
         setBurnAmount('' as bLuna);
@@ -199,7 +198,7 @@ export function Swap() {
         address: status.walletAddress,
         amount: burnAmount,
         bAsset: burnCurrency.value,
-        beliefPrice,
+        beliefPrice: big(1).div(beliefPrice).toString(),
         maxSpread,
       });
 

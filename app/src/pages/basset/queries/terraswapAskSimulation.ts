@@ -35,7 +35,7 @@ export function parseData(
     'commission_amount' | 'return_amount' | 'spread_amount'
   >;
 
-  const beliefPrice = big(data.return_amount).div(getAmount);
+  const beliefPrice = big(1).div(big(data.return_amount).div(getAmount));
   const maxSpread = 0.1;
 
   const tax = min(
