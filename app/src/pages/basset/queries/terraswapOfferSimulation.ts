@@ -62,6 +62,38 @@ export function parseData(
     .plus(data.spread_amount)
     .toFixed() as uLuna;
 
+  console.log(
+    'user input amount and tax',
+    JSON.stringify(
+      {
+        burnAmount,
+        taxRate,
+        maxTaxUUSD,
+      },
+      null,
+      2,
+    ),
+  );
+
+  console.log('from query', JSON.stringify(data, null, 2));
+
+  console.log(
+    'results of equations',
+    JSON.stringify(
+      {
+        ...data,
+        beliefPrice: beliefPrice.toFixed(),
+        maxSpread,
+        expectedAmount: expectedAmount.toFixed(),
+        rate: rate.toFixed(),
+        minimumReceived,
+        swapFee,
+      },
+      null,
+      2,
+    ),
+  );
+
   return {
     ...data,
     minimumReceived,
