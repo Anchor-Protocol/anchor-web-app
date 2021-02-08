@@ -198,7 +198,9 @@ export function Swap() {
         address: status.walletAddress,
         amount: burnAmount,
         bAsset: burnCurrency.value,
-        beliefPrice: big(1).div(beliefPrice).toString(),
+        beliefPrice: formatFluidDecimalPoints(big(1).div(beliefPrice), 18, {
+          fallbackValue: '0',
+        }),
         maxSpread,
       });
 

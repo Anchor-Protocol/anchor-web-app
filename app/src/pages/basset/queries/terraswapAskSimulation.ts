@@ -55,9 +55,7 @@ export function parseData(
     ...data,
     minimumReceived,
     swapFee,
-    beliefPrice: formatFluidDecimalPoints(beliefPrice, 18, {
-      fallbackValue: '0',
-    }) as Ratio,
+    beliefPrice: beliefPrice.toFixed() as Ratio,
     maxSpread: maxSpread.toString() as Ratio,
 
     bLunaAmount: big(getAmount).div(beliefPrice).toString() as ubLuna,
