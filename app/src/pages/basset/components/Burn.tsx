@@ -23,7 +23,7 @@ import {
 import big, { Big } from 'big.js';
 import { ArrowDownLine } from 'components/ArrowDownLine';
 import { TransactionRenderer } from 'components/TransactionRenderer';
-import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useNetConstants } from 'contexts/net-contants';
@@ -180,12 +180,7 @@ export function Burn() {
       {/* Burn (bAsset) */}
       <div className="burn-description">
         <p>I want to burn</p>
-        <p>
-          {exchangeRate &&
-            `1 ${burnCurrency.label} = ${formatLuna(
-              (exchangeRate.exchange_rate as string) as Luna,
-            )} ${getCurrency.label}`}
-        </p>
+        <p />
       </div>
 
       <SelectAndTextInputContainer
@@ -239,12 +234,7 @@ export function Burn() {
       {/* Get (Asset) */}
       <div className="gett-description">
         <p>and get</p>
-        <p>
-          {exchangeRate &&
-            `1 ${getCurrency.label} = ${formatLuna(
-              (big(1).div(exchangeRate.exchange_rate) as Big) as Luna<Big>,
-            )} ${burnCurrency.label}`}
-        </p>
+        <p />
       </div>
 
       <SelectAndTextInputContainer className="gett" error={!!invalidBurnAmount}>
@@ -271,8 +261,17 @@ export function Burn() {
         />
       </SelectAndTextInputContainer>
 
-      {burnAmount.length > 0 && (
-        <TxFeeList className="receipt">
+      <TxFeeList className="receipt">
+        {exchangeRate && (
+          <SwapListItem
+            label="Price"
+            currencyA={burnCurrency.label}
+            currencyB={getCurrency.label}
+            exchangeRateAB={exchangeRate.exchange_rate}
+            formatExchangeRate={(ratio) => formatLuna(ratio as Luna<Big>)}
+          />
+        )}
+        {burnAmount.length > 0 && (
           <TxFeeListItem
             label={
               <IconSpan>
@@ -282,8 +281,8 @@ export function Burn() {
           >
             {formatUST(demicrofy(fixedGas))} UST
           </TxFeeListItem>
-        </TxFeeList>
-      )}
+        )}
+      </TxFeeList>
 
       {/* Submit */}
       <ActionButton

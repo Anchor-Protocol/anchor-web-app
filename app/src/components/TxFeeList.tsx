@@ -1,5 +1,14 @@
 import { HorizontalDashedRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalDashedRuler';
-import { DetailedHTMLProps, HTMLAttributes, ReactNode } from 'react';
+import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { SwapHoriz } from '@material-ui/icons';
+import big, { BigSource } from 'big.js';
+import {
+  DetailedHTMLProps,
+  HTMLAttributes,
+  ReactNode,
+  useMemo,
+  useState,
+} from 'react';
 import styled from 'styled-components';
 
 export interface TxFeeListItemProps {
@@ -38,12 +47,58 @@ export function TxFeeListItem({ label, children }: TxFeeListItemProps) {
   );
 }
 
+export interface SwapListItemProps {
+  label: string;
+  currencyA: string;
+  currencyB: string;
+  exchangeRateAB: BigSource;
+  formatExchangeRate: (n: BigSource) => string;
+  initialDirection?: 'a/b' | 'b/a';
+}
+
+export function SwapListItem({
+  label,
+  currencyA,
+  currencyB,
+  exchangeRateAB,
+  formatExchangeRate,
+  initialDirection = 'b/a',
+}: SwapListItemProps) {
+  const [direction, setDirection] = useState<'a/b' | 'b/a'>(initialDirection);
+
+  const exchangeRate = useMemo(() => {
+    return direction === 'a/b'
+      ? formatExchangeRate(exchangeRateAB)
+      : formatExchangeRate(big(1).div(exchangeRateAB));
+  }, [direction, exchangeRateAB, formatExchangeRate]);
+
+  return (
+    <li>
+      <span>{label}</span>
+      <IconSpan>
+        {exchangeRate} {direction === 'a/b' ? currencyA : currencyB} per{' '}
+        {direction === 'a/b' ? currencyB : currencyA}
+        <SwapHoriz
+          className="swap"
+          onClick={() =>
+            setDirection((prev) => (prev === 'a/b' ? 'b/a' : 'a/b'))
+          }
+        />
+      </IconSpan>
+    </li>
+  );
+}
+
 export const TxFeeList = styled(TxFeeListBase)`
   font-size: 12px;
 
   ul {
     list-style: none;
     padding: 0;
+
+    &:empty {
+      display: none;
+    }
 
     li {
       margin: 15px 0;
@@ -62,6 +117,12 @@ export const TxFeeList = styled(TxFeeListBase)`
 
       a {
         color: ${({ theme }) => theme.textColor};
+      }
+
+      svg.swap {
+        transform: scale(1.3) translateY(0.1em);
+        margin-left: 0.5em;
+        cursor: pointer;
       }
     }
   }

@@ -24,10 +24,10 @@ import {
   Input as MuiInput,
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
-import big, { Big } from 'big.js';
+import big from 'big.js';
 import { ArrowDownLine } from 'components/ArrowDownLine';
 import { TransactionRenderer } from 'components/TransactionRenderer';
-import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
@@ -229,12 +229,7 @@ export function Swap() {
       {/* Burn (bAsset) */}
       <div className="burn-description">
         <p>I want to burn</p>
-        <p>
-          {bLunaPrice?.bLunaPrice &&
-            `1 ${burnCurrency.label} = ${formatLuna(
-              (big(1).div(bLunaPrice?.bLunaPrice) as Big) as Luna<Big>,
-            )} ${getCurrency.label}`}
-        </p>
+        <p />
       </div>
 
       <SelectAndTextInputContainer
@@ -288,12 +283,7 @@ export function Swap() {
       {/* Get (Asset) */}
       <div className="gett-description">
         <p>and get</p>
-        <p>
-          {bLunaPrice?.bLunaPrice &&
-            `1 ${getCurrency.label} = ${formatLuna(
-              (bLunaPrice?.bLunaPrice as string) as Luna,
-            )} ${burnCurrency.label}`}
-        </p>
+        <p />
       </div>
 
       <SelectAndTextInputContainer className="gett" error={!!invalidBurnAmount}>
@@ -322,14 +312,20 @@ export function Swap() {
 
       {burnAmount.length > 0 && bLunaPrice && simulation && (
         <TxFeeList className="receipt">
-          <TxFeeListItem label="Price">
-            {formatFluidDecimalPoints(
-              simulation.beliefPrice,
-              LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
-              { delimiter: true },
-            )}{' '}
-            Luna per bLuna
-          </TxFeeListItem>
+          <SwapListItem
+            label="Price"
+            currencyA="Luna"
+            currencyB="bLuna"
+            exchangeRateAB={simulation.beliefPrice}
+            initialDirection="a/b"
+            formatExchangeRate={(price) =>
+              formatFluidDecimalPoints(
+                price,
+                LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
+                { delimiter: true },
+              )
+            }
+          />
           <TxFeeListItem label="Minimum Received">
             {formatLuna(demicrofy(simulation.minimumReceived))} Luna
           </TxFeeListItem>

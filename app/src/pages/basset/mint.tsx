@@ -26,7 +26,7 @@ import {
 import big, { Big } from 'big.js';
 import { ArrowDownLine } from 'components/ArrowDownLine';
 import { TransactionRenderer } from 'components/TransactionRenderer';
-import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { WarningMessage } from 'components/WarningMessage';
 import { useBank } from 'contexts/bank';
 import { useNetConstants } from 'contexts/net-contants';
@@ -216,12 +216,7 @@ function MintBase({ className }: MintProps) {
       {/* Bond (Asset) */}
       <div className="bond-description">
         <p>I want to bond</p>
-        <p>
-          {exchangeRate &&
-            `1 ${bondCurrency.label} = ${formatLuna(
-              (big(1).div(exchangeRate.exchange_rate) as Big) as Luna<Big>,
-            )} ${mintCurrency.label}`}
-        </p>
+        <p />
       </div>
 
       <SelectAndTextInputContainer
@@ -276,12 +271,7 @@ function MintBase({ className }: MintProps) {
       {/* Mint (bAsset) */}
       <div className="mint-description">
         <p>and mint</p>
-        <p>
-          {exchangeRate &&
-            `1 ${mintCurrency.label} = ${formatLuna(
-              (exchangeRate.exchange_rate as string) as Luna,
-            )} ${bondCurrency.label}`}
-        </p>
+        <p />
       </div>
 
       <SelectAndTextInputContainer className="mint" error={!!invalidBondAmount}>
@@ -334,8 +324,17 @@ function MintBase({ className }: MintProps) {
         )}
       </NativeSelect>
 
-      {bondAmount.length > 0 && (
-        <TxFeeList className="receipt">
+      <TxFeeList className="receipt">
+        {exchangeRate && (
+          <SwapListItem
+            label="Price"
+            currencyA={bondCurrency.label}
+            currencyB={mintCurrency.label}
+            exchangeRateAB={exchangeRate.exchange_rate}
+            formatExchangeRate={(ratio) => formatLuna(ratio as Luna<Big>)}
+          />
+        )}
+        {bondAmount.length > 0 && (
           <TxFeeListItem
             label={
               <IconSpan>
@@ -345,8 +344,8 @@ function MintBase({ className }: MintProps) {
           >
             {formatUST(demicrofy(fixedGas))} UST
           </TxFeeListItem>
-        </TxFeeList>
-      )}
+        )}
+      </TxFeeList>
 
       {/* Submit */}
       <ActionButton
