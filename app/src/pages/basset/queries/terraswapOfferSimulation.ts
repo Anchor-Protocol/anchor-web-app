@@ -1,12 +1,6 @@
 import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
 import { min } from '@anchor-protocol/big-math';
-import {
-  formatFluidDecimalPoints,
-  Ratio,
-  ubLuna,
-  uLuna,
-  uUST,
-} from '@anchor-protocol/notation';
+import { Ratio, ubLuna, uLuna, uUST } from '@anchor-protocol/notation';
 import { ApolloClient, ApolloQueryResult, gql } from '@apollo/client';
 import big, { Big } from 'big.js';
 import { Bank } from 'contexts/bank';
