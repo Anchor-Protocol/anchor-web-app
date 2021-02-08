@@ -17,15 +17,14 @@ import {
 import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import {
-  Icon,
   Input as MuiInput,
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
 import big, { Big } from 'big.js';
 import { ArrowDownLine } from 'components/ArrowDownLine';
+import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { MessageBox } from 'components/MessageBox';
 import { useBank } from 'contexts/bank';
 import { useNetConstants } from 'contexts/net-contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
