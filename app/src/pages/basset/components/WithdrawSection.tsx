@@ -7,7 +7,7 @@ import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { demicrofy, formatLuna, uUST } from '@anchor-protocol/notation';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { TransactionRenderer } from 'components/TransactionRenderer';
-import { WarningMessage } from 'components/WarningMessage';
+import { MessageBox } from 'components/MessageBox';
 import { useBank } from 'contexts/bank';
 import { useNetConstants } from 'contexts/net-contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
@@ -162,7 +162,7 @@ export function WithdrawSection({
       </article>
 
       {!!invalidTxFee && withdrawableAmount.gt(0) && (
-        <WarningMessage>{invalidTxFee}</WarningMessage>
+        <MessageBox>{invalidTxFee}</MessageBox>
       )}
 
       <ActionButton

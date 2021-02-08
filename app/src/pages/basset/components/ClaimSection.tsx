@@ -7,7 +7,7 @@ import { demicrofy, formatUST } from '@anchor-protocol/notation';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import big from 'big.js';
 import { TransactionRenderer } from 'components/TransactionRenderer';
-import { WarningMessage } from 'components/WarningMessage';
+import { MessageBox } from 'components/MessageBox';
 import { useBank } from 'contexts/bank';
 import { useNetConstants } from 'contexts/net-contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
@@ -107,7 +107,7 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
       </article>
 
       {!!invalidTxFee && big(claimableRewards).gt(0) && (
-        <WarningMessage>{invalidTxFee}</WarningMessage>
+        <MessageBox>{invalidTxFee}</MessageBox>
       )}
 
       <ActionButton

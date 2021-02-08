@@ -17,6 +17,7 @@ import {
 import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import {
+  Icon,
   Input as MuiInput,
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
@@ -24,7 +25,7 @@ import big, { Big } from 'big.js';
 import { ArrowDownLine } from 'components/ArrowDownLine';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { WarningMessage } from 'components/WarningMessage';
+import { MessageBox } from 'components/MessageBox';
 import { useBank } from 'contexts/bank';
 import { useNetConstants } from 'contexts/net-contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
@@ -175,7 +176,17 @@ export function Burn() {
 
   return (
     <>
-      {!!invalidTxFee && <WarningMessage>{invalidTxFee}</WarningMessage>}
+      {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
+
+      <MessageBox
+        level="info"
+        hide={{ id: 'burn', period: 1000 * 60 * 60 * 24 * 7 }}
+      >
+        Default bLuna redemptions take at least 21 days to process.
+        <br />
+        Slashing events during the 21 days may affect the final amount
+        withdrawn.
+      </MessageBox>
 
       {/* Burn (bAsset) */}
       <div className="burn-description">

@@ -27,7 +27,7 @@ import big, { Big } from 'big.js';
 import { ArrowDownLine } from 'components/ArrowDownLine';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { WarningMessage } from 'components/WarningMessage';
+import { MessageBox } from 'components/MessageBox';
 import { useBank } from 'contexts/bank';
 import { useNetConstants } from 'contexts/net-contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
@@ -211,7 +211,7 @@ function MintBase({ className }: MintProps) {
 
   return (
     <Section className={className}>
-      {!!invalidTxFee && <WarningMessage>{invalidTxFee}</WarningMessage>}
+      {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
 
       {/* Bond (Asset) */}
       <div className="bond-description">

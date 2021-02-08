@@ -21,7 +21,7 @@ import { InputAdornment, Modal } from '@material-ui/core';
 import big, { BigSource } from 'big.js';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { WarningMessage } from 'components/WarningMessage';
+import { MessageBox } from 'components/MessageBox';
 import { useBank } from 'contexts/bank';
 import { useNetConstants } from 'contexts/net-contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
@@ -156,7 +156,7 @@ function ComponentBase({
       <Dialog className={className} onClose={() => closeDialog()}>
         <h1>Deposit</h1>
 
-        {!!invalidTxFee && <WarningMessage>{invalidTxFee}</WarningMessage>}
+        {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
 
         <NumberInput
           className="amount"
@@ -212,9 +212,9 @@ function ComponentBase({
         )}
 
         {invalidNextTransaction && maxAmount && (
-          <WarningMessage style={{ marginTop: 30, marginBottom: 0 }}>
+          <MessageBox style={{ marginTop: 30, marginBottom: 0 }}>
             {invalidNextTransaction}
-          </WarningMessage>
+          </MessageBox>
         )}
 
         <ActionButton

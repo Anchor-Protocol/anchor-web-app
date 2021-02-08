@@ -24,7 +24,7 @@ import big, { Big, BigSource } from 'big.js';
 import { ArrowDownLine } from 'components/ArrowDownLine';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { WarningMessage } from 'components/WarningMessage';
+import { MessageBox } from 'components/MessageBox';
 import { useBank } from 'contexts/bank';
 import { useNetConstants } from 'contexts/net-contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
@@ -246,7 +246,7 @@ function ComponentBase({
       <Dialog className={className} onClose={() => closeDialog()}>
         {title}
 
-        {!!invalidTxFee && <WarningMessage>{invalidTxFee}</WarningMessage>}
+        {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
 
         <NumberInput
           className="amount"
