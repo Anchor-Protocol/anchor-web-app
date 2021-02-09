@@ -19,7 +19,7 @@ describe('queries/totalDeposit', () => {
           },
         }),
       })
-      .then(({ data }) => parseData(data));
+      .then(({ data }) => parseData(data, 5256666));
 
     expect(typeof data.marketStatus.deposit_rate).toBe('string');
   });

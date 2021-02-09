@@ -11,7 +11,7 @@ function lazy<T>(v: T) {
 }
 
 const wrapper = ({ children }: { children: ReactNode }) => (
-  <OperationBroadcaster>{children}</OperationBroadcaster>
+  <OperationBroadcaster dependency={{}}>{children}</OperationBroadcaster>
 );
 
 const options = createOperationOptions({
