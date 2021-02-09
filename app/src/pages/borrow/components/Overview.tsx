@@ -29,14 +29,7 @@ function OverviewBase({ className }: OverviewProps) {
   const { blocksPerYear } = useNetConstants();
 
   const apr = useAPR(marketOverview?.borrowRate.rate, blocksPerYear);
-  const borrowed = useBorrowed(
-    marketUserOverview?.loanAmount.loan_amount,
-    marketOverview?.borrowRate.rate,
-    marketBalance?.currentBlock,
-    marketBalance?.marketState.last_interest_updated,
-    marketBalance?.marketState.global_interest_index,
-    marketUserOverview?.liability.interest_index,
-  );
+  const borrowed = useBorrowed(marketUserOverview?.loanAmount.loan_amount);
   const collaterals = useCollaterals(
     marketUserOverview?.borrowInfo.balance,
     marketUserOverview?.borrowInfo.spendable,

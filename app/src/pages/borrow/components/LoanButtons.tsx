@@ -25,14 +25,7 @@ export function LoanButtons() {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const borrowed = useBorrowed(
-    marketUserOverview?.loanAmount.loan_amount,
-    marketOverview?.borrowRate.rate,
-    marketBalance?.currentBlock,
-    marketBalance?.marketState.last_interest_updated,
-    marketBalance?.marketState.global_interest_index,
-    marketUserOverview?.liability.interest_index,
-  );
+  const borrowed = useBorrowed(marketUserOverview?.loanAmount.loan_amount);
 
   return (
     <>
