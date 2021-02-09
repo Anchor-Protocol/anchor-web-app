@@ -1,4 +1,6 @@
 import { Meta } from '@storybook/addon-docs/blocks';
+import resultRendering1 from './images/20210209.133043.png';
+import resultRendering2 from './images/20210209.133120.png';
 
 <Meta title="Report/Operation Broadcasting"/>
 
@@ -109,7 +111,7 @@ function BroadcatingRenderer() {
 
 위와 같이 전역 관리 (`<OperationBroadcaster/>`), 송신 (`useOperation()`), 수신 (`useBroadcasting()`) 의 3가지 구성 요소들을 조합해서 설정하게 된다.
 
-# Operator 로 데이터 전달
+## Operator 로 데이터 전달
 
 ```ts
 export const operationOptions = createOperationOptions({
@@ -129,13 +131,13 @@ const [ exec ] = useOperation(operationOptions, {c: 30})
 
 Pipe 내에서 활용할 수 있는 의존성은 `1 & 2 & 3` 과 같은 형태가 된다.
 
-## 1번 직접적으로 전달되는 의존성
+### 1번 직접적으로 전달되는 의존성
 
 첫번째의 경우 Pipe 의 첫 번째 함수의 Parameter가 된다.
 
 Pipe의 첫번째 함수로 선언된 `({a, b}: {a: number, b: number}) => number` 가 1번이 된다.
 
-## 2번 `useOperation()` 지역적으로 발생되는 의존성
+### 2번 `useOperation()` 지역적으로 발생되는 의존성
 
 두번째 지역적으로 발생되는 의존성은 Pipe 내의 `OperationDependency<{}>` 와 같이 Generic으로 선언된 항목이 된다.
 
@@ -149,7 +151,7 @@ useOperation(operationOptions, {c: 30})
 
 TypeScript 의 Type 유추에 의해서 강제되기 때문에 의존성을 입력하지 않는 경우 TS Error 를 발생시킨다.
 
-## 3번 `<OperationBroadcaster dependency={{d: 40}}>` 와 같이 `Context` 전역적으로 발생되는 의존성
+### 3번 `<OperationBroadcaster dependency={{d: 40}}>` 와 같이 `Context` 전역적으로 발생되는 의존성
 
 이런 전역 의존성을 TypeScript 에서 선언하기 위해서는 추가적인 조치가 필요하다.
 
@@ -163,7 +165,7 @@ declare module '@anchor-protocol/broadcastable-operation/global' {
 }
 ```
 
-위의 Code는 `@anchor-protocol/broadcastable-operation/global` 의 `GlobalDependency` interface를 Overload 하게 된다.
+위의 Code는 `@anchor-protocol/broadcastable-operation/global` 의 `GlobalDependency` interface를 Override 하게 된다.
 
 이와 같은 전역 항목의 Overload는 <https://styled-components.com/docs/api#create-a-declarations-file> Styled-Components 의 `DefaultTheme` 처리와 유사하다.
 
@@ -175,6 +177,52 @@ declare module '@anchor-protocol/broadcastable-operation/global' {
 
 위와 같이 `dependency={{d: 40}}` 을 입력하지 않는 경우 TS Error를 발생시키게 된다.
 
+## 예제 (Borrow / Borrow)
 
+### Operation Parameter들의 구성
 
+[borrowOptions](https://github.com/Anchor-Protocol/anchor-web-app/blob/develop/app/src/pages/borrow/transactions/borrowOptions.ts#L26)
+
+1. `effect(fabricateBorrow, takeTxFee(storage))` exec() 에 fabricateBorrow 의 Params 와 `{txFee}` 를 함께 요구하게 된다.
+2. `OperationDependency<DependencyList = {walletStatus: WalletStatus}>` 는 `useOperation()` 에 walletStatus를 요구하게 된다.
+
+[useOperation()](https://github.com/Anchor-Protocol/anchor-web-app/blob/develop/app/src/pages/borrow/components/useBorrowDialog.tsx#L72)
+
+Option에서 `OperationDependency<{walletStatus: WalletStatus}>` 를 요구했기 때문에 두 번째 인자에서 walletStatus 를 입력해주고 있다.
+
+[exec()](https://github.com/Anchor-Protocol/anchor-web-app/blob/develop/app/src/pages/borrow/components/useBorrowDialog.tsx#L170)
+
+Operation 실행시에 `fabricateBorrow` 의 Params 와 함께 `txFee` 를 함께 넘기고 있다.
+
+[GlobalDependency](https://github.com/Anchor-Protocol/anchor-web-app/blob/develop/app/src/operation.d.ts)
+
+이렇게 GlobalDependency 로 설정된 항목들은
+
+[OperationBroadcaster](https://github.com/Anchor-Protocol/anchor-web-app/blob/develop/app/src/App.tsx#L81)
+
+`<OperationBroadcaster dependency={}>` 를 통해 넘겨지고 있다.
+
+[borrowOptions:pipe](https://github.com/Anchor-Protocol/anchor-web-app/blob/develop/app/src/pages/borrow/transactions/borrowOptions.ts#L29)
+
+다시 되돌아가 `borrowOptions` 의 Pipeline Parameter 를 보면
+`GlobalDependency` 의 `addressProvider` 와 같은 전역 의존성들과
+`walletStatus` 와 같은 지역 의존성이 함께 들어오고 있다.
+
+### Result 렌더링
+
+<img src={resultRendering1} width="600"/>
+
+[result rendering](https://github.com/Anchor-Protocol/anchor-web-app/blob/develop/app/src/pages/borrow/components/useBorrowDialog.tsx#L222)
+
+Operation의 결과 (Result)는 해당 화면 내에서 렌더링 되기도 하지만,
+
+<img src={resultRendering2} width="800"/>
+
+[borrowOptions:renderBroadcast](https://github.com/Anchor-Protocol/anchor-web-app/blob/develop/app/src/pages/borrow/transactions/borrowOptions.ts#L53)
+
+화면에서 이탈하는 경우 (Unmount) 위와 같이 `renderBroadcast` 에 의해서 대체되어서 렌더링 되게 되며
+
+[BroadcastingContainer](https://github.com/Anchor-Protocol/anchor-web-app/blob/develop/app/src/components/BroadcastingContainer.tsx#L18)
+
+렌더링 된 Element는 위와 같이 `useBroadcasting()` Hook에 의해서 화면에 출력되게 된다.
 
