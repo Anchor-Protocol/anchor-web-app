@@ -3,18 +3,18 @@
 ## Transaction
 
 - `timeout(postContractMsg)` -> `<ChromeExtensionWalletProvider> post`
-  - [x] `UserDeniedError`
-  - [x] `OperationTimeoutError` + 대기 시간이 길어서 취소됨
+  - \[x] `UserDeniedError`
+  - \[x] `OperationTimeoutError` + 대기 시간이 길어서 취소됨
 - `parseTxResult`
-  - [x] `TxFailedError` if success is false
+  - \[x] `TxFailedError` if success is false
 - `getTxInfo`
-  - [x] `TxInfoError`
-  - [ ] `*` of ApolloClient
-  - [ ] `OperationTimeoutError` + TxInfo 를 불러올 수 없음 (`getTxInfo` 에 `timeout()` 필요)
+  - \[x] `TxInfoError`
+  - \[ ] `*` of ApolloClient
+  - \[ ] `OperationTimeoutError` + TxInfo 를 불러올 수 없음 (`getTxInfo` 에 `timeout()` 필요)
 - `pick<*>Result`
-  - [x] `TxInfoParseError` + RawLog 를 찾을 수 없음 | Event 를 찾을 수 없음
+  - \[x] `TxInfoParseError` + RawLog 를 찾을 수 없음 | Event 를 찾을 수 없음
 - `*`
-  - [ ] 그 외, 벗어나는 Error들은 `String(error)` 형태로 처리
+  - \[ ] 그 외, 벗어나는 Error들은 `String(error)` 형태로 처리
 
 ## `<Section>`, `<Dialog>`
 

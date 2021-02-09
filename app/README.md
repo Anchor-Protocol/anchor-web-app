@@ -2,7 +2,7 @@
 
 - graphql query and clients (hooks, fetch functions)
 
-- ~~operations~~ -> 그냥 component 내에서 처리 (맥락을 굳이 분리할 필요가 없을듯...)
+- \~~operations~~ -> 그냥 component 내에서 처리 (맥락을 굳이 분리할 필요가 없을듯...)
 
 - transactions -> transaction 에 관련된 모든 것들을 일괄 처리? operator들의 모음
 

@@ -34,21 +34,21 @@
     ]
   },
   "dependencies": {
-    "@material-ui/core": "^4.11.2",
+    "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2"
   },
   "devDependencies": {
-    "@handbook/markdown-source-import": "^1.0.1",
+    "@handbook/markdown-source-import": "^1.1.0",
     "@ssen/prettier-config": "^1.2.0",
     "@types/eslint": "^7.2.6",
-    "@types/prettier": "^2.1.6",
-    "eslint": "^7.18.0",
+    "@types/prettier": "^2.2.0",
+    "eslint": "^7.19.0",
     "eslint-config-prettier": "^7.2.0",
     "eslint-config-react-app": "^6.0.0",
-    "husky": "^4.3.8",
-    "lint-staged": "^10.3.0",
+    "husky": "^5.0.9",
+    "lint-staged": "^10.5.4",
     "prettier": "^2.1.1",
-    "react-scripts": "4.0.1"
+    "react-scripts": "4.0.2"
   },
   "peerDependencies": {
     "eslint-config-react-app": "6.0.0"
