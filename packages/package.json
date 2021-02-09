@@ -7,7 +7,7 @@
     "coverage": "react-scripts test --colors --coverage",
     "build": "rocket-punch build",
     "publish": "rocket-punch publish",
-    "storybook": "start-storybook -p 6006 -s public",
+    "storybook": "start-storybook -h localhost -p 6006 -s public",
     "build-storybook": "build-storybook -s public"
   },
   "eslintConfig": {

@@ -59,7 +59,7 @@ export type InternalDependency = {
 //option: OperatorOption,
 export type Operator<T, R> = (param: T) => Promise<R> | R;
 
-export type OperationDependency<D extends {}> = D &
+export type OperationDependency<D extends {} = {}> = D &
   GlobalDependency &
   InternalDependency;
 

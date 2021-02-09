@@ -44,23 +44,28 @@ function Container() {
   return <FloatingContainer>{renderings}</FloatingContainer>;
 }
 
+/**
+ * story
+ *
+ * 1. When the option is `broadcastWhen: always` result is always render by `useBroadcasting()`
+ */
 export const Always_Broadcast = () => {
-  const [operate1] = useOperation(operationOptions, { a: 30 });
-  const [operate2] = useOperation(operationOptions, { a: 50 });
+  const [exec1] = useOperation(operationOptions, { a: 30 });
+  const [exec2] = useOperation(operationOptions, { a: 50 });
 
   return (
     <div style={{ display: 'flex', gap: 10 }}>
       <ActionButton
         style={{ width: 200 }}
-        onClick={() => operate1(Math.floor(Math.random() * 100))}
+        onClick={() => exec1(Math.floor(Math.random() * 100))}
       >
-        Operation 1
+        Execute Operation 1
       </ActionButton>
       <ActionButton
         style={{ width: 200 }}
-        onClick={() => operate2(Math.floor(Math.random() * 100))}
+        onClick={() => exec2(Math.floor(Math.random() * 100))}
       >
-        Operation 2
+        Execute Operation 2
       </ActionButton>
     </div>
   );
