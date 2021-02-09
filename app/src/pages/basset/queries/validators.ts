@@ -98,14 +98,18 @@ export function useValidators({
 } {
   const addressProvider = useAddressProvider();
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
-    fetchPolicy: 'cache-and-network',
-    variables: stringifyVariables({
+  const variables = useMemo(() => {
+    return stringifyVariables({
       bLunaHubContract: addressProvider.bAssetHub(bAsset),
       whitelistedValidatorsQuery: {
         whitelisted_validators: {},
       },
-    }),
+    });
+  }, [addressProvider, bAsset]);
+
+  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
+    fetchPolicy: 'network-only',
+    variables,
   });
 
   const parsedData = useMemo(

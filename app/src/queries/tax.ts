@@ -49,9 +49,13 @@ export const query = gql`
 export function useTax(): QueryResult<StringifiedData, StringifiedVariables> & {
   parsedData: Data | undefined;
 } {
+  const variables = useMemo(() => {
+    return stringifyVariables({});
+  }, []);
+
   const result = useQuery<StringifiedData, StringifiedVariables>(query, {
-    fetchPolicy: 'cache-and-network',
-    variables: stringifyVariables({}),
+    fetchPolicy: 'network-only',
+    variables,
   });
 
   const parsedData = useMemo(

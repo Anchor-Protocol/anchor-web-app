@@ -111,9 +111,8 @@ export function useTotalDeposit(): QueryResult<
 
   const { parsedData: lastSyncedHeight } = useLastSyncedHeight();
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
-    skip: status.status !== 'ready' || typeof lastSyncedHeight !== 'number',
-    variables: stringifyVariables({
+  const variables = useMemo(() => {
+    return stringifyVariables({
       anchorTokenContract: addressProvider.aToken(''),
       anchorTokenBalanceQuery: {
         balance: {
@@ -127,7 +126,12 @@ export function useTotalDeposit(): QueryResult<
             typeof lastSyncedHeight === 'number' ? lastSyncedHeight : 0,
         },
       },
-    }),
+    });
+  }, [addressProvider, lastSyncedHeight, status]);
+
+  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
+    skip: status.status !== 'ready' || typeof lastSyncedHeight !== 'number',
+    variables,
   });
 
   const parsedData = useMemo(

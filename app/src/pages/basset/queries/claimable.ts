@@ -98,10 +98,8 @@ export function useClaimable(): QueryResult<
   const addressProvider = useAddressProvider();
   const { status } = useWallet();
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
-    skip: status.status !== 'ready',
-    fetchPolicy: 'cache-and-network',
-    variables: stringifyVariables({
+  const variables = useMemo(() => {
+    return stringifyVariables({
       bAssetRewardContract: addressProvider.bAssetReward(''),
       rewardState: {
         state: {},
@@ -111,7 +109,13 @@ export function useClaimable(): QueryResult<
           address: status.status === 'ready' ? status.walletAddress : '',
         },
       },
-    }),
+    });
+  }, [addressProvider, status]);
+
+  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
+    skip: status.status !== 'ready',
+    fetchPolicy: 'network-only',
+    variables,
   });
 
   useSubscription((id, event) => {

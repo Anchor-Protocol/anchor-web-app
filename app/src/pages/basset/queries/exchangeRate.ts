@@ -65,14 +65,18 @@ export function useExchangeRate({
 } {
   const addressProvider = useAddressProvider();
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
-    fetchPolicy: 'cache-and-network',
-    variables: stringifyVariables({
+  const variables = useMemo(() => {
+    return stringifyVariables({
       bLunaHubContract: addressProvider.bAssetHub(bAsset),
       stateQuery: {
         state: {},
       },
-    }),
+    });
+  }, [addressProvider, bAsset]);
+
+  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
+    fetchPolicy: 'network-only',
+    variables,
   });
 
   const parsedData = useMemo(

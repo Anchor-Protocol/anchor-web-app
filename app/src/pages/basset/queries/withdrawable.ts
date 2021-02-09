@@ -120,10 +120,8 @@ export function useWithdrawable({
 
   const [now, setNow] = useState(() => Math.floor(Date.now() / 1000));
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
-    skip: status.status !== 'ready',
-    fetchPolicy: 'cache-and-network',
-    variables: stringifyVariables({
+  const variables = useMemo(() => {
+    return stringifyVariables({
       bLunaHubContract: addressProvider.bAssetHub(bAsset),
       withdrawableAmountQuery: {
         withdrawable_unbonded: {
@@ -139,7 +137,13 @@ export function useWithdrawable({
       exchangeRateQuery: {
         state: {},
       },
-    }),
+    });
+  }, [addressProvider, bAsset, now, status]);
+
+  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
+    skip: status.status !== 'ready',
+    fetchPolicy: 'network-only',
+    variables,
   });
 
   useSubscription((id, event) => {

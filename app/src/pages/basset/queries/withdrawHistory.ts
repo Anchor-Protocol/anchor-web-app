@@ -103,10 +103,8 @@ export function useWithdrawHistory({
 } {
   const addressProvider = useAddressProvider();
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
-    skip: !withdrawable || withdrawable.withdrawRequestsStartFrom < 0,
-    fetchPolicy: 'cache-and-network',
-    variables: stringifyVariables({
+  const variables = useMemo(() => {
+    return stringifyVariables({
       bLunaHubContract: addressProvider.bAssetHub('bluna'),
       allHistory: {
         all_history: {
@@ -117,7 +115,13 @@ export function useWithdrawHistory({
       parameters: {
         parameters: {},
       },
-    }),
+    });
+  }, [addressProvider, withdrawable?.withdrawRequestsStartFrom]);
+
+  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
+    skip: !withdrawable || withdrawable.withdrawRequestsStartFrom < 0,
+    fetchPolicy: 'network-only',
+    variables,
   });
 
   useSubscription((id, event) => {

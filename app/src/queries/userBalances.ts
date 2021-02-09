@@ -130,14 +130,18 @@ export function useUserBalances(): QueryResult<
   const addressProvider = useAddressProvider();
   const { status } = useWallet();
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
-    skip: status.status !== 'ready',
-    fetchPolicy: 'cache-and-network',
-    variables: stringifyVariables({
+  const variables = useMemo(() => {
+    return stringifyVariables({
       walletAddress: status.status === 'ready' ? status.walletAddress : '',
       bAssetTokenAddress: addressProvider.bAssetToken('bluna'),
       aTokenAddress: addressProvider.aToken('usd'),
-    }),
+    });
+  }, [addressProvider, status]);
+
+  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
+    skip: status.status !== 'ready',
+    fetchPolicy: 'network-only',
+    variables,
   });
 
   useSubscription((id, event) => {

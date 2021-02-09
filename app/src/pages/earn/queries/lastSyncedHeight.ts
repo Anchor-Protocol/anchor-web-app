@@ -22,7 +22,7 @@ export function useLastSyncedHeight(): QueryResult<StringifiedData> & {
   parsedData: Data | undefined;
 } {
   const result = useQuery<StringifiedData>(query, {
-    fetchPolicy: 'cache-and-network',
+    fetchPolicy: 'network-only',
   });
 
   useSubscription((id, event) => {

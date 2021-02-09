@@ -78,15 +78,19 @@ export function useInterest(): QueryResult<
 
   const { blocksPerYear } = useNetConstants();
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
-    fetchPolicy: 'cache-and-network',
-    pollInterval: 1000 * 60,
-    variables: stringifyVariables({
+  const variables = useMemo(() => {
+    return stringifyVariables({
       overseerContract: addressProvider.overseer(''),
       overseerEpochState: {
         epoch_state: {},
       },
-    }),
+    });
+  }, [addressProvider]);
+
+  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
+    fetchPolicy: 'network-only',
+    pollInterval: 1000 * 60,
+    variables,
   });
 
   const parsedData = useMemo(

@@ -84,12 +84,16 @@ export function useTerraswapBLunaPrice(): QueryResult<
   const addressProvider = useAddressProvider();
   const { status } = useWallet();
 
+  const variables = useMemo(() => {
+    return stringifyVariables({
+      bLunaTerraswap: addressProvider.blunaBurnPair(),
+    });
+  }, [addressProvider]);
+
   const result = useQuery<StringifiedData, StringifiedVariables>(query, {
     skip: status.status !== 'ready',
-    fetchPolicy: 'cache-and-network',
-    variables: stringifyVariables({
-      bLunaTerraswap: addressProvider.blunaBurnPair(),
-    }),
+    fetchPolicy: 'network-only',
+    variables,
   });
 
   const parsedData = useMemo(

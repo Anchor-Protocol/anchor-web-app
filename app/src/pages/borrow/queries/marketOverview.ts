@@ -1,6 +1,5 @@
 import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
 import { Ratio } from '@anchor-protocol/notation';
-import { useMap } from '@anchor-protocol/use-map';
 import {
   ApolloClient,
   ApolloQueryResult,
@@ -11,6 +10,7 @@ import {
 import big from 'big.js';
 import { useAddressProvider } from 'contexts/contract';
 import { SAFE_RATIO } from 'env';
+import { useMemo } from 'react';
 import { Data as MarketBalanceOverviewData } from './marketBalanceOverview';
 
 export interface StringifiedData {
@@ -167,10 +167,8 @@ export function useMarketOverview({
 } {
   const addressProvider = useAddressProvider();
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
-    skip: !marketBalance,
-    fetchPolicy: 'cache-and-network',
-    variables: stringifyVariables({
+  const variables = useMemo(() => {
+    return stringifyVariables({
       interestContractAddress: addressProvider.interest(),
       interestBorrowRateQuery: {
         borrow_rate: {
@@ -194,14 +192,23 @@ export function useMarketOverview({
           collateral_token: addressProvider.bAssetToken('ubluna'),
         },
       },
-    }),
+    });
+  }, [
+    addressProvider,
+    marketBalance?.marketBalance,
+    marketBalance?.marketState.total_liabilities,
+    marketBalance?.marketState.total_reserves,
+  ]);
+
+  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
+    skip: !marketBalance,
+    fetchPolicy: 'network-only',
+    variables,
   });
 
-  const parsedData = useMap<StringifiedData | undefined, Data>(
-    result.data,
-    (next, prev) => {
-      return !!next ? parseData(next, addressProvider) : prev;
-    },
+  const parsedData = useMemo(
+    () => (result.data ? parseData(result.data, addressProvider) : undefined),
+    [addressProvider, result.data],
   );
 
   return {

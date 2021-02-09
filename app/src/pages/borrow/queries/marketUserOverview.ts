@@ -1,7 +1,6 @@
 import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { Num, uUST } from '@anchor-protocol/notation';
-import { useMap } from '@anchor-protocol/use-map';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import {
   ApolloClient,
@@ -11,6 +10,7 @@ import {
   useQuery,
 } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
+import { useMemo } from 'react';
 import { Data as MarketBalanceOverviewData } from './marketBalanceOverview';
 
 export interface StringifiedData {
@@ -142,10 +142,8 @@ export function useMarketUserOverview({
   const addressProvider = useAddressProvider();
   const { status } = useWallet();
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
-    skip: status.status !== 'ready' || !marketBalance,
-    fetchPolicy: 'cache-and-network',
-    variables: stringifyVariables({
+  const variables = useMemo(() => {
+    return stringifyVariables({
       marketContractAddress: addressProvider.market('uusd'),
       marketLoanQuery: {
         loan_amount: {
@@ -159,7 +157,13 @@ export function useMarketUserOverview({
           address: status.status === 'ready' ? status.walletAddress : '',
         },
       },
-    }),
+    });
+  }, [addressProvider, marketBalance?.currentBlock, status]);
+
+  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
+    skip: status.status !== 'ready' || !marketBalance,
+    fetchPolicy: 'network-only',
+    variables,
   });
 
   useSubscription((id, event) => {
@@ -168,11 +172,9 @@ export function useMarketUserOverview({
     }
   });
 
-  const parsedData = useMap<StringifiedData | undefined, Data>(
-    result.data,
-    (next, prev) => {
-      return !!next ? parseData(next) : prev;
-    },
+  const parsedData = useMemo(
+    () => (result.data ? parseData(result.data) : undefined),
+    [result.data],
   );
 
   return {

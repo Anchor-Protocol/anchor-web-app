@@ -1,6 +1,5 @@
 import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
 import { Num, uaUST, uUST } from '@anchor-protocol/notation';
-import { useMap } from '@anchor-protocol/use-map';
 import {
   ApolloClient,
   ApolloQueryResult,
@@ -9,6 +8,7 @@ import {
   useQuery,
 } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
+import { useMemo } from 'react';
 
 export interface StringifiedData {
   currentBlock: number;
@@ -95,22 +95,24 @@ export function useMarketBalanceOverview(): QueryResult<
 > & { parsedData: Data | undefined } {
   const addressProvider = useAddressProvider();
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
-    fetchPolicy: 'cache-and-network',
-    pollInterval: 1000 * 60,
-    variables: stringifyVariables({
+  const variables = useMemo<StringifiedVariables>(() => {
+    return stringifyVariables({
       marketContractAddress: addressProvider.market('uusd'),
       marketStateQuery: {
         state: {},
       },
-    }),
+    });
+  }, [addressProvider]);
+
+  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
+    fetchPolicy: 'network-only',
+    pollInterval: 1000 * 60,
+    variables,
   });
 
-  const parsedData = useMap<StringifiedData | undefined, Data>(
-    result.data,
-    (next, prev) => {
-      return !!next ? parseData(next) : prev;
-    },
+  const parsedData = useMemo(
+    () => (result.data ? parseData(result.data) : undefined),
+    [result.data],
   );
 
   return {
