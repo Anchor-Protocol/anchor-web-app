@@ -3,6 +3,7 @@ import {
   formatLuna,
   formatRatioToPercentage,
   formatUSTWithPostfixUnits,
+  Ratio,
   ubLuna,
   uUST,
 } from '@anchor-protocol/notation';
@@ -26,17 +27,24 @@ interface Params {
   txResult: TxResult;
   txInfo: Data;
   txFee: uUST;
-  marketBalance: MarketBalance;
-  marketOverview: MarketOverview;
-  marketUserOverview: MarketUserOverview;
+  currentBlock?: MarketBalance['currentBlock'];
+  marketBalance?: MarketBalance['marketBalance'];
+  marketState?: MarketBalance['marketState'];
+  borrowRate?: MarketOverview['borrowRate'];
+  oraclePrice?: MarketOverview['oraclePrice'];
+  overseerWhitelist?: MarketOverview['overseerWhitelist'];
+  loanAmount?: MarketUserOverview['loanAmount'];
+  liability?: MarketUserOverview['liability'];
+  borrowInfo?: MarketUserOverview['borrowInfo'];
 }
 
 export function pickRedeemCollateralResult({
   txInfo,
   txResult,
   txFee,
-  marketOverview,
-  marketUserOverview,
+  loanAmount,
+  borrowInfo,
+  oraclePrice,
 }: Params): TransactionResult {
   const rawLog = pickRawLog(txInfo, 1);
 
@@ -56,20 +64,21 @@ export function pickRedeemCollateralResult({
 
   const redeemedAmount = pickAttributeValue<ubLuna>(fromContract, 16);
 
-  const newLtv = currentLtv(
-    marketUserOverview.loanAmount.loan_amount,
-    marketUserOverview.borrowInfo.balance,
-    marketUserOverview.borrowInfo.spendable,
-    marketOverview.oraclePrice.rate,
-  );
+  const newLtv =
+    loanAmount && borrowInfo && oraclePrice
+      ? currentLtv(
+          loanAmount?.loan_amount,
+          borrowInfo?.balance,
+          borrowInfo?.spendable,
+          oraclePrice?.rate,
+        )
+      : ('0' as Ratio);
 
   const txHash = txResult.result.txhash;
 
   return {
     txInfo,
     txResult,
-    //txFee,
-    //txHash,
     details: [
       redeemedAmount && {
         name: 'Redeemed Amount',

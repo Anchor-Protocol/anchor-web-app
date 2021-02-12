@@ -8,6 +8,7 @@ import {
   demicrofy,
   formatUST,
   formatUSTInput,
+  Ratio,
   UST,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
@@ -18,9 +19,9 @@ import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import big, { BigSource } from 'big.js';
+import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { MessageBox } from 'components/MessageBox';
 import { useBank } from 'contexts/bank';
 import { useNetConstants } from 'contexts/net-contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
@@ -30,12 +31,12 @@ import styled from 'styled-components';
 import { useInvalidWithdrawAmount } from '../logics/useInvalidWithdrawAmount';
 import { useWithdrawReceiveAmount } from '../logics/useWithdrawReceiveAmount';
 import { useWithdrawTxFee } from '../logics/useWithdrawTxFee';
-import { Data as TotalDepositData } from '../queries/totalDeposit';
 import { withdrawOptions } from '../transactions/withdrawOptions';
 
 interface FormParams {
   className?: string;
-  totalDeposit: TotalDepositData;
+  totalDeposit: uUST<BigSource>;
+  exchangeRate: Ratio<BigSource>;
 }
 
 type FormReturn = void;
@@ -51,6 +52,7 @@ function ComponentBase({
   className,
   closeDialog,
   totalDeposit,
+  exchangeRate,
 }: DialogProps<FormParams, FormReturn>) {
   // ---------------------------------------------
   // dependencies
@@ -81,7 +83,7 @@ function ComponentBase({
   const invalidWithdrawAmount = useInvalidWithdrawAmount(
     withdrawAmount,
     bank,
-    totalDeposit.totalDeposit,
+    totalDeposit,
     txFee,
   );
 
@@ -104,14 +106,12 @@ function ComponentBase({
 
       await withdraw({
         address: status.walletAddress,
-        amount: big(withdrawAmount)
-          .div(totalDeposit.exchangeRate.exchange_rate)
-          .toString(),
+        amount: big(withdrawAmount).div(exchangeRate).toString(),
         symbol: 'usd',
         txFee: txFee!.toString() as uUST,
       });
     },
-    [bank.status, totalDeposit.exchangeRate.exchange_rate, withdraw],
+    [bank.status, exchangeRate, withdraw],
   );
 
   // ---------------------------------------------
@@ -161,12 +161,10 @@ function ComponentBase({
                 cursor: 'pointer',
               }}
               onClick={() =>
-                updateWithdrawAmount(
-                  formatUSTInput(demicrofy(totalDeposit.totalDeposit)),
-                )
+                updateWithdrawAmount(formatUSTInput(demicrofy(totalDeposit)))
               }
             >
-              {formatUST(demicrofy(totalDeposit.totalDeposit))} UST
+              {formatUST(demicrofy(totalDeposit))} UST
             </span>
           </span>
         </div>

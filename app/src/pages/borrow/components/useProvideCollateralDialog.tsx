@@ -62,7 +62,13 @@ function ComponentBase({
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { marketUserOverview, marketOverview } = useMarketNotNullable();
+  const {
+    loanAmount,
+    borrowInfo,
+    bLunaMaxLtv,
+    bLunaSafeLtv,
+    oraclePrice,
+  } = useMarketNotNullable();
 
   const { status } = useWallet();
 
@@ -93,59 +99,54 @@ function ComponentBase({
   const amountToLtv = useMemo(
     () =>
       depositAmountToLtv(
-        marketUserOverview.loanAmount.loan_amount,
-        marketUserOverview.borrowInfo.balance,
-        marketUserOverview.borrowInfo.spendable,
-        marketOverview.oraclePrice.rate,
+        loanAmount.loan_amount,
+        borrowInfo.balance,
+        borrowInfo.spendable,
+        oraclePrice.rate,
       ),
     [
-      marketOverview.oraclePrice.rate,
-      marketUserOverview.borrowInfo.balance,
-      marketUserOverview.borrowInfo.spendable,
-      marketUserOverview.loanAmount.loan_amount,
+      oraclePrice.rate,
+      borrowInfo.balance,
+      borrowInfo.spendable,
+      loanAmount.loan_amount,
     ],
   );
 
   const ltvToAmount = useMemo(
     () =>
       ltvToDepositAmount(
-        marketUserOverview.loanAmount.loan_amount,
-        marketUserOverview.borrowInfo.balance,
-        marketUserOverview.borrowInfo.spendable,
-        marketOverview.oraclePrice.rate,
+        loanAmount.loan_amount,
+        borrowInfo.balance,
+        borrowInfo.spendable,
+        oraclePrice.rate,
       ),
     [
-      marketOverview.oraclePrice.rate,
-      marketUserOverview.borrowInfo.balance,
-      marketUserOverview.borrowInfo.spendable,
-      marketUserOverview.loanAmount.loan_amount,
+      oraclePrice.rate,
+      borrowInfo.balance,
+      borrowInfo.spendable,
+      loanAmount.loan_amount,
     ],
   );
 
   const amountToBorrowLimit = useMemo(
     () =>
       depositAmountToBorrowLimit(
-        marketUserOverview.borrowInfo.balance,
-        marketUserOverview.borrowInfo.spendable,
-        marketOverview.oraclePrice.rate,
-        marketOverview.bLunaMaxLtv,
+        borrowInfo.balance,
+        borrowInfo.spendable,
+        oraclePrice.rate,
+        bLunaMaxLtv,
       ),
-    [
-      marketOverview.bLunaMaxLtv,
-      marketOverview.oraclePrice.rate,
-      marketUserOverview.borrowInfo.balance,
-      marketUserOverview.borrowInfo.spendable,
-    ],
+    [bLunaMaxLtv, oraclePrice.rate, borrowInfo.balance, borrowInfo.spendable],
   );
 
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
   const currentLtv = useCurrentLtv(
-    marketUserOverview.loanAmount.loan_amount,
-    marketUserOverview.borrowInfo.balance,
-    marketUserOverview.borrowInfo.spendable,
-    marketOverview.oraclePrice.rate,
+    loanAmount.loan_amount,
+    borrowInfo.balance,
+    borrowInfo.spendable,
+    oraclePrice.rate,
   );
   const nextLtv = useProvideCollateralNextLtv(
     depositAmount,
@@ -297,8 +298,8 @@ function ComponentBase({
         {big(currentLtv ?? 0).gt(0) && (
           <figure className="graph">
             <LTVGraph
-              maxLtv={marketOverview.bLunaMaxLtv}
-              safeLtv={marketOverview.bLunaSafeLtv}
+              maxLtv={bLunaMaxLtv}
+              safeLtv={bLunaSafeLtv}
               currentLtv={currentLtv}
               nextLtv={nextLtv}
               userMinLtv={0 as Ratio<BigSource>}

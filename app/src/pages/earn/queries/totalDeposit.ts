@@ -1,12 +1,15 @@
-import { Num, Ratio, uaUST, uUST } from '@anchor-protocol/notation';
+import { Num, Ratio, uaUST } from '@anchor-protocol/notation';
+import { createMap, useMap } from '@anchor-protocol/use-map';
 import { useWallet } from '@anchor-protocol/wallet-provider';
-import { gql, QueryResult, useQuery } from '@apollo/client';
-import big from 'big.js';
+import { gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
 import { useLastSyncedHeight } from 'pages/earn/queries/lastSyncedHeight';
+import { parseResult } from 'queries/parseResult';
+import { MappedQueryResult } from 'queries/types';
+import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
-export interface StringifiedData {
+export interface RawData {
   aUSTBalance: {
     Result: string;
   };
@@ -17,33 +20,27 @@ export interface StringifiedData {
 
 export interface Data {
   aUSTBalance: {
+    Result: string;
     balance: uaUST<string>;
   };
   exchangeRate: {
+    Result: string;
     a_token_supply: Num<string>;
     exchange_rate: Ratio<string>;
   };
-  totalDeposit: uUST<string>;
+  //totalDeposit: uUST<string>;
 }
 
-export function parseData({
-  aUSTBalance,
-  exchangeRate,
-}: StringifiedData): Data {
-  const parsedAUSTBalance: Data['aUSTBalance'] = JSON.parse(aUSTBalance.Result);
-  const parsedExchangeRate: Data['exchangeRate'] = JSON.parse(
-    exchangeRate.Result,
-  );
-  return {
-    aUSTBalance: parsedAUSTBalance,
-    exchangeRate: parsedExchangeRate,
-    totalDeposit: big(parsedAUSTBalance.balance)
-      .mul(parsedExchangeRate.exchange_rate)
-      .toString() as uUST,
-  };
-}
+export const dataMap = createMap<RawData, Data>({
+  aUSTBalance: (existing, { aUSTBalance }) => {
+    return parseResult(existing.aUSTBalance, aUSTBalance.Result);
+  },
+  exchangeRate: (existing, { exchangeRate }) => {
+    return parseResult(existing.exchangeRate, exchangeRate.Result);
+  },
+});
 
-export interface StringifiedVariables {
+export interface RawVariables {
   anchorTokenContract: string;
   anchorTokenBalanceQuery: string;
   moneyMarketContract: string;
@@ -65,12 +62,12 @@ export interface Variables {
   };
 }
 
-export function stringifyVariables({
+export function mapVariables({
   anchorTokenContract,
   anchorTokenBalanceQuery,
   moneyMarketContract,
   moneyMarketEpochQuery,
-}: Variables): StringifiedVariables {
+}: Variables): RawVariables {
   return {
     anchorTokenContract,
     anchorTokenBalanceQuery: JSON.stringify(anchorTokenBalanceQuery),
@@ -102,17 +99,14 @@ export const query = gql`
   }
 `;
 
-export function useTotalDeposit(): QueryResult<
-  StringifiedData,
-  StringifiedVariables
-> & { parsedData: Data | undefined } {
+export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
   const addressProvider = useAddressProvider();
   const { status } = useWallet();
 
-  const { parsedData: lastSyncedHeight } = useLastSyncedHeight();
+  const { data: lastSyncedHeight } = useLastSyncedHeight();
 
   const variables = useMemo(() => {
-    return stringifyVariables({
+    return mapVariables({
       anchorTokenContract: addressProvider.aToken(''),
       anchorTokenBalanceQuery: {
         balance: {
@@ -129,18 +123,20 @@ export function useTotalDeposit(): QueryResult<
     });
   }, [addressProvider, lastSyncedHeight, status]);
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
+  const { data: _data, refetch: _refetch, ...result } = useQuery<
+    RawData,
+    RawVariables
+  >(query, {
     skip: status.status !== 'ready' || typeof lastSyncedHeight !== 'number',
     variables,
   });
 
-  const parsedData = useMemo(
-    () => (result.data ? parseData(result.data) : undefined),
-    [result.data],
-  );
+  const data = useMap(_data, dataMap);
+  const refetch = useRefetch(_refetch, dataMap);
 
   return {
     ...result,
-    parsedData,
+    data,
+    refetch,
   };
 }

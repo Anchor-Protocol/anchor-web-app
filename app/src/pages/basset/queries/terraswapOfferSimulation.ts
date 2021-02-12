@@ -1,60 +1,35 @@
 import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
-import { min } from '@anchor-protocol/big-math';
-import { Ratio, ubLuna, uLuna, uUST } from '@anchor-protocol/notation';
-import { ApolloClient, ApolloQueryResult, gql } from '@apollo/client';
-import big, { Big } from 'big.js';
-import { Bank } from 'contexts/bank';
-import { SwapSimulation } from 'pages/basset/models/swapSimulation';
-import { Data as TaxData } from 'queries/tax';
+import { ubLuna, uLuna } from '@anchor-protocol/notation';
+import { createMap, map } from '@anchor-protocol/use-map';
+import { ApolloClient, gql } from '@apollo/client';
+import { parseResult } from 'queries/parseResult';
+import { MappedApolloQueryResult } from 'queries/types';
 
-export interface StringifiedData {
+export interface RawData {
   terraswapOfferSimulation: {
     Result: string;
   };
 }
 
-export interface Data extends SwapSimulation {
-  commission_amount: uLuna;
-  return_amount: uLuna;
-  spread_amount: uLuna;
-}
-
-export function parseData(
-  { terraswapOfferSimulation }: StringifiedData,
-  burnAmount: ubLuna,
-  { taxRate, maxTaxUUSD }: TaxData,
-): Data {
-  const data = JSON.parse(terraswapOfferSimulation.Result) as Pick<
-    Data,
-    'commission_amount' | 'return_amount' | 'spread_amount'
-  >;
-
-  const beliefPrice = big(data.return_amount).div(burnAmount);
-  const maxSpread = 0.1;
-
-  const tax = min(
-    big(burnAmount).mul(beliefPrice).mul(taxRate),
-    maxTaxUUSD,
-  ) as uUST<Big>;
-  const expectedAmount = big(burnAmount).mul(beliefPrice).minus(tax);
-  const rate = big(1).minus(maxSpread);
-  const minimumReceived = expectedAmount.mul(rate).toFixed() as uLuna;
-  const swapFee = big(data.commission_amount)
-    .plus(data.spread_amount)
-    .toFixed() as uLuna;
-
-  return {
-    ...data,
-    minimumReceived,
-    swapFee,
-    beliefPrice: beliefPrice.toFixed() as Ratio,
-    maxSpread: maxSpread.toString() as Ratio,
-
-    lunaAmount: big(burnAmount).mul(beliefPrice).toString() as uLuna,
+export interface Data {
+  terraswapOfferSimulation: {
+    Result: string;
+    commission_amount: uLuna;
+    return_amount: uLuna;
+    spread_amount: uLuna;
   };
 }
 
-export interface StringifiedVariables {
+export const dataMap = createMap<RawData, Data>({
+  terraswapOfferSimulation: (existing, { terraswapOfferSimulation }) => {
+    return parseResult(
+      existing.terraswapOfferSimulation,
+      terraswapOfferSimulation.Result,
+    );
+  },
+});
+
+export interface RawVariables {
   bLunaTerraswap: string;
   offerSimulationQuery: string;
 }
@@ -75,10 +50,10 @@ export interface Variables {
   };
 }
 
-export function stringifyVariables({
+export function mapVariables({
   bLunaTerraswap,
   offerSimulationQuery,
-}: Variables): StringifiedVariables {
+}: Variables): RawVariables {
   return {
     bLunaTerraswap,
     offerSimulationQuery: JSON.stringify(offerSimulationQuery),
@@ -100,13 +75,12 @@ export function queryTerraswapOfferSimulation(
   client: ApolloClient<any>,
   addressProvider: AddressProvider,
   burnAmount: ubLuna,
-  bank: Bank,
-): Promise<ApolloQueryResult<StringifiedData> & { parsedData: Data }> {
+): Promise<MappedApolloQueryResult<RawData, Data>> {
   return client
-    .query<StringifiedData, StringifiedVariables>({
+    .query<RawData, RawVariables>({
       query,
       fetchPolicy: 'network-only',
-      variables: stringifyVariables({
+      variables: mapVariables({
         bLunaTerraswap: addressProvider.blunaBurnPair(),
         offerSimulationQuery: {
           simulation: {
@@ -125,7 +99,7 @@ export function queryTerraswapOfferSimulation(
     .then((result) => {
       return {
         ...result,
-        parsedData: parseData(result.data, burnAmount, bank.tax),
+        data: map(result.data, dataMap),
       };
     });
 }

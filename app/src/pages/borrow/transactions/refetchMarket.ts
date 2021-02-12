@@ -4,57 +4,65 @@ import { ApolloClient } from '@apollo/client';
 import {
   Data as MarketBalance,
   queryMarketBalanceOverview,
-} from 'pages/borrow/queries/marketBalanceOverview';
+} from '../queries/marketBalanceOverview';
 import {
   Data as MarketOverview,
   queryMarketOverview,
-} from 'pages/borrow/queries/marketOverview';
+} from '../queries/marketOverview';
 import {
   Data as MarketUserOverview,
   queryMarketUserOverview,
-} from 'pages/borrow/queries/marketUserOverview';
-import { Data } from 'queries/txInfos';
-import { TxResult } from 'transactions/tx';
+} from '../queries/marketUserOverview';
 
 export const refetchMarket = (
   addressProvider: AddressProvider,
   client: ApolloClient<any>,
   walletStatus: WalletStatus,
-) => async ({
-  txInfo,
-  txResult,
-}: {
-  txResult: TxResult;
-  txInfo: Data;
-}): Promise<{
-  txResult: TxResult;
-  txInfo: Data;
-  marketBalance: MarketBalance;
-  marketOverview: MarketOverview;
-  marketUserOverview: MarketUserOverview;
+) => async (_: {}): Promise<{
+  currentBlock?: MarketBalance['currentBlock'];
+  marketBalance?: MarketBalance['marketBalance'];
+  marketState?: MarketBalance['marketState'];
+  borrowRate?: MarketOverview['borrowRate'];
+  oraclePrice?: MarketOverview['oraclePrice'];
+  overseerWhitelist?: MarketOverview['overseerWhitelist'];
+  loanAmount?: MarketUserOverview['loanAmount'];
+  liability?: MarketUserOverview['liability'];
+  borrowInfo?: MarketUserOverview['borrowInfo'];
 }> => {
-  const { parsedData: marketBalance } = await queryMarketBalanceOverview(
-    client,
-    addressProvider,
-  );
+  const {
+    data: { currentBlock, marketBalance, marketState },
+  } = await queryMarketBalanceOverview(client, addressProvider);
+
+  if (typeof currentBlock !== 'number' || !marketBalance || !marketState) {
+    return {};
+  }
+
   const [
-    { parsedData: marketUserOverview },
-    { parsedData: marketOverview },
+    {
+      data: { borrowRate, oraclePrice, overseerWhitelist },
+    },
+    {
+      data: { loanAmount, liability, borrowInfo },
+    },
   ] = await Promise.all([
+    queryMarketOverview(client, addressProvider, marketBalance, marketState),
     queryMarketUserOverview(
       client,
       addressProvider,
       walletStatus,
-      marketBalance,
+      currentBlock,
     ),
-    queryMarketOverview(client, addressProvider, marketBalance),
   ]);
 
   return {
-    txInfo,
-    txResult,
+    currentBlock,
     marketBalance,
-    marketOverview,
-    marketUserOverview,
+    marketState,
+    borrowRate,
+    oraclePrice,
+    overseerWhitelist,
+    loanAmount,
+    liability,
+    borrowInfo,
   };
 };

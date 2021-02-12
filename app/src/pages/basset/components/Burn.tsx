@@ -74,7 +74,9 @@ export function Burn() {
   // ---------------------------------------------
   const bank = useBank();
 
-  const { parsedData: exchangeRate } = useExchangeRate({
+  const {
+    data: { exchangeRate },
+  } = useExchangeRate({
     bAsset: getCurrency.value,
   });
 

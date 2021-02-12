@@ -55,12 +55,16 @@ export function WithdrawSection({
   // ---------------------------------------------
   const bank = useBank();
 
-  const { parsedData: withdrawable } = useWithdrawable({
+  const {
+    data: { withdrawableAmount: _withdrawableAmount, withdrawRequests },
+  } = useWithdrawable({
     bAsset: 'bluna',
   });
 
-  const { parsedData: withdrawAllHistory } = useWithdrawHistory({
-    withdrawable,
+  const {
+    data: { allHistory, parameters },
+  } = useWithdrawHistory({
+    withdrawRequestsStartFrom: withdrawRequests?.startFrom,
   });
 
   // ---------------------------------------------
@@ -69,13 +73,13 @@ export function WithdrawSection({
   const invalidTxFee = useInvalidTxFee(bank, fixedGas);
 
   const withdrawHistory = useWithdrawAllHistory(
-    withdrawable?.withdrawRequestsStartFrom,
-    withdrawable?.withdrawRequests.requests,
-    withdrawAllHistory?.allHistory,
-    withdrawAllHistory?.parameters,
+    withdrawRequests?.startFrom,
+    withdrawRequests?.requests,
+    allHistory,
+    parameters,
   );
   const withdrawableAmount = useWithdrawableAmount(
-    withdrawable?.withdrawableAmount.withdrawable,
+    _withdrawableAmount?.withdrawable,
   );
 
   // ---------------------------------------------

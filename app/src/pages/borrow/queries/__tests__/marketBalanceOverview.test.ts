@@ -1,29 +1,30 @@
+import { map } from '@anchor-protocol/use-map';
 import { testAddressProvider, testClient } from 'test.env';
 import {
-  parseData,
+  dataMap,
+  mapVariables,
   query,
-  StringifiedData,
-  StringifiedVariables,
-  stringifyVariables,
+  RawData,
+  RawVariables,
 } from '../marketBalanceOverview';
 
 export async function getMarketBalance() {
   return await testClient
-    .query<StringifiedData, StringifiedVariables>({
+    .query<RawData, RawVariables>({
       query,
-      variables: stringifyVariables({
+      variables: mapVariables({
         marketContractAddress: testAddressProvider.market('uusd'),
         marketStateQuery: {
           state: {},
         },
       }),
     })
-    .then(({ data }) => parseData(data));
+    .then(({ data }) => map(data, dataMap));
 }
 
 describe('queries/marketBalanceOverview', () => {
   test('should get result from query', async () => {
     const data = await getMarketBalance();
-    expect(typeof data.marketState.total_liabilities).toBe('string');
+    expect(typeof data.marketState?.total_liabilities).toBe('string');
   });
 });

@@ -1,11 +1,14 @@
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { uaUST, ubLuna, uLuna, uUST } from '@anchor-protocol/notation';
+import { createMap, useMap } from '@anchor-protocol/use-map';
 import { useWallet } from '@anchor-protocol/wallet-provider';
-import { gql, QueryResult, useQuery } from '@apollo/client';
+import { gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
+import { MappedQueryResult } from 'queries/types';
+import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
-export interface StringifiedData {
+export interface RawData {
   bankBalances: {
     Result: { Denom: string; Amount: string }[];
   };
@@ -21,37 +24,29 @@ export interface StringifiedData {
 
 export interface Data {
   uUSD: uUST<string>;
-
   uLuna: uLuna<string>;
-
   ubLuna: ubLuna<string>;
-
   uaUST: uaUST<string>;
 }
 
-export function parseData({
-  bankBalances,
-  uaUSTBalance,
-  ubLunaBalance,
-}: StringifiedData): Data {
-  const bank = bankBalances.Result;
+export const dataMap = createMap<RawData, Data>({
+  uUSD: (_, { bankBalances }) => {
+    return (bankBalances.Result.find(({ Denom }) => Denom === 'uusd')?.Amount ??
+      '0') as uUST;
+  },
+  uLuna: (_, { bankBalances }) => {
+    return (bankBalances.Result.find(({ Denom }) => Denom === 'uluna')
+      ?.Amount ?? '0') as uLuna;
+  },
+  uaUST: (_, { uaUSTBalance }) => {
+    return JSON.parse(uaUSTBalance.Result).balance as uaUST;
+  },
+  ubLuna: (_, { ubLunaBalance }) => {
+    return JSON.parse(ubLunaBalance.Result).balance as ubLuna;
+  },
+});
 
-  const bluna: { balance: string } = JSON.parse(ubLunaBalance.Result);
-  const aust: { balance: string } = JSON.parse(uaUSTBalance.Result);
-  const usd: string | undefined = bank.find(({ Denom }) => Denom === 'uusd')
-    ?.Amount;
-  const luna: string | undefined = bank.find(({ Denom }) => Denom === 'uluna')
-    ?.Amount;
-
-  return {
-    uUSD: (usd ?? '0') as uUST,
-    uLuna: (luna ?? '0') as uLuna,
-    ubLuna: bluna.balance as ubLuna,
-    uaUST: aust.balance as uaUST,
-  };
-}
-
-export interface StringifiedVariables {
+export interface RawVariables {
   walletAddress: string;
   bAssetTokenAddress: string;
   bAssetTokenBalanceQuery: string;
@@ -65,11 +60,11 @@ export interface Variables {
   aTokenAddress: string;
 }
 
-export function stringifyVariables({
+export function mapVariables({
   walletAddress,
   bAssetTokenAddress,
   aTokenAddress,
-}: Variables): StringifiedVariables {
+}: Variables): RawVariables {
   return {
     walletAddress,
     bAssetTokenAddress,
@@ -121,24 +116,26 @@ export const query = gql`
   }
 `;
 
-export function useUserBalances(): QueryResult<
-  StringifiedData,
-  StringifiedVariables
-> & {
-  parsedData: Data | undefined;
-} {
+export function useUserBalances(): MappedQueryResult<
+  RawVariables,
+  RawData,
+  Data
+> {
   const addressProvider = useAddressProvider();
   const { status } = useWallet();
 
   const variables = useMemo(() => {
-    return stringifyVariables({
+    return mapVariables({
       walletAddress: status.status === 'ready' ? status.walletAddress : '',
       bAssetTokenAddress: addressProvider.bAssetToken('bluna'),
       aTokenAddress: addressProvider.aToken('usd'),
     });
   }, [addressProvider, status]);
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
+  const { data: _data, refetch: _refetch, ...result } = useQuery<
+    RawData,
+    RawVariables
+  >(query, {
     skip: status.status !== 'ready',
     fetchPolicy: 'network-only',
     variables,
@@ -146,17 +143,16 @@ export function useUserBalances(): QueryResult<
 
   useSubscription((id, event) => {
     if (event === 'done') {
-      result.refetch();
+      _refetch();
     }
   });
 
-  const parsedData = useMemo(
-    () => (result.data ? parseData(result.data) : undefined),
-    [result.data],
-  );
+  const data = useMap(_data, dataMap);
+  const refetch = useRefetch(_refetch, dataMap);
 
   return {
     ...result,
-    parsedData,
+    data,
+    refetch,
   };
 }

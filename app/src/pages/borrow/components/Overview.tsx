@@ -24,16 +24,22 @@ export interface OverviewProps {
 }
 
 function OverviewBase({ className }: OverviewProps) {
-  const { marketOverview, marketUserOverview, marketBalance } = useMarket();
+  const {
+    borrowRate,
+    loanAmount,
+    borrowInfo,
+    oraclePrice,
+    bLunaMaxLtv,
+  } = useMarket();
 
   const { blocksPerYear } = useNetConstants();
 
-  const apr = useAPR(marketOverview?.borrowRate.rate, blocksPerYear);
-  const borrowed = useBorrowed(marketUserOverview?.loanAmount.loan_amount);
+  const apr = useAPR(borrowRate?.rate, blocksPerYear);
+  const borrowed = useBorrowed(loanAmount?.loan_amount);
   const collaterals = useCollaterals(
-    marketUserOverview?.borrowInfo.balance,
-    marketUserOverview?.borrowInfo.spendable,
-    marketOverview?.oraclePrice.rate,
+    borrowInfo?.balance,
+    borrowInfo?.spendable,
+    oraclePrice?.rate,
   );
 
   // TODO
@@ -101,11 +107,9 @@ function OverviewBase({ className }: OverviewProps) {
 
       <figure>
         <BorrowLimitGraph
-          bLunaMaxLtv={marketOverview?.bLunaMaxLtv ?? (0 as Ratio<BigSource>)}
+          bLunaMaxLtv={bLunaMaxLtv ?? (0 as Ratio<BigSource>)}
           collateralValue={collaterals}
-          loanAmount={
-            marketUserOverview?.loanAmount.loan_amount ?? (0 as uUST<BigSource>)
-          }
+          loanAmount={loanAmount?.loan_amount ?? (0 as uUST<BigSource>)}
         />
       </figure>
     </Section>

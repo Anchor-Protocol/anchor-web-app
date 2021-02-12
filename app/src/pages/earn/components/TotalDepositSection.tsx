@@ -6,10 +6,14 @@ import {
   demicrofy,
   formatUST,
   mapDecimalPointBaseSeparatedNumbers,
+  Ratio,
+  uUST,
 } from '@anchor-protocol/notation';
+import { BigSource } from 'big.js';
+import { useTotalDeposit } from 'pages/earn/logics/useTotalDeposit';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
-import { useTotalDeposit } from '../queries/totalDeposit';
+import { useDeposit } from '../queries/totalDeposit';
 import { useDepositDialog } from './useDepositDialog';
 import { useWithdrawDialog } from './useWithdrawDialog';
 
@@ -21,7 +25,17 @@ function TotalDepositSectionBase({ className }: TotalDepositSectionProps) {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const { parsedData: totalDeposit } = useTotalDeposit();
+  const {
+    data: { aUSTBalance, exchangeRate },
+  } = useDeposit();
+
+  // ---------------------------------------------
+  // logics
+  // ---------------------------------------------
+  const totalDeposit = useTotalDeposit(
+    aUSTBalance?.balance,
+    exchangeRate?.exchange_rate,
+  );
 
   // ---------------------------------------------
   // dialogs
@@ -33,11 +47,17 @@ function TotalDepositSectionBase({ className }: TotalDepositSectionProps) {
     await openDepositDialog({});
   }, [openDepositDialog]);
 
-  const openWithdraw = useCallback(async () => {
-    if (totalDeposit) {
-      await openWithdrawDialog({ totalDeposit });
-    }
-  }, [openWithdrawDialog, totalDeposit]);
+  const openWithdraw = useCallback(
+    async (totalDeposit: uUST<BigSource>, exchangeRate: Ratio<BigSource>) => {
+      if (totalDeposit) {
+        await openWithdrawDialog({
+          totalDeposit,
+          exchangeRate,
+        });
+      }
+    },
+    [openWithdrawDialog],
+  );
 
   // ---------------------------------------------
   // presentation
@@ -54,26 +74,29 @@ function TotalDepositSectionBase({ className }: TotalDepositSectionProps) {
       </h2>
 
       <div className="amount">
-        {totalDeposit?.totalDeposit
-          ? mapDecimalPointBaseSeparatedNumbers(
-              formatUST(demicrofy(totalDeposit.totalDeposit)),
-              (i, d) => {
-                return (
-                  <>
-                    {i}
-                    {d ? <span className="decimal-point">.{d}</span> : null} UST
-                  </>
-                );
-              },
-            )
-          : `0 UST`}
+        {mapDecimalPointBaseSeparatedNumbers(
+          formatUST(demicrofy(totalDeposit)),
+          (i, d) => {
+            return (
+              <>
+                {i}
+                {d ? <span className="decimal-point">.{d}</span> : null} UST
+              </>
+            );
+          },
+        )}
       </div>
 
       <aside className="total-deposit-buttons">
         <ActionButton disabled={!totalDeposit} onClick={() => openDeposit()}>
           Deposit
         </ActionButton>
-        <ActionButton disabled={!totalDeposit} onClick={() => openWithdraw()}>
+        <ActionButton
+          disabled={!totalDeposit || !exchangeRate?.exchange_rate}
+          onClick={() =>
+            openWithdraw(totalDeposit, exchangeRate!.exchange_rate)
+          }
+        >
           Withdraw
         </ActionButton>
       </aside>

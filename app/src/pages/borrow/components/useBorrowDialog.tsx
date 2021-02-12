@@ -20,9 +20,9 @@ import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import big, { Big, BigSource } from 'big.js';
+import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { MessageBox } from 'components/MessageBox';
 import { useBank } from 'contexts/bank';
 import { useNetConstants } from 'contexts/net-contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
@@ -63,7 +63,14 @@ function ComponentBase({
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { marketUserOverview, marketOverview } = useMarketNotNullable();
+  const {
+    loanAmount,
+    borrowInfo,
+    oraclePrice,
+    bLunaMaxLtv,
+    bLunaSafeLtv,
+    borrowRate,
+  } = useMarketNotNullable();
 
   const { status } = useWallet();
 
@@ -89,32 +96,32 @@ function ComponentBase({
   const amountToLtv = useMemo(
     () =>
       borrowAmountToLtv(
-        marketUserOverview.loanAmount.loan_amount,
-        marketUserOverview.borrowInfo.balance,
-        marketUserOverview.borrowInfo.spendable,
-        marketOverview.oraclePrice.rate,
+        loanAmount.loan_amount,
+        borrowInfo.balance,
+        borrowInfo.spendable,
+        oraclePrice.rate,
       ),
     [
-      marketOverview.oraclePrice.rate,
-      marketUserOverview.borrowInfo.balance,
-      marketUserOverview.borrowInfo.spendable,
-      marketUserOverview.loanAmount.loan_amount,
+      oraclePrice.rate,
+      borrowInfo.balance,
+      borrowInfo.spendable,
+      loanAmount.loan_amount,
     ],
   );
 
   const ltvToAmount = useMemo(
     () =>
       ltvToBorrowAmount(
-        marketUserOverview.loanAmount.loan_amount,
-        marketUserOverview.borrowInfo.balance,
-        marketUserOverview.borrowInfo.spendable,
-        marketOverview.oraclePrice.rate,
+        loanAmount.loan_amount,
+        borrowInfo.balance,
+        borrowInfo.spendable,
+        oraclePrice.rate,
       ),
     [
-      marketOverview.oraclePrice.rate,
-      marketUserOverview.borrowInfo.balance,
-      marketUserOverview.borrowInfo.spendable,
-      marketUserOverview.loanAmount.loan_amount,
+      oraclePrice.rate,
+      borrowInfo.balance,
+      borrowInfo.spendable,
+      loanAmount.loan_amount,
     ],
   );
 
@@ -122,27 +129,27 @@ function ComponentBase({
   // logics
   // ---------------------------------------------
   const currentLtv = useCurrentLtv(
-    marketUserOverview.loanAmount.loan_amount,
-    marketUserOverview.borrowInfo.balance,
-    marketUserOverview.borrowInfo.spendable,
-    marketOverview.oraclePrice.rate,
+    loanAmount.loan_amount,
+    borrowInfo.balance,
+    borrowInfo.spendable,
+    oraclePrice.rate,
   );
   const nextLtv = useBorrowNextLtv(borrowAmount, currentLtv, amountToLtv);
-  const apr = useAPR(marketOverview.borrowRate.rate, blocksPerYear);
+  const apr = useAPR(borrowRate.rate, blocksPerYear);
   const safeMax = useBorrowSafeMax(
-    marketUserOverview.loanAmount.loan_amount,
-    marketUserOverview.borrowInfo.balance,
-    marketUserOverview.borrowInfo.spendable,
-    marketOverview.oraclePrice.rate,
-    marketOverview.bLunaSafeLtv,
+    loanAmount.loan_amount,
+    borrowInfo.balance,
+    borrowInfo.spendable,
+    oraclePrice.rate,
+    bLunaSafeLtv,
     currentLtv,
   );
   const max = useBorrowMax(
-    marketUserOverview.loanAmount.loan_amount,
-    marketUserOverview.borrowInfo.balance,
-    marketUserOverview.borrowInfo.spendable,
-    marketOverview.oraclePrice.rate,
-    marketOverview.bLunaMaxLtv,
+    loanAmount.loan_amount,
+    borrowInfo.balance,
+    borrowInfo.spendable,
+    oraclePrice.rate,
+    bLunaMaxLtv,
   );
   const txFee = useBorrowTxFee(borrowAmount, bank, fixedGas);
   const receiveAmount = useBorrowReceiveAmount(borrowAmount, txFee);
@@ -273,12 +280,12 @@ function ComponentBase({
         <figure className="graph">
           <LTVGraph
             disabled={max.lte(0)}
-            maxLtv={marketOverview.bLunaMaxLtv}
-            safeLtv={marketOverview.bLunaSafeLtv}
+            maxLtv={bLunaMaxLtv}
+            safeLtv={bLunaSafeLtv}
             currentLtv={currentLtv}
             nextLtv={nextLtv}
             userMinLtv={currentLtv}
-            userMaxLtv={marketOverview.bLunaMaxLtv}
+            userMaxLtv={bLunaMaxLtv}
             onStep={ltvStepFunction}
             onChange={onLtvChange}
           />

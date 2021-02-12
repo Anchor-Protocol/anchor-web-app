@@ -88,11 +88,15 @@ function MintBase({ className }: MintProps) {
   // ---------------------------------------------
   const bank = useBank();
 
-  const { parsedData: validators } = useValidators({
+  const {
+    data: { whitelistedValidators },
+  } = useValidators({
     bAsset: mintCurrency.value,
   });
 
-  const { parsedData: exchangeRate } = useExchangeRate({
+  const {
+    data: { exchangeRate },
+  } = useExchangeRate({
     bAsset: mintCurrency.value,
   });
 
@@ -307,21 +311,19 @@ function MintBase({ className }: MintProps) {
         value={selectedValidator?.OperatorAddress ?? ''}
         onChange={({ target }) =>
           setSelectedValidator(
-            validators?.whitelistedValidators.find(
+            whitelistedValidators?.find(
               ({ OperatorAddress }) => target.value === OperatorAddress,
             ) ?? null,
           )
         }
-        disabled={validators?.whitelistedValidators.length === 0}
+        disabled={whitelistedValidators?.length === 0}
       >
         <option value="">Select validator</option>
-        {validators?.whitelistedValidators.map(
-          ({ Description, OperatorAddress }) => (
-            <option key={OperatorAddress} value={OperatorAddress}>
-              {Description.Moniker}
-            </option>
-          ),
-        )}
+        {whitelistedValidators?.map(({ Description, OperatorAddress }) => (
+          <option key={OperatorAddress} value={OperatorAddress}>
+            {Description.Moniker}
+          </option>
+        ))}
       </NativeSelect>
 
       <TxFeeList className="receipt">

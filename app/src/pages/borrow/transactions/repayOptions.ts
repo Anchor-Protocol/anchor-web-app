@@ -43,11 +43,11 @@ export const repayOptions = createOperationOptions({
     })), // -> CreateTxOptions
     timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<StringifiedTxResult>
     parseTxResult, // -> TxResult
-    getTxInfo(client, signal), // -> { TxResult, TxInfo }
     merge(
-      refetchMarket(addressProvider, client, walletStatus),
-      injectTxFee(storage),
-    ), // -> { TxResult, TxInfo, MarketBalanceOverview, MarketOverview, MarketUserOverview, txFee }
+      getTxInfo(client, signal), // -> { TxResult, TxInfo }
+      refetchMarket(addressProvider, client, walletStatus), // -> { loanAmount, borrowInfo... }
+      injectTxFee(storage), // -> { txFee }
+    ),
     pickRepayResult, // -> TransactionResult
   ],
   renderBroadcast: renderBroadcastTransaction,

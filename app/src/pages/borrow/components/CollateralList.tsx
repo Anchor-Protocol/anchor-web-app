@@ -26,7 +26,7 @@ function CollateralListBase({ className }: CollateralListProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { marketOverview, marketUserOverview, refetch } = useMarket();
+  const { ready, borrowInfo, oraclePrice, loanAmount, refetch } = useMarket();
 
   const { status } = useWallet();
 
@@ -44,14 +44,14 @@ function CollateralListBase({ className }: CollateralListProps) {
   // compute
   // ---------------------------------------------
   const collaterals = useCollaterals(
-    marketUserOverview?.borrowInfo.balance,
-    marketUserOverview?.borrowInfo.spendable,
+    borrowInfo?.balance,
+    borrowInfo?.spendable,
     1 as Ratio<number>,
   );
   const collateralsInUST = useCollaterals(
-    marketUserOverview?.borrowInfo.balance,
-    marketUserOverview?.borrowInfo.spendable,
-    marketOverview?.oraclePrice.rate,
+    borrowInfo?.balance,
+    borrowInfo?.spendable,
+    oraclePrice?.rate,
   );
 
   // ---------------------------------------------
@@ -101,11 +101,7 @@ function CollateralListBase({ className }: CollateralListProps) {
             </td>
             <td>
               <ActionButton
-                disabled={
-                  status.status !== 'ready' ||
-                  !marketOverview ||
-                  !marketUserOverview
-                }
+                disabled={status.status !== 'ready' || !ready}
                 onClick={() => {
                   refetch();
                   openProvideCollateralDialog({});
@@ -116,12 +112,11 @@ function CollateralListBase({ className }: CollateralListProps) {
               <ActionButton
                 disabled={
                   status.status !== 'ready' ||
-                  !marketOverview ||
-                  !marketUserOverview ||
-                  (big(marketUserOverview.borrowInfo.balance)
-                    .minus(marketUserOverview.borrowInfo.spendable)
-                    .eq(0) &&
-                    big(marketUserOverview.loanAmount.loan_amount).lte(0))
+                  !ready ||
+                  !borrowInfo ||
+                  !loanAmount ||
+                  (big(borrowInfo.balance).minus(borrowInfo.spendable).eq(0) &&
+                    big(loanAmount.loan_amount).lte(0))
                 }
                 onClick={() => {
                   refetch();

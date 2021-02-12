@@ -1,8 +1,11 @@
-import { gql, QueryResult, useQuery } from '@apollo/client';
+import { createMap, useMap } from '@anchor-protocol/use-map';
+import { gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
+import { MappedQueryResult } from 'queries/types';
+import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
-export interface StringifiedData {
+export interface RawData {
   validators: {
     Result: {
       OperatorAddress: string;
@@ -31,23 +34,22 @@ export interface Data {
   }[];
 }
 
-export function parseData({
-  validators,
-  whitelistedValidators,
-}: StringifiedData): Data {
-  const set: Set<string> = new Set(
-    JSON.parse(whitelistedValidators.Result).validators,
-  );
+export const dataMap = createMap<RawData, Data>({
+  validators: (_, { validators }) => {
+    return validators.Result;
+  },
+  whitelistedValidators: (existing, { validators, whitelistedValidators }) => {
+    const set: Set<string> = new Set(
+      JSON.parse(whitelistedValidators.Result).validators,
+    );
 
-  return {
-    validators: validators.Result,
-    whitelistedValidators: validators.Result.filter(({ OperatorAddress }) =>
+    return validators.Result.filter(({ OperatorAddress }) =>
       set.has(OperatorAddress),
-    ),
-  };
-}
+    );
+  },
+});
 
-export interface StringifiedVariables {
+export interface RawVariables {
   bLunaHubContract: string;
   whitelistedValidatorsQuery: string;
 }
@@ -59,10 +61,10 @@ export interface Variables {
   };
 }
 
-export function stringifyVariables({
+export function mapVariables({
   bLunaHubContract,
   whitelistedValidatorsQuery = { whitelisted_validators: {} },
-}: Variables): StringifiedVariables {
+}: Variables): RawVariables {
   return {
     bLunaHubContract,
     whitelistedValidatorsQuery: JSON.stringify(whitelistedValidatorsQuery),
@@ -93,13 +95,11 @@ export function useValidators({
   bAsset,
 }: {
   bAsset: string;
-}): QueryResult<StringifiedData, StringifiedVariables> & {
-  parsedData: Data | undefined;
-} {
+}): MappedQueryResult<RawVariables, RawData, Data> {
   const addressProvider = useAddressProvider();
 
   const variables = useMemo(() => {
-    return stringifyVariables({
+    return mapVariables({
       bLunaHubContract: addressProvider.bAssetHub(bAsset),
       whitelistedValidatorsQuery: {
         whitelisted_validators: {},
@@ -107,18 +107,20 @@ export function useValidators({
     });
   }, [addressProvider, bAsset]);
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
+  const { data: _data, refetch: _refetch, ...result } = useQuery<
+    RawData,
+    RawVariables
+  >(query, {
     fetchPolicy: 'network-only',
     variables,
   });
 
-  const parsedData = useMemo(
-    () => (result.data ? parseData(result.data) : undefined),
-    [result.data],
-  );
+  const data = useMap(_data, dataMap);
+  const refetch = useRefetch(_refetch, dataMap);
 
   return {
     ...result,
-    parsedData,
+    data,
+    refetch,
   };
 }

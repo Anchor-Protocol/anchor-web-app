@@ -1,11 +1,15 @@
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { Num, ubLuna } from '@anchor-protocol/notation';
+import { createMap, useMap } from '@anchor-protocol/use-map';
 import { useWallet } from '@anchor-protocol/wallet-provider';
-import { gql, QueryResult, useQuery } from '@apollo/client';
+import { gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
+import { parseResult } from 'queries/parseResult';
+import { MappedQueryResult } from 'queries/types';
+import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
-export interface StringifiedData {
+export interface RawData {
   rewardState: {
     Result: string;
   };
@@ -17,11 +21,13 @@ export interface StringifiedData {
 
 export interface Data {
   rewardState: {
+    Result: string;
     global_index: Num<string>;
     total_balance: ubLuna<string>;
   };
 
   claimableReward: {
+    Result: string;
     address: string;
     balance: ubLuna<string>;
     index: Num<string>;
@@ -29,17 +35,16 @@ export interface Data {
   };
 }
 
-export function parseData({
-  rewardState,
-  claimableReward,
-}: StringifiedData): Data {
-  return {
-    rewardState: JSON.parse(rewardState.Result),
-    claimableReward: JSON.parse(claimableReward.Result),
-  };
-}
+export const dataMap = createMap<RawData, Data>({
+  rewardState: (existing, { rewardState }) => {
+    return parseResult(existing.rewardState, rewardState.Result);
+  },
+  claimableReward: (existing, { claimableReward }: RawData) => {
+    return parseResult(existing.claimableReward, claimableReward.Result);
+  },
+});
 
-export interface StringifiedVariables {
+export interface RawVariables {
   bAssetRewardContract: string;
   rewardState: string;
   claimableRewardQuery: string;
@@ -57,11 +62,11 @@ export interface Variables {
   };
 }
 
-export function stringifyVariables({
+export function mapVariables({
   bAssetRewardContract,
   rewardState,
   claimableRewardQuery,
-}: Variables): StringifiedVariables {
+}: Variables): RawVariables {
   return {
     bAssetRewardContract,
     rewardState: JSON.stringify(rewardState),
@@ -91,15 +96,12 @@ export const query = gql`
   }
 `;
 
-export function useClaimable(): QueryResult<
-  StringifiedData,
-  StringifiedVariables
-> & { parsedData: Data | undefined } {
+export function useClaimable(): MappedQueryResult<RawVariables, RawData, Data> {
   const addressProvider = useAddressProvider();
   const { status } = useWallet();
 
   const variables = useMemo(() => {
-    return stringifyVariables({
+    return mapVariables({
       bAssetRewardContract: addressProvider.bAssetReward(''),
       rewardState: {
         state: {},
@@ -112,7 +114,10 @@ export function useClaimable(): QueryResult<
     });
   }, [addressProvider, status]);
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
+  const { data: _data, refetch: _refetch, ...result } = useQuery<
+    RawData,
+    RawVariables
+  >(query, {
     skip: status.status !== 'ready',
     fetchPolicy: 'network-only',
     variables,
@@ -120,17 +125,16 @@ export function useClaimable(): QueryResult<
 
   useSubscription((id, event) => {
     if (event === 'done') {
-      result.refetch();
+      _refetch();
     }
   });
 
-  const parsedData = useMemo(
-    () => (result.data ? parseData(result.data) : undefined),
-    [result.data],
-  );
+  const data = useMap(_data, dataMap);
+  const refetch = useRefetch(_refetch, dataMap);
 
   return {
     ...result,
-    parsedData,
+    data,
+    refetch,
   };
 }

@@ -1,29 +1,38 @@
 import { DateTime, Ratio, uLuna } from '@anchor-protocol/notation';
-import { gql, QueryResult, useQuery } from '@apollo/client';
+import { createMap, useMap } from '@anchor-protocol/use-map';
+import { gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
+import { parseResult } from 'queries/parseResult';
+import { MappedQueryResult } from 'queries/types';
+import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
-export interface StringifiedData {
+export interface RawData {
   exchangeRate: {
     Result: string;
   };
 }
 
 export interface Data {
-  actual_unbonded_amount: uLuna<string>;
-  exchange_rate: Ratio<string>;
-  last_index_modification: DateTime;
-  last_processed_batch: number;
-  last_unbonded_time: DateTime;
-  prev_hub_balance: uLuna<string>;
-  total_bond_amount: uLuna<string>;
+  exchangeRate: {
+    Result: string;
+    actual_unbonded_amount: uLuna<string>;
+    exchange_rate: Ratio<string>;
+    last_index_modification: DateTime;
+    last_processed_batch: number;
+    last_unbonded_time: DateTime;
+    prev_hub_balance: uLuna<string>;
+    total_bond_amount: uLuna<string>;
+  };
 }
 
-export function parseData(data: StringifiedData): Data {
-  return JSON.parse(data.exchangeRate.Result);
-}
+export const dataMap = createMap<RawData, Data>({
+  exchangeRate: (existing, { exchangeRate }) => {
+    return parseResult(existing.exchangeRate, exchangeRate.Result);
+  },
+});
 
-export interface StringifiedVariables {
+export interface RawVariables {
   bLunaHubContract: string;
   stateQuery: string;
 }
@@ -35,10 +44,10 @@ export interface Variables {
   };
 }
 
-export function stringifyVariables({
+export function mapVariables({
   bLunaHubContract,
   stateQuery = { state: {} },
-}: Variables): StringifiedVariables {
+}: Variables): RawVariables {
   return {
     bLunaHubContract,
     stateQuery: JSON.stringify(stateQuery),
@@ -60,13 +69,11 @@ export function useExchangeRate({
   bAsset,
 }: {
   bAsset: string;
-}): QueryResult<StringifiedData, StringifiedVariables> & {
-  parsedData: Data | undefined;
-} {
+}): MappedQueryResult<RawVariables, RawData, Data> {
   const addressProvider = useAddressProvider();
 
   const variables = useMemo(() => {
-    return stringifyVariables({
+    return mapVariables({
       bLunaHubContract: addressProvider.bAssetHub(bAsset),
       stateQuery: {
         state: {},
@@ -74,18 +81,20 @@ export function useExchangeRate({
     });
   }, [addressProvider, bAsset]);
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
+  const { data: _data, refetch: _refetch, ...result } = useQuery<
+    RawData,
+    RawVariables
+  >(query, {
     fetchPolicy: 'network-only',
     variables,
   });
 
-  const parsedData = useMemo(
-    () => (result.data ? parseData(result.data) : undefined),
-    [result.data],
-  );
+  const data = useMap(_data, dataMap);
+  const refetch = useRefetch(_refetch, dataMap);
 
   return {
     ...result,
-    parsedData,
+    data,
+    refetch,
   };
 }

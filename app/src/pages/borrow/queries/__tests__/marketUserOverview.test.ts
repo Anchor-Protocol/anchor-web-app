@@ -1,10 +1,11 @@
+import { map } from '@anchor-protocol/use-map';
 import { testAddressProvider, testClient, testWalletAddress } from 'test.env';
 import {
+  dataMap,
+  mapVariables,
   query,
-  StringifiedData,
-  StringifiedVariables,
-  stringifyVariables,
-  parseData,
+  RawData,
+  RawVariables,
 } from '../marketUserOverview';
 import { getMarketBalance } from './marketBalanceOverview.test';
 
@@ -17,9 +18,9 @@ describe('queries/marketUserOverview', () => {
     }
 
     const data = await testClient
-      .query<StringifiedData, StringifiedVariables>({
+      .query<RawData, RawVariables>({
         query,
-        variables: stringifyVariables({
+        variables: mapVariables({
           marketContractAddress: testAddressProvider.market('uusd'),
           marketLoanQuery: {
             loan_amount: {
@@ -35,9 +36,10 @@ describe('queries/marketUserOverview', () => {
           },
         }),
       })
-      .then(({ data }) => parseData(data));
+      .then(({ data }) => map(data, dataMap));
 
-    expect(!!data.loanAmount).toBeTruthy();
-    expect(!!data.borrowInfo).toBeTruthy();
+    expect(data.loanAmount).not.toBeUndefined();
+    expect(data.borrowInfo).not.toBeUndefined();
+    expect(data.liability).not.toBeUndefined();
   });
 });

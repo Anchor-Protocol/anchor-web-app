@@ -2,6 +2,7 @@ import {
   demicrofy,
   formatRatioToPercentage,
   formatUSTWithPostfixUnits,
+  Ratio,
   uUST,
 } from '@anchor-protocol/notation';
 import { TxHashLink } from 'components/TxHashLink';
@@ -24,17 +25,24 @@ interface Params {
   txResult: TxResult;
   txInfo: Data;
   txFee: uUST;
-  marketBalance: MarketBalance;
-  marketOverview: MarketOverview;
-  marketUserOverview: MarketUserOverview;
+  currentBlock?: MarketBalance['currentBlock'];
+  marketBalance?: MarketBalance['marketBalance'];
+  marketState?: MarketBalance['marketState'];
+  borrowRate?: MarketOverview['borrowRate'];
+  oraclePrice?: MarketOverview['oraclePrice'];
+  overseerWhitelist?: MarketOverview['overseerWhitelist'];
+  loanAmount?: MarketUserOverview['loanAmount'];
+  liability?: MarketUserOverview['liability'];
+  borrowInfo?: MarketUserOverview['borrowInfo'];
 }
 
 export function pickRepayResult({
   txInfo,
   txResult,
   txFee,
-  marketOverview,
-  marketUserOverview,
+  loanAmount,
+  borrowInfo,
+  oraclePrice,
 }: Params): TransactionResult {
   const rawLog = pickRawLog(txInfo, 0);
 
@@ -54,22 +62,23 @@ export function pickRepayResult({
 
   const repaidAmount = pickAttributeValue<uUST>(fromContract, 3);
 
-  const newLtv = currentLtv(
-    marketUserOverview.loanAmount.loan_amount,
-    marketUserOverview.borrowInfo.balance,
-    marketUserOverview.borrowInfo.spendable,
-    marketOverview.oraclePrice.rate,
-  );
+  const newLtv =
+    loanAmount && borrowInfo && oraclePrice
+      ? currentLtv(
+          loanAmount?.loan_amount,
+          borrowInfo?.balance,
+          borrowInfo?.spendable,
+          oraclePrice?.rate,
+        )
+      : ('0' as Ratio);
 
-  const outstandingLoan = marketUserOverview.loanAmount.loan_amount;
+  const outstandingLoan = loanAmount?.loan_amount;
 
   const txHash = txResult.result.txhash;
 
   return {
     txInfo,
     txResult,
-    //txFee,
-    //txHash,
     details: [
       repaidAmount && {
         name: 'Repaid Amount',

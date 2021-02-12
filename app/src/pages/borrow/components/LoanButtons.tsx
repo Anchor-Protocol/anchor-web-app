@@ -10,12 +10,7 @@ export function LoanButtons() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const {
-    marketBalance,
-    marketOverview,
-    marketUserOverview,
-    refetch,
-  } = useMarket();
+  const { ready, loanAmount, borrowInfo, refetch } = useMarket();
 
   const { status } = useWallet();
 
@@ -25,16 +20,16 @@ export function LoanButtons() {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const borrowed = useBorrowed(marketUserOverview?.loanAmount.loan_amount);
+  const borrowed = useBorrowed(loanAmount?.loan_amount);
 
   return (
     <>
       <ActionButton
         disabled={
           status.status !== 'ready' ||
-          !marketOverview ||
-          !marketUserOverview ||
-          big(marketUserOverview?.borrowInfo.balance ?? 0).lte(0)
+          !ready ||
+          !borrowInfo ||
+          big(borrowInfo.balance ?? 0).lte(0)
         }
         onClick={() => {
           refetch();
@@ -44,13 +39,7 @@ export function LoanButtons() {
         Borrow
       </ActionButton>
       <ActionButton
-        disabled={
-          status.status !== 'ready' ||
-          !marketBalance ||
-          !marketOverview ||
-          !marketUserOverview ||
-          borrowed.lte(0)
-        }
+        disabled={status.status !== 'ready' || !ready || borrowed.lte(0)}
         onClick={() => {
           refetch();
           openRepayDialog({});

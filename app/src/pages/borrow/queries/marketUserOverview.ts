@@ -1,19 +1,17 @@
 import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { Num, uUST } from '@anchor-protocol/notation';
+import { createMap, map, useMap } from '@anchor-protocol/use-map';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
-import {
-  ApolloClient,
-  ApolloQueryResult,
-  gql,
-  QueryResult,
-  useQuery,
-} from '@apollo/client';
+import { ApolloClient, gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
+import { parseResult } from 'queries/parseResult';
+import { MappedApolloQueryResult, MappedQueryResult } from 'queries/types';
+import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 import { Data as MarketBalanceOverviewData } from './marketBalanceOverview';
 
-export interface StringifiedData {
+export interface RawData {
   loanAmount: {
     Result: string;
   };
@@ -29,36 +27,39 @@ export interface StringifiedData {
 
 export interface Data {
   loanAmount: {
+    Result: string;
     borrower: string;
     loan_amount: uUST<string>;
   };
 
   liability: {
+    Result: string;
     borrower: string;
     loan_amount: uUST<string>;
     interest_index: Num<string>;
   };
 
   borrowInfo: {
+    Result: string;
     borrower: string;
     balance: uUST<string>;
     spendable: uUST<string>;
   };
 }
 
-export function parseData({
-  loanAmount,
-  liability,
-  borrowInfo,
-}: StringifiedData): Data {
-  return {
-    loanAmount: JSON.parse(loanAmount.Result),
-    liability: JSON.parse(liability.Result),
-    borrowInfo: JSON.parse(borrowInfo.Result),
-  };
-}
+export const dataMap = createMap<RawData, Data>({
+  loanAmount: (existing, { loanAmount }) => {
+    return parseResult(existing.loanAmount, loanAmount.Result);
+  },
+  liability: (existing, { liability }) => {
+    return parseResult(existing.liability, liability.Result);
+  },
+  borrowInfo: (existing, { borrowInfo }) => {
+    return parseResult(existing.borrowInfo, borrowInfo.Result);
+  },
+});
 
-export interface StringifiedVariables {
+export interface RawVariables {
   marketContractAddress: string;
   marketLoanQuery: string;
   marketLiabilityQuery: string;
@@ -82,12 +83,12 @@ export interface Variables {
   };
 }
 
-export function stringifyVariables({
+export function mapVariables({
   marketContractAddress,
   marketLoanQuery,
   custodyContractAddress,
   custodyBorrowerQuery,
-}: Variables): StringifiedVariables {
+}: Variables): RawVariables {
   return {
     marketContractAddress,
     marketLoanQuery: JSON.stringify(marketLoanQuery),
@@ -133,22 +134,20 @@ export const query = gql`
 `;
 
 export function useMarketUserOverview({
-  marketBalance,
+  currentBlock,
 }: {
-  marketBalance: MarketBalanceOverviewData | undefined;
-}): QueryResult<StringifiedData, StringifiedVariables> & {
-  parsedData: Data | undefined;
-} {
+  currentBlock: MarketBalanceOverviewData['currentBlock'] | undefined;
+}): MappedQueryResult<RawVariables, RawData, Data> {
   const addressProvider = useAddressProvider();
   const { status } = useWallet();
 
   const variables = useMemo(() => {
-    return stringifyVariables({
+    return mapVariables({
       marketContractAddress: addressProvider.market('uusd'),
       marketLoanQuery: {
         loan_amount: {
           borrower: status.status === 'ready' ? status.walletAddress : '',
-          block_height: marketBalance?.currentBlock ?? 0,
+          block_height: currentBlock ?? 0,
         },
       },
       custodyContractAddress: addressProvider.custody('ubluna'),
@@ -158,28 +157,30 @@ export function useMarketUserOverview({
         },
       },
     });
-  }, [addressProvider, marketBalance?.currentBlock, status]);
+  }, [addressProvider, currentBlock, status]);
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
-    skip: status.status !== 'ready' || !marketBalance,
+  const { data: _data, refetch: _refetch, ...result } = useQuery<
+    RawData,
+    RawVariables
+  >(query, {
+    skip: status.status !== 'ready' || typeof currentBlock !== 'number',
     fetchPolicy: 'network-only',
     variables,
   });
 
   useSubscription((id, event) => {
     if (event === 'done') {
-      result.refetch();
+      _refetch();
     }
   });
 
-  const parsedData = useMemo(
-    () => (result.data ? parseData(result.data) : undefined),
-    [result.data],
-  );
+  const data = useMap(_data, dataMap);
+  const refetch = useRefetch(_refetch, dataMap);
 
   return {
     ...result,
-    parsedData,
+    data,
+    refetch,
   };
 }
 
@@ -187,22 +188,22 @@ export function queryMarketUserOverview(
   client: ApolloClient<any>,
   addressProvider: AddressProvider,
   walletStatus: WalletStatus,
-  marketBalance: MarketBalanceOverviewData,
-): Promise<ApolloQueryResult<StringifiedData> & { parsedData: Data }> {
+  currentBlock: MarketBalanceOverviewData['currentBlock'],
+): Promise<MappedApolloQueryResult<RawData, Data>> {
   if (walletStatus.status !== 'ready') {
     throw new Error(`Wallet is not ready`);
   }
 
   return client
-    .query<StringifiedData, StringifiedVariables>({
+    .query<RawData, RawVariables>({
       query,
       fetchPolicy: 'network-only',
-      variables: stringifyVariables({
+      variables: mapVariables({
         marketContractAddress: addressProvider.market('uusd'),
         marketLoanQuery: {
           loan_amount: {
             borrower: walletStatus.walletAddress,
-            block_height: marketBalance.currentBlock,
+            block_height: currentBlock,
           },
         },
         custodyContractAddress: addressProvider.custody('ubluna'),
@@ -216,7 +217,7 @@ export function queryMarketUserOverview(
     .then((result) => {
       return {
         ...result,
-        parsedData: parseData(result.data),
+        data: map(result.data, dataMap),
       };
     });
 }

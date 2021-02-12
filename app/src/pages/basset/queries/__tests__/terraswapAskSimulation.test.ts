@@ -1,6 +1,6 @@
-import { Ratio, ubLuna, uUST } from '@anchor-protocol/notation';
+import { Ratio, uLuna, uUST } from '@anchor-protocol/notation';
 import { map } from '@anchor-protocol/use-map';
-import { offerSimulation } from 'pages/basset/logics/offerSimulation';
+import { askSimulation } from 'pages/basset/logics/askSimulation';
 import { testAddressProvider, testClient } from 'test.env';
 import {
   Data,
@@ -9,36 +9,36 @@ import {
   query,
   RawData,
   RawVariables,
-} from '../terraswapOfferSimulation';
+} from '../terraswapAskSimulation';
 
 describe('queries/terraswapOfferSimulation', () => {
   test('should get result from query', async () => {
     const data = await testClient
-      .query<Omit<RawData, 'deps'>, RawVariables>({
+      .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
           bLunaTerraswap: testAddressProvider.blunaBurnPair(),
-          offerSimulationQuery: {
+          askSimulationQuery: {
             simulation: {
               offer_asset: {
                 info: {
-                  token: {
-                    contract_addr: testAddressProvider.bAssetToken('bluna'),
+                  native_token: {
+                    denom: 'uluna',
                   },
                 },
-                amount: '100' as ubLuna,
+                amount: '100' as uLuna,
               },
             },
           },
         }),
       })
       .then(({ data }) => map<RawData, Data>(data, dataMap))
-      .then(({ terraswapOfferSimulation }) =>
-        offerSimulation(
-          terraswapOfferSimulation!.commission_amount,
-          terraswapOfferSimulation!.return_amount,
-          terraswapOfferSimulation!.spread_amount,
-          '100' as ubLuna,
+      .then(({ terraswapAskSimulation }) =>
+        askSimulation(
+          terraswapAskSimulation!.commission_amount,
+          terraswapAskSimulation!.return_amount,
+          terraswapAskSimulation!.spread_amount,
+          '100' as uLuna,
           {
             taxRate: '1' as Ratio,
             maxTaxUUSD: '3500000' as uUST,
