@@ -47,12 +47,10 @@ export function MarketProvider({ children }: MarketProviderProps) {
 
   const {
     data: { borrowRate, oraclePrice, overseerWhitelist },
-    refetch: refetchMarketOverview,
   } = useMarketOverview({ marketBalance, marketState });
 
   const {
     data: { loanAmount, liability, borrowInfo },
-    refetch: refetchMarketUserOverview,
   } = useMarketUserOverview({
     currentBlock,
   });

@@ -169,12 +169,6 @@ export function useMarketUserOverview({
     variables,
   });
 
-  useSubscription((id, event) => {
-    if (event === 'done') {
-      _refetch();
-    }
-  });
-
   const data = useMap(_data, dataMap);
   const refetch = useRefetch(_refetch, dataMap);
 

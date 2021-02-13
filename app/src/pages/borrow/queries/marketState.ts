@@ -1,4 +1,5 @@
 import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
+import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { Num, uaUST, uUST } from '@anchor-protocol/notation';
 import { createMap, map, useMap } from '@anchor-protocol/use-map';
 import { ApolloClient, gql, useQuery } from '@apollo/client';
@@ -129,6 +130,12 @@ export function useMarketState(): MappedQueryResult<
     nextFetchPolicy: 'cache-first',
     pollInterval: 1000 * 10,
     variables,
+  });
+
+  useSubscription((id, event) => {
+    if (event === 'done') {
+      _refetch();
+    }
   });
 
   const data = useMap(_data, dataMap);
