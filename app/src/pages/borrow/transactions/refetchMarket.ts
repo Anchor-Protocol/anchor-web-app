@@ -5,10 +5,7 @@ import {
   Data as MarketOverview,
   queryMarketOverview,
 } from '../queries/marketOverview';
-import {
-  Data as MarketBalance,
-  queryMarketState,
-} from '../queries/marketState';
+import { Data as MarketState, queryMarketState } from '../queries/marketState';
 import {
   Data as MarketUserOverview,
   queryMarketUserOverview,
@@ -19,9 +16,9 @@ export const refetchMarket = (
   client: ApolloClient<any>,
   walletStatus: WalletStatus,
 ) => async (_: {}): Promise<{
-  currentBlock?: MarketBalance['currentBlock'];
-  marketBalance?: MarketBalance['marketBalance'];
-  marketState?: MarketBalance['marketState'];
+  currentBlock?: MarketState['currentBlock'];
+  marketBalance?: MarketState['marketBalance'];
+  marketState?: MarketState['marketState'];
   borrowRate?: MarketOverview['borrowRate'];
   oraclePrice?: MarketOverview['oraclePrice'];
   overseerWhitelist?: MarketOverview['overseerWhitelist'];

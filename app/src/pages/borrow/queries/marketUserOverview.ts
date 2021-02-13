@@ -1,5 +1,4 @@
 import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
-import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { Num, uUST } from '@anchor-protocol/notation';
 import { createMap, map, useMap } from '@anchor-protocol/use-map';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
@@ -9,7 +8,7 @@ import { parseResult } from 'queries/parseResult';
 import { MappedApolloQueryResult, MappedQueryResult } from 'queries/types';
 import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
-import { Data as MarketBalanceOverviewData } from './marketState';
+import { Data as MarketState } from './marketState';
 
 export interface RawData {
   loanAmount: {
@@ -136,7 +135,7 @@ export const query = gql`
 export function useMarketUserOverview({
   currentBlock,
 }: {
-  currentBlock: MarketBalanceOverviewData['currentBlock'] | undefined;
+  currentBlock: MarketState['currentBlock'] | undefined;
 }): MappedQueryResult<RawVariables, RawData, Data> {
   const addressProvider = useAddressProvider();
   const { status } = useWallet();
@@ -183,7 +182,7 @@ export function queryMarketUserOverview(
   client: ApolloClient<any>,
   addressProvider: AddressProvider,
   walletStatus: WalletStatus,
-  currentBlock: MarketBalanceOverviewData['currentBlock'],
+  currentBlock: MarketState['currentBlock'],
 ): Promise<MappedApolloQueryResult<RawData, Data>> {
   if (walletStatus.status !== 'ready') {
     throw new Error(`Wallet is not ready`);

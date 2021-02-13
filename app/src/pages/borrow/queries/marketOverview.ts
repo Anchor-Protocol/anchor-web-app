@@ -7,7 +7,7 @@ import { parseResult } from 'queries/parseResult';
 import { MappedApolloQueryResult, MappedQueryResult } from 'queries/types';
 import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
-import { Data as MarketBalanceOverviewData } from './marketState';
+import { Data as MarketState } from './marketState';
 
 export interface RawData {
   borrowRate: {
@@ -146,8 +146,8 @@ export function useMarketOverview({
   marketBalance,
   marketState,
 }: {
-  marketBalance: MarketBalanceOverviewData['marketBalance'] | undefined;
-  marketState: MarketBalanceOverviewData['marketState'] | undefined;
+  marketBalance: MarketState['marketBalance'] | undefined;
+  marketState: MarketState['marketState'] | undefined;
 }): MappedQueryResult<RawVariables, RawData, Data> {
   const addressProvider = useAddressProvider();
 
@@ -206,8 +206,8 @@ export function useMarketOverview({
 export function queryMarketOverview(
   client: ApolloClient<any>,
   addressProvider: AddressProvider,
-  marketBalance: MarketBalanceOverviewData['marketBalance'],
-  marketState: MarketBalanceOverviewData['marketState'],
+  marketBalance: MarketState['marketBalance'],
+  marketState: MarketState['marketState'],
 ): Promise<MappedApolloQueryResult<RawData, Data>> {
   return client
     .query<RawData, RawVariables>({
