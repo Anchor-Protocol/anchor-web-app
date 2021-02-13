@@ -2,13 +2,14 @@ import {
   demicrofy,
   formatRatioToPercentage,
   formatUSTWithPostfixUnits,
+  Ratio,
   uUST,
 } from '@anchor-protocol/notation';
 import { TxHashLink } from 'components/TxHashLink';
 import { TxInfoParseError } from 'errors/TxInfoParseError';
 import { TransactionResult } from 'models/transaction';
 import { currentLtv } from 'pages/borrow/logics/currentLtv';
-import { Data as MarketBalance } from 'pages/borrow/queries/marketBalanceOverview';
+import { Data as MarketState } from 'pages/borrow/queries/marketState';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import {
@@ -24,17 +25,24 @@ interface Params {
   txResult: TxResult;
   txInfo: Data;
   txFee: uUST;
-  marketBalance: MarketBalance;
-  marketOverview: MarketOverview;
-  marketUserOverview: MarketUserOverview;
+  currentBlock?: MarketState['currentBlock'];
+  marketBalance?: MarketState['marketBalance'];
+  marketState?: MarketState['marketState'];
+  borrowRate?: MarketOverview['borrowRate'];
+  oraclePrice?: MarketOverview['oraclePrice'];
+  overseerWhitelist?: MarketOverview['overseerWhitelist'];
+  loanAmount?: MarketUserOverview['loanAmount'];
+  liability?: MarketUserOverview['liability'];
+  borrowInfo?: MarketUserOverview['borrowInfo'];
 }
 
 export function pickRepayResult({
   txInfo,
   txResult,
   txFee,
-  marketOverview,
-  marketUserOverview,
+  loanAmount,
+  borrowInfo,
+  oraclePrice,
 }: Params): TransactionResult {
   const rawLog = pickRawLog(txInfo, 0);
 
@@ -54,22 +62,23 @@ export function pickRepayResult({
 
   const repaidAmount = pickAttributeValue<uUST>(fromContract, 3);
 
-  const newLtv = currentLtv(
-    marketUserOverview.loanAmount.loan_amount,
-    marketUserOverview.borrowInfo.balance,
-    marketUserOverview.borrowInfo.spendable,
-    marketOverview.oraclePrice.rate,
-  );
+  const newLtv =
+    loanAmount && borrowInfo && oraclePrice
+      ? currentLtv(
+          loanAmount?.loan_amount,
+          borrowInfo?.balance,
+          borrowInfo?.spendable,
+          oraclePrice?.rate,
+        )
+      : ('0' as Ratio);
 
-  const outstandingLoan = marketUserOverview.loanAmount.loan_amount;
+  const outstandingLoan = loanAmount?.loan_amount;
 
   const txHash = txResult.result.txhash;
 
   return {
     txInfo,
     txResult,
-    //txFee,
-    //txHash,
     details: [
       repaidAmount && {
         name: 'Repaid Amount',

@@ -42,30 +42,37 @@ const BankContext: Context<Bank> = createContext<Bank>();
 export function BankProvider({ children }: BankProviderProps) {
   const { status } = useWallet();
 
-  const { parsedData: taxData, refetch: refetchTax } = useTax();
+  const { data: taxData, refetch: refetchTax } = useTax();
 
   const {
-    parsedData: userBalancesData,
+    data: balancesData,
     refetch: refetchUserBalances,
   } = useUserBalances();
 
   const state = useMemo<Bank>(() => {
-    return status.status === 'ready' && !!taxData && !!userBalancesData
+    const tax = {
+      taxRate: taxData.taxRate ?? ('0.1' as Ratio),
+      maxTaxUUSD:
+        taxData.maxTaxUUSD ??
+        (microfy(0.1 as UST<BigSource>).toString() as uUST),
+    };
+
+    return status.status === 'ready'
       ? {
           status: 'connected',
-          tax: taxData,
+          tax,
           refetchTax,
-          userBalances: userBalancesData,
+          userBalances: {
+            uUSD: balancesData.uUSD ?? ('0' as uUST),
+            uLuna: balancesData.uLuna ?? ('0' as uLuna),
+            uaUST: balancesData.uaUST ?? ('0' as uaUST),
+            ubLuna: balancesData.ubLuna ?? ('0' as ubLuna),
+          },
           refetchUserBalances,
         }
       : {
           status: 'demo',
-          tax: taxData
-            ? taxData
-            : {
-                taxRate: '0.1' as Ratio,
-                maxTaxUUSD: microfy(0.1 as UST<BigSource>).toString() as uUST,
-              },
+          tax,
           refetchTax,
           userBalances: {
             uUSD: '0' as uUST,
@@ -76,11 +83,14 @@ export function BankProvider({ children }: BankProviderProps) {
           refetchUserBalances,
         };
   }, [
+    balancesData.uLuna,
+    balancesData.uUSD,
+    balancesData.uaUST,
+    balancesData.ubLuna,
     refetchTax,
     refetchUserBalances,
     status.status,
     taxData,
-    userBalancesData,
   ]);
 
   useEffect(() => {

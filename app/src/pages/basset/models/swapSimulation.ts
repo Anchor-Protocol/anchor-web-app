@@ -8,4 +8,8 @@ export interface SwapSimulation {
 
   lunaAmount?: uLuna;
   bLunaAmount?: ubLuna;
+
+  commission_amount: uLuna;
+  return_amount: uLuna;
+  spread_amount: uLuna;
 }

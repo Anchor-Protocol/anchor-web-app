@@ -1,11 +1,13 @@
 import { Num, Ratio } from '@anchor-protocol/notation';
-import { gql, QueryResult, useQuery } from '@apollo/client';
-import big from 'big.js';
+import { createMap, useMap } from '@anchor-protocol/use-map';
+import { gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
-import { useNetConstants } from 'contexts/net-contants';
+import { parseResult } from 'queries/parseResult';
+import { MappedQueryResult } from 'queries/types';
+import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
-export interface StringifiedData {
+export interface RawData {
   marketStatus: {
     Result: string;
   };
@@ -13,31 +15,21 @@ export interface StringifiedData {
 
 export interface Data {
   marketStatus: {
+    Result: string;
     deposit_rate: Ratio<string>;
     last_executed_height: number;
     prev_a_token_supply: Num<string>;
     prev_exchange_rate: Ratio<string>;
   };
-  currentAPY: Ratio<string>;
 }
 
-export function parseData(
-  { marketStatus }: StringifiedData,
-  blocksPerYear: number,
-): Data {
-  const parsedMarketStatus: Data['marketStatus'] = JSON.parse(
-    marketStatus.Result,
-  );
+export const dataMap = createMap<RawData, Data>({
+  marketStatus: (existing, { marketStatus }) => {
+    return parseResult(existing.marketStatus, marketStatus.Result);
+  },
+});
 
-  return {
-    marketStatus: parsedMarketStatus,
-    currentAPY: big(parsedMarketStatus.deposit_rate)
-      .mul(blocksPerYear)
-      .toString() as Ratio,
-  };
-}
-
-export interface StringifiedVariables {
+export interface RawVariables {
   overseerContract: string;
   overseerEpochState: string;
 }
@@ -49,10 +41,10 @@ export interface Variables {
   };
 }
 
-export function stringifyVariables({
+export function mapVariables({
   overseerContract,
   overseerEpochState,
-}: Variables): StringifiedVariables {
+}: Variables): RawVariables {
   return {
     overseerContract,
     overseerEpochState: JSON.stringify(overseerEpochState),
@@ -60,7 +52,7 @@ export function stringifyVariables({
 }
 
 export const query = gql`
-  query depositRate($overseerContract: String!, $overseerEpochState: String!) {
+  query __interest($overseerContract: String!, $overseerEpochState: String!) {
     marketStatus: WasmContractsContractAddressStore(
       ContractAddress: $overseerContract
       QueryMsg: $overseerEpochState
@@ -70,16 +62,11 @@ export const query = gql`
   }
 `;
 
-export function useInterest(): QueryResult<
-  StringifiedData,
-  StringifiedVariables
-> & { parsedData: Data | undefined } {
+export function useInterest(): MappedQueryResult<RawVariables, RawData, Data> {
   const addressProvider = useAddressProvider();
 
-  const { blocksPerYear } = useNetConstants();
-
   const variables = useMemo(() => {
-    return stringifyVariables({
+    return mapVariables({
       overseerContract: addressProvider.overseer(''),
       overseerEpochState: {
         epoch_state: {},
@@ -87,19 +74,22 @@ export function useInterest(): QueryResult<
     });
   }, [addressProvider]);
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
+  const { data: _data, refetch: _refetch, ...result } = useQuery<
+    RawData,
+    RawVariables
+  >(query, {
     fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-first',
     pollInterval: 1000 * 60,
     variables,
   });
 
-  const parsedData = useMemo(
-    () => (result.data ? parseData(result.data, blocksPerYear) : undefined),
-    [blocksPerYear, result.data],
-  );
+  const data = useMap(_data, dataMap);
+  const refetch = useRefetch(_refetch, dataMap);
 
   return {
     ...result,
-    parsedData,
+    data,
+    refetch,
   };
 }

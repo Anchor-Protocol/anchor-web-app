@@ -26,13 +26,15 @@ import {
 } from '@material-ui/core';
 import big from 'big.js';
 import { ArrowDownLine } from 'components/ArrowDownLine';
+import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { MessageBox } from 'components/MessageBox';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { useNetConstants } from 'contexts/net-contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
+import { askSimulation } from 'pages/basset/logics/askSimulation';
+import { offerSimulation } from 'pages/basset/logics/offerSimulation';
 import { useInvalidBurnAmount } from 'pages/basset/logics/useInvalidBurnAmount';
 import { SwapSimulation } from 'pages/basset/models/swapSimulation';
 import { queryTerraswapAskSimulation } from 'pages/basset/queries/terraswapAskSimulation';
@@ -74,9 +76,9 @@ export function Swap() {
   const [burnAmount, setBurnAmount] = useState<bLuna>('' as bLuna);
   const [getAmount, setGetAmount] = useState<Luna>('' as Luna);
 
-  const [resolveSimulation, simulation] = useResolveLast<SwapSimulation | null>(
-    () => null,
-  );
+  const [resolveSimulation, simulation] = useResolveLast<
+    SwapSimulation | undefined | null
+  >(() => null);
 
   const [burnCurrency, setBurnCurrency] = useState<Item>(
     () => bAssetCurrencies[0],
@@ -90,7 +92,9 @@ export function Swap() {
   // ---------------------------------------------
   const bank = useBank();
 
-  const { parsedData: bLunaPrice } = useTerraswapBLunaPrice();
+  const {
+    data: { terraswapPoolInfo: bLunaPrice },
+  } = useTerraswapBLunaPrice();
 
   // ---------------------------------------------
   // logics
@@ -141,13 +145,24 @@ export function Swap() {
         const burnAmount: bLuna = nextBurnAmount as bLuna;
         setBurnAmount(burnAmount);
 
+        const amount = microfy(burnAmount).toString() as ubLuna;
+
         resolveSimulation(
           queryTerraswapOfferSimulation(
             client,
             addressProvider,
-            microfy(burnAmount).toString() as ubLuna,
-            bank,
-          ).then(({ parsedData }) => parsedData),
+            amount,
+          ).then(({ data: { terraswapOfferSimulation } }) =>
+            terraswapOfferSimulation
+              ? offerSimulation(
+                  terraswapOfferSimulation.commission_amount,
+                  terraswapOfferSimulation.return_amount,
+                  terraswapOfferSimulation.spread_amount,
+                  amount,
+                  bank.tax,
+                )
+              : undefined,
+          ),
         );
       }
     },
@@ -165,13 +180,24 @@ export function Swap() {
         const getAmount: Luna = nextGetAmount as Luna;
         setGetAmount(getAmount);
 
+        const amount = microfy(getAmount).toString() as uLuna;
+
         resolveSimulation(
           queryTerraswapAskSimulation(
             client,
             addressProvider,
-            microfy(getAmount).toString() as uLuna,
-            bank,
-          ).then(({ parsedData }) => parsedData),
+            amount,
+          ).then(({ data: { terraswapAskSimulation } }) =>
+            terraswapAskSimulation
+              ? askSimulation(
+                  terraswapAskSimulation.commission_amount,
+                  terraswapAskSimulation.return_amount,
+                  terraswapAskSimulation.spread_amount,
+                  amount,
+                  bank.tax,
+                )
+              : undefined,
+          ),
         );
       }
     },

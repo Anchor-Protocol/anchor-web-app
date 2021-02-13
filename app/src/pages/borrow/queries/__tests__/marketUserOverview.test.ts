@@ -1,30 +1,31 @@
+import { map } from '@anchor-protocol/use-map';
 import { testAddressProvider, testClient, testWalletAddress } from 'test.env';
 import {
+  dataMap,
+  mapVariables,
   query,
-  StringifiedData,
-  StringifiedVariables,
-  stringifyVariables,
-  parseData,
+  RawData,
+  RawVariables,
 } from '../marketUserOverview';
-import { getMarketBalance } from './marketBalanceOverview.test';
+import { getMarketState } from './marketState.test';
 
 describe('queries/marketUserOverview', () => {
   test('should get result from query', async () => {
-    const marketBalance = await getMarketBalance();
+    const marketState = await getMarketState();
 
-    if (!marketBalance) {
+    if (!marketState) {
       throw new Error('Undefined marketBalance!');
     }
 
     const data = await testClient
-      .query<StringifiedData, StringifiedVariables>({
+      .query<RawData, RawVariables>({
         query,
-        variables: stringifyVariables({
+        variables: mapVariables({
           marketContractAddress: testAddressProvider.market('uusd'),
           marketLoanQuery: {
             loan_amount: {
               borrower: testWalletAddress,
-              block_height: marketBalance.currentBlock ?? 0,
+              block_height: marketState.currentBlock ?? 0,
             },
           },
           custodyContractAddress: testAddressProvider.custody(),
@@ -35,9 +36,10 @@ describe('queries/marketUserOverview', () => {
           },
         }),
       })
-      .then(({ data }) => parseData(data));
+      .then(({ data }) => map(data, dataMap));
 
-    expect(!!data.loanAmount).toBeTruthy();
-    expect(!!data.borrowInfo).toBeTruthy();
+    expect(data.loanAmount).not.toBeUndefined();
+    expect(data.borrowInfo).not.toBeUndefined();
+    expect(data.liability).not.toBeUndefined();
   });
 });

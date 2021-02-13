@@ -9877,6 +9877,13 @@ jake@^10.6.1:
     filelist "^1.0.1"
     minimatch "^3.0.4"
 
+jest-bin@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.npmjs.org/jest-bin/-/jest-bin-0.1.0.tgz#352884897f98dc68706505cdd3966b64f65602fb"
+  integrity sha512-YJjGIv1FIlHBuxv6vBMFxw51vFtC0ry0XT2TaPc+bvPnnYcU8qAnCicUbSrpedVEiHME7ZDmL0YEHWcQpTMtUg==
+  dependencies:
+    react-dev-utils "^11.0.0"
+
 jest-changed-files@^26.6.2:
   version "26.6.2"
   resolved "https://registry.npmjs.org/jest-changed-files/-/jest-changed-files-26.6.2.tgz#f6198479e1cc66f22f9ae1e22acaa0b429c042d0"
@@ -13451,7 +13458,7 @@ react-dev-utils@^10.0.0:
     strip-ansi "6.0.0"
     text-table "0.2.0"
 
-react-dev-utils@^11.0.2:
+react-dev-utils@^11.0.0, react-dev-utils@^11.0.2:
   version "11.0.2"
   resolved "https://registry.npmjs.org/react-dev-utils/-/react-dev-utils-11.0.2.tgz#98aed16ef50f808ee17b32def75eb15f89655802"
   integrity sha512-xG7GlMoYkrgc2M1kDCHKRywXMDbFnjOB+/VzpytQyYBusEzR8NlGTMmUbvN86k94yyKu5XReHB8eZC2JZrNchQ==

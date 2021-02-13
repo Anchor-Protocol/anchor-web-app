@@ -1,35 +1,34 @@
+import { map } from '@anchor-protocol/use-map';
 import { testAddressProvider, testClient } from 'test.env';
 import {
-  parseData,
+  dataMap,
+  mapVariables,
   query,
-  StringifiedData,
-  StringifiedVariables,
-  stringifyVariables,
+  RawData,
+  RawVariables,
 } from '../marketOverview';
-import { getMarketBalance } from './marketBalanceOverview.test';
+import { getMarketState } from './marketState.test';
 
 describe('queries/marketOverview', () => {
   test('should get result from query', async () => {
-    const marketBalance = await getMarketBalance();
+    const { marketBalance, marketState } = await getMarketState();
 
-    if (!marketBalance) {
+    if (!marketBalance || !marketState) {
       throw new Error('Undefined marketBalance!');
     }
 
     const data = await testClient
-      .query<StringifiedData, StringifiedVariables>({
+      .query<RawData, RawVariables>({
         query,
-        variables: stringifyVariables({
+        variables: mapVariables({
           interestContractAddress: testAddressProvider.interest(),
           interestBorrowRateQuery: {
             borrow_rate: {
               market_balance:
-                marketBalance.marketBalance.find(
-                  ({ Denom }) => Denom === 'uusd',
-                )?.Amount ?? '',
-              total_liabilities:
-                marketBalance.marketState.total_liabilities ?? '',
-              total_reserves: marketBalance.marketState.total_reserves ?? '',
+                marketBalance.find(({ Denom }) => Denom === 'uusd')?.Amount ??
+                '',
+              total_liabilities: marketState.total_liabilities ?? '',
+              total_reserves: marketState.total_reserves ?? '',
             },
           },
           oracleContractAddress: testAddressProvider.oracle(),
@@ -47,10 +46,10 @@ describe('queries/marketOverview', () => {
           },
         }),
       })
-      .then(({ data }) => parseData(data, testAddressProvider));
+      .then(({ data }) => map(data, dataMap));
 
-    expect(!!data.borrowRate).toBeTruthy();
-    expect(!!data.oraclePrice).toBeTruthy();
-    expect(!!data.overseerWhitelist).toBeTruthy();
+    expect(data.borrowRate).not.toBeUndefined();
+    expect(data.oraclePrice).not.toBeUndefined();
+    expect(data.overseerWhitelist).not.toBeUndefined();
   });
 });

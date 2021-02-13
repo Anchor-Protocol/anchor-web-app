@@ -1,62 +1,35 @@
 import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
-import { min } from '@anchor-protocol/big-math';
-import { Ratio, ubLuna, uLuna, uUST } from '@anchor-protocol/notation';
-import { ApolloClient, ApolloQueryResult, gql } from '@apollo/client';
-import big, { Big } from 'big.js';
-import { Bank } from 'contexts/bank';
-import { SwapSimulation } from 'pages/basset/models/swapSimulation';
-import { Data as TaxData } from 'queries/tax';
+import { uLuna } from '@anchor-protocol/notation';
+import { createMap, map } from '@anchor-protocol/use-map';
+import { ApolloClient, gql } from '@apollo/client';
+import { parseResult } from 'queries/parseResult';
+import { MappedApolloQueryResult } from 'queries/types';
 
-export interface StringifiedData {
+export interface RawData {
   terraswapAskSimulation: {
     Result: string;
   };
 }
 
-export interface Data extends SwapSimulation {
-  commission_amount: uLuna;
-  return_amount: uLuna;
-  spread_amount: uLuna;
-}
-
-export function parseData(
-  { terraswapAskSimulation }: StringifiedData,
-  getAmount: uLuna,
-  { taxRate, maxTaxUUSD }: TaxData,
-): Data {
-  const data = JSON.parse(terraswapAskSimulation.Result) as Pick<
-    Data,
-    'commission_amount' | 'return_amount' | 'spread_amount'
-  >;
-
-  const beliefPrice = big(1).div(big(data.return_amount).div(getAmount));
-  const maxSpread = 0.1;
-
-  const tax = min(
-    big(getAmount)
-      .div(beliefPrice)
-      .div(1 + taxRate),
-    maxTaxUUSD,
-  ) as uUST<Big>;
-  const expectedAmount = big(getAmount).div(beliefPrice).minus(tax);
-  const rate = big(1).minus(maxSpread);
-  const minimumReceived = expectedAmount.mul(rate).toFixed() as uLuna;
-  const swapFee = big(data.commission_amount)
-    .plus(data.spread_amount)
-    .toFixed() as uLuna;
-
-  return {
-    ...data,
-    minimumReceived,
-    swapFee,
-    beliefPrice: beliefPrice.toFixed() as Ratio,
-    maxSpread: maxSpread.toString() as Ratio,
-
-    bLunaAmount: big(getAmount).div(beliefPrice).toString() as ubLuna,
+export interface Data {
+  terraswapAskSimulation: {
+    Result: string;
+    commission_amount: uLuna;
+    return_amount: uLuna;
+    spread_amount: uLuna;
   };
 }
 
-export interface StringifiedVariables {
+export const dataMap = createMap<RawData, Data>({
+  terraswapAskSimulation: (existing, { terraswapAskSimulation }) => {
+    return parseResult(
+      existing.terraswapAskSimulation,
+      terraswapAskSimulation.Result,
+    );
+  },
+});
+
+export interface RawVariables {
   bLunaTerraswap: string;
   askSimulationQuery: string;
 }
@@ -77,10 +50,10 @@ export interface Variables {
   };
 }
 
-export function stringifyVariables({
+export function mapVariables({
   bLunaTerraswap,
   askSimulationQuery,
-}: Variables): StringifiedVariables {
+}: Variables): RawVariables {
   return {
     bLunaTerraswap,
     askSimulationQuery: JSON.stringify(askSimulationQuery),
@@ -88,7 +61,10 @@ export function stringifyVariables({
 }
 
 export const query = gql`
-  query($bLunaTerraswap: String!, $askSimulationQuery: String!) {
+  query __terraswapAskSimulation(
+    $bLunaTerraswap: String!
+    $askSimulationQuery: String!
+  ) {
     terraswapAskSimulation: WasmContractsContractAddressStore(
       ContractAddress: $bLunaTerraswap
       QueryMsg: $askSimulationQuery
@@ -102,13 +78,12 @@ export function queryTerraswapAskSimulation(
   client: ApolloClient<any>,
   addressProvider: AddressProvider,
   getAmount: uLuna,
-  bank: Bank,
-): Promise<ApolloQueryResult<StringifiedData> & { parsedData: Data }> {
+): Promise<MappedApolloQueryResult<RawData, Data>> {
   return client
-    .query<StringifiedData, StringifiedVariables>({
+    .query<RawData, RawVariables>({
       query,
-      fetchPolicy: 'network-only',
-      variables: stringifyVariables({
+      fetchPolicy: 'no-cache',
+      variables: mapVariables({
         bLunaTerraswap: addressProvider.blunaBurnPair(),
         askSimulationQuery: {
           simulation: {
@@ -127,7 +102,7 @@ export function queryTerraswapAskSimulation(
     .then((result) => {
       return {
         ...result,
-        parsedData: parseData(result.data, getAmount, bank.tax),
+        data: map(result.data, dataMap),
       };
     });
 }

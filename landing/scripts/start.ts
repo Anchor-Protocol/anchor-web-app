@@ -1,4 +1,4 @@
-import { launch } from 'puppeteer';
+import puppeteer from 'puppeteer';
 
 (async () => {
   // chromium debugging port
@@ -8,7 +8,7 @@ import { launch } from 'puppeteer';
 
   const port: number = +(process.env.PORT ?? 3000);
 
-  const browser = await launch({
+  const browser = await puppeteer.launch({
     userDataDir: process.env.CHROMIUM_USER_DATA_DEBUG,
     headless: false,
     defaultViewport: null,

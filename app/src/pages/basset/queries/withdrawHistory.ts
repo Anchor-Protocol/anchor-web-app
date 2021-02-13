@@ -1,11 +1,13 @@
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { DateTime, Ratio, ubLuna } from '@anchor-protocol/notation';
-import { gql, QueryResult, useQuery } from '@apollo/client';
+import { createMap, useMap } from '@anchor-protocol/use-map';
+import { gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
+import { MappedQueryResult } from 'queries/types';
+import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
-import { Data as WithdrawableData } from './withdrawable';
 
-export interface StringifiedData {
+export interface RawData {
   allHistory: {
     Result: string;
   };
@@ -16,6 +18,7 @@ export interface StringifiedData {
 
 export interface Data {
   allHistory: {
+    Result: string;
     history: {
       batch_id: number;
       time: DateTime;
@@ -25,6 +28,7 @@ export interface Data {
     }[];
   };
   parameters: {
+    Result: string;
     epoch_period: number;
     underlying_coin_denom: string;
     unbonding_period: number;
@@ -34,14 +38,20 @@ export interface Data {
   };
 }
 
-export function parseData({ allHistory, parameters }: StringifiedData): Data {
-  return {
-    allHistory: JSON.parse(allHistory.Result),
-    parameters: JSON.parse(parameters.Result),
-  };
-}
+export const dataMap = createMap<RawData, Data>({
+  allHistory: (existing, { allHistory }) => {
+    return existing.allHistory?.Result === allHistory.Result
+      ? existing.allHistory
+      : { ...allHistory, ...JSON.parse(allHistory.Result) };
+  },
+  parameters: (existing, { parameters }) => {
+    return existing.parameters?.Result === parameters.Result
+      ? existing.parameters
+      : { ...parameters, ...JSON.parse(parameters.Result) };
+  },
+});
 
-export interface StringifiedVariables {
+export interface RawVariables {
   bLunaHubContract: string;
   allHistory: string;
   parameters: string;
@@ -60,11 +70,11 @@ export interface Variables {
   };
 }
 
-export function stringifyVariables({
+export function mapVariables({
   bLunaHubContract,
   allHistory,
   parameters,
-}: Variables): StringifiedVariables {
+}: Variables): RawVariables {
   return {
     bLunaHubContract,
     allHistory: JSON.stringify(allHistory),
@@ -73,7 +83,7 @@ export function stringifyVariables({
 }
 
 export const query = gql`
-  query withdrawAllHistory(
+  query __withdrawHistory(
     $bLunaHubContract: String!
     $allHistory: String!
     $parameters: String!
@@ -95,20 +105,18 @@ export const query = gql`
 `;
 
 export function useWithdrawHistory({
-  withdrawable,
+  withdrawRequestsStartFrom,
 }: {
-  withdrawable?: WithdrawableData;
-}): QueryResult<StringifiedData, StringifiedVariables> & {
-  parsedData: Data | undefined;
-} {
+  withdrawRequestsStartFrom?: number;
+}): MappedQueryResult<RawVariables, RawData, Data> {
   const addressProvider = useAddressProvider();
 
   const variables = useMemo(() => {
-    return stringifyVariables({
+    return mapVariables({
       bLunaHubContract: addressProvider.bAssetHub('bluna'),
       allHistory: {
         all_history: {
-          start_from: withdrawable?.withdrawRequestsStartFrom ?? 0,
+          start_from: withdrawRequestsStartFrom ?? 0,
           limit: 100,
         },
       },
@@ -116,27 +124,32 @@ export function useWithdrawHistory({
         parameters: {},
       },
     });
-  }, [addressProvider, withdrawable?.withdrawRequestsStartFrom]);
+  }, [addressProvider, withdrawRequestsStartFrom]);
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
-    skip: !withdrawable || withdrawable.withdrawRequestsStartFrom < 0,
+  const { data: _data, refetch: _refetch, ...result } = useQuery<
+    RawData,
+    RawVariables
+  >(query, {
+    skip:
+      typeof withdrawRequestsStartFrom !== 'number' ||
+      withdrawRequestsStartFrom < 0,
     fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-first',
     variables,
   });
 
   useSubscription((id, event) => {
     if (event === 'done') {
-      result.refetch();
+      _refetch();
     }
   });
 
-  const parsedData = useMemo(
-    () => (result.data ? parseData(result.data) : undefined),
-    [result.data],
-  );
+  const data = useMap(_data, dataMap);
+  const refetch = useRefetch(_refetch, dataMap);
 
   return {
     ...result,
-    parsedData,
+    data,
+    refetch,
   };
 }

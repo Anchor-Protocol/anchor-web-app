@@ -1,47 +1,132 @@
-import {
-  Data as MarketBalance,
-  useMarketBalanceOverview,
-} from 'pages/borrow/queries/marketBalanceOverview';
+import { Ratio } from '@anchor-protocol/notation';
+import big from 'big.js';
+import { useAddressProvider } from 'contexts/contract';
+import { SAFE_RATIO } from 'env';
+import type { ReactNode } from 'react';
+import { Consumer, Context, createContext, useContext, useMemo } from 'react';
 import {
   Data as MarketOverview,
   useMarketOverview,
-} from 'pages/borrow/queries/marketOverview';
+} from '../queries/marketOverview';
+import { Data as MarketState, useMarketState } from '../queries/marketState';
 import {
   Data as MarketUserOverview,
   useMarketUserOverview,
-} from 'pages/borrow/queries/marketUserOverview';
-import type { ReactNode } from 'react';
-import { Consumer, Context, createContext, useContext, useMemo } from 'react';
+} from '../queries/marketUserOverview';
 
 export interface MarketProviderProps {
   children: ReactNode;
 }
 
-export interface MarketState {
-  marketBalance: MarketBalance | undefined;
-  marketOverview: MarketOverview | undefined;
-  marketUserOverview: MarketUserOverview | undefined;
+export interface Market {
+  ready: boolean;
+  currentBlock: MarketState['currentBlock'] | undefined;
+  marketBalance: MarketState['marketBalance'] | undefined;
+  marketState: MarketState['marketState'] | undefined;
+  borrowRate: MarketOverview['borrowRate'] | undefined;
+  oraclePrice: MarketOverview['oraclePrice'] | undefined;
+  overseerWhitelist: MarketOverview['overseerWhitelist'] | undefined;
+  loanAmount: MarketUserOverview['loanAmount'] | undefined;
+  liability: MarketUserOverview['liability'] | undefined;
+  borrowInfo: MarketUserOverview['borrowInfo'] | undefined;
+  bLunaMaxLtv: Ratio | undefined;
+  bLunaSafeLtv: Ratio | undefined;
   refetch: () => void;
 }
 
 // @ts-ignore
-const MarketContext: Context<MarketState> = createContext<MarketState>();
+const MarketContext: Context<Market> = createContext<Market>();
 
 export function MarketProvider({ children }: MarketProviderProps) {
-  const { parsedData: marketBalance, refetch } = useMarketBalanceOverview();
-  const { parsedData: marketOverview } = useMarketOverview({ marketBalance });
-  const { parsedData: marketUserOverview } = useMarketUserOverview({
-    marketBalance,
+  const addressProvider = useAddressProvider();
+
+  const {
+    data: { currentBlock, marketBalance, marketState },
+    refetch: refetchMarketState,
+  } = useMarketState();
+
+  const {
+    data: { borrowRate, oraclePrice, overseerWhitelist },
+  } = useMarketOverview({ marketBalance, marketState });
+
+  const {
+    data: { loanAmount, liability, borrowInfo },
+  } = useMarketUserOverview({
+    currentBlock,
   });
-  
-  const state = useMemo<MarketState>(
+
+  const bLunaMaxLtv = useMemo(() => {
+    return overseerWhitelist?.elems.find(
+      ({ collateral_token }) =>
+        collateral_token === addressProvider.bAssetToken('ubluna'),
+    )?.ltv;
+  }, [addressProvider, overseerWhitelist?.elems]);
+
+  const bLunaSafeLtv = useMemo(() => {
+    return bLunaMaxLtv
+      ? (big(bLunaMaxLtv).mul(SAFE_RATIO).toString() as Ratio)
+      : undefined;
+  }, [bLunaMaxLtv]);
+
+  const ready = useMemo(() => {
+    return (
+      typeof currentBlock === 'number' &&
+      !!marketBalance &&
+      !!marketState &&
+      !!borrowRate &&
+      !!oraclePrice &&
+      !!overseerWhitelist &&
+      !!loanAmount &&
+      !!liability &&
+      !!borrowInfo &&
+      !!bLunaMaxLtv &&
+      !!bLunaSafeLtv
+    );
+  }, [
+    currentBlock,
+    bLunaMaxLtv,
+    bLunaSafeLtv,
+    borrowInfo,
+    borrowRate,
+    liability,
+    loanAmount,
+    marketBalance,
+    marketState,
+    oraclePrice,
+    overseerWhitelist,
+  ]);
+
+  const state = useMemo<Market>(
     () => ({
+      ready,
+      currentBlock,
       marketBalance,
-      marketOverview,
-      marketUserOverview,
-      refetch,
+      marketState,
+      borrowRate,
+      oraclePrice,
+      overseerWhitelist,
+      loanAmount,
+      liability,
+      borrowInfo,
+      bLunaMaxLtv,
+      bLunaSafeLtv,
+      refetch: refetchMarketState,
     }),
-    [marketBalance, marketOverview, marketUserOverview, refetch],
+    [
+      ready,
+      currentBlock,
+      bLunaMaxLtv,
+      bLunaSafeLtv,
+      borrowInfo,
+      borrowRate,
+      liability,
+      loanAmount,
+      marketBalance,
+      marketState,
+      oraclePrice,
+      overseerWhitelist,
+      refetchMarketState,
+    ],
   );
 
   return (
@@ -49,33 +134,71 @@ export function MarketProvider({ children }: MarketProviderProps) {
   );
 }
 
-export function useMarket(): MarketState {
+export function useMarket(): Market {
   return useContext(MarketContext);
 }
 
 export function useMarketNotNullable(): {
-  marketBalance: MarketBalance;
-  marketOverview: MarketOverview;
-  marketUserOverview: MarketUserOverview;
+  currentBlock: MarketState['currentBlock'];
+  marketBalance: MarketState['marketBalance'];
+  marketState: MarketState['marketState'];
+  borrowRate: MarketOverview['borrowRate'];
+  oraclePrice: MarketOverview['oraclePrice'];
+  overseerWhitelist: MarketOverview['overseerWhitelist'];
+  loanAmount: MarketUserOverview['loanAmount'];
+  liability: MarketUserOverview['liability'];
+  borrowInfo: MarketUserOverview['borrowInfo'];
+  bLunaMaxLtv: Ratio;
+  bLunaSafeLtv: Ratio;
   refetch: () => void;
 } {
   const {
+    ready,
+    currentBlock,
     marketBalance,
-    marketOverview,
-    marketUserOverview,
+    marketState,
+    borrowRate,
+    oraclePrice,
+    overseerWhitelist,
+    loanAmount,
+    liability,
+    borrowInfo,
+    bLunaMaxLtv,
+    bLunaSafeLtv,
     refetch,
   } = useContext(MarketContext);
 
-  if (!marketBalance || !marketOverview || !marketUserOverview) {
+  if (
+    !ready ||
+    typeof currentBlock !== 'number' ||
+    !marketBalance ||
+    !marketState ||
+    !borrowRate ||
+    !oraclePrice ||
+    !overseerWhitelist ||
+    !loanAmount ||
+    !liability ||
+    !borrowInfo ||
+    !bLunaMaxLtv ||
+    !bLunaSafeLtv
+  ) {
     throw new Error(`Datas can not be undefined`);
   }
 
   return {
+    currentBlock,
     marketBalance,
-    marketOverview,
-    marketUserOverview,
+    marketState,
+    borrowRate,
+    oraclePrice,
+    overseerWhitelist,
+    loanAmount,
+    liability,
+    borrowInfo,
+    bLunaMaxLtv,
+    bLunaSafeLtv,
     refetch,
   };
 }
 
-export const MarketConsumer: Consumer<MarketState> = MarketContext.Consumer;
+export const MarketConsumer: Consumer<Market> = MarketContext.Consumer;

@@ -1,23 +1,24 @@
+import { map } from '@anchor-protocol/use-map';
 import { testAddressProvider, testClient } from 'test.env';
 import {
-  parseData,
+  dataMap,
+  mapVariables,
   query,
-  StringifiedData,
-  StringifiedVariables,
-  stringifyVariables,
+  RawData,
+  RawVariables,
 } from '../exchangeRate';
 
 describe('queries/exchangeRate', () => {
   test('should get result from query', async () => {
     const data = await testClient
-      .query<StringifiedData, StringifiedVariables>({
+      .query<RawData, RawVariables>({
         query,
-        variables: stringifyVariables({
+        variables: mapVariables({
           bLunaHubContract: testAddressProvider.bAssetHub(''),
         }),
       })
-      .then(({ data }) => parseData(data));
+      .then(({ data }) => map(data, dataMap));
 
-    expect(typeof data.actual_unbonded_amount).toBe('string');
+    expect(data.exchangeRate).not.toBeUndefined();
   });
 });

@@ -1,23 +1,25 @@
+import { map } from '@anchor-protocol/use-map';
 import { testAddressProvider, testClient, testWalletAddress } from 'test.env';
 import {
-  parseData,
+  dataMap,
+  mapVariables,
   query,
-  StringifiedData,
-  StringifiedVariables,
-  stringifyVariables,
+  RawData,
+  RawVariables,
 } from '../withdrawable';
 
 describe('queries/withdrawable', () => {
   test('should get result from query', async () => {
     const data = await testClient
-      .query<StringifiedData, StringifiedVariables>({
+      .query<RawData, RawVariables>({
         query,
-        variables: stringifyVariables({
+        variables: mapVariables({
           bLunaHubContract: testAddressProvider.bAssetHub(''),
           withdrawableAmountQuery: {
             withdrawable_unbonded: {
               address: testWalletAddress,
-              block_time: Math.floor(Date.now() / 1000) - 1000 * 60 * 60 * 24 * 10,
+              block_time:
+                Math.floor(Date.now() / 1000) - 1000 * 60 * 60 * 24 * 10,
             },
           },
           withdrawRequestsQuery: {
@@ -30,8 +32,8 @@ describe('queries/withdrawable', () => {
           },
         }),
       })
-      .then(({ data }) => parseData(data));
+      .then(({ data }) => map(data, dataMap));
 
-    expect(Array.isArray(data.withdrawRequests.requests)).toBeTruthy();
+    expect(Array.isArray(data.withdrawRequests?.requests)).toBeTruthy();
   });
 });

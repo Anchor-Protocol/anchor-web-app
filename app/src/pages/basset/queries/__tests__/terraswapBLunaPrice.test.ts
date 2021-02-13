@@ -1,23 +1,24 @@
+import { map } from '@anchor-protocol/use-map';
 import { testAddressProvider, testClient } from 'test.env';
 import {
-  parseData,
+  dataMap,
+  mapVariables,
   query,
-  StringifiedData,
-  StringifiedVariables,
-  stringifyVariables,
+  RawData,
+  RawVariables,
 } from '../terraswapBLunaPrice';
 
 describe('queries/terraswapBLunaPrice', () => {
   test('should get result from query', async () => {
     const data = await testClient
-      .query<StringifiedData, StringifiedVariables>({
+      .query<RawData, RawVariables>({
         query,
-        variables: stringifyVariables({
+        variables: mapVariables({
           bLunaTerraswap: testAddressProvider.blunaBurnPair(),
         }),
       })
-      .then(({ data }) => parseData(data));
+      .then(({ data }) => map(data, dataMap));
 
-    expect(+data.bLunaPrice).not.toBeNaN();
+    expect(parseInt(data.terraswapPoolInfo?.bLunaPrice ?? '')).not.toBeNaN();
   });
 });

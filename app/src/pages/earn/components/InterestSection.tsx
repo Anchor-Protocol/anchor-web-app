@@ -6,6 +6,8 @@ import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { Tab } from '@anchor-protocol/neumorphism-ui/components/Tab';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { formatRatioToPercentage } from '@anchor-protocol/notation';
+import { useNetConstants } from 'contexts/net-contants';
+import { useCurrentAPY } from 'pages/earn/logics/useCurrentAPY';
 import { useInterest } from 'pages/earn/queries/interest';
 import { useState } from 'react';
 import styled from 'styled-components';
@@ -43,6 +45,8 @@ const tabItems: Item[] = [
 ];
 
 function InterestSectionBase({ className }: InterestSectionProps) {
+  const { blocksPerYear } = useNetConstants();
+
   // ---------------------------------------------
   // states
   // ---------------------------------------------
@@ -51,7 +55,14 @@ function InterestSectionBase({ className }: InterestSectionProps) {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const { parsedData: interest } = useInterest();
+  const {
+    data: { marketStatus },
+  } = useInterest();
+
+  // ---------------------------------------------
+  // logics
+  // ---------------------------------------------
+  const currentAPY = useCurrentAPY(marketStatus?.deposit_rate, blocksPerYear);
 
   // ---------------------------------------------
   // presentation
@@ -68,12 +79,7 @@ function InterestSectionBase({ className }: InterestSectionProps) {
         <Tooltip title="Annual Percentage Yield" placement="top">
           <Label className="name">APY</Label>
         </Tooltip>
-        <div className="value">
-          {interest?.currentAPY
-            ? formatRatioToPercentage(interest.currentAPY)
-            : 0}
-          %
-        </div>
+        <div className="value">{formatRatioToPercentage(currentAPY)}%</div>
         <LineChart
           data={[
             { label: 'A', date: 0, value: 100 },

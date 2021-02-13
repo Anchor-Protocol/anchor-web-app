@@ -2,27 +2,28 @@ import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { gql, QueryResult, useQuery } from '@apollo/client';
 import { useMemo } from 'react';
 
-export interface StringifiedData {
+export interface RawData {
   LastSyncedHeight: number;
 }
 
 export type Data = number;
 
-export function parseData({ LastSyncedHeight }: StringifiedData): Data {
+export function mapData({ LastSyncedHeight }: RawData): Data {
   return LastSyncedHeight;
 }
 
 export const query = gql`
-  query lastSyncedHeight {
+  query __lastSyncedHeight {
     LastSyncedHeight
   }
 `;
 
-export function useLastSyncedHeight(): QueryResult<StringifiedData> & {
-  parsedData: Data | undefined;
+export function useLastSyncedHeight(): Omit<QueryResult<RawData>, 'data'> & {
+  data: Data | undefined;
 } {
-  const result = useQuery<StringifiedData>(query, {
+  const result = useQuery<RawData>(query, {
     fetchPolicy: 'network-only',
+    pollInterval: 1000 * 60,
   });
 
   useSubscription((id, event) => {
@@ -31,13 +32,12 @@ export function useLastSyncedHeight(): QueryResult<StringifiedData> & {
     }
   });
 
-  const parsedData = useMemo(
-    () => (result.data ? parseData(result.data) : undefined),
-    [result.data],
-  );
+  const data = useMemo(() => (result.data ? mapData(result.data) : undefined), [
+    result.data,
+  ]);
 
   return {
     ...result,
-    parsedData,
+    data,
   };
 }

@@ -36,16 +36,18 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
   // ---------------------------------------------
   const bank = useBank();
 
-  const { parsedData: claimable } = useClaimable();
+  const {
+    data: { rewardState, claimableReward },
+  } = useClaimable();
 
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
   const claimableRewards = useClaimableRewards(
-    claimable?.claimableReward.balance,
-    claimable?.rewardState.global_index,
-    claimable?.claimableReward.index,
-    claimable?.claimableReward.pending_rewards,
+    claimableReward?.balance,
+    rewardState?.global_index,
+    claimableReward?.index,
+    claimableReward?.pending_rewards,
   );
 
   const invalidTxFee = useInvalidTxFee(bank, fixedGas);

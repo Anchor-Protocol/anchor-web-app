@@ -1,12 +1,12 @@
 import { microfy, UST, uUST } from '@anchor-protocol/notation';
-import big, { Big } from 'big.js';
+import big, { Big, BigSource } from 'big.js';
 import { Bank } from 'contexts/bank';
 import { ReactNode, useMemo } from 'react';
 
 export function useInvalidWithdrawAmount(
   withdrawAmount: UST,
   bank: Bank,
-  totalDeposit: uUST,
+  totalDeposit: uUST<BigSource>,
   txFee: uUST<Big> | undefined,
 ): ReactNode {
   return useMemo(() => {

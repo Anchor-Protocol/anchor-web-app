@@ -17,10 +17,7 @@ export const getTxInfo = (
       throw new OperationStop();
     }
 
-    const { parsedData: txInfo } = await queryTxInfo(
-      client,
-      txResult.result.txhash,
-    );
+    const { data: txInfo } = await queryTxInfo(client, txResult.result.txhash);
 
     if (txInfo.length > 0) {
       const fail = txInfo.find(({ Success }) => !Success);

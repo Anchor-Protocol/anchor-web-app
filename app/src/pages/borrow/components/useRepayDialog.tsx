@@ -64,9 +64,15 @@ function ComponentBase({
   // dependencies
   // ---------------------------------------------
   const {
-    marketBalance,
-    marketUserOverview,
-    marketOverview,
+    loanAmount,
+    borrowInfo,
+    bLunaMaxLtv,
+    bLunaSafeLtv,
+    oraclePrice,
+    borrowRate,
+    currentBlock,
+    marketState,
+    liability,
   } = useMarketNotNullable();
 
   const { status } = useWallet();
@@ -93,32 +99,32 @@ function ComponentBase({
   const amountToLtv = useMemo(
     () =>
       repayAmountToLtv(
-        marketUserOverview.loanAmount.loan_amount,
-        marketUserOverview.borrowInfo.balance,
-        marketUserOverview.borrowInfo.spendable,
-        marketOverview.oraclePrice.rate,
+        loanAmount.loan_amount,
+        borrowInfo.balance,
+        borrowInfo.spendable,
+        oraclePrice.rate,
       ),
     [
-      marketOverview.oraclePrice.rate,
-      marketUserOverview.borrowInfo.balance,
-      marketUserOverview.borrowInfo.spendable,
-      marketUserOverview.loanAmount.loan_amount,
+      oraclePrice.rate,
+      borrowInfo.balance,
+      borrowInfo.spendable,
+      loanAmount.loan_amount,
     ],
   );
 
   const ltvToAmount = useMemo(
     () =>
       ltvToRepayAmount(
-        marketUserOverview.loanAmount.loan_amount,
-        marketUserOverview.borrowInfo.balance,
-        marketUserOverview.borrowInfo.spendable,
-        marketOverview.oraclePrice.rate,
+        loanAmount.loan_amount,
+        borrowInfo.balance,
+        borrowInfo.spendable,
+        oraclePrice.rate,
       ),
     [
-      marketOverview.oraclePrice.rate,
-      marketUserOverview.borrowInfo.balance,
-      marketUserOverview.borrowInfo.spendable,
-      marketUserOverview.loanAmount.loan_amount,
+      oraclePrice.rate,
+      borrowInfo.balance,
+      borrowInfo.spendable,
+      loanAmount.loan_amount,
     ],
   );
 
@@ -126,25 +132,25 @@ function ComponentBase({
   // compute
   // ---------------------------------------------
   const currentLtv = useCurrentLtv(
-    marketUserOverview.loanAmount.loan_amount,
-    marketUserOverview.borrowInfo.balance,
-    marketUserOverview.borrowInfo.spendable,
-    marketOverview.oraclePrice.rate,
+    loanAmount.loan_amount,
+    borrowInfo.balance,
+    borrowInfo.spendable,
+    oraclePrice.rate,
   );
   const nextLtv = useRepayNextLtv(repayAmount, currentLtv, amountToLtv);
-  const apr = useAPR(marketOverview.borrowRate.rate, blocksPerYear);
+  const apr = useAPR(borrowRate.rate, blocksPerYear);
   const totalBorrows = useRepayTotalBorrows(
-    marketUserOverview.loanAmount.loan_amount,
-    marketOverview.borrowRate.rate,
-    marketBalance.currentBlock,
-    marketBalance.marketState.last_interest_updated,
-    marketBalance.marketState.global_interest_index,
-    marketUserOverview.liability.interest_index,
+    loanAmount.loan_amount,
+    borrowRate.rate,
+    currentBlock,
+    marketState.last_interest_updated,
+    marketState.global_interest_index,
+    liability.interest_index,
   );
   const txFee = useRepayTxFee(repayAmount, bank, fixedGas);
   const totalOutstandingLoan = useRepayTotalOutstandingLoan(
     repayAmount,
-    marketUserOverview.loanAmount.loan_amount,
+    loanAmount.loan_amount,
   );
   const sendAmount = useRepaySendAmount(repayAmount, txFee);
 
@@ -273,8 +279,8 @@ function ComponentBase({
 
         <figure className="graph">
           <LTVGraph
-            maxLtv={marketOverview.bLunaMaxLtv}
-            safeLtv={marketOverview.bLunaSafeLtv}
+            maxLtv={bLunaMaxLtv}
+            safeLtv={bLunaSafeLtv}
             currentLtv={currentLtv}
             nextLtv={nextLtv}
             userMinLtv={0 as Ratio<BigSource>}

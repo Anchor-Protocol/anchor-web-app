@@ -1,19 +1,15 @@
 import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
 import { Ratio } from '@anchor-protocol/notation';
-import {
-  ApolloClient,
-  ApolloQueryResult,
-  gql,
-  QueryResult,
-  useQuery,
-} from '@apollo/client';
-import big from 'big.js';
+import { createMap, map, useMap } from '@anchor-protocol/use-map';
+import { ApolloClient, gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
-import { SAFE_RATIO } from 'env';
+import { parseResult } from 'queries/parseResult';
+import { MappedApolloQueryResult, MappedQueryResult } from 'queries/types';
+import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
-import { Data as MarketBalanceOverviewData } from './marketBalanceOverview';
+import { Data as MarketState } from './marketState';
 
-export interface StringifiedData {
+export interface RawData {
   borrowRate: {
     Result: string;
   };
@@ -29,53 +25,41 @@ export interface StringifiedData {
 
 export interface Data {
   borrowRate: {
+    Result: string;
     rate: Ratio<string>;
   };
 
   oraclePrice: {
+    Result: string;
     rate: Ratio<string>;
     last_updated_base: number;
     last_updated_quote: number;
   };
 
   overseerWhitelist: {
+    Result: string;
+
     elems: {
       collateral_token: string;
       custody_contract: string;
       ltv: Ratio<string>;
     }[];
   };
-
-  bLunaMaxLtv: Ratio<string>;
-  bLunaSafeLtv: Ratio<string>;
 }
 
-export function parseData(
-  { borrowRate, oraclePrice, overseerWhitelist }: StringifiedData,
-  addressProvider: AddressProvider,
-): Data {
-  const parsedOverseerWhitelist: Data['overseerWhitelist'] = JSON.parse(
-    overseerWhitelist.Result,
-  );
-  const bLunaMaxLtv = parsedOverseerWhitelist.elems.find(
-    ({ collateral_token }) =>
-      collateral_token === addressProvider.bAssetToken('ubluna'),
-  )?.ltv;
+export const dataMap = createMap<RawData, Data>({
+  borrowRate: (existing, { borrowRate }) => {
+    return parseResult(existing.borrowRate, borrowRate.Result);
+  },
+  oraclePrice: (existing, { oraclePrice }) => {
+    return parseResult(existing.oraclePrice, oraclePrice.Result);
+  },
+  overseerWhitelist: (existing, { overseerWhitelist }) => {
+    return parseResult(existing.overseerWhitelist, overseerWhitelist.Result);
+  },
+});
 
-  if (!bLunaMaxLtv) {
-    throw new Error(`Undefined bLuna collateral token!`);
-  }
-
-  return {
-    borrowRate: JSON.parse(borrowRate.Result),
-    oraclePrice: JSON.parse(oraclePrice.Result),
-    overseerWhitelist: parsedOverseerWhitelist,
-    bLunaMaxLtv,
-    bLunaSafeLtv: big(bLunaMaxLtv).mul(SAFE_RATIO).toString() as Ratio,
-  };
-}
-
-export interface StringifiedVariables {
+export interface RawVariables {
   interestContractAddress: string;
   interestBorrowRateQuery: string;
   oracleContractAddress: string;
@@ -108,14 +92,14 @@ export interface Variables {
   };
 }
 
-export function stringifyVariables({
+export function mapVariables({
   interestContractAddress,
   interestBorrowRateQuery,
   oracleContractAddress,
   oracleQuery,
   overseerContractAddress,
   overseerWhitelistQuery,
-}: Variables): StringifiedVariables {
+}: Variables): RawVariables {
   return {
     interestContractAddress,
     interestBorrowRateQuery: JSON.stringify(interestBorrowRateQuery),
@@ -127,7 +111,7 @@ export function stringifyVariables({
 }
 
 export const query = gql`
-  query(
+  query __marketOverview(
     $interestContractAddress: String!
     $interestBorrowRateQuery: String!
     $oracleContractAddress: String!
@@ -160,23 +144,22 @@ export const query = gql`
 
 export function useMarketOverview({
   marketBalance,
+  marketState,
 }: {
-  marketBalance: MarketBalanceOverviewData | undefined;
-}): QueryResult<StringifiedData, StringifiedVariables> & {
-  parsedData: Data | undefined;
-} {
+  marketBalance: MarketState['marketBalance'] | undefined;
+  marketState: MarketState['marketState'] | undefined;
+}): MappedQueryResult<RawVariables, RawData, Data> {
   const addressProvider = useAddressProvider();
 
   const variables = useMemo(() => {
-    return stringifyVariables({
+    return mapVariables({
       interestContractAddress: addressProvider.interest(),
       interestBorrowRateQuery: {
         borrow_rate: {
           market_balance:
-            marketBalance?.marketBalance.find(({ Denom }) => Denom === 'uusd')
-              ?.Amount ?? '',
-          total_liabilities: marketBalance?.marketState.total_liabilities ?? '',
-          total_reserves: marketBalance?.marketState.total_reserves ?? '',
+            marketBalance?.find(({ Denom }) => Denom === 'uusd')?.Amount ?? '',
+          total_liabilities: marketState?.total_liabilities ?? '',
+          total_reserves: marketState?.total_reserves ?? '',
         },
       },
       oracleContractAddress: addressProvider.oracle(),
@@ -195,46 +178,49 @@ export function useMarketOverview({
     });
   }, [
     addressProvider,
-    marketBalance?.marketBalance,
-    marketBalance?.marketState.total_liabilities,
-    marketBalance?.marketState.total_reserves,
+    marketBalance,
+    marketState?.total_liabilities,
+    marketState?.total_reserves,
   ]);
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
-    skip: !marketBalance,
+  const { data: _data, refetch: _refetch, ...result } = useQuery<
+    RawData,
+    RawVariables
+  >(query, {
+    skip: !marketBalance || !marketState,
     fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-first',
     variables,
   });
 
-  const parsedData = useMemo(
-    () => (result.data ? parseData(result.data, addressProvider) : undefined),
-    [addressProvider, result.data],
-  );
+  const data = useMap(_data, dataMap);
+  const refetch = useRefetch(_refetch, dataMap);
 
   return {
     ...result,
-    parsedData,
+    data,
+    refetch,
   };
 }
 
 export function queryMarketOverview(
   client: ApolloClient<any>,
   addressProvider: AddressProvider,
-  marketBalance: MarketBalanceOverviewData,
-): Promise<ApolloQueryResult<StringifiedData> & { parsedData: Data }> {
+  marketBalance: MarketState['marketBalance'],
+  marketState: MarketState['marketState'],
+): Promise<MappedApolloQueryResult<RawData, Data>> {
   return client
-    .query<StringifiedData, StringifiedVariables>({
+    .query<RawData, RawVariables>({
       query,
       fetchPolicy: 'network-only',
-      variables: stringifyVariables({
+      variables: mapVariables({
         interestContractAddress: addressProvider.interest(),
         interestBorrowRateQuery: {
           borrow_rate: {
             market_balance:
-              marketBalance.marketBalance.find(({ Denom }) => Denom === 'uusd')
-                ?.Amount ?? '',
-            total_liabilities: marketBalance.marketState.total_liabilities,
-            total_reserves: marketBalance.marketState.total_reserves,
+              marketBalance.find(({ Denom }) => Denom === 'uusd')?.Amount ?? '',
+            total_liabilities: marketState.total_liabilities,
+            total_reserves: marketState.total_reserves,
           },
         },
         oracleContractAddress: addressProvider.oracle(),
@@ -255,7 +241,7 @@ export function queryMarketOverview(
     .then((result) => {
       return {
         ...result,
-        parsedData: parseData(result.data, addressProvider),
+        data: map(result.data, dataMap),
       };
     });
 }

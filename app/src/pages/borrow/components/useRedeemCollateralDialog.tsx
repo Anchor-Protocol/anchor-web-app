@@ -22,9 +22,9 @@ import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import big, { Big, BigSource } from 'big.js';
 import { ArrowDownLine } from 'components/ArrowDownLine';
+import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { MessageBox } from 'components/MessageBox';
 import { useBank } from 'contexts/bank';
 import { useNetConstants } from 'contexts/net-contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
@@ -63,7 +63,13 @@ function ComponentBase({
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { marketUserOverview, marketOverview } = useMarketNotNullable();
+  const {
+    loanAmount,
+    borrowInfo,
+    bLunaMaxLtv,
+    bLunaSafeLtv,
+    oraclePrice,
+  } = useMarketNotNullable();
 
   const { status } = useWallet();
 
@@ -94,41 +100,37 @@ function ComponentBase({
   const amountToLtv = useMemo(
     () =>
       redeemAmountToLtv(
-        marketUserOverview.loanAmount.loan_amount,
-        marketUserOverview.borrowInfo.balance,
-        marketUserOverview.borrowInfo.spendable,
-        marketOverview.oraclePrice.rate,
+        loanAmount.loan_amount,
+        borrowInfo.balance,
+        borrowInfo.spendable,
+        oraclePrice.rate,
       ),
     [
-      marketOverview.oraclePrice.rate,
-      marketUserOverview.borrowInfo.balance,
-      marketUserOverview.borrowInfo.spendable,
-      marketUserOverview.loanAmount.loan_amount,
+      oraclePrice.rate,
+      borrowInfo.balance,
+      borrowInfo.spendable,
+      loanAmount.loan_amount,
     ],
   );
 
   const ltvToAmount = useMemo(
     () =>
       ltvToRedeemAmount(
-        marketUserOverview.loanAmount.loan_amount,
-        marketUserOverview.borrowInfo.balance,
-        marketOverview.oraclePrice.rate,
+        loanAmount.loan_amount,
+        borrowInfo.balance,
+        oraclePrice.rate,
       ),
-    [
-      marketOverview.oraclePrice.rate,
-      marketUserOverview.borrowInfo.balance,
-      marketUserOverview.loanAmount.loan_amount,
-    ],
+    [oraclePrice.rate, borrowInfo.balance, loanAmount.loan_amount],
   );
 
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
   const currentLtv = useCurrentLtv(
-    marketUserOverview.loanAmount.loan_amount,
-    marketUserOverview.borrowInfo.balance,
-    marketUserOverview.borrowInfo.spendable,
-    marketOverview.oraclePrice.rate,
+    loanAmount.loan_amount,
+    borrowInfo.balance,
+    borrowInfo.spendable,
+    oraclePrice.rate,
   );
   const nextLtv = useRedeemCollateralNextLtv(
     redeemAmount,
@@ -136,26 +138,26 @@ function ComponentBase({
     amountToLtv,
   );
   const withdrawableAmount = useRedeemCollateralWithdrawableAmount(
-    marketUserOverview.loanAmount.loan_amount,
-    marketUserOverview.borrowInfo.balance,
-    marketUserOverview.borrowInfo.spendable,
-    marketOverview.oraclePrice.rate,
-    marketOverview.bLunaSafeLtv,
-    marketOverview.bLunaMaxLtv,
+    loanAmount.loan_amount,
+    borrowInfo.balance,
+    borrowInfo.spendable,
+    oraclePrice.rate,
+    bLunaSafeLtv,
+    bLunaMaxLtv,
     nextLtv,
   );
   const withdrawableMaxAmount = useRedeemCollateralMaxAmount(
-    marketUserOverview.loanAmount.loan_amount,
-    marketUserOverview.borrowInfo.balance,
-    marketOverview.oraclePrice.rate,
-    marketOverview.bLunaMaxLtv,
+    loanAmount.loan_amount,
+    borrowInfo.balance,
+    oraclePrice.rate,
+    bLunaMaxLtv,
   );
   const borrowLimit = useRedeemCollateralBorrowLimit(
     redeemAmount,
-    marketUserOverview.borrowInfo.balance,
-    marketUserOverview.borrowInfo.spendable,
-    marketOverview.oraclePrice.rate,
-    marketOverview.bLunaMaxLtv,
+    borrowInfo.balance,
+    borrowInfo.spendable,
+    oraclePrice.rate,
+    bLunaMaxLtv,
   );
 
   const invalidTxFee = useInvalidTxFee(bank, fixedGas);
@@ -297,12 +299,12 @@ function ComponentBase({
 
         <figure className="graph">
           <LTVGraph
-            maxLtv={marketOverview.bLunaMaxLtv}
-            safeLtv={marketOverview.bLunaSafeLtv}
+            maxLtv={bLunaMaxLtv}
+            safeLtv={bLunaSafeLtv}
             currentLtv={currentLtv}
             nextLtv={nextLtv}
             userMinLtv={currentLtv}
-            userMaxLtv={marketOverview.bLunaMaxLtv}
+            userMaxLtv={bLunaMaxLtv}
             onStep={ltvStepFunction}
             onChange={onLtvChange}
           />

@@ -1,11 +1,14 @@
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { ubLuna, uLuna } from '@anchor-protocol/notation';
+import { createMap, useMap } from '@anchor-protocol/use-map';
 import { useWallet } from '@anchor-protocol/wallet-provider';
-import { gql, QueryResult, useQuery } from '@apollo/client';
+import { gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
+import { MappedQueryResult } from 'queries/types';
+import { useRefetch } from 'queries/useRefetch';
 import { useMemo, useState } from 'react';
 
-export interface StringifiedData {
+export interface RawData {
   withdrawableAmount: {
     Result: string;
   };
@@ -16,38 +19,47 @@ export interface StringifiedData {
 
 export interface Data {
   withdrawableAmount: {
+    Result: string;
     withdrawable: uLuna<string>;
   };
   withdrawRequests: {
+    Result: string;
     address: string;
     requests: [number, ubLuna<string>][];
-  };
-  withdrawRequestsStartFrom: number;
-}
-
-export function parseData({
-  withdrawableAmount,
-  withdrawRequests,
-}: StringifiedData): Data {
-  const parsedWithdrawRequests: Data['withdrawRequests'] = JSON.parse(
-    withdrawRequests.Result,
-  );
-  return {
-    withdrawableAmount: JSON.parse(withdrawableAmount.Result),
-    withdrawRequests: parsedWithdrawRequests,
-    withdrawRequestsStartFrom:
-      parsedWithdrawRequests.requests.length > 0
-        ? Math.max(
-            0,
-            Math.min(
-              ...parsedWithdrawRequests.requests.map(([index]) => index),
-            ) - 1,
-          )
-        : -1,
+    startFrom: number;
   };
 }
 
-export interface StringifiedVariables {
+export const dataMap = createMap<RawData, Data>({
+  withdrawableAmount: (existing, { withdrawableAmount }) => {
+    return existing.withdrawableAmount?.Result === withdrawableAmount.Result
+      ? existing.withdrawableAmount
+      : { ...withdrawableAmount, ...JSON.parse(withdrawableAmount.Result) };
+  },
+  withdrawRequests: (existing, { withdrawRequests }) => {
+    if (existing.withdrawRequests?.Result === withdrawRequests.Result) {
+      return existing.withdrawRequests;
+    }
+
+    const parsed = JSON.parse(
+      withdrawRequests.Result,
+    ) as Data['withdrawRequests'];
+
+    return {
+      ...withdrawRequests,
+      ...parsed,
+      startFrom:
+        parsed.requests.length > 0
+          ? Math.max(
+              0,
+              Math.min(...parsed.requests.map(([index]) => index)) - 1,
+            )
+          : -1,
+    };
+  },
+});
+
+export interface RawVariables {
   bLunaHubContract: string;
   withdrawableAmountQuery: string;
   withdrawRequestsQuery: string;
@@ -72,12 +84,12 @@ export interface Variables {
   };
 }
 
-export function stringifyVariables({
+export function mapVariables({
   bLunaHubContract,
   withdrawableAmountQuery,
   withdrawRequestsQuery,
   exchangeRateQuery,
-}: Variables): StringifiedVariables {
+}: Variables): RawVariables {
   return {
     bLunaHubContract,
     withdrawableAmountQuery: JSON.stringify(withdrawableAmountQuery),
@@ -87,7 +99,7 @@ export function stringifyVariables({
 }
 
 export const query = gql`
-  query bLunaClaim(
+  query __withdrawable(
     $bLunaHubContract: String!
     $withdrawableAmountQuery: String!
     $withdrawRequestsQuery: String!
@@ -112,16 +124,14 @@ export function useWithdrawable({
   bAsset,
 }: {
   bAsset: string;
-}): QueryResult<StringifiedData, StringifiedVariables> & {
-  parsedData: Data | undefined;
-} {
+}): MappedQueryResult<RawVariables, RawData, Data> {
   const addressProvider = useAddressProvider();
   const { status } = useWallet();
 
   const [now, setNow] = useState(() => Math.floor(Date.now() / 1000));
 
   const variables = useMemo(() => {
-    return stringifyVariables({
+    return mapVariables({
       bLunaHubContract: addressProvider.bAssetHub(bAsset),
       withdrawableAmountQuery: {
         withdrawable_unbonded: {
@@ -140,9 +150,13 @@ export function useWithdrawable({
     });
   }, [addressProvider, bAsset, now, status]);
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
+  const { data: _data, refetch: _refetch, ...result } = useQuery<
+    RawData,
+    RawVariables
+  >(query, {
     skip: status.status !== 'ready',
     fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-first',
     variables,
   });
 
@@ -152,13 +166,12 @@ export function useWithdrawable({
     }
   });
 
-  const parsedData = useMemo(
-    () => (result.data ? parseData(result.data) : undefined),
-    [result.data],
-  );
+  const data = useMap(_data, dataMap);
+  const refetch = useRefetch(_refetch, dataMap);
 
   return {
     ...result,
-    parsedData,
+    data,
+    refetch,
   };
 }

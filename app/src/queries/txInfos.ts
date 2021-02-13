@@ -1,6 +1,6 @@
 import { ApolloClient, ApolloQueryResult, gql } from '@apollo/client';
 
-export interface StringifiedData {
+export interface RawData {
   TxInfos: {
     TxHash: string;
     Success: boolean;
@@ -30,7 +30,7 @@ export type Data = {
   RawLog: RawLogMsg[] | string;
 }[];
 
-export function parseData({ TxInfos }: StringifiedData): Data {
+export function mapData({ TxInfos }: RawData): Data {
   return TxInfos.map(({ TxHash, Success, RawLog }) => {
     let rawLog: Data[number]['RawLog'] | string;
 
@@ -48,18 +48,18 @@ export function parseData({ TxInfos }: StringifiedData): Data {
   });
 }
 
-export interface StringifiedVariables {
+export interface RawVariables {
   txHash: string;
 }
 
-export type Variables = StringifiedVariables;
+export type Variables = RawVariables;
 
-export function stringifyVariables(variables: Variables): StringifiedVariables {
+export function mapVariables(variables: Variables): RawVariables {
   return variables;
 }
 
 export const query = gql`
-  query($txHash: String!) {
+  query __txInfos($txHash: String!) {
     TxInfos(TxHash: $txHash) {
       TxHash
       Success
@@ -71,19 +71,19 @@ export const query = gql`
 export function queryTxInfo(
   client: ApolloClient<any>,
   txHash: string,
-): Promise<ApolloQueryResult<StringifiedData> & { parsedData: Data }> {
+): Promise<Omit<ApolloQueryResult<RawData>, 'data'> & { data: Data }> {
   return client
-    .query<StringifiedData, StringifiedVariables>({
+    .query<RawData, RawVariables>({
       query,
-      fetchPolicy: 'network-only',
-      variables: stringifyVariables({
+      fetchPolicy: 'no-cache',
+      variables: mapVariables({
         txHash,
       }),
     })
     .then((result) => {
       return {
         ...result,
-        parsedData: result.data ? parseData(result.data) : [],
+        data: result.data ? mapData(result.data) : [],
       };
     });
 }

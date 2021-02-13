@@ -1,8 +1,11 @@
 import { Ratio, uUST } from '@anchor-protocol/notation';
-import { gql, QueryResult, useQuery } from '@apollo/client';
+import { createMap, useMap } from '@anchor-protocol/use-map';
+import { gql, useQuery } from '@apollo/client';
+import { MappedQueryResult } from 'queries/types';
+import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
-export interface StringifiedData {
+export interface RawData {
   tax_rate: {
     Height: string;
     Result: string;
@@ -18,23 +21,25 @@ export interface Data {
   maxTaxUUSD: uUST;
 }
 
-export function parseData({ tax_rate, tax_cap_denom }: StringifiedData): Data {
-  return {
-    taxRate: tax_rate.Result as Ratio,
-    maxTaxUUSD: tax_cap_denom.Result as uUST,
-  };
-}
+export const dataMap = createMap<RawData, Data>({
+  taxRate: (_, { tax_rate }) => {
+    return tax_rate.Result as Ratio;
+  },
+  maxTaxUUSD: (_, { tax_cap_denom }) => {
+    return tax_cap_denom.Result as uUST;
+  },
+});
 
-export type StringifiedVariables = {};
+export type RawVariables = {};
 
-export type Variables = StringifiedVariables;
+export type Variables = RawVariables;
 
-export function stringifyVariables(variables: Variables): StringifiedVariables {
+export function mapVariables(variables: Variables): RawVariables {
   return variables;
 }
 
 export const query = gql`
-  query {
+  query __tax {
     tax_rate: TreasuryTaxRate {
       Height
       Result
@@ -46,25 +51,26 @@ export const query = gql`
   }
 `;
 
-export function useTax(): QueryResult<StringifiedData, StringifiedVariables> & {
-  parsedData: Data | undefined;
-} {
+export function useTax(): MappedQueryResult<RawVariables, RawData, Data> {
   const variables = useMemo(() => {
-    return stringifyVariables({});
+    return mapVariables({});
   }, []);
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
+  const { data: _data, refetch: _refetch, ...result } = useQuery<
+    RawData,
+    RawVariables
+  >(query, {
     fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-first',
     variables,
   });
 
-  const parsedData = useMemo(
-    () => (result.data ? parseData(result.data) : undefined),
-    [result.data],
-  );
+  const data = useMap(_data, dataMap);
+  const refetch = useRefetch(_refetch, dataMap);
 
   return {
     ...result,
-    parsedData,
+    data,
+    refetch,
   };
 }

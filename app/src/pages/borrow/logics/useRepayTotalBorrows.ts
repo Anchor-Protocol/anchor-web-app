@@ -11,9 +11,9 @@ export function useRepayTotalBorrows(
 ): uUST<Big> {
   const bufferBlocks = 20;
 
-  //- block_height = marketBalanceOverview.ts / currentBlock
-  //- global_index = marketBalanceOverview.ts / marketState.global_interest_index
-  //- last_interest_updated = marketBalanceOverview.ts / marketState.last_interest_updated
+  //- block_height = marketState.ts / currentBlock
+  //- global_index = marketState.ts / marketState.global_interest_index
+  //- last_interest_updated = marketState.ts / marketState.last_interest_updated
   //- borrowRate = marketOverview.ts / borrowRate.rate
   //- loan_amount = marketUserOverview.ts / loanAmont.loan_amount
   //- interest_index = marketUserOverview.ts / loanAmont.interest_index

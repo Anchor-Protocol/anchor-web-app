@@ -1,16 +1,15 @@
 import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
+import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { Num, uaUST, uUST } from '@anchor-protocol/notation';
-import {
-  ApolloClient,
-  ApolloQueryResult,
-  gql,
-  QueryResult,
-  useQuery,
-} from '@apollo/client';
+import { createMap, map, useMap } from '@anchor-protocol/use-map';
+import { ApolloClient, gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
+import { parseResult } from 'queries/parseResult';
+import { MappedApolloQueryResult, MappedQueryResult } from 'queries/types';
+import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
-export interface StringifiedData {
+export interface RawData {
   currentBlock: number;
   marketBalance: {
     Result: { Denom: string; Amount: Num<string> }[];
@@ -24,6 +23,7 @@ export interface Data {
   currentBlock: number;
   marketBalance: { Denom: string; Amount: Num<string> }[];
   marketState: {
+    Result: string;
     total_liabilities: uUST<string>;
     total_reserves: uaUST<string>;
     last_interest_updated: number;
@@ -31,19 +31,33 @@ export interface Data {
   };
 }
 
-export function parseData({
-  currentBlock,
-  marketBalance,
-  marketState,
-}: StringifiedData): Data {
-  return {
-    currentBlock,
-    marketBalance: marketBalance.Result,
-    marketState: JSON.parse(marketState.Result),
-  };
-}
+export const dataMap = createMap<RawData, Data>({
+  currentBlock: (_, { currentBlock }) => {
+    return currentBlock;
+  },
+  marketBalance: (existing, { marketBalance }) => {
+    if (existing.marketBalance?.length === marketBalance.Result.length) {
+      let i: number = -1;
+      const max: number = marketBalance.Result.length;
+      while (++i < max) {
+        const prev = existing.marketBalance[i];
+        const next = marketBalance.Result[i];
 
-export interface StringifiedVariables {
+        if (prev.Denom !== next.Denom || prev.Amount !== next.Amount) {
+          return marketBalance.Result;
+        }
+      }
+      return existing.marketBalance;
+    }
+
+    return marketBalance.Result;
+  },
+  marketState: (existing, { marketState }) => {
+    return parseResult(existing.marketState, marketState.Result);
+  },
+});
+
+export interface RawVariables {
   marketContractAddress: string;
   marketStateQuery: string;
 }
@@ -55,10 +69,10 @@ export interface Variables {
   };
 }
 
-export function stringifyVariables({
+export function mapVariables({
   marketContractAddress,
   marketStateQuery,
-}: Variables): StringifiedVariables {
+}: Variables): RawVariables {
   return {
     marketContractAddress,
     marketStateQuery: JSON.stringify(marketStateQuery),
@@ -66,7 +80,10 @@ export function stringifyVariables({
 }
 
 export const query = gql`
-  query($marketContractAddress: String!, $marketStateQuery: String!) {
+  query __marketState(
+    $marketContractAddress: String!
+    $marketStateQuery: String!
+  ) {
     # current block height, synced in mantle
     currentBlock: LastSyncedHeight
 
@@ -89,14 +106,15 @@ export const query = gql`
   }
 `;
 
-export function useMarketBalanceOverview(): QueryResult<
-  StringifiedData,
-  StringifiedVariables
-> & { parsedData: Data | undefined } {
+export function useMarketState(): MappedQueryResult<
+  RawVariables,
+  RawData,
+  Data
+> {
   const addressProvider = useAddressProvider();
 
-  const variables = useMemo<StringifiedVariables>(() => {
-    return stringifyVariables({
+  const variables = useMemo<RawVariables>(() => {
+    return mapVariables({
       marketContractAddress: addressProvider.market('uusd'),
       marketStateQuery: {
         state: {},
@@ -104,32 +122,41 @@ export function useMarketBalanceOverview(): QueryResult<
     });
   }, [addressProvider]);
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
+  const { data: _data, refetch: _refetch, ...result } = useQuery<
+    RawData,
+    RawVariables
+  >(query, {
     fetchPolicy: 'network-only',
-    pollInterval: 1000 * 60,
+    nextFetchPolicy: 'cache-first',
+    pollInterval: 1000 * 10,
     variables,
   });
 
-  const parsedData = useMemo(
-    () => (result.data ? parseData(result.data) : undefined),
-    [result.data],
-  );
+  useSubscription((id, event) => {
+    if (event === 'done') {
+      _refetch();
+    }
+  });
+
+  const data = useMap(_data, dataMap);
+  const refetch = useRefetch(_refetch, dataMap);
 
   return {
     ...result,
-    parsedData,
+    data,
+    refetch,
   };
 }
 
-export function queryMarketBalanceOverview(
+export function queryMarketState(
   client: ApolloClient<any>,
   addressProvider: AddressProvider,
-): Promise<ApolloQueryResult<StringifiedData> & { parsedData: Data }> {
+): Promise<MappedApolloQueryResult<RawData, Data>> {
   return client
-    .query<StringifiedData, StringifiedVariables>({
+    .query<RawData, RawVariables>({
       query,
       fetchPolicy: 'network-only',
-      variables: stringifyVariables({
+      variables: mapVariables({
         marketContractAddress: addressProvider.market('uusd'),
         marketStateQuery: {
           state: {},
@@ -139,7 +166,7 @@ export function queryMarketBalanceOverview(
     .then((result) => {
       return {
         ...result,
-        parsedData: parseData(result.data),
+        data: map(result.data, dataMap),
       };
     });
 }

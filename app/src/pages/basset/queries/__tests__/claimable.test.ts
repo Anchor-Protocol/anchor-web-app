@@ -1,18 +1,19 @@
+import { map } from '@anchor-protocol/use-map';
 import { testAddressProvider, testClient, testWalletAddress } from 'test.env';
 import {
-  parseData,
+  dataMap,
+  mapVariables,
   query,
-  StringifiedData,
-  StringifiedVariables,
-  stringifyVariables,
+  RawData,
+  RawVariables,
 } from '../claimable';
 
 describe('queries/claimable', () => {
   test('should get result from query', async () => {
     const data = await testClient
-      .query<StringifiedData, StringifiedVariables>({
+      .query<RawData, RawVariables>({
         query,
-        variables: stringifyVariables({
+        variables: mapVariables({
           bAssetRewardContract: testAddressProvider.bAssetReward(''),
           rewardState: {
             state: {},
@@ -24,8 +25,9 @@ describe('queries/claimable', () => {
           },
         }),
       })
-      .then(({ data }) => parseData(data));
+      .then(({ data }) => map(data, dataMap));
 
-    expect(!!data.rewardState).toBeTruthy();
+    expect(data.rewardState).not.toBeUndefined();
+    expect(data.claimableReward).not.toBeUndefined();
   });
 });
