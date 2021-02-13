@@ -102,7 +102,7 @@ export const query = gql`
   }
 `;
 
-export function useMarketBalanceOverview(): MappedQueryResult<
+export function useMarketState(): MappedQueryResult<
   RawVariables,
   RawData,
   Data
@@ -137,7 +137,7 @@ export function useMarketBalanceOverview(): MappedQueryResult<
   };
 }
 
-export function queryMarketBalanceOverview(
+export function queryMarketState(
   client: ApolloClient<any>,
   addressProvider: AddressProvider,
 ): Promise<MappedApolloQueryResult<RawData, Data>> {

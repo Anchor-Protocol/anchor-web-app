@@ -7,11 +7,11 @@ import {
   RawData,
   RawVariables,
 } from '../marketOverview';
-import { getMarketBalance } from './marketBalanceOverview.test';
+import { getMarketState } from './marketState.test';
 
 describe('queries/marketOverview', () => {
   test('should get result from query', async () => {
-    const { marketBalance, marketState } = await getMarketBalance();
+    const { marketBalance, marketState } = await getMarketState();
 
     if (!marketBalance || !marketState) {
       throw new Error('Undefined marketBalance!');

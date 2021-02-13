@@ -7,13 +7,13 @@ import {
   RawData,
   RawVariables,
 } from '../marketUserOverview';
-import { getMarketBalance } from './marketBalanceOverview.test';
+import { getMarketState } from './marketState.test';
 
 describe('queries/marketUserOverview', () => {
   test('should get result from query', async () => {
-    const marketBalance = await getMarketBalance();
+    const marketState = await getMarketState();
 
-    if (!marketBalance) {
+    if (!marketState) {
       throw new Error('Undefined marketBalance!');
     }
 
@@ -25,7 +25,7 @@ describe('queries/marketUserOverview', () => {
           marketLoanQuery: {
             loan_amount: {
               borrower: testWalletAddress,
-              block_height: marketBalance.currentBlock ?? 0,
+              block_height: marketState.currentBlock ?? 0,
             },
           },
           custodyContractAddress: testAddressProvider.custody(),

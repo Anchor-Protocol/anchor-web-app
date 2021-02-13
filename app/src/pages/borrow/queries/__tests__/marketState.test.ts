@@ -6,9 +6,9 @@ import {
   query,
   RawData,
   RawVariables,
-} from '../marketBalanceOverview';
+} from '../marketState';
 
-export async function getMarketBalance() {
+export async function getMarketState() {
   return await testClient
     .query<RawData, RawVariables>({
       query,
@@ -22,9 +22,9 @@ export async function getMarketBalance() {
     .then(({ data }) => map(data, dataMap));
 }
 
-describe('queries/marketBalanceOverview', () => {
+describe('queries/marketState', () => {
   test('should get result from query', async () => {
-    const data = await getMarketBalance();
+    const data = await getMarketState();
     expect(typeof data.marketState?.total_liabilities).toBe('string');
   });
 });

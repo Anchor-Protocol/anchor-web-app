@@ -7,7 +7,7 @@ import { parseResult } from 'queries/parseResult';
 import { MappedApolloQueryResult, MappedQueryResult } from 'queries/types';
 import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
-import { Data as MarketBalanceOverviewData } from './marketBalanceOverview';
+import { Data as MarketBalanceOverviewData } from './marketState';
 
 export interface RawData {
   borrowRate: {

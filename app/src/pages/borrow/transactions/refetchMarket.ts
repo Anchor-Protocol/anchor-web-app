@@ -2,13 +2,13 @@ import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
 import { WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient } from '@apollo/client';
 import {
-  Data as MarketBalance,
-  queryMarketBalanceOverview,
-} from '../queries/marketBalanceOverview';
-import {
   Data as MarketOverview,
   queryMarketOverview,
 } from '../queries/marketOverview';
+import {
+  Data as MarketBalance,
+  queryMarketState,
+} from '../queries/marketState';
 import {
   Data as MarketUserOverview,
   queryMarketUserOverview,
@@ -31,7 +31,7 @@ export const refetchMarket = (
 }> => {
   const {
     data: { currentBlock, marketBalance, marketState },
-  } = await queryMarketBalanceOverview(client, addressProvider);
+  } = await queryMarketState(client, addressProvider);
 
   if (typeof currentBlock !== 'number' || !marketBalance || !marketState) {
     return {};

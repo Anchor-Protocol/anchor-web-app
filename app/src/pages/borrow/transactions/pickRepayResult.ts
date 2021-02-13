@@ -9,7 +9,7 @@ import { TxHashLink } from 'components/TxHashLink';
 import { TxInfoParseError } from 'errors/TxInfoParseError';
 import { TransactionResult } from 'models/transaction';
 import { currentLtv } from 'pages/borrow/logics/currentLtv';
-import { Data as MarketBalance } from 'pages/borrow/queries/marketBalanceOverview';
+import { Data as MarketBalance } from 'pages/borrow/queries/marketState';
 import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
 import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import {

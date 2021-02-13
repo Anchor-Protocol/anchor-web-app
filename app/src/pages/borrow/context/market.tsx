@@ -5,13 +5,10 @@ import { SAFE_RATIO } from 'env';
 import type { ReactNode } from 'react';
 import { Consumer, Context, createContext, useContext, useMemo } from 'react';
 import {
-  Data as MarketBalance,
-  useMarketBalanceOverview,
-} from '../queries/marketBalanceOverview';
-import {
   Data as MarketOverview,
   useMarketOverview,
 } from '../queries/marketOverview';
+import { Data as MarketState, useMarketState } from '../queries/marketState';
 import {
   Data as MarketUserOverview,
   useMarketUserOverview,
@@ -21,11 +18,11 @@ export interface MarketProviderProps {
   children: ReactNode;
 }
 
-export interface MarketState {
+export interface Market {
   ready: boolean;
-  currentBlock: MarketBalance['currentBlock'] | undefined;
-  marketBalance: MarketBalance['marketBalance'] | undefined;
-  marketState: MarketBalance['marketState'] | undefined;
+  currentBlock: MarketState['currentBlock'] | undefined;
+  marketBalance: MarketState['marketBalance'] | undefined;
+  marketState: MarketState['marketState'] | undefined;
   borrowRate: MarketOverview['borrowRate'] | undefined;
   oraclePrice: MarketOverview['oraclePrice'] | undefined;
   overseerWhitelist: MarketOverview['overseerWhitelist'] | undefined;
@@ -38,7 +35,7 @@ export interface MarketState {
 }
 
 // @ts-ignore
-const MarketContext: Context<MarketState> = createContext<MarketState>();
+const MarketContext: Context<Market> = createContext<Market>();
 
 export function MarketProvider({ children }: MarketProviderProps) {
   const addressProvider = useAddressProvider();
@@ -46,7 +43,7 @@ export function MarketProvider({ children }: MarketProviderProps) {
   const {
     data: { currentBlock, marketBalance, marketState },
     refetch: refetchMarketState,
-  } = useMarketBalanceOverview();
+  } = useMarketState();
 
   const {
     data: { borrowRate, oraclePrice, overseerWhitelist },
@@ -101,7 +98,7 @@ export function MarketProvider({ children }: MarketProviderProps) {
     overseerWhitelist,
   ]);
 
-  const state = useMemo<MarketState>(
+  const state = useMemo<Market>(
     () => ({
       ready,
       currentBlock,
@@ -139,14 +136,14 @@ export function MarketProvider({ children }: MarketProviderProps) {
   );
 }
 
-export function useMarket(): MarketState {
+export function useMarket(): Market {
   return useContext(MarketContext);
 }
 
 export function useMarketNotNullable(): {
-  currentBlock: MarketBalance['currentBlock'];
-  marketBalance: MarketBalance['marketBalance'];
-  marketState: MarketBalance['marketState'];
+  currentBlock: MarketState['currentBlock'];
+  marketBalance: MarketState['marketBalance'];
+  marketState: MarketState['marketState'];
   borrowRate: MarketOverview['borrowRate'];
   oraclePrice: MarketOverview['oraclePrice'];
   overseerWhitelist: MarketOverview['overseerWhitelist'];
@@ -206,4 +203,4 @@ export function useMarketNotNullable(): {
   };
 }
 
-export const MarketConsumer: Consumer<MarketState> = MarketContext.Consumer;
+export const MarketConsumer: Consumer<Market> = MarketContext.Consumer;
