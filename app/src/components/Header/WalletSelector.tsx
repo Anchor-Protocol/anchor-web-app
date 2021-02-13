@@ -46,6 +46,11 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
     setOpen(false);
   }, [connect]);
 
+  const disconnectWallet = useCallback(() => {
+    disconnect();
+    window.location.reload();
+  }, [disconnect]);
+
   const toggleOpen = useCallback(() => {
     if (status.status === 'ready') {
       setOpen((prev) => !prev);
@@ -178,7 +183,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                   </div>
                 </section>
 
-                <button className="disconnect" onClick={disconnect}>
+                <button className="disconnect" onClick={disconnectWallet}>
                   DISCONNECT
                 </button>
               </WalletDropdown>
