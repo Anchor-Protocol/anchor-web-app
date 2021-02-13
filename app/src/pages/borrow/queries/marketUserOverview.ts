@@ -165,6 +165,7 @@ export function useMarketUserOverview({
   >(query, {
     skip: status.status !== 'ready' || typeof currentBlock !== 'number',
     fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-first',
     variables,
   });
 

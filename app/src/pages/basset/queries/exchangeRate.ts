@@ -86,6 +86,7 @@ export function useExchangeRate({
     RawVariables
   >(query, {
     fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-first',
     variables,
   });
 

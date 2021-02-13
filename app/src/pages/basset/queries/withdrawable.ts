@@ -156,6 +156,7 @@ export function useWithdrawable({
   >(query, {
     skip: status.status !== 'ready',
     fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-first',
     variables,
   });
 

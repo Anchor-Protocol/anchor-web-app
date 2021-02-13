@@ -23,6 +23,7 @@ export function useLastSyncedHeight(): Omit<QueryResult<RawData>, 'data'> & {
 } {
   const result = useQuery<RawData>(query, {
     fetchPolicy: 'network-only',
+    pollInterval: 1000 * 60,
   });
 
   useSubscription((id, event) => {

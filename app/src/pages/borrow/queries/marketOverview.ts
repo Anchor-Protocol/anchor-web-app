@@ -44,9 +44,6 @@ export interface Data {
       custody_contract: string;
       ltv: Ratio<string>;
     }[];
-
-    //bLunaMaxLtv: Ratio<string>;
-    //bLunaSafeLtv: Ratio<string>;
   };
 }
 
@@ -59,49 +56,8 @@ export const dataMap = createMap<RawData, Data>({
   },
   overseerWhitelist: (existing, { overseerWhitelist }) => {
     return parseResult(existing.overseerWhitelist, overseerWhitelist.Result);
-
-    //  if (existing.overseerWhitelist?.Result === overseerWhitelist.Result) {
-    //    return existing.overseerWhitelist;
-    //  }
-    //
-    //  const {Result, elems} = JSON.parse(overseerWhitelist.Result) as Pick<Data['overseerWhitelist'], 'Result' | 'elems'>;
-    //
-    //  const bLunaMaxLtv = elems.find(
-    //  ({ collateral_token }) =>
-    //    collateral_token === addressProvider.bAssetToken('ubluna'),
-    //)?.ltv;
-    //
-    //if (!bLunaMaxLtv) {
-    //  throw new Error(`Undefined bLuna collateral token!`);
-    //}
   },
 });
-
-//export function mapData(
-//  existing: Data,
-//  { borrowRate, oraclePrice, overseerWhitelist }: RawData,
-//  addressProvider: AddressProvider,
-//): Data {
-//  const parsedOverseerWhitelist: Data['overseerWhitelist'] = JSON.parse(
-//    overseerWhitelist.Result,
-//  );
-//  const bLunaMaxLtv = parsedOverseerWhitelist.elems.find(
-//    ({ collateral_token }) =>
-//      collateral_token === addressProvider.bAssetToken('ubluna'),
-//  )?.ltv;
-//
-//  if (!bLunaMaxLtv) {
-//    throw new Error(`Undefined bLuna collateral token!`);
-//  }
-//
-//  return {
-//    borrowRate: JSON.parse(borrowRate.Result),
-//    oraclePrice: JSON.parse(oraclePrice.Result),
-//    overseerWhitelist: parsedOverseerWhitelist,
-//    bLunaMaxLtv,
-//    bLunaSafeLtv: big(bLunaMaxLtv).mul(SAFE_RATIO).toString() as Ratio,
-//  };
-//}
 
 export interface RawVariables {
   interestContractAddress: string;
@@ -231,8 +187,9 @@ export function useMarketOverview({
     RawData,
     RawVariables
   >(query, {
-    skip: !marketBalance,
+    skip: !marketBalance || !marketState,
     fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-first',
     variables,
   });
 
@@ -285,7 +242,6 @@ export function queryMarketOverview(
       return {
         ...result,
         data: map(result.data, dataMap),
-        //parsedData: mapData(result.data, addressProvider),
       };
     });
 }

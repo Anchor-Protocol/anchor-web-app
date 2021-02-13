@@ -28,7 +28,6 @@ export interface Data {
     a_token_supply: Num<string>;
     exchange_rate: Ratio<string>;
   };
-  //totalDeposit: uUST<string>;
 }
 
 export const dataMap = createMap<RawData, Data>({
@@ -128,6 +127,8 @@ export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
     RawVariables
   >(query, {
     skip: status.status !== 'ready' || typeof lastSyncedHeight !== 'number',
+    fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-first',
     variables,
   });
 

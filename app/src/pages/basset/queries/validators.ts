@@ -115,6 +115,7 @@ export function useValidators({
     RawVariables
   >(query, {
     fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-first',
     variables,
   });
 

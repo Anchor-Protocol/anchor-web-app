@@ -134,6 +134,7 @@ export function useWithdrawHistory({
       typeof withdrawRequestsStartFrom !== 'number' ||
       withdrawRequestsStartFrom < 0,
     fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-first',
     variables,
   });
 

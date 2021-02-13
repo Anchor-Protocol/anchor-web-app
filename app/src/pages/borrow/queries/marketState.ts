@@ -126,7 +126,8 @@ export function useMarketState(): MappedQueryResult<
     RawVariables
   >(query, {
     fetchPolicy: 'network-only',
-    pollInterval: 1000 * 60,
+    nextFetchPolicy: 'cache-first',
+    pollInterval: 1000 * 10,
     variables,
   });
 

@@ -82,7 +82,7 @@ export function queryTerraswapOfferSimulation(
   return client
     .query<RawData, RawVariables>({
       query,
-      fetchPolicy: 'network-only',
+      fetchPolicy: 'no-cache',
       variables: mapVariables({
         bLunaTerraswap: addressProvider.blunaBurnPair(),
         offerSimulationQuery: {

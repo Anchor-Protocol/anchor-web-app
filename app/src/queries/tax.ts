@@ -61,6 +61,7 @@ export function useTax(): MappedQueryResult<RawVariables, RawData, Data> {
     RawVariables
   >(query, {
     fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-first',
     variables,
   });
 

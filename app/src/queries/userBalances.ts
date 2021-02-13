@@ -138,6 +138,7 @@ export function useUserBalances(): MappedQueryResult<
   >(query, {
     skip: status.status !== 'ready',
     fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-first',
     variables,
   });
 

@@ -21,7 +21,6 @@ export interface Data {
     prev_a_token_supply: Num<string>;
     prev_exchange_rate: Ratio<string>;
   };
-  //currentAPY: Ratio<string>;
 }
 
 export const dataMap = createMap<RawData, Data>({
@@ -29,22 +28,6 @@ export const dataMap = createMap<RawData, Data>({
     return parseResult(existing.marketStatus, marketStatus.Result);
   },
 });
-
-//export function mapData(existing: Data,
-//  { marketStatus }: RawData,
-//  blocksPerYear: number,
-//): Data {
-//  const parsedMarketStatus: Data['marketStatus'] = JSON.parse(
-//    marketStatus.Result,
-//  );
-//
-//  return {
-//    marketStatus: parsedMarketStatus,
-//    currentAPY: big(parsedMarketStatus.deposit_rate)
-//      .mul(blocksPerYear)
-//      .toString() as Ratio,
-//  };
-//}
 
 export interface RawVariables {
   overseerContract: string;
@@ -82,8 +65,6 @@ export const query = gql`
 export function useInterest(): MappedQueryResult<RawVariables, RawData, Data> {
   const addressProvider = useAddressProvider();
 
-  //const { blocksPerYear } = useNetConstants();
-
   const variables = useMemo(() => {
     return mapVariables({
       overseerContract: addressProvider.overseer(''),
@@ -98,6 +79,7 @@ export function useInterest(): MappedQueryResult<RawVariables, RawData, Data> {
     RawVariables
   >(query, {
     fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-first',
     pollInterval: 1000 * 60,
     variables,
   });

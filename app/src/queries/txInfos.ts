@@ -75,7 +75,7 @@ export function queryTxInfo(
   return client
     .query<RawData, RawVariables>({
       query,
-      fetchPolicy: 'network-only',
+      fetchPolicy: 'no-cache',
       variables: mapVariables({
         txHash,
       }),

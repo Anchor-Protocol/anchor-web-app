@@ -114,6 +114,7 @@ export function useTerraswapBLunaPrice(): MappedQueryResult<
   >(query, {
     skip: status.status !== 'ready',
     fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-first',
     variables,
   });
 
