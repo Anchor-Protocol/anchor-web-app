@@ -53,5 +53,8 @@
   },
   "peerDependencies": {
     "eslint-config-react-app": "6.0.0"
+  },
+  "resolutions": {
+    "@babel/core": "^7.12.0"
   }
 }
