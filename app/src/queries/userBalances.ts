@@ -83,7 +83,7 @@ export function mapVariables({
 }
 
 export const query = gql`
-  query(
+  query __userBalances(
     $walletAddress: String!
     $bAssetTokenAddress: String!
     $bAssetTokenBalanceQuery: String!

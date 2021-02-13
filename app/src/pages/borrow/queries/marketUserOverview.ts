@@ -103,7 +103,7 @@ export function mapVariables({
 }
 
 export const query = gql`
-  query(
+  query __marketUserOverview(
     $marketContractAddress: String!
     $marketLoanQuery: String!
     $marketLiabilityQuery: String!

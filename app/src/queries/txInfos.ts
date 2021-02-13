@@ -59,7 +59,7 @@ export function mapVariables(variables: Variables): RawVariables {
 }
 
 export const query = gql`
-  query($txHash: String!) {
+  query __txInfos($txHash: String!) {
     TxInfos(TxHash: $txHash) {
       TxHash
       Success

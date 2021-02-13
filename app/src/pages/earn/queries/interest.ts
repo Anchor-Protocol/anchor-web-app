@@ -69,7 +69,7 @@ export function mapVariables({
 }
 
 export const query = gql`
-  query depositRate($overseerContract: String!, $overseerEpochState: String!) {
+  query __interest($overseerContract: String!, $overseerEpochState: String!) {
     marketStatus: WasmContractsContractAddressStore(
       ContractAddress: $overseerContract
       QueryMsg: $overseerEpochState

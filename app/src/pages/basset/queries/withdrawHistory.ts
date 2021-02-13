@@ -83,7 +83,7 @@ export function mapVariables({
 }
 
 export const query = gql`
-  query withdrawAllHistory(
+  query __withdrawHistory(
     $bLunaHubContract: String!
     $allHistory: String!
     $parameters: String!

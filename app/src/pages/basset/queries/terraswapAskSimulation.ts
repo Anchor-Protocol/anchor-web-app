@@ -61,7 +61,10 @@ export function mapVariables({
 }
 
 export const query = gql`
-  query($bLunaTerraswap: String!, $askSimulationQuery: String!) {
+  query __terraswapAskSimulation(
+    $bLunaTerraswap: String!
+    $askSimulationQuery: String!
+  ) {
     terraswapAskSimulation: WasmContractsContractAddressStore(
       ContractAddress: $bLunaTerraswap
       QueryMsg: $askSimulationQuery

@@ -10,7 +10,12 @@ import {
   RouterWalletStatusRecheck,
   useWallet,
 } from '@anchor-protocol/wallet-provider';
-import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
+import {
+  ApolloClient,
+  ApolloProvider,
+  HttpLink,
+  InMemoryCache,
+} from '@apollo/client';
 import { Banner } from 'components/Banner';
 import { BroadcastingContainer } from 'components/BroadcastingContainer';
 import { Header } from 'components/Header';
@@ -44,10 +49,15 @@ function WalletConnectedProviders({ children }: { children: ReactNode }) {
   }, []);
 
   const client = useMemo<ApolloClient<any>>(() => {
+    const httpLink = new HttpLink({
+      uri: ({ operationName }) =>
+        `https://tequila-mantle.terra.dev?${operationName}`,
+    });
+
     // TODO create endpoint by wallet info
     return new ApolloClient({
-      uri: 'https://tequila-mantle.terra.dev',
       cache: new InMemoryCache(),
+      link: httpLink,
     });
   }, []);
 

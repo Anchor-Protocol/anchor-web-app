@@ -155,7 +155,7 @@ export function mapVariables({
 }
 
 export const query = gql`
-  query(
+  query __marketOverview(
     $interestContractAddress: String!
     $interestBorrowRateQuery: String!
     $oracleContractAddress: String!

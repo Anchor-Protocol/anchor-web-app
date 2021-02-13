@@ -79,7 +79,10 @@ export function mapVariables({
 }
 
 export const query = gql`
-  query($marketContractAddress: String!, $marketStateQuery: String!) {
+  query __marketState(
+    $marketContractAddress: String!
+    $marketStateQuery: String!
+  ) {
     # current block height, synced in mantle
     currentBlock: LastSyncedHeight
 

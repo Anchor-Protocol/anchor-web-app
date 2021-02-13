@@ -99,7 +99,7 @@ export function mapVariables({
 }
 
 export const query = gql`
-  query bLunaClaim(
+  query __withdrawable(
     $bLunaHubContract: String!
     $withdrawableAmountQuery: String!
     $withdrawRequestsQuery: String!

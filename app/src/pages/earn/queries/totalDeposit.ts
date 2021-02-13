@@ -77,7 +77,7 @@ export function mapVariables({
 }
 
 export const query = gql`
-  query earnTotalDeposit(
+  query __totalDeposit(
     $anchorTokenContract: String!
     $anchorTokenBalanceQuery: String!
     $moneyMarketContract: String!

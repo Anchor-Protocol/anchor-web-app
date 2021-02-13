@@ -13,7 +13,7 @@ export function mapData({ LastSyncedHeight }: RawData): Data {
 }
 
 export const query = gql`
-  query lastSyncedHeight {
+  query __lastSyncedHeight {
     LastSyncedHeight
   }
 `;

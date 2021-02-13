@@ -81,7 +81,10 @@ export function mapVariables({ bLunaTerraswap }: Variables): RawVariables {
 }
 
 export const query = gql`
-  query terraswapPoolInfo($bLunaTerraswap: String!, $poolInfoQuery: String!) {
+  query __terraswapBLunaPrice(
+    $bLunaTerraswap: String!
+    $poolInfoQuery: String!
+  ) {
     terraswapPoolInfo: WasmContractsContractAddressStore(
       ContractAddress: $bLunaTerraswap
       QueryMsg: $poolInfoQuery

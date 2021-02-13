@@ -39,7 +39,7 @@ export function mapVariables(variables: Variables): RawVariables {
 }
 
 export const query = gql`
-  query {
+  query __tax {
     tax_rate: TreasuryTaxRate {
       Height
       Result

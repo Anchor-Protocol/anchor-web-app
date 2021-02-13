@@ -55,7 +55,7 @@ export function mapVariables({
 }
 
 export const query = gql`
-  query bLunaExchangeRate($bLunaHubContract: String!, $stateQuery: String!) {
+  query __exchangeRate($bLunaHubContract: String!, $stateQuery: String!) {
     exchangeRate: WasmContractsContractAddressStore(
       ContractAddress: $bLunaHubContract
       QueryMsg: $stateQuery

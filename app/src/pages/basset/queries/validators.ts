@@ -72,7 +72,10 @@ export function mapVariables({
 }
 
 export const query = gql`
-  query($bLunaHubContract: String!, $whitelistedValidatorsQuery: String!) {
+  query __validators(
+    $bLunaHubContract: String!
+    $whitelistedValidatorsQuery: String!
+  ) {
     validators: StakingValidators {
       Result {
         OperatorAddress

@@ -75,7 +75,7 @@ export function mapVariables({
 }
 
 export const query = gql`
-  query claimableReward(
+  query __claimable(
     $bAssetRewardContract: String!
     $rewardState: String!
     $claimableRewardQuery: String!
