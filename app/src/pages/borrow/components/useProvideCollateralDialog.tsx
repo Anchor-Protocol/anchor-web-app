@@ -38,7 +38,7 @@ import { useInvalidDepositAmount } from 'pages/borrow/logics/useInvalidDepositAm
 import { useProvideCollateralBorrowLimit } from 'pages/borrow/logics/useProvideCollateralBorrowLimit';
 import { useProvideCollateralNextLtv } from 'pages/borrow/logics/useProvideCollateralNextLtv';
 import { provideCollateralOptions } from 'pages/borrow/transactions/provideCollateralOptions';
-import type { ReactNode } from 'react';
+import type { ChangeEvent, ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
@@ -256,7 +256,9 @@ function ComponentBase({
           maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="DEPOSIT AMOUNT"
           error={!!invalidDepositAmount}
-          onChange={({ target }) => updateDepositAmount(target.value)}
+          onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
+            updateDepositAmount(target.value)
+          }
           InputProps={{
             endAdornment: <InputAdornment position="end">bLUNA</InputAdornment>,
           }}

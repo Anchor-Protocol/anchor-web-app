@@ -41,17 +41,20 @@
     "@handbook/markdown-source-import": "^1.1.0",
     "@ssen/prettier-config": "^1.2.0",
     "@types/eslint": "^7.2.6",
-    "@types/prettier": "^2.2.0",
-    "eslint": "^7.19.0",
+    "@types/prettier": "^2.2.1",
+    "eslint": "^7.20.0",
     "eslint-config-prettier": "^7.2.0",
     "eslint-config-react-app": "^6.0.0",
     "husky": "^5.0.9",
-    "jest-bin": "^0.1.0",
+    "jest-bin": "^0.2.3",
     "lint-staged": "^10.5.4",
-    "prettier": "^2.1.1",
+    "prettier": "^2.2.1",
     "react-scripts": "4.0.2"
   },
   "peerDependencies": {
     "eslint-config-react-app": "6.0.0"
+  },
+  "resolutions": {
+    "@babel/core": "^7.12.0"
   }
 }

@@ -31,7 +31,7 @@ import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { useInvalidBurnAmount } from 'pages/basset/logics/useInvalidBurnAmount';
 import { useExchangeRate } from 'pages/basset/queries/exchangeRate';
 import { burnOptions } from 'pages/basset/transactions/burnOptions';
-import React, { useCallback, useState } from 'react';
+import React, { ChangeEvent, useCallback, useState } from 'react';
 
 interface Item {
   label: string;
@@ -237,7 +237,9 @@ export function Burn() {
           error={!!invalidBurnAmount}
           value={burnAmount}
           onKeyPress={onLunaInputKeyPress as any}
-          onChange={({ target }) => updateBurnAmount(target.value)}
+          onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
+            updateBurnAmount(target.value)
+          }
         />
       </SelectAndTextInputContainer>
 
@@ -269,7 +271,9 @@ export function Burn() {
           error={!!invalidBurnAmount}
           value={getAmount}
           onKeyPress={onLunaInputKeyPress as any}
-          onChange={({ target }) => updateGetAmount(target.value)}
+          onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
+            updateGetAmount(target.value)
+          }
         />
       </SelectAndTextInputContainer>
 
