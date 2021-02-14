@@ -1,5 +1,5 @@
 import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
-import { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import styled from 'styled-components';
 
 export default {
@@ -33,13 +33,17 @@ export const Basic = () => {
     <Layout>
       <NativeSelect
         value={value}
-        onChange={({ target }) => setValue(target.value)}
+        onChange={({ target }: ChangeEvent<HTMLSelectElement>) =>
+          setValue(target.value)
+        }
       >
         {createOptions(items)}
       </NativeSelect>
       <NativeSelect
         value={value}
-        onChange={({ target }) => setValue(target.value)}
+        onChange={({ target }: ChangeEvent<HTMLSelectElement>) =>
+          setValue(target.value)
+        }
         disabled
       >
         {createOptions(items)}

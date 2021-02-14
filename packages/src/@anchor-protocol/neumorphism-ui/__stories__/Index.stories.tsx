@@ -28,7 +28,7 @@ import {
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
 import { Warning } from '@material-ui/icons';
-import { Fragment, useState } from 'react';
+import { ChangeEvent, Fragment, useState } from 'react';
 import styled from 'styled-components';
 
 export default {
@@ -182,7 +182,7 @@ const Component = styled(({ className }: { className?: string }) => {
             value={
               selectedItem['nativeSelect']?.value ?? selectorItems[0].value
             }
-            onChange={(evt) =>
+            onChange={(evt: ChangeEvent<HTMLSelectElement>) =>
               setSelectedItem((prev) => ({
                 ...prev,
                 nativeSelect:
