@@ -41,7 +41,7 @@ import { queryTerraswapAskSimulation } from 'pages/basset/queries/terraswapAskSi
 import { useTerraswapBLunaPrice } from 'pages/basset/queries/terraswapBLunaPrice';
 import { queryTerraswapOfferSimulation } from 'pages/basset/queries/terraswapOfferSimulation';
 import { swapOptions } from 'pages/basset/transactions/swapOptions';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
 interface Item {
   label: string;
@@ -300,7 +300,9 @@ export function Swap() {
           error={!!invalidBurnAmount}
           value={burnAmount}
           onKeyPress={onLunaInputKeyPress as any}
-          onChange={({ target }) => updateBurnAmount(target.value)}
+          onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
+            updateBurnAmount(target.value)
+          }
         />
       </SelectAndTextInputContainer>
 
@@ -332,7 +334,9 @@ export function Swap() {
           error={!!invalidBurnAmount}
           value={getAmount}
           onKeyPress={onLunaInputKeyPress as any}
-          onChange={({ target }) => updateGetAmount(target.value)}
+          onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
+            updateGetAmount(target.value)
+          }
         />
       </SelectAndTextInputContainer>
 

@@ -40,7 +40,7 @@ import { useRepayTotalOutstandingLoan } from 'pages/borrow/logics/useRepayTotalO
 import { useRepayTxFee } from 'pages/borrow/logics/useRepayTxFee';
 import { repayOptions } from 'pages/borrow/transactions/repayOptions';
 import type { ReactNode } from 'react';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 interface FormParams {
@@ -253,7 +253,9 @@ function ComponentBase({
           maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="REPAY AMOUNT"
           error={!!invalidAssetAmount}
-          onChange={({ target }) => updateRepayAmount(target.value)}
+          onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
+            updateRepayAmount(target.value)
+          }
           InputProps={{
             endAdornment: <InputAdornment position="end">UST</InputAdornment>,
           }}

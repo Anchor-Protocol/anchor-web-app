@@ -31,7 +31,7 @@ import { MessageBox } from 'components/MessageBox';
 import { useBank } from 'contexts/bank';
 import { useNetConstants } from 'contexts/net-contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
-import React, { useCallback, useState } from 'react';
+import React, { ChangeEvent, useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { useInvalidBondAmount } from './logics/useInvalidBondAmount';
 import { useExchangeRate } from './queries/exchangeRate';
@@ -266,7 +266,9 @@ function MintBase({ className }: MintProps) {
           error={!!invalidBondAmount}
           value={bondAmount}
           onKeyPress={onLunaInputKeyPress as any}
-          onChange={({ target }) => updateBondAmount(target.value)}
+          onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
+            updateBondAmount(target.value)
+          }
         />
       </SelectAndTextInputContainer>
 
@@ -298,7 +300,9 @@ function MintBase({ className }: MintProps) {
           error={!!invalidBondAmount}
           value={mintAmount}
           onKeyPress={onLunaInputKeyPress as any}
-          onChange={({ target }) => updateMintAmount(target.value)}
+          onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
+            updateMintAmount(target.value)
+          }
         />
       </SelectAndTextInputContainer>
 
@@ -309,7 +313,7 @@ function MintBase({ className }: MintProps) {
         className="validator"
         data-selected-value={selectedValidator?.OperatorAddress ?? ''}
         value={selectedValidator?.OperatorAddress ?? ''}
-        onChange={({ target }) =>
+        onChange={({ target }: ChangeEvent<HTMLSelectElement>) =>
           setSelectedValidator(
             whitelistedValidators?.find(
               ({ OperatorAddress }) => target.value === OperatorAddress,

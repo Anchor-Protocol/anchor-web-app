@@ -40,7 +40,7 @@ import { useRedeemCollateralNextLtv } from 'pages/borrow/logics/useRedeemCollate
 import { useRedeemCollateralWithdrawableAmount } from 'pages/borrow/logics/useRedeemCollateralWithdrawableAmount';
 import { redeemCollateralOptions } from 'pages/borrow/transactions/redeemCollateralOptions';
 import type { ReactNode } from 'react';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 interface FormParams {
@@ -259,7 +259,9 @@ function ComponentBase({
           maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="REDEEM AMOUNT"
           error={!!invalidRedeemAmount}
-          onChange={({ target }) => updateRedeemAmount(target.value)}
+          onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
+            updateRedeemAmount(target.value)
+          }
           InputProps={{
             endAdornment: <InputAdornment position="end">bLUNA</InputAdornment>,
           }}

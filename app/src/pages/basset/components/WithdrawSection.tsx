@@ -16,7 +16,7 @@ import { useWithdrawAllHistory } from 'pages/basset/logics/useWithdrawAllHistory
 import { useWithdrawable } from 'pages/basset/queries/withdrawable';
 import { useWithdrawHistory } from 'pages/basset/queries/withdrawHistory';
 import { withdrawOptions } from 'pages/basset/transactions/withdrawOptions';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
 export interface WithdrawSectionProps {
   disabled: boolean;
@@ -136,7 +136,9 @@ export function WithdrawSection({
         <NativeSelect
           className="bond"
           value={withdrawableCurrency.value}
-          onChange={({ target }) => updateWithdrawableCurrency(target.value)}
+          onChange={({ target }: ChangeEvent<HTMLSelectElement>) =>
+            updateWithdrawableCurrency(target.value)
+          }
         >
           {assetCurrencies.map(({ label, value }) => (
             <option key={value} value={value}>

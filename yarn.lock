@@ -9,14 +9,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@anchor-web-app/app@workspace:app"
   dependencies:
-    "@apollo/client": ^3.3.8
+    "@apollo/client": ^3.3.10
     "@material-ui/core": ^4.11.3
     "@material-ui/icons": ^4.11.2
     "@rocket-scripts/utils": ^2.0.0
     "@terra-money/terra.js": ^1.3.6
     "@testing-library/jest-dom": ^5.11.9
     "@testing-library/react": ^11.2.5
-    "@testing-library/user-event": ^12.6.3
+    "@testing-library/user-event": ^12.7.1
     "@types/autoprefixer": ^10.2.0
     "@types/big.js": ^6.0.2
     "@types/color": ^3.0.1
@@ -25,13 +25,13 @@ __metadata:
     "@types/d3-shape": ^2.0.0
     "@types/eslint": ^7.2.6
     "@types/jest": ^26.0.20
-    "@types/node": ^14.14.25
+    "@types/node": ^14.14.27
     "@types/numeral": ^2.0.0
     "@types/postcss-nested": ^4.2.3
     "@types/puppeteer": ^5.4.3
-    "@types/ramda": ^0.27.37
-    "@types/react": ^17.0.1
-    "@types/react-dom": ^17.0.0
+    "@types/ramda": ^0.27.38
+    "@types/react": ^17.0.2
+    "@types/react-dom": ^17.0.1
     "@types/react-router-dom": ^5.1.7
     "@types/styled-components": ^5.1.7
     "@types/testing-library__jest-dom": ^5.9.5
@@ -45,12 +45,12 @@ __metadata:
     downshift: ^6.1.0
     fastdom: ^1.0.10
     graphql: ^15.5.0
-    graphql-tag: ^2.11.0
+    graphql-tag: ^2.12.1
     multiplerun: ^1.1.2
     numeral: ^2.0.6
-    puppeteer: ^7.0.1
+    puppeteer: ^7.1.0
     react: ^17.0.1
-    react-app-rewire-alias: ^0.2.1
+    react-app-rewire-alias: ^1.0.0
     react-app-rewired: ^2.1.8
     react-dom: ^17.0.1
     react-is: ^17.0.1
@@ -59,11 +59,11 @@ __metadata:
     react-spinners-kit: ^1.9.1
     react-use-clipboard: ^1.0.7
     resize-observer-polyfill: ^1.5.1
-    rocket-punch: ^2.4.0
+    rocket-punch: ^2.4.1
     styled-components: ^5.2.1
     ts-node: ^9.1.1
     tsconfig-paths: ^3.9.0
-    typescript: ^4.1.3
+    typescript: ^4.1.5
     use-resize-observer: ^7.0.0
     web-vitals: ^1.1.0
     yamlparser: ^0.0.2
@@ -74,14 +74,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@anchor-web-app/landing@workspace:landing"
   dependencies:
-    "@apollo/client": ^3.3.8
+    "@apollo/client": ^3.3.10
     "@material-ui/core": ^4.11.3
     "@material-ui/icons": ^4.11.2
     "@rocket-scripts/utils": ^2.0.0
     "@terra-money/terra.js": ^1.3.6
     "@testing-library/jest-dom": ^5.11.9
     "@testing-library/react": ^11.2.5
-    "@testing-library/user-event": ^12.6.3
+    "@testing-library/user-event": ^12.7.1
     "@types/autoprefixer": ^10.2.0
     "@types/color": ^3.0.1
     "@types/d3-scale": ^3.2.2
@@ -90,12 +90,12 @@ __metadata:
     "@types/eslint": ^7.2.6
     "@types/gl-matrix": ^3.2.0
     "@types/jest": ^26.0.20
-    "@types/node": ^14.14.25
+    "@types/node": ^14.14.27
     "@types/postcss-nested": ^4.2.3
     "@types/puppeteer": ^5.4.3
-    "@types/ramda": ^0.27.37
-    "@types/react": ^17.0.1
-    "@types/react-dom": ^17.0.0
+    "@types/ramda": ^0.27.38
+    "@types/react": ^17.0.2
+    "@types/react-dom": ^17.0.1
     "@types/react-responsive": ^8.0.2
     "@types/react-router-dom": ^5.1.7
     "@types/stats.js": ^0.17.0
@@ -112,12 +112,12 @@ __metadata:
     glslify: ^7.1.1
     glslify-loader: ^2.0.0
     graphql: ^15.5.0
-    graphql-tag: ^2.11.0
+    graphql-tag: ^2.12.1
     multiplerun: ^1.1.2
-    puppeteer: ^7.0.1
+    puppeteer: ^7.1.0
     raw-loader: ^4.0.2
     react: ^17.0.1
-    react-app-rewire-alias: ^0.2.1
+    react-app-rewire-alias: ^1.0.0
     react-app-rewired: ^2.1.8
     react-dom: ^17.0.1
     react-responsive: ^8.2.0
@@ -127,12 +127,12 @@ __metadata:
     regl: ^2.0.1
     resize-observer-polyfill: ^1.5.1
     resl: ^1.0.3
-    rocket-punch: ^2.4.0
+    rocket-punch: ^2.4.1
     stats.js: ^0.17.0
     styled-components: ^5.2.1
     ts-node: ^9.1.1
     tsconfig-paths: ^3.9.0
-    typescript: ^4.1.3
+    typescript: ^4.1.5
     use-resize-observer: ^7.0.0
     web-vitals: ^1.1.0
   languageName: unknown
@@ -157,7 +157,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.11.9
     "@testing-library/react": ^11.2.5
     "@testing-library/react-hooks": ^5.0.3
-    "@testing-library/user-event": ^12.6.3
+    "@testing-library/user-event": ^12.7.1
     "@types/autoprefixer": ^10.2.0
     "@types/color": ^3.0.1
     "@types/d3-scale": ^3.2.2
@@ -166,13 +166,13 @@ __metadata:
     "@types/eslint": ^7.2.6
     "@types/jest": ^26.0.20
     "@types/lodash.throttle": ^4.1.6
-    "@types/node": ^14.14.25
+    "@types/node": ^14.14.27
     "@types/numeral": ^2.0.0
     "@types/postcss-nested": ^4.2.3
     "@types/puppeteer": ^5.4.3
-    "@types/ramda": ^0.27.37
-    "@types/react": ^17.0.1
-    "@types/react-dom": ^17.0.0
+    "@types/ramda": ^0.27.38
+    "@types/react": ^17.0.2
+    "@types/react-dom": ^17.0.1
     "@types/react-router-dom": ^5.1.7
     "@types/styled-components": ^5.1.7
     "@types/testing-library__jest-dom": ^5.9.5
@@ -195,17 +195,17 @@ __metadata:
     react-router-dom: ^5.2.0
     react-scripts: 4.0.2
     resize-observer-polyfill: ^1.5.1
-    rocket-punch: ^2.4.0
+    rocket-punch: ^2.4.1
     rxjs: ^6.6.3
     styled-components: ^5.2.1
-    typescript: ^4.1.3
+    typescript: ^4.1.5
     use-resize-observer: ^7.0.0
   languageName: unknown
   linkType: soft
 
-"@apollo/client@npm:^3.3.8":
-  version: 3.3.9
-  resolution: "@apollo/client@npm:3.3.9"
+"@apollo/client@npm:^3.3.10":
+  version: 3.3.10
+  resolution: "@apollo/client@npm:3.3.10"
   dependencies:
     "@graphql-typed-document-node/core": ^3.0.0
     "@types/zen-observable": ^0.8.0
@@ -229,7 +229,7 @@ __metadata:
       optional: true
     subscriptions-transport-ws:
       optional: true
-  checksum: 8b0662d70e6ef203d7e3df6e013205c891967f42f3b639cafb56d87e7cdf56c1c150358e6fd69cdc5fb9e894ed352785cdf26d7d15b76921ed028f8247fdb6a2
+  checksum: 76e671272186add72b0701a5d0384217eb31e80ea5bc7113481cd031bc5566e2b6a0b079583d1871c79106c85b8f7140e4d497294ced71e87f61637c0d97cc92
   languageName: node
   linkType: hard
 
@@ -3953,7 +3953,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/user-event@npm:^12.6.3":
+"@testing-library/user-event@npm:^12.7.1":
   version: 12.7.1
   resolution: "@testing-library/user-event@npm:12.7.1"
   dependencies:
@@ -4330,7 +4330,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^14.14.25":
+"@types/node@npm:*, @types/node@npm:^14.14.27":
   version: 14.14.27
   resolution: "@types/node@npm:14.14.27"
   checksum: efc78cf6e698e09925a2542bbea932dfe092408f4ce39b8f260b71df502221d76c925fd3227bc1f7427edd9cfb6f8c81c68a56b9ab690f08425e7e6e177e61e0
@@ -4402,7 +4402,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prettier@npm:^2.0.0, @types/prettier@npm:^2.2.0":
+"@types/prettier@npm:^2.0.0, @types/prettier@npm:^2.2.1":
   version: 2.2.1
   resolution: "@types/prettier@npm:2.2.1"
   checksum: 9dc257dfc51eab6bc1e9ce58df94b309a206b2cdc6768709de3d20f70ae545c616bbc46add6d66f66cfa6cfbb0613dd09e6b6028ff6ff8ba9d3625f38d85cc66
@@ -4439,7 +4439,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ramda@npm:^0.27.37":
+"@types/ramda@npm:^0.27.38":
   version: 0.27.38
   resolution: "@types/ramda@npm:0.27.38"
   dependencies:
@@ -4467,7 +4467,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:>=16.9.0, @types/react-dom@npm:^17.0.0":
+"@types/react-dom@npm:>=16.9.0, @types/react-dom@npm:^17.0.1":
   version: 17.0.1
   resolution: "@types/react-dom@npm:17.0.1"
   dependencies:
@@ -4533,7 +4533,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:>=16.9.0, @types/react@npm:^17.0.1":
+"@types/react@npm:*, @types/react@npm:>=16.9.0, @types/react@npm:^17.0.2":
   version: 17.0.2
   resolution: "@types/react@npm:17.0.2"
   dependencies:
@@ -9827,7 +9827,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^7.11.0, eslint@npm:^7.19.0":
+"eslint@npm:^7.11.0, eslint@npm:^7.19.0, eslint@npm:^7.20.0":
   version: 7.20.0
   resolution: "eslint@npm:7.20.0"
   dependencies:
@@ -11363,7 +11363,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"graphql-tag@npm:^2.11.0, graphql-tag@npm:^2.12.0":
+"graphql-tag@npm:^2.12.0, graphql-tag@npm:^2.12.1":
   version: 2.12.1
   resolution: "graphql-tag@npm:2.12.1"
   dependencies:
@@ -13073,14 +13073,14 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"jest-bin@npm:^0.1.0":
-  version: 0.1.0
-  resolution: "jest-bin@npm:0.1.0"
+"jest-bin@npm:^0.2.3":
+  version: 0.2.3
+  resolution: "jest-bin@npm:0.2.3"
   dependencies:
     react-dev-utils: ^11.0.0
   bin:
     jest-bin: bin/jest-bin.js
-  checksum: 2b99c8cdcc52a02861378e089029a3a333607222f29d39367876d645255f41d6c9532a884a4d674869b4e9221fadc2be392a94d939eee428b349dee0bcc6b90b
+  checksum: 24b9b2031250750865f19f6d3f78cb859b96deb4b29dd4d74aace7d791b41c0fc6c23e6551d36d43d32744ce6cb96661533ef6b1174322ee6cb72cf89c6b989b
   languageName: node
   linkType: hard
 
@@ -17205,7 +17205,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"prettier@npm:^2.1.1, prettier@npm:^2.2.1":
+"prettier@npm:^2.2.1":
   version: 2.2.1
   resolution: "prettier@npm:2.2.1"
   bin:
@@ -17460,7 +17460,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"puppeteer@npm:^7.0.1":
+"puppeteer@npm:^7.1.0":
   version: 7.1.0
   resolution: "puppeteer@npm:7.1.0"
   dependencies:
@@ -17650,12 +17650,12 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"react-app-rewire-alias@npm:^0.2.1":
-  version: 0.2.1
-  resolution: "react-app-rewire-alias@npm:0.2.1"
+"react-app-rewire-alias@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "react-app-rewire-alias@npm:1.0.0"
   peerDependencies:
     react-app-rewired: 1 || ^2
-  checksum: e4c34abe0d579ca11ca773f21b5a7959793dc3433640cb628c603f70c73dc62a30e127f439bc7b9e6a0970abbe3e8232753d7e300035e4cc0f8ec6462468e395
+  checksum: c8f3b738b05a08757c5c998373002cd547cbc436093cd9a365e37b0da04124e48226772cab019882f20f158055f3a4a9918f3c129a3b4a170835a069991aac87
   languageName: node
   linkType: hard
 
@@ -18961,7 +18961,7 @@ resolve@^0.6.1:
   languageName: node
   linkType: hard
 
-"rocket-punch@npm:^2.4.0":
+"rocket-punch@npm:^2.4.1":
   version: 2.4.1
   resolution: "rocket-punch@npm:2.4.1"
   dependencies:
@@ -19049,14 +19049,14 @@ resolve@^0.6.1:
     "@material-ui/icons": ^4.11.2
     "@ssen/prettier-config": ^1.2.0
     "@types/eslint": ^7.2.6
-    "@types/prettier": ^2.2.0
-    eslint: ^7.19.0
+    "@types/prettier": ^2.2.1
+    eslint: ^7.20.0
     eslint-config-prettier: ^7.2.0
     eslint-config-react-app: ^6.0.0
     husky: ^5.0.9
-    jest-bin: ^0.1.0
+    jest-bin: ^0.2.3
     lint-staged: ^10.5.4
-    prettier: ^2.1.1
+    prettier: ^2.2.1
     react-scripts: 4.0.2
   peerDependencies:
     eslint-config-react-app: 6.0.0
@@ -21262,7 +21262,7 @@ resolve@^0.6.1:
   languageName: node
   linkType: hard
 
-typescript@^4.1.3:
+"typescript@^4.1.3, typescript@^4.1.5":
   version: 4.1.5
   resolution: "typescript@npm:4.1.5"
   bin:
@@ -21272,7 +21272,7 @@ typescript@^4.1.3:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.1.3#builtin<compat/typescript>":
+"typescript@patch:typescript@^4.1.3#builtin<compat/typescript>, typescript@patch:typescript@^4.1.5#builtin<compat/typescript>":
   version: 4.1.5
   resolution: "typescript@patch:typescript@npm%3A4.1.5#builtin<compat/typescript>::version=4.1.5&hash=cc6730"
   bin:

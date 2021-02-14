@@ -26,7 +26,7 @@ import { useBank } from 'contexts/bank';
 import { useNetConstants } from 'contexts/net-contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import type { ReactNode } from 'react';
-import React, { useCallback, useState } from 'react';
+import React, { ChangeEvent, useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { useInvalidWithdrawAmount } from '../logics/useInvalidWithdrawAmount';
 import { useWithdrawReceiveAmount } from '../logics/useWithdrawReceiveAmount';
@@ -145,7 +145,9 @@ function ComponentBase({
           maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="AMOUNT"
           error={!!invalidWithdrawAmount}
-          onChange={({ target }) => updateWithdrawAmount(target.value)}
+          onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
+            updateWithdrawAmount(target.value)
+          }
           InputProps={{
             endAdornment: <InputAdornment position="end">UST</InputAdornment>,
           }}

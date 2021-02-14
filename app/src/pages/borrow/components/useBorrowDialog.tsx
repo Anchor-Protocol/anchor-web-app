@@ -39,7 +39,7 @@ import { useBorrowTxFee } from 'pages/borrow/logics/useBorrowTxFee';
 import { useCurrentLtv } from 'pages/borrow/logics/useCurrentLtv';
 import { useInvalidBorrowAmount } from 'pages/borrow/logics/useInvalidBorrowAmount';
 import { borrowOptions } from 'pages/borrow/transactions/borrowOptions';
-import type { ReactNode } from 'react';
+import type { ChangeEvent, ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
@@ -253,7 +253,9 @@ function ComponentBase({
           maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="BORROW AMOUNT"
           error={!!invalidBorrowAmount}
-          onChange={({ target }) => updateBorrowAmount(target.value)}
+          onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
+            updateBorrowAmount(target.value)
+          }
           InputProps={{
             endAdornment: <InputAdornment position="end">UST</InputAdornment>,
           }}
