@@ -6,7 +6,7 @@ import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { Tab } from '@anchor-protocol/neumorphism-ui/components/Tab';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { formatRatioToPercentage } from '@anchor-protocol/notation';
-import { useNetConstants } from 'contexts/net-contants';
+import { useConstants } from 'contexts/contants';
 import { useCurrentAPY } from 'pages/earn/logics/useCurrentAPY';
 import { useInterest } from 'pages/earn/queries/interest';
 import { useState } from 'react';
@@ -44,7 +44,7 @@ const tabItems: Item[] = [
 ];
 
 export function InterestSection({ className }: InterestSectionProps) {
-  const { blocksPerYear } = useNetConstants();
+  const { blocksPerYear } = useConstants();
 
   // ---------------------------------------------
   // states

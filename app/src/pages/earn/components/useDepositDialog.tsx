@@ -23,7 +23,7 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { MessageBox } from 'components/MessageBox';
 import { useBank } from 'contexts/bank';
-import { useNetConstants } from 'contexts/net-contants';
+import { useConstants } from 'contexts/contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import type { ReactNode } from 'react';
 import React, { ChangeEvent, useCallback, useState } from 'react';
@@ -57,7 +57,7 @@ function ComponentBase({
   // ---------------------------------------------
   const { status } = useWallet();
 
-  const { fixedGas } = useNetConstants();
+  const { fixedGas } = useConstants();
 
   const [deposit, depositResult] = useOperation(depositOptions, {});
 

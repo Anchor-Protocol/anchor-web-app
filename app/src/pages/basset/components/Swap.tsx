@@ -31,7 +31,7 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
-import { useNetConstants } from 'contexts/net-contants';
+import { useConstants } from 'contexts/contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { askSimulation } from 'pages/basset/logics/askSimulation';
 import { offerSimulation } from 'pages/basset/logics/offerSimulation';
@@ -57,7 +57,7 @@ export function Swap() {
   // ---------------------------------------------
   const { status } = useWallet();
 
-  const { fixedGas } = useNetConstants();
+  const { fixedGas } = useConstants();
 
   const client = useApolloClient();
 

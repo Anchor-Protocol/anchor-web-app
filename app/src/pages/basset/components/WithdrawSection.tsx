@@ -9,7 +9,7 @@ import { useWallet } from '@anchor-protocol/wallet-provider';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { MessageBox } from 'components/MessageBox';
 import { useBank } from 'contexts/bank';
-import { useNetConstants } from 'contexts/net-contants';
+import { useConstants } from 'contexts/contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { useWithdrawableAmount } from 'pages/basset/logics/useWithdrawableAmount';
 import { useWithdrawAllHistory } from 'pages/basset/logics/useWithdrawAllHistory';
@@ -39,7 +39,7 @@ export function WithdrawSection({
   // ---------------------------------------------
   const { status } = useWallet();
 
-  const { fixedGas } = useNetConstants();
+  const { fixedGas } = useConstants();
 
   const [withdraw, withdrawResult] = useOperation(withdrawOptions, {});
 

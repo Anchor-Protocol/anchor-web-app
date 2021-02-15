@@ -24,7 +24,7 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { MessageBox } from 'components/MessageBox';
 import { useBank } from 'contexts/bank';
-import { useNetConstants } from 'contexts/net-contants';
+import { useConstants } from 'contexts/contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
 import { useMarketNotNullable } from 'pages/borrow/context/market';
@@ -77,7 +77,7 @@ function ComponentBase({
 
   const { status } = useWallet();
 
-  const { fixedGas, blocksPerYear } = useNetConstants();
+  const { fixedGas, blocksPerYear } = useConstants();
 
   const [repay, repayResult] = useOperation(repayOptions, {
     walletStatus: status,

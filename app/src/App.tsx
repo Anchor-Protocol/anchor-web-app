@@ -1,6 +1,7 @@
 import { AddressProviderFromJson } from '@anchor-protocol/anchor-js/address-provider';
 import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider/provider';
 import { OperationBroadcaster } from '@anchor-protocol/broadcastable-operation';
+import { GlobalDependency } from '@anchor-protocol/broadcastable-operation/global';
 import { GlobalStyle } from '@anchor-protocol/neumorphism-ui/themes/GlobalStyle';
 import { Ratio, uUST } from '@anchor-protocol/notation';
 import { SnackbarProvider } from '@anchor-protocol/snackbar';
@@ -17,12 +18,14 @@ import {
   HttpLink,
   InMemoryCache,
 } from '@apollo/client';
+import { captureException } from '@sentry/react';
 import { Banner } from 'components/Banner';
 import { BroadcastingContainer } from 'components/BroadcastingContainer';
 import { Header } from 'components/Header';
 import { BankProvider } from 'contexts/bank';
 import { ContractProvider } from 'contexts/contract';
-import { NetConstants, NetConstantsProvider } from 'contexts/net-contants';
+import { Constants, ConstantsProvider } from 'contexts/contants';
+import { ServiceProvider } from 'contexts/service';
 import { ThemeProvider } from 'contexts/theme';
 import { contractAddresses, defaultNetwork, GA_TRACKING_ID } from 'env';
 import { BAsset } from 'pages/basset';
@@ -35,16 +38,11 @@ import {
   Route,
   Switch,
 } from 'react-router-dom';
-import { captureException } from '@sentry/react';
-
-interface AppProps {
-  className?: string;
-}
 
 const operationBroadcasterErrorReporter =
   process.env.NODE_ENV === 'production' ? captureException : undefined;
 
-function WalletConnectedProviders({ children }: { children: ReactNode }) {
+function Providers({ children }: { children: ReactNode }) {
   const { post } = useWallet();
 
   const addressProvider = useMemo<AddressProvider>(() => {
@@ -65,7 +63,7 @@ function WalletConnectedProviders({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const netConstants = useMemo<NetConstants>(
+  const constants = useMemo<Constants>(
     () => ({
       gasFee: 6000000 as uUST<number>,
       fixedGas: 3500000 as uUST<number>,
@@ -75,110 +73,78 @@ function WalletConnectedProviders({ children }: { children: ReactNode }) {
     [],
   );
 
-  return (
-    <NetConstantsProvider {...netConstants}>
-      {/**
-       * Smart Contract Address * useAddressProvider()
-       */}
-      <ContractProvider addressProvider={addressProvider}>
-        {/**
-         * Set GraphQL environenments
-         * useQuery(), useApolloClient()...
-         */}
-        <ApolloProvider client={client}>
-          {/**
-           * Broadcastable Query Provider
-           * useBroadCastableQuery(), useQueryBroadCaster()
-           *
-           * @see ../../packages/src/@anchor-protocol/use-broadcastable-query
-           */}
-          <OperationBroadcaster
-            dependency={{
-              addressProvider,
-              client,
-              post,
-              ...netConstants,
-            }}
-            errorReporter={operationBroadcasterErrorReporter}
-          >
-            {children}
-          </OperationBroadcaster>
-        </ApolloProvider>
-      </ContractProvider>
-    </NetConstantsProvider>
+  const operationGlobalDependency = useMemo<GlobalDependency>(
+    () => ({
+      addressProvider,
+      client,
+      post,
+      ...constants,
+    }),
+    [addressProvider, client, constants, post],
   );
-}
 
-export function App({ className }: AppProps) {
   return (
-    /**
-     * React App routing
-     * <Link>, <NavLink>, useLocation(), useRouteMatch()...
-     *
-     * @link https://reactrouter.com/web/guides/quick-start
-     */
+    /** React App routing :: <Link>, <NavLink>, useLocation(), useRouteMatch()... */
     <Router>
       {/** Send Google Analytics Page view when router's location changed */}
       <GoogleAnalytics trackingId={GA_TRACKING_ID} />
-      {/** Scroll Restore when basepath changed (page moved) */}
+      {/** Scroll Restore every Router's basepath changed */}
       <RouterScrollRestoration />
-      {/**
-       * Terra Station Wallet Address
-       * useWallet()
-       */}
-      <ChromeExtensionWalletProvider defaultNetwork={defaultNetwork}>
-        {/**
-         * Re-Check Terra Station Wallet Status when Router pathname changed
-         */}
-        <RouterWalletStatusRecheck />
-        <WalletConnectedProviders>
-          {/**
-           * User Balances (uUSD, uLuna, ubLuna, uaUST...)
-           * useBank()
-           */}
-          <BankProvider>
-            {/**
-             * Theme Providing to Styled-Components and Material-UI
-             *
-             * @example
-             * ```
-             * styled.div`
-             *   color: ${({theme}) => theme.textColor}
-             * `
-             * ```
-             */}
-            <ThemeProvider initialTheme="light">
-              {/**
-               * Snackbar Provider
-               * useSnackbar()
-               */}
-              <SnackbarProvider>
-                {/**
-                 * Styled-Components Global CSS
-                 */}
-                <GlobalStyle />
-                {/** Start Layout */}
-                <div className={className}>
-                  <Header />
-                  <Banner />
-                  <Switch>
-                    <Route path="/earn" component={Earn} />
-                    <Route path="/borrow" component={Borrow} />
-                    <Route path="/basset" component={BAsset} />
-                    <Redirect to="/earn" />
-                  </Switch>
-                </div>
-                {/**
-                 * Snackbar Container
-                 * Snackbar Floating (position: fixed) Container
-                 */}
-                <BroadcastingContainer />
-                {/** End Layout */}
-              </SnackbarProvider>
-            </ThemeProvider>
-          </BankProvider>
-        </WalletConnectedProviders>
-      </ChromeExtensionWalletProvider>
+      {/** Re-Check Terra Station Wallet Status every Router's pathname changed */}
+      <RouterWalletStatusRecheck />
+      {/** Serve Constants */}
+      <ConstantsProvider {...constants}>
+        {/** Service (Network...) :: useService() */}
+        <ServiceProvider>
+          {/** Smart Contract Address :: useAddressProvider() */}
+          <ContractProvider addressProvider={addressProvider}>
+            {/** Set GraphQL environenments :: useQuery(), useApolloClient()... */}
+            <ApolloProvider client={client}>
+              {/** Broadcastable Query Provider :: useBroadCastableQuery(), useQueryBroadCaster() */}
+              <OperationBroadcaster
+                dependency={operationGlobalDependency}
+                errorReporter={operationBroadcasterErrorReporter}
+              >
+                {/** User Balances (uUSD, uLuna, ubLuna, uaUST...) :: useBank() */}
+                <BankProvider>
+                  {/** Theme Providing to Styled-Components and Material-UI */}
+                  <ThemeProvider initialTheme="light">
+                    {/** Snackbar Provider :: useSnackbar() */}
+                    <SnackbarProvider>
+                      {/** Styled-Components Global CSS */}
+                      <GlobalStyle />
+                      {/** Application Layout */}
+                      {children}
+                      {/** Operation Result Broadcasting Render Container (Snackbar...) */}
+                      <BroadcastingContainer />
+                    </SnackbarProvider>
+                  </ThemeProvider>
+                </BankProvider>
+              </OperationBroadcaster>
+            </ApolloProvider>
+          </ContractProvider>
+        </ServiceProvider>
+      </ConstantsProvider>
     </Router>
+  );
+}
+
+export function App() {
+  return (
+    /** Terra Station Wallet Address :: useWallet() */
+    <ChromeExtensionWalletProvider defaultNetwork={defaultNetwork}>
+      <Providers>
+        <div>
+          <Header />
+          <Banner />
+          <Switch>
+            <Route path="/earn" component={Earn} />
+            <Route path="/borrow" component={Borrow} />
+            <Route path="/basset" component={BAsset} />
+            <Redirect to="/earn" />
+          </Switch>
+        </div>
+      </Providers>
+    </ChromeExtensionWalletProvider>
   );
 }

@@ -11,7 +11,7 @@ import {
   uUST,
 } from '@anchor-protocol/notation';
 import { BigSource } from 'big.js';
-import { useNetConstants } from 'contexts/net-contants';
+import { useConstants } from 'contexts/contants';
 import { BorrowLimitGraph } from 'pages/borrow/components/BorrowLimitGraph';
 import { useMarket } from 'pages/borrow/context/market';
 import { useAPR } from 'pages/borrow/logics/useAPR';
@@ -31,7 +31,7 @@ export function Overview({ className }: OverviewProps) {
     bLunaMaxLtv,
   } = useMarket();
 
-  const { blocksPerYear } = useNetConstants();
+  const { blocksPerYear } = useConstants();
 
   const apr = useAPR(borrowRate?.rate, blocksPerYear);
   const borrowed = useBorrowed(loanAmount?.loan_amount);

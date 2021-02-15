@@ -29,7 +29,7 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { MessageBox } from 'components/MessageBox';
 import { useBank } from 'contexts/bank';
-import { useNetConstants } from 'contexts/net-contants';
+import { useConstants } from 'contexts/contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import React, { ChangeEvent, useCallback, useState } from 'react';
 import styled from 'styled-components';
@@ -57,7 +57,7 @@ function MintBase({ className }: MintProps) {
   // ---------------------------------------------
   const { status } = useWallet();
 
-  const { fixedGas } = useNetConstants();
+  const { fixedGas } = useConstants();
 
   const [mint, mintResult] = useOperation(mintOptions, {});
 

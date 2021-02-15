@@ -4,7 +4,7 @@ import { Badge, ClickAwayListener, IconButton } from '@material-ui/core';
 import { NotificationsNone } from '@material-ui/icons';
 import big from 'big.js';
 import { useBank } from 'contexts/bank';
-import { useNetConstants } from 'contexts/net-contants';
+import { useConstants } from 'contexts/contants';
 import { Children, ReactNode, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
@@ -18,7 +18,7 @@ function NotificationsBase({ className }: NotificationsProps) {
   // ---------------------------------------------
   const { status } = useWallet();
   const bank = useBank();
-  const { fixedGas } = useNetConstants();
+  const { fixedGas } = useConstants();
 
   // ---------------------------------------------
   // states

@@ -9,7 +9,7 @@ import big from 'big.js';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { MessageBox } from 'components/MessageBox';
 import { useBank } from 'contexts/bank';
-import { useNetConstants } from 'contexts/net-contants';
+import { useConstants } from 'contexts/contants';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { useClaimableRewards } from 'pages/basset/logics/useClaimableRewards';
 import { useClaimable } from 'pages/basset/queries/claimable';
@@ -27,7 +27,7 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
   // ---------------------------------------------
   const { status } = useWallet();
 
-  const { fixedGas } = useNetConstants();
+  const { fixedGas } = useConstants();
 
   const [claim, claimResult] = useOperation(claimOptions, {});
 
