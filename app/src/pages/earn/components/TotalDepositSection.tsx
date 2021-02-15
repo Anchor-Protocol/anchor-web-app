@@ -12,7 +12,6 @@ import {
 import { BigSource } from 'big.js';
 import { useTotalDeposit } from 'pages/earn/logics/useTotalDeposit';
 import React, { useCallback } from 'react';
-import styled from 'styled-components';
 import { useDeposit } from '../queries/totalDeposit';
 import { useDepositDialog } from './useDepositDialog';
 import { useWithdrawDialog } from './useWithdrawDialog';
@@ -21,7 +20,7 @@ export interface TotalDepositSectionProps {
   className?: string;
 }
 
-function TotalDepositSectionBase({ className }: TotalDepositSectionProps) {
+export function TotalDepositSection({ className }: TotalDepositSectionProps) {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
@@ -106,7 +105,3 @@ function TotalDepositSectionBase({ className }: TotalDepositSectionProps) {
     </Section>
   );
 }
-
-export const TotalDepositSection = styled(TotalDepositSectionBase)`
-  // TODO
-`;

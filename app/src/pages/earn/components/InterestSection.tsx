@@ -10,7 +10,6 @@ import { useNetConstants } from 'contexts/net-contants';
 import { useCurrentAPY } from 'pages/earn/logics/useCurrentAPY';
 import { useInterest } from 'pages/earn/queries/interest';
 import { useState } from 'react';
-import styled from 'styled-components';
 
 export interface InterestSectionProps {
   className?: string;
@@ -44,7 +43,7 @@ const tabItems: Item[] = [
   },
 ];
 
-function InterestSectionBase({ className }: InterestSectionProps) {
+export function InterestSection({ className }: InterestSectionProps) {
   const { blocksPerYear } = useNetConstants();
 
   // ---------------------------------------------
@@ -124,7 +123,3 @@ function InterestSectionBase({ className }: InterestSectionProps) {
     </Section>
   );
 }
-
-export const InterestSection = styled(InterestSectionBase)`
-  // TODO
-`;

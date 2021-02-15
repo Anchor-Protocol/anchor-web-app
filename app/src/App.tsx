@@ -35,7 +35,6 @@ import {
   Route,
   Switch,
 } from 'react-router-dom';
-import styled from 'styled-components';
 
 interface AppProps {
   className?: string;
@@ -105,7 +104,7 @@ function WalletConnectedProviders({ children }: { children: ReactNode }) {
   );
 }
 
-function AppBase({ className }: AppProps) {
+export function App({ className }: AppProps) {
   return (
     /**
      * React App routing
@@ -178,7 +177,3 @@ function AppBase({ className }: AppProps) {
     </Router>
   );
 }
-
-export const App = styled(AppBase)`
-  // TODO
-`;
