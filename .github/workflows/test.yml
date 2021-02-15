@@ -3,9 +3,11 @@ name: TEST
 on:
   push:
     branches:
+      - master
       - develop
   pull_request:
     branches:
+      - master
       - develop
 
 jobs:
@@ -26,7 +28,7 @@ jobs:
             node: 14
 
     steps:
-      - name: Clone Repository
+      - name: Clone repository
         uses: actions/checkout@v2
 
       - name: Set Node.js version
@@ -51,7 +53,7 @@ jobs:
           node --version
           yarn --version
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: yarn install
 
       - name: Test
@@ -62,3 +64,6 @@ jobs:
 
       - name: Lint
         run: yarn run lint
+
+      - name: Test build packages
+        run: yarn run packages:build
