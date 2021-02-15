@@ -4,6 +4,7 @@ import { OperationBroadcaster } from '@anchor-protocol/broadcastable-operation';
 import { GlobalStyle } from '@anchor-protocol/neumorphism-ui/themes/GlobalStyle';
 import { Ratio, uUST } from '@anchor-protocol/notation';
 import { SnackbarProvider } from '@anchor-protocol/snackbar';
+import { GoogleAnalytics } from '@anchor-protocol/use-google-analytics';
 import { RouterScrollRestoration } from '@anchor-protocol/use-router-scroll-restoration';
 import {
   ChromeExtensionWalletProvider,
@@ -23,7 +24,7 @@ import { BankProvider } from 'contexts/bank';
 import { ContractProvider } from 'contexts/contract';
 import { NetConstants, NetConstantsProvider } from 'contexts/net-contants';
 import { ThemeProvider } from 'contexts/theme';
-import { contractAddresses, defaultNetwork } from 'env';
+import { contractAddresses, defaultNetwork, GA_TRACKING_ID } from 'env';
 import { BAsset } from 'pages/basset';
 import { Borrow } from 'pages/borrow';
 import { Earn } from 'pages/earn';
@@ -113,9 +114,9 @@ function AppBase({ className }: AppProps) {
      * @link https://reactrouter.com/web/guides/quick-start
      */
     <Router>
-      {/**
-       * Scroll Restore when basepath changed (page moved)
-       */}
+      {/** Send Google Analytics Page view when router's location changed */}
+      <GoogleAnalytics trackingId={GA_TRACKING_ID} />
+      {/** Scroll Restore when basepath changed (page moved) */}
       <RouterScrollRestoration />
       {/**
        * Terra Station Wallet Address

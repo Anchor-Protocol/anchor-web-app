@@ -34,6 +34,7 @@ __metadata:
     "@types/ramda": ^0.27.38
     "@types/react": ^17.0.2
     "@types/react-dom": ^17.0.1
+    "@types/react-is": ^17.0.0
     "@types/react-router-dom": ^5.1.7
     "@types/styled-components": ^5.1.7
     "@types/testing-library__jest-dom": ^5.9.5
@@ -55,6 +56,7 @@ __metadata:
     react-app-rewire-alias: ^1.0.0
     react-app-rewired: ^2.1.8
     react-dom: ^17.0.1
+    react-ga: ^3.3.0
     react-is: ^17.0.1
     react-router-dom: ^5.2.0
     react-scripts: 4.0.2
@@ -173,6 +175,7 @@ __metadata:
     "@testing-library/react-hooks": ^5.0.3
     "@testing-library/user-event": ^12.7.1
     "@types/autoprefixer": ^10.2.0
+    "@types/big.js": ^6.0.2
     "@types/color": ^3.0.1
     "@types/d3-scale": ^3.2.2
     "@types/d3-selection": ^2.0.0
@@ -206,6 +209,7 @@ __metadata:
     numeral: ^2.0.6
     react: ^17.0.1
     react-dom: ^17.0.1
+    react-ga: ^3.3.0
     react-router-dom: ^5.2.0
     react-scripts: 4.0.2
     resize-observer-polyfill: ^1.5.1
@@ -4581,6 +4585,15 @@ __metadata:
   dependencies:
     "@types/react": "*"
   checksum: 695dd4bbef4fabdc726359e4031b2887b913d65fb2ff59e5a9e81f9ae20ca4dd8f2b6fe1f39fa5c1197babdb86f6b81b385f5d4438536f2ceeb5ff136102f45b
+  languageName: node
+  linkType: hard
+
+"@types/react-is@npm:^17.0.0":
+  version: 17.0.0
+  resolution: "@types/react-is@npm:17.0.0"
+  dependencies:
+    "@types/react": "*"
+  checksum: d0734c30ba645c42626ea580addb24f1d23bd35b3f52a3a78ff876ceadfb0ada4b6a4bb55b8730ab17ca240019aa2c5ea67302308f3a8e95ee8b9b20812a76a8
   languageName: node
   linkType: hard
 
@@ -17975,6 +17988,16 @@ fsevents@^1.2.7:
   version: 3.2.0
   resolution: "react-fast-compare@npm:3.2.0"
   checksum: 6fe65c889eb4f326e97769135f97b3d63ac68737866f9c37f9625c9de4f5eaa9abed6f748eb3fd6a66808392118842916309cab7cfa99c67991f0c837433d6d2
+  languageName: node
+  linkType: hard
+
+"react-ga@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "react-ga@npm:3.3.0"
+  peerDependencies:
+    prop-types: ^15.6.0
+    react: ^15.6.2 || ^16.0 || ^17
+  checksum: fe3dc0a7679b3a52df3944660f2b1f353ee5d24f73e4bdb88c8323e012e1042ef3c2c1a6e432d3c6e3196861162925ff9f5ba515a8112e11187d21d8a00cc863
   languageName: node
   linkType: hard
 
