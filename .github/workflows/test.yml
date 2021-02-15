@@ -4,11 +4,9 @@ on:
   push:
     branches:
       - master
-      - develop
   pull_request:
     branches:
       - master
-      - develop
 
 jobs:
   test:
@@ -20,7 +18,7 @@ jobs:
       fail-fast: false
       matrix:
         node: [ 12, 14, 15 ]
-        os: [ ubuntu-latest, macos-latest ]
+        os: [ ubuntu-latest ]
         include:
           - os: windows-latest
             node: 12
