@@ -17,13 +17,12 @@ import { useMarket } from 'pages/borrow/context/market';
 import { useAPR } from 'pages/borrow/logics/useAPR';
 import { useBorrowed } from 'pages/borrow/logics/useBorrowed';
 import { useCollaterals } from 'pages/borrow/logics/useCollaterals';
-import styled from 'styled-components';
 
 export interface OverviewProps {
   className?: string;
 }
 
-function OverviewBase({ className }: OverviewProps) {
+export function Overview({ className }: OverviewProps) {
   const {
     borrowRate,
     loanAmount,
@@ -115,7 +114,3 @@ function OverviewBase({ className }: OverviewProps) {
     </Section>
   );
 }
-
-export const Overview = styled(OverviewBase)`
-  // TODO
-`;

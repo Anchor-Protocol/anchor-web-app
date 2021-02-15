@@ -1,5 +1,6 @@
+import { NeumorphismTheme } from '../themes/Theme';
 import { Component, CSSProperties, ReactElement } from 'react';
-import styled, { DefaultTheme, withTheme } from 'styled-components';
+import styled, { withTheme } from 'styled-components';
 import { Rect } from './HorizontalGraphBar';
 
 export interface HorizontalGraphSliderProps {
@@ -195,14 +196,14 @@ class HorizontalGraphSliderBase extends Component<
 }
 
 export const HorizontalGraphSliderThumb = withTheme(
-  ({ theme }: { theme: DefaultTheme }) => (
+  ({ theme }: { theme: NeumorphismTheme }) => (
     <svg
       width={22}
       height={22}
       style={{
         borderRadius: '50%',
         backgroundColor: theme.slider.thumb.thumbColor,
-        boxShadow: '0px 0px 6px 2px rgba(0, 0, 0, 0.18)'
+        boxShadow: '0px 0px 6px 2px rgba(0, 0, 0, 0.18)',
       }}
     >
       <circle cx={11} cy={11} r={2} fill="darkgray" />

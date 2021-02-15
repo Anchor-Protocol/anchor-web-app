@@ -1,12 +1,14 @@
-import { ErrorBoundary } from '@anchor-protocol/neumorphism-ui/components/ErrorBoundary';
 import { flat } from '@anchor-protocol/styled-neumorphism';
 import { DetailedHTMLProps, HTMLAttributes } from 'react';
 import styled from 'styled-components';
+import { getErrorBoundary } from './configErrorBoundary';
 
 export interface SectionProps
   extends DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement> {}
 
 function SectionBase({ children, className, ...sectionProps }: SectionProps) {
+  const ErrorBoundary = getErrorBoundary();
+
   return (
     <section className={`NeuSection-root ${className}`} {...sectionProps}>
       <div className="NeuSection-content">

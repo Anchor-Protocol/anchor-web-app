@@ -12,23 +12,12 @@ export const screen = {
   // huge monitor : @media (min-width: ${screen.monitor.min}px)
 } as const;
 
-//export const FINDER = 'https://finder.terra.money';
+export const GA_TRACKING_ID = 'G-H42LRVHR5Y';
+
+export const SENTRY_DSN =
+  'https://f33dd06d6f5948bfb06d809d0d0a274c@o247107.ingest.sentry.io/5636828';
 
 export const SAFE_RATIO: Ratio<number> = 0.7 as Ratio<number>;
-
-//export const FIXED_GAS: uUST<number> = 3500000 as uUST<number>;
-////export const FIXED_GAS: uUST<number> = 35000 as uUST<number>; // when need to occur transaction failed
-//
-//export const GAS_FEE = 6000000 as uUST<number>;
-//
-//export const TRANSACTION_FEE = {
-//  //gasPrices: '0.0015uusd',
-//  //fee: new StdFee(503333, '5000000000000uusd'),
-//  fee: new StdFee(GAS_FEE, FIXED_GAS + 'uusd'),
-//  gasAdjustment: 1.4,
-//};
-
-//export const BLOCKS_PER_YEAR = 5256666;
 
 export const onProduction =
   global.location.host === 'app.anchorprotocol.com' ||

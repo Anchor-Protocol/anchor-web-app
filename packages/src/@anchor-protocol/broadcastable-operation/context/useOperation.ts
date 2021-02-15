@@ -153,6 +153,7 @@ export function useOperation(
     removeAbortController,
     dispatch,
     globalDependency,
+    errorReporter,
   } = useOperationBroadcaster();
 
   const dependencyList = useRef(deps);
@@ -293,6 +294,8 @@ export function useOperation(
             (typeof breakOnError === 'function' && breakOnError(error)))
         ) {
           throw error;
+        } else if (errorReporter) {
+          errorReporter(error);
         }
 
         updateResult({

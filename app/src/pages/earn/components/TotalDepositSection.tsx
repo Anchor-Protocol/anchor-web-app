@@ -9,10 +9,10 @@ import {
   Ratio,
   uUST,
 } from '@anchor-protocol/notation';
+import { useWallet } from '@anchor-protocol/wallet-provider';
 import { BigSource } from 'big.js';
 import { useTotalDeposit } from 'pages/earn/logics/useTotalDeposit';
 import React, { useCallback } from 'react';
-import styled from 'styled-components';
 import { useDeposit } from '../queries/totalDeposit';
 import { useDepositDialog } from './useDepositDialog';
 import { useWithdrawDialog } from './useWithdrawDialog';
@@ -21,7 +21,9 @@ export interface TotalDepositSectionProps {
   className?: string;
 }
 
-function TotalDepositSectionBase({ className }: TotalDepositSectionProps) {
+export function TotalDepositSection({ className }: TotalDepositSectionProps) {
+  const { status } = useWallet();
+
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
@@ -88,11 +90,18 @@ function TotalDepositSectionBase({ className }: TotalDepositSectionProps) {
       </div>
 
       <aside className="total-deposit-buttons">
-        <ActionButton disabled={!totalDeposit} onClick={() => openDeposit()}>
+        <ActionButton
+          disabled={status.status !== 'ready' || !totalDeposit}
+          onClick={() => openDeposit()}
+        >
           Deposit
         </ActionButton>
         <ActionButton
-          disabled={!totalDeposit || !exchangeRate?.exchange_rate}
+          disabled={
+            status.status !== 'ready' ||
+            !totalDeposit ||
+            !exchangeRate?.exchange_rate
+          }
           onClick={() =>
             openWithdraw(totalDeposit, exchangeRate!.exchange_rate)
           }
@@ -106,7 +115,3 @@ function TotalDepositSectionBase({ className }: TotalDepositSectionProps) {
     </Section>
   );
 }
-
-export const TotalDepositSection = styled(TotalDepositSectionBase)`
-  // TODO
-`;

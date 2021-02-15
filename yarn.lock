@@ -13,6 +13,8 @@ __metadata:
     "@material-ui/core": ^4.11.3
     "@material-ui/icons": ^4.11.2
     "@rocket-scripts/utils": ^2.0.0
+    "@sentry/react": ^6.1.0
+    "@sentry/tracing": ^6.1.0
     "@terra-money/terra.js": ^1.3.6
     "@testing-library/jest-dom": ^5.11.9
     "@testing-library/react": ^11.2.5
@@ -32,6 +34,7 @@ __metadata:
     "@types/ramda": ^0.27.38
     "@types/react": ^17.0.2
     "@types/react-dom": ^17.0.1
+    "@types/react-is": ^17.0.0
     "@types/react-router-dom": ^5.1.7
     "@types/styled-components": ^5.1.7
     "@types/testing-library__jest-dom": ^5.9.5
@@ -53,6 +56,7 @@ __metadata:
     react-app-rewire-alias: ^1.0.0
     react-app-rewired: ^2.1.8
     react-dom: ^17.0.1
+    react-ga: ^3.3.0
     react-is: ^17.0.1
     react-router-dom: ^5.2.0
     react-scripts: 4.0.2
@@ -171,6 +175,7 @@ __metadata:
     "@testing-library/react-hooks": ^5.0.3
     "@testing-library/user-event": ^12.7.1
     "@types/autoprefixer": ^10.2.0
+    "@types/big.js": ^6.0.2
     "@types/color": ^3.0.1
     "@types/d3-scale": ^3.2.2
     "@types/d3-selection": ^2.0.0
@@ -204,6 +209,7 @@ __metadata:
     numeral: ^2.0.6
     react: ^17.0.1
     react-dom: ^17.0.1
+    react-ga: ^3.3.0
     react-router-dom: ^5.2.0
     react-scripts: 4.0.2
     resize-observer-polyfill: ^1.5.1
@@ -2818,6 +2824,100 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sentry/browser@npm:6.1.0":
+  version: 6.1.0
+  resolution: "@sentry/browser@npm:6.1.0"
+  dependencies:
+    "@sentry/core": 6.1.0
+    "@sentry/types": 6.1.0
+    "@sentry/utils": 6.1.0
+    tslib: ^1.9.3
+  checksum: eee87e75c8c464ad870b6401273c1798d689e272c32b03b37d53edcb29164db65bba2d13ae382317d3658f330eaa5c138e7a0f1beede4564a6c86f7268db529c
+  languageName: node
+  linkType: hard
+
+"@sentry/core@npm:6.1.0":
+  version: 6.1.0
+  resolution: "@sentry/core@npm:6.1.0"
+  dependencies:
+    "@sentry/hub": 6.1.0
+    "@sentry/minimal": 6.1.0
+    "@sentry/types": 6.1.0
+    "@sentry/utils": 6.1.0
+    tslib: ^1.9.3
+  checksum: 613719b525ee8d37f132040ac789d081794570aed35bca70ae827585ddf38e94d5a0bb0100240045b3825e4e66771305812d7978393cfa24aaeafb3868fe843e
+  languageName: node
+  linkType: hard
+
+"@sentry/hub@npm:6.1.0":
+  version: 6.1.0
+  resolution: "@sentry/hub@npm:6.1.0"
+  dependencies:
+    "@sentry/types": 6.1.0
+    "@sentry/utils": 6.1.0
+    tslib: ^1.9.3
+  checksum: e13653ce1142c1f0525a0c809b4df9dd8e5778a577ce41543d9a05c208dafff9c17e8c352b5a7dfdf1f9a41632ccedb0435f0d878ffa951162464f381224c788
+  languageName: node
+  linkType: hard
+
+"@sentry/minimal@npm:6.1.0":
+  version: 6.1.0
+  resolution: "@sentry/minimal@npm:6.1.0"
+  dependencies:
+    "@sentry/hub": 6.1.0
+    "@sentry/types": 6.1.0
+    tslib: ^1.9.3
+  checksum: 7ed66526e60ebad7ce9f871d7b2716e8a627bdf25458230a2d84e3e623394ade09026f7fb4c04e40a49eb22b4fc6b1f4a899e1287d4ffc2f6d891944b49be464
+  languageName: node
+  linkType: hard
+
+"@sentry/react@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "@sentry/react@npm:6.1.0"
+  dependencies:
+    "@sentry/browser": 6.1.0
+    "@sentry/minimal": 6.1.0
+    "@sentry/types": 6.1.0
+    "@sentry/utils": 6.1.0
+    hoist-non-react-statics: ^3.3.2
+    tslib: ^1.9.3
+  peerDependencies:
+    react: 15.x || 16.x || 17.x
+    react-dom: 15.x || 16.x || 17.x
+  checksum: fbd8dc716bc09f09897cbe5b19044f695b9694c71ffd579e811e26ab79be9597e6c280d6bc5148a8770d7e7e834114b2d8bf1d61f1081a44da0b3e625e4fbd15
+  languageName: node
+  linkType: hard
+
+"@sentry/tracing@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "@sentry/tracing@npm:6.1.0"
+  dependencies:
+    "@sentry/hub": 6.1.0
+    "@sentry/minimal": 6.1.0
+    "@sentry/types": 6.1.0
+    "@sentry/utils": 6.1.0
+    tslib: ^1.9.3
+  checksum: be59f16e50f051d512c16764a259cd1be79d0bcd1a7974e07b9565fa049051314ac12aee4ab31295778061be9f485f86296a881cf890ea15e4edf6e17b24b608
+  languageName: node
+  linkType: hard
+
+"@sentry/types@npm:6.1.0":
+  version: 6.1.0
+  resolution: "@sentry/types@npm:6.1.0"
+  checksum: 94ca9ac94f6cec5db23c4526daad0aa29ef166f00de0f7ccfbcf5005e882c95c4e1e75f8ecb06c2fd4dfc8912f9f56ce2c7c2ea0fed8ff06b8ac5f4bc5db6d0b
+  languageName: node
+  linkType: hard
+
+"@sentry/utils@npm:6.1.0":
+  version: 6.1.0
+  resolution: "@sentry/utils@npm:6.1.0"
+  dependencies:
+    "@sentry/types": 6.1.0
+    tslib: ^1.9.3
+  checksum: 12f96fe22671342f2cb516cc8c4f245c68c1d78d73a9249661a724e3211d7a64e905247224cc9d84ecfec666143aef0badeda9276b8dcb6d5a9231ae6c6fd121
+  languageName: node
+  linkType: hard
+
 "@sindresorhus/is@npm:^0.14.0":
   version: 0.14.0
   resolution: "@sindresorhus/is@npm:0.14.0"
@@ -4485,6 +4585,15 @@ __metadata:
   dependencies:
     "@types/react": "*"
   checksum: 695dd4bbef4fabdc726359e4031b2887b913d65fb2ff59e5a9e81f9ae20ca4dd8f2b6fe1f39fa5c1197babdb86f6b81b385f5d4438536f2ceeb5ff136102f45b
+  languageName: node
+  linkType: hard
+
+"@types/react-is@npm:^17.0.0":
+  version: 17.0.0
+  resolution: "@types/react-is@npm:17.0.0"
+  dependencies:
+    "@types/react": "*"
+  checksum: d0734c30ba645c42626ea580addb24f1d23bd35b3f52a3a78ff876ceadfb0ada4b6a4bb55b8730ab17ca240019aa2c5ea67302308f3a8e95ee8b9b20812a76a8
   languageName: node
   linkType: hard
 
@@ -17879,6 +17988,16 @@ fsevents@^1.2.7:
   version: 3.2.0
   resolution: "react-fast-compare@npm:3.2.0"
   checksum: 6fe65c889eb4f326e97769135f97b3d63ac68737866f9c37f9625c9de4f5eaa9abed6f748eb3fd6a66808392118842916309cab7cfa99c67991f0c837433d6d2
+  languageName: node
+  linkType: hard
+
+"react-ga@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "react-ga@npm:3.3.0"
+  peerDependencies:
+    prop-types: ^15.6.0
+    react: ^15.6.2 || ^16.0 || ^17
+  checksum: fe3dc0a7679b3a52df3944660f2b1f353ee5d24f73e4bdb88c8323e012e1042ef3c2c1a6e432d3c6e3196861162925ff9f5ba515a8112e11187d21d8a00cc863
   languageName: node
   linkType: hard
 

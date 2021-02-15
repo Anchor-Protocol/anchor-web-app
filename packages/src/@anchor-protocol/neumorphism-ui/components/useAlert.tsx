@@ -1,3 +1,4 @@
+import { NeumorphismTheme } from '../themes/Theme';
 import { DialogProps, useDialog } from '@anchor-protocol/use-dialog';
 import {
   createStyles,
@@ -9,10 +10,9 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { ReactNode } from 'react';
-import { DefaultTheme } from 'styled-components';
 import { ActionButton } from './ActionButton';
 
-export const useAlertStyles = makeStyles((theme: DefaultTheme) =>
+export const useAlertStyles = makeStyles((theme: NeumorphismTheme) =>
   createStyles({
     paper: {
       backgroundColor: theme.backgroundColor,

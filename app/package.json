@@ -1,6 +1,7 @@
 {
   "name": "@anchor-web-app/app",
   "version": "0.1.0",
+  "license": "Apache-2.0",
   "private": true,
   "scripts": {
     "start": "multiplerun start",
@@ -37,6 +38,8 @@
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
     "@rocket-scripts/utils": "^2.0.0",
+    "@sentry/react": "^6.1.0",
+    "@sentry/tracing": "^6.1.0",
     "@terra-money/terra.js": "^1.3.6",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
@@ -72,6 +75,7 @@
     "react-app-rewire-alias": "^1.0.0",
     "react-app-rewired": "^2.1.8",
     "react-dom": "^17.0.1",
+    "react-ga": "^3.3.0",
     "react-is": "^17.0.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.2",
@@ -104,6 +108,7 @@
     "@types/d3-scale": "^3.2.2",
     "@types/d3-selection": "^2.0.0",
     "@types/d3-shape": "^2.0.0",
-    "@types/numeral": "^2.0.0"
+    "@types/numeral": "^2.0.0",
+    "@types/react-is": "^17.0.0"
   }
 }

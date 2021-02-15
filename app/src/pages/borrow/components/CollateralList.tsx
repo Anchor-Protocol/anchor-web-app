@@ -14,7 +14,6 @@ import { useWallet } from '@anchor-protocol/wallet-provider';
 import big from 'big.js';
 import { useMarket } from 'pages/borrow/context/market';
 import { useCollaterals } from 'pages/borrow/logics/useCollaterals';
-import styled from 'styled-components';
 import { useProvideCollateralDialog } from './useProvideCollateralDialog';
 import { useRedeemCollateralDialog } from './useRedeemCollateralDialog';
 
@@ -22,7 +21,7 @@ export interface CollateralListProps {
   className?: string;
 }
 
-function CollateralListBase({ className }: CollateralListProps) {
+export function CollateralList({ className }: CollateralListProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
@@ -135,7 +134,3 @@ function CollateralListBase({ className }: CollateralListProps) {
     </Section>
   );
 }
-
-export const CollateralList = styled(CollateralListBase)`
-  // TODO
-`;

@@ -1,8 +1,8 @@
-import { ErrorBoundary } from '@anchor-protocol/neumorphism-ui/components/ErrorBoundary';
-import { MessageColor } from '../themes/Theme';
 import type { DetailedHTMLProps, HTMLAttributes } from 'react';
 import { forwardRef } from 'react';
 import styled, { keyframes } from 'styled-components';
+import { MessageColor } from '../themes/Theme';
+import { getErrorBoundary } from './configErrorBoundary';
 
 export interface DialogProps
   extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
@@ -21,6 +21,8 @@ export interface DialogProps
 
 const DialogBase = forwardRef<HTMLDivElement, DialogProps>(
   ({ onClose, color = 'normal', children, ...divProps }: DialogProps, ref) => {
+    const ErrorBoundary = getErrorBoundary();
+
     return (
       <div {...divProps} ref={ref} data-color={color}>
         <div className="dialog-content">
