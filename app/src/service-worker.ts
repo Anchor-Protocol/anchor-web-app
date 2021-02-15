@@ -2,15 +2,16 @@
 /* eslint-disable no-restricted-globals */
 
 import { ExpirationPlugin } from 'workbox-expiration';
-import { precacheAndRoute } from 'workbox-precaching';
+import { createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
-import { NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies';
+import { StaleWhileRevalidate } from 'workbox-strategies';
 
 declare const self: ServiceWorkerGlobalScope;
 
-self.addEventListener('install', () => {
+self.addEventListener('install', (event) => {
   console.log('SERVICE WORKER UPDATED');
   self.skipWaiting();
+  //event.waitUntil(() => {});
 });
 
 precacheAndRoute(self.__WB_MANIFEST);
@@ -31,7 +32,7 @@ registerRoute(({ request, url }: { request: Request; url: URL }) => {
   }
 
   return true;
-}, new NetworkFirst());
+}, createHandlerBoundToURL(process.env.PUBLIC_URL + '/index.html'));
 
 registerRoute(
   ({ url }) => {
