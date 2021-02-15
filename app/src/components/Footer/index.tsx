@@ -34,7 +34,7 @@ function FooterBase({ className, style }: FooterProps) {
           <IconSpan>
             <FiberManualRecord />{' '}
             {status.network.name.toLowerCase().indexOf('mainnet') !== 0 && (
-              <b style={{ color: 'red' }}>
+              <b style={{ color: 'blue' }}>
                 [ {status.network.name.toUpperCase()} ]{' '}
               </b>
             )}
