@@ -34,7 +34,7 @@ function FooterBase({ className, style }: FooterProps) {
           <IconSpan>
             <FiberManualRecord />{' '}
             {status.network.name.toLowerCase().indexOf('mainnet') !== 0 && (
-              <b>({status.network.name}) </b>
+              <b>({status.network.name.toUpperCase()}) </b>
             )}
             Latest Block: {lastSyncedHeight}
           </IconSpan>
