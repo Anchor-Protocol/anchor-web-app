@@ -20,10 +20,13 @@ export class ErrorBoundary extends Component<
     return { error };
   }
 
-  //componentDidCatch(error: Error, errorInfo) {
-  //  TODO report error
-  //  log(error, errorInfo);
-  //}
+  componentDidCatch(error: Error, errorInfo: any) {
+    this.setState({
+      error,
+    });
+
+    console.error(errorInfo);
+  }
 
   render() {
     if (this.state.error) {
