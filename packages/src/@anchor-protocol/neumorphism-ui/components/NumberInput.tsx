@@ -1,9 +1,9 @@
-import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
 import {
   RestrictedNumberInputParams,
   useRestrictedNumberInput,
 } from '@anchor-protocol/use-restricted-input';
 import { TextFieldProps } from '@material-ui/core';
+import { TextInput } from './TextInput';
 
 export type NumberInputProps = Omit<TextFieldProps, 'type'> &
   RestrictedNumberInputParams;

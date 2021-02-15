@@ -1,7 +1,7 @@
-import { ErrorBoundary } from '@anchor-protocol/neumorphism-ui/components/ErrorBoundary';
 import { flat } from '@anchor-protocol/styled-neumorphism';
 import { DetailedHTMLProps, HTMLAttributes } from 'react';
 import styled from 'styled-components';
+import { ErrorBoundary } from './ErrorBoundary';
 
 export interface SectionProps
   extends DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement> {}

@@ -1,9 +1,6 @@
-import {
-  Tooltip,
-  TooltipProps,
-} from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { InfoOutlined } from '@material-ui/icons';
 import React, { ReactNode } from 'react';
+import { Tooltip, TooltipProps } from './Tooltip';
 
 export interface InfoTooltipProps
   extends Omit<TooltipProps, 'children' | 'title'> {

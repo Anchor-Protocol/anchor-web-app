@@ -1,9 +1,9 @@
-import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { flat, softPressed } from '@anchor-protocol/styled-neumorphism';
 import c from 'color';
 import { CSSProperties, ReactElement, ReactNode, useMemo } from 'react';
 import styled from 'styled-components';
 import useResizeObserver from 'use-resize-observer/polyfilled';
+import { Tooltip } from './Tooltip';
 
 export interface TabProps<T> {
   className?: string;
