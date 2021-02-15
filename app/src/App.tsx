@@ -35,10 +35,14 @@ import {
   Route,
   Switch,
 } from 'react-router-dom';
+import { captureException } from '@sentry/react';
 
 interface AppProps {
   className?: string;
 }
+
+const operationBroadcasterErrorReporter =
+  process.env.NODE_ENV === 'production' ? captureException : undefined;
 
 function WalletConnectedProviders({ children }: { children: ReactNode }) {
   const { post } = useWallet();
@@ -95,6 +99,7 @@ function WalletConnectedProviders({ children }: { children: ReactNode }) {
               post,
               ...netConstants,
             }}
+            errorReporter={operationBroadcasterErrorReporter}
           >
             {children}
           </OperationBroadcaster>

@@ -17,6 +17,7 @@ import { Broadcasting, EventType, OperationResult, Subscriber } from './types';
 export interface OperationBroadcasterProps {
   children: ReactNode;
   dependency: GlobalDependency;
+  errorReporter?: (error: unknown) => void;
 }
 
 export interface OperationBroadcasterState {
@@ -37,6 +38,8 @@ export interface OperationBroadcasterState {
   removeAbortController: (id: string) => void;
   // deps
   globalDependency: MutableRefObject<GlobalDependency>;
+  // error reporter
+  errorReporter?: (error: unknown) => void;
 }
 
 // @ts-ignore
