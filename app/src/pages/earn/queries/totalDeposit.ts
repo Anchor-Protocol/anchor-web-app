@@ -3,7 +3,7 @@ import { createMap, useMap } from '@anchor-protocol/use-map';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
-import { useLastSyncedHeight } from 'pages/earn/queries/lastSyncedHeight';
+import { useLastSyncedHeight } from 'queries/lastSyncedHeight';
 import { parseResult } from 'queries/parseResult';
 import { MappedQueryResult } from 'queries/types';
 import { useRefetch } from 'queries/useRefetch';

@@ -1,5 +1,6 @@
 import { Discord } from '@anchor-protocol/icons';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { useWallet } from '@anchor-protocol/wallet-provider';
 import { IconButton } from '@material-ui/core';
 import {
   FiberManualRecord,
@@ -7,10 +8,11 @@ import {
   Telegram,
   Twitter,
 } from '@material-ui/icons';
+import c from 'color';
 import { screen } from 'env';
+import { useLastSyncedHeight } from 'queries/lastSyncedHeight';
 import { CSSProperties } from 'react';
 import styled from 'styled-components';
-import c from 'color';
 
 export interface FooterProps {
   className?: string;
@@ -18,12 +20,25 @@ export interface FooterProps {
 }
 
 function FooterBase({ className, style }: FooterProps) {
+  const { status } = useWallet();
+  const { data: lastSyncedHeight } = useLastSyncedHeight();
+
   return (
     <footer className={className} style={style}>
       <div>
-        <IconSpan>
-          <FiberManualRecord /> <s>Latest Block: 233333</s>
-        </IconSpan>
+        <a
+          href={`https://finder.terra.money/${status.network.chainID}/blocks/${lastSyncedHeight}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          <IconSpan>
+            <FiberManualRecord />{' '}
+            {status.network.name.toLowerCase().indexOf('mainnet') !== 0 && (
+              <b>({status.network.name}) </b>
+            )}
+            Latest Block: {lastSyncedHeight}
+          </IconSpan>
+        </a>
       </div>
       <div>
         <IconButton>
@@ -47,6 +62,11 @@ export const Footer = styled(FooterBase)`
   font-size: 12px;
   color: ${({ theme }) => c(theme.dimTextColor).alpha(0.5).toString()};
 
+  a {
+    text-decoration: none;
+  }
+
+  a,
   .MuiIconButton-root {
     color: ${({ theme }) => c(theme.dimTextColor).alpha(0.5).toString()};
 
