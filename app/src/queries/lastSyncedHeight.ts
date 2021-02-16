@@ -1,5 +1,6 @@
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { gql, QueryResult, useQuery } from '@apollo/client';
+import { useService } from 'contexts/service';
 import { useMemo } from 'react';
 
 export interface RawData {
@@ -21,7 +22,10 @@ export const query = gql`
 export function useLastSyncedHeight(): Omit<QueryResult<RawData>, 'data'> & {
   data: Data | undefined;
 } {
+  const { serviceAvailable } = useService();
+
   const result = useQuery<RawData>(query, {
+    skip: !serviceAvailable,
     fetchPolicy: 'network-only',
     pollInterval: 1000 * 60,
   });
@@ -38,6 +42,6 @@ export function useLastSyncedHeight(): Omit<QueryResult<RawData>, 'data'> & {
 
   return {
     ...result,
-    data,
+    data: serviceAvailable ? data : undefined,
   };
 }

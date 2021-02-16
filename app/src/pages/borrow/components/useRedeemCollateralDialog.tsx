@@ -14,11 +14,12 @@ import {
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
   Ratio,
+  ubLuna,
   uUST,
 } from '@anchor-protocol/notation';
 import type { DialogProps, OpenDialog } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
-import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
+import { useWallet, WalletReady } from '@anchor-protocol/wallet-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import big, { Big, BigSource } from 'big.js';
 import { ArrowDownLine } from 'components/ArrowDownLine';
@@ -27,18 +28,18 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
-import { useService } from 'contexts/service';
-import { useInvalidTxFee } from 'logics/useInvalidTxFee';
+import { useService, useServiceConnectedMemo } from 'contexts/service';
+import { validateTxFee } from 'logics/validateTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
 import { useMarketNotNullable } from 'pages/borrow/context/market';
+import { currentLtv as _currentLtv } from 'pages/borrow/logics/currentLtv';
 import { ltvToRedeemAmount } from 'pages/borrow/logics/ltvToRedeemAmount';
 import { redeemAmountToLtv } from 'pages/borrow/logics/redeemAmountToLtv';
-import { useCurrentLtv } from 'pages/borrow/logics/useCurrentLtv';
-import { useInvalidRedeemAmount } from 'pages/borrow/logics/useInvalidRedeemAmount';
-import { useRedeemCollateralBorrowLimit } from 'pages/borrow/logics/useRedeemCollateralBorrowLimit';
-import { useRedeemCollateralMaxAmount } from 'pages/borrow/logics/useRedeemCollateralMaxAmount';
-import { useRedeemCollateralNextLtv } from 'pages/borrow/logics/useRedeemCollateralNextLtv';
-import { useRedeemCollateralWithdrawableAmount } from 'pages/borrow/logics/useRedeemCollateralWithdrawableAmount';
+import { redeemCollateralBorrowLimit } from 'pages/borrow/logics/redeemCollateralBorrowLimit';
+import { redeemCollateralMaxAmount } from 'pages/borrow/logics/redeemCollateralMaxAmount';
+import { redeemCollateralNextLtv } from 'pages/borrow/logics/redeemCollateralNextLtv';
+import { redeemCollateralWithdrawableAmount } from 'pages/borrow/logics/redeemCollateralWithdrawableAmount';
+import { validateRedeemAmount } from 'pages/borrow/logics/validateRedeemAmount';
 import { redeemCollateralOptions } from 'pages/borrow/transactions/redeemCollateralOptions';
 import type { ReactNode } from 'react';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
@@ -74,7 +75,7 @@ function ComponentBase({
 
   const { status } = useWallet();
 
-  const { online } = useService();
+  const { serviceAvailable, walletReady } = useService();
 
   const { fixedGas } = useConstants();
 
@@ -129,45 +130,93 @@ function ComponentBase({
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const currentLtv = useCurrentLtv(
-    loanAmount.loan_amount,
-    borrowInfo.balance,
-    borrowInfo.spendable,
-    oraclePrice.rate,
-  );
-  const nextLtv = useRedeemCollateralNextLtv(
-    redeemAmount,
-    currentLtv,
-    amountToLtv,
-  );
-  const withdrawableAmount = useRedeemCollateralWithdrawableAmount(
-    loanAmount.loan_amount,
-    borrowInfo.balance,
-    borrowInfo.spendable,
-    oraclePrice.rate,
-    bLunaSafeLtv,
-    bLunaMaxLtv,
-    nextLtv,
-  );
-  const withdrawableMaxAmount = useRedeemCollateralMaxAmount(
-    loanAmount.loan_amount,
-    borrowInfo.balance,
-    oraclePrice.rate,
-    bLunaMaxLtv,
-  );
-  const borrowLimit = useRedeemCollateralBorrowLimit(
-    redeemAmount,
-    borrowInfo.balance,
-    borrowInfo.spendable,
-    oraclePrice.rate,
-    bLunaMaxLtv,
+  const currentLtv = useServiceConnectedMemo(
+    () =>
+      _currentLtv(
+        loanAmount.loan_amount,
+        borrowInfo.balance,
+        borrowInfo.spendable,
+        oraclePrice.rate,
+      ),
+    [
+      borrowInfo.balance,
+      borrowInfo.spendable,
+      loanAmount.loan_amount,
+      oraclePrice.rate,
+    ],
+    undefined,
   );
 
-  const invalidTxFee = useInvalidTxFee(bank, fixedGas);
-  const invalidRedeemAmount = useInvalidRedeemAmount(
-    redeemAmount,
-    bank,
-    withdrawableMaxAmount,
+  const nextLtv = useServiceConnectedMemo(
+    () => redeemCollateralNextLtv(redeemAmount, currentLtv, amountToLtv),
+    [amountToLtv, currentLtv, redeemAmount],
+    undefined,
+  );
+
+  const withdrawableAmount = useServiceConnectedMemo(
+    () =>
+      redeemCollateralWithdrawableAmount(
+        loanAmount.loan_amount,
+        borrowInfo.balance,
+        borrowInfo.spendable,
+        oraclePrice.rate,
+        bLunaSafeLtv,
+        bLunaMaxLtv,
+        nextLtv,
+      ),
+    [
+      bLunaMaxLtv,
+      bLunaSafeLtv,
+      borrowInfo.balance,
+      borrowInfo.spendable,
+      loanAmount.loan_amount,
+      nextLtv,
+      oraclePrice.rate,
+    ],
+    big(0) as ubLuna<Big>,
+  );
+
+  const withdrawableMaxAmount = useServiceConnectedMemo(
+    () =>
+      redeemCollateralMaxAmount(
+        loanAmount.loan_amount,
+        borrowInfo.balance,
+        oraclePrice.rate,
+        bLunaMaxLtv,
+      ),
+    [bLunaMaxLtv, borrowInfo.balance, loanAmount.loan_amount, oraclePrice.rate],
+    big(0) as ubLuna<Big>,
+  );
+
+  const borrowLimit = useServiceConnectedMemo(
+    () =>
+      redeemCollateralBorrowLimit(
+        redeemAmount,
+        borrowInfo.balance,
+        borrowInfo.spendable,
+        oraclePrice.rate,
+        bLunaMaxLtv,
+      ),
+    [
+      bLunaMaxLtv,
+      borrowInfo.balance,
+      borrowInfo.spendable,
+      oraclePrice.rate,
+      redeemAmount,
+    ],
+    undefined,
+  );
+
+  const invalidTxFee = useServiceConnectedMemo(
+    () => validateTxFee(bank, fixedGas),
+    [bank, fixedGas],
+    undefined,
+  );
+
+  const invalidRedeemAmount = useServiceConnectedMemo(
+    () => validateRedeemAmount(redeemAmount, withdrawableMaxAmount),
+    [redeemAmount, withdrawableMaxAmount],
+    undefined,
   );
 
   // ---------------------------------------------
@@ -179,22 +228,18 @@ function ComponentBase({
 
   const proceed = useCallback(
     async (
-      status: WalletStatus,
+      walletReady: WalletReady,
       redeemAmount: bLuna,
       txFee: uUST<BigSource> | undefined,
     ) => {
-      if (status.status !== 'ready' || bank.status !== 'connected') {
-        return;
-      }
-
       await redeemCollateral({
-        address: status.walletAddress,
+        address: walletReady.walletAddress,
         market: 'ust',
         amount: redeemAmount.length > 0 ? redeemAmount : '0',
         txFee: txFee!.toString() as uUST,
       });
     },
-    [bank.status, redeemCollateral],
+    [redeemCollateral],
   );
 
   const onLtvChange = useCallback(
@@ -304,6 +349,7 @@ function ComponentBase({
 
         <figure className="graph">
           <LTVGraph
+            disabled={!serviceAvailable}
             maxLtv={bLunaMaxLtv}
             safeLtv={bLunaSafeLtv}
             currentLtv={currentLtv}
@@ -332,15 +378,15 @@ function ComponentBase({
         <ActionButton
           className="proceed"
           disabled={
-            !online ||
-            status.status !== 'ready' ||
-            bank.status !== 'connected' ||
+            !serviceAvailable ||
             redeemAmount.length === 0 ||
             big(redeemAmount).lte(0) ||
             !!invalidTxFee ||
             !!invalidRedeemAmount
           }
-          onClick={() => proceed(status, redeemAmount, txFee)}
+          onClick={() =>
+            walletReady && proceed(walletReady, redeemAmount, txFee)
+          }
         >
           Proceed
         </ActionButton>

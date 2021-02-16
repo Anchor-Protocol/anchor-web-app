@@ -17,7 +17,7 @@ import {
 } from '@anchor-protocol/notation';
 import type { DialogProps, OpenDialog } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
-import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
+import { useWallet, WalletReady } from '@anchor-protocol/wallet-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import big, { Big, BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
@@ -25,20 +25,20 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
-import { useService } from 'contexts/service';
-import { useInvalidTxFee } from 'logics/useInvalidTxFee';
+import { useService, useServiceConnectedMemo } from 'contexts/service';
+import { validateTxFee } from 'logics/validateTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
 import { useMarketNotNullable } from 'pages/borrow/context/market';
+import { apr as _apr } from 'pages/borrow/logics/apr';
 import { borrowAmountToLtv } from 'pages/borrow/logics/borrowAmountToLtv';
+import { borrowMax } from 'pages/borrow/logics/borrowMax';
+import { borrowNextLtv } from 'pages/borrow/logics/borrowNextLtv';
+import { borrowReceiveAmount } from 'pages/borrow/logics/borrowReceiveAmount';
+import { borrowSafeMax } from 'pages/borrow/logics/borrowSafeMax';
+import { borrowTxFee } from 'pages/borrow/logics/borrowTxFee';
+import { currentLtv as _currentLtv } from 'pages/borrow/logics/currentLtv';
 import { ltvToBorrowAmount } from 'pages/borrow/logics/ltvToBorrowAmount';
-import { useAPR } from 'pages/borrow/logics/useAPR';
-import { useBorrowMax } from 'pages/borrow/logics/useBorrowMax';
-import { useBorrowNextLtv } from 'pages/borrow/logics/useBorrowNextLtv';
-import { useBorrowReceiveAmount } from 'pages/borrow/logics/useBorrowReceiveAmount';
-import { useBorrowSafeMax } from 'pages/borrow/logics/useBorrowSafeMax';
-import { useBorrowTxFee } from 'pages/borrow/logics/useBorrowTxFee';
-import { useCurrentLtv } from 'pages/borrow/logics/useCurrentLtv';
-import { useInvalidBorrowAmount } from 'pages/borrow/logics/useInvalidBorrowAmount';
+import { validateBorrowAmount } from 'pages/borrow/logics/validateBorrowAmount';
 import { borrowOptions } from 'pages/borrow/transactions/borrowOptions';
 import type { ChangeEvent, ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -75,7 +75,7 @@ function ComponentBase({
 
   const { status } = useWallet();
 
-  const { online } = useService();
+  const { serviceAvailable, walletReady } = useService();
 
   const { fixedGas, blocksPerYear } = useConstants();
 
@@ -131,34 +131,98 @@ function ComponentBase({
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const currentLtv = useCurrentLtv(
-    loanAmount.loan_amount,
-    borrowInfo.balance,
-    borrowInfo.spendable,
-    oraclePrice.rate,
+  const currentLtv = useServiceConnectedMemo(
+    () =>
+      _currentLtv(
+        loanAmount.loan_amount,
+        borrowInfo.balance,
+        borrowInfo.spendable,
+        oraclePrice.rate,
+      ),
+    [
+      borrowInfo.balance,
+      borrowInfo.spendable,
+      loanAmount.loan_amount,
+      oraclePrice.rate,
+    ],
+    undefined,
   );
-  const nextLtv = useBorrowNextLtv(borrowAmount, currentLtv, amountToLtv);
-  const apr = useAPR(borrowRate.rate, blocksPerYear);
-  const safeMax = useBorrowSafeMax(
-    loanAmount.loan_amount,
-    borrowInfo.balance,
-    borrowInfo.spendable,
-    oraclePrice.rate,
-    bLunaSafeLtv,
-    currentLtv,
-  );
-  const max = useBorrowMax(
-    loanAmount.loan_amount,
-    borrowInfo.balance,
-    borrowInfo.spendable,
-    oraclePrice.rate,
-    bLunaMaxLtv,
-  );
-  const txFee = useBorrowTxFee(borrowAmount, bank, fixedGas);
-  const receiveAmount = useBorrowReceiveAmount(borrowAmount, txFee);
 
-  const invalidTxFee = useInvalidTxFee(bank, fixedGas);
-  const invalidBorrowAmount = useInvalidBorrowAmount(borrowAmount, bank, max);
+  const nextLtv = useServiceConnectedMemo(
+    () => borrowNextLtv(borrowAmount, currentLtv, amountToLtv),
+    [amountToLtv, borrowAmount, currentLtv],
+    undefined,
+  );
+
+  const apr = useServiceConnectedMemo(
+    () => _apr(borrowRate.rate, blocksPerYear),
+    [blocksPerYear, borrowRate.rate],
+    big(0) as Ratio<Big>,
+  );
+
+  const safeMax = useServiceConnectedMemo(
+    () =>
+      borrowSafeMax(
+        loanAmount.loan_amount,
+        borrowInfo.balance,
+        borrowInfo.spendable,
+        oraclePrice.rate,
+        bLunaSafeLtv,
+        currentLtv,
+      ),
+    [
+      bLunaSafeLtv,
+      borrowInfo.balance,
+      borrowInfo.spendable,
+      currentLtv,
+      loanAmount.loan_amount,
+      oraclePrice.rate,
+    ],
+    big(0) as uUST<Big>,
+  );
+
+  const max = useServiceConnectedMemo(
+    () =>
+      borrowMax(
+        loanAmount.loan_amount,
+        borrowInfo.balance,
+        borrowInfo.spendable,
+        oraclePrice.rate,
+        bLunaMaxLtv,
+      ),
+    [
+      bLunaMaxLtv,
+      borrowInfo.balance,
+      borrowInfo.spendable,
+      loanAmount.loan_amount,
+      oraclePrice.rate,
+    ],
+    big(0) as uUST<Big>,
+  );
+
+  const txFee = useServiceConnectedMemo(
+    () => borrowTxFee(borrowAmount, bank, fixedGas),
+    [bank, borrowAmount, fixedGas],
+    big(0) as uUST<Big>,
+  );
+
+  const receiveAmount = useServiceConnectedMemo(
+    () => borrowReceiveAmount(borrowAmount, txFee),
+    [borrowAmount, txFee],
+    big(0) as uUST<Big>,
+  );
+
+  const invalidTxFee = useServiceConnectedMemo(
+    () => validateTxFee(bank, fixedGas),
+    [bank, fixedGas],
+    undefined,
+  );
+
+  const invalidBorrowAmount = useServiceConnectedMemo(
+    () => validateBorrowAmount(borrowAmount, max),
+    [borrowAmount, max],
+    undefined,
+  );
 
   // ---------------------------------------------
   // callbacks
@@ -169,23 +233,19 @@ function ComponentBase({
 
   const proceed = useCallback(
     async (
-      status: WalletStatus,
+      walletReady: WalletReady,
       borrowAmount: UST,
       txFee: uUST<BigSource> | undefined,
     ) => {
-      if (status.status !== 'ready' || bank.status !== 'connected') {
-        return;
-      }
-
       await borrow({
-        address: status.walletAddress,
+        address: walletReady.walletAddress,
         market: 'ust',
         amount: borrowAmount,
         withdrawTo: undefined,
         txFee: txFee!.toString() as uUST,
       });
     },
-    [bank.status, borrow],
+    [borrow],
   );
 
   const onLtvChange = useCallback(
@@ -284,7 +344,7 @@ function ComponentBase({
 
         <figure className="graph">
           <LTVGraph
-            disabled={max.lte(0)}
+            disabled={!serviceAvailable || max.lte(0)}
             maxLtv={bLunaMaxLtv}
             safeLtv={bLunaSafeLtv}
             currentLtv={currentLtv}
@@ -316,15 +376,15 @@ function ComponentBase({
         <ActionButton
           className="proceed"
           disabled={
-            !online ||
-            status.status !== 'ready' ||
-            bank.status !== 'connected' ||
+            !serviceAvailable ||
             borrowAmount.length === 0 ||
             big(borrowAmount).lte(0) ||
             !!invalidTxFee ||
             !!invalidBorrowAmount
           }
-          onClick={() => proceed(status, borrowAmount, txFee)}
+          onClick={() =>
+            walletReady && proceed(walletReady, borrowAmount, txFee)
+          }
         >
           Proceed
         </ActionButton>

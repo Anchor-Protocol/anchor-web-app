@@ -10,13 +10,15 @@ import {
   Ratio,
   uUST,
 } from '@anchor-protocol/notation';
-import { BigSource } from 'big.js';
+import big, { Big, BigSource } from 'big.js';
 import { useConstants } from 'contexts/contants';
+import { useServiceConnectedMemo } from 'contexts/service';
 import { BorrowLimitGraph } from 'pages/borrow/components/BorrowLimitGraph';
 import { useMarket } from 'pages/borrow/context/market';
-import { useAPR } from 'pages/borrow/logics/useAPR';
-import { useBorrowed } from 'pages/borrow/logics/useBorrowed';
-import { useCollaterals } from 'pages/borrow/logics/useCollaterals';
+import { apr as _apr } from 'pages/borrow/logics/apr';
+import { borrowed as _borrowed } from 'pages/borrow/logics/borrowed';
+import { collaterals as _collaterals } from 'pages/borrow/logics/collaterals';
+import { useMemo } from 'react';
 
 export interface OverviewProps {
   className?: string;
@@ -33,12 +35,24 @@ export function Overview({ className }: OverviewProps) {
 
   const { blocksPerYear } = useConstants();
 
-  const apr = useAPR(borrowRate?.rate, blocksPerYear);
-  const borrowed = useBorrowed(loanAmount?.loan_amount);
-  const collaterals = useCollaterals(
-    borrowInfo?.balance,
-    borrowInfo?.spendable,
-    oraclePrice?.rate,
+  const apr = useServiceConnectedMemo(
+    () => _apr(borrowRate?.rate, blocksPerYear),
+    [blocksPerYear, borrowRate?.rate],
+    big(0) as Ratio<Big>,
+  );
+
+  const borrowed = useMemo(() => _borrowed(loanAmount?.loan_amount), [
+    loanAmount?.loan_amount,
+  ]);
+
+  const collaterals = useMemo(
+    () =>
+      _collaterals(
+        borrowInfo?.balance,
+        borrowInfo?.spendable,
+        oraclePrice?.rate,
+      ),
+    [borrowInfo?.balance, borrowInfo?.spendable, oraclePrice?.rate],
   );
 
   // TODO

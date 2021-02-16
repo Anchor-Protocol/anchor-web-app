@@ -3,7 +3,7 @@ import big, { Big, BigSource } from 'big.js';
 
 // maxAmount = balance - (loan_amount / bLunaMaxLtv / oraclePrice)
 
-export function useRedeemCollateralMaxAmount(
+export function redeemCollateralMaxAmount(
   loanAmount: uUST<BigSource>,
   balance: uUST<BigSource>,
   oraclePrice: Ratio<BigSource>,

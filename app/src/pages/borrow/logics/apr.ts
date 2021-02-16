@@ -1,13 +1,9 @@
 import { Ratio } from '@anchor-protocol/notation';
 import big, { Big, BigSource } from 'big.js';
-import { useMemo } from 'react';
 
-export function useAPR(
+export function apr(
   borrowRate: Ratio<BigSource> | undefined,
   blocksPerYear: number,
 ): Ratio<Big> {
-  return useMemo(() => big(borrowRate ?? 0).mul(blocksPerYear) as Ratio<Big>, [
-    blocksPerYear,
-    borrowRate,
-  ]);
+  return big(borrowRate ?? 0).mul(blocksPerYear) as Ratio<Big>;
 }

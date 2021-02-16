@@ -3,7 +3,7 @@ import big, { Big, BigSource } from 'big.js';
 
 // Loan_amount / ((Borrow_info.balance - Borrow_info.spendable - redeemed_collateral) * Oracleprice)
 
-export function useRedeemCollateralNextLtv(
+export function redeemCollateralNextLtv(
   redeemAmount: bLuna,
   currentLtv: Ratio<Big> | undefined,
   redeemAmountToLtv: (redeemAmount: ubLuna<BigSource>) => Ratio<Big>,

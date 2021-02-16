@@ -1,9 +1,9 @@
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { uaUST, ubLuna, uLuna, uUST } from '@anchor-protocol/notation';
-import { createMap, useMap } from '@anchor-protocol/use-map';
-import { useWallet } from '@anchor-protocol/wallet-provider';
+import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
+import { useService } from 'contexts/service';
 import { MappedQueryResult } from 'queries/types';
 import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
@@ -45,6 +45,27 @@ export const dataMap = createMap<RawData, Data>({
     return JSON.parse(ubLunaBalance.Result).balance as ubLuna;
   },
 });
+
+export const mockupData: Mapped<RawData, Data> = {
+  __data: {
+    bankBalances: {
+      Result: [
+        { Denom: 'uusd', Amount: '0' },
+        { Denom: 'uluna', Amount: '0' },
+      ],
+    },
+    uaUSTBalance: {
+      Result: '',
+    },
+    ubLunaBalance: {
+      Result: '',
+    },
+  },
+  uUSD: '0' as uUST,
+  uaUST: '0' as uaUST,
+  uLuna: '0' as uLuna,
+  ubLuna: '0' as ubLuna,
+};
 
 export interface RawVariables {
   walletAddress: string;
@@ -122,21 +143,22 @@ export function useUserBalances(): MappedQueryResult<
   Data
 > {
   const addressProvider = useAddressProvider();
-  const { status } = useWallet();
+
+  const { serviceAvailable, walletReady } = useService();
 
   const variables = useMemo(() => {
     return mapVariables({
-      walletAddress: status.status === 'ready' ? status.walletAddress : '',
+      walletAddress: walletReady?.walletAddress ?? '',
       bAssetTokenAddress: addressProvider.bAssetToken('bluna'),
       aTokenAddress: addressProvider.aToken('usd'),
     });
-  }, [addressProvider, status]);
+  }, [addressProvider, walletReady?.walletAddress]);
 
   const { data: _data, refetch: _refetch, ...result } = useQuery<
     RawData,
     RawVariables
   >(query, {
-    skip: status.status !== 'ready',
+    skip: !serviceAvailable,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,
@@ -153,7 +175,7 @@ export function useUserBalances(): MappedQueryResult<
 
   return {
     ...result,
-    data,
+    data: serviceAvailable ? data : mockupData,
     refetch,
   };
 }

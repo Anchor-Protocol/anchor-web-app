@@ -6,7 +6,7 @@ import big, { Big, BigSource } from 'big.js';
 // else:
 //   withdrawable = borrow_info.balance - borrow_info.loan_amount / 0.35 / oracle_price
 
-export function useRedeemCollateralWithdrawableAmount(
+export function redeemCollateralWithdrawableAmount(
   loanAmount: uUST<BigSource>,
   balance: uUST<BigSource>,
   spendable: uUST<BigSource>,

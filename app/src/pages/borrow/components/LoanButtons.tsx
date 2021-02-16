@@ -1,11 +1,11 @@
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
-import { useWallet } from '@anchor-protocol/wallet-provider';
 import big from 'big.js';
 import { useService } from 'contexts/service';
 import { useBorrowDialog } from 'pages/borrow/components/useBorrowDialog';
 import { useRepayDialog } from 'pages/borrow/components/useRepayDialog';
 import { useMarket } from 'pages/borrow/context/market';
-import { useBorrowed } from 'pages/borrow/logics/useBorrowed';
+import { borrowed as _borrowed } from 'pages/borrow/logics/borrowed';
+import { useMemo } from 'react';
 
 export function LoanButtons() {
   // ---------------------------------------------
@@ -13,8 +13,7 @@ export function LoanButtons() {
   // ---------------------------------------------
   const { ready, loanAmount, borrowInfo, refetch } = useMarket();
 
-  const { status } = useWallet();
-  const { online } = useService();
+  const { serviceAvailable } = useService();
 
   const [openBorrowDialog, borrowDialogElement] = useBorrowDialog();
   const [openRepayDialog, repayDialogElement] = useRepayDialog();
@@ -22,14 +21,15 @@ export function LoanButtons() {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const borrowed = useBorrowed(loanAmount?.loan_amount);
+  const borrowed = useMemo(() => _borrowed(loanAmount?.loan_amount), [
+    loanAmount?.loan_amount,
+  ]);
 
   return (
     <>
       <ActionButton
         disabled={
-          !online ||
-          status.status !== 'ready' ||
+          !serviceAvailable ||
           !ready ||
           !borrowInfo ||
           big(borrowInfo.balance ?? 0).lte(0)
@@ -42,9 +42,7 @@ export function LoanButtons() {
         Borrow
       </ActionButton>
       <ActionButton
-        disabled={
-          !online || status.status !== 'ready' || !ready || borrowed.lte(0)
-        }
+        disabled={!serviceAvailable || !ready || borrowed.lte(0)}
         onClick={() => {
           refetch();
           openRepayDialog({});

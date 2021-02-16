@@ -1,7 +1,7 @@
 import { Num, Ratio, uUST } from '@anchor-protocol/notation';
 import big, { Big, BigSource } from 'big.js';
 
-export function useRepayTotalBorrows(
+export function repayTotalBorrows(
   loanAmount: uUST<BigSource>,
   borrowRate: Ratio<BigSource>,
   currentBlock: number,
