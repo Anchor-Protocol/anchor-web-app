@@ -11,6 +11,7 @@ import { useWallet } from '@anchor-protocol/wallet-provider';
 import { ClickAwayListener } from '@material-ui/core';
 import { Check, KeyboardArrowRight } from '@material-ui/icons';
 import { useBank } from 'contexts/bank';
+import { useService } from 'contexts/service';
 import { useCallback, useState } from 'react';
 import useClipboard from 'react-use-clipboard';
 import styled from 'styled-components';
@@ -27,6 +28,8 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   const { status, install, connect, disconnect } = useWallet();
 
   const bank = useBank();
+
+  const { serviceAvailable } = useService();
 
   // ---------------------------------------------
   // states
@@ -102,7 +105,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                 <span className="wallet-address">
                   {truncate(status.walletAddress)}
                 </span>
-                {bank.status === 'connected' && (
+                {serviceAvailable && (
                   <div>
                     {formatUSTWithPostfixUnits(
                       demicrofy(bank.userBalances.uUSD),
