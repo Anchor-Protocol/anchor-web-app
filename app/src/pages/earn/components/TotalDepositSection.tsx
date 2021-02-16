@@ -11,6 +11,7 @@ import {
 } from '@anchor-protocol/notation';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { BigSource } from 'big.js';
+import { useService } from 'contexts/service';
 import { useTotalDeposit } from 'pages/earn/logics/useTotalDeposit';
 import React, { useCallback } from 'react';
 import { useDeposit } from '../queries/totalDeposit';
@@ -22,7 +23,11 @@ export interface TotalDepositSectionProps {
 }
 
 export function TotalDepositSection({ className }: TotalDepositSectionProps) {
+  // ---------------------------------------------
+  // dependencies
+  // ---------------------------------------------
   const { status } = useWallet();
+  const { online } = useService();
 
   // ---------------------------------------------
   // queries
@@ -91,13 +96,14 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
 
       <aside className="total-deposit-buttons">
         <ActionButton
-          disabled={status.status !== 'ready' || !totalDeposit}
+          disabled={!online || status.status !== 'ready' || !totalDeposit}
           onClick={() => openDeposit()}
         >
           Deposit
         </ActionButton>
         <ActionButton
           disabled={
+            !online ||
             status.status !== 'ready' ||
             !totalDeposit ||
             !exchangeRate?.exchange_rate

@@ -1,6 +1,7 @@
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import big from 'big.js';
+import { useService } from 'contexts/service';
 import { useBorrowDialog } from 'pages/borrow/components/useBorrowDialog';
 import { useRepayDialog } from 'pages/borrow/components/useRepayDialog';
 import { useMarket } from 'pages/borrow/context/market';
@@ -13,6 +14,7 @@ export function LoanButtons() {
   const { ready, loanAmount, borrowInfo, refetch } = useMarket();
 
   const { status } = useWallet();
+  const { online } = useService();
 
   const [openBorrowDialog, borrowDialogElement] = useBorrowDialog();
   const [openRepayDialog, repayDialogElement] = useRepayDialog();
@@ -26,6 +28,7 @@ export function LoanButtons() {
     <>
       <ActionButton
         disabled={
+          !online ||
           status.status !== 'ready' ||
           !ready ||
           !borrowInfo ||
@@ -39,7 +42,9 @@ export function LoanButtons() {
         Borrow
       </ActionButton>
       <ActionButton
-        disabled={status.status !== 'ready' || !ready || borrowed.lte(0)}
+        disabled={
+          !online || status.status !== 'ready' || !ready || borrowed.lte(0)
+        }
         onClick={() => {
           refetch();
           openRepayDialog({});

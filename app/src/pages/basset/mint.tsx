@@ -30,6 +30,7 @@ import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { MessageBox } from 'components/MessageBox';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
+import { useService } from 'contexts/service';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import React, { ChangeEvent, useCallback, useState } from 'react';
 import styled from 'styled-components';
@@ -56,6 +57,8 @@ function MintBase({ className }: MintProps) {
   // dependencies
   // ---------------------------------------------
   const { status } = useWallet();
+
+  const { online } = useService();
 
   const { fixedGas } = useConstants();
 
@@ -357,6 +360,7 @@ function MintBase({ className }: MintProps) {
       <ActionButton
         className="submit"
         disabled={
+          !online ||
           status.status !== 'ready' ||
           bank.status !== 'connected' ||
           bondAmount.length === 0 ||

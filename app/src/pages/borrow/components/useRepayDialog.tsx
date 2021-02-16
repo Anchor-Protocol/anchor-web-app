@@ -25,6 +25,7 @@ import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { MessageBox } from 'components/MessageBox';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
+import { useService } from 'contexts/service';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
 import { useMarketNotNullable } from 'pages/borrow/context/market';
@@ -76,6 +77,8 @@ function ComponentBase({
   } = useMarketNotNullable();
 
   const { status } = useWallet();
+
+  const { online } = useService();
 
   const { fixedGas, blocksPerYear } = useConstants();
 
@@ -318,6 +321,7 @@ function ComponentBase({
         <ActionButton
           className="proceed"
           disabled={
+            !online ||
             status.status !== 'ready' ||
             bank.status !== 'connected' ||
             repayAmount.length === 0 ||

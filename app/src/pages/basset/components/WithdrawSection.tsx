@@ -10,6 +10,7 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { MessageBox } from 'components/MessageBox';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
+import { useService } from 'contexts/service';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { useWithdrawableAmount } from 'pages/basset/logics/useWithdrawableAmount';
 import { useWithdrawAllHistory } from 'pages/basset/logics/useWithdrawAllHistory';
@@ -38,6 +39,8 @@ export function WithdrawSection({
   // dependencies
   // ---------------------------------------------
   const { status } = useWallet();
+
+  const { online } = useService();
 
   const { fixedGas } = useConstants();
 
@@ -174,6 +177,7 @@ export function WithdrawSection({
       <ActionButton
         className="submit"
         disabled={
+          !online ||
           status.status !== 'ready' ||
           bank.status !== 'connected' ||
           !!invalidTxFee ||

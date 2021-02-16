@@ -19,11 +19,12 @@ import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import big, { BigSource } from 'big.js';
+import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { MessageBox } from 'components/MessageBox';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
+import { useService } from 'contexts/service';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import type { ReactNode } from 'react';
 import React, { ChangeEvent, useCallback, useState } from 'react';
@@ -56,6 +57,8 @@ function ComponentBase({
   // dependencies
   // ---------------------------------------------
   const { status } = useWallet();
+
+  const { online } = useService();
 
   const { fixedGas } = useConstants();
 
@@ -229,6 +232,7 @@ function ComponentBase({
               : undefined
           }
           disabled={
+            !online ||
             status.status !== 'ready' ||
             bank.status !== 'connected' ||
             depositAmount.length === 0 ||

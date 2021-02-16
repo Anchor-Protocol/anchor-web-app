@@ -12,6 +12,7 @@ import {
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import big from 'big.js';
+import { useService } from 'contexts/service';
 import { useMarket } from 'pages/borrow/context/market';
 import { useCollaterals } from 'pages/borrow/logics/useCollaterals';
 import { useProvideCollateralDialog } from './useProvideCollateralDialog';
@@ -28,6 +29,8 @@ export function CollateralList({ className }: CollateralListProps) {
   const { ready, borrowInfo, oraclePrice, loanAmount, refetch } = useMarket();
 
   const { status } = useWallet();
+
+  const { online } = useService();
 
   const [
     openProvideCollateralDialog,
@@ -100,7 +103,7 @@ export function CollateralList({ className }: CollateralListProps) {
             </td>
             <td>
               <ActionButton
-                disabled={status.status !== 'ready' || !ready}
+                disabled={!online || status.status !== 'ready' || !ready}
                 onClick={() => {
                   refetch();
                   openProvideCollateralDialog({});
@@ -110,6 +113,7 @@ export function CollateralList({ className }: CollateralListProps) {
               </ActionButton>
               <ActionButton
                 disabled={
+                  !online ||
                   status.status !== 'ready' ||
                   !ready ||
                   !borrowInfo ||

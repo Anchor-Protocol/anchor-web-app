@@ -27,6 +27,7 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
+import { useService } from 'contexts/service';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { useInvalidBurnAmount } from 'pages/basset/logics/useInvalidBurnAmount';
 import { useExchangeRate } from 'pages/basset/queries/exchangeRate';
@@ -46,6 +47,8 @@ export function Burn() {
   // dependencies
   // ---------------------------------------------
   const { status } = useWallet();
+
+  const { online } = useService();
 
   const { fixedGas } = useConstants();
 
@@ -304,6 +307,7 @@ export function Burn() {
       <ActionButton
         className="submit"
         disabled={
+          !online ||
           status.status !== 'ready' ||
           bank.status !== 'connected' ||
           burnAmount.length === 0 ||

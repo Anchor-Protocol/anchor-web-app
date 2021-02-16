@@ -6,10 +6,11 @@ import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { demicrofy, formatUST } from '@anchor-protocol/notation';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import big from 'big.js';
-import { TransactionRenderer } from 'components/TransactionRenderer';
 import { MessageBox } from 'components/MessageBox';
+import { TransactionRenderer } from 'components/TransactionRenderer';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
+import { useService } from 'contexts/service';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { useClaimableRewards } from 'pages/basset/logics/useClaimableRewards';
 import { useClaimable } from 'pages/basset/queries/claimable';
@@ -26,6 +27,8 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
   // dependencies
   // ---------------------------------------------
   const { status } = useWallet();
+
+  const { online } = useService();
 
   const { fixedGas } = useConstants();
 
@@ -115,6 +118,7 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
       <ActionButton
         className="submit"
         disabled={
+          !online ||
           status.status !== 'ready' ||
           bank.status !== 'connected' ||
           !!invalidTxFee ||

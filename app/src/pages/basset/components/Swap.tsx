@@ -32,6 +32,7 @@ import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from 'contexts/bank';
 import { useAddressProvider } from 'contexts/contract';
 import { useConstants } from 'contexts/contants';
+import { useService } from 'contexts/service';
 import { useInvalidTxFee } from 'logics/useInvalidTxFee';
 import { askSimulation } from 'pages/basset/logics/askSimulation';
 import { offerSimulation } from 'pages/basset/logics/offerSimulation';
@@ -56,6 +57,8 @@ export function Swap() {
   // dependencies
   // ---------------------------------------------
   const { status } = useWallet();
+
+  const { online } = useService();
 
   const { fixedGas } = useConstants();
 
@@ -372,6 +375,7 @@ export function Swap() {
       <ActionButton
         className="submit"
         disabled={
+          !online ||
           status.status !== 'ready' ||
           bank.status !== 'connected' ||
           burnAmount.length === 0 ||
