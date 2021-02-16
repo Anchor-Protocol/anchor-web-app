@@ -36,7 +36,10 @@ export const depositOptions = createOperationOptions({
     })), // -> CreateTxOptions
     timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<StringifiedTxResult>
     parseTxResult, // -> TxResult
-    merge(getTxInfo(client, signal), injectTxFee(storage)), // -> { TxResult, TxInfo, txFee }
+    merge(
+      getTxInfo(client, signal), // -> { TxResult, TxInfo }
+      injectTxFee(storage), // -> { txFee }
+    ),
     pickDepositResult, // -> TransactionResult
   ],
   renderBroadcast: renderBroadcastTransaction,

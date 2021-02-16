@@ -29,6 +29,7 @@ export interface BankProviderProps {
 }
 
 export interface Bank {
+  /** @deprecated */
   status: 'demo' | 'connected';
   tax: TaxData;
   refetchTax: () => void;

@@ -1,8 +1,8 @@
 import { Num, Ratio, uaUST } from '@anchor-protocol/notation';
-import { createMap, useMap } from '@anchor-protocol/use-map';
-import { useWallet } from '@anchor-protocol/wallet-provider';
+import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
+import { useService } from 'contexts/service';
 import { useLastSyncedHeight } from 'queries/lastSyncedHeight';
 import { parseResult } from 'queries/parseResult';
 import { MappedQueryResult } from 'queries/types';
@@ -38,6 +38,26 @@ export const dataMap = createMap<RawData, Data>({
     return parseResult(existing.exchangeRate, exchangeRate.Result);
   },
 });
+
+export const mockupData: Mapped<RawData, Data> = {
+  __data: {
+    aUSTBalance: {
+      Result: '',
+    },
+    exchangeRate: {
+      Result: '',
+    },
+  },
+  aUSTBalance: {
+    Result: '',
+    balance: '0' as uaUST,
+  },
+  exchangeRate: {
+    Result: '',
+    exchange_rate: '1' as Ratio,
+    a_token_supply: '0' as Num,
+  },
+};
 
 export interface RawVariables {
   anchorTokenContract: string;
@@ -100,7 +120,7 @@ export const query = gql`
 
 export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
   const addressProvider = useAddressProvider();
-  const { status } = useWallet();
+  const { serviceAvailable, walletReady } = useService();
 
   const { data: lastSyncedHeight } = useLastSyncedHeight();
 
@@ -109,7 +129,7 @@ export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
       anchorTokenContract: addressProvider.aToken(''),
       anchorTokenBalanceQuery: {
         balance: {
-          address: status.status === 'ready' ? status.walletAddress : '',
+          address: walletReady?.walletAddress ?? '',
         },
       },
       moneyMarketContract: addressProvider.market(''),
@@ -120,13 +140,13 @@ export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
         },
       },
     });
-  }, [addressProvider, lastSyncedHeight, status]);
+  }, [addressProvider, lastSyncedHeight, walletReady?.walletAddress]);
 
   const { data: _data, refetch: _refetch, ...result } = useQuery<
     RawData,
     RawVariables
   >(query, {
-    skip: status.status !== 'ready' || typeof lastSyncedHeight !== 'number',
+    skip: !serviceAvailable || typeof lastSyncedHeight !== 'number',
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,
@@ -137,7 +157,7 @@ export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
 
   return {
     ...result,
-    data,
+    data: serviceAvailable ? data : mockupData,
     refetch,
   };
 }

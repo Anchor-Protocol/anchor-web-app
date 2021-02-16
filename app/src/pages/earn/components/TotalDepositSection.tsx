@@ -12,8 +12,8 @@ import {
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { BigSource } from 'big.js';
 import { useService } from 'contexts/service';
-import { useTotalDeposit } from 'pages/earn/logics/useTotalDeposit';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
+import { totalDepositUST } from '../logics/totalDepositUST';
 import { useDeposit } from '../queries/totalDeposit';
 import { useDepositDialog } from './useDepositDialog';
 import { useWithdrawDialog } from './useWithdrawDialog';
@@ -39,9 +39,9 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const totalDeposit = useTotalDeposit(
-    aUSTBalance?.balance,
-    exchangeRate?.exchange_rate,
+  const totalDeposit = useMemo(
+    () => totalDepositUST(aUSTBalance?.balance, exchangeRate?.exchange_rate),
+    [aUSTBalance?.balance, exchangeRate?.exchange_rate],
   );
 
   // ---------------------------------------------

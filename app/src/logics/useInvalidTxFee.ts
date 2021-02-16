@@ -3,6 +3,9 @@ import big, { BigSource } from 'big.js';
 import { Bank } from 'contexts/bank';
 import { ReactNode, useMemo } from 'react';
 
+/**
+ * @deprecated
+ */
 export function useInvalidTxFee(
   bank: Bank,
   fixedGas: uUST<BigSource>,
