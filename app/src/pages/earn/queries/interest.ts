@@ -2,6 +2,7 @@ import { Num, Ratio } from '@anchor-protocol/notation';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
+import { useService } from 'contexts/service';
 import { parseResult } from 'queries/parseResult';
 import { MappedQueryResult } from 'queries/types';
 import { useRefetch } from 'queries/useRefetch';
@@ -63,6 +64,8 @@ export const query = gql`
 `;
 
 export function useInterest(): MappedQueryResult<RawVariables, RawData, Data> {
+  const { online } = useService();
+
   const addressProvider = useAddressProvider();
 
   const variables = useMemo(() => {
@@ -78,6 +81,7 @@ export function useInterest(): MappedQueryResult<RawVariables, RawData, Data> {
     RawData,
     RawVariables
   >(query, {
+    skip: !online,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     pollInterval: 1000 * 60,

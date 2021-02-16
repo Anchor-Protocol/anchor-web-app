@@ -15,7 +15,7 @@ import {
   uUST,
 } from '@anchor-protocol/notation';
 import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
-import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
+import { WalletReady } from '@anchor-protocol/wallet-provider';
 import {
   Input as MuiInput,
   NativeSelect as MuiNativeSelect,
@@ -26,9 +26,10 @@ import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from 'contexts/bank';
-import { useNetConstants } from 'contexts/net-contants';
-import { useInvalidTxFee } from 'logics/useInvalidTxFee';
-import { useInvalidBurnAmount } from 'pages/basset/logics/useInvalidBurnAmount';
+import { useConstants } from 'contexts/contants';
+import { useService, useServiceConnectedMemo } from 'contexts/service';
+import { validateTxFee } from 'logics/validateTxFee';
+import { validateBurnAmount } from 'pages/basset/logics/validateBurnAmount';
 import { useExchangeRate } from 'pages/basset/queries/exchangeRate';
 import { burnOptions } from 'pages/basset/transactions/burnOptions';
 import React, { ChangeEvent, useCallback, useState } from 'react';
@@ -45,9 +46,9 @@ export function Burn() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { status } = useWallet();
+  const { serviceAvailable, walletReady } = useService();
 
-  const { fixedGas } = useNetConstants();
+  const { fixedGas } = useConstants();
 
   const [burn, burnResult] = useOperation(burnOptions, {});
 
@@ -83,8 +84,17 @@ export function Burn() {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const invalidTxFee = useInvalidTxFee(bank, fixedGas);
-  const invalidBurnAmount = useInvalidBurnAmount(burnAmount, bank);
+  const invalidTxFee = useServiceConnectedMemo(
+    () => validateTxFee(bank, fixedGas),
+    [bank, fixedGas],
+    undefined,
+  );
+
+  const invalidBurnAmount = useServiceConnectedMemo(
+    () => validateBurnAmount(burnAmount, bank),
+    [bank, burnAmount],
+    undefined,
+  );
 
   // ---------------------------------------------
   // callbacks
@@ -145,13 +155,9 @@ export function Burn() {
   }, []);
 
   const proceed = useCallback(
-    async (status: WalletStatus, burnAmount: bLuna) => {
-      if (status.status !== 'ready' || bank.status !== 'connected') {
-        return;
-      }
-
+    async (walletReady: WalletReady, burnAmount: bLuna) => {
       const broadcasted = await burn({
-        address: status.walletAddress,
+        address: walletReady.walletAddress,
         amount: burnAmount,
         bAsset: burnCurrency.value,
         txFee: fixedGas.toString() as uUST,
@@ -161,7 +167,7 @@ export function Burn() {
         init();
       }
     },
-    [bank.status, burn, burnCurrency.value, fixedGas, init],
+    [burn, burnCurrency.value, fixedGas, init],
   );
 
   // ---------------------------------------------
@@ -200,7 +206,7 @@ export function Burn() {
         error={!!invalidBurnAmount}
         leftHelperText={invalidBurnAmount}
         rightHelperText={
-          status.status === 'ready' && (
+          serviceAvailable && (
             <span>
               Balance:{' '}
               <span
@@ -304,14 +310,13 @@ export function Burn() {
       <ActionButton
         className="submit"
         disabled={
-          status.status !== 'ready' ||
-          bank.status !== 'connected' ||
+          !serviceAvailable ||
           burnAmount.length === 0 ||
           big(burnAmount).lte(0) ||
           !!invalidTxFee ||
           !!invalidBurnAmount
         }
-        onClick={() => proceed(status, burnAmount)}
+        onClick={() => walletReady && proceed(walletReady, burnAmount)}
       >
         Burn
       </ActionButton>

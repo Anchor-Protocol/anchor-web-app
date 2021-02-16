@@ -6,6 +6,14 @@ module.exports = {
     'prettier/react',
     'prettier/@typescript-eslint',
   ],
+  rules: {
+    'react-hooks/exhaustive-deps': [
+      'warn',
+      {
+        additionalHooks: '(useServiceConnectedMemo|useServiceConnectedCallback)',
+      },
+    ],
+  },
   overrides: [
     {
       files: ['**/*.stories.{js,jsx,ts,tsx}'],

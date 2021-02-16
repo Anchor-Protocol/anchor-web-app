@@ -1,6 +1,7 @@
 import { Ratio, uUST } from '@anchor-protocol/notation';
-import { createMap, useMap } from '@anchor-protocol/use-map';
+import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
+import { useService } from 'contexts/service';
 import { MappedQueryResult } from 'queries/types';
 import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
@@ -30,6 +31,21 @@ export const dataMap = createMap<RawData, Data>({
   },
 });
 
+export const mockupData: Mapped<RawData, Data> = {
+  __data: {
+    tax_rate: {
+      Height: '0',
+      Result: '1',
+    },
+    tax_cap_denom: {
+      Height: '0',
+      Result: '3500000',
+    },
+  },
+  taxRate: '1' as Ratio,
+  maxTaxUUSD: '3500000' as uUST,
+};
+
 export type RawVariables = {};
 
 export type Variables = RawVariables;
@@ -52,6 +68,8 @@ export const query = gql`
 `;
 
 export function useTax(): MappedQueryResult<RawVariables, RawData, Data> {
+  const { serviceAvailable } = useService();
+
   const variables = useMemo(() => {
     return mapVariables({});
   }, []);
@@ -60,6 +78,7 @@ export function useTax(): MappedQueryResult<RawVariables, RawData, Data> {
     RawData,
     RawVariables
   >(query, {
+    skip: !serviceAvailable,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,
@@ -70,7 +89,7 @@ export function useTax(): MappedQueryResult<RawVariables, RawData, Data> {
 
   return {
     ...result,
-    data,
+    data: serviceAvailable ? data : mockupData,
     refetch,
   };
 }

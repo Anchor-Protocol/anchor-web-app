@@ -18,25 +18,26 @@ import {
 } from '@anchor-protocol/notation';
 import type { DialogProps, OpenDialog } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
-import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
+import { useWallet, WalletReady } from '@anchor-protocol/wallet-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import big, { Big, BigSource } from 'big.js';
 import { ArrowDownLine } from 'components/ArrowDownLine';
+import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { MessageBox } from 'components/MessageBox';
 import { useBank } from 'contexts/bank';
-import { useNetConstants } from 'contexts/net-contants';
-import { useInvalidTxFee } from 'logics/useInvalidTxFee';
+import { useConstants } from 'contexts/contants';
+import { useService, useServiceConnectedMemo } from 'contexts/service';
+import { validateTxFee } from 'logics/validateTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
 import { useMarketNotNullable } from 'pages/borrow/context/market';
+import { currentLtv as _currentLtv } from 'pages/borrow/logics/currentLtv';
 import { depositAmountToBorrowLimit } from 'pages/borrow/logics/depositAmountToBorrowLimit';
 import { depositAmountToLtv } from 'pages/borrow/logics/depositAmountToLtv';
 import { ltvToDepositAmount } from 'pages/borrow/logics/ltvToDepositAmount';
-import { useCurrentLtv } from 'pages/borrow/logics/useCurrentLtv';
-import { useInvalidDepositAmount } from 'pages/borrow/logics/useInvalidDepositAmount';
-import { useProvideCollateralBorrowLimit } from 'pages/borrow/logics/useProvideCollateralBorrowLimit';
-import { useProvideCollateralNextLtv } from 'pages/borrow/logics/useProvideCollateralNextLtv';
+import { provideCollateralBorrowLimit } from 'pages/borrow/logics/provideCollateralBorrowLimit';
+import { provideCollateralNextLtv } from 'pages/borrow/logics/provideCollateralNextLtv';
+import { validateDepositAmount } from 'pages/borrow/logics/validateDepositAmount';
 import { provideCollateralOptions } from 'pages/borrow/transactions/provideCollateralOptions';
 import type { ChangeEvent, ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -72,7 +73,9 @@ function ComponentBase({
 
   const { status } = useWallet();
 
-  const { fixedGas } = useNetConstants();
+  const { serviceAvailable, walletReady } = useService();
+
+  const { fixedGas } = useConstants();
 
   const txFee = fixedGas;
 
@@ -142,24 +145,46 @@ function ComponentBase({
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const currentLtv = useCurrentLtv(
-    loanAmount.loan_amount,
-    borrowInfo.balance,
-    borrowInfo.spendable,
-    oraclePrice.rate,
-  );
-  const nextLtv = useProvideCollateralNextLtv(
-    depositAmount,
-    currentLtv,
-    amountToLtv,
-  );
-  const borrowLimit = useProvideCollateralBorrowLimit(
-    depositAmount,
-    amountToBorrowLimit,
+  const currentLtv = useServiceConnectedMemo(
+    () =>
+      _currentLtv(
+        loanAmount.loan_amount,
+        borrowInfo.balance,
+        borrowInfo.spendable,
+        oraclePrice.rate,
+      ),
+    [
+      borrowInfo.balance,
+      borrowInfo.spendable,
+      loanAmount.loan_amount,
+      oraclePrice.rate,
+    ],
+    undefined,
   );
 
-  const invalidTxFee = useInvalidTxFee(bank, fixedGas);
-  const invalidDepositAmount = useInvalidDepositAmount(depositAmount, bank);
+  const nextLtv = useServiceConnectedMemo(
+    () => provideCollateralNextLtv(depositAmount, currentLtv, amountToLtv),
+    [amountToLtv, currentLtv, depositAmount],
+    undefined,
+  );
+
+  const borrowLimit = useServiceConnectedMemo(
+    () => provideCollateralBorrowLimit(depositAmount, amountToBorrowLimit),
+    [amountToBorrowLimit, depositAmount],
+    undefined,
+  );
+
+  const invalidTxFee = useServiceConnectedMemo(
+    () => validateTxFee(bank, fixedGas),
+    [bank, fixedGas],
+    undefined,
+  );
+
+  const invalidDepositAmount = useServiceConnectedMemo(
+    () => validateDepositAmount(depositAmount, bank),
+    [bank, depositAmount],
+    undefined,
+  );
 
   // ---------------------------------------------
   // callbacks
@@ -170,23 +195,19 @@ function ComponentBase({
 
   const proceed = useCallback(
     async (
-      status: WalletStatus,
+      walletReady: WalletReady,
       depositAmount: bLuna,
       txFee: uUST<BigSource> | undefined,
     ) => {
-      if (status.status !== 'ready' || bank.status !== 'connected') {
-        return;
-      }
-
       await provideCollateral({
-        address: status.status === 'ready' ? status.walletAddress : '',
+        address: walletReady.walletAddress,
         market: 'ust',
         symbol: 'bluna',
         amount: depositAmount,
         txFee: txFee!.toString() as uUST,
       });
     },
-    [bank.status, provideCollateral],
+    [provideCollateral],
   );
 
   const onLtvChange = useCallback(
@@ -300,6 +321,7 @@ function ComponentBase({
         {big(currentLtv ?? 0).gt(0) && (
           <figure className="graph">
             <LTVGraph
+              disabled={!serviceAvailable}
               maxLtv={bLunaMaxLtv}
               safeLtv={bLunaSafeLtv}
               currentLtv={currentLtv}
@@ -329,14 +351,15 @@ function ComponentBase({
         <ActionButton
           className="proceed"
           disabled={
-            status.status !== 'ready' ||
-            bank.status !== 'connected' ||
+            !serviceAvailable ||
             depositAmount.length === 0 ||
             big(depositAmount).lte(0) ||
             !!invalidTxFee ||
             !!invalidDepositAmount
           }
-          onClick={() => proceed(status, depositAmount, txFee)}
+          onClick={() =>
+            walletReady && proceed(walletReady, depositAmount, txFee)
+          }
         >
           Proceed
         </ActionButton>

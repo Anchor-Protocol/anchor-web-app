@@ -18,7 +18,7 @@ import {
 } from '@anchor-protocol/notation';
 import { useResolveLast } from '@anchor-protocol/use-resolve-last';
 import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
-import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
+import { WalletReady } from '@anchor-protocol/wallet-provider';
 import { useApolloClient } from '@apollo/client';
 import {
   Input as MuiInput,
@@ -30,18 +30,19 @@ import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from 'contexts/bank';
+import { useConstants } from 'contexts/contants';
 import { useAddressProvider } from 'contexts/contract';
-import { useNetConstants } from 'contexts/net-contants';
-import { useInvalidTxFee } from 'logics/useInvalidTxFee';
-import { askSimulation } from 'pages/basset/logics/askSimulation';
-import { offerSimulation } from 'pages/basset/logics/offerSimulation';
-import { useInvalidBurnAmount } from 'pages/basset/logics/useInvalidBurnAmount';
-import { SwapSimulation } from 'pages/basset/models/swapSimulation';
-import { queryTerraswapAskSimulation } from 'pages/basset/queries/terraswapAskSimulation';
-import { useTerraswapBLunaPrice } from 'pages/basset/queries/terraswapBLunaPrice';
-import { queryTerraswapOfferSimulation } from 'pages/basset/queries/terraswapOfferSimulation';
-import { swapOptions } from 'pages/basset/transactions/swapOptions';
+import { useService, useServiceConnectedMemo } from 'contexts/service';
+import { validateTxFee } from 'logics/validateTxFee';
 import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import { askSimulation } from '../logics/askSimulation';
+import { offerSimulation } from '../logics/offerSimulation';
+import { validateBurnAmount } from '../logics/validateBurnAmount';
+import { SwapSimulation } from '../models/swapSimulation';
+import { queryTerraswapAskSimulation } from '../queries/terraswapAskSimulation';
+import { useTerraswapBLunaPrice } from '../queries/terraswapBLunaPrice';
+import { queryTerraswapOfferSimulation } from '../queries/terraswapOfferSimulation';
+import { swapOptions } from '../transactions/swapOptions';
 
 interface Item {
   label: string;
@@ -55,9 +56,9 @@ export function Swap() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { status } = useWallet();
+  const { serviceAvailable, walletReady } = useService();
 
-  const { fixedGas } = useNetConstants();
+  const { fixedGas } = useConstants();
 
   const client = useApolloClient();
 
@@ -99,8 +100,17 @@ export function Swap() {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const invalidTxFee = useInvalidTxFee(bank, fixedGas);
-  const invalidBurnAmount = useInvalidBurnAmount(burnAmount, bank);
+  const invalidTxFee = useServiceConnectedMemo(
+    () => validateTxFee(bank, fixedGas),
+    [bank, fixedGas],
+    undefined,
+  );
+
+  const invalidBurnAmount = useServiceConnectedMemo(
+    () => validateBurnAmount(burnAmount, bank),
+    [bank, burnAmount],
+    undefined,
+  );
 
   // ---------------------------------------------
   // effects
@@ -145,28 +155,30 @@ export function Swap() {
         const burnAmount: bLuna = nextBurnAmount as bLuna;
         setBurnAmount(burnAmount);
 
-        const amount = microfy(burnAmount).toString() as ubLuna;
+        if (serviceAvailable) {
+          const amount = microfy(burnAmount).toString() as ubLuna;
 
-        resolveSimulation(
-          queryTerraswapOfferSimulation(
-            client,
-            addressProvider,
-            amount,
-          ).then(({ data: { terraswapOfferSimulation } }) =>
-            terraswapOfferSimulation
-              ? offerSimulation(
-                  terraswapOfferSimulation.commission_amount,
-                  terraswapOfferSimulation.return_amount,
-                  terraswapOfferSimulation.spread_amount,
-                  amount,
-                  bank.tax,
-                )
-              : undefined,
-          ),
-        );
+          resolveSimulation(
+            queryTerraswapOfferSimulation(
+              client,
+              addressProvider,
+              amount,
+            ).then(({ data: { terraswapOfferSimulation } }) =>
+              terraswapOfferSimulation
+                ? offerSimulation(
+                    terraswapOfferSimulation.commission_amount,
+                    terraswapOfferSimulation.return_amount,
+                    terraswapOfferSimulation.spread_amount,
+                    amount,
+                    bank.tax,
+                  )
+                : undefined,
+            ),
+          );
+        }
       }
     },
-    [addressProvider, bank, client, resolveSimulation],
+    [addressProvider, bank.tax, client, resolveSimulation, serviceAvailable],
   );
 
   const updateGetAmount = useCallback(
@@ -180,28 +192,30 @@ export function Swap() {
         const getAmount: Luna = nextGetAmount as Luna;
         setGetAmount(getAmount);
 
-        const amount = microfy(getAmount).toString() as uLuna;
+        if (serviceAvailable) {
+          const amount = microfy(getAmount).toString() as uLuna;
 
-        resolveSimulation(
-          queryTerraswapAskSimulation(
-            client,
-            addressProvider,
-            amount,
-          ).then(({ data: { terraswapAskSimulation } }) =>
-            terraswapAskSimulation
-              ? askSimulation(
-                  terraswapAskSimulation.commission_amount,
-                  terraswapAskSimulation.return_amount,
-                  terraswapAskSimulation.spread_amount,
-                  amount,
-                  bank.tax,
-                )
-              : undefined,
-          ),
-        );
+          resolveSimulation(
+            queryTerraswapAskSimulation(
+              client,
+              addressProvider,
+              amount,
+            ).then(({ data: { terraswapAskSimulation } }) =>
+              terraswapAskSimulation
+                ? askSimulation(
+                    terraswapAskSimulation.commission_amount,
+                    terraswapAskSimulation.return_amount,
+                    terraswapAskSimulation.spread_amount,
+                    amount,
+                    bank.tax,
+                  )
+                : undefined,
+            ),
+          );
+        }
       }
     },
-    [addressProvider, bank, client, resolveSimulation],
+    [addressProvider, bank.tax, client, resolveSimulation, serviceAvailable],
   );
 
   const init = useCallback(() => {
@@ -211,17 +225,13 @@ export function Swap() {
 
   const proceed = useCallback(
     async (
-      status: WalletStatus,
+      walletReady: WalletReady,
       burnAmount: bLuna,
       beliefPrice: Ratio,
       maxSpread: Ratio,
     ) => {
-      if (status.status !== 'ready' || bank.status !== 'connected') {
-        return;
-      }
-
       const broadcasted = await swap({
-        address: status.walletAddress,
+        address: walletReady.walletAddress,
         amount: burnAmount,
         bAsset: burnCurrency.value,
         beliefPrice: formatFluidDecimalPoints(big(1).div(beliefPrice), 18, {
@@ -234,7 +244,7 @@ export function Swap() {
         init();
       }
     },
-    [bank.status, swap, burnCurrency.value, init],
+    [swap, burnCurrency.value, init],
   );
 
   // ---------------------------------------------
@@ -263,7 +273,7 @@ export function Swap() {
         error={!!invalidBurnAmount}
         leftHelperText={invalidBurnAmount}
         rightHelperText={
-          status.status === 'ready' && (
+          serviceAvailable && (
             <span>
               Balance:{' '}
               <span
@@ -372,8 +382,7 @@ export function Swap() {
       <ActionButton
         className="submit"
         disabled={
-          status.status !== 'ready' ||
-          bank.status !== 'connected' ||
+          !serviceAvailable ||
           burnAmount.length === 0 ||
           big(burnAmount).lte(0) ||
           !!invalidTxFee ||
@@ -381,8 +390,9 @@ export function Swap() {
           big(simulation?.swapFee ?? 0).lte(0)
         }
         onClick={() =>
+          walletReady &&
           proceed(
-            status,
+            walletReady,
             burnAmount,
             simulation!.beliefPrice,
             simulation!.maxSpread,

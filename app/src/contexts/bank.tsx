@@ -7,8 +7,8 @@ import {
   UST,
   uUST,
 } from '@anchor-protocol/notation';
-import { useWallet } from '@anchor-protocol/wallet-provider';
 import { BigSource } from 'big.js';
+import { useService } from 'contexts/service';
 import { Data as TaxData, useTax } from 'queries/tax';
 import {
   Data as UserBalancesData,
@@ -29,7 +29,6 @@ export interface BankProviderProps {
 }
 
 export interface Bank {
-  status: 'demo' | 'connected';
   tax: TaxData;
   refetchTax: () => void;
   userBalances: UserBalancesData;
@@ -40,7 +39,7 @@ export interface Bank {
 const BankContext: Context<Bank> = createContext<Bank>();
 
 export function BankProvider({ children }: BankProviderProps) {
-  const { status } = useWallet();
+  const { serviceAvailable } = useService();
 
   const { data: taxData, refetch: refetchTax } = useTax();
 
@@ -57,9 +56,8 @@ export function BankProvider({ children }: BankProviderProps) {
         (microfy(0.1 as UST<BigSource>).toString() as uUST),
     };
 
-    return status.status === 'ready'
+    return serviceAvailable
       ? {
-          status: 'connected',
           tax,
           refetchTax,
           userBalances: {
@@ -71,9 +69,8 @@ export function BankProvider({ children }: BankProviderProps) {
           refetchUserBalances,
         }
       : {
-          status: 'demo',
           tax,
-          refetchTax,
+          refetchTax: () => {},
           userBalances: {
             uUSD: '0' as uUST,
             uLuna: '0' as uLuna,
@@ -89,17 +86,17 @@ export function BankProvider({ children }: BankProviderProps) {
     balancesData.ubLuna,
     refetchTax,
     refetchUserBalances,
-    status.status,
-    taxData,
+    serviceAvailable,
+    taxData.maxTaxUUSD,
+    taxData.taxRate,
   ]);
 
   useEffect(() => {
-    refetchTax();
-
-    if (status.status === 'ready') {
+    if (serviceAvailable) {
+      refetchTax();
       refetchUserBalances();
     }
-  }, [refetchTax, refetchUserBalances, status.status]);
+  }, [refetchTax, refetchUserBalances, serviceAvailable]);
 
   return <BankContext.Provider value={state}>{children}</BankContext.Provider>;
 }

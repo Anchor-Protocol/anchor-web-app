@@ -37,5 +37,5 @@ export const claimOptions = createOperationOptions({
     pickClaimResult, // -> TransactionResult
   ],
   renderBroadcast: renderBroadcastTransaction,
-  breakOnError: true,
+  //breakOnError: true,
 });

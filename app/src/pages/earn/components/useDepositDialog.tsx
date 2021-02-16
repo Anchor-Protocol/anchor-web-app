@@ -16,23 +16,24 @@ import {
 } from '@anchor-protocol/notation';
 import type { DialogProps, OpenDialog } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
-import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
+import { WalletReady } from '@anchor-protocol/wallet-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import big, { BigSource } from 'big.js';
+import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { MessageBox } from 'components/MessageBox';
 import { useBank } from 'contexts/bank';
-import { useNetConstants } from 'contexts/net-contants';
-import { useInvalidTxFee } from 'logics/useInvalidTxFee';
+import { useConstants } from 'contexts/contants';
+import { useService, useServiceConnectedMemo } from 'contexts/service';
+import { validateTxFee } from 'logics/validateTxFee';
+import { depositRecommendationAmount } from 'pages/earn/logics/depositRecommendationAmount';
+import { depositSendAmount } from 'pages/earn/logics/depositSendAmount';
+import { depositTxFee } from 'pages/earn/logics/depositTxFee';
+import { validateDepositAmount } from 'pages/earn/logics/validateDepositAmount';
+import { validateDepositNextTransaction } from 'pages/earn/logics/validateDepositNextTransaction';
 import type { ReactNode } from 'react';
-import React, { ChangeEvent, useCallback, useState } from 'react';
+import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { useDepositRecommentationAmount } from '../logics/useDepositRecommentationAmount';
-import { useDepositSendAmount } from '../logics/useDepositSendAmount';
-import { useDepositTxFee } from '../logics/useDepositTxFee';
-import { useInvalidDepositAmount } from '../logics/useInvalidDepositAmount';
-import { useInvalidDepositNextTransaction } from '../logics/useInvalidDepositNextTransaction';
 import { depositOptions } from '../transactions/depositOptions';
 
 interface FormParams {
@@ -55,9 +56,9 @@ function ComponentBase({
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { status } = useWallet();
+  const { serviceAvailable, walletReady } = useService();
 
-  const { fixedGas } = useNetConstants();
+  const { fixedGas } = useConstants();
 
   const [deposit, depositResult] = useOperation(depositOptions, {});
 
@@ -76,22 +77,46 @@ function ComponentBase({
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const txFee = useDepositTxFee(depositAmount, bank, fixedGas);
-  const sendAmount = useDepositSendAmount(depositAmount, txFee);
-  const maxAmount = useDepositRecommentationAmount(bank, fixedGas);
-
-  const invalidTxFee = useInvalidTxFee(bank, fixedGas);
-  const invalidDepositAmount = useInvalidDepositAmount(
-    depositAmount,
+  const txFee = useMemo(() => depositTxFee(depositAmount, bank, fixedGas), [
     bank,
-    txFee,
-  );
-  const invalidNextTransaction = useInvalidDepositNextTransaction(
     depositAmount,
-    bank,
-    txFee,
     fixedGas,
-    !!invalidDepositAmount || !maxAmount,
+  ]);
+
+  const sendAmount = useMemo(() => depositSendAmount(depositAmount, txFee), [
+    depositAmount,
+    txFee,
+  ]);
+
+  const maxAmount = useServiceConnectedMemo(
+    () => depositRecommendationAmount(bank, fixedGas),
+    [bank, fixedGas],
+    undefined,
+  );
+
+  const invalidTxFee = useServiceConnectedMemo(
+    () => validateTxFee(bank, fixedGas),
+    [bank, fixedGas],
+    undefined,
+  );
+
+  const invalidDepositAmount = useServiceConnectedMemo(
+    () => validateDepositAmount(depositAmount, bank, txFee),
+    [bank, depositAmount, txFee],
+    undefined,
+  );
+
+  const invalidNextTransaction = useServiceConnectedMemo(
+    () =>
+      validateDepositNextTransaction(
+        depositAmount,
+        bank,
+        txFee,
+        fixedGas,
+        !!invalidDepositAmount || !maxAmount,
+      ),
+    [bank, depositAmount, fixedGas, invalidDepositAmount, maxAmount, txFee],
+    undefined,
   );
 
   // ---------------------------------------------
@@ -103,15 +128,11 @@ function ComponentBase({
 
   const proceed = useCallback(
     async (
-      status: WalletStatus,
+      status: WalletReady,
       depositAmount: string,
       txFee: uUST<BigSource> | undefined,
       confirm: ReactNode,
     ) => {
-      if (status.status !== 'ready' || bank.status !== 'connected') {
-        return;
-      }
-
       if (confirm) {
         const userConfirm = await openConfirm({
           description: confirm,
@@ -131,7 +152,7 @@ function ComponentBase({
         txFee: txFee!.toString() as uUST,
       });
     },
-    [bank.status, deposit, openConfirm],
+    [deposit, openConfirm],
   );
 
   // ---------------------------------------------
@@ -229,14 +250,14 @@ function ComponentBase({
               : undefined
           }
           disabled={
-            status.status !== 'ready' ||
-            bank.status !== 'connected' ||
+            !serviceAvailable ||
             depositAmount.length === 0 ||
             big(depositAmount).lte(0) ||
             !!invalidDepositAmount
           }
           onClick={() =>
-            proceed(status, depositAmount, txFee, invalidNextTransaction)
+            walletReady &&
+            proceed(walletReady, depositAmount, txFee, invalidNextTransaction)
           }
         >
           Proceed

@@ -6,11 +6,17 @@ import type { ReactNode } from 'react';
 import { Consumer, Context, createContext, useContext, useMemo } from 'react';
 import {
   Data as MarketOverview,
+  mockupData as marketOverviewMockupData,
   useMarketOverview,
 } from '../queries/marketOverview';
-import { Data as MarketState, useMarketState } from '../queries/marketState';
+import {
+  Data as MarketState,
+  mockupData as marketStateMockupData,
+  useMarketState,
+} from '../queries/marketState';
 import {
   Data as MarketUserOverview,
+  mockupData as marketUserOverviewMockupData,
   useMarketUserOverview,
 } from '../queries/marketUserOverview';
 
@@ -153,7 +159,6 @@ export function useMarketNotNullable(): {
   refetch: () => void;
 } {
   const {
-    ready,
     currentBlock,
     marketBalance,
     marketState,
@@ -168,35 +173,19 @@ export function useMarketNotNullable(): {
     refetch,
   } = useContext(MarketContext);
 
-  if (
-    !ready ||
-    typeof currentBlock !== 'number' ||
-    !marketBalance ||
-    !marketState ||
-    !borrowRate ||
-    !oraclePrice ||
-    !overseerWhitelist ||
-    !loanAmount ||
-    !liability ||
-    !borrowInfo ||
-    !bLunaMaxLtv ||
-    !bLunaSafeLtv
-  ) {
-    throw new Error(`Datas can not be undefined`);
-  }
-
   return {
-    currentBlock,
-    marketBalance,
-    marketState,
-    borrowRate,
-    oraclePrice,
-    overseerWhitelist,
-    loanAmount,
-    liability,
-    borrowInfo,
-    bLunaMaxLtv,
-    bLunaSafeLtv,
+    currentBlock: currentBlock ?? marketStateMockupData.currentBlock!,
+    marketBalance: marketBalance ?? marketStateMockupData.marketBalance!,
+    marketState: marketState ?? marketStateMockupData.marketState!,
+    borrowRate: borrowRate ?? marketOverviewMockupData.borrowRate!,
+    oraclePrice: oraclePrice ?? marketOverviewMockupData.oraclePrice!,
+    overseerWhitelist:
+      overseerWhitelist ?? marketOverviewMockupData.overseerWhitelist!,
+    loanAmount: loanAmount ?? marketUserOverviewMockupData.loanAmount!,
+    liability: liability ?? marketUserOverviewMockupData.liability!,
+    borrowInfo: borrowInfo ?? marketUserOverviewMockupData.borrowInfo!,
+    bLunaMaxLtv: bLunaMaxLtv ?? ('0.7' as Ratio),
+    bLunaSafeLtv: bLunaSafeLtv ?? ('0.5' as Ratio),
     refetch,
   };
 }

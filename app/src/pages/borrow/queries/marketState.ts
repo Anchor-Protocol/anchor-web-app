@@ -1,9 +1,10 @@
 import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { Num, uaUST, uUST } from '@anchor-protocol/notation';
-import { createMap, map, useMap } from '@anchor-protocol/use-map';
+import { createMap, map, Mapped, useMap } from '@anchor-protocol/use-map';
 import { ApolloClient, gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
+import { useService } from 'contexts/service';
 import { parseResult } from 'queries/parseResult';
 import { MappedApolloQueryResult, MappedQueryResult } from 'queries/types';
 import { useRefetch } from 'queries/useRefetch';
@@ -56,6 +57,19 @@ export const dataMap = createMap<RawData, Data>({
     return parseResult(existing.marketState, marketState.Result);
   },
 });
+
+export const mockupData: Mapped<RawData, Data> = {
+  __data: undefined,
+  currentBlock: 0,
+  marketBalance: [],
+  marketState: {
+    Result: '',
+    total_liabilities: '0' as uUST,
+    total_reserves: '0' as uaUST,
+    last_interest_updated: 0,
+    global_interest_index: '0' as Num,
+  },
+};
 
 export interface RawVariables {
   marketContractAddress: string;
@@ -113,6 +127,8 @@ export function useMarketState(): MappedQueryResult<
 > {
   const addressProvider = useAddressProvider();
 
+  const { online } = useService();
+
   const variables = useMemo<RawVariables>(() => {
     return mapVariables({
       marketContractAddress: addressProvider.market('uusd'),
@@ -126,6 +142,7 @@ export function useMarketState(): MappedQueryResult<
     RawData,
     RawVariables
   >(query, {
+    skip: !online,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     pollInterval: 1000 * 10,
@@ -143,7 +160,7 @@ export function useMarketState(): MappedQueryResult<
 
   return {
     ...result,
-    data,
+    data: online ? data : mockupData,
     refetch,
   };
 }

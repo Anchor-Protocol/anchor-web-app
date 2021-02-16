@@ -1,9 +1,10 @@
 import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
 import { Num, uUST } from '@anchor-protocol/notation';
-import { createMap, map, useMap } from '@anchor-protocol/use-map';
-import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
+import { createMap, map, Mapped, useMap } from '@anchor-protocol/use-map';
+import { WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
+import { useService } from 'contexts/service';
 import { parseResult } from 'queries/parseResult';
 import { MappedApolloQueryResult, MappedQueryResult } from 'queries/types';
 import { useRefetch } from 'queries/useRefetch';
@@ -57,6 +58,30 @@ export const dataMap = createMap<RawData, Data>({
     return parseResult(existing.borrowInfo, borrowInfo.Result);
   },
 });
+
+export const mockupData: Mapped<RawData, Data> = {
+  __data: undefined,
+
+  loanAmount: {
+    Result: '',
+    loan_amount: '0' as uUST,
+    borrower: '',
+  },
+
+  liability: {
+    Result: '',
+    loan_amount: '0' as uUST,
+    borrower: '',
+    interest_index: '1' as Num,
+  },
+
+  borrowInfo: {
+    Result: '',
+    borrower: '',
+    balance: '0' as uUST,
+    spendable: '0' as uUST,
+  },
+};
 
 export interface RawVariables {
   marketContractAddress: string;
@@ -138,31 +163,32 @@ export function useMarketUserOverview({
   currentBlock: MarketState['currentBlock'] | undefined;
 }): MappedQueryResult<RawVariables, RawData, Data> {
   const addressProvider = useAddressProvider();
-  const { status } = useWallet();
+
+  const { serviceAvailable, walletReady } = useService();
 
   const variables = useMemo(() => {
     return mapVariables({
       marketContractAddress: addressProvider.market('uusd'),
       marketLoanQuery: {
         loan_amount: {
-          borrower: status.status === 'ready' ? status.walletAddress : '',
+          borrower: walletReady?.walletAddress ?? '',
           block_height: currentBlock ?? 0,
         },
       },
       custodyContractAddress: addressProvider.custody('ubluna'),
       custodyBorrowerQuery: {
         borrower: {
-          address: status.status === 'ready' ? status.walletAddress : '',
+          address: walletReady?.walletAddress ?? '',
         },
       },
     });
-  }, [addressProvider, currentBlock, status]);
+  }, [addressProvider, currentBlock, walletReady?.walletAddress]);
 
   const { data: _data, refetch: _refetch, ...result } = useQuery<
     RawData,
     RawVariables
   >(query, {
-    skip: status.status !== 'ready' || typeof currentBlock !== 'number',
+    skip: !serviceAvailable || typeof currentBlock !== 'number',
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,
@@ -173,7 +199,7 @@ export function useMarketUserOverview({
 
   return {
     ...result,
-    data,
+    data: serviceAvailable ? data : mockupData,
     refetch,
   };
 }

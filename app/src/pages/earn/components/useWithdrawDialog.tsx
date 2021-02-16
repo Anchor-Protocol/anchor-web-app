@@ -16,21 +16,22 @@ import {
 } from '@anchor-protocol/notation';
 import type { DialogProps, OpenDialog } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
-import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
+import { WalletReady } from '@anchor-protocol/wallet-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import big, { BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from 'contexts/bank';
-import { useNetConstants } from 'contexts/net-contants';
-import { useInvalidTxFee } from 'logics/useInvalidTxFee';
+import { useConstants } from 'contexts/contants';
+import { useService, useServiceConnectedMemo } from 'contexts/service';
+import { validateTxFee } from 'logics/validateTxFee';
+import { validateWithdrawAmount } from 'pages/earn/logics/validateWithdrawAmount';
+import { withdrawReceiveAmount } from 'pages/earn/logics/withdrawReceiveAmount';
+import { withdrawTxFee } from 'pages/earn/logics/withdrawTxFee';
 import type { ReactNode } from 'react';
-import React, { ChangeEvent, useCallback, useState } from 'react';
+import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { useInvalidWithdrawAmount } from '../logics/useInvalidWithdrawAmount';
-import { useWithdrawReceiveAmount } from '../logics/useWithdrawReceiveAmount';
-import { useWithdrawTxFee } from '../logics/useWithdrawTxFee';
 import { withdrawOptions } from '../transactions/withdrawOptions';
 
 interface FormParams {
@@ -57,9 +58,9 @@ function ComponentBase({
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { status } = useWallet();
+  const { serviceAvailable, walletReady } = useService();
 
-  const { fixedGas } = useNetConstants();
+  const { fixedGas } = useConstants();
 
   const [withdraw, withdrawResult] = useOperation(withdrawOptions, {});
 
@@ -76,15 +77,27 @@ function ComponentBase({
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const txFee = useWithdrawTxFee(withdrawAmount, bank, fixedGas);
-  const receiveAmount = useWithdrawReceiveAmount(withdrawAmount, txFee);
-
-  const invalidTxFee = useInvalidTxFee(bank, fixedGas);
-  const invalidWithdrawAmount = useInvalidWithdrawAmount(
-    withdrawAmount,
+  const txFee = useMemo(() => withdrawTxFee(withdrawAmount, bank, fixedGas), [
     bank,
-    totalDeposit,
-    txFee,
+    fixedGas,
+    withdrawAmount,
+  ]);
+
+  const receiveAmount = useMemo(
+    () => withdrawReceiveAmount(withdrawAmount, txFee),
+    [txFee, withdrawAmount],
+  );
+
+  const invalidTxFee = useServiceConnectedMemo(
+    () => validateTxFee(bank, fixedGas),
+    [bank, fixedGas],
+    undefined,
+  );
+
+  const invalidWithdrawAmount = useServiceConnectedMemo(
+    () => validateWithdrawAmount(withdrawAmount, bank, totalDeposit, txFee),
+    [bank, totalDeposit, txFee, withdrawAmount],
+    undefined,
   );
 
   // ---------------------------------------------
@@ -96,14 +109,10 @@ function ComponentBase({
 
   const proceed = useCallback(
     async (
-      status: WalletStatus,
+      status: WalletReady,
       withdrawAmount: string,
       txFee: uUST<BigSource> | undefined,
     ) => {
-      if (status.status !== 'ready' || bank.status !== 'connected') {
-        return;
-      }
-
       await withdraw({
         address: status.walletAddress,
         amount: big(withdrawAmount).div(exchangeRate).toString(),
@@ -111,7 +120,7 @@ function ComponentBase({
         txFee: txFee!.toString() as uUST,
       });
     },
-    [bank.status, exchangeRate, withdraw],
+    [exchangeRate, withdraw],
   );
 
   // ---------------------------------------------
@@ -191,13 +200,14 @@ function ComponentBase({
         <ActionButton
           className="proceed"
           disabled={
-            status.status !== 'ready' ||
-            bank.status !== 'connected' ||
+            !serviceAvailable ||
             withdrawAmount.length === 0 ||
             big(withdrawAmount).lte(0) ||
             !!invalidWithdrawAmount
           }
-          onClick={() => proceed(status, withdrawAmount, txFee)}
+          onClick={() =>
+            walletReady && proceed(walletReady, withdrawAmount, txFee)
+          }
         >
           Proceed
         </ActionButton>

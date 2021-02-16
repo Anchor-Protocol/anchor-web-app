@@ -2,6 +2,7 @@ import { DateTime, Ratio, uLuna } from '@anchor-protocol/notation';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
+import { useService } from 'contexts/service';
 import { parseResult } from 'queries/parseResult';
 import { MappedQueryResult } from 'queries/types';
 import { useRefetch } from 'queries/useRefetch';
@@ -70,6 +71,8 @@ export function useExchangeRate({
 }: {
   bAsset: string;
 }): MappedQueryResult<RawVariables, RawData, Data> {
+  const { online } = useService();
+
   const addressProvider = useAddressProvider();
 
   const variables = useMemo(() => {
@@ -85,6 +88,7 @@ export function useExchangeRate({
     RawData,
     RawVariables
   >(query, {
+    skip: !online,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,

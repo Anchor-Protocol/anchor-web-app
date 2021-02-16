@@ -10,10 +10,11 @@ import {
   Ratio,
 } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
-import { useWallet } from '@anchor-protocol/wallet-provider';
 import big from 'big.js';
-import { useMarket } from 'pages/borrow/context/market';
-import { useCollaterals } from 'pages/borrow/logics/useCollaterals';
+import { useService } from 'contexts/service';
+import { useMemo } from 'react';
+import { useMarket } from '../context/market';
+import { collaterals as _collaterals } from '../logics/collaterals';
 import { useProvideCollateralDialog } from './useProvideCollateralDialog';
 import { useRedeemCollateralDialog } from './useRedeemCollateralDialog';
 
@@ -27,7 +28,7 @@ export function CollateralList({ className }: CollateralListProps) {
   // ---------------------------------------------
   const { ready, borrowInfo, oraclePrice, loanAmount, refetch } = useMarket();
 
-  const { status } = useWallet();
+  const { serviceAvailable } = useService();
 
   const [
     openProvideCollateralDialog,
@@ -42,15 +43,24 @@ export function CollateralList({ className }: CollateralListProps) {
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
-  const collaterals = useCollaterals(
-    borrowInfo?.balance,
-    borrowInfo?.spendable,
-    1 as Ratio<number>,
+  const collaterals = useMemo(
+    () =>
+      _collaterals(
+        borrowInfo?.balance,
+        borrowInfo?.spendable,
+        1 as Ratio<number>,
+      ),
+    [borrowInfo?.balance, borrowInfo?.spendable],
   );
-  const collateralsInUST = useCollaterals(
-    borrowInfo?.balance,
-    borrowInfo?.spendable,
-    oraclePrice?.rate,
+
+  const collateralsInUST = useMemo(
+    () =>
+      _collaterals(
+        borrowInfo?.balance,
+        borrowInfo?.spendable,
+        oraclePrice?.rate,
+      ),
+    [borrowInfo?.balance, borrowInfo?.spendable, oraclePrice?.rate],
   );
 
   // ---------------------------------------------
@@ -100,7 +110,7 @@ export function CollateralList({ className }: CollateralListProps) {
             </td>
             <td>
               <ActionButton
-                disabled={status.status !== 'ready' || !ready}
+                disabled={!serviceAvailable || !ready}
                 onClick={() => {
                   refetch();
                   openProvideCollateralDialog({});
@@ -110,7 +120,7 @@ export function CollateralList({ className }: CollateralListProps) {
               </ActionButton>
               <ActionButton
                 disabled={
-                  status.status !== 'ready' ||
+                  !serviceAvailable ||
                   !ready ||
                   !borrowInfo ||
                   !loanAmount ||

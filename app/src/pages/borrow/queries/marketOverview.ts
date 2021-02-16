@@ -1,8 +1,9 @@
 import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
 import { Ratio } from '@anchor-protocol/notation';
-import { createMap, map, useMap } from '@anchor-protocol/use-map';
+import { createMap, map, Mapped, useMap } from '@anchor-protocol/use-map';
 import { ApolloClient, gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
+import { useService } from 'contexts/service';
 import { parseResult } from 'queries/parseResult';
 import { MappedApolloQueryResult, MappedQueryResult } from 'queries/types';
 import { useRefetch } from 'queries/useRefetch';
@@ -58,6 +59,34 @@ export const dataMap = createMap<RawData, Data>({
     return parseResult(existing.overseerWhitelist, overseerWhitelist.Result);
   },
 });
+
+export const mockupData: Mapped<RawData, Data> = {
+  __data: {
+    borrowRate: {
+      Result: '',
+    },
+    oraclePrice: {
+      Result: '',
+    },
+    overseerWhitelist: {
+      Result: '',
+    },
+  },
+  borrowRate: {
+    Result: '',
+    rate: '1' as Ratio,
+  },
+  oraclePrice: {
+    Result: '',
+    rate: '1' as Ratio,
+    last_updated_base: 0,
+    last_updated_quote: 0,
+  },
+  overseerWhitelist: {
+    Result: '',
+    elems: [],
+  },
+};
 
 export interface RawVariables {
   interestContractAddress: string;
@@ -151,6 +180,8 @@ export function useMarketOverview({
 }): MappedQueryResult<RawVariables, RawData, Data> {
   const addressProvider = useAddressProvider();
 
+  const { online } = useService();
+
   const variables = useMemo(() => {
     return mapVariables({
       interestContractAddress: addressProvider.interest(),
@@ -187,7 +218,7 @@ export function useMarketOverview({
     RawData,
     RawVariables
   >(query, {
-    skip: !marketBalance || !marketState,
+    skip: !online || !marketBalance || !marketState,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,
@@ -198,7 +229,7 @@ export function useMarketOverview({
 
   return {
     ...result,
-    data,
+    data: online ? data : mockupData,
     refetch,
   };
 }
