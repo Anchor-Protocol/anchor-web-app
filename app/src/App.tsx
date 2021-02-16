@@ -23,8 +23,8 @@ import { Banner } from 'components/Banner';
 import { BroadcastingContainer } from 'components/BroadcastingContainer';
 import { Header } from 'components/Header';
 import { BankProvider } from 'contexts/bank';
-import { ContractProvider } from 'contexts/contract';
 import { Constants, ConstantsProvider } from 'contexts/contants';
+import { ContractProvider } from 'contexts/contract';
 import { ServiceProvider } from 'contexts/service';
 import { ThemeProvider } from 'contexts/theme';
 import { contractAddresses, defaultNetwork, GA_TRACKING_ID } from 'env';
@@ -45,24 +45,25 @@ const operationBroadcasterErrorReporter =
 function Providers({ children }: { children: ReactNode }) {
   const { post } = useWallet();
 
+  // TODO create address provider depends on wallet info
   const addressProvider = useMemo<AddressProvider>(() => {
-    // TODO create address provider by wallet info
     return new AddressProviderFromJson(contractAddresses);
   }, []);
 
+  // TODO create endpoint depends on wallet info
   const client = useMemo<ApolloClient<any>>(() => {
     const httpLink = new HttpLink({
       uri: ({ operationName }) =>
         `https://tequila-mantle.terra.dev?${operationName}`,
     });
 
-    // TODO create endpoint by wallet info
     return new ApolloClient({
       cache: new InMemoryCache(),
       link: httpLink,
     });
   }, []);
 
+  // TODO create constants depends on wallet info
   const constants = useMemo<Constants>(
     () => ({
       gasFee: 6000000 as uUST<number>,
@@ -86,44 +87,34 @@ function Providers({ children }: { children: ReactNode }) {
   return (
     /** React App routing :: <Link>, <NavLink>, useLocation(), useRouteMatch()... */
     <Router>
-      {/** Send Google Analytics Page view when router's location changed */}
-      <GoogleAnalytics trackingId={GA_TRACKING_ID} />
-      {/** Scroll Restore every Router's basepath changed */}
-      <RouterScrollRestoration />
-      {/** Re-Check Terra Station Wallet Status every Router's pathname changed */}
-      <RouterWalletStatusRecheck />
       {/** Serve Constants */}
       <ConstantsProvider {...constants}>
-        {/** Service (Network...) :: useService() */}
-        <ServiceProvider>
-          {/** Smart Contract Address :: useAddressProvider() */}
-          <ContractProvider addressProvider={addressProvider}>
-            {/** Set GraphQL environenments :: useQuery(), useApolloClient()... */}
-            <ApolloProvider client={client}>
-              {/** Broadcastable Query Provider :: useBroadCastableQuery(), useQueryBroadCaster() */}
-              <OperationBroadcaster
-                dependency={operationGlobalDependency}
-                errorReporter={operationBroadcasterErrorReporter}
-              >
+        {/** Smart Contract Address :: useAddressProvider() */}
+        <ContractProvider addressProvider={addressProvider}>
+          {/** Set GraphQL environenments :: useQuery(), useApolloClient()... */}
+          <ApolloProvider client={client}>
+            {/** Broadcastable Query Provider :: useBroadCastableQuery(), useQueryBroadCaster() */}
+            <OperationBroadcaster
+              dependency={operationGlobalDependency}
+              errorReporter={operationBroadcasterErrorReporter}
+            >
+              {/** Service (Network...) :: useService() */}
+              <ServiceProvider>
                 {/** User Balances (uUSD, uLuna, ubLuna, uaUST...) :: useBank() */}
                 <BankProvider>
                   {/** Theme Providing to Styled-Components and Material-UI */}
                   <ThemeProvider initialTheme="light">
                     {/** Snackbar Provider :: useSnackbar() */}
                     <SnackbarProvider>
-                      {/** Styled-Components Global CSS */}
-                      <GlobalStyle />
                       {/** Application Layout */}
                       {children}
-                      {/** Operation Result Broadcasting Render Container (Snackbar...) */}
-                      <BroadcastingContainer />
                     </SnackbarProvider>
                   </ThemeProvider>
                 </BankProvider>
-              </OperationBroadcaster>
-            </ApolloProvider>
-          </ContractProvider>
-        </ServiceProvider>
+              </ServiceProvider>
+            </OperationBroadcaster>
+          </ApolloProvider>
+        </ContractProvider>
       </ConstantsProvider>
     </Router>
   );
@@ -134,6 +125,17 @@ export function App() {
     /** Terra Station Wallet Address :: useWallet() */
     <ChromeExtensionWalletProvider defaultNetwork={defaultNetwork}>
       <Providers>
+        {/* Router Actions ======================== */}
+        {/** Send Google Analytics Page view every Router's location changed */}
+        <GoogleAnalytics trackingId={GA_TRACKING_ID} />
+        {/** Scroll Restore every Router's basepath changed */}
+        <RouterScrollRestoration />
+        {/** Re-Check Terra Station Wallet Status every Router's pathname changed */}
+        <RouterWalletStatusRecheck />
+        {/* Theme ================================= */}
+        {/** Styled-Components Global CSS */}
+        <GlobalStyle />
+        {/* Layout ================================ */}
         <div>
           <Header />
           <Banner />
@@ -144,6 +146,9 @@ export function App() {
             <Redirect to="/earn" />
           </Switch>
         </div>
+        {/* Portal ================================ */}
+        {/** Operation Result Broadcasting Render Container (Snackbar...) */}
+        <BroadcastingContainer />
       </Providers>
     </ChromeExtensionWalletProvider>
   );
