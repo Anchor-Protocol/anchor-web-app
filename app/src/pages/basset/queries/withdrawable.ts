@@ -1,9 +1,9 @@
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { ubLuna, uLuna } from '@anchor-protocol/notation';
-import { createMap, useMap } from '@anchor-protocol/use-map';
-import { useWallet } from '@anchor-protocol/wallet-provider';
+import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
+import { useService } from 'contexts/service';
 import { MappedQueryResult } from 'queries/types';
 import { useRefetch } from 'queries/useRefetch';
 import { useMemo, useState } from 'react';
@@ -58,6 +58,19 @@ export const dataMap = createMap<RawData, Data>({
     };
   },
 });
+
+export const mockupData: Mapped<RawData, Data> = {
+  __data: {
+    withdrawableAmount: {
+      Result: '',
+    },
+    withdrawRequests: {
+      Result: '',
+    },
+  },
+  withdrawableAmount: undefined,
+  withdrawRequests: undefined,
+};
 
 export interface RawVariables {
   bLunaHubContract: string;
@@ -126,7 +139,8 @@ export function useWithdrawable({
   bAsset: string;
 }): MappedQueryResult<RawVariables, RawData, Data> {
   const addressProvider = useAddressProvider();
-  const { status } = useWallet();
+
+  const { serviceAvailable, walletReady } = useService();
 
   const [now, setNow] = useState(() => Math.floor(Date.now() / 1000));
 
@@ -136,25 +150,25 @@ export function useWithdrawable({
       withdrawableAmountQuery: {
         withdrawable_unbonded: {
           block_time: now,
-          address: status.status === 'ready' ? status.walletAddress : '',
+          address: walletReady?.walletAddress ?? '',
         },
       },
       withdrawRequestsQuery: {
         unbond_requests: {
-          address: status.status === 'ready' ? status.walletAddress : '',
+          address: walletReady?.walletAddress ?? '',
         },
       },
       exchangeRateQuery: {
         state: {},
       },
     });
-  }, [addressProvider, bAsset, now, status]);
+  }, [addressProvider, bAsset, now, walletReady?.walletAddress]);
 
   const { data: _data, refetch: _refetch, ...result } = useQuery<
     RawData,
     RawVariables
   >(query, {
-    skip: status.status !== 'ready',
+    skip: !serviceAvailable,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,
@@ -171,7 +185,7 @@ export function useWithdrawable({
 
   return {
     ...result,
-    data,
+    data: serviceAvailable ? data : mockupData,
     refetch,
   };
 }

@@ -18,23 +18,23 @@ import {
   uUST,
 } from '@anchor-protocol/notation';
 import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
-import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
+import { WalletReady } from '@anchor-protocol/wallet-provider';
 import {
   Input as MuiInput,
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
 import big, { Big } from 'big.js';
 import { ArrowDownLine } from 'components/ArrowDownLine';
+import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { MessageBox } from 'components/MessageBox';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
-import { useService } from 'contexts/service';
-import { useInvalidTxFee } from 'logics/useInvalidTxFee';
+import { useService, useServiceConnectedMemo } from 'contexts/service';
+import { validateTxFee } from 'logics/validateTxFee';
+import { validateBondAmount } from 'pages/basset/logics/validateBondAmount';
 import React, { ChangeEvent, useCallback, useState } from 'react';
 import styled from 'styled-components';
-import { useInvalidBondAmount } from './logics/useInvalidBondAmount';
 import { useExchangeRate } from './queries/exchangeRate';
 import * as val from './queries/validators';
 import { useValidators } from './queries/validators';
@@ -56,9 +56,7 @@ function MintBase({ className }: MintProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { status } = useWallet();
-
-  const { online } = useService();
+  const { serviceAvailable, walletReady } = useService();
 
   const { fixedGas } = useConstants();
 
@@ -106,8 +104,17 @@ function MintBase({ className }: MintProps) {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const invalidTxFee = useInvalidTxFee(bank, fixedGas);
-  const invalidBondAmount = useInvalidBondAmount(bondAmount, bank);
+  const invalidTxFee = useServiceConnectedMemo(
+    () => validateTxFee(bank, fixedGas),
+    [bank, fixedGas],
+    undefined,
+  );
+
+  const invalidBondAmount = useServiceConnectedMemo(
+    () => validateBondAmount(bondAmount, bank),
+    [bank, bondAmount],
+    undefined,
+  );
 
   // ---------------------------------------------
   // callbacks
@@ -169,25 +176,13 @@ function MintBase({ className }: MintProps) {
   }, []);
 
   const proceed = useCallback(
-    async ({
-      status,
-      bondAmount,
-      selectedValidator,
-    }: {
-      status: WalletStatus;
-      bondAmount: Luna;
-      selectedValidator: string | undefined;
-    }) => {
-      if (
-        status.status !== 'ready' ||
-        bank.status !== 'connected' ||
-        !selectedValidator
-      ) {
-        return;
-      }
-
+    async (
+      walletReady: WalletReady,
+      bondAmount: Luna,
+      selectedValidator: string,
+    ) => {
       const broadcasted = await mint({
-        address: status.walletAddress,
+        address: walletReady.walletAddress,
         amount: bondAmount,
         bAsset: mintCurrency.value,
         validator: selectedValidator,
@@ -198,7 +193,7 @@ function MintBase({ className }: MintProps) {
         init();
       }
     },
-    [bank.status, fixedGas, init, mint, mintCurrency.value],
+    [fixedGas, init, mint, mintCurrency.value],
   );
 
   // ---------------------------------------------
@@ -231,7 +226,7 @@ function MintBase({ className }: MintProps) {
         error={!!invalidBondAmount}
         leftHelperText={invalidBondAmount}
         rightHelperText={
-          status.status === 'ready' && (
+          serviceAvailable && (
             <span>
               Balance:{' '}
               <span
@@ -360,9 +355,7 @@ function MintBase({ className }: MintProps) {
       <ActionButton
         className="submit"
         disabled={
-          !online ||
-          status.status !== 'ready' ||
-          bank.status !== 'connected' ||
+          !serviceAvailable ||
           bondAmount.length === 0 ||
           big(bondAmount).lte(0) ||
           !!invalidBondAmount ||
@@ -370,11 +363,9 @@ function MintBase({ className }: MintProps) {
           !selectedValidator
         }
         onClick={() =>
-          proceed({
-            bondAmount,
-            status,
-            selectedValidator: selectedValidator?.OperatorAddress,
-          })
+          walletReady &&
+          selectedValidator?.OperatorAddress &&
+          proceed(walletReady, bondAmount, selectedValidator.OperatorAddress)
         }
       >
         Mint

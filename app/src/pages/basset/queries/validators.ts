@@ -1,6 +1,7 @@
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
+import { useService } from 'contexts/service';
 import { MappedQueryResult } from 'queries/types';
 import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
@@ -101,6 +102,8 @@ export function useValidators({
 }): MappedQueryResult<RawVariables, RawData, Data> {
   const addressProvider = useAddressProvider();
 
+  const { online } = useService();
+
   const variables = useMemo(() => {
     return mapVariables({
       bLunaHubContract: addressProvider.bAssetHub(bAsset),
@@ -114,6 +117,7 @@ export function useValidators({
     RawData,
     RawVariables
   >(query, {
+    skip: !online,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,

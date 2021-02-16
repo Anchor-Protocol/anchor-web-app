@@ -313,6 +313,7 @@ export function useOperation(
     [
       breakOnError,
       dispatch,
+      errorReporter,
       getAbortController,
       globalDependency,
       id,

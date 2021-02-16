@@ -1,9 +1,9 @@
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { Num, ubLuna } from '@anchor-protocol/notation';
-import { createMap, useMap } from '@anchor-protocol/use-map';
-import { useWallet } from '@anchor-protocol/wallet-provider';
+import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
+import { useService } from 'contexts/service';
 import { parseResult } from 'queries/parseResult';
 import { MappedQueryResult } from 'queries/types';
 import { useRefetch } from 'queries/useRefetch';
@@ -43,6 +43,19 @@ export const dataMap = createMap<RawData, Data>({
     return parseResult(existing.claimableReward, claimableReward.Result);
   },
 });
+
+export const mockupData: Mapped<RawData, Data> = {
+  __data: {
+    rewardState: {
+      Result: '',
+    },
+    claimableReward: {
+      Result: '',
+    },
+  },
+  rewardState: undefined,
+  claimableReward: undefined,
+};
 
 export interface RawVariables {
   bAssetRewardContract: string;
@@ -98,7 +111,8 @@ export const query = gql`
 
 export function useClaimable(): MappedQueryResult<RawVariables, RawData, Data> {
   const addressProvider = useAddressProvider();
-  const { status } = useWallet();
+
+  const { serviceAvailable, walletReady } = useService();
 
   const variables = useMemo(() => {
     return mapVariables({
@@ -108,17 +122,17 @@ export function useClaimable(): MappedQueryResult<RawVariables, RawData, Data> {
       },
       claimableRewardQuery: {
         holder: {
-          address: status.status === 'ready' ? status.walletAddress : '',
+          address: walletReady?.walletAddress ?? '',
         },
       },
     });
-  }, [addressProvider, status]);
+  }, [addressProvider, walletReady?.walletAddress]);
 
   const { data: _data, refetch: _refetch, ...result } = useQuery<
     RawData,
     RawVariables
   >(query, {
-    skip: status.status !== 'ready',
+    skip: !serviceAvailable,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,
@@ -135,7 +149,7 @@ export function useClaimable(): MappedQueryResult<RawVariables, RawData, Data> {
 
   return {
     ...result,
-    data,
+    data: serviceAvailable ? data : mockupData,
     refetch,
   };
 }

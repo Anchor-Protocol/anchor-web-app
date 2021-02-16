@@ -1,9 +1,9 @@
 import { bLuna, Num } from '@anchor-protocol/notation';
 import { createMap, useMap } from '@anchor-protocol/use-map';
-import { useWallet } from '@anchor-protocol/wallet-provider';
 import { gql, useQuery } from '@apollo/client';
 import big from 'big.js';
 import { useAddressProvider } from 'contexts/contract';
+import { useService } from 'contexts/service';
 import { MappedQueryResult } from 'queries/types';
 import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
@@ -100,7 +100,8 @@ export function useTerraswapBLunaPrice(): MappedQueryResult<
   Data
 > {
   const addressProvider = useAddressProvider();
-  const { status } = useWallet();
+
+  const { online } = useService();
 
   const variables = useMemo(() => {
     return mapVariables({
@@ -112,7 +113,7 @@ export function useTerraswapBLunaPrice(): MappedQueryResult<
     RawData,
     RawVariables
   >(query, {
-    skip: status.status !== 'ready',
+    skip: !online,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,

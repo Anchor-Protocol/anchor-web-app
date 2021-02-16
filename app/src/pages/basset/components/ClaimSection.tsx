@@ -4,18 +4,18 @@ import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { demicrofy, formatUST } from '@anchor-protocol/notation';
-import { useWallet } from '@anchor-protocol/wallet-provider';
+import { WalletReady } from '@anchor-protocol/wallet-provider';
 import big from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
-import { useService } from 'contexts/service';
-import { useInvalidTxFee } from 'logics/useInvalidTxFee';
-import { useClaimableRewards } from 'pages/basset/logics/useClaimableRewards';
+import { useService, useServiceConnectedMemo } from 'contexts/service';
+import { validateTxFee } from 'logics/validateTxFee';
 import { useClaimable } from 'pages/basset/queries/claimable';
 import { claimOptions } from 'pages/basset/transactions/claimOptions';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
+import { claimableRewards as _claimableRewards } from '../logics/claimableRewards';
 
 export interface ClaimSectionProps {
   disabled: boolean;
@@ -26,9 +26,7 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { status } = useWallet();
-
-  const { online } = useService();
+  const { serviceAvailable, walletReady } = useService();
 
   const { fixedGas } = useConstants();
 
@@ -46,29 +44,41 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const claimableRewards = useClaimableRewards(
-    claimableReward?.balance,
-    rewardState?.global_index,
-    claimableReward?.index,
-    claimableReward?.pending_rewards,
+  const invalidTxFee = useServiceConnectedMemo(
+    () => validateTxFee(bank, fixedGas),
+    [bank, fixedGas],
+    undefined,
   );
 
-  const invalidTxFee = useInvalidTxFee(bank, fixedGas);
+  const claimableRewards = useMemo(
+    () =>
+      _claimableRewards(
+        claimableReward?.balance,
+        rewardState?.global_index,
+        claimableReward?.index,
+        claimableReward?.pending_rewards,
+      ),
+    [
+      claimableReward?.balance,
+      claimableReward?.index,
+      claimableReward?.pending_rewards,
+      rewardState?.global_index,
+    ],
+  );
 
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
-  const proceed = useCallback(async () => {
-    if (status.status !== 'ready' || bank.status !== 'connected') {
-      return;
-    }
-
-    await claim({
-      address: status.status === 'ready' ? status.walletAddress : '',
-      bAsset: 'bluna',
-      recipient: undefined,
-    });
-  }, [bank.status, claim, status]);
+  const proceed = useCallback(
+    async (walletReady: WalletReady) => {
+      await claim({
+        address: walletReady.walletAddress,
+        bAsset: 'bluna',
+        recipient: undefined,
+      });
+    },
+    [claim],
+  );
 
   // ---------------------------------------------
   // effects
@@ -118,14 +128,12 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
       <ActionButton
         className="submit"
         disabled={
-          !online ||
-          status.status !== 'ready' ||
-          bank.status !== 'connected' ||
+          !serviceAvailable ||
           !!invalidTxFee ||
           claimableRewards.lte(0) ||
           disabled
         }
-        onClick={() => proceed()}
+        onClick={() => walletReady && proceed(walletReady)}
       >
         Claim
       </ActionButton>
