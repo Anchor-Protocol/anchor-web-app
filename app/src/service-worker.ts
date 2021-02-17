@@ -1,10 +1,11 @@
 /// <reference lib="webworker" />
 /* eslint-disable no-restricted-globals */
 
+import { RouteHandlerCallbackOptions } from 'workbox-core/src/types';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
-import { StaleWhileRevalidate } from 'workbox-strategies';
+import { NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -18,6 +19,17 @@ precacheAndRoute(self.__WB_MANIFEST);
 
 const fileExtensionRegexp = new RegExp('/[^/?]+\\.[^/]+$');
 
+const networkFirst = new NetworkFirst();
+const boundIndexHtml = createHandlerBoundToURL(
+  process.env.PUBLIC_URL + '/index.html',
+);
+
+const spaRoutesHandler = async (options: RouteHandlerCallbackOptions) => {
+  return navigator.onLine
+    ? networkFirst.handle(options)
+    : await boundIndexHtml(options);
+};
+
 registerRoute(({ request, url }: { request: Request; url: URL }) => {
   if (
     request.mode !== 'navigate' ||
@@ -28,7 +40,7 @@ registerRoute(({ request, url }: { request: Request; url: URL }) => {
   }
 
   return true;
-}, createHandlerBoundToURL(process.env.PUBLIC_URL + '/index.html'));
+}, spaRoutesHandler);
 
 registerRoute(
   ({ url }) => {
