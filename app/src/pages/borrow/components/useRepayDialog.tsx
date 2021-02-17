@@ -398,6 +398,7 @@ const Component = styled(ComponentBase)`
     font-weight: 300;
 
     p {
+      color: ${({ theme }) => theme.positiveTextColor};
       font-size: 14px;
       margin-top: 10px;
     }

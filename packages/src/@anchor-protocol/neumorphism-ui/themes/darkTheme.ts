@@ -26,7 +26,8 @@ export const darkTheme: DefaultTheme = {
   dimTextColor: 'rgba(255, 255, 255, 0.5)',
   errorTextColor: '#ac2b45',
   highlightBackgroundColor: '#363c5f',
-  
+  positiveTextColor: '#15cc93',
+
   label: {
     backgroundColor: '#363c5f',
     textColor: '#ffffff',
@@ -38,7 +39,7 @@ export const darkTheme: DefaultTheme = {
     backgroundHoverColor: '#404872',
     textColor: '#ffffff',
   },
-  
+
   selector: {
     backgroundColor: '#1b1e31',
     textColor: '#ffffff',
@@ -63,17 +64,17 @@ export const darkTheme: DefaultTheme = {
       textColor: '#ffffff',
     },
   },
-  
+
   slider: {
     thumb: {
       shadowColor: 'rgba(0, 0, 0, 0.3)',
       thumbColor: '#ffffff',
     },
   },
-  
+
   skeleton: {
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    lightColor: 'rgba(255, 255, 255, 0.2)'
+    lightColor: 'rgba(255, 255, 255, 0.2)',
   },
 
   dialog: {
@@ -94,7 +95,7 @@ export const darkTheme: DefaultTheme = {
       textColor: '#3e9bba',
     },
   },
-  
+
   tooltip: {
     normal: {
       backgroundColor: '#363d5e',
@@ -113,7 +114,7 @@ export const darkTheme: DefaultTheme = {
       textColor: '#ffffff',
     },
   },
-  
+
   snackbar: {
     normal: {
       backgroundColor: '#363d5e',

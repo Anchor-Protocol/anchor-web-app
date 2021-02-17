@@ -29,7 +29,8 @@ export interface NeumorphismTheme extends Theme {
   dimTextColor: string;
   errorTextColor: string;
   highlightBackgroundColor: string;
-  
+  positiveTextColor: string;
+
   // label
   label: {
     backgroundColor: string;
@@ -43,12 +44,12 @@ export interface NeumorphismTheme extends Theme {
     backgroundHoverColor: string;
     textColor: string;
   };
-  
+
   // selector
   selector: {
     backgroundColor: string;
     textColor: string;
-  }
+  };
 
   // form control
   formControl: {
@@ -73,27 +74,27 @@ export interface NeumorphismTheme extends Theme {
       textColor: string;
     };
   };
-  
+
   // slider
   slider: {
     thumb: {
       shadowColor: string;
       thumbColor: string;
-    }
-  }
-  
+    };
+  };
+
   // skeleton
   skeleton: {
     backgroundColor: string;
     lightColor: string;
-  }
+  };
 
   // dialog
   dialog: Record<MessageColor, DialogTheme>;
 
   // tooltip
   tooltip: Record<MessageColor, TooltipTheme>;
-  
+
   // snackbar
   snackbar: Record<MessageColor, SnackbarTheme>;
 }

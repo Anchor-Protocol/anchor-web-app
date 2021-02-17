@@ -18,7 +18,8 @@ export const lightTheme: DefaultTheme = {
   dimTextColor: '#999999',
   errorTextColor: '#ef3158',
   highlightBackgroundColor: '#ffffff',
-  
+  positiveTextColor: '#15cc93',
+
   label: {
     backgroundColor: '#ffffff',
     textColor: '#1f1f1f',
@@ -62,10 +63,10 @@ export const lightTheme: DefaultTheme = {
       thumbColor: '#ffffff',
     },
   },
-  
+
   skeleton: {
     backgroundColor: 'rgba(0, 0, 0, 0.15)',
-    lightColor: 'rgba(255, 255, 255, 0.8)'
+    lightColor: 'rgba(255, 255, 255, 0.8)',
   },
 
   dialog: {
@@ -105,7 +106,7 @@ export const lightTheme: DefaultTheme = {
       textColor: '#ffffff',
     },
   },
-  
+
   snackbar: {
     normal: {
       backgroundColor: '#94f3b8',
