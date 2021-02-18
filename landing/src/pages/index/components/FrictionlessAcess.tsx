@@ -124,4 +124,12 @@ export const FrictionlessAcess = styled(FrictionlessAcessBase)`
       font-size: 14px;
     }
   }
+
+  @media (max-width: 500px) {
+    article {
+      h2 {
+        font-size: 2.6em;
+      }
+    }
+  }
 `;

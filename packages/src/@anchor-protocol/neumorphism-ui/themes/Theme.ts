@@ -45,6 +45,18 @@ export interface NeumorphismTheme extends Theme {
     textColor: string;
   };
 
+  // text buttons
+  textButton: {
+    textColor: string;
+  };
+
+  // border buttons
+  borderButton: {
+    borderColor: string;
+    borderHoverColor: string;
+    textColor: string;
+  };
+
   // selector
   selector: {
     backgroundColor: string;

@@ -6,7 +6,7 @@
   "scripts": {
     "start": "multiplerun start",
     "start:chrome": "PORT=9434 react-app-rewired start",
-    "build": "CI=true react-app-rewired build",
+    "build": "GENERATE_SOURCEMAP=true CI=true react-app-rewired build",
     "test": "react-app-rewired test --colors",
     "coverage": "react-app-rewired test --colors --coverage"
   },
@@ -48,7 +48,6 @@
     "@types/jest": "^26.0.20",
     "@types/node": "^14.14.27",
     "@types/postcss-nested": "^4.2.3",
-    "@types/puppeteer": "^5.4.3",
     "@types/ramda": "^0.27.38",
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.1",

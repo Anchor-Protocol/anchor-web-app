@@ -1,3 +1,4 @@
+import { HorizontalHeavyRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalHeavyRuler';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 
 export interface TransactionHistorySectionProps {
@@ -10,6 +11,8 @@ export function TransactionHistorySection({
   return (
     <Section className={className}>
       <h2>TRANSACTION HISTORY</h2>
+
+      <HorizontalHeavyRuler />
 
       <ul>
         {Array.from({ length: 20 }, (_, i) => (

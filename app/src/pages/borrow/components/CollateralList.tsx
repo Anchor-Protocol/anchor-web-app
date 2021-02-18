@@ -1,4 +1,4 @@
-import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
+import { BorderButton } from '@anchor-protocol/neumorphism-ui/components/BorderButton';
 import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/components/HorizontalScrollTable';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
@@ -109,7 +109,7 @@ export function CollateralList({ className }: CollateralListProps) {
               </p>
             </td>
             <td>
-              <ActionButton
+              <BorderButton
                 disabled={!serviceAvailable || !ready}
                 onClick={() => {
                   refetch();
@@ -117,8 +117,8 @@ export function CollateralList({ className }: CollateralListProps) {
                 }}
               >
                 Provide
-              </ActionButton>
-              <ActionButton
+              </BorderButton>
+              <BorderButton
                 disabled={
                   !serviceAvailable ||
                   !ready ||
@@ -133,7 +133,7 @@ export function CollateralList({ className }: CollateralListProps) {
                 }}
               >
                 Withdraw
-              </ActionButton>
+              </BorderButton>
             </td>
           </tr>
         </tbody>

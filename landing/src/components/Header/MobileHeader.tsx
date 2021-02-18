@@ -1,6 +1,7 @@
 import { Menu, MenuClose } from '@anchor-protocol/icons';
 import { IconToggleButton } from '@anchor-protocol/neumorphism-ui/components/IconToggleButton';
 import { WebAppButton } from 'components/Header/WebAppButton';
+import { headerHeight } from 'env';
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
@@ -14,37 +15,44 @@ function MobileHeaderBase({ className, color }: MobileHeaderProps) {
   const [open, setOpen] = useState<boolean>(false);
 
   return (
-    <header className={className} data-dark={color === 'dark'} data-open={open}>
-      {open && (
-        <nav>
-          <NavLink to="/market" onClick={() => setOpen(false)}>
-            MARKET
-          </NavLink>
-          <a
-            href="https://anchor-protocol.gitbook.io/anchor-1/"
-            target="anchor-developers"
-            onClick={() => setOpen(false)}
-          >
-            DEVELOPERS
-          </a>
-          <NavLink to="/contact" onClick={() => setOpen(false)}>
-            CONTACT
-          </NavLink>
-          <WebAppButton />
-        </nav>
-      )}
-      <section>
-        <Link to="/" onClick={() => setOpen(false)}>
-          ANCHOR
-        </Link>
-        <IconToggleButton
-          on={open}
-          onChange={setOpen}
-          onIcon={MenuClose}
-          offIcon={Menu}
-        />
-      </section>
-    </header>
+    <>
+      <header
+        className={className}
+        data-dark={color === 'dark'}
+        data-open={open}
+      >
+        {open && (
+          <nav>
+            <NavLink to="/market" onClick={() => setOpen(false)}>
+              MARKET
+            </NavLink>
+            <a
+              href="https://anchor-protocol.gitbook.io/anchor-1/"
+              target="anchor-developers"
+              onClick={() => setOpen(false)}
+            >
+              DEVELOPERS
+            </a>
+            <NavLink to="/contact" onClick={() => setOpen(false)}>
+              CONTACT
+            </NavLink>
+            <WebAppButton />
+          </nav>
+        )}
+        <section>
+          <Link to="/" onClick={() => setOpen(false)}>
+            ANCHOR
+          </Link>
+          <IconToggleButton
+            on={open}
+            onChange={setOpen}
+            onIcon={MenuClose}
+            offIcon={Menu}
+          />
+        </section>
+      </header>
+      {open && <div style={{ height: headerHeight }} />}
+    </>
   );
 }
 
@@ -149,7 +157,7 @@ export const MobileHeader = styled(MobileHeaderBase)`
   // ---------------------------------------------
   > section {
     position: relative;
-    height: 84px;
+    height: ${headerHeight}px;
     padding: 0 24px;
 
     display: flex;
@@ -168,10 +176,10 @@ export const MobileHeader = styled(MobileHeaderBase)`
 
   > nav {
     position: absolute;
-    top: 84px;
+    top: ${headerHeight}px;
     left: 0;
     width: 100vw;
-    height: calc(100vh - 84px);
+    height: calc(100vh - ${headerHeight}px);
 
     display: flex;
     flex-direction: column;

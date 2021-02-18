@@ -1,6 +1,9 @@
+import { auditMeasure } from '@anchor-protocol/audit-fastdom';
+import { isTouchDevice } from '@anchor-protocol/is-touch-device';
 import { landingMobileLayout } from 'env';
 import { FrictionlessAcess } from 'pages/index/components/FrictionlessAcess';
 import { Subscribe } from 'pages/index/components/Subscribe';
+import { useEffect } from 'react';
 import styled from 'styled-components';
 import { BetterSavings } from './components/BetterSavings';
 import { BetterYield } from './components/BetterYield';
@@ -11,9 +14,60 @@ export interface IndexProps {
 }
 
 function IndexBase({ className }: IndexProps) {
+  useEffect(() => {
+    let inScroll = false;
+
+    function endPaging(event: WheelEvent) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+
+      if (event.deltaY > 10 && !inScroll) {
+        inScroll = true;
+        if (process.env.NODE_ENV === 'development') {
+          console.log('SCROLL TO NEXT PAGE!');
+        }
+
+        window.scrollTo({
+          top: window.innerHeight,
+          behavior: 'smooth',
+        });
+
+        setTimeout(() => {
+          if (process.env.NODE_ENV === 'development') {
+            console.log('END PAGING!');
+          }
+          window.removeEventListener('wheel', endPaging);
+          inScroll = false;
+        }, 1200);
+      }
+    }
+
+    const startPaging = auditMeasure(() => {
+      const scrollY = window.scrollY;
+
+      if (scrollY === 0) {
+        if (process.env.NODE_ENV === 'development') {
+          console.log('START PAGING!');
+        }
+        window.addEventListener('wheel', endPaging, { passive: false });
+      }
+    });
+
+    if (!isTouchDevice()) {
+      window.addEventListener('scroll', startPaging);
+      startPaging();
+    }
+
+    return () => {
+      window.removeEventListener('scroll', startPaging);
+      window.removeEventListener('wheel', endPaging);
+    };
+  }, []);
+
   return (
     <div className={className}>
-      {process.env.NODE_ENV !== 'development' && <BetterSavings />}
+      <BetterSavings disable3D={process.env.NODE_ENV === 'development'} />
       <ResponsiveContainer>
         <BetterYield />
         <EasierIntegrations />

@@ -1,8 +1,5 @@
 import logoUrl from '@anchor-protocol/icons/assets/Anchor.svg';
-import { IconButton } from '@material-ui/core';
-import { Brightness3, Brightness5 } from '@material-ui/icons';
 import { WalletSelector } from 'components/Header/WalletSelector';
-import { useTheme } from 'contexts/theme';
 import { screen } from 'env';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
@@ -13,8 +10,6 @@ export interface HeaderProps {
 }
 
 function HeaderBase({ className }: HeaderProps) {
-  const { themeColor, updateTheme } = useTheme();
-
   return (
     <header className={className}>
       <nav className="menu">
@@ -25,12 +20,6 @@ function HeaderBase({ className }: HeaderProps) {
 
       <section className="wallet">
         <WalletSelector />
-        <IconButton
-          style={{ color: 'white' }}
-          onClick={() => updateTheme(themeColor === 'light' ? 'dark' : 'light')}
-        >
-          {themeColor === 'light' ? <Brightness5 /> : <Brightness3 />}
-        </IconButton>
       </section>
 
       <GlobalStyle />

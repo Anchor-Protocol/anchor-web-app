@@ -3,15 +3,18 @@ import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { IconButton } from '@material-ui/core';
 import {
+  Brightness3,
+  Brightness5,
   FiberManualRecord,
   GitHub,
   Telegram,
   Twitter,
 } from '@material-ui/icons';
 import c from 'color';
+import { useTheme } from 'contexts/theme';
 import { screen } from 'env';
 import { useLastSyncedHeight } from 'queries/lastSyncedHeight';
-import { CSSProperties } from 'react';
+import React, { CSSProperties } from 'react';
 import styled from 'styled-components';
 
 export interface FooterProps {
@@ -22,6 +25,8 @@ export interface FooterProps {
 function FooterBase({ className, style }: FooterProps) {
   const { status } = useWallet();
   const { data: lastSyncedHeight } = useLastSyncedHeight();
+
+  const { themeColor, updateTheme } = useTheme();
 
   return (
     <footer className={className} style={style}>
@@ -52,6 +57,11 @@ function FooterBase({ className, style }: FooterProps) {
         </IconButton>
         <IconButton>
           <GitHub />
+        </IconButton>
+        <IconButton
+          onClick={() => updateTheme(themeColor === 'light' ? 'dark' : 'light')}
+        >
+          {themeColor === 'light' ? <Brightness5 /> : <Brightness3 />}
         </IconButton>
       </div>
     </footer>
