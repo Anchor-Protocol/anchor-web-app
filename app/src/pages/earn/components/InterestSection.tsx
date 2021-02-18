@@ -110,7 +110,7 @@ export function InterestSection({ className }: InterestSectionProps) {
         <div className="amount">
           <span>
             <s>
-              2,320<span className="decimal-point">.063700</span> UST
+              2,320<span className="decimal-point">.063</span> UST
             </s>
           </span>
           <p>

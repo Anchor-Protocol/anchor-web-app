@@ -94,12 +94,13 @@ export const Earn = styled(EarnBase)`
         margin-top: 80px;
 
         text-align: center;
-        font-size: 32px;
+        font-size: 40px;
+        font-weight: 300;
 
         p {
           margin-top: 10px;
-          font-size: 14px;
-          color: ${({ theme }) => theme.dimTextColor};
+          font-size: 13px;
+          font-weight: 500;
         }
       }
     }
@@ -173,7 +174,11 @@ export const Earn = styled(EarnBase)`
 
   .transaction-history {
     h2 {
-      margin-bottom: 20px;
+      margin-bottom: 16px;
+    }
+
+    hr {
+      margin: 0 0 10px 0;
     }
   }
 
@@ -199,7 +204,7 @@ export const Earn = styled(EarnBase)`
         min-height: 800px;
 
         grid-template-columns: 1fr 1fr 460px;
-        grid-template-rows: auto 1fr;
+        grid-template-rows: auto 425px;
         grid-gap: 40px;
 
         .total-deposit {
@@ -229,7 +234,7 @@ export const Earn = styled(EarnBase)`
 
     .transaction-history {
       ul {
-        max-height: 350px;
+        max-height: 240px;
         overflow-y: auto;
       }
     }
