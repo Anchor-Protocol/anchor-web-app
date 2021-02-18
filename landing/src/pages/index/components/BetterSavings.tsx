@@ -1,6 +1,7 @@
+import { isTouchDevice } from '@anchor-protocol/is-touch-device';
 import { useElementIntersection } from '@anchor-protocol/use-element-intersection';
 import { GUI } from 'dat.gui';
-import { landingMobileLayout } from 'env';
+import { headerHeight, landingMobileLayout } from 'env';
 import { useEffect, useRef, useState } from 'react';
 import Regl from 'regl';
 import Stats from 'stats.js';
@@ -10,40 +11,53 @@ import { play, stop } from '../graphics/cube-3d/renderer';
 
 export interface BetterSavingsProps {
   className?: string;
+  disable3D?: boolean;
 }
 
-function getSize(): number {
-  return Math.max(500, Math.min(Math.floor(window.innerWidth * 0.6), 900));
+function measureGraphicsSize(windowInnerWidth: number): number {
+  return Math.max(500, Math.min(Math.floor(windowInnerWidth * 0.6), 900));
 }
 
-function BetterSavingsBase({ className }: BetterSavingsProps) {
+function measureHeight(windowInnerHeight: number): number {
+  return windowInnerHeight - headerHeight;
+}
+
+function BetterSavingsBase({
+  className,
+  disable3D = false,
+}: BetterSavingsProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const intersection = useElementIntersection({ elementRef: canvasRef });
 
   const isIntersecting = intersection?.isIntersecting ?? false;
 
-  const [size, setSize] = useState<number>(() => getSize());
+  const [graphicsSize, setGraphicsSize] = useState<number>(() =>
+    measureGraphicsSize(window.innerWidth),
+  );
+
+  const [height] = useState<number>(() => measureHeight(window.innerHeight));
 
   useEffect(() => {
-    function listener() {
-      setSize(getSize());
+    function resize() {
+      setGraphicsSize(measureGraphicsSize(window.innerWidth));
+      //setHeight(measureHeight(window.innerHeight));
     }
 
-    window.addEventListener('resize', listener);
+    window.addEventListener('resize', resize);
 
     return () => {
-      window.removeEventListener('resize', listener);
+      window.removeEventListener('resize', resize);
     };
   }, []);
 
   useEffect(() => {
-    if (!isIntersecting) return;
+    if (disable3D || !isIntersecting) return;
 
     let gui: GUI | null = null,
       stats: Stats | null = null;
 
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'development' && !isTouchDevice()) {
       gui = new GUI({ width: 300 });
 
       stats = new Stats();
@@ -73,16 +87,21 @@ function BetterSavingsBase({ className }: BetterSavingsProps) {
         document.body.removeChild(stats.dom);
       }
     };
-  }, [isIntersecting]);
+  }, [disable3D, isIntersecting]);
 
   return (
-    <section className={className}>
+    <section className={className} style={{ height }}>
       <h2 className="title">Better Savings</h2>
       <canvas
         ref={canvasRef}
-        width={size * 2}
-        height={size * 2}
-        style={{ width: size, height: size, opacity: isIntersecting ? 1 : 0 }}
+        width={graphicsSize * 2}
+        height={graphicsSize * 2}
+        style={{
+          width: graphicsSize,
+          height: graphicsSize,
+          opacity: isIntersecting ? 1 : 0,
+          border: disable3D ? '2px dashed blue' : undefined,
+        }}
       />
     </section>
   );
@@ -95,7 +114,7 @@ export const BetterSavings = styled(BetterSavingsBase)`
   place-items: center;
 
   width: 100%;
-  height: max(450px, 80vh);
+  overflow: hidden;
 
   > h2 {
     text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.2), 1px 1px 1px #000;
@@ -117,8 +136,6 @@ export const BetterSavings = styled(BetterSavingsBase)`
   }
 
   @media (max-width: ${landingMobileLayout}px) {
-    height: 80vh;
-
     > h2 {
       margin-top: 40vh;
     }

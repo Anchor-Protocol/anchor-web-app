@@ -12,4 +12,6 @@ export const screen = {
 
 export const landingMobileLayout = 680;
 
+export const headerHeight = 84;
+
 //export const FINDER = 'https://finder.terra.money';

@@ -1,4 +1,5 @@
 import { WebAppButton } from 'components/Header/WebAppButton';
+import { headerHeight } from 'env';
 import { Link, NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -119,7 +120,7 @@ export const DesktopHeader = styled(DesktopHeaderBase)`
   // ---------------------------------------------
   // layout
   // ---------------------------------------------
-  height: 84px;
+  height: ${headerHeight}px;
   padding: 0 44px;
 
   display: flex;
