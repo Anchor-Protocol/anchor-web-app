@@ -15,7 +15,8 @@ function HeaderBase({ className }: HeaderProps) {
       <nav className="menu">
         <NavLink to="/earn">EARN</NavLink>
         <NavLink to="/borrow">BORROW</NavLink>
-        <NavLink to="/basset">bASSET</NavLink>
+        <NavLink to="/bond">BOND</NavLink>
+        <NavLink to="/government">GOVERN</NavLink>
       </nav>
 
       <section className="wallet">
@@ -36,7 +37,7 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 const desktopLayoutBreak = 1180;
-const mobileLayoutBreak = 860;
+const mobileLayoutBreak = 950;
 
 export const Header = styled(HeaderBase)`
   // ---------------------------------------------
@@ -93,7 +94,7 @@ export const Header = styled(HeaderBase)`
         border-bottom-style: solid;
         border-bottom-width: 7px;
 
-        padding-bottom: 13px;
+        padding-bottom: 6px;
 
         &:not(:last-child) {
           margin-right: 38px;
@@ -116,7 +117,7 @@ export const Header = styled(HeaderBase)`
     }
 
     .wallet {
-      padding-bottom: 15px;
+      padding-bottom: 20px;
       text-align: right;
     }
   }
@@ -130,7 +131,7 @@ export const Header = styled(HeaderBase)`
         border-bottom-style: solid;
         border-bottom-width: 7px;
 
-        padding-bottom: 13px;
+        padding-bottom: 6px;
 
         &:not(:last-child) {
           margin-right: 28px;
@@ -141,7 +142,7 @@ export const Header = styled(HeaderBase)`
     }
 
     .wallet {
-      padding-bottom: 12px;
+      padding-bottom: 17px;
       text-align: right;
     }
   }
