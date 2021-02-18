@@ -40,6 +40,16 @@ export const darkTheme: DefaultTheme = {
     textColor: '#ffffff',
   },
 
+  textButton: {
+    textColor: '#ffffff',
+  },
+
+  borderButton: {
+    borderColor: '#363c5f',
+    borderHoverColor: '#404872',
+    textColor: '#ffffff',
+  },
+
   selector: {
     backgroundColor: '#1b1e31',
     textColor: '#ffffff',

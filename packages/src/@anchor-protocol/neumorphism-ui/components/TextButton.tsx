@@ -12,6 +12,8 @@ import { buttonBaseStyle } from './ActionButton';
 export const TextButton = styled(ButtonBase).attrs({ disableRipple: true })`
   ${buttonBaseStyle};
 
+  color: ${({ theme }) => theme.textButton.textColor};
+
   ${({ theme }) =>
     flat({
       color: theme.backgroundColor,
@@ -31,14 +33,13 @@ export const TextButton = styled(ButtonBase).attrs({ disableRipple: true })`
   &:active {
     ${({ theme }) =>
       pressed({
-        color: theme.textInput.backgroundColor,
+        color: theme.backgroundColor,
         distance: 1,
         intensity: theme.intensity,
       })};
   }
 
   &:disabled {
-    color: ${({ theme }) =>
-      c(theme.actionButton.textColor).alpha(0.3).string()};
+    color: ${({ theme }) => c(theme.textButton.textColor).alpha(0.3).string()};
   }
 `;

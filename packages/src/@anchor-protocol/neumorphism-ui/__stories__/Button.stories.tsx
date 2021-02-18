@@ -1,4 +1,5 @@
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
+import { BorderButton } from '@anchor-protocol/neumorphism-ui/components/BorderButton';
 import { TextButton } from '@anchor-protocol/neumorphism-ui/components/TextButton';
 import { CircularProgress } from '@material-ui/core';
 import { Send } from '@material-ui/icons';
@@ -12,8 +13,10 @@ export const Basic = () => (
   <Layout>
     <TextButton>BUTTON</TextButton>
     <ActionButton>BUTTON</ActionButton>
+    <BorderButton>BUTTON</BorderButton>
     <TextButton disabled>BUTTON</TextButton>
     <ActionButton disabled>BUTTON</ActionButton>
+    <BorderButton disabled>BUTTON</BorderButton>
   </Layout>
 );
 
@@ -30,6 +33,10 @@ export const WithIcon = () => (
       />
       BUTTON
     </ActionButton>
+    <BorderButton>
+      <Send style={{ marginRight: 10 }} />
+      BUTTON
+    </BorderButton>
     <TextButton disabled>
       <Send style={{ marginRight: 10 }} />
       BUTTON
@@ -41,11 +48,15 @@ export const WithIcon = () => (
       />
       BUTTON
     </ActionButton>
+    <BorderButton disabled>
+      <Send style={{ marginRight: 10 }} />
+      BUTTON
+    </BorderButton>
   </Layout>
 );
 
 const Layout = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 200px);
+  grid-template-columns: repeat(3, 200px);
   grid-gap: 20px;
 `;

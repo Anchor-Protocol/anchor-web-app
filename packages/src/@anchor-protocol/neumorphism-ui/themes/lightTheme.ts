@@ -28,8 +28,18 @@ export const lightTheme: DefaultTheme = {
 
   actionButton: {
     backgroundColor: '#2c2c2c',
-    backgroundHoverColor: '#2c2c2c',
+    backgroundHoverColor: '#1c1c1c',
     textColor: '#ffffff',
+  },
+
+  textButton: {
+    textColor: '#1f1f1f',
+  },
+
+  borderButton: {
+    borderColor: '#2c2c2c',
+    borderHoverColor: '#1c1c1c',
+    textColor: '#1f1f1f',
   },
 
   selector: {
