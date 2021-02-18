@@ -5,7 +5,7 @@ export default {
 };
 
 export const Basic = () => (
-  <HorizontalScrollTable>
+  <HorizontalScrollTable minWidth={800}>
     <colgroup>
       <col style={{ width: 300 }} />
       <col style={{ width: 300 }} />

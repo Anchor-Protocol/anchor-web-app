@@ -8,7 +8,7 @@ import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { formatRatioToPercentage, Ratio } from '@anchor-protocol/notation';
 import { InfoOutlined } from '@material-ui/icons';
 import big, { Big, BigSource } from 'big.js';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { GraphLabel } from './GraphLabel';
 import { GraphTick } from './GraphTick';
 
@@ -35,7 +35,10 @@ export interface LTVGraphProps {
 
 const colorFunction = ({ color }: Data) => color;
 const valueFunction = ({ value }: Data) => value;
-const labelRenderer = ({ position, label, tooltip }: Data, rect: Rect) => {
+const labelRenderer = (
+  { position, label, tooltip, color }: Data,
+  rect: Rect,
+) => {
   return position === 'top' ? (
     <GraphTick style={{ left: rect.x + rect.width }}>
       {tooltip ? (
@@ -52,7 +55,9 @@ const labelRenderer = ({ position, label, tooltip }: Data, rect: Rect) => {
       )}
     </GraphTick>
   ) : (
-    <GraphLabel style={{ left: rect.x + rect.width }}>{label}</GraphLabel>
+    <GraphLabel style={{ left: rect.x + rect.width, color }}>
+      {label}
+    </GraphLabel>
   );
 };
 
@@ -79,6 +84,14 @@ export function LTVGraph({
     },
     [onChange],
   );
+
+  const color = useMemo(() => {
+    return nextLtv?.gte(maxLtv)
+      ? '#e95979'
+      : nextLtv?.gte(safeLtv)
+      ? '#ff9a63'
+      : '#15cc93';
+  }, [maxLtv, nextLtv, safeLtv]);
 
   return (
     <HorizontalGraphBar<Data>
@@ -115,11 +128,7 @@ export function LTVGraph({
           label: nextLtv
             ? `${nextLtv.lt(1) ? formatRatioToPercentage(nextLtv) : '>100'}%`
             : '',
-          color: nextLtv?.gte(maxLtv)
-            ? '#e95979'
-            : nextLtv?.gte(safeLtv)
-            ? '#ff9a63'
-            : '#15cc93',
+          color,
           value: nextLtv
             ? Math.max(Math.min(nextLtv.toNumber(), big(maxLtv).toNumber()), 0)
             : 0,

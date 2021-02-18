@@ -3,7 +3,7 @@ import {
   rulerShadowColor,
 } from '@anchor-protocol/styled-neumorphism';
 import { TokenIcon } from '@anchor-protocol/token-icons';
-import { Footer } from 'components/Footer';
+import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { screen } from 'env';
 import { LoanButtons } from 'pages/borrow/components/LoanButtons';
 import { Overview } from 'pages/borrow/components/Overview';
@@ -19,25 +19,19 @@ export interface BorrowProps {
 function BorrowBase({ className }: BorrowProps) {
   return (
     <MarketProvider>
-      <div className={className}>
-        <main>
-          <div className="market">
-            <h1>
-              <TokenIcon token="ust" /> UST
-            </h1>
-            <div className="loan-buttons">
-              <LoanButtons />
-            </div>
+      <PaddedLayout className={className}>
+        <div className="market">
+          <h1>
+            <TokenIcon token="ust" /> UST
+          </h1>
+          <div className="loan-buttons">
+            <LoanButtons />
           </div>
+        </div>
 
-          <div className="content-layout">
-            <Overview className="borrow" />
-            <CollateralList className="collateral-list" />
-          </div>
-
-          <Footer />
-        </main>
-      </div>
+        <Overview className="borrow" />
+        <CollateralList className="collateral-list" />
+      </PaddedLayout>
     </MarketProvider>
   );
 }
@@ -46,9 +40,6 @@ export const Borrow = styled(BorrowBase)`
   // ---------------------------------------------
   // style
   // ---------------------------------------------
-  background-color: ${({ theme }) => theme.backgroundColor};
-  color: ${({ theme }) => theme.textColor};
-
   .market {
     display: flex;
     justify-content: space-between;
@@ -203,27 +194,9 @@ export const Borrow = styled(BorrowBase)`
     }
   }
 
-  // pc
-  @media (min-width: ${screen.pc.min}px) {
-    padding: 100px;
-
-    .NeuSection-root {
-      margin-bottom: 40px;
-    }
-  }
-
-  @media (min-width: ${screen.monitor.min}px) {
-    main {
-      max-width: 1440px;
-      margin: 0 auto;
-    }
-  }
-
   // tablet
   @media (min-width: ${screen.tablet.min}px) and (max-width: ${screen.tablet
       .max}px) {
-    padding: 30px;
-
     .market {
       flex-direction: column;
       align-items: center;
@@ -234,20 +207,10 @@ export const Borrow = styled(BorrowBase)`
         grid-template-columns: repeat(2, 1fr);
       }
     }
-
-    .NeuSection-root {
-      margin-bottom: 40px;
-
-      .NeuSection-content {
-        padding: 30px;
-      }
-    }
   }
 
   // mobile
   @media (max-width: ${screen.mobile.max}px) {
-    padding: 30px 20px;
-
     .market {
       flex-direction: column;
       align-items: center;
@@ -256,14 +219,6 @@ export const Borrow = styled(BorrowBase)`
         width: 100%;
         margin-top: 20px;
         grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    .NeuSection-root {
-      margin-bottom: 40px;
-
-      .NeuSection-content {
-        padding: 20px;
       }
     }
 

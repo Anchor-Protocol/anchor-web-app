@@ -2,7 +2,7 @@ import {
   rulerLightColor,
   rulerShadowColor,
 } from '@anchor-protocol/styled-neumorphism';
-import { Footer } from 'components/Footer';
+import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { screen } from 'env';
 import React from 'react';
 import styled from 'styled-components';
@@ -16,17 +16,13 @@ export interface EarnProps {
 
 function EarnBase({ className }: EarnProps) {
   return (
-    <div className={className}>
-      <main>
-        <div className="content-layout">
-          <TotalDepositSection className="total-deposit" />
-          <InterestSection className="interest" />
-          <TransactionHistorySection className="transaction-history" />
-        </div>
-
-        <Footer />
-      </main>
-    </div>
+    <PaddedLayout className={className}>
+      <section className="grid">
+        <TotalDepositSection className="total-deposit" />
+        <InterestSection className="interest" />
+        <TransactionHistorySection className="transaction-history" />
+      </section>
+    </PaddedLayout>
   );
 }
 
@@ -34,9 +30,6 @@ export const Earn = styled(EarnBase)`
   // ---------------------------------------------
   // style
   // ---------------------------------------------
-  background-color: ${({ theme }) => theme.backgroundColor};
-  color: ${({ theme }) => theme.textColor};
-
   h2 {
     margin: 0;
     font-size: 15px;
@@ -183,46 +176,31 @@ export const Earn = styled(EarnBase)`
   }
 
   // pc
-  @media (min-width: ${screen.pc.min}px) {
-    padding: 100px;
-  }
-
-  @media (min-width: ${screen.pc.min}px) and (max-width: ${screen.pc.max}px) {
-    .NeuSection-root {
-      margin-bottom: 40px;
-    }
-  }
-
   @media (min-width: ${screen.monitor.min}px) {
-    main {
-      max-width: 1440px;
-      margin: 0 auto;
+    .grid {
+      display: grid;
 
-      .content-layout {
-        display: grid;
+      grid-template-columns: 1fr 1fr 460px;
+      grid-template-rows: auto 425px;
+      grid-gap: 40px;
 
-        min-height: 800px;
+      .NeuSection-root {
+        margin: 0;
+      }
 
-        grid-template-columns: 1fr 1fr 460px;
-        grid-template-rows: auto 425px;
-        grid-gap: 40px;
+      .total-deposit {
+        grid-column: 1/3;
+        grid-row: 1;
+      }
 
-        .total-deposit {
-          grid-column: 1/3;
-          grid-row: 1;
-        }
+      .interest {
+        grid-column: 3;
+        grid-row: 1/3;
+      }
 
-        .interest {
-          grid-column: 3;
-          grid-row: 1/3;
-        }
-
-        .transaction-history {
-          grid-column: 1/3;
-          grid-row: 2/3;
-        }
-
-        margin-bottom: 30px;
+      .transaction-history {
+        grid-column: 1/3;
+        grid-row: 2/3;
       }
     }
 
@@ -240,32 +218,8 @@ export const Earn = styled(EarnBase)`
     }
   }
 
-  // tablet
-  @media (min-width: ${screen.tablet.min}px) and (max-width: ${screen.tablet
-      .max}px) {
-    padding: 30px;
-
-    .NeuSection-root {
-      margin-bottom: 40px;
-
-      .NeuSection-content {
-        padding: 30px;
-      }
-    }
-  }
-
   // mobile
   @media (max-width: ${screen.mobile.max}px) {
-    padding: 30px 20px;
-
-    .NeuSection-root {
-      margin-bottom: 40px;
-
-      .NeuSection-content {
-        padding: 20px;
-      }
-    }
-
     .decimal-point {
       display: none;
     }

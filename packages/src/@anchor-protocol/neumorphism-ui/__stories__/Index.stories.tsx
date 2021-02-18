@@ -284,7 +284,7 @@ const Component = styled(({ className }: { className?: string }) => {
       </Section>
 
       <Section className="table">
-        <HorizontalScrollTable>
+        <HorizontalScrollTable minWidth={800}>
           <colgroup>
             <col style={{ width: 300 }} />
             <col style={{ width: 300 }} />

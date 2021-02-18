@@ -68,7 +68,7 @@ export function CollateralList({ className }: CollateralListProps) {
   // ---------------------------------------------
   return (
     <Section className={className}>
-      <HorizontalScrollTable>
+      <HorizontalScrollTable minWidth={700}>
         <colgroup>
           <col style={{ width: 300 }} />
           <col style={{ width: 200 }} />

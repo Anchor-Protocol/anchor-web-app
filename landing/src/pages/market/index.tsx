@@ -60,7 +60,7 @@ function MarketBase({ className }: MarketProps) {
           </Section>
 
           <Section className="stablecoin-market">
-            <HorizontalScrollTable>
+            <HorizontalScrollTable minWidth={1000}>
               <colgroup>
                 <col style={{ width: 300 }} />
                 <col style={{ width: 200 }} />
@@ -116,7 +116,7 @@ function MarketBase({ className }: MarketProps) {
           </Section>
 
           <Section className="basset-market">
-            <HorizontalScrollTable>
+            <HorizontalScrollTable minWidth={800}>
               <colgroup>
                 <col style={{ width: 300 }} />
                 <col style={{ width: 200 }} />

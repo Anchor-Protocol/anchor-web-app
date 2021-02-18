@@ -17,18 +17,25 @@ export interface HorizontalScrollTableProps
     TableHTMLAttributes<HTMLTableElement>,
     HTMLTableElement
   > {
-  /**
-   * Line width under the table header
-   */
+  /** Line width under the table header */
   headRulerWidth?: number;
-  
-  /**
-   * Line width over the table footer
-   */
+
+  /** Line width over the table footer */
   footRulerWidth?: number;
+
+  /** Table minimum width */
+  minWidth: number;
+
+  /** padding-left of first-child */
+  startPadding?: number;
+
+  /** padding-right of last-child */
+  endPadding?: number;
 }
 
 const defaultRulerWidth: number = 5;
+const defaultStartPadding: number = 0;
+const defaultEndPadding: number = 0;
 
 function HorizontalScrollTableBase({
   className,
@@ -112,13 +119,19 @@ const contentPadding: number = 15;
 export const HorizontalScrollTable = styled(HorizontalScrollTableBase)`
   position: relative;
 
+  th {
+    font-weight: 500;
+    text-align: left;
+  }
+
   > .scroll-container {
     overflow-x: scroll;
 
     > table {
       table-layout: auto;
       width: 100%;
-      
+      min-width: ${({ minWidth }) => minWidth}px;
+
       // ruler space over tbody
       thead:after,
       tfoot:before {
@@ -128,8 +141,9 @@ export const HorizontalScrollTable = styled(HorizontalScrollTableBase)`
           headRulerWidth}px;
         color: transparent;
       }
-      
-      th, td {
+
+      th,
+      td {
         white-space: nowrap;
       }
 
@@ -137,21 +151,18 @@ export const HorizontalScrollTable = styled(HorizontalScrollTableBase)`
         font-size: 13px;
         color: ${({ theme }) => theme.table.head.textColor};
 
-        th {
-          font-weight: 500;
-          text-align: left;
-        }
-
         th,
         td {
           padding: 0 ${contentPadding}px 20px ${contentPadding}px;
 
           &:first-child {
-            padding-left: 0;
+            padding-left: ${({ startPadding = defaultStartPadding }) =>
+              startPadding}px;
           }
 
           &:last-child {
-            padding-right: 0;
+            padding-right: ${({ endPadding = defaultEndPadding }) =>
+              endPadding}px;
           }
         }
       }
@@ -166,11 +177,13 @@ export const HorizontalScrollTable = styled(HorizontalScrollTableBase)`
           padding: 30px ${contentPadding}px;
 
           &:first-child {
-            padding-left: 0;
+            padding-left: ${({ startPadding = defaultStartPadding }) =>
+              startPadding}px;
           }
 
           &:last-child {
-            padding-right: 0;
+            padding-right: ${({ endPadding = defaultEndPadding }) =>
+              endPadding}px;
           }
         }
 
@@ -230,12 +243,14 @@ export const HorizontalScrollTable = styled(HorizontalScrollTableBase)`
   }
 
   > .headRuler {
-    border-radius: ${({ headRulerWidth = defaultRulerWidth }) => headRulerWidth / 2}px;
+    border-radius: ${({ headRulerWidth = defaultRulerWidth }) =>
+      headRulerWidth / 2}px;
     height: ${({ headRulerWidth = defaultRulerWidth }) => headRulerWidth}px;
   }
 
   > .footRuler {
-    border-radius: ${({ footRulerWidth = defaultRulerWidth }) => footRulerWidth / 2}px;
+    border-radius: ${({ footRulerWidth = defaultRulerWidth }) =>
+      footRulerWidth / 2}px;
     height: ${({ footRulerWidth = defaultRulerWidth }) => footRulerWidth}px;
   }
 `;
