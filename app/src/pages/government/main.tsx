@@ -1,5 +1,4 @@
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
-import { screen } from 'env';
 import { Overview } from 'pages/government/components/Overview';
 import { Polls } from 'pages/government/components/Polls';
 import { Rewards } from 'pages/government/components/Rewards';
@@ -49,8 +48,4 @@ export const GovernmentMain = styled(GovernmentMainBase)`
       margin-left: 10px;
     }
   }
-
-  // ---------------------------------------------
-  // layout
-  // ---------------------------------------------
 `;
