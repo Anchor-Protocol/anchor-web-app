@@ -72,7 +72,7 @@ export const CustomShape = () => {
       min={-100}
       max={100}
       barHeight={30}
-      boxRadis={15}
+      boxRadius={15}
       data={data}
       colorFunction={colorFunction}
       valueFunction={valueFunction}

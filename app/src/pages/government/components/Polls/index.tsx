@@ -2,9 +2,13 @@ import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionB
 import { BorderButton } from '@anchor-protocol/neumorphism-ui/components/BorderButton';
 import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
 import { useLocalStorage } from '@anchor-protocol/use-local-storage';
-import { List, ViewModule } from '@material-ui/icons';
-import { ChangeEvent, useState } from 'react';
+import { HOUR, MINUTE, SECOND } from '@anchor-protocol/use-time-end';
+import { ViewModule, List } from '@material-ui/icons';
+import { Grid as GridView } from 'pages/government/components/Polls/Grid';
+import { List as ListView } from 'pages/government/components/Polls/List';
+import { ChangeEvent, useCallback, useState } from 'react';
 import styled from 'styled-components';
+import { Poll } from './types';
 
 export interface PollsProps {
   className?: string;
@@ -21,12 +25,92 @@ const options: Item[] = [
   { label: 'Item2', value: 'item2' },
 ];
 
+const polls: Poll[] = [
+  {
+    id: 6,
+    type: 'Gov Update',
+    status: 'In Progress',
+    title: 'Reduce voting period to 7 days',
+    vote: {
+      total: 100,
+      yes: 45,
+      no: 5,
+    },
+    endsIn: new Date(Date.now() + 10 * HOUR + 24 * SECOND),
+  },
+  {
+    id: 5,
+    type: 'Gov Update',
+    status: 'In Progress',
+    title: 'Reward Minsters bonus mAssets when the premium is too high',
+    vote: {
+      total: 100,
+      yes: 5,
+      no: 45,
+    },
+    endsIn: new Date(Date.now() + 22 * MINUTE + 24 * SECOND),
+  },
+  {
+    id: 4,
+    type: 'Gov Update',
+    status: 'Passed',
+    title: 'Reduce voting period to 7 days',
+    vote: {
+      total: 100,
+      yes: 45,
+      no: 5,
+    },
+    endsIn: new Date(Date.now() + 10 * HOUR + 24 * SECOND),
+  },
+  {
+    id: 3,
+    type: 'Gov Update',
+    status: 'Rejected',
+    title: 'Reduce voting period to 7 days',
+    vote: {
+      total: 100,
+      yes: 45,
+      no: 5,
+    },
+    endsIn: new Date(Date.now() + 10 * HOUR + 24 * SECOND),
+  },
+  {
+    id: 2,
+    type: 'Gov Update',
+    status: 'Executed',
+    title: 'Reduce voting period to 7 days',
+    vote: {
+      total: 100,
+      yes: 45,
+      no: 5,
+    },
+    endsIn: new Date(Date.now() + 10 * HOUR + 24 * SECOND),
+  },
+  {
+    id: 1,
+    type: 'Gov Update',
+    status: 'Executed',
+    title: 'Reduce voting period to 7 days',
+    vote: {
+      total: 100,
+      yes: 45,
+      no: 5,
+    },
+    endsIn: new Date(Date.now() + 10 * HOUR + 24 * SECOND),
+  },
+];
+
 function PollsBase({ className }: PollsProps) {
   const [option, setOption] = useState<string>(() => options[0].value);
+
   const [view, setView] = useLocalStorage<'grid' | 'list'>(
     '__anchor_polls_view__',
     () => 'grid',
   );
+
+  const onPollClick = useCallback((poll: Poll) => {
+    console.log('index.tsx..()', poll);
+  }, []);
 
   return (
     <section className={className}>
@@ -68,6 +152,12 @@ function PollsBase({ className }: PollsProps) {
         <BorderButton>Join Forum</BorderButton>
         <ActionButton>Create Poll</ActionButton>
       </header>
+
+      {view === 'grid' ? (
+        <GridView polls={polls} onClick={onPollClick} />
+      ) : (
+        <ListView polls={polls} onClick={onPollClick} />
+      )}
     </section>
   );
 }

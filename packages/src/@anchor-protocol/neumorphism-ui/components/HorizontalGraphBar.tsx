@@ -52,7 +52,7 @@ export interface HorizontalGraphBarProps<T>
   children?: ReactNode | ((coordinateSpace: Rect) => ReactNode);
 
   barHeight?: number;
-  boxRadis?: number;
+  boxRadius?: number;
 }
 
 function HorizontalGraphBarBase<T>({
@@ -65,7 +65,7 @@ function HorizontalGraphBarBase<T>({
   colorFunction,
   labelRenderer,
   barHeight = defaultBarHeight,
-  boxRadis = defaultBoxRadius,
+  boxRadius = defaultBoxRadius,
   ...divProps
 }: HorizontalGraphBarProps<T>) {
   const { ref, width = 500 } = useResizeObserver<HTMLDivElement>({});
@@ -101,8 +101,8 @@ function HorizontalGraphBarBase<T>({
           graphRects.map((rect, i) => (
             <rect
               {...rect}
-              rx={boxRadis - padding}
-              ry={boxRadis - padding}
+              rx={boxRadius - padding}
+              ry={boxRadius - padding}
               fill={colorFunction(data[i])}
             />
           )),
@@ -128,7 +128,7 @@ export const HorizontalGraphBar: <T>(
   padding: 0;
   margin: 0;
 
-  border-radius: ${({ boxRadis = defaultBoxRadius }) => boxRadis}px;
+  border-radius: ${({ boxRadius = defaultBoxRadius }) => boxRadius}px;
 
   position: relative;
   font-size: 0;
