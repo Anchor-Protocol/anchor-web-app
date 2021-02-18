@@ -41,6 +41,9 @@ function HorizontalScrollTableBase({
   className,
   headRulerWidth = defaultRulerWidth,
   footRulerWidth = defaultRulerWidth,
+  minWidth,
+  startPadding,
+  endPadding,
   ...tableProps
 }: HorizontalScrollTableProps) {
   const container = useRef<HTMLDivElement>(null);
