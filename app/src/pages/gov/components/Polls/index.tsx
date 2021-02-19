@@ -4,7 +4,9 @@ import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeS
 import { useLocalStorage } from '@anchor-protocol/use-local-storage';
 import { HOUR, MINUTE, SECOND } from '@anchor-protocol/use-time-end';
 import { List, ViewModule } from '@material-ui/icons';
+import { govPathname } from 'pages/gov/env';
 import { ChangeEvent, useCallback, useState } from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Grid as GridView } from './Grid';
 import { List as ListView } from './List';
@@ -149,8 +151,17 @@ function PollsBase({ className }: PollsProps) {
 
         <div />
 
-        <BorderButton>Join Forum</BorderButton>
-        <ActionButton>Create Poll</ActionButton>
+        <BorderButton
+          component="a"
+          href="https://google.com/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Join Forum
+        </BorderButton>
+        <ActionButton component={Link} to={`/${govPathname}/poll/create`}>
+          Create Poll
+        </ActionButton>
       </header>
 
       {view === 'grid' ? (

@@ -14,10 +14,13 @@ export const lightTheme: DefaultTheme = {
   intensity: 0.1,
 
   backgroundColor: '#f4f4f5',
+  highlightBackgroundColor: '#ffffff',
+  hoverBackgroundColor: 'rgba(37, 117, 164, 0.05)',
+
   textColor: '#1f1f1f',
   dimTextColor: '#999999',
+
   errorTextColor: '#ef3158',
-  highlightBackgroundColor: '#ffffff',
   positiveTextColor: '#15cc93',
 
   label: {

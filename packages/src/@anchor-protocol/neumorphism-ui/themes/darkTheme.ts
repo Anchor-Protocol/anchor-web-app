@@ -22,10 +22,13 @@ export const darkTheme: DefaultTheme = {
   intensity: 0.45,
 
   backgroundColor: '#1f2237',
+  highlightBackgroundColor: '#363c5f',
+  hoverBackgroundColor: 'rgba(37, 117, 164, 0.05)',
+
   textColor: '#ffffff',
   dimTextColor: 'rgba(255, 255, 255, 0.5)',
+
   errorTextColor: '#ac2b45',
-  highlightBackgroundColor: '#363c5f',
   positiveTextColor: '#15cc93',
 
   label: {

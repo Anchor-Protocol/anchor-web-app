@@ -25,10 +25,13 @@ export interface NeumorphismTheme extends Theme {
 
   // colors
   backgroundColor: string;
+  highlightBackgroundColor: string;
+  hoverBackgroundColor: string;
+
   textColor: string;
   dimTextColor: string;
+
   errorTextColor: string;
-  highlightBackgroundColor: string;
   positiveTextColor: string;
 
   // label

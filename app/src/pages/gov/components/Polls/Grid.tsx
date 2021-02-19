@@ -63,7 +63,7 @@ export const Grid = styled(GridBase)`
     cursor: pointer;
 
     &:hover {
-      background-color: rgba(37, 117, 164, 0.05);
+      background-color: ${({ theme }) => theme.hoverBackgroundColor};
     }
   }
 

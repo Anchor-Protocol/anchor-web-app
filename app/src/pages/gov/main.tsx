@@ -41,7 +41,8 @@ export const GovernmentMain = styled(GovernmentMainBase)`
       height: 40px;
     }
 
-    button {
+    button,
+    a {
       width: 180px;
       height: 48px;
       border-radius: 26px;

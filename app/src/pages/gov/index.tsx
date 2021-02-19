@@ -1,29 +1,37 @@
+import { pollCreateTextProposal } from 'pages/gov/poll.create.text-proposal';
+import { Redirect, Route, Switch } from 'react-router-dom';
+import { govPathname } from './env';
+import { GovernmentMain } from './main';
+import { PollCreate } from './poll.create';
+import { PollDetail } from './poll.detail';
 import { RewardsClaim } from './rewards.claim';
 import { RewardsPool } from './rewards.pool';
 import { RewardsStake } from './rewards.stake';
-import { Redirect, Route, RouteComponentProps, Switch } from 'react-router-dom';
-import { GovernmentMain } from './main';
 
-export function Government({ match }: RouteComponentProps) {
+export function Government() {
   return (
     <Switch>
-      <Route exact path={`${match.path}/`} component={GovernmentMain} />
+      <Route exact path={`/${govPathname}/`} component={GovernmentMain} />
+
+      {/* Rewards */}
+      <Route path={`/${govPathname}/rewards/pool`} component={RewardsPool} />
+      <Route path={`/${govPathname}/rewards/stake`} component={RewardsStake} />
+      <Route path={`/${govPathname}/rewards/claim`} component={RewardsClaim} />
+
+      {/* Poll */}
       <Route
         exact
-        path={`${match.path}/rewards/pool`}
-        component={RewardsPool}
+        path={`/${govPathname}/poll/create`}
+        component={PollCreate}
       />
       <Route
-        exact
-        path={`${match.path}/rewards/stake`}
-        component={RewardsStake}
+        path={`/${govPathname}/poll/create/text-proposal`}
+        component={pollCreateTextProposal}
       />
-      <Route
-        exact
-        path={`${match.path}/rewards/claim`}
-        component={RewardsClaim}
-      />
-      <Redirect path={`${match.path}/*`} to={`${match.path}/`} />
+      <Route path={`/${govPathname}/poll/:id`} component={PollDetail} />
+
+      {/* Fallback */}
+      <Redirect path={`/${govPathname}/*`} to={`/${govPathname}/`} />
     </Switch>
   );
 }

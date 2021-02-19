@@ -1,6 +1,7 @@
 import logoUrl from '@anchor-protocol/icons/assets/Anchor.svg';
 import { WalletSelector } from 'components/Header/WalletSelector';
 import { screen } from 'env';
+import { govPathname } from 'pages/gov/env';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
@@ -16,7 +17,7 @@ function HeaderBase({ className }: HeaderProps) {
         <NavLink to="/earn">EARN</NavLink>
         <NavLink to="/borrow">BORROW</NavLink>
         <NavLink to="/bond">BOND</NavLink>
-        <NavLink to="/gov">GOVERN</NavLink>
+        <NavLink to={`/${govPathname}`}>GOVERN</NavLink>
       </nav>
 
       <section className="wallet">

@@ -15,6 +15,7 @@ export const BorderButton = styled(ButtonBase).attrs({ disableRipple: true })`
 
   &:hover {
     border: 1px solid ${({ theme }) => theme.borderButton.borderHoverColor};
+    background-color: ${({ theme }) => theme.hoverBackgroundColor};
   }
 
   &:disabled {
