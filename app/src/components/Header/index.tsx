@@ -71,7 +71,7 @@ export const Header = styled(HeaderBase)`
       &.active {
         color: #ffffff;
 
-        border-bottom-color: #ffffff;
+        border-bottom-color: ${({ theme }) => theme.backgroundColor};
       }
     }
   }
