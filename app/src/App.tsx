@@ -31,7 +31,7 @@ import { contractAddresses, defaultNetwork, GA_TRACKING_ID } from 'env';
 import { BAsset } from 'pages/basset';
 import { Borrow } from 'pages/borrow';
 import { Earn } from 'pages/earn';
-import { Government } from 'pages/government';
+import { Government } from 'pages/gov';
 import { ReactNode, useMemo } from 'react';
 import {
   BrowserRouter as Router,
@@ -144,7 +144,7 @@ export function App() {
             <Route path="/earn" component={Earn} />
             <Route path="/borrow" component={Borrow} />
             <Route path="/bond" component={BAsset} />
-            <Route path="/government" component={Government} />
+            <Route path="/gov" component={Government} />
             <Redirect to="/earn" />
           </Switch>
         </div>

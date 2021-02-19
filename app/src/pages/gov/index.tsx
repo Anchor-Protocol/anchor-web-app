@@ -1,6 +1,6 @@
-import { RewardsClaim } from 'pages/government/rewards.claim';
-import { RewardsPool } from 'pages/government/rewards.pool';
-import { RewardsStake } from 'pages/government/rewards.stake';
+import { RewardsClaim } from './rewards.claim';
+import { RewardsPool } from './rewards.pool';
+import { RewardsStake } from './rewards.stake';
 import { Redirect, Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { GovernmentMain } from './main';
 

@@ -3,11 +3,11 @@ import { BorderButton } from '@anchor-protocol/neumorphism-ui/components/BorderB
 import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
 import { useLocalStorage } from '@anchor-protocol/use-local-storage';
 import { HOUR, MINUTE, SECOND } from '@anchor-protocol/use-time-end';
-import { ViewModule, List } from '@material-ui/icons';
-import { Grid as GridView } from 'pages/government/components/Polls/Grid';
-import { List as ListView } from 'pages/government/components/Polls/List';
+import { List, ViewModule } from '@material-ui/icons';
 import { ChangeEvent, useCallback, useState } from 'react';
 import styled from 'styled-components';
+import { Grid as GridView } from './Grid';
+import { List as ListView } from './List';
 import { Poll } from './types';
 
 export interface PollsProps {

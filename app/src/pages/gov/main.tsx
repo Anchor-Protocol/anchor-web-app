@@ -1,7 +1,7 @@
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
-import { Overview } from 'pages/government/components/Overview';
-import { Polls } from 'pages/government/components/Polls';
-import { Rewards } from 'pages/government/components/Rewards';
+import { Overview } from './components/Overview';
+import { Polls } from './components/Polls';
+import { Rewards } from './components/Rewards';
 import styled from 'styled-components';
 
 export interface GovernmentMainProps {

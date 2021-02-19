@@ -2,7 +2,7 @@ import { BorderButton } from '@anchor-protocol/neumorphism-ui/components/BorderB
 import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/components/HorizontalScrollTable';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { TimeEnd } from '@anchor-protocol/use-time-end';
-import { PollTinyGraph } from 'pages/government/components/Polls/PollTinyGraph';
+import { PollTinyGraph } from './PollTinyGraph';
 import styled from 'styled-components';
 import { PollList } from './types';
 

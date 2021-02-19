@@ -2,7 +2,7 @@ import { BorderButton } from '@anchor-protocol/neumorphism-ui/components/BorderB
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { TimeEnd } from '@anchor-protocol/use-time-end';
-import { PollGraph } from 'pages/government/components/Polls/PollGraph';
+import { PollGraph } from './PollGraph';
 import styled from 'styled-components';
 import { Schedule } from '@material-ui/icons';
 import { PollList } from './types';
