@@ -19,25 +19,20 @@ export function useGoogleAnalytics(
   useEffect(() => {
     if (!debugRef.current) {
       const script = document.createElement('script');
-      script.setAttribute('async', '');
-      script.setAttribute(
-        'src',
-        `https://www.googletagmanager.com/gtag/js?id=${trackingIdRef.current}`,
-      );
+      script.src = `https://www.googletagmanager.com/gtag/js?id=${trackingIdRef.current}`;
+      script.async = true;
 
-      document.head.appendChild(script);
+      document.body.appendChild(script);
 
-      requestAnimationFrame(() => {
-        window.dataLayer = window.dataLayer || [];
+      window.dataLayer = window.dataLayer || [];
 
-        window.gtag = (...args: any[]) => {
-          window.dataLayer?.push(...args);
-        };
+      window.gtag = (...args: any[]) => {
+        window.dataLayer?.push(...args);
+      };
 
-        window.gtag('js', new Date());
+      window.gtag('js', new Date());
 
-        window.gtag('config', trackingIdRef.current);
-      });
+      window.gtag('config', trackingIdRef.current);
     } else {
       console.log('GTAG INIT:', trackingIdRef.current);
     }
