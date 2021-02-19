@@ -1,19 +1,23 @@
-import { ReactNode } from 'react';
+import { ButtonHTMLAttributes, DetailedHTMLProps } from 'react';
 import styled from 'styled-components';
 
-export interface BorderIconButtonProps {
-  className?: string;
+export interface BorderIconButtonProps
+  extends DetailedHTMLProps<
+    ButtonHTMLAttributes<HTMLButtonElement>,
+    HTMLButtonElement
+  > {
   size: `${number}%` | `${number}px` | `${number}em`;
-  children: ReactNode;
 }
 
-function BorderIconButtonBase({ className, children }: BorderIconButtonProps) {
-  return <button className={className}>{children}</button>;
+function BorderIconButtonBase({ size, ...buttonProps }: BorderIconButtonProps) {
+  return <button {...buttonProps} />;
 }
 
 export const BorderIconButton = styled(BorderIconButtonBase)`
   background-color: transparent;
   outline: none;
+
+  cursor: pointer;
 
   border-radius: 50%;
   width: ${({ size }) => size};
@@ -26,6 +30,7 @@ export const BorderIconButton = styled(BorderIconButtonBase)`
 
   &:hover {
     border: 1px solid ${({ theme }) => theme.borderButton.borderHoverColor};
+    background-color: ${({ theme }) => theme.hoverBackgroundColor};
   }
 
   svg {

@@ -9,7 +9,7 @@ export interface CenteredLayoutProps {
   children: ReactNode;
 }
 
-const defaultMaxWidth: number = 940;
+const defaultMaxWidth: number = 980;
 
 function CenteredLayoutBase({ className, children }: CenteredLayoutProps) {
   return (

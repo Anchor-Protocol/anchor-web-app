@@ -1,8 +1,10 @@
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
-import { BorderIconButton } from '@anchor-protocol/neumorphism-ui/components/BorderIconButton';
 import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/components/HorizontalScrollTable';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
-import { MoreHoriz } from '@material-ui/icons';
+import { MenuItem } from '@material-ui/core';
+import { MoreMenu } from 'pages/gov/components/MoreMenu';
+import { govPathname } from 'pages/gov/env';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 export interface RewardsProps {
@@ -55,9 +57,21 @@ export function RewardsBase({ className }: RewardsProps) {
               <td>34.84</td>
               <td>0</td>
               <td>
-                <BorderIconButton size="25px">
-                  <MoreHoriz />
-                </BorderIconButton>
+                <MoreMenu size="25px">
+                  <MenuItem
+                    component={Link}
+                    to={`/${govPathname}/pool/ANC-UST LP/provide`}
+                  >
+                    Pool
+                  </MenuItem>
+                  <MenuItem
+                    component={Link}
+                    to={`/${govPathname}/pool/ANC-UST LP/stake`}
+                  >
+                    Stake
+                  </MenuItem>
+                  <MenuItem>Claim</MenuItem>
+                </MoreMenu>
               </td>
             </tr>
             <tr>
@@ -67,9 +81,21 @@ export function RewardsBase({ className }: RewardsProps) {
               <td>34.84</td>
               <td>120,36.000</td>
               <td>
-                <BorderIconButton size="25px">
-                  <MoreHoriz />
-                </BorderIconButton>
+                <MoreMenu size="25px">
+                  <MenuItem
+                    component={Link}
+                    to={`/${govPathname}/pool/ANC Government/provide`}
+                  >
+                    Pool
+                  </MenuItem>
+                  <MenuItem
+                    component={Link}
+                    to={`/${govPathname}/pool/ANC Government/stake`}
+                  >
+                    Stake
+                  </MenuItem>
+                  <MenuItem>Claim</MenuItem>
+                </MoreMenu>
               </td>
             </tr>
             <tr>
@@ -79,9 +105,21 @@ export function RewardsBase({ className }: RewardsProps) {
               <td>34.84</td>
               <td>0</td>
               <td>
-                <BorderIconButton size="25px">
-                  <MoreHoriz />
-                </BorderIconButton>
+                <MoreMenu size="25px">
+                  <MenuItem
+                    component={Link}
+                    to={`/${govPathname}/pool/UST Borrow/provide`}
+                  >
+                    Pool
+                  </MenuItem>
+                  <MenuItem
+                    component={Link}
+                    to={`/${govPathname}/pool/UST Borrow/stake`}
+                  >
+                    Stake
+                  </MenuItem>
+                  <MenuItem>Claim</MenuItem>
+                </MoreMenu>
               </td>
             </tr>
           </tbody>
