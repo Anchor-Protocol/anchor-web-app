@@ -2,8 +2,9 @@ import {
   HorizontalGraphBar,
   Rect,
 } from '@anchor-protocol/neumorphism-ui/components/HorizontalGraphBar';
+import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import React from 'react';
-import { useTheme } from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import { GraphTick } from './GraphTick';
 
 export interface Data {
@@ -58,6 +59,41 @@ export function PollGraph({ total, yes, no, baseline }: PollGraphProps) {
       colorFunction={colorFunction}
       valueFunction={valueFunction}
       labelRenderer={labelRenderer}
-    />
+    >
+      <TotalVoteSpan>
+        <b>Voted</b> 10.8%
+      </TotalVoteSpan>
+      <YesNoSpan>
+        <span className="yes">
+          <b>Yes</b> {Math.floor((yes / (yes + no)) * 100)}%
+        </span>
+        <span className="no">
+          <b>No</b> {Math.floor((no / (yes + no)) * 100)}%
+        </span>
+      </YesNoSpan>
+    </HorizontalGraphBar>
   );
 }
+
+const TotalVoteSpan = styled(IconSpan)`
+  left: 0;
+  top: 20px;
+
+  font-size: 12px;
+`;
+
+const YesNoSpan = styled.span`
+  right: 0;
+  top: 20px;
+
+  font-size: 12px;
+
+  .yes {
+    color: #15cc93;
+  }
+
+  .no {
+    color: #e95979;
+    margin-left: 10px;
+  }
+`;

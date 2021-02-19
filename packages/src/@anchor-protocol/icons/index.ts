@@ -1,4 +1,5 @@
 import { ReactComponent as AnchorIcon } from './assets/Anchor.svg';
+import { ReactComponent as AnchorNoCircleIcon } from './assets/AnchorNoCircle.svg';
 import { ReactComponent as ArrowDownIcon } from './assets/ArrowDown.svg';
 import { ReactComponent as CircleArrowRightIcon } from './assets/CircleArrowRight.svg';
 import { ReactComponent as DiscordIcon } from './assets/Discord.svg';
@@ -12,6 +13,7 @@ export const Discord = createMaterialIcon(DiscordIcon);
 export const Wallet = createMaterialIcon(WalletIcon);
 export const ArrowDown = createMaterialIcon(ArrowDownIcon);
 export const Anchor = createMaterialIcon(AnchorIcon);
+export const AnchorNoCircle = createMaterialIcon(AnchorNoCircleIcon);
 export const CircleArrowRight = createMaterialIcon(CircleArrowRightIcon);
 export const Labtop = createMaterialIcon(LabtopIcon);
 export const Menu = createMaterialIcon(MenuIcon);

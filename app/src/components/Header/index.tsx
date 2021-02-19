@@ -111,6 +111,7 @@ export const Header = styled(HeaderBase)`
             width: 100px;
             height: 100px;
             background: url('${logoUrl}') no-repeat;
+            background-size: 28px 28px;
           }
         }
       }

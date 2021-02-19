@@ -1,3 +1,4 @@
+import { BorderButton } from '@anchor-protocol/neumorphism-ui/components/BorderButton';
 import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/components/HorizontalScrollTable';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { TimeEnd } from '@anchor-protocol/use-time-end';
@@ -53,6 +54,8 @@ function ListBase({ className, polls, onClick }: ListProps) {
           ))}
         </tbody>
       </HorizontalScrollTable>
+
+      <BorderButton className="more">More</BorderButton>
     </Section>
   );
 }
@@ -84,11 +87,17 @@ export const List = styled(ListBase)`
 
     tbody {
       tr {
+        cursor: pointer;
+
         &:hover {
-          cursor: pointer;
           background-color: rgba(37, 117, 164, 0.05);
         }
       }
     }
+  }
+
+  .more {
+    width: 100%;
+    margin-top: 20px;
   }
 `;
