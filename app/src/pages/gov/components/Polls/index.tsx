@@ -6,7 +6,7 @@ import { HOUR, MINUTE, SECOND } from '@anchor-protocol/use-time-end';
 import { List, ViewModule } from '@material-ui/icons';
 import { govPathname } from 'pages/gov/env';
 import { ChangeEvent, useCallback, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { Grid as GridView } from './Grid';
 import { List as ListView } from './List';
@@ -103,6 +103,8 @@ const polls: Poll[] = [
 ];
 
 function PollsBase({ className }: PollsProps) {
+  const history = useHistory();
+
   const [option, setOption] = useState<string>(() => options[0].value);
 
   const [view, setView] = useLocalStorage<'grid' | 'list'>(
@@ -110,9 +112,12 @@ function PollsBase({ className }: PollsProps) {
     () => 'grid',
   );
 
-  const onPollClick = useCallback((poll: Poll) => {
-    console.log('index.tsx..()', poll);
-  }, []);
+  const onPollClick = useCallback(
+    (poll: Poll) => {
+      history.push(`/${govPathname}/poll/${poll.id}`);
+    },
+    [history],
+  );
 
   return (
     <section className={className}>

@@ -4,7 +4,7 @@ import {
 } from '@anchor-protocol/neumorphism-ui/components/HorizontalGraphBar';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import React from 'react';
-import styled, { useTheme } from 'styled-components';
+import styled from 'styled-components';
 import { GraphTick } from './GraphTick';
 
 export interface Data {
@@ -19,6 +19,7 @@ export interface PollGraphProps {
   yes: number;
   no: number;
   baseline: number;
+  displaySpans?: boolean;
 }
 
 const colorFunction = ({ color }: Data) => color;
@@ -29,9 +30,13 @@ const labelRenderer = ({ position, label, color }: Data, rect: Rect) => {
   ) : null;
 };
 
-export function PollGraph({ total, yes, no, baseline }: PollGraphProps) {
-  const theme = useTheme();
-
+export function PollGraph({
+  total,
+  yes,
+  no,
+  baseline,
+  displaySpans = true,
+}: PollGraphProps) {
   return (
     <HorizontalGraphBar<Data>
       min={0}
@@ -52,7 +57,7 @@ export function PollGraph({ total, yes, no, baseline }: PollGraphProps) {
         {
           position: 'baseline',
           label: 'Pass Threshold',
-          color: theme.dimTextColor,
+          color: 'transparent',
           value: baseline,
         },
       ]}
@@ -60,17 +65,21 @@ export function PollGraph({ total, yes, no, baseline }: PollGraphProps) {
       valueFunction={valueFunction}
       labelRenderer={labelRenderer}
     >
-      <TotalVoteSpan>
-        <b>Voted</b> 10.8%
-      </TotalVoteSpan>
-      <YesNoSpan>
-        <span className="yes">
-          <b>Yes</b> {Math.floor((yes / (yes + no)) * 100)}%
-        </span>
-        <span className="no">
-          <b>No</b> {Math.floor((no / (yes + no)) * 100)}%
-        </span>
-      </YesNoSpan>
+      {displaySpans && (
+        <TotalVoteSpan>
+          <b>Voted</b> 10.8%
+        </TotalVoteSpan>
+      )}
+      {displaySpans && (
+        <YesNoSpan>
+          <span className="yes">
+            <b>Yes</b> {Math.floor((yes / (yes + no)) * 100)}%
+          </span>
+          <span className="no">
+            <b>No</b> {Math.floor((no / (yes + no)) * 100)}%
+          </span>
+        </YesNoSpan>
+      )}
     </HorizontalGraphBar>
   );
 }

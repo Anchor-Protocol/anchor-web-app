@@ -5,7 +5,7 @@ import { GovernmentMain } from './main';
 import { PollCreate } from './poll.create';
 import { PollDetail } from './poll.detail';
 import { RewardsClaim } from './rewards.claim';
-import { RewardsPool } from './rewards.pool';
+import { RewardsPoolProvide } from 'pages/gov/rewards.pool.provide';
 import { RewardsStake } from './rewards.stake';
 
 export function Government() {
@@ -14,7 +14,10 @@ export function Government() {
       <Route exact path={`/${govPathname}/`} component={GovernmentMain} />
 
       {/* Rewards */}
-      <Route path={`/${govPathname}/rewards/pool`} component={RewardsPool} />
+      <Route
+        path={`/${govPathname}/rewards/pool`}
+        component={RewardsPoolProvide}
+      />
       <Route path={`/${govPathname}/rewards/stake`} component={RewardsStake} />
       <Route path={`/${govPathname}/rewards/claim`} component={RewardsClaim} />
 

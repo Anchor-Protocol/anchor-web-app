@@ -1,5 +1,12 @@
+import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
+import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
-import { PollFormLayout } from 'pages/gov/components/PollFormLayout';
+import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
+import { InputAdornment } from '@material-ui/core';
+import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { FormLayout } from 'pages/gov/components/FormLayout';
+import React from 'react';
 import styled from 'styled-components';
 
 export interface pollCreateTextProposalProps {
@@ -10,14 +17,52 @@ function pollCreateTextProposalBase({
   className,
 }: pollCreateTextProposalProps) {
   return (
-    <PollFormLayout className={className}>
+    <FormLayout className={className}>
       <Section>
         <h1>Submit Text Proposal</h1>
+
+        <div className="description">
+          <p>Label</p>
+          <p />
+        </div>
+
+        <TextInput placeholder="Label" />
+
+        <div className="description">
+          <p>Label</p>
+          <p />
+        </div>
+
+        <TextInput placeholder="Label" multiline rows={4} />
+
+        <div className="description">
+          <p>Label</p>
+          <p />
+        </div>
+
+        <TextInput
+          placeholder="Label"
+          InputProps={{
+            endAdornment: <InputAdornment position="end">Unit</InputAdornment>,
+          }}
+        />
+
+        <TxFeeList className="receipt">
+          <TxFeeListItem
+            label={
+              <IconSpan>
+                Tx Fee <InfoTooltip>Tx Fee Description</InfoTooltip>
+              </IconSpan>
+            }
+          >
+            0 UST
+          </TxFeeListItem>
+        </TxFeeList>
+
+        <ActionButton className="proceed">Swap</ActionButton>
       </Section>
-    </PollFormLayout>
+    </FormLayout>
   );
 }
 
-export const pollCreateTextProposal = styled(pollCreateTextProposalBase)`
-  // TODO
-`;
+export const pollCreateTextProposal = styled(pollCreateTextProposalBase)``;
