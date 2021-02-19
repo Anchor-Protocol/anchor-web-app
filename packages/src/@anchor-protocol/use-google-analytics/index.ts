@@ -59,6 +59,6 @@ export function GoogleAnalytics({
   trackingId: string;
   debug?: boolean;
 }) {
-  useGoogleAnalytics(trackingId, false);
+  useGoogleAnalytics(trackingId, debug);
   return null;
 }
