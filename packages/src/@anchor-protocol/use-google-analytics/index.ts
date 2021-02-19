@@ -8,6 +8,13 @@ declare global {
   }
 }
 
+const gtag = (trackingId: string) => `
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', '${trackingId}');
+`;
+
 export function useGoogleAnalytics(
   trackingId: string,
   debug: boolean = process.env.NODE_ENV !== 'production',
@@ -18,21 +25,16 @@ export function useGoogleAnalytics(
 
   useEffect(() => {
     if (!debugRef.current) {
-      const script = document.createElement('script');
-      script.src = `https://www.googletagmanager.com/gtag/js?id=${trackingIdRef.current}`;
-      script.async = true;
+      const script1 = document.createElement('script');
+      script1.src = `https://www.googletagmanager.com/gtag/js?id=${trackingIdRef.current}`;
+      script1.async = true;
 
-      document.body.appendChild(script);
+      document.body.appendChild(script1);
 
-      window.dataLayer = window.dataLayer || [];
+      const script2 = document.createElement('script');
+      script2.text = gtag(trackingIdRef.current);
 
-      window.gtag = (...args: any[]) => {
-        window.dataLayer?.push(...args);
-      };
-
-      window.gtag('js', new Date());
-
-      window.gtag('config', trackingIdRef.current);
+      document.body.appendChild(script2);
     } else {
       console.log('GTAG INIT:', trackingIdRef.current);
     }
@@ -57,6 +59,6 @@ export function GoogleAnalytics({
   trackingId: string;
   debug?: boolean;
 }) {
-  useGoogleAnalytics(trackingId, debug);
+  useGoogleAnalytics(trackingId, false);
   return null;
 }
