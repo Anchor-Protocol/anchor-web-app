@@ -26,7 +26,6 @@ export interface APYChartProps
   data: Item[];
   gutter?: Gutter;
   margin?: Gutter;
-  isDevelopment?: boolean;
   minY?: number;
   maxY?: number;
 }
@@ -35,9 +34,8 @@ export function APYChartBase({
   data,
   gutter = { top: 60, bottom: 30, left: 20, right: 20 },
   margin = { top: 20, bottom: 20, left: 20, right: 20 },
-  minY = Math.min(...data.map(({ value }) => value)),
-  maxY = Math.max(...data.map(({ value }) => value)),
-  isDevelopment,
+  minY: _minY = Math.min(...data.map(({ value }) => value)),
+  maxY: _maxY = Math.max(...data.map(({ value }) => value)),
   ...divProps
 }: APYChartProps) {
   const { ref, width = 400, height = 200 } = useResizeObserver<HTMLDivElement>(
@@ -53,12 +51,22 @@ export function APYChartBase({
     gutter,
   });
 
+  const { minX, minY, maxX, maxY } = useMemo(
+    () => ({
+      minX: 0,
+      maxX: data.length - 1,
+      minY: _minY ?? Math.min(...data.map(({ value }) => value)),
+      maxY: _maxY ?? Math.max(...data.map(({ value }) => value)),
+    }),
+    [_maxY, _minY, data],
+  );
+
   const xScale = useMemo(() => {
     return scaleLinear()
-      .domain([0, data.length - 1])
+      .domain([minX, maxX])
       .range([coordinateSpace.left, coordinateSpace.right])
       .clamp(true);
-  }, [coordinateSpace.left, coordinateSpace.right, data.length]);
+  }, [coordinateSpace.left, coordinateSpace.right, maxX, minX]);
 
   const yScale = useMemo(() => {
     return scaleLinear()
@@ -88,19 +96,14 @@ export function APYChartBase({
     );
   }, [data, xScale, yScale]);
 
-  const [sliderPosition, setSliderPosition] = useState<number>(
-    () => data.length - 1,
-  );
+  const [sliderPosition, setSliderPosition] = useState<number>(() => maxX);
 
   const sliderStep = useCallback((nextValue: number) => {
     return Math.round(nextValue);
   }, []);
 
   const pointingElements = useMemo<ReactNode>(() => {
-    const index = Math.max(
-      Math.min(Math.round(sliderPosition), data.length - 1),
-      0,
-    );
+    const index = Math.max(Math.min(Math.round(sliderPosition), maxX), minX);
 
     const x = xScale(index);
     const y = yScale(data[index].value);
@@ -136,6 +139,8 @@ export function APYChartBase({
     coordinateSpace.bottom,
     data,
     margin.top,
+    maxX,
+    minX,
     sliderPosition,
     theme.dimTextColor,
     theme.textColor,
@@ -161,10 +166,10 @@ export function APYChartBase({
             y: height + margin.top,
             width: coordinateSpace.width,
           }}
-          min={0}
-          max={data.length - 1}
-          start={0}
-          end={data.length - 1}
+          min={minX}
+          max={maxX}
+          start={minX}
+          end={maxX}
           value={sliderPosition}
           stepFunction={sliderStep}
           onChange={setSliderPosition}
@@ -188,14 +193,10 @@ export function APYChartBase({
 
 export const APYChart = styled(APYChartBase)`
   min-width: 0;
-
-  ${({ isDevelopment }) =>
-    isDevelopment && `background-color: rgba(0, 0, 0, 0.05)`};
+  //background-color: rgba(0, 0, 0, 0.05);
 
   svg {
     min-width: 0;
-
-    ${({ isDevelopment }) =>
-      isDevelopment && `background-color: rgba(0, 0, 0, 0.02)`};
+    //background-color: rgba(0, 0, 0, 0.02);
   }
 `;

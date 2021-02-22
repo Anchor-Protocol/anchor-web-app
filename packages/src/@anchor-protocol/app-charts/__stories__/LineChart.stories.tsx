@@ -7,7 +7,6 @@ export default {
 export const Basic = () => {
   return (
     <APYChart
-      isDevelopment={true}
       style={{ width: '80vw', height: '50vh' }}
       data={[
         { label: 'A', value: 100 },
