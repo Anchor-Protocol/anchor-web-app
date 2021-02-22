@@ -1,4 +1,5 @@
 import { AnchorNoCircle } from '@anchor-protocol/icons';
+import { RulerTab } from '@anchor-protocol/neumorphism-ui/components/RulerTab';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { Tab } from '@anchor-protocol/neumorphism-ui/components/Tab';
 import { TokenIcon } from '@anchor-protocol/token-icons';
@@ -116,7 +117,7 @@ function RewardsPoolBase({ className }: RewardsPoolProps) {
       </header>
 
       <Section>
-        <Tab
+        <RulerTab
           className="subtab"
           items={tab?.value === 'stake' ? stakeItems : poolItems}
           selectedItem={
@@ -125,9 +126,6 @@ function RewardsPoolBase({ className }: RewardsPoolProps) {
           onChange={subTabChange}
           labelFunction={({ label }) => label}
           keyFunction={({ value }) => value}
-          height={46}
-          borderRadius={30}
-          fontSize={12}
         />
 
         <Switch>

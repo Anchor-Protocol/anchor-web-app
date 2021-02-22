@@ -5,9 +5,7 @@ import styled from 'styled-components';
 import useResizeObserver from 'use-resize-observer/polyfilled';
 import { Tooltip } from './Tooltip';
 
-export interface TabProps<T> {
-  className?: string;
-
+export interface TabBaseProps<T> {
   disabled?: boolean;
 
   /** Data */
@@ -26,6 +24,10 @@ export interface TabProps<T> {
   keyFunction: (item: T) => string;
 
   tooltipFunction?: (item: T) => ReactNode;
+}
+
+export interface TabProps<T> extends TabBaseProps<T> {
+  className?: string;
 
   /** height value to change look */
   height?: number;
