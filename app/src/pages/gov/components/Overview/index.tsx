@@ -7,6 +7,8 @@ import { TokenIcon } from '@anchor-protocol/token-icons';
 import { ChevronRight } from '@material-ui/icons';
 import { Circles } from 'components/Circles';
 import { screen } from 'env';
+import { govPathname } from 'pages/gov/env';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 export interface OverviewProps {
@@ -36,8 +38,15 @@ function OverviewBase({ className }: OverviewProps) {
           <span>8.32%</span>
         </div>
         <div className="staking-buttons">
-          <BorderButton>Trade ANC</BorderButton>
-          <BorderButton>Stake</BorderButton>
+          <BorderButton component={Link} to={`/${govPathname}/trade`}>
+            Trade ANC
+          </BorderButton>
+          <BorderButton
+            component={Link}
+            to={`/${govPathname}/pool/Governance Staking/stake`}
+          >
+            Stake
+          </BorderButton>
         </div>
       </Section>
       <Section className="lp">
@@ -46,9 +55,11 @@ function OverviewBase({ className }: OverviewProps) {
           <AnchorNoCircle style={{ fontSize: '1.4em' }} />
         </Circles>
         <h2>
-          <IconSpan>
-            ANC - UST LP <ChevronRight />
-          </IconSpan>
+          <Link to={`/${govPathname}/pool/ANC - UST LP/provide`}>
+            <IconSpan>
+              ANC - UST LP <ChevronRight />
+            </IconSpan>
+          </Link>
         </h2>
         <div className="lp-labels">
           <div>

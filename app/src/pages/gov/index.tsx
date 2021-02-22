@@ -1,10 +1,11 @@
-import { pollCreateTextProposal } from 'pages/gov/poll.create.text-proposal';
-import { RewardsPool } from 'pages/gov/rewards.pool';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { govPathname } from './env';
 import { GovernmentMain } from './main';
 import { PollCreate } from './poll.create';
+import { pollCreateTextProposal } from './poll.create.text-proposal';
 import { PollDetail } from './poll.detail';
+import { RewardsPool } from './rewards.pool';
+import { Trade } from './trade';
 
 export function Government() {
   return (
@@ -14,6 +15,9 @@ export function Government() {
 
       {/* Rewards */}
       <Route path={`/${govPathname}/pool/:reward`} component={RewardsPool} />
+
+      {/* Trade */}
+      <Route path={`/${govPathname}/trade`} component={Trade} />
 
       {/* Poll */}
       <Route
