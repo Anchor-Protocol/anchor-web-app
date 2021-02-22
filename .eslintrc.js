@@ -3,8 +3,6 @@ module.exports = {
     'react-app',
     'react-app/jest',
     'prettier',
-    'prettier/react',
-    'prettier/@typescript-eslint',
   ],
   rules: {
     'react-hooks/exhaustive-deps': [
