@@ -77,6 +77,19 @@ function OverviewBase({ className }: OverviewProps) {
 }
 
 export const Overview = styled(OverviewBase)`
+  // ---------------------------------------------
+  // styles
+  // ---------------------------------------------
+  .lp {
+    a {
+      text-decoration: none;
+      color: ${({ theme }) => theme.textColor};
+    }
+  }
+
+  // ---------------------------------------------
+  // layout
+  // ---------------------------------------------
   .anc-price,
   .total-staked {
     display: grid;

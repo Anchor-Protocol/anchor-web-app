@@ -93,7 +93,7 @@ function RewardsPoolBase({ className }: RewardsPoolProps) {
     <CenteredLayout className={className}>
       <header>
         <h1>
-          <Circles radius={24}>
+          <Circles radius={24} backgroundColor="#ffffff">
             <TokenIcon
               token="ust"
               variant="@3x"
