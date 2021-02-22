@@ -1,4 +1,4 @@
-import { LineChart } from '@anchor-protocol/app-charts/LineChart';
+import { APYChart } from '@anchor-protocol/app-charts/APYChart';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { Label } from '@anchor-protocol/neumorphism-ui/components/Label';
@@ -82,14 +82,21 @@ export function InterestSection({ className }: InterestSectionProps) {
           <Label className="name">APY</Label>
         </Tooltip>
         <div className="value">{formatRatioToPercentage(apy)}%</div>
-        <LineChart
+        <APYChart
+          margin={{ top: 20, bottom: 20, left: 100, right: 100 }}
+          gutter={{ top: 30, bottom: 30, left: 100, right: 100 }}
           data={[
-            { label: 'A', date: 0, value: 100 },
-            { label: 'B', date: 1, value: 10 },
-            { label: 'C', date: 2, value: 70 },
-            { label: 'D', date: 3, value: 130 },
-            { label: 'E', date: 4, value: 60 },
-            { label: 'F', date: 5, value: 170 },
+            { label: 'A', value: 100 },
+            { label: 'B', value: 0 },
+            { label: 'C', value: 70 },
+            { label: 'D', value: 130 },
+            { label: 'E', value: 60 },
+            { label: 'F', value: 170 },
+            { label: 'G', value: 190 },
+            { label: 'H', value: 140 },
+            { label: 'I', value: 110 },
+            { label: 'J', value: 40 },
+            { label: 'K', value: 10 },
           ]}
         />
       </div>

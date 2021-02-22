@@ -1,4 +1,4 @@
-import { LineChart } from '@anchor-protocol/app-charts/LineChart';
+import { APYChart } from '@anchor-protocol/app-charts/APYChart';
 
 export default {
   title: 'anchor/LineChart',
@@ -6,16 +6,23 @@ export default {
 
 export const Basic = () => {
   return (
-    <LineChart
-      style={{ width: '50vw', height: '50vh' }}
+    <APYChart
+      isDevelopment={true}
+      style={{ width: '80vw', height: '50vh' }}
       data={[
-        { label: 'A', date: 0, value: 100 },
-        { label: 'B', date: 1, value: 10 },
-        { label: 'C', date: 2, value: 70 },
-        { label: 'D', date: 3, value: 130 },
-        { label: 'E', date: 4, value: 60 },
-        { label: 'F', date: 5, value: 170 },
+        { label: 'A', value: 100 },
+        { label: 'B', value: 0 },
+        { label: 'C', value: 70 },
+        { label: 'D', value: 130 },
+        { label: 'E', value: 60 },
+        { label: 'F', value: 170 },
+        { label: 'G', value: 190 },
+        { label: 'H', value: 140 },
+        { label: 'I', value: 110 },
+        { label: 'J', value: 40 },
+        { label: 'K', value: 10 },
       ]}
+      minY={0}
     />
   );
 };
