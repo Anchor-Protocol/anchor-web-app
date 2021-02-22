@@ -6,7 +6,7 @@ import {
 import { DetailedHTMLProps, HTMLAttributes, ReactNode } from 'react';
 import styled from 'styled-components';
 
-type GridTemplate = number | `${number}fr`;
+type GridTemplate = number | string; // of number | `${number}fr`
 
 export interface SelectAndTextInputContainerProps
   extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
@@ -35,7 +35,7 @@ function notFirstRow(columnLength: number): string {
   return `:not(:nth-child(-n + ${columnLength}))`;
 }
 
-function notLastRow(columnLength: number, rowLength): string {
+function notLastRow(columnLength: number, rowLength: number): string {
   return `:not(:nth-child(n + ${columnLength * rowLength - columnLength + 1}))`;
 }
 
