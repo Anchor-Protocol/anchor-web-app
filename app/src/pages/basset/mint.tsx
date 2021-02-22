@@ -223,6 +223,7 @@ function MintBase({ className }: MintProps) {
 
       <SelectAndTextInputContainer
         className="bond"
+        gridColumns={[100, '1fr']}
         error={!!invalidBondAmount}
         leftHelperText={invalidBondAmount}
         rightHelperText={
@@ -278,7 +279,11 @@ function MintBase({ className }: MintProps) {
         <p />
       </div>
 
-      <SelectAndTextInputContainer className="mint" error={!!invalidBondAmount}>
+      <SelectAndTextInputContainer
+        className="mint"
+        gridColumns={[100, '1fr']}
+        error={!!invalidBondAmount}
+      >
         <MuiNativeSelect
           value={mintCurrency}
           onChange={({ target }) => updateMintCurrency(target.value)}
@@ -398,14 +403,6 @@ export const Mint = styled(MintBase)`
   .bond,
   .mint {
     margin-bottom: 30px;
-
-    > :first-child {
-      width: 100px;
-    }
-
-    > :nth-child(2) {
-      flex: 1;
-    }
   }
 
   hr {

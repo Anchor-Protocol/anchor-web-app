@@ -199,7 +199,7 @@ const Component = styled(({ className }: { className?: string }) => {
             ))}
           </NativeSelect>
 
-          <SelectAndTextInputContainer>
+          <SelectAndTextInputContainer gridColumns={[100, '1fr']}>
             <MuiNativeSelect
               value={
                 selectedItem['selectAndTextInput']?.value ??

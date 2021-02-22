@@ -23,7 +23,31 @@ export const Basic = () => {
   const [selectedItem, setSelectedItem] = useState<Item>(() => items[0]);
 
   return (
-    <SelectAndTextInputContainer>
+    <SelectAndTextInputContainer gridColumns={[120, '1fr']}>
+      <MuiNativeSelect
+        value={selectedItem.value}
+        onChange={({ target }) =>
+          setSelectedItem(
+            items.find(({ value }) => target.value === value) ?? items[0],
+          )
+        }
+      >
+        {items.map(({ label, value }) => (
+          <option key={value} value={value}>
+            {label}
+          </option>
+        ))}
+      </MuiNativeSelect>
+      <Input placeholder="PLACEHOLDER" />
+    </SelectAndTextInputContainer>
+  );
+};
+
+export const Readonly = () => {
+  const [selectedItem, setSelectedItem] = useState<Item>(() => items[0]);
+
+  return (
+    <SelectAndTextInputContainer gridColumns={[120, '1fr']} aria-readonly>
       <MuiNativeSelect
         value={selectedItem.value}
         onChange={({ target }) =>
@@ -47,7 +71,7 @@ export const Disabled = () => {
   const [selectedItem, setSelectedItem] = useState<Item>(() => items[0]);
 
   return (
-    <SelectAndTextInputContainer aria-disabled>
+    <SelectAndTextInputContainer gridColumns={[120, '1fr']} aria-disabled>
       <MuiNativeSelect
         value={selectedItem.value}
         onChange={({ target }) =>
@@ -62,6 +86,85 @@ export const Disabled = () => {
           </option>
         ))}
       </MuiNativeSelect>
+      <Input placeholder="PLACEHOLDER" />
+    </SelectAndTextInputContainer>
+  );
+};
+
+export const Multiline = () => {
+  const [selectedItem, setSelectedItem] = useState<Item>(() => items[0]);
+
+  return (
+    <SelectAndTextInputContainer
+      gridColumns={[120, '1fr', '1fr']}
+      gridRows={[60, 60, 60, 60]}
+    >
+      <MuiNativeSelect
+        value={selectedItem.value}
+        onChange={({ target }) =>
+          setSelectedItem(
+            items.find(({ value }) => target.value === value) ?? items[0],
+          )
+        }
+      >
+        {items.map(({ label, value }) => (
+          <option key={value} value={value}>
+            {label}
+          </option>
+        ))}
+      </MuiNativeSelect>
+      <Input placeholder="PLACEHOLDER" />
+      <Input placeholder="PLACEHOLDER" />
+
+      <MuiNativeSelect
+        value={selectedItem.value}
+        onChange={({ target }) =>
+          setSelectedItem(
+            items.find(({ value }) => target.value === value) ?? items[0],
+          )
+        }
+      >
+        {items.map(({ label, value }) => (
+          <option key={value} value={value}>
+            {label}
+          </option>
+        ))}
+      </MuiNativeSelect>
+      <Input placeholder="PLACEHOLDER" />
+      <Input placeholder="PLACEHOLDER" />
+
+      <MuiNativeSelect
+        value={selectedItem.value}
+        onChange={({ target }) =>
+          setSelectedItem(
+            items.find(({ value }) => target.value === value) ?? items[0],
+          )
+        }
+      >
+        {items.map(({ label, value }) => (
+          <option key={value} value={value}>
+            {label}
+          </option>
+        ))}
+      </MuiNativeSelect>
+      <Input placeholder="PLACEHOLDER" />
+      <Input placeholder="PLACEHOLDER" />
+
+      <MuiNativeSelect
+        value={selectedItem.value}
+        onChange={({ target }) =>
+          setSelectedItem(
+            items.find(({ value }) => target.value === value) ?? items[0],
+          )
+        }
+      >
+        {items.map(({ label, value }) => (
+          <option key={value} value={value}>
+            {label}
+          </option>
+        ))}
+      </MuiNativeSelect>
+      <Input placeholder="PLACEHOLDER" />
       <Input placeholder="PLACEHOLDER" />
     </SelectAndTextInputContainer>
   );

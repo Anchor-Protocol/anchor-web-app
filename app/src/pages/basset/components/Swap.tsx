@@ -270,6 +270,7 @@ export function Swap() {
 
       <SelectAndTextInputContainer
         className="burn"
+        gridColumns={[100, '1fr']}
         error={!!invalidBurnAmount}
         leftHelperText={invalidBurnAmount}
         rightHelperText={
@@ -324,7 +325,11 @@ export function Swap() {
         <p />
       </div>
 
-      <SelectAndTextInputContainer className="gett" error={!!invalidBurnAmount}>
+      <SelectAndTextInputContainer
+        className="gett"
+        gridColumns={[100, '1fr']}
+        error={!!invalidBurnAmount}
+      >
         <MuiNativeSelect
           value={getCurrency}
           onChange={({ target }) => updateGetCurrency(target.value)}
