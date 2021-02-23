@@ -140,6 +140,61 @@ export const query = gql`
   }
 `;
 
+export const totalQuery = gql`
+  query __interestEarnedTotal(
+    $walletAddress: String!
+    $now: Int!
+    $stable_denom: String!
+  ) {
+    now: InterestEarnedUserRecords(
+      Order: DESC
+      Limit: 1
+      Address: $walletAddress
+      StableDenom: $stable_denom
+    ) {
+      Address
+      StableDenom
+      Height
+      Timestamp
+      TotalDeposit
+      TotalWithdraw
+      CurrentDeposit
+    }
+
+    then: InterestEarnedUserRecords(
+      Order: ASC
+      Limit: 1
+      Address: $walletAddress
+      Timestamp_range: [0, $now]
+      StableDenom: $stable_denom
+    ) {
+      Address
+      StableDenom
+      Height
+      Timestamp
+      TotalDeposit
+      TotalWithdraw
+      CurrentDeposit
+    }
+
+    fallback: InterestEarnedUserRecords(
+      Order: ASC
+      Limit: 1
+      Address: $walletAddress
+      Timestamp_range: [0, $now]
+      StableDenom: $stable_denom
+    ) {
+      Address
+      StableDenom
+      Height
+      Timestamp
+      TotalDeposit
+      TotalWithdraw
+      CurrentDeposit
+    }
+  }
+`;
+
 function getDates(
   period: 'total' | 'year' | 'month' | 'week' | 'day',
 ): { now: JSDateTime; then: JSDateTime } {
@@ -149,7 +204,7 @@ function getDates(
     now,
     then:
       period === 'total'
-        ? (sub(now, { years: 10 }).getTime() as JSDateTime)
+        ? (0 as JSDateTime)
         : period === 'year'
         ? (sub(now, { years: 1 }).getTime() as JSDateTime)
         : period === 'month'
@@ -180,7 +235,7 @@ export function useInterestEarned(
   const { data: _data, refetch: _refetch, ...result } = useQuery<
     RawData,
     RawVariables
-  >(query, {
+  >(period === 'total' ? totalQuery : query, {
     skip: !serviceAvailable,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
