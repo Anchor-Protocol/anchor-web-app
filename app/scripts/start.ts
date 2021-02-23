@@ -21,7 +21,9 @@ import { launch } from 'puppeteer';
   });
 
   const [page] = await browser.pages();
-  await page.goto(`http://localhost:${port}/basset/mint`);
+  await page.goto(
+    `${process.env.HTTPS ? 'https' : 'http'}://localhost:${port}/basset/mint`,
+  );
 
   //await page.waitForFunction(
   //  `document.querySelector('#app h1').innerHTML === 'Hello World!'`,

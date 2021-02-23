@@ -13208,14 +13208,14 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"jest-bin@npm:^0.2.3":
-  version: 0.2.3
-  resolution: "jest-bin@npm:0.2.3"
+"jest-bin@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "jest-bin@npm:0.3.0"
   dependencies:
     react-dev-utils: ^11.0.0
   bin:
     jest-bin: bin/jest-bin.js
-  checksum: 24b9b2031250750865f19f6d3f78cb859b96deb4b29dd4d74aace7d791b41c0fc6c23e6551d36d43d32744ce6cb96661533ef6b1174322ee6cb72cf89c6b989b
+  checksum: f7cc219918c9ab19767428aef50611a130bcbc85a2b6cc0fcafcb93fa5ba47d00e74a4c22e6f1e50900b1a83bc06bf363c6cec50480db693e79534ecc819e192
   languageName: node
   linkType: hard
 
@@ -19203,7 +19203,7 @@ resolve@^0.6.1:
     eslint-config-prettier: ^8.0.0
     eslint-config-react-app: ^6.0.0
     husky: ^5.1.0
-    jest-bin: ^0.2.3
+    jest-bin: ^0.3.0
     lint-staged: ^10.5.4
     prettier: ^2.2.1
     react-scripts: 4.0.2

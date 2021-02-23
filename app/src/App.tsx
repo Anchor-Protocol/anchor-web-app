@@ -56,7 +56,7 @@ function Providers({ children }: { children: ReactNode }) {
   const client = useMemo<ApolloClient<any>>(() => {
     const httpLink = new HttpLink({
       uri: ({ operationName }) =>
-        `https://tequila-mantle.terra.dev?${operationName}`,
+        `https://tequila-mantle.anchorprotocol.com?${operationName}`,
     });
 
     return new ApolloClient({

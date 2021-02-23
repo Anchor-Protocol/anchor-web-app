@@ -3,7 +3,8 @@ import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { contractAddresses } from 'env';
 
 export const testClient = new ApolloClient({
-  uri: 'https://tequila-mantle.terra.dev',
+  uri: 'https://tequila-mantle.anchorprotocol.com',
+  //uri: 'https://tequila-mantle.terra.dev',
   cache: new InMemoryCache(),
 });
 

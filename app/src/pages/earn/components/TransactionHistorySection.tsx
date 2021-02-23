@@ -1,5 +1,8 @@
 import { HorizontalHeavyRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalHeavyRuler';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
+import { demicrofy, formatUST, truncate } from '@anchor-protocol/notation';
+import { useTransactionHistory } from 'pages/earn/queries/transactionHistory';
+import styled from 'styled-components';
 
 export interface TransactionHistorySectionProps {
   className?: string;
@@ -8,25 +11,85 @@ export interface TransactionHistorySectionProps {
 export function TransactionHistorySection({
   className,
 }: TransactionHistorySectionProps) {
+  const {
+    data: { transactionHistory = [] },
+  } = useTransactionHistory();
+
   return (
     <Section className={className}>
       <h2>TRANSACTION HISTORY</h2>
 
       <HorizontalHeavyRuler />
 
-      <ul>
-        {Array.from({ length: 20 }, (_, i) => (
-          <li key={'listitem' + i}>
-            <div className="amount">
-              <s>+200 UST</s>
-            </div>
-            <div className="detail">
-              <span>Deposit from terra1...52wpvt</span>
-              <time>16:53 12 Oct 2020</time>
-            </div>
-          </li>
-        ))}
-      </ul>
+      {transactionHistory?.length > 0 ? (
+        <ul>
+          {transactionHistory
+            .filter(
+              ({ TransactionType }) =>
+                TransactionType === 'deposit_stable' ||
+                TransactionType === 'redeem_stable',
+            )
+            .map(
+              ({
+                Address,
+                TxHash,
+                InAmount,
+                OutAmount,
+                TransactionType,
+                Timestamp,
+              }) => {
+                const datetime: Date = new Date(Timestamp * 1000);
+
+                return (
+                  <li key={'history' + TxHash}>
+                    <div className="amount">
+                      {TransactionType === 'deposit_stable'
+                        ? `+${formatUST(demicrofy(InAmount))}`
+                        : `-${formatUST(demicrofy(OutAmount))}`}{' '}
+                      UST
+                    </div>
+                    <div className="detail">
+                      <span>Deposit from {truncate(Address)}</span>
+                      <time>
+                        {datetime.toLocaleDateString(undefined, {
+                          weekday: 'short',
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        })}{' '}
+                        {datetime.toLocaleTimeString()}
+                      </time>
+                    </div>
+                  </li>
+                );
+              },
+            )}
+        </ul>
+      ) : (
+        <EmptyMessage>
+          <h3>No transaction history</h3>
+          <p>Looks like you haven't made any transaction yet</p>
+        </EmptyMessage>
+      )}
     </Section>
   );
 }
+
+const EmptyMessage = styled.div`
+  height: 280px;
+  display: grid;
+  place-content: center;
+  text-align: center;
+
+  h3 {
+    font-size: 18px;
+    font-weight: 500;
+
+    margin-bottom: 8px;
+  }
+
+  p {
+    font-size: 13px;
+    color: ${({ theme }) => theme.dimTextColor};
+  }
+`;
