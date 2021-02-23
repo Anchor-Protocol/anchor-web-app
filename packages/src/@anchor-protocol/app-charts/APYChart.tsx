@@ -1,4 +1,3 @@
-import { ChartSliderThumb } from '@anchor-protocol/app-charts/ChartSliderThumb';
 import { scaleLinear } from 'd3-scale';
 import { curveNatural, line } from 'd3-shape';
 import {
@@ -13,6 +12,7 @@ import styled, { useTheme } from 'styled-components';
 import useResizeObserver from 'use-resize-observer/polyfilled';
 import { ChartRuler } from './ChartRuler';
 import { ChartSlider } from './ChartSlider';
+import { ChartSliderThumb } from './ChartSliderThumb';
 import { dropshadowFilter } from './filters';
 import { useCoordinateSpace } from './interactions/useCoordinateSpace';
 import { Gutter } from './types';

@@ -30,7 +30,7 @@ export function useCoordinateSpace({
       x: gutter.left,
       y: gutter.top,
       width: w - gutter.left - gutter.right,
-      height: h + margin.top + margin.bottom - gutter.top - gutter.bottom,
+      height: h - gutter.top - gutter.bottom,
       top: gutter.top,
       left: gutter.left,
       right: w - gutter.right,

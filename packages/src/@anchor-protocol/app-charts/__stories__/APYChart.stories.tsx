@@ -1,7 +1,7 @@
 import { APYChart } from '@anchor-protocol/app-charts/APYChart';
 
 export default {
-  title: 'anchor/LineChart',
+  title: 'anchor/APYChart',
 };
 
 export const Basic = () => {
