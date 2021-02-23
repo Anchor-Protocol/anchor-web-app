@@ -40,8 +40,8 @@ export const dataMap = createMap<RawData, Data>({
     try {
       return big(referenceNow.CurrentDeposit)
         .minus(referenceThen.CurrentDeposit)
-        .plus(referenceNow.TotalDeposit)
-        .minus(referenceThen.TotalWithdraw)
+        .plus(referenceNow.TotalWithdraw)
+        .minus(referenceNow.TotalDeposit)
         .toFixed() as uUST;
     } catch {
       return '0' as uUST;
