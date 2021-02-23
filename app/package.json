@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
+  "// how to enable local https": "@see https://iamssen.medium.com/localhost%EC%97%90-ssl-%EC%A0%81%EC%9A%A9%ED%95%98%EA%B8%B0-b76acbaea079",
   "scripts": {
     "start": "multiplerun start",
     "start:chrome": "HTTPS=true SSL_CRT_FILE=$LOCALHOST_HTTPS_CERT SSL_KEY_FILE=$LOCALHOST_HTTPS_KEY PORT=9433 react-app-rewired start",
@@ -67,6 +68,7 @@
     "d3-scale": "^3.2.3",
     "d3-selection": "^2.0.0",
     "d3-shape": "^2.0.0",
+    "date-fns": "^2.17.0",
     "downshift": "^6.1.0",
     "fastdom": "^1.0.10",
     "graphql": "^15.5.0",

@@ -5,10 +5,16 @@ import { Label } from '@anchor-protocol/neumorphism-ui/components/Label';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { Tab } from '@anchor-protocol/neumorphism-ui/components/Tab';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
-import { formatRatioToPercentage } from '@anchor-protocol/notation';
+import {
+  demicrofy,
+  formatRatioToPercentage,
+  formatUST,
+  mapDecimalPointBaseSeparatedNumbers,
+} from '@anchor-protocol/notation';
 import { useConstants } from 'contexts/contants';
 import { currentAPY } from 'pages/earn/logics/currentAPY';
 import { useInterest } from 'pages/earn/queries/interest';
+import { Period, useInterestEarned } from 'pages/earn/queries/interestEarned';
 import { useMemo, useState } from 'react';
 
 export interface InterestSectionProps {
@@ -17,7 +23,7 @@ export interface InterestSectionProps {
 
 interface Item {
   label: string;
-  value: string;
+  value: Period;
 }
 
 const tabItems: Item[] = [
@@ -57,6 +63,10 @@ export function InterestSection({ className }: InterestSectionProps) {
   const {
     data: { marketStatus },
   } = useInterest();
+
+  const {
+    data: { interestEarned },
+  } = useInterestEarned(tab.value);
 
   // ---------------------------------------------
   // logics
@@ -115,11 +125,32 @@ export function InterestSection({ className }: InterestSectionProps) {
         />
 
         <div className="amount">
-          <span>
-            <s>
-              2,320<span className="decimal-point">.063</span> UST
-            </s>
-          </span>
+          <Tooltip
+            title={
+              'This is debug message. interest_earned is ' +
+              String(interestEarned)
+            }
+            placement="top"
+          >
+            <span>
+              {interestEarned
+                ? mapDecimalPointBaseSeparatedNumbers(
+                    formatUST(demicrofy(interestEarned)),
+                    (i, d) => {
+                      return (
+                        <>
+                          {i}
+                          {d ? (
+                            <span className="decimal-point">.{d}</span>
+                          ) : null}{' '}
+                          UST
+                        </>
+                      );
+                    },
+                  )
+                : '0 UST'}
+            </span>
+          </Tooltip>
           <p>
             <IconSpan>
               Interest earned{' '}
