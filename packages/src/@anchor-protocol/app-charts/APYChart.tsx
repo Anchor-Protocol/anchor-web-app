@@ -1,9 +1,12 @@
+import { darkTheme } from '@anchor-protocol/neumorphism-ui/themes/darkTheme';
+import { lightTheme } from '@anchor-protocol/neumorphism-ui/themes/lightTheme';
 import { scaleLinear } from 'd3-scale';
 import { curveNatural, line } from 'd3-shape';
 import {
   DetailedHTMLProps,
   HTMLAttributes,
   ReactNode,
+  SVGProps,
   useCallback,
   useMemo,
   useState,
@@ -31,6 +34,63 @@ export interface APYChartProps
   maxY?: number;
 }
 
+type ColorPalette = {
+  line: SVGProps<SVGPathElement>;
+
+  pointing: {
+    line: SVGProps<SVGLineElement>;
+    date: SVGProps<SVGTextElement>;
+  };
+  slider: {
+    backgroundColor: string;
+    strokeColor: string;
+  };
+};
+
+const lightColorPalette: ColorPalette = {
+  line: {
+    stroke: '#15cc93',
+    strokeWidth: 4,
+  },
+  pointing: {
+    line: {
+      stroke: '#979797',
+      strokeWidth: 1,
+      strokeDasharray: '3 3',
+    },
+    date: {
+      fill: lightTheme.textColor,
+      style: { userSelect: 'none' },
+    },
+  },
+  slider: {
+    backgroundColor: lightTheme.label.backgroundColor,
+    strokeColor: lightTheme.textColor,
+  },
+};
+
+const darkColorPalette: ColorPalette = {
+  line: {
+    stroke: '#15cc93',
+    strokeWidth: 4,
+  },
+  pointing: {
+    line: {
+      stroke: '#4d4f70',
+      strokeWidth: 1,
+      strokeDasharray: '3 3',
+    },
+    date: {
+      fill: darkTheme.textColor,
+      style: { userSelect: 'none' },
+    },
+  },
+  slider: {
+    backgroundColor: darkTheme.label.backgroundColor,
+    strokeColor: darkTheme.dimTextColor,
+  },
+};
+
 export function APYChartBase({
   data,
   gutter = { top: 60, bottom: 30, left: 20, right: 20 },
@@ -44,6 +104,10 @@ export function APYChartBase({
   );
 
   const theme = useTheme();
+
+  const palette = useMemo(() => {
+    return theme.palette.type === 'dark' ? darkColorPalette : lightColorPalette;
+  }, [theme.palette.type]);
 
   const { coordinateSpace, canvasStyle } = useCoordinateSpace({
     width,
@@ -85,17 +149,9 @@ export function APYChartBase({
     const d = drawPath(data);
 
     return (
-      d && (
-        <path
-          d={d}
-          stroke="#15cc93"
-          strokeWidth={4}
-          strokeLinecap="round"
-          fill="none"
-        />
-      )
+      d && <path d={d} {...palette.line} strokeLinecap="round" fill="none" />
     );
-  }, [data, xScale, yScale]);
+  }, [data, palette.line, xScale, yScale]);
 
   const [sliderPosition, setSliderPosition] = useState<number>(() => maxX);
 
@@ -116,23 +172,20 @@ export function APYChartBase({
           x2={x}
           y1={margin.top}
           y2={coordinateSpace.bottom}
-          stroke={theme.dimTextColor}
-          strokeWidth={1}
-          strokeDasharray="3 3"
+          {...palette.pointing.line}
         />
         <text
           x={x}
           y={margin.top - 7}
           fontSize={10}
           textAnchor="middle"
-          fill={theme.textColor}
-          style={{ userSelect: 'none' }}
+          {...palette.pointing.date}
         >
           JAN 21, 2021
         </text>
         <g transform={`translate(${x} ${y})`} filter="url(#dropshadow)">
           <circle r={6} fill="white" />
-          <circle r={2} fill="black" />
+          <circle r={2} fill={palette.line.stroke} />
         </g>
       </>
     );
@@ -142,9 +195,10 @@ export function APYChartBase({
     margin.top,
     maxX,
     minX,
+    palette.line.stroke,
+    palette.pointing.date,
+    palette.pointing.line,
     sliderPosition,
-    theme.dimTextColor,
-    theme.textColor,
     xScale,
     yScale,
   ]);
@@ -175,11 +229,7 @@ export function APYChartBase({
           stepFunction={sliderStep}
           onChange={setSliderPosition}
         >
-          <ChartSliderThumb
-            backgroundColor={theme.label.backgroundColor}
-            strokeColor={theme.textColor}
-            filter="url(#dropshadow)"
-          />
+          <ChartSliderThumb {...palette.slider} filter="url(#dropshadow)" />
         </ChartSlider>
       </svg>
     </figure>

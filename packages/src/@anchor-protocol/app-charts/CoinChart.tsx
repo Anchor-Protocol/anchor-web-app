@@ -4,6 +4,7 @@ import {
   DetailedHTMLProps,
   HTMLAttributes,
   ReactNode,
+  SVGProps,
   useCallback,
   useMemo,
   useState,
@@ -31,7 +32,7 @@ export interface CoinChartProps
   margin?: Gutter;
 }
 
-const yRatio = {
+const yLayout = {
   apy: {
     top: 0.1,
     bottom: 0.35,
@@ -41,6 +42,48 @@ const yRatio = {
     bottom: 0.97,
   },
 } as const;
+
+type ColorPalette = {
+  apy: {
+    line: SVGProps<SVGPathElement>;
+  };
+
+  total: {
+    stepLine: SVGProps<SVGPathElement>;
+    tickLine: SVGProps<SVGLineElement>;
+  };
+
+  pointing: {
+    backgroundFill: SVGProps<SVGRectElement>;
+  };
+};
+
+const palette: ColorPalette = {
+  apy: {
+    line: {
+      stroke: '#2c2c2c',
+      strokeWidth: 4,
+    },
+  },
+
+  total: {
+    stepLine: {
+      stroke: '#d3d3d5',
+      strokeWidth: 5,
+    },
+
+    tickLine: {
+      stroke: '#d3d3d5',
+      strokeDasharray: '3 3',
+    },
+  },
+
+  pointing: {
+    backgroundFill: {
+      fill: '#ffffff',
+    },
+  },
+};
 
 function CoinChartBase({
   data,
@@ -84,8 +127,8 @@ function CoinChartBase({
     return scaleLinear()
       .domain([maxAPY, minAPY])
       .range([
-        coordinateSpace.top + coordinateSpace.height * yRatio.apy.top,
-        coordinateSpace.top + coordinateSpace.height * yRatio.apy.bottom,
+        coordinateSpace.top + coordinateSpace.height * yLayout.apy.top,
+        coordinateSpace.top + coordinateSpace.height * yLayout.apy.bottom,
       ])
       .clamp(true);
   }, [coordinateSpace.height, coordinateSpace.top, maxAPY, minAPY]);
@@ -94,8 +137,8 @@ function CoinChartBase({
     return scaleLinear()
       .domain([maxTotal, minTotal])
       .range([
-        coordinateSpace.top + coordinateSpace.height * yRatio.total.top,
-        coordinateSpace.top + coordinateSpace.height * yRatio.total.bottom,
+        coordinateSpace.top + coordinateSpace.height * yLayout.total.top,
+        coordinateSpace.top + coordinateSpace.height * yLayout.total.bottom,
       ])
       .clamp(true);
   }, [coordinateSpace.height, coordinateSpace.top, maxTotal, minTotal]);
@@ -133,8 +176,7 @@ function CoinChartBase({
         {apy && (
           <path
             d={apy}
-            stroke={theme.textColor}
-            strokeWidth={4}
+            {...palette.apy.line}
             strokeLinecap="round"
             fill="none"
           />
@@ -148,30 +190,20 @@ function CoinChartBase({
               x2={x + width}
               y1={y}
               y2={y + height}
-              stroke={theme.dimTextColor}
-              strokeDasharray="3 3"
+              {...palette.total.tickLine}
             />
           ))}
         {total && (
           <path
             d={total}
-            stroke={theme.dimTextColor}
-            strokeWidth={4}
+            {...palette.total.stepLine}
             strokeLinecap="round"
             fill="none"
           />
         )}
       </>
     );
-  }, [
-    apyScale,
-    data,
-    theme.dimTextColor,
-    theme.textColor,
-    totalScale,
-    totalStepRects,
-    xScale,
-  ]);
+  }, [apyScale, data, totalScale, totalStepRects, xScale]);
 
   const [sliderPosition, setSliderPosition] = useState<number>(() => maxX);
 
@@ -187,7 +219,8 @@ function CoinChartBase({
     const stepRect = totalStepRects[index];
 
     const x = xScale(index);
-    const y = apyScale(data[index].apy);
+    const apy = apyScale(data[index].apy);
+    const total = totalScale(data[index].total);
 
     return [
       <rect
@@ -199,12 +232,18 @@ function CoinChartBase({
             : stepRect.width
         }
         height={coordinateSpace.height}
-        fill="white"
+        {...palette.pointing.backgroundFill}
       />,
-      <g transform={`translate(${x} ${y})`} filter="url(#dropshadow)">
-        <circle r={6} fill="white" />
-        <circle r={2} fill="black" />
-      </g>,
+      <>
+        <g transform={`translate(${x} ${apy})`} filter="url(#dropshadow)">
+          <circle r={6} fill="white" />
+          <circle r={2} fill={palette.apy.line.stroke} />
+        </g>
+        <g transform={`translate(${x} ${total})`} filter="url(#dropshadow)">
+          <circle r={6} fill="white" />
+          <circle r={2} fill={palette.total.stepLine.stroke} />
+        </g>
+      </>,
     ];
   }, [
     apyScale,
@@ -215,6 +254,7 @@ function CoinChartBase({
     maxX,
     minX,
     sliderPosition,
+    totalScale,
     totalStepRects,
     xScale,
   ]);
