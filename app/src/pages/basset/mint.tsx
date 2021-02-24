@@ -223,7 +223,7 @@ function MintBase({ className }: MintProps) {
 
       <SelectAndTextInputContainer
         className="bond"
-        gridColumns={[100, '1fr']}
+        gridColumns={[120, '1fr']}
         error={!!invalidBondAmount}
         leftHelperText={invalidBondAmount}
         rightHelperText={
@@ -281,7 +281,7 @@ function MintBase({ className }: MintProps) {
 
       <SelectAndTextInputContainer
         className="mint"
-        gridColumns={[100, '1fr']}
+        gridColumns={[120, '1fr']}
         error={!!invalidBondAmount}
       >
         <MuiNativeSelect

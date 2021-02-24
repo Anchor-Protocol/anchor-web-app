@@ -203,7 +203,7 @@ export function Burn() {
 
       <SelectAndTextInputContainer
         className="burn"
-        gridColumns={[100, '1fr']}
+        gridColumns={[120, '1fr']}
         error={!!invalidBurnAmount}
         leftHelperText={invalidBurnAmount}
         rightHelperText={
@@ -260,7 +260,7 @@ export function Burn() {
 
       <SelectAndTextInputContainer
         className="gett"
-        gridColumns={[100, '1fr']}
+        gridColumns={[120, '1fr']}
         error={!!invalidBurnAmount}
       >
         <MuiNativeSelect
