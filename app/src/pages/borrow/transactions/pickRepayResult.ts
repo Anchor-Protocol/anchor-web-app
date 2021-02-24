@@ -32,7 +32,6 @@ interface Params {
   oraclePrice?: MarketOverview['oraclePrice'];
   overseerWhitelist?: MarketOverview['overseerWhitelist'];
   loanAmount?: MarketUserOverview['loanAmount'];
-  liability?: MarketUserOverview['liability'];
   borrowInfo?: MarketUserOverview['borrowInfo'];
 }
 

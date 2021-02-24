@@ -23,7 +23,6 @@ export const refetchMarket = (
   oraclePrice?: MarketOverview['oraclePrice'];
   overseerWhitelist?: MarketOverview['overseerWhitelist'];
   loanAmount?: MarketUserOverview['loanAmount'];
-  liability?: MarketUserOverview['liability'];
   borrowInfo?: MarketUserOverview['borrowInfo'];
 }> => {
   const {
@@ -39,7 +38,7 @@ export const refetchMarket = (
       data: { borrowRate, oraclePrice, overseerWhitelist },
     },
     {
-      data: { loanAmount, liability, borrowInfo },
+      data: { loanAmount, borrowInfo },
     },
   ] = await Promise.all([
     queryMarketOverview(client, addressProvider, marketBalance, marketState),
@@ -59,7 +58,6 @@ export const refetchMarket = (
     oraclePrice,
     overseerWhitelist,
     loanAmount,
-    liability,
     borrowInfo,
   };
 };

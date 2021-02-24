@@ -43,7 +43,7 @@ export interface Data {
     elems: {
       collateral_token: string;
       custody_contract: string;
-      ltv: Ratio<string>;
+      max_ltv: Ratio<string>;
     }[];
   };
 }

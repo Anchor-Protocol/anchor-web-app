@@ -7,6 +7,7 @@ import { useAddressProvider } from 'contexts/contract';
 import { useService } from 'contexts/service';
 import { parseResult } from 'queries/parseResult';
 import { MappedApolloQueryResult, MappedQueryResult } from 'queries/types';
+import { useQueryErrorAlert } from 'queries/useQueryErrorAlert';
 import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 import { Data as MarketState } from './marketState';
@@ -30,12 +31,6 @@ export interface Data {
     Result: string;
     borrower: string;
     loan_amount: uUST<string>;
-  };
-
-  liability: {
-    Result: string;
-    borrower: string;
-    loan_amount: uUST<string>;
     interest_index: Num<string>;
   };
 
@@ -51,9 +46,6 @@ export const dataMap = createMap<RawData, Data>({
   loanAmount: (existing, { loanAmount }) => {
     return parseResult(existing.loanAmount, loanAmount.Result);
   },
-  liability: (existing, { liability }) => {
-    return parseResult(existing.liability, liability.Result);
-  },
   borrowInfo: (existing, { borrowInfo }) => {
     return parseResult(existing.borrowInfo, borrowInfo.Result);
   },
@@ -63,12 +55,6 @@ export const mockupData: Mapped<RawData, Data> = {
   __data: undefined,
 
   loanAmount: {
-    Result: '',
-    loan_amount: '0' as uUST,
-    borrower: '',
-  },
-
-  liability: {
     Result: '',
     loan_amount: '0' as uUST,
     borrower: '',
@@ -85,16 +71,15 @@ export const mockupData: Mapped<RawData, Data> = {
 
 export interface RawVariables {
   marketContractAddress: string;
-  marketLoanQuery: string;
-  marketLiabilityQuery: string;
+  marketBorrowerQuery: string;
   custodyContractAddress: string;
   custodyBorrowerQuery: string;
 }
 
 export interface Variables {
   marketContractAddress: string;
-  marketLoanQuery: {
-    loan_amount: {
+  marketBorrowerQuery: {
+    borrower_info: {
       borrower: string;
       block_height: number;
     };
@@ -109,18 +94,13 @@ export interface Variables {
 
 export function mapVariables({
   marketContractAddress,
-  marketLoanQuery,
+  marketBorrowerQuery,
   custodyContractAddress,
   custodyBorrowerQuery,
 }: Variables): RawVariables {
   return {
     marketContractAddress,
-    marketLoanQuery: JSON.stringify(marketLoanQuery),
-    marketLiabilityQuery: JSON.stringify({
-      liability: {
-        borrower: marketLoanQuery.loan_amount.borrower,
-      },
-    }),
+    marketBorrowerQuery: JSON.stringify(marketBorrowerQuery),
     custodyContractAddress,
     custodyBorrowerQuery: JSON.stringify(custodyBorrowerQuery),
   };
@@ -129,21 +109,13 @@ export function mapVariables({
 export const query = gql`
   query __marketUserOverview(
     $marketContractAddress: String!
-    $marketLoanQuery: String!
-    $marketLiabilityQuery: String!
+    $marketBorrowerQuery: String!
     $custodyContractAddress: String!
     $custodyBorrowerQuery: String!
   ) {
     loanAmount: WasmContractsContractAddressStore(
       ContractAddress: $marketContractAddress
-      QueryMsg: $marketLoanQuery
-    ) {
-      Result
-    }
-
-    liability: WasmContractsContractAddressStore(
-      ContractAddress: $marketContractAddress
-      QueryMsg: $marketLiabilityQuery
+      QueryMsg: $marketBorrowerQuery
     ) {
       Result
     }
@@ -169,8 +141,8 @@ export function useMarketUserOverview({
   const variables = useMemo(() => {
     return mapVariables({
       marketContractAddress: addressProvider.market('uusd'),
-      marketLoanQuery: {
-        loan_amount: {
+      marketBorrowerQuery: {
+        borrower_info: {
           borrower: walletReady?.walletAddress ?? '',
           block_height: currentBlock ?? 0,
         },
@@ -184,7 +156,7 @@ export function useMarketUserOverview({
     });
   }, [addressProvider, currentBlock, walletReady?.walletAddress]);
 
-  const { data: _data, refetch: _refetch, ...result } = useQuery<
+  const { data: _data, refetch: _refetch, error, ...result } = useQuery<
     RawData,
     RawVariables
   >(query, {
@@ -193,6 +165,8 @@ export function useMarketUserOverview({
     nextFetchPolicy: 'cache-first',
     variables,
   });
+
+  useQueryErrorAlert(error);
 
   const data = useMap(_data, dataMap);
   const refetch = useRefetch(_refetch, dataMap);
@@ -220,8 +194,8 @@ export function queryMarketUserOverview(
       fetchPolicy: 'network-only',
       variables: mapVariables({
         marketContractAddress: addressProvider.market('uusd'),
-        marketLoanQuery: {
-          loan_amount: {
+        marketBorrowerQuery: {
+          borrower_info: {
             borrower: walletStatus.walletAddress,
             block_height: currentBlock,
           },

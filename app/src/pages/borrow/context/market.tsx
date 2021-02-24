@@ -33,7 +33,6 @@ export interface Market {
   oraclePrice: MarketOverview['oraclePrice'] | undefined;
   overseerWhitelist: MarketOverview['overseerWhitelist'] | undefined;
   loanAmount: MarketUserOverview['loanAmount'] | undefined;
-  liability: MarketUserOverview['liability'] | undefined;
   borrowInfo: MarketUserOverview['borrowInfo'] | undefined;
   bLunaMaxLtv: Ratio | undefined;
   bLunaSafeLtv: Ratio | undefined;
@@ -56,7 +55,7 @@ export function MarketProvider({ children }: MarketProviderProps) {
   } = useMarketOverview({ marketBalance, marketState });
 
   const {
-    data: { loanAmount, liability, borrowInfo },
+    data: { loanAmount, borrowInfo },
   } = useMarketUserOverview({
     currentBlock,
   });
@@ -65,7 +64,7 @@ export function MarketProvider({ children }: MarketProviderProps) {
     return overseerWhitelist?.elems.find(
       ({ collateral_token }) =>
         collateral_token === addressProvider.bAssetToken('ubluna'),
-    )?.ltv;
+    )?.max_ltv;
   }, [addressProvider, overseerWhitelist?.elems]);
 
   const bLunaSafeLtv = useMemo(() => {
@@ -83,7 +82,6 @@ export function MarketProvider({ children }: MarketProviderProps) {
       !!oraclePrice &&
       !!overseerWhitelist &&
       !!loanAmount &&
-      !!liability &&
       !!borrowInfo &&
       !!bLunaMaxLtv &&
       !!bLunaSafeLtv
@@ -94,7 +92,6 @@ export function MarketProvider({ children }: MarketProviderProps) {
     bLunaSafeLtv,
     borrowInfo,
     borrowRate,
-    liability,
     loanAmount,
     marketBalance,
     marketState,
@@ -112,7 +109,6 @@ export function MarketProvider({ children }: MarketProviderProps) {
       oraclePrice,
       overseerWhitelist,
       loanAmount,
-      liability,
       borrowInfo,
       bLunaMaxLtv,
       bLunaSafeLtv,
@@ -125,7 +121,6 @@ export function MarketProvider({ children }: MarketProviderProps) {
       bLunaSafeLtv,
       borrowInfo,
       borrowRate,
-      liability,
       loanAmount,
       marketBalance,
       marketState,
@@ -152,7 +147,6 @@ export function useMarketNotNullable(): {
   oraclePrice: MarketOverview['oraclePrice'];
   overseerWhitelist: MarketOverview['overseerWhitelist'];
   loanAmount: MarketUserOverview['loanAmount'];
-  liability: MarketUserOverview['liability'];
   borrowInfo: MarketUserOverview['borrowInfo'];
   bLunaMaxLtv: Ratio;
   bLunaSafeLtv: Ratio;
@@ -166,7 +160,6 @@ export function useMarketNotNullable(): {
     oraclePrice,
     overseerWhitelist,
     loanAmount,
-    liability,
     borrowInfo,
     bLunaMaxLtv,
     bLunaSafeLtv,
@@ -182,7 +175,6 @@ export function useMarketNotNullable(): {
     overseerWhitelist:
       overseerWhitelist ?? marketOverviewMockupData.overseerWhitelist!,
     loanAmount: loanAmount ?? marketUserOverviewMockupData.loanAmount!,
-    liability: liability ?? marketUserOverviewMockupData.liability!,
     borrowInfo: borrowInfo ?? marketUserOverviewMockupData.borrowInfo!,
     bLunaMaxLtv: bLunaMaxLtv ?? ('0.7' as Ratio),
     bLunaSafeLtv: bLunaSafeLtv ?? ('0.5' as Ratio),

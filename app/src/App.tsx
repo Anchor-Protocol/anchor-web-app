@@ -22,6 +22,7 @@ import { captureException } from '@sentry/react';
 import { Banner } from 'components/Banner';
 import { BroadcastingContainer } from 'components/BroadcastingContainer';
 import { Header } from 'components/Header';
+import { SnackbarContainer } from 'components/SnackbarContainer';
 import { BankProvider } from 'contexts/bank';
 import { Constants, ConstantsProvider } from 'contexts/contants';
 import { ContractProvider } from 'contexts/contract';
@@ -152,6 +153,7 @@ export function App() {
         {/* Portal ================================ */}
         {/** Operation Result Broadcasting Render Container (Snackbar...) */}
         <BroadcastingContainer />
+        <SnackbarContainer />
       </Providers>
     </ChromeExtensionWalletProvider>
   );

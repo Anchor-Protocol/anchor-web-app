@@ -73,7 +73,6 @@ function ComponentBase({
     borrowRate,
     currentBlock,
     marketState,
-    liability,
   } = useMarketNotNullable();
 
   const { status } = useWallet();
@@ -171,12 +170,12 @@ function ComponentBase({
         currentBlock,
         marketState.last_interest_updated,
         marketState.global_interest_index,
-        liability.interest_index,
+        loanAmount.interest_index,
       ),
     [
       borrowRate.rate,
       currentBlock,
-      liability.interest_index,
+      loanAmount.interest_index,
       loanAmount.loan_amount,
       marketState.global_interest_index,
       marketState.last_interest_updated,
