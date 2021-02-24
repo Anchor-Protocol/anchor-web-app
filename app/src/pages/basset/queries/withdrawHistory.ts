@@ -5,6 +5,7 @@ import { gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
 import { useService } from 'contexts/service';
 import { MappedQueryResult } from 'queries/types';
+import { useQueryErrorAlert } from 'queries/useQueryErrorAlert';
 import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
@@ -142,7 +143,7 @@ export function useWithdrawHistory({
     });
   }, [addressProvider, withdrawRequestsStartFrom]);
 
-  const { data: _data, refetch: _refetch, ...result } = useQuery<
+  const { data: _data, refetch: _refetch, error, ...result } = useQuery<
     RawData,
     RawVariables
   >(query, {
@@ -154,6 +155,8 @@ export function useWithdrawHistory({
     nextFetchPolicy: 'cache-first',
     variables,
   });
+
+  useQueryErrorAlert(error);
 
   useSubscription((id, event) => {
     if (event === 'done') {

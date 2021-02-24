@@ -6,6 +6,7 @@ import big from 'big.js';
 import { useService } from 'contexts/service';
 import { sub } from 'date-fns';
 import { MappedQueryResult } from 'queries/types';
+import { useQueryErrorAlert } from 'queries/useQueryErrorAlert';
 import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
@@ -274,7 +275,7 @@ export function useInterestEarned(
     return v;
   }, [period, walletReady?.walletAddress]);
 
-  const { data: _data, refetch: _refetch, ...result } = useQuery<
+  const { data: _data, refetch: _refetch, error, ...result } = useQuery<
     RawData,
     RawVariables
   >(period === 'total' ? totalQuery : query, {
@@ -283,6 +284,8 @@ export function useInterestEarned(
     nextFetchPolicy: 'cache-first',
     variables,
   });
+
+  useQueryErrorAlert(error);
 
   const data = useMap(_data, dataMap);
   const refetch = useRefetch(_refetch, dataMap);

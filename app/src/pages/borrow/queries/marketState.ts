@@ -7,6 +7,7 @@ import { useAddressProvider } from 'contexts/contract';
 import { useService } from 'contexts/service';
 import { parseResult } from 'queries/parseResult';
 import { MappedApolloQueryResult, MappedQueryResult } from 'queries/types';
+import { useQueryErrorAlert } from 'queries/useQueryErrorAlert';
 import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
@@ -138,7 +139,7 @@ export function useMarketState(): MappedQueryResult<
     });
   }, [addressProvider]);
 
-  const { data: _data, refetch: _refetch, ...result } = useQuery<
+  const { data: _data, refetch: _refetch, error, ...result } = useQuery<
     RawData,
     RawVariables
   >(query, {
@@ -148,6 +149,8 @@ export function useMarketState(): MappedQueryResult<
     pollInterval: 1000 * 10,
     variables,
   });
+
+  useQueryErrorAlert(error);
 
   useSubscription((id, event) => {
     if (event === 'done') {

@@ -6,6 +6,7 @@ import { useService } from 'contexts/service';
 import { useLastSyncedHeight } from 'queries/lastSyncedHeight';
 import { parseResult } from 'queries/parseResult';
 import { MappedQueryResult } from 'queries/types';
+import { useQueryErrorAlert } from 'queries/useQueryErrorAlert';
 import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
@@ -142,7 +143,7 @@ export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
     });
   }, [addressProvider, lastSyncedHeight, walletReady?.walletAddress]);
 
-  const { data: _data, refetch: _refetch, ...result } = useQuery<
+  const { data: _data, refetch: _refetch, error, ...result } = useQuery<
     RawData,
     RawVariables
   >(query, {
@@ -151,6 +152,8 @@ export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
     nextFetchPolicy: 'cache-first',
     variables,
   });
+
+  useQueryErrorAlert(error);
 
   const data = useMap(_data, dataMap);
   const refetch = useRefetch(_refetch, dataMap);
