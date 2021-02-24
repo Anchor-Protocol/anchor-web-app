@@ -1,4 +1,5 @@
-import { DateTime, JSDateTime, uUST } from '@anchor-protocol/notation';
+import { floor } from '@anchor-protocol/big-math';
+import { DateTime, JSDateTime, Ratio, uUST } from '@anchor-protocol/notation';
 import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import big from 'big.js';
@@ -16,9 +17,14 @@ type Earned = {
   Timestamp: DateTime;
   TotalDeposit: uUST<string>;
   TotalWithdraw: uUST<string>;
+  CurrentAnchorBalance: uUST<string>;
 };
 
 export interface RawData {
+  latestExchangeRate: {
+    StableDenom: string;
+    ExchangeRate: Ratio<string>;
+  }[];
   fallback: Earned[];
   now?: Earned[];
   then?: Earned[];
@@ -29,7 +35,7 @@ export interface Data {
 }
 
 export const dataMap = createMap<RawData, Data>({
-  interestEarned: (_, { now, then, fallback }) => {
+  interestEarned: (_, { now, then, fallback, latestExchangeRate }) => {
     if (!now || now.length === 0) {
       return '0' as uUST;
     }
@@ -37,12 +43,19 @@ export const dataMap = createMap<RawData, Data>({
     const referenceNow = now[0];
     const referenceThen = then && then.length >= 1 ? then[0] : fallback[0];
 
+    const currentTokenValue = big(
+      referenceNow.CurrentAnchorBalance.length > 0
+        ? referenceNow.CurrentAnchorBalance
+        : '0',
+    ).mul(latestExchangeRate[0].ExchangeRate);
+
     try {
-      return big(referenceNow.CurrentDeposit)
-        .minus(referenceThen.CurrentDeposit)
-        .plus(referenceNow.TotalWithdraw)
-        .minus(referenceNow.TotalDeposit)
-        .toFixed() as uUST;
+      return floor(
+        currentTokenValue
+          .minus(referenceThen.CurrentDeposit)
+          .plus(referenceNow.TotalWithdraw)
+          .minus(referenceNow.TotalDeposit),
+      ).toFixed() as uUST;
     } catch {
       return '0' as uUST;
     }
@@ -51,6 +64,7 @@ export const dataMap = createMap<RawData, Data>({
 
 export const mockupData: Mapped<RawData, Data> = {
   __data: {
+    latestExchangeRate: [],
     fallback: [],
     now: [],
     then: [],
@@ -91,6 +105,15 @@ export const query = gql`
     $then: Int!
     $stable_denom: String!
   ) {
+    latestExchangeRate: AnchorExchangeRates(
+      Order: DESC
+      Limit: 1
+      StableDenom: $stable_denom
+    ) {
+      StableDenom
+      ExchangeRate
+    }
+
     now: InterestEarnedUserRecords(
       Order: DESC
       Limit: 1
@@ -103,6 +126,7 @@ export const query = gql`
       Timestamp
       TotalDeposit
       TotalWithdraw
+      CurrentAnchorBalance
       CurrentDeposit
     }
 
@@ -119,6 +143,7 @@ export const query = gql`
       Timestamp
       TotalDeposit
       TotalWithdraw
+      CurrentAnchorBalance
       CurrentDeposit
     }
 
@@ -135,6 +160,7 @@ export const query = gql`
       Timestamp
       TotalDeposit
       TotalWithdraw
+      CurrentAnchorBalance
       CurrentDeposit
     }
   }
@@ -146,6 +172,15 @@ export const totalQuery = gql`
     $now: Int!
     $stable_denom: String!
   ) {
+    latestExchangeRate: AnchorExchangeRates(
+      Order: DESC
+      Limit: 1
+      StableDenom: $stable_denom
+    ) {
+      StableDenom
+      ExchangeRate
+    }
+
     now: InterestEarnedUserRecords(
       Order: DESC
       Limit: 1
@@ -158,6 +193,7 @@ export const totalQuery = gql`
       Timestamp
       TotalDeposit
       TotalWithdraw
+      CurrentAnchorBalance
       CurrentDeposit
     }
 
@@ -174,6 +210,7 @@ export const totalQuery = gql`
       Timestamp
       TotalDeposit
       TotalWithdraw
+      CurrentAnchorBalance
       CurrentDeposit
     }
 
@@ -190,6 +227,7 @@ export const totalQuery = gql`
       Timestamp
       TotalDeposit
       TotalWithdraw
+      CurrentAnchorBalance
       CurrentDeposit
     }
   }
@@ -225,11 +263,15 @@ export function useInterestEarned(
   const variables = useMemo(() => {
     const { now, then } = getDates(period);
 
-    return mapVariables({
+    const v = mapVariables({
       walletAddress: walletReady?.walletAddress ?? '',
       now,
       then,
     });
+
+    //console.log('interestEarned.ts..()', JSON.stringify(v, null, 2));
+
+    return v;
   }, [period, walletReady?.walletAddress]);
 
   const { data: _data, refetch: _refetch, ...result } = useQuery<
