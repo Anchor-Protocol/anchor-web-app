@@ -53,7 +53,7 @@ export function useMap<T extends {}, R extends {}>(
 
     const keys = Object.keys(savedMap.current) as (keyof R)[];
 
-    const next: FieldsValues<R> = keys.reduce((next, key) => {
+    const values: FieldsValues<R> = keys.reduce((next, key) => {
       next[key] = data
         ? savedMap.current[key](prev ?? ({} as Mapped<T, R>), data)
         : ignoreNullData && prev && prev[key]
@@ -62,14 +62,18 @@ export function useMap<T extends {}, R extends {}>(
       return next;
     }, {} as FieldsValues<R>);
 
-    if (prev && shallowEqual(keys as string[])(prev, next)) {
+    if (prev && shallowEqual(keys as string[])(prev, values)) {
       return prev;
     }
 
-    return {
-      ...next,
+    const next = {
+      ...values,
       __data: data,
     } as Mapped<T, R>;
+
+    existing.current = next;
+
+    return next;
   }, [data, ignoreNullData]);
 }
 
