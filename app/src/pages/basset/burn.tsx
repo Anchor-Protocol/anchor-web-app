@@ -71,14 +71,6 @@ export const Burn = styled(BurnBase)`
   .burn,
   .gett {
     margin-bottom: 30px;
-
-    > :first-child {
-      width: 100px;
-    }
-
-    > :nth-child(2) {
-      flex: 1;
-    }
   }
 
   hr {
