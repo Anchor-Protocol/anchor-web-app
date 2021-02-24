@@ -43,6 +43,34 @@ export const Basic = () => {
   );
 };
 
+export const HelperText = () => {
+  const [selectedItem, setSelectedItem] = useState<Item>(() => items[0]);
+
+  return (
+    <SelectAndTextInputContainer
+      gridColumns={[120, '1fr']}
+      leftHelperText="LEFT"
+      rightHelperText="RIGHT"
+    >
+      <MuiNativeSelect
+        value={selectedItem.value}
+        onChange={({ target }) =>
+          setSelectedItem(
+            items.find(({ value }) => target.value === value) ?? items[0],
+          )
+        }
+      >
+        {items.map(({ label, value }) => (
+          <option key={value} value={value}>
+            {label}
+          </option>
+        ))}
+      </MuiNativeSelect>
+      <Input placeholder="PLACEHOLDER" />
+    </SelectAndTextInputContainer>
+  );
+};
+
 export const Readonly = () => {
   const [selectedItem, setSelectedItem] = useState<Item>(() => items[0]);
 

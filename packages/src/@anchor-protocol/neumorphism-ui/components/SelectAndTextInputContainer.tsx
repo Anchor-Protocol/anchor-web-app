@@ -83,6 +83,8 @@ export const SelectAndTextInputContainer = styled(
 )`
   border-radius: 5px;
 
+  position: relative;
+
   ${({ theme, ...props }) =>
     softPressed({
       color:
@@ -102,8 +104,6 @@ export const SelectAndTextInputContainer = styled(
     grid-template-columns: ${({ gridColumns }) =>
       parseGridTemplate(gridColumns)};
     grid-template-rows: ${({ gridRows = [60] }) => parseGridTemplate(gridRows)};
-
-    position: relative;
 
     color: ${({ theme }) => theme.textInput.textColor};
 
