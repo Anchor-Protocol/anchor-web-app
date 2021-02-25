@@ -171,7 +171,8 @@ export function APYChartBase({
     const fontSize = 12;
     const rectRadius = 13;
     const rectHeight = 26;
-    const rectWidth = rectRadius * 2 + (percentage.length + 4) * fontSize;
+    const rectWidth =
+      rectRadius * 2 + (percentage.length + 4) * (fontSize * 0.85);
 
     return (
       <>

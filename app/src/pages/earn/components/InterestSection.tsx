@@ -77,9 +77,9 @@ export function InterestSection({ className }: InterestSectionProps) {
   const apyChartItems = useMemo<APYChartItem[] | undefined>(() => {
     return apyHistory?.map(({ Timestamp, DepositRate }) => ({
       date: new Date(Timestamp * 1000),
-      value: parseFloat(DepositRate) as Ratio<number>,
+      value: (parseFloat(DepositRate) * blocksPerYear) as Ratio<number>,
     }));
-  }, [apyHistory]);
+  }, [apyHistory, blocksPerYear]);
 
   // ---------------------------------------------
   // logics
