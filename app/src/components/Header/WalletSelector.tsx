@@ -12,10 +12,10 @@ import { ClickAwayListener } from '@material-ui/core';
 import { Check, KeyboardArrowRight } from '@material-ui/icons';
 import { useBank } from 'contexts/bank';
 import { useService } from 'contexts/service';
+import { useSendDialog } from 'pages/send/useSendDialog';
 import { useCallback, useState } from 'react';
 import useClipboard from 'react-use-clipboard';
 import styled from 'styled-components';
-import c from 'color';
 
 export interface WalletSelectorProps {
   className?: string;
@@ -30,6 +30,8 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   const bank = useBank();
 
   const { serviceAvailable } = useService();
+
+  const [openSendDialog, sendDialogElement] = useSendDialog();
 
   // ---------------------------------------------
   // states
@@ -161,6 +163,17 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                     </li>
                   </ul>
 
+                  <div className="send">
+                    <ActionButton
+                      onClick={() => {
+                        openSendDialog({});
+                        setOpen(false);
+                      }}
+                    >
+                      SEND
+                    </ActionButton>
+                  </div>
+
                   <div className="outlink">
                     <button onClick={viewOnTerraFinder}>
                       View on Terra Finder{' '}
@@ -191,6 +204,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                 </button>
               </WalletDropdown>
             )}
+            {sendDialogElement}
           </div>
         </ClickAwayListener>
       );
@@ -344,19 +358,42 @@ export const WalletDropdown = styled.div`
       list-style: none;
 
       font-size: 12px;
-      color: ${({ theme }) => theme.textColor};
+      color: ${({ theme }) =>
+        theme.palette.type === 'light'
+          ? '#666666'
+          : 'rgba(255, 255, 255, 0.6)'};
 
-      border-top: 1px solid ${({ theme }) => theme.dimTextColor};
+      border-top: 1px solid
+        ${({ theme }) =>
+          theme.palette.type === 'light'
+            ? '#e5e5e5'
+            : 'rgba(255, 255, 255, 0.1)'};
 
       li {
         display: flex;
         justify-content: space-between;
         align-items: center;
         height: 35px;
-        border-bottom: 1px dashed ${({ theme }) => theme.dimTextColor};
+
+        &:not(:last-child) {
+          border-bottom: 1px dashed
+            ${({ theme }) =>
+              theme.palette.type === 'light'
+                ? '#e5e5e5'
+                : 'rgba(255, 255, 255, 0.1)'};
+        }
       }
 
       margin-bottom: 20px;
+    }
+
+    .send {
+      margin-bottom: 20px;
+
+      button {
+        width: 100%;
+        height: 28px;
+      }
     }
 
     .outlink {
@@ -386,14 +423,20 @@ export const WalletDropdown = styled.div`
 
           background-color: ${({ theme }) =>
             theme.palette.type === 'light' ? '#f1f1f1' : 'rgba(0, 0, 0, 0.15)'};
-          color: ${({ theme }) => theme.dimTextColor};
+          color: ${({ theme }) =>
+            theme.palette.type === 'light'
+              ? '#666666'
+              : 'rgba(255, 255, 255, 0.6)'};
 
           &:hover {
             background-color: ${({ theme }) =>
               theme.palette.type === 'light'
                 ? '#e1e1e1'
                 : 'rgba(0, 0, 0, 0.2)'};
-            color: ${({ theme }) => theme.textColor};
+            color: ${({ theme }) =>
+              theme.palette.type === 'light'
+                ? '#666666'
+                : 'rgba(255, 255, 255, 0.6)'};
           }
         }
       }
@@ -405,16 +448,13 @@ export const WalletDropdown = styled.div`
     outline: none;
 
     background-color: ${({ theme }) =>
-      theme.palette.type === 'light'
-        ? theme.actionButton.backgroundColor
-        : c(theme.actionButton.backgroundColor).darken(0.3).toString()};
-    color: ${({ theme }) => theme.actionButton.textColor};
+      theme.palette.type === 'light' ? '#f1f1f1' : 'rgba(0, 0, 0, 0.15)'};
+    color: ${({ theme }) => theme.dimTextColor};
 
     &:hover {
       background-color: ${({ theme }) =>
-        theme.palette.type === 'light'
-          ? theme.actionButton.backgroundHoverColor
-          : c(theme.actionButton.backgroundHoverColor).darken(0.3).toString()};
+        theme.palette.type === 'light' ? '#e1e1e1' : 'rgba(0, 0, 0, 0.2)'};
+      color: ${({ theme }) => theme.textColor};
     }
 
     font-size: 12px;
