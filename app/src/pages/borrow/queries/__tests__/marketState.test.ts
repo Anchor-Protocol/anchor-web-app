@@ -13,7 +13,7 @@ export async function getMarketState() {
     .query<RawData, RawVariables>({
       query,
       variables: mapVariables({
-        marketContractAddress: testAddressProvider.market('uusd'),
+        marketContractAddress: testAddressProvider.market(),
         marketStateQuery: {
           state: {},
         },

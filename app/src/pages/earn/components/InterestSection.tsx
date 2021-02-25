@@ -75,10 +75,12 @@ export function InterestSection({ className }: InterestSectionProps) {
   } = useAPYHistory();
 
   const apyChartItems = useMemo<APYChartItem[] | undefined>(() => {
-    return apyHistory?.map(({ Timestamp, DepositRate }) => ({
-      date: new Date(Timestamp * 1000),
-      value: (parseFloat(DepositRate) * blocksPerYear) as Ratio<number>,
-    }));
+    return apyHistory
+      ?.map(({ Timestamp, DepositRate }) => ({
+        date: new Date(Timestamp * 1000),
+        value: (parseFloat(DepositRate) * blocksPerYear) as Ratio<number>,
+      }))
+      .reverse();
   }, [apyHistory, blocksPerYear]);
 
   // ---------------------------------------------
@@ -108,9 +110,9 @@ export function InterestSection({ className }: InterestSectionProps) {
         {apyChartItems && (
           <APYChart
             margin={{ top: 20, bottom: 20, left: 100, right: 100 }}
-            gutter={{ top: 30, bottom: 50, left: 100, right: 100 }}
+            gutter={{ top: 20, bottom: 20, left: 100, right: 100 }}
             data={apyChartItems}
-            minY={0}
+            minY={-0.2}
             maxY={1.3}
           />
         )}
