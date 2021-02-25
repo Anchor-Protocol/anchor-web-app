@@ -117,7 +117,7 @@ export function useClaimable(): MappedQueryResult<RawVariables, RawData, Data> {
 
   const variables = useMemo(() => {
     return mapVariables({
-      bAssetRewardContract: addressProvider.bAssetReward(''),
+      bAssetRewardContract: addressProvider.blunaReward(''),
       rewardState: {
         state: {},
       },

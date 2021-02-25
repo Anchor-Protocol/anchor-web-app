@@ -1,5 +1,5 @@
 import big, { BigSource } from 'big.js';
-import { aUST, bLuna, Luna, UST } from './currency';
+import { ANC, aUST, bLuna, Luna, UST } from './currency';
 import { formatFluidDecimalPoints, FormatOptions } from './unit.format';
 
 // ---------------------------------------------
@@ -35,6 +35,32 @@ export function formatLunaInput<C extends Luna<BigSource> | bLuna<BigSource>>(
   ? bLuna
   : never {
   return formatFluidDecimalPoints(n, 6, { delimiter: false }) as any;
+}
+
+export function formatANCInput<C extends ANC<BigSource>>(
+  n: C,
+): C extends ANC<BigSource> ? ANC : never {
+  return formatFluidDecimalPoints(n, 6, { delimiter: false }) as any;
+}
+
+export function formatANC(
+  n: ANC<BigSource>,
+  options: FormatOptions = { delimiter: true },
+): string {
+  return formatFluidDecimalPoints(n, 6, options);
+}
+
+export function formatANCWithPostfixUnits(
+  n: ANC<BigSource>,
+  options: FormatOptions = { delimiter: true },
+): string {
+  const bn = big(n);
+
+  if (bn.gte(1000000)) {
+    return formatFluidDecimalPoints(bn.div(1000000), 2, options) + 'M';
+  } else {
+    return formatANC(n, options);
+  }
 }
 
 export function formatUST(

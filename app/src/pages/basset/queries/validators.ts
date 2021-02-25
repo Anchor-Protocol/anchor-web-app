@@ -107,7 +107,7 @@ export function useValidators({
 
   const variables = useMemo(() => {
     return mapVariables({
-      bLunaHubContract: addressProvider.bAssetHub(bAsset),
+      bLunaHubContract: addressProvider.blunaHub(bAsset),
       whitelistedValidatorsQuery: {
         whitelisted_validators: {},
       },

@@ -130,7 +130,7 @@ export function useWithdrawHistory({
 
   const variables = useMemo(() => {
     return mapVariables({
-      bLunaHubContract: addressProvider.bAssetHub('bluna'),
+      bLunaHubContract: addressProvider.blunaHub('bluna'),
       allHistory: {
         all_history: {
           start_from: withdrawRequestsStartFrom ?? 0,

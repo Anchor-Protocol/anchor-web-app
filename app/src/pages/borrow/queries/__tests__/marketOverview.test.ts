@@ -34,14 +34,14 @@ describe('queries/marketOverview', () => {
           oracleContractAddress: testAddressProvider.oracle(),
           oracleQuery: {
             price: {
-              base: testAddressProvider.bAssetToken('ubluna'),
+              base: testAddressProvider.blunaToken(),
               quote: 'uusd',
             },
           },
           overseerContractAddress: testAddressProvider.overseer(),
           overseerWhitelistQuery: {
             whitelist: {
-              collateral_token: testAddressProvider.bAssetToken('ubluna'),
+              collateral_token: testAddressProvider.blunaToken(),
             },
           },
         }),

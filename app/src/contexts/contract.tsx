@@ -1,6 +1,6 @@
 import { createContext, useContext, Context, Consumer, useMemo } from 'react';
 import type { ReactNode } from 'react';
-import type { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
+import type { AddressProvider } from '@anchor-protocol/anchor.js';
 
 export interface ContractProviderProps {
   children: ReactNode;

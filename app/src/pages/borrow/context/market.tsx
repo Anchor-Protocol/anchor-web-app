@@ -63,7 +63,7 @@ export function MarketProvider({ children }: MarketProviderProps) {
   const bLunaMaxLtv = useMemo(() => {
     return overseerWhitelist?.elems.find(
       ({ collateral_token }) =>
-        collateral_token === addressProvider.bAssetToken('ubluna'),
+        collateral_token === addressProvider.blunaToken('ubluna'),
     )?.max_ltv;
   }, [addressProvider, overseerWhitelist?.elems]);
 

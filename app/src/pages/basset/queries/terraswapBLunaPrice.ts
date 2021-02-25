@@ -106,7 +106,7 @@ export function useTerraswapBLunaPrice(): MappedQueryResult<
 
   const variables = useMemo(() => {
     return mapVariables({
-      bLunaTerraswap: addressProvider.blunaBurnPair(),
+      bLunaTerraswap: addressProvider.terraswapblunaLunaPair(),
     });
   }, [addressProvider]);
 

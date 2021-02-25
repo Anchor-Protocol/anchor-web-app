@@ -1,4 +1,4 @@
-import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
+import { AddressProvider } from '@anchor-protocol/anchor.js';
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { Num, uaUST, uUST } from '@anchor-protocol/notation';
 import { createMap, map, Mapped, useMap } from '@anchor-protocol/use-map';

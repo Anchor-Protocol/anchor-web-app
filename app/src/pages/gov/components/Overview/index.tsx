@@ -3,11 +3,22 @@ import { BorderButton } from '@anchor-protocol/neumorphism-ui/components/BorderB
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { Label } from '@anchor-protocol/neumorphism-ui/components/Label';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
+import {
+  demicrofy,
+  formatANCWithPostfixUnits,
+  formatRatioToPercentage,
+  formatUSTWithPostfixUnits,
+} from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import { ChevronRight } from '@material-ui/icons';
 import { Circles } from 'components/Circles';
 import { screen } from 'env';
 import { govPathname } from 'pages/gov/env';
+import { totalGovStaked } from 'pages/gov/logics/totalGovStaked';
+import { totalStakedGovShareIndex } from 'pages/gov/logics/totalStakedGovShareIndex';
+import { useANCPrice } from 'pages/gov/queries/ancPrice';
+import { useTotalStaked } from 'pages/gov/queries/totalStaked';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -16,16 +27,49 @@ export interface OverviewProps {
 }
 
 function OverviewBase({ className }: OverviewProps) {
+  const {
+    data: { ancPrice },
+  } = useANCPrice();
+
+  const {
+    data: { govANCBalance, govState },
+  } = useTotalStaked();
+
+  const totalStaked = useMemo(
+    () => totalGovStaked(govANCBalance?.balance, govState?.total_deposit),
+    [govANCBalance?.balance, govState?.total_deposit],
+  );
+
+  const totalStakedShareIndex = useMemo(
+    () => totalStakedGovShareIndex(totalStaked, govState?.total_share),
+    [govState?.total_share, totalStaked],
+  );
+
   return (
     <div className={className}>
       <Section className="anc-price">
         <h2>ANC PRICE</h2>
-        <div>13.38 UST</div>
+        <div>
+          {ancPrice?.ANCPrice
+            ? formatUSTWithPostfixUnits(demicrofy(ancPrice?.ANCPrice))
+            : '0'}{' '}
+          UST
+        </div>
       </Section>
       <Section className="total-staked">
         <h2>TOTAL STAKED</h2>
         <div>
-          1.42M ANC <sub>(11.3%)</sub>
+          {totalStaked
+            ? formatANCWithPostfixUnits(demicrofy(totalStaked))
+            : '0'}{' '}
+          ANC{' '}
+          <sub>
+            (
+            {totalStakedShareIndex
+              ? formatRatioToPercentage(totalStakedShareIndex)
+              : '0'}
+            %)
+          </sub>
         </div>
       </Section>
       <Section className="staking">

@@ -1,4 +1,4 @@
-import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
+import { AddressProvider } from '@anchor-protocol/anchor.js';
 import { Num, uUST } from '@anchor-protocol/notation';
 import { createMap, map, Mapped, useMap } from '@anchor-protocol/use-map';
 import { WalletStatus } from '@anchor-protocol/wallet-provider';

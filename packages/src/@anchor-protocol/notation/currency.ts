@@ -13,6 +13,8 @@ export type Currency<
     | 'bluna'
     | 'ust'
     | 'aust'
+    | 'uanc'
+    | 'anc'
 > = { __nominal: T };
 
 export type uaUST<T = string> = T & Currency<'uaust'>;
@@ -21,6 +23,9 @@ export type aUST<T = string> = T & Currency<'aust'>;
 export type uUST<T = string> = T & Currency<'uust'>;
 export type UST<T = string> = T & Currency<'ust'>;
 
+export type uANC<T = string> = T & Currency<'uanc'>;
+export type ANC<T = string> = T & Currency<'anc'>;
+
 export type uLuna<T = string> = T & Currency<'uluna'>;
 export type Luna<T = string> = T & Currency<'luna'>;
 
@@ -28,8 +33,9 @@ export type ubLuna<T = string> = T & Currency<'ubluna'>;
 export type bLuna<T = string> = T & Currency<'bluna'>;
 
 export type uToken<T = string> = T &
-  Currency<'uaust' | 'uust' | 'uluna' | 'ubluna'>;
-export type Token<T = string> = T & Currency<'aust' | 'ust' | 'luna' | 'bluna'>;
+  Currency<'uaust' | 'uust' | 'uluna' | 'ubluna' | 'uanc'>;
+export type Token<T = string> = T &
+  Currency<'aust' | 'ust' | 'luna' | 'bluna' | 'anc'>;
 
 // ---------------------------------------------
 // micro
@@ -42,6 +48,7 @@ export function microfy<
     | bLuna<BigSource>
     | UST<BigSource>
     | aUST<BigSource>
+    | ANC<BigSource>
     | Token<BigSource>
 >(
   amount: C,
@@ -53,6 +60,8 @@ export function microfy<
   ? uUST<Big>
   : C extends aUST
   ? uaUST<Big>
+  : C extends ANC
+  ? uANC<Big>
   : C extends Token
   ? uToken<Big>
   : never {
@@ -65,6 +74,7 @@ export function demicrofy<
     | ubLuna<BigSource>
     | uUST<BigSource>
     | uaUST<BigSource>
+    | uANC<BigSource>
     | uToken<BigSource>
 >(
   amount: C,
@@ -76,6 +86,8 @@ export function demicrofy<
   ? UST<Big>
   : C extends uaUST
   ? aUST<Big>
+  : C extends uANC
+  ? ANC<Big>
   : C extends uToken
   ? Token<Big>
   : never {

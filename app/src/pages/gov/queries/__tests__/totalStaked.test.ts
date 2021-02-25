@@ -6,20 +6,26 @@ import {
   query,
   RawData,
   RawVariables,
-} from '../validators';
+} from '../totalStaked';
 
-describe('queries/validators', () => {
+describe('queries/totalStaked', () => {
   test('should get result from query', async () => {
     const data = await testClient
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          bLunaHubContract: testAddressProvider.blunaHub(),
+          ANCTokenContract: testAddressProvider.ANC(),
+          ANCTokenBalanceQuery: {
+            balance: {
+              address: testAddressProvider.gov(),
+            },
+          },
+          GovContract: testAddressProvider.gov(),
         }),
       })
       .then(({ data }) => map(data, dataMap));
-
-    expect(Array.isArray(data.validators)).toBeTruthy();
-    expect(Array.isArray(data.whitelistedValidators)).toBeTruthy();
+    //
+    //expect(typeof data.ancPrice?.ANCPrice).toBe('string');
+    console.log('totalStaked.test.ts..()', data);
   });
 });

@@ -17,7 +17,7 @@ describe('queries/terraswapOfferSimulation', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          bLunaTerraswap: testAddressProvider.blunaBurnPair(),
+          bLunaTerraswap: testAddressProvider.terraswapblunaLunaPair(),
           askSimulationQuery: {
             simulation: {
               offer_asset: {

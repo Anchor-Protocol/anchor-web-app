@@ -1,6 +1,5 @@
-import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
-import { MsgExecuteContract } from '@terra-money/terra.js';
+import { AddressProvider } from '@anchor-protocol/anchor.js';
 
-export const createContractMsg = (addressProvider: AddressProvider) => (
-  fn: (AddressProvider: AddressProvider) => MsgExecuteContract[],
-) => fn(addressProvider);
+export const createContractMsg = <Fabricator extends (...args: any[]) => any>(
+  addressProvider: AddressProvider,
+) => (fn: ReturnType<Fabricator>) => fn(addressProvider);

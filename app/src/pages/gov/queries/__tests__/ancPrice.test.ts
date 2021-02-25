@@ -6,20 +6,19 @@ import {
   query,
   RawData,
   RawVariables,
-} from '../validators';
+} from '../ancPrice';
 
-describe('queries/validators', () => {
+describe('queries/ancPrice', () => {
   test('should get result from query', async () => {
     const data = await testClient
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          bLunaHubContract: testAddressProvider.blunaHub(),
+          ANCTerraswap: testAddressProvider.terraswapAncUstPair(),
         }),
       })
       .then(({ data }) => map(data, dataMap));
 
-    expect(Array.isArray(data.validators)).toBeTruthy();
-    expect(Array.isArray(data.whitelistedValidators)).toBeTruthy();
+    expect(typeof data.ancPrice?.ANCPrice).toBe('string');
   });
 });

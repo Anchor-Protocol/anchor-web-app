@@ -1,4 +1,4 @@
-import { fabricatebAssetClaim } from '@anchor-protocol/anchor-js/fabricators';
+import { fabricatebAssetClaim } from '@anchor-protocol/anchor.js';
 import {
   createOperationOptions,
   merge,
