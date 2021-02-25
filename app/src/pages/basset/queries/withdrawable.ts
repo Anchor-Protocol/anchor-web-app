@@ -147,7 +147,7 @@ export function useWithdrawable({
 
   const variables = useMemo(() => {
     return mapVariables({
-      bLunaHubContract: addressProvider.bAssetHub(bAsset),
+      bLunaHubContract: addressProvider.blunaHub(bAsset),
       withdrawableAmountQuery: {
         withdrawable_unbonded: {
           block_time: now,

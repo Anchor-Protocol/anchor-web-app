@@ -14,7 +14,7 @@ describe('queries/ancPrice', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          ANCTerraswap: testAddressProvider.anchorUusdPair(),
+          ANCTerraswap: testAddressProvider.terraswapAncUstPair(),
         }),
       })
       .then(({ data }) => map(data, dataMap));

@@ -14,7 +14,7 @@ describe('queries/validators', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          bLunaHubContract: testAddressProvider.bAssetHub(''),
+          bLunaHubContract: testAddressProvider.blunaHub(),
         }),
       })
       .then(({ data }) => map(data, dataMap));

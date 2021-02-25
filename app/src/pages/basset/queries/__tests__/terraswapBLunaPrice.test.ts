@@ -14,7 +14,7 @@ describe('queries/terraswapBLunaPrice', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          bLunaTerraswap: testAddressProvider.blunaBurnPair(),
+          bLunaTerraswap: testAddressProvider.terraswapblunaLunaPair(),
         }),
       })
       .then(({ data }) => map(data, dataMap));

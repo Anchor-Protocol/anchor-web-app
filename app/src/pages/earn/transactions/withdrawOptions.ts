@@ -1,4 +1,4 @@
-import { fabricateRedeemStable } from '@anchor-protocol/anchor-js/fabricators';
+import { fabricateRedeemStable } from '@anchor-protocol/anchor.js';
 import {
   createOperationOptions,
   effect,

@@ -21,9 +21,9 @@ describe('queries/marketUserOverview', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          marketContractAddress: testAddressProvider.market('uusd'),
-          marketLoanQuery: {
-            loan_amount: {
+          marketContractAddress: testAddressProvider.market(),
+          marketBorrowerQuery: {
+            borrower_info: {
               borrower: testWalletAddress,
               block_height: marketState.currentBlock ?? 0,
             },
@@ -40,6 +40,5 @@ describe('queries/marketUserOverview', () => {
 
     expect(data.loanAmount).not.toBeUndefined();
     expect(data.borrowInfo).not.toBeUndefined();
-    expect(data.liability).not.toBeUndefined();
   });
 });

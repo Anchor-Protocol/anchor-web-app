@@ -1,4 +1,4 @@
-import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
+import { AddressProvider } from '@anchor-protocol/anchor.js';
 import { uLuna } from '@anchor-protocol/notation';
 import { createMap, map } from '@anchor-protocol/use-map';
 import { ApolloClient, gql } from '@apollo/client';
@@ -84,7 +84,7 @@ export function queryTerraswapAskSimulation(
       query,
       fetchPolicy: 'no-cache',
       variables: mapVariables({
-        bLunaTerraswap: addressProvider.blunaBurnPair(),
+        bLunaTerraswap: addressProvider.terraswapblunaLunaPair(),
         askSimulationQuery: {
           simulation: {
             offer_asset: {

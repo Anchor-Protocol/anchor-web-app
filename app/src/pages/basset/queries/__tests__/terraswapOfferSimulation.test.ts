@@ -17,13 +17,13 @@ describe('queries/terraswapOfferSimulation', () => {
       .query<Omit<RawData, 'deps'>, RawVariables>({
         query,
         variables: mapVariables({
-          bLunaTerraswap: testAddressProvider.blunaBurnPair(),
+          bLunaTerraswap: testAddressProvider.terraswapblunaLunaPair(),
           offerSimulationQuery: {
             simulation: {
               offer_asset: {
                 info: {
                   token: {
-                    contract_addr: testAddressProvider.bAssetToken('bluna'),
+                    contract_addr: testAddressProvider.blunaToken(),
                   },
                 },
                 amount: '100' as ubLuna,

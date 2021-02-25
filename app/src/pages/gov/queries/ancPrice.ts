@@ -88,7 +88,7 @@ export function useANCPrice(): MappedQueryResult<RawVariables, RawData, Data> {
 
   const variables = useMemo(() => {
     return mapVariables({
-      ANCTerraswap: addressProvider.anchorUusdPair(),
+      ANCTerraswap: addressProvider.terraswapAncUstPair(),
     });
   }, [addressProvider]);
 

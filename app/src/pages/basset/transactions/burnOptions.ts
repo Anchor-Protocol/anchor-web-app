@@ -1,4 +1,4 @@
-import { fabricatebAssetBurn } from '@anchor-protocol/anchor-js/fabricators';
+import { fabricatebAssetBurn } from '@anchor-protocol/anchor.js';
 import { floor } from '@anchor-protocol/big-math';
 import {
   createOperationOptions,

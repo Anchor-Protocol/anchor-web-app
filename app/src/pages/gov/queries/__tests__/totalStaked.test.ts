@@ -14,7 +14,7 @@ describe('queries/totalStaked', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          ANCTokenContract: testAddressProvider.token(),
+          ANCTokenContract: testAddressProvider.ANC(),
           ANCTokenBalanceQuery: {
             balance: {
               address: testAddressProvider.gov(),

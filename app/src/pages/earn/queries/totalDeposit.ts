@@ -132,7 +132,7 @@ export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
 
   const variables = useMemo(() => {
     return mapVariables({
-      anchorTokenContract: addressProvider.aToken(''),
+      anchorTokenContract: addressProvider.aTerra(''),
       anchorTokenBalanceQuery: {
         balance: {
           address: walletReady?.walletAddress ?? '',

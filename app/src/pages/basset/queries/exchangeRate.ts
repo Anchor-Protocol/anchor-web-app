@@ -78,7 +78,7 @@ export function useExchangeRate({
 
   const variables = useMemo(() => {
     return mapVariables({
-      bLunaHubContract: addressProvider.bAssetHub(bAsset),
+      bLunaHubContract: addressProvider.blunaHub(bAsset),
       stateQuery: {
         state: {},
       },

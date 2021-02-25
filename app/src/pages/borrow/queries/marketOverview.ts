@@ -1,4 +1,4 @@
-import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
+import { AddressProvider } from '@anchor-protocol/anchor.js';
 import { Ratio } from '@anchor-protocol/notation';
 import { createMap, map, Mapped, useMap } from '@anchor-protocol/use-map';
 import { ApolloClient, gql, useQuery } from '@apollo/client';
@@ -197,14 +197,14 @@ export function useMarketOverview({
       oracleContractAddress: addressProvider.oracle(),
       oracleQuery: {
         price: {
-          base: addressProvider.bAssetToken('ubluna'),
+          base: addressProvider.blunaToken('ubluna'),
           quote: 'uusd',
         },
       },
       overseerContractAddress: addressProvider.overseer('ubluna'),
       overseerWhitelistQuery: {
         whitelist: {
-          collateral_token: addressProvider.bAssetToken('ubluna'),
+          collateral_token: addressProvider.blunaToken('ubluna'),
         },
       },
     });
@@ -261,14 +261,14 @@ export function queryMarketOverview(
         oracleContractAddress: addressProvider.oracle(),
         oracleQuery: {
           price: {
-            base: addressProvider.bAssetToken('ubluna'),
+            base: addressProvider.blunaToken('ubluna'),
             quote: 'uusd',
           },
         },
         overseerContractAddress: addressProvider.overseer('ubluna'),
         overseerWhitelistQuery: {
           whitelist: {
-            collateral_token: addressProvider.bAssetToken('ubluna'),
+            collateral_token: addressProvider.blunaToken('ubluna'),
           },
         },
       }),

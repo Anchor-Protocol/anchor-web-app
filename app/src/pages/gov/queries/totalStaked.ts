@@ -143,7 +143,7 @@ export function useTotalStaked(): MappedQueryResult<
 
   const variables = useMemo(() => {
     return mapVariables({
-      ANCTokenContract: addressProvider.token(),
+      ANCTokenContract: addressProvider.ANC(),
       ANCTokenBalanceQuery: {
         balance: {
           address: addressProvider.gov(),

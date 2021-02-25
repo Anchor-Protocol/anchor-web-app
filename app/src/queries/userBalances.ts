@@ -149,8 +149,8 @@ export function useUserBalances(): MappedQueryResult<
   const variables = useMemo(() => {
     return mapVariables({
       walletAddress: walletReady?.walletAddress ?? '',
-      bAssetTokenAddress: addressProvider.bAssetToken('bluna'),
-      aTokenAddress: addressProvider.aToken('usd'),
+      bAssetTokenAddress: addressProvider.blunaToken('bluna'),
+      aTokenAddress: addressProvider.aTerra('usd'),
     });
   }, [addressProvider, walletReady?.walletAddress]);
 

@@ -1,4 +1,4 @@
-import { fabricatebAssetWithdrawUnbonded } from '@anchor-protocol/anchor-js/fabricators';
+import { fabricatebAssetWithdrawUnbonded } from '@anchor-protocol/anchor.js';
 import { floor } from '@anchor-protocol/big-math';
 import {
   createOperationOptions,
