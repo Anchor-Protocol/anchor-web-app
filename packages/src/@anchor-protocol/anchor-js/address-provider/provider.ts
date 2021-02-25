@@ -26,4 +26,30 @@ export interface AddressProvider {
   blunaBurnPair(): string;
 
   blunaBurn(quote: string): string;
+
+  gov(): string;
+
+  staking(): string;
+
+  bAssetAirdrop(denom: string): string;
+
+  distribution(): string;
+
+  blunaUlunaPair(): string;
+
+  blunaUlunaToken(): string;
+
+  anchorUusdPair(): string;
+
+  anchorUusdToken(): string;
+
+  faucet(): string;
+
+  collector(): string;
+
+  community(): string;
+
+  token(): string;
+
+  airdrop(): string;
 }
