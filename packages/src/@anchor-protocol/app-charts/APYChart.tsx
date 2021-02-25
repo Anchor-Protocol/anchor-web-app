@@ -190,7 +190,8 @@ export function APYChartBase({
           textAnchor="middle"
           {...palette.pointing.date}
         >
-          {format(data[index].date, 'MMM dd, yyyy')}
+          {/* TODO remove hh:mm */}
+          {format(data[index].date, 'MMM dd, yyyy hh:mm')}
         </text>
         <g transform={`translate(${x} ${y})`} filter="url(#dropshadow)">
           <rect
