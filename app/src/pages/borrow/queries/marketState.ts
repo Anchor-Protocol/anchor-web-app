@@ -7,7 +7,7 @@ import { useAddressProvider } from 'contexts/contract';
 import { useService } from 'contexts/service';
 import { parseResult } from 'queries/parseResult';
 import { MappedApolloQueryResult, MappedQueryResult } from 'queries/types';
-import { useQueryErrorAlert } from 'queries/useQueryErrorAlert';
+import { useQueryErrorHandler } from 'queries/useQueryErrorHandler';
 import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
@@ -139,6 +139,8 @@ export function useMarketState(): MappedQueryResult<
     });
   }, [addressProvider]);
 
+  const onError = useQueryErrorHandler();
+
   const { data: _data, refetch: _refetch, error, ...result } = useQuery<
     RawData,
     RawVariables
@@ -148,9 +150,8 @@ export function useMarketState(): MappedQueryResult<
     nextFetchPolicy: 'cache-first',
     pollInterval: 1000 * 10,
     variables,
+    onError,
   });
-
-  useQueryErrorAlert(error);
 
   useSubscription((id, event) => {
     if (event === 'done') {

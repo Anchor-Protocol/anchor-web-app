@@ -3,7 +3,7 @@ import { gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
 import { useService } from 'contexts/service';
 import { MappedQueryResult } from 'queries/types';
-import { useQueryErrorAlert } from 'queries/useQueryErrorAlert';
+import { useQueryErrorHandler } from 'queries/useQueryErrorHandler';
 import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
@@ -114,6 +114,8 @@ export function useValidators({
     });
   }, [addressProvider, bAsset]);
 
+  const onError = useQueryErrorHandler();
+
   const { data: _data, refetch: _refetch, error, ...result } = useQuery<
     RawData,
     RawVariables
@@ -122,9 +124,8 @@ export function useValidators({
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,
+    onError,
   });
-
-  useQueryErrorAlert(error);
 
   const data = useMap(_data, dataMap);
   const refetch = useRefetch(_refetch, dataMap);

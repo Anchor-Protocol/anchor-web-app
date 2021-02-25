@@ -4,7 +4,7 @@ import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useService } from 'contexts/service';
 import { MappedQueryResult } from 'queries/types';
-import { useQueryErrorAlert } from 'queries/useQueryErrorAlert';
+import { useQueryErrorHandler } from 'queries/useQueryErrorHandler';
 import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
@@ -81,6 +81,8 @@ export function useTransactionHistory(): MappedQueryResult<
     });
   }, [walletReady?.walletAddress]);
 
+  const onError = useQueryErrorHandler();
+
   const { data: _data, refetch: _refetch, error, ...result } = useQuery<
     RawData,
     RawVariables
@@ -89,9 +91,8 @@ export function useTransactionHistory(): MappedQueryResult<
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,
+    onError,
   });
-
-  useQueryErrorAlert(error);
 
   useSubscription((id, event) => {
     if (event === 'done') {

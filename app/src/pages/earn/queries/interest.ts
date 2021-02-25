@@ -5,7 +5,7 @@ import { useAddressProvider } from 'contexts/contract';
 import { useService } from 'contexts/service';
 import { parseResult } from 'queries/parseResult';
 import { MappedQueryResult } from 'queries/types';
-import { useQueryErrorAlert } from 'queries/useQueryErrorAlert';
+import { useQueryErrorHandler } from 'queries/useQueryErrorHandler';
 import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
@@ -78,6 +78,8 @@ export function useInterest(): MappedQueryResult<RawVariables, RawData, Data> {
     });
   }, [addressProvider]);
 
+  const onError = useQueryErrorHandler();
+
   const { data: _data, refetch: _refetch, error, ...result } = useQuery<
     RawData,
     RawVariables
@@ -87,9 +89,8 @@ export function useInterest(): MappedQueryResult<RawVariables, RawData, Data> {
     nextFetchPolicy: 'cache-first',
     pollInterval: 1000 * 60,
     variables,
+    onError,
   });
-
-  useQueryErrorAlert(error);
 
   const data = useMap(_data, dataMap);
   const refetch = useRefetch(_refetch, dataMap);

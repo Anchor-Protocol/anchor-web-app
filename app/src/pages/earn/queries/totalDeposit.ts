@@ -7,7 +7,7 @@ import { useService } from 'contexts/service';
 import { useLastSyncedHeight } from 'queries/lastSyncedHeight';
 import { parseResult } from 'queries/parseResult';
 import { MappedQueryResult } from 'queries/types';
-import { useQueryErrorAlert } from 'queries/useQueryErrorAlert';
+import { useQueryErrorHandler } from 'queries/useQueryErrorHandler';
 import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
@@ -34,10 +34,14 @@ export interface Data {
 
 export const dataMap = createMap<RawData, Data>({
   aUSTBalance: (existing, { aUSTBalance }) => {
-    return parseResult(existing.aUSTBalance, aUSTBalance.Result);
+    return aUSTBalance
+      ? parseResult(existing.aUSTBalance, aUSTBalance.Result)
+      : existing.aUSTBalance;
   },
   exchangeRate: (existing, { exchangeRate }) => {
-    return parseResult(existing.exchangeRate, exchangeRate.Result);
+    return exchangeRate
+      ? parseResult(existing.exchangeRate, exchangeRate.Result)
+      : existing.exchangeRate;
   },
 });
 
@@ -144,6 +148,8 @@ export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
     });
   }, [addressProvider, lastSyncedHeight, walletReady?.walletAddress]);
 
+  const onError = useQueryErrorHandler();
+
   const { data: _data, refetch: _refetch, error, ...result } = useQuery<
     RawData,
     RawVariables
@@ -152,11 +158,14 @@ export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,
+    onError,
   });
 
-  useQueryErrorAlert(error);
-
-  useEventBusListener('interest-earned-updated', _refetch);
+  useEventBusListener('interest-earned-updated', () => {
+    if (serviceAvailable) {
+      _refetch();
+    }
+  });
 
   const data = useMap(_data, dataMap);
   const refetch = useRefetch(_refetch, dataMap);

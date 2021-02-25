@@ -6,7 +6,7 @@ import { useAddressProvider } from 'contexts/contract';
 import { useService } from 'contexts/service';
 import { parseResult } from 'queries/parseResult';
 import { MappedQueryResult } from 'queries/types';
-import { useQueryErrorAlert } from 'queries/useQueryErrorAlert';
+import { useQueryErrorHandler } from 'queries/useQueryErrorHandler';
 import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
@@ -129,6 +129,8 @@ export function useClaimable(): MappedQueryResult<RawVariables, RawData, Data> {
     });
   }, [addressProvider, walletReady?.walletAddress]);
 
+  const onError = useQueryErrorHandler();
+
   const { data: _data, refetch: _refetch, error, ...result } = useQuery<
     RawData,
     RawVariables
@@ -137,9 +139,8 @@ export function useClaimable(): MappedQueryResult<RawVariables, RawData, Data> {
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,
+    onError,
   });
-
-  useQueryErrorAlert(error);
 
   useSubscription((id, event) => {
     if (event === 'done') {
