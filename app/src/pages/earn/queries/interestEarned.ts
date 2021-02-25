@@ -27,6 +27,10 @@ export interface RawData {
     StableDenom: string;
     ExchangeRate: Ratio<string>;
   }[];
+  thenExchangeRate: {
+    StableDenom: string;
+    ExchangeRate: Ratio<string>;
+  }[];
   fallback: Earned[];
   now?: Earned[];
   then?: Earned[];
@@ -37,7 +41,10 @@ export interface Data {
 }
 
 export const dataMap = createMap<RawData, Data>({
-  interestEarned: (_, { now, then, fallback, latestExchangeRate }) => {
+  interestEarned: (
+    _,
+    { now, then, fallback, latestExchangeRate, thenExchangeRate },
+  ) => {
     if (!now || now.length === 0) {
       return '0' as uUST;
     }
@@ -51,12 +58,22 @@ export const dataMap = createMap<RawData, Data>({
         : '0',
     ).mul(latestExchangeRate[0].ExchangeRate);
 
+    const thenTokenValue = big(
+      referenceThen.CurrentAnchorBalance.length > 0
+        ? referenceThen.CurrentAnchorBalance
+        : '0',
+    ).mul(thenExchangeRate[0].ExchangeRate);
+
     try {
       return floor(
         currentTokenValue
-          .minus(referenceThen.CurrentDeposit)
-          .plus(referenceNow.TotalWithdraw)
-          .minus(referenceNow.TotalDeposit),
+          .minus(thenTokenValue)
+          .plus(
+            big(referenceNow.TotalWithdraw).minus(referenceThen.TotalWithdraw),
+          )
+          .minus(
+            big(referenceNow.TotalDeposit).minus(referenceThen.TotalDeposit),
+          ),
       ).toFixed() as uUST;
     } catch {
       return '0' as uUST;
@@ -67,6 +84,7 @@ export const dataMap = createMap<RawData, Data>({
 export const mockupData: Mapped<RawData, Data> = {
   __data: {
     latestExchangeRate: [],
+    thenExchangeRate: [],
     fallback: [],
     now: [],
     then: [],
@@ -111,6 +129,16 @@ export const query = gql`
       Order: DESC
       Limit: 1
       StableDenom: $stable_denom
+    ) {
+      StableDenom
+      ExchangeRate
+    }
+
+    thenExchangeRate: AnchorExchangeRates(
+      Order: ASC
+      Limit: 1
+      StableDenom: $stable_denom
+      Timestamp_range: [$then, $now]
     ) {
       StableDenom
       ExchangeRate
@@ -178,6 +206,16 @@ export const totalQuery = gql`
       Order: DESC
       Limit: 1
       StableDenom: $stable_denom
+    ) {
+      StableDenom
+      ExchangeRate
+    }
+
+    thenExchangeRate: AnchorExchangeRates(
+      Order: ASC
+      Limit: 1
+      StableDenom: $stable_denom
+      Timestamp_range: [0, $now]
     ) {
       StableDenom
       ExchangeRate
