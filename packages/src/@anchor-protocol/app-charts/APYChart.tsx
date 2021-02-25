@@ -1,7 +1,9 @@
 import { darkTheme } from '@anchor-protocol/neumorphism-ui/themes/darkTheme';
 import { lightTheme } from '@anchor-protocol/neumorphism-ui/themes/lightTheme';
+import { formatRatioToPercentage, Ratio } from '@anchor-protocol/notation';
 import { scaleLinear } from 'd3-scale';
 import { curveNatural, line } from 'd3-shape';
+import { format } from 'date-fns';
 import {
   DetailedHTMLProps,
   HTMLAttributes,
@@ -20,14 +22,14 @@ import { dropshadowFilter } from './filters';
 import { useCoordinateSpace } from './interactions/useCoordinateSpace';
 import { Gutter } from './types';
 
-interface Item {
-  label: string;
-  value: number;
+export interface APYChartItem {
+  date: Date;
+  value: Ratio<number>;
 }
 
 export interface APYChartProps
   extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
-  data: Item[];
+  data: APYChartItem[];
   gutter?: Gutter;
   margin?: Gutter;
   minY?: number;
@@ -60,7 +62,6 @@ const lightColorPalette: ColorPalette = {
     },
     date: {
       fill: lightTheme.textColor,
-      style: { userSelect: 'none' },
     },
   },
   slider: {
@@ -82,7 +83,6 @@ const darkColorPalette: ColorPalette = {
     },
     date: {
       fill: darkTheme.textColor,
-      style: { userSelect: 'none' },
     },
   },
   slider: {
@@ -141,7 +141,7 @@ export function APYChartBase({
   }, [coordinateSpace.bottom, coordinateSpace.top, maxY, minY]);
 
   const figureElements = useMemo<ReactNode>(() => {
-    const drawPath = line<Item>()
+    const drawPath = line<APYChartItem>()
       .curve(curveNatural)
       .x((_, i) => xScale(i))
       .y(({ value }) => yScale(value));
@@ -165,6 +165,14 @@ export function APYChartBase({
     const x = xScale(index);
     const y = yScale(data[index].value);
 
+    const percentage = formatRatioToPercentage(data[index].value);
+
+    const isLeft = index > 1;
+    const fontSize = 12;
+    const rectRadius = 13;
+    const rectHeight = 26;
+    const rectWidth = rectRadius * 2 + (percentage.length + 4) * fontSize;
+
     return (
       <>
         <line
@@ -181,10 +189,27 @@ export function APYChartBase({
           textAnchor="middle"
           {...palette.pointing.date}
         >
-          JAN 21, 2021
+          {format(data[index].date, 'MMM dd, yyyy')}
         </text>
         <g transform={`translate(${x} ${y})`} filter="url(#dropshadow)">
-          <circle r={6} fill="white" />
+          <rect
+            x={isLeft ? rectRadius - rectWidth : -rectRadius}
+            y={rectHeight / -2}
+            width={rectWidth}
+            height={rectHeight}
+            rx={rectRadius}
+            ry={rectRadius}
+            fill="rgba(255, 255, 255, 0.9)"
+          />
+          <text
+            x={isLeft ? -rectRadius : rectRadius}
+            y={4}
+            width={rectWidth - rectRadius * 2}
+            fontSize={fontSize}
+            textAnchor={isLeft ? 'end' : 'start'}
+          >
+            APY <tspan fontWeight="700">{percentage}%</tspan>
+          </text>
           <circle r={2} fill={palette.line.stroke} />
         </g>
       </>
@@ -243,5 +268,7 @@ export const APYChart = styled(APYChartBase)`
   svg {
     min-width: 0;
     //background-color: rgba(0, 0, 0, 0.02);
+
+    user-select: none;
   }
 `;

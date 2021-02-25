@@ -1,4 +1,4 @@
-import { APYChart } from '@anchor-protocol/app-charts/APYChart';
+import { APYChart, APYChartItem } from '@anchor-protocol/app-charts/APYChart';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { Label } from '@anchor-protocol/neumorphism-ui/components/Label';
@@ -10,9 +10,11 @@ import {
   formatRatioToPercentage,
   formatUST,
   mapDecimalPointBaseSeparatedNumbers,
+  Ratio,
 } from '@anchor-protocol/notation';
 import { useConstants } from 'contexts/contants';
 import { currentAPY } from 'pages/earn/logics/currentAPY';
+import { useAPYHistory } from 'pages/earn/queries/apyHistory';
 import { useInterest } from 'pages/earn/queries/interest';
 import { Period, useInterestEarned } from 'pages/earn/queries/interestEarned';
 import { useMemo, useState } from 'react';
@@ -68,6 +70,17 @@ export function InterestSection({ className }: InterestSectionProps) {
     data: { interestEarned },
   } = useInterestEarned(tab.value);
 
+  const {
+    data: { apyHistory },
+  } = useAPYHistory();
+
+  const apyChartItems = useMemo<APYChartItem[] | undefined>(() => {
+    return apyHistory?.map(({ Timestamp, DepositRate }) => ({
+      date: new Date(Timestamp * 1000),
+      value: parseFloat(DepositRate) as Ratio<number>,
+    }));
+  }, [apyHistory]);
+
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
@@ -92,23 +105,15 @@ export function InterestSection({ className }: InterestSectionProps) {
           <Label className="name">APY</Label>
         </Tooltip>
         <div className="value">{formatRatioToPercentage(apy)}%</div>
-        <APYChart
-          margin={{ top: 20, bottom: 20, left: 100, right: 100 }}
-          gutter={{ top: 30, bottom: 30, left: 100, right: 100 }}
-          data={[
-            { label: 'A', value: 100 },
-            { label: 'B', value: 0 },
-            { label: 'C', value: 70 },
-            { label: 'D', value: 130 },
-            { label: 'E', value: 60 },
-            { label: 'F', value: 170 },
-            { label: 'G', value: 190 },
-            { label: 'H', value: 140 },
-            { label: 'I', value: 110 },
-            { label: 'J', value: 40 },
-            { label: 'K', value: 10 },
-          ]}
-        />
+        {apyChartItems && (
+          <APYChart
+            margin={{ top: 20, bottom: 20, left: 100, right: 100 }}
+            gutter={{ top: 30, bottom: 50, left: 100, right: 100 }}
+            data={apyChartItems}
+            minY={0}
+            maxY={1.3}
+          />
+        )}
       </div>
 
       <article className="earn">
