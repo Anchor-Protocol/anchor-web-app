@@ -1,3 +1,4 @@
+import { useEventBusListener } from '@anchor-protocol/event-bus';
 import { Num, Ratio, uaUST } from '@anchor-protocol/notation';
 import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
@@ -154,6 +155,8 @@ export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
   });
 
   useQueryErrorAlert(error);
+
+  useEventBusListener('interest-earned-updated', _refetch);
 
   const data = useMap(_data, dataMap);
   const refetch = useRefetch(_refetch, dataMap);

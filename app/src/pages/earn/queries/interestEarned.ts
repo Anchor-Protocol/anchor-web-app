@@ -1,4 +1,5 @@
 import { floor } from '@anchor-protocol/big-math';
+import { useEventBus } from '@anchor-protocol/event-bus';
 import { DateTime, JSDateTime, Ratio, uUST } from '@anchor-protocol/notation';
 import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
@@ -8,7 +9,7 @@ import { sub } from 'date-fns';
 import { MappedQueryResult } from 'queries/types';
 import { useQueryErrorAlert } from 'queries/useQueryErrorAlert';
 import { useRefetch } from 'queries/useRefetch';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 type Earned = {
   Address: string;
@@ -259,20 +260,18 @@ export type Period = 'total' | 'year' | 'month' | 'week' | 'day';
 export function useInterestEarned(
   period: Period,
 ): MappedQueryResult<RawVariables, RawData, Data> {
+  const { dispatch } = useEventBus();
+
   const { serviceAvailable, walletReady } = useService();
 
   const variables = useMemo(() => {
     const { now, then } = getDates(period);
 
-    const v = mapVariables({
+    return mapVariables({
       walletAddress: walletReady?.walletAddress ?? '',
       now,
       then,
     });
-
-    //console.log('interestEarned.ts..()', JSON.stringify(v, null, 2));
-
-    return v;
   }, [period, walletReady?.walletAddress]);
 
   const { data: _data, refetch: _refetch, error, ...result } = useQuery<
@@ -289,6 +288,10 @@ export function useInterestEarned(
 
   const data = useMap(_data, dataMap);
   const refetch = useRefetch(_refetch, dataMap);
+
+  useEffect(() => {
+    dispatch('interest-earned-updated');
+  }, [variables, dispatch]);
 
   return {
     ...result,
