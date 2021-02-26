@@ -17,11 +17,11 @@ export interface PollsProps {
 
 interface Item {
   label: string;
-  value: PollStatus | undefined;
+  value: PollStatus | 'all';
 }
 
 const options: Item[] = [
-  { label: 'All', value: undefined },
+  { label: 'All', value: 'all' },
   { label: 'In Progress', value: 'in_progress' },
   { label: 'Executed', value: 'executed' },
   { label: 'Passed', value: 'passed' },
@@ -31,13 +31,13 @@ const options: Item[] = [
 function PollsBase({ className }: PollsProps) {
   const history = useHistory();
 
-  const [option, setOption] = useState<PollStatus | undefined>(
+  const [option, setOption] = useState<PollStatus | 'all'>(
     () => options[0].value,
   );
 
-  const [polls, govConfig, loadMorePolls] = usePolls(option);
-
-  console.log('index.tsx..PollsBase()', polls);
+  const [polls, govConfig, loadMorePolls] = usePolls(
+    option === 'all' ? undefined : option,
+  );
 
   const [view, setView] = useLocalStorage<'grid' | 'list'>(
     '__anchor_polls_view__',
@@ -76,7 +76,7 @@ function PollsBase({ className }: PollsProps) {
           value={option}
           style={{ width: 150, height: 40, marginLeft: 10 }}
           onChange={({ target }: ChangeEvent<HTMLSelectElement>) =>
-            setOption(target.value as PollStatus | undefined)
+            setOption(target.value as PollStatus | 'all')
           }
         >
           {options.map(({ label, value }) => (
