@@ -19,6 +19,19 @@ interface ChartSliderState {
   position: number;
 }
 
+function getPosition(props: ChartSliderProps) {
+  return (
+    Math.max(
+      Math.min(
+        ((props.value - props.min) / (props.max - props.min)) *
+          props.coordinateSpace.width,
+        props.coordinateSpace.width,
+      ),
+      0,
+    ) + props.coordinateSpace.x
+  );
+}
+
 export class ChartSlider extends Component<ChartSliderProps, ChartSliderState> {
   private active: boolean = false;
   private cursorStart: number = 0;
@@ -32,15 +45,7 @@ export class ChartSlider extends Component<ChartSliderProps, ChartSliderState> {
     super(props);
 
     this.state = {
-      position:
-        Math.max(
-          Math.min(
-            ((props.value - props.min) / (props.max - props.min)) *
-              props.coordinateSpace.width,
-            props.coordinateSpace.width,
-          ),
-          0,
-        ) + props.coordinateSpace.x,
+      position: getPosition(props),
     };
   }
 
@@ -52,7 +57,10 @@ export class ChartSlider extends Component<ChartSliderProps, ChartSliderState> {
       <g
         ref={this.takeThumb}
         transform={`translate(${x} ${y})`}
-        style={{ cursor: 'pointer' }}
+        style={{
+          cursor: 'pointer',
+          visibility: isNaN(x) ? 'hidden' : undefined,
+        }}
       >
         {this.props.children}
       </g>
@@ -87,16 +95,7 @@ export class ChartSlider extends Component<ChartSliderProps, ChartSliderState> {
       prevProps.coordinateSpace.x !== this.props.coordinateSpace.x
     ) {
       this.setState({
-        position:
-          Math.max(
-            Math.min(
-              ((this.props.value - this.props.min) /
-                (this.props.max - this.props.min)) *
-                this.props.coordinateSpace.width,
-              this.props.coordinateSpace.width,
-            ),
-            0,
-          ) + this.props.coordinateSpace.x,
+        position: getPosition(this.props),
       });
     }
   }

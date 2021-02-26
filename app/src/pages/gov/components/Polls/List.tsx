@@ -2,6 +2,9 @@ import { BorderButton } from '@anchor-protocol/neumorphism-ui/components/BorderB
 import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/components/HorizontalScrollTable';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { TimeEnd } from '@anchor-protocol/use-time-end';
+import { extractPollDetail } from 'pages/gov/logics/extractPollDetail';
+import { useLastSyncedHeight } from 'queries/lastSyncedHeight';
+import { useMemo } from 'react';
 import styled from 'styled-components';
 import { PollTinyGraph } from './PollTinyGraph';
 import { PollList } from './types';
@@ -10,7 +13,23 @@ export interface ListProps extends PollList {
   className?: string;
 }
 
-function ListBase({ className, polls, onClick, onLoadMore }: ListProps) {
+function ListBase({
+  className,
+  polls,
+  govConfig,
+  onClick,
+  onLoadMore,
+}: ListProps) {
+  const { data: lastSyncedHeight } = useLastSyncedHeight();
+
+  const pollDetails = useMemo(() => {
+    return govConfig && lastSyncedHeight
+      ? polls.map((poll) =>
+          extractPollDetail(poll, govConfig, lastSyncedHeight),
+        )
+      : [];
+  }, [govConfig, lastSyncedHeight, polls]);
+
   return (
     <Section className={className}>
       <HorizontalScrollTable minWidth={1200} startPadding={20} endPadding={20}>
@@ -33,37 +52,34 @@ function ListBase({ className, polls, onClick, onLoadMore }: ListProps) {
           </tr>
         </thead>
         <tbody>
-          {polls.map((poll) => (
+          {pollDetails.map(({ poll, vote, type, endsIn }) => (
             <tr key={'list' + poll.id} onClick={() => onClick(poll)}>
               <td>{poll.id}</td>
-              <td>
-                <s>Gov Update</s>
-              </td>
+              <td>{type}</td>
               <td>{poll.status}</td>
               <td>{poll.title}</td>
               <td>
                 <PollTinyGraph
-                  total={+poll.yes_votes + +poll.no_votes}
-                  yes={+poll.yes_votes}
-                  no={+poll.no_votes}
-                  baseline={Math.floor(
-                    (+poll.yes_votes + +poll.no_votes) * 0.45,
-                  )}
+                  total={vote.possibleVotes}
+                  yes={vote.yes}
+                  no={vote.no}
+                  baseline={vote.threshold}
                 />
               </td>
               <td>
-                <s>
-                  <TimeEnd endTime={new Date(Date.now() * 1000000)} />
-                </s>
+                <TimeEnd endTime={endsIn} />
               </td>
             </tr>
           ))}
         </tbody>
       </HorizontalScrollTable>
 
-      <BorderButton className="more" onClick={onLoadMore}>
-        More
-      </BorderButton>
+      {pollDetails.length > 0 &&
+        pollDetails[pollDetails.length - 1].poll.id > 1 && (
+          <BorderButton className="more" onClick={onLoadMore}>
+            More
+          </BorderButton>
+        )}
     </Section>
   );
 }
@@ -74,6 +90,12 @@ export const List = styled(ListBase)`
 
     thead,
     tbody {
+      td:nth-child(3) {
+        &:first-letter {
+          text-transform: uppercase;
+        }
+      }
+
       td:nth-child(4) {
         white-space: break-spaces;
       }

@@ -56,6 +56,7 @@ export const contractAddresses = {
   mmLiquidation: 'terra17mvw0a8pkwzljzqfnpgc04w58uu2t0m5alejax',
   mmdistributionModel: 'terra1qhducr784hs5dwy2aqf87m44qu2cq8uwa5dy99',
   aTerra: 'terra1mj2p7r4886ljadtelvmphqj946nv34ks2jdeyz',
+  terraswapFactory: 'terra18qpjm4zkvqnpjpw0zn0tdr8gdzvt8au35v45xf',
   terraswapblunaLunaPair: 'terra1alzpqevx3hg5lyf6925k902wyq6q4w068w7avt',
   terraswapblunaLunaLPToken: 'terra1u3g737cx5tyuwpmf8gxnn4dymxlaq74rzxjg4u',
   terraswapAncUstPair: 'terra1pks49j0lqeae874cjn32wpvwdz4nkv6vx767r4',
@@ -67,5 +68,4 @@ export const contractAddresses = {
   staking: 'terra1hjk5vur4kj0p7prxmn463zq3e9qe8a9q8d0x3m',
   ANC: 'terra1qfrasf2ajaynut6qlfdrgts4dwp854e5ess2gd',
   airdrop: 'terra130eefc9dnffl5ussg5afz7mkq4hw7tv2wqsqes',
-  terraswapFactory: 'terra1ccvnhpr88c2hk7swsn2r3z08kec8ax8n3dsfkk',
 };

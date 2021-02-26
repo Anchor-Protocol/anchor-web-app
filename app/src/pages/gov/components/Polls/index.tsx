@@ -4,7 +4,7 @@ import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeS
 import { useLocalStorage } from '@anchor-protocol/use-local-storage';
 import { List, ViewModule } from '@material-ui/icons';
 import { govPathname } from 'pages/gov/env';
-import { Poll, usePolls } from 'pages/gov/queries/polls';
+import { Poll, PollStatus, usePolls } from 'pages/gov/queries/polls';
 import { ChangeEvent, useCallback, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
@@ -17,21 +17,27 @@ export interface PollsProps {
 
 interface Item {
   label: string;
-  value: string;
+  value: PollStatus | undefined;
 }
 
 const options: Item[] = [
-  { label: 'All', value: 'all' },
-  { label: 'Item1', value: 'item1' },
-  { label: 'Item2', value: 'item2' },
+  { label: 'All', value: undefined },
+  { label: 'In Progress', value: 'in_progress' },
+  { label: 'Executed', value: 'executed' },
+  { label: 'Passed', value: 'passed' },
+  { label: 'Rejected', value: 'rejected' },
 ];
 
 function PollsBase({ className }: PollsProps) {
-  const [polls, loadMorePolls] = usePolls(undefined);
-
   const history = useHistory();
 
-  const [option, setOption] = useState<string>(() => options[0].value);
+  const [option, setOption] = useState<PollStatus | undefined>(
+    () => options[0].value,
+  );
+
+  const [polls, govConfig, loadMorePolls] = usePolls(option);
+
+  console.log('index.tsx..PollsBase()', polls);
 
   const [view, setView] = useLocalStorage<'grid' | 'list'>(
     '__anchor_polls_view__',
@@ -70,7 +76,7 @@ function PollsBase({ className }: PollsProps) {
           value={option}
           style={{ width: 150, height: 40, marginLeft: 10 }}
           onChange={({ target }: ChangeEvent<HTMLSelectElement>) =>
-            setOption(target.value)
+            setOption(target.value as PollStatus | undefined)
           }
         >
           {options.map(({ label, value }) => (
@@ -100,12 +106,14 @@ function PollsBase({ className }: PollsProps) {
           polls={polls}
           onClick={onPollClick}
           onLoadMore={loadMorePolls}
+          govConfig={govConfig}
         />
       ) : (
         <ListView
           polls={polls}
           onClick={onPollClick}
           onLoadMore={loadMorePolls}
+          govConfig={govConfig}
         />
       )}
     </section>

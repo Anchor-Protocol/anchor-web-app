@@ -110,10 +110,10 @@ export function InterestSection({ className }: InterestSectionProps) {
         {apyChartItems && (
           <APYChart
             margin={{ top: 20, bottom: 20, left: 100, right: 100 }}
-            gutter={{ top: 20, bottom: 20, left: 100, right: 100 }}
+            gutter={{ top: 30, bottom: 20, left: 100, right: 100 }}
             data={apyChartItems}
-            minY={-0.2}
-            maxY={1.3}
+            minY={() => -0.03}
+            maxY={(...values) => Math.max(...values, 0.3)}
           />
         )}
       </div>

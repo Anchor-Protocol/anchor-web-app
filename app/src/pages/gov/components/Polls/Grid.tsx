@@ -3,6 +3,9 @@ import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { TimeEnd } from '@anchor-protocol/use-time-end';
 import { Schedule } from '@material-ui/icons';
+import { extractPollDetail } from 'pages/gov/logics/extractPollDetail';
+import { useLastSyncedHeight } from 'queries/lastSyncedHeight';
+import { useMemo } from 'react';
 import styled from 'styled-components';
 import { PollGraph } from './PollGraph';
 import { PollList } from './types';
@@ -11,17 +14,31 @@ export interface GridProps extends PollList {
   className?: string;
 }
 
-function GridBase({ className, polls, onClick, onLoadMore }: GridProps) {
+function GridBase({
+  className,
+  polls,
+  govConfig,
+  onClick,
+  onLoadMore,
+}: GridProps) {
+  const { data: lastSyncedHeight } = useLastSyncedHeight();
+
+  const pollDetails = useMemo(() => {
+    return govConfig && lastSyncedHeight
+      ? polls.map((poll) =>
+          extractPollDetail(poll, govConfig, lastSyncedHeight),
+        )
+      : [];
+  }, [govConfig, lastSyncedHeight, polls]);
+
   return (
     <div className={className}>
       <div className="grid">
-        {polls.map((poll) => (
+        {pollDetails.map(({ poll, vote, type, endsIn }) => (
           <Section key={'grid' + poll.id} onClick={() => onClick(poll)}>
             <div className="poll-id">
               <span>ID: {poll.id}</span>
-              <span>
-                <s>Gov Update</s>
-              </span>
+              <span>{type}</span>
             </div>
 
             <div className="poll-status">{poll.status}</div>
@@ -29,38 +46,35 @@ function GridBase({ className, polls, onClick, onLoadMore }: GridProps) {
             <h2>{poll.title}</h2>
 
             <PollGraph
-              total={+poll.yes_votes + +poll.no_votes}
-              yes={+poll.yes_votes}
-              no={+poll.no_votes}
-              baseline={Math.floor((+poll.yes_votes + +poll.no_votes) * 0.45)}
+              total={vote.possibleVotes}
+              yes={vote.yes}
+              no={vote.no}
+              baseline={vote.threshold}
             />
 
             <div className="poll-ends-in">
               <IconSpan>
-                <s>
-                  <b>Estimated end time</b>{' '}
-                  {new Date(Date.now() * 1000000).toLocaleDateString(
-                    undefined,
-                    {
-                      weekday: 'short',
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric',
-                    },
-                  )}{' '}
-                  {new Date(Date.now() * 1000000).toLocaleTimeString()}{' '}
-                  <Schedule />{' '}
-                  <TimeEnd endTime={new Date(Date.now() * 1000000)} />
-                </s>
+                <b>Estimated end time</b>{' '}
+                {endsIn.toLocaleDateString(undefined, {
+                  weekday: 'short',
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                })}{' '}
+                {endsIn.toLocaleTimeString()} <Schedule />{' '}
+                <TimeEnd endTime={endsIn} />
               </IconSpan>
             </div>
           </Section>
         ))}
       </div>
 
-      <BorderButton className="more" onClick={onLoadMore}>
-        More
-      </BorderButton>
+      {pollDetails.length > 0 &&
+        pollDetails[pollDetails.length - 1].poll.id > 1 && (
+          <BorderButton className="more" onClick={onLoadMore}>
+            More
+          </BorderButton>
+        )}
     </div>
   );
 }

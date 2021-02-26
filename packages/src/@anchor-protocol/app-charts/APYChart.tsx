@@ -32,8 +32,8 @@ export interface APYChartProps
   data: APYChartItem[];
   gutter?: Gutter;
   margin?: Gutter;
-  minY?: number;
-  maxY?: number;
+  minY?: (...values: number[]) => number;
+  maxY?: (...values: number[]) => number;
 }
 
 type ColorPalette = {
@@ -95,8 +95,8 @@ export function APYChartBase({
   data,
   gutter = { top: 60, bottom: 30, left: 20, right: 20 },
   margin = { top: 20, bottom: 20, left: 20, right: 20 },
-  minY: _minY = Math.min(...data.map(({ value }) => value)),
-  maxY: _maxY = Math.max(...data.map(({ value }) => value)),
+  minY: _minY = Math.min,
+  maxY: _maxY = Math.max,
   ...divProps
 }: APYChartProps) {
   const { ref, width = 400, height = 200 } = useResizeObserver<HTMLDivElement>(
@@ -120,8 +120,8 @@ export function APYChartBase({
     () => ({
       minX: 0,
       maxX: data.length - 1,
-      minY: _minY ?? Math.min(...data.map(({ value }) => value)),
-      maxY: _maxY ?? Math.max(...data.map(({ value }) => value)),
+      minY: _minY(...data.map(({ value }) => value)),
+      maxY: _maxY(...data.map(({ value }) => value)),
     }),
     [_maxY, _minY, data],
   );
@@ -136,8 +136,7 @@ export function APYChartBase({
   const yScale = useMemo(() => {
     return scaleLinear()
       .domain([maxY, minY])
-      .range([coordinateSpace.top, coordinateSpace.bottom])
-      .clamp(true);
+      .range([coordinateSpace.top, coordinateSpace.bottom]);
   }, [coordinateSpace.bottom, coordinateSpace.top, maxY, minY]);
 
   const figureElements = useMemo<ReactNode>(() => {

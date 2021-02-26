@@ -41,13 +41,13 @@ export function PollTinyGraph({ total, yes, no, baseline }: PollGraphProps) {
       data={[
         {
           position: 'vote',
-          label: `No ${Math.floor((no / (yes + no)) * 100)}%`,
+          label: `No ${Math.floor((no / total) * 100)}%`,
           color: '#e95979',
           value: yes + no,
         },
         {
           position: 'vote',
-          label: `Yes ${Math.floor((yes / (yes + no)) * 100)}%`,
+          label: `Yes ${Math.floor((yes / total) * 100)}%`,
           color: '#15cc93',
           value: yes,
         },
@@ -62,13 +62,13 @@ export function PollTinyGraph({ total, yes, no, baseline }: PollGraphProps) {
       valueFunction={valueFunction}
       labelRenderer={labelRenderer}
     >
-      <TotalVoteSpan>10.8%</TotalVoteSpan>
+      <TotalVoteSpan>{Math.floor(((yes + no) / total) * 100)}%</TotalVoteSpan>
       <YesNoSpan>
         <span className="yes">
-          <b>Yes</b> {Math.floor((yes / (yes + no)) * 100)}%
+          <b>Yes</b> {Math.floor((yes / total) * 100)}%
         </span>
         <span className="no">
-          <b>No</b> {Math.floor((no / (yes + no)) * 100)}%
+          <b>No</b> {Math.floor((no / total) * 100)}%
         </span>
       </YesNoSpan>
     </HorizontalGraphBar>
