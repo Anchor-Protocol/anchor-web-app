@@ -12,6 +12,7 @@ import {
   mapDecimalPointBaseSeparatedNumbers,
   Ratio,
 } from '@anchor-protocol/notation';
+import big from 'big.js';
 import { useConstants } from 'contexts/contants';
 import { currentAPY } from 'pages/earn/logics/currentAPY';
 import { useAPYHistory } from 'pages/earn/queries/apyHistory';
@@ -75,13 +76,25 @@ export function InterestSection({ className }: InterestSectionProps) {
   } = useAPYHistory();
 
   const apyChartItems = useMemo<APYChartItem[] | undefined>(() => {
-    return apyHistory
+    const history = apyHistory
       ?.map(({ Timestamp, DepositRate }) => ({
         date: new Date(Timestamp * 1000),
         value: (parseFloat(DepositRate) * blocksPerYear) as Ratio<number>,
       }))
       .reverse();
-  }, [apyHistory, blocksPerYear]);
+
+    return history && marketStatus
+      ? [
+          ...history,
+          {
+            date: new Date(),
+            value: big(marketStatus.deposit_rate)
+              .mul(blocksPerYear)
+              .toNumber() as Ratio<number>,
+          },
+        ]
+      : undefined;
+  }, [apyHistory, blocksPerYear, marketStatus]);
 
   // ---------------------------------------------
   // logics

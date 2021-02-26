@@ -1,4 +1,4 @@
-import { DateTime, Ratio } from '@anchor-protocol/notation';
+import { DateTime, JSDateTime, Ratio } from '@anchor-protocol/notation';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useService } from 'contexts/service';
@@ -23,17 +23,27 @@ export const dataMap = createMap<RawData, Data>({
   },
 });
 
-export interface RawVariables {}
+export interface RawVariables {
+  timestampMax: DateTime;
+}
 
-export type Variables = RawVariables;
+export interface Variables {
+  timestampMax: JSDateTime;
+}
 
-export function mapVariables(variables: Variables): RawVariables {
-  return variables;
+export function mapVariables({ timestampMax }: Variables): RawVariables {
+  return {
+    timestampMax: Math.floor(timestampMax / 1000) as DateTime,
+  };
 }
 
 export const query = gql`
-  query __apyHistory {
-    apyHistory: AnchorDepositRateHistory(Order: DESC, Limit: 10) {
+  query __apyHistory($timestampMax: Int!) {
+    apyHistory: AnchorDepositRateHistory(
+      Order: DESC
+      Limit: 9
+      Timestamp_range: [0, $timestampMax]
+    ) {
       Timestamp
       Height
       DepositRate
@@ -49,7 +59,9 @@ export function useAPYHistory(): MappedQueryResult<
   const { serviceAvailable } = useService();
 
   const variables = useMemo(() => {
-    return mapVariables({});
+    return mapVariables({
+      timestampMax: (Date.now() - 1000 * 60 * 60 * 24) as JSDateTime,
+    });
   }, []);
 
   const onError = useQueryErrorHandler();
