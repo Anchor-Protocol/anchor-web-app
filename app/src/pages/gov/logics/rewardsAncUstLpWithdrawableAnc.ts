@@ -3,7 +3,7 @@ import big, { Big, BigSource } from 'big.js';
 
 export function rewardsAncUstLpWithdrawableAnc(
   ancPoolSize: Num<BigSource> | undefined,
-  userLpBalance: Num<BigSource> | undefined,
+  userLpBalance: uANC<BigSource> | undefined,
   lpShare: Num<BigSource> | undefined,
 ): uANC<Big> | undefined {
   return ancPoolSize && userLpBalance && lpShare

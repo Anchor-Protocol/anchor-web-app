@@ -1,17 +1,17 @@
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { govPathname } from './env';
-import { GovernmentMain } from './main';
+import { GovernanceMain } from './main';
 import { PollCreate } from './poll.create';
 import { pollCreateTextProposal } from './poll.create.text-proposal';
 import { PollDetail } from './poll.detail';
 import { RewardsPool } from './rewards.pool';
 import { Trade } from './trade';
 
-export function Government() {
+export function Governance() {
   return (
     <Switch>
       {/* Main */}
-      <Route exact path={`/${govPathname}/`} component={GovernmentMain} />
+      <Route exact path={`/${govPathname}/`} component={GovernanceMain} />
 
       {/* Rewards */}
       <Route path={`/${govPathname}/pool/:reward`} component={RewardsPool} />

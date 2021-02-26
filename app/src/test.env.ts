@@ -1,4 +1,7 @@
-import { AddressProviderFromJson } from '@anchor-protocol/anchor.js';
+import {
+  AddressProvider,
+  AddressProviderFromJson,
+} from '@anchor-protocol/anchor.js';
 import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { contractAddresses } from 'env';
 
@@ -8,7 +11,7 @@ export const testClient = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-export const testAddressProvider = new AddressProviderFromJson(
+export const testAddressProvider: AddressProvider = new AddressProviderFromJson(
   contractAddresses,
 );
 

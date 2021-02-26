@@ -1,4 +1,4 @@
-import { Num } from '@anchor-protocol/notation';
+import { Num, Ratio, uaUST, uUST } from '@anchor-protocol/notation';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
@@ -10,102 +10,107 @@ import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
 export interface RawData {
-  userLPBalance: {
+  borrowerInfo: {
     Result: string;
   };
 
-  userLPStakingInfo: {
+  marketState: {
     Result: string;
   };
 }
 
 export interface Data {
-  userLPBalance: {
+  borrowerInfo: {
     Result: string;
-    balance: Num<string>;
+    borrower: string;
+    interest_index: Num<string>;
+    loan_amount: uUST<string>;
+    pending_rewards: Num<string>;
+    reward_index: Num<string>;
   };
 
-  userLPStakingInfo: {
+  marketState: {
     Result: string;
-    staker: string;
-    reward_index: Num<string>;
-    bond_amount: Num<string>;
-    pending_reward: Num<string>;
+    anc_emission_rate: Ratio<string>;
+    global_interest_index: Num<string>;
+    global_reward_index: Num<string>;
+    last_interest_updated: number;
+    last_reward_updated: number;
+    total_liabilities: uUST<string>;
+    total_reserves: uaUST<string>;
   };
 }
 
 export const dataMap = createMap<RawData, Data>({
-  userLPBalance: (existing, { userLPBalance }) => {
-    return parseResult(existing.userLPBalance, userLPBalance.Result);
+  borrowerInfo: (existing, { borrowerInfo }) => {
+    return parseResult(existing.borrowerInfo, borrowerInfo.Result);
   },
 
-  userLPStakingInfo: (existing, { userLPStakingInfo }) => {
-    return parseResult(existing.userLPStakingInfo, userLPStakingInfo.Result);
+  marketState: (existing, { marketState }) => {
+    return parseResult(existing.marketState, marketState.Result);
   },
 });
 
 export interface RawVariables {
-  ANCUST_LP_Token_contract: string;
-  ANCUSTLPBalanceQuery: string;
-  ANCUST_LP_Staking_contract: string;
-  UserLPStakingInfoQuery: string;
+  MarketContract: string;
+  BorrowerInfoQuery: string;
+  MarketStateQuery: string;
 }
 
 export interface Variables {
-  ANCUST_LP_Token_contract: string;
-  ANCUST_LP_Staking_contract: string;
+  MarketContract: string;
   userWalletAddress: string;
 }
 
 export function mapVariables({
-  ANCUST_LP_Token_contract,
-  ANCUST_LP_Staking_contract,
+  MarketContract,
   userWalletAddress,
 }: Variables): RawVariables {
   return {
-    ANCUST_LP_Token_contract,
-    ANCUSTLPBalanceQuery: JSON.stringify({
-      balance: { address: userWalletAddress },
+    MarketContract,
+    BorrowerInfoQuery: JSON.stringify({
+      borrower_info: { borrower: userWalletAddress },
     }),
-    ANCUST_LP_Staking_contract,
-    UserLPStakingInfoQuery: JSON.stringify({
-      staker_info: { staker: userWalletAddress },
+    MarketStateQuery: JSON.stringify({
+      state: {},
     }),
   };
 }
 
 export const query = gql`
-  query __rewards(
-    $ANCUST_LP_Token_contract: String!
-    $ANCUSTLPBalanceQuery: String!
-    $ANCUST_LP_Staking_contract: String!
-    $UserLPStakingInfoQuery: String!
+  query __rewardsUSTBorrow(
+    $MarketContract: String!
+    $BorrowerInfoQuery: String!
+    $MarketStateQuery: String!
   ) {
-    userLPBalance: WasmContractsContractAddressStore(
-      ContractAddress: $ANCUST_LP_Token_contract
-      QueryMsg: $ANCUSTLPBalanceQuery
+    borrowerInfo: WasmContractsContractAddressStore(
+      ContractAddress: $MarketContract
+      QueryMsg: $BorrowerInfoQuery
     ) {
       Result
     }
 
-    userLPStakingInfo: WasmContractsContractAddressStore(
-      ContractAddress: $ANCUST_LP_Staking_contract
-      QueryMsg: $UserLPStakingInfoQuery
+    marketState: WasmContractsContractAddressStore(
+      ContractAddress: $MarketContract
+      QueryMsg: $MarketStateQuery
     ) {
       Result
     }
   }
 `;
 
-export function useRewards(): MappedQueryResult<RawVariables, RawData, Data> {
+export function useRewardsUSTBorrow(): MappedQueryResult<
+  RawVariables,
+  RawData,
+  Data
+> {
   const { serviceAvailable, walletReady } = useService();
 
   const addressProvider = useAddressProvider();
 
   const variables = useMemo(() => {
     return mapVariables({
-      ANCUST_LP_Token_contract: addressProvider.terraswapAncUstLPToken(),
-      ANCUST_LP_Staking_contract: addressProvider.staking(),
+      MarketContract: addressProvider.market(''),
       userWalletAddress: walletReady?.walletAddress ?? '',
     });
   }, [addressProvider, walletReady?.walletAddress]);

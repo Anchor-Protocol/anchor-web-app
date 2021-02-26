@@ -4,11 +4,11 @@ import { Polls } from './components/Polls';
 import { Rewards } from './components/Rewards';
 import styled from 'styled-components';
 
-export interface GovernmentMainProps {
+export interface GovernanceMainProps {
   className?: string;
 }
 
-function GovernmentMainBase({ className }: GovernmentMainProps) {
+function GovernanceMainBase({ className }: GovernanceMainProps) {
   return (
     <PaddedLayout className={className}>
       <Overview className="overview" />
@@ -18,7 +18,7 @@ function GovernmentMainBase({ className }: GovernmentMainProps) {
   );
 }
 
-export const GovernmentMain = styled(GovernmentMainBase)`
+export const GovernanceMain = styled(GovernanceMainBase)`
   // ---------------------------------------------
   // style
   // ---------------------------------------------

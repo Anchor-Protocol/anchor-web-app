@@ -10,12 +10,18 @@ import {
 import { MenuItem } from '@material-ui/core';
 import { MoreMenu } from 'pages/gov/components/MoreMenu';
 import { govPathname } from 'pages/gov/env';
+import { rewardsAncGovernanceStakable } from 'pages/gov/logics/rewardsAncGovernanceStakable';
+import { rewardsAncGovernanceWithdrawableAsset } from 'pages/gov/logics/rewardsAncGovernanceWithdrawableAsset';
 import { rewardsAncUstLpReward } from 'pages/gov/logics/rewardsAncUstLpReward';
 import { rewardsAncUstLpWithdrawableAnc } from 'pages/gov/logics/rewardsAncUstLpWithdrawableAnc';
 import { rewardsAncUstLpWithdrawableUst } from 'pages/gov/logics/rewardsAncUstLpWithdrawableUst';
+import { rewardsTotalBorrowReward } from 'pages/gov/logics/rewardsTotalBorrowReward';
 import { useANCPrice } from 'pages/gov/queries/ancPrice';
 import { useLPStakingState } from 'pages/gov/queries/lpStakingState';
-import { useRewards } from 'pages/gov/queries/rewards';
+import { useRewardsAncGovernance } from 'pages/gov/queries/rewardsAncGovernance';
+import { useRewardsAncUstLp } from 'pages/gov/queries/rewardsAncUstLp';
+import { useRewardsUSTBorrow } from 'pages/gov/queries/rewardsUSTBorrow';
+import { useTotalStaked } from 'pages/gov/queries/totalStaked';
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -25,17 +31,36 @@ export interface RewardsProps {
 }
 
 export function RewardsBase({ className }: RewardsProps) {
+  // ---------------------------------------------
+  // queries
+  // ---------------------------------------------
   const {
     data: { ancPrice },
   } = useANCPrice();
+
   const {
-    data: { userLPBalance, userLPStakingInfo },
-  } = useRewards();
+    data: { govANCBalance, govState },
+  } = useTotalStaked();
 
   const {
     data: { lpStakingState },
   } = useLPStakingState();
 
+  const {
+    data: { userLPBalance, userLPStakingInfo },
+  } = useRewardsAncUstLp();
+
+  const {
+    data: { userGovStakingInfo, userANCBalance },
+  } = useRewardsAncGovernance();
+
+  const {
+    data: { borrowerInfo, marketState },
+  } = useRewardsUSTBorrow();
+
+  // ---------------------------------------------
+  // logics
+  // ---------------------------------------------
   const ancUstLpWithdrawableAnc = useMemo(
     () =>
       rewardsAncUstLpWithdrawableAnc(
@@ -68,6 +93,36 @@ export function RewardsBase({ className }: RewardsProps) {
     userLPStakingInfo?.bond_amount,
     userLPStakingInfo?.pending_reward,
     userLPStakingInfo?.reward_index,
+  ]);
+
+  const ancGovernanceWithdrawableAsset = useMemo(() => {
+    return rewardsAncGovernanceWithdrawableAsset(
+      govANCBalance?.balance,
+      govState?.total_deposit,
+      govState?.total_share,
+      userGovStakingInfo?.share,
+    );
+  }, [
+    govANCBalance?.balance,
+    govState?.total_deposit,
+    govState?.total_share,
+    userGovStakingInfo?.share,
+  ]);
+
+  const ancGovernanceStakable = useMemo(() => {
+    return rewardsAncGovernanceStakable(userANCBalance?.balance);
+  }, [userANCBalance?.balance]);
+
+  const ustBorrowReward = useMemo(() => {
+    return rewardsTotalBorrowReward(
+      marketState?.global_interest_index,
+      borrowerInfo?.reward_index,
+      borrowerInfo?.pending_rewards,
+    );
+  }, [
+    borrowerInfo?.pending_rewards,
+    borrowerInfo?.reward_index,
+    marketState?.global_interest_index,
   ]);
 
   return (
@@ -154,30 +209,35 @@ export function RewardsBase({ className }: RewardsProps) {
               </td>
             </tr>
             <tr>
-              <td>ANC Government</td>
+              <td>ANC Governance</td>
               <td>
                 <s>134.84%</s>
               </td>
               <td>
-                <s>34.84ANC + 482 UST</s>
+                {ancGovernanceWithdrawableAsset
+                  ? formatANCWithPostfixUnits(
+                      demicrofy(ancGovernanceWithdrawableAsset),
+                    )
+                  : 0}{' '}
+                ANC
               </td>
+              <td></td>
               <td>
-                <s>34.84</s>
-              </td>
-              <td>
-                <s>120,36.000</s>
+                {ancGovernanceStakable
+                  ? formatANCWithPostfixUnits(demicrofy(ancGovernanceStakable))
+                  : 0}
               </td>
               <td>
                 <MoreMenu size="25px">
                   <MenuItem
                     component={Link}
-                    to={`/${govPathname}/pool/ANC Government/provide`}
+                    to={`/${govPathname}/pool/ANC Governance/provide`}
                   >
                     Pool
                   </MenuItem>
                   <MenuItem
                     component={Link}
-                    to={`/${govPathname}/pool/ANC Government/stake`}
+                    to={`/${govPathname}/pool/ANC Governance/stake`}
                   >
                     Stake
                   </MenuItem>
@@ -192,7 +252,9 @@ export function RewardsBase({ className }: RewardsProps) {
               </td>
               <td></td>
               <td>
-                <s>34.84</s>
+                {ustBorrowReward
+                  ? formatUSTWithPostfixUnits(demicrofy(ustBorrowReward))
+                  : 0}
               </td>
               <td>
                 <s>0</s>
