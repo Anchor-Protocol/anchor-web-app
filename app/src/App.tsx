@@ -47,7 +47,13 @@ import {
 const operationBroadcasterErrorReporter =
   process.env.NODE_ENV === 'production' ? captureException : undefined;
 
-function Providers({ children }: { children: ReactNode }) {
+function Providers({
+  children,
+  isDemo,
+}: {
+  children: ReactNode;
+  isDemo: boolean;
+}) {
   const { post } = useWallet();
 
   // TODO create address provider depends on wallet info
@@ -75,8 +81,10 @@ function Providers({ children }: { children: ReactNode }) {
       fixedGas: 3500000 as uUST<number>,
       blocksPerYear: 5256666,
       gasAdjustment: 1.4 as Ratio<number>,
+
+      isDemo,
     }),
-    [],
+    [isDemo],
   );
 
   const operationGlobalDependency = useMemo<GlobalDependency>(
@@ -125,11 +133,11 @@ function Providers({ children }: { children: ReactNode }) {
   );
 }
 
-export function App() {
+export function App({ isDemo = false }: { isDemo?: boolean }) {
   return (
     /** Terra Station Wallet Address :: useWallet() */
     <ChromeExtensionWalletProvider defaultNetwork={defaultNetwork}>
-      <Providers>
+      <Providers isDemo={isDemo}>
         {/* Router Actions ======================== */}
         {/** Send Google Analytics Page view every Router's location changed */}
         <GoogleAnalytics trackingId={GA_TRACKING_ID} />
@@ -148,7 +156,9 @@ export function App() {
             <Route path="/earn" component={Earn} />
             <Route path="/borrow" component={Borrow} />
             <Route path="/bond" component={BAsset} />
-            <Route path={`/${govPathname}`} component={Governance} />
+            {!isDemo && (
+              <Route path={`/${govPathname}`} component={Governance} />
+            )}
             <Redirect to="/earn" />
           </Switch>
         </div>

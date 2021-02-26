@@ -1,5 +1,6 @@
 import logoUrl from '@anchor-protocol/icons/assets/Anchor.svg';
 import { WalletSelector } from 'components/Header/WalletSelector';
+import { useConstants } from 'contexts/contants';
 import { screen } from 'env';
 import { govPathname } from 'pages/gov/env';
 import React from 'react';
@@ -11,13 +12,15 @@ export interface HeaderProps {
 }
 
 function HeaderBase({ className }: HeaderProps) {
+  const { isDemo } = useConstants();
+
   return (
     <header className={className}>
       <nav className="menu">
         <NavLink to="/earn">EARN</NavLink>
         <NavLink to="/borrow">BORROW</NavLink>
         <NavLink to="/bond">BOND</NavLink>
-        <NavLink to={`/${govPathname}`}>GOVERN</NavLink>
+        {!isDemo && <NavLink to={`/${govPathname}`}>GOVERN</NavLink>}
       </nav>
 
       <section className="wallet">

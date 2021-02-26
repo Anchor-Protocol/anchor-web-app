@@ -1,26 +1,30 @@
+import { AddressProvider } from '@anchor-protocol/anchor.js';
 import { Num, uUST } from '@anchor-protocol/notation';
-import { createMap, useMap } from '@anchor-protocol/use-map';
-import { gql, useQuery } from '@apollo/client';
+import { createMap, map } from '@anchor-protocol/use-map';
+import { ApolloClient, gql, useApolloClient } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
-import { useService } from 'contexts/service';
 import { parseResult } from 'queries/parseResult';
-import { MappedQueryResult } from 'queries/types';
-import { useQueryErrorHandler } from 'queries/useQueryErrorHandler';
-import { useRefetch } from 'queries/useRefetch';
-import { useMemo } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+
+export interface ExecuteMsg {
+  contract: string;
+  msg: string;
+}
+
+export type PollStatus = 'in_progress' | 'passed' | 'rejected' | 'executed';
 
 export interface Poll {
-  creator: string;
-  deposit_amount: uUST<string>;
-  description: Num<string>;
-  end_height: number;
-  execute_data: null;
   id: number;
-  link: string | null;
+  creator: string;
+  status: PollStatus;
+  end_height: number;
+  title: string;
+  description: string;
+  link: string | null | undefined;
+  deposit_amount: uUST<string>;
+  execute_data: ExecuteMsg | null | undefined;
   no_votes: Num<string>;
   yes_votes: Num<string>;
-  status: 'rejected' | 'passed' | 'in-progress' | 'executed';
-  title: string;
   total_balance_at_end_poll: Num<string>;
 }
 
@@ -52,7 +56,9 @@ export interface Variables {
   Gov_contract: string;
   PollsQuery: {
     polls: {
-      limit: number;
+      filter?: PollStatus;
+      start_after?: number;
+      limit?: number;
     };
   };
 }
@@ -78,42 +84,75 @@ export const query = gql`
   }
 `;
 
-export function usePolls(): MappedQueryResult<RawVariables, RawData, Data> {
-  const { serviceAvailable } = useService();
+const limit = 6;
+
+export function usePolls(
+  filter: PollStatus | undefined,
+): [polls: Poll[], loadMore: () => void] {
+  const client = useApolloClient();
 
   const addressProvider = useAddressProvider();
 
-  const variables = useMemo(() => {
-    return mapVariables({
-      Gov_contract: addressProvider.gov(),
-      PollsQuery: {
-        polls: {
-          limit: 6,
-        },
+  const [polls, setPolls] = useState<Poll[]>([]);
+
+  useEffect(() => {
+    queryPolls(client, addressProvider, filter, undefined, limit).then(
+      ({ data }) => {
+        if (data.polls?.polls) {
+          setPolls(data.polls.polls);
+        }
       },
+    );
+  }, [addressProvider, client, filter]);
+
+  const loadMore = useCallback(() => {
+    if (polls.length > 0) {
+      queryPolls(
+        client,
+        addressProvider,
+        filter,
+        polls[polls.length - 1].id,
+        limit,
+      ).then(({ data }) => {
+        setPolls((prev) => {
+          if (data.polls && Array.isArray(data.polls.polls)) {
+            return [...prev, ...data.polls.polls];
+          }
+          return prev;
+        });
+      });
+    }
+  }, [addressProvider, client, filter, polls]);
+
+  return [polls, loadMore];
+}
+
+export function queryPolls(
+  client: ApolloClient<any>,
+  addressProvider: AddressProvider,
+  filter?: PollStatus,
+  start_after?: number,
+  limit?: number,
+) {
+  return client
+    .query<RawData, RawVariables>({
+      query,
+      fetchPolicy: 'network-only',
+      variables: mapVariables({
+        Gov_contract: addressProvider.gov(),
+        PollsQuery: {
+          polls: {
+            filter,
+            start_after,
+            limit,
+          },
+        },
+      }),
+    })
+    .then((result) => {
+      return {
+        ...result,
+        data: map(result.data, dataMap),
+      };
     });
-  }, [addressProvider]);
-
-  const onError = useQueryErrorHandler();
-
-  const { data: _data, refetch: _refetch, error, ...result } = useQuery<
-    RawData,
-    RawVariables
-  >(query, {
-    skip: !serviceAvailable,
-    fetchPolicy: 'network-only',
-    nextFetchPolicy: 'cache-first',
-    //pollInterval: 1000 * 60,
-    variables,
-    onError,
-  });
-
-  const data = useMap(_data, dataMap);
-  const refetch = useRefetch(_refetch, dataMap);
-
-  return {
-    ...result,
-    data,
-    refetch,
-  };
 }

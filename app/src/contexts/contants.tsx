@@ -11,6 +11,8 @@ export interface Constants {
   fixedGas: uUST<number>;
   gasAdjustment: Ratio<number>;
   blocksPerYear: number;
+
+  isDemo: boolean;
 }
 
 // @ts-ignore

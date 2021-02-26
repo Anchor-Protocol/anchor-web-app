@@ -10,7 +10,7 @@ export interface ListProps extends PollList {
   className?: string;
 }
 
-function ListBase({ className, polls, onClick }: ListProps) {
+function ListBase({ className, polls, onClick, onLoadMore }: ListProps) {
   return (
     <Section className={className}>
       <HorizontalScrollTable minWidth={1200} startPadding={20} endPadding={20}>
@@ -61,7 +61,9 @@ function ListBase({ className, polls, onClick }: ListProps) {
         </tbody>
       </HorizontalScrollTable>
 
-      <BorderButton className="more">More</BorderButton>
+      <BorderButton className="more" onClick={onLoadMore}>
+        More
+      </BorderButton>
     </Section>
   );
 }

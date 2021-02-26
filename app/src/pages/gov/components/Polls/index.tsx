@@ -27,9 +27,7 @@ const options: Item[] = [
 ];
 
 function PollsBase({ className }: PollsProps) {
-  const {
-    data: { polls },
-  } = usePolls();
+  const [polls, loadMorePolls] = usePolls(undefined);
 
   const history = useHistory();
 
@@ -98,9 +96,17 @@ function PollsBase({ className }: PollsProps) {
       </header>
 
       {view === 'grid' ? (
-        <GridView polls={polls?.polls ?? []} onClick={onPollClick} />
+        <GridView
+          polls={polls}
+          onClick={onPollClick}
+          onLoadMore={loadMorePolls}
+        />
       ) : (
-        <ListView polls={polls?.polls ?? []} onClick={onPollClick} />
+        <ListView
+          polls={polls}
+          onClick={onPollClick}
+          onLoadMore={loadMorePolls}
+        />
       )}
     </section>
   );

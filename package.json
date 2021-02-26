@@ -6,6 +6,7 @@
   "repository": "github:Anchor-Protocol/anchor",
   "workspaces": [
     "app",
+    "demo",
     "landing",
     "packages"
   ],

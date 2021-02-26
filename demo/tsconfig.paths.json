@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "baseUrl": "src",
+    "paths": {
+      "*": [
+        "../../app/src/*"
+      ],
+      "@anchor-protocol/*": [
+        "../../packages/src/@anchor-protocol/*"
+      ]
+    }
+  }
+}

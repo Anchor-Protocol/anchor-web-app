@@ -11,7 +11,7 @@ export interface GridProps extends PollList {
   className?: string;
 }
 
-function GridBase({ className, polls, onClick }: GridProps) {
+function GridBase({ className, polls, onClick, onLoadMore }: GridProps) {
   return (
     <div className={className}>
       <div className="grid">
@@ -58,7 +58,9 @@ function GridBase({ className, polls, onClick }: GridProps) {
         ))}
       </div>
 
-      <BorderButton className="more">More</BorderButton>
+      <BorderButton className="more" onClick={onLoadMore}>
+        More
+      </BorderButton>
     </div>
   );
 }
