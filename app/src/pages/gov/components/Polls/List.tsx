@@ -2,8 +2,8 @@ import { BorderButton } from '@anchor-protocol/neumorphism-ui/components/BorderB
 import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/components/HorizontalScrollTable';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { TimeEnd } from '@anchor-protocol/use-time-end';
-import { PollTinyGraph } from './PollTinyGraph';
 import styled from 'styled-components';
+import { PollTinyGraph } from './PollTinyGraph';
 import { PollList } from './types';
 
 export interface ListProps extends PollList {
@@ -36,19 +36,25 @@ function ListBase({ className, polls, onClick }: ListProps) {
           {polls.map((poll) => (
             <tr key={'list' + poll.id} onClick={() => onClick(poll)}>
               <td>{poll.id}</td>
-              <td>{poll.type}</td>
+              <td>
+                <s>Gov Update</s>
+              </td>
               <td>{poll.status}</td>
               <td>{poll.title}</td>
               <td>
                 <PollTinyGraph
-                  total={poll.vote.total}
-                  yes={poll.vote.yes}
-                  no={poll.vote.no}
-                  baseline={Math.floor(poll.vote.total * 0.45)}
+                  total={+poll.yes_votes + +poll.no_votes}
+                  yes={+poll.yes_votes}
+                  no={+poll.no_votes}
+                  baseline={Math.floor(
+                    (+poll.yes_votes + +poll.no_votes) * 0.45,
+                  )}
                 />
               </td>
               <td>
-                <TimeEnd endTime={poll.endsIn} />
+                <s>
+                  <TimeEnd endTime={new Date(Date.now() * 1000000)} />
+                </s>
               </td>
             </tr>
           ))}

@@ -2,9 +2,9 @@ import { BorderButton } from '@anchor-protocol/neumorphism-ui/components/BorderB
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { TimeEnd } from '@anchor-protocol/use-time-end';
-import { PollGraph } from './PollGraph';
-import styled from 'styled-components';
 import { Schedule } from '@material-ui/icons';
+import styled from 'styled-components';
+import { PollGraph } from './PollGraph';
 import { PollList } from './types';
 
 export interface GridProps extends PollList {
@@ -19,7 +19,9 @@ function GridBase({ className, polls, onClick }: GridProps) {
           <Section key={'grid' + poll.id} onClick={() => onClick(poll)}>
             <div className="poll-id">
               <span>ID: {poll.id}</span>
-              <span>{poll.type}</span>
+              <span>
+                <s>Gov Update</s>
+              </span>
             </div>
 
             <div className="poll-status">{poll.status}</div>
@@ -27,23 +29,29 @@ function GridBase({ className, polls, onClick }: GridProps) {
             <h2>{poll.title}</h2>
 
             <PollGraph
-              total={poll.vote.total}
-              yes={poll.vote.yes}
-              no={poll.vote.no}
-              baseline={Math.floor(poll.vote.total * 0.45)}
+              total={+poll.yes_votes + +poll.no_votes}
+              yes={+poll.yes_votes}
+              no={+poll.no_votes}
+              baseline={Math.floor((+poll.yes_votes + +poll.no_votes) * 0.45)}
             />
 
             <div className="poll-ends-in">
               <IconSpan>
-                <b>Estimated end time</b>{' '}
-                {poll.endsIn.toLocaleDateString(undefined, {
-                  weekday: 'short',
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric',
-                })}{' '}
-                {poll.endsIn.toLocaleTimeString()} <Schedule />{' '}
-                <TimeEnd endTime={poll.endsIn} />
+                <s>
+                  <b>Estimated end time</b>{' '}
+                  {new Date(Date.now() * 1000000).toLocaleDateString(
+                    undefined,
+                    {
+                      weekday: 'short',
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric',
+                    },
+                  )}{' '}
+                  {new Date(Date.now() * 1000000).toLocaleTimeString()}{' '}
+                  <Schedule />{' '}
+                  <TimeEnd endTime={new Date(Date.now() * 1000000)} />
+                </s>
               </IconSpan>
             </div>
           </Section>
