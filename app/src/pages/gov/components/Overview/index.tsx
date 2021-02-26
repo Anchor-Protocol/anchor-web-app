@@ -79,7 +79,9 @@ function OverviewBase({ className }: OverviewProps) {
         <h2>Anchor Governance Staking</h2>
         <div className="staking-apy">
           <Label>APY</Label>
-          <span>8.32%</span>
+          <span>
+            <s>8.32%</s>
+          </span>
         </div>
         <div className="staking-buttons">
           <BorderButton component={Link} to={`/${govPathname}/trade`}>
@@ -108,11 +110,15 @@ function OverviewBase({ className }: OverviewProps) {
         <div className="lp-labels">
           <div>
             <Label>APY</Label>
-            <p>12.39%</p>
+            <p>
+              <s>12.39%</s>
+            </p>
           </div>
           <div>
             <Label>Total Staked</Label>
-            <p>13,413</p>
+            <p>
+              <s>13,413</s>
+            </p>
           </div>
         </div>
       </Section>

@@ -22,8 +22,8 @@ export function RewardsBase({ className }: RewardsProps) {
 
       <Section>
         <h3>
-          <label>Total Reward</label> 12.238 ANC
-          <label>Total Reward Value</label> 12.238 ANC
+          <label>Total Reward</label> <s>12.238</s> ANC
+          <label>Total Reward Value</label> <s>12.238</s> ANC
         </h3>
 
         <HorizontalScrollTable
@@ -52,10 +52,18 @@ export function RewardsBase({ className }: RewardsProps) {
           <tbody>
             <tr>
               <td>ANC-UST LP</td>
-              <td>134.84%</td>
-              <td>34.84ANC + 482 UST</td>
-              <td>34.84</td>
-              <td>0</td>
+              <td>
+                <s>134.84%</s>
+              </td>
+              <td>
+                <s>34.84ANC + 482 UST</s>
+              </td>
+              <td>
+                <s>34.84</s>
+              </td>
+              <td>
+                <s>0</s>
+              </td>
               <td>
                 <MoreMenu size="25px">
                   <MenuItem
@@ -76,10 +84,18 @@ export function RewardsBase({ className }: RewardsProps) {
             </tr>
             <tr>
               <td>ANC Government</td>
-              <td>134.84%</td>
-              <td>34.84ANC + 482 UST</td>
-              <td>34.84</td>
-              <td>120,36.000</td>
+              <td>
+                <s>134.84%</s>
+              </td>
+              <td>
+                <s>34.84ANC + 482 UST</s>
+              </td>
+              <td>
+                <s>34.84</s>
+              </td>
+              <td>
+                <s>120,36.000</s>
+              </td>
               <td>
                 <MoreMenu size="25px">
                   <MenuItem
@@ -100,10 +116,16 @@ export function RewardsBase({ className }: RewardsProps) {
             </tr>
             <tr>
               <td>UST Borrow</td>
-              <td>134.84%</td>
+              <td>
+                <s>134.84%</s>
+              </td>
               <td></td>
-              <td>34.84</td>
-              <td>0</td>
+              <td>
+                <s>34.84</s>
+              </td>
+              <td>
+                <s>0</s>
+              </td>
               <td>
                 <MoreMenu size="25px">
                   <MenuItem
