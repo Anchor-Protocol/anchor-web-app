@@ -1,6 +1,7 @@
 import { HorizontalHeavyRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalHeavyRuler';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { demicrofy, formatUST, truncate } from '@anchor-protocol/notation';
+import { useWallet } from '@anchor-protocol/wallet-provider';
 import { useTransactionHistory } from 'pages/earn/queries/transactionHistory';
 import styled from 'styled-components';
 
@@ -11,6 +12,8 @@ export interface TransactionHistorySectionProps {
 export function TransactionHistorySection({
   className,
 }: TransactionHistorySectionProps) {
+  const { status } = useWallet();
+
   const {
     data: { transactionHistory = [] },
   } = useTransactionHistory();
@@ -49,7 +52,18 @@ export function TransactionHistorySection({
                       UST
                     </div>
                     <div className="detail">
-                      <span>Deposit from {truncate(Address)}</span>
+                      <span>
+                        {TransactionType === 'deposit_stable'
+                          ? 'Deposit from'
+                          : 'Redeem to'}{' '}
+                        <a
+                          href={`https://finder.terra.money/${status.network.chainID}/account/${Address}`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {truncate(Address)}
+                        </a>
+                      </span>
                       <time>
                         {datetime.toLocaleDateString(undefined, {
                           weekday: 'short',

@@ -106,15 +106,15 @@ export function Overview({ className }: OverviewProps) {
             <Label>APR</Label>
           </Tooltip>
           <p>{formatRatioToPercentage(apr)}%</p>
-          <p>
-            <IconSpan>
-              <InfoTooltip>
-                Current rate of annualized borrowing interest applied for this
-                stablecoin / The amount of interest accrued on open loans
-              </InfoTooltip>{' '}
-              Accrued: {formatUSTWithPostfixUnits(demicrofy(borrowed))} UST
-            </IconSpan>
-          </p>
+          {/*<p>*/}
+          {/*  <IconSpan>*/}
+          {/*    <InfoTooltip>*/}
+          {/*      Current rate of annualized borrowing interest applied for this*/}
+          {/*      stablecoin / The amount of interest accrued on open loans*/}
+          {/*    </InfoTooltip>{' '}*/}
+          {/*    Accrued: {formatUSTWithPostfixUnits(demicrofy(borrowed))} UST*/}
+          {/*  </IconSpan>*/}
+          {/*</p>*/}
         </div>
       </article>
 

@@ -123,6 +123,11 @@ export const Earn = styled(EarnBase)`
 
           font-size: 14px;
           color: ${({ theme }) => theme.dimTextColor};
+
+          a {
+            color: currentColor;
+            text-decoration: none;
+          }
         }
 
         &:not(:last-child) {
