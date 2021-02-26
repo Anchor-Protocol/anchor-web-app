@@ -1,4 +1,5 @@
 import { APYChart } from '@anchor-protocol/app-charts/APYChart';
+import { Ratio } from '@anchor-protocol/notation';
 
 export default {
   title: 'anchor/APYChart',
@@ -9,17 +10,17 @@ export const Basic = () => {
     <APYChart
       style={{ width: '80vw', height: '50vh' }}
       data={[
-        { label: 'A', value: 100 },
-        { label: 'B', value: 0 },
-        { label: 'C', value: 70 },
-        { label: 'D', value: 130 },
-        { label: 'E', value: 60 },
-        { label: 'F', value: 170 },
-        { label: 'G', value: 190 },
-        { label: 'H', value: 140 },
-        { label: 'I', value: 110 },
-        { label: 'J', value: 40 },
-        { label: 'K', value: 10 },
+        { date: new Date(), value: (100 / 100) as Ratio<number> },
+        { date: new Date(), value: (0 / 100) as Ratio<number> },
+        { date: new Date(), value: (70 / 100) as Ratio<number> },
+        { date: new Date(), value: (130 / 100) as Ratio<number> },
+        { date: new Date(), value: (60 / 100) as Ratio<number> },
+        { date: new Date(), value: (170 / 100) as Ratio<number> },
+        { date: new Date(), value: (190 / 100) as Ratio<number> },
+        { date: new Date(), value: (140 / 100) as Ratio<number> },
+        { date: new Date(), value: (110 / 100) as Ratio<number> },
+        { date: new Date(), value: (40 / 100) as Ratio<number> },
+        { date: new Date(), value: (10 / 100) as Ratio<number> },
       ]}
       minY={0}
     />

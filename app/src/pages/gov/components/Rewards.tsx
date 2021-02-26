@@ -6,8 +6,10 @@ import {
   formatANCWithPostfixUnits,
   formatFluidDecimalPoints,
   formatUSTWithPostfixUnits,
+  uANC,
 } from '@anchor-protocol/notation';
 import { MenuItem } from '@material-ui/core';
+import big, { Big } from 'big.js';
 import { MoreMenu } from 'pages/gov/components/MoreMenu';
 import { govPathname } from 'pages/gov/env';
 import { rewardsAncGovernanceStakable } from 'pages/gov/logics/rewardsAncGovernanceStakable';
@@ -16,6 +18,7 @@ import { rewardsAncUstLpReward } from 'pages/gov/logics/rewardsAncUstLpReward';
 import { rewardsAncUstLpWithdrawableAnc } from 'pages/gov/logics/rewardsAncUstLpWithdrawableAnc';
 import { rewardsAncUstLpWithdrawableUst } from 'pages/gov/logics/rewardsAncUstLpWithdrawableUst';
 import { rewardsTotalBorrowReward } from 'pages/gov/logics/rewardsTotalBorrowReward';
+import { rewardsTotalReward } from 'pages/gov/logics/rewardsTotalReward';
 import { useANCPrice } from 'pages/gov/queries/ancPrice';
 import { useLPStakingState } from 'pages/gov/queries/lpStakingState';
 import { useRewardsAncGovernance } from 'pages/gov/queries/rewardsAncGovernance';
@@ -125,6 +128,13 @@ export function RewardsBase({ className }: RewardsProps) {
     marketState?.global_interest_index,
   ]);
 
+  const totalReward = useMemo(() => {
+    return rewardsTotalReward(ustBorrowReward, ancUstLpReward);
+  }, [ancUstLpReward, ustBorrowReward]);
+
+  // ---------------------------------------------
+  // presentation
+  // ---------------------------------------------
   return (
     <section className={className}>
       <header>
@@ -135,8 +145,16 @@ export function RewardsBase({ className }: RewardsProps) {
 
       <Section>
         <h3>
-          <label>Total Reward</label> <s>12.238</s> ANC
-          <label>Total Reward Value</label> <s>12.238</s> ANC
+          <label>Total Reward</label>{' '}
+          {totalReward ? formatUSTWithPostfixUnits(demicrofy(totalReward)) : 0}{' '}
+          UST
+          <label>Total Reward Value</label>{' '}
+          {totalReward && ancPrice?.ANCPrice
+            ? formatANCWithPostfixUnits(
+                demicrofy(big(totalReward).mul(ancPrice.ANCPrice) as uANC<Big>),
+              )
+            : 0}{' '}
+          ANC
         </h3>
 
         <HorizontalScrollTable
