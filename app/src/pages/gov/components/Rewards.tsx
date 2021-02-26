@@ -1,9 +1,22 @@
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/components/HorizontalScrollTable';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
+import {
+  demicrofy,
+  formatANCWithPostfixUnits,
+  formatFluidDecimalPoints,
+  formatUSTWithPostfixUnits,
+} from '@anchor-protocol/notation';
 import { MenuItem } from '@material-ui/core';
 import { MoreMenu } from 'pages/gov/components/MoreMenu';
 import { govPathname } from 'pages/gov/env';
+import { rewardsAncUstLpReward } from 'pages/gov/logics/rewardsAncUstLpReward';
+import { rewardsAncUstLpWithdrawableAnc } from 'pages/gov/logics/rewardsAncUstLpWithdrawableAnc';
+import { rewardsAncUstLpWithdrawableUst } from 'pages/gov/logics/rewardsAncUstLpWithdrawableUst';
+import { useANCPrice } from 'pages/gov/queries/ancPrice';
+import { useLPStakingState } from 'pages/gov/queries/lpStakingState';
+import { useRewards } from 'pages/gov/queries/rewards';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -12,6 +25,51 @@ export interface RewardsProps {
 }
 
 export function RewardsBase({ className }: RewardsProps) {
+  const {
+    data: { ancPrice },
+  } = useANCPrice();
+  const {
+    data: { userLPBalance, userLPStakingInfo },
+  } = useRewards();
+
+  const {
+    data: { lpStakingState },
+  } = useLPStakingState();
+
+  const ancUstLpWithdrawableAnc = useMemo(
+    () =>
+      rewardsAncUstLpWithdrawableAnc(
+        ancPrice?.ANCPoolSize,
+        userLPBalance?.balance,
+        ancPrice?.LPShare,
+      ),
+    [ancPrice?.ANCPoolSize, ancPrice?.LPShare, userLPBalance?.balance],
+  );
+
+  const ancUstLpWithdrawableUst = useMemo(
+    () =>
+      rewardsAncUstLpWithdrawableUst(
+        ancPrice?.USTPoolSize,
+        userLPBalance?.balance,
+        ancPrice?.LPShare,
+      ),
+    [ancPrice?.LPShare, ancPrice?.USTPoolSize, userLPBalance?.balance],
+  );
+
+  const ancUstLpReward = useMemo(() => {
+    return rewardsAncUstLpReward(
+      lpStakingState?.global_reward_index,
+      userLPStakingInfo?.reward_index,
+      userLPStakingInfo?.bond_amount,
+      userLPStakingInfo?.pending_reward,
+    );
+  }, [
+    lpStakingState?.global_reward_index,
+    userLPStakingInfo?.bond_amount,
+    userLPStakingInfo?.pending_reward,
+    userLPStakingInfo?.reward_index,
+  ]);
+
   return (
     <section className={className}>
       <header>
@@ -56,10 +114,23 @@ export function RewardsBase({ className }: RewardsProps) {
                 <s>134.84%</s>
               </td>
               <td>
-                <s>34.84ANC + 482 UST</s>
+                {ancUstLpWithdrawableAnc
+                  ? formatANCWithPostfixUnits(
+                      demicrofy(ancUstLpWithdrawableAnc),
+                    )
+                  : 0}{' '}
+                ANC +{' '}
+                {ancUstLpWithdrawableUst
+                  ? formatUSTWithPostfixUnits(
+                      demicrofy(ancUstLpWithdrawableUst),
+                    )
+                  : 0}{' '}
+                UST
               </td>
               <td>
-                <s>34.84</s>
+                {ancUstLpReward
+                  ? formatFluidDecimalPoints(ancUstLpReward, 2)
+                  : 0}
               </td>
               <td>
                 <s>0</s>

@@ -1,0 +1,20 @@
+query User_ANCUST_LP_Data(
+    $ANCUST_LP_Token_contract: String!,
+    $ANCUSTLPBalanceQuery: String!,
+    $ANCUST_LP_Staking_contract: String!,
+    $UserLPStakingInfoQuery: String!
+) {
+    UserLPBalance : WasmContractsContractAddressStore(
+        ContractAddress: $ANCUST_LP_Token_contract,
+        QueryMsg: $ANCUSTLPBalanceQuery
+    ) {
+        Result
+    }
+
+    UserLPStakingInfo : WasmContractsContractAddressStore(
+        ContractAddress: $ANCUST_LP_Staking_contract,
+        QueryMsg: $UserLPStakingInfoQuery
+    ) {
+        Result
+    }
+}

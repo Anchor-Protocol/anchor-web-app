@@ -6,6 +6,7 @@ import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import {
   demicrofy,
   formatANCWithPostfixUnits,
+  formatFluidDecimalPoints,
   formatRatioToPercentage,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
@@ -17,6 +18,7 @@ import { govPathname } from 'pages/gov/env';
 import { totalGovStaked } from 'pages/gov/logics/totalGovStaked';
 import { totalStakedGovShareIndex } from 'pages/gov/logics/totalStakedGovShareIndex';
 import { useANCPrice } from 'pages/gov/queries/ancPrice';
+import { useLPStakingState } from 'pages/gov/queries/lpStakingState';
 import { useTotalStaked } from 'pages/gov/queries/totalStaked';
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
@@ -34,6 +36,10 @@ function OverviewBase({ className }: OverviewProps) {
   const {
     data: { govANCBalance, govState },
   } = useTotalStaked();
+
+  const {
+    data: { lpStakingState },
+  } = useLPStakingState();
 
   const totalStaked = useMemo(
     () => totalGovStaked(govANCBalance?.balance, govState?.total_deposit),
@@ -117,7 +123,9 @@ function OverviewBase({ className }: OverviewProps) {
           <div>
             <Label>Total Staked</Label>
             <p>
-              <s>13,413</s>
+              {lpStakingState?.total_bond_amount
+                ? formatFluidDecimalPoints(lpStakingState.total_bond_amount, 0)
+                : '0'}
             </p>
           </div>
         </div>
