@@ -1,4 +1,5 @@
-import { GovConfig, Poll } from '../../queries/polls';
+import { GovConfig } from '../../queries/govConfig';
+import { Poll } from '../../queries/polls';
 
 export interface PollList {
   polls: Poll[];

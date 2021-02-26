@@ -4,6 +4,7 @@ import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeS
 import { useLocalStorage } from '@anchor-protocol/use-local-storage';
 import { List, ViewModule } from '@material-ui/icons';
 import { govPathname } from 'pages/gov/env';
+import { useGovConfig } from 'pages/gov/queries/govConfig';
 import { Poll, PollStatus, usePolls } from 'pages/gov/queries/polls';
 import { ChangeEvent, useCallback, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
@@ -35,9 +36,13 @@ function PollsBase({ className }: PollsProps) {
     () => options[0].value,
   );
 
-  const [polls, govConfig, loadMorePolls] = usePolls(
+  const [polls, loadMorePolls] = usePolls(
     option === 'all' ? undefined : option,
   );
+
+  const {
+    data: { govConfig },
+  } = useGovConfig();
 
   const [view, setView] = useLocalStorage<'grid' | 'list'>(
     '__anchor_polls_view__',

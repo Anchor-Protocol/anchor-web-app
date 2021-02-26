@@ -1,17 +1,27 @@
+import { floor } from '@anchor-protocol/big-math';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { HorizontalHeavyRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalHeavyRuler';
 import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/components/HorizontalScrollTable';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import {
+  demicrofy,
+  formatANCWithPostfixUnits,
+} from '@anchor-protocol/notation';
+import {
   rulerLightColor,
   rulerShadowColor,
 } from '@anchor-protocol/styled-neumorphism';
-import { HOUR, TimeEnd } from '@anchor-protocol/use-time-end';
+import { TimeEnd } from '@anchor-protocol/use-time-end';
 import { Schedule } from '@material-ui/icons';
+import big from 'big.js';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { DescriptionGrid } from 'pages/gov/components/DescriptionGrid';
 import { PollGraph } from 'pages/gov/components/Polls/PollGraph';
+import { extractPollDetail } from 'pages/gov/logics/extractPollDetail';
+import { useGovConfig } from 'pages/gov/queries/govConfig';
+import { usePoll } from 'pages/gov/queries/poll';
+import { useLastSyncedHeight } from 'queries/lastSyncedHeight';
 import { useMemo } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import styled from 'styled-components';
@@ -21,20 +31,38 @@ export interface PollDetailProps extends RouteComponentProps<{ id: string }> {
 }
 
 function PollDetailBase({ className, match }: PollDetailProps) {
-  const endsIn = useMemo(() => new Date(Date.now() + HOUR * 10), []);
+  const {
+    data: { poll },
+  } = usePoll(+match.params.id);
+
+  const {
+    data: { govConfig },
+  } = useGovConfig();
+
+  const { data: lastSyncedHeight } = useLastSyncedHeight();
+
+  const pollDetail = useMemo(() => {
+    return poll && govConfig && lastSyncedHeight
+      ? extractPollDetail(poll, govConfig, lastSyncedHeight)
+      : undefined;
+  }, [govConfig, lastSyncedHeight, poll]);
+
+  if (!pollDetail) {
+    return null;
+  }
 
   return (
     <PaddedLayout className={className}>
       <Section className="content">
         <div className="content-id">
-          <span>ID: {match.params.id}</span>
-          <span>Community Spend</span>
+          <span>ID: {pollDetail.poll.id}</span>
+          <span>{pollDetail.type}</span>
         </div>
 
         <div className="content-title">
           <div>
-            <p>IN PROGRESS</p>
-            <h2>Meme Contest</h2>
+            <p>{pollDetail.poll.status}</p>
+            <h2>{pollDetail.poll.title}</h2>
           </div>
           <ActionButton>Vote</ActionButton>
         </div>
@@ -44,55 +72,56 @@ function PollDetailBase({ className, match }: PollDetailProps) {
         <DescriptionGrid className="content-detail">
           <article>
             <h4>Creator</h4>
-            <p>terra1c27yxz0y2vks5w5uq0uqrtek4lgt773y7x5jng</p>
+            <p>{pollDetail.poll.creator}</p>
           </article>
 
           <article>
             <h4>End Time</h4>
             <p>
               <IconSpan>
-                {endsIn.toLocaleDateString(undefined, {
+                {pollDetail.endsIn.toLocaleDateString(undefined, {
                   weekday: 'short',
                   year: 'numeric',
                   month: 'short',
                   day: 'numeric',
                 })}{' '}
-                {endsIn.toLocaleTimeString()} <Schedule />{' '}
-                <TimeEnd endTime={endsIn} />
+                {pollDetail.endsIn.toLocaleTimeString()} <Schedule />{' '}
+                <TimeEnd endTime={pollDetail.endsIn} />
               </IconSpan>
             </p>
           </article>
 
           <article>
             <h4>Description</h4>
-            <p>
-              To increase the exposure and awareness of Anchor Protocol, a meme
-              contest will be held. Option 2 (please refer to mirror forum) will
-              be used to select winners. Target of submissions: 100-120
-            </p>
+            <p>{pollDetail.poll.description}</p>
           </article>
 
-          <article>
-            <h4>Link</h4>
-            <p>
-              <a
-                href="https://forum.anchorprotocol.com/t/anchor-protocols-meme-contest/93"
-                target="_blank"
-                rel="noreferrer"
-              >
-                https://forum.anchorprotocol.com/t/anchor-protocols-meme-contest/93
-              </a>
-            </p>
-          </article>
+          {pollDetail.poll.link && (
+            <article>
+              <h4>Link</h4>
+              <p>
+                <a href={pollDetail.poll.link} target="_blank" rel="noreferrer">
+                  {pollDetail.poll.link}
+                </a>
+              </p>
+            </article>
+          )}
 
           <article>
             <h4>Recipient</h4>
-            <p>terra1cwk4s0jtvt69mawaqsay2a9h20cgqd9h5c2qgk</p>
+            <p>
+              <s>terra1cwk4s0jtvt69mawaqsay2a9h20cgqd9h5c2qgk</s>
+            </p>
           </article>
 
           <article>
             <h4>Amount</h4>
-            <p>2,500 ANC</p>
+            <p>
+              {formatANCWithPostfixUnits(
+                demicrofy(pollDetail.poll.deposit_amount),
+              )}{' '}
+              ANC
+            </p>
           </article>
         </DescriptionGrid>
       </Section>
@@ -101,30 +130,53 @@ function PollDetailBase({ className, match }: PollDetailProps) {
         <h2>VOTE DETAILS</h2>
 
         <PollGraph
-          total={100}
-          yes={45}
-          no={5}
-          baseline={35}
+          total={pollDetail.vote.possibleVotes}
+          yes={pollDetail.vote.yes}
+          no={pollDetail.vote.no}
+          baseline={pollDetail.vote.threshold}
           displaySpans={false}
         />
 
         <section className="detail-voted">
           <article>
             <h4>VOTED</h4>
-            <p>11%</p>
-            <span>Quorum 10%</span>
+            <p>
+              {Math.floor(
+                ((pollDetail.vote.yes + pollDetail.vote.no) /
+                  pollDetail.vote.possibleVotes) *
+                  100,
+              )}
+              %
+            </p>
+            <span>
+              Quorum {floor(big(govConfig?.quorum ?? 0).mul(100)).toString()}%
+            </span>
           </article>
 
           <article data-vote="yes">
             <h4>YES</h4>
-            <p>90%</p>
-            <span>3.06 ANC</span>
+            <p>
+              {Math.floor(
+                (pollDetail.vote.yes / pollDetail.vote.possibleVotes) * 100,
+              )}
+              %
+            </p>
+            <span>
+              <s>3.06 ANC</s>
+            </span>
           </article>
 
           <article data-vote="no">
             <h4>NO</h4>
-            <p>10%</p>
-            <span>1,038 ANC</span>
+            <p>
+              {Math.floor(
+                (pollDetail.vote.no / pollDetail.vote.possibleVotes) * 100,
+              )}
+              %
+            </p>
+            <span>
+              <s>1,038 ANC</s>
+            </span>
           </article>
         </section>
 
@@ -148,7 +200,9 @@ function PollDetailBase({ className, match }: PollDetailProps) {
           <tbody>
             {Array.from({ length: 10 }, (_, i) => (
               <tr key={'voter' + i}>
-                <td>terra1s4acnl09edwnn8kcd5wc407qzde35gpdc6c9e8</td>
+                <td>
+                  <s>terra1s4acnl09edwnn8kcd5wc407qzde35gpdc6c9e8</s>
+                </td>
                 <td style={{ textAlign: 'center' }}>
                   {Math.random() > 0.5 ? 'Yes' : 'No'}
                 </td>

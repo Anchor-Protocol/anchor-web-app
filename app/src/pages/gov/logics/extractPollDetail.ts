@@ -1,5 +1,6 @@
 import big from 'big.js';
-import { GovConfig, Poll } from 'pages/gov/queries/polls';
+import { GovConfig } from 'pages/gov/queries/govConfig';
+import { Poll } from 'pages/gov/queries/polls';
 
 export interface PollDetail {
   poll: Poll;
@@ -14,6 +15,8 @@ export interface PollDetail {
   type: string;
 
   endsIn: Date;
+
+  executeData: any;
 }
 
 export function extractPollDetail(
@@ -29,7 +32,9 @@ export function extractPollDetail(
     (poll.end_height - currentHeight) * 6000 + Date.now(),
   );
 
-  const executeData = poll.execute_data ? atob(poll.execute_data.msg) : null;
+  const executeData = poll.execute_data
+    ? JSON.parse(atob(poll.execute_data.msg))
+    : null;
 
   const type = executeData?.hasOwnProperty('spend')
     ? 'Community Spend'
@@ -52,5 +57,9 @@ export function extractPollDetail(
     type,
 
     endsIn,
+
+    executeData: {
+      ...executeData,
+    },
   };
 }

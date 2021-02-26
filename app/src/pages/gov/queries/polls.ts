@@ -1,5 +1,5 @@
 import { AddressProvider } from '@anchor-protocol/anchor.js';
-import { Num, Ratio, uUST } from '@anchor-protocol/notation';
+import { Num, uANC } from '@anchor-protocol/notation';
 import { createMap, map } from '@anchor-protocol/use-map';
 import { ApolloClient, gql, useApolloClient } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
@@ -21,32 +21,15 @@ export interface Poll {
   title: string;
   description: string;
   link: string | null | undefined;
-  deposit_amount: uUST<string>;
+  deposit_amount: uANC<string>;
   execute_data: ExecuteMsg | null | undefined;
   no_votes: Num<string>;
   yes_votes: Num<string>;
   total_balance_at_end_poll: Num<string>;
 }
 
-export interface GovConfig {
-  Result: string;
-  anchor_token: string;
-  expiration_period: number;
-  owner: string;
-  proposal_deposit: uUST<string>;
-  quorum: Ratio<string>;
-  snapshot_period: number;
-  threshold: Ratio<string>;
-  timelock_period: number;
-  voting_period: number;
-}
-
 export interface RawData {
   polls: {
-    Result: string;
-  };
-
-  govConfig: {
     Result: string;
   };
 }
@@ -56,24 +39,17 @@ export interface Data {
     Result: string;
     polls: Poll[];
   };
-
-  govConfig: GovConfig;
 }
 
 export const dataMap = createMap<RawData, Data>({
   polls: (existing, { polls }) => {
     return parseResult(existing.polls, polls.Result);
   },
-
-  govConfig: (existing, { govConfig }) => {
-    return parseResult(existing.govConfig, govConfig.Result);
-  },
 });
 
 export interface RawVariables {
-  Gov_contract: string;
   PollsQuery: string;
-  GovConfigQuery: string;
+  Gov_contract: string;
 }
 
 export interface Variables {
@@ -94,28 +70,14 @@ export function mapVariables({
   return {
     Gov_contract,
     PollsQuery: JSON.stringify(PollsQuery),
-    GovConfigQuery: JSON.stringify({
-      config: {},
-    }),
   };
 }
 
 export const query = gql`
-  query __polls(
-    $Gov_contract: String!
-    $PollsQuery: String!
-    $GovConfigQuery: String!
-  ) {
+  query __polls($Gov_contract: String!, $PollsQuery: String!) {
     polls: WasmContractsContractAddressStore(
       ContractAddress: $Gov_contract
       QueryMsg: $PollsQuery
-    ) {
-      Result
-    }
-
-    govConfig: WasmContractsContractAddressStore(
-      ContractAddress: $Gov_contract
-      QueryMsg: $GovConfigQuery
     ) {
       Result
     }
@@ -126,18 +88,12 @@ const limit = 6;
 
 export function usePolls(
   filter: PollStatus | undefined,
-): [
-  polls: Poll[],
-  govConfig: Data['govConfig'] | undefined,
-  loadMore: () => void,
-] {
+): [polls: Poll[], loadMore: () => void] {
   const client = useApolloClient();
 
   const addressProvider = useAddressProvider();
 
   const [polls, setPolls] = useState<Poll[]>([]);
-
-  const [govConfig, setGovConfig] = useState<Data['govConfig'] | undefined>();
 
   useEffect(() => {
     queryPolls(client, addressProvider, filter, undefined, limit).then(
@@ -145,7 +101,6 @@ export function usePolls(
         if (data.polls?.polls) {
           setPolls(data.polls.polls);
         }
-        setGovConfig(data.govConfig);
       },
     );
   }, [addressProvider, client, filter]);
@@ -165,12 +120,11 @@ export function usePolls(
           }
           return prev;
         });
-        setGovConfig(data.govConfig);
       });
     }
   }, [addressProvider, client, filter, polls]);
 
-  return [polls, govConfig, loadMore];
+  return [polls, loadMore];
 }
 
 export function queryPolls(
