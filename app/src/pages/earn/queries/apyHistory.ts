@@ -60,7 +60,8 @@ export function useAPYHistory(): MappedQueryResult<
 
   const variables = useMemo(() => {
     return mapVariables({
-      timestampMax: (Date.now() - 1000 * 60 * 60 * 24) as JSDateTime,
+      //timestampMax: (Date.now() - 1000 * 60 * 60 * 24) as JSDateTime,
+      timestampMax: (Date.now() - 1000 * 60 * 30) as JSDateTime,
     });
   }, []);
 
