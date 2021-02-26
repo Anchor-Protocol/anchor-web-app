@@ -162,7 +162,7 @@ export function InterestSection({ className }: InterestSectionProps) {
             <IconSpan>
               Interest earned{' '}
               <InfoTooltip>
-                Total amount of interest accrued for the selected time period
+                Interest accrued for the selected time period
               </InfoTooltip>
             </IconSpan>
           </p>
