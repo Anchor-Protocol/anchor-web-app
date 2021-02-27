@@ -1,12 +1,9 @@
-import {
-  HumanAddr,
-  StableDenom,
-} from '@anchor-protocol/types/contracts/common';
+import { CW20Addr, StableDenom } from '@anchor-protocol/types/contracts/common';
 import { Rate } from '@anchor-protocol/types/units';
 
 export interface Price {
   price: {
-    base: HumanAddr;
+    base: CW20Addr;
     quote: StableDenom;
   };
 }

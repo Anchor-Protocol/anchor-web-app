@@ -1,5 +1,5 @@
 import { map } from '@anchor-protocol/use-map';
-import { testAddressProvider, testClient, testWalletAddress } from 'test.env';
+import { testAddress, testClient, testWalletAddress } from 'test.env';
 import {
   dataMap,
   mapVariables,
@@ -21,14 +21,14 @@ describe('queries/marketUserOverview', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          marketContractAddress: testAddressProvider.market(''),
+          marketContractAddress: testAddress.moneyMarket.market,
           marketBorrowerQuery: {
             borrower_info: {
               borrower: testWalletAddress,
               block_height: marketState.currentBlock ?? 0,
             },
           },
-          custodyContractAddress: testAddressProvider.custody(''),
+          custodyContractAddress: testAddress.moneyMarket.custody,
           custodyBorrowerQuery: {
             borrower: {
               address: testWalletAddress,

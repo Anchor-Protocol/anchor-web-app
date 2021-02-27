@@ -1,5 +1,5 @@
 import { map } from '@anchor-protocol/use-map';
-import { testAddressProvider, testClient } from 'test.env';
+import { testAddress, testClient } from 'test.env';
 import {
   dataMap,
   mapVariables,
@@ -13,7 +13,7 @@ export async function getMarketState() {
     .query<RawData, RawVariables>({
       query,
       variables: mapVariables({
-        marketContractAddress: testAddressProvider.market(''),
+        marketContractAddress: testAddress.moneyMarket.market,
         marketStateQuery: {
           state: {},
         },

@@ -1,6 +1,12 @@
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
-import type { Num, uaUST, uUST } from '@anchor-protocol/types';
-import { ContractAddress } from '@anchor-protocol/types/contracts';
+import type {
+  ContractAddress,
+  Denom,
+  HumanAddr,
+  Num,
+  uUST,
+} from '@anchor-protocol/types';
+import { contracts, Rate } from '@anchor-protocol/types';
 import { createMap, map, Mapped, useMap } from '@anchor-protocol/use-map';
 import { ApolloClient, gql, useQuery } from '@apollo/client';
 import { useContractAddress } from 'contexts/contract';
@@ -14,23 +20,15 @@ import { useMemo } from 'react';
 export interface RawData {
   currentBlock: number;
   marketBalance: {
-    Result: { Denom: string; Amount: Num<string> }[];
+    Result: { Denom: Denom; Amount: uUST }[];
   };
-  marketState: {
-    Result: string;
-  };
+  marketState: contracts.WASMContractResult;
 }
 
 export interface Data {
   currentBlock: number;
-  marketBalance: { Denom: string; Amount: Num<string> }[];
-  marketState: {
-    Result: string;
-    total_liabilities: uUST<string>;
-    total_reserves: uaUST<string>;
-    last_interest_updated: number;
-    global_interest_index: Num<string>;
-  };
+  marketBalance: { Denom: Denom; Amount: uUST }[];
+  marketState: contracts.WASMContractResult<contracts.moneyMarket.market.StateResponse>;
 }
 
 export const dataMap = createMap<RawData, Data>({
@@ -66,9 +64,12 @@ export const mockupData: Mapped<RawData, Data> = {
   marketState: {
     Result: '',
     total_liabilities: '0' as uUST,
-    total_reserves: '0' as uaUST,
+    total_reserves: '0' as uUST,
     last_interest_updated: 0,
+    last_reward_updated: 0,
     global_interest_index: '0' as Num,
+    global_reward_index: '0' as Num,
+    anc_emission_rate: '1' as Rate,
   },
 };
 
@@ -78,10 +79,8 @@ export interface RawVariables {
 }
 
 export interface Variables {
-  marketContractAddress: string;
-  marketStateQuery: {
-    state: {};
-  };
+  marketContractAddress: HumanAddr;
+  marketStateQuery: contracts.moneyMarket.market.State;
 }
 
 export function mapVariables({

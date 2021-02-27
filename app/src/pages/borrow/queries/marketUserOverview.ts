@@ -1,4 +1,5 @@
 import type { Num, uUST } from '@anchor-protocol/types';
+import { contracts, HumanAddr, uANC } from '@anchor-protocol/types';
 import { ContractAddress } from '@anchor-protocol/types/contracts';
 import { createMap, map, Mapped, useMap } from '@anchor-protocol/use-map';
 import { WalletStatus } from '@anchor-protocol/wallet-provider';
@@ -13,33 +14,13 @@ import { useMemo } from 'react';
 import { Data as MarketState } from './marketState';
 
 export interface RawData {
-  loanAmount: {
-    Result: string;
-  };
-
-  liability: {
-    Result: string;
-  };
-
-  borrowInfo: {
-    Result: string;
-  };
+  loanAmount: contracts.WASMContractResult;
+  borrowInfo: contracts.WASMContractResult;
 }
 
 export interface Data {
-  loanAmount: {
-    Result: string;
-    borrower: string;
-    loan_amount: uUST<string>;
-    interest_index: Num<string>;
-  };
-
-  borrowInfo: {
-    Result: string;
-    borrower: string;
-    balance: uUST<string>;
-    spendable: uUST<string>;
-  };
+  loanAmount: contracts.WASMContractResult<contracts.moneyMarket.market.BorrowInfoResponse>;
+  borrowInfo: contracts.WASMContractResult<contracts.moneyMarket.custody.BorrowerResponse>;
 }
 
 export const dataMap = createMap<RawData, Data>({
@@ -57,13 +38,15 @@ export const mockupData: Mapped<RawData, Data> = {
   loanAmount: {
     Result: '',
     loan_amount: '0' as uUST,
-    borrower: '',
+    borrower: '' as HumanAddr,
     interest_index: '1' as Num,
+    reward_index: '0' as Num,
+    pending_rewards: '0' as uANC,
   },
 
   borrowInfo: {
     Result: '',
-    borrower: '',
+    borrower: '' as HumanAddr,
     balance: '0' as uUST,
     spendable: '0' as uUST,
   },
@@ -77,19 +60,10 @@ export interface RawVariables {
 }
 
 export interface Variables {
-  marketContractAddress: string;
-  marketBorrowerQuery: {
-    borrower_info: {
-      borrower: string;
-      block_height: number;
-    };
-  };
-  custodyContractAddress: string;
-  custodyBorrowerQuery: {
-    borrower: {
-      address: string;
-    };
-  };
+  marketContractAddress: HumanAddr;
+  marketBorrowerQuery: contracts.moneyMarket.market.BorrowInfo;
+  custodyContractAddress: HumanAddr;
+  custodyBorrowerQuery: contracts.moneyMarket.custody.Borrower;
 }
 
 export function mapVariables({
@@ -139,27 +113,24 @@ export function useMarketUserOverview({
   const { serviceAvailable, walletReady } = useService();
 
   const variables = useMemo(() => {
+    if (!walletReady || typeof currentBlock !== 'number') return undefined;
+
     return mapVariables({
       marketContractAddress: moneyMarket.market,
       marketBorrowerQuery: {
         borrower_info: {
-          borrower: walletReady?.walletAddress ?? '',
-          block_height: currentBlock ?? 0,
+          borrower: walletReady.walletAddress,
+          block_height: currentBlock,
         },
       },
       custodyContractAddress: moneyMarket.custody,
       custodyBorrowerQuery: {
         borrower: {
-          address: walletReady?.walletAddress ?? '',
+          address: walletReady.walletAddress,
         },
       },
     });
-  }, [
-    currentBlock,
-    moneyMarket.custody,
-    moneyMarket.market,
-    walletReady?.walletAddress,
-  ]);
+  }, [currentBlock, moneyMarket.custody, moneyMarket.market, walletReady]);
 
   const onError = useQueryErrorHandler();
 
@@ -167,7 +138,7 @@ export function useMarketUserOverview({
     RawData,
     RawVariables
   >(query, {
-    skip: !serviceAvailable || typeof currentBlock !== 'number',
+    skip: !variables || !serviceAvailable,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,

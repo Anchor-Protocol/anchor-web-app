@@ -1,5 +1,6 @@
+import { contracts, StableDenom } from '@anchor-protocol/types';
 import type { Rate } from '@anchor-protocol/types';
-import { ContractAddress } from '@anchor-protocol/types/contracts';
+import { ContractAddress, HumanAddr } from '@anchor-protocol/types/contracts';
 import { createMap, map, Mapped, useMap } from '@anchor-protocol/use-map';
 import { ApolloClient, gql, useQuery } from '@apollo/client';
 import { useContractAddress } from 'contexts/contract';
@@ -12,41 +13,15 @@ import { useMemo } from 'react';
 import { Data as MarketState } from './marketState';
 
 export interface RawData {
-  borrowRate: {
-    Result: string;
-  };
-
-  oraclePrice: {
-    Result: string;
-  };
-
-  overseerWhitelist: {
-    Result: string;
-  };
+  borrowRate: contracts.WASMContractResult;
+  oraclePrice: contracts.WASMContractResult;
+  overseerWhitelist: contracts.WASMContractResult;
 }
 
 export interface Data {
-  borrowRate: {
-    Result: string;
-    rate: Rate<string>;
-  };
-
-  oraclePrice: {
-    Result: string;
-    rate: Rate<string>;
-    last_updated_base: number;
-    last_updated_quote: number;
-  };
-
-  overseerWhitelist: {
-    Result: string;
-
-    elems: {
-      collateral_token: string;
-      custody_contract: string;
-      max_ltv: Rate<string>;
-    }[];
-  };
+  borrowRate: contracts.WASMContractResult<contracts.moneyMarket.interestModel.BorrowRateResponse>;
+  oraclePrice: contracts.WASMContractResult<contracts.moneyMarket.oracle.PriceResponse>;
+  overseerWhitelist: contracts.WASMContractResult<contracts.moneyMarket.overseer.WhitelistResponse>;
 }
 
 export const dataMap = createMap<RawData, Data>({
@@ -99,27 +74,12 @@ export interface RawVariables {
 }
 
 export interface Variables {
-  interestContractAddress: string;
-  interestBorrowRateQuery: {
-    borrow_rate: {
-      market_balance: string;
-      total_liabilities: string;
-      total_reserves: string;
-    };
-  };
-  oracleContractAddress: string;
-  oracleQuery: {
-    price: {
-      base: string;
-      quote: string;
-    };
-  };
-  overseerContractAddress: string;
-  overseerWhitelistQuery: {
-    whitelist: {
-      collateral_token: string;
-    };
-  };
+  interestContractAddress: HumanAddr;
+  interestBorrowRateQuery: contracts.moneyMarket.interestModel.BorrowRate;
+  oracleContractAddress: HumanAddr;
+  oracleQuery: contracts.moneyMarket.oracle.Price;
+  overseerContractAddress: HumanAddr;
+  overseerWhitelistQuery: contracts.moneyMarket.overseer.Whitelist;
 }
 
 export function mapVariables({
@@ -184,21 +144,27 @@ export function useMarketOverview({
   const { online } = useService();
 
   const variables = useMemo(() => {
+    if (!marketBalance || !marketState) return undefined;
+
+    const market_balance = marketBalance?.find(({ Denom }) => Denom === 'uusd')
+      ?.Amount;
+
+    if (!market_balance) return undefined;
+
     return mapVariables({
       interestContractAddress: moneyMarket.interestModel,
       interestBorrowRateQuery: {
         borrow_rate: {
-          market_balance:
-            marketBalance?.find(({ Denom }) => Denom === 'uusd')?.Amount ?? '',
-          total_liabilities: marketState?.total_liabilities ?? '',
-          total_reserves: marketState?.total_reserves ?? '',
+          market_balance,
+          total_liabilities: marketState.total_liabilities,
+          total_reserves: marketState.total_reserves,
         },
       },
       oracleContractAddress: moneyMarket.oracle,
       oracleQuery: {
         price: {
           base: cw20.bLuna,
-          quote: 'uusd',
+          quote: 'uusd' as StableDenom,
         },
       },
       overseerContractAddress: moneyMarket.overseer,
@@ -211,8 +177,7 @@ export function useMarketOverview({
   }, [
     cw20.bLuna,
     marketBalance,
-    marketState?.total_liabilities,
-    marketState?.total_reserves,
+    marketState,
     moneyMarket.interestModel,
     moneyMarket.oracle,
     moneyMarket.overseer,
@@ -255,8 +220,8 @@ export function queryMarketOverview(
         interestContractAddress: address.moneyMarket.interestModel,
         interestBorrowRateQuery: {
           borrow_rate: {
-            market_balance:
-              marketBalance.find(({ Denom }) => Denom === 'uusd')?.Amount ?? '',
+            market_balance: marketBalance.find(({ Denom }) => Denom === 'uusd')!
+              .Amount,
             total_liabilities: marketState.total_liabilities,
             total_reserves: marketState.total_reserves,
           },
@@ -265,7 +230,7 @@ export function queryMarketOverview(
         oracleQuery: {
           price: {
             base: address.cw20.bLuna,
-            quote: 'uusd',
+            quote: 'uusd' as StableDenom,
           },
         },
         overseerContractAddress: address.moneyMarket.overseer,

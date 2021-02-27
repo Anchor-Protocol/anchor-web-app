@@ -1,5 +1,6 @@
+import { StableDenom } from '@anchor-protocol/types';
 import { map } from '@anchor-protocol/use-map';
-import { testAddressProvider, testClient } from 'test.env';
+import { testAddress, testClient } from 'test.env';
 import {
   dataMap,
   mapVariables,
@@ -21,27 +22,27 @@ describe('queries/marketOverview', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          interestContractAddress: testAddressProvider.interest(),
+          interestContractAddress: testAddress.moneyMarket.interestModel,
           interestBorrowRateQuery: {
             borrow_rate: {
-              market_balance:
-                marketBalance.find(({ Denom }) => Denom === 'uusd')?.Amount ??
-                '',
-              total_liabilities: marketState.total_liabilities ?? '',
-              total_reserves: marketState.total_reserves ?? '',
+              market_balance: marketBalance.find(
+                ({ Denom }) => Denom === 'uusd',
+              )!.Amount,
+              total_liabilities: marketState.total_liabilities,
+              total_reserves: marketState.total_reserves,
             },
           },
-          oracleContractAddress: testAddressProvider.oracle(),
+          oracleContractAddress: testAddress.moneyMarket.oracle,
           oracleQuery: {
             price: {
-              base: testAddressProvider.blunaToken(''),
-              quote: 'uusd',
+              base: testAddress.cw20.bLuna,
+              quote: 'uusd' as StableDenom,
             },
           },
-          overseerContractAddress: testAddressProvider.overseer(''),
+          overseerContractAddress: testAddress.moneyMarket.overseer,
           overseerWhitelistQuery: {
             whitelist: {
-              collateral_token: testAddressProvider.blunaToken(''),
+              collateral_token: testAddress.cw20.bLuna,
             },
           },
         }),
