@@ -1,3 +1,4 @@
+import type { HumanAddr } from '@anchor-protocol/types/contracts';
 import { Extension } from '@terra-money/terra.js';
 import { getParser } from 'bowser';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -104,7 +105,7 @@ export function ChromeExtensionWalletProvider({
               ? {
                   status: 'ready',
                   network,
-                  walletAddress: storedWalletAddress,
+                  walletAddress: storedWalletAddress as HumanAddr,
                 }
               : prev;
           });

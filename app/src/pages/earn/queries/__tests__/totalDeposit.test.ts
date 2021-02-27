@@ -1,5 +1,5 @@
 import { map } from '@anchor-protocol/use-map';
-import { testAddressProvider, testClient, testWalletAddress } from 'test.env';
+import { testAddress, testClient, testWalletAddress } from 'test.env';
 import {
   dataMap,
   mapVariables,
@@ -14,16 +14,16 @@ describe('queries/totalDeposit', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          anchorTokenContract: testAddressProvider.aTerra(''),
+          anchorTokenContract: testAddress.cw20.aUST,
           anchorTokenBalanceQuery: {
             balance: {
               address: testWalletAddress,
             },
           },
-          moneyMarketContract: testAddressProvider.market(''),
+          moneyMarketContract: testAddress.moneyMarket.market,
           moneyMarketEpochQuery: {
             epoch_state: {
-              lastSyncedHeight: 0,
+              block_height: 0,
             },
           },
         }),

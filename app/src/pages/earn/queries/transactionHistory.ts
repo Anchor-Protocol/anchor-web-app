@@ -1,5 +1,6 @@
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import type { DateTime, uaUST, uUST } from '@anchor-protocol/types';
+import { Denom, HumanAddr } from '@anchor-protocol/types/contracts';
 import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useService } from 'contexts/service';
@@ -10,13 +11,13 @@ import { useMemo } from 'react';
 
 export interface RawData {
   transactionHistory: {
-    Address: string;
+    Address: HumanAddr;
     Contract: string;
     Height: number;
     InAmount: uUST<string>;
-    InDenom: string;
+    InDenom: Denom;
     OutAmount: uaUST<string>;
-    OutDenom: string;
+    OutDenom: Denom;
     Timestamp: DateTime;
     TransactionType: string;
     TxHash: string;
@@ -39,7 +40,7 @@ export const mockupData: Mapped<RawData, Data> = {
 };
 
 export interface RawVariables {
-  walletAddress: string;
+  walletAddress: HumanAddr;
 }
 
 export type Variables = RawVariables;
@@ -76,10 +77,12 @@ export function useTransactionHistory(): MappedQueryResult<
   const { serviceAvailable, walletReady } = useService();
 
   const variables = useMemo(() => {
+    if (!walletReady) return undefined;
+
     return mapVariables({
-      walletAddress: walletReady?.walletAddress ?? '',
+      walletAddress: walletReady.walletAddress,
     });
-  }, [walletReady?.walletAddress]);
+  }, [walletReady]);
 
   const onError = useQueryErrorHandler();
 
@@ -87,7 +90,7 @@ export function useTransactionHistory(): MappedQueryResult<
     RawData,
     RawVariables
   >(query, {
-    skip: !serviceAvailable,
+    skip: !variables || !serviceAvailable,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,

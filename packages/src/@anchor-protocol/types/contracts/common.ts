@@ -11,6 +11,10 @@ export type Denom = StableDenom | bAssetDenom | AssetDenom;
 
 export type Base64EncodedJson = string & NominalType<'Base64EncodedJson'>;
 
+export type WASMContractResult<T extends {} = {}> = {
+  Result: string;
+} & T;
+
 export interface ContractAddress {
   bluna: {
     /** addressProvider.blunaReward() */

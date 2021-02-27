@@ -1,5 +1,7 @@
 import { useEventBusListener } from '@anchor-protocol/event-bus';
 import type { Num, Rate, uaUST } from '@anchor-protocol/types';
+import { contracts } from '@anchor-protocol/types';
+import { CW20Addr, HumanAddr } from '@anchor-protocol/types/contracts';
 import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useContractAddress } from 'contexts/contract';
@@ -12,24 +14,15 @@ import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
 export interface RawData {
-  aUSTBalance: {
-    Result: string;
-  };
-  exchangeRate: {
-    Result: string;
-  };
+  aUSTBalance: contracts.WASMContractResult;
+  exchangeRate: contracts.WASMContractResult;
 }
 
 export interface Data {
-  aUSTBalance: {
-    Result: string;
-    balance: uaUST<string>;
-  };
-  exchangeRate: {
-    Result: string;
-    a_token_supply: Num<string>;
-    exchange_rate: Rate<string>;
-  };
+  aUSTBalance: contracts.WASMContractResult<
+    contracts.cw20.BalanceResponse<uaUST>
+  >;
+  exchangeRate: contracts.WASMContractResult<contracts.moneyMarket.market.EpochStateResponse>;
 }
 
 export const dataMap = createMap<RawData, Data>({
@@ -61,7 +54,7 @@ export const mockupData: Mapped<RawData, Data> = {
   exchangeRate: {
     Result: '',
     exchange_rate: '1' as Rate,
-    a_token_supply: '0' as Num,
+    aterra_supply: '0' as Num,
   },
 };
 
@@ -73,18 +66,10 @@ export interface RawVariables {
 }
 
 export interface Variables {
-  anchorTokenContract: string;
-  anchorTokenBalanceQuery: {
-    balance: {
-      address: string;
-    };
-  };
-  moneyMarketContract: string;
-  moneyMarketEpochQuery: {
-    epoch_state: {
-      lastSyncedHeight: number;
-    };
-  };
+  anchorTokenContract: CW20Addr;
+  anchorTokenBalanceQuery: contracts.cw20.Balance;
+  moneyMarketContract: HumanAddr;
+  moneyMarketEpochQuery: contracts.moneyMarket.market.EpochState;
 }
 
 export function mapVariables({
@@ -131,27 +116,23 @@ export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
   const { data: lastSyncedHeight } = useLastSyncedHeight();
 
   const variables = useMemo(() => {
+    if (!walletReady || typeof lastSyncedHeight !== 'number') return undefined;
+
     return mapVariables({
       anchorTokenContract: cw20.aUST,
       anchorTokenBalanceQuery: {
         balance: {
-          address: walletReady?.walletAddress ?? '',
+          address: walletReady.walletAddress,
         },
       },
       moneyMarketContract: moneyMarket.market,
       moneyMarketEpochQuery: {
         epoch_state: {
-          lastSyncedHeight:
-            typeof lastSyncedHeight === 'number' ? lastSyncedHeight : 0,
+          block_height: lastSyncedHeight,
         },
       },
     });
-  }, [
-    cw20.aUST,
-    lastSyncedHeight,
-    moneyMarket.market,
-    walletReady?.walletAddress,
-  ]);
+  }, [cw20.aUST, lastSyncedHeight, moneyMarket.market, walletReady]);
 
   const onError = useQueryErrorHandler();
 
@@ -159,7 +140,7 @@ export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
     RawData,
     RawVariables
   >(query, {
-    skip: !serviceAvailable || typeof lastSyncedHeight !== 'number',
+    skip: !variables || !serviceAvailable,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,

@@ -7,6 +7,6 @@ export interface Balance {
   };
 }
 
-export interface BalanceResponse {
-  balance: uToken;
+export interface BalanceResponse<T extends uToken> {
+  balance: T;
 }

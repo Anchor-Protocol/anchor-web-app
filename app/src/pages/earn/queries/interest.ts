@@ -1,4 +1,5 @@
-import type { Num, Rate } from '@anchor-protocol/types';
+import { contracts } from '@anchor-protocol/types';
+import { HumanAddr } from '@anchor-protocol/types/contracts';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useContractAddress } from 'contexts/contract';
@@ -10,19 +11,11 @@ import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
 export interface RawData {
-  marketStatus: {
-    Result: string;
-  };
+  marketStatus: contracts.WASMContractResult;
 }
 
 export interface Data {
-  marketStatus: {
-    Result: string;
-    deposit_rate: Rate<string>;
-    last_executed_height: number;
-    prev_a_token_supply: Num<string>;
-    prev_exchange_rate: Rate<string>;
-  };
+  marketStatus: contracts.WASMContractResult<contracts.moneyMarket.overseer.EpochStateResponse>;
 }
 
 export const dataMap = createMap<RawData, Data>({
@@ -37,19 +30,15 @@ export interface RawVariables {
 }
 
 export interface Variables {
-  overseerContract: string;
-  overseerEpochState: {
-    epoch_state: {};
-  };
+  overseerContract: HumanAddr;
 }
 
-export function mapVariables({
-  overseerContract,
-  overseerEpochState,
-}: Variables): RawVariables {
+export function mapVariables({ overseerContract }: Variables): RawVariables {
   return {
     overseerContract,
-    overseerEpochState: JSON.stringify(overseerEpochState),
+    overseerEpochState: JSON.stringify({
+      epoch_state: {},
+    } as contracts.moneyMarket.overseer.EpochState),
   };
 }
 
@@ -72,9 +61,6 @@ export function useInterest(): MappedQueryResult<RawVariables, RawData, Data> {
   const variables = useMemo(() => {
     return mapVariables({
       overseerContract: moneyMarket.overseer,
-      overseerEpochState: {
-        epoch_state: {},
-      },
     });
   }, [moneyMarket.overseer]);
 

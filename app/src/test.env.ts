@@ -2,7 +2,7 @@ import {
   AddressProvider,
   AddressProviderFromJson,
 } from '@anchor-protocol/anchor.js';
-import { ContractAddress } from '@anchor-protocol/types/contracts';
+import { ContractAddress, HumanAddr } from '@anchor-protocol/types/contracts';
 import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { createContractAddress } from 'contexts/contract';
 import { contractAddresses } from 'env';
@@ -22,4 +22,4 @@ export const testAddress: ContractAddress = createContractAddress(
   testAddressProvider,
 );
 
-export const testWalletAddress = 'terra12hnhh5vtyg5juqnzm43970nh4fw42pt27nw9g9';
+export const testWalletAddress: HumanAddr = 'terra12hnhh5vtyg5juqnzm43970nh4fw42pt27nw9g9' as HumanAddr;

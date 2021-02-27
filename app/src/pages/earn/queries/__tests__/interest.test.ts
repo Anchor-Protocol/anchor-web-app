@@ -1,5 +1,5 @@
 import { map } from '@anchor-protocol/use-map';
-import { testAddressProvider, testClient } from 'test.env';
+import { testAddress, testClient } from 'test.env';
 import {
   dataMap,
   mapVariables,
@@ -14,10 +14,7 @@ describe('queries/totalDeposit', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          overseerContract: testAddressProvider.overseer(''),
-          overseerEpochState: {
-            epoch_state: {},
-          },
+          overseerContract: testAddress.moneyMarket.overseer,
         }),
       })
       .then(({ data }) => map(data, dataMap));

@@ -1,6 +1,8 @@
 /**
  * Result of `Extension.info()` of `terra.js`
  */
+import type { HumanAddr } from '@anchor-protocol/types/contracts';
+
 export interface StationNetworkInfo {
   name: string;
   chainID: string;
@@ -17,7 +19,7 @@ export type WalletNotReady = {
 export type WalletReady = {
   status: 'ready';
   network: StationNetworkInfo;
-  walletAddress: string;
+  walletAddress: HumanAddr;
 };
 
 export type WalletStatus = WalletNotReady | WalletReady;

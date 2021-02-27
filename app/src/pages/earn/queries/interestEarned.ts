@@ -303,14 +303,16 @@ export function useInterestEarned(
   const { serviceAvailable, walletReady } = useService();
 
   const variables = useMemo(() => {
+    if (!walletReady) return undefined;
+
     const { now, then } = getDates(period);
 
     return mapVariables({
-      walletAddress: walletReady?.walletAddress ?? '',
+      walletAddress: walletReady.walletAddress,
       now,
       then,
     });
-  }, [period, walletReady?.walletAddress]);
+  }, [period, walletReady]);
 
   const onError = useQueryErrorHandler();
 
@@ -318,7 +320,7 @@ export function useInterestEarned(
     RawData,
     RawVariables
   >(period === 'total' ? totalQuery : query, {
-    skip: !serviceAvailable,
+    skip: !variables || !serviceAvailable,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,
