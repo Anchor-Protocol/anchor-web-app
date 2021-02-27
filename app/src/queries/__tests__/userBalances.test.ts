@@ -15,8 +15,8 @@ describe('queries/userBalances', () => {
         query,
         variables: mapVariables({
           walletAddress: testWalletAddress,
-          bAssetTokenAddress: testAddressProvider.blunaToken(),
-          aTokenAddress: testAddressProvider.aTerra(),
+          bAssetTokenAddress: testAddressProvider.blunaToken(''),
+          aTokenAddress: testAddressProvider.aTerra(''),
         }),
       })
       .then(({ data }) => map(data, dataMap));
