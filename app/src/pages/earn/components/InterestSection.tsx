@@ -75,6 +75,14 @@ export function InterestSection({ className }: InterestSectionProps) {
     data: { apyHistory },
   } = useAPYHistory();
 
+  // ---------------------------------------------
+  // logics
+  // ---------------------------------------------
+  const apy = useMemo(() => currentAPY(marketStatus, blocksPerYear), [
+    blocksPerYear,
+    marketStatus,
+  ]);
+
   const apyChartItems = useMemo<APYChartItem[] | undefined>(() => {
     const history = apyHistory
       ?.map(({ Timestamp, DepositRate }) => ({
@@ -95,14 +103,6 @@ export function InterestSection({ className }: InterestSectionProps) {
         ]
       : undefined;
   }, [apyHistory, blocksPerYear, marketStatus]);
-
-  // ---------------------------------------------
-  // logics
-  // ---------------------------------------------
-  const apy = useMemo(
-    () => currentAPY(marketStatus?.deposit_rate, blocksPerYear),
-    [blocksPerYear, marketStatus?.deposit_rate],
-  );
 
   // ---------------------------------------------
   // presentation

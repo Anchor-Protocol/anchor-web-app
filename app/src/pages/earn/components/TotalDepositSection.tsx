@@ -39,8 +39,8 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
   // logics
   // ---------------------------------------------
   const totalDeposit = useMemo(
-    () => totalDepositUST(aUSTBalance?.balance, exchangeRate?.exchange_rate),
-    [aUSTBalance?.balance, exchangeRate?.exchange_rate],
+    () => totalDepositUST(aUSTBalance, exchangeRate),
+    [aUSTBalance, exchangeRate],
   );
 
   // ---------------------------------------------

@@ -1,6 +1,6 @@
 import type { ubLuna, uLuna } from '@anchor-protocol/types';
+import { bluna } from '@anchor-protocol/types';
 import big, { Big } from 'big.js';
-import { Data as WithdrawAllHistory } from '../queries/withdrawHistory';
 
 interface History {
   blunaAmount: ubLuna<Big>;
@@ -10,23 +10,23 @@ interface History {
 }
 
 export function withdrawAllHistory(
-  withdrawRequestsStartFrom: number | undefined,
-  requests: [number, ubLuna][] | undefined,
-  allHistory: WithdrawAllHistory['allHistory'] | undefined,
-  parameters: WithdrawAllHistory['parameters'] | undefined,
+  unbondRequests:
+    | (bluna.hub.UnbondRequestsResponse & { startFrom: number })
+    | undefined,
+  allHistory: bluna.hub.AllHistoryResponse | undefined,
+  parameters: bluna.hub.ParametersResponse | undefined,
 ): History[] | undefined {
   if (
-    typeof withdrawRequestsStartFrom !== 'number' ||
-    withdrawRequestsStartFrom < 0 ||
-    !requests ||
+    !unbondRequests ||
+    unbondRequests.startFrom < 0 ||
     !allHistory ||
     !parameters
   ) {
     return undefined;
   }
 
-  return requests.map<History>(([index, amount]) => {
-    const historyIndex: number = index - withdrawRequestsStartFrom;
+  return unbondRequests.requests.map<History>(([index, amount]) => {
+    const historyIndex: number = index - unbondRequests.startFrom;
     const matchingHistory = allHistory.history[historyIndex - 1];
 
     const blunaAmount = big(amount) as ubLuna<Big>;

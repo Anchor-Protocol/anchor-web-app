@@ -34,16 +34,10 @@ describe('queries/terraswapOfferSimulation', () => {
       })
       .then(({ data }) => map<RawData, Data>(data, dataMap))
       .then(({ terraswapAskSimulation }) =>
-        askSimulation(
-          terraswapAskSimulation!.commission_amount,
-          terraswapAskSimulation!.return_amount,
-          terraswapAskSimulation!.spread_amount,
-          '100' as uLuna,
-          {
-            taxRate: '1' as Rate,
-            maxTaxUUSD: '3500000' as uUST,
-          },
-        ),
+        askSimulation(terraswapAskSimulation!, '100' as uLuna, {
+          taxRate: '1' as Rate,
+          maxTaxUUSD: '3500000' as uUST,
+        }),
       );
 
     expect(parseInt(data.return_amount)).not.toBeNaN();

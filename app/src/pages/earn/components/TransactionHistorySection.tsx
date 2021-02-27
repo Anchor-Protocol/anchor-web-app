@@ -12,12 +12,21 @@ export interface TransactionHistorySectionProps {
 export function TransactionHistorySection({
   className,
 }: TransactionHistorySectionProps) {
+  // ---------------------------------------------
+  // dependencies
+  // ---------------------------------------------
   const { status } = useWallet();
 
+  // ---------------------------------------------
+  // queries
+  // ---------------------------------------------
   const {
     data: { transactionHistory = [] },
   } = useTransactionHistory();
 
+  // ---------------------------------------------
+  // presentation
+  // ---------------------------------------------
   return (
     <Section className={className}>
       <h2>TRANSACTION HISTORY</h2>

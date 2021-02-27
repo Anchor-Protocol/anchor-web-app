@@ -161,13 +161,7 @@ export function Swap() {
               amount,
             ).then(({ data: { terraswapOfferSimulation } }) =>
               terraswapOfferSimulation
-                ? offerSimulation(
-                    terraswapOfferSimulation.commission_amount,
-                    terraswapOfferSimulation.return_amount,
-                    terraswapOfferSimulation.spread_amount,
-                    amount,
-                    bank.tax,
-                  )
+                ? offerSimulation(terraswapOfferSimulation, amount, bank.tax)
                 : undefined,
             ),
           );
@@ -198,13 +192,7 @@ export function Swap() {
               amount,
             ).then(({ data: { terraswapAskSimulation } }) =>
               terraswapAskSimulation
-                ? askSimulation(
-                    terraswapAskSimulation.commission_amount,
-                    terraswapAskSimulation.return_amount,
-                    terraswapAskSimulation.spread_amount,
-                    amount,
-                    bank.tax,
-                  )
+                ? askSimulation(terraswapAskSimulation, amount, bank.tax)
                 : undefined,
             ),
           );

@@ -85,19 +85,8 @@ export function WithdrawSection({
   );
 
   const withdrawHistory = useMemo(
-    () =>
-      withdrawAllHistory(
-        withdrawRequests?.startFrom,
-        withdrawRequests?.requests,
-        allHistory,
-        parameters,
-      ),
-    [
-      allHistory,
-      parameters,
-      withdrawRequests?.requests,
-      withdrawRequests?.startFrom,
-    ],
+    () => withdrawAllHistory(withdrawRequests, allHistory, parameters),
+    [allHistory, parameters, withdrawRequests],
   );
 
   const withdrawableAmount = useMemo(

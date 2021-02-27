@@ -1,9 +1,12 @@
-import type { Rate, uaUST, uUST } from '@anchor-protocol/types';
-import big, { Big, BigSource } from 'big.js';
+import type { uaUST, uUST } from '@anchor-protocol/types';
+import { cw20, moneyMarket } from '@anchor-protocol/types';
+import big, { Big } from 'big.js';
 
 export function totalDepositUST(
-  balance: uaUST<BigSource> | undefined,
-  exchangeRate: Rate<BigSource> | undefined,
+  aUSTBalance: cw20.BalanceResponse<uaUST> | undefined,
+  epochState: moneyMarket.market.EpochStateResponse | undefined,
 ) {
-  return big(balance ?? '0').mul(exchangeRate ?? '1') as uUST<Big>;
+  return big(aUSTBalance?.balance ?? '0').mul(
+    epochState?.exchange_rate ?? '1',
+  ) as uUST<Big>;
 }
