@@ -1,4 +1,5 @@
 import { map } from '@anchor-protocol/use-map';
+import { testAddress, testClient, testWalletAddress } from 'test.env';
 import {
   dataMap,
   mapVariables,
@@ -6,7 +7,6 @@ import {
   RawData,
   RawVariables,
 } from '../rewardsUSTBorrow';
-import { testAddressProvider, testClient, testWalletAddress } from 'test.env';
 
 describe('queries/rewardsUSTBorrow', () => {
   test('should get result from query', async () => {
@@ -14,8 +14,15 @@ describe('queries/rewardsUSTBorrow', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          MarketContract: testAddressProvider.market(''),
-          userWalletAddress: testWalletAddress,
+          MarketContract: testAddress.moneyMarket.market,
+          MarketStateQuery: {
+            state: {},
+          },
+          BorrowerInfoQuery: {
+            borrower_info: {
+              borrower: testWalletAddress,
+            },
+          },
         }),
       })
       .then(({ data }) => map(data, dataMap));

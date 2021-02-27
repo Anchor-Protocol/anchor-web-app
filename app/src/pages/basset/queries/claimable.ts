@@ -1,5 +1,5 @@
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
-import type { Num, ubLuna } from '@anchor-protocol/types';
+import { bluna, WASMContractResult } from '@anchor-protocol/types';
 import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useContractAddress } from 'contexts/contract';
@@ -11,29 +11,13 @@ import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
 export interface RawData {
-  rewardState: {
-    Result: string;
-  };
-
-  claimableReward: {
-    Result: string;
-  };
+  rewardState: WASMContractResult;
+  claimableReward: WASMContractResult;
 }
 
 export interface Data {
-  rewardState: {
-    Result: string;
-    global_index: Num<string>;
-    total_balance: ubLuna<string>;
-  };
-
-  claimableReward: {
-    Result: string;
-    address: string;
-    balance: ubLuna<string>;
-    index: Num<string>;
-    pending_rewards: ubLuna<string>;
-  };
+  rewardState: WASMContractResult<bluna.reward.StateResponse>;
+  claimableReward: WASMContractResult<bluna.reward.HolderResponse>;
 }
 
 export const dataMap = createMap<RawData, Data>({
@@ -66,14 +50,8 @@ export interface RawVariables {
 
 export interface Variables {
   bAssetRewardContract: string;
-  rewardState: {
-    state: {};
-  };
-  claimableRewardQuery: {
-    holder: {
-      address: string;
-    };
-  };
+  rewardState: bluna.reward.State;
+  claimableRewardQuery: bluna.reward.Holder;
 }
 
 export function mapVariables({
@@ -116,6 +94,8 @@ export function useClaimable(): MappedQueryResult<RawVariables, RawData, Data> {
   const { serviceAvailable, walletReady } = useService();
 
   const variables = useMemo(() => {
+    if (!walletReady) return undefined;
+
     return mapVariables({
       bAssetRewardContract: bluna.reward,
       rewardState: {
@@ -123,11 +103,11 @@ export function useClaimable(): MappedQueryResult<RawVariables, RawData, Data> {
       },
       claimableRewardQuery: {
         holder: {
-          address: walletReady?.walletAddress ?? '',
+          address: walletReady.walletAddress,
         },
       },
     });
-  }, [bluna.reward, walletReady?.walletAddress]);
+  }, [bluna.reward, walletReady]);
 
   const onError = useQueryErrorHandler();
 
@@ -135,7 +115,7 @@ export function useClaimable(): MappedQueryResult<RawVariables, RawData, Data> {
     RawData,
     RawVariables
   >(query, {
-    skip: !serviceAvailable,
+    skip: !variables || !serviceAvailable,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,

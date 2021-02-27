@@ -1,5 +1,5 @@
 import { map } from '@anchor-protocol/use-map';
-import { testAddressProvider, testClient, testWalletAddress } from 'test.env';
+import { testAddress, testClient, testWalletAddress } from 'test.env';
 import {
   dataMap,
   mapVariables,
@@ -14,7 +14,7 @@ describe('queries/withdrawable', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          bLunaHubContract: testAddressProvider.blunaHub(''),
+          bLunaHubContract: testAddress.bluna.hub,
           withdrawableAmountQuery: {
             withdrawable_unbonded: {
               address: testWalletAddress,
@@ -26,9 +26,6 @@ describe('queries/withdrawable', () => {
             unbond_requests: {
               address: testWalletAddress,
             },
-          },
-          exchangeRateQuery: {
-            state: {},
           },
         }),
       })

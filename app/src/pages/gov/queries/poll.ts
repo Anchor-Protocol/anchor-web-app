@@ -1,8 +1,8 @@
+import { anchorToken, WASMContractResult } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useContractAddress } from 'contexts/contract';
 import { useService } from 'contexts/service';
-import { Poll } from 'pages/gov/queries/polls';
 import { parseResult } from 'queries/parseResult';
 import { MappedQueryResult } from 'queries/types';
 import { useQueryErrorHandler } from 'queries/useQueryErrorHandler';
@@ -10,15 +10,11 @@ import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
 export interface RawData {
-  poll: {
-    Result: string;
-  };
+  poll: WASMContractResult;
 }
 
 export interface Data {
-  poll: {
-    Result: string;
-  } & Poll;
+  poll: WASMContractResult<anchorToken.gov.PollResponse>;
 }
 
 export const dataMap = createMap<RawData, Data>({
@@ -34,20 +30,16 @@ export interface RawVariables {
 
 export interface Variables {
   govContract: string;
-  poll_id: number;
+  pollQuery: anchorToken.gov.Poll;
 }
 
 export function mapVariables({
   govContract,
-  poll_id,
+  pollQuery,
 }: Variables): RawVariables {
   return {
     govContract,
-    pollQuery: JSON.stringify({
-      poll: {
-        poll_id,
-      },
-    }),
+    pollQuery: JSON.stringify(pollQuery),
   };
 }
 
@@ -72,7 +64,11 @@ export function usePoll(
   const variables = useMemo(() => {
     return mapVariables({
       govContract: anchorToken.gov,
-      poll_id: pollId,
+      pollQuery: {
+        poll: {
+          poll_id: pollId,
+        },
+      },
     });
   }, [anchorToken.gov, pollId]);
 

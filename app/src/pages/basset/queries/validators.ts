@@ -1,3 +1,4 @@
+import { bluna, WASMContractResult } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useContractAddress } from 'contexts/contract';
@@ -16,9 +17,7 @@ export interface RawData {
       };
     }[];
   };
-  whitelistedValidators: {
-    Result: string;
-  };
+  whitelistedValidators: WASMContractResult;
 }
 
 export interface Data {
@@ -41,9 +40,11 @@ export const dataMap = createMap<RawData, Data>({
     return validators.Result;
   },
   whitelistedValidators: (existing, { validators, whitelistedValidators }) => {
-    const set: Set<string> = new Set(
-      JSON.parse(whitelistedValidators.Result).validators,
+    const result: WASMContractResult<bluna.hub.WhitelistedValidatorsResponse> = JSON.parse(
+      whitelistedValidators.Result,
     );
+
+    const set: Set<string> = new Set(result.validators);
 
     return validators.Result.filter(({ OperatorAddress }) =>
       set.has(OperatorAddress),
@@ -58,14 +59,12 @@ export interface RawVariables {
 
 export interface Variables {
   bLunaHubContract: string;
-  whitelistedValidatorsQuery?: {
-    whitelisted_validators: {};
-  };
+  whitelistedValidatorsQuery: bluna.hub.WhitelistedValidators;
 }
 
 export function mapVariables({
   bLunaHubContract,
-  whitelistedValidatorsQuery = { whitelisted_validators: {} },
+  whitelistedValidatorsQuery,
 }: Variables): RawVariables {
   return {
     bLunaHubContract,

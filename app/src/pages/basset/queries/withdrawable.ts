@@ -1,50 +1,39 @@
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
-import type { ubLuna, uLuna } from '@anchor-protocol/types';
+import { bluna, WASMContractResult } from '@anchor-protocol/types';
 import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useContractAddress } from 'contexts/contract';
 import { useService } from 'contexts/service';
+import { parseResult } from 'queries/parseResult';
 import { MappedQueryResult } from 'queries/types';
 import { useQueryErrorHandler } from 'queries/useQueryErrorHandler';
 import { useRefetch } from 'queries/useRefetch';
 import { useMemo, useState } from 'react';
 
 export interface RawData {
-  withdrawableAmount: {
-    Result: string;
-  };
-  withdrawRequests: {
-    Result: string;
-  };
+  withdrawableAmount: WASMContractResult;
+  withdrawRequests: WASMContractResult;
 }
 
 export interface Data {
-  withdrawableAmount: {
-    Result: string;
-    withdrawable: uLuna<string>;
-  };
-  withdrawRequests: {
-    Result: string;
-    address: string;
-    requests: [number, ubLuna<string>][];
+  withdrawableAmount: WASMContractResult<bluna.hub.WithdrawableUnbondedResponse>;
+  withdrawRequests: WASMContractResult<bluna.hub.UnbondRequestsResponse> & {
     startFrom: number;
   };
 }
 
 export const dataMap = createMap<RawData, Data>({
   withdrawableAmount: (existing, { withdrawableAmount }) => {
-    return existing.withdrawableAmount?.Result === withdrawableAmount.Result
-      ? existing.withdrawableAmount
-      : { ...withdrawableAmount, ...JSON.parse(withdrawableAmount.Result) };
+    return parseResult(existing.withdrawableAmount, withdrawableAmount.Result);
   },
   withdrawRequests: (existing, { withdrawRequests }) => {
     if (existing.withdrawRequests?.Result === withdrawRequests.Result) {
       return existing.withdrawRequests;
     }
 
-    const parsed = JSON.parse(
+    const parsed: WASMContractResult<bluna.hub.UnbondRequestsResponse> = JSON.parse(
       withdrawRequests.Result,
-    ) as Data['withdrawRequests'];
+    );
 
     return {
       ...withdrawRequests,
@@ -77,38 +66,23 @@ export interface RawVariables {
   bLunaHubContract: string;
   withdrawableAmountQuery: string;
   withdrawRequestsQuery: string;
-  exchangeRateQuery: string;
 }
 
 export interface Variables {
   bLunaHubContract: string;
-  withdrawableAmountQuery: {
-    withdrawable_unbonded: {
-      address: string;
-      block_time: number;
-    };
-  };
-  withdrawRequestsQuery: {
-    unbond_requests: {
-      address: string;
-    };
-  };
-  exchangeRateQuery: {
-    state: {};
-  };
+  withdrawableAmountQuery: bluna.hub.WithdrawableUnbonded;
+  withdrawRequestsQuery: bluna.hub.UnbondRequests;
 }
 
 export function mapVariables({
   bLunaHubContract,
   withdrawableAmountQuery,
   withdrawRequestsQuery,
-  exchangeRateQuery,
 }: Variables): RawVariables {
   return {
     bLunaHubContract,
     withdrawableAmountQuery: JSON.stringify(withdrawableAmountQuery),
     withdrawRequestsQuery: JSON.stringify(withdrawRequestsQuery),
-    exchangeRateQuery: JSON.stringify(exchangeRateQuery),
   };
 }
 
@@ -146,24 +120,23 @@ export function useWithdrawable({
   const [now, setNow] = useState(() => Math.floor(Date.now() / 1000));
 
   const variables = useMemo(() => {
+    if (!walletReady) return undefined;
+
     return mapVariables({
       bLunaHubContract: bluna.hub,
       withdrawableAmountQuery: {
         withdrawable_unbonded: {
           block_time: now,
-          address: walletReady?.walletAddress ?? '',
+          address: walletReady.walletAddress,
         },
       },
       withdrawRequestsQuery: {
         unbond_requests: {
-          address: walletReady?.walletAddress ?? '',
+          address: walletReady.walletAddress,
         },
       },
-      exchangeRateQuery: {
-        state: {},
-      },
     });
-  }, [bluna.hub, now, walletReady?.walletAddress]);
+  }, [bluna.hub, now, walletReady]);
 
   const onError = useQueryErrorHandler();
 
@@ -171,7 +144,7 @@ export function useWithdrawable({
     RawData,
     RawVariables
   >(query, {
-    skip: !serviceAvailable,
+    skip: !variables || !serviceAvailable,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,

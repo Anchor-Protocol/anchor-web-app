@@ -1,5 +1,5 @@
 import { map } from '@anchor-protocol/use-map';
-import { testAddressProvider, testClient } from 'test.env';
+import { testAddress, testClient } from 'test.env';
 import {
   dataMap,
   mapVariables,
@@ -14,7 +14,7 @@ describe('queries/withdrawHistory', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          bLunaHubContract: testAddressProvider.blunaHub(''),
+          bLunaHubContract: testAddress.bluna.hub,
           allHistory: {
             all_history: {
               start_from: 1,

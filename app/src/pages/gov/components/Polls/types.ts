@@ -1,9 +1,8 @@
-import { GovConfig } from '../../queries/govConfig';
-import { Poll } from '../../queries/polls';
+import { anchorToken } from '@anchor-protocol/types';
 
 export interface PollList {
-  polls: Poll[];
-  govConfig: GovConfig | undefined;
-  onClick: (poll: Poll) => void;
+  polls: anchorToken.gov.PollResponse[];
+  govConfig: anchorToken.gov.ConfigResponse | undefined;
+  onClick: (poll: anchorToken.gov.PollResponse) => void;
   onLoadMore: () => void;
 }

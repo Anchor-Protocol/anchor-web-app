@@ -1,5 +1,6 @@
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import type { Num, uUST } from '@anchor-protocol/types';
+import { terraswap, uToken, WASMContractResult } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { Int } from '@terra-money/terra.js';
@@ -11,9 +12,7 @@ import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
 export interface RawData {
-  ancPrice: {
-    Result: string;
-  };
+  ancPrice: WASMContractResult;
 }
 
 export interface Data {
@@ -32,14 +31,16 @@ export const dataMap = createMap<RawData, Data>({
       return existing.ancPrice;
     }
 
-    const { assets, total_share } = JSON.parse(ancPrice.Result) as {
-      assets: [{ amount: Num<string> }, { amount: Num<string> }];
-      total_share: Num<string>;
-    };
+    const {
+      assets,
+      total_share,
+    }: WASMContractResult<terraswap.PoolResponse<uToken>> = JSON.parse(
+      ancPrice.Result,
+    );
 
-    const ANCPoolSize = assets[0].amount as Num;
-    const USTPoolSize = assets[0].amount as Num;
-    const LPShare = total_share;
+    const ANCPoolSize = (assets[0].amount as unknown) as Num;
+    const USTPoolSize = (assets[0].amount as unknown) as Num;
+    const LPShare = (total_share as unknown) as Num;
     const ANCPrice = new Int(USTPoolSize).div(ANCPoolSize).toString() as uUST;
 
     return {
@@ -59,14 +60,16 @@ export interface RawVariables {
 
 export interface Variables {
   ANCTerraswap: string;
+  poolInfoQuery: terraswap.Pool;
 }
 
-export function mapVariables({ ANCTerraswap }: Variables): RawVariables {
+export function mapVariables({
+  ANCTerraswap,
+  poolInfoQuery,
+}: Variables): RawVariables {
   return {
     ANCTerraswap,
-    poolInfoQuery: JSON.stringify({
-      pool: {},
-    }),
+    poolInfoQuery: JSON.stringify(poolInfoQuery),
   };
 }
 
@@ -89,6 +92,9 @@ export function useANCPrice(): MappedQueryResult<RawVariables, RawData, Data> {
   const variables = useMemo(() => {
     return mapVariables({
       ANCTerraswap: terraswap.ancUstPair,
+      poolInfoQuery: {
+        pool: {},
+      },
     });
   }, [terraswap.ancUstPair]);
 

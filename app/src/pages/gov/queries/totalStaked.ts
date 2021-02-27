@@ -1,5 +1,6 @@
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
-import type { Rate, uANC } from '@anchor-protocol/types';
+import type { uANC } from '@anchor-protocol/types';
+import { anchorToken, cw20, WASMContractResult } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useContractAddress } from 'contexts/contract';
@@ -11,44 +12,15 @@ import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
 export interface RawData {
-  govANCBalance: {
-    Result: string;
-  };
-
-  govState: {
-    Result: string;
-  };
-
-  govConfig: {
-    Result: string;
-  };
+  govANCBalance: WASMContractResult;
+  govState: WASMContractResult;
+  govConfig: WASMContractResult;
 }
 
 export interface Data {
-  govANCBalance: {
-    Result: string;
-    balance: uANC<string>;
-  };
-
-  govState: {
-    Result: string;
-    poll_count: number;
-    total_deposit: uANC<string>;
-    total_share: uANC<string>;
-  };
-
-  govConfig: {
-    Result: string;
-    anchor_token: string;
-    expiration_period: number;
-    owner: string;
-    proposal_deposit: uANC<string>;
-    quorum: Rate<string>;
-    snapshot_period: number;
-    threshold: Rate<string>;
-    timelock_period: number;
-    voting_period: number;
-  };
+  govANCBalance: WASMContractResult<cw20.BalanceResponse<uANC>>;
+  govState: WASMContractResult<anchorToken.gov.StateResponse>;
+  govConfig: WASMContractResult<anchorToken.gov.ConfigResponse>;
 }
 
 export const dataMap = createMap<RawData, Data>({
@@ -75,29 +47,25 @@ export interface RawVariables {
 
 export interface Variables {
   ANCTokenContract: string;
-  ANCTokenBalanceQuery: {
-    balance: {
-      address: string;
-    };
-  };
   GovContract: string;
+  ANCTokenBalanceQuery: cw20.Balance;
+  GovStateQuery: anchorToken.gov.State;
+  GovConfigQuery: anchorToken.gov.Config;
 }
 
 export function mapVariables({
   ANCTokenContract,
   ANCTokenBalanceQuery,
   GovContract,
+  GovStateQuery,
+  GovConfigQuery,
 }: Variables): RawVariables {
   return {
     ANCTokenContract,
     ANCTokenBalanceQuery: JSON.stringify(ANCTokenBalanceQuery),
     GovContract,
-    GovStateQuery: JSON.stringify({
-      state: {},
-    }),
-    GovConfigQuery: JSON.stringify({
-      config: {},
-    }),
+    GovStateQuery: JSON.stringify(GovStateQuery),
+    GovConfigQuery: JSON.stringify(GovConfigQuery),
   };
 }
 
@@ -148,6 +116,12 @@ export function useTotalStaked(): MappedQueryResult<
         balance: {
           address: anchorToken.gov,
         },
+      },
+      GovStateQuery: {
+        state: {},
+      },
+      GovConfigQuery: {
+        config: {},
       },
       GovContract: anchorToken.gov,
     });

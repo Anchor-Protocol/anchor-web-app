@@ -1,4 +1,5 @@
 import { map } from '@anchor-protocol/use-map';
+import { testAddress, testClient, testWalletAddress } from 'test.env';
 import {
   dataMap,
   mapVariables,
@@ -6,7 +7,6 @@ import {
   RawData,
   RawVariables,
 } from '../rewardsAncUstLp';
-import { testAddressProvider, testClient, testWalletAddress } from 'test.env';
 
 describe('queries/rewardsAncUstLp', () => {
   test('should get result from query', async () => {
@@ -14,9 +14,18 @@ describe('queries/rewardsAncUstLp', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          ANCUST_LP_Token_contract: testAddressProvider.terraswapAncUstLPToken(),
-          ANCUST_LP_Staking_contract: testAddressProvider.staking(),
-          userWalletAddress: testWalletAddress,
+          ANCUST_LP_Token_contract: testAddress.terraswap.ancUstLPToken,
+          ANCUST_LP_Staking_contract: testAddress.anchorToken.staking,
+          UserLPStakingInfoQuery: {
+            staker_info: {
+              staker: testWalletAddress,
+            },
+          },
+          ANCUSTLPBalanceQuery: {
+            balance: {
+              address: testWalletAddress,
+            },
+          },
         }),
       })
       .then(({ data }) => map(data, dataMap));

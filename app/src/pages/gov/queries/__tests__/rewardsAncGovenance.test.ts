@@ -1,4 +1,5 @@
 import { map } from '@anchor-protocol/use-map';
+import { testAddress, testClient, testWalletAddress } from 'test.env';
 import {
   dataMap,
   mapVariables,
@@ -6,7 +7,6 @@ import {
   RawData,
   RawVariables,
 } from '../rewardsAncGovernance';
-import { testAddressProvider, testClient, testWalletAddress } from 'test.env';
 
 describe('queries/rewardsAncGovernance', () => {
   test('should get result from query', async () => {
@@ -14,9 +14,18 @@ describe('queries/rewardsAncGovernance', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          ANC_Gov_contract: testAddressProvider.gov(),
-          ANC_token_contract: testAddressProvider.ANC(),
-          userWalletAddress: testWalletAddress,
+          ANC_Gov_contract: testAddress.anchorToken.gov,
+          ANC_token_contract: testAddress.cw20.ANC,
+          UserANCBalanceQuery: {
+            balance: {
+              address: testWalletAddress,
+            },
+          },
+          UserGovStakeInfoQuery: {
+            staker: {
+              address: testWalletAddress,
+            },
+          },
         }),
       })
       .then(({ data }) => map(data, dataMap));

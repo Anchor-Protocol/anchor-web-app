@@ -1,4 +1,5 @@
-import type { Num, uANC } from '@anchor-protocol/types';
+import type { uANC } from '@anchor-protocol/types';
+import { anchorToken, cw20, WASMContractResult } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useContractAddress } from 'contexts/contract';
@@ -10,27 +11,13 @@ import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
 export interface RawData {
-  userGovStakingInfo: {
-    Result: string;
-  };
-
-  userANCBalance: {
-    Result: string;
-  };
+  userGovStakingInfo: WASMContractResult;
+  userANCBalance: WASMContractResult;
 }
 
 export interface Data {
-  userGovStakingInfo: {
-    Result: string;
-    balance: Num<string>;
-    locked_balance: [number, { balance: Num<string>; vote: string }][];
-    share: Num<string>;
-  };
-
-  userANCBalance: {
-    Result: string;
-    balance: uANC<string>;
-  };
+  userGovStakingInfo: WASMContractResult<anchorToken.gov.StakerResponse>;
+  userANCBalance: WASMContractResult<cw20.BalanceResponse<uANC>>;
 }
 
 export const dataMap = createMap<RawData, Data>({
@@ -53,23 +40,21 @@ export interface RawVariables {
 export interface Variables {
   ANC_Gov_contract: string;
   ANC_token_contract: string;
-  userWalletAddress: string;
+  UserGovStakeInfoQuery: anchorToken.gov.Staker;
+  UserANCBalanceQuery: cw20.Balance;
 }
 
 export function mapVariables({
   ANC_Gov_contract,
   ANC_token_contract,
-  userWalletAddress,
+  UserANCBalanceQuery,
+  UserGovStakeInfoQuery,
 }: Variables): RawVariables {
   return {
     ANC_Gov_contract,
-    UserGovStakeInfoQuery: JSON.stringify({
-      staker: { address: userWalletAddress },
-    }),
+    UserGovStakeInfoQuery: JSON.stringify(UserGovStakeInfoQuery),
     ANC_token_contract,
-    UserANCBalanceQuery: JSON.stringify({
-      balance: { address: userWalletAddress },
-    }),
+    UserANCBalanceQuery: JSON.stringify(UserANCBalanceQuery),
   };
 }
 
@@ -106,12 +91,23 @@ export function useRewardsAncGovernance(): MappedQueryResult<
   const { anchorToken, cw20 } = useContractAddress();
 
   const variables = useMemo(() => {
+    if (!walletReady) return undefined;
+
     return mapVariables({
       ANC_Gov_contract: anchorToken.gov,
       ANC_token_contract: cw20.ANC,
-      userWalletAddress: walletReady?.walletAddress ?? '',
+      UserGovStakeInfoQuery: {
+        staker: {
+          address: walletReady.walletAddress,
+        },
+      },
+      UserANCBalanceQuery: {
+        balance: {
+          address: walletReady.walletAddress,
+        },
+      },
     });
-  }, [anchorToken.gov, cw20.ANC, walletReady?.walletAddress]);
+  }, [anchorToken.gov, cw20.ANC, walletReady]);
 
   const onError = useQueryErrorHandler();
 
@@ -119,7 +115,7 @@ export function useRewardsAncGovernance(): MappedQueryResult<
     RawData,
     RawVariables
   >(query, {
-    skip: !serviceAvailable,
+    skip: !variables || !serviceAvailable,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     //pollInterval: 1000 * 60,

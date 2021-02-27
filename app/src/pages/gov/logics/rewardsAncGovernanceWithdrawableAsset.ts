@@ -1,11 +1,11 @@
-import type { Num, uANC } from '@anchor-protocol/types';
+import type { uANC } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
 
 export function rewardsAncGovernanceWithdrawableAsset(
   ancBalance: uANC<BigSource> | undefined,
   total_deposit: uANC<BigSource> | undefined,
   total_share: uANC<BigSource> | undefined,
-  share: Num<BigSource> | undefined,
+  share: uANC<BigSource> | undefined,
 ): uANC<Big> | undefined {
   if (ancBalance && total_deposit && total_share && share) {
     return big(

@@ -1,4 +1,4 @@
-import type { Num, Rate, uaUST, uUST } from '@anchor-protocol/types';
+import { moneyMarket, WASMContractResult } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useContractAddress } from 'contexts/contract';
@@ -10,35 +10,13 @@ import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
 export interface RawData {
-  borrowerInfo: {
-    Result: string;
-  };
-
-  marketState: {
-    Result: string;
-  };
+  borrowerInfo: WASMContractResult;
+  marketState: WASMContractResult;
 }
 
 export interface Data {
-  borrowerInfo: {
-    Result: string;
-    borrower: string;
-    interest_index: Num<string>;
-    loan_amount: uUST<string>;
-    pending_rewards: Num<string>;
-    reward_index: Num<string>;
-  };
-
-  marketState: {
-    Result: string;
-    anc_emission_rate: Rate<string>;
-    global_interest_index: Num<string>;
-    global_reward_index: Num<string>;
-    last_interest_updated: number;
-    last_reward_updated: number;
-    total_liabilities: uUST<string>;
-    total_reserves: uaUST<string>;
-  };
+  borrowerInfo: WASMContractResult<moneyMarket.market.BorrowInfoResponse>;
+  marketState: WASMContractResult<moneyMarket.market.StateResponse>;
 }
 
 export const dataMap = createMap<RawData, Data>({
@@ -59,21 +37,19 @@ export interface RawVariables {
 
 export interface Variables {
   MarketContract: string;
-  userWalletAddress: string;
+  BorrowerInfoQuery: moneyMarket.market.BorrowInfo;
+  MarketStateQuery: moneyMarket.market.State;
 }
 
 export function mapVariables({
   MarketContract,
-  userWalletAddress,
+  BorrowerInfoQuery,
+  MarketStateQuery,
 }: Variables): RawVariables {
   return {
     MarketContract,
-    BorrowerInfoQuery: JSON.stringify({
-      borrower_info: { borrower: userWalletAddress },
-    }),
-    MarketStateQuery: JSON.stringify({
-      state: {},
-    }),
+    BorrowerInfoQuery: JSON.stringify(BorrowerInfoQuery),
+    MarketStateQuery: JSON.stringify(MarketStateQuery),
   };
 }
 
@@ -109,11 +85,20 @@ export function useRewardsUSTBorrow(): MappedQueryResult<
   const { moneyMarket } = useContractAddress();
 
   const variables = useMemo(() => {
+    if (!walletReady) return undefined;
+
     return mapVariables({
       MarketContract: moneyMarket.market,
-      userWalletAddress: walletReady?.walletAddress ?? '',
+      BorrowerInfoQuery: {
+        borrower_info: {
+          borrower: walletReady.walletAddress,
+        },
+      },
+      MarketStateQuery: {
+        state: {},
+      },
     });
-  }, [moneyMarket.market, walletReady?.walletAddress]);
+  }, [moneyMarket.market, walletReady]);
 
   const onError = useQueryErrorHandler();
 
@@ -121,7 +106,7 @@ export function useRewardsUSTBorrow(): MappedQueryResult<
     RawData,
     RawVariables
   >(query, {
-    skip: !serviceAvailable,
+    skip: !variables || !serviceAvailable,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     //pollInterval: 1000 * 60,

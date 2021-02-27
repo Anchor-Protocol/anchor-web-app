@@ -1,10 +1,10 @@
 import { uToken } from '@anchor-protocol/types/currencies';
-import { Denom, HumanAddr } from '../common';
+import { CW20Addr, Denom } from '../common';
 
 export type SimulationInfo =
   | {
       token: {
-        contract_addr: HumanAddr;
+        contract_addr: CW20Addr;
       };
     }
   | {

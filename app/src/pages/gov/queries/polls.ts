@@ -1,44 +1,20 @@
-import type { Num, uANC } from '@anchor-protocol/types';
-import { ContractAddress } from '@anchor-protocol/types';
+import {
+  anchorToken,
+  ContractAddress,
+  WASMContractResult,
+} from '@anchor-protocol/types';
 import { createMap, map } from '@anchor-protocol/use-map';
 import { ApolloClient, gql, useApolloClient } from '@apollo/client';
 import { useContractAddress } from 'contexts/contract';
 import { parseResult } from 'queries/parseResult';
 import { useCallback, useEffect, useState } from 'react';
 
-export interface ExecuteMsg {
-  contract: string;
-  msg: string;
-}
-
-export type PollStatus = 'in_progress' | 'passed' | 'rejected' | 'executed';
-
-export interface Poll {
-  id: number;
-  creator: string;
-  status: PollStatus;
-  end_height: number;
-  title: string;
-  description: string;
-  link: string | null | undefined;
-  deposit_amount: uANC<string>;
-  execute_data: ExecuteMsg | null | undefined;
-  no_votes: Num<string>;
-  yes_votes: Num<string>;
-  total_balance_at_end_poll: Num<string>;
-}
-
 export interface RawData {
-  polls: {
-    Result: string;
-  };
+  polls: WASMContractResult;
 }
 
 export interface Data {
-  polls: {
-    Result: string;
-    polls: Poll[];
-  };
+  polls: WASMContractResult<anchorToken.gov.PollsResponse>;
 }
 
 export const dataMap = createMap<RawData, Data>({
@@ -54,13 +30,7 @@ export interface RawVariables {
 
 export interface Variables {
   Gov_contract: string;
-  PollsQuery: {
-    polls: {
-      filter?: PollStatus;
-      start_after?: number;
-      limit?: number;
-    };
-  };
+  PollsQuery: anchorToken.gov.Polls;
 }
 
 export function mapVariables({
@@ -87,13 +57,13 @@ export const query = gql`
 const limit = 6;
 
 export function usePolls(
-  filter: PollStatus | undefined,
-): [polls: Poll[], loadMore: () => void] {
+  filter: anchorToken.gov.PollStatus | undefined,
+): [polls: anchorToken.gov.PollResponse[], loadMore: () => void] {
   const client = useApolloClient();
 
   const address = useContractAddress();
 
-  const [polls, setPolls] = useState<Poll[]>([]);
+  const [polls, setPolls] = useState<anchorToken.gov.PollResponse[]>([]);
 
   useEffect(() => {
     queryPolls(client, address, filter, undefined, limit).then(({ data }) => {
@@ -128,7 +98,7 @@ export function usePolls(
 export function queryPolls(
   client: ApolloClient<any>,
   address: ContractAddress,
-  filter?: PollStatus,
+  filter?: anchorToken.gov.PollStatus,
   start_after?: number,
   limit?: number,
 ) {

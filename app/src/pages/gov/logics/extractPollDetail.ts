@@ -1,9 +1,8 @@
+import { anchorToken } from '@anchor-protocol/types';
 import big from 'big.js';
-import { GovConfig } from 'pages/gov/queries/govConfig';
-import { Poll } from 'pages/gov/queries/polls';
 
 export interface PollDetail {
-  poll: Poll;
+  poll: anchorToken.gov.PollResponse;
 
   vote: {
     yes: number;
@@ -16,12 +15,12 @@ export interface PollDetail {
 
   endsIn: Date;
 
-  executeData: any;
+  executeData: any[] | null;
 }
 
 export function extractPollDetail(
-  poll: Poll,
-  govConfig: GovConfig,
+  poll: anchorToken.gov.PollResponse,
+  govConfig: anchorToken.gov.ConfigResponse,
   currentHeight: number,
 ): PollDetail {
   const possibleVotes: number = +poll.total_balance_at_end_poll;
@@ -58,8 +57,6 @@ export function extractPollDetail(
 
     endsIn,
 
-    executeData: {
-      ...executeData,
-    },
+    executeData,
   };
 }

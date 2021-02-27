@@ -1,4 +1,5 @@
-import type { bLuna, Num } from '@anchor-protocol/types';
+import type { bLuna, HumanAddr } from '@anchor-protocol/types';
+import { terraswap, uToken, WASMContractResult } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import big from 'big.js';
@@ -10,33 +11,11 @@ import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
 export interface RawData {
-  terraswapPoolInfo: {
-    Result: string;
-  };
+  terraswapPoolInfo: WASMContractResult;
 }
 
 export interface Data {
-  terraswapPoolInfo: {
-    Result: string;
-    total_share: string;
-    assets: [
-      {
-        amount: Num<string>;
-        info: {
-          token: {
-            contract_addr: string;
-          };
-        };
-      },
-      {
-        amount: Num<string>;
-        info: {
-          native_token: {
-            denom: string;
-          };
-        };
-      },
-    ];
+  terraswapPoolInfo: WASMContractResult<terraswap.PoolResponse<uToken>> & {
     bLunaPrice: bLuna;
   };
 }
@@ -69,15 +48,17 @@ export interface RawVariables {
 }
 
 export interface Variables {
-  bLunaTerraswap: string;
+  bLunaTerraswap: HumanAddr;
+  poolInfoQuery: terraswap.Pool;
 }
 
-export function mapVariables({ bLunaTerraswap }: Variables): RawVariables {
+export function mapVariables({
+  bLunaTerraswap,
+  poolInfoQuery,
+}: Variables): RawVariables {
   return {
     bLunaTerraswap,
-    poolInfoQuery: JSON.stringify({
-      pool: {},
-    }),
+    poolInfoQuery: JSON.stringify(poolInfoQuery),
   };
 }
 
@@ -107,6 +88,9 @@ export function useTerraswapBLunaPrice(): MappedQueryResult<
   const variables = useMemo(() => {
     return mapVariables({
       bLunaTerraswap: terraswap.blunaLunaPair,
+      poolInfoQuery: {
+        pool: {},
+      },
     });
   }, [terraswap.blunaLunaPair]);
 

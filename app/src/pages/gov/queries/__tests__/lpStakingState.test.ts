@@ -1,5 +1,5 @@
 import { map } from '@anchor-protocol/use-map';
-import { testAddressProvider, testClient } from 'test.env';
+import { testAddress, testClient } from 'test.env';
 import {
   dataMap,
   mapVariables,
@@ -14,7 +14,10 @@ describe('queries/lpStakingState', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          ANCUST_LP_Staking_contract: testAddressProvider.staking(),
+          ANCUST_LP_Staking_contract: testAddress.anchorToken.staking,
+          LPStakingStateQuery: {
+            state: {},
+          },
         }),
       })
       .then(({ data }) => map(data, dataMap));

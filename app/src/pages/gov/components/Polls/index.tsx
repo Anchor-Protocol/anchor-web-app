@@ -1,11 +1,12 @@
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { BorderButton } from '@anchor-protocol/neumorphism-ui/components/BorderButton';
 import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
+import { anchorToken } from '@anchor-protocol/types/contracts';
 import { useLocalStorage } from '@anchor-protocol/use-local-storage';
 import { List, ViewModule } from '@material-ui/icons';
 import { govPathname } from 'pages/gov/env';
 import { useGovConfig } from 'pages/gov/queries/govConfig';
-import { Poll, PollStatus, usePolls } from 'pages/gov/queries/polls';
+import { usePolls } from 'pages/gov/queries/polls';
 import { ChangeEvent, useCallback, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
@@ -18,7 +19,7 @@ export interface PollsProps {
 
 interface Item {
   label: string;
-  value: PollStatus | 'all';
+  value: anchorToken.gov.PollStatus | 'all';
 }
 
 const options: Item[] = [
@@ -32,7 +33,7 @@ const options: Item[] = [
 function PollsBase({ className }: PollsProps) {
   const history = useHistory();
 
-  const [option, setOption] = useState<PollStatus | 'all'>(
+  const [option, setOption] = useState<anchorToken.gov.PollStatus | 'all'>(
     () => options[0].value,
   );
 
@@ -50,7 +51,7 @@ function PollsBase({ className }: PollsProps) {
   );
 
   const onPollClick = useCallback(
-    (poll: Poll) => {
+    (poll: anchorToken.gov.PollResponse) => {
       history.push(`/${govPathname}/poll/${poll.id}`);
     },
     [history],
@@ -81,7 +82,7 @@ function PollsBase({ className }: PollsProps) {
           value={option}
           style={{ width: 150, height: 40, marginLeft: 10 }}
           onChange={({ target }: ChangeEvent<HTMLSelectElement>) =>
-            setOption(target.value as PollStatus | 'all')
+            setOption(target.value as anchorToken.gov.PollStatus | 'all')
           }
         >
           {options.map(({ label, value }) => (

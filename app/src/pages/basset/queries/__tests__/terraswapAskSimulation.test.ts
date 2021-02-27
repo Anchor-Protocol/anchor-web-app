@@ -1,7 +1,7 @@
-import type { Rate, uLuna, uUST } from '@anchor-protocol/types';
+import type { Denom, Rate, uLuna, uUST } from '@anchor-protocol/types';
 import { map } from '@anchor-protocol/use-map';
 import { askSimulation } from 'pages/basset/logics/askSimulation';
-import { testAddressProvider, testClient } from 'test.env';
+import { testAddress, testClient } from 'test.env';
 import {
   Data,
   dataMap,
@@ -17,13 +17,13 @@ describe('queries/terraswapOfferSimulation', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          bLunaTerraswap: testAddressProvider.terraswapblunaLunaPair(),
+          bLunaTerraswap: testAddress.terraswap.blunaLunaPair,
           askSimulationQuery: {
             simulation: {
               offer_asset: {
                 info: {
                   native_token: {
-                    denom: 'uluna',
+                    denom: 'uluna' as Denom,
                   },
                 },
                 amount: '100' as uLuna,

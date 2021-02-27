@@ -1,4 +1,4 @@
-import type { Num } from '@anchor-protocol/types';
+import { anchorToken, WASMContractResult } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useContractAddress } from 'contexts/contract';
@@ -10,18 +10,11 @@ import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
 export interface RawData {
-  lpStakingState: {
-    Result: string;
-  };
+  lpStakingState: WASMContractResult;
 }
 
 export interface Data {
-  lpStakingState: {
-    Result: string;
-    global_reward_index: Num<string>;
-    last_distributed: number;
-    total_bond_amount: Num<string>;
-  };
+  lpStakingState: WASMContractResult<anchorToken.staking.StateResponse>;
 }
 
 export const dataMap = createMap<RawData, Data>({
@@ -37,16 +30,16 @@ export interface RawVariables {
 
 export interface Variables {
   ANCUST_LP_Staking_contract: string;
+  LPStakingStateQuery: anchorToken.staking.State;
 }
 
 export function mapVariables({
   ANCUST_LP_Staking_contract,
+  LPStakingStateQuery,
 }: Variables): RawVariables {
   return {
     ANCUST_LP_Staking_contract,
-    LPStakingStateQuery: JSON.stringify({
-      state: {},
-    }),
+    LPStakingStateQuery: JSON.stringify(LPStakingStateQuery),
   };
 }
 
@@ -76,6 +69,9 @@ export function useLPStakingState(): MappedQueryResult<
   const variables = useMemo(() => {
     return mapVariables({
       ANCUST_LP_Staking_contract: anchorToken.staking,
+      LPStakingStateQuery: {
+        state: {},
+      },
     });
   }, [anchorToken.staking]);
 

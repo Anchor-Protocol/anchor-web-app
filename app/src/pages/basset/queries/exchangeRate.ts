@@ -1,4 +1,4 @@
-import type { DateTime, Rate, uLuna } from '@anchor-protocol/types';
+import { bluna, WASMContractResult } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useContractAddress } from 'contexts/contract';
@@ -10,22 +10,11 @@ import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
 export interface RawData {
-  exchangeRate: {
-    Result: string;
-  };
+  exchangeRate: WASMContractResult;
 }
 
 export interface Data {
-  exchangeRate: {
-    Result: string;
-    actual_unbonded_amount: uLuna<string>;
-    exchange_rate: Rate<string>;
-    last_index_modification: DateTime;
-    last_processed_batch: number;
-    last_unbonded_time: DateTime;
-    prev_hub_balance: uLuna<string>;
-    total_bond_amount: uLuna<string>;
-  };
+  exchangeRate: WASMContractResult<bluna.hub.StateResponse>;
 }
 
 export const dataMap = createMap<RawData, Data>({
@@ -41,14 +30,12 @@ export interface RawVariables {
 
 export interface Variables {
   bLunaHubContract: string;
-  stateQuery?: {
-    state: {};
-  };
+  stateQuery: bluna.hub.State;
 }
 
 export function mapVariables({
   bLunaHubContract,
-  stateQuery = { state: {} },
+  stateQuery,
 }: Variables): RawVariables {
   return {
     bLunaHubContract,

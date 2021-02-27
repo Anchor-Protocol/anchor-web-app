@@ -1,55 +1,31 @@
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
-import type { DateTime, Rate, ubLuna } from '@anchor-protocol/types';
+import { bluna, WASMContractResult } from '@anchor-protocol/types';
 import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useContractAddress } from 'contexts/contract';
 import { useService } from 'contexts/service';
+import { parseResult } from 'queries/parseResult';
 import { MappedQueryResult } from 'queries/types';
 import { useQueryErrorHandler } from 'queries/useQueryErrorHandler';
 import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
 export interface RawData {
-  allHistory: {
-    Result: string;
-  };
-  parameters: {
-    Result: string;
-  };
+  allHistory: WASMContractResult;
+  parameters: WASMContractResult;
 }
 
 export interface Data {
-  allHistory: {
-    Result: string;
-    history: {
-      batch_id: number;
-      time: DateTime;
-      amount: ubLuna<string>;
-      withdraw_rate: Rate<string>;
-      released: boolean;
-    }[];
-  };
-  parameters: {
-    Result: string;
-    epoch_period: number;
-    underlying_coin_denom: string;
-    unbonding_period: number;
-    peg_recovery_fee: ubLuna<string>;
-    er_threshold: Rate<string>;
-    reward_denom: string;
-  };
+  allHistory: WASMContractResult<bluna.hub.AllHistoryResponse>;
+  parameters: WASMContractResult<bluna.hub.ParametersResponse>;
 }
 
 export const dataMap = createMap<RawData, Data>({
   allHistory: (existing, { allHistory }) => {
-    return existing.allHistory?.Result === allHistory.Result
-      ? existing.allHistory
-      : { ...allHistory, ...JSON.parse(allHistory.Result) };
+    return parseResult(existing.allHistory, allHistory.Result);
   },
   parameters: (existing, { parameters }) => {
-    return existing.parameters?.Result === parameters.Result
-      ? existing.parameters
-      : { ...parameters, ...JSON.parse(parameters.Result) };
+    return parseResult(existing.parameters, parameters.Result);
   },
 });
 
@@ -74,15 +50,8 @@ export interface RawVariables {
 
 export interface Variables {
   bLunaHubContract: string;
-  allHistory: {
-    all_history: {
-      start_from: number;
-      limit: number;
-    };
-  };
-  parameters: {
-    parameters: {};
-  };
+  allHistory: bluna.hub.AllHistory;
+  parameters: bluna.hub.Parameters;
 }
 
 export function mapVariables({

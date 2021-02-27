@@ -1,5 +1,5 @@
 import { map } from '@anchor-protocol/use-map';
-import { testAddressProvider, testClient } from 'test.env';
+import { testAddress, testAddressProvider, testClient } from 'test.env';
 import {
   dataMap,
   mapVariables,
@@ -14,11 +14,17 @@ describe('queries/totalStaked', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          ANCTokenContract: testAddressProvider.ANC(),
+          ANCTokenContract: testAddress.cw20.ANC,
           ANCTokenBalanceQuery: {
             balance: {
-              address: testAddressProvider.gov(),
+              address: testAddress.anchorToken.gov,
             },
+          },
+          GovConfigQuery: {
+            config: {},
+          },
+          GovStateQuery: {
+            state: {},
           },
           GovContract: testAddressProvider.gov(),
         }),

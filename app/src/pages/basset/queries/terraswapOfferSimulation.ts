@@ -1,23 +1,22 @@
 import type { ubLuna, uLuna } from '@anchor-protocol/types';
-import { ContractAddress } from '@anchor-protocol/types';
+import {
+  ContractAddress,
+  terraswap,
+  WASMContractResult,
+} from '@anchor-protocol/types';
 import { createMap, map } from '@anchor-protocol/use-map';
 import { ApolloClient, gql } from '@apollo/client';
 import { parseResult } from 'queries/parseResult';
 import { MappedApolloQueryResult } from 'queries/types';
 
 export interface RawData {
-  terraswapOfferSimulation: {
-    Result: string;
-  };
+  terraswapOfferSimulation: WASMContractResult;
 }
 
 export interface Data {
-  terraswapOfferSimulation: {
-    Result: string;
-    commission_amount: uLuna;
-    return_amount: uLuna;
-    spread_amount: uLuna;
-  };
+  terraswapOfferSimulation: WASMContractResult<
+    terraswap.SimulationResponse<uLuna>
+  >;
 }
 
 export const dataMap = createMap<RawData, Data>({
@@ -36,18 +35,7 @@ export interface RawVariables {
 
 export interface Variables {
   bLunaTerraswap: string;
-  offerSimulationQuery: {
-    simulation: {
-      offer_asset: {
-        info: {
-          token: {
-            contract_addr: string;
-          };
-        };
-        amount: ubLuna;
-      };
-    };
-  };
+  offerSimulationQuery: terraswap.Simulation<ubLuna>;
 }
 
 export function mapVariables({

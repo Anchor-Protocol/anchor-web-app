@@ -1,5 +1,4 @@
 import { uANC } from '@anchor-protocol/types/currencies';
-import { Num } from '@anchor-protocol/types/units';
 
 /**
  * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/anchor-token/gov#state
@@ -13,6 +12,6 @@ export interface State {
  */
 export interface StateResponse {
   poll_count: number;
-  total_share: Num;
+  total_share: uANC;
   total_deposit: uANC;
 }

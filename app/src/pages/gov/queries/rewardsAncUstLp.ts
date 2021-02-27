@@ -1,4 +1,5 @@
 import type { Num, uANC } from '@anchor-protocol/types';
+import { anchorToken, cw20, WASMContractResult } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useContractAddress } from 'contexts/contract';
@@ -10,13 +11,8 @@ import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
 export interface RawData {
-  userLPBalance: {
-    Result: string;
-  };
-
-  userLPStakingInfo: {
-    Result: string;
-  };
+  userLPBalance: WASMContractResult;
+  userLPStakingInfo: WASMContractResult;
 }
 
 export interface Data {
@@ -54,23 +50,21 @@ export interface RawVariables {
 export interface Variables {
   ANCUST_LP_Token_contract: string;
   ANCUST_LP_Staking_contract: string;
-  userWalletAddress: string;
+  ANCUSTLPBalanceQuery: cw20.Balance;
+  UserLPStakingInfoQuery: anchorToken.staking.StakerInfo;
 }
 
 export function mapVariables({
   ANCUST_LP_Token_contract,
   ANCUST_LP_Staking_contract,
-  userWalletAddress,
+  ANCUSTLPBalanceQuery,
+  UserLPStakingInfoQuery,
 }: Variables): RawVariables {
   return {
     ANCUST_LP_Token_contract,
-    ANCUSTLPBalanceQuery: JSON.stringify({
-      balance: { address: userWalletAddress },
-    }),
+    ANCUSTLPBalanceQuery: JSON.stringify(ANCUSTLPBalanceQuery),
     ANCUST_LP_Staking_contract,
-    UserLPStakingInfoQuery: JSON.stringify({
-      staker_info: { staker: userWalletAddress },
-    }),
+    UserLPStakingInfoQuery: JSON.stringify(UserLPStakingInfoQuery),
   };
 }
 
@@ -107,16 +101,23 @@ export function useRewardsAncUstLp(): MappedQueryResult<
   const { terraswap, anchorToken } = useContractAddress();
 
   const variables = useMemo(() => {
+    if (!walletReady) return undefined;
+
     return mapVariables({
       ANCUST_LP_Token_contract: terraswap.ancUstLPToken,
       ANCUST_LP_Staking_contract: anchorToken.staking,
-      userWalletAddress: walletReady?.walletAddress ?? '',
+      ANCUSTLPBalanceQuery: {
+        balance: {
+          address: walletReady.walletAddress,
+        },
+      },
+      UserLPStakingInfoQuery: {
+        staker_info: {
+          staker: walletReady.walletAddress,
+        },
+      },
     });
-  }, [
-    anchorToken.staking,
-    terraswap.ancUstLPToken,
-    walletReady?.walletAddress,
-  ]);
+  }, [anchorToken.staking, terraswap.ancUstLPToken, walletReady]);
 
   const onError = useQueryErrorHandler();
 
@@ -124,7 +125,7 @@ export function useRewardsAncUstLp(): MappedQueryResult<
     RawData,
     RawVariables
   >(query, {
-    skip: !serviceAvailable,
+    skip: !variables || !serviceAvailable,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     //pollInterval: 1000 * 60,

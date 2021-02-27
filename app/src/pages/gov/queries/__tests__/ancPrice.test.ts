@@ -1,5 +1,5 @@
 import { map } from '@anchor-protocol/use-map';
-import { testAddressProvider, testClient } from 'test.env';
+import { testAddress, testClient } from 'test.env';
 import {
   dataMap,
   mapVariables,
@@ -14,7 +14,10 @@ describe('queries/ancPrice', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          ANCTerraswap: testAddressProvider.terraswapAncUstPair(),
+          ANCTerraswap: testAddress.terraswap.ancUstPair,
+          poolInfoQuery: {
+            pool: {},
+          },
         }),
       })
       .then(({ data }) => map(data, dataMap));

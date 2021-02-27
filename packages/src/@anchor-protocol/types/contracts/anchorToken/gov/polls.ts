@@ -1,7 +1,4 @@
-import {
-  PollResponse,
-  PollStatus,
-} from '@anchor-protocol/types/contracts/anchorToken/gov/poll';
+import { PollResponse, PollStatus } from './poll';
 
 /**
  * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/anchor-token/gov#polls

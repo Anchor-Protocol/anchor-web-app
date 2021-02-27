@@ -1,5 +1,5 @@
 import { map } from '@anchor-protocol/use-map';
-import { testAddressProvider, testClient, testWalletAddress } from 'test.env';
+import { testAddress, testClient, testWalletAddress } from 'test.env';
 import {
   dataMap,
   mapVariables,
@@ -14,7 +14,7 @@ describe('queries/claimable', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          bAssetRewardContract: testAddressProvider.blunaReward(''),
+          bAssetRewardContract: testAddress.bluna.reward,
           rewardState: {
             state: {},
           },

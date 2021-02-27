@@ -1,4 +1,4 @@
-import type { Rate, uUST } from '@anchor-protocol/types';
+import { anchorToken, WASMContractResult } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useContractAddress } from 'contexts/contract';
@@ -9,27 +9,12 @@ import { useQueryErrorHandler } from 'queries/useQueryErrorHandler';
 import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
-export interface GovConfig {
-  Result: string;
-  anchor_token: string;
-  expiration_period: number;
-  owner: string;
-  proposal_deposit: uUST<string>;
-  quorum: Rate<string>;
-  snapshot_period: number;
-  threshold: Rate<string>;
-  timelock_period: number;
-  voting_period: number;
-}
-
 export interface RawData {
-  govConfig: {
-    Result: string;
-  };
+  govConfig: WASMContractResult;
 }
 
 export interface Data {
-  govConfig: GovConfig;
+  govConfig: WASMContractResult<anchorToken.gov.ConfigResponse>;
 }
 
 export const dataMap = createMap<RawData, Data>({
@@ -45,14 +30,16 @@ export interface RawVariables {
 
 export interface Variables {
   Gov_contract: string;
+  GovConfigQuery: anchorToken.gov.Config;
 }
 
-export function mapVariables({ Gov_contract }: Variables): RawVariables {
+export function mapVariables({
+  Gov_contract,
+  GovConfigQuery,
+}: Variables): RawVariables {
   return {
     Gov_contract,
-    GovConfigQuery: JSON.stringify({
-      config: {},
-    }),
+    GovConfigQuery: JSON.stringify(GovConfigQuery),
   };
 }
 
@@ -75,6 +62,9 @@ export function useGovConfig(): MappedQueryResult<RawVariables, RawData, Data> {
   const variables = useMemo(() => {
     return mapVariables({
       Gov_contract: anchorToken.gov,
+      GovConfigQuery: {
+        config: {},
+      },
     });
   }, [anchorToken.gov]);
 
