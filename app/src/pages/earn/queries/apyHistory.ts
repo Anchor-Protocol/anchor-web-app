@@ -1,4 +1,4 @@
-import { DateTime, JSDateTime, Ratio } from '@anchor-protocol/notation';
+import type { DateTime, JSDateTime, Rate } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useService } from 'contexts/service';
@@ -11,7 +11,7 @@ export interface RawData {
   apyHistory: {
     Timestamp: DateTime;
     Height: number;
-    DepositRate: Ratio<string>;
+    DepositRate: Rate<string>;
   }[];
 }
 

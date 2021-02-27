@@ -6,8 +6,8 @@ import {
   formatANCWithPostfixUnits,
   formatFluidDecimalPoints,
   formatUSTWithPostfixUnits,
-  uANC,
 } from '@anchor-protocol/notation';
+import { uANC } from '@anchor-protocol/types';
 import { MenuItem } from '@material-ui/core';
 import big, { Big } from 'big.js';
 import { MoreMenu } from 'pages/gov/components/MoreMenu';

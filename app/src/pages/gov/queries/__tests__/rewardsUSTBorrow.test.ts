@@ -20,8 +20,8 @@ describe('queries/rewardsUSTBorrow', () => {
       })
       .then(({ data }) => map(data, dataMap));
 
-    //expect(typeof data.userGovStakingInfo?.balance).toBe('string');
+    expect(typeof data.marketState?.total_liabilities).toBe('string');
     //expect(typeof data.userANCBalance?.balance).toBe('string');
-    console.log('rewardsUSTBorrow.test.ts..()', data);
+    //console.log('rewardsUSTBorrow.test.ts..()', data);
   });
 });

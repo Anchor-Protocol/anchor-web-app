@@ -1,4 +1,4 @@
-import { JSDateTime } from '@anchor-protocol/notation';
+import type { JSDateTime } from '@anchor-protocol/types';
 import { map } from '@anchor-protocol/use-map';
 import { testClient, testWalletAddress } from 'test.env';
 import {

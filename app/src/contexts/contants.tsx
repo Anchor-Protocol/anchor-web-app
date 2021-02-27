@@ -1,4 +1,4 @@
-import { Ratio, uUST } from '@anchor-protocol/notation';
+import type { Rate, uUST } from '@anchor-protocol/types';
 import type { ReactNode } from 'react';
 import { Consumer, Context, createContext, useContext } from 'react';
 
@@ -9,7 +9,7 @@ export interface ConstantsProviderProps extends Constants {
 export interface Constants {
   gasFee: uUST<number>;
   fixedGas: uUST<number>;
-  gasAdjustment: Ratio<number>;
+  gasAdjustment: Rate<number>;
   blocksPerYear: number;
 
   isDemo: boolean;

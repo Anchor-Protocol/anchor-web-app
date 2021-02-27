@@ -1,13 +1,14 @@
-import { bLuna, microfy, Ratio, ubLuna } from '@anchor-protocol/notation';
+import { microfy } from '@anchor-protocol/notation';
+import type { bLuna, Rate, ubLuna } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
 
 // Loan_amount / ((Borrow_info.balance - Borrow_info.spendable - redeemed_collateral) * Oracleprice)
 
 export function redeemCollateralNextLtv(
   redeemAmount: bLuna,
-  currentLtv: Ratio<Big> | undefined,
-  redeemAmountToLtv: (redeemAmount: ubLuna<BigSource>) => Ratio<Big>,
-): Ratio<Big> | undefined {
+  currentLtv: Rate<Big> | undefined,
+  redeemAmountToLtv: (redeemAmount: ubLuna<BigSource>) => Rate<Big>,
+): Rate<Big> | undefined {
   if (redeemAmount.length === 0) {
     return currentLtv;
   }
@@ -16,7 +17,7 @@ export function redeemCollateralNextLtv(
 
   try {
     const ltv = redeemAmountToLtv(amount);
-    return ltv.lt(0) ? (big(0) as Ratio<Big>) : ltv;
+    return ltv.lt(0) ? (big(0) as Rate<Big>) : ltv;
   } catch {
     return currentLtv;
   }

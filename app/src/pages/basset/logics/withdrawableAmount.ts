@@ -1,4 +1,4 @@
-import { uLuna } from '@anchor-protocol/notation';
+import type { uLuna } from '@anchor-protocol/types';
 import big, { Big } from 'big.js';
 
 export function withdrawableAmount(

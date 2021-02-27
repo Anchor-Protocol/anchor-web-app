@@ -1,5 +1,5 @@
 import { Operator } from '@anchor-protocol/broadcastable-operation';
-import { uLuna } from '@anchor-protocol/notation';
+import type { uLuna } from '@anchor-protocol/types';
 
 export const takeSwapFee = (
   storage: Map<string, any>,

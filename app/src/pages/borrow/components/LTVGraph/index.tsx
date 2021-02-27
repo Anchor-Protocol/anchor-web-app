@@ -5,7 +5,8 @@ import {
 import { HorizontalGraphSlider } from '@anchor-protocol/neumorphism-ui/components/HorizontalGraphSlider';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
-import { formatRatioToPercentage, Ratio } from '@anchor-protocol/notation';
+import { formatRateToPercentage } from '@anchor-protocol/notation';
+import type { Rate } from '@anchor-protocol/types';
 import { InfoOutlined } from '@material-ui/icons';
 import big, { Big, BigSource } from 'big.js';
 import React, { useCallback, useMemo } from 'react';
@@ -21,15 +22,15 @@ export interface Data {
 }
 
 export interface LTVGraphProps {
-  maxLtv: Ratio<BigSource>;
-  safeLtv: Ratio<BigSource>;
-  currentLtv: Ratio<Big> | undefined;
-  nextLtv: Ratio<Big> | undefined;
+  maxLtv: Rate<BigSource>;
+  safeLtv: Rate<BigSource>;
+  currentLtv: Rate<Big> | undefined;
+  nextLtv: Rate<Big> | undefined;
   // draftLtv => (fix with amount format 0.000 -> fixed ltv)
-  userMinLtv: Ratio<BigSource> | undefined;
-  userMaxLtv: Ratio<BigSource> | undefined;
-  onStep: (draftLtv: Ratio<Big>) => Ratio<Big>;
-  onChange: (nextLtv: Ratio<Big>) => void;
+  userMinLtv: Rate<BigSource> | undefined;
+  userMaxLtv: Rate<BigSource> | undefined;
+  onStep: (draftLtv: Rate<Big>) => Rate<Big>;
+  onChange: (nextLtv: Rate<Big>) => void;
   disabled?: boolean;
 }
 
@@ -73,14 +74,14 @@ export function LTVGraph({
 }: LTVGraphProps) {
   const step = useCallback(
     (draftLtv: number) => {
-      return onStep(big(draftLtv) as Ratio<Big>).toNumber();
+      return onStep(big(draftLtv) as Rate<Big>).toNumber();
     },
     [onStep],
   );
 
   const change = useCallback(
     (nextLtv: number) => {
-      onChange(big(nextLtv) as Ratio<Big>);
+      onChange(big(nextLtv) as Rate<Big>);
     },
     [onChange],
   );
@@ -100,7 +101,7 @@ export function LTVGraph({
       data={[
         {
           position: 'top',
-          label: `MAX LTV: ${formatRatioToPercentage(maxLtv)}%`,
+          label: `MAX LTV: ${formatRateToPercentage(maxLtv)}%`,
           color: 'rgba(0, 0, 0, 0)',
           value: big(maxLtv).toNumber(),
           tooltip:
@@ -108,7 +109,7 @@ export function LTVGraph({
         },
         {
           position: 'top',
-          label: `SAFE LTV: ${formatRatioToPercentage(safeLtv)}%`,
+          label: `SAFE LTV: ${formatRateToPercentage(safeLtv)}%`,
           color: 'rgba(0, 0, 0, 0)',
           value: big(safeLtv).toNumber(),
           tooltip: 'Recommended LTV',
@@ -126,7 +127,7 @@ export function LTVGraph({
         {
           position: 'bottom',
           label: nextLtv
-            ? `${nextLtv.lt(1) ? formatRatioToPercentage(nextLtv) : '>100'}%`
+            ? `${nextLtv.lt(1) ? formatRateToPercentage(nextLtv) : '>100'}%`
             : '',
           color,
           value: nextLtv

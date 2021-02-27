@@ -1,5 +1,5 @@
 import { Operator } from '@anchor-protocol/broadcastable-operation';
-import { uUST } from '@anchor-protocol/notation';
+import type { uUST } from '@anchor-protocol/types';
 
 export const takeTxFee = (
   storage: Map<string, any>,

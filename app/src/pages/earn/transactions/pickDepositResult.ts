@@ -2,10 +2,8 @@ import {
   demicrofy,
   formatFluidDecimalPoints,
   formatUSTWithPostfixUnits,
-  Ratio,
-  uaUST,
-  uUST,
 } from '@anchor-protocol/notation';
+import { Rate, uaUST, uUST } from '@anchor-protocol/types';
 import big, { BigSource } from 'big.js';
 import { TxHashLink } from 'components/TxHashLink';
 import { TxInfoParseError } from 'errors/TxInfoParseError';
@@ -53,7 +51,7 @@ export function pickDepositResult({
   const exchangeRate =
     depositAmount &&
     receivedAmount &&
-    (big(depositAmount).div(receivedAmount) as Ratio<BigSource> | undefined);
+    (big(depositAmount).div(receivedAmount) as Rate<BigSource> | undefined);
 
   //const txFee = pickTxFee(txResult);
 

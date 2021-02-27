@@ -1,4 +1,4 @@
-import { Ratio, uUST } from '@anchor-protocol/notation';
+import type { Rate, uUST } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
 
 // If user_ltv >= 0.35 or user_ltv == Null:
@@ -10,9 +10,9 @@ export function borrowSafeMax(
   loanAmount: uUST<BigSource>,
   balance: uUST<BigSource>,
   spendable: uUST<BigSource>,
-  oraclePrice: Ratio<BigSource>,
-  bLunaSafeLtv: Ratio<BigSource>,
-  currentLtv: Ratio<Big> | undefined,
+  oraclePrice: Rate<BigSource>,
+  bLunaSafeLtv: Rate<BigSource>,
+  currentLtv: Rate<Big> | undefined,
 ): uUST<Big> {
   return !currentLtv || currentLtv.gte(bLunaSafeLtv)
     ? (big(0) as uUST<Big>)

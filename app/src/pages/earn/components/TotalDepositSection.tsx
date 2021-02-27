@@ -6,9 +6,8 @@ import {
   demicrofy,
   formatUST,
   mapDecimalPointBaseSeparatedNumbers,
-  Ratio,
-  uUST,
 } from '@anchor-protocol/notation';
+import { Rate, uUST } from '@anchor-protocol/types';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { BigSource } from 'big.js';
 import { useService } from 'contexts/service';
@@ -55,7 +54,7 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
   }, [openDepositDialog]);
 
   const openWithdraw = useCallback(
-    async (totalDeposit: uUST<BigSource>, exchangeRate: Ratio<BigSource>) => {
+    async (totalDeposit: uUST<BigSource>, exchangeRate: Rate<BigSource>) => {
       if (totalDeposit) {
         await openWithdrawDialog({
           totalDeposit,

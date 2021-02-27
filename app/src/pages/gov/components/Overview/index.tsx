@@ -7,7 +7,7 @@ import {
   demicrofy,
   formatANCWithPostfixUnits,
   formatFluidDecimalPoints,
-  formatRatioToPercentage,
+  formatRateToPercentage,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
@@ -72,7 +72,7 @@ function OverviewBase({ className }: OverviewProps) {
           <sub>
             (
             {totalStakedShareIndex
-              ? formatRatioToPercentage(totalStakedShareIndex)
+              ? formatRateToPercentage(totalStakedShareIndex)
               : '0'}
             %)
           </sub>

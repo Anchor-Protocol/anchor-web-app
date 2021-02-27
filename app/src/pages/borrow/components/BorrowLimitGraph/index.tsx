@@ -7,11 +7,10 @@ import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTool
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import {
   demicrofy,
-  formatRatioToPercentage,
+  formatRateToPercentage,
   formatUSTWithPostfixUnits,
-  Ratio,
-  uUST,
 } from '@anchor-protocol/notation';
+import { Rate, uUST } from '@anchor-protocol/types';
 import { InfoOutlined } from '@material-ui/icons';
 import big, { Big, BigSource } from 'big.js';
 import React, { useMemo } from 'react';
@@ -27,7 +26,7 @@ export interface Data {
 }
 
 export interface BorrowLimitGraphProps {
-  bLunaMaxLtv: Ratio<BigSource>;
+  bLunaMaxLtv: Rate<BigSource>;
   collateralValue: uUST<BigSource>;
   loanAmount: uUST<BigSource>;
 }
@@ -60,14 +59,14 @@ export function BorrowLimitGraph({
   collateralValue,
   loanAmount,
 }: BorrowLimitGraphProps) {
-  const { borrowLimit, borrowLimitRatio } = useMemo(() => {
+  const { borrowLimit, borrowLimitRate } = useMemo(() => {
     const borrowLimit = big(collateralValue).mul(bLunaMaxLtv) as uUST<Big>;
     return {
       borrowLimit,
-      //borrowLimitRatio: big(1) as Ratio<Big>,
-      borrowLimitRatio: big(loanAmount).div(
+      //borrowLimitRate: big(1) as Rate<Big>,
+      borrowLimitRate: big(loanAmount).div(
         borrowLimit.eq(0) ? 1 : borrowLimit,
-      ) as Ratio<Big>,
+      ) as Rate<Big>,
     };
   }, [bLunaMaxLtv, collateralValue, loanAmount]);
 
@@ -76,20 +75,20 @@ export function BorrowLimitGraph({
       min={0}
       max={1}
       data={
-        borrowLimitRatio.gt(0)
+        borrowLimitRate.gt(0)
           ? [
               {
                 position: 'top',
-                label: `${formatRatioToPercentage(borrowLimitRatio)}%`,
-                color: borrowLimitRatio.gte(1)
+                label: `${formatRateToPercentage(borrowLimitRate)}%`,
+                color: borrowLimitRate.gte(1)
                   ? '#e95979'
-                  : borrowLimitRatio.gte(0.7)
+                  : borrowLimitRate.gte(0.7)
                   ? '#ff9a63'
                   : '#15cc93',
-                value: borrowLimitRatio.toNumber(),
-                tooltip: borrowLimitRatio.gte(1)
+                value: borrowLimitRate.toNumber(),
+                tooltip: borrowLimitRate.gte(1)
                   ? "Loan can be liquidated anytime upon another user's request. Repay loans with stablecoins or deposit more collateral to prevent liquidation."
-                  : borrowLimitRatio.gte(0.7)
+                  : borrowLimitRate.gte(0.7)
                   ? 'Loan is close to liquidation. Repay loan with stablecoins or deposit more collateral.'
                   : undefined,
               },

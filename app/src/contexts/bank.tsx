@@ -1,12 +1,12 @@
-import {
-  microfy,
-  Ratio,
+import { microfy } from '@anchor-protocol/notation';
+import type {
+  Rate,
   uaUST,
   ubLuna,
   uLuna,
   UST,
   uUST,
-} from '@anchor-protocol/notation';
+} from '@anchor-protocol/types';
 import { BigSource } from 'big.js';
 import { useService } from 'contexts/service';
 import { Data as TaxData, useTax } from 'queries/tax';
@@ -50,7 +50,7 @@ export function BankProvider({ children }: BankProviderProps) {
 
   const state = useMemo<Bank>(() => {
     const tax = {
-      taxRate: taxData.taxRate ?? ('0.1' as Ratio),
+      taxRate: taxData.taxRate ?? ('0.1' as Rate),
       maxTaxUUSD:
         taxData.maxTaxUUSD ??
         (microfy(0.1 as UST<BigSource>).toString() as uUST),

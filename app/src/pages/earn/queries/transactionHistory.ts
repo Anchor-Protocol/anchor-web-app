@@ -1,5 +1,5 @@
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
-import { DateTime, uaUST, uUST } from '@anchor-protocol/notation';
+import type { DateTime, uaUST, uUST } from '@anchor-protocol/types';
 import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useService } from 'contexts/service';

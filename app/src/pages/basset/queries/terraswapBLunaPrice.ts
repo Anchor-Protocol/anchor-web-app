@@ -1,4 +1,4 @@
-import { bLuna, Num } from '@anchor-protocol/notation';
+import type { bLuna, Num } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import big from 'big.js';

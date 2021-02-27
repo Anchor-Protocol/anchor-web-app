@@ -1,6 +1,7 @@
 import { darkTheme } from '@anchor-protocol/neumorphism-ui/themes/darkTheme';
 import { lightTheme } from '@anchor-protocol/neumorphism-ui/themes/lightTheme';
-import { formatRatioToPercentage, Ratio } from '@anchor-protocol/notation';
+import { formatRateToPercentage } from '@anchor-protocol/notation';
+import { Rate } from '@anchor-protocol/types';
 import { scaleLinear } from 'd3-scale';
 import { curveNatural, line } from 'd3-shape';
 import { format } from 'date-fns';
@@ -24,7 +25,7 @@ import { Gutter } from './types';
 
 export interface APYChartItem {
   date: Date;
-  value: Ratio<number>;
+  value: Rate<number>;
 }
 
 export interface APYChartProps
@@ -164,7 +165,7 @@ export function APYChartBase({
     const x = xScale(index);
     const y = yScale(data[index].value);
 
-    const percentage = formatRatioToPercentage(data[index].value);
+    const percentage = formatRateToPercentage(data[index].value);
 
     const isLeft = index > 1;
     const fontSize = 12;

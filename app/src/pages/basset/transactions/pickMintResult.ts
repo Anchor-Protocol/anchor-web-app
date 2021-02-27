@@ -3,11 +3,8 @@ import {
   formatFluidDecimalPoints,
   formatLuna,
   formatUSTWithPostfixUnits,
-  Ratio,
-  ubLuna,
-  uLuna,
-  uUST,
 } from '@anchor-protocol/notation';
+import { Rate, ubLuna, uLuna, uUST } from '@anchor-protocol/types';
 import big, { BigSource } from 'big.js';
 import { TxHashLink } from 'components/TxHashLink';
 import { TxInfoParseError } from 'errors/TxInfoParseError';
@@ -55,7 +52,7 @@ export function pickMintResult({
   const exchangeRate =
     bondedAmount &&
     mintedAmount &&
-    (big(bondedAmount).div(mintedAmount) as Ratio<BigSource> | undefined);
+    (big(bondedAmount).div(mintedAmount) as Rate<BigSource> | undefined);
 
   const txHash = txResult.result.txhash;
 

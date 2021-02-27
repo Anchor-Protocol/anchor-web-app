@@ -9,11 +9,10 @@ import {
   demicrofy,
   formatUST,
   formatUSTInput,
-  UST,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
-  uUST,
 } from '@anchor-protocol/notation';
+import { UST, uUST } from '@anchor-protocol/types';
 import type { DialogProps, OpenDialog } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { WalletReady } from '@anchor-protocol/wallet-provider';

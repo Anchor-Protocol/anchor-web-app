@@ -1,6 +1,6 @@
+import { Percent, Rate } from '@anchor-protocol/types';
 import big, { BigSource } from 'big.js';
 import numeral from 'numeral';
-import { Percent, Ratio } from './unit';
 
 export interface FormatOptions {
   delimiter?: boolean;
@@ -37,8 +37,8 @@ export function formatPercentage(
   return formatFluidDecimalPoints(n, 2, options);
 }
 
-export function formatRatioToPercentage(
-  n: Ratio<BigSource>,
+export function formatRateToPercentage(
+  n: Rate<BigSource>,
   options: FormatOptions = { delimiter: true },
 ): string {
   return formatFluidDecimalPoints(big(n).mul(100), 2, options);

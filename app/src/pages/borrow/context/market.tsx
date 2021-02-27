@@ -1,4 +1,4 @@
-import { Ratio } from '@anchor-protocol/notation';
+import type { Rate } from '@anchor-protocol/types';
 import big from 'big.js';
 import { useAddressProvider } from 'contexts/contract';
 import { SAFE_RATIO } from 'env';
@@ -34,8 +34,8 @@ export interface Market {
   overseerWhitelist: MarketOverview['overseerWhitelist'] | undefined;
   loanAmount: MarketUserOverview['loanAmount'] | undefined;
   borrowInfo: MarketUserOverview['borrowInfo'] | undefined;
-  bLunaMaxLtv: Ratio | undefined;
-  bLunaSafeLtv: Ratio | undefined;
+  bLunaMaxLtv: Rate | undefined;
+  bLunaSafeLtv: Rate | undefined;
   refetch: () => void;
 }
 
@@ -69,7 +69,7 @@ export function MarketProvider({ children }: MarketProviderProps) {
 
   const bLunaSafeLtv = useMemo(() => {
     return bLunaMaxLtv
-      ? (big(bLunaMaxLtv).mul(SAFE_RATIO).toString() as Ratio)
+      ? (big(bLunaMaxLtv).mul(SAFE_RATIO).toString() as Rate)
       : undefined;
   }, [bLunaMaxLtv]);
 
@@ -148,8 +148,8 @@ export function useMarketNotNullable(): {
   overseerWhitelist: MarketOverview['overseerWhitelist'];
   loanAmount: MarketUserOverview['loanAmount'];
   borrowInfo: MarketUserOverview['borrowInfo'];
-  bLunaMaxLtv: Ratio;
-  bLunaSafeLtv: Ratio;
+  bLunaMaxLtv: Rate;
+  bLunaSafeLtv: Rate;
   refetch: () => void;
 } {
   const {
@@ -176,8 +176,8 @@ export function useMarketNotNullable(): {
       overseerWhitelist ?? marketOverviewMockupData.overseerWhitelist!,
     loanAmount: loanAmount ?? marketUserOverviewMockupData.loanAmount!,
     borrowInfo: borrowInfo ?? marketUserOverviewMockupData.borrowInfo!,
-    bLunaMaxLtv: bLunaMaxLtv ?? ('0.7' as Ratio),
-    bLunaSafeLtv: bLunaSafeLtv ?? ('0.5' as Ratio),
+    bLunaMaxLtv: bLunaMaxLtv ?? ('0.7' as Rate),
+    bLunaSafeLtv: bLunaSafeLtv ?? ('0.5' as Rate),
     refetch,
   };
 }

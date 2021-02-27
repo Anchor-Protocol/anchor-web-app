@@ -1,4 +1,4 @@
-import { Ratio, ubLuna, uUST } from '@anchor-protocol/notation';
+import type { Rate, ubLuna, uUST } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
 
 // If user_ltv >= 0.35 or user_ltv == Null:
@@ -10,10 +10,10 @@ export function redeemCollateralWithdrawableAmount(
   loanAmount: uUST<BigSource>,
   balance: uUST<BigSource>,
   spendable: uUST<BigSource>,
-  oraclePrice: Ratio<BigSource>,
-  bLunaSafeLtv: Ratio<BigSource>,
-  bLunaMaxLtv: Ratio<BigSource>,
-  nextLtv: Ratio<Big> | undefined,
+  oraclePrice: Rate<BigSource>,
+  bLunaSafeLtv: Rate<BigSource>,
+  bLunaMaxLtv: Rate<BigSource>,
+  nextLtv: Rate<Big> | undefined,
 ): ubLuna<Big> {
   const withdrawable =
     !nextLtv || nextLtv.gte(bLunaMaxLtv)

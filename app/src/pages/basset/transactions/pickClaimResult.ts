@@ -2,8 +2,8 @@ import {
   demicrofy,
   formatUSTWithPostfixUnits,
   stripUUSD,
-  uUST,
 } from '@anchor-protocol/notation';
+import { uUST } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
 import { TxHashLink } from 'components/TxHashLink';
 import { TxInfoParseError } from 'errors/TxInfoParseError';

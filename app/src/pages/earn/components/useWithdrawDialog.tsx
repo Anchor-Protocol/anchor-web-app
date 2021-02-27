@@ -8,12 +8,10 @@ import {
   demicrofy,
   formatUST,
   formatUSTInput,
-  Ratio,
-  UST,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
-  uUST,
 } from '@anchor-protocol/notation';
+import { Rate, UST, uUST } from '@anchor-protocol/types';
 import type { DialogProps, OpenDialog } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
@@ -37,7 +35,7 @@ import { withdrawOptions } from '../transactions/withdrawOptions';
 interface FormParams {
   className?: string;
   totalDeposit: uUST<BigSource>;
-  exchangeRate: Ratio<BigSource>;
+  exchangeRate: Rate<BigSource>;
 }
 
 type FormReturn = void;

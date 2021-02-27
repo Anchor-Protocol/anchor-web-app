@@ -7,9 +7,9 @@ import {
   demicrofy,
   formatLuna,
   formatUSTWithPostfixUnits,
-  Ratio,
 } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
+import { Rate } from '@anchor-protocol/types';
 import big from 'big.js';
 import { useService } from 'contexts/service';
 import { useMemo } from 'react';
@@ -48,7 +48,7 @@ export function CollateralList({ className }: CollateralListProps) {
       _collaterals(
         borrowInfo?.balance,
         borrowInfo?.spendable,
-        1 as Ratio<number>,
+        1 as Rate<number>,
       ),
     [borrowInfo?.balance, borrowInfo?.spendable],
   );

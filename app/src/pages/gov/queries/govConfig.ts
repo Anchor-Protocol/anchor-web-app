@@ -1,4 +1,4 @@
-import { Ratio, uUST } from '@anchor-protocol/notation';
+import type { Rate, uUST } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
@@ -15,9 +15,9 @@ export interface GovConfig {
   expiration_period: number;
   owner: string;
   proposal_deposit: uUST<string>;
-  quorum: Ratio<string>;
+  quorum: Rate<string>;
   snapshot_period: number;
-  threshold: Ratio<string>;
+  threshold: Rate<string>;
   timelock_period: number;
   voting_period: number;
 }

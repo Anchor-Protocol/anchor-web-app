@@ -1,5 +1,5 @@
 import { AddressProvider } from '@anchor-protocol/anchor.js';
-import { Num, uANC } from '@anchor-protocol/notation';
+import type { Num, uANC } from '@anchor-protocol/types';
 import { createMap, map } from '@anchor-protocol/use-map';
 import { ApolloClient, gql, useApolloClient } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';

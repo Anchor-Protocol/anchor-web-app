@@ -5,7 +5,6 @@ import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import {
-  bLuna,
   demicrofy,
   formatLuna,
   formatLunaInput,
@@ -13,10 +12,8 @@ import {
   formatUSTInput,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
-  Ratio,
-  ubLuna,
-  uUST,
 } from '@anchor-protocol/notation';
+import { bLuna, Rate, ubLuna, uUST } from '@anchor-protocol/types';
 import type { DialogProps, OpenDialog } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletReady } from '@anchor-protocol/wallet-provider';
@@ -243,7 +240,7 @@ function ComponentBase({
   );
 
   const onLtvChange = useCallback(
-    (nextLtv: Ratio<Big>) => {
+    (nextLtv: Rate<Big>) => {
       try {
         const nextAmount = ltvToAmount(nextLtv);
         updateRedeemAmount(formatLunaInput(demicrofy(nextAmount)));
@@ -253,7 +250,7 @@ function ComponentBase({
   );
 
   const ltvStepFunction = useCallback(
-    (draftLtv: Ratio<Big>): Ratio<Big> => {
+    (draftLtv: Rate<Big>): Rate<Big> => {
       try {
         const draftAmount = ltvToAmount(draftLtv);
         return amountToLtv(draftAmount);

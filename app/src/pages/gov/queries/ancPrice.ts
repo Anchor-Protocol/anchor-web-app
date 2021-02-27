@@ -1,5 +1,5 @@
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
-import { Num, uUST } from '@anchor-protocol/notation';
+import type { Num, uUST } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { Int } from '@terra-money/terra.js';

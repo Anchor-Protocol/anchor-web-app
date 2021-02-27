@@ -1,3 +1,4 @@
+import { JSDateTime } from '@anchor-protocol/types';
 import { map } from '@anchor-protocol/use-map';
 import { testClient } from 'test.env';
 import {
@@ -13,7 +14,9 @@ describe('queries/apyHistory', () => {
     const data = await testClient
       .query<RawData, RawVariables>({
         query,
-        variables: mapVariables({}),
+        variables: mapVariables({
+          timestampMax: (Date.now() - 1000 * 60 * 30) as JSDateTime,
+        }),
       })
       .then(({ data }) => map(data, dataMap));
 

@@ -1,9 +1,9 @@
-import { Ratio } from '@anchor-protocol/notation';
+import type { Rate } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
 
 export function currentAPY(
-  depositRate: Ratio<BigSource> | undefined,
+  depositRate: Rate<BigSource> | undefined,
   blocksPerYear: number,
-): Ratio<Big> {
-  return big(depositRate ?? '0').mul(blocksPerYear) as Ratio<Big>;
+): Rate<Big> {
+  return big(depositRate ?? '0').mul(blocksPerYear) as Rate<Big>;
 }

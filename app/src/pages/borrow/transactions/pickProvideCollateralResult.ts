@@ -1,12 +1,10 @@
 import {
   demicrofy,
   formatLuna,
-  formatRatioToPercentage,
+  formatRateToPercentage,
   formatUSTWithPostfixUnits,
-  Ratio,
-  ubLuna,
-  uUST,
 } from '@anchor-protocol/notation';
+import { Rate, ubLuna, uUST } from '@anchor-protocol/types';
 import { TxHashLink } from 'components/TxHashLink';
 import { TxInfoParseError } from 'errors/TxInfoParseError';
 import { TransactionResult } from 'models/transaction';
@@ -71,7 +69,7 @@ export function pickProvideCollateralResult({
           borrowInfo?.spendable,
           oraclePrice?.rate,
         )
-      : ('0' as Ratio);
+      : ('0' as Rate);
 
   const txHash = txResult.result.txhash;
 
@@ -85,7 +83,7 @@ export function pickProvideCollateralResult({
       },
       newLtv && {
         name: 'New LTV',
-        value: formatRatioToPercentage(newLtv) + ' %',
+        value: formatRateToPercentage(newLtv) + ' %',
       },
       {
         name: 'Tx Hash',

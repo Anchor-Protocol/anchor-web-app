@@ -1,4 +1,4 @@
-import { Ratio, ubLuna, uUST } from '@anchor-protocol/notation';
+import type { Rate, ubLuna, uUST } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
 
 // ltv = loanAmount / ((balance - spendable + <amount>) * oracle)
@@ -8,8 +8,8 @@ export const ltvToDepositAmount = (
   loanAmount: uUST<BigSource>,
   balance: uUST<BigSource>,
   spendable: uUST<BigSource>,
-  oraclePrice: Ratio<BigSource>,
-) => (ltv: Ratio<BigSource>): ubLuna<Big> => {
+  oraclePrice: Rate<BigSource>,
+) => (ltv: Rate<BigSource>): ubLuna<Big> => {
   return big(big(loanAmount).div(big(ltv).mul(oraclePrice)))
     .plus(spendable)
     .minus(balance) as ubLuna<Big>;

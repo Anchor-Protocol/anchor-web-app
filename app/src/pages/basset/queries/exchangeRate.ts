@@ -1,4 +1,4 @@
-import { DateTime, Ratio, uLuna } from '@anchor-protocol/notation';
+import type { DateTime, Rate, uLuna } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
@@ -19,7 +19,7 @@ export interface Data {
   exchangeRate: {
     Result: string;
     actual_unbonded_amount: uLuna<string>;
-    exchange_rate: Ratio<string>;
+    exchange_rate: Rate<string>;
     last_index_modification: DateTime;
     last_processed_batch: number;
     last_unbonded_time: DateTime;

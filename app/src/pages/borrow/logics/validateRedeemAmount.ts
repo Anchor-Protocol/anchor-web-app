@@ -1,4 +1,5 @@
-import { bLuna, microfy, ubLuna } from '@anchor-protocol/notation';
+import { microfy } from '@anchor-protocol/notation';
+import type { bLuna, ubLuna } from '@anchor-protocol/types';
 import { BigSource } from 'big.js';
 import { ReactNode } from 'react';
 

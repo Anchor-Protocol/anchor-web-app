@@ -1,10 +1,9 @@
 import {
   demicrofy,
-  formatRatioToPercentage,
+  formatRateToPercentage,
   formatUSTWithPostfixUnits,
-  Ratio,
-  uUST,
 } from '@anchor-protocol/notation';
+import { Rate, uUST } from '@anchor-protocol/types';
 import { TxHashLink } from 'components/TxHashLink';
 import { TxInfoParseError } from 'errors/TxInfoParseError';
 import { TransactionResult } from 'models/transaction';
@@ -69,7 +68,7 @@ export function pickRepayResult({
           borrowInfo?.spendable,
           oraclePrice?.rate,
         )
-      : ('0' as Ratio);
+      : ('0' as Rate);
 
   const outstandingLoan = loanAmount?.loan_amount;
 
@@ -85,7 +84,7 @@ export function pickRepayResult({
       },
       newLtv && {
         name: 'New LTV',
-        value: formatRatioToPercentage(newLtv) + ' %',
+        value: formatRateToPercentage(newLtv) + ' %',
       },
       outstandingLoan && {
         name: 'Outstanding Loan',

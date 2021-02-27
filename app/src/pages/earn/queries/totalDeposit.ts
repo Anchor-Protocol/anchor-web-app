@@ -1,5 +1,5 @@
 import { useEventBusListener } from '@anchor-protocol/event-bus';
-import { Num, Ratio, uaUST } from '@anchor-protocol/notation';
+import type { Num, Rate, uaUST } from '@anchor-protocol/types';
 import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
@@ -28,7 +28,7 @@ export interface Data {
   exchangeRate: {
     Result: string;
     a_token_supply: Num<string>;
-    exchange_rate: Ratio<string>;
+    exchange_rate: Rate<string>;
   };
 }
 
@@ -60,7 +60,7 @@ export const mockupData: Mapped<RawData, Data> = {
   },
   exchangeRate: {
     Result: '',
-    exchange_rate: '1' as Ratio,
+    exchange_rate: '1' as Rate,
     a_token_supply: '0' as Num,
   },
 };

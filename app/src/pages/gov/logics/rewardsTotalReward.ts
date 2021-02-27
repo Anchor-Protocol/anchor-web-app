@@ -1,4 +1,4 @@
-import { uUST } from '@anchor-protocol/notation';
+import type { uUST } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
 
 export function rewardsTotalReward(

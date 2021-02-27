@@ -1,4 +1,4 @@
-import { Ratio, uLuna, uUST } from '@anchor-protocol/notation';
+import type { Rate, uLuna, uUST } from '@anchor-protocol/types';
 import { map } from '@anchor-protocol/use-map';
 import { askSimulation } from 'pages/basset/logics/askSimulation';
 import { testAddressProvider, testClient } from 'test.env';
@@ -40,7 +40,7 @@ describe('queries/terraswapOfferSimulation', () => {
           terraswapAskSimulation!.spread_amount,
           '100' as uLuna,
           {
-            taxRate: '1' as Ratio,
+            taxRate: '1' as Rate,
             maxTaxUUSD: '3500000' as uUST,
           },
         ),

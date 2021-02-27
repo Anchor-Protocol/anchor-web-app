@@ -1,4 +1,4 @@
-import { Num, ubLuna, uUST } from '@anchor-protocol/notation';
+import type { Num, ubLuna, uUST } from '@anchor-protocol/types';
 import { Dec, Int } from '@terra-money/terra.js';
 import big, { Big } from 'big.js';
 

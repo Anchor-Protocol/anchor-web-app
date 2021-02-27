@@ -1,5 +1,5 @@
 import { min } from '@anchor-protocol/big-math';
-import { uUST } from '@anchor-protocol/notation';
+import type { uUST } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
 import { Bank } from 'contexts/bank';
 

@@ -6,15 +6,13 @@ import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTool
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import {
   demicrofy,
-  formatRatioToPercentage,
+  formatRateToPercentage,
   formatUST,
   formatUSTInput,
-  Ratio,
-  UST,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
-  uUST,
 } from '@anchor-protocol/notation';
+import { Rate, UST, uUST } from '@anchor-protocol/types';
 import type { DialogProps, OpenDialog } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletReady } from '@anchor-protocol/wallet-provider';
@@ -159,7 +157,7 @@ function ComponentBase({
   const apr = useServiceConnectedMemo(
     () => _apr(borrowRate.rate, blocksPerYear),
     [blocksPerYear, borrowRate.rate],
-    big(0) as Ratio<Big>,
+    big(0) as Rate<Big>,
   );
 
   const totalBorrows = useServiceConnectedMemo(
@@ -238,7 +236,7 @@ function ComponentBase({
   );
 
   const onLtvChange = useCallback(
-    (nextLtv: Ratio<Big>) => {
+    (nextLtv: Rate<Big>) => {
       try {
         const nextAmount = ltvToAmount(nextLtv);
         updateRepayAmount(formatUSTInput(demicrofy(nextAmount)));
@@ -248,7 +246,7 @@ function ComponentBase({
   );
 
   const ltvStepFunction = useCallback(
-    (draftLtv: Ratio<Big>): Ratio<Big> => {
+    (draftLtv: Rate<Big>): Rate<Big> => {
       try {
         const draftAmount = ltvToAmount(draftLtv);
         return amountToLtv(draftAmount);
@@ -267,7 +265,7 @@ function ComponentBase({
       Repay{' '}
       <p>
         <IconSpan>
-          Borrow APR : {formatRatioToPercentage(apr)}%{' '}
+          Borrow APR : {formatRateToPercentage(apr)}%{' '}
           <InfoTooltip>
             Current rate of annualized borrowing interest applied for this
             stablecoin
@@ -338,7 +336,7 @@ function ComponentBase({
             safeLtv={bLunaSafeLtv}
             currentLtv={currentLtv}
             nextLtv={nextLtv}
-            userMinLtv={0 as Ratio<BigSource>}
+            userMinLtv={0 as Rate<BigSource>}
             userMaxLtv={currentLtv}
             onStep={ltvStepFunction}
             onChange={onLtvChange}

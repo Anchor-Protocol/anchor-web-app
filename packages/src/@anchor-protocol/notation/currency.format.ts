@@ -1,5 +1,5 @@
+import { ANC, aUST, bLuna, Luna, UST } from '@anchor-protocol/types';
 import big, { BigSource } from 'big.js';
-import { ANC, aUST, bLuna, Luna, UST } from './currency';
 import { formatFluidDecimalPoints, FormatOptions } from './unit.format';
 
 // ---------------------------------------------

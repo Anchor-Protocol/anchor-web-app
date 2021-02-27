@@ -1,29 +1,20 @@
+import {
+  ANC,
+  aToken,
+  aUST,
+  bLuna,
+  Luna,
+  Token,
+  uANC,
+  uaToken,
+  uaUST,
+  ubLuna,
+  uLuna,
+  UST,
+  uToken,
+  uUST,
+} from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
-
-// ---------------------------------------------
-// currency types
-// ---------------------------------------------
-export type Currency<T extends string> = { __nominal: T };
-
-export type uaUST<T = string> = T & Currency<'uaust'>;
-export type aUST<T = string> = T & Currency<'aust'>;
-
-export type uUST<T = string> = T & Currency<'uust'>;
-export type UST<T = string> = T & Currency<'ust'>;
-
-export type uANC<T = string> = T & Currency<'uanc'>;
-export type ANC<T = string> = T & Currency<'anc'>;
-
-export type uLuna<T = string> = T & Currency<'uluna'>;
-export type Luna<T = string> = T & Currency<'luna'>;
-
-export type ubLuna<T = string> = T & Currency<'ubluna'>;
-export type bLuna<T = string> = T & Currency<'bluna'>;
-
-export type uToken<T = string> = T &
-  Currency<'uaust' | 'uust' | 'uluna' | 'ubluna' | 'uanc'>;
-export type Token<T = string> = T &
-  Currency<'aust' | 'ust' | 'luna' | 'bluna' | 'anc'>;
 
 // ---------------------------------------------
 // micro
@@ -37,6 +28,7 @@ export function microfy<
     | UST<BigSource>
     | aUST<BigSource>
     | ANC<BigSource>
+    | aToken<BigSource>
     | Token<BigSource>
 >(
   amount: C,
@@ -50,6 +42,8 @@ export function microfy<
   ? uaUST<Big>
   : C extends ANC
   ? uANC<Big>
+  : C extends uaToken
+  ? aToken<Big>
   : C extends Token
   ? uToken<Big>
   : never {
@@ -63,6 +57,7 @@ export function demicrofy<
     | uUST<BigSource>
     | uaUST<BigSource>
     | uANC<BigSource>
+    | uaToken<BigSource>
     | uToken<BigSource>
 >(
   amount: C,
@@ -76,6 +71,8 @@ export function demicrofy<
   ? aUST<Big>
   : C extends uANC
   ? ANC<Big>
+  : C extends uaToken
+  ? aToken<Big>
   : C extends uToken
   ? Token<Big>
   : never {

@@ -1,5 +1,5 @@
 import { AddressProvider } from '@anchor-protocol/anchor.js';
-import { Ratio } from '@anchor-protocol/notation';
+import type { Rate } from '@anchor-protocol/types';
 import { createMap, map, Mapped, useMap } from '@anchor-protocol/use-map';
 import { ApolloClient, gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
@@ -28,12 +28,12 @@ export interface RawData {
 export interface Data {
   borrowRate: {
     Result: string;
-    rate: Ratio<string>;
+    rate: Rate<string>;
   };
 
   oraclePrice: {
     Result: string;
-    rate: Ratio<string>;
+    rate: Rate<string>;
     last_updated_base: number;
     last_updated_quote: number;
   };
@@ -44,7 +44,7 @@ export interface Data {
     elems: {
       collateral_token: string;
       custody_contract: string;
-      max_ltv: Ratio<string>;
+      max_ltv: Rate<string>;
     }[];
   };
 }
@@ -75,11 +75,11 @@ export const mockupData: Mapped<RawData, Data> = {
   },
   borrowRate: {
     Result: '',
-    rate: '1' as Ratio,
+    rate: '1' as Rate,
   },
   oraclePrice: {
     Result: '',
-    rate: '1' as Ratio,
+    rate: '1' as Rate,
     last_updated_base: 0,
     last_updated_quote: 0,
   },

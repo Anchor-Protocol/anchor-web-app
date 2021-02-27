@@ -1,4 +1,4 @@
-import { Num, uANC } from '@anchor-protocol/notation';
+import type { Num, uANC } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
 
 export function rewardsAncGovernanceWithdrawableAsset(

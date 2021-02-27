@@ -1,5 +1,5 @@
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
-import { Ratio, uANC } from '@anchor-protocol/notation';
+import type { Rate, uANC } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
@@ -43,9 +43,9 @@ export interface Data {
     expiration_period: number;
     owner: string;
     proposal_deposit: uANC<string>;
-    quorum: Ratio<string>;
+    quorum: Rate<string>;
     snapshot_period: number;
-    threshold: Ratio<string>;
+    threshold: Rate<string>;
     timelock_period: number;
     voting_period: number;
   };

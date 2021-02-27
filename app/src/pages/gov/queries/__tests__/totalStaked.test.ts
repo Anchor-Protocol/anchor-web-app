@@ -24,8 +24,7 @@ describe('queries/totalStaked', () => {
         }),
       })
       .then(({ data }) => map(data, dataMap));
-    //
-    //expect(typeof data.ancPrice?.ANCPrice).toBe('string');
-    console.log('totalStaked.test.ts..()', data);
+
+    expect(typeof data.govState?.total_deposit).toBe('string');
   });
 });

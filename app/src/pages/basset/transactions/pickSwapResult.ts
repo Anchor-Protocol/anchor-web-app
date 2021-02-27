@@ -3,11 +3,8 @@ import {
   formatFluidDecimalPoints,
   formatLuna,
   formatUSTWithPostfixUnits,
-  Ratio,
-  ubLuna,
-  uLuna,
-  uUST,
 } from '@anchor-protocol/notation';
+import { Rate, ubLuna, uLuna, uUST } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
 import { TxHashLink } from 'components/TxHashLink';
 import { TxInfoParseError } from 'errors/TxInfoParseError';
@@ -64,7 +61,7 @@ export function pickSwapResult({
   const exchangeRate =
     boughtAmount &&
     paidAmount &&
-    (big(boughtAmount).div(paidAmount) as Ratio<BigSource> | undefined);
+    (big(boughtAmount).div(paidAmount) as Rate<BigSource> | undefined);
 
   //console.log('pickSwapResult.ts..pickSwapResult()', rawLog);
   //

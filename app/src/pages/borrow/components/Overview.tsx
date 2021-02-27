@@ -5,11 +5,10 @@ import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import {
   demicrofy,
-  formatRatioToPercentage,
+  formatRateToPercentage,
   formatUSTWithPostfixUnits,
-  Ratio,
-  uUST,
 } from '@anchor-protocol/notation';
+import { Rate, uUST } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
 import { useConstants } from 'contexts/contants';
 import { useServiceConnectedMemo } from 'contexts/service';
@@ -38,7 +37,7 @@ export function Overview({ className }: OverviewProps) {
   const apr = useServiceConnectedMemo(
     () => _apr(borrowRate?.rate, blocksPerYear),
     [blocksPerYear, borrowRate?.rate],
-    big(0) as Ratio<Big>,
+    big(0) as Rate<Big>,
   );
 
   const borrowed = useMemo(() => _borrowed(loanAmount?.loan_amount), [
@@ -105,7 +104,7 @@ export function Overview({ className }: OverviewProps) {
           >
             <Label>APR</Label>
           </Tooltip>
-          <p>{formatRatioToPercentage(apr)}%</p>
+          <p>{formatRateToPercentage(apr)}%</p>
           {/*<p>*/}
           {/*  <IconSpan>*/}
           {/*    <InfoTooltip>*/}
@@ -120,7 +119,7 @@ export function Overview({ className }: OverviewProps) {
 
       <figure>
         <BorrowLimitGraph
-          bLunaMaxLtv={bLunaMaxLtv ?? (0 as Ratio<BigSource>)}
+          bLunaMaxLtv={bLunaMaxLtv ?? (0 as Rate<BigSource>)}
           collateralValue={collaterals}
           loanAmount={loanAmount?.loan_amount ?? (0 as uUST<BigSource>)}
         />

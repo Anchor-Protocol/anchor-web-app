@@ -1,4 +1,4 @@
-import { ubLuna, uLuna } from '@anchor-protocol/notation';
+import type { ubLuna, uLuna } from '@anchor-protocol/types';
 import big, { Big } from 'big.js';
 import { Data as WithdrawAllHistory } from '../queries/withdrawHistory';
 

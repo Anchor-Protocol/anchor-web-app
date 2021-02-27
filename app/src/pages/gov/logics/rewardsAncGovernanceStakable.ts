@@ -1,4 +1,4 @@
-import { uANC } from '@anchor-protocol/notation';
+import type { uANC } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
 
 export function rewardsAncGovernanceStakable(

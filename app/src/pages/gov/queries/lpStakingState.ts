@@ -1,4 +1,4 @@
-import { Num } from '@anchor-protocol/notation';
+import type { Num } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';

@@ -3,8 +3,8 @@ import {
   formatLuna,
   formatUSTWithPostfixUnits,
   stripULuna,
-  uUST,
 } from '@anchor-protocol/notation';
+import { uUST } from '@anchor-protocol/types';
 import { TxHashLink } from 'components/TxHashLink';
 import { TxInfoParseError } from 'errors/TxInfoParseError';
 import { TransactionResult } from 'models/transaction';

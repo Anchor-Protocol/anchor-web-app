@@ -1,4 +1,4 @@
-import { Num, Ratio, uaUST, uUST } from '@anchor-protocol/notation';
+import type { Num, Rate, uaUST, uUST } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
@@ -31,7 +31,7 @@ export interface Data {
 
   marketState: {
     Result: string;
-    anc_emission_rate: Ratio<string>;
+    anc_emission_rate: Rate<string>;
     global_interest_index: Num<string>;
     global_reward_index: Num<string>;
     last_interest_updated: number;

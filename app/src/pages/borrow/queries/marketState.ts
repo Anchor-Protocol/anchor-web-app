@@ -1,6 +1,6 @@
 import { AddressProvider } from '@anchor-protocol/anchor.js';
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
-import { Num, uaUST, uUST } from '@anchor-protocol/notation';
+import type { Num, uaUST, uUST } from '@anchor-protocol/types';
 import { createMap, map, Mapped, useMap } from '@anchor-protocol/use-map';
 import { ApolloClient, gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';

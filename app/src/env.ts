@@ -1,4 +1,4 @@
-import { Ratio } from '@anchor-protocol/notation';
+import type { Rate } from '@anchor-protocol/types';
 
 export const screen = {
   mobile: { max: 510 },
@@ -17,7 +17,7 @@ export const GA_TRACKING_ID = 'G-H42LRVHR5Y';
 export const SENTRY_DSN =
   'https://f33dd06d6f5948bfb06d809d0d0a274c@o247107.ingest.sentry.io/5636828';
 
-export const SAFE_RATIO: Ratio<number> = 0.7 as Ratio<number>;
+export const SAFE_RATIO: Rate<number> = 0.7 as Rate<number>;
 
 export const onProduction =
   global.location.host === 'app.anchorprotocol.com' ||

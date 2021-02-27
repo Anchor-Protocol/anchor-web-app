@@ -1,4 +1,5 @@
-import { microfy, UST, uUST } from '@anchor-protocol/notation';
+import { microfy } from '@anchor-protocol/notation';
+import type { UST, uUST } from '@anchor-protocol/types';
 import { BigSource } from 'big.js';
 import { ReactNode } from 'react';
 

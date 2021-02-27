@@ -1,4 +1,4 @@
-import { Num, Ratio } from '@anchor-protocol/notation';
+import type { Num, Rate } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
@@ -18,10 +18,10 @@ export interface RawData {
 export interface Data {
   marketStatus: {
     Result: string;
-    deposit_rate: Ratio<string>;
+    deposit_rate: Rate<string>;
     last_executed_height: number;
     prev_a_token_supply: Num<string>;
-    prev_exchange_rate: Ratio<string>;
+    prev_exchange_rate: Rate<string>;
   };
 }
 

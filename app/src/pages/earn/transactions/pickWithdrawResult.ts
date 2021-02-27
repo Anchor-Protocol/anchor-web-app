@@ -2,10 +2,8 @@ import {
   demicrofy,
   formatFluidDecimalPoints,
   formatUSTWithPostfixUnits,
-  Ratio,
-  uaUST,
-  uUST,
 } from '@anchor-protocol/notation';
+import { Rate, uaUST, uUST } from '@anchor-protocol/types';
 import big, { BigSource } from 'big.js';
 import { TxHashLink } from 'components/TxHashLink';
 import { TxInfoParseError } from 'errors/TxInfoParseError';
@@ -53,7 +51,7 @@ export function pickWithdrawResult({
   const exchangeRate =
     redeemAmount &&
     burnAmount &&
-    (big(redeemAmount).div(burnAmount) as Ratio<BigSource> | undefined);
+    (big(redeemAmount).div(burnAmount) as Rate<BigSource> | undefined);
 
   const txHash = txResult.result.txhash;
 

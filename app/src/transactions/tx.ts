@@ -1,4 +1,4 @@
-import { Ratio, uUST } from '@anchor-protocol/notation';
+import type { Rate, uUST } from '@anchor-protocol/types';
 import { TxFailedError } from 'errors/TxFailedError';
 
 export interface StringifiedTxResult {
@@ -27,7 +27,7 @@ export interface TxResult {
     ];
     gas: uUST<string>;
   };
-  gasAdjustment: Ratio<string>;
+  gasAdjustment: Rate<string>;
   id: number;
   msgs: {
     type: string;
@@ -71,7 +71,7 @@ export function parseTxResult({
 }: StringifiedTxResult): TxResult {
   const txResult: TxResult = {
     fee: JSON.parse(fee),
-    gasAdjustment: gasAdjustment as Ratio,
+    gasAdjustment: gasAdjustment as Rate,
     id,
     msgs: msgs.map((msg) => JSON.parse(msg)),
     origin,

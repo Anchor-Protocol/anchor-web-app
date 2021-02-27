@@ -1,5 +1,5 @@
 import { min } from '@anchor-protocol/big-math';
-import { Ratio, ubLuna, uLuna, uUST } from '@anchor-protocol/notation';
+import type { Rate, ubLuna, uLuna, uUST } from '@anchor-protocol/types';
 import big, { Big } from 'big.js';
 import { Data as TaxData } from 'queries/tax';
 import { SwapSimulation } from '../models/swapSimulation';
@@ -31,8 +31,8 @@ export function askSimulation(
     spread_amount,
     minimumReceived,
     swapFee,
-    beliefPrice: beliefPrice.toFixed() as Ratio,
-    maxSpread: maxSpread.toString() as Ratio,
+    beliefPrice: beliefPrice.toFixed() as Rate,
+    maxSpread: maxSpread.toString() as Rate,
 
     bLunaAmount: big(getAmount).div(beliefPrice).toString() as ubLuna,
   };

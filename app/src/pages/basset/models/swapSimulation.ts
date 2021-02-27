@@ -1,10 +1,10 @@
-import { Ratio, ubLuna, uLuna } from '@anchor-protocol/notation';
+import type { Rate, ubLuna, uLuna } from '@anchor-protocol/types';
 
 export interface SwapSimulation {
   minimumReceived: uLuna;
   swapFee: uLuna;
-  beliefPrice: Ratio;
-  maxSpread: Ratio;
+  beliefPrice: Rate;
+  maxSpread: Rate;
 
   lunaAmount?: uLuna;
   bLunaAmount?: ubLuna;

@@ -1,5 +1,6 @@
 import { max, min } from '@anchor-protocol/big-math';
-import { microfy, UST, uUST } from '@anchor-protocol/notation';
+import { microfy } from '@anchor-protocol/notation';
+import type { UST, uUST } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
 import { Bank } from 'contexts/bank';
 

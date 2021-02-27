@@ -7,11 +7,11 @@ import { Tab } from '@anchor-protocol/neumorphism-ui/components/Tab';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import {
   demicrofy,
-  formatRatioToPercentage,
+  formatRateToPercentage,
   formatUST,
   mapDecimalPointBaseSeparatedNumbers,
-  Ratio,
 } from '@anchor-protocol/notation';
+import { Rate } from '@anchor-protocol/types';
 import big from 'big.js';
 import { useConstants } from 'contexts/contants';
 import { currentAPY } from 'pages/earn/logics/currentAPY';
@@ -79,7 +79,7 @@ export function InterestSection({ className }: InterestSectionProps) {
     const history = apyHistory
       ?.map(({ Timestamp, DepositRate }) => ({
         date: new Date(Timestamp * 1000),
-        value: (parseFloat(DepositRate) * blocksPerYear) as Ratio<number>,
+        value: (parseFloat(DepositRate) * blocksPerYear) as Rate<number>,
       }))
       .reverse();
 
@@ -92,7 +92,7 @@ export function InterestSection({ className }: InterestSectionProps) {
             date: new Date(),
             value: big(marketStatus.deposit_rate)
               .mul(blocksPerYear)
-              .toNumber() as Ratio<number>,
+              .toNumber() as Rate<number>,
           },
         ]
       : undefined;
@@ -121,7 +121,7 @@ export function InterestSection({ className }: InterestSectionProps) {
         <Tooltip title="Annual Percentage Yield" placement="top">
           <Label className="name">APY</Label>
         </Tooltip>
-        <div className="value">{formatRatioToPercentage(apy)}%</div>
+        <div className="value">{formatRateToPercentage(apy)}%</div>
         {apyChartItems && (
           <APYChart
             margin={{ top: 20, bottom: 20, left: 100, right: 100 }}

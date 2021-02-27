@@ -1,4 +1,4 @@
-import { Ratio, ubLuna, uUST } from '@anchor-protocol/notation';
+import type { Rate, ubLuna, uUST } from '@anchor-protocol/types';
 import { map } from '@anchor-protocol/use-map';
 import { offerSimulation } from 'pages/basset/logics/offerSimulation';
 import { testAddressProvider, testClient } from 'test.env';
@@ -23,7 +23,7 @@ describe('queries/terraswapOfferSimulation', () => {
               offer_asset: {
                 info: {
                   token: {
-                    contract_addr: testAddressProvider.blunaToken(),
+                    contract_addr: testAddressProvider.blunaToken(''),
                   },
                 },
                 amount: '100' as ubLuna,
@@ -40,7 +40,7 @@ describe('queries/terraswapOfferSimulation', () => {
           terraswapOfferSimulation!.spread_amount,
           '100' as ubLuna,
           {
-            taxRate: '1' as Ratio,
+            taxRate: '1' as Rate,
             maxTaxUUSD: '3500000' as uUST,
           },
         ),

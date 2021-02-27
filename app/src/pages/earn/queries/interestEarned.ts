@@ -1,6 +1,6 @@
 import { floor } from '@anchor-protocol/big-math';
 import { useEventBus } from '@anchor-protocol/event-bus';
-import { DateTime, JSDateTime, Ratio, uUST } from '@anchor-protocol/notation';
+import type { DateTime, JSDateTime, Rate, uUST } from '@anchor-protocol/types';
 import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import big from 'big.js';
@@ -25,11 +25,11 @@ type Earned = {
 export interface RawData {
   latestExchangeRate: {
     StableDenom: string;
-    ExchangeRate: Ratio<string>;
+    ExchangeRate: Rate<string>;
   }[];
   thenExchangeRate: {
     StableDenom: string;
-    ExchangeRate: Ratio<string>;
+    ExchangeRate: Rate<string>;
   }[];
   fallback: Earned[];
   now?: Earned[];

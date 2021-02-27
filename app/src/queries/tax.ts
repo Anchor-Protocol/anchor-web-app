@@ -1,4 +1,4 @@
-import { Ratio, uUST } from '@anchor-protocol/notation';
+import type { Rate, uUST } from '@anchor-protocol/types';
 import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useService } from 'contexts/service';
@@ -18,13 +18,13 @@ export interface RawData {
 }
 
 export interface Data {
-  taxRate: Ratio;
+  taxRate: Rate;
   maxTaxUUSD: uUST;
 }
 
 export const dataMap = createMap<RawData, Data>({
   taxRate: (_, { tax_rate }) => {
-    return tax_rate.Result as Ratio;
+    return tax_rate.Result as Rate;
   },
   maxTaxUUSD: (_, { tax_cap_denom }) => {
     return tax_cap_denom.Result as uUST;
@@ -42,7 +42,7 @@ export const mockupData: Mapped<RawData, Data> = {
       Result: '3500000',
     },
   },
-  taxRate: '1' as Ratio,
+  taxRate: '1' as Rate,
   maxTaxUUSD: '3500000' as uUST,
 };
 

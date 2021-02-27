@@ -1,5 +1,5 @@
 import { AddressProvider } from '@anchor-protocol/anchor.js';
-import { ubLuna, uLuna } from '@anchor-protocol/notation';
+import type { ubLuna, uLuna } from '@anchor-protocol/types';
 import { createMap, map } from '@anchor-protocol/use-map';
 import { ApolloClient, gql } from '@apollo/client';
 import { parseResult } from 'queries/parseResult';

@@ -1,5 +1,5 @@
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
-import { DateTime, Ratio, ubLuna } from '@anchor-protocol/notation';
+import type { DateTime, Rate, ubLuna } from '@anchor-protocol/types';
 import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useAddressProvider } from 'contexts/contract';
@@ -25,7 +25,7 @@ export interface Data {
       batch_id: number;
       time: DateTime;
       amount: ubLuna<string>;
-      withdraw_rate: Ratio<string>;
+      withdraw_rate: Rate<string>;
       released: boolean;
     }[];
   };
@@ -35,7 +35,7 @@ export interface Data {
     underlying_coin_denom: string;
     unbonding_period: number;
     peg_recovery_fee: ubLuna<string>;
-    er_threshold: Ratio<string>;
+    er_threshold: Rate<string>;
     reward_denom: string;
   };
 }

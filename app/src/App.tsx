@@ -5,7 +5,7 @@ import {
 import { OperationBroadcaster } from '@anchor-protocol/broadcastable-operation';
 import { GlobalDependency } from '@anchor-protocol/broadcastable-operation/global';
 import { GlobalStyle } from '@anchor-protocol/neumorphism-ui/themes/GlobalStyle';
-import { Ratio, uUST } from '@anchor-protocol/notation';
+import type { Rate, uUST } from '@anchor-protocol/types';
 import { SnackbarProvider } from '@anchor-protocol/snackbar';
 import { GoogleAnalytics } from '@anchor-protocol/use-google-analytics';
 import { RouterScrollRestoration } from '@anchor-protocol/use-router-scroll-restoration';
@@ -80,7 +80,7 @@ function Providers({
       gasFee: 6000000 as uUST<number>,
       fixedGas: 3500000 as uUST<number>,
       blocksPerYear: 5256666,
-      gasAdjustment: 1.4 as Ratio<number>,
+      gasAdjustment: 1.4 as Rate<number>,
 
       isDemo,
     }),

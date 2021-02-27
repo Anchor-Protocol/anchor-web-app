@@ -2,20 +2,16 @@ import { useOperation } from '@anchor-protocol/broadcastable-operation';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
 import {
-  bLuna,
   demicrofy,
   formatFluidDecimalPoints,
   formatLuna,
   formatLunaInput,
   formatUST,
-  Luna,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
   microfy,
-  Ratio,
-  ubLuna,
-  uLuna,
 } from '@anchor-protocol/notation';
+import type { bLuna, Luna, Rate, ubLuna, uLuna } from '@anchor-protocol/types';
 import { useResolveLast } from '@anchor-protocol/use-resolve-last';
 import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
@@ -227,8 +223,8 @@ export function Swap() {
     async (
       walletReady: WalletReady,
       burnAmount: bLuna,
-      beliefPrice: Ratio,
-      maxSpread: Ratio,
+      beliefPrice: Rate,
+      maxSpread: Rate,
     ) => {
       const broadcasted = await swap({
         address: walletReady.walletAddress,

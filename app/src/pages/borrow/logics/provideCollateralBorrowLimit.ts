@@ -1,4 +1,5 @@
-import { bLuna, microfy, ubLuna, uUST } from '@anchor-protocol/notation';
+import { microfy } from '@anchor-protocol/notation';
+import type { bLuna, ubLuna, uUST } from '@anchor-protocol/types';
 import { Big, BigSource } from 'big.js';
 
 // New Borrow Limit = ((Borrow_info.balance - Borrow_info.spendable + provided_collateral) * Oracleprice) * Max_LTV
