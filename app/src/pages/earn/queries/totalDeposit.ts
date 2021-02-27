@@ -1,7 +1,14 @@
 import { useEventBusListener } from '@anchor-protocol/event-bus';
-import type { Num, Rate, uaUST } from '@anchor-protocol/types';
-import { contracts } from '@anchor-protocol/types';
-import { CW20Addr, HumanAddr } from '@anchor-protocol/types/contracts';
+import type {
+  cw20,
+  CW20Addr,
+  HumanAddr,
+  moneyMarket,
+  Num,
+  Rate,
+  uaUST,
+  WASMContractResult,
+} from '@anchor-protocol/types';
 import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useContractAddress } from 'contexts/contract';
@@ -14,15 +21,13 @@ import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
 export interface RawData {
-  aUSTBalance: contracts.WASMContractResult;
-  exchangeRate: contracts.WASMContractResult;
+  aUSTBalance: WASMContractResult;
+  exchangeRate: WASMContractResult;
 }
 
 export interface Data {
-  aUSTBalance: contracts.WASMContractResult<
-    contracts.cw20.BalanceResponse<uaUST>
-  >;
-  exchangeRate: contracts.WASMContractResult<contracts.moneyMarket.market.EpochStateResponse>;
+  aUSTBalance: WASMContractResult<cw20.BalanceResponse<uaUST>>;
+  exchangeRate: WASMContractResult<moneyMarket.market.EpochStateResponse>;
 }
 
 export const dataMap = createMap<RawData, Data>({
@@ -67,9 +72,9 @@ export interface RawVariables {
 
 export interface Variables {
   anchorTokenContract: CW20Addr;
-  anchorTokenBalanceQuery: contracts.cw20.Balance;
+  anchorTokenBalanceQuery: cw20.Balance;
   moneyMarketContract: HumanAddr;
-  moneyMarketEpochQuery: contracts.moneyMarket.market.EpochState;
+  moneyMarketEpochQuery: moneyMarket.market.EpochState;
 }
 
 export function mapVariables({

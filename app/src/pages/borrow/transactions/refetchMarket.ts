@@ -1,4 +1,4 @@
-import { ContractAddress } from '@anchor-protocol/types/contracts';
+import { ContractAddress } from '@anchor-protocol/types';
 import { WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient } from '@apollo/client';
 import {

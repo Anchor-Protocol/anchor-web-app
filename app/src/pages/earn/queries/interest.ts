@@ -1,5 +1,8 @@
-import { contracts } from '@anchor-protocol/types';
-import { HumanAddr } from '@anchor-protocol/types/contracts';
+import {
+  HumanAddr,
+  moneyMarket,
+  WASMContractResult,
+} from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useContractAddress } from 'contexts/contract';
@@ -11,11 +14,11 @@ import { useRefetch } from 'queries/useRefetch';
 import { useMemo } from 'react';
 
 export interface RawData {
-  marketStatus: contracts.WASMContractResult;
+  marketStatus: WASMContractResult;
 }
 
 export interface Data {
-  marketStatus: contracts.WASMContractResult<contracts.moneyMarket.overseer.EpochStateResponse>;
+  marketStatus: WASMContractResult<moneyMarket.overseer.EpochStateResponse>;
 }
 
 export const dataMap = createMap<RawData, Data>({
@@ -38,7 +41,7 @@ export function mapVariables({ overseerContract }: Variables): RawVariables {
     overseerContract,
     overseerEpochState: JSON.stringify({
       epoch_state: {},
-    } as contracts.moneyMarket.overseer.EpochState),
+    } as moneyMarket.overseer.EpochState),
   };
 }
 

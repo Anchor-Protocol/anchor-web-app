@@ -2,7 +2,7 @@ import {
   AddressProvider,
   AddressProviderFromJson,
 } from '@anchor-protocol/anchor.js';
-import { ContractAddress, HumanAddr } from '@anchor-protocol/types/contracts';
+import { ContractAddress, HumanAddr } from '@anchor-protocol/types';
 import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { createContractAddress } from 'contexts/contract';
 import { contractAddresses } from 'env';

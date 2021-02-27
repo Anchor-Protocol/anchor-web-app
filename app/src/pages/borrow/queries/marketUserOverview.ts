@@ -1,6 +1,12 @@
-import type { Num, uUST } from '@anchor-protocol/types';
-import { contracts, HumanAddr, uANC } from '@anchor-protocol/types';
-import { ContractAddress } from '@anchor-protocol/types/contracts';
+import type {
+  HumanAddr,
+  moneyMarket,
+  Num,
+  uANC,
+  uUST,
+  WASMContractResult,
+} from '@anchor-protocol/types';
+import { ContractAddress } from '@anchor-protocol/types';
 import { createMap, map, Mapped, useMap } from '@anchor-protocol/use-map';
 import { WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, gql, useQuery } from '@apollo/client';
@@ -14,13 +20,13 @@ import { useMemo } from 'react';
 import { Data as MarketState } from './marketState';
 
 export interface RawData {
-  loanAmount: contracts.WASMContractResult;
-  borrowInfo: contracts.WASMContractResult;
+  loanAmount: WASMContractResult;
+  borrowInfo: WASMContractResult;
 }
 
 export interface Data {
-  loanAmount: contracts.WASMContractResult<contracts.moneyMarket.market.BorrowInfoResponse>;
-  borrowInfo: contracts.WASMContractResult<contracts.moneyMarket.custody.BorrowerResponse>;
+  loanAmount: WASMContractResult<moneyMarket.market.BorrowInfoResponse>;
+  borrowInfo: WASMContractResult<moneyMarket.custody.BorrowerResponse>;
 }
 
 export const dataMap = createMap<RawData, Data>({
@@ -61,9 +67,9 @@ export interface RawVariables {
 
 export interface Variables {
   marketContractAddress: HumanAddr;
-  marketBorrowerQuery: contracts.moneyMarket.market.BorrowInfo;
+  marketBorrowerQuery: moneyMarket.market.BorrowInfo;
   custodyContractAddress: HumanAddr;
-  custodyBorrowerQuery: contracts.moneyMarket.custody.Borrower;
+  custodyBorrowerQuery: moneyMarket.custody.Borrower;
 }
 
 export function mapVariables({

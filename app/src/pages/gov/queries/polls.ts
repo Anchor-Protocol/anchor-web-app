@@ -1,5 +1,5 @@
 import type { Num, uANC } from '@anchor-protocol/types';
-import { ContractAddress } from '@anchor-protocol/types/contracts';
+import { ContractAddress } from '@anchor-protocol/types';
 import { createMap, map } from '@anchor-protocol/use-map';
 import { ApolloClient, gql, useApolloClient } from '@apollo/client';
 import { useContractAddress } from 'contexts/contract';

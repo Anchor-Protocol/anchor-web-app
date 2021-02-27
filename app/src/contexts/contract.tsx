@@ -1,9 +1,5 @@
 import type { AddressProvider } from '@anchor-protocol/anchor.js';
-import {
-  ContractAddress,
-  CW20Addr,
-  HumanAddr,
-} from '@anchor-protocol/types/contracts';
+import { ContractAddress, CW20Addr, HumanAddr } from '@anchor-protocol/types';
 import type { ReactNode } from 'react';
 import { Consumer, Context, createContext, useContext, useMemo } from 'react';
 

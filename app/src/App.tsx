@@ -7,7 +7,7 @@ import { GlobalDependency } from '@anchor-protocol/broadcastable-operation/globa
 import { GlobalStyle } from '@anchor-protocol/neumorphism-ui/themes/GlobalStyle';
 import { SnackbarProvider } from '@anchor-protocol/snackbar';
 import type { Rate, uUST } from '@anchor-protocol/types';
-import { ContractAddress } from '@anchor-protocol/types/contracts';
+import { ContractAddress } from '@anchor-protocol/types';
 import { GoogleAnalytics } from '@anchor-protocol/use-google-analytics';
 import { RouterScrollRestoration } from '@anchor-protocol/use-router-scroll-restoration';
 import {

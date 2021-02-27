@@ -1,6 +1,10 @@
-import { contracts, StableDenom } from '@anchor-protocol/types';
-import type { Rate } from '@anchor-protocol/types';
-import { ContractAddress, HumanAddr } from '@anchor-protocol/types/contracts';
+import type {
+  StableDenom,
+  WASMContractResult,
+  moneyMarket,
+  Rate,
+} from '@anchor-protocol/types';
+import { ContractAddress, HumanAddr } from '@anchor-protocol/types';
 import { createMap, map, Mapped, useMap } from '@anchor-protocol/use-map';
 import { ApolloClient, gql, useQuery } from '@apollo/client';
 import { useContractAddress } from 'contexts/contract';
@@ -13,15 +17,15 @@ import { useMemo } from 'react';
 import { Data as MarketState } from './marketState';
 
 export interface RawData {
-  borrowRate: contracts.WASMContractResult;
-  oraclePrice: contracts.WASMContractResult;
-  overseerWhitelist: contracts.WASMContractResult;
+  borrowRate: WASMContractResult;
+  oraclePrice: WASMContractResult;
+  overseerWhitelist: WASMContractResult;
 }
 
 export interface Data {
-  borrowRate: contracts.WASMContractResult<contracts.moneyMarket.interestModel.BorrowRateResponse>;
-  oraclePrice: contracts.WASMContractResult<contracts.moneyMarket.oracle.PriceResponse>;
-  overseerWhitelist: contracts.WASMContractResult<contracts.moneyMarket.overseer.WhitelistResponse>;
+  borrowRate: WASMContractResult<moneyMarket.interestModel.BorrowRateResponse>;
+  oraclePrice: WASMContractResult<moneyMarket.oracle.PriceResponse>;
+  overseerWhitelist: WASMContractResult<moneyMarket.overseer.WhitelistResponse>;
 }
 
 export const dataMap = createMap<RawData, Data>({
@@ -75,11 +79,11 @@ export interface RawVariables {
 
 export interface Variables {
   interestContractAddress: HumanAddr;
-  interestBorrowRateQuery: contracts.moneyMarket.interestModel.BorrowRate;
+  interestBorrowRateQuery: moneyMarket.interestModel.BorrowRate;
   oracleContractAddress: HumanAddr;
-  oracleQuery: contracts.moneyMarket.oracle.Price;
+  oracleQuery: moneyMarket.oracle.Price;
   overseerContractAddress: HumanAddr;
-  overseerWhitelistQuery: contracts.moneyMarket.overseer.Whitelist;
+  overseerWhitelistQuery: moneyMarket.overseer.Whitelist;
 }
 
 export function mapVariables({

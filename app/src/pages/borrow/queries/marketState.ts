@@ -3,10 +3,12 @@ import type {
   ContractAddress,
   Denom,
   HumanAddr,
+  moneyMarket,
   Num,
   uUST,
+  WASMContractResult,
+  Rate,
 } from '@anchor-protocol/types';
-import { contracts, Rate } from '@anchor-protocol/types';
 import { createMap, map, Mapped, useMap } from '@anchor-protocol/use-map';
 import { ApolloClient, gql, useQuery } from '@apollo/client';
 import { useContractAddress } from 'contexts/contract';
@@ -22,13 +24,13 @@ export interface RawData {
   marketBalance: {
     Result: { Denom: Denom; Amount: uUST }[];
   };
-  marketState: contracts.WASMContractResult;
+  marketState: WASMContractResult;
 }
 
 export interface Data {
   currentBlock: number;
   marketBalance: { Denom: Denom; Amount: uUST }[];
-  marketState: contracts.WASMContractResult<contracts.moneyMarket.market.StateResponse>;
+  marketState: WASMContractResult<moneyMarket.market.StateResponse>;
 }
 
 export const dataMap = createMap<RawData, Data>({
@@ -80,7 +82,7 @@ export interface RawVariables {
 
 export interface Variables {
   marketContractAddress: HumanAddr;
-  marketStateQuery: contracts.moneyMarket.market.State;
+  marketStateQuery: moneyMarket.market.State;
 }
 
 export function mapVariables({
