@@ -4,10 +4,16 @@ import {
 } from '@anchor-protocol/types/contracts/common';
 import { Rate } from '@anchor-protocol/types/units';
 
+/**
+ * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/money-market/overseer#config-1
+ */
 export interface Config {
   config: {};
 }
 
+/**
+ * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/money-market/overseer#configresponse
+ */
 export interface ConfigResponse {
   owner_addr: HumanAddr;
   oracle_contract: HumanAddr;

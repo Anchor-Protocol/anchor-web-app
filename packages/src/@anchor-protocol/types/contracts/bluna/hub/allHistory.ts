@@ -1,6 +1,9 @@
 import { ubLuna } from '@anchor-protocol/types/currencies';
 import { DateTime, Rate } from '@anchor-protocol/types/units';
 
+/**
+ * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/bluna/hub-1#allhistory
+ */
 export interface AllHistory {
   all_history: {
     start_from?: number;
@@ -8,6 +11,9 @@ export interface AllHistory {
   };
 }
 
+/**
+ * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/bluna/hub-1#allhistoryresponse
+ */
 export interface AllHistoryResponse {
   history: Array<{
     batch_id: number;

@@ -3,6 +3,9 @@ import {
   PollStatus,
 } from '@anchor-protocol/types/contracts/anchorToken/gov/poll';
 
+/**
+ * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/anchor-token/gov#polls
+ */
 export interface Polls {
   polls: {
     filter?: PollStatus;
@@ -12,6 +15,9 @@ export interface Polls {
   };
 }
 
+/**
+ * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/anchor-token/gov#pollsresponse
+ */
 export interface PollsResponse {
   polls: Array<PollResponse>;
 }

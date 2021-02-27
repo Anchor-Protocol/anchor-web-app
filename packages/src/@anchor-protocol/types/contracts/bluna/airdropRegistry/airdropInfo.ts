@@ -1,6 +1,9 @@
 import { Denom, HumanAddr } from '@anchor-protocol/types/contracts/common';
 import { Rate } from '@anchor-protocol/types/units';
 
+/**
+ * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/bluna/airdrop-registry#airdropinfo
+ */
 export interface AirdropInfo {
   airdrop_info: {
     airdrop_token?: Denom;
@@ -9,6 +12,9 @@ export interface AirdropInfo {
   };
 }
 
+/**
+ * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/bluna/airdrop-registry#airdropinforesponse
+ */
 export interface AirdropInfoResponse {
   airdrop_info: Array<{
     airdrop_token: Denom;

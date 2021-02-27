@@ -1,6 +1,9 @@
 import { CW20Addr } from '@anchor-protocol/types/contracts/common';
 import { uUST } from '@anchor-protocol/types/currencies';
 
+/**
+ * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/liquidations/liquidation-contract#liquidationamount
+ */
 export interface LiquidationAmount {
   liquidation_amount: {
     borrow_amount: uUST;
@@ -16,6 +19,9 @@ export interface LiquidationAmount {
   };
 }
 
+/**
+ * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/liquidations/liquidation-contract#liquidationamountresponse
+ */
 export interface LiquidationAmountResponse {
   collaterals: Array<[CW20Addr, uUST]>;
 }

@@ -4,10 +4,16 @@ import {
   StableDenom,
 } from '@anchor-protocol/types/contracts/common';
 
+/**
+ * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/money-market/custody-bluna-specific#config-1
+ */
 export interface Config {
   config: {};
 }
 
+/**
+ * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/money-market/custody-bluna-specific#configresponse
+ */
 export interface ConfigResponse {
   owner: HumanAddr;
   collateral_token: HumanAddr;

@@ -1,5 +1,8 @@
 import { Rate } from '@anchor-protocol/types/units';
 
+/**
+ * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/money-market/distribution-model#ancemissionrate
+ */
 export interface AncEmissionRate {
   anc_emission_rate: {
     deposit_rate: Rate;
@@ -8,6 +11,9 @@ export interface AncEmissionRate {
   };
 }
 
+/**
+ * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/money-market/distribution-model#ancemissionrateresponse
+ */
 export interface AncEmissionRateResponse {
   emission_rate: Rate;
 }

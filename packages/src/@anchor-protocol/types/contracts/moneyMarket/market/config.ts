@@ -1,10 +1,16 @@
 import { Rate } from '../../../units';
 import { HumanAddr, StableDenom } from '../../common';
 
+/**
+ * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/money-market/market#config-1
+ */
 export interface Config {
   config: {};
 }
 
+/**
+ * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/money-market/market#configresponse
+ */
 export interface ConfigResponse {
   owner_addr: HumanAddr;
   aterra_contract: HumanAddr;

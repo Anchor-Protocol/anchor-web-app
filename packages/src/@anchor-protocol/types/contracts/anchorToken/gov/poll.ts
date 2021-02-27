@@ -13,12 +13,18 @@ export interface ExecuteMsg {
   msg: Base64EncodedJson;
 }
 
+/**
+ * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/anchor-token/gov#poll
+ */
 export interface Poll {
   poll: {
     poll_id: number;
   };
 }
 
+/**
+ * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/anchor-token/gov#pollresponse
+ */
 export interface PollResponse {
   id: number;
   creator: HumanAddr;
