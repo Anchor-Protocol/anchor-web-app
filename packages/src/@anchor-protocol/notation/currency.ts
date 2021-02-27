@@ -3,19 +3,7 @@ import big, { Big, BigSource } from 'big.js';
 // ---------------------------------------------
 // currency types
 // ---------------------------------------------
-export type Currency<
-  T extends
-    | 'uluna'
-    | 'ubluna'
-    | 'uaust'
-    | 'uust'
-    | 'luna'
-    | 'bluna'
-    | 'ust'
-    | 'aust'
-    | 'uanc'
-    | 'anc'
-> = { __nominal: T };
+export type Currency<T extends string> = { __nominal: T };
 
 export type uaUST<T = string> = T & Currency<'uaust'>;
 export type aUST<T = string> = T & Currency<'aust'>;

@@ -1,0 +1,35 @@
+import {
+  Base64EncodedJson,
+  HumanAddr,
+} from '@anchor-protocol/types/contracts/common';
+import { uANC } from '@anchor-protocol/types/currencies';
+import { Num } from '@anchor-protocol/types/units';
+
+export type PollStatus = 'in_progress' | 'passed' | 'rejected' | 'executed';
+
+export interface ExecuteMsg {
+  order: number;
+  contract: HumanAddr;
+  msg: Base64EncodedJson;
+}
+
+export interface Poll {
+  poll: {
+    poll_id: number;
+  };
+}
+
+export interface PollResponse {
+  id: number;
+  creator: HumanAddr;
+  status: PollStatus;
+  end_height: number;
+  title: string;
+  description: string;
+  link?: string;
+  deposit_amount: uANC;
+  execute_data?: Array<ExecuteMsg>;
+  yes_votes: Num;
+  no_votes: Num;
+  total_balance_at_end_poll: Num;
+}
