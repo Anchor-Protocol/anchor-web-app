@@ -5,8 +5,9 @@ import {
 import { OperationBroadcaster } from '@anchor-protocol/broadcastable-operation';
 import { GlobalDependency } from '@anchor-protocol/broadcastable-operation/global';
 import { GlobalStyle } from '@anchor-protocol/neumorphism-ui/themes/GlobalStyle';
-import type { Rate, uUST } from '@anchor-protocol/types';
 import { SnackbarProvider } from '@anchor-protocol/snackbar';
+import type { Rate, uUST } from '@anchor-protocol/types';
+import { ContractAddress } from '@anchor-protocol/types/contracts';
 import { GoogleAnalytics } from '@anchor-protocol/use-google-analytics';
 import { RouterScrollRestoration } from '@anchor-protocol/use-router-scroll-restoration';
 import {
@@ -27,7 +28,7 @@ import { Header } from 'components/Header';
 import { SnackbarContainer } from 'components/SnackbarContainer';
 import { BankProvider } from 'contexts/bank';
 import { Constants, ConstantsProvider } from 'contexts/contants';
-import { ContractProvider } from 'contexts/contract';
+import { ContractProvider, createContractAddress } from 'contexts/contract';
 import { ServiceProvider } from 'contexts/service';
 import { ThemeProvider } from 'contexts/theme';
 import { contractAddresses, defaultNetwork, GA_TRACKING_ID } from 'env';
@@ -61,6 +62,10 @@ function Providers({
     return new AddressProviderFromJson(contractAddresses);
   }, []);
 
+  const address = useMemo<ContractAddress>(() => {
+    return createContractAddress(addressProvider);
+  }, [addressProvider]);
+
   // TODO create endpoint depends on wallet info
   const client = useMemo<ApolloClient<any>>(() => {
     const httpLink = new HttpLink({
@@ -90,11 +95,12 @@ function Providers({
   const operationGlobalDependency = useMemo<GlobalDependency>(
     () => ({
       addressProvider,
+      address,
       client,
       post,
       ...constants,
     }),
-    [addressProvider, client, constants, post],
+    [address, addressProvider, client, constants, post],
   );
 
   return (

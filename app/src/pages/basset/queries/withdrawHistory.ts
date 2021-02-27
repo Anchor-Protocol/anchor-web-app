@@ -2,7 +2,7 @@ import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import type { DateTime, Rate, ubLuna } from '@anchor-protocol/types';
 import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
-import { useAddressProvider } from 'contexts/contract';
+import { useContractAddress } from 'contexts/contract';
 import { useService } from 'contexts/service';
 import { MappedQueryResult } from 'queries/types';
 import { useQueryErrorHandler } from 'queries/useQueryErrorHandler';
@@ -124,13 +124,13 @@ export function useWithdrawHistory({
 }: {
   withdrawRequestsStartFrom?: number;
 }): MappedQueryResult<RawVariables, RawData, Data> {
-  const addressProvider = useAddressProvider();
+  const { bluna } = useContractAddress();
 
   const { online } = useService();
 
   const variables = useMemo(() => {
     return mapVariables({
-      bLunaHubContract: addressProvider.blunaHub('bluna'),
+      bLunaHubContract: bluna.hub,
       allHistory: {
         all_history: {
           start_from: withdrawRequestsStartFrom ?? 0,
@@ -141,7 +141,7 @@ export function useWithdrawHistory({
         parameters: {},
       },
     });
-  }, [addressProvider, withdrawRequestsStartFrom]);
+  }, [bluna.hub, withdrawRequestsStartFrom]);
 
   const onError = useQueryErrorHandler();
 

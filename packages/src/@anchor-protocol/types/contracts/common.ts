@@ -13,53 +13,53 @@ export type Base64EncodedJson = string & NominalType<'Base64EncodedJson'>;
 
 export interface ContractAddress {
   bluna: {
-    // addressProvider.blunaReward()
+    /** addressProvider.blunaReward() */
     reward: HumanAddr;
-    // addressProvider.blunaHub()
+    /** addressProvider.blunaHub() */
     hub: HumanAddr;
   };
   moneyMarket: {
-    // addressProvider.market()
+    /** addressProvider.market() */
     market: HumanAddr;
-    // addressProvider.custody()
+    /** addressProvider.custody() */
     custody: HumanAddr;
-    // addressProvider.overseer()
+    /** addressProvider.overseer() */
     overseer: HumanAddr;
-    // addressProvider.oracle()
+    /** addressProvider.oracle() */
     oracle: HumanAddr;
-    // addressProvider.interest()
+    /** addressProvider.interest() */
     interestModel: HumanAddr;
   };
   liquidation: {
-    // addressProvider.liquidation()
+    /** addressProvider.liquidation() */
     liquidationContract: HumanAddr;
   };
   anchorToken: {
-    // addressProvider.gov()
+    /** addressProvider.gov() */
     gov: HumanAddr;
-    // addressProvider.staking()
+    /** addressProvider.staking() */
     staking: HumanAddr;
-    // addressProvider.community()
+    /** addressProvider.community() */
     community: HumanAddr;
-    // addressProvider.faucet()
+    /** addressProvider.faucet() */
     faucet: HumanAddr;
   };
   terraswap: {
-    // addressProvider.terraswapblunaLunaPair()
+    /** addressProvider.terraswapblunaLunaPair() */
     blunaLunaPair: HumanAddr;
-    // addressProvider.terraswapblunaLunaLPToken()
+    /** addressProvider.terraswapblunaLunaLPToken() */
     blunaLunaLPToken: HumanAddr;
-    // addressProvider.terraswapbAncUstPair()
+    /** addressProvider.terraswapbAncUstPair() */
     ancUstPair: HumanAddr;
-    // addressProvider.terraswapbAncUstLPToken()
+    /** addressProvider.terraswapbAncUstLPToken() */
     ancUstLPToken: HumanAddr;
   };
   cw20: {
-    // addressProvider.blunaToken()
+    /** addressProvider.blunaToken() */
     bLuna: CW20Addr;
-    // addressProvider.aTerra()
+    /** addressProvider.aTerra() */
     aUST: CW20Addr;
-    // addressProvider.ANC()
+    /** addressProvider.ANC() */
     ANC: CW20Addr;
   };
 }

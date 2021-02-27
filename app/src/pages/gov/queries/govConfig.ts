@@ -1,7 +1,7 @@
 import type { Rate, uUST } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
-import { useAddressProvider } from 'contexts/contract';
+import { useContractAddress } from 'contexts/contract';
 import { useService } from 'contexts/service';
 import { parseResult } from 'queries/parseResult';
 import { MappedQueryResult } from 'queries/types';
@@ -70,13 +70,13 @@ export const query = gql`
 export function useGovConfig(): MappedQueryResult<RawVariables, RawData, Data> {
   const { serviceAvailable } = useService();
 
-  const addressProvider = useAddressProvider();
+  const { anchorToken } = useContractAddress();
 
   const variables = useMemo(() => {
     return mapVariables({
-      Gov_contract: addressProvider.gov(),
+      Gov_contract: anchorToken.gov,
     });
-  }, [addressProvider]);
+  }, [anchorToken.gov]);
 
   const onError = useQueryErrorHandler();
 

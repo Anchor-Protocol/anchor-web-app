@@ -2,7 +2,7 @@ import { useEventBusListener } from '@anchor-protocol/event-bus';
 import type { Num, Rate, uaUST } from '@anchor-protocol/types';
 import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
-import { useAddressProvider } from 'contexts/contract';
+import { useContractAddress } from 'contexts/contract';
 import { useService } from 'contexts/service';
 import { useLastSyncedHeight } from 'queries/lastSyncedHeight';
 import { parseResult } from 'queries/parseResult';
@@ -125,20 +125,20 @@ export const query = gql`
 `;
 
 export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
-  const addressProvider = useAddressProvider();
+  const { moneyMarket, cw20 } = useContractAddress();
   const { serviceAvailable, walletReady } = useService();
 
   const { data: lastSyncedHeight } = useLastSyncedHeight();
 
   const variables = useMemo(() => {
     return mapVariables({
-      anchorTokenContract: addressProvider.aTerra(''),
+      anchorTokenContract: cw20.aUST,
       anchorTokenBalanceQuery: {
         balance: {
           address: walletReady?.walletAddress ?? '',
         },
       },
-      moneyMarketContract: addressProvider.market(''),
+      moneyMarketContract: moneyMarket.market,
       moneyMarketEpochQuery: {
         epoch_state: {
           lastSyncedHeight:
@@ -146,7 +146,12 @@ export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
         },
       },
     });
-  }, [addressProvider, lastSyncedHeight, walletReady?.walletAddress]);
+  }, [
+    cw20.aUST,
+    lastSyncedHeight,
+    moneyMarket.market,
+    walletReady?.walletAddress,
+  ]);
 
   const onError = useQueryErrorHandler();
 

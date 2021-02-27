@@ -1,9 +1,9 @@
-import { AddressProvider } from '@anchor-protocol/anchor.js';
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import type { Num, uaUST, uUST } from '@anchor-protocol/types';
+import { ContractAddress } from '@anchor-protocol/types/contracts';
 import { createMap, map, Mapped, useMap } from '@anchor-protocol/use-map';
 import { ApolloClient, gql, useQuery } from '@apollo/client';
-import { useAddressProvider } from 'contexts/contract';
+import { useContractAddress } from 'contexts/contract';
 import { useService } from 'contexts/service';
 import { parseResult } from 'queries/parseResult';
 import { MappedApolloQueryResult, MappedQueryResult } from 'queries/types';
@@ -126,18 +126,18 @@ export function useMarketState(): MappedQueryResult<
   RawData,
   Data
 > {
-  const addressProvider = useAddressProvider();
+  const { moneyMarket } = useContractAddress();
 
   const { online } = useService();
 
   const variables = useMemo<RawVariables>(() => {
     return mapVariables({
-      marketContractAddress: addressProvider.market('uusd'),
+      marketContractAddress: moneyMarket.market,
       marketStateQuery: {
         state: {},
       },
     });
-  }, [addressProvider]);
+  }, [moneyMarket.market]);
 
   const onError = useQueryErrorHandler();
 
@@ -171,14 +171,14 @@ export function useMarketState(): MappedQueryResult<
 
 export function queryMarketState(
   client: ApolloClient<any>,
-  addressProvider: AddressProvider,
+  address: ContractAddress,
 ): Promise<MappedApolloQueryResult<RawData, Data>> {
   return client
     .query<RawData, RawVariables>({
       query,
       fetchPolicy: 'network-only',
       variables: mapVariables({
-        marketContractAddress: addressProvider.market('uusd'),
+        marketContractAddress: address.moneyMarket.market,
         marketStateQuery: {
           state: {},
         },

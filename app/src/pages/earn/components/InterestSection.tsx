@@ -83,8 +83,6 @@ export function InterestSection({ className }: InterestSectionProps) {
       }))
       .reverse();
 
-    console.log('InterestSection.tsx..()', apyHistory);
-
     return history && marketStatus
       ? [
           ...history,

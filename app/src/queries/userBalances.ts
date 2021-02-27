@@ -2,7 +2,7 @@ import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import type { uaUST, ubLuna, uLuna, uUST } from '@anchor-protocol/types';
 import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
-import { useAddressProvider } from 'contexts/contract';
+import { useContractAddress } from 'contexts/contract';
 import { useService } from 'contexts/service';
 import { MappedQueryResult } from 'queries/types';
 import { useRefetch } from 'queries/useRefetch';
@@ -142,17 +142,17 @@ export function useUserBalances(): MappedQueryResult<
   RawData,
   Data
 > {
-  const addressProvider = useAddressProvider();
+  const { cw20 } = useContractAddress();
 
   const { serviceAvailable, walletReady } = useService();
 
   const variables = useMemo(() => {
     return mapVariables({
       walletAddress: walletReady?.walletAddress ?? '',
-      bAssetTokenAddress: addressProvider.blunaToken('bluna'),
-      aTokenAddress: addressProvider.aTerra('usd'),
+      bAssetTokenAddress: cw20.bLuna,
+      aTokenAddress: cw20.aUST,
     });
-  }, [addressProvider, walletReady?.walletAddress]);
+  }, [cw20.aUST, cw20.bLuna, walletReady?.walletAddress]);
 
   const { data: _data, refetch: _refetch, ...result } = useQuery<
     RawData,

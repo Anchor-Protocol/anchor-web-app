@@ -1,7 +1,7 @@
 import type { Num, Rate } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
-import { useAddressProvider } from 'contexts/contract';
+import { useContractAddress } from 'contexts/contract';
 import { useService } from 'contexts/service';
 import { parseResult } from 'queries/parseResult';
 import { MappedQueryResult } from 'queries/types';
@@ -67,16 +67,16 @@ export const query = gql`
 export function useInterest(): MappedQueryResult<RawVariables, RawData, Data> {
   const { online } = useService();
 
-  const addressProvider = useAddressProvider();
+  const { moneyMarket } = useContractAddress();
 
   const variables = useMemo(() => {
     return mapVariables({
-      overseerContract: addressProvider.overseer(''),
+      overseerContract: moneyMarket.overseer,
       overseerEpochState: {
         epoch_state: {},
       },
     });
-  }, [addressProvider]);
+  }, [moneyMarket.overseer]);
 
   const onError = useQueryErrorHandler();
 

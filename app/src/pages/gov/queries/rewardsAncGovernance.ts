@@ -1,7 +1,7 @@
 import type { Num, uANC } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
-import { useAddressProvider } from 'contexts/contract';
+import { useContractAddress } from 'contexts/contract';
 import { useService } from 'contexts/service';
 import { parseResult } from 'queries/parseResult';
 import { MappedQueryResult } from 'queries/types';
@@ -103,15 +103,15 @@ export function useRewardsAncGovernance(): MappedQueryResult<
 > {
   const { serviceAvailable, walletReady } = useService();
 
-  const addressProvider = useAddressProvider();
+  const { anchorToken, cw20 } = useContractAddress();
 
   const variables = useMemo(() => {
     return mapVariables({
-      ANC_Gov_contract: addressProvider.gov(),
-      ANC_token_contract: addressProvider.ANC(),
+      ANC_Gov_contract: anchorToken.gov,
+      ANC_token_contract: cw20.ANC,
       userWalletAddress: walletReady?.walletAddress ?? '',
     });
-  }, [addressProvider, walletReady?.walletAddress]);
+  }, [anchorToken.gov, cw20.ANC, walletReady?.walletAddress]);
 
   const onError = useQueryErrorHandler();
 

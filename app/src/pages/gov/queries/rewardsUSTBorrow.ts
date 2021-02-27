@@ -1,7 +1,7 @@
 import type { Num, Rate, uaUST, uUST } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
-import { useAddressProvider } from 'contexts/contract';
+import { useContractAddress } from 'contexts/contract';
 import { useService } from 'contexts/service';
 import { parseResult } from 'queries/parseResult';
 import { MappedQueryResult } from 'queries/types';
@@ -106,14 +106,14 @@ export function useRewardsUSTBorrow(): MappedQueryResult<
 > {
   const { serviceAvailable, walletReady } = useService();
 
-  const addressProvider = useAddressProvider();
+  const { moneyMarket } = useContractAddress();
 
   const variables = useMemo(() => {
     return mapVariables({
-      MarketContract: addressProvider.market(''),
+      MarketContract: moneyMarket.market,
       userWalletAddress: walletReady?.walletAddress ?? '',
     });
-  }, [addressProvider, walletReady?.walletAddress]);
+  }, [moneyMarket.market, walletReady?.walletAddress]);
 
   const onError = useQueryErrorHandler();
 

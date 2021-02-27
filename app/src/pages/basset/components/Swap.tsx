@@ -27,7 +27,7 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
-import { useAddressProvider } from 'contexts/contract';
+import { useContractAddress } from 'contexts/contract';
 import { useService, useServiceConnectedMemo } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
@@ -58,7 +58,7 @@ export function Swap() {
 
   const client = useApolloClient();
 
-  const addressProvider = useAddressProvider();
+  const address = useContractAddress();
 
   const [swap, swapResult] = useOperation(swapOptions, {});
 
@@ -157,7 +157,7 @@ export function Swap() {
           resolveSimulation(
             queryTerraswapOfferSimulation(
               client,
-              addressProvider,
+              address,
               amount,
             ).then(({ data: { terraswapOfferSimulation } }) =>
               terraswapOfferSimulation
@@ -174,7 +174,7 @@ export function Swap() {
         }
       }
     },
-    [addressProvider, bank.tax, client, resolveSimulation, serviceAvailable],
+    [address, bank.tax, client, resolveSimulation, serviceAvailable],
   );
 
   const updateGetAmount = useCallback(
@@ -194,7 +194,7 @@ export function Swap() {
           resolveSimulation(
             queryTerraswapAskSimulation(
               client,
-              addressProvider,
+              address,
               amount,
             ).then(({ data: { terraswapAskSimulation } }) =>
               terraswapAskSimulation
@@ -211,7 +211,7 @@ export function Swap() {
         }
       }
     },
-    [addressProvider, bank.tax, client, resolveSimulation, serviceAvailable],
+    [address, bank.tax, client, resolveSimulation, serviceAvailable],
   );
 
   const init = useCallback(() => {

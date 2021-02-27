@@ -1,7 +1,7 @@
 import type { Num } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
-import { useAddressProvider } from 'contexts/contract';
+import { useContractAddress } from 'contexts/contract';
 import { useService } from 'contexts/service';
 import { parseResult } from 'queries/parseResult';
 import { MappedQueryResult } from 'queries/types';
@@ -71,13 +71,13 @@ export function useLPStakingState(): MappedQueryResult<
 > {
   const { serviceAvailable } = useService();
 
-  const addressProvider = useAddressProvider();
+  const { anchorToken } = useContractAddress();
 
   const variables = useMemo(() => {
     return mapVariables({
-      ANCUST_LP_Staking_contract: addressProvider.staking(),
+      ANCUST_LP_Staking_contract: anchorToken.staking,
     });
-  }, [addressProvider]);
+  }, [anchorToken.staking]);
 
   const onError = useQueryErrorHandler();
 

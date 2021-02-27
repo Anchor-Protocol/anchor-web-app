@@ -2,7 +2,7 @@ import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import type { Rate, uANC } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
-import { useAddressProvider } from 'contexts/contract';
+import { useContractAddress } from 'contexts/contract';
 import { useService } from 'contexts/service';
 import { parseResult } from 'queries/parseResult';
 import { MappedQueryResult } from 'queries/types';
@@ -139,19 +139,19 @@ export function useTotalStaked(): MappedQueryResult<
 > {
   const { serviceAvailable } = useService();
 
-  const addressProvider = useAddressProvider();
+  const { cw20, anchorToken } = useContractAddress();
 
   const variables = useMemo(() => {
     return mapVariables({
-      ANCTokenContract: addressProvider.ANC(),
+      ANCTokenContract: cw20.ANC,
       ANCTokenBalanceQuery: {
         balance: {
-          address: addressProvider.gov(),
+          address: anchorToken.gov,
         },
       },
-      GovContract: addressProvider.gov(),
+      GovContract: anchorToken.gov,
     });
-  }, [addressProvider]);
+  }, [anchorToken.gov, cw20.ANC]);
 
   const onError = useQueryErrorHandler();
 

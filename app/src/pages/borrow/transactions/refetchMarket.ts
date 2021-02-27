@@ -1,4 +1,4 @@
-import { AddressProvider } from '@anchor-protocol/anchor.js';
+import { ContractAddress } from '@anchor-protocol/types/contracts';
 import { WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient } from '@apollo/client';
 import {
@@ -12,7 +12,7 @@ import {
 } from '../queries/marketUserOverview';
 
 export const refetchMarket = (
-  addressProvider: AddressProvider,
+  address: ContractAddress,
   client: ApolloClient<any>,
   walletStatus: WalletStatus,
 ) => async (_: {}): Promise<{
@@ -27,7 +27,7 @@ export const refetchMarket = (
 }> => {
   const {
     data: { currentBlock, marketBalance, marketState },
-  } = await queryMarketState(client, addressProvider);
+  } = await queryMarketState(client, address);
 
   if (typeof currentBlock !== 'number' || !marketBalance || !marketState) {
     return {};
@@ -41,13 +41,8 @@ export const refetchMarket = (
       data: { loanAmount, borrowInfo },
     },
   ] = await Promise.all([
-    queryMarketOverview(client, addressProvider, marketBalance, marketState),
-    queryMarketUserOverview(
-      client,
-      addressProvider,
-      walletStatus,
-      currentBlock,
-    ),
+    queryMarketOverview(client, address, marketBalance, marketState),
+    queryMarketUserOverview(client, address, walletStatus, currentBlock),
   ]);
 
   return {

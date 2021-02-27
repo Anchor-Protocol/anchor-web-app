@@ -1,8 +1,8 @@
-import { AddressProvider } from '@anchor-protocol/anchor.js';
 import type { Rate } from '@anchor-protocol/types';
+import { ContractAddress } from '@anchor-protocol/types/contracts';
 import { createMap, map, Mapped, useMap } from '@anchor-protocol/use-map';
 import { ApolloClient, gql, useQuery } from '@apollo/client';
-import { useAddressProvider } from 'contexts/contract';
+import { useContractAddress } from 'contexts/contract';
 import { useService } from 'contexts/service';
 import { parseResult } from 'queries/parseResult';
 import { MappedApolloQueryResult, MappedQueryResult } from 'queries/types';
@@ -179,13 +179,13 @@ export function useMarketOverview({
   marketBalance: MarketState['marketBalance'] | undefined;
   marketState: MarketState['marketState'] | undefined;
 }): MappedQueryResult<RawVariables, RawData, Data> {
-  const addressProvider = useAddressProvider();
+  const { cw20, moneyMarket } = useContractAddress();
 
   const { online } = useService();
 
   const variables = useMemo(() => {
     return mapVariables({
-      interestContractAddress: addressProvider.interest(),
+      interestContractAddress: moneyMarket.interestModel,
       interestBorrowRateQuery: {
         borrow_rate: {
           market_balance:
@@ -194,25 +194,28 @@ export function useMarketOverview({
           total_reserves: marketState?.total_reserves ?? '',
         },
       },
-      oracleContractAddress: addressProvider.oracle(),
+      oracleContractAddress: moneyMarket.oracle,
       oracleQuery: {
         price: {
-          base: addressProvider.blunaToken('ubluna'),
+          base: cw20.bLuna,
           quote: 'uusd',
         },
       },
-      overseerContractAddress: addressProvider.overseer('ubluna'),
+      overseerContractAddress: moneyMarket.overseer,
       overseerWhitelistQuery: {
         whitelist: {
-          collateral_token: addressProvider.blunaToken('ubluna'),
+          collateral_token: cw20.bLuna,
         },
       },
     });
   }, [
-    addressProvider,
+    cw20.bLuna,
     marketBalance,
     marketState?.total_liabilities,
     marketState?.total_reserves,
+    moneyMarket.interestModel,
+    moneyMarket.oracle,
+    moneyMarket.overseer,
   ]);
 
   const onError = useQueryErrorHandler();
@@ -240,7 +243,7 @@ export function useMarketOverview({
 
 export function queryMarketOverview(
   client: ApolloClient<any>,
-  addressProvider: AddressProvider,
+  address: ContractAddress,
   marketBalance: MarketState['marketBalance'],
   marketState: MarketState['marketState'],
 ): Promise<MappedApolloQueryResult<RawData, Data>> {
@@ -249,7 +252,7 @@ export function queryMarketOverview(
       query,
       fetchPolicy: 'network-only',
       variables: mapVariables({
-        interestContractAddress: addressProvider.interest(),
+        interestContractAddress: address.moneyMarket.interestModel,
         interestBorrowRateQuery: {
           borrow_rate: {
             market_balance:
@@ -258,17 +261,17 @@ export function queryMarketOverview(
             total_reserves: marketState.total_reserves,
           },
         },
-        oracleContractAddress: addressProvider.oracle(),
+        oracleContractAddress: address.moneyMarket.oracle,
         oracleQuery: {
           price: {
-            base: addressProvider.blunaToken('ubluna'),
+            base: address.cw20.bLuna,
             quote: 'uusd',
           },
         },
-        overseerContractAddress: addressProvider.overseer('ubluna'),
+        overseerContractAddress: address.moneyMarket.overseer,
         overseerWhitelistQuery: {
           whitelist: {
-            collateral_token: addressProvider.blunaToken('ubluna'),
+            collateral_token: address.cw20.bLuna,
           },
         },
       }),

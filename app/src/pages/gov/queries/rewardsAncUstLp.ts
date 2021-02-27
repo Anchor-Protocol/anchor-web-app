@@ -1,7 +1,7 @@
 import type { Num, uANC } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
-import { useAddressProvider } from 'contexts/contract';
+import { useContractAddress } from 'contexts/contract';
 import { useService } from 'contexts/service';
 import { parseResult } from 'queries/parseResult';
 import { MappedQueryResult } from 'queries/types';
@@ -104,15 +104,19 @@ export function useRewardsAncUstLp(): MappedQueryResult<
 > {
   const { serviceAvailable, walletReady } = useService();
 
-  const addressProvider = useAddressProvider();
+  const { terraswap, anchorToken } = useContractAddress();
 
   const variables = useMemo(() => {
     return mapVariables({
-      ANCUST_LP_Token_contract: addressProvider.terraswapAncUstLPToken(),
-      ANCUST_LP_Staking_contract: addressProvider.staking(),
+      ANCUST_LP_Token_contract: terraswap.ancUstLPToken,
+      ANCUST_LP_Staking_contract: anchorToken.staking,
       userWalletAddress: walletReady?.walletAddress ?? '',
     });
-  }, [addressProvider, walletReady?.walletAddress]);
+  }, [
+    anchorToken.staking,
+    terraswap.ancUstLPToken,
+    walletReady?.walletAddress,
+  ]);
 
   const onError = useQueryErrorHandler();
 

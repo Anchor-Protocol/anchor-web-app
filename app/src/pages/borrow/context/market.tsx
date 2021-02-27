@@ -1,6 +1,6 @@
 import type { Rate } from '@anchor-protocol/types';
 import big from 'big.js';
-import { useAddressProvider } from 'contexts/contract';
+import { useContractAddress } from 'contexts/contract';
 import { SAFE_RATIO } from 'env';
 import type { ReactNode } from 'react';
 import { Consumer, Context, createContext, useContext, useMemo } from 'react';
@@ -43,7 +43,7 @@ export interface Market {
 const MarketContext: Context<Market> = createContext<Market>();
 
 export function MarketProvider({ children }: MarketProviderProps) {
-  const addressProvider = useAddressProvider();
+  const { cw20 } = useContractAddress();
 
   const {
     data: { currentBlock, marketBalance, marketState },
@@ -62,10 +62,9 @@ export function MarketProvider({ children }: MarketProviderProps) {
 
   const bLunaMaxLtv = useMemo(() => {
     return overseerWhitelist?.elems.find(
-      ({ collateral_token }) =>
-        collateral_token === addressProvider.blunaToken('ubluna'),
+      ({ collateral_token }) => collateral_token === cw20.bLuna,
     )?.max_ltv;
-  }, [addressProvider, overseerWhitelist?.elems]);
+  }, [cw20.bLuna, overseerWhitelist?.elems]);
 
   const bLunaSafeLtv = useMemo(() => {
     return bLunaMaxLtv

@@ -3,7 +3,7 @@ import type { Num, uUST } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { Int } from '@terra-money/terra.js';
-import { useAddressProvider } from 'contexts/contract';
+import { useContractAddress } from 'contexts/contract';
 import { useService } from 'contexts/service';
 import { MappedQueryResult } from 'queries/types';
 import { useQueryErrorHandler } from 'queries/useQueryErrorHandler';
@@ -84,13 +84,13 @@ export const query = gql`
 export function useANCPrice(): MappedQueryResult<RawVariables, RawData, Data> {
   const { serviceAvailable } = useService();
 
-  const addressProvider = useAddressProvider();
+  const { terraswap } = useContractAddress();
 
   const variables = useMemo(() => {
     return mapVariables({
-      ANCTerraswap: addressProvider.terraswapAncUstPair(),
+      ANCTerraswap: terraswap.ancUstPair,
     });
-  }, [addressProvider]);
+  }, [terraswap.ancUstPair]);
 
   const onError = useQueryErrorHandler();
 

@@ -1,6 +1,6 @@
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
-import { useAddressProvider } from 'contexts/contract';
+import { useContractAddress } from 'contexts/contract';
 import { useService } from 'contexts/service';
 import { Poll } from 'pages/gov/queries/polls';
 import { parseResult } from 'queries/parseResult';
@@ -67,14 +67,14 @@ export function usePoll(
 ): MappedQueryResult<RawVariables, RawData, Data> {
   const { serviceAvailable } = useService();
 
-  const addressProvider = useAddressProvider();
+  const { anchorToken } = useContractAddress();
 
   const variables = useMemo(() => {
     return mapVariables({
-      govContract: addressProvider.gov(),
+      govContract: anchorToken.gov,
       poll_id: pollId,
     });
-  }, [addressProvider, pollId]);
+  }, [anchorToken.gov, pollId]);
 
   const onError = useQueryErrorHandler();
 

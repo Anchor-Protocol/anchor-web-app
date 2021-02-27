@@ -1,8 +1,8 @@
-import { AddressProvider } from '@anchor-protocol/anchor.js';
 import type { Num, uANC } from '@anchor-protocol/types';
+import { ContractAddress } from '@anchor-protocol/types/contracts';
 import { createMap, map } from '@anchor-protocol/use-map';
 import { ApolloClient, gql, useApolloClient } from '@apollo/client';
-import { useAddressProvider } from 'contexts/contract';
+import { useContractAddress } from 'contexts/contract';
 import { parseResult } from 'queries/parseResult';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -91,25 +91,23 @@ export function usePolls(
 ): [polls: Poll[], loadMore: () => void] {
   const client = useApolloClient();
 
-  const addressProvider = useAddressProvider();
+  const address = useContractAddress();
 
   const [polls, setPolls] = useState<Poll[]>([]);
 
   useEffect(() => {
-    queryPolls(client, addressProvider, filter, undefined, limit).then(
-      ({ data }) => {
-        if (data.polls?.polls) {
-          setPolls(data.polls.polls);
-        }
-      },
-    );
-  }, [addressProvider, client, filter]);
+    queryPolls(client, address, filter, undefined, limit).then(({ data }) => {
+      if (data.polls?.polls) {
+        setPolls(data.polls.polls);
+      }
+    });
+  }, [address, client, filter]);
 
   const loadMore = useCallback(() => {
     if (polls.length > 0) {
       queryPolls(
         client,
-        addressProvider,
+        address,
         filter,
         polls[polls.length - 1].id,
         limit,
@@ -122,14 +120,14 @@ export function usePolls(
         });
       });
     }
-  }, [addressProvider, client, filter, polls]);
+  }, [address, client, filter, polls]);
 
   return [polls, loadMore];
 }
 
 export function queryPolls(
   client: ApolloClient<any>,
-  addressProvider: AddressProvider,
+  address: ContractAddress,
   filter?: PollStatus,
   start_after?: number,
   limit?: number,
@@ -139,7 +137,7 @@ export function queryPolls(
       query,
       fetchPolicy: 'network-only',
       variables: mapVariables({
-        Gov_contract: addressProvider.gov(),
+        Gov_contract: address.anchorToken.gov,
         PollsQuery: {
           polls: {
             filter,

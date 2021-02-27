@@ -2,7 +2,7 @@ import type { bLuna, Num } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import big from 'big.js';
-import { useAddressProvider } from 'contexts/contract';
+import { useContractAddress } from 'contexts/contract';
 import { useService } from 'contexts/service';
 import { MappedQueryResult } from 'queries/types';
 import { useQueryErrorHandler } from 'queries/useQueryErrorHandler';
@@ -100,15 +100,15 @@ export function useTerraswapBLunaPrice(): MappedQueryResult<
   RawData,
   Data
 > {
-  const addressProvider = useAddressProvider();
+  const { terraswap } = useContractAddress();
 
   const { online } = useService();
 
   const variables = useMemo(() => {
     return mapVariables({
-      bLunaTerraswap: addressProvider.terraswapblunaLunaPair(),
+      bLunaTerraswap: terraswap.blunaLunaPair,
     });
-  }, [addressProvider]);
+  }, [terraswap.blunaLunaPair]);
 
   const onError = useQueryErrorHandler();
 

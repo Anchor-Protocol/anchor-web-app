@@ -26,6 +26,7 @@ interface DependencyList {
 export const provideCollateralOptions = createOperationOptions({
   id: 'borrow/provide-collateral',
   pipe: ({
+    address,
     addressProvider,
     post,
     client,
@@ -45,7 +46,7 @@ export const provideCollateralOptions = createOperationOptions({
     parseTxResult, // -> TxResult
     merge(
       getTxInfo(client, signal), // -> { TxResult, TxInfo }
-      refetchMarket(addressProvider, client, walletStatus), // -> { loanAmount, borrowInfo... }
+      refetchMarket(address, client, walletStatus), // -> { loanAmount, borrowInfo... }
       injectTxFee(storage), // -> { txFee }
     ),
     pickProvideCollateralResult, // -> TransactionResult

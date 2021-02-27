@@ -1,5 +1,5 @@
-import { AddressProvider } from '@anchor-protocol/anchor.js';
 import type { ubLuna, uLuna } from '@anchor-protocol/types';
+import { ContractAddress } from '@anchor-protocol/types/contracts';
 import { createMap, map } from '@anchor-protocol/use-map';
 import { ApolloClient, gql } from '@apollo/client';
 import { parseResult } from 'queries/parseResult';
@@ -76,7 +76,7 @@ export const query = gql`
 
 export function queryTerraswapOfferSimulation(
   client: ApolloClient<any>,
-  addressProvider: AddressProvider,
+  address: ContractAddress,
   burnAmount: ubLuna,
 ): Promise<MappedApolloQueryResult<RawData, Data>> {
   return client
@@ -84,13 +84,13 @@ export function queryTerraswapOfferSimulation(
       query,
       fetchPolicy: 'no-cache',
       variables: mapVariables({
-        bLunaTerraswap: addressProvider.terraswapblunaLunaPair(),
+        bLunaTerraswap: address.terraswap.blunaLunaPair,
         offerSimulationQuery: {
           simulation: {
             offer_asset: {
               info: {
                 token: {
-                  contract_addr: addressProvider.blunaToken('bluna'),
+                  contract_addr: address.cw20.bLuna,
                 },
               },
               amount: burnAmount,

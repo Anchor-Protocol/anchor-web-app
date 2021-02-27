@@ -2,7 +2,7 @@ import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import type { ubLuna, uLuna } from '@anchor-protocol/types';
 import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
-import { useAddressProvider } from 'contexts/contract';
+import { useContractAddress } from 'contexts/contract';
 import { useService } from 'contexts/service';
 import { MappedQueryResult } from 'queries/types';
 import { useQueryErrorHandler } from 'queries/useQueryErrorHandler';
@@ -139,7 +139,7 @@ export function useWithdrawable({
 }: {
   bAsset: string;
 }): MappedQueryResult<RawVariables, RawData, Data> {
-  const addressProvider = useAddressProvider();
+  const { bluna } = useContractAddress();
 
   const { serviceAvailable, walletReady } = useService();
 
@@ -147,7 +147,7 @@ export function useWithdrawable({
 
   const variables = useMemo(() => {
     return mapVariables({
-      bLunaHubContract: addressProvider.blunaHub(bAsset),
+      bLunaHubContract: bluna.hub,
       withdrawableAmountQuery: {
         withdrawable_unbonded: {
           block_time: now,
@@ -163,7 +163,7 @@ export function useWithdrawable({
         state: {},
       },
     });
-  }, [addressProvider, bAsset, now, walletReady?.walletAddress]);
+  }, [bluna.hub, now, walletReady?.walletAddress]);
 
   const onError = useQueryErrorHandler();
 

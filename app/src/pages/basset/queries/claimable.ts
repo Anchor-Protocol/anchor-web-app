@@ -2,7 +2,7 @@ import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import type { Num, ubLuna } from '@anchor-protocol/types';
 import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
-import { useAddressProvider } from 'contexts/contract';
+import { useContractAddress } from 'contexts/contract';
 import { useService } from 'contexts/service';
 import { parseResult } from 'queries/parseResult';
 import { MappedQueryResult } from 'queries/types';
@@ -111,13 +111,13 @@ export const query = gql`
 `;
 
 export function useClaimable(): MappedQueryResult<RawVariables, RawData, Data> {
-  const addressProvider = useAddressProvider();
+  const { bluna } = useContractAddress();
 
   const { serviceAvailable, walletReady } = useService();
 
   const variables = useMemo(() => {
     return mapVariables({
-      bAssetRewardContract: addressProvider.blunaReward(''),
+      bAssetRewardContract: bluna.reward,
       rewardState: {
         state: {},
       },
@@ -127,7 +127,7 @@ export function useClaimable(): MappedQueryResult<RawVariables, RawData, Data> {
         },
       },
     });
-  }, [addressProvider, walletReady?.walletAddress]);
+  }, [bluna.reward, walletReady?.walletAddress]);
 
   const onError = useQueryErrorHandler();
 

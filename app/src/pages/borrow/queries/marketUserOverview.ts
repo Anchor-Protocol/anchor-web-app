@@ -1,9 +1,9 @@
-import { AddressProvider } from '@anchor-protocol/anchor.js';
 import type { Num, uUST } from '@anchor-protocol/types';
+import { ContractAddress } from '@anchor-protocol/types/contracts';
 import { createMap, map, Mapped, useMap } from '@anchor-protocol/use-map';
 import { WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, gql, useQuery } from '@apollo/client';
-import { useAddressProvider } from 'contexts/contract';
+import { useContractAddress } from 'contexts/contract';
 import { useService } from 'contexts/service';
 import { parseResult } from 'queries/parseResult';
 import { MappedApolloQueryResult, MappedQueryResult } from 'queries/types';
@@ -134,27 +134,32 @@ export function useMarketUserOverview({
 }: {
   currentBlock: MarketState['currentBlock'] | undefined;
 }): MappedQueryResult<RawVariables, RawData, Data> {
-  const addressProvider = useAddressProvider();
+  const { moneyMarket } = useContractAddress();
 
   const { serviceAvailable, walletReady } = useService();
 
   const variables = useMemo(() => {
     return mapVariables({
-      marketContractAddress: addressProvider.market('uusd'),
+      marketContractAddress: moneyMarket.market,
       marketBorrowerQuery: {
         borrower_info: {
           borrower: walletReady?.walletAddress ?? '',
           block_height: currentBlock ?? 0,
         },
       },
-      custodyContractAddress: addressProvider.custody('ubluna'),
+      custodyContractAddress: moneyMarket.custody,
       custodyBorrowerQuery: {
         borrower: {
           address: walletReady?.walletAddress ?? '',
         },
       },
     });
-  }, [addressProvider, currentBlock, walletReady?.walletAddress]);
+  }, [
+    currentBlock,
+    moneyMarket.custody,
+    moneyMarket.market,
+    walletReady?.walletAddress,
+  ]);
 
   const onError = useQueryErrorHandler();
 
@@ -181,7 +186,7 @@ export function useMarketUserOverview({
 
 export function queryMarketUserOverview(
   client: ApolloClient<any>,
-  addressProvider: AddressProvider,
+  address: ContractAddress,
   walletStatus: WalletStatus,
   currentBlock: MarketState['currentBlock'],
 ): Promise<MappedApolloQueryResult<RawData, Data>> {
@@ -194,14 +199,14 @@ export function queryMarketUserOverview(
       query,
       fetchPolicy: 'network-only',
       variables: mapVariables({
-        marketContractAddress: addressProvider.market('uusd'),
+        marketContractAddress: address.moneyMarket.market,
         marketBorrowerQuery: {
           borrower_info: {
             borrower: walletStatus.walletAddress,
             block_height: currentBlock,
           },
         },
-        custodyContractAddress: addressProvider.custody('ubluna'),
+        custodyContractAddress: address.moneyMarket.custody,
         custodyBorrowerQuery: {
           borrower: {
             address: walletStatus.walletAddress,
