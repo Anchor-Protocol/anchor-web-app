@@ -14,13 +14,13 @@ describe('queries/totalDeposit', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          anchorTokenContract: testAddressProvider.aTerra(),
+          anchorTokenContract: testAddressProvider.aTerra(''),
           anchorTokenBalanceQuery: {
             balance: {
               address: testWalletAddress,
             },
           },
-          moneyMarketContract: testAddressProvider.market(),
+          moneyMarketContract: testAddressProvider.market(''),
           moneyMarketEpochQuery: {
             epoch_state: {
               lastSyncedHeight: 0,

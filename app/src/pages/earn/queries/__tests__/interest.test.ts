@@ -14,7 +14,7 @@ describe('queries/totalDeposit', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          overseerContract: testAddressProvider.overseer(),
+          overseerContract: testAddressProvider.overseer(''),
           overseerEpochState: {
             epoch_state: {},
           },

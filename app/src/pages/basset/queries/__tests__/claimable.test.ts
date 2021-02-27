@@ -14,7 +14,7 @@ describe('queries/claimable', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          bAssetRewardContract: testAddressProvider.blunaReward(),
+          bAssetRewardContract: testAddressProvider.blunaReward(''),
           rewardState: {
             state: {},
           },

@@ -21,14 +21,14 @@ describe('queries/marketUserOverview', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          marketContractAddress: testAddressProvider.market(),
+          marketContractAddress: testAddressProvider.market(''),
           marketBorrowerQuery: {
             borrower_info: {
               borrower: testWalletAddress,
               block_height: marketState.currentBlock ?? 0,
             },
           },
-          custodyContractAddress: testAddressProvider.custody(),
+          custodyContractAddress: testAddressProvider.custody(''),
           custodyBorrowerQuery: {
             borrower: {
               address: testWalletAddress,

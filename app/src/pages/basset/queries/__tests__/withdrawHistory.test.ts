@@ -14,7 +14,7 @@ describe('queries/withdrawHistory', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          bLunaHubContract: testAddressProvider.blunaHub(),
+          bLunaHubContract: testAddressProvider.blunaHub(''),
           allHistory: {
             all_history: {
               start_from: 1,

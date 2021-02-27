@@ -14,7 +14,7 @@ describe('queries/withdrawable', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          bLunaHubContract: testAddressProvider.blunaHub(),
+          bLunaHubContract: testAddressProvider.blunaHub(''),
           withdrawableAmountQuery: {
             withdrawable_unbonded: {
               address: testWalletAddress,
