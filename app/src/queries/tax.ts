@@ -74,10 +74,12 @@ export function useTax(): MappedQueryResult<RawVariables, RawData, Data> {
     return mapVariables({});
   }, []);
 
-  const { data: _data, refetch: _refetch, ...result } = useQuery<
-    RawData,
-    RawVariables
-  >(query, {
+  const {
+    previousData,
+    data: _data = previousData,
+    refetch: _refetch,
+    ...result
+  } = useQuery<RawData, RawVariables>(query, {
     skip: !serviceAvailable,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',

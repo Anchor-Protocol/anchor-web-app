@@ -86,10 +86,13 @@ export function useTransactionHistory(): MappedQueryResult<
 
   const onError = useQueryErrorHandler();
 
-  const { data: _data, refetch: _refetch, error, ...result } = useQuery<
-    RawData,
-    RawVariables
-  >(query, {
+  const {
+    previousData,
+    data: _data = previousData,
+    refetch: _refetch,
+    error,
+    ...result
+  } = useQuery<RawData, RawVariables>(query, {
     skip: !variables || !serviceAvailable,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',

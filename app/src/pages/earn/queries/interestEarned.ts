@@ -316,10 +316,13 @@ export function useInterestEarned(
 
   const onError = useQueryErrorHandler();
 
-  const { data: _data, refetch: _refetch, error, ...result } = useQuery<
-    RawData,
-    RawVariables
-  >(period === 'total' ? totalQuery : query, {
+  const {
+    previousData,
+    data: _data = previousData,
+    refetch: _refetch,
+    error,
+    ...result
+  } = useQuery<RawData, RawVariables>(period === 'total' ? totalQuery : query, {
     skip: !variables || !serviceAvailable,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',

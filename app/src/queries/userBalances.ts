@@ -154,10 +154,12 @@ export function useUserBalances(): MappedQueryResult<
     });
   }, [cw20.aUST, cw20.bLuna, walletReady?.walletAddress]);
 
-  const { data: _data, refetch: _refetch, ...result } = useQuery<
-    RawData,
-    RawVariables
-  >(query, {
+  const {
+    previousData,
+    data: _data = previousData,
+    refetch: _refetch,
+    ...result
+  } = useQuery<RawData, RawVariables>(query, {
     skip: !serviceAvailable,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',

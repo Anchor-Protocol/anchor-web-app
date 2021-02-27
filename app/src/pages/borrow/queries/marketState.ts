@@ -5,9 +5,9 @@ import type {
   HumanAddr,
   moneyMarket,
   Num,
+  Rate,
   uUST,
   WASMContractResult,
-  Rate,
 } from '@anchor-protocol/types';
 import { createMap, map, Mapped, useMap } from '@anchor-protocol/use-map';
 import { ApolloClient, gql, useQuery } from '@apollo/client';
@@ -142,10 +142,13 @@ export function useMarketState(): MappedQueryResult<
 
   const onError = useQueryErrorHandler();
 
-  const { data: _data, refetch: _refetch, error, ...result } = useQuery<
-    RawData,
-    RawVariables
-  >(query, {
+  const {
+    previousData,
+    data: _data = previousData,
+    refetch: _refetch,
+    error,
+    ...result
+  } = useQuery<RawData, RawVariables>(query, {
     skip: !online,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
