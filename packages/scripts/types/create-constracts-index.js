@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const glob = require('glob');
+const prettier = require('prettier');
 
 const { src } = require('../env');
 
@@ -20,7 +21,12 @@ async function createIndex(dir) {
       }
     });
 
-  const indexSource = `// AUTO GENERATED FILE\n${importPaths.join('\n')}`;
+  const prettierConfig = await prettier.resolveConfig(dir);
+
+  const indexSource = prettier.format(
+    `// AUTO GENERATED FILE\n${importPaths.join('\n')}`,
+    { ...prettierConfig, parser: 'typescript' },
+  );
 
   await fs.writeFile(path.resolve(dir, 'index.ts'), indexSource, {
     encoding: 'utf8',
