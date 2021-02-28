@@ -3,14 +3,11 @@ import {
   formatRateToPercentage,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
-import { Rate, uUST } from '@anchor-protocol/types';
+import { moneyMarket, Rate, uUST } from '@anchor-protocol/types';
 import { TxHashLink } from 'components/TxHashLink';
 import { TxInfoParseError } from 'errors/TxInfoParseError';
 import { TransactionResult } from 'models/transaction';
 import { currentLtv } from 'pages/borrow/logics/currentLtv';
-import { Data as MarketState } from 'pages/borrow/queries/marketState';
-import { Data as MarketOverview } from 'pages/borrow/queries/marketOverview';
-import { Data as MarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
 import {
   Data,
   pickAttributeValue,
@@ -24,14 +21,9 @@ interface Params {
   txResult: TxResult;
   txInfo: Data;
   txFee: uUST;
-  currentBlock?: MarketState['currentBlock'];
-  marketBalance?: MarketState['marketBalance'];
-  marketState?: MarketState['marketState'];
-  borrowRate?: MarketOverview['borrowRate'];
-  oraclePrice?: MarketOverview['oraclePrice'];
-  overseerWhitelist?: MarketOverview['overseerWhitelist'];
-  loanAmount?: MarketUserOverview['loanAmount'];
-  borrowInfo?: MarketUserOverview['borrowInfo'];
+  loanAmount?: moneyMarket.market.BorrowInfoResponse;
+  borrowInfo?: moneyMarket.custody.BorrowerResponse;
+  oraclePrice?: moneyMarket.oracle.PriceResponse;
 }
 
 export function pickBorrowResult({
@@ -62,12 +54,7 @@ export function pickBorrowResult({
 
   const newLtv =
     loanAmount && borrowInfo && oraclePrice
-      ? currentLtv(
-          loanAmount?.loan_amount,
-          borrowInfo?.balance,
-          borrowInfo?.spendable,
-          oraclePrice?.rate,
-        )
+      ? currentLtv(loanAmount, borrowInfo, oraclePrice)
       : ('0' as Rate);
 
   const outstandingLoan = loanAmount?.loan_amount;

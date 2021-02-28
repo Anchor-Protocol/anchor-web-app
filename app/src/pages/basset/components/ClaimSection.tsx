@@ -51,19 +51,8 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
   );
 
   const claimableRewards = useMemo(
-    () =>
-      _claimableRewards(
-        claimableReward?.balance,
-        rewardState?.global_index,
-        claimableReward?.index,
-        claimableReward?.pending_rewards,
-      ),
-    [
-      claimableReward?.balance,
-      claimableReward?.index,
-      claimableReward?.pending_rewards,
-      rewardState?.global_index,
-    ],
+    () => _claimableRewards(claimableReward, rewardState),
+    [claimableReward, rewardState],
   );
 
   // ---------------------------------------------

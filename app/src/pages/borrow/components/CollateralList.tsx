@@ -44,23 +44,13 @@ export function CollateralList({ className }: CollateralListProps) {
   // compute
   // ---------------------------------------------
   const collaterals = useMemo(
-    () =>
-      _collaterals(
-        borrowInfo?.balance,
-        borrowInfo?.spendable,
-        1 as Rate<number>,
-      ),
-    [borrowInfo?.balance, borrowInfo?.spendable],
+    () => _collaterals(borrowInfo, 1 as Rate<number>),
+    [borrowInfo],
   );
 
   const collateralsInUST = useMemo(
-    () =>
-      _collaterals(
-        borrowInfo?.balance,
-        borrowInfo?.spendable,
-        oraclePrice?.rate,
-      ),
-    [borrowInfo?.balance, borrowInfo?.spendable, oraclePrice?.rate],
+    () => _collaterals(borrowInfo, oraclePrice?.rate),
+    [borrowInfo, oraclePrice?.rate],
   );
 
   // ---------------------------------------------

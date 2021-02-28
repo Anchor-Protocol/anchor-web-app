@@ -21,9 +21,7 @@ export function LoanButtons() {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const borrowed = useMemo(() => _borrowed(loanAmount?.loan_amount), [
-    loanAmount?.loan_amount,
-  ]);
+  const borrowed = useMemo(() => _borrowed(loanAmount), [loanAmount]);
 
   return (
     <>

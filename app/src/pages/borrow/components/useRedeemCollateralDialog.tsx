@@ -99,48 +99,21 @@ function ComponentBase({
   // calculate
   // ---------------------------------------------
   const amountToLtv = useMemo(
-    () =>
-      redeemAmountToLtv(
-        loanAmount.loan_amount,
-        borrowInfo.balance,
-        borrowInfo.spendable,
-        oraclePrice.rate,
-      ),
-    [
-      oraclePrice.rate,
-      borrowInfo.balance,
-      borrowInfo.spendable,
-      loanAmount.loan_amount,
-    ],
+    () => redeemAmountToLtv(loanAmount, borrowInfo, oraclePrice),
+    [loanAmount, borrowInfo, oraclePrice],
   );
 
   const ltvToAmount = useMemo(
-    () =>
-      ltvToRedeemAmount(
-        loanAmount.loan_amount,
-        borrowInfo.balance,
-        oraclePrice.rate,
-      ),
-    [oraclePrice.rate, borrowInfo.balance, loanAmount.loan_amount],
+    () => ltvToRedeemAmount(loanAmount, borrowInfo, oraclePrice),
+    [loanAmount, borrowInfo, oraclePrice],
   );
 
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
   const currentLtv = useServiceConnectedMemo(
-    () =>
-      _currentLtv(
-        loanAmount.loan_amount,
-        borrowInfo.balance,
-        borrowInfo.spendable,
-        oraclePrice.rate,
-      ),
-    [
-      borrowInfo.balance,
-      borrowInfo.spendable,
-      loanAmount.loan_amount,
-      oraclePrice.rate,
-    ],
+    () => _currentLtv(loanAmount, borrowInfo, oraclePrice),
+    [borrowInfo, loanAmount, oraclePrice],
     undefined,
   );
 
@@ -153,35 +126,26 @@ function ComponentBase({
   const withdrawableAmount = useServiceConnectedMemo(
     () =>
       redeemCollateralWithdrawableAmount(
-        loanAmount.loan_amount,
-        borrowInfo.balance,
-        borrowInfo.spendable,
-        oraclePrice.rate,
+        loanAmount,
+        borrowInfo,
+        oraclePrice,
         bLunaSafeLtv,
         bLunaMaxLtv,
         nextLtv,
       ),
-    [
-      bLunaMaxLtv,
-      bLunaSafeLtv,
-      borrowInfo.balance,
-      borrowInfo.spendable,
-      loanAmount.loan_amount,
-      nextLtv,
-      oraclePrice.rate,
-    ],
+    [bLunaMaxLtv, bLunaSafeLtv, borrowInfo, loanAmount, nextLtv, oraclePrice],
     big(0) as ubLuna<Big>,
   );
 
   const withdrawableMaxAmount = useServiceConnectedMemo(
     () =>
       redeemCollateralMaxAmount(
-        loanAmount.loan_amount,
-        borrowInfo.balance,
-        oraclePrice.rate,
+        loanAmount,
+        borrowInfo,
+        oraclePrice,
         bLunaMaxLtv,
       ),
-    [bLunaMaxLtv, borrowInfo.balance, loanAmount.loan_amount, oraclePrice.rate],
+    [bLunaMaxLtv, borrowInfo, loanAmount, oraclePrice],
     big(0) as ubLuna<Big>,
   );
 
@@ -189,18 +153,11 @@ function ComponentBase({
     () =>
       redeemCollateralBorrowLimit(
         redeemAmount,
-        borrowInfo.balance,
-        borrowInfo.spendable,
-        oraclePrice.rate,
+        borrowInfo,
+        oraclePrice,
         bLunaMaxLtv,
       ),
-    [
-      bLunaMaxLtv,
-      borrowInfo.balance,
-      borrowInfo.spendable,
-      oraclePrice.rate,
-      redeemAmount,
-    ],
+    [bLunaMaxLtv, borrowInfo, oraclePrice, redeemAmount],
     undefined,
   );
 

@@ -95,54 +95,21 @@ function ComponentBase({
   // calculate
   // ---------------------------------------------
   const amountToLtv = useMemo(
-    () =>
-      borrowAmountToLtv(
-        loanAmount.loan_amount,
-        borrowInfo.balance,
-        borrowInfo.spendable,
-        oraclePrice.rate,
-      ),
-    [
-      oraclePrice.rate,
-      borrowInfo.balance,
-      borrowInfo.spendable,
-      loanAmount.loan_amount,
-    ],
+    () => borrowAmountToLtv(loanAmount, borrowInfo, oraclePrice),
+    [loanAmount, borrowInfo, oraclePrice],
   );
 
   const ltvToAmount = useMemo(
-    () =>
-      ltvToBorrowAmount(
-        loanAmount.loan_amount,
-        borrowInfo.balance,
-        borrowInfo.spendable,
-        oraclePrice.rate,
-      ),
-    [
-      oraclePrice.rate,
-      borrowInfo.balance,
-      borrowInfo.spendable,
-      loanAmount.loan_amount,
-    ],
+    () => ltvToBorrowAmount(loanAmount, borrowInfo, oraclePrice),
+    [loanAmount, borrowInfo, oraclePrice],
   );
 
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
   const currentLtv = useServiceConnectedMemo(
-    () =>
-      _currentLtv(
-        loanAmount.loan_amount,
-        borrowInfo.balance,
-        borrowInfo.spendable,
-        oraclePrice.rate,
-      ),
-    [
-      borrowInfo.balance,
-      borrowInfo.spendable,
-      loanAmount.loan_amount,
-      oraclePrice.rate,
-    ],
+    () => _currentLtv(loanAmount, borrowInfo, oraclePrice),
+    [borrowInfo, loanAmount, oraclePrice],
     undefined,
   );
 
@@ -153,48 +120,27 @@ function ComponentBase({
   );
 
   const apr = useServiceConnectedMemo(
-    () => _apr(borrowRate.rate, blocksPerYear),
-    [blocksPerYear, borrowRate.rate],
+    () => _apr(borrowRate, blocksPerYear),
+    [blocksPerYear, borrowRate],
     big(0) as Rate<Big>,
   );
 
   const safeMax = useServiceConnectedMemo(
     () =>
       borrowSafeMax(
-        loanAmount.loan_amount,
-        borrowInfo.balance,
-        borrowInfo.spendable,
-        oraclePrice.rate,
+        loanAmount,
+        borrowInfo,
+        oraclePrice,
         bLunaSafeLtv,
         currentLtv,
       ),
-    [
-      bLunaSafeLtv,
-      borrowInfo.balance,
-      borrowInfo.spendable,
-      currentLtv,
-      loanAmount.loan_amount,
-      oraclePrice.rate,
-    ],
+    [bLunaSafeLtv, borrowInfo, currentLtv, loanAmount, oraclePrice],
     big(0) as uUST<Big>,
   );
 
   const max = useServiceConnectedMemo(
-    () =>
-      borrowMax(
-        loanAmount.loan_amount,
-        borrowInfo.balance,
-        borrowInfo.spendable,
-        oraclePrice.rate,
-        bLunaMaxLtv,
-      ),
-    [
-      bLunaMaxLtv,
-      borrowInfo.balance,
-      borrowInfo.spendable,
-      loanAmount.loan_amount,
-      oraclePrice.rate,
-    ],
+    () => borrowMax(loanAmount, borrowInfo, oraclePrice, bLunaMaxLtv),
+    [bLunaMaxLtv, borrowInfo, loanAmount, oraclePrice],
     big(0) as uUST<Big>,
   );
 

@@ -1,12 +1,13 @@
-import type { Rate, ubLuna, uUST } from '@anchor-protocol/types';
+import type { Rate, ubLuna } from '@anchor-protocol/types';
+import { moneyMarket } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
 
 export const ltvToRedeemAmount = (
-  loanAmount: uUST<BigSource>,
-  balance: uUST<BigSource>,
-  oraclePrice: Rate<BigSource>,
+  borrowInfo: moneyMarket.market.BorrowInfoResponse,
+  borrower: moneyMarket.custody.BorrowerResponse,
+  oracle: moneyMarket.oracle.PriceResponse,
 ) => (ltv: Rate<BigSource>) => {
-  return big(balance).minus(
-    big(loanAmount).div(big(ltv).mul(oraclePrice)),
+  return big(borrower.balance).minus(
+    big(borrowInfo.loan_amount).div(big(ltv).mul(oracle.rate)),
   ) as ubLuna<Big>;
 };

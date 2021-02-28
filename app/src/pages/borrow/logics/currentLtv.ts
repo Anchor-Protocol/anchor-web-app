@@ -1,15 +1,15 @@
-import type { Rate, uUST } from '@anchor-protocol/types';
-import big, { Big, BigSource } from 'big.js';
+import type { Rate } from '@anchor-protocol/types';
+import { moneyMarket } from '@anchor-protocol/types';
+import big, { Big } from 'big.js';
 
 export function currentLtv(
-  loanAmount: uUST<BigSource>,
-  balance: uUST<BigSource>,
-  spendable: uUST<BigSource>,
-  oraclePrice: Rate<BigSource>,
+  borrowInfo: moneyMarket.market.BorrowInfoResponse,
+  borrower: moneyMarket.custody.BorrowerResponse,
+  oracle: moneyMarket.oracle.PriceResponse,
 ): Rate<Big> | undefined {
   try {
-    return big(loanAmount).div(
-      big(big(balance).minus(spendable)).mul(oraclePrice),
+    return big(borrowInfo.loan_amount).div(
+      big(big(borrower.balance).minus(borrower.spendable)).mul(oracle.rate),
     ) as Rate<Big>;
   } catch {
     return undefined;

@@ -1,21 +1,19 @@
-import type { Rate } from '@anchor-protocol/types';
+import type { Denom, Rate } from '@anchor-protocol/types';
+import { moneyMarket, uUST } from '@anchor-protocol/types';
 import big from 'big.js';
 import { useContractAddress } from 'contexts/contract';
 import { SAFE_RATIO } from 'env';
 import type { ReactNode } from 'react';
 import { Consumer, Context, createContext, useContext, useMemo } from 'react';
 import {
-  Data as MarketOverview,
   mockupData as marketOverviewMockupData,
   useMarketOverview,
 } from '../queries/marketOverview';
 import {
-  Data as MarketState,
   mockupData as marketStateMockupData,
   useMarketState,
 } from '../queries/marketState';
 import {
-  Data as MarketUserOverview,
   mockupData as marketUserOverviewMockupData,
   useMarketUserOverview,
 } from '../queries/marketUserOverview';
@@ -26,14 +24,14 @@ export interface MarketProviderProps {
 
 export interface Market {
   ready: boolean;
-  currentBlock: MarketState['currentBlock'] | undefined;
-  marketBalance: MarketState['marketBalance'] | undefined;
-  marketState: MarketState['marketState'] | undefined;
-  borrowRate: MarketOverview['borrowRate'] | undefined;
-  oraclePrice: MarketOverview['oraclePrice'] | undefined;
-  overseerWhitelist: MarketOverview['overseerWhitelist'] | undefined;
-  loanAmount: MarketUserOverview['loanAmount'] | undefined;
-  borrowInfo: MarketUserOverview['borrowInfo'] | undefined;
+  currentBlock: number | undefined;
+  marketBalance: { Denom: Denom; Amount: uUST }[] | undefined;
+  marketState: moneyMarket.market.StateResponse | undefined;
+  borrowRate: moneyMarket.interestModel.BorrowRateResponse | undefined;
+  oraclePrice: moneyMarket.oracle.PriceResponse | undefined;
+  overseerWhitelist: moneyMarket.overseer.WhitelistResponse | undefined;
+  loanAmount: moneyMarket.market.BorrowInfoResponse | undefined;
+  borrowInfo: moneyMarket.custody.BorrowerResponse | undefined;
   bLunaMaxLtv: Rate | undefined;
   bLunaSafeLtv: Rate | undefined;
   refetch: () => void;
@@ -139,14 +137,14 @@ export function useMarket(): Market {
 }
 
 export function useMarketNotNullable(): {
-  currentBlock: MarketState['currentBlock'];
-  marketBalance: MarketState['marketBalance'];
-  marketState: MarketState['marketState'];
-  borrowRate: MarketOverview['borrowRate'];
-  oraclePrice: MarketOverview['oraclePrice'];
-  overseerWhitelist: MarketOverview['overseerWhitelist'];
-  loanAmount: MarketUserOverview['loanAmount'];
-  borrowInfo: MarketUserOverview['borrowInfo'];
+  currentBlock: number;
+  marketBalance: { Denom: Denom; Amount: uUST }[];
+  marketState: moneyMarket.market.StateResponse;
+  borrowRate: moneyMarket.interestModel.BorrowRateResponse;
+  oraclePrice: moneyMarket.oracle.PriceResponse;
+  overseerWhitelist: moneyMarket.overseer.WhitelistResponse;
+  loanAmount: moneyMarket.market.BorrowInfoResponse;
+  borrowInfo: moneyMarket.custody.BorrowerResponse;
   bLunaMaxLtv: Rate;
   bLunaSafeLtv: Rate;
   refetch: () => void;

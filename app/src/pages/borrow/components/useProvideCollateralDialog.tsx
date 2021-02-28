@@ -98,65 +98,26 @@ function ComponentBase({
   // calculate
   // ---------------------------------------------
   const amountToLtv = useMemo(
-    () =>
-      depositAmountToLtv(
-        loanAmount.loan_amount,
-        borrowInfo.balance,
-        borrowInfo.spendable,
-        oraclePrice.rate,
-      ),
-    [
-      oraclePrice.rate,
-      borrowInfo.balance,
-      borrowInfo.spendable,
-      loanAmount.loan_amount,
-    ],
+    () => depositAmountToLtv(loanAmount, borrowInfo, oraclePrice),
+    [loanAmount, borrowInfo, oraclePrice],
   );
 
   const ltvToAmount = useMemo(
-    () =>
-      ltvToDepositAmount(
-        loanAmount.loan_amount,
-        borrowInfo.balance,
-        borrowInfo.spendable,
-        oraclePrice.rate,
-      ),
-    [
-      oraclePrice.rate,
-      borrowInfo.balance,
-      borrowInfo.spendable,
-      loanAmount.loan_amount,
-    ],
+    () => ltvToDepositAmount(loanAmount, borrowInfo, oraclePrice),
+    [loanAmount, borrowInfo, oraclePrice],
   );
 
   const amountToBorrowLimit = useMemo(
-    () =>
-      depositAmountToBorrowLimit(
-        borrowInfo.balance,
-        borrowInfo.spendable,
-        oraclePrice.rate,
-        bLunaMaxLtv,
-      ),
-    [bLunaMaxLtv, oraclePrice.rate, borrowInfo.balance, borrowInfo.spendable],
+    () => depositAmountToBorrowLimit(borrowInfo, oraclePrice, bLunaMaxLtv),
+    [borrowInfo, oraclePrice, bLunaMaxLtv],
   );
 
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
   const currentLtv = useServiceConnectedMemo(
-    () =>
-      _currentLtv(
-        loanAmount.loan_amount,
-        borrowInfo.balance,
-        borrowInfo.spendable,
-        oraclePrice.rate,
-      ),
-    [
-      borrowInfo.balance,
-      borrowInfo.spendable,
-      loanAmount.loan_amount,
-      oraclePrice.rate,
-    ],
+    () => _currentLtv(loanAmount, borrowInfo, oraclePrice),
+    [borrowInfo, loanAmount, oraclePrice],
     undefined,
   );
 

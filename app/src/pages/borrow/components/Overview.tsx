@@ -35,23 +35,16 @@ export function Overview({ className }: OverviewProps) {
   const { blocksPerYear } = useConstants();
 
   const apr = useServiceConnectedMemo(
-    () => _apr(borrowRate?.rate, blocksPerYear),
-    [blocksPerYear, borrowRate?.rate],
+    () => _apr(borrowRate, blocksPerYear),
+    [blocksPerYear, borrowRate],
     big(0) as Rate<Big>,
   );
 
-  const borrowed = useMemo(() => _borrowed(loanAmount?.loan_amount), [
-    loanAmount?.loan_amount,
-  ]);
+  const borrowed = useMemo(() => _borrowed(loanAmount), [loanAmount]);
 
   const collaterals = useMemo(
-    () =>
-      _collaterals(
-        borrowInfo?.balance,
-        borrowInfo?.spendable,
-        oraclePrice?.rate,
-      ),
-    [borrowInfo?.balance, borrowInfo?.spendable, oraclePrice?.rate],
+    () => _collaterals(borrowInfo, oraclePrice?.rate),
+    [borrowInfo, oraclePrice?.rate],
   );
 
   // TODO

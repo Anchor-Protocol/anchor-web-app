@@ -1,17 +1,20 @@
-import type { Num, ubLuna, uToken, uUST } from '@anchor-protocol/types';
+import type { uUST } from '@anchor-protocol/types';
+import { bluna } from '@anchor-protocol/types';
 import { Dec, Int } from '@terra-money/terra.js';
 import big, { Big } from 'big.js';
 
 export function claimableRewards(
-  balance: ubLuna | undefined,
-  global_index: Num | undefined,
-  index: Num | undefined,
-  pending_rewards: uToken | undefined,
+  holder: bluna.reward.HolderResponse | undefined,
+  state: bluna.reward.StateResponse | undefined,
 ): uUST<Big> {
-  return balance && global_index && index && pending_rewards
+  return holder && state
     ? (big(
-        new Int(new Int(balance).mul(new Dec(global_index).sub(new Dec(index))))
-          .add(new Int(pending_rewards))
+        new Int(
+          new Int(holder.balance).mul(
+            new Dec(state.global_index).sub(new Dec(holder.index)),
+          ),
+        )
+          .add(new Int(holder.pending_rewards))
           .toString(),
       ) as uUST<Big>)
     : (big(0) as uUST<Big>);

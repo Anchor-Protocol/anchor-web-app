@@ -97,54 +97,21 @@ function ComponentBase({
   // calculate
   // ---------------------------------------------
   const amountToLtv = useMemo(
-    () =>
-      repayAmountToLtv(
-        loanAmount.loan_amount,
-        borrowInfo.balance,
-        borrowInfo.spendable,
-        oraclePrice.rate,
-      ),
-    [
-      oraclePrice.rate,
-      borrowInfo.balance,
-      borrowInfo.spendable,
-      loanAmount.loan_amount,
-    ],
+    () => repayAmountToLtv(loanAmount, borrowInfo, oraclePrice),
+    [loanAmount, borrowInfo, oraclePrice],
   );
 
   const ltvToAmount = useMemo(
-    () =>
-      ltvToRepayAmount(
-        loanAmount.loan_amount,
-        borrowInfo.balance,
-        borrowInfo.spendable,
-        oraclePrice.rate,
-      ),
-    [
-      oraclePrice.rate,
-      borrowInfo.balance,
-      borrowInfo.spendable,
-      loanAmount.loan_amount,
-    ],
+    () => ltvToRepayAmount(loanAmount, borrowInfo, oraclePrice),
+    [loanAmount, borrowInfo, oraclePrice],
   );
 
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
   const currentLtv = useServiceConnectedMemo(
-    () =>
-      _currentLtv(
-        loanAmount.loan_amount,
-        borrowInfo.balance,
-        borrowInfo.spendable,
-        oraclePrice.rate,
-      ),
-    [
-      borrowInfo.balance,
-      borrowInfo.spendable,
-      loanAmount.loan_amount,
-      oraclePrice.rate,
-    ],
+    () => _currentLtv(loanAmount, borrowInfo, oraclePrice),
+    [borrowInfo, loanAmount, oraclePrice],
     undefined,
   );
 
@@ -155,29 +122,14 @@ function ComponentBase({
   );
 
   const apr = useServiceConnectedMemo(
-    () => _apr(borrowRate.rate, blocksPerYear),
-    [blocksPerYear, borrowRate.rate],
+    () => _apr(borrowRate, blocksPerYear),
+    [blocksPerYear, borrowRate],
     big(0) as Rate<Big>,
   );
 
   const totalBorrows = useServiceConnectedMemo(
-    () =>
-      repayTotalBorrows(
-        loanAmount.loan_amount,
-        borrowRate.rate,
-        currentBlock,
-        marketState.last_interest_updated,
-        marketState.global_interest_index,
-        loanAmount.interest_index,
-      ),
-    [
-      borrowRate.rate,
-      currentBlock,
-      loanAmount.interest_index,
-      loanAmount.loan_amount,
-      marketState.global_interest_index,
-      marketState.last_interest_updated,
-    ],
+    () => repayTotalBorrows(marketState, borrowRate, loanAmount, currentBlock),
+    [borrowRate, currentBlock, loanAmount, marketState],
     big(0) as uUST<Big>,
   );
 
@@ -188,8 +140,8 @@ function ComponentBase({
   );
 
   const totalOutstandingLoan = useServiceConnectedMemo(
-    () => repayTotalOutstandingLoan(repayAmount, loanAmount.loan_amount),
-    [loanAmount.loan_amount, repayAmount],
+    () => repayTotalOutstandingLoan(repayAmount, loanAmount),
+    [loanAmount, repayAmount],
     undefined,
   );
 

@@ -1,13 +1,12 @@
-import type { Num, Rate, uUST } from '@anchor-protocol/types';
-import big, { Big, BigSource } from 'big.js';
+import type { uUST } from '@anchor-protocol/types';
+import { moneyMarket } from '@anchor-protocol/types';
+import big, { Big } from 'big.js';
 
 export function repayTotalBorrows(
-  loanAmount: uUST<BigSource>,
-  borrowRate: Rate<BigSource>,
+  marketState: moneyMarket.market.StateResponse,
+  borrowRate: moneyMarket.interestModel.BorrowRateResponse,
+  borrowInfo: moneyMarket.market.BorrowInfoResponse,
   currentBlock: number,
-  lastInterestUpdated: number,
-  globalInterestIndex: Num<BigSource>,
-  interestIndex: Num<BigSource>,
 ): uUST<Big> {
   const bufferBlocks = 20;
 
@@ -18,14 +17,16 @@ export function repayTotalBorrows(
   //- loan_amount = marketUserOverview.ts / loanAmont.loan_amount
   //- interest_index = marketUserOverview.ts / loanAmont.interest_index
 
-  const passedBlock = big(currentBlock).minus(lastInterestUpdated);
-  const interestFactor = passedBlock.mul(borrowRate);
-  const globalFactorInterestIndex = big(globalInterestIndex).mul(
+  const passedBlock = big(currentBlock).minus(
+    marketState.last_interest_updated,
+  );
+  const interestFactor = passedBlock.mul(borrowRate.rate);
+  const globalFactorInterestIndex = big(marketState.global_interest_index).mul(
     big(1).plus(interestFactor),
   );
-  const bufferInterestFactor = big(borrowRate).mul(bufferBlocks);
-  const totalBorrowsWithoutBuffer = big(loanAmount).mul(
-    big(globalFactorInterestIndex).div(interestIndex),
+  const bufferInterestFactor = big(borrowRate.rate).mul(bufferBlocks);
+  const totalBorrowsWithoutBuffer = big(borrowInfo.loan_amount).mul(
+    big(globalFactorInterestIndex).div(borrowInfo.interest_index),
   );
   const totalBorrows = totalBorrowsWithoutBuffer.mul(
     big(1).plus(bufferInterestFactor),
