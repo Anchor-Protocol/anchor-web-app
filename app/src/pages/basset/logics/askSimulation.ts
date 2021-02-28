@@ -9,7 +9,7 @@ export function askSimulation(
   askSimulation: terraswap.SimulationResponse<uLuna>,
   getAmount: uLuna,
   { taxRate, maxTaxUUSD }: TaxData,
-): SwapSimulation {
+): SwapSimulation<uLuna, ubLuna> {
   const beliefPrice = big(1).div(
     big(askSimulation.return_amount).div(getAmount),
   );
@@ -35,6 +35,6 @@ export function askSimulation(
     beliefPrice: beliefPrice.toFixed() as Rate,
     maxSpread: maxSpread.toString() as Rate,
 
-    bLunaAmount: big(getAmount).div(beliefPrice).toString() as ubLuna,
+    burnAmount: big(getAmount).div(beliefPrice).toString() as ubLuna,
   };
 }

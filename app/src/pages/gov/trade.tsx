@@ -72,6 +72,11 @@ function TradeBase({ className }: RewardsPoolProps) {
           <Route path={`/${govPathname}/trade/buy`} component={TradeBuy} />
           <Route path={`/${govPathname}/trade/sell`} component={TradeSell} />
           <Redirect
+            exact
+            path={`/${govPathname}/trade`}
+            to={`/${govPathname}/trade/buy`}
+          />
+          <Redirect
             path={`/${govPathname}/trade/*`}
             to={`/${govPathname}/trade/buy`}
           />
@@ -84,5 +89,48 @@ function TradeBase({ className }: RewardsPoolProps) {
 export const Trade = styled(TradeBase)`
   .tab {
     margin-bottom: 40px;
+  }
+
+  .burn-description,
+  .gett-description {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    font-size: 16px;
+    color: ${({ theme }) => theme.dimTextColor};
+
+    > :last-child {
+      font-size: 12px;
+    }
+
+    margin-bottom: 12px;
+  }
+
+  .burn,
+  .gett {
+    margin-bottom: 30px;
+  }
+
+  hr {
+    margin: 40px 0;
+  }
+
+  .validator {
+    width: 100%;
+    margin-bottom: 40px;
+
+    &[data-selected-value=''] {
+      color: ${({ theme }) => theme.dimTextColor};
+    }
+  }
+
+  .receipt {
+    margin-bottom: 40px;
+  }
+
+  .submit {
+    width: 100%;
+    height: 60px;
   }
 `;

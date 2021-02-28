@@ -1,6 +1,7 @@
-import type { ubLuna, uLuna } from '@anchor-protocol/types';
+import type { CW20Addr, uToken } from '@anchor-protocol/types';
 import {
   ContractAddress,
+  HumanAddr,
   terraswap,
   WASMContractResult,
 } from '@anchor-protocol/types';
@@ -15,7 +16,7 @@ export interface RawData {
 
 export interface Data {
   terraswapOfferSimulation: WASMContractResult<
-    terraswap.SimulationResponse<uLuna>
+    terraswap.SimulationResponse<uToken>
   >;
 }
 
@@ -29,32 +30,32 @@ export const dataMap = createMap<RawData, Data>({
 });
 
 export interface RawVariables {
-  bLunaTerraswap: string;
+  terraswapPair: string;
   offerSimulationQuery: string;
 }
 
 export interface Variables {
-  bLunaTerraswap: string;
-  offerSimulationQuery: terraswap.Simulation<ubLuna>;
+  terraswapPair: string;
+  offerSimulationQuery: terraswap.Simulation<uToken>;
 }
 
 export function mapVariables({
-  bLunaTerraswap,
+  terraswapPair,
   offerSimulationQuery,
 }: Variables): RawVariables {
   return {
-    bLunaTerraswap,
+    terraswapPair,
     offerSimulationQuery: JSON.stringify(offerSimulationQuery),
   };
 }
 
 export const query = gql`
   query __terraswapOfferSimulation(
-    $bLunaTerraswap: String!
+    $terraswapPair: String!
     $offerSimulationQuery: String!
   ) {
     terraswapOfferSimulation: WasmContractsContractAddressStore(
-      ContractAddress: $bLunaTerraswap
+      ContractAddress: $terraswapPair
       QueryMsg: $offerSimulationQuery
     ) {
       Result
@@ -65,20 +66,22 @@ export const query = gql`
 export function queryTerraswapOfferSimulation(
   client: ApolloClient<any>,
   address: ContractAddress,
-  burnAmount: ubLuna,
+  burnAmount: uToken,
+  terraswapPair: HumanAddr,
+  cw20Token: CW20Addr,
 ): Promise<MappedApolloQueryResult<RawData, Data>> {
   return client
     .query<RawData, RawVariables>({
       query,
       fetchPolicy: 'no-cache',
       variables: mapVariables({
-        bLunaTerraswap: address.terraswap.blunaLunaPair,
+        terraswapPair,
         offerSimulationQuery: {
           simulation: {
             offer_asset: {
               info: {
                 token: {
-                  contract_addr: address.cw20.bLuna,
+                  contract_addr: cw20Token,
                 },
               },
               amount: burnAmount,

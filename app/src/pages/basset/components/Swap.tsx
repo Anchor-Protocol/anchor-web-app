@@ -11,7 +11,15 @@ import {
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
   microfy,
 } from '@anchor-protocol/notation';
-import type { bLuna, Luna, Rate, ubLuna, uLuna } from '@anchor-protocol/types';
+import type {
+  bLuna,
+  Denom,
+  Luna,
+  Rate,
+  ubLuna,
+  uLuna,
+} from '@anchor-protocol/types';
+import { terraswap } from '@anchor-protocol/types';
 import { useResolveLast } from '@anchor-protocol/use-resolve-last';
 import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
@@ -30,14 +38,14 @@ import { useConstants } from 'contexts/contants';
 import { useContractAddress } from 'contexts/contract';
 import { useService, useServiceConnectedMemo } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
+import { queryTerraswapAskSimulation } from 'queries/terraswapAskSimulation';
+import { queryTerraswapOfferSimulation } from 'queries/terraswapOfferSimulation';
 import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { askSimulation } from '../logics/askSimulation';
 import { offerSimulation } from '../logics/offerSimulation';
 import { validateBurnAmount } from '../logics/validateBurnAmount';
 import { SwapSimulation } from '../models/swapSimulation';
-import { queryTerraswapAskSimulation } from '../queries/terraswapAskSimulation';
 import { useTerraswapBLunaPrice } from '../queries/terraswapBLunaPrice';
-import { queryTerraswapOfferSimulation } from '../queries/terraswapOfferSimulation';
 import { swapOptions } from '../transactions/swapOptions';
 
 interface Item {
@@ -45,8 +53,8 @@ interface Item {
   value: string;
 }
 
-const assetCurrencies: Item[] = [{ label: 'Luna', value: 'luna' }];
-const bAssetCurrencies: Item[] = [{ label: 'bLuna', value: 'bluna' }];
+const burnCurrencies: Item[] = [{ label: 'bLuna', value: 'bluna' }];
+const getCurrencies: Item[] = [{ label: 'Luna', value: 'luna' }];
 
 export function Swap() {
   // ---------------------------------------------
@@ -74,15 +82,13 @@ export function Swap() {
   const [getAmount, setGetAmount] = useState<Luna>('' as Luna);
 
   const [resolveSimulation, simulation] = useResolveLast<
-    SwapSimulation | undefined | null
+    SwapSimulation<uLuna, ubLuna> | undefined | null
   >(() => null);
 
   const [burnCurrency, setBurnCurrency] = useState<Item>(
-    () => bAssetCurrencies[0],
+    () => burnCurrencies[0],
   );
-  const [getCurrency, setGetCurrency] = useState<Item>(
-    () => assetCurrencies[0],
-  );
+  const [getCurrency, setGetCurrency] = useState<Item>(() => getCurrencies[0]);
 
   // ---------------------------------------------
   // queries
@@ -112,31 +118,31 @@ export function Swap() {
   // effects
   // ---------------------------------------------
   useEffect(() => {
-    if (simulation?.lunaAmount) {
-      setGetAmount(formatLunaInput(demicrofy(simulation.lunaAmount)));
+    if (simulation?.getAmount) {
+      setGetAmount(formatLunaInput(demicrofy(simulation.getAmount)));
     }
-  }, [simulation?.lunaAmount]);
+  }, [simulation?.getAmount]);
 
   useEffect(() => {
-    if (simulation?.bLunaAmount) {
-      setBurnAmount(formatLunaInput(demicrofy(simulation.bLunaAmount)));
+    if (simulation?.burnAmount) {
+      setBurnAmount(formatLunaInput(demicrofy(simulation.burnAmount)));
     }
-  }, [simulation?.bLunaAmount]);
+  }, [simulation?.burnAmount]);
 
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
   const updateBurnCurrency = useCallback((nextBurnCurrencyValue: string) => {
     setBurnCurrency(
-      bAssetCurrencies.find(({ value }) => nextBurnCurrencyValue === value) ??
-        bAssetCurrencies[0],
+      burnCurrencies.find(({ value }) => nextBurnCurrencyValue === value) ??
+        burnCurrencies[0],
     );
   }, []);
 
   const updateGetCurrency = useCallback((nextGetCurrencyValue: string) => {
     setGetCurrency(
-      assetCurrencies.find(({ value }) => nextGetCurrencyValue === value) ??
-        assetCurrencies[0],
+      getCurrencies.find(({ value }) => nextGetCurrencyValue === value) ??
+        getCurrencies[0],
     );
   }, []);
 
@@ -159,9 +165,15 @@ export function Swap() {
               client,
               address,
               amount,
+              address.terraswap.blunaLunaPair,
+              address.cw20.bLuna,
             ).then(({ data: { terraswapOfferSimulation } }) =>
               terraswapOfferSimulation
-                ? offerSimulation(terraswapOfferSimulation, amount, bank.tax)
+                ? offerSimulation(
+                    terraswapOfferSimulation as terraswap.SimulationResponse<uLuna>,
+                    amount,
+                    bank.tax,
+                  )
                 : undefined,
             ),
           );
@@ -190,9 +202,15 @@ export function Swap() {
               client,
               address,
               amount,
+              address.terraswap.blunaLunaPair,
+              'uluna' as Denom,
             ).then(({ data: { terraswapAskSimulation } }) =>
               terraswapAskSimulation
-                ? askSimulation(terraswapAskSimulation, amount, bank.tax)
+                ? askSimulation(
+                    terraswapAskSimulation as terraswap.SimulationResponse<uLuna>,
+                    amount,
+                    bank.tax,
+                  )
                 : undefined,
             ),
           );
@@ -279,12 +297,10 @@ export function Swap() {
         <MuiNativeSelect
           value={burnCurrency}
           onChange={({ target }) => updateBurnCurrency(target.value)}
-          IconComponent={
-            bAssetCurrencies.length < 2 ? BlankComponent : undefined
-          }
-          disabled={bAssetCurrencies.length < 2}
+          IconComponent={burnCurrencies.length < 2 ? BlankComponent : undefined}
+          disabled={burnCurrencies.length < 2}
         >
-          {bAssetCurrencies.map(({ label, value }) => (
+          {burnCurrencies.map(({ label, value }) => (
             <option key={value} value={value}>
               {label}
             </option>
@@ -317,12 +333,10 @@ export function Swap() {
         <MuiNativeSelect
           value={getCurrency}
           onChange={({ target }) => updateGetCurrency(target.value)}
-          IconComponent={
-            assetCurrencies.length < 2 ? BlankComponent : undefined
-          }
-          disabled={assetCurrencies.length < 2}
+          IconComponent={getCurrencies.length < 2 ? BlankComponent : undefined}
+          disabled={getCurrencies.length < 2}
         >
-          {assetCurrencies.map(({ label, value }) => (
+          {getCurrencies.map(({ label, value }) => (
             <option key={value} value={value}>
               {label}
             </option>

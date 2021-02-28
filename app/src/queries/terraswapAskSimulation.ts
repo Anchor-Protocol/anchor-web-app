@@ -1,8 +1,9 @@
 import type {
-  bAssetDenom,
   ContractAddress,
+  Denom,
+  HumanAddr,
   terraswap,
-  uLuna,
+  uToken,
   WASMContractResult,
 } from '@anchor-protocol/types';
 import { createMap, map } from '@anchor-protocol/use-map';
@@ -16,7 +17,7 @@ export interface RawData {
 
 export interface Data {
   terraswapAskSimulation: WASMContractResult<
-    terraswap.SimulationResponse<uLuna>
+    terraswap.SimulationResponse<uToken>
   >;
 }
 
@@ -30,32 +31,32 @@ export const dataMap = createMap<RawData, Data>({
 });
 
 export interface RawVariables {
-  bLunaTerraswap: string;
+  terraswapPair: string;
   askSimulationQuery: string;
 }
 
 export interface Variables {
-  bLunaTerraswap: string;
-  askSimulationQuery: terraswap.Simulation<uLuna>;
+  terraswapPair: string;
+  askSimulationQuery: terraswap.Simulation<uToken>;
 }
 
 export function mapVariables({
-  bLunaTerraswap,
+  terraswapPair,
   askSimulationQuery,
 }: Variables): RawVariables {
   return {
-    bLunaTerraswap,
+    terraswapPair,
     askSimulationQuery: JSON.stringify(askSimulationQuery),
   };
 }
 
 export const query = gql`
   query __terraswapAskSimulation(
-    $bLunaTerraswap: String!
+    $terraswapPair: String!
     $askSimulationQuery: String!
   ) {
     terraswapAskSimulation: WasmContractsContractAddressStore(
-      ContractAddress: $bLunaTerraswap
+      ContractAddress: $terraswapPair
       QueryMsg: $askSimulationQuery
     ) {
       Result
@@ -66,21 +67,21 @@ export const query = gql`
 export function queryTerraswapAskSimulation(
   client: ApolloClient<any>,
   address: ContractAddress,
-  getAmount: uLuna,
+  getAmount: uToken,
+  terraswapPair: HumanAddr,
+  denom: Denom,
 ): Promise<MappedApolloQueryResult<RawData, Data>> {
   return client
     .query<RawData, RawVariables>({
       query,
       fetchPolicy: 'no-cache',
       variables: mapVariables({
-        bLunaTerraswap: address.terraswap.blunaLunaPair,
+        terraswapPair,
         askSimulationQuery: {
           simulation: {
             offer_asset: {
               info: {
-                native_token: {
-                  denom: 'uluna' as bAssetDenom,
-                },
+                native_token: { denom },
               },
               amount: getAmount,
             },

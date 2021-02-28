@@ -57,7 +57,7 @@ function OverviewBase({ className }: OverviewProps) {
         <h2>ANC PRICE</h2>
         <div>
           {ancPrice?.ANCPrice
-            ? formatUSTWithPostfixUnits(demicrofy(ancPrice?.ANCPrice))
+            ? formatUSTWithPostfixUnits(ancPrice.ANCPrice)
             : '0'}{' '}
           UST
         </div>

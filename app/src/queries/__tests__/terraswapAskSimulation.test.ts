@@ -1,6 +1,5 @@
-import type { Denom, Rate, uLuna, uUST } from '@anchor-protocol/types';
+import type { Denom, uLuna } from '@anchor-protocol/types';
 import { map } from '@anchor-protocol/use-map';
-import { askSimulation } from 'pages/basset/logics/askSimulation';
 import { testAddress, testClient } from 'test.env';
 import {
   Data,
@@ -17,7 +16,7 @@ describe('queries/terraswapOfferSimulation', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          bLunaTerraswap: testAddress.terraswap.blunaLunaPair,
+          terraswapPair: testAddress.terraswap.blunaLunaPair,
           askSimulationQuery: {
             simulation: {
               offer_asset: {
@@ -32,14 +31,10 @@ describe('queries/terraswapOfferSimulation', () => {
           },
         }),
       })
-      .then(({ data }) => map<RawData, Data>(data, dataMap))
-      .then(({ terraswapAskSimulation }) =>
-        askSimulation(terraswapAskSimulation!, '100' as uLuna, {
-          taxRate: '1' as Rate,
-          maxTaxUUSD: '3500000' as uUST,
-        }),
-      );
+      .then(({ data }) => map<RawData, Data>(data, dataMap));
 
-    expect(parseInt(data.return_amount)).not.toBeNaN();
+    expect(
+      parseInt(data.terraswapAskSimulation?.return_amount ?? ''),
+    ).not.toBeNaN();
   });
 });

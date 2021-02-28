@@ -1,11 +1,12 @@
-import type { Rate, terraswap, ubLuna, uLuna } from '@anchor-protocol/types';
+import type { Rate, terraswap, uToken } from '@anchor-protocol/types';
 
-export interface SwapSimulation extends terraswap.SimulationResponse<uLuna> {
-  minimumReceived: uLuna;
-  swapFee: uLuna;
+export interface SwapSimulation<Get extends uToken, Burn extends uToken>
+  extends terraswap.SimulationResponse<Get> {
+  minimumReceived: Get;
+  swapFee: Get;
   beliefPrice: Rate;
   maxSpread: Rate;
 
-  lunaAmount?: uLuna;
-  bLunaAmount?: ubLuna;
+  getAmount?: Get;
+  burnAmount?: Burn;
 }

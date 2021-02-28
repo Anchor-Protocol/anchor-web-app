@@ -17,9 +17,11 @@ export function mapDecimalPointBaseSeparatedNumbers<T>(
 // format
 // ---------------------------------------------
 export const UST_INPUT_MAXIMUM_INTEGER_POINTS = 14;
+export const ANC_INPUT_MAXIMUM_INTEGER_POINTS = 14;
 export const LUNA_INPUT_MAXIMUM_INTEGER_POINTS = 14;
 export const UST_INPUT_MAXIMUM_DECIMAL_POINTS = 3;
 export const LUNA_INPUT_MAXIMUM_DECIMAL_POINTS = 6;
+export const ANC_INPUT_MAXIMUM_DECIMAL_POINTS = 6;
 
 export function formatUSTInput<C extends UST<BigSource> | aUST<BigSource>>(
   n: C,
