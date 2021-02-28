@@ -38,11 +38,10 @@ import { useConstants } from 'contexts/contants';
 import { useContractAddress } from 'contexts/contract';
 import { useService, useServiceConnectedMemo } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
-import { queryTerraswapAskSimulation } from 'queries/terraswapAskSimulation';
-import { queryTerraswapOfferSimulation } from 'queries/terraswapOfferSimulation';
+import { querySimulation } from 'queries/simulation';
 import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
-import { askSimulation } from '../logics/askSimulation';
-import { offerSimulation } from '../logics/offerSimulation';
+import { swapBurnSimulation } from 'pages/basset/logics/swapBurnSimulation';
+import { swapGetSimulation } from 'pages/basset/logics/swapGetSimulation';
 import { validateBurnAmount } from '../logics/validateBurnAmount';
 import { SwapSimulation } from '../models/swapSimulation';
 import { useTerraswapBLunaPrice } from '../queries/terraswapBLunaPrice';
@@ -161,16 +160,20 @@ export function Swap() {
           const amount = microfy(burnAmount).toString() as ubLuna;
 
           resolveSimulation(
-            queryTerraswapOfferSimulation(
+            querySimulation(
               client,
               address,
               amount,
               address.terraswap.blunaLunaPair,
-              address.cw20.bLuna,
-            ).then(({ data: { terraswapOfferSimulation } }) =>
-              terraswapOfferSimulation
-                ? offerSimulation(
-                    terraswapOfferSimulation as terraswap.SimulationResponse<uLuna>,
+              {
+                token: {
+                  contract_addr: address.cw20.bLuna,
+                },
+              },
+            ).then(({ data: { simulation } }) =>
+              simulation
+                ? swapGetSimulation(
+                    simulation as terraswap.SimulationResponse<uLuna>,
                     amount,
                     bank.tax,
                   )
@@ -198,16 +201,20 @@ export function Swap() {
           const amount = microfy(getAmount).toString() as uLuna;
 
           resolveSimulation(
-            queryTerraswapAskSimulation(
+            querySimulation(
               client,
               address,
               amount,
               address.terraswap.blunaLunaPair,
-              'uluna' as Denom,
-            ).then(({ data: { terraswapAskSimulation } }) =>
-              terraswapAskSimulation
-                ? askSimulation(
-                    terraswapAskSimulation as terraswap.SimulationResponse<uLuna>,
+              {
+                native_token: {
+                  denom: 'uluna' as Denom,
+                },
+              },
+            ).then(({ data: { simulation } }) =>
+              simulation
+                ? swapBurnSimulation(
+                    simulation as terraswap.SimulationResponse<uLuna>,
                     amount,
                     bank.tax,
                   )

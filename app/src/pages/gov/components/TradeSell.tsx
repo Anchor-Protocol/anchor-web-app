@@ -41,12 +41,12 @@ import { useConstants } from 'contexts/contants';
 import { useContractAddress } from 'contexts/contract';
 import { useService, useServiceConnectedMemo } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
-import { sellAskSimulation } from 'pages/gov/logics/sellAskSimulation';
-import { sellOfferSimulation } from 'pages/gov/logics/sellOfferSimulation';
+import { sellFromSimulation } from 'pages/gov/logics/sellFromSimulation';
+import { sellToSimulation } from 'pages/gov/logics/sellToSimulation';
 import { TradeSimulation } from 'pages/gov/models/tradeSimulation';
 import { sellOptions } from 'pages/gov/transactions/sellOptions';
-import { queryTerraswapOfferSimulation } from 'queries/terraswapOfferSimulation';
-import { queryTerraswapReverseOfferSimulation } from 'queries/terraswapReverseOfferSimulation';
+import { queryReverseSimulation } from 'queries/reverseSimulation';
+import { querySimulation } from 'queries/simulation';
 import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
 interface Item {
@@ -54,8 +54,8 @@ interface Item {
   value: string;
 }
 
-const burnCurrencies: Item[] = [{ label: 'ANC', value: 'anc' }];
-const getCurrencies: Item[] = [{ label: 'UST', value: 'ust' }];
+const fromCurrencies: Item[] = [{ label: 'ANC', value: 'anc' }];
+const toCurrencies: Item[] = [{ label: 'UST', value: 'ust' }];
 
 export function TradeSell() {
   // ---------------------------------------------
@@ -84,17 +84,17 @@ export function TradeSell() {
   // ---------------------------------------------
   // states
   // ---------------------------------------------
-  const [getAmount, setGetAmount] = useState<UST>('' as UST);
-  const [burnAmount, setBurnAmount] = useState<ANC>('' as ANC);
+  const [fromAmount, setFromAmount] = useState<ANC>('' as ANC);
+  const [toAmount, setToAmount] = useState<UST>('' as UST);
 
   const [resolveSimulation, simulation] = useResolveLast<
     TradeSimulation<uUST, uANC> | undefined | null
   >(() => null);
 
-  const [burnCurrency, setBurnCurrency] = useState<Item>(
-    () => burnCurrencies[0],
+  const [fromCurrency, setFromCurrency] = useState<Item>(
+    () => fromCurrencies[0],
   );
-  const [getCurrency, setGetCurrency] = useState<Item>(() => getCurrencies[0]);
+  const [toCurrency, setToCurrency] = useState<Item>(() => toCurrencies[0]);
 
   // ---------------------------------------------
   // queries
@@ -120,59 +120,63 @@ export function TradeSell() {
   // effects
   // ---------------------------------------------
   useEffect(() => {
-    if (simulation?.getAmount) {
-      setGetAmount(formatUSTInput(demicrofy(simulation.getAmount)));
+    if (simulation?.toAmount) {
+      setToAmount(formatUSTInput(demicrofy(simulation.toAmount)));
     }
-  }, [simulation?.getAmount]);
+  }, [simulation?.toAmount]);
 
   useEffect(() => {
-    if (simulation?.burnAmount) {
-      setBurnAmount(formatANCInput(demicrofy(simulation.burnAmount)));
+    if (simulation?.fromAmount) {
+      setFromAmount(formatANCInput(demicrofy(simulation.fromAmount)));
     }
-  }, [simulation?.burnAmount]);
+  }, [simulation?.fromAmount]);
 
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
-  const updateBurnCurrency = useCallback((nextBurnCurrencyValue: string) => {
-    setBurnCurrency(
-      burnCurrencies.find(({ value }) => nextBurnCurrencyValue === value) ??
-        burnCurrencies[0],
+  const updateFromCurrency = useCallback((nextFromCurrencyValue: string) => {
+    setFromCurrency(
+      fromCurrencies.find(({ value }) => nextFromCurrencyValue === value) ??
+        fromCurrencies[0],
     );
   }, []);
 
-  const updateGetCurrency = useCallback((nextGetCurrencyValue: string) => {
-    setGetCurrency(
-      getCurrencies.find(({ value }) => nextGetCurrencyValue === value) ??
-        getCurrencies[0],
+  const updateToCurrency = useCallback((nextToCurrencyValue: string) => {
+    setToCurrency(
+      toCurrencies.find(({ value }) => nextToCurrencyValue === value) ??
+        toCurrencies[0],
     );
   }, []);
 
-  const updateBurnAmount = useCallback(
-    async (nextBurnAmount: string) => {
-      if (nextBurnAmount.trim().length === 0) {
-        setGetAmount('' as UST);
-        setBurnAmount('' as ANC);
+  const updateFromAmount = useCallback(
+    async (nextFromAmount: string) => {
+      if (nextFromAmount.trim().length === 0) {
+        setToAmount('' as UST);
+        setFromAmount('' as ANC);
 
         resolveSimulation(null);
       } else {
-        const burnAmount: ANC = nextBurnAmount as ANC;
-        setBurnAmount(burnAmount);
+        const fromAmount: ANC = nextFromAmount as ANC;
+        setFromAmount(fromAmount);
 
         if (serviceAvailable) {
-          const amount = microfy(burnAmount).toString() as uANC;
+          const amount = microfy(fromAmount).toString() as uANC;
 
           resolveSimulation(
-            queryTerraswapOfferSimulation(
+            querySimulation(
               client,
               address,
               amount,
               address.terraswap.ancUstPair,
-              address.cw20.ANC,
-            ).then(({ data: { terraswapOfferSimulation } }) =>
-              terraswapOfferSimulation
-                ? sellOfferSimulation(
-                    terraswapOfferSimulation as terraswap.SimulationResponse<uUST>,
+              {
+                token: {
+                  contract_addr: address.cw20.ANC,
+                },
+              },
+            ).then(({ data: { simulation } }) =>
+              simulation
+                ? sellToSimulation(
+                    simulation as terraswap.SimulationResponse<uUST>,
                     amount,
                     bank.tax,
                     fixedGas,
@@ -186,31 +190,35 @@ export function TradeSell() {
     [address, bank.tax, client, fixedGas, resolveSimulation, serviceAvailable],
   );
 
-  const updateGetAmount = useCallback(
-    (nextGetAmount: string) => {
-      if (nextGetAmount.trim().length === 0) {
-        setBurnAmount('' as ANC);
-        setGetAmount('' as UST);
+  const updateToAmount = useCallback(
+    (nextToAmount: string) => {
+      if (nextToAmount.trim().length === 0) {
+        setFromAmount('' as ANC);
+        setToAmount('' as UST);
 
         resolveSimulation(null);
       } else {
-        const getAmount: UST = nextGetAmount as UST;
-        setGetAmount(getAmount);
+        const toAmount: UST = nextToAmount as UST;
+        setToAmount(toAmount);
 
         if (serviceAvailable) {
-          const amount = microfy(getAmount).toString() as uUST;
+          const amount = microfy(toAmount).toString() as uUST;
 
           resolveSimulation(
-            queryTerraswapReverseOfferSimulation(
+            queryReverseSimulation(
               client,
               address,
               amount,
               address.terraswap.ancUstPair,
-              'uusd' as Denom,
-            ).then(({ data: { terraswapOfferSimulation } }) =>
-              terraswapOfferSimulation
-                ? sellAskSimulation(
-                    terraswapOfferSimulation as terraswap.SimulationResponse<uUST>,
+              {
+                native_token: {
+                  denom: 'uusd' as Denom,
+                },
+              },
+            ).then(({ data: { simulation } }) =>
+              simulation
+                ? sellFromSimulation(
+                    simulation as terraswap.SimulationResponse<uUST>,
                     amount,
                     bank.tax,
                     fixedGas,
@@ -225,8 +233,8 @@ export function TradeSell() {
   );
 
   const init = useCallback(() => {
-    setGetAmount('' as UST);
-    setBurnAmount('' as ANC);
+    setToAmount('' as UST);
+    setFromAmount('' as ANC);
   }, []);
 
   const proceed = useCallback(
@@ -269,7 +277,7 @@ export function TradeSell() {
 
       {/* Burn (bAsset) */}
       <div className="burn-description">
-        <p>I want to burn</p>
+        <p>From</p>
         <p />
       </div>
 
@@ -285,25 +293,25 @@ export function TradeSell() {
               <span
                 style={{ textDecoration: 'underline', cursor: 'pointer' }}
                 onClick={() =>
-                  updateBurnAmount(
+                  updateFromAmount(
                     formatANCInput(demicrofy(bank.userBalances.uANC)),
                   )
                 }
               >
                 {formatANC(demicrofy(bank.userBalances.uANC))}{' '}
-                {burnCurrency.label}
+                {fromCurrency.label}
               </span>
             </span>
           )
         }
       >
         <MuiNativeSelect
-          value={burnCurrency}
-          onChange={({ target }) => updateBurnCurrency(target.value)}
-          IconComponent={burnCurrencies.length < 2 ? BlankComponent : undefined}
-          disabled={burnCurrencies.length < 2}
+          value={fromCurrency}
+          onChange={({ target }) => updateFromCurrency(target.value)}
+          IconComponent={fromCurrencies.length < 2 ? BlankComponent : undefined}
+          disabled={fromCurrencies.length < 2}
         >
-          {burnCurrencies.map(({ label, value }) => (
+          {fromCurrencies.map(({ label, value }) => (
             <option key={value} value={value}>
               {label}
             </option>
@@ -312,10 +320,10 @@ export function TradeSell() {
         <MuiInput
           placeholder="0"
           error={!!invalidBurnAmount}
-          value={burnAmount}
+          value={fromAmount}
           onKeyPress={onUstInputKeyPress as any}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
-            updateBurnAmount(target.value)
+            updateFromAmount(target.value)
           }
         />
       </SelectAndTextInputContainer>
@@ -324,7 +332,7 @@ export function TradeSell() {
 
       {/* Get (Asset) */}
       <div className="gett-description">
-        <p>and get</p>
+        <p>To</p>
         <p />
       </div>
 
@@ -334,12 +342,12 @@ export function TradeSell() {
         error={!!invalidBurnAmount}
       >
         <MuiNativeSelect
-          value={getCurrency}
-          onChange={({ target }) => updateGetCurrency(target.value)}
-          IconComponent={getCurrencies.length < 2 ? BlankComponent : undefined}
-          disabled={getCurrencies.length < 2}
+          value={toCurrency}
+          onChange={({ target }) => updateToCurrency(target.value)}
+          IconComponent={toCurrencies.length < 2 ? BlankComponent : undefined}
+          disabled={toCurrencies.length < 2}
         >
-          {getCurrencies.map(({ label, value }) => (
+          {toCurrencies.map(({ label, value }) => (
             <option key={value} value={value}>
               {label}
             </option>
@@ -348,15 +356,15 @@ export function TradeSell() {
         <MuiInput
           placeholder="0"
           error={!!invalidBurnAmount}
-          value={getAmount}
+          value={toAmount}
           onKeyPress={onAncInputKeyPress as any}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
-            updateGetAmount(target.value)
+            updateToAmount(target.value)
           }
         />
       </SelectAndTextInputContainer>
 
-      {burnAmount.length > 0 && simulation && (
+      {fromAmount.length > 0 && simulation && (
         <TxFeeList className="receipt">
           <SwapListItem
             label="Price"
@@ -391,8 +399,8 @@ export function TradeSell() {
         className="submit"
         disabled={
           !serviceAvailable ||
-          burnAmount.length === 0 ||
-          big(burnAmount).lte(0) ||
+          fromAmount.length === 0 ||
+          big(fromAmount).lte(0) ||
           !!invalidTxFee ||
           !!invalidBurnAmount ||
           big(simulation?.swapFee ?? 0).lte(0)
@@ -401,7 +409,7 @@ export function TradeSell() {
           walletReady &&
           proceed(
             walletReady,
-            burnAmount,
+            fromAmount,
             simulation!.beliefPrice,
             simulation!.maxSpread,
           )

@@ -5,14 +5,12 @@ import big, { Big } from 'big.js';
 import { Data as TaxData } from 'queries/tax';
 import { SwapSimulation } from '../models/swapSimulation';
 
-export function askSimulation(
-  askSimulation: terraswap.SimulationResponse<uLuna>,
+export function swapBurnSimulation(
+  simulation: terraswap.SimulationResponse<uLuna>,
   getAmount: uLuna,
   { taxRate, maxTaxUUSD }: TaxData,
 ): SwapSimulation<uLuna, ubLuna> {
-  const beliefPrice = big(1).div(
-    big(askSimulation.return_amount).div(getAmount),
-  );
+  const beliefPrice = big(1).div(big(simulation.return_amount).div(getAmount));
   const maxSpread = 0.1;
 
   const tax = min(
@@ -24,12 +22,12 @@ export function askSimulation(
   const expectedAmount = big(getAmount).div(beliefPrice).minus(tax);
   const rate = big(1).minus(maxSpread);
   const minimumReceived = expectedAmount.mul(rate).toFixed() as uLuna;
-  const swapFee = big(askSimulation.commission_amount)
-    .plus(askSimulation.spread_amount)
+  const swapFee = big(simulation.commission_amount)
+    .plus(simulation.spread_amount)
     .toFixed() as uLuna;
 
   return {
-    ...askSimulation,
+    ...simulation,
     minimumReceived,
     swapFee,
     beliefPrice: beliefPrice.toFixed() as Rate,

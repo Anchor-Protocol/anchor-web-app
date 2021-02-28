@@ -1,6 +1,5 @@
 import type {
   ContractAddress,
-  Denom,
   HumanAddr,
   terraswap,
   uToken,
@@ -12,64 +11,59 @@ import { parseResult } from 'queries/parseResult';
 import { MappedApolloQueryResult } from 'queries/types';
 
 export interface RawData {
-  terraswapAskSimulation: WASMContractResult;
+  simulation: WASMContractResult;
 }
 
 export interface Data {
-  terraswapAskSimulation: WASMContractResult<
-    terraswap.SimulationResponse<uToken>
-  >;
+  simulation: WASMContractResult<terraswap.SimulationResponse<uToken>>;
 }
 
 export const dataMap = createMap<RawData, Data>({
-  terraswapAskSimulation: (existing, { terraswapAskSimulation }) => {
-    return parseResult(
-      existing.terraswapAskSimulation,
-      terraswapAskSimulation.Result,
-    );
+  simulation: (existing, { simulation }) => {
+    return parseResult(existing.simulation, simulation.Result);
   },
 });
 
 export interface RawVariables {
   terraswapPair: string;
-  askSimulationQuery: string;
+  simulationQuery: string;
 }
 
 export interface Variables {
   terraswapPair: string;
-  askSimulationQuery: terraswap.Simulation<uToken>;
+  simulationQuery: terraswap.Simulation<uToken>;
 }
 
 export function mapVariables({
   terraswapPair,
-  askSimulationQuery,
+  simulationQuery,
 }: Variables): RawVariables {
   return {
     terraswapPair,
-    askSimulationQuery: JSON.stringify(askSimulationQuery),
+    simulationQuery: JSON.stringify(simulationQuery),
   };
 }
 
 export const query = gql`
-  query __terraswapAskSimulation(
+  query __terraswapSimulation(
     $terraswapPair: String!
-    $askSimulationQuery: String!
+    $simulationQuery: String!
   ) {
-    terraswapAskSimulation: WasmContractsContractAddressStore(
+    simulation: WasmContractsContractAddressStore(
       ContractAddress: $terraswapPair
-      QueryMsg: $askSimulationQuery
+      QueryMsg: $simulationQuery
     ) {
       Result
     }
   }
 `;
 
-export function queryTerraswapAskSimulation(
+export function querySimulation(
   client: ApolloClient<any>,
   address: ContractAddress,
-  getAmount: uToken,
+  amount: uToken,
   terraswapPair: HumanAddr,
-  denom: Denom,
+  simulationInfo: terraswap.SimulationInfo,
 ): Promise<MappedApolloQueryResult<RawData, Data>> {
   return client
     .query<RawData, RawVariables>({
@@ -77,13 +71,11 @@ export function queryTerraswapAskSimulation(
       fetchPolicy: 'no-cache',
       variables: mapVariables({
         terraswapPair,
-        askSimulationQuery: {
+        simulationQuery: {
           simulation: {
             offer_asset: {
-              info: {
-                native_token: { denom },
-              },
-              amount: getAmount,
+              info: simulationInfo,
+              amount,
             },
           },
         },

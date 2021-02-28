@@ -33,12 +33,12 @@ import { useConstants } from 'contexts/contants';
 import { useContractAddress } from 'contexts/contract';
 import { useService, useServiceConnectedMemo } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
-import { buyAskSimulation } from 'pages/gov/logics/buyAskSimulation';
-import { buyOfferSimulation } from 'pages/gov/logics/buyOfferSimulation';
+import { buyFromSimulation } from 'pages/gov/logics/buyFromSimulation';
+import { buyToSimulation } from 'pages/gov/logics/buyToSimulation';
 import { TradeSimulation } from 'pages/gov/models/tradeSimulation';
 import { buyOptions } from 'pages/gov/transactions/buyOptions';
-import { queryTerraswapOfferSimulation } from 'queries/terraswapOfferSimulation';
-import { queryTerraswapReverseAskSimulation } from 'queries/terraswapReverseAskSimulation';
+import { queryReverseSimulation } from 'queries/reverseSimulation';
+import { querySimulation } from 'queries/simulation';
 import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
 interface Item {
@@ -46,8 +46,8 @@ interface Item {
   value: string;
 }
 
-const burnCurrencies: Item[] = [{ label: 'UST', value: 'ust' }];
-const getCurrencies: Item[] = [{ label: 'ANC', value: 'anc' }];
+const fromCurrencies: Item[] = [{ label: 'UST', value: 'ust' }];
+const toCurrencies: Item[] = [{ label: 'ANC', value: 'anc' }];
 
 export function TradeBuy() {
   // ---------------------------------------------
@@ -76,17 +76,17 @@ export function TradeBuy() {
   // ---------------------------------------------
   // states
   // ---------------------------------------------
-  const [burnAmount, setBurnAmount] = useState<UST>('' as UST);
-  const [getAmount, setGetAmount] = useState<ANC>('' as ANC);
+  const [fromAmount, setFromAmount] = useState<UST>('' as UST);
+  const [toAmount, setToAmount] = useState<ANC>('' as ANC);
 
   const [resolveSimulation, simulation] = useResolveLast<
     TradeSimulation<uANC, uUST> | undefined | null
   >(() => null);
 
-  const [burnCurrency, setBurnCurrency] = useState<Item>(
-    () => burnCurrencies[0],
+  const [fromCurrency, setFromCurrency] = useState<Item>(
+    () => fromCurrencies[0],
   );
-  const [getCurrency, setGetCurrency] = useState<Item>(() => getCurrencies[0]);
+  const [toCurrency, setToCurrency] = useState<Item>(() => toCurrencies[0]);
 
   // ---------------------------------------------
   // queries
@@ -112,59 +112,63 @@ export function TradeBuy() {
   // effects
   // ---------------------------------------------
   useEffect(() => {
-    if (simulation?.getAmount) {
-      setGetAmount(formatANCInput(demicrofy(simulation.getAmount)));
+    if (simulation?.toAmount) {
+      setToAmount(formatANCInput(demicrofy(simulation.toAmount)));
     }
-  }, [simulation?.getAmount]);
+  }, [simulation?.toAmount]);
 
   useEffect(() => {
-    if (simulation?.burnAmount) {
-      setBurnAmount(formatUSTInput(demicrofy(simulation.burnAmount)));
+    if (simulation?.fromAmount) {
+      setFromAmount(formatUSTInput(demicrofy(simulation.fromAmount)));
     }
-  }, [simulation?.burnAmount]);
+  }, [simulation?.fromAmount]);
 
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
-  const updateBurnCurrency = useCallback((nextBurnCurrencyValue: string) => {
-    setBurnCurrency(
-      burnCurrencies.find(({ value }) => nextBurnCurrencyValue === value) ??
-        burnCurrencies[0],
+  const updateFromCurrency = useCallback((nextFromCurrencyValue: string) => {
+    setFromCurrency(
+      fromCurrencies.find(({ value }) => nextFromCurrencyValue === value) ??
+        fromCurrencies[0],
     );
   }, []);
 
-  const updateGetCurrency = useCallback((nextGetCurrencyValue: string) => {
-    setGetCurrency(
-      getCurrencies.find(({ value }) => nextGetCurrencyValue === value) ??
-        getCurrencies[0],
+  const updateToCurrency = useCallback((nextToCurrencyValue: string) => {
+    setToCurrency(
+      toCurrencies.find(({ value }) => nextToCurrencyValue === value) ??
+        toCurrencies[0],
     );
   }, []);
 
-  const updateBurnAmount = useCallback(
-    async (nextBurnAmount: string) => {
-      if (nextBurnAmount.trim().length === 0) {
-        setGetAmount('' as ANC);
-        setBurnAmount('' as UST);
+  const updateFromAmount = useCallback(
+    async (nextFromAmount: string) => {
+      if (nextFromAmount.trim().length === 0) {
+        setToAmount('' as ANC);
+        setFromAmount('' as UST);
 
         resolveSimulation(null);
       } else {
-        const burnAmount: UST = nextBurnAmount as UST;
-        setBurnAmount(burnAmount);
+        const fromAmount: UST = nextFromAmount as UST;
+        setFromAmount(fromAmount);
 
         if (serviceAvailable) {
-          const amount = microfy(burnAmount).toString() as uUST;
+          const amount = microfy(fromAmount).toString() as uUST;
 
           resolveSimulation(
-            queryTerraswapOfferSimulation(
+            querySimulation(
               client,
               address,
               amount,
               address.terraswap.ancUstPair,
-              address.cw20.ANC,
-            ).then(({ data: { terraswapOfferSimulation } }) =>
-              terraswapOfferSimulation
-                ? buyOfferSimulation(
-                    terraswapOfferSimulation as terraswap.SimulationResponse<uANC>,
+              {
+                token: {
+                  contract_addr: address.cw20.ANC,
+                },
+              },
+            ).then(({ data: { simulation } }) =>
+              simulation
+                ? buyToSimulation(
+                    simulation as terraswap.SimulationResponse<uANC>,
                     amount,
                     bank.tax,
                     fixedGas,
@@ -178,31 +182,35 @@ export function TradeBuy() {
     [address, bank.tax, client, fixedGas, resolveSimulation, serviceAvailable],
   );
 
-  const updateGetAmount = useCallback(
-    (nextGetAmount: string) => {
-      if (nextGetAmount.trim().length === 0) {
-        setBurnAmount('' as UST);
-        setGetAmount('' as ANC);
+  const updateToAmount = useCallback(
+    (nextToAmount: string) => {
+      if (nextToAmount.trim().length === 0) {
+        setFromAmount('' as UST);
+        setToAmount('' as ANC);
 
         resolveSimulation(null);
       } else {
-        const getAmount: ANC = nextGetAmount as ANC;
-        setGetAmount(getAmount);
+        const toAmount: ANC = nextToAmount as ANC;
+        setToAmount(toAmount);
 
         if (serviceAvailable) {
-          const amount = microfy(getAmount).toString() as uANC;
+          const amount = microfy(toAmount).toString() as uANC;
 
           resolveSimulation(
-            queryTerraswapReverseAskSimulation(
+            queryReverseSimulation(
               client,
               address,
               amount,
               address.terraswap.ancUstPair,
-              address.cw20.ANC,
-            ).then(({ data: { terraswapAskSimulation } }) =>
-              terraswapAskSimulation
-                ? buyAskSimulation(
-                    terraswapAskSimulation as terraswap.SimulationResponse<uANC>,
+              {
+                token: {
+                  contract_addr: address.cw20.ANC,
+                },
+              },
+            ).then(({ data: { simulation } }) =>
+              simulation
+                ? buyFromSimulation(
+                    simulation as terraswap.SimulationResponse<uANC>,
                     amount,
                     bank.tax,
                     fixedGas,
@@ -217,20 +225,20 @@ export function TradeBuy() {
   );
 
   const init = useCallback(() => {
-    setGetAmount('' as ANC);
-    setBurnAmount('' as UST);
+    setToAmount('' as ANC);
+    setFromAmount('' as UST);
   }, []);
 
   const proceed = useCallback(
     async (
       walletReady: WalletReady,
-      burnAmount: UST,
+      fromAmount: UST,
       beliefPrice: Rate,
       maxSpread: Rate,
     ) => {
       const broadcasted = await buy({
         address: walletReady.walletAddress,
-        amount: burnAmount,
+        amount: fromAmount,
         beliefPrice: formatFluidDecimalPoints(big(1).div(beliefPrice), 18, {
           fallbackValue: '0',
         }),
@@ -262,7 +270,7 @@ export function TradeBuy() {
 
       {/* Burn (bAsset) */}
       <div className="burn-description">
-        <p>I want to burn</p>
+        <p>From</p>
         <p />
       </div>
 
@@ -278,25 +286,25 @@ export function TradeBuy() {
               <span
                 style={{ textDecoration: 'underline', cursor: 'pointer' }}
                 onClick={() =>
-                  updateBurnAmount(
+                  updateFromAmount(
                     formatUSTInput(demicrofy(bank.userBalances.uUSD)),
                   )
                 }
               >
                 {formatUST(demicrofy(bank.userBalances.uUSD))}{' '}
-                {burnCurrency.label}
+                {fromCurrency.label}
               </span>
             </span>
           )
         }
       >
         <MuiNativeSelect
-          value={burnCurrency}
-          onChange={({ target }) => updateBurnCurrency(target.value)}
-          IconComponent={burnCurrencies.length < 2 ? BlankComponent : undefined}
-          disabled={burnCurrencies.length < 2}
+          value={fromCurrency}
+          onChange={({ target }) => updateFromCurrency(target.value)}
+          IconComponent={fromCurrencies.length < 2 ? BlankComponent : undefined}
+          disabled={fromCurrencies.length < 2}
         >
-          {burnCurrencies.map(({ label, value }) => (
+          {fromCurrencies.map(({ label, value }) => (
             <option key={value} value={value}>
               {label}
             </option>
@@ -305,10 +313,10 @@ export function TradeBuy() {
         <MuiInput
           placeholder="0"
           error={!!invalidBurnAmount}
-          value={burnAmount}
+          value={fromAmount}
           onKeyPress={onUstInputKeyPress as any}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
-            updateBurnAmount(target.value)
+            updateFromAmount(target.value)
           }
         />
       </SelectAndTextInputContainer>
@@ -317,7 +325,7 @@ export function TradeBuy() {
 
       {/* Get (Asset) */}
       <div className="gett-description">
-        <p>and get</p>
+        <p>To</p>
         <p />
       </div>
 
@@ -327,12 +335,12 @@ export function TradeBuy() {
         error={!!invalidBurnAmount}
       >
         <MuiNativeSelect
-          value={getCurrency}
-          onChange={({ target }) => updateGetCurrency(target.value)}
-          IconComponent={getCurrencies.length < 2 ? BlankComponent : undefined}
-          disabled={getCurrencies.length < 2}
+          value={toCurrency}
+          onChange={({ target }) => updateToCurrency(target.value)}
+          IconComponent={toCurrencies.length < 2 ? BlankComponent : undefined}
+          disabled={toCurrencies.length < 2}
         >
-          {getCurrencies.map(({ label, value }) => (
+          {toCurrencies.map(({ label, value }) => (
             <option key={value} value={value}>
               {label}
             </option>
@@ -341,15 +349,15 @@ export function TradeBuy() {
         <MuiInput
           placeholder="0"
           error={!!invalidBurnAmount}
-          value={getAmount}
+          value={toAmount}
           onKeyPress={onAncInputKeyPress as any}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
-            updateGetAmount(target.value)
+            updateToAmount(target.value)
           }
         />
       </SelectAndTextInputContainer>
 
-      {burnAmount.length > 0 && simulation && (
+      {fromAmount.length > 0 && simulation && (
         <TxFeeList className="receipt">
           <SwapListItem
             label="Price"
@@ -384,8 +392,8 @@ export function TradeBuy() {
         className="submit"
         disabled={
           !serviceAvailable ||
-          burnAmount.length === 0 ||
-          big(burnAmount).lte(0) ||
+          fromAmount.length === 0 ||
+          big(fromAmount).lte(0) ||
           !!invalidTxFee ||
           !!invalidBurnAmount ||
           big(simulation?.swapFee ?? 0).lte(0)
@@ -394,7 +402,7 @@ export function TradeBuy() {
           walletReady &&
           proceed(
             walletReady,
-            burnAmount,
+            fromAmount,
             simulation!.beliefPrice,
             simulation!.maxSpread,
           )
