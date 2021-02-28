@@ -1,36 +1,36 @@
 import type {
   ContractAddress,
-  CW20Addr,
   HumanAddr,
   terraswap,
   uToken,
   WASMContractResult,
 } from '@anchor-protocol/types';
+import { Denom } from '@anchor-protocol/types';
 import { createMap, map } from '@anchor-protocol/use-map';
 import { ApolloClient, gql } from '@apollo/client';
 import { MappedApolloQueryResult } from 'queries/types';
 
 export interface RawData {
-  terraswapAskSimulation: WASMContractResult;
+  terraswapOfferSimulation: WASMContractResult;
 }
 
 export interface Data {
-  terraswapAskSimulation: WASMContractResult<
+  terraswapOfferSimulation: WASMContractResult<
     terraswap.SimulationResponse<uToken>
   >;
 }
 
 export const dataMap = createMap<RawData, Data>({
-  terraswapAskSimulation: (existing, { terraswapAskSimulation }) => {
-    if (!terraswapAskSimulation || !terraswapAskSimulation?.Result)
-      return existing.terraswapAskSimulation;
+  terraswapOfferSimulation: (existing, { terraswapOfferSimulation }) => {
+    if (!terraswapOfferSimulation || !terraswapOfferSimulation?.Result)
+      return existing.terraswapOfferSimulation;
 
     const { commission_amount, offer_amount, spread_amount } = JSON.parse(
-      terraswapAskSimulation.Result,
+      terraswapOfferSimulation.Result,
     ) as terraswap.ReverseSimulationResponse<uToken>;
 
     return {
-      ...terraswapAskSimulation,
+      ...terraswapOfferSimulation,
       commission_amount,
       return_amount: offer_amount,
       spread_amount,
@@ -40,44 +40,44 @@ export const dataMap = createMap<RawData, Data>({
 
 export interface RawVariables {
   terraswapPair: string;
-  askSimulationQuery: string;
+  offerSimulationQuery: string;
 }
 
 export interface Variables {
   terraswapPair: string;
-  askSimulationQuery: terraswap.ReverseSimulation<uToken>;
+  offerSimulationQuery: terraswap.ReverseSimulation<uToken>;
 }
 
 export function mapVariables({
   terraswapPair,
-  askSimulationQuery,
+  offerSimulationQuery,
 }: Variables): RawVariables {
   return {
     terraswapPair,
-    askSimulationQuery: JSON.stringify(askSimulationQuery),
+    offerSimulationQuery: JSON.stringify(offerSimulationQuery),
   };
 }
 
 export const query = gql`
-  query __terraswapReverseAskSimulation(
+  query __terraswapReverseOfferSimulation(
     $terraswapPair: String!
-    $askSimulationQuery: String!
+    $offerSimulationQuery: String!
   ) {
-    terraswapAskSimulation: WasmContractsContractAddressStore(
+    terraswapOfferSimulation: WasmContractsContractAddressStore(
       ContractAddress: $terraswapPair
-      QueryMsg: $askSimulationQuery
+      QueryMsg: $offerSimulationQuery
     ) {
       Result
     }
   }
 `;
 
-export function queryTerraswapReverseAskSimulation(
+export function queryTerraswapReverseOfferSimulation(
   client: ApolloClient<any>,
   address: ContractAddress,
   getAmount: uToken,
   terraswapPair: HumanAddr,
-  tokenAddr: CW20Addr,
+  denom: Denom,
 ): Promise<MappedApolloQueryResult<RawData, Data>> {
   return client
     .query<RawData, RawVariables>({
@@ -85,12 +85,12 @@ export function queryTerraswapReverseAskSimulation(
       fetchPolicy: 'no-cache',
       variables: mapVariables({
         terraswapPair,
-        askSimulationQuery: {
+        offerSimulationQuery: {
           reverse_simulation: {
             ask_asset: {
               info: {
-                token: {
-                  contract_addr: tokenAddr,
+                native_token: {
+                  denom,
                 },
               },
               amount: getAmount,

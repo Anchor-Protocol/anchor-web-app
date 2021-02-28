@@ -1,4 +1,5 @@
 import { AddressProvider } from '@anchor-protocol/anchor.js';
+import { createHookMsg } from '@anchor-protocol/anchor.js/dist/utils/cw20/create-hook-msg';
 import { validateInput } from '@anchor-protocol/anchor.js/dist/utils/validate-input';
 import { validateAddress } from '@anchor-protocol/anchor.js/dist/utils/validation/address';
 import {
@@ -11,14 +12,7 @@ import {
   OperationDependency,
   timeout,
 } from '@anchor-protocol/broadcastable-operation';
-import {
-  Coin,
-  Coins,
-  Dec,
-  Int,
-  MsgExecuteContract,
-  StdFee,
-} from '@terra-money/terra.js';
+import { Dec, Int, MsgExecuteContract, StdFee } from '@terra-money/terra.js';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { pickSwapResult } from 'pages/basset/transactions/pickSwapResult';
 import { createContractMsg } from 'transactions/createContractMsg';
@@ -27,8 +21,8 @@ import { getTxInfo } from 'transactions/getTxInfo';
 import { postContractMsg } from 'transactions/postContractMsg';
 import { parseTxResult } from 'transactions/tx';
 
-export const buyOptions = createOperationOptions({
-  id: 'gov/buy',
+export const sellOptions = createOperationOptions({
+  id: 'gov/sell',
   //broadcastWhen: 'always',
   pipe: ({
     addressProvider,
@@ -39,7 +33,7 @@ export const buyOptions = createOperationOptions({
     gasFee,
     gasAdjustment,
   }: OperationDependency<{}>) => [
-    fabricatebBuy, // Option -> ((AddressProvider) -> MsgExecuteContract[])
+    fabricatebSell, // Option -> ((AddressProvider) -> MsgExecuteContract[])
     createContractMsg(addressProvider), // -> MsgExecuteContract[]
     createOptions(() => ({
       fee: new StdFee(gasFee, fixedGas + 'uusd'),
@@ -57,19 +51,17 @@ export const buyOptions = createOperationOptions({
 interface Option {
   address: string;
   amount: string;
-  denom: string;
   to?: string;
   beliefPrice?: string;
   maxSpread?: string;
 }
 
-export const fabricatebBuy = ({
+export const fabricatebSell = ({
   address,
   amount,
   to,
   beliefPrice,
   maxSpread,
-  denom,
 }: Option) => (addressProvider: AddressProvider): MsgExecuteContract[] => {
   validateInput([
     validateAddress(address),
@@ -77,30 +69,22 @@ export const fabricatebBuy = ({
     validateIsGreaterThanZero(+amount),
   ]);
 
-  const coins = new Coins([
-    new Coin(denom, new Int(new Dec(amount).mul(1000000)).toString()),
-  ]);
+  const ancTokenAddress = addressProvider.ANC();
   const pairAddress = addressProvider.terraswapAncUstPair();
+
   return [
-    new MsgExecuteContract(
-      address,
-      pairAddress,
-      {
-        swap: {
-          offer_asset: {
-            info: {
-              native_token: {
-                denom: denom,
-              },
-            },
-            amount: new Int(new Dec(amount).mul(1000000)).toString(),
+    new MsgExecuteContract(address, ancTokenAddress, {
+      send: {
+        contract: pairAddress,
+        amount: new Int(new Dec(amount).mul(1000000)).toString(),
+        msg: createHookMsg({
+          swap: {
+            belief_price: beliefPrice,
+            max_spread: maxSpread,
+            to: to,
           },
-          belief_price: beliefPrice,
-          max_spread: maxSpread,
-          to: to,
-        },
+        }),
       },
-      coins,
-    ),
+    }),
   ];
 };

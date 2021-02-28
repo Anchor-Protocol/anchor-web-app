@@ -1,5 +1,5 @@
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
-import type { uaUST, ubLuna, uLuna, uUST } from '@anchor-protocol/types';
+import type { uANC, uaUST, ubLuna, uLuna, uUST } from '@anchor-protocol/types';
 import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useContractAddress } from 'contexts/contract';
@@ -20,6 +20,10 @@ export interface RawData {
   uaUSTBalance: {
     Result: string;
   };
+
+  uANCBalance: {
+    Result: string;
+  };
 }
 
 export interface Data {
@@ -27,6 +31,7 @@ export interface Data {
   uLuna: uLuna<string>;
   ubLuna: ubLuna<string>;
   uaUST: uaUST<string>;
+  uANC: uANC<string>;
 }
 
 export const dataMap = createMap<RawData, Data>({
@@ -44,6 +49,9 @@ export const dataMap = createMap<RawData, Data>({
   ubLuna: (_, { ubLunaBalance }) => {
     return JSON.parse(ubLunaBalance.Result).balance as ubLuna;
   },
+  uANC: (_, { uANCBalance }) => {
+    return JSON.parse(uANCBalance.Result).balance as uANC;
+  },
 });
 
 export const mockupData: Mapped<RawData, Data> = {
@@ -60,11 +68,15 @@ export const mockupData: Mapped<RawData, Data> = {
     ubLunaBalance: {
       Result: '',
     },
+    uANCBalance: {
+      Result: '',
+    },
   },
   uUSD: '0' as uUST,
   uaUST: '0' as uaUST,
   uLuna: '0' as uLuna,
   ubLuna: '0' as ubLuna,
+  uANC: '0' as uANC,
 };
 
 export interface RawVariables {
@@ -73,18 +85,22 @@ export interface RawVariables {
   bAssetTokenBalanceQuery: string;
   aTokenAddress: string;
   aTokenBalanceQuery: string;
+  ANCTokenAddress: string;
+  ANCTokenBalanceQuery: string;
 }
 
 export interface Variables {
   walletAddress: string;
   bAssetTokenAddress: string;
   aTokenAddress: string;
+  ANCTokenAddress: string;
 }
 
 export function mapVariables({
   walletAddress,
   bAssetTokenAddress,
   aTokenAddress,
+  ANCTokenAddress,
 }: Variables): RawVariables {
   return {
     walletAddress,
@@ -100,6 +116,12 @@ export function mapVariables({
         address: walletAddress,
       },
     }),
+    ANCTokenAddress,
+    ANCTokenBalanceQuery: JSON.stringify({
+      balance: {
+        address: walletAddress,
+      },
+    }),
   };
 }
 
@@ -110,6 +132,8 @@ export const query = gql`
     $bAssetTokenBalanceQuery: String!
     $aTokenAddress: String!
     $aTokenBalanceQuery: String!
+    $ANCTokenAddress: String!
+    $ANCTokenBalanceQuery: String!
   ) {
     # uluna, ukrt, uust...
     bankBalances: BankBalancesAddress(Address: $walletAddress) {
@@ -134,6 +158,14 @@ export const query = gql`
     ) {
       Result
     }
+
+    # uanc
+    uANCBalance: WasmContractsContractAddressStore(
+      ContractAddress: $ANCTokenAddress
+      QueryMsg: $ANCTokenBalanceQuery
+    ) {
+      Result
+    }
   }
 `;
 
@@ -151,8 +183,9 @@ export function useUserBalances(): MappedQueryResult<
       walletAddress: walletReady?.walletAddress ?? '',
       bAssetTokenAddress: cw20.bLuna,
       aTokenAddress: cw20.aUST,
+      ANCTokenAddress: cw20.ANC,
     });
-  }, [cw20.aUST, cw20.bLuna, walletReady?.walletAddress]);
+  }, [cw20.ANC, cw20.aUST, cw20.bLuna, walletReady?.walletAddress]);
 
   const {
     previousData,

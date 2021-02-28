@@ -52,7 +52,7 @@ export interface SwapListItemProps {
   currencyA: string;
   currencyB: string;
   exchangeRateAB: BigSource;
-  formatExchangeRate: (n: BigSource) => string;
+  formatExchangeRate: (n: BigSource, direction: 'a/b' | 'b/a') => string;
   initialDirection?: 'a/b' | 'b/a';
 }
 
@@ -68,8 +68,8 @@ export function SwapListItem({
 
   const exchangeRate = useMemo(() => {
     return direction === 'a/b'
-      ? formatExchangeRate(exchangeRateAB)
-      : formatExchangeRate(big(1).div(exchangeRateAB));
+      ? formatExchangeRate(exchangeRateAB, direction)
+      : formatExchangeRate(big(1).div(exchangeRateAB), direction);
   }, [direction, exchangeRateAB, formatExchangeRate]);
 
   return (

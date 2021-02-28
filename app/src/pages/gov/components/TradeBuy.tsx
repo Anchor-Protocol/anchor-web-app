@@ -235,6 +235,7 @@ export function TradeBuy() {
           fallbackValue: '0',
         }),
         maxSpread,
+        denom: 'uusd',
       });
 
       if (!broadcasted) {
@@ -356,10 +357,12 @@ export function TradeBuy() {
             currencyB="UST"
             exchangeRateAB={simulation.beliefPrice}
             initialDirection="a/b"
-            formatExchangeRate={(price) =>
+            formatExchangeRate={(price, direction) =>
               formatFluidDecimalPoints(
                 price,
-                ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
+                direction === 'a/b'
+                  ? ANC_INPUT_MAXIMUM_DECIMAL_POINTS
+                  : UST_INPUT_MAXIMUM_DECIMAL_POINTS,
                 { delimiter: true },
               )
             }

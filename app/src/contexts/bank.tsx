@@ -1,6 +1,7 @@
 import { microfy } from '@anchor-protocol/notation';
 import type {
   Rate,
+  uANC,
   uaUST,
   ubLuna,
   uLuna,
@@ -65,6 +66,7 @@ export function BankProvider({ children }: BankProviderProps) {
             uLuna: balancesData.uLuna ?? ('0' as uLuna),
             uaUST: balancesData.uaUST ?? ('0' as uaUST),
             ubLuna: balancesData.ubLuna ?? ('0' as ubLuna),
+            uANC: balancesData.uANC ?? ('0' as uANC),
           },
           refetchUserBalances,
         }
@@ -76,10 +78,12 @@ export function BankProvider({ children }: BankProviderProps) {
             uLuna: '0' as uLuna,
             ubLuna: '0' as ubLuna,
             uaUST: '0' as uaUST,
+            uANC: '0' as uANC,
           },
           refetchUserBalances,
         };
   }, [
+    balancesData.uANC,
     balancesData.uLuna,
     balancesData.uUSD,
     balancesData.uaUST,

@@ -3,6 +3,7 @@ import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionB
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import {
   demicrofy,
+  formatANC,
   formatLuna,
   formatUSTWithPostfixUnits,
   truncate,
@@ -159,6 +160,12 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                       <span>bLuna</span>
                       <span>
                         {formatLuna(demicrofy(bank.userBalances.ubLuna))}
+                      </span>
+                    </li>
+                    <li>
+                      <span>ANC</span>
+                      <span>
+                        {formatANC(demicrofy(bank.userBalances.uANC))}
                       </span>
                     </li>
                   </ul>
