@@ -19,5 +19,5 @@ export interface StakerInfoResponse {
   staker: HumanAddr;
   reward_index: Num;
   bond_amount: uANC;
-  pending_rewards: uANC;
+  pending_reward: uANC;
 }

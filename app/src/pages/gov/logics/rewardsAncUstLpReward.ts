@@ -11,7 +11,7 @@ export function rewardsAncUstLpReward(
       big(stakingState.global_reward_index).minus(stakerInfo.reward_index),
     )
       .mul(stakerInfo.bond_amount)
-      .plus(stakerInfo.pending_rewards) as uUST<Big>;
+      .plus(stakerInfo.pending_reward) as uUST<Big>;
   }
 
   return undefined;
