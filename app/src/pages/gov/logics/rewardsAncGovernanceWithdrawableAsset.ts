@@ -1,18 +1,18 @@
 import type { uANC } from '@anchor-protocol/types';
-import big, { Big, BigSource } from 'big.js';
+import { anchorToken, cw20 } from '@anchor-protocol/types';
+import big, { Big } from 'big.js';
 
 export function rewardsAncGovernanceWithdrawableAsset(
-  ancBalance: uANC<BigSource> | undefined,
-  total_deposit: uANC<BigSource> | undefined,
-  total_share: uANC<BigSource> | undefined,
-  share: uANC<BigSource> | undefined,
+  govANCBalance: cw20.BalanceResponse<uANC> | undefined,
+  govState: anchorToken.gov.StateResponse | undefined,
+  govStaker: anchorToken.gov.StakerResponse | undefined,
 ): uANC<Big> | undefined {
-  if (ancBalance && total_deposit && total_share && share) {
+  if (govANCBalance && govState && govStaker) {
     return big(
-      big(big(ancBalance).minus(total_deposit)).div(
-        total_share === '0' ? 1 : total_share,
+      big(big(govANCBalance.balance).minus(govState.total_deposit)).div(
+        govState.total_share === '0' ? 1 : govState.total_share,
       ),
-    ).mul(share) as uANC<Big>;
+    ).mul(govStaker.share) as uANC<Big>;
   }
 
   return undefined;

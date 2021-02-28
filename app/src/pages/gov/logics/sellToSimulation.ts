@@ -7,11 +7,11 @@ import { Data as TaxData } from 'queries/tax';
 
 export function sellToSimulation(
   simulation: terraswap.SimulationResponse<uUST>,
-  burnAmount: uANC,
+  amount: uANC,
   { taxRate, maxTaxUUSD }: TaxData,
   fixedGas: uUST<BigSource>,
 ): TradeSimulation<uUST, uANC> {
-  const beliefPrice = big(simulation.return_amount).div(burnAmount);
+  const beliefPrice = big(simulation.return_amount).div(amount);
   const maxSpread = 0.1;
 
   const tax = min(
@@ -35,6 +35,6 @@ export function sellToSimulation(
     maxSpread: maxSpread.toString() as Rate,
 
     txFee: tax.plus(fixedGas).toFixed() as uUST,
-    toAmount: big(burnAmount).div(beliefPrice).toString() as uUST,
+    toAmount: big(amount).div(beliefPrice).toString() as uUST,
   };
 }

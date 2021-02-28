@@ -1,4 +1,4 @@
-import type { Num, uANC } from '@anchor-protocol/types';
+import type { uANC } from '@anchor-protocol/types';
 import { anchorToken, cw20, WASMContractResult } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
@@ -16,18 +16,8 @@ export interface RawData {
 }
 
 export interface Data {
-  userLPBalance: {
-    Result: string;
-    balance: uANC<string>;
-  };
-
-  userLPStakingInfo: {
-    Result: string;
-    staker: string;
-    reward_index: Num<string>;
-    bond_amount: Num<string>;
-    pending_reward: Num<string>;
-  };
+  userLPBalance: WASMContractResult<cw20.BalanceResponse<uANC>>;
+  userLPStakingInfo: WASMContractResult<anchorToken.staking.StakerInfoResponse>;
 }
 
 export const dataMap = createMap<RawData, Data>({

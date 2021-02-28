@@ -1,14 +1,14 @@
-import type { Num, uANC, uUST } from '@anchor-protocol/types';
-import big, { Big, BigSource } from 'big.js';
+import type { uUST } from '@anchor-protocol/types';
+import { moneyMarket } from '@anchor-protocol/types';
+import big, { Big } from 'big.js';
 
 export function rewardsTotalBorrowReward(
-  global_reward_index: Num<BigSource> | undefined,
-  reward_index: Num<BigSource> | undefined,
-  pending_rewards: uANC<BigSource> | undefined,
+  marketState: moneyMarket.market.StateResponse | undefined,
+  borrowInfo: moneyMarket.market.BorrowInfoResponse | undefined,
 ): uUST<Big> | undefined {
-  return global_reward_index && reward_index && pending_rewards
-    ? (big(global_reward_index)
-        .minus(reward_index)
-        .plus(pending_rewards) as uUST<Big>)
+  return borrowInfo && marketState
+    ? (big(marketState.global_reward_index)
+        .minus(borrowInfo.reward_index)
+        .plus(borrowInfo.pending_rewards) as uUST<Big>)
     : undefined;
 }

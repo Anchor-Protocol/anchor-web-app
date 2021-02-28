@@ -41,14 +41,14 @@ function OverviewBase({ className }: OverviewProps) {
     data: { lpStakingState },
   } = useLPStakingState();
 
-  const totalStaked = useMemo(
-    () => totalGovStaked(govANCBalance?.balance, govState?.total_deposit),
-    [govANCBalance?.balance, govState?.total_deposit],
-  );
+  const totalStaked = useMemo(() => totalGovStaked(govANCBalance, govState), [
+    govANCBalance,
+    govState,
+  ]);
 
   const totalStakedShareIndex = useMemo(
-    () => totalStakedGovShareIndex(totalStaked, govState?.total_share),
-    [govState?.total_share, totalStaked],
+    () => totalStakedGovShareIndex(totalStaked, govState),
+    [govState, totalStaked],
   );
 
   return (

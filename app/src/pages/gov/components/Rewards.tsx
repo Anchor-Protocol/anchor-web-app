@@ -65,68 +65,34 @@ export function RewardsBase({ className }: RewardsProps) {
   // logics
   // ---------------------------------------------
   const ancUstLpWithdrawableAnc = useMemo(
-    () =>
-      rewardsAncUstLpWithdrawableAnc(
-        ancPrice?.ANCPoolSize,
-        userLPBalance?.balance,
-        ancPrice?.LPShare,
-      ),
-    [ancPrice?.ANCPoolSize, ancPrice?.LPShare, userLPBalance?.balance],
+    () => rewardsAncUstLpWithdrawableAnc(ancPrice, userLPBalance),
+    [ancPrice, userLPBalance],
   );
 
   const ancUstLpWithdrawableUst = useMemo(
-    () =>
-      rewardsAncUstLpWithdrawableUst(
-        ancPrice?.USTPoolSize,
-        userLPBalance?.balance,
-        ancPrice?.LPShare,
-      ),
-    [ancPrice?.LPShare, ancPrice?.USTPoolSize, userLPBalance?.balance],
+    () => rewardsAncUstLpWithdrawableUst(ancPrice, userLPBalance),
+    [ancPrice, userLPBalance],
   );
 
   const ancUstLpReward = useMemo(() => {
-    return rewardsAncUstLpReward(
-      lpStakingState?.global_reward_index,
-      userLPStakingInfo?.reward_index,
-      userLPStakingInfo?.bond_amount,
-      userLPStakingInfo?.pending_reward,
-    );
-  }, [
-    lpStakingState?.global_reward_index,
-    userLPStakingInfo?.bond_amount,
-    userLPStakingInfo?.pending_reward,
-    userLPStakingInfo?.reward_index,
-  ]);
+    return rewardsAncUstLpReward(lpStakingState, userLPStakingInfo);
+  }, [lpStakingState, userLPStakingInfo]);
 
   const ancGovernanceWithdrawableAsset = useMemo(() => {
     return rewardsAncGovernanceWithdrawableAsset(
-      govANCBalance?.balance,
-      govState?.total_deposit,
-      govState?.total_share,
-      userGovStakingInfo?.share,
+      govANCBalance,
+      govState,
+      userGovStakingInfo,
     );
-  }, [
-    govANCBalance?.balance,
-    govState?.total_deposit,
-    govState?.total_share,
-    userGovStakingInfo?.share,
-  ]);
+  }, [govANCBalance, govState, userGovStakingInfo]);
 
   const ancGovernanceStakable = useMemo(() => {
-    return rewardsAncGovernanceStakable(userANCBalance?.balance);
-  }, [userANCBalance?.balance]);
+    return rewardsAncGovernanceStakable(userANCBalance);
+  }, [userANCBalance]);
 
   const ustBorrowReward = useMemo(() => {
-    return rewardsTotalBorrowReward(
-      marketState?.global_interest_index,
-      borrowerInfo?.reward_index,
-      borrowerInfo?.pending_rewards,
-    );
-  }, [
-    borrowerInfo?.pending_rewards,
-    borrowerInfo?.reward_index,
-    marketState?.global_interest_index,
-  ]);
+    return rewardsTotalBorrowReward(marketState, borrowerInfo);
+  }, [borrowerInfo, marketState]);
 
   const totalReward = useMemo(() => {
     return rewardsTotalReward(ustBorrowReward, ancUstLpReward);

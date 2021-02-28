@@ -6,6 +6,7 @@ import { gql, useQuery } from '@apollo/client';
 import { Int } from '@terra-money/terra.js';
 import { useContractAddress } from 'contexts/contract';
 import { useService } from 'contexts/service';
+import { AncPrice } from 'pages/gov/models/ancPrice';
 import { MappedQueryResult } from 'queries/types';
 import { useQueryErrorHandler } from 'queries/useQueryErrorHandler';
 import { useRefetch } from 'queries/useRefetch';
@@ -16,13 +17,7 @@ export interface RawData {
 }
 
 export interface Data {
-  ancPrice: {
-    Result: string;
-    ANCPoolSize: Num<string>;
-    USTPoolSize: Num<string>;
-    LPShare: Num<string>;
-    ANCPrice: UST<string>;
-  };
+  ancPrice: WASMContractResult<AncPrice>;
 }
 
 export const dataMap = createMap<RawData, Data>({
