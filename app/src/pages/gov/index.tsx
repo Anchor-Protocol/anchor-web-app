@@ -1,8 +1,8 @@
+import { PollCreateModifyCollateralAttribute } from 'pages/gov/poll.create.modify-collateral-attribute';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { govPathname } from './env';
 import { GovernanceMain } from './main';
 import { PollCreate } from './poll.create';
-import { pollCreateTextProposal } from './poll.create.text-proposal';
 import { PollDetail } from './poll.detail';
 import { RewardsPool } from './rewards.pool';
 import { Trade } from './trade';
@@ -27,8 +27,8 @@ export function Governance() {
       />
 
       <Route
-        path={`/${govPathname}/poll/create/text-proposal`}
-        component={pollCreateTextProposal}
+        path={`/${govPathname}/poll/create/modify-collateral-attribute`}
+        component={PollCreateModifyCollateralAttribute}
       />
 
       <Route path={`/${govPathname}/poll/:id`} component={PollDetail} />

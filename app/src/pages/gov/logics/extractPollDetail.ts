@@ -15,7 +15,7 @@ export interface PollDetail {
 
   endsIn: Date;
 
-  executeData: any[] | null;
+  executeData: any | null;
 }
 
 export function extractPollDetail(
@@ -31,9 +31,15 @@ export function extractPollDetail(
     (poll.end_height - currentHeight) * 6000 + Date.now(),
   );
 
-  const executeData = poll.execute_data
-    ? JSON.parse(atob(poll.execute_data.msg))
-    : null;
+  let executeData: any = null;
+
+  try {
+    executeData = poll.execute_data
+      ? JSON.parse(atob(poll.execute_data.msg))
+      : null;
+  } catch (error) {
+    console.log('extractPollDetail.ts..extractPollDetail()', error);
+  }
 
   const type = executeData?.hasOwnProperty('spend')
     ? 'Community Spend'

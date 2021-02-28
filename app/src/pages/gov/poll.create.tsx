@@ -6,8 +6,8 @@ import { ChevronRight, Forum } from '@material-ui/icons';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { govPathname } from 'pages/gov/env';
 import { ReactNode } from 'react';
-import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import styled from 'styled-components';
 
 export interface PollCreateProps {
   className?: string;
@@ -21,21 +21,9 @@ function PollCreateBase({ className }: PollCreateProps) {
 
         <ul>
           <PollLink
-            to={`/${govPathname}/poll/create/text-proposal`}
-            title="Modify Governance Parameters"
-            description="Modify the existing governance parameters of ..."
-          />
-
-          <PollLink
-            to={`/${govPathname}/poll/create/text-proposal`}
-            title="Spend Community Pool"
-            description="Submit community pool spending proposal"
-          />
-
-          <PollLink
-            to={`/${govPathname}/poll/create/text-proposal`}
-            title="Submit Text Proposal"
-            description="Upload a text proposal"
+            to={`/${govPathname}/poll/create/modify-collateral-attribute`}
+            title="Modify Collateral Attribute"
+            description="TODO: Description ..."
           />
         </ul>
 

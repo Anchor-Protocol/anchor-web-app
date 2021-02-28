@@ -61,7 +61,7 @@ export const contractAddresses = {
   terraswapblunaLunaLPToken: 'terra1u3g737cx5tyuwpmf8gxnn4dymxlaq74rzxjg4u',
   terraswapAncUstPair: 'terra1pks49j0lqeae874cjn32wpvwdz4nkv6vx767r4',
   terraswapAncUstLPToken: 'terra1m9lf50qxajujllyacuwmy3c28kk6fjayezvn96',
-  gov: 'terra12r5ghc6ppewcdcs3hkewrz24ey6xl7mmpk478s',
+  gov: 'terra1grjkq4ke45rmd4gktjmpajv8rg3rnes9mzs8gs',
   faucet: 'terra19mk5g0ngudpkmuhyh2qdgz5c3jehvpu43p4x5f',
   collector: 'terra1h6e8ythcvdqqz9jx5snylu3k9ynnuuy52sa6xk',
   community: 'terra1qds4gm6tplrhdumm0sm3h3leqxdrdruzq4aekh',
