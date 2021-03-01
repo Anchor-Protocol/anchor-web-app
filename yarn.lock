@@ -5,13 +5,13 @@ __metadata:
   version: 4
   cacheKey: 7
 
-"@anchor-protocol/anchor.js@npm:^0.1.6":
-  version: 0.1.6
-  resolution: "@anchor-protocol/anchor.js@npm:0.1.6"
+"@anchor-protocol/anchor.js@npm:^0.1.5":
+  version: 0.1.5
+  resolution: "@anchor-protocol/anchor.js@npm:0.1.5"
   dependencies:
     "@terra-money/terra.js": ^1.3.6
     yaml: ^1.10.0
-  checksum: 7b4ef56c0c9e5b72482b2a9666c600845798f9b89c9de6aa1f2b8585d04cc5fa9071882f5b1cc600f53f10f00d42f9be3fea4357512d55bf7140f1e28b5b31b8
+  checksum: 6f270964d3571e315dc27d17afb74ed224317b625130b8004f2306b6b15109b06a503e09d43486fef9934fceecd945ed3b4f69d88567892d1d1593497483f39b
   languageName: node
   linkType: hard
 
@@ -19,7 +19,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@anchor-web-app/app@workspace:app"
   dependencies:
-    "@anchor-protocol/anchor.js": ^0.1.6
+    "@anchor-protocol/anchor.js": ^0.1.5
     "@apollo/client": ^3.3.11
     "@material-ui/core": ^4.11.3
     "@material-ui/icons": ^4.11.2
@@ -29,7 +29,7 @@ __metadata:
     "@terra-money/terra.js": ^1.4.2
     "@testing-library/jest-dom": ^5.11.9
     "@testing-library/react": ^11.2.5
-    "@testing-library/user-event": ^12.8.0
+    "@testing-library/user-event": ^12.7.3
     "@types/autoprefixer": ^10.2.0
     "@types/big.js": ^6.0.2
     "@types/color": ^3.0.1
@@ -60,12 +60,12 @@ __metadata:
     downshift: ^6.1.0
     fastdom: ^1.0.10
     graphql: ^15.5.0
-    graphql-tag: ^2.11.0
+    graphql-tag: ^2.12.1
     multiplerun: ^2.0.1
     numeral: ^2.0.6
     puppeteer: ^7.1.0
     react: ^17.0.1
-    react-app-rewire-alias: ^1.0.1
+    react-app-rewire-alias: ^1.0.0
     react-app-rewired: ^2.1.8
     react-dom: ^17.0.1
     react-ga: ^3.3.0
@@ -79,7 +79,7 @@ __metadata:
     styled-components: ^5.2.1
     ts-node: ^9.1.1
     tsconfig-paths: ^3.9.0
-    typescript: ^4.2.2
+    typescript: ^4.1.5
     use-resize-observer: ^7.0.0
     web-vitals: ^1.1.0
     workbox-background-sync: ^6.1.1
@@ -101,7 +101,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@anchor-web-app/demo@workspace:demo"
   dependencies:
-    "@anchor-protocol/anchor.js": ^0.1.6
+    "@anchor-protocol/anchor.js": ^0.1.5
     "@apollo/client": ^3.3.11
     "@material-ui/core": ^4.11.3
     "@material-ui/icons": ^4.11.2
@@ -111,7 +111,7 @@ __metadata:
     "@terra-money/terra.js": ^1.4.2
     "@testing-library/jest-dom": ^5.11.9
     "@testing-library/react": ^11.2.5
-    "@testing-library/user-event": ^12.8.0
+    "@testing-library/user-event": ^12.7.3
     "@types/autoprefixer": ^10.2.0
     "@types/big.js": ^6.0.2
     "@types/color": ^3.0.1
@@ -142,12 +142,12 @@ __metadata:
     downshift: ^6.1.0
     fastdom: ^1.0.10
     graphql: ^15.5.0
-    graphql-tag: ^2.11.0
+    graphql-tag: ^2.12.1
     multiplerun: ^2.0.1
     numeral: ^2.0.6
     puppeteer: ^7.1.0
     react: ^17.0.1
-    react-app-rewire-alias: ^1.0.1
+    react-app-rewire-alias: ^1.0.0
     react-app-rewired: ^2.1.8
     react-dom: ^17.0.1
     react-ga: ^3.3.0
@@ -161,7 +161,7 @@ __metadata:
     styled-components: ^5.2.1
     ts-node: ^9.1.1
     tsconfig-paths: ^3.9.0
-    typescript: ^4.2.2
+    typescript: ^4.1.5
     use-resize-observer: ^7.0.0
     web-vitals: ^1.1.0
     workbox-background-sync: ^6.1.1
@@ -190,7 +190,7 @@ __metadata:
     "@terra-money/terra.js": ^1.4.2
     "@testing-library/jest-dom": ^5.11.9
     "@testing-library/react": ^11.2.5
-    "@testing-library/user-event": ^12.8.0
+    "@testing-library/user-event": ^12.7.3
     "@types/autoprefixer": ^10.2.0
     "@types/color": ^3.0.1
     "@types/d3-scale": ^3.2.2
@@ -220,12 +220,12 @@ __metadata:
     glslify: ^7.1.1
     glslify-loader: ^2.0.0
     graphql: ^15.5.0
-    graphql-tag: ^2.11.0
+    graphql-tag: ^2.12.1
     multiplerun: ^2.0.1
     puppeteer: ^7.1.0
     raw-loader: ^4.0.2
     react: ^17.0.1
-    react-app-rewire-alias: ^1.0.1
+    react-app-rewire-alias: ^1.0.0
     react-app-rewired: ^2.1.8
     react-dom: ^17.0.1
     react-responsive: ^8.2.0
@@ -240,7 +240,7 @@ __metadata:
     styled-components: ^5.2.1
     ts-node: ^9.1.1
     tsconfig-paths: ^3.9.0
-    typescript: ^4.2.2
+    typescript: ^4.1.5
     use-resize-observer: ^7.0.0
     web-vitals: ^1.1.0
   languageName: unknown
@@ -265,7 +265,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.11.9
     "@testing-library/react": ^11.2.5
     "@testing-library/react-hooks": ^5.0.3
-    "@testing-library/user-event": ^12.8.0
+    "@testing-library/user-event": ^12.7.3
     "@types/autoprefixer": ^10.2.0
     "@types/big.js": ^6.0.2
     "@types/color": ^3.0.1
@@ -308,7 +308,7 @@ __metadata:
     rocket-punch: ^2.4.1
     rxjs: ^6.6.6
     styled-components: ^5.2.1
-    typescript: ^4.2.2
+    typescript: ^4.1.5
     use-resize-observer: ^7.0.0
   languageName: unknown
   linkType: soft
@@ -2195,23 +2195,6 @@ __metadata:
     minimatch: ^3.0.4
     strip-json-comments: ^3.1.1
   checksum: 00e87c194672eb85dcea22ba749fb3cabdd9768e952e748b2c727940f06691c873369d75cf3bddb239301eca8c38de6e098b0de4839fa7c16a2062e536e8ff5a
-  languageName: node
-  linkType: hard
-
-"@eslint/eslintrc@npm:^0.4.0":
-  version: 0.4.0
-  resolution: "@eslint/eslintrc@npm:0.4.0"
-  dependencies:
-    ajv: ^6.12.4
-    debug: ^4.1.1
-    espree: ^7.3.0
-    globals: ^12.1.0
-    ignore: ^4.0.6
-    import-fresh: ^3.2.1
-    js-yaml: ^3.13.1
-    minimatch: ^3.0.4
-    strip-json-comments: ^3.1.1
-  checksum: d3f51b741997cbf36662d8b5a52985bfa5d2873e48cadccd95c67fcce1706327ec98ebb6f0be79c6ecbc31bdeca32c2b1c4f66fd1cf3934c434d1ac269cbceac
   languageName: node
   linkType: hard
 
@@ -4181,14 +4164,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/user-event@npm:^12.8.0":
-  version: 12.8.0
-  resolution: "@testing-library/user-event@npm:12.8.0"
+"@testing-library/user-event@npm:^12.7.3":
+  version: 12.7.3
+  resolution: "@testing-library/user-event@npm:12.7.3"
   dependencies:
     "@babel/runtime": ^7.12.5
   peerDependencies:
     "@testing-library/dom": ">=7.21.4"
-  checksum: f94d2948653407ceef1960fff21e851cd48a6c48348d78041ba6b87c5d0a919b4373a09f5d91031fb23eda5889d678ba3408e9a1df718720348b7b7b90ad5a10
+  checksum: 6e9526e58872b101063ac2350bfe36c1c4ec08752bb2e79c759ed75e70cca653bb413ee4f2d49e625da32d460108b7e0070a40042253f5f0e9333d25e27f65b7
   languageName: node
   linkType: hard
 
@@ -9991,7 +9974,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^7.11.0, eslint@npm:^7.19.0":
+"eslint@npm:^7.11.0, eslint@npm:^7.19.0, eslint@npm:^7.20.0":
   version: 7.20.0
   resolution: "eslint@npm:7.20.0"
   dependencies:
@@ -10035,53 +10018,6 @@ __metadata:
   bin:
     eslint: bin/eslint.js
   checksum: 1d56cabc7e21f43b8bb6a1934f2488b27d86b018ce2246bc9b89e52931e26b306c5883f5e4ff5c6e0228e0e8673553a460e98eacc4890f9e5984002df0292123
-  languageName: node
-  linkType: hard
-
-"eslint@npm:^7.21.0":
-  version: 7.21.0
-  resolution: "eslint@npm:7.21.0"
-  dependencies:
-    "@babel/code-frame": 7.12.11
-    "@eslint/eslintrc": ^0.4.0
-    ajv: ^6.10.0
-    chalk: ^4.0.0
-    cross-spawn: ^7.0.2
-    debug: ^4.0.1
-    doctrine: ^3.0.0
-    enquirer: ^2.3.5
-    eslint-scope: ^5.1.1
-    eslint-utils: ^2.1.0
-    eslint-visitor-keys: ^2.0.0
-    espree: ^7.3.1
-    esquery: ^1.4.0
-    esutils: ^2.0.2
-    file-entry-cache: ^6.0.1
-    functional-red-black-tree: ^1.0.1
-    glob-parent: ^5.0.0
-    globals: ^12.1.0
-    ignore: ^4.0.6
-    import-fresh: ^3.0.0
-    imurmurhash: ^0.1.4
-    is-glob: ^4.0.0
-    js-yaml: ^3.13.1
-    json-stable-stringify-without-jsonify: ^1.0.1
-    levn: ^0.4.1
-    lodash: ^4.17.20
-    minimatch: ^3.0.4
-    natural-compare: ^1.4.0
-    optionator: ^0.9.1
-    progress: ^2.0.0
-    regexpp: ^3.1.0
-    semver: ^7.2.1
-    strip-ansi: ^6.0.0
-    strip-json-comments: ^3.1.0
-    table: ^6.0.4
-    text-table: ^0.2.0
-    v8-compile-cache: ^2.0.3
-  bin:
-    eslint: bin/eslint.js
-  checksum: aa8fd50cddc4ab259e2d0ff8f43f0601060543c12e335d76ee074bf25ad02a885bea9d48a367de736d3bdb871de7eb62e6d67930c0173cc46280ddd0f236e740
   languageName: node
   linkType: hard
 
@@ -10564,15 +10500,6 @@ __metadata:
   dependencies:
     flat-cache: ^3.0.4
   checksum: aec91f60f903a61f6edd8591f574692a36e054a99f7b1e280823316fde7d487aaf9a0b59db59387c6e071c10ce0e40771f8472067ebe746fe3b7f095f0877be0
-  languageName: node
-  linkType: hard
-
-"file-entry-cache@npm:^6.0.1":
-  version: 6.0.1
-  resolution: "file-entry-cache@npm:6.0.1"
-  dependencies:
-    flat-cache: ^3.0.4
-  checksum: af83a412143100405a995bb7d9a31982ebcfabe6c545dac2e787fc5580b2da74e253ef62968057fa5bbfaf0811a8b85623aeea776e16c77e3ce4c2488b0e4821
   languageName: node
   linkType: hard
 
@@ -11536,7 +11463,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"graphql-tag@npm:^2.11.0, graphql-tag@npm:^2.12.0":
+"graphql-tag@npm:^2.12.0, graphql-tag@npm:^2.12.1":
   version: 2.12.1
   resolution: "graphql-tag@npm:2.12.1"
   dependencies:
@@ -12122,12 +12049,12 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"husky@npm:^5.1.2":
-  version: 5.1.2
-  resolution: "husky@npm:5.1.2"
+"husky@npm:^5.1.1":
+  version: 5.1.1
+  resolution: "husky@npm:5.1.1"
   bin:
     husky: lib/bin.js
-  checksum: 2c20d7132fa8c6f63ba5d7457361351f3c736d60f8faea53e8fde4735e8d75243771fa36bdda94b6e8cbd53f7caa600fa55dbdfc553184903538a9c72cbc61f1
+  checksum: 130f2298be383902001827e536b8345a8889609128c182923d9f4c8acae09ce791a3b83d1f67b148dde74d39bd61c17b86c3b4eb7e1dbb9cc7aebcc03b1ff015
   languageName: node
   linkType: hard
 
@@ -17769,12 +17696,12 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"react-app-rewire-alias@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "react-app-rewire-alias@npm:1.0.1"
+"react-app-rewire-alias@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "react-app-rewire-alias@npm:1.0.0"
   peerDependencies:
     react-app-rewired: 1 || ^2
-  checksum: 292000192b54ae57e59208dbac7b4e599c02909893b7b010478245d093aa1dd8bd3d3d4c8b6f6d4e18f9774c84b045c23daf00a742462ac7969e049bbb15f55c
+  checksum: c8f3b738b05a08757c5c998373002cd547cbc436093cd9a365e37b0da04124e48226772cab019882f20f158055f3a4a9918f3c129a3b4a170835a069991aac87
   languageName: node
   linkType: hard
 
@@ -19147,10 +19074,10 @@ resolve@^0.6.1:
     "@ssen/prettier-config": ^1.2.0
     "@types/eslint": ^7.2.6
     "@types/prettier": ^2.2.1
-    eslint: ^7.21.0
+    eslint: ^7.20.0
     eslint-config-prettier: ^8.1.0
     eslint-config-react-app: ^6.0.0
-    husky: ^5.1.2
+    husky: ^5.1.1
     jest-bin: ^0.3.0
     lint-staged: ^10.5.4
     prettier: ^2.2.1
@@ -21345,7 +21272,7 @@ resolve@^0.6.1:
   languageName: node
   linkType: hard
 
-typescript@^4.1.3:
+"typescript@npm:4.1.5":
   version: 4.1.5
   resolution: "typescript@npm:4.1.5"
   bin:
@@ -21355,33 +21282,13 @@ typescript@^4.1.3:
   languageName: node
   linkType: hard
 
-typescript@^4.2.2:
-  version: 4.2.2
-  resolution: "typescript@npm:4.2.2"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: b2e3d5551a12c51b6b7a14f0e78d2664c136fab4dfb3eecaaf7a6e8e7e608f2cf43c6ebe81387d194db2588793b769720d2df523d445a1664b7585c5b9a85984
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@^4.1.3#builtin<compat/typescript>":
+"typescript@patch:typescript@npm%3A4.1.5#builtin<compat/typescript>":
   version: 4.1.5
   resolution: "typescript@patch:typescript@npm%3A4.1.5#builtin<compat/typescript>::version=4.1.5&hash=a45b0e"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 9c57e19536e978f130694888fbda2f8fe60f92c388c6b2945881dd7c912078bf52663dcb3278100cf9f4689805fbaec86b3de42ef600fb9672545b24fc1b7b15
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@^4.2.2#builtin<compat/typescript>":
-  version: 4.2.2
-  resolution: "typescript@patch:typescript@npm%3A4.2.2#builtin<compat/typescript>::version=4.2.2&hash=a45b0e"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: ea1f1b6be22c9e3348f61692719d3169dd4abaad34b2132edff44a8d5a748bde8f3116fa2fae41d61c92b3a7cf1c35d0c7276058b2f35196ff3cde3b7d57c84b
   languageName: node
   linkType: hard
 
