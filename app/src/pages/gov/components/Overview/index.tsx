@@ -14,7 +14,11 @@ import { TokenIcon } from '@anchor-protocol/token-icons';
 import { ChevronRight } from '@material-ui/icons';
 import { Circles } from 'components/Circles';
 import { screen } from 'env';
-import { govPathname } from 'pages/gov/env';
+import {
+  ancGovernancePathname,
+  ancUstLpPathname,
+  govPathname,
+} from 'pages/gov/env';
 import { totalGovStaked } from 'pages/gov/logics/totalGovStaked';
 import { totalStakedGovShareIndex } from 'pages/gov/logics/totalStakedGovShareIndex';
 import { useANCPrice } from 'pages/gov/queries/ancPrice';
@@ -95,7 +99,7 @@ function OverviewBase({ className }: OverviewProps) {
           </BorderButton>
           <BorderButton
             component={Link}
-            to={`/${govPathname}/pool/Governance Staking/stake`}
+            to={`/${govPathname}/rewards/${ancGovernancePathname}/stake`}
           >
             Stake
           </BorderButton>
@@ -107,7 +111,7 @@ function OverviewBase({ className }: OverviewProps) {
           <AnchorNoCircle style={{ fontSize: '1.4em' }} />
         </Circles>
         <h2>
-          <Link to={`/${govPathname}/pool/ANC - UST LP/provide`}>
+          <Link to={`/${govPathname}/rewards/${ancUstLpPathname}/provide`}>
             <IconSpan>
               ANC - UST LP <ChevronRight />
             </IconSpan>

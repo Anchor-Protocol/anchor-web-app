@@ -5,16 +5,21 @@ import { Tab } from '@anchor-protocol/neumorphism-ui/components/Tab';
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import { Circles } from 'components/Circles';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
-import { PoolProvide } from 'pages/gov/components/PoolProvide';
-import { PoolStake } from 'pages/gov/components/PoolStake';
-import { PoolUnstake } from 'pages/gov/components/PoolUnstake';
-import { PoolWithdraw } from 'pages/gov/components/PoolWithdraw';
-import { govPathname } from 'pages/gov/env';
+import { AncGovernanceClaim } from 'pages/gov/components/AncGovernanceClaim';
+import { AncGovernanceStake } from 'pages/gov/components/AncGovernanceStake';
+import { AncGovernanceUnstake } from 'pages/gov/components/AncGovernanceUnstake';
+import { ancGovernancePathname, govPathname } from 'pages/gov/env';
 import React, { useCallback, useMemo } from 'react';
-import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
+import {
+  Redirect,
+  Route,
+  Switch,
+  useHistory,
+  useRouteMatch,
+} from 'react-router-dom';
 import styled from 'styled-components';
 
-export interface RewardsPoolProps {
+export interface RewardsAncUstLpProps {
   className?: string;
 }
 
@@ -24,13 +29,8 @@ interface Item {
 }
 
 const tabItems: Item[] = [
-  { label: 'POOL', value: 'pool' },
   { label: 'STAKE', value: 'stake' },
-];
-
-const poolItems: Item[] = [
-  { label: 'Provide', value: 'provide' },
-  { label: 'Withdraw', value: 'withdraw' },
+  { label: 'CLAIM', value: 'claim' },
 ];
 
 const stakeItems: Item[] = [
@@ -38,20 +38,21 @@ const stakeItems: Item[] = [
   { label: 'Unstake', value: 'unstake' },
 ];
 
-function RewardsPoolBase({ className }: RewardsPoolProps) {
+const claimItems: Item[] = [{ label: 'Claim', value: 'claim' }];
+
+function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
   const history = useHistory();
 
-  const pageMatch = useRouteMatch<{ reward: string; view: string }>(
-    `/${govPathname}/pool/:reward/:view`,
+  const pageMatch = useRouteMatch<{ view: string }>(
+    `/${govPathname}/rewards/${ancGovernancePathname}/:view`,
   );
 
   const tab = useMemo<Item | undefined>(() => {
     switch (pageMatch?.params.view) {
-      case 'provide':
-      case 'withdraw':
-        return tabItems[0];
       case 'stake':
       case 'unstake':
+        return tabItems[0];
+      case 'claim':
         return tabItems[1];
     }
   }, [pageMatch?.params.view]);
@@ -61,33 +62,31 @@ function RewardsPoolBase({ className }: RewardsPoolProps) {
       history.push({
         pathname:
           nextTab.value === 'stake'
-            ? `/${govPathname}/pool/${pageMatch?.params.reward}/stake`
-            : `/${govPathname}/pool/${pageMatch?.params.reward}/provide`,
+            ? `/${govPathname}/rewards/${ancGovernancePathname}/stake`
+            : `/${govPathname}/rewards/${ancGovernancePathname}/claim`,
       });
     },
-    [history, pageMatch?.params.reward],
+    [history],
   );
 
   const subTab = useMemo<Item | undefined>(() => {
     switch (pageMatch?.params.view) {
-      case 'provide':
-        return poolItems[0];
-      case 'withdraw':
-        return poolItems[1];
       case 'stake':
         return stakeItems[0];
       case 'unstake':
         return stakeItems[1];
+      case 'claim':
+        return claimItems[0];
     }
   }, [pageMatch?.params.view]);
 
   const subTabChange = useCallback(
     (nextTab: Item) => {
       history.push({
-        pathname: `/${govPathname}/pool/${pageMatch?.params.reward}/${nextTab.value}`,
+        pathname: `/${govPathname}/rewards/${ancGovernancePathname}/${nextTab.value}`,
       });
     },
-    [history, pageMatch?.params.reward],
+    [history],
   );
 
   return (
@@ -102,7 +101,7 @@ function RewardsPoolBase({ className }: RewardsPoolProps) {
             />
             <AnchorNoCircle style={{ fontSize: '1.4em' }} />
           </Circles>
-          {pageMatch?.params.reward}
+          ANC Governance
         </h1>
         <Tab
           items={tabItems}
@@ -119,9 +118,9 @@ function RewardsPoolBase({ className }: RewardsPoolProps) {
       <Section>
         <RulerTab
           className="subtab"
-          items={tab?.value === 'stake' ? stakeItems : poolItems}
+          items={tab?.value === 'stake' ? stakeItems : claimItems}
           selectedItem={
-            subTab ?? (tab?.value === 'stake' ? stakeItems[0] : poolItems[0])
+            subTab ?? (tab?.value === 'stake' ? stakeItems[0] : claimItems[0])
           }
           onChange={subTabChange}
           labelFunction={({ label }) => label}
@@ -130,20 +129,25 @@ function RewardsPoolBase({ className }: RewardsPoolProps) {
 
         <Switch>
           <Route
-            path={`/${govPathname}/pool/:reward/provide`}
-            component={PoolProvide}
+            path={`/${govPathname}/rewards/${ancGovernancePathname}/stake`}
+            component={AncGovernanceStake}
           />
           <Route
-            path={`/${govPathname}/pool/:reward/withdraw`}
-            component={PoolWithdraw}
+            path={`/${govPathname}/rewards/${ancGovernancePathname}/unstake`}
+            component={AncGovernanceUnstake}
           />
           <Route
-            path={`/${govPathname}/pool/:reward/stake`}
-            component={PoolStake}
+            path={`/${govPathname}/rewards/${ancGovernancePathname}/claim`}
+            component={AncGovernanceClaim}
           />
-          <Route
-            path={`/${govPathname}/pool/:reward/unstake`}
-            component={PoolUnstake}
+          <Redirect
+            exact
+            path={`/${govPathname}/rewards/${ancGovernancePathname}`}
+            to={`/${govPathname}/rewards/${ancGovernancePathname}/stake`}
+          />
+          <Redirect
+            path={`/${govPathname}/rewards/${ancGovernancePathname}/*`}
+            to={`/${govPathname}/rewards/${ancGovernancePathname}/stake`}
           />
         </Switch>
       </Section>
@@ -151,7 +155,7 @@ function RewardsPoolBase({ className }: RewardsPoolProps) {
   );
 }
 
-export const RewardsPool = styled(RewardsPoolBase)`
+export const RewardsAncGovernance = styled(RewardsAncUstLpBase)`
   header {
     display: grid;
     grid-template-columns: 1fr 250px;

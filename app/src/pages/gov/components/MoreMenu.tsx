@@ -9,7 +9,7 @@ import styled from 'styled-components';
 
 export interface MoreMenuProps {
   className?: string;
-  children: ReactElement<MenuItemProps>[];
+  children: ReactElement<MenuItemProps> | ReactElement<MenuItemProps>[];
   size: BorderIconButtonProps['size'];
 }
 

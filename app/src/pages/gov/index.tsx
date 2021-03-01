@@ -1,10 +1,17 @@
 import { PollCreateModifyCollateralAttribute } from 'pages/gov/poll.create.modify-collateral-attribute';
+import { RewardsAncGovernance } from 'pages/gov/rewards.anc-governance';
+import { RewardsAncUstLp } from 'pages/gov/rewards.anc-ust-lp';
+import { RewardsUstBorrow } from 'pages/gov/rewards.ust-borrow';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import { govPathname } from './env';
+import {
+  ancGovernancePathname,
+  ancUstLpPathname,
+  govPathname,
+  ustBorrowPathname,
+} from './env';
 import { GovernanceMain } from './main';
 import { PollCreate } from './poll.create';
 import { PollDetail } from './poll.detail';
-import { RewardsPool } from './rewards.pool';
 import { Trade } from './trade';
 
 export function Governance() {
@@ -14,7 +21,20 @@ export function Governance() {
       <Route exact path={`/${govPathname}/`} component={GovernanceMain} />
 
       {/* Rewards */}
-      <Route path={`/${govPathname}/pool/:reward`} component={RewardsPool} />
+      <Route
+        path={`/${govPathname}/rewards/${ancUstLpPathname}`}
+        component={RewardsAncUstLp}
+      />
+
+      <Route
+        path={`/${govPathname}/rewards/${ancGovernancePathname}`}
+        component={RewardsAncGovernance}
+      />
+
+      <Route
+        path={`/${govPathname}/rewards/${ustBorrowPathname}`}
+        component={RewardsUstBorrow}
+      />
 
       {/* Trade */}
       <Route path={`/${govPathname}/trade`} component={Trade} />

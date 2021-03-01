@@ -11,7 +11,12 @@ import { uANC } from '@anchor-protocol/types';
 import { MenuItem } from '@material-ui/core';
 import big, { Big } from 'big.js';
 import { MoreMenu } from 'pages/gov/components/MoreMenu';
-import { govPathname } from 'pages/gov/env';
+import {
+  ancGovernancePathname,
+  ancUstLpPathname,
+  govPathname,
+  ustBorrowPathname,
+} from 'pages/gov/env';
 import { rewardsAncGovernanceStakable } from 'pages/gov/logics/rewardsAncGovernanceStakable';
 import { rewardsAncGovernanceWithdrawableAsset } from 'pages/gov/logics/rewardsAncGovernanceWithdrawableAsset';
 import { rewardsAncUstLpReward } from 'pages/gov/logics/rewardsAncUstLpReward';
@@ -178,17 +183,34 @@ export function RewardsBase({ className }: RewardsProps) {
                 <MoreMenu size="25px">
                   <MenuItem
                     component={Link}
-                    to={`/${govPathname}/pool/ANC-UST LP/provide`}
+                    to={`/${govPathname}/rewards/${ancUstLpPathname}/provide`}
                   >
-                    Pool
+                    Provide
                   </MenuItem>
                   <MenuItem
                     component={Link}
-                    to={`/${govPathname}/pool/ANC-UST LP/stake`}
+                    to={`/${govPathname}/rewards/${ancUstLpPathname}/withdraw`}
+                  >
+                    Withdraw
+                  </MenuItem>
+                  <MenuItem
+                    component={Link}
+                    to={`/${govPathname}/rewards/${ancUstLpPathname}/stake`}
                   >
                     Stake
                   </MenuItem>
-                  <MenuItem>Claim</MenuItem>
+                  <MenuItem
+                    component={Link}
+                    to={`/${govPathname}/rewards/${ancUstLpPathname}/unstake`}
+                  >
+                    Unstake
+                  </MenuItem>
+                  <MenuItem
+                    component={Link}
+                    to={`/${govPathname}/rewards/${ancUstLpPathname}/claim`}
+                  >
+                    Claim
+                  </MenuItem>
                 </MoreMenu>
               </td>
             </tr>
@@ -215,17 +237,22 @@ export function RewardsBase({ className }: RewardsProps) {
                 <MoreMenu size="25px">
                   <MenuItem
                     component={Link}
-                    to={`/${govPathname}/pool/ANC Governance/provide`}
-                  >
-                    Pool
-                  </MenuItem>
-                  <MenuItem
-                    component={Link}
-                    to={`/${govPathname}/pool/ANC Governance/stake`}
+                    to={`/${govPathname}/rewards/${ancGovernancePathname}/stake`}
                   >
                     Stake
                   </MenuItem>
-                  <MenuItem>Claim</MenuItem>
+                  <MenuItem
+                    component={Link}
+                    to={`/${govPathname}/rewards/${ancGovernancePathname}/unstake`}
+                  >
+                    Unstake
+                  </MenuItem>
+                  <MenuItem
+                    component={Link}
+                    to={`/${govPathname}/rewards/${ancGovernancePathname}/claim`}
+                  >
+                    Claim
+                  </MenuItem>
                 </MoreMenu>
               </td>
             </tr>
@@ -247,17 +274,10 @@ export function RewardsBase({ className }: RewardsProps) {
                 <MoreMenu size="25px">
                   <MenuItem
                     component={Link}
-                    to={`/${govPathname}/pool/UST Borrow/provide`}
+                    to={`/${govPathname}/rewards/${ustBorrowPathname}/claim`}
                   >
-                    Pool
+                    Claim
                   </MenuItem>
-                  <MenuItem
-                    component={Link}
-                    to={`/${govPathname}/pool/UST Borrow/stake`}
-                  >
-                    Stake
-                  </MenuItem>
-                  <MenuItem>Claim</MenuItem>
                 </MoreMenu>
               </td>
             </tr>
