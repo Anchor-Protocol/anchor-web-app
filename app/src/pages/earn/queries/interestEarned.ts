@@ -196,83 +196,6 @@ export const query = gql`
   }
 `;
 
-export const totalQuery = gql`
-  query __interestEarnedTotal(
-    $walletAddress: String!
-    $now: Int!
-    $stable_denom: String!
-  ) {
-    latestExchangeRate: AnchorExchangeRates(
-      Order: DESC
-      Limit: 1
-      StableDenom: $stable_denom
-    ) {
-      StableDenom
-      ExchangeRate
-    }
-
-    thenExchangeRate: AnchorExchangeRates(
-      Order: ASC
-      Limit: 1
-      StableDenom: $stable_denom
-      Timestamp_range: [0, $now]
-    ) {
-      StableDenom
-      ExchangeRate
-    }
-
-    now: InterestEarnedUserRecords(
-      Order: DESC
-      Limit: 1
-      Address: $walletAddress
-      StableDenom: $stable_denom
-    ) {
-      Address
-      StableDenom
-      Height
-      Timestamp
-      TotalDeposit
-      TotalWithdraw
-      CurrentAnchorBalance
-      CurrentDeposit
-    }
-
-    then: InterestEarnedUserRecords(
-      Order: ASC
-      Limit: 1
-      Address: $walletAddress
-      Timestamp_range: [0, $now]
-      StableDenom: $stable_denom
-    ) {
-      Address
-      StableDenom
-      Height
-      Timestamp
-      TotalDeposit
-      TotalWithdraw
-      CurrentAnchorBalance
-      CurrentDeposit
-    }
-
-    fallback: InterestEarnedUserRecords(
-      Order: ASC
-      Limit: 1
-      Address: $walletAddress
-      Timestamp_range: [0, $now]
-      StableDenom: $stable_denom
-    ) {
-      Address
-      StableDenom
-      Height
-      Timestamp
-      TotalDeposit
-      TotalWithdraw
-      CurrentAnchorBalance
-      CurrentDeposit
-    }
-  }
-`;
-
 function getDates(
   period: 'total' | 'year' | 'month' | 'week' | 'day',
 ): { now: JSDateTime; then: JSDateTime } {
@@ -322,7 +245,7 @@ export function useInterestEarned(
     refetch: _refetch,
     error,
     ...result
-  } = useQuery<RawData, RawVariables>(period === 'total' ? totalQuery : query, {
+  } = useQuery<RawData, RawVariables>(query, {
     skip: !variables || !serviceAvailable,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
