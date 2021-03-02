@@ -4,6 +4,7 @@ import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import {
   demicrofy,
   formatANC,
+  formatLP,
   formatLuna,
   formatUSTWithPostfixUnits,
   truncate,
@@ -166,6 +167,18 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                       <span>ANC</span>
                       <span>
                         {formatANC(demicrofy(bank.userBalances.uANC))}
+                      </span>
+                    </li>
+                    <li>
+                      <span>ANC-UST-LP</span>
+                      <span>
+                        {formatLP(demicrofy(bank.userBalances.uAncUstLP))}
+                      </span>
+                    </li>
+                    <li>
+                      <span>bLuna-Luna-LP</span>
+                      <span>
+                        {formatLP(demicrofy(bank.userBalances.ubLunaLunaLP))}
                       </span>
                     </li>
                   </ul>

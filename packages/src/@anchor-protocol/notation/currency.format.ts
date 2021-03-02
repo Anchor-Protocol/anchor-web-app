@@ -1,4 +1,4 @@
-import { ANC, aUST, bLuna, Luna, UST } from '@anchor-protocol/types';
+import { ANC, aUST, bLuna, LPToken, Luna, UST } from '@anchor-protocol/types';
 import big, { BigSource } from 'big.js';
 import { formatFluidDecimalPoints, FormatOptions } from './unit.format';
 
@@ -50,6 +50,13 @@ export function formatANC(
   options: FormatOptions = { delimiter: true },
 ): string {
   return formatFluidDecimalPoints(n, 6, options);
+}
+
+export function formatLP(
+  n: LPToken<BigSource>,
+  options: FormatOptions = { delimiter: true },
+): string {
+  return formatFluidDecimalPoints(n, 2, options);
 }
 
 export function formatANCWithPostfixUnits(

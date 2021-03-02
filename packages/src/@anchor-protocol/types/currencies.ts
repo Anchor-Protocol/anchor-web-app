@@ -17,15 +17,13 @@ export type ANC<T = string> = T & NominalType<'anc'>;
 export type ubLuna<T = string> = T & NominalType<'ubluna'>;
 export type bLuna<T = string> = T & NominalType<'bluna'>;
 
-export type uANC_UST_LP<T = string> = T & NominalType<'uanc_ust_lp'>;
-export type ANC_UST_LP<T = string> = T & NominalType<'anc_ust_lp'>;
+export type uAncUstLP<T = string> = T & NominalType<'uanc_ust_lp'>;
+export type AncUstLP<T = string> = T & NominalType<'anc_ust_lp'>;
 
-export type ubLuna_Luna_LP<T = string> = T & NominalType<'ubluna_luna_lp'>;
-export type bLuna_Luna_LP<T = string> = T & NominalType<'bluna_luna_lp'>;
+export type ubLunaLunaLP<T = string> = T & NominalType<'ubluna_luna_lp'>;
+export type bLunaLunaLP<T = string> = T & NominalType<'bluna_luna_lp'>;
 
 // Union currencies
-// prettier-ignore
-// @formatter:off
 export type uaToken<T = string> = T & NominalType<'uaust'>;
 
 export type aToken<T = string> = T & NominalType<'aust'>;
@@ -39,6 +37,12 @@ export type uCW20Token<T = string> = T &
 
 export type CW20Token<T = string> = T &
   NominalType<'aust' | 'anc' | 'bluna' | 'anc_ust_lp' | 'bluna_luna_lp'>;
+
+export type uLPToken<T = string> = T &
+  NominalType<'uanc_ust_lp' | 'ubluna_luna_lp'>;
+
+export type LPToken<T = string> = T &
+  NominalType<'anc_ust_lp' | 'bluna_luna_lp'>;
 
 export type uToken<T = string> = T &
   NominalType<
