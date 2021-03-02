@@ -155,37 +155,39 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
           keyFunction={({ value }) => value}
         />
 
-        <Switch>
-          <Route
-            path={`/${govPathname}/rewards/${ancUstLpPathname}/provide`}
-            component={AncUstLpProvide}
-          />
-          <Route
-            path={`/${govPathname}/rewards/${ancUstLpPathname}/withdraw`}
-            component={AncUstLpWithdraw}
-          />
-          <Route
-            path={`/${govPathname}/rewards/${ancUstLpPathname}/stake`}
-            component={AncUstLpStake}
-          />
-          <Route
-            path={`/${govPathname}/rewards/${ancUstLpPathname}/unstake`}
-            component={AncUstLpUnstake}
-          />
-          <Route
-            path={`/${govPathname}/rewards/${ancUstLpPathname}/claim`}
-            component={AncUstLpClaim}
-          />
-          <Redirect
-            exact
-            path={`/${govPathname}/rewards/${ancUstLpPathname}`}
-            to={`/${govPathname}/rewards/${ancUstLpPathname}/provide`}
-          />
-          <Redirect
-            path={`/${govPathname}/rewards/${ancUstLpPathname}/*`}
-            to={`/${govPathname}/rewards/${ancUstLpPathname}/provide`}
-          />
-        </Switch>
+        <div className="form">
+          <Switch>
+            <Route
+              path={`/${govPathname}/rewards/${ancUstLpPathname}/provide`}
+              component={AncUstLpProvide}
+            />
+            <Route
+              path={`/${govPathname}/rewards/${ancUstLpPathname}/withdraw`}
+              component={AncUstLpWithdraw}
+            />
+            <Route
+              path={`/${govPathname}/rewards/${ancUstLpPathname}/stake`}
+              component={AncUstLpStake}
+            />
+            <Route
+              path={`/${govPathname}/rewards/${ancUstLpPathname}/unstake`}
+              component={AncUstLpUnstake}
+            />
+            <Route
+              path={`/${govPathname}/rewards/${ancUstLpPathname}/claim`}
+              component={AncUstLpClaim}
+            />
+            <Redirect
+              exact
+              path={`/${govPathname}/rewards/${ancUstLpPathname}`}
+              to={`/${govPathname}/rewards/${ancUstLpPathname}/provide`}
+            />
+            <Redirect
+              path={`/${govPathname}/rewards/${ancUstLpPathname}/*`}
+              to={`/${govPathname}/rewards/${ancUstLpPathname}/provide`}
+            />
+          </Switch>
+        </div>
       </Section>
     </CenteredLayout>
   );
@@ -213,5 +215,54 @@ export const RewardsAncUstLp = styled(RewardsAncUstLpBase)`
 
   .subtab {
     margin-bottom: 70px;
+  }
+
+  .form {
+    .description {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      font-size: 16px;
+      color: ${({ theme }) => theme.dimTextColor};
+
+      > :last-child {
+        font-size: 12px;
+      }
+
+      margin-bottom: 12px;
+    }
+
+    .amount {
+      width: 100%;
+
+      margin-bottom: 5px;
+    }
+
+    .wallet {
+      display: flex;
+      justify-content: space-between;
+
+      font-size: 12px;
+      color: ${({ theme }) => theme.dimTextColor};
+
+      &[aria-invalid='true'] {
+        color: #f5356a;
+      }
+    }
+
+    .separator {
+      margin: 10px 0 0 0;
+    }
+
+    .receipt {
+      margin-top: 30px;
+      margin-bottom: 40px;
+    }
+
+    .submit {
+      width: 100%;
+      height: 60px;
+    }
   }
 `;
