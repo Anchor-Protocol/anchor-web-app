@@ -3,7 +3,6 @@ import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionB
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
-  ANC_INPUT_MAXIMUM_INTEGER_POINTS,
   demicrofy,
   formatANC,
   formatANCInput,
@@ -69,7 +68,7 @@ export function TradeBuy() {
   });
 
   const { onKeyPress: onAncInputKeyPress } = useRestrictedNumberInput({
-    maxIntegerPoinsts: ANC_INPUT_MAXIMUM_INTEGER_POINTS,
+    maxIntegerPoinsts: 5,
     maxDecimalPoints: ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   });
 
@@ -102,9 +101,15 @@ export function TradeBuy() {
     undefined,
   );
 
-  const invalidBurnAmount = useServiceConnectedMemo(
-    () => undefined,
-    [],
+  const invalidFromAmount = useServiceConnectedMemo(
+    () => {
+      if (fromAmount.length === 0) return undefined;
+
+      return microfy(fromAmount).gt(bank.userBalances.uUSD)
+        ? 'Not enough assets'
+        : undefined;
+    },
+    [bank.userBalances.uUSD, fromAmount],
     undefined,
   );
 
@@ -277,8 +282,8 @@ export function TradeBuy() {
       <SelectAndTextInputContainer
         className="burn"
         gridColumns={[120, '1fr']}
-        error={!!invalidBurnAmount}
-        leftHelperText={invalidBurnAmount}
+        error={!!invalidFromAmount}
+        leftHelperText={invalidFromAmount}
         rightHelperText={
           serviceAvailable && (
             <span>
@@ -312,7 +317,7 @@ export function TradeBuy() {
         </MuiNativeSelect>
         <MuiInput
           placeholder="0"
-          error={!!invalidBurnAmount}
+          error={!!invalidFromAmount}
           value={fromAmount}
           onKeyPress={onUstInputKeyPress as any}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
@@ -332,7 +337,7 @@ export function TradeBuy() {
       <SelectAndTextInputContainer
         className="gett"
         gridColumns={[120, '1fr']}
-        error={!!invalidBurnAmount}
+        error={!!invalidFromAmount}
       >
         <MuiNativeSelect
           value={toCurrency}
@@ -348,7 +353,7 @@ export function TradeBuy() {
         </MuiNativeSelect>
         <MuiInput
           placeholder="0"
-          error={!!invalidBurnAmount}
+          error={!!invalidFromAmount}
           value={toAmount}
           onKeyPress={onAncInputKeyPress as any}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
@@ -395,7 +400,7 @@ export function TradeBuy() {
           fromAmount.length === 0 ||
           big(fromAmount).lte(0) ||
           !!invalidTxFee ||
-          !!invalidBurnAmount ||
+          !!invalidFromAmount ||
           big(simulation?.swapFee ?? 0).lte(0)
         }
         onClick={() =>

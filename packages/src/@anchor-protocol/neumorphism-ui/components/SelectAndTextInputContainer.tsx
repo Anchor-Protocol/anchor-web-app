@@ -169,20 +169,20 @@ export const SelectAndTextInputContainer = styled(
         background-color: transparent;
       }
     }
+  }
 
-    &[aria-disabled='true'] {
-      user-select: none;
-      pointer-events: none;
-      opacity: 0.3;
-    }
+  &[aria-disabled='true'] {
+    user-select: none;
+    pointer-events: none;
+    opacity: 0.3;
+  }
 
-    &[aria-invalid='true'] {
+  &[aria-invalid='true'] {
+    color: ${({ theme }) => theme.errorTextColor};
+
+    .MuiInputBase-input,
+    .MuiInputBase-root {
       color: ${({ theme }) => theme.errorTextColor};
-
-      .MuiInputBase-input,
-      .MuiInputBase-root {
-        color: ${({ theme }) => theme.errorTextColor};
-      }
     }
   }
 `;
