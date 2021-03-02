@@ -1,3 +1,4 @@
+import { useOperation } from '@anchor-protocol/broadcastable-operation';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
@@ -13,10 +14,12 @@ import {
   microfy,
 } from '@anchor-protocol/notation';
 import { ANC, AncUstLP, UST } from '@anchor-protocol/types';
+import { WalletReady } from '@anchor-protocol/wallet-provider';
 import { Input, InputAdornment } from '@material-ui/core';
 import big, { Big } from 'big.js';
 import { ArrowDownLine } from 'components/ArrowDownLine';
 import { MessageBox } from 'components/MessageBox';
+import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
@@ -26,6 +29,7 @@ import { ancUstLpLpSimulation } from 'pages/gov/logics/ancUstLpLpSimulation';
 import { AncUstLpSimulation } from 'pages/gov/models/ancUstLpSimulation';
 import { useANCPrice } from 'pages/gov/queries/ancPrice';
 import { useRewardsAncUstLp } from 'pages/gov/queries/rewardsAncUstLp';
+import { ancUstLpWithdrawOptions } from 'pages/gov/transactions/ancUstLpWithdrawOptions';
 import React, { ChangeEvent, useCallback, useState } from 'react';
 
 export function AncUstLpWithdraw() {
@@ -36,7 +40,7 @@ export function AncUstLpWithdraw() {
 
   const { fixedGas } = useConstants();
 
-  //const [anc, burnResult] = useOperation(burnOptions, {});
+  const [withdraw, withdrawResult] = useOperation(ancUstLpWithdrawOptions, {});
 
   // ---------------------------------------------
   // states
@@ -109,9 +113,36 @@ export function AncUstLpWithdraw() {
     [ancPrice, bank, fixedGas, userLPBalance, userLPStakingInfo],
   );
 
+  const init = useCallback(() => {
+    setLpAmount('' as AncUstLP);
+    setSimulation(null);
+  }, []);
+
+  const proceed = useCallback(
+    async (walletReady: WalletReady, lpAmount: AncUstLP) => {
+      const broadcasted = await withdraw({
+        address: walletReady.walletAddress,
+        amount: lpAmount,
+      });
+
+      if (!broadcasted) {
+        init();
+      }
+    },
+    [init, withdraw],
+  );
+
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
+  if (
+    withdrawResult?.status === 'in-progress' ||
+    withdrawResult?.status === 'done' ||
+    withdrawResult?.status === 'fault'
+  ) {
+    return <TransactionRenderer result={withdrawResult} onExit={init} />;
+  }
+
   return (
     <>
       {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
@@ -219,7 +250,7 @@ export function AncUstLpWithdraw() {
           !!invalidTxFee ||
           !!invalidLpAmount
         }
-        onClick={() => walletReady && console.log('submit')}
+        onClick={() => walletReady && proceed(walletReady, lpAmount)}
       >
         Remove Liquidity
       </ActionButton>
