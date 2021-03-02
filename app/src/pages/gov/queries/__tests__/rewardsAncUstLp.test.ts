@@ -14,7 +14,7 @@ describe('queries/rewardsAncUstLp', () => {
       .query<RawData, RawVariables>({
         query,
         variables: mapVariables({
-          ANCUST_LP_Token_contract: testAddress.terraswap.ancUstLPToken,
+          ANCUST_LP_Token_contract: testAddress.cw20.ancUstLPToken,
           ANCUST_LP_Staking_contract: testAddress.anchorToken.staking,
           UserLPStakingInfoQuery: {
             staker_info: {

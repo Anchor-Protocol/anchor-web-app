@@ -51,12 +51,8 @@ export interface ContractAddress {
   terraswap: {
     /** addressProvider.terraswapblunaLunaPair() */
     blunaLunaPair: HumanAddr;
-    /** addressProvider.terraswapblunaLunaLPToken() */
-    blunaLunaLPToken: HumanAddr;
     /** addressProvider.terraswapbAncUstPair() */
     ancUstPair: HumanAddr;
-    /** addressProvider.terraswapbAncUstLPToken() */
-    ancUstLPToken: HumanAddr;
   };
   cw20: {
     /** addressProvider.blunaToken() */
@@ -65,5 +61,9 @@ export interface ContractAddress {
     aUST: CW20Addr;
     /** addressProvider.ANC() */
     ANC: CW20Addr;
+    /** addressProvider.terraswapbAncUstLPToken() */
+    ancUstLPToken: CW20Addr;
+    /** addressProvider.terraswapblunaLunaLPToken() */
+    blunaLunaLPToken: CW20Addr;
   };
 }

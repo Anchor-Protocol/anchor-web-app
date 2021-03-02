@@ -62,16 +62,16 @@ export function createContractAddress(
     },
     terraswap: {
       blunaLunaPair: addressProvider.terraswapblunaLunaPair() as HumanAddr,
-      blunaLunaLPToken: addressProvider.terraswapblunaLunaLPToken(
-        '',
-      ) as HumanAddr,
       ancUstPair: addressProvider.terraswapAncUstPair() as HumanAddr,
-      ancUstLPToken: addressProvider.terraswapAncUstLPToken() as HumanAddr,
     },
     cw20: {
       bLuna: addressProvider.blunaToken('') as CW20Addr,
       aUST: addressProvider.aTerra('') as CW20Addr,
       ANC: addressProvider.ANC() as CW20Addr,
+      ancUstLPToken: addressProvider.terraswapAncUstLPToken() as CW20Addr,
+      blunaLunaLPToken: addressProvider.terraswapblunaLunaLPToken(
+        '',
+      ) as CW20Addr,
     },
   };
 }

@@ -88,13 +88,13 @@ export function useRewardsAncUstLp(): MappedQueryResult<
 > {
   const { serviceAvailable, walletReady } = useService();
 
-  const { terraswap, anchorToken } = useContractAddress();
+  const { anchorToken, cw20 } = useContractAddress();
 
   const variables = useMemo(() => {
     if (!walletReady) return undefined;
 
     return mapVariables({
-      ANCUST_LP_Token_contract: terraswap.ancUstLPToken,
+      ANCUST_LP_Token_contract: cw20.ancUstLPToken,
       ANCUST_LP_Staking_contract: anchorToken.staking,
       ANCUSTLPBalanceQuery: {
         balance: {
@@ -107,7 +107,7 @@ export function useRewardsAncUstLp(): MappedQueryResult<
         },
       },
     });
-  }, [anchorToken.staking, terraswap.ancUstLPToken, walletReady]);
+  }, [anchorToken.staking, cw20.ancUstLPToken, walletReady]);
 
   const onError = useQueryErrorHandler();
 
