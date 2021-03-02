@@ -1,5 +1,5 @@
 import { HumanAddr } from '@anchor-protocol/types/contracts/common';
-import { uANC } from '@anchor-protocol/types/currencies';
+import { uANC, uAncUstLP } from '@anchor-protocol/types/currencies';
 import { Num } from '@anchor-protocol/types/units';
 
 /**
@@ -18,6 +18,6 @@ export interface StakerInfo {
 export interface StakerInfoResponse {
   staker: HumanAddr;
   reward_index: Num;
-  bond_amount: uANC;
+  bond_amount: uAncUstLP;
   pending_reward: uANC;
 }
