@@ -156,7 +156,7 @@ export function AncUstLpProvide() {
         value={ancAmount}
         maxIntegerPoinsts={ANC_INPUT_MAXIMUM_INTEGER_POINTS}
         maxDecimalPoints={ANC_INPUT_MAXIMUM_DECIMAL_POINTS}
-        label="AMOUNT"
+        placeholder="0.00"
         error={!!invalidAncAmount}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           updateAncAmount(target.value)
@@ -197,7 +197,7 @@ export function AncUstLpProvide() {
         value={ustAmount}
         maxIntegerPoinsts={UST_INPUT_MAXIMUM_INTEGER_POINTS}
         maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
-        label="AMOUNT"
+        placeholder="0.00"
         error={!!invalidUstAmount}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           updateUstAmount(target.value)

@@ -1,4 +1,4 @@
-import type { uANC } from '@anchor-protocol/types';
+import type { uAncUstLP } from '@anchor-protocol/types';
 import { anchorToken, cw20, WASMContractResult } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
@@ -16,7 +16,7 @@ export interface RawData {
 }
 
 export interface Data {
-  userLPBalance: WASMContractResult<cw20.BalanceResponse<uANC>>;
+  userLPBalance: WASMContractResult<cw20.BalanceResponse<uAncUstLP>>;
   userLPStakingInfo: WASMContractResult<anchorToken.staking.StakerInfoResponse>;
 }
 

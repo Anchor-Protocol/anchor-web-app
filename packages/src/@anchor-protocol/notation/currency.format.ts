@@ -45,6 +45,12 @@ export function formatANCInput<C extends ANC<BigSource>>(
   return formatFluidDecimalPoints(n, 6, { delimiter: false }) as any;
 }
 
+export function formatLPInput<C extends LPToken<BigSource>>(
+  n: C,
+): C extends LPToken<BigSource> ? LPToken : never {
+  return formatFluidDecimalPoints(n, 3, { delimiter: false }) as any;
+}
+
 export function formatANC(
   n: ANC<BigSource>,
   options: FormatOptions = { delimiter: true },
