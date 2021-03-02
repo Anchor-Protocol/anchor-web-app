@@ -1,11 +1,15 @@
-import { fabricateStakingBond } from '@anchor-protocol/anchor.js';
+//import { fabricateStakingBond } from '@anchor-protocol/anchor.js';
+import { AddressProvider } from '@anchor-protocol/anchor.js';
+import { createHookMsg } from '@anchor-protocol/anchor.js/dist/utils/cw20/create-hook-msg';
+import { validateInput } from '@anchor-protocol/anchor.js/dist/utils/validate-input';
+import { validateAddress } from '@anchor-protocol/anchor.js/dist/utils/validation/address';
 import {
   createOperationOptions,
   merge,
   OperationDependency,
   timeout,
 } from '@anchor-protocol/broadcastable-operation';
-import { StdFee } from '@terra-money/terra.js';
+import { Dec, Int, MsgExecuteContract, StdFee } from '@terra-money/terra.js';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { pickSwapResult } from 'pages/basset/transactions/pickSwapResult';
 import { createContractMsg } from 'transactions/createContractMsg';
@@ -40,3 +44,28 @@ export const ancUstLpStakeOptions = createOperationOptions({
   renderBroadcast: renderBroadcastTransaction,
   //breakOnError: true,
 });
+
+interface Option {
+  address: string;
+  amount: string;
+}
+
+export const fabricateStakingBond = ({ address, amount }: Option) => (
+  addressProvider: AddressProvider,
+): MsgExecuteContract[] => {
+  validateInput([validateAddress(address)]);
+
+  const anchorToken = addressProvider.terraswapAncUstLPToken();
+
+  return [
+    new MsgExecuteContract(address, anchorToken, {
+      send: {
+        contract: addressProvider.staking(),
+        amount: new Int(new Dec(amount).mul(1000000)).toString(),
+        msg: createHookMsg({
+          bond: {},
+        }),
+      },
+    }),
+  ];
+};
