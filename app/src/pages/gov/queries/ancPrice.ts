@@ -3,7 +3,7 @@ import type { Num, UST } from '@anchor-protocol/types';
 import { terraswap, uToken, WASMContractResult } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
-import { Int } from '@terra-money/terra.js';
+import big from 'big.js';
 import { useContractAddress } from 'contexts/contract';
 import { useService } from 'contexts/service';
 import { AncPrice } from 'pages/gov/models/ancPrice';
@@ -36,7 +36,7 @@ export const dataMap = createMap<RawData, Data>({
     const ANCPoolSize = (assets[0].amount as unknown) as Num;
     const USTPoolSize = (assets[1].amount as unknown) as Num;
     const LPShare = (total_share as unknown) as Num;
-    const ANCPrice = new Int(USTPoolSize).div(ANCPoolSize).toString() as UST;
+    const ANCPrice = big(USTPoolSize).div(ANCPoolSize).toString() as UST;
 
     return {
       Result: ancPrice.Result,
