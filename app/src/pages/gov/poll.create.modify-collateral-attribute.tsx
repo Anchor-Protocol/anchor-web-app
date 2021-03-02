@@ -1,4 +1,3 @@
-import { ExecuteMsg } from '@anchor-protocol/anchor.js';
 import { useOperation } from '@anchor-protocol/broadcastable-operation';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
@@ -7,8 +6,9 @@ import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeS
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
-import { formatANC, microfy } from '@anchor-protocol/notation';
-import { ANC, CW20Addr, uUST } from '@anchor-protocol/types';
+import { formatANC } from '@anchor-protocol/notation';
+import { ANC, CW20Addr, Rate, uUST } from '@anchor-protocol/types';
+import { PollMsg } from '@anchor-protocol/types/contracts/anchorToken/gov';
 import { useValidateStringBytes } from '@anchor-protocol/use-string-bytes-length';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
 import { InputAdornment } from '@material-ui/core';
@@ -122,25 +122,27 @@ function PollCreateModifyCollateralAttributeBase({
       ltv: string,
       amount: ANC,
     ) => {
-      const msg = {
+      const msg: PollMsg = {
         update_whitelist: {
           collateral_token: bAsset.value,
-          ltv: big(ltv).div(100).toFixed(),
+          max_ltv: big(ltv).div(100).toFixed() as Rate,
         },
-      };
-
-      const execute_msg: ExecuteMsg = {
-        contract: address.moneyMarket.overseer,
-        msg: btoa(JSON.stringify(msg)),
       };
 
       const broadcasted = await createPoll({
         address: walletReady.walletAddress,
-        amount: microfy(amount).toFixed(),
+        amount,
         title,
         description,
         link: link.length > 0 ? link : undefined,
-        execute_msg,
+        execute_msgs: [
+          {
+            order: 1,
+            contract: address.moneyMarket.overseer,
+            msg: Buffer.from(JSON.stringify(msg)).toString('base64'),
+            //msg: btoa(JSON.stringify(msg)),
+          },
+        ],
         txFee: txFee.toString() as uUST,
       });
 

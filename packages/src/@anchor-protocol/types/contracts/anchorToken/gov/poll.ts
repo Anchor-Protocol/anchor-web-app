@@ -4,6 +4,7 @@ import {
 } from '@anchor-protocol/types/contracts/common';
 import { uANC } from '@anchor-protocol/types/currencies';
 import { Num } from '@anchor-protocol/types/units';
+import { UpdateWhitelist } from '../../moneyMarket/overseer/updateWhitelist';
 
 export type PollStatus = 'in_progress' | 'passed' | 'rejected' | 'executed';
 
@@ -12,6 +13,8 @@ export interface ExecuteMsg {
   contract: HumanAddr;
   msg: Base64EncodedJson;
 }
+
+export type PollMsg = UpdateWhitelist;
 
 /**
  * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/anchor-token/gov#poll
@@ -34,8 +37,8 @@ export interface PollResponse {
   description: string;
   link?: string;
   deposit_amount: uANC;
-  execute_data?: ExecuteMsg;
-  //execute_data?: Array<ExecuteMsg>;
+  //execute_data?: ExecuteMsg[];
+  execute_data?: Array<ExecuteMsg>;
   yes_votes: Num;
   no_votes: Num;
   total_balance_at_end_poll: Num;

@@ -1,4 +1,5 @@
 import { anchorToken } from '@anchor-protocol/types';
+import { PollMsg } from '@anchor-protocol/types/contracts/anchorToken/gov';
 import big from 'big.js';
 
 export interface PollDetail {
@@ -15,7 +16,7 @@ export interface PollDetail {
 
   endsIn: Date;
 
-  executeData: any | null;
+  msg: PollMsg | null;
 }
 
 export function extractPollDetail(
@@ -23,7 +24,9 @@ export function extractPollDetail(
   govConfig: anchorToken.gov.ConfigResponse,
   currentHeight: number,
 ): PollDetail {
-  const possibleVotes: number = +poll.total_balance_at_end_poll;
+  const possibleVotes: number = poll.total_balance_at_end_poll
+    ? +poll.total_balance_at_end_poll
+    : 1;
   const yes: number = +poll.yes_votes;
   const no: number = +poll.no_votes;
 
@@ -31,21 +34,23 @@ export function extractPollDetail(
     (poll.end_height - currentHeight) * 6000 + Date.now(),
   );
 
-  let executeData: any = null;
+  let msg: PollMsg | null = null;
 
-  try {
-    executeData = poll.execute_data
-      ? JSON.parse(atob(poll.execute_data.msg))
-      : null;
-  } catch (error) {
-    console.log('extractPollDetail.ts..extractPollDetail()', error);
+  if (Array.isArray(poll.execute_data)) {
+    msg = JSON.parse(atob(poll.execute_data[0].msg));
   }
 
-  const type = executeData?.hasOwnProperty('spend')
-    ? 'Community Spend'
-    : executeData?.hasOwnProperty('update_config')
-    ? 'Parameter Change'
-    : 'TEXT';
+  let type: string = 'TEXT';
+
+  if (msg) {
+    if ('spend' in msg) {
+      type = 'Community Spend';
+    } else if ('update_config' in msg) {
+      type = 'Parameter Change';
+    } else if ('update_whitelist' in msg) {
+      type = 'Update Whitelist';
+    }
+  }
 
   return {
     poll,
@@ -63,6 +68,6 @@ export function extractPollDetail(
 
     endsIn,
 
-    executeData,
+    msg,
   };
 }

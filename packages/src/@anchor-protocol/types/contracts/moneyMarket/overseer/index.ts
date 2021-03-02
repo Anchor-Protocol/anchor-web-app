@@ -5,4 +5,5 @@ export * from './collaterals';
 export * from './config';
 export * from './distributionParams';
 export * from './epochState';
+export * from './updateWhitelist';
 export * from './whitelist';

@@ -54,7 +54,7 @@ export const contractAddresses = {
   mmOverseer: 'terra1evqupf62q8usks968pn3kqfs37lh9e4ct8l3r4',
   mmCustody: 'terra1qf37lcxvj43m03fadkhl0j0dt3qm328f64m4au',
   mmLiquidation: 'terra17mvw0a8pkwzljzqfnpgc04w58uu2t0m5alejax',
-  mmdistributionModel: 'terra1qhducr784hs5dwy2aqf87m44qu2cq8uwa5dy99',
+  mmDistributionModel: 'terra1qhducr784hs5dwy2aqf87m44qu2cq8uwa5dy99',
   aTerra: 'terra1mj2p7r4886ljadtelvmphqj946nv34ks2jdeyz',
   terraswapFactory: 'terra18qpjm4zkvqnpjpw0zn0tdr8gdzvt8au35v45xf',
   terraswapblunaLunaPair: 'terra1alzpqevx3hg5lyf6925k902wyq6q4w068w7avt',

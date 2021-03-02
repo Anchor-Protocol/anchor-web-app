@@ -5,13 +5,13 @@ __metadata:
   version: 4
   cacheKey: 7
 
-"@anchor-protocol/anchor.js@npm:^0.1.5":
-  version: 0.1.5
-  resolution: "@anchor-protocol/anchor.js@npm:0.1.5"
+"@anchor-protocol/anchor.js@npm:^0.1.7":
+  version: 0.1.7
+  resolution: "@anchor-protocol/anchor.js@npm:0.1.7"
   dependencies:
     "@terra-money/terra.js": ^1.3.6
     yaml: ^1.10.0
-  checksum: 6f270964d3571e315dc27d17afb74ed224317b625130b8004f2306b6b15109b06a503e09d43486fef9934fceecd945ed3b4f69d88567892d1d1593497483f39b
+  checksum: 66226d8b96a7b380afd227519382fe6f99854fd3471e12a2ea0afc31dc27fa2bbd60560438354202f8d5944006be64017977d1b9428c9b12e8c68a365f2d1275
   languageName: node
   linkType: hard
 
@@ -19,17 +19,17 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@anchor-web-app/app@workspace:app"
   dependencies:
-    "@anchor-protocol/anchor.js": ^0.1.5
+    "@anchor-protocol/anchor.js": ^0.1.7
     "@apollo/client": ^3.3.11
     "@material-ui/core": ^4.11.3
     "@material-ui/icons": ^4.11.2
     "@rocket-scripts/utils": ^2.0.0
-    "@sentry/react": ^6.2.0
-    "@sentry/tracing": ^6.2.0
+    "@sentry/react": ^6.2.1
+    "@sentry/tracing": ^6.2.1
     "@terra-money/terra.js": ^1.4.2
     "@testing-library/jest-dom": ^5.11.9
     "@testing-library/react": ^11.2.5
-    "@testing-library/user-event": ^12.7.3
+    "@testing-library/user-event": ^12.8.0
     "@types/autoprefixer": ^10.2.0
     "@types/big.js": ^6.0.2
     "@types/color": ^3.0.1
@@ -56,16 +56,16 @@ __metadata:
     d3-scale: ^3.2.3
     d3-selection: ^2.0.0
     d3-shape: ^2.0.0
-    date-fns: ^2.17.0
+    date-fns: ^2.18.0
     downshift: ^6.1.0
     fastdom: ^1.0.10
     graphql: ^15.5.0
-    graphql-tag: ^2.12.1
+    graphql-tag: ^2.11.0
     multiplerun: ^2.0.1
     numeral: ^2.0.6
     puppeteer: ^7.1.0
     react: ^17.0.1
-    react-app-rewire-alias: ^1.0.0
+    react-app-rewire-alias: ^1.0.1
     react-app-rewired: ^2.1.8
     react-dom: ^17.0.1
     react-ga: ^3.3.0
@@ -101,17 +101,17 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@anchor-web-app/demo@workspace:demo"
   dependencies:
-    "@anchor-protocol/anchor.js": ^0.1.5
+    "@anchor-protocol/anchor.js": ^0.1.7
     "@apollo/client": ^3.3.11
     "@material-ui/core": ^4.11.3
     "@material-ui/icons": ^4.11.2
     "@rocket-scripts/utils": ^2.0.0
-    "@sentry/react": ^6.2.0
-    "@sentry/tracing": ^6.2.0
+    "@sentry/react": ^6.2.1
+    "@sentry/tracing": ^6.2.1
     "@terra-money/terra.js": ^1.4.2
     "@testing-library/jest-dom": ^5.11.9
     "@testing-library/react": ^11.2.5
-    "@testing-library/user-event": ^12.7.3
+    "@testing-library/user-event": ^12.8.0
     "@types/autoprefixer": ^10.2.0
     "@types/big.js": ^6.0.2
     "@types/color": ^3.0.1
@@ -138,16 +138,16 @@ __metadata:
     d3-scale: ^3.2.3
     d3-selection: ^2.0.0
     d3-shape: ^2.0.0
-    date-fns: ^2.17.0
+    date-fns: ^2.18.0
     downshift: ^6.1.0
     fastdom: ^1.0.10
     graphql: ^15.5.0
-    graphql-tag: ^2.12.1
+    graphql-tag: ^2.11.0
     multiplerun: ^2.0.1
     numeral: ^2.0.6
     puppeteer: ^7.1.0
     react: ^17.0.1
-    react-app-rewire-alias: ^1.0.0
+    react-app-rewire-alias: ^1.0.1
     react-app-rewired: ^2.1.8
     react-dom: ^17.0.1
     react-ga: ^3.3.0
@@ -190,7 +190,7 @@ __metadata:
     "@terra-money/terra.js": ^1.4.2
     "@testing-library/jest-dom": ^5.11.9
     "@testing-library/react": ^11.2.5
-    "@testing-library/user-event": ^12.7.3
+    "@testing-library/user-event": ^12.8.0
     "@types/autoprefixer": ^10.2.0
     "@types/color": ^3.0.1
     "@types/d3-scale": ^3.2.2
@@ -220,12 +220,12 @@ __metadata:
     glslify: ^7.1.1
     glslify-loader: ^2.0.0
     graphql: ^15.5.0
-    graphql-tag: ^2.12.1
+    graphql-tag: ^2.11.0
     multiplerun: ^2.0.1
     puppeteer: ^7.1.0
     raw-loader: ^4.0.2
     react: ^17.0.1
-    react-app-rewire-alias: ^1.0.0
+    react-app-rewire-alias: ^1.0.1
     react-app-rewired: ^2.1.8
     react-dom: ^17.0.1
     react-responsive: ^8.2.0
@@ -264,8 +264,8 @@ __metadata:
     "@terra-money/terra.js": ^1.4.2
     "@testing-library/jest-dom": ^5.11.9
     "@testing-library/react": ^11.2.5
-    "@testing-library/react-hooks": ^5.0.3
-    "@testing-library/user-event": ^12.7.3
+    "@testing-library/react-hooks": ^5.1.0
+    "@testing-library/user-event": ^12.8.0
     "@types/autoprefixer": ^10.2.0
     "@types/big.js": ^6.0.2
     "@types/color": ^3.0.1
@@ -2907,96 +2907,96 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/browser@npm:6.2.0":
-  version: 6.2.0
-  resolution: "@sentry/browser@npm:6.2.0"
+"@sentry/browser@npm:6.2.1":
+  version: 6.2.1
+  resolution: "@sentry/browser@npm:6.2.1"
   dependencies:
-    "@sentry/core": 6.2.0
-    "@sentry/types": 6.2.0
-    "@sentry/utils": 6.2.0
+    "@sentry/core": 6.2.1
+    "@sentry/types": 6.2.1
+    "@sentry/utils": 6.2.1
     tslib: ^1.9.3
-  checksum: a472d5e777bbd0f6b3b732d22779b956d9d1816d922414fc5e4a57fa34940c332affced5c551806d0e4884edafd6b627c4252fd7f8070b5ccd5ad862d3bf3c75
+  checksum: 851d77c61849ae44c3807860d70b290acb68a83a2235dbed41554f04aea060916b2527fc76ae3b06fa4c741d38ab885ea06806ecc230c6285e5f1bb7e6ff8eee
   languageName: node
   linkType: hard
 
-"@sentry/core@npm:6.2.0":
-  version: 6.2.0
-  resolution: "@sentry/core@npm:6.2.0"
+"@sentry/core@npm:6.2.1":
+  version: 6.2.1
+  resolution: "@sentry/core@npm:6.2.1"
   dependencies:
-    "@sentry/hub": 6.2.0
-    "@sentry/minimal": 6.2.0
-    "@sentry/types": 6.2.0
-    "@sentry/utils": 6.2.0
+    "@sentry/hub": 6.2.1
+    "@sentry/minimal": 6.2.1
+    "@sentry/types": 6.2.1
+    "@sentry/utils": 6.2.1
     tslib: ^1.9.3
-  checksum: 77ac1f974cba0484705a4bc0cc6d000cfcb8265b093c93161064b32c1645ed2c70723ac4da916d6172bee45109dd8e9567b5ff1dddeff4bc71a534f0d582e18d
+  checksum: a8835af793f76c4b1311c4e82bd9e3a002a7e354e1f7e20f20d7c7669158037ee7179481d7cff71165504c6e2072f3b4e7cf5a61e0e89eadd8253192eec55aff
   languageName: node
   linkType: hard
 
-"@sentry/hub@npm:6.2.0":
-  version: 6.2.0
-  resolution: "@sentry/hub@npm:6.2.0"
+"@sentry/hub@npm:6.2.1":
+  version: 6.2.1
+  resolution: "@sentry/hub@npm:6.2.1"
   dependencies:
-    "@sentry/types": 6.2.0
-    "@sentry/utils": 6.2.0
+    "@sentry/types": 6.2.1
+    "@sentry/utils": 6.2.1
     tslib: ^1.9.3
-  checksum: 437a0a733360fdca4399cedbca4a99bda5d4c73223c69f9039ea7fe6b3f4f613bbe5341bc03a54f419de91eeebffaac102d966d87638be2cfde04185be3ce5c3
+  checksum: 2fdeab8cd0e8a8b1f36afa6742644eb11706294f76a07efabb5565a5059747922d98e87891164d7b9ef3fe8ff75cbe031d1d29ede4cdf6c24c867955a207275f
   languageName: node
   linkType: hard
 
-"@sentry/minimal@npm:6.2.0":
-  version: 6.2.0
-  resolution: "@sentry/minimal@npm:6.2.0"
+"@sentry/minimal@npm:6.2.1":
+  version: 6.2.1
+  resolution: "@sentry/minimal@npm:6.2.1"
   dependencies:
-    "@sentry/hub": 6.2.0
-    "@sentry/types": 6.2.0
+    "@sentry/hub": 6.2.1
+    "@sentry/types": 6.2.1
     tslib: ^1.9.3
-  checksum: 38f8a9f12d71b726daff316e83d53cdcf9a8e2caf488152a3766d92e9ffa873e6c52897d1fb0fbd495f29023f218c3852d79a7cbbfd294225f2eff19a5f77180
+  checksum: 39c19cfb9c9a441f653cc7415951082f05049d5aca8afd64157380f97278716163f218df1a2e26705071c36cec6c2ddb954e0fbdccb84242bda4ad1c6c49dd28
   languageName: node
   linkType: hard
 
-"@sentry/react@npm:^6.2.0":
-  version: 6.2.0
-  resolution: "@sentry/react@npm:6.2.0"
+"@sentry/react@npm:^6.2.1":
+  version: 6.2.1
+  resolution: "@sentry/react@npm:6.2.1"
   dependencies:
-    "@sentry/browser": 6.2.0
-    "@sentry/minimal": 6.2.0
-    "@sentry/types": 6.2.0
-    "@sentry/utils": 6.2.0
+    "@sentry/browser": 6.2.1
+    "@sentry/minimal": 6.2.1
+    "@sentry/types": 6.2.1
+    "@sentry/utils": 6.2.1
     hoist-non-react-statics: ^3.3.2
     tslib: ^1.9.3
   peerDependencies:
     react: 15.x || 16.x || 17.x
-  checksum: 79a3b1668695286175c6c11a689f16bffd69ebfe7273dc69519e4092e64c4849d73573a8c265225e72355b04c32c4c9acb336e48af02ce697115d6099f3aba7d
+  checksum: cd56d6525d6dbdaf8f877d8550ba7dd45fd58e888635d38f2414e61a7b80c1944fd5133ce86055522a43a9481196da890bf9e5652c7290f41eab34dcade463aa
   languageName: node
   linkType: hard
 
-"@sentry/tracing@npm:^6.2.0":
-  version: 6.2.0
-  resolution: "@sentry/tracing@npm:6.2.0"
+"@sentry/tracing@npm:^6.2.1":
+  version: 6.2.1
+  resolution: "@sentry/tracing@npm:6.2.1"
   dependencies:
-    "@sentry/hub": 6.2.0
-    "@sentry/minimal": 6.2.0
-    "@sentry/types": 6.2.0
-    "@sentry/utils": 6.2.0
+    "@sentry/hub": 6.2.1
+    "@sentry/minimal": 6.2.1
+    "@sentry/types": 6.2.1
+    "@sentry/utils": 6.2.1
     tslib: ^1.9.3
-  checksum: 617d82b91647e2f4bd5ab560def9c5d3d7ca430a11afd2542299fb215ea6f282d3c5d7ab5ef6b50b267e4e321ac4d08701f18a48dfed8d3acd75ab13c9c3fa01
+  checksum: 4c9632ec1c7a3e02f988d59d3125560d4a565eadac2d1da1adbfe83d30b293363f6e0ca2334a37c331a113ea64d90de7b8b4cb14031f7e8425dba5cf0333e6cf
   languageName: node
   linkType: hard
 
-"@sentry/types@npm:6.2.0":
-  version: 6.2.0
-  resolution: "@sentry/types@npm:6.2.0"
-  checksum: 004dd83757e82c37f7d493eefcb410e46233f2eeb1c4ac9fabb4de91817fbb6953e7839ba11ec0b6f4eb7ee95a3709277261a0b5853c01695dcb08a92ccbcc18
+"@sentry/types@npm:6.2.1":
+  version: 6.2.1
+  resolution: "@sentry/types@npm:6.2.1"
+  checksum: d34d3eadd399436a79ff217f3bdfebe35367da217b18f648057a4a59a4e4af642eab02c8303ad188a14e9532a6c375ab08016a93f11c19249584d8a4967ef34f
   languageName: node
   linkType: hard
 
-"@sentry/utils@npm:6.2.0":
-  version: 6.2.0
-  resolution: "@sentry/utils@npm:6.2.0"
+"@sentry/utils@npm:6.2.1":
+  version: 6.2.1
+  resolution: "@sentry/utils@npm:6.2.1"
   dependencies:
-    "@sentry/types": 6.2.0
+    "@sentry/types": 6.2.1
     tslib: ^1.9.3
-  checksum: 5bb3cc822a6748de11be0dbb5800372b9d161e8e126b50430ac4632231439219866f7c5a45c22347f745b4d42f70c94b8f933f422b885e994e328dda67e608bf
+  checksum: 19a386ca346c09901c584d04e961523fd20397c72c094fb0aaa1547ac8c57e39a51342a1099a00401498a687336531c5ce17b8ae146c1c7138afed0d11e58c20
   languageName: node
   linkType: hard
 
@@ -4128,9 +4128,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/react-hooks@npm:^5.0.3":
-  version: 5.0.3
-  resolution: "@testing-library/react-hooks@npm:5.0.3"
+"@testing-library/react-hooks@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "@testing-library/react-hooks@npm:5.1.0"
   dependencies:
     "@babel/runtime": ^7.12.5
     "@types/react": ">=16.9.0"
@@ -4147,7 +4147,7 @@ __metadata:
       optional: true
     react-test-renderer:
       optional: true
-  checksum: e542a768fedeb344cfba5c171a3efa0341786e3a38bb0bc56a39bf66dbd9a89f530575e34e8cf3cc006aafe0ab0908c80afd42b1079e4c5812b28b8f3f9f4523
+  checksum: 9c03fa569c52597f833fc7a8e63774fec54ac0b8ce62bf5b02c1178add36189f7ada0c923c6cd696a04184468b71a62a0b217c42498fc19764e10cc0e49df57d
   languageName: node
   linkType: hard
 
@@ -4164,14 +4164,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/user-event@npm:^12.7.3":
-  version: 12.7.3
-  resolution: "@testing-library/user-event@npm:12.7.3"
+"@testing-library/user-event@npm:^12.8.0":
+  version: 12.8.0
+  resolution: "@testing-library/user-event@npm:12.8.0"
   dependencies:
     "@babel/runtime": ^7.12.5
   peerDependencies:
     "@testing-library/dom": ">=7.21.4"
-  checksum: 6e9526e58872b101063ac2350bfe36c1c4ec08752bb2e79c759ed75e70cca653bb413ee4f2d49e625da32d460108b7e0070a40042253f5f0e9333d25e27f65b7
+  checksum: f94d2948653407ceef1960fff21e851cd48a6c48348d78041ba6b87c5d0a919b4373a09f5d91031fb23eda5889d678ba3408e9a1df718720348b7b7b90ad5a10
   languageName: node
   linkType: hard
 
@@ -8718,10 +8718,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^2.17.0":
-  version: 2.17.0
-  resolution: "date-fns@npm:2.17.0"
-  checksum: 51ee9e264aac54d2a16471691d560838bad681f729573f520b03ec0c21f28904c73bf98ec2d33603e71bdabf8506140449c2b50d0db6fdd042faed9fe5467b92
+"date-fns@npm:^2.18.0":
+  version: 2.18.0
+  resolution: "date-fns@npm:2.18.0"
+  checksum: 58320ad5122bb2ae2f5aa23e2c432529d3390222bbec49339f8c360c2c07e5db8c26b40fe2cb2c947b4507732b9e1f9c195ec39572e14014291788ca07a5de6f
   languageName: node
   linkType: hard
 
@@ -11463,7 +11463,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"graphql-tag@npm:^2.12.0, graphql-tag@npm:^2.12.1":
+"graphql-tag@npm:^2.11.0, graphql-tag@npm:^2.12.0":
   version: 2.12.1
   resolution: "graphql-tag@npm:2.12.1"
   dependencies:
@@ -12049,12 +12049,12 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"husky@npm:^5.1.1":
-  version: 5.1.1
-  resolution: "husky@npm:5.1.1"
+"husky@npm:^5.1.3":
+  version: 5.1.3
+  resolution: "husky@npm:5.1.3"
   bin:
     husky: lib/bin.js
-  checksum: 130f2298be383902001827e536b8345a8889609128c182923d9f4c8acae09ce791a3b83d1f67b148dde74d39bd61c17b86c3b4eb7e1dbb9cc7aebcc03b1ff015
+  checksum: 99baafebe710d3d9008d7e8523a2bba28b73acb71d92c22dfb05cd0fb38160c7d47594b5178ad1979032e1c7334afbc96f6137c3879a5c6c24ee339c74dd972b
   languageName: node
   linkType: hard
 
@@ -17696,12 +17696,12 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"react-app-rewire-alias@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "react-app-rewire-alias@npm:1.0.0"
+"react-app-rewire-alias@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "react-app-rewire-alias@npm:1.0.1"
   peerDependencies:
     react-app-rewired: 1 || ^2
-  checksum: c8f3b738b05a08757c5c998373002cd547cbc436093cd9a365e37b0da04124e48226772cab019882f20f158055f3a4a9918f3c129a3b4a170835a069991aac87
+  checksum: 292000192b54ae57e59208dbac7b4e599c02909893b7b010478245d093aa1dd8bd3d3d4c8b6f6d4e18f9774c84b045c23daf00a742462ac7969e049bbb15f55c
   languageName: node
   linkType: hard
 
@@ -19077,7 +19077,7 @@ resolve@^0.6.1:
     eslint: ^7.20.0
     eslint-config-prettier: ^8.1.0
     eslint-config-react-app: ^6.0.0
-    husky: ^5.1.1
+    husky: ^5.1.3
     jest-bin: ^0.3.0
     lint-staged: ^10.5.4
     prettier: ^2.2.1

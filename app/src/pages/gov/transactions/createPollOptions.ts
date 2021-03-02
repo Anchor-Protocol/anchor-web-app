@@ -1,4 +1,7 @@
-import { fabricateGovCreatePoll } from '@anchor-protocol/anchor.js';
+import { AddressProvider } from '@anchor-protocol/anchor.js';
+import { createHookMsg } from '@anchor-protocol/anchor.js/dist/utils/cw20/create-hook-msg';
+import { validateInput } from '@anchor-protocol/anchor.js/dist/utils/validate-input';
+import { validateAddress } from '@anchor-protocol/anchor.js/dist/utils/validation/address';
 import { floor } from '@anchor-protocol/big-math';
 import {
   createOperationOptions,
@@ -7,7 +10,7 @@ import {
   OperationDependency,
   timeout,
 } from '@anchor-protocol/broadcastable-operation';
-import { StdFee } from '@terra-money/terra.js';
+import { Dec, Int, MsgExecuteContract, StdFee } from '@terra-money/terra.js';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { pickCreatePollResult } from 'pages/gov/transactions/pickCreatePollResult';
 import { createContractMsg } from 'transactions/createContractMsg';
@@ -45,3 +48,48 @@ export const createPollOptions = createOperationOptions({
   renderBroadcast: renderBroadcastTransaction,
   //breakOnError: true,
 });
+
+export interface ExecuteMsg {
+  order: number;
+  contract: string;
+  msg: string;
+}
+
+interface Option {
+  address: string;
+  amount: string;
+  title: string;
+  description: string;
+  link?: string;
+  execute_msgs?: ExecuteMsg[];
+}
+
+export const fabricateGovCreatePoll = ({
+  address,
+  amount,
+  title,
+  description,
+  link,
+  execute_msgs,
+}: Option) => (addressProvider: AddressProvider): MsgExecuteContract[] => {
+  validateInput([validateAddress(address)]);
+
+  const anchorToken = addressProvider.ANC();
+
+  return [
+    new MsgExecuteContract(address, anchorToken, {
+      send: {
+        contract: addressProvider.gov(),
+        amount: new Int(new Dec(amount).mul(1000000)).toString(),
+        msg: createHookMsg({
+          create_poll: {
+            title,
+            description,
+            link,
+            execute_msgs,
+          },
+        }),
+      },
+    }),
+  ];
+};
