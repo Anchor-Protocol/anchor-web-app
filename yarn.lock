@@ -5,13 +5,13 @@ __metadata:
   version: 4
   cacheKey: 7
 
-"@anchor-protocol/anchor.js@npm:^0.1.8":
-  version: 0.1.8
-  resolution: "@anchor-protocol/anchor.js@npm:0.1.8"
+"@anchor-protocol/anchor.js@npm:^0.1.9":
+  version: 0.1.9
+  resolution: "@anchor-protocol/anchor.js@npm:0.1.9"
   dependencies:
     "@terra-money/terra.js": ^1.3.6
     yaml: ^1.10.0
-  checksum: ba9883ebc807f4e4c2a350d96d5fe22365674ebc51c270dec13c19e7bcdf9cec46b03204119660152aeff068317f19477c2e015deb2ae1ce33e8f556a284d6d6
+  checksum: 2901439f696c57cbc3057e9fe114e9f5c2318c3f8742bd4b3fac00c7aeed8ae82e8b32117dc4d866ff9c320a8d87257a0677cc5720d077537293c693fead20da
   languageName: node
   linkType: hard
 
@@ -19,7 +19,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@anchor-web-app/app@workspace:app"
   dependencies:
-    "@anchor-protocol/anchor.js": ^0.1.8
+    "@anchor-protocol/anchor.js": ^0.1.9
     "@apollo/client": ^3.3.11
     "@material-ui/core": ^4.11.3
     "@material-ui/icons": ^4.11.2
@@ -101,7 +101,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@anchor-web-app/demo@workspace:demo"
   dependencies:
-    "@anchor-protocol/anchor.js": ^0.1.8
+    "@anchor-protocol/anchor.js": ^0.1.9
     "@apollo/client": ^3.3.11
     "@material-ui/core": ^4.11.3
     "@material-ui/icons": ^4.11.2

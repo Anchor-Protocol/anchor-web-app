@@ -1,4 +1,4 @@
-import { fabricateGovCastVote } from '@anchor-protocol/anchor.js';
+import { fabricateTerraSwapProvideLiquidityANC } from '@anchor-protocol/anchor.js';
 import {
   createOperationOptions,
   merge,
@@ -26,7 +26,7 @@ export const ancUstLpProvideOptions = createOperationOptions({
     gasFee,
     gasAdjustment,
   }: OperationDependency<{}>) => [
-    fabricateGovCastVote, // Option -> ((AddressProvider) -> MsgExecuteContract[])
+    fabricateTerraSwapProvideLiquidityANC, // Option -> ((AddressProvider) -> MsgExecuteContract[])
     createContractMsg(addressProvider), // -> MsgExecuteContract[]
     createOptions(() => ({
       fee: new StdFee(gasFee, fixedGas + 'uusd'),

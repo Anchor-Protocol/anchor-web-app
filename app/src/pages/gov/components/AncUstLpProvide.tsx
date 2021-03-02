@@ -1,3 +1,4 @@
+import { useOperation } from '@anchor-protocol/broadcastable-operation';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import {
@@ -15,10 +16,12 @@ import {
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { ANC, UST } from '@anchor-protocol/types';
+import { WalletReady } from '@anchor-protocol/wallet-provider';
 import { InputAdornment } from '@material-ui/core';
 import big, { Big } from 'big.js';
 import { ArrowDownLine } from 'components/ArrowDownLine';
 import { MessageBox } from 'components/MessageBox';
+import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
@@ -28,6 +31,7 @@ import { ancUstLpAncSimulation } from 'pages/gov/logics/ancUstLpAncSimulation';
 import { ancUstLpUstSimulation } from 'pages/gov/logics/ancUstLpUstSimulation';
 import { AncUstLpSimulation } from 'pages/gov/models/ancUstLpSimulation';
 import { useANCPrice } from 'pages/gov/queries/ancPrice';
+import { ancUstLpProvideOptions } from 'pages/gov/transactions/ancUstLpProvideOptions';
 import React, { ChangeEvent, useCallback, useState } from 'react';
 
 export function AncUstLpProvide() {
@@ -38,7 +42,7 @@ export function AncUstLpProvide() {
 
   const { fixedGas } = useConstants();
 
-  //const [anc, burnResult] = useOperation(burnOptions, {});
+  const [provide, provideResult] = useOperation(ancUstLpProvideOptions, {});
 
   // ---------------------------------------------
   // states
@@ -138,9 +142,39 @@ export function AncUstLpProvide() {
     [ancPrice, bank, fixedGas],
   );
 
+  const init = useCallback(() => {
+    setAncAmount('' as ANC);
+    setUstAmount('' as UST);
+    setSimulation(null);
+  }, []);
+
+  const proceed = useCallback(
+    async (walletReady: WalletReady, ancAmount: ANC, ustAmount: UST) => {
+      const broadcasted = await provide({
+        address: walletReady.walletAddress,
+        tokenAmount: ancAmount,
+        nativeAmount: ustAmount,
+        quote: 'uusd',
+      });
+
+      if (!broadcasted) {
+        init();
+      }
+    },
+    [init, provide],
+  );
+
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
+  if (
+    provideResult?.status === 'in-progress' ||
+    provideResult?.status === 'done' ||
+    provideResult?.status === 'fault'
+  ) {
+    return <TransactionRenderer result={provideResult} onExit={init} />;
+  }
+
   return (
     <>
       {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
@@ -265,7 +299,9 @@ export function AncUstLpProvide() {
           !!invalidAncAmount ||
           !!invalidUstAmount
         }
-        onClick={() => walletReady && console.log('submit')}
+        onClick={() =>
+          walletReady && proceed(walletReady, ancAmount, ustAmount)
+        }
       >
         Add Liquidity
       </ActionButton>
