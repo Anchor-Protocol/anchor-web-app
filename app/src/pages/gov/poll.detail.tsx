@@ -18,6 +18,7 @@ import big from 'big.js';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { DescriptionGrid } from 'pages/gov/components/DescriptionGrid';
 import { PollGraph } from 'pages/gov/components/Polls/PollGraph';
+import { usePollVoteDialog } from 'pages/gov/components/usePollVoteDialog';
 import { extractPollDetail } from 'pages/gov/logics/extractPollDetail';
 import { useGovConfig } from 'pages/gov/queries/govConfig';
 import { usePoll } from 'pages/gov/queries/poll';
@@ -38,6 +39,8 @@ function PollDetailBase({ className, match }: PollDetailProps) {
   const {
     data: { govConfig },
   } = useGovConfig();
+
+  const [openVoteDialog, voteDialogElement] = usePollVoteDialog();
 
   const { data: lastSyncedHeight } = useLastSyncedHeight();
 
@@ -64,7 +67,11 @@ function PollDetailBase({ className, match }: PollDetailProps) {
             <p>{pollDetail.poll.status}</p>
             <h2>{pollDetail.poll.title}</h2>
           </div>
-          <ActionButton>Vote</ActionButton>
+          <ActionButton
+            onClick={() => openVoteDialog({ pollId: +match.params.id })}
+          >
+            Vote
+          </ActionButton>
         </div>
 
         <HorizontalHeavyRuler />
@@ -212,6 +219,8 @@ function PollDetailBase({ className, match }: PollDetailProps) {
           </tbody>
         </HorizontalScrollTable>
       </Section>
+
+      {voteDialogElement}
     </PaddedLayout>
   );
 }
@@ -247,7 +256,7 @@ export const PollDetail = styled(PollDetailBase)`
         }
       }
 
-      button {
+      .MuiButtonBase-root {
         width: 144px;
       }
 

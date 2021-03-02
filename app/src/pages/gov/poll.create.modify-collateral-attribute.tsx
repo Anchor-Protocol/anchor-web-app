@@ -25,6 +25,7 @@ import { FormLayout } from 'pages/gov/components/FormLayout';
 import { validateLinkAddress } from 'pages/gov/logics/validateLinkAddress';
 import { createPollOptions } from 'pages/gov/transactions/createPollOptions';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
 export interface PollCreateModifyCollateralAttributeProps {
@@ -55,6 +56,8 @@ function PollCreateModifyCollateralAttributeBase({
   const { fixedGas } = useConstants();
 
   const address = useContractAddress();
+
+  const history = useHistory();
 
   const [createPoll, createPollResult] = useOperation(createPollOptions, {});
 
@@ -104,13 +107,9 @@ function PollCreateModifyCollateralAttributeBase({
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
-  const init = useCallback(() => {
-    setTitle('');
-    setDescription('');
-    setLink('');
-    setBAsset(bAssetItems[0]);
-    setLtv('');
-  }, [bAssetItems]);
+  const goToGov = useCallback(() => {
+    history.push('/gov');
+  }, [history]);
 
   const submit = useCallback(
     async (
@@ -129,7 +128,7 @@ function PollCreateModifyCollateralAttributeBase({
         },
       };
 
-      const broadcasted = await createPoll({
+      await createPoll({
         address: walletReady.walletAddress,
         amount,
         title,
@@ -145,12 +144,8 @@ function PollCreateModifyCollateralAttributeBase({
         ],
         txFee: txFee.toString() as uUST,
       });
-
-      if (!broadcasted) {
-        init();
-      }
     },
-    [address.moneyMarket.overseer, createPoll, init, txFee],
+    [address.moneyMarket.overseer, createPoll, txFee],
   );
 
   // ---------------------------------------------
@@ -164,7 +159,7 @@ function PollCreateModifyCollateralAttributeBase({
     return (
       <FormLayout className={className}>
         <Section>
-          <TransactionRenderer result={createPollResult} onExit={init} />
+          <TransactionRenderer result={createPollResult} onExit={goToGov} />
         </Section>
       </FormLayout>
     );

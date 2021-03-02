@@ -24,9 +24,9 @@ function ListBase({
 
   const pollDetails = useMemo(() => {
     return govConfig && lastSyncedHeight
-      ? polls
-          .filter((poll) => !!poll.execute_data)
-          .map((poll) => extractPollDetail(poll, govConfig, lastSyncedHeight))
+      ? polls.map((poll) =>
+          extractPollDetail(poll, govConfig, lastSyncedHeight),
+        )
       : [];
   }, [govConfig, lastSyncedHeight, polls]);
 
