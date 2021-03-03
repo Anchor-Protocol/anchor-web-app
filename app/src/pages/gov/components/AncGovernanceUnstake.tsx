@@ -50,21 +50,21 @@ export function AncGovernanceUnstake() {
   const bank = useBank();
 
   const {
-    data: { userANCBalance, userGovStakingInfo },
+    data: { userGovStakingInfo },
   } = useRewardsAncGovernance();
 
   const {
-    data: { govState },
+    data: { govState, govANCBalance },
   } = useTotalStaked();
 
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
   const unstakableBalance = useMemo<uANC<Big> | undefined>(() => {
-    if (!userANCBalance || !userGovStakingInfo || !govState) return undefined;
+    if (!govANCBalance || !userGovStakingInfo || !govState) return undefined;
 
     const govShareIndex = big(
-      big(userANCBalance.balance).minus(govState.total_deposit),
+      big(govANCBalance.balance).minus(govState.total_deposit),
     ).div(govState.total_share);
 
     const lockedANC = userGovStakingInfo.locked_balance.reduce(
@@ -72,10 +72,12 @@ export function AncGovernanceUnstake() {
       big(0),
     );
 
-    return big(userGovStakingInfo.share)
+    const unstakable = big(userGovStakingInfo.share)
       .mul(govShareIndex)
       .minus(lockedANC) as uANC<Big>;
-  }, [govState, userANCBalance, userGovStakingInfo]);
+
+    return unstakable;
+  }, [govANCBalance, govState, userGovStakingInfo]);
 
   const invalidTxFee = useServiceConnectedMemo(
     () => validateTxFee(bank, fixedGas),
@@ -85,14 +87,13 @@ export function AncGovernanceUnstake() {
 
   const invalidANCAmount = useServiceConnectedMemo(
     () => {
-      if (ancAmount.length === 0 || !userANCBalance || !unstakableBalance)
-        return undefined;
+      if (ancAmount.length === 0 || !unstakableBalance) return undefined;
 
       return big(microfy(ancAmount)).gt(unstakableBalance)
         ? 'Not enough assets'
         : undefined;
     },
-    [ancAmount, unstakableBalance, userANCBalance],
+    [ancAmount, unstakableBalance],
     undefined,
   );
 
