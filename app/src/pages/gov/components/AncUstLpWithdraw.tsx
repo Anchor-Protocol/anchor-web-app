@@ -9,7 +9,6 @@ import {
   formatANC,
   formatLP,
   formatLPInput,
-  formatRateToPercentage,
   formatUST,
   microfy,
 } from '@anchor-protocol/notation';
@@ -25,6 +24,7 @@ import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
 import { useService, useServiceConnectedMemo } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
+import { formatShareOfPool } from 'pages/gov/components/formatShareOfPool';
 import { ancUstLpLpSimulation } from 'pages/gov/logics/ancUstLpLpSimulation';
 import { AncUstLpSimulation } from 'pages/gov/models/ancUstLpSimulation';
 import { useANCPrice } from 'pages/gov/queries/ancPrice';
@@ -231,7 +231,7 @@ export function AncUstLpWithdraw() {
               {formatLP(simulation.lpFromTx)} LP
             </TxFeeListItem>
             <TxFeeListItem label="Pool Share after Tx">
-              {formatRateToPercentage(simulation.shareOfPool)} %
+              {formatShareOfPool(simulation.shareOfPool)} %
             </TxFeeListItem>
             <TxFeeListItem label="Tx Fee">
               {formatUST(demicrofy(simulation.txFee))} UST

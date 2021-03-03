@@ -1,6 +1,6 @@
 import { min } from '@anchor-protocol/big-math';
-import { microfy } from '@anchor-protocol/notation';
-import { ANC, AncUstLP, Rate, UST, uUST } from '@anchor-protocol/types';
+import { demicrofy, microfy } from '@anchor-protocol/notation';
+import { Rate, uANC, uAncUstLP, UST, uUST } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
 import { Bank } from 'contexts/bank';
 import { AncPrice } from 'pages/gov/models/ancPrice';
@@ -16,26 +16,53 @@ export function ancUstLpUstSimulation(
     throw new Error(`Can't not be ustAmount is empty string`);
   }
 
-  const ancAmount = big(ustAmount).div(ancPrice.ANCPrice) as ANC<Big>;
+  const ust = microfy(ustAmount);
+  const anc = big(ust).div(ancPrice.ANCPrice) as uANC<Big>;
 
   const poolPrice = microfy(ancPrice.ANCPrice) as uUST<Big>;
+
+  console.log(
+    JSON.stringify(
+      {
+        anc: anc.toFixed(),
+        ust: ust.toFixed(),
+        lpShare: ancPrice.LPShare,
+      },
+      null,
+      2,
+    ),
+  );
+
   const lpFromTx = min(
-    ancAmount.mul(ancPrice.ANCPoolSize).div(ancPrice.LPShare),
-    big(ustAmount).mul(ancPrice.USTPoolSize).div(ancPrice.LPShare),
-  ) as AncUstLP<Big>;
+    anc.mul(ancPrice.LPShare).div(ancPrice.ANCPoolSize),
+    ust.mul(ancPrice.LPShare).div(ancPrice.USTPoolSize),
+  ) as uAncUstLP<Big>;
+
   const shareOfPool = lpFromTx.div(
     big(ancPrice.LPShare).plus(lpFromTx),
   ) as Rate<Big>;
-  const txFee = min(
-    big(microfy(ustAmount)).mul(bank.tax.taxRate),
-    bank.tax.maxTaxUUSD,
-  ).plus(fixedGas) as uUST<Big>;
+
+  const txFee = min(ust.mul(bank.tax.taxRate), bank.tax.maxTaxUUSD).plus(
+    fixedGas,
+  ) as uUST<Big>;
+
+  console.log(
+    JSON.stringify(
+      {
+        lpFromTx: lpFromTx.toFixed(),
+        lpShare: ancPrice.LPShare,
+        shareOfPool: shareOfPool.toFixed(),
+      },
+      null,
+      2,
+    ),
+  );
 
   return {
     poolPrice,
-    lpFromTx,
+    lpFromTx: demicrofy(lpFromTx),
     shareOfPool,
     txFee,
-    ancAmount,
+    ancAmount: demicrofy(anc),
   };
 }

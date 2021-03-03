@@ -1,5 +1,5 @@
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
-import type { Num, UST } from '@anchor-protocol/types';
+import type { uANC, uAncUstLP, UST, uUST } from '@anchor-protocol/types';
 import { terraswap, uToken, WASMContractResult } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
@@ -33,11 +33,9 @@ export const dataMap = createMap<RawData, Data>({
       ancPrice.Result,
     );
 
-    console.log('ancPrice.ts..ancPrice()', { total_share });
-
-    const ANCPoolSize = (assets[0].amount as unknown) as Num;
-    const USTPoolSize = (assets[1].amount as unknown) as Num;
-    const LPShare = (total_share as unknown) as Num;
+    const ANCPoolSize = (assets[0].amount as unknown) as uANC;
+    const USTPoolSize = (assets[1].amount as unknown) as uUST;
+    const LPShare = (total_share as unknown) as uAncUstLP;
     const ANCPrice = big(USTPoolSize).div(ANCPoolSize).toString() as UST;
 
     return {

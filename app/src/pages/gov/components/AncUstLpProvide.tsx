@@ -8,7 +8,6 @@ import {
   formatANC,
   formatANCInput,
   formatLP,
-  formatRateToPercentage,
   formatUST,
   formatUSTInput,
   microfy,
@@ -27,6 +26,7 @@ import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
 import { useService, useServiceConnectedMemo } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
+import { formatShareOfPool } from 'pages/gov/components/formatShareOfPool';
 import { ancUstLpAncSimulation } from 'pages/gov/logics/ancUstLpAncSimulation';
 import { ancUstLpUstSimulation } from 'pages/gov/logics/ancUstLpUstSimulation';
 import { AncUstLpSimulation } from 'pages/gov/models/ancUstLpSimulation';
@@ -278,7 +278,7 @@ export function AncUstLpProvide() {
               {formatLP(simulation.lpFromTx)} LP
             </TxFeeListItem>
             <TxFeeListItem label="Share of Pool">
-              {formatRateToPercentage(simulation.shareOfPool)} %
+              {formatShareOfPool(simulation.shareOfPool)} %
             </TxFeeListItem>
             <TxFeeListItem label="Tx Fee">
               {formatUST(demicrofy(simulation.txFee))} UST
