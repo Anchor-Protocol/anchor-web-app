@@ -33,6 +33,7 @@ export function ChromeExtensionWalletProvider({
     const browser = getParser(navigator.userAgent);
     return browser.satisfies({
       chrome: '>60',
+      edge: '>80',
     });
   }, []);
 

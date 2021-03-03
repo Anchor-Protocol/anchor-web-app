@@ -16,6 +16,7 @@ function BannerBase({ className }: BannerProps) {
     const browser = getParser(navigator.userAgent);
     return browser.satisfies({
       chrome: '>60',
+      edge: '>80',
     });
   }, []);
 
