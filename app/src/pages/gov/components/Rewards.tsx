@@ -4,10 +4,9 @@ import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import {
   demicrofy,
   formatANCWithPostfixUnits,
-  formatFluidDecimalPoints,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
-import { uANC } from '@anchor-protocol/types';
+import { uUST } from '@anchor-protocol/types';
 import { MenuItem } from '@material-ui/core';
 import big, { Big } from 'big.js';
 import { MoreMenu } from 'pages/gov/components/MoreMenu';
@@ -119,15 +118,15 @@ export function RewardsBase({ className }: RewardsProps) {
       <Section>
         <h3>
           <label>Total Reward</label>{' '}
-          {totalReward ? formatUSTWithPostfixUnits(demicrofy(totalReward)) : 0}{' '}
-          UST
+          {totalReward ? formatANCWithPostfixUnits(demicrofy(totalReward)) : 0}{' '}
+          ANC
           <label>Total Reward Value</label>{' '}
           {totalReward && ancPrice?.ANCPrice
-            ? formatANCWithPostfixUnits(
-                demicrofy(big(totalReward).mul(ancPrice.ANCPrice) as uANC<Big>),
+            ? formatUSTWithPostfixUnits(
+                demicrofy(big(totalReward).mul(ancPrice.ANCPrice) as uUST<Big>),
               )
             : 0}{' '}
-          ANC
+          UST
         </h3>
 
         <HorizontalScrollTable
@@ -139,8 +138,8 @@ export function RewardsBase({ className }: RewardsProps) {
             <col style={{ minWidth: 210 }} />
             <col style={{ minWidth: 205 }} />
             <col style={{ minWidth: 340 }} />
-            <col style={{ minWidth: 200 }} />
             <col style={{ minWidth: 160 }} />
+            <col style={{ minWidth: 200 }} />
             <col style={{ minWidth: 100 }} />
           </colgroup>
           <thead>
@@ -148,8 +147,8 @@ export function RewardsBase({ className }: RewardsProps) {
               <th>Rewards Pool</th>
               <th>APY</th>
               <th>Withdrawable Asset</th>
-              <th>Reward</th>
               <th>Stakable</th>
+              <th>Reward</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -174,12 +173,12 @@ export function RewardsBase({ className }: RewardsProps) {
                 UST
               </td>
               <td>
-                {ancUstLpReward
-                  ? formatFluidDecimalPoints(ancUstLpReward, 2)
-                  : 0}
+                <s>0</s>
               </td>
               <td>
-                <s>0</s>
+                {ancUstLpReward
+                  ? formatANCWithPostfixUnits(demicrofy(ancUstLpReward))
+                  : 0}
               </td>
               <td>
                 <MoreMenu size="25px">
@@ -229,12 +228,12 @@ export function RewardsBase({ className }: RewardsProps) {
                   : 0}{' '}
                 ANC
               </td>
-              <td></td>
               <td>
                 {ancGovernanceStakable
                   ? formatANCWithPostfixUnits(demicrofy(ancGovernanceStakable))
                   : 0}
               </td>
+              <td>Automatically re-staked</td>
               <td>
                 <MoreMenu size="25px">
                   <MenuItem
@@ -259,12 +258,12 @@ export function RewardsBase({ className }: RewardsProps) {
               </td>
               <td></td>
               <td>
+                <s>0</s>
+              </td>
+              <td>
                 {ustBorrowReward
                   ? formatUSTWithPostfixUnits(demicrofy(ustBorrowReward))
                   : 0}
-              </td>
-              <td>
-                <s>0</s>
               </td>
               <td>
                 <MoreMenu size="25px">
@@ -314,18 +313,20 @@ export const Rewards = styled(RewardsBase)`
       th:nth-child(3),
       td:nth-child(3),
       th:nth-child(4),
-      td:nth-child(4) {
+      td:nth-child(4),
+      th:nth-child(5),
+      td:nth-child(5) {
         text-align: center;
       }
 
-      th:nth-child(5) {
-        text-align: right;
-      }
+      //th:nth-child(5) {
+      //  text-align: right;
+      //}
 
-      td:nth-child(5) {
-        color: #e95979;
-        text-align: right;
-      }
+      //td:nth-child(5) {
+      //  color: #e95979;
+      //  text-align: right;
+      //}
 
       th:nth-child(6),
       td:nth-child(6) {

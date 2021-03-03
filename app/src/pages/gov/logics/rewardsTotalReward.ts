@@ -1,11 +1,11 @@
-import type { uUST } from '@anchor-protocol/types';
+import type { uANC } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
 
 export function rewardsTotalReward(
-  borrowerAncReward: uUST<BigSource> | undefined,
-  ancUstLpReward: uUST<BigSource> | undefined,
-): uUST<Big> | undefined {
+  borrowerAncReward: uANC<BigSource> | undefined,
+  ancUstLpReward: uANC<BigSource> | undefined,
+): uANC<Big> | undefined {
   return borrowerAncReward && ancUstLpReward
-    ? (big(borrowerAncReward).plus(ancUstLpReward) as uUST<Big>)
+    ? (big(borrowerAncReward).plus(ancUstLpReward) as uANC<Big>)
     : undefined;
 }
