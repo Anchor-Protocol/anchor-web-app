@@ -21,7 +21,6 @@ import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
 import { useService, useServiceConnectedMemo } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
-import { AncUstLpStakeOverview } from 'pages/gov/components/AncUstLpStakeOverview';
 import { useRewardsAncGovernance } from 'pages/gov/queries/rewardsAncGovernance';
 import { useTotalStaked } from 'pages/gov/queries/totalStaked';
 import { ancGovernanceUnstakeOptions } from 'pages/gov/transactions/ancGovernanceUnstakeOptions';
@@ -129,8 +128,6 @@ export function AncGovernanceUnstake() {
   return (
     <>
       {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
-
-      <AncUstLpStakeOverview />
 
       <NumberInput
         className="amount"

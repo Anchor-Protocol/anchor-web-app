@@ -8,7 +8,7 @@ import {
   query,
   RawData,
   RawVariables,
-} from '../terraswapAskSimulation';
+} from '../simulation';
 
 describe('queries/terraswapOfferSimulation', () => {
   test('should get result from query', async () => {
@@ -17,7 +17,7 @@ describe('queries/terraswapOfferSimulation', () => {
         query,
         variables: mapVariables({
           terraswapPair: testAddress.terraswap.blunaLunaPair,
-          askSimulationQuery: {
+          simulationQuery: {
             simulation: {
               offer_asset: {
                 info: {
@@ -33,8 +33,6 @@ describe('queries/terraswapOfferSimulation', () => {
       })
       .then(({ data }) => map<RawData, Data>(data, dataMap));
 
-    expect(
-      parseInt(data.terraswapAskSimulation?.return_amount ?? ''),
-    ).not.toBeNaN();
+    expect(parseInt(data.simulation?.return_amount ?? '')).not.toBeNaN();
   });
 });

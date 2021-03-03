@@ -413,7 +413,7 @@ export function TradeBuy() {
           )
         }
       >
-        Burn
+        Proceed
       </ActionButton>
     </>
   );

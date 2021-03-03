@@ -420,7 +420,7 @@ export function TradeSell() {
           )
         }
       >
-        Burn
+        Proceed
       </ActionButton>
     </>
   );
