@@ -84,7 +84,7 @@ function Providers({
     () => ({
       gasFee: 6000000 as uUST<number>,
       fixedGas: 3500000 as uUST<number>,
-      blocksPerYear: 5256666,
+      blocksPerYear: 4906443,
       gasAdjustment: 1.4 as Rate<number>,
 
       isDemo,
