@@ -1,11 +1,9 @@
 import { AnchorNoCircle } from '@anchor-protocol/icons';
 import { RulerTab } from '@anchor-protocol/neumorphism-ui/components/RulerTab';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
-import { Tab } from '@anchor-protocol/neumorphism-ui/components/Tab';
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import { Circles } from 'components/Circles';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
-import { AncGovernanceClaim } from 'pages/gov/components/AncGovernanceClaim';
 import { AncGovernanceStake } from 'pages/gov/components/AncGovernanceStake';
 import { AncGovernanceUnstake } from 'pages/gov/components/AncGovernanceUnstake';
 import { ancGovernancePathname, govPathname } from 'pages/gov/env';
@@ -28,17 +26,10 @@ interface Item {
   value: string;
 }
 
-const tabItems: Item[] = [
-  { label: 'STAKE', value: 'stake' },
-  { label: 'CLAIM', value: 'claim' },
-];
-
 const stakeItems: Item[] = [
   { label: 'Stake', value: 'stake' },
   { label: 'Unstake', value: 'unstake' },
 ];
-
-const claimItems: Item[] = [{ label: 'Claim', value: 'claim' }];
 
 function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
   const history = useHistory();
@@ -47,36 +38,12 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
     `/${govPathname}/rewards/${ancGovernancePathname}/:view`,
   );
 
-  const tab = useMemo<Item | undefined>(() => {
-    switch (pageMatch?.params.view) {
-      case 'stake':
-      case 'unstake':
-        return tabItems[0];
-      case 'claim':
-        return tabItems[1];
-    }
-  }, [pageMatch?.params.view]);
-
-  const tabChange = useCallback(
-    (nextTab: Item) => {
-      history.push({
-        pathname:
-          nextTab.value === 'stake'
-            ? `/${govPathname}/rewards/${ancGovernancePathname}/stake`
-            : `/${govPathname}/rewards/${ancGovernancePathname}/claim`,
-      });
-    },
-    [history],
-  );
-
   const subTab = useMemo<Item | undefined>(() => {
     switch (pageMatch?.params.view) {
       case 'stake':
         return stakeItems[0];
       case 'unstake':
         return stakeItems[1];
-      case 'claim':
-        return claimItems[0];
     }
   }, [pageMatch?.params.view]);
 
@@ -103,53 +70,39 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
           </Circles>
           ANC Governance
         </h1>
-        <Tab
-          items={tabItems}
-          selectedItem={tab ?? tabItems[0]}
-          onChange={tabChange}
-          labelFunction={({ label }) => label}
-          keyFunction={({ value }) => value}
-          height={46}
-          borderRadius={30}
-          fontSize={12}
-        />
       </header>
 
       <Section>
         <RulerTab
           className="subtab"
-          items={tab?.value === 'stake' ? stakeItems : claimItems}
-          selectedItem={
-            subTab ?? (tab?.value === 'stake' ? stakeItems[0] : claimItems[0])
-          }
+          items={stakeItems}
+          selectedItem={subTab ?? stakeItems[0]}
           onChange={subTabChange}
           labelFunction={({ label }) => label}
           keyFunction={({ value }) => value}
         />
 
-        <Switch>
-          <Route
-            path={`/${govPathname}/rewards/${ancGovernancePathname}/stake`}
-            component={AncGovernanceStake}
-          />
-          <Route
-            path={`/${govPathname}/rewards/${ancGovernancePathname}/unstake`}
-            component={AncGovernanceUnstake}
-          />
-          <Route
-            path={`/${govPathname}/rewards/${ancGovernancePathname}/claim`}
-            component={AncGovernanceClaim}
-          />
-          <Redirect
-            exact
-            path={`/${govPathname}/rewards/${ancGovernancePathname}`}
-            to={`/${govPathname}/rewards/${ancGovernancePathname}/stake`}
-          />
-          <Redirect
-            path={`/${govPathname}/rewards/${ancGovernancePathname}/*`}
-            to={`/${govPathname}/rewards/${ancGovernancePathname}/stake`}
-          />
-        </Switch>
+        <div className="form">
+          <Switch>
+            <Route
+              path={`/${govPathname}/rewards/${ancGovernancePathname}/stake`}
+              component={AncGovernanceStake}
+            />
+            <Route
+              path={`/${govPathname}/rewards/${ancGovernancePathname}/unstake`}
+              component={AncGovernanceUnstake}
+            />
+            <Redirect
+              exact
+              path={`/${govPathname}/rewards/${ancGovernancePathname}`}
+              to={`/${govPathname}/rewards/${ancGovernancePathname}/stake`}
+            />
+            <Redirect
+              path={`/${govPathname}/rewards/${ancGovernancePathname}/*`}
+              to={`/${govPathname}/rewards/${ancGovernancePathname}/stake`}
+            />
+          </Switch>
+        </div>
       </Section>
     </CenteredLayout>
   );
@@ -158,7 +111,7 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
 export const RewardsAncGovernance = styled(RewardsAncUstLpBase)`
   header {
     display: grid;
-    grid-template-columns: 1fr 250px;
+    grid-template-columns: 1fr 375px;
     align-items: center;
 
     margin-bottom: 40px;
@@ -177,5 +130,55 @@ export const RewardsAncGovernance = styled(RewardsAncUstLpBase)`
 
   .subtab {
     margin-bottom: 70px;
+  }
+
+  .form {
+    .description {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      font-size: 16px;
+      color: ${({ theme }) => theme.dimTextColor};
+
+      > :last-child {
+        font-size: 12px;
+      }
+
+      margin-bottom: 12px;
+    }
+
+    .amount {
+      width: 100%;
+
+      margin-bottom: 5px;
+    }
+
+    .wallet {
+      display: flex;
+      justify-content: space-between;
+
+      font-size: 12px;
+      color: ${({ theme }) => theme.dimTextColor};
+
+      &[aria-invalid='true'] {
+        color: #f5356a;
+      }
+    }
+
+    .separator {
+      margin: 10px 0 0 0;
+    }
+
+    .receipt {
+      margin-top: 30px;
+    }
+
+    .submit {
+      margin-top: 40px;
+
+      width: 100%;
+      height: 60px;
+    }
   }
 `;

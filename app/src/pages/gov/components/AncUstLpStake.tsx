@@ -21,6 +21,7 @@ import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
 import { useService, useServiceConnectedMemo } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
+import { AncUstLpStakeOverview } from 'pages/gov/components/AncUstLpStakeOverview';
 import { useRewardsAncUstLp } from 'pages/gov/queries/rewardsAncUstLp';
 import { ancUstLpStakeOptions } from 'pages/gov/transactions/ancUstLpStakeOptions';
 import React, { ChangeEvent, useCallback, useState } from 'react';
@@ -103,11 +104,7 @@ export function AncUstLpStake() {
     <>
       {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
 
-      {/* ANC */}
-      <div className="description">
-        <p>Input</p>
-        <p />
-      </div>
+      <AncUstLpStakeOverview />
 
       <NumberInput
         className="amount"
@@ -143,11 +140,13 @@ export function AncUstLpStake() {
         </span>
       </div>
 
-      <TxFeeList className="receipt">
-        <TxFeeListItem label="Tx Fee">
-          {formatUST(demicrofy(fixedGas))} UST
-        </TxFeeListItem>
-      </TxFeeList>
+      {lpAmount.length > 0 && (
+        <TxFeeList className="receipt">
+          <TxFeeListItem label="Tx Fee">
+            {formatUST(demicrofy(fixedGas))} UST
+          </TxFeeListItem>
+        </TxFeeList>
+      )}
 
       {/* Submit */}
       <ActionButton

@@ -5,7 +5,6 @@ import { Tab } from '@anchor-protocol/neumorphism-ui/components/Tab';
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import { Circles } from 'components/Circles';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
-import { AncUstLpClaim } from 'pages/gov/components/AncUstLpClaim';
 import { AncUstLpProvide } from 'pages/gov/components/AncUstLpProvide';
 import { AncUstLpStake } from 'pages/gov/components/AncUstLpStake';
 import { AncUstLpUnstake } from 'pages/gov/components/AncUstLpUnstake';
@@ -33,7 +32,6 @@ interface Item {
 const tabItems: Item[] = [
   { label: 'POOL', value: 'pool' },
   { label: 'STAKE', value: 'stake' },
-  { label: 'CLAIM', value: 'claim' },
 ];
 
 const poolItems: Item[] = [
@@ -45,8 +43,6 @@ const stakeItems: Item[] = [
   { label: 'Stake', value: 'stake' },
   { label: 'Unstake', value: 'unstake' },
 ];
-
-const claimItems: Item[] = [{ label: 'Claim', value: 'claim' }];
 
 function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
   const history = useHistory();
@@ -63,8 +59,6 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
       case 'stake':
       case 'unstake':
         return tabItems[1];
-      case 'claim':
-        return tabItems[2];
     }
   }, [pageMatch?.params.view]);
 
@@ -72,11 +66,9 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
     (nextTab: Item) => {
       history.push({
         pathname:
-          nextTab.value === 'pool'
-            ? `/${govPathname}/rewards/${ancUstLpPathname}/provide`
-            : nextTab.value === 'stake'
+          nextTab.value === 'stake'
             ? `/${govPathname}/rewards/${ancUstLpPathname}/stake`
-            : `/${govPathname}/rewards/${ancUstLpPathname}/claim`,
+            : `/${govPathname}/rewards/${ancUstLpPathname}/provide`,
       });
     },
     [history],
@@ -92,8 +84,6 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
         return stakeItems[0];
       case 'unstake':
         return stakeItems[1];
-      case 'claim':
-        return claimItems[0];
     }
   }, [pageMatch?.params.view]);
 
@@ -135,20 +125,9 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
       <Section>
         <RulerTab
           className="subtab"
-          items={
-            tab?.value === 'pool'
-              ? poolItems
-              : tab?.value === 'stake'
-              ? stakeItems
-              : claimItems
-          }
+          items={tab?.value === 'stake' ? stakeItems : poolItems}
           selectedItem={
-            subTab ??
-            (tab?.value === 'pool'
-              ? poolItems[0]
-              : tab?.value === 'stake'
-              ? stakeItems[0]
-              : claimItems[0])
+            subTab ?? (tab?.value === 'stake' ? stakeItems[0] : poolItems[0])
           }
           onChange={subTabChange}
           labelFunction={({ label }) => label}
@@ -172,10 +151,6 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
             <Route
               path={`/${govPathname}/rewards/${ancUstLpPathname}/unstake`}
               component={AncUstLpUnstake}
-            />
-            <Route
-              path={`/${govPathname}/rewards/${ancUstLpPathname}/claim`}
-              component={AncUstLpClaim}
             />
             <Redirect
               exact
@@ -257,10 +232,11 @@ export const RewardsAncUstLp = styled(RewardsAncUstLpBase)`
 
     .receipt {
       margin-top: 30px;
-      margin-bottom: 40px;
     }
 
     .submit {
+      margin-top: 40px;
+
       width: 100%;
       height: 60px;
     }

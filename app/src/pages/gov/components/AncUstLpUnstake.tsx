@@ -21,6 +21,7 @@ import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
 import { useService, useServiceConnectedMemo } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
+import { AncUstLpStakeOverview } from 'pages/gov/components/AncUstLpStakeOverview';
 import { useRewardsAncUstLp } from 'pages/gov/queries/rewardsAncUstLp';
 import { ancUstLpUnstakeOptions } from 'pages/gov/transactions/ancUstLpUnstakeOptions';
 import React, { ChangeEvent, useCallback, useState } from 'react';
@@ -33,7 +34,7 @@ export function AncUstLpUnstake() {
 
   const { fixedGas } = useConstants();
 
-  const [stake, stakeResult] = useOperation(ancUstLpUnstakeOptions, {});
+  const [unstake, unstakeResult] = useOperation(ancUstLpUnstakeOptions, {});
 
   // ---------------------------------------------
   // states
@@ -76,7 +77,7 @@ export function AncUstLpUnstake() {
 
   const proceed = useCallback(
     async (walletReady: WalletReady, lpAmount: AncUstLP) => {
-      const broadcasted = await stake({
+      const broadcasted = await unstake({
         address: walletReady.walletAddress,
         amount: lpAmount,
       });
@@ -85,29 +86,25 @@ export function AncUstLpUnstake() {
         init();
       }
     },
-    [init, stake],
+    [init, unstake],
   );
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
   if (
-    stakeResult?.status === 'in-progress' ||
-    stakeResult?.status === 'done' ||
-    stakeResult?.status === 'fault'
+    unstakeResult?.status === 'in-progress' ||
+    unstakeResult?.status === 'done' ||
+    unstakeResult?.status === 'fault'
   ) {
-    return <TransactionRenderer result={stakeResult} onExit={init} />;
+    return <TransactionRenderer result={unstakeResult} onExit={init} />;
   }
 
   return (
     <>
       {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
 
-      {/* ANC */}
-      <div className="description">
-        <p>Input</p>
-        <p />
-      </div>
+      <AncUstLpStakeOverview />
 
       <NumberInput
         className="amount"
@@ -148,11 +145,13 @@ export function AncUstLpUnstake() {
         </span>
       </div>
 
-      <TxFeeList className="receipt">
-        <TxFeeListItem label="Tx Fee">
-          {formatUST(demicrofy(fixedGas))} UST
-        </TxFeeListItem>
-      </TxFeeList>
+      {lpAmount.length > 0 && (
+        <TxFeeList className="receipt">
+          <TxFeeListItem label="Tx Fee">
+            {formatUST(demicrofy(fixedGas))} UST
+          </TxFeeListItem>
+        </TxFeeList>
+      )}
 
       {/* Submit */}
       <ActionButton

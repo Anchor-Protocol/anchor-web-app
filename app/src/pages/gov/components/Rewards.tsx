@@ -207,7 +207,7 @@ export function RewardsBase({ className }: RewardsProps) {
                   </MenuItem>
                   <MenuItem
                     component={Link}
-                    to={`/${govPathname}/rewards/${ancUstLpPathname}/claim`}
+                    to={`/${govPathname}/claim/${ancUstLpPathname}`}
                   >
                     Claim
                   </MenuItem>
@@ -249,7 +249,7 @@ export function RewardsBase({ className }: RewardsProps) {
                   </MenuItem>
                   <MenuItem
                     component={Link}
-                    to={`/${govPathname}/rewards/${ancGovernancePathname}/claim`}
+                    to={`/${govPathname}/claim/${ancGovernancePathname}/claim`}
                   >
                     Claim
                   </MenuItem>
@@ -274,7 +274,7 @@ export function RewardsBase({ className }: RewardsProps) {
                 <MoreMenu size="25px">
                   <MenuItem
                     component={Link}
-                    to={`/${govPathname}/rewards/${ustBorrowPathname}/claim`}
+                    to={`/${govPathname}/claim/${ustBorrowPathname}/claim`}
                   >
                     Claim
                   </MenuItem>
