@@ -1,4 +1,4 @@
-import { ClaimAncGovernance } from 'pages/gov/claim.anc-governance';
+import { ClaimAll } from 'pages/gov/claim.all';
 import { ClaimAncUstLp } from 'pages/gov/claim.anc-ust-lp';
 import { ClaimUstBorrow } from 'pages/gov/claim.ust-borrow';
 import { PollCreateModifyCollateralAttribute } from 'pages/gov/poll.create.modify-collateral-attribute';
@@ -34,14 +34,11 @@ export function Governance() {
       />
 
       {/* Claim */}
+      <Route path={`/${govPathname}/claim/all`} component={ClaimAll} />
+
       <Route
         path={`/${govPathname}/claim/${ancUstLpPathname}`}
         component={ClaimAncUstLp}
-      />
-
-      <Route
-        path={`/${govPathname}/claim/${ancGovernancePathname}`}
-        component={ClaimAncGovernance}
       />
 
       <Route

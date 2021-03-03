@@ -19,15 +19,15 @@ import { useService, useServiceConnectedMemo } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { useClaimableAncUstLp } from 'pages/gov/queries/claimableAncUstLp';
 import { useClaimableUstBorrow } from 'pages/gov/queries/claimableUstBorrow';
-import { ancUstLpClaimOptions } from 'pages/gov/transactions/ancUstLpClaimOptions';
+import { allClaimOptions } from 'pages/gov/transactions/allClaimOptions';
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 
-export interface ClaimAncUstLpProps {
+export interface ClaimAllProps {
   className?: string;
 }
 
-function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
+function ClaimAllBase({ className }: ClaimAllProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
@@ -35,7 +35,7 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
 
   const { fixedGas } = useConstants();
 
-  const [claim, claimResult] = useOperation(ancUstLpClaimOptions, {});
+  const [claim, claimResult] = useOperation(allClaimOptions, {});
 
   // ---------------------------------------------
   // queries
@@ -43,7 +43,7 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
   const bank = useBank();
 
   const {
-    data: { userANCBalance },
+    data: { borrowerInfo, userANCBalance },
   } = useClaimableUstBorrow();
 
   const {
@@ -53,10 +53,34 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const claiming = useMemo(() => {
+  const claimingBorrowerInfoPendingRewards = useMemo(() => {
+    if (!borrowerInfo) return undefined;
+    return big(borrowerInfo.pending_rewards) as uANC<Big>;
+  }, [borrowerInfo]);
+
+  const claimingLpStaingInfoPendingRewards = useMemo(() => {
     if (!userLPStakingInfo) return undefined;
     return big(userLPStakingInfo.pending_reward) as uANC<Big>;
   }, [userLPStakingInfo]);
+
+  const claiming = useMemo(() => {
+    if (
+      !claimingBorrowerInfoPendingRewards ||
+      !claimingLpStaingInfoPendingRewards
+    ) {
+      return undefined;
+    }
+
+    console.log(
+      'claim.all.tsx..()',
+      claimingBorrowerInfoPendingRewards.toFixed(),
+      claimingLpStaingInfoPendingRewards.toFixed(),
+    );
+
+    return claimingLpStaingInfoPendingRewards.plus(
+      claimingBorrowerInfoPendingRewards,
+    ) as uANC<Big>;
+  }, [claimingBorrowerInfoPendingRewards, claimingLpStaingInfoPendingRewards]);
 
   const ancAfterTx = useMemo(() => {
     if (!claiming || !userANCBalance) return undefined;
@@ -70,9 +94,15 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
   );
 
   const proceed = useCallback(
-    async (walletReady: WalletReady) => {
+    async (
+      walletReady: WalletReady,
+      claimMoneyMarketRewards: boolean,
+      cliamLpStakingRewards: boolean,
+    ) => {
       await claim({
-        address: walletReady.walletAddress,
+        walletAddress: walletReady.walletAddress,
+        cliamLpStakingRewards,
+        claimMoneyMarketRewards,
       });
     },
     [claim],
@@ -101,7 +131,7 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
   return (
     <CenteredLayout className={className} maxWidth={800}>
       <Section>
-        <h1>ANC-UST-LP Claim</h1>
+        <h1>Claim All Rewards</h1>
 
         {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
 
@@ -120,8 +150,23 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
 
         <ActionButton
           className="proceed"
-          disabled={!serviceAvailable || !claiming || claiming.lte(0)}
-          onClick={() => walletReady && proceed(walletReady)}
+          disabled={
+            !serviceAvailable ||
+            !claimingLpStaingInfoPendingRewards ||
+            !claimingBorrowerInfoPendingRewards ||
+            !claiming ||
+            claiming.lte(0)
+          }
+          onClick={() =>
+            walletReady &&
+            claimingBorrowerInfoPendingRewards &&
+            claimingLpStaingInfoPendingRewards &&
+            proceed(
+              walletReady,
+              claimingBorrowerInfoPendingRewards.gt(0),
+              claimingLpStaingInfoPendingRewards.gt(0),
+            )
+          }
         >
           Claim
         </ActionButton>
@@ -130,7 +175,7 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
   );
 }
 
-export const ClaimAncUstLp = styled(ClaimAncUstLpBase)`
+export const ClaimAll = styled(ClaimAllBase)`
   h1 {
     font-size: 27px;
     text-align: center;
