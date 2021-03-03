@@ -218,8 +218,8 @@ export function AncUstLpWithdraw() {
           <>
             <SwapListItem
               label="Pool Price"
-              currencyA="ANC"
-              currencyB="UST"
+              currencyA="UST"
+              currencyB="ANC"
               exchangeRateAB={demicrofy(simulation.poolPrice)}
               formatExchangeRate={(ratio, direction) =>
                 direction === 'a/b'
@@ -227,10 +227,10 @@ export function AncUstLpWithdraw() {
                   : formatUST(ratio as UST<Big>)
               }
             />
-            <TxFeeListItem label="LP from Tx">
+            <TxFeeListItem label="LP after Tx">
               {formatLP(simulation.lpFromTx)} LP
             </TxFeeListItem>
-            <TxFeeListItem label="Share of Pool">
+            <TxFeeListItem label="Pool Share after Tx">
               {formatRateToPercentage(simulation.shareOfPool)} %
             </TxFeeListItem>
             <TxFeeListItem label="Tx Fee">

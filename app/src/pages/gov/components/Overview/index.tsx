@@ -6,7 +6,7 @@ import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import {
   demicrofy,
   formatANCWithPostfixUnits,
-  formatFluidDecimalPoints,
+  formatLP,
   formatRateToPercentage,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
@@ -128,7 +128,7 @@ function OverviewBase({ className }: OverviewProps) {
             <Label>Total Staked</Label>
             <p>
               {lpStakingState?.total_bond_amount
-                ? formatFluidDecimalPoints(lpStakingState.total_bond_amount, 0)
+                ? formatLP(demicrofy(lpStakingState.total_bond_amount))
                 : '0'}
             </p>
           </div>

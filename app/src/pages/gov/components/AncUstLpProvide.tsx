@@ -264,8 +264,9 @@ export function AncUstLpProvide() {
           <>
             <SwapListItem
               label="Pool Price"
-              currencyA="ANC"
-              currencyB="UST"
+              currencyA="UST"
+              currencyB="ANC"
+              initialDirection="a/b"
               exchangeRateAB={demicrofy(simulation.poolPrice)}
               formatExchangeRate={(ratio, direction) =>
                 direction === 'a/b'

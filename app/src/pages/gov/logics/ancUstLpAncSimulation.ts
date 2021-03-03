@@ -31,6 +31,11 @@ export function ancUstLpAncSimulation(
     bank.tax.maxTaxUUSD,
   ).plus(fixedGas) as uUST<Big>;
 
+  console.log('ancUstLpAncSimulation.ts..ancUstLpAncSimulation()', {
+    lpFromTx: lpFromTx.toFixed(),
+    lpShare: ancPrice.LPShare,
+  });
+
   return {
     poolPrice,
     lpFromTx,

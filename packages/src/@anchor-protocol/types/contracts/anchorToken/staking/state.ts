@@ -1,4 +1,4 @@
-import { uANC } from '@anchor-protocol/types/currencies';
+import { uAncUstLP } from '@anchor-protocol/types/currencies';
 import { Num } from '@anchor-protocol/types/units';
 
 /**
@@ -15,6 +15,6 @@ export interface State {
  */
 export interface StateResponse {
   last_distributed: number;
-  total_bond_amount: uANC;
+  total_bond_amount: uAncUstLP;
   global_reward_index: Num;
 }

@@ -33,6 +33,8 @@ export const dataMap = createMap<RawData, Data>({
       ancPrice.Result,
     );
 
+    console.log('ancPrice.ts..ancPrice()', { total_share });
+
     const ANCPoolSize = (assets[0].amount as unknown) as Num;
     const USTPoolSize = (assets[1].amount as unknown) as Num;
     const LPShare = (total_share as unknown) as Num;
