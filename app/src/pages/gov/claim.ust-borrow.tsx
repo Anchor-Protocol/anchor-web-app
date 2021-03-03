@@ -17,6 +17,7 @@ import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
 import { useService, useServiceConnectedMemo } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
+import { MINIMUM_CLAIM_BALANCE } from 'pages/gov/env';
 import { useClaimableUstBorrow } from 'pages/gov/queries/claimableUstBorrow';
 import { ustBorrowClaimOptions } from 'pages/gov/transactions/ustBorrowClaimOptions';
 import React, { useCallback, useMemo } from 'react';
@@ -113,7 +114,11 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
 
         <ActionButton
           className="proceed"
-          disabled={!serviceAvailable || !claiming || claiming.lte(0)}
+          disabled={
+            !serviceAvailable ||
+            !claiming ||
+            claiming.lte(MINIMUM_CLAIM_BALANCE)
+          }
           onClick={() => walletReady && proceed(walletReady)}
         >
           Claim

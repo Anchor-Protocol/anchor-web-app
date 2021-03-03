@@ -17,6 +17,7 @@ import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
 import { useService, useServiceConnectedMemo } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
+import { MINIMUM_CLAIM_BALANCE } from 'pages/gov/env';
 import { useClaimableAncUstLp } from 'pages/gov/queries/claimableAncUstLp';
 import { useClaimableUstBorrow } from 'pages/gov/queries/claimableUstBorrow';
 import { ancUstLpClaimOptions } from 'pages/gov/transactions/ancUstLpClaimOptions';
@@ -120,7 +121,11 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
 
         <ActionButton
           className="proceed"
-          disabled={!serviceAvailable || !claiming || claiming.lte(0)}
+          disabled={
+            !serviceAvailable ||
+            !claiming ||
+            claiming.lte(MINIMUM_CLAIM_BALANCE)
+          }
           onClick={() => walletReady && proceed(walletReady)}
         >
           Claim

@@ -155,7 +155,8 @@ function ClaimAllBase({ className }: ClaimAllProps) {
             !claimingLpStaingInfoPendingRewards ||
             !claimingBorrowerInfoPendingRewards ||
             !claiming ||
-            claiming.lte(0)
+            (claimingBorrowerInfoPendingRewards.lt(1) &&
+              claimingLpStaingInfoPendingRewards.lt(1))
           }
           onClick={() =>
             walletReady &&
@@ -163,8 +164,8 @@ function ClaimAllBase({ className }: ClaimAllProps) {
             claimingLpStaingInfoPendingRewards &&
             proceed(
               walletReady,
-              claimingBorrowerInfoPendingRewards.gt(0),
-              claimingLpStaingInfoPendingRewards.gt(0),
+              claimingBorrowerInfoPendingRewards.gte(1),
+              claimingLpStaingInfoPendingRewards.gte(1),
             )
           }
         >
