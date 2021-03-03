@@ -3,26 +3,23 @@ import {
   createOperationOptions,
   merge,
   OperationDependency,
-  OperationStop,
   timeout,
 } from '@anchor-protocol/broadcastable-operation';
 import { Token } from '@anchor-protocol/types';
-import { MsgExecuteContract, StdFee } from '@terra-money/terra.js';
+import { Coin, Dec, Int, Msg, MsgSend, StdFee } from '@terra-money/terra.js';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
-import { pickSwapResult } from 'pages/basset/transactions/pickSwapResult';
 import { CurrencyInfo } from 'pages/send/models/currency';
 import { createOptions } from 'transactions/createOptions';
 import { getTxInfo } from 'transactions/getTxInfo';
+import { pickEmptyResult } from 'transactions/pickEmptyResult';
 import { postContractMsg } from 'transactions/postContractMsg';
 import { parseTxResult } from 'transactions/tx';
 
 export const sendOptions = createOperationOptions({
-  id: 'earn/deposit',
+  id: 'send/send',
   pipe: ({
-    addressProvider,
     post,
     client,
-    storage,
     signal,
     gasFee,
     gasAdjustment,
@@ -38,7 +35,7 @@ export const sendOptions = createOperationOptions({
       toAddress: string;
       currency: CurrencyInfo;
       amount: Token;
-    }): MsgExecuteContract[] => {
+    }): Msg[] => {
       if (!!currency.cw20Address) {
         return fabricateCw20Transfer({
           amount,
@@ -47,9 +44,16 @@ export const sendOptions = createOperationOptions({
           recipient: toAddress,
         });
       } else {
-        throw new OperationStop();
+        return [
+          new MsgSend(myAddress, toAddress, [
+            new Coin(
+              `u${currency.value}`,
+              new Int(new Dec(amount).mul(1000000)).toString(),
+            ),
+          ]),
+        ];
       }
-    }, // -> MsgExecuteContract[]
+    }, // -> Msg[]
     createOptions(() => ({
       fee: new StdFee(gasFee, fixedGas + 'uusd'),
       gasAdjustment,
@@ -57,7 +61,7 @@ export const sendOptions = createOperationOptions({
     timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<StringifiedTxResult>
     parseTxResult, // -> TxResult
     merge(getTxInfo(client, signal), () => ({ fixedGas })), // -> { TxResult, TxInfo, fixedGas }
-    pickSwapResult, // -> TransactionResult
+    pickEmptyResult, // -> TransactionResult
   ],
   renderBroadcast: renderBroadcastTransaction,
   breakOnError: true,

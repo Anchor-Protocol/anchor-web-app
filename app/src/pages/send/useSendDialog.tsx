@@ -85,7 +85,7 @@ function ComponentBase({
     () => [
       {
         label: 'UST',
-        value: 'ust',
+        value: 'usd',
         integerPoints: UST_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: UST_INPUT_MAXIMUM_INTEGER_POINTS,
         getWithdrawable: (bank: Bank) => bank.userBalances.uUSD,

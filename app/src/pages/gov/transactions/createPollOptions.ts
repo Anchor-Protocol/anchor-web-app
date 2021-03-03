@@ -12,10 +12,10 @@ import {
 } from '@anchor-protocol/broadcastable-operation';
 import { Dec, Int, MsgExecuteContract, StdFee } from '@terra-money/terra.js';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
-import { pickCreatePollResult } from 'pages/gov/transactions/pickCreatePollResult';
 import { createContractMsg } from 'transactions/createContractMsg';
 import { createOptions } from 'transactions/createOptions';
 import { getTxInfo } from 'transactions/getTxInfo';
+import { pickEmptyResult } from 'transactions/pickEmptyResult';
 import { postContractMsg } from 'transactions/postContractMsg';
 import { injectTxFee, takeTxFee } from 'transactions/takeTxFee';
 import { parseTxResult } from 'transactions/tx';
@@ -43,7 +43,7 @@ export const createPollOptions = createOperationOptions({
       getTxInfo(client, signal), // -> { TxResult, TxInfo }
       injectTxFee(storage), // -> { txFee }
     ),
-    pickCreatePollResult, // -> TransactionResult
+    pickEmptyResult, // -> TransactionResult
   ],
   renderBroadcast: renderBroadcastTransaction,
   //breakOnError: true,
