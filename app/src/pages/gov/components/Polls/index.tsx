@@ -19,11 +19,10 @@ export interface PollsProps {
 
 interface Item {
   label: string;
-  value: anchorToken.gov.PollStatus | 'all';
+  value: anchorToken.gov.PollStatus;
 }
 
 const options: Item[] = [
-  { label: 'All', value: 'all' },
   { label: 'In Progress', value: 'in_progress' },
   { label: 'Executed', value: 'executed' },
   { label: 'Passed', value: 'passed' },
@@ -33,13 +32,11 @@ const options: Item[] = [
 function PollsBase({ className }: PollsProps) {
   const history = useHistory();
 
-  const [option, setOption] = useState<anchorToken.gov.PollStatus | 'all'>(
+  const [option, setOption] = useState<anchorToken.gov.PollStatus>(
     () => options[0].value,
   );
 
-  const [polls, loadMorePolls] = usePolls(
-    option === 'all' ? undefined : option,
-  );
+  const [polls, loadMorePolls] = usePolls(option);
 
   const {
     data: { govConfig },
@@ -82,7 +79,7 @@ function PollsBase({ className }: PollsProps) {
           value={option}
           style={{ width: 150, height: 40, marginLeft: 10 }}
           onChange={({ target }: ChangeEvent<HTMLSelectElement>) =>
-            setOption(target.value as anchorToken.gov.PollStatus | 'all')
+            setOption(target.value as anchorToken.gov.PollStatus)
           }
         >
           {options.map(({ label, value }) => (
