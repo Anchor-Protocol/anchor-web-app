@@ -1,13 +1,12 @@
 import { max, min } from '@anchor-protocol/big-math';
-import { microfy } from '@anchor-protocol/notation';
+import { demicrofy, microfy } from '@anchor-protocol/notation';
 import {
-  ANC,
   anchorToken,
   AncUstLP,
   cw20,
   Rate,
+  uANC,
   uAncUstLP,
-  UST,
   uUST,
 } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
@@ -27,37 +26,38 @@ export function ancUstLpLpSimulation(
     throw new Error(`Can't not be lpAmount is empty string`);
   }
 
-  const ancAmount = big(ancPrice.ANCPoolSize)
-    .mul(lpAmount)
-    .div(ancPrice.LPShare) as ANC<Big>;
-  const ustAmount = big(ancPrice.USTPoolSize)
-    .mul(lpAmount)
-    .div(ancPrice.LPShare) as UST<Big>;
+  const lp = microfy(lpAmount);
+
+  const anc = big(ancPrice.ANCPoolSize)
+    .mul(lp)
+    .div(ancPrice.LPShare) as uANC<Big>;
+
+  const ust = big(ancPrice.USTPoolSize)
+    .mul(lp)
+    .div(ancPrice.LPShare) as uUST<Big>;
 
   const poolPrice = microfy(ancPrice.ANCPrice) as uUST<Big>;
+
   const lpFromTx = max(
     0,
-    big(userLpBalance.balance).minus(microfy(lpAmount)),
-  ) as AncUstLP<Big>;
+    big(userLpBalance.balance).minus(lp),
+  ) as uAncUstLP<Big>;
+
   const shareOfPool = lpFromTx.div(
     big(ancPrice.LPShare).plus(lpFromTx),
   ) as Rate<Big>;
-  const txFee = min(ustAmount.mul(bank.tax.taxRate), bank.tax.maxTaxUUSD).plus(
+
+  const txFee = min(ust.mul(bank.tax.taxRate), bank.tax.maxTaxUUSD).plus(
     fixedGas,
   ) as uUST<Big>;
 
-  console.log(
-    'ancUstLpLpSimulation.ts..ancUstLpLpSimulation()',
-    ustAmount.toFixed(),
-  );
-
   return {
     poolPrice,
-    lpFromTx,
+    lpFromTx: demicrofy(lpFromTx),
     shareOfPool,
     txFee,
 
-    ancAmount,
-    ustAmount,
+    ancAmount: demicrofy(anc),
+    ustAmount: demicrofy(ust),
   };
 }

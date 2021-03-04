@@ -21,18 +21,6 @@ export function ancUstLpUstSimulation(
 
   const poolPrice = microfy(ancPrice.ANCPrice) as uUST<Big>;
 
-  console.log(
-    JSON.stringify(
-      {
-        anc: anc.toFixed(),
-        ust: ust.toFixed(),
-        lpShare: ancPrice.LPShare,
-      },
-      null,
-      2,
-    ),
-  );
-
   const lpFromTx = min(
     anc.mul(ancPrice.LPShare).div(ancPrice.ANCPoolSize),
     ust.mul(ancPrice.LPShare).div(ancPrice.USTPoolSize),
@@ -45,18 +33,6 @@ export function ancUstLpUstSimulation(
   const txFee = min(ust.mul(bank.tax.taxRate), bank.tax.maxTaxUUSD).plus(
     fixedGas,
   ) as uUST<Big>;
-
-  console.log(
-    JSON.stringify(
-      {
-        lpFromTx: lpFromTx.toFixed(),
-        lpShare: ancPrice.LPShare,
-        shareOfPool: shareOfPool.toFixed(),
-      },
-      null,
-      2,
-    ),
-  );
 
   return {
     poolPrice,
