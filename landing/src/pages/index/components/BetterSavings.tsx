@@ -119,20 +119,21 @@ export const BetterSavings = styled(BetterSavingsBase)`
   overflow: hidden;
 
   > h2 {
-    text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.2), 1px 1px 1px #000;
-    color: #171717;
     font-size: clamp(80px, 10vw, 156px);
     font-weight: 900;
     text-align: center;
-    word-spacing: 1em;
     line-height: 1em;
+
+    text-shadow: rgb(255 255 255 / 50%) 0 -1px 2px, rgb(0 0 0) 1px 1px 1px;
+    color: rgb(47, 50, 46);
+    word-spacing: 1.4em;
   }
 
   > canvas {
     position: absolute;
     left: 50%;
     top: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-56%, -50%);
 
     transition: opacity 2s ease-out;
   }
