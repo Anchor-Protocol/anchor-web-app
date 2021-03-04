@@ -33,6 +33,7 @@ export interface ContractAddress {
     oracle: HumanAddr;
     /** addressProvider.interest() */
     interestModel: HumanAddr;
+    distributionModel: HumanAddr;
   };
   liquidation: {
     /** addressProvider.liquidation() */

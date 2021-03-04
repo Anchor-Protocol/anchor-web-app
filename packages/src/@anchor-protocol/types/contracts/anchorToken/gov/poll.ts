@@ -3,9 +3,11 @@ import {
   HumanAddr,
 } from '@anchor-protocol/types/contracts/common';
 import { uANC } from '@anchor-protocol/types/currencies';
+import { UpdateConfig as InterestModelUpdateConfig } from '../../moneyMarket/interestModel/updateConfig';
 import { UpdateConfig as MarketUpdateConfig } from '../../moneyMarket/market/updateConfig';
 import { UpdateConfig as OverseerUpdateConfig } from '../../moneyMarket/overseer/updateConfig';
 import { UpdateWhitelist as OverseerUpdateWhitelist } from '../../moneyMarket/overseer/updateWhitelist';
+import { UpdateConfig as DistributionModelUpdateConfig } from '../../moneyMarket/distributionModel/updateConfig';
 
 export type PollStatus = 'in_progress' | 'passed' | 'rejected' | 'executed';
 
@@ -18,7 +20,9 @@ export interface ExecuteMsg {
 export type PollMsg =
   | OverseerUpdateWhitelist
   | OverseerUpdateConfig
-  | MarketUpdateConfig;
+  | MarketUpdateConfig
+  | InterestModelUpdateConfig
+  | DistributionModelUpdateConfig;
 
 /**
  * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/anchor-token/gov#poll

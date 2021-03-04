@@ -50,6 +50,7 @@ export function createContractAddress(
       overseer: addressProvider.overseer('') as HumanAddr,
       oracle: addressProvider.oracle() as HumanAddr,
       interestModel: addressProvider.interest() as HumanAddr,
+      distributionModel: 'terra1qhducr784hs5dwy2aqf87m44qu2cq8uwa5dy99' as HumanAddr,
     },
     liquidation: {
       liquidationContract: addressProvider.liquidation() as HumanAddr,
