@@ -1,9 +1,21 @@
-import { uUST } from '@anchor-protocol/types';
-import { BigSource } from 'big.js';
+import { min } from '@anchor-protocol/big-math';
+import {
+  demicrofy,
+  formatANCWithPostfixUnits,
+  formatUSTWithPostfixUnits,
+} from '@anchor-protocol/notation';
+import { uANC, UST, uUST } from '@anchor-protocol/types';
+import big, { Big, BigSource } from 'big.js';
 import { TxHashLink } from 'components/TxHashLink';
+import { Bank } from 'contexts/bank';
 import { TxInfoParseError } from 'errors/TxInfoParseError';
 import { TransactionResult } from 'models/transaction';
-import { Data, pickEvent, pickRawLog } from 'queries/txInfos';
+import {
+  Data,
+  pickAttributeValueByKey,
+  pickEvent,
+  pickRawLog,
+} from 'queries/txInfos';
 import { createElement } from 'react';
 import { TxResult } from 'transactions/tx';
 
@@ -11,12 +23,14 @@ interface Params {
   txResult: TxResult;
   txInfo: Data;
   fixedGas: uUST<BigSource>;
+  bank: Bank;
 }
 
 export function pickBuyResult({
   txInfo,
   txResult,
   fixedGas,
+  bank,
 }: Params): TransactionResult {
   const rawLog = pickRawLog(txInfo, 0);
 
@@ -34,28 +48,65 @@ export function pickBuyResult({
     );
   }
 
-  console.log(
-    'pickBuyResult.tsx..pickBuyResult()',
-    JSON.stringify(fromContract, null, 2),
+  const return_amount = pickAttributeValueByKey<uANC>(
+    fromContract,
+    'return_amount',
+  );
+  const offer_amount = pickAttributeValueByKey<uUST>(
+    fromContract,
+    'offer_amount',
+  );
+  const spread_amount = pickAttributeValueByKey<uUST>(
+    fromContract,
+    'spread_amount',
+  );
+  const commission_amount = pickAttributeValueByKey<uUST>(
+    fromContract,
+    'commission_amount',
   );
 
-  //const bought = pickAttributeValue<uANC>(fromContract, 18);
-  //const paid = pickAttributeValue<uUST>(fromContract, 17);
-  //const pricePerANC = big(bought ?? 0).div(paid ?? 1) as uUST<Big>;
-  //const tradingFee = big(pickAttributeValue<uUST>(fromContract, 20) ?? 0).plus(
-  //  pickAttributeValue<uUST>(fromContract, 21) ?? 0,
-  //);
-  //
-  //const txFee = big(fixedGas).plus(paid ?? 0);
+  const pricePerANC =
+    return_amount && offer_amount
+      ? (big(return_amount).div(offer_amount) as UST<Big>)
+      : undefined;
+  const tradingFee =
+    spread_amount && commission_amount
+      ? (big(spread_amount).plus(commission_amount) as uUST<Big>)
+      : undefined;
+  const txFee = offer_amount
+    ? (big(fixedGas).plus(
+        min(big(offer_amount).mul(bank.tax.taxRate), bank.tax.maxTaxUUSD),
+      ) as uUST<Big>)
+    : undefined;
   const txHash = txResult.result.txhash;
 
   return {
     txInfo,
     txResult,
     details: [
+      return_amount && {
+        name: 'Bought',
+        value: formatANCWithPostfixUnits(demicrofy(return_amount)) + ' ANC',
+      },
+      offer_amount && {
+        name: 'Paid',
+        value: formatUSTWithPostfixUnits(demicrofy(offer_amount)) + ' UST',
+      },
+      pricePerANC && {
+        name: 'Price per ANC',
+        value: formatUSTWithPostfixUnits(pricePerANC) + ' UST',
+      },
+      tradingFee && {
+        name: 'Trading Fee',
+        value: formatUSTWithPostfixUnits(demicrofy(tradingFee)) + ' UST',
+      },
       {
         name: 'Tx Hash',
         value: createElement(TxHashLink, { txHash }),
+      },
+      txFee && {
+        name: 'Tx Fee',
+        value: formatUSTWithPostfixUnits(demicrofy(txFee)) + ' UST',
       },
     ],
   };

@@ -60,7 +60,9 @@ export function TradeBuy() {
 
   const address = useContractAddress();
 
-  const [buy, buyResult] = useOperation(buyOptions, {});
+  const bank = useBank();
+
+  const [buy, buyResult] = useOperation(buyOptions, { bank });
 
   const { onKeyPress: onUstInputKeyPress } = useRestrictedNumberInput({
     maxIntegerPoinsts: UST_INPUT_MAXIMUM_INTEGER_POINTS,
@@ -86,11 +88,6 @@ export function TradeBuy() {
     () => fromCurrencies[0],
   );
   const [toCurrency, setToCurrency] = useState<Item>(() => toCurrencies[0]);
-
-  // ---------------------------------------------
-  // queries
-  // ---------------------------------------------
-  const bank = useBank();
 
   // ---------------------------------------------
   // logics

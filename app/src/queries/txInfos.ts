@@ -106,3 +106,16 @@ export function pickAttributeValue<T extends string>(
   const attr = fromContract.attributes[index];
   return attr ? (attr.value as T) : undefined;
 }
+
+export function pickAttributeValueByKey<T extends string>(
+  fromContract: RawLogEvent,
+  key: string,
+  pick?: (attrs: RawLogAttribute[]) => RawLogAttribute,
+): T | undefined {
+  const attrs = fromContract.attributes.filter((attr) => key === attr.key);
+
+  if (attrs.length > 1) {
+    return (pick?.(attrs) ?? attrs[0])?.value as T | undefined;
+  }
+  return attrs[0]?.value as T | undefined;
+}

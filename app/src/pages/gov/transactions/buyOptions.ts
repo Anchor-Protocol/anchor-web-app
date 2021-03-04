@@ -20,6 +20,7 @@ import {
   StdFee,
 } from '@terra-money/terra.js';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
+import { Bank } from 'contexts/bank';
 import { pickBuyResult } from 'pages/gov/transactions/pickBuyResult';
 import { createContractMsg } from 'transactions/createContractMsg';
 import { createOptions } from 'transactions/createOptions';
@@ -38,7 +39,8 @@ export const buyOptions = createOperationOptions({
     fixedGas,
     gasFee,
     gasAdjustment,
-  }: OperationDependency<{}>) => [
+    bank,
+  }: OperationDependency<{ bank: Bank }>) => [
     fabricatebBuy, // Option -> ((AddressProvider) -> MsgExecuteContract[])
     createContractMsg(addressProvider), // -> MsgExecuteContract[]
     createOptions(() => ({
@@ -47,7 +49,13 @@ export const buyOptions = createOperationOptions({
     })), // -> CreateTxOptions
     timeout(postContractMsg(post), 1000 * 60 * 20), // -> Promise<StringifiedTxResult>
     parseTxResult, // -> TxResult
-    merge(getTxInfo(client, signal), () => ({ fixedGas })), // -> { TxResult, TxInfo, fixedGas }
+    merge(
+      getTxInfo(client, signal), // -> { TxResult, TxInfo }
+      () => ({
+        fixedGas,
+        bank,
+      }), // -> { fixedGas }
+    ),
     pickBuyResult, // -> TransactionResult
   ],
   renderBroadcast: renderBroadcastTransaction,
