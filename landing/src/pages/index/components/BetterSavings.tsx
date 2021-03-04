@@ -91,7 +91,9 @@ function BetterSavingsBase({
 
   return (
     <section className={className} style={{ height }}>
-      <h2 className="title">Better Savings</h2>
+      <h2 className="title">
+        <span>Better</span> <span>Savings</span>
+      </h2>
       <canvas
         ref={canvasRef}
         width={graphicsSize * 2}
