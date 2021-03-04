@@ -4,6 +4,7 @@ import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeS
 import { anchorToken } from '@anchor-protocol/types/contracts';
 import { useLocalStorage } from '@anchor-protocol/use-local-storage';
 import { List, ViewModule } from '@material-ui/icons';
+import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
 import { govPathname } from 'pages/gov/env';
 import { useGovConfig } from 'pages/gov/queries/govConfig';
 import { usePolls } from 'pages/gov/queries/polls';
@@ -23,10 +24,10 @@ interface Item {
 }
 
 const options: Item[] = [
-  { label: 'In Progress', value: 'in_progress' },
-  { label: 'Executed', value: 'executed' },
-  { label: 'Passed', value: 'passed' },
-  { label: 'Rejected', value: 'rejected' },
+  { label: pollStatusLabels['in_progress'], value: 'in_progress' },
+  { label: pollStatusLabels['executed'], value: 'executed' },
+  { label: pollStatusLabels['passed'], value: 'passed' },
+  { label: pollStatusLabels['rejected'], value: 'rejected' },
 ];
 
 function PollsBase({ className }: PollsProps) {

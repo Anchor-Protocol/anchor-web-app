@@ -8,7 +8,7 @@ export interface PollDetail {
   vote: {
     yes: number;
     no: number;
-    possibleVotes: number;
+    total: number;
     threshold: number;
   };
 
@@ -26,7 +26,7 @@ export function extractPollDetail(
 ): PollDetail {
   const possibleVotes: number = poll.total_balance_at_end_poll
     ? +poll.total_balance_at_end_poll
-    : 1;
+    : big(poll.yes_votes).plus(poll.no_votes).toNumber();
   const yes: number = +poll.yes_votes;
   const no: number = +poll.no_votes;
 
@@ -58,7 +58,7 @@ export function extractPollDetail(
     vote: {
       yes,
       no,
-      possibleVotes,
+      total: possibleVotes,
       threshold: big(yes + no)
         .mul(govConfig.threshold)
         .toNumber(),

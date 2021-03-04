@@ -1,7 +1,6 @@
 import { floor } from '@anchor-protocol/big-math';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { HorizontalHeavyRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalHeavyRuler';
-import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/components/HorizontalScrollTable';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import {
@@ -17,9 +16,12 @@ import { Schedule } from '@material-ui/icons';
 import big from 'big.js';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { DescriptionGrid } from 'pages/gov/components/DescriptionGrid';
+import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
 import { PollGraph } from 'pages/gov/components/Polls/PollGraph';
+import { PollVoters } from 'pages/gov/components/PollVoters';
 import { usePollVoteDialog } from 'pages/gov/components/usePollVoteDialog';
 import { extractPollDetail } from 'pages/gov/logics/extractPollDetail';
+import { useCanIVote } from 'pages/gov/queries/canIVote';
 import { useGovConfig } from 'pages/gov/queries/govConfig';
 import { usePoll } from 'pages/gov/queries/poll';
 import { useLastSyncedHeight } from 'queries/lastSyncedHeight';
@@ -39,6 +41,8 @@ function PollDetailBase({ className, match }: PollDetailProps) {
   const {
     data: { govConfig },
   } = useGovConfig();
+
+  const canIVote = useCanIVote(poll?.id);
 
   const [openVoteDialog, voteDialogElement] = usePollVoteDialog();
 
@@ -64,10 +68,17 @@ function PollDetailBase({ className, match }: PollDetailProps) {
 
         <div className="content-title">
           <div>
-            <p>{pollDetail.poll.status}</p>
+            <p>{pollStatusLabels[pollDetail.poll.status]}</p>
             <h2>{pollDetail.poll.title}</h2>
           </div>
           <ActionButton
+            disabled={
+              !canIVote ||
+              !poll ||
+              !lastSyncedHeight ||
+              poll.status !== 'in_progress' ||
+              poll.end_height < lastSyncedHeight
+            }
             onClick={() => openVoteDialog({ pollId: +match.params.id })}
           >
             Vote
@@ -137,7 +148,7 @@ function PollDetailBase({ className, match }: PollDetailProps) {
         <h2>VOTE DETAILS</h2>
 
         <PollGraph
-          total={pollDetail.vote.possibleVotes}
+          total={pollDetail.vote.total}
           yes={pollDetail.vote.yes}
           no={pollDetail.vote.no}
           baseline={pollDetail.vote.threshold}
@@ -150,7 +161,7 @@ function PollDetailBase({ className, match }: PollDetailProps) {
             <p>
               {Math.floor(
                 ((pollDetail.vote.yes + pollDetail.vote.no) /
-                  pollDetail.vote.possibleVotes) *
+                  pollDetail.vote.total) *
                   100,
               )}
               %
@@ -163,61 +174,30 @@ function PollDetailBase({ className, match }: PollDetailProps) {
           <article data-vote="yes">
             <h4>YES</h4>
             <p>
-              {Math.floor(
-                (pollDetail.vote.yes / pollDetail.vote.possibleVotes) * 100,
-              )}
-              %
+              {Math.floor((pollDetail.vote.yes / pollDetail.vote.total) * 100)}%
             </p>
             <span>
-              <s>3.06 ANC</s>
+              {poll ? formatANCWithPostfixUnits(demicrofy(poll.yes_votes)) : 0}{' '}
+              ANC
             </span>
           </article>
 
           <article data-vote="no">
             <h4>NO</h4>
             <p>
-              {Math.floor(
-                (pollDetail.vote.no / pollDetail.vote.possibleVotes) * 100,
-              )}
-              %
+              {Math.floor((pollDetail.vote.no / pollDetail.vote.total) * 100)}%
             </p>
             <span>
-              <s>1,038 ANC</s>
+              {poll ? formatANCWithPostfixUnits(demicrofy(poll.no_votes)) : 0}{' '}
+              ANC
             </span>
           </article>
         </section>
 
-        <HorizontalScrollTable
-          minWidth={1200}
-          startPadding={20}
-          endPadding={20}
-        >
-          <colgroup>
-            <col style={{ width: 600 }} />
-            <col style={{ width: 100 }} />
-            <col style={{ width: 200 }} />
-          </colgroup>
-          <thead>
-            <tr>
-              <th>Voter</th>
-              <th style={{ textAlign: 'center' }}>Vote</th>
-              <th style={{ textAlign: 'right' }}>Balance</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Array.from({ length: 10 }, (_, i) => (
-              <tr key={'voter' + i}>
-                <td>
-                  <s>terra1s4acnl09edwnn8kcd5wc407qzde35gpdc6c9e8</s>
-                </td>
-                <td style={{ textAlign: 'center' }}>
-                  {Math.random() > 0.5 ? 'Yes' : 'No'}
-                </td>
-                <td style={{ textAlign: 'right' }}>8.032 ANC</td>
-              </tr>
-            ))}
-          </tbody>
-        </HorizontalScrollTable>
+        {poll &&
+          typeof lastSyncedHeight === 'number' &&
+          poll.status === 'in_progress' &&
+          poll.end_height > lastSyncedHeight && <PollVoters pollId={poll.id} />}
       </Section>
 
       {voteDialogElement}

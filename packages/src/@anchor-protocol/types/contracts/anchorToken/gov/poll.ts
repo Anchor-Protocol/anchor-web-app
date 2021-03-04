@@ -3,7 +3,6 @@ import {
   HumanAddr,
 } from '@anchor-protocol/types/contracts/common';
 import { uANC } from '@anchor-protocol/types/currencies';
-import { Num } from '@anchor-protocol/types/units';
 import { UpdateWhitelist } from '../../moneyMarket/overseer/updateWhitelist';
 
 export type PollStatus = 'in_progress' | 'passed' | 'rejected' | 'executed';
@@ -39,7 +38,7 @@ export interface PollResponse {
   deposit_amount: uANC;
   //execute_data?: ExecuteMsg[];
   execute_data?: Array<ExecuteMsg>;
-  yes_votes: Num;
-  no_votes: Num;
-  total_balance_at_end_poll: Num;
+  yes_votes: uANC;
+  no_votes: uANC;
+  total_balance_at_end_poll: uANC;
 }
