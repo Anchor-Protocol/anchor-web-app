@@ -3,6 +3,8 @@ import {
   Rect,
 } from '@anchor-protocol/neumorphism-ui/components/HorizontalGraphBar';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { formatRateToPercentage } from '@anchor-protocol/notation';
+import { Rate } from '@anchor-protocol/types';
 import React from 'react';
 import styled from 'styled-components';
 import { GraphTick } from './GraphTick';
@@ -19,6 +21,7 @@ export interface PollGraphProps {
   yes: number;
   no: number;
   baseline: number;
+  baselineLabel: string;
   displaySpans?: boolean;
 }
 
@@ -35,6 +38,7 @@ export function PollGraph({
   yes,
   no,
   baseline,
+  baselineLabel,
   displaySpans = true,
 }: PollGraphProps) {
   return (
@@ -44,19 +48,21 @@ export function PollGraph({
       data={[
         {
           position: 'vote',
-          label: `No ${Math.floor((no / total) * 100)}%`,
-          color: '#e95979',
+          label: `No ${formatRateToPercentage((no / total) as Rate<number>)}%`,
+          color: no > 0 ? '#e95979' : 'transparent',
           value: yes + no,
         },
         {
           position: 'vote',
-          label: `Yes ${Math.floor((yes / total) * 100)}%`,
+          label: `Yes ${formatRateToPercentage(
+            (yes / total) as Rate<number>,
+          )}%`,
           color: '#15cc93',
           value: yes,
         },
         {
           position: 'baseline',
-          label: 'Pass Threshold',
+          label: baselineLabel,
           color: 'transparent',
           value: baseline,
         },
@@ -67,16 +73,17 @@ export function PollGraph({
     >
       {displaySpans && (
         <TotalVoteSpan>
-          <b>Voted</b> {Math.floor(((yes + no) / total) * 100)}%
+          <b>Voted</b>{' '}
+          {formatRateToPercentage(((yes + no) / total) as Rate<number>)}%
         </TotalVoteSpan>
       )}
       {displaySpans && (
         <YesNoSpan>
           <span className="yes">
-            <b>Yes</b> {Math.floor((yes / total) * 100)}%
+            <b>Yes</b> {formatRateToPercentage((yes / total) as Rate<number>)}%
           </span>
           <span className="no">
-            <b>No</b> {Math.floor((no / total) * 100)}%
+            <b>No</b> {formatRateToPercentage((no / total) as Rate<number>)}%
           </span>
         </YesNoSpan>
       )}

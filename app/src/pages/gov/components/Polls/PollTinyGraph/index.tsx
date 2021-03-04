@@ -3,8 +3,10 @@ import {
   Rect,
 } from '@anchor-protocol/neumorphism-ui/components/HorizontalGraphBar';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { formatRateToPercentage } from '@anchor-protocol/notation';
+import { Rate } from '@anchor-protocol/types';
 import React from 'react';
-import styled, { useTheme } from 'styled-components';
+import styled from 'styled-components';
 import { GraphTick } from './GraphTick';
 
 export interface Data {
@@ -19,6 +21,7 @@ export interface PollGraphProps {
   yes: number;
   no: number;
   baseline: number;
+  baselineLabel: string;
 }
 
 const colorFunction = ({ color }: Data) => color;
@@ -29,9 +32,13 @@ const labelRenderer = ({ position, label, color }: Data, rect: Rect) => {
   ) : null;
 };
 
-export function PollTinyGraph({ total, yes, no, baseline }: PollGraphProps) {
-  const theme = useTheme();
-
+export function PollTinyGraph({
+  total,
+  yes,
+  no,
+  baseline,
+  baselineLabel,
+}: PollGraphProps) {
   return (
     <HorizontalGraphBar<Data>
       min={0}
@@ -41,20 +48,22 @@ export function PollTinyGraph({ total, yes, no, baseline }: PollGraphProps) {
       data={[
         {
           position: 'vote',
-          label: `No ${Math.floor((no / total) * 100)}%`,
-          color: '#e95979',
+          label: `No ${formatRateToPercentage((no / total) as Rate<number>)}%`,
+          color: no > 0 ? '#e95979' : 'transparent',
           value: yes + no,
         },
         {
           position: 'vote',
-          label: `Yes ${Math.floor((yes / total) * 100)}%`,
+          label: `Yes ${formatRateToPercentage(
+            (yes / total) as Rate<number>,
+          )}%`,
           color: '#15cc93',
           value: yes,
         },
         {
           position: 'baseline',
-          label: 'Pass Threshold',
-          color: theme.dimTextColor,
+          label: baselineLabel,
+          color: 'transparent',
           value: baseline,
         },
       ]}
@@ -62,13 +71,15 @@ export function PollTinyGraph({ total, yes, no, baseline }: PollGraphProps) {
       valueFunction={valueFunction}
       labelRenderer={labelRenderer}
     >
-      <TotalVoteSpan>{Math.floor(((yes + no) / total) * 100)}%</TotalVoteSpan>
+      <TotalVoteSpan>
+        {formatRateToPercentage(((yes + no) / total) as Rate<number>)}%
+      </TotalVoteSpan>
       <YesNoSpan>
         <span className="yes">
-          <b>Yes</b> {Math.floor((yes / total) * 100)}%
+          <b>Yes</b> {formatRateToPercentage((yes / total) as Rate<number>)}%
         </span>
         <span className="no">
-          <b>No</b> {Math.floor((no / total) * 100)}%
+          <b>No</b> {formatRateToPercentage((no / total) as Rate<number>)}%
         </span>
       </YesNoSpan>
     </HorizontalGraphBar>

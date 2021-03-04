@@ -6,8 +6,8 @@ import { useLocalStorage } from '@anchor-protocol/use-local-storage';
 import { List, ViewModule } from '@material-ui/icons';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
 import { govPathname } from 'pages/gov/env';
-import { useGovConfig } from 'pages/gov/queries/govConfig';
 import { usePolls } from 'pages/gov/queries/polls';
+import { useTotalStaked } from 'pages/gov/queries/totalStaked';
 import { ChangeEvent, useCallback, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
@@ -40,8 +40,8 @@ function PollsBase({ className }: PollsProps) {
   const [polls, loadMorePolls] = usePolls(option);
 
   const {
-    data: { govConfig },
-  } = useGovConfig();
+    data: { govANCBalance, govState, govConfig },
+  } = useTotalStaked();
 
   const [view, setView] = useLocalStorage<'grid' | 'list'>(
     '__anchor_polls_view__',
@@ -110,6 +110,8 @@ function PollsBase({ className }: PollsProps) {
           polls={polls}
           onClick={onPollClick}
           onLoadMore={loadMorePolls}
+          govANCBalance={govANCBalance}
+          govState={govState}
           govConfig={govConfig}
         />
       ) : (
@@ -117,6 +119,8 @@ function PollsBase({ className }: PollsProps) {
           polls={polls}
           onClick={onPollClick}
           onLoadMore={loadMorePolls}
+          govANCBalance={govANCBalance}
+          govState={govState}
           govConfig={govConfig}
         />
       )}

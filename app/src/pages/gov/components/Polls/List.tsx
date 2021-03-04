@@ -17,6 +17,8 @@ export interface ListProps extends PollList {
 function ListBase({
   className,
   polls,
+  govANCBalance,
+  govState,
   govConfig,
   onClick,
   onLoadMore,
@@ -24,12 +26,18 @@ function ListBase({
   const { data: lastSyncedHeight } = useLastSyncedHeight();
 
   const pollDetails = useMemo(() => {
-    return govConfig && lastSyncedHeight
+    return govANCBalance && govState && govConfig && lastSyncedHeight
       ? polls.map((poll) =>
-          extractPollDetail(poll, govConfig, lastSyncedHeight),
+          extractPollDetail(
+            poll,
+            govANCBalance,
+            govState,
+            govConfig,
+            lastSyncedHeight,
+          ),
         )
       : [];
-  }, [govConfig, lastSyncedHeight, polls]);
+  }, [govANCBalance, govConfig, govState, lastSyncedHeight, polls]);
 
   return (
     <Section className={className}>
@@ -53,7 +61,7 @@ function ListBase({
           </tr>
         </thead>
         <tbody>
-          {pollDetails.map(({ poll, vote, type, endsIn }) => (
+          {pollDetails.map(({ poll, vote, type, baseline, endsIn }) => (
             <tr key={'list' + poll.id} onClick={() => onClick(poll)}>
               <td>{poll.id}</td>
               <td>{type}</td>
@@ -64,7 +72,8 @@ function ListBase({
                   total={vote.total}
                   yes={vote.yes}
                   no={vote.no}
-                  baseline={vote.threshold}
+                  baseline={baseline.value}
+                  baselineLabel={baseline.label}
                 />
               </td>
               <td>

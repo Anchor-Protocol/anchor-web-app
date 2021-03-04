@@ -36,9 +36,9 @@ export interface PollResponse {
   description: string;
   link?: string;
   deposit_amount: uANC;
-  //execute_data?: ExecuteMsg[];
   execute_data?: Array<ExecuteMsg>;
   yes_votes: uANC;
   no_votes: uANC;
+  staked_amount?: uANC;
   total_balance_at_end_poll: uANC;
 }

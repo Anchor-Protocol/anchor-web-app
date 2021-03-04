@@ -1,4 +1,3 @@
-import { floor } from '@anchor-protocol/big-math';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { HorizontalHeavyRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalHeavyRuler';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
@@ -6,14 +5,15 @@ import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import {
   demicrofy,
   formatANCWithPostfixUnits,
+  formatRateToPercentage,
 } from '@anchor-protocol/notation';
 import {
   rulerLightColor,
   rulerShadowColor,
 } from '@anchor-protocol/styled-neumorphism';
+import { Rate } from '@anchor-protocol/types';
 import { TimeEnd } from '@anchor-protocol/use-time-end';
 import { Schedule } from '@material-ui/icons';
-import big from 'big.js';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { DescriptionGrid } from 'pages/gov/components/DescriptionGrid';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
@@ -22,8 +22,8 @@ import { PollVoters } from 'pages/gov/components/PollVoters';
 import { usePollVoteDialog } from 'pages/gov/components/usePollVoteDialog';
 import { extractPollDetail } from 'pages/gov/logics/extractPollDetail';
 import { useCanIVote } from 'pages/gov/queries/canIVote';
-import { useGovConfig } from 'pages/gov/queries/govConfig';
 import { usePoll } from 'pages/gov/queries/poll';
+import { useTotalStaked } from 'pages/gov/queries/totalStaked';
 import { useLastSyncedHeight } from 'queries/lastSyncedHeight';
 import { useMemo } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
@@ -39,8 +39,8 @@ function PollDetailBase({ className, match }: PollDetailProps) {
   } = usePoll(+match.params.id);
 
   const {
-    data: { govConfig },
-  } = useGovConfig();
+    data: { govANCBalance, govState, govConfig },
+  } = useTotalStaked();
 
   const canIVote = useCanIVote(poll?.id);
 
@@ -49,10 +49,16 @@ function PollDetailBase({ className, match }: PollDetailProps) {
   const { data: lastSyncedHeight } = useLastSyncedHeight();
 
   const pollDetail = useMemo(() => {
-    return poll && govConfig && lastSyncedHeight
-      ? extractPollDetail(poll, govConfig, lastSyncedHeight)
+    return poll && govANCBalance && govState && govConfig && lastSyncedHeight
+      ? extractPollDetail(
+          poll,
+          govANCBalance,
+          govState,
+          govConfig,
+          lastSyncedHeight,
+        )
       : undefined;
-  }, [govConfig, lastSyncedHeight, poll]);
+  }, [govANCBalance, govConfig, govState, lastSyncedHeight, poll]);
 
   if (!pollDetail) {
     return null;
@@ -151,7 +157,8 @@ function PollDetailBase({ className, match }: PollDetailProps) {
           total={pollDetail.vote.total}
           yes={pollDetail.vote.yes}
           no={pollDetail.vote.no}
-          baseline={pollDetail.vote.threshold}
+          baseline={pollDetail.baseline.value}
+          baselineLabel={pollDetail.baseline.label}
           displaySpans={false}
         />
 
@@ -159,22 +166,24 @@ function PollDetailBase({ className, match }: PollDetailProps) {
           <article>
             <h4>VOTED</h4>
             <p>
-              {Math.floor(
+              {formatRateToPercentage(
                 ((pollDetail.vote.yes + pollDetail.vote.no) /
-                  pollDetail.vote.total) *
-                  100,
+                  pollDetail.vote.total) as Rate<number>,
               )}
               %
             </p>
             <span>
-              Quorum {floor(big(govConfig?.quorum ?? 0).mul(100)).toString()}%
+              Quorum {govConfig ? formatRateToPercentage(govConfig.quorum) : 0}%
             </span>
           </article>
 
           <article data-vote="yes">
             <h4>YES</h4>
             <p>
-              {Math.floor((pollDetail.vote.yes / pollDetail.vote.total) * 100)}%
+              {formatRateToPercentage(
+                (pollDetail.vote.yes / pollDetail.vote.total) as Rate<number>,
+              )}
+              %
             </p>
             <span>
               {poll ? formatANCWithPostfixUnits(demicrofy(poll.yes_votes)) : 0}{' '}
@@ -185,7 +194,10 @@ function PollDetailBase({ className, match }: PollDetailProps) {
           <article data-vote="no">
             <h4>NO</h4>
             <p>
-              {Math.floor((pollDetail.vote.no / pollDetail.vote.total) * 100)}%
+              {formatRateToPercentage(
+                (pollDetail.vote.no / pollDetail.vote.total) as Rate<number>,
+              )}
+              %
             </p>
             <span>
               {poll ? formatANCWithPostfixUnits(demicrofy(poll.no_votes)) : 0}{' '}

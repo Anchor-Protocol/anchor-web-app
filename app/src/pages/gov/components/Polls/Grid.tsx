@@ -18,6 +18,8 @@ export interface GridProps extends PollList {
 function GridBase({
   className,
   polls,
+  govANCBalance,
+  govState,
   govConfig,
   onClick,
   onLoadMore,
@@ -25,17 +27,23 @@ function GridBase({
   const { data: lastSyncedHeight } = useLastSyncedHeight();
 
   const pollDetails = useMemo(() => {
-    return govConfig && lastSyncedHeight
+    return govANCBalance && govState && govConfig && lastSyncedHeight
       ? polls.map((poll) =>
-          extractPollDetail(poll, govConfig, lastSyncedHeight),
+          extractPollDetail(
+            poll,
+            govANCBalance,
+            govState,
+            govConfig,
+            lastSyncedHeight,
+          ),
         )
       : [];
-  }, [govConfig, lastSyncedHeight, polls]);
+  }, [govANCBalance, govConfig, govState, lastSyncedHeight, polls]);
 
   return (
     <div className={className}>
       <div className="grid">
-        {pollDetails.map(({ poll, vote, type, endsIn }) => (
+        {pollDetails.map(({ poll, vote, type, baseline, endsIn }) => (
           <Section key={'grid' + poll.id} onClick={() => onClick(poll)}>
             <div className="poll-id">
               <span>ID: {poll.id}</span>
@@ -50,7 +58,8 @@ function GridBase({
               total={vote.total}
               yes={vote.yes}
               no={vote.no}
-              baseline={vote.threshold}
+              baseline={baseline.value}
+              baselineLabel={baseline.label}
             />
 
             <div className="poll-ends-in">

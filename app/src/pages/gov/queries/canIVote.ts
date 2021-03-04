@@ -20,7 +20,6 @@ export function useCanIVote(pollId: number | undefined): boolean {
       queryVoters(client, address, pollId, walletReady.walletAddress, 1).then(
         ({ data }) => {
           setCanIVote(!!data.voters && data.voters.voters.length > 0);
-          console.log('canIVote.ts..()', data);
         },
       );
     }
