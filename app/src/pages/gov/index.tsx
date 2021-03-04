@@ -1,7 +1,10 @@
 import { ClaimAll } from 'pages/gov/claim.all';
 import { ClaimAncUstLp } from 'pages/gov/claim.anc-ust-lp';
 import { ClaimUstBorrow } from 'pages/gov/claim.ust-borrow';
+import { PollCreateModifyANCDistribution } from 'pages/gov/poll.create.modify-anc-distribution';
+import { PollCreateModifyBorrowInterest } from 'pages/gov/poll.create.modify-borrow-interest';
 import { PollCreateModifyCollateralAttribute } from 'pages/gov/poll.create.modify-collateral-attribute';
+import { PollCreateModifyMarketParameters } from 'pages/gov/poll.create.modify-market-parameters';
 import { RewardsAncGovernance } from 'pages/gov/rewards.anc-governance';
 import { RewardsAncUstLp } from 'pages/gov/rewards.anc-ust-lp';
 import { Redirect, Route, Switch } from 'react-router-dom';
@@ -57,8 +60,23 @@ export function Governance() {
       />
 
       <Route
+        path={`/${govPathname}/poll/create/modify-anc-distribution`}
+        component={PollCreateModifyANCDistribution}
+      />
+
+      <Route
+        path={`/${govPathname}/poll/create/modify-borrow-interest`}
+        component={PollCreateModifyBorrowInterest}
+      />
+
+      <Route
         path={`/${govPathname}/poll/create/modify-collateral-attribute`}
         component={PollCreateModifyCollateralAttribute}
+      />
+
+      <Route
+        path={`/${govPathname}/poll/create/modify-market-parameters`}
+        component={PollCreateModifyMarketParameters}
       />
 
       <Route path={`/${govPathname}/poll/:id`} component={PollDetail} />

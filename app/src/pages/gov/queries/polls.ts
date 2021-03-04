@@ -19,6 +19,18 @@ export interface Data {
 
 export const dataMap = createMap<RawData, Data>({
   polls: (existing, { polls }) => {
+    //@ts-ignore
+    polls?.Result &&
+      console.log(
+        JSON.stringify(
+          JSON.parse(polls.Result).polls.map(({ execute_data, ...poll }) => ({
+            execute_data: execute_data.map(({ msg }) => atob(msg)),
+            ...poll,
+          })),
+          null,
+          2,
+        ),
+      );
     return parseResult(existing.polls, polls.Result);
   },
 });

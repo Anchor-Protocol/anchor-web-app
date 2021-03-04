@@ -57,8 +57,6 @@ export function extractPollDetail(
     gov: +govConfig.quorum,
   };
 
-  console.log('extractPollDetail.ts..extractPollDetail()', quorum);
-
   const baseline =
     quorum.current > quorum.gov
       ? {
