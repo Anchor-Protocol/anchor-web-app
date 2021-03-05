@@ -73,8 +73,8 @@ export const dataMap = createMap<RawData, Data>({
   uAncUstLP: (_, { uAncUstLPBalance }) => {
     return JSON.parse(uAncUstLPBalance.Result).balance as uAncUstLP;
   },
-  ubLunaLunaLP: (_, { ubLunaBalance }) => {
-    return JSON.parse(ubLunaBalance.Result).balance as ubLunaLunaLP;
+  ubLunaLunaLP: (_, { ubLunaLunaLPBalance }) => {
+    return JSON.parse(ubLunaLunaLPBalance.Result).balance as ubLunaLunaLP;
   },
 });
 

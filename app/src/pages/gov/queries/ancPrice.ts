@@ -36,7 +36,9 @@ export const dataMap = createMap<RawData, Data>({
     const ANCPoolSize = (assets[0].amount as unknown) as uANC;
     const USTPoolSize = (assets[1].amount as unknown) as uUST;
     const LPShare = (total_share as unknown) as uAncUstLP;
-    const ANCPrice = big(USTPoolSize).div(ANCPoolSize).toString() as UST;
+    const ANCPrice = big(USTPoolSize)
+      .div(+ANCPoolSize === 0 ? '1' : ANCPoolSize)
+      .toString() as UST;
 
     return {
       Result: ancPrice.Result,
