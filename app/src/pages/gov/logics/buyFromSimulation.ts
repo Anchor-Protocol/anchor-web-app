@@ -22,15 +22,13 @@ export function buyFromSimulation(
     .div(beliefPrice)
     .minus(tax);
   const rate = big(1).minus(maxSpread);
-  const minimumReceived = expectedAmount.mul(rate).toFixed() as uANC;
-  const swapFee = big(simulation.commission_amount)
-    .plus(simulation.spread_amount)
-    .toFixed() as uANC;
 
   return {
     ...simulation,
-    minimumReceived,
-    swapFee,
+    minimumReceived: expectedAmount.mul(rate).toFixed() as uANC,
+    swapFee: big(simulation.commission_amount)
+      .plus(simulation.spread_amount)
+      .toFixed() as uANC,
     beliefPrice: beliefPrice.toFixed() as Rate,
     maxSpread: maxSpread.toString() as Rate,
 

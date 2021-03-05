@@ -56,11 +56,11 @@ export function pickBuyResult({
     fromContract,
     'offer_amount',
   );
-  const spread_amount = pickAttributeValueByKey<uUST>(
+  const spread_amount = pickAttributeValueByKey<uANC>(
     fromContract,
     'spread_amount',
   );
-  const commission_amount = pickAttributeValueByKey<uUST>(
+  const commission_amount = pickAttributeValueByKey<uANC>(
     fromContract,
     'commission_amount',
   );
@@ -71,7 +71,7 @@ export function pickBuyResult({
       : undefined;
   const tradingFee =
     spread_amount && commission_amount
-      ? (big(spread_amount).plus(commission_amount) as uUST<Big>)
+      ? (big(spread_amount).plus(commission_amount) as uANC<Big>)
       : undefined;
   const txFee = offer_amount
     ? (big(fixedGas).plus(
@@ -93,12 +93,12 @@ export function pickBuyResult({
         value: formatUSTWithPostfixUnits(demicrofy(offer_amount)) + ' UST',
       },
       pricePerANC && {
-        name: 'Price per ANC',
+        name: 'Paid/Bought',
         value: formatUSTWithPostfixUnits(pricePerANC) + ' UST',
       },
       tradingFee && {
         name: 'Trading Fee',
-        value: formatUSTWithPostfixUnits(demicrofy(tradingFee)) + ' UST',
+        value: formatANCWithPostfixUnits(demicrofy(tradingFee)) + ' ANC',
       },
       {
         name: 'Tx Hash',

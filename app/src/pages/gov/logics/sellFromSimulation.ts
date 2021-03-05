@@ -33,6 +33,6 @@ export function sellFromSimulation(
     maxSpread: maxSpread.toString() as Rate,
 
     txFee: tax.plus(fixedGas).toFixed() as uUST,
-    fromAmount: big(amount).mul(beliefPrice).toString() as uANC,
+    fromAmount: big(simulation.return_amount).toString() as uANC,
   };
 }
