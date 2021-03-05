@@ -65,6 +65,12 @@ function PollDetailBase({ className, match }: PollDetailProps) {
     return null;
   }
 
+  console.log('poll.detail.tsx..PollDetailBase()', {
+    canIVote,
+    poll,
+    lastSyncedHeight,
+  });
+
   return (
     <PaddedLayout className={className}>
       <Section className="content">

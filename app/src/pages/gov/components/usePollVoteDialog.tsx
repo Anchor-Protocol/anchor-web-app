@@ -115,6 +115,14 @@ function ComponentBase({
       <Dialog className={className} onClose={() => closeDialog()}>
         <h1>Vote</h1>
 
+        <MessageBox
+          level="info"
+          hide={{ id: 'vote', period: 1000 * 60 * 60 * 24 * 7 }}
+        >
+          Vote cannot be changed after submission. Staked ANC used to vote in
+          polls are locked and cannot be withdrawn until the poll finishes.
+        </MessageBox>
+
         {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
 
         <ul className="vote">

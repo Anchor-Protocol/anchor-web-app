@@ -77,7 +77,9 @@ export function extractPollDetail(
   let msg: PollMsg | null = null;
 
   if (Array.isArray(poll.execute_data)) {
-    msg = JSON.parse(atob(poll.execute_data[0].msg));
+    msg = poll.execute_data[0]
+      ? JSON.parse(atob(poll.execute_data[0].msg))
+      : null;
   }
 
   let type: string = 'TEXT';

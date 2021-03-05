@@ -19,7 +19,7 @@ export function useCanIVote(pollId: number | undefined): boolean {
     if (typeof pollId === 'number' && walletReady) {
       queryVoters(client, address, pollId, walletReady.walletAddress, 1).then(
         ({ data }) => {
-          setCanIVote(!!data.voters && data.voters.voters.length > 0);
+          setCanIVote(!!data.voters && data.voters.voters.length === 0);
         },
       );
     }
