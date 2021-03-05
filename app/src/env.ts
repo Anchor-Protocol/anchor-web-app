@@ -1,3 +1,4 @@
+import { AddressMap } from '@anchor-protocol/anchor.js';
 import type { Rate } from '@anchor-protocol/types';
 
 export const screen = {
@@ -43,7 +44,7 @@ export const defaultNetwork = onProduction
 /**
  * @deprecated will remove
  */
-export const contractAddresses = {
+export const contractAddresses: AddressMap = {
   bLunaHub: 'terra1qpeapgucdd9v3dns8j60um94r5rnegyp8fp9rr',
   blunaToken: 'terra1pm4d64dlngwuxh8a2rmkx56lrgq795vx4g0u9g',
   blunaReward: 'terra12zznxh59l8e2fl8duf2agxyngvv4vayh523l0j',
