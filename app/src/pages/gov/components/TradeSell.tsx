@@ -87,7 +87,7 @@ export function TradeSell() {
   const [toAmount, setToAmount] = useState<UST>('' as UST);
 
   const [resolveSimulation, simulation] = useResolveLast<
-    TradeSimulation<uUST, uANC> | undefined | null
+    TradeSimulation<uUST, uANC, uANC> | undefined | null
   >(() => null);
 
   const [fromCurrency, setFromCurrency] = useState<Item>(
@@ -181,7 +181,7 @@ export function TradeSell() {
             ).then(({ data: { simulation } }) =>
               simulation
                 ? sellToSimulation(
-                    simulation as terraswap.SimulationResponse<uUST>,
+                    simulation as terraswap.SimulationResponse<uUST, uANC>,
                     amount,
                     bank.tax,
                     fixedGas,
@@ -223,7 +223,7 @@ export function TradeSell() {
             ).then(({ data: { simulation } }) =>
               simulation
                 ? sellFromSimulation(
-                    simulation as terraswap.SimulationResponse<uUST>,
+                    simulation as terraswap.SimulationResponse<uUST, uANC>,
                     amount,
                     bank.tax,
                     fixedGas,
