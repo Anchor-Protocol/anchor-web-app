@@ -19,6 +19,7 @@ import { DescriptionGrid } from 'pages/gov/components/DescriptionGrid';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
 import { PollGraph } from 'pages/gov/components/Polls/PollGraph';
 import { PollVoters } from 'pages/gov/components/PollVoters';
+import { PollStatusSpan } from 'pages/gov/components/PollStatusSpan';
 import { usePollVoteDialog } from 'pages/gov/components/usePollVoteDialog';
 import { extractPollDetail } from 'pages/gov/logics/extractPollDetail';
 import { useCanIVote } from 'pages/gov/queries/canIVote';
@@ -74,7 +75,14 @@ function PollDetailBase({ className, match }: PollDetailProps) {
 
         <div className="content-title">
           <div>
-            <p>{pollStatusLabels[pollDetail.poll.status]}</p>
+            <p>
+              <PollStatusSpan
+                status={pollDetail.poll.status}
+                endsIn={pollDetail.endsIn}
+              >
+                {pollStatusLabels[pollDetail.poll.status]}
+              </PollStatusSpan>
+            </p>
             <h2>{pollDetail.poll.title}</h2>
           </div>
           <ActionButton

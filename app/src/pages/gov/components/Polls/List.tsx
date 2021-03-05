@@ -3,6 +3,7 @@ import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/component
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { TimeEnd } from '@anchor-protocol/use-time-end';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
+import { PollStatusSpan } from 'pages/gov/components/PollStatusSpan';
 import { extractPollDetail } from 'pages/gov/logics/extractPollDetail';
 import { useLastSyncedHeight } from 'queries/lastSyncedHeight';
 import { useMemo } from 'react';
@@ -65,7 +66,11 @@ function ListBase({
             <tr key={'list' + poll.id} onClick={() => onClick(poll)}>
               <td>{poll.id}</td>
               <td>{type}</td>
-              <td>{pollStatusLabels[poll.status]}</td>
+              <td>
+                <PollStatusSpan status={poll.status} endsIn={endsIn}>
+                  {pollStatusLabels[poll.status]}
+                </PollStatusSpan>
+              </td>
               <td>{poll.title}</td>
               <td>
                 <PollTinyGraph

@@ -4,6 +4,7 @@ import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { TimeEnd } from '@anchor-protocol/use-time-end';
 import { Schedule } from '@material-ui/icons';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
+import { PollStatusSpan } from 'pages/gov/components/PollStatusSpan';
 import { extractPollDetail } from 'pages/gov/logics/extractPollDetail';
 import { useLastSyncedHeight } from 'queries/lastSyncedHeight';
 import { useMemo } from 'react';
@@ -50,7 +51,11 @@ function GridBase({
               <span>{type}</span>
             </div>
 
-            <div className="poll-status">{pollStatusLabels[poll.status]}</div>
+            <div className="poll-status">
+              <PollStatusSpan status={poll.status} endsIn={endsIn}>
+                {pollStatusLabels[poll.status]}
+              </PollStatusSpan>
+            </div>
 
             <h2>{poll.title}</h2>
 
