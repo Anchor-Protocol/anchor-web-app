@@ -24,6 +24,7 @@ import { validateTxFee } from 'logics/validateTxFee';
 import { FormLayout } from 'pages/gov/components/FormLayout';
 import { bytesHelperText } from 'pages/gov/logics/bytesHelperText';
 import { validateLinkAddress } from 'pages/gov/logics/validateLinkAddress';
+import { usePollConfig } from 'pages/gov/queries/pollConfig';
 import { createPollOptions } from 'pages/gov/transactions/createPollOptions';
 import React, {
   ChangeEvent,
@@ -75,6 +76,10 @@ export function PollCreateBase({
   // queries
   // ---------------------------------------------
   const bank = useBank();
+
+  const {
+    data: { pollConfig },
+  } = usePollConfig();
 
   // ---------------------------------------------
   // logics
@@ -211,7 +216,9 @@ export function PollCreateBase({
             endAdornment: <InputAdornment position="end">ANC</InputAdornment>,
             readOnly: true,
           }}
-          value={formatANC(amount)}
+          value={
+            pollConfig ? formatANC(demicrofy(pollConfig.proposal_deposit)) : '0'
+          }
         />
 
         <TxFeeList className="receipt">

@@ -68,7 +68,9 @@ export function TradeSell() {
 
   const address = useContractAddress();
 
-  const [sell, sellResult] = useOperation(sellOptions, {});
+  const bank = useBank();
+
+  const [sell, sellResult] = useOperation(sellOptions, { bank });
 
   const { onKeyPress: onUstInputKeyPress } = useRestrictedNumberInput({
     maxIntegerPoinsts: 5,
@@ -94,11 +96,6 @@ export function TradeSell() {
     () => fromCurrencies[0],
   );
   const [toCurrency, setToCurrency] = useState<Item>(() => toCurrencies[0]);
-
-  // ---------------------------------------------
-  // queries
-  // ---------------------------------------------
-  const bank = useBank();
 
   // ---------------------------------------------
   // logics
