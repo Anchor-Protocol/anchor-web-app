@@ -124,7 +124,7 @@ export function AncUstLpUnstake() {
       <div className="wallet" aria-invalid={!!invalidLpAmount}>
         <span>{invalidLpAmount}</span>
         <span>
-          Bonded ANC-UST LP Balance:{' '}
+          Balance:{' '}
           <span
             style={{
               textDecoration: 'underline',
