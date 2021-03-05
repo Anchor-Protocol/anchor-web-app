@@ -70,8 +70,6 @@ export function PollCreateBase({
 
   const [link, setLink] = useState<string>('');
 
-  const [amount] = useState<ANC>(() => '100' as ANC);
-
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
@@ -247,7 +245,15 @@ export function PollCreateBase({
             !!invalidLinkProtocol
           }
           onClick={() =>
-            walletReady && submit(walletReady, title, description, link, amount)
+            walletReady &&
+            pollConfig &&
+            submit(
+              walletReady,
+              title,
+              description,
+              link,
+              demicrofy(pollConfig.proposal_deposit).toString() as ANC,
+            )
           }
         >
           Submit
