@@ -6,21 +6,24 @@ import { TradeSimulation } from 'pages/gov/models/tradeSimulation';
 import { Data as TaxData } from 'queries/tax';
 
 export function buyFromSimulation(
-  simulation: terraswap.SimulationResponse<uANC>,
-  amount: uANC,
+  simulation: terraswap.SimulationResponse<uANC, uUST>,
+  toAmount: uANC,
   { taxRate, maxTaxUUSD }: TaxData,
   fixedGas: uUST<BigSource>,
-): TradeSimulation<uANC, uUST> {
-  const beliefPrice = big(amount).div(simulation.return_amount);
-  const maxSpread = 0.1;
+): TradeSimulation<uANC, uUST, uUST> {
+  const beliefPrice = big(simulation.return_amount).div(toAmount);
+
+  const maxSpread = 0.5;
 
   const tax = min(
     big(simulation.return_amount).mul(taxRate),
     maxTaxUUSD,
   ) as uUST<Big>;
+
   const expectedAmount = big(simulation.return_amount)
     .div(beliefPrice)
     .minus(tax);
+
   const rate = big(1).minus(maxSpread);
 
   return {
@@ -33,6 +36,6 @@ export function buyFromSimulation(
     maxSpread: maxSpread.toString() as Rate,
 
     txFee: tax.plus(fixedGas).toFixed() as uUST,
-    fromAmount: big(amount).div(beliefPrice).toString() as uUST,
+    fromAmount: big(simulation.return_amount).toString() as uUST,
   };
 }

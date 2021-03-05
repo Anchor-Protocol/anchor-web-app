@@ -13,7 +13,16 @@ import {
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { ANC, Rate, terraswap, uANC, UST, uUST } from '@anchor-protocol/types';
+import {
+  ANC,
+  Denom,
+  Rate,
+  terraswap,
+  uANC,
+  UST,
+  uToken,
+  uUST,
+} from '@anchor-protocol/types';
 import { useResolveLast } from '@anchor-protocol/use-resolve-last';
 import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
@@ -81,7 +90,7 @@ export function TradeBuy() {
   const [toAmount, setToAmount] = useState<ANC>('' as ANC);
 
   const [resolveSimulation, simulation] = useResolveLast<
-    TradeSimulation<uANC, uUST> | undefined | null
+    TradeSimulation<uANC, uUST, uToken> | undefined | null
   >(() => null);
 
   const [fromCurrency, setFromCurrency] = useState<Item>(
@@ -163,8 +172,8 @@ export function TradeBuy() {
               amount,
               address.terraswap.ancUstPair,
               {
-                token: {
-                  contract_addr: address.cw20.ANC,
+                native_token: {
+                  denom: 'uusd' as Denom,
                 },
               },
             ).then(({ data: { simulation } }) =>
@@ -212,7 +221,7 @@ export function TradeBuy() {
             ).then(({ data: { simulation } }) =>
               simulation
                 ? buyFromSimulation(
-                    simulation as terraswap.SimulationResponse<uANC>,
+                    simulation as terraswap.SimulationResponse<uANC, uUST>,
                     amount,
                     bank.tax,
                     fixedGas,
@@ -363,16 +372,16 @@ export function TradeBuy() {
         <TxFeeList className="receipt">
           <SwapListItem
             label="Price"
-            currencyA="ANC"
-            currencyB="UST"
+            currencyA="UST"
+            currencyB="ANC"
             exchangeRateAB={simulation.beliefPrice}
             initialDirection="a/b"
             formatExchangeRate={(price, direction) =>
               formatFluidDecimalPoints(
                 price,
                 direction === 'a/b'
-                  ? ANC_INPUT_MAXIMUM_DECIMAL_POINTS
-                  : UST_INPUT_MAXIMUM_DECIMAL_POINTS,
+                  ? UST_INPUT_MAXIMUM_DECIMAL_POINTS
+                  : ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
                 { delimiter: true },
               )
             }

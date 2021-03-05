@@ -22,8 +22,8 @@ export interface Simulation<T extends uToken> {
   };
 }
 
-export interface SimulationResponse<T extends uToken> {
+export interface SimulationResponse<T extends uToken, RT extends uToken = T> {
   commission_amount: T;
-  return_amount: T;
+  return_amount: RT;
   spread_amount: T;
 }

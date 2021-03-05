@@ -1,7 +1,10 @@
 import { Rate, terraswap, uToken, uUST } from '@anchor-protocol/types';
 
-export interface TradeSimulation<To extends uToken, From extends uToken>
-  extends terraswap.SimulationResponse<To> {
+export interface TradeSimulation<
+  To extends uToken,
+  From extends uToken,
+  R extends uToken = To
+> extends terraswap.SimulationResponse<To, R> {
   beliefPrice: Rate;
   maxSpread: Rate;
   minimumReceived: To;
