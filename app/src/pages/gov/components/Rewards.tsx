@@ -4,6 +4,7 @@ import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import {
   demicrofy,
   formatANCWithPostfixUnits,
+  formatLP,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { uUST } from '@anchor-protocol/types';
@@ -17,7 +18,7 @@ import {
   ustBorrowPathname,
 } from 'pages/gov/env';
 import { rewardsAncGovernanceStakable } from 'pages/gov/logics/rewardsAncGovernanceStakable';
-import { rewardsAncGovernanceWithdrawableAsset } from 'pages/gov/logics/rewardsAncGovernanceWithdrawableAsset';
+import { rewardsAncGovernanceStaked } from 'pages/gov/logics/rewardsAncGovernanceStaked';
 import { rewardsAncUstLpReward } from 'pages/gov/logics/rewardsAncUstLpReward';
 import { rewardsAncUstLpWithdrawableAnc } from 'pages/gov/logics/rewardsAncUstLpWithdrawableAnc';
 import { rewardsAncUstLpWithdrawableUst } from 'pages/gov/logics/rewardsAncUstLpWithdrawableUst';
@@ -78,12 +79,16 @@ export function RewardsBase({ className }: RewardsProps) {
     [ancPrice, userLPBalance],
   );
 
+  const ancUstLpStaked = useMemo(() => {
+    return userLPStakingInfo?.bond_amount;
+  }, [userLPStakingInfo?.bond_amount]);
+
   const ancUstLpReward = useMemo(() => {
     return rewardsAncUstLpReward(lpStakingState, userLPStakingInfo);
   }, [lpStakingState, userLPStakingInfo]);
 
-  const ancGovernanceWithdrawableAsset = useMemo(() => {
-    return rewardsAncGovernanceWithdrawableAsset(
+  const ancGovernanceStaked = useMemo(() => {
+    return rewardsAncGovernanceStaked(
       govANCBalance,
       govState,
       userGovStakingInfo,
@@ -130,7 +135,7 @@ export function RewardsBase({ className }: RewardsProps) {
         </h3>
 
         <HorizontalScrollTable
-          minWidth={1000}
+          minWidth={1200}
           startPadding={20}
           endPadding={20}
         >
@@ -146,7 +151,7 @@ export function RewardsBase({ className }: RewardsProps) {
             <tr>
               <th>Rewards Pool</th>
               <th>APY</th>
-              <th>Withdrawable Asset</th>
+              <th>Staked</th>
               <th>Stakable</th>
               <th>Reward</th>
               <th>Actions</th>
@@ -154,23 +159,28 @@ export function RewardsBase({ className }: RewardsProps) {
           </thead>
           <tbody>
             <tr>
-              <td>ANC-UST LP</td>
+              <td>
+                <p>ANC-UST LP</p>
+                <p style={{ fontSize: 12 }}>
+                  {ancUstLpWithdrawableAnc
+                    ? formatANCWithPostfixUnits(
+                        demicrofy(ancUstLpWithdrawableAnc),
+                      )
+                    : 0}{' '}
+                  ANC +{' '}
+                  {ancUstLpWithdrawableUst
+                    ? formatUSTWithPostfixUnits(
+                        demicrofy(ancUstLpWithdrawableUst),
+                      )
+                    : 0}{' '}
+                  UST
+                </p>
+              </td>
               <td>
                 <s>134.84%</s>
               </td>
               <td>
-                {ancUstLpWithdrawableAnc
-                  ? formatANCWithPostfixUnits(
-                      demicrofy(ancUstLpWithdrawableAnc),
-                    )
-                  : 0}{' '}
-                ANC +{' '}
-                {ancUstLpWithdrawableUst
-                  ? formatUSTWithPostfixUnits(
-                      demicrofy(ancUstLpWithdrawableUst),
-                    )
-                  : 0}{' '}
-                UST
+                {ancUstLpStaked ? formatLP(demicrofy(ancUstLpStaked)) : 0}
               </td>
               <td>
                 <s>0</s>
@@ -221,10 +231,8 @@ export function RewardsBase({ className }: RewardsProps) {
                 <s>134.84%</s>
               </td>
               <td>
-                {ancGovernanceWithdrawableAsset
-                  ? formatANCWithPostfixUnits(
-                      demicrofy(ancGovernanceWithdrawableAsset),
-                    )
+                {ancGovernanceStaked
+                  ? formatANCWithPostfixUnits(demicrofy(ancGovernanceStaked))
                   : 0}{' '}
                 ANC
               </td>

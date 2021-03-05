@@ -2,7 +2,7 @@ import type { uANC } from '@anchor-protocol/types';
 import { anchorToken, cw20 } from '@anchor-protocol/types';
 import big, { Big } from 'big.js';
 
-export function rewardsAncGovernanceWithdrawableAsset(
+export function rewardsAncGovernanceStaked(
   govANCBalance: cw20.BalanceResponse<uANC> | undefined,
   govState: anchorToken.gov.StateResponse | undefined,
   govStaker: anchorToken.gov.StakerResponse | undefined,
