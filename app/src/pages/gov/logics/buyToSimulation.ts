@@ -13,7 +13,7 @@ export function buyToSimulation(
 ): TradeSimulation<uANC, uUST> {
   const beliefPrice = big(fromAmount).div(simulation.return_amount);
 
-  const maxSpread = 0.05;
+  const maxSpread = 0.1;
 
   const tax = min(
     big(fromAmount).mul(beliefPrice).mul(taxRate),
