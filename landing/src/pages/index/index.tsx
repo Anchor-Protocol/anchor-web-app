@@ -3,7 +3,8 @@ import { isTouchDevice } from '@anchor-protocol/is-touch-device';
 import { landingMobileLayout } from 'env';
 import { FrictionlessAcess } from 'pages/index/components/FrictionlessAcess';
 import { Subscribe } from 'pages/index/components/Subscribe';
-import { useEffect } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
+import SmoothScroll from 'smooth-scroll';
 import styled from 'styled-components';
 import { BetterSavings } from './components/BetterSavings';
 import { BetterYield } from './components/BetterYield';
@@ -13,7 +14,12 @@ export interface IndexProps {
   className?: string;
 }
 
+const ANIMATION_OFFSET = 1000;
+
 function IndexBase({ className }: IndexProps) {
+  const scrollTarget = useRef<HTMLDivElement>(null);
+  const scroll = useMemo(() => new SmoothScroll(), []);
+
   useEffect(() => {
     let inScroll = false;
 
@@ -28,9 +34,8 @@ function IndexBase({ className }: IndexProps) {
           console.log('SCROLL TO NEXT PAGE!');
         }
 
-        window.scrollTo({
-          top: window.innerHeight,
-          behavior: 'smooth',
+        scroll.animateScroll(scrollTarget.current, undefined, {
+          easing: 'easeInOutCubic',
         });
 
         setTimeout(() => {
@@ -39,7 +44,7 @@ function IndexBase({ className }: IndexProps) {
           }
           window.removeEventListener('wheel', endPaging);
           inScroll = false;
-        }, 1200);
+        }, ANIMATION_OFFSET);
       }
     }
 
@@ -63,12 +68,12 @@ function IndexBase({ className }: IndexProps) {
       window.removeEventListener('scroll', startPaging);
       window.removeEventListener('wheel', endPaging);
     };
-  }, []);
+  }, [scroll]);
 
   return (
     <div className={className}>
       <BetterSavings disable3D={process.env.NODE_ENV === 'development'} />
-      <ResponsiveContainer>
+      <ResponsiveContainer ref={scrollTarget}>
         <BetterYield />
         <EasierIntegrations />
         <FrictionlessAcess />

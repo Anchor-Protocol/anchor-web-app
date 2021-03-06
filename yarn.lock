@@ -206,6 +206,7 @@ __metadata:
     "@types/react-dom": ^17.0.1
     "@types/react-responsive": ^8.0.2
     "@types/react-router-dom": ^5.1.7
+    "@types/smooth-scroll": ^16.1.0
     "@types/stats.js": ^0.17.0
     "@types/styled-components": ^5.1.7
     "@types/testing-library__jest-dom": ^5.9.5
@@ -236,6 +237,7 @@ __metadata:
     resize-observer-polyfill: ^1.5.1
     resl: ^1.0.3
     rocket-punch: ^2.4.1
+    smooth-scroll: ^16.1.3
     stats.js: ^0.17.0
     styled-components: ^5.2.1
     ts-node: ^9.1.1
@@ -4787,6 +4789,13 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: e6e6613c800aeda63e2331e753e8d21df1a2c9aa7a4bc71ed792a848e4811fc96e609759089355314a2318c76eff1f161499cd242044838ab1e6f56e463ebb9c
+  languageName: node
+  linkType: hard
+
+"@types/smooth-scroll@npm:^16.1.0":
+  version: 16.1.0
+  resolution: "@types/smooth-scroll@npm:16.1.0"
+  checksum: 0f74bcb344197f6f29950f9d7095f1777385506a18c935366619803c1ba3611234fe16ed66a0e962d60d943ad64a037af376fa071e7945e3c49959e4e88dc0f5
   languageName: node
   linkType: hard
 
@@ -19684,6 +19693,13 @@ resolve@^0.6.1:
     astral-regex: ^2.0.0
     is-fullwidth-code-point: ^3.0.0
   checksum: f411aa051802605c3dc8523edee42d39ef59d7c36e6bef6bf1e61d9d2a83894187f6af56911a43ec8e58b921996722d75b354a4c3050b924426ffd1b05da33f9
+  languageName: node
+  linkType: hard
+
+"smooth-scroll@npm:^16.1.3":
+  version: 16.1.3
+  resolution: "smooth-scroll@npm:16.1.3"
+  checksum: 9cbf582cfc2e779b2690338311828038c49ae265f20574adfa5e188b74a1ff3838eac23378b2ed2acdf9749a03db09c222ca2e561d44fdde127f0759d4665f11
   languageName: node
   linkType: hard
 
