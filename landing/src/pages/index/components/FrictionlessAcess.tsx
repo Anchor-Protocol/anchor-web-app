@@ -86,7 +86,7 @@ export const FrictionlessAcess = styled(FrictionlessAcessBase)`
 
   figure {
     width: 100%;
-    max-width: 1520px;
+    //max-width: 1520px;
     min-height: 242px;
 
     background-image: url('${devicePixelRatio > 1
@@ -115,13 +115,17 @@ export const FrictionlessAcess = styled(FrictionlessAcessBase)`
 
     figure {
       margin-bottom: min(85px, 10vw);
-      background-position: 60% 0;
+      background-position: 55% 0;
     }
   }
 
   @media (max-width: 600px) {
     article {
       font-size: 14px;
+    }
+
+    figure {
+      background-position: 53% 0;
     }
   }
 
