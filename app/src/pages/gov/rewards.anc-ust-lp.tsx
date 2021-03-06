@@ -222,7 +222,7 @@ export const RewardsAncUstLp = styled(RewardsAncUstLpBase)`
       color: ${({ theme }) => theme.dimTextColor};
 
       &[aria-invalid='true'] {
-        color: #f5356a;
+        color: ${({ theme }) => theme.colors.negative};
       }
     }
 

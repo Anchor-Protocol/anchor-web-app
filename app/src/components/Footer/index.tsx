@@ -77,7 +77,7 @@ export const Footer = styled(FooterBase)`
   }
 
   .point {
-    color: ${({ theme }) => theme.pointColor};
+    color: ${({ theme }) => theme.colors.positive};
   }
 
   a,

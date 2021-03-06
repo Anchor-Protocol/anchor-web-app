@@ -6,7 +6,7 @@ import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { formatRateToPercentage } from '@anchor-protocol/notation';
 import { Rate } from '@anchor-protocol/types';
 import React from 'react';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import { GraphTick } from './GraphTick';
 
 export interface Data {
@@ -39,6 +39,8 @@ export function PollTinyGraph({
   baseline,
   baselineLabel,
 }: PollGraphProps) {
+  const theme = useTheme();
+
   return (
     <HorizontalGraphBar<Data>
       min={0}
@@ -49,7 +51,7 @@ export function PollTinyGraph({
         {
           position: 'vote',
           label: `No ${formatRateToPercentage((no / total) as Rate<number>)}%`,
-          color: no > 0 ? '#e95979' : 'transparent',
+          color: no > 0 ? theme.colors.negative : 'transparent',
           value: yes + no,
         },
         {
@@ -57,7 +59,7 @@ export function PollTinyGraph({
           label: `Yes ${formatRateToPercentage(
             (yes / total) as Rate<number>,
           )}%`,
-          color: '#15cc93',
+          color: theme.colors.positive,
           value: yes,
         },
         {
@@ -100,11 +102,11 @@ const YesNoSpan = styled.span`
   font-size: 12px;
 
   .yes {
-    color: #15cc93;
+    color: ${({ theme }) => theme.colors.positive};
   }
 
   .no {
-    color: #e95979;
+    color: ${({ theme }) => theme.colors.negative};
     margin-left: 10px;
   }
 `;

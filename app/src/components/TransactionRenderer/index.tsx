@@ -101,11 +101,11 @@ const Layout = styled.section`
       }
 
       &[data-state='fault'] {
-        color: #e95979;
+        color: ${({ theme }) => theme.colors.negative};
       }
 
       &[data-state='done'] {
-        color: #15cc93;
+        color: ${({ theme }) => theme.colors.positive};
       }
 
       &[data-state='in-progress'] {

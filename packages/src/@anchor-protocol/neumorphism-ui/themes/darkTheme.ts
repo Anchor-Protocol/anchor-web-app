@@ -28,10 +28,15 @@ export const darkTheme: DefaultTheme = {
   textColor: '#ffffff',
   dimTextColor: 'rgba(255, 255, 255, 0.5)',
 
-  errorTextColor: '#ac2b45',
-  positiveTextColor: '#15cc93',
+  colors: {
+    positive: '#15cc93',
+    negative: '#e95979',
+    warning: '#ff9a63',
+  },
 
-  pointColor: '#15cc93',
+  //errorTextColor: '#ac2b45',
+  //positiveTextColor: '#15cc93',
+  //pointColor: '#15cc93',
 
   label: {
     backgroundColor: '#363c5f',

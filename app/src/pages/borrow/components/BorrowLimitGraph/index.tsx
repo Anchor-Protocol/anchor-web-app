@@ -14,6 +14,7 @@ import { Rate, uUST } from '@anchor-protocol/types';
 import { InfoOutlined } from '@material-ui/icons';
 import big, { Big, BigSource } from 'big.js';
 import React, { useMemo } from 'react';
+import { useTheme } from 'styled-components';
 import { GraphLabel } from './GraphLabel';
 import { GraphTick } from './GraphTick';
 
@@ -59,6 +60,8 @@ export function BorrowLimitGraph({
   collateralValue,
   loanAmount,
 }: BorrowLimitGraphProps) {
+  const theme = useTheme();
+
   const { borrowLimit, borrowLimitRate } = useMemo(() => {
     const borrowLimit = big(collateralValue).mul(bLunaMaxLtv) as uUST<Big>;
     return {
@@ -81,10 +84,10 @@ export function BorrowLimitGraph({
                 position: 'top',
                 label: `${formatRateToPercentage(borrowLimitRate)}%`,
                 color: borrowLimitRate.gte(1)
-                  ? '#e95979'
+                  ? theme.colors.negative
                   : borrowLimitRate.gte(0.7)
-                  ? '#ff9a63'
-                  : '#15cc93',
+                  ? theme.colors.warning
+                  : theme.colors.positive,
                 value: borrowLimitRate.toNumber(),
                 tooltip: borrowLimitRate.gte(1)
                   ? "Loan can be liquidated anytime upon another user's request. Repay loans with stablecoins or deposit more collateral to prevent liquidation."

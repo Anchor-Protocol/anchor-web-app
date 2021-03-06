@@ -214,18 +214,16 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                     </button>
 
                     {process.env.NODE_ENV === 'development' && (
-                      <button
-                        className="outlink"
-                        // @ts-ignore
-                        component="a"
+                      <a
                         href="https://faucet.terra.money/"
                         target="_blank"
+                        rel="noreferrer"
                       >
                         Go to Faucet{' '}
                         <i>
                           <KeyboardArrowRight />
                         </i>
-                      </button>
+                      </a>
                     )}
                   </div>
                 </section>
@@ -281,12 +279,12 @@ export const WalletConnectButton = styled(BorderButton)`
     }
   }
 
-  color: ${({ theme }) => theme.pointColor};
-  border-color: ${({ theme }) => theme.pointColor};
+  color: ${({ theme }) => theme.colors.positive};
+  border-color: ${({ theme }) => theme.colors.positive};
 
   &:hover {
-    color: ${({ theme }) => theme.pointColor};
-    border-color: ${({ theme }) => theme.pointColor};
+    color: ${({ theme }) => theme.colors.positive};
+    border-color: ${({ theme }) => theme.colors.positive};
   }
 `;
 
@@ -304,8 +302,8 @@ export const WalletButton = styled.button`
     }
   }
 
-  color: ${({ theme }) => theme.pointColor};
-  border: 1px solid ${({ theme }) => theme.pointColor};
+  color: ${({ theme }) => theme.colors.positive};
+  border: 1px solid ${({ theme }) => theme.colors.positive};
   outline: none;
   background-color: transparent;
 
@@ -334,7 +332,7 @@ export const WalletButton = styled.button`
   }
 
   &:hover {
-    border: 1px solid ${({ theme }) => theme.pointColor};
+    border: 1px solid ${({ theme }) => theme.colors.positive};
     background-color: rgba(255, 255, 255, 0.04);
   }
 `;
@@ -446,14 +444,15 @@ export const WalletDropdown = styled.div`
         width: 100%;
         height: 28px;
 
-        background-color: ${({ theme }) => theme.pointColor};
+        background-color: ${({ theme }) => theme.colors.positive};
       }
     }
 
     .outlink {
       text-align: center;
 
-      button {
+      button,
+      a {
         border: 0;
         outline: none;
         background-color: transparent;

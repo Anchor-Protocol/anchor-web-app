@@ -292,11 +292,11 @@ export const PollDetail = styled(PollDetailBase)`
         text-align: center;
 
         &[data-vote='yes'] {
-          color: #15cc93;
+          color: ${({ theme }) => theme.colors.positive};
         }
 
         &[data-vote='no'] {
-          color: #e95979;
+          color: ${({ theme }) => theme.colors.negative};
         }
 
         h4 {

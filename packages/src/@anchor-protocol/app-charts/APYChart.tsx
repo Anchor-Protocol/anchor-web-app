@@ -52,7 +52,7 @@ type ColorPalette = {
 
 const lightColorPalette: ColorPalette = {
   line: {
-    stroke: lightTheme.pointColor,
+    stroke: lightTheme.colors.positive,
     strokeWidth: 4,
   },
   pointing: {
@@ -73,7 +73,7 @@ const lightColorPalette: ColorPalette = {
 
 const darkColorPalette: ColorPalette = {
   line: {
-    stroke: darkTheme.pointColor,
+    stroke: darkTheme.colors.positive,
     strokeWidth: 4,
   },
   pointing: {

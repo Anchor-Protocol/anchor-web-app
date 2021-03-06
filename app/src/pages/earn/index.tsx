@@ -73,7 +73,7 @@ export const Earn = styled(EarnBase)`
       .value {
         font-size: 50px;
         font-weight: 300;
-        color: ${({ theme }) => theme.positiveTextColor};
+        color: ${({ theme }) => theme.colors.positive};
         margin-bottom: 50px;
       }
 

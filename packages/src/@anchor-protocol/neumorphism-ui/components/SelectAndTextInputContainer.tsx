@@ -178,11 +178,11 @@ export const SelectAndTextInputContainer = styled(
   }
 
   &[aria-invalid='true'] {
-    color: ${({ theme }) => theme.errorTextColor};
+    color: ${({ theme }) => theme.colors.negative};
 
     .MuiInputBase-input,
     .MuiInputBase-root {
-      color: ${({ theme }) => theme.errorTextColor};
+      color: ${({ theme }) => theme.colors.negative};
     }
   }
 `;

@@ -20,10 +20,16 @@ export const lightTheme: DefaultTheme = {
   textColor: '#1f1f1f',
   dimTextColor: '#999999',
 
-  errorTextColor: '#ef3158',
-  positiveTextColor: '#4BDB4B',
+  colors: {
+    positive: '#4BDB4B',
+    negative: '#e95979',
+    warning: '#ff9a63',
+  },
 
-  pointColor: '#4BDB4B',
+  //errorTextColor: '#e95979',
+  //positiveTextColor: '#4BDB4B',
+  //
+  //pointColor: '#4BDB4B',
 
   label: {
     backgroundColor: '#ffffff',

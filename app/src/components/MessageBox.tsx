@@ -54,7 +54,7 @@ const textColor = ({
   theme,
   level = defaultLevel,
 }: MessageBoxProps & ThemeProps<DefaultTheme>) =>
-  level === 'error' ? theme.errorTextColor : '#3e6788';
+  level === 'error' ? theme.colors.negative : '#3e6788';
 
 export const MessageBox = styled(MessageBoxBase)`
   border: 1px solid ${textColor};

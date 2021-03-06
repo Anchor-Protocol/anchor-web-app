@@ -31,10 +31,16 @@ export interface NeumorphismTheme extends Theme {
   textColor: string;
   dimTextColor: string;
 
-  errorTextColor: string;
-  positiveTextColor: string;
+  //errorTextColor: string;
+  //positiveTextColor: string;
+  //pointColor: string;
 
-  pointColor: string;
+  // level
+  colors: {
+    positive: string;
+    negative: string;
+    warning: string;
+  };
 
   // label
   label: {

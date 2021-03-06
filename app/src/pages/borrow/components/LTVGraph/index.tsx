@@ -10,6 +10,7 @@ import type { Rate } from '@anchor-protocol/types';
 import { InfoOutlined } from '@material-ui/icons';
 import big, { Big, BigSource } from 'big.js';
 import React, { useCallback, useMemo } from 'react';
+import { useTheme } from 'styled-components';
 import { GraphLabel } from './GraphLabel';
 import { GraphTick } from './GraphTick';
 
@@ -72,6 +73,8 @@ export function LTVGraph({
   onStep,
   disabled,
 }: LTVGraphProps) {
+  const theme = useTheme();
+
   const step = useCallback(
     (draftLtv: number) => {
       return onStep(big(draftLtv) as Rate<Big>).toNumber();
@@ -88,11 +91,18 @@ export function LTVGraph({
 
   const color = useMemo(() => {
     return nextLtv?.gte(maxLtv)
-      ? '#e95979'
+      ? theme.colors.negative
       : nextLtv?.gte(safeLtv)
-      ? '#ff9a63'
-      : '#15cc93';
-  }, [maxLtv, nextLtv, safeLtv]);
+      ? theme.colors.warning
+      : theme.colors.positive;
+  }, [
+    maxLtv,
+    nextLtv,
+    safeLtv,
+    theme.colors.negative,
+    theme.colors.positive,
+    theme.colors.warning,
+  ]);
 
   return (
     <HorizontalGraphBar<Data>

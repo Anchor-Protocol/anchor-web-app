@@ -157,7 +157,7 @@ export const Header = styled(HeaderBase)`
 
             position: absolute;
 
-            background-color: ${({ theme }) => theme.pointColor};
+            background-color: ${({ theme }) => theme.colors.positive};
 
             width: 1px;
             height: 18px;

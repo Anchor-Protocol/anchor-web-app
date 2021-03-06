@@ -327,15 +327,6 @@ export const Rewards = styled(RewardsBase)`
         text-align: center;
       }
 
-      //th:nth-child(5) {
-      //  text-align: right;
-      //}
-
-      //td:nth-child(5) {
-      //  color: #e95979;
-      //  text-align: right;
-      //}
-
       th:nth-child(6),
       td:nth-child(6) {
         text-align: right;

@@ -346,7 +346,7 @@ const Component = styled(ComponentBase)`
     font-weight: 300;
 
     p {
-      color: ${({ theme }) => theme.positiveTextColor};
+      color: ${({ theme }) => theme.colors.positive};
       font-size: 14px;
       margin-top: 10px;
     }
@@ -371,7 +371,7 @@ const Component = styled(ComponentBase)`
     color: ${({ theme }) => theme.dimTextColor};
 
     &[aria-invalid='true'] {
-      color: #f5356a;
+      color: ${({ theme }) => theme.colors.negative};
     }
 
     margin-bottom: 45px;
