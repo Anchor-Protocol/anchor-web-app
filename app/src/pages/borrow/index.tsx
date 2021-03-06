@@ -1,7 +1,3 @@
-import {
-  rulerLightColor,
-  rulerShadowColor,
-} from '@anchor-protocol/styled-neumorphism';
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { screen } from 'env';
@@ -78,25 +74,6 @@ export const Borrow = styled(BorrowBase)`
 
   .borrow {
     article {
-      text-align: center;
-
-      > div {
-        padding: 20px 0;
-
-        p:nth-child(2) {
-          margin-top: 18px;
-          font-weight: 300;
-          font-size: 40px;
-        }
-
-        p:nth-child(3) {
-          margin-top: 5px;
-          font-weight: 300;
-          font-size: 13px;
-          color: ${({ theme }) => theme.dimTextColor};
-        }
-      }
-
       margin-bottom: 80px;
     }
 
@@ -236,25 +213,11 @@ export const Borrow = styled(BorrowBase)`
       article {
         display: flex;
 
-        div {
+        > div {
           flex: 1;
 
-          &:not(:last-child) {
-            border-right: 1px solid
-              ${({ theme }) =>
-                rulerShadowColor({
-                  intensity: theme.intensity,
-                  color: theme.backgroundColor,
-                })};
-          }
-
           &:not(:first-child) {
-            border-left: 1px solid
-              ${({ theme }) =>
-                rulerLightColor({
-                  intensity: theme.intensity,
-                  color: theme.backgroundColor,
-                })};
+            margin-left: 18px;
           }
         }
       }
@@ -267,31 +230,11 @@ export const Borrow = styled(BorrowBase)`
         display: flex;
         flex-direction: column;
 
-        div {
+        > div {
           flex: 1;
 
-          &:not(:last-child) {
-            padding-bottom: 20px;
-            border-bottom: 1px solid
-              ${({ theme }) =>
-                rulerShadowColor({
-                  intensity: theme.intensity,
-                  color: theme.backgroundColor,
-                })};
-          }
-
           &:not(:first-child) {
-            padding-top: 20px;
-            border-top: 1px solid
-              ${({ theme }) =>
-                rulerLightColor({
-                  intensity: theme.intensity,
-                  color: theme.backgroundColor,
-                })};
-          }
-
-          p {
-            font-size: 48px;
+            margin-top: 18px;
           }
         }
       }

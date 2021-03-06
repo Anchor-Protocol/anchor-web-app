@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>icon_Collateral value</title>
+    <defs>
+        <polygon id="path-1" points="0 25.4128 24.097 25.4128 24.097 -0.0002 0 -0.0002"></polygon>
+    </defs>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="icon_Collateral-value">
+            <g transform="translate(2.000000, 1.000000)">
+                <path d="M14.9995,19.4088 L17.1405,19.4088 C18.8495,19.4318 20.2565,18.0708 20.2895,16.3618 L20.2895,12.6618" id="Stroke-1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M1.4595,6.8028 L12.4075,9.9138 C13.9255,10.4118 14.9635,11.8118 14.9995,13.4088 L14.9995,22.4188 C15.1055,23.5478 14.2765,24.5478 13.1485,24.6538 C12.8975,24.6778 12.6435,24.6548 12.3995,24.5858 L3.3515,22.1258 C1.8305,21.6528 0.7835,20.2608 0.7505,18.6688 L0.7505,8.7208 C0.7175,7.2098 1.9085,5.9538 3.4195,5.9088 L12.7895,5.9088" id="Stroke-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M8.9995,17.9088 C8.9995,18.7368 9.6715,19.4088 10.4995,19.4088 C11.3275,19.4088 11.9995,18.7368 11.9995,17.9088 C11.9995,17.0808 11.3275,16.4088 10.4995,16.4088 C9.6715,16.4088 8.9995,17.0808 8.9995,17.9088 Z" id="Stroke-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <g id="Clip-8"></g>
+                <polygon id="Stroke-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" mask="url(#mask-2)" points="15.847 9.7498 23.347 9.7498 23.347 3.7498 15.847 3.7498"></polygon>
+                <path d="M19.5972,6.3751 C19.3902,6.3751 19.2222,6.5431 19.2222,6.7501 C19.2222,6.9571 19.3902,7.1251 19.5972,7.1251 C19.8042,7.1251 19.9722,6.9571 19.9722,6.7501 C19.9722,6.5431 19.8042,6.3751 19.5972,6.3751" id="Stroke-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" mask="url(#mask-2)"></path>
+                <path d="M17.3472,3.7501 L17.3472,3.0001 C17.3472,1.7571 18.3542,0.7501 19.5972,0.7501 C20.8392,0.7501 21.8472,1.7571 21.8472,3.0001 L21.8472,3.7501" id="Stroke-10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" mask="url(#mask-2)"></path>
+            </g>
+        </g>
+    </g>
+</svg>
