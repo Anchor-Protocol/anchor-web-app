@@ -21,7 +21,9 @@ export const lightTheme: DefaultTheme = {
   dimTextColor: '#999999',
 
   errorTextColor: '#ef3158',
-  positiveTextColor: '#15cc93',
+  positiveTextColor: '#4BDB4B',
+
+  pointColor: '#4BDB4B',
 
   label: {
     backgroundColor: '#ffffff',

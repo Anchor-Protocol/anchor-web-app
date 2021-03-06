@@ -34,6 +34,8 @@ export interface NeumorphismTheme extends Theme {
   errorTextColor: string;
   positiveTextColor: string;
 
+  pointColor: string;
+
   // label
   label: {
     backgroundColor: string;

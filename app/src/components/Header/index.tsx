@@ -1,11 +1,12 @@
-import logoUrl from '@anchor-protocol/icons/assets/Anchor.svg';
+import { Launch } from '@material-ui/icons';
 import { WalletSelector } from 'components/Header/WalletSelector';
 import { useConstants } from 'contexts/contants';
 import { screen } from 'env';
 import { govPathname } from 'pages/gov/env';
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link, useRouteMatch } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
+import logoUrl from './assets/Logo.svg';
 
 export interface HeaderProps {
   className?: string;
@@ -16,11 +17,33 @@ function HeaderBase({ className }: HeaderProps) {
 
   return (
     <header className={className}>
+      <a className="logo" href="https://anchorprotocol.com">
+        <img src={logoUrl} alt="logo" />
+      </a>
+
       <nav className="menu">
-        <NavLink to="/earn">EARN</NavLink>
-        <NavLink to="/borrow">BORROW</NavLink>
-        <NavLink to="/bond">BOND</NavLink>
-        {!isDemo && <NavLink to={`/${govPathname}`}>GOVERN</NavLink>}
+        <NavMenu
+          to="/earn"
+          title="EARN"
+          docsTo="https://anchor-protocol.gitbook.io/anchor-2/user-guide/earn"
+        />
+        <NavMenu
+          to="/borrow"
+          title="BORROW"
+          docsTo="https://anchor-protocol.gitbook.io/anchor-2/user-guide/borrow"
+        />
+        <NavMenu
+          to="/bond"
+          title="BOND"
+          docsTo="https://anchor-protocol.gitbook.io/anchor-2/user-guide/basset"
+        />
+        {!isDemo && (
+          <NavMenu
+            to={`/${govPathname}`}
+            title="GOVERN"
+            docsTo="https://anchor-protocol.gitbook.io/anchor-2/user-guide/govern"
+          />
+        )}
       </nav>
 
       <section className="wallet">
@@ -29,6 +52,30 @@ function HeaderBase({ className }: HeaderProps) {
 
       <GlobalStyle />
     </header>
+  );
+}
+
+function NavMenu({
+  to,
+  docsTo,
+  title,
+  className,
+}: {
+  className?: string;
+  to: string;
+  docsTo: string;
+  title: string;
+}) {
+  const match = useRouteMatch(to);
+
+  return (
+    <div className={className} data-active={!!match}>
+      <Link to={to}>{title}</Link>
+      <a href={docsTo} target="_blank" rel="noreferrer">
+        Docs
+        <Launch />
+      </a>
+    </div>
   );
 }
 
@@ -54,27 +101,71 @@ export const Header = styled(HeaderBase)`
   }
 
   .menu {
-    a {
-      display: inline-block;
+    > div {
+      padding: 6px 17px;
 
-      font-weight: 900;
+      display: flex;
+      align-items: center;
 
-      color: rgba(255, 255, 255, 0.12);
-
-      border-bottom-color: transparent;
-
-      position: relative;
-
-      transition: color 0.3s ease-out, border-bottom-color 0.4s ease-out;
-
-      &:hover {
-        color: rgba(255, 255, 255, 0.3);
+      a {
+        color: rgba(255, 255, 255, 0.4);
       }
 
-      &.active {
-        color: #ffffff;
+      a:first-child {
+        font-size: 18px;
+        font-weight: 900;
 
-        border-bottom-color: ${({ theme }) => theme.backgroundColor};
+        text-decoration: none;
+      }
+
+      a:last-child {
+        display: none;
+
+        font-size: 12px;
+        font-weight: 500;
+
+        text-decoration: none;
+
+        position: relative;
+
+        svg {
+          margin-left: 2px;
+          font-size: 1em;
+          transform: translateY(2px);
+        }
+      }
+
+      &[data-active='true'] {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        background: ${({ theme }) => theme.backgroundColor};
+
+        opacity: 1;
+
+        a {
+          color: ${({ theme }) => theme.textColor};
+        }
+
+        a:last-child {
+          display: inline-block;
+
+          margin-left: 17px;
+
+          &::before {
+            content: '';
+            display: block;
+
+            position: absolute;
+
+            background-color: ${({ theme }) => theme.pointColor};
+
+            width: 1px;
+            height: 18px;
+
+            left: -8px;
+            top: -1px;
+          }
+        }
       }
     }
   }
@@ -86,93 +177,42 @@ export const Header = styled(HeaderBase)`
   justify-content: space-between;
   align-items: flex-end;
 
-  @media (min-width: ${desktopLayoutBreak}px) {
-    height: 144px;
-    padding: 0 100px;
+  height: 88px;
 
-    .menu {
-      word-break: keep-all;
-      white-space: nowrap;
+  .menu {
+    word-break: keep-all;
+    white-space: nowrap;
 
-      a {
-        border-bottom-style: solid;
-        border-bottom-width: 7px;
+    display: flex;
 
-        padding-bottom: 6px;
-
-        &:not(:last-child) {
-          margin-right: 38px;
-        }
-
-        font-size: 34px;
-
-        &.active {
-          &::before {
-            position: absolute;
-            left: 0;
-            top: -54px;
-            content: '';
-            width: 100px;
-            height: 100px;
-            background: url('${logoUrl}') no-repeat;
-            background-size: 28px 28px;
-          }
-        }
+    > div {
+      a:first-child {
+        font-size: 18px;
       }
     }
+  }
 
-    .wallet {
-      padding-bottom: 20px;
-      text-align: right;
-    }
+  .wallet {
+    padding-bottom: 8px;
+    text-align: right;
+  }
+
+  .logo {
+    position: absolute;
+    top: 18px;
+    left: 100px;
+  }
+
+  @media (min-width: ${desktopLayoutBreak}px) {
+    padding: 0 100px;
   }
 
   @media (max-width: ${desktopLayoutBreak}px) {
-    height: 80px;
-    padding: 0 80px;
-
-    .menu {
-      a {
-        border-bottom-style: solid;
-        border-bottom-width: 7px;
-
-        padding-bottom: 6px;
-
-        &:not(:last-child) {
-          margin-right: 28px;
-        }
-
-        font-size: 27px;
-      }
-    }
-
-    .wallet {
-      padding-bottom: 17px;
-      text-align: right;
-    }
+    padding: 0 100px;
   }
 
   @media (max-width: ${mobileLayoutBreak}px) {
-    align-items: center;
-
-    height: 60px;
-    padding: 0;
-
-    .menu {
-      display: flex;
-      justify-content: space-evenly;
-      width: 100%;
-
-      a {
-        border: none;
-        padding-bottom: 0;
-        font-size: 18px;
-
-        &:not(:last-child) {
-          margin-right: 0;
-        }
-      }
-    }
+    justify-content: center;
 
     .wallet {
       display: none;

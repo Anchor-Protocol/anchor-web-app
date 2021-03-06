@@ -31,6 +31,8 @@ export const darkTheme: DefaultTheme = {
   errorTextColor: '#ac2b45',
   positiveTextColor: '#15cc93',
 
+  pointColor: '#15cc93',
+
   label: {
     backgroundColor: '#363c5f',
     textColor: '#ffffff',

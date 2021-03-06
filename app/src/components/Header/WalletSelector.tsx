@@ -1,5 +1,6 @@
 import { Wallet } from '@anchor-protocol/icons';
-import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
+import { BorderButton } from '@anchor-protocol/neumorphism-ui/components/BorderButton';
+import { FlatButton } from '@anchor-protocol/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import {
   demicrofy,
@@ -85,7 +86,12 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
       return (
         <div className={className}>
           <WalletConnectButton disabled>
-            Initialzing Wallet...
+            <IconSpan>
+              <span className="wallet-icon">
+                <Wallet />
+              </span>
+              Initialzing Wallet...
+            </IconSpan>
           </WalletConnectButton>
         </div>
       );
@@ -93,7 +99,12 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
       return (
         <div className={className}>
           <WalletConnectButton onClick={connectWallet}>
-            Connect Wallet
+            <IconSpan>
+              <span className="wallet-icon">
+                <Wallet />
+              </span>
+              Connect Wallet
+            </IconSpan>
           </WalletConnectButton>
         </div>
       );
@@ -110,7 +121,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                   {truncate(status.walletAddress)}
                 </span>
                 {serviceAvailable && (
-                  <div>
+                  <div className="wallet-balance">
                     {formatUSTWithPostfixUnits(
                       demicrofy(bank.userBalances.uUSD),
                     )}{' '}
@@ -184,14 +195,14 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                   </ul>
 
                   <div className="send">
-                    <ActionButton
+                    <FlatButton
                       onClick={() => {
                         openSendDialog({});
                         setOpen(false);
                       }}
                     >
                       SEND
-                    </ActionButton>
+                    </FlatButton>
                   </div>
 
                   <div className="outlink">
@@ -220,7 +231,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                 </section>
 
                 <button className="disconnect" onClick={disconnectWallet}>
-                  DISCONNECT
+                  Disconnect
                 </button>
               </WalletDropdown>
             )}
@@ -230,10 +241,13 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
       );
     case 'not_installed':
       return (
-        <WalletConnectButton className={className}>
-          <button className={className} onClick={install}>
+        <WalletConnectButton className={className} onClick={install}>
+          <IconSpan>
+            <span className="wallet-icon">
+              <Wallet />
+            </span>
             Please Install Wallet
-          </button>
+          </IconSpan>
         </WalletConnectButton>
       );
     default:
@@ -241,27 +255,48 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   }
 }
 
-export const WalletConnectButton = styled(ActionButton)`
+export const WalletConnectButton = styled(BorderButton)`
+  height: 26px;
   border-radius: 20px;
-  padding: 8px 20px;
-
+  padding: 4px 20px;
   font-size: 12px;
+  font-weight: 700;
 
-  height: 34px;
+  .wallet-icon {
+    svg {
+      transform: scale(1.2) translateY(0.15em);
+    }
+
+    margin-right: 17px;
+
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 1px;
+      bottom: 1px;
+      right: -11px;
+      border-left: 1px solid rgba(255, 255, 255, 0.2);
+    }
+  }
+
+  color: ${({ theme }) => theme.pointColor};
+  border-color: ${({ theme }) => theme.pointColor};
+
+  &:hover {
+    color: ${({ theme }) => theme.pointColor};
+    border-color: ${({ theme }) => theme.pointColor};
+  }
 `;
 
 export const WalletButton = styled.button`
-  height: 34px;
-
+  height: 26px;
+  border-radius: 20px;
+  padding: 4px 17px;
   font-size: 12px;
 
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  padding: 8px 20px;
-  outline: none;
-  background-color: transparent;
-
-  color: #ffffff;
+  cursor: pointer;
 
   .wallet-icon {
     svg {
@@ -269,15 +304,18 @@ export const WalletButton = styled.button`
     }
   }
 
+  color: ${({ theme }) => theme.pointColor};
+  border: 1px solid ${({ theme }) => theme.pointColor};
+  outline: none;
+  background-color: transparent;
+
   .wallet-address {
     margin-left: 6px;
     color: #8a8a8a;
   }
 
-  cursor: pointer;
-
-  div {
-    font-weight: 500;
+  .wallet-balance {
+    font-weight: 700;
 
     position: relative;
     display: inline-block;
@@ -288,22 +326,16 @@ export const WalletButton = styled.button`
     &::before {
       content: '';
       position: absolute;
-      top: -2px;
-      bottom: -2px;
+      top: 1px;
+      bottom: 1px;
       left: 0;
       border-left: 1px solid rgba(255, 255, 255, 0.2);
     }
   }
 
   &:hover {
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid ${({ theme }) => theme.pointColor};
     background-color: rgba(255, 255, 255, 0.04);
-
-    div {
-      &::before {
-        border-left: 1px solid rgba(255, 255, 255, 0.3);
-      }
-    }
   }
 `;
 
@@ -413,6 +445,8 @@ export const WalletDropdown = styled.div`
       button {
         width: 100%;
         height: 28px;
+
+        background-color: ${({ theme }) => theme.pointColor};
       }
     }
 

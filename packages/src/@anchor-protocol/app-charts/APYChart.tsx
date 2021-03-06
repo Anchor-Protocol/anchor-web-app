@@ -52,7 +52,7 @@ type ColorPalette = {
 
 const lightColorPalette: ColorPalette = {
   line: {
-    stroke: '#15cc93',
+    stroke: lightTheme.pointColor,
     strokeWidth: 4,
   },
   pointing: {
@@ -73,7 +73,7 @@ const lightColorPalette: ColorPalette = {
 
 const darkColorPalette: ColorPalette = {
   line: {
-    stroke: '#15cc93',
+    stroke: darkTheme.pointColor,
     strokeWidth: 4,
   },
   pointing: {
@@ -190,8 +190,7 @@ export function APYChartBase({
           textAnchor="middle"
           {...palette.pointing.date}
         >
-          {/* TODO remove hh:mm */}
-          {format(data[index].date, 'MMM dd, yyyy hh:mm')}
+          {format(data[index].date, 'MMM dd, yyyy')}
         </text>
         <g transform={`translate(${x} ${y})`} filter="url(#dropshadow)">
           <rect

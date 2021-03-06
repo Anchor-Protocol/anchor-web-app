@@ -37,7 +37,7 @@ function FooterBase({ className, style }: FooterProps) {
           rel="noreferrer"
         >
           <IconSpan>
-            <FiberManualRecord />{' '}
+            <FiberManualRecord className="point" />{' '}
             {status.network.name.toLowerCase().indexOf('mainnet') !== 0 && (
               <b>[{status.network.name.toUpperCase()}] </b>
             )}
@@ -74,6 +74,10 @@ export const Footer = styled(FooterBase)`
 
   a {
     text-decoration: none;
+  }
+
+  .point {
+    color: ${({ theme }) => theme.pointColor};
   }
 
   a,
