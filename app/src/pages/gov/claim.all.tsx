@@ -17,6 +17,7 @@ import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
 import { useService, useServiceConnectedMemo } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
+import { MINIMUM_CLAIM_BALANCE } from 'pages/gov/env';
 import { useClaimableAncUstLp } from 'pages/gov/queries/claimableAncUstLp';
 import { useClaimableUstBorrow } from 'pages/gov/queries/claimableUstBorrow';
 import { allClaimOptions } from 'pages/gov/transactions/allClaimOptions';
@@ -155,8 +156,8 @@ function ClaimAllBase({ className }: ClaimAllProps) {
             !claimingLpStaingInfoPendingRewards ||
             !claimingBorrowerInfoPendingRewards ||
             !claiming ||
-            (claimingBorrowerInfoPendingRewards.lt(1) &&
-              claimingLpStaingInfoPendingRewards.lt(1))
+            (claimingBorrowerInfoPendingRewards.lt(MINIMUM_CLAIM_BALANCE) &&
+              claimingLpStaingInfoPendingRewards.lt(MINIMUM_CLAIM_BALANCE))
           }
           onClick={() =>
             walletReady &&
@@ -164,8 +165,8 @@ function ClaimAllBase({ className }: ClaimAllProps) {
             claimingLpStaingInfoPendingRewards &&
             proceed(
               walletReady,
-              claimingBorrowerInfoPendingRewards.gte(1),
-              claimingLpStaingInfoPendingRewards.gte(1),
+              claimingBorrowerInfoPendingRewards.gte(MINIMUM_CLAIM_BALANCE),
+              claimingLpStaingInfoPendingRewards.gte(MINIMUM_CLAIM_BALANCE),
             )
           }
         >

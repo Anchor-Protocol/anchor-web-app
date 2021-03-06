@@ -1,10 +1,10 @@
 import {
   demicrofy,
-  formatANCWithPostfixUnits,
+  formatLP,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { uANC, uUST } from '@anchor-protocol/types';
-import { BigSource } from 'big.js';
+import big, { Big, BigSource } from 'big.js';
 import { TxHashLink } from 'components/TxHashLink';
 import { TxInfoParseError } from 'errors/TxInfoParseError';
 import { TransactionResult } from 'models/transaction';
@@ -12,7 +12,7 @@ import {
   Data,
   pickAttributeValueByKey,
   pickEvent,
-  pickRawLog,
+  RawLogEvent,
 } from 'queries/txInfos';
 import { createElement } from 'react';
 import { TxResult } from 'transactions/tx';
@@ -23,32 +23,41 @@ interface Params {
   fixedGas: uUST<BigSource>;
 }
 
-export function pickAncUstLpClaimResult({
+export function pickAllClaimResult({
   txInfo,
   txResult,
   fixedGas,
 }: Params): TransactionResult {
-  const rawLog = pickRawLog(txInfo, 0);
+  console.log(JSON.stringify(txInfo, null, 2));
 
-  if (!rawLog) {
-    throw new TxInfoParseError(txResult, txInfo, 'Undefined the RawLog');
-  }
+  const fromContracts = txInfo.reduce((fromContracts, { RawLog }) => {
+    for (const rawLog of RawLog) {
+      if (typeof rawLog !== 'string') {
+        const fromContract = pickEvent(rawLog, 'from_contract');
+        if (fromContract) {
+          fromContracts.push(fromContract);
+        }
+      }
+    }
+    return fromContracts;
+  }, [] as RawLogEvent[]);
 
-  const fromContract = pickEvent(rawLog, 'from_contract');
-
-  if (!fromContract) {
+  if (fromContracts.length === 0) {
     throw new TxInfoParseError(
       txResult,
       txInfo,
-      'Undefined the from_contract event',
+      'Undefined the from_contract events',
     );
   }
 
-  const claimed = pickAttributeValueByKey<uANC>(
-    fromContract,
-    'amount',
-    (attrs) => attrs.reverse()[0],
-  );
+  const claimed = fromContracts.reduce((claimed, fromContract) => {
+    const amount = pickAttributeValueByKey<uANC>(
+      fromContract,
+      'amount',
+      (attrs) => attrs.reverse()[0],
+    );
+    return amount ? claimed.plus(amount) : claimed;
+  }, big(0)) as uANC<Big>;
 
   const txFee = fixedGas;
   const txHash = txResult.result.txhash;
@@ -59,7 +68,7 @@ export function pickAncUstLpClaimResult({
     details: [
       claimed && {
         name: 'Claimed',
-        value: formatANCWithPostfixUnits(demicrofy(claimed)) + ' ANC',
+        value: formatLP(demicrofy(claimed)) + ' ANC',
       },
       {
         name: 'Tx Hash',
