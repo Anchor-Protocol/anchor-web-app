@@ -11,10 +11,10 @@ import {
 } from '@anchor-protocol/broadcastable-operation';
 import { Dec, Int, MsgExecuteContract, StdFee } from '@terra-money/terra.js';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
+import { pickAncUstLpStakeResult } from 'pages/gov/transactions/pickAncUstLpStakeResult';
 import { createContractMsg } from 'transactions/createContractMsg';
 import { createOptions } from 'transactions/createOptions';
 import { getTxInfo } from 'transactions/getTxInfo';
-import { pickEmptyResult } from 'transactions/pickEmptyResult';
 import { postContractMsg } from 'transactions/postContractMsg';
 import { parseTxResult } from 'transactions/tx';
 
@@ -39,7 +39,7 @@ export const ancUstLpStakeOptions = createOperationOptions({
     timeout(postContractMsg(post), 1000 * 60 * 20), // -> Promise<StringifiedTxResult>
     parseTxResult, // -> TxResult
     merge(getTxInfo(client, signal), () => ({ fixedGas })), // -> { TxResult, TxInfo, fixedGas }
-    pickEmptyResult, // -> TransactionResult
+    pickAncUstLpStakeResult, // -> TransactionResult
   ],
   renderBroadcast: renderBroadcastTransaction,
   //breakOnError: true,
