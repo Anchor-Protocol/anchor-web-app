@@ -101,7 +101,7 @@ export function pickSellResult({
       },
       tradingFee && {
         name: 'Trading Fee',
-        value: formatANCWithPostfixUnits(demicrofy(tradingFee)) + ' ANC',
+        value: formatUSTWithPostfixUnits(demicrofy(tradingFee)) + ' UST',
       },
       {
         name: 'Tx Hash',
