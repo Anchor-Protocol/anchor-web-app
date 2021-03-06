@@ -3,7 +3,7 @@ import { IconToggleButton } from '@anchor-protocol/neumorphism-ui/components/Ico
 import { WebAppButton } from 'components/Header/WebAppButton';
 import { headerHeight } from 'env';
 import { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 
 export interface MobileHeaderProps {
@@ -23,9 +23,9 @@ function MobileHeaderBase({ className, color }: MobileHeaderProps) {
       >
         {open && (
           <nav>
-            <NavLink to="/market" onClick={() => setOpen(false)}>
-              MARKET
-            </NavLink>
+            {/*<NavLink to="/market" onClick={() => setOpen(false)}>*/}
+            {/*  MARKET*/}
+            {/*</NavLink>*/}
             <a
               href="https://anchor-protocol.gitbook.io/anchor-1/"
               target="anchor-developers"
@@ -33,9 +33,9 @@ function MobileHeaderBase({ className, color }: MobileHeaderProps) {
             >
               DEVELOPERS
             </a>
-            <NavLink to="/contact" onClick={() => setOpen(false)}>
-              CONTACT
-            </NavLink>
+            {/*<NavLink to="/contact" onClick={() => setOpen(false)}>*/}
+            {/*  CONTACT*/}
+            {/*</NavLink>*/}
             <WebAppButton />
           </nav>
         )}
