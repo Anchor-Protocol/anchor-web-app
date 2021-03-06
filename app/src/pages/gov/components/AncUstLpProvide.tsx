@@ -42,8 +42,6 @@ export function AncUstLpProvide() {
 
   const { fixedGas } = useConstants();
 
-  const [provide, provideResult] = useOperation(ancUstLpProvideOptions, {});
-
   // ---------------------------------------------
   // states
   // ---------------------------------------------
@@ -62,6 +60,14 @@ export function AncUstLpProvide() {
   const {
     data: { ancPrice },
   } = useANCPrice();
+
+  // ---------------------------------------------
+  // transaction
+  // ---------------------------------------------
+  const [provide, provideResult] = useOperation(ancUstLpProvideOptions, {
+    bank,
+    ancPrice,
+  });
 
   // ---------------------------------------------
   // logics

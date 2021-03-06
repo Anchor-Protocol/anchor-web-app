@@ -7,10 +7,12 @@ import {
 } from '@anchor-protocol/broadcastable-operation';
 import { StdFee } from '@terra-money/terra.js';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
+import { Bank } from 'contexts/bank';
+import { AncPrice } from 'pages/gov/models/ancPrice';
+import { pickAncUstLpProvideResult } from 'pages/gov/transactions/pickAncUstLpProvideResult';
 import { createContractMsg } from 'transactions/createContractMsg';
 import { createOptions } from 'transactions/createOptions';
 import { getTxInfo } from 'transactions/getTxInfo';
-import { pickEmptyResult } from 'transactions/pickEmptyResult';
 import { postContractMsg } from 'transactions/postContractMsg';
 import { parseTxResult } from 'transactions/tx';
 
@@ -25,7 +27,9 @@ export const ancUstLpProvideOptions = createOperationOptions({
     fixedGas,
     gasFee,
     gasAdjustment,
-  }: OperationDependency<{}>) => [
+    bank,
+    ancPrice,
+  }: OperationDependency<{ bank: Bank; ancPrice: AncPrice | undefined }>) => [
     fabricateTerraSwapProvideLiquidityANC, // Option -> ((AddressProvider) -> MsgExecuteContract[])
     createContractMsg(addressProvider), // -> MsgExecuteContract[]
     createOptions(() => ({
@@ -34,8 +38,11 @@ export const ancUstLpProvideOptions = createOperationOptions({
     })), // -> CreateTxOptions
     timeout(postContractMsg(post), 1000 * 60 * 20), // -> Promise<StringifiedTxResult>
     parseTxResult, // -> TxResult
-    merge(getTxInfo(client, signal), () => ({ fixedGas })), // -> { TxResult, TxInfo, fixedGas }
-    pickEmptyResult, // -> TransactionResult
+    merge(
+      getTxInfo(client, signal), // -> { TxResult, TxInfo }
+      () => ({ fixedGas, bank, ancPrice }), // -> { fixedGas, bank, ancPrice }
+    ),
+    pickAncUstLpProvideResult, // -> TransactionResult
   ],
   renderBroadcast: renderBroadcastTransaction,
   //breakOnError: true,
