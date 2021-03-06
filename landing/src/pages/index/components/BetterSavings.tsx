@@ -145,6 +145,7 @@ export const BetterSavings = styled(BetterSavingsBase)`
 
     > canvas {
       top: 40%;
+      transform: translate(-50%, -50%);
     }
   }
 `;

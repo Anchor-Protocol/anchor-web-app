@@ -169,12 +169,12 @@ export const BetterYield = styled(BetterYieldBase)`
       background-color: transparent;
       padding: 0;
       font-size: 14px;
-      color: #5ebfc9;
-      font-weight: 500;
+      color: #70d870;
+      font-weight: 700;
 
       svg {
         font-size: 1em;
-        transform: scale(1.4) translate(4px, 1px);
+        transform: scale(1.4) translate(4px, 2px);
       }
     }
   }

@@ -1,6 +1,6 @@
 import { CircleArrowRight } from '@anchor-protocol/icons';
 import styled from 'styled-components';
-import codeImage from './assets/code.svg';
+import codeImage from './assets/code.png';
 
 export interface EasierIntegrationsProps {
   className?: string;
@@ -78,12 +78,12 @@ export const EasierIntegrations = styled(EasierIntegrationsBase)`
       background-color: transparent;
       padding: 0;
       font-size: 14px;
-      color: #5ebfc9;
-      font-weight: 500;
+      color: #70d870;
+      font-weight: 700;
 
       svg {
         font-size: 1em;
-        transform: scale(1.4) translate(4px, 1px);
+        transform: scale(1.4) translate(4px, 2px);
       }
     }
   }
@@ -106,7 +106,7 @@ export const EasierIntegrations = styled(EasierIntegrationsBase)`
       box-shadow: inset 0 0 16px 0 rgba(0, 0, 0, 0.09);
       background-image: linear-gradient(219deg, #585858 0%, #252525 100%);
 
-      padding: 30px;
+      padding: 0;
 
       img {
         width: 100%;
