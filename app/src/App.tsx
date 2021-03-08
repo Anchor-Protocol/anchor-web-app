@@ -55,41 +55,59 @@ function Providers({
   children: ReactNode;
   isDemo: boolean;
 }) {
-  const { post } = useWallet();
+  const {
+    post,
+    status: { network },
+  } = useWallet();
 
-  // TODO create address provider depends on wallet info
+  const isMainnet = useMemo(() => /^columbus/.test(network.chainID), [
+    network.chainID,
+  ]);
+
   const addressProvider = useMemo<AddressProvider>(() => {
-    return new AddressProviderFromJson(contractAddresses);
-  }, []);
+    return isMainnet
+      ? // TODO set mainet contracts
+        new AddressProviderFromJson(contractAddresses)
+      : new AddressProviderFromJson(contractAddresses);
+  }, [isMainnet]);
 
   const address = useMemo<ContractAddress>(() => {
     return createContractAddress(addressProvider);
   }, [addressProvider]);
 
-  // TODO create endpoint depends on wallet info
   const client = useMemo<ApolloClient<any>>(() => {
     const httpLink = new HttpLink({
       uri: ({ operationName }) =>
-        `https://tequila-mantle.anchorprotocol.com?${operationName}`,
+        isMainnet
+          ? `https://mantle.anchorprotocol.com?${operationName}`
+          : `https://tequila-mantle.anchorprotocol.com?${operationName}`,
     });
 
     return new ApolloClient({
       cache: new InMemoryCache(),
       link: httpLink,
     });
-  }, []);
+  }, [isMainnet]);
 
-  // TODO create constants depends on wallet info
   const constants = useMemo<Constants>(
-    () => ({
-      gasFee: 6000000 as uUST<number>,
-      fixedGas: 3500000 as uUST<number>,
-      blocksPerYear: 4906443,
-      gasAdjustment: 1.4 as Rate<number>,
-
-      isDemo,
-    }),
-    [isDemo],
+    () =>
+      isMainnet
+        ? // TODO set mainet constants
+          {
+            gasFee: 6000000 as uUST<number>,
+            fixedGas: 3500000 as uUST<number>,
+            blocksPerYear: 4906443,
+            gasAdjustment: 1.4 as Rate<number>,
+            isDemo,
+          }
+        : {
+            gasFee: 6000000 as uUST<number>,
+            fixedGas: 3500000 as uUST<number>,
+            blocksPerYear: 4906443,
+            gasAdjustment: 1.4 as Rate<number>,
+            isDemo,
+          },
+    [isDemo, isMainnet],
   );
 
   const operationGlobalDependency = useMemo<GlobalDependency>(
