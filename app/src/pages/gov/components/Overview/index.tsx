@@ -111,11 +111,8 @@ function OverviewBase({ className }: OverviewProps) {
           </span>
         </div>
         <div className="staking-buttons">
-          <BorderButton component={Link} to={`/${govPathname}/trade/buy`}>
-            Buy
-          </BorderButton>
-          <BorderButton component={Link} to={`/${govPathname}/trade/sell`}>
-            Sell
+          <BorderButton component={Link} to={`/${govPathname}/trade`}>
+            Trade ANC
           </BorderButton>
           <Tooltip
             title="Stake ANC to participate in governance voting or to obtain governance rewards"
@@ -243,7 +240,7 @@ export const Overview = styled(OverviewBase)`
       margin-top: 84px;
 
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       grid-gap: 20px;
     }
 
