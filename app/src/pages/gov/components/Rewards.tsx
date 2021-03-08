@@ -1,5 +1,7 @@
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/components/HorizontalScrollTable';
+import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import {
   demicrofy,
@@ -173,7 +175,11 @@ export function RewardsBase({ className }: RewardsProps) {
           <thead>
             <tr>
               <th>Rewards Pool</th>
-              <th>APY</th>
+              <th>
+                <IconSpan>
+                  APY <InfoTooltip>Annualized Staking Returns</InfoTooltip>
+                </IconSpan>
+              </th>
               <th>Staked</th>
               <th>Stakable</th>
               <th>Reward</th>

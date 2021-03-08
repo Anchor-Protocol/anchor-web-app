@@ -1,6 +1,6 @@
 import { WebAppButton } from 'components/Header/WebAppButton';
-import { headerHeight } from 'env';
-import { Link } from 'react-router-dom';
+import { headerHeight, links } from 'env';
+import { Link, NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 
 export interface DesktopHeaderProps {
@@ -15,11 +15,8 @@ function DesktopHeaderBase({ className, color }: DesktopHeaderProps) {
         <Link to="/">ANCHOR</Link>
       </section>
       <nav>
-        {/*<NavLink to="/market">MARKET</NavLink>*/}
-        <a
-          href="https://anchor-protocol.gitbook.io/anchor-1/"
-          target="anchor-developers"
-        >
+        <NavLink to="/market">MARKET</NavLink>
+        <a href={links.developers} target="anchor-developers">
           DEVELOPERS
         </a>
         {/*<NavLink to="/contact">CONTACT</NavLink>*/}

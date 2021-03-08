@@ -1,4 +1,5 @@
 import { CircleArrowRight } from '@anchor-protocol/icons';
+import { links } from 'env';
 import styled from 'styled-components';
 import signalImage from './assets/signal.png';
 import signal2xImage from './assets/signal@2x.png';
@@ -17,9 +18,9 @@ function FrictionlessAcessBase({ className }: FrictionlessAcessProps) {
           requirements - it can be used by anyone in the world with access to
           the internet.
           <br />
-          <button>
+          <a href={links.frictionlessAccess} target="_blank" rel="noreferrer">
             Learn more <CircleArrowRight />
-          </button>
+          </a>
         </p>
       </article>
 
@@ -66,8 +67,11 @@ export const FrictionlessAcess = styled(FrictionlessAcessBase)`
       white-space: break-spaces;
     }
 
-    button {
+    a {
       margin-top: 16px;
+
+      display: inline-block;
+      text-decoration: none;
 
       border: none;
       outline: none;

@@ -15,3 +15,21 @@ export const landingMobileLayout = 680;
 export const headerHeight = 84;
 
 //export const FINDER = 'https://finder.terra.money';
+
+//1st page top right (DEVELOPERS) -> https://docs.anchorprotocol.com/developers-terra/anchor.js
+//2nd page Anchor Offers Better Yield -> https://docs.anchorprotocol.com/protocol/overview
+//3rd page Anchor offers Easier Integrations -> https://docs.anchorprotocol.com/developers-terra/anchor.js
+//4th page Anchor offers frictionless access -> https://app.anchorprotocol.com
+
+//EARN docs -> https://docs.anchorprotocol.com/user-guide/earn
+//BORROW docs -> https://docs.anchorprotocol.com/user-guide/borrow
+//BOND docs -> https://docs.anchorprotocol.com/user-guide/bond
+//GOVERN docs -> https://docs.anchorprotocol.com/user-guide/govern
+
+export const links = {
+  developers: 'https://docs.anchorprotocol.com/developers-terra/anchor.js',
+  betterYield: 'https://docs.anchorprotocol.com/protocol/overview',
+  easierIntegration:
+    'https://docs.anchorprotocol.com/developers-terra/anchor.js',
+  frictionlessAccess: 'https://app.anchorprotocol.com',
+};

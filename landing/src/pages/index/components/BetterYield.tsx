@@ -1,6 +1,7 @@
 import { CircleArrowRight } from '@anchor-protocol/icons';
 import { scaleLinear } from 'd3-scale';
 import { arc } from 'd3-shape';
+import { links } from 'env';
 import { useRef } from 'react';
 import { animated, useSpring } from 'react-spring';
 import styled from 'styled-components';
@@ -58,9 +59,9 @@ function BetterYieldBase({ className }: BetterYieldProps) {
           Anchor yields stable and attractive - powered by staking returns from
           multiple Proof of Stake blockchains.
           <br />
-          <button>
+          <a href={links.betterYield} target="_blank" rel="noreferrer">
             Learn more <CircleArrowRight />
-          </button>
+          </a>
         </p>
       </article>
 
@@ -161,8 +162,11 @@ export const BetterYield = styled(BetterYieldBase)`
       white-space: break-spaces;
     }
 
-    button {
+    a {
       margin-top: 16px;
+
+      display: inline-block;
+      text-decoration: none;
 
       border: none;
       outline: none;

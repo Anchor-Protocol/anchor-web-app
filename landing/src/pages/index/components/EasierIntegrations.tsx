@@ -1,4 +1,5 @@
 import { CircleArrowRight } from '@anchor-protocol/icons';
+import { links } from 'env';
 import styled from 'styled-components';
 import codeImage from './assets/code.png';
 
@@ -27,9 +28,9 @@ function EasierIntegrationsBase({ className }: EasierIntegrationsProps) {
           Anchor’s open source Savings-as-a-Service SDK can be integrated in 10
           lines of code to any serviced application holding user balances.
           <br />
-          <button>
+          <a href={links.easierIntegration} target="_blank" rel="noreferrer">
             Read the docs <CircleArrowRight />
-          </button>
+          </a>
         </p>
       </article>
     </section>
@@ -70,8 +71,11 @@ export const EasierIntegrations = styled(EasierIntegrationsBase)`
       white-space: break-spaces;
     }
 
-    button {
+    a {
       margin-top: 16px;
+
+      display: inline-block;
+      text-decoration: none;
 
       border: none;
       outline: none;

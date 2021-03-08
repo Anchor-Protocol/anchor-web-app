@@ -1,8 +1,10 @@
 import { AnchorNoCircle } from '@anchor-protocol/icons';
 import { BorderButton } from '@anchor-protocol/neumorphism-ui/components/BorderButton';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { Label } from '@anchor-protocol/neumorphism-ui/components/Label';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
+import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import {
   demicrofy,
   formatANCWithPostfixUnits,
@@ -58,7 +60,15 @@ function OverviewBase({ className }: OverviewProps) {
   return (
     <div className={className}>
       <Section className="anc-price">
-        <h2>ANC PRICE</h2>
+        <h2>
+          <IconSpan>
+            ANC PRICE{' '}
+            <InfoTooltip>
+              Terraswap price of ANC that is determined by the current pool
+              ratio
+            </InfoTooltip>
+          </IconSpan>
+        </h2>
         <div>
           {ancPrice?.ANCPrice
             ? formatUSTWithPostfixUnits(ancPrice.ANCPrice)
@@ -67,7 +77,12 @@ function OverviewBase({ className }: OverviewProps) {
         </div>
       </Section>
       <Section className="total-staked">
-        <h2>TOTAL STAKED</h2>
+        <h2>
+          <IconSpan>
+            TOTAL STAKED{' '}
+            <InfoTooltip>Total quantity of ANC tokens staked</InfoTooltip>
+          </IconSpan>
+        </h2>
         <div>
           {totalStaked
             ? formatANCWithPostfixUnits(demicrofy(totalStaked))
@@ -86,23 +101,33 @@ function OverviewBase({ className }: OverviewProps) {
         <Circles backgroundColors={['#2C2C2C']}>
           <AnchorNoCircle style={{ fontSize: '1.4em' }} />
         </Circles>
-        <h2>Anchor Governance Staking</h2>
+        <h2>Anchor (ANC)</h2>
         <div className="staking-apy">
-          <Label>APY</Label>
+          <Tooltip title="Governance Rewards APY" placement="top">
+            <Label>APY</Label>
+          </Tooltip>
           <span>
             <s>8.32%</s>
           </span>
         </div>
         <div className="staking-buttons">
-          <BorderButton component={Link} to={`/${govPathname}/trade`}>
-            Trade ANC
+          <BorderButton component={Link} to={`/${govPathname}/trade/buy`}>
+            Buy
           </BorderButton>
-          <BorderButton
-            component={Link}
-            to={`/${govPathname}/rewards/${ancGovernancePathname}/stake`}
+          <BorderButton component={Link} to={`/${govPathname}/trade/sell`}>
+            Sell
+          </BorderButton>
+          <Tooltip
+            title="Stake ANC to participate in governance voting or to obtain governance rewards"
+            placement="top"
           >
-            Stake
-          </BorderButton>
+            <BorderButton
+              component={Link}
+              to={`/${govPathname}/rewards/${ancGovernancePathname}/stake`}
+            >
+              Gov Stake
+            </BorderButton>
+          </Tooltip>
         </div>
       </Section>
       <Section className="lp">
@@ -119,13 +144,20 @@ function OverviewBase({ className }: OverviewProps) {
         </h2>
         <div className="lp-labels">
           <div>
-            <Label>APY</Label>
+            <Tooltip title="LP rewards APY" placement="top">
+              <Label>APY</Label>
+            </Tooltip>
             <p>
               <s>12.39%</s>
             </p>
           </div>
           <div>
-            <Label>Total Staked</Label>
+            <Tooltip
+              title="Total quantity of ANC - UST LP tokens staked"
+              placement="top"
+            >
+              <Label>Total Staked</Label>
+            </Tooltip>
             <p>
               {lpStakingState?.total_bond_amount
                 ? formatLP(demicrofy(lpStakingState.total_bond_amount))
@@ -211,7 +243,7 @@ export const Overview = styled(OverviewBase)`
       margin-top: 84px;
 
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       grid-gap: 20px;
     }
 
