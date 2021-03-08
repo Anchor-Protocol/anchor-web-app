@@ -7,7 +7,7 @@ import {
   formatLP,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
-import { uUST } from '@anchor-protocol/types';
+import { uANC, uUST } from '@anchor-protocol/types';
 import { MenuItem } from '@material-ui/core';
 import big, { Big } from 'big.js';
 import { MoreMenu } from 'pages/gov/components/MoreMenu';
@@ -17,13 +17,6 @@ import {
   govPathname,
   ustBorrowPathname,
 } from 'pages/gov/env';
-import { rewardsAncGovernanceStakable } from 'pages/gov/logics/rewardsAncGovernanceStakable';
-import { rewardsAncGovernanceStaked } from 'pages/gov/logics/rewardsAncGovernanceStaked';
-import { rewardsAncUstLpReward } from 'pages/gov/logics/rewardsAncUstLpReward';
-import { rewardsAncUstLpWithdrawableAnc } from 'pages/gov/logics/rewardsAncUstLpWithdrawableAnc';
-import { rewardsAncUstLpWithdrawableUst } from 'pages/gov/logics/rewardsAncUstLpWithdrawableUst';
-import { rewardsTotalBorrowReward } from 'pages/gov/logics/rewardsTotalBorrowReward';
-import { rewardsTotalReward } from 'pages/gov/logics/rewardsTotalReward';
 import { useANCPrice } from 'pages/gov/queries/ancPrice';
 import { useLPStakingState } from 'pages/gov/queries/lpStakingState';
 import { useRewardsAncGovernance } from 'pages/gov/queries/rewardsAncGovernance';
@@ -69,43 +62,79 @@ export function RewardsBase({ className }: RewardsProps) {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const ancUstLpWithdrawableAnc = useMemo(
-    () => rewardsAncUstLpWithdrawableAnc(ancPrice, userLPBalance),
-    [ancPrice, userLPBalance],
-  );
+  const ancUstLp = useMemo(() => {
+    if (!ancPrice || !lpStakingState || !userLPStakingInfo || !userLPBalance) {
+      return undefined;
+    }
 
-  const ancUstLpWithdrawableUst = useMemo(
-    () => rewardsAncUstLpWithdrawableUst(ancPrice, userLPBalance),
-    [ancPrice, userLPBalance],
-  );
-
-  const ancUstLpStaked = useMemo(() => {
-    return userLPStakingInfo?.bond_amount;
-  }, [userLPStakingInfo?.bond_amount]);
-
-  const ancUstLpReward = useMemo(() => {
-    return rewardsAncUstLpReward(lpStakingState, userLPStakingInfo);
-  }, [lpStakingState, userLPStakingInfo]);
-
-  const ancGovernanceStaked = useMemo(() => {
-    return rewardsAncGovernanceStaked(
-      govANCBalance,
-      govState,
-      userGovStakingInfo,
+    const totalUserLPHolding = big(userLPBalance.balance).plus(
+      userLPStakingInfo.bond_amount,
     );
-  }, [govANCBalance, govState, userGovStakingInfo]);
 
-  const ancGovernanceStakable = useMemo(() => {
-    return rewardsAncGovernanceStakable(userANCBalance);
-  }, [userANCBalance]);
+    const withdrawableAssets = {
+      anc: big(ancPrice.ANCPoolSize)
+        .mul(totalUserLPHolding)
+        .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare) as uANC<Big>,
+      ust: big(ancPrice.USTPoolSize)
+        .mul(totalUserLPHolding)
+        .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare) as uUST<Big>,
+    };
 
-  const ustBorrowReward = useMemo(() => {
-    return rewardsTotalBorrowReward(marketState, borrowerInfo);
+    const staked = userLPStakingInfo.bond_amount;
+
+    const stakable = userLPBalance.balance;
+
+    const reward = big(
+      big(
+        big(lpStakingState.global_reward_index).minus(
+          userLPStakingInfo.reward_index,
+        ),
+      ).mul(userLPStakingInfo.bond_amount),
+    ).plus(userLPStakingInfo.pending_reward) as uANC<Big>;
+
+    return { withdrawableAssets, staked, stakable, reward };
+  }, [ancPrice, lpStakingState, userLPBalance, userLPStakingInfo]);
+
+  const govGorvernance = useMemo(() => {
+    if (!govANCBalance || !govState || !userGovStakingInfo || !userANCBalance) {
+      return undefined;
+    }
+
+    const govShareIndex = big(
+      big(govANCBalance.balance).minus(govState.total_deposit),
+    ).div(govState.total_share);
+
+    const staked = big(userGovStakingInfo.share).mul(
+      govShareIndex,
+    ) as uANC<Big>;
+
+    const stakable = userANCBalance.balance;
+
+    return { staked, stakable };
+  }, [govANCBalance, govState, userANCBalance, userGovStakingInfo]);
+
+  const ustBorrow = useMemo(() => {
+    if (!marketState || !borrowerInfo) {
+      return undefined;
+    }
+
+    const reward = big(marketState.global_reward_index)
+      .minus(borrowerInfo.reward_index)
+      .plus(borrowerInfo.pending_rewards) as uANC<Big>;
+
+    return { reward };
   }, [borrowerInfo, marketState]);
 
-  const totalReward = useMemo(() => {
-    return rewardsTotalReward(ustBorrowReward, ancUstLpReward);
-  }, [ancUstLpReward, ustBorrowReward]);
+  const total = useMemo(() => {
+    if (!ustBorrow || !ancUstLp || !ancPrice) {
+      return undefined;
+    }
+
+    const reward = ustBorrow.reward.plus(ancUstLp.reward) as uANC<Big>;
+    const rewardValue = reward.mul(ancPrice.ANCPrice) as uUST<Big>;
+
+    return { reward, rewardValue };
+  }, [ancPrice, ancUstLp, ustBorrow]);
 
   // ---------------------------------------------
   // presentation
@@ -123,13 +152,13 @@ export function RewardsBase({ className }: RewardsProps) {
       <Section>
         <h3>
           <label>Total Reward</label>{' '}
-          {totalReward ? formatANCWithPostfixUnits(demicrofy(totalReward)) : 0}{' '}
+          {total?.reward
+            ? formatANCWithPostfixUnits(demicrofy(total.reward))
+            : 0}{' '}
           ANC
           <label>Total Reward Value</label>{' '}
-          {totalReward && ancPrice?.ANCPrice
-            ? formatUSTWithPostfixUnits(
-                demicrofy(big(totalReward).mul(ancPrice.ANCPrice) as uUST<Big>),
-              )
+          {total?.rewardValue
+            ? formatUSTWithPostfixUnits(demicrofy(total.rewardValue))
             : 0}{' '}
           UST
         </h3>
@@ -162,15 +191,15 @@ export function RewardsBase({ className }: RewardsProps) {
               <td>
                 <p>ANC-UST LP</p>
                 <p style={{ fontSize: 12 }}>
-                  {ancUstLpWithdrawableAnc
+                  {ancUstLp?.withdrawableAssets
                     ? formatANCWithPostfixUnits(
-                        demicrofy(ancUstLpWithdrawableAnc),
+                        demicrofy(ancUstLp.withdrawableAssets.anc),
                       )
                     : 0}{' '}
                   ANC +{' '}
-                  {ancUstLpWithdrawableUst
+                  {ancUstLp?.withdrawableAssets
                     ? formatUSTWithPostfixUnits(
-                        demicrofy(ancUstLpWithdrawableUst),
+                        demicrofy(ancUstLp.withdrawableAssets.ust),
                       )
                     : 0}{' '}
                   UST
@@ -180,15 +209,19 @@ export function RewardsBase({ className }: RewardsProps) {
                 <s>134.84%</s>
               </td>
               <td>
-                {ancUstLpStaked ? formatLP(demicrofy(ancUstLpStaked)) : 0}
+                {ancUstLp?.staked ? formatLP(demicrofy(ancUstLp.staked)) : 0} LP
               </td>
               <td>
-                <s>0</s>
+                {ancUstLp?.stakable
+                  ? formatLP(demicrofy(ancUstLp.stakable))
+                  : 0}{' '}
+                LP
               </td>
               <td>
-                {ancUstLpReward
-                  ? formatANCWithPostfixUnits(demicrofy(ancUstLpReward))
-                  : 0}
+                {ancUstLp?.reward
+                  ? formatANCWithPostfixUnits(demicrofy(ancUstLp.reward))
+                  : 0}{' '}
+                ANC
               </td>
               <td>
                 <MoreMenu size="25px">
@@ -231,15 +264,18 @@ export function RewardsBase({ className }: RewardsProps) {
                 <s>134.84%</s>
               </td>
               <td>
-                {ancGovernanceStaked
-                  ? formatANCWithPostfixUnits(demicrofy(ancGovernanceStaked))
+                {govGorvernance?.staked
+                  ? formatANCWithPostfixUnits(demicrofy(govGorvernance.staked))
                   : 0}{' '}
                 ANC
               </td>
               <td>
-                {ancGovernanceStakable
-                  ? formatANCWithPostfixUnits(demicrofy(ancGovernanceStakable))
-                  : 0}
+                {govGorvernance?.stakable
+                  ? formatANCWithPostfixUnits(
+                      demicrofy(govGorvernance.stakable),
+                    )
+                  : 0}{' '}
+                ANC
               </td>
               <td>Automatically re-staked</td>
               <td>
@@ -265,13 +301,12 @@ export function RewardsBase({ className }: RewardsProps) {
                 <s>134.84%</s>
               </td>
               <td></td>
+              <td></td>
               <td>
-                <s>0</s>
-              </td>
-              <td>
-                {ustBorrowReward
-                  ? formatUSTWithPostfixUnits(demicrofy(ustBorrowReward))
-                  : 0}
+                {ustBorrow?.reward
+                  ? formatUSTWithPostfixUnits(demicrofy(ustBorrow.reward))
+                  : 0}{' '}
+                ANC
               </td>
               <td>
                 <MoreMenu size="25px">
