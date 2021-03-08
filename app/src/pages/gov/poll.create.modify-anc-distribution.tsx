@@ -1,9 +1,11 @@
 import { ExecuteMsg } from '@anchor-protocol/anchor.js';
-import { floor } from '@anchor-protocol/big-math';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
+import {
+  formatFluidDecimalPoints,
+  MAX_EXECUTE_MSG_DECIMALS,
+} from '@anchor-protocol/notation';
 import { Rate } from '@anchor-protocol/types';
 import { UpdateConfig as DistributionModelUpdateConfig } from '@anchor-protocol/types/contracts/moneyMarket/distributionModel/updateConfig';
-import big from 'big.js';
 import { useContractAddress } from 'contexts/contract';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
 import React, { ChangeEvent, useCallback, useState } from 'react';
@@ -33,21 +35,28 @@ export function PollCreateModifyANCDistribution() {
       const distributionModelConfig: DistributionModelUpdateConfig['update_config'] = {};
 
       if (borrowerEmissionCap.length > 0) {
-        distributionModelConfig['emission_cap'] = floor(
-          big(borrowerEmissionCap),
-        ).toFixed() as Rate;
+        distributionModelConfig['emission_cap'] = formatFluidDecimalPoints(
+          borrowerEmissionCap,
+          MAX_EXECUTE_MSG_DECIMALS,
+        ) as Rate;
       }
 
       if (incrementMultiplier.length > 0) {
-        distributionModelConfig['increment_multiplier'] = floor(
-          big(incrementMultiplier),
-        ).toFixed() as Rate;
+        distributionModelConfig[
+          'increment_multiplier'
+        ] = formatFluidDecimalPoints(
+          incrementMultiplier,
+          MAX_EXECUTE_MSG_DECIMALS,
+        ) as Rate;
       }
 
       if (decrementMultiplier.length > 0) {
-        distributionModelConfig['decrement_multiplier'] = floor(
-          big(decrementMultiplier),
-        ).toFixed() as Rate;
+        distributionModelConfig[
+          'decrement_multiplier'
+        ] = formatFluidDecimalPoints(
+          decrementMultiplier,
+          MAX_EXECUTE_MSG_DECIMALS,
+        ) as Rate;
       }
 
       const msgs: Omit<ExecuteMsg, 'order'>[] = [];
@@ -98,7 +107,7 @@ export function PollCreateModifyANCDistribution() {
       <NumberInput
         placeholder="0.00"
         maxIntegerPoinsts={3}
-        maxDecimalPoints={10}
+        maxDecimalPoints={MAX_EXECUTE_MSG_DECIMALS}
         value={borrowerEmissionCap}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setBorrowerEmissionCap(target.value)
@@ -113,7 +122,7 @@ export function PollCreateModifyANCDistribution() {
       <NumberInput
         placeholder="0.00"
         maxIntegerPoinsts={3}
-        maxDecimalPoints={10}
+        maxDecimalPoints={MAX_EXECUTE_MSG_DECIMALS}
         value={incrementMultiplier}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setIncrementMultiplier(target.value)
@@ -128,7 +137,7 @@ export function PollCreateModifyANCDistribution() {
       <NumberInput
         placeholder="0.00"
         maxIntegerPoinsts={3}
-        maxDecimalPoints={10}
+        maxDecimalPoints={MAX_EXECUTE_MSG_DECIMALS}
         value={decrementMultiplier}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setDecrementMultiplier(target.value)

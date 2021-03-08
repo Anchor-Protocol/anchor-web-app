@@ -9,6 +9,7 @@ import {
   formatFluidDecimalPoints,
   formatUST,
   formatUSTInput,
+  MAX_EXECUTE_MSG_DECIMALS,
   microfy,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
@@ -256,7 +257,7 @@ export function TradeBuy() {
         amount: fromAmount,
         beliefPrice: formatFluidDecimalPoints(
           big(ancPrice.USTPoolSize).div(ancPrice.ANCPoolSize),
-          18,
+          MAX_EXECUTE_MSG_DECIMALS,
           {
             fallbackValue: '0',
           },

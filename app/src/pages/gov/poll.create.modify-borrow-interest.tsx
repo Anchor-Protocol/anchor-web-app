@@ -1,10 +1,14 @@
 import { ExecuteMsg } from '@anchor-protocol/anchor.js';
-import { floor } from '@anchor-protocol/big-math';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
+import {
+  formatFluidDecimalPoints,
+  MAX_EXECUTE_MSG_DECIMALS,
+} from '@anchor-protocol/notation';
 import { Rate } from '@anchor-protocol/types';
 import { UpdateConfig as InterestModelUpdateConfig } from '@anchor-protocol/types/contracts/moneyMarket/interestModel/updateConfig';
 import { InputAdornment } from '@material-ui/core';
 import big from 'big.js';
+import { useConstants } from 'contexts/contants';
 import { useContractAddress } from 'contexts/contract';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
 import React, { ChangeEvent, useCallback, useState } from 'react';
@@ -14,6 +18,7 @@ export function PollCreateModifyBorrowInterest() {
   // dependencies
   // ---------------------------------------------
   const address = useContractAddress();
+  const { blocksPerYear } = useConstants();
 
   // ---------------------------------------------
   // states
@@ -29,15 +34,17 @@ export function PollCreateModifyBorrowInterest() {
       const interestModelConfig: InterestModelUpdateConfig['update_config'] = {};
 
       if (interestMultiplier.length > 0) {
-        interestModelConfig['base_rate'] = big(baseBorrowRate)
-          .div(100)
-          .toFixed() as Rate;
+        interestModelConfig['base_rate'] = formatFluidDecimalPoints(
+          big(baseBorrowRate).div(100).div(blocksPerYear),
+          MAX_EXECUTE_MSG_DECIMALS,
+        ) as Rate;
       }
 
       if (interestMultiplier.length > 0) {
-        interestModelConfig['interest_multiplier'] = floor(
-          big(interestMultiplier),
-        ).toFixed() as Rate;
+        interestModelConfig['interest_multiplier'] = formatFluidDecimalPoints(
+          interestMultiplier,
+          MAX_EXECUTE_MSG_DECIMALS,
+        ) as Rate;
       }
 
       const msgs: Omit<ExecuteMsg, 'order'>[] = [];
@@ -58,7 +65,7 @@ export function PollCreateModifyBorrowInterest() {
         ...msg,
       }));
     },
-    [address.moneyMarket.interestModel],
+    [address.moneyMarket.interestModel, blocksPerYear],
   );
 
   // ---------------------------------------------
@@ -98,7 +105,7 @@ export function PollCreateModifyBorrowInterest() {
       <NumberInput
         placeholder="0.00"
         maxIntegerPoinsts={3}
-        maxDecimalPoints={6}
+        maxDecimalPoints={MAX_EXECUTE_MSG_DECIMALS}
         value={interestMultiplier}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setInterestMultiplier(target.value)

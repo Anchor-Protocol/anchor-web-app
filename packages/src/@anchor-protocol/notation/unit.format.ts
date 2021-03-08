@@ -7,6 +7,8 @@ export interface FormatOptions {
   fallbackValue?: string;
 }
 
+export const MAX_EXECUTE_MSG_DECIMALS = 18;
+
 export function formatFluidDecimalPoints(
   n: BigSource,
   numDecimalPoints: number,

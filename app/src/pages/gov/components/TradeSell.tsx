@@ -10,6 +10,7 @@ import {
   formatFluidDecimalPoints,
   formatUST,
   formatUSTInput,
+  MAX_EXECUTE_MSG_DECIMALS,
   microfy,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
 } from '@anchor-protocol/notation';
@@ -248,7 +249,7 @@ export function TradeSell() {
         amount: burnAmount,
         beliefPrice: formatFluidDecimalPoints(
           big(ancPrice.ANCPoolSize).div(ancPrice.USTPoolSize),
-          18,
+          MAX_EXECUTE_MSG_DECIMALS,
           {
             fallbackValue: '0',
           },

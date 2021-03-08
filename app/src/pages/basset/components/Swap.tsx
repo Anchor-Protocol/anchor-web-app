@@ -9,6 +9,7 @@ import {
   formatUST,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
+  MAX_EXECUTE_MSG_DECIMALS,
   microfy,
 } from '@anchor-protocol/notation';
 import type {
@@ -243,9 +244,13 @@ export function Swap() {
         address: walletReady.walletAddress,
         amount: burnAmount,
         bAsset: burnCurrency.value,
-        beliefPrice: formatFluidDecimalPoints(big(1).div(beliefPrice), 18, {
-          fallbackValue: '0',
-        }),
+        beliefPrice: formatFluidDecimalPoints(
+          big(1).div(beliefPrice),
+          MAX_EXECUTE_MSG_DECIMALS,
+          {
+            fallbackValue: '0',
+          },
+        ),
         maxSpread,
       });
 

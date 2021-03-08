@@ -1,6 +1,10 @@
 import { ExecuteMsg } from '@anchor-protocol/anchor.js';
 import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
+import {
+  formatFluidDecimalPoints,
+  MAX_EXECUTE_MSG_DECIMALS,
+} from '@anchor-protocol/notation';
 import { CW20Addr, Rate } from '@anchor-protocol/types';
 import { PollMsg } from '@anchor-protocol/types/contracts/anchorToken/gov';
 import { InputAdornment } from '@material-ui/core';
@@ -39,7 +43,10 @@ export function PollCreateModifyCollateralAttribute() {
       const msg: PollMsg = {
         update_whitelist: {
           collateral_token: bAsset.value,
-          max_ltv: big(ltv).div(100).toFixed() as Rate,
+          max_ltv: formatFluidDecimalPoints(
+            big(ltv).div(100),
+            MAX_EXECUTE_MSG_DECIMALS,
+          ) as Rate,
         },
       };
 

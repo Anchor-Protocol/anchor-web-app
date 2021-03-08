@@ -45,12 +45,6 @@ export function pickBurnResult({
     );
   }
 
-  console.log('pickBurnResult.ts..pickBurnResult()', fromContract);
-
-  // TODO restore this indexes
-  //const burnedAmount = pickAttributeValue<uLuna>(fromContract, 16);
-  //const expectedAmount = pickAttributeValue<ubLuna>(fromContract, 17);
-
   const burnedAmount = pickAttributeValue<uLuna>(fromContract, 4);
   const expectedAmount = pickAttributeValue<ubLuna>(fromContract, 16);
 
