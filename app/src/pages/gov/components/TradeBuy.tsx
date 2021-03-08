@@ -16,7 +16,6 @@ import {
 import {
   ANC,
   Denom,
-  Rate,
   terraswap,
   uANC,
   UST,
@@ -41,9 +40,12 @@ import { useConstants } from 'contexts/contants';
 import { useContractAddress } from 'contexts/contract';
 import { useService, useServiceConnectedMemo } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
+import { MAX_SPREAD } from 'pages/gov/env';
 import { buyFromSimulation } from 'pages/gov/logics/buyFromSimulation';
 import { buyToSimulation } from 'pages/gov/logics/buyToSimulation';
+import { AncPrice } from 'pages/gov/models/ancPrice';
 import { TradeSimulation } from 'pages/gov/models/tradeSimulation';
+import { useANCPrice } from 'pages/gov/queries/ancPrice';
 import { buyOptions } from 'pages/gov/transactions/buyOptions';
 import { queryReverseSimulation } from 'queries/reverseSimulation';
 import { querySimulation } from 'queries/simulation';
@@ -97,6 +99,13 @@ export function TradeBuy() {
     () => fromCurrencies[0],
   );
   const [toCurrency, setToCurrency] = useState<Item>(() => toCurrencies[0]);
+
+  // ---------------------------------------------
+  // queries
+  // ---------------------------------------------
+  const {
+    data: { ancPrice },
+  } = useANCPrice();
 
   // ---------------------------------------------
   // logics
@@ -241,19 +250,18 @@ export function TradeBuy() {
   }, []);
 
   const proceed = useCallback(
-    async (
-      walletReady: WalletReady,
-      fromAmount: UST,
-      beliefPrice: Rate,
-      maxSpread: Rate,
-    ) => {
+    async (walletReady: WalletReady, fromAmount: UST, ancPrice: AncPrice) => {
       const broadcasted = await buy({
         address: walletReady.walletAddress,
         amount: fromAmount,
-        beliefPrice: formatFluidDecimalPoints(beliefPrice, 18, {
-          fallbackValue: '0',
-        }),
-        maxSpread,
+        beliefPrice: formatFluidDecimalPoints(
+          big(ancPrice.USTPoolSize).div(ancPrice.ANCPrice),
+          18,
+          {
+            fallbackValue: '0',
+          },
+        ),
+        maxSpread: MAX_SPREAD.toString(),
         denom: 'uusd',
       });
 
@@ -403,6 +411,7 @@ export function TradeBuy() {
         className="submit"
         disabled={
           !serviceAvailable ||
+          !ancPrice ||
           fromAmount.length === 0 ||
           big(fromAmount).lte(0) ||
           !!invalidTxFee ||
@@ -410,13 +419,7 @@ export function TradeBuy() {
           big(simulation?.swapFee ?? 0).lte(0)
         }
         onClick={() =>
-          walletReady &&
-          proceed(
-            walletReady,
-            fromAmount,
-            simulation!.beliefPrice,
-            simulation!.maxSpread,
-          )
+          walletReady && ancPrice && proceed(walletReady, fromAmount, ancPrice)
         }
       >
         Proceed

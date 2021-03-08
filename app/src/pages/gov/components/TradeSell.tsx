@@ -13,15 +13,7 @@ import {
   microfy,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
 } from '@anchor-protocol/notation';
-import {
-  ANC,
-  Denom,
-  Rate,
-  terraswap,
-  uANC,
-  UST,
-  uUST,
-} from '@anchor-protocol/types';
+import { ANC, Denom, terraswap, uANC, UST, uUST } from '@anchor-protocol/types';
 import { useResolveLast } from '@anchor-protocol/use-resolve-last';
 import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
@@ -40,9 +32,12 @@ import { useConstants } from 'contexts/contants';
 import { useContractAddress } from 'contexts/contract';
 import { useService, useServiceConnectedMemo } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
+import { MAX_SPREAD } from 'pages/gov/env';
 import { sellFromSimulation } from 'pages/gov/logics/sellFromSimulation';
 import { sellToSimulation } from 'pages/gov/logics/sellToSimulation';
+import { AncPrice } from 'pages/gov/models/ancPrice';
 import { TradeSimulation } from 'pages/gov/models/tradeSimulation';
+import { useANCPrice } from 'pages/gov/queries/ancPrice';
 import { sellOptions } from 'pages/gov/transactions/sellOptions';
 import { queryReverseSimulation } from 'queries/reverseSimulation';
 import { querySimulation } from 'queries/simulation';
@@ -96,6 +91,13 @@ export function TradeSell() {
     () => fromCurrencies[0],
   );
   const [toCurrency, setToCurrency] = useState<Item>(() => toCurrencies[0]);
+
+  // ---------------------------------------------
+  // queries
+  // ---------------------------------------------
+  const {
+    data: { ancPrice },
+  } = useANCPrice();
 
   // ---------------------------------------------
   // logics
@@ -240,19 +242,18 @@ export function TradeSell() {
   }, []);
 
   const proceed = useCallback(
-    async (
-      walletReady: WalletReady,
-      burnAmount: ANC,
-      beliefPrice: Rate,
-      maxSpread: Rate,
-    ) => {
+    async (walletReady: WalletReady, burnAmount: ANC, ancPrice: AncPrice) => {
       const broadcasted = await sell({
         address: walletReady.walletAddress,
         amount: burnAmount,
-        beliefPrice: formatFluidDecimalPoints(big(1).div(beliefPrice), 18, {
-          fallbackValue: '0',
-        }),
-        maxSpread,
+        beliefPrice: formatFluidDecimalPoints(
+          big(ancPrice.ANCPoolSize).div(ancPrice.USTPoolSize),
+          18,
+          {
+            fallbackValue: '0',
+          },
+        ),
+        maxSpread: MAX_SPREAD.toString(),
       });
 
       if (!broadcasted) {
@@ -401,6 +402,7 @@ export function TradeSell() {
         className="submit"
         disabled={
           !serviceAvailable ||
+          !ancPrice ||
           fromAmount.length === 0 ||
           big(fromAmount).lte(0) ||
           !!invalidTxFee ||
@@ -408,13 +410,7 @@ export function TradeSell() {
           big(simulation?.swapFee ?? 0).lte(0)
         }
         onClick={() =>
-          walletReady &&
-          proceed(
-            walletReady,
-            fromAmount,
-            simulation!.beliefPrice,
-            simulation!.maxSpread,
-          )
+          walletReady && ancPrice && proceed(walletReady, fromAmount, ancPrice)
         }
       >
         Proceed

@@ -6,7 +6,6 @@ export interface TradeSimulation<
   R extends uToken = To
 > extends terraswap.SimulationResponse<To, R> {
   beliefPrice: Rate;
-  maxSpread: Rate;
   minimumReceived: To;
   swapFee: To;
 

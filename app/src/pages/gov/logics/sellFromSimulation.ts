@@ -2,6 +2,7 @@ import { min } from '@anchor-protocol/big-math';
 import { Rate, uANC, uUST } from '@anchor-protocol/types';
 import { terraswap } from '@anchor-protocol/types/contracts';
 import big, { Big, BigSource } from 'big.js';
+import { MAX_SPREAD } from 'pages/gov/env';
 import { TradeSimulation } from 'pages/gov/models/tradeSimulation';
 import { Data as TaxData } from 'queries/tax';
 
@@ -13,8 +14,6 @@ export function sellFromSimulation(
 ): TradeSimulation<uUST, uANC, uANC> {
   const beliefPrice = big(toAmount).div(simulation.return_amount);
 
-  const maxSpread = 0.05;
-
   const tax = min(
     big(toAmount).minus(big(toAmount).div(big(1).plus(taxRate))),
     maxTaxUUSD,
@@ -22,7 +21,7 @@ export function sellFromSimulation(
 
   const expectedAmount = big(simulation.return_amount).minus(tax);
 
-  const rate = big(1).minus(maxSpread);
+  const rate = big(1).minus(MAX_SPREAD);
 
   return {
     ...simulation,
@@ -31,7 +30,6 @@ export function sellFromSimulation(
       .plus(simulation.spread_amount)
       .toFixed() as uUST,
     beliefPrice: beliefPrice.toFixed() as Rate,
-    maxSpread: maxSpread.toString() as Rate,
 
     txFee: tax.plus(fixedGas).toFixed() as uUST,
     fromAmount: big(simulation.return_amount).toString() as uANC,
