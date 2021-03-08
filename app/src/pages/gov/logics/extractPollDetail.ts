@@ -60,11 +60,11 @@ export function extractPollDetail(
   const baseline =
     quorum.current > quorum.gov
       ? {
-          value: threshold * total,
+          value: (threshold / total) * total,
           label: 'Pass Threshold',
         }
       : {
-          value: quorum.gov * total,
+          value: big(quorum.gov).mul(total).toNumber(),
           label: `Quorum ${formatRateToPercentage(
             quorum.gov as Rate<number>,
           )}%`,
