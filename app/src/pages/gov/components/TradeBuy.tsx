@@ -255,7 +255,7 @@ export function TradeBuy() {
         address: walletReady.walletAddress,
         amount: fromAmount,
         beliefPrice: formatFluidDecimalPoints(
-          big(ancPrice.USTPoolSize).div(ancPrice.ANCPrice),
+          big(ancPrice.USTPoolSize).div(ancPrice.ANCPoolSize),
           18,
           {
             fallbackValue: '0',
