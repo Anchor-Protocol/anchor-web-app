@@ -303,13 +303,7 @@ function ComponentBase({
                 : formatUST(demicrofy(totalOutstandingLoan))}{' '}
               UST
             </TxFeeListItem>
-            <TxFeeListItem
-              label={
-                <IconSpan>
-                  Tx Fee <InfoTooltip>Tx Fee Description</InfoTooltip>
-                </IconSpan>
-              }
-            >
+            <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
               {formatUST(demicrofy(txFee))} UST
             </TxFeeListItem>
             <TxFeeListItem label="Send Amount">

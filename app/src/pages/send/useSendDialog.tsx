@@ -2,7 +2,6 @@ import { useOperation } from '@anchor-protocol/broadcastable-operation';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
 import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
 import {
@@ -317,13 +316,7 @@ function ComponentBase({
         </SelectAndTextInputContainer>
 
         <TxFeeList className="receipt">
-          <TxFeeListItem
-            label={
-              <IconSpan>
-                Tx Fee <InfoTooltip>Tx Fee Description</InfoTooltip>
-              </IconSpan>
-            }
-          >
+          <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
             {formatUST(demicrofy(fixedGas))} UST
           </TxFeeListItem>
         </TxFeeList>

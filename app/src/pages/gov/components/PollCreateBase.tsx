@@ -2,7 +2,6 @@ import { ExecuteMsg } from '@anchor-protocol/anchor.js';
 import { useOperation } from '@anchor-protocol/broadcastable-operation';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
 import {
@@ -220,13 +219,7 @@ export function PollCreateBase({
         />
 
         <TxFeeList className="receipt">
-          <TxFeeListItem
-            label={
-              <IconSpan>
-                Tx Fee <InfoTooltip>Tx Fee Description</InfoTooltip>
-              </IconSpan>
-            }
-          >
+          <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
             {formatUSTWithPostfixUnits(demicrofy(txFee))} UST
           </TxFeeListItem>
         </TxFeeList>

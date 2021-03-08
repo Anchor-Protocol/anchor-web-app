@@ -2,7 +2,6 @@ import { useOperation } from '@anchor-protocol/broadcastable-operation';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { HorizontalHeavyRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalHeavyRuler';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
@@ -342,13 +341,7 @@ function MintBase({ className }: MintProps) {
           />
         )}
         {bondAmount.length > 0 && (
-          <TxFeeListItem
-            label={
-              <IconSpan>
-                Tx Fee <InfoTooltip>Tx Fee Description</InfoTooltip>
-              </IconSpan>
-            }
-          >
+          <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
             {formatUST(demicrofy(fixedGas))} UST
           </TxFeeListItem>
         )}
