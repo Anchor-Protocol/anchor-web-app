@@ -1,7 +1,7 @@
 import { Launch } from '@material-ui/icons';
 import { WalletSelector } from 'components/Header/WalletSelector';
 import { useConstants } from 'contexts/contants';
-import { screen } from 'env';
+import { links, screen } from 'env';
 import { govPathname } from 'pages/gov/env';
 import React from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
@@ -22,27 +22,11 @@ function HeaderBase({ className }: HeaderProps) {
       </a>
 
       <nav className="menu">
-        <NavMenu
-          to="/earn"
-          title="EARN"
-          docsTo="https://anchor-protocol.gitbook.io/anchor-2/user-guide/earn"
-        />
-        <NavMenu
-          to="/borrow"
-          title="BORROW"
-          docsTo="https://anchor-protocol.gitbook.io/anchor-2/user-guide/borrow"
-        />
-        <NavMenu
-          to="/bond"
-          title="BOND"
-          docsTo="https://anchor-protocol.gitbook.io/anchor-2/user-guide/basset"
-        />
+        <NavMenu to="/earn" title="EARN" docsTo={links.earn} />
+        <NavMenu to="/borrow" title="BORROW" docsTo={links.borrow} />
+        <NavMenu to="/bond" title="BOND" docsTo={links.bond} />
         {!isDemo && (
-          <NavMenu
-            to={`/${govPathname}`}
-            title="GOVERN"
-            docsTo="https://anchor-protocol.gitbook.io/anchor-2/user-guide/govern"
-          />
+          <NavMenu to={`/${govPathname}`} title="GOVERN" docsTo={links.gov} />
         )}
       </nav>
 

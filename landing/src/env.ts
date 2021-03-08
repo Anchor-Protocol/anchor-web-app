@@ -21,11 +21,6 @@ export const headerHeight = 84;
 //3rd page Anchor offers Easier Integrations -> https://docs.anchorprotocol.com/developers-terra/anchor.js
 //4th page Anchor offers frictionless access -> https://app.anchorprotocol.com
 
-//EARN docs -> https://docs.anchorprotocol.com/user-guide/earn
-//BORROW docs -> https://docs.anchorprotocol.com/user-guide/borrow
-//BOND docs -> https://docs.anchorprotocol.com/user-guide/bond
-//GOVERN docs -> https://docs.anchorprotocol.com/user-guide/govern
-
 export const links = {
   developers: 'https://docs.anchorprotocol.com/developers-terra/anchor.js',
   betterYield: 'https://docs.anchorprotocol.com/protocol/overview',

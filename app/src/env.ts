@@ -20,6 +20,18 @@ export const SENTRY_DSN =
 
 export const SAFE_RATIO: Rate<number> = 0.7 as Rate<number>;
 
+//EARN docs -> https://docs.anchorprotocol.com/user-guide/earn
+//BORROW docs -> https://docs.anchorprotocol.com/user-guide/borrow
+//BOND docs -> https://docs.anchorprotocol.com/user-guide/bond
+//GOVERN docs -> https://docs.anchorprotocol.com/user-guide/govern
+
+export const links = {
+  earn: 'https://docs.anchorprotocol.com/user-guide/earn',
+  borrow: 'https://docs.anchorprotocol.com/user-guide/borrow',
+  bond: 'https://docs.anchorprotocol.com/user-guide/bond',
+  gov: 'https://docs.anchorprotocol.com/user-guide/govern',
+};
+
 export const onProduction =
   global.location.host === 'app.anchorprotocol.com' ||
   global.location.host === 'app.anchor.money' ||
