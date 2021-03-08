@@ -35,7 +35,7 @@ export function useTimeEnd(endTime: Date): string {
     setRemainTime(timeGap(endTime, new Date()));
   }, [endTime]);
 
-  useInterval(updateRemainTime, 1000);
+  useInterval(updateRemainTime, Date.now() < endTime.getTime() ? 1000 : 0);
 
   return remainTime;
 }
