@@ -100,7 +100,7 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
     <CenteredLayout className={className}>
       <header>
         <h1>
-          <Circles radius={24} backgroundColor="#ffffff">
+          <Circles radius={24} backgroundColors={['#ffffff', '#2C2C2C']}>
             <TokenIcon
               token="ust"
               variant="@3x"

@@ -5,19 +5,37 @@ export interface CirclesProps {
   className?: string;
   children: ReactNode;
   radius?: number;
-  backgroundColor?: string;
+  backgroundColors?: string[];
 }
 
 const defaultRadius = 40;
 
-function CirclesBase({ className, children }: CirclesProps) {
+function CirclesBase({
+  className,
+  children,
+  backgroundColors = ['#ffffff'],
+}: CirclesProps) {
   return (
     <div className={className}>
       {Array.isArray(children)
         ? children
             .filter((el) => isValidElement(el))
-            .map((element, i) => <figure key={'circle' + i}>{element}</figure>)
-        : isValidElement(children) && <figure>{children}</figure>}
+            .map((element, i) => (
+              <figure
+                key={'circle' + i}
+                style={{
+                  backgroundColor:
+                    backgroundColors[i % backgroundColors.length],
+                }}
+              >
+                {element}
+              </figure>
+            ))
+        : isValidElement(children) && (
+            <figure style={{ backgroundColor: backgroundColors[0] }}>
+              {children}
+            </figure>
+          )}
     </div>
   );
 }
@@ -37,9 +55,6 @@ export const Circles = styled(CirclesBase)`
 
     display: grid;
     place-content: center;
-
-    background-color: ${({ backgroundColor, theme }) =>
-      backgroundColor ?? theme.highlightBackgroundColor};
     border-radius: 50%;
 
     &:not(:first-child) {

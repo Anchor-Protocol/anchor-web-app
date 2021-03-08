@@ -24,7 +24,7 @@ import { totalStakedGovShareIndex } from 'pages/gov/logics/totalStakedGovShareIn
 import { useANCPrice } from 'pages/gov/queries/ancPrice';
 import { useLPStakingState } from 'pages/gov/queries/lpStakingState';
 import { useTotalStaked } from 'pages/gov/queries/totalStaked';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -83,7 +83,7 @@ function OverviewBase({ className }: OverviewProps) {
         </div>
       </Section>
       <Section className="staking">
-        <Circles backgroundColor="#ffffff">
+        <Circles backgroundColors={['#2C2C2C']}>
           <AnchorNoCircle style={{ fontSize: '1.4em' }} />
         </Circles>
         <h2>Anchor Governance Staking</h2>
@@ -106,7 +106,7 @@ function OverviewBase({ className }: OverviewProps) {
         </div>
       </Section>
       <Section className="lp">
-        <Circles backgroundColor="#ffffff">
+        <Circles backgroundColors={['#ffffff', '#2C2C2C']}>
           <TokenIcon token="ust" variant="@3x" style={{ fontSize: '1.1em' }} />
           <AnchorNoCircle style={{ fontSize: '1.4em' }} />
         </Circles>
