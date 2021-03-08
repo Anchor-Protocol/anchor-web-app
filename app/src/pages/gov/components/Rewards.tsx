@@ -180,9 +180,25 @@ export function RewardsBase({ className }: RewardsProps) {
                   APY <InfoTooltip>Annualized Staking Returns</InfoTooltip>
                 </IconSpan>
               </th>
-              <th>Staked</th>
+              <th>
+                <IconSpan>
+                  Staked{' '}
+                  <InfoTooltip>
+                    Quantity of staked assets from the corresponding reward
+                    pools
+                  </InfoTooltip>
+                </IconSpan>
+              </th>
               <th>Stakable</th>
-              <th>Reward</th>
+              <th>
+                <IconSpan>
+                  Reward{' '}
+                  <InfoTooltip>
+                    Quantity of claimable rewards for the corresponding staking
+                    pool
+                  </InfoTooltip>
+                </IconSpan>
+              </th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -191,18 +207,23 @@ export function RewardsBase({ className }: RewardsProps) {
               <td>
                 <p>ANC-UST LP</p>
                 <p style={{ fontSize: 12 }}>
-                  {ancUstLp?.withdrawableAssets
-                    ? formatANCWithPostfixUnits(
-                        demicrofy(ancUstLp.withdrawableAssets.anc),
-                      )
-                    : 0}{' '}
-                  ANC +{' '}
-                  {ancUstLp?.withdrawableAssets
-                    ? formatUSTWithPostfixUnits(
-                        demicrofy(ancUstLp.withdrawableAssets.ust),
-                      )
-                    : 0}{' '}
-                  UST
+                  <IconSpan>
+                    {ancUstLp?.withdrawableAssets
+                      ? formatANCWithPostfixUnits(
+                          demicrofy(ancUstLp.withdrawableAssets.anc),
+                        )
+                      : 0}{' '}
+                    ANC +{' '}
+                    {ancUstLp?.withdrawableAssets
+                      ? formatUSTWithPostfixUnits(
+                          demicrofy(ancUstLp.withdrawableAssets.ust),
+                        )
+                      : 0}{' '}
+                    UST{' '}
+                    <InfoTooltip>
+                      Amount of withdrawable assets from the ANC-UST pair
+                    </InfoTooltip>
+                  </IconSpan>
                 </p>
               </td>
               <td>
@@ -277,7 +298,15 @@ export function RewardsBase({ className }: RewardsProps) {
                   : 0}{' '}
                 ANC
               </td>
-              <td>Automatically re-staked</td>
+              <td>
+                <IconSpan>
+                  Automatically re-staked{' '}
+                  <InfoTooltip>
+                    Protocol fee paid from withdrawing collateral is distributed
+                    to ANC stakers and increases staked ANC
+                  </InfoTooltip>
+                </IconSpan>
+              </td>
               <td>
                 <MoreMenu size="25px">
                   <MenuItem
