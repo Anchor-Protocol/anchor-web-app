@@ -1,10 +1,7 @@
 import { ExecuteMsg } from '@anchor-protocol/anchor.js';
 import { floor } from '@anchor-protocol/big-math';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
-import {
-  formatFluidDecimalPoints,
-  MAX_EXECUTE_MSG_DECIMALS,
-} from '@anchor-protocol/notation';
+import { formatExecuteMsgNumber } from '@anchor-protocol/notation';
 import { Rate } from '@anchor-protocol/types';
 import { UpdateConfig as MarketUpdateConfig } from '@anchor-protocol/types/contracts/moneyMarket/market/updateConfig';
 import { UpdateConfig as OverseerUpdateConfig } from '@anchor-protocol/types/contracts/moneyMarket/overseer/updateConfig';
@@ -47,27 +44,22 @@ export function PollCreateModifyMarketParameters() {
       const marketUpdateConfig: MarketUpdateConfig['update_config'] = {};
 
       if (targetDepositRate.length > 0) {
-        overseerUpdateConfig['target_deposit_rate'] = formatFluidDecimalPoints(
+        overseerUpdateConfig['target_deposit_rate'] = formatExecuteMsgNumber(
           big(targetDepositRate).div(100),
-          MAX_EXECUTE_MSG_DECIMALS,
         ) as Rate;
       }
 
       if (thresholdDepositRate.length > 0) {
-        overseerUpdateConfig[
-          'threshold_deposit_rate'
-        ] = formatFluidDecimalPoints(
+        overseerUpdateConfig['threshold_deposit_rate'] = formatExecuteMsgNumber(
           big(thresholdDepositRate).div(100),
-          MAX_EXECUTE_MSG_DECIMALS,
         ) as Rate;
       }
 
       if (bufferDistributionFactor.length > 0) {
         overseerUpdateConfig[
           'buffer_distribution_factor'
-        ] = formatFluidDecimalPoints(
+        ] = formatExecuteMsgNumber(
           big(bufferDistributionFactor).div(100),
-          MAX_EXECUTE_MSG_DECIMALS,
         ) as Rate;
       }
 

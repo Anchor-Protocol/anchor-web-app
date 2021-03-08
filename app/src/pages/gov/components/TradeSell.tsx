@@ -7,10 +7,10 @@ import {
   demicrofy,
   formatANC,
   formatANCInput,
+  formatExecuteMsgNumber,
   formatFluidDecimalPoints,
   formatUST,
   formatUSTInput,
-  MAX_EXECUTE_MSG_DECIMALS,
   microfy,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
 } from '@anchor-protocol/notation';
@@ -247,12 +247,8 @@ export function TradeSell() {
       const broadcasted = await sell({
         address: walletReady.walletAddress,
         amount: burnAmount,
-        beliefPrice: formatFluidDecimalPoints(
+        beliefPrice: formatExecuteMsgNumber(
           big(ancPrice.ANCPoolSize).div(ancPrice.USTPoolSize),
-          MAX_EXECUTE_MSG_DECIMALS,
-          {
-            fallbackValue: '0',
-          },
         ),
         maxSpread: MAX_SPREAD.toString(),
       });

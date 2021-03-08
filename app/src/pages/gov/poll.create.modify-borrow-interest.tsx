@@ -1,7 +1,7 @@
 import { ExecuteMsg } from '@anchor-protocol/anchor.js';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import {
-  formatFluidDecimalPoints,
+  formatExecuteMsgNumber,
   MAX_EXECUTE_MSG_DECIMALS,
 } from '@anchor-protocol/notation';
 import { Rate } from '@anchor-protocol/types';
@@ -34,16 +34,14 @@ export function PollCreateModifyBorrowInterest() {
       const interestModelConfig: InterestModelUpdateConfig['update_config'] = {};
 
       if (interestMultiplier.length > 0) {
-        interestModelConfig['base_rate'] = formatFluidDecimalPoints(
+        interestModelConfig['base_rate'] = formatExecuteMsgNumber(
           big(baseBorrowRate).div(100).div(blocksPerYear),
-          MAX_EXECUTE_MSG_DECIMALS,
         ) as Rate;
       }
 
       if (interestMultiplier.length > 0) {
-        interestModelConfig['interest_multiplier'] = formatFluidDecimalPoints(
+        interestModelConfig['interest_multiplier'] = formatExecuteMsgNumber(
           interestMultiplier,
-          MAX_EXECUTE_MSG_DECIMALS,
         ) as Rate;
       }
 

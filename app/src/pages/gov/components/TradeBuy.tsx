@@ -6,10 +6,10 @@ import {
   demicrofy,
   formatANC,
   formatANCInput,
+  formatExecuteMsgNumber,
   formatFluidDecimalPoints,
   formatUST,
   formatUSTInput,
-  MAX_EXECUTE_MSG_DECIMALS,
   microfy,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
@@ -255,12 +255,8 @@ export function TradeBuy() {
       const broadcasted = await buy({
         address: walletReady.walletAddress,
         amount: fromAmount,
-        beliefPrice: formatFluidDecimalPoints(
+        beliefPrice: formatExecuteMsgNumber(
           big(ancPrice.USTPoolSize).div(ancPrice.ANCPoolSize),
-          MAX_EXECUTE_MSG_DECIMALS,
-          {
-            fallbackValue: '0',
-          },
         ),
         maxSpread: MAX_SPREAD.toString(),
         denom: 'uusd',

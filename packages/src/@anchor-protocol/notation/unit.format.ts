@@ -23,13 +23,21 @@ export function formatFluidDecimalPoints(
     .div(10 ** numDecimalPoints)
     .toFixed();
 
-  const str = numeral(num).format(
-    delimiter
-      ? `0,0.[${'0'.repeat(numDecimalPoints)}]`
-      : `0.[${'0'.repeat(numDecimalPoints)}]`,
-  );
+  if (num === 'NaN') return fallbackValue;
 
-  return str === 'NaN' ? fallbackValue : str;
+  const [i, d] = num.split('.');
+
+  const ii = delimiter ? numeral(i).format('0,0') : i;
+  const dd = d ? '.' + d : '';
+
+  return ii + dd;
+}
+
+export function formatExecuteMsgNumber(n: BigSource): string {
+  return formatFluidDecimalPoints(n, MAX_EXECUTE_MSG_DECIMALS, {
+    delimiter: false,
+    fallbackValue: '0',
+  });
 }
 
 export function formatPercentage(

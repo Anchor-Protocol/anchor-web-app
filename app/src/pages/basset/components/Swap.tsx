@@ -3,13 +3,13 @@ import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionB
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
 import {
   demicrofy,
+  formatExecuteMsgNumber,
   formatFluidDecimalPoints,
   formatLuna,
   formatLunaInput,
   formatUST,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
-  MAX_EXECUTE_MSG_DECIMALS,
   microfy,
 } from '@anchor-protocol/notation';
 import type {
@@ -39,10 +39,10 @@ import { useConstants } from 'contexts/contants';
 import { useContractAddress } from 'contexts/contract';
 import { useService, useServiceConnectedMemo } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
-import { querySimulation } from 'queries/simulation';
-import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { swapBurnSimulation } from 'pages/basset/logics/swapBurnSimulation';
 import { swapGetSimulation } from 'pages/basset/logics/swapGetSimulation';
+import { querySimulation } from 'queries/simulation';
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { validateBurnAmount } from '../logics/validateBurnAmount';
 import { SwapSimulation } from '../models/swapSimulation';
 import { useTerraswapBLunaPrice } from '../queries/terraswapBLunaPrice';
@@ -244,13 +244,7 @@ export function Swap() {
         address: walletReady.walletAddress,
         amount: burnAmount,
         bAsset: burnCurrency.value,
-        beliefPrice: formatFluidDecimalPoints(
-          big(1).div(beliefPrice),
-          MAX_EXECUTE_MSG_DECIMALS,
-          {
-            fallbackValue: '0',
-          },
-        ),
+        beliefPrice: formatExecuteMsgNumber(big(1).div(beliefPrice)),
         maxSpread,
       });
 

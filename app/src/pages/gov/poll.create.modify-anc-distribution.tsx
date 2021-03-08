@@ -1,7 +1,7 @@
 import { ExecuteMsg } from '@anchor-protocol/anchor.js';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import {
-  formatFluidDecimalPoints,
+  formatExecuteMsgNumber,
   MAX_EXECUTE_MSG_DECIMALS,
 } from '@anchor-protocol/notation';
 import { Rate } from '@anchor-protocol/types';
@@ -35,28 +35,21 @@ export function PollCreateModifyANCDistribution() {
       const distributionModelConfig: DistributionModelUpdateConfig['update_config'] = {};
 
       if (borrowerEmissionCap.length > 0) {
-        distributionModelConfig['emission_cap'] = formatFluidDecimalPoints(
+        distributionModelConfig['emission_cap'] = formatExecuteMsgNumber(
           borrowerEmissionCap,
-          MAX_EXECUTE_MSG_DECIMALS,
         ) as Rate;
       }
 
       if (incrementMultiplier.length > 0) {
         distributionModelConfig[
           'increment_multiplier'
-        ] = formatFluidDecimalPoints(
-          incrementMultiplier,
-          MAX_EXECUTE_MSG_DECIMALS,
-        ) as Rate;
+        ] = formatExecuteMsgNumber(incrementMultiplier) as Rate;
       }
 
       if (decrementMultiplier.length > 0) {
         distributionModelConfig[
           'decrement_multiplier'
-        ] = formatFluidDecimalPoints(
-          decrementMultiplier,
-          MAX_EXECUTE_MSG_DECIMALS,
-        ) as Rate;
+        ] = formatExecuteMsgNumber(decrementMultiplier) as Rate;
       }
 
       const msgs: Omit<ExecuteMsg, 'order'>[] = [];
