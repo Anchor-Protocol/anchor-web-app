@@ -88,7 +88,7 @@ export const MobileHeader = styled(MobileHeaderBase)`
   > nav {
     background-color: #ffffff;
 
-    a {
+    a:not(.webapp) {
       font-size: 36px;
       font-weight: 700;
       letter-spacing: -0.2px;
@@ -105,7 +105,7 @@ export const MobileHeader = styled(MobileHeaderBase)`
       }
     }
 
-    > button {
+    > .webapp {
       color: #999999;
       background-color: #f6f6f6;
 

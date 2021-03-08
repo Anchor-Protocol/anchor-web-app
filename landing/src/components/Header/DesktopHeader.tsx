@@ -67,7 +67,7 @@ export const DesktopHeader = styled(DesktopHeaderBase)`
 
   // webapp
   > :last-child {
-    button {
+    .webapp {
       color: #999999;
       background-color: #f6f6f6;
 

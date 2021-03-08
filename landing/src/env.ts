@@ -32,4 +32,5 @@ export const links = {
   discord: 'https://discord.gg/9aUYgpKZ9c',
   forum: 'https://forum.anchorprotocol.com/',
   terra: 'https://terra.money/',
+  app: 'https://app.anchorprotocol.com',
 };

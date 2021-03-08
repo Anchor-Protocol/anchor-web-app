@@ -1,3 +1,4 @@
+import { links } from 'env';
 import styled from 'styled-components';
 import { Labtop } from '@anchor-protocol/icons';
 
@@ -7,13 +8,23 @@ export interface WebAppButtonProps {
 
 function WebAppButtonBase({ className }: WebAppButtonProps) {
   return (
-    <button className={className}>
+    <a
+      className={`webapp ${className}`}
+      href={links.app}
+      target="_blank"
+      rel="noreferrer"
+    >
       <Labtop /> WebApp
-    </button>
+    </a>
   );
 }
 
 export const WebAppButton = styled(WebAppButtonBase)`
+  display: inline-flex;
+  text-decoration: none;
+  justify-content: center;
+  align-items: center;
+
   width: 124px;
   height: 36px;
   border-radius: 18px;
@@ -28,6 +39,6 @@ export const WebAppButton = styled(WebAppButtonBase)`
     margin-left: 4px;
     margin-right: 9px;
     font-size: 1em;
-    transform: scale(1.8) translateY(1px);
+    transform: scale(1.8);
   }
 `;
