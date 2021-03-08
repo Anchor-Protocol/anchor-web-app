@@ -84,13 +84,7 @@ export function RewardsBase({ className }: RewardsProps) {
 
     const stakable = userLPBalance.balance;
 
-    const reward = big(
-      big(
-        big(lpStakingState.global_reward_index).minus(
-          userLPStakingInfo.reward_index,
-        ),
-      ).mul(userLPStakingInfo.bond_amount),
-    ).plus(userLPStakingInfo.pending_reward) as uANC<Big>;
+    const reward = userLPStakingInfo.pending_reward;
 
     return { withdrawableAssets, staked, stakable, reward };
   }, [ancPrice, lpStakingState, userLPBalance, userLPStakingInfo]);
