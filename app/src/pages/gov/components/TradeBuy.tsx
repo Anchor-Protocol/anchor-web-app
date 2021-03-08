@@ -250,7 +250,7 @@ export function TradeBuy() {
       const broadcasted = await buy({
         address: walletReady.walletAddress,
         amount: fromAmount,
-        beliefPrice: formatFluidDecimalPoints(big(1).div(beliefPrice), 18, {
+        beliefPrice: formatFluidDecimalPoints(beliefPrice, 18, {
           fallbackValue: '0',
         }),
         maxSpread,
@@ -375,7 +375,7 @@ export function TradeBuy() {
             currencyA="UST"
             currencyB="ANC"
             exchangeRateAB={simulation.beliefPrice}
-            initialDirection="a/b"
+            initialDirection="b/a"
             formatExchangeRate={(price, direction) =>
               formatFluidDecimalPoints(
                 price,
