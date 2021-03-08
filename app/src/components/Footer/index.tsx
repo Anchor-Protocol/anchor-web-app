@@ -46,16 +46,36 @@ function FooterBase({ className, style }: FooterProps) {
         </a>
       </div>
       <div>
-        <IconButton>
+        <IconButton
+          component="a"
+          href="https://discord.gg/9aUYgpKZ9c"
+          target="_blank"
+          rel="noreferrer"
+        >
           <Discord />
         </IconButton>
-        <IconButton>
+        <IconButton
+          component="a"
+          href="https://twitter.com/anchor_protocol"
+          target="_blank"
+          rel="noreferrer"
+        >
           <Twitter />
         </IconButton>
-        <IconButton>
+        <IconButton
+          component="a"
+          href="https://t.me/protocol_anchor"
+          target="_blank"
+          rel="noreferrer"
+        >
           <Telegram />
         </IconButton>
-        <IconButton>
+        <IconButton
+          component="a"
+          href="https://github.com/Anchor-Protocol"
+          target="_blank"
+          rel="noreferrer"
+        >
           <GitHub />
         </IconButton>
         <IconButton

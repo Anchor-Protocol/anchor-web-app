@@ -356,6 +356,10 @@ export const Rewards = styled(RewardsBase)`
         text-align: center;
       }
 
+      td:nth-child(4) {
+        color: ${({ theme }) => theme.colors.negative};
+      }
+
       th:nth-child(6),
       td:nth-child(6) {
         text-align: right;
