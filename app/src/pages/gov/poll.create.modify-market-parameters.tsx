@@ -7,6 +7,7 @@ import { UpdateConfig as MarketUpdateConfig } from '@anchor-protocol/types/contr
 import { UpdateConfig as OverseerUpdateConfig } from '@anchor-protocol/types/contracts/moneyMarket/overseer/updateConfig';
 import { InputAdornment } from '@material-ui/core';
 import big from 'big.js';
+import { useConstants } from 'contexts/contants';
 import { useContractAddress } from 'contexts/contract';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
 import React, { ChangeEvent, useCallback, useState } from 'react';
@@ -16,6 +17,7 @@ export function PollCreateModifyMarketParameters() {
   // dependencies
   // ---------------------------------------------
   const address = useContractAddress();
+  const { blocksPerYear } = useConstants();
 
   // ---------------------------------------------
   // states
@@ -45,13 +47,13 @@ export function PollCreateModifyMarketParameters() {
 
       if (targetDepositRate.length > 0) {
         overseerUpdateConfig['target_deposit_rate'] = formatExecuteMsgNumber(
-          big(targetDepositRate).div(100),
+          big(targetDepositRate).div(100).div(blocksPerYear),
         ) as Rate;
       }
 
       if (thresholdDepositRate.length > 0) {
         overseerUpdateConfig['threshold_deposit_rate'] = formatExecuteMsgNumber(
-          big(thresholdDepositRate).div(100),
+          big(thresholdDepositRate).div(100).div(blocksPerYear),
         ) as Rate;
       }
 
@@ -104,7 +106,7 @@ export function PollCreateModifyMarketParameters() {
         ...msg,
       }));
     },
-    [address.moneyMarket.market, address.moneyMarket.overseer],
+    [address.moneyMarket.market, address.moneyMarket.overseer, blocksPerYear],
   );
 
   // ---------------------------------------------

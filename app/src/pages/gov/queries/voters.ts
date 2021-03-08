@@ -75,8 +75,10 @@ export function useVoters(
     setVoters([]);
 
     queryVoters(client, address, pollId, undefined, limit).then(({ data }) => {
-      if (data.voters?.voters && data.voters.voters.length > 0) {
-        setVoters(data.voters.voters);
+      if (data.voters?.voters) {
+        if (data.voters.voters.length > 0) {
+          setVoters(data.voters.voters);
+        }
 
         if (data.voters.voters.length < limit) {
           setIsLast(true);

@@ -20,6 +20,9 @@ export function PollCreateModifyANCDistribution() {
   // states
   // ---------------------------------------------
   const [borrowerEmissionCap, setBorrowerEmissionCap] = useState<string>('');
+  const [borrowerEmissionFloor, setBorrowerEmissionFloor] = useState<string>(
+    '',
+  );
   const [incrementMultiplier, setIncrementMultiplier] = useState<string>('');
   const [decrementMultiplier, setDecrementMultiplier] = useState<string>('');
 
@@ -29,6 +32,7 @@ export function PollCreateModifyANCDistribution() {
   const createMsgs = useCallback(
     (
       borrowerEmissionCap: string,
+      borrowerEmissionFloor: string,
       incrementMultiplier: string,
       decrementMultiplier: string,
     ): ExecuteMsg[] => {
@@ -37,6 +41,12 @@ export function PollCreateModifyANCDistribution() {
       if (borrowerEmissionCap.length > 0) {
         distributionModelConfig['emission_cap'] = formatExecuteMsgNumber(
           borrowerEmissionCap,
+        ) as Rate;
+      }
+
+      if (borrowerEmissionFloor.length > 0) {
+        distributionModelConfig['emission_floor'] = formatExecuteMsgNumber(
+          borrowerEmissionFloor,
         ) as Rate;
       }
 
@@ -81,12 +91,14 @@ export function PollCreateModifyANCDistribution() {
       pollTitle="Modify ANC Distribution"
       submitDisabled={
         borrowerEmissionCap.length === 0 &&
+        borrowerEmissionFloor.length === 0 &&
         incrementMultiplier.length === 0 &&
         decrementMultiplier.length === 0
       }
       onCreateMsgs={() =>
         createMsgs(
           borrowerEmissionCap,
+          borrowerEmissionFloor,
           incrementMultiplier,
           decrementMultiplier,
         )
@@ -104,6 +116,21 @@ export function PollCreateModifyANCDistribution() {
         value={borrowerEmissionCap}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setBorrowerEmissionCap(target.value)
+        }
+      />
+
+      <div className="description">
+        <p>Borrower Emission Floor</p>
+        <p />
+      </div>
+
+      <NumberInput
+        placeholder="0.00"
+        maxIntegerPoinsts={3}
+        maxDecimalPoints={MAX_EXECUTE_MSG_DECIMALS}
+        value={borrowerEmissionFloor}
+        onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
+          setBorrowerEmissionFloor(target.value)
         }
       />
 

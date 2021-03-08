@@ -55,5 +55,8 @@ function PollVotersBase({ className, pollId }: PollVotersProps) {
 }
 
 export const PollVoters = styled(PollVotersBase)`
-  // TODO
+  .more {
+    width: 100%;
+    margin-top: 20px;
+  }
 `;
