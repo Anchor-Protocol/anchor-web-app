@@ -86,8 +86,7 @@ function OverviewBase({ className }: OverviewProps) {
                 <IconSpan>
                   Borrowed: {formatUSTWithPostfixUnits(demicrofy(borrowed))} UST{' '}
                   <InfoTooltip>
-                    The borrow amount for this specific stablecoin / The borrow
-                    amount for this specific stablecoin in USD
+                    The borrow amount for this specific stablecoin
                   </InfoTooltip>
                 </IconSpan>
               </p>

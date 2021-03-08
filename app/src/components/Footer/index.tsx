@@ -64,7 +64,7 @@ function FooterBase({ className, style }: FooterProps) {
         </IconButton>
         <IconButton
           component="a"
-          href="https://t.me/protocol_anchor"
+          href="https://t.me/anchor_official"
           target="_blank"
           rel="noreferrer"
         >
