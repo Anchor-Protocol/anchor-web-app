@@ -18,9 +18,9 @@ import {
   ustBorrowPathname,
 } from 'pages/gov/env';
 import { useANCPrice } from 'pages/gov/queries/ancPrice';
+import { useClaimableAncUstLp } from 'pages/gov/queries/claimableAncUstLp';
 import { useLPStakingState } from 'pages/gov/queries/lpStakingState';
 import { useRewardsAncGovernance } from 'pages/gov/queries/rewardsAncGovernance';
-import { useRewardsAncUstLp } from 'pages/gov/queries/rewardsAncUstLp';
 import { useRewardsUSTBorrow } from 'pages/gov/queries/rewardsUSTBorrow';
 import { useTotalStaked } from 'pages/gov/queries/totalStaked';
 import { useMemo } from 'react';
@@ -48,8 +48,8 @@ export function RewardsBase({ className }: RewardsProps) {
   } = useLPStakingState();
 
   const {
-    data: { userLPBalance, userLPStakingInfo },
-  } = useRewardsAncUstLp();
+    data: { userLPStakingInfo, userLPBalance },
+  } = useClaimableAncUstLp();
 
   const {
     data: { userGovStakingInfo, userANCBalance },
