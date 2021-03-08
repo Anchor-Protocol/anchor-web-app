@@ -10,7 +10,7 @@ import { AncUstLpStake } from 'pages/gov/components/AncUstLpStake';
 import { AncUstLpUnstake } from 'pages/gov/components/AncUstLpUnstake';
 import { AncUstLpWithdraw } from 'pages/gov/components/AncUstLpWithdraw';
 import { ancUstLpPathname, govPathname } from 'pages/gov/env';
-import React, { useCallback, useMemo } from 'react';
+import React, { ReactNode, useCallback, useMemo } from 'react';
 import {
   Redirect,
   Route,
@@ -27,6 +27,7 @@ export interface RewardsAncUstLpProps {
 interface Item {
   label: string;
   value: string;
+  tooltip?: ReactNode;
 }
 
 const tabItems: Item[] = [
@@ -35,13 +36,30 @@ const tabItems: Item[] = [
 ];
 
 const poolItems: Item[] = [
-  { label: 'Provide', value: 'provide' },
-  { label: 'Withdraw', value: 'withdraw' },
+  {
+    label: 'Provide',
+    value: 'provide',
+    tooltip:
+      'Provide liquidity to receive LP tokens. LP tokens can be staked to earn ANC token rewards',
+  },
+  {
+    label: 'Withdraw',
+    value: 'withdraw',
+    tooltip: 'Withdraw ANC liquidity provided by burning LP tokens',
+  },
 ];
 
 const stakeItems: Item[] = [
-  { label: 'Stake', value: 'stake' },
-  { label: 'Unstake', value: 'unstake' },
+  {
+    label: 'Stake',
+    value: 'stake',
+    tooltip: 'Stake LP tokens to earn ANC token rewards',
+  },
+  {
+    label: 'Unstake',
+    value: 'unstake',
+    tooltip: 'Unstake LP tokens to withdraw provided liquidity',
+  },
 ];
 
 function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
@@ -128,6 +146,7 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
           onChange={subTabChange}
           labelFunction={({ label }) => label}
           keyFunction={({ value }) => value}
+          tooltipFunction={({ tooltip }) => tooltip}
         />
 
         <div className="form">

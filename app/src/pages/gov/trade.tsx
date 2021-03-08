@@ -4,7 +4,7 @@ import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { TradeBuy } from 'pages/gov/components/TradeBuy';
 import { TradeSell } from 'pages/gov/components/TradeSell';
 import { govPathname } from 'pages/gov/env';
-import React, { useCallback, useMemo } from 'react';
+import React, { ReactNode, useCallback, useMemo } from 'react';
 import {
   Redirect,
   Route,
@@ -21,11 +21,22 @@ export interface RewardsPoolProps {
 interface Item {
   label: string;
   value: string;
+  tooltip: ReactNode;
 }
 
 const tabItems: Item[] = [
-  { label: 'BUY', value: 'buy' },
-  { label: 'SELL', value: 'sell' },
+  {
+    label: 'BUY',
+    value: 'buy',
+    tooltip:
+      'The amount of asset traded is automatically calculated based on the current price, spread, and commission',
+  },
+  {
+    label: 'SELL',
+    value: 'sell',
+    tooltip:
+      'The amount of asset traded is automatically calculated based on the current price, spread, and commission',
+  },
 ];
 
 function TradeBase({ className }: RewardsPoolProps) {
@@ -65,6 +76,7 @@ function TradeBase({ className }: RewardsPoolProps) {
         onChange={tabChange}
         labelFunction={({ label }) => label}
         keyFunction={({ value }) => value}
+        tooltipFunction={({ tooltip }) => tooltip}
       />
 
       <Section>

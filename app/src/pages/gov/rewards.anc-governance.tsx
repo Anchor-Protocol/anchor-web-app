@@ -7,7 +7,7 @@ import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { AncGovernanceStake } from 'pages/gov/components/AncGovernanceStake';
 import { AncGovernanceUnstake } from 'pages/gov/components/AncGovernanceUnstake';
 import { ancGovernancePathname, govPathname } from 'pages/gov/env';
-import React, { useCallback, useMemo } from 'react';
+import React, { ReactNode, useCallback, useMemo } from 'react';
 import {
   Redirect,
   Route,
@@ -24,11 +24,12 @@ export interface RewardsAncUstLpProps {
 interface Item {
   label: string;
   value: string;
+  tooltip: ReactNode;
 }
 
 const stakeItems: Item[] = [
-  { label: 'Stake', value: 'stake' },
-  { label: 'Unstake', value: 'unstake' },
+  { label: 'Stake', value: 'stake', tooltip: '' },
+  { label: 'Unstake', value: 'unstake', tooltip: '' },
 ];
 
 function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
@@ -76,6 +77,7 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
           onChange={subTabChange}
           labelFunction={({ label }) => label}
           keyFunction={({ value }) => value}
+          tooltipFunction={({ tooltip }) => tooltip}
         />
 
         <div className="form">

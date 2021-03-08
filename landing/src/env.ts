@@ -27,4 +27,9 @@ export const links = {
   easierIntegration:
     'https://docs.anchorprotocol.com/developers-terra/anchor.js',
   frictionlessAccess: 'https://app.anchorprotocol.com',
+  contact: 'mailto:info@anchorprotocol.com',
+  whitepaper: 'https://anchorprotocol.com/docs/anchor-v1.1.pdf/',
+  discord: 'https://discord.gg/9aUYgpKZ9c',
+  forum: 'https://forum.anchorprotocol.com/',
+  terra: 'https://terra.money/',
 };

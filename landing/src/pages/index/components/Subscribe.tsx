@@ -1,5 +1,6 @@
 import { InputBase } from '@material-ui/core';
 import { MailOutline } from '@material-ui/icons';
+import { links } from 'env';
 import { useMemo, useState } from 'react';
 import styled from 'styled-components';
 
@@ -36,19 +37,19 @@ function SubscribeBase({ className }: SubscribeProps) {
         </button>
       </div>
       <div className="links">
-        <a href="https://anchorprotocol.com" target="_blank" rel="noreferrer">
+        <a href={links.contact} target="_blank" rel="noreferrer">
           CONTACT
         </a>
-        <a href="https://anchorprotocol.com" target="_blank" rel="noreferrer">
+        <a href={links.whitepaper} target="_blank" rel="noreferrer">
           WHITE PAPER
         </a>
-        <a href="https://anchorprotocol.com" target="_blank" rel="noreferrer">
+        <a href={links.discord} target="_blank" rel="noreferrer">
           DISCORD
         </a>
-        <a href="https://anchorprotocol.com" target="_blank" rel="noreferrer">
-          AGORA
+        <a href={links.forum} target="_blank" rel="noreferrer">
+          FORUM
         </a>
-        <a href="https://anchorprotocol.com" target="_blank" rel="noreferrer">
+        <a href={links.terra} target="_blank" rel="noreferrer">
           Terra WEBSITE
         </a>
       </div>
