@@ -121,7 +121,7 @@ export function AncGovernanceStake() {
       <div className="wallet" aria-invalid={!!invalidANCAmount}>
         <span>{invalidANCAmount}</span>
         <span>
-          ANC Balance:{' '}
+          Balance:{' '}
           <span
             style={{
               textDecoration: 'underline',

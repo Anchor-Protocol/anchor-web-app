@@ -148,7 +148,7 @@ export function AncGovernanceUnstake() {
       <div className="wallet" aria-invalid={!!invalidANCAmount}>
         <span>{invalidANCAmount}</span>
         <span>
-          Unstakable ANC Balance:{' '}
+          Balance:{' '}
           <span
             style={{
               textDecoration: 'underline',
