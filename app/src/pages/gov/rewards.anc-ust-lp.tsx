@@ -101,11 +101,7 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
       <header>
         <h1>
           <Circles radius={24} backgroundColors={['#ffffff', '#2C2C2C']}>
-            <TokenIcon
-              token="ust"
-              variant="@3x"
-              style={{ fontSize: '1.1em' }}
-            />
+            <TokenIcon token="ust" style={{ fontSize: '1.1em' }} />
             <AnchorNoCircle style={{ fontSize: '1.4em' }} />
           </Circles>
           ANC-UST LP

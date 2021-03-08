@@ -22,7 +22,6 @@ function BAssetsBase({ className }: BAssetsProps) {
                 ? (bAssetId.toLowerCase() as Tokens)
                 : 'aust'
             }
-            variant="@2x"
           />{' '}
           {bAssetId}
         </h1>

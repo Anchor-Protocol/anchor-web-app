@@ -83,7 +83,7 @@ export function CollateralList({ className }: CollateralListProps) {
           <tr>
             <td>
               <i>
-                <TokenIcon token="bluna" variant="@2x" />
+                <TokenIcon token="bluna" />
               </i>
               <div>
                 <div className="coin">bLuna</div>

@@ -107,7 +107,7 @@ function OverviewBase({ className }: OverviewProps) {
       </Section>
       <Section className="lp">
         <Circles backgroundColors={['#ffffff', '#2C2C2C']}>
-          <TokenIcon token="ust" variant="@3x" style={{ fontSize: '1.1em' }} />
+          <TokenIcon token="ust" style={{ fontSize: '1.1em' }} />
           <AnchorNoCircle style={{ fontSize: '1.4em' }} />
         </Circles>
         <h2>

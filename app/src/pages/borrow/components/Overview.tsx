@@ -154,7 +154,8 @@ export const LabelAndCircle = styled.div`
 
 export const Overview = styled(OverviewBase)`
   article > div {
-    background: #fcfcfc;
+    background: ${({ theme }) =>
+      theme.palette.type === 'light' ? '#fcfcfc' : '#262940'};
     box-shadow: 0 8px 14px -8px rgba(0, 0, 0, 0.07);
     border-radius: 22px;
     padding: 35px 40px;

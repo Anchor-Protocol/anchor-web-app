@@ -144,7 +144,6 @@ function MarketBase({ className }: MarketProps) {
                                 ? (bAssetId.toLowerCase() as Tokens)
                                 : 'aust'
                             }
-                            variant="@2x"
                           />
                         </i>
                         <div>
