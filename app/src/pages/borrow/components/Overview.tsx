@@ -9,9 +9,8 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { Rate, uUST } from '@anchor-protocol/types';
-import big, { Big, BigSource } from 'big.js';
+import { BigSource } from 'big.js';
 import { useConstants } from 'contexts/contants';
-import { useServiceConnectedMemo } from 'contexts/service';
 import { BorrowLimitGraph } from 'pages/borrow/components/BorrowLimitGraph';
 import { useMarket } from 'pages/borrow/context/market';
 import { apr as _apr } from 'pages/borrow/logics/apr';
@@ -35,11 +34,10 @@ function OverviewBase({ className }: OverviewProps) {
 
   const { blocksPerYear } = useConstants();
 
-  const apr = useServiceConnectedMemo(
-    () => _apr(borrowRate, blocksPerYear),
-    [blocksPerYear, borrowRate],
-    big(0) as Rate<Big>,
-  );
+  const apr = useMemo(() => _apr(borrowRate, blocksPerYear), [
+    blocksPerYear,
+    borrowRate,
+  ]);
 
   const borrowed = useMemo(() => _borrowed(loanAmount), [loanAmount]);
 

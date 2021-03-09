@@ -22,7 +22,7 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
-import { useService, useServiceConnectedMemo } from 'contexts/service';
+import { useService } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { formatShareOfPool } from 'pages/gov/components/formatShareOfPool';
 import { ancUstLpLpSimulation } from 'pages/gov/logics/ancUstLpLpSimulation';
@@ -30,7 +30,7 @@ import { AncUstLpSimulation } from 'pages/gov/models/ancUstLpSimulation';
 import { useANCPrice } from 'pages/gov/queries/ancPrice';
 import { useRewardsAncUstLp } from 'pages/gov/queries/rewardsAncUstLp';
 import { ancUstLpWithdrawOptions } from 'pages/gov/transactions/ancUstLpWithdrawOptions';
-import React, { ChangeEvent, useCallback, useState } from 'react';
+import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 export function AncUstLpWithdraw() {
   // ---------------------------------------------
@@ -67,23 +67,18 @@ export function AncUstLpWithdraw() {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const invalidTxFee = useServiceConnectedMemo(
-    () => validateTxFee(bank, fixedGas),
-    [bank, fixedGas],
-    undefined,
-  );
+  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
+    bank,
+    fixedGas,
+  ]);
 
-  const invalidLpAmount = useServiceConnectedMemo(
-    () => {
-      if (lpAmount.length === 0) return undefined;
+  const invalidLpAmount = useMemo(() => {
+    if (lpAmount.length === 0) return undefined;
 
-      return big(microfy(lpAmount)).gt(bank.userBalances.uAncUstLP)
-        ? 'Not enough assets'
-        : undefined;
-    },
-    [bank.userBalances.uAncUstLP, lpAmount],
-    undefined,
-  );
+    return big(microfy(lpAmount)).gt(bank.userBalances.uAncUstLP)
+      ? 'Not enough assets'
+      : undefined;
+  }, [bank.userBalances.uAncUstLP, lpAmount]);
 
   const updateLpAmount = useCallback(
     (nextLpAmount: string) => {

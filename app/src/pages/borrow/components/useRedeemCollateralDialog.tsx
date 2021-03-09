@@ -13,7 +13,7 @@ import {
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { bLuna, Rate, ubLuna, uUST } from '@anchor-protocol/types';
+import { bLuna, Rate, uUST } from '@anchor-protocol/types';
 import type { DialogProps, OpenDialog } from '@anchor-protocol/use-dialog';
 import { useDialog } from '@anchor-protocol/use-dialog';
 import { useWallet, WalletReady } from '@anchor-protocol/wallet-provider';
@@ -25,7 +25,7 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
-import { useService, useServiceConnectedMemo } from 'contexts/service';
+import { useService } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
 import { useMarketNotNullable } from 'pages/borrow/context/market';
@@ -111,19 +111,17 @@ function ComponentBase({
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const currentLtv = useServiceConnectedMemo(
+  const currentLtv = useMemo(
     () => _currentLtv(loanAmount, borrowInfo, oraclePrice),
     [borrowInfo, loanAmount, oraclePrice],
-    undefined,
   );
 
-  const nextLtv = useServiceConnectedMemo(
+  const nextLtv = useMemo(
     () => redeemCollateralNextLtv(redeemAmount, currentLtv, amountToLtv),
     [amountToLtv, currentLtv, redeemAmount],
-    undefined,
   );
 
-  const withdrawableAmount = useServiceConnectedMemo(
+  const withdrawableAmount = useMemo(
     () =>
       redeemCollateralWithdrawableAmount(
         loanAmount,
@@ -134,10 +132,9 @@ function ComponentBase({
         nextLtv,
       ),
     [bLunaMaxLtv, bLunaSafeLtv, borrowInfo, loanAmount, nextLtv, oraclePrice],
-    big(0) as ubLuna<Big>,
   );
 
-  const withdrawableMaxAmount = useServiceConnectedMemo(
+  const withdrawableMaxAmount = useMemo(
     () =>
       redeemCollateralMaxAmount(
         loanAmount,
@@ -146,10 +143,9 @@ function ComponentBase({
         bLunaMaxLtv,
       ),
     [bLunaMaxLtv, borrowInfo, loanAmount, oraclePrice],
-    big(0) as ubLuna<Big>,
   );
 
-  const borrowLimit = useServiceConnectedMemo(
+  const borrowLimit = useMemo(
     () =>
       redeemCollateralBorrowLimit(
         redeemAmount,
@@ -158,19 +154,16 @@ function ComponentBase({
         bLunaMaxLtv,
       ),
     [bLunaMaxLtv, borrowInfo, oraclePrice, redeemAmount],
-    undefined,
   );
 
-  const invalidTxFee = useServiceConnectedMemo(
-    () => validateTxFee(bank, fixedGas),
-    [bank, fixedGas],
-    undefined,
-  );
+  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
+    bank,
+    fixedGas,
+  ]);
 
-  const invalidRedeemAmount = useServiceConnectedMemo(
+  const invalidRedeemAmount = useMemo(
     () => validateRedeemAmount(redeemAmount, withdrawableMaxAmount),
     [redeemAmount, withdrawableMaxAmount],
-    undefined,
   );
 
   // ---------------------------------------------

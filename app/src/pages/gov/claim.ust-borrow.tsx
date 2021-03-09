@@ -15,7 +15,7 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
-import { useService, useServiceConnectedMemo } from 'contexts/service';
+import { useService } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { MINIMUM_CLAIM_BALANCE } from 'pages/gov/env';
 import { useClaimableUstBorrow } from 'pages/gov/queries/claimableUstBorrow';
@@ -59,11 +59,10 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
     return claiming.plus(userANCBalance.balance) as uANC<Big>;
   }, [claiming, userANCBalance]);
 
-  const invalidTxFee = useServiceConnectedMemo(
-    () => validateTxFee(bank, fixedGas),
-    [bank, fixedGas],
-    undefined,
-  );
+  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
+    bank,
+    fixedGas,
+  ]);
 
   const proceed = useCallback(
     async (walletReady: WalletReady) => {

@@ -23,7 +23,7 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
-import { useService, useServiceConnectedMemo } from 'contexts/service';
+import { useService } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
 import { useMarketNotNullable } from 'pages/borrow/context/market';
@@ -109,58 +109,50 @@ function ComponentBase({
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
-  const currentLtv = useServiceConnectedMemo(
+  const currentLtv = useMemo(
     () => _currentLtv(loanAmount, borrowInfo, oraclePrice),
     [borrowInfo, loanAmount, oraclePrice],
-    undefined,
   );
 
-  const nextLtv = useServiceConnectedMemo(
+  const nextLtv = useMemo(
     () => repayNextLtv(repayAmount, currentLtv, amountToLtv),
     [amountToLtv, currentLtv, repayAmount],
-    undefined,
   );
 
-  const apr = useServiceConnectedMemo(
-    () => _apr(borrowRate, blocksPerYear),
-    [blocksPerYear, borrowRate],
-    big(0) as Rate<Big>,
-  );
+  const apr = useMemo(() => _apr(borrowRate, blocksPerYear), [
+    blocksPerYear,
+    borrowRate,
+  ]);
 
-  const totalBorrows = useServiceConnectedMemo(
+  const totalBorrows = useMemo(
     () => repayTotalBorrows(marketState, borrowRate, loanAmount, currentBlock),
     [borrowRate, currentBlock, loanAmount, marketState],
-    big(0) as uUST<Big>,
   );
 
-  const txFee = useServiceConnectedMemo(
-    () => repayTxFee(repayAmount, bank, fixedGas),
-    [bank, fixedGas, repayAmount],
-    undefined,
-  );
+  const txFee = useMemo(() => repayTxFee(repayAmount, bank, fixedGas), [
+    bank,
+    fixedGas,
+    repayAmount,
+  ]);
 
-  const totalOutstandingLoan = useServiceConnectedMemo(
+  const totalOutstandingLoan = useMemo(
     () => repayTotalOutstandingLoan(repayAmount, loanAmount),
     [loanAmount, repayAmount],
-    undefined,
   );
 
-  const sendAmount = useServiceConnectedMemo(
-    () => repaySendAmount(repayAmount, txFee),
-    [repayAmount, txFee],
-    undefined,
-  );
+  const sendAmount = useMemo(() => repaySendAmount(repayAmount, txFee), [
+    repayAmount,
+    txFee,
+  ]);
 
-  const invalidTxFee = useServiceConnectedMemo(
-    () => validateTxFee(bank, fixedGas),
-    [bank, fixedGas],
-    undefined,
-  );
+  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
+    bank,
+    fixedGas,
+  ]);
 
-  const invalidAssetAmount = useServiceConnectedMemo(
+  const invalidAssetAmount = useMemo(
     () => validateRepayAmount(repayAmount, bank),
     [bank, repayAmount],
-    undefined,
   );
 
   // ---------------------------------------------

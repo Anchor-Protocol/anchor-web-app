@@ -19,12 +19,12 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
-import { useService, useServiceConnectedMemo } from 'contexts/service';
+import { useService } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { AncUstLpStakeOverview } from 'pages/gov/components/AncUstLpStakeOverview';
 import { useRewardsAncUstLp } from 'pages/gov/queries/rewardsAncUstLp';
 import { ancUstLpUnstakeOptions } from 'pages/gov/transactions/ancUstLpUnstakeOptions';
-import React, { ChangeEvent, useCallback, useState } from 'react';
+import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 export function AncUstLpUnstake() {
   // ---------------------------------------------
@@ -53,23 +53,18 @@ export function AncUstLpUnstake() {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const invalidTxFee = useServiceConnectedMemo(
-    () => validateTxFee(bank, fixedGas),
-    [bank, fixedGas],
-    undefined,
-  );
+  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
+    bank,
+    fixedGas,
+  ]);
 
-  const invalidLpAmount = useServiceConnectedMemo(
-    () => {
-      if (lpAmount.length === 0 || !userLPStakingInfo) return undefined;
+  const invalidLpAmount = useMemo(() => {
+    if (lpAmount.length === 0 || !userLPStakingInfo) return undefined;
 
-      return big(microfy(lpAmount)).gt(userLPStakingInfo.bond_amount)
-        ? 'Not enough assets'
-        : undefined;
-    },
-    [lpAmount, userLPStakingInfo],
-    undefined,
-  );
+    return big(microfy(lpAmount)).gt(userLPStakingInfo.bond_amount)
+      ? 'Not enough assets'
+      : undefined;
+  }, [lpAmount, userLPStakingInfo]);
 
   const init = useCallback(() => {
     setLpAmount('' as AncUstLP);

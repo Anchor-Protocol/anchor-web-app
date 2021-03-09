@@ -25,7 +25,7 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
-import { useService, useServiceConnectedMemo } from 'contexts/service';
+import { useService } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { voteOptions } from 'pages/gov/transactions/voteOptions';
 import React, {
@@ -67,11 +67,10 @@ function ComponentBase({
   const [voteFor, setVoteFor] = useState<null | 'yes' | 'no'>(null);
   const [amount, setAmount] = useState<ANC>('' as ANC);
 
-  const invalidTxFee = useServiceConnectedMemo(
-    () => validateTxFee(bank, fixedGas),
-    [bank, fixedGas],
-    undefined,
-  );
+  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
+    bank,
+    fixedGas,
+  ]);
 
   const invalidAmount = useMemo(() => {
     if (amount.length === 0) return undefined;

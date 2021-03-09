@@ -23,7 +23,7 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
-import { useService, useServiceConnectedMemo } from 'contexts/service';
+import { useService } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
 import { useMarketNotNullable } from 'pages/borrow/context/market';
@@ -107,25 +107,22 @@ function ComponentBase({
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const currentLtv = useServiceConnectedMemo(
+  const currentLtv = useMemo(
     () => _currentLtv(loanAmount, borrowInfo, oraclePrice),
     [borrowInfo, loanAmount, oraclePrice],
-    undefined,
   );
 
-  const nextLtv = useServiceConnectedMemo(
+  const nextLtv = useMemo(
     () => borrowNextLtv(borrowAmount, currentLtv, amountToLtv),
     [amountToLtv, borrowAmount, currentLtv],
-    undefined,
   );
 
-  const apr = useServiceConnectedMemo(
-    () => _apr(borrowRate, blocksPerYear),
-    [blocksPerYear, borrowRate],
-    big(0) as Rate<Big>,
-  );
+  const apr = useMemo(() => _apr(borrowRate, blocksPerYear), [
+    blocksPerYear,
+    borrowRate,
+  ]);
 
-  const safeMax = useServiceConnectedMemo(
+  const safeMax = useMemo(
     () =>
       borrowSafeMax(
         loanAmount,
@@ -135,37 +132,32 @@ function ComponentBase({
         currentLtv,
       ),
     [bLunaSafeLtv, borrowInfo, currentLtv, loanAmount, oraclePrice],
-    big(0) as uUST<Big>,
   );
 
-  const max = useServiceConnectedMemo(
+  const max = useMemo(
     () => borrowMax(loanAmount, borrowInfo, oraclePrice, bLunaMaxLtv),
     [bLunaMaxLtv, borrowInfo, loanAmount, oraclePrice],
-    big(0) as uUST<Big>,
   );
 
-  const txFee = useServiceConnectedMemo(
-    () => borrowTxFee(borrowAmount, bank, fixedGas),
-    [bank, borrowAmount, fixedGas],
-    big(0) as uUST<Big>,
-  );
+  const txFee = useMemo(() => borrowTxFee(borrowAmount, bank, fixedGas), [
+    bank,
+    borrowAmount,
+    fixedGas,
+  ]);
 
-  const receiveAmount = useServiceConnectedMemo(
+  const receiveAmount = useMemo(
     () => borrowReceiveAmount(borrowAmount, txFee),
     [borrowAmount, txFee],
-    big(0) as uUST<Big>,
   );
 
-  const invalidTxFee = useServiceConnectedMemo(
-    () => validateTxFee(bank, fixedGas),
-    [bank, fixedGas],
-    undefined,
-  );
+  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
+    bank,
+    fixedGas,
+  ]);
 
-  const invalidBorrowAmount = useServiceConnectedMemo(
+  const invalidBorrowAmount = useMemo(
     () => validateBorrowAmount(borrowAmount, max),
     [borrowAmount, max],
-    undefined,
   );
 
   // ---------------------------------------------

@@ -27,10 +27,10 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
-import { useService, useServiceConnectedMemo } from 'contexts/service';
+import { useService } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { validateBondAmount } from 'pages/basset/logics/validateBondAmount';
-import React, { ChangeEvent, useCallback, useState } from 'react';
+import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { useExchangeRate } from './queries/exchangeRate';
 import * as val from './queries/validators';
@@ -101,16 +101,14 @@ function MintBase({ className }: MintProps) {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const invalidTxFee = useServiceConnectedMemo(
-    () => validateTxFee(bank, fixedGas),
-    [bank, fixedGas],
-    undefined,
-  );
+  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
+    bank,
+    fixedGas,
+  ]);
 
-  const invalidBondAmount = useServiceConnectedMemo(
+  const invalidBondAmount = useMemo(
     () => validateBondAmount(bondAmount, bank),
     [bank, bondAmount],
-    undefined,
   );
 
   // ---------------------------------------------

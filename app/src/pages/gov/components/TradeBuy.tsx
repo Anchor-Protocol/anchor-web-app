@@ -39,7 +39,7 @@ import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
 import { useContractAddress } from 'contexts/contract';
-import { useService, useServiceConnectedMemo } from 'contexts/service';
+import { useService } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { MAX_SPREAD } from 'pages/gov/env';
 import { buyFromSimulation } from 'pages/gov/logics/buyFromSimulation';
@@ -50,7 +50,13 @@ import { useANCPrice } from 'pages/gov/queries/ancPrice';
 import { buyOptions } from 'pages/gov/transactions/buyOptions';
 import { queryReverseSimulation } from 'queries/reverseSimulation';
 import { querySimulation } from 'queries/simulation';
-import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import React, {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 interface Item {
   label: string;
@@ -111,23 +117,18 @@ export function TradeBuy() {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const invalidTxFee = useServiceConnectedMemo(
-    () => validateTxFee(bank, fixedGas),
-    [bank, fixedGas],
-    undefined,
-  );
+  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
+    bank,
+    fixedGas,
+  ]);
 
-  const invalidFromAmount = useServiceConnectedMemo(
-    () => {
-      if (fromAmount.length === 0) return undefined;
+  const invalidFromAmount = useMemo(() => {
+    if (fromAmount.length === 0) return undefined;
 
-      return microfy(fromAmount).gt(bank.userBalances.uUSD)
-        ? 'Not enough assets'
-        : undefined;
-    },
-    [bank.userBalances.uUSD, fromAmount],
-    undefined,
-  );
+    return microfy(fromAmount).gt(bank.userBalances.uUSD)
+      ? 'Not enough assets'
+      : undefined;
+  }, [bank.userBalances.uUSD, fromAmount]);
 
   // ---------------------------------------------
   // effects

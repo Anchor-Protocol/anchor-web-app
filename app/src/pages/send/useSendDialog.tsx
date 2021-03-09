@@ -39,7 +39,7 @@ import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { Bank, useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
 import { useContractAddress } from 'contexts/contract';
-import { useService, useServiceConnectedMemo } from 'contexts/service';
+import { useService } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { CurrencyInfo } from 'pages/send/models/currency';
 import { sendOptions } from 'pages/send/transactions/sendOptions';
@@ -194,23 +194,18 @@ function ComponentBase({
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const invalidTxFee = useServiceConnectedMemo(
-    () => validateTxFee(bank, fixedGas),
-    [bank, fixedGas],
-    undefined,
-  );
+  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
+    bank,
+    fixedGas,
+  ]);
 
-  const invalidAmount = useServiceConnectedMemo(
-    () => {
-      if (amount.length === 0) return undefined;
+  const invalidAmount = useMemo(() => {
+    if (amount.length === 0) return undefined;
 
-      return big(microfy(amount as Token)).gt(currency.getWithdrawable(bank))
-        ? 'Not enough assets'
-        : undefined;
-    },
-    [amount, currency, bank],
-    undefined,
-  );
+    return big(microfy(amount as Token)).gt(currency.getWithdrawable(bank))
+      ? 'Not enough assets'
+      : undefined;
+  }, [amount, currency, bank]);
 
   const submit = useCallback(
     (

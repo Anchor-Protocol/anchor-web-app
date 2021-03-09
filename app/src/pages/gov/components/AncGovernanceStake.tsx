@@ -19,11 +19,11 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
-import { useService, useServiceConnectedMemo } from 'contexts/service';
+import { useService } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { useRewardsAncGovernance } from 'pages/gov/queries/rewardsAncGovernance';
 import { ancGovernanceStakeOptions } from 'pages/gov/transactions/ancGovernanceStakeOptions';
-import React, { ChangeEvent, useCallback, useState } from 'react';
+import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 export function AncGovernanceStake() {
   // ---------------------------------------------
@@ -52,23 +52,18 @@ export function AncGovernanceStake() {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const invalidTxFee = useServiceConnectedMemo(
-    () => validateTxFee(bank, fixedGas),
-    [bank, fixedGas],
-    undefined,
-  );
+  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
+    bank,
+    fixedGas,
+  ]);
 
-  const invalidANCAmount = useServiceConnectedMemo(
-    () => {
-      if (ancAmount.length === 0 || !userANCBalance) return undefined;
+  const invalidANCAmount = useMemo(() => {
+    if (ancAmount.length === 0 || !userANCBalance) return undefined;
 
-      return big(microfy(ancAmount)).gt(userANCBalance.balance)
-        ? 'Not enough assets'
-        : undefined;
-    },
-    [ancAmount, userANCBalance],
-    undefined,
-  );
+    return big(microfy(ancAmount)).gt(userANCBalance.balance)
+      ? 'Not enough assets'
+      : undefined;
+  }, [ancAmount, userANCBalance]);
 
   const init = useCallback(() => {
     setANCAmount('' as ANC);

@@ -24,12 +24,12 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
-import { useService, useServiceConnectedMemo } from 'contexts/service';
+import { useService } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { validateBurnAmount } from 'pages/basset/logics/validateBurnAmount';
 import { useExchangeRate } from 'pages/basset/queries/exchangeRate';
 import { burnOptions } from 'pages/basset/transactions/burnOptions';
-import React, { ChangeEvent, useCallback, useState } from 'react';
+import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 interface Item {
   label: string;
@@ -81,16 +81,14 @@ export function Burn() {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const invalidTxFee = useServiceConnectedMemo(
-    () => validateTxFee(bank, fixedGas),
-    [bank, fixedGas],
-    undefined,
-  );
+  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
+    bank,
+    fixedGas,
+  ]);
 
-  const invalidBurnAmount = useServiceConnectedMemo(
+  const invalidBurnAmount = useMemo(
     () => validateBurnAmount(burnAmount, bank),
     [bank, burnAmount],
-    undefined,
   );
 
   // ---------------------------------------------

@@ -21,7 +21,7 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
-import { useService, useServiceConnectedMemo } from 'contexts/service';
+import { useService } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { validateWithdrawAmount } from 'pages/earn/logics/validateWithdrawAmount';
 import { withdrawReceiveAmount } from 'pages/earn/logics/withdrawReceiveAmount';
@@ -85,16 +85,14 @@ function ComponentBase({
     [txFee, withdrawAmount],
   );
 
-  const invalidTxFee = useServiceConnectedMemo(
-    () => validateTxFee(bank, fixedGas),
-    [bank, fixedGas],
-    undefined,
-  );
+  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
+    bank,
+    fixedGas,
+  ]);
 
-  const invalidWithdrawAmount = useServiceConnectedMemo(
+  const invalidWithdrawAmount = useMemo(
     () => validateWithdrawAmount(withdrawAmount, bank, totalDeposit, txFee),
     [bank, totalDeposit, txFee, withdrawAmount],
-    undefined,
   );
 
   // ---------------------------------------------

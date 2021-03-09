@@ -37,12 +37,18 @@ import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
 import { useContractAddress } from 'contexts/contract';
-import { useService, useServiceConnectedMemo } from 'contexts/service';
+import { useService } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { swapBurnSimulation } from 'pages/basset/logics/swapBurnSimulation';
 import { swapGetSimulation } from 'pages/basset/logics/swapGetSimulation';
 import { querySimulation } from 'queries/simulation';
-import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import React, {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { validateBurnAmount } from '../logics/validateBurnAmount';
 import { SwapSimulation } from '../models/swapSimulation';
 import { useTerraswapBLunaPrice } from '../queries/terraswapBLunaPrice';
@@ -102,16 +108,14 @@ export function Swap() {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const invalidTxFee = useServiceConnectedMemo(
-    () => validateTxFee(bank, fixedGas),
-    [bank, fixedGas],
-    undefined,
-  );
+  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
+    bank,
+    fixedGas,
+  ]);
 
-  const invalidBurnAmount = useServiceConnectedMemo(
+  const invalidBurnAmount = useMemo(
     () => validateBurnAmount(burnAmount, bank),
     [bank, burnAmount],
-    undefined,
   );
 
   // ---------------------------------------------

@@ -22,7 +22,7 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
-import { useService, useServiceConnectedMemo } from 'contexts/service';
+import { useService } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { depositRecommendationAmount } from 'pages/earn/logics/depositRecommendationAmount';
 import { depositSendAmount } from 'pages/earn/logics/depositSendAmount';
@@ -86,25 +86,22 @@ function ComponentBase({
     txFee,
   ]);
 
-  const maxAmount = useServiceConnectedMemo(
-    () => depositRecommendationAmount(bank, fixedGas),
-    [bank, fixedGas],
-    undefined,
-  );
+  const maxAmount = useMemo(() => depositRecommendationAmount(bank, fixedGas), [
+    bank,
+    fixedGas,
+  ]);
 
-  const invalidTxFee = useServiceConnectedMemo(
-    () => validateTxFee(bank, fixedGas),
-    [bank, fixedGas],
-    undefined,
-  );
+  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
+    bank,
+    fixedGas,
+  ]);
 
-  const invalidDepositAmount = useServiceConnectedMemo(
+  const invalidDepositAmount = useMemo(
     () => validateDepositAmount(depositAmount, bank, txFee),
     [bank, depositAmount, txFee],
-    undefined,
   );
 
-  const invalidNextTransaction = useServiceConnectedMemo(
+  const invalidNextTransaction = useMemo(
     () =>
       validateDepositNextTransaction(
         depositAmount,
@@ -114,7 +111,6 @@ function ComponentBase({
         !!invalidDepositAmount || !maxAmount,
       ),
     [bank, depositAmount, fixedGas, invalidDepositAmount, maxAmount, txFee],
-    undefined,
   );
 
   // ---------------------------------------------

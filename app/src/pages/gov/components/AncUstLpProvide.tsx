@@ -24,7 +24,7 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from 'contexts/bank';
 import { useConstants } from 'contexts/contants';
-import { useService, useServiceConnectedMemo } from 'contexts/service';
+import { useService } from 'contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { formatShareOfPool } from 'pages/gov/components/formatShareOfPool';
 import { ancUstLpAncSimulation } from 'pages/gov/logics/ancUstLpAncSimulation';
@@ -32,7 +32,7 @@ import { ancUstLpUstSimulation } from 'pages/gov/logics/ancUstLpUstSimulation';
 import { AncUstLpSimulation } from 'pages/gov/models/ancUstLpSimulation';
 import { useANCPrice } from 'pages/gov/queries/ancPrice';
 import { ancUstLpProvideOptions } from 'pages/gov/transactions/ancUstLpProvideOptions';
-import React, { ChangeEvent, useCallback, useState } from 'react';
+import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 export function AncUstLpProvide() {
   // ---------------------------------------------
@@ -72,35 +72,26 @@ export function AncUstLpProvide() {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const invalidTxFee = useServiceConnectedMemo(
-    () => validateTxFee(bank, fixedGas),
-    [bank, fixedGas],
-    undefined,
-  );
+  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
+    bank,
+    fixedGas,
+  ]);
 
-  const invalidAncAmount = useServiceConnectedMemo(
-    () => {
-      if (ancAmount.length === 0) return undefined;
+  const invalidAncAmount = useMemo(() => {
+    if (ancAmount.length === 0) return undefined;
 
-      return big(microfy(ancAmount)).gt(bank.userBalances.uANC)
-        ? 'Not enough assets'
-        : undefined;
-    },
-    [ancAmount, bank],
-    undefined,
-  );
+    return big(microfy(ancAmount)).gt(bank.userBalances.uANC)
+      ? 'Not enough assets'
+      : undefined;
+  }, [ancAmount, bank]);
 
-  const invalidUstAmount = useServiceConnectedMemo(
-    () => {
-      if (ustAmount.length === 0) return undefined;
+  const invalidUstAmount = useMemo(() => {
+    if (ustAmount.length === 0) return undefined;
 
-      return big(microfy(ustAmount)).gt(bank.userBalances.uUSD)
-        ? 'Not enough assets'
-        : undefined;
-    },
-    [bank.userBalances.uUSD, ustAmount],
-    undefined,
-  );
+    return big(microfy(ustAmount)).gt(bank.userBalances.uUSD)
+      ? 'Not enough assets'
+      : undefined;
+  }, [bank.userBalances.uUSD, ustAmount]);
 
   const updateAncAmount = useCallback(
     (nextAncAmount: string) => {
