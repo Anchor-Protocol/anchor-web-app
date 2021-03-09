@@ -1,3 +1,4 @@
+import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { useRewardsAncGovernance } from 'pages/gov/queries/rewardsAncGovernance';
 import { useMemo } from 'react';
 
@@ -27,7 +28,14 @@ export function useCanIVote(pollId: number | undefined): boolean {
 
   const {
     data: { userGovStakingInfo },
+    refetch,
   } = useRewardsAncGovernance();
+
+  useSubscription((id, event) => {
+    if (event === 'done') {
+      refetch();
+    }
+  });
 
   return useMemo(() => {
     if (!pollId || !userGovStakingInfo) return false;
