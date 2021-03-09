@@ -5,6 +5,8 @@ import { PollCreateModifyANCDistribution } from 'pages/gov/poll.create.modify-an
 import { PollCreateModifyBorrowInterest } from 'pages/gov/poll.create.modify-borrow-interest';
 import { PollCreateModifyCollateralAttribute } from 'pages/gov/poll.create.modify-collateral-attribute';
 import { PollCreateModifyMarketParameters } from 'pages/gov/poll.create.modify-market-parameters';
+import { PollCreateSpendCommunityPool } from 'pages/gov/poll.create.spend-community-pool';
+import { PollCreateTextProposal } from 'pages/gov/poll.create.text-proposal';
 import { RewardsAncGovernance } from 'pages/gov/rewards.anc-governance';
 import { RewardsAncUstLp } from 'pages/gov/rewards.anc-ust-lp';
 import { Redirect, Route, Switch } from 'react-router-dom';
@@ -77,6 +79,16 @@ export function Governance() {
       <Route
         path={`/${govPathname}/poll/create/modify-market-parameters`}
         component={PollCreateModifyMarketParameters}
+      />
+
+      <Route
+        path={`/${govPathname}/poll/create/spend-community-pool`}
+        component={PollCreateSpendCommunityPool}
+      />
+
+      <Route
+        path={`/${govPathname}/poll/create/text-proposal`}
+        component={PollCreateTextProposal}
       />
 
       <Route path={`/${govPathname}/poll/:id`} component={PollDetail} />

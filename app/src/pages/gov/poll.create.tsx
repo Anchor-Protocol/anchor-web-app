@@ -43,6 +43,18 @@ function PollCreateBase({ className }: PollCreateProps) {
             title="Modify Market Parameters"
             description="TODO: Description ..."
           />
+
+          <PollLink
+            to={`/${govPathname}/poll/create/spend-community-pool`}
+            title="Spend Community Pool"
+            description="TODO: Description ..."
+          />
+
+          <PollLink
+            to={`/${govPathname}/poll/create/text-proposal`}
+            title="Text Proposal"
+            description="TODO: Description ..."
+          />
         </ul>
 
         <BorderButton className="forum">

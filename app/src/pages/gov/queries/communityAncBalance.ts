@@ -1,5 +1,4 @@
-import { useSubscription } from '@anchor-protocol/broadcastable-operation';
-import { anchorToken, WASMContractResult } from '@anchor-protocol/types';
+import { cw20, uANC, WASMContractResult } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
 import { useService } from '@anchor-protocol/web-contexts/contexts/service';
@@ -11,89 +10,88 @@ import { gql, useQuery } from '@apollo/client';
 import { useMemo } from 'react';
 
 export interface RawData {
-  poll: WASMContractResult;
+  communityAncBalance: WASMContractResult;
 }
 
 export interface Data {
-  poll: WASMContractResult<anchorToken.gov.PollResponse>;
+  communityAncBalance: WASMContractResult<cw20.BalanceResponse<uANC>>;
 }
 
 export const dataMap = createMap<RawData, Data>({
-  poll: (existing, { poll }) => {
-    return parseResult(existing.poll, poll.Result);
+  communityAncBalance: (existing, { communityAncBalance }) => {
+    return parseResult(
+      existing.communityAncBalance,
+      communityAncBalance.Result,
+    );
   },
 });
 
 export interface RawVariables {
-  govContract: string;
-  pollQuery: string;
+  ANCTokenContract: string;
+  CommunityANCBalanceQuery: string;
 }
 
 export interface Variables {
-  govContract: string;
-  pollQuery: anchorToken.gov.Poll;
+  ANCTokenContract: string;
+  communityAddress: string;
 }
 
 export function mapVariables({
-  govContract,
-  pollQuery,
+  ANCTokenContract,
+  communityAddress,
 }: Variables): RawVariables {
   return {
-    govContract,
-    pollQuery: JSON.stringify(pollQuery),
+    ANCTokenContract,
+    CommunityANCBalanceQuery: JSON.stringify({
+      balance: {
+        address: communityAddress,
+      },
+    }),
   };
 }
 
 export const query = gql`
-  query __poll($govContract: String!, $pollQuery: String!) {
-    poll: WasmContractsContractAddressStore(
-      ContractAddress: $govContract
-      QueryMsg: $pollQuery
+  query __communityAncBalance(
+    $ANCTokenContract: String!
+    $CommunityANCBalanceQuery: String!
+  ) {
+    communityAncBalance: WasmContractsContractAddressStore(
+      ContractAddress: $ANCTokenContract
+      QueryMsg: $CommunityANCBalanceQuery
     ) {
       Result
     }
   }
 `;
 
-export function usePoll(
-  pollId: number,
-): MappedQueryResult<RawVariables, RawData, Data> {
+export function useCommunityAncBalance(): MappedQueryResult<
+  RawVariables,
+  RawData,
+  Data
+> {
   const { serviceAvailable } = useService();
 
-  const { anchorToken } = useContractAddress();
+  const address = useContractAddress();
 
   const variables = useMemo(() => {
     return mapVariables({
-      govContract: anchorToken.gov,
-      pollQuery: {
-        poll: {
-          poll_id: pollId,
-        },
-      },
+      ANCTokenContract: address.cw20.ANC,
+      communityAddress: address.anchorToken.community,
     });
-  }, [anchorToken.gov, pollId]);
+  }, [address.anchorToken.community, address.cw20.ANC]);
 
   const onError = useQueryErrorHandler();
 
-  const {
-    previousData,
-    data: _data = previousData,
-    refetch: _refetch,
-    error,
-    ...result
-  } = useQuery<RawData, RawVariables>(query, {
+  const { data: _data, refetch: _refetch, error, ...result } = useQuery<
+    RawData,
+    RawVariables
+  >(query, {
     skip: !serviceAvailable,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     //pollInterval: 1000 * 60,
     variables,
     onError,
-  });
-
-  useSubscription((id, event) => {
-    if (event === 'done') {
-      _refetch();
-    }
   });
 
   const data = useMap(_data, dataMap);

@@ -23,11 +23,15 @@ export const dataMap = createMap<RawData, Data>({
       console.log(
         JSON.stringify(
           //@ts-ignore
-          JSON.parse(polls.Result).polls.map(({ execute_data, ...poll }) => ({
-            //@ts-ignore
-            execute_data: execute_data.map(({ msg }) => atob(msg)),
-            ...poll,
-          })),
+          JSON.parse(polls.Result).polls.map(({ execute_data, ...poll }) => {
+            return {
+              //@ts-ignore
+              execute_data: Array.isArray(execute_data)
+                ? execute_data.map(({ msg }) => atob(msg))
+                : undefined,
+              ...poll,
+            };
+          }),
           null,
           2,
         ),

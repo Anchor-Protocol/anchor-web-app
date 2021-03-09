@@ -42,6 +42,20 @@ export const FormLayout = styled(FormLayoutBase)`
     margin-top: 30px;
   }
 
+  .wallet {
+    margin-top: 5px;
+
+    display: flex;
+    justify-content: space-between;
+
+    font-size: 12px;
+    color: ${({ theme }) => theme.dimTextColor};
+
+    &[aria-invalid='true'] {
+      color: ${({ theme }) => theme.colors.negative};
+    }
+  }
+
   .proceed {
     margin-top: 45px;
 

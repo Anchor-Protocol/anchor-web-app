@@ -38,7 +38,7 @@ export interface PollCreateBaseProps {
   pollTitle: ReactNode;
   children: ReactNode;
   submitDisabled: boolean;
-  onCreateMsgs: () => ExecuteMsg[];
+  onCreateMsgs: () => ExecuteMsg[] | undefined;
 }
 
 export function PollCreateBase({
@@ -111,7 +111,7 @@ export function PollCreateBase({
     ) => {
       const execute_msgs = onCreateMsgs();
 
-      if (execute_msgs.length !== 1) {
+      if (execute_msgs && execute_msgs.length !== 1) {
         return;
       }
 

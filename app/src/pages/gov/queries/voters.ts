@@ -20,7 +20,6 @@ export interface Data {
 
 export const dataMap = createMap<RawData, Data>({
   voters: (existing, { voters }) => {
-    console.log('voters.ts..voters()', voters.Result);
     return parseResult(existing.voters, voters.Result);
   },
 });
