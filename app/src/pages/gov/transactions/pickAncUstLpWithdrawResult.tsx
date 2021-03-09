@@ -1,10 +1,11 @@
 import {
   demicrofy,
   formatANCWithPostfixUnits,
+  formatLP,
   formatUSTWithPostfixUnits,
   stripUUSD,
 } from '@anchor-protocol/notation';
-import { uANC, uUST } from '@anchor-protocol/types';
+import { uANC, uAncUstLP, uUST } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
 import { TxHashLink } from 'components/TxHashLink';
 import { TxInfoParseError } from 'errors/TxInfoParseError';
@@ -46,6 +47,11 @@ export function pickAncUstLpWithdrawResult({
     );
   }
 
+  const burned = pickAttributeValueByKey<uAncUstLP>(
+    fromContract,
+    'withdrawn_share',
+  );
+
   const receivedAnc = pickAttributeValueByKey<uANC>(
     fromContract,
     'amount',
@@ -68,6 +74,10 @@ export function pickAncUstLpWithdrawResult({
     txInfo,
     txResult,
     details: [
+      burned && {
+        name: 'Burned',
+        value: formatLP(demicrofy(burned)) + ' ANC-UST-LP',
+      },
       receivedAnc &&
         receivedUst && {
           name: 'Received',
