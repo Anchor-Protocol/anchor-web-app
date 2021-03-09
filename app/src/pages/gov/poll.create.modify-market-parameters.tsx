@@ -114,7 +114,7 @@ export function PollCreateModifyMarketParameters() {
   // ---------------------------------------------
   return (
     <PollCreateBase
-      pollTitle="Modify Collateral Attribute"
+      pollTitle="Modify Market Parameters"
       submitDisabled={
         targetDepositRate.length === 0 &&
         thresholdDepositRate.length === 0 &&
@@ -138,9 +138,9 @@ export function PollCreateModifyMarketParameters() {
       </div>
 
       <NumberInput
-        placeholder="0.00"
-        maxIntegerPoinsts={3}
-        maxDecimalPoints={6}
+        placeholder="0"
+        type="integer"
+        maxIntegerPoinsts={2}
         InputProps={{
           endAdornment: <InputAdornment position="end">%</InputAdornment>,
         }}
@@ -156,9 +156,9 @@ export function PollCreateModifyMarketParameters() {
       </div>
 
       <NumberInput
-        placeholder="0.00"
-        maxIntegerPoinsts={3}
-        maxDecimalPoints={6}
+        placeholder="0"
+        type="integer"
+        maxIntegerPoinsts={2}
         InputProps={{
           endAdornment: <InputAdornment position="end">%</InputAdornment>,
         }}
@@ -174,9 +174,9 @@ export function PollCreateModifyMarketParameters() {
       </div>
 
       <NumberInput
-        placeholder="0.00"
-        maxIntegerPoinsts={3}
-        maxDecimalPoints={6}
+        placeholder="0"
+        type="integer"
+        maxIntegerPoinsts={2}
         InputProps={{
           endAdornment: <InputAdornment position="end">%</InputAdornment>,
         }}
@@ -192,9 +192,9 @@ export function PollCreateModifyMarketParameters() {
       </div>
 
       <NumberInput
-        placeholder="0.00"
-        maxIntegerPoinsts={3}
-        maxDecimalPoints={6}
+        placeholder="0"
+        type="integer"
+        maxIntegerPoinsts={2}
         InputProps={{
           endAdornment: <InputAdornment position="end">%</InputAdornment>,
         }}
@@ -211,8 +211,8 @@ export function PollCreateModifyMarketParameters() {
 
       <NumberInput
         placeholder="0"
+        type="integer"
         maxIntegerPoinsts={3}
-        maxDecimalPoints={0}
         InputProps={{
           endAdornment: <InputAdornment position="end">Seconds</InputAdornment>,
         }}
