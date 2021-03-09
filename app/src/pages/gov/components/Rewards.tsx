@@ -204,6 +204,51 @@ export function RewardsBase({ className }: RewardsProps) {
           </thead>
           <tbody>
             <tr>
+              <td>ANC Governance</td>
+              <td>
+                <s>134.84%</s>
+              </td>
+              <td>
+                {govGorvernance?.staked
+                  ? formatANCWithPostfixUnits(demicrofy(govGorvernance.staked))
+                  : 0}{' '}
+                ANC
+              </td>
+              <td>
+                {govGorvernance?.stakable
+                  ? formatANCWithPostfixUnits(
+                      demicrofy(govGorvernance.stakable),
+                    )
+                  : 0}{' '}
+                ANC
+              </td>
+              <td>
+                <IconSpan>
+                  Automatically re-staked{' '}
+                  <InfoTooltip>
+                    Protocol fee paid from withdrawing collateral is distributed
+                    to ANC stakers and increases staked ANC
+                  </InfoTooltip>
+                </IconSpan>
+              </td>
+              <td>
+                <MoreMenu size="25px">
+                  <MenuItem
+                    component={Link}
+                    to={`/${govPathname}/rewards/${ancGovernancePathname}/stake`}
+                  >
+                    Stake
+                  </MenuItem>
+                  <MenuItem
+                    component={Link}
+                    to={`/${govPathname}/rewards/${ancGovernancePathname}/unstake`}
+                  >
+                    Unstake
+                  </MenuItem>
+                </MoreMenu>
+              </td>
+            </tr>
+            <tr>
               <td>
                 <p>ANC-UST LP</p>
                 <p style={{ fontSize: 12 }}>
@@ -232,7 +277,7 @@ export function RewardsBase({ className }: RewardsProps) {
               <td>
                 {ancUstLp?.staked ? formatLP(demicrofy(ancUstLp.staked)) : 0} LP
               </td>
-              <td>
+              <td className="warning">
                 {ancUstLp?.stakable
                   ? formatLP(demicrofy(ancUstLp.stakable))
                   : 0}{' '}
@@ -275,51 +320,6 @@ export function RewardsBase({ className }: RewardsProps) {
                     to={`/${govPathname}/claim/${ancUstLpPathname}`}
                   >
                     Claim
-                  </MenuItem>
-                </MoreMenu>
-              </td>
-            </tr>
-            <tr>
-              <td>ANC Governance</td>
-              <td>
-                <s>134.84%</s>
-              </td>
-              <td>
-                {govGorvernance?.staked
-                  ? formatANCWithPostfixUnits(demicrofy(govGorvernance.staked))
-                  : 0}{' '}
-                ANC
-              </td>
-              <td>
-                {govGorvernance?.stakable
-                  ? formatANCWithPostfixUnits(
-                      demicrofy(govGorvernance.stakable),
-                    )
-                  : 0}{' '}
-                ANC
-              </td>
-              <td>
-                <IconSpan>
-                  Automatically re-staked{' '}
-                  <InfoTooltip>
-                    Protocol fee paid from withdrawing collateral is distributed
-                    to ANC stakers and increases staked ANC
-                  </InfoTooltip>
-                </IconSpan>
-              </td>
-              <td>
-                <MoreMenu size="25px">
-                  <MenuItem
-                    component={Link}
-                    to={`/${govPathname}/rewards/${ancGovernancePathname}/stake`}
-                  >
-                    Stake
-                  </MenuItem>
-                  <MenuItem
-                    component={Link}
-                    to={`/${govPathname}/rewards/${ancGovernancePathname}/unstake`}
-                  >
-                    Unstake
                   </MenuItem>
                 </MoreMenu>
               </td>
@@ -391,7 +391,7 @@ export const Rewards = styled(RewardsBase)`
         text-align: center;
       }
 
-      td:nth-child(4) {
+      .warning {
         color: ${({ theme }) => theme.colors.negative};
       }
 
