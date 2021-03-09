@@ -119,3 +119,16 @@ export function formatLuna(
 ): string {
   return formatFluidDecimalPoints(n, 6, options);
 }
+
+export function formatLunaWithPostfixUnits(
+  n: Luna<BigSource> | bLuna<BigSource>,
+  options: FormatOptions = { delimiter: true },
+): string {
+  const bn = big(n);
+
+  if (bn.gte(1000000)) {
+    return formatFluidDecimalPoints(bn.div(1000000), 2, options) + 'M';
+  } else {
+    return formatFluidDecimalPoints(bn, 2, options);
+  }
+}

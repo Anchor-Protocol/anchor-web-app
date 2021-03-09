@@ -1,12 +1,12 @@
 import type {
-  StableDenom,
-  WASMContractResult,
   moneyMarket,
   Rate,
+  StableDenom,
+  UST,
+  WASMContractResult,
 } from '@anchor-protocol/types';
 import { ContractAddress, HumanAddr } from '@anchor-protocol/types';
 import { createMap, map, Mapped, useMap } from '@anchor-protocol/use-map';
-import { ApolloClient, gql, useQuery } from '@apollo/client';
 import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
 import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { parseResult } from '@anchor-protocol/web-contexts/queries/parseResult';
@@ -16,6 +16,7 @@ import {
 } from '@anchor-protocol/web-contexts/queries/types';
 import { useQueryErrorHandler } from '@anchor-protocol/web-contexts/queries/useQueryErrorHandler';
 import { useRefetch } from '@anchor-protocol/web-contexts/queries/useRefetch';
+import { ApolloClient, gql, useQuery } from '@apollo/client';
 import { useMemo } from 'react';
 import { Data as MarketState } from './marketState';
 
@@ -61,7 +62,7 @@ export const mockupData: Mapped<RawData, Data> = {
   },
   oraclePrice: {
     Result: '',
-    rate: '1' as Rate,
+    rate: '1' as UST,
     last_updated_base: 0,
     last_updated_quote: 0,
   },

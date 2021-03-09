@@ -1,5 +1,5 @@
 import { CW20Addr, StableDenom } from '@anchor-protocol/types/contracts/common';
-import { Rate } from '@anchor-protocol/types/units';
+import { UST } from '@anchor-protocol/types/currencies';
 
 /**
  * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/money-market/oracle#price
@@ -15,7 +15,7 @@ export interface Price {
  * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/money-market/oracle#priceresponse
  */
 export interface PriceResponse {
-  rate: Rate;
+  rate: UST;
   last_updated_base: number;
   last_updated_quote: number;
 }

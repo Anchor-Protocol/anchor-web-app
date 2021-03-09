@@ -9,9 +9,9 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
-import { Rate } from '@anchor-protocol/types';
-import big from 'big.js';
+import { UST } from '@anchor-protocol/types';
 import { useService } from '@anchor-protocol/web-contexts/contexts/service';
+import big from 'big.js';
 import { useMemo } from 'react';
 import { useMarket } from '../context/market';
 import { collaterals as _collaterals } from '../logics/collaterals';
@@ -44,7 +44,7 @@ export function CollateralList({ className }: CollateralListProps) {
   // compute
   // ---------------------------------------------
   const collaterals = useMemo(
-    () => _collaterals(borrowInfo, 1 as Rate<number>),
+    () => _collaterals(borrowInfo, 1 as UST<number>),
     [borrowInfo],
   );
 
