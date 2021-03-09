@@ -1,29 +1,41 @@
-import { useApolloClient } from '@apollo/client';
-import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
-import { useService } from '@anchor-protocol/web-contexts/contexts/service';
-import { queryVoters } from 'pages/gov/queries/voters';
-import { useEffect, useState } from 'react';
+import { useRewardsAncGovernance } from 'pages/gov/queries/rewardsAncGovernance';
+import { useMemo } from 'react';
 
 export function useCanIVote(pollId: number | undefined): boolean {
-  const client = useApolloClient();
+  //const client = useApolloClient();
+  //
+  //const { walletReady } = useService();
+  //
+  //const address = useContractAddress();
+  //
+  //const [canIVote, setCanIVote] = useState<boolean>(false);
+  //
+  //useEffect(() => {
+  //  setCanIVote(false);
+  //
+  //  if (typeof pollId === 'number' && walletReady) {
+  //    queryVoters(client, address, pollId, walletReady.walletAddress, 1).then(
+  //      ({ data }) => {
+  //        console.log('canIVote.ts..()', data.voters);
+  //        setCanIVote(!!data.voters && data.voters.voters.length === 0);
+  //      },
+  //    );
+  //  }
+  //}, [address, client, pollId, walletReady]);
+  //
+  //return canIVote;
 
-  const { walletReady } = useService();
+  const {
+    data: { userGovStakingInfo },
+  } = useRewardsAncGovernance();
 
-  const address = useContractAddress();
+  return useMemo(() => {
+    if (!pollId || !userGovStakingInfo) return false;
 
-  const [canIVote, setCanIVote] = useState<boolean>(false);
-
-  useEffect(() => {
-    setCanIVote(false);
-
-    if (typeof pollId === 'number' && walletReady) {
-      queryVoters(client, address, pollId, walletReady.walletAddress, 1).then(
-        ({ data }) => {
-          setCanIVote(!!data.voters && data.voters.voters.length === 0);
-        },
-      );
+    for (const [stakedPollId] of userGovStakingInfo.locked_balance) {
+      if (pollId === stakedPollId) return false;
     }
-  }, [address, client, pollId, walletReady]);
 
-  return canIVote;
+    return true;
+  }, [pollId, userGovStakingInfo]);
 }

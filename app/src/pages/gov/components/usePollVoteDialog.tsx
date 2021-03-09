@@ -29,6 +29,7 @@ import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { validateTxFee } from 'logics/validateTxFee';
+import { useCanIVote } from 'pages/gov/queries/canIVote';
 import { useRewardsAncGovernance } from 'pages/gov/queries/rewardsAncGovernance';
 import { useTotalStaked } from 'pages/gov/queries/totalStaked';
 import { voteOptions } from 'pages/gov/transactions/voteOptions';
@@ -76,18 +77,10 @@ function ComponentBase({
     data: { govANCBalance, govState },
   } = useTotalStaked();
 
+  const canIVote = useCanIVote(pollId);
+
   const [voteFor, setVoteFor] = useState<null | 'yes' | 'no'>(null);
   const [amount, setAmount] = useState<ANC>('' as ANC);
-
-  const canIVote = useMemo(() => {
-    if (!userGovStakingInfo) return false;
-
-    for (const [stakedPollId] of userGovStakingInfo.locked_balance) {
-      if (pollId === stakedPollId) return false;
-    }
-
-    return true;
-  }, [pollId, userGovStakingInfo]);
 
   const maxVote = useMemo(() => {
     if (!govANCBalance || !govState || !userGovStakingInfo) {
