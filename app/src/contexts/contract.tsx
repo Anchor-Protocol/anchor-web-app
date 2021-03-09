@@ -1,10 +1,11 @@
-import type { AddressProvider } from '@anchor-protocol/anchor.js';
+import type { AddressMap, AddressProvider } from '@anchor-protocol/anchor.js';
 import { ContractAddress, CW20Addr, HumanAddr } from '@anchor-protocol/types';
 import type { ReactNode } from 'react';
 import { Consumer, Context, createContext, useContext, useMemo } from 'react';
 
 export interface ContractProviderProps {
   children: ReactNode;
+  addressMap: AddressMap;
   addressProvider: AddressProvider;
 }
 
@@ -19,15 +20,19 @@ const ContractContext: Context<ContractState> = createContext<ContractState>();
 export function ContractProvider({
   children,
   addressProvider,
+  addressMap,
 }: ContractProviderProps) {
   const state = useMemo<ContractState>(() => {
-    const address: ContractAddress = createContractAddress(addressProvider);
+    const address: ContractAddress = createContractAddress(
+      addressProvider,
+      addressMap,
+    );
 
     return {
       addressProvider,
       address,
     };
-  }, [addressProvider]);
+  }, [addressMap, addressProvider]);
 
   return (
     <ContractContext.Provider value={state}>
@@ -38,6 +43,7 @@ export function ContractProvider({
 
 export function createContractAddress(
   addressProvider: AddressProvider,
+  addressMap: AddressMap,
 ): ContractAddress {
   return {
     bluna: {
@@ -50,7 +56,7 @@ export function createContractAddress(
       overseer: addressProvider.overseer('') as HumanAddr,
       oracle: addressProvider.oracle() as HumanAddr,
       interestModel: addressProvider.interest() as HumanAddr,
-      distributionModel: 'terra1qhducr784hs5dwy2aqf87m44qu2cq8uwa5dy99' as HumanAddr,
+      distributionModel: addressMap.mmDistributionModel as HumanAddr,
     },
     liquidation: {
       liquidationContract: addressProvider.liquidation() as HumanAddr,

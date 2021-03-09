@@ -1,3 +1,4 @@
+import { max } from '@anchor-protocol/big-math';
 import { useOperation } from '@anchor-protocol/broadcastable-operation';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
@@ -67,9 +68,9 @@ export function AncGovernanceUnstake() {
       big(govANCBalance.balance).minus(govState.total_deposit),
     ).div(govState.total_share);
 
-    const lockedANC = userGovStakingInfo.locked_balance.reduce(
-      (lockedANC, [_, { balance }]) => lockedANC.plus(balance),
-      big(0),
+    const lockedANC = max(
+      0,
+      ...userGovStakingInfo.locked_balance.map(([_, { balance }]) => balance),
     );
 
     const unstakable = big(userGovStakingInfo.share)

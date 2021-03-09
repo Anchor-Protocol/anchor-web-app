@@ -64,16 +64,18 @@ function Providers({
     network.chainID,
   ]);
 
-  const addressProvider = useMemo<AddressProvider>(() => {
-    return isMainnet
-      ? // TODO set mainet contracts
-        new AddressProviderFromJson(contractAddresses)
-      : new AddressProviderFromJson(contractAddresses);
+  const addressMap = useMemo(() => {
+    // TODO set mainet contracts
+    return isMainnet ? contractAddresses : contractAddresses;
   }, [isMainnet]);
 
+  const addressProvider = useMemo<AddressProvider>(() => {
+    return new AddressProviderFromJson(addressMap);
+  }, [addressMap]);
+
   const address = useMemo<ContractAddress>(() => {
-    return createContractAddress(addressProvider);
-  }, [addressProvider]);
+    return createContractAddress(addressProvider, addressMap);
+  }, [addressMap, addressProvider]);
 
   const client = useMemo<ApolloClient<any>>(() => {
     const httpLink = new HttpLink({
@@ -127,7 +129,10 @@ function Providers({
       {/** Serve Constants */}
       <ConstantsProvider {...constants}>
         {/** Smart Contract Address :: useAddressProvider() */}
-        <ContractProvider addressProvider={addressProvider}>
+        <ContractProvider
+          addressProvider={addressProvider}
+          addressMap={addressMap}
+        >
           {/** Set GraphQL environenments :: useQuery(), useApolloClient()... */}
           <ApolloProvider client={client}>
             {/** Broadcastable Query Provider :: useBroadCastableQuery(), useQueryBroadCaster() */}
