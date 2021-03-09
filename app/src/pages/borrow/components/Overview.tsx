@@ -1,4 +1,9 @@
-import { APY, BorrowValue, CollateralValue } from '@anchor-protocol/icons';
+import {
+  APY,
+  BorrowValue,
+  CollateralValue,
+  BorrowAPR,
+} from '@anchor-protocol/icons';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
@@ -104,14 +109,30 @@ function OverviewBase({ className }: OverviewProps) {
           </Tooltip>
           <div className="value">{formatRateToPercentage(apr)}%</div>
           <div>
-            <CircleOnly>
-              <Circle>
-                <APY />
-              </Circle>
-            </CircleOnly>
-            {/*<Circle>*/}
-            {/*  <BorrowAPR />*/}
-            {/*</Circle>*/}
+            <Circles>
+              <div>
+                <Circle>
+                  <BorrowAPR />
+                </Circle>
+                <p>
+                  Borrow APR
+                  <b>
+                    <s>3.19%</s>
+                  </b>
+                </p>
+              </div>
+              <div>
+                <Circle>
+                  <APY />
+                </Circle>
+                <p>
+                  Distribution APY
+                  <b>
+                    <s>3.19%</s>
+                  </b>
+                </p>
+              </div>
+            </Circles>
           </div>
         </div>
       </article>
@@ -131,14 +152,42 @@ export const Circle = styled.div`
   border-radius: 50%;
   background-color: ${({ theme }) => theme.backgroundColor};
   display: inline-grid;
-  width: 56px;
-  height: 56px;
+  min-width: 56px;
+  max-width: 56px;
+  min-height: 56px;
+  max-height: 56px;
   place-content: center;
   color: ${({ theme }) => theme.dimTextColor};
 `;
 
 export const CircleOnly = styled.div`
   text-align: right;
+`;
+
+export const Circles = styled.div`
+  display: flex;
+
+  > div {
+    flex: 1;
+
+    display: flex;
+    align-items: center;
+
+    font-size: 13px;
+    color: ${({ theme }) => theme.dimTextColor};
+
+    word-break: keep-all;
+    white-space: nowrap;
+
+    b {
+      display: block;
+      color: ${({ theme }) => theme.textColor};
+    }
+
+    > :nth-child(odd) {
+      margin-right: 10px;
+    }
+  }
 `;
 
 export const LabelAndCircle = styled.div`
