@@ -81,7 +81,7 @@ function MarketBase({ className }: MarketProps) {
   return (
     <div className={className}>
       <main>
-        <h1>MARKET</h1>
+        <h1>DASHBOARD</h1>
 
         <div className="content-layout">
           <Section className="total-deposit">

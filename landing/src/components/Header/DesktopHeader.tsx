@@ -15,7 +15,7 @@ function DesktopHeaderBase({ className, color }: DesktopHeaderProps) {
         <Link to="/">ANCHOR</Link>
       </section>
       <nav>
-        <NavLink to="/market">MARKET</NavLink>
+        <NavLink to="/dashboard">DASHBOARD</NavLink>
         <a href={links.developers} target="anchor-developers">
           DEVELOPERS
         </a>

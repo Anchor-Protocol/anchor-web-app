@@ -23,8 +23,8 @@ function MobileHeaderBase({ className, color }: MobileHeaderProps) {
       >
         {open && (
           <nav>
-            <NavLink to="/market" onClick={() => setOpen(false)}>
-              MARKET
+            <NavLink to="/dashboard" onClick={() => setOpen(false)}>
+              DASHBOARD
             </NavLink>
             <a
               href={links.developers}

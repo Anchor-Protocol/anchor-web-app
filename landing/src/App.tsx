@@ -19,7 +19,7 @@ export function App() {
           {/*<Route path="/contact" component={Contact} />*/}
           {/*<Redirect to="/" />*/}
           <Route exact path="/" component={Index} />
-          <Route path="/market" component={Market} />
+          <Route path="/dashboard" component={Market} />
           <Redirect to="/" />
         </Switch>
       </div>
