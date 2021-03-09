@@ -90,6 +90,38 @@ export function PollCreateModifyMarketParameters() {
     validPriceTimeframe.length,
   ]);
 
+  const invalidBufferDistributionFactor = useMemo(() => {
+    if (bufferDistributionFactor.length === 0) return undefined;
+
+    return big(bufferDistributionFactor).lt(1)
+      ? 'Please input LTV between 1 ~ 99'
+      : undefined;
+  }, [bufferDistributionFactor]);
+
+  const invalidMaxBorrowFactor = useMemo(() => {
+    if (maxBorrowFactor.length === 0) return undefined;
+
+    return big(maxBorrowFactor).lt(1)
+      ? 'Please input LTV between 1 ~ 99'
+      : undefined;
+  }, [maxBorrowFactor]);
+
+  const invalidTargetDepositRate = useMemo(() => {
+    if (targetDepositRate.length === 0) return undefined;
+
+    return big(targetDepositRate).lt(1)
+      ? 'Please input LTV between 1 ~ 99'
+      : undefined;
+  }, [targetDepositRate]);
+
+  const invalidThresholdDepositRate = useMemo(() => {
+    if (thresholdDepositRate.length === 0) return undefined;
+
+    return big(thresholdDepositRate).lt(1)
+      ? 'Please input LTV between 1 ~ 99'
+      : undefined;
+  }, [thresholdDepositRate]);
+
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
@@ -168,6 +200,11 @@ export function PollCreateModifyMarketParameters() {
     [address.moneyMarket.market, address.moneyMarket.overseer, blocksPerYear],
   );
 
+  console.log(
+    'poll.create.modify-market-parameters.tsx..PollCreateModifyMarketParameters()',
+    invalidThresholdDepositRate,
+  );
+
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
@@ -175,11 +212,15 @@ export function PollCreateModifyMarketParameters() {
     <PollCreateBase
       pollTitle="Modify Market Parameters"
       submitDisabled={
-        targetDepositRate.length === 0 &&
-        thresholdDepositRate.length === 0 &&
-        bufferDistributionFactor.length === 0 &&
-        maxBorrowFactor.length === 0 &&
-        validPriceTimeframe.length === 0
+        (targetDepositRate.length === 0 &&
+          thresholdDepositRate.length === 0 &&
+          bufferDistributionFactor.length === 0 &&
+          maxBorrowFactor.length === 0 &&
+          validPriceTimeframe.length === 0) ||
+        !!invalidBufferDistributionFactor ||
+        !!invalidThresholdDepositRate ||
+        !!invalidTargetDepositRate ||
+        !!invalidMaxBorrowFactor
       }
       onCreateMsgs={() =>
         createMsgs(
@@ -208,6 +249,8 @@ export function PollCreateModifyMarketParameters() {
         }}
         value={targetDepositRate}
         disabled={inputDisabled.targetDepositRate}
+        error={!!invalidTargetDepositRate}
+        helperText={invalidTargetDepositRate}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setTargetDepositRate(target.value)
         }
@@ -230,6 +273,8 @@ export function PollCreateModifyMarketParameters() {
         }}
         value={thresholdDepositRate}
         disabled={inputDisabled.thresholdDepositRate}
+        error={!!invalidThresholdDepositRate}
+        helperText={invalidThresholdDepositRate}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setThresholdDepositRate(target.value)
         }
@@ -252,6 +297,8 @@ export function PollCreateModifyMarketParameters() {
         }}
         value={bufferDistributionFactor}
         disabled={inputDisabled.bufferDistributionFactor}
+        error={!!invalidBufferDistributionFactor}
+        helperText={invalidBufferDistributionFactor}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setBufferDistributionFactor(target.value)
         }
@@ -274,6 +321,8 @@ export function PollCreateModifyMarketParameters() {
         }}
         value={maxBorrowFactor}
         disabled={inputDisabled.maxBorrowFactor}
+        error={!!invalidMaxBorrowFactor}
+        helperText={invalidMaxBorrowFactor}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setMaxBorrowFactor(target.value)
         }

@@ -4,9 +4,9 @@ import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberIn
 import { formatExecuteMsgNumber } from '@anchor-protocol/notation';
 import { CW20Addr, Rate } from '@anchor-protocol/types';
 import { PollMsg } from '@anchor-protocol/types/contracts/anchorToken/gov';
+import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
 import { InputAdornment } from '@material-ui/core';
 import big from 'big.js';
-import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
@@ -31,6 +31,11 @@ export function PollCreateModifyCollateralAttribute() {
   const [bAsset, setBAsset] = useState<Item>(() => bAssetItems[0]);
 
   const [ltv, setLtv] = useState<string>('');
+
+  const invalidLtv = useMemo(() => {
+    if (ltv.length === 0) return undefined;
+    return big(ltv).lt(1) ? 'Please input LTV between 1 ~ 99' : undefined;
+  }, [ltv]);
 
   // ---------------------------------------------
   // callbacks
@@ -62,7 +67,7 @@ export function PollCreateModifyCollateralAttribute() {
   return (
     <PollCreateBase
       pollTitle="Modify Collateral Attribute"
-      submitDisabled={ltv.length === 0}
+      submitDisabled={ltv.length === 0 || !!invalidLtv}
       onCreateMsgs={() => createMsgs(bAsset, ltv)}
     >
       <div className="description">
@@ -96,10 +101,14 @@ export function PollCreateModifyCollateralAttribute() {
 
       <NumberInput
         placeholder="MAX LTV"
+        type="integer"
+        maxIntegerPoinsts={2}
         InputProps={{
           endAdornment: <InputAdornment position="end">%</InputAdornment>,
         }}
         value={ltv}
+        error={!!invalidLtv}
+        helperText={invalidLtv}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setLtv(target.value)
         }
