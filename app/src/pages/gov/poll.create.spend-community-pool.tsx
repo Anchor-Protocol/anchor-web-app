@@ -56,7 +56,7 @@ export function PollCreateSpendCommunityPool() {
 
       if (Object.keys(spend).length > 0) {
         msgs.push({
-          contract: address.moneyMarket.distributionModel,
+          contract: address.anchorToken.community,
           msg: Buffer.from(
             JSON.stringify({
               spend,
@@ -70,7 +70,7 @@ export function PollCreateSpendCommunityPool() {
         ...msg,
       }));
     },
-    [address.moneyMarket.distributionModel],
+    [address.anchorToken.community],
   );
 
   // ---------------------------------------------
