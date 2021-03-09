@@ -28,6 +28,10 @@ export const FormLayout = styled(FormLayoutBase)`
     }
 
     margin-bottom: 10px;
+
+    &[aria-disabled='true'] {
+      opacity: 0.3;
+    }
   }
 
   .MuiTextField-root {

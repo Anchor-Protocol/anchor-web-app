@@ -11,7 +11,7 @@ import big from 'big.js';
 import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
 import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
-import React, { ChangeEvent, useCallback, useState } from 'react';
+import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 export function PollCreateModifyBorrowInterest() {
   // ---------------------------------------------
@@ -25,6 +25,25 @@ export function PollCreateModifyBorrowInterest() {
   // ---------------------------------------------
   const [baseBorrowRate, setBaseBorrowRate] = useState<string>('');
   const [interestMultiplier, setInterestMultiplier] = useState<string>('');
+
+  const inputDisabled = useMemo(() => {
+    if (baseBorrowRate.length > 0) {
+      return {
+        baseBorrowRate: false,
+        interestMultiplier: true,
+      };
+    } else if (interestMultiplier.length > 0) {
+      return {
+        baseBorrowRate: true,
+        interestMultiplier: false,
+      };
+    } else {
+      return {
+        baseBorrowRate: false,
+        interestMultiplier: false,
+      };
+    }
+  }, [baseBorrowRate.length, interestMultiplier.length]);
 
   // ---------------------------------------------
   // callbacks
@@ -77,7 +96,7 @@ export function PollCreateModifyBorrowInterest() {
       }
       onCreateMsgs={() => createMsgs(baseBorrowRate, interestMultiplier)}
     >
-      <div className="description">
+      <div className="description" aria-disabled={inputDisabled.baseBorrowRate}>
         <p>Base Borrow Rate</p>
         <p />
       </div>
@@ -90,12 +109,16 @@ export function PollCreateModifyBorrowInterest() {
           endAdornment: <InputAdornment position="end">%</InputAdornment>,
         }}
         value={baseBorrowRate}
+        disabled={inputDisabled.baseBorrowRate}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setBaseBorrowRate(target.value)
         }
       />
 
-      <div className="description">
+      <div
+        className="description"
+        aria-disabled={inputDisabled.interestMultiplier}
+      >
         <p>Interest Multiplier</p>
         <p />
       </div>
@@ -105,6 +128,7 @@ export function PollCreateModifyBorrowInterest() {
         maxIntegerPoinsts={3}
         maxDecimalPoints={MAX_EXECUTE_MSG_DECIMALS}
         value={interestMultiplier}
+        disabled={inputDisabled.interestMultiplier}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setInterestMultiplier(target.value)
         }

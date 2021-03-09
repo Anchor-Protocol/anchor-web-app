@@ -5,12 +5,12 @@ import { formatExecuteMsgNumber } from '@anchor-protocol/notation';
 import { Rate } from '@anchor-protocol/types';
 import { UpdateConfig as MarketUpdateConfig } from '@anchor-protocol/types/contracts/moneyMarket/market/updateConfig';
 import { UpdateConfig as OverseerUpdateConfig } from '@anchor-protocol/types/contracts/moneyMarket/overseer/updateConfig';
-import { InputAdornment } from '@material-ui/core';
-import big from 'big.js';
 import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
 import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
+import { InputAdornment } from '@material-ui/core';
+import big from 'big.js';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
-import React, { ChangeEvent, useCallback, useState } from 'react';
+import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 export function PollCreateModifyMarketParameters() {
   // ---------------------------------------------
@@ -30,6 +30,65 @@ export function PollCreateModifyMarketParameters() {
   ] = useState<string>('');
   const [maxBorrowFactor, setMaxBorrowFactor] = useState<string>('');
   const [validPriceTimeframe, setValidPriceTimeframe] = useState<string>('');
+
+  const inputDisabled = useMemo(() => {
+    if (targetDepositRate.length > 0) {
+      return {
+        targetDepositRate: false,
+        thresholdDepositRate: true,
+        bufferDistributionFactor: true,
+        maxBorrowFactor: true,
+        validPriceTimeframe: true,
+      };
+    } else if (thresholdDepositRate.length > 0) {
+      return {
+        targetDepositRate: true,
+        thresholdDepositRate: false,
+        bufferDistributionFactor: true,
+        maxBorrowFactor: true,
+        validPriceTimeframe: true,
+      };
+    } else if (bufferDistributionFactor.length > 0) {
+      return {
+        targetDepositRate: true,
+        thresholdDepositRate: true,
+        bufferDistributionFactor: false,
+        maxBorrowFactor: true,
+        validPriceTimeframe: true,
+      };
+    }
+    if (maxBorrowFactor.length > 0) {
+      return {
+        targetDepositRate: true,
+        thresholdDepositRate: true,
+        bufferDistributionFactor: true,
+        maxBorrowFactor: false,
+        validPriceTimeframe: true,
+      };
+    } else if (validPriceTimeframe.length > 0) {
+      return {
+        targetDepositRate: true,
+        thresholdDepositRate: true,
+        bufferDistributionFactor: true,
+        maxBorrowFactor: true,
+        validPriceTimeframe: false,
+      };
+    } else {
+      return {
+        targetDepositRate: false,
+        thresholdDepositRate: false,
+        bufferDistributionFactor: false,
+        maxBorrowFactor: false,
+        validPriceTimeframe: false,
+      };
+    }
+  }, [
+    bufferDistributionFactor.length,
+    maxBorrowFactor.length,
+    targetDepositRate.length,
+    thresholdDepositRate.length,
+    validPriceTimeframe.length,
+  ]);
 
   // ---------------------------------------------
   // callbacks
@@ -132,7 +191,10 @@ export function PollCreateModifyMarketParameters() {
         )
       }
     >
-      <div className="description">
+      <div
+        className="description"
+        aria-disabled={inputDisabled.targetDepositRate}
+      >
         <p>Target Deposit Rate</p>
         <p />
       </div>
@@ -145,12 +207,16 @@ export function PollCreateModifyMarketParameters() {
           endAdornment: <InputAdornment position="end">%</InputAdornment>,
         }}
         value={targetDepositRate}
+        disabled={inputDisabled.targetDepositRate}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setTargetDepositRate(target.value)
         }
       />
 
-      <div className="description">
+      <div
+        className="description"
+        aria-disabled={inputDisabled.thresholdDepositRate}
+      >
         <p>Threshold Deposit Rate</p>
         <p />
       </div>
@@ -163,12 +229,16 @@ export function PollCreateModifyMarketParameters() {
           endAdornment: <InputAdornment position="end">%</InputAdornment>,
         }}
         value={thresholdDepositRate}
+        disabled={inputDisabled.thresholdDepositRate}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setThresholdDepositRate(target.value)
         }
       />
 
-      <div className="description">
+      <div
+        className="description"
+        aria-disabled={inputDisabled.bufferDistributionFactor}
+      >
         <p>Buffer Distribution Factor</p>
         <p />
       </div>
@@ -181,12 +251,16 @@ export function PollCreateModifyMarketParameters() {
           endAdornment: <InputAdornment position="end">%</InputAdornment>,
         }}
         value={bufferDistributionFactor}
+        disabled={inputDisabled.bufferDistributionFactor}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setBufferDistributionFactor(target.value)
         }
       />
 
-      <div className="description">
+      <div
+        className="description"
+        aria-disabled={inputDisabled.maxBorrowFactor}
+      >
         <p>Max Borrow Factor</p>
         <p />
       </div>
@@ -199,12 +273,16 @@ export function PollCreateModifyMarketParameters() {
           endAdornment: <InputAdornment position="end">%</InputAdornment>,
         }}
         value={maxBorrowFactor}
+        disabled={inputDisabled.maxBorrowFactor}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setMaxBorrowFactor(target.value)
         }
       />
 
-      <div className="description">
+      <div
+        className="description"
+        aria-disabled={inputDisabled.validPriceTimeframe}
+      >
         <p>Valid Price Timeframe</p>
         <p />
       </div>
@@ -217,6 +295,7 @@ export function PollCreateModifyMarketParameters() {
           endAdornment: <InputAdornment position="end">Seconds</InputAdornment>,
         }}
         value={validPriceTimeframe}
+        disabled={inputDisabled.validPriceTimeframe}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setValidPriceTimeframe(target.value)
         }

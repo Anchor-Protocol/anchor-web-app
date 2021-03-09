@@ -8,7 +8,7 @@ import { Rate } from '@anchor-protocol/types';
 import { UpdateConfig as DistributionModelUpdateConfig } from '@anchor-protocol/types/contracts/moneyMarket/distributionModel/updateConfig';
 import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
-import React, { ChangeEvent, useCallback, useState } from 'react';
+import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 export function PollCreateModifyANCDistribution() {
   // ---------------------------------------------
@@ -25,6 +25,51 @@ export function PollCreateModifyANCDistribution() {
   );
   const [incrementMultiplier, setIncrementMultiplier] = useState<string>('');
   const [decrementMultiplier, setDecrementMultiplier] = useState<string>('');
+
+  const inputDisabled = useMemo(() => {
+    if (borrowerEmissionCap.length > 0) {
+      return {
+        borrowerEmissionCap: false,
+        borrowerEmissionFloor: true,
+        incrementMultiplier: true,
+        decrementMultiplier: true,
+      };
+    } else if (borrowerEmissionFloor.length > 0) {
+      return {
+        borrowerEmissionCap: true,
+        borrowerEmissionFloor: false,
+        incrementMultiplier: true,
+        decrementMultiplier: true,
+      };
+    } else if (incrementMultiplier.length > 0) {
+      return {
+        borrowerEmissionCap: true,
+        borrowerEmissionFloor: true,
+        incrementMultiplier: false,
+        decrementMultiplier: true,
+      };
+    }
+    if (decrementMultiplier.length > 0) {
+      return {
+        borrowerEmissionCap: true,
+        borrowerEmissionFloor: true,
+        incrementMultiplier: true,
+        decrementMultiplier: false,
+      };
+    } else {
+      return {
+        borrowerEmissionCap: false,
+        borrowerEmissionFloor: false,
+        incrementMultiplier: false,
+        decrementMultiplier: false,
+      };
+    }
+  }, [
+    borrowerEmissionCap.length,
+    borrowerEmissionFloor.length,
+    decrementMultiplier.length,
+    incrementMultiplier.length,
+  ]);
 
   // ---------------------------------------------
   // callbacks
@@ -104,7 +149,10 @@ export function PollCreateModifyANCDistribution() {
         )
       }
     >
-      <div className="description">
+      <div
+        className="description"
+        aria-disabled={inputDisabled.borrowerEmissionCap}
+      >
         <p>Borrower Emission Cap</p>
         <p />
       </div>
@@ -114,12 +162,16 @@ export function PollCreateModifyANCDistribution() {
         maxIntegerPoinsts={3}
         maxDecimalPoints={MAX_EXECUTE_MSG_DECIMALS}
         value={borrowerEmissionCap}
+        disabled={inputDisabled.borrowerEmissionCap}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setBorrowerEmissionCap(target.value)
         }
       />
 
-      <div className="description">
+      <div
+        className="description"
+        aria-disabled={inputDisabled.borrowerEmissionFloor}
+      >
         <p>Borrower Emission Floor</p>
         <p />
       </div>
@@ -129,12 +181,16 @@ export function PollCreateModifyANCDistribution() {
         maxIntegerPoinsts={3}
         maxDecimalPoints={MAX_EXECUTE_MSG_DECIMALS}
         value={borrowerEmissionFloor}
+        disabled={inputDisabled.borrowerEmissionFloor}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setBorrowerEmissionFloor(target.value)
         }
       />
 
-      <div className="description">
+      <div
+        className="description"
+        aria-disabled={inputDisabled.incrementMultiplier}
+      >
         <p>Increment Multiplier</p>
         <p />
       </div>
@@ -144,12 +200,16 @@ export function PollCreateModifyANCDistribution() {
         maxIntegerPoinsts={3}
         maxDecimalPoints={MAX_EXECUTE_MSG_DECIMALS}
         value={incrementMultiplier}
+        disabled={inputDisabled.incrementMultiplier}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setIncrementMultiplier(target.value)
         }
       />
 
-      <div className="description">
+      <div
+        className="description"
+        aria-disabled={inputDisabled.decrementMultiplier}
+      >
         <p>Decrement Multiplier</p>
         <p />
       </div>
@@ -159,6 +219,7 @@ export function PollCreateModifyANCDistribution() {
         maxIntegerPoinsts={3}
         maxDecimalPoints={MAX_EXECUTE_MSG_DECIMALS}
         value={decrementMultiplier}
+        disabled={inputDisabled.decrementMultiplier}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setDecrementMultiplier(target.value)
         }
