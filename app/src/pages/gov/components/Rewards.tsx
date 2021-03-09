@@ -21,9 +21,9 @@ import {
 } from 'pages/gov/env';
 import { useANCPrice } from 'pages/gov/queries/ancPrice';
 import { useClaimableAncUstLp } from 'pages/gov/queries/claimableAncUstLp';
+import { useClaimableUstBorrow } from 'pages/gov/queries/claimableUstBorrow';
 import { useLPStakingState } from 'pages/gov/queries/lpStakingState';
 import { useRewardsAncGovernance } from 'pages/gov/queries/rewardsAncGovernance';
-import { useRewardsUSTBorrow } from 'pages/gov/queries/rewardsUSTBorrow';
 import { useTotalStaked } from 'pages/gov/queries/totalStaked';
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
@@ -59,7 +59,7 @@ export function RewardsBase({ className }: RewardsProps) {
 
   const {
     data: { borrowerInfo, marketState },
-  } = useRewardsUSTBorrow();
+  } = useClaimableUstBorrow();
 
   // ---------------------------------------------
   // logics
@@ -114,9 +114,7 @@ export function RewardsBase({ className }: RewardsProps) {
       return undefined;
     }
 
-    const reward = big(marketState.global_reward_index)
-      .minus(borrowerInfo.reward_index)
-      .plus(borrowerInfo.pending_rewards) as uANC<Big>;
+    const reward = big(borrowerInfo.pending_rewards) as uANC<Big>;
 
     return { reward };
   }, [borrowerInfo, marketState]);
