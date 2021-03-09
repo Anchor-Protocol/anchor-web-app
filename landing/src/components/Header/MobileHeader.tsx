@@ -128,7 +128,7 @@ export const MobileHeader = styled(MobileHeaderBase)`
     nav {
       background-color: #000000;
 
-      a {
+      a:not(.webapp) {
         color: rgba(255, 255, 255, 0.35);
 
         &:hover {
@@ -140,7 +140,7 @@ export const MobileHeader = styled(MobileHeaderBase)`
         }
       }
 
-      button {
+      .webapp {
         color: rgba(255, 255, 255, 0.54);
         background-color: #161616;
 
