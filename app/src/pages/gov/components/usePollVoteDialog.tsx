@@ -7,26 +7,30 @@ import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   ANC_INPUT_MAXIMUM_INTEGER_POINTS,
   demicrofy,
+  formatANC,
   formatUST,
+  formatUSTInput,
   microfy,
 } from '@anchor-protocol/notation';
-import { ANC } from '@anchor-protocol/types';
+import { ANC, uANC } from '@anchor-protocol/types';
 import {
   DialogProps,
   OpenDialog,
   useDialog,
 } from '@anchor-protocol/use-dialog';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
-import { InputAdornment, Modal } from '@material-ui/core';
-import { ThumbDown, ThumbUp } from '@material-ui/icons';
-import big from 'big.js';
-import { MessageBox } from 'components/MessageBox';
-import { TransactionRenderer } from 'components/TransactionRenderer';
-import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { useBank } from '@anchor-protocol/web-contexts/contexts/bank';
 import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
 import { useService } from '@anchor-protocol/web-contexts/contexts/service';
+import { InputAdornment, Modal } from '@material-ui/core';
+import { ThumbDown, ThumbUp } from '@material-ui/icons';
+import big, { Big } from 'big.js';
+import { MessageBox } from 'components/MessageBox';
+import { TransactionRenderer } from 'components/TransactionRenderer';
+import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { validateTxFee } from 'logics/validateTxFee';
+import { useRewardsAncGovernance } from 'pages/gov/queries/rewardsAncGovernance';
+import { useTotalStaked } from 'pages/gov/queries/totalStaked';
 import { voteOptions } from 'pages/gov/transactions/voteOptions';
 import React, {
   ChangeEvent,
@@ -64,8 +68,38 @@ function ComponentBase({
 
   const bank = useBank();
 
+  const {
+    data: { userGovStakingInfo },
+  } = useRewardsAncGovernance();
+
+  const {
+    data: { govANCBalance, govState },
+  } = useTotalStaked();
+
   const [voteFor, setVoteFor] = useState<null | 'yes' | 'no'>(null);
   const [amount, setAmount] = useState<ANC>('' as ANC);
+
+  const canIVote = useMemo(() => {
+    if (!userGovStakingInfo) return false;
+
+    for (const [stakedPollId] of userGovStakingInfo.locked_balance) {
+      if (pollId === stakedPollId) return false;
+    }
+
+    return true;
+  }, [pollId, userGovStakingInfo]);
+
+  const maxVote = useMemo(() => {
+    if (!govANCBalance || !govState || !userGovStakingInfo) {
+      return undefined;
+    }
+
+    const govShareIndex = big(
+      big(govANCBalance.balance).minus(govState.total_deposit),
+    ).div(govState.total_share);
+
+    return big(userGovStakingInfo.share).mul(govShareIndex) as uANC<Big>;
+  }, [govANCBalance, govState, userGovStakingInfo]);
 
   const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
     bank,
@@ -75,10 +109,12 @@ function ComponentBase({
   const invalidAmount = useMemo(() => {
     if (amount.length === 0) return undefined;
 
-    return microfy(amount).gt(bank.userBalances.uANC)
+    const uanc = microfy(amount);
+
+    return uanc.gt(bank.userBalances.uANC) || (maxVote && uanc.gt(maxVote))
       ? 'Not enough assets'
       : undefined;
-  }, [amount, bank.userBalances.uANC]);
+  }, [amount, bank.userBalances.uANC, maxVote]);
 
   const txFee = fixedGas;
 
@@ -145,8 +181,6 @@ function ComponentBase({
           maxIntegerPoinsts={ANC_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={ANC_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="AMOUNT"
-          error={!!invalidAmount}
-          helperText={invalidAmount}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             setAmount(target.value as ANC)
           }
@@ -154,6 +188,24 @@ function ComponentBase({
             endAdornment: <InputAdornment position="end">ANC</InputAdornment>,
           }}
         />
+
+        <div className="wallet" aria-invalid={!!invalidAmount}>
+          <span>{invalidAmount}</span>
+          <span>
+            Balance:{' '}
+            <span
+              style={{
+                textDecoration: 'underline',
+                cursor: 'pointer',
+              }}
+              onClick={() =>
+                maxVote && setAmount(formatUSTInput(demicrofy(maxVote)))
+              }
+            >
+              {maxVote ? formatANC(demicrofy(maxVote)) : 0} ANC
+            </span>
+          </span>
+        </div>
 
         {txFee && (
           <TxFeeList className="receipt">
@@ -167,6 +219,7 @@ function ComponentBase({
           className="submit"
           disabled={
             !serviceAvailable ||
+            !canIVote ||
             amount.length === 0 ||
             !voteFor ||
             big(amount).lte(0) ||
@@ -222,11 +275,25 @@ const Component = styled(ComponentBase)`
 
   .amount {
     width: 100%;
-    margin-bottom: 40px;
+    margin-bottom: 5px;
 
     .MuiTypography-colorTextSecondary {
       color: currentColor;
     }
+  }
+
+  .wallet {
+    display: flex;
+    justify-content: space-between;
+
+    font-size: 12px;
+    color: ${({ theme }) => theme.dimTextColor};
+
+    &[aria-invalid='true'] {
+      color: ${({ theme }) => theme.colors.negative};
+    }
+
+    margin-bottom: 45px;
   }
 
   .receipt {

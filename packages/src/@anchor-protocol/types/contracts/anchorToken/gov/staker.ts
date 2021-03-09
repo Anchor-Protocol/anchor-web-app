@@ -18,7 +18,7 @@ export interface StakerResponse {
   share: uANC;
   locked_balance: Array<
     [
-      number,
+      number, // poll_id
       {
         vote: 'yes' | 'no';
         balance: uANC;
