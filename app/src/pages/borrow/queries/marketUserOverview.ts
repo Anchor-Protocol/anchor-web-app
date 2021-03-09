@@ -10,12 +10,15 @@ import { ContractAddress } from '@anchor-protocol/types';
 import { createMap, map, Mapped, useMap } from '@anchor-protocol/use-map';
 import { WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, gql, useQuery } from '@apollo/client';
-import { useContractAddress } from 'contexts/contract';
-import { useService } from 'contexts/service';
-import { parseResult } from 'queries/parseResult';
-import { MappedApolloQueryResult, MappedQueryResult } from 'queries/types';
-import { useQueryErrorHandler } from 'queries/useQueryErrorHandler';
-import { useRefetch } from 'queries/useRefetch';
+import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
+import { useService } from '@anchor-protocol/web-contexts/contexts/service';
+import { parseResult } from '@anchor-protocol/web-contexts/queries/parseResult';
+import {
+  MappedApolloQueryResult,
+  MappedQueryResult,
+} from '@anchor-protocol/web-contexts/queries/types';
+import { useQueryErrorHandler } from '@anchor-protocol/web-contexts/queries/useQueryErrorHandler';
+import { useRefetch } from '@anchor-protocol/web-contexts/queries/useRefetch';
 import { useMemo } from 'react';
 import { Data as MarketState } from './marketState';
 

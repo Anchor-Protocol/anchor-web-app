@@ -10,7 +10,7 @@ import {
   uUST,
 } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
-import { Bank } from 'contexts/bank';
+import { Bank } from '@anchor-protocol/web-contexts/contexts/bank';
 import { AncPrice } from 'pages/gov/models/ancPrice';
 import { AncUstLpSimulation } from 'pages/gov/models/ancUstLpSimulation';
 

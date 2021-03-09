@@ -1,7 +1,7 @@
 import { map } from '@anchor-protocol/use-map';
 import big from 'big.js';
-import { dataMap, query, RawData, RawVariables } from 'queries/tax';
-import { testClient } from 'test.env';
+import { dataMap, query, RawData, RawVariables } from '../tax';
+import { testClient } from '../../test.env';
 
 describe('queries/tax', () => {
   test('should get result from query', async () => {

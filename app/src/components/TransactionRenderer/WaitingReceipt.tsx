@@ -1,10 +1,10 @@
 import { InProgress } from '@anchor-protocol/broadcastable-operation';
 import { HorizontalHeavyRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalHeavyRuler';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { TxHashLink } from 'components/TxHashLink';
+import { TxHashLink } from '@anchor-protocol/web-contexts/components/TxHashLink';
 import React from 'react';
 import { GuardSpinner } from 'react-spinners-kit';
-import { TxResult } from 'transactions/tx';
+import { TxResult } from '@anchor-protocol/web-contexts/transactions/tx';
 
 export interface WaitingReceiptProps {
   result: InProgress<unknown[]>;

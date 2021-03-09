@@ -1,4 +1,4 @@
-import { TxResult } from 'transactions/tx';
+import { TxResult } from '../transactions/tx';
 
 export class TxFailedError extends Error {
   constructor(public readonly txResult: TxResult) {

@@ -6,7 +6,7 @@ import {
 } from '@anchor-protocol/notation';
 import { Rate } from '@anchor-protocol/types';
 import { UpdateConfig as DistributionModelUpdateConfig } from '@anchor-protocol/types/contracts/moneyMarket/distributionModel/updateConfig';
-import { useContractAddress } from 'contexts/contract';
+import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
 import React, { ChangeEvent, useCallback, useState } from 'react';
 

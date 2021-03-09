@@ -1,5 +1,5 @@
-import { Data } from 'queries/txInfos';
-import { TxResult } from 'transactions/tx';
+import { Data } from '../queries/txInfos';
+import { TxResult } from '../transactions/tx';
 
 export class TxInfoParseError extends Error {
   constructor(

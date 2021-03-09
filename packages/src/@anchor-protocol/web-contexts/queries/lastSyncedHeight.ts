@@ -1,6 +1,6 @@
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { gql, QueryResult, useQuery } from '@apollo/client';
-import { useService } from 'contexts/service';
+import { useService } from '../contexts/service';
 import { useMemo } from 'react';
 
 export interface RawData {

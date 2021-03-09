@@ -11,12 +11,12 @@ import type {
   uUST,
 } from '@anchor-protocol/types';
 import { BigSource } from 'big.js';
-import { useService } from 'contexts/service';
-import { Data as TaxData, useTax } from 'queries/tax';
+import { useService } from './service';
+import { Data as TaxData, useTax } from '../queries/tax';
 import {
   Data as UserBalancesData,
   useUserBalances,
-} from 'queries/userBalances';
+} from '../queries/userBalances';
 import type { ReactNode } from 'react';
 import {
   Consumer,

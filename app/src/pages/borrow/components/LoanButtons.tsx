@@ -1,6 +1,6 @@
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import big from 'big.js';
-import { useService } from 'contexts/service';
+import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { useBorrowDialog } from 'pages/borrow/components/useBorrowDialog';
 import { useRepayDialog } from 'pages/borrow/components/useRepayDialog';
 import { useMarket } from 'pages/borrow/context/market';

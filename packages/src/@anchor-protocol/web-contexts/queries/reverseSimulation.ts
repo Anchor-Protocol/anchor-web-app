@@ -7,7 +7,7 @@ import type {
 } from '@anchor-protocol/types';
 import { createMap, map } from '@anchor-protocol/use-map';
 import { ApolloClient, gql } from '@apollo/client';
-import { MappedApolloQueryResult } from 'queries/types';
+import { MappedApolloQueryResult } from '../queries/types';
 
 export interface RawData {
   simulation: WASMContractResult;

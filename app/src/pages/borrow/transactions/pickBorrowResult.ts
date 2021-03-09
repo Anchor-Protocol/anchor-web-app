@@ -4,18 +4,18 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { moneyMarket, Rate, uUST } from '@anchor-protocol/types';
-import { TxHashLink } from 'components/TxHashLink';
-import { TxInfoParseError } from 'errors/TxInfoParseError';
-import { TransactionResult } from 'models/transaction';
+import { TxHashLink } from '@anchor-protocol/web-contexts/components/TxHashLink';
+import { TxInfoParseError } from '@anchor-protocol/web-contexts/errors/TxInfoParseError';
+import { TransactionResult } from '@anchor-protocol/web-contexts/models/transaction';
 import { currentLtv } from 'pages/borrow/logics/currentLtv';
 import {
   Data,
   pickAttributeValue,
   pickEvent,
   pickRawLog,
-} from 'queries/txInfos';
+} from '@anchor-protocol/web-contexts/queries/txInfos';
 import { createElement } from 'react';
-import { TxResult } from 'transactions/tx';
+import { TxResult } from '@anchor-protocol/web-contexts/transactions/tx';
 
 interface Params {
   txResult: TxResult;

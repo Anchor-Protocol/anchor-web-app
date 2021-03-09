@@ -1,7 +1,7 @@
 import { min } from '@anchor-protocol/big-math';
 import type { uUST } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
-import { Bank } from 'contexts/bank';
+import { Bank } from '@anchor-protocol/web-contexts/contexts/bank';
 
 export function depositRecommendationAmount(
   bank: Bank,

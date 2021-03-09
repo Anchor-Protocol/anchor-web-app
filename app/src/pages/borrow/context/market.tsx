@@ -1,8 +1,8 @@
 import type { Denom, Rate } from '@anchor-protocol/types';
 import { moneyMarket, uUST } from '@anchor-protocol/types';
 import big from 'big.js';
-import { useContractAddress } from 'contexts/contract';
-import { SAFE_RATIO } from 'env';
+import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
+import { SAFE_RATIO } from '@anchor-protocol/web-contexts/env';
 import type { ReactNode } from 'react';
 import { Consumer, Context, createContext, useContext, useMemo } from 'react';
 import {

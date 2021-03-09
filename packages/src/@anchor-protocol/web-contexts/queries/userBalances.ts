@@ -10,10 +10,10 @@ import type {
 } from '@anchor-protocol/types';
 import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
-import { useContractAddress } from 'contexts/contract';
-import { useService } from 'contexts/service';
-import { MappedQueryResult } from 'queries/types';
-import { useRefetch } from 'queries/useRefetch';
+import { useContractAddress } from '../contexts/contract';
+import { useService } from '../contexts/service';
+import { MappedQueryResult } from '../queries/types';
+import { useRefetch } from '../queries/useRefetch';
 import { useMemo } from 'react';
 
 export interface RawData {

@@ -1,5 +1,5 @@
 import { CW20Addr, Token, uToken } from '@anchor-protocol/types';
-import { Bank } from 'contexts/bank';
+import { Bank } from '@anchor-protocol/web-contexts/contexts/bank';
 
 export interface CurrencyInfo {
   label: string;

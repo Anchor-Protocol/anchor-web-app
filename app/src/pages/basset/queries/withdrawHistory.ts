@@ -2,12 +2,12 @@ import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { bluna, WASMContractResult } from '@anchor-protocol/types';
 import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
-import { useContractAddress } from 'contexts/contract';
-import { useService } from 'contexts/service';
-import { parseResult } from 'queries/parseResult';
-import { MappedQueryResult } from 'queries/types';
-import { useQueryErrorHandler } from 'queries/useQueryErrorHandler';
-import { useRefetch } from 'queries/useRefetch';
+import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
+import { useService } from '@anchor-protocol/web-contexts/contexts/service';
+import { parseResult } from '@anchor-protocol/web-contexts/queries/parseResult';
+import { MappedQueryResult } from '@anchor-protocol/web-contexts/queries/types';
+import { useQueryErrorHandler } from '@anchor-protocol/web-contexts/queries/useQueryErrorHandler';
+import { useRefetch } from '@anchor-protocol/web-contexts/queries/useRefetch';
 import { useMemo } from 'react';
 
 export interface RawData {

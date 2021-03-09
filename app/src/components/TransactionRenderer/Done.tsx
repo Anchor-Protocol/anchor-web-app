@@ -2,7 +2,10 @@ import { Done as DoneResult } from '@anchor-protocol/broadcastable-operation';
 import { HorizontalHeavyRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalHeavyRuler';
 import { Done as DoneIcon } from '@material-ui/icons';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { TransactionDetail, TransactionResult } from 'models/transaction';
+import {
+  TransactionDetail,
+  TransactionResult,
+} from '@anchor-protocol/web-contexts/models/transaction';
 import React from 'react';
 
 export interface DoneProps {

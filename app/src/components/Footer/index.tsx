@@ -1,6 +1,8 @@
 import { Discord } from '@anchor-protocol/icons';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { useWallet } from '@anchor-protocol/wallet-provider';
+import { useTheme } from '@anchor-protocol/web-contexts/contexts/theme';
+import { useLastSyncedHeight } from '@anchor-protocol/web-contexts/queries/lastSyncedHeight';
 import { IconButton } from '@material-ui/core';
 import {
   Brightness3,
@@ -11,9 +13,7 @@ import {
   Twitter,
 } from '@material-ui/icons';
 import c from 'color';
-import { useTheme } from 'contexts/theme';
 import { screen } from 'env';
-import { useLastSyncedHeight } from 'queries/lastSyncedHeight';
 import React, { CSSProperties } from 'react';
 import styled from 'styled-components';
 

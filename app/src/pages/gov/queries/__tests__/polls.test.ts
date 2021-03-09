@@ -1,5 +1,8 @@
 import { map } from '@anchor-protocol/use-map';
-import { testAddressProvider, testClient } from 'test.env';
+import {
+  testAddressProvider,
+  testClient,
+} from '@anchor-protocol/web-contexts/test.env';
 import { dataMap, mapVariables, query, RawData, RawVariables } from '../polls';
 
 describe('queries/polls', () => {

@@ -1,7 +1,7 @@
 import { microfy } from '@anchor-protocol/notation';
 import type { UST, uUST } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
-import { Bank } from 'contexts/bank';
+import { Bank } from '@anchor-protocol/web-contexts/contexts/bank';
 import { ReactNode } from 'react';
 
 export function validateWithdrawAmount(

@@ -4,10 +4,10 @@ import { Done } from 'components/TransactionRenderer/Done';
 import { Fault } from 'components/TransactionRenderer/Fault';
 import { WaitingReceipt } from 'components/TransactionRenderer/WaitingReceipt';
 import { WaitingTransaction } from 'components/TransactionRenderer/WaitingTransaction';
-import { TransactionResult } from 'models/transaction';
+import { TransactionResult } from '@anchor-protocol/web-contexts/models/transaction';
 import React from 'react';
 import styled from 'styled-components';
-import { findTxResult } from 'transactions/tx';
+import { findTxResult } from '@anchor-protocol/web-contexts/transactions/tx';
 
 export interface TransactionRendererProps {
   result: OperationResult<TransactionResult, unknown[]>;

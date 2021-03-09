@@ -28,10 +28,10 @@ import { ArrowDownLine } from 'components/ArrowDownLine';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { useBank } from 'contexts/bank';
-import { useConstants } from 'contexts/contants';
-import { useContractAddress } from 'contexts/contract';
-import { useService } from 'contexts/service';
+import { useBank } from '@anchor-protocol/web-contexts/contexts/bank';
+import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
+import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
+import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { MAX_SPREAD } from 'pages/gov/env';
 import { sellFromSimulation } from 'pages/gov/logics/sellFromSimulation';
@@ -40,8 +40,8 @@ import { AncPrice } from 'pages/gov/models/ancPrice';
 import { TradeSimulation } from 'pages/gov/models/tradeSimulation';
 import { useANCPrice } from 'pages/gov/queries/ancPrice';
 import { sellOptions } from 'pages/gov/transactions/sellOptions';
-import { queryReverseSimulation } from 'queries/reverseSimulation';
-import { querySimulation } from 'queries/simulation';
+import { queryReverseSimulation } from '@anchor-protocol/web-contexts/queries/reverseSimulation';
+import { querySimulation } from '@anchor-protocol/web-contexts/queries/simulation';
 import React, {
   ChangeEvent,
   useCallback,

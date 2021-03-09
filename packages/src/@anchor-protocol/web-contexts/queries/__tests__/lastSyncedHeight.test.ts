@@ -1,4 +1,4 @@
-import { testClient } from 'test.env';
+import { testClient } from '../../test.env';
 import { mapData, query, RawData } from '../lastSyncedHeight';
 
 describe('queries/lastSyncedHeight', () => {

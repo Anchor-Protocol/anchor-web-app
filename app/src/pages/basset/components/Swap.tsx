@@ -34,14 +34,14 @@ import { ArrowDownLine } from 'components/ArrowDownLine';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { useBank } from 'contexts/bank';
-import { useConstants } from 'contexts/contants';
-import { useContractAddress } from 'contexts/contract';
-import { useService } from 'contexts/service';
+import { useBank } from '@anchor-protocol/web-contexts/contexts/bank';
+import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
+import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
+import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { swapBurnSimulation } from 'pages/basset/logics/swapBurnSimulation';
 import { swapGetSimulation } from 'pages/basset/logics/swapGetSimulation';
-import { querySimulation } from 'queries/simulation';
+import { querySimulation } from '@anchor-protocol/web-contexts/queries/simulation';
 import React, {
   ChangeEvent,
   useCallback,

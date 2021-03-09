@@ -6,7 +6,7 @@ import { Schedule } from '@material-ui/icons';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
 import { PollStatusSpan } from 'pages/gov/components/PollStatusSpan';
 import { extractPollDetail } from 'pages/gov/logics/extractPollDetail';
-import { useLastSyncedHeight } from 'queries/lastSyncedHeight';
+import { useLastSyncedHeight } from '@anchor-protocol/web-contexts/queries/lastSyncedHeight';
 import { useMemo } from 'react';
 import styled from 'styled-components';
 import { PollGraph } from './PollGraph';

@@ -1,6 +1,6 @@
 import { JSDateTime } from '@anchor-protocol/types';
 import { map } from '@anchor-protocol/use-map';
-import { testClient } from 'test.env';
+import { testClient } from '@anchor-protocol/web-contexts/test.env';
 import {
   dataMap,
   mapVariables,

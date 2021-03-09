@@ -1,6 +1,6 @@
 import { useWallet } from '@anchor-protocol/wallet-provider';
+import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { getParser } from 'bowser';
-import { useService } from 'contexts/service';
 import { useMemo } from 'react';
 import styled from 'styled-components';
 

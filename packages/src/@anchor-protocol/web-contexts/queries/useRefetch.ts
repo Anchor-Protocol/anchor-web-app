@@ -1,6 +1,6 @@
 import { map, Map } from '@anchor-protocol/use-map';
 import { ApolloQueryResult } from '@apollo/client';
-import { MappedApolloQueryResult } from 'queries/types';
+import { MappedApolloQueryResult } from '../queries/types';
 import { useCallback } from 'react';
 
 export function useRefetch<RawVariables, RawData, Data>(

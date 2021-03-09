@@ -13,7 +13,7 @@ import {
 } from '@anchor-protocol/notation';
 import { Rate } from '@anchor-protocol/types';
 import big from 'big.js';
-import { useConstants } from 'contexts/contants';
+import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
 import { currentAPY } from 'pages/earn/logics/currentAPY';
 import { useAPYHistory } from 'pages/earn/queries/apyHistory';
 import { useInterest } from 'pages/earn/queries/interest';

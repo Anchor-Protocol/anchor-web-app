@@ -1,6 +1,6 @@
 import { WalletState } from '@anchor-protocol/wallet-provider';
 import { CreateTxOptions } from '@terra-money/terra.js';
-import { StringifiedTxResult } from 'transactions/tx';
+import { StringifiedTxResult } from './tx';
 
 export const postContractMsg = (post: WalletState['post']) => (
   options: CreateTxOptions,

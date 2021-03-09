@@ -12,11 +12,11 @@ import {
 import { HumanAddr } from '@anchor-protocol/types';
 import { MsgExecuteContract, StdFee } from '@terra-money/terra.js';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
-import { createOptions } from 'transactions/createOptions';
-import { getTxInfo } from 'transactions/getTxInfo';
-import { pickEmptyResult } from 'transactions/pickEmptyResult';
-import { postContractMsg } from 'transactions/postContractMsg';
-import { parseTxResult } from 'transactions/tx';
+import { createOptions } from '@anchor-protocol/web-contexts/transactions/createOptions';
+import { getTxInfo } from '@anchor-protocol/web-contexts/transactions/getTxInfo';
+import { pickEmptyResult } from '@anchor-protocol/web-contexts/transactions/pickEmptyResult';
+import { postContractMsg } from '@anchor-protocol/web-contexts/transactions/postContractMsg';
+import { parseTxResult } from '@anchor-protocol/web-contexts/transactions/tx';
 
 export const allClaimOptions = createOperationOptions({
   id: 'gov/allClaim',

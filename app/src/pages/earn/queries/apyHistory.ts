@@ -1,10 +1,10 @@
 import type { DateTime, JSDateTime, Rate } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';
-import { useService } from 'contexts/service';
-import { MappedQueryResult } from 'queries/types';
-import { useQueryErrorHandler } from 'queries/useQueryErrorHandler';
-import { useRefetch } from 'queries/useRefetch';
+import { useService } from '@anchor-protocol/web-contexts/contexts/service';
+import { MappedQueryResult } from '@anchor-protocol/web-contexts/queries/types';
+import { useQueryErrorHandler } from '@anchor-protocol/web-contexts/queries/useQueryErrorHandler';
+import { useRefetch } from '@anchor-protocol/web-contexts/queries/useRefetch';
 import { useMemo } from 'react';
 
 export interface RawData {

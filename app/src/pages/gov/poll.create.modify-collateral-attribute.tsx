@@ -6,7 +6,7 @@ import { CW20Addr, Rate } from '@anchor-protocol/types';
 import { PollMsg } from '@anchor-protocol/types/contracts/anchorToken/gov';
 import { InputAdornment } from '@material-ui/core';
 import big from 'big.js';
-import { useContractAddress } from 'contexts/contract';
+import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 

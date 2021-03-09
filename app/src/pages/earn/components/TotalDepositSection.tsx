@@ -10,7 +10,7 @@ import {
 import { Rate, uUST } from '@anchor-protocol/types';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { BigSource } from 'big.js';
-import { useService } from 'contexts/service';
+import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import React, { useCallback, useMemo } from 'react';
 import { totalDepositUST } from '../logics/totalDepositUST';
 import { useDeposit } from '../queries/totalDeposit';

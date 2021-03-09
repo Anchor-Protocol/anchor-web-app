@@ -7,14 +7,14 @@ import {
 } from '@anchor-protocol/broadcastable-operation';
 import { StdFee } from '@terra-money/terra.js';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
-import { Bank } from 'contexts/bank';
+import { Bank } from '@anchor-protocol/web-contexts/contexts/bank';
 import { AncPrice } from 'pages/gov/models/ancPrice';
 import { pickAncUstLpProvideResult } from 'pages/gov/transactions/pickAncUstLpProvideResult';
-import { createContractMsg } from 'transactions/createContractMsg';
-import { createOptions } from 'transactions/createOptions';
-import { getTxInfo } from 'transactions/getTxInfo';
-import { postContractMsg } from 'transactions/postContractMsg';
-import { parseTxResult } from 'transactions/tx';
+import { createContractMsg } from '@anchor-protocol/web-contexts/transactions/createContractMsg';
+import { createOptions } from '@anchor-protocol/web-contexts/transactions/createOptions';
+import { getTxInfo } from '@anchor-protocol/web-contexts/transactions/getTxInfo';
+import { postContractMsg } from '@anchor-protocol/web-contexts/transactions/postContractMsg';
+import { parseTxResult } from '@anchor-protocol/web-contexts/transactions/tx';
 
 export const ancUstLpProvideOptions = createOperationOptions({
   id: 'gov/ancUstLpProvide',

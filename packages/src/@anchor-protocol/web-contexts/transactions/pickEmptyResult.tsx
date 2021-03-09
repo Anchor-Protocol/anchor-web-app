@@ -1,8 +1,8 @@
-import { TxHashLink } from 'components/TxHashLink';
-import { TransactionResult } from 'models/transaction';
-import { Data } from 'queries/txInfos';
+import { TxHashLink } from '../components/TxHashLink';
+import { TransactionResult } from '../models/transaction';
+import { Data } from '../queries/txInfos';
 import { createElement } from 'react';
-import { TxResult } from 'transactions/tx';
+import { TxResult } from '../transactions/tx';
 
 interface Params {
   txResult: TxResult;

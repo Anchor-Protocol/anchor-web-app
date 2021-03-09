@@ -25,7 +25,7 @@ import { extractPollDetail } from 'pages/gov/logics/extractPollDetail';
 import { useCanIVote } from 'pages/gov/queries/canIVote';
 import { usePoll } from 'pages/gov/queries/poll';
 import { useTotalStaked } from 'pages/gov/queries/totalStaked';
-import { useLastSyncedHeight } from 'queries/lastSyncedHeight';
+import { useLastSyncedHeight } from '@anchor-protocol/web-contexts/queries/lastSyncedHeight';
 import { useMemo } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import styled from 'styled-components';

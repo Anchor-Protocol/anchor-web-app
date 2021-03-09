@@ -11,7 +11,7 @@ import {
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import { Rate } from '@anchor-protocol/types';
 import big from 'big.js';
-import { useService } from 'contexts/service';
+import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { useMemo } from 'react';
 import { useMarket } from '../context/market';
 import { collaterals as _collaterals } from '../logics/collaterals';

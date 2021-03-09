@@ -13,8 +13,8 @@ import {
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { ClickAwayListener } from '@material-ui/core';
 import { Check, KeyboardArrowRight } from '@material-ui/icons';
-import { useBank } from 'contexts/bank';
-import { useService } from 'contexts/service';
+import { useBank } from '@anchor-protocol/web-contexts/contexts/bank';
+import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import { useCallback, useState } from 'react';
 import useClipboard from 'react-use-clipboard';

@@ -1,11 +1,11 @@
-import { testClient } from 'test.env';
+import { testClient } from '../../test.env';
 import {
   mapData,
+  mapVariables,
   query,
   RawData,
   RawVariables,
-  mapVariables,
-} from 'queries/txInfos';
+} from '../txInfos';
 
 describe('queries/txInfos', () => {
   test('should get result from query', async () => {

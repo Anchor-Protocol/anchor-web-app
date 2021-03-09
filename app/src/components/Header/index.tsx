@@ -1,6 +1,6 @@
 import { Launch } from '@material-ui/icons';
 import { WalletSelector } from 'components/Header/WalletSelector';
-import { useConstants } from 'contexts/contants';
+import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
 import { links, screen } from 'env';
 import { govPathname } from 'pages/gov/env';
 import React from 'react';

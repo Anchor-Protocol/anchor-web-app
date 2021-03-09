@@ -10,7 +10,7 @@ import {
 } from '@anchor-protocol/notation';
 import { Rate, uUST } from '@anchor-protocol/types';
 import { BigSource } from 'big.js';
-import { useConstants } from 'contexts/contants';
+import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
 import { BorrowLimitGraph } from 'pages/borrow/components/BorrowLimitGraph';
 import { useMarket } from 'pages/borrow/context/market';
 import { apr as _apr } from 'pages/borrow/logics/apr';

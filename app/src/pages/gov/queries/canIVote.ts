@@ -1,6 +1,6 @@
 import { useApolloClient } from '@apollo/client';
-import { useContractAddress } from 'contexts/contract';
-import { useService } from 'contexts/service';
+import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
+import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { queryVoters } from 'pages/gov/queries/voters';
 import { useEffect, useState } from 'react';
 

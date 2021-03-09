@@ -1,6 +1,6 @@
 import type { Denom, uLuna } from '@anchor-protocol/types';
 import { map } from '@anchor-protocol/use-map';
-import { testAddress, testClient } from 'test.env';
+import { testAddress, testClient } from '../../test.env';
 import {
   Data,
   dataMap,

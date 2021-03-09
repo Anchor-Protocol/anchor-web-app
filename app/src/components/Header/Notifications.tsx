@@ -3,8 +3,8 @@ import { useWallet } from '@anchor-protocol/wallet-provider';
 import { Badge, ClickAwayListener, IconButton } from '@material-ui/core';
 import { NotificationsNone } from '@material-ui/icons';
 import big from 'big.js';
-import { useBank } from 'contexts/bank';
-import { useConstants } from 'contexts/contants';
+import { useBank } from '@anchor-protocol/web-contexts/contexts/bank';
+import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
 import { Children, ReactNode, useMemo, useState } from 'react';
 import styled from 'styled-components';
 

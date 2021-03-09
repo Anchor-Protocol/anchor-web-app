@@ -6,8 +6,8 @@ import {
 } from '@anchor-protocol/types';
 import { createMap, map } from '@anchor-protocol/use-map';
 import { ApolloClient, gql, useApolloClient } from '@apollo/client';
-import { useContractAddress } from 'contexts/contract';
-import { parseResult } from 'queries/parseResult';
+import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
+import { parseResult } from '@anchor-protocol/web-contexts/queries/parseResult';
 import { useCallback, useEffect, useState } from 'react';
 
 export interface RawData {

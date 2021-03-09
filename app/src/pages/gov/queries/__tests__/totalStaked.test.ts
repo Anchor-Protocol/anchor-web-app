@@ -1,5 +1,9 @@
 import { map } from '@anchor-protocol/use-map';
-import { testAddress, testAddressProvider, testClient } from 'test.env';
+import {
+  testAddress,
+  testAddressProvider,
+  testClient,
+} from '@anchor-protocol/web-contexts/test.env';
 import {
   dataMap,
   mapVariables,

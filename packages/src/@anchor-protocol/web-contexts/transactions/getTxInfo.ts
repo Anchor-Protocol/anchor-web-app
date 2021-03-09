@@ -1,8 +1,8 @@
 import { OperationStop } from '@anchor-protocol/broadcastable-operation';
 import { ApolloClient } from '@apollo/client';
-import { TxInfoError } from 'errors/TxInfoError';
-import { Data, queryTxInfo } from 'queries/txInfos';
-import { TxResult } from 'transactions/tx';
+import { TxInfoError } from '../errors/TxInfoError';
+import { Data, queryTxInfo } from '../queries/txInfos';
+import { TxResult } from './tx';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
