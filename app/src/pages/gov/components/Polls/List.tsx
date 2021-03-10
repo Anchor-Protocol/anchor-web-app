@@ -17,6 +17,7 @@ export interface ListProps extends PollList {
 
 function ListBase({
   className,
+  isLast,
   polls,
   govANCBalance,
   govState,
@@ -89,12 +90,11 @@ function ListBase({
         </tbody>
       </HorizontalScrollTable>
 
-      {pollDetails.length > 0 &&
-        pollDetails[pollDetails.length - 1].poll.id > 1 && (
-          <BorderButton className="more" onClick={onLoadMore}>
-            More
-          </BorderButton>
-        )}
+      {!isLast && (
+        <BorderButton className="more" onClick={onLoadMore}>
+          More
+        </BorderButton>
+      )}
     </Section>
   );
 }

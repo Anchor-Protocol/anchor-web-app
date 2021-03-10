@@ -18,6 +18,7 @@ export interface GridProps extends PollList {
 
 function GridBase({
   className,
+  isLast,
   polls,
   govANCBalance,
   govState,
@@ -84,12 +85,11 @@ function GridBase({
         ))}
       </div>
 
-      {pollDetails.length > 0 &&
-        pollDetails[pollDetails.length - 1].poll.id > 1 && (
-          <BorderButton className="more" onClick={onLoadMore}>
-            More
-          </BorderButton>
-        )}
+      {!isLast && (
+        <BorderButton className="more" onClick={onLoadMore}>
+          More
+        </BorderButton>
+      )}
     </div>
   );
 }

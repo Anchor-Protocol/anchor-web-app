@@ -36,11 +36,10 @@ function PollsBase({ className }: PollsProps) {
   const history = useHistory();
 
   const [option, setOption] = useState<anchorToken.gov.PollStatus>(
-    // TODO to change options[0]
     () => options[0].value,
   );
 
-  const [polls, loadMorePolls] = usePolls(option);
+  const [polls, isLast, loadMorePolls] = usePolls(option);
 
   const {
     data: { govANCBalance, govState, govConfig },
@@ -118,6 +117,7 @@ function PollsBase({ className }: PollsProps) {
 
       {view === 'grid' ? (
         <GridView
+          isLast={isLast}
           polls={polls}
           onClick={onPollClick}
           onLoadMore={loadMorePolls}
@@ -127,6 +127,7 @@ function PollsBase({ className }: PollsProps) {
         />
       ) : (
         <ListView
+          isLast={isLast}
           polls={polls}
           onClick={onPollClick}
           onLoadMore={loadMorePolls}

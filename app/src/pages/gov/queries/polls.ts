@@ -19,23 +19,6 @@ export interface Data {
 
 export const dataMap = createMap<RawData, Data>({
   polls: (existing, { polls }) => {
-    //polls?.Result &&
-    //  console.log(
-    //    JSON.stringify(
-    //      //@ts-ignore
-    //      JSON.parse(polls.Result).polls.map(({ execute_data, ...poll }) => {
-    //        return {
-    //          //@ts-ignore
-    //          execute_data: Array.isArray(execute_data)
-    //            ? execute_data.map(({ msg }) => atob(msg))
-    //            : undefined,
-    //          ...poll,
-    //        };
-    //      }),
-    //      null,
-    //      2,
-    //    ),
-    //  );
     return parseResult(existing.polls, polls.Result);
   },
 });
@@ -75,17 +58,33 @@ const limit = 6;
 
 export function usePolls(
   filter: anchorToken.gov.PollStatus | undefined,
-): [polls: anchorToken.gov.PollResponse[], loadMore: () => void] {
+): [
+  polls: anchorToken.gov.PollResponse[],
+  isLast: boolean,
+  loadMore: () => void,
+] {
   const client = useApolloClient();
 
   const address = useContractAddress();
 
   const [polls, setPolls] = useState<anchorToken.gov.PollResponse[]>([]);
 
+  const [isLast, setIsLast] = useState<boolean>(false);
+
   useEffect(() => {
+    // initialize data
+    setIsLast(false);
+    setPolls([]);
+
     queryPolls(client, address, filter, undefined, limit).then(({ data }) => {
       if (data.polls?.polls) {
-        setPolls(data.polls.polls);
+        if (data.polls.polls.length > 0) {
+          setPolls(data.polls.polls);
+        }
+
+        if (data.polls.polls.length < limit) {
+          setIsLast(true);
+        }
       }
     });
   }, [address, client, filter]);
@@ -99,17 +98,27 @@ export function usePolls(
         polls[polls.length - 1].id,
         limit,
       ).then(({ data }) => {
-        setPolls((prev) => {
-          if (data.polls && Array.isArray(data.polls.polls)) {
-            return [...prev, ...data.polls.polls];
+        if (data.polls) {
+          setPolls((prev) => {
+            if (
+              data.polls &&
+              Array.isArray(data.polls.polls) &&
+              data.polls.polls.length > 0
+            ) {
+              return [...prev, ...data.polls.polls];
+            }
+            return prev;
+          });
+
+          if (data.polls.polls.length < limit) {
+            setIsLast(true);
           }
-          return prev;
-        });
+        }
       });
     }
   }, [address, client, filter, polls]);
 
-  return [polls, loadMore];
+  return [polls, isLast, loadMore];
 }
 
 export function queryPolls(
