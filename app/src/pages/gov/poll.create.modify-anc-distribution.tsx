@@ -7,6 +7,7 @@ import {
 import { Rate } from '@anchor-protocol/types';
 import { UpdateConfig as DistributionModelUpdateConfig } from '@anchor-protocol/types/contracts/moneyMarket/distributionModel/updateConfig';
 import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
+import { InputAdornment } from '@material-ui/core';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
@@ -163,6 +164,9 @@ export function PollCreateModifyANCDistribution() {
         maxDecimalPoints={MAX_EXECUTE_MSG_DECIMALS}
         value={borrowerEmissionCap}
         disabled={inputDisabled.borrowerEmissionCap}
+        InputProps={{
+          endAdornment: <InputAdornment position="end">uANC</InputAdornment>,
+        }}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setBorrowerEmissionCap(target.value)
         }
@@ -182,6 +186,9 @@ export function PollCreateModifyANCDistribution() {
         maxDecimalPoints={MAX_EXECUTE_MSG_DECIMALS}
         value={borrowerEmissionFloor}
         disabled={inputDisabled.borrowerEmissionFloor}
+        InputProps={{
+          endAdornment: <InputAdornment position="end">uANC</InputAdornment>,
+        }}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setBorrowerEmissionFloor(target.value)
         }
