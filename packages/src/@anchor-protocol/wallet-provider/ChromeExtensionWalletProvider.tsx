@@ -92,7 +92,10 @@ export function ChromeExtensionWalletProvider({
       }
 
       const { payload } = await extension.request('info');
-      const network: StationNetworkInfo = payload as any;
+
+      console.log('ChromeExtensionWalletProvider.tsx..()', { payload });
+
+      const network: StationNetworkInfo = (payload ?? defaultNetwork) as any;
 
       const storedWalletAddress: string | null = storage.getItem(
         WALLET_ADDRESS,
