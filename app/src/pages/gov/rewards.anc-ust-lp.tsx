@@ -7,6 +7,7 @@ import { Circles } from 'components/Circles';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { AncUstLpProvide } from 'pages/gov/components/AncUstLpProvide';
 import { AncUstLpStake } from 'pages/gov/components/AncUstLpStake';
+import { AncUstLpStakeOverview } from 'pages/gov/components/AncUstLpStakeOverview';
 import { AncUstLpUnstake } from 'pages/gov/components/AncUstLpUnstake';
 import { AncUstLpWithdraw } from 'pages/gov/components/AncUstLpWithdraw';
 import { ancUstLpPathname, govPathname } from 'pages/gov/env';
@@ -150,6 +151,8 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
         />
 
         <div className="form">
+          {tab?.value === 'stake' && <AncUstLpStakeOverview />}
+
           <Switch>
             <Route
               path={`/${govPathname}/rewards/${ancUstLpPathname}/provide`}

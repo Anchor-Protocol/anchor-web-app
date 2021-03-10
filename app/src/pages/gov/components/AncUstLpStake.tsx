@@ -12,16 +12,15 @@ import {
 } from '@anchor-protocol/notation';
 import { AncUstLP } from '@anchor-protocol/types';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
+import { useBank } from '@anchor-protocol/web-contexts/contexts/bank';
+import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
+import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { InputAdornment } from '@material-ui/core';
 import big from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { useBank } from '@anchor-protocol/web-contexts/contexts/bank';
-import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
-import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
-import { AncUstLpStakeOverview } from 'pages/gov/components/AncUstLpStakeOverview';
 import { useRewardsAncUstLp } from 'pages/gov/queries/rewardsAncUstLp';
 import { ancUstLpStakeOptions } from 'pages/gov/transactions/ancUstLpStakeOptions';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
@@ -98,8 +97,6 @@ export function AncUstLpStake() {
   return (
     <>
       {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
-
-      <AncUstLpStakeOverview />
 
       <NumberInput
         className="amount"

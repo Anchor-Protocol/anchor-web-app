@@ -1,44 +1,84 @@
 import { Label } from '@anchor-protocol/neumorphism-ui/components/Label';
-import { demicrofy, formatANC, formatLP } from '@anchor-protocol/notation';
+import {
+  demicrofy,
+  formatANCWithPostfixUnits,
+  formatLP,
+} from '@anchor-protocol/notation';
 import {
   rulerLightColor,
   rulerShadowColor,
 } from '@anchor-protocol/styled-neumorphism';
-import { uANC, uAncUstLP } from '@anchor-protocol/types';
-import { BigSource } from 'big.js';
+import { uANC, uUST } from '@anchor-protocol/types';
+import big, { Big } from 'big.js';
+import { useANCPrice } from 'pages/gov/queries/ancPrice';
+import { useClaimableAncUstLp } from 'pages/gov/queries/claimableAncUstLp';
+import { useLPStakingState } from 'pages/gov/queries/lpStakingState';
+import { useMemo } from 'react';
 import styled from 'styled-components';
 
 export interface AncUstLpStakeOverviewProps {
   className?: string;
-  stakable?: uAncUstLP<BigSource>;
-  staked?: uAncUstLP<BigSource>;
-  reward?: uANC<BigSource>;
 }
 
-function AncUstLpStakeOverviewBase({
-  className,
-  stakable,
-  staked,
-  reward,
-}: AncUstLpStakeOverviewProps) {
+function AncUstLpStakeOverviewBase({ className }: AncUstLpStakeOverviewProps) {
+  const {
+    data: { ancPrice },
+  } = useANCPrice();
+
+  const {
+    data: { lpStakingState },
+  } = useLPStakingState();
+
+  const {
+    data: { userLPStakingInfo, userLPBalance },
+  } = useClaimableAncUstLp();
+
+  const ancUstLp = useMemo(() => {
+    if (!ancPrice || !lpStakingState || !userLPStakingInfo || !userLPBalance) {
+      return undefined;
+    }
+
+    const totalUserLPHolding = big(userLPBalance.balance).plus(
+      userLPStakingInfo.bond_amount,
+    );
+
+    const withdrawableAssets = {
+      anc: big(ancPrice.ANCPoolSize)
+        .mul(totalUserLPHolding)
+        .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare) as uANC<Big>,
+      ust: big(ancPrice.USTPoolSize)
+        .mul(totalUserLPHolding)
+        .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare) as uUST<Big>,
+    };
+
+    const staked = userLPStakingInfo.bond_amount;
+
+    const stakable = userLPBalance.balance;
+
+    const reward = userLPStakingInfo.pending_reward;
+
+    return { withdrawableAssets, staked, stakable, reward };
+  }, [ancPrice, lpStakingState, userLPBalance, userLPStakingInfo]);
+
   return (
     <ul className={className}>
       <li>
         <Label>Stakable</Label>
         <p>
-          <s>{stakable ? formatLP(demicrofy(stakable)) : 0} LP</s>
+          {ancUstLp?.stakable ? formatLP(demicrofy(ancUstLp.stakable)) : 0} LP
         </p>
       </li>
       <li>
         <Label>Staked</Label>
-        <p>
-          <s>{staked ? formatLP(demicrofy(staked)) : 0} LP</s>
-        </p>
+        <p>{ancUstLp?.staked ? formatLP(demicrofy(ancUstLp.staked)) : 0} LP</p>
       </li>
       <li>
         <Label>Reward</Label>
         <p>
-          <s>{reward ? formatANC(demicrofy(reward)) : 0} ANC</s>
+          {ancUstLp?.reward
+            ? formatANCWithPostfixUnits(demicrofy(ancUstLp.reward))
+            : 0}{' '}
+          ANC
         </p>
       </li>
     </ul>
