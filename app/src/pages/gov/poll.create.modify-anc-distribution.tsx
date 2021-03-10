@@ -8,6 +8,7 @@ import { Rate } from '@anchor-protocol/types';
 import { UpdateConfig as DistributionModelUpdateConfig } from '@anchor-protocol/types/contracts/moneyMarket/distributionModel/updateConfig';
 import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
 import { InputAdornment } from '@material-ui/core';
+import big from 'big.js';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
@@ -26,6 +27,28 @@ export function PollCreateModifyANCDistribution() {
   );
   const [incrementMultiplier, setIncrementMultiplier] = useState<string>('');
   const [decrementMultiplier, setDecrementMultiplier] = useState<string>('');
+
+  const invalidIncrementMultiplier = useMemo(() => {
+    if (incrementMultiplier.length === 0) {
+      return undefined;
+    }
+
+    const v = big(incrementMultiplier);
+
+    return v.lt(1) ? `Increment Multiplier should be higher than 1` : undefined;
+  }, [incrementMultiplier]);
+
+  const invalidDecrementMultiplier = useMemo(() => {
+    if (decrementMultiplier.length === 0) {
+      return undefined;
+    }
+
+    const v = big(decrementMultiplier);
+
+    return v.lte(0) || v.gt(1)
+      ? `Decrement Multiplier must be between 0 and 1`
+      : undefined;
+  }, [decrementMultiplier]);
 
   const inputDisabled = useMemo(() => {
     if (borrowerEmissionCap.length > 0) {
@@ -136,10 +159,12 @@ export function PollCreateModifyANCDistribution() {
     <PollCreateBase
       pollTitle="Modify ANC Distribution"
       submitDisabled={
-        borrowerEmissionCap.length === 0 &&
-        borrowerEmissionFloor.length === 0 &&
-        incrementMultiplier.length === 0 &&
-        decrementMultiplier.length === 0
+        (borrowerEmissionCap.length === 0 &&
+          borrowerEmissionFloor.length === 0 &&
+          incrementMultiplier.length === 0 &&
+          decrementMultiplier.length === 0) ||
+        !!invalidDecrementMultiplier ||
+        !!invalidIncrementMultiplier
       }
       onCreateMsgs={() =>
         createMsgs(
@@ -160,7 +185,7 @@ export function PollCreateModifyANCDistribution() {
 
       <NumberInput
         placeholder="0.00"
-        maxIntegerPoinsts={3}
+        maxIntegerPoinsts={10}
         maxDecimalPoints={MAX_EXECUTE_MSG_DECIMALS}
         value={borrowerEmissionCap}
         disabled={inputDisabled.borrowerEmissionCap}
@@ -182,7 +207,7 @@ export function PollCreateModifyANCDistribution() {
 
       <NumberInput
         placeholder="0.00"
-        maxIntegerPoinsts={3}
+        maxIntegerPoinsts={10}
         maxDecimalPoints={MAX_EXECUTE_MSG_DECIMALS}
         value={borrowerEmissionFloor}
         disabled={inputDisabled.borrowerEmissionFloor}
@@ -208,6 +233,8 @@ export function PollCreateModifyANCDistribution() {
         maxDecimalPoints={MAX_EXECUTE_MSG_DECIMALS}
         value={incrementMultiplier}
         disabled={inputDisabled.incrementMultiplier}
+        error={!!invalidIncrementMultiplier}
+        helperText={invalidIncrementMultiplier}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setIncrementMultiplier(target.value)
         }
@@ -227,6 +254,8 @@ export function PollCreateModifyANCDistribution() {
         maxDecimalPoints={MAX_EXECUTE_MSG_DECIMALS}
         value={decrementMultiplier}
         disabled={inputDisabled.decrementMultiplier}
+        error={!!invalidDecrementMultiplier}
+        helperText={invalidDecrementMultiplier}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setDecrementMultiplier(target.value)
         }

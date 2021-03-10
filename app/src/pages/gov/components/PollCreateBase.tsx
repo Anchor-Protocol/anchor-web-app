@@ -111,9 +111,9 @@ export function PollCreateBase({
     ) => {
       const execute_msgs = onCreateMsgs();
 
-      if (execute_msgs && execute_msgs.length !== 1) {
-        return;
-      }
+      //if (execute_msgs && execute_msgs.length !== 1) {
+      //  return;
+      //}
 
       await createPoll({
         address: walletReady.walletAddress,
