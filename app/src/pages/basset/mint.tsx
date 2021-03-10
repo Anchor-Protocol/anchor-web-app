@@ -102,10 +102,10 @@ function MintBase({ className }: MintProps) {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const pegRecoveryFee = useMemo(
-    () => pegRecovery(mintAmount, exchangeRate, parameters),
-    [exchangeRate, mintAmount, parameters],
-  );
+  const pegRecoveryFee = useMemo(() => pegRecovery(exchangeRate, parameters), [
+    exchangeRate,
+    parameters,
+  ]);
 
   const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
     bank,
@@ -355,9 +355,9 @@ function MintBase({ className }: MintProps) {
             formatExchangeRate={(ratio) => formatLuna(ratio as Luna<Big>)}
           />
         )}
-        {!!pegRecoveryFee && (
+        {!!pegRecoveryFee && mintAmount.length > 0 && (
           <TxFeeListItem label={<IconSpan>Peg Recovery Fee</IconSpan>}>
-            {formatLuna(demicrofy(pegRecoveryFee))} bLuna
+            {formatLuna(demicrofy(pegRecoveryFee(mintAmount)))} bLuna
           </TxFeeListItem>
         )}
         {bondAmount.length > 0 && (

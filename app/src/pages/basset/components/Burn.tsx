@@ -82,10 +82,10 @@ export function Burn() {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const pegRecoveryFee = useMemo(
-    () => pegRecovery(getAmount, exchangeRate, parameters),
-    [exchangeRate, getAmount, parameters],
-  );
+  const pegRecoveryFee = useMemo(() => pegRecovery(exchangeRate, parameters), [
+    exchangeRate,
+    parameters,
+  ]);
 
   const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
     bank,
@@ -310,9 +310,9 @@ export function Burn() {
             formatExchangeRate={(ratio) => formatLuna(ratio as Luna<Big>)}
           />
         )}
-        {!!pegRecoveryFee && (
+        {!!pegRecoveryFee && getAmount.length > 0 && (
           <TxFeeListItem label={<IconSpan>Peg Recovery Fee</IconSpan>}>
-            {formatLuna(demicrofy(pegRecoveryFee))} Luna
+            {formatLuna(demicrofy(pegRecoveryFee(getAmount)))} Luna
           </TxFeeListItem>
         )}
         {burnAmount.length > 0 && (
