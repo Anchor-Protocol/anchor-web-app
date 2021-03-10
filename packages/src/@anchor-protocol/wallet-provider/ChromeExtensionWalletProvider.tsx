@@ -93,7 +93,21 @@ export function ChromeExtensionWalletProvider({
 
       const { payload } = await extension.request('info');
 
-      console.log('ChromeExtensionWalletProvider.tsx..()', { payload });
+      console.log(
+        [
+          `Extension return`,
+          `=======================================`,
+          JSON.stringify(payload, null, 2),
+          JSON.stringify(
+            {
+              'window.isTerraExtensionAvailable':
+                window.isTerraExtensionAvailable,
+            },
+            null,
+            2,
+          ),
+        ].join('\n'),
+      );
 
       const network: StationNetworkInfo = (payload ?? defaultNetwork) as any;
 
