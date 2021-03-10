@@ -37,7 +37,7 @@ function PollsBase({ className }: PollsProps) {
 
   const [option, setOption] = useState<anchorToken.gov.PollStatus>(
     // TODO to change options[0]
-    () => options[1].value,
+    () => options[0].value,
   );
 
   const [polls, loadMorePolls] = usePolls(option);
