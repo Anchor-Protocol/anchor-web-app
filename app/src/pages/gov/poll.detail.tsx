@@ -1,4 +1,5 @@
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
+import { BorderButton } from '@anchor-protocol/neumorphism-ui/components/BorderButton';
 import { HorizontalHeavyRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalHeavyRuler';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
@@ -15,6 +16,7 @@ import { Rate } from '@anchor-protocol/types';
 import { TimeEnd } from '@anchor-protocol/use-time-end';
 import { Schedule } from '@material-ui/icons';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
+import { useCodeViewerDialog } from 'components/useCodeViewerDialog';
 import { DescriptionGrid } from 'pages/gov/components/DescriptionGrid';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
 import { PollMsgRenderer } from 'pages/gov/components/PollMsgRenderer';
@@ -49,6 +51,8 @@ function PollDetailBase({ className, match }: PollDetailProps) {
   const [openVoteDialog, voteDialogElement] = usePollVoteDialog();
 
   const { data: lastSyncedHeight } = useLastSyncedHeight();
+
+  const [openCodeViewer, codeViewerElement] = useCodeViewerDialog();
 
   const pollDetail = useMemo(() => {
     return poll && govANCBalance && govState && govConfig && lastSyncedHeight
@@ -162,13 +166,19 @@ function PollDetailBase({ className, match }: PollDetailProps) {
             </>
           )}
 
-        <HorizontalHeavyRuler style={{ margin: '30px 0' }} />
-
-        <h4>Poll detail test codes...</h4>
-
-        <pre style={{ color: '#cccccc' }}>
-          {JSON.stringify(pollDetail.msgs, null, 2)}
-        </pre>
+        {pollDetail.msgs && (
+          <BorderButton
+            style={{ width: '100%', height: 30 }}
+            onClick={() =>
+              openCodeViewer({
+                title: 'Raw Msgs',
+                source: JSON.stringify(pollDetail.msgs, null, 2),
+              })
+            }
+          >
+            See Raw Msgs
+          </BorderButton>
+        )}
       </Section>
 
       <Section className="detail">
@@ -234,6 +244,7 @@ function PollDetailBase({ className, match }: PollDetailProps) {
       </Section>
 
       {voteDialogElement}
+      {codeViewerElement}
     </PaddedLayout>
   );
 }
