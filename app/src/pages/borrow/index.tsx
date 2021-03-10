@@ -208,7 +208,7 @@ export const Borrow = styled(BorrowBase)`
   }
 
   // borrow
-  @media (min-width: 1200px) {
+  @media (min-width: 1400px) {
     .borrow {
       article {
         display: flex;
@@ -224,7 +224,7 @@ export const Borrow = styled(BorrowBase)`
     }
   }
 
-  @media (max-width: 1199px) {
+  @media (max-width: 1399px) {
     .borrow {
       article {
         display: flex;
