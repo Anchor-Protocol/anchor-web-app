@@ -47,6 +47,22 @@ export function PollCreateModifyBorrowInterest() {
     }
   }, [baseBorrowRate.length, interestMultiplier.length]);
 
+  const invalidBaseBorrowRate = useMemo(() => {
+    if (baseBorrowRate.length === 0) return undefined;
+
+    return big(baseBorrowRate).lt(1)
+      ? 'Please input LTV between 1 ~ 99'
+      : undefined;
+  }, [baseBorrowRate]);
+
+  const invalidInterestMultiplier = useMemo(() => {
+    if (interestMultiplier.length === 0) return undefined;
+
+    return big(interestMultiplier).gt(1) || big(interestMultiplier).lt(0)
+      ? 'Interest Multiplier must be between 0 and 1'
+      : undefined;
+  }, [interestMultiplier]);
+
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
@@ -54,7 +70,7 @@ export function PollCreateModifyBorrowInterest() {
     (baseBorrowRate: string, interestMultiplier: string): ExecuteMsg[] => {
       const interestModelConfig: InterestModelUpdateConfig['update_config'] = {};
 
-      if (interestMultiplier.length > 0) {
+      if (baseBorrowRate.length > 0) {
         interestModelConfig['base_rate'] = formatExecuteMsgNumber(
           big(baseBorrowRate).div(100).div(blocksPerYear),
         ) as Rate;
@@ -94,7 +110,9 @@ export function PollCreateModifyBorrowInterest() {
     <PollCreateBase
       pollTitle="Modify Borrow Interest"
       submitDisabled={
-        baseBorrowRate.length === 0 && interestMultiplier.length === 0
+        (baseBorrowRate.length === 0 && interestMultiplier.length === 0) ||
+        !!invalidBaseBorrowRate ||
+        !!invalidInterestMultiplier
       }
       onCreateMsgs={() => createMsgs(baseBorrowRate, interestMultiplier)}
     >
@@ -112,13 +130,15 @@ export function PollCreateModifyBorrowInterest() {
 
       <NumberInput
         placeholder="0.00"
-        maxIntegerPoinsts={3}
-        maxDecimalPoints={8}
+        type="integer"
+        maxIntegerPoinsts={2}
         InputProps={{
           endAdornment: <InputAdornment position="end">%</InputAdornment>,
         }}
         value={baseBorrowRate}
         disabled={inputDisabled.baseBorrowRate}
+        error={!!invalidBaseBorrowRate}
+        helperText={invalidBaseBorrowRate}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setBaseBorrowRate(target.value)
         }
@@ -141,10 +161,12 @@ export function PollCreateModifyBorrowInterest() {
 
       <NumberInput
         placeholder="0.00"
-        maxIntegerPoinsts={3}
+        maxIntegerPoinsts={1}
         maxDecimalPoints={MAX_EXECUTE_MSG_DECIMALS}
         value={interestMultiplier}
         disabled={inputDisabled.interestMultiplier}
+        error={!!invalidInterestMultiplier}
+        helperText={invalidInterestMultiplier}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setInterestMultiplier(target.value)
         }
