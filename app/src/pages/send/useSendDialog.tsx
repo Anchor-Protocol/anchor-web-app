@@ -20,7 +20,7 @@ import {
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { Token, UST, uUST } from '@anchor-protocol/types';
+import { Token, UST, uToken, uUST } from '@anchor-protocol/types';
 import {
   DialogProps,
   OpenDialog,
@@ -28,20 +28,20 @@ import {
 } from '@anchor-protocol/use-dialog';
 import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
+import { Bank, useBank } from '@anchor-protocol/web-contexts/contexts/bank';
+import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
+import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
+import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import {
   Input as MuiInput,
   Modal,
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
 import { AccAddress } from '@terra-money/terra.js';
-import big, { Big } from 'big.js';
+import big, { Big, BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { Bank, useBank } from '@anchor-protocol/web-contexts/contexts/bank';
-import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
-import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
-import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { CurrencyInfo } from 'pages/send/models/currency';
 import { sendOptions } from 'pages/send/transactions/sendOptions';
@@ -89,9 +89,31 @@ function ComponentBase({
         value: 'usd',
         integerPoints: UST_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: UST_INPUT_MAXIMUM_INTEGER_POINTS,
-        getWithdrawable: (bank: Bank) => bank.userBalances.uUSD,
-        getFormatWithdrawable: (bank: Bank) =>
-          formatUSTInput(demicrofy(bank.userBalances.uUSD)),
+        getWithdrawable: (bank: Bank, fixedGas: uUST<BigSource>) => {
+          return big(bank.userBalances.uUSD)
+            .minus(
+              min(
+                big(bank.userBalances.uUSD).mul(bank.tax.taxRate),
+                bank.tax.maxTaxUUSD,
+              ),
+            )
+            .minus(fixedGas)
+            .toString() as uToken;
+        },
+        getFormatWithdrawable: (bank: Bank, fixedGas: uUST<BigSource>) => {
+          return formatUSTInput(
+            demicrofy(
+              big(bank.userBalances.uUSD)
+                .minus(
+                  min(
+                    big(bank.userBalances.uUSD).mul(bank.tax.taxRate),
+                    bank.tax.maxTaxUUSD,
+                  ),
+                )
+                .minus(fixedGas) as uUST<Big>,
+            ),
+          );
+        },
       },
       {
         label: 'aUST',
@@ -197,12 +219,14 @@ function ComponentBase({
   // logics
   // ---------------------------------------------
   const txFee = useMemo(() => {
-    return currency.value === 'usd'
-      ? (min(
-          amount.length > 0 ? microfy(amount as UST).mul(bank.tax.taxRate) : 0,
-          bank.tax.maxTaxUUSD,
-        ).plus(fixedGas) as uUST<Big>)
-      : fixedGas;
+    if (amount.length === 0 || currency.value !== 'usd') {
+      return fixedGas;
+    }
+
+    return min(
+      microfy(amount as UST).mul(bank.tax.taxRate),
+      bank.tax.maxTaxUUSD,
+    ).plus(fixedGas) as uUST<Big>;
   }, [amount, bank.tax.maxTaxUUSD, bank.tax.taxRate, currency.value, fixedGas]);
 
   const invalidTxFee = useMemo(() => validateTxFee(bank, txFee), [bank, txFee]);
@@ -218,15 +242,10 @@ function ComponentBase({
   const invalidAmount = useMemo(() => {
     if (amount.length === 0) return undefined;
 
-    const a =
-      currency.value === 'usd'
-        ? microfy(amount as Token).plus(txFee)
-        : microfy(amount as Token);
-
-    return big(a).gt(currency.getWithdrawable(bank))
+    return microfy(amount as Token).gt(currency.getWithdrawable(bank, fixedGas))
       ? 'Not enough assets'
       : undefined;
-  }, [amount, currency, txFee, bank]);
+  }, [amount, currency, bank, fixedGas]);
 
   const submit = useCallback(
     (
@@ -302,13 +321,12 @@ function ComponentBase({
                 style={{ textDecoration: 'underline', cursor: 'pointer' }}
                 onClick={() =>
                   setAmount(
-                    demicrofy(
-                      currency.getWithdrawable(bank),
-                    ).toString() as Token,
+                    currency.getFormatWithdrawable(bank, fixedGas) as Token,
                   )
                 }
               >
-                {currency.getFormatWithdrawable(bank)} {currency.label}
+                {currency.getFormatWithdrawable(bank, fixedGas)}{' '}
+                {currency.label}
               </span>
             </span>
           }
@@ -348,7 +366,7 @@ function ComponentBase({
             !!invalidAddress ||
             !!invalidAmount ||
             !!invalidTxFee ||
-            big(currency.getWithdrawable(bank)).lte(0)
+            big(currency.getWithdrawable(bank, fixedGas)).lte(0)
           }
           onClick={() =>
             walletReady && submit(walletReady, address, currency, amount)
