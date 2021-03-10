@@ -28,7 +28,7 @@ function IndexBase({ className }: IndexProps) {
       event.stopPropagation();
       event.stopImmediatePropagation();
 
-      if (event.deltaY > 10 && !inScroll) {
+      if (event.deltaY > 1 && !inScroll) {
         inScroll = true;
         if (process.env.NODE_ENV === 'development') {
           console.log('SCROLL TO NEXT PAGE!');
