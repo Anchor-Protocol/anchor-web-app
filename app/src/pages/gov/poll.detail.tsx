@@ -14,21 +14,24 @@ import {
 } from '@anchor-protocol/styled-neumorphism';
 import { Rate } from '@anchor-protocol/types';
 import { TimeEnd } from '@anchor-protocol/use-time-end';
+import { useLastSyncedHeight } from '@anchor-protocol/web-contexts/queries/lastSyncedHeight';
 import { Schedule } from '@material-ui/icons';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { useCodeViewerDialog } from 'components/useCodeViewerDialog';
 import { DescriptionGrid } from 'pages/gov/components/DescriptionGrid';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
-import { PollMsgRenderer } from 'pages/gov/components/PollMsgRenderer';
+import {
+  PollMsgRenderer,
+  PollMsgRendererContainer,
+} from 'pages/gov/components/PollMsgRenderer';
 import { PollGraph } from 'pages/gov/components/Polls/PollGraph';
-import { PollVoters } from 'pages/gov/components/PollVoters';
 import { PollStatusSpan } from 'pages/gov/components/PollStatusSpan';
+import { PollVoters } from 'pages/gov/components/PollVoters';
 import { usePollVoteDialog } from 'pages/gov/components/usePollVoteDialog';
 import { extractPollDetail } from 'pages/gov/logics/extractPollDetail';
 import { useCanIVote } from 'pages/gov/queries/canIVote';
 import { usePoll } from 'pages/gov/queries/poll';
 import { useTotalStaked } from 'pages/gov/queries/totalStaked';
-import { useLastSyncedHeight } from '@anchor-protocol/web-contexts/queries/lastSyncedHeight';
 import { useMemo } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import styled from 'styled-components';
@@ -160,15 +163,17 @@ function PollDetailBase({ className, match }: PollDetailProps) {
             <>
               <HorizontalHeavyRuler style={{ margin: '30px 0' }} />
 
-              {pollDetail.msgs.map((msg) => (
-                <PollMsgRenderer msg={msg} />
-              ))}
+              <PollMsgRendererContainer>
+                {pollDetail.msgs.map((msg) => (
+                  <PollMsgRenderer msg={msg} />
+                ))}
+              </PollMsgRendererContainer>
             </>
           )}
 
         {pollDetail.msgs && (
           <BorderButton
-            style={{ width: '100%', height: 30 }}
+            style={{ width: '100%', height: 30, opacity: 0.3 }}
             onClick={() =>
               openCodeViewer({
                 title: 'Raw Msgs',

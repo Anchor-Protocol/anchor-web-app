@@ -81,6 +81,57 @@ export function createContractAddress(
   };
 }
 
+export function useContractName(): (addr: HumanAddr | CW20Addr) => string {
+  const { address } = useContext(ContractContext);
+
+  return (addr: HumanAddr | CW20Addr) => {
+    switch (addr) {
+      case address.bluna.reward:
+        return `bLuna / Reward (${addr})`;
+      case address.bluna.hub:
+        return `bLuna / Hub (${addr})`;
+      case address.moneyMarket.market:
+        return `Money Market / Market (${addr})`;
+      case address.moneyMarket.custody:
+        return `Money Market / Custody (${addr})`;
+      case address.moneyMarket.overseer:
+        return `Money Market / Overseer (${addr})`;
+      case address.moneyMarket.oracle:
+        return `Money Market / Oracle (${addr})`;
+      case address.moneyMarket.interestModel:
+        return `Money Market / Interest Model (${addr})`;
+      case address.moneyMarket.distributionModel:
+        return `Money Market / Distribution Model (${addr})`;
+      case address.liquidation.liquidationContract:
+        return `Liquidation (${addr})`;
+      case address.anchorToken.gov:
+        return `Anchor Token / Gov (${addr})`;
+      case address.anchorToken.staking:
+        return `Anchor Token / Staking (${addr})`;
+      case address.anchorToken.community:
+        return `Anchor Token / Community (${addr})`;
+      case address.anchorToken.faucet:
+        return `Anchor Token / Faucet (${addr})`;
+      case address.terraswap.blunaLunaPair:
+        return `Terraswap / bLuna-Luna Pair (${addr})`;
+      case address.terraswap.ancUstPair:
+        return `Terraswap / ANC-UST Pair (${addr})`;
+      case address.cw20.bLuna:
+        return `bLuna (${addr})`;
+      case address.cw20.aUST:
+        return `aUST (${addr})`;
+      case address.cw20.ANC:
+        return `ANC (${addr})`;
+      case address.cw20.AncUstLP:
+        return `ANC-UST-LP (${addr})`;
+      case address.cw20.bLunaLunaLP:
+        return `bLuna-Luna-LP (${addr})`;
+      default:
+        return addr;
+    }
+  };
+}
+
 export function useContract(): ContractState {
   return useContext(ContractContext);
 }
