@@ -1,3 +1,4 @@
+import { min } from '@anchor-protocol/big-math';
 import { useOperation } from '@anchor-protocol/broadcastable-operation';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
@@ -19,7 +20,7 @@ import {
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { Token } from '@anchor-protocol/types';
+import { Token, UST, uUST } from '@anchor-protocol/types';
 import {
   DialogProps,
   OpenDialog,
@@ -32,7 +33,8 @@ import {
   Modal,
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
-import big from 'big.js';
+import { AccAddress } from '@terra-money/terra.js';
+import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
@@ -194,18 +196,37 @@ function ComponentBase({
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
-    bank,
-    fixedGas,
-  ]);
+  const txFee = useMemo(() => {
+    return currency.value === 'usd'
+      ? (min(
+          amount.length > 0 ? microfy(amount as UST).mul(bank.tax.taxRate) : 0,
+          bank.tax.maxTaxUUSD,
+        ).plus(fixedGas) as uUST<Big>)
+      : fixedGas;
+  }, [amount, bank.tax.maxTaxUUSD, bank.tax.taxRate, currency.value, fixedGas]);
+
+  const invalidTxFee = useMemo(() => validateTxFee(bank, txFee), [bank, txFee]);
+
+  const invalidAddress = useMemo(() => {
+    if (address.length === 0) {
+      return undefined;
+    }
+
+    return !AccAddress.validate(address) ? 'Not valid address' : undefined;
+  }, [address]);
 
   const invalidAmount = useMemo(() => {
     if (amount.length === 0) return undefined;
 
-    return big(microfy(amount as Token)).gt(currency.getWithdrawable(bank))
+    const a =
+      currency.value === 'usd'
+        ? microfy(amount as Token).plus(txFee)
+        : microfy(amount as Token);
+
+    return big(a).gt(currency.getWithdrawable(bank))
       ? 'Not enough assets'
       : undefined;
-  }, [amount, currency, bank]);
+  }, [amount, currency, txFee, bank]);
 
   const submit = useCallback(
     (
@@ -256,6 +277,8 @@ function ComponentBase({
           fullWidth
           placeholder="ADDRESS"
           value={address}
+          error={!!invalidAddress}
+          helperText={invalidAddress}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             setAddress(target.value)
           }
@@ -312,7 +335,7 @@ function ComponentBase({
 
         <TxFeeList className="receipt">
           <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
-            {formatUST(demicrofy(fixedGas))} UST
+            {formatUST(demicrofy(txFee))} UST
           </TxFeeListItem>
         </TxFeeList>
 
@@ -322,6 +345,7 @@ function ComponentBase({
             !serviceAvailable ||
             address.length === 0 ||
             amount.length === 0 ||
+            !!invalidAddress ||
             !!invalidAmount ||
             !!invalidTxFee ||
             big(currency.getWithdrawable(bank)).lte(0)

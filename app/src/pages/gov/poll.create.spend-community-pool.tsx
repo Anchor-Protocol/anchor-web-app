@@ -48,7 +48,7 @@ export function PollCreateSpendCommunityPool() {
   }, [amount, communityAncBalance]);
 
   const invalidRecipient = useMemo(() => {
-    if (!recipient) {
+    if (recipient.length === 0) {
       return undefined;
     }
 
