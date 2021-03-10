@@ -16,6 +16,9 @@ import {
 import { bLuna, Luna, uUST } from '@anchor-protocol/types';
 import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
+import { useBank } from '@anchor-protocol/web-contexts/contexts/bank';
+import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
+import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import {
   Input as MuiInput,
   NativeSelect as MuiNativeSelect,
@@ -25,10 +28,8 @@ import { ArrowDownLine } from 'components/ArrowDownLine';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { useBank } from '@anchor-protocol/web-contexts/contexts/bank';
-import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
-import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
+import { pegRecovery } from 'pages/basset/logics/pegRecovery';
 import { validateBondAmount } from 'pages/basset/logics/validateBondAmount';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
@@ -93,7 +94,7 @@ function MintBase({ className }: MintProps) {
   });
 
   const {
-    data: { exchangeRate },
+    data: { exchangeRate, parameters },
   } = useExchangeRate({
     bAsset: mintCurrency.value,
   });
@@ -101,6 +102,11 @@ function MintBase({ className }: MintProps) {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
+  const pegRecoveryFee = useMemo(
+    () => pegRecovery(mintAmount, exchangeRate, parameters),
+    [exchangeRate, mintAmount, parameters],
+  );
+
   const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
     bank,
     fixedGas,
@@ -209,6 +215,16 @@ function MintBase({ className }: MintProps) {
   return (
     <Section className={className}>
       {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
+
+      {pegRecoveryFee && (
+        <MessageBox
+          level="info"
+          hide={{ id: 'mint_peg', period: 1000 * 60 * 60 * 24 * 7 }}
+        >
+          When exchange rate is lower than threshold, protocol charges peg
+          recovery fee for each Mint/Burn action.
+        </MessageBox>
+      )}
 
       {/* Bond (Asset) */}
       <div className="bond-description">
@@ -337,6 +353,11 @@ function MintBase({ className }: MintProps) {
             exchangeRateAB={exchangeRate.exchange_rate}
             formatExchangeRate={(ratio) => formatLuna(ratio as Luna<Big>)}
           />
+        )}
+        {!!pegRecoveryFee && (
+          <TxFeeListItem label={<IconSpan>Peg Recovery Fee</IconSpan>}>
+            {formatLuna(demicrofy(pegRecoveryFee))} bLuna
+          </TxFeeListItem>
         )}
         {bondAmount.length > 0 && (
           <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>

@@ -11,43 +11,63 @@ import { useMemo } from 'react';
 
 export interface RawData {
   exchangeRate: WASMContractResult;
+  parameters: WASMContractResult;
 }
 
 export interface Data {
   exchangeRate: WASMContractResult<bluna.hub.StateResponse>;
+  parameters: WASMContractResult<bluna.hub.ParametersResponse>;
 }
 
 export const dataMap = createMap<RawData, Data>({
   exchangeRate: (existing, { exchangeRate }) => {
     return parseResult(existing.exchangeRate, exchangeRate.Result);
   },
+  parameters: (existing, { parameters }) => {
+    return parseResult(existing.parameters, parameters.Result);
+  },
 });
 
 export interface RawVariables {
   bLunaHubContract: string;
   stateQuery: string;
+  parametersQuery: string;
 }
 
 export interface Variables {
   bLunaHubContract: string;
   stateQuery: bluna.hub.State;
+  parametersQuery: bluna.hub.Parameters;
 }
 
 export function mapVariables({
   bLunaHubContract,
   stateQuery,
+  parametersQuery,
 }: Variables): RawVariables {
   return {
     bLunaHubContract,
     stateQuery: JSON.stringify(stateQuery),
+    parametersQuery: JSON.stringify(parametersQuery),
   };
 }
 
 export const query = gql`
-  query __exchangeRate($bLunaHubContract: String!, $stateQuery: String!) {
+  query __exchangeRate(
+    $bLunaHubContract: String!
+    $stateQuery: String!
+    $parametersQuery: String!
+  ) {
     exchangeRate: WasmContractsContractAddressStore(
       ContractAddress: $bLunaHubContract
       QueryMsg: $stateQuery
+    ) {
+      Result
+    }
+
+    parameters: WasmContractsContractAddressStore(
+      ContractAddress: $bLunaHubContract
+      QueryMsg: $parametersQuery
     ) {
       Result
     }
@@ -68,6 +88,9 @@ export function useExchangeRate({
       bLunaHubContract: bluna.hub,
       stateQuery: {
         state: {},
+      },
+      parametersQuery: {
+        parameters: {},
       },
     });
   }, [bluna.hub]);
