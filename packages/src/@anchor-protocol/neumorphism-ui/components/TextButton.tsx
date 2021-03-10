@@ -28,6 +28,7 @@ export const TextButton = styled(ButtonBase).attrs({ disableRipple: true })`
         distance: 1,
         intensity: theme.intensity,
       })};
+    background-color: ${({ theme }) => theme.hoverBackgroundColor};
   }
 
   &:active {
@@ -37,6 +38,7 @@ export const TextButton = styled(ButtonBase).attrs({ disableRipple: true })`
         distance: 1,
         intensity: theme.intensity,
       })};
+    background-color: ${({ theme }) => theme.hoverBackgroundColor};
   }
 
   &:disabled {

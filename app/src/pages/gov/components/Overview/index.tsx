@@ -4,6 +4,7 @@ import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { Label } from '@anchor-protocol/neumorphism-ui/components/Label';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
+import { TextButton } from '@anchor-protocol/neumorphism-ui/components/TextButton';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import {
   demicrofy,
@@ -173,11 +174,15 @@ function OverviewBase({ className }: OverviewProps) {
           <AnchorNoCircle style={{ fontSize: '1.4em' }} />
         </Circles>
         <h2>
-          <Link to={`/${govPathname}/rewards/${ancUstLpPathname}/provide`}>
+          <TextButton
+            component={Link}
+            to={`/${govPathname}/rewards/${ancUstLpPathname}/provide`}
+            style={{ width: 200, height: 28, fontSize: 18, fontWeight: 500 }}
+          >
             <IconSpan>
               ANC - UST LP <ChevronRight />
             </IconSpan>
-          </Link>
+          </TextButton>
         </h2>
         <div className="lp-labels">
           <div>
