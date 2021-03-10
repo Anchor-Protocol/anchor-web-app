@@ -65,7 +65,9 @@ export function createContractAddress(
       gov: addressProvider.gov() as HumanAddr,
       staking: addressProvider.staking() as HumanAddr,
       community: addressProvider.community() as HumanAddr,
-      faucet: addressProvider.faucet() as HumanAddr,
+      distributor: addressProvider.faucet() as HumanAddr,
+      investorLock: 'terra19f6ktw4qpjj9p9m49y8mhf6pr9807d44xdcus7' as HumanAddr,
+      teamLock: 'terra1x7ted5g0g6ntyqdaqmjwtzcctvvrdju49vs8pl' as HumanAddr,
     },
     terraswap: {
       blunaLunaPair: addressProvider.terraswapblunaLunaPair() as HumanAddr,
@@ -110,7 +112,7 @@ export function useContractName(): (addr: HumanAddr | CW20Addr) => string {
         return `Anchor Token / Staking (${addr})`;
       case address.anchorToken.community:
         return `Anchor Token / Community (${addr})`;
-      case address.anchorToken.faucet:
+      case address.anchorToken.distributor:
         return `Anchor Token / Faucet (${addr})`;
       case address.terraswap.blunaLunaPair:
         return `Terraswap / bLuna-Luna Pair (${addr})`;

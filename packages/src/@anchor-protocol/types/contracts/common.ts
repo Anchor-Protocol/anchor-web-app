@@ -33,6 +33,7 @@ export interface ContractAddress {
     oracle: HumanAddr;
     /** addressProvider.interest() */
     interestModel: HumanAddr;
+
     distributionModel: HumanAddr;
   };
   liquidation: {
@@ -47,7 +48,10 @@ export interface ContractAddress {
     /** addressProvider.community() */
     community: HumanAddr;
     /** addressProvider.faucet() */
-    faucet: HumanAddr;
+    distributor: HumanAddr;
+
+    investorLock: HumanAddr;
+    teamLock: HumanAddr;
   };
   terraswap: {
     /** addressProvider.terraswapblunaLunaPair() */

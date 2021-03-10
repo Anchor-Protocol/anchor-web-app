@@ -57,6 +57,6 @@ export const contractAddresses: AddressMap = {
   ANC: 'terra1800p00qlxh0nmt0r0u9hv7m4lg042fnafng2t6',
   airdrop: 'terra18vlmtqhxgdp49vsfsk6pwvye8rg33nc2x92alr',
 
-  faucet: '',
+  faucet: 'terra1ytyge2vqtl9kcj8amrx9pxjypmw00244e7l3ye',
   terraswapFactory: '',
 };

@@ -13,7 +13,9 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
+import { Rate, uANC } from '@anchor-protocol/types';
 import { ChevronRight } from '@material-ui/icons';
+import big, { Big } from 'big.js';
 import { Circles } from 'components/Circles';
 import { screen } from 'env';
 import {
@@ -21,11 +23,9 @@ import {
   ancUstLpPathname,
   govPathname,
 } from 'pages/gov/env';
-import { totalGovStaked } from 'pages/gov/logics/totalGovStaked';
-import { totalStakedGovShareIndex } from 'pages/gov/logics/totalStakedGovShareIndex';
 import { useANCPrice } from 'pages/gov/queries/ancPrice';
 import { useLPStakingState } from 'pages/gov/queries/lpStakingState';
-import { useTotalStaked } from 'pages/gov/queries/totalStaked';
+import { useTotalStakedMain } from 'pages/gov/queries/totalStakedMain';
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -40,22 +40,68 @@ function OverviewBase({ className }: OverviewProps) {
   } = useANCPrice();
 
   const {
-    data: { govANCBalance, govState },
-  } = useTotalStaked();
+    data: {
+      ancTokenInfo,
+      govANCBalance,
+      communityANCBalance,
+      distributorANCBalance,
+      lpStakingANCBalance,
+      investorLockANCBalance,
+      teamLockANCBalance,
+      govState,
+      govConfig,
+    },
+  } = useTotalStakedMain();
 
   const {
     data: { lpStakingState },
   } = useLPStakingState();
 
-  const totalStaked = useMemo(() => totalGovStaked(govANCBalance, govState), [
-    govANCBalance,
-    govState,
-  ]);
+  const { totalStaked, totalStakedRate } = useMemo(() => {
+    if (
+      !ancTokenInfo ||
+      !govANCBalance ||
+      !communityANCBalance ||
+      !distributorANCBalance ||
+      !lpStakingANCBalance ||
+      !investorLockANCBalance ||
+      !teamLockANCBalance ||
+      !govState ||
+      !govConfig
+    ) {
+      return {
+        totalStaked: big(0) as uANC<Big>,
+        totalStakedRate: big(0) as Rate<Big>,
+      };
+    }
 
-  const totalStakedShareIndex = useMemo(
-    () => totalStakedGovShareIndex(totalStaked, govState),
-    [govState, totalStaked],
-  );
+    const totalStaked = big(govANCBalance.balance).minus(
+      govState.total_deposit,
+    ) as uANC<Big>;
+
+    const currentTotalSupply = big(ancTokenInfo.total_supply)
+      .minus(communityANCBalance.balance)
+      .minus(distributorANCBalance.balance)
+      .minus(lpStakingANCBalance.balance)
+      .minus(investorLockANCBalance.balance)
+      .minus(teamLockANCBalance.balance);
+
+    const totalStakedRate = big(totalStaked).div(
+      currentTotalSupply,
+    ) as Rate<Big>;
+
+    return { totalStaked, totalStakedRate };
+  }, [
+    ancTokenInfo,
+    communityANCBalance,
+    distributorANCBalance,
+    govANCBalance,
+    govConfig,
+    govState,
+    investorLockANCBalance,
+    lpStakingANCBalance,
+    teamLockANCBalance,
+  ]);
 
   return (
     <div className={className}>
@@ -84,15 +130,9 @@ function OverviewBase({ className }: OverviewProps) {
           </IconSpan>
         </h2>
         <div>
-          {totalStaked
-            ? formatANCWithPostfixUnits(demicrofy(totalStaked))
-            : '0'}{' '}
-          ANC{' '}
+          {formatANCWithPostfixUnits(demicrofy(totalStaked))} ANC{' '}
           <sub>
-            (
-            {totalStakedShareIndex
-              ? formatRateToPercentage(totalStakedShareIndex)
-              : '0'}
+            ({formatRateToPercentage(totalStakedRate)}
             %)
           </sub>
         </div>
