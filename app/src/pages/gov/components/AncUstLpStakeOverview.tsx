@@ -94,8 +94,10 @@ export const AncUstLpStakeOverview = styled(AncUstLpStakeOverviewBase)`
   grid-template-rows: 88px;
 
   li {
-    display: grid;
-    place-content: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     text-align: center;
 
     span {
