@@ -17,6 +17,7 @@ import { Schedule } from '@material-ui/icons';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { DescriptionGrid } from 'pages/gov/components/DescriptionGrid';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
+import { PollMsgRenderer } from 'pages/gov/components/PollMsgRenderer';
 import { PollGraph } from 'pages/gov/components/Polls/PollGraph';
 import { PollVoters } from 'pages/gov/components/PollVoters';
 import { PollStatusSpan } from 'pages/gov/components/PollStatusSpan';
@@ -150,11 +151,24 @@ function PollDetailBase({ className, match }: PollDetailProps) {
           </article>
         </DescriptionGrid>
 
+        {Array.isArray(pollDetail.msgs) &&
+          pollDetail.msgs.filter((msg) => !!msg).length > 0 && (
+            <>
+              <HorizontalHeavyRuler style={{ margin: '30px 0' }} />
+
+              {pollDetail.msgs.map((msg) => (
+                <PollMsgRenderer msg={msg} />
+              ))}
+            </>
+          )}
+
         <HorizontalHeavyRuler style={{ margin: '30px 0' }} />
 
-        <h4>Poll detail test...</h4>
+        <h4>Poll detail test codes...</h4>
 
-        <pre>{JSON.stringify(pollDetail.msgs, null, 2)}</pre>
+        <pre style={{ color: '#cccccc' }}>
+          {JSON.stringify(pollDetail.msgs, null, 2)}
+        </pre>
       </Section>
 
       <Section className="detail">
