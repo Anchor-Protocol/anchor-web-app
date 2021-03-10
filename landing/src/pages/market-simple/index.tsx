@@ -1,4 +1,6 @@
 import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/components/HorizontalScrollTable';
+import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import {
   demicrofy,
@@ -85,7 +87,14 @@ function MarketBase({ className }: MarketProps) {
 
         <div className="content-layout">
           <Section className="total-deposit">
-            <h2>TOTAL DEPOSIT</h2>
+            <h2>
+              <IconSpan>
+                TOTAL DEPOSIT{' '}
+                <InfoTooltip>
+                  Total deposited value of this stablecoin market in USD
+                </InfoTooltip>
+              </IconSpan>
+            </h2>
 
             <div className="amount">
               ${' '}
@@ -122,10 +131,36 @@ function MarketBase({ className }: MarketProps) {
               <thead>
                 <tr>
                   <th>STABLECOIN MARKET</th>
-                  <th>Total Deposit</th>
-                  <th>Deposit APY</th>
-                  <th>Total Borrow</th>
-                  <th>Borrow APR</th>
+                  <th>
+                    <IconSpan>
+                      Total Deposit{' '}
+                      <InfoTooltip>
+                        Total deposited value of this stablecoin market in USD
+                      </InfoTooltip>
+                    </IconSpan>
+                  </th>
+                  <th>
+                    <IconSpan>
+                      Deposit APY{' '}
+                      <InfoTooltip>
+                        Annualized deposit interest of this stablecoin market
+                      </InfoTooltip>
+                    </IconSpan>
+                  </th>
+                  <th>
+                    <IconSpan>
+                      Total Borrow{' '}
+                      <InfoTooltip>
+                        Annualized borrow interest of this stablecoin market
+                      </InfoTooltip>
+                    </IconSpan>
+                  </th>
+                  <th>
+                    <IconSpan>
+                      Borrow APR{' '}
+                      <InfoTooltip>Annualized borrow interest</InfoTooltip>
+                    </IconSpan>
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -193,9 +228,25 @@ function MarketBase({ className }: MarketProps) {
               <thead>
                 <tr>
                   <th>bASSET MARKET</th>
-                  <th>Price</th>
-                  <th>Total Collateral</th>
-                  <th>Total Collateral Value</th>
+                  <th>
+                    <IconSpan>
+                      Price <InfoTooltip>Oracle price of bAsset</InfoTooltip>
+                    </IconSpan>
+                  </th>
+                  <th>
+                    <IconSpan>
+                      Total Collateral{' '}
+                      <InfoTooltip>
+                        Total collateral value in bASSET
+                      </InfoTooltip>
+                    </IconSpan>
+                  </th>
+                  <th>
+                    <IconSpan>
+                      Total Collateral Value{' '}
+                      <InfoTooltip>Total collateral value in USD</InfoTooltip>
+                    </IconSpan>
+                  </th>
                 </tr>
               </thead>
               <tbody>
