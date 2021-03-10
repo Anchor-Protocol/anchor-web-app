@@ -1,6 +1,7 @@
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { BorderButton } from '@anchor-protocol/neumorphism-ui/components/BorderButton';
 import { HorizontalHeavyRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalHeavyRuler';
+import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import {
@@ -16,14 +17,12 @@ import { Rate } from '@anchor-protocol/types';
 import { TimeEnd } from '@anchor-protocol/use-time-end';
 import { useLastSyncedHeight } from '@anchor-protocol/web-contexts/queries/lastSyncedHeight';
 import { Schedule } from '@material-ui/icons';
+import { AccountLink } from 'components/AccountLink';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { useCodeViewerDialog } from 'components/useCodeViewerDialog';
 import { DescriptionGrid } from 'pages/gov/components/DescriptionGrid';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
-import {
-  PollMsgRenderer,
-  PollMsgRendererContainer,
-} from 'pages/gov/components/PollMsgRenderer';
+import { PollMsgRenderer } from 'pages/gov/components/PollMsgRenderer';
 import { PollGraph } from 'pages/gov/components/Polls/PollGraph';
 import { PollStatusSpan } from 'pages/gov/components/PollStatusSpan';
 import { PollVoters } from 'pages/gov/components/PollVoters';
@@ -112,7 +111,9 @@ function PollDetailBase({ className, match }: PollDetailProps) {
         <DescriptionGrid className="content-detail">
           <article>
             <h4>Creator</h4>
-            <p>{pollDetail.poll.creator}</p>
+            <p>
+              <AccountLink address={pollDetail.poll.creator} />
+            </p>
           </article>
 
           <article>
@@ -161,29 +162,32 @@ function PollDetailBase({ className, match }: PollDetailProps) {
         {Array.isArray(pollDetail.msgs) &&
           pollDetail.msgs.filter((msg) => !!msg).length > 0 && (
             <>
-              <HorizontalHeavyRuler style={{ margin: '30px 0' }} />
+              <HorizontalRuler style={{ margin: '40px 0' }} />
 
-              <PollMsgRendererContainer>
+              <DescriptionGrid>
                 {pollDetail.msgs.map((msg) => (
                   <PollMsgRenderer msg={msg} />
                 ))}
-              </PollMsgRendererContainer>
+              </DescriptionGrid>
+
+              <BorderButton
+                style={{
+                  marginTop: 40,
+                  width: '100%',
+                  height: 30,
+                  opacity: 0.3,
+                }}
+                onClick={() =>
+                  openCodeViewer({
+                    title: 'Raw Msgs',
+                    source: JSON.stringify(pollDetail.msgs, null, 2),
+                  })
+                }
+              >
+                See Raw Msgs
+              </BorderButton>
             </>
           )}
-
-        {pollDetail.msgs && (
-          <BorderButton
-            style={{ width: '100%', height: 30, opacity: 0.3 }}
-            onClick={() =>
-              openCodeViewer({
-                title: 'Raw Msgs',
-                source: JSON.stringify(pollDetail.msgs, null, 2),
-              })
-            }
-          >
-            See Raw Msgs
-          </BorderButton>
-        )}
       </Section>
 
       <Section className="detail">

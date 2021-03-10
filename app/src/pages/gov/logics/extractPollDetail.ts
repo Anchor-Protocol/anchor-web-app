@@ -2,6 +2,7 @@ import { formatRateToPercentage } from '@anchor-protocol/notation';
 import { anchorToken, cw20, Rate, uANC } from '@anchor-protocol/types';
 import { ParsedExecuteMsg } from '@anchor-protocol/types/contracts/anchorToken/gov';
 import big from 'big.js';
+import { getMsgTitle } from 'pages/gov/logics/getMsgTitle';
 
 export interface PollDetail {
   poll: anchorToken.gov.PollResponse;
@@ -89,15 +90,7 @@ export function extractPollDetail(
     if (poll.execute_data.length > 1) {
       type = 'Multiple Execute';
     } else if (poll.execute_data.length === 1) {
-      if (msgs[0].msg) {
-        if ('spend' in msgs[0].msg) {
-          type = 'Community Spend';
-        } else if ('update_config' in msgs[0].msg) {
-          type = 'Parameter Change';
-        } else if ('update_whitelist' in msgs[0].msg) {
-          type = 'Update Whitelist';
-        }
-      }
+      type = getMsgTitle(msgs[0]);
     }
   }
 

@@ -16,6 +16,10 @@ export const DescriptionGrid = styled(DescriptionGridBase)`
     font-weight: 500;
     color: ${({ theme }) => theme.dimTextColor};
 
+    &:not(:first-child) {
+      margin-top: 10px;
+    }
+
     margin-bottom: 5px;
   }
 

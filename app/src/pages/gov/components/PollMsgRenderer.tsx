@@ -1,7 +1,8 @@
 import { ParsedExecuteMsg } from '@anchor-protocol/types/contracts/anchorToken/gov';
-import { useWallet } from '@anchor-protocol/wallet-provider';
-import { useContractName } from '@anchor-protocol/web-contexts/contexts/contract';
-import React from 'react';
+import { useContractNickname } from '@anchor-protocol/web-contexts/contexts/contract';
+import { AccountLink } from 'components/AccountLink';
+import { getMsgDetails } from 'pages/gov/logics/getMsgDetails';
+import React, { Fragment } from 'react';
 import styled from 'styled-components';
 
 export interface PollMsgRendererProps {
@@ -9,30 +10,30 @@ export interface PollMsgRendererProps {
 }
 
 export function PollMsgRenderer({ msg }: PollMsgRendererProps) {
-  const { status } = useWallet();
-
-  const contractName = useContractName();
+  const nickname = useContractNickname();
 
   if (!msg) {
-    return <div>Empty Msg</div>;
+    return null;
   }
 
   return (
-    <ul style={{ border: '1px solid black' }}>
-      <li>
-        Contract:{' '}
-        <a
-          href={`https://finder.terra.money/${status.network.chainID}/account/${msg.contract}`}
-          target="_blank"
-          rel="noreferrer"
-        >
-          {contractName(msg.contract)}
-        </a>
-      </li>
-      <li>
-        <pre>{JSON.stringify(msg.msg, null, 2)}</pre>
-      </li>
-    </ul>
+    <>
+      <article>
+        <h4>Contract</h4>
+        <p>
+          {nickname(msg.contract)} <AccountLink address={msg.contract} />
+        </p>
+      </article>
+
+      <article>
+        {getMsgDetails(msg).map(({ name, value }) => (
+          <Fragment key={name}>
+            <h4>{name}</h4>
+            <p>{value}</p>
+          </Fragment>
+        ))}
+      </article>
+    </>
   );
 }
 

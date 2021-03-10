@@ -83,53 +83,53 @@ export function createContractAddress(
   };
 }
 
-export function useContractName(): (addr: HumanAddr | CW20Addr) => string {
+export function useContractNickname(): (addr: HumanAddr | CW20Addr) => string {
   const { address } = useContext(ContractContext);
 
   return (addr: HumanAddr | CW20Addr) => {
     switch (addr) {
       case address.bluna.reward:
-        return `bLuna / Reward (${addr})`;
+        return `bLuna / Reward`;
       case address.bluna.hub:
-        return `bLuna / Hub (${addr})`;
+        return `bLuna / Hub`;
       case address.moneyMarket.market:
-        return `Money Market / Market (${addr})`;
+        return `Money Market / Market`;
       case address.moneyMarket.custody:
-        return `Money Market / Custody (${addr})`;
+        return `Money Market / Custody`;
       case address.moneyMarket.overseer:
-        return `Money Market / Overseer (${addr})`;
+        return `Money Market / Overseer`;
       case address.moneyMarket.oracle:
-        return `Money Market / Oracle (${addr})`;
+        return `Money Market / Oracle`;
       case address.moneyMarket.interestModel:
-        return `Money Market / Interest Model (${addr})`;
+        return `Money Market / Interest Model`;
       case address.moneyMarket.distributionModel:
-        return `Money Market / Distribution Model (${addr})`;
+        return `Money Market / Distribution Model`;
       case address.liquidation.liquidationContract:
-        return `Liquidation (${addr})`;
+        return `Liquidation`;
       case address.anchorToken.gov:
-        return `Anchor Token / Gov (${addr})`;
+        return `Anchor Token / Gov`;
       case address.anchorToken.staking:
-        return `Anchor Token / Staking (${addr})`;
+        return `Anchor Token / Staking`;
       case address.anchorToken.community:
-        return `Anchor Token / Community (${addr})`;
+        return `Anchor Token / Community`;
       case address.anchorToken.distributor:
-        return `Anchor Token / Faucet (${addr})`;
+        return `Anchor Token / Distributor`;
       case address.terraswap.blunaLunaPair:
-        return `Terraswap / bLuna-Luna Pair (${addr})`;
+        return `Terraswap / bLuna-Luna Pair`;
       case address.terraswap.ancUstPair:
-        return `Terraswap / ANC-UST Pair (${addr})`;
+        return `Terraswap / ANC-UST Pair`;
       case address.cw20.bLuna:
-        return `bLuna (${addr})`;
+        return `bLuna`;
       case address.cw20.aUST:
-        return `aUST (${addr})`;
+        return `aUST`;
       case address.cw20.ANC:
-        return `ANC (${addr})`;
+        return `ANC`;
       case address.cw20.AncUstLP:
-        return `ANC-UST-LP (${addr})`;
+        return `ANC-UST-LP`;
       case address.cw20.bLunaLunaLP:
-        return `bLuna-Luna-LP (${addr})`;
+        return `bLuna-Luna-LP`;
       default:
-        return addr;
+        return '';
     }
   };
 }
