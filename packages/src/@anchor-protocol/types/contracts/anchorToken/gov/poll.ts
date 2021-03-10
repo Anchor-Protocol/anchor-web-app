@@ -17,6 +17,12 @@ export interface ExecuteMsg {
   msg: Base64EncodedJson;
 }
 
+export interface ParsedExecuteMsg {
+  order: number;
+  contract: HumanAddr;
+  msg: PollMsg;
+}
+
 export type PollMsg =
   | OverseerUpdateWhitelist
   | OverseerUpdateConfig

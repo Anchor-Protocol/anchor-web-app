@@ -65,12 +65,6 @@ function PollDetailBase({ className, match }: PollDetailProps) {
     return null;
   }
 
-  console.log('poll.detail.tsx..PollDetailBase()', {
-    canIVote,
-    poll,
-    lastSyncedHeight,
-  });
-
   return (
     <PaddedLayout className={className}>
       <Section className="content">
@@ -146,13 +140,6 @@ function PollDetailBase({ className, match }: PollDetailProps) {
           )}
 
           <article>
-            <h4>Recipient</h4>
-            <p>
-              <s>terra1cwk4s0jtvt69mawaqsay2a9h20cgqd9h5c2qgk</s>
-            </p>
-          </article>
-
-          <article>
             <h4>Amount</h4>
             <p>
               {formatANCWithPostfixUnits(
@@ -162,6 +149,12 @@ function PollDetailBase({ className, match }: PollDetailProps) {
             </p>
           </article>
         </DescriptionGrid>
+
+        <HorizontalHeavyRuler style={{ margin: '30px 0' }} />
+
+        <h4>Poll detail test...</h4>
+
+        <pre>{JSON.stringify(pollDetail.msgs, null, 2)}</pre>
       </Section>
 
       <Section className="detail">

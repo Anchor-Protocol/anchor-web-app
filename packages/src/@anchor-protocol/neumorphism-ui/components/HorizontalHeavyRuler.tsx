@@ -4,20 +4,22 @@ import styled from 'styled-components';
 
 export interface HorizontalHeavyRulerProps
   extends DetailedHTMLProps<HTMLAttributes<HTMLHRElement>, HTMLHRElement> {
-  className?: string;
   rulerWidth?: number;
 }
 
 const defaultRulerWidth: number = 5;
 
-function HorizontalHeavyRulerBase({ className }: HorizontalHeavyRulerProps) {
-  return <hr className={className} />;
+function HorizontalHeavyRulerBase({
+  rulerWidth,
+  ...hrProps
+}: HorizontalHeavyRulerProps) {
+  return <hr {...hrProps} />;
 }
 
 export const HorizontalHeavyRuler = styled(HorizontalHeavyRulerBase)`
   padding: 0;
   margin: 0;
-  
+
   border: 0;
 
   height: ${({ rulerWidth = defaultRulerWidth }) => rulerWidth}px;

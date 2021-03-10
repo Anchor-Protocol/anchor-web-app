@@ -1,6 +1,6 @@
 import { formatRateToPercentage } from '@anchor-protocol/notation';
 import { anchorToken, cw20, Rate, uANC } from '@anchor-protocol/types';
-import { PollMsg } from '@anchor-protocol/types/contracts/anchorToken/gov';
+import { ParsedExecuteMsg } from '@anchor-protocol/types/contracts/anchorToken/gov';
 import big from 'big.js';
 
 export interface PollDetail {
@@ -27,7 +27,7 @@ export interface PollDetail {
 
   endsIn: Date;
 
-  msg: PollMsg | null;
+  msgs: ParsedExecuteMsg[] | null;
 }
 
 export function extractPollDetail(
@@ -74,23 +74,30 @@ export function extractPollDetail(
     (poll.end_height - currentHeight) * 6000 + Date.now(),
   );
 
-  let msg: PollMsg | null = null;
-
-  if (Array.isArray(poll.execute_data)) {
-    msg = poll.execute_data[0]
-      ? JSON.parse(atob(poll.execute_data[0].msg))
-      : null;
-  }
-
+  let msgs: ParsedExecuteMsg[] | null = null;
   let type: string = 'TEXT';
 
-  if (msg) {
-    if ('spend' in msg) {
-      type = 'Community Spend';
-    } else if ('update_config' in msg) {
-      type = 'Parameter Change';
-    } else if ('update_whitelist' in msg) {
-      type = 'Update Whitelist';
+  if (Array.isArray(poll.execute_data)) {
+    msgs = poll.execute_data.map(({ msg, order, contract }) => {
+      return {
+        order,
+        contract,
+        msg: !!msg && JSON.parse(atob(msg)),
+      };
+    });
+
+    if (poll.execute_data.length > 1) {
+      type = 'Multiple Execute';
+    } else if (poll.execute_data.length === 1) {
+      if (msgs[0].msg) {
+        if ('spend' in msgs[0].msg) {
+          type = 'Community Spend';
+        } else if ('update_config' in msgs[0].msg) {
+          type = 'Parameter Change';
+        } else if ('update_whitelist' in msgs[0].msg) {
+          type = 'Update Whitelist';
+        }
+      }
     }
   }
 
@@ -112,6 +119,6 @@ export function extractPollDetail(
 
     endsIn,
 
-    msg,
+    msgs,
   };
 }
