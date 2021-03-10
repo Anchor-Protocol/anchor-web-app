@@ -1,0 +1,90 @@
+import { DateTime, Rate, uANC } from '@anchor-protocol/types';
+import { createMap, useMap } from '@anchor-protocol/use-map';
+import { MappedQueryResult } from '@anchor-protocol/web-contexts/queries/types';
+import { useQueryErrorHandler } from '@anchor-protocol/web-contexts/queries/useQueryErrorHandler';
+import { useRefetch } from '@anchor-protocol/web-contexts/queries/useRefetch';
+import { gql, useQuery } from '@apollo/client';
+
+export interface RawData {
+  borrowerDistributionAPYs: Array<{
+    DistributionAPY: Rate;
+    Height: number;
+    Timestamp: DateTime;
+  }>;
+
+  govRewards: Array<{
+    CurrentAPY: Rate;
+    Amount: uANC;
+    TxHash: string;
+    Timestamp: DateTime;
+    Height: number;
+  }>;
+
+  lpRewards: Array<{
+    APY: Rate;
+    Height: number;
+    Timestamp: DateTime;
+  }>;
+}
+
+export type Data = RawData;
+
+export const dataMap = createMap<RawData, Data>({
+  borrowerDistributionAPYs: (_, { borrowerDistributionAPYs }) => {
+    return borrowerDistributionAPYs;
+  },
+  govRewards: (_, { govRewards }) => {
+    return govRewards;
+  },
+  lpRewards: (_, { lpRewards }) => {
+    return lpRewards;
+  },
+});
+
+export const query = gql`
+  query __borrowAPY {
+    borrowerDistributionAPYs: AnchorBorrowerDistributionAPYs(
+      Order: DESC
+      Limit: 1
+    ) {
+      Height
+      Timestamp
+      DistributionAPY
+    }
+    govRewards: AnchorGovRewards(Order: DESC, Limit: 1) {
+      CurrentAPY
+      Amount
+      TxHash
+      Timestamp
+      Height
+    }
+    lpRewards: AnchorLPRewards(Order: DESC, Limit: 1) {
+      Height
+      Timestamp
+      APY
+    }
+  }
+`;
+
+export function useBorrowAPY(): MappedQueryResult<{}, RawData, Data> {
+  const onError = useQueryErrorHandler();
+
+  const { data: _data, refetch: _refetch, error, ...result } = useQuery<
+    RawData,
+    {}
+  >(query, {
+    fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-first',
+    pollInterval: 1000 * 60,
+    onError,
+  });
+
+  const data = useMap(_data, dataMap);
+  const refetch = useRefetch(_refetch, dataMap);
+
+  return {
+    ...result,
+    data,
+    refetch,
+  };
+}

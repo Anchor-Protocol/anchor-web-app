@@ -14,13 +14,14 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { Rate, uUST } from '@anchor-protocol/types';
-import { BigSource } from 'big.js';
+import big, { Big, BigSource } from 'big.js';
 import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
 import { BorrowLimitGraph } from 'pages/borrow/components/BorrowLimitGraph';
 import { useMarket } from 'pages/borrow/context/market';
 import { apr as _apr } from 'pages/borrow/logics/apr';
 import { borrowed as _borrowed } from 'pages/borrow/logics/borrowed';
 import { collaterals as _collaterals } from 'pages/borrow/logics/collaterals';
+import { useBorrowAPY } from 'pages/borrow/queries/borrowAPY';
 import { useMemo } from 'react';
 import styled from 'styled-components';
 
@@ -43,6 +44,10 @@ function OverviewBase({ className }: OverviewProps) {
     blocksPerYear,
     borrowRate,
   ]);
+
+  const {
+    data: { borrowerDistributionAPYs },
+  } = useBorrowAPY();
 
   const borrowed = useMemo(() => _borrowed(loanAmount), [loanAmount]);
 
@@ -107,7 +112,16 @@ function OverviewBase({ className }: OverviewProps) {
           >
             <h3>Net APY</h3>
           </Tooltip>
-          <div className="value">{formatRateToPercentage(apr)}%</div>
+          <div className="value">
+            {borrowerDistributionAPYs && borrowerDistributionAPYs.length > 0
+              ? formatRateToPercentage(
+                  big(borrowerDistributionAPYs[0].DistributionAPY).minus(
+                    apr,
+                  ) as Rate<Big>,
+                )
+              : 0}{' '}
+            %
+          </div>
           <div>
             <Circles>
               <div>
@@ -116,9 +130,7 @@ function OverviewBase({ className }: OverviewProps) {
                 </Circle>
                 <p>
                   Borrow APR
-                  <b>
-                    <s>3.19%</s>
-                  </b>
+                  <b>{formatRateToPercentage(apr)}%</b>
                 </p>
               </div>
               <div>
@@ -128,7 +140,13 @@ function OverviewBase({ className }: OverviewProps) {
                 <p>
                   Distribution APY
                   <b>
-                    <s>3.19%</s>
+                    {borrowerDistributionAPYs &&
+                    borrowerDistributionAPYs.length > 0
+                      ? formatRateToPercentage(
+                          borrowerDistributionAPYs[0].DistributionAPY,
+                        )
+                      : 0}
+                    %
                   </b>
                 </p>
               </div>
