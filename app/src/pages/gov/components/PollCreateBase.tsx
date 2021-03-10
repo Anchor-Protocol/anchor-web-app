@@ -13,16 +13,15 @@ import {
 import { ANC, uUST } from '@anchor-protocol/types';
 import { useValidateStringBytes } from '@anchor-protocol/use-string-bytes-length';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
+import { useBank } from '@anchor-protocol/web-contexts/contexts/bank';
+import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
+import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { InputAdornment } from '@material-ui/core';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { useBank } from '@anchor-protocol/web-contexts/contexts/bank';
-import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
-import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { FormLayout } from 'pages/gov/components/FormLayout';
-import { bytesHelperText } from 'pages/gov/logics/bytesHelperText';
 import { validateLinkAddress } from 'pages/gov/logics/validateLinkAddress';
 import { usePollConfig } from 'pages/gov/queries/pollConfig';
 import { createPollOptions } from 'pages/gov/transactions/createPollOptions';
@@ -165,7 +164,13 @@ export function PollCreateBase({
             setTitle(target.value)
           }
           error={!!invalidTitleBytes}
-          helperText={bytesHelperText(invalidTitleBytes)}
+          helperText={
+            invalidTitleBytes === 'less'
+              ? 'Title must be at least 4 bytes.'
+              : invalidTitleBytes === 'much'
+              ? 'Title cannot be longer than 64 bytes.'
+              : undefined
+          }
         />
 
         <div className="description">
@@ -182,7 +187,13 @@ export function PollCreateBase({
             setDescription(target.value)
           }
           error={!!invalidDescriptionBytes}
-          helperText={bytesHelperText(invalidDescriptionBytes)}
+          helperText={
+            invalidDescriptionBytes === 'less'
+              ? 'Proposal rational must be at least 4 bytes.'
+              : invalidDescriptionBytes === 'much'
+              ? 'Proposal rational cannot be longer than 1024 bytes.'
+              : undefined
+          }
         />
 
         <div className="description">
@@ -198,9 +209,11 @@ export function PollCreateBase({
           }
           error={!!invalidLinkBytes || !!invalidLinkProtocol}
           helperText={
-            bytesHelperText(invalidTitleBytes) ?? invalidLinkProtocol
-              ? 'Only allow starts with http:// or https://'
-              : undefined
+            invalidLinkBytes === 'less'
+              ? 'Information link must be at least 12 bytes.'
+              : invalidLinkBytes === 'much'
+              ? 'Information link cannot be longer than 128 bytes.'
+              : invalidLinkProtocol
           }
         />
 

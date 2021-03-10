@@ -91,7 +91,7 @@ export function TransactionHistorySection({
       ) : (
         <EmptyMessage>
           <h3>No transaction history</h3>
-          <p>Looks like you haven't made any transaction yet</p>
+          <p>Looks like you haven't made any transactions yet.</p>
         </EmptyMessage>
       )}
     </Section>
