@@ -221,8 +221,9 @@ function MintBase({ className }: MintProps) {
           level="info"
           hide={{ id: 'mint_peg', period: 1000 * 60 * 60 * 24 * 7 }}
         >
-          When exchange rate is lower than threshold, protocol charges peg
-          recovery fee for each Mint/Burn action.
+          When exchange rate is lower than threshold,
+          <br />
+          protocol charges peg recovery fee for each Mint/Burn action.
         </MessageBox>
       )}
 

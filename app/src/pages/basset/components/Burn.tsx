@@ -191,8 +191,9 @@ export function Burn() {
           level="info"
           hide={{ id: 'burn_peg', period: 1000 * 60 * 60 * 24 * 7 }}
         >
-          When exchange rate is lower than threshold, protocol charges peg
-          recovery fee for each Mint/Burn action.
+          When exchange rate is lower than threshold,
+          <br />
+          protocol charges peg recovery fee for each Mint/Burn action.
         </MessageBox>
       )}
 
@@ -311,7 +312,7 @@ export function Burn() {
         )}
         {!!pegRecoveryFee && (
           <TxFeeListItem label={<IconSpan>Peg Recovery Fee</IconSpan>}>
-            {formatLuna(demicrofy(pegRecoveryFee))} bLuna
+            {formatLuna(demicrofy(pegRecoveryFee))} Luna
           </TxFeeListItem>
         )}
         {burnAmount.length > 0 && (
