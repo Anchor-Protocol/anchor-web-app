@@ -1,4 +1,5 @@
 import { HumanAddr } from '@anchor-protocol/types/contracts/common';
+import { uANC } from '@anchor-protocol/types/currencies';
 import { Rate } from '@anchor-protocol/types/units';
 
 /**
@@ -13,7 +14,8 @@ export interface Config {
  */
 export interface ConfigResponse {
   owner: HumanAddr;
-  emission_cap: Rate;
+  emission_cap: uANC;
+  emission_floor: uANC;
   increment_multiplier: Rate;
   decrement_multiplier: Rate;
 }

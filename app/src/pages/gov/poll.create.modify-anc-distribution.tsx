@@ -6,12 +6,13 @@ import {
   formatExecuteMsgNumber,
   MAX_EXECUTE_MSG_DECIMALS,
 } from '@anchor-protocol/notation';
-import { Rate } from '@anchor-protocol/types';
+import { Rate, uANC } from '@anchor-protocol/types';
 import { UpdateConfig as DistributionModelUpdateConfig } from '@anchor-protocol/types/contracts/moneyMarket/distributionModel/updateConfig';
 import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
 import { InputAdornment } from '@material-ui/core';
 import big from 'big.js';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
+import { useDistributionModelConfig } from 'pages/gov/queries/distributionModelUpdateConfig';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 export function PollCreateModifyANCDistribution() {
@@ -19,6 +20,10 @@ export function PollCreateModifyANCDistribution() {
   // dependencies
   // ---------------------------------------------
   const address = useContractAddress();
+
+  const {
+    data: { distributionModelConfig },
+  } = useDistributionModelConfig();
 
   // ---------------------------------------------
   // states
@@ -29,6 +34,26 @@ export function PollCreateModifyANCDistribution() {
   );
   const [incrementMultiplier, setIncrementMultiplier] = useState<string>('');
   const [decrementMultiplier, setDecrementMultiplier] = useState<string>('');
+
+  const invalidBorrowerEmissionCap = useMemo(() => {
+    if (borrowerEmissionCap.length === 0 || !distributionModelConfig) {
+      return undefined;
+    }
+
+    return big(borrowerEmissionCap).lte(distributionModelConfig.emission_floor)
+      ? `emission_cap must be higher than emission_floor (${distributionModelConfig.emission_floor})`
+      : undefined;
+  }, [borrowerEmissionCap, distributionModelConfig]);
+
+  const invalidBorrowerEmissionFloor = useMemo(() => {
+    if (borrowerEmissionFloor.length === 0 || !distributionModelConfig) {
+      return undefined;
+    }
+
+    return big(borrowerEmissionFloor).gte(distributionModelConfig.emission_cap)
+      ? `emission_floor must be lower than emission_cap (${distributionModelConfig.emission_cap})`
+      : undefined;
+  }, [borrowerEmissionFloor, distributionModelConfig]);
 
   const invalidIncrementMultiplier = useMemo(() => {
     if (incrementMultiplier.length === 0) {
@@ -112,13 +137,13 @@ export function PollCreateModifyANCDistribution() {
       if (borrowerEmissionCap.length > 0) {
         distributionModelConfig['emission_cap'] = formatExecuteMsgNumber(
           borrowerEmissionCap,
-        ) as Rate;
+        ) as uANC;
       }
 
       if (borrowerEmissionFloor.length > 0) {
         distributionModelConfig['emission_floor'] = formatExecuteMsgNumber(
           borrowerEmissionFloor,
-        ) as Rate;
+        ) as uANC;
       }
 
       if (incrementMultiplier.length > 0) {
@@ -199,6 +224,8 @@ export function PollCreateModifyANCDistribution() {
         InputProps={{
           endAdornment: <InputAdornment position="end">uANC</InputAdornment>,
         }}
+        error={!!invalidBorrowerEmissionCap}
+        helperText={invalidBorrowerEmissionCap}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setBorrowerEmissionCap(target.value)
         }
@@ -226,6 +253,8 @@ export function PollCreateModifyANCDistribution() {
         InputProps={{
           endAdornment: <InputAdornment position="end">uANC</InputAdornment>,
         }}
+        error={!!invalidBorrowerEmissionFloor}
+        helperText={invalidBorrowerEmissionFloor}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setBorrowerEmissionFloor(target.value)
         }
