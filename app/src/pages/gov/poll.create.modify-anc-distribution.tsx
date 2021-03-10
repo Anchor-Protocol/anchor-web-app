@@ -1,4 +1,6 @@
 import { ExecuteMsg } from '@anchor-protocol/anchor.js';
+import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import {
   formatExecuteMsgNumber,
@@ -179,7 +181,12 @@ export function PollCreateModifyANCDistribution() {
         className="description"
         aria-disabled={inputDisabled.borrowerEmissionCap}
       >
-        <p>Borrower Emission Cap</p>
+        <p>
+          <IconSpan>
+            Borrower Emission Cap{' '}
+            <InfoTooltip>Maximum per-block ANC emission rate</InfoTooltip>
+          </IconSpan>
+        </p>
         <p />
       </div>
 
@@ -201,7 +208,12 @@ export function PollCreateModifyANCDistribution() {
         className="description"
         aria-disabled={inputDisabled.borrowerEmissionFloor}
       >
-        <p>Borrower Emission Floor</p>
+        <p>
+          <IconSpan>
+            Borrower Emission Floor{' '}
+            <InfoTooltip>Minimum per-block ANC emission rate</InfoTooltip>
+          </IconSpan>
+        </p>
         <p />
       </div>
 
@@ -223,7 +235,12 @@ export function PollCreateModifyANCDistribution() {
         className="description"
         aria-disabled={inputDisabled.incrementMultiplier}
       >
-        <p>Increment Multiplier</p>
+        <p>
+          <IconSpan>
+            Increment Multiplier{' '}
+            <InfoTooltip>Rate multiplier when increasing emission</InfoTooltip>
+          </IconSpan>
+        </p>
         <p />
       </div>
 
@@ -244,7 +261,12 @@ export function PollCreateModifyANCDistribution() {
         className="description"
         aria-disabled={inputDisabled.decrementMultiplier}
       >
-        <p>Decrement Multiplier</p>
+        <p>
+          <IconSpan>
+            Decrement Multiplier{' '}
+            <InfoTooltip>Rate multiplier when decreasing emission</InfoTooltip>
+          </IconSpan>
+        </p>
         <p />
       </div>
 

@@ -1,5 +1,7 @@
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { BorderButton } from '@anchor-protocol/neumorphism-ui/components/BorderButton';
+import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
 import { anchorToken } from '@anchor-protocol/types/contracts';
 import { useLocalStorage } from '@anchor-protocol/use-local-storage';
@@ -58,7 +60,15 @@ function PollsBase({ className }: PollsProps) {
   return (
     <section className={className}>
       <header>
-        <h2>Polls</h2>
+        <h2>
+          <IconSpan>
+            Polls{' '}
+            <InfoTooltip>
+              Staked ANC can be used to exercise voting power in polls that are
+              currently in progress
+            </InfoTooltip>
+          </IconSpan>
+        </h2>
 
         <button
           className="icon-button"

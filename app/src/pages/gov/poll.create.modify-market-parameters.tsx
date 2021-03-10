@@ -1,5 +1,7 @@
 import { ExecuteMsg } from '@anchor-protocol/anchor.js';
 import { floor } from '@anchor-protocol/big-math';
+import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import { formatExecuteMsgNumber } from '@anchor-protocol/notation';
 import { Rate } from '@anchor-protocol/types';
@@ -236,7 +238,12 @@ export function PollCreateModifyMarketParameters() {
         className="description"
         aria-disabled={inputDisabled.targetDepositRate}
       >
-        <p>Target Deposit Rate</p>
+        <p>
+          <IconSpan>
+            Target Deposit Rate{' '}
+            <InfoTooltip>Target stablecoin deposit rate for Anchor</InfoTooltip>
+          </IconSpan>
+        </p>
         <p />
       </div>
 
@@ -260,7 +267,14 @@ export function PollCreateModifyMarketParameters() {
         className="description"
         aria-disabled={inputDisabled.thresholdDepositRate}
       >
-        <p>Threshold Deposit Rate</p>
+        <p>
+          <IconSpan>
+            Threshold Deposit Rate{' '}
+            <InfoTooltip>
+              Threshold deposit rate to trigger interest buffer distribution
+            </InfoTooltip>
+          </IconSpan>
+        </p>
         <p />
       </div>
 
@@ -284,7 +298,15 @@ export function PollCreateModifyMarketParameters() {
         className="description"
         aria-disabled={inputDisabled.bufferDistributionFactor}
       >
-        <p>Buffer Distribution Factor</p>
+        <p>
+          <IconSpan>
+            Buffer Distribution Factor{' '}
+            <InfoTooltip>
+              Maximum portion of interest buffer that can be distributed in an
+              epoch
+            </InfoTooltip>
+          </IconSpan>
+        </p>
         <p />
       </div>
 
@@ -308,7 +330,14 @@ export function PollCreateModifyMarketParameters() {
         className="description"
         aria-disabled={inputDisabled.maxBorrowFactor}
       >
-        <p>Max Borrow Factor</p>
+        <p>
+          <IconSpan>
+            Max Borrow Factor{' '}
+            <InfoTooltip>
+              Maximum portion of stablecoin liquidity available to borrower
+            </InfoTooltip>
+          </IconSpan>
+        </p>
         <p />
       </div>
 
@@ -332,7 +361,14 @@ export function PollCreateModifyMarketParameters() {
         className="description"
         aria-disabled={inputDisabled.validPriceTimeframe}
       >
-        <p>Valid Price Timeframe</p>
+        <p>
+          <IconSpan>
+            Valid Price Timeframe{' '}
+            <InfoTooltip>
+              Window of time before price data is considered outdated
+            </InfoTooltip>
+          </IconSpan>
+        </p>
         <p />
       </div>
 

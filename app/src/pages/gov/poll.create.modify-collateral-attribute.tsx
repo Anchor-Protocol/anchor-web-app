@@ -1,4 +1,6 @@
 import { ExecuteMsg } from '@anchor-protocol/anchor.js';
+import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import { formatExecuteMsgNumber } from '@anchor-protocol/notation';
@@ -95,7 +97,14 @@ export function PollCreateModifyCollateralAttribute() {
       </NativeSelect>
 
       <div className="description">
-        <p>Max LTV</p>
+        <p>
+          <IconSpan>
+            Max LTV{' '}
+            <InfoTooltip>
+              Maximum loan to value ratio allowed for collateral
+            </InfoTooltip>
+          </IconSpan>
+        </p>
         <p />
       </div>
 

@@ -1,4 +1,6 @@
 import { ExecuteMsg } from '@anchor-protocol/anchor.js';
+import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
 import {
@@ -85,7 +87,11 @@ export function PollCreateSpendCommunityPool() {
       onCreateMsgs={() => createMsgs(recipient, amount)}
     >
       <div className="description">
-        <p>Recipient</p>
+        <p>
+          <IconSpan>
+            Recipient <InfoTooltip>Grant recipient address</InfoTooltip>
+          </IconSpan>
+        </p>
         <p />
       </div>
 
@@ -98,7 +104,11 @@ export function PollCreateSpendCommunityPool() {
       />
 
       <div className="description">
-        <p>Amount</p>
+        <p>
+          <IconSpan>
+            Amount <InfoTooltip>Grant amount (in units of ANC)</InfoTooltip>
+          </IconSpan>
+        </p>
         <p />
       </div>
 

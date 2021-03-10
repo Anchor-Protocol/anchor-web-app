@@ -1,4 +1,6 @@
 import { ExecuteMsg } from '@anchor-protocol/anchor.js';
+import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import {
   formatExecuteMsgNumber,
@@ -97,7 +99,14 @@ export function PollCreateModifyBorrowInterest() {
       onCreateMsgs={() => createMsgs(baseBorrowRate, interestMultiplier)}
     >
       <div className="description" aria-disabled={inputDisabled.baseBorrowRate}>
-        <p>Base Borrow Rate</p>
+        <p>
+          <IconSpan>
+            Base Borrow Rate{' '}
+            <InfoTooltip>
+              Minimum per-block interest rate to borrowers
+            </InfoTooltip>
+          </IconSpan>
+        </p>
         <p />
       </div>
 
@@ -119,7 +128,14 @@ export function PollCreateModifyBorrowInterest() {
         className="description"
         aria-disabled={inputDisabled.interestMultiplier}
       >
-        <p>Interest Multiplier</p>
+        <p>
+          <IconSpan>
+            Interest Multiplier{' '}
+            <InfoTooltip>
+              Multiplier between utilization ratio and per-block borrow rate
+            </InfoTooltip>
+          </IconSpan>
+        </p>
         <p />
       </div>
 
