@@ -14,6 +14,7 @@ import {
 import { ANC, HumanAddr, uANC } from '@anchor-protocol/types';
 import { Spend } from '@anchor-protocol/types/contracts/anchorToken/community/spend';
 import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
+import { AccAddress } from '@terra-money/terra.js';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
 import { useCommunityAncBalance } from './queries/communityAncBalance';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
@@ -35,7 +36,9 @@ export function PollCreateSpendCommunityPool() {
   } = useCommunityAncBalance();
 
   const invalidAmount = useMemo(() => {
-    if (amount.length === 0 || !communityAncBalance) return undefined;
+    if (amount.length === 0 || !communityAncBalance) {
+      return undefined;
+    }
 
     const uanc = microfy(amount as ANC);
 
@@ -44,6 +47,14 @@ export function PollCreateSpendCommunityPool() {
       : undefined;
   }, [amount, communityAncBalance]);
 
+  const invalidRecipient = useMemo(() => {
+    if (!recipient) {
+      return undefined;
+    }
+
+    return !AccAddress.validate(recipient) ? 'Not valid address' : undefined;
+  }, [recipient]);
+
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
@@ -51,7 +62,7 @@ export function PollCreateSpendCommunityPool() {
     (recipient: string, amount: string): ExecuteMsg[] => {
       const spend: Spend['spend'] = {
         recipient: recipient as HumanAddr,
-        amount: amount as uANC,
+        amount: microfy(amount as ANC).toFixed() as uANC,
       };
 
       const msgs: Omit<ExecuteMsg, 'order'>[] = [];
@@ -82,7 +93,10 @@ export function PollCreateSpendCommunityPool() {
     <PollCreateBase
       pollTitle="Spend Community Pool"
       submitDisabled={
-        recipient.length === 0 || amount.length === 0 || !!invalidAmount
+        recipient.length === 0 ||
+        amount.length === 0 ||
+        !!invalidAmount ||
+        !!invalidRecipient
       }
       onCreateMsgs={() => createMsgs(recipient, amount)}
     >
@@ -98,6 +112,8 @@ export function PollCreateSpendCommunityPool() {
       <TextInput
         placeholder="Address"
         value={recipient}
+        error={!!invalidRecipient}
+        helperText={invalidRecipient}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setRecipient(target.value)
         }
