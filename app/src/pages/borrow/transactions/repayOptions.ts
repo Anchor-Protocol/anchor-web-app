@@ -8,10 +8,6 @@ import {
   timeout,
 } from '@anchor-protocol/broadcastable-operation';
 import { WalletStatus } from '@anchor-protocol/wallet-provider';
-import { StdFee } from '@terra-money/terra.js';
-import { renderBroadcastTransaction } from 'components/TransactionRenderer';
-import { pickRepayResult } from 'pages/borrow/transactions/pickRepayResult';
-import { refetchMarket } from 'pages/borrow/transactions/refetchMarket';
 import { createContractMsg } from '@anchor-protocol/web-contexts/transactions/createContractMsg';
 import { createOptions } from '@anchor-protocol/web-contexts/transactions/createOptions';
 import { getTxInfo } from '@anchor-protocol/web-contexts/transactions/getTxInfo';
@@ -21,6 +17,11 @@ import {
   takeTxFee,
 } from '@anchor-protocol/web-contexts/transactions/takeTxFee';
 import { parseTxResult } from '@anchor-protocol/web-contexts/transactions/tx';
+import { StdFee } from '@terra-money/terra.js';
+import { renderBroadcastTransaction } from 'components/TransactionRenderer';
+import { passTxInfo } from 'pages/borrow/transactions/passTxInfo';
+import { pickRepayResult } from 'pages/borrow/transactions/pickRepayResult';
+import { refetchMarket } from 'pages/borrow/transactions/refetchMarket';
 
 interface DependencyList {
   walletStatus: WalletStatus;
@@ -47,8 +48,9 @@ export const repayOptions = createOperationOptions({
     })), // -> CreateTxOptions
     timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<StringifiedTxResult>
     parseTxResult, // -> TxResult
+    getTxInfo(client, signal), // -> { TxResult, TxInfo }
     merge(
-      getTxInfo(client, signal), // -> { TxResult, TxInfo }
+      passTxInfo,
       refetchMarket(address, client, walletStatus), // -> { loanAmount, borrowInfo... }
       injectTxFee(storage), // -> { txFee }
     ),
