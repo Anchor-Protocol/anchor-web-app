@@ -217,8 +217,8 @@ function ComponentBase({
   const title = (
     <h1>
       <IconSpan>
-        Redeem Collateral{' '}
-        <InfoTooltip>Redeem bAsset to your wallet</InfoTooltip>
+        Withdraw Collateral{' '}
+        <InfoTooltip>Withdraw bAsset to your wallet</InfoTooltip>
       </IconSpan>
     </h1>
   );
@@ -252,7 +252,7 @@ function ComponentBase({
           value={redeemAmount}
           maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
-          label="REDEEM AMOUNT"
+          label="WITHDRAW AMOUNT"
           error={!!invalidRedeemAmount}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateRedeemAmount(target.value)
