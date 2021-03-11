@@ -10,13 +10,13 @@ import {
   timeout,
 } from '@anchor-protocol/broadcastable-operation';
 import { HumanAddr } from '@anchor-protocol/types';
-import { MsgExecuteContract, StdFee } from '@terra-money/terra.js';
-import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { createOptions } from '@anchor-protocol/web-contexts/transactions/createOptions';
 import { getTxInfo } from '@anchor-protocol/web-contexts/transactions/getTxInfo';
-import { pickEmptyResult } from '@anchor-protocol/web-contexts/transactions/pickEmptyResult';
 import { postContractMsg } from '@anchor-protocol/web-contexts/transactions/postContractMsg';
 import { parseTxResult } from '@anchor-protocol/web-contexts/transactions/tx';
+import { MsgExecuteContract, StdFee } from '@terra-money/terra.js';
+import { renderBroadcastTransaction } from 'components/TransactionRenderer';
+import { pickAllClaimResult } from 'pages/gov/transactions/pickAllClaimResult';
 
 export const allClaimOptions = createOperationOptions({
   id: 'gov/allClaim',
@@ -71,7 +71,7 @@ export const allClaimOptions = createOperationOptions({
     timeout(postContractMsg(post), 1000 * 60 * 20), // -> Promise<StringifiedTxResult>
     parseTxResult, // -> TxResult
     merge(getTxInfo(client, signal), () => ({ fixedGas })), // -> { TxResult, TxInfo, fixedGas }
-    pickEmptyResult, // -> TransactionResult
+    pickAllClaimResult, // -> TransactionResult
   ],
   renderBroadcast: renderBroadcastTransaction,
   //breakOnError: true,
