@@ -1,4 +1,5 @@
 import { useOperation } from '@anchor-protocol/broadcastable-operation';
+import { isZero } from '@anchor-protocol/is-zero';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
 import {
@@ -157,6 +158,11 @@ export function Swap() {
         setBurnAmount('' as bLuna);
 
         resolveSimulation(null);
+      } else if (isZero(nextBurnAmount)) {
+        setGetAmount('' as Luna);
+        setBurnAmount(nextBurnAmount as bLuna);
+
+        resolveSimulation(null);
       } else {
         const burnAmount: bLuna = nextBurnAmount as bLuna;
         setBurnAmount(burnAmount);
@@ -196,6 +202,11 @@ export function Swap() {
       if (nextGetAmount.trim().length === 0) {
         setBurnAmount('' as bLuna);
         setGetAmount('' as Luna);
+
+        resolveSimulation(null);
+      } else if (isZero(nextGetAmount)) {
+        setBurnAmount('' as bLuna);
+        setGetAmount(nextGetAmount as Luna);
 
         resolveSimulation(null);
       } else {
