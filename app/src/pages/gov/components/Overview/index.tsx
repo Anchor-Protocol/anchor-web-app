@@ -7,11 +7,9 @@ import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { TextButton } from '@anchor-protocol/neumorphism-ui/components/TextButton';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import {
-  demicrofy,
-  formatANCWithPostfixUnits,
-  formatLP,
   formatRateToPercentage,
   formatUSTWithPostfixUnits,
+  formatUTokenWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import { Rate, uANC } from '@anchor-protocol/types';
@@ -136,7 +134,7 @@ function OverviewBase({ className }: OverviewProps) {
           </IconSpan>
         </h2>
         <div>
-          {formatANCWithPostfixUnits(demicrofy(totalStaked))} ANC{' '}
+          {formatUTokenWithPostfixUnits(totalStaked)} ANC{' '}
           <sub>
             ({formatRateToPercentage(totalStakedRate)}
             %)
@@ -213,7 +211,7 @@ function OverviewBase({ className }: OverviewProps) {
             </Tooltip>
             <p>
               {lpStakingState?.total_bond_amount
-                ? formatLP(demicrofy(lpStakingState.total_bond_amount))
+                ? formatUTokenWithPostfixUnits(lpStakingState.total_bond_amount)
                 : '0'}
             </p>
           </div>

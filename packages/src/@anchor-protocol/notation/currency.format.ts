@@ -1,3 +1,4 @@
+import { MICRO } from '@anchor-protocol/notation/currency';
 import {
   ANC,
   AncUstLP,
@@ -6,7 +7,9 @@ import {
   bLunaLunaLP,
   LPToken,
   Luna,
+  Token,
   UST,
+  uToken,
 } from '@anchor-protocol/types';
 import big, { BigSource } from 'big.js';
 import { formatFluidDecimalPoints, FormatOptions } from './unit.format';
@@ -125,6 +128,32 @@ export function formatLunaWithPostfixUnits(
   options: FormatOptions = { delimiter: true },
 ): string {
   const bn = big(n);
+
+  if (bn.gte(1000000)) {
+    return formatFluidDecimalPoints(bn.div(1000000), 2, options) + 'M';
+  } else {
+    return formatFluidDecimalPoints(bn, 2, options);
+  }
+}
+
+export function formatTokenWithPostfixUnits(
+  n: Token<BigSource>,
+  options: FormatOptions = { delimiter: true },
+): string {
+  const bn = big(n);
+
+  if (bn.gte(1000000)) {
+    return formatFluidDecimalPoints(bn.div(1000000), 2, options) + 'M';
+  } else {
+    return formatFluidDecimalPoints(bn, 2, options);
+  }
+}
+
+export function formatUTokenWithPostfixUnits(
+  n: uToken<BigSource>,
+  options: FormatOptions = { delimiter: true },
+): string {
+  const bn = big(n).div(MICRO);
 
   if (bn.gte(1000000)) {
     return formatFluidDecimalPoints(bn.div(1000000), 2, options) + 'M';
