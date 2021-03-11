@@ -19,6 +19,7 @@ import { ChevronRight } from '@material-ui/icons';
 import big, { Big } from 'big.js';
 import { Circles } from 'components/Circles';
 import { screen } from 'env';
+import { useBorrowAPY } from 'pages/borrow/queries/borrowAPY';
 import {
   ancGovernancePathname,
   ancUstLpPathname,
@@ -39,6 +40,10 @@ function OverviewBase({ className }: OverviewProps) {
   const {
     data: { ancPrice },
   } = useANCPrice();
+
+  const {
+    data: { govRewards, lpRewards },
+  } = useBorrowAPY();
 
   const {
     data: {
@@ -148,7 +153,10 @@ function OverviewBase({ className }: OverviewProps) {
             <Label>APY</Label>
           </Tooltip>
           <span>
-            <s>8.32%</s>
+            {govRewards && govRewards.length > 0
+              ? formatRateToPercentage(govRewards[0].CurrentAPY)
+              : 0}{' '}
+            %
           </span>
         </div>
         <div className="staking-buttons">
@@ -190,7 +198,10 @@ function OverviewBase({ className }: OverviewProps) {
               <Label>APY</Label>
             </Tooltip>
             <p>
-              <s>12.39%</s>
+              {lpRewards && lpRewards.length > 0
+                ? formatRateToPercentage(lpRewards[0].APY)
+                : 0}{' '}
+              %
             </p>
           </div>
           <div>

@@ -60,12 +60,11 @@ type AnchorExchangeRates {
   Timestamp: Int
 }
 
-type AnchorGovRewards {
-  Amount: String
+type AnchorGovRewardRecords {
   CurrentAPY: String
+  GovShareIndex: String
   Height: Int
   Timestamp: Int
-  TxHash: String
 }
 
 type AnchorLPRewards {
@@ -1965,6 +1964,28 @@ enum Order {
 
 type RootQuery {
   AnchorBorrowerDistributionAPYs(
+    """index Timestamp with type uint64"""
+    Timestamp: Int
+
+    """Ranged - index Timestamp with type uint64"""
+    Timestamp_range: [Int]
+
+    """index Height with type uint64"""
+    Height: Int
+
+    """Ranged - index Height with type uint64"""
+    Height_range: [Int]
+
+    """Limit"""
+    Limit: Int
+
+    """Sort order"""
+    Order: Order
+  ): [AnchorBorrowerDistributionAPYs]
+  AnchorDepositRateHistory(
+    """Sort order"""
+    Order: Order
+
     """index Height with type uint64"""
     Height: Int
 
@@ -1976,16 +1997,6 @@ type RootQuery {
 
     """Ranged - index Timestamp with type uint64"""
     Timestamp_range: [Int]
-
-    """Limit"""
-    Limit: Int
-
-    """Sort order"""
-    Order: Order
-  ): [AnchorBorrowerDistributionAPYs]
-  AnchorDepositRateHistory(
-    """Ranged - index Height with type uint64"""
-    Height_range: [Int]
 
     """index Updated with type bool"""
     Updated: Boolean
@@ -1995,22 +2006,34 @@ type RootQuery {
 
     """Limit"""
     Limit: Int
-
-    """Sort order"""
-    Order: Order
-
+  ): [AnchorDepositRateHistory]
+  AnchorExchangeRates(
     """index Timestamp with type uint64"""
     Timestamp: Int
 
     """Ranged - index Timestamp with type uint64"""
     Timestamp_range: [Int]
 
-    """index Height with type uint64"""
-    Height: Int
-  ): [AnchorDepositRateHistory]
-  AnchorExchangeRates(
+    """Ranged - index ATerraContract with type string"""
+    ATerraContract_range: [String]
+
+    """Sort order"""
+    Order: Order
+
     """index StableDenom with type string"""
     StableDenom: String
+
+    """Ranged - index ExchangeRate with type string"""
+    ExchangeRate_range: [String]
+
+    """Ranged - index Height with type uint64"""
+    Height_range: [Int]
+
+    """index ATerraContract with type string"""
+    ATerraContract: String
+
+    """Limit"""
+    Limit: Int
 
     """Ranged - index StableDenom with type string"""
     StableDenom_range: [String]
@@ -2018,34 +2041,16 @@ type RootQuery {
     """index ExchangeRate with type string"""
     ExchangeRate: String
 
-    """Limit"""
-    Limit: Int
-
-    """Ranged - index Height with type uint64"""
-    Height_range: [Int]
-
-    """Ranged - index Timestamp with type uint64"""
-    Timestamp_range: [Int]
-
-    """index ATerraContract with type string"""
-    ATerraContract: String
-
-    """Ranged - index ATerraContract with type string"""
-    ATerraContract_range: [String]
-
     """index Height with type uint64"""
     Height: Int
-
-    """index Timestamp with type uint64"""
-    Timestamp: Int
-
-    """Ranged - index ExchangeRate with type string"""
-    ExchangeRate_range: [String]
-
-    """Sort order"""
-    Order: Order
   ): [AnchorExchangeRates]
-  AnchorGovRewards(
+  AnchorGovRewardRecords(
+    """index Height with type uint64"""
+    Height: Int
+
+    """Ranged - index Height with type uint64"""
+    Height_range: [Int]
+
     """index Timestamp with type uint64"""
     Timestamp: Int
 
@@ -2057,14 +2062,14 @@ type RootQuery {
 
     """Sort order"""
     Order: Order
-
-    """index Height with type uint64"""
-    Height: Int
-
-    """Ranged - index Height with type uint64"""
-    Height_range: [Int]
-  ): [AnchorGovRewards]
+  ): [AnchorGovRewardRecords]
   AnchorLPRewards(
+    """Sort order"""
+    Order: Order
+
+    """index Height with type uint64"""
+    Height: Int
+
     """Ranged - index Height with type uint64"""
     Height_range: [Int]
 
@@ -2076,12 +2081,6 @@ type RootQuery {
 
     """Limit"""
     Limit: Int
-
-    """Sort order"""
-    Order: Order
-
-    """index Height with type uint64"""
-    Height: Int
   ): [AnchorLPRewards]
 
   """(proxy) """
@@ -2104,11 +2103,32 @@ type RootQuery {
 
   """(proxy) """
   Blocks(
+    """Sort order"""
+    Order: Order
+
+    """index TimestampUTC with type uint64"""
+    TimestampUTC: Int
+
+    """index Memo with type string"""
+    Memo: String
+
+    """index TxHash with type string"""
+    TxHash: String
+
     """index Success with type bool"""
     Success: Boolean
 
     """Ranged - index Success with type bool"""
     Success_range: [Boolean]
+
+    """Ranged - index TimestampUTC with type uint64"""
+    TimestampUTC_range: [Int]
+
+    """Ranged - index TxHash with type string"""
+    TxHash_range: [String]
+
+    """Ranged - index Memo with type string"""
+    Memo_range: [String]
 
     """Height is the absolute block height when indexed"""
     Height: Int
@@ -2118,27 +2138,6 @@ type RootQuery {
 
     """Limit"""
     Limit: Int
-
-    """index TimestampUTC with type uint64"""
-    TimestampUTC: Int
-
-    """index TxHash with type string"""
-    TxHash: String
-
-    """Ranged - index Memo with type string"""
-    Memo_range: [String]
-
-    """Ranged - index TimestampUTC with type uint64"""
-    TimestampUTC_range: [Int]
-
-    """Ranged - index TxHash with type string"""
-    TxHash_range: [String]
-
-    """Sort order"""
-    Order: Order
-
-    """index Memo with type string"""
-    Memo: String
   ): [Blocks]
 
   """(proxy) """
@@ -2149,23 +2148,26 @@ type RootQuery {
 
   """(proxy) """
   CW20Transfers(
-    """index Contract with type string"""
-    Contract: String
-
     """Ranged - index Amount with type string"""
     Amount_range: [String]
-
-    """index Amount with type string"""
-    Amount: String
-
-    """index Recipient with type string"""
-    Recipient: String
 
     """index Sender with type string"""
     Sender: String
 
-    """Height is the absolute block height when indexed"""
-    Height: Int
+    """Ranged - Height is the absolute block height when indexed"""
+    Height_range: [Int]
+
+    """Ranged - index Recipient with type string"""
+    Recipient_range: [String]
+
+    """Sort order"""
+    Order: Order
+
+    """index TransferType with type string"""
+    TransferType: String
+
+    """index Amount with type string"""
+    Amount: String
 
     """Ranged - index Sender with type string"""
     Sender_range: [String]
@@ -2176,26 +2178,23 @@ type RootQuery {
     """Ranged - index TransferType with type string"""
     TransferType_range: [String]
 
-    """Ranged - index Contract with type string"""
-    Contract_range: [String]
-
-    """index TransferType with type string"""
-    TransferType: String
-
     """Ranged - index Address with type string"""
     Address_range: [String]
 
     """Limit"""
     Limit: Int
 
-    """Ranged - Height is the absolute block height when indexed"""
-    Height_range: [Int]
+    """index Recipient with type string"""
+    Recipient: String
 
-    """Ranged - index Recipient with type string"""
-    Recipient_range: [String]
+    """Height is the absolute block height when indexed"""
+    Height: Int
 
-    """Sort order"""
-    Order: Order
+    """index Contract with type string"""
+    Contract: String
+
+    """Ranged - index Contract with type string"""
+    Contract_range: [String]
   ): [CW20Transfers]
 
   """(proxy) """
@@ -2241,7 +2240,7 @@ type RootQuery {
   GovProposalsProposalIDDeposits(ProposalID: String): GetGovProposalsProposalIDDepositsPayload
 
   """(proxy) """
-  GovProposalsProposalIDDepositsDepositor(Depositor: String, ProposalID: String): GetGovProposalsProposalIDDepositsDepositorPayload
+  GovProposalsProposalIDDepositsDepositor(ProposalID: String, Depositor: String): GetGovProposalsProposalIDDepositsDepositorPayload
 
   """(proxy) """
   GovProposalsProposalIDProposer(ProposalID: String): GetGovProposalsProposalIDProposerPayload
@@ -2255,14 +2254,14 @@ type RootQuery {
   """(proxy) """
   GovProposalsProposalIDVotesVoter(ProposalID: String, Voter: String): GetGovProposalsProposalIDVotesVoterPayload
   InterestEarnedUserRecords(
-    """index Address with type string"""
-    Address: String
-
     """Ranged - index Timestamp with type uint64"""
     Timestamp_range: [Int]
 
     """Ranged - index Height with type uint64"""
     Height_range: [Int]
+
+    """index Address with type string"""
+    Address: String
 
     """Ranged - index Address with type string"""
     Address_range: [String]
@@ -2270,11 +2269,11 @@ type RootQuery {
     """index StableDenom with type string"""
     StableDenom: String
 
-    """Ranged - index StableDenom with type string"""
-    StableDenom_range: [String]
-
     """index Timestamp with type uint64"""
     Timestamp: Int
+
+    """Ranged - index StableDenom with type string"""
+    StableDenom_range: [String]
 
     """index Height with type uint64"""
     Height: Int
@@ -2374,7 +2373,7 @@ type RootQuery {
   StakingDelegatorsDelegatorAddrDelegations(DelegatorAddr: String): GetStakingDelegatorsDelegatorAddrDelegationsPayload
 
   """(proxy) """
-  StakingDelegatorsDelegatorAddrDelegationsValidatorAddr(DelegatorAddr: String, ValidatorAddr: String): GetStakingDelegatorsDelegatorAddrDelegationsValidatorAddrPayload
+  StakingDelegatorsDelegatorAddrDelegationsValidatorAddr(ValidatorAddr: String, DelegatorAddr: String): GetStakingDelegatorsDelegatorAddrDelegationsValidatorAddrPayload
 
   """(proxy) """
   StakingDelegatorsDelegatorAddrTxs(DelegatorAddr: String): [GetStakingDelegatorsDelegatorAddrTxsPayload]
@@ -2424,56 +2423,8 @@ type RootQuery {
     """index InDenom with type string"""
     InDenom: String
 
-    """index OutAmount with type string"""
-    OutAmount: String
-
-    """Ranged - index Height with type uint64"""
-    Height_range: [Int]
-
-    """index InAmount with type string"""
-    InAmount: String
-
-    """Ranged - index InAmount with type string"""
-    InAmount_range: [String]
-
-    """index Contract with type string"""
-    Contract: String
-
-    """Limit"""
-    Limit: Int
-
-    """index Address with type string"""
-    Address: String
-
-    """Sort order"""
-    Order: Order
-
-    """Ranged - index Contract with type string"""
-    Contract_range: [String]
-
-    """Ranged - index Timestamp with type uint64"""
-    Timestamp_range: [Int]
-
-    """index Height with type uint64"""
-    Height: Int
-
     """index TxHash with type string"""
     TxHash: String
-
-    """index Timestamp with type uint64"""
-    Timestamp: Int
-
-    """Ranged - index TransactionType with type string"""
-    TransactionType_range: [String]
-
-    """index TransactionType with type string"""
-    TransactionType: String
-
-    """Ranged - index InDenom with type string"""
-    InDenom_range: [String]
-
-    """Ranged - index OutAmount with type string"""
-    OutAmount_range: [String]
 
     """Ranged - index TxHash with type string"""
     TxHash_range: [String]
@@ -2481,11 +2432,59 @@ type RootQuery {
     """index OutDenom with type string"""
     OutDenom: String
 
-    """Ranged - index OutDenom with type string"""
-    OutDenom_range: [String]
+    """index Height with type uint64"""
+    Height: Int
+
+    """Limit"""
+    Limit: Int
+
+    """Ranged - index Contract with type string"""
+    Contract_range: [String]
+
+    """index OutAmount with type string"""
+    OutAmount: String
+
+    """Ranged - index OutAmount with type string"""
+    OutAmount_range: [String]
+
+    """Ranged - index InAmount with type string"""
+    InAmount_range: [String]
+
+    """Ranged - index Timestamp with type uint64"""
+    Timestamp_range: [Int]
+
+    """Ranged - index Height with type uint64"""
+    Height_range: [Int]
+
+    """index Address with type string"""
+    Address: String
 
     """Ranged - index Address with type string"""
     Address_range: [String]
+
+    """Ranged - index InDenom with type string"""
+    InDenom_range: [String]
+
+    """index Contract with type string"""
+    Contract: String
+
+    """index TransactionType with type string"""
+    TransactionType: String
+
+    """Ranged - index TransactionType with type string"""
+    TransactionType_range: [String]
+
+    """index Timestamp with type uint64"""
+    Timestamp: Int
+
+    """Sort order"""
+    Order: Order
+
+    """index InAmount with type string"""
+    InAmount: String
+
+    """Ranged - index OutDenom with type string"""
+    OutDenom_range: [String]
   ): [TransactionHistory]
 
   """(proxy) """
@@ -2511,6 +2510,12 @@ type RootQuery {
 
   """(proxy) """
   TxInfos(
+    """Ranged - Height is the absolute block height when indexed"""
+    Height_range: [Int]
+
+    """Ranged - index TimestampUTC with type uint64"""
+    TimestampUTC_range: [Int]
+
     """index Success with type bool"""
     Success: Boolean
 
@@ -2520,26 +2525,20 @@ type RootQuery {
     """index TimestampUTC with type uint64"""
     TimestampUTC: Int
 
+    """Ranged - index TxHash with type string"""
+    TxHash_range: [String]
+
     """Ranged - index Success with type bool"""
     Success_range: [Boolean]
-
-    """Limit"""
-    Limit: Int
 
     """Height is the absolute block height when indexed"""
     Height: Int
 
-    """Ranged - Height is the absolute block height when indexed"""
-    Height_range: [Int]
-
-    """Ranged - index TimestampUTC with type uint64"""
-    TimestampUTC_range: [Int]
-
     """index TxHash with type string"""
     TxHash: String
 
-    """Ranged - index TxHash with type string"""
-    TxHash_range: [String]
+    """Limit"""
+    Limit: Int
 
     """index Memo with type string"""
     Memo: String
@@ -2570,7 +2569,7 @@ type RootQuery {
   WasmContractsContractAddressStore(ContractAddress: String, QueryMsg: String): GetWasmContractsContractAddressStorePayload
 
   """(proxy) """
-  WasmContractsContractAddressStoreRaw(ContractAddress: String, Key: String, Subkey: String): GetWasmContractsContractAddressStoreRawPayload
+  WasmContractsContractAddressStoreRaw(Subkey: String, ContractAddress: String, Key: String): GetWasmContractsContractAddressStoreRawPayload
 
   """(proxy) """
   WasmParameters: GetWasmParametersPayload

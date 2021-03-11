@@ -7,11 +7,13 @@ import {
   demicrofy,
   formatANCWithPostfixUnits,
   formatLP,
+  formatRateToPercentage,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { uANC, uUST } from '@anchor-protocol/types';
 import { MenuItem } from '@material-ui/core';
 import big, { Big } from 'big.js';
+import { useBorrowAPY } from 'pages/borrow/queries/borrowAPY';
 import { MoreMenu } from 'pages/gov/components/MoreMenu';
 import {
   ancGovernancePathname,
@@ -25,7 +27,7 @@ import { useClaimableUstBorrow } from 'pages/gov/queries/claimableUstBorrow';
 import { useLPStakingState } from 'pages/gov/queries/lpStakingState';
 import { useRewardsAncGovernance } from 'pages/gov/queries/rewardsAncGovernance';
 import { useTotalStaked } from 'pages/gov/queries/totalStaked';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -60,6 +62,10 @@ export function RewardsBase({ className }: RewardsProps) {
   const {
     data: { borrowerInfo, marketState },
   } = useClaimableUstBorrow();
+
+  const {
+    data: { govRewards, lpRewards, borrowerDistributionAPYs },
+  } = useBorrowAPY();
 
   // ---------------------------------------------
   // logics
@@ -204,7 +210,10 @@ export function RewardsBase({ className }: RewardsProps) {
             <tr>
               <td>ANC Governance</td>
               <td>
-                <s>134.84%</s>
+                {govRewards && govRewards.length > 0
+                  ? formatRateToPercentage(govRewards[0].CurrentAPY)
+                  : 0}{' '}
+                %
               </td>
               <td>
                 {govGorvernance?.staked
@@ -270,7 +279,10 @@ export function RewardsBase({ className }: RewardsProps) {
                 </p>
               </td>
               <td>
-                <s>134.84%</s>
+                {lpRewards && lpRewards.length > 0
+                  ? formatRateToPercentage(lpRewards[0].APY)
+                  : 0}{' '}
+                %
               </td>
               <td>
                 {ancUstLp?.staked ? formatLP(demicrofy(ancUstLp.staked)) : 0} LP
@@ -325,7 +337,12 @@ export function RewardsBase({ className }: RewardsProps) {
             <tr>
               <td>UST Borrow</td>
               <td>
-                <s>134.84%</s>
+                {borrowerDistributionAPYs && borrowerDistributionAPYs.length > 0
+                  ? formatRateToPercentage(
+                      borrowerDistributionAPYs[0].DistributionAPY,
+                    )
+                  : 0}{' '}
+                %
               </td>
               <td></td>
               <td></td>
