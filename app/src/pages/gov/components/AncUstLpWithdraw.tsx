@@ -1,4 +1,5 @@
 import { useOperation } from '@anchor-protocol/broadcastable-operation';
+import { isZero } from '@anchor-protocol/is-zero';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
@@ -89,6 +90,9 @@ export function AncUstLpWithdraw() {
         nextLpAmount.length === 0
       ) {
         setLpAmount('' as AncUstLP);
+        setSimulation(null);
+        return;
+      } else if (isZero(nextLpAmount)) {
         setSimulation(null);
         return;
       }

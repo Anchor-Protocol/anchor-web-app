@@ -1,4 +1,5 @@
 import { useOperation } from '@anchor-protocol/broadcastable-operation';
+import { isZero } from '@anchor-protocol/is-zero';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import {
@@ -100,6 +101,10 @@ export function AncUstLpProvide() {
         setUstAmount('' as UST);
         setSimulation(null);
         return;
+      } else if (isZero(nextAncAmount)) {
+        setUstAmount('' as UST);
+        setSimulation(null);
+        return;
       }
 
       const { ustAmount, ...nextSimulation } = ancUstLpAncSimulation(
@@ -121,6 +126,10 @@ export function AncUstLpProvide() {
       if (!ancPrice || nextUstAmount.length === 0) {
         setAncAmount('' as ANC);
         setUstAmount('' as UST);
+        setSimulation(null);
+        return;
+      } else if (isZero(nextUstAmount)) {
+        setAncAmount('' as ANC);
         setSimulation(null);
         return;
       }
