@@ -5,7 +5,7 @@ import {
 import { ContractAddress, HumanAddr } from '@anchor-protocol/types';
 import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { createContractAddress } from './contexts/contract';
-import { contractAddresses } from './env';
+import { tequilaContractAddresses } from './env';
 
 export const testClient = new ApolloClient({
   uri: 'https://tequila-mantle.anchorprotocol.com',
@@ -15,12 +15,12 @@ export const testClient = new ApolloClient({
 
 /** @deprecated */
 export const testAddressProvider: AddressProvider = new AddressProviderFromJson(
-  contractAddresses,
+  tequilaContractAddresses,
 );
 
 export const testAddress: ContractAddress = createContractAddress(
   testAddressProvider,
-  contractAddresses,
+  tequilaContractAddresses,
 );
 
 export const testWalletAddress: HumanAddr = 'terra12hnhh5vtyg5juqnzm43970nh4fw42pt27nw9g9' as HumanAddr;

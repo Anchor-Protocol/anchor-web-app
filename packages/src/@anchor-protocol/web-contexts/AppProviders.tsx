@@ -30,7 +30,11 @@ import { Constants, ConstantsProvider } from './contexts/contants';
 import { ContractProvider, createContractAddress } from './contexts/contract';
 import { ServiceProvider } from './contexts/service';
 import { ThemeProvider } from './contexts/theme';
-import { contractAddresses, defaultNetwork, GA_TRACKING_ID } from './env';
+import {
+  tequilaContractAddresses,
+  defaultNetwork,
+  GA_TRACKING_ID,
+} from './env';
 
 const operationBroadcasterErrorReporter =
   process.env.NODE_ENV === 'production' ? captureException : undefined;
@@ -53,7 +57,7 @@ function Providers({
 
   const addressMap = useMemo(() => {
     // TODO set mainet contracts
-    return isMainnet ? contractAddresses : contractAddresses;
+    return isMainnet ? tequilaContractAddresses : tequilaContractAddresses;
   }, [isMainnet]);
 
   const addressProvider = useMemo<AddressProvider>(() => {
