@@ -17,6 +17,7 @@ import { useBank } from '@anchor-protocol/web-contexts/contexts/bank';
 import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
 import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { InputAdornment } from '@material-ui/core';
+import big from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
@@ -93,6 +94,16 @@ export function PollCreateBase({
   const invalidLinkBytes = useValidateStringBytes(link, 12, 128);
 
   const invalidLinkProtocol = useMemo(() => validateLinkAddress(link), [link]);
+
+  const invalidUserANCBalance = useMemo(() => {
+    if (!pollConfig) {
+      return undefined;
+    }
+
+    return big(bank.userBalances.uANC).lt(pollConfig.proposal_deposit)
+      ? `Not enoght assets`
+      : undefined;
+  }, [bank.userBalances.uANC, pollConfig]);
 
   // ---------------------------------------------
   // callbacks
@@ -242,6 +253,8 @@ export function PollCreateBase({
           value={
             pollConfig ? formatANC(demicrofy(pollConfig.proposal_deposit)) : '0'
           }
+          error={!!invalidUserANCBalance}
+          helperText={invalidUserANCBalance}
         />
 
         <TxFeeList className="receipt">
@@ -257,6 +270,7 @@ export function PollCreateBase({
             !serviceAvailable ||
             title.length === 0 ||
             description.length === 0 ||
+            !!invalidUserANCBalance ||
             !!invalidTxFee ||
             !!invalidTitleBytes ||
             !!invalidDescriptionBytes ||
