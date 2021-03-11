@@ -27,6 +27,9 @@ export const DescriptionGrid = styled(DescriptionGridBase)`
     font-size: 14px;
     line-height: 1.5;
     max-width: 90%;
+
+    word-break: break-all;
+    white-space: break-spaces;
   }
 
   display: grid;
