@@ -1,3 +1,4 @@
+import { onProduction } from '@anchor-protocol/web-contexts/env';
 import { Launch } from '@material-ui/icons';
 import { WalletSelector } from 'components/Header/WalletSelector';
 import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
@@ -17,7 +18,14 @@ function HeaderBase({ className }: HeaderProps) {
 
   return (
     <header className={className}>
-      <a className="logo" href="https://anchorprotocol.com">
+      <a
+        className="logo"
+        href={
+          onProduction
+            ? 'https://anchorprotocol.com'
+            : 'https://dev.anchor.money'
+        }
+      >
         <img src={logoUrl} alt="logo" />
       </a>
 

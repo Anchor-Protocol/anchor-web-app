@@ -11,7 +11,10 @@ export const SAFE_RATIO: Rate<number> = 0.7 as Rate<number>;
 export const onProduction =
   global.location.host === 'app.anchorprotocol.com' ||
   global.location.host === 'app.anchor.money' ||
-  global.location.host === 'app.anchor.market';
+  global.location.host === 'app.anchor.market' ||
+  global.location.host === 'anchorprotocol.com' ||
+  global.location.host === 'anchor.money' ||
+  global.location.host === 'anchor.market';
 
 export const defaultNetwork = onProduction
   ? {
