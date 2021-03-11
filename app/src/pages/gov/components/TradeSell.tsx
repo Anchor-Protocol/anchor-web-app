@@ -164,7 +164,7 @@ export function TradeSell() {
         resolveSimulation(null);
       } else if (isZero(nextFromAmount)) {
         setToAmount('' as UST);
-
+        setFromAmount(nextFromAmount as ANC);
         resolveSimulation(null);
       } else {
         const fromAmount: ANC = nextFromAmount as ANC;
@@ -210,7 +210,7 @@ export function TradeSell() {
         resolveSimulation(null);
       } else if (isZero(nextToAmount)) {
         setFromAmount('' as ANC);
-
+        setToAmount(nextToAmount as UST);
         resolveSimulation(null);
       } else {
         const toAmount: UST = nextToAmount as UST;

@@ -103,6 +103,7 @@ export function AncUstLpProvide() {
         return;
       } else if (isZero(nextAncAmount)) {
         setUstAmount('' as UST);
+        setAncAmount(nextAncAmount as ANC);
         setSimulation(null);
         return;
       }
@@ -130,6 +131,7 @@ export function AncUstLpProvide() {
         return;
       } else if (isZero(nextUstAmount)) {
         setAncAmount('' as ANC);
+        setUstAmount(nextUstAmount as UST);
         setSimulation(null);
         return;
       }

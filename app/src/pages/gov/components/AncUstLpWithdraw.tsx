@@ -93,6 +93,7 @@ export function AncUstLpWithdraw() {
         setSimulation(null);
         return;
       } else if (isZero(nextLpAmount)) {
+        setLpAmount(nextLpAmount as AncUstLP);
         setSimulation(null);
         return;
       }
