@@ -1,6 +1,7 @@
 import { AppProviders } from '@anchor-protocol/web-contexts/AppProviders';
 import { Banner } from 'components/Banner';
 import { Header } from 'components/Header';
+import { Airdrop } from 'pages/airdrop';
 import { BAsset } from 'pages/basset';
 import { Borrow } from 'pages/borrow';
 import { Earn } from 'pages/earn';
@@ -18,6 +19,7 @@ export function App({ isDemo = false }: { isDemo?: boolean }) {
           <Route path="/earn" component={Earn} />
           <Route path="/borrow" component={Borrow} />
           <Route path="/bond" component={BAsset} />
+          <Route path="/airdrop" component={Airdrop} />
           {!isDemo && <Route path={`/${govPathname}`} component={Governance} />}
           <Redirect to="/earn" />
         </Switch>

@@ -15,10 +15,13 @@ import { ClickAwayListener } from '@material-ui/core';
 import { Check, KeyboardArrowRight } from '@material-ui/icons';
 import { useBank } from '@anchor-protocol/web-contexts/contexts/bank';
 import { useService } from '@anchor-protocol/web-contexts/contexts/service';
+import { useAirdrop } from 'pages/airdrop/queries/useAirdrop';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import { useCallback, useState } from 'react';
 import useClipboard from 'react-use-clipboard';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
+import airdropImage from './assets/airdrop.svg';
+import { Link, useRouteMatch } from 'react-router-dom';
 
 export interface WalletSelectorProps {
   className?: string;
@@ -35,6 +38,10 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   const { serviceAvailable } = useService();
 
   const [openSendDialog, sendDialogElement] = useSendDialog();
+
+  const [airdrop] = useAirdrop();
+
+  const matchAirdrop = useRouteMatch('/airdrop');
 
   // ---------------------------------------------
   // states
@@ -130,6 +137,18 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                 )}
               </IconSpan>
             </WalletButton>
+            {airdrop && !open && !matchAirdrop && (
+              <WalletDropdown>
+                <AirdropContent>
+                  <img src={airdropImage} alt="Airdrop!" />
+                  <h2>Airdrop</h2>
+                  <p>Claim your ANC tokens</p>
+                  <FlatButton component={Link} to="/airdrop">
+                    Claim
+                  </FlatButton>
+                </AirdropContent>
+              </WalletDropdown>
+            )}
             {open && (
               <WalletDropdown>
                 <section>
@@ -337,11 +356,67 @@ export const WalletButton = styled.button`
   }
 `;
 
+const parachute = keyframes`
+  0% {
+    transform: rotate(10deg) translateY(0);
+  }
+  
+  25% {
+    transform: rotate(-10deg) translateY(-3px);
+  }
+  
+  50% {
+    transform: rotate(10deg) translateY(0);
+  }
+  
+  75% {
+    transform: rotate(-10deg) translateY(3px);
+  }
+  
+  100% {
+    transform: rotate(10deg) translateY(0);
+  }
+`;
+
+const AirdropContent = styled.div`
+  margin: 30px;
+  text-align: center;
+
+  img {
+    animation: ${parachute} 6s ease-in-out infinite;
+  }
+
+  h2 {
+    margin-top: 13px;
+
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  p {
+    margin-top: 5px;
+
+    font-size: 13px;
+    font-weight: 500;
+    color: ${({ theme }) => theme.dimTextColor};
+  }
+
+  a {
+    margin-top: 15px;
+
+    width: 100%;
+    height: 28px;
+
+    background-color: ${({ theme }) => theme.colors.positive};
+  }
+`;
+
 export const WalletDropdown = styled.div`
   position: absolute;
   display: block;
   top: 40px;
-  right: 0;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 1000;
 
   min-width: 260px;

@@ -71,4 +71,5 @@ export interface ContractAddress {
     /** addressProvider.terraswapblunaLunaLPToken() */
     bLunaLunaLP: CW20Addr;
   };
+  airdrop: HumanAddr;
 }

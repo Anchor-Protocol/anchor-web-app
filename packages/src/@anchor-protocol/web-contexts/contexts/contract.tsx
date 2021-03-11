@@ -80,6 +80,7 @@ export function createContractAddress(
       AncUstLP: addressProvider.terraswapAncUstLPToken() as CW20Addr,
       bLunaLunaLP: addressProvider.terraswapblunaLunaLPToken('') as CW20Addr,
     },
+    airdrop: addressMap.airdrop as HumanAddr,
   };
 }
 
