@@ -29,7 +29,7 @@ export function sellFromSimulation(
     swapFee: big(simulation.commission_amount)
       .plus(simulation.spread_amount)
       .toFixed() as uUST,
-    beliefPrice: beliefPrice.toFixed() as Rate,
+    beliefPrice: big(1).div(beliefPrice).toFixed() as Rate,
 
     txFee: tax.plus(fixedGas).toFixed() as uUST,
     fromAmount: big(simulation.return_amount).toString() as uANC,

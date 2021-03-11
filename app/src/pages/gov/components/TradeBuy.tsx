@@ -1,4 +1,5 @@
 import { useOperation } from '@anchor-protocol/broadcastable-operation';
+import { isZero } from '@anchor-protocol/is-zero';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
 import {
@@ -26,6 +27,12 @@ import {
 import { useResolveLast } from '@anchor-protocol/use-resolve-last';
 import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
+import { useBank } from '@anchor-protocol/web-contexts/contexts/bank';
+import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
+import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
+import { useService } from '@anchor-protocol/web-contexts/contexts/service';
+import { queryReverseSimulation } from '@anchor-protocol/web-contexts/queries/reverseSimulation';
+import { querySimulation } from '@anchor-protocol/web-contexts/queries/simulation';
 import { useApolloClient } from '@apollo/client';
 import {
   Input as MuiInput,
@@ -36,10 +43,6 @@ import { ArrowDownLine } from 'components/ArrowDownLine';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { useBank } from '@anchor-protocol/web-contexts/contexts/bank';
-import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
-import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
-import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { MAX_SPREAD } from 'pages/gov/env';
 import { buyFromSimulation } from 'pages/gov/logics/buyFromSimulation';
@@ -48,8 +51,6 @@ import { AncPrice } from 'pages/gov/models/ancPrice';
 import { TradeSimulation } from 'pages/gov/models/tradeSimulation';
 import { useANCPrice } from 'pages/gov/queries/ancPrice';
 import { buyOptions } from 'pages/gov/transactions/buyOptions';
-import { queryReverseSimulation } from '@anchor-protocol/web-contexts/queries/reverseSimulation';
-import { querySimulation } from '@anchor-protocol/web-contexts/queries/simulation';
 import React, {
   ChangeEvent,
   useCallback,
@@ -169,6 +170,10 @@ export function TradeBuy() {
         setFromAmount('' as UST);
 
         resolveSimulation(null);
+      } else if (isZero(nextFromAmount)) {
+        setToAmount('' as ANC);
+
+        resolveSimulation(null);
       } else {
         const fromAmount: UST = nextFromAmount as UST;
         setFromAmount(fromAmount);
@@ -209,6 +214,10 @@ export function TradeBuy() {
       if (nextToAmount.trim().length === 0) {
         setFromAmount('' as UST);
         setToAmount('' as ANC);
+
+        resolveSimulation(null);
+      } else if (isZero(nextToAmount)) {
+        setFromAmount('' as UST);
 
         resolveSimulation(null);
       } else {

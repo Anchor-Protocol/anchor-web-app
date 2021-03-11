@@ -1,4 +1,5 @@
 import { useOperation } from '@anchor-protocol/broadcastable-operation';
+import { isZero } from '@anchor-protocol/is-zero';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
 import {
@@ -161,6 +162,10 @@ export function TradeSell() {
         setFromAmount('' as ANC);
 
         resolveSimulation(null);
+      } else if (isZero(nextFromAmount)) {
+        setToAmount('' as UST);
+
+        resolveSimulation(null);
       } else {
         const fromAmount: ANC = nextFromAmount as ANC;
         setFromAmount(fromAmount);
@@ -201,6 +206,10 @@ export function TradeSell() {
       if (nextToAmount.trim().length === 0) {
         setFromAmount('' as ANC);
         setToAmount('' as UST);
+
+        resolveSimulation(null);
+      } else if (isZero(nextToAmount)) {
+        setFromAmount('' as ANC);
 
         resolveSimulation(null);
       } else {
@@ -369,10 +378,10 @@ export function TradeSell() {
         <TxFeeList className="receipt">
           <SwapListItem
             label="Price"
-            currencyA="UST"
-            currencyB="ANC"
+            currencyA="ANC"
+            currencyB="UST"
             exchangeRateAB={simulation.beliefPrice}
-            initialDirection="a/b"
+            initialDirection="b/a"
             formatExchangeRate={(price, direction) =>
               formatFluidDecimalPoints(
                 price,
