@@ -91,7 +91,7 @@ function MarketBase({ className }: MarketProps) {
               <IconSpan>
                 TOTAL DEPOSIT{' '}
                 <InfoTooltip>
-                  Total deposited value of this stablecoin market in USD
+                  Total deposited asset value of Anchor (USD)
                 </InfoTooltip>
               </IconSpan>
             </h2>
@@ -107,7 +107,14 @@ function MarketBase({ className }: MarketProps) {
           </Section>
 
           <Section className="total-borrow">
-            <h2>TOTAL BORROW</h2>
+            <h2>
+              <IconSpan>
+                TOTAL BORROW{' '}
+                <InfoTooltip>
+                  Total borrowed asset value of Anchor (USD)
+                </InfoTooltip>
+              </IconSpan>
+            </h2>
 
             <div className="amount">
               ${' '}
