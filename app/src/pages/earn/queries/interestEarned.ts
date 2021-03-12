@@ -68,7 +68,7 @@ export const dataMap = createMap<RawData, Data>({
         ).mul(thenExchangeRate[0].ExchangeRate)
       )
       : (
-        referenceThen.CurrentDeposit
+        big(referenceThen.CurrentDeposit)
       )
 
     try {
