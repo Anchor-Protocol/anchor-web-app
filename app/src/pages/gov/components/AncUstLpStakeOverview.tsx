@@ -1,4 +1,5 @@
 import { Label } from '@anchor-protocol/neumorphism-ui/components/Label';
+import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import {
   demicrofy,
   formatANCWithPostfixUnits,
@@ -63,17 +64,29 @@ function AncUstLpStakeOverviewBase({ className }: AncUstLpStakeOverviewProps) {
   return (
     <ul className={className}>
       <li>
-        <Label>Stakable</Label>
+        <Tooltip title="Stakable ANC-UST LP tokens" placement="top">
+          <Label>Stakable</Label>
+        </Tooltip>
         <p>
           {ancUstLp?.stakable ? formatLP(demicrofy(ancUstLp.stakable)) : 0} LP
         </p>
       </li>
       <li>
-        <Label>Staked</Label>
+        <Tooltip
+          title="Quantity of staked ANC-UST LP tokens from the ANC-UST LP staking pool"
+          placement="top"
+        >
+          <Label>Staked</Label>
+        </Tooltip>
         <p>{ancUstLp?.staked ? formatLP(demicrofy(ancUstLp.staked)) : 0} LP</p>
       </li>
       <li>
-        <Label>Reward</Label>
+        <Tooltip
+          title="Quantity of claimable rewards from ANC-UST LP staking pool"
+          placement="top"
+        >
+          <Label>Reward</Label>
+        </Tooltip>
         <p>
           {ancUstLp?.reward
             ? formatANCWithPostfixUnits(demicrofy(ancUstLp.reward))
