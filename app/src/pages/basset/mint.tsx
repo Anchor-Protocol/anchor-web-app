@@ -60,7 +60,7 @@ function MintBase({ className }: MintProps) {
 
   const [mint, mintResult] = useOperation(mintOptions, {});
 
-  const { onKeyPress: onLunaInputKeyPress } = useRestrictedNumberInput({
+  const lunaInputHandlers = useRestrictedNumberInput({
     maxIntegerPoinsts: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
     maxDecimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   });
@@ -276,7 +276,7 @@ function MintBase({ className }: MintProps) {
           placeholder="0"
           error={!!invalidBondAmount}
           value={bondAmount}
-          onKeyPress={onLunaInputKeyPress as any}
+          {...lunaInputHandlers}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateBondAmount(target.value)
           }
@@ -314,7 +314,7 @@ function MintBase({ className }: MintProps) {
           placeholder="0"
           error={!!invalidBondAmount}
           value={mintAmount}
-          onKeyPress={onLunaInputKeyPress as any}
+          {...lunaInputHandlers}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateMintAmount(target.value)
           }

@@ -170,7 +170,7 @@ function ComponentBase({
   // ---------------------------------------------
   // computed
   // ---------------------------------------------
-  const { onKeyPress: onNumberInputKeyPress } = useRestrictedNumberInput({
+  const numberInputHandlers = useRestrictedNumberInput({
     maxIntegerPoinsts: currency.integerPoints,
     maxDecimalPoints: currency.decimalPoints,
   });
@@ -322,7 +322,7 @@ function ComponentBase({
           <MuiInput
             placeholder="0"
             value={amount}
-            onKeyPress={onNumberInputKeyPress as any}
+            {...numberInputHandlers}
             onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
               setAmount(target.value as Token)
             }

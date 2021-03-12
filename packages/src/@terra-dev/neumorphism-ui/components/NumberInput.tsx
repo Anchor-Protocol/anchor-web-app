@@ -14,10 +14,10 @@ export function NumberInput({
   maxIntegerPoinsts,
   ...props
 }: NumberInputProps) {
-  const { onKeyPress } = useRestrictedNumberInput({
+  const handlers = useRestrictedNumberInput({
     type,
     maxIntegerPoinsts,
     maxDecimalPoints,
   });
-  return <TextInput {...props} type="text" onKeyPress={onKeyPress} />;
+  return <TextInput {...props} type="text" {...handlers} />;
 }

@@ -1,7 +1,8 @@
-import { KeyboardEvent, useCallback, useMemo } from 'react';
+import { KeyboardEvent, useCallback, useMemo, ClipboardEvent } from 'react';
 
 export interface RestrictedInputReturn {
   onKeyPress: (event: KeyboardEvent<HTMLInputElement>) => void;
+  onPaste?: (event: ClipboardEvent<HTMLInputElement>) => void;
 }
 
 export default function useRestrictedInput(
@@ -94,5 +95,15 @@ export function useRestrictedNumberInput({
     [maxDecimalPoints, maxIntegerPoinsts, restrictCharacters, type],
   );
 
-  return { onKeyPress };
+  const onPaste = useCallback((event: ClipboardEvent<HTMLInputElement>) => {
+    const pastedText = event.clipboardData?.getData('text');
+
+    if (!/^[0-9.]$/.test(pastedText)) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.nativeEvent.stopImmediatePropagation();
+    }
+  }, []);
+
+  return { onKeyPress, onPaste };
 }

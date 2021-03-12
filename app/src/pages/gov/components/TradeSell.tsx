@@ -75,12 +75,12 @@ export function TradeSell() {
 
   const [sell, sellResult] = useOperation(sellOptions, { bank });
 
-  const { onKeyPress: onUstInputKeyPress } = useRestrictedNumberInput({
+  const ustInputHandlers = useRestrictedNumberInput({
     maxIntegerPoinsts: 5,
     maxDecimalPoints: UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   });
 
-  const { onKeyPress: onAncInputKeyPress } = useRestrictedNumberInput({
+  const ancInputHandlers = useRestrictedNumberInput({
     maxIntegerPoinsts: ANC_INPUT_MAXIMUM_INTEGER_POINTS,
     maxDecimalPoints: ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   });
@@ -331,7 +331,7 @@ export function TradeSell() {
           placeholder="0"
           error={!!invalidFromAmount}
           value={fromAmount}
-          onKeyPress={onAncInputKeyPress as any}
+          {...ancInputHandlers}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateFromAmount(target.value)
           }
@@ -367,7 +367,7 @@ export function TradeSell() {
           placeholder="0"
           error={!!invalidFromAmount}
           value={toAmount}
-          onKeyPress={onUstInputKeyPress as any}
+          {...ustInputHandlers}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateToAmount(target.value)
           }

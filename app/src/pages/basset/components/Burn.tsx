@@ -50,7 +50,7 @@ export function Burn() {
 
   const [burn, burnResult] = useOperation(burnOptions, {});
 
-  const { onKeyPress: onLunaInputKeyPress } = useRestrictedNumberInput({
+  const lunaInputHandlers = useRestrictedNumberInput({
     maxIntegerPoinsts: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
     maxDecimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   });
@@ -255,7 +255,7 @@ export function Burn() {
           placeholder="0"
           error={!!invalidBurnAmount}
           value={burnAmount}
-          onKeyPress={onLunaInputKeyPress as any}
+          {...lunaInputHandlers}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateBurnAmount(target.value)
           }
@@ -293,7 +293,7 @@ export function Burn() {
           placeholder="0"
           error={!!invalidBurnAmount}
           value={getAmount}
-          onKeyPress={onLunaInputKeyPress as any}
+          {...lunaInputHandlers}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateGetAmount(target.value)
           }
