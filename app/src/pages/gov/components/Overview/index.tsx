@@ -155,7 +155,7 @@ function OverviewBase({ className }: OverviewProps) {
           <Tooltip title="Governance Rewards APY" placement="top">
             <Label>APY</Label>
           </Tooltip>
-          <span style={{ display: 'inline-block', width: 80 }}>
+          <span style={{ display: 'inline-block', minWidth: 80 }}>
             <AnimateNumber format={formatRate}>
               {govRewards && govRewards.length > 0
                 ? govRewards[0].CurrentAPY
