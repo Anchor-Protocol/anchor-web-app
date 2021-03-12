@@ -19,7 +19,7 @@ And you can run scripts
 - `yarn run landing:test`
 - `yarn run landing:coverage`
 - `yarn run packages:build` Build `/packages/src/@anchor-protocol` packages (`/packages/out` directory will created)
-- `yarn run packages:publish` Publish `/packages/out` directory to the NPM registry (<https://www.npmjs.com/org/anchor-protocol>)
+- `yarn run packages:publish` Publish `/packages/out` directory to the NPM registry
 - `yarn run packages:storybook` Development run Storybook
 - `yarn run packages:build-storybook`
 - `yarn run packages:test`
@@ -61,9 +61,11 @@ IDE
 
 ## `/packages`
 
-| develop                                   |
-| ----------------------------------------- |
-| <https://anchor-storybook.vercel.app/>    |
+| develop                                     |
+| ------------------------------------------- |
+| <https://anchor-storybook.vercel.app/>      |
+| <https://www.npmjs.com/org/anchor-protocol> |
+| <https://www.npmjs.com/org/terra-dev>       |
 
 # License
 
