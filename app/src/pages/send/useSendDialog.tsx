@@ -236,7 +236,7 @@ function ComponentBase({
       return undefined;
     }
 
-    return !AccAddress.validate(address) ? 'Not valid address' : undefined;
+    return !AccAddress.validate(address) ? 'Invalid address' : undefined;
   }, [address]);
 
   const invalidAmount = useMemo(() => {

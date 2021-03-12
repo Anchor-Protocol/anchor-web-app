@@ -8,7 +8,6 @@ import {
   ANC_INPUT_MAXIMUM_INTEGER_POINTS,
   demicrofy,
   formatANC,
-  formatANCInput,
   microfy,
 } from '@anchor-protocol/notation';
 import { ANC, HumanAddr, uANC } from '@anchor-protocol/types';
@@ -16,8 +15,8 @@ import { Spend } from '@anchor-protocol/types/contracts/anchorToken/community/sp
 import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
 import { AccAddress } from '@terra-money/terra.js';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
-import { useCommunityAncBalance } from './queries/communityAncBalance';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import { useCommunityAncBalance } from './queries/communityAncBalance';
 
 export function PollCreateSpendCommunityPool() {
   // ---------------------------------------------
@@ -43,7 +42,7 @@ export function PollCreateSpendCommunityPool() {
     const uanc = microfy(amount as ANC);
 
     return uanc.gt(communityAncBalance.balance)
-      ? 'Exceed Spending Limit'
+      ? 'Spending Limit Exceeded'
       : undefined;
   }, [amount, communityAncBalance]);
 
@@ -52,7 +51,7 @@ export function PollCreateSpendCommunityPool() {
       return undefined;
     }
 
-    return !AccAddress.validate(recipient) ? 'Not valid address' : undefined;
+    return !AccAddress.validate(recipient) ? 'Invalid address' : undefined;
   }, [recipient]);
 
   // ---------------------------------------------
@@ -141,17 +140,8 @@ export function PollCreateSpendCommunityPool() {
       <div className="wallet" aria-invalid={!!invalidAmount}>
         <span>{invalidAmount}</span>
         <span>
-          Safe Max:{' '}
-          <span
-            style={{
-              textDecoration: 'underline',
-              cursor: 'pointer',
-            }}
-            onClick={() =>
-              communityAncBalance &&
-              setAmount(formatANCInput(demicrofy(communityAncBalance.balance)))
-            }
-          >
+          Max Spending Limit:{' '}
+          <span>
             {communityAncBalance
               ? formatANC(demicrofy(communityAncBalance.balance))
               : 0}{' '}
