@@ -49,7 +49,7 @@ IDE
 | -------------------------------- | ------------------------------------ |
 | <https://app.anchorprotocol.com> | <https://app-dev.anchorprotocol.com> |
 | <https://app.anchor.money>       | <https://app-dev.anchor.money>       |
-| <https://app.anchor.market>      | <https://app-dev.anchor.>            |
+| <https://app.anchor.market>      | <https://app-dev.anchor.market>      |
 
 ## `/landing`
 
@@ -57,7 +57,7 @@ IDE
 | -------------------------------- | ------------------------------------ |
 | <https://anchorprotocol.com>     | <https://dev.anchorprotocol.com>     |
 | <https://anchor.money>           | <https://dev.anchor.money>           |
-| <https://anchor.market>          | <https://dev.anchor.>                |
+| <https://anchor.market>          | <https://dev.anchor.market>          |
 
 ## `/packages`
 
