@@ -1,19 +1,19 @@
 import { APYChart, APYChartItem } from '@anchor-protocol/app-charts/APYChart';
+import {
+  AnimateNumber,
+  demicrofy,
+  formatRate,
+  formatUST,
+} from '@anchor-protocol/notation';
+import { Rate, UST } from '@anchor-protocol/types';
+import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Label } from '@terra-dev/neumorphism-ui/components/Label';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { Tab } from '@terra-dev/neumorphism-ui/components/Tab';
 import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
-import {
-  demicrofy,
-  formatRateToPercentage,
-  formatUST,
-  mapDecimalPointBaseSeparatedNumbers,
-} from '@anchor-protocol/notation';
-import { Rate } from '@anchor-protocol/types';
 import big from 'big.js';
-import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
 import { currentAPY } from 'pages/earn/logics/currentAPY';
 import { useAPYHistory } from 'pages/earn/queries/apyHistory';
 import { useInterest } from 'pages/earn/queries/interest';
@@ -119,7 +119,9 @@ export function InterestSection({ className }: InterestSectionProps) {
         <Tooltip title="Annual Percentage Yield" placement="top">
           <Label className="name">APY</Label>
         </Tooltip>
-        <div className="value">{formatRateToPercentage(apy)}%</div>
+        <div className="value">
+          <AnimateNumber format={formatRate}>{apy}</AnimateNumber>%
+        </div>
         {apyChartItems && (
           <APYChart
             margin={{ top: 20, bottom: 20, left: 100, right: 100 }}
@@ -153,22 +155,12 @@ export function InterestSection({ className }: InterestSectionProps) {
             placement="top"
           >
             <span>
-              {interestEarned
-                ? mapDecimalPointBaseSeparatedNumbers(
-                    formatUST(demicrofy(interestEarned)),
-                    (i, d) => {
-                      return (
-                        <>
-                          {i}
-                          {d ? (
-                            <span className="decimal-point">.{d}</span>
-                          ) : null}{' '}
-                          UST
-                        </>
-                      );
-                    },
-                  )
-                : '0 UST'}
+              <AnimateNumber format={formatUST}>
+                {interestEarned
+                  ? demicrofy(interestEarned)
+                  : (0 as UST<number>)}
+              </AnimateNumber>{' '}
+              UST
             </span>
           </Tooltip>
           <p>

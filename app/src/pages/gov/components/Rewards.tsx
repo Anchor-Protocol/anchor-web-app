@@ -7,7 +7,7 @@ import {
   demicrofy,
   formatANCWithPostfixUnits,
   formatLP,
-  formatRateToPercentage,
+  formatRate,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { uANC, uUST } from '@anchor-protocol/types';
@@ -211,7 +211,7 @@ export function RewardsBase({ className }: RewardsProps) {
               <td>ANC Governance</td>
               <td>
                 {govRewards && govRewards.length > 0
-                  ? formatRateToPercentage(govRewards[0].CurrentAPY)
+                  ? formatRate(govRewards[0].CurrentAPY)
                   : 0}{' '}
                 %
               </td>
@@ -280,7 +280,7 @@ export function RewardsBase({ className }: RewardsProps) {
               </td>
               <td>
                 {lpRewards && lpRewards.length > 0
-                  ? formatRateToPercentage(lpRewards[0].APY)
+                  ? formatRate(lpRewards[0].APY)
                   : 0}{' '}
                 %
               </td>
@@ -338,9 +338,7 @@ export function RewardsBase({ className }: RewardsProps) {
               <td>UST Borrow</td>
               <td>
                 {borrowerDistributionAPYs && borrowerDistributionAPYs.length > 0
-                  ? formatRateToPercentage(
-                      borrowerDistributionAPYs[0].DistributionAPY,
-                    )
+                  ? formatRate(borrowerDistributionAPYs[0].DistributionAPY)
                   : 0}{' '}
                 %
               </td>

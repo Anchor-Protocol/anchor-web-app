@@ -9,8 +9,9 @@ import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
 import {
+  AnimateNumber,
   demicrofy,
-  formatRateToPercentage,
+  formatRate,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { Rate, uUST } from '@anchor-protocol/types';
@@ -67,7 +68,10 @@ function OverviewBase({ className }: OverviewProps) {
             <h3>Collateral Value</h3>
           </Tooltip>
           <div className="value">
-            ${formatUSTWithPostfixUnits(demicrofy(collaterals))}
+            $
+            <AnimateNumber format={formatUSTWithPostfixUnits}>
+              {demicrofy(collaterals)}
+            </AnimateNumber>
           </div>
           <div>
             <CircleOnly>
@@ -86,7 +90,10 @@ function OverviewBase({ className }: OverviewProps) {
             <h3>Borrowed Value</h3>
           </Tooltip>
           <div className="value">
-            ${formatUSTWithPostfixUnits(demicrofy(borrowed))}
+            $
+            <AnimateNumber format={formatUSTWithPostfixUnits}>
+              {demicrofy(borrowed)}
+            </AnimateNumber>
           </div>
           <div>
             <LabelAndCircle>
@@ -113,13 +120,13 @@ function OverviewBase({ className }: OverviewProps) {
             <h3>Net APY</h3>
           </Tooltip>
           <div className="value">
-            {borrowerDistributionAPYs && borrowerDistributionAPYs.length > 0
-              ? formatRateToPercentage(
-                  big(borrowerDistributionAPYs[0].DistributionAPY).minus(
+            <AnimateNumber format={formatRate}>
+              {borrowerDistributionAPYs && borrowerDistributionAPYs.length > 0
+                ? (big(borrowerDistributionAPYs[0].DistributionAPY).minus(
                     apr,
-                  ) as Rate<Big>,
-                )
-              : 0}{' '}
+                  ) as Rate<Big>)
+                : (0 as Rate<number>)}
+            </AnimateNumber>{' '}
             %
           </div>
           <div>
@@ -130,7 +137,7 @@ function OverviewBase({ className }: OverviewProps) {
                 </Circle>
                 <p>
                   Borrow APR
-                  <b>{formatRateToPercentage(apr)}%</b>
+                  <b>{formatRate(apr)}%</b>
                 </p>
               </div>
               <div>
@@ -142,9 +149,7 @@ function OverviewBase({ className }: OverviewProps) {
                   <b>
                     {borrowerDistributionAPYs &&
                     borrowerDistributionAPYs.length > 0
-                      ? formatRateToPercentage(
-                          borrowerDistributionAPYs[0].DistributionAPY,
-                        )
+                      ? formatRate(borrowerDistributionAPYs[0].DistributionAPY)
                       : 0}
                     %
                   </b>

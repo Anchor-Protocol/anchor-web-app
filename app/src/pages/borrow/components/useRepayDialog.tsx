@@ -6,7 +6,7 @@ import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import {
   demicrofy,
-  formatRateToPercentage,
+  formatRate,
   formatUST,
   formatUSTInput,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
@@ -209,7 +209,7 @@ function ComponentBase({
       Repay{' '}
       <p>
         <IconSpan>
-          Borrow APR : {formatRateToPercentage(apr)}%{' '}
+          Borrow APR : {formatRate(apr)}%{' '}
           <InfoTooltip>
             Current rate of annualized borrowing interest applied for this
             stablecoin

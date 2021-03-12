@@ -7,7 +7,7 @@ import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import {
   demicrofy,
   formatANCWithPostfixUnits,
-  formatRateToPercentage,
+  formatRate,
 } from '@anchor-protocol/notation';
 import {
   rulerLightColor,
@@ -206,21 +206,19 @@ function PollDetailBase({ className, match }: PollDetailProps) {
           <article>
             <h4>VOTED</h4>
             <p>
-              {formatRateToPercentage(
+              {formatRate(
                 ((pollDetail.vote.yes + pollDetail.vote.no) /
                   pollDetail.vote.total) as Rate<number>,
               )}
               %
             </p>
-            <span>
-              Quorum {govConfig ? formatRateToPercentage(govConfig.quorum) : 0}%
-            </span>
+            <span>Quorum {govConfig ? formatRate(govConfig.quorum) : 0}%</span>
           </article>
 
           <article data-vote="yes">
             <h4>YES</h4>
             <p>
-              {formatRateToPercentage(
+              {formatRate(
                 (pollDetail.vote.yes / pollDetail.vote.total) as Rate<number>,
               )}
               %
@@ -234,7 +232,7 @@ function PollDetailBase({ className, match }: PollDetailProps) {
           <article data-vote="no">
             <h4>NO</h4>
             <p>
-              {formatRateToPercentage(
+              {formatRate(
                 (pollDetail.vote.no / pollDetail.vote.total) as Rate<number>,
               )}
               %

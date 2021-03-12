@@ -9,6 +9,42 @@ export interface FormatOptions {
 
 export const MAX_EXECUTE_MSG_DECIMALS = 18;
 
+export const formatDemimal = ({
+  decimalPoints,
+  delimiter,
+}: {
+  decimalPoints: number;
+  delimiter: boolean;
+}) => (n: BigSource, fallbackValue: string = ''): string => {
+  const num = big(
+    big(n)
+      .mul(10 ** decimalPoints)
+      .toFixed()
+      .split('.')[0],
+  )
+    .div(10 ** decimalPoints)
+    .toFixed();
+
+  if (num === 'NaN') return fallbackValue;
+
+  const [i, d] = num.split('.');
+
+  const ii = delimiter ? numeral(i).format('0,0') : i;
+  const dd = d ? '.' + d : '';
+
+  return ii + dd;
+};
+
+export const formatInteger = ({ delimiter }: { delimiter: boolean }) => (
+  n: BigSource,
+): string => {
+  const num = big(n).toFixed();
+
+  const [i] = num.split('.');
+
+  return delimiter ? numeral(i).format('0,0') : i;
+};
+
 export function formatFluidDecimalPoints(
   n: BigSource,
   numDecimalPoints: number,
@@ -33,23 +69,26 @@ export function formatFluidDecimalPoints(
   return ii + dd;
 }
 
-export function formatExecuteMsgNumber(n: BigSource): string {
-  return formatFluidDecimalPoints(n, MAX_EXECUTE_MSG_DECIMALS, {
-    delimiter: false,
-    fallbackValue: '0',
-  });
-}
+// ---------------------------------------------
+// formatters
+// ---------------------------------------------
+export const executeMsgFormatter = formatDemimal({
+  decimalPoints: MAX_EXECUTE_MSG_DECIMALS,
+  delimiter: false,
+});
 
-export function formatPercentage(
-  n: Percent<BigSource>,
-  options: FormatOptions = { delimiter: true },
-): string {
-  return formatFluidDecimalPoints(n, 2, options);
-}
+const percentageFormatter = formatDemimal({
+  decimalPoints: 2,
+  delimiter: true,
+});
 
-export function formatRateToPercentage(
-  n: Rate<BigSource>,
-  options: FormatOptions = { delimiter: true },
-): string {
-  return formatFluidDecimalPoints(big(n).mul(100), 2, options);
-}
+// ---------------------------------------------
+// functions
+// ---------------------------------------------
+export const formatExecuteMsgNumber = executeMsgFormatter;
+
+export const formatPercentage = (n: Percent<BigSource>) =>
+  percentageFormatter(n);
+
+export const formatRate = (n: Rate<BigSource>) =>
+  percentageFormatter(big(n).div(100));

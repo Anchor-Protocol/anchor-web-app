@@ -1,4 +1,4 @@
-import { formatRateToPercentage } from '@anchor-protocol/notation';
+import { formatRate } from '@anchor-protocol/notation';
 import { anchorToken, cw20, Rate, uANC } from '@anchor-protocol/types';
 import { ParsedExecuteMsg } from '@anchor-protocol/types/contracts/anchorToken/gov';
 import big from 'big.js';
@@ -66,9 +66,7 @@ export function extractPollDetail(
         }
       : {
           value: big(quorum.gov).mul(total).toNumber(),
-          label: `Quorum ${formatRateToPercentage(
-            quorum.gov as Rate<number>,
-          )}%`,
+          label: `Quorum ${formatRate(quorum.gov as Rate<number>)}%`,
         };
 
   const endsIn: Date = new Date(

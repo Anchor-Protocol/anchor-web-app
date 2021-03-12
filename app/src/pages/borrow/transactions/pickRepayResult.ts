@@ -1,6 +1,6 @@
 import {
   demicrofy,
-  formatRateToPercentage,
+  formatRate,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { moneyMarket, Rate, uUST } from '@anchor-protocol/types';
@@ -71,7 +71,7 @@ export function pickRepayResult({
       },
       newLtv && {
         name: 'New LTV',
-        value: formatRateToPercentage(newLtv) + ' %',
+        value: formatRate(newLtv) + ' %',
       },
       outstandingLoan && {
         name: 'Outstanding Loan',

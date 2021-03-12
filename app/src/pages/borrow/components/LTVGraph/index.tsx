@@ -5,7 +5,7 @@ import {
 import { HorizontalGraphSlider } from '@terra-dev/neumorphism-ui/components/HorizontalGraphSlider';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
-import { formatRateToPercentage } from '@anchor-protocol/notation';
+import { formatRate } from '@anchor-protocol/notation';
 import type { Rate } from '@anchor-protocol/types';
 import { InfoOutlined } from '@material-ui/icons';
 import big, { Big, BigSource } from 'big.js';
@@ -111,7 +111,7 @@ export function LTVGraph({
       data={[
         {
           position: 'top',
-          label: `MAX LTV: ${formatRateToPercentage(maxLtv)}%`,
+          label: `MAX LTV: ${formatRate(maxLtv)}%`,
           color: 'rgba(0, 0, 0, 0)',
           value: big(maxLtv).toNumber(),
           tooltip:
@@ -119,7 +119,7 @@ export function LTVGraph({
         },
         {
           position: 'top',
-          label: `SAFE LTV: ${formatRateToPercentage(safeLtv)}%`,
+          label: `SAFE LTV: ${formatRate(safeLtv)}%`,
           color: 'rgba(0, 0, 0, 0)',
           value: big(safeLtv).toNumber(),
           tooltip: 'Recommended LTV',
@@ -137,7 +137,7 @@ export function LTVGraph({
         {
           position: 'bottom',
           label: nextLtv
-            ? `${nextLtv.lt(1) ? formatRateToPercentage(nextLtv) : '>100'}%`
+            ? `${nextLtv.lt(1) ? formatRate(nextLtv) : '>100'}%`
             : '',
           color,
           value: nextLtv

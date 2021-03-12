@@ -1,4 +1,13 @@
 import { AnchorNoCircle } from '@anchor-protocol/icons';
+import {
+  AnimateNumber,
+  formatRate,
+  formatUSTWithPostfixUnits,
+  formatUTokenDecimal2,
+} from '@anchor-protocol/notation';
+import { TokenIcon } from '@anchor-protocol/token-icons';
+import { Rate, uANC, UST, uToken } from '@anchor-protocol/types';
+import { ChevronRight } from '@material-ui/icons';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
@@ -6,14 +15,6 @@ import { Label } from '@terra-dev/neumorphism-ui/components/Label';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { TextButton } from '@terra-dev/neumorphism-ui/components/TextButton';
 import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
-import {
-  formatRateToPercentage,
-  formatUSTWithPostfixUnits,
-  formatUTokenWithPostfixUnits,
-} from '@anchor-protocol/notation';
-import { TokenIcon } from '@anchor-protocol/token-icons';
-import { Rate, uANC } from '@anchor-protocol/types';
-import { ChevronRight } from '@material-ui/icons';
 import big, { Big } from 'big.js';
 import { Circles } from 'components/Circles';
 import { screen } from 'env';
@@ -120,9 +121,9 @@ function OverviewBase({ className }: OverviewProps) {
           </IconSpan>
         </h2>
         <div>
-          {ancPrice?.ANCPrice
-            ? formatUSTWithPostfixUnits(ancPrice.ANCPrice)
-            : '0'}{' '}
+          <AnimateNumber format={formatUSTWithPostfixUnits}>
+            {ancPrice?.ANCPrice ?? ('0' as UST)}
+          </AnimateNumber>{' '}
           UST
         </div>
       </Section>
@@ -134,9 +135,13 @@ function OverviewBase({ className }: OverviewProps) {
           </IconSpan>
         </h2>
         <div>
-          {formatUTokenWithPostfixUnits(totalStaked)} ANC{' '}
+          <AnimateNumber format={formatUTokenDecimal2}>
+            {totalStaked}
+          </AnimateNumber>{' '}
+          ANC{' '}
           <sub>
-            ({formatRateToPercentage(totalStakedRate)}
+            (
+            <AnimateNumber format={formatRate}>{totalStakedRate}</AnimateNumber>
             %)
           </sub>
         </div>
@@ -150,10 +155,12 @@ function OverviewBase({ className }: OverviewProps) {
           <Tooltip title="Governance Rewards APY" placement="top">
             <Label>APY</Label>
           </Tooltip>
-          <span>
-            {govRewards && govRewards.length > 0
-              ? formatRateToPercentage(govRewards[0].CurrentAPY)
-              : 0}{' '}
+          <span style={{ display: 'inline-block', width: 80 }}>
+            <AnimateNumber format={formatRate}>
+              {govRewards && govRewards.length > 0
+                ? govRewards[0].CurrentAPY
+                : (0 as Rate<number>)}
+            </AnimateNumber>{' '}
             %
           </span>
         </div>
@@ -196,9 +203,11 @@ function OverviewBase({ className }: OverviewProps) {
               <Label>APY</Label>
             </Tooltip>
             <p>
-              {lpRewards && lpRewards.length > 0
-                ? formatRateToPercentage(lpRewards[0].APY)
-                : 0}{' '}
+              <AnimateNumber format={formatRate}>
+                {lpRewards && lpRewards.length > 0
+                  ? lpRewards[0].APY
+                  : (0 as Rate<number>)}
+              </AnimateNumber>{' '}
               %
             </p>
           </div>
@@ -210,9 +219,11 @@ function OverviewBase({ className }: OverviewProps) {
               <Label>Total Staked</Label>
             </Tooltip>
             <p>
-              {lpStakingState?.total_bond_amount
-                ? formatUTokenWithPostfixUnits(lpStakingState.total_bond_amount)
-                : '0'}
+              <AnimateNumber format={formatUTokenDecimal2}>
+                {lpStakingState?.total_bond_amount
+                  ? lpStakingState.total_bond_amount
+                  : (0 as uToken<number>)}
+              </AnimateNumber>
             </p>
           </div>
         </div>

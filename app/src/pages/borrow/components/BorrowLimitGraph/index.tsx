@@ -7,7 +7,7 @@ import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
 import {
   demicrofy,
-  formatRateToPercentage,
+  formatRate,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { Rate, uUST } from '@anchor-protocol/types';
@@ -82,7 +82,7 @@ export function BorrowLimitGraph({
           ? [
               {
                 position: 'top',
-                label: `${formatRateToPercentage(borrowLimitRate)}%`,
+                label: `${formatRate(borrowLimitRate)}%`,
                 color: borrowLimitRate.gte(1)
                   ? theme.colors.negative
                   : borrowLimitRate.gte(0.7)

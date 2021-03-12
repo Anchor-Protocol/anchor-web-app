@@ -1,7 +1,7 @@
 import {
   demicrofy,
   formatLuna,
-  formatRateToPercentage,
+  formatRate,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { moneyMarket, Rate, ubLuna, uUST } from '@anchor-protocol/types';
@@ -70,7 +70,7 @@ export function pickProvideCollateralResult({
       },
       newLtv && {
         name: 'New LTV',
-        value: formatRateToPercentage(newLtv) + ' %',
+        value: formatRate(newLtv) + ' %',
       },
       {
         name: 'Tx Hash',

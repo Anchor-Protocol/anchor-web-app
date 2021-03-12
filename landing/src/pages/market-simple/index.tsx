@@ -5,7 +5,7 @@ import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import {
   demicrofy,
   formatLunaWithPostfixUnits,
-  formatRateToPercentage,
+  formatRate,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
@@ -195,10 +195,7 @@ function MarketBase({ className }: MarketProps) {
                   </td>
                   <td>
                     <div className="value">
-                      {stableCoin
-                        ? formatRateToPercentage(stableCoin.depositRate)
-                        : 0}
-                      %
+                      {stableCoin ? formatRate(stableCoin.depositRate) : 0}%
                     </div>
                   </td>
                   <td>
@@ -213,10 +210,7 @@ function MarketBase({ className }: MarketProps) {
                   </td>
                   <td>
                     <div className="value">
-                      {stableCoin
-                        ? formatRateToPercentage(stableCoin.borrowRate)
-                        : 0}
-                      %
+                      {stableCoin ? formatRate(stableCoin.borrowRate) : 0}%
                     </div>
                   </td>
                 </tr>

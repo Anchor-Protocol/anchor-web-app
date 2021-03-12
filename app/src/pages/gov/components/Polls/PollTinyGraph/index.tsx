@@ -3,7 +3,7 @@ import {
   Rect,
 } from '@terra-dev/neumorphism-ui/components/HorizontalGraphBar';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { formatRateToPercentage } from '@anchor-protocol/notation';
+import { formatRate } from '@anchor-protocol/notation';
 import { Rate } from '@anchor-protocol/types';
 import React from 'react';
 import styled, { useTheme } from 'styled-components';
@@ -50,15 +50,13 @@ export function PollTinyGraph({
       data={[
         {
           position: 'vote',
-          label: `No ${formatRateToPercentage((no / total) as Rate<number>)}%`,
+          label: `No ${formatRate((no / total) as Rate<number>)}%`,
           color: no > 0 ? theme.colors.negative : 'transparent',
           value: yes + no,
         },
         {
           position: 'vote',
-          label: `Yes ${formatRateToPercentage(
-            (yes / total) as Rate<number>,
-          )}%`,
+          label: `Yes ${formatRate((yes / total) as Rate<number>)}%`,
           color: theme.colors.positive,
           value: yes,
         },
@@ -74,14 +72,14 @@ export function PollTinyGraph({
       labelRenderer={labelRenderer}
     >
       <TotalVoteSpan>
-        {formatRateToPercentage(((yes + no) / total) as Rate<number>)}%
+        {formatRate(((yes + no) / total) as Rate<number>)}%
       </TotalVoteSpan>
       <YesNoSpan>
         <span className="yes">
-          <b>Yes</b> {formatRateToPercentage((yes / total) as Rate<number>)}%
+          <b>Yes</b> {formatRate((yes / total) as Rate<number>)}%
         </span>
         <span className="no">
-          <b>No</b> {formatRateToPercentage((no / total) as Rate<number>)}%
+          <b>No</b> {formatRate((no / total) as Rate<number>)}%
         </span>
       </YesNoSpan>
     </HorizontalGraphBar>

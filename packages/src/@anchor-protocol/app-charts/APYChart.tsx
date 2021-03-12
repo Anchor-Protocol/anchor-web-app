@@ -1,6 +1,6 @@
 import { darkTheme } from '@terra-dev/neumorphism-ui/themes/darkTheme';
 import { lightTheme } from '@terra-dev/neumorphism-ui/themes/lightTheme';
-import { formatRateToPercentage } from '@anchor-protocol/notation';
+import { formatRate } from '@anchor-protocol/notation';
 import { Rate } from '@anchor-protocol/types';
 import { scaleLinear } from 'd3-scale';
 import { curveNatural, line } from 'd3-shape';
@@ -165,7 +165,7 @@ export function APYChartBase({
     const x = xScale(index);
     const y = yScale(data[index].value);
 
-    const percentage = formatRateToPercentage(data[index].value);
+    const percentage = formatRate(data[index].value);
 
     const isLeft = index > 1;
     const fontSize = 12;

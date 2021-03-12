@@ -1,14 +1,14 @@
+import {
+  AnimateNumber,
+  demicrofy,
+  formatUSTWithPostfixUnits,
+} from '@anchor-protocol/notation';
+import { Rate, uUST } from '@anchor-protocol/types';
+import { useWallet } from '@anchor-protocol/wallet-provider';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
-import {
-  demicrofy,
-  formatUST,
-  mapDecimalPointBaseSeparatedNumbers,
-} from '@anchor-protocol/notation';
-import { Rate, uUST } from '@anchor-protocol/types';
-import { useWallet } from '@anchor-protocol/wallet-provider';
 import { BigSource } from 'big.js';
 import React, { useCallback, useMemo } from 'react';
 import { totalDepositUST } from '../logics/totalDepositUST';
@@ -78,17 +78,10 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
       </h2>
 
       <div className="amount">
-        {mapDecimalPointBaseSeparatedNumbers(
-          formatUST(demicrofy(totalDeposit)),
-          (i, d) => {
-            return (
-              <>
-                {i}
-                {d ? <span className="decimal-point">.{d}</span> : null} UST
-              </>
-            );
-          },
-        )}
+        <AnimateNumber format={formatUSTWithPostfixUnits}>
+          {demicrofy(totalDeposit)}
+        </AnimateNumber>{' '}
+        UST
       </div>
 
       <aside className="total-deposit-buttons">
