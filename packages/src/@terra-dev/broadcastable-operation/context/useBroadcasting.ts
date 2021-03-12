@@ -1,4 +1,4 @@
-import { useInterval } from '@anchor-protocol/use-interval';
+import { useInterval } from '@terra-dev/use-interval';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useOperationBroadcaster } from './OperationBroadcaster';
 import { Broadcasting } from './types';

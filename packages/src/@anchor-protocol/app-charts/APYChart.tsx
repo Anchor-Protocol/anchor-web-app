@@ -1,5 +1,5 @@
-import { darkTheme } from '@anchor-protocol/neumorphism-ui/themes/darkTheme';
-import { lightTheme } from '@anchor-protocol/neumorphism-ui/themes/lightTheme';
+import { darkTheme } from '@terra-dev/neumorphism-ui/themes/darkTheme';
+import { lightTheme } from '@terra-dev/neumorphism-ui/themes/lightTheme';
 import { formatRateToPercentage } from '@anchor-protocol/notation';
 import { Rate } from '@anchor-protocol/types';
 import { scaleLinear } from 'd3-scale';

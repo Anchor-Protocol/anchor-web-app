@@ -1,7 +1,7 @@
-import { BorderButton } from '@anchor-protocol/neumorphism-ui/components/BorderButton';
-import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/components/HorizontalScrollTable';
-import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
-import { TimeEnd } from '@anchor-protocol/use-time-end';
+import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
+import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { TimeEnd } from '@terra-dev/use-time-end';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
 import { PollStatusSpan } from 'pages/gov/components/PollStatusSpan';
 import { extractPollDetail } from 'pages/gov/logics/extractPollDetail';

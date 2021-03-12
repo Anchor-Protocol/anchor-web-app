@@ -1,6 +1,6 @@
 import { useOperation } from '@terra-dev/broadcastable-operation';
-import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
-import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import {
   demicrofy,
   formatANCWithPostfixUnits,

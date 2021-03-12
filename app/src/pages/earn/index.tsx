@@ -1,8 +1,8 @@
-import { EventBusProvider } from '@anchor-protocol/event-bus';
+import { EventBusProvider } from '@terra-dev/event-bus';
 import {
   rulerLightColor,
   rulerShadowColor,
-} from '@anchor-protocol/styled-neumorphism';
+} from '@terra-dev/styled-neumorphism';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { screen } from 'env';
 import React from 'react';

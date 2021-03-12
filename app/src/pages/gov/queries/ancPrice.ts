@@ -1,7 +1,7 @@
 import { useSubscription } from '@terra-dev/broadcastable-operation';
 import type { uANC, uAncUstLP, UST, uUST } from '@anchor-protocol/types';
 import { terraswap, uToken, WASMContractResult } from '@anchor-protocol/types';
-import { createMap, useMap } from '@anchor-protocol/use-map';
+import { createMap, useMap } from '@terra-dev/use-map';
 import { gql, useQuery } from '@apollo/client';
 import big from 'big.js';
 import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';

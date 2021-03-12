@@ -1,4 +1,4 @@
-import { createMap, useMap } from '@anchor-protocol/use-map';
+import { createMap, useMap } from '@terra-dev/use-map';
 import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
 import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { parseResult } from '@anchor-protocol/web-contexts/queries/parseResult';

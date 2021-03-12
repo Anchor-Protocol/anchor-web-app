@@ -1,6 +1,6 @@
-import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
-import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/components/HorizontalScrollTable';
-import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
+import { HorizontalRuler } from '@terra-dev/neumorphism-ui/components/HorizontalRuler';
+import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { TokenIcon, tokens, Tokens } from '@anchor-protocol/token-icons';
 import { screen } from 'env';
 import { Link } from 'react-router-dom';

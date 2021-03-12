@@ -1,5 +1,5 @@
 import { Discord } from '@anchor-protocol/icons';
-import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { useTheme } from '@anchor-protocol/web-contexts/contexts/theme';
 import { useLastSyncedHeight } from '@anchor-protocol/web-contexts/queries/lastSyncedHeight';

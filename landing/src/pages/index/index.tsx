@@ -1,5 +1,5 @@
 import { auditMeasure } from '@terra-dev/audit-fastdom';
-import { isTouchDevice } from '@anchor-protocol/is-touch-device';
+import { isTouchDevice } from '@terra-dev/is-touch-device';
 import { landingMobileLayout } from 'env';
 import { FrictionlessAcess } from 'pages/index/components/FrictionlessAcess';
 import { Subscribe } from 'pages/index/components/Subscribe';

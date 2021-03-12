@@ -1,10 +1,10 @@
-import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
-import { BorderButton } from '@anchor-protocol/neumorphism-ui/components/BorderButton';
-import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
-import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
+import { NativeSelect } from '@terra-dev/neumorphism-ui/components/NativeSelect';
 import { anchorToken } from '@anchor-protocol/types/contracts';
-import { useLocalStorage } from '@anchor-protocol/use-local-storage';
+import { useLocalStorage } from '@terra-dev/use-local-storage';
 import { List, ViewModule } from '@material-ui/icons';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
 import { govPathname } from 'pages/gov/env';

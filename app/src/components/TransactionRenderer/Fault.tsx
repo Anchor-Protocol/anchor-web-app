@@ -2,8 +2,8 @@ import {
   Fault as FaultResult,
   OperationTimeoutError,
 } from '@terra-dev/broadcastable-operation';
-import { HorizontalHeavyRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalHeavyRuler';
-import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
+import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
+import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
 import { UserDeniedError } from '@anchor-protocol/wallet-provider';
 import { IconButton } from '@material-ui/core';
 import { Close, FileCopy } from '@material-ui/icons';

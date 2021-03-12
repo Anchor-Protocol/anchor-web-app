@@ -1,4 +1,4 @@
-import { Tab } from '@anchor-protocol/neumorphism-ui/components/Tab';
+import { Tab } from '@terra-dev/neumorphism-ui/components/Tab';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { useCallback, useMemo } from 'react';
 import {

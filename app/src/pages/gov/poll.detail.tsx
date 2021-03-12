@@ -1,9 +1,9 @@
-import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
-import { BorderButton } from '@anchor-protocol/neumorphism-ui/components/BorderButton';
-import { HorizontalHeavyRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalHeavyRuler';
-import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
-import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
-import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
+import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
+import { HorizontalRuler } from '@terra-dev/neumorphism-ui/components/HorizontalRuler';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import {
   demicrofy,
   formatANCWithPostfixUnits,
@@ -12,9 +12,9 @@ import {
 import {
   rulerLightColor,
   rulerShadowColor,
-} from '@anchor-protocol/styled-neumorphism';
+} from '@terra-dev/styled-neumorphism';
 import { Rate } from '@anchor-protocol/types';
-import { TimeEnd } from '@anchor-protocol/use-time-end';
+import { TimeEnd } from '@terra-dev/use-time-end';
 import { useLastSyncedHeight } from '@anchor-protocol/web-contexts/queries/lastSyncedHeight';
 import { Schedule } from '@material-ui/icons';
 import { AccountLink } from 'components/AccountLink';

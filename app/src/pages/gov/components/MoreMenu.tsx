@@ -1,7 +1,7 @@
 import {
   BorderIconButton,
   BorderIconButtonProps,
-} from '@anchor-protocol/neumorphism-ui/components/BorderIconButton';
+} from '@terra-dev/neumorphism-ui/components/BorderIconButton';
 import { MenuItemProps, MenuList, Popover } from '@material-ui/core';
 import { MoreHoriz } from '@material-ui/icons';
 import { ReactElement, useState } from 'react';

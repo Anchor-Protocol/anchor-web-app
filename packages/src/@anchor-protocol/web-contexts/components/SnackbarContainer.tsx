@@ -1,4 +1,4 @@
-import { useSnackbar } from '@anchor-protocol/snackbar';
+import { useSnackbar } from '@terra-dev/snackbar';
 import styled from 'styled-components';
 
 export interface SnackbarContainerProps {

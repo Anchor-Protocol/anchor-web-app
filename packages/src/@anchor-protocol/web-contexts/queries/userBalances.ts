@@ -8,7 +8,7 @@ import type {
   uLuna,
   uUST,
 } from '@anchor-protocol/types';
-import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
+import { createMap, Mapped, useMap } from '@terra-dev/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useContractAddress } from '../contexts/contract';
 import { useService } from '../contexts/service';

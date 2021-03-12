@@ -5,7 +5,7 @@ import type {
   uToken,
   WASMContractResult,
 } from '@anchor-protocol/types';
-import { createMap, map } from '@anchor-protocol/use-map';
+import { createMap, map } from '@terra-dev/use-map';
 import { ApolloClient, gql } from '@apollo/client';
 import { parseResult } from '../queries/parseResult';
 import { MappedApolloQueryResult } from '../queries/types';

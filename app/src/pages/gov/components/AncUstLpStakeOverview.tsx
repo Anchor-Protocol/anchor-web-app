@@ -1,5 +1,5 @@
-import { Label } from '@anchor-protocol/neumorphism-ui/components/Label';
-import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
+import { Label } from '@terra-dev/neumorphism-ui/components/Label';
+import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
 import {
   demicrofy,
   formatANCWithPostfixUnits,
@@ -8,7 +8,7 @@ import {
 import {
   rulerLightColor,
   rulerShadowColor,
-} from '@anchor-protocol/styled-neumorphism';
+} from '@terra-dev/styled-neumorphism';
 import { uANC, uUST } from '@anchor-protocol/types';
 import big, { Big } from 'big.js';
 import { useANCPrice } from 'pages/gov/queries/ancPrice';

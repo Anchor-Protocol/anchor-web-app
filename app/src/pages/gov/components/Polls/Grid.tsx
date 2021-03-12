@@ -1,7 +1,7 @@
-import { BorderButton } from '@anchor-protocol/neumorphism-ui/components/BorderButton';
-import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
-import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
-import { TimeEnd } from '@anchor-protocol/use-time-end';
+import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { TimeEnd } from '@terra-dev/use-time-end';
 import { Schedule } from '@material-ui/icons';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
 import { PollStatusSpan } from 'pages/gov/components/PollStatusSpan';

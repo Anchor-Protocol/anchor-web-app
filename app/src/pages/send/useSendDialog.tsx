@@ -1,10 +1,10 @@
 import { min } from '@terra-dev/big-math';
 import { useOperation } from '@terra-dev/broadcastable-operation';
-import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
-import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
-import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
-import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
-import { TextInput } from '@anchor-protocol/neumorphism-ui/components/TextInput';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
+import { TextInput } from '@terra-dev/neumorphism-ui/components/TextInput';
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   ANC_INPUT_MAXIMUM_INTEGER_POINTS,
@@ -21,12 +21,8 @@ import {
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { Token, UST, uToken, uUST } from '@anchor-protocol/types';
-import {
-  DialogProps,
-  OpenDialog,
-  useDialog,
-} from '@anchor-protocol/use-dialog';
-import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
+import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
+import { useRestrictedNumberInput } from '@terra-dev/use-restricted-input';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
 import { Bank, useBank } from '@anchor-protocol/web-contexts/contexts/bank';
 import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';

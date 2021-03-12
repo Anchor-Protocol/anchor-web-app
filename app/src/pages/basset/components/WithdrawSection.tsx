@@ -1,9 +1,9 @@
 import { useOperation } from '@terra-dev/broadcastable-operation';
-import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
-import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
-import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
-import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
+import { NativeSelect } from '@terra-dev/neumorphism-ui/components/NativeSelect';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { demicrofy, formatLuna } from '@anchor-protocol/notation';
 import type { uLuna, uUST } from '@anchor-protocol/types';
 import { WalletReady } from '@anchor-protocol/wallet-provider';

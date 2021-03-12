@@ -1,5 +1,5 @@
 import type { Denom, uLuna } from '@anchor-protocol/types';
-import { map } from '@anchor-protocol/use-map';
+import { map } from '@terra-dev/use-map';
 import { testAddress, testClient } from '../../test.env';
 import {
   Data,

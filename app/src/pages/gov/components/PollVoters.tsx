@@ -1,5 +1,5 @@
-import { BorderButton } from '@anchor-protocol/neumorphism-ui/components/BorderButton';
-import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/components/HorizontalScrollTable';
+import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
+import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
 import {
   demicrofy,
   formatANCWithPostfixUnits,

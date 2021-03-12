@@ -1,7 +1,7 @@
 import {
   rulerLightColor,
   rulerShadowColor,
-} from '@anchor-protocol/styled-neumorphism';
+} from '@terra-dev/styled-neumorphism';
 import { useTheme } from 'styled-components';
 
 export interface ChartRulerProps {

@@ -1,5 +1,5 @@
-import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
-import { Tab } from '@anchor-protocol/neumorphism-ui/components/Tab';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { Tab } from '@terra-dev/neumorphism-ui/components/Tab';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { TradeBuy } from 'pages/gov/components/TradeBuy';
 import { TradeSell } from 'pages/gov/components/TradeSell';

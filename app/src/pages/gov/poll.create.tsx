@@ -1,7 +1,7 @@
-import { BorderButton } from '@anchor-protocol/neumorphism-ui/components/BorderButton';
-import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
-import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
-import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
+import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
+import { HorizontalRuler } from '@terra-dev/neumorphism-ui/components/HorizontalRuler';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { ChevronRight, Forum } from '@material-ui/icons';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { govPathname } from 'pages/gov/env';

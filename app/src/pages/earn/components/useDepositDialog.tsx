@@ -1,9 +1,9 @@
 import { useOperation } from '@terra-dev/broadcastable-operation';
-import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
-import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
-import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
-import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
-import { useConfirm } from '@anchor-protocol/neumorphism-ui/components/useConfirm';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
+import { useConfirm } from '@terra-dev/neumorphism-ui/components/useConfirm';
 import {
   demicrofy,
   formatUST,
@@ -12,8 +12,8 @@ import {
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { UST, uUST } from '@anchor-protocol/types';
-import type { DialogProps, OpenDialog } from '@anchor-protocol/use-dialog';
-import { useDialog } from '@anchor-protocol/use-dialog';
+import type { DialogProps, OpenDialog } from '@terra-dev/use-dialog';
+import { useDialog } from '@terra-dev/use-dialog';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
 import { useBank } from '@anchor-protocol/web-contexts/contexts/bank';
 import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';

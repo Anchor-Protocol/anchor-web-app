@@ -1,8 +1,8 @@
 import { ExecuteMsg } from '@anchor-protocol/anchor.js';
-import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
-import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
-import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
+import { NativeSelect } from '@terra-dev/neumorphism-ui/components/NativeSelect';
+import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import { formatExecuteMsgNumber } from '@anchor-protocol/notation';
 import { CW20Addr, Rate } from '@anchor-protocol/types';
 import { PollMsg } from '@anchor-protocol/types/contracts/anchorToken/gov';

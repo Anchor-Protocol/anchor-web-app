@@ -1,7 +1,7 @@
 import { useSubscription } from '@terra-dev/broadcastable-operation';
 import type { DateTime, uaUST, uUST } from '@anchor-protocol/types';
 import { Denom, HumanAddr } from '@anchor-protocol/types';
-import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
+import { createMap, Mapped, useMap } from '@terra-dev/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { MappedQueryResult } from '@anchor-protocol/web-contexts/queries/types';

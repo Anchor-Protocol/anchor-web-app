@@ -1,4 +1,4 @@
-import { map } from '@anchor-protocol/use-map';
+import { map } from '@terra-dev/use-map';
 import big from 'big.js';
 import { dataMap, query, RawData, RawVariables } from '../tax';
 import { testClient } from '../../test.env';

@@ -7,7 +7,7 @@ import type {
   WASMContractResult,
 } from '@anchor-protocol/types';
 import { ContractAddress } from '@anchor-protocol/types';
-import { createMap, map, Mapped, useMap } from '@anchor-protocol/use-map';
+import { createMap, map, Mapped, useMap } from '@terra-dev/use-map';
 import { WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, gql, useQuery } from '@apollo/client';
 import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';

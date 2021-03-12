@@ -1,5 +1,5 @@
-import { isTouchDevice } from '@anchor-protocol/is-touch-device';
-import { useElementIntersection } from '@anchor-protocol/use-element-intersection';
+import { isTouchDevice } from '@terra-dev/is-touch-device';
+import { useElementIntersection } from '@terra-dev/use-element-intersection';
 import { GUI } from 'dat.gui';
 import { headerHeight, landingMobileLayout } from 'env';
 import { useEffect, useRef, useState } from 'react';

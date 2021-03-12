@@ -1,7 +1,7 @@
 import { useOperation } from '@terra-dev/broadcastable-operation';
-import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
-import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
-import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
 import {
   demicrofy,
   formatLuna,
@@ -11,7 +11,7 @@ import {
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import type { bLuna, Luna, uUST } from '@anchor-protocol/types';
-import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
+import { useRestrictedNumberInput } from '@terra-dev/use-restricted-input';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
 import { useBank } from '@anchor-protocol/web-contexts/contexts/bank';
 import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';

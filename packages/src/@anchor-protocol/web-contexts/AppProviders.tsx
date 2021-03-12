@@ -4,11 +4,11 @@ import {
 } from '@anchor-protocol/anchor.js';
 import { OperationBroadcaster } from '@terra-dev/broadcastable-operation';
 import { GlobalDependency } from '@terra-dev/broadcastable-operation/global';
-import { GlobalStyle } from '@anchor-protocol/neumorphism-ui/themes/GlobalStyle';
-import { SnackbarProvider } from '@anchor-protocol/snackbar';
+import { GlobalStyle } from '@terra-dev/neumorphism-ui/themes/GlobalStyle';
+import { SnackbarProvider } from '@terra-dev/snackbar';
 import { ContractAddress, Rate, uUST } from '@anchor-protocol/types';
-import { GoogleAnalytics } from '@anchor-protocol/use-google-analytics';
-import { RouterScrollRestoration } from '@anchor-protocol/use-router-scroll-restoration';
+import { GoogleAnalytics } from '@terra-dev/use-google-analytics';
+import { RouterScrollRestoration } from '@terra-dev/use-router-scroll-restoration';
 import {
   ChromeExtensionWalletProvider,
   RouterWalletStatusRecheck,

@@ -1,5 +1,5 @@
-import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
-import { Tab } from '@anchor-protocol/neumorphism-ui/components/Tab';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { Tab } from '@terra-dev/neumorphism-ui/components/Tab';
 import { Swap as SwapTabContent } from 'pages/basset/components/Swap';
 import React, { useState } from 'react';
 import styled from 'styled-components';

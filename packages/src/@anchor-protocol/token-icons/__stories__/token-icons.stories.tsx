@@ -1,4 +1,4 @@
-import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
+import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
 import { ReactNode } from 'react';
 import styled from 'styled-components';
 import { TokenIcon, tokens, variants } from '../';

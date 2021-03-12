@@ -1,5 +1,5 @@
 import { OperationResult } from '@terra-dev/broadcastable-operation';
-import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Done } from 'components/TransactionRenderer/Done';
 import { Fault } from 'components/TransactionRenderer/Fault';
 import { WaitingReceipt } from 'components/TransactionRenderer/WaitingReceipt';

@@ -1,6 +1,6 @@
 import { useOperation } from '@terra-dev/broadcastable-operation';
-import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
-import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   ANC_INPUT_MAXIMUM_INTEGER_POINTS,

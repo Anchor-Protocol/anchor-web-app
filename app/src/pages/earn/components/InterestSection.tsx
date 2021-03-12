@@ -1,10 +1,10 @@
 import { APYChart, APYChartItem } from '@anchor-protocol/app-charts/APYChart';
-import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
-import { Label } from '@anchor-protocol/neumorphism-ui/components/Label';
-import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
-import { Tab } from '@anchor-protocol/neumorphism-ui/components/Tab';
-import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
+import { Label } from '@terra-dev/neumorphism-ui/components/Label';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { Tab } from '@terra-dev/neumorphism-ui/components/Tab';
+import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
 import {
   demicrofy,
   formatRateToPercentage,

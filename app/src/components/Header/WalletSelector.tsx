@@ -1,7 +1,7 @@
 import { Wallet } from '@anchor-protocol/icons';
-import { BorderButton } from '@anchor-protocol/neumorphism-ui/components/BorderButton';
-import { FlatButton } from '@anchor-protocol/neumorphism-ui/components/FlatButton';
-import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
+import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
+import { FlatButton } from '@terra-dev/neumorphism-ui/components/FlatButton';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import {
   demicrofy,
   formatANC,

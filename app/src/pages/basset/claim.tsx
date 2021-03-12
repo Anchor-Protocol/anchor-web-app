@@ -2,7 +2,7 @@ import {
   pressed,
   rulerLightColor,
   rulerShadowColor,
-} from '@anchor-protocol/styled-neumorphism';
+} from '@terra-dev/styled-neumorphism';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { ClaimSection } from './components/ClaimSection';

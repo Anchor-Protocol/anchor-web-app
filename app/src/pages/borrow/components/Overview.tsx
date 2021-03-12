@@ -4,10 +4,10 @@ import {
   CollateralValue,
   BorrowAPR,
 } from '@anchor-protocol/icons';
-import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
-import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
 import {
   demicrofy,
   formatRateToPercentage,

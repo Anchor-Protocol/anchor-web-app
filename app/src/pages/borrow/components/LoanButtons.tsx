@@ -1,4 +1,4 @@
-import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import big from 'big.js';
 import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { useBorrowDialog } from 'pages/borrow/components/useBorrowDialog';

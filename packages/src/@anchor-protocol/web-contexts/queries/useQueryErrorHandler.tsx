@@ -1,4 +1,4 @@
-import { Snackbar, useSnackbar } from '@anchor-protocol/snackbar';
+import { Snackbar, useSnackbar } from '@terra-dev/snackbar';
 import { ApolloError } from '@apollo/client';
 import React, { useCallback } from 'react';
 

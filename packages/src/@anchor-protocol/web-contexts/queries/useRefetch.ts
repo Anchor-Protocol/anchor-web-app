@@ -1,4 +1,4 @@
-import { map, Map } from '@anchor-protocol/use-map';
+import { map, Map } from '@terra-dev/use-map';
 import { ApolloQueryResult } from '@apollo/client';
 import { MappedApolloQueryResult } from '../queries/types';
 import { useCallback } from 'react';

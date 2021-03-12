@@ -1,7 +1,7 @@
 import { floor } from '@terra-dev/big-math';
-import { useEventBus } from '@anchor-protocol/event-bus';
+import { useEventBus } from '@terra-dev/event-bus';
 import type { DateTime, JSDateTime, Rate, uUST } from '@anchor-protocol/types';
-import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
+import { createMap, Mapped, useMap } from '@terra-dev/use-map';
 import { gql, useQuery } from '@apollo/client';
 import big from 'big.js';
 import { useService } from '@anchor-protocol/web-contexts/contexts/service';

@@ -1,11 +1,11 @@
 import { AnchorNoCircle } from '@anchor-protocol/icons';
-import { BorderButton } from '@anchor-protocol/neumorphism-ui/components/BorderButton';
-import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
-import { Label } from '@anchor-protocol/neumorphism-ui/components/Label';
-import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
-import { TextButton } from '@anchor-protocol/neumorphism-ui/components/TextButton';
-import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
+import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
+import { Label } from '@terra-dev/neumorphism-ui/components/Label';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { TextButton } from '@terra-dev/neumorphism-ui/components/TextButton';
+import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
 import {
   formatRateToPercentage,
   formatUSTWithPostfixUnits,

@@ -1,6 +1,6 @@
 import { AnchorNoCircle } from '@anchor-protocol/icons';
-import { RulerTab } from '@anchor-protocol/neumorphism-ui/components/RulerTab';
-import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
+import { RulerTab } from '@terra-dev/neumorphism-ui/components/RulerTab';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import { Circles } from 'components/Circles';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';

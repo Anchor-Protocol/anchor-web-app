@@ -1,10 +1,10 @@
 import {
   HorizontalGraphBar,
   Rect,
-} from '@anchor-protocol/neumorphism-ui/components/HorizontalGraphBar';
-import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
-import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
+} from '@terra-dev/neumorphism-ui/components/HorizontalGraphBar';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
+import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
 import {
   demicrofy,
   formatRateToPercentage,

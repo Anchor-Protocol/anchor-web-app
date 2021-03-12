@@ -1,4 +1,4 @@
-import { configErrorBoundary } from '@anchor-protocol/neumorphism-ui/components/configErrorBoundary';
+import { configErrorBoundary } from '@terra-dev/neumorphism-ui/components/configErrorBoundary';
 import * as Sentry from '@sentry/react';
 import { Integrations } from '@sentry/tracing';
 import { SENTRY_DSN } from '@anchor-protocol/web-contexts/env';

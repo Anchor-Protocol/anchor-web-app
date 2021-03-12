@@ -1,4 +1,4 @@
-import { Mapped } from '@anchor-protocol/use-map';
+import { Mapped } from '@terra-dev/use-map';
 import { ApolloQueryResult, QueryResult } from '@apollo/client';
 
 export type MappedQueryResult<RawVariables, RawData, Data> = Omit<

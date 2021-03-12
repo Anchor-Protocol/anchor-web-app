@@ -5,7 +5,7 @@ import {
   useBroadcasting,
   useOperation,
 } from '@terra-dev/broadcastable-operation';
-import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import React, { ComponentType } from 'react';
 import { FloatingContainer } from './fixtures/FloatingContainer';
 import { lazy } from './fixtures/lazy';
