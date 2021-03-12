@@ -91,4 +91,4 @@ export const formatPercentage = (n: Percent<BigSource>) =>
   percentageFormatter(n);
 
 export const formatRate = (n: Rate<BigSource>) =>
-  percentageFormatter(big(n).div(100));
+  percentageFormatter(big(n).mul(100));

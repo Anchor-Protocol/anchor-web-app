@@ -1,8 +1,9 @@
-import { aUST, bLuna, Luna, Percent, UST } from '@anchor-protocol/types';
+import { aUST, bLuna, Luna, Percent, Rate, UST } from '@anchor-protocol/types';
 import {
   formatLuna,
   formatLunaInput,
   formatPercentage,
+  formatRate,
   formatUST,
   formatUSTInput,
   formatUSTWithPostfixUnits,
@@ -50,5 +51,9 @@ describe('notation', () => {
 
     expect(formatLunaInput('10.3436' as Luna)).toBe('10.3436');
     expect(formatLunaInput('10.00' as bLuna)).toBe('10');
+  });
+
+  test('error cases', () => {
+    expect(formatRate('0.195545188517526138' as Rate)).toBe('19.55');
   });
 });
