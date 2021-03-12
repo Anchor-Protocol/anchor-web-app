@@ -107,10 +107,10 @@ function MintBase({ className }: MintProps) {
     parameters,
   ]);
 
-  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
-    bank,
-    fixedGas,
-  ]);
+  const invalidTxFee = useMemo(
+    () => serviceAvailable && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, serviceAvailable],
+  );
 
   const invalidBondAmount = useMemo(
     () => validateBondAmount(bondAmount, bank),

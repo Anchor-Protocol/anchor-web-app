@@ -45,10 +45,10 @@ function AirdropBase({ className }: AirdropProps) {
   // ---------------------------------------------
   const bank = useBank();
 
-  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
-    bank,
-    fixedGas,
-  ]);
+  const invalidTxFee = useMemo(
+    () => serviceAvailable && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, serviceAvailable],
+  );
 
   const init = useCallback(() => {
     refetch();

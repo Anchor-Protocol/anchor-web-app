@@ -87,10 +87,10 @@ export function Burn() {
     parameters,
   ]);
 
-  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
-    bank,
-    fixedGas,
-  ]);
+  const invalidTxFee = useMemo(
+    () => serviceAvailable && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, serviceAvailable],
+  );
 
   const invalidBurnAmount = useMemo(
     () => validateBurnAmount(burnAmount, bank),

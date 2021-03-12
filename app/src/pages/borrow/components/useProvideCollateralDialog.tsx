@@ -130,10 +130,10 @@ function ComponentBase({
     [amountToBorrowLimit, depositAmount],
   );
 
-  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
-    bank,
-    fixedGas,
-  ]);
+  const invalidTxFee = useMemo(
+    () => serviceAvailable && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, serviceAvailable],
+  );
 
   const invalidDepositAmount = useMemo(
     () => validateDepositAmount(depositAmount, bank),

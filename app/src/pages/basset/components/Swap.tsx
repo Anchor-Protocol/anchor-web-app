@@ -25,6 +25,11 @@ import { terraswap } from '@anchor-protocol/types';
 import { useResolveLast } from '@anchor-protocol/use-resolve-last';
 import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
+import { useBank } from '@anchor-protocol/web-contexts/contexts/bank';
+import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
+import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
+import { useService } from '@anchor-protocol/web-contexts/contexts/service';
+import { querySimulation } from '@anchor-protocol/web-contexts/queries/simulation';
 import { useApolloClient } from '@apollo/client';
 import {
   Input as MuiInput,
@@ -35,14 +40,9 @@ import { ArrowDownLine } from 'components/ArrowDownLine';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { useBank } from '@anchor-protocol/web-contexts/contexts/bank';
-import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
-import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
-import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { swapBurnSimulation } from 'pages/basset/logics/swapBurnSimulation';
 import { swapGetSimulation } from 'pages/basset/logics/swapGetSimulation';
-import { querySimulation } from '@anchor-protocol/web-contexts/queries/simulation';
 import React, {
   ChangeEvent,
   useCallback,
@@ -109,10 +109,10 @@ export function Swap() {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
-    bank,
-    fixedGas,
-  ]);
+  const invalidTxFee = useMemo(
+    () => serviceAvailable && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, serviceAvailable],
+  );
 
   const invalidBurnAmount = useMemo(
     () => validateBurnAmount(burnAmount, bank),

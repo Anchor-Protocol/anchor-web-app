@@ -94,10 +94,10 @@ function ComponentBase({
     return big(userGovStakingInfo.share).mul(govShareIndex) as uANC<Big>;
   }, [govANCBalance, govState, userGovStakingInfo]);
 
-  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
-    bank,
-    fixedGas,
-  ]);
+  const invalidTxFee = useMemo(
+    () => serviceAvailable && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, serviceAvailable],
+  );
 
   const invalidAmount = useMemo(() => {
     if (amount.length === 0) return undefined;

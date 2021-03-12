@@ -118,10 +118,10 @@ export function TradeBuy() {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
-    bank,
-    fixedGas,
-  ]);
+  const invalidTxFee = useMemo(
+    () => serviceAvailable && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, serviceAvailable],
+  );
 
   const invalidFromAmount = useMemo(() => {
     if (fromAmount.length === 0) return undefined;

@@ -7,12 +7,12 @@ import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import { demicrofy, formatLuna } from '@anchor-protocol/notation';
 import type { uLuna, uUST } from '@anchor-protocol/types';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
-import big, { Big } from 'big.js';
-import { MessageBox } from 'components/MessageBox';
-import { TransactionRenderer } from 'components/TransactionRenderer';
 import { useBank } from '@anchor-protocol/web-contexts/contexts/bank';
 import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
 import { useService } from '@anchor-protocol/web-contexts/contexts/service';
+import big, { Big } from 'big.js';
+import { MessageBox } from 'components/MessageBox';
+import { TransactionRenderer } from 'components/TransactionRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
 import { withdrawAllHistory } from 'pages/basset/logics/withdrawAllHistory';
 import { useWithdrawable } from 'pages/basset/queries/withdrawable';
@@ -78,10 +78,10 @@ export function WithdrawSection({
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
-    bank,
-    fixedGas,
-  ]);
+  const invalidTxFee = useMemo(
+    () => serviceAvailable && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, serviceAvailable],
+  );
 
   const withdrawHistory = useMemo(
     () => withdrawAllHistory(withdrawRequests, allHistory, parameters),

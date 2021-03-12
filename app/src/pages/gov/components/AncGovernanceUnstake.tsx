@@ -13,14 +13,14 @@ import {
 } from '@anchor-protocol/notation';
 import { ANC, uANC } from '@anchor-protocol/types';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
+import { useBank } from '@anchor-protocol/web-contexts/contexts/bank';
+import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
+import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { InputAdornment } from '@material-ui/core';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { useBank } from '@anchor-protocol/web-contexts/contexts/bank';
-import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
-import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { useRewardsAncGovernance } from 'pages/gov/queries/rewardsAncGovernance';
 import { useTotalStaked } from 'pages/gov/queries/totalStaked';
@@ -80,10 +80,10 @@ export function AncGovernanceUnstake() {
     return unstakable;
   }, [govANCBalance, govState, userGovStakingInfo]);
 
-  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
-    bank,
-    fixedGas,
-  ]);
+  const invalidTxFee = useMemo(
+    () => serviceAvailable && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, serviceAvailable],
+  );
 
   const invalidANCAmount = useMemo(() => {
     if (ancAmount.length === 0 || !unstakableBalance) return undefined;

@@ -52,10 +52,10 @@ export function AncUstLpUnstake() {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
-    bank,
-    fixedGas,
-  ]);
+  const invalidTxFee = useMemo(
+    () => serviceAvailable && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, serviceAvailable],
+  );
 
   const invalidLpAmount = useMemo(() => {
     if (lpAmount.length === 0 || !userLPStakingInfo) return undefined;

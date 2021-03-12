@@ -229,7 +229,10 @@ function ComponentBase({
     ).plus(fixedGas) as uUST<Big>;
   }, [amount, bank.tax.maxTaxUUSD, bank.tax.taxRate, currency.value, fixedGas]);
 
-  const invalidTxFee = useMemo(() => validateTxFee(bank, txFee), [bank, txFee]);
+  const invalidTxFee = useMemo(
+    () => serviceAvailable && validateTxFee(bank, txFee),
+    [bank, serviceAvailable, txFee],
+  );
 
   const invalidAddress = useMemo(() => {
     if (address.length === 0) {

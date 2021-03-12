@@ -52,10 +52,10 @@ export function AncGovernanceStake() {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const invalidTxFee = useMemo(() => validateTxFee(bank, fixedGas), [
-    bank,
-    fixedGas,
-  ]);
+  const invalidTxFee = useMemo(
+    () => serviceAvailable && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, serviceAvailable],
+  );
 
   const invalidANCAmount = useMemo(() => {
     if (ancAmount.length === 0 || !userANCBalance) return undefined;
