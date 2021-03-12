@@ -147,22 +147,12 @@ export function InterestSection({ className }: InterestSectionProps) {
         />
 
         <div className="amount">
-          <Tooltip
-            title={
-              'This is debug message. interest_earned is ' +
-              String(interestEarned)
-            }
-            placement="top"
-          >
-            <span>
-              <AnimateNumber format={formatUST}>
-                {interestEarned
-                  ? demicrofy(interestEarned)
-                  : (0 as UST<number>)}
-              </AnimateNumber>{' '}
-              UST
-            </span>
-          </Tooltip>
+          <span>
+            <AnimateNumber format={formatUST}>
+              {interestEarned ? demicrofy(interestEarned) : (0 as UST<number>)}
+            </AnimateNumber>{' '}
+            UST
+          </span>
           <p>
             <IconSpan>
               Interest earned{' '}

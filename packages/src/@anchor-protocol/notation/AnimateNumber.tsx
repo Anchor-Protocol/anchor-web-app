@@ -1,7 +1,7 @@
 import { interpolateBig } from '@terra-dev/big-interpolate';
 import big, { Big, BigSource } from 'big.js';
 import { easeCircleOut } from 'd3-ease';
-import { timer, Timer } from 'd3-timer';
+import { timer } from 'd3-timer';
 import { DetailedHTMLProps, HTMLAttributes, useEffect, useRef } from 'react';
 
 type Formatter<T extends BigSource> = (value: T) => string;
@@ -31,7 +31,6 @@ export function AnimateNumber<T extends BigSource>({
   const _element = useRef<HTMLSpanElement>(null);
   const _format = useRef<Formatter<T>>(format);
   const _value = useRef<Big>(initialValue);
-  const _timer = useRef<Timer>();
 
   useEffect(() => {
     _format.current = format;
@@ -44,8 +43,6 @@ export function AnimateNumber<T extends BigSource>({
   useEffect(() => {
     if (!_element.current) return;
 
-    _timer.current?.stop();
-
     if (!_value.current.eq(value)) {
       const interpolate = interpolateBig({
         from: _value.current,
@@ -53,24 +50,26 @@ export function AnimateNumber<T extends BigSource>({
         ease,
       });
 
-      _timer.current = timer((elapsed) => {
+      const ti = timer((elapsed) => {
         const dv = interpolate(Math.min(elapsed / duration, 1));
         _element.current!.textContent = _format.current(dv as T);
         if (elapsed > duration) {
-          _timer.current?.stop();
+          ti.stop();
+          _element.current!.textContent = _format.current(value);
         }
       });
 
       _value.current = big(value);
+
+      return () => {
+        ti.stop();
+      };
     }
   }, [duration, ease, value]);
 
-  useEffect(
-    () => () => {
-      _timer.current?.stop();
-    },
-    [],
+  return (
+    <span ref={_element} {...spanProps}>
+      {format(value)}
+    </span>
   );
-
-  return <span ref={_element} {...spanProps} />;
 }
