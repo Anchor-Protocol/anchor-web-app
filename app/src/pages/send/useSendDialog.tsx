@@ -1,16 +1,8 @@
-import { min } from '@terra-dev/big-math';
-import { useOperation } from '@terra-dev/broadcastable-operation';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
-import { TextInput } from '@terra-dev/neumorphism-ui/components/TextInput';
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   ANC_INPUT_MAXIMUM_INTEGER_POINTS,
   demicrofy,
   formatANCInput,
-  formatLPInput,
   formatLunaInput,
   formatUST,
   formatUSTInput,
@@ -21,8 +13,6 @@ import {
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { Token, UST, uToken, uUST } from '@anchor-protocol/types';
-import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
-import { useRestrictedNumberInput } from '@terra-dev/use-restricted-input';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
 import { Bank, useBank } from '@anchor-protocol/web-contexts/contexts/bank';
 import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
@@ -33,6 +23,15 @@ import {
   Modal,
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
+import { min } from '@terra-dev/big-math';
+import { useOperation } from '@terra-dev/broadcastable-operation';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
+import { TextInput } from '@terra-dev/neumorphism-ui/components/TextInput';
+import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
+import { useRestrictedNumberInput } from '@terra-dev/use-restricted-input';
 import { AccAddress } from '@terra-money/terra.js';
 import big, { Big, BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
@@ -150,28 +149,8 @@ function ComponentBase({
           formatANCInput(demicrofy(bank.userBalances.uANC)),
         cw20Address: cw20.ANC,
       },
-      {
-        label: 'ANC-UST-LP',
-        value: 'anc-ust-lp',
-        integerPoints: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
-        decimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
-        getWithdrawable: (bank: Bank) => bank.userBalances.uAncUstLP,
-        getFormatWithdrawable: (bank: Bank) =>
-          formatLPInput(demicrofy(bank.userBalances.uAncUstLP)),
-        cw20Address: cw20.AncUstLP,
-      },
-      {
-        label: 'bLuna-Luna-LP',
-        value: 'bluna-luna-lp',
-        integerPoints: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
-        decimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
-        getWithdrawable: (bank: Bank) => bank.userBalances.ubLunaLunaLP,
-        getFormatWithdrawable: (bank: Bank) =>
-          formatLPInput(demicrofy(bank.userBalances.ubLunaLunaLP)),
-        cw20Address: cw20.bLunaLunaLP,
-      },
     ],
-    [cw20.ANC, cw20.AncUstLP, cw20.aUST, cw20.bLuna, cw20.bLunaLunaLP],
+    [cw20.ANC, cw20.aUST, cw20.bLuna],
   );
 
   // ---------------------------------------------

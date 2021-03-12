@@ -199,18 +199,24 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                         {formatANC(demicrofy(bank.userBalances.uANC))}
                       </span>
                     </li>
-                    <li>
-                      <span>ANC-UST-LP</span>
-                      <span>
-                        {formatLP(demicrofy(bank.userBalances.uAncUstLP))}
-                      </span>
-                    </li>
-                    <li>
-                      <span>bLuna-Luna-LP</span>
-                      <span>
-                        {formatLP(demicrofy(bank.userBalances.ubLunaLunaLP))}
-                      </span>
-                    </li>
+                    {process.env.NODE_ENV === 'development' && (
+                      <>
+                        <li>
+                          <span>ANC-UST-LP</span>
+                          <span>
+                            {formatLP(demicrofy(bank.userBalances.uAncUstLP))}
+                          </span>
+                        </li>
+                        <li>
+                          <span>bLuna-Luna-LP</span>
+                          <span>
+                            {formatLP(
+                              demicrofy(bank.userBalances.ubLunaLunaLP),
+                            )}
+                          </span>
+                        </li>
+                      </>
+                    )}
                   </ul>
 
                   <div className="send">
