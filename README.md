@@ -61,9 +61,9 @@ IDE
 
 ## `/packages`
 
-| develop                                            |
-| -------------------------------------------------- |
-| <https://https://anchor-storybook.vercel.app/>     |
+| develop                                   |
+| ----------------------------------------- |
+| <https://anchor-storybook.vercel.app/>    |
 
 # License
 
