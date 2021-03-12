@@ -1,5 +1,0 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
-
-#yarn run markdown-source-import README.md "app/**/*.md" "packages/**/*.md" --git-add
-yarn run lint-staged
