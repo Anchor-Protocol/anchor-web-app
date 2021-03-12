@@ -1,4 +1,3 @@
-import { Network, useNetwork } from '@anchor-protocol/use-network';
 import {
   useWallet,
   WalletReady,
@@ -11,7 +10,7 @@ export interface ServiceProviderProps {
   children: ReactNode;
 }
 
-export interface Service extends Network {
+export interface Service {
   serviceAvailable: boolean;
   walletReady: WalletReady | undefined;
   walletStatus: WalletStatus;
@@ -21,18 +20,15 @@ export interface Service extends Network {
 const ServiceContext: Context<Service> = createContext<Service>();
 
 export function ServiceProvider({ children }: ServiceProviderProps) {
-  const { online } = useNetwork();
   const { status: walletStatus } = useWallet();
 
   const state = useMemo<Service>(() => {
     return {
-      serviceAvailable: walletStatus.status === 'ready' && online,
-      online,
-      walletReady:
-        walletStatus.status === 'ready' && online ? walletStatus : undefined,
+      serviceAvailable: walletStatus.status === 'ready',
+      walletReady: walletStatus.status === 'ready' ? walletStatus : undefined,
       walletStatus,
     };
-  }, [online, walletStatus]);
+  }, [walletStatus]);
 
   return (
     <ServiceContext.Provider value={state}>{children}</ServiceContext.Provider>
