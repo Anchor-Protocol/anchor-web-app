@@ -1,16 +1,18 @@
-import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import {
+  AnimateNumber,
   demicrofy,
   formatLunaWithPostfixUnits,
   formatRate,
   formatUSTWithPostfixUnits,
+  formatUTokenInteger,
 } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
-import { Rate, uUST } from '@anchor-protocol/types';
+import { Luna, Rate, UST, uUST } from '@anchor-protocol/types';
 import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
+import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import big, { Big } from 'big.js';
 import { screen } from 'env';
 import { useBAssetMarket } from 'pages/market-simple/queries/bAssetMarket';
@@ -98,11 +100,9 @@ function MarketBase({ className }: MarketProps) {
 
             <div className="amount">
               ${' '}
-              {market
-                ? formatUSTWithPostfixUnits(
-                    demicrofy(market.totalDeposit),
-                  ).replace(/\.[0-9]+$/, '')
-                : 0}
+              <AnimateNumber format={formatUTokenInteger}>
+                {market ? market.totalDeposit : (0 as uUST<number>)}
+              </AnimateNumber>
             </div>
           </Section>
 
@@ -118,11 +118,9 @@ function MarketBase({ className }: MarketProps) {
 
             <div className="amount">
               ${' '}
-              {market
-                ? formatUSTWithPostfixUnits(
-                    demicrofy(market.totalBorrow),
-                  ).replace(/\.[0-9]+$/, '')
-                : 0}
+              <AnimateNumber format={formatUTokenInteger}>
+                {market ? market.totalBorrow : (0 as uUST<number>)}
+              </AnimateNumber>
             </div>
           </Section>
 
@@ -186,26 +184,27 @@ function MarketBase({ className }: MarketProps) {
                   <td>
                     <div className="value">
                       ${' '}
-                      {market
-                        ? formatUSTWithPostfixUnits(
-                            demicrofy(market.totalDeposit),
-                          ).replace(/\.[0-9]+$/, '')
-                        : 0}
+                      <AnimateNumber format={formatUTokenInteger}>
+                        {market ? market.totalDeposit : (0 as uUST<number>)}
+                      </AnimateNumber>
                     </div>
                   </td>
                   <td>
                     <div className="value">
-                      {stableCoin ? formatRate(stableCoin.depositRate) : 0}%
+                      <AnimateNumber format={formatRate}>
+                        {stableCoin
+                          ? stableCoin.depositRate
+                          : (0 as Rate<number>)}
+                      </AnimateNumber>
+                      %
                     </div>
                   </td>
                   <td>
                     <div className="value">
                       ${' '}
-                      {market
-                        ? formatUSTWithPostfixUnits(
-                            demicrofy(market.totalBorrow),
-                          ).replace(/\.[0-9]+$/, '')
-                        : 0}
+                      <AnimateNumber format={formatUTokenInteger}>
+                        {market ? market.totalBorrow : (0 as uUST<number>)}
+                      </AnimateNumber>
                     </div>
                   </td>
                   <td>
@@ -265,26 +264,32 @@ function MarketBase({ className }: MarketProps) {
                   </td>
                   <td>
                     <div className="value">
-                      $ {bAsset ? formatUSTWithPostfixUnits(bAsset.price) : 0}
+                      ${' '}
+                      <AnimateNumber format={formatUSTWithPostfixUnits}>
+                        {bAsset ? bAsset.price : (0 as UST<number>)}
+                      </AnimateNumber>
                     </div>
                   </td>
                   <td>
                     <div className="value">
-                      {bAsset
-                        ? formatLunaWithPostfixUnits(
-                            demicrofy(bAsset.totalCollateral),
-                          )
-                        : 0}
+                      <AnimateNumber format={formatLunaWithPostfixUnits}>
+                        {bAsset
+                          ? demicrofy(bAsset.totalCollateral)
+                          : (0 as Luna<number>)}
+                      </AnimateNumber>
                     </div>
                   </td>
                   <td>
                     <div className="value">
                       ${' '}
-                      {bAsset
-                        ? formatUSTWithPostfixUnits(
-                            demicrofy(bAsset.totalCollateralValue),
-                          )
-                        : 0}
+                      <AnimateNumber
+                        format={formatUSTWithPostfixUnits}
+                        id="collateral-value"
+                      >
+                        {bAsset
+                          ? demicrofy(bAsset.totalCollateralValue)
+                          : (0 as UST<number>)}
+                      </AnimateNumber>
                     </div>
                   </td>
                 </tr>

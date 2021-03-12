@@ -7,6 +7,7 @@ import {
   bLunaLunaLP,
   LPToken,
   Luna,
+  Token,
   UST,
   uToken,
 } from '@anchor-protocol/types';
@@ -130,6 +131,10 @@ export function formatLunaWithPostfixUnits(
 export function formatUTokenDecimal2(n: uToken<BigSource>): string {
   const bn = big(n).div(MICRO);
   return bn.gte(M) ? d2Formatter(bn.div(M)) + 'M' : d2Formatter(bn);
+}
+
+export function formatTokenInteger(n: Token<BigSource>): string {
+  return big(n).gte(M) ? iFormatter(n) + 'M' : iFormatter(n);
 }
 
 export function formatUTokenInteger(n: uToken<BigSource>): string {
