@@ -1,4 +1,4 @@
-import { useSubscription } from '@anchor-protocol/broadcastable-operation';
+import { useSubscription } from '@terra-dev/broadcastable-operation';
 import { gql, QueryResult, useQuery } from '@apollo/client';
 import { useService } from '../contexts/service';
 import { useMemo } from 'react';

@@ -1,4 +1,4 @@
-import { useOperation } from '@anchor-protocol/broadcastable-operation';
+import { useOperation } from '@terra-dev/broadcastable-operation';
 import { isZero } from '@anchor-protocol/is-zero';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';

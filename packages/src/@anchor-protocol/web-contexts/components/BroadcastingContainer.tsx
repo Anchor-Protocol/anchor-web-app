@@ -1,7 +1,7 @@
 import {
   createBroadcastingOption,
   useBroadcasting,
-} from '@anchor-protocol/broadcastable-operation';
+} from '@terra-dev/broadcastable-operation';
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
 

@@ -1,7 +1,7 @@
 import {
   Fault as FaultResult,
   OperationTimeoutError,
-} from '@anchor-protocol/broadcastable-operation';
+} from '@terra-dev/broadcastable-operation';
 import { HorizontalHeavyRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalHeavyRuler';
 import { Tooltip } from '@anchor-protocol/neumorphism-ui/components/Tooltip';
 import { UserDeniedError } from '@anchor-protocol/wallet-provider';

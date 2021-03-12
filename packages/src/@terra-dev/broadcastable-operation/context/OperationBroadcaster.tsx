@@ -1,4 +1,4 @@
-import type { GlobalDependency } from '@anchor-protocol/broadcastable-operation/global';
+import type { GlobalDependency } from '@terra-dev/broadcastable-operation/global';
 import { produce } from 'immer';
 import {
   Context,

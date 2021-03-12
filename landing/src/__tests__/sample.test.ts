@@ -1,4 +1,4 @@
-import { max } from '@anchor-protocol/big-math';
+import { max } from '@terra-dev/big-math';
 
 describe('sample', () => {
   test('sample test', () => {

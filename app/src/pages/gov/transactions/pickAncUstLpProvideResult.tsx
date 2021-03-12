@@ -1,4 +1,4 @@
-import { min } from '@anchor-protocol/big-math';
+import { min } from '@terra-dev/big-math';
 import {
   demicrofy,
   formatANCWithPostfixUnits,

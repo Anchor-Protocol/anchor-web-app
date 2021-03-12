@@ -1,4 +1,4 @@
-import { auditMeasure } from '@anchor-protocol/audit-fastdom';
+import { auditMeasure } from '@terra-dev/audit-fastdom';
 import { isTouchDevice } from '@anchor-protocol/is-touch-device';
 import { landingMobileLayout } from 'env';
 import { FrictionlessAcess } from 'pages/index/components/FrictionlessAcess';

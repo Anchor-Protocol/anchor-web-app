@@ -1,4 +1,4 @@
-import { min } from '@anchor-protocol/big-math';
+import { min } from '@terra-dev/big-math';
 import type { uUST } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
 import { Bank } from '@anchor-protocol/web-contexts/contexts/bank';

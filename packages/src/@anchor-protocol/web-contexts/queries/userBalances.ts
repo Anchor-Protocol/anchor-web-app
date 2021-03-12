@@ -1,4 +1,4 @@
-import { useSubscription } from '@anchor-protocol/broadcastable-operation';
+import { useSubscription } from '@terra-dev/broadcastable-operation';
 import type {
   uANC,
   uAncUstLP,

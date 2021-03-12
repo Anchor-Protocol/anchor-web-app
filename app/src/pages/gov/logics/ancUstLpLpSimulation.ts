@@ -1,4 +1,4 @@
-import { max, min } from '@anchor-protocol/big-math';
+import { max, min } from '@terra-dev/big-math';
 import { demicrofy, microfy } from '@anchor-protocol/notation';
 import {
   anchorToken,

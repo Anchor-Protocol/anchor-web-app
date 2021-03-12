@@ -10,7 +10,7 @@ import {
   merge,
   OperationDependency,
   timeout,
-} from '@anchor-protocol/broadcastable-operation';
+} from '@terra-dev/broadcastable-operation';
 import {
   Coin,
   Coins,

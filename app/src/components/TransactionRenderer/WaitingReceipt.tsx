@@ -1,4 +1,4 @@
-import { InProgress } from '@anchor-protocol/broadcastable-operation';
+import { InProgress } from '@terra-dev/broadcastable-operation';
 import { HorizontalHeavyRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalHeavyRuler';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxHashLink } from '@anchor-protocol/web-contexts/components/TxHashLink';

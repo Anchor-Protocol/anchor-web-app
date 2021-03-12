@@ -1,4 +1,4 @@
-import { OperationStop } from '@anchor-protocol/broadcastable-operation';
+import { OperationStop } from '@terra-dev/broadcastable-operation';
 import { ApolloClient } from '@apollo/client';
 import { TxInfoError } from '../errors/TxInfoError';
 import { Data, queryTxInfo } from '../queries/txInfos';

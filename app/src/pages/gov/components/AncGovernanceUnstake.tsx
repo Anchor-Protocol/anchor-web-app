@@ -1,5 +1,5 @@
-import { max } from '@anchor-protocol/big-math';
-import { useOperation } from '@anchor-protocol/broadcastable-operation';
+import { max } from '@terra-dev/big-math';
+import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
 import {

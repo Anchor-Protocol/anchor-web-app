@@ -1,4 +1,4 @@
-import { Done as DoneResult } from '@anchor-protocol/broadcastable-operation';
+import { Done as DoneResult } from '@terra-dev/broadcastable-operation';
 import { HorizontalHeavyRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalHeavyRuler';
 import { Done as DoneIcon } from '@material-ui/icons';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';

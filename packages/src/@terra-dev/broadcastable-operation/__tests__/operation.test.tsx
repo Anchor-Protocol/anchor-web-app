@@ -2,7 +2,7 @@ import {
   createOperationOptions,
   OperationBroadcaster,
   useOperation,
-} from '@anchor-protocol/broadcastable-operation';
+} from '@terra-dev/broadcastable-operation';
 import { act, renderHook } from '@testing-library/react-hooks';
 import { ReactNode } from 'react';
 

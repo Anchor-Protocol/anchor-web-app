@@ -12,7 +12,7 @@ import resultRendering2 from './images/20210209.133120.png';
 4. Chrome Extension 에서 Transaction 처리됨
 5. 결과를 Web Site 내에서 확인할 수 없음
 
-위와 같은 구조를 해결하기 위해서 별개의 Framework(`@anchor-protocol/broadcastable-operation`)을 만들어서 사용한다.
+위와 같은 구조를 해결하기 위해서 별개의 Framework(`@terra-dev/broadcastable-operation`)을 만들어서 사용한다.
 
 1. 화면 내에서 Transaction 요청
 2. 화면 내에서 Chrome Extension의 Transaction 결과 대기
@@ -31,7 +31,7 @@ import resultRendering2 from './images/20210209.133120.png';
 Provider 설정 (전역 관리자)
 
 ```tsx
-import { OperationBroadcaster } from '@anchor-protocol/broadcastable-operation';
+import { OperationBroadcaster } from '@terra-dev/broadcastable-operation';
 
 function App() {
   return (
@@ -53,7 +53,7 @@ import {
   useBroadcasting,
   createBroadcastingOption,
   OperationDependency,
-} from '@anchor-protocol/broadcastable-operation';
+} from '@terra-dev/broadcastable-operation';
 
 const operationOptions = createOperationOptions({
   pipe: ({ a }: OperationDependency<{ a: number }>) => [
@@ -90,7 +90,7 @@ Broadcast 되는 Result 들을 화면에 렌더링하기 (수신부)
 import {
   useBroadcasting,
   createBroadcastingOption,
-} from '@anchor-protocol/broadcastable-operation';
+} from '@terra-dev/broadcastable-operation';
 
 const broadcastingOption = createBroadcastingOption({
   map: ({ id, rendering }) => <li key={id}>{rendering}</li>,
@@ -158,14 +158,14 @@ TypeScript 의 Type 유추에 의해서 강제되기 때문에 의존성을 입�
 `~/src/operation.d.ts` 와 같은 파일을 만들고 위와 같이 선언을 해준다.
 
 ```ts
-declare module '@anchor-protocol/broadcastable-operation/global' {
+declare module '@terra-dev/broadcastable-operation/global' {
   interface GlobalDependency {
     d: number;
   }
 }
 ```
 
-위의 Code는 `@anchor-protocol/broadcastable-operation/global` 의 `GlobalDependency` interface를 Override 하게 된다.
+위의 Code는 `@terra-dev/broadcastable-operation/global` 의 `GlobalDependency` interface를 Override 하게 된다.
 
 이와 같은 전역 항목의 Overload는 <https://styled-components.com/docs/api#create-a-declarations-file> Styled-Components 의 `DefaultTheme` 처리와 유사하다.
 

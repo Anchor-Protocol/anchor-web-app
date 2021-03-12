@@ -4,7 +4,7 @@ import {
   merge,
   OperationDependency,
   timeout,
-} from '@anchor-protocol/broadcastable-operation';
+} from '@terra-dev/broadcastable-operation';
 import { Token } from '@anchor-protocol/types';
 import { Coin, Dec, Int, Msg, MsgSend, StdFee } from '@terra-money/terra.js';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';

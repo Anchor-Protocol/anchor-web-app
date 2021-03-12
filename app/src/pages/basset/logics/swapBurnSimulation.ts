@@ -1,4 +1,4 @@
-import { min } from '@anchor-protocol/big-math';
+import { min } from '@terra-dev/big-math';
 import type { Rate, ubLuna, uLuna, uUST } from '@anchor-protocol/types';
 import { terraswap } from '@anchor-protocol/types';
 import big, { Big } from 'big.js';

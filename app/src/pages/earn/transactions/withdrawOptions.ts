@@ -5,7 +5,7 @@ import {
   merge,
   OperationDependency,
   timeout,
-} from '@anchor-protocol/broadcastable-operation';
+} from '@terra-dev/broadcastable-operation';
 import { StdFee } from '@terra-money/terra.js';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { pickWithdrawResult } from 'pages/earn/transactions/pickWithdrawResult';

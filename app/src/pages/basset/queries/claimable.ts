@@ -1,4 +1,4 @@
-import { useSubscription } from '@anchor-protocol/broadcastable-operation';
+import { useSubscription } from '@terra-dev/broadcastable-operation';
 import { bluna, WASMContractResult } from '@anchor-protocol/types';
 import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
 import { gql, useQuery } from '@apollo/client';

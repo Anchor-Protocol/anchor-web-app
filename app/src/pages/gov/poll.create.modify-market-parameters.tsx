@@ -1,5 +1,5 @@
 import { ExecuteMsg } from '@anchor-protocol/anchor.js';
-import { floor } from '@anchor-protocol/big-math';
+import { floor } from '@terra-dev/big-math';
 import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
 import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';

@@ -8,7 +8,7 @@ import {
   merge,
   OperationDependency,
   timeout,
-} from '@anchor-protocol/broadcastable-operation';
+} from '@terra-dev/broadcastable-operation';
 import { Dec, Int, MsgExecuteContract, StdFee } from '@terra-money/terra.js';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { pickAncUstLpStakeResult } from 'pages/gov/transactions/pickAncUstLpStakeResult';

@@ -1,4 +1,4 @@
-import { useSubscription } from '@anchor-protocol/broadcastable-operation';
+import { useSubscription } from '@terra-dev/broadcastable-operation';
 import type { uANC, uAncUstLP, UST, uUST } from '@anchor-protocol/types';
 import { terraswap, uToken, WASMContractResult } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';

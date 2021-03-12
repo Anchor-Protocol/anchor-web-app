@@ -1,4 +1,4 @@
-import { InProgress } from '@anchor-protocol/broadcastable-operation';
+import { InProgress } from '@terra-dev/broadcastable-operation';
 import React from 'react';
 import { PushSpinner } from 'react-spinners-kit';
 import { useTheme } from 'styled-components';

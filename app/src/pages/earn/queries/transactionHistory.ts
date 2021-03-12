@@ -1,4 +1,4 @@
-import { useSubscription } from '@anchor-protocol/broadcastable-operation';
+import { useSubscription } from '@terra-dev/broadcastable-operation';
 import type { DateTime, uaUST, uUST } from '@anchor-protocol/types';
 import { Denom, HumanAddr } from '@anchor-protocol/types';
 import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';

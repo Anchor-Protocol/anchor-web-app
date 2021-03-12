@@ -1,4 +1,4 @@
-declare module '@anchor-protocol/broadcastable-operation/global' {
+declare module '@terra-dev/broadcastable-operation/global' {
   import { AddressProvider } from '@anchor-protocol/anchor.js';
   import { ContractAddress } from '@anchor-protocol/types';
   import { WalletState } from '@anchor-protocol/wallet-provider';

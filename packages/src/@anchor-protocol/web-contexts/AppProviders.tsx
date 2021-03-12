@@ -2,8 +2,8 @@ import {
   AddressProvider,
   AddressProviderFromJson,
 } from '@anchor-protocol/anchor.js';
-import { OperationBroadcaster } from '@anchor-protocol/broadcastable-operation';
-import { GlobalDependency } from '@anchor-protocol/broadcastable-operation/global';
+import { OperationBroadcaster } from '@terra-dev/broadcastable-operation';
+import { GlobalDependency } from '@terra-dev/broadcastable-operation/global';
 import { GlobalStyle } from '@anchor-protocol/neumorphism-ui/themes/GlobalStyle';
 import { SnackbarProvider } from '@anchor-protocol/snackbar';
 import { ContractAddress, Rate, uUST } from '@anchor-protocol/types';

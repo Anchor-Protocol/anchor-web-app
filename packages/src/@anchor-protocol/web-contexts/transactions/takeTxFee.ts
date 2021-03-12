@@ -1,4 +1,4 @@
-import { Operator } from '@anchor-protocol/broadcastable-operation';
+import { Operator } from '@terra-dev/broadcastable-operation';
 import type { uUST } from '@anchor-protocol/types';
 
 export const takeTxFee = (

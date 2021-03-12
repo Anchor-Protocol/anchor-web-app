@@ -8,7 +8,7 @@ import {
   OperationDependency,
   OperationStop,
   timeout,
-} from '@anchor-protocol/broadcastable-operation';
+} from '@terra-dev/broadcastable-operation';
 import { HumanAddr } from '@anchor-protocol/types';
 import { createOptions } from '@anchor-protocol/web-contexts/transactions/createOptions';
 import { getTxInfo } from '@anchor-protocol/web-contexts/transactions/getTxInfo';

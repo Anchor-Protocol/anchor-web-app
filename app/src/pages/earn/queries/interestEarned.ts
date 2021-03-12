@@ -1,4 +1,4 @@
-import { floor } from '@anchor-protocol/big-math';
+import { floor } from '@terra-dev/big-math';
 import { useEventBus } from '@anchor-protocol/event-bus';
 import type { DateTime, JSDateTime, Rate, uUST } from '@anchor-protocol/types';
 import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';

@@ -1,4 +1,4 @@
-import { min } from '@anchor-protocol/big-math';
+import { min } from '@terra-dev/big-math';
 import { Rate, uANC, uUST } from '@anchor-protocol/types';
 import { terraswap } from '@anchor-protocol/types/contracts';
 import big, { Big, BigSource } from 'big.js';

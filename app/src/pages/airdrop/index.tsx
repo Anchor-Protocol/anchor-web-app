@@ -1,4 +1,4 @@
-import { useOperation } from '@anchor-protocol/broadcastable-operation';
+import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
 import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import {

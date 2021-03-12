@@ -1,12 +1,12 @@
 import { fabricateDepositStableCoin } from '@anchor-protocol/anchor.js';
-import { floor } from '@anchor-protocol/big-math';
+import { floor } from '@terra-dev/big-math';
 import {
   createOperationOptions,
   effect,
   merge,
   OperationDependency,
   timeout,
-} from '@anchor-protocol/broadcastable-operation';
+} from '@terra-dev/broadcastable-operation';
 import { StdFee } from '@terra-money/terra.js';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { pickDepositResult } from 'pages/earn/transactions/pickDepositResult';

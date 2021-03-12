@@ -1,4 +1,4 @@
-import { Operator } from '@anchor-protocol/broadcastable-operation';
+import { Operator } from '@terra-dev/broadcastable-operation';
 import type { uLuna } from '@anchor-protocol/types';
 
 export const takeSwapFee = (
