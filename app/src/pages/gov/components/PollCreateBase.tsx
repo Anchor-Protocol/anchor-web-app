@@ -101,7 +101,7 @@ export function PollCreateBase({
     }
 
     return big(bank.userBalances.uANC).lt(pollConfig.proposal_deposit)
-      ? `Not enoght ANC`
+      ? `Not enough ANC`
       : undefined;
   }, [bank.userBalances.uANC, pollConfig]);
 
