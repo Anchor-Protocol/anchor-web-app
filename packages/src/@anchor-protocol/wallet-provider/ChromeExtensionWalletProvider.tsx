@@ -1,8 +1,8 @@
 import type { HumanAddr } from '@anchor-protocol/types/contracts';
-import { Extension } from '@terra-money/terra.js';
+import { extensionFixer } from '@anchor-protocol/wallet-provider/extensionFixer';
+import { AccAddress, Extension } from '@terra-money/terra.js';
 import { getParser } from 'bowser';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { UserDeniedError } from './errors';
 import { StationNetworkInfo, WalletStatus } from './types';
 import { WalletContext, WalletProviderProps, WalletState } from './useWallet';
 
@@ -37,7 +37,10 @@ export function ChromeExtensionWalletProvider({
     });
   }, []);
 
-  const extension = useMemo<Extension>(() => new Extension(), []);
+  const extension = useMemo(() => {
+    const extension = new Extension();
+    return extensionFixer(extension);
+  }, []);
 
   const [status, setStatus] = useState<WalletStatus>(() => ({
     status: isChrome ? 'initializing' : 'unavailable',
@@ -57,8 +60,8 @@ export function ChromeExtensionWalletProvider({
       }
 
       const isExtensionInstalled = watingExtensionScriptInjection
-        ? await intervalCheck(20, () => extension.isAvailable)
-        : extension.isAvailable;
+        ? await intervalCheck(20, () => extension.isAvailable())
+        : extension.isAvailable();
 
       firstCheck.current = true;
 
@@ -91,46 +94,41 @@ export function ChromeExtensionWalletProvider({
         return;
       }
 
-      const { payload } = await extension.request('info');
+      const infoPayload = await extension.info();
 
-      console.log(
-        [
-          `Extension return`,
-          `=======================================`,
-          JSON.stringify(payload, null, 2),
-          JSON.stringify(
-            {
-              'window.isTerraExtensionAvailable':
-                window.isTerraExtensionAvailable,
-            },
-            null,
-            2,
-          ),
-        ].join('\n'),
-      );
-
-      const network: StationNetworkInfo = (payload ?? defaultNetwork) as any;
+      const network: StationNetworkInfo = (infoPayload ??
+        defaultNetwork) as any;
 
       const storedWalletAddress: string | null = storage.getItem(
         WALLET_ADDRESS,
       );
 
-      if (storedWalletAddress) {
-        if (storedWalletAddress.trim().length > 0) {
-          setStatus((prev) => {
-            return prev.status !== 'ready' ||
-              prev.walletAddress !== storedWalletAddress
-              ? {
-                  status: 'ready',
-                  network,
-                  walletAddress: storedWalletAddress as HumanAddr,
-                }
-              : prev;
-          });
-        } else {
+      if (storedWalletAddress && AccAddress.validate(storedWalletAddress)) {
+        const connectResult = await extension.connect();
+
+        if (
+          connectResult?.address &&
+          AccAddress.validate(connectResult.address) &&
+          connectResult.address !== storedWalletAddress
+        ) {
+          storage.setItem(WALLET_ADDRESS, connectResult.address);
+        }
+
+        setStatus((prev) => {
+          return prev.status !== 'ready' ||
+            prev.walletAddress !== connectResult.address
+            ? {
+                status: 'ready',
+                network,
+                walletAddress: connectResult.address as HumanAddr,
+              }
+            : prev;
+        });
+      } else {
+        if (storedWalletAddress) {
           storage.removeItem(WALLET_ADDRESS);
         }
-      } else {
+
         setStatus((prev) => {
           return prev.status !== 'not_connected'
             ? { status: 'not_connected', network }
@@ -149,11 +147,10 @@ export function ChromeExtensionWalletProvider({
   }, []);
 
   const connect = useCallback(async () => {
-    const { name, payload } = await extension.request('connect');
+    const result = await extension.connect();
 
-    if (name === 'onConnect' && 'address' in payload) {
-      const walletAddress: string = (payload as { address: string }).address;
-
+    if (result?.address) {
+      const walletAddress: string = result.address;
       storage.setItem(WALLET_ADDRESS, walletAddress);
 
       await checkStatus();
@@ -165,51 +162,9 @@ export function ChromeExtensionWalletProvider({
     checkStatus();
   }, [checkStatus]);
 
-  const postResolvers = useRef(
-    new Map<number, [(data: any) => void, (error: any) => void]>(),
-  );
-
-  useEffect(() => {
-    extension.on('onPost', ({ error, ...payload }) => {
-      if (!postResolvers.current.has(payload.id)) {
-        return;
-      }
-
-      const [resolve, reject] = postResolvers.current.get(payload.id)!;
-
-      if (error && 'code' in error && error.code === 1 && reject) {
-        reject(new UserDeniedError());
-      } else if (resolve) {
-        resolve({ name: 'onPost', payload });
-      }
-
-      postResolvers.current.delete(payload.id);
-    });
-  }, [extension]);
-
   const post = useCallback<WalletState['post']>(
     (data) => {
-      return new Promise((...resolver) => {
-        const id = extension.post({
-          ...(data as any),
-          purgeQueue: true,
-        });
-
-        postResolvers.current.set(id, resolver);
-
-        //extension.once('onPost', ({ error, ...payload }) => {
-        //  console.log('ChromeExtensionWalletProvider.tsx..()', {
-        //    error,
-        //    ...payload,
-        //  });
-        //  if (error && 'code' in error && error.code === 1) {
-        //    reject(new UserDeniedError());
-        //  } else {
-        //    resolve({ name: 'onPost', payload });
-        //  }
-        //});
-      });
-      //return extension.request('post', data) as any;
+      return extension.post(data);
     },
     [extension],
   );
@@ -219,25 +174,6 @@ export function ChromeExtensionWalletProvider({
       checkStatus(true);
     }
   }, [checkStatus, isChrome]);
-
-  useEffect(() => {
-    // TODO disable process.env.NODE !== development
-    console.log(
-      [
-        `Wallet Status`,
-        `=======================================`,
-        JSON.stringify(status, null, 2),
-        JSON.stringify(
-          {
-            'window.isTerraExtensionAvailable':
-              window.isTerraExtensionAvailable,
-          },
-          null,
-          2,
-        ),
-      ].join('\n'),
-    );
-  }, [status]);
 
   const state = useMemo<WalletState>(
     () => ({
