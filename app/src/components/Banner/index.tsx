@@ -1,5 +1,3 @@
-import { useWallet } from '@anchor-protocol/wallet-provider';
-import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { getParser } from 'bowser';
 import { useMemo } from 'react';
 import styled from 'styled-components';
@@ -9,9 +7,6 @@ export interface BannerProps {
 }
 
 function BannerBase({ className }: BannerProps) {
-  const { status, install, connect } = useWallet();
-  const { online } = useService();
-
   const isChrome = useMemo(() => {
     const browser = getParser(navigator.userAgent);
     return browser.satisfies({
@@ -31,32 +26,7 @@ function BannerBase({ className }: BannerProps) {
     );
   }
 
-  if (!online) {
-    return (
-      <div className={className}>
-        <p>Network is offline. the data cannot be loaded.</p>
-      </div>
-    );
-  }
-
-  switch (status.status) {
-    case 'not_installed':
-      return (
-        <div className={className}>
-          <p>Wallet is not installed.</p>
-          <button onClick={install}>Please install Wallet</button>
-        </div>
-      );
-    case 'not_connected':
-      return (
-        <div className={className}>
-          <p>Wallet is not connected.</p>
-          <button onClick={connect}>Please connect Wallet</button>
-        </div>
-      );
-    default:
-      return null;
-  }
+  return null;
 }
 
 export const Banner = styled(BannerBase)`

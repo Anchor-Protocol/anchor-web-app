@@ -10,9 +10,7 @@ import type {
   WASMContractResult,
 } from '@anchor-protocol/types';
 import { createMap, map, Mapped, useMap } from '@anchor-protocol/use-map';
-import { ApolloClient, gql, useQuery } from '@apollo/client';
 import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
-import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { parseResult } from '@anchor-protocol/web-contexts/queries/parseResult';
 import {
   MappedApolloQueryResult,
@@ -20,6 +18,7 @@ import {
 } from '@anchor-protocol/web-contexts/queries/types';
 import { useQueryErrorHandler } from '@anchor-protocol/web-contexts/queries/useQueryErrorHandler';
 import { useRefetch } from '@anchor-protocol/web-contexts/queries/useRefetch';
+import { ApolloClient, gql, useQuery } from '@apollo/client';
 import { useMemo } from 'react';
 
 export interface RawData {
@@ -132,8 +131,6 @@ export function useMarketState(): MappedQueryResult<
 > {
   const { moneyMarket } = useContractAddress();
 
-  const { online } = useService();
-
   const variables = useMemo<RawVariables>(() => {
     return mapVariables({
       marketContractAddress: moneyMarket.market,
@@ -152,7 +149,6 @@ export function useMarketState(): MappedQueryResult<
     error,
     ...result
   } = useQuery<RawData, RawVariables>(query, {
-    skip: !online,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     pollInterval: 1000 * 10,
@@ -171,7 +167,7 @@ export function useMarketState(): MappedQueryResult<
 
   return {
     ...result,
-    data: online ? data : mockupData,
+    data,
     refetch,
   };
 }

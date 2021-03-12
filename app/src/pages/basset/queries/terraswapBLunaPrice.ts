@@ -1,13 +1,12 @@
 import type { bLuna, HumanAddr } from '@anchor-protocol/types';
 import { terraswap, uToken, WASMContractResult } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
-import { gql, useQuery } from '@apollo/client';
-import big from 'big.js';
 import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
-import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { MappedQueryResult } from '@anchor-protocol/web-contexts/queries/types';
 import { useQueryErrorHandler } from '@anchor-protocol/web-contexts/queries/useQueryErrorHandler';
 import { useRefetch } from '@anchor-protocol/web-contexts/queries/useRefetch';
+import { gql, useQuery } from '@apollo/client';
+import big from 'big.js';
 import { useMemo } from 'react';
 
 export interface RawData {
@@ -83,8 +82,6 @@ export function useTerraswapBLunaPrice(): MappedQueryResult<
 > {
   const { terraswap } = useContractAddress();
 
-  const { online } = useService();
-
   const variables = useMemo(() => {
     return mapVariables({
       bLunaTerraswap: terraswap.blunaLunaPair,
@@ -103,7 +100,6 @@ export function useTerraswapBLunaPrice(): MappedQueryResult<
     error,
     ...result
   } = useQuery<RawData, RawVariables>(query, {
-    skip: !online,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,

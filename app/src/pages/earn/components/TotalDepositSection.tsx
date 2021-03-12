@@ -10,7 +10,6 @@ import {
 import { Rate, uUST } from '@anchor-protocol/types';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { BigSource } from 'big.js';
-import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import React, { useCallback, useMemo } from 'react';
 import { totalDepositUST } from '../logics/totalDepositUST';
 import { useDeposit } from '../queries/totalDeposit';
@@ -26,7 +25,6 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
   // dependencies
   // ---------------------------------------------
   const { status } = useWallet();
-  const { online } = useService();
 
   // ---------------------------------------------
   // queries
@@ -95,14 +93,13 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
 
       <aside className="total-deposit-buttons">
         <ActionButton
-          disabled={!online || status.status !== 'ready' || !totalDeposit}
+          disabled={status.status !== 'ready' || !totalDeposit}
           onClick={() => openDeposit()}
         >
           Deposit
         </ActionButton>
         <ActionButton
           disabled={
-            !online ||
             status.status !== 'ready' ||
             !totalDeposit ||
             !exchangeRate?.exchange_rate

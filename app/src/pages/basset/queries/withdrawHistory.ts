@@ -1,13 +1,12 @@
 import { useSubscription } from '@anchor-protocol/broadcastable-operation';
 import { bluna, WASMContractResult } from '@anchor-protocol/types';
 import { createMap, Mapped, useMap } from '@anchor-protocol/use-map';
-import { gql, useQuery } from '@apollo/client';
 import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
-import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { parseResult } from '@anchor-protocol/web-contexts/queries/parseResult';
 import { MappedQueryResult } from '@anchor-protocol/web-contexts/queries/types';
 import { useQueryErrorHandler } from '@anchor-protocol/web-contexts/queries/useQueryErrorHandler';
 import { useRefetch } from '@anchor-protocol/web-contexts/queries/useRefetch';
+import { gql, useQuery } from '@apollo/client';
 import { useMemo } from 'react';
 
 export interface RawData {
@@ -95,8 +94,6 @@ export function useWithdrawHistory({
 }): MappedQueryResult<RawVariables, RawData, Data> {
   const { bluna } = useContractAddress();
 
-  const { online } = useService();
-
   const variables = useMemo(() => {
     return mapVariables({
       bLunaHubContract: bluna.hub,
@@ -122,7 +119,6 @@ export function useWithdrawHistory({
     ...result
   } = useQuery<RawData, RawVariables>(query, {
     skip:
-      !online ||
       typeof withdrawRequestsStartFrom !== 'number' ||
       withdrawRequestsStartFrom < 0,
     fetchPolicy: 'network-only',
@@ -142,7 +138,7 @@ export function useWithdrawHistory({
 
   return {
     ...result,
-    data: online ? data : mockupData,
+    data,
     refetch,
   };
 }

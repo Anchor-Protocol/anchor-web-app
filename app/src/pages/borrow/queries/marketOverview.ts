@@ -8,7 +8,6 @@ import type {
 import { ContractAddress, HumanAddr } from '@anchor-protocol/types';
 import { createMap, map, Mapped, useMap } from '@anchor-protocol/use-map';
 import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
-import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { parseResult } from '@anchor-protocol/web-contexts/queries/parseResult';
 import {
   MappedApolloQueryResult,
@@ -149,8 +148,6 @@ export function useMarketOverview({
 }): MappedQueryResult<RawVariables, RawData, Data> {
   const { cw20, moneyMarket } = useContractAddress();
 
-  const { online } = useService();
-
   const variables = useMemo(() => {
     if (!marketBalance || !marketState) return undefined;
 
@@ -200,7 +197,7 @@ export function useMarketOverview({
     error,
     ...result
   } = useQuery<RawData, RawVariables>(query, {
-    skip: !online || !marketBalance || !marketState,
+    skip: !marketBalance || !marketState,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,
@@ -212,7 +209,7 @@ export function useMarketOverview({
 
   return {
     ...result,
-    data: online ? data : mockupData,
+    data,
     refetch,
   };
 }

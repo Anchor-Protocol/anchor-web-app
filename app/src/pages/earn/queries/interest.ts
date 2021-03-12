@@ -4,13 +4,12 @@ import {
   WASMContractResult,
 } from '@anchor-protocol/types';
 import { createMap, useMap } from '@anchor-protocol/use-map';
-import { gql, useQuery } from '@apollo/client';
 import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
-import { useService } from '@anchor-protocol/web-contexts/contexts/service';
 import { parseResult } from '@anchor-protocol/web-contexts/queries/parseResult';
 import { MappedQueryResult } from '@anchor-protocol/web-contexts/queries/types';
 import { useQueryErrorHandler } from '@anchor-protocol/web-contexts/queries/useQueryErrorHandler';
 import { useRefetch } from '@anchor-protocol/web-contexts/queries/useRefetch';
+import { gql, useQuery } from '@apollo/client';
 import { useMemo } from 'react';
 
 export interface RawData {
@@ -57,8 +56,6 @@ export const query = gql`
 `;
 
 export function useInterest(): MappedQueryResult<RawVariables, RawData, Data> {
-  const { online } = useService();
-
   const { moneyMarket } = useContractAddress();
 
   const variables = useMemo(() => {
@@ -76,7 +73,6 @@ export function useInterest(): MappedQueryResult<RawVariables, RawData, Data> {
     error,
     ...result
   } = useQuery<RawData, RawVariables>(query, {
-    skip: !online,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     pollInterval: 1000 * 60,
