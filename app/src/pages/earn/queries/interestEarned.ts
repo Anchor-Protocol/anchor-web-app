@@ -49,8 +49,9 @@ export const dataMap = createMap<RawData, Data>({
       return '0' as uUST;
     }
 
+    const thenExists = then && then.length >= 1;
     const referenceNow = now[0];
-    const referenceThen = then && then.length >= 1 ? then[0] : fallback[0];
+    const referenceThen = then && thenExists ? then[0] : fallback[0];
 
     const currentTokenValue = big(
       referenceNow.CurrentAnchorBalance.length > 0
@@ -58,11 +59,17 @@ export const dataMap = createMap<RawData, Data>({
         : '0',
     ).mul(latestExchangeRate[0].ExchangeRate);
 
-    const thenTokenValue = big(
-      referenceThen.CurrentAnchorBalance.length > 0
-        ? referenceThen.CurrentAnchorBalance
-        : '0',
-    ).mul(thenExchangeRate[0].ExchangeRate);
+    const thenTokenValue = then && thenExists 
+      ? (
+        big(
+          referenceThen.CurrentAnchorBalance.length > 0
+            ? referenceThen.CurrentAnchorBalance
+            : '0',
+        ).mul(thenExchangeRate[0].ExchangeRate)
+      )
+      : (
+        referenceThen.CurrentDeposit
+      )
 
     try {
       return floor(
