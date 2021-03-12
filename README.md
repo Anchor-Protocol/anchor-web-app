@@ -3,8 +3,8 @@
 Initialize this project
 
 ```sh
-git clone https://github.com/Anchor-Protocol/anchor.git
-cd anchor
+git clone https://github.com/Anchor-Protocol/anchor-web-app.git
+cd anchor-web-app
 yarn install
 ```
 
