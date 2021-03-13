@@ -27,7 +27,8 @@
     "packages:build-storybook": "yarn workspace @anchor-web-app/packages run build-storybook",
     "packages:test": "yarn workspace @anchor-web-app/packages run test",
     "packages:coverage": "yarn workspace @anchor-web-app/packages run coverage",
-    "graphql:download-schema": "npx apollo client:download-schema --endpoint \"https://tequila-mantle.anchorprotocol.com\" \"schema.graphql\""
+    "graphql:download-schema": "npx apollo client:download-schema --endpoint \"https://tequila-mantle.anchorprotocol.com\" \"schema.graphql\"",
+    "markdown:build": "markdown-source-import **/src/**/*.md"
   },
   "lint-staged": {
     "**/src/{**/*,*}.{ts,tsx}": [

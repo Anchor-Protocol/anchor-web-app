@@ -1,10 +1,6 @@
 # `@terra-dev/is-touch-device`
 
-# Install
-
-```sh
-npm install @terra-dev/is-touch-device
-```
+Checking is the device support multi-touch.
 
 # Usage
 
