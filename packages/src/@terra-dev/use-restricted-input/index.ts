@@ -1,4 +1,4 @@
-import { KeyboardEvent, useCallback, useMemo, ClipboardEvent } from 'react';
+import { ClipboardEvent, KeyboardEvent, useCallback, useMemo } from 'react';
 
 export interface RestrictedInputReturn {
   onKeyPress: (event: KeyboardEvent<HTMLInputElement>) => void;
@@ -51,6 +51,20 @@ export function useRestrictedNumberInput({
     type === 'integer' ? '0-9' : '0-9.',
   );
 
+  const isInvalid = useCallback(
+    (nextValue: string): boolean => {
+      return (
+        Number.isNaN(+nextValue) ||
+        (typeof maxIntegerPoinsts === 'number' &&
+          new RegExp(`^[0-9]{${maxIntegerPoinsts + 1},}`).test(nextValue)) ||
+        (type === 'decimal' &&
+          typeof maxDecimalPoints === 'number' &&
+          new RegExp(`\\.[0-9]{${maxDecimalPoints + 1},}$`).test(nextValue))
+      );
+    },
+    [maxDecimalPoints, maxIntegerPoinsts, type],
+  );
+
   const onKeyPress = useCallback(
     (event: KeyboardEvent<HTMLInputElement>) => {
       restrictCharacters(event);
@@ -80,30 +94,50 @@ export function useRestrictedNumberInput({
         char +
         value.substring(selectionEnd);
 
-      if (
-        Number.isNaN(+nextValue) ||
-        (typeof maxIntegerPoinsts === 'number' &&
-          new RegExp(`^[0-9]{${maxIntegerPoinsts + 1},}`).test(nextValue)) ||
-        (type === 'decimal' &&
-          typeof maxDecimalPoints === 'number' &&
-          new RegExp(`\\.[0-9]{${maxDecimalPoints + 1},}$`).test(nextValue))
-      ) {
+      if (isInvalid(nextValue)) {
         event.preventDefault();
         event.stopPropagation();
       }
     },
-    [maxDecimalPoints, maxIntegerPoinsts, restrictCharacters, type],
+    [restrictCharacters, isInvalid],
   );
 
-  const onPaste = useCallback((event: ClipboardEvent<HTMLInputElement>) => {
-    const pastedText = event.clipboardData?.getData('text');
+  const onPaste = useCallback(
+    (event: ClipboardEvent<HTMLInputElement>) => {
+      const pastedText = event.clipboardData?.getData('text');
 
-    if (!/^[0-9.]$/.test(pastedText)) {
-      event.preventDefault();
-      event.stopPropagation();
-      event.nativeEvent.stopImmediatePropagation();
-    }
-  }, []);
+      if (!/^[0-9.]+$/.test(pastedText)) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
+      const {
+        value,
+        selectionStart,
+        selectionEnd,
+      } = event.target as HTMLInputElement;
+
+      if (
+        typeof selectionStart !== 'number' ||
+        typeof selectionEnd !== 'number'
+      ) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+
+      const nextValue =
+        value.substring(0, selectionStart) +
+        pastedText +
+        value.substring(selectionEnd);
+
+      if (isInvalid(nextValue)) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    },
+    [isInvalid],
+  );
 
   return { onKeyPress, onPaste };
 }
