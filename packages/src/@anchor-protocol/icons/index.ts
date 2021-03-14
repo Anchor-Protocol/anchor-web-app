@@ -10,6 +10,7 @@ import { ReactComponent as DiscordIcon } from './assets/Discord.svg';
 import { ReactComponent as LabtopIcon } from './assets/Labtop.svg';
 import { ReactComponent as MenuIcon } from './assets/Menu.svg';
 import { ReactComponent as MenuCloseIcon } from './assets/MenuClose.svg';
+import { ReactComponent as PlusIcon } from './assets/Plus.svg';
 import { ReactComponent as WalletIcon } from './assets/Wallet.svg';
 import { createMaterialIcon } from './createMaterialIcon';
 
@@ -26,3 +27,4 @@ export const APY = createMaterialIcon(APYIcon);
 export const BorrowAPR = createMaterialIcon(BorrowAPRIcon);
 export const BorrowValue = createMaterialIcon(BorrowValueIcon);
 export const CollateralValue = createMaterialIcon(CollateralValueIcon);
+export const Plus = createMaterialIcon(PlusIcon);

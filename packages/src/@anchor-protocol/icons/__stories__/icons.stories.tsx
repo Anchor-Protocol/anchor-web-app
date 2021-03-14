@@ -14,6 +14,7 @@ import {
   Menu,
   MenuClose,
   Wallet,
+  Plus,
 } from '../';
 
 export default {
@@ -36,6 +37,7 @@ export const Icons = () => {
       <BorrowAPR />
       <BorrowValue />
       <CollateralValue />
+      <Plus />
     </Grid>
   );
 };

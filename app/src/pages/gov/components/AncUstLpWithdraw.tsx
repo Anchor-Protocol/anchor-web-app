@@ -20,7 +20,7 @@ import { useConstants } from 'base/contexts/contants';
 import { useService } from 'base/contexts/service';
 import { Input, InputAdornment } from '@material-ui/core';
 import big, { Big } from 'big.js';
-import { ArrowDownLine } from 'components/ArrowDownLine';
+import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
@@ -188,7 +188,7 @@ export function AncUstLpWithdraw() {
         </span>
       </div>
 
-      <ArrowDownLine className="separator" />
+      <IconLineSeparator className="separator" />
 
       {/* UST */}
       <div className="description">

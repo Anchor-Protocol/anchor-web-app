@@ -22,7 +22,7 @@ import { useConstants } from 'base/contexts/contants';
 import { useService } from 'base/contexts/service';
 import { InputAdornment, Modal, TextField } from '@material-ui/core';
 import big, { Big, BigSource } from 'big.js';
-import { ArrowDownLine } from 'components/ArrowDownLine';
+import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
@@ -282,7 +282,7 @@ function ComponentBase({
           </span>
         </div>
 
-        <ArrowDownLine style={{ margin: '10px 0' }} />
+        <IconLineSeparator style={{ margin: '10px 0' }} />
 
         <TextField
           className="limit"

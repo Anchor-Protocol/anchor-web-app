@@ -1,3 +1,4 @@
+import { Plus } from '@anchor-protocol/icons';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { isZero } from '@terra-dev/is-zero';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
@@ -19,7 +20,7 @@ import { ANC, UST } from '@anchor-protocol/types';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
 import { InputAdornment } from '@material-ui/core';
 import big, { Big } from 'big.js';
-import { ArrowDownLine } from 'components/ArrowDownLine';
+import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
@@ -226,7 +227,7 @@ export function AncUstLpProvide() {
         </span>
       </div>
 
-      <ArrowDownLine className="separator" />
+      <IconLineSeparator className="separator" Icon={Plus} />
 
       {/* UST */}
       <div className="description">

@@ -36,7 +36,7 @@ import { useService } from 'base/contexts/service';
 import { queryReverseSimulation } from 'base/queries/reverseSimulation';
 import { querySimulation } from 'base/queries/simulation';
 import big from 'big.js';
-import { ArrowDownLine } from 'components/ArrowDownLine';
+import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
@@ -336,7 +336,7 @@ export function TradeBuy() {
         />
       </SelectAndTextInputContainer>
 
-      <ArrowDownLine />
+      <IconLineSeparator />
 
       {/* Get (Asset) */}
       <div className="gett-description">
