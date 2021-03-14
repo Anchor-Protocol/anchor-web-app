@@ -99,16 +99,21 @@ export function AncGovernanceUnstake() {
 
   const proceed = useCallback(
     async (walletReady: WalletReady, ancAmount: ANC) => {
+      if (!unstakableBalance) return;
+
       const broadcasted = await unstake({
         address: walletReady.walletAddress,
-        amount: ancAmount,
+        amount:
+          formatANCInput(demicrofy(unstakableBalance)) === ancAmount
+            ? undefined
+            : ancAmount,
       });
 
       if (!broadcasted) {
         init();
       }
     },
-    [init, unstake],
+    [init, unstakableBalance, unstake],
   );
 
   // ---------------------------------------------

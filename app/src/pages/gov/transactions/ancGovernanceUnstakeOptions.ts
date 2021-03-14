@@ -1,9 +1,5 @@
 //import { fabricateStakingBond } from '@anchor-protocol/anchor.js';
-import {
-  AddressProvider,
-  fabricateGovWithdrawVotingTokens,
-} from '@anchor-protocol/anchor.js';
-import { createHookMsg } from '@anchor-protocol/anchor.js/dist/utils/cw20/create-hook-msg';
+import { AddressProvider } from '@anchor-protocol/anchor.js';
 import { validateInput } from '@anchor-protocol/anchor.js/dist/utils/validate-input';
 import { validateAddress } from '@anchor-protocol/anchor.js/dist/utils/validation/address';
 import {
@@ -13,13 +9,13 @@ import {
   timeout,
 } from '@terra-dev/broadcastable-operation';
 import { Dec, Int, MsgExecuteContract, StdFee } from '@terra-money/terra.js';
-import { renderBroadcastTransaction } from 'components/TransactionRenderer';
-import { pickAncGovernanceStakeResult } from 'pages/gov/transactions/pickAncGovernanceStakeResult';
 import { createContractMsg } from 'base/transactions/createContractMsg';
 import { createOptions } from 'base/transactions/createOptions';
 import { getTxInfo } from 'base/transactions/getTxInfo';
 import { postContractMsg } from 'base/transactions/postContractMsg';
 import { parseTxResult } from 'base/transactions/tx';
+import { renderBroadcastTransaction } from 'components/TransactionRenderer';
+import { pickAncGovernanceStakeResult } from 'pages/gov/transactions/pickAncGovernanceStakeResult';
 
 export const ancGovernanceUnstakeOptions = createOperationOptions({
   id: 'gov/ancGovernanceUnstake',
@@ -50,24 +46,23 @@ export const ancGovernanceUnstakeOptions = createOperationOptions({
 
 interface Option {
   address: string;
-  amount: string;
+  amount?: string;
 }
 
-export const fabricateStakingBond = ({ address, amount }: Option) => (
-  addressProvider: AddressProvider,
-): MsgExecuteContract[] => {
+export const fabricateGovWithdrawVotingTokens = ({
+  address,
+  amount,
+}: Option) => (addressProvider: AddressProvider): MsgExecuteContract[] => {
   validateInput([validateAddress(address)]);
 
-  const anchorToken = addressProvider.terraswapAncUstLPToken();
+  const gov = addressProvider.gov();
 
   return [
-    new MsgExecuteContract(address, anchorToken, {
-      send: {
-        contract: addressProvider.staking(),
-        amount: new Int(new Dec(amount).mul(1000000)).toString(),
-        msg: createHookMsg({
-          bond: {},
-        }),
+    new MsgExecuteContract(address, gov, {
+      withdraw_voting_tokens: {
+        amount: amount
+          ? new Int(new Dec(amount).mul(1000000)).toString()
+          : undefined,
       },
     }),
   ];

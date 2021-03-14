@@ -29,12 +29,6 @@ function GridBase({
   const { data: lastSyncedHeight } = useLastSyncedHeight();
 
   const pollDetails = useMemo(() => {
-    console.log('Grid.tsx..()', {
-      govANCBalance,
-      govState,
-      govConfig,
-      lastSyncedHeight,
-    });
     return govANCBalance && govState && govConfig && lastSyncedHeight
       ? polls.map((poll) => {
           return extractPollDetail(
