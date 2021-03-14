@@ -2,7 +2,7 @@
 
 In this time, there are no suitable Google Analytics's new `gtag` supported library.
 
-This library only support `gtag`. If you want to use the legacy Google Anlaytics you can make  better that use `react-ga`
+This library only support `gtag`. If you want to use the legacy Google Anlaytics you can make better that use `react-ga`
 
 ## Usage
 
@@ -15,7 +15,7 @@ function App() {
       <GoogleAnalytics trackingId={YOUR_TRACKING_ID} />
       <App />
     </>
-  )
+  );
 }
 ```
 
@@ -25,10 +25,8 @@ Or
 import { useGoogleAnalytics } from '@terra-dev/use-google-analytics';
 
 function App() {
-  useGoogleAnalytics({ trackingId: YOUR_TRACKING_ID })
-  
-  return (
-    <App />
-  )
+  useGoogleAnalytics({ trackingId: YOUR_TRACKING_ID });
+
+  return <App />;
 }
 ```
