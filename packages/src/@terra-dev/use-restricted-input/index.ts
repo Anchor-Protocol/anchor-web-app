@@ -47,7 +47,7 @@ export interface RestrictedNumberInputParams {
   type?: 'decimal' | 'integer';
   maxDecimalPoints?: number;
   maxIntegerPoinsts?: number;
-  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export function useRestrictedNumberInput({
@@ -151,12 +151,15 @@ export function useRestrictedNumberInput({
 
   const onChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
-      const hasNonNumeralCharacters = /[^0-9.]/g;
+      if (_onChange) {
+        const hasNonNumeralCharacters = /[^0-9.]/g;
 
-      if (hasNonNumeralCharacters.test(event.target.value)) {
-        event.target.value = event.target.value.replace(/[^0-9.]/g, '');
+        if (hasNonNumeralCharacters.test(event.target.value)) {
+          event.target.value = event.target.value.replace(/[^0-9.]/g, '');
+        }
+
+        _onChange(event);
       }
-      _onChange(event);
     },
     [_onChange],
   );

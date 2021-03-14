@@ -1,8 +1,3 @@
-import { useOperation } from '@terra-dev/broadcastable-operation';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   ANC_INPUT_MAXIMUM_INTEGER_POINTS,
@@ -13,13 +8,18 @@ import {
   microfy,
 } from '@anchor-protocol/notation';
 import { ANC, uANC } from '@anchor-protocol/types';
-import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
+import { InputAdornment, Modal } from '@material-ui/core';
+import { ThumbDown, ThumbUp } from '@material-ui/icons';
+import { useOperation } from '@terra-dev/broadcastable-operation';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
+import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
 import { useService } from 'base/contexts/service';
-import { InputAdornment, Modal } from '@material-ui/core';
-import { ThumbDown, ThumbUp } from '@material-ui/icons';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
@@ -27,7 +27,6 @@ import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { validateTxFee } from 'logics/validateTxFee';
 import { useCanIVote } from 'pages/gov/queries/canIVote';
 import { useRewardsAncGovernance } from 'pages/gov/queries/rewardsAncGovernance';
-import { useTotalStaked } from 'pages/gov/queries/totalStaked';
 import { voteOptions } from 'pages/gov/transactions/voteOptions';
 import React, {
   ChangeEvent,
@@ -69,26 +68,18 @@ function ComponentBase({
     data: { userGovStakingInfo },
   } = useRewardsAncGovernance();
 
-  const {
-    data: { govANCBalance, govState },
-  } = useTotalStaked();
-
   const canIVote = useCanIVote(pollId);
 
   const [voteFor, setVoteFor] = useState<null | 'yes' | 'no'>(null);
   const [amount, setAmount] = useState<ANC>('' as ANC);
 
   const maxVote = useMemo(() => {
-    if (!govANCBalance || !govState || !userGovStakingInfo) {
+    if (!userGovStakingInfo) {
       return undefined;
     }
 
-    const govShareIndex = big(
-      big(govANCBalance.balance).minus(govState.total_deposit),
-    ).div(govState.total_share);
-
-    return big(userGovStakingInfo.share).mul(govShareIndex) as uANC<Big>;
-  }, [govANCBalance, govState, userGovStakingInfo]);
+    return big(userGovStakingInfo.balance) as uANC<Big>;
+  }, [userGovStakingInfo]);
 
   const invalidTxFee = useMemo(
     () => serviceAvailable && validateTxFee(bank, fixedGas),

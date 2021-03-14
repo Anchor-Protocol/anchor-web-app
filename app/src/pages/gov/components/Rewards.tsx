@@ -1,8 +1,3 @@
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import {
   demicrofy,
   formatANCWithPostfixUnits,
@@ -12,6 +7,11 @@ import {
 } from '@anchor-protocol/notation';
 import { uANC, uUST } from '@anchor-protocol/types';
 import { MenuItem } from '@material-ui/core';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import big, { Big } from 'big.js';
 import { useBorrowAPY } from 'pages/borrow/queries/borrowAPY';
 import { MoreMenu } from 'pages/gov/components/MoreMenu';
@@ -26,7 +26,6 @@ import { useClaimableAncUstLp } from 'pages/gov/queries/claimableAncUstLp';
 import { useClaimableUstBorrow } from 'pages/gov/queries/claimableUstBorrow';
 import { useLPStakingState } from 'pages/gov/queries/lpStakingState';
 import { useRewardsAncGovernance } from 'pages/gov/queries/rewardsAncGovernance';
-import { useTotalStaked } from 'pages/gov/queries/totalStaked';
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -42,10 +41,6 @@ export function RewardsBase({ className }: RewardsProps) {
   const {
     data: { ancPrice },
   } = useANCPrice();
-
-  const {
-    data: { govANCBalance, govState },
-  } = useTotalStaked();
 
   const {
     data: { lpStakingState },
@@ -98,22 +93,16 @@ export function RewardsBase({ className }: RewardsProps) {
   }, [ancPrice, lpStakingState, userLPBalance, userLPStakingInfo]);
 
   const govGorvernance = useMemo(() => {
-    if (!govANCBalance || !govState || !userGovStakingInfo || !userANCBalance) {
+    if (!userGovStakingInfo || !userANCBalance) {
       return undefined;
     }
 
-    const govShareIndex = big(
-      big(govANCBalance.balance).minus(govState.total_deposit),
-    ).div(govState.total_share);
-
-    const staked = big(userGovStakingInfo.share).mul(
-      govShareIndex,
-    ) as uANC<Big>;
+    const staked = big(userGovStakingInfo.balance) as uANC<Big>;
 
     const stakable = userANCBalance.balance;
 
     return { staked, stakable };
-  }, [govANCBalance, govState, userANCBalance, userGovStakingInfo]);
+  }, [userANCBalance, userGovStakingInfo]);
 
   const ustBorrow = useMemo(() => {
     if (!marketState || !borrowerInfo) {
@@ -287,7 +276,11 @@ export function RewardsBase({ className }: RewardsProps) {
               <td>
                 {ancUstLp?.staked ? formatLP(demicrofy(ancUstLp.staked)) : 0} LP
               </td>
-              <td className="warning">
+              <td
+                className={
+                  big(ancUstLp?.stakable ?? 0).gt(0) ? 'warning' : undefined
+                }
+              >
                 {ancUstLp?.stakable
                   ? formatLP(demicrofy(ancUstLp.stakable))
                   : 0}{' '}

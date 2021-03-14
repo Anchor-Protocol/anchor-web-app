@@ -1,7 +1,3 @@
-import { max } from '@terra-dev/big-math';
-import { useOperation } from '@terra-dev/broadcastable-operation';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   ANC_INPUT_MAXIMUM_INTEGER_POINTS,
@@ -13,10 +9,14 @@ import {
 } from '@anchor-protocol/notation';
 import { ANC, uANC } from '@anchor-protocol/types';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
+import { InputAdornment } from '@material-ui/core';
+import { max } from '@terra-dev/big-math';
+import { useOperation } from '@terra-dev/broadcastable-operation';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
 import { useService } from 'base/contexts/service';
-import { InputAdornment } from '@material-ui/core';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
@@ -64,18 +64,14 @@ export function AncGovernanceUnstake() {
   const unstakableBalance = useMemo<uANC<Big> | undefined>(() => {
     if (!govANCBalance || !userGovStakingInfo || !govState) return undefined;
 
-    const govShareIndex = big(
-      big(govANCBalance.balance).minus(govState.total_deposit),
-    ).div(govState.total_share);
-
     const lockedANC = max(
       0,
       ...userGovStakingInfo.locked_balance.map(([_, { balance }]) => balance),
     );
 
-    const unstakable = big(userGovStakingInfo.share)
-      .mul(govShareIndex)
-      .minus(lockedANC) as uANC<Big>;
+    const unstakable = big(userGovStakingInfo.balance).minus(
+      lockedANC,
+    ) as uANC<Big>;
 
     return unstakable;
   }, [govANCBalance, govState, userGovStakingInfo]);
@@ -99,21 +95,16 @@ export function AncGovernanceUnstake() {
 
   const proceed = useCallback(
     async (walletReady: WalletReady, ancAmount: ANC) => {
-      if (!unstakableBalance) return;
-
       const broadcasted = await unstake({
         address: walletReady.walletAddress,
-        amount:
-          formatANCInput(demicrofy(unstakableBalance)) === ancAmount
-            ? undefined
-            : ancAmount,
+        amount: ancAmount,
       });
 
       if (!broadcasted) {
         init();
       }
     },
-    [init, unstakableBalance, unstake],
+    [init, unstake],
   );
 
   // ---------------------------------------------
