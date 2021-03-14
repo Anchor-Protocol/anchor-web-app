@@ -5,17 +5,7 @@ __metadata:
   version: 4
   cacheKey: 7
 
-"@anchor-protocol/anchor.js@npm:^0.1.12":
-  version: 0.1.12
-  resolution: "@anchor-protocol/anchor.js@npm:0.1.12"
-  dependencies:
-    "@terra-money/terra.js": ^1.3.6
-    yaml: ^1.10.0
-  checksum: f172b6a3e9a575affb9c3b14be1678229740b23d4c97e66ff6cd5e0c34775e4dab2dd70bfe4e91a3eacc97c8f5756eea850aa609931cbde8f2d8bc08fcfd6dcb
-  languageName: node
-  linkType: hard
-
-"@anchor-protocol/anchor.js@npm:^0.1.14":
+"@anchor-protocol/anchor.js@npm:^0.1.12, @anchor-protocol/anchor.js@npm:^0.1.14":
   version: 0.1.14
   resolution: "@anchor-protocol/anchor.js@npm:0.1.14"
   dependencies:
@@ -4699,14 +4689,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prettier@npm:^2.0.0, @types/prettier@npm:^2.2.1":
-  version: 2.2.1
-  resolution: "@types/prettier@npm:2.2.1"
-  checksum: 9dc257dfc51eab6bc1e9ce58df94b309a206b2cdc6768709de3d20f70ae545c616bbc46add6d66f66cfa6cfbb0613dd09e6b6028ff6ff8ba9d3625f38d85cc66
-  languageName: node
-  linkType: hard
-
-"@types/prettier@npm:^2.2.2":
+"@types/prettier@npm:^2.0.0, @types/prettier@npm:^2.2.1, @types/prettier@npm:^2.2.2":
   version: 2.2.2
   resolution: "@types/prettier@npm:2.2.2"
   checksum: 907c2dac93899961706017ecf17d0038b500f499f61d6f1d31e439dae88f7cb90ee944760b1348856baa7befa42761fc53f9bde5add08feccfc810280347d681
