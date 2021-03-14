@@ -51,8 +51,14 @@ function SelectAndTextInputContainerBase({
   return (
     <div {...divProps} aria-invalid={!!error}>
       <div role="grid">{children}</div>
-      {leftHelperText && <LeftHelperText>{leftHelperText}</LeftHelperText>}
-      {rightHelperText && <RightHelperText>{rightHelperText}</RightHelperText>}
+      {leftHelperText && (
+        <LeftHelperText aria-invalid={!!error}>{leftHelperText}</LeftHelperText>
+      )}
+      {rightHelperText && (
+        <RightHelperText aria-invalid={!!error}>
+          {rightHelperText}
+        </RightHelperText>
+      )}
     </div>
   );
 }
@@ -194,7 +200,11 @@ const LeftHelperText = styled.span`
   left: 0;
   bottom: -20px;
 
-  color: inherit;
+  color: ${({ theme }) => theme.dimTextColor};
+
+  &[aria-invalid='true'] {
+    color: ${({ theme }) => theme.colors.negative};
+  }
 `;
 
 const RightHelperText = styled.span`
@@ -204,5 +214,9 @@ const RightHelperText = styled.span`
   right: 0;
   bottom: -20px;
 
-  color: inherit;
+  color: ${({ theme }) => theme.dimTextColor};
+
+  &[aria-invalid='true'] {
+    color: ${({ theme }) => theme.colors.negative};
+  }
 `;
