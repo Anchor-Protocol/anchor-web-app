@@ -14,10 +14,7 @@ import {
 import { ANC, Denom, terraswap, uANC, UST, uUST } from '@anchor-protocol/types';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
 import { useApolloClient } from '@apollo/client';
-import {
-  Input as MuiInput,
-  NativeSelect as MuiNativeSelect,
-} from '@material-ui/core';
+import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { isZero } from '@terra-dev/is-zero';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
@@ -317,7 +314,7 @@ export function TradeSell() {
             </option>
           ))}
         </MuiNativeSelect>
-        <MuiInput
+        <NumberMuiInput
           placeholder="0"
           error={!!invalidFromAmount}
           value={fromAmount}
