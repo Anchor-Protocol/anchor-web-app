@@ -76,7 +76,7 @@ export function pickAncUstLpWithdrawResult({
     details: [
       burned && {
         name: 'Burned',
-        value: formatLP(demicrofy(burned)) + ' ANC-UST-LP',
+        value: formatLP(demicrofy(burned)) + ' ANC-UST LP',
       },
       receivedAnc &&
         receivedUst && {

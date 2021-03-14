@@ -202,13 +202,13 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                     {process.env.NODE_ENV === 'development' && (
                       <>
                         <li>
-                          <span>ANC-UST-LP</span>
+                          <span>ANC-UST LP</span>
                           <span>
                             {formatLP(demicrofy(bank.userBalances.uAncUstLP))}
                           </span>
                         </li>
                         <li>
-                          <span>bLuna-Luna-LP</span>
+                          <span>bLuna-Luna LP</span>
                           <span>
                             {formatLP(
                               demicrofy(bank.userBalances.ubLunaLunaLP),

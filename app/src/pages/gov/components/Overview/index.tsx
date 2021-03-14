@@ -193,7 +193,7 @@ function OverviewBase({ className }: OverviewProps) {
             style={{ width: 200, height: 28, fontSize: 18, fontWeight: 500 }}
           >
             <IconSpan>
-              ANC - UST LP <ChevronRight />
+              ANC-UST LP <ChevronRight />
             </IconSpan>
           </TextButton>
         </h2>
@@ -213,7 +213,7 @@ function OverviewBase({ className }: OverviewProps) {
           </div>
           <div>
             <Tooltip
-              title="Total quantity of ANC - UST LP tokens staked"
+              title="Total quantity of ANC-UST LP tokens staked"
               placement="top"
             >
               <Label>Total Staked</Label>

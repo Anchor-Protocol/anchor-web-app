@@ -55,7 +55,7 @@ export function pickAncUstLpStakeResult({
     details: [
       amount && {
         name: 'Amount',
-        value: formatLP(demicrofy(amount)) + ' ANC-UST-LP',
+        value: formatLP(demicrofy(amount)) + ' ANC-UST LP',
       },
       {
         name: 'Tx Hash',

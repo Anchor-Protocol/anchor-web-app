@@ -81,7 +81,7 @@ export function pickAncUstLpProvideResult({
     details: [
       received && {
         name: 'Received',
-        value: formatLP(demicrofy(received)) + ' ANC-UST-LP',
+        value: formatLP(demicrofy(received)) + ' ANC-UST LP',
       },
       !!depositedAnc &&
         !!depositedUst && {

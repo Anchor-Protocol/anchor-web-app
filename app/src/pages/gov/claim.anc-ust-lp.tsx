@@ -101,7 +101,7 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
   return (
     <CenteredLayout className={className} maxWidth={800}>
       <Section>
-        <h1>ANC-UST-LP Claim</h1>
+        <h1>ANC-UST LP Claim</h1>
 
         {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
 
