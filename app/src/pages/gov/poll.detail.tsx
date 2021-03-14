@@ -165,8 +165,8 @@ function PollDetailBase({ className, match }: PollDetailProps) {
               <HorizontalRuler style={{ margin: '40px 0' }} />
 
               <DescriptionGrid>
-                {pollDetail.msgs.map((msg) => (
-                  <PollMsgRenderer msg={msg} />
+                {pollDetail.msgs.map((msg, i) => (
+                  <PollMsgRenderer key={'msg' + i} msg={msg} />
                 ))}
               </DescriptionGrid>
 

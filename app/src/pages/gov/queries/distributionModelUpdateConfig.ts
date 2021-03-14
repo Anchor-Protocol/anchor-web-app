@@ -1,13 +1,12 @@
+import { moneyMarket, WASMContractResult } from '@anchor-protocol/types';
+import { gql, useQuery } from '@apollo/client';
 import { createMap, useMap } from '@terra-dev/use-map';
 import { useContractAddress } from 'base/contexts/contract';
-import { useService } from 'base/contexts/service';
 import { parseResult } from 'base/queries/parseResult';
 import { MappedQueryResult } from 'base/queries/types';
 import { useQueryErrorHandler } from 'base/queries/useQueryErrorHandler';
 import { useRefetch } from 'base/queries/useRefetch';
-import { gql, useQuery } from '@apollo/client';
 import { useMemo } from 'react';
-import { moneyMarket, WASMContractResult } from '@anchor-protocol/types';
 
 export interface RawData {
   distributionModelConfig: WASMContractResult;
@@ -65,8 +64,6 @@ export function useDistributionModelConfig(): MappedQueryResult<
   RawData,
   Data
 > {
-  const { serviceAvailable } = useService();
-
   const address = useContractAddress();
 
   const variables = useMemo(() => {
@@ -84,7 +81,6 @@ export function useDistributionModelConfig(): MappedQueryResult<
     RawData,
     RawVariables
   >(query, {
-    skip: !serviceAvailable,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     //pollInterval: 1000 * 60,

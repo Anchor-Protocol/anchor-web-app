@@ -1,12 +1,11 @@
 import { cw20, uANC, WASMContractResult } from '@anchor-protocol/types';
+import { gql, useQuery } from '@apollo/client';
 import { createMap, useMap } from '@terra-dev/use-map';
 import { useContractAddress } from 'base/contexts/contract';
-import { useService } from 'base/contexts/service';
 import { parseResult } from 'base/queries/parseResult';
 import { MappedQueryResult } from 'base/queries/types';
 import { useQueryErrorHandler } from 'base/queries/useQueryErrorHandler';
 import { useRefetch } from 'base/queries/useRefetch';
-import { gql, useQuery } from '@apollo/client';
 import { useMemo } from 'react';
 
 export interface RawData {
@@ -69,8 +68,6 @@ export function useCommunityAncBalance(): MappedQueryResult<
   RawData,
   Data
 > {
-  const { serviceAvailable } = useService();
-
   const address = useContractAddress();
 
   const variables = useMemo(() => {
@@ -86,7 +83,6 @@ export function useCommunityAncBalance(): MappedQueryResult<
     RawData,
     RawVariables
   >(query, {
-    skip: !serviceAvailable,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     //pollInterval: 1000 * 60,

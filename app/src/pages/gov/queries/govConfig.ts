@@ -1,8 +1,7 @@
 import { anchorToken, WASMContractResult } from '@anchor-protocol/types';
-import { createMap, useMap } from '@terra-dev/use-map';
 import { gql, useQuery } from '@apollo/client';
+import { createMap, useMap } from '@terra-dev/use-map';
 import { useContractAddress } from 'base/contexts/contract';
-import { useService } from 'base/contexts/service';
 import { parseResult } from 'base/queries/parseResult';
 import { MappedQueryResult } from 'base/queries/types';
 import { useQueryErrorHandler } from 'base/queries/useQueryErrorHandler';
@@ -55,8 +54,6 @@ export const query = gql`
 `;
 
 export function useGovConfig(): MappedQueryResult<RawVariables, RawData, Data> {
-  const { serviceAvailable } = useService();
-
   const { anchorToken } = useContractAddress();
 
   const variables = useMemo(() => {
@@ -77,7 +74,6 @@ export function useGovConfig(): MappedQueryResult<RawVariables, RawData, Data> {
     error,
     ...result
   } = useQuery<RawData, RawVariables>(query, {
-    skip: !serviceAvailable,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     //pollInterval: 1000 * 60,
