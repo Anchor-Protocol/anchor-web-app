@@ -1,5 +1,6 @@
 import type { uANC } from '@anchor-protocol/types';
 import { anchorToken, cw20, WASMContractResult } from '@anchor-protocol/types';
+import { useSubscription } from '@terra-dev/broadcastable-operation';
 import { createMap, useMap } from '@terra-dev/use-map';
 import { gql, useQuery } from '@apollo/client';
 import { useContractAddress } from 'base/contexts/contract';
@@ -124,6 +125,12 @@ export function useRewardsAncGovernance(): MappedQueryResult<
     //pollInterval: 1000 * 60,
     variables,
     onError,
+  });
+
+  useSubscription((id, event) => {
+    if (event === 'done') {
+      _refetch();
+    }
   });
 
   const data = useMap(_data, dataMap);
