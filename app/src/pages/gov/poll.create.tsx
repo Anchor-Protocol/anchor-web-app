@@ -4,6 +4,7 @@ import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { ChevronRight, Forum } from '@material-ui/icons';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
+import { links } from 'env';
 import { govPathname } from 'pages/gov/env';
 import { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
@@ -57,7 +58,13 @@ function PollCreateBase({ className }: PollCreateProps) {
           />
         </ul>
 
-        <BorderButton className="forum">
+        <BorderButton
+          className="forum"
+          component="a"
+          href={links.forum}
+          target="_blank"
+          rel="noreferrer"
+        >
           <IconSpan>
             <Forum /> Forum discussion is recommended before poll creation
           </IconSpan>

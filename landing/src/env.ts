@@ -1,3 +1,5 @@
+import { onProduction } from 'base/env';
+
 export const screen = {
   mobile: { max: 510 },
   // mobile : @media (max-width: ${screen.mobile.max}px)
@@ -22,15 +24,24 @@ export const headerHeight = 84;
 //4th page Anchor offers frictionless access -> https://app.anchorprotocol.com
 
 export const links = {
-  developers: 'https://docs.anchorprotocol.com/developers-terra/anchor.js',
-  betterYield: 'https://docs.anchorprotocol.com/protocol/overview',
-  easierIntegration:
-    'https://docs.anchorprotocol.com/developers-terra/anchor.js',
-  frictionlessAccess: 'https://app.anchorprotocol.com',
+  developers: onProduction
+    ? 'https://docs.anchorprotocol.com/developers-terra/'
+    : 'https://app.gitbook.com/@anchor-protocol/s/anchor-2/',
+  app: onProduction
+    ? 'https://app.anchorprotocol.com'
+    : 'https://app-staging.anchorprotocol.com',
+  betterYield: onProduction
+    ? 'https://docs.anchorprotocol.com/protocol/overview'
+    : 'https://app.gitbook.com/@anchor-protocol/s/anchor-2/protocol/overview',
+  easierIntegration: onProduction
+    ? 'https://docs.anchorprotocol.com/developers-terra/anchor.js'
+    : 'https://app.gitbook.com/@anchor-protocol/s/anchor-2/developers-terra/anchor.js',
+  frictionlessAccess: onProduction
+    ? 'https://app.anchorprotocol.com'
+    : 'https://app-staging.anchorprotocol.com/earn',
   contact: 'mailto:info@anchorprotocol.com',
   whitepaper: 'https://anchorprotocol.com/docs/anchor-v1.1.pdf/',
   discord: 'https://discord.gg/9aUYgpKZ9c',
   forum: 'https://forum.anchorprotocol.com/',
   terra: 'https://terra.money/',
-  app: 'https://app.anchorprotocol.com',
 };

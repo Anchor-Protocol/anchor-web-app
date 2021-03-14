@@ -6,6 +6,7 @@ import { NativeSelect } from '@terra-dev/neumorphism-ui/components/NativeSelect'
 import { anchorToken } from '@anchor-protocol/types/contracts';
 import { useLocalStorage } from '@terra-dev/use-local-storage';
 import { List, ViewModule } from '@material-ui/icons';
+import { links } from 'env';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
 import { govPathname } from 'pages/gov/env';
 import { usePolls } from 'pages/gov/queries/polls';
@@ -104,7 +105,7 @@ function PollsBase({ className }: PollsProps) {
 
         <BorderButton
           component="a"
-          href="https://google.com/"
+          href={links.forum}
           target="_blank"
           rel="noreferrer"
         >
