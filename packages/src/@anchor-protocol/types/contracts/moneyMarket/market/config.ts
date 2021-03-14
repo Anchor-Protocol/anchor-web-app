@@ -18,7 +18,7 @@ export interface ConfigResponse {
   distribution_model: HumanAddr;
   overseer_contract: HumanAddr;
   collector_contract: HumanAddr;
-  faucet_contract: HumanAddr;
+  distributor_contract: HumanAddr;
   stable_denom: StableDenom;
   reserve_factor: Rate;
   max_borrow_factor: Rate;
