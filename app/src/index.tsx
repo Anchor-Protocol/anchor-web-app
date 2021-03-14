@@ -1,7 +1,7 @@
 import { configErrorBoundary } from '@terra-dev/neumorphism-ui/components/configErrorBoundary';
 import * as Sentry from '@sentry/react';
 import { Integrations } from '@sentry/tracing';
-import { SENTRY_DSN } from '@anchor-protocol/web-contexts/env';
+import { SENTRY_DSN } from 'base/env';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { App } from './App';

@@ -13,8 +13,8 @@ import {
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { ClickAwayListener } from '@material-ui/core';
 import { Check, KeyboardArrowRight } from '@material-ui/icons';
-import { useBank } from '@anchor-protocol/web-contexts/contexts/bank';
-import { useService } from '@anchor-protocol/web-contexts/contexts/service';
+import { useBank } from 'base/contexts/bank';
+import { useService } from 'base/contexts/service';
 import { useAirdrop } from 'pages/airdrop/queries/useAirdrop';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import { useCallback, useState } from 'react';

@@ -13,9 +13,9 @@ import {
 } from '@anchor-protocol/notation';
 import { ANC, uANC } from '@anchor-protocol/types';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
-import { useBank } from '@anchor-protocol/web-contexts/contexts/bank';
-import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
-import { useService } from '@anchor-protocol/web-contexts/contexts/service';
+import { useBank } from 'base/contexts/bank';
+import { useConstants } from 'base/contexts/contants';
+import { useService } from 'base/contexts/service';
 import { InputAdornment } from '@material-ui/core';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';

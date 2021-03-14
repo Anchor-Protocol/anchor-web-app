@@ -1,5 +1,5 @@
 import { ParsedExecuteMsg } from '@anchor-protocol/types/contracts/anchorToken/gov';
-import { useContractNickname } from '@anchor-protocol/web-contexts/contexts/contract';
+import { useContractNickname } from 'base/contexts/contract';
 import { AccountLink } from 'components/AccountLink';
 import { getMsgDetails } from 'pages/gov/logics/getMsgDetails';
 import React, { Fragment } from 'react';

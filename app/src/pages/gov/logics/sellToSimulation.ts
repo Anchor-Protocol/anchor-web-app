@@ -4,7 +4,7 @@ import { terraswap } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
 import { MAX_SPREAD } from 'pages/gov/env';
 import { TradeSimulation } from 'pages/gov/models/tradeSimulation';
-import { Data as TaxData } from '@anchor-protocol/web-contexts/queries/tax';
+import { Data as TaxData } from 'base/queries/tax';
 
 export function sellToSimulation(
   simulation: terraswap.SimulationResponse<uUST, uANC>,

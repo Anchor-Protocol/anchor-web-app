@@ -2,7 +2,7 @@ import { min } from '@terra-dev/big-math';
 import { microfy } from '@anchor-protocol/notation';
 import type { UST, uUST } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
-import { Bank } from '@anchor-protocol/web-contexts/contexts/bank';
+import { Bank } from 'base/contexts/bank';
 
 // Tx_fee = MIN(User_Input/(1+tax_rate) * tax_rate , Max_tax) + Fixed_Gas
 

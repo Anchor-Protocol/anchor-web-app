@@ -14,13 +14,13 @@ import {
 } from '@terra-dev/broadcastable-operation';
 import { Dec, Int, MsgExecuteContract, StdFee } from '@terra-money/terra.js';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
-import { Bank } from '@anchor-protocol/web-contexts/contexts/bank';
+import { Bank } from 'base/contexts/bank';
 import { pickSellResult } from 'pages/gov/transactions/pickSellResult';
-import { createContractMsg } from '@anchor-protocol/web-contexts/transactions/createContractMsg';
-import { createOptions } from '@anchor-protocol/web-contexts/transactions/createOptions';
-import { getTxInfo } from '@anchor-protocol/web-contexts/transactions/getTxInfo';
-import { postContractMsg } from '@anchor-protocol/web-contexts/transactions/postContractMsg';
-import { parseTxResult } from '@anchor-protocol/web-contexts/transactions/tx';
+import { createContractMsg } from 'base/transactions/createContractMsg';
+import { createOptions } from 'base/transactions/createOptions';
+import { getTxInfo } from 'base/transactions/getTxInfo';
+import { postContractMsg } from 'base/transactions/postContractMsg';
+import { parseTxResult } from 'base/transactions/tx';
 
 export const sellOptions = createOperationOptions({
   id: 'gov/sell',

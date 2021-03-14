@@ -1,8 +1,5 @@
 import { map } from '@terra-dev/use-map';
-import {
-  testAddressProvider,
-  testClient,
-} from '@anchor-protocol/web-contexts/test.env';
+import { testAddressProvider, testClient } from 'base/test.env';
 import { dataMap, mapVariables, query, RawData, RawVariables } from '../polls';
 
 describe('queries/polls', () => {

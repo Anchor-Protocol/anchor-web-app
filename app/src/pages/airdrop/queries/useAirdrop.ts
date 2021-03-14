@@ -1,5 +1,5 @@
 import { Rate, uANC } from '@anchor-protocol/types';
-import { useService } from '@anchor-protocol/web-contexts/contexts/service';
+import { useService } from 'base/contexts/service';
 import { useCallback, useEffect, useState } from 'react';
 
 export interface Airdrop {

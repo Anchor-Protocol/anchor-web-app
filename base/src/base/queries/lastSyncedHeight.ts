@@ -1,7 +1,13 @@
+import {
+  ApolloClient,
+  ApolloQueryResult,
+  gql,
+  QueryResult,
+  useQuery,
+} from '@apollo/client';
 import { useSubscription } from '@terra-dev/broadcastable-operation';
-import { gql, QueryResult, useQuery } from '@apollo/client';
-import { useService } from '../contexts/service';
 import { useMemo } from 'react';
+import { useService } from '../contexts/service';
 
 export interface RawData {
   LastSyncedHeight: number;
@@ -44,4 +50,20 @@ export function useLastSyncedHeight(): Omit<QueryResult<RawData>, 'data'> & {
     ...result,
     data: serviceAvailable ? data : undefined,
   };
+}
+
+export function queryLastSyncedHeight(
+  client: ApolloClient<any>,
+): Promise<Omit<ApolloQueryResult<RawData>, 'data'> & { data: Data }> {
+  return client
+    .query<RawData>({
+      query,
+      fetchPolicy: 'network-only',
+    })
+    .then((result) => {
+      return {
+        ...result,
+        data: result.data.LastSyncedHeight,
+      };
+    });
 }

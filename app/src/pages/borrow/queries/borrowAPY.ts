@@ -1,8 +1,8 @@
 import { DateTime, Rate } from '@anchor-protocol/types';
 import { createMap, useMap } from '@terra-dev/use-map';
-import { MappedQueryResult } from '@anchor-protocol/web-contexts/queries/types';
-import { useQueryErrorHandler } from '@anchor-protocol/web-contexts/queries/useQueryErrorHandler';
-import { useRefetch } from '@anchor-protocol/web-contexts/queries/useRefetch';
+import { MappedQueryResult } from 'base/queries/types';
+import { useQueryErrorHandler } from 'base/queries/useQueryErrorHandler';
+import { useRefetch } from 'base/queries/useRefetch';
 import { gql, useQuery } from '@apollo/client';
 
 export interface RawData {

@@ -7,9 +7,9 @@ import {
   formatUST,
 } from '@anchor-protocol/notation';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
-import { useBank } from '@anchor-protocol/web-contexts/contexts/bank';
-import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
-import { useService } from '@anchor-protocol/web-contexts/contexts/service';
+import { useBank } from 'base/contexts/bank';
+import { useConstants } from 'base/contexts/contants';
+import { useService } from 'base/contexts/service';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';

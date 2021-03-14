@@ -9,15 +9,12 @@ import {
 import { StdFee } from '@terra-money/terra.js';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { pickWithdrawResult } from 'pages/earn/transactions/pickWithdrawResult';
-import { createContractMsg } from '@anchor-protocol/web-contexts/transactions/createContractMsg';
-import { createOptions } from '@anchor-protocol/web-contexts/transactions/createOptions';
-import { getTxInfo } from '@anchor-protocol/web-contexts/transactions/getTxInfo';
-import { postContractMsg } from '@anchor-protocol/web-contexts/transactions/postContractMsg';
-import {
-  injectTxFee,
-  takeTxFee,
-} from '@anchor-protocol/web-contexts/transactions/takeTxFee';
-import { parseTxResult } from '@anchor-protocol/web-contexts/transactions/tx';
+import { createContractMsg } from 'base/transactions/createContractMsg';
+import { createOptions } from 'base/transactions/createOptions';
+import { getTxInfo } from 'base/transactions/getTxInfo';
+import { postContractMsg } from 'base/transactions/postContractMsg';
+import { injectTxFee, takeTxFee } from 'base/transactions/takeTxFee';
+import { parseTxResult } from 'base/transactions/tx';
 
 export const withdrawOptions = createOperationOptions({
   id: 'earn/withdarw',

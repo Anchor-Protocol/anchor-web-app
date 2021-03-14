@@ -1,4 +1,4 @@
-import { AppProviders } from '@anchor-protocol/web-contexts/AppProviders';
+import { AppProviders } from 'base/AppProviders';
 import { Header } from 'components/Header';
 import { Index } from 'pages/index';
 import { Market } from 'pages/market-simple';

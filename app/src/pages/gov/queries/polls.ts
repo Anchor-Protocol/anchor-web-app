@@ -4,8 +4,8 @@ import {
   WASMContractResult,
 } from '@anchor-protocol/types';
 import { createMap, map } from '@terra-dev/use-map';
-import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
-import { parseResult } from '@anchor-protocol/web-contexts/queries/parseResult';
+import { useContractAddress } from 'base/contexts/contract';
+import { parseResult } from 'base/queries/parseResult';
 import { ApolloClient, gql, useApolloClient } from '@apollo/client';
 import { useCallback, useEffect, useState } from 'react';
 

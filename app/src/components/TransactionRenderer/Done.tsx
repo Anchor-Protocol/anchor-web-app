@@ -2,10 +2,7 @@ import { Done as DoneResult } from '@terra-dev/broadcastable-operation';
 import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
 import { Done as DoneIcon } from '@material-ui/icons';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import {
-  TransactionDetail,
-  TransactionResult,
-} from '@anchor-protocol/web-contexts/models/transaction';
+import { TransactionDetail, TransactionResult } from 'base/models/transaction';
 import React from 'react';
 
 export interface DoneProps {

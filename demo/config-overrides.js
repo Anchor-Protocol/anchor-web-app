@@ -6,6 +6,7 @@ module.exports = {
   webpack: (config) => {
     aliasDangerous({
       ...getWebpackAlias(path.resolve(__dirname, '../packages')),
+      ...getWebpackAlias(path.resolve(__dirname, '../base')),
       ...getWebpackAlias(path.resolve(__dirname, '../app')),
       env: path.resolve(__dirname, '../app/src/env.ts'),
       App: path.resolve(__dirname, '../app/src/App.tsx'),

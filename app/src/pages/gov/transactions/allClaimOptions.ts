@@ -10,10 +10,10 @@ import {
   timeout,
 } from '@terra-dev/broadcastable-operation';
 import { HumanAddr } from '@anchor-protocol/types';
-import { createOptions } from '@anchor-protocol/web-contexts/transactions/createOptions';
-import { getTxInfo } from '@anchor-protocol/web-contexts/transactions/getTxInfo';
-import { postContractMsg } from '@anchor-protocol/web-contexts/transactions/postContractMsg';
-import { parseTxResult } from '@anchor-protocol/web-contexts/transactions/tx';
+import { createOptions } from 'base/transactions/createOptions';
+import { getTxInfo } from 'base/transactions/getTxInfo';
+import { postContractMsg } from 'base/transactions/postContractMsg';
+import { parseTxResult } from 'base/transactions/tx';
 import { MsgExecuteContract, StdFee } from '@terra-money/terra.js';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { pickAllClaimResult } from 'pages/gov/transactions/pickAllClaimResult';

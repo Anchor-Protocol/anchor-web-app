@@ -4,11 +4,11 @@ import type { DateTime, JSDateTime, Rate, uUST } from '@anchor-protocol/types';
 import { createMap, Mapped, useMap } from '@terra-dev/use-map';
 import { gql, useQuery } from '@apollo/client';
 import big from 'big.js';
-import { useService } from '@anchor-protocol/web-contexts/contexts/service';
+import { useService } from 'base/contexts/service';
 import { sub } from 'date-fns';
-import { MappedQueryResult } from '@anchor-protocol/web-contexts/queries/types';
-import { useQueryErrorHandler } from '@anchor-protocol/web-contexts/queries/useQueryErrorHandler';
-import { useRefetch } from '@anchor-protocol/web-contexts/queries/useRefetch';
+import { MappedQueryResult } from 'base/queries/types';
+import { useQueryErrorHandler } from 'base/queries/useQueryErrorHandler';
+import { useRefetch } from 'base/queries/useRefetch';
 import { useEffect, useMemo } from 'react';
 
 type Earned = {
@@ -59,17 +59,14 @@ export const dataMap = createMap<RawData, Data>({
         : '0',
     ).mul(latestExchangeRate[0].ExchangeRate);
 
-    const thenTokenValue = then && thenExists 
-      ? (
-        big(
-          referenceThen.CurrentAnchorBalance.length > 0
-            ? referenceThen.CurrentAnchorBalance
-            : '0',
-        ).mul(thenExchangeRate[0].ExchangeRate)
-      )
-      : (
-        big(referenceThen.CurrentDeposit)
-      )
+    const thenTokenValue =
+      then && thenExists
+        ? big(
+            referenceThen.CurrentAnchorBalance.length > 0
+              ? referenceThen.CurrentAnchorBalance
+              : '0',
+          ).mul(thenExchangeRate[0].ExchangeRate)
+        : big(referenceThen.CurrentDeposit);
 
     try {
       return floor(

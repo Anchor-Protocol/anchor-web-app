@@ -1,8 +1,5 @@
 import { map } from '@terra-dev/use-map';
-import {
-  testAddress,
-  testClient,
-} from '@anchor-protocol/web-contexts/test.env';
+import { testAddress, testClient } from 'base/test.env';
 import {
   dataMap,
   mapVariables,
@@ -20,6 +17,9 @@ describe('queries/exchangeRate', () => {
           bLunaHubContract: testAddress.bluna.hub,
           stateQuery: {
             state: {},
+          },
+          parametersQuery: {
+            parameters: {},
           },
         }),
       })

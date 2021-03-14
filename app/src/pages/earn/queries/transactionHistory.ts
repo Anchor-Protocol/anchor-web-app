@@ -3,10 +3,10 @@ import type { DateTime, uaUST, uUST } from '@anchor-protocol/types';
 import { Denom, HumanAddr } from '@anchor-protocol/types';
 import { createMap, Mapped, useMap } from '@terra-dev/use-map';
 import { gql, useQuery } from '@apollo/client';
-import { useService } from '@anchor-protocol/web-contexts/contexts/service';
-import { MappedQueryResult } from '@anchor-protocol/web-contexts/queries/types';
-import { useQueryErrorHandler } from '@anchor-protocol/web-contexts/queries/useQueryErrorHandler';
-import { useRefetch } from '@anchor-protocol/web-contexts/queries/useRefetch';
+import { useService } from 'base/contexts/service';
+import { MappedQueryResult } from 'base/queries/types';
+import { useQueryErrorHandler } from 'base/queries/useQueryErrorHandler';
+import { useRefetch } from 'base/queries/useRefetch';
 import { useMemo } from 'react';
 
 export interface RawData {

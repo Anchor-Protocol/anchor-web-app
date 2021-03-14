@@ -6,18 +6,18 @@ import {
 } from '@anchor-protocol/notation';
 import { uANC, UST, uUST } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
-import { TxHashLink } from '@anchor-protocol/web-contexts/components/TxHashLink';
-import { Bank } from '@anchor-protocol/web-contexts/contexts/bank';
-import { TxInfoParseError } from '@anchor-protocol/web-contexts/errors/TxInfoParseError';
-import { TransactionResult } from '@anchor-protocol/web-contexts/models/transaction';
+import { TxHashLink } from 'base/components/TxHashLink';
+import { Bank } from 'base/contexts/bank';
+import { TxInfoParseError } from 'base/errors/TxInfoParseError';
+import { TransactionResult } from 'base/models/transaction';
 import {
   Data,
   pickAttributeValueByKey,
   pickEvent,
   pickRawLog,
-} from '@anchor-protocol/web-contexts/queries/txInfos';
+} from 'base/queries/txInfos';
 import { createElement } from 'react';
-import { TxResult } from '@anchor-protocol/web-contexts/transactions/tx';
+import { TxResult } from 'base/transactions/tx';
 
 interface Params {
   txResult: TxResult;

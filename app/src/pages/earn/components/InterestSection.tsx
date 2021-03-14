@@ -6,7 +6,7 @@ import {
   formatUST,
 } from '@anchor-protocol/notation';
 import { Rate, UST } from '@anchor-protocol/types';
-import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
+import { useConstants } from 'base/contexts/contants';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Label } from '@terra-dev/neumorphism-ui/components/Label';

@@ -1,4 +1,4 @@
-import { testClient } from '@anchor-protocol/web-contexts/test.env';
+import { testClient } from 'base/test.env';
 import { query, RawData } from '../borrowAPY';
 
 describe('queries/borrowAPY', () => {

@@ -1,4 +1,4 @@
-import { AppProviders } from '@anchor-protocol/web-contexts/AppProviders';
+import { AppProviders } from 'base/AppProviders';
 import { Banner } from 'components/Banner';
 import { Header } from 'components/Header';
 import { Airdrop } from 'pages/airdrop';

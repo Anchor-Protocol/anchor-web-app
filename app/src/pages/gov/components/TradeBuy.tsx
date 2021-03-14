@@ -27,12 +27,12 @@ import {
 import { useResolveLast } from '@terra-dev/use-resolve-last';
 import { useRestrictedNumberInput } from '@terra-dev/use-restricted-input';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
-import { useBank } from '@anchor-protocol/web-contexts/contexts/bank';
-import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
-import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
-import { useService } from '@anchor-protocol/web-contexts/contexts/service';
-import { queryReverseSimulation } from '@anchor-protocol/web-contexts/queries/reverseSimulation';
-import { querySimulation } from '@anchor-protocol/web-contexts/queries/simulation';
+import { useBank } from 'base/contexts/bank';
+import { useConstants } from 'base/contexts/contants';
+import { useContractAddress } from 'base/contexts/contract';
+import { useService } from 'base/contexts/service';
+import { queryReverseSimulation } from 'base/queries/reverseSimulation';
+import { querySimulation } from 'base/queries/simulation';
 import { useApolloClient } from '@apollo/client';
 import {
   Input as MuiInput,

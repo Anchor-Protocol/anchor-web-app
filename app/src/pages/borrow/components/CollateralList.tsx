@@ -10,7 +10,7 @@ import {
 } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import { UST } from '@anchor-protocol/types';
-import { useService } from '@anchor-protocol/web-contexts/contexts/service';
+import { useService } from 'base/contexts/service';
 import big from 'big.js';
 import { useMemo } from 'react';
 import { useMarket } from '../context/market';

@@ -8,7 +8,7 @@ import {
 } from '@anchor-protocol/notation';
 import { Rate, uANC } from '@anchor-protocol/types';
 import { UpdateConfig as DistributionModelUpdateConfig } from '@anchor-protocol/types/contracts/moneyMarket/distributionModel/updateConfig';
-import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
+import { useContractAddress } from 'base/contexts/contract';
 import { InputAdornment } from '@material-ui/core';
 import big from 'big.js';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';

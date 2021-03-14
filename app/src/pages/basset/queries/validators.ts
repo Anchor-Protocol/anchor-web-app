@@ -1,9 +1,9 @@
 import { bluna, WASMContractResult } from '@anchor-protocol/types';
 import { createMap, useMap } from '@terra-dev/use-map';
-import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
-import { MappedQueryResult } from '@anchor-protocol/web-contexts/queries/types';
-import { useQueryErrorHandler } from '@anchor-protocol/web-contexts/queries/useQueryErrorHandler';
-import { useRefetch } from '@anchor-protocol/web-contexts/queries/useRefetch';
+import { useContractAddress } from 'base/contexts/contract';
+import { MappedQueryResult } from 'base/queries/types';
+import { useQueryErrorHandler } from 'base/queries/useQueryErrorHandler';
+import { useRefetch } from 'base/queries/useRefetch';
 import { gql, useQuery } from '@apollo/client';
 import { useMemo } from 'react';
 

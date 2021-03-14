@@ -15,7 +15,7 @@ import {
 } from '@terra-dev/styled-neumorphism';
 import { Rate } from '@anchor-protocol/types';
 import { TimeEnd } from '@terra-dev/use-time-end';
-import { useLastSyncedHeight } from '@anchor-protocol/web-contexts/queries/lastSyncedHeight';
+import { useLastSyncedHeight } from 'base/queries/lastSyncedHeight';
 import { Schedule } from '@material-ui/icons';
 import { AccountLink } from 'components/AccountLink';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';

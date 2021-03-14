@@ -14,10 +14,10 @@ import {
 } from '@anchor-protocol/notation';
 import { Token, UST, uToken, uUST } from '@anchor-protocol/types';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
-import { Bank, useBank } from '@anchor-protocol/web-contexts/contexts/bank';
-import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
-import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
-import { useService } from '@anchor-protocol/web-contexts/contexts/service';
+import { Bank, useBank } from 'base/contexts/bank';
+import { useConstants } from 'base/contexts/contants';
+import { useContractAddress } from 'base/contexts/contract';
+import { useService } from 'base/contexts/service';
 import {
   Input as MuiInput,
   Modal,

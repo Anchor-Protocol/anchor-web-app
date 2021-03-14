@@ -1,6 +1,6 @@
 import { microfy } from '@anchor-protocol/notation';
 import type { bLuna } from '@anchor-protocol/types';
-import { Bank } from '@anchor-protocol/web-contexts/contexts/bank';
+import { Bank } from 'base/contexts/bank';
 import { ReactNode } from 'react';
 
 export function validateDepositAmount(

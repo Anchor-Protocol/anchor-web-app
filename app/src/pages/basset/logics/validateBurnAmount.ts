@@ -1,6 +1,6 @@
 import type { bLuna } from '@anchor-protocol/types';
 import { microfy } from '@anchor-protocol/notation';
-import { Bank } from '@anchor-protocol/web-contexts/contexts/bank';
+import { Bank } from 'base/contexts/bank';
 import { ReactNode } from 'react';
 
 export function validateBurnAmount(burnAmount: bLuna, bank: Bank): ReactNode {

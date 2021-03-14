@@ -5,18 +5,18 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { moneyMarket, Rate, ubLuna, uUST } from '@anchor-protocol/types';
-import { TxHashLink } from '@anchor-protocol/web-contexts/components/TxHashLink';
-import { TxInfoParseError } from '@anchor-protocol/web-contexts/errors/TxInfoParseError';
-import { TransactionResult } from '@anchor-protocol/web-contexts/models/transaction';
+import { TxHashLink } from 'base/components/TxHashLink';
+import { TxInfoParseError } from 'base/errors/TxInfoParseError';
+import { TransactionResult } from 'base/models/transaction';
 import { currentLtv } from 'pages/borrow/logics/currentLtv';
 import {
   Data,
   pickAttributeValue,
   pickEvent,
   pickRawLog,
-} from '@anchor-protocol/web-contexts/queries/txInfos';
+} from 'base/queries/txInfos';
 import { createElement } from 'react';
-import { TxResult } from '@anchor-protocol/web-contexts/transactions/tx';
+import { TxResult } from 'base/transactions/tx';
 
 interface Params {
   txResult: TxResult;

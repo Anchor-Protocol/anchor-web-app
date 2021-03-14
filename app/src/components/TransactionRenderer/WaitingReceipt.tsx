@@ -1,10 +1,10 @@
 import { InProgress } from '@terra-dev/broadcastable-operation';
 import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { TxHashLink } from '@anchor-protocol/web-contexts/components/TxHashLink';
+import { TxHashLink } from 'base/components/TxHashLink';
 import React from 'react';
 import { GuardSpinner } from 'react-spinners-kit';
-import { TxResult } from '@anchor-protocol/web-contexts/transactions/tx';
+import { TxResult } from 'base/transactions/tx';
 
 export interface WaitingReceiptProps {
   result: InProgress<unknown[]>;

@@ -1,9 +1,5 @@
 import { map } from '@terra-dev/use-map';
-import {
-  testAddress,
-  testAddressProvider,
-  testClient,
-} from '@anchor-protocol/web-contexts/test.env';
+import { testAddress, testAddressProvider, testClient } from 'base/test.env';
 import {
   dataMap,
   mapVariables,

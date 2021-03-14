@@ -1,9 +1,6 @@
 import { map } from '@terra-dev/use-map';
-import {
-  testAddress,
-  testClient,
-  testWalletAddress,
-} from '@anchor-protocol/web-contexts/test.env';
+import { queryLastSyncedHeight } from 'base/queries/lastSyncedHeight';
+import { testAddress, testClient, testWalletAddress } from 'base/test.env';
 import {
   dataMap,
   mapVariables,
@@ -14,6 +11,8 @@ import {
 
 describe('queries/totalDeposit', () => {
   test('should get result from query', async () => {
+    const { data: lastSyncedHeight } = await queryLastSyncedHeight(testClient);
+
     const data = await testClient
       .query<RawData, RawVariables>({
         query,
@@ -27,7 +26,7 @@ describe('queries/totalDeposit', () => {
           moneyMarketContract: testAddress.moneyMarket.market,
           moneyMarketEpochQuery: {
             epoch_state: {
-              block_height: 0,
+              block_height: lastSyncedHeight,
             },
           },
         }),

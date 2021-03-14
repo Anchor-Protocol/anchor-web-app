@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "baseUrl": "src",
+    "paths": {
+      "@terra-dev/*": [
+        "../../packages/src/@terra-dev/*"
+      ],
+      "@anchor-protocol/*": [
+        "../../packages/src/@anchor-protocol/*"
+      ]
+    }
+  }
+}

@@ -1,5 +1,5 @@
-import { Data } from '@anchor-protocol/web-contexts/queries/txInfos';
-import { TxResult } from '@anchor-protocol/web-contexts/transactions/tx';
+import { Data } from 'base/queries/txInfos';
+import { TxResult } from 'base/transactions/tx';
 
 export const passTxInfo = ({
   txResult,

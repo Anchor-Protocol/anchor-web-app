@@ -10,6 +10,9 @@
       ],
       "@anchor-protocol/*": [
         "../../packages/src/@anchor-protocol/*"
+      ],
+      "base/*": [
+        "../../base/src/base/*"
       ]
     }
   }

@@ -1,6 +1,6 @@
 import { JSDateTime } from '@anchor-protocol/types';
 import { map } from '@terra-dev/use-map';
-import { testClient } from '@anchor-protocol/web-contexts/test.env';
+import { testClient } from 'base/test.env';
 import {
   dataMap,
   mapVariables,

@@ -1,5 +1,5 @@
 import { uUST } from '@anchor-protocol/types';
-import { TxResult } from '@anchor-protocol/web-contexts/transactions/tx';
+import { TxResult } from 'base/transactions/tx';
 import { pickAllClaimResult } from 'pages/gov/transactions/pickAllClaimResult';
 import json from './fixtures/claim-all.json';
 

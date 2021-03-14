@@ -12,7 +12,7 @@ import {
 } from '@anchor-protocol/notation';
 import { ANC, HumanAddr, uANC } from '@anchor-protocol/types';
 import { Spend } from '@anchor-protocol/types/contracts/anchorToken/community/spend';
-import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
+import { useContractAddress } from 'base/contexts/contract';
 import { AccAddress } from '@terra-money/terra.js';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';

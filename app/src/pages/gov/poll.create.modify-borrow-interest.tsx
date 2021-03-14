@@ -10,8 +10,8 @@ import { Rate } from '@anchor-protocol/types';
 import { UpdateConfig as InterestModelUpdateConfig } from '@anchor-protocol/types/contracts/moneyMarket/interestModel/updateConfig';
 import { InputAdornment } from '@material-ui/core';
 import big from 'big.js';
-import { useConstants } from '@anchor-protocol/web-contexts/contexts/contants';
-import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
+import { useConstants } from 'base/contexts/contants';
+import { useContractAddress } from 'base/contexts/contract';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 

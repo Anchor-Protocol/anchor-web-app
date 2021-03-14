@@ -1,8 +1,8 @@
 import { Discord } from '@anchor-protocol/icons';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { useWallet } from '@anchor-protocol/wallet-provider';
-import { useTheme } from '@anchor-protocol/web-contexts/contexts/theme';
-import { useLastSyncedHeight } from '@anchor-protocol/web-contexts/queries/lastSyncedHeight';
+import { useTheme } from 'base/contexts/theme';
+import { useLastSyncedHeight } from 'base/queries/lastSyncedHeight';
 import { IconButton } from '@material-ui/core';
 import {
   Brightness3,

@@ -6,7 +6,7 @@ import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import { formatExecuteMsgNumber } from '@anchor-protocol/notation';
 import { CW20Addr, Rate } from '@anchor-protocol/types';
 import { PollMsg } from '@anchor-protocol/types/contracts/anchorToken/gov';
-import { useContractAddress } from '@anchor-protocol/web-contexts/contexts/contract';
+import { useContractAddress } from 'base/contexts/contract';
 import { InputAdornment } from '@material-ui/core';
 import big from 'big.js';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';

@@ -1,5 +1,5 @@
 import type { Rate, uUST } from '@anchor-protocol/types';
-import { TxFailedError } from '@anchor-protocol/web-contexts/errors/TxFailedError';
+import { TxFailedError } from 'base/errors/TxFailedError';
 
 export interface StringifiedTxResult {
   fee: string;

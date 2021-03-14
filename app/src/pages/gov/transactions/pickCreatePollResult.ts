@@ -3,11 +3,11 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { uUST } from '@anchor-protocol/types';
-import { TxHashLink } from '@anchor-protocol/web-contexts/components/TxHashLink';
-import { TransactionResult } from '@anchor-protocol/web-contexts/models/transaction';
-import { Data } from '@anchor-protocol/web-contexts/queries/txInfos';
+import { TxHashLink } from 'base/components/TxHashLink';
+import { TransactionResult } from 'base/models/transaction';
+import { Data } from 'base/queries/txInfos';
 import { createElement } from 'react';
-import { TxResult } from '@anchor-protocol/web-contexts/transactions/tx';
+import { TxResult } from 'base/transactions/tx';
 
 interface Params {
   txResult: TxResult;
