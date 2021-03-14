@@ -340,21 +340,21 @@ __metadata:
     bowser: ^2.11.0
     color: ^3.1.3
     d3-ease: ^2.0.0
-    d3-interpolate: ^2.0.1
     d3-scale: ^3.2.3
-    d3-selection: ^2.0.0
     d3-shape: ^2.0.0
     d3-timer: ^2.0.0
+    date-fns: ^2.19.0
     downshift: ^6.1.0
     event-target-shim: ^6.0.2
     fastdom: ^1.0.10
+    fs-extra: ^9.1.0
+    glob: ^7.1.6
     graphql: ^15.5.0
     immer: ^8.0.1
-    lodash.throttle: ^4.1.1
     numeral: ^2.0.6
+    prettier: ^2.2.1
     react: ^17.0.1
     react-dom: ^17.0.1
-    react-ga: ^3.3.0
     react-router-dom: ^5.2.0
     react-scripts: 4.0.3
     resize-observer-polyfill: ^1.5.1
@@ -8710,7 +8710,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"d3-interpolate@npm:1.2.0 - 2, d3-interpolate@npm:^2.0.1":
+"d3-interpolate@npm:1.2.0 - 2":
   version: 2.0.1
   resolution: "d3-interpolate@npm:2.0.1"
   dependencies:
@@ -8822,10 +8822,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^2.18.0":
-  version: 2.18.0
-  resolution: "date-fns@npm:2.18.0"
-  checksum: 58320ad5122bb2ae2f5aa23e2c432529d3390222bbec49339f8c360c2c07e5db8c26b40fe2cb2c947b4507732b9e1f9c195ec39572e14014291788ca07a5de6f
+"date-fns@npm:^2.18.0, date-fns@npm:^2.19.0":
+  version: 2.19.0
+  resolution: "date-fns@npm:2.19.0"
+  checksum: 99ec34199c3a61cdb7fd27dcd68dd3c0c949ddfc34aa1daba9a6b2e0b5381bf42d8955d28ec2770f72eee429f5e7ab10fadba7b69108379d2545f003461d04f7
   languageName: node
   linkType: hard
 
@@ -14418,13 +14418,6 @@ fsevents@^1.2.7:
   dependencies:
     lodash._reinterpolate: ^3.0.0
   checksum: 45546a5b76376b138ef4f01aa2722813127c639428eb9baef3fbac176b509ee2dab5cb9d1ee8267dbeeef8d49371f9a748af3df83649bf8b75fa54993f65b7aa
-  languageName: node
-  linkType: hard
-
-"lodash.throttle@npm:^4.1.1":
-  version: 4.1.1
-  resolution: "lodash.throttle@npm:4.1.1"
-  checksum: d9107c79033f609f23552f48f5ba93b8a98a07a2b38914745a48d33f18704a4c6a125610ad2bab2a0139974d1da7c5d6a24271243e21571f01e21bf3b2f6b21d
   languageName: node
   linkType: hard
 
