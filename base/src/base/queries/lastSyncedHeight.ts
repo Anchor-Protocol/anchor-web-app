@@ -6,8 +6,6 @@ import {
   useQuery,
 } from '@apollo/client';
 import { useSubscription } from '@terra-dev/broadcastable-operation';
-import { useMemo } from 'react';
-import { useService } from '../contexts/service';
 
 export interface RawData {
   LastSyncedHeight: number;
@@ -28,10 +26,7 @@ export const query = gql`
 export function useLastSyncedHeight(): Omit<QueryResult<RawData>, 'data'> & {
   data: Data | undefined;
 } {
-  const { serviceAvailable } = useService();
-
   const result = useQuery<RawData>(query, {
-    skip: !serviceAvailable,
     fetchPolicy: 'network-only',
     pollInterval: 1000 * 60,
   });
@@ -42,13 +37,9 @@ export function useLastSyncedHeight(): Omit<QueryResult<RawData>, 'data'> & {
     }
   });
 
-  const data = useMemo(() => (result.data ? mapData(result.data) : undefined), [
-    result.data,
-  ]);
-
   return {
     ...result,
-    data: serviceAvailable ? data : undefined,
+    data: result.data?.LastSyncedHeight ?? 0,
   };
 }
 

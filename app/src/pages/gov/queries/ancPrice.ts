@@ -1,15 +1,14 @@
-import { useSubscription } from '@terra-dev/broadcastable-operation';
 import type { uANC, uAncUstLP, UST, uUST } from '@anchor-protocol/types';
 import { terraswap, uToken, WASMContractResult } from '@anchor-protocol/types';
-import { createMap, useMap } from '@terra-dev/use-map';
 import { gql, useQuery } from '@apollo/client';
-import big from 'big.js';
+import { useSubscription } from '@terra-dev/broadcastable-operation';
+import { createMap, useMap } from '@terra-dev/use-map';
 import { useContractAddress } from 'base/contexts/contract';
-import { useService } from 'base/contexts/service';
-import { AncPrice } from 'pages/gov/models/ancPrice';
 import { MappedQueryResult } from 'base/queries/types';
 import { useQueryErrorHandler } from 'base/queries/useQueryErrorHandler';
 import { useRefetch } from 'base/queries/useRefetch';
+import big from 'big.js';
+import { AncPrice } from 'pages/gov/models/ancPrice';
 import { useMemo } from 'react';
 
 export interface RawData {
@@ -82,8 +81,6 @@ export const query = gql`
 `;
 
 export function useANCPrice(): MappedQueryResult<RawVariables, RawData, Data> {
-  const { serviceAvailable } = useService();
-
   const { terraswap } = useContractAddress();
 
   const variables = useMemo(() => {
@@ -104,7 +101,6 @@ export function useANCPrice(): MappedQueryResult<RawVariables, RawData, Data> {
     error,
     ...result
   } = useQuery<RawData, RawVariables>(query, {
-    skip: !serviceAvailable,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     pollInterval: 1000 * 60,

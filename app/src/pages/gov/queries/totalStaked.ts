@@ -1,10 +1,9 @@
-import { useSubscription } from '@terra-dev/broadcastable-operation';
 import type { uANC } from '@anchor-protocol/types';
 import { anchorToken, cw20, WASMContractResult } from '@anchor-protocol/types';
-import { createMap, useMap } from '@terra-dev/use-map';
 import { gql, useQuery } from '@apollo/client';
+import { useSubscription } from '@terra-dev/broadcastable-operation';
+import { createMap, useMap } from '@terra-dev/use-map';
 import { useContractAddress } from 'base/contexts/contract';
-import { useService } from 'base/contexts/service';
 import { parseResult } from 'base/queries/parseResult';
 import { MappedQueryResult } from 'base/queries/types';
 import { useQueryErrorHandler } from 'base/queries/useQueryErrorHandler';
@@ -105,8 +104,6 @@ export function useTotalStaked(): MappedQueryResult<
   RawData,
   Data
 > {
-  const { serviceAvailable } = useService();
-
   const { cw20, anchorToken } = useContractAddress();
 
   const variables = useMemo(() => {
@@ -136,7 +133,6 @@ export function useTotalStaked(): MappedQueryResult<
     error,
     ...result
   } = useQuery<RawData, RawVariables>(query, {
-    skip: !serviceAvailable,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     pollInterval: 1000 * 60,

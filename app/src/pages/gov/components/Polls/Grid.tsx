@@ -1,12 +1,12 @@
+import { Schedule } from '@material-ui/icons';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { TimeEnd } from '@terra-dev/use-time-end';
-import { Schedule } from '@material-ui/icons';
+import { useLastSyncedHeight } from 'base/queries/lastSyncedHeight';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
 import { PollStatusSpan } from 'pages/gov/components/PollStatusSpan';
 import { extractPollDetail } from 'pages/gov/logics/extractPollDetail';
-import { useLastSyncedHeight } from 'base/queries/lastSyncedHeight';
 import { useMemo } from 'react';
 import styled from 'styled-components';
 import { PollGraph } from './PollGraph';
@@ -29,16 +29,22 @@ function GridBase({
   const { data: lastSyncedHeight } = useLastSyncedHeight();
 
   const pollDetails = useMemo(() => {
+    console.log('Grid.tsx..()', {
+      govANCBalance,
+      govState,
+      govConfig,
+      lastSyncedHeight,
+    });
     return govANCBalance && govState && govConfig && lastSyncedHeight
-      ? polls.map((poll) =>
-          extractPollDetail(
+      ? polls.map((poll) => {
+          return extractPollDetail(
             poll,
             govANCBalance,
             govState,
             govConfig,
             lastSyncedHeight,
-          ),
-        )
+          );
+        })
       : [];
   }, [govANCBalance, govConfig, govState, lastSyncedHeight, polls]);
 
