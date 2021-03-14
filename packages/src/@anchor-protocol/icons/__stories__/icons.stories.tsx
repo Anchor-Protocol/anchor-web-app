@@ -1,6 +1,20 @@
 import { Children, ReactElement } from 'react';
 import styled from 'styled-components';
-import { Discord, Wallet, ArrowDown } from '../';
+import {
+  Anchor,
+  AnchorNoCircle,
+  APY,
+  ArrowDown,
+  BorrowAPR,
+  BorrowValue,
+  CircleArrowRight,
+  CollateralValue,
+  Discord,
+  Labtop,
+  Menu,
+  MenuClose,
+  Wallet,
+} from '../';
 
 export default {
   title: 'assets/Icons',
@@ -9,9 +23,19 @@ export default {
 export const Icons = () => {
   return (
     <Grid size={60}>
-      <Wallet />
       <Discord />
+      <Wallet />
       <ArrowDown />
+      <Anchor />
+      <AnchorNoCircle />
+      <CircleArrowRight />
+      <Labtop />
+      <Menu />
+      <MenuClose />
+      <APY />
+      <BorrowAPR />
+      <BorrowValue />
+      <CollateralValue />
     </Grid>
   );
 };
