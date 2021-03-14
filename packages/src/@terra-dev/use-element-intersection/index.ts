@@ -1,6 +1,6 @@
 import { RefObject, useEffect, useState } from 'react';
 
-interface Params extends IntersectionObserverInit {
+export interface ElementIntersectionParams extends IntersectionObserverInit {
   elementRef: RefObject<HTMLElement>;
   observeOnce?: boolean;
 }
@@ -11,7 +11,7 @@ export function useElementIntersection({
   root,
   rootMargin,
   observeOnce = false,
-}: Params) {
+}: ElementIntersectionParams) {
   const [entry, setEntry] = useState<IntersectionObserverEntry | null>(null);
 
   useEffect(() => {

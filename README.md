@@ -78,9 +78,14 @@ IDE
 - [packages/src/@terra-dev/is-touch-device/README.md](packages/src/@terra-dev/is-touch-device/README.md)
 - [packages/src/@terra-dev/is-zero/README.md](packages/src/@terra-dev/is-zero/README.md)
 - [packages/src/@terra-dev/neumorphism-ui/README.md](packages/src/@terra-dev/neumorphism-ui/README.md)
+- [packages/src/@terra-dev/sendinblue/README.md](packages/src/@terra-dev/sendinblue/README.md)
 - [packages/src/@terra-dev/snackbar/README.md](packages/src/@terra-dev/snackbar/README.md)
 - [packages/src/@terra-dev/styled-neumorphism/README.md](packages/src/@terra-dev/styled-neumorphism/README.md)
 - [packages/src/@terra-dev/use-dialog/README.md](packages/src/@terra-dev/use-dialog/README.md)
+- [packages/src/@terra-dev/use-element-intersection/README.md](packages/src/@terra-dev/use-element-intersection/README.md)
+- [packages/src/@terra-dev/use-google-analytics/README.md](packages/src/@terra-dev/use-google-analytics/README.md)
+- [packages/src/@terra-dev/use-interval/README.md](packages/src/@terra-dev/use-interval/README.md)
+- [packages/src/@terra-dev/use-local-storage/README.md](packages/src/@terra-dev/use-local-storage/README.md)
 - [packages/src/@terra-dev/use-resolve-last/README.md](packages/src/@terra-dev/use-resolve-last/README.md)
 
 <!-- /index -->

@@ -34,7 +34,7 @@ It is helpful when you make a fetch requests by user input.
 import { useResolveLast } from '@terra-dev/use-resolve-last/index';
 
 export default {
-  title: 'core/use-resolve-last',
+  title: 'packages/use-resolve-last',
 };
 
 const someFetch = (value: string) =>

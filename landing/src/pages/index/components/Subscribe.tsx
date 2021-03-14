@@ -1,8 +1,10 @@
 import { InputBase } from '@material-ui/core';
 import { MailOutline } from '@material-ui/icons';
-import { useSendinblueSubscription } from '@terra-dev/sendinblue';
+import {
+  useEmailInput,
+  useSendinblueSubscription,
+} from '@terra-dev/sendinblue';
 import { links, sendinblueApiKey } from 'env';
-import { useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 export interface SubscribeProps {
@@ -10,17 +12,11 @@ export interface SubscribeProps {
 }
 
 function SubscribeBase({ className }: SubscribeProps) {
-  const [email, setEmail] = useState<string>('');
+  const [email, setEmail, validEmail] = useEmailInput();
 
   const [subscribeEmail, { status }] = useSendinblueSubscription(
     sendinblueApiKey,
   );
-
-  const validEmail = useMemo(() => {
-    return /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(
-      email,
-    );
-  }, [email]);
 
   return (
     <section className={className}>

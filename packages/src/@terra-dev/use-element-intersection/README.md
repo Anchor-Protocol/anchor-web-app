@@ -1,3 +1,35 @@
+# `@terra-dev/use-element-intersection`
+
+## API
+
+<!-- source index.ts --pick "ElementIntersectionParams useElementIntersection" -->
+
+[index.ts](index.ts)
+
+```ts
+export function useElementIntersection({
+  elementRef,
+  threshold,
+  root,
+  rootMargin,
+  observeOnce = false,
+}: ElementIntersectionParams) {}
+
+export interface ElementIntersectionParams extends IntersectionObserverInit {
+  elementRef: RefObject<HTMLElement>;
+  observeOnce?: boolean;
+}
+```
+
+<!-- /source -->
+
+## Examples
+
+<!-- source __stories__/*.stories.tsx -->
+
+[\_\_stories\_\_/use-element-intersection.stories.tsx](__stories__/use-element-intersection.stories.tsx)
+
+```tsx
 import { useElementIntersection } from '@terra-dev/use-element-intersection';
 import { useRef } from 'react';
 import styled from 'styled-components';
@@ -65,3 +97,6 @@ const Intersecting = styled.div`
   border-radius: 15px;
   padding: 20px;
 `;
+```
+
+<!-- /source -->

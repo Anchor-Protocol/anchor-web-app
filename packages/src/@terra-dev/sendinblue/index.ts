@@ -1,15 +1,34 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
-interface Status {
+export function useEmailInput(): [
+  email: string,
+  setEmail: (email: string) => void,
+  validEmail: 'valid' | null,
+] {
+  const [email, setEmail] = useState<string>('');
+
+  const valid = useMemo(() => {
+    return email.length > 0 &&
+      /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(
+        email,
+      )
+      ? 'valid'
+      : null;
+  }, [email]);
+
+  return [email, setEmail, valid];
+}
+
+export interface Status {
   status: 'success' | 'in-progress' | 'ready';
 }
 
-interface Fault {
+export interface Fault {
   status: 'error';
   message: string;
 }
 
-type Result = Status | Fault;
+export type Result = Status | Fault;
 
 export function useSendinblueSubscription(
   apiKey: string,
