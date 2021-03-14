@@ -15,11 +15,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@anchor-protocol/anchor.js@npm:^0.1.14":
+  version: 0.1.14
+  resolution: "@anchor-protocol/anchor.js@npm:0.1.14"
+  dependencies:
+    "@terra-money/terra.js": ^1.3.6
+    yaml: ^1.10.0
+  checksum: dc4e330096cd18a75ebecc4a620e591c85a714fe700c323a9e16eb339534040d10fe5fbe25eccc4db4810a35e5da53fe452959acbd0c3b4246f9ce0afbd0567a
+  languageName: node
+  linkType: hard
+
 "@anchor-web-app/app@workspace:app":
   version: 0.0.0-use.local
   resolution: "@anchor-web-app/app@workspace:app"
   dependencies:
-    "@anchor-protocol/anchor.js": ^0.1.12
+    "@anchor-protocol/anchor.js": ^0.1.14
     "@apollo/client": ^3.3.11
     "@material-ui/core": ^4.11.3
     "@material-ui/icons": ^4.11.2

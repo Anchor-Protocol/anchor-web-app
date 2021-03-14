@@ -47,10 +47,11 @@ export interface ContractAddress {
     staking: HumanAddr;
     /** addressProvider.community() */
     community: HumanAddr;
-    /** addressProvider.faucet() */
+    /** addressProvider.distributor() */
     distributor: HumanAddr;
-
+    /** addressProvider.investorLock() */
     investorLock: HumanAddr;
+    /** addressProvider.teamLock() */
     teamLock: HumanAddr;
   };
   terraswap: {

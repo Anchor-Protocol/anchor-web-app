@@ -15,6 +15,6 @@ export interface ConfigResponse {
   gov_contract: HumanAddr;
   terraswap_factory: HumanAddr;
   anchor_token: HumanAddr;
-  faucet_contract: HumanAddr;
+  distributor_contract: HumanAddr;
   reward_weight: Rate;
 }
