@@ -1,6 +1,7 @@
 import { InputBase } from '@material-ui/core';
 import { MailOutline } from '@material-ui/icons';
-import { links } from 'env';
+import { useSendinblueSubscription } from '@terra-dev/sendinblue';
+import { links, sendinblueApiKey } from 'env';
 import { useMemo, useState } from 'react';
 import styled from 'styled-components';
 
@@ -10,6 +11,10 @@ export interface SubscribeProps {
 
 function SubscribeBase({ className }: SubscribeProps) {
   const [email, setEmail] = useState<string>('');
+
+  const [subscribeEmail, { status }] = useSendinblueSubscription(
+    sendinblueApiKey,
+  );
 
   const validEmail = useMemo(() => {
     return /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(
@@ -23,19 +28,29 @@ function SubscribeBase({ className }: SubscribeProps) {
         Sign up for our newsletter to receive product news, updates and special
         invites.
       </p>
-      <div className="email">
-        <MailOutline />
-        <InputBase
-          type="email"
-          fullWidth
-          placeholder="Enter Your email address"
-          value={email}
-          onChange={({ target }) => setEmail(target.value)}
-        />
-        <button disabled={!validEmail} onClick={() => console.log(email)}>
-          Subscribe
-        </button>
-      </div>
+      {status === 'in-progress' ? (
+        <div className="email">
+          <MailOutline /> Please wait...
+        </div>
+      ) : status === 'success' ? (
+        <div className="email">
+          <MailOutline /> Thanks for subscribing.
+        </div>
+      ) : (
+        <div className="email">
+          <MailOutline />
+          <InputBase
+            type="email"
+            fullWidth
+            placeholder="Enter Your email address"
+            value={email}
+            onChange={({ target }) => setEmail(target.value)}
+          />
+          <button disabled={!validEmail} onClick={() => subscribeEmail(email)}>
+            Subscribe
+          </button>
+        </div>
+      )}
       <div className="links">
         <a href={links.contact} target="_blank" rel="noreferrer">
           CONTACT
@@ -70,6 +85,9 @@ export const Subscribe = styled(SubscribeBase)`
   }
 
   .email {
+    font-size: 17px;
+    color: ${({ theme }) => theme.textColor};
+
     margin-top: 24px;
 
     display: flex;
@@ -100,18 +118,17 @@ export const Subscribe = styled(SubscribeBase)`
     button {
       cursor: pointer;
 
-      padding: 4px 28px;
+      width: 130px;
 
-      border: none;
+      border: 0;
       outline: none;
       background-color: transparent;
 
-      border-left: 1px solid #e2e2e2;
-      color: #949494;
+      padding: 4px 28px;
+      border-radius: 0;
 
-      &:hover {
-        color: #777777;
-      }
+      border-left: 1px solid #e2e2e2;
+      color: ${({ theme }) => theme.textColor};
 
       &:disabled {
         cursor: default;

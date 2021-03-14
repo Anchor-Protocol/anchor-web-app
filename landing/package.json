@@ -76,6 +76,7 @@
     "react-responsive": "^8.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
+    "react-spinners-kit": "^1.9.1",
     "react-spring": "^8.0.27",
     "regl": "^2.1.0",
     "resize-observer-polyfill": "^1.5.1",
