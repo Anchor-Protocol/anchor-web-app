@@ -1,4 +1,4 @@
-import { APYChart } from '@anchor-protocol/app-charts/APYChart';
+import { APYChart } from '@anchor-protocol/webapp-charts/APYChart';
 import { Rate } from '@anchor-protocol/types';
 
 export default {

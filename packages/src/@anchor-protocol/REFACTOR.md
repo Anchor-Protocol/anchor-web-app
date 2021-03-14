@@ -27,11 +27,11 @@
 
 - \[ ] types
   - \[ ] re-export 되는 것들을 namespace 구조로 변경
-- \[ ] notation
-  - \[ ] curried function 구조로 모두 변경
-- \[ ] wallet-provider
-- \[ ] app-charts -> webapp-charts
-- \[ ] web-contexts -> webapp-common
+- \[x] notation
+  - \[x] curried function 구조로 모두 변경
+- \[x] wallet-provider
+- \[x] app-charts -> webapp-charts
+- \[x] web-contexts -> base
 
 # Dependencies
 

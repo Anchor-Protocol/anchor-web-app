@@ -1,4 +1,4 @@
-import { CoinChart } from '@anchor-protocol/app-charts/CoinChart';
+import { CoinChart } from '@anchor-protocol/webapp-charts/CoinChart';
 
 export default {
   title: 'anchor/CoinChart',

@@ -1,4 +1,4 @@
-import { CoinChart } from '@anchor-protocol/app-charts/CoinChart';
+import { CoinChart } from '@anchor-protocol/webapp-charts/CoinChart';
 import { HorizontalRuler } from '@terra-dev/neumorphism-ui/components/HorizontalRuler';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { Tab } from '@terra-dev/neumorphism-ui/components/Tab';

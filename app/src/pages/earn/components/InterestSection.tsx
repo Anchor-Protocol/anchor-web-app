@@ -1,4 +1,7 @@
-import { APYChart, APYChartItem } from '@anchor-protocol/app-charts/APYChart';
+import {
+  APYChart,
+  APYChartItem,
+} from '@anchor-protocol/webapp-charts/APYChart';
 import {
   AnimateNumber,
   demicrofy,
