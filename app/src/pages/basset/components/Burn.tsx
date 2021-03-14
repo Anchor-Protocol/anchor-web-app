@@ -1,7 +1,3 @@
-import { useOperation } from '@terra-dev/broadcastable-operation';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
 import {
   demicrofy,
   formatLuna,
@@ -11,15 +7,16 @@ import {
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import type { bLuna, Luna, uUST } from '@anchor-protocol/types';
-import { useRestrictedNumberInput } from '@terra-dev/use-restricted-input';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
+import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
+import { useOperation } from '@terra-dev/broadcastable-operation';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { NumberMuiInput } from '@terra-dev/neumorphism-ui/components/NumberMuiInput';
+import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
 import { useService } from 'base/contexts/service';
-import {
-  Input as MuiInput,
-  NativeSelect as MuiNativeSelect,
-} from '@material-ui/core';
 import big, { Big } from 'big.js';
 import { ArrowDownLine } from 'components/ArrowDownLine';
 import { MessageBox } from 'components/MessageBox';
@@ -49,11 +46,6 @@ export function Burn() {
   const { fixedGas } = useConstants();
 
   const [burn, burnResult] = useOperation(burnOptions, {});
-
-  const lunaInputHandlers = useRestrictedNumberInput({
-    maxIntegerPoinsts: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
-    maxDecimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
-  });
 
   // ---------------------------------------------
   // states
@@ -251,11 +243,12 @@ export function Burn() {
             </option>
           ))}
         </MuiNativeSelect>
-        <MuiInput
+        <NumberMuiInput
           placeholder="0"
           error={!!invalidBurnAmount}
           value={burnAmount}
-          {...lunaInputHandlers}
+          maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
+          maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateBurnAmount(target.value)
           }
@@ -289,11 +282,12 @@ export function Burn() {
             </option>
           ))}
         </MuiNativeSelect>
-        <MuiInput
+        <NumberMuiInput
           placeholder="0"
           error={!!invalidBurnAmount}
           value={getAmount}
-          {...lunaInputHandlers}
+          maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
+          maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateGetAmount(target.value)
           }

@@ -20,7 +20,7 @@ import { useWallet, WalletReady } from '@anchor-protocol/wallet-provider';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
 import { useService } from 'base/contexts/service';
-import { InputAdornment, Modal } from '@material-ui/core';
+import { InputAdornment, Modal, TextField } from '@material-ui/core';
 import big, { Big, BigSource } from 'big.js';
 import { ArrowDownLine } from 'components/ArrowDownLine';
 import { MessageBox } from 'components/MessageBox';
@@ -284,7 +284,7 @@ function ComponentBase({
 
         <ArrowDownLine style={{ margin: '10px 0' }} />
 
-        <NumberInput
+        <TextField
           className="limit"
           value={borrowLimit ? formatUSTInput(demicrofy(borrowLimit)) : ''}
           label="NEW BORROW LIMIT"

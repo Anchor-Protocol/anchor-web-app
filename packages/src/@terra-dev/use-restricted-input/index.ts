@@ -1,8 +1,15 @@
-import { ClipboardEvent, KeyboardEvent, useCallback, useMemo } from 'react';
+import {
+  ChangeEvent,
+  ClipboardEvent,
+  KeyboardEvent,
+  useCallback,
+  useMemo,
+} from 'react';
 
 export interface RestrictedInputReturn {
   onKeyPress: (event: KeyboardEvent<HTMLInputElement>) => void;
   onPaste?: (event: ClipboardEvent<HTMLInputElement>) => void;
+  onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function useRestrictedInput(
@@ -40,12 +47,14 @@ export interface RestrictedNumberInputParams {
   type?: 'decimal' | 'integer';
   maxDecimalPoints?: number;
   maxIntegerPoinsts?: number;
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export function useRestrictedNumberInput({
   type = 'decimal',
   maxDecimalPoints,
   maxIntegerPoinsts,
+  onChange: _onChange,
 }: RestrictedNumberInputParams): RestrictedInputReturn {
   const { onKeyPress: restrictCharacters } = useRestrictedInput(
     type === 'integer' ? '0-9' : '0-9.',
@@ -89,6 +98,7 @@ export function useRestrictedNumberInput({
       }
 
       const char = event.key;
+
       const nextValue =
         value.substring(0, selectionStart) +
         char +
@@ -139,5 +149,17 @@ export function useRestrictedNumberInput({
     [isInvalid],
   );
 
-  return { onKeyPress, onPaste };
+  const onChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const hasNonNumeralCharacters = /[^0-9.]/g;
+
+      if (hasNonNumeralCharacters.test(event.target.value)) {
+        event.target.value = event.target.value.replace(/[^0-9.]/g, '');
+      }
+      _onChange(event);
+    },
+    [_onChange],
+  );
+
+  return { onKeyPress, onPaste, onChange };
 }

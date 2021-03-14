@@ -1,7 +1,3 @@
-import { useOperation } from '@terra-dev/broadcastable-operation';
-import { isZero } from '@terra-dev/is-zero';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   demicrofy,
@@ -24,20 +20,24 @@ import {
   uToken,
   uUST,
 } from '@anchor-protocol/types';
-import { useResolveLast } from '@terra-dev/use-resolve-last';
-import { useRestrictedNumberInput } from '@terra-dev/use-restricted-input';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
+import { useApolloClient } from '@apollo/client';
+import {
+  Input as MuiInput,
+  NativeSelect as MuiNativeSelect,
+} from '@material-ui/core';
+import { useOperation } from '@terra-dev/broadcastable-operation';
+import { isZero } from '@terra-dev/is-zero';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { NumberMuiInput } from '@terra-dev/neumorphism-ui/components/NumberMuiInput';
+import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
+import { useResolveLast } from '@terra-dev/use-resolve-last';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
 import { useContractAddress } from 'base/contexts/contract';
 import { useService } from 'base/contexts/service';
 import { queryReverseSimulation } from 'base/queries/reverseSimulation';
 import { querySimulation } from 'base/queries/simulation';
-import { useApolloClient } from '@apollo/client';
-import {
-  Input as MuiInput,
-  NativeSelect as MuiNativeSelect,
-} from '@material-ui/core';
 import big from 'big.js';
 import { ArrowDownLine } from 'components/ArrowDownLine';
 import { MessageBox } from 'components/MessageBox';
@@ -82,16 +82,6 @@ export function TradeBuy() {
   const bank = useBank();
 
   const [buy, buyResult] = useOperation(buyOptions, { bank });
-
-  const ustInputHandlers = useRestrictedNumberInput({
-    maxIntegerPoinsts: UST_INPUT_MAXIMUM_INTEGER_POINTS,
-    maxDecimalPoints: UST_INPUT_MAXIMUM_DECIMAL_POINTS,
-  });
-
-  const ancInputHandlers = useRestrictedNumberInput({
-    maxIntegerPoinsts: 5,
-    maxDecimalPoints: ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
-  });
 
   // ---------------------------------------------
   // states
@@ -337,11 +327,12 @@ export function TradeBuy() {
             </option>
           ))}
         </MuiNativeSelect>
-        <MuiInput
+        <NumberMuiInput
           placeholder="0"
           error={!!invalidFromAmount}
           value={fromAmount}
-          {...ustInputHandlers}
+          maxIntegerPoinsts={UST_INPUT_MAXIMUM_INTEGER_POINTS}
+          maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateFromAmount(target.value)
           }
@@ -377,7 +368,8 @@ export function TradeBuy() {
           placeholder="0"
           error={!!invalidFromAmount}
           value={toAmount}
-          {...ancInputHandlers}
+          maxIntegerPoinsts={5}
+          maxDecimalPoints={ANC_INPUT_MAXIMUM_DECIMAL_POINTS}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateToAmount(target.value)
           }

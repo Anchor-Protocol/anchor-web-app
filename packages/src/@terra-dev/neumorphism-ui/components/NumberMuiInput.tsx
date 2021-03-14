@@ -1,20 +1,20 @@
-import { TextFieldProps } from '@material-ui/core';
+import { InputProps } from '@material-ui/core';
 import {
   RestrictedNumberInputParams,
   useRestrictedNumberInput,
 } from '@terra-dev/use-restricted-input';
 import { TextInput } from './TextInput';
 
-export type NumberInputProps = Omit<TextFieldProps, 'type'> &
+export type NumberMuiInputProps = Omit<InputProps, 'type'> &
   RestrictedNumberInputParams;
 
-export function NumberInput({
+export function NumberMuiInput({
   type = 'decimal',
   maxDecimalPoints,
   maxIntegerPoinsts,
   onChange,
   ...props
-}: NumberInputProps) {
+}: NumberMuiInputProps) {
   const handlers = useRestrictedNumberInput({
     type,
     maxIntegerPoinsts,

@@ -14,25 +14,21 @@ import {
 } from '@anchor-protocol/notation';
 import { Token, UST, uToken, uUST } from '@anchor-protocol/types';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
-import { Bank, useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
-import { useContractAddress } from 'base/contexts/contract';
-import { useService } from 'base/contexts/service';
-import {
-  Input as MuiInput,
-  Modal,
-  NativeSelect as MuiNativeSelect,
-} from '@material-ui/core';
+import { Modal, NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { min } from '@terra-dev/big-math';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { NumberMuiInput } from '@terra-dev/neumorphism-ui/components/NumberMuiInput';
 import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
 import { TextInput } from '@terra-dev/neumorphism-ui/components/TextInput';
 import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
-import { useRestrictedNumberInput } from '@terra-dev/use-restricted-input';
 import { AccAddress } from '@terra-money/terra.js';
+import { Bank, useBank } from 'base/contexts/bank';
+import { useConstants } from 'base/contexts/contants';
+import { useContractAddress } from 'base/contexts/contract';
+import { useService } from 'base/contexts/service';
 import big, { Big, BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
@@ -170,10 +166,10 @@ function ComponentBase({
   // ---------------------------------------------
   // computed
   // ---------------------------------------------
-  const numberInputHandlers = useRestrictedNumberInput({
-    maxIntegerPoinsts: currency.integerPoints,
-    maxDecimalPoints: currency.decimalPoints,
-  });
+  //const numberInputHandlers = useRestrictedNumberInput({
+  //  maxIntegerPoinsts: currency.integerPoints,
+  //  maxDecimalPoints: currency.decimalPoints,
+  //});
 
   // ---------------------------------------------
   // callbacks
@@ -319,10 +315,11 @@ function ComponentBase({
               </option>
             ))}
           </MuiNativeSelect>
-          <MuiInput
+          <NumberMuiInput
             placeholder="0"
             value={amount}
-            {...numberInputHandlers}
+            maxIntegerPoinsts={currency.integerPoints}
+            maxDecimalPoints={currency.decimalPoints}
             onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
               setAmount(target.value as Token)
             }

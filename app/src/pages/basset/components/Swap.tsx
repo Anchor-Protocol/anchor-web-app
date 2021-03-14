@@ -1,7 +1,3 @@
-import { useOperation } from '@terra-dev/broadcastable-operation';
-import { isZero } from '@terra-dev/is-zero';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
 import {
   demicrofy,
   formatExecuteMsgNumber,
@@ -22,19 +18,20 @@ import type {
   uLuna,
 } from '@anchor-protocol/types';
 import { terraswap } from '@anchor-protocol/types';
-import { useResolveLast } from '@terra-dev/use-resolve-last';
-import { useRestrictedNumberInput } from '@terra-dev/use-restricted-input';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
+import { useApolloClient } from '@apollo/client';
+import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
+import { useOperation } from '@terra-dev/broadcastable-operation';
+import { isZero } from '@terra-dev/is-zero';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { NumberMuiInput } from '@terra-dev/neumorphism-ui/components/NumberMuiInput';
+import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
+import { useResolveLast } from '@terra-dev/use-resolve-last';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
 import { useContractAddress } from 'base/contexts/contract';
 import { useService } from 'base/contexts/service';
 import { querySimulation } from 'base/queries/simulation';
-import { useApolloClient } from '@apollo/client';
-import {
-  Input as MuiInput,
-  NativeSelect as MuiNativeSelect,
-} from '@material-ui/core';
 import big from 'big.js';
 import { ArrowDownLine } from 'components/ArrowDownLine';
 import { MessageBox } from 'components/MessageBox';
@@ -76,11 +73,6 @@ export function Swap() {
   const address = useContractAddress();
 
   const [swap, swapResult] = useOperation(swapOptions, {});
-
-  const lunaInputHandlers = useRestrictedNumberInput({
-    maxIntegerPoinsts: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
-    maxDecimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
-  });
 
   // ---------------------------------------------
   // states
@@ -327,11 +319,12 @@ export function Swap() {
             </option>
           ))}
         </MuiNativeSelect>
-        <MuiInput
+        <NumberMuiInput
           placeholder="0"
           error={!!invalidBurnAmount}
           value={burnAmount}
-          {...lunaInputHandlers}
+          maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
+          maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateBurnAmount(target.value)
           }
@@ -363,11 +356,12 @@ export function Swap() {
             </option>
           ))}
         </MuiNativeSelect>
-        <MuiInput
+        <NumberMuiInput
           placeholder="0"
           error={!!invalidBurnAmount}
           value={getAmount}
-          {...lunaInputHandlers}
+          maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
+          maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateGetAmount(target.value)
           }

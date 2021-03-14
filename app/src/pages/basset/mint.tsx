@@ -1,10 +1,3 @@
-import { useOperation } from '@terra-dev/broadcastable-operation';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { NativeSelect } from '@terra-dev/neumorphism-ui/components/NativeSelect';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
-import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
 import {
   demicrofy,
   formatLuna,
@@ -14,15 +7,19 @@ import {
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { bLuna, Luna, uUST } from '@anchor-protocol/types';
-import { useRestrictedNumberInput } from '@terra-dev/use-restricted-input';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
+import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
+import { useOperation } from '@terra-dev/broadcastable-operation';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { NativeSelect } from '@terra-dev/neumorphism-ui/components/NativeSelect';
+import { NumberMuiInput } from '@terra-dev/neumorphism-ui/components/NumberMuiInput';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
 import { useService } from 'base/contexts/service';
-import {
-  Input as MuiInput,
-  NativeSelect as MuiNativeSelect,
-} from '@material-ui/core';
 import big, { Big } from 'big.js';
 import { ArrowDownLine } from 'components/ArrowDownLine';
 import { MessageBox } from 'components/MessageBox';
@@ -59,11 +56,6 @@ function MintBase({ className }: MintProps) {
   const { fixedGas } = useConstants();
 
   const [mint, mintResult] = useOperation(mintOptions, {});
-
-  const lunaInputHandlers = useRestrictedNumberInput({
-    maxIntegerPoinsts: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
-    maxDecimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
-  });
 
   // ---------------------------------------------
   // states
@@ -272,11 +264,12 @@ function MintBase({ className }: MintProps) {
           ))}
         </MuiNativeSelect>
 
-        <MuiInput
+        <NumberMuiInput
           placeholder="0"
           error={!!invalidBondAmount}
           value={bondAmount}
-          {...lunaInputHandlers}
+          maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
+          maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateBondAmount(target.value)
           }
@@ -310,11 +303,12 @@ function MintBase({ className }: MintProps) {
             </option>
           ))}
         </MuiNativeSelect>
-        <MuiInput
+        <NumberMuiInput
           placeholder="0"
           error={!!invalidBondAmount}
           value={mintAmount}
-          {...lunaInputHandlers}
+          maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
+          maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateMintAmount(target.value)
           }
