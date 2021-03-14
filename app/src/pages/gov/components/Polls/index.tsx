@@ -3,7 +3,7 @@ import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton'
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { NativeSelect } from '@terra-dev/neumorphism-ui/components/NativeSelect';
-import { anchorToken } from '@anchor-protocol/types/contracts';
+import { anchorToken } from '@anchor-protocol/types';
 import { useLocalStorage } from '@terra-dev/use-local-storage';
 import { List, ViewModule } from '@material-ui/icons';
 import { links } from 'env';

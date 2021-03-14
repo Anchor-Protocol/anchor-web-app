@@ -4,8 +4,7 @@ import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { NativeSelect } from '@terra-dev/neumorphism-ui/components/NativeSelect';
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import { formatExecuteMsgNumber } from '@anchor-protocol/notation';
-import { CW20Addr, Rate } from '@anchor-protocol/types';
-import { PollMsg } from '@anchor-protocol/types/contracts/anchorToken/gov';
+import { anchorToken, CW20Addr, Rate } from '@anchor-protocol/types';
 import { useContractAddress } from 'base/contexts/contract';
 import { InputAdornment } from '@material-ui/core';
 import big from 'big.js';
@@ -44,7 +43,7 @@ export function PollCreateModifyCollateralAttribute() {
   // ---------------------------------------------
   const createMsgs = useCallback(
     (bAsset: Item, ltv: string): ExecuteMsg[] => {
-      const msg: PollMsg = {
+      const msg: anchorToken.gov.PollMsg = {
         update_whitelist: {
           collateral_token: bAsset.value,
           max_ltv: formatExecuteMsgNumber(big(ltv).div(100)) as Rate,

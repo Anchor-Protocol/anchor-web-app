@@ -1,6 +1,8 @@
-import { ParsedExecuteMsg } from '@anchor-protocol/types/contracts/anchorToken/gov';
+import { anchorToken } from '@anchor-protocol/types';
 
-export function getMsgTitle(msg: ParsedExecuteMsg | undefined | null): string {
+export function getMsgTitle(
+  msg: anchorToken.gov.ParsedExecuteMsg | undefined | null,
+): string {
   if (msg?.msg) {
     if ('spend' in msg.msg) {
       return 'Community Spend';

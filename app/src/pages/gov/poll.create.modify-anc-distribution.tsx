@@ -1,15 +1,14 @@
 import { ExecuteMsg } from '@anchor-protocol/anchor.js';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import {
   formatExecuteMsgNumber,
   MAX_EXECUTE_MSG_DECIMALS,
 } from '@anchor-protocol/notation';
-import { Rate, uANC } from '@anchor-protocol/types';
-import { UpdateConfig as DistributionModelUpdateConfig } from '@anchor-protocol/types/contracts/moneyMarket/distributionModel/updateConfig';
-import { useContractAddress } from 'base/contexts/contract';
+import { moneyMarket, Rate, uANC } from '@anchor-protocol/types';
 import { InputAdornment } from '@material-ui/core';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
+import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
+import { useContractAddress } from 'base/contexts/contract';
 import big from 'big.js';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
 import { useDistributionModelConfig } from 'pages/gov/queries/distributionModelUpdateConfig';
@@ -132,7 +131,7 @@ export function PollCreateModifyANCDistribution() {
       incrementMultiplier: string,
       decrementMultiplier: string,
     ): ExecuteMsg[] => {
-      const distributionModelConfig: DistributionModelUpdateConfig['update_config'] = {};
+      const distributionModelConfig: moneyMarket.distributionModel.UpdateConfig['update_config'] = {};
 
       if (borrowerEmissionCap.length > 0) {
         distributionModelConfig['emission_cap'] = formatExecuteMsgNumber(

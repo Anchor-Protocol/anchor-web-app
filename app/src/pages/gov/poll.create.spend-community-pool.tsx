@@ -1,8 +1,4 @@
 import { ExecuteMsg } from '@anchor-protocol/anchor.js';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
-import { TextInput } from '@terra-dev/neumorphism-ui/components/TextInput';
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   ANC_INPUT_MAXIMUM_INTEGER_POINTS,
@@ -10,10 +6,13 @@ import {
   formatANC,
   microfy,
 } from '@anchor-protocol/notation';
-import { ANC, HumanAddr, uANC } from '@anchor-protocol/types';
-import { Spend } from '@anchor-protocol/types/contracts/anchorToken/community/spend';
-import { useContractAddress } from 'base/contexts/contract';
+import { ANC, anchorToken, HumanAddr, uANC } from '@anchor-protocol/types';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
+import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
+import { TextInput } from '@terra-dev/neumorphism-ui/components/TextInput';
 import { AccAddress } from '@terra-money/terra.js';
+import { useContractAddress } from 'base/contexts/contract';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { useCommunityAncBalance } from './queries/communityAncBalance';
@@ -59,7 +58,7 @@ export function PollCreateSpendCommunityPool() {
   // ---------------------------------------------
   const createMsgs = useCallback(
     (recipient: string, amount: string): ExecuteMsg[] => {
-      const spend: Spend['spend'] = {
+      const spend: anchorToken.community.Spend['spend'] = {
         recipient: recipient as HumanAddr,
         amount: microfy(amount as ANC).toFixed() as uANC,
       };

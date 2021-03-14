@@ -1,9 +1,9 @@
-import { ParsedExecuteMsg } from '@anchor-protocol/types/contracts/anchorToken/gov';
+import { anchorToken } from '@anchor-protocol/types';
 import { AccountLink } from 'components/AccountLink';
 import { createElement, ReactNode } from 'react';
 
 export function getMsgDetails(
-  msg: ParsedExecuteMsg | undefined | null,
+  msg: anchorToken.gov.ParsedExecuteMsg | undefined | null,
 ): { name: string; value: ReactNode }[] {
   if (msg?.msg) {
     if ('spend' in msg.msg) {

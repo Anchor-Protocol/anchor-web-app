@@ -1,15 +1,13 @@
 import { ExecuteMsg } from '@anchor-protocol/anchor.js';
+import { formatExecuteMsgNumber } from '@anchor-protocol/notation';
+import { moneyMarket, Rate } from '@anchor-protocol/types';
+import { InputAdornment } from '@material-ui/core';
 import { floor } from '@terra-dev/big-math';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
-import { formatExecuteMsgNumber } from '@anchor-protocol/notation';
-import { Rate } from '@anchor-protocol/types';
-import { UpdateConfig as MarketUpdateConfig } from '@anchor-protocol/types/contracts/moneyMarket/market/updateConfig';
-import { UpdateConfig as OverseerUpdateConfig } from '@anchor-protocol/types/contracts/moneyMarket/overseer/updateConfig';
 import { useConstants } from 'base/contexts/contants';
 import { useContractAddress } from 'base/contexts/contract';
-import { InputAdornment } from '@material-ui/core';
 import big from 'big.js';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
@@ -135,8 +133,8 @@ export function PollCreateModifyMarketParameters() {
       maxBorrowFactor: string,
       validPriceTimeframe: string,
     ): ExecuteMsg[] => {
-      const overseerUpdateConfig: OverseerUpdateConfig['update_config'] = {};
-      const marketUpdateConfig: MarketUpdateConfig['update_config'] = {};
+      const overseerUpdateConfig: moneyMarket.overseer.UpdateConfig['update_config'] = {};
+      const marketUpdateConfig: moneyMarket.market.UpdateConfig['update_config'] = {};
 
       if (targetDepositRate.length > 0) {
         overseerUpdateConfig['target_deposit_rate'] = formatExecuteMsgNumber(

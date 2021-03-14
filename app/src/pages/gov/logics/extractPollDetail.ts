@@ -1,6 +1,5 @@
 import { formatRate } from '@anchor-protocol/notation';
 import { anchorToken, cw20, Rate, uANC } from '@anchor-protocol/types';
-import { ParsedExecuteMsg } from '@anchor-protocol/types/contracts/anchorToken/gov';
 import big from 'big.js';
 import { getMsgTitle } from 'pages/gov/logics/getMsgTitle';
 
@@ -28,7 +27,7 @@ export interface PollDetail {
 
   endsIn: Date;
 
-  msgs: ParsedExecuteMsg[] | null;
+  msgs: anchorToken.gov.ParsedExecuteMsg[] | null;
 }
 
 export function extractPollDetail(
@@ -73,7 +72,7 @@ export function extractPollDetail(
     (poll.end_height - currentHeight) * 6000 + Date.now(),
   );
 
-  let msgs: ParsedExecuteMsg[] | null = null;
+  let msgs: anchorToken.gov.ParsedExecuteMsg[] | null = null;
   let type: string = 'TEXT';
 
   if (Array.isArray(poll.execute_data)) {

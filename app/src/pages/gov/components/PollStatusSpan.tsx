@@ -1,10 +1,10 @@
-import { PollStatus } from '@anchor-protocol/types/contracts/anchorToken/gov';
+import { anchorToken } from '@anchor-protocol/types';
 import { ReactNode } from 'react';
 import { useTheme } from 'styled-components';
 
 export interface StatusSpanProps {
   endsIn: Date;
-  status: PollStatus;
+  status: anchorToken.gov.PollStatus;
   children: ReactNode;
 }
 

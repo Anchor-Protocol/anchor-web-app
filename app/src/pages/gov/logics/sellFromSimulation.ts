@@ -1,10 +1,9 @@
+import { Rate, terraswap, uANC, uUST } from '@anchor-protocol/types';
 import { min } from '@terra-dev/big-math';
-import { Rate, uANC, uUST } from '@anchor-protocol/types';
-import { terraswap } from '@anchor-protocol/types/contracts';
+import { Data as TaxData } from 'base/queries/tax';
 import big, { Big, BigSource } from 'big.js';
 import { MAX_SPREAD } from 'pages/gov/env';
 import { TradeSimulation } from 'pages/gov/models/tradeSimulation';
-import { Data as TaxData } from 'base/queries/tax';
 
 export function sellFromSimulation(
   simulation: terraswap.SimulationResponse<uUST, uANC>,

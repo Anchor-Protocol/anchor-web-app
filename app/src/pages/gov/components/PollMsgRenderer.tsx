@@ -1,4 +1,4 @@
-import { ParsedExecuteMsg } from '@anchor-protocol/types/contracts/anchorToken/gov';
+import { anchorToken } from '@anchor-protocol/types';
 import { useContractNickname } from 'base/contexts/contract';
 import { AccountLink } from 'components/AccountLink';
 import { getMsgDetails } from 'pages/gov/logics/getMsgDetails';
@@ -6,7 +6,7 @@ import React, { Fragment } from 'react';
 import styled from 'styled-components';
 
 export interface PollMsgRendererProps {
-  msg: ParsedExecuteMsg | null | undefined;
+  msg: anchorToken.gov.ParsedExecuteMsg | null | undefined;
 }
 
 export function PollMsgRenderer({ msg }: PollMsgRendererProps) {
