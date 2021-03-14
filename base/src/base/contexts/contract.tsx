@@ -65,9 +65,9 @@ export function createContractAddress(
       gov: addressProvider.gov() as HumanAddr,
       staking: addressProvider.staking() as HumanAddr,
       community: addressProvider.community() as HumanAddr,
-      distributor: addressProvider.faucet() as HumanAddr,
-      investorLock: 'terra19f6ktw4qpjj9p9m49y8mhf6pr9807d44xdcus7' as HumanAddr,
-      teamLock: 'terra1x7ted5g0g6ntyqdaqmjwtzcctvvrdju49vs8pl' as HumanAddr,
+      distributor: addressProvider.distributor() as HumanAddr,
+      investorLock: addressProvider.investorLock() as HumanAddr,
+      teamLock: addressProvider.teamLock() as HumanAddr,
     },
     terraswap: {
       blunaLunaPair: addressProvider.terraswapblunaLunaPair() as HumanAddr,

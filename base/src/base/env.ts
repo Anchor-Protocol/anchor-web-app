@@ -50,13 +50,13 @@ export const tequilaContractAddresses: AddressMap = {
   terraswapAncUstPair: 'terra1wfvczps2865j0awnurk9m04u7wdmd6qv3fdnvz',
   terraswapAncUstLPToken: 'terra1vg0qyq92ky9z9dp0j9fv5rmr2s80sg605dah6f',
   gov: 'terra16ckeuu7c6ggu52a8se005mg5c0kd2kmuun63cu',
-  //distributor: 'terra1z7nxemcnm8kp7fs33cs7ge4wfuld307v80gypj',
+  distributor: 'terra1z7nxemcnm8kp7fs33cs7ge4wfuld307v80gypj',
   collector: 'terra1hlctcrrhcl2azxzcsns467le876cfuzam6jty4',
   community: 'terra17g577z0pqt6tejhceh06y3lyeudfs3v90mzduy',
   staking: 'terra19nxz35c8f7t3ghdxrxherym20tux8eccar0c3k',
   ANC: 'terra1747mad58h0w4y589y3sk84r5efqdev9q4r02pc',
   airdrop: 'terra1u5ywhlve3wugzqslqvm8ks2j0nsvrqjx0mgxpk',
-
-  faucet: 'terra1z7nxemcnm8kp7fs33cs7ge4wfuld307v80gypj',
   terraswapFactory: '',
+  vesting: 'terra19f6ktw4qpjj9p9m49y8mhf6pr9807d44xdcus7',
+  team: 'terra1x7ted5g0g6ntyqdaqmjwtzcctvvrdju49vs8pl',
 };
