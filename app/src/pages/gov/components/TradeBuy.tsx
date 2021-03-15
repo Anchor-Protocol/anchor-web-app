@@ -259,7 +259,12 @@ export function TradeBuy() {
   }, []);
 
   const proceed = useCallback(
-    async (walletReady: WalletReady, fromAmount: UST, ancPrice: AncPrice) => {
+    async (
+      walletReady: WalletReady,
+      fromAmount: UST,
+      ancPrice: AncPrice,
+      txFee: uUST,
+    ) => {
       const broadcasted = await buy({
         address: walletReady.walletAddress,
         amount: fromAmount,
@@ -268,6 +273,7 @@ export function TradeBuy() {
         ),
         maxSpread: MAX_SPREAD.toString(),
         denom: 'uusd',
+        txFee,
       });
 
       if (!broadcasted) {
@@ -425,10 +431,14 @@ export function TradeBuy() {
           big(fromAmount).lte(0) ||
           !!invalidTxFee ||
           !!invalidFromAmount ||
+          !simulation ||
           big(simulation?.swapFee ?? 0).lte(0)
         }
         onClick={() =>
-          walletReady && ancPrice && proceed(walletReady, fromAmount, ancPrice)
+          walletReady &&
+          ancPrice &&
+          simulation &&
+          proceed(walletReady, fromAmount, ancPrice, simulation.txFee)
         }
       >
         Proceed

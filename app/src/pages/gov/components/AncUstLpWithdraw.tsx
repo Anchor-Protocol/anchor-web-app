@@ -8,7 +8,7 @@ import {
   formatUST,
   microfy,
 } from '@anchor-protocol/notation';
-import { ANC, AncUstLP, UST } from '@anchor-protocol/types';
+import { ANC, AncUstLP, UST, uUST } from '@anchor-protocol/types';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
 import { Input, InputAdornment } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
@@ -115,10 +115,11 @@ export function AncUstLpWithdraw() {
   }, []);
 
   const proceed = useCallback(
-    async (walletReady: WalletReady, lpAmount: AncUstLP) => {
+    async (walletReady: WalletReady, lpAmount: AncUstLP, txFee: uUST) => {
       const broadcasted = await withdraw({
         address: walletReady.walletAddress,
         amount: lpAmount,
+        txFee,
       });
 
       if (!broadcasted) {
@@ -243,10 +244,15 @@ export function AncUstLpWithdraw() {
           !serviceAvailable ||
           lpAmount.length === 0 ||
           big(lpAmount).lte(0) ||
+          !simulation ||
           !!invalidTxFee ||
           !!invalidLpAmount
         }
-        onClick={() => walletReady && proceed(walletReady, lpAmount)}
+        onClick={() =>
+          walletReady &&
+          simulation &&
+          proceed(walletReady, lpAmount, simulation.txFee.toFixed() as uUST)
+        }
       >
         Remove Liquidity
       </ActionButton>

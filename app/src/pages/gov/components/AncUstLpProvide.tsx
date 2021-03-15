@@ -1,9 +1,4 @@
 import { Plus } from '@anchor-protocol/icons';
-import { min } from '@terra-dev/big-math';
-import { useOperation } from '@terra-dev/broadcastable-operation';
-import { isZero } from '@terra-dev/is-zero';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   ANC_INPUT_MAXIMUM_INTEGER_POINTS,
@@ -20,14 +15,19 @@ import {
 import { ANC, UST, uUST } from '@anchor-protocol/types';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
 import { InputAdornment } from '@material-ui/core';
+import { min } from '@terra-dev/big-math';
+import { useOperation } from '@terra-dev/broadcastable-operation';
+import { isZero } from '@terra-dev/is-zero';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
+import { useBank } from 'base/contexts/bank';
+import { useConstants } from 'base/contexts/contants';
+import { useService } from 'base/contexts/service';
 import big, { Big } from 'big.js';
 import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
-import { useService } from 'base/contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { formatShareOfPool } from 'pages/gov/components/formatShareOfPool';
 import { ancUstLpAncSimulation } from 'pages/gov/logics/ancUstLpAncSimulation';
@@ -172,12 +172,18 @@ export function AncUstLpProvide() {
   }, []);
 
   const proceed = useCallback(
-    async (walletReady: WalletReady, ancAmount: ANC, ustAmount: UST) => {
+    async (
+      walletReady: WalletReady,
+      ancAmount: ANC,
+      ustAmount: UST,
+      txFee: uUST,
+    ) => {
       const broadcasted = await provide({
         address: walletReady.walletAddress,
         tokenAmount: ancAmount,
         nativeAmount: ustAmount,
         quote: 'uusd',
+        txFee,
       });
 
       if (!broadcasted) {
@@ -321,12 +327,20 @@ export function AncUstLpProvide() {
           ustAmount.length === 0 ||
           big(ancAmount).lte(0) ||
           big(ustAmount).lte(0) ||
+          !simulation ||
           !!invalidTxFee ||
           !!invalidAncAmount ||
           !!invalidUstAmount
         }
         onClick={() =>
-          walletReady && proceed(walletReady, ancAmount, ustAmount)
+          walletReady &&
+          simulation &&
+          proceed(
+            walletReady,
+            ancAmount,
+            ustAmount,
+            simulation.txFee.toFixed() as uUST,
+          )
         }
       >
         Add Liquidity

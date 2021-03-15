@@ -16,6 +16,7 @@ import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton'
 import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
+import { flat } from '@terra-dev/styled-neumorphism';
 import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
@@ -239,8 +240,8 @@ const Component = styled(ComponentBase)`
 
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 100px;
-    grid-gap: 20px;
+    grid-template-rows: 120px;
+    grid-gap: 40px;
 
     li {
       cursor: pointer;
@@ -248,14 +249,21 @@ const Component = styled(ComponentBase)`
       place-content: center;
       color: #ffffff;
       border-radius: 5px;
-      opacity: 0.3;
+      //opacity: 0.3;
+
+      ${({ theme }) =>
+        flat({
+          color: theme.backgroundColor,
+          intensity: theme.intensity,
+          distance: 6,
+        })}
 
       &[data-vote='yes'] {
-        background-color: ${({ theme }) => theme.colors.positive};
+        //background-color: ${({ theme }) => theme.colors.positive};
       }
 
       &[data-vote='no'] {
-        background-color: ${({ theme }) => theme.colors.negative};
+        //background-color: ${({ theme }) => theme.colors.negative};
       }
 
       &[data-selected='true'] {

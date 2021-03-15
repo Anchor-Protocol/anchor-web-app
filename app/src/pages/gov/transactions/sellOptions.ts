@@ -6,21 +6,24 @@ import {
   validateIsGreaterThanZero,
   validateIsNumber,
 } from '@anchor-protocol/anchor.js/dist/utils/validation/number';
+import { floor } from '@terra-dev/big-math';
 import {
   createOperationOptions,
+  effect,
   merge,
   OperationDependency,
   timeout,
 } from '@terra-dev/broadcastable-operation';
 import { Dec, Int, MsgExecuteContract, StdFee } from '@terra-money/terra.js';
-import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { Bank } from 'base/contexts/bank';
-import { pickSellResult } from 'pages/gov/transactions/pickSellResult';
 import { createContractMsg } from 'base/transactions/createContractMsg';
 import { createOptions } from 'base/transactions/createOptions';
 import { getTxInfo } from 'base/transactions/getTxInfo';
 import { postContractMsg } from 'base/transactions/postContractMsg';
+import { takeTxFee } from 'base/transactions/takeTxFee';
 import { parseTxResult } from 'base/transactions/tx';
+import { renderBroadcastTransaction } from 'components/TransactionRenderer';
+import { pickSellResult } from 'pages/gov/transactions/pickSellResult';
 
 export const sellOptions = createOperationOptions({
   id: 'gov/sell',
@@ -34,11 +37,12 @@ export const sellOptions = createOperationOptions({
     gasFee,
     gasAdjustment,
     bank,
+    storage,
   }: OperationDependency<{ bank: Bank }>) => [
-    fabricatebSell, // Option -> ((AddressProvider) -> MsgExecuteContract[])
+    effect(fabricatebSell, takeTxFee(storage)), // Option -> ((AddressProvider) -> MsgExecuteContract[])
     createContractMsg(addressProvider), // -> MsgExecuteContract[]
     createOptions(() => ({
-      fee: new StdFee(gasFee, fixedGas + 'uusd'),
+      fee: new StdFee(gasFee, floor(storage.get('txFee')) + 'uusd'),
       gasAdjustment,
     })), // -> CreateTxOptions
     timeout(postContractMsg(post), 1000 * 60 * 20), // -> Promise<StringifiedTxResult>
