@@ -2,13 +2,10 @@ import {
   cw20,
   CW20Addr,
   HumanAddr,
-  StableDenom,
   terraswap,
-  uANC,
   uToken,
-  uUST,
 } from '@anchor-protocol/types';
-import { ApolloClient, ApolloError } from '@apollo/client';
+import { ApolloError } from '@apollo/client';
 import { QueryDependency, useQueryDependency } from './provider';
 import {
   useWasmQuery,
@@ -87,26 +84,6 @@ export const queryTerraswapSimulation = <
     }
   });
 };
-
-queryTerraswapSimulation<uUST, uANC>({
-  client: new ApolloClient<any>({} as any),
-  address: {} as any,
-})({
-  id: '',
-  address: '' as CW20Addr,
-  query: {
-    simulation: {
-      offer_asset: {
-        info: {
-          native_token: {
-            denom: 'uusd' as StableDenom,
-          },
-        },
-        amount: '100' as uUST,
-      },
-    },
-  },
-});
 
 export const queryTerraswapReverseSimulation = <
   T extends uToken,
