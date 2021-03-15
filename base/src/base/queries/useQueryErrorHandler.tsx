@@ -1,6 +1,7 @@
 import { Snackbar, useSnackbar } from '@terra-dev/snackbar';
 import { ApolloError } from '@apollo/client';
 import React, { useCallback } from 'react';
+import styled from 'styled-components';
 
 export function useQueryErrorHandler(): (error: ApolloError) => void {
   const { addSnackbar } = useSnackbar();
@@ -9,18 +10,7 @@ export function useQueryErrorHandler(): (error: ApolloError) => void {
     (error: ApolloError) => {
       addSnackbar(
         <Snackbar>
-          <pre
-            style={{
-              border: '2px solid black',
-              maxWidth: 500,
-              wordBreak: 'break-word',
-              whiteSpace: 'break-spaces',
-              fontSize: 10,
-              padding: 10,
-            }}
-          >
-            {error.message}
-          </pre>
+          <Message>{error.message}</Message>
         </Snackbar>,
       );
     },
@@ -29,3 +19,15 @@ export function useQueryErrorHandler(): (error: ApolloError) => void {
 
   return callback;
 }
+
+const Message = styled.pre`
+  max-width: 600px;
+  word-break: break-word;
+  white-space: break-spaces;
+  font-size: 12px;
+  color: white;
+  background-color: ${({ theme }) => theme.colors.negative};
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 0 21px 4px rgba(0, 0, 0, 0.3);
+`;
