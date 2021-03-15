@@ -4,6 +4,7 @@ import {
   demicrofy,
   formatANCWithPostfixUnits,
 } from '@anchor-protocol/notation';
+import { AccountLink } from 'components/AccountLink';
 import { useVoters } from 'pages/gov/queries/voters';
 import styled from 'styled-components';
 
@@ -33,7 +34,9 @@ function PollVotersBase({ className, pollId }: PollVotersProps) {
         <tbody>
           {voters.map(({ vote, balance, voter }) => (
             <tr key={voter}>
-              <td>{voter}</td>
+              <td>
+                <AccountLink address={voter} />
+              </td>
               <td style={{ textAlign: 'center' }}>
                 {vote === 'yes' ? 'Yes' : 'No'}
               </td>

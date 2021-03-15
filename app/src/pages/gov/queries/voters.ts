@@ -4,8 +4,9 @@ import {
   HumanAddr,
   WASMContractResult,
 } from '@anchor-protocol/types';
-import { createMap, map } from '@terra-dev/use-map';
 import { ApolloClient, gql, useApolloClient } from '@apollo/client';
+import { useSubscription } from '@terra-dev/broadcastable-operation';
+import { createMap, map } from '@terra-dev/use-map';
 import { useContractAddress } from 'base/contexts/contract';
 import { parseResult } from 'base/queries/parseResult';
 import { useCallback, useEffect, useState } from 'react';
@@ -68,7 +69,7 @@ export function useVoters(
 
   const [isLast, setIsLast] = useState<boolean>(false);
 
-  useEffect(() => {
+  const load = useCallback(() => {
     // initialize data
     setIsLast(false);
     setVoters([]);
@@ -85,6 +86,16 @@ export function useVoters(
       }
     });
   }, [address, client, pollId]);
+
+  useEffect(() => {
+    load();
+  }, [address, client, load, pollId]);
+
+  useSubscription((id, event) => {
+    if (event === 'done') {
+      load();
+    }
+  });
 
   const loadMore = useCallback(() => {
     if (voters.length > 0) {
