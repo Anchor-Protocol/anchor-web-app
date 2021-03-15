@@ -20,7 +20,10 @@ import { Schedule } from '@material-ui/icons';
 import { AccountLink } from 'components/AccountLink';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { useCodeViewerDialog } from 'components/useCodeViewerDialog';
-import { DescriptionGrid } from 'pages/gov/components/DescriptionGrid';
+import {
+  Description,
+  DescriptionGrid,
+} from 'pages/gov/components/DescriptionGrid';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
 import { PollMsgRenderer } from 'pages/gov/components/PollMsgRenderer';
 import { PollGraph } from 'pages/gov/components/Polls/PollGraph';
@@ -117,6 +120,16 @@ function PollDetailBase({ className, match }: PollDetailProps) {
           </article>
 
           <article>
+            <h4>Amount</h4>
+            <p>
+              {formatANCWithPostfixUnits(
+                demicrofy(pollDetail.poll.deposit_amount),
+              )}{' '}
+              ANC
+            </p>
+          </article>
+
+          <article>
             <h4>End Time</h4>
             <p>
               <IconSpan>
@@ -133,31 +146,25 @@ function PollDetailBase({ className, match }: PollDetailProps) {
           </article>
 
           <article>
-            <h4>Description</h4>
-            <p>{pollDetail.poll.description}</p>
-          </article>
-
-          {pollDetail.poll.link && (
-            <article>
-              <h4>Link</h4>
-              <p>
+            <h4>Link</h4>
+            <p>
+              {pollDetail.poll.link ? (
                 <a href={pollDetail.poll.link} target="_blank" rel="noreferrer">
                   {pollDetail.poll.link}
                 </a>
-              </p>
-            </article>
-          )}
-
-          <article>
-            <h4>Amount</h4>
-            <p>
-              {formatANCWithPostfixUnits(
-                demicrofy(pollDetail.poll.deposit_amount),
-              )}{' '}
-              ANC
+              ) : (
+                '-'
+              )}
             </p>
           </article>
         </DescriptionGrid>
+
+        <Description>
+          <article>
+            <h4>Description</h4>
+            <p>{pollDetail.poll.description}</p>
+          </article>
+        </Description>
 
         {Array.isArray(pollDetail.msgs) &&
           pollDetail.msgs.filter((msg) => !!msg).length > 0 && (

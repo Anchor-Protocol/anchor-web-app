@@ -2,8 +2,7 @@ import { anchorToken } from '@anchor-protocol/types';
 import { useContractNickname } from 'base/contexts/contract';
 import { AccountLink } from 'components/AccountLink';
 import { getMsgDetails } from 'pages/gov/logics/getMsgDetails';
-import React, { Fragment } from 'react';
-import styled from 'styled-components';
+import React, { Fragment, useMemo } from 'react';
 
 export interface PollMsgRendererProps {
   msg: anchorToken.gov.ParsedExecuteMsg | null | undefined;
@@ -11,6 +10,11 @@ export interface PollMsgRendererProps {
 
 export function PollMsgRenderer({ msg }: PollMsgRendererProps) {
   const nickname = useContractNickname();
+
+  const contractNickname = useMemo(
+    () => (msg?.contract ? nickname(msg.contract) : ''),
+    [msg?.contract, nickname],
+  );
 
   if (!msg) {
     return null;
@@ -21,7 +25,13 @@ export function PollMsgRenderer({ msg }: PollMsgRendererProps) {
       <article>
         <h4>Contract</h4>
         <p>
-          {nickname(msg.contract)} <AccountLink address={msg.contract} />
+          {contractNickname.length > 0 ? (
+            <>
+              {contractNickname}
+              <br />
+            </>
+          ) : null}
+          <AccountLink address={msg.contract} />
         </p>
       </article>
 
@@ -36,5 +46,3 @@ export function PollMsgRenderer({ msg }: PollMsgRendererProps) {
     </>
   );
 }
-
-export const PollMsgRendererContainer = styled.div``;

@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 export interface DescriptionGridProps {
   className?: string;
@@ -10,27 +10,33 @@ function DescriptionGridBase({ className, children }: DescriptionGridProps) {
   return <section className={className}>{children}</section>;
 }
 
-export const DescriptionGrid = styled(DescriptionGridBase)`
-  h4 {
-    font-size: 13px;
-    font-weight: 500;
-    color: ${({ theme }) => theme.dimTextColor};
+const itemStyle = css`
+  article {
+    h4 {
+      font-size: 13px;
+      font-weight: 500;
+      color: ${({ theme }) => theme.dimTextColor};
 
-    &:not(:first-child) {
-      margin-top: 10px;
+      &:not(:first-child) {
+        margin-top: 10px;
+      }
+
+      margin-bottom: 5px;
     }
 
-    margin-bottom: 5px;
-  }
+    p {
+      font-size: 14px;
+      line-height: 1.5;
+      max-width: 90%;
 
-  p {
-    font-size: 14px;
-    line-height: 1.5;
-    max-width: 90%;
-
-    word-break: break-all;
-    white-space: break-spaces;
+      word-break: break-all;
+      white-space: break-spaces;
+    }
   }
+`;
+
+export const DescriptionGrid = styled(DescriptionGridBase)`
+  ${itemStyle};
 
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -39,4 +45,10 @@ export const DescriptionGrid = styled(DescriptionGridBase)`
   @media (max-width: 1000px) {
     grid-template-columns: 1fr;
   }
+`;
+
+export const Description = styled.section`
+  ${itemStyle};
+
+  margin-top: 40px;
 `;
