@@ -102,7 +102,7 @@ export function useTransactionHistory(): MappedQueryResult<
 
   useSubscription((id, event) => {
     if (event === 'done') {
-      setTimeout(_refetch, 1000);
+      setTimeout(_refetch, 2000);
     }
   });
 

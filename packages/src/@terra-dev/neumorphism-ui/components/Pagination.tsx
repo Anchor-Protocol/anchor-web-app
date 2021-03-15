@@ -24,8 +24,13 @@ function PaginationBase({
 }: PaginationProps) {
   const { totalPages, startPage, endPage } = useMemo(() => {
     const totalPages = Math.ceil(totalItems / viewItems);
-    const startPage = Math.max(0, Math.ceil(pageIndex - viewPages / 2));
-    const endPage = Math.min(totalPages, startPage + viewPages);
+
+    let startPage = Math.max(0, Math.ceil(pageIndex - viewPages / 2));
+    let endPage = Math.min(totalPages, startPage + viewPages);
+
+    if (endPage === totalPages) {
+      startPage = Math.max(0, endPage - viewPages);
+    }
 
     return {
       totalPages,
@@ -36,7 +41,7 @@ function PaginationBase({
 
   return (
     <ul {...ulProps}>
-      {startPage > 0 && (
+      {startPage > 1 && (
         <li onClick={() => onChange(0)}>
           <FirstPage />
         </li>
