@@ -103,7 +103,9 @@ export const Earn = styled(EarnBase)`
   }
 
   .transaction-history {
-    ul {
+    position: relative;
+
+    ul.list {
       list-style: none;
       padding: 0;
 
@@ -148,6 +150,13 @@ export const Earn = styled(EarnBase)`
               })};
         }
       }
+    }
+
+    ul.pagination {
+      position: absolute;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%);
     }
   }
 
@@ -215,13 +224,6 @@ export const Earn = styled(EarnBase)`
     .interest {
       .NeuSection-content {
         padding: 60px 40px;
-      }
-    }
-
-    .transaction-history {
-      ul {
-        max-height: 240px;
-        overflow-y: auto;
       }
     }
   }

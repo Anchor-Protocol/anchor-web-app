@@ -1,8 +1,11 @@
-import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { demicrofy, formatUST, truncate } from '@anchor-protocol/notation';
 import { useWallet } from '@anchor-protocol/wallet-provider';
+import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
+import { Pagination } from '@terra-dev/neumorphism-ui/components/Pagination';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { useArrayPagination } from '@terra-dev/use-array-pagination';
 import { useTransactionHistory } from 'pages/earn/queries/transactionHistory';
+import { useMemo } from 'react';
 import styled from 'styled-components';
 
 export interface TransactionHistorySectionProps {
@@ -24,6 +27,16 @@ export function TransactionHistorySection({
     data: { transactionHistory = [] },
   } = useTransactionHistory();
 
+  const filteredHistory = useMemo(() => {
+    return transactionHistory.filter(
+      ({ TransactionType }) =>
+        TransactionType === 'deposit_stable' ||
+        TransactionType === 'redeem_stable',
+    );
+  }, [transactionHistory]);
+
+  const { page, pageIndex, paging } = useArrayPagination(filteredHistory, 3);
+
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
@@ -33,15 +46,10 @@ export function TransactionHistorySection({
 
       <HorizontalHeavyRuler />
 
-      {transactionHistory?.length > 0 ? (
-        <ul>
-          {transactionHistory
-            .filter(
-              ({ TransactionType }) =>
-                TransactionType === 'deposit_stable' ||
-                TransactionType === 'redeem_stable',
-            )
-            .map(
+      {filteredHistory.length > 0 ? (
+        <>
+          <ul className="list">
+            {page.map(
               ({
                 Address,
                 TxHash,
@@ -87,7 +95,16 @@ export function TransactionHistorySection({
                 );
               },
             )}
-        </ul>
+          </ul>
+          <Pagination
+            className="pagination"
+            totalItems={filteredHistory.length}
+            pageIndex={pageIndex}
+            viewPages={7}
+            viewItems={3}
+            onChange={paging}
+          />
+        </>
       ) : (
         <EmptyMessage>
           <h3>No transaction history</h3>
