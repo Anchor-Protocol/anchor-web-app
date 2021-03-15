@@ -227,12 +227,14 @@ function ComponentBase({
       toAddress: string,
       currency: CurrencyInfo,
       amount: Token,
+      txFee: uUST,
     ) => {
       send({
         myAddress: walletReady.walletAddress,
         toAddress,
         amount,
         currency,
+        txFee,
       });
     },
     [send],
@@ -344,7 +346,14 @@ function ComponentBase({
             big(currency.getWithdrawable(bank, fixedGas)).lte(0)
           }
           onClick={() =>
-            walletReady && submit(walletReady, address, currency, amount)
+            walletReady &&
+            submit(
+              walletReady,
+              address,
+              currency,
+              amount,
+              txFee.toString() as uUST,
+            )
           }
         >
           Send
