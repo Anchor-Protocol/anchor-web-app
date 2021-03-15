@@ -2,6 +2,7 @@ import {
   AddressProvider,
   AddressProviderFromJson,
 } from '@anchor-protocol/anchor.js';
+import { QueryDependencyProvider } from '@anchor-protocol/queries';
 import { ContractAddress, Rate, uUST } from '@anchor-protocol/types';
 import {
   ChromeExtensionWalletProvider,
@@ -10,6 +11,7 @@ import {
 } from '@anchor-protocol/wallet-provider';
 import {
   ApolloClient,
+  ApolloError,
   ApolloProvider,
   HttpLink,
   InMemoryCache,
@@ -21,7 +23,7 @@ import { GlobalStyle } from '@terra-dev/neumorphism-ui/themes/GlobalStyle';
 import { SnackbarProvider } from '@terra-dev/snackbar';
 import { GoogleAnalytics } from '@terra-dev/use-google-analytics';
 import { RouterScrollRestoration } from '@terra-dev/use-router-scroll-restoration';
-import { ReactNode, useMemo } from 'react';
+import { ReactNode, useCallback, useMemo } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { BroadcastingContainer } from './components/BroadcastingContainer';
 import { SnackbarContainer } from './components/SnackbarContainer';
@@ -113,6 +115,10 @@ function Providers({
     [address, addressProvider, client, constants, post],
   );
 
+  const onQueryError = useCallback((error: ApolloError) => {
+    console.error('AppProviders.tsx..()', error);
+  }, []);
+
   return (
     /** React App routing :: <Link>, <NavLink>, useLocation(), useRouteMatch()... */
     <Router>
@@ -130,20 +136,27 @@ function Providers({
               dependency={operationGlobalDependency}
               errorReporter={operationBroadcasterErrorReporter}
             >
-              {/** Service (Network...) :: useService() */}
-              <ServiceProvider>
-                {/** User Balances (uUSD, uLuna, ubLuna, uaUST...) :: useBank() */}
-                <BankProvider>
-                  {/** Theme Providing to Styled-Components and Material-UI */}
-                  <ThemeProvider initialTheme="light">
-                    {/** Snackbar Provider :: useSnackbar() */}
-                    <SnackbarProvider>
-                      {/** Application Layout */}
-                      {children}
-                    </SnackbarProvider>
-                  </ThemeProvider>
-                </BankProvider>
-              </ServiceProvider>
+              {/** Query dependencies :: @anchor-protocol/queries, useWasmQuery()... */}
+              <QueryDependencyProvider
+                client={client}
+                address={address}
+                onError={onQueryError}
+              >
+                {/** Service (Network...) :: useService() */}
+                <ServiceProvider>
+                  {/** User Balances (uUSD, uLuna, ubLuna, uaUST...) :: useBank() */}
+                  <BankProvider>
+                    {/** Theme Providing to Styled-Components and Material-UI */}
+                    <ThemeProvider initialTheme="light">
+                      {/** Snackbar Provider :: useSnackbar() */}
+                      <SnackbarProvider>
+                        {/** Application Layout */}
+                        {children}
+                      </SnackbarProvider>
+                    </ThemeProvider>
+                  </BankProvider>
+                </ServiceProvider>
+              </QueryDependencyProvider>
             </OperationBroadcaster>
           </ApolloProvider>
         </ContractProvider>

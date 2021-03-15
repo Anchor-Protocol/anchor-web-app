@@ -20,14 +20,14 @@ export function useCW20Balance<T extends uToken>({
   ...options
 }: Omit<UseWasmQueryOptions<cw20.Balance>, 'address' | 'query'> & {
   tokenAddress: CW20Addr;
-  userAddress: HumanAddr;
+  userAddress: HumanAddr | undefined;
 }) {
   const { onError } = useQueryDependency();
 
   return useWasmQuery<cw20.Balance, cw20.BalanceResponse<T>>({
     ...options,
     address: tokenAddress,
-    query: {
+    query: !!userAddress && {
       balance: {
         address: userAddress,
       },

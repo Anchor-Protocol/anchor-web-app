@@ -3,8 +3,8 @@ import {
   ANC_INPUT_MAXIMUM_INTEGER_POINTS,
   demicrofy,
   formatANC,
+  formatANCInput,
   formatUST,
-  formatUSTInput,
   microfy,
 } from '@anchor-protocol/notation';
 import { ANC, uANC } from '@anchor-protocol/types';
@@ -141,6 +141,7 @@ function ComponentBase({
 
         <ul className="vote">
           <li
+            data-vote="yes"
             data-selected={voteFor === 'yes'}
             onClick={() => setVoteFor('yes')}
           >
@@ -148,7 +149,11 @@ function ComponentBase({
               <ThumbUp /> YES
             </IconSpan>
           </li>
-          <li data-selected={voteFor === 'no'} onClick={() => setVoteFor('no')}>
+          <li
+            data-vote="no"
+            data-selected={voteFor === 'no'}
+            onClick={() => setVoteFor('no')}
+          >
             <IconSpan>
               <ThumbDown /> NO
             </IconSpan>
@@ -179,7 +184,7 @@ function ComponentBase({
                 cursor: 'pointer',
               }}
               onClick={() =>
-                maxVote && setAmount(formatUSTInput(demicrofy(maxVote)))
+                maxVote && setAmount(formatANCInput(demicrofy(maxVote)))
               }
             >
               {maxVote ? formatANC(demicrofy(maxVote)) : 0} ANC
@@ -241,12 +246,20 @@ const Component = styled(ComponentBase)`
       cursor: pointer;
       display: grid;
       place-content: center;
-      color: ${({ theme }) => theme.dimTextColor};
-      border: 1px solid currentColor;
+      color: #ffffff;
       border-radius: 5px;
+      opacity: 0.3;
+
+      &[data-vote='yes'] {
+        background-color: ${({ theme }) => theme.colors.positive};
+      }
+
+      &[data-vote='no'] {
+        background-color: ${({ theme }) => theme.colors.negative};
+      }
 
       &[data-selected='true'] {
-        color: ${({ theme }) => theme.textColor};
+        opacity: 1;
       }
     }
 
