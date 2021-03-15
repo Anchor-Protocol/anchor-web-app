@@ -85,12 +85,11 @@ function Providers({
   const constants = useMemo<Constants>(
     () =>
       isMainnet
-        ? // TODO set mainet constants
-          {
+        ? {
             gasFee: 6000000 as uUST<number>,
-            fixedGas: 3500000 as uUST<number>,
+            fixedGas: 5000 as uUST<number>,
             blocksPerYear: 4906443,
-            gasAdjustment: 1.4 as Rate<number>,
+            gasAdjustment: 1.6 as Rate<number>,
             isDemo,
           }
         : {
