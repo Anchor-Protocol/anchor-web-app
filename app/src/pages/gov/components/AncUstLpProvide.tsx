@@ -85,7 +85,7 @@ export function AncUstLpProvide() {
 
     return big(bank.userBalances.uUSD)
       .minus(txFee)
-      .minus(fixedGas) as uUST<Big>;
+      .minus(fixedGas * 2) as uUST<Big>;
   }, [bank.tax.maxTaxUUSD, bank.tax.taxRate, bank.userBalances.uUSD, fixedGas]);
 
   const invalidTxFee = useMemo(
