@@ -311,7 +311,7 @@ export function TradeSell() {
           ))}
         </MuiNativeSelect>
         <NumberMuiInput
-          placeholder="0"
+          placeholder="0.00"
           error={!!invalidFromAmount}
           value={fromAmount}
           maxIntegerPoinsts={ANC_INPUT_MAXIMUM_INTEGER_POINTS}
@@ -348,7 +348,7 @@ export function TradeSell() {
           ))}
         </MuiNativeSelect>
         <NumberMuiInput
-          placeholder="0"
+          placeholder="0.00"
           error={!!invalidFromAmount}
           value={toAmount}
           maxIntegerPoinsts={5}

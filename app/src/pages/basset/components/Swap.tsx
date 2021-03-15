@@ -316,7 +316,7 @@ export function Swap() {
           ))}
         </MuiNativeSelect>
         <NumberMuiInput
-          placeholder="0"
+          placeholder="0.00"
           error={!!invalidBurnAmount}
           value={burnAmount}
           maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
@@ -353,7 +353,7 @@ export function Swap() {
           ))}
         </MuiNativeSelect>
         <NumberMuiInput
-          placeholder="0"
+          placeholder="0.00"
           error={!!invalidBurnAmount}
           value={getAmount}
           maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}

@@ -105,8 +105,8 @@ function MintBase({ className }: MintProps) {
   );
 
   const invalidBondAmount = useMemo(
-    () => validateBondAmount(bondAmount, bank),
-    [bank, bondAmount],
+    () => serviceAvailable && validateBondAmount(bondAmount, bank),
+    [bank, bondAmount, serviceAvailable],
   );
 
   // ---------------------------------------------
@@ -265,7 +265,7 @@ function MintBase({ className }: MintProps) {
         </MuiNativeSelect>
 
         <NumberMuiInput
-          placeholder="0"
+          placeholder="0.00"
           error={!!invalidBondAmount}
           value={bondAmount}
           maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
@@ -304,7 +304,7 @@ function MintBase({ className }: MintProps) {
           ))}
         </MuiNativeSelect>
         <NumberMuiInput
-          placeholder="0"
+          placeholder="0.00"
           error={!!invalidBondAmount}
           value={mintAmount}
           maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}

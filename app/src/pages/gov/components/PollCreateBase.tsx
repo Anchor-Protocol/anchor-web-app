@@ -96,14 +96,14 @@ export function PollCreateBase({
   const invalidLinkProtocol = useMemo(() => validateLinkAddress(link), [link]);
 
   const invalidUserANCBalance = useMemo(() => {
-    if (!pollConfig) {
+    if (!pollConfig || !serviceAvailable) {
       return undefined;
     }
 
     return big(bank.userBalances.uANC).lt(pollConfig.proposal_deposit)
       ? `Not enough ANC`
       : undefined;
-  }, [bank.userBalances.uANC, pollConfig]);
+  }, [bank.userBalances.uANC, pollConfig, serviceAvailable]);
 
   // ---------------------------------------------
   // callbacks
