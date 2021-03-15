@@ -83,8 +83,6 @@ export function AncUstLpWithdraw() {
 
   const updateLpAmount = useCallback(
     (nextLpAmount: string) => {
-      console.log('AncUstLpWithdraw.tsx..()', nextLpAmount);
-
       if (!ancPrice || nextLpAmount.length === 0) {
         setLpAmount('' as AncUstLP);
         setSimulation(null);
