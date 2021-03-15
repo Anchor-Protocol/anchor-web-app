@@ -2,13 +2,7 @@ import {
   AddressProvider,
   AddressProviderFromJson,
 } from '@anchor-protocol/anchor.js';
-import { OperationBroadcaster } from '@terra-dev/broadcastable-operation';
-import { GlobalDependency } from '@terra-dev/broadcastable-operation/global';
-import { GlobalStyle } from '@terra-dev/neumorphism-ui/themes/GlobalStyle';
-import { SnackbarProvider } from '@terra-dev/snackbar';
 import { ContractAddress, Rate, uUST } from '@anchor-protocol/types';
-import { GoogleAnalytics } from '@terra-dev/use-google-analytics';
-import { RouterScrollRestoration } from '@terra-dev/use-router-scroll-restoration';
 import {
   ChromeExtensionWalletProvider,
   RouterWalletStatusRecheck,
@@ -21,6 +15,12 @@ import {
   InMemoryCache,
 } from '@apollo/client';
 import { captureException } from '@sentry/react';
+import { OperationBroadcaster } from '@terra-dev/broadcastable-operation';
+import { GlobalDependency } from '@terra-dev/broadcastable-operation/global';
+import { GlobalStyle } from '@terra-dev/neumorphism-ui/themes/GlobalStyle';
+import { SnackbarProvider } from '@terra-dev/snackbar';
+import { GoogleAnalytics } from '@terra-dev/use-google-analytics';
+import { RouterScrollRestoration } from '@terra-dev/use-router-scroll-restoration';
 import { ReactNode, useMemo } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { BroadcastingContainer } from './components/BroadcastingContainer';
@@ -31,9 +31,10 @@ import { ContractProvider, createContractAddress } from './contexts/contract';
 import { ServiceProvider } from './contexts/service';
 import { ThemeProvider } from './contexts/theme';
 import {
-  tequilaContractAddresses,
+  columbusContractAddresses,
   defaultNetwork,
   GA_TRACKING_ID,
+  tequilaContractAddresses,
 } from './env';
 
 const operationBroadcasterErrorReporter =
@@ -56,8 +57,7 @@ function Providers({
   ]);
 
   const addressMap = useMemo(() => {
-    // TODO set mainet contracts
-    return isMainnet ? tequilaContractAddresses : tequilaContractAddresses;
+    return isMainnet ? columbusContractAddresses : tequilaContractAddresses;
   }, [isMainnet]);
 
   const addressProvider = useMemo<AddressProvider>(() => {
