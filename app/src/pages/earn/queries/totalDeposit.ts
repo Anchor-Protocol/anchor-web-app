@@ -121,7 +121,12 @@ export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
   const { data: lastSyncedHeight } = useLastSyncedHeight();
 
   const variables = useMemo(() => {
-    if (!walletReady || typeof lastSyncedHeight !== 'number') return undefined;
+    if (
+      !walletReady ||
+      typeof lastSyncedHeight !== 'number' ||
+      lastSyncedHeight === 0
+    )
+      return undefined;
 
     return mapVariables({
       anchorTokenContract: cw20.aUST,

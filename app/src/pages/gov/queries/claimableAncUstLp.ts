@@ -94,7 +94,12 @@ export function useClaimableAncUstLp(): MappedQueryResult<
   const { anchorToken, cw20 } = useContractAddress();
 
   const variables = useMemo(() => {
-    if (!walletReady) return undefined;
+    if (
+      !walletReady ||
+      typeof lastSyncedHeight !== 'number' ||
+      lastSyncedHeight === 0
+    )
+      return undefined;
 
     return mapVariables({
       ANCUST_LP_Token_contract: cw20.AncUstLP,

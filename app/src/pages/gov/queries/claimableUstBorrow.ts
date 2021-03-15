@@ -110,7 +110,12 @@ export function useClaimableUstBorrow(): MappedQueryResult<
   const { serviceAvailable, walletReady } = useService();
 
   const variables = useMemo(() => {
-    if (!walletReady) return undefined;
+    if (
+      !walletReady ||
+      typeof lastSyncedHeight !== 'number' ||
+      lastSyncedHeight === 0
+    )
+      return undefined;
 
     return mapVariables({
       Market_contract: moneyMarket.market,
