@@ -35,7 +35,7 @@ export const dataMap = createMap<RawData, Data>({
     return {
       ...data,
       bLunaPrice: big(data.assets[0].amount)
-        .div(data.assets[1].amount)
+        .div(+data.assets[1].amount === 0 ? 1 : data.assets[1].amount)
         .toFixed() as bLuna,
     };
   },
