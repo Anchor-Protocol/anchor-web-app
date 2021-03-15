@@ -111,12 +111,12 @@ export function TradeBuy() {
   );
 
   const invalidFromAmount = useMemo(() => {
-    if (fromAmount.length === 0) return undefined;
+    if (fromAmount.length === 0 || !serviceAvailable) return undefined;
 
     return microfy(fromAmount).gt(bank.userBalances.uUSD)
       ? 'Not enough assets'
       : undefined;
-  }, [bank.userBalances.uUSD, fromAmount]);
+  }, [bank.userBalances.uUSD, fromAmount, serviceAvailable]);
 
   // ---------------------------------------------
   // effects
@@ -165,35 +165,33 @@ export function TradeBuy() {
         const fromAmount: UST = nextFromAmount as UST;
         setFromAmount(fromAmount);
 
-        if (serviceAvailable) {
-          const amount = microfy(fromAmount).toString() as uUST;
+        const amount = microfy(fromAmount).toString() as uUST;
 
-          resolveSimulation(
-            querySimulation(
-              client,
-              address,
-              amount,
-              address.terraswap.ancUstPair,
-              {
-                native_token: {
-                  denom: 'uusd' as Denom,
-                },
+        resolveSimulation(
+          querySimulation(
+            client,
+            address,
+            amount,
+            address.terraswap.ancUstPair,
+            {
+              native_token: {
+                denom: 'uusd' as Denom,
               },
-            ).then(({ data: { simulation } }) =>
-              simulation
-                ? buyToSimulation(
-                    simulation as terraswap.SimulationResponse<uANC>,
-                    amount,
-                    bank.tax,
-                    fixedGas,
-                  )
-                : undefined,
-            ),
-          );
-        }
+            },
+          ).then(({ data: { simulation } }) =>
+            simulation
+              ? buyToSimulation(
+                  simulation as terraswap.SimulationResponse<uANC>,
+                  amount,
+                  bank.tax,
+                  fixedGas,
+                )
+              : undefined,
+          ),
+        );
       }
     },
-    [address, bank.tax, client, fixedGas, resolveSimulation, serviceAvailable],
+    [address, bank.tax, client, fixedGas, resolveSimulation],
   );
 
   const updateToAmount = useCallback(
@@ -212,35 +210,33 @@ export function TradeBuy() {
         const toAmount: ANC = nextToAmount as ANC;
         setToAmount(toAmount);
 
-        if (serviceAvailable) {
-          const amount = microfy(toAmount).toString() as uANC;
+        const amount = microfy(toAmount).toString() as uANC;
 
-          resolveSimulation(
-            queryReverseSimulation(
-              client,
-              address,
-              amount,
-              address.terraswap.ancUstPair,
-              {
-                token: {
-                  contract_addr: address.cw20.ANC,
-                },
+        resolveSimulation(
+          queryReverseSimulation(
+            client,
+            address,
+            amount,
+            address.terraswap.ancUstPair,
+            {
+              token: {
+                contract_addr: address.cw20.ANC,
               },
-            ).then(({ data: { simulation } }) =>
-              simulation
-                ? buyFromSimulation(
-                    simulation as terraswap.SimulationResponse<uANC, uUST>,
-                    amount,
-                    bank.tax,
-                    fixedGas,
-                  )
-                : undefined,
-            ),
-          );
-        }
+            },
+          ).then(({ data: { simulation } }) =>
+            simulation
+              ? buyFromSimulation(
+                  simulation as terraswap.SimulationResponse<uANC, uUST>,
+                  amount,
+                  bank.tax,
+                  fixedGas,
+                )
+              : undefined,
+          ),
+        );
       }
     },
-    [address, bank.tax, client, fixedGas, resolveSimulation, serviceAvailable],
+    [address, bank.tax, client, fixedGas, resolveSimulation],
   );
 
   const init = useCallback(() => {

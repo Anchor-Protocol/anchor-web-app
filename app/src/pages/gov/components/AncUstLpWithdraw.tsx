@@ -1,8 +1,3 @@
-import { useOperation } from '@terra-dev/broadcastable-operation';
-import { isZero } from '@terra-dev/is-zero';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
-import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   ANC_INPUT_MAXIMUM_INTEGER_POINTS,
@@ -15,10 +10,15 @@ import {
 } from '@anchor-protocol/notation';
 import { ANC, AncUstLP, UST } from '@anchor-protocol/types';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
+import { Input, InputAdornment } from '@material-ui/core';
+import { useOperation } from '@terra-dev/broadcastable-operation';
+import { isZero } from '@terra-dev/is-zero';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
+import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
 import { useService } from 'base/contexts/service';
-import { Input, InputAdornment } from '@material-ui/core';
 import big, { Big } from 'big.js';
 import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
@@ -62,7 +62,7 @@ export function AncUstLpWithdraw() {
   } = useANCPrice();
 
   const {
-    data: { userLPBalance, userLPStakingInfo },
+    data: { userLPBalance },
   } = useRewardsAncUstLp();
 
   // ---------------------------------------------
@@ -74,21 +74,18 @@ export function AncUstLpWithdraw() {
   );
 
   const invalidLpAmount = useMemo(() => {
-    if (lpAmount.length === 0) return undefined;
+    if (lpAmount.length === 0 || !serviceAvailable) return undefined;
 
     return big(microfy(lpAmount)).gt(bank.userBalances.uAncUstLP)
       ? 'Not enough assets'
       : undefined;
-  }, [bank.userBalances.uAncUstLP, lpAmount]);
+  }, [bank.userBalances.uAncUstLP, lpAmount, serviceAvailable]);
 
   const updateLpAmount = useCallback(
     (nextLpAmount: string) => {
-      if (
-        !ancPrice ||
-        !userLPBalance ||
-        !userLPStakingInfo ||
-        nextLpAmount.length === 0
-      ) {
+      console.log('AncUstLpWithdraw.tsx..()', nextLpAmount);
+
+      if (!ancPrice || nextLpAmount.length === 0) {
         setLpAmount('' as AncUstLP);
         setSimulation(null);
         return;
@@ -101,7 +98,6 @@ export function AncUstLpWithdraw() {
       const nextSimulation = ancUstLpLpSimulation(
         ancPrice,
         userLPBalance,
-        userLPStakingInfo,
         nextLpAmount as AncUstLP,
         fixedGas,
         bank,
@@ -110,7 +106,7 @@ export function AncUstLpWithdraw() {
       setLpAmount(nextLpAmount as AncUstLP);
       setSimulation(nextSimulation);
     },
-    [ancPrice, bank, fixedGas, userLPBalance, userLPStakingInfo],
+    [ancPrice, bank, fixedGas, userLPBalance],
   );
 
   const init = useCallback(() => {

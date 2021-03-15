@@ -80,20 +80,20 @@ export function AncUstLpProvide() {
   );
 
   const invalidAncAmount = useMemo(() => {
-    if (ancAmount.length === 0) return undefined;
+    if (ancAmount.length === 0 || !serviceAvailable) return undefined;
 
     return big(microfy(ancAmount)).gt(bank.userBalances.uANC)
       ? 'Not enough assets'
       : undefined;
-  }, [ancAmount, bank]);
+  }, [ancAmount, bank.userBalances.uANC, serviceAvailable]);
 
   const invalidUstAmount = useMemo(() => {
-    if (ustAmount.length === 0) return undefined;
+    if (ustAmount.length === 0 || !serviceAvailable) return undefined;
 
     return big(microfy(ustAmount)).gt(bank.userBalances.uUSD)
       ? 'Not enough assets'
       : undefined;
-  }, [bank.userBalances.uUSD, ustAmount]);
+  }, [bank.userBalances.uUSD, serviceAvailable, ustAmount]);
 
   const updateAncAmount = useCallback(
     (nextAncAmount: string) => {

@@ -1,7 +1,5 @@
-import { max, min } from '@terra-dev/big-math';
 import { demicrofy, microfy } from '@anchor-protocol/notation';
 import {
-  anchorToken,
   AncUstLP,
   cw20,
   Rate,
@@ -9,15 +7,15 @@ import {
   uAncUstLP,
   uUST,
 } from '@anchor-protocol/types';
-import big, { Big, BigSource } from 'big.js';
+import { max, min } from '@terra-dev/big-math';
 import { Bank } from 'base/contexts/bank';
+import big, { Big, BigSource } from 'big.js';
 import { AncPrice } from 'pages/gov/models/ancPrice';
 import { AncUstLpSimulation } from 'pages/gov/models/ancUstLpSimulation';
 
 export function ancUstLpLpSimulation(
   ancPrice: AncPrice,
-  userLpBalance: cw20.BalanceResponse<uAncUstLP>,
-  userLpStakingInfo: anchorToken.staking.StakerInfoResponse,
+  userLpBalance: cw20.BalanceResponse<uAncUstLP> | undefined,
   lpAmount: AncUstLP,
   fixedGas: uUST<BigSource>,
   bank: Bank,
@@ -38,10 +36,9 @@ export function ancUstLpLpSimulation(
 
   const poolPrice = microfy(ancPrice.ANCPrice) as uUST<Big>;
 
-  const lpFromTx = max(
-    0,
-    big(userLpBalance.balance).minus(lp),
-  ) as uAncUstLP<Big>;
+  const lpFromTx = userLpBalance
+    ? (max(0, big(userLpBalance.balance).minus(lp)) as uAncUstLP<Big>)
+    : (big(0) as uAncUstLP<Big>);
 
   const shareOfPool = lpFromTx.div(
     big(ancPrice.LPShare).plus(lpFromTx),

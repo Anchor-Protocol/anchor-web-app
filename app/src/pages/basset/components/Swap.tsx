@@ -107,8 +107,8 @@ export function Swap() {
   );
 
   const invalidBurnAmount = useMemo(
-    () => validateBurnAmount(burnAmount, bank),
-    [bank, burnAmount],
+    () => serviceAvailable && validateBurnAmount(burnAmount, bank),
+    [bank, burnAmount, serviceAvailable],
   );
 
   // ---------------------------------------------
@@ -159,34 +159,32 @@ export function Swap() {
         const burnAmount: bLuna = nextBurnAmount as bLuna;
         setBurnAmount(burnAmount);
 
-        if (serviceAvailable) {
-          const amount = microfy(burnAmount).toString() as ubLuna;
+        const amount = microfy(burnAmount).toString() as ubLuna;
 
-          resolveSimulation(
-            querySimulation(
-              client,
-              address,
-              amount,
-              address.terraswap.blunaLunaPair,
-              {
-                token: {
-                  contract_addr: address.cw20.bLuna,
-                },
+        resolveSimulation(
+          querySimulation(
+            client,
+            address,
+            amount,
+            address.terraswap.blunaLunaPair,
+            {
+              token: {
+                contract_addr: address.cw20.bLuna,
               },
-            ).then(({ data: { simulation } }) =>
-              simulation
-                ? swapGetSimulation(
-                    simulation as terraswap.SimulationResponse<uLuna>,
-                    amount,
-                    bank.tax,
-                  )
-                : undefined,
-            ),
-          );
-        }
+            },
+          ).then(({ data: { simulation } }) =>
+            simulation
+              ? swapGetSimulation(
+                  simulation as terraswap.SimulationResponse<uLuna>,
+                  amount,
+                  bank.tax,
+                )
+              : undefined,
+          ),
+        );
       }
     },
-    [address, bank.tax, client, resolveSimulation, serviceAvailable],
+    [address, bank.tax, client, resolveSimulation],
   );
 
   const updateGetAmount = useCallback(
@@ -205,34 +203,32 @@ export function Swap() {
         const getAmount: Luna = nextGetAmount as Luna;
         setGetAmount(getAmount);
 
-        if (serviceAvailable) {
-          const amount = microfy(getAmount).toString() as uLuna;
+        const amount = microfy(getAmount).toString() as uLuna;
 
-          resolveSimulation(
-            querySimulation(
-              client,
-              address,
-              amount,
-              address.terraswap.blunaLunaPair,
-              {
-                native_token: {
-                  denom: 'uluna' as Denom,
-                },
+        resolveSimulation(
+          querySimulation(
+            client,
+            address,
+            amount,
+            address.terraswap.blunaLunaPair,
+            {
+              native_token: {
+                denom: 'uluna' as Denom,
               },
-            ).then(({ data: { simulation } }) =>
-              simulation
-                ? swapBurnSimulation(
-                    simulation as terraswap.SimulationResponse<uLuna>,
-                    amount,
-                    bank.tax,
-                  )
-                : undefined,
-            ),
-          );
-        }
+            },
+          ).then(({ data: { simulation } }) =>
+            simulation
+              ? swapBurnSimulation(
+                  simulation as terraswap.SimulationResponse<uLuna>,
+                  amount,
+                  bank.tax,
+                )
+              : undefined,
+          ),
+        );
       }
     },
-    [address, bank.tax, client, resolveSimulation, serviceAvailable],
+    [address, bank.tax, client, resolveSimulation],
   );
 
   const init = useCallback(() => {

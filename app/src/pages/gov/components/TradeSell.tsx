@@ -103,12 +103,12 @@ export function TradeSell() {
   );
 
   const invalidFromAmount = useMemo(() => {
-    if (fromAmount.length === 0) return undefined;
+    if (fromAmount.length === 0 || !serviceAvailable) return undefined;
 
     return microfy(fromAmount).gt(bank.userBalances.uANC)
       ? 'Not enough assets'
       : undefined;
-  }, [bank.userBalances.uANC, fromAmount]);
+  }, [bank.userBalances.uANC, fromAmount, serviceAvailable]);
 
   // ---------------------------------------------
   // effects
@@ -157,35 +157,33 @@ export function TradeSell() {
         const fromAmount: ANC = nextFromAmount as ANC;
         setFromAmount(fromAmount);
 
-        if (serviceAvailable) {
-          const amount = microfy(fromAmount).toString() as uANC;
+        const amount = microfy(fromAmount).toString() as uANC;
 
-          resolveSimulation(
-            querySimulation(
-              client,
-              address,
-              amount,
-              address.terraswap.ancUstPair,
-              {
-                token: {
-                  contract_addr: address.cw20.ANC,
-                },
+        resolveSimulation(
+          querySimulation(
+            client,
+            address,
+            amount,
+            address.terraswap.ancUstPair,
+            {
+              token: {
+                contract_addr: address.cw20.ANC,
               },
-            ).then(({ data: { simulation } }) =>
-              simulation
-                ? sellToSimulation(
-                    simulation as terraswap.SimulationResponse<uUST, uANC>,
-                    amount,
-                    bank.tax,
-                    fixedGas,
-                  )
-                : undefined,
-            ),
-          );
-        }
+            },
+          ).then(({ data: { simulation } }) =>
+            simulation
+              ? sellToSimulation(
+                  simulation as terraswap.SimulationResponse<uUST, uANC>,
+                  amount,
+                  bank.tax,
+                  fixedGas,
+                )
+              : undefined,
+          ),
+        );
       }
     },
-    [address, bank.tax, client, fixedGas, resolveSimulation, serviceAvailable],
+    [address, bank.tax, client, fixedGas, resolveSimulation],
   );
 
   const updateToAmount = useCallback(
@@ -203,35 +201,33 @@ export function TradeSell() {
         const toAmount: UST = nextToAmount as UST;
         setToAmount(toAmount);
 
-        if (serviceAvailable) {
-          const amount = microfy(toAmount).toString() as uUST;
+        const amount = microfy(toAmount).toString() as uUST;
 
-          resolveSimulation(
-            queryReverseSimulation(
-              client,
-              address,
-              amount,
-              address.terraswap.ancUstPair,
-              {
-                native_token: {
-                  denom: 'uusd' as Denom,
-                },
+        resolveSimulation(
+          queryReverseSimulation(
+            client,
+            address,
+            amount,
+            address.terraswap.ancUstPair,
+            {
+              native_token: {
+                denom: 'uusd' as Denom,
               },
-            ).then(({ data: { simulation } }) =>
-              simulation
-                ? sellFromSimulation(
-                    simulation as terraswap.SimulationResponse<uUST, uANC>,
-                    amount,
-                    bank.tax,
-                    fixedGas,
-                  )
-                : undefined,
-            ),
-          );
-        }
+            },
+          ).then(({ data: { simulation } }) =>
+            simulation
+              ? sellFromSimulation(
+                  simulation as terraswap.SimulationResponse<uUST, uANC>,
+                  amount,
+                  bank.tax,
+                  fixedGas,
+                )
+              : undefined,
+          ),
+        );
       }
     },
-    [address, bank.tax, client, fixedGas, resolveSimulation, serviceAvailable],
+    [address, bank.tax, client, fixedGas, resolveSimulation],
   );
 
   const init = useCallback(() => {
