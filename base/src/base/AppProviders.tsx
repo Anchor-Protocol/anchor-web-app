@@ -168,13 +168,18 @@ function Providers({
 export function AppProviders({
   children,
   isDemo = false,
+  enableWatchConnection = true,
 }: {
   children: ReactNode;
   isDemo?: boolean;
+  enableWatchConnection?: boolean;
 }) {
   return (
     /** Terra Station Wallet Address :: useWallet() */
-    <ChromeExtensionWalletProvider defaultNetwork={defaultNetwork}>
+    <ChromeExtensionWalletProvider
+      defaultNetwork={defaultNetwork}
+      enableWatchConnection={enableWatchConnection}
+    >
       <Providers isDemo={isDemo}>
         {/* Router Actions ======================== */}
         {/** Send Google Analytics Page view every Router's location changed */}

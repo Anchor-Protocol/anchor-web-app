@@ -5,6 +5,7 @@ import { StationNetworkInfo, WalletStatus } from './types';
 export interface WalletProviderProps {
   defaultNetwork: StationNetworkInfo;
   children: ReactNode | ((state: WalletState) => ReactNode);
+  enableWatchConnection?: boolean;
 }
 
 export interface WalletState {

@@ -28,6 +28,7 @@ async function intervalCheck(
 export function ChromeExtensionWalletProvider({
   children,
   defaultNetwork,
+  enableWatchConnection = true,
 }: WalletProviderProps) {
   const isChrome = useMemo(() => {
     const browser = getParser(navigator.userAgent);
@@ -46,6 +47,8 @@ export function ChromeExtensionWalletProvider({
     status: isChrome ? 'initializing' : 'unavailable',
     network: defaultNetwork,
   }));
+
+  const watchConnection = useRef<boolean>(enableWatchConnection);
 
   const firstCheck = useRef<boolean>(false);
 
@@ -99,36 +102,44 @@ export function ChromeExtensionWalletProvider({
       const network: StationNetworkInfo = (infoPayload ??
         defaultNetwork) as any;
 
-      const storedWalletAddress: string | null = storage.getItem(
-        WALLET_ADDRESS,
-      );
+      if (watchConnection.current) {
+        const storedWalletAddress: string | null = storage.getItem(
+          WALLET_ADDRESS,
+        );
 
-      if (storedWalletAddress && AccAddress.validate(storedWalletAddress)) {
-        const connectResult = await extension.connect();
+        if (storedWalletAddress && AccAddress.validate(storedWalletAddress)) {
+          const connectResult = await extension.connect();
 
-        if (
-          connectResult?.address &&
-          AccAddress.validate(connectResult.address) &&
-          connectResult.address !== storedWalletAddress
-        ) {
-          storage.setItem(WALLET_ADDRESS, connectResult.address);
+          if (
+            connectResult?.address &&
+            AccAddress.validate(connectResult.address) &&
+            connectResult.address !== storedWalletAddress
+          ) {
+            storage.setItem(WALLET_ADDRESS, connectResult.address);
+          }
+
+          setStatus((prev) => {
+            return prev.status !== 'ready' ||
+              prev.walletAddress !== connectResult.address
+              ? {
+                  status: 'ready',
+                  network,
+                  walletAddress: connectResult.address as HumanAddr,
+                }
+              : prev;
+          });
+        } else {
+          if (storedWalletAddress) {
+            storage.removeItem(WALLET_ADDRESS);
+          }
+
+          setStatus((prev) => {
+            return prev.status !== 'not_connected'
+              ? { status: 'not_connected', network }
+              : prev;
+          });
         }
-
-        setStatus((prev) => {
-          return prev.status !== 'ready' ||
-            prev.walletAddress !== connectResult.address
-            ? {
-                status: 'ready',
-                network,
-                walletAddress: connectResult.address as HumanAddr,
-              }
-            : prev;
-        });
       } else {
-        if (storedWalletAddress) {
-          storage.removeItem(WALLET_ADDRESS);
-        }
-
         setStatus((prev) => {
           return prev.status !== 'not_connected'
             ? { status: 'not_connected', network }
