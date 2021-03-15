@@ -21,6 +21,8 @@ export interface ContractAddress {
     reward: HumanAddr;
     /** addressProvider.blunaHub() */
     hub: HumanAddr;
+    /** addressProvider.airdrop() */
+    airdropRegistry: HumanAddr;
   };
   moneyMarket: {
     /** addressProvider.market() */
@@ -53,6 +55,8 @@ export interface ContractAddress {
     investorLock: HumanAddr;
     /** addressProvider.teamLock() */
     teamLock: HumanAddr;
+    /** addressProvider.collector() */
+    collector: HumanAddr;
   };
   terraswap: {
     /** addressProvider.terraswapblunaLunaPair() */
@@ -72,5 +76,4 @@ export interface ContractAddress {
     /** addressProvider.terraswapblunaLunaLPToken() */
     bLunaLunaLP: CW20Addr;
   };
-  airdrop: HumanAddr;
 }

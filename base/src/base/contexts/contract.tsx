@@ -49,6 +49,7 @@ export function createContractAddress(
     bluna: {
       reward: addressProvider.blunaReward('') as HumanAddr,
       hub: addressProvider.blunaHub('') as HumanAddr,
+      airdropRegistry: addressProvider.airdrop() as HumanAddr,
     },
     moneyMarket: {
       market: addressProvider.market('') as HumanAddr,
@@ -68,6 +69,7 @@ export function createContractAddress(
       distributor: addressProvider.distributor() as HumanAddr,
       investorLock: addressProvider.investorLock() as HumanAddr,
       teamLock: addressProvider.teamLock() as HumanAddr,
+      collector: addressProvider.collector() as HumanAddr,
     },
     terraswap: {
       blunaLunaPair: addressProvider.terraswapblunaLunaPair() as HumanAddr,
@@ -80,7 +82,6 @@ export function createContractAddress(
       AncUstLP: addressProvider.terraswapAncUstLPToken() as CW20Addr,
       bLunaLunaLP: addressProvider.terraswapblunaLunaLPToken('') as CW20Addr,
     },
-    airdrop: addressMap.airdrop as HumanAddr,
   };
 }
 

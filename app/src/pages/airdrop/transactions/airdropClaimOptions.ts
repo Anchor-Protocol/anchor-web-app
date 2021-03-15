@@ -18,7 +18,7 @@ export const airdropClaimOptions = createOperationOptions({
   id: 'airdrop/claim',
   //broadcastWhen: 'always',
   pipe: ({
-    address: { airdrop: airdropContract },
+    address: contractAddress,
     post,
     client,
     signal,
@@ -28,7 +28,7 @@ export const airdropClaimOptions = createOperationOptions({
   }: OperationDependency<{}>) => [
     ({ address, airdrop }: { address: HumanAddr; airdrop: Airdrop }) => {
       return [
-        new MsgExecuteContract(address, airdropContract, {
+        new MsgExecuteContract(address, contractAddress.bluna.airdropRegistry, {
           claim: airdrop,
         }),
       ] as MsgExecuteContract[];

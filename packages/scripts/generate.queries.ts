@@ -12,28 +12,22 @@ interface Names {
 }
 
 const queryTemplate = ({ name, idName, className, parentName }: Names) => `
-export function use${className}({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<${name}>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function use${className}(options: Omit<UseWasmQueryOptions<${name}>, 'id' | 'address'>) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<${name}, ${name}Response>({
     ...options,
     id: '${idName}',
     address: address.${parentName},
+    onError: options.onError ?? onError,
   });
 }
 
-export function query${className}(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<${name}>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const query${className} = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (options: Omit<WasmQueryOptions<${name}>, 'id' | 'address'>) => {
   return wasmQuery<${name}, ${name}Response>(
     client,
     {
@@ -41,7 +35,13 @@ export function query${className}(
       id: '${idName}',
       address: address.${parentName},
     },
-  );
+  ).catch(error => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
+  });
 }
 `;
 
@@ -50,8 +50,10 @@ const fileTemplate = (imports: string[], body: string) => `
 // DO NOT EDIT MANUALLY
 // YOU CAN SEE THE GENERATOR SCRIPTS ON PACKAGE.JSON
 
-import { ${imports.join(', ')}, ContractAddress } from '@anchor-protocol/types';
-import { ApolloClient } from '@apollo/client';
+/* eslint-disable */
+
+import { ${imports.join(', ')} } from '@anchor-protocol/types';
+import { ApolloError } from '@apollo/client';
 import { Omit } from '@material-ui/core';
 import {
   useWasmQuery,
@@ -59,6 +61,10 @@ import {
   wasmQuery,
   WasmQueryOptions,
 } from './wasmQuery';
+import {
+  useQueryDependency,
+  QueryDependency,
+} from './provider';
 
 ${body}
 `;

@@ -2,14 +2,15 @@
 // DO NOT EDIT MANUALLY
 // YOU CAN SEE THE GENERATOR SCRIPTS ON PACKAGE.JSON
 
+/* eslint-disable */
+
 import {
   anchorToken,
   bluna,
   liquidation,
   moneyMarket,
-  ContractAddress,
 } from '@anchor-protocol/types';
-import { ApolloClient } from '@apollo/client';
+import { ApolloError } from '@apollo/client';
 import { Omit } from '@material-ui/core';
 import {
   useWasmQuery,
@@ -17,13 +18,16 @@ import {
   wasmQuery,
   WasmQueryOptions,
 } from './wasmQuery';
+import { useQueryDependency, QueryDependency } from './provider';
 
-export function useAnchorTokenCollectorConfig({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<anchorToken.collector.Config>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useAnchorTokenCollectorConfig(
+  options: Omit<
+    UseWasmQueryOptions<anchorToken.collector.Config>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     anchorToken.collector.Config,
     anchorToken.collector.ConfigResponse
@@ -31,18 +35,20 @@ export function useAnchorTokenCollectorConfig({
     ...options,
     id: 'anchorToken_collector_Config',
     address: address.anchorToken.collector,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryAnchorTokenCollectorConfig(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<anchorToken.collector.Config>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryAnchorTokenCollectorConfig = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
+    WasmQueryOptions<anchorToken.collector.Config>,
+    'id' | 'address'
+  >,
+) => {
   return wasmQuery<
     anchorToken.collector.Config,
     anchorToken.collector.ConfigResponse
@@ -50,15 +56,23 @@ export function queryAnchorTokenCollectorConfig(
     ...options,
     id: 'anchorToken_collector_Config',
     address: address.anchorToken.collector,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useAnchorTokenCommunityConfig({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<anchorToken.community.Config>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useAnchorTokenCommunityConfig(
+  options: Omit<
+    UseWasmQueryOptions<anchorToken.community.Config>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     anchorToken.community.Config,
     anchorToken.community.ConfigResponse
@@ -66,18 +80,20 @@ export function useAnchorTokenCommunityConfig({
     ...options,
     id: 'anchorToken_community_Config',
     address: address.anchorToken.community,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryAnchorTokenCommunityConfig(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<anchorToken.community.Config>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryAnchorTokenCommunityConfig = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
+    WasmQueryOptions<anchorToken.community.Config>,
+    'id' | 'address'
+  >,
+) => {
   return wasmQuery<
     anchorToken.community.Config,
     anchorToken.community.ConfigResponse
@@ -85,18 +101,23 @@ export function queryAnchorTokenCommunityConfig(
     ...options,
     id: 'anchorToken_community_Config',
     address: address.anchorToken.community,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useAnchorTokenDistributorConfig({
-  address,
-  ...options
-}: Omit<
-  UseWasmQueryOptions<anchorToken.distributor.Config>,
-  'id' | 'address'
-> & {
-  address: ContractAddress;
-}) {
+export function useAnchorTokenDistributorConfig(
+  options: Omit<
+    UseWasmQueryOptions<anchorToken.distributor.Config>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     anchorToken.distributor.Config,
     anchorToken.distributor.ConfigResponse
@@ -104,21 +125,20 @@ export function useAnchorTokenDistributorConfig({
     ...options,
     id: 'anchorToken_distributor_Config',
     address: address.anchorToken.distributor,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryAnchorTokenDistributorConfig(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<
+export const queryAnchorTokenDistributorConfig = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
     WasmQueryOptions<anchorToken.distributor.Config>,
     'id' | 'address'
-  > & {
-    address: ContractAddress;
-  },
-) {
+  >,
+) => {
   return wasmQuery<
     anchorToken.distributor.Config,
     anchorToken.distributor.ConfigResponse
@@ -126,31 +146,35 @@ export function queryAnchorTokenDistributorConfig(
     ...options,
     id: 'anchorToken_distributor_Config',
     address: address.anchorToken.distributor,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useAnchorTokenGovConfig({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<anchorToken.gov.Config>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useAnchorTokenGovConfig(
+  options: Omit<UseWasmQueryOptions<anchorToken.gov.Config>, 'id' | 'address'>,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<anchorToken.gov.Config, anchorToken.gov.ConfigResponse>({
     ...options,
     id: 'anchorToken_gov_Config',
     address: address.anchorToken.gov,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryAnchorTokenGovConfig(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<anchorToken.gov.Config>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryAnchorTokenGovConfig = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<WasmQueryOptions<anchorToken.gov.Config>, 'id' | 'address'>,
+) => {
   return wasmQuery<anchorToken.gov.Config, anchorToken.gov.ConfigResponse>(
     client,
     {
@@ -158,60 +182,68 @@ export function queryAnchorTokenGovConfig(
       id: 'anchorToken_gov_Config',
       address: address.anchorToken.gov,
     },
-  );
-}
+  ).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
+  });
+};
 
-export function useAnchorTokenGovPoll({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<anchorToken.gov.Poll>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useAnchorTokenGovPoll(
+  options: Omit<UseWasmQueryOptions<anchorToken.gov.Poll>, 'id' | 'address'>,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<anchorToken.gov.Poll, anchorToken.gov.PollResponse>({
     ...options,
     id: 'anchorToken_gov_Poll',
     address: address.anchorToken.gov,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryAnchorTokenGovPoll(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<anchorToken.gov.Poll>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryAnchorTokenGovPoll = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<WasmQueryOptions<anchorToken.gov.Poll>, 'id' | 'address'>,
+) => {
   return wasmQuery<anchorToken.gov.Poll, anchorToken.gov.PollResponse>(client, {
     ...options,
     id: 'anchorToken_gov_Poll',
     address: address.anchorToken.gov,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useAnchorTokenGovPolls({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<anchorToken.gov.Polls>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useAnchorTokenGovPolls(
+  options: Omit<UseWasmQueryOptions<anchorToken.gov.Polls>, 'id' | 'address'>,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<anchorToken.gov.Polls, anchorToken.gov.PollsResponse>({
     ...options,
     id: 'anchorToken_gov_Polls',
     address: address.anchorToken.gov,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryAnchorTokenGovPolls(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<anchorToken.gov.Polls>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryAnchorTokenGovPolls = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<WasmQueryOptions<anchorToken.gov.Polls>, 'id' | 'address'>,
+) => {
   return wasmQuery<anchorToken.gov.Polls, anchorToken.gov.PollsResponse>(
     client,
     {
@@ -219,31 +251,35 @@ export function queryAnchorTokenGovPolls(
       id: 'anchorToken_gov_Polls',
       address: address.anchorToken.gov,
     },
-  );
-}
+  ).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
+  });
+};
 
-export function useAnchorTokenGovStaker({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<anchorToken.gov.Staker>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useAnchorTokenGovStaker(
+  options: Omit<UseWasmQueryOptions<anchorToken.gov.Staker>, 'id' | 'address'>,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<anchorToken.gov.Staker, anchorToken.gov.StakerResponse>({
     ...options,
     id: 'anchorToken_gov_Staker',
     address: address.anchorToken.gov,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryAnchorTokenGovStaker(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<anchorToken.gov.Staker>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryAnchorTokenGovStaker = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<WasmQueryOptions<anchorToken.gov.Staker>, 'id' | 'address'>,
+) => {
   return wasmQuery<anchorToken.gov.Staker, anchorToken.gov.StakerResponse>(
     client,
     {
@@ -251,31 +287,35 @@ export function queryAnchorTokenGovStaker(
       id: 'anchorToken_gov_Staker',
       address: address.anchorToken.gov,
     },
-  );
-}
+  ).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
+  });
+};
 
-export function useAnchorTokenGovState({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<anchorToken.gov.State>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useAnchorTokenGovState(
+  options: Omit<UseWasmQueryOptions<anchorToken.gov.State>, 'id' | 'address'>,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<anchorToken.gov.State, anchorToken.gov.StateResponse>({
     ...options,
     id: 'anchorToken_gov_State',
     address: address.anchorToken.gov,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryAnchorTokenGovState(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<anchorToken.gov.State>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryAnchorTokenGovState = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<WasmQueryOptions<anchorToken.gov.State>, 'id' | 'address'>,
+) => {
   return wasmQuery<anchorToken.gov.State, anchorToken.gov.StateResponse>(
     client,
     {
@@ -283,31 +323,35 @@ export function queryAnchorTokenGovState(
       id: 'anchorToken_gov_State',
       address: address.anchorToken.gov,
     },
-  );
-}
+  ).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
+  });
+};
 
-export function useAnchorTokenGovVoters({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<anchorToken.gov.Voters>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useAnchorTokenGovVoters(
+  options: Omit<UseWasmQueryOptions<anchorToken.gov.Voters>, 'id' | 'address'>,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<anchorToken.gov.Voters, anchorToken.gov.VotersResponse>({
     ...options,
     id: 'anchorToken_gov_Voters',
     address: address.anchorToken.gov,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryAnchorTokenGovVoters(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<anchorToken.gov.Voters>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryAnchorTokenGovVoters = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<WasmQueryOptions<anchorToken.gov.Voters>, 'id' | 'address'>,
+) => {
   return wasmQuery<anchorToken.gov.Voters, anchorToken.gov.VotersResponse>(
     client,
     {
@@ -315,15 +359,23 @@ export function queryAnchorTokenGovVoters(
       id: 'anchorToken_gov_Voters',
       address: address.anchorToken.gov,
     },
-  );
-}
+  ).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
+  });
+};
 
-export function useAnchorTokenStakingConfig({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<anchorToken.staking.Config>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useAnchorTokenStakingConfig(
+  options: Omit<
+    UseWasmQueryOptions<anchorToken.staking.Config>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     anchorToken.staking.Config,
     anchorToken.staking.ConfigResponse
@@ -331,18 +383,17 @@ export function useAnchorTokenStakingConfig({
     ...options,
     id: 'anchorToken_staking_Config',
     address: address.anchorToken.staking,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryAnchorTokenStakingConfig(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<anchorToken.staking.Config>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryAnchorTokenStakingConfig = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<WasmQueryOptions<anchorToken.staking.Config>, 'id' | 'address'>,
+) => {
   return wasmQuery<
     anchorToken.staking.Config,
     anchorToken.staking.ConfigResponse
@@ -350,18 +401,23 @@ export function queryAnchorTokenStakingConfig(
     ...options,
     id: 'anchorToken_staking_Config',
     address: address.anchorToken.staking,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useAnchorTokenStakingStakerInfo({
-  address,
-  ...options
-}: Omit<
-  UseWasmQueryOptions<anchorToken.staking.StakerInfo>,
-  'id' | 'address'
-> & {
-  address: ContractAddress;
-}) {
+export function useAnchorTokenStakingStakerInfo(
+  options: Omit<
+    UseWasmQueryOptions<anchorToken.staking.StakerInfo>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     anchorToken.staking.StakerInfo,
     anchorToken.staking.StakerInfoResponse
@@ -369,21 +425,20 @@ export function useAnchorTokenStakingStakerInfo({
     ...options,
     id: 'anchorToken_staking_StakerInfo',
     address: address.anchorToken.staking,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryAnchorTokenStakingStakerInfo(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<
+export const queryAnchorTokenStakingStakerInfo = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
     WasmQueryOptions<anchorToken.staking.StakerInfo>,
     'id' | 'address'
-  > & {
-    address: ContractAddress;
-  },
-) {
+  >,
+) => {
   return wasmQuery<
     anchorToken.staking.StakerInfo,
     anchorToken.staking.StakerInfoResponse
@@ -391,15 +446,23 @@ export function queryAnchorTokenStakingStakerInfo(
     ...options,
     id: 'anchorToken_staking_StakerInfo',
     address: address.anchorToken.staking,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useAnchorTokenStakingState({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<anchorToken.staking.State>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useAnchorTokenStakingState(
+  options: Omit<
+    UseWasmQueryOptions<anchorToken.staking.State>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     anchorToken.staking.State,
     anchorToken.staking.StateResponse
@@ -407,18 +470,17 @@ export function useAnchorTokenStakingState({
     ...options,
     id: 'anchorToken_staking_State',
     address: address.anchorToken.staking,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryAnchorTokenStakingState(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<anchorToken.staking.State>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryAnchorTokenStakingState = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<WasmQueryOptions<anchorToken.staking.State>, 'id' | 'address'>,
+) => {
   return wasmQuery<
     anchorToken.staking.State,
     anchorToken.staking.StateResponse
@@ -426,18 +488,23 @@ export function queryAnchorTokenStakingState(
     ...options,
     id: 'anchorToken_staking_State',
     address: address.anchorToken.staking,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useBlunaAirdropRegistryAirdropInfo({
-  address,
-  ...options
-}: Omit<
-  UseWasmQueryOptions<bluna.airdropRegistry.AirdropInfo>,
-  'id' | 'address'
-> & {
-  address: ContractAddress;
-}) {
+export function useBlunaAirdropRegistryAirdropInfo(
+  options: Omit<
+    UseWasmQueryOptions<bluna.airdropRegistry.AirdropInfo>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     bluna.airdropRegistry.AirdropInfo,
     bluna.airdropRegistry.AirdropInfoResponse
@@ -445,21 +512,20 @@ export function useBlunaAirdropRegistryAirdropInfo({
     ...options,
     id: 'bluna_airdropRegistry_AirdropInfo',
     address: address.bluna.airdropRegistry,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryBlunaAirdropRegistryAirdropInfo(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<
+export const queryBlunaAirdropRegistryAirdropInfo = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
     WasmQueryOptions<bluna.airdropRegistry.AirdropInfo>,
     'id' | 'address'
-  > & {
-    address: ContractAddress;
-  },
-) {
+  >,
+) => {
   return wasmQuery<
     bluna.airdropRegistry.AirdropInfo,
     bluna.airdropRegistry.AirdropInfoResponse
@@ -467,15 +533,23 @@ export function queryBlunaAirdropRegistryAirdropInfo(
     ...options,
     id: 'bluna_airdropRegistry_AirdropInfo',
     address: address.bluna.airdropRegistry,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useBlunaAirdropRegistryConfig({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<bluna.airdropRegistry.Config>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useBlunaAirdropRegistryConfig(
+  options: Omit<
+    UseWasmQueryOptions<bluna.airdropRegistry.Config>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     bluna.airdropRegistry.Config,
     bluna.airdropRegistry.ConfigResponse
@@ -483,18 +557,20 @@ export function useBlunaAirdropRegistryConfig({
     ...options,
     id: 'bluna_airdropRegistry_Config',
     address: address.bluna.airdropRegistry,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryBlunaAirdropRegistryConfig(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<bluna.airdropRegistry.Config>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryBlunaAirdropRegistryConfig = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
+    WasmQueryOptions<bluna.airdropRegistry.Config>,
+    'id' | 'address'
+  >,
+) => {
   return wasmQuery<
     bluna.airdropRegistry.Config,
     bluna.airdropRegistry.ConfigResponse
@@ -502,89 +578,101 @@ export function queryBlunaAirdropRegistryConfig(
     ...options,
     id: 'bluna_airdropRegistry_Config',
     address: address.bluna.airdropRegistry,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useBlunaHubAllHistory({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<bluna.hub.AllHistory>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useBlunaHubAllHistory(
+  options: Omit<UseWasmQueryOptions<bluna.hub.AllHistory>, 'id' | 'address'>,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<bluna.hub.AllHistory, bluna.hub.AllHistoryResponse>({
     ...options,
     id: 'bluna_hub_AllHistory',
     address: address.bluna.hub,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryBlunaHubAllHistory(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<bluna.hub.AllHistory>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryBlunaHubAllHistory = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<WasmQueryOptions<bluna.hub.AllHistory>, 'id' | 'address'>,
+) => {
   return wasmQuery<bluna.hub.AllHistory, bluna.hub.AllHistoryResponse>(client, {
     ...options,
     id: 'bluna_hub_AllHistory',
     address: address.bluna.hub,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useBlunaHubConfig({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<bluna.hub.Config>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useBlunaHubConfig(
+  options: Omit<UseWasmQueryOptions<bluna.hub.Config>, 'id' | 'address'>,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<bluna.hub.Config, bluna.hub.ConfigResponse>({
     ...options,
     id: 'bluna_hub_Config',
     address: address.bluna.hub,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryBlunaHubConfig(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<bluna.hub.Config>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryBlunaHubConfig = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<WasmQueryOptions<bluna.hub.Config>, 'id' | 'address'>,
+) => {
   return wasmQuery<bluna.hub.Config, bluna.hub.ConfigResponse>(client, {
     ...options,
     id: 'bluna_hub_Config',
     address: address.bluna.hub,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useBlunaHubCurrentBatch({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<bluna.hub.CurrentBatch>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useBlunaHubCurrentBatch(
+  options: Omit<UseWasmQueryOptions<bluna.hub.CurrentBatch>, 'id' | 'address'>,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<bluna.hub.CurrentBatch, bluna.hub.CurrentBatchResponse>({
     ...options,
     id: 'bluna_hub_CurrentBatch',
     address: address.bluna.hub,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryBlunaHubCurrentBatch(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<bluna.hub.CurrentBatch>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryBlunaHubCurrentBatch = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<WasmQueryOptions<bluna.hub.CurrentBatch>, 'id' | 'address'>,
+) => {
   return wasmQuery<bluna.hub.CurrentBatch, bluna.hub.CurrentBatchResponse>(
     client,
     {
@@ -592,73 +680,89 @@ export function queryBlunaHubCurrentBatch(
       id: 'bluna_hub_CurrentBatch',
       address: address.bluna.hub,
     },
-  );
-}
+  ).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
+  });
+};
 
-export function useBlunaHubParameters({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<bluna.hub.Parameters>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useBlunaHubParameters(
+  options: Omit<UseWasmQueryOptions<bluna.hub.Parameters>, 'id' | 'address'>,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<bluna.hub.Parameters, bluna.hub.ParametersResponse>({
     ...options,
     id: 'bluna_hub_Parameters',
     address: address.bluna.hub,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryBlunaHubParameters(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<bluna.hub.Parameters>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryBlunaHubParameters = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<WasmQueryOptions<bluna.hub.Parameters>, 'id' | 'address'>,
+) => {
   return wasmQuery<bluna.hub.Parameters, bluna.hub.ParametersResponse>(client, {
     ...options,
     id: 'bluna_hub_Parameters',
     address: address.bluna.hub,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useBlunaHubState({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<bluna.hub.State>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useBlunaHubState(
+  options: Omit<UseWasmQueryOptions<bluna.hub.State>, 'id' | 'address'>,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<bluna.hub.State, bluna.hub.StateResponse>({
     ...options,
     id: 'bluna_hub_State',
     address: address.bluna.hub,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryBlunaHubState(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<bluna.hub.State>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryBlunaHubState = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<WasmQueryOptions<bluna.hub.State>, 'id' | 'address'>,
+) => {
   return wasmQuery<bluna.hub.State, bluna.hub.StateResponse>(client, {
     ...options,
     id: 'bluna_hub_State',
     address: address.bluna.hub,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useBlunaHubUnbondRequests({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<bluna.hub.UnbondRequests>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useBlunaHubUnbondRequests(
+  options: Omit<
+    UseWasmQueryOptions<bluna.hub.UnbondRequests>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     bluna.hub.UnbondRequests,
     bluna.hub.UnbondRequestsResponse
@@ -666,18 +770,17 @@ export function useBlunaHubUnbondRequests({
     ...options,
     id: 'bluna_hub_UnbondRequests',
     address: address.bluna.hub,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryBlunaHubUnbondRequests(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<bluna.hub.UnbondRequests>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryBlunaHubUnbondRequests = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<WasmQueryOptions<bluna.hub.UnbondRequests>, 'id' | 'address'>,
+) => {
   return wasmQuery<bluna.hub.UnbondRequests, bluna.hub.UnbondRequestsResponse>(
     client,
     {
@@ -685,18 +788,23 @@ export function queryBlunaHubUnbondRequests(
       id: 'bluna_hub_UnbondRequests',
       address: address.bluna.hub,
     },
-  );
-}
+  ).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
+  });
+};
 
-export function useBlunaHubWhitelistedValidators({
-  address,
-  ...options
-}: Omit<
-  UseWasmQueryOptions<bluna.hub.WhitelistedValidators>,
-  'id' | 'address'
-> & {
-  address: ContractAddress;
-}) {
+export function useBlunaHubWhitelistedValidators(
+  options: Omit<
+    UseWasmQueryOptions<bluna.hub.WhitelistedValidators>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     bluna.hub.WhitelistedValidators,
     bluna.hub.WhitelistedValidatorsResponse
@@ -704,21 +812,20 @@ export function useBlunaHubWhitelistedValidators({
     ...options,
     id: 'bluna_hub_WhitelistedValidators',
     address: address.bluna.hub,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryBlunaHubWhitelistedValidators(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<
+export const queryBlunaHubWhitelistedValidators = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
     WasmQueryOptions<bluna.hub.WhitelistedValidators>,
     'id' | 'address'
-  > & {
-    address: ContractAddress;
-  },
-) {
+  >,
+) => {
   return wasmQuery<
     bluna.hub.WhitelistedValidators,
     bluna.hub.WhitelistedValidatorsResponse
@@ -726,18 +833,23 @@ export function queryBlunaHubWhitelistedValidators(
     ...options,
     id: 'bluna_hub_WhitelistedValidators',
     address: address.bluna.hub,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useBlunaHubWithdrawableUnbonded({
-  address,
-  ...options
-}: Omit<
-  UseWasmQueryOptions<bluna.hub.WithdrawableUnbonded>,
-  'id' | 'address'
-> & {
-  address: ContractAddress;
-}) {
+export function useBlunaHubWithdrawableUnbonded(
+  options: Omit<
+    UseWasmQueryOptions<bluna.hub.WithdrawableUnbonded>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     bluna.hub.WithdrawableUnbonded,
     bluna.hub.WithdrawableUnbondedResponse
@@ -745,21 +857,20 @@ export function useBlunaHubWithdrawableUnbonded({
     ...options,
     id: 'bluna_hub_WithdrawableUnbonded',
     address: address.bluna.hub,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryBlunaHubWithdrawableUnbonded(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<
+export const queryBlunaHubWithdrawableUnbonded = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
     WasmQueryOptions<bluna.hub.WithdrawableUnbonded>,
     'id' | 'address'
-  > & {
-    address: ContractAddress;
-  },
-) {
+  >,
+) => {
   return wasmQuery<
     bluna.hub.WithdrawableUnbonded,
     bluna.hub.WithdrawableUnbondedResponse
@@ -767,15 +878,23 @@ export function queryBlunaHubWithdrawableUnbonded(
     ...options,
     id: 'bluna_hub_WithdrawableUnbonded',
     address: address.bluna.hub,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useBlunaRewardAccruedRewards({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<bluna.reward.AccruedRewards>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useBlunaRewardAccruedRewards(
+  options: Omit<
+    UseWasmQueryOptions<bluna.reward.AccruedRewards>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     bluna.reward.AccruedRewards,
     bluna.reward.AccruedRewardsResponse
@@ -783,18 +902,20 @@ export function useBlunaRewardAccruedRewards({
     ...options,
     id: 'bluna_reward_AccruedRewards',
     address: address.bluna.reward,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryBlunaRewardAccruedRewards(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<bluna.reward.AccruedRewards>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryBlunaRewardAccruedRewards = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
+    WasmQueryOptions<bluna.reward.AccruedRewards>,
+    'id' | 'address'
+  >,
+) => {
   return wasmQuery<
     bluna.reward.AccruedRewards,
     bluna.reward.AccruedRewardsResponse
@@ -802,134 +923,155 @@ export function queryBlunaRewardAccruedRewards(
     ...options,
     id: 'bluna_reward_AccruedRewards',
     address: address.bluna.reward,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useBlunaRewardConfig({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<bluna.reward.Config>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useBlunaRewardConfig(
+  options: Omit<UseWasmQueryOptions<bluna.reward.Config>, 'id' | 'address'>,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<bluna.reward.Config, bluna.reward.ConfigResponse>({
     ...options,
     id: 'bluna_reward_Config',
     address: address.bluna.reward,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryBlunaRewardConfig(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<bluna.reward.Config>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryBlunaRewardConfig = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<WasmQueryOptions<bluna.reward.Config>, 'id' | 'address'>,
+) => {
   return wasmQuery<bluna.reward.Config, bluna.reward.ConfigResponse>(client, {
     ...options,
     id: 'bluna_reward_Config',
     address: address.bluna.reward,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useBlunaRewardHolder({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<bluna.reward.Holder>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useBlunaRewardHolder(
+  options: Omit<UseWasmQueryOptions<bluna.reward.Holder>, 'id' | 'address'>,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<bluna.reward.Holder, bluna.reward.HolderResponse>({
     ...options,
     id: 'bluna_reward_Holder',
     address: address.bluna.reward,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryBlunaRewardHolder(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<bluna.reward.Holder>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryBlunaRewardHolder = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<WasmQueryOptions<bluna.reward.Holder>, 'id' | 'address'>,
+) => {
   return wasmQuery<bluna.reward.Holder, bluna.reward.HolderResponse>(client, {
     ...options,
     id: 'bluna_reward_Holder',
     address: address.bluna.reward,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useBlunaRewardHolders({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<bluna.reward.Holders>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useBlunaRewardHolders(
+  options: Omit<UseWasmQueryOptions<bluna.reward.Holders>, 'id' | 'address'>,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<bluna.reward.Holders, bluna.reward.HoldersResponse>({
     ...options,
     id: 'bluna_reward_Holders',
     address: address.bluna.reward,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryBlunaRewardHolders(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<bluna.reward.Holders>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryBlunaRewardHolders = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<WasmQueryOptions<bluna.reward.Holders>, 'id' | 'address'>,
+) => {
   return wasmQuery<bluna.reward.Holders, bluna.reward.HoldersResponse>(client, {
     ...options,
     id: 'bluna_reward_Holders',
     address: address.bluna.reward,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useBlunaRewardState({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<bluna.reward.State>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useBlunaRewardState(
+  options: Omit<UseWasmQueryOptions<bluna.reward.State>, 'id' | 'address'>,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<bluna.reward.State, bluna.reward.StateResponse>({
     ...options,
     id: 'bluna_reward_State',
     address: address.bluna.reward,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryBlunaRewardState(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<bluna.reward.State>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryBlunaRewardState = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<WasmQueryOptions<bluna.reward.State>, 'id' | 'address'>,
+) => {
   return wasmQuery<bluna.reward.State, bluna.reward.StateResponse>(client, {
     ...options,
     id: 'bluna_reward_State',
     address: address.bluna.reward,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useLiquidationLiquidationContractBid({
-  address,
-  ...options
-}: Omit<
-  UseWasmQueryOptions<liquidation.liquidationContract.Bid>,
-  'id' | 'address'
-> & {
-  address: ContractAddress;
-}) {
+export function useLiquidationLiquidationContractBid(
+  options: Omit<
+    UseWasmQueryOptions<liquidation.liquidationContract.Bid>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     liquidation.liquidationContract.Bid,
     liquidation.liquidationContract.BidResponse
@@ -937,21 +1079,20 @@ export function useLiquidationLiquidationContractBid({
     ...options,
     id: 'liquidation_liquidationContract_Bid',
     address: address.liquidation.liquidationContract,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryLiquidationLiquidationContractBid(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<
+export const queryLiquidationLiquidationContractBid = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
     WasmQueryOptions<liquidation.liquidationContract.Bid>,
     'id' | 'address'
-  > & {
-    address: ContractAddress;
-  },
-) {
+  >,
+) => {
   return wasmQuery<
     liquidation.liquidationContract.Bid,
     liquidation.liquidationContract.BidResponse
@@ -959,18 +1100,23 @@ export function queryLiquidationLiquidationContractBid(
     ...options,
     id: 'liquidation_liquidationContract_Bid',
     address: address.liquidation.liquidationContract,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useLiquidationLiquidationContractBidsByCollateral({
-  address,
-  ...options
-}: Omit<
-  UseWasmQueryOptions<liquidation.liquidationContract.BidsByCollateral>,
-  'id' | 'address'
-> & {
-  address: ContractAddress;
-}) {
+export function useLiquidationLiquidationContractBidsByCollateral(
+  options: Omit<
+    UseWasmQueryOptions<liquidation.liquidationContract.BidsByCollateral>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     liquidation.liquidationContract.BidsByCollateral,
     liquidation.liquidationContract.BidsByCollateralResponse
@@ -978,21 +1124,20 @@ export function useLiquidationLiquidationContractBidsByCollateral({
     ...options,
     id: 'liquidation_liquidationContract_BidsByCollateral',
     address: address.liquidation.liquidationContract,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryLiquidationLiquidationContractBidsByCollateral(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<
+export const queryLiquidationLiquidationContractBidsByCollateral = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
     WasmQueryOptions<liquidation.liquidationContract.BidsByCollateral>,
     'id' | 'address'
-  > & {
-    address: ContractAddress;
-  },
-) {
+  >,
+) => {
   return wasmQuery<
     liquidation.liquidationContract.BidsByCollateral,
     liquidation.liquidationContract.BidsByCollateralResponse
@@ -1000,18 +1145,23 @@ export function queryLiquidationLiquidationContractBidsByCollateral(
     ...options,
     id: 'liquidation_liquidationContract_BidsByCollateral',
     address: address.liquidation.liquidationContract,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useLiquidationLiquidationContractBidsByUser({
-  address,
-  ...options
-}: Omit<
-  UseWasmQueryOptions<liquidation.liquidationContract.BidsByUser>,
-  'id' | 'address'
-> & {
-  address: ContractAddress;
-}) {
+export function useLiquidationLiquidationContractBidsByUser(
+  options: Omit<
+    UseWasmQueryOptions<liquidation.liquidationContract.BidsByUser>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     liquidation.liquidationContract.BidsByUser,
     liquidation.liquidationContract.BidsByUserResponse
@@ -1019,21 +1169,20 @@ export function useLiquidationLiquidationContractBidsByUser({
     ...options,
     id: 'liquidation_liquidationContract_BidsByUser',
     address: address.liquidation.liquidationContract,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryLiquidationLiquidationContractBidsByUser(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<
+export const queryLiquidationLiquidationContractBidsByUser = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
     WasmQueryOptions<liquidation.liquidationContract.BidsByUser>,
     'id' | 'address'
-  > & {
-    address: ContractAddress;
-  },
-) {
+  >,
+) => {
   return wasmQuery<
     liquidation.liquidationContract.BidsByUser,
     liquidation.liquidationContract.BidsByUserResponse
@@ -1041,18 +1190,23 @@ export function queryLiquidationLiquidationContractBidsByUser(
     ...options,
     id: 'liquidation_liquidationContract_BidsByUser',
     address: address.liquidation.liquidationContract,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useLiquidationLiquidationContractConfig({
-  address,
-  ...options
-}: Omit<
-  UseWasmQueryOptions<liquidation.liquidationContract.Config>,
-  'id' | 'address'
-> & {
-  address: ContractAddress;
-}) {
+export function useLiquidationLiquidationContractConfig(
+  options: Omit<
+    UseWasmQueryOptions<liquidation.liquidationContract.Config>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     liquidation.liquidationContract.Config,
     liquidation.liquidationContract.ConfigResponse
@@ -1060,21 +1214,20 @@ export function useLiquidationLiquidationContractConfig({
     ...options,
     id: 'liquidation_liquidationContract_Config',
     address: address.liquidation.liquidationContract,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryLiquidationLiquidationContractConfig(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<
+export const queryLiquidationLiquidationContractConfig = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
     WasmQueryOptions<liquidation.liquidationContract.Config>,
     'id' | 'address'
-  > & {
-    address: ContractAddress;
-  },
-) {
+  >,
+) => {
   return wasmQuery<
     liquidation.liquidationContract.Config,
     liquidation.liquidationContract.ConfigResponse
@@ -1082,18 +1235,23 @@ export function queryLiquidationLiquidationContractConfig(
     ...options,
     id: 'liquidation_liquidationContract_Config',
     address: address.liquidation.liquidationContract,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useLiquidationLiquidationContractLiquidationAmount({
-  address,
-  ...options
-}: Omit<
-  UseWasmQueryOptions<liquidation.liquidationContract.LiquidationAmount>,
-  'id' | 'address'
-> & {
-  address: ContractAddress;
-}) {
+export function useLiquidationLiquidationContractLiquidationAmount(
+  options: Omit<
+    UseWasmQueryOptions<liquidation.liquidationContract.LiquidationAmount>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     liquidation.liquidationContract.LiquidationAmount,
     liquidation.liquidationContract.LiquidationAmountResponse
@@ -1101,21 +1259,20 @@ export function useLiquidationLiquidationContractLiquidationAmount({
     ...options,
     id: 'liquidation_liquidationContract_LiquidationAmount',
     address: address.liquidation.liquidationContract,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryLiquidationLiquidationContractLiquidationAmount(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<
+export const queryLiquidationLiquidationContractLiquidationAmount = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
     WasmQueryOptions<liquidation.liquidationContract.LiquidationAmount>,
     'id' | 'address'
-  > & {
-    address: ContractAddress;
-  },
-) {
+  >,
+) => {
   return wasmQuery<
     liquidation.liquidationContract.LiquidationAmount,
     liquidation.liquidationContract.LiquidationAmountResponse
@@ -1123,15 +1280,23 @@ export function queryLiquidationLiquidationContractLiquidationAmount(
     ...options,
     id: 'liquidation_liquidationContract_LiquidationAmount',
     address: address.liquidation.liquidationContract,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useMoneyMarketCustodyBorrower({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<moneyMarket.custody.Borrower>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useMoneyMarketCustodyBorrower(
+  options: Omit<
+    UseWasmQueryOptions<moneyMarket.custody.Borrower>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     moneyMarket.custody.Borrower,
     moneyMarket.custody.BorrowerResponse
@@ -1139,18 +1304,20 @@ export function useMoneyMarketCustodyBorrower({
     ...options,
     id: 'moneyMarket_custody_Borrower',
     address: address.moneyMarket.custody,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryMoneyMarketCustodyBorrower(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<moneyMarket.custody.Borrower>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryMoneyMarketCustodyBorrower = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
+    WasmQueryOptions<moneyMarket.custody.Borrower>,
+    'id' | 'address'
+  >,
+) => {
   return wasmQuery<
     moneyMarket.custody.Borrower,
     moneyMarket.custody.BorrowerResponse
@@ -1158,18 +1325,23 @@ export function queryMoneyMarketCustodyBorrower(
     ...options,
     id: 'moneyMarket_custody_Borrower',
     address: address.moneyMarket.custody,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useMoneyMarketCustodyBorrowers({
-  address,
-  ...options
-}: Omit<
-  UseWasmQueryOptions<moneyMarket.custody.Borrowers>,
-  'id' | 'address'
-> & {
-  address: ContractAddress;
-}) {
+export function useMoneyMarketCustodyBorrowers(
+  options: Omit<
+    UseWasmQueryOptions<moneyMarket.custody.Borrowers>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     moneyMarket.custody.Borrowers,
     moneyMarket.custody.BorrowersResponse
@@ -1177,18 +1349,20 @@ export function useMoneyMarketCustodyBorrowers({
     ...options,
     id: 'moneyMarket_custody_Borrowers',
     address: address.moneyMarket.custody,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryMoneyMarketCustodyBorrowers(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<moneyMarket.custody.Borrowers>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryMoneyMarketCustodyBorrowers = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
+    WasmQueryOptions<moneyMarket.custody.Borrowers>,
+    'id' | 'address'
+  >,
+) => {
   return wasmQuery<
     moneyMarket.custody.Borrowers,
     moneyMarket.custody.BorrowersResponse
@@ -1196,15 +1370,23 @@ export function queryMoneyMarketCustodyBorrowers(
     ...options,
     id: 'moneyMarket_custody_Borrowers',
     address: address.moneyMarket.custody,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useMoneyMarketCustodyConfig({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<moneyMarket.custody.Config>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useMoneyMarketCustodyConfig(
+  options: Omit<
+    UseWasmQueryOptions<moneyMarket.custody.Config>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     moneyMarket.custody.Config,
     moneyMarket.custody.ConfigResponse
@@ -1212,18 +1394,17 @@ export function useMoneyMarketCustodyConfig({
     ...options,
     id: 'moneyMarket_custody_Config',
     address: address.moneyMarket.custody,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryMoneyMarketCustodyConfig(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<moneyMarket.custody.Config>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryMoneyMarketCustodyConfig = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<WasmQueryOptions<moneyMarket.custody.Config>, 'id' | 'address'>,
+) => {
   return wasmQuery<
     moneyMarket.custody.Config,
     moneyMarket.custody.ConfigResponse
@@ -1231,18 +1412,23 @@ export function queryMoneyMarketCustodyConfig(
     ...options,
     id: 'moneyMarket_custody_Config',
     address: address.moneyMarket.custody,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useMoneyMarketDistributionModelAncEmissionRate({
-  address,
-  ...options
-}: Omit<
-  UseWasmQueryOptions<moneyMarket.distributionModel.AncEmissionRate>,
-  'id' | 'address'
-> & {
-  address: ContractAddress;
-}) {
+export function useMoneyMarketDistributionModelAncEmissionRate(
+  options: Omit<
+    UseWasmQueryOptions<moneyMarket.distributionModel.AncEmissionRate>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     moneyMarket.distributionModel.AncEmissionRate,
     moneyMarket.distributionModel.AncEmissionRateResponse
@@ -1250,21 +1436,20 @@ export function useMoneyMarketDistributionModelAncEmissionRate({
     ...options,
     id: 'moneyMarket_distributionModel_AncEmissionRate',
     address: address.moneyMarket.distributionModel,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryMoneyMarketDistributionModelAncEmissionRate(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<
+export const queryMoneyMarketDistributionModelAncEmissionRate = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
     WasmQueryOptions<moneyMarket.distributionModel.AncEmissionRate>,
     'id' | 'address'
-  > & {
-    address: ContractAddress;
-  },
-) {
+  >,
+) => {
   return wasmQuery<
     moneyMarket.distributionModel.AncEmissionRate,
     moneyMarket.distributionModel.AncEmissionRateResponse
@@ -1272,18 +1457,23 @@ export function queryMoneyMarketDistributionModelAncEmissionRate(
     ...options,
     id: 'moneyMarket_distributionModel_AncEmissionRate',
     address: address.moneyMarket.distributionModel,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useMoneyMarketDistributionModelConfig({
-  address,
-  ...options
-}: Omit<
-  UseWasmQueryOptions<moneyMarket.distributionModel.Config>,
-  'id' | 'address'
-> & {
-  address: ContractAddress;
-}) {
+export function useMoneyMarketDistributionModelConfig(
+  options: Omit<
+    UseWasmQueryOptions<moneyMarket.distributionModel.Config>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     moneyMarket.distributionModel.Config,
     moneyMarket.distributionModel.ConfigResponse
@@ -1291,21 +1481,20 @@ export function useMoneyMarketDistributionModelConfig({
     ...options,
     id: 'moneyMarket_distributionModel_Config',
     address: address.moneyMarket.distributionModel,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryMoneyMarketDistributionModelConfig(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<
+export const queryMoneyMarketDistributionModelConfig = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
     WasmQueryOptions<moneyMarket.distributionModel.Config>,
     'id' | 'address'
-  > & {
-    address: ContractAddress;
-  },
-) {
+  >,
+) => {
   return wasmQuery<
     moneyMarket.distributionModel.Config,
     moneyMarket.distributionModel.ConfigResponse
@@ -1313,18 +1502,23 @@ export function queryMoneyMarketDistributionModelConfig(
     ...options,
     id: 'moneyMarket_distributionModel_Config',
     address: address.moneyMarket.distributionModel,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useMoneyMarketInterestModelBorrowRate({
-  address,
-  ...options
-}: Omit<
-  UseWasmQueryOptions<moneyMarket.interestModel.BorrowRate>,
-  'id' | 'address'
-> & {
-  address: ContractAddress;
-}) {
+export function useMoneyMarketInterestModelBorrowRate(
+  options: Omit<
+    UseWasmQueryOptions<moneyMarket.interestModel.BorrowRate>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     moneyMarket.interestModel.BorrowRate,
     moneyMarket.interestModel.BorrowRateResponse
@@ -1332,21 +1526,20 @@ export function useMoneyMarketInterestModelBorrowRate({
     ...options,
     id: 'moneyMarket_interestModel_BorrowRate',
     address: address.moneyMarket.interestModel,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryMoneyMarketInterestModelBorrowRate(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<
+export const queryMoneyMarketInterestModelBorrowRate = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
     WasmQueryOptions<moneyMarket.interestModel.BorrowRate>,
     'id' | 'address'
-  > & {
-    address: ContractAddress;
-  },
-) {
+  >,
+) => {
   return wasmQuery<
     moneyMarket.interestModel.BorrowRate,
     moneyMarket.interestModel.BorrowRateResponse
@@ -1354,18 +1547,23 @@ export function queryMoneyMarketInterestModelBorrowRate(
     ...options,
     id: 'moneyMarket_interestModel_BorrowRate',
     address: address.moneyMarket.interestModel,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useMoneyMarketInterestModelConfig({
-  address,
-  ...options
-}: Omit<
-  UseWasmQueryOptions<moneyMarket.interestModel.Config>,
-  'id' | 'address'
-> & {
-  address: ContractAddress;
-}) {
+export function useMoneyMarketInterestModelConfig(
+  options: Omit<
+    UseWasmQueryOptions<moneyMarket.interestModel.Config>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     moneyMarket.interestModel.Config,
     moneyMarket.interestModel.ConfigResponse
@@ -1373,21 +1571,20 @@ export function useMoneyMarketInterestModelConfig({
     ...options,
     id: 'moneyMarket_interestModel_Config',
     address: address.moneyMarket.interestModel,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryMoneyMarketInterestModelConfig(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<
+export const queryMoneyMarketInterestModelConfig = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
     WasmQueryOptions<moneyMarket.interestModel.Config>,
     'id' | 'address'
-  > & {
-    address: ContractAddress;
-  },
-) {
+  >,
+) => {
   return wasmQuery<
     moneyMarket.interestModel.Config,
     moneyMarket.interestModel.ConfigResponse
@@ -1395,18 +1592,23 @@ export function queryMoneyMarketInterestModelConfig(
     ...options,
     id: 'moneyMarket_interestModel_Config',
     address: address.moneyMarket.interestModel,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useMoneyMarketMarketBorrowInfo({
-  address,
-  ...options
-}: Omit<
-  UseWasmQueryOptions<moneyMarket.market.BorrowInfo>,
-  'id' | 'address'
-> & {
-  address: ContractAddress;
-}) {
+export function useMoneyMarketMarketBorrowInfo(
+  options: Omit<
+    UseWasmQueryOptions<moneyMarket.market.BorrowInfo>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     moneyMarket.market.BorrowInfo,
     moneyMarket.market.BorrowInfoResponse
@@ -1414,18 +1616,20 @@ export function useMoneyMarketMarketBorrowInfo({
     ...options,
     id: 'moneyMarket_market_BorrowInfo',
     address: address.moneyMarket.market,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryMoneyMarketMarketBorrowInfo(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<moneyMarket.market.BorrowInfo>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryMoneyMarketMarketBorrowInfo = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
+    WasmQueryOptions<moneyMarket.market.BorrowInfo>,
+    'id' | 'address'
+  >,
+) => {
   return wasmQuery<
     moneyMarket.market.BorrowInfo,
     moneyMarket.market.BorrowInfoResponse
@@ -1433,18 +1637,23 @@ export function queryMoneyMarketMarketBorrowInfo(
     ...options,
     id: 'moneyMarket_market_BorrowInfo',
     address: address.moneyMarket.market,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useMoneyMarketMarketBorrowInfos({
-  address,
-  ...options
-}: Omit<
-  UseWasmQueryOptions<moneyMarket.market.BorrowInfos>,
-  'id' | 'address'
-> & {
-  address: ContractAddress;
-}) {
+export function useMoneyMarketMarketBorrowInfos(
+  options: Omit<
+    UseWasmQueryOptions<moneyMarket.market.BorrowInfos>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     moneyMarket.market.BorrowInfos,
     moneyMarket.market.BorrowInfosResponse
@@ -1452,21 +1661,20 @@ export function useMoneyMarketMarketBorrowInfos({
     ...options,
     id: 'moneyMarket_market_BorrowInfos',
     address: address.moneyMarket.market,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryMoneyMarketMarketBorrowInfos(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<
+export const queryMoneyMarketMarketBorrowInfos = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
     WasmQueryOptions<moneyMarket.market.BorrowInfos>,
     'id' | 'address'
-  > & {
-    address: ContractAddress;
-  },
-) {
+  >,
+) => {
   return wasmQuery<
     moneyMarket.market.BorrowInfos,
     moneyMarket.market.BorrowInfosResponse
@@ -1474,15 +1682,23 @@ export function queryMoneyMarketMarketBorrowInfos(
     ...options,
     id: 'moneyMarket_market_BorrowInfos',
     address: address.moneyMarket.market,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useMoneyMarketMarketConfig({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<moneyMarket.market.Config>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useMoneyMarketMarketConfig(
+  options: Omit<
+    UseWasmQueryOptions<moneyMarket.market.Config>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     moneyMarket.market.Config,
     moneyMarket.market.ConfigResponse
@@ -1490,18 +1706,17 @@ export function useMoneyMarketMarketConfig({
     ...options,
     id: 'moneyMarket_market_Config',
     address: address.moneyMarket.market,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryMoneyMarketMarketConfig(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<moneyMarket.market.Config>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryMoneyMarketMarketConfig = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<WasmQueryOptions<moneyMarket.market.Config>, 'id' | 'address'>,
+) => {
   return wasmQuery<
     moneyMarket.market.Config,
     moneyMarket.market.ConfigResponse
@@ -1509,18 +1724,23 @@ export function queryMoneyMarketMarketConfig(
     ...options,
     id: 'moneyMarket_market_Config',
     address: address.moneyMarket.market,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useMoneyMarketMarketEpochState({
-  address,
-  ...options
-}: Omit<
-  UseWasmQueryOptions<moneyMarket.market.EpochState>,
-  'id' | 'address'
-> & {
-  address: ContractAddress;
-}) {
+export function useMoneyMarketMarketEpochState(
+  options: Omit<
+    UseWasmQueryOptions<moneyMarket.market.EpochState>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     moneyMarket.market.EpochState,
     moneyMarket.market.EpochStateResponse
@@ -1528,18 +1748,20 @@ export function useMoneyMarketMarketEpochState({
     ...options,
     id: 'moneyMarket_market_EpochState',
     address: address.moneyMarket.market,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryMoneyMarketMarketEpochState(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<moneyMarket.market.EpochState>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryMoneyMarketMarketEpochState = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
+    WasmQueryOptions<moneyMarket.market.EpochState>,
+    'id' | 'address'
+  >,
+) => {
   return wasmQuery<
     moneyMarket.market.EpochState,
     moneyMarket.market.EpochStateResponse
@@ -1547,15 +1769,23 @@ export function queryMoneyMarketMarketEpochState(
     ...options,
     id: 'moneyMarket_market_EpochState',
     address: address.moneyMarket.market,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useMoneyMarketMarketState({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<moneyMarket.market.State>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useMoneyMarketMarketState(
+  options: Omit<
+    UseWasmQueryOptions<moneyMarket.market.State>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     moneyMarket.market.State,
     moneyMarket.market.StateResponse
@@ -1563,18 +1793,17 @@ export function useMoneyMarketMarketState({
     ...options,
     id: 'moneyMarket_market_State',
     address: address.moneyMarket.market,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryMoneyMarketMarketState(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<moneyMarket.market.State>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryMoneyMarketMarketState = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<WasmQueryOptions<moneyMarket.market.State>, 'id' | 'address'>,
+) => {
   return wasmQuery<moneyMarket.market.State, moneyMarket.market.StateResponse>(
     client,
     {
@@ -1582,15 +1811,23 @@ export function queryMoneyMarketMarketState(
       id: 'moneyMarket_market_State',
       address: address.moneyMarket.market,
     },
-  );
-}
+  ).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
+  });
+};
 
-export function useMoneyMarketOracleConfig({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<moneyMarket.oracle.Config>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useMoneyMarketOracleConfig(
+  options: Omit<
+    UseWasmQueryOptions<moneyMarket.oracle.Config>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     moneyMarket.oracle.Config,
     moneyMarket.oracle.ConfigResponse
@@ -1598,18 +1835,17 @@ export function useMoneyMarketOracleConfig({
     ...options,
     id: 'moneyMarket_oracle_Config',
     address: address.moneyMarket.oracle,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryMoneyMarketOracleConfig(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<moneyMarket.oracle.Config>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryMoneyMarketOracleConfig = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<WasmQueryOptions<moneyMarket.oracle.Config>, 'id' | 'address'>,
+) => {
   return wasmQuery<
     moneyMarket.oracle.Config,
     moneyMarket.oracle.ConfigResponse
@@ -1617,15 +1853,23 @@ export function queryMoneyMarketOracleConfig(
     ...options,
     id: 'moneyMarket_oracle_Config',
     address: address.moneyMarket.oracle,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useMoneyMarketOracleFeeder({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<moneyMarket.oracle.Feeder>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useMoneyMarketOracleFeeder(
+  options: Omit<
+    UseWasmQueryOptions<moneyMarket.oracle.Feeder>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     moneyMarket.oracle.Feeder,
     moneyMarket.oracle.FeederResponse
@@ -1633,18 +1877,17 @@ export function useMoneyMarketOracleFeeder({
     ...options,
     id: 'moneyMarket_oracle_Feeder',
     address: address.moneyMarket.oracle,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryMoneyMarketOracleFeeder(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<moneyMarket.oracle.Feeder>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryMoneyMarketOracleFeeder = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<WasmQueryOptions<moneyMarket.oracle.Feeder>, 'id' | 'address'>,
+) => {
   return wasmQuery<
     moneyMarket.oracle.Feeder,
     moneyMarket.oracle.FeederResponse
@@ -1652,15 +1895,23 @@ export function queryMoneyMarketOracleFeeder(
     ...options,
     id: 'moneyMarket_oracle_Feeder',
     address: address.moneyMarket.oracle,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useMoneyMarketOraclePrice({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<moneyMarket.oracle.Price>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useMoneyMarketOraclePrice(
+  options: Omit<
+    UseWasmQueryOptions<moneyMarket.oracle.Price>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     moneyMarket.oracle.Price,
     moneyMarket.oracle.PriceResponse
@@ -1668,18 +1919,17 @@ export function useMoneyMarketOraclePrice({
     ...options,
     id: 'moneyMarket_oracle_Price',
     address: address.moneyMarket.oracle,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryMoneyMarketOraclePrice(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<moneyMarket.oracle.Price>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryMoneyMarketOraclePrice = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<WasmQueryOptions<moneyMarket.oracle.Price>, 'id' | 'address'>,
+) => {
   return wasmQuery<moneyMarket.oracle.Price, moneyMarket.oracle.PriceResponse>(
     client,
     {
@@ -1687,15 +1937,23 @@ export function queryMoneyMarketOraclePrice(
       id: 'moneyMarket_oracle_Price',
       address: address.moneyMarket.oracle,
     },
-  );
-}
+  ).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
+  });
+};
 
-export function useMoneyMarketOraclePrices({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<moneyMarket.oracle.Prices>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useMoneyMarketOraclePrices(
+  options: Omit<
+    UseWasmQueryOptions<moneyMarket.oracle.Prices>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     moneyMarket.oracle.Prices,
     moneyMarket.oracle.PricesResponse
@@ -1703,18 +1961,17 @@ export function useMoneyMarketOraclePrices({
     ...options,
     id: 'moneyMarket_oracle_Prices',
     address: address.moneyMarket.oracle,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryMoneyMarketOraclePrices(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<moneyMarket.oracle.Prices>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryMoneyMarketOraclePrices = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<WasmQueryOptions<moneyMarket.oracle.Prices>, 'id' | 'address'>,
+) => {
   return wasmQuery<
     moneyMarket.oracle.Prices,
     moneyMarket.oracle.PricesResponse
@@ -1722,18 +1979,23 @@ export function queryMoneyMarketOraclePrices(
     ...options,
     id: 'moneyMarket_oracle_Prices',
     address: address.moneyMarket.oracle,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useMoneyMarketOverseerAllCollaterals({
-  address,
-  ...options
-}: Omit<
-  UseWasmQueryOptions<moneyMarket.overseer.AllCollaterals>,
-  'id' | 'address'
-> & {
-  address: ContractAddress;
-}) {
+export function useMoneyMarketOverseerAllCollaterals(
+  options: Omit<
+    UseWasmQueryOptions<moneyMarket.overseer.AllCollaterals>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     moneyMarket.overseer.AllCollaterals,
     moneyMarket.overseer.AllCollateralsResponse
@@ -1741,21 +2003,20 @@ export function useMoneyMarketOverseerAllCollaterals({
     ...options,
     id: 'moneyMarket_overseer_AllCollaterals',
     address: address.moneyMarket.overseer,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryMoneyMarketOverseerAllCollaterals(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<
+export const queryMoneyMarketOverseerAllCollaterals = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
     WasmQueryOptions<moneyMarket.overseer.AllCollaterals>,
     'id' | 'address'
-  > & {
-    address: ContractAddress;
-  },
-) {
+  >,
+) => {
   return wasmQuery<
     moneyMarket.overseer.AllCollaterals,
     moneyMarket.overseer.AllCollateralsResponse
@@ -1763,18 +2024,23 @@ export function queryMoneyMarketOverseerAllCollaterals(
     ...options,
     id: 'moneyMarket_overseer_AllCollaterals',
     address: address.moneyMarket.overseer,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useMoneyMarketOverseerBorrowLimit({
-  address,
-  ...options
-}: Omit<
-  UseWasmQueryOptions<moneyMarket.overseer.BorrowLimit>,
-  'id' | 'address'
-> & {
-  address: ContractAddress;
-}) {
+export function useMoneyMarketOverseerBorrowLimit(
+  options: Omit<
+    UseWasmQueryOptions<moneyMarket.overseer.BorrowLimit>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     moneyMarket.overseer.BorrowLimit,
     moneyMarket.overseer.BorrowLimitResponse
@@ -1782,21 +2048,20 @@ export function useMoneyMarketOverseerBorrowLimit({
     ...options,
     id: 'moneyMarket_overseer_BorrowLimit',
     address: address.moneyMarket.overseer,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryMoneyMarketOverseerBorrowLimit(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<
+export const queryMoneyMarketOverseerBorrowLimit = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
     WasmQueryOptions<moneyMarket.overseer.BorrowLimit>,
     'id' | 'address'
-  > & {
-    address: ContractAddress;
-  },
-) {
+  >,
+) => {
   return wasmQuery<
     moneyMarket.overseer.BorrowLimit,
     moneyMarket.overseer.BorrowLimitResponse
@@ -1804,18 +2069,23 @@ export function queryMoneyMarketOverseerBorrowLimit(
     ...options,
     id: 'moneyMarket_overseer_BorrowLimit',
     address: address.moneyMarket.overseer,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useMoneyMarketOverseerCollaterals({
-  address,
-  ...options
-}: Omit<
-  UseWasmQueryOptions<moneyMarket.overseer.Collaterals>,
-  'id' | 'address'
-> & {
-  address: ContractAddress;
-}) {
+export function useMoneyMarketOverseerCollaterals(
+  options: Omit<
+    UseWasmQueryOptions<moneyMarket.overseer.Collaterals>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     moneyMarket.overseer.Collaterals,
     moneyMarket.overseer.CollateralsResponse
@@ -1823,21 +2093,20 @@ export function useMoneyMarketOverseerCollaterals({
     ...options,
     id: 'moneyMarket_overseer_Collaterals',
     address: address.moneyMarket.overseer,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryMoneyMarketOverseerCollaterals(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<
+export const queryMoneyMarketOverseerCollaterals = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
     WasmQueryOptions<moneyMarket.overseer.Collaterals>,
     'id' | 'address'
-  > & {
-    address: ContractAddress;
-  },
-) {
+  >,
+) => {
   return wasmQuery<
     moneyMarket.overseer.Collaterals,
     moneyMarket.overseer.CollateralsResponse
@@ -1845,15 +2114,23 @@ export function queryMoneyMarketOverseerCollaterals(
     ...options,
     id: 'moneyMarket_overseer_Collaterals',
     address: address.moneyMarket.overseer,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useMoneyMarketOverseerConfig({
-  address,
-  ...options
-}: Omit<UseWasmQueryOptions<moneyMarket.overseer.Config>, 'id' | 'address'> & {
-  address: ContractAddress;
-}) {
+export function useMoneyMarketOverseerConfig(
+  options: Omit<
+    UseWasmQueryOptions<moneyMarket.overseer.Config>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     moneyMarket.overseer.Config,
     moneyMarket.overseer.ConfigResponse
@@ -1861,18 +2138,20 @@ export function useMoneyMarketOverseerConfig({
     ...options,
     id: 'moneyMarket_overseer_Config',
     address: address.moneyMarket.overseer,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryMoneyMarketOverseerConfig(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<WasmQueryOptions<moneyMarket.overseer.Config>, 'id' | 'address'> & {
-    address: ContractAddress;
-  },
-) {
+export const queryMoneyMarketOverseerConfig = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
+    WasmQueryOptions<moneyMarket.overseer.Config>,
+    'id' | 'address'
+  >,
+) => {
   return wasmQuery<
     moneyMarket.overseer.Config,
     moneyMarket.overseer.ConfigResponse
@@ -1880,18 +2159,23 @@ export function queryMoneyMarketOverseerConfig(
     ...options,
     id: 'moneyMarket_overseer_Config',
     address: address.moneyMarket.overseer,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useMoneyMarketOverseerDistributionParams({
-  address,
-  ...options
-}: Omit<
-  UseWasmQueryOptions<moneyMarket.overseer.DistributionParams>,
-  'id' | 'address'
-> & {
-  address: ContractAddress;
-}) {
+export function useMoneyMarketOverseerDistributionParams(
+  options: Omit<
+    UseWasmQueryOptions<moneyMarket.overseer.DistributionParams>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     moneyMarket.overseer.DistributionParams,
     moneyMarket.overseer.DistributionParamsResponse
@@ -1899,21 +2183,20 @@ export function useMoneyMarketOverseerDistributionParams({
     ...options,
     id: 'moneyMarket_overseer_DistributionParams',
     address: address.moneyMarket.overseer,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryMoneyMarketOverseerDistributionParams(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<
+export const queryMoneyMarketOverseerDistributionParams = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
     WasmQueryOptions<moneyMarket.overseer.DistributionParams>,
     'id' | 'address'
-  > & {
-    address: ContractAddress;
-  },
-) {
+  >,
+) => {
   return wasmQuery<
     moneyMarket.overseer.DistributionParams,
     moneyMarket.overseer.DistributionParamsResponse
@@ -1921,18 +2204,23 @@ export function queryMoneyMarketOverseerDistributionParams(
     ...options,
     id: 'moneyMarket_overseer_DistributionParams',
     address: address.moneyMarket.overseer,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useMoneyMarketOverseerEpochState({
-  address,
-  ...options
-}: Omit<
-  UseWasmQueryOptions<moneyMarket.overseer.EpochState>,
-  'id' | 'address'
-> & {
-  address: ContractAddress;
-}) {
+export function useMoneyMarketOverseerEpochState(
+  options: Omit<
+    UseWasmQueryOptions<moneyMarket.overseer.EpochState>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     moneyMarket.overseer.EpochState,
     moneyMarket.overseer.EpochStateResponse
@@ -1940,21 +2228,20 @@ export function useMoneyMarketOverseerEpochState({
     ...options,
     id: 'moneyMarket_overseer_EpochState',
     address: address.moneyMarket.overseer,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryMoneyMarketOverseerEpochState(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<
+export const queryMoneyMarketOverseerEpochState = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
     WasmQueryOptions<moneyMarket.overseer.EpochState>,
     'id' | 'address'
-  > & {
-    address: ContractAddress;
-  },
-) {
+  >,
+) => {
   return wasmQuery<
     moneyMarket.overseer.EpochState,
     moneyMarket.overseer.EpochStateResponse
@@ -1962,18 +2249,23 @@ export function queryMoneyMarketOverseerEpochState(
     ...options,
     id: 'moneyMarket_overseer_EpochState',
     address: address.moneyMarket.overseer,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
 
-export function useMoneyMarketOverseerWhitelist({
-  address,
-  ...options
-}: Omit<
-  UseWasmQueryOptions<moneyMarket.overseer.Whitelist>,
-  'id' | 'address'
-> & {
-  address: ContractAddress;
-}) {
+export function useMoneyMarketOverseerWhitelist(
+  options: Omit<
+    UseWasmQueryOptions<moneyMarket.overseer.Whitelist>,
+    'id' | 'address'
+  >,
+) {
+  const { address, onError } = useQueryDependency();
+
   return useWasmQuery<
     moneyMarket.overseer.Whitelist,
     moneyMarket.overseer.WhitelistResponse
@@ -1981,21 +2273,20 @@ export function useMoneyMarketOverseerWhitelist({
     ...options,
     id: 'moneyMarket_overseer_Whitelist',
     address: address.moneyMarket.overseer,
+    onError: options.onError ?? onError,
   });
 }
 
-export function queryMoneyMarketOverseerWhitelist(
-  client: ApolloClient<any>,
-  {
-    address,
-    ...options
-  }: Omit<
+export const queryMoneyMarketOverseerWhitelist = ({
+  client,
+  address,
+  onError,
+}: QueryDependency) => (
+  options: Omit<
     WasmQueryOptions<moneyMarket.overseer.Whitelist>,
     'id' | 'address'
-  > & {
-    address: ContractAddress;
-  },
-) {
+  >,
+) => {
   return wasmQuery<
     moneyMarket.overseer.Whitelist,
     moneyMarket.overseer.WhitelistResponse
@@ -2003,5 +2294,11 @@ export function queryMoneyMarketOverseerWhitelist(
     ...options,
     id: 'moneyMarket_overseer_Whitelist',
     address: address.moneyMarket.overseer,
+  }).catch((error) => {
+    if (onError && error instanceof ApolloError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   });
-}
+};
