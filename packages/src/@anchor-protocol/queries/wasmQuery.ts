@@ -11,18 +11,18 @@ import { QueryHookOptions } from '@apollo/client/react/types/types';
 import { useDeepMemo } from '@terra-dev/use-deep-memo';
 import { useCallback, useMemo } from 'react';
 
-interface WasmQueryVariables {
+export interface WasmQueryVariables {
   address: HumanAddr | CW20Addr;
   query: string;
 }
 
-interface WasmQueryResult {
+export interface WasmQueryResult {
   result?: {
     Result: string;
   };
 }
 
-type UseWasmQueryOptions<Query extends {}> = Omit<
+export type UseWasmQueryOptions<Query extends {}> = Omit<
   QueryHookOptions,
   'variables' | 'query'
 > & {
@@ -31,7 +31,7 @@ type UseWasmQueryOptions<Query extends {}> = Omit<
   query: Query | undefined | null | false;
 };
 
-type UseWasmQueryReturn<Query extends {}, Response extends {}> = Omit<
+export type UseWasmQueryReturn<Query extends {}, Response extends {}> = Omit<
   QueryResult<WasmQueryResult, WasmQueryVariables>,
   'data' | 'refetch'
 > & {
@@ -39,7 +39,7 @@ type UseWasmQueryReturn<Query extends {}, Response extends {}> = Omit<
   refetch: (query?: Query) => Promise<ApolloQueryResult<Response | undefined>>;
 };
 
-const WASM_QUERY = (id: string) => `
+export const WASM_QUERY = (id: string) => `
 query __${id}($address: String!, $query: String!) {
   result: WasmContractsContractAddressStore(
     ContractAddress: $address

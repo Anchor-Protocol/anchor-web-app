@@ -76,9 +76,12 @@ export namespace terraswap {
     };
   }
 
-  export interface ReverseSimulationResponse<T extends uToken> {
+  export interface ReverseSimulationResponse<
+    T extends uToken,
+    RT extends uToken = T
+  > {
     commission_amount: T;
-    offer_amount: T;
+    offer_amount: RT;
     spread_amount: T;
   }
 }
