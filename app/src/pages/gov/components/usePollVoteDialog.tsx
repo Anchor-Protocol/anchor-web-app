@@ -88,14 +88,12 @@ function ComponentBase({
   );
 
   const invalidAmount = useMemo(() => {
-    if (amount.length === 0) return undefined;
+    if (amount.length === 0 || !serviceAvailable) return undefined;
 
     const uanc = microfy(amount);
 
-    return uanc.gt(bank.userBalances.uANC) || (maxVote && uanc.gt(maxVote))
-      ? 'Not enough assets'
-      : undefined;
-  }, [amount, bank.userBalances.uANC, maxVote]);
+    return maxVote && uanc.gt(maxVote) ? 'Not enough assets' : undefined;
+  }, [amount, maxVote, serviceAvailable]);
 
   const txFee = fixedGas;
 
