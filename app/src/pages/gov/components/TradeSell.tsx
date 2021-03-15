@@ -384,7 +384,7 @@ export function TradeSell() {
             {formatUST(demicrofy(simulation.swapFee))} UST
           </TxFeeListItem>
           <TxFeeListItem label="Tx Fee">
-            {formatUST(demicrofy(fixedGas))} UST
+            {formatUST(demicrofy(simulation.txFee))} UST
           </TxFeeListItem>
         </TxFeeList>
       )}

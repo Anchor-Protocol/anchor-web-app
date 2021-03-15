@@ -23,6 +23,7 @@ import {
 import { WalletReady } from '@anchor-protocol/wallet-provider';
 import { useApolloClient } from '@apollo/client';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
+import { min } from '@terra-dev/big-math';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { isZero } from '@terra-dev/is-zero';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
@@ -35,7 +36,7 @@ import { useContractAddress } from 'base/contexts/contract';
 import { useService } from 'base/contexts/service';
 import { queryReverseSimulation } from 'base/queries/reverseSimulation';
 import { querySimulation } from 'base/queries/simulation';
-import big from 'big.js';
+import big, { Big } from 'big.js';
 import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
@@ -105,6 +106,19 @@ export function TradeBuy() {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
+  const ustBalance = useMemo(() => {
+    const txFee = min(
+      big(big(bank.userBalances.uUSD).minus(fixedGas)).div(
+        big(1).plus(bank.tax.taxRate),
+      ),
+      bank.tax.maxTaxUUSD,
+    );
+
+    return big(bank.userBalances.uUSD)
+      .minus(txFee)
+      .minus(fixedGas) as uUST<Big>;
+  }, [bank.tax.maxTaxUUSD, bank.tax.taxRate, bank.userBalances.uUSD, fixedGas]);
+
   const invalidTxFee = useMemo(
     () => serviceAvailable && validateTxFee(bank, fixedGas),
     [bank, fixedGas, serviceAvailable],
@@ -297,11 +311,13 @@ export function TradeBuy() {
                 style={{ textDecoration: 'underline', cursor: 'pointer' }}
                 onClick={() =>
                   updateFromAmount(
-                    formatUSTInput(demicrofy(bank.userBalances.uUSD)),
+                    formatUSTInput(
+                      demicrofy(ustBalance ?? bank.userBalances.uUSD),
+                    ),
                   )
                 }
               >
-                {formatUST(demicrofy(bank.userBalances.uUSD))}{' '}
+                {formatUST(demicrofy(ustBalance ?? bank.userBalances.uUSD))}{' '}
                 {fromCurrency.label}
               </span>
             </span>
@@ -394,7 +410,7 @@ export function TradeBuy() {
             {formatANC(demicrofy(simulation.swapFee))} ANC
           </TxFeeListItem>
           <TxFeeListItem label="Tx Fee">
-            {formatUST(demicrofy(fixedGas))} UST
+            {formatUST(demicrofy(simulation.txFee))} UST
           </TxFeeListItem>
         </TxFeeList>
       )}

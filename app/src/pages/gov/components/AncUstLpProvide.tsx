@@ -1,4 +1,5 @@
 import { Plus } from '@anchor-protocol/icons';
+import { min } from '@terra-dev/big-math';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { isZero } from '@terra-dev/is-zero';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
@@ -16,7 +17,7 @@ import {
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { ANC, UST } from '@anchor-protocol/types';
+import { ANC, UST, uUST } from '@anchor-protocol/types';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
 import { InputAdornment } from '@material-ui/core';
 import big, { Big } from 'big.js';
@@ -74,6 +75,19 @@ export function AncUstLpProvide() {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
+  const ustBalance = useMemo(() => {
+    const txFee = min(
+      big(big(bank.userBalances.uUSD).minus(fixedGas)).div(
+        big(1).plus(bank.tax.taxRate),
+      ),
+      bank.tax.maxTaxUUSD,
+    );
+
+    return big(bank.userBalances.uUSD)
+      .minus(txFee)
+      .minus(fixedGas) as uUST<Big>;
+  }, [bank.tax.maxTaxUUSD, bank.tax.taxRate, bank.userBalances.uUSD, fixedGas]);
+
   const invalidTxFee = useMemo(
     () => serviceAvailable && validateTxFee(bank, fixedGas),
     [bank, fixedGas, serviceAvailable],
@@ -260,10 +274,12 @@ export function AncUstLpProvide() {
               cursor: 'pointer',
             }}
             onClick={() =>
-              updateUstAmount(formatUSTInput(demicrofy(bank.userBalances.uUSD)))
+              updateUstAmount(
+                formatUSTInput(demicrofy(ustBalance ?? bank.userBalances.uUSD)),
+              )
             }
           >
-            {formatUST(demicrofy(bank.userBalances.uUSD))} UST
+            {formatUST(demicrofy(ustBalance ?? bank.userBalances.uUSD))} UST
           </span>
         </span>
       </div>
