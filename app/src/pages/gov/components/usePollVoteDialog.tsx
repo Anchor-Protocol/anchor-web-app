@@ -10,7 +10,7 @@ import {
 import { ANC, uANC } from '@anchor-protocol/types';
 import { WalletReady } from '@anchor-protocol/wallet-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
-import { ThumbDown, ThumbUp } from '@material-ui/icons';
+import { ThumbDownOutlined, ThumbUpOutlined } from '@material-ui/icons';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
@@ -146,18 +146,20 @@ function ComponentBase({
             data-selected={voteFor === 'yes'}
             onClick={() => setVoteFor('yes')}
           >
-            <IconSpan>
-              <ThumbUp /> YES
-            </IconSpan>
+            <i>
+              <ThumbUpOutlined />
+            </i>
+            <span>YES</span>
           </li>
           <li
             data-vote="no"
             data-selected={voteFor === 'no'}
             onClick={() => setVoteFor('no')}
           >
-            <IconSpan>
-              <ThumbDown /> NO
-            </IconSpan>
+            <i>
+              <ThumbDownOutlined />
+            </i>
+            <span>NO</span>
           </li>
         </ul>
 
@@ -235,6 +237,8 @@ const Component = styled(ComponentBase)`
   }
 
   .vote {
+    margin-top: 50px;
+
     list-style: none;
     padding: 0;
 
@@ -247,31 +251,40 @@ const Component = styled(ComponentBase)`
       cursor: pointer;
       display: grid;
       place-content: center;
-      color: #ffffff;
+      color: #cccccc;
       border-radius: 5px;
-      //opacity: 0.3;
+
+      font-size: 28px;
+      font-weight: 300;
+      text-align: center;
+
+      svg {
+        font-size: 28px;
+      }
 
       ${({ theme }) =>
         flat({
           color: theme.backgroundColor,
           intensity: theme.intensity,
           distance: 6,
-        })}
-
-      &[data-vote='yes'] {
-        //background-color: ${({ theme }) => theme.colors.positive};
-      }
-
-      &[data-vote='no'] {
-        //background-color: ${({ theme }) => theme.colors.negative};
-      }
+        })};
 
       &[data-selected='true'] {
-        opacity: 1;
+        &[data-vote='yes'] {
+          color: #15cc93;
+          border: 1px solid #15cc93;
+          background-color: rgba(21, 204, 147, 0.05);
+        }
+
+        &[data-vote='no'] {
+          color: #e95979;
+          border: 1px solid #e95979;
+          background-color: rgba(233, 89, 121, 0.06);
+        }
       }
     }
 
-    margin-bottom: 20px;
+    margin-bottom: 60px;
   }
 
   .amount {
