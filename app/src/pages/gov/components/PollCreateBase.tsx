@@ -1,4 +1,12 @@
 import { ExecuteMsg } from '@anchor-protocol/anchor.js';
+import {
+  demicrofy,
+  formatANC,
+  formatUSTWithPostfixUnits,
+} from '@anchor-protocol/notation';
+import { ANC, uUST } from '@anchor-protocol/types';
+import { WalletReady } from '@anchor-protocol/wallet-provider';
+import { InputAdornment } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
@@ -6,17 +14,12 @@ import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { TextInput } from '@terra-dev/neumorphism-ui/components/TextInput';
 import {
-  demicrofy,
-  formatANC,
-  formatUSTWithPostfixUnits,
-} from '@anchor-protocol/notation';
-import { ANC, uUST } from '@anchor-protocol/types';
-import { useValidateStringBytes } from '@terra-dev/use-string-bytes-length';
-import { WalletReady } from '@anchor-protocol/wallet-provider';
+  BytesValid,
+  useValidateStringBytes,
+} from '@terra-dev/use-string-bytes-length';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
 import { useService } from 'base/contexts/service';
-import { InputAdornment } from '@material-ui/core';
 import big from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
@@ -176,9 +179,9 @@ export function PollCreateBase({
           }
           error={!!invalidTitleBytes}
           helperText={
-            invalidTitleBytes === 'less'
+            invalidTitleBytes === BytesValid.LESS
               ? 'Title must be at least 4 bytes.'
-              : invalidTitleBytes === 'much'
+              : invalidTitleBytes === BytesValid.MUCH
               ? 'Title cannot be longer than 64 bytes.'
               : undefined
           }
@@ -199,9 +202,9 @@ export function PollCreateBase({
           }
           error={!!invalidDescriptionBytes}
           helperText={
-            invalidDescriptionBytes === 'less'
+            invalidDescriptionBytes === BytesValid.LESS
               ? 'Proposal rational must be at least 4 bytes.'
-              : invalidDescriptionBytes === 'much'
+              : invalidDescriptionBytes === BytesValid.MUCH
               ? 'Proposal rational cannot be longer than 1024 bytes.'
               : undefined
           }
@@ -220,9 +223,9 @@ export function PollCreateBase({
           }
           error={!!invalidLinkBytes || !!invalidLinkProtocol}
           helperText={
-            invalidLinkBytes === 'less'
+            invalidLinkBytes === BytesValid.LESS
               ? 'Information link must be at least 12 bytes.'
-              : invalidLinkBytes === 'much'
+              : invalidLinkBytes === BytesValid.MUCH
               ? 'Information link cannot be longer than 128 bytes.'
               : invalidLinkProtocol
           }

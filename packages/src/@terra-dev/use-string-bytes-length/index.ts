@@ -8,6 +8,11 @@ export function countUtf8Bytes(s: string): number {
   return b;
 }
 
+export enum BytesValid {
+  MUCH = 'much',
+  LESS = 'less',
+}
+
 export function useStringBytesLength(str: string): number {
   return useMemo(() => {
     return countUtf8Bytes(str);
@@ -18,7 +23,7 @@ export function useValidateStringBytes(
   str: string,
   minBytes: number,
   maxBytes: number,
-): 'much' | 'less' | undefined {
+): BytesValid | undefined {
   return useMemo(() => {
     if (str.trim().length === 0) {
       return undefined;
@@ -26,6 +31,10 @@ export function useValidateStringBytes(
 
     const bytes = countUtf8Bytes(str);
 
-    return bytes <= minBytes ? 'less' : bytes >= maxBytes ? 'much' : undefined;
+    return bytes <= minBytes
+      ? BytesValid.LESS
+      : bytes >= maxBytes
+      ? BytesValid.MUCH
+      : undefined;
   }, [maxBytes, minBytes, str]);
 }

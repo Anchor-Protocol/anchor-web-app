@@ -87,6 +87,10 @@ IDE
 - [packages/src/@terra-dev/use-interval/README.md](packages/src/@terra-dev/use-interval/README.md)
 - [packages/src/@terra-dev/use-local-storage/README.md](packages/src/@terra-dev/use-local-storage/README.md)
 - [packages/src/@terra-dev/use-resolve-last/README.md](packages/src/@terra-dev/use-resolve-last/README.md)
+- [packages/src/@terra-dev/use-restricted-input/README.md](packages/src/@terra-dev/use-restricted-input/README.md)
+- [packages/src/@terra-dev/use-router-scroll-restoration/README.md](packages/src/@terra-dev/use-router-scroll-restoration/README.md)
+- [packages/src/@terra-dev/use-string-bytes-length/README.md](packages/src/@terra-dev/use-string-bytes-length/README.md)
+- [packages/src/@terra-dev/use-time-end/README.md](packages/src/@terra-dev/use-time-end/README.md)
 
 <!-- /index -->
 

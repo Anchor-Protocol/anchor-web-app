@@ -12,7 +12,10 @@ export interface RestrictedInputReturn {
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-export default function useRestrictedInput(
+/**
+ * @param availableCharacters 'abc', 'a-z', 'a-z0-9'
+ */
+export function useRestrictedInput(
   availableCharacters: ((character: string) => boolean) | string,
 ): RestrictedInputReturn {
   const test: (character: string) => boolean = useMemo(() => {
