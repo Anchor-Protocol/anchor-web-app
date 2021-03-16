@@ -1,11 +1,18 @@
 import { pressed } from '@terra-dev/styled-neumorphism';
+import { easeQuadInOut } from 'd3-ease';
+import { interpolate } from 'd3-interpolate';
+import { select } from 'd3-selection';
+import { timer } from 'd3-timer';
 import {
-  Children,
   DetailedHTMLProps,
   HTMLAttributes,
   ReactElement,
   ReactNode,
+  SVGProps,
+  useEffect,
   useMemo,
+  useRef,
+  useState,
 } from 'react';
 import styled from 'styled-components';
 import useResizeObserver from 'use-resize-observer/polyfilled';
@@ -41,7 +48,7 @@ export interface HorizontalGraphBarProps<T>
    * @param value An item of the values
    * @param rect Rectangle of the bar
    */
-  labelRenderer?: (value: T, rect: Rect) => ReactNode | null;
+  labelRenderer?: (value: T, rect: Rect, i: number) => ReactNode | null;
 
   /** Get the numeric value from the value */
   valueFunction: (value: T) => number;
@@ -53,7 +60,11 @@ export interface HorizontalGraphBarProps<T>
 
   barHeight?: number;
   boxRadius?: number;
+
+  animate?: boolean;
 }
+
+const duration = 500;
 
 function HorizontalGraphBarBase<T>({
   className,
@@ -66,6 +77,7 @@ function HorizontalGraphBarBase<T>({
   labelRenderer,
   barHeight = defaultBarHeight,
   boxRadius = defaultBoxRadius,
+  animate = false,
   ...divProps
 }: HorizontalGraphBarProps<T>) {
   const { ref, width = 500 } = useResizeObserver<HTMLDivElement>({});
@@ -81,8 +93,19 @@ function HorizontalGraphBarBase<T>({
     };
   }, [barHeight, width]);
 
-  const graphRects = useMemo<Rect[]>(() => {
-    return data.map((item) => {
+  const rectsRef = useRef<SVGGElement>(null);
+  const labelsRef = useRef<HTMLDivElement>(null);
+
+  const [graphRects, setGraphRects] = useState<SVGProps<SVGRectElement>[]>([]);
+
+  const graphRectsRef = useRef(graphRects);
+
+  useEffect(() => {
+    graphRectsRef.current = graphRects;
+  }, [graphRects]);
+
+  useEffect(() => {
+    const nextGraphRects = data.map((item, i) => {
       const r: number = (valueFunction(item) - min) / total;
 
       return {
@@ -90,29 +113,81 @@ function HorizontalGraphBarBase<T>({
         y: padding,
         width: r * (width - padding * 2),
         height: barHeight - padding * 2,
+        rx: boxRadius - padding,
+        ry: boxRadius - padding,
+        fill: colorFunction(data[i]),
       };
     });
-  }, [barHeight, min, total, valueFunction, data, width]);
+
+    setGraphRects(nextGraphRects);
+
+    function draw(drawRects: SVGProps<SVGRectElement>[]) {
+      if (!rectsRef.current) return;
+
+      select(rectsRef.current)
+        .selectAll('rect')
+        .data(drawRects)
+        .join(
+          (enter) => enter.append('rect'),
+          (update) => update,
+          (exit) => exit.remove(),
+        )
+        .attr('fill', ({ fill }) => fill?.toString() ?? null)
+        .attr('rx', ({ rx }) => rx?.toString() ?? null)
+        .attr('ry', ({ ry }) => ry?.toString() ?? null)
+        .attr('x', ({ x }) => x?.toString() ?? null)
+        .attr('y', ({ y }) => y?.toString() ?? null)
+        .attr('width', ({ width }) => width?.toString() ?? null)
+        .attr('height', ({ height }) => height?.toString() ?? null);
+    }
+
+    if (animate && rectsRef.current) {
+      const ease = easeQuadInOut;
+
+      const interpolateRects = interpolate(
+        graphRectsRef.current,
+        nextGraphRects,
+      );
+
+      const ti = timer((elapsed) => {
+        const dv = interpolateRects(ease(Math.min(elapsed / duration, 1)));
+        draw(dv);
+
+        if (elapsed > duration) {
+          ti.stop();
+          draw(nextGraphRects);
+        }
+      });
+
+      return () => {
+        ti.stop();
+      };
+    } else {
+      draw(nextGraphRects);
+    }
+  }, [
+    animate,
+    barHeight,
+    boxRadius,
+    colorFunction,
+    data,
+    min,
+    total,
+    valueFunction,
+    width,
+  ]);
 
   return (
     <div {...divProps} ref={ref} className={className}>
       <svg width={width} height={barHeight}>
-        {Children.toArray(
-          graphRects.map((rect, i) => (
-            <rect
-              {...rect}
-              rx={boxRadius - padding}
-              ry={boxRadius - padding}
-              fill={colorFunction(data[i])}
-            />
-          )),
-        )}
+        <g ref={rectsRef} />
       </svg>
 
-      {typeof labelRenderer === 'function' &&
-        Children.toArray(
-          graphRects.map((rect, i) => labelRenderer(data[i], rect)),
-        )}
+      <div ref={labelsRef}>
+        {typeof labelRenderer === 'function' &&
+          data.length > 0 &&
+          graphRects.map((rect, i) => labelRenderer(data[i], rect as Rect, i))}
+      </div>
 
       {typeof children === 'function' ? children(coordinateSpace) : children}
     </div>
@@ -134,8 +209,16 @@ export const HorizontalGraphBar: <T>(
   font-size: 0;
   color: ${({ theme }) => theme.textColor};
 
-  > span {
+  > span,
+  > div > span {
     position: absolute;
+    transition: transform ${duration}ms ease-in-out;
+  }
+
+  svg {
+    rect {
+      transition: fill 0.6s ease-in-out;
+    }
   }
 
   ${({ theme }) =>

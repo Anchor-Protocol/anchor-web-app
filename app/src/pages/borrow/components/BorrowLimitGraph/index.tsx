@@ -34,9 +34,16 @@ export interface BorrowLimitGraphProps {
 
 const colorFunction = ({ color }: Data) => color;
 const valueFunction = ({ value }: Data) => value;
-const labelRenderer = ({ position, label, tooltip }: Data, rect: Rect) => {
+const labelRenderer = (
+  { position, label, tooltip }: Data,
+  rect: Rect,
+  i: number,
+) => {
   return position === 'top' ? (
-    <GraphTick style={{ left: rect.x + rect.width }}>
+    <GraphTick
+      key={'label' + i}
+      style={{ left: rect.x + rect.width, opacity: label.length === 0 ? 0 : 1 }}
+    >
       {tooltip ? (
         <Tooltip title={tooltip} placement="top">
           <IconSpan style={{ cursor: 'help' }}>
@@ -51,7 +58,9 @@ const labelRenderer = ({ position, label, tooltip }: Data, rect: Rect) => {
       )}
     </GraphTick>
   ) : (
-    <GraphLabel style={{ left: rect.x + rect.width }}>{label}</GraphLabel>
+    <GraphLabel key={'label' + i} style={{ left: rect.x + rect.width }}>
+      {label}
+    </GraphLabel>
   );
 };
 
@@ -96,7 +105,15 @@ export function BorrowLimitGraph({
                   : undefined,
               },
             ]
-          : []
+          : [
+              {
+                position: 'top',
+                label: '',
+                color: 'transparent',
+                value: 0,
+                tooltip: undefined,
+              },
+            ]
       }
       colorFunction={colorFunction}
       valueFunction={valueFunction}

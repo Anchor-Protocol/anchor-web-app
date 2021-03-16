@@ -40,9 +40,10 @@ const valueFunction = ({ value }: Data) => value;
 const labelRenderer = (
   { position, label, tooltip, color }: Data,
   rect: Rect,
+  i: number,
 ) => {
   return position === 'top' ? (
-    <GraphTick style={{ left: rect.x + rect.width }}>
+    <GraphTick key={'label' + i} style={{ left: rect.x + rect.width }}>
       {tooltip ? (
         <Tooltip title={tooltip} placement="top">
           <IconSpan style={{ cursor: 'help' }}>
@@ -57,7 +58,7 @@ const labelRenderer = (
       )}
     </GraphTick>
   ) : (
-    <GraphLabel style={{ left: rect.x + rect.width, color }}>
+    <GraphLabel key={'label' + i} style={{ left: rect.x + rect.width, color }}>
       {label}
     </GraphLabel>
   );

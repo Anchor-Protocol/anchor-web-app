@@ -1,7 +1,10 @@
+import { AnimateNumber } from '@anchor-protocol/notation';
+import { floor } from '@terra-dev/big-math';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { HorizontalGraphBar } from '@terra-dev/neumorphism-ui/components/HorizontalGraphBar';
 import { HorizontalGraphSlider } from '@terra-dev/neumorphism-ui/components/HorizontalGraphSlider';
 import { sliderStep } from '@terra-dev/neumorphism-ui/components/sliderStep';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import styled from 'styled-components';
 
 export default {
@@ -39,6 +42,118 @@ export const Basic = () => {
       <GraphLabel style={{ left: 0 }}>Borrow Limit</GraphLabel>
       <GraphLabel style={{ right: 0 }}>$246k</GraphLabel>
     </HorizontalGraphBar>
+  );
+};
+
+export const Animate = () => {
+  const [data, setData] = useState(() => [{ value: 50, color: '#4da3ee' }]);
+
+  const updateData = useCallback(() => {
+    setData([
+      {
+        value: Math.floor(Math.random() * 1000),
+        color: Math.random() > 0.5 ? '#4da3ee' : '#ff8a4b',
+      },
+    ]);
+  }, []);
+
+  const emptyData = useCallback(() => {
+    setData([]);
+  }, []);
+
+  return (
+    <div>
+      <HorizontalGraphBar
+        style={{ margin: '50px 0' }}
+        animate
+        min={0}
+        max={1000}
+        data={data}
+        colorFunction={colorFunction}
+        valueFunction={valueFunction}
+        labelRenderer={({ value }, rect) => {
+          return (
+            <GraphTick
+              style={{ transform: `translateX(${rect.x + rect.width}px)` }}
+            >
+              VALUE:{' '}
+              <AnimateNumber format={(v) => floor(v).toFixed()}>
+                {value}
+              </AnimateNumber>
+            </GraphTick>
+          );
+        }}
+      >
+        <GraphLabel style={{ left: 0 }}>Borrow Limit</GraphLabel>
+        <GraphLabel style={{ right: 0 }}>$246k</GraphLabel>
+      </HorizontalGraphBar>
+
+      <ActionButton style={{ width: 150 }} onClick={updateData}>
+        Random Data
+      </ActionButton>
+
+      <ActionButton style={{ width: 150, marginLeft: 10 }} onClick={emptyData}>
+        Empty Data
+      </ActionButton>
+    </div>
+  );
+};
+
+export const Animate_Multiple = () => {
+  const [data, setData] = useState(() => [
+    { value: 500, color: '#4da3ee' },
+    { value: 300, color: '#ffffff' },
+    { value: 100, color: '#ff8a4b' },
+  ]);
+
+  const updateData = useCallback(() => {
+    setData([
+      { value: Math.floor(Math.random() * 1000), color: '#4da3ee' },
+      { value: Math.floor(Math.random() * 1000), color: '#ffffff' },
+      { value: Math.floor(Math.random() * 1000), color: '#ff8a4b' },
+    ]);
+  }, []);
+
+  const emptyData = useCallback(() => {
+    setData([]);
+  }, []);
+
+  return (
+    <div>
+      <HorizontalGraphBar
+        style={{ margin: '50px 0' }}
+        animate
+        min={0}
+        max={1000}
+        data={data}
+        colorFunction={colorFunction}
+        valueFunction={valueFunction}
+        labelRenderer={({ value }, rect, i) => {
+          return (
+            <GraphTick
+              key={'label' + i}
+              style={{ transform: `translateX(${rect.x + rect.width}px)` }}
+            >
+              VALUE:{' '}
+              <AnimateNumber format={(v) => floor(v).toFixed()}>
+                {value}
+              </AnimateNumber>
+            </GraphTick>
+          );
+        }}
+      >
+        <GraphLabel style={{ left: 0 }}>Borrow Limit</GraphLabel>
+        <GraphLabel style={{ right: 0 }}>$246k</GraphLabel>
+      </HorizontalGraphBar>
+
+      <ActionButton style={{ width: 150 }} onClick={updateData}>
+        Random Data
+      </ActionButton>
+
+      <ActionButton style={{ width: 150, marginLeft: 10 }} onClick={emptyData}>
+        Empty Data
+      </ActionButton>
+    </div>
   );
 };
 

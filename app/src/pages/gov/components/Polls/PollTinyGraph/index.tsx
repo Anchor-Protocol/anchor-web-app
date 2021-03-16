@@ -26,9 +26,15 @@ export interface PollGraphProps {
 
 const colorFunction = ({ color }: Data) => color;
 const valueFunction = ({ value }: Data) => value;
-const labelRenderer = ({ position, label, color }: Data, rect: Rect) => {
+const labelRenderer = (
+  { position, label, color }: Data,
+  rect: Rect,
+  i: number,
+) => {
   return position === 'baseline' ? (
-    <GraphTick style={{ left: rect.x + rect.width }}>&nbsp;</GraphTick>
+    <GraphTick key={'label' + i} style={{ left: rect.x + rect.width }}>
+      &nbsp;
+    </GraphTick>
   ) : null;
 };
 
