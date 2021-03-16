@@ -128,7 +128,7 @@ export function formatAUST(n: aUST<BigSource>): string {
 
 export function formatAUSTWithPostfixUnits(n: aUST<BigSource>): string {
   const bn = big(n);
-  return bn.gte(M) ? d3Formatter(bn.div(M)) + 'M' : d3Formatter(bn);
+  return bn.gte(M) ? d3Formatter(bn.div(M)) + 'M' : d6Formatter(bn);
 }
 
 export function formatLuna(n: Luna<BigSource> | bLuna<BigSource>): string {
