@@ -1,6 +1,5 @@
 import { demicrofy, formatUST, truncate } from '@anchor-protocol/notation';
 import { useWallet } from '@anchor-protocol/wallet-provider';
-import { captureMessage } from '@sentry/react';
 import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
 import { Pagination } from '@terra-dev/neumorphism-ui/components/Pagination';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
@@ -37,18 +36,6 @@ export function TransactionHistorySection({
   }, [transactionHistory]);
 
   const { page, pageIndex, paging } = useArrayPagination(filteredHistory, 3);
-
-  console.log(
-    'TRANSACTION HISTORY CURRENT PAGE ITEMS',
-    JSON.stringify({ page }, null, 2),
-  );
-
-  if (process.env.NODE_ENV === 'production') {
-    captureMessage(
-      'TRANSACTION HISTORY CURRENT PAGE ITEMS ::: ' +
-        JSON.stringify({ page }, null, 2),
-    );
-  }
 
   // ---------------------------------------------
   // presentation
