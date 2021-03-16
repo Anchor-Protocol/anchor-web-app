@@ -262,14 +262,14 @@ export const Overview = styled(OverviewBase)`
 
     h2 {
       font-size: 13px;
-      font-weight: 500;
+      font-weight: 700;
 
       margin-bottom: 10px;
     }
 
     div {
       font-size: 36px;
-      font-weight: 400;
+      font-weight: 300;
 
       sub {
         font-size: 18px;
@@ -291,7 +291,11 @@ export const Overview = styled(OverviewBase)`
       margin-top: 15px;
 
       font-size: 18px;
-      font-weight: 500;
+      font-weight: 700;
+
+      a {
+        font-weight: 700 !important;
+      }
     }
 
     .staking-apy {
@@ -300,8 +304,6 @@ export const Overview = styled(OverviewBase)`
       display: flex;
       justify-content: center;
       align-items: center;
-
-      font-weight: 500;
 
       > :first-child {
         margin-right: 10px;
@@ -331,7 +333,6 @@ export const Overview = styled(OverviewBase)`
 
         > :last-child {
           font-size: 18px;
-          font-weight: 500;
         }
       }
     }
