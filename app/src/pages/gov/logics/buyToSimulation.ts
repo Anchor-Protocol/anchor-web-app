@@ -14,10 +14,11 @@ export function buyToSimulation(
 ): TradeSimulation<uANC, uUST> {
   const beliefPrice = big(fromAmount).div(simulation.return_amount);
 
-  const tax = min(
-    big(fromAmount).mul(beliefPrice).mul(taxRate),
-    maxTaxUUSD,
-  ) as uUST<Big>;
+  //const tax = min(
+  //  big(fromAmount).mul(beliefPrice).mul(taxRate),
+  //  maxTaxUUSD,
+  //) as uUST<Big>;
+  const tax = min(big(fromAmount).mul(taxRate), maxTaxUUSD) as uUST<Big>;
 
   const expectedAmount = big(fromAmount)
     .mul(beliefPrice)
