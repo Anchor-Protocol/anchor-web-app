@@ -124,7 +124,7 @@ function ComponentBase({
   }
 
   return (
-    <Modal open onClose={() => closeDialog}>
+    <Modal open onClose={() => closeDialog()}>
       <Dialog className={className} onClose={() => closeDialog()}>
         <h1>Vote</h1>
 

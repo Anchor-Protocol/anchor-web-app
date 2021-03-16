@@ -27,7 +27,7 @@ function ComponentBase({
   source,
 }: DialogProps<FormParams, FormReturn>) {
   return (
-    <Modal open onClose={() => closeDialog}>
+    <Modal open onClose={() => closeDialog()}>
       <Dialog className={className} onClose={() => closeDialog()}>
         <h1>{title}</h1>
         <pre>{source}</pre>
