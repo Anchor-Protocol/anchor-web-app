@@ -11,29 +11,33 @@ export function sellToSimulation(
   fromAmount: uANC,
   { taxRate, maxTaxUUSD }: TaxData,
   fixedGas: uUST<BigSource>,
-): TradeSimulation<uUST, uANC, uANC> {
-  const beliefPrice = big(fromAmount).div(simulation.return_amount);
+): TradeSimulation<uUST, uANC, uANC> | null {
+  try {
+    const beliefPrice = big(fromAmount).div(simulation.return_amount);
 
-  const tax = min(
-    big(simulation.return_amount).minus(
-      big(simulation.return_amount).div(big(1).plus(taxRate)),
-    ),
-    maxTaxUUSD,
-  ) as uUST<Big>;
+    const tax = min(
+      big(simulation.return_amount).minus(
+        big(simulation.return_amount).div(big(1).plus(taxRate)),
+      ),
+      maxTaxUUSD,
+    ) as uUST<Big>;
 
-  const expectedAmount = big(simulation.return_amount).minus(tax);
+    const expectedAmount = big(simulation.return_amount).minus(tax);
 
-  const rate = big(1).minus(MAX_SPREAD);
+    const rate = big(1).minus(MAX_SPREAD);
 
-  return {
-    ...simulation,
-    minimumReceived: expectedAmount.mul(rate).toFixed() as uUST,
-    swapFee: big(simulation.commission_amount)
-      .plus(simulation.spread_amount)
-      .toFixed() as uUST,
-    beliefPrice: beliefPrice.toFixed() as Rate,
+    return {
+      ...simulation,
+      minimumReceived: expectedAmount.mul(rate).toFixed() as uUST,
+      swapFee: big(simulation.commission_amount)
+        .plus(simulation.spread_amount)
+        .toFixed() as uUST,
+      beliefPrice: beliefPrice.toFixed() as Rate,
 
-    txFee: tax.plus(fixedGas).toFixed() as uUST,
-    toAmount: big(simulation.return_amount).toString() as uUST,
-  };
+      txFee: tax.plus(fixedGas).toFixed() as uUST,
+      toAmount: big(simulation.return_amount).toString() as uUST,
+    };
+  } catch {
+    return null;
+  }
 }
