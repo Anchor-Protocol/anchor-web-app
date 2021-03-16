@@ -81,7 +81,7 @@ export function TransactionHistorySection({
                           target="_blank"
                           rel="noreferrer"
                         >
-                          {truncate(TxHash)}
+                          {truncate(Address)}
                         </a>
                       </span>
                       <time>
