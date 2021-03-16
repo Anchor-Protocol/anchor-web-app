@@ -80,8 +80,8 @@ export function TransactionHistorySection({
                   <li key={'history' + TxHash + '-' + i}>
                     <div className="amount">
                       {TransactionType === 'deposit_stable'
-                        ? `+${formatUST(demicrofy(InAmount))}`
-                        : `-${formatUST(demicrofy(OutAmount))}`}{' '}
+                        ? `+ ${formatUST(demicrofy(InAmount))}`
+                        : `- ${formatUST(demicrofy(OutAmount))}`}{' '}
                       UST
                     </div>
                     <div className="detail">
