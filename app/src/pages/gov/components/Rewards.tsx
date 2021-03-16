@@ -153,7 +153,7 @@ export function RewardsBase({ className }: RewardsProps) {
         </h3>
 
         <HorizontalScrollTable
-          minWidth={1200}
+          minWidth={1100}
           startPadding={20}
           endPadding={20}
         >
@@ -383,6 +383,13 @@ export const Rewards = styled(RewardsBase)`
 
   table {
     min-width: 1000px;
+
+    tbody {
+      td {
+        font-size: 16px;
+        letter-spacing: -0.3px;
+      }
+    }
 
     thead,
     tbody {

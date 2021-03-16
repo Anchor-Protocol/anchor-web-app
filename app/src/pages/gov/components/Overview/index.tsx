@@ -269,7 +269,7 @@ export const Overview = styled(OverviewBase)`
 
     div {
       font-size: 36px;
-      font-weight: 300;
+      font-weight: 400;
 
       sub {
         font-size: 18px;
@@ -301,6 +301,8 @@ export const Overview = styled(OverviewBase)`
       justify-content: center;
       align-items: center;
 
+      font-weight: 500;
+
       > :first-child {
         margin-right: 10px;
       }
@@ -329,6 +331,7 @@ export const Overview = styled(OverviewBase)`
 
         > :last-child {
           font-size: 18px;
+          font-weight: 500;
         }
       }
     }
