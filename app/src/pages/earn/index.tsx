@@ -128,7 +128,6 @@ export const Earn = styled(EarnBase)`
 
           a {
             color: currentColor;
-            text-decoration: none;
           }
         }
 
