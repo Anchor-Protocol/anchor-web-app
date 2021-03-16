@@ -37,6 +37,11 @@ export function TransactionHistorySection({
 
   const { page, pageIndex, paging } = useArrayPagination(filteredHistory, 3);
 
+  console.log(
+    'TRANSACTION HISTORY CURRENT PAGE ITEMS',
+    JSON.stringify({ page }, null, 2),
+  );
+
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
