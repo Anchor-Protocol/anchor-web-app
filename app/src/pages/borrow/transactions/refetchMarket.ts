@@ -17,6 +17,8 @@ export const refetchMarket = (
   loanAmount?: moneyMarket.market.BorrowInfoResponse;
   borrowInfo?: moneyMarket.custody.BorrowerResponse;
 }> => {
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+
   const {
     data: { currentBlock, marketBalance, marketState },
   } = await queryMarketState(client, address);
