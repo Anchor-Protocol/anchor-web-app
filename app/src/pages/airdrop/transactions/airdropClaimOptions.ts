@@ -29,7 +29,11 @@ export const airdropClaimOptions = createOperationOptions({
     ({ address, airdrop }: { address: HumanAddr; airdrop: Airdrop }) => {
       return [
         new MsgExecuteContract(address, contractAddress.bluna.airdropRegistry, {
-          claim: airdrop,
+          claim: {
+            stage: airdrop.stage,
+            amount: airdrop.amount.toString(),
+            proof: JSON.parse(airdrop.proof),
+          },
         }),
       ] as MsgExecuteContract[];
     }, // -> MsgExecuteContract[]
