@@ -10,6 +10,9 @@ on:
       - master
       - develop
 
+env:
+  NPM_TOKEN: ${{secrets.NPM_TOKEN}}
+
 jobs:
   test:
     name: Node ${{ matrix.node }} on ${{ matrix.os }}
