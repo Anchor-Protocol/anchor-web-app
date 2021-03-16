@@ -1,9 +1,3 @@
-import { useOperation } from '@terra-dev/broadcastable-operation';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import {
   demicrofy,
   formatLuna,
@@ -14,13 +8,20 @@ import {
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { bLuna, Rate, uUST } from '@anchor-protocol/types';
+import { useWallet, WalletReady } from '@anchor-protocol/wallet-provider';
+import { InputAdornment, Modal } from '@material-ui/core';
+import { useOperation } from '@terra-dev/broadcastable-operation';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
+import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
+import { TextInput } from '@terra-dev/neumorphism-ui/components/TextInput';
 import type { DialogProps, OpenDialog } from '@terra-dev/use-dialog';
 import { useDialog } from '@terra-dev/use-dialog';
-import { useWallet, WalletReady } from '@anchor-protocol/wallet-provider';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
 import { useService } from 'base/contexts/service';
-import { InputAdornment, Modal, TextField } from '@material-ui/core';
 import big, { Big, BigSource } from 'big.js';
 import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
@@ -284,11 +285,13 @@ function ComponentBase({
 
         <IconLineSeparator style={{ margin: '10px 0' }} />
 
-        <TextField
+        <TextInput
           className="limit"
           value={borrowLimit ? formatUSTInput(demicrofy(borrowLimit)) : ''}
           label="NEW BORROW LIMIT"
+          readOnly
           InputProps={{
+            readOnly: true,
             endAdornment: <InputAdornment position="end">UST</InputAdornment>,
           }}
           style={{ pointerEvents: 'none' }}

@@ -11,9 +11,9 @@ import styled from 'styled-components';
 export const TextInput: ComponentType<TextFieldProps> = styled(TextField)`
   border-radius: 5px;
 
-  ${({ theme }) =>
+  ${({ theme, readOnly }) =>
     softPressed({
-      color: theme.textInput.backgroundColor,
+      color: readOnly ? theme.backgroundColor : theme.textInput.backgroundColor,
       backgroundColor: theme.backgroundColor,
       distance: 1,
       intensity: theme.intensity * 2,
