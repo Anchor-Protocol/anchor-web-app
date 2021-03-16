@@ -1,11 +1,10 @@
-import { AnchorNoCircle } from '@anchor-protocol/icons';
 import {
   AnimateNumber,
   formatRate,
   formatUSTWithPostfixUnits,
   formatUTokenDecimal2,
 } from '@anchor-protocol/notation';
-import { TokenIcon } from '@anchor-protocol/token-icons';
+import { anc80gif, GifIcon, TokenIcon } from '@anchor-protocol/token-icons';
 import { Rate, uANC, UST, uToken } from '@anchor-protocol/types';
 import { ChevronRight } from '@material-ui/icons';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
@@ -148,7 +147,10 @@ function OverviewBase({ className }: OverviewProps) {
       </Section>
       <Section className="staking">
         <Circles backgroundColors={['#2C2C2C']}>
-          <AnchorNoCircle style={{ fontSize: '1.4em' }} />
+          <GifIcon
+            src={anc80gif}
+            style={{ fontSize: '2em', borderRadius: '50%' }}
+          />
         </Circles>
         <h2>Anchor (ANC)</h2>
         <div className="staking-apy">
@@ -184,7 +186,10 @@ function OverviewBase({ className }: OverviewProps) {
       <Section className="lp">
         <Circles backgroundColors={['#ffffff', '#2C2C2C']}>
           <TokenIcon token="ust" style={{ fontSize: '1.1em' }} />
-          <AnchorNoCircle style={{ fontSize: '1.4em' }} />
+          <GifIcon
+            src={anc80gif}
+            style={{ fontSize: '2em', borderRadius: '50%' }}
+          />
         </Circles>
         <h2>
           <TextButton

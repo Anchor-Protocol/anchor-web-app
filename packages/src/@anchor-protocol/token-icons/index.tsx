@@ -1,5 +1,9 @@
 import { ComponentType, DetailedHTMLProps, ImgHTMLAttributes } from 'react';
 import styled from 'styled-components';
+import anc80gif from './assets/anc@80.gif';
+import anc800gif from './assets/anc@800.gif';
+
+export { anc80gif, anc800gif };
 
 export const tokens = ['ust', 'krt', 'aust', 'akrt', 'luna', 'bluna'] as const;
 export const variants = ['svg', '@2x', '@3x', '@4x'] as const;
@@ -79,6 +83,11 @@ export function TokenIconBase({
 }
 
 export const TokenIcon = styled(TokenIconBase)`
+  width: 1em;
+  height: 1em;
+`;
+
+export const GifIcon = styled.img`
   width: 1em;
   height: 1em;
 `;
