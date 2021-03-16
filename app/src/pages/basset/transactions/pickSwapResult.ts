@@ -45,14 +45,6 @@ export function pickSwapResult({
     );
   }
 
-  // TODO restore this indexes
-  //Bought Amount = Event[1][“attributes”][18][‘value’]
-  //Paid Amount = Event[1][“attributes”][17][‘value’]
-  //Exchange Rate = Bought Amount / Paid_amount
-  //Trading Fee = Event[1][“attributes”][20][‘value’] + Event[1][“attributes”][21][‘value’]
-  //Tx Fee = same as pop up Tx Fee
-  //Tx Hash = Tx hash of this Tx
-
   const boughtAmount = pickAttributeValue<uLuna>(fromContract, 18);
   const paidAmount = pickAttributeValue<ubLuna>(fromContract, 17);
   const tradingFee1 = pickAttributeValue<uLuna>(fromContract, 20);
@@ -62,15 +54,6 @@ export function pickSwapResult({
     boughtAmount &&
     paidAmount &&
     (big(boughtAmount).div(paidAmount) as Rate<BigSource> | undefined);
-
-  //console.log('pickSwapResult.ts..pickSwapResult()', rawLog);
-  //
-  //console.log('pickSwapResult.ts..pickSwapResult()', {
-  //  boughtAmount,
-  //  paidAmount,
-  //  tradingFee1,
-  //  tradingFee2,
-  //});
 
   const txHash = txResult.result.txhash;
 

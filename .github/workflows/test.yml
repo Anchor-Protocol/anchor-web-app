@@ -3,11 +3,12 @@ name: TEST
 on:
   push:
     branches:
-      # TODO restore March 1 - develop
       - master
+      - develop
   pull_request:
     branches:
       - master
+      - develop
 
 jobs:
   test:

@@ -60,7 +60,6 @@ export function pickAncUstLpProvideResult({
 
   const received = pickAttributeValueByKey<uAncUstLP>(fromContract, 'share');
 
-  // TODO fixedGas + min(SimulatedUST * taxRate, maxTax)
   const simulatedUst =
     !!depositedAnc &&
     !!depositedUst &&

@@ -9,8 +9,6 @@ export const SENTRY_DSN =
 export const SAFE_RATIO: Rate<number> = 0.7 as Rate<number>;
 
 export const onProduction =
-  // TODO test url
-  global.location.host === 'app-dev.anchorprotocol.com' ||
   global.location.host === 'app.anchorprotocol.com' ||
   global.location.host === 'app.anchor.money' ||
   global.location.host === 'app.anchor.market' ||

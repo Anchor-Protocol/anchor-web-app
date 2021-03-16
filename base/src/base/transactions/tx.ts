@@ -18,7 +18,6 @@ export interface StringifiedTxResult {
 
 export interface TxResult {
   fee: {
-    // FIXME currently txfee is only uusd
     amount: [
       {
         amount: uUST<string>;
