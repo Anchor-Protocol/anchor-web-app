@@ -32,21 +32,25 @@ const pathGenerator = arc<Value>()
 function BetterYieldBase({ className }: BetterYieldProps) {
   const elementRef = useRef<HTMLElement>(null);
 
-  const intersectionX = useElementIntersection({
+  const elementIntersection = useElementIntersection({
     elementRef,
     threshold: 0.8,
     observeOnce: true,
   });
 
   const intersection = useSpring<Value>({
-    ratio: intersectionX?.isIntersecting === true ? 1 : 0,
+    ratio: elementIntersection?.isIntersecting === true ? 1 : 0,
     config: {
       friction: 60,
     },
   });
 
   return (
-    <section ref={elementRef} className={className}>
+    <section
+      ref={elementRef}
+      className={className}
+      data-intersection={elementIntersection?.isIntersecting}
+    >
       <article>
         <h2>
           Anchor
@@ -129,6 +133,9 @@ const Circle = animated((props: Value) => {
 });
 
 export const BetterYield = styled(BetterYieldBase)`
+  // ---------------------------------------------
+  // style
+  // ---------------------------------------------
   display: flex;
   justify-content: space-evenly;
   align-items: center;
@@ -197,6 +204,31 @@ export const BetterYield = styled(BetterYieldBase)`
     transform: scale(1.2);
   }
 
+  // ---------------------------------------------
+  // animation
+  // ---------------------------------------------
+  article {
+    h2,
+    p {
+      opacity: 0;
+      transform: scale(1.5);
+      transition: opacity 1s ease-out, transform 0.3s ease-in-out;
+    }
+  }
+
+  &[data-intersection='true'] {
+    article {
+      h2,
+      p {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  }
+
+  // ---------------------------------------------
+  // layout
+  // ---------------------------------------------
   @media (max-width: 1100px) {
     flex-direction: column-reverse;
     justify-content: center;

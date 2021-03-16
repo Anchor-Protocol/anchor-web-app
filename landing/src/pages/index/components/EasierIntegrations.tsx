@@ -1,5 +1,7 @@
 import { CircleArrowRight } from '@anchor-protocol/icons';
+import { useElementIntersection } from '@terra-dev/use-element-intersection';
 import { links } from 'env';
+import { useRef } from 'react';
 import styled from 'styled-components';
 import codeImage from './assets/code.png';
 
@@ -8,8 +10,20 @@ export interface EasierIntegrationsProps {
 }
 
 function EasierIntegrationsBase({ className }: EasierIntegrationsProps) {
+  const elementRef = useRef<HTMLElement>(null);
+
+  const elementIntersection = useElementIntersection({
+    elementRef,
+    threshold: 0.4,
+    observeOnce: true,
+  });
+
   return (
-    <section className={className}>
+    <section
+      ref={elementRef}
+      className={className}
+      data-intersection={elementIntersection?.isIntersecting}
+    >
       <figure>
         <div>
           <img src={codeImage} alt="code" />
@@ -38,6 +52,9 @@ function EasierIntegrationsBase({ className }: EasierIntegrationsProps) {
 }
 
 export const EasierIntegrations = styled(EasierIntegrationsBase)`
+  // ---------------------------------------------
+  // style
+  // ---------------------------------------------
   display: flex;
   justify-content: space-evenly;
   align-items: center;
@@ -118,6 +135,42 @@ export const EasierIntegrations = styled(EasierIntegrationsBase)`
     }
   }
 
+  // ---------------------------------------------
+  // animation
+  // ---------------------------------------------
+  article {
+    h2,
+    p {
+      opacity: 0;
+      transform: scale(1.5);
+      transition: opacity 1s ease-out, transform 0.3s ease-in-out;
+    }
+  }
+
+  figure {
+    opacity: 0;
+    transform: translateX(-10%) scale(1.1);
+    transition: opacity 1s ease-out, transform 0.3s ease-in-out;
+  }
+
+  &[data-intersection='true'] {
+    article {
+      h2,
+      p {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    figure {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  // ---------------------------------------------
+  // layout
+  // ---------------------------------------------
   @media (max-width: 1100px) {
     flex-direction: column;
     justify-content: center;

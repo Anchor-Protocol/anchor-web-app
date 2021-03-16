@@ -1,5 +1,7 @@
 import { CircleArrowRight } from '@anchor-protocol/icons';
+import { useElementIntersection } from '@terra-dev/use-element-intersection';
 import { links } from 'env';
+import { useRef } from 'react';
 import styled from 'styled-components';
 import signalImage from './assets/signal.png';
 import signal2xImage from './assets/signal@2x.png';
@@ -9,8 +11,20 @@ export interface FrictionlessAcessProps {
 }
 
 function FrictionlessAcessBase({ className }: FrictionlessAcessProps) {
+  const elementRef = useRef<HTMLElement>(null);
+
+  const elementIntersection = useElementIntersection({
+    elementRef,
+    threshold: 0.4,
+    observeOnce: true,
+  });
+
   return (
-    <section className={className}>
+    <section
+      ref={elementRef}
+      className={className}
+      data-intersection={elementIntersection?.isIntersecting}
+    >
       <article>
         <h2>Anchor offers frictionless access</h2>
         <p>
@@ -30,6 +44,9 @@ function FrictionlessAcessBase({ className }: FrictionlessAcessProps) {
 }
 
 export const FrictionlessAcess = styled(FrictionlessAcessBase)`
+  // ---------------------------------------------
+  // style
+  // ---------------------------------------------
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -103,6 +120,40 @@ export const FrictionlessAcess = styled(FrictionlessAcessBase)`
     overflow: hidden;
   }
 
+  // ---------------------------------------------
+  // animation
+  // ---------------------------------------------
+  article {
+    h2,
+    p {
+      opacity: 0;
+      transform: scale(1.5);
+      transition: opacity 1s ease-out, transform 0.3s ease-in-out;
+    }
+  }
+
+  figure {
+    opacity: 0;
+    transition: opacity 1s ease-out;
+  }
+
+  &[data-intersection='true'] {
+    article {
+      h2,
+      p {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    figure {
+      opacity: 1;
+    }
+  }
+
+  // ---------------------------------------------
+  // layout
+  // ---------------------------------------------
   @media (max-width: 1100px) {
     flex-direction: column-reverse;
 
