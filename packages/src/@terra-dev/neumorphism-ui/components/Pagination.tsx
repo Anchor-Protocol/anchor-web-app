@@ -84,10 +84,11 @@ export const Pagination = styled(PaginationBase)`
     display: grid;
     place-content: center;
 
-    background-color: #eeeeee;
+    border-radius: 50%;
 
     &[data-selected='true'] {
-      background-color: #cccccc;
+      color: ${({ theme }) => theme.actionButton.textColor};
+      background-color: ${({ theme }) => theme.actionButton.backgroundColor};
     }
   }
 `;
