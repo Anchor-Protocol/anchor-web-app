@@ -63,18 +63,21 @@ export function TransactionHistorySection({
         <>
           <ul className="list">
             {page.map(
-              ({
-                Address,
-                TxHash,
-                InAmount,
-                OutAmount,
-                TransactionType,
-                Timestamp,
-              }) => {
+              (
+                {
+                  Address,
+                  TxHash,
+                  InAmount,
+                  OutAmount,
+                  TransactionType,
+                  Timestamp,
+                },
+                i,
+              ) => {
                 const datetime: Date = new Date(Timestamp * 1000);
 
                 return (
-                  <li key={'history' + TxHash}>
+                  <li key={'history' + TxHash + '-' + i}>
                     <div className="amount">
                       {TransactionType === 'deposit_stable'
                         ? `+${formatUST(demicrofy(InAmount))}`
