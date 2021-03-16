@@ -37,9 +37,12 @@ export function useAirdrop(): [Airdrop | null, () => void] {
 
   const refetch = useCallback(() => {
     if (walletReady && walletReady.network.chainID.startsWith('columbus')) {
-      fetch(`https://airdrop.anchorprotocol.com/${walletReady.walletAddress}`)
+      fetch(
+        `https://airdrop.anchorprotocol.com/api/get?address=${walletReady.walletAddress}&chainId=${walletReady.network.chainID}`,
+      )
         .then((res) => res.json())
         .then((airdrops: Airdrop[]) => {
+          console.log(airdrops);
           const claimableAirdrops = airdrops.filter(
             ({ claimable }) => claimable,
           );
