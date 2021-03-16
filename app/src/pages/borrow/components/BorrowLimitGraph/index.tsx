@@ -81,9 +81,9 @@ export function BorrowLimitGraph({
     return {
       borrowLimit,
       //borrowLimitRate: big(1) as Rate<Big>,
-      borrowLimitRate: big(loanAmount).div(
-        borrowLimit.eq(0) ? 1 : borrowLimit,
-      ) as Rate<Big>,
+      borrowLimitRate: !borrowLimit.eq(0)
+        ? (big(loanAmount).div(borrowLimit) as Rate<Big>)
+        : (big(0) as Rate<Big>),
     };
   }, [bLunaMaxLtv, collateralValue, loanAmount]);
 
