@@ -90,11 +90,11 @@ export function TransactionHistorySection({
                           ? 'Deposit from'
                           : 'Redeem to'}{' '}
                         <a
-                          href={`https://finder.terra.money/${status.network.chainID}/account/${Address}`}
+                          href={`https://finder.terra.money/${status.network.chainID}/tx/${TxHash}`}
                           target="_blank"
                           rel="noreferrer"
                         >
-                          {truncate(Address)}
+                          {truncate(TxHash)}
                         </a>
                       </span>
                       <time>
