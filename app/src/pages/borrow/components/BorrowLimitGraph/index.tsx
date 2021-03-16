@@ -1,17 +1,17 @@
 import {
-  HorizontalGraphBar,
-  Rect,
-} from '@terra-dev/neumorphism-ui/components/HorizontalGraphBar';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
-import {
   demicrofy,
   formatRate,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { Rate, uUST } from '@anchor-protocol/types';
 import { InfoOutlined } from '@material-ui/icons';
+import {
+  HorizontalGraphBar,
+  Rect,
+} from '@terra-dev/neumorphism-ui/components/HorizontalGraphBar';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
+import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
 import big, { Big, BigSource } from 'big.js';
 import React, { useMemo } from 'react';
 import { useTheme } from 'styled-components';
@@ -42,20 +42,25 @@ const labelRenderer = (
   return position === 'top' ? (
     <GraphTick
       key={'label' + i}
-      style={{ left: rect.x + rect.width, opacity: label.length === 0 ? 0 : 1 }}
+      style={{
+        transform: `translateX(${rect.x + rect.width}px)`,
+        opacity: label.length === 0 ? 0 : 1,
+      }}
     >
-      {tooltip ? (
-        <Tooltip title={tooltip} placement="top">
-          <IconSpan style={{ cursor: 'help' }}>
-            <sup>
-              <InfoOutlined />
-            </sup>{' '}
-            {label}
-          </IconSpan>
-        </Tooltip>
-      ) : (
-        label
-      )}
+      <span>
+        {tooltip ? (
+          <Tooltip title={tooltip} placement="top">
+            <IconSpan style={{ cursor: 'help' }}>
+              <sup>
+                <InfoOutlined />
+              </sup>{' '}
+              {label}
+            </IconSpan>
+          </Tooltip>
+        ) : (
+          label
+        )}
+      </span>
     </GraphTick>
   ) : (
     <GraphLabel key={'label' + i} style={{ left: rect.x + rect.width }}>
@@ -86,6 +91,7 @@ export function BorrowLimitGraph({
     <HorizontalGraphBar<Data>
       min={0}
       max={1}
+      animate
       data={
         borrowLimitRate.gt(0)
           ? [
@@ -109,7 +115,7 @@ export function BorrowLimitGraph({
               {
                 position: 'top',
                 label: '',
-                color: 'transparent',
+                color: theme.colors.positive,
                 value: 0,
                 tooltip: undefined,
               },

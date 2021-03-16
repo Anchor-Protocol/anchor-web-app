@@ -217,7 +217,7 @@ export const HorizontalGraphBar: <T>(
 
   svg {
     rect {
-      transition: fill 0.6s ease-in-out;
+      transition: fill 0.2s ease-in-out;
     }
   }
 

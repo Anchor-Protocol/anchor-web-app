@@ -58,7 +58,12 @@ export const Animate = () => {
   }, []);
 
   const emptyData = useCallback(() => {
-    setData([]);
+    setData([
+      {
+        value: 0,
+        color: Math.random() > 0.5 ? '#4da3ee' : '#ff8a4b',
+      },
+    ]);
   }, []);
 
   return (
@@ -73,14 +78,19 @@ export const Animate = () => {
         valueFunction={valueFunction}
         labelRenderer={({ value }, rect) => {
           return (
-            <GraphTick
-              style={{ transform: `translateX(${rect.x + rect.width}px)` }}
+            <AnimateGraphTick
+              style={{
+                transform: `translateX(${rect.x + rect.width}px)`,
+                opacity: value > 0 ? 1 : 0,
+              }}
             >
-              VALUE:{' '}
-              <AnimateNumber format={(v) => floor(v).toFixed()}>
-                {value}
-              </AnimateNumber>
-            </GraphTick>
+              <span>
+                VALUE:{' '}
+                <AnimateNumber format={(v) => floor(v).toFixed()}>
+                  {value}
+                </AnimateNumber>
+              </span>
+            </AnimateGraphTick>
           );
         }}
       >
@@ -107,15 +117,23 @@ export const Animate_Multiple = () => {
   ]);
 
   const updateData = useCallback(() => {
+    const rand1 = Math.floor(Math.random() * 500) + 500;
+    const rand2 = rand1 - Math.floor(Math.random() * 200);
+    const rand3 = rand2 - Math.floor(Math.random() * 200);
+
     setData([
-      { value: Math.floor(Math.random() * 1000), color: '#4da3ee' },
-      { value: Math.floor(Math.random() * 1000), color: '#ffffff' },
-      { value: Math.floor(Math.random() * 1000), color: '#ff8a4b' },
+      { value: rand1, color: '#4da3ee' },
+      { value: rand2, color: '#ffffff' },
+      { value: rand3, color: '#ff8a4b' },
     ]);
   }, []);
 
   const emptyData = useCallback(() => {
-    setData([]);
+    setData([
+      { value: 0, color: '#4da3ee' },
+      { value: 0, color: '#ffffff' },
+      { value: 0, color: '#ff8a4b' },
+    ]);
   }, []);
 
   return (
@@ -130,15 +148,20 @@ export const Animate_Multiple = () => {
         valueFunction={valueFunction}
         labelRenderer={({ value }, rect, i) => {
           return (
-            <GraphTick
+            <AnimateGraphTick
               key={'label' + i}
-              style={{ transform: `translateX(${rect.x + rect.width}px)` }}
+              style={{
+                transform: `translateX(${rect.x + rect.width}px)`,
+                opacity: value > 0 ? 1 : 0,
+              }}
             >
-              VALUE:{' '}
-              <AnimateNumber format={(v) => floor(v).toFixed()}>
-                {value}
-              </AnimateNumber>
-            </GraphTick>
+              <span>
+                VALUE:{' '}
+                <AnimateNumber format={(v) => floor(v).toFixed()}>
+                  {value}
+                </AnimateNumber>
+              </span>
+            </AnimateGraphTick>
           );
         }}
       >
@@ -321,6 +344,35 @@ const GraphTick = styled.span`
     left: calc(50% - 1px);
     bottom: -11px;
     z-index: 1;
+  }
+`;
+
+const AnimateGraphTick = styled.span`
+  top: -28px;
+
+  > span {
+    display: inline-block;
+
+    font-size: 14px;
+    font-weight: 300;
+    color: ${({ theme }) => theme.dimTextColor};
+
+    transform: translateX(-50%);
+
+    word-break: keep-all;
+    white-space: nowrap;
+
+    user-select: none;
+
+    &::before {
+      content: '';
+      height: 8px;
+      border-left: solid 1px currentColor;
+      position: absolute;
+      left: calc(50% - 1px);
+      bottom: -11px;
+      z-index: 1;
+    }
   }
 `;
 
