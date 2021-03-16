@@ -19,16 +19,16 @@ export const screen = {
 
 export const links = {
   earn: onProduction
-    ? 'https://docs.anchorprotocol.com/user-guide/earn'
+    ? 'https://docs.anchorprotocol.com/user-guide/webapp/earn'
     : 'https://app.gitbook.com/@anchor-protocol/s/anchor-2/user-guide/earn',
   borrow: onProduction
-    ? 'https://docs.anchorprotocol.com/user-guide/borrow'
+    ? 'https://docs.anchorprotocol.com/user-guide/webapp/borrow'
     : 'https://app.gitbook.com/@anchor-protocol/s/anchor-2/user-guide/borrow',
   bond: onProduction
-    ? 'https://docs.anchorprotocol.com/user-guide/bond'
+    ? 'https://docs.anchorprotocol.com/user-guide/webapp/bond'
     : 'https://app.gitbook.com/@anchor-protocol/s/anchor-2/user-guide/bond',
   gov: onProduction
-    ? 'https://docs.anchorprotocol.com/user-guide/govern'
+    ? 'https://docs.anchorprotocol.com/user-guide/webapp/govern'
     : 'https://app.gitbook.com/@anchor-protocol/s/anchor-2/user-guide/govern',
   forum: 'https://forum.anchorprotocol.com/',
 };
