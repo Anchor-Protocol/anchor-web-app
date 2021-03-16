@@ -5,6 +5,7 @@ import { Pagination } from '@terra-dev/neumorphism-ui/components/Pagination';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { useArrayPagination } from '@terra-dev/use-array-pagination';
 import { useTransactionHistory } from 'pages/earn/queries/transactionHistory';
+import { captureMessage } from '@sentry/react';
 import { useMemo } from 'react';
 import styled from 'styled-components';
 
@@ -41,6 +42,13 @@ export function TransactionHistorySection({
     'TRANSACTION HISTORY CURRENT PAGE ITEMS',
     JSON.stringify({ page }, null, 2),
   );
+
+  if (process.env.NODE_ENV === 'production') {
+    captureMessage(
+      'TRANSACTION HISTORY CURRENT PAGE ITEMS ::: ' +
+        JSON.stringify({ page }, null, 2),
+    );
+  }
 
   // ---------------------------------------------
   // presentation
