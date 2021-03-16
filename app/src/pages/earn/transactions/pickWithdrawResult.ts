@@ -1,5 +1,6 @@
 import {
   demicrofy,
+  formatAUSTWithPostfixUnits,
   formatFluidDecimalPoints,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
@@ -67,7 +68,7 @@ export function pickWithdrawResult({
       },
       burnAmount && {
         name: 'Returned Amount',
-        value: formatUSTWithPostfixUnits(demicrofy(burnAmount)) + ' aUST',
+        value: formatAUSTWithPostfixUnits(demicrofy(burnAmount)) + ' aUST',
       },
       exchangeRate && {
         name: 'Exchange Rate',

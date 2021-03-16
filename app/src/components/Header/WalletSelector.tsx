@@ -5,6 +5,7 @@ import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import {
   demicrofy,
   formatANC,
+  formatAUSTWithPostfixUnits,
   formatLP,
   formatLuna,
   formatUSTWithPostfixUnits,
@@ -176,7 +177,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                     <li>
                       <span>aUST</span>
                       <span>
-                        {formatUSTWithPostfixUnits(
+                        {formatAUSTWithPostfixUnits(
                           demicrofy(bank.userBalances.uaUST),
                         )}
                       </span>

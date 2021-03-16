@@ -1,4 +1,4 @@
-import type { DateTime, uaUST, uUST } from '@anchor-protocol/types';
+import type { DateTime, uUST } from '@anchor-protocol/types';
 import { Denom, HumanAddr } from '@anchor-protocol/types';
 import { gql, useQuery } from '@apollo/client';
 import { useSubscription } from '@terra-dev/broadcastable-operation';
@@ -16,7 +16,7 @@ export interface RawData {
     Height: number;
     InAmount: uUST<string>;
     InDenom: Denom;
-    OutAmount: uaUST<string>;
+    OutAmount: uUST<string>;
     OutDenom: Denom;
     Timestamp: DateTime;
     TransactionType: string;

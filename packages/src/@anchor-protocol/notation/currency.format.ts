@@ -62,6 +62,10 @@ export function formatUSTInput<C extends UST<BigSource> | aUST<BigSource>>(
   return d3InputFormatter(n) as any;
 }
 
+export function formatAUSTInput(n: aUST<BigSource>): aUST {
+  return d6InputFormatter(n) as any;
+}
+
 export function formatLunaInput<C extends Luna<BigSource> | bLuna<BigSource>>(
   n: C,
 ): C extends Luna<BigSource>
@@ -112,6 +116,15 @@ export function formatUSTWithPostfixUnits(
 ): string {
   const bn = big(n);
   return bn.gte(M) ? d2Formatter(bn.div(M)) + 'M' : formatUST(n);
+}
+
+export function formatAUST(n: aUST<BigSource>): string {
+  return d6Formatter(n);
+}
+
+export function formatAUSTWithPostfixUnits(n: aUST<BigSource>): string {
+  const bn = big(n);
+  return bn.gte(M) ? d3Formatter(bn.div(M)) + 'M' : d3Formatter(bn);
 }
 
 export function formatLuna(n: Luna<BigSource> | bLuna<BigSource>): string {
