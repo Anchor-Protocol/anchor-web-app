@@ -1,18 +1,24 @@
 import { Snackbar, useSnackbar } from '@terra-dev/snackbar';
 import { ApolloError } from '@apollo/client';
+import { onProduction } from '../env';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
+import { captureException } from '@sentry/react';
 
 export function useQueryErrorHandler(): (error: ApolloError) => void {
   const { addSnackbar } = useSnackbar();
 
   const callback = useCallback(
     (error: ApolloError) => {
-      addSnackbar(
-        <Snackbar>
-          <Message>{error.message}</Message>
-        </Snackbar>,
-      );
+      captureException(error);
+
+      if (!onProduction) {
+        addSnackbar(
+          <Snackbar>
+            <Message>{error.message}</Message>
+          </Snackbar>,
+        );
+      }
     },
     [addSnackbar],
   );
