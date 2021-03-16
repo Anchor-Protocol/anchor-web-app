@@ -1,9 +1,9 @@
 import { ComponentType, DetailedHTMLProps, ImgHTMLAttributes } from 'react';
 import styled from 'styled-components';
 import anc80gif from './assets/anc@80.gif';
-import anc800gif from './assets/anc@800.gif';
+import anc160gif from './assets/anc@160.gif';
 
-export { anc80gif, anc800gif };
+export { anc80gif, anc160gif };
 
 export const tokens = ['ust', 'krt', 'aust', 'akrt', 'luna', 'bluna'] as const;
 export const variants = ['svg', '@2x', '@3x', '@4x'] as const;

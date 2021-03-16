@@ -4,7 +4,7 @@ import {
   formatUSTWithPostfixUnits,
   formatUTokenDecimal2,
 } from '@anchor-protocol/notation';
-import { anc80gif, GifIcon, TokenIcon } from '@anchor-protocol/token-icons';
+import { anc160gif, GifIcon, TokenIcon } from '@anchor-protocol/token-icons';
 import { Rate, uANC, UST, uToken } from '@anchor-protocol/types';
 import { ChevronRight } from '@material-ui/icons';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
@@ -148,7 +148,7 @@ function OverviewBase({ className }: OverviewProps) {
       <Section className="staking">
         <Circles backgroundColors={['#2C2C2C']}>
           <GifIcon
-            src={anc80gif}
+            src={anc160gif}
             style={{ fontSize: '2em', borderRadius: '50%' }}
           />
         </Circles>
@@ -187,7 +187,7 @@ function OverviewBase({ className }: OverviewProps) {
         <Circles backgroundColors={['#ffffff', '#2C2C2C']}>
           <TokenIcon token="ust" style={{ fontSize: '1.1em' }} />
           <GifIcon
-            src={anc80gif}
+            src={anc160gif}
             style={{ fontSize: '2em', borderRadius: '50%' }}
           />
         </Circles>
