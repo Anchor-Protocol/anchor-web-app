@@ -111,7 +111,7 @@ export function formatANCWithPostfixUnits(n: ANC<BigSource>): string {
 }
 
 export function formatUST(n: UST<BigSource>): string {
-  if (big(n).lt(0.001)) {
+  if (big(n).gt(0) && big(n).lt(0.001)) {
     return '<0.001';
   }
   return d3Formatter(n);
