@@ -45,10 +45,15 @@ export const iFormatter = formatInteger({ delimiter: true });
 // constants
 // ---------------------------------------------
 export const UST_INPUT_MAXIMUM_INTEGER_POINTS = 14;
-export const ANC_INPUT_MAXIMUM_INTEGER_POINTS = 14;
-export const LUNA_INPUT_MAXIMUM_INTEGER_POINTS = 14;
 export const UST_INPUT_MAXIMUM_DECIMAL_POINTS = 3;
+
+export const AUST_INPUT_MAXIMUM_INTEGER_POINTS = 14;
+export const AUST_INPUT_MAXIMUM_DECIMAL_POINTS = 6;
+
+export const LUNA_INPUT_MAXIMUM_INTEGER_POINTS = 14;
 export const LUNA_INPUT_MAXIMUM_DECIMAL_POINTS = 6;
+
+export const ANC_INPUT_MAXIMUM_INTEGER_POINTS = 14;
 export const ANC_INPUT_MAXIMUM_DECIMAL_POINTS = 6;
 
 const M = 1000000;
@@ -56,9 +61,7 @@ const M = 1000000;
 // ---------------------------------------------
 // specific format functions
 // ---------------------------------------------
-export function formatUSTInput<C extends UST<BigSource> | aUST<BigSource>>(
-  n: C,
-): C extends UST<BigSource> ? UST : C extends aUST<BigSource> ? aUST : never {
+export function formatUSTInput(n: UST<BigSource>): UST {
   return d3InputFormatter(n) as any;
 }
 
@@ -107,13 +110,14 @@ export function formatANCWithPostfixUnits(n: ANC<BigSource>): string {
   return bn.gte(M) ? d3Formatter(bn.div(M)) + 'M' : formatANC(n);
 }
 
-export function formatUST(n: UST<BigSource> | aUST<BigSource>): string {
+export function formatUST(n: UST<BigSource>): string {
+  if (big(n).lt(0.001)) {
+    return '<0.001';
+  }
   return d3Formatter(n);
 }
 
-export function formatUSTWithPostfixUnits(
-  n: UST<BigSource> | aUST<BigSource>,
-): string {
+export function formatUSTWithPostfixUnits(n: UST<BigSource>): string {
   const bn = big(n);
   return bn.gte(M) ? d2Formatter(bn.div(M)) + 'M' : formatUST(n);
 }

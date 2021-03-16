@@ -1,8 +1,11 @@
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   ANC_INPUT_MAXIMUM_INTEGER_POINTS,
+  AUST_INPUT_MAXIMUM_DECIMAL_POINTS,
+  AUST_INPUT_MAXIMUM_INTEGER_POINTS,
   demicrofy,
   formatANCInput,
+  formatAUSTInput,
   formatLunaInput,
   formatUST,
   formatUSTInput,
@@ -79,7 +82,7 @@ function ComponentBase({
         label: 'UST',
         value: 'usd',
         integerPoints: UST_INPUT_MAXIMUM_INTEGER_POINTS,
-        decimalPoints: UST_INPUT_MAXIMUM_INTEGER_POINTS,
+        decimalPoints: UST_INPUT_MAXIMUM_DECIMAL_POINTS,
         getWithdrawable: (bank: Bank, fixedGas: uUST<BigSource>) => {
           return big(bank.userBalances.uUSD)
             .minus(
@@ -109,11 +112,11 @@ function ComponentBase({
       {
         label: 'aUST',
         value: 'aust',
-        integerPoints: UST_INPUT_MAXIMUM_INTEGER_POINTS,
-        decimalPoints: UST_INPUT_MAXIMUM_DECIMAL_POINTS,
+        integerPoints: AUST_INPUT_MAXIMUM_INTEGER_POINTS,
+        decimalPoints: AUST_INPUT_MAXIMUM_DECIMAL_POINTS,
         getWithdrawable: (bank: Bank) => bank.userBalances.uaUST,
         getFormatWithdrawable: (bank: Bank) =>
-          formatUSTInput(demicrofy(bank.userBalances.uaUST)),
+          formatAUSTInput(demicrofy(bank.userBalances.uaUST)),
         cw20Address: cw20.aUST,
       },
       {
