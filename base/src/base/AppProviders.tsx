@@ -89,7 +89,7 @@ function Providers({
       isMainnet
         ? {
             gasFee: 1000000 as uUST<number>,
-            fixedGas: 5000 as uUST<number>,
+            fixedGas: 500000 as uUST<number>,
             blocksPerYear: 4906443,
             gasAdjustment: 1.6 as Rate<number>,
             isDemo,
