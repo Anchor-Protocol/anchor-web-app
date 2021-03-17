@@ -118,7 +118,7 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
         disabled={
           !serviceAvailable ||
           !!invalidTxFee ||
-          claimableRewards.lte(0) ||
+          claimableRewards.lte(fixedGas) ||
           disabled
         }
         onClick={() => walletReady && proceed(walletReady)}
