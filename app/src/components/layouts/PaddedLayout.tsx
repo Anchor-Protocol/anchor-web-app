@@ -1,5 +1,5 @@
 import { Footer } from 'components/Footer';
-import { screen } from 'env';
+import { BODY_MARGIN_TOP, screen } from 'env';
 import { ReactNode } from 'react';
 import styled from 'styled-components';
 
@@ -33,7 +33,7 @@ export const PaddedLayout = styled(PaddedLayoutBase)`
   // ---------------------------------------------
   // pc
   @media (min-width: ${screen.pc.min}px) {
-    padding: 100px;
+    padding: ${BODY_MARGIN_TOP.pc}px 100px 100px 100px;
 
     .NeuSection-root {
       margin-bottom: 40px;
@@ -50,7 +50,7 @@ export const PaddedLayout = styled(PaddedLayoutBase)`
   // tablet
   @media (min-width: ${screen.tablet.min}px) and (max-width: ${screen.tablet
       .max}px) {
-    padding: 30px;
+    padding: ${BODY_MARGIN_TOP.tablet}px 30px 30px 30px;
 
     .NeuSection-root {
       margin-bottom: 40px;
@@ -63,7 +63,7 @@ export const PaddedLayout = styled(PaddedLayoutBase)`
 
   // mobile
   @media (max-width: ${screen.mobile.max}px) {
-    padding: 30px 20px;
+    padding: ${BODY_MARGIN_TOP.mobile}px 20px 30px 20px;
 
     .NeuSection-root {
       margin-bottom: 40px;

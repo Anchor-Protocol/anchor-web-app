@@ -32,3 +32,9 @@ export const links = {
     : 'https://app.gitbook.com/@anchor-protocol/s/anchor-2/user-guide/govern',
   forum: 'https://forum.anchorprotocol.com/',
 };
+
+export const BODY_MARGIN_TOP = {
+  pc: 50,
+  mobile: 10,
+  tablet: 20,
+};

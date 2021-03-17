@@ -1,5 +1,5 @@
 import { Footer } from 'components/Footer';
-import { screen } from 'env';
+import { BODY_MARGIN_TOP, screen } from 'env';
 import { ReactNode } from 'react';
 import styled from 'styled-components';
 
@@ -46,7 +46,7 @@ export const CenteredLayout = styled(CenteredLayoutBase)`
   // pc
   @media (min-width: ${screen.pc.min}px) {
     main {
-      padding-top: 100px;
+      padding-top: ${BODY_MARGIN_TOP.pc}px;
     }
   }
 
@@ -54,7 +54,7 @@ export const CenteredLayout = styled(CenteredLayoutBase)`
   @media (min-width: ${screen.tablet.min}px) and (max-width: ${screen.tablet
       .max}px) {
     main {
-      padding-top: 30px;
+      padding-top: ${BODY_MARGIN_TOP.tablet}px;
     }
 
     .NeuSection-root {
@@ -67,7 +67,7 @@ export const CenteredLayout = styled(CenteredLayoutBase)`
   // mobile
   @media (max-width: ${screen.mobile.max}px) {
     main {
-      padding-top: 30px;
+      padding-top: ${BODY_MARGIN_TOP.mobile}px;
     }
 
     .NeuSection-root {
