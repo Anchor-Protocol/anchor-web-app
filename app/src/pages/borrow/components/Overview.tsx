@@ -130,7 +130,7 @@ function OverviewBase({ className }: OverviewProps) {
             %
           </div>
           <div>
-            <Circles>
+            <Circles style={{ marginLeft: -20, marginRight: -30 }}>
               <div>
                 <Circle>
                   <BorrowAPR />
