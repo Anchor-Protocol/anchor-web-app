@@ -12,7 +12,6 @@ import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Label } from '@terra-dev/neumorphism-ui/components/Label';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
-import { TextButton } from '@terra-dev/neumorphism-ui/components/TextButton';
 import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
 import big, { Big } from 'big.js';
 import { Circles } from 'components/Circles';
@@ -27,7 +26,7 @@ import { useANCPrice } from 'pages/gov/queries/ancPrice';
 import { useLPStakingState } from 'pages/gov/queries/lpStakingState';
 import { useTotalStakedMain } from 'pages/gov/queries/totalStakedMain';
 import React, { useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
 export interface OverviewProps {
@@ -42,6 +41,8 @@ function OverviewBase({ className }: OverviewProps) {
   const {
     data: { govRewards, lpRewards },
   } = useBorrowAPY();
+
+  const history = useHistory();
 
   const {
     data: {
@@ -183,7 +184,12 @@ function OverviewBase({ className }: OverviewProps) {
           </Tooltip>
         </div>
       </Section>
-      <Section className="lp">
+      <Section
+        className="lp"
+        onClick={() =>
+          history.push(`/${govPathname}/rewards/${ancUstLpPathname}/provide`)
+        }
+      >
         <Circles backgroundColors={['#ffffff', '#2C2C2C']}>
           <TokenIcon token="ust" style={{ fontSize: '1.1em' }} />
           <GifIcon
@@ -192,15 +198,15 @@ function OverviewBase({ className }: OverviewProps) {
           />
         </Circles>
         <h2>
-          <TextButton
-            component={Link}
-            to={`/${govPathname}/rewards/${ancUstLpPathname}/provide`}
-            style={{ width: 200, height: 28, fontSize: 18, fontWeight: 500 }}
-          >
-            <IconSpan>
-              ANC-UST LP <ChevronRight />
-            </IconSpan>
-          </TextButton>
+          {/*<TextButton*/}
+          {/*  component={Link}*/}
+          {/*  to={`/${govPathname}/rewards/${ancUstLpPathname}/provide`}*/}
+          {/*  style={{ width: 200, height: 28, fontSize: 18, fontWeight: 500 }}*/}
+          {/*>*/}
+          <IconSpan>
+            ANC-UST LP <ChevronRight />
+          </IconSpan>
+          {/*</TextButton>*/}
         </h2>
         <div className="lp-labels">
           <div>
@@ -238,13 +244,11 @@ function OverviewBase({ className }: OverviewProps) {
 }
 
 export const Overview = styled(OverviewBase)`
-  // ---------------------------------------------
-  // styles
-  // ---------------------------------------------
   .lp {
-    a {
-      text-decoration: none;
-      color: ${({ theme }) => theme.textColor};
+    cursor: pointer;
+
+    &:hover {
+      background-color: ${({ theme }) => theme.hoverBackgroundColor};
     }
   }
 
