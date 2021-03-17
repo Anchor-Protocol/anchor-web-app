@@ -1,8 +1,3 @@
-import { useOperation } from '@terra-dev/broadcastable-operation';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import {
   demicrofy,
   formatUST,
@@ -11,21 +6,25 @@ import {
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { Rate, UST, uUST } from '@anchor-protocol/types';
+import { WalletReady } from '@anchor-protocol/wallet-provider';
+import { InputAdornment, Modal } from '@material-ui/core';
+import { useOperation } from '@terra-dev/broadcastable-operation';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import type { DialogProps, OpenDialog } from '@terra-dev/use-dialog';
 import { useDialog } from '@terra-dev/use-dialog';
-import { WalletReady } from '@anchor-protocol/wallet-provider';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
 import { useService } from 'base/contexts/service';
-import { InputAdornment, Modal } from '@material-ui/core';
-import big, { BigSource } from 'big.js';
+import big, { Big, BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { validateTxFee } from 'logics/validateTxFee';
 import { validateWithdrawAmount } from 'pages/earn/logics/validateWithdrawAmount';
 import { withdrawReceiveAmount } from 'pages/earn/logics/withdrawReceiveAmount';
-import { withdrawTxFee } from 'pages/earn/logics/withdrawTxFee';
 import type { ReactNode } from 'react';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
@@ -74,11 +73,7 @@ function ComponentBase({
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const txFee = useMemo(() => withdrawTxFee(withdrawAmount, bank, fixedGas), [
-    bank,
-    fixedGas,
-    withdrawAmount,
-  ]);
+  const txFee = useMemo(() => big(fixedGas) as uUST<Big>, [fixedGas]);
 
   const receiveAmount = useMemo(
     () => withdrawReceiveAmount(withdrawAmount, txFee),

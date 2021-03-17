@@ -10,9 +10,11 @@ export function validateWithdrawAmount(
   totalDeposit: uUST<BigSource>,
   txFee: uUST<Big> | undefined,
 ): ReactNode {
+  const amount = microfy(withdrawAmount);
+
   if (withdrawAmount.length === 0) {
     return undefined;
-  } else if (microfy(withdrawAmount).gt(totalDeposit)) {
+  } else if (amount.gt(totalDeposit)) {
     return `Not enough aUST`;
   } else if (txFee && big(bank.userBalances.uUSD).lt(txFee)) {
     return `Not enough UST`;
