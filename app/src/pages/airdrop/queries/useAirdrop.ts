@@ -1,4 +1,5 @@
 import { Rate, uANC } from '@anchor-protocol/types';
+import { useSubscription } from '@terra-dev/broadcastable-operation';
 import { useService } from 'base/contexts/service';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -56,6 +57,12 @@ export function useAirdrop(): [Airdrop | null, () => void] {
         });
     }
   }, [walletReady]);
+
+  useSubscription((id, event) => {
+    if (event === 'done') {
+      refetch();
+    }
+  });
 
   useEffect(() => {
     refetch();
