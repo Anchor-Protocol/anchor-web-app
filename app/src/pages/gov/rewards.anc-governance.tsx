@@ -1,4 +1,4 @@
-import { anc80gif, GifIcon, TokenIcon } from '@anchor-protocol/token-icons';
+import { anc80gif, GifIcon } from '@anchor-protocol/token-icons';
 import { RulerTab } from '@terra-dev/neumorphism-ui/components/RulerTab';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { Circles } from 'components/Circles';
@@ -61,7 +61,6 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
       <header>
         <h1>
           <Circles radius={24} backgroundColors={['#ffffff', '#2C2C2C']}>
-            <TokenIcon token="ust" style={{ fontSize: '1.1em' }} />
             <GifIcon
               src={anc80gif}
               style={{ fontSize: '2em', borderRadius: '50%' }}
