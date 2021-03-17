@@ -25,7 +25,10 @@ export function extensionFixer(extension: Extension): FixedExtension {
     [(data: any) => void, (error: any) => void]
   >();
 
-  extension.on('onPost', ({ error, ...payload }) => {
+  extension.on('onPost', (result) => {
+    if (!result) return;
+    const { error, ...payload } = result;
+
     if (!postResolvers.has(payload.id)) {
       return;
     }
@@ -41,7 +44,10 @@ export function extensionFixer(extension: Extension): FixedExtension {
     postResolvers.delete(payload.id);
   });
 
-  extension.on('onInfo', ({ error, ...payload }) => {
+  extension.on('onInfo', (result) => {
+    if (!result) return;
+    const { error, ...payload } = result;
+
     for (const [resolve, reject] of infoResolvers) {
       if (error) {
         reject(error);
@@ -53,7 +59,10 @@ export function extensionFixer(extension: Extension): FixedExtension {
     infoResolvers.clear();
   });
 
-  extension.on('onConnect', ({ error, ...payload }) => {
+  extension.on('onConnect', (result) => {
+    if (!result) return;
+    const { error, ...payload } = result;
+
     for (const [resolve, reject] of connectResolvers) {
       if (error) {
         reject(error);
