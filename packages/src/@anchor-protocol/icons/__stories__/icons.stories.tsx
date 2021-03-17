@@ -57,7 +57,10 @@ const Grid = styled(
 )<{ size: number }>`
   display: grid;
   grid-template-columns: repeat(5, ${({ size }) => size}px);
-  grid-template-rows: repeat(auto-fill, ${({ size }) => size}px);
+  grid-template-rows: repeat(
+    ${({ children }) => Math.ceil(children.length / 5)},
+    ${({ size }) => size}px
+  );
 
   div {
     display: grid;

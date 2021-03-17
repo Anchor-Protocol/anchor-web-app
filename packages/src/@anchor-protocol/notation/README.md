@@ -1,3 +1,14 @@
+# `@anchor-protocol/notation`
+
+TODO
+
+## Spec
+
+<!-- source __tests__/*.test.ts -->
+
+[\_\_tests\_\_/notation.test.ts](__tests__/notation.test.ts)
+
+```ts
 import { aUST, bLuna, Luna, Percent, Rate, UST } from '@anchor-protocol/types';
 import {
   formatAUST,
@@ -65,3 +76,48 @@ describe('notation', () => {
     expect(formatRate('0.195545188517526138' as Rate)).toBe('19.55');
   });
 });
+```
+
+<!-- /source -->
+
+## Stories
+
+<!-- source __stories__/*.stories.tsx -->
+
+[\_\_stories\_\_/AnimateNumber.stories.tsx](__stories__/AnimateNumber.stories.tsx)
+
+```tsx
+import {
+  AnimateNumber,
+  formatUSTWithPostfixUnits,
+} from '@anchor-protocol/notation';
+import { UST } from '@anchor-protocol/types';
+import { useCallback, useState } from 'react';
+
+export default {
+  title: 'components/AnimateNumber',
+};
+
+export const Basic = () => {
+  const [n, setN] = useState<UST>('1000' as UST);
+
+  const updateNumber = useCallback(() => {
+    setN(
+      Math.floor(
+        Math.random() * (Math.random() > 0.5 ? 100000000 : 100000),
+      ).toString() as UST,
+    );
+  }, []);
+
+  return (
+    <div>
+      <AnimateNumber format={formatUSTWithPostfixUnits}>{n}</AnimateNumber>
+      <div>
+        <button onClick={updateNumber}>Update Number</button>
+      </div>
+    </div>
+  );
+};
+```
+
+<!-- /source -->

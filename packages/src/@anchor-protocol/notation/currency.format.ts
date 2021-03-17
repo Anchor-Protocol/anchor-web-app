@@ -1,4 +1,3 @@
-import { MICRO } from '@anchor-protocol/notation/currency';
 import {
   ANC,
   AncUstLP,
@@ -12,6 +11,7 @@ import {
   uToken,
 } from '@anchor-protocol/types';
 import big, { BigSource } from 'big.js';
+import { MICRO } from './currency';
 import { formatDemimal, formatInteger } from './unit.format';
 
 // ---------------------------------------------
