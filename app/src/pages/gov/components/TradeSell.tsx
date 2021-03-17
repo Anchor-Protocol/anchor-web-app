@@ -274,6 +274,14 @@ export function TradeSell() {
     <>
       {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
 
+      <MessageBox
+        level="info"
+        hide={{ id: 'anc_buy', period: 1000 * 60 * 60 * 24 * 7 }}
+      >
+        Due to max_Spread setting(90%), the resulting price may be different
+        from the expected price. Trade at your own risk.
+      </MessageBox>
+
       {/* Burn (bAsset) */}
       <div className="burn-description">
         <p>From</p>

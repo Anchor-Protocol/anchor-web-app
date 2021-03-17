@@ -3,6 +3,7 @@ import type { Rate, ubLuna, uLuna, uUST } from '@anchor-protocol/types';
 import { terraswap } from '@anchor-protocol/types';
 import big, { Big } from 'big.js';
 import { Data as TaxData } from 'base/queries/tax';
+import { MAX_SPREAD } from 'pages/basset/env';
 import { SwapSimulation } from '../models/swapSimulation';
 
 export function swapBurnSimulation(
@@ -11,7 +12,7 @@ export function swapBurnSimulation(
   { taxRate, maxTaxUUSD }: TaxData,
 ): SwapSimulation<uLuna, ubLuna> {
   const beliefPrice = big(1).div(big(simulation.return_amount).div(getAmount));
-  const maxSpread = 0.1;
+  const maxSpread = MAX_SPREAD;
 
   const tax = min(
     big(getAmount)
