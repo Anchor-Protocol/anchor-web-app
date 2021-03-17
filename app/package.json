@@ -74,6 +74,7 @@
     "fastdom": "^1.0.10",
     "graphql": "^15.5.0",
     "graphql-tag": "^2.11.0",
+    "mobile-detect": "^1.4.5",
     "multiplerun": "^2.0.1",
     "numeral": "^2.0.6",
     "puppeteer": "^7.1.0",

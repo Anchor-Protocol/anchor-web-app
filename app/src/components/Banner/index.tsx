@@ -1,21 +1,27 @@
 import { getParser } from 'bowser';
 import { useMemo } from 'react';
 import styled from 'styled-components';
+import MobileDetect from 'mobile-detect';
 
 export interface BannerProps {
   className?: string;
 }
 
 function BannerBase({ className }: BannerProps) {
-  const isChrome = useMemo(() => {
+  const isDesktopChrome = useMemo(() => {
     const browser = getParser(navigator.userAgent);
-    return browser.satisfies({
-      chrome: '>60',
-      edge: '>80',
-    });
+    const mobileDetect = new MobileDetect(navigator.userAgent);
+
+    const result =
+      browser.satisfies({
+        chrome: '>60',
+        edge: '>80',
+      }) && !mobileDetect.os();
+
+    return result;
   }, []);
 
-  if (!isChrome) {
+  if (!isDesktopChrome) {
     return (
       <div className={className}>
         <p>

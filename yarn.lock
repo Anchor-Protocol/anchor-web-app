@@ -61,6 +61,7 @@ __metadata:
     fastdom: ^1.0.10
     graphql: ^15.5.0
     graphql-tag: ^2.11.0
+    mobile-detect: ^1.4.5
     multiplerun: ^2.0.1
     numeral: ^2.0.6
     puppeteer: ^7.1.0
@@ -15661,6 +15662,13 @@ fsevents@^1.2.7:
   bin:
     mkdirp: bin/cmd.js
   checksum: 9dd9792e891927b14ca02226dbe1daeb717b9517a001620d5e2658bbc72c5e4f06887b6cbcbb60595fa5a56e701073cf250f1ed69c1988a6b89faf9fd6a4d049
+  languageName: node
+  linkType: hard
+
+"mobile-detect@npm:^1.4.5":
+  version: 1.4.5
+  resolution: "mobile-detect@npm:1.4.5"
+  checksum: 395574ab4043e4c0e370bbe5aed7dbd38e256098e61541bd4517a2b11d4e20f1bf80148bc751c9a79d110dee9e24ab9c96290b4a3562cb4a410af511b313e2ba
   languageName: node
   linkType: hard
 
