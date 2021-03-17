@@ -138,7 +138,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                 )}
               </IconSpan>
             </WalletButton>
-            {airdrop && !open && !matchAirdrop && (
+            {airdrop && airdrop !== 'in-progress' && !open && !matchAirdrop && (
               <WalletDropdown>
                 <AirdropContent>
                   <img src={airdropImage} alt="Airdrop!" />

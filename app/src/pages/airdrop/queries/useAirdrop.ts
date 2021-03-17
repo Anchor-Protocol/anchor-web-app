@@ -89,10 +89,12 @@ export const query = gql`
   }
 `;
 
-export function useAirdrop(): [Airdrop | null, () => void] {
+export function useAirdrop(): [Airdrop | 'in-progress' | null, () => void] {
   const { walletReady } = useService();
 
-  const [airdrop, setAirdrop] = useState<Airdrop | null>(null);
+  const [airdrop, setAirdrop] = useState<Airdrop | null | 'in-progress'>(
+    'in-progress',
+  );
 
   const client = useApolloClient();
 
@@ -115,13 +117,20 @@ export function useAirdrop(): [Airdrop | null, () => void] {
 
                 if (claimableAirdrops.length > 0) {
                   setAirdrop(claimableAirdrops[0]);
+                } else {
+                  setAirdrop(null);
                 }
               });
+          } else {
+            setAirdrop(null);
           }
         })
         .catch((e) => {
           console.error(e);
+          setAirdrop(null);
         });
+    } else {
+      setAirdrop(null);
     }
   }, [address, client, walletReady]);
 

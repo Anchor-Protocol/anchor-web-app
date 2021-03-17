@@ -22,6 +22,7 @@ import {
 import { airdropClaimOptions } from 'pages/airdrop/transactions/airdropClaimOptions';
 import React, { useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { SwishSpinner } from 'react-spinners-kit';
 import styled from 'styled-components';
 
 export interface AirdropProps {
@@ -80,6 +81,21 @@ function AirdropBase({ className }: AirdropProps) {
       <CenteredLayout className={className} maxWidth={800}>
         <Section>
           <TransactionRenderer result={claimResult} onExit={init} />
+        </Section>
+      </CenteredLayout>
+    );
+  }
+
+  if (airdrop === 'in-progress') {
+    return (
+      <CenteredLayout className={className} maxWidth={800}>
+        <Section>
+          <EmptyMessage>
+            <SwishSpinner />
+          </EmptyMessage>
+          <ActionButton className="proceed" component={Link} to={`/earn`}>
+            Exit
+          </ActionButton>
         </Section>
       </CenteredLayout>
     );
