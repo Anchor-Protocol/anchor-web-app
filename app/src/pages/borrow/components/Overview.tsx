@@ -61,12 +61,14 @@ function OverviewBase({ className }: OverviewProps) {
     <Section className={className}>
       <article>
         <div>
-          <Tooltip
-            title="The sum of all collaterals deposited by the user, in USD"
-            placement="top"
-          >
-            <h3>Collateral Value</h3>
-          </Tooltip>
+          <h3>
+            <IconSpan>
+              Collateral Value{' '}
+              <InfoTooltip>
+                The sum of all collaterals deposited by the user, in USD
+              </InfoTooltip>
+            </IconSpan>
+          </h3>
           <div className="value">
             $
             <AnimateNumber format={formatUSTWithPostfixUnits}>
@@ -83,12 +85,14 @@ function OverviewBase({ className }: OverviewProps) {
         </div>
 
         <div>
-          <Tooltip
-            title="The sum of all loans borrowed by the user, in USD"
-            placement="top"
-          >
-            <h3>Borrowed Value</h3>
-          </Tooltip>
+          <h3>
+            <IconSpan>
+              Borrowed Value{' '}
+              <InfoTooltip>
+                The sum of all loans borrowed by the user, in USD
+              </InfoTooltip>
+            </IconSpan>
+          </h3>
           <div className="value">
             $
             <AnimateNumber format={formatUSTWithPostfixUnits}>
@@ -113,12 +117,15 @@ function OverviewBase({ className }: OverviewProps) {
         </div>
 
         <div className="apy">
-          <Tooltip
-            title="Annual Percentage Rate. The annualized rate of current interest on loans in USD"
-            placement="top"
-          >
-            <h3>Net APY</h3>
-          </Tooltip>
+          <h3>
+            <IconSpan>
+              Net APY{' '}
+              <InfoTooltip>
+                Current rate of annualized percentage yield from ANC APY minus
+                borrow APR
+              </InfoTooltip>
+            </IconSpan>
+          </h3>
           <div className="value">
             <AnimateNumber format={formatRate}>
               {borrowerDistributionAPYs && borrowerDistributionAPYs.length > 0
@@ -132,18 +139,28 @@ function OverviewBase({ className }: OverviewProps) {
           <div>
             <Circles style={{ marginLeft: -20, marginRight: -30 }}>
               <div>
-                <Circle>
-                  <BorrowAPR />
-                </Circle>
+                <Tooltip
+                  title="The annualized rate of current interest on loans in USD"
+                  placement="top"
+                >
+                  <Circle style={{ cursor: 'help' }}>
+                    <BorrowAPR />
+                  </Circle>
+                </Tooltip>
                 <p>
                   Borrow APR
                   <b>{formatRate(apr)}%</b>
                 </p>
               </div>
               <div>
-                <Circle>
-                  <APY />
-                </Circle>
+                <Tooltip
+                  title="Current rate of annualized percentage yield from ANC rewards"
+                  placement="top"
+                >
+                  <Circle style={{ cursor: 'help' }}>
+                    <APY />
+                  </Circle>
+                </Tooltip>
                 <p>
                   Distribution APY
                   <b>
