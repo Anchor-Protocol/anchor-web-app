@@ -1,49 +1,69 @@
-import { Num, Ratio, uaUST, uUST } from '@anchor-protocol/notation';
-import { useWallet } from '@anchor-protocol/wallet-provider';
-import { gql, QueryResult, useQuery } from '@apollo/client';
-import big from 'big.js';
-import { useAddressProvider } from 'contexts/contract';
-import { useLastSyncedHeight } from 'pages/earn/queries/lastSyncedHeight';
+import { useEventBusListener } from '@terra-dev/event-bus';
+import type {
+  cw20,
+  CW20Addr,
+  HumanAddr,
+  moneyMarket,
+  Num,
+  Rate,
+  uaUST,
+  WASMContractResult,
+} from '@anchor-protocol/types';
+import { createMap, Mapped, useMap } from '@terra-dev/use-map';
+import { gql, useQuery } from '@apollo/client';
+import { useContractAddress } from 'base/contexts/contract';
+import { useService } from 'base/contexts/service';
+import { useLastSyncedHeight } from 'base/queries/lastSyncedHeight';
+import { parseResult } from 'base/queries/parseResult';
+import { MappedQueryResult } from 'base/queries/types';
+import { useQueryErrorHandler } from 'base/queries/useQueryErrorHandler';
+import { useRefetch } from 'base/queries/useRefetch';
 import { useMemo } from 'react';
 
-export interface StringifiedData {
-  aUSTBalance: {
-    Result: string;
-  };
-  exchangeRate: {
-    Result: string;
-  };
+export interface RawData {
+  aUSTBalance: WASMContractResult;
+  exchangeRate: WASMContractResult;
 }
 
 export interface Data {
+  aUSTBalance: WASMContractResult<cw20.BalanceResponse<uaUST>>;
+  exchangeRate: WASMContractResult<moneyMarket.market.EpochStateResponse>;
+}
+
+export const dataMap = createMap<RawData, Data>({
+  aUSTBalance: (existing, { aUSTBalance }) => {
+    return aUSTBalance
+      ? parseResult(existing.aUSTBalance, aUSTBalance.Result)
+      : existing.aUSTBalance;
+  },
+  exchangeRate: (existing, { exchangeRate }) => {
+    return exchangeRate
+      ? parseResult(existing.exchangeRate, exchangeRate.Result)
+      : existing.exchangeRate;
+  },
+});
+
+export const mockupData: Mapped<RawData, Data> = {
+  __data: {
+    aUSTBalance: {
+      Result: '',
+    },
+    exchangeRate: {
+      Result: '',
+    },
+  },
   aUSTBalance: {
-    balance: uaUST<string>;
-  };
+    Result: '',
+    balance: '0' as uaUST,
+  },
   exchangeRate: {
-    a_token_supply: Num<string>;
-    exchange_rate: Ratio<string>;
-  };
-  totalDeposit: uUST<string>;
-}
+    Result: '',
+    exchange_rate: '1' as Rate,
+    aterra_supply: '0' as Num,
+  },
+};
 
-export function parseData({
-  aUSTBalance,
-  exchangeRate,
-}: StringifiedData): Data {
-  const parsedAUSTBalance: Data['aUSTBalance'] = JSON.parse(aUSTBalance.Result);
-  const parsedExchangeRate: Data['exchangeRate'] = JSON.parse(
-    exchangeRate.Result,
-  );
-  return {
-    aUSTBalance: parsedAUSTBalance,
-    exchangeRate: parsedExchangeRate,
-    totalDeposit: big(parsedAUSTBalance.balance)
-      .mul(parsedExchangeRate.exchange_rate)
-      .toString() as uUST,
-  };
-}
-
-export interface StringifiedVariables {
+export interface RawVariables {
   anchorTokenContract: string;
   anchorTokenBalanceQuery: string;
   moneyMarketContract: string;
@@ -51,26 +71,18 @@ export interface StringifiedVariables {
 }
 
 export interface Variables {
-  anchorTokenContract: string;
-  anchorTokenBalanceQuery: {
-    balance: {
-      address: string;
-    };
-  };
-  moneyMarketContract: string;
-  moneyMarketEpochQuery: {
-    epoch_state: {
-      lastSyncedHeight: number;
-    };
-  };
+  anchorTokenContract: CW20Addr;
+  anchorTokenBalanceQuery: cw20.Balance;
+  moneyMarketContract: HumanAddr;
+  moneyMarketEpochQuery: moneyMarket.market.EpochState;
 }
 
-export function stringifyVariables({
+export function mapVariables({
   anchorTokenContract,
   anchorTokenBalanceQuery,
   moneyMarketContract,
   moneyMarketEpochQuery,
-}: Variables): StringifiedVariables {
+}: Variables): RawVariables {
   return {
     anchorTokenContract,
     anchorTokenBalanceQuery: JSON.stringify(anchorTokenBalanceQuery),
@@ -80,7 +92,7 @@ export function stringifyVariables({
 }
 
 export const query = gql`
-  query earnTotalDeposit(
+  query __totalDeposit(
     $anchorTokenContract: String!
     $anchorTokenBalanceQuery: String!
     $moneyMarketContract: String!
@@ -102,41 +114,64 @@ export const query = gql`
   }
 `;
 
-export function useTotalDeposit(): QueryResult<
-  StringifiedData,
-  StringifiedVariables
-> & { parsedData: Data | undefined } {
-  const addressProvider = useAddressProvider();
-  const { status } = useWallet();
+export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
+  const { moneyMarket, cw20 } = useContractAddress();
+  const { serviceAvailable, walletReady } = useService();
 
-  const { parsedData: lastSyncedHeight } = useLastSyncedHeight();
+  const { data: lastSyncedHeight } = useLastSyncedHeight();
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
-    skip: status.status !== 'ready' || typeof lastSyncedHeight !== 'number',
-    variables: stringifyVariables({
-      anchorTokenContract: addressProvider.aToken(''),
+  const variables = useMemo(() => {
+    if (
+      !walletReady ||
+      typeof lastSyncedHeight !== 'number' ||
+      lastSyncedHeight === 0
+    )
+      return undefined;
+
+    return mapVariables({
+      anchorTokenContract: cw20.aUST,
       anchorTokenBalanceQuery: {
         balance: {
-          address: status.status === 'ready' ? status.walletAddress : '',
+          address: walletReady.walletAddress,
         },
       },
-      moneyMarketContract: addressProvider.market(''),
+      moneyMarketContract: moneyMarket.market,
       moneyMarketEpochQuery: {
         epoch_state: {
-          lastSyncedHeight:
-            typeof lastSyncedHeight === 'number' ? lastSyncedHeight : 0,
+          block_height: lastSyncedHeight,
         },
       },
-    }),
+    });
+  }, [cw20.aUST, lastSyncedHeight, moneyMarket.market, walletReady]);
+
+  const onError = useQueryErrorHandler();
+
+  const {
+    previousData,
+    data: _data = previousData,
+    refetch: _refetch,
+    error,
+    ...result
+  } = useQuery<RawData, RawVariables>(query, {
+    skip: !variables || !serviceAvailable,
+    fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-first',
+    variables,
+    onError,
   });
 
-  const parsedData = useMemo(
-    () => (result.data ? parseData(result.data) : undefined),
-    [result.data],
-  );
+  useEventBusListener('interest-earned-updated', () => {
+    if (serviceAvailable) {
+      _refetch();
+    }
+  });
+
+  const data = useMap(_data, dataMap);
+  const refetch = useRefetch(_refetch, dataMap);
 
   return {
     ...result,
-    parsedData,
+    data: serviceAvailable ? data : mockupData,
+    refetch,
   };
 }

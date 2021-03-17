@@ -1,56 +1,34 @@
-import {
-  rulerLightColor,
-  rulerShadowColor,
-} from '@anchor-protocol/styled-neumorphism';
-import { Footer } from 'components/Footer';
+import { TokenIcon } from '@anchor-protocol/token-icons';
+import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { screen } from 'env';
-import { useMarketBalanceOverview } from 'pages/borrow/queries/marketBalanceOverview';
-import { useMarketOverview } from 'pages/borrow/queries/marketOverview';
-import { useMarketUserOverview } from 'pages/borrow/queries/marketUserOverview';
+import { LoanButtons } from 'pages/borrow/components/LoanButtons';
+import { Overview } from 'pages/borrow/components/Overview';
+import { MarketProvider } from 'pages/borrow/context/market';
 import React from 'react';
 import styled from 'styled-components';
 import { CollateralList } from './components/CollateralList';
-import { LoanList } from './components/LoanList';
-import { Overview } from 'pages/borrow/components/Overview';
 
 export interface BorrowProps {
   className?: string;
 }
 
 function BorrowBase({ className }: BorrowProps) {
-  const { parsedData: marketBalance } = useMarketBalanceOverview();
-  const { parsedData: marketOverview } = useMarketOverview({ marketBalance });
-  const { parsedData: marketUserOverview } = useMarketUserOverview({
-    marketBalance,
-  });
-
   return (
-    <div className={className}>
-      <main>
-        <h1>BORROW</h1>
-
-        <div className="content-layout">
-          <Overview
-            className="borrow"
-            marketOverview={marketOverview}
-            marketUserOverview={marketUserOverview}
-          />
-          <CollateralList
-            className="collateral-list"
-            marketOverview={marketOverview}
-            marketUserOverview={marketUserOverview}
-          />
-          <LoanList
-            className="loan-list"
-            marketBalance={marketBalance}
-            marketOverview={marketOverview}
-            marketUserOverview={marketUserOverview}
-          />
+    <MarketProvider>
+      <PaddedLayout className={className}>
+        <div className="market">
+          <h1>
+            <TokenIcon token="ust" /> UST
+          </h1>
+          <div className="loan-buttons">
+            <LoanButtons />
+          </div>
         </div>
 
-        <Footer />
-      </main>
-    </div>
+        <Overview className="borrow" />
+        <CollateralList className="collateral-list" />
+      </PaddedLayout>
+    </MarketProvider>
   );
 }
 
@@ -58,15 +36,32 @@ export const Borrow = styled(BorrowBase)`
   // ---------------------------------------------
   // style
   // ---------------------------------------------
-  background-color: ${({ theme }) => theme.backgroundColor};
-  color: ${({ theme }) => theme.textColor};
+  .market {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
 
-  h1 {
-    margin: 0 0 50px 0;
+    h1 {
+      font-size: 44px;
+      font-weight: 900;
+      color: ${({ theme }) => theme.textColor};
 
-    font-size: 34px;
-    font-weight: 900;
-    color: ${({ theme }) => theme.textColor};
+      img {
+        transform: scale(1.3) translateY(3px);
+        margin-right: 5px;
+      }
+    }
+
+    .loan-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 180px);
+      grid-gap: 10px;
+
+      button {
+        height: 48px;
+        border-radius: 26px;
+      }
+    }
   }
 
   h2 {
@@ -79,18 +74,6 @@ export const Borrow = styled(BorrowBase)`
 
   .borrow {
     article {
-      text-align: center;
-
-      label {
-        font-size: 14px;
-        color: ${({ theme }) => theme.dimTextColor};
-      }
-
-      p {
-        font-weight: 300;
-        font-size: 48px;
-      }
-
       margin-bottom: 80px;
     }
 
@@ -142,7 +125,8 @@ export const Borrow = styled(BorrowBase)`
 
               margin-right: 15px;
 
-              svg {
+              svg,
+              img {
                 display: block;
                 width: 60px;
                 height: 60px;
@@ -187,45 +171,31 @@ export const Borrow = styled(BorrowBase)`
     }
   }
 
-  // pc
-  @media (min-width: ${screen.pc.min}px) {
-    padding: 100px;
-
-    .NeuSection-root {
-      margin-bottom: 40px;
-    }
-  }
-
   // tablet
   @media (min-width: ${screen.tablet.min}px) and (max-width: ${screen.tablet
       .max}px) {
-    padding: 30px;
+    .market {
+      flex-direction: column;
+      align-items: center;
 
-    .NeuSection-root {
-      margin-bottom: 40px;
-
-      .NeuSection-content {
-        padding: 30px;
+      .loan-buttons {
+        width: 500px;
+        margin-top: 20px;
+        grid-template-columns: repeat(2, 1fr);
       }
-    }
-  }
-
-  @media (min-width: ${screen.monitor.min}px) {
-    main {
-      max-width: 1440px;
-      margin: 0 auto;
     }
   }
 
   // mobile
   @media (max-width: ${screen.mobile.max}px) {
-    padding: 30px 20px;
+    .market {
+      flex-direction: column;
+      align-items: center;
 
-    .NeuSection-root {
-      margin-bottom: 40px;
-
-      .NeuSection-content {
-        padding: 20px;
+      .loan-buttons {
+        width: 100%;
+        margin-top: 20px;
+        grid-template-columns: repeat(2, 1fr);
       }
     }
 
@@ -238,67 +208,33 @@ export const Borrow = styled(BorrowBase)`
   }
 
   // borrow
-  @media (min-width: 1200px) {
+  @media (min-width: 1400px) {
     .borrow {
       article {
         display: flex;
 
-        div {
+        > div {
           flex: 1;
 
-          &:not(:last-child) {
-            border-right: 1px solid
-              ${({ theme }) =>
-                rulerShadowColor({
-                  intensity: theme.intensity,
-                  color: theme.backgroundColor,
-                })};
-          }
-
           &:not(:first-child) {
-            border-left: 1px solid
-              ${({ theme }) =>
-                rulerLightColor({
-                  intensity: theme.intensity,
-                  color: theme.backgroundColor,
-                })};
+            margin-left: 18px;
           }
         }
       }
     }
   }
 
-  @media (max-width: 1199px) {
+  @media (max-width: 1399px) {
     .borrow {
       article {
         display: flex;
         flex-direction: column;
 
-        div {
+        > div {
           flex: 1;
 
-          &:not(:last-child) {
-            padding-bottom: 20px;
-            border-bottom: 1px solid
-              ${({ theme }) =>
-                rulerShadowColor({
-                  intensity: theme.intensity,
-                  color: theme.backgroundColor,
-                })};
-          }
-
           &:not(:first-child) {
-            padding-top: 20px;
-            border-top: 1px solid
-              ${({ theme }) =>
-                rulerLightColor({
-                  intensity: theme.intensity,
-                  color: theme.backgroundColor,
-                })};
-          }
-
-          p {
-            font-size: 48px;
+            margin-top: 18px;
           }
         }
       }

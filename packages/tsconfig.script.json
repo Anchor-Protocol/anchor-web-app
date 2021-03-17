@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "downlevelIteration": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "target": "ES2018",
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "baseUrl": "src"
+  },
+  "include": [
+    "src",
+    "scripts"
+  ]
+}

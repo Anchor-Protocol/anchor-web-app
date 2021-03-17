@@ -1,45 +1,48 @@
-import { useSubscription } from '@anchor-protocol/broadcastable-operation';
-import { Num, ubLuna } from '@anchor-protocol/notation';
-import { useWallet } from '@anchor-protocol/wallet-provider';
-import { gql, QueryResult, useQuery } from '@apollo/client';
-import { useAddressProvider } from 'contexts/contract';
+import { useSubscription } from '@terra-dev/broadcastable-operation';
+import { bluna, WASMContractResult } from '@anchor-protocol/types';
+import { createMap, Mapped, useMap } from '@terra-dev/use-map';
+import { gql, useQuery } from '@apollo/client';
+import { useContractAddress } from 'base/contexts/contract';
+import { useService } from 'base/contexts/service';
+import { parseResult } from 'base/queries/parseResult';
+import { MappedQueryResult } from 'base/queries/types';
+import { useQueryErrorHandler } from 'base/queries/useQueryErrorHandler';
+import { useRefetch } from 'base/queries/useRefetch';
 import { useMemo } from 'react';
 
-export interface StringifiedData {
-  rewardState: {
-    Result: string;
-  };
-
-  claimableReward: {
-    Result: string;
-  };
+export interface RawData {
+  rewardState: WASMContractResult;
+  claimableReward: WASMContractResult;
 }
 
 export interface Data {
-  rewardState: {
-    global_index: Num<string>;
-    total_balance: ubLuna<string>;
-  };
-
-  claimableReward: {
-    address: string;
-    balance: ubLuna<string>;
-    index: Num<string>;
-    pending_rewards: ubLuna<string>;
-  };
+  rewardState: WASMContractResult<bluna.reward.StateResponse>;
+  claimableReward: WASMContractResult<bluna.reward.HolderResponse>;
 }
 
-export function parseData({
-  rewardState,
-  claimableReward,
-}: StringifiedData): Data {
-  return {
-    rewardState: JSON.parse(rewardState.Result),
-    claimableReward: JSON.parse(claimableReward.Result),
-  };
-}
+export const dataMap = createMap<RawData, Data>({
+  rewardState: (existing, { rewardState }) => {
+    return parseResult(existing.rewardState, rewardState.Result);
+  },
+  claimableReward: (existing, { claimableReward }: RawData) => {
+    return parseResult(existing.claimableReward, claimableReward.Result);
+  },
+});
 
-export interface StringifiedVariables {
+export const mockupData: Mapped<RawData, Data> = {
+  __data: {
+    rewardState: {
+      Result: '',
+    },
+    claimableReward: {
+      Result: '',
+    },
+  },
+  rewardState: undefined,
+  claimableReward: undefined,
+};
+
+export interface RawVariables {
   bAssetRewardContract: string;
   rewardState: string;
   claimableRewardQuery: string;
@@ -47,21 +50,15 @@ export interface StringifiedVariables {
 
 export interface Variables {
   bAssetRewardContract: string;
-  rewardState: {
-    state: {};
-  };
-  claimableRewardQuery: {
-    holder: {
-      address: string;
-    };
-  };
+  rewardState: bluna.reward.State;
+  claimableRewardQuery: bluna.reward.Holder;
 }
 
-export function stringifyVariables({
+export function mapVariables({
   bAssetRewardContract,
   rewardState,
   claimableRewardQuery,
-}: Variables): StringifiedVariables {
+}: Variables): RawVariables {
   return {
     bAssetRewardContract,
     rewardState: JSON.stringify(rewardState),
@@ -70,7 +67,7 @@ export function stringifyVariables({
 }
 
 export const query = gql`
-  query claimableReward(
+  query __claimable(
     $bAssetRewardContract: String!
     $rewardState: String!
     $claimableRewardQuery: String!
@@ -91,42 +88,55 @@ export const query = gql`
   }
 `;
 
-export function useClaimable(): QueryResult<
-  StringifiedData,
-  StringifiedVariables
-> & { parsedData: Data | undefined } {
-  const addressProvider = useAddressProvider();
-  const { status } = useWallet();
+export function useClaimable(): MappedQueryResult<RawVariables, RawData, Data> {
+  const { bluna } = useContractAddress();
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
-    skip: status.status !== 'ready',
-    fetchPolicy: 'cache-and-network',
-    variables: stringifyVariables({
-      bAssetRewardContract: addressProvider.bAssetReward(''),
+  const { serviceAvailable, walletReady } = useService();
+
+  const variables = useMemo(() => {
+    if (!walletReady) return undefined;
+
+    return mapVariables({
+      bAssetRewardContract: bluna.reward,
       rewardState: {
         state: {},
       },
       claimableRewardQuery: {
         holder: {
-          address: status.status === 'ready' ? status.walletAddress : '',
+          address: walletReady.walletAddress,
         },
       },
-    }),
+    });
+  }, [bluna.reward, walletReady]);
+
+  const onError = useQueryErrorHandler();
+
+  const {
+    previousData,
+    data: _data = previousData,
+    refetch: _refetch,
+    error,
+    ...result
+  } = useQuery<RawData, RawVariables>(query, {
+    skip: !variables || !serviceAvailable,
+    fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-first',
+    variables,
+    onError,
   });
 
   useSubscription((id, event) => {
     if (event === 'done') {
-      result.refetch();
+      _refetch();
     }
   });
 
-  const parsedData = useMemo(
-    () => (result.data ? parseData(result.data) : undefined),
-    [result.data],
-  );
+  const data = useMap(_data, dataMap);
+  const refetch = useRefetch(_refetch, dataMap);
 
   return {
     ...result,
-    parsedData,
+    data: serviceAvailable ? data : mockupData,
+    refetch,
   };
 }

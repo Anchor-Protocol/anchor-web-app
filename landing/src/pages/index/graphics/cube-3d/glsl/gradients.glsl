@@ -10,10 +10,10 @@ mat2 rotate2d(float value){
 }
 
 vec3 gradient1(vec2 st, float tick) {
-  vec3 c1 = vec3(0.286,0.455,0.533);
-  vec3 c2 = vec3(0.722,0.843,0.863);
-  vec3 c3 = vec3(0.553,0.796,0.769);
-  vec3 c4 = vec3(0.357,0.537,0.576);
+  vec3 c1 = vec3(0.612,0.769,0.561);
+  vec3 c2 = vec3(0.424,0.612,0.412);
+  vec3 c3 = vec3(0.424,0.612,0.412); 
+  vec3 c4 = vec3(0.365,0.576,0.345); 
 
   st.y = 1.0 - st.y;
 
@@ -34,8 +34,8 @@ vec3 gradient1(vec2 st, float tick) {
 }
 
 vec3 gradient2(vec2 st, float tick) {
-  vec3 c1 = vec3(0.553,0.796,0.769);
-  vec3 c2 = vec3(0.722,0.843,0.863);
+  vec3 c1 = vec3(0.612,0.769,0.561);
+  vec3 c2 = vec3(0.424,0.612,0.412);
 
   st -= vec2(0.5);
   st *= scale(vec2(3.8));
@@ -46,8 +46,8 @@ vec3 gradient2(vec2 st, float tick) {
 }
 
 vec3 gradient3(vec2 st, float tick) {
-  vec3 c1 = vec3(0.553,0.796,0.769);
-  vec3 c2 = vec3(0.357,0.537,0.576);
+  vec3 c1 = vec3(0.612,0.769,0.561);
+  vec3 c2 = vec3(0.424,0.612,0.412);
 
   st -= vec2(0.5);
   st *= scale(vec2(3.8));

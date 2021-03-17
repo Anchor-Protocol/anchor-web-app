@@ -1,19 +1,20 @@
-import { testAddressProvider, testClient } from 'test.env';
+import { map } from '@terra-dev/use-map';
+import { testAddress, testClient } from 'base/test.env';
 import {
-  parseData,
+  dataMap,
+  mapVariables,
   query,
-  StringifiedData,
-  StringifiedVariables,
-  stringifyVariables,
+  RawData,
+  RawVariables,
 } from '../withdrawHistory';
 
 describe('queries/withdrawHistory', () => {
   test('should get result from query', async () => {
     const data = await testClient
-      .query<StringifiedData, StringifiedVariables>({
+      .query<RawData, RawVariables>({
         query,
-        variables: stringifyVariables({
-          bLunaHubContract: testAddressProvider.bAssetHub(''),
+        variables: mapVariables({
+          bLunaHubContract: testAddress.bluna.hub,
           allHistory: {
             all_history: {
               start_from: 1,
@@ -25,8 +26,8 @@ describe('queries/withdrawHistory', () => {
           },
         }),
       })
-      .then(({ data }) => parseData(data));
+      .then(({ data }) => map(data, dataMap));
 
-    expect(Array.isArray(data.allHistory.history)).toBeTruthy();
+    expect(Array.isArray(data.allHistory?.history)).toBeTruthy();
   });
 });

@@ -1,54 +1,90 @@
-import { Ratio, uaUST, uUST } from '@anchor-protocol/notation';
-import big from 'big.js';
-import { Data } from 'queries/txInfos';
-import { TxResult } from 'transactions/tx';
+import {
+  demicrofy,
+  formatRate,
+  formatUSTWithPostfixUnits,
+} from '@anchor-protocol/notation';
+import { moneyMarket, Rate, uUST } from '@anchor-protocol/types';
+import { TxHashLink } from 'base/components/TxHashLink';
+import { TxInfoParseError } from 'base/errors/TxInfoParseError';
+import { TransactionResult } from 'base/models/transaction';
+import { currentLtv } from 'pages/borrow/logics/currentLtv';
+import {
+  Data,
+  pickAttributeValue,
+  pickEvent,
+  pickRawLog,
+} from 'base/queries/txInfos';
+import { createElement } from 'react';
+import { TxResult } from 'base/transactions/tx';
 
 interface Params {
   txResult: TxResult;
   txInfo: Data;
+  txFee: uUST;
+  loanAmount?: moneyMarket.market.BorrowInfoResponse;
+  borrowInfo?: moneyMarket.custody.BorrowerResponse;
+  oraclePrice?: moneyMarket.oracle.PriceResponse;
 }
 
-export interface BorrowResult {
-  depositAmount: uUST<string> | undefined;
-  receivedAmount: uaUST<string> | undefined;
-  exchangeRate: Ratio<string> | undefined;
-  txFee: uUST<string>;
-  txHash: string;
-}
+export function pickBorrowResult({
+  txInfo,
+  txResult,
+  txFee,
+  loanAmount,
+  borrowInfo,
+  oraclePrice,
+}: Params): TransactionResult {
+  const rawLog = pickRawLog(txInfo, 0);
 
-export function pickBorrowResult({ txInfo, txResult }: Params): BorrowResult {
-  const fromContract =
-    Array.isArray(txInfo[0].RawLog) && txInfo[0].RawLog[0].events[1];
-
-  if (!fromContract) {
-    console.error({ txInfo, txResult });
-    throw new Error(`Failed contract result parse`);
+  if (!rawLog) {
+    throw new TxInfoParseError(txResult, txInfo, 'Undefined the RawLog');
   }
 
-  const depositAmount = fromContract.attributes.find(
-    ({ key }: { key: string }) => key === 'deposit_amount',
-  )?.value as uUST | undefined;
+  const fromContract = pickEvent(rawLog, 'from_contract');
 
-  const receivedAmount = fromContract.attributes.find(
-    ({ key }: { key: string }) => key === 'mint_amount',
-  )?.value as uaUST | undefined;
+  if (!fromContract) {
+    throw new TxInfoParseError(
+      txResult,
+      txInfo,
+      'Undefined the from_contract event',
+    );
+  }
 
-  const exchangeRate =
-    depositAmount &&
-    receivedAmount &&
-    (big(receivedAmount).div(depositAmount).toFixed() as Ratio | undefined);
+  const borrowedAmount = pickAttributeValue<uUST>(fromContract, 3);
 
-  const txFee = big(txResult.fee.amount[0].amount)
-    .plus(txResult.fee.gas)
-    .toFixed() as uUST;
+  const newLtv =
+    loanAmount && borrowInfo && oraclePrice
+      ? currentLtv(loanAmount, borrowInfo, oraclePrice)
+      : ('0' as Rate);
+
+  const outstandingLoan = loanAmount?.loan_amount;
 
   const txHash = txResult.result.txhash;
 
   return {
-    depositAmount,
-    receivedAmount,
-    exchangeRate,
-    txFee,
-    txHash,
+    txInfo,
+    txResult,
+    details: [
+      borrowedAmount && {
+        name: 'Borrowed Amount',
+        value: formatUSTWithPostfixUnits(demicrofy(borrowedAmount)) + ' UST',
+      },
+      newLtv && {
+        name: 'New LTV',
+        value: formatRate(newLtv) + ' %',
+      },
+      outstandingLoan && {
+        name: 'Outstanding Loan',
+        value: formatUSTWithPostfixUnits(demicrofy(outstandingLoan)) + ' UST',
+      },
+      {
+        name: 'Tx Hash',
+        value: createElement(TxHashLink, { txHash }),
+      },
+      {
+        name: 'Tx Fee',
+        value: formatUSTWithPostfixUnits(demicrofy(txFee)) + ' UST',
+      },
+    ],
   };
 }

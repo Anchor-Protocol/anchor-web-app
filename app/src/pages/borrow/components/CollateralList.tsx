@@ -1,39 +1,34 @@
-import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
-import { HorizontalScrollTable } from '@anchor-protocol/neumorphism-ui/components/HorizontalScrollTable';
-import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
+import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
+import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import {
   demicrofy,
   formatLuna,
   formatUSTWithPostfixUnits,
-  Ratio,
 } from '@anchor-protocol/notation';
-import { useWallet } from '@anchor-protocol/wallet-provider';
-import { Error } from '@material-ui/icons';
+import { TokenIcon } from '@anchor-protocol/token-icons';
+import { UST } from '@anchor-protocol/types';
+import { useService } from 'base/contexts/service';
 import big from 'big.js';
-import { useCollaterals } from 'pages/borrow/logics/useCollaterals';
-import styled from 'styled-components';
-import { Data as MarketOverview } from '../queries/marketOverview';
-import { Data as MarketUserOverview } from '../queries/marketUserOverview';
+import { useMemo } from 'react';
+import { useMarket } from '../context/market';
+import { collaterals as _collaterals } from '../logics/collaterals';
 import { useProvideCollateralDialog } from './useProvideCollateralDialog';
 import { useRedeemCollateralDialog } from './useRedeemCollateralDialog';
 
 export interface CollateralListProps {
   className?: string;
-  marketOverview: MarketOverview | undefined;
-  marketUserOverview: MarketUserOverview | undefined;
 }
 
-function CollateralListBase({
-  className,
-  marketOverview,
-  marketUserOverview,
-}: CollateralListProps) {
+export function CollateralList({ className }: CollateralListProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { status } = useWallet();
+  const { ready, borrowInfo, oraclePrice, loanAmount, refetch } = useMarket();
+
+  const { serviceAvailable } = useService();
 
   const [
     openProvideCollateralDialog,
@@ -48,15 +43,14 @@ function CollateralListBase({
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
-  const collaterals = useCollaterals(
-    marketUserOverview?.borrowInfo.balance,
-    marketUserOverview?.borrowInfo.spendable,
-    1 as Ratio<number>,
+  const collaterals = useMemo(
+    () => _collaterals(borrowInfo, 1 as UST<number>),
+    [borrowInfo],
   );
-  const collateralsInUST = useCollaterals(
-    marketUserOverview?.borrowInfo.balance,
-    marketUserOverview?.borrowInfo.spendable,
-    marketOverview?.oraclePrice.rate,
+
+  const collateralsInUST = useMemo(
+    () => _collaterals(borrowInfo, oraclePrice?.rate),
+    [borrowInfo, oraclePrice?.rate],
   );
 
   // ---------------------------------------------
@@ -64,9 +58,7 @@ function CollateralListBase({
   // ---------------------------------------------
   return (
     <Section className={className}>
-      <h2>COLLATERAL LIST</h2>
-
-      <HorizontalScrollTable>
+      <HorizontalScrollTable minWidth={700}>
         <colgroup>
           <col style={{ width: 300 }} />
           <col style={{ width: 200 }} />
@@ -74,10 +66,10 @@ function CollateralListBase({
         </colgroup>
         <thead>
           <tr>
-            <th>Name</th>
+            <th>COLLATERAL LIST</th>
             <th>
               <IconSpan>
-                Balance{' '}
+                Provided{' '}
                 <InfoTooltip>
                   Amount of bAsset collateral deposited by user, in USD / Amount
                   of bAsset collateral deposited by user
@@ -91,7 +83,7 @@ function CollateralListBase({
           <tr>
             <td>
               <i>
-                <Error />
+                <TokenIcon token="bluna" />
               </i>
               <div>
                 <div className="coin">bLuna</div>
@@ -107,40 +99,31 @@ function CollateralListBase({
               </p>
             </td>
             <td>
-              <ActionButton
-                disabled={
-                  status.status !== 'ready' ||
-                  !marketOverview ||
-                  !marketUserOverview
-                }
-                onClick={() =>
-                  openProvideCollateralDialog({
-                    marketOverview: marketOverview!,
-                    marketUserOverview: marketUserOverview!,
-                  })
-                }
+              <BorderButton
+                disabled={!serviceAvailable || !ready}
+                onClick={() => {
+                  refetch();
+                  openProvideCollateralDialog({});
+                }}
               >
-                Add
-              </ActionButton>
-              <ActionButton
+                Provide
+              </BorderButton>
+              <BorderButton
                 disabled={
-                  status.status !== 'ready' ||
-                  !marketOverview ||
-                  !marketUserOverview ||
-                  (big(marketUserOverview.borrowInfo.balance)
-                    .minus(marketUserOverview.borrowInfo.spendable)
-                    .eq(0) &&
-                    big(marketUserOverview.loanAmount.loan_amount).lte(0))
+                  !serviceAvailable ||
+                  !ready ||
+                  !borrowInfo ||
+                  !loanAmount ||
+                  (big(borrowInfo.balance).minus(borrowInfo.spendable).eq(0) &&
+                    big(loanAmount.loan_amount).lte(0))
                 }
-                onClick={() =>
-                  openRedeemCollateralDialog({
-                    marketOverview: marketOverview!,
-                    marketUserOverview: marketUserOverview!,
-                  })
-                }
+                onClick={() => {
+                  refetch();
+                  openRedeemCollateralDialog({});
+                }}
               >
                 Withdraw
-              </ActionButton>
+              </BorderButton>
             </td>
           </tr>
         </tbody>
@@ -151,7 +134,3 @@ function CollateralListBase({
     </Section>
   );
 }
-
-export const CollateralList = styled(CollateralListBase)`
-  // TODO
-`;

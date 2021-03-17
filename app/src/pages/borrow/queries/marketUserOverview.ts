@@ -1,117 +1,101 @@
-import { useSubscription } from '@anchor-protocol/broadcastable-operation';
-import { Num, uUST } from '@anchor-protocol/notation';
-import { useWallet } from '@anchor-protocol/wallet-provider';
-import { gql, QueryResult, useQuery } from '@apollo/client';
-import { useAddressProvider } from 'contexts/contract';
+import type {
+  HumanAddr,
+  moneyMarket,
+  Num,
+  uANC,
+  uUST,
+  WASMContractResult,
+} from '@anchor-protocol/types';
+import { ContractAddress } from '@anchor-protocol/types';
+import { createMap, map, Mapped, useMap } from '@terra-dev/use-map';
+import { WalletStatus } from '@anchor-protocol/wallet-provider';
+import { ApolloClient, gql, useQuery } from '@apollo/client';
+import { useContractAddress } from 'base/contexts/contract';
+import { useService } from 'base/contexts/service';
+import { parseResult } from 'base/queries/parseResult';
+import { MappedApolloQueryResult, MappedQueryResult } from 'base/queries/types';
+import { useQueryErrorHandler } from 'base/queries/useQueryErrorHandler';
+import { useRefetch } from 'base/queries/useRefetch';
 import { useMemo } from 'react';
-import { Data as MarketBalanceOverviewData } from './marketBalanceOverview';
+import { Data as MarketState } from './marketState';
 
-export interface StringifiedData {
-  loanAmount: {
-    Result: string;
-  };
-
-  liability: {
-    Result: string;
-  };
-
-  borrowInfo: {
-    Result: string;
-  };
+export interface RawData {
+  loanAmount: WASMContractResult;
+  borrowInfo: WASMContractResult;
 }
 
 export interface Data {
-  loanAmount: {
-    borrower: string;
-    loan_amount: uUST<string>;
-  };
+  loanAmount: WASMContractResult<moneyMarket.market.BorrowInfoResponse>;
+  borrowInfo: WASMContractResult<moneyMarket.custody.BorrowerResponse>;
+}
 
-  liability: {
-    borrower: string;
-    loan_amount: uUST<string>;
-    interest_index: Num<string>;
-  };
+export const dataMap = createMap<RawData, Data>({
+  loanAmount: (existing, { loanAmount }) => {
+    return parseResult(existing.loanAmount, loanAmount.Result);
+  },
+  borrowInfo: (existing, { borrowInfo }) => {
+    return parseResult(existing.borrowInfo, borrowInfo.Result);
+  },
+});
+
+export const mockupData: Mapped<RawData, Data> = {
+  __data: undefined,
+
+  loanAmount: {
+    Result: '',
+    loan_amount: '0' as uUST,
+    borrower: '' as HumanAddr,
+    interest_index: '1' as Num,
+    reward_index: '0' as Num,
+    pending_rewards: '0' as uANC,
+  },
 
   borrowInfo: {
-    borrower: string;
-    balance: uUST<string>;
-    spendable: uUST<string>;
-  };
-}
+    Result: '',
+    borrower: '' as HumanAddr,
+    balance: '0' as uUST,
+    spendable: '0' as uUST,
+  },
+};
 
-export function parseData({
-  loanAmount,
-  liability,
-  borrowInfo,
-}: StringifiedData): Data {
-  return {
-    loanAmount: JSON.parse(loanAmount.Result),
-    liability: JSON.parse(liability.Result),
-    borrowInfo: JSON.parse(borrowInfo.Result),
-  };
-}
-
-export interface StringifiedVariables {
+export interface RawVariables {
   marketContractAddress: string;
-  marketLoanQuery: string;
-  marketLiabilityQuery: string;
+  marketBorrowerQuery: string;
   custodyContractAddress: string;
   custodyBorrowerQuery: string;
 }
 
 export interface Variables {
-  marketContractAddress: string;
-  marketLoanQuery: {
-    loan_amount: {
-      borrower: string;
-      block_height: number;
-    };
-  };
-  custodyContractAddress: string;
-  custodyBorrowerQuery: {
-    borrower: {
-      address: string;
-    };
-  };
+  marketContractAddress: HumanAddr;
+  marketBorrowerQuery: moneyMarket.market.BorrowInfo;
+  custodyContractAddress: HumanAddr;
+  custodyBorrowerQuery: moneyMarket.custody.Borrower;
 }
 
-export function stringifyVariables({
+export function mapVariables({
   marketContractAddress,
-  marketLoanQuery,
+  marketBorrowerQuery,
   custodyContractAddress,
   custodyBorrowerQuery,
-}: Variables): StringifiedVariables {
+}: Variables): RawVariables {
   return {
     marketContractAddress,
-    marketLoanQuery: JSON.stringify(marketLoanQuery),
-    marketLiabilityQuery: JSON.stringify({
-      liability: {
-        borrower: marketLoanQuery.loan_amount.borrower,
-      },
-    }),
+    marketBorrowerQuery: JSON.stringify(marketBorrowerQuery),
     custodyContractAddress,
     custodyBorrowerQuery: JSON.stringify(custodyBorrowerQuery),
   };
 }
 
 export const query = gql`
-  query(
+  query __marketUserOverview(
     $marketContractAddress: String!
-    $marketLoanQuery: String!
-    $marketLiabilityQuery: String!
+    $marketBorrowerQuery: String!
     $custodyContractAddress: String!
     $custodyBorrowerQuery: String!
   ) {
     loanAmount: WasmContractsContractAddressStore(
       ContractAddress: $marketContractAddress
-      QueryMsg: $marketLoanQuery
-    ) {
-      Result
-    }
-
-    liability: WasmContractsContractAddressStore(
-      ContractAddress: $marketContractAddress
-      QueryMsg: $marketLiabilityQuery
+      QueryMsg: $marketBorrowerQuery
     ) {
       Result
     }
@@ -126,48 +110,94 @@ export const query = gql`
 `;
 
 export function useMarketUserOverview({
-  marketBalance,
+  currentBlock,
 }: {
-  marketBalance: MarketBalanceOverviewData | undefined;
-}): QueryResult<StringifiedData, StringifiedVariables> & {
-  parsedData: Data | undefined;
-} {
-  const addressProvider = useAddressProvider();
-  const { status } = useWallet();
+  currentBlock: MarketState['currentBlock'] | undefined;
+}): MappedQueryResult<RawVariables, RawData, Data> {
+  const { moneyMarket } = useContractAddress();
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
-    skip: status.status !== 'ready' || !marketBalance,
-    fetchPolicy: 'cache-and-network',
-    variables: stringifyVariables({
-      marketContractAddress: addressProvider.market('uusd'),
-      marketLoanQuery: {
-        loan_amount: {
-          borrower: status.status === 'ready' ? status.walletAddress : '',
-          block_height: marketBalance?.currentBlock ?? 0,
+  const { serviceAvailable, walletReady } = useService();
+
+  const variables = useMemo(() => {
+    if (!walletReady || typeof currentBlock !== 'number') return undefined;
+
+    return mapVariables({
+      marketContractAddress: moneyMarket.market,
+      marketBorrowerQuery: {
+        borrower_info: {
+          borrower: walletReady.walletAddress,
+          block_height: currentBlock,
         },
       },
-      custodyContractAddress: addressProvider.custody('ubluna'),
+      custodyContractAddress: moneyMarket.custody,
       custodyBorrowerQuery: {
         borrower: {
-          address: status.status === 'ready' ? status.walletAddress : '',
+          address: walletReady.walletAddress,
         },
       },
-    }),
+    });
+  }, [currentBlock, moneyMarket.custody, moneyMarket.market, walletReady]);
+
+  const onError = useQueryErrorHandler();
+
+  const {
+    previousData,
+    data: _data = previousData,
+    refetch: _refetch,
+    error,
+    ...result
+  } = useQuery<RawData, RawVariables>(query, {
+    skip: !variables || !serviceAvailable,
+    fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-first',
+    variables,
+    onError,
   });
 
-  useSubscription((id, event) => {
-    if (event === 'done') {
-      result.refetch();
-    }
-  });
-
-  const parsedData = useMemo(
-    () => (result.data ? parseData(result.data) : undefined),
-    [result.data],
-  );
+  const data = useMap(_data, dataMap);
+  const refetch = useRefetch(_refetch, dataMap);
 
   return {
     ...result,
-    parsedData,
+    data: serviceAvailable ? data : mockupData,
+    refetch,
   };
+}
+
+export function queryMarketUserOverview(
+  client: ApolloClient<any>,
+  address: ContractAddress,
+  walletStatus: WalletStatus,
+  currentBlock: MarketState['currentBlock'],
+): Promise<MappedApolloQueryResult<RawData, Data>> {
+  if (walletStatus.status !== 'ready') {
+    throw new Error(`Wallet is not ready`);
+  }
+
+  return client
+    .query<RawData, RawVariables>({
+      query,
+      fetchPolicy: 'network-only',
+      variables: mapVariables({
+        marketContractAddress: address.moneyMarket.market,
+        marketBorrowerQuery: {
+          borrower_info: {
+            borrower: walletStatus.walletAddress,
+            block_height: currentBlock,
+          },
+        },
+        custodyContractAddress: address.moneyMarket.custody,
+        custodyBorrowerQuery: {
+          borrower: {
+            address: walletStatus.walletAddress,
+          },
+        },
+      }),
+    })
+    .then((result) => {
+      return {
+        ...result,
+        data: map(result.data, dataMap),
+      };
+    });
 }

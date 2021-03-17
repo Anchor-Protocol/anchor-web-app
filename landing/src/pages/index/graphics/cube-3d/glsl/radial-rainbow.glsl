@@ -5,11 +5,11 @@ vec4 radialRainbow(vec2 st, float tick) {
   float angle = mod((atan(toCenter.y, toCenter.x) / PI2) + 0.5 + sin(tick * 0.002), 1.0);
 
   // colors
-  vec4 a = vec4(0.722,0.843,0.863,1.0);
-  vec4 b = vec4(0.573,0.725,0.757,1.0);
-  vec4 c = vec4(0.553,0.796,0.769,1.0);
-  vec4 d = vec4(0.357,0.537,0.576,1.0);
-  vec4 e = vec4(0.286,0.455,0.533,1.0);
+  vec4 a = vec4(0.424,0.612,0.412,1.0);
+  vec4 b = vec4(0.612,0.769,0.561,1.0);
+  vec4 c = vec4(0.424,0.612,0.412,1.0);
+  vec4 d = vec4(0.612,0.769,0.561,1.0);
+  vec4 e = vec4(0.424,0.612,0.412,1.0);
 
   float step = 1.0 / 10.0;
 

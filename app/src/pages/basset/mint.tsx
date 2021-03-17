@@ -1,39 +1,35 @@
-import { useOperation } from '@anchor-protocol/broadcastable-operation';
-import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
-import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
-import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
-import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
-import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
-import { SelectAndTextInputContainer } from '@anchor-protocol/neumorphism-ui/components/SelectAndTextInputContainer';
 import {
-  bLuna,
   demicrofy,
   formatLuna,
   formatLunaInput,
   formatUST,
-  Luna,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { useRestrictedNumberInput } from '@anchor-protocol/use-restricted-input';
-import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
-import { useApolloClient } from '@apollo/client';
-import {
-  Input as MuiInput,
-  NativeSelect as MuiNativeSelect,
-} from '@material-ui/core';
+import { bLuna, Luna, uUST } from '@anchor-protocol/types';
+import { WalletReady } from '@anchor-protocol/wallet-provider';
+import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
+import { useOperation } from '@terra-dev/broadcastable-operation';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { NativeSelect } from '@terra-dev/neumorphism-ui/components/NativeSelect';
+import { NumberMuiInput } from '@terra-dev/neumorphism-ui/components/NumberMuiInput';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
+import { useBank } from 'base/contexts/bank';
+import { useConstants } from 'base/contexts/contants';
+import { useService } from 'base/contexts/service';
 import big, { Big } from 'big.js';
-import { OperationRenderer } from 'components/OperationRenderer';
-import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { WarningMessage } from 'components/WarningMessage';
-import { useBank } from 'contexts/bank';
-import { useAddressProvider } from 'contexts/contract';
-import { FIXED_GAS } from 'env';
-import { useInvalidTxFee } from 'logics/useInvalidTxFee';
-import React, { useCallback, useState } from 'react';
+import { IconLineSeparator } from 'components/IconLineSeparator';
+import { MessageBox } from 'components/MessageBox';
+import { TransactionRenderer } from 'components/TransactionRenderer';
+import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { validateTxFee } from 'logics/validateTxFee';
+import { pegRecovery } from 'pages/basset/logics/pegRecovery';
+import { validateBondAmount } from 'pages/basset/logics/validateBondAmount';
+import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { useInvalidBondAmount } from './logics/useInvalidBondAmount';
 import { useExchangeRate } from './queries/exchangeRate';
 import * as val from './queries/validators';
 import { useValidators } from './queries/validators';
@@ -55,22 +51,11 @@ function MintBase({ className }: MintProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { status, post } = useWallet();
+  const { serviceAvailable, walletReady } = useService();
 
-  const addressProvider = useAddressProvider();
+  const { fixedGas } = useConstants();
 
-  const client = useApolloClient();
-
-  const [mint, mintResult] = useOperation(mintOptions, {
-    addressProvider,
-    post,
-    client,
-  });
-
-  const { onKeyPress: onLunaInputKeyPress } = useRestrictedNumberInput({
-    maxIntegerPoinsts: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
-    maxDecimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
-  });
+  const [mint, mintResult] = useOperation(mintOptions, {});
 
   // ---------------------------------------------
   // states
@@ -94,19 +79,35 @@ function MintBase({ className }: MintProps) {
   // ---------------------------------------------
   const bank = useBank();
 
-  const { parsedData: validators } = useValidators({
+  const {
+    data: { whitelistedValidators },
+  } = useValidators({
     bAsset: mintCurrency.value,
   });
 
-  const { parsedData: exchangeRate } = useExchangeRate({
+  const {
+    data: { exchangeRate, parameters },
+  } = useExchangeRate({
     bAsset: mintCurrency.value,
   });
 
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const invalidTxFee = useInvalidTxFee(bank);
-  const invalidBondAmount = useInvalidBondAmount(bondAmount, bank);
+  const pegRecoveryFee = useMemo(() => pegRecovery(exchangeRate, parameters), [
+    exchangeRate,
+    parameters,
+  ]);
+
+  const invalidTxFee = useMemo(
+    () => serviceAvailable && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, serviceAvailable],
+  );
+
+  const invalidBondAmount = useMemo(
+    () => serviceAvailable && validateBondAmount(bondAmount, bank),
+    [bank, bondAmount, serviceAvailable],
+  );
 
   // ---------------------------------------------
   // callbacks
@@ -168,35 +169,24 @@ function MintBase({ className }: MintProps) {
   }, []);
 
   const proceed = useCallback(
-    async ({
-      status,
-      bondAmount,
-      selectedValidator,
-    }: {
-      status: WalletStatus;
-      bondAmount: Luna;
-      selectedValidator: string | undefined;
-    }) => {
-      if (
-        status.status !== 'ready' ||
-        bank.status !== 'connected' ||
-        !selectedValidator
-      ) {
-        return;
-      }
-
+    async (
+      walletReady: WalletReady,
+      bondAmount: Luna,
+      selectedValidator: string,
+    ) => {
       const broadcasted = await mint({
-        address: status.walletAddress,
+        address: walletReady.walletAddress,
         amount: bondAmount,
         bAsset: mintCurrency.value,
         validator: selectedValidator,
+        txFee: fixedGas.toString() as uUST,
       });
 
       if (!broadcasted) {
         init();
       }
     },
-    [bank.status, init, mint, mintCurrency.value],
+    [fixedGas, init, mint, mintCurrency.value],
   );
 
   // ---------------------------------------------
@@ -209,47 +199,39 @@ function MintBase({ className }: MintProps) {
   ) {
     return (
       <Section className={className}>
-        {mintResult.status === 'done' ? (
-          <div>
-            <pre>{JSON.stringify(mintResult.data, null, 2)}</pre>
-            <ActionButton
-              style={{ width: 200 }}
-              onClick={() => {
-                init();
-                mintResult.reset();
-              }}
-            >
-              Exit
-            </ActionButton>
-          </div>
-        ) : (
-          <OperationRenderer result={mintResult} />
-        )}
+        <TransactionRenderer result={mintResult} onExit={init} />
       </Section>
     );
   }
 
   return (
     <Section className={className}>
-      {!!invalidTxFee && <WarningMessage>{invalidTxFee}</WarningMessage>}
+      {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
+
+      {pegRecoveryFee && (
+        <MessageBox
+          level="info"
+          hide={{ id: 'mint_peg', period: 1000 * 60 * 60 * 24 * 7 }}
+        >
+          When exchange rate is lower than threshold,
+          <br />
+          protocol charges peg recovery fee for each Mint/Burn action.
+        </MessageBox>
+      )}
 
       {/* Bond (Asset) */}
       <div className="bond-description">
         <p>I want to bond</p>
-        <p>
-          {exchangeRate &&
-            `1 ${bondCurrency.label} = ${formatLuna(
-              (big(1).div(exchangeRate.exchange_rate) as Big) as Luna<Big>,
-            )} ${mintCurrency.label}`}
-        </p>
+        <p />
       </div>
 
       <SelectAndTextInputContainer
         className="bond"
+        gridColumns={[120, '1fr']}
         error={!!invalidBondAmount}
         leftHelperText={invalidBondAmount}
         rightHelperText={
-          status.status === 'ready' && (
+          serviceAvailable && (
             <span>
               Balance:{' '}
               <span
@@ -282,27 +264,31 @@ function MintBase({ className }: MintProps) {
           ))}
         </MuiNativeSelect>
 
-        <MuiInput
-          placeholder="0"
+        <NumberMuiInput
+          placeholder="0.00"
           error={!!invalidBondAmount}
           value={bondAmount}
-          onKeyPress={onLunaInputKeyPress as any}
-          onChange={({ target }) => updateBondAmount(target.value)}
+          maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
+          maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
+          onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
+            updateBondAmount(target.value)
+          }
         />
       </SelectAndTextInputContainer>
+
+      <IconLineSeparator />
 
       {/* Mint (bAsset) */}
       <div className="mint-description">
         <p>and mint</p>
-        <p>
-          {exchangeRate &&
-            `1 ${mintCurrency.label} = ${formatLuna(
-              (exchangeRate.exchange_rate as string) as Luna,
-            )} ${bondCurrency.label}`}
-        </p>
+        <p />
       </div>
 
-      <SelectAndTextInputContainer className="mint" error={!!invalidBondAmount}>
+      <SelectAndTextInputContainer
+        className="mint"
+        gridColumns={[120, '1fr']}
+        error={!!invalidBondAmount}
+      >
         <MuiNativeSelect
           value={mintCurrency}
           onChange={({ target }) => updateMintCurrency(target.value)}
@@ -317,61 +303,69 @@ function MintBase({ className }: MintProps) {
             </option>
           ))}
         </MuiNativeSelect>
-        <MuiInput
-          placeholder="0"
+        <NumberMuiInput
+          placeholder="0.00"
           error={!!invalidBondAmount}
           value={mintAmount}
-          onKeyPress={onLunaInputKeyPress as any}
-          onChange={({ target }) => updateMintAmount(target.value)}
+          maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
+          maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
+          onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
+            updateMintAmount(target.value)
+          }
         />
       </SelectAndTextInputContainer>
 
-      <HorizontalRuler />
+      <HorizontalHeavyRuler />
 
       {/* Validators */}
       <NativeSelect
         className="validator"
         data-selected-value={selectedValidator?.OperatorAddress ?? ''}
         value={selectedValidator?.OperatorAddress ?? ''}
-        onChange={({ target }) =>
+        onChange={({ target }: ChangeEvent<HTMLSelectElement>) =>
           setSelectedValidator(
-            validators?.whitelistedValidators.find(
+            whitelistedValidators?.find(
               ({ OperatorAddress }) => target.value === OperatorAddress,
             ) ?? null,
           )
         }
-        disabled={validators?.whitelistedValidators.length === 0}
+        disabled={whitelistedValidators?.length === 0}
       >
         <option value="">Select validator</option>
-        {validators?.whitelistedValidators.map(
-          ({ Description, OperatorAddress }) => (
-            <option key={OperatorAddress} value={OperatorAddress}>
-              {Description.Moniker}
-            </option>
-          ),
-        )}
+        {whitelistedValidators?.map(({ Description, OperatorAddress }) => (
+          <option key={OperatorAddress} value={OperatorAddress}>
+            {Description.Moniker}
+          </option>
+        ))}
       </NativeSelect>
 
-      {bondAmount.length > 0 && (
-        <TxFeeList className="receipt">
-          <TxFeeListItem
-            label={
-              <IconSpan>
-                Tx Fee <InfoTooltip>Tx Fee Description</InfoTooltip>
-              </IconSpan>
-            }
-          >
-            {formatUST(demicrofy(FIXED_GAS))} UST
+      <TxFeeList className="receipt">
+        {exchangeRate && (
+          <SwapListItem
+            label="Price"
+            currencyA={bondCurrency.label}
+            currencyB={mintCurrency.label}
+            exchangeRateAB={exchangeRate.exchange_rate}
+            formatExchangeRate={(ratio) => formatLuna(ratio as Luna<Big>)}
+          />
+        )}
+        {!!pegRecoveryFee && mintAmount.length > 0 && (
+          <TxFeeListItem label={<IconSpan>Peg Recovery Fee</IconSpan>}>
+            {formatLuna(demicrofy(pegRecoveryFee(mintAmount)))} bLuna
           </TxFeeListItem>
-        </TxFeeList>
-      )}
+        )}
+        {bondAmount.length > 0 && (
+          <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
+            {formatUST(demicrofy(fixedGas))} UST
+          </TxFeeListItem>
+        )}
+      </TxFeeList>
 
       {/* Submit */}
       <ActionButton
         className="submit"
         disabled={
-          status.status !== 'ready' ||
-          bank.status !== 'connected' ||
+          !serviceAvailable ||
           bondAmount.length === 0 ||
           big(bondAmount).lte(0) ||
           !!invalidBondAmount ||
@@ -379,11 +373,9 @@ function MintBase({ className }: MintProps) {
           !selectedValidator
         }
         onClick={() =>
-          proceed({
-            bondAmount,
-            status,
-            selectedValidator: selectedValidator?.OperatorAddress,
-          })
+          walletReady &&
+          selectedValidator?.OperatorAddress &&
+          proceed(walletReady, bondAmount, selectedValidator.OperatorAddress)
         }
       >
         Mint
@@ -416,14 +408,6 @@ export const Mint = styled(MintBase)`
   .bond,
   .mint {
     margin-bottom: 30px;
-
-    > :first-child {
-      width: 100px;
-    }
-
-    > :nth-child(2) {
-      flex: 1;
-    }
   }
 
   hr {

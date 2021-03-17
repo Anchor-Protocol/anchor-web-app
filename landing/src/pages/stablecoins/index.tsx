@@ -1,3 +1,4 @@
+import { TokenIcon, Tokens } from '@anchor-protocol/token-icons';
 import { screen } from 'env';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -15,7 +16,10 @@ function StableCoinsBase({ className }: StableCoinsProps) {
   return (
     <div className={className}>
       <main>
-        <h1>{stableCoinId}</h1>
+        <h1>
+          <TokenIcon token={stableCoinId.toLowerCase() as Tokens} />{' '}
+          {stableCoinId}
+        </h1>
 
         <div className="content-layout">
           <ChartSection className="chart" />
@@ -37,6 +41,11 @@ export const StableCoins = styled(StableCoinsBase)`
     font-size: 44px;
     font-weight: 900;
     color: #1f1f1f;
+
+    img {
+      transform: scale(1.3) translateY(3px);
+      margin-right: 3px;
+    }
   }
 
   // ---------------------------------------------

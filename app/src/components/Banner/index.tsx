@@ -1,4 +1,3 @@
-import { useWallet } from '@anchor-protocol/wallet-provider';
 import { getParser } from 'bowser';
 import { useMemo } from 'react';
 import styled from 'styled-components';
@@ -8,12 +7,11 @@ export interface BannerProps {
 }
 
 function BannerBase({ className }: BannerProps) {
-  const { status, install, connect } = useWallet();
-
   const isChrome = useMemo(() => {
     const browser = getParser(navigator.userAgent);
     return browser.satisfies({
       chrome: '>60',
+      edge: '>80',
     });
   }, []);
 
@@ -28,29 +26,31 @@ function BannerBase({ className }: BannerProps) {
     );
   }
 
-  switch (status.status) {
-    case 'not_installed':
-      return (
-        <div className={className}>
-          <p>Demo Mode: Not installed</p>
-          <button onClick={install}>Install Wallet</button>
-        </div>
-      );
-    case 'not_connected':
-      return (
-        <div className={className}>
-          <p>Demo Mode: Not Connected</p>
-          <button onClick={connect}>Connect Wallet</button>
-        </div>
-      );
-    default:
-      return null;
-  }
+  return null;
 }
 
 export const Banner = styled(BannerBase)`
   height: 70px;
   background-color: #cfb673;
-  display: grid;
-  place-content: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  color: ${({ theme }) => theme.textColor};
+  font-size: 1em;
+
+  button {
+    font-size: 0.9em;
+    background-color: transparent;
+    outline: none;
+    cursor: pointer;
+    border: 1px solid currentColor;
+
+    margin-left: 10px;
+
+    color: ${({ theme }) => theme.textColor};
+
+    padding: 5px 15px;
+    border-radius: 20px;
+  }
 `;

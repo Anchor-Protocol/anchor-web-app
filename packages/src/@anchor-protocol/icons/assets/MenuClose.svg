@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>btn_close</title>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Landing_Mobile_Menu" transform="translate(-319.000000, -118.000000)">
+            <g id="GNB_menu-open">
+                <g id="btn_close" transform="translate(319.000000, 118.000000)">
+                    <rect id="Rectangle" stroke="currentColor" stroke-width="2" x="1" y="1" width="30" height="30" rx="2"></rect>
+                    <path d="M21.668,10.332 L21.668,10.332 C21.225,9.889 20.507,9.889 20.064,10.332 L16,14.396 L11.936,10.332 C11.493,9.889 10.775,9.889 10.332,10.332 C9.889,10.775 9.889,11.493 10.332,11.936 L14.397,16 L10.332,20.064 C9.889,20.507 9.889,21.225 10.332,21.668 C10.775,22.111 11.493,22.111 11.936,21.668 L16,17.603 L20.064,21.668 C20.507,22.111 21.225,22.111 21.668,21.668 C22.111,21.225 22.111,20.507 21.668,20.064 L17.604,16 L21.668,11.936 C22.111,11.493 22.111,10.775 21.668,10.332" id="Fill-1" fill="currentColor"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,15 +1,54 @@
+import { Percent, Rate } from '@anchor-protocol/types';
 import big, { BigSource } from 'big.js';
 import numeral from 'numeral';
-import { Percent, Ratio } from './unit';
 
 export interface FormatOptions {
   delimiter?: boolean;
+  fallbackValue?: string;
 }
+
+export const MAX_EXECUTE_MSG_DECIMALS = 18;
+
+export const formatDemimal = ({
+  decimalPoints,
+  delimiter,
+}: {
+  decimalPoints: number;
+  delimiter: boolean;
+}) => (n: BigSource, fallbackValue: string = ''): string => {
+  const num = big(
+    big(n)
+      .mul(10 ** decimalPoints)
+      .toFixed()
+      .split('.')[0],
+  )
+    .div(10 ** decimalPoints)
+    .toFixed();
+
+  if (num === 'NaN') return fallbackValue;
+
+  const [i, d] = num.split('.');
+
+  const ii = delimiter ? numeral(i).format('0,0') : i;
+  const dd = d ? '.' + d : '';
+
+  return ii + dd;
+};
+
+export const formatInteger = ({ delimiter }: { delimiter: boolean }) => (
+  n: BigSource,
+): string => {
+  const num = big(n).toFixed();
+
+  const [i] = num.split('.');
+
+  return delimiter ? numeral(i).format('0,0') : i;
+};
 
 export function formatFluidDecimalPoints(
   n: BigSource,
   numDecimalPoints: number,
-  { delimiter }: FormatOptions = { delimiter: true },
+  { delimiter = true, fallbackValue = '' }: FormatOptions = {},
 ): string {
   const num = big(
     big(n)
@@ -20,25 +59,36 @@ export function formatFluidDecimalPoints(
     .div(10 ** numDecimalPoints)
     .toFixed();
 
-  const str = numeral(num).format(
-    delimiter
-      ? `0,0.[${'0'.repeat(numDecimalPoints)}]`
-      : `0.[${'0'.repeat(numDecimalPoints)}]`,
-  );
+  if (num === 'NaN') return fallbackValue;
 
-  return str === 'NaN' ? '' : str;
+  const [i, d] = num.split('.');
+
+  const ii = delimiter ? numeral(i).format('0,0') : i;
+  const dd = d ? '.' + d : '';
+
+  return ii + dd;
 }
 
-export function formatPercentage(
-  n: Percent<BigSource>,
-  options: FormatOptions = { delimiter: true },
-): string {
-  return formatFluidDecimalPoints(n, 2, options);
-}
+// ---------------------------------------------
+// formatters
+// ---------------------------------------------
+export const executeMsgFormatter = formatDemimal({
+  decimalPoints: MAX_EXECUTE_MSG_DECIMALS,
+  delimiter: false,
+});
 
-export function formatRatioToPercentage(
-  n: Ratio<BigSource>,
-  options: FormatOptions = { delimiter: true },
-): string {
-  return formatFluidDecimalPoints(big(n).mul(100), 2, options);
-}
+const percentageFormatter = formatDemimal({
+  decimalPoints: 2,
+  delimiter: true,
+});
+
+// ---------------------------------------------
+// functions
+// ---------------------------------------------
+export const formatExecuteMsgNumber = executeMsgFormatter;
+
+export const formatPercentage = (n: Percent<BigSource>) =>
+  percentageFormatter(n);
+
+export const formatRate = (n: Rate<BigSource>) =>
+  percentageFormatter(big(n).mul(100));

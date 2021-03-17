@@ -1,8 +1,13 @@
-import { gql, QueryResult, useQuery } from '@apollo/client';
-import { useAddressProvider } from 'contexts/contract';
+import { bluna, WASMContractResult } from '@anchor-protocol/types';
+import { createMap, useMap } from '@terra-dev/use-map';
+import { useContractAddress } from 'base/contexts/contract';
+import { MappedQueryResult } from 'base/queries/types';
+import { useQueryErrorHandler } from 'base/queries/useQueryErrorHandler';
+import { useRefetch } from 'base/queries/useRefetch';
+import { gql, useQuery } from '@apollo/client';
 import { useMemo } from 'react';
 
-export interface StringifiedData {
+export interface RawData {
   validators: {
     Result: {
       OperatorAddress: string;
@@ -11,9 +16,7 @@ export interface StringifiedData {
       };
     }[];
   };
-  whitelistedValidators: {
-    Result: string;
-  };
+  whitelistedValidators: WASMContractResult;
 }
 
 export interface Data {
@@ -31,38 +34,37 @@ export interface Data {
   }[];
 }
 
-export function parseData({
-  validators,
-  whitelistedValidators,
-}: StringifiedData): Data {
-  const set: Set<string> = new Set(
-    JSON.parse(whitelistedValidators.Result).validators,
-  );
+export const dataMap = createMap<RawData, Data>({
+  validators: (_, { validators }) => {
+    return validators.Result;
+  },
+  whitelistedValidators: (existing, { validators, whitelistedValidators }) => {
+    const result: WASMContractResult<bluna.hub.WhitelistedValidatorsResponse> = JSON.parse(
+      whitelistedValidators.Result,
+    );
 
-  return {
-    validators: validators.Result,
-    whitelistedValidators: validators.Result.filter(({ OperatorAddress }) =>
+    const set: Set<string> = new Set(result.validators);
+
+    return validators.Result.filter(({ OperatorAddress }) =>
       set.has(OperatorAddress),
-    ),
-  };
-}
+    );
+  },
+});
 
-export interface StringifiedVariables {
+export interface RawVariables {
   bLunaHubContract: string;
   whitelistedValidatorsQuery: string;
 }
 
 export interface Variables {
   bLunaHubContract: string;
-  whitelistedValidatorsQuery?: {
-    whitelisted_validators: {};
-  };
+  whitelistedValidatorsQuery: bluna.hub.WhitelistedValidators;
 }
 
-export function stringifyVariables({
+export function mapVariables({
   bLunaHubContract,
-  whitelistedValidatorsQuery = { whitelisted_validators: {} },
-}: Variables): StringifiedVariables {
+  whitelistedValidatorsQuery,
+}: Variables): RawVariables {
   return {
     bLunaHubContract,
     whitelistedValidatorsQuery: JSON.stringify(whitelistedValidatorsQuery),
@@ -70,7 +72,10 @@ export function stringifyVariables({
 }
 
 export const query = gql`
-  query($bLunaHubContract: String!, $whitelistedValidatorsQuery: String!) {
+  query __validators(
+    $bLunaHubContract: String!
+    $whitelistedValidatorsQuery: String!
+  ) {
     validators: StakingValidators {
       Result {
         OperatorAddress
@@ -93,28 +98,39 @@ export function useValidators({
   bAsset,
 }: {
   bAsset: string;
-}): QueryResult<StringifiedData, StringifiedVariables> & {
-  parsedData: Data | undefined;
-} {
-  const addressProvider = useAddressProvider();
+}): MappedQueryResult<RawVariables, RawData, Data> {
+  const { bluna } = useContractAddress();
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
-    fetchPolicy: 'cache-and-network',
-    variables: stringifyVariables({
-      bLunaHubContract: addressProvider.bAssetHub(bAsset),
+  const variables = useMemo(() => {
+    return mapVariables({
+      bLunaHubContract: bluna.hub,
       whitelistedValidatorsQuery: {
         whitelisted_validators: {},
       },
-    }),
+    });
+  }, [bluna.hub]);
+
+  const onError = useQueryErrorHandler();
+
+  const {
+    previousData,
+    data: _data = previousData,
+    refetch: _refetch,
+    error,
+    ...result
+  } = useQuery<RawData, RawVariables>(query, {
+    fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-first',
+    variables,
+    onError,
   });
 
-  const parsedData = useMemo(
-    () => (result.data ? parseData(result.data) : undefined),
-    [result.data],
-  );
+  const data = useMap(_data, dataMap);
+  const refetch = useRefetch(_refetch, dataMap);
 
   return {
     ...result,
-    parsedData,
+    data,
+    refetch,
   };
 }

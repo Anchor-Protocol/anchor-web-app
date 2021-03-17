@@ -1,21 +1,21 @@
-import { useOperation } from '@anchor-protocol/broadcastable-operation';
-import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
-import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
+import { useOperation } from '@terra-dev/broadcastable-operation';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { demicrofy, formatUST } from '@anchor-protocol/notation';
-import { useWallet } from '@anchor-protocol/wallet-provider';
-import { useApolloClient } from '@apollo/client';
+import { WalletReady } from '@anchor-protocol/wallet-provider';
 import big from 'big.js';
-import { OperationRenderer } from 'components/OperationRenderer';
-import { WarningMessage } from 'components/WarningMessage';
-import { useBank } from 'contexts/bank';
-import { useAddressProvider } from 'contexts/contract';
-import { useInvalidTxFee } from 'logics/useInvalidTxFee';
-import { useClaimableRewards } from 'pages/basset/logics/useClaimableRewards';
+import { MessageBox } from 'components/MessageBox';
+import { TransactionRenderer } from 'components/TransactionRenderer';
+import { useBank } from 'base/contexts/bank';
+import { useConstants } from 'base/contexts/contants';
+import { useService } from 'base/contexts/service';
+import { validateTxFee } from 'logics/validateTxFee';
 import { useClaimable } from 'pages/basset/queries/claimable';
 import { claimOptions } from 'pages/basset/transactions/claimOptions';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
+import { claimableRewards as _claimableRewards } from '../logics/claimableRewards';
 
 export interface ClaimSectionProps {
   disabled: boolean;
@@ -26,51 +26,47 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { status, post } = useWallet();
+  const { serviceAvailable, walletReady } = useService();
 
-  const addressProvider = useAddressProvider();
+  const { fixedGas } = useConstants();
 
-  const client = useApolloClient();
-
-  const [claim, claimResult] = useOperation(claimOptions, {
-    addressProvider,
-    client,
-    post,
-  });
+  const [claim, claimResult] = useOperation(claimOptions, {});
 
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
   const bank = useBank();
 
-  const { parsedData: claimable } = useClaimable();
+  const {
+    data: { rewardState, claimableReward },
+  } = useClaimable();
 
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const claimableRewards = useClaimableRewards(
-    claimable?.claimableReward.balance,
-    claimable?.rewardState.global_index,
-    claimable?.claimableReward.index,
-    claimable?.claimableReward.pending_rewards,
+  const invalidTxFee = useMemo(
+    () => serviceAvailable && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, serviceAvailable],
   );
 
-  const invalidTxFee = useInvalidTxFee(bank);
+  const claimableRewards = useMemo(
+    () => _claimableRewards(claimableReward, rewardState),
+    [claimableReward, rewardState],
+  );
 
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
-  const proceed = useCallback(async () => {
-    if (status.status !== 'ready' || bank.status !== 'connected') {
-      return;
-    }
-
-    await claim({
-      address: status.status === 'ready' ? status.walletAddress : '',
-      bAsset: 'bluna',
-      recipient: undefined,
-    });
-  }, [bank.status, claim, status]);
+  const proceed = useCallback(
+    async (walletReady: WalletReady) => {
+      await claim({
+        address: walletReady.walletAddress,
+        bAsset: 'bluna',
+        recipient: undefined,
+      });
+    },
+    [claim],
+  );
 
   // ---------------------------------------------
   // effects
@@ -89,16 +85,7 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
   ) {
     return (
       <Section>
-        {claimResult.status === 'done' ? (
-          <div>
-            <pre>{JSON.stringify(claimResult.data, null, 2)}</pre>
-            <ActionButton style={{ width: 200 }} onClick={claimResult.reset}>
-              Exit
-            </ActionButton>
-          </div>
-        ) : (
-          <OperationRenderer result={claimResult} />
-        )}
+        <TransactionRenderer result={claimResult} />
       </Section>
     );
   }
@@ -116,26 +103,25 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
           </IconSpan>
         </h4>
         <p>
-          {claimableRewards.gt(0)
+          {claimableRewards.gt(fixedGas)
             ? formatUST(demicrofy(claimableRewards)) + ' UST'
             : '-'}
         </p>
       </article>
 
       {!!invalidTxFee && big(claimableRewards).gt(0) && (
-        <WarningMessage>{invalidTxFee}</WarningMessage>
+        <MessageBox>{invalidTxFee}</MessageBox>
       )}
 
       <ActionButton
         className="submit"
         disabled={
-          status.status !== 'ready' ||
-          bank.status !== 'connected' ||
+          !serviceAvailable ||
           !!invalidTxFee ||
           claimableRewards.lte(0) ||
           disabled
         }
-        onClick={() => proceed()}
+        onClick={() => walletReady && proceed(walletReady)}
       >
         Claim
       </ActionButton>

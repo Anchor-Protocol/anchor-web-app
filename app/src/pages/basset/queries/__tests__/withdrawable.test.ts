@@ -1,23 +1,25 @@
-import { testAddressProvider, testClient, testWalletAddress } from 'test.env';
+import { map } from '@terra-dev/use-map';
+import { testAddress, testClient, testWalletAddress } from 'base/test.env';
 import {
-  parseData,
+  dataMap,
+  mapVariables,
   query,
-  StringifiedData,
-  StringifiedVariables,
-  stringifyVariables,
+  RawData,
+  RawVariables,
 } from '../withdrawable';
 
 describe('queries/withdrawable', () => {
   test('should get result from query', async () => {
     const data = await testClient
-      .query<StringifiedData, StringifiedVariables>({
+      .query<RawData, RawVariables>({
         query,
-        variables: stringifyVariables({
-          bLunaHubContract: testAddressProvider.bAssetHub(''),
+        variables: mapVariables({
+          bLunaHubContract: testAddress.bluna.hub,
           withdrawableAmountQuery: {
             withdrawable_unbonded: {
               address: testWalletAddress,
-              block_time: Math.floor(Date.now() / 1000) - 1000 * 60 * 60 * 24 * 10,
+              block_time:
+                Math.floor(Date.now() / 1000) - 1000 * 60 * 60 * 24 * 10,
             },
           },
           withdrawRequestsQuery: {
@@ -25,13 +27,10 @@ describe('queries/withdrawable', () => {
               address: testWalletAddress,
             },
           },
-          exchangeRateQuery: {
-            state: {},
-          },
         }),
       })
-      .then(({ data }) => parseData(data));
+      .then(({ data }) => map(data, dataMap));
 
-    expect(Array.isArray(data.withdrawRequests.requests)).toBeTruthy();
+    expect(Array.isArray(data.withdrawRequests?.requests)).toBeTruthy();
   });
 });

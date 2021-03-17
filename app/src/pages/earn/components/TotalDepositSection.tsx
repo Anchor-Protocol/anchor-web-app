@@ -1,16 +1,18 @@
-import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
-import { HorizontalRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalRuler';
-import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
 import {
+  AnimateNumber,
   demicrofy,
-  formatUST,
-  mapDecimalPointBaseSeparatedNumbers,
+  formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
-import React, { useCallback } from 'react';
-import styled from 'styled-components';
-import { useTotalDeposit } from '../queries/totalDeposit';
+import { Rate, uUST } from '@anchor-protocol/types';
+import { useWallet } from '@anchor-protocol/wallet-provider';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { BigSource } from 'big.js';
+import React, { useCallback, useMemo } from 'react';
+import { totalDepositUST } from '../logics/totalDepositUST';
+import { useDeposit } from '../queries/totalDeposit';
 import { useDepositDialog } from './useDepositDialog';
 import { useWithdrawDialog } from './useWithdrawDialog';
 
@@ -18,11 +20,26 @@ export interface TotalDepositSectionProps {
   className?: string;
 }
 
-function TotalDepositSectionBase({ className }: TotalDepositSectionProps) {
+export function TotalDepositSection({ className }: TotalDepositSectionProps) {
+  // ---------------------------------------------
+  // dependencies
+  // ---------------------------------------------
+  const { status } = useWallet();
+
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const { parsedData: totalDeposit } = useTotalDeposit();
+  const {
+    data: { aUSTBalance, exchangeRate },
+  } = useDeposit();
+
+  // ---------------------------------------------
+  // logics
+  // ---------------------------------------------
+  const totalDeposit = useMemo(
+    () => totalDepositUST(aUSTBalance, exchangeRate),
+    [aUSTBalance, exchangeRate],
+  );
 
   // ---------------------------------------------
   // dialogs
@@ -34,11 +51,17 @@ function TotalDepositSectionBase({ className }: TotalDepositSectionProps) {
     await openDepositDialog({});
   }, [openDepositDialog]);
 
-  const openWithdraw = useCallback(async () => {
-    if (totalDeposit) {
-      await openWithdrawDialog({ totalDeposit });
-    }
-  }, [openWithdrawDialog, totalDeposit]);
+  const openWithdraw = useCallback(
+    async (totalDeposit: uUST<BigSource>, exchangeRate: Rate<BigSource>) => {
+      if (totalDeposit) {
+        await openWithdrawDialog({
+          totalDeposit,
+          exchangeRate,
+        });
+      }
+    },
+    [openWithdrawDialog],
+  );
 
   // ---------------------------------------------
   // presentation
@@ -55,28 +78,29 @@ function TotalDepositSectionBase({ className }: TotalDepositSectionProps) {
       </h2>
 
       <div className="amount">
-        {totalDeposit?.totalDeposit
-          ? mapDecimalPointBaseSeparatedNumbers(
-              formatUST(demicrofy(totalDeposit.totalDeposit)),
-              (i, d) => {
-                return (
-                  <>
-                    {i}
-                    {d ? <span className="decimal-point">.{d}</span> : null} UST
-                  </>
-                );
-              },
-            )
-          : `0 UST`}
+        <AnimateNumber format={formatUSTWithPostfixUnits}>
+          {demicrofy(totalDeposit)}
+        </AnimateNumber>{' '}
+        UST
       </div>
 
-      <HorizontalRuler />
-
       <aside className="total-deposit-buttons">
-        <ActionButton disabled={!totalDeposit} onClick={() => openDeposit()}>
+        <ActionButton
+          disabled={status.status !== 'ready' || !totalDeposit}
+          onClick={() => openDeposit()}
+        >
           Deposit
         </ActionButton>
-        <ActionButton disabled={!totalDeposit} onClick={() => openWithdraw()}>
+        <ActionButton
+          disabled={
+            status.status !== 'ready' ||
+            !totalDeposit ||
+            !exchangeRate?.exchange_rate
+          }
+          onClick={() =>
+            openWithdraw(totalDeposit, exchangeRate!.exchange_rate)
+          }
+        >
           Withdraw
         </ActionButton>
       </aside>
@@ -86,7 +110,3 @@ function TotalDepositSectionBase({ className }: TotalDepositSectionProps) {
     </Section>
   );
 }
-
-export const TotalDepositSection = styled(TotalDepositSectionBase)`
-  // TODO
-`;

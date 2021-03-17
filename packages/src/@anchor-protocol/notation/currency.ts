@@ -1,35 +1,30 @@
+import {
+  ANC,
+  AncUstLP,
+  aToken,
+  aUST,
+  bLuna,
+  bLunaLunaLP,
+  CW20Token,
+  LPToken,
+  Luna,
+  NativeToken,
+  Token,
+  uANC,
+  uAncUstLP,
+  uaToken,
+  uaUST,
+  ubLuna,
+  ubLunaLunaLP,
+  uCW20Token,
+  uLPToken,
+  uLuna,
+  uNativeToken,
+  UST,
+  uToken,
+  uUST,
+} from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
-
-// ---------------------------------------------
-// currency types
-// ---------------------------------------------
-export type Currency<
-  T extends
-    | 'uluna'
-    | 'ubluna'
-    | 'uaust'
-    | 'uust'
-    | 'luna'
-    | 'bluna'
-    | 'ust'
-    | 'aust'
-> = { __nominal: T };
-
-export type uaUST<T = string> = T & Currency<'uaust'>;
-export type aUST<T = string> = T & Currency<'aust'>;
-
-export type uUST<T = string> = T & Currency<'uust'>;
-export type UST<T = string> = T & Currency<'ust'>;
-
-export type uLuna<T = string> = T & Currency<'uluna'>;
-export type Luna<T = string> = T & Currency<'luna'>;
-
-export type ubLuna<T = string> = T & Currency<'ubluna'>;
-export type bLuna<T = string> = T & Currency<'bluna'>;
-
-export type uToken<T = string> = T &
-  Currency<'uaust' | 'uust' | 'uluna' | 'ubluna'>;
-export type Token<T = string> = T & Currency<'aust' | 'ust' | 'luna' | 'bluna'>;
 
 // ---------------------------------------------
 // micro
@@ -37,22 +32,45 @@ export type Token<T = string> = T & Currency<'aust' | 'ust' | 'luna' | 'bluna'>;
 export const MICRO = 1000000;
 
 export function microfy<
-  C extends
-    | Luna<BigSource>
-    | bLuna<BigSource>
+  C extends  // native tokens
     | UST<BigSource>
+    | Luna<BigSource>
+    // cw20 tokens
     | aUST<BigSource>
+    | ANC<BigSource>
+    | bLuna<BigSource>
+    | AncUstLP<BigSource>
+    | bLunaLunaLP<BigSource>
+    // union tokens
+    | aToken<BigSource>
+    | NativeToken<BigSource>
+    | CW20Token<BigSource>
+    | LPToken<BigSource>
     | Token<BigSource>
 >(
   amount: C,
-): C extends Luna
-  ? uLuna<Big>
-  : C extends bLuna
-  ? ubLuna<Big>
-  : C extends UST
+): C extends UST
   ? uUST<Big>
+  : C extends Luna
+  ? uLuna<Big>
   : C extends aUST
   ? uaUST<Big>
+  : C extends ANC
+  ? uANC<Big>
+  : C extends bLuna
+  ? ubLuna<Big>
+  : C extends AncUstLP
+  ? uAncUstLP<Big>
+  : C extends bLunaLunaLP
+  ? ubLunaLunaLP<Big>
+  : C extends aToken
+  ? uaToken<Big>
+  : C extends NativeToken
+  ? uNativeToken<Big>
+  : C extends CW20Token
+  ? uCW20Token<Big>
+  : C extends LPToken
+  ? uLPToken<Big>
   : C extends Token
   ? uToken<Big>
   : never {
@@ -60,22 +78,42 @@ export function microfy<
 }
 
 export function demicrofy<
-  C extends
-    | uLuna<BigSource>
-    | ubLuna<BigSource>
+  C extends  // native tokens
     | uUST<BigSource>
+    | uLuna<BigSource>
+    // cw20 tokens
     | uaUST<BigSource>
+    | uANC<BigSource>
+    | ubLuna<BigSource>
+    | uAncUstLP<BigSource>
+    | ubLunaLunaLP<BigSource>
+    // union tokens
+    | uaToken<BigSource>
     | uToken<BigSource>
 >(
   amount: C,
-): C extends uLuna
-  ? Luna<Big>
-  : C extends ubLuna
-  ? bLuna<Big>
-  : C extends uUST
+): C extends uUST
   ? UST<Big>
+  : C extends uLuna
+  ? Luna<Big>
   : C extends uaUST
   ? aUST<Big>
+  : C extends uANC
+  ? ANC<Big>
+  : C extends ubLuna
+  ? bLuna<Big>
+  : C extends uAncUstLP
+  ? AncUstLP<Big>
+  : C extends ubLunaLunaLP
+  ? bLunaLunaLP<Big>
+  : C extends uaToken
+  ? aToken<Big>
+  : C extends uNativeToken
+  ? NativeToken<Big>
+  : C extends uCW20Token
+  ? CW20Token<Big>
+  : C extends uLPToken
+  ? LPToken<Big>
   : C extends uToken
   ? Token<Big>
   : never {

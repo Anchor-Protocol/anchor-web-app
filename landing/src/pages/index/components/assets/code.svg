@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="544px" height="460px" viewBox="0 0 544 460" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>img</title>
+    <defs>
+        <rect id="path-1" x="260" y="17" width="127" height="194"></rect>
+        <filter x="-16.9%" y="-11.1%" width="146.5%" height="130.4%" filterUnits="objectBoundingBox" id="filter-2">
+            <feOffset dx="8" dy="8" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="8.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.30935861 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <rect id="path-3" x="189" y="28" width="1" height="29"></rect>
+        <filter x="-600.0%" y="-17.2%" width="1900.0%" height="169.0%" filterUnits="objectBoundingBox" id="filter-4">
+            <feOffset dx="3" dy="6" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <rect id="path-5" x="0" y="0" width="460" height="54" rx="3"></rect>
+        <filter x="-7.5%" y="-54.6%" width="122.4%" height="290.7%" filterUnits="objectBoundingBox" id="filter-6">
+            <feOffset dx="17" dy="22" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="13.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.136964598 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="img">
+            <rect id="Rectangle-Copy-2" x="0" y="0" width="540" height="460" rx="30"></rect>
+            <g id="Group-2" transform="translate(58.000000, 140.000000)">
+                <rect id="Rectangle" fill="#232323" x="189" y="31" width="60" height="23"></rect>
+                <text id="import-{-addressProv" font-family="Helvetica" font-size="14" font-weight="normal" line-spacing="27" letter-spacing="-0.2" fill="#C8C8C8">
+                    <tspan x="21" y="14">import { addressProvider, fabricateDepositStablecoin }</tspan>
+                    <tspan x="21" y="41">from '@anchor-protocol/anchor.js';</tspan>
+                    <tspan x="21" y="68">const depositMsg = fabricateDepositStablecoin({</tspan>
+                    <tspan x="21" y="95">    address:</tspan>
+                    <tspan x="21" y="122">        'terra1tagxzz9pfx5s9ykpwsve49k69msgymer52wpvt',</tspan>
+                    <tspan x="21" y="149">    symbol: 'uusd',</tspan>
+                    <tspan x="21" y="176">    amount: '10000',</tspan>
+                    <tspan x="21" y="203">})(addressProvider);</tspan>
+                </text>
+                <text id="1.-2.-3.-4.-5.-6." font-family="Helvetica" font-size="14" font-weight="normal" line-spacing="27" fill="#C8C8C8">
+                    <tspan x="0" y="14">1.</tspan>
+                    <tspan x="0" y="41"></tspan>
+                    <tspan x="0" y="68">2.</tspan>
+                    <tspan x="0" y="95">3.</tspan>
+                    <tspan x="0" y="122">4.</tspan>
+                    <tspan x="0" y="149"></tspan>
+                    <tspan x="0" y="176">5.</tspan>
+                    <tspan x="0" y="203">6.</tspan>
+                </text>
+                <g id="Rectangle" opacity="0.849999964">
+                    <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
+                    <use fill="#232323" fill-rule="evenodd" xlink:href="#path-1"></use>
+                </g>
+                <rect id="Rectangle" fill="#151515" x="260" y="17" width="127" height="48"></rect>
+                <text id="anchor" font-family="Helvetica" font-size="14" font-weight="normal" fill="#EEEEEE">
+                    <tspan x="273" y="47">anchor</tspan>
+                </text>
+                <g id="Rectangle">
+                    <use fill="black" fill-opacity="1" filter="url(#filter-4)" xlink:href="#path-3"></use>
+                    <use fill="#4BDB4B" fill-rule="evenodd" xlink:href="#path-3"></use>
+                </g>
+            </g>
+            <g id="Group" transform="translate(40.000000, 52.000000)">
+                <g id="Rectangle">
+                    <use fill="black" fill-opacity="1" filter="url(#filter-6)" xlink:href="#path-5"></use>
+                    <use fill="#535353" fill-rule="evenodd" xlink:href="#path-5"></use>
+                </g>
+                <g transform="translate(84.000000, 24.000000)" fill="#717171" fill-rule="nonzero" id="&gt;">
+                    <g>
+                        <path d="M3.05701179,1.79643625 C3.23057814,1.6228699 3.50000254,1.60358475 3.69487068,1.7385808 L3.76411857,1.79643625 L5.61412892,3.64644661 C5.78769527,3.82001296 5.80698042,4.08943736 5.67198437,4.2843055 L5.61412892,4.35355339 L3.76411857,6.20356375 C3.56885642,6.39882589 3.25227393,6.39882589 3.05701179,6.20356375 C2.88344543,6.02999739 2.86416028,5.76057299 2.99915634,5.56570485 L3.05701179,5.49645696 L4.554,4 L3.05701179,2.50354304 C2.88344543,2.32997668 2.86416028,2.06055228 2.99915634,1.86568414 L3.05701179,1.79643625 Z" id="Path-3"></path>
+                    </g>
+                </g>
+                <g transform="translate(132.000000, 24.000000)" fill="#717171" fill-rule="nonzero" id="&gt;">
+                    <g>
+                        <path d="M3.05701179,1.79643625 C3.23057814,1.6228699 3.50000254,1.60358475 3.69487068,1.7385808 L3.76411857,1.79643625 L5.61412892,3.64644661 C5.78769527,3.82001296 5.80698042,4.08943736 5.67198437,4.2843055 L5.61412892,4.35355339 L3.76411857,6.20356375 C3.56885642,6.39882589 3.25227393,6.39882589 3.05701179,6.20356375 C2.88344543,6.02999739 2.86416028,5.76057299 2.99915634,5.56570485 L3.05701179,5.49645696 L4.554,4 L3.05701179,2.50354304 C2.88344543,2.32997668 2.86416028,2.06055228 2.99915634,1.86568414 L3.05701179,1.79643625 Z" id="Path-3"></path>
+                    </g>
+                </g>
+                <text id="Anchor" opacity="0.5" font-family="Helvetica" font-size="11" font-weight="normal" letter-spacing="-0.8" fill="#FFFFFF">
+                    <tspan x="40" y="31">Anchor</tspan>
+                </text>
+                <text id="web" opacity="0.5" font-family="Helvetica" font-size="11" font-weight="normal" fill="#FFFFFF">
+                    <tspan x="100" y="31">web</tspan>
+                </text>
+                <text id="anchor.js" opacity="0.5" font-family="Helvetica" font-size="11" font-weight="normal" fill="#FFFFFF">
+                    <tspan x="148" y="31">anchor.js</tspan>
+                </text>
+                <g transform="translate(24.000000, 22.000000)" fill="#737373" id="icon_doc">
+                    <path d="M6.5,0 L6.5,3.5 L10,3.5 L10,10 C10,10.5522847 9.55228475,11 9,11 L1,11 C0.44771525,11 6.76353751e-17,10.5522847 0,10 L0,1 C-6.76353751e-17,0.44771525 0.44771525,1.01453063e-16 1,0 L6.5,0 Z M9.67441923,2.35639778 C9.72233356,2.40016348 9.76548495,2.44811853 9.80351708,2.49945488 L7.5,2.5 L7.5,0.37 L9.67441923,2.35639778 Z"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

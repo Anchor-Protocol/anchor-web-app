@@ -1,8 +1,9 @@
+import { EventBusProvider } from '@terra-dev/event-bus';
 import {
   rulerLightColor,
   rulerShadowColor,
-} from '@anchor-protocol/styled-neumorphism';
-import { Footer } from 'components/Footer';
+} from '@terra-dev/styled-neumorphism';
+import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { screen } from 'env';
 import React from 'react';
 import styled from 'styled-components';
@@ -16,19 +17,15 @@ export interface EarnProps {
 
 function EarnBase({ className }: EarnProps) {
   return (
-    <div className={className}>
-      <main>
-        <h1>EARN</h1>
-
-        <div className="content-layout">
+    <PaddedLayout className={className}>
+      <section className="grid">
+        <EventBusProvider>
           <TotalDepositSection className="total-deposit" />
           <InterestSection className="interest" />
           <TransactionHistorySection className="transaction-history" />
-        </div>
-
-        <Footer />
-      </main>
-    </div>
+        </EventBusProvider>
+      </section>
+    </PaddedLayout>
   );
 }
 
@@ -36,21 +33,10 @@ export const Earn = styled(EarnBase)`
   // ---------------------------------------------
   // style
   // ---------------------------------------------
-  background-color: ${({ theme }) => theme.backgroundColor};
-  color: ${({ theme }) => theme.textColor};
-
-  h1 {
-    margin: 0 0 50px 0;
-
-    font-size: 34px;
-    font-weight: 900;
-    color: ${({ theme }) => theme.textColor};
-  }
-
   h2 {
     margin: 0;
-    font-size: 14px;
-    font-weight: 700;
+    font-size: 15px;
+    font-weight: 500;
     letter-spacing: -0.3px;
     color: ${({ theme }) => theme.textColor};
   }
@@ -65,17 +51,14 @@ export const Earn = styled(EarnBase)`
 
   .total-deposit {
     .amount {
-      font-size: 64px;
+      font-size: 50px;
       font-weight: 200;
-      letter-spacing: -3px;
+      letter-spacing: -1.5px;
       color: ${({ theme }) => theme.textColor};
     }
 
-    .amount-description {
-      font-size: 14px;
-      line-height: 1.5;
-      letter-spacing: -0.3px;
-      color: ${({ theme }) => theme.dimTextColor};
+    .total-deposit-buttons {
+      margin-top: 72px;
     }
   }
 
@@ -83,75 +66,46 @@ export const Earn = styled(EarnBase)`
     .apy {
       text-align: center;
 
-      .value {
-        font-size: 64px;
-        font-weight: 300;
-        color: ${({ theme }) => theme.textColor};
+      .name {
+        margin-bottom: 5px;
       }
 
-      .name {
-        font-size: 14px;
-        color: ${({ theme }) => theme.dimTextColor};
-
-        margin-bottom: 10px;
+      .value {
+        font-size: 50px;
+        font-weight: 300;
+        color: ${({ theme }) => theme.colors.positive};
+        margin-bottom: 50px;
       }
 
       figure {
         width: 100%;
         height: 200px;
-        border-radius: 10px;
-        border: 2px dashed white;
       }
     }
 
     .earn {
-      ul {
-        list-style: none;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-
-        li {
-          text-align: center;
-          font-size: 12px;
-          border-radius: 15px;
-          border: 1px solid transparent;
-          color: ${({ theme }) => theme.dimTextColor};
-
-          cursor: pointer;
-          user-select: none;
-
-          width: 58px;
-          padding: 5px 0;
-
-          &:not(:last-child) {
-            margin-right: 5px;
-          }
-
-          &[data-selected='true'] {
-            border: 1px solid ${({ theme }) => theme.textColor};
-            color: ${({ theme }) => theme.textColor};
-          }
-        }
-
-        margin-bottom: 90px;
-      }
+      margin-top: 33px;
 
       .amount {
+        margin-top: 80px;
+
         text-align: center;
-        font-size: 32px;
+        font-size: 40px;
+        font-weight: 300;
 
         p {
           margin-top: 10px;
-          font-size: 14px;
-          color: ${({ theme }) => theme.dimTextColor};
+          font-size: 13px;
+          font-weight: 500;
         }
       }
     }
   }
 
   .transaction-history {
-    ul {
+    position: relative;
+
+    ul.list {
       list-style: none;
       padding: 0;
 
@@ -171,6 +125,10 @@ export const Earn = styled(EarnBase)`
 
           font-size: 14px;
           color: ${({ theme }) => theme.dimTextColor};
+
+          a {
+            color: currentColor;
+          }
         }
 
         &:not(:last-child) {
@@ -192,6 +150,13 @@ export const Earn = styled(EarnBase)`
         }
       }
     }
+
+    ul.pagination {
+      position: absolute;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%);
+    }
   }
 
   // ---------------------------------------------
@@ -202,9 +167,10 @@ export const Earn = styled(EarnBase)`
       margin-bottom: 15px;
     }
 
-    aside {
+    .total-deposit-buttons {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, 142px);
+      justify-content: end;
       grid-gap: 20px;
     }
   }
@@ -217,90 +183,52 @@ export const Earn = styled(EarnBase)`
 
   .transaction-history {
     h2 {
-      margin-bottom: 20px;
+      margin-bottom: 16px;
+    }
+
+    hr {
+      margin: 0 0 10px 0;
     }
   }
 
   // pc
-  @media (min-width: ${screen.pc.min}px) {
-    padding: 100px;
-  }
-
-  @media (min-width: ${screen.pc.min}px) and (max-width: ${screen.pc.max}px) {
-    .NeuSection-root {
-      margin-bottom: 40px;
-    }
-  }
-
   @media (min-width: ${screen.monitor.min}px) {
-    main {
-      max-width: 1440px;
-      margin: 0 auto;
+    .grid {
+      display: grid;
 
-      .content-layout {
-        display: grid;
+      grid-template-columns: 1fr 1fr 460px;
+      grid-template-rows: auto 425px;
+      grid-gap: 40px;
 
-        min-height: 800px;
+      .NeuSection-root {
+        margin: 0;
+      }
 
-        grid-template-columns: 1fr 1fr 1fr;
-        grid-template-rows: auto 1fr;
-        grid-gap: 40px;
+      .total-deposit {
+        grid-column: 1/3;
+        grid-row: 1;
+      }
 
-        .total-deposit {
-          grid-column: 1/3;
-          grid-row: 1;
-        }
+      .interest {
+        grid-column: 3;
+        grid-row: 1/3;
+      }
 
-        .interest {
-          grid-column: 3;
-          grid-row: 1/3;
-        }
-
-        .transaction-history {
-          grid-column: 1/3;
-          grid-row: 2/3;
-        }
+      .transaction-history {
+        grid-column: 1/3;
+        grid-row: 2/3;
       }
     }
 
-    .transaction-history {
-      ul {
-        max-height: 350px;
-        overflow-y: auto;
-      }
-    }
-  }
-
-  // tablet
-  @media (min-width: ${screen.tablet.min}px) and (max-width: ${screen.tablet
-      .max}px) {
-    padding: 30px;
-
-    .NeuSection-root {
-      margin-bottom: 40px;
-
+    .interest {
       .NeuSection-content {
-        padding: 30px;
+        padding: 60px 40px;
       }
-    }
-
-    .decimal-point {
-      display: none;
     }
   }
 
   // mobile
   @media (max-width: ${screen.mobile.max}px) {
-    padding: 30px 20px;
-
-    .NeuSection-root {
-      margin-bottom: 40px;
-
-      .NeuSection-content {
-        padding: 20px;
-      }
-    }
-
     .decimal-point {
       display: none;
     }
@@ -314,7 +242,8 @@ export const Earn = styled(EarnBase)`
         font-size: 50px;
       }
 
-      aside {
+      .total-deposit-buttons {
+        margin-top: 40px;
         display: grid;
         grid-template-columns: 1fr;
         grid-gap: 15px;

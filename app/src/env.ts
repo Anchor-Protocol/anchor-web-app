@@ -1,5 +1,4 @@
-import { Ratio, uUST } from '@anchor-protocol/notation';
-import { StdFee } from '@terra-money/terra.js';
+import { onProduction } from 'base/env';
 
 export const screen = {
   mobile: { max: 510 },
@@ -13,56 +12,23 @@ export const screen = {
   // huge monitor : @media (min-width: ${screen.monitor.min}px)
 } as const;
 
-//export const FINDER = 'https://finder.terra.money';
+//EARN docs -> https://docs.anchorprotocol.com/user-guide/earn
+//BORROW docs -> https://docs.anchorprotocol.com/user-guide/borrow
+//BOND docs -> https://docs.anchorprotocol.com/user-guide/bond
+//GOVERN docs -> https://docs.anchorprotocol.com/user-guide/govern
 
-export const SAFE_RATIO: Ratio<number> = 0.7 as Ratio<number>;
-
-export const FIXED_GAS: uUST<number> = 3500000 as uUST<number>;
-
-export const TRANSACTION_FEE = {
-  //gasPrices: '0.0015uusd',
-  //fee: new StdFee(503333, '5000000000000uusd'),
-  fee: new StdFee(6000000, FIXED_GAS + 'uusd'),
-  gasAdjustment: 1.4,
-};
-
-export const BLOCKS_PER_YEAR = 5256666;
-
-export const onProduction =
-  global.location.host === 'app.anchorprotocol.com' ||
-  global.location.host === 'app.anchor.money' ||
-  global.location.host === 'app.anchor.market';
-
-export const defaultNetwork = onProduction
-  ? {
-      chainID: 'columbus-4',
-      fcd: 'https://fcd.terra.dev',
-      lcd: 'https://lcd.terra.dev',
-      name: 'mainnet',
-      ws: 'wss://fcd.terra.dev',
-    }
-  : {
-      chainID: 'tequila-0004',
-      fcd: 'https://tequila-fcd.terra.dev',
-      lcd: 'https://tequila-lcd.terra.dev',
-      name: 'testnet',
-      ws: 'wss://tequila-ws.terra.dev',
-    };
-
-/**
- * @deprecated will remove
- */
-export const contractAddresses = {
-  bLunaHub: 'terra1kzx23xs8v9yggf6lqpwgerg455e8xzsv0s0glf',
-  bAssetToken: 'terra12kz7ehjh9m2aexmyumlt29qjuc9j5mjcdp0d5k',
-  bAssetReward: 'terra1pjpzktukkd20amfwc0d8mahjg5na2pgu3swdu4',
-  mmInterest: 'terra16f3lv77yu4ga4w8m7jl0xg2xkavqe347dz30v9',
-  mmOracle: 'terra1enud48d754pau5rce79xsdx9gfschw2eelwcuj',
-  mmMarket: 'terra1r8vmgf3mf5m5gcp09fnj2ewsyaqppr6ke50mf2',
-  mmOverseer: 'terra1t6zjqmqjvsfrszr65cppug4gd4xkqm33vugwl2',
-  mmCustody: 'terra1usycpap7j0mz4ynrgmtv7jc7uwqka345ushknz',
-  mmLiquidation: 'terra14pdcpx6szzfvhz4g6dfddkx82f5ssf8llmzpw4',
-  anchorToken: 'terra10c0q6qyk2634tfx2nw9v4gxqlm7a0luk9huhy8',
-  terraswapFactory: 'terra1mtvsarza55hehpmyjgw7edqwvxpq5qquvttz9n',
-  terraswapPair: 'unused',
+export const links = {
+  earn: onProduction
+    ? 'https://docs.anchorprotocol.com/user-guide/webapp/earn'
+    : 'https://app.gitbook.com/@anchor-protocol/s/anchor-2/user-guide/earn',
+  borrow: onProduction
+    ? 'https://docs.anchorprotocol.com/user-guide/webapp/borrow'
+    : 'https://app.gitbook.com/@anchor-protocol/s/anchor-2/user-guide/borrow',
+  bond: onProduction
+    ? 'https://docs.anchorprotocol.com/user-guide/webapp/bond'
+    : 'https://app.gitbook.com/@anchor-protocol/s/anchor-2/user-guide/bond',
+  gov: onProduction
+    ? 'https://docs.anchorprotocol.com/user-guide/webapp/govern'
+    : 'https://app.gitbook.com/@anchor-protocol/s/anchor-2/user-guide/govern',
+  forum: 'https://forum.anchorprotocol.com/',
 };

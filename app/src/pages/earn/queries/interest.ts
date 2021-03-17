@@ -1,63 +1,51 @@
-import { Num, Ratio } from '@anchor-protocol/notation';
-import { gql, QueryResult, useQuery } from '@apollo/client';
-import big from 'big.js';
-import { useAddressProvider } from 'contexts/contract';
-import { BLOCKS_PER_YEAR } from 'env';
+import {
+  HumanAddr,
+  moneyMarket,
+  WASMContractResult,
+} from '@anchor-protocol/types';
+import { createMap, useMap } from '@terra-dev/use-map';
+import { useContractAddress } from 'base/contexts/contract';
+import { parseResult } from 'base/queries/parseResult';
+import { MappedQueryResult } from 'base/queries/types';
+import { useQueryErrorHandler } from 'base/queries/useQueryErrorHandler';
+import { useRefetch } from 'base/queries/useRefetch';
+import { gql, useQuery } from '@apollo/client';
 import { useMemo } from 'react';
 
-export interface StringifiedData {
-  marketStatus: {
-    Result: string;
-  };
+export interface RawData {
+  marketStatus: WASMContractResult;
 }
 
 export interface Data {
-  marketStatus: {
-    deposit_rate: Ratio<string>;
-    last_executed_height: number;
-    prev_a_token_supply: Num<string>;
-    prev_exchange_rate: Ratio<string>;
-  };
-  currentAPY: Ratio<string>;
+  marketStatus: WASMContractResult<moneyMarket.overseer.EpochStateResponse>;
 }
 
-export function parseData({ marketStatus }: StringifiedData): Data {
-  const parsedMarketStatus: Data['marketStatus'] = JSON.parse(
-    marketStatus.Result,
-  );
+export const dataMap = createMap<RawData, Data>({
+  marketStatus: (existing, { marketStatus }) => {
+    return parseResult(existing.marketStatus, marketStatus.Result);
+  },
+});
 
-  return {
-    marketStatus: parsedMarketStatus,
-    currentAPY: big(parsedMarketStatus.deposit_rate)
-      .mul(BLOCKS_PER_YEAR)
-      .toString() as Ratio,
-  };
-}
-
-export interface StringifiedVariables {
+export interface RawVariables {
   overseerContract: string;
   overseerEpochState: string;
 }
 
 export interface Variables {
-  overseerContract: string;
-  overseerEpochState: {
-    epoch_state: {};
-  };
+  overseerContract: HumanAddr;
 }
 
-export function stringifyVariables({
-  overseerContract,
-  overseerEpochState,
-}: Variables): StringifiedVariables {
+export function mapVariables({ overseerContract }: Variables): RawVariables {
   return {
     overseerContract,
-    overseerEpochState: JSON.stringify(overseerEpochState),
+    overseerEpochState: JSON.stringify({
+      epoch_state: {},
+    } as moneyMarket.overseer.EpochState),
   };
 }
 
 export const query = gql`
-  query depositRate($overseerContract: String!, $overseerEpochState: String!) {
+  query __interest($overseerContract: String!, $overseerEpochState: String!) {
     marketStatus: WasmContractsContractAddressStore(
       ContractAddress: $overseerContract
       QueryMsg: $overseerEpochState
@@ -67,30 +55,37 @@ export const query = gql`
   }
 `;
 
-export function useInterest(): QueryResult<
-  StringifiedData,
-  StringifiedVariables
-> & { parsedData: Data | undefined } {
-  const addressProvider = useAddressProvider();
+export function useInterest(): MappedQueryResult<RawVariables, RawData, Data> {
+  const { moneyMarket } = useContractAddress();
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
-    fetchPolicy: 'cache-and-network',
+  const variables = useMemo(() => {
+    return mapVariables({
+      overseerContract: moneyMarket.overseer,
+    });
+  }, [moneyMarket.overseer]);
+
+  const onError = useQueryErrorHandler();
+
+  const {
+    previousData,
+    data: _data = previousData,
+    refetch: _refetch,
+    error,
+    ...result
+  } = useQuery<RawData, RawVariables>(query, {
+    fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-first',
     pollInterval: 1000 * 60,
-    variables: stringifyVariables({
-      overseerContract: addressProvider.overseer(''),
-      overseerEpochState: {
-        epoch_state: {},
-      },
-    }),
+    variables,
+    onError,
   });
 
-  const parsedData = useMemo(
-    () => (result.data ? parseData(result.data) : undefined),
-    [result.data],
-  );
+  const data = useMap(_data, dataMap);
+  const refetch = useRefetch(_refetch, dataMap);
 
   return {
     ...result,
-    parsedData,
+    data,
+    refetch,
   };
 }

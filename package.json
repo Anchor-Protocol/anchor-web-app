@@ -2,10 +2,12 @@
   "private": true,
   "version": "0.1.0",
   "author": "SSen <ian@ssen.name>",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "repository": "github:Anchor-Protocol/anchor",
   "workspaces": [
     "app",
+    "demo",
+    "base",
     "landing",
     "packages"
   ],
@@ -16,6 +18,8 @@
     "app:build": "yarn workspace @anchor-web-app/app run build",
     "app:test": "yarn workspace @anchor-web-app/app run test",
     "app:coverage": "yarn workspace @anchor-web-app/app run coverage",
+    "base:test": "yarn workspace @anchor-web-app/base run test",
+    "base:coverage": "yarn workspace @anchor-web-app/base run coverage",
     "landing:start": "yarn workspace @anchor-web-app/landing run start",
     "landing:build": "yarn workspace @anchor-web-app/landing run build",
     "landing:test": "yarn workspace @anchor-web-app/landing run test",
@@ -25,32 +29,40 @@
     "packages:storybook": "yarn workspace @anchor-web-app/packages run storybook",
     "packages:build-storybook": "yarn workspace @anchor-web-app/packages run build-storybook",
     "packages:test": "yarn workspace @anchor-web-app/packages run test",
-    "graphql:update-schema": "curl https://docs.github.com/public/schema.docs.graphql --output schema.graphql"
+    "packages:coverage": "yarn workspace @anchor-web-app/packages run coverage",
+    "graphql:download-schema": "npx apollo client:download-schema --endpoint \"https://tequila-mantle.anchorprotocol.com\" \"schema.graphql\"",
+    "markdown:build": "markdown-source-import **/src/**/*.md",
+    "postinstall": "husky install"
   },
   "lint-staged": {
     "**/src/{**/*,*}.{ts,tsx}": [
       "prettier --write",
-      "eslint"
+      "eslint --max-warnings 0"
     ]
   },
   "dependencies": {
-    "@material-ui/core": "^4.11.2",
+    "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2"
   },
   "devDependencies": {
-    "@handbook/markdown-source-import": "^1.0.1",
+    "@handbook/markdown-source-import": "^1.1.0",
     "@ssen/prettier-config": "^1.2.0",
     "@types/eslint": "^7.2.6",
-    "@types/prettier": "^2.1.6",
-    "eslint": "^7.18.0",
-    "eslint-config-prettier": "^7.2.0",
+    "@types/prettier": "^2.2.1",
+    "eslint": "^7.20.0",
+    "eslint-config-prettier": "^8.1.0",
     "eslint-config-react-app": "^6.0.0",
-    "husky": "^4.3.8",
-    "lint-staged": "^10.3.0",
-    "prettier": "^2.1.1",
-    "react-scripts": "4.0.1"
+    "husky": "^5",
+    "jest-bin": "^0.3.0",
+    "lint-staged": "^10.5.4",
+    "prettier": "^2.2.1",
+    "react-scripts": "4.0.3"
   },
   "peerDependencies": {
     "eslint-config-react-app": "6.0.0"
+  },
+  "resolutions": {
+    "@babel/core": "^7.12.0",
+    "typescript": "4.1.5"
   }
 }

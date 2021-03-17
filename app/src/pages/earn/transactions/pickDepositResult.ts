@@ -1,54 +1,89 @@
-import { Ratio, uaUST, uUST } from '@anchor-protocol/notation';
-import big from 'big.js';
-import { Data } from 'queries/txInfos';
-import { TxResult } from 'transactions/tx';
+import {
+  demicrofy,
+  formatAUSTWithPostfixUnits,
+  formatFluidDecimalPoints,
+  formatUSTWithPostfixUnits,
+} from '@anchor-protocol/notation';
+import { Rate, uaUST, uUST } from '@anchor-protocol/types';
+import big, { BigSource } from 'big.js';
+import { TxHashLink } from 'base/components/TxHashLink';
+import { TxInfoParseError } from 'base/errors/TxInfoParseError';
+import { TransactionResult } from 'base/models/transaction';
+import {
+  Data,
+  pickAttributeValue,
+  pickEvent,
+  pickRawLog,
+} from 'base/queries/txInfos';
+import { createElement } from 'react';
+import { TxResult } from 'base/transactions/tx';
 
 interface Params {
   txResult: TxResult;
   txInfo: Data;
+  txFee: uUST;
 }
 
-export interface DepositResult {
-  depositAmount: uUST<string> | undefined;
-  receivedAmount: uaUST<string> | undefined;
-  exchangeRate: Ratio<string> | undefined;
-  txFee: uUST<string>;
-  txHash: string;
-}
+export function pickDepositResult({
+  txInfo,
+  txResult,
+  txFee,
+}: Params): TransactionResult {
+  const rawLog = pickRawLog(txInfo, 0);
 
-export function pickDepositResult({ txInfo, txResult }: Params): DepositResult {
-  const fromContract =
-    Array.isArray(txInfo[0].RawLog) && txInfo[0].RawLog[0].events[1];
-
-  if (!fromContract) {
-    console.error({ txInfo, txResult });
-    throw new Error(`Failed contract result parse`);
+  if (!rawLog) {
+    throw new TxInfoParseError(txResult, txInfo, 'Undefined the RawLog');
   }
 
-  const depositAmount = fromContract.attributes.find(
-    ({ key }: { key: string }) => key === 'deposit_amount',
-  )?.value as uUST | undefined;
+  const fromContract = pickEvent(rawLog, 'from_contract');
 
-  const receivedAmount = fromContract.attributes.find(
-    ({ key }: { key: string }) => key === 'mint_amount',
-  )?.value as uaUST | undefined;
+  if (!fromContract) {
+    throw new TxInfoParseError(
+      txResult,
+      txInfo,
+      'Undefined the from_contract event',
+    );
+  }
+
+  const depositAmount = pickAttributeValue<uUST>(fromContract, 4);
+
+  const receivedAmount = pickAttributeValue<uaUST>(fromContract, 3);
 
   const exchangeRate =
     depositAmount &&
     receivedAmount &&
-    (big(receivedAmount).div(depositAmount).toFixed() as Ratio | undefined);
+    (big(depositAmount).div(receivedAmount) as Rate<BigSource> | undefined);
 
-  const txFee = big(txResult.fee.amount[0].amount)
-    .plus(txResult.fee.gas)
-    .toFixed() as uUST;
+  //const txFee = pickTxFee(txResult);
 
   const txHash = txResult.result.txhash;
 
   return {
-    depositAmount,
-    receivedAmount,
-    exchangeRate,
-    txFee,
-    txHash,
+    txInfo,
+    txResult,
+    //txFee,
+    //txHash,
+    details: [
+      depositAmount && {
+        name: 'Deposit Amount',
+        value: formatUSTWithPostfixUnits(demicrofy(depositAmount)) + ' UST',
+      },
+      receivedAmount && {
+        name: 'Received Amount',
+        value: formatAUSTWithPostfixUnits(demicrofy(receivedAmount)) + ' aUST',
+      },
+      exchangeRate && {
+        name: 'Exchange Rate',
+        value: formatFluidDecimalPoints(exchangeRate, 6),
+      },
+      {
+        name: 'Tx Hash',
+        value: createElement(TxHashLink, { txHash }),
+      },
+      {
+        name: 'Tx Fee',
+        value: formatUSTWithPostfixUnits(demicrofy(txFee)) + ' UST',
+      },
+    ],
   };
 }

@@ -1,5 +1,5 @@
-import { HorizontalHeavyRuler } from '@anchor-protocol/neumorphism-ui/components/HorizontalHeavyRuler';
-import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
+import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import styled from 'styled-components';
 
 export interface InterestRateModelSectionProps {

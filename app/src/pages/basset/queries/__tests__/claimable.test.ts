@@ -1,19 +1,20 @@
-import { testAddressProvider, testClient, testWalletAddress } from 'test.env';
+import { map } from '@terra-dev/use-map';
+import { testAddress, testClient, testWalletAddress } from 'base/test.env';
 import {
-  parseData,
+  dataMap,
+  mapVariables,
   query,
-  StringifiedData,
-  StringifiedVariables,
-  stringifyVariables,
+  RawData,
+  RawVariables,
 } from '../claimable';
 
 describe('queries/claimable', () => {
   test('should get result from query', async () => {
     const data = await testClient
-      .query<StringifiedData, StringifiedVariables>({
+      .query<RawData, RawVariables>({
         query,
-        variables: stringifyVariables({
-          bAssetRewardContract: testAddressProvider.bAssetReward(''),
+        variables: mapVariables({
+          bAssetRewardContract: testAddress.bluna.reward,
           rewardState: {
             state: {},
           },
@@ -24,8 +25,9 @@ describe('queries/claimable', () => {
           },
         }),
       })
-      .then(({ data }) => parseData(data));
+      .then(({ data }) => map(data, dataMap));
 
-    expect(!!data.rewardState).toBeTruthy();
+    expect(data.rewardState).not.toBeUndefined();
+    expect(data.claimableReward).not.toBeUndefined();
   });
 });

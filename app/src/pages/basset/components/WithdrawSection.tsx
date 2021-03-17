@@ -1,23 +1,30 @@
-import { useOperation } from '@anchor-protocol/broadcastable-operation';
-import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
-import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
-import { NativeSelect } from '@anchor-protocol/neumorphism-ui/components/NativeSelect';
-import { Section } from '@anchor-protocol/neumorphism-ui/components/Section';
+import { useOperation } from '@terra-dev/broadcastable-operation';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
+import { NativeSelect } from '@terra-dev/neumorphism-ui/components/NativeSelect';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { demicrofy, formatLuna } from '@anchor-protocol/notation';
-import { useWallet } from '@anchor-protocol/wallet-provider';
-import { useApolloClient } from '@apollo/client';
-import { OperationRenderer } from 'components/OperationRenderer';
-import { WarningMessage } from 'components/WarningMessage';
-import { useBank } from 'contexts/bank';
-import { useAddressProvider } from 'contexts/contract';
-import { useInvalidTxFee } from 'logics/useInvalidTxFee';
-import { useWithdrawableAmount } from 'pages/basset/logics/useWithdrawableAmount';
-import { useWithdrawAllHistory } from 'pages/basset/logics/useWithdrawAllHistory';
+import type { uLuna, uUST } from '@anchor-protocol/types';
+import { WalletReady } from '@anchor-protocol/wallet-provider';
+import { useBank } from 'base/contexts/bank';
+import { useConstants } from 'base/contexts/contants';
+import { useService } from 'base/contexts/service';
+import big, { Big } from 'big.js';
+import { MessageBox } from 'components/MessageBox';
+import { TransactionRenderer } from 'components/TransactionRenderer';
+import { validateTxFee } from 'logics/validateTxFee';
+import { withdrawAllHistory } from 'pages/basset/logics/withdrawAllHistory';
 import { useWithdrawable } from 'pages/basset/queries/withdrawable';
 import { useWithdrawHistory } from 'pages/basset/queries/withdrawHistory';
 import { withdrawOptions } from 'pages/basset/transactions/withdrawOptions';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 export interface WithdrawSectionProps {
   disabled: boolean;
@@ -38,17 +45,11 @@ export function WithdrawSection({
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { status, post } = useWallet();
+  const { serviceAvailable, walletReady } = useService();
 
-  const addressProvider = useAddressProvider();
+  const { fixedGas } = useConstants();
 
-  const client = useApolloClient();
-
-  const [withdraw, withdrawResult] = useOperation(withdrawOptions, {
-    addressProvider,
-    client,
-    post,
-  });
+  const [withdraw, withdrawResult] = useOperation(withdrawOptions, {});
 
   // ---------------------------------------------
   // states
@@ -62,27 +63,34 @@ export function WithdrawSection({
   // ---------------------------------------------
   const bank = useBank();
 
-  const { parsedData: withdrawable } = useWithdrawable({
+  const {
+    data: { withdrawableAmount: _withdrawableAmount, withdrawRequests },
+  } = useWithdrawable({
     bAsset: 'bluna',
   });
 
-  const { parsedData: withdrawAllHistory } = useWithdrawHistory({
-    withdrawable,
+  const {
+    data: { allHistory, parameters },
+  } = useWithdrawHistory({
+    withdrawRequestsStartFrom: withdrawRequests?.startFrom,
   });
 
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const invalidTxFee = useInvalidTxFee(bank);
-
-  const withdrawHistory = useWithdrawAllHistory(
-    withdrawable?.withdrawRequestsStartFrom,
-    withdrawable?.withdrawRequests.requests,
-    withdrawAllHistory?.allHistory,
-    withdrawAllHistory?.parameters,
+  const invalidTxFee = useMemo(
+    () => serviceAvailable && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, serviceAvailable],
   );
-  const withdrawableAmount = useWithdrawableAmount(
-    withdrawable?.withdrawableAmount.withdrawable,
+
+  const withdrawHistory = useMemo(
+    () => withdrawAllHistory(withdrawRequests, allHistory, parameters),
+    [allHistory, parameters, withdrawRequests],
+  );
+
+  const withdrawableAmount = useMemo(
+    () => big(_withdrawableAmount?.withdrawable ?? 0) as uLuna<Big>,
+    [_withdrawableAmount?.withdrawable],
   );
 
   // ---------------------------------------------
@@ -99,16 +107,16 @@ export function WithdrawSection({
     [],
   );
 
-  const proceed = useCallback(async () => {
-    if (status.status !== 'ready' || bank.status !== 'connected') {
-      return;
-    }
-
-    await withdraw({
-      address: status.walletAddress,
-      bAsset: 'bluna',
-    });
-  }, [bank.status, status, withdraw]);
+  const proceed = useCallback(
+    async (walletReady: WalletReady) => {
+      await withdraw({
+        address: walletReady.walletAddress,
+        bAsset: 'bluna',
+        txFee: fixedGas.toString() as uUST,
+      });
+    },
+    [fixedGas, withdraw],
+  );
 
   // ---------------------------------------------
   // effects
@@ -127,16 +135,7 @@ export function WithdrawSection({
   ) {
     return (
       <Section>
-        {withdrawResult.status === 'done' ? (
-          <div>
-            <pre>{JSON.stringify(withdrawResult.data, null, 2)}</pre>
-            <ActionButton style={{ width: 200 }} onClick={withdrawResult.reset}>
-              Exit
-            </ActionButton>
-          </div>
-        ) : (
-          <OperationRenderer result={withdrawResult} />
-        )}
+        <TransactionRenderer result={withdrawResult} />
       </Section>
     );
   }
@@ -147,7 +146,9 @@ export function WithdrawSection({
         <NativeSelect
           className="bond"
           value={withdrawableCurrency.value}
-          onChange={({ target }) => updateWithdrawableCurrency(target.value)}
+          onChange={({ target }: ChangeEvent<HTMLSelectElement>) =>
+            updateWithdrawableCurrency(target.value)
+          }
         >
           {assetCurrencies.map(({ label, value }) => (
             <option key={value} value={value}>
@@ -177,19 +178,18 @@ export function WithdrawSection({
       </article>
 
       {!!invalidTxFee && withdrawableAmount.gt(0) && (
-        <WarningMessage>{invalidTxFee}</WarningMessage>
+        <MessageBox>{invalidTxFee}</MessageBox>
       )}
 
       <ActionButton
         className="submit"
         disabled={
-          status.status !== 'ready' ||
-          bank.status !== 'connected' ||
+          !serviceAvailable ||
           !!invalidTxFee ||
           withdrawableAmount.lte(0) ||
           disabled
         }
-        onClick={() => proceed()}
+        onClick={() => walletReady && proceed(walletReady)}
       >
         Withdraw
       </ActionButton>

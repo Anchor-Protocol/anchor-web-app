@@ -1,53 +1,28 @@
-import { GlobalStyle } from '@anchor-protocol/neumorphism-ui/themes/GlobalStyle';
-import { lightTheme } from '@anchor-protocol/neumorphism-ui/themes/lightTheme';
-import { ThemeProvider } from '@anchor-protocol/neumorphism-ui/themes/ThemeProvider';
-import { RouterScrollRestoration } from '@anchor-protocol/use-router-scroll-restoration';
-import { Footer } from 'components/Footer';
+import { AppProviders } from 'base/AppProviders';
 import { Header } from 'components/Header';
-import { BAssets } from 'pages/bassets';
-import { Contact } from 'pages/contact';
 import { Index } from 'pages/index';
-import { Market } from 'pages/market';
-import { StableCoins } from 'pages/stablecoins';
-import {
-  BrowserRouter as Router,
-  Redirect,
-  Route,
-  Switch,
-} from 'react-router-dom';
-import styled from 'styled-components';
+import { Market } from 'pages/market-simple';
+import { Redirect, Route, Switch } from 'react-router-dom';
 
-export interface AppProps {
-  className?: string;
-}
-
-function AppBase({ className }: AppProps) {
+export function App() {
   return (
-    <Router>
-      <RouterScrollRestoration />
-      <ThemeProvider theme={lightTheme}>
-        <GlobalStyle />
-        {/* Start Layout */}
-        <div className={className}>
-          <Header />
-          <Switch>
-            <Route exact path="/" component={Index} />
-            <Route path="/market" component={Market} />
-            <Redirect exact path="/stablecoins" to="/market" />
-            <Route path="/stablecoins/:stableCoinId" component={StableCoins} />
-            <Redirect exact path="/bassets" to="/market" />
-            <Route path="/bassets/:bAssetId" component={BAssets} />
-            <Route path="/contact" component={Contact} />
-            <Redirect to="/" />
-          </Switch>
-          <Footer />
-        </div>
-        {/* End Layout */}
-      </ThemeProvider>
-    </Router>
+    <AppProviders enableWatchConnection={false}>
+      <div>
+        <Header />
+        <Switch>
+          {/*<Route exact path="/" component={Index} />*/}
+          {/*<Route path="/market" component={Market} />*/}
+          {/*<Redirect exact path="/stablecoins" to="/market" />*/}
+          {/*<Route path="/stablecoins/:stableCoinId" component={StableCoins} />*/}
+          {/*<Redirect exact path="/bassets" to="/market" />*/}
+          {/*<Route path="/bassets/:bAssetId" component={BAssets} />*/}
+          {/*<Route path="/contact" component={Contact} />*/}
+          {/*<Redirect to="/" />*/}
+          <Route exact path="/" component={Index} />
+          <Route path="/dashboard" component={Market} />
+          <Redirect to="/" />
+        </Switch>
+      </div>
+    </AppProviders>
   );
 }
-
-export const App = styled(AppBase)`
-  // TODO
-`;

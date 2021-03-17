@@ -1,75 +1,74 @@
-import { AddressProvider } from '@anchor-protocol/anchor-js/address-provider';
-import { Ratio } from '@anchor-protocol/notation';
-import { gql, QueryResult, useQuery } from '@apollo/client';
-import big from 'big.js';
-import { useAddressProvider } from 'contexts/contract';
-import { SAFE_RATIO } from 'env';
+import type {
+  moneyMarket,
+  Rate,
+  StableDenom,
+  UST,
+  WASMContractResult,
+} from '@anchor-protocol/types';
+import { ContractAddress, HumanAddr } from '@anchor-protocol/types';
+import { createMap, map, Mapped, useMap } from '@terra-dev/use-map';
+import { useContractAddress } from 'base/contexts/contract';
+import { parseResult } from 'base/queries/parseResult';
+import { MappedApolloQueryResult, MappedQueryResult } from 'base/queries/types';
+import { useQueryErrorHandler } from 'base/queries/useQueryErrorHandler';
+import { useRefetch } from 'base/queries/useRefetch';
+import { ApolloClient, gql, useQuery } from '@apollo/client';
 import { useMemo } from 'react';
-import { Data as MarketBalanceOverviewData } from './marketBalanceOverview';
+import { Data as MarketState } from './marketState';
 
-export interface StringifiedData {
-  borrowRate: {
-    Result: string;
-  };
-
-  oraclePrice: {
-    Result: string;
-  };
-
-  overseerWhitelist: {
-    Result: string;
-  };
+export interface RawData {
+  borrowRate: WASMContractResult;
+  oraclePrice: WASMContractResult;
+  overseerWhitelist: WASMContractResult;
 }
 
 export interface Data {
+  borrowRate: WASMContractResult<moneyMarket.interestModel.BorrowRateResponse>;
+  oraclePrice: WASMContractResult<moneyMarket.oracle.PriceResponse>;
+  overseerWhitelist: WASMContractResult<moneyMarket.overseer.WhitelistResponse>;
+}
+
+export const dataMap = createMap<RawData, Data>({
+  borrowRate: (existing, { borrowRate }) => {
+    return parseResult(existing.borrowRate, borrowRate.Result);
+  },
+  oraclePrice: (existing, { oraclePrice }) => {
+    return parseResult(existing.oraclePrice, oraclePrice.Result);
+  },
+  overseerWhitelist: (existing, { overseerWhitelist }) => {
+    return parseResult(existing.overseerWhitelist, overseerWhitelist.Result);
+  },
+});
+
+export const mockupData: Mapped<RawData, Data> = {
+  __data: {
+    borrowRate: {
+      Result: '',
+    },
+    oraclePrice: {
+      Result: '',
+    },
+    overseerWhitelist: {
+      Result: '',
+    },
+  },
   borrowRate: {
-    rate: Ratio<string>;
-  };
-
+    Result: '',
+    rate: '1' as Rate,
+  },
   oraclePrice: {
-    rate: Ratio<string>;
-    last_updated_base: number;
-    last_updated_quote: number;
-  };
-
+    Result: '',
+    rate: '1' as UST,
+    last_updated_base: 0,
+    last_updated_quote: 0,
+  },
   overseerWhitelist: {
-    elems: {
-      collateral_token: string;
-      custody_contract: string;
-      ltv: Ratio<string>;
-    }[];
-  };
+    Result: '',
+    elems: [],
+  },
+};
 
-  bLunaMaxLtv: Ratio<string>;
-  bLunaSafeLtv: Ratio<string>;
-}
-
-export function parseData(
-  { borrowRate, oraclePrice, overseerWhitelist }: StringifiedData,
-  addressProvider: AddressProvider,
-): Data {
-  const parsedOverseerWhitelist: Data['overseerWhitelist'] = JSON.parse(
-    overseerWhitelist.Result,
-  );
-  const bLunaMaxLtv = parsedOverseerWhitelist.elems.find(
-    ({ collateral_token }) =>
-      collateral_token === addressProvider.bAssetToken('ubluna'),
-  )?.ltv;
-
-  if (!bLunaMaxLtv) {
-    throw new Error(`Undefined bLuna collateral token!`);
-  }
-
-  return {
-    borrowRate: JSON.parse(borrowRate.Result),
-    oraclePrice: JSON.parse(oraclePrice.Result),
-    overseerWhitelist: parsedOverseerWhitelist,
-    bLunaMaxLtv,
-    bLunaSafeLtv: big(bLunaMaxLtv).mul(SAFE_RATIO).toString() as Ratio,
-  };
-}
-
-export interface StringifiedVariables {
+export interface RawVariables {
   interestContractAddress: string;
   interestBorrowRateQuery: string;
   oracleContractAddress: string;
@@ -79,37 +78,22 @@ export interface StringifiedVariables {
 }
 
 export interface Variables {
-  interestContractAddress: string;
-  interestBorrowRateQuery: {
-    borrow_rate: {
-      market_balance: string;
-      total_liabilities: string;
-      total_reserves: string;
-    };
-  };
-  oracleContractAddress: string;
-  oracleQuery: {
-    price: {
-      base: string;
-      quote: string;
-    };
-  };
-  overseerContractAddress: string;
-  overseerWhitelistQuery: {
-    whitelist: {
-      collateral_token: string;
-    };
-  };
+  interestContractAddress: HumanAddr;
+  interestBorrowRateQuery: moneyMarket.interestModel.BorrowRate;
+  oracleContractAddress: HumanAddr;
+  oracleQuery: moneyMarket.oracle.Price;
+  overseerContractAddress: HumanAddr;
+  overseerWhitelistQuery: moneyMarket.overseer.Whitelist;
 }
 
-export function stringifyVariables({
+export function mapVariables({
   interestContractAddress,
   interestBorrowRateQuery,
   oracleContractAddress,
   oracleQuery,
   overseerContractAddress,
   overseerWhitelistQuery,
-}: Variables): StringifiedVariables {
+}: Variables): RawVariables {
   return {
     interestContractAddress,
     interestBorrowRateQuery: JSON.stringify(interestBorrowRateQuery),
@@ -121,7 +105,7 @@ export function stringifyVariables({
 }
 
 export const query = gql`
-  query(
+  query __marketOverview(
     $interestContractAddress: String!
     $interestBorrowRateQuery: String!
     $oracleContractAddress: String!
@@ -154,50 +138,118 @@ export const query = gql`
 
 export function useMarketOverview({
   marketBalance,
+  marketState,
 }: {
-  marketBalance: MarketBalanceOverviewData | undefined;
-}): QueryResult<StringifiedData, StringifiedVariables> & {
-  parsedData: Data | undefined;
-} {
-  const addressProvider = useAddressProvider();
+  marketBalance: MarketState['marketBalance'] | undefined;
+  marketState: MarketState['marketState'] | undefined;
+}): MappedQueryResult<RawVariables, RawData, Data> {
+  const { cw20, moneyMarket } = useContractAddress();
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
-    skip: !marketBalance,
-    fetchPolicy: 'cache-and-network',
-    variables: stringifyVariables({
-      interestContractAddress: addressProvider.interest(),
+  const variables = useMemo(() => {
+    if (!marketBalance || !marketState) return undefined;
+
+    const market_balance = marketBalance?.find(({ Denom }) => Denom === 'uusd')
+      ?.Amount;
+
+    if (!market_balance) return undefined;
+
+    return mapVariables({
+      interestContractAddress: moneyMarket.interestModel,
       interestBorrowRateQuery: {
         borrow_rate: {
-          market_balance:
-            marketBalance?.marketBalance.find(({ Denom }) => Denom === 'uusd')
-              ?.Amount ?? '',
-          total_liabilities: marketBalance?.marketState.total_liabilities ?? '',
-          total_reserves: marketBalance?.marketState.total_reserves ?? '',
+          market_balance,
+          total_liabilities: marketState.total_liabilities,
+          total_reserves: marketState.total_reserves,
         },
       },
-      oracleContractAddress: addressProvider.oracle(),
+      oracleContractAddress: moneyMarket.oracle,
       oracleQuery: {
         price: {
-          base: addressProvider.bAssetToken('ubluna'),
-          quote: 'uusd',
+          base: cw20.bLuna,
+          quote: 'uusd' as StableDenom,
         },
       },
-      overseerContractAddress: addressProvider.overseer('ubluna'),
+      overseerContractAddress: moneyMarket.overseer,
       overseerWhitelistQuery: {
         whitelist: {
-          collateral_token: addressProvider.bAssetToken('ubluna'),
+          collateral_token: cw20.bLuna,
         },
       },
-    }),
+    });
+  }, [
+    cw20.bLuna,
+    marketBalance,
+    marketState,
+    moneyMarket.interestModel,
+    moneyMarket.oracle,
+    moneyMarket.overseer,
+  ]);
+
+  const onError = useQueryErrorHandler();
+
+  const {
+    previousData,
+    data: _data = previousData,
+    refetch: _refetch,
+    error,
+    ...result
+  } = useQuery<RawData, RawVariables>(query, {
+    skip: !marketBalance || !marketState,
+    fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-first',
+    variables,
+    onError,
   });
 
-  const parsedData = useMemo(
-    () => (result.data ? parseData(result.data, addressProvider) : undefined),
-    [addressProvider, result.data],
-  );
+  const data = useMap(_data, dataMap);
+  const refetch = useRefetch(_refetch, dataMap);
 
   return {
     ...result,
-    parsedData,
+    data,
+    refetch,
   };
+}
+
+export function queryMarketOverview(
+  client: ApolloClient<any>,
+  address: ContractAddress,
+  marketBalance: MarketState['marketBalance'],
+  marketState: MarketState['marketState'],
+): Promise<MappedApolloQueryResult<RawData, Data>> {
+  return client
+    .query<RawData, RawVariables>({
+      query,
+      fetchPolicy: 'network-only',
+      variables: mapVariables({
+        interestContractAddress: address.moneyMarket.interestModel,
+        interestBorrowRateQuery: {
+          borrow_rate: {
+            market_balance: marketBalance.find(({ Denom }) => Denom === 'uusd')!
+              .Amount,
+            total_liabilities: marketState.total_liabilities,
+            total_reserves: marketState.total_reserves,
+          },
+        },
+        oracleContractAddress: address.moneyMarket.oracle,
+        oracleQuery: {
+          price: {
+            base: address.cw20.bLuna,
+            quote: 'uusd' as StableDenom,
+          },
+        },
+        overseerContractAddress: address.moneyMarket.overseer,
+        overseerWhitelistQuery: {
+          whitelist: {
+            collateral_token: address.cw20.bLuna,
+          },
+        },
+      }),
+    })
+    .then((result) => {
+      return {
+        ...result,
+        data: map(result.data, dataMap),
+      };
+    });
 }

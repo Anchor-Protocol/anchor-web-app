@@ -1,56 +1,82 @@
-import { Ratio, uaUST, uUST } from '@anchor-protocol/notation';
-import big from 'big.js';
-import { Data } from 'queries/txInfos';
-import { TxResult } from 'transactions/tx';
+import {
+  demicrofy,
+  formatUSTWithPostfixUnits,
+  stripUUSD,
+} from '@anchor-protocol/notation';
+import { uUST } from '@anchor-protocol/types';
+import big, { Big, BigSource } from 'big.js';
+import { TxHashLink } from 'base/components/TxHashLink';
+import { TxInfoParseError } from 'base/errors/TxInfoParseError';
+import { TransactionResult } from 'base/models/transaction';
+import {
+  Data,
+  pickAttributeValue,
+  pickEvent,
+  pickRawLog,
+} from 'base/queries/txInfos';
+import { createElement } from 'react';
+import { TxResult } from 'base/transactions/tx';
 
 interface Params {
   txResult: TxResult;
   txInfo: Data;
+  fixedGas: uUST<BigSource>;
 }
 
-export interface ClaimResult {
-  depositAmount: uUST<string> | undefined;
-  receivedAmount: uaUST<string> | undefined;
-  exchangeRate: Ratio<string> | undefined;
-  txFee: uUST<string>;
-  txHash: string;
-}
+export function pickClaimResult({
+  txInfo,
+  txResult,
+  fixedGas,
+}: Params): TransactionResult {
+  const rawLog = pickRawLog(txInfo, 0);
 
-export function pickClaimResult({ txInfo, txResult }: Params): ClaimResult {
-  const fromContract =
-    Array.isArray(txInfo[0].RawLog) && txInfo[0].RawLog[0].events[1];
-
-  if (!fromContract) {
-    console.error({ txInfo, txResult });
-    throw new Error(`Failed contract result parse`);
+  if (!rawLog) {
+    throw new TxInfoParseError(txResult, txInfo, 'Undefined the RawLog');
   }
 
-  // TODO
+  const transfer = pickEvent(rawLog, 'transfer');
 
-  const depositAmount = fromContract.attributes.find(
-    ({ key }: { key: string }) => key === 'deposit_amount',
-  )?.value as uUST | undefined;
+  if (!transfer) {
+    throw new TxInfoParseError(
+      txResult,
+      txInfo,
+      'Undefined the transfer event',
+    );
+  }
 
-  const receivedAmount = fromContract.attributes.find(
-    ({ key }: { key: string }) => key === 'mint_amount',
-  )?.value as uaUST | undefined;
+  console.log('pickClaimResult.ts..pickClaimResult()', transfer);
 
-  const exchangeRate =
-    depositAmount &&
-    receivedAmount &&
-    (big(receivedAmount).div(depositAmount).toFixed() as Ratio | undefined);
+  const claimedReward = pickAttributeValue<string>(transfer, 5);
 
-  const txFee = big(txResult.fee.amount[0].amount)
-    .plus(txResult.fee.gas)
-    .toFixed() as uUST;
+  const txFee = pickAttributeValue<string>(transfer, 2);
 
   const txHash = txResult.result.txhash;
 
   return {
-    depositAmount,
-    receivedAmount,
-    exchangeRate,
-    txFee,
-    txHash,
+    txInfo,
+    txResult,
+    //txFee: txFee ? stripUUSD(txFee) : ('0' as uUST),
+    //txHash,
+    details: [
+      !!claimedReward && {
+        name: 'Claimed Reward',
+        value:
+          formatUSTWithPostfixUnits(demicrofy(stripUUSD(claimedReward))) +
+          ' UST',
+      },
+      {
+        name: 'Tx Hash',
+        value: createElement(TxHashLink, { txHash }),
+      },
+      {
+        name: 'Tx Fee',
+        value:
+          formatUSTWithPostfixUnits(
+            demicrofy(
+              big(txFee ? stripUUSD(txFee) : '0').plus(fixedGas) as uUST<Big>,
+            ),
+          ) + ' UST',
+      },
+    ],
   };
 }

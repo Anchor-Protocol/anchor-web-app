@@ -1,23 +1,30 @@
-import { testAddressProvider, testClient } from 'test.env';
+import { map } from '@terra-dev/use-map';
+import { testAddress, testClient } from 'base/test.env';
 import {
-  parseData,
+  dataMap,
+  mapVariables,
   query,
-  StringifiedData,
-  StringifiedVariables,
-  stringifyVariables,
+  RawData,
+  RawVariables,
 } from '../exchangeRate';
 
 describe('queries/exchangeRate', () => {
   test('should get result from query', async () => {
     const data = await testClient
-      .query<StringifiedData, StringifiedVariables>({
+      .query<RawData, RawVariables>({
         query,
-        variables: stringifyVariables({
-          bLunaHubContract: testAddressProvider.bAssetHub(''),
+        variables: mapVariables({
+          bLunaHubContract: testAddress.bluna.hub,
+          stateQuery: {
+            state: {},
+          },
+          parametersQuery: {
+            parameters: {},
+          },
         }),
       })
-      .then(({ data }) => parseData(data));
+      .then(({ data }) => map(data, dataMap));
 
-    expect(typeof data.actual_unbonded_amount).toBe('string');
+    expect(data.exchangeRate).not.toBeUndefined();
   });
 });

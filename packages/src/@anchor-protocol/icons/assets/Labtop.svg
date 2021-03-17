@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 21 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <title>Shape</title>
+  <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+    <g id="Landing" transform="translate(-1454.000000, -35.000000)">
+      <g id="GNB">
+        <g id="Group-10" transform="translate(1454.500000, 35.500000)" fill="currentColor">
+          <path
+              d="M17.5,0 C18.0522847,0 18.5,0.44771525 18.5,1 L18.5,11.5 L20,11.5 L20,12 C20,12.5522847 19.5522847,13 19,13 L1,13 C0.44771525,13 0,12.5522847 0,12 L0,11.5 L1.5,11.5 L1.5,1 C1.5,0.44771525 1.94771525,0 2.5,0 L17.5,0 Z M17.5,1.5 L2.5,1.5 L2.5,11.5 L7.54184894,11.5005588 C7.6080915,11.6516662 7.74689943,11.76373 7.91418701,11.7926644 L8,11.8 L12,11.8 C12.2048156,11.8 12.3808681,11.6768508 12.4581511,11.5005588 L17.5,11.5 L17.5,1.5 Z"
+              id="Shape"></path>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

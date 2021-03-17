@@ -1,11 +1,11 @@
 {
-  "author": "Name <ian@terra.money>",
-  "license": "MIT",
-  "repository": "github:Anchor-Protocol/anchor",
-  "bugs": "https://github.com/Anchor-Protocol/anchor/issues",
-  "homepage": "https://github.com/Anchor-Protocol/anchor/tree/master/packages/src/{name}",
+  "author": "Ian <ian@terra.money>",
+  "license": "Apache-2.0",
+  "repository": "github:Anchor-Protocol/anchor-web-app",
+  "bugs": "https://github.com/Anchor-Protocol/anchor-web-app/issues",
+  "homepage": "https://github.com/Anchor-Protocol/anchor-web-app/tree/master/packages/src/{name}",
   "engines": {
-    "node": ">=10"
+    "node": ">=12"
   },
   "publishConfig": {
     "access": "public"

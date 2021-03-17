@@ -1,45 +1,40 @@
-import { useOperation } from '@anchor-protocol/broadcastable-operation';
-import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
-import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
-import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
-import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
+import { useOperation } from '@terra-dev/broadcastable-operation';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import {
   demicrofy,
   formatUST,
   formatUSTInput,
-  UST,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import type {
-  DialogProps,
-  DialogTemplate,
-  OpenDialog,
-} from '@anchor-protocol/use-dialog';
-import { useDialog } from '@anchor-protocol/use-dialog';
-import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
-import { useApolloClient } from '@apollo/client';
+import { Rate, UST, uUST } from '@anchor-protocol/types';
+import type { DialogProps, OpenDialog } from '@terra-dev/use-dialog';
+import { useDialog } from '@terra-dev/use-dialog';
+import { WalletReady } from '@anchor-protocol/wallet-provider';
+import { useBank } from 'base/contexts/bank';
+import { useConstants } from 'base/contexts/contants';
+import { useService } from 'base/contexts/service';
 import { InputAdornment, Modal } from '@material-ui/core';
-import big from 'big.js';
-import { OperationRenderer } from 'components/OperationRenderer';
+import big, { BigSource } from 'big.js';
+import { MessageBox } from 'components/MessageBox';
+import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { WarningMessage } from 'components/WarningMessage';
-import { useBank } from 'contexts/bank';
-import { useAddressProvider } from 'contexts/contract';
-import { useInvalidTxFee } from 'logics/useInvalidTxFee';
+import { validateTxFee } from 'logics/validateTxFee';
+import { validateWithdrawAmount } from 'pages/earn/logics/validateWithdrawAmount';
+import { withdrawReceiveAmount } from 'pages/earn/logics/withdrawReceiveAmount';
+import { withdrawTxFee } from 'pages/earn/logics/withdrawTxFee';
 import type { ReactNode } from 'react';
-import React, { useCallback, useState } from 'react';
+import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { useInvalidWithdrawAmount } from '../logics/useInvalidWithdrawAmount';
-import { useWithdrawReceiveAmount } from '../logics/useWithdrawReceiveAmount';
-import { useWithdrawTxFee } from '../logics/useWithdrawTxFee';
-import { Data as TotalDepositData } from '../queries/totalDeposit';
 import { withdrawOptions } from '../transactions/withdrawOptions';
 
 interface FormParams {
   className?: string;
-  totalDeposit: TotalDepositData;
+  totalDeposit: uUST<BigSource>;
+  exchangeRate: Rate<BigSource>;
 }
 
 type FormReturn = void;
@@ -48,32 +43,23 @@ export function useWithdrawDialog(): [
   OpenDialog<FormParams, FormReturn>,
   ReactNode,
 ] {
-  return useDialog(Template);
+  return useDialog(Component);
 }
-
-const Template: DialogTemplate<FormParams, FormReturn> = (props) => {
-  return <Component {...props} />;
-};
 
 function ComponentBase({
   className,
   closeDialog,
   totalDeposit,
+  exchangeRate,
 }: DialogProps<FormParams, FormReturn>) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { status, post } = useWallet();
+  const { serviceAvailable, walletReady } = useService();
 
-  const addressProvider = useAddressProvider();
+  const { fixedGas } = useConstants();
 
-  const client = useApolloClient();
-
-  const [withdraw, withdrawResult] = useOperation(withdrawOptions, {
-    addressProvider,
-    post,
-    client,
-  });
+  const [withdraw, withdrawResult] = useOperation(withdrawOptions, {});
 
   // ---------------------------------------------
   // states
@@ -88,15 +74,25 @@ function ComponentBase({
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const txFee = useWithdrawTxFee(withdrawAmount, bank);
-  const receiveAmount = useWithdrawReceiveAmount(withdrawAmount, txFee);
-
-  const invalidTxFee = useInvalidTxFee(bank);
-  const invalidWithdrawAmount = useInvalidWithdrawAmount(
-    withdrawAmount,
+  const txFee = useMemo(() => withdrawTxFee(withdrawAmount, bank, fixedGas), [
     bank,
-    totalDeposit.totalDeposit,
-    txFee,
+    fixedGas,
+    withdrawAmount,
+  ]);
+
+  const receiveAmount = useMemo(
+    () => withdrawReceiveAmount(withdrawAmount, txFee),
+    [txFee, withdrawAmount],
+  );
+
+  const invalidTxFee = useMemo(
+    () => serviceAvailable && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, serviceAvailable],
+  );
+
+  const invalidWithdrawAmount = useMemo(
+    () => validateWithdrawAmount(withdrawAmount, bank, totalDeposit, txFee),
+    [bank, totalDeposit, txFee, withdrawAmount],
   );
 
   // ---------------------------------------------
@@ -107,20 +103,19 @@ function ComponentBase({
   }, []);
 
   const proceed = useCallback(
-    async (status: WalletStatus, withdrawAmount: string) => {
-      if (status.status !== 'ready' || bank.status !== 'connected') {
-        return;
-      }
-
+    async (
+      status: WalletReady,
+      withdrawAmount: string,
+      txFee: uUST<BigSource> | undefined,
+    ) => {
       await withdraw({
         address: status.walletAddress,
-        amount: big(withdrawAmount)
-          .div(totalDeposit.exchangeRate.exchange_rate)
-          .toString(),
+        amount: big(withdrawAmount).div(exchangeRate).toString(),
         symbol: 'usd',
+        txFee: txFee!.toString() as uUST,
       });
     },
-    [bank.status, totalDeposit.exchangeRate.exchange_rate, withdraw],
+    [exchangeRate, withdraw],
   );
 
   // ---------------------------------------------
@@ -134,20 +129,7 @@ function ComponentBase({
     return (
       <Modal open disableBackdropClick>
         <Dialog className={className}>
-          <h1>Withdraw</h1>
-          {withdrawResult.status === 'done' ? (
-            <div>
-              <pre>{JSON.stringify(withdrawResult.data, null, 2)}</pre>
-              <ActionButton
-                style={{ width: 200 }}
-                onClick={() => closeDialog()}
-              >
-                Close
-              </ActionButton>
-            </div>
-          ) : (
-            <OperationRenderer result={withdrawResult} />
-          )}
+          <TransactionRenderer result={withdrawResult} onExit={closeDialog} />
         </Dialog>
       </Modal>
     );
@@ -158,7 +140,7 @@ function ComponentBase({
       <Dialog className={className} onClose={() => closeDialog()}>
         <h1>Withdraw</h1>
 
-        {!!invalidTxFee && <WarningMessage>{invalidTxFee}</WarningMessage>}
+        {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
 
         <NumberInput
           className="amount"
@@ -167,7 +149,9 @@ function ComponentBase({
           maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="AMOUNT"
           error={!!invalidWithdrawAmount}
-          onChange={({ target }) => updateWithdrawAmount(target.value)}
+          onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
+            updateWithdrawAmount(target.value)
+          }
           InputProps={{
             endAdornment: <InputAdornment position="end">UST</InputAdornment>,
           }}
@@ -183,25 +167,17 @@ function ComponentBase({
                 cursor: 'pointer',
               }}
               onClick={() =>
-                updateWithdrawAmount(
-                  formatUSTInput(demicrofy(totalDeposit.totalDeposit)),
-                )
+                updateWithdrawAmount(formatUSTInput(demicrofy(totalDeposit)))
               }
             >
-              {formatUST(demicrofy(totalDeposit.totalDeposit))} UST
+              {formatUST(demicrofy(totalDeposit))} UST
             </span>
           </span>
         </div>
 
         {txFee && receiveAmount && (
           <TxFeeList className="receipt">
-            <TxFeeListItem
-              label={
-                <IconSpan>
-                  Tx Fee <InfoTooltip>Tx Fee Description</InfoTooltip>
-                </IconSpan>
-              }
-            >
+            <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
               {formatUST(demicrofy(txFee))} UST
             </TxFeeListItem>
             <TxFeeListItem label="Receive Amount">
@@ -213,13 +189,14 @@ function ComponentBase({
         <ActionButton
           className="proceed"
           disabled={
-            status.status !== 'ready' ||
-            bank.status !== 'connected' ||
+            !serviceAvailable ||
             withdrawAmount.length === 0 ||
             big(withdrawAmount).lte(0) ||
             !!invalidWithdrawAmount
           }
-          onClick={() => proceed(status, withdrawAmount)}
+          onClick={() =>
+            walletReady && proceed(walletReady, withdrawAmount, txFee)
+          }
         >
           Proceed
         </ActionButton>
@@ -256,7 +233,7 @@ const Component = styled(ComponentBase)`
     color: ${({ theme }) => theme.dimTextColor};
 
     &[aria-invalid='true'] {
-      color: #f5356a;
+      color: ${({ theme }) => theme.colors.negative};
     }
   }
 

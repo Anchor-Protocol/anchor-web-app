@@ -1,47 +1,47 @@
-import { useSubscription } from '@anchor-protocol/broadcastable-operation';
-import { DateTime, Ratio, ubLuna } from '@anchor-protocol/notation';
-import { gql, QueryResult, useQuery } from '@apollo/client';
-import { useAddressProvider } from 'contexts/contract';
+import { useSubscription } from '@terra-dev/broadcastable-operation';
+import { bluna, WASMContractResult } from '@anchor-protocol/types';
+import { createMap, Mapped, useMap } from '@terra-dev/use-map';
+import { useContractAddress } from 'base/contexts/contract';
+import { parseResult } from 'base/queries/parseResult';
+import { MappedQueryResult } from 'base/queries/types';
+import { useQueryErrorHandler } from 'base/queries/useQueryErrorHandler';
+import { useRefetch } from 'base/queries/useRefetch';
+import { gql, useQuery } from '@apollo/client';
 import { useMemo } from 'react';
-import { Data as WithdrawableData } from './withdrawable';
 
-export interface StringifiedData {
-  allHistory: {
-    Result: string;
-  };
-  parameters: {
-    Result: string;
-  };
+export interface RawData {
+  allHistory: WASMContractResult;
+  parameters: WASMContractResult;
 }
 
 export interface Data {
-  allHistory: {
-    history: {
-      batch_id: number;
-      time: DateTime;
-      amount: ubLuna<string>;
-      withdraw_rate: Ratio<string>;
-      released: boolean;
-    }[];
-  };
-  parameters: {
-    epoch_period: number;
-    underlying_coin_denom: string;
-    unbonding_period: number;
-    peg_recovery_fee: ubLuna<string>;
-    er_threshold: Ratio<string>;
-    reward_denom: string;
-  };
+  allHistory: WASMContractResult<bluna.hub.AllHistoryResponse>;
+  parameters: WASMContractResult<bluna.hub.ParametersResponse>;
 }
 
-export function parseData({ allHistory, parameters }: StringifiedData): Data {
-  return {
-    allHistory: JSON.parse(allHistory.Result),
-    parameters: JSON.parse(parameters.Result),
-  };
-}
+export const dataMap = createMap<RawData, Data>({
+  allHistory: (existing, { allHistory }) => {
+    return parseResult(existing.allHistory, allHistory.Result);
+  },
+  parameters: (existing, { parameters }) => {
+    return parseResult(existing.parameters, parameters.Result);
+  },
+});
 
-export interface StringifiedVariables {
+export const mockupData: Mapped<RawData, Data> = {
+  __data: {
+    allHistory: {
+      Result: '',
+    },
+    parameters: {
+      Result: '',
+    },
+  },
+  allHistory: undefined,
+  parameters: undefined,
+};
+
+export interface RawVariables {
   bLunaHubContract: string;
   allHistory: string;
   parameters: string;
@@ -49,22 +49,15 @@ export interface StringifiedVariables {
 
 export interface Variables {
   bLunaHubContract: string;
-  allHistory: {
-    all_history: {
-      start_from: number;
-      limit: number;
-    };
-  };
-  parameters: {
-    parameters: {};
-  };
+  allHistory: bluna.hub.AllHistory;
+  parameters: bluna.hub.Parameters;
 }
 
-export function stringifyVariables({
+export function mapVariables({
   bLunaHubContract,
   allHistory,
   parameters,
-}: Variables): StringifiedVariables {
+}: Variables): RawVariables {
   return {
     bLunaHubContract,
     allHistory: JSON.stringify(allHistory),
@@ -73,7 +66,7 @@ export function stringifyVariables({
 }
 
 export const query = gql`
-  query withdrawAllHistory(
+  query __withdrawHistory(
     $bLunaHubContract: String!
     $allHistory: String!
     $parameters: String!
@@ -95,44 +88,57 @@ export const query = gql`
 `;
 
 export function useWithdrawHistory({
-  withdrawable,
+  withdrawRequestsStartFrom,
 }: {
-  withdrawable?: WithdrawableData;
-}): QueryResult<StringifiedData, StringifiedVariables> & {
-  parsedData: Data | undefined;
-} {
-  const addressProvider = useAddressProvider();
+  withdrawRequestsStartFrom?: number;
+}): MappedQueryResult<RawVariables, RawData, Data> {
+  const { bluna } = useContractAddress();
 
-  const result = useQuery<StringifiedData, StringifiedVariables>(query, {
-    skip: !withdrawable || withdrawable.withdrawRequestsStartFrom < 0,
-    fetchPolicy: 'cache-and-network',
-    variables: stringifyVariables({
-      bLunaHubContract: addressProvider.bAssetHub('bluna'),
+  const variables = useMemo(() => {
+    return mapVariables({
+      bLunaHubContract: bluna.hub,
       allHistory: {
         all_history: {
-          start_from: withdrawable?.withdrawRequestsStartFrom ?? 0,
+          start_from: withdrawRequestsStartFrom ?? 0,
           limit: 100,
         },
       },
       parameters: {
         parameters: {},
       },
-    }),
+    });
+  }, [bluna.hub, withdrawRequestsStartFrom]);
+
+  const onError = useQueryErrorHandler();
+
+  const {
+    previousData,
+    data: _data = previousData,
+    refetch: _refetch,
+    error,
+    ...result
+  } = useQuery<RawData, RawVariables>(query, {
+    skip:
+      typeof withdrawRequestsStartFrom !== 'number' ||
+      withdrawRequestsStartFrom < 0,
+    fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-first',
+    variables,
+    onError,
   });
 
   useSubscription((id, event) => {
     if (event === 'done') {
-      result.refetch();
+      _refetch();
     }
   });
 
-  const parsedData = useMemo(
-    () => (result.data ? parseData(result.data) : undefined),
-    [result.data],
-  );
+  const data = useMap(_data, dataMap);
+  const refetch = useRefetch(_refetch, dataMap);
 
   return {
     ...result,
-    parsedData,
+    data,
+    refetch,
   };
 }

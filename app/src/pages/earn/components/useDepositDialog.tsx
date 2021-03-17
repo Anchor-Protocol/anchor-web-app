@@ -1,42 +1,37 @@
-import { useOperation } from '@anchor-protocol/broadcastable-operation';
-import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
-import { Dialog } from '@anchor-protocol/neumorphism-ui/components/Dialog';
-import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@anchor-protocol/neumorphism-ui/components/InfoTooltip';
-import { NumberInput } from '@anchor-protocol/neumorphism-ui/components/NumberInput';
-import { useConfirm } from '@anchor-protocol/neumorphism-ui/components/useConfirm';
+import { useOperation } from '@terra-dev/broadcastable-operation';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
+import { useConfirm } from '@terra-dev/neumorphism-ui/components/useConfirm';
 import {
   demicrofy,
   formatUST,
   formatUSTInput,
-  UST,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import type {
-  DialogProps,
-  DialogTemplate,
-  OpenDialog,
-} from '@anchor-protocol/use-dialog';
-import { useDialog } from '@anchor-protocol/use-dialog';
-import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
-import { useApolloClient } from '@apollo/client';
+import { UST, uUST } from '@anchor-protocol/types';
+import type { DialogProps, OpenDialog } from '@terra-dev/use-dialog';
+import { useDialog } from '@terra-dev/use-dialog';
+import { WalletReady } from '@anchor-protocol/wallet-provider';
+import { useBank } from 'base/contexts/bank';
+import { useConstants } from 'base/contexts/contants';
+import { useService } from 'base/contexts/service';
 import { InputAdornment, Modal } from '@material-ui/core';
-import big from 'big.js';
-import { OperationRenderer } from 'components/OperationRenderer';
+import big, { BigSource } from 'big.js';
+import { MessageBox } from 'components/MessageBox';
+import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { WarningMessage } from 'components/WarningMessage';
-import { useBank } from 'contexts/bank';
-import { useAddressProvider } from 'contexts/contract';
-import { useInvalidTxFee } from 'logics/useInvalidTxFee';
+import { validateTxFee } from 'logics/validateTxFee';
+import { depositRecommendationAmount } from 'pages/earn/logics/depositRecommendationAmount';
+import { depositSendAmount } from 'pages/earn/logics/depositSendAmount';
+import { depositTxFee } from 'pages/earn/logics/depositTxFee';
+import { validateDepositAmount } from 'pages/earn/logics/validateDepositAmount';
+import { validateDepositNextTransaction } from 'pages/earn/logics/validateDepositNextTransaction';
 import type { ReactNode } from 'react';
-import React, { useCallback, useState } from 'react';
+import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { useDepositRecommentationAmount } from '../logics/useDepositRecommentationAmount';
-import { useDepositSendAmount } from '../logics/useDepositSendAmount';
-import { useDepositTxFee } from '../logics/useDepositTxFee';
-import { useInvalidDepositAmount } from '../logics/useInvalidDepositAmount';
-import { useInvalidDepositNextTransaction } from '../logics/useInvalidDepositNextTransaction';
 import { depositOptions } from '../transactions/depositOptions';
 
 interface FormParams {
@@ -49,12 +44,8 @@ export function useDepositDialog(): [
   OpenDialog<FormParams, FormReturn>,
   ReactNode,
 ] {
-  return useDialog(Template);
+  return useDialog(Component);
 }
-
-const Template: DialogTemplate<FormParams, FormReturn> = (props) => {
-  return <Component {...props} />;
-};
 
 function ComponentBase({
   className,
@@ -63,17 +54,11 @@ function ComponentBase({
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { status, post } = useWallet();
+  const { serviceAvailable, walletReady } = useService();
 
-  const addressProvider = useAddressProvider();
+  const { fixedGas } = useConstants();
 
-  const client = useApolloClient();
-
-  const [deposit, depositResult] = useOperation(depositOptions, {
-    addressProvider,
-    post,
-    client,
-  });
+  const [deposit, depositResult] = useOperation(depositOptions, {});
 
   const [openConfirm, confirmElement] = useConfirm();
 
@@ -90,21 +75,42 @@ function ComponentBase({
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const txFee = useDepositTxFee(depositAmount, bank);
-  const sendAmount = useDepositSendAmount(depositAmount, txFee);
-  const recommendationAssetAmount = useDepositRecommentationAmount(bank);
+  const txFee = useMemo(() => depositTxFee(depositAmount, bank, fixedGas), [
+    bank,
+    depositAmount,
+    fixedGas,
+  ]);
 
-  const invalidTxFee = useInvalidTxFee(bank);
-  const invalidDepositAmount = useInvalidDepositAmount(
+  const sendAmount = useMemo(() => depositSendAmount(depositAmount, txFee), [
     depositAmount,
-    bank,
     txFee,
+  ]);
+
+  const maxAmount = useMemo(() => depositRecommendationAmount(bank, fixedGas), [
+    bank,
+    fixedGas,
+  ]);
+
+  const invalidTxFee = useMemo(
+    () => serviceAvailable && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, serviceAvailable],
   );
-  const invalidNextTransaction = useInvalidDepositNextTransaction(
-    depositAmount,
-    bank,
-    txFee,
-    !!invalidDepositAmount,
+
+  const invalidDepositAmount = useMemo(
+    () => validateDepositAmount(depositAmount, bank, txFee),
+    [bank, depositAmount, txFee],
+  );
+
+  const invalidNextTransaction = useMemo(
+    () =>
+      validateDepositNextTransaction(
+        depositAmount,
+        bank,
+        txFee,
+        fixedGas,
+        !!invalidDepositAmount || !maxAmount,
+      ),
+    [bank, depositAmount, fixedGas, invalidDepositAmount, maxAmount, txFee],
   );
 
   // ---------------------------------------------
@@ -115,11 +121,12 @@ function ComponentBase({
   }, []);
 
   const proceed = useCallback(
-    async (status: WalletStatus, depositAmount: string, confirm: ReactNode) => {
-      if (status.status !== 'ready' || bank.status !== 'connected') {
-        return;
-      }
-
+    async (
+      status: WalletReady,
+      depositAmount: string,
+      txFee: uUST<BigSource> | undefined,
+      confirm: ReactNode,
+    ) => {
       if (confirm) {
         const userConfirm = await openConfirm({
           description: confirm,
@@ -136,9 +143,10 @@ function ComponentBase({
         address: status.walletAddress,
         amount: depositAmount,
         symbol: 'usd',
+        txFee: txFee!.toString() as uUST,
       });
     },
-    [bank.status, deposit, openConfirm],
+    [deposit, openConfirm],
   );
 
   // ---------------------------------------------
@@ -152,20 +160,7 @@ function ComponentBase({
     return (
       <Modal open disableBackdropClick>
         <Dialog className={className}>
-          <h1>Deposit</h1>
-          {depositResult.status === 'done' ? (
-            <div>
-              <pre>{JSON.stringify(depositResult.data, null, 2)}</pre>
-              <ActionButton
-                style={{ width: 200 }}
-                onClick={() => closeDialog()}
-              >
-                Close
-              </ActionButton>
-            </div>
-          ) : (
-            <OperationRenderer result={depositResult} />
-          )}
+          <TransactionRenderer result={depositResult} onExit={closeDialog} />
         </Dialog>
       </Modal>
     );
@@ -176,7 +171,7 @@ function ComponentBase({
       <Dialog className={className} onClose={() => closeDialog()}>
         <h1>Deposit</h1>
 
-        {!!invalidTxFee && <WarningMessage>{invalidTxFee}</WarningMessage>}
+        {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
 
         <NumberInput
           className="amount"
@@ -185,7 +180,9 @@ function ComponentBase({
           maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="AMOUNT"
           error={!!invalidDepositAmount}
-          onChange={({ target }) => updateDepositAmount(target.value)}
+          onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
+            updateDepositAmount(target.value)
+          }
           InputProps={{
             endAdornment: <InputAdornment position="end">UST</InputAdornment>,
           }}
@@ -197,7 +194,7 @@ function ComponentBase({
             Max:{' '}
             <span
               style={
-                recommendationAssetAmount
+                maxAmount
                   ? {
                       textDecoration: 'underline',
                       cursor: 'pointer',
@@ -205,29 +202,18 @@ function ComponentBase({
                   : undefined
               }
               onClick={() =>
-                recommendationAssetAmount &&
-                updateDepositAmount(
-                  formatUSTInput(demicrofy(recommendationAssetAmount)),
-                )
+                maxAmount &&
+                updateDepositAmount(formatUSTInput(demicrofy(maxAmount)))
               }
             >
-              {recommendationAssetAmount
-                ? formatUST(demicrofy(recommendationAssetAmount))
-                : 0}{' '}
-              UST
+              {maxAmount ? formatUST(demicrofy(maxAmount)) : 0} UST
             </span>
           </span>
         </div>
 
         {txFee && sendAmount && (
           <TxFeeList className="receipt">
-            <TxFeeListItem
-              label={
-                <IconSpan>
-                  Tx Fee <InfoTooltip>Tx Fee Description</InfoTooltip>
-                </IconSpan>
-              }
-            >
+            <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
               {formatUST(demicrofy(txFee))} UST
             </TxFeeListItem>
             <TxFeeListItem label="Send Amount">
@@ -236,10 +222,10 @@ function ComponentBase({
           </TxFeeList>
         )}
 
-        {invalidNextTransaction && recommendationAssetAmount && (
-          <WarningMessage style={{ marginTop: 30, marginBottom: 0 }}>
+        {invalidNextTransaction && maxAmount && (
+          <MessageBox style={{ marginTop: 30, marginBottom: 0 }}>
             {invalidNextTransaction}
-          </WarningMessage>
+          </MessageBox>
         )}
 
         <ActionButton
@@ -252,13 +238,15 @@ function ComponentBase({
               : undefined
           }
           disabled={
-            status.status !== 'ready' ||
-            bank.status !== 'connected' ||
+            !serviceAvailable ||
             depositAmount.length === 0 ||
             big(depositAmount).lte(0) ||
             !!invalidDepositAmount
           }
-          onClick={() => proceed(status, depositAmount, invalidNextTransaction)}
+          onClick={() =>
+            walletReady &&
+            proceed(walletReady, depositAmount, txFee, invalidNextTransaction)
+          }
         >
           Proceed
         </ActionButton>
@@ -297,7 +285,7 @@ const Component = styled(ComponentBase)`
     color: ${({ theme }) => theme.dimTextColor};
 
     &[aria-invalid='true'] {
-      color: #f5356a;
+      color: ${({ theme }) => theme.colors.negative};
     }
   }
 

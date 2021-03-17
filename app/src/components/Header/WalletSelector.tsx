@@ -1,19 +1,28 @@
 import { Wallet } from '@anchor-protocol/icons';
-import { ActionButton } from '@anchor-protocol/neumorphism-ui/components/ActionButton';
-import { IconSpan } from '@anchor-protocol/neumorphism-ui/components/IconSpan';
-import { TextButton } from '@anchor-protocol/neumorphism-ui/components/TextButton';
+import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
+import { FlatButton } from '@terra-dev/neumorphism-ui/components/FlatButton';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import {
   demicrofy,
+  formatANC,
+  formatAUSTWithPostfixUnits,
+  formatLP,
   formatLuna,
   formatUSTWithPostfixUnits,
   truncate,
 } from '@anchor-protocol/notation';
 import { useWallet } from '@anchor-protocol/wallet-provider';
 import { ClickAwayListener } from '@material-ui/core';
-import { useBank } from 'contexts/bank';
+import { Check, KeyboardArrowRight } from '@material-ui/icons';
+import { useBank } from 'base/contexts/bank';
+import { useService } from 'base/contexts/service';
+import { useAirdrop } from 'pages/airdrop/queries/useAirdrop';
+import { useSendDialog } from 'pages/send/useSendDialog';
 import { useCallback, useState } from 'react';
 import useClipboard from 'react-use-clipboard';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
+import airdropImage from './assets/airdrop.svg';
+import { Link, useRouteMatch } from 'react-router-dom';
 
 export interface WalletSelectorProps {
   className?: string;
@@ -26,6 +35,14 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   const { status, install, connect, disconnect } = useWallet();
 
   const bank = useBank();
+
+  const { serviceAvailable } = useService();
+
+  const [openSendDialog, sendDialogElement] = useSendDialog();
+
+  const [airdrop] = useAirdrop();
+
+  const matchAirdrop = useRouteMatch('/airdrop');
 
   // ---------------------------------------------
   // states
@@ -44,6 +61,11 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
     connect();
     setOpen(false);
   }, [connect]);
+
+  const disconnectWallet = useCallback(() => {
+    disconnect();
+    window.location.reload();
+  }, [disconnect]);
 
   const toggleOpen = useCallback(() => {
     if (status.status === 'ready') {
@@ -72,7 +94,12 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
       return (
         <div className={className}>
           <WalletConnectButton disabled>
-            Initialzing Wallet...
+            <IconSpan>
+              <span className="wallet-icon">
+                <Wallet />
+              </span>
+              Initialzing Wallet...
+            </IconSpan>
           </WalletConnectButton>
         </div>
       );
@@ -80,7 +107,12 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
       return (
         <div className={className}>
           <WalletConnectButton onClick={connectWallet}>
-            Connect Wallet
+            <IconSpan>
+              <span className="wallet-icon">
+                <Wallet />
+              </span>
+              Connect Wallet
+            </IconSpan>
           </WalletConnectButton>
         </div>
       );
@@ -90,9 +122,14 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
           <div className={className}>
             <WalletButton onClick={toggleOpen}>
               <IconSpan>
-                <Wallet /> {truncate(status.walletAddress)}
-                {bank.status === 'connected' && (
-                  <div>
+                <span className="wallet-icon">
+                  <Wallet />
+                </span>
+                <span className="wallet-address">
+                  {truncate(status.walletAddress)}
+                </span>
+                {serviceAvailable && (
+                  <div className="wallet-balance">
                     {formatUSTWithPostfixUnits(
                       demicrofy(bank.userBalances.uUSD),
                     )}{' '}
@@ -101,52 +138,140 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                 )}
               </IconSpan>
             </WalletButton>
-            {open && (
+            {airdrop && airdrop !== 'in-progress' && !open && !matchAirdrop && (
               <WalletDropdown>
-                <h2>
-                  <IconSpan>
-                    <Wallet /> {truncate(status.walletAddress)}
-                  </IconSpan>
-                </h2>
-                <ActionButton onClick={disconnect}>Disconnect</ActionButton>
-                <TextButton onClick={setCopied}>
-                  Copy Address {isCopied && `(Copied!)`}
-                </TextButton>
-                <TextButton onClick={viewOnTerraFinder}>
-                  View on Terra Finder
-                </TextButton>
-                <h2>Balances</h2>
-                <ul>
-                  <li>
-                    UST:{' '}
-                    {formatUSTWithPostfixUnits(
-                      demicrofy(bank.userBalances.uUSD),
-                    )}
-                  </li>
-                  <li>
-                    aUST:{' '}
-                    {formatUSTWithPostfixUnits(
-                      demicrofy(bank.userBalances.uaUST),
-                    )}
-                  </li>
-                  <li>
-                    Luna: {formatLuna(demicrofy(bank.userBalances.uLuna))}
-                  </li>
-                  <li>
-                    bLuna: {formatLuna(demicrofy(bank.userBalances.ubLuna))}
-                  </li>
-                </ul>
+                <AirdropContent>
+                  <img src={airdropImage} alt="Airdrop!" />
+                  <h2>Airdrop</h2>
+                  <p>Claim your ANC tokens</p>
+                  <FlatButton component={Link} to="/airdrop">
+                    Claim
+                  </FlatButton>
+                </AirdropContent>
               </WalletDropdown>
             )}
+            {open && (
+              <WalletDropdown>
+                <section>
+                  <div className="wallet-icon">
+                    <Wallet />
+                  </div>
+
+                  <h2 className="wallet-address">
+                    {truncate(status.walletAddress)}
+                  </h2>
+
+                  <button className="copy-wallet-address" onClick={setCopied}>
+                    <IconSpan>COPY ADDRESS {isCopied && <Check />}</IconSpan>
+                  </button>
+
+                  <ul>
+                    <li>
+                      <span>UST</span>
+                      <span>
+                        {formatUSTWithPostfixUnits(
+                          demicrofy(bank.userBalances.uUSD),
+                        )}
+                      </span>
+                    </li>
+                    <li>
+                      <span>aUST</span>
+                      <span>
+                        {formatAUSTWithPostfixUnits(
+                          demicrofy(bank.userBalances.uaUST),
+                        )}
+                      </span>
+                    </li>
+                    <li>
+                      <span>Luna</span>
+                      <span>
+                        {formatLuna(demicrofy(bank.userBalances.uLuna))}
+                      </span>
+                    </li>
+                    <li>
+                      <span>bLuna</span>
+                      <span>
+                        {formatLuna(demicrofy(bank.userBalances.ubLuna))}
+                      </span>
+                    </li>
+                    <li>
+                      <span>ANC</span>
+                      <span>
+                        {formatANC(demicrofy(bank.userBalances.uANC))}
+                      </span>
+                    </li>
+                    {process.env.NODE_ENV === 'development' && (
+                      <>
+                        <li>
+                          <span>ANC-UST LP</span>
+                          <span>
+                            {formatLP(demicrofy(bank.userBalances.uAncUstLP))}
+                          </span>
+                        </li>
+                        <li>
+                          <span>bLuna-Luna LP</span>
+                          <span>
+                            {formatLP(
+                              demicrofy(bank.userBalances.ubLunaLunaLP),
+                            )}
+                          </span>
+                        </li>
+                      </>
+                    )}
+                  </ul>
+
+                  <div className="send">
+                    <FlatButton
+                      onClick={() => {
+                        openSendDialog({});
+                        setOpen(false);
+                      }}
+                    >
+                      SEND
+                    </FlatButton>
+                  </div>
+
+                  <div className="outlink">
+                    <button onClick={viewOnTerraFinder}>
+                      View on Terra Finder{' '}
+                      <i>
+                        <KeyboardArrowRight />
+                      </i>
+                    </button>
+
+                    {process.env.NODE_ENV === 'development' && (
+                      <a
+                        href="https://faucet.terra.money/"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Go to Faucet{' '}
+                        <i>
+                          <KeyboardArrowRight />
+                        </i>
+                      </a>
+                    )}
+                  </div>
+                </section>
+
+                <button className="disconnect" onClick={disconnectWallet}>
+                  Disconnect
+                </button>
+              </WalletDropdown>
+            )}
+            {sendDialogElement}
           </div>
         </ClickAwayListener>
       );
     case 'not_installed':
       return (
-        <WalletConnectButton className={className}>
-          <button className={className} onClick={install}>
+        <WalletConnectButton className={className} onClick={install}>
+          <IconSpan>
+            <span className="wallet-icon">
+              <Wallet />
+            </span>
             Please Install Wallet
-          </button>
+          </IconSpan>
         </WalletConnectButton>
       );
     default:
@@ -154,27 +279,68 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   }
 }
 
-export const WalletConnectButton = styled(ActionButton)`
+export const WalletConnectButton = styled(BorderButton)`
+  height: 26px;
   border-radius: 20px;
-  padding: 8px 20px;
+  padding: 4px 20px;
+  font-size: 12px;
+  font-weight: 700;
 
-  height: 34px;
+  .wallet-icon {
+    svg {
+      transform: scale(1.2) translateY(0.15em);
+    }
+
+    margin-right: 17px;
+
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 1px;
+      bottom: 1px;
+      right: -11px;
+      border-left: 1px solid rgba(255, 255, 255, 0.2);
+    }
+  }
+
+  color: ${({ theme }) => theme.colors.positive};
+  border-color: ${({ theme }) => theme.colors.positive};
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.positive};
+    border-color: ${({ theme }) => theme.colors.positive};
+  }
 `;
 
 export const WalletButton = styled.button`
-  height: 34px;
-
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  height: 26px;
   border-radius: 20px;
-  padding: 8px 20px;
-  outline: none;
-  background-color: transparent;
-
-  color: #ffffff;
+  padding: 4px 17px;
+  font-size: 12px;
 
   cursor: pointer;
 
-  div {
+  .wallet-icon {
+    svg {
+      transform: scale(1.2) translateY(0.15em);
+    }
+  }
+
+  color: ${({ theme }) => theme.colors.positive};
+  border: 1px solid ${({ theme }) => theme.colors.positive};
+  outline: none;
+  background-color: transparent;
+
+  .wallet-address {
+    margin-left: 6px;
+    color: #8a8a8a;
+  }
+
+  .wallet-balance {
+    font-weight: 700;
+
     position: relative;
     display: inline-block;
     height: 100%;
@@ -184,22 +350,71 @@ export const WalletButton = styled.button`
     &::before {
       content: '';
       position: absolute;
-      top: -9px;
-      bottom: -8px;
+      top: 1px;
+      bottom: 1px;
       left: 0;
-      border-left: 1px solid rgba(255, 255, 255, 0.1);
+      border-left: 1px solid rgba(255, 255, 255, 0.2);
     }
   }
 
   &:hover {
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid ${({ theme }) => theme.colors.positive};
     background-color: rgba(255, 255, 255, 0.04);
+  }
+`;
 
-    div {
-      &::before {
-        border-left: 1px solid rgba(255, 255, 255, 0.2);
-      }
-    }
+const parachute = keyframes`
+  0% {
+    transform: rotate(10deg) translateY(0);
+  }
+  
+  25% {
+    transform: rotate(-10deg) translateY(-3px);
+  }
+  
+  50% {
+    transform: rotate(10deg) translateY(0);
+  }
+  
+  75% {
+    transform: rotate(-10deg) translateY(3px);
+  }
+  
+  100% {
+    transform: rotate(10deg) translateY(0);
+  }
+`;
+
+const AirdropContent = styled.div`
+  margin: 30px;
+  text-align: center;
+
+  img {
+    animation: ${parachute} 6s ease-in-out infinite;
+  }
+
+  h2 {
+    margin-top: 13px;
+
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  p {
+    margin-top: 5px;
+
+    font-size: 13px;
+    font-weight: 500;
+    color: ${({ theme }) => theme.dimTextColor};
+  }
+
+  a {
+    margin-top: 15px;
+
+    width: 100%;
+    height: 28px;
+
+    background-color: ${({ theme }) => theme.colors.positive};
   }
 `;
 
@@ -207,18 +422,182 @@ export const WalletDropdown = styled.div`
   position: absolute;
   display: block;
   top: 40px;
-  right: 0;
-  padding: 20px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 1000;
-  border: 1px solid white;
-  background-color: ${({ theme }) => theme.backgroundColor};
 
-  > * {
-    margin-bottom: 10px;
-  }
+  min-width: 260px;
+
+  border: 1px solid ${({ theme }) => theme.highlightBackgroundColor};
+  background-color: ${({ theme }) => theme.highlightBackgroundColor};
+  box-shadow: 0 0 21px 4px rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
 
   button {
+    cursor: pointer;
+  }
+
+  > section {
+    padding: 32px 28px;
+
+    .wallet-icon {
+      width: 38px;
+      height: 38px;
+      background-color: #000000;
+      border-radius: 50%;
+      color: #ffffff;
+
+      display: grid;
+      place-content: center;
+
+      svg {
+        font-size: 16px;
+      }
+    }
+
+    .wallet-address {
+      margin-top: 15px;
+
+      color: ${({ theme }) => theme.textColor};
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .copy-wallet-address {
+      margin-top: 8px;
+
+      border: 0;
+      outline: none;
+      border-radius: 12px;
+      font-size: 9px;
+      padding: 5px 10px;
+
+      background-color: ${({ theme }) =>
+        theme.palette.type === 'light' ? '#f1f1f1' : 'rgba(0, 0, 0, 0.15)'};
+      color: ${({ theme }) => theme.dimTextColor};
+
+      &:hover {
+        background-color: ${({ theme }) =>
+          theme.palette.type === 'light' ? '#e1e1e1' : 'rgba(0, 0, 0, 0.2)'};
+        color: ${({ theme }) => theme.textColor};
+      }
+    }
+
+    ul {
+      margin-top: 48px;
+
+      padding: 0;
+      list-style: none;
+
+      font-size: 12px;
+      color: ${({ theme }) =>
+        theme.palette.type === 'light'
+          ? '#666666'
+          : 'rgba(255, 255, 255, 0.6)'};
+
+      border-top: 1px solid
+        ${({ theme }) =>
+          theme.palette.type === 'light'
+            ? '#e5e5e5'
+            : 'rgba(255, 255, 255, 0.1)'};
+
+      li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 35px;
+
+        &:not(:last-child) {
+          border-bottom: 1px dashed
+            ${({ theme }) =>
+              theme.palette.type === 'light'
+                ? '#e5e5e5'
+                : 'rgba(255, 255, 255, 0.1)'};
+        }
+      }
+
+      margin-bottom: 20px;
+    }
+
+    .send {
+      margin-bottom: 20px;
+
+      button {
+        width: 100%;
+        height: 28px;
+
+        background-color: ${({ theme }) => theme.colors.positive};
+      }
+    }
+
+    .outlink {
+      text-align: center;
+
+      button,
+      a {
+        border: 0;
+        outline: none;
+        background-color: transparent;
+        font-size: 12px;
+        color: ${({ theme }) => theme.dimTextColor};
+        display: inline-flex;
+        align-items: center;
+
+        i {
+          margin-left: 5px;
+          transform: translateY(1px);
+
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+
+          svg {
+            font-size: 11px;
+            transform: translateY(1px);
+          }
+
+          background-color: ${({ theme }) =>
+            theme.palette.type === 'light' ? '#f1f1f1' : 'rgba(0, 0, 0, 0.15)'};
+          color: ${({ theme }) =>
+            theme.palette.type === 'light'
+              ? '#666666'
+              : 'rgba(255, 255, 255, 0.6)'};
+
+          &:hover {
+            background-color: ${({ theme }) =>
+              theme.palette.type === 'light'
+                ? '#e1e1e1'
+                : 'rgba(0, 0, 0, 0.2)'};
+            color: ${({ theme }) =>
+              theme.palette.type === 'light'
+                ? '#666666'
+                : 'rgba(255, 255, 255, 0.6)'};
+          }
+        }
+      }
+    }
+  }
+
+  .disconnect {
+    border: none;
+    outline: none;
+
+    background-color: ${({ theme }) =>
+      theme.palette.type === 'light' ? '#f1f1f1' : 'rgba(0, 0, 0, 0.15)'};
+    color: ${({ theme }) => theme.dimTextColor};
+
+    &:hover {
+      background-color: ${({ theme }) =>
+        theme.palette.type === 'light' ? '#e1e1e1' : 'rgba(0, 0, 0, 0.2)'};
+      color: ${({ theme }) => theme.textColor};
+    }
+
+    font-size: 12px;
     width: 100%;
+    height: 36px;
+
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
   }
 `;
 

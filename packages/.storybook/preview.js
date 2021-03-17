@@ -1,10 +1,10 @@
-import { darkTheme } from '../src/@anchor-protocol/neumorphism-ui/themes/darkTheme';
+import { darkTheme } from '../src/@terra-dev/neumorphism-ui/themes/darkTheme';
 import {
   globalStyle,
   GlobalStyle,
-} from '../src/@anchor-protocol/neumorphism-ui/themes/GlobalStyle';
-import { lightTheme } from '../src/@anchor-protocol/neumorphism-ui/themes/lightTheme';
-import { ThemeProvider } from '../src/@anchor-protocol/neumorphism-ui/themes/ThemeProvider';
+} from '../src/@terra-dev/neumorphism-ui/themes/GlobalStyle';
+import { lightTheme } from '../src/@terra-dev/neumorphism-ui/themes/lightTheme';
+import { ThemeProvider } from '../src/@terra-dev/neumorphism-ui/themes/ThemeProvider';
 import { createGlobalStyle } from 'styled-components';
 import { theme } from './theme';
 
@@ -14,7 +14,7 @@ export const parameters = {
     theme,
   },
   backgrounds: {
-    default: 'dark',
+    default: 'light',
     values: [
       {
         name: 'dark',
@@ -32,9 +32,9 @@ export const decorators = [
   (Story, { globals }) => (
     <ThemeProvider
       theme={
-        globals?.backgrounds?.value === lightTheme.backgroundColor
-          ? lightTheme
-          : darkTheme
+        globals?.backgrounds?.value === darkTheme.backgroundColor
+          ? darkTheme
+          : lightTheme
       }
     >
       <GlobalStyle />

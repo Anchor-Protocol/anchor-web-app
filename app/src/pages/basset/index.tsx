@@ -1,6 +1,5 @@
-import { Tab } from '@anchor-protocol/neumorphism-ui/components/Tab';
-import { Footer } from 'components/Footer';
-import { screen } from 'env';
+import { Tab } from '@terra-dev/neumorphism-ui/components/Tab';
+import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { useCallback, useMemo } from 'react';
 import {
   Redirect,
@@ -25,14 +24,14 @@ interface Item {
 }
 
 const tabItems: Item[] = [
-  { label: 'Mint', value: 'mint', tooltip: 'Bond assets to mint bAssets' },
+  { label: 'MINT', value: 'mint', tooltip: 'Bond assets to mint bAssets' },
   {
-    label: 'Burn',
+    label: 'BURN',
     value: 'burn',
     tooltip: 'Burn previously minted bAssets to unbond your assets',
   },
   {
-    label: 'Claim',
+    label: 'CLAIM',
     value: 'claim',
     tooltip: 'Claim burned bAssets or Staking Rewards',
   },
@@ -55,96 +54,30 @@ function BAssetBase({ className, match, history }: BAssetProps) {
   );
 
   return (
-    <div className={className}>
-      <main>
-        <h1>bASSET</h1>
+    <CenteredLayout className={className}>
+      <Tab
+        className="tab"
+        items={tabItems}
+        selectedItem={tab ?? tabItems[0]}
+        onChange={tabChange}
+        labelFunction={({ label }) => label}
+        keyFunction={({ value }) => value}
+        tooltipFunction={({ tooltip }) => tooltip}
+      />
 
-        <div className="content-layout">
-          <Tab
-            className="tab"
-            items={tabItems}
-            selectedItem={tab ?? tabItems[0]}
-            onChange={tabChange}
-            labelFunction={({ label }) => label}
-            keyFunction={({ value }) => value}
-            tooltipFunction={({ tooltip }) => tooltip}
-          />
-
-          <Switch>
-            <Redirect exact path={`${match.path}/`} to={`${match.path}/mint`} />
-            <Route path={`${match.path}/mint`} component={Mint} />
-            <Route path={`${match.path}/burn`} component={Burn} />
-            <Route path={`${match.path}/claim`} component={Claim} />
-            <Redirect path={`${match.path}/*`} to={`${match.path}/mint`} />
-          </Switch>
-        </div>
-
-        <Footer style={{ margin: '60px 40px' }} />
-      </main>
-    </div>
+      <Switch>
+        <Redirect exact path={`${match.path}/`} to={`${match.path}/mint`} />
+        <Route path={`${match.path}/mint`} component={Mint} />
+        <Route path={`${match.path}/burn`} component={Burn} />
+        <Route path={`${match.path}/claim`} component={Claim} />
+        <Redirect path={`${match.path}/*`} to={`${match.path}/mint`} />
+      </Switch>
+    </CenteredLayout>
   );
 }
 
 export const BAsset = styled(BAssetBase)`
-  // ---------------------------------------------
-  // style
-  // ---------------------------------------------
-  background-color: ${({ theme }) => theme.backgroundColor};
-  color: ${({ theme }) => theme.textColor};
-
-  h1 {
-    font-size: 34px;
-    font-weight: 900;
-    color: ${({ theme }) => theme.textColor};
-  }
-
   .tab {
     margin-bottom: 40px;
-  }
-
-  // ---------------------------------------------
-  // layout
-  // ---------------------------------------------
-  main {
-    .content-layout {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 0 20px;
-      border-radius: 30px;
-    }
-  }
-
-  // pc
-  @media (min-width: ${screen.pc.min}px) {
-    h1 {
-      margin: 100px 0 80px 40px;
-    }
-  }
-
-  // tablet
-  @media (min-width: ${screen.tablet.min}px) and (max-width: ${screen.tablet
-      .max}px) {
-    h1 {
-      margin: 80px 0 60px 30px;
-    }
-
-    .NeuSection-root {
-      .NeuSection-content {
-        padding: 30px;
-      }
-    }
-  }
-
-  // mobile
-  @media (max-width: ${screen.mobile.max}px) {
-    h1 {
-      margin: 50px 0 40px 20px;
-    }
-
-    .NeuSection-root {
-      .NeuSection-content {
-        padding: 20px;
-      }
-    }
   }
 `;
