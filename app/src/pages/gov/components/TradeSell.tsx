@@ -278,8 +278,10 @@ export function TradeSell() {
         level="info"
         hide={{ id: 'anc_buy', period: 1000 * 60 * 60 * 24 * 7 }}
       >
-        Due to max_Spread setting(90%), the resulting price may be different
-        from the expected price. Trade at your own risk.
+        Resulting price may differ from the expected price due to max_spread
+        settings (90%).
+        <br />
+        Trade at your own risk.
       </MessageBox>
 
       {/* Burn (bAsset) */}
