@@ -51,8 +51,8 @@ function OverviewBase({ className }: OverviewProps) {
       communityANCBalance,
       distributorANCBalance,
       lpStakingANCBalance,
-      investorLockANCBalance,
-      teamLockANCBalance,
+      airdropANCBalance,
+      investorTeamLockANCBalance,
       govState,
       govConfig,
     },
@@ -69,8 +69,8 @@ function OverviewBase({ className }: OverviewProps) {
       !communityANCBalance ||
       !distributorANCBalance ||
       !lpStakingANCBalance ||
-      !investorLockANCBalance ||
-      !teamLockANCBalance ||
+      !airdropANCBalance ||
+      !investorTeamLockANCBalance ||
       !govState ||
       !govConfig
     ) {
@@ -88,8 +88,8 @@ function OverviewBase({ className }: OverviewProps) {
       .minus(communityANCBalance.balance)
       .minus(distributorANCBalance.balance)
       .minus(lpStakingANCBalance.balance)
-      .minus(investorLockANCBalance.balance)
-      .minus(teamLockANCBalance.balance);
+      .minus(airdropANCBalance.balance)
+      .minus(investorTeamLockANCBalance.balance);
 
     const totalStakedRate = big(totalStaked).div(
       currentTotalSupply,
@@ -97,15 +97,15 @@ function OverviewBase({ className }: OverviewProps) {
 
     return { totalStaked, totalStakedRate };
   }, [
+    airdropANCBalance,
     ancTokenInfo,
     communityANCBalance,
     distributorANCBalance,
     govANCBalance,
     govConfig,
     govState,
-    investorLockANCBalance,
+    investorTeamLockANCBalance,
     lpStakingANCBalance,
-    teamLockANCBalance,
   ]);
 
   return (

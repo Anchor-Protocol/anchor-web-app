@@ -20,8 +20,8 @@ export interface RawData {
   communityANCBalance: WASMContractResult;
   distributorANCBalance: WASMContractResult;
   lpStakingANCBalance: WASMContractResult;
-  investorLockANCBalance: WASMContractResult;
-  teamLockANCBalance: WASMContractResult;
+  airdropANCBalance: WASMContractResult;
+  investorTeamLockANCBalance: WASMContractResult;
   govState: WASMContractResult;
   govConfig: WASMContractResult;
 }
@@ -32,8 +32,8 @@ export interface Data {
   communityANCBalance: WASMContractResult<cw20.BalanceResponse<uANC>>;
   distributorANCBalance: WASMContractResult<cw20.BalanceResponse<uANC>>;
   lpStakingANCBalance: WASMContractResult<cw20.BalanceResponse<uANC>>;
-  investorLockANCBalance: WASMContractResult<cw20.BalanceResponse<uANC>>;
-  teamLockANCBalance: WASMContractResult<cw20.BalanceResponse<uANC>>;
+  airdropANCBalance: WASMContractResult<cw20.BalanceResponse<uANC>>;
+  investorTeamLockANCBalance: WASMContractResult<cw20.BalanceResponse<uANC>>;
   govState: WASMContractResult<anchorToken.gov.StateResponse>;
   govConfig: WASMContractResult<anchorToken.gov.ConfigResponse>;
 }
@@ -63,14 +63,14 @@ export const dataMap = createMap<RawData, Data>({
       lpStakingANCBalance.Result,
     );
   },
-  investorLockANCBalance: (existing, { investorLockANCBalance }) => {
-    return parseResult(
-      existing.investorLockANCBalance,
-      investorLockANCBalance.Result,
-    );
+  airdropANCBalance: (existing, { airdropANCBalance }) => {
+    return parseResult(existing.airdropANCBalance, airdropANCBalance.Result);
   },
-  teamLockANCBalance: (existing, { teamLockANCBalance }) => {
-    return parseResult(existing.teamLockANCBalance, teamLockANCBalance.Result);
+  investorTeamLockANCBalance: (existing, { investorTeamLockANCBalance }) => {
+    return parseResult(
+      existing.investorTeamLockANCBalance,
+      investorTeamLockANCBalance.Result,
+    );
   },
   govState: (existing, { govState }) => {
     return parseResult(existing.govState, govState.Result);
@@ -87,8 +87,8 @@ export interface RawVariables {
   CommunityANCTokenBalanceQuery: string;
   DistributorANCTokenBalanceQuery: string;
   LPStakingANCTokenBalanceQuery: string;
-  InvestorLockANCTokenBalanceQuery: string;
-  TeamLockANCTokenBalanceQuery: string;
+  AirdropANCTokenBalanceQuery: string;
+  InvestorTeamLockANCTokenBalanceQuery: string;
   Gov_contract: string;
   GovStateQuery: string;
   GovConfigQuery: string;
@@ -124,14 +124,17 @@ export function mapVariables({ address }: Variables): RawVariables {
         address: address.anchorToken.staking,
       },
     }),
-    InvestorLockANCTokenBalanceQuery: JSON.stringify({
+    AirdropANCTokenBalanceQuery: JSON.stringify({
       balance: {
-        address: address.anchorToken.investorLock,
+        // TODO hard coding
+        address: 'terra146ahqn6d3qgdvmj8cj96hh03dzmeedhsf0kxqm',
       },
     }),
-    TeamLockANCTokenBalanceQuery: JSON.stringify({
+    InvestorTeamLockANCTokenBalanceQuery: JSON.stringify({
       balance: {
-        address: address.anchorToken.teamLock,
+        // TODO hard coding
+        address: 'terra1dp0taj85ruc299rkdvzp4z5pfg6z6swaed74e6',
+        //address: address.anchorToken.investorLock,
       },
     }),
     Gov_contract: address.anchorToken.gov,
@@ -152,8 +155,8 @@ export const query = gql`
     $CommunityANCTokenBalanceQuery: String!
     $DistributorANCTokenBalanceQuery: String!
     $LPStakingANCTokenBalanceQuery: String!
-    $InvestorLockANCTokenBalanceQuery: String!
-    $TeamLockANCTokenBalanceQuery: String!
+    $AirdropANCTokenBalanceQuery: String!
+    $InvestorTeamLockANCTokenBalanceQuery: String!
     $Gov_contract: String!
     $GovStateQuery: String!
     $GovConfigQuery: String!
@@ -193,16 +196,16 @@ export const query = gql`
       Result
     }
 
-    investorLockANCBalance: WasmContractsContractAddressStore(
+    airdropANCBalance: WasmContractsContractAddressStore(
       ContractAddress: $ANC_token_contract
-      QueryMsg: $InvestorLockANCTokenBalanceQuery
+      QueryMsg: $AirdropANCTokenBalanceQuery
     ) {
       Result
     }
 
-    teamLockANCBalance: WasmContractsContractAddressStore(
+    investorTeamLockANCBalance: WasmContractsContractAddressStore(
       ContractAddress: $ANC_token_contract
-      QueryMsg: $TeamLockANCTokenBalanceQuery
+      QueryMsg: $InvestorTeamLockANCTokenBalanceQuery
     ) {
       Result
     }
