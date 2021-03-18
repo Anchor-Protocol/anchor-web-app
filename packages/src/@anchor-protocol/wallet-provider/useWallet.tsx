@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ReactNode, RefObject } from 'react';
 import { Consumer, Context, createContext, useContext } from 'react';
 import { StationNetworkInfo, WalletStatus } from './types';
 
@@ -17,6 +17,7 @@ export interface WalletState {
   post: <SendData extends {}, Payload extends {}>(
     data: SendData,
   ) => Promise<{ name: string; payload: Payload }>;
+  inTransactionProgress: RefObject<boolean>;
 }
 
 // @ts-ignore

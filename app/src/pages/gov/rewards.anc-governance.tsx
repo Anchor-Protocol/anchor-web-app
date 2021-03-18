@@ -3,6 +3,7 @@ import { RulerTab } from '@terra-dev/neumorphism-ui/components/RulerTab';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { Circles } from 'components/Circles';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
+import { screen } from 'env';
 import { AncGovernanceStake } from 'pages/gov/components/AncGovernanceStake';
 import { AncGovernanceUnstake } from 'pages/gov/components/AncGovernanceUnstake';
 import { ancGovernancePathname, govPathname } from 'pages/gov/env';
@@ -121,6 +122,9 @@ export const RewardsAncGovernance = styled(RewardsAncUstLpBase)`
       display: flex;
       align-items: center;
 
+      word-break: keep-all;
+      white-space: nowrap;
+
       > :first-child {
         margin-right: 14px;
       }
@@ -178,6 +182,13 @@ export const RewardsAncGovernance = styled(RewardsAncUstLpBase)`
 
       width: 100%;
       height: 60px;
+    }
+  }
+
+  // under tablet
+  @media (max-width: ${screen.tablet.max}px) {
+    header {
+      margin-bottom: 20px;
     }
   }
 `;

@@ -38,9 +38,11 @@ export function ChromeExtensionWalletProvider({
     });
   }, []);
 
+  const inTransactionProgress = useRef<boolean>(false);
+
   const extension = useMemo(() => {
     const extension = new Extension();
-    return extensionFixer(extension);
+    return extensionFixer(extension, inTransactionProgress);
   }, []);
 
   const [status, setStatus] = useState<WalletStatus>(() => ({
@@ -91,7 +93,10 @@ export function ChromeExtensionWalletProvider({
           }
 
           return prev.status !== 'not_installed'
-            ? { status: 'not_installed', network: defaultNetwork }
+            ? {
+                status: 'not_installed',
+                network: defaultNetwork,
+              }
             : prev;
         });
         return;
@@ -194,6 +199,7 @@ export function ChromeExtensionWalletProvider({
       disconnect,
       post,
       checkStatus,
+      inTransactionProgress,
     }),
     [checkStatus, connect, disconnect, install, post, status],
   );

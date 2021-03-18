@@ -13,8 +13,10 @@ import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import big, { Big } from 'big.js';
+import { screen } from 'env';
 import { useBorrowAPY } from 'pages/borrow/queries/borrowAPY';
 import { MoreMenu } from 'pages/gov/components/MoreMenu';
+import { SubHeader } from 'pages/gov/components/SubHeader';
 import {
   ancGovernancePathname,
   ancUstLpPathname,
@@ -130,26 +132,33 @@ export function RewardsBase({ className }: RewardsProps) {
   // ---------------------------------------------
   return (
     <section className={className}>
-      <header>
-        <h2>Rewards</h2>
-        <div />
-        <ActionButton component={Link} to={`/${govPathname}/claim/all`}>
-          Claim All Rewards
-        </ActionButton>
-      </header>
+      <SubHeader>
+        <div>
+          <h2>Rewards</h2>
+        </div>
+        <div>
+          <ActionButton component={Link} to={`/${govPathname}/claim/all`}>
+            Claim All Rewards
+          </ActionButton>
+        </div>
+      </SubHeader>
 
       <Section>
         <h3>
-          <label>Total Reward</label>{' '}
-          {total?.reward
-            ? formatANCWithPostfixUnits(demicrofy(total.reward))
-            : 0}{' '}
-          ANC
-          <label>Total Reward Value</label>{' '}
-          {total?.rewardValue
-            ? formatUSTWithPostfixUnits(demicrofy(total.rewardValue))
-            : 0}{' '}
-          UST
+          <div>
+            <label>Total Reward</label>{' '}
+            {total?.reward
+              ? formatANCWithPostfixUnits(demicrofy(total.reward))
+              : 0}{' '}
+            ANC
+          </div>
+          <div>
+            <label>Total Reward Value</label>{' '}
+            {total?.rewardValue
+              ? formatUSTWithPostfixUnits(demicrofy(total.rewardValue))
+              : 0}{' '}
+            UST
+          </div>
         </h3>
 
         <HorizontalScrollTable
@@ -362,7 +371,16 @@ export function RewardsBase({ className }: RewardsProps) {
 }
 
 export const Rewards = styled(RewardsBase)`
+  // ---------------------------------------------
+  // style
+  // ---------------------------------------------
   h3 {
+    display: flex;
+
+    > div:nth-of-type(2) {
+      margin-left: 40px;
+    }
+
     font-size: 14px;
     color: ${({ theme }) => theme.textColor};
     font-weight: 700;
@@ -374,10 +392,6 @@ export const Rewards = styled(RewardsBase)`
       font-weight: 500;
 
       margin-right: 10px;
-
-      &:nth-of-type(2) {
-        margin-left: 40px;
-      }
     }
   }
 
@@ -411,6 +425,29 @@ export const Rewards = styled(RewardsBase)`
       th:nth-child(6),
       td:nth-child(6) {
         text-align: right;
+      }
+    }
+  }
+
+  // ---------------------------------------------
+  // layout
+  // ---------------------------------------------
+  // under tablet
+  @media (max-width: ${screen.tablet.max}px) {
+    h3 {
+      display: flex;
+      flex-direction: column;
+
+      > div {
+        label {
+          display: inline-block;
+          width: 150px;
+        }
+      }
+
+      > div:nth-of-type(2) {
+        margin-left: 0;
+        margin-top: 10px;
       }
     }
   }

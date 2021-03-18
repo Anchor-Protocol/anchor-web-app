@@ -1,9 +1,9 @@
 import { onProduction } from 'base/env';
 
 export const screen = {
-  mobile: { max: 510 },
+  mobile: { max: 530 },
   // mobile : @media (max-width: ${screen.mobile.max}px)
-  tablet: { min: 511, max: 830 },
+  tablet: { min: 531, max: 830 },
   // tablet : @media (min-width: ${screen.tablet.min}px) and (max-width: ${screen.tablet.max}px)
   pc: { min: 831, max: 1439 },
   // pc : @media (min-width: ${screen.pc.min}px)
@@ -38,3 +38,5 @@ export const BODY_MARGIN_TOP = {
   mobile: 10,
   tablet: 20,
 };
+
+export const headerHeight = 84;

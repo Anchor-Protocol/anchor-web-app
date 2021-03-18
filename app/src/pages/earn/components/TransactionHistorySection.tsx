@@ -4,13 +4,18 @@ import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/Horiz
 import { Pagination } from '@terra-dev/neumorphism-ui/components/Pagination';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { useArrayPagination } from '@terra-dev/use-array-pagination';
-import { useTransactionHistory } from 'pages/earn/queries/transactionHistory';
+import {
+  useTransactionHistory,
+  Data,
+} from 'pages/earn/queries/transactionHistory';
 import { useMemo } from 'react';
 import styled from 'styled-components';
 
 export interface TransactionHistorySectionProps {
   className?: string;
 }
+
+const emptyArray: Data['transactionHistory'] = [];
 
 export function TransactionHistorySection({
   className,
@@ -24,7 +29,7 @@ export function TransactionHistorySection({
   // queries
   // ---------------------------------------------
   const {
-    data: { transactionHistory = [] },
+    data: { transactionHistory = emptyArray },
   } = useTransactionHistory();
 
   const filteredHistory = useMemo(() => {
@@ -91,7 +96,9 @@ export function TransactionHistorySection({
                           month: 'short',
                           day: 'numeric',
                         })}{' '}
-                        {datetime.toLocaleTimeString()}
+                        <span className="time">
+                          {datetime.toLocaleTimeString()}
+                        </span>
                       </time>
                     </div>
                   </li>
