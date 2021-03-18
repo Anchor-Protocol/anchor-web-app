@@ -1,6 +1,7 @@
 import { UserDeniedError } from '@anchor-protocol/wallet-provider/errors';
 import { StationNetworkInfo } from '@anchor-protocol/wallet-provider/types';
 import { Extension } from '@terra-money/terra.js';
+import { MutableRefObject } from 'react';
 
 type ConnectResponse = { address?: string };
 type PostResponse = any;
@@ -13,7 +14,10 @@ interface FixedExtension {
   connect: () => Promise<ConnectResponse>;
 }
 
-export function extensionFixer(extension: Extension): FixedExtension {
+export function extensionFixer(
+  extension: Extension,
+  inTransactionProgress: MutableRefObject<boolean>,
+): FixedExtension {
   const postResolvers = new Map<
     number,
     [(data: any) => void, (error: any) => void]
@@ -27,6 +31,7 @@ export function extensionFixer(extension: Extension): FixedExtension {
 
   extension.on('onPost', (result) => {
     if (!result) return;
+
     const { error, ...payload } = result;
 
     if (!postResolvers.has(payload.id)) {
@@ -42,6 +47,10 @@ export function extensionFixer(extension: Extension): FixedExtension {
     }
 
     postResolvers.delete(payload.id);
+
+    if (postResolvers.size === 0) {
+      inTransactionProgress.current = false;
+    }
   });
 
   extension.on('onInfo', (result) => {
@@ -76,6 +85,8 @@ export function extensionFixer(extension: Extension): FixedExtension {
 
   function post(data: object) {
     return new Promise<PostResponse>((...resolver) => {
+      inTransactionProgress.current = true;
+
       const id = extension.post({
         ...(data as any),
         purgeQueue: true,
