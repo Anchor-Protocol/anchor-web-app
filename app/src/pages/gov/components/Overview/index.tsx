@@ -180,7 +180,7 @@ function OverviewBase({ className }: OverviewProps) {
             title="Annualized ANC staking return based on the ANC distribution and staking ratio"
             placement="top"
           >
-            APY
+            APR
           </TooltipLabel>
           <span style={{ display: 'inline-block', minWidth: 80 }}>
             <AnimateNumber format={formatRate}>
@@ -229,7 +229,7 @@ function OverviewBase({ className }: OverviewProps) {
         <div className="lp-labels">
           <div>
             <TooltipLabel title={ancUstLpAprTooltip} placement="top">
-              APY
+              APR
             </TooltipLabel>
             <p>
               <AnimateNumber format={formatRate}>
