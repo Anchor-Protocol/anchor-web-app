@@ -119,10 +119,11 @@ function OverviewBase({ className }: OverviewProps) {
         <div className="apy">
           <h3>
             <IconSpan>
-              Net APY{' '}
+              Net APR{' '}
               <InfoTooltip>
-                Current rate of annualized percentage yield from ANC APY minus
-                borrow APR
+                Distribution APR - Borrow APR, When the Net APR is a positive
+                number, ANC rewards given to borrowers is greater than the
+                interest to be paid for the loan
               </InfoTooltip>
             </IconSpan>
           </h3>
@@ -154,7 +155,7 @@ function OverviewBase({ className }: OverviewProps) {
               </div>
               <div>
                 <Tooltip
-                  title="Current rate of annualized percentage yield from ANC rewards"
+                  title="Annual percentage yield determined by ANC rewards given to borrowers where the principal is taken to be the loan amount"
                   placement="top"
                 >
                   <Circle style={{ cursor: 'help' }}>
@@ -162,7 +163,7 @@ function OverviewBase({ className }: OverviewProps) {
                   </Circle>
                 </Tooltip>
                 <p>
-                  Distribution APY
+                  Distribution APR
                   <b>
                     {borrowerDistributionAPYs &&
                     borrowerDistributionAPYs.length > 0
