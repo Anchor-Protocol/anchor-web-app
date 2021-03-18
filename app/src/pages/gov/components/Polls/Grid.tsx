@@ -71,14 +71,16 @@ function GridBase({
             <div className="poll-ends-in">
               <IconSpan>
                 <b>Estimated end time</b>{' '}
-                {endsIn.toLocaleDateString(undefined, {
-                  weekday: 'short',
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric',
-                })}{' '}
-                {endsIn.toLocaleTimeString()} <Schedule />{' '}
-                <TimeEnd endTime={endsIn} />
+                <time>
+                  {endsIn.toLocaleDateString(undefined, {
+                    weekday: 'short',
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                  })}{' '}
+                  {endsIn.toLocaleTimeString()}
+                </time>{' '}
+                <Schedule /> <TimeEnd endTime={endsIn} />
               </IconSpan>
             </div>
           </Section>
@@ -167,6 +169,12 @@ export const Grid = styled(GridBase)`
   @media (max-width: 1200px) {
     .grid {
       grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 500px) {
+    time {
+      display: none;
     }
   }
 `;
