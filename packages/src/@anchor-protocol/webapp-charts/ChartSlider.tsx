@@ -1,3 +1,4 @@
+import { isTouchDevice } from '@terra-dev/is-touch-device';
 import { Component, ReactNode } from 'react';
 import { Point } from './types';
 
@@ -72,13 +73,13 @@ export class ChartSlider extends Component<ChartSliderProps, ChartSliderState> {
   };
 
   componentDidMount() {
-    this.thumb.addEventListener('pointerdown', this.onDown);
+    this.startTrigger();
   }
 
   componentWillUnmount() {
-    this.thumb.removeEventListener('pointerdown', this.onDown);
-    window.removeEventListener('pointerup', this.onUp);
-    window.removeEventListener('pointermove', this.onMove);
+    this.thumb.removeEventListener('mousedown', this.onMouseDown);
+    window.removeEventListener('mouseup', this.onMouseUp);
+    window.removeEventListener('mousemove', this.onMouseMove);
   }
 
   componentDidUpdate(
@@ -100,14 +101,19 @@ export class ChartSlider extends Component<ChartSliderProps, ChartSliderState> {
     }
   }
 
-  onDown = (event: PointerEvent) => {
-    if (this.props.min === this.props.max) {
-      return;
+  startTrigger = () => {
+    this.thumb.addEventListener('mousedown', this.onMouseDown);
+    if (isTouchDevice()) {
+      this.thumb.addEventListener('touchstart', this.onTouchStart);
     }
+  };
 
-    this.active = true;
-    this.cursorStart = event.screenX;
-    this.thumbStart = event.offsetX;
+  stopTrigger = () => {
+    this.thumb.removeEventListener('mousedown', this.onMouseDown);
+    this.thumb.removeEventListener('touchstart', this.onTouchStart);
+  };
+
+  isNegative = () => {
     this.thumbMin =
       ((this.props.start - this.props.min) /
         (this.props.max - this.props.min)) *
@@ -118,40 +124,10 @@ export class ChartSlider extends Component<ChartSliderProps, ChartSliderState> {
         this.props.coordinateSpace.width +
       this.props.coordinateSpace.x;
 
-    if (this.thumbMax - this.thumbMin < 1) {
-      return;
-    }
-
-    this.thumb.removeEventListener('pointerdown', this.onDown);
-    window.addEventListener('pointerup', this.onUp);
-    window.addEventListener('pointermove', this.onMove);
-
-    if (typeof this.props.onEnter === 'function') {
-      this.props.onEnter();
-    }
-
-    event.stopPropagation();
-    event.stopImmediatePropagation();
+    return this.thumbMax - this.thumbMin < 1;
   };
 
-  onUp = (event: PointerEvent) => {
-    this.active = false;
-
-    window.removeEventListener('pointerup', this.onUp);
-    window.removeEventListener('pointermove', this.onMove);
-    this.thumb.addEventListener('pointerdown', this.onDown);
-
-    if (typeof this.props.onLeave === 'function') {
-      this.props.onLeave();
-    }
-
-    event.stopPropagation();
-    event.stopImmediatePropagation();
-  };
-
-  onMove = (event: PointerEvent) => {
-    const moved: number = event.screenX - this.cursorStart;
-
+  move = (moved: number) => {
     let moveTo: number = this.thumbStart + moved;
 
     if (moveTo < this.thumbMin) {
@@ -180,8 +156,136 @@ export class ChartSlider extends Component<ChartSliderProps, ChartSliderState> {
     });
 
     this.props.onChange(nextValue);
+  };
+
+  // ---------------------------------------------
+  // touch events
+  // ---------------------------------------------
+  onTouchStart = (event: TouchEvent) => {
+    if (event.targetTouches.length > 1) {
+      window.removeEventListener('touchmove', this.onTouchMove);
+      window.removeEventListener('touchend', this.onTouchEnd);
+      window.removeEventListener('touchcancel', this.onTouchEnd);
+
+      this.startTrigger();
+
+      return;
+    }
+
+    if (event.targetTouches.length !== 1) return;
+
+    if (this.props.min === this.props.max) {
+      return;
+    }
+
+    if (this.isNegative()) {
+      return;
+    }
 
     event.stopPropagation();
     event.stopImmediatePropagation();
+    if (event.cancelable) event.preventDefault();
+
+    this.active = true;
+    this.cursorStart = event.targetTouches[0].pageX;
+    this.thumbStart = this.state.position;
+
+    window.addEventListener('touchmove', this.onTouchMove);
+    window.addEventListener('touchend', this.onTouchEnd);
+    window.addEventListener('touchcancel', this.onTouchEnd);
+
+    if (typeof this.props.onEnter === 'function') {
+      this.props.onEnter();
+    }
+  };
+
+  onTouchMove = (event: TouchEvent) => {
+    if (event.cancelable) event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+
+    if (event.targetTouches.length !== 1 || event.changedTouches.length !== 1) {
+      window.removeEventListener('touchmove', this.onTouchMove);
+      window.removeEventListener('touchend', this.onTouchEnd);
+      window.removeEventListener('touchcancel', this.onTouchEnd);
+
+      this.startTrigger();
+
+      return;
+    }
+
+    const moved = event.targetTouches[0].pageX - this.cursorStart;
+
+    this.move(moved);
+  };
+
+  onTouchEnd = (event: TouchEvent) => {
+    if (event.cancelable) event.preventDefault();
+    window.removeEventListener('touchmove', this.onTouchMove);
+    window.removeEventListener('touchend', this.onTouchEnd);
+    window.removeEventListener('touchcancel', this.onTouchEnd);
+
+    this.startTrigger();
+
+    if (typeof this.props.onLeave === 'function') {
+      this.props.onLeave();
+    }
+  };
+
+  // ---------------------------------------------
+  // mouse events
+  // ---------------------------------------------
+  onMouseDown = (event: MouseEvent) => {
+    if (this.props.min === this.props.max) {
+      return;
+    }
+
+    if (this.isNegative()) {
+      return;
+    }
+
+    this.active = true;
+    this.cursorStart = event.screenX;
+    this.thumbStart = event.offsetX;
+
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    if (event.cancelable) event.preventDefault();
+
+    this.stopTrigger();
+
+    window.addEventListener('mouseup', this.onMouseUp);
+    window.addEventListener('mousemove', this.onMouseMove);
+
+    if (typeof this.props.onEnter === 'function') {
+      this.props.onEnter();
+    }
+  };
+
+  onMouseUp = (event: MouseEvent) => {
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    if (event.cancelable) event.preventDefault();
+
+    this.active = false;
+
+    window.removeEventListener('mouseup', this.onMouseUp);
+    window.removeEventListener('mousemove', this.onMouseMove);
+
+    this.startTrigger();
+
+    if (typeof this.props.onLeave === 'function') {
+      this.props.onLeave();
+    }
+  };
+
+  onMouseMove = (event: MouseEvent) => {
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    if (event.cancelable) event.preventDefault();
+
+    const moved: number = event.screenX - this.cursorStart;
+
+    this.move(moved);
   };
 }

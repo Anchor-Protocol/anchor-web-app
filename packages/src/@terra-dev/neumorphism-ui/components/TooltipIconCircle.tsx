@@ -1,15 +1,14 @@
 import { ClickAwayListener } from '@material-ui/core';
-import { InfoOutlined } from '@material-ui/icons';
 import { isTouchDevice } from '@terra-dev/is-touch-device';
+import { IconCircle } from '@terra-dev/neumorphism-ui/components/IconCircle';
 import React, { ReactNode, useCallback, useMemo, useState } from 'react';
 import { Tooltip, TooltipProps } from './Tooltip';
 
-export interface InfoTooltipProps
-  extends Omit<TooltipProps, 'children' | 'title'> {
-  children: NonNullable<ReactNode>;
+export interface TooltipIconCircleProps extends Omit<TooltipProps, 'children'> {
+  children: ReactNode;
 }
 
-export function InfoTooltip(props: InfoTooltipProps) {
+export function TooltipIconCircle(props: TooltipIconCircleProps) {
   const touchDevice = useMemo(() => isTouchDevice(), []);
 
   return touchDevice ? (
@@ -21,23 +20,29 @@ export function InfoTooltip(props: InfoTooltipProps) {
 
 export function PointerTooltip({
   children,
+  title,
+  className,
+  style,
   placement = 'top',
   ...tooltipProps
-}: InfoTooltipProps) {
+}: TooltipIconCircleProps) {
   return (
-    <sup style={{ cursor: 'help' }}>
-      <Tooltip {...tooltipProps} title={children} placement={placement}>
-        <InfoOutlined />
-      </Tooltip>
-    </sup>
+    <Tooltip {...tooltipProps} title={title} placement={placement}>
+      <IconCircle style={style} className={className}>
+        {children}
+      </IconCircle>
+    </Tooltip>
   );
 }
 
 export function TouchTooltip({
   children,
+  title,
+  className,
+  style,
   placement = 'top',
   ...tooltipProps
-}: InfoTooltipProps) {
+}: TooltipIconCircleProps) {
   const [open, setOpen] = useState<boolean>(false);
 
   const tooltipOpen = useCallback(() => {
@@ -50,7 +55,7 @@ export function TouchTooltip({
 
   return (
     <ClickAwayListener onClickAway={tooltipClose}>
-      <sup onClick={tooltipOpen}>
+      <IconCircle style={style} className={className} onClick={tooltipOpen}>
         <Tooltip
           {...tooltipProps}
           open={open}
@@ -58,12 +63,12 @@ export function TouchTooltip({
           disableFocusListener
           disableHoverListener
           disableTouchListener
-          title={children}
+          title={title}
           placement={placement}
         >
-          <InfoOutlined />
+          <span>{children}</span>
         </Tooltip>
-      </sup>
+      </IconCircle>
     </ClickAwayListener>
   );
 }
