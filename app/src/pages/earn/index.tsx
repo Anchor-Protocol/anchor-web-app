@@ -120,9 +120,6 @@ export const Earn = styled(EarnBase)`
         .detail {
           margin-top: 5px;
 
-          display: flex;
-          justify-content: space-between;
-
           font-size: 14px;
           color: ${({ theme }) => theme.dimTextColor};
 
@@ -149,13 +146,6 @@ export const Earn = styled(EarnBase)`
               })};
         }
       }
-    }
-
-    ul.pagination {
-      position: absolute;
-      left: 50%;
-      bottom: 20px;
-      transform: translateX(-50%);
     }
   }
 
@@ -188,6 +178,22 @@ export const Earn = styled(EarnBase)`
 
     hr {
       margin: 0 0 10px 0;
+    }
+
+    ul.list {
+      li {
+        .detail {
+          display: flex;
+          justify-content: space-between;
+        }
+      }
+    }
+
+    ul.pagination {
+      position: absolute;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%);
     }
   }
 
@@ -227,6 +233,40 @@ export const Earn = styled(EarnBase)`
     }
   }
 
+  // under pc
+  @media (max-width: ${screen.pc.max}px) {
+    .transaction-history {
+      height: 430px;
+
+      ul.list {
+        li {
+          .detail {
+            .time {
+              display: none;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // under tablet
+  @media (max-width: ${screen.tablet.max}px) {
+    .transaction-history {
+      height: 410px;
+
+      ul.list {
+        li {
+          .detail {
+            .time {
+              display: none;
+            }
+          }
+        }
+      }
+    }
+  }
+
   // mobile
   @media (max-width: ${screen.mobile.max}px) {
     .decimal-point {
@@ -248,6 +288,10 @@ export const Earn = styled(EarnBase)`
         grid-template-columns: 1fr;
         grid-gap: 15px;
       }
+    }
+
+    .transaction-history {
+      height: 390px;
     }
   }
 `;

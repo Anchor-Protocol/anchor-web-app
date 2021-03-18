@@ -122,7 +122,7 @@ export const Footer = styled(FooterBase)`
   justify-content: space-between;
   align-items: center;
 
-  @media (max-width: ${screen.mobile.max}px) {
+  @media (max-width: ${screen.tablet.max}px) {
     flex-direction: column;
   }
 `;

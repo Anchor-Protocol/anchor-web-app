@@ -96,7 +96,9 @@ export function TransactionHistorySection({
                           month: 'short',
                           day: 'numeric',
                         })}{' '}
-                        {datetime.toLocaleTimeString()}
+                        <span className="time">
+                          {datetime.toLocaleTimeString()}
+                        </span>
                       </time>
                     </div>
                   </li>
