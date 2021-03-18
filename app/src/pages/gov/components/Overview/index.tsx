@@ -1,11 +1,12 @@
 import {
   AnimateNumber,
+  formatPercentage,
   formatRate,
   formatUSTWithPostfixUnits,
   formatUTokenDecimal2,
 } from '@anchor-protocol/notation';
 import { anc160gif, GifIcon, TokenIcon } from '@anchor-protocol/token-icons';
-import { Rate, uANC, UST, uToken } from '@anchor-protocol/types';
+import { Percent, Rate, uANC, UST, uToken } from '@anchor-protocol/types';
 import { ChevronRight } from '@material-ui/icons';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
@@ -22,6 +23,7 @@ import {
   ancUstLpPathname,
   govPathname,
 } from 'pages/gov/env';
+import { useAnchorLPRewards } from 'pages/gov/queries/anchorLPRewards';
 import { useANCPrice } from 'pages/gov/queries/ancPrice';
 import { useLPStakingState } from 'pages/gov/queries/lpStakingState';
 import { useTotalStakedMain } from 'pages/gov/queries/totalStakedMain';
@@ -42,6 +44,10 @@ function OverviewBase({ className }: OverviewProps) {
     data: { govRewards, lpRewards },
   } = useBorrowAPY();
 
+  const {
+    data: { apyLPRewards },
+  } = useAnchorLPRewards();
+
   const history = useHistory();
 
   const {
@@ -61,6 +67,20 @@ function OverviewBase({ className }: OverviewProps) {
   const {
     data: { lpStakingState },
   } = useLPStakingState();
+
+  const ancUstLpAprTooltip = useMemo(() => {
+    let defaultTooltip = 'LP rewards APR';
+
+    if (apyLPRewards && apyLPRewards.length > 0) {
+      const apr = big(big(apyLPRewards[0].APY).div(365).plus(1)).pow(
+        365,
+      ) as Percent<Big>;
+
+      return `${formatPercentage(apr).toString()}% (if compounded daily)`;
+    }
+
+    return defaultTooltip;
+  }, [apyLPRewards]);
 
   const { totalStaked, totalStakedRate } = useMemo(() => {
     if (
@@ -131,7 +151,9 @@ function OverviewBase({ className }: OverviewProps) {
         <h2>
           <IconSpan>
             TOTAL STAKED{' '}
-            <InfoTooltip>Total quantity of ANC tokens staked</InfoTooltip>
+            <InfoTooltip>
+              Total quantity of ANC tokens staked to the governance contract
+            </InfoTooltip>
           </IconSpan>
         </h2>
         <div>
@@ -155,8 +177,11 @@ function OverviewBase({ className }: OverviewProps) {
         </Circles>
         <h2>Anchor (ANC)</h2>
         <div className="staking-apy">
-          <Tooltip title="Governance Rewards APY" placement="top">
-            <Label>APY</Label>
+          <Tooltip
+            title="Annualized ANC staking return based on the ANC distribution and staking ratio"
+            placement="top"
+          >
+            <Label>APR</Label>
           </Tooltip>
           <span style={{ display: 'inline-block', minWidth: 80 }}>
             <AnimateNumber format={formatRate}>
@@ -198,20 +223,14 @@ function OverviewBase({ className }: OverviewProps) {
           />
         </Circles>
         <h2>
-          {/*<TextButton*/}
-          {/*  component={Link}*/}
-          {/*  to={`/${govPathname}/rewards/${ancUstLpPathname}/provide`}*/}
-          {/*  style={{ width: 200, height: 28, fontSize: 18, fontWeight: 500 }}*/}
-          {/*>*/}
           <IconSpan>
             ANC-UST LP <ChevronRight />
           </IconSpan>
-          {/*</TextButton>*/}
         </h2>
         <div className="lp-labels">
           <div>
-            <Tooltip title="LP rewards APY" placement="top">
-              <Label>APY</Label>
+            <Tooltip title={ancUstLpAprTooltip} placement="top">
+              <Label>APR</Label>
             </Tooltip>
             <p>
               <AnimateNumber format={formatRate}>

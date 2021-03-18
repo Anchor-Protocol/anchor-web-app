@@ -179,7 +179,7 @@ export function RewardsBase({ className }: RewardsProps) {
               <th>Rewards Pool</th>
               <th>
                 <IconSpan>
-                  APY <InfoTooltip>Annualized Staking Returns</InfoTooltip>
+                  APR <InfoTooltip>Annualized Staking Returns</InfoTooltip>
                 </IconSpan>
               </th>
               <th>
