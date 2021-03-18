@@ -156,7 +156,7 @@ function MarketBase({ className }: MarketProps) {
                     <IconSpan>
                       Total Borrow{' '}
                       <InfoTooltip>
-                        Annualized borrow interest of this stablecoin market
+                        Total borrow value of this stable coin market in USD
                       </InfoTooltip>
                     </IconSpan>
                   </th>
