@@ -4,6 +4,7 @@ import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { Tab } from '@terra-dev/neumorphism-ui/components/Tab';
 import { Circles } from 'components/Circles';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
+import { screen } from 'env';
 import { AncUstLpProvide } from 'pages/gov/components/AncUstLpProvide';
 import { AncUstLpStake } from 'pages/gov/components/AncUstLpStake';
 import { AncUstLpStakeOverview } from 'pages/gov/components/AncUstLpStakeOverview';
@@ -202,6 +203,9 @@ export const RewardsAncUstLp = styled(RewardsAncUstLpBase)`
       display: flex;
       align-items: center;
 
+      word-break: keep-all;
+      white-space: nowrap;
+
       > :first-child {
         margin-right: 14px;
       }
@@ -259,6 +263,16 @@ export const RewardsAncUstLp = styled(RewardsAncUstLpBase)`
 
       width: 100%;
       height: 60px;
+    }
+  }
+
+  // under tablet
+  @media (max-width: ${screen.tablet.max}px) {
+    header {
+      margin-bottom: 20px;
+
+      grid-template-columns: 1fr;
+      grid-gap: 20px;
     }
   }
 `;
