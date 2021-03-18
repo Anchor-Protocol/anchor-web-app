@@ -145,4 +145,31 @@ export const AncUstLpStakeOverview = styled(AncUstLpStakeOverviewBase)`
   }
 
   margin-bottom: 56px;
+
+  @media (max-width: 500px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(3, 90px);
+
+    li {
+      &:not(:last-child) {
+        border-right: 0;
+        border-bottom: 1px solid
+          ${({ theme }) =>
+            rulerShadowColor({
+              intensity: theme.intensity,
+              color: theme.backgroundColor,
+            })};
+      }
+
+      &:not(:first-child) {
+        border-left: 0;
+        border-top: 1px solid
+          ${({ theme }) =>
+            rulerLightColor({
+              intensity: theme.intensity,
+              color: theme.backgroundColor,
+            })};
+      }
+    }
+  }
 `;

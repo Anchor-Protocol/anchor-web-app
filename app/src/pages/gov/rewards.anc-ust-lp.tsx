@@ -269,6 +269,10 @@ export const RewardsAncUstLp = styled(RewardsAncUstLpBase)`
   // under tablet
   @media (max-width: ${screen.tablet.max}px) {
     header {
+      h1 {
+        font-size: 32px;
+      }
+
       margin-bottom: 20px;
 
       grid-template-columns: 1fr;
