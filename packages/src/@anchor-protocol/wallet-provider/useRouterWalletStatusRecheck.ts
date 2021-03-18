@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useWallet } from './useWallet';
 
-const interval = 1000 * 10;
+const interval = 1000 * 60;
 
 export function useRouterWalletStatusRecheck() {
   const { pathname } = useLocation();
@@ -12,11 +12,6 @@ export function useRouterWalletStatusRecheck() {
   const lastCheckTime = useRef<number>(Date.now());
 
   const check = useCallback(() => {
-    console.log(
-      'useRouterWalletStatusRecheck.ts..() check!!!',
-      inTransactionProgress.current,
-    );
-
     if (!inTransactionProgress.current) {
       checkStatus();
       lastCheckTime.current = Date.now();
@@ -29,8 +24,6 @@ export function useRouterWalletStatusRecheck() {
 
   const tick = useCallback(() => {
     const now = Date.now();
-
-    console.log('useRouterWalletStatusRecheck.ts..() ???');
 
     if (now > lastCheckTime.current + interval) {
       check();

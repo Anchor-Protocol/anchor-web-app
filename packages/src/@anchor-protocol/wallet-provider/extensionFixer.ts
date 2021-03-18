@@ -93,6 +93,16 @@ export function extensionFixer(
       });
 
       postResolvers.set(id, resolver);
+
+      setTimeout(() => {
+        if (postResolvers.has(id)) {
+          postResolvers.delete(id);
+
+          if (postResolvers.size === 0) {
+            inTransactionProgress.current = false;
+          }
+        }
+      }, 1000 * 120);
     });
   }
 
