@@ -1,5 +1,6 @@
 import { Menu, MenuClose } from '@anchor-protocol/icons';
 import { Launch } from '@material-ui/icons';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { IconToggleButton } from '@terra-dev/neumorphism-ui/components/IconToggleButton';
 import { useTheme } from 'base/contexts/theme';
 import { onProduction } from 'base/env';
@@ -82,10 +83,8 @@ function NavMenu({
   to,
   docsTo,
   title,
-  className,
   close,
 }: {
-  className?: string;
   to: string;
   docsTo: string;
   title: string;
@@ -94,13 +93,14 @@ function NavMenu({
   const match = useRouteMatch(to);
 
   return (
-    <div className={className} data-active={!!match}>
+    <div data-active={!!match}>
       <Link to={to} onClick={close}>
         {title}
       </Link>
       <a href={docsTo} target="_blank" rel="noreferrer" onClick={close}>
-        Docs
-        <Launch />
+        <IconSpan>
+          Docs <Launch />
+        </IconSpan>
       </a>
     </div>
   );
@@ -138,6 +138,12 @@ export const MobileHeader = styled(MobileHeaderBase)`
   > nav {
     background-color: #ffffff;
 
+    > div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
     a:first-child {
       font-size: 36px;
       font-weight: 700;
@@ -152,6 +158,17 @@ export const MobileHeader = styled(MobileHeaderBase)`
 
       &.active {
         color: #333333;
+      }
+    }
+
+    a:last-child {
+      font-size: 16px;
+      text-decoration: none;
+
+      color: #696969;
+
+      svg {
+        font-size: 1em;
       }
     }
   }
