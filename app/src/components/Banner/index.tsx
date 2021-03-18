@@ -1,7 +1,7 @@
 import { getParser } from 'bowser';
+import MobileDetect from 'mobile-detect';
 import { useMemo } from 'react';
 import styled from 'styled-components';
-import MobileDetect from 'mobile-detect';
 
 export interface BannerProps {
   className?: string;
@@ -12,13 +12,12 @@ function BannerBase({ className }: BannerProps) {
     const browser = getParser(navigator.userAgent);
     const mobileDetect = new MobileDetect(navigator.userAgent);
 
-    const result =
+    return (
       browser.satisfies({
         chrome: '>60',
         edge: '>80',
-      }) && !mobileDetect.os();
-
-    return result;
+      }) && !mobileDetect.os()
+    );
   }, []);
 
   if (!isDesktopChrome) {
@@ -26,7 +25,7 @@ function BannerBase({ className }: BannerProps) {
       <div className={className}>
         <p>
           Anchor currently only supports{' '}
-          <a href="https://www.google.com/chrome/">Chrome</a>
+          <a href="https://www.google.com/chrome/">desktop Chrome</a>
         </p>
       </div>
     );
@@ -43,10 +42,10 @@ export const Banner = styled(BannerBase)`
   align-items: center;
 
   color: ${({ theme }) => theme.textColor};
-  font-size: 1em;
+  font-size: 0.9em;
 
   button {
-    font-size: 0.9em;
+    font-size: 0.8em;
     background-color: transparent;
     outline: none;
     cursor: pointer;
