@@ -1,15 +1,14 @@
-import { Label } from '@terra-dev/neumorphism-ui/components/Label';
-import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
 import {
   demicrofy,
   formatANCWithPostfixUnits,
   formatLP,
 } from '@anchor-protocol/notation';
+import { uANC, uUST } from '@anchor-protocol/types';
+import { TooltipLabel } from '@terra-dev/neumorphism-ui/components/TooltipLabel';
 import {
   rulerLightColor,
   rulerShadowColor,
 } from '@terra-dev/styled-neumorphism';
-import { uANC, uUST } from '@anchor-protocol/types';
 import big, { Big } from 'big.js';
 import { useANCPrice } from 'pages/gov/queries/ancPrice';
 import { useClaimableAncUstLp } from 'pages/gov/queries/claimableAncUstLp';
@@ -64,29 +63,29 @@ function AncUstLpStakeOverviewBase({ className }: AncUstLpStakeOverviewProps) {
   return (
     <ul className={className}>
       <li>
-        <Tooltip title="Stakable ANC-UST LP tokens" placement="top">
-          <Label>Stakable</Label>
-        </Tooltip>
+        <TooltipLabel title="Stakable ANC-UST LP tokens" placement="top">
+          Stakable
+        </TooltipLabel>
         <p>
           {ancUstLp?.stakable ? formatLP(demicrofy(ancUstLp.stakable)) : 0} LP
         </p>
       </li>
       <li>
-        <Tooltip
+        <TooltipLabel
           title="Quantity of staked ANC-UST LP tokens from the ANC-UST LP staking pool"
           placement="top"
         >
-          <Label>Staked</Label>
-        </Tooltip>
+          Staked
+        </TooltipLabel>
         <p>{ancUstLp?.staked ? formatLP(demicrofy(ancUstLp.staked)) : 0} LP</p>
       </li>
       <li>
-        <Tooltip
+        <TooltipLabel
           title="Quantity of claimable rewards from ANC-UST LP staking pool"
           placement="top"
         >
-          <Label>Reward</Label>
-        </Tooltip>
+          Reward
+        </TooltipLabel>
         <p>
           {ancUstLp?.reward
             ? formatANCWithPostfixUnits(demicrofy(ancUstLp.reward))

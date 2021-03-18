@@ -1,13 +1,9 @@
 import {
   APY,
+  BorrowAPR,
   BorrowValue,
   CollateralValue,
-  BorrowAPR,
 } from '@anchor-protocol/icons';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
-import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
 import {
   AnimateNumber,
   demicrofy,
@@ -15,8 +11,14 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { Rate, uUST } from '@anchor-protocol/types';
-import big, { Big, BigSource } from 'big.js';
+import { IconCircle } from '@terra-dev/neumorphism-ui/components/IconCircle';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { TooltipIconCircle } from '@terra-dev/neumorphism-ui/components/TooltipIconCircle';
 import { useConstants } from 'base/contexts/contants';
+import big, { Big, BigSource } from 'big.js';
+import { screen } from 'env';
 import { BorrowLimitGraph } from 'pages/borrow/components/BorrowLimitGraph';
 import { useMarket } from 'pages/borrow/context/market';
 import { apr as _apr } from 'pages/borrow/logics/apr';
@@ -77,9 +79,9 @@ function OverviewBase({ className }: OverviewProps) {
           </div>
           <div>
             <CircleOnly>
-              <Circle>
+              <IconCircle>
                 <CollateralValue />
-              </Circle>
+              </IconCircle>
             </CircleOnly>
           </div>
         </div>
@@ -109,9 +111,9 @@ function OverviewBase({ className }: OverviewProps) {
                   </InfoTooltip>
                 </IconSpan>
               </p>
-              <Circle>
+              <IconCircle>
                 <BorrowValue />
-              </Circle>
+              </IconCircle>
             </LabelAndCircle>
           </div>
         </div>
@@ -138,30 +140,28 @@ function OverviewBase({ className }: OverviewProps) {
             %
           </div>
           <div>
-            <Circles style={{ marginLeft: -20, marginRight: -30 }}>
+            <Circles>
               <div>
-                <Tooltip
+                <TooltipIconCircle
+                  style={{ cursor: 'help' }}
                   title="The annualized rate of current interest on loans in USD"
                   placement="top"
                 >
-                  <Circle style={{ cursor: 'help' }}>
-                    <BorrowAPR />
-                  </Circle>
-                </Tooltip>
+                  <BorrowAPR />
+                </TooltipIconCircle>
                 <p>
                   Borrow APR
                   <b>{formatRate(apr)}%</b>
                 </p>
               </div>
               <div>
-                <Tooltip
+                <TooltipIconCircle
+                  style={{ cursor: 'help' }}
                   title="Annual percentage yield determined by ANC rewards given to borrowers where the principal is taken to be the loan amount"
                   placement="top"
                 >
-                  <Circle style={{ cursor: 'help' }}>
-                    <APY />
-                  </Circle>
-                </Tooltip>
+                  <APY />
+                </TooltipIconCircle>
                 <p>
                   Distribution APR
                   <b>
@@ -189,24 +189,15 @@ function OverviewBase({ className }: OverviewProps) {
   );
 }
 
-export const Circle = styled.div`
-  border-radius: 50%;
-  background-color: ${({ theme }) => theme.backgroundColor};
-  display: inline-grid;
-  min-width: 56px;
-  max-width: 56px;
-  min-height: 56px;
-  max-height: 56px;
-  place-content: center;
-  color: ${({ theme }) => theme.dimTextColor};
-`;
-
 export const CircleOnly = styled.div`
   text-align: right;
 `;
 
 export const Circles = styled.div`
   display: flex;
+
+  margin-left: -20px;
+  margin-right: -30px;
 
   > div {
     flex: 1;
@@ -229,6 +220,19 @@ export const Circles = styled.div`
       margin-right: 10px;
     }
   }
+
+  @media (max-width: 1400px) {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  @media (max-width: ${screen.mobile.max}px) {
+    flex-direction: column;
+
+    > :last-child {
+      margin-top: 10px;
+    }
+  }
 `;
 
 export const LabelAndCircle = styled.div`
@@ -246,7 +250,7 @@ export const Overview = styled(OverviewBase)`
     box-shadow: 0 8px 14px -8px rgba(0, 0, 0, 0.07);
     border-radius: 22px;
     padding: 35px 40px;
-    height: 238px;
+    height: auto;
 
     display: grid;
     grid-template-rows: 20px 100px 1fr;

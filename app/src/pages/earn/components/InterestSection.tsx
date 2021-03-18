@@ -1,21 +1,20 @@
 import {
-  APYChart,
-  APYChartItem,
-} from '@anchor-protocol/webapp-charts/APYChart';
-import {
   AnimateNumber,
   demicrofy,
   formatRate,
   formatUST,
 } from '@anchor-protocol/notation';
 import { Rate, UST } from '@anchor-protocol/types';
-import { useConstants } from 'base/contexts/contants';
+import {
+  APYChart,
+  APYChartItem,
+} from '@anchor-protocol/webapp-charts/APYChart';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { Label } from '@terra-dev/neumorphism-ui/components/Label';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { Tab } from '@terra-dev/neumorphism-ui/components/Tab';
-import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
+import { TooltipLabel } from '@terra-dev/neumorphism-ui/components/TooltipLabel';
+import { useConstants } from 'base/contexts/contants';
 import big from 'big.js';
 import { currentAPY } from 'pages/earn/logics/currentAPY';
 import { useAPYHistory } from 'pages/earn/queries/apyHistory';
@@ -119,9 +118,13 @@ export function InterestSection({ className }: InterestSectionProps) {
       </h2>
 
       <div className="apy">
-        <Tooltip title="Annual Percentage Yield" placement="top">
-          <Label className="name">APY</Label>
-        </Tooltip>
+        <TooltipLabel
+          className="name"
+          title="Annual Percentage Yield"
+          placement="top"
+        >
+          APY
+        </TooltipLabel>
         <div className="value">
           <AnimateNumber format={formatRate}>{apy}</AnimateNumber>%
         </div>

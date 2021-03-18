@@ -1,15 +1,14 @@
 import { ClickAwayListener } from '@material-ui/core';
-import { InfoOutlined } from '@material-ui/icons';
 import { isTouchDevice } from '@terra-dev/is-touch-device';
 import React, { ReactNode, useCallback, useMemo, useState } from 'react';
+import { Label } from './Label';
 import { Tooltip, TooltipProps } from './Tooltip';
 
-export interface InfoTooltipProps
-  extends Omit<TooltipProps, 'children' | 'title'> {
-  children: NonNullable<ReactNode>;
+export interface TooltipLabelProps extends Omit<TooltipProps, 'children'> {
+  children: ReactNode;
 }
 
-export function InfoTooltip(props: InfoTooltipProps) {
+export function TooltipLabel(props: TooltipLabelProps) {
   const touchDevice = useMemo(() => isTouchDevice(), []);
 
   return touchDevice ? (
@@ -21,23 +20,29 @@ export function InfoTooltip(props: InfoTooltipProps) {
 
 export function PointerTooltip({
   children,
+  title,
+  style,
+  className,
   placement = 'top',
   ...tooltipProps
-}: InfoTooltipProps) {
+}: TooltipLabelProps) {
   return (
-    <sup style={{ cursor: 'help' }}>
-      <Tooltip {...tooltipProps} title={children} placement={placement}>
-        <InfoOutlined />
-      </Tooltip>
-    </sup>
+    <Tooltip {...tooltipProps} title={title} placement={placement}>
+      <Label style={style} className={className}>
+        {children}
+      </Label>
+    </Tooltip>
   );
 }
 
 export function TouchTooltip({
   children,
+  title,
+  style,
+  className,
   placement = 'top',
   ...tooltipProps
-}: InfoTooltipProps) {
+}: TooltipLabelProps) {
   const [open, setOpen] = useState<boolean>(false);
 
   const tooltipOpen = useCallback(() => {
@@ -50,7 +55,7 @@ export function TouchTooltip({
 
   return (
     <ClickAwayListener onClickAway={tooltipClose}>
-      <sup onClick={tooltipOpen}>
+      <Label style={style} className={className} onClick={tooltipOpen}>
         <Tooltip
           {...tooltipProps}
           open={open}
@@ -58,12 +63,12 @@ export function TouchTooltip({
           disableFocusListener
           disableHoverListener
           disableTouchListener
-          title={children}
+          title={title}
           placement={placement}
         >
-          <InfoOutlined />
+          <span>{children}</span>
         </Tooltip>
-      </sup>
+      </Label>
     </ClickAwayListener>
   );
 }

@@ -10,9 +10,9 @@ import { ChevronRight } from '@material-ui/icons';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { Label } from '@terra-dev/neumorphism-ui/components/Label';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
+import { TooltipLabel } from '@terra-dev/neumorphism-ui/components/TooltipLabel';
 import big, { Big } from 'big.js';
 import { Circles } from 'components/Circles';
 import { screen } from 'env';
@@ -155,9 +155,9 @@ function OverviewBase({ className }: OverviewProps) {
         </Circles>
         <h2>Anchor (ANC)</h2>
         <div className="staking-apy">
-          <Tooltip title="Governance Rewards APY" placement="top">
-            <Label>APY</Label>
-          </Tooltip>
+          <TooltipLabel title="Governance Rewards APY" placement="top">
+            APY
+          </TooltipLabel>
           <span style={{ display: 'inline-block', minWidth: 80 }}>
             <AnimateNumber format={formatRate}>
               {govRewards && govRewards.length > 0
@@ -210,9 +210,9 @@ function OverviewBase({ className }: OverviewProps) {
         </h2>
         <div className="lp-labels">
           <div>
-            <Tooltip title="LP rewards APY" placement="top">
-              <Label>APY</Label>
-            </Tooltip>
+            <TooltipLabel title="LP rewards APY" placement="top">
+              APY
+            </TooltipLabel>
             <p>
               <AnimateNumber format={formatRate}>
                 {lpRewards && lpRewards.length > 0
@@ -223,12 +223,12 @@ function OverviewBase({ className }: OverviewProps) {
             </p>
           </div>
           <div>
-            <Tooltip
+            <TooltipLabel
               title="Total quantity of ANC-UST LP tokens staked"
               placement="top"
             >
-              <Label>Total Staked</Label>
-            </Tooltip>
+              Total Staked
+            </TooltipLabel>
             <p>
               <AnimateNumber format={formatUTokenDecimal2}>
                 {lpStakingState?.total_bond_amount
