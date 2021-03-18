@@ -38,3 +38,5 @@ export const BODY_MARGIN_TOP = {
   mobile: 10,
   tablet: 20,
 };
+
+export const headerHeight = 84;

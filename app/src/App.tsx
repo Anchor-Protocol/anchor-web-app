@@ -10,11 +10,13 @@ import { Governance } from 'pages/gov';
 import { govPathname } from 'pages/gov/env';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import styled from 'styled-components';
+import { GlobalStyle } from 'components/GlobalStyle';
 
-export function App({ isDemo = false }: { isDemo?: boolean }) {
+export function App() {
   return (
-    <AppProviders isDemo={isDemo}>
+    <AppProviders>
       <div>
+        <GlobalStyle />
         <Header />
         <Banner />
         <EmptyCatcher>
@@ -35,7 +37,7 @@ export function App({ isDemo = false }: { isDemo?: boolean }) {
           <Route path="/borrow" component={Borrow} />
           <Route path="/bond" component={BAsset} />
           <Route path="/airdrop" component={Airdrop} />
-          {!isDemo && <Route path={`/${govPathname}`} component={Governance} />}
+          <Route path={`/${govPathname}`} component={Governance} />
           <Redirect to="/earn" />
         </Switch>
       </div>

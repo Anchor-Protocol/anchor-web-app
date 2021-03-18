@@ -42,13 +42,7 @@ import {
 const operationBroadcasterErrorReporter =
   process.env.NODE_ENV === 'production' ? captureException : undefined;
 
-function Providers({
-  children,
-  isDemo,
-}: {
-  children: ReactNode;
-  isDemo: boolean;
-}) {
+function Providers({ children }: { children: ReactNode }) {
   const {
     post,
     status: { network },
@@ -92,16 +86,14 @@ function Providers({
             fixedGas: 500000 as uUST<number>,
             blocksPerYear: 4906443,
             gasAdjustment: 1.6 as Rate<number>,
-            isDemo,
           }
         : {
             gasFee: 6000000 as uUST<number>,
             fixedGas: 3500000 as uUST<number>,
             blocksPerYear: 4906443,
             gasAdjustment: 1.4 as Rate<number>,
-            isDemo,
           },
-    [isDemo, isMainnet],
+    [isMainnet],
   );
 
   const operationGlobalDependency = useMemo<GlobalDependency>(
@@ -167,11 +159,9 @@ function Providers({
 
 export function AppProviders({
   children,
-  isDemo = false,
   enableWatchConnection = true,
 }: {
   children: ReactNode;
-  isDemo?: boolean;
   enableWatchConnection?: boolean;
 }) {
   return (
@@ -180,7 +170,7 @@ export function AppProviders({
       defaultNetwork={defaultNetwork}
       enableWatchConnection={enableWatchConnection}
     >
-      <Providers isDemo={isDemo}>
+      <Providers>
         {/* Router Actions ======================== */}
         {/** Send Google Analytics Page view every Router's location changed */}
         <GoogleAnalytics trackingId={GA_TRACKING_ID} />
