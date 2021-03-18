@@ -1,12 +1,11 @@
 import {
   AnimateNumber,
-  formatPercentage,
   formatRate,
   formatUSTWithPostfixUnits,
   formatUTokenDecimal2,
 } from '@anchor-protocol/notation';
 import { anc160gif, GifIcon, TokenIcon } from '@anchor-protocol/token-icons';
-import { Percent, Rate, uANC, UST, uToken } from '@anchor-protocol/types';
+import { Rate, uANC, UST, uToken } from '@anchor-protocol/types';
 import { ChevronRight } from '@material-ui/icons';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
@@ -74,9 +73,9 @@ function OverviewBase({ className }: OverviewProps) {
     if (apyLPRewards && apyLPRewards.length > 0) {
       const apr = big(big(apyLPRewards[0].APY).div(365).plus(1)).pow(
         365,
-      ) as Percent<Big>;
+      ) as Rate<Big>;
 
-      return `${formatPercentage(apr).toString()}% (if compounded daily)`;
+      return `${formatRate(apr).toString()}% (if compounded daily)`;
     }
 
     return defaultTooltip;
