@@ -25,7 +25,7 @@ const parachute = keyframes`
   }
 `;
 
-function AirdropDropdownBase({ className }: { className?: string }) {
+function AirdropBase({ className }: { className?: string }) {
   return (
     <div className={className}>
       <img src={airdropImage} alt="Airdrop!" />
@@ -38,7 +38,7 @@ function AirdropDropdownBase({ className }: { className?: string }) {
   );
 }
 
-export const AirdropDropdownContent = styled(AirdropDropdownBase)`
+export const AirdropContent = styled(AirdropBase)`
   margin: 30px;
   text-align: center;
 

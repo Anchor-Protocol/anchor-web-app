@@ -1,12 +1,15 @@
+import { HumanAddr } from '@anchor-protocol/types';
 import { useWallet, WalletStatusType } from '@anchor-protocol/wallet-provider';
 import { ClickAwayListener } from '@material-ui/core';
 import { useBank } from 'base/contexts/bank';
+import { AirdropContent } from 'components/Header/WalletSelector/AirdropContent';
+import { useProvideAddressDialog } from 'components/Header/WalletSelector/useProvideAddressDialog';
+import { WalletConnectContent } from 'components/Header/WalletSelector/WalletConnectContent';
 import { useAirdrop } from 'pages/airdrop/queries/useAirdrop';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import { useCallback, useState } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import styled from 'styled-components';
-import { AirdropDropdownContent } from './AirdropDropdownContent';
 import { ConnectedButton } from './ConnectedButton';
 import { DropdownContainer } from './DropdownContainer';
 import { NotConnectedButton } from './NotConnectedButton';
@@ -21,7 +24,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   // dependencies
   // ---------------------------------------------
   // TODO
-  const { status, install, connect, disconnect } = useWallet();
+  const { status, install, connect, disconnect, provideAddress } = useWallet();
 
   const bank = useBank();
 
@@ -30,6 +33,8 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   const matchAirdrop = useRouteMatch('/airdrop');
 
   const [openSendDialog, sendDialogElement] = useSendDialog();
+
+  const [openProvideAddress, provideAddressElement] = useProvideAddressDialog();
 
   // ---------------------------------------------
   // states
@@ -49,14 +54,20 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
     window.location.reload();
   }, [disconnect]);
 
+  const provideWallet = useCallback(
+    (address?: HumanAddr) => {
+      if (address) {
+        provideAddress(address);
+      } else {
+        openProvideAddress({});
+      }
+    },
+    [openProvideAddress, provideAddress],
+  );
+
   const toggleOpen = useCallback(() => {
-    if (
-      status.status === WalletStatusType.CONNECTED ||
-      status.status === WalletStatusType.MANUAL_PROVIDED
-    ) {
-      setOpen((prev) => !prev);
-    }
-  }, [status.status]);
+    setOpen((prev) => !prev);
+  }, []);
 
   const onClickAway = useCallback(() => {
     setOpen(false);
@@ -75,12 +86,30 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
         </div>
       );
     case WalletStatusType.NOT_CONNECTED:
+    case WalletStatusType.NOT_INSTALLED:
+    case WalletStatusType.UNAVAILABLE:
       return (
-        <div className={className}>
-          <NotConnectedButton onClick={connectWallet}>
-            Connect Wallet
-          </NotConnectedButton>
-        </div>
+        <ClickAwayListener onClickAway={onClickAway}>
+          <div className={className}>
+            <NotConnectedButton onClick={toggleOpen}>
+              Connect Wallet
+            </NotConnectedButton>
+
+            {open && (
+              <DropdownContainer>
+                <WalletConnectContent
+                  status={status}
+                  closePopup={() => setOpen(false)}
+                  installWallet={install}
+                  provideWallet={provideWallet}
+                  connectWallet={connectWallet}
+                />
+              </DropdownContainer>
+            )}
+
+            {provideAddressElement}
+          </div>
+        </ClickAwayListener>
       );
     case WalletStatusType.CONNECTED:
     case WalletStatusType.MANUAL_PROVIDED:
@@ -95,7 +124,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
               !open &&
               !matchAirdrop && (
                 <DropdownContainer>
-                  <AirdropDropdownContent />
+                  <AirdropContent />
                 </DropdownContainer>
               )}
 
@@ -115,14 +144,6 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
           </div>
         </ClickAwayListener>
       );
-    case WalletStatusType.NOT_INSTALLED:
-      return (
-        <NotConnectedButton className={className} onClick={install}>
-          Please Install Wallet
-        </NotConnectedButton>
-      );
-    default:
-      return null;
   }
 }
 

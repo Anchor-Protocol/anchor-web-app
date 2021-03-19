@@ -32,9 +32,7 @@ export function useLocalStorageJson<T extends {}>(
   const [value, setValue] = useState<T>(() => {
     const storedString = localStorage.getItem(key);
     try {
-      if (storedString) {
-        return JSON.parse(storedString);
-      }
+      return storedString ? JSON.parse(storedString) : defaultValue();
     } catch {
       return defaultValue();
     }

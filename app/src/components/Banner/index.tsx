@@ -1,6 +1,4 @@
-import { getParser } from 'bowser';
-import MobileDetect from 'mobile-detect';
-import { useMemo } from 'react';
+import { useIsDesktopChrome } from '@terra-dev/is-desktop-chrome';
 import styled from 'styled-components';
 
 export interface BannerProps {
@@ -8,17 +6,7 @@ export interface BannerProps {
 }
 
 function BannerBase({ className }: BannerProps) {
-  const isDesktopChrome = useMemo(() => {
-    const browser = getParser(navigator.userAgent);
-    const mobileDetect = new MobileDetect(navigator.userAgent);
-
-    return (
-      browser.satisfies({
-        chrome: '>60',
-        edge: '>80',
-      }) && !mobileDetect.os()
-    );
-  }, []);
+  const isDesktopChrome = useIsDesktopChrome();
 
   if (!isDesktopChrome) {
     return (

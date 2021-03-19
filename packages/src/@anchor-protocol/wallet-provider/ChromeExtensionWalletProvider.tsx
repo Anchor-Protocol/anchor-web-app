@@ -1,6 +1,6 @@
 import type { HumanAddr } from '@anchor-protocol/types/contracts';
+import { useIsDesktopChrome } from '@terra-dev/is-desktop-chrome';
 import { AccAddress, Extension } from '@terra-money/terra.js';
-import { getParser } from 'bowser';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { extensionFixer } from './extensionFixer';
 import { StationNetworkInfo, WalletStatus, WalletStatusType } from './types';
@@ -30,13 +30,7 @@ export function ChromeExtensionWalletProvider({
   defaultNetwork,
   enableWatchConnection = true,
 }: WalletProviderProps) {
-  const isChrome = useMemo(() => {
-    const browser = getParser(navigator.userAgent);
-    return browser.satisfies({
-      chrome: '>60',
-      edge: '>80',
-    });
-  }, []);
+  const isDesktopChrome = useIsDesktopChrome();
 
   const inTransactionProgress = useRef<boolean>(false);
 
@@ -46,7 +40,7 @@ export function ChromeExtensionWalletProvider({
   }, []);
 
   const [status, setStatus] = useState<WalletStatus>(() => ({
-    status: isChrome
+    status: isDesktopChrome
       ? WalletStatusType.INITIALIZING
       : WalletStatusType.UNAVAILABLE,
     network: defaultNetwork,
@@ -58,7 +52,7 @@ export function ChromeExtensionWalletProvider({
 
   const checkStatus = useCallback(
     async (watingExtensionScriptInjection: boolean = false) => {
-      if (!isChrome) {
+      if (!isDesktopChrome) {
         return;
       }
 
@@ -154,7 +148,7 @@ export function ChromeExtensionWalletProvider({
         });
       }
     },
-    [defaultNetwork, extension, isChrome],
+    [defaultNetwork, extension, isDesktopChrome],
   );
 
   const install = useCallback(() => {
@@ -194,10 +188,10 @@ export function ChromeExtensionWalletProvider({
   }, []);
 
   useEffect(() => {
-    if (isChrome) {
+    if (isDesktopChrome) {
       checkStatus(true);
     }
-  }, [checkStatus, isChrome]);
+  }, [checkStatus, isDesktopChrome]);
 
   const state = useMemo<WalletState>(
     () => ({
