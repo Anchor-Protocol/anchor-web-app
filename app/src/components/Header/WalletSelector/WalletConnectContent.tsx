@@ -87,5 +87,27 @@ function WalletConnectContentBase({
 }
 
 export const WalletConnectContent = styled(WalletConnectContentBase)`
-  // TODO
+  margin: 30px;
+  text-align: center;
+
+  button {
+    width: 100%;
+    height: 28px;
+
+    &:not(:first-child) {
+      margin-top: 20px;
+    }
+  }
+
+  ul {
+    margin-top: 20px;
+
+    list-style: none;
+    padding: 0;
+
+    li {
+      cursor: pointer;
+      text-decoration: underline;
+    }
+  }
 `;

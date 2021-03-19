@@ -46,9 +46,7 @@ function ComponentBase({
     walletHistory: [],
   }));
 
-  const [address, setAddress] = useState<string>(
-    'terra1zua4zv5ljx8v3vdh6qeftjf7se53lac5xxtq54',
-  );
+  const [address, setAddress] = useState<string>('');
 
   const invalidAddress = useMemo(() => {
     if (address.length === 0) {
@@ -61,12 +59,12 @@ function ComponentBase({
   const provideWallet = useCallback(
     (address: string) => {
       if (AccAddress.validate(address)) {
-        const nextWalletHistory: HumanAddr[] = [
-          address as HumanAddr,
-          ...walletHistory,
-        ];
+        const nextWalletHistory: Set<HumanAddr> = new Set<HumanAddr>(
+          walletHistory,
+        );
+        nextWalletHistory.add(address as HumanAddr);
 
-        setWalletHistory({ walletHistory: nextWalletHistory });
+        setWalletHistory({ walletHistory: Array.from(nextWalletHistory) });
 
         provideAddress(address as HumanAddr);
         closeDialog();
@@ -99,7 +97,7 @@ function ComponentBase({
         />
 
         <ActionButton
-          className="send"
+          className="connect"
           disabled={address.length === 0 || !!invalidAddress}
           onClick={() => provideWallet(address)}
         >
@@ -137,19 +135,9 @@ const Component = styled(ComponentBase)`
     margin-bottom: 12px;
   }
 
-  .address {
-    margin-bottom: 20px;
-  }
+  .connect {
+    margin-top: 40px;
 
-  .amount {
-    margin-bottom: 30px;
-  }
-
-  .receipt {
-    margin-bottom: 40px;
-  }
-
-  .send {
     width: 100%;
     height: 60px;
   }
