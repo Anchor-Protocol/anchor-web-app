@@ -7,9 +7,12 @@ import type {
   WASMContractResult,
 } from '@anchor-protocol/types';
 import { ContractAddress } from '@anchor-protocol/types';
-import { createMap, map, Mapped, useMap } from '@terra-dev/use-map';
-import { WalletStatus } from '@anchor-protocol/wallet-provider';
+import {
+  WalletStatus,
+  WalletStatusType,
+} from '@anchor-protocol/wallet-provider';
 import { ApolloClient, gql, useQuery } from '@apollo/client';
+import { createMap, map, Mapped, useMap } from '@terra-dev/use-map';
 import { useContractAddress } from 'base/contexts/contract';
 import { useService } from 'base/contexts/service';
 import { parseResult } from 'base/queries/parseResult';
@@ -170,7 +173,7 @@ export function queryMarketUserOverview(
   walletStatus: WalletStatus,
   currentBlock: MarketState['currentBlock'],
 ): Promise<MappedApolloQueryResult<RawData, Data>> {
-  if (walletStatus.status !== 'ready') {
+  if (walletStatus.status !== WalletStatusType.CONNECTED) {
     throw new Error(`Wallet is not ready`);
   }
 

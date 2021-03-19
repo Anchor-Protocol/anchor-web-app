@@ -1,9 +1,9 @@
 import type { HumanAddr } from '@anchor-protocol/types/contracts';
-import { extensionFixer } from '@anchor-protocol/wallet-provider/extensionFixer';
 import { AccAddress, Extension } from '@terra-money/terra.js';
 import { getParser } from 'bowser';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { StationNetworkInfo, WalletStatus } from './types';
+import { extensionFixer } from './extensionFixer';
+import { StationNetworkInfo, WalletStatus, WalletStatusType } from './types';
 import { WalletContext, WalletProviderProps, WalletState } from './useWallet';
 
 const storage = localStorage;
@@ -46,7 +46,9 @@ export function ChromeExtensionWalletProvider({
   }, []);
 
   const [status, setStatus] = useState<WalletStatus>(() => ({
-    status: isChrome ? 'initializing' : 'unavailable',
+    status: isChrome
+      ? WalletStatusType.INITIALIZING
+      : WalletStatusType.UNAVAILABLE,
     network: defaultNetwork,
   }));
 
@@ -73,8 +75,8 @@ export function ChromeExtensionWalletProvider({
       if (!isExtensionInstalled) {
         setStatus((prev) => {
           if (
-            prev.status !== 'initializing' &&
-            prev.status !== 'not_installed'
+            prev.status !== WalletStatusType.INITIALIZING &&
+            prev.status !== WalletStatusType.NOT_INSTALLED
           ) {
             console.error(
               [
@@ -92,9 +94,9 @@ export function ChromeExtensionWalletProvider({
             );
           }
 
-          return prev.status !== 'not_installed'
+          return prev.status !== WalletStatusType.NOT_INSTALLED
             ? {
-                status: 'not_installed',
+                status: WalletStatusType.NOT_INSTALLED,
                 network: defaultNetwork,
               }
             : prev;
@@ -124,10 +126,10 @@ export function ChromeExtensionWalletProvider({
           }
 
           setStatus((prev) => {
-            return prev.status !== 'ready' ||
+            return prev.status !== WalletStatusType.CONNECTED ||
               prev.walletAddress !== connectResult.address
               ? {
-                  status: 'ready',
+                  status: WalletStatusType.CONNECTED,
                   network,
                   walletAddress: connectResult.address as HumanAddr,
                 }
@@ -139,15 +141,15 @@ export function ChromeExtensionWalletProvider({
           }
 
           setStatus((prev) => {
-            return prev.status !== 'not_connected'
-              ? { status: 'not_connected', network }
+            return prev.status !== WalletStatusType.NOT_CONNECTED
+              ? { status: WalletStatusType.NOT_CONNECTED, network }
               : prev;
           });
         }
       } else {
         setStatus((prev) => {
-          return prev.status !== 'not_connected'
-            ? { status: 'not_connected', network }
+          return prev.status !== WalletStatusType.NOT_CONNECTED
+            ? { status: WalletStatusType.NOT_CONNECTED, network }
             : prev;
         });
       }

@@ -1,6 +1,7 @@
 import {
   ChromeExtensionWalletProvider,
   useWallet,
+  WalletStatusType,
 } from '@anchor-protocol/wallet-provider';
 import React, { ComponentType } from 'react';
 
@@ -32,11 +33,11 @@ export const Handle_Status = () => {
         <pre>{JSON.stringify(status, null, 2)}</pre>
       </section>
       <section style={{ margin: '20px 0' }}>
-        {status.status === 'not_installed' ? (
+        {status.status === WalletStatusType.NOT_INSTALLED ? (
           <button onClick={() => install()}>Install</button>
-        ) : status.status === 'not_connected' ? (
+        ) : status.status === WalletStatusType.NOT_CONNECTED ? (
           <button onClick={() => connect()}>Connect</button>
-        ) : status.status === 'ready' ? (
+        ) : status.status === WalletStatusType.CONNECTED ? (
           <button onClick={() => disconnect()}>Disconnect</button>
         ) : null}
       </section>

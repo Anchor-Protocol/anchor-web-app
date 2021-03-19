@@ -1,7 +1,4 @@
 import { Wallet } from '@anchor-protocol/icons';
-import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
-import { FlatButton } from '@terra-dev/neumorphism-ui/components/FlatButton';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import {
   demicrofy,
   formatANC,
@@ -11,18 +8,21 @@ import {
   formatUSTWithPostfixUnits,
   truncate,
 } from '@anchor-protocol/notation';
-import { useWallet } from '@anchor-protocol/wallet-provider';
+import { useWallet, WalletStatusType } from '@anchor-protocol/wallet-provider';
 import { ClickAwayListener } from '@material-ui/core';
 import { Check, KeyboardArrowRight } from '@material-ui/icons';
+import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
+import { FlatButton } from '@terra-dev/neumorphism-ui/components/FlatButton';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { useBank } from 'base/contexts/bank';
 import { useService } from 'base/contexts/service';
 import { useAirdrop } from 'pages/airdrop/queries/useAirdrop';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import { useCallback, useState } from 'react';
+import { Link, useRouteMatch } from 'react-router-dom';
 import useClipboard from 'react-use-clipboard';
 import styled, { keyframes } from 'styled-components';
 import airdropImage from './assets/airdrop.svg';
-import { Link, useRouteMatch } from 'react-router-dom';
 
 export interface WalletSelectorProps {
   className?: string;
@@ -53,7 +53,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   // callbacks
   // ---------------------------------------------
   const [isCopied, setCopied] = useClipboard(
-    status.status === 'ready' ? status.walletAddress : '',
+    status.status === WalletStatusType.CONNECTED ? status.walletAddress : '',
     { successDuration: 1000 * 5 },
   );
 
@@ -68,7 +68,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   }, [disconnect]);
 
   const toggleOpen = useCallback(() => {
-    if (status.status === 'ready') {
+    if (status.status === WalletStatusType.CONNECTED) {
       setOpen((prev) => !prev);
     }
   }, [status.status]);
@@ -78,7 +78,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   }, []);
 
   const viewOnTerraFinder = useCallback(() => {
-    if (status.status === 'ready') {
+    if (status.status === WalletStatusType.CONNECTED) {
       window.open(
         `https://finder.terra.money/${status.network.chainID}/account/${status.walletAddress}`,
         '_blank',
@@ -90,7 +90,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   // presentation
   // ---------------------------------------------
   switch (status.status) {
-    case 'initializing':
+    case WalletStatusType.INITIALIZING:
       return (
         <div className={className}>
           <WalletConnectButton disabled>
@@ -103,7 +103,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
           </WalletConnectButton>
         </div>
       );
-    case 'not_connected':
+    case WalletStatusType.NOT_CONNECTED:
       return (
         <div className={className}>
           <WalletConnectButton onClick={connectWallet}>
@@ -116,7 +116,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
           </WalletConnectButton>
         </div>
       );
-    case 'ready':
+    case WalletStatusType.CONNECTED:
       return (
         <ClickAwayListener onClickAway={onClickAway}>
           <div className={className}>

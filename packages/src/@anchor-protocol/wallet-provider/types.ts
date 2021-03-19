@@ -12,12 +12,49 @@ export interface StationNetworkInfo {
   ws: string;
 }
 
+export enum WalletStatusType {
+  /**
+   * wallet provider in initialize
+   */
+  INITIALIZING = 'initializing',
+
+  /**
+   * browser is not a chrome
+   */
+  UNAVAILABLE = 'unavailable',
+
+  /**
+   * chrome extension is not installed
+   */
+  NOT_INSTALLED = 'not_installed',
+
+  /**
+   * chrome extension is not connected
+   */
+  NOT_CONNECTED = 'not_connected',
+
+  /**
+   * user can try transaction
+   */
+  CONNECTED = 'connected',
+
+  /**
+   * the wallet address manual provided
+   * but, user can't try transaction (the wallet only using for querying)
+   */
+  MANUAL_PROVIDED = 'manual_provided',
+}
+
 export type WalletNotReady = {
-  status: 'initializing' | 'unavailable' | 'not_installed' | 'not_connected';
+  status:
+    | WalletStatusType.INITIALIZING
+    | WalletStatusType.UNAVAILABLE
+    | WalletStatusType.NOT_INSTALLED
+    | WalletStatusType.NOT_CONNECTED;
   network: StationNetworkInfo;
 };
 export type WalletReady = {
-  status: 'ready';
+  status: WalletStatusType.CONNECTED | WalletStatusType.MANUAL_PROVIDED;
   network: StationNetworkInfo;
   walletAddress: HumanAddr;
 };

@@ -16,21 +16,29 @@ export const onProduction =
   global.location.host === 'anchor.money' ||
   global.location.host === 'anchor.market';
 
-export const defaultNetwork = onProduction
-  ? {
-      chainID: 'columbus-4',
-      fcd: 'https://fcd.terra.dev',
-      lcd: 'https://lcd.terra.dev',
-      name: 'mainnet',
-      ws: 'wss://fcd.terra.dev',
-    }
-  : {
-      chainID: 'tequila-0004',
-      fcd: 'https://tequila-fcd.terra.dev',
-      lcd: 'https://tequila-lcd.terra.dev',
-      name: 'testnet',
-      ws: 'wss://tequila-ws.terra.dev',
-    };
+//export const defaultNetwork = onProduction
+//  ? {
+//      chainID: 'columbus-4',
+//      fcd: 'https://fcd.terra.dev',
+//      lcd: 'https://lcd.terra.dev',
+//      name: 'mainnet',
+//      ws: 'wss://fcd.terra.dev',
+//    }
+//  : {
+//      chainID: 'tequila-0004',
+//      fcd: 'https://tequila-fcd.terra.dev',
+//      lcd: 'https://tequila-lcd.terra.dev',
+//      name: 'testnet',
+//      ws: 'wss://tequila-ws.terra.dev',
+//    };
+
+export const defaultNetwork = {
+  chainID: 'columbus-4',
+  fcd: 'https://fcd.terra.dev',
+  lcd: 'https://lcd.terra.dev',
+  name: 'mainnet',
+  ws: 'wss://fcd.terra.dev',
+};
 
 export const columbusContractAddresses: AddressMap = {
   bLunaHub: 'terra1mtwph2juhj0rvjz7dy92gvl6xvukaxu8rfv8ts',

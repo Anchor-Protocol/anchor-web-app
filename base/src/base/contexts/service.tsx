@@ -2,6 +2,7 @@ import {
   useWallet,
   WalletReady,
   WalletStatus,
+  WalletStatusType,
 } from '@anchor-protocol/wallet-provider';
 import type { ReactNode } from 'react';
 import { Consumer, Context, createContext, useContext, useMemo } from 'react';
@@ -24,8 +25,11 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
 
   const state = useMemo<Service>(() => {
     return {
-      serviceAvailable: walletStatus.status === 'ready',
-      walletReady: walletStatus.status === 'ready' ? walletStatus : undefined,
+      serviceAvailable: walletStatus.status === WalletStatusType.CONNECTED,
+      walletReady:
+        walletStatus.status === WalletStatusType.CONNECTED
+          ? walletStatus
+          : undefined,
       walletStatus,
     };
   }, [walletStatus]);

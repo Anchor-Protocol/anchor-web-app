@@ -1,10 +1,10 @@
 import { demicrofy, formatUST } from '@anchor-protocol/notation';
-import { useWallet } from '@anchor-protocol/wallet-provider';
+import { useWallet, WalletStatusType } from '@anchor-protocol/wallet-provider';
 import { Badge, ClickAwayListener, IconButton } from '@material-ui/core';
 import { NotificationsNone } from '@material-ui/icons';
-import big from 'big.js';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
+import big from 'big.js';
 import { Children, ReactNode, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
@@ -29,7 +29,7 @@ function NotificationsBase({ className }: NotificationsProps) {
   // compute
   // ---------------------------------------------
   const notifications = useMemo<ReactNode[]>(() => {
-    if (status.status !== 'ready') {
+    if (status.status !== WalletStatusType.CONNECTED) {
       return [];
     }
 
@@ -64,7 +64,7 @@ function NotificationsBase({ className }: NotificationsProps) {
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
-  return status.status === 'ready' ? (
+  return status.status === WalletStatusType.CONNECTED ? (
     <ClickAwayListener onClickAway={onClickAway}>
       <div
         className={className}
