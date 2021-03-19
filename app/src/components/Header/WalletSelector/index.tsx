@@ -23,7 +23,6 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  // TODO
   const { status, install, connect, disconnect, provideAddress } = useWallet();
 
   const bank = useBank();

@@ -1,4 +1,6 @@
-import { Menu, MenuClose } from '@anchor-protocol/icons';
+import { Menu, MenuClose, Wallet } from '@anchor-protocol/icons';
+import { useWallet, WalletStatusType } from '@anchor-protocol/wallet-provider';
+import { IconButton } from '@material-ui/core';
 import { Launch } from '@material-ui/icons';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { IconToggleButton } from '@terra-dev/neumorphism-ui/components/IconToggleButton';
@@ -7,9 +9,10 @@ import { onProduction } from 'base/env';
 import logoUrl from 'components/Header/assets/Logo.svg';
 import { headerHeight, links } from 'env';
 import { govPathname } from 'pages/gov/env';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
+import { useProvideAddressDialog } from './WalletSelector/useProvideAddressDialog';
 
 export interface MobileHeaderProps {
   className?: string;
@@ -19,6 +22,19 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
   const [open, setOpen] = useState<boolean>(false);
 
   const { themeColor } = useTheme();
+
+  const { status, disconnect } = useWallet();
+
+  const [openProvideAddress, provideAddressElement] = useProvideAddressDialog();
+
+  const toggleWallet = useCallback(() => {
+    if (status.status === WalletStatusType.MANUAL_PROVIDED) {
+      disconnect();
+      window.location.reload();
+    } else {
+      openProvideAddress({});
+    }
+  }, [disconnect, openProvideAddress, status.status]);
 
   return (
     <>
@@ -66,6 +82,13 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
           >
             <img src={logoUrl} alt="logo" />
           </a>
+
+          <div />
+
+          <IconButton onClick={toggleWallet}>
+            <Wallet />
+          </IconButton>
+
           <IconToggleButton
             on={open}
             onChange={setOpen}
@@ -74,7 +97,10 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
           />
         </section>
       </header>
+
       {open && <div style={{ height: headerHeight }} />}
+
+      {provideAddressElement}
     </>
   );
 }
@@ -123,6 +149,10 @@ export const MobileHeader = styled(MobileHeaderBase)`
   // style
   // ---------------------------------------------
   > section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
     background-color: #ffffff;
 
     a {
@@ -132,6 +162,14 @@ export const MobileHeader = styled(MobileHeaderBase)`
 
     button {
       color: #333333;
+
+      &:last-child {
+        margin-left: 10px;
+      }
+    }
+
+    div:empty {
+      flex: 1;
     }
   }
 

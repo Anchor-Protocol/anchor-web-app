@@ -241,8 +241,10 @@ export const Earn = styled(EarnBase)`
       ul.list {
         li {
           .detail {
-            .time {
-              display: none;
+            flex-direction: column;
+
+            time {
+              margin-top: 5px;
             }
           }
         }
@@ -254,16 +256,6 @@ export const Earn = styled(EarnBase)`
   @media (max-width: ${screen.tablet.max}px) {
     .transaction-history {
       height: 410px;
-
-      ul.list {
-        li {
-          .detail {
-            .time {
-              display: none;
-            }
-          }
-        }
-      }
     }
   }
 
