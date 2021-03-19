@@ -1,4 +1,3 @@
-import { useSubscription } from '@terra-dev/broadcastable-operation';
 import type {
   uANC,
   uAncUstLP,
@@ -8,13 +7,14 @@ import type {
   uLuna,
   uUST,
 } from '@anchor-protocol/types';
-import { createMap, Mapped, useMap } from '@terra-dev/use-map';
+import { useUserWallet } from '@anchor-protocol/wallet-provider';
 import { gql, useQuery } from '@apollo/client';
+import { useSubscription } from '@terra-dev/broadcastable-operation';
+import { createMap, Mapped, useMap } from '@terra-dev/use-map';
+import { useMemo } from 'react';
 import { useContractAddress } from '../contexts/contract';
-import { useService } from '../contexts/service';
 import { MappedQueryResult } from '../queries/types';
 import { useRefetch } from '../queries/useRefetch';
-import { useMemo } from 'react';
 
 export interface RawData {
   bankBalances: {
@@ -248,11 +248,13 @@ export function useUserBalances(): MappedQueryResult<
 > {
   const { cw20 } = useContractAddress();
 
-  const { serviceAvailable, walletReady } = useService();
+  const userWallet = useUserWallet();
 
   const variables = useMemo(() => {
+    if (!userWallet) return undefined;
+
     return mapVariables({
-      walletAddress: walletReady?.walletAddress ?? '',
+      walletAddress: userWallet.walletAddress,
       bAssetTokenAddress: cw20.bLuna,
       aTokenAddress: cw20.aUST,
       ANCTokenAddress: cw20.ANC,
@@ -265,7 +267,7 @@ export function useUserBalances(): MappedQueryResult<
     cw20.aUST,
     cw20.bLuna,
     cw20.bLunaLunaLP,
-    walletReady?.walletAddress,
+    userWallet,
   ]);
 
   const {
@@ -274,7 +276,7 @@ export function useUserBalances(): MappedQueryResult<
     refetch: _refetch,
     ...result
   } = useQuery<RawData, RawVariables>(query, {
-    skip: !serviceAvailable,
+    skip: !userWallet,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,
@@ -291,7 +293,7 @@ export function useUserBalances(): MappedQueryResult<
 
   return {
     ...result,
-    data: serviceAvailable ? data : mockupData,
+    data: userWallet ? data : mockupData,
     refetch,
   };
 }

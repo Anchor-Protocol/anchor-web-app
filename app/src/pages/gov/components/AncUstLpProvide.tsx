@@ -13,7 +13,10 @@ import {
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { ANC, UST, uUST } from '@anchor-protocol/types';
-import { WalletReady } from '@anchor-protocol/wallet-provider';
+import {
+  useConnectedWallet,
+  WalletReady,
+} from '@anchor-protocol/wallet-provider';
 import { InputAdornment } from '@material-ui/core';
 import { min } from '@terra-dev/big-math';
 import { useOperation } from '@terra-dev/broadcastable-operation';
@@ -22,7 +25,6 @@ import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton'
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
-import { useService } from 'base/contexts/service';
 import big, { Big } from 'big.js';
 import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
@@ -41,7 +43,7 @@ export function AncUstLpProvide() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { serviceAvailable, walletReady } = useService();
+  const connectedWallet = useConnectedWallet();
 
   const { fixedGas } = useConstants();
 
@@ -89,25 +91,25 @@ export function AncUstLpProvide() {
   }, [bank.tax.maxTaxUUSD, bank.tax.taxRate, bank.userBalances.uUSD, fixedGas]);
 
   const invalidTxFee = useMemo(
-    () => serviceAvailable && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, serviceAvailable],
+    () => !!connectedWallet && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, connectedWallet],
   );
 
   const invalidAncAmount = useMemo(() => {
-    if (ancAmount.length === 0 || !serviceAvailable) return undefined;
+    if (ancAmount.length === 0 || !connectedWallet) return undefined;
 
     return big(microfy(ancAmount)).gt(bank.userBalances.uANC)
       ? 'Not enough assets'
       : undefined;
-  }, [ancAmount, bank.userBalances.uANC, serviceAvailable]);
+  }, [ancAmount, bank.userBalances.uANC, connectedWallet]);
 
   const invalidUstAmount = useMemo(() => {
-    if (ustAmount.length === 0 || !serviceAvailable) return undefined;
+    if (ustAmount.length === 0 || !connectedWallet) return undefined;
 
     return big(microfy(ustAmount)).gt(bank.userBalances.uUSD)
       ? 'Not enough assets'
       : undefined;
-  }, [bank.userBalances.uUSD, serviceAvailable, ustAmount]);
+  }, [bank.userBalances.uUSD, connectedWallet, ustAmount]);
 
   const updateAncAmount = useCallback(
     (nextAncAmount: string) => {
@@ -322,7 +324,7 @@ export function AncUstLpProvide() {
       <ActionButton
         className="submit"
         disabled={
-          !serviceAvailable ||
+          !connectedWallet ||
           ancAmount.length === 0 ||
           ustAmount.length === 0 ||
           big(ancAmount).lte(0) ||
@@ -333,10 +335,10 @@ export function AncUstLpProvide() {
           !!invalidUstAmount
         }
         onClick={() =>
-          walletReady &&
+          connectedWallet &&
           simulation &&
           proceed(
-            walletReady,
+            connectedWallet,
             ancAmount,
             ustAmount,
             simulation.txFee.toFixed() as uUST,

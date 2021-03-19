@@ -1,9 +1,9 @@
-import { useSubscription } from '@terra-dev/broadcastable-operation';
 import { bluna, WASMContractResult } from '@anchor-protocol/types';
-import { createMap, Mapped, useMap } from '@terra-dev/use-map';
+import { useUserWallet } from '@anchor-protocol/wallet-provider';
 import { gql, useQuery } from '@apollo/client';
+import { useSubscription } from '@terra-dev/broadcastable-operation';
+import { createMap, Mapped, useMap } from '@terra-dev/use-map';
 import { useContractAddress } from 'base/contexts/contract';
-import { useService } from 'base/contexts/service';
 import { parseResult } from 'base/queries/parseResult';
 import { MappedQueryResult } from 'base/queries/types';
 import { useQueryErrorHandler } from 'base/queries/useQueryErrorHandler';
@@ -115,28 +115,28 @@ export function useWithdrawable({
 }): MappedQueryResult<RawVariables, RawData, Data> {
   const { bluna } = useContractAddress();
 
-  const { serviceAvailable, walletReady } = useService();
+  const userWallet = useUserWallet();
 
   const [now, setNow] = useState(() => Math.floor(Date.now() / 1000));
 
   const variables = useMemo(() => {
-    if (!walletReady) return undefined;
+    if (!userWallet) return undefined;
 
     return mapVariables({
       bLunaHubContract: bluna.hub,
       withdrawableAmountQuery: {
         withdrawable_unbonded: {
           block_time: now,
-          address: walletReady.walletAddress,
+          address: userWallet.walletAddress,
         },
       },
       withdrawRequestsQuery: {
         unbond_requests: {
-          address: walletReady.walletAddress,
+          address: userWallet.walletAddress,
         },
       },
     });
-  }, [bluna.hub, now, walletReady]);
+  }, [bluna.hub, now, userWallet]);
 
   const onError = useQueryErrorHandler();
 
@@ -147,7 +147,7 @@ export function useWithdrawable({
     error,
     ...result
   } = useQuery<RawData, RawVariables>(query, {
-    skip: !variables || !serviceAvailable,
+    skip: !variables || !userWallet,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,
@@ -165,7 +165,7 @@ export function useWithdrawable({
 
   return {
     ...result,
-    data: serviceAvailable ? data : mockupData,
+    data: userWallet ? data : mockupData,
     refetch,
   };
 }

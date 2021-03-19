@@ -1,9 +1,9 @@
 import type { uAncUstLP } from '@anchor-protocol/types';
 import { anchorToken, cw20, WASMContractResult } from '@anchor-protocol/types';
-import { createMap, useMap } from '@terra-dev/use-map';
+import { useUserWallet } from '@anchor-protocol/wallet-provider';
 import { gql, useQuery } from '@apollo/client';
+import { createMap, useMap } from '@terra-dev/use-map';
 import { useContractAddress } from 'base/contexts/contract';
-import { useService } from 'base/contexts/service';
 import { parseResult } from 'base/queries/parseResult';
 import { MappedQueryResult } from 'base/queries/types';
 import { useQueryErrorHandler } from 'base/queries/useQueryErrorHandler';
@@ -86,28 +86,28 @@ export function useRewardsAncUstLp(): MappedQueryResult<
   RawData,
   Data
 > {
-  const { serviceAvailable, walletReady } = useService();
+  const userWallet = useUserWallet();
 
   const { anchorToken, cw20 } = useContractAddress();
 
   const variables = useMemo(() => {
-    if (!walletReady) return undefined;
+    if (!userWallet) return undefined;
 
     return mapVariables({
       ANCUST_LP_Token_contract: cw20.AncUstLP,
       ANCUST_LP_Staking_contract: anchorToken.staking,
       ANCUSTLPBalanceQuery: {
         balance: {
-          address: walletReady.walletAddress,
+          address: userWallet.walletAddress,
         },
       },
       UserLPStakingInfoQuery: {
         staker_info: {
-          staker: walletReady.walletAddress,
+          staker: userWallet.walletAddress,
         },
       },
     });
-  }, [anchorToken.staking, cw20.AncUstLP, walletReady]);
+  }, [anchorToken.staking, cw20.AncUstLP, userWallet]);
 
   const onError = useQueryErrorHandler();
 
@@ -118,7 +118,7 @@ export function useRewardsAncUstLp(): MappedQueryResult<
     error,
     ...result
   } = useQuery<RawData, RawVariables>(query, {
-    skip: !variables || !serviceAvailable,
+    skip: !variables || !userWallet,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     //pollInterval: 1000 * 60,

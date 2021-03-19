@@ -16,7 +16,10 @@ import {
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { Token, UST, uToken, uUST } from '@anchor-protocol/types';
-import { WalletReady } from '@anchor-protocol/wallet-provider';
+import {
+  useConnectedWallet,
+  WalletReady,
+} from '@anchor-protocol/wallet-provider';
 import { Modal, NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { min } from '@terra-dev/big-math';
 import { useOperation } from '@terra-dev/broadcastable-operation';
@@ -31,7 +34,6 @@ import { AccAddress } from '@terra-money/terra.js';
 import { Bank, useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
 import { useContractAddress } from 'base/contexts/contract';
-import { useService } from 'base/contexts/service';
 import big, { Big, BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
@@ -68,7 +70,7 @@ function ComponentBase({
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { serviceAvailable, walletReady } = useService();
+  const connectedWallet = useConnectedWallet();
 
   const { fixedGas } = useConstants();
 
@@ -204,8 +206,8 @@ function ComponentBase({
   }, [amount, bank.tax.maxTaxUUSD, bank.tax.taxRate, currency.value, fixedGas]);
 
   const invalidTxFee = useMemo(
-    () => serviceAvailable && validateTxFee(bank, txFee),
-    [bank, serviceAvailable, txFee],
+    () => !!connectedWallet && validateTxFee(bank, txFee),
+    [bank, connectedWallet, txFee],
   );
 
   const invalidAddress = useMemo(() => {
@@ -340,7 +342,7 @@ function ComponentBase({
         <ActionButton
           className="send"
           disabled={
-            !serviceAvailable ||
+            !connectedWallet ||
             address.length === 0 ||
             amount.length === 0 ||
             !!invalidAddress ||
@@ -349,9 +351,9 @@ function ComponentBase({
             big(currency.getWithdrawable(bank, fixedGas)).lte(0)
           }
           onClick={() =>
-            walletReady &&
+            connectedWallet &&
             submit(
-              walletReady,
+              connectedWallet,
               address,
               currency,
               amount,

@@ -53,6 +53,7 @@ export type WalletNotReady = {
     | WalletStatusType.NOT_CONNECTED;
   network: StationNetworkInfo;
 };
+
 export type WalletReady = {
   status: WalletStatusType.CONNECTED | WalletStatusType.MANUAL_PROVIDED;
   network: StationNetworkInfo;

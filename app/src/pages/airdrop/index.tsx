@@ -1,15 +1,17 @@
-import { useOperation } from '@terra-dev/broadcastable-operation';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import {
   demicrofy,
   formatANCWithPostfixUnits,
   formatUST,
 } from '@anchor-protocol/notation';
-import { WalletReady } from '@anchor-protocol/wallet-provider';
+import {
+  useConnectedWallet,
+  WalletReady,
+} from '@anchor-protocol/wallet-provider';
+import { useOperation } from '@terra-dev/broadcastable-operation';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
-import { useService } from 'base/contexts/service';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
@@ -33,7 +35,7 @@ function AirdropBase({ className }: AirdropProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { serviceAvailable, walletReady } = useService();
+  const connectedWallet = useConnectedWallet();
 
   const { fixedGas } = useConstants();
 
@@ -47,8 +49,8 @@ function AirdropBase({ className }: AirdropProps) {
   const bank = useBank();
 
   const invalidTxFee = useMemo(
-    () => serviceAvailable && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, serviceAvailable],
+    () => connectedWallet && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, connectedWallet],
   );
 
   const init = useCallback(() => {
@@ -136,9 +138,9 @@ function AirdropBase({ className }: AirdropProps) {
 
         <ActionButton
           className="proceed"
-          disabled={!serviceAvailable || !airdrop}
+          disabled={!connectedWallet || !airdrop}
           onClick={() =>
-            walletReady && airdrop && proceed(walletReady, airdrop)
+            connectedWallet && airdrop && proceed(connectedWallet, airdrop)
           }
         >
           Claim

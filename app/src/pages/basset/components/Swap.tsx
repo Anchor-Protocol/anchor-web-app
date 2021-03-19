@@ -18,7 +18,10 @@ import type {
   uLuna,
 } from '@anchor-protocol/types';
 import { terraswap } from '@anchor-protocol/types';
-import { WalletReady } from '@anchor-protocol/wallet-provider';
+import {
+  useConnectedWallet,
+  WalletReady,
+} from '@anchor-protocol/wallet-provider';
 import { useApolloClient } from '@apollo/client';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
@@ -30,7 +33,6 @@ import { useResolveLast } from '@terra-dev/use-resolve-last';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
 import { useContractAddress } from 'base/contexts/contract';
-import { useService } from 'base/contexts/service';
 import { querySimulation } from 'base/queries/simulation';
 import big from 'big.js';
 import { IconLineSeparator } from 'components/IconLineSeparator';
@@ -64,7 +66,7 @@ export function Swap() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { serviceAvailable, walletReady } = useService();
+  const connectedWallet = useConnectedWallet();
 
   const { fixedGas } = useConstants();
 
@@ -102,13 +104,13 @@ export function Swap() {
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => serviceAvailable && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, serviceAvailable],
+    () => !!connectedWallet && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, connectedWallet],
   );
 
   const invalidBurnAmount = useMemo(
-    () => serviceAvailable && validateBurnAmount(burnAmount, bank),
-    [bank, burnAmount, serviceAvailable],
+    () => !!connectedWallet && validateBurnAmount(burnAmount, bank),
+    [bank, burnAmount, connectedWallet],
   );
 
   // ---------------------------------------------
@@ -285,7 +287,7 @@ export function Swap() {
         error={!!invalidBurnAmount}
         leftHelperText={invalidBurnAmount}
         rightHelperText={
-          serviceAvailable && (
+          !!connectedWallet && (
             <span>
               Balance:{' '}
               <span
@@ -396,7 +398,7 @@ export function Swap() {
       <ActionButton
         className="submit"
         disabled={
-          !serviceAvailable ||
+          !connectedWallet ||
           burnAmount.length === 0 ||
           big(burnAmount).lte(0) ||
           !!invalidTxFee ||
@@ -404,9 +406,9 @@ export function Swap() {
           big(simulation?.swapFee ?? 0).lte(0)
         }
         onClick={() =>
-          walletReady &&
+          connectedWallet &&
           proceed(
-            walletReady,
+            connectedWallet,
             burnAmount,
             simulation!.beliefPrice,
             simulation!.maxSpread,

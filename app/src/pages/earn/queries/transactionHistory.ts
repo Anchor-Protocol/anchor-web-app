@@ -1,9 +1,9 @@
 import type { DateTime, uUST } from '@anchor-protocol/types';
 import { Denom, HumanAddr } from '@anchor-protocol/types';
+import { useUserWallet } from '@anchor-protocol/wallet-provider';
 import { gql, useQuery } from '@apollo/client';
 import { useSubscription } from '@terra-dev/broadcastable-operation';
 import { createMap, Mapped, useMap } from '@terra-dev/use-map';
-import { useService } from 'base/contexts/service';
 import { MappedQueryResult } from 'base/queries/types';
 import { useQueryErrorHandler } from 'base/queries/useQueryErrorHandler';
 import { useRefetch } from 'base/queries/useRefetch';
@@ -74,15 +74,15 @@ export function useTransactionHistory(): MappedQueryResult<
   RawData,
   Data
 > {
-  const { serviceAvailable, walletReady } = useService();
+  const userWallet = useUserWallet();
 
   const variables = useMemo(() => {
-    if (!walletReady) return undefined;
+    if (!userWallet) return undefined;
 
     return mapVariables({
-      walletAddress: walletReady.walletAddress,
+      walletAddress: userWallet.walletAddress,
     });
-  }, [walletReady]);
+  }, [userWallet]);
 
   const onError = useQueryErrorHandler();
 
@@ -93,7 +93,7 @@ export function useTransactionHistory(): MappedQueryResult<
     error,
     ...result
   } = useQuery<RawData, RawVariables>(query, {
-    skip: !variables || !serviceAvailable,
+    skip: !variables || !userWallet,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,
@@ -111,7 +111,7 @@ export function useTransactionHistory(): MappedQueryResult<
 
   return {
     ...result,
-    data: serviceAvailable ? data : mockupData,
+    data: userWallet ? data : mockupData,
     refetch,
   };
 }

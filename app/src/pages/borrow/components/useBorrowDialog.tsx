@@ -1,9 +1,3 @@
-import { useOperation } from '@terra-dev/broadcastable-operation';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import {
   demicrofy,
   formatRate,
@@ -13,17 +7,26 @@ import {
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { Rate, UST, uUST } from '@anchor-protocol/types';
+import {
+  useConnectedWallet,
+  useWallet,
+  WalletReady,
+} from '@anchor-protocol/wallet-provider';
+import { InputAdornment, Modal } from '@material-ui/core';
+import { useOperation } from '@terra-dev/broadcastable-operation';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
+import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import type { DialogProps, OpenDialog } from '@terra-dev/use-dialog';
 import { useDialog } from '@terra-dev/use-dialog';
-import { useWallet, WalletReady } from '@anchor-protocol/wallet-provider';
-import { InputAdornment, Modal } from '@material-ui/core';
+import { useBank } from 'base/contexts/bank';
+import { useConstants } from 'base/contexts/contants';
 import big, { Big, BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
-import { useService } from 'base/contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
 import { useMarketNotNullable } from 'pages/borrow/context/market';
@@ -73,7 +76,7 @@ function ComponentBase({
 
   const { status } = useWallet();
 
-  const { serviceAvailable, walletReady } = useService();
+  const connectedWallet = useConnectedWallet();
 
   const { fixedGas, blocksPerYear } = useConstants();
 
@@ -151,8 +154,8 @@ function ComponentBase({
   );
 
   const invalidTxFee = useMemo(
-    () => serviceAvailable && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, serviceAvailable],
+    () => !!connectedWallet && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, connectedWallet],
   );
 
   const invalidBorrowAmount = useMemo(
@@ -280,7 +283,7 @@ function ComponentBase({
 
         <figure className="graph">
           <LTVGraph
-            disabled={!serviceAvailable || max.lte(0)}
+            disabled={!connectedWallet || max.lte(0)}
             maxLtv={bLunaMaxLtv}
             safeLtv={bLunaSafeLtv}
             currentLtv={currentLtv}
@@ -306,14 +309,14 @@ function ComponentBase({
         <ActionButton
           className="proceed"
           disabled={
-            !serviceAvailable ||
+            !connectedWallet ||
             borrowAmount.length === 0 ||
             big(borrowAmount).lte(0) ||
             !!invalidTxFee ||
             !!invalidBorrowAmount
           }
           onClick={() =>
-            walletReady && proceed(walletReady, borrowAmount, txFee)
+            connectedWallet && proceed(connectedWallet, borrowAmount, txFee)
           }
         >
           Proceed

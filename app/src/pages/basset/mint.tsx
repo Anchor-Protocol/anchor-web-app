@@ -7,7 +7,10 @@ import {
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { bLuna, Luna, uUST } from '@anchor-protocol/types';
-import { WalletReady } from '@anchor-protocol/wallet-provider';
+import {
+  useConnectedWallet,
+  WalletReady,
+} from '@anchor-protocol/wallet-provider';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
@@ -19,7 +22,6 @@ import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
-import { useService } from 'base/contexts/service';
 import big, { Big } from 'big.js';
 import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
@@ -51,7 +53,7 @@ function MintBase({ className }: MintProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { serviceAvailable, walletReady } = useService();
+  const connectedWallet = useConnectedWallet();
 
   const { fixedGas } = useConstants();
 
@@ -100,13 +102,13 @@ function MintBase({ className }: MintProps) {
   ]);
 
   const invalidTxFee = useMemo(
-    () => serviceAvailable && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, serviceAvailable],
+    () => !!connectedWallet && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, connectedWallet],
   );
 
   const invalidBondAmount = useMemo(
-    () => serviceAvailable && validateBondAmount(bondAmount, bank),
-    [bank, bondAmount, serviceAvailable],
+    () => !!connectedWallet && validateBondAmount(bondAmount, bank),
+    [bank, bondAmount, connectedWallet],
   );
 
   // ---------------------------------------------
@@ -231,7 +233,7 @@ function MintBase({ className }: MintProps) {
         error={!!invalidBondAmount}
         leftHelperText={invalidBondAmount}
         rightHelperText={
-          serviceAvailable && (
+          !!connectedWallet && (
             <span>
               Balance:{' '}
               <span
@@ -365,7 +367,7 @@ function MintBase({ className }: MintProps) {
       <ActionButton
         className="submit"
         disabled={
-          !serviceAvailable ||
+          !connectedWallet ||
           bondAmount.length === 0 ||
           big(bondAmount).lte(0) ||
           !!invalidBondAmount ||
@@ -373,9 +375,13 @@ function MintBase({ className }: MintProps) {
           !selectedValidator
         }
         onClick={() =>
-          walletReady &&
+          connectedWallet &&
           selectedValidator?.OperatorAddress &&
-          proceed(walletReady, bondAmount, selectedValidator.OperatorAddress)
+          proceed(
+            connectedWallet,
+            bondAmount,
+            selectedValidator.OperatorAddress,
+          )
         }
       >
         Mint

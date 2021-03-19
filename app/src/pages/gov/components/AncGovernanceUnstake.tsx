@@ -8,7 +8,10 @@ import {
   microfy,
 } from '@anchor-protocol/notation';
 import { ANC, uANC } from '@anchor-protocol/types';
-import { WalletReady } from '@anchor-protocol/wallet-provider';
+import {
+  useConnectedWallet,
+  WalletReady,
+} from '@anchor-protocol/wallet-provider';
 import { InputAdornment } from '@material-ui/core';
 import { max } from '@terra-dev/big-math';
 import { useOperation } from '@terra-dev/broadcastable-operation';
@@ -16,7 +19,6 @@ import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton'
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
-import { useService } from 'base/contexts/service';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
@@ -31,7 +33,7 @@ export function AncGovernanceUnstake() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { serviceAvailable, walletReady } = useService();
+  const connectedWallet = useConnectedWallet();
 
   const { fixedGas } = useConstants();
 
@@ -77,8 +79,8 @@ export function AncGovernanceUnstake() {
   }, [govANCBalance, govState, userGovStakingInfo]);
 
   const invalidTxFee = useMemo(
-    () => serviceAvailable && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, serviceAvailable],
+    () => !!connectedWallet && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, connectedWallet],
   );
 
   const invalidANCAmount = useMemo(() => {
@@ -169,13 +171,13 @@ export function AncGovernanceUnstake() {
       <ActionButton
         className="submit"
         disabled={
-          !serviceAvailable ||
+          !connectedWallet ||
           ancAmount.length === 0 ||
           big(ancAmount).lte(0) ||
           !!invalidTxFee ||
           !!invalidANCAmount
         }
-        onClick={() => walletReady && proceed(walletReady, ancAmount)}
+        onClick={() => connectedWallet && proceed(connectedWallet, ancAmount)}
       >
         Unstake
       </ActionButton>

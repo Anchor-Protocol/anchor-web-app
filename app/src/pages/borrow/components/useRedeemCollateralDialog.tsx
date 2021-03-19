@@ -8,7 +8,11 @@ import {
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { bLuna, Rate, uUST } from '@anchor-protocol/types';
-import { useWallet, WalletReady } from '@anchor-protocol/wallet-provider';
+import {
+  useConnectedWallet,
+  useWallet,
+  WalletReady,
+} from '@anchor-protocol/wallet-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
@@ -21,7 +25,6 @@ import type { DialogProps, OpenDialog } from '@terra-dev/use-dialog';
 import { useDialog } from '@terra-dev/use-dialog';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
-import { useService } from 'base/contexts/service';
 import big, { Big, BigSource } from 'big.js';
 import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
@@ -73,7 +76,7 @@ function ComponentBase({
 
   const { status } = useWallet();
 
-  const { serviceAvailable, walletReady } = useService();
+  const connectedWallet = useConnectedWallet();
 
   const { fixedGas } = useConstants();
 
@@ -158,8 +161,8 @@ function ComponentBase({
   );
 
   const invalidTxFee = useMemo(
-    () => serviceAvailable && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, serviceAvailable],
+    () => !!connectedWallet && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, connectedWallet],
   );
 
   const invalidRedeemAmount = useMemo(
@@ -299,7 +302,7 @@ function ComponentBase({
 
         <figure className="graph">
           <LTVGraph
-            disabled={!serviceAvailable}
+            disabled={!connectedWallet}
             maxLtv={bLunaMaxLtv}
             safeLtv={bLunaSafeLtv}
             currentLtv={currentLtv}
@@ -322,14 +325,14 @@ function ComponentBase({
         <ActionButton
           className="proceed"
           disabled={
-            !serviceAvailable ||
+            !connectedWallet ||
             redeemAmount.length === 0 ||
             big(redeemAmount).lte(0) ||
             !!invalidTxFee ||
             !!invalidRedeemAmount
           }
           onClick={() =>
-            walletReady && proceed(walletReady, redeemAmount, txFee)
+            connectedWallet && proceed(connectedWallet, redeemAmount, txFee)
           }
         >
           Proceed

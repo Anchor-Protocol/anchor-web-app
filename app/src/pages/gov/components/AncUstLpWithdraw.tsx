@@ -9,7 +9,10 @@ import {
   microfy,
 } from '@anchor-protocol/notation';
 import { ANC, AncUstLP, UST, uUST } from '@anchor-protocol/types';
-import { WalletReady } from '@anchor-protocol/wallet-provider';
+import {
+  useConnectedWallet,
+  WalletReady,
+} from '@anchor-protocol/wallet-provider';
 import { Input, InputAdornment } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { isZero } from '@terra-dev/is-zero';
@@ -18,7 +21,6 @@ import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
-import { useService } from 'base/contexts/service';
 import big, { Big } from 'big.js';
 import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
@@ -37,7 +39,7 @@ export function AncUstLpWithdraw() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { serviceAvailable, walletReady } = useService();
+  const connectedWallet = useConnectedWallet();
 
   const { fixedGas } = useConstants();
 
@@ -69,17 +71,17 @@ export function AncUstLpWithdraw() {
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => serviceAvailable && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, serviceAvailable],
+    () => !!connectedWallet && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, connectedWallet],
   );
 
   const invalidLpAmount = useMemo(() => {
-    if (lpAmount.length === 0 || !serviceAvailable) return undefined;
+    if (lpAmount.length === 0 || !connectedWallet) return undefined;
 
     return big(microfy(lpAmount)).gt(bank.userBalances.uAncUstLP)
       ? 'Not enough assets'
       : undefined;
-  }, [bank.userBalances.uAncUstLP, lpAmount, serviceAvailable]);
+  }, [bank.userBalances.uAncUstLP, lpAmount, connectedWallet]);
 
   const updateLpAmount = useCallback(
     (nextLpAmount: string) => {
@@ -239,7 +241,7 @@ export function AncUstLpWithdraw() {
       <ActionButton
         className="submit"
         disabled={
-          !serviceAvailable ||
+          !connectedWallet ||
           lpAmount.length === 0 ||
           big(lpAmount).lte(0) ||
           !simulation ||
@@ -247,9 +249,9 @@ export function AncUstLpWithdraw() {
           !!invalidLpAmount
         }
         onClick={() =>
-          walletReady &&
+          connectedWallet &&
           simulation &&
-          proceed(walletReady, lpAmount, simulation.txFee.toFixed() as uUST)
+          proceed(connectedWallet, lpAmount, simulation.txFee.toFixed() as uUST)
         }
       >
         Remove Liquidity

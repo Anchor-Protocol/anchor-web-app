@@ -1,16 +1,18 @@
-import { useOperation } from '@terra-dev/broadcastable-operation';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import {
   demicrofy,
   formatANCWithPostfixUnits,
   formatUST,
 } from '@anchor-protocol/notation';
 import { uANC } from '@anchor-protocol/types';
-import { WalletReady } from '@anchor-protocol/wallet-provider';
+import {
+  useConnectedWallet,
+  WalletReady,
+} from '@anchor-protocol/wallet-provider';
+import { useOperation } from '@terra-dev/broadcastable-operation';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
-import { useService } from 'base/contexts/service';
 import big, { Big } from 'big.js';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { MessageBox } from 'components/MessageBox';
@@ -32,7 +34,7 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { serviceAvailable, walletReady } = useService();
+  const connectedWallet = useConnectedWallet();
 
   const { fixedGas } = useConstants();
 
@@ -65,8 +67,8 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
   }, [claiming, userANCBalance]);
 
   const invalidTxFee = useMemo(
-    () => serviceAvailable && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, serviceAvailable],
+    () => !!connectedWallet && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, connectedWallet],
   );
 
   const proceed = useCallback(
@@ -121,11 +123,9 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
         <ActionButton
           className="proceed"
           disabled={
-            !serviceAvailable ||
-            !claiming ||
-            claiming.lte(MINIMUM_CLAIM_BALANCE)
+            !connectedWallet || !claiming || claiming.lte(MINIMUM_CLAIM_BALANCE)
           }
-          onClick={() => walletReady && proceed(walletReady)}
+          onClick={() => connectedWallet && proceed(connectedWallet)}
         >
           Claim
         </ActionButton>

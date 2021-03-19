@@ -1,9 +1,3 @@
-import { useOperation } from '@terra-dev/broadcastable-operation';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
-import { useConfirm } from '@terra-dev/neumorphism-ui/components/useConfirm';
 import {
   demicrofy,
   formatUST,
@@ -12,13 +6,21 @@ import {
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { UST, uUST } from '@anchor-protocol/types';
+import {
+  useConnectedWallet,
+  WalletReady,
+} from '@anchor-protocol/wallet-provider';
+import { InputAdornment, Modal } from '@material-ui/core';
+import { useOperation } from '@terra-dev/broadcastable-operation';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
+import { useConfirm } from '@terra-dev/neumorphism-ui/components/useConfirm';
 import type { DialogProps, OpenDialog } from '@terra-dev/use-dialog';
 import { useDialog } from '@terra-dev/use-dialog';
-import { WalletReady } from '@anchor-protocol/wallet-provider';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
-import { useService } from 'base/contexts/service';
-import { InputAdornment, Modal } from '@material-ui/core';
 import big, { BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
@@ -54,7 +56,7 @@ function ComponentBase({
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { serviceAvailable, walletReady } = useService();
+  const connectedWallet = useConnectedWallet();
 
   const { fixedGas } = useConstants();
 
@@ -92,8 +94,8 @@ function ComponentBase({
   ]);
 
   const invalidTxFee = useMemo(
-    () => serviceAvailable && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, serviceAvailable],
+    () => !!connectedWallet && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, connectedWallet],
   );
 
   const invalidDepositAmount = useMemo(
@@ -238,14 +240,19 @@ function ComponentBase({
               : undefined
           }
           disabled={
-            !serviceAvailable ||
+            !connectedWallet ||
             depositAmount.length === 0 ||
             big(depositAmount).lte(0) ||
             !!invalidDepositAmount
           }
           onClick={() =>
-            walletReady &&
-            proceed(walletReady, depositAmount, txFee, invalidNextTransaction)
+            connectedWallet &&
+            proceed(
+              connectedWallet,
+              depositAmount,
+              txFee,
+              invalidNextTransaction,
+            )
           }
         >
           Proceed

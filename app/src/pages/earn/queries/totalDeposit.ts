@@ -1,4 +1,3 @@
-import { useEventBusListener } from '@terra-dev/event-bus';
 import type {
   cw20,
   CW20Addr,
@@ -9,10 +8,11 @@ import type {
   uaUST,
   WASMContractResult,
 } from '@anchor-protocol/types';
-import { createMap, Mapped, useMap } from '@terra-dev/use-map';
+import { useUserWallet } from '@anchor-protocol/wallet-provider';
 import { gql, useQuery } from '@apollo/client';
+import { useEventBusListener } from '@terra-dev/event-bus';
+import { createMap, Mapped, useMap } from '@terra-dev/use-map';
 import { useContractAddress } from 'base/contexts/contract';
-import { useService } from 'base/contexts/service';
 import { useLastSyncedHeight } from 'base/queries/lastSyncedHeight';
 import { parseResult } from 'base/queries/parseResult';
 import { MappedQueryResult } from 'base/queries/types';
@@ -116,13 +116,13 @@ export const query = gql`
 
 export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
   const { moneyMarket, cw20 } = useContractAddress();
-  const { serviceAvailable, walletReady } = useService();
+  const userWallet = useUserWallet();
 
   const { data: lastSyncedHeight } = useLastSyncedHeight();
 
   const variables = useMemo(() => {
     if (
-      !walletReady ||
+      !userWallet ||
       typeof lastSyncedHeight !== 'number' ||
       lastSyncedHeight === 0
     )
@@ -132,7 +132,7 @@ export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
       anchorTokenContract: cw20.aUST,
       anchorTokenBalanceQuery: {
         balance: {
-          address: walletReady.walletAddress,
+          address: userWallet.walletAddress,
         },
       },
       moneyMarketContract: moneyMarket.market,
@@ -142,7 +142,7 @@ export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
         },
       },
     });
-  }, [cw20.aUST, lastSyncedHeight, moneyMarket.market, walletReady]);
+  }, [cw20.aUST, lastSyncedHeight, moneyMarket.market, userWallet]);
 
   const onError = useQueryErrorHandler();
 
@@ -153,7 +153,7 @@ export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
     error,
     ...result
   } = useQuery<RawData, RawVariables>(query, {
-    skip: !variables || !serviceAvailable,
+    skip: !variables || !userWallet,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,
@@ -161,7 +161,7 @@ export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
   });
 
   useEventBusListener('interest-earned-updated', () => {
-    if (serviceAvailable) {
+    if (userWallet) {
       _refetch();
     }
   });
@@ -171,7 +171,7 @@ export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
 
   return {
     ...result,
-    data: serviceAvailable ? data : mockupData,
+    data: userWallet ? data : mockupData,
     refetch,
   };
 }

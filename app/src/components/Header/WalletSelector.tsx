@@ -15,7 +15,6 @@ import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton'
 import { FlatButton } from '@terra-dev/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { useBank } from 'base/contexts/bank';
-import { useService } from 'base/contexts/service';
 import { useAirdrop } from 'pages/airdrop/queries/useAirdrop';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import { useCallback, useState } from 'react';
@@ -35,8 +34,6 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   const { status, install, connect, disconnect } = useWallet();
 
   const bank = useBank();
-
-  const { serviceAvailable } = useService();
 
   const [openSendDialog, sendDialogElement] = useSendDialog();
 
@@ -128,14 +125,10 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                 <span className="wallet-address">
                   {truncate(status.walletAddress)}
                 </span>
-                {serviceAvailable && (
-                  <div className="wallet-balance">
-                    {formatUSTWithPostfixUnits(
-                      demicrofy(bank.userBalances.uUSD),
-                    )}{' '}
-                    UST
-                  </div>
-                )}
+                <div className="wallet-balance">
+                  {formatUSTWithPostfixUnits(demicrofy(bank.userBalances.uUSD))}{' '}
+                  UST
+                </div>
               </IconSpan>
             </WalletButton>
             {airdrop && airdrop !== 'in-progress' && !open && !matchAirdrop && (

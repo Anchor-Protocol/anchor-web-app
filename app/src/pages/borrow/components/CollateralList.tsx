@@ -1,8 +1,3 @@
-import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
-import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import {
   demicrofy,
   formatLuna,
@@ -10,7 +5,12 @@ import {
 } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import { UST } from '@anchor-protocol/types';
-import { useService } from 'base/contexts/service';
+import { useConnectedWallet } from '@anchor-protocol/wallet-provider';
+import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
+import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import big from 'big.js';
 import { useMemo } from 'react';
 import { useMarket } from '../context/market';
@@ -28,7 +28,7 @@ export function CollateralList({ className }: CollateralListProps) {
   // ---------------------------------------------
   const { ready, borrowInfo, oraclePrice, loanAmount, refetch } = useMarket();
 
-  const { serviceAvailable } = useService();
+  const connectedWallet = useConnectedWallet();
 
   const [
     openProvideCollateralDialog,
@@ -100,7 +100,7 @@ export function CollateralList({ className }: CollateralListProps) {
             </td>
             <td>
               <BorderButton
-                disabled={!serviceAvailable || !ready}
+                disabled={!connectedWallet || !ready}
                 onClick={() => {
                   refetch();
                   openProvideCollateralDialog({});
@@ -110,7 +110,7 @@ export function CollateralList({ className }: CollateralListProps) {
               </BorderButton>
               <BorderButton
                 disabled={
-                  !serviceAvailable ||
+                  !connectedWallet ||
                   !ready ||
                   !borrowInfo ||
                   !loanAmount ||

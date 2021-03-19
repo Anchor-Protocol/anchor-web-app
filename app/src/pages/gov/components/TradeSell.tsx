@@ -12,7 +12,10 @@ import {
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
 } from '@anchor-protocol/notation';
 import { ANC, Denom, terraswap, uANC, UST, uUST } from '@anchor-protocol/types';
-import { WalletReady } from '@anchor-protocol/wallet-provider';
+import {
+  useConnectedWallet,
+  WalletReady,
+} from '@anchor-protocol/wallet-provider';
 import { useApolloClient } from '@apollo/client';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
@@ -24,7 +27,6 @@ import { useResolveLast } from '@terra-dev/use-resolve-last';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
 import { useContractAddress } from 'base/contexts/contract';
-import { useService } from 'base/contexts/service';
 import { queryReverseSimulation } from 'base/queries/reverseSimulation';
 import { querySimulation } from 'base/queries/simulation';
 import big from 'big.js';
@@ -60,7 +62,7 @@ export function TradeSell() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { serviceAvailable, walletReady } = useService();
+  const connectedWallet = useConnectedWallet();
 
   const { fixedGas } = useConstants();
 
@@ -98,17 +100,17 @@ export function TradeSell() {
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => serviceAvailable && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, serviceAvailable],
+    () => !!connectedWallet && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, connectedWallet],
   );
 
   const invalidFromAmount = useMemo(() => {
-    if (fromAmount.length === 0 || !serviceAvailable) return undefined;
+    if (fromAmount.length === 0 || !connectedWallet) return undefined;
 
     return microfy(fromAmount).gt(bank.userBalances.uANC)
       ? 'Not enough assets'
       : undefined;
-  }, [bank.userBalances.uANC, fromAmount, serviceAvailable]);
+  }, [bank.userBalances.uANC, fromAmount, connectedWallet]);
 
   // ---------------------------------------------
   // effects
@@ -296,7 +298,7 @@ export function TradeSell() {
         error={!!invalidFromAmount}
         leftHelperText={invalidFromAmount}
         rightHelperText={
-          serviceAvailable && (
+          !!connectedWallet && (
             <span>
               Balance:{' '}
               <span
@@ -409,7 +411,7 @@ export function TradeSell() {
       <ActionButton
         className="submit"
         disabled={
-          !serviceAvailable ||
+          !connectedWallet ||
           !ancPrice ||
           fromAmount.length === 0 ||
           big(fromAmount).lte(0) ||
@@ -418,10 +420,10 @@ export function TradeSell() {
           big(simulation?.swapFee ?? 0).lte(0)
         }
         onClick={() =>
-          walletReady &&
+          connectedWallet &&
           ancPrice &&
           simulation &&
-          proceed(walletReady, fromAmount, ancPrice, simulation.txFee)
+          proceed(connectedWallet, fromAmount, ancPrice, simulation.txFee)
         }
       >
         Proceed

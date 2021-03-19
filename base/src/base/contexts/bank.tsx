@@ -10,13 +10,8 @@ import type {
   UST,
   uUST,
 } from '@anchor-protocol/types';
+import { useUserWallet } from '@anchor-protocol/wallet-provider';
 import { BigSource } from 'big.js';
-import { useService } from './service';
-import { Data as TaxData, useTax } from '../queries/tax';
-import {
-  Data as UserBalancesData,
-  useUserBalances,
-} from '../queries/userBalances';
 import type { ReactNode } from 'react';
 import {
   Consumer,
@@ -26,6 +21,11 @@ import {
   useEffect,
   useMemo,
 } from 'react';
+import { Data as TaxData, useTax } from '../queries/tax';
+import {
+  Data as UserBalancesData,
+  useUserBalances,
+} from '../queries/userBalances';
 
 export interface BankProviderProps {
   children: ReactNode;
@@ -42,7 +42,7 @@ export interface Bank {
 const BankContext: Context<Bank> = createContext<Bank>();
 
 export function BankProvider({ children }: BankProviderProps) {
-  const { serviceAvailable } = useService();
+  const userWallet = useUserWallet();
 
   const { data: taxData, refetch: refetchTax } = useTax();
 
@@ -59,7 +59,7 @@ export function BankProvider({ children }: BankProviderProps) {
         (microfy(0.1 as UST<BigSource>).toString() as uUST),
     };
 
-    return serviceAvailable
+    return !!userWallet
       ? {
           tax,
           refetchTax,
@@ -98,17 +98,17 @@ export function BankProvider({ children }: BankProviderProps) {
     balancesData.ubLunaLunaLP,
     refetchTax,
     refetchUserBalances,
-    serviceAvailable,
+    userWallet,
     taxData.maxTaxUUSD,
     taxData.taxRate,
   ]);
 
   useEffect(() => {
-    if (serviceAvailable) {
+    if (userWallet) {
       refetchTax();
       refetchUserBalances();
     }
-  }, [refetchTax, refetchUserBalances, serviceAvailable]);
+  }, [refetchTax, refetchUserBalances, userWallet]);
 
   return <BankContext.Provider value={state}>{children}</BankContext.Provider>;
 }

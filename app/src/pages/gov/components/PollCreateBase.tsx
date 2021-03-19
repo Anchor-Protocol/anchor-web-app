@@ -5,7 +5,10 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { ANC, uUST } from '@anchor-protocol/types';
-import { WalletReady } from '@anchor-protocol/wallet-provider';
+import {
+  useConnectedWallet,
+  WalletReady,
+} from '@anchor-protocol/wallet-provider';
 import { InputAdornment } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
@@ -19,7 +22,6 @@ import {
 } from '@terra-dev/use-string-bytes-length';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
-import { useService } from 'base/contexts/service';
 import big from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
@@ -54,7 +56,7 @@ export function PollCreateBase({
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { serviceAvailable, walletReady } = useService();
+  const connectedWallet = useConnectedWallet();
 
   const { fixedGas } = useConstants();
 
@@ -86,8 +88,8 @@ export function PollCreateBase({
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => serviceAvailable && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, serviceAvailable],
+    () => !!connectedWallet && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, connectedWallet],
   );
 
   const invalidTitleBytes = useValidateStringBytes(title, 4, 64);
@@ -99,14 +101,14 @@ export function PollCreateBase({
   const invalidLinkProtocol = useMemo(() => validateLinkAddress(link), [link]);
 
   const invalidUserANCBalance = useMemo(() => {
-    if (!pollConfig || !serviceAvailable) {
+    if (!pollConfig || !connectedWallet) {
       return undefined;
     }
 
     return big(bank.userBalances.uANC).lt(pollConfig.proposal_deposit)
       ? `Not enough ANC`
       : undefined;
-  }, [bank.userBalances.uANC, pollConfig, serviceAvailable]);
+  }, [bank.userBalances.uANC, pollConfig, connectedWallet]);
 
   // ---------------------------------------------
   // callbacks
@@ -270,7 +272,7 @@ export function PollCreateBase({
           className="proceed"
           disabled={
             submitDisabled ||
-            !serviceAvailable ||
+            !connectedWallet ||
             title.length === 0 ||
             description.length === 0 ||
             !!invalidUserANCBalance ||
@@ -281,10 +283,10 @@ export function PollCreateBase({
             !!invalidLinkProtocol
           }
           onClick={() =>
-            walletReady &&
+            connectedWallet &&
             pollConfig &&
             submit(
-              walletReady,
+              connectedWallet,
               title,
               description,
               link,

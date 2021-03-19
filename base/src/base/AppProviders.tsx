@@ -30,7 +30,6 @@ import { SnackbarContainer } from './components/SnackbarContainer';
 import { BankProvider } from './contexts/bank';
 import { Constants, ConstantsProvider } from './contexts/contants';
 import { ContractProvider, createContractAddress } from './contexts/contract';
-import { ServiceProvider } from './contexts/service';
 import { ThemeProvider } from './contexts/theme';
 import {
   columbusContractAddresses,
@@ -134,20 +133,17 @@ function Providers({ children }: { children: ReactNode }) {
                 address={address}
                 onError={onQueryError}
               >
-                {/** Service (Network...) :: useService() */}
-                <ServiceProvider>
-                  {/** User Balances (uUSD, uLuna, ubLuna, uaUST...) :: useBank() */}
-                  <BankProvider>
-                    {/** Theme Providing to Styled-Components and Material-UI */}
-                    <ThemeProvider initialTheme="light">
-                      {/** Snackbar Provider :: useSnackbar() */}
-                      <SnackbarProvider>
-                        {/** Application Layout */}
-                        {children}
-                      </SnackbarProvider>
-                    </ThemeProvider>
-                  </BankProvider>
-                </ServiceProvider>
+                {/** User Balances (uUSD, uLuna, ubLuna, uaUST...) :: useBank() */}
+                <BankProvider>
+                  {/** Theme Providing to Styled-Components and Material-UI */}
+                  <ThemeProvider initialTheme="light">
+                    {/** Snackbar Provider :: useSnackbar() */}
+                    <SnackbarProvider>
+                      {/** Application Layout */}
+                      {children}
+                    </SnackbarProvider>
+                  </ThemeProvider>
+                </BankProvider>
               </QueryDependencyProvider>
             </OperationBroadcaster>
           </ApolloProvider>

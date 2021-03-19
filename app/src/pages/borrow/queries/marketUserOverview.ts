@@ -8,13 +8,13 @@ import type {
 } from '@anchor-protocol/types';
 import { ContractAddress } from '@anchor-protocol/types';
 import {
+  useUserWallet,
   WalletStatus,
   WalletStatusType,
 } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, gql, useQuery } from '@apollo/client';
 import { createMap, map, Mapped, useMap } from '@terra-dev/use-map';
 import { useContractAddress } from 'base/contexts/contract';
-import { useService } from 'base/contexts/service';
 import { parseResult } from 'base/queries/parseResult';
 import { MappedApolloQueryResult, MappedQueryResult } from 'base/queries/types';
 import { useQueryErrorHandler } from 'base/queries/useQueryErrorHandler';
@@ -119,27 +119,27 @@ export function useMarketUserOverview({
 }): MappedQueryResult<RawVariables, RawData, Data> {
   const { moneyMarket } = useContractAddress();
 
-  const { serviceAvailable, walletReady } = useService();
+  const userWallet = useUserWallet();
 
   const variables = useMemo(() => {
-    if (!walletReady || typeof currentBlock !== 'number') return undefined;
+    if (!userWallet || typeof currentBlock !== 'number') return undefined;
 
     return mapVariables({
       marketContractAddress: moneyMarket.market,
       marketBorrowerQuery: {
         borrower_info: {
-          borrower: walletReady.walletAddress,
+          borrower: userWallet.walletAddress,
           block_height: currentBlock,
         },
       },
       custodyContractAddress: moneyMarket.custody,
       custodyBorrowerQuery: {
         borrower: {
-          address: walletReady.walletAddress,
+          address: userWallet.walletAddress,
         },
       },
     });
-  }, [currentBlock, moneyMarket.custody, moneyMarket.market, walletReady]);
+  }, [currentBlock, moneyMarket.custody, moneyMarket.market, userWallet]);
 
   const onError = useQueryErrorHandler();
 
@@ -150,7 +150,7 @@ export function useMarketUserOverview({
     error,
     ...result
   } = useQuery<RawData, RawVariables>(query, {
-    skip: !variables || !serviceAvailable,
+    skip: !variables || !userWallet,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,
@@ -162,7 +162,7 @@ export function useMarketUserOverview({
 
   return {
     ...result,
-    data: serviceAvailable ? data : mockupData,
+    data: userWallet ? data : mockupData,
     refetch,
   };
 }
