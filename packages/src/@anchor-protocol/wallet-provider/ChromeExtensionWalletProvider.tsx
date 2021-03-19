@@ -176,6 +176,8 @@ export function ChromeExtensionWalletProvider({
   }, [checkStatus, extension]);
 
   const disconnect = useCallback(() => {
+    // TODO unprovide address
+
     storage.removeItem(WALLET_ADDRESS);
     checkStatus();
   }, [checkStatus]);
@@ -186,6 +188,10 @@ export function ChromeExtensionWalletProvider({
     },
     [extension],
   );
+
+  const provideAddress = useCallback((address: HumanAddr) => {
+    // TODO provide address
+  }, []);
 
   useEffect(() => {
     if (isChrome) {
@@ -199,11 +205,12 @@ export function ChromeExtensionWalletProvider({
       install,
       connect,
       disconnect,
+      provideAddress,
       post,
       checkStatus,
       inTransactionProgress,
     }),
-    [checkStatus, connect, disconnect, install, post, status],
+    [checkStatus, connect, disconnect, install, post, provideAddress, status],
   );
 
   return (

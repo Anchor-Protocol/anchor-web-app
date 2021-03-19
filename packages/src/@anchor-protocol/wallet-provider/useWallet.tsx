@@ -1,3 +1,4 @@
+import { HumanAddr } from '@anchor-protocol/types';
 import type { ReactNode, RefObject } from 'react';
 import { Consumer, Context, createContext, useContext } from 'react';
 import {
@@ -18,6 +19,7 @@ export interface WalletState {
   install: () => void;
   connect: () => void;
   disconnect: () => void;
+  provideAddress: (address: HumanAddr) => void;
   checkStatus: () => void;
   post: <SendData extends {}, Payload extends {}>(
     data: SendData,

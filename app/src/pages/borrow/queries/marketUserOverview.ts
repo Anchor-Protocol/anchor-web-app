@@ -173,7 +173,10 @@ export function queryMarketUserOverview(
   walletStatus: WalletStatus,
   currentBlock: MarketState['currentBlock'],
 ): Promise<MappedApolloQueryResult<RawData, Data>> {
-  if (walletStatus.status !== WalletStatusType.CONNECTED) {
+  if (
+    walletStatus.status !== WalletStatusType.CONNECTED &&
+    walletStatus.status !== WalletStatusType.MANUAL_PROVIDED
+  ) {
     throw new Error(`Wallet is not ready`);
   }
 

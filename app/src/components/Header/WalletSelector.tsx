@@ -31,6 +31,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
+  // TODO
   const { status, install, connect, disconnect } = useWallet();
 
   const bank = useBank();
@@ -50,7 +51,10 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   // callbacks
   // ---------------------------------------------
   const [isCopied, setCopied] = useClipboard(
-    status.status === WalletStatusType.CONNECTED ? status.walletAddress : '',
+    status.status === WalletStatusType.CONNECTED ||
+      status.status === WalletStatusType.MANUAL_PROVIDED
+      ? status.walletAddress
+      : '',
     { successDuration: 1000 * 5 },
   );
 
@@ -65,7 +69,10 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   }, [disconnect]);
 
   const toggleOpen = useCallback(() => {
-    if (status.status === WalletStatusType.CONNECTED) {
+    if (
+      status.status === WalletStatusType.CONNECTED ||
+      status.status === WalletStatusType.MANUAL_PROVIDED
+    ) {
       setOpen((prev) => !prev);
     }
   }, [status.status]);
@@ -75,7 +82,10 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   }, []);
 
   const viewOnTerraFinder = useCallback(() => {
-    if (status.status === WalletStatusType.CONNECTED) {
+    if (
+      status.status === WalletStatusType.CONNECTED ||
+      status.status === WalletStatusType.MANUAL_PROVIDED
+    ) {
       window.open(
         `https://finder.terra.money/${status.network.chainID}/account/${status.walletAddress}`,
         '_blank',
@@ -114,6 +124,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
         </div>
       );
     case WalletStatusType.CONNECTED:
+    case WalletStatusType.MANUAL_PROVIDED:
       return (
         <ClickAwayListener onClickAway={onClickAway}>
           <div className={className}>
@@ -256,7 +267,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
           </div>
         </ClickAwayListener>
       );
-    case 'not_installed':
+    case WalletStatusType.NOT_INSTALLED:
       return (
         <WalletConnectButton className={className} onClick={install}>
           <IconSpan>
