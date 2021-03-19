@@ -19,7 +19,7 @@ export enum WalletStatusType {
   INITIALIZING = 'initializing',
 
   /**
-   * browser is not a chrome
+   * user can't use transaction
    */
   UNAVAILABLE = 'unavailable',
 

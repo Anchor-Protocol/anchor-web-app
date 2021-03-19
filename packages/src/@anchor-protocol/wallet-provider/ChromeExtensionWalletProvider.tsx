@@ -9,6 +9,7 @@ import { WalletContext, WalletProviderProps, WalletState } from './useWallet';
 const storage = localStorage;
 
 const WALLET_ADDRESS: string = '__anchor_terra_station_wallet_address__';
+const PROVIDED_ADDRESS: string = '__anchor_provided_wallet_address';
 
 async function intervalCheck(
   count: number,
@@ -25,6 +26,8 @@ async function intervalCheck(
   return false;
 }
 
+const initialProvidedAddress = localStorage.getItem(PROVIDED_ADDRESS);
+
 export function ChromeExtensionWalletProvider({
   children,
   defaultNetwork,
@@ -39,12 +42,26 @@ export function ChromeExtensionWalletProvider({
     return extensionFixer(extension, inTransactionProgress);
   }, []);
 
-  const [status, setStatus] = useState<WalletStatus>(() => ({
-    status: isDesktopChrome
-      ? WalletStatusType.INITIALIZING
-      : WalletStatusType.UNAVAILABLE,
-    network: defaultNetwork,
-  }));
+  const providedAddress = useRef<HumanAddr | undefined>(
+    initialProvidedAddress ? (initialProvidedAddress as HumanAddr) : undefined,
+  );
+
+  const [status, setStatus] = useState<WalletStatus>(() => {
+    if (providedAddress.current) {
+      return {
+        status: WalletStatusType.MANUAL_PROVIDED,
+        network: defaultNetwork,
+        walletAddress: providedAddress.current,
+      };
+    }
+
+    return {
+      status: isDesktopChrome
+        ? WalletStatusType.INITIALIZING
+        : WalletStatusType.UNAVAILABLE,
+      network: defaultNetwork,
+    };
+  });
 
   const watchConnection = useRef<boolean>(enableWatchConnection);
 
@@ -52,40 +69,57 @@ export function ChromeExtensionWalletProvider({
 
   const checkStatus = useCallback(
     async (watingExtensionScriptInjection: boolean = false) => {
+      // if there is providedAddress and the browser is not the Chrome
+      // network is defaultNetwork
+      if (providedAddress.current && !isDesktopChrome) {
+        setStatus((prev) => {
+          return providedAddress.current &&
+            (prev.status !== WalletStatusType.MANUAL_PROVIDED ||
+              prev.walletAddress !== providedAddress.current)
+            ? {
+                status: WalletStatusType.MANUAL_PROVIDED,
+                walletAddress: providedAddress.current,
+                network: defaultNetwork,
+              }
+            : prev;
+        });
+        return;
+      }
+
+      // if there is no providedAddress and the browser is not the Chrome
+      // does not need check more
       if (!isDesktopChrome) {
         return;
       }
 
+      // if the check is not first check and first check is not completed
+      // does not need check more
       if (!watingExtensionScriptInjection && !firstCheck.current) {
         return;
       }
 
+      // ---------------------------------------------
+      // check available use chrome extension
+      // ---------------------------------------------
       const isExtensionInstalled = watingExtensionScriptInjection
         ? await intervalCheck(20, () => extension.isAvailable())
         : extension.isAvailable();
 
       firstCheck.current = true;
 
+      // if extension is not installed
+      // does not need check more
       if (!isExtensionInstalled) {
         setStatus((prev) => {
-          if (
-            prev.status !== WalletStatusType.INITIALIZING &&
-            prev.status !== WalletStatusType.NOT_INSTALLED
-          ) {
-            console.error(
-              [
-                `Abnormal Wallet status change to not_install`,
-                `===============================================`,
-                JSON.stringify(
-                  {
-                    'window.isTerraExtensionAvailable':
-                      window.isTerraExtensionAvailable,
-                  },
-                  null,
-                  2,
-                ),
-              ].join('\n'),
-            );
+          if (providedAddress.current) {
+            return prev.status !== WalletStatusType.MANUAL_PROVIDED ||
+              prev.walletAddress !== providedAddress.current
+              ? {
+                  status: WalletStatusType.MANUAL_PROVIDED,
+                  walletAddress: providedAddress.current,
+                  network: defaultNetwork,
+                }
+              : prev;
           }
 
           return prev.status !== WalletStatusType.NOT_INSTALLED
@@ -98,12 +132,28 @@ export function ChromeExtensionWalletProvider({
         return;
       }
 
+      // ---------------------------------------------
+      // get wallet network info
+      // ---------------------------------------------
       const infoPayload = await extension.info();
 
       const network: StationNetworkInfo = (infoPayload ??
         defaultNetwork) as any;
 
-      if (watchConnection.current) {
+      if (providedAddress.current) {
+        setStatus((prev) => {
+          return providedAddress.current &&
+            (prev.status !== WalletStatusType.MANUAL_PROVIDED ||
+              prev.walletAddress !== providedAddress.current ||
+              prev.network.chainID !== network.chainID)
+            ? {
+                status: WalletStatusType.MANUAL_PROVIDED,
+                walletAddress: providedAddress.current,
+                network,
+              }
+            : prev;
+        });
+      } else if (watchConnection.current) {
         const storedWalletAddress: string | null = storage.getItem(
           WALLET_ADDRESS,
         );
@@ -170,9 +220,11 @@ export function ChromeExtensionWalletProvider({
   }, [checkStatus, extension]);
 
   const disconnect = useCallback(() => {
-    // TODO unprovide address
+    providedAddress.current = undefined;
+    storage.removeItem(PROVIDED_ADDRESS);
 
     storage.removeItem(WALLET_ADDRESS);
+
     checkStatus();
   }, [checkStatus]);
 
@@ -183,9 +235,17 @@ export function ChromeExtensionWalletProvider({
     [extension],
   );
 
-  const provideAddress = useCallback((address: HumanAddr) => {
-    // TODO provide address
-  }, []);
+  const provideAddress = useCallback(
+    (address: HumanAddr) => {
+      providedAddress.current = address;
+      storage.setItem(PROVIDED_ADDRESS, address);
+
+      storage.removeItem(WALLET_ADDRESS);
+
+      checkStatus();
+    },
+    [checkStatus],
+  );
 
   useEffect(() => {
     if (isDesktopChrome) {
