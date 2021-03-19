@@ -1,5 +1,6 @@
+import { useIsDesktopChrome } from '@terra-dev/is-desktop-chrome';
 import { AppProviders } from 'base/AppProviders';
-import { Banner } from 'components/Banner';
+import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
 import { MessageBox } from 'components/MessageBox';
 import { Airdrop } from 'pages/airdrop';
@@ -10,22 +11,29 @@ import { Governance } from 'pages/gov';
 import { govPathname } from 'pages/gov/env';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import styled from 'styled-components';
-import { GlobalStyle } from 'components/GlobalStyle';
 
 export function App() {
+  const isDesktopChrome = useIsDesktopChrome();
+
   return (
     <AppProviders>
       <div>
         <GlobalStyle />
         <Header />
-        <Banner />
         <EmptyCatcher>
+          {!isDesktopChrome && (
+            <MessageBox
+              level="info"
+              hide={{ id: 'chrome-only', period: 1000 * 60 * 60 * 24 * 7 }}
+            >
+              Anchor currently only supports{' '}
+              <a href="https://www.google.com/chrome/">desktop Chrome</a>
+            </MessageBox>
+          )}
+
           <MessageBox
             level="info"
             hide={{ id: 'announcement1', period: 1000 * 60 * 60 * 24 * 7 }}
-            style={{
-              margin: '30px 30px 0 30px',
-            }}
           >
             Some time is required for accurate data to be displayed on the
             Anchor web app. Information displayed may vary until the necessary
@@ -46,6 +54,21 @@ export function App() {
 }
 
 const EmptyCatcher = styled.div`
+  :not(:empty) {
+    padding: 20px 30px 10px 30px;
+
+    display: flex;
+    flex-direction: column;
+
+    > * {
+      margin: 0;
+
+      &:not(:first-child) {
+        margin-top: 10px;
+      }
+    }
+  }
+
   :empty {
     display: block;
     height: 50px;
