@@ -169,5 +169,27 @@ export const Subscribe = styled(SubscribeBase)`
         }
       }
     }
+
+    .email {
+      font-size: 13px;
+      padding: 0 5px 0 15px;
+
+      svg {
+        font-size: 18px;
+        margin-right: 5px;
+      }
+
+      input::placeholder {
+        font-size: 13px;
+        letter-spacing: -0.2px;
+      }
+
+      button {
+        font-size: 13px;
+        letter-spacing: -0.3px;
+        width: 90px;
+        padding: 4px 10px;
+      }
+    }
   }
 `;
