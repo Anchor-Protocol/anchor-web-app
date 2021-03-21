@@ -46,7 +46,9 @@ function ComponentBase({
     walletHistory: [],
   }));
 
-  const [address, setAddress] = useState<string>('');
+  const [address, setAddress] = useState<string>(() => {
+    return walletHistory.length > 0 ? walletHistory[0] : '';
+  });
 
   const invalidAddress = useMemo(() => {
     if (address.length === 0) {
@@ -87,6 +89,7 @@ function ComponentBase({
         <TextInput
           className="address"
           fullWidth
+          multiline
           placeholder="ADDRESS"
           value={address}
           error={!!invalidAddress}

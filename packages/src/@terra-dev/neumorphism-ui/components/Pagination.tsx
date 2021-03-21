@@ -39,6 +39,10 @@ function PaginationBase({
     };
   }, [pageIndex, totalItems, viewItems, viewPages]);
 
+  if (totalItems < viewItems) {
+    return null;
+  }
+
   return (
     <ul {...ulProps}>
       {startPage > 1 && (

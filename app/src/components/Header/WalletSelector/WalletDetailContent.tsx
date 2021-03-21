@@ -26,7 +26,7 @@ interface WalletDetailContentProps {
   openSend: () => void;
 }
 
-function WalletDetailContentBase({
+export function WalletDetailContentBase({
   className,
   status,
   disconnectWallet,

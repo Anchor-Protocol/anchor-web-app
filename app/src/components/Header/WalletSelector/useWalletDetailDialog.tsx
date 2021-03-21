@@ -1,0 +1,98 @@
+import { useWallet, WalletStatusType } from '@anchor-protocol/wallet-provider';
+import { Modal } from '@material-ui/core';
+import { buttonBaseStyle } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
+import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
+import { useBank } from 'base/contexts/bank';
+import { WalletDetailContent } from 'components/Header/WalletSelector/WalletDetailContent';
+import React, { ReactNode, useCallback } from 'react';
+import styled from 'styled-components';
+
+interface FormParams {
+  className?: string;
+}
+
+type FormReturn = void;
+
+export function useWalletDetailDialog(): [
+  OpenDialog<FormParams, FormReturn>,
+  ReactNode,
+] {
+  return useDialog(Component);
+}
+
+function ComponentBase({
+  className,
+  closeDialog,
+}: DialogProps<FormParams, FormReturn>) {
+  const { status, disconnect } = useWallet();
+
+  const bank = useBank();
+
+  const disconnectWallet = useCallback(() => {
+    disconnect();
+    window.location.reload();
+  }, [disconnect]);
+
+  return (
+    <Modal open onClose={() => closeDialog()}>
+      <Dialog className={className} onClose={() => closeDialog()}>
+        {status.status === WalletStatusType.MANUAL_PROVIDED && (
+          <WalletDetailContent
+            status={status}
+            closePopup={() => {}}
+            disconnectWallet={disconnectWallet}
+            bank={bank}
+            openSend={() => {}}
+          />
+        )}
+      </Dialog>
+    </Modal>
+  );
+}
+
+const Component = styled(ComponentBase)`
+  width: 720px;
+
+  section {
+    padding: 0;
+  }
+
+  .wallet-address {
+    display: inline-block;
+  }
+
+  .copy-wallet-address {
+    display: inline-block;
+    margin-left: 10px;
+  }
+
+  .wallet-icon {
+    display: none !important;
+  }
+
+  ul {
+    margin-top: 20px !important;
+    font-size: 15px !important;
+  }
+
+  .send {
+    display: none;
+  }
+
+  .disconnect {
+    margin-top: 40px;
+
+    width: 100%;
+    height: 60px !important;
+
+    ${buttonBaseStyle};
+
+    background-color: ${({ theme }) => theme.actionButton.backgroundColor};
+
+    &:hover {
+      background-color: ${({ theme }) =>
+        theme.actionButton.backgroundHoverColor};
+    }
+  }
+`;

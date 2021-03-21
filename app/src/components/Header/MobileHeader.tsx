@@ -7,6 +7,7 @@ import { IconToggleButton } from '@terra-dev/neumorphism-ui/components/IconToggl
 import { useTheme } from 'base/contexts/theme';
 import { onProduction } from 'base/env';
 import logoUrl from 'components/Header/assets/Logo.svg';
+import { useWalletDetailDialog } from 'components/Header/WalletSelector/useWalletDetailDialog';
 import { headerHeight, links } from 'env';
 import { govPathname } from 'pages/gov/env';
 import React, { useCallback, useState } from 'react';
@@ -23,18 +24,19 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
 
   const { themeColor } = useTheme();
 
-  const { status, disconnect } = useWallet();
+  const { status } = useWallet();
 
   const [openProvideAddress, provideAddressElement] = useProvideAddressDialog();
 
+  const [openWalletDetail, walletDetailElement] = useWalletDetailDialog();
+
   const toggleWallet = useCallback(() => {
     if (status.status === WalletStatusType.MANUAL_PROVIDED) {
-      disconnect();
-      window.location.reload();
+      openWalletDetail({});
     } else {
       openProvideAddress({});
     }
-  }, [disconnect, openProvideAddress, status.status]);
+  }, [openProvideAddress, openWalletDetail, status.status]);
 
   return (
     <>
@@ -100,6 +102,7 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
 
       {open && <div style={{ height: headerHeight }} />}
 
+      {walletDetailElement}
       {provideAddressElement}
     </>
   );

@@ -271,7 +271,7 @@ export const Earn = styled(EarnBase)`
       }
 
       .amount {
-        font-size: 50px;
+        font-size: 40px;
       }
 
       .total-deposit-buttons {
