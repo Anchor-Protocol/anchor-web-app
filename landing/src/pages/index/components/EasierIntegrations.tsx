@@ -34,7 +34,7 @@ function EasierIntegrationsBase({ className }: EasierIntegrationsProps) {
         <h2>
           Anchor
           <br />
-          offers Easier
+          offers easier
           <br />
           Integrations
         </h2>
