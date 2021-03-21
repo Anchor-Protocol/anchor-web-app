@@ -36,27 +36,50 @@ function WalletConnectContentBase({
 
   return (
     <div className={className}>
+      <h2>Connect Wallet</h2>
+
       {status.status === WalletStatusType.NOT_CONNECTED && (
-        <FlatButton
-          onClick={() => {
-            connectWallet();
-            closePopup();
-          }}
-        >
-          Connect Wallet
-        </FlatButton>
+        <>
+          <p>
+            You seems installed Chrome Extension.
+            <br />
+            You can connect your Terra Station Wallet.
+          </p>
+
+          <FlatButton
+            onClick={() => {
+              connectWallet();
+              closePopup();
+            }}
+          >
+            Chrome Extension
+          </FlatButton>
+        </>
       )}
 
       {status.status === WalletStatusType.NOT_INSTALLED && (
-        <FlatButton
-          onClick={() => {
-            installWallet();
-            closePopup();
-          }}
-        >
-          Install Wallet
-        </FlatButton>
+        <>
+          <p>
+            If you want to send transaction.
+            <br />
+            Please install Chrome Extension.
+          </p>
+          <FlatButton
+            onClick={() => {
+              installWallet();
+              closePopup();
+            }}
+          >
+            Install Wallet
+          </FlatButton>
+        </>
       )}
+
+      <p>
+        You can connect your wallet address.
+        <br />
+        But, you can't send transaction.
+      </p>
 
       <FlatButton
         onClick={() => {
@@ -64,23 +87,26 @@ function WalletConnectContentBase({
           closePopup();
         }}
       >
-        Provide Address
+        with Wallet Address
       </FlatButton>
 
       {walletHistory.length > 0 && (
-        <ul>
-          {walletHistory.map((walletAddress) => (
-            <li
-              key={walletAddress}
-              onClick={() => {
-                provideWallet(walletAddress);
-                closePopup();
-              }}
-            >
-              {truncate(walletAddress)}
-            </li>
-          ))}
-        </ul>
+        <>
+          <h3>Recent Addresses</h3>
+          <ul>
+            {walletHistory.map((walletAddress) => (
+              <li
+                key={walletAddress}
+                onClick={() => {
+                  provideWallet(walletAddress);
+                  closePopup();
+                }}
+              >
+                {truncate(walletAddress)}
+              </li>
+            ))}
+          </ul>
+        </>
       )}
     </div>
   );
@@ -88,19 +114,36 @@ function WalletConnectContentBase({
 
 export const WalletConnectContent = styled(WalletConnectContentBase)`
   margin: 30px;
-  text-align: center;
+
+  h2 {
+    text-align: center;
+
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  p {
+    margin: 25px 0 15px 0;
+
+    font-size: 14px;
+
+    color: ${({ theme }) => theme.dimTextColor};
+  }
 
   button {
     width: 100%;
     height: 28px;
+  }
 
-    &:not(:first-child) {
-      margin-top: 20px;
-    }
+  h3 {
+    margin-top: 30px;
+
+    font-size: 16px;
+    font-weight: 500;
   }
 
   ul {
-    margin-top: 20px;
+    margin-top: 10px;
 
     list-style: none;
     padding: 0;
@@ -108,6 +151,8 @@ export const WalletConnectContent = styled(WalletConnectContentBase)`
     li {
       cursor: pointer;
       text-decoration: underline;
+
+      font-size: 14px;
     }
   }
 `;

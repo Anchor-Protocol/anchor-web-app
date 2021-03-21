@@ -78,7 +78,7 @@ function ComponentBase({
   return (
     <Modal open onClose={() => closeDialog()}>
       <Dialog className={className} onClose={() => closeDialog()}>
-        <h1>Provide Wallet Address</h1>
+        <h1>Connect Wallet</h1>
 
         {/* Address */}
         <div className="address-description">

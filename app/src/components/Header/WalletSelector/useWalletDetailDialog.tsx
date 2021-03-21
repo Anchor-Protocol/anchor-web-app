@@ -76,10 +76,6 @@ const Component = styled(ComponentBase)`
     font-size: 15px !important;
   }
 
-  .send {
-    display: none;
-  }
-
   .disconnect {
     margin-top: 40px;
 

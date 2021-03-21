@@ -8,7 +8,10 @@ import {
   formatUSTWithPostfixUnits,
   truncate,
 } from '@anchor-protocol/notation';
-import { WalletReady } from '@anchor-protocol/wallet-provider';
+import {
+  WalletReady,
+  WalletStatusType,
+} from '@anchor-protocol/wallet-provider';
 import { Check, KeyboardArrowRight } from '@material-ui/icons';
 import { FlatButton } from '@terra-dev/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
@@ -99,16 +102,18 @@ export function WalletDetailContentBase({
           )}
         </ul>
 
-        <div className="send">
-          <FlatButton
-            onClick={() => {
-              openSend();
-              closePopup();
-            }}
-          >
-            SEND
-          </FlatButton>
-        </div>
+        {status.status === WalletStatusType.CONNECTED && (
+          <div className="send">
+            <FlatButton
+              onClick={() => {
+                openSend();
+                closePopup();
+              }}
+            >
+              SEND
+            </FlatButton>
+          </div>
+        )}
 
         <div className="outlink">
           <button onClick={viewOnTerraFinder}>
