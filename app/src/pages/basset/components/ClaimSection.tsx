@@ -98,12 +98,13 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
             Claimable Rewards{' '}
             <InfoTooltip>
               Claim staking rewards from minted bAssets that have not been
-              provided as collateral
+              provided as collateral. If user's claimable reward is smaller than
+              gas fee, user cannot claim rewards
             </InfoTooltip>
           </IconSpan>
         </h4>
         <p>
-          {claimableRewards.gt(fixedGas)
+          {claimableRewards.gt(0)
             ? formatUST(demicrofy(claimableRewards)) + ' UST'
             : '-'}
         </p>
