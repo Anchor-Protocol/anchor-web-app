@@ -104,7 +104,7 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
           </IconSpan>
         </h4>
         <p>
-          {claimableRewards.gte(0.001)
+          {claimableRewards.gt(0)
             ? formatUST(demicrofy(claimableRewards)) + ' UST'
             : '-'}
         </p>
