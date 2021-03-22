@@ -37,7 +37,7 @@ function ComponentBase({
   return (
     <Modal open onClose={() => closeDialog()}>
       <Dialog className={className} onClose={() => closeDialog()}>
-        {status.status === WalletStatusType.MANUAL_PROVIDED && (
+        {status.status === WalletStatusType.WALLET_ADDRESS_CONNECTED && (
           <WalletDetailContent
             status={status}
             closePopup={() => {}}

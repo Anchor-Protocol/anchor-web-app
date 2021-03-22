@@ -31,7 +31,7 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
   const [openWalletDetail, walletDetailElement] = useWalletDetailDialog();
 
   const toggleWallet = useCallback(() => {
-    if (status.status === WalletStatusType.MANUAL_PROVIDED) {
+    if (status.status === WalletStatusType.WALLET_ADDRESS_CONNECTED) {
       openWalletDetail({});
     } else {
       openProvideAddress({});

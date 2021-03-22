@@ -9,7 +9,7 @@ import { WalletContext, WalletProviderProps, WalletState } from './useWallet';
 const storage = localStorage;
 
 const WALLET_ADDRESS: string = '__anchor_terra_station_wallet_address__';
-const PROVIDED_ADDRESS: string = '__anchor_provided_wallet_address';
+const STORED_WALLET_ADDRESS: string = '__anchor_stored_wallet_address__';
 
 async function intervalCheck(
   count: number,
@@ -26,7 +26,7 @@ async function intervalCheck(
   return false;
 }
 
-const initialProvidedAddress = localStorage.getItem(PROVIDED_ADDRESS);
+const initialStoredWalletAddress = localStorage.getItem(STORED_WALLET_ADDRESS);
 
 export function ChromeExtensionWalletProvider({
   children,
@@ -42,16 +42,18 @@ export function ChromeExtensionWalletProvider({
     return extensionFixer(extension, inTransactionProgress);
   }, []);
 
-  const providedAddress = useRef<HumanAddr | undefined>(
-    initialProvidedAddress ? (initialProvidedAddress as HumanAddr) : undefined,
+  const storedWalletAddress = useRef<HumanAddr | undefined>(
+    initialStoredWalletAddress
+      ? (initialStoredWalletAddress as HumanAddr)
+      : undefined,
   );
 
   const [status, setStatus] = useState<WalletStatus>(() => {
-    if (providedAddress.current) {
+    if (storedWalletAddress.current) {
       return {
-        status: WalletStatusType.MANUAL_PROVIDED,
+        status: WalletStatusType.WALLET_ADDRESS_CONNECTED,
         network: defaultNetwork,
-        walletAddress: providedAddress.current,
+        walletAddress: storedWalletAddress.current,
       };
     }
 
@@ -71,14 +73,14 @@ export function ChromeExtensionWalletProvider({
     async (watingExtensionScriptInjection: boolean = false) => {
       // if there is providedAddress and the browser is not the Chrome
       // network is defaultNetwork
-      if (providedAddress.current && !isDesktopChrome) {
+      if (storedWalletAddress.current && !isDesktopChrome) {
         setStatus((prev) => {
-          return providedAddress.current &&
-            (prev.status !== WalletStatusType.MANUAL_PROVIDED ||
-              prev.walletAddress !== providedAddress.current)
+          return storedWalletAddress.current &&
+            (prev.status !== WalletStatusType.WALLET_ADDRESS_CONNECTED ||
+              prev.walletAddress !== storedWalletAddress.current)
             ? {
-                status: WalletStatusType.MANUAL_PROVIDED,
-                walletAddress: providedAddress.current,
+                status: WalletStatusType.WALLET_ADDRESS_CONNECTED,
+                walletAddress: storedWalletAddress.current,
                 network: defaultNetwork,
               }
             : prev;
@@ -111,12 +113,12 @@ export function ChromeExtensionWalletProvider({
       // does not need check more
       if (!isExtensionInstalled) {
         setStatus((prev) => {
-          if (providedAddress.current) {
-            return prev.status !== WalletStatusType.MANUAL_PROVIDED ||
-              prev.walletAddress !== providedAddress.current
+          if (storedWalletAddress.current) {
+            return prev.status !== WalletStatusType.WALLET_ADDRESS_CONNECTED ||
+              prev.walletAddress !== storedWalletAddress.current
               ? {
-                  status: WalletStatusType.MANUAL_PROVIDED,
-                  walletAddress: providedAddress.current,
+                  status: WalletStatusType.WALLET_ADDRESS_CONNECTED,
+                  walletAddress: storedWalletAddress.current,
                   network: defaultNetwork,
                 }
               : prev;
@@ -140,15 +142,15 @@ export function ChromeExtensionWalletProvider({
       const network: StationNetworkInfo = (infoPayload ??
         defaultNetwork) as any;
 
-      if (providedAddress.current) {
+      if (storedWalletAddress.current) {
         setStatus((prev) => {
-          return providedAddress.current &&
-            (prev.status !== WalletStatusType.MANUAL_PROVIDED ||
-              prev.walletAddress !== providedAddress.current ||
+          return storedWalletAddress.current &&
+            (prev.status !== WalletStatusType.WALLET_ADDRESS_CONNECTED ||
+              prev.walletAddress !== storedWalletAddress.current ||
               prev.network.chainID !== network.chainID)
             ? {
-                status: WalletStatusType.MANUAL_PROVIDED,
-                walletAddress: providedAddress.current,
+                status: WalletStatusType.WALLET_ADDRESS_CONNECTED,
+                walletAddress: storedWalletAddress.current,
                 network,
               }
             : prev;
@@ -220,8 +222,8 @@ export function ChromeExtensionWalletProvider({
   }, [checkStatus, extension]);
 
   const disconnect = useCallback(() => {
-    providedAddress.current = undefined;
-    storage.removeItem(PROVIDED_ADDRESS);
+    storedWalletAddress.current = undefined;
+    storage.removeItem(STORED_WALLET_ADDRESS);
 
     storage.removeItem(WALLET_ADDRESS);
 
@@ -237,8 +239,8 @@ export function ChromeExtensionWalletProvider({
 
   const provideAddress = useCallback(
     (address: HumanAddr) => {
-      providedAddress.current = address;
-      storage.setItem(PROVIDED_ADDRESS, address);
+      storedWalletAddress.current = address;
+      storage.setItem(STORED_WALLET_ADDRESS, address);
 
       storage.removeItem(WALLET_ADDRESS);
 
@@ -259,7 +261,7 @@ export function ChromeExtensionWalletProvider({
       install,
       connect,
       disconnect,
-      provideAddress,
+      connectWalletAddress: provideAddress,
       post,
       checkStatus,
       inTransactionProgress,

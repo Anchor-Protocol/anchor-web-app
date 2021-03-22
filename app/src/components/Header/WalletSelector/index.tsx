@@ -23,7 +23,13 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { status, install, connect, disconnect, provideAddress } = useWallet();
+  const {
+    status,
+    install,
+    connect,
+    disconnect,
+    connectWalletAddress,
+  } = useWallet();
 
   const bank = useBank();
 
@@ -56,12 +62,12 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   const provideWallet = useCallback(
     (address?: HumanAddr) => {
       if (address) {
-        provideAddress(address);
+        connectWalletAddress(address);
       } else {
         openProvideAddress({});
       }
     },
-    [openProvideAddress, provideAddress],
+    [openProvideAddress, connectWalletAddress],
   );
 
   const toggleOpen = useCallback(() => {
@@ -111,7 +117,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
         </ClickAwayListener>
       );
     case WalletStatusType.CONNECTED:
-    case WalletStatusType.MANUAL_PROVIDED:
+    case WalletStatusType.WALLET_ADDRESS_CONNECTED:
       return (
         <ClickAwayListener onClickAway={onClickAway}>
           <div className={className}>

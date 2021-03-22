@@ -42,7 +42,7 @@ export enum WalletStatusType {
    * the wallet address manual provided
    * but, user can't try transaction (the wallet only using for querying)
    */
-  MANUAL_PROVIDED = 'manual_provided',
+  WALLET_ADDRESS_CONNECTED = 'wallet_address_connected',
 }
 
 export type WalletNotReady = {
@@ -55,7 +55,9 @@ export type WalletNotReady = {
 };
 
 export type WalletReady = {
-  status: WalletStatusType.CONNECTED | WalletStatusType.MANUAL_PROVIDED;
+  status:
+    | WalletStatusType.CONNECTED
+    | WalletStatusType.WALLET_ADDRESS_CONNECTED;
   network: StationNetworkInfo;
   walletAddress: HumanAddr;
 };

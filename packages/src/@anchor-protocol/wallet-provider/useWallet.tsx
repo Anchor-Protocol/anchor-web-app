@@ -19,7 +19,7 @@ export interface WalletState {
   install: () => void;
   connect: () => void;
   disconnect: () => void;
-  provideAddress: (address: HumanAddr) => void;
+  connectWalletAddress: (walletAddress: HumanAddr) => void;
   checkStatus: () => void;
   post: <SendData extends {}, Payload extends {}>(
     data: SendData,
@@ -52,7 +52,7 @@ export function useUserWallet(): WalletReady | undefined {
   const { status } = useContext(WalletContext);
 
   return status.status === WalletStatusType.CONNECTED ||
-    status.status === WalletStatusType.MANUAL_PROVIDED
+    status.status === WalletStatusType.WALLET_ADDRESS_CONNECTED
     ? status
     : undefined;
 }

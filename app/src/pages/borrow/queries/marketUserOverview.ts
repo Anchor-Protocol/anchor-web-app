@@ -175,7 +175,7 @@ export function queryMarketUserOverview(
 ): Promise<MappedApolloQueryResult<RawData, Data>> {
   if (
     walletStatus.status !== WalletStatusType.CONNECTED &&
-    walletStatus.status !== WalletStatusType.MANUAL_PROVIDED
+    walletStatus.status !== WalletStatusType.WALLET_ADDRESS_CONNECTED
   ) {
     throw new Error(`Wallet is not ready`);
   }

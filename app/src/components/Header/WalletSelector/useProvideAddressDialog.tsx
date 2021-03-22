@@ -37,7 +37,7 @@ function ComponentBase({
   className,
   closeDialog,
 }: DialogProps<FormParams, FormReturn>) {
-  const { provideAddress } = useWallet();
+  const { connectWalletAddress } = useWallet();
 
   const [
     { walletHistory },
@@ -68,11 +68,11 @@ function ComponentBase({
 
         setWalletHistory({ walletHistory: Array.from(nextWalletHistory) });
 
-        provideAddress(address as HumanAddr);
+        connectWalletAddress(address as HumanAddr);
         closeDialog();
       }
     },
-    [closeDialog, provideAddress, setWalletHistory, walletHistory],
+    [closeDialog, connectWalletAddress, setWalletHistory, walletHistory],
   );
 
   return (
