@@ -1,10 +1,8 @@
-# Anchor Icon Library
-
-These icons are compatible with material-ui's icon.
+# Anchor Token Icon Library
 
 ```tsx
 import { IconButton } from '@material-ui/core';
-import { Wallet } from '@anchor-protocol/icons';
+import { Wallet } from '@anchor-protocol/token-icons';
 
 function App() {
   return (
