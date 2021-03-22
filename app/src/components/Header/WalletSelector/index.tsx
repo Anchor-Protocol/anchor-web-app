@@ -1,6 +1,7 @@
 import { HumanAddr } from '@anchor-protocol/types';
 import { useWallet, WalletStatusType } from '@anchor-protocol/wallet-provider';
 import { ClickAwayListener } from '@material-ui/core';
+import { useIsDesktopChrome } from '@terra-dev/is-desktop-chrome';
 import { useBank } from 'base/contexts/bank';
 import { AirdropContent } from 'components/Header/WalletSelector/AirdropContent';
 import { useProvideAddressDialog } from 'components/Header/WalletSelector/useProvideAddressDialog';
@@ -30,6 +31,8 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
     disconnect,
     connectWalletAddress,
   } = useWallet();
+
+  const isDesktopChrome = useIsDesktopChrome();
 
   const bank = useBank();
 
@@ -93,6 +96,22 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
     case WalletStatusType.NOT_CONNECTED:
     case WalletStatusType.NOT_INSTALLED:
     case WalletStatusType.UNAVAILABLE:
+      if (isDesktopChrome) {
+        if (status.status === WalletStatusType.NOT_CONNECTED) {
+          return (
+            <div className={className} onClick={connectWallet}>
+              <NotConnectedButton>Connect Wallet</NotConnectedButton>
+            </div>
+          );
+        } else if (status.status === WalletStatusType.NOT_INSTALLED) {
+          return (
+            <div className={className} onClick={install}>
+              <NotConnectedButton>Please Install Wallet</NotConnectedButton>
+            </div>
+          );
+        }
+      }
+
       return (
         <ClickAwayListener onClickAway={onClickAway}>
           <div className={className}>
