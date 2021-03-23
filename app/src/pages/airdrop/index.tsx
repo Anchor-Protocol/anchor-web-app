@@ -23,7 +23,7 @@ import {
 } from 'pages/airdrop/queries/useAirdrop';
 import { airdropClaimOptions } from 'pages/airdrop/transactions/airdropClaimOptions';
 import React, { useCallback, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { SwishSpinner } from 'react-spinners-kit';
 import styled from 'styled-components';
 
@@ -37,9 +37,11 @@ function AirdropBase({ className }: AirdropProps) {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
+  const history = useHistory();
+
   const { fixedGas } = useConstants();
 
-  const [airdrop, refetch] = useAirdrop();
+  const [airdrop] = useAirdrop();
 
   const [claim, claimResult] = useOperation(airdropClaimOptions, {});
 
@@ -53,22 +55,18 @@ function AirdropBase({ className }: AirdropProps) {
     [bank, fixedGas, connectedWallet],
   );
 
-  const init = useCallback(() => {
-    refetch();
-  }, [refetch]);
+  const exit = useCallback(() => {
+    history.push('/earn');
+  }, [history]);
 
   const proceed = useCallback(
     async (walletReady: WalletReady, airdrop: AirdropData) => {
-      const broadcasted = await claim({
+      await claim({
         address: walletReady.walletAddress,
         airdrop,
       });
-
-      if (!broadcasted) {
-        init();
-      }
     },
-    [claim, init],
+    [claim],
   );
 
   // ---------------------------------------------
@@ -82,12 +80,13 @@ function AirdropBase({ className }: AirdropProps) {
     return (
       <CenteredLayout className={className} maxWidth={800}>
         <Section>
-          <TransactionRenderer result={claimResult} onExit={init} />
+          <TransactionRenderer result={claimResult} onExit={exit} />
         </Section>
       </CenteredLayout>
     );
   }
 
+  // in-progress api check if there is an airdrop
   if (airdrop === 'in-progress') {
     return (
       <CenteredLayout className={className} maxWidth={800}>
