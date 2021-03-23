@@ -2,9 +2,9 @@ import {
   AnimateNumber,
   demicrofy,
   formatRate,
-  formatUST,
+  formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
-import { Rate, UST } from '@anchor-protocol/types';
+import { Rate, UST, uUST } from '@anchor-protocol/types';
 import {
   APYChart,
   APYChartItem,
@@ -15,11 +15,12 @@ import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { Tab } from '@terra-dev/neumorphism-ui/components/Tab';
 import { TooltipLabel } from '@terra-dev/neumorphism-ui/components/TooltipLabel';
 import { useConstants } from 'base/contexts/contants';
-import big from 'big.js';
+import big, { Big } from 'big.js';
 import { currentAPY } from 'pages/earn/logics/currentAPY';
 import { useAPYHistory } from 'pages/earn/queries/apyHistory';
+import { useExpectedInterest } from 'pages/earn/queries/expectedInterest';
 import { useInterest } from 'pages/earn/queries/interest';
-import { Period, useInterestEarned } from 'pages/earn/queries/interestEarned';
+import { Period } from 'pages/earn/queries/interestEarned';
 import { useMemo, useState } from 'react';
 
 export interface InterestSectionProps {
@@ -32,10 +33,6 @@ interface Item {
 }
 
 const tabItems: Item[] = [
-  {
-    label: 'TOTAL',
-    value: 'total',
-  },
   {
     label: 'YEAR',
     value: 'year',
@@ -70,16 +67,47 @@ export function InterestSection({ className }: InterestSectionProps) {
   } = useInterest();
 
   const {
-    data: { interestEarned },
-  } = useInterestEarned(tab.value);
-
-  const {
     data: { apyHistory },
   } = useAPYHistory();
+
+  const {
+    data: { aUSTBalance, moneyMarketEpochState, overseerEpochState },
+  } = useExpectedInterest();
 
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
+  const expectedReturn = useMemo(() => {
+    if (!aUSTBalance || !moneyMarketEpochState || !overseerEpochState) {
+      return undefined;
+    }
+
+    const ustBalance = big(aUSTBalance.balance).mul(
+      moneyMarketEpochState.exchange_rate,
+    );
+    const annualizedInterestRate = big(overseerEpochState.deposit_rate).mul(
+      blocksPerYear,
+    );
+
+    return ustBalance
+      .mul(annualizedInterestRate)
+      .div(
+        tab.value === 'month'
+          ? 12
+          : tab.value === 'week'
+          ? 52
+          : tab.value === 'day'
+          ? 365
+          : 1,
+      ) as uUST<Big>;
+  }, [
+    aUSTBalance,
+    blocksPerYear,
+    moneyMarketEpochState,
+    overseerEpochState,
+    tab.value,
+  ]);
+
   const apy = useMemo(() => currentAPY(marketStatus, blocksPerYear), [
     blocksPerYear,
     marketStatus,
@@ -154,16 +182,16 @@ export function InterestSection({ className }: InterestSectionProps) {
 
         <div className="amount">
           <span>
-            <AnimateNumber format={formatUST}>
-              {interestEarned ? demicrofy(interestEarned) : (0 as UST<number>)}
+            <AnimateNumber format={formatUSTWithPostfixUnits}>
+              {expectedReturn ? demicrofy(expectedReturn) : (0 as UST<number>)}
             </AnimateNumber>{' '}
             UST
           </span>
           <p>
             <IconSpan>
-              Interest earned{' '}
+              Expected Interest{' '}
               <InfoTooltip>
-                Interest accrued for the selected time period
+                Estimated interest for the selected time period
               </InfoTooltip>
             </IconSpan>
           </p>
