@@ -6,11 +6,11 @@ import {
   uANC,
   WASMContractResult,
 } from '@anchor-protocol/types';
+import { useConnectedWallet } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, gql, useApolloClient } from '@apollo/client';
 import { useSubscription } from '@terra-dev/broadcastable-operation';
 import { createMap, map } from '@terra-dev/use-map';
 import { useContractAddress } from 'base/contexts/contract';
-import { useService } from 'base/contexts/service';
 import { parseResult } from 'base/queries/parseResult';
 import { MappedApolloQueryResult } from 'base/queries/types';
 import { useCallback, useEffect, useState } from 'react';
@@ -90,7 +90,7 @@ export const query = gql`
 `;
 
 export function useAirdrop(): [Airdrop | 'in-progress' | null, () => void] {
-  const { walletReady } = useService();
+  const connectedWallet = useConnectedWallet();
 
   const [airdrop, setAirdrop] = useState<Airdrop | null | 'in-progress'>(
     'in-progress',
@@ -101,12 +101,15 @@ export function useAirdrop(): [Airdrop | 'in-progress' | null, () => void] {
   const address = useContractAddress();
 
   const refetch = useCallback(() => {
-    if (walletReady && walletReady.network.chainID.startsWith('columbus')) {
+    if (
+      connectedWallet &&
+      connectedWallet.network.chainID.startsWith('columbus')
+    ) {
       // NOTE: temporary
       // get airdrop list from db first,
       // then do the contract check
       fetch(
-        `https://airdrop.anchorprotocol.com/api/get?address=${walletReady.walletAddress}&chainId=${walletReady.network.chainID}`,
+        `https://airdrop.anchorprotocol.com/api/get?address=${connectedWallet.walletAddress}&chainId=${connectedWallet.network.chainID}`,
       )
         .then((res) => res.json())
         .then(async (airdrops: Airdrop[]) => {
@@ -124,7 +127,7 @@ export function useAirdrop(): [Airdrop | 'in-progress' | null, () => void] {
                 const isClaimed = await queryIsClaimed(
                   client,
                   address,
-                  walletReady.walletAddress,
+                  connectedWallet.walletAddress,
                   stage,
                 );
 
@@ -154,7 +157,7 @@ export function useAirdrop(): [Airdrop | 'in-progress' | null, () => void] {
     } else {
       setAirdrop(null);
     }
-  }, [address, client, walletReady]);
+  }, [address, client, connectedWallet]);
 
   useSubscription((id, event) => {
     if (event === 'done') {
