@@ -1,16 +1,18 @@
-import { useOperation } from '@terra-dev/broadcastable-operation';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import {
   demicrofy,
   formatANCWithPostfixUnits,
   formatUST,
 } from '@anchor-protocol/notation';
 import { uANC } from '@anchor-protocol/types';
-import { WalletReady } from '@anchor-protocol/wallet-provider';
+import {
+  useConnectedWallet,
+  WalletReady,
+} from '@anchor-protocol/wallet-provider';
+import { useOperation } from '@terra-dev/broadcastable-operation';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
-import { useService } from 'base/contexts/service';
 import big, { Big } from 'big.js';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { MessageBox } from 'components/MessageBox';
@@ -32,7 +34,7 @@ function ClaimAllBase({ className }: ClaimAllProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { serviceAvailable, walletReady } = useService();
+  const connectedWallet = useConnectedWallet();
 
   const { fixedGas } = useConstants();
 
@@ -89,8 +91,8 @@ function ClaimAllBase({ className }: ClaimAllProps) {
   }, [claiming, userANCBalance]);
 
   const invalidTxFee = useMemo(
-    () => serviceAvailable && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, serviceAvailable],
+    () => !!connectedWallet && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, connectedWallet],
   );
 
   const proceed = useCallback(
@@ -151,7 +153,7 @@ function ClaimAllBase({ className }: ClaimAllProps) {
         <ActionButton
           className="proceed"
           disabled={
-            !serviceAvailable ||
+            !connectedWallet ||
             !claimingLpStaingInfoPendingRewards ||
             !claimingBorrowerInfoPendingRewards ||
             !claiming ||
@@ -159,11 +161,11 @@ function ClaimAllBase({ className }: ClaimAllProps) {
               claimingLpStaingInfoPendingRewards.lt(MINIMUM_CLAIM_BALANCE))
           }
           onClick={() =>
-            walletReady &&
+            connectedWallet &&
             claimingBorrowerInfoPendingRewards &&
             claimingLpStaingInfoPendingRewards &&
             proceed(
-              walletReady,
+              connectedWallet,
               claimingBorrowerInfoPendingRewards.gte(MINIMUM_CLAIM_BALANCE),
               claimingLpStaingInfoPendingRewards.gte(MINIMUM_CLAIM_BALANCE),
             )

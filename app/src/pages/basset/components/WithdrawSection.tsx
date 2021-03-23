@@ -1,15 +1,17 @@
+import { demicrofy, formatLuna } from '@anchor-protocol/notation';
+import type { uLuna, uUST } from '@anchor-protocol/types';
+import {
+  useConnectedWallet,
+  WalletReady,
+} from '@anchor-protocol/wallet-provider';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { NativeSelect } from '@terra-dev/neumorphism-ui/components/NativeSelect';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
-import { demicrofy, formatLuna } from '@anchor-protocol/notation';
-import type { uLuna, uUST } from '@anchor-protocol/types';
-import { WalletReady } from '@anchor-protocol/wallet-provider';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
-import { useService } from 'base/contexts/service';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
@@ -45,7 +47,7 @@ export function WithdrawSection({
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { serviceAvailable, walletReady } = useService();
+  const connectedWallet = useConnectedWallet();
 
   const { fixedGas } = useConstants();
 
@@ -79,8 +81,8 @@ export function WithdrawSection({
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => serviceAvailable && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, serviceAvailable],
+    () => !!connectedWallet && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, connectedWallet],
   );
 
   const withdrawHistory = useMemo(
@@ -184,12 +186,12 @@ export function WithdrawSection({
       <ActionButton
         className="submit"
         disabled={
-          !serviceAvailable ||
+          !connectedWallet ||
           !!invalidTxFee ||
           withdrawableAmount.lte(0) ||
           disabled
         }
-        onClick={() => walletReady && proceed(walletReady)}
+        onClick={() => connectedWallet && proceed(connectedWallet)}
       >
         Withdraw
       </ActionButton>

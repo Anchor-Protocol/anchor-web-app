@@ -4,7 +4,7 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { Rate, uUST } from '@anchor-protocol/types';
-import { useWallet } from '@anchor-protocol/wallet-provider';
+import { useConnectedWallet } from '@anchor-protocol/wallet-provider';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
@@ -24,7 +24,7 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { status } = useWallet();
+  const connectedWallet = useConnectedWallet();
 
   // ---------------------------------------------
   // queries
@@ -86,16 +86,14 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
 
       <aside className="total-deposit-buttons">
         <ActionButton
-          disabled={status.status !== 'ready' || !totalDeposit}
+          disabled={!connectedWallet || !totalDeposit}
           onClick={() => openDeposit()}
         >
           Deposit
         </ActionButton>
         <ActionButton
           disabled={
-            status.status !== 'ready' ||
-            !totalDeposit ||
-            !exchangeRate?.exchange_rate
+            !connectedWallet || !totalDeposit || !exchangeRate?.exchange_rate
           }
           onClick={() =>
             openWithdraw(totalDeposit, exchangeRate!.exchange_rate)

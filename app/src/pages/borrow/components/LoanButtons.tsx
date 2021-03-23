@@ -1,6 +1,6 @@
+import { useConnectedWallet } from '@anchor-protocol/wallet-provider';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import big from 'big.js';
-import { useService } from 'base/contexts/service';
 import { useBorrowDialog } from 'pages/borrow/components/useBorrowDialog';
 import { useRepayDialog } from 'pages/borrow/components/useRepayDialog';
 import { useMarket } from 'pages/borrow/context/market';
@@ -13,7 +13,7 @@ export function LoanButtons() {
   // ---------------------------------------------
   const { ready, loanAmount, borrowInfo, refetch } = useMarket();
 
-  const { serviceAvailable } = useService();
+  const connectedWallet = useConnectedWallet();
 
   const [openBorrowDialog, borrowDialogElement] = useBorrowDialog();
   const [openRepayDialog, repayDialogElement] = useRepayDialog();
@@ -27,7 +27,7 @@ export function LoanButtons() {
     <>
       <ActionButton
         disabled={
-          !serviceAvailable ||
+          !connectedWallet ||
           !ready ||
           !borrowInfo ||
           big(borrowInfo.balance ?? 0).lte(0)
@@ -40,7 +40,7 @@ export function LoanButtons() {
         Borrow
       </ActionButton>
       <ActionButton
-        disabled={!serviceAvailable || !ready || borrowed.lte(0)}
+        disabled={!connectedWallet || !ready || borrowed.lte(0)}
         onClick={() => {
           refetch();
           openRepayDialog({});

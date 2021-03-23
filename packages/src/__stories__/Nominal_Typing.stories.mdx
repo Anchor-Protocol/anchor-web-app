@@ -38,7 +38,7 @@ export type bLuna<T = string> = T & Currency<'bluna'>;
 
 TypeScript 자체적으로 지원되는 Nominal Type 기능이 없으므로,
 Union Type 을 사용해서 Nominal Type을 직접 만든다.
-[@anchor-protocol/notation](https://github.com/Anchor-Protocol/anchor-web-app/tree/develop/packages/src/%40anchor-protocol/notation) 에 구현되어 있다.
+[@anchor-protocol/types](https://github.com/Anchor-Protocol/anchor-web-app/blob/master/packages/src/%40anchor-protocol/types) 에 구현되어 있다.
 
 ```ts
 const uluna = '10000000' as uLuna; // uLuna<string>

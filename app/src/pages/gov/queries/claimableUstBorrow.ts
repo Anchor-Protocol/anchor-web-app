@@ -1,9 +1,9 @@
 import type { uANC } from '@anchor-protocol/types';
 import { cw20, moneyMarket, WASMContractResult } from '@anchor-protocol/types';
-import { createMap, useMap } from '@terra-dev/use-map';
+import { useUserWallet } from '@anchor-protocol/wallet-provider';
 import { gql, useQuery } from '@apollo/client';
+import { createMap, useMap } from '@terra-dev/use-map';
 import { useContractAddress } from 'base/contexts/contract';
-import { useService } from 'base/contexts/service';
 import { useLastSyncedHeight } from 'base/queries/lastSyncedHeight';
 import { parseResult } from 'base/queries/parseResult';
 import { MappedQueryResult } from 'base/queries/types';
@@ -107,11 +107,11 @@ export function useClaimableUstBorrow(): MappedQueryResult<
 
   const { data: lastSyncedHeight } = useLastSyncedHeight();
 
-  const { serviceAvailable, walletReady } = useService();
+  const userWallet = useUserWallet();
 
   const variables = useMemo(() => {
     if (
-      !walletReady ||
+      !userWallet ||
       typeof lastSyncedHeight !== 'number' ||
       lastSyncedHeight === 0
     )
@@ -121,7 +121,7 @@ export function useClaimableUstBorrow(): MappedQueryResult<
       Market_contract: moneyMarket.market,
       BorrowerInfoQuery: {
         borrower_info: {
-          borrower: walletReady.walletAddress,
+          borrower: userWallet.walletAddress,
           block_height: lastSyncedHeight,
         },
       },
@@ -131,11 +131,11 @@ export function useClaimableUstBorrow(): MappedQueryResult<
       },
       UserANCBalanceQuery: {
         balance: {
-          address: walletReady.walletAddress,
+          address: userWallet.walletAddress,
         },
       },
     });
-  }, [cw20.ANC, lastSyncedHeight, moneyMarket.market, walletReady]);
+  }, [cw20.ANC, lastSyncedHeight, moneyMarket.market, userWallet]);
 
   const onError = useQueryErrorHandler();
 
@@ -146,7 +146,7 @@ export function useClaimableUstBorrow(): MappedQueryResult<
     error,
     ...result
   } = useQuery<RawData, RawVariables>(query, {
-    skip: !variables || !serviceAvailable,
+    skip: !variables || !userWallet,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     //pollInterval: 1000 * 60,

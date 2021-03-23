@@ -2,7 +2,7 @@
 
 Deduplicate [fastdom](https://www.npmjs.com/package/fastdom) callbacks.
 
-![img.png](readme-assets/img.png)
+![img.png](https://raw.githubusercontent.com/Anchor-Protocol/anchor-web-app/master/packages/src/%40terra-dev/audit-fastdom/readme-assets/img.png)
 
 ## API
 

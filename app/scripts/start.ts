@@ -22,7 +22,7 @@ import { launch } from 'puppeteer';
 
   const [page] = await browser.pages();
   await page.goto(
-    `${process.env.HTTPS ? 'https' : 'http'}://localhost:${port}/basset/mint`,
+    `${process.env.HTTPS ? 'https' : 'http'}://localhost:${port}`,
   );
 
   //await page.waitForFunction(
@@ -32,8 +32,4 @@ import { launch } from 'puppeteer';
   //    polling: 1000 * 3,
   //  },
   //);
-
-  // if you want to start with another situation
-  // you can make another script file like this script file
-  // and, add the made script to the scripts section of package.json
 })();

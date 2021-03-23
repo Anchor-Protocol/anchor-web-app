@@ -1,6 +1,3 @@
-import { useOperation } from '@terra-dev/broadcastable-operation';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   ANC_INPUT_MAXIMUM_INTEGER_POINTS,
@@ -11,15 +8,20 @@ import {
   microfy,
 } from '@anchor-protocol/notation';
 import { ANC } from '@anchor-protocol/types';
-import { WalletReady } from '@anchor-protocol/wallet-provider';
+import {
+  useConnectedWallet,
+  WalletReady,
+} from '@anchor-protocol/wallet-provider';
 import { InputAdornment } from '@material-ui/core';
+import { useOperation } from '@terra-dev/broadcastable-operation';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
+import { useBank } from 'base/contexts/bank';
+import { useConstants } from 'base/contexts/contants';
 import big from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
-import { useService } from 'base/contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { useRewardsAncGovernance } from 'pages/gov/queries/rewardsAncGovernance';
 import { ancGovernanceStakeOptions } from 'pages/gov/transactions/ancGovernanceStakeOptions';
@@ -29,7 +31,7 @@ export function AncGovernanceStake() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { serviceAvailable, walletReady } = useService();
+  const connectedWallet = useConnectedWallet();
 
   const { fixedGas } = useConstants();
 
@@ -53,8 +55,8 @@ export function AncGovernanceStake() {
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => serviceAvailable && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, serviceAvailable],
+    () => !!connectedWallet && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, connectedWallet],
   );
 
   const invalidANCAmount = useMemo(() => {
@@ -145,13 +147,13 @@ export function AncGovernanceStake() {
       <ActionButton
         className="submit"
         disabled={
-          !serviceAvailable ||
+          !connectedWallet ||
           ancAmount.length === 0 ||
           big(ancAmount).lte(0) ||
           !!invalidTxFee ||
           !!invalidANCAmount
         }
-        onClick={() => walletReady && proceed(walletReady, ancAmount)}
+        onClick={() => connectedWallet && proceed(connectedWallet, ancAmount)}
       >
         Stake
       </ActionButton>

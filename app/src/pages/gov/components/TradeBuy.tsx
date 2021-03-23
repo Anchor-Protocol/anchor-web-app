@@ -20,7 +20,10 @@ import {
   uToken,
   uUST,
 } from '@anchor-protocol/types';
-import { WalletReady } from '@anchor-protocol/wallet-provider';
+import {
+  useConnectedWallet,
+  WalletReady,
+} from '@anchor-protocol/wallet-provider';
 import { useApolloClient } from '@apollo/client';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { min } from '@terra-dev/big-math';
@@ -33,7 +36,6 @@ import { useResolveLast } from '@terra-dev/use-resolve-last';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
 import { useContractAddress } from 'base/contexts/contract';
-import { useService } from 'base/contexts/service';
 import { queryReverseSimulation } from 'base/queries/reverseSimulation';
 import { querySimulation } from 'base/queries/simulation';
 import big, { Big } from 'big.js';
@@ -69,7 +71,7 @@ export function TradeBuy() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { serviceAvailable, walletReady } = useService();
+  const connectedWallet = useConnectedWallet();
 
   const { fixedGas } = useConstants();
 
@@ -120,17 +122,17 @@ export function TradeBuy() {
   }, [bank.tax.maxTaxUUSD, bank.tax.taxRate, bank.userBalances.uUSD, fixedGas]);
 
   const invalidTxFee = useMemo(
-    () => serviceAvailable && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, serviceAvailable],
+    () => !!connectedWallet && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, connectedWallet],
   );
 
   const invalidFromAmount = useMemo(() => {
-    if (fromAmount.length === 0 || !serviceAvailable) return undefined;
+    if (fromAmount.length === 0 || !connectedWallet) return undefined;
 
     return microfy(fromAmount).gt(bank.userBalances.uUSD)
       ? 'Not enough assets'
       : undefined;
-  }, [bank.userBalances.uUSD, fromAmount, serviceAvailable]);
+  }, [bank.userBalances.uUSD, fromAmount, connectedWallet]);
 
   // ---------------------------------------------
   // effects
@@ -320,7 +322,7 @@ export function TradeBuy() {
         error={!!invalidFromAmount}
         leftHelperText={invalidFromAmount}
         rightHelperText={
-          serviceAvailable && (
+          !!connectedWallet && (
             <span>
               Balance:{' '}
               <span
@@ -435,7 +437,7 @@ export function TradeBuy() {
       <ActionButton
         className="submit"
         disabled={
-          !serviceAvailable ||
+          !connectedWallet ||
           !ancPrice ||
           fromAmount.length === 0 ||
           big(fromAmount).lte(0) ||
@@ -445,10 +447,10 @@ export function TradeBuy() {
           big(simulation?.swapFee ?? 0).lte(0)
         }
         onClick={() =>
-          walletReady &&
+          connectedWallet &&
           ancPrice &&
           simulation &&
-          proceed(walletReady, fromAmount, ancPrice, simulation.txFee)
+          proceed(connectedWallet, fromAmount, ancPrice, simulation.txFee)
         }
       >
         Proceed

@@ -1,6 +1,3 @@
-import { useOperation } from '@terra-dev/broadcastable-operation';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   ANC_INPUT_MAXIMUM_INTEGER_POINTS,
@@ -11,11 +8,16 @@ import {
   microfy,
 } from '@anchor-protocol/notation';
 import { AncUstLP } from '@anchor-protocol/types';
-import { WalletReady } from '@anchor-protocol/wallet-provider';
+import {
+  useConnectedWallet,
+  WalletReady,
+} from '@anchor-protocol/wallet-provider';
+import { InputAdornment } from '@material-ui/core';
+import { useOperation } from '@terra-dev/broadcastable-operation';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
-import { useService } from 'base/contexts/service';
-import { InputAdornment } from '@material-ui/core';
 import big from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
@@ -29,7 +31,7 @@ export function AncUstLpStake() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { serviceAvailable, walletReady } = useService();
+  const connectedWallet = useConnectedWallet();
 
   const { fixedGas } = useConstants();
 
@@ -53,8 +55,8 @@ export function AncUstLpStake() {
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => serviceAvailable && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, serviceAvailable],
+    () => !!connectedWallet && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, connectedWallet],
   );
 
   const invalidLpAmount = useMemo(() => {
@@ -144,13 +146,13 @@ export function AncUstLpStake() {
       <ActionButton
         className="submit"
         disabled={
-          !serviceAvailable ||
+          !connectedWallet ||
           lpAmount.length === 0 ||
           big(lpAmount).lte(0) ||
           !!invalidTxFee ||
           !!invalidLpAmount
         }
-        onClick={() => walletReady && proceed(walletReady, lpAmount)}
+        onClick={() => connectedWallet && proceed(connectedWallet, lpAmount)}
       >
         Stake
       </ActionButton>

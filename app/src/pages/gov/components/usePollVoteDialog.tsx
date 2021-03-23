@@ -8,7 +8,10 @@ import {
   microfy,
 } from '@anchor-protocol/notation';
 import { ANC, uANC } from '@anchor-protocol/types';
-import { WalletReady } from '@anchor-protocol/wallet-provider';
+import {
+  useConnectedWallet,
+  WalletReady,
+} from '@anchor-protocol/wallet-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { ThumbDownOutlined, ThumbUpOutlined } from '@material-ui/icons';
 import { useOperation } from '@terra-dev/broadcastable-operation';
@@ -20,7 +23,6 @@ import { flat } from '@terra-dev/styled-neumorphism';
 import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
-import { useService } from 'base/contexts/service';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
@@ -59,7 +61,7 @@ function ComponentBase({
 }: DialogProps<FormParams, FormReturn>) {
   const [vote, voteResult] = useOperation(voteOptions, {});
 
-  const { serviceAvailable, walletReady } = useService();
+  const connectedWallet = useConnectedWallet();
 
   const { fixedGas } = useConstants();
 
@@ -83,17 +85,17 @@ function ComponentBase({
   }, [userGovStakingInfo]);
 
   const invalidTxFee = useMemo(
-    () => serviceAvailable && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, serviceAvailable],
+    () => !!connectedWallet && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, connectedWallet],
   );
 
   const invalidAmount = useMemo(() => {
-    if (amount.length === 0 || !serviceAvailable) return undefined;
+    if (amount.length === 0 || !connectedWallet) return undefined;
 
     const uanc = microfy(amount);
 
     return maxVote && uanc.gt(maxVote) ? 'Not enough assets' : undefined;
-  }, [amount, maxVote, serviceAvailable]);
+  }, [amount, maxVote, connectedWallet]);
 
   const txFee = fixedGas;
 
@@ -204,7 +206,7 @@ function ComponentBase({
         <ActionButton
           className="submit"
           disabled={
-            !serviceAvailable ||
+            !connectedWallet ||
             !canIVote ||
             amount.length === 0 ||
             !voteFor ||
@@ -213,7 +215,9 @@ function ComponentBase({
             !!invalidAmount
           }
           onClick={() =>
-            walletReady && !!voteFor && submit(walletReady, voteFor, amount)
+            connectedWallet &&
+            !!voteFor &&
+            submit(connectedWallet, voteFor, amount)
           }
         >
           Submit

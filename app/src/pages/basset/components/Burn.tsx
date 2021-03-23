@@ -7,7 +7,10 @@ import {
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import type { bLuna, Luna, uUST } from '@anchor-protocol/types';
-import { WalletReady } from '@anchor-protocol/wallet-provider';
+import {
+  useConnectedWallet,
+  WalletReady,
+} from '@anchor-protocol/wallet-provider';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
@@ -16,7 +19,6 @@ import { NumberMuiInput } from '@terra-dev/neumorphism-ui/components/NumberMuiIn
 import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
-import { useService } from 'base/contexts/service';
 import big, { Big } from 'big.js';
 import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
@@ -41,7 +43,7 @@ export function Burn() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { serviceAvailable, walletReady } = useService();
+  const connectedWallet = useConnectedWallet();
 
   const { fixedGas } = useConstants();
 
@@ -80,13 +82,13 @@ export function Burn() {
   ]);
 
   const invalidTxFee = useMemo(
-    () => serviceAvailable && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, serviceAvailable],
+    () => !!connectedWallet && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, connectedWallet],
   );
 
   const invalidBurnAmount = useMemo(
-    () => serviceAvailable && validateBurnAmount(burnAmount, bank),
-    [bank, burnAmount, serviceAvailable],
+    () => !!connectedWallet && validateBurnAmount(burnAmount, bank),
+    [bank, burnAmount, connectedWallet],
   );
 
   // ---------------------------------------------
@@ -211,7 +213,7 @@ export function Burn() {
         error={!!invalidBurnAmount}
         leftHelperText={invalidBurnAmount}
         rightHelperText={
-          serviceAvailable && (
+          !!connectedWallet && (
             <span>
               Balance:{' '}
               <span
@@ -320,13 +322,13 @@ export function Burn() {
       <ActionButton
         className="submit"
         disabled={
-          !serviceAvailable ||
+          !connectedWallet ||
           burnAmount.length === 0 ||
           big(burnAmount).lte(0) ||
           !!invalidTxFee ||
           !!invalidBurnAmount
         }
-        onClick={() => walletReady && proceed(walletReady, burnAmount)}
+        onClick={() => connectedWallet && proceed(connectedWallet, burnAmount)}
       >
         Burn
       </ActionButton>

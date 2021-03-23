@@ -1,10 +1,10 @@
 import type { uANC } from '@anchor-protocol/types';
 import { anchorToken, cw20, WASMContractResult } from '@anchor-protocol/types';
+import { useUserWallet } from '@anchor-protocol/wallet-provider';
+import { gql, useQuery } from '@apollo/client';
 import { useSubscription } from '@terra-dev/broadcastable-operation';
 import { createMap, useMap } from '@terra-dev/use-map';
-import { gql, useQuery } from '@apollo/client';
 import { useContractAddress } from 'base/contexts/contract';
-import { useService } from 'base/contexts/service';
 import { parseResult } from 'base/queries/parseResult';
 import { MappedQueryResult } from 'base/queries/types';
 import { useQueryErrorHandler } from 'base/queries/useQueryErrorHandler';
@@ -87,28 +87,28 @@ export function useRewardsAncGovernance(): MappedQueryResult<
   RawData,
   Data
 > {
-  const { serviceAvailable, walletReady } = useService();
+  const userWallet = useUserWallet();
 
   const { anchorToken, cw20 } = useContractAddress();
 
   const variables = useMemo(() => {
-    if (!walletReady) return undefined;
+    if (!userWallet) return undefined;
 
     return mapVariables({
       ANC_Gov_contract: anchorToken.gov,
       ANC_token_contract: cw20.ANC,
       UserGovStakeInfoQuery: {
         staker: {
-          address: walletReady.walletAddress,
+          address: userWallet.walletAddress,
         },
       },
       UserANCBalanceQuery: {
         balance: {
-          address: walletReady.walletAddress,
+          address: userWallet.walletAddress,
         },
       },
     });
-  }, [anchorToken.gov, cw20.ANC, walletReady]);
+  }, [anchorToken.gov, cw20.ANC, userWallet]);
 
   const onError = useQueryErrorHandler();
 
@@ -119,7 +119,7 @@ export function useRewardsAncGovernance(): MappedQueryResult<
     error,
     ...result
   } = useQuery<RawData, RawVariables>(query, {
-    skip: !variables || !serviceAvailable,
+    skip: !variables || !userWallet,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     //pollInterval: 1000 * 60,

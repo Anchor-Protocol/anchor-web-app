@@ -1,10 +1,9 @@
 import type { Rate, uUST } from '@anchor-protocol/types';
-import { createMap, Mapped, useMap } from '@terra-dev/use-map';
 import { gql, useQuery } from '@apollo/client';
-import { useService } from '../contexts/service';
+import { createMap, Mapped, useMap } from '@terra-dev/use-map';
+import { useMemo } from 'react';
 import { MappedQueryResult } from '../queries/types';
 import { useRefetch } from '../queries/useRefetch';
-import { useMemo } from 'react';
 
 export interface RawData {
   tax_rate: {
@@ -68,8 +67,6 @@ export const query = gql`
 `;
 
 export function useTax(): MappedQueryResult<RawVariables, RawData, Data> {
-  const { serviceAvailable } = useService();
-
   const variables = useMemo(() => {
     return mapVariables({});
   }, []);
@@ -80,7 +77,6 @@ export function useTax(): MappedQueryResult<RawVariables, RawData, Data> {
     refetch: _refetch,
     ...result
   } = useQuery<RawData, RawVariables>(query, {
-    skip: !serviceAvailable,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,
@@ -91,7 +87,7 @@ export function useTax(): MappedQueryResult<RawVariables, RawData, Data> {
 
   return {
     ...result,
-    data: serviceAvailable ? data : mockupData,
+    data: data ?? mockupData,
     refetch,
   };
 }

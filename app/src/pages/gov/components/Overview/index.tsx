@@ -423,4 +423,47 @@ export const Overview = styled(OverviewBase)`
       grid-row: 1/3;
     }
   }
+
+  // tablet
+  @media (min-width: ${screen.tablet.min}px) and (max-width: ${screen.tablet
+      .max}px) {
+    .NeuSection-root {
+      .NeuSection-content {
+        padding: 30px;
+      }
+    }
+  }
+
+  // mobile
+  @media (max-width: ${screen.mobile.max}px) {
+    .NeuSection-root {
+      margin-bottom: 20px;
+
+      .NeuSection-content {
+        padding: 20px;
+      }
+    }
+
+    .anc-price,
+    .total-staked {
+      div {
+        font-size: 30px;
+
+        sub {
+          font-size: 14px;
+        }
+      }
+    }
+
+    .staking,
+    .lp {
+      .staking-buttons {
+        margin-top: 44px;
+      }
+
+      .lp-labels {
+        margin-top: 44px;
+      }
+    }
+  }
 `;

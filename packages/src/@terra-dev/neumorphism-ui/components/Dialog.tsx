@@ -1,6 +1,6 @@
 import type { DetailedHTMLProps, HTMLAttributes } from 'react';
 import { forwardRef } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled, { createGlobalStyle, keyframes } from 'styled-components';
 import { MessageColor } from '../themes/Theme';
 import { getErrorBoundary } from './configErrorBoundary';
 
@@ -44,10 +44,18 @@ const DialogBase = forwardRef<HTMLDivElement, DialogProps>(
             </g>
           </svg>
         )}
+
+        <ScrollLock />
       </div>
     );
   },
 );
+
+const ScrollLock = createGlobalStyle`
+  html {
+    overflow: hidden !important;
+  }
+`;
 
 const enter = keyframes`
   from {
@@ -144,7 +152,7 @@ export const Dialog = styled(DialogBase)`
     right: 0;
     position: absolute;
 
-    padding-bottom: 80px;
+    padding-bottom: 40px;
 
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
@@ -154,7 +162,7 @@ export const Dialog = styled(DialogBase)`
     animation: ${slide} 0.3s ease-out;
 
     .dialog-content {
-      margin: 30px;
+      margin: 50px 30px 30px 30px;
     }
   }
 `;

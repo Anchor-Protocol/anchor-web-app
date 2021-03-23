@@ -1,16 +1,18 @@
+import { demicrofy, formatUST } from '@anchor-protocol/notation';
+import {
+  useConnectedWallet,
+  WalletReady,
+} from '@anchor-protocol/wallet-provider';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
-import { demicrofy, formatUST } from '@anchor-protocol/notation';
-import { WalletReady } from '@anchor-protocol/wallet-provider';
+import { useBank } from 'base/contexts/bank';
+import { useConstants } from 'base/contexts/contants';
 import big from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
-import { useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
-import { useService } from 'base/contexts/service';
 import { validateTxFee } from 'logics/validateTxFee';
 import { useClaimable } from 'pages/basset/queries/claimable';
 import { claimOptions } from 'pages/basset/transactions/claimOptions';
@@ -26,7 +28,7 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { serviceAvailable, walletReady } = useService();
+  const connectedWallet = useConnectedWallet();
 
   const { fixedGas } = useConstants();
 
@@ -45,8 +47,8 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => serviceAvailable && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, serviceAvailable],
+    () => !!connectedWallet && validateTxFee(bank, fixedGas),
+    [bank, fixedGas, connectedWallet],
   );
 
   const claimableRewards = useMemo(
@@ -117,12 +119,12 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
       <ActionButton
         className="submit"
         disabled={
-          !serviceAvailable ||
+          !connectedWallet ||
           !!invalidTxFee ||
           claimableRewards.lte(fixedGas) ||
           disabled
         }
-        onClick={() => walletReady && proceed(walletReady)}
+        onClick={() => connectedWallet && proceed(connectedWallet)}
       >
         Claim
       </ActionButton>

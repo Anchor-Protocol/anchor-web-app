@@ -52,6 +52,10 @@ export const TextInput: ComponentType<TextFieldProps> = styled(TextField)`
     color: ${({ theme }) => theme.textInput.textColor};
   }
 
+  .MuiInput-root.MuiInput-fullWidth {
+    width: auto;
+  }
+
   .MuiInput-root.Mui-error {
     color: ${({ theme }) => theme.formControl.labelErrorColor};
   }

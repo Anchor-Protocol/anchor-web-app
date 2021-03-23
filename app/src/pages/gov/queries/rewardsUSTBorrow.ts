@@ -1,8 +1,8 @@
 import { moneyMarket, WASMContractResult } from '@anchor-protocol/types';
-import { createMap, useMap } from '@terra-dev/use-map';
+import { useUserWallet } from '@anchor-protocol/wallet-provider';
 import { gql, useQuery } from '@apollo/client';
+import { createMap, useMap } from '@terra-dev/use-map';
 import { useContractAddress } from 'base/contexts/contract';
-import { useService } from 'base/contexts/service';
 import { parseResult } from 'base/queries/parseResult';
 import { MappedQueryResult } from 'base/queries/types';
 import { useQueryErrorHandler } from 'base/queries/useQueryErrorHandler';
@@ -80,25 +80,25 @@ export function useRewardsUSTBorrow(): MappedQueryResult<
   RawData,
   Data
 > {
-  const { serviceAvailable, walletReady } = useService();
+  const userWallet = useUserWallet();
 
   const { moneyMarket } = useContractAddress();
 
   const variables = useMemo(() => {
-    if (!walletReady) return undefined;
+    if (!userWallet) return undefined;
 
     return mapVariables({
       MarketContract: moneyMarket.market,
       BorrowerInfoQuery: {
         borrower_info: {
-          borrower: walletReady.walletAddress,
+          borrower: userWallet.walletAddress,
         },
       },
       MarketStateQuery: {
         state: {},
       },
     });
-  }, [moneyMarket.market, walletReady]);
+  }, [moneyMarket.market, userWallet]);
 
   const onError = useQueryErrorHandler();
 
@@ -109,7 +109,7 @@ export function useRewardsUSTBorrow(): MappedQueryResult<
     error,
     ...result
   } = useQuery<RawData, RawVariables>(query, {
-    skip: !variables || !serviceAvailable,
+    skip: !variables || !userWallet,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     //pollInterval: 1000 * 60,

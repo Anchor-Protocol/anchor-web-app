@@ -1,5 +1,7 @@
 # `@anchor-protocol/wallet-provider`
 
+<https://anchor-storybook.vercel.app/?path=/story/core-wallet-provider--handle-status>
+
 # API
 
 ## `ChromeExtensionWalletProvider`
@@ -51,7 +53,7 @@ export function useWallet(): WalletState {}
 ### Example
 
 ```js
-import { useWallet } from '@anchor-protocol/wallet-provider';
+import { useWallet, WalletStatusType } from '@anchor-protocol/wallet-provider';
 
 function Component() {
   const { status, post } = useWallet();
@@ -60,7 +62,7 @@ function Component() {
     <div>
       <pre>{JSON.stringify(status, null, 2)}</pre>
 
-      {status.status === 'ready' && (
+      {status.status === WalletStatusType.CONNECTED && (
         <button onClick={() => post(createTransaction())}>
           Send Transaction
         </button>

@@ -1,9 +1,9 @@
-import { useSubscription } from '@terra-dev/broadcastable-operation';
 import { bluna, WASMContractResult } from '@anchor-protocol/types';
-import { createMap, Mapped, useMap } from '@terra-dev/use-map';
+import { useUserWallet } from '@anchor-protocol/wallet-provider';
 import { gql, useQuery } from '@apollo/client';
+import { useSubscription } from '@terra-dev/broadcastable-operation';
+import { createMap, Mapped, useMap } from '@terra-dev/use-map';
 import { useContractAddress } from 'base/contexts/contract';
-import { useService } from 'base/contexts/service';
 import { parseResult } from 'base/queries/parseResult';
 import { MappedQueryResult } from 'base/queries/types';
 import { useQueryErrorHandler } from 'base/queries/useQueryErrorHandler';
@@ -91,10 +91,10 @@ export const query = gql`
 export function useClaimable(): MappedQueryResult<RawVariables, RawData, Data> {
   const { bluna } = useContractAddress();
 
-  const { serviceAvailable, walletReady } = useService();
+  const userWallet = useUserWallet();
 
   const variables = useMemo(() => {
-    if (!walletReady) return undefined;
+    if (!userWallet) return undefined;
 
     return mapVariables({
       bAssetRewardContract: bluna.reward,
@@ -103,11 +103,11 @@ export function useClaimable(): MappedQueryResult<RawVariables, RawData, Data> {
       },
       claimableRewardQuery: {
         holder: {
-          address: walletReady.walletAddress,
+          address: userWallet.walletAddress,
         },
       },
     });
-  }, [bluna.reward, walletReady]);
+  }, [bluna.reward, userWallet]);
 
   const onError = useQueryErrorHandler();
 
@@ -118,7 +118,7 @@ export function useClaimable(): MappedQueryResult<RawVariables, RawData, Data> {
     error,
     ...result
   } = useQuery<RawData, RawVariables>(query, {
-    skip: !variables || !serviceAvailable,
+    skip: !variables || !userWallet,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     variables,
@@ -136,7 +136,7 @@ export function useClaimable(): MappedQueryResult<RawVariables, RawData, Data> {
 
   return {
     ...result,
-    data: serviceAvailable ? data : mockupData,
+    data: userWallet ? data : mockupData,
     refetch,
   };
 }
