@@ -6,7 +6,7 @@ import {
   uaUST,
   WASMContractResult,
 } from '@anchor-protocol/types';
-import { useWallet } from '@anchor-protocol/wallet-provider';
+import { useConnectedWallet } from '@anchor-protocol/wallet-provider';
 import { gql, useQuery } from '@apollo/client';
 import { useEventBus } from '@terra-dev/event-bus';
 import { createMap, useMap } from '@terra-dev/use-map';
@@ -118,7 +118,7 @@ export function useExpectedInterest(): MappedQueryResult<
   RawData,
   Data
 > {
-  const { status } = useWallet();
+  const connectedWallet = useConnectedWallet();
 
   const { data: lastSyncedHeight } = useLastSyncedHeight();
 
@@ -127,7 +127,7 @@ export function useExpectedInterest(): MappedQueryResult<
   const { dispatch } = useEventBus();
 
   const variables = useMemo(() => {
-    if (status.status !== 'ready' || lastSyncedHeight === 0) {
+    if (!connectedWallet || lastSyncedHeight === 0) {
       return undefined;
     }
 
@@ -135,7 +135,7 @@ export function useExpectedInterest(): MappedQueryResult<
       anchorTokenContract: address.cw20.aUST,
       anchorTokenQuery: {
         balance: {
-          address: status.walletAddress,
+          address: connectedWallet.walletAddress,
         },
       },
       moneyMarketContract: address.moneyMarket.market,
@@ -155,8 +155,8 @@ export function useExpectedInterest(): MappedQueryResult<
     address.cw20.aUST,
     address.moneyMarket.market,
     address.moneyMarket.overseer,
+    connectedWallet,
     lastSyncedHeight,
-    status,
   ]);
 
   const onError = useQueryErrorHandler();
