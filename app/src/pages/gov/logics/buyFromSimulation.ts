@@ -13,7 +13,7 @@ export function buyFromSimulation(
   fixedGas: uUST<BigSource>,
 ): TradeSimulation<uANC, uUST, uUST> | null {
   try {
-    const beliefPrice = big(simulation.return_amount).div(toAmount);
+    const beliefPrice = big(simulation.return_amount).mul(toAmount);
 
     const tax = min(
       big(simulation.return_amount).mul(taxRate),
