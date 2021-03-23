@@ -61,7 +61,7 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
     <CenteredLayout className={className}>
       <header>
         <h1>
-          <Circles radius={24} backgroundColors={['#ffffff', '#2C2C2C']}>
+          <Circles radius={24} backgroundColors={['#2C2C2C']}>
             <GifIcon
               src={anc80gif}
               style={{ fontSize: '2em', borderRadius: '50%' }}
