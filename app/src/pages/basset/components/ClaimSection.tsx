@@ -100,8 +100,8 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
             Claimable Rewards{' '}
             <InfoTooltip>
               Claim staking rewards from minted bAssets that have not been
-              provided as collateral. If user's claimable reward is smaller than
-              gas fee, user cannot claim rewards
+              provided as collateral. If the user's claimable reward is smaller
+              than the gas fee, the rewards are not claimable.
             </InfoTooltip>
           </IconSpan>
         </h4>
