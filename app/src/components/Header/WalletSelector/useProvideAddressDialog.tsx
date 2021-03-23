@@ -78,7 +78,7 @@ function ComponentBase({
   return (
     <Modal open onClose={() => closeDialog()}>
       <Dialog className={className} onClose={() => closeDialog()}>
-        <h1>Connect Wallet</h1>
+        <h1>View an address</h1>
 
         {/* Address */}
         <div className="address-description">
@@ -104,7 +104,7 @@ function ComponentBase({
           disabled={address.length === 0 || !!invalidAddress}
           onClick={() => provideWallet(address)}
         >
-          Connect
+          View
         </ActionButton>
       </Dialog>
     </Modal>
