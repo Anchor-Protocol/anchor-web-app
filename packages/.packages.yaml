@@ -1,7 +1,7 @@
 $schema: https://rocket-hangar.github.io/rocket-punch/schemas/packages.json
 '@anchor-protocol/*':
   version: 0.1.0
-  tag: canary
+  tag: latest
 '@terra-dev/*':
   version: 0.1.0
-  tag: canary
+  tag: latest

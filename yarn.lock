@@ -229,6 +229,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@anchor-web-app/packages@workspace:packages"
   dependencies:
+    "@apollo/client": ^3.3.12
     "@material-ui/core": ^4.11.3
     "@material-ui/icons": ^4.11.2
     "@storybook/addon-actions": ^6.1.20
@@ -288,6 +289,7 @@ __metadata:
     glob: ^7.1.6
     graphql: ^15.5.0
     immer: ^8.0.1
+    mobile-detect: ^1.4.5
     numeral: ^2.0.6
     prettier: ^2.2.1
     react: ^17.0.1
@@ -305,7 +307,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@apollo/client@npm:^3.3.11":
+"@apollo/client@npm:^3.3.11, @apollo/client@npm:^3.3.12":
   version: 3.3.12
   resolution: "@apollo/client@npm:3.3.12"
   dependencies:
