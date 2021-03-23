@@ -22,7 +22,7 @@ export function buyToSimulation(
     const tax = min(big(fromAmount).mul(taxRate), maxTaxUUSD) as uUST<Big>;
 
     const expectedAmount = big(fromAmount)
-      .mul(beliefPrice)
+      .div(beliefPrice)
       .minus(tax) as uUST<Big>;
 
     const rate = big(1).minus(MAX_SPREAD) as Rate<Big>;
