@@ -1,5 +1,7 @@
 # `@anchor-protocol/wallet-provider`
 
+<https://anchor-storybook.vercel.app/?path=/story/core-wallet-provider--handle-status>
+
 # API
 
 ## `ChromeExtensionWalletProvider`

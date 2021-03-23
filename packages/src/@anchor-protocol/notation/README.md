@@ -82,6 +82,8 @@ describe('notation', () => {
 
 ## Stories
 
+<https://anchor-storybook.vercel.app/?path=/story/components-animatenumber--basic>
+
 <!-- source __stories__/*.stories.tsx -->
 
 [\_\_stories\_\_/AnimateNumber.stories.tsx](__stories__/AnimateNumber.stories.tsx)

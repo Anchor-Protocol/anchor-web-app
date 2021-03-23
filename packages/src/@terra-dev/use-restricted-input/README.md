@@ -2,6 +2,8 @@
 
 Restrict text input
 
+<https://anchor-storybook.vercel.app/?path=/story/core-use-restricted-input--basic>
+
 ## API
 
 <!-- source index.ts --pick "RestrictedInputReturn useRestrictedInput RestrictedNumberInputParams useRestrictedNumberInput" -->
