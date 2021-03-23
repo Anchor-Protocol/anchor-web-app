@@ -13,7 +13,7 @@ import { govPathname } from 'pages/gov/env';
 import React, { useCallback, useState } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
-import { useProvideAddressDialog } from './WalletSelector/useProvideAddressDialog';
+import { useViewAddressDialog } from 'components/Header/WalletSelector/useViewAddressDialog';
 
 export interface MobileHeaderProps {
   className?: string;
@@ -26,7 +26,7 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
 
   const { status } = useWallet();
 
-  const [openProvideAddress, provideAddressElement] = useProvideAddressDialog();
+  const [openProvideAddress, provideAddressElement] = useViewAddressDialog();
 
   const [openWalletDetail, walletDetailElement] = useWalletDetailDialog();
 

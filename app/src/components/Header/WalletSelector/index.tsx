@@ -3,7 +3,7 @@ import { ClickAwayListener } from '@material-ui/core';
 import { useIsDesktopChrome } from '@terra-dev/is-desktop-chrome';
 import { useBank } from 'base/contexts/bank';
 import { AirdropContent } from 'components/Header/WalletSelector/AirdropContent';
-import { useProvideAddressDialog } from 'components/Header/WalletSelector/useProvideAddressDialog';
+import { useViewAddressDialog } from 'components/Header/WalletSelector/useViewAddressDialog';
 import { useAirdrop } from 'pages/airdrop/queries/useAirdrop';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import { useCallback, useState } from 'react';
@@ -34,7 +34,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
 
   const [openSendDialog, sendDialogElement] = useSendDialog();
 
-  const [openProvideAddress, provideAddressElement] = useProvideAddressDialog();
+  const [openViewAddress, viewAddressElement] = useViewAddressDialog();
 
   // ---------------------------------------------
   // states
@@ -110,10 +110,10 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
 
       return (
         <div className={className}>
-          <NotConnectedButton onClick={() => openProvideAddress({})}>
+          <NotConnectedButton onClick={() => openViewAddress({})}>
             View an address
           </NotConnectedButton>
-          {provideAddressElement}
+          {viewAddressElement}
         </div>
       );
 

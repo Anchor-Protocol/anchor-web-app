@@ -26,7 +26,7 @@ interface FormParams {
 
 type FormReturn = void;
 
-export function useProvideAddressDialog(): [
+export function useViewAddressDialog(): [
   OpenDialog<FormParams, FormReturn>,
   ReactNode,
 ] {
