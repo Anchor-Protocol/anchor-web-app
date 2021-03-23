@@ -237,18 +237,6 @@ export const Earn = styled(EarnBase)`
   @media (max-width: ${screen.pc.max}px) {
     .transaction-history {
       height: 430px;
-
-      ul.list {
-        li {
-          .detail {
-            flex-direction: column;
-
-            time {
-              margin-top: 5px;
-            }
-          }
-        }
-      }
     }
   }
 
@@ -283,7 +271,21 @@ export const Earn = styled(EarnBase)`
     }
 
     .transaction-history {
-      height: 390px;
+      height: 440px;
+
+      ul.list {
+        li {
+          .detail {
+            flex-direction: column;
+
+            margin-left: 13px;
+
+            time {
+              margin-top: 5px;
+            }
+          }
+        }
+      }
     }
   }
 `;
