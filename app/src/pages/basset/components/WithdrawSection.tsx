@@ -166,7 +166,9 @@ export function WithdrawSection({
             Withdrawable Amount{' '}
             <InfoTooltip>
               bAssets that have been burned and have surpassed the undelegation
-              period can be withdrawn
+              period can be withdrawn. Because burn requests are processed in
+              3-day batches, requests that are not yet included in a batch are
+              shown as pending.
             </InfoTooltip>
           </IconSpan>
         </h4>
