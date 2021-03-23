@@ -30,8 +30,4 @@ import { launch } from 'puppeteer';
   //    polling: 1000 * 3,
   //  },
   //);
-
-  // if you want to start with another situation
-  // you can make another script file like this script file
-  // and, add the made script to the scripts section of package.json
 })();
