@@ -1,7 +1,7 @@
-import { UserDeniedError } from '@anchor-protocol/wallet-provider/errors';
-import { StationNetworkInfo } from '@anchor-protocol/wallet-provider/types';
 import { Extension } from '@terra-money/terra.js';
 import { MutableRefObject } from 'react';
+import { UserDeniedError } from './errors';
+import { StationNetworkInfo } from './types';
 
 type ConnectResponse = { address?: string };
 type PostResponse = any;

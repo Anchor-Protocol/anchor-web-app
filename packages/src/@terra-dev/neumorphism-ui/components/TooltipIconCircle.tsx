@@ -1,7 +1,7 @@
 import { ClickAwayListener } from '@material-ui/core';
 import { isTouchDevice } from '@terra-dev/is-touch-device';
-import { IconCircle } from '@terra-dev/neumorphism-ui/components/IconCircle';
 import React, { ReactNode, useCallback, useMemo, useState } from 'react';
+import { IconCircle } from './IconCircle';
 import { Tooltip, TooltipProps } from './Tooltip';
 
 export interface TooltipIconCircleProps extends Omit<TooltipProps, 'children'> {
