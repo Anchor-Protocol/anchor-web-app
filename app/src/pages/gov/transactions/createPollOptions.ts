@@ -16,6 +16,7 @@ import { pickEmptyResult } from 'base/transactions/pickEmptyResult';
 import { postContractMsg } from 'base/transactions/postContractMsg';
 import { injectTxFee, takeTxFee } from 'base/transactions/takeTxFee';
 import { parseTxResult } from 'base/transactions/tx';
+import { OPERATION_TIMEOUT } from 'env';
 
 export const createPollOptions = createOperationOptions({
   id: 'gov/create-poll',
@@ -34,7 +35,7 @@ export const createPollOptions = createOperationOptions({
       fee: new StdFee(gasFee, floor(storage.get('txFee')) + 'uusd'),
       gasAdjustment,
     })), // -> CreateTxOptions
-    timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<StringifiedTxResult>
+    timeout(postContractMsg(post), OPERATION_TIMEOUT), // -> Promise<StringifiedTxResult>
     parseTxResult, // -> TxResult
     merge(
       getTxInfo(client, signal), // -> { TxResult, TxInfo }

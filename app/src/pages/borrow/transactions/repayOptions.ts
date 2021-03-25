@@ -16,6 +16,7 @@ import { injectTxFee, takeTxFee } from 'base/transactions/takeTxFee';
 import { parseTxResult } from 'base/transactions/tx';
 import { StdFee } from '@terra-money/terra.js';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
+import { OPERATION_TIMEOUT } from 'env';
 import { passTxInfo } from 'pages/borrow/transactions/passTxInfo';
 import { pickRepayResult } from 'pages/borrow/transactions/pickRepayResult';
 import { refetchMarket } from 'pages/borrow/transactions/refetchMarket';
@@ -43,7 +44,7 @@ export const repayOptions = createOperationOptions({
       fee: new StdFee(gasFee, floor(storage.get('txFee')) + 'uusd'),
       gasAdjustment,
     })), // -> CreateTxOptions
-    timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<StringifiedTxResult>
+    timeout(postContractMsg(post), OPERATION_TIMEOUT), // -> Promise<StringifiedTxResult>
     parseTxResult, // -> TxResult
     getTxInfo(client, signal), // -> { TxResult, TxInfo }
     merge(

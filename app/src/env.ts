@@ -35,3 +35,6 @@ export const BODY_MARGIN_TOP = {
 };
 
 export const headerHeight = 84;
+
+export const OPERATION_TIMEOUT =
+  process.env.NODE_ENV === 'production' ? 1000 * 60 * 2 : 1000 * 60 * 10;

@@ -29,6 +29,7 @@ import { postContractMsg } from 'base/transactions/postContractMsg';
 import { takeTxFee } from 'base/transactions/takeTxFee';
 import { parseTxResult } from 'base/transactions/tx';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
+import { OPERATION_TIMEOUT } from 'env';
 import { pickBuyResult } from 'pages/gov/transactions/pickBuyResult';
 
 export const buyOptions = createOperationOptions({
@@ -51,7 +52,7 @@ export const buyOptions = createOperationOptions({
       fee: new StdFee(gasFee, floor(storage.get('txFee')) + 'uusd'),
       gasAdjustment,
     })), // -> CreateTxOptions
-    timeout(postContractMsg(post), 1000 * 60 * 20), // -> Promise<StringifiedTxResult>
+    timeout(postContractMsg(post), OPERATION_TIMEOUT), // -> Promise<StringifiedTxResult>
     parseTxResult, // -> TxResult
     merge(
       getTxInfo(client, signal), // -> { TxResult, TxInfo }

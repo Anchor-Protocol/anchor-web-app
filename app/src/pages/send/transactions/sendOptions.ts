@@ -14,6 +14,7 @@ import { pickEmptyResult } from 'base/transactions/pickEmptyResult';
 import { postContractMsg } from 'base/transactions/postContractMsg';
 import { parseTxResult } from 'base/transactions/tx';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
+import { OPERATION_TIMEOUT } from 'env';
 import { CurrencyInfo } from 'pages/send/models/currency';
 
 export const sendOptions = createOperationOptions({
@@ -64,7 +65,7 @@ export const sendOptions = createOperationOptions({
       fee: new StdFee(gasFee, floor(storage.get('txFee')) + 'uusd'),
       gasAdjustment,
     })), // -> CreateTxOptions
-    timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<StringifiedTxResult>
+    timeout(postContractMsg(post), OPERATION_TIMEOUT), // -> Promise<StringifiedTxResult>
     parseTxResult, // -> TxResult
     merge(getTxInfo(client, signal), () => ({ fixedGas })), // -> { TxResult, TxInfo, fixedGas }
     pickEmptyResult, // -> TransactionResult

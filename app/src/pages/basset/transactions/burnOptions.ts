@@ -16,6 +16,7 @@ import { getTxInfo } from 'base/transactions/getTxInfo';
 import { postContractMsg } from 'base/transactions/postContractMsg';
 import { injectTxFee, takeTxFee } from 'base/transactions/takeTxFee';
 import { parseTxResult } from 'base/transactions/tx';
+import { OPERATION_TIMEOUT } from 'env';
 
 export const burnOptions = createOperationOptions({
   id: 'basset/burn',
@@ -35,7 +36,7 @@ export const burnOptions = createOperationOptions({
       fee: new StdFee(gasFee, floor(storage.get('txFee')) + 'uusd'),
       gasAdjustment,
     })), // -> CreateTxOptions
-    timeout(postContractMsg(post), 1000 * 60 * 20), // -> Promise<StringifiedTxResult>
+    timeout(postContractMsg(post), OPERATION_TIMEOUT), // -> Promise<StringifiedTxResult>
     parseTxResult, // -> TxResult
     merge(getTxInfo(client, signal), injectTxFee(storage)), // -> { TxResult, TxInfo, txFee }
     pickBurnResult, // -> TransactionResult

@@ -13,6 +13,7 @@ import { getTxInfo } from 'base/transactions/getTxInfo';
 import { pickEmptyResult } from 'base/transactions/pickEmptyResult';
 import { postContractMsg } from 'base/transactions/postContractMsg';
 import { parseTxResult } from 'base/transactions/tx';
+import { OPERATION_TIMEOUT } from 'env';
 
 export const voteOptions = createOperationOptions({
   id: 'gov/vote',
@@ -32,7 +33,7 @@ export const voteOptions = createOperationOptions({
       fee: new StdFee(gasFee, fixedGas + 'uusd'),
       gasAdjustment,
     })), // -> CreateTxOptions
-    timeout(postContractMsg(post), 1000 * 60 * 20), // -> Promise<StringifiedTxResult>
+    timeout(postContractMsg(post), OPERATION_TIMEOUT), // -> Promise<StringifiedTxResult>
     parseTxResult, // -> TxResult
     merge(getTxInfo(client, signal), () => ({ fixedGas })), // -> { TxResult, TxInfo, fixedGas }
     pickEmptyResult, // -> TransactionResult

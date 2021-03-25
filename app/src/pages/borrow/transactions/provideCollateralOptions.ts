@@ -19,6 +19,7 @@ import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { passTxInfo } from 'pages/borrow/transactions/passTxInfo';
 import { pickProvideCollateralResult } from 'pages/borrow/transactions/pickProvideCollateralResult';
 import { refetchMarket } from 'pages/borrow/transactions/refetchMarket';
+import { OPERATION_TIMEOUT } from 'env';
 
 interface DependencyList {
   walletStatus: WalletStatus;
@@ -43,7 +44,7 @@ export const provideCollateralOptions = createOperationOptions({
       fee: new StdFee(gasFee, floor(storage.get('txFee')) + 'uusd'),
       gasAdjustment,
     })), // -> CreateTxOptions
-    timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<StringifiedTxResult>
+    timeout(postContractMsg(post), OPERATION_TIMEOUT), // -> Promise<StringifiedTxResult>
     parseTxResult, // -> TxResult
     getTxInfo(client, signal), // -> { TxResult, TxInfo }
     merge(

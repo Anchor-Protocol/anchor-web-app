@@ -10,6 +10,7 @@ import {
 import { StdFee } from '@terra-money/terra.js';
 import { takeTxFee } from 'base/transactions/takeTxFee';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
+import { OPERATION_TIMEOUT } from 'env';
 import { pickAncUstLpWithdrawResult } from 'pages/gov/transactions/pickAncUstLpWithdrawResult';
 import { createContractMsg } from 'base/transactions/createContractMsg';
 import { createOptions } from 'base/transactions/createOptions';
@@ -36,7 +37,7 @@ export const ancUstLpWithdrawOptions = createOperationOptions({
       fee: new StdFee(gasFee, floor(storage.get('txFee')) + 'uusd'),
       gasAdjustment,
     })), // -> CreateTxOptions
-    timeout(postContractMsg(post), 1000 * 60 * 20), // -> Promise<StringifiedTxResult>
+    timeout(postContractMsg(post), OPERATION_TIMEOUT), // -> Promise<StringifiedTxResult>
     parseTxResult, // -> TxResult
     merge(getTxInfo(client, signal), () => ({ fixedGas })), // -> { TxResult, TxInfo, fixedGas }
     pickAncUstLpWithdrawResult, // -> TransactionResult
