@@ -18,6 +18,14 @@
       "../.eslintrc.js"
     ]
   },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.ts?(x)",
+      "!**/*.d.ts?(x)",
+      "!**/*.stories.ts?(x)",
+      "!**/__*__/**"
+    ]
+  },
   "browserslist": {
     "production": [
       "chrome > 60",
