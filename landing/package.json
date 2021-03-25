@@ -8,7 +8,7 @@
     "start:chrome": "PORT=9434 react-app-rewired start",
     "build": "GENERATE_SOURCEMAP=true CI=true react-app-rewired build",
     "test": "react-app-rewired test --colors",
-    "coverage": "react-app-rewired test --colors --coverage --collectCoverageFrom=src/**/*.{ts,tsx} --collectCoverageFrom='!src/**/*.stories.{ts,tsx}"
+    "coverage": "react-app-rewired test --colors --coverage"
   },
   "multiplerun": {
     "start": [
@@ -19,6 +19,14 @@
   "eslintConfig": {
     "extends": [
       "../.eslintrc.js"
+    ]
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.ts?(x)",
+      "!**/*.d.ts?(x)",
+      "!**/*.stories.ts?(x)",
+      "!**/__*__/**"
     ]
   },
   "browserslist": {
