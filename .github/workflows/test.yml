@@ -5,10 +5,20 @@ on:
     branches:
       - master
       - develop
+    paths-ignore:
+      - '**.md'
+      - '**/vercel-build-ignore.sh'
+      - '.prettierrc.js'
+      - '.sonarcloud.properties'
   pull_request:
     branches:
       - master
       - develop
+    paths-ignore:
+      - '**.md'
+      - '**/vercel-build-ignore.sh'
+      - '.prettierrc.js'
+      - '.sonarcloud.properties'
 
 env:
   NPM_TOKEN: ${{secrets.NPM_TOKEN}}
