@@ -62,11 +62,12 @@ jobs:
 
       - name: Test
         run: |
+          yarn run packages:coverage
+          yarn run base:coverage
           yarn run app:coverage
           yarn run landing:coverage
-          yarn run packages:coverage
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
-          files: ./app/coverage/coverage-final.json,./landing/coverage/coverage-final.json,./packages/coverage/coverage-final.json
+          files: ./packages/coverage/coverage-final.json,./base/coverage/coverage-final.json,./app/coverage/coverage-final.json,./landing/coverage/coverage-final.json

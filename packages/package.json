@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "test": "react-scripts test --colors",
-    "coverage": "react-scripts test --colors --coverage",
+    "coverage": "react-scripts test --colors --coverage --collectCoverageFrom=src/**/*.{ts,tsx} --collectCoverageFrom='!src/**/*.stories.{ts,tsx}",
     "build": "rocket-punch build",
     "publish": "rocket-punch publish",
     "doctor": "rocket-punch doctor",

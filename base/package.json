@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "test": "react-app-rewired test --colors",
-    "coverage": "react-app-rewired test --colors --coverage"
+    "coverage": "react-app-rewired test --colors --coverage --collectCoverageFrom=src/**/*.{ts,tsx} --collectCoverageFrom='!src/**/*.stories.{ts,tsx}"
   },
   "eslintConfig": {
     "extends": [

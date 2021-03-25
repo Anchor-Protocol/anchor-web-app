@@ -9,7 +9,7 @@
     "start:chrome": "HTTPS=true SSL_CRT_FILE=$LOCALHOST_HTTPS_CERT SSL_KEY_FILE=$LOCALHOST_HTTPS_KEY PORT=9433 react-app-rewired start",
     "build": "CI=true react-app-rewired build",
     "test": "react-app-rewired test --colors",
-    "coverage": "react-app-rewired test --colors --coverage"
+    "coverage": "react-app-rewired test --colors --coverage --collectCoverageFrom=src/**/*.{ts,tsx} --collectCoverageFrom='!src/**/*.stories.{ts,tsx}"
   },
   "multiplerun": {
     "start": [
