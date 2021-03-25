@@ -1,3 +1,6 @@
+[![codecov](https://codecov.io/gh/Anchor-Protocol/anchor-web-app/branch/develop/graph/badge.svg?token=FDL5NJ27FS)](https://codecov.io/gh/Anchor-Protocol/anchor-web-app)
+[![TEST](https://github.com/Anchor-Protocol/anchor-web-app/actions/workflows/test.yml/badge.svg)](https://github.com/Anchor-Protocol/anchor-web-app/actions/workflows/test.yml)
+
 # Scripts
 
 Initialize this project
