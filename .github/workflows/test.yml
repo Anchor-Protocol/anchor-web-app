@@ -54,14 +54,19 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
+      - name: Lint
+        run: yarn run lint
+
+      - name: Test build packages
+        run: yarn run packages:build
+
       - name: Test
         run: |
           yarn run app:coverage
           yarn run landing:coverage
           yarn run packages:coverage
 
-      - name: Lint
-        run: yarn run lint
-
-      - name: Test build packages
-        run: yarn run packages:build
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          files: ./app/coverage/coverage-final.json,./landing/coverage/coverage-final.json,./packages/coverage/coverage-final.json
