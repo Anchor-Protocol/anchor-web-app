@@ -12,11 +12,6 @@ export const screen = {
   // huge monitor : @media (min-width: ${screen.monitor.min}px)
 } as const;
 
-//EARN docs -> https://docs.anchorprotocol.com/user-guide/earn
-//BORROW docs -> https://docs.anchorprotocol.com/user-guide/borrow
-//BOND docs -> https://docs.anchorprotocol.com/user-guide/bond
-//GOVERN docs -> https://docs.anchorprotocol.com/user-guide/govern
-
 export const links = {
   earn: onProduction
     ? 'https://docs.anchorprotocol.com/user-guide/webapp/earn'
