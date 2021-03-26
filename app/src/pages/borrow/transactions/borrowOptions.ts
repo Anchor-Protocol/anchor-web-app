@@ -1,5 +1,5 @@
 import { fabricateBorrow } from '@anchor-protocol/anchor.js';
-import { floor } from '@terra-dev/big-math';
+import { WalletStatus } from '@anchor-protocol/wallet-provider';
 import {
   createOperationOptions,
   effect,
@@ -7,14 +7,13 @@ import {
   OperationDependency,
   timeout,
 } from '@terra-dev/broadcastable-operation';
-import { WalletStatus } from '@anchor-protocol/wallet-provider';
+import { StdFee } from '@terra-money/terra.js';
 import { createContractMsg } from 'base/transactions/createContractMsg';
 import { createOptions } from 'base/transactions/createOptions';
 import { getTxInfo } from 'base/transactions/getTxInfo';
 import { postContractMsg } from 'base/transactions/postContractMsg';
 import { injectTxFee, takeTxFee } from 'base/transactions/takeTxFee';
 import { parseTxResult } from 'base/transactions/tx';
-import { StdFee } from '@terra-money/terra.js';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { OPERATION_TIMEOUT } from 'env';
 import { passTxInfo } from 'pages/borrow/transactions/passTxInfo';
@@ -37,11 +36,12 @@ export const borrowOptions = createOperationOptions({
     storage,
     gasAdjustment,
     gasFee,
+    fixedGas,
   }: OperationDependency<DependencyList>) => [
     effect(fabricateBorrow, takeTxFee(storage)), // Option -> ((AddressProvider) -> MsgExecuteContract[])
     createContractMsg(addressProvider), // -> MsgExecuteContract[]
     createOptions(() => ({
-      fee: new StdFee(gasFee, floor(storage.get('txFee')) + 'uusd'),
+      fee: new StdFee(gasFee, fixedGas + 'uusd'),
       gasAdjustment,
     })), // -> CreateTxOptions
     timeout(postContractMsg(post), OPERATION_TIMEOUT), // -> Promise<StringifiedTxResult>
