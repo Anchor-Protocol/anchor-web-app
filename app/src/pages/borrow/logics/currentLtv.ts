@@ -3,7 +3,7 @@ import { moneyMarket } from '@anchor-protocol/types';
 import big, { Big } from 'big.js';
 
 export function currentLtv(
-  borrowInfo: moneyMarket.market.BorrowInfoResponse,
+  borrowInfo: moneyMarket.market.BorrowerInfoResponse,
   borrower: moneyMarket.custody.BorrowerResponse,
   oracle: moneyMarket.oracle.PriceResponse,
 ): Rate<Big> | undefined {

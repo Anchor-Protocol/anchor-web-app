@@ -11,7 +11,9 @@ import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/Hori
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
-import big from 'big.js';
+import { useContractAddress } from 'base/contexts/contract';
+import big, { Big } from 'big.js';
+import { useLiquidationPrice } from 'pages/borrow/queries/liquidationPrice';
 import { useMemo } from 'react';
 import { useMarket } from '../context/market';
 import { collaterals as _collaterals } from '../logics/collaterals';
@@ -28,6 +30,18 @@ export function CollateralList({ className }: CollateralListProps) {
   // ---------------------------------------------
   const { ready, borrowInfo, oraclePrice, loanAmount, refetch } = useMarket();
 
+  const address = useContractAddress();
+
+  const {
+    data: {
+      marketBorrowerInfo,
+      oraclePriceInfo,
+      overseerBorrowLimit,
+      overseerWhitelist,
+      overseerCollaterals,
+    },
+  } = useLiquidationPrice();
+
   const connectedWallet = useConnectedWallet();
 
   const [
@@ -43,6 +57,38 @@ export function CollateralList({ className }: CollateralListProps) {
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
+  const liquidationPrice = useMemo(() => {
+    if (
+      !marketBorrowerInfo ||
+      !oraclePriceInfo ||
+      !overseerBorrowLimit ||
+      !overseerWhitelist ||
+      !overseerCollaterals ||
+      overseerCollaterals.collaterals.length === 0
+    ) {
+      return undefined;
+    }
+
+    const bLunaCollateral = overseerWhitelist.elems.find(
+      ({ collateral_token }) => address.cw20.bLuna,
+    );
+
+    if (!bLunaCollateral) {
+      return undefined;
+    }
+
+    return big(marketBorrowerInfo.loan_amount).div(
+      big(overseerCollaterals.collaterals[0][1]).mul(bLunaCollateral.max_ltv),
+    ) as UST<Big>;
+  }, [
+    address.cw20.bLuna,
+    marketBorrowerInfo,
+    oraclePriceInfo,
+    overseerBorrowLimit,
+    overseerCollaterals,
+    overseerWhitelist,
+  ]);
+
   const collaterals = useMemo(
     () => _collaterals(borrowInfo, 1 as UST<number>),
     [borrowInfo],
@@ -58,15 +104,25 @@ export function CollateralList({ className }: CollateralListProps) {
   // ---------------------------------------------
   return (
     <Section className={className}>
-      <HorizontalScrollTable minWidth={700}>
+      <HorizontalScrollTable minWidth={850}>
         <colgroup>
-          <col style={{ width: 300 }} />
           <col style={{ width: 200 }} />
           <col style={{ width: 200 }} />
+          <col style={{ width: 200 }} />
+          <col style={{ width: 250 }} />
         </colgroup>
         <thead>
           <tr>
             <th>COLLATERAL LIST</th>
+            <th>
+              <IconSpan>
+                Price{' '}
+                <InfoTooltip>
+                  Current price of bAsset / Price of bAsset that will trigger
+                  liquidation of current loan
+                </InfoTooltip>
+              </IconSpan>
+            </th>
             <th>
               <IconSpan>
                 Provided{' '}
@@ -89,6 +145,18 @@ export function CollateralList({ className }: CollateralListProps) {
                 <div className="coin">bLuna</div>
                 <p className="name">Bonded Luna</p>
               </div>
+            </td>
+            <td>
+              <div className="value">
+                {oraclePrice ? formatUSTWithPostfixUnits(oraclePrice.rate) : 0}{' '}
+                UST
+              </div>
+              <p className="volatility">
+                {liquidationPrice
+                  ? formatUSTWithPostfixUnits(liquidationPrice)
+                  : 0}{' '}
+                UST
+              </p>
             </td>
             <td>
               <div className="value">

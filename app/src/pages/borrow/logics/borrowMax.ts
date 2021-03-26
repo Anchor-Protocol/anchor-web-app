@@ -3,7 +3,7 @@ import { moneyMarket } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
 
 export function borrowMax(
-  borrowInfo: moneyMarket.market.BorrowInfoResponse,
+  borrowInfo: moneyMarket.market.BorrowerInfoResponse,
   borrower: moneyMarket.custody.BorrowerResponse,
   oracle: moneyMarket.oracle.PriceResponse,
   bLunaMaxLtv: Rate<BigSource>,

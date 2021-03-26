@@ -161,7 +161,7 @@ export namespace moneyMarket {
     /**
      * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/money-market/market#borrowerinfo
      */
-    export interface BorrowInfo {
+    export interface BorrowerInfo {
       borrower_info: {
         borrower: HumanAddr;
         block_height?: number;
@@ -171,7 +171,7 @@ export namespace moneyMarket {
     /**
      * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/money-market/market#borrowerinforesponse
      */
-    export interface BorrowInfoResponse {
+    export interface BorrowerInfoResponse {
       borrower: HumanAddr;
       interest_index: Num;
       reward_index: Num;
@@ -182,7 +182,7 @@ export namespace moneyMarket {
     /**
      * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/money-market/market#borrowinfos
      */
-    export interface BorrowInfos {
+    export interface BorrowerInfos {
       borrower_infos: {
         start_after?: HumanAddr;
         limit?: number;
@@ -192,8 +192,8 @@ export namespace moneyMarket {
     /**
      * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/money-market/market#borrowerinfosresponse
      */
-    export interface BorrowInfosResponse {
-      borrower_infos: Array<BorrowInfoResponse>;
+    export interface BorrowerInfosResponse {
+      borrower_infos: Array<BorrowerInfoResponse>;
     }
 
     /**
@@ -379,6 +379,7 @@ export namespace moneyMarket {
     export interface Collaterals {
       collaterals: {
         borrower: HumanAddr;
+        block_height?: number;
       };
     }
 

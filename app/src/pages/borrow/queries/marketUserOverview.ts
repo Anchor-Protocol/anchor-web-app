@@ -28,7 +28,7 @@ export interface RawData {
 }
 
 export interface Data {
-  loanAmount: WASMContractResult<moneyMarket.market.BorrowInfoResponse>;
+  loanAmount: WASMContractResult<moneyMarket.market.BorrowerInfoResponse>;
   borrowInfo: WASMContractResult<moneyMarket.custody.BorrowerResponse>;
 }
 
@@ -70,7 +70,7 @@ export interface RawVariables {
 
 export interface Variables {
   marketContractAddress: HumanAddr;
-  marketBorrowerQuery: moneyMarket.market.BorrowInfo;
+  marketBorrowerQuery: moneyMarket.market.BorrowerInfo;
   custodyContractAddress: HumanAddr;
   custodyBorrowerQuery: moneyMarket.custody.Borrower;
 }

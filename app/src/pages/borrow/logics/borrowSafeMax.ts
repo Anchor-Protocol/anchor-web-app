@@ -8,7 +8,7 @@ import big, { Big, BigSource } from 'big.js';
 //   safemax = 0.35 * (balance - spendable) * oracle_price - loan_amount
 
 export function borrowSafeMax(
-  borrowInfo: moneyMarket.market.BorrowInfoResponse,
+  borrowInfo: moneyMarket.market.BorrowerInfoResponse,
   borrower: moneyMarket.custody.BorrowerResponse,
   oracle: moneyMarket.oracle.PriceResponse,
   bLunaSafeLtv: Rate<BigSource>,
