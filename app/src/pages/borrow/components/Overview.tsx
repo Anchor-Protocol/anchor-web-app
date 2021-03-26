@@ -123,9 +123,9 @@ function OverviewBase({ className }: OverviewProps) {
             <IconSpan>
               Net APR{' '}
               <InfoTooltip>
-                Distribution APR - Borrow APR, When the Net APR is a positive
-                number, ANC rewards given to borrowers is greater than the
-                interest to be paid for the loan
+                Distribution APR - Borrow APR. When the net APR is a positive
+                number, ANC rewards distributed to borrowers are greater than
+                the interest to be paid for the loan
               </InfoTooltip>
             </IconSpan>
           </h3>

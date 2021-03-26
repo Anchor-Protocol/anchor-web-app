@@ -71,8 +71,8 @@ export function CollateralList({ className }: CollateralListProps) {
               <IconSpan>
                 Provided{' '}
                 <InfoTooltip>
-                  Amount of bAsset collateral deposited by user, in USD / Amount
-                  of bAsset collateral deposited by user
+                  Value of bAsset collateral deposited by user / Amount of
+                  bAsset collateral deposited by user
                 </InfoTooltip>
               </IconSpan>
             </th>
