@@ -388,7 +388,7 @@ export namespace moneyMarket {
      */
     export interface CollateralsResponse {
       borrower: HumanAddr;
-      collaterals: Array<[HumanAddr, uToken]>;
+      collaterals: Array<[CW20Addr, uToken]>;
     }
 
     /**

@@ -69,16 +69,20 @@ export function CollateralList({ className }: CollateralListProps) {
       return undefined;
     }
 
-    const bLunaCollateral = overseerWhitelist.elems.find(
+    const bLunaCollateral = overseerCollaterals.collaterals.find(
+      ([contractAddress]) => contractAddress === address.cw20.bLuna,
+    );
+
+    const bLunaWhitelist = overseerWhitelist.elems.find(
       ({ collateral_token }) => address.cw20.bLuna,
     );
 
-    if (!bLunaCollateral) {
+    if (!bLunaCollateral || !bLunaWhitelist) {
       return undefined;
     }
 
     return big(marketBorrowerInfo.loan_amount).div(
-      big(overseerCollaterals.collaterals[0][1]).mul(bLunaCollateral.max_ltv),
+      big(bLunaCollateral[1]).mul(bLunaWhitelist.max_ltv),
     ) as UST<Big>;
   }, [
     address.cw20.bLuna,
