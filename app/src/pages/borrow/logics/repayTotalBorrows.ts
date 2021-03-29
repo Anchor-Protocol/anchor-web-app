@@ -5,7 +5,7 @@ import big, { Big } from 'big.js';
 export function repayTotalBorrows(
   marketState: moneyMarket.market.StateResponse,
   borrowRate: moneyMarket.interestModel.BorrowRateResponse,
-  borrowInfo: moneyMarket.market.BorrowInfoResponse,
+  borrowInfo: moneyMarket.market.BorrowerInfoResponse,
   currentBlock: number,
 ): uUST<Big> {
   const bufferBlocks = 20;

@@ -1603,15 +1603,15 @@ export const queryMoneyMarketInterestModelConfig = ({
 
 export function useMoneyMarketMarketBorrowInfo(
   options: Omit<
-    UseWasmQueryOptions<moneyMarket.market.BorrowInfo>,
+    UseWasmQueryOptions<moneyMarket.market.BorrowerInfo>,
     'id' | 'address'
   >,
 ) {
   const { address, onError } = useQueryDependency();
 
   return useWasmQuery<
-    moneyMarket.market.BorrowInfo,
-    moneyMarket.market.BorrowInfoResponse
+    moneyMarket.market.BorrowerInfo,
+    moneyMarket.market.BorrowerInfoResponse
   >({
     ...options,
     id: 'moneyMarket_market_BorrowInfo',
@@ -1626,13 +1626,13 @@ export const queryMoneyMarketMarketBorrowInfo = ({
   onError,
 }: QueryDependency) => (
   options: Omit<
-    WasmQueryOptions<moneyMarket.market.BorrowInfo>,
+    WasmQueryOptions<moneyMarket.market.BorrowerInfo>,
     'id' | 'address'
   >,
 ) => {
   return wasmQuery<
-    moneyMarket.market.BorrowInfo,
-    moneyMarket.market.BorrowInfoResponse
+    moneyMarket.market.BorrowerInfo,
+    moneyMarket.market.BorrowerInfoResponse
   >(client, {
     ...options,
     id: 'moneyMarket_market_BorrowInfo',
@@ -1648,15 +1648,15 @@ export const queryMoneyMarketMarketBorrowInfo = ({
 
 export function useMoneyMarketMarketBorrowInfos(
   options: Omit<
-    UseWasmQueryOptions<moneyMarket.market.BorrowInfos>,
+    UseWasmQueryOptions<moneyMarket.market.BorrowerInfos>,
     'id' | 'address'
   >,
 ) {
   const { address, onError } = useQueryDependency();
 
   return useWasmQuery<
-    moneyMarket.market.BorrowInfos,
-    moneyMarket.market.BorrowInfosResponse
+    moneyMarket.market.BorrowerInfos,
+    moneyMarket.market.BorrowerInfosResponse
   >({
     ...options,
     id: 'moneyMarket_market_BorrowInfos',
@@ -1671,13 +1671,13 @@ export const queryMoneyMarketMarketBorrowInfos = ({
   onError,
 }: QueryDependency) => (
   options: Omit<
-    WasmQueryOptions<moneyMarket.market.BorrowInfos>,
+    WasmQueryOptions<moneyMarket.market.BorrowerInfos>,
     'id' | 'address'
   >,
 ) => {
   return wasmQuery<
-    moneyMarket.market.BorrowInfos,
-    moneyMarket.market.BorrowInfosResponse
+    moneyMarket.market.BorrowerInfos,
+    moneyMarket.market.BorrowerInfosResponse
   >(client, {
     ...options,
     id: 'moneyMarket_market_BorrowInfos',

@@ -5,7 +5,7 @@ import big, { Big } from 'big.js';
 
 export function repayTotalOutstandingLoan(
   repayAmount: UST,
-  borrowInfo: moneyMarket.market.BorrowInfoResponse,
+  borrowInfo: moneyMarket.market.BorrowerInfoResponse,
 ): uUST<Big> | undefined {
   return repayAmount.length > 0
     ? (big(borrowInfo.loan_amount).minus(microfy(repayAmount)) as uUST<Big>)

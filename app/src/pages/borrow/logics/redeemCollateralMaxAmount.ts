@@ -5,7 +5,7 @@ import big, { Big, BigSource } from 'big.js';
 // maxAmount = balance - (loan_amount / bLunaMaxLtv / oraclePrice)
 
 export function redeemCollateralMaxAmount(
-  borrowInfo: moneyMarket.market.BorrowInfoResponse,
+  borrowInfo: moneyMarket.market.BorrowerInfoResponse,
   borrower: moneyMarket.custody.BorrowerResponse,
   oracle: moneyMarket.oracle.PriceResponse,
   bLunaMaxLtv: Rate<BigSource>,

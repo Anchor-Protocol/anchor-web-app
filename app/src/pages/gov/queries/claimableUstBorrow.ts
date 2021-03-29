@@ -18,7 +18,7 @@ export interface RawData {
 }
 
 export interface Data {
-  borrowerInfo: WASMContractResult<moneyMarket.market.BorrowInfoResponse>;
+  borrowerInfo: WASMContractResult<moneyMarket.market.BorrowerInfoResponse>;
   userANCBalance: WASMContractResult<cw20.BalanceResponse<uANC>>;
   marketState: WASMContractResult<moneyMarket.market.StateResponse>;
 }
@@ -46,7 +46,7 @@ export interface RawVariables {
 export interface Variables {
   Market_contract: string;
   ANC_token_contract: string;
-  BorrowerInfoQuery: moneyMarket.market.BorrowInfo;
+  BorrowerInfoQuery: moneyMarket.market.BorrowerInfo;
   UserANCBalanceQuery: cw20.Balance;
   MarketStateQuery: moneyMarket.market.State;
 }

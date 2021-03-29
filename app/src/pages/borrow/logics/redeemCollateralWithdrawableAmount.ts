@@ -8,7 +8,7 @@ import big, { Big, BigSource } from 'big.js';
 //   withdrawable = borrow_info.balance - borrow_info.loan_amount / 0.35 / oracle_price
 
 export function redeemCollateralWithdrawableAmount(
-  borrowInfo: moneyMarket.market.BorrowInfoResponse,
+  borrowInfo: moneyMarket.market.BorrowerInfoResponse,
   borrower: moneyMarket.custody.BorrowerResponse,
   oracle: moneyMarket.oracle.PriceResponse,
   bLunaSafeLtv: Rate<BigSource>,

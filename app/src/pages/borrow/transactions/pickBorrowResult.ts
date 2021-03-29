@@ -21,7 +21,7 @@ interface Params {
   txResult: TxResult;
   txInfo: Data;
   txFee: uUST;
-  loanAmount?: moneyMarket.market.BorrowInfoResponse;
+  loanAmount?: moneyMarket.market.BorrowerInfoResponse;
   borrowInfo?: moneyMarket.custody.BorrowerResponse;
   oraclePrice?: moneyMarket.oracle.PriceResponse;
 }
