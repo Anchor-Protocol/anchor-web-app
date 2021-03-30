@@ -58,6 +58,7 @@ function OverviewBase({ className }: OverviewProps) {
       lpStakingANCBalance,
       airdropANCBalance,
       investorTeamLockANCBalance,
+      shuttleANCBalance,
       govState,
       govConfig,
     },
@@ -90,6 +91,7 @@ function OverviewBase({ className }: OverviewProps) {
       !lpStakingANCBalance ||
       !airdropANCBalance ||
       !investorTeamLockANCBalance ||
+      !shuttleANCBalance ||
       !govState ||
       !govConfig
     ) {
@@ -108,7 +110,8 @@ function OverviewBase({ className }: OverviewProps) {
       .minus(distributorANCBalance.balance)
       .minus(lpStakingANCBalance.balance)
       .minus(airdropANCBalance.balance)
-      .minus(investorTeamLockANCBalance.balance);
+      .minus(investorTeamLockANCBalance.balance)
+      .minus(shuttleANCBalance.balance);
 
     const totalStakedRate = big(totalStaked).div(
       currentTotalSupply,
@@ -124,6 +127,7 @@ function OverviewBase({ className }: OverviewProps) {
     govConfig,
     govState,
     investorTeamLockANCBalance,
+    shuttleANCBalance,
     lpStakingANCBalance,
   ]);
 
