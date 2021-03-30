@@ -22,6 +22,7 @@ export interface RawData {
   lpStakingANCBalance: WASMContractResult;
   airdropANCBalance: WASMContractResult;
   investorTeamLockANCBalance: WASMContractResult;
+  shuttleANCBalance: WASMContractResult;
   govState: WASMContractResult;
   govConfig: WASMContractResult;
 }
@@ -34,6 +35,7 @@ export interface Data {
   lpStakingANCBalance: WASMContractResult<cw20.BalanceResponse<uANC>>;
   airdropANCBalance: WASMContractResult<cw20.BalanceResponse<uANC>>;
   investorTeamLockANCBalance: WASMContractResult<cw20.BalanceResponse<uANC>>;
+  shuttleANCBalance: WASMContractResult<cw20.BalanceResponse<uANC>>;
   govState: WASMContractResult<anchorToken.gov.StateResponse>;
   govConfig: WASMContractResult<anchorToken.gov.ConfigResponse>;
 }
@@ -72,6 +74,12 @@ export const dataMap = createMap<RawData, Data>({
       investorTeamLockANCBalance.Result,
     );
   },
+  shuttleANCBalance: (existing, { shuttleANCBalance }) => {
+    return parseResult(
+      existing.shuttleANCBalance,
+      shuttleANCBalance.Result,
+    );
+  },
   govState: (existing, { govState }) => {
     return parseResult(existing.govState, govState.Result);
   },
@@ -89,6 +97,7 @@ export interface RawVariables {
   LPStakingANCTokenBalanceQuery: string;
   AirdropANCTokenBalanceQuery: string;
   InvestorTeamLockANCTokenBalanceQuery: string;
+  ShuttleANCTokenBalanceQuery: string;
   Gov_contract: string;
   GovStateQuery: string;
   GovConfigQuery: string;
@@ -137,6 +146,13 @@ export function mapVariables({ address }: Variables): RawVariables {
         //address: address.anchorToken.investorLock,
       },
     }),
+    ShuttleANCTokenBalanceQuery: JSON.stringify({
+      balance: {
+        // TODO hard coding
+        address: 'terra13yxhrk08qvdf5zdc9ss5mwsg5sf7zva9xrgwgc',
+        //address: address.anchorToken.shuttle,
+      },
+    }),
     Gov_contract: address.anchorToken.gov,
     GovStateQuery: JSON.stringify({
       state: {},
@@ -157,6 +173,7 @@ export const query = gql`
     $LPStakingANCTokenBalanceQuery: String!
     $AirdropANCTokenBalanceQuery: String!
     $InvestorTeamLockANCTokenBalanceQuery: String!
+    $ShuttleANCTokenBalanceQuery: String!
     $Gov_contract: String!
     $GovStateQuery: String!
     $GovConfigQuery: String!
@@ -206,6 +223,13 @@ export const query = gql`
     investorTeamLockANCBalance: WasmContractsContractAddressStore(
       ContractAddress: $ANC_token_contract
       QueryMsg: $InvestorTeamLockANCTokenBalanceQuery
+    ) {
+      Result
+    }
+
+    shuttleANCBalance: WasmContractsContractAddressStore(
+      ContractAddress: $ANC_token_contract
+      QueryMsg: $ShuttleANCTokenBalanceQuery
     ) {
       Result
     }
