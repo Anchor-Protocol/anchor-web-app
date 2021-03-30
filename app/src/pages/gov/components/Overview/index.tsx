@@ -73,7 +73,7 @@ function OverviewBase({ className }: OverviewProps) {
     if (apyLPRewards && apyLPRewards.length > 0) {
       const apr = big(big(apyLPRewards[0].APY).div(365).plus(1)).pow(
         365,
-      ) as Rate<Big>;
+      ).minus(1) as Rate<Big>;
 
       return `${formatRate(apr).toString()}% (if compounded daily)`;
     }
