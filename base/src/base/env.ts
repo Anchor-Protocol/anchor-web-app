@@ -67,6 +67,7 @@ export const columbusContractAddresses: AddressMap = {
   team: 'terra1pm54pmw3ej0vfwn3gtn6cdmaqxt0x37e9jt0za',
   vesting: 'terra10evq9zxk2m86n3n3xnpw28jpqwp628c6dzuq42',
   terraswapFactory: '',
+  shuttle: 'terra13yxhrk08qvdf5zdc9ss5mwsg5sf7zva9xrgwgc',
 };
 
 export const tequilaContractAddresses: AddressMap = {
@@ -96,4 +97,5 @@ export const tequilaContractAddresses: AddressMap = {
   terraswapFactory: '',
   vesting: 'terra19f6ktw4qpjj9p9m49y8mhf6pr9807d44xdcus7',
   team: 'terra1x7ted5g0g6ntyqdaqmjwtzcctvvrdju49vs8pl',
+  shuttle: 'terra10a29fyas9768pw8mewdrar3kzr07jz8f3n73t3',
 };
