@@ -24,6 +24,7 @@ import { useClaimableAncUstLp } from 'pages/gov/queries/claimableAncUstLp';
 import { useClaimableUstBorrow } from 'pages/gov/queries/claimableUstBorrow';
 import { ancUstLpClaimOptions } from 'pages/gov/transactions/ancUstLpClaimOptions';
 import React, { useCallback, useMemo } from 'react';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
 export interface ClaimAncUstLpProps {
@@ -39,6 +40,8 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
   const { fixedGas } = useConstants();
 
   const [claim, claimResult] = useOperation(ancUstLpClaimOptions, {});
+
+  const history = useHistory();
 
   // ---------------------------------------------
   // queries
@@ -73,11 +76,15 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
 
   const proceed = useCallback(
     async (walletReady: WalletReady) => {
-      await claim({
+      const broadcasted = await claim({
         address: walletReady.walletAddress,
       });
+
+      if (!broadcasted) {
+        history.push('/gov');
+      }
     },
-    [claim],
+    [claim, history],
   );
 
   // ---------------------------------------------

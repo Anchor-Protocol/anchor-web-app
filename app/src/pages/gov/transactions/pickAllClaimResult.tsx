@@ -28,8 +28,6 @@ export function pickAllClaimResult({
   txResult,
   fixedGas,
 }: Params): TransactionResult {
-  console.log(JSON.stringify(txInfo, null, 2));
-
   const fromContracts = txInfo.reduce((fromContracts, { RawLog }) => {
     for (const rawLog of RawLog) {
       if (typeof rawLog !== 'string') {
