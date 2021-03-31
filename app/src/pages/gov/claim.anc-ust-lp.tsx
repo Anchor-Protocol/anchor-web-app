@@ -76,15 +76,11 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
 
   const proceed = useCallback(
     async (walletReady: WalletReady) => {
-      const broadcasted = await claim({
+      await claim({
         address: walletReady.walletAddress,
       });
-
-      if (!broadcasted) {
-        history.push('/gov');
-      }
     },
-    [claim, history],
+    [claim],
   );
 
   // ---------------------------------------------
@@ -98,10 +94,13 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
     claimResult?.status === 'done' ||
     claimResult?.status === 'fault'
   ) {
+    const onExit =
+      claimResult.status === 'done' ? () => history.push('/gov') : undefined;
+
     return (
       <CenteredLayout className={className} maxWidth={800}>
         <Section>
-          <TransactionRenderer result={claimResult} />
+          <TransactionRenderer result={claimResult} onExit={onExit} />
         </Section>
       </CenteredLayout>
     );

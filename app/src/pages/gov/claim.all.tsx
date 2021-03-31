@@ -98,22 +98,15 @@ function ClaimAllBase({ className }: ClaimAllProps) {
       claimMoneyMarketRewards: boolean,
       cliamLpStakingRewards: boolean,
     ) => {
-      const broadcasted = await claim({
+      await claim({
         walletAddress: walletReady.walletAddress,
         cliamLpStakingRewards,
         claimMoneyMarketRewards,
       });
-
-      if (!broadcasted) {
-        history.push('/gov');
-      }
     },
-    [claim, history],
+    [claim],
   );
 
-  // ---------------------------------------------
-  // presentation
-  // ---------------------------------------------
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
@@ -122,10 +115,13 @@ function ClaimAllBase({ className }: ClaimAllProps) {
     claimResult?.status === 'done' ||
     claimResult?.status === 'fault'
   ) {
+    const onExit =
+      claimResult.status === 'done' ? () => history.push('/gov') : undefined;
+
     return (
       <CenteredLayout className={className} maxWidth={800}>
         <Section>
-          <TransactionRenderer result={claimResult} />
+          <TransactionRenderer result={claimResult} onExit={onExit} />
         </Section>
       </CenteredLayout>
     );
