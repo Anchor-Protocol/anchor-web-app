@@ -9,6 +9,8 @@ export const isDesktopChrome = () => {
     browser.satisfies({
       chrome: '>60',
       edge: '>80',
+      firefox: '>80',
+      safari: '>=14',
     }) && !mobileDetect.os()
   );
 };
