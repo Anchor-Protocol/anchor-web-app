@@ -14,7 +14,7 @@ export const refetchMarket = (
   borrowRate?: moneyMarket.interestModel.BorrowRateResponse;
   oraclePrice?: moneyMarket.oracle.PriceResponse;
   overseerWhitelist?: moneyMarket.overseer.WhitelistResponse;
-  loanAmount?: moneyMarket.market.BorrowInfoResponse;
+  loanAmount?: moneyMarket.market.BorrowerInfoResponse;
   borrowInfo?: moneyMarket.custody.BorrowerResponse;
 }> => {
   await new Promise((resolve) => setTimeout(resolve, 2000));

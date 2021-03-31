@@ -3,7 +3,7 @@ import type { Rate, uUST } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
 
 export const repayAmountToLtv = (
-  borrowInfo: moneyMarket.market.BorrowInfoResponse,
+  borrowInfo: moneyMarket.market.BorrowerInfoResponse,
   borrower: moneyMarket.custody.BorrowerResponse,
   oracle: moneyMarket.oracle.PriceResponse,
 ) => (repayAmount: uUST<BigSource>): Rate<Big> => {

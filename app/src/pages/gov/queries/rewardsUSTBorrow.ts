@@ -15,7 +15,7 @@ export interface RawData {
 }
 
 export interface Data {
-  borrowerInfo: WASMContractResult<moneyMarket.market.BorrowInfoResponse>;
+  borrowerInfo: WASMContractResult<moneyMarket.market.BorrowerInfoResponse>;
   marketState: WASMContractResult<moneyMarket.market.StateResponse>;
 }
 
@@ -37,7 +37,7 @@ export interface RawVariables {
 
 export interface Variables {
   MarketContract: string;
-  BorrowerInfoQuery: moneyMarket.market.BorrowInfo;
+  BorrowerInfoQuery: moneyMarket.market.BorrowerInfo;
   MarketStateQuery: moneyMarket.market.State;
 }
 

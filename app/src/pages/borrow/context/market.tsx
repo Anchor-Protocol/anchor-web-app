@@ -30,7 +30,7 @@ export interface Market {
   borrowRate: moneyMarket.interestModel.BorrowRateResponse | undefined;
   oraclePrice: moneyMarket.oracle.PriceResponse | undefined;
   overseerWhitelist: moneyMarket.overseer.WhitelistResponse | undefined;
-  loanAmount: moneyMarket.market.BorrowInfoResponse | undefined;
+  loanAmount: moneyMarket.market.BorrowerInfoResponse | undefined;
   borrowInfo: moneyMarket.custody.BorrowerResponse | undefined;
   bLunaMaxLtv: Rate | undefined;
   bLunaSafeLtv: Rate | undefined;
@@ -143,7 +143,7 @@ export function useMarketNotNullable(): {
   borrowRate: moneyMarket.interestModel.BorrowRateResponse;
   oraclePrice: moneyMarket.oracle.PriceResponse;
   overseerWhitelist: moneyMarket.overseer.WhitelistResponse;
-  loanAmount: moneyMarket.market.BorrowInfoResponse;
+  loanAmount: moneyMarket.market.BorrowerInfoResponse;
   borrowInfo: moneyMarket.custody.BorrowerResponse;
   bLunaMaxLtv: Rate;
   bLunaSafeLtv: Rate;

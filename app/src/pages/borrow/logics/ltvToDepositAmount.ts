@@ -6,7 +6,7 @@ import big, { Big, BigSource } from 'big.js';
 // amount = (loanAmount / (<ltv> * oracle)) + spendable - balance
 
 export const ltvToDepositAmount = (
-  borrowInfo: moneyMarket.market.BorrowInfoResponse,
+  borrowInfo: moneyMarket.market.BorrowerInfoResponse,
   borrower: moneyMarket.custody.BorrowerResponse,
   oracle: moneyMarket.oracle.PriceResponse,
 ) => (ltv: Rate<BigSource>): ubLuna<Big> => {

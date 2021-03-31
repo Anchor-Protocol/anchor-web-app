@@ -30,15 +30,6 @@ export function App() {
               <a href="https://www.google.com/chrome/">desktop Chrome</a>
             </MessageBox>
           )}
-
-          <MessageBox
-            level="info"
-            hide={{ id: 'announcement1', period: 1000 * 60 * 60 * 24 * 7 }}
-          >
-            Some time is required for accurate data to be displayed on the
-            Anchor web app. Information displayed may vary until the necessary
-            amount of data has been collected.
-          </MessageBox>
         </EmptyCatcher>
         <Switch>
           <Route path="/earn" component={Earn} />
