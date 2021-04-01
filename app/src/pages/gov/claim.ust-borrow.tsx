@@ -23,6 +23,7 @@ import { MINIMUM_CLAIM_BALANCE } from 'pages/gov/env';
 import { useClaimableUstBorrow } from 'pages/gov/queries/claimableUstBorrow';
 import { ustBorrowClaimOptions } from 'pages/gov/transactions/ustBorrowClaimOptions';
 import React, { useCallback, useMemo } from 'react';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
 export interface ClaimUstBorrowProps {
@@ -38,6 +39,8 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
   const { fixedGas } = useConstants();
 
   const [claim, claimResult] = useOperation(ustBorrowClaimOptions, {});
+
+  const history = useHistory();
 
   // ---------------------------------------------
   // queries
@@ -84,10 +87,13 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
     claimResult?.status === 'done' ||
     claimResult?.status === 'fault'
   ) {
+    const onExit =
+      claimResult.status === 'done' ? () => history.push('/gov') : undefined;
+
     return (
       <CenteredLayout className={className} maxWidth={800}>
         <Section>
-          <TransactionRenderer result={claimResult} />
+          <TransactionRenderer result={claimResult} onExit={onExit} />
         </Section>
       </CenteredLayout>
     );

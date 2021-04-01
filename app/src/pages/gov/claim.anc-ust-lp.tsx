@@ -24,6 +24,7 @@ import { useClaimableAncUstLp } from 'pages/gov/queries/claimableAncUstLp';
 import { useClaimableUstBorrow } from 'pages/gov/queries/claimableUstBorrow';
 import { ancUstLpClaimOptions } from 'pages/gov/transactions/ancUstLpClaimOptions';
 import React, { useCallback, useMemo } from 'react';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
 export interface ClaimAncUstLpProps {
@@ -39,6 +40,8 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
   const { fixedGas } = useConstants();
 
   const [claim, claimResult] = useOperation(ancUstLpClaimOptions, {});
+
+  const history = useHistory();
 
   // ---------------------------------------------
   // queries
@@ -91,10 +94,13 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
     claimResult?.status === 'done' ||
     claimResult?.status === 'fault'
   ) {
+    const onExit =
+      claimResult.status === 'done' ? () => history.push('/gov') : undefined;
+
     return (
       <CenteredLayout className={className} maxWidth={800}>
         <Section>
-          <TransactionRenderer result={claimResult} />
+          <TransactionRenderer result={claimResult} onExit={onExit} />
         </Section>
       </CenteredLayout>
     );

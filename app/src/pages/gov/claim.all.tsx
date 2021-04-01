@@ -24,6 +24,7 @@ import { useClaimableAncUstLp } from 'pages/gov/queries/claimableAncUstLp';
 import { useClaimableUstBorrow } from 'pages/gov/queries/claimableUstBorrow';
 import { allClaimOptions } from 'pages/gov/transactions/allClaimOptions';
 import React, { useCallback, useMemo } from 'react';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
 export interface ClaimAllProps {
@@ -39,6 +40,8 @@ function ClaimAllBase({ className }: ClaimAllProps) {
   const { fixedGas } = useConstants();
 
   const [claim, claimResult] = useOperation(allClaimOptions, {});
+
+  const history = useHistory();
 
   // ---------------------------------------------
   // queries
@@ -74,12 +77,6 @@ function ClaimAllBase({ className }: ClaimAllProps) {
       return undefined;
     }
 
-    console.log(
-      'claim.all.tsx..()',
-      claimingBorrowerInfoPendingRewards.toFixed(),
-      claimingLpStaingInfoPendingRewards.toFixed(),
-    );
-
     return claimingLpStaingInfoPendingRewards.plus(
       claimingBorrowerInfoPendingRewards,
     ) as uANC<Big>;
@@ -113,18 +110,18 @@ function ClaimAllBase({ className }: ClaimAllProps) {
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
-  // ---------------------------------------------
-  // presentation
-  // ---------------------------------------------
   if (
     claimResult?.status === 'in-progress' ||
     claimResult?.status === 'done' ||
     claimResult?.status === 'fault'
   ) {
+    const onExit =
+      claimResult.status === 'done' ? () => history.push('/gov') : undefined;
+
     return (
       <CenteredLayout className={className} maxWidth={800}>
         <Section>
-          <TransactionRenderer result={claimResult} />
+          <TransactionRenderer result={claimResult} onExit={onExit} />
         </Section>
       </CenteredLayout>
     );
