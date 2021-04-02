@@ -97,3 +97,15 @@ export const tequilaContractAddresses: AddressMap = {
   vesting: 'terra19f6ktw4qpjj9p9m49y8mhf6pr9807d44xdcus7',
   team: 'terra1x7ted5g0g6ntyqdaqmjwtzcctvvrdju49vs8pl',
 };
+
+export const screen = {
+  mobile: { max: 530 },
+  // mobile : @media (max-width: ${screen.mobile.max}px)
+  tablet: { min: 531, max: 830 },
+  // tablet : @media (min-width: ${screen.tablet.min}px) and (max-width: ${screen.tablet.max}px)
+  pc: { min: 831, max: 1439 },
+  // pc : @media (min-width: ${screen.pc.min}px)
+  monitor: { min: 1440 },
+  // monitor : @media (min-width: ${screen.pc.min}px) and (max-width: ${screen.pc.max}px)
+  // huge monitor : @media (min-width: ${screen.monitor.min}px)
+} as const;

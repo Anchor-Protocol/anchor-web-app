@@ -13,7 +13,7 @@ import {
   Twitter,
 } from '@material-ui/icons';
 import c from 'color';
-import { screen } from 'env';
+import { screen } from 'base/env';
 import React, { CSSProperties } from 'react';
 import styled from 'styled-components';
 
@@ -41,7 +41,7 @@ function FooterBase({ className, style }: FooterProps) {
             {status.network.name.toLowerCase().indexOf('mainnet') !== 0 && (
               <b>[{status.network.name.toUpperCase()}] </b>
             )}
-            Latest Block: {lastSyncedHeight}
+            Latest Block 2: {lastSyncedHeight}
           </IconSpan>
         </a>
       </div>
