@@ -19,6 +19,7 @@ import { useBAssetMarket } from 'pages/market-simple/queries/bAssetMarket';
 import { useMarket } from 'pages/market-simple/queries/market';
 import { useStableCoinMarket } from 'pages/market-simple/queries/stableCoinMarket';
 import { useMemo } from 'react';
+import { Footer } from 'base/components/Footer';
 import styled from 'styled-components';
 
 export interface MarketProps {
@@ -297,6 +298,7 @@ function MarketBase({ className }: MarketProps) {
             </HorizontalScrollTable>
           </Section>
         </div>
+        <Footer style={{ margin: '60px 0' }} />
       </main>
     </div>
   );

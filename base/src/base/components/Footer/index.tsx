@@ -41,7 +41,7 @@ function FooterBase({ className, style }: FooterProps) {
             {status.network.name.toLowerCase().indexOf('mainnet') !== 0 && (
               <b>[{status.network.name.toUpperCase()}] </b>
             )}
-            Latest Block 2: {lastSyncedHeight}
+            Latest Block: {lastSyncedHeight}
           </IconSpan>
         </a>
       </div>
