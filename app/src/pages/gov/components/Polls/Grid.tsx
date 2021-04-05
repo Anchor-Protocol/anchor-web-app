@@ -72,13 +72,14 @@ function GridBase({
               <IconSpan>
                 <b>Estimated end time</b>{' '}
                 <time>
-                  {endsIn.toLocaleDateString(undefined, {
+                  {endsIn.toLocaleDateString('en-US', {
                     weekday: 'short',
                     year: 'numeric',
                     month: 'short',
                     day: 'numeric',
-                  })}{' '}
-                  {endsIn.toLocaleTimeString()}
+                  })}
+                  {', '}
+                  {endsIn.toLocaleTimeString('en-US')}
                 </time>{' '}
                 <Schedule /> <TimeEnd endTime={endsIn} />
               </IconSpan>

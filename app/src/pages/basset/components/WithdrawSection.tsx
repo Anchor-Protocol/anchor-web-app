@@ -208,12 +208,34 @@ export function WithdrawSection({
               <li key={`withdraw-history-${index}`}>
                 <p>
                   Requested time:{' '}
-                  <time>{requestTime?.toLocaleString() ?? 'Pending'}</time>
+                  <time>
+                    {requestTime
+                      ? requestTime.toLocaleString('en-US', {
+                          weekday: 'short',
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        }) +
+                        ', ' +
+                        requestTime.toLocaleTimeString('en-US')
+                      : 'Pending'}
+                  </time>
                 </p>
                 <p>{formatLuna(demicrofy(blunaAmount))} bLuna</p>
                 <p>
                   Claimable time:{' '}
-                  <time>{claimableTime?.toLocaleString() ?? 'Pending'}</time>
+                  <time>
+                    {claimableTime
+                      ? claimableTime.toLocaleString('en-US', {
+                          weekday: 'short',
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        }) +
+                        ', ' +
+                        claimableTime.toLocaleTimeString('en-US')
+                      : 'Pending'}
+                  </time>
                 </p>
                 <p>
                   {lunaAmount
