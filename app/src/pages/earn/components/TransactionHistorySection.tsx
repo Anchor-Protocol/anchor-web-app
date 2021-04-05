@@ -90,14 +90,15 @@ export function TransactionHistorySection({
                         </a>
                       </span>
                       <time>
-                        {datetime.toLocaleDateString(undefined, {
+                        {datetime.toLocaleDateString('en-US', {
                           weekday: 'short',
                           year: 'numeric',
                           month: 'short',
                           day: 'numeric',
-                        })}{' '}
+                        })}
+                        {', '}
                         <span className="time">
-                          {datetime.toLocaleTimeString()}
+                          {datetime.toLocaleTimeString('en-US')}
                         </span>
                       </time>
                     </div>

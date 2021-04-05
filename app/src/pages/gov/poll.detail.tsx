@@ -133,14 +133,16 @@ function PollDetailBase({ className, match }: PollDetailProps) {
             <h4>End Time</h4>
             <p>
               <IconSpan>
-                {pollDetail.endsIn.toLocaleDateString(undefined, {
+                {pollDetail.endsIn.toLocaleDateString('en-US', {
                   weekday: 'short',
                   year: 'numeric',
                   month: 'short',
                   day: 'numeric',
-                })}{' '}
-                {pollDetail.endsIn.toLocaleTimeString()} <Schedule />{' '}
-                <TimeEnd endTime={pollDetail.endsIn} />
+                })}
+                {', '}
+                {pollDetail.endsIn.toLocaleTimeString(
+                  'en-US',
+                )} <Schedule /> <TimeEnd endTime={pollDetail.endsIn} />
               </IconSpan>
             </p>
           </article>
