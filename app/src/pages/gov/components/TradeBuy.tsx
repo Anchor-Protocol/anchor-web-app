@@ -400,7 +400,7 @@ export function TradeBuy() {
             currencyA="UST"
             currencyB="ANC"
             exchangeRateAB={simulation.beliefPrice}
-            initialDirection="b/a"
+            initialDirection="a/b"
             formatExchangeRate={(price, direction) =>
               formatFluidDecimalPoints(
                 price,
