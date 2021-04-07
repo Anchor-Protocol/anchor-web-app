@@ -18,6 +18,8 @@ export interface WalletSelectorProps {
   className?: string;
 }
 
+let airdropClosed: boolean = false;
+
 function WalletSelectorBase({ className }: WalletSelectorProps) {
   // ---------------------------------------------
   // dependencies
@@ -35,6 +37,13 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   const [openSendDialog, sendDialogElement] = useSendDialog();
 
   const [openViewAddress, viewAddressElement] = useViewAddressDialog();
+
+  const [closed, setClosed] = useState(() => airdropClosed);
+
+  const closeAirdrop = useCallback(() => {
+    setClosed(true);
+    airdropClosed = true;
+  }, []);
 
   // ---------------------------------------------
   // states
@@ -147,13 +156,14 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
           <div className={className}>
             <ConnectedButton status={status} bank={bank} onClick={toggleOpen} />
 
-            {status.status === WalletStatusType.CONNECTED &&
+            {!closed &&
+              status.status === WalletStatusType.CONNECTED &&
               airdrop &&
               airdrop !== 'in-progress' &&
               !open &&
               !matchAirdrop && (
                 <DropdownContainer>
-                  <AirdropContent />
+                  <AirdropContent onClose={closeAirdrop} />
                 </DropdownContainer>
               )}
 
