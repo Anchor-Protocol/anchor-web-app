@@ -21,6 +21,7 @@ import {
   WalletReady,
 } from '@anchor-protocol/wallet-provider';
 import { Modal, NativeSelect as MuiNativeSelect } from '@material-ui/core';
+import { Warning } from '@material-ui/icons';
 import { min } from '@terra-dev/big-math';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
@@ -29,7 +30,6 @@ import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { NumberMuiInput } from '@terra-dev/neumorphism-ui/components/NumberMuiInput';
 import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
 import { TextInput } from '@terra-dev/neumorphism-ui/components/TextInput';
-import { useConfirm } from '@terra-dev/neumorphism-ui/components/useConfirm';
 import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
 import { AccAddress } from '@terra-money/terra.js';
 import { Bank, useBank } from 'base/contexts/bank';
@@ -78,8 +78,6 @@ function ComponentBase({
   const { cw20 } = useContractAddress();
 
   const [send, sendResult] = useOperation(sendOptions, {});
-
-  const [openConfirm, confirmElement] = useConfirm();
 
   const currencies = useMemo<CurrencyInfo[]>(
     () => [
@@ -181,6 +179,12 @@ function ComponentBase({
   //  maxDecimalPoints: currency.decimalPoints,
   //});
 
+  const memoWarning = useMemo(() => {
+    return memo.trim().length === 0
+      ? 'Please double check if the transaction requires a memo'
+      : undefined;
+  }, [memo]);
+
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
@@ -240,21 +244,6 @@ function ComponentBase({
       txFee: uUST,
       memo: string,
     ) => {
-      const confirmWithoutMemo =
-        memo.trim().length === 0
-          ? await openConfirm({
-              title: 'Warning',
-              description:
-                'Sending without memo. Certain exchanges require a memo for deposits to be processed. Would you like to send?',
-              agree: 'Send',
-              disagree: 'Cancel',
-            })
-          : true;
-
-      if (!confirmWithoutMemo) {
-        return;
-      }
-
       await send({
         myAddress: walletReady.walletAddress,
         toAddress,
@@ -264,7 +253,7 @@ function ComponentBase({
         memo,
       });
     },
-    [openConfirm, send],
+    [send],
   );
 
   if (
@@ -371,6 +360,14 @@ function ComponentBase({
           }
         />
 
+        {memoWarning && (
+          <WarningMessage>
+            <IconSpan>
+              <Warning /> Please double check if the transaction requires a memo
+            </IconSpan>
+          </WarningMessage>
+        )}
+
         <TxFeeList className="receipt">
           <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
             {formatUST(demicrofy(txFee))} UST
@@ -402,12 +399,28 @@ function ComponentBase({
         >
           Send
         </ActionButton>
-
-        {confirmElement}
       </Dialog>
     </Modal>
   );
 }
+
+const WarningMessage = styled.div`
+  color: ${({ theme }) => theme.colors.negative};
+
+  text-align: center;
+
+  font-size: 13px;
+
+  padding: 5px;
+  border: 1px solid ${({ theme }) => theme.colors.negative};
+  border-radius: 5px;
+
+  svg {
+    margin-right: 10px;
+  }
+
+  margin-bottom: 20px;
+`;
 
 const Component = styled(ComponentBase)`
   width: 720px;
@@ -446,7 +459,7 @@ const Component = styled(ComponentBase)`
   }
 
   .memo {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
   }
 
   .receipt {
