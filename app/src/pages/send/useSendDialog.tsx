@@ -29,6 +29,7 @@ import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { NumberMuiInput } from '@terra-dev/neumorphism-ui/components/NumberMuiInput';
 import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
 import { TextInput } from '@terra-dev/neumorphism-ui/components/TextInput';
+import { useConfirm } from '@terra-dev/neumorphism-ui/components/useConfirm';
 import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
 import { AccAddress } from '@terra-money/terra.js';
 import { Bank, useBank } from 'base/contexts/bank';
@@ -77,6 +78,8 @@ function ComponentBase({
   const { cw20 } = useContractAddress();
 
   const [send, sendResult] = useOperation(sendOptions, {});
+
+  const [openConfirm, confirmElement] = useConfirm();
 
   const currencies = useMemo<CurrencyInfo[]>(
     () => [
@@ -163,6 +166,8 @@ function ComponentBase({
 
   const [currency, setCurrency] = useState<CurrencyInfo>(() => currencies[0]);
 
+  const [memo, setMemo] = useState<string>('');
+
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
@@ -227,22 +232,39 @@ function ComponentBase({
   }, [amount, currency, bank, fixedGas]);
 
   const submit = useCallback(
-    (
+    async (
       walletReady: WalletReady,
       toAddress: string,
       currency: CurrencyInfo,
       amount: Token,
       txFee: uUST,
+      memo: string,
     ) => {
-      send({
+      const confirmWithoutMemo =
+        memo.trim().length === 0
+          ? await openConfirm({
+              title: 'Warning',
+              description:
+                'Sending without memo. Certain exchanges require a memo for deposits to be processed. Would you like to send?',
+              agree: 'Send',
+              disagree: 'Cancel',
+            })
+          : true;
+
+      if (!confirmWithoutMemo) {
+        return;
+      }
+
+      await send({
         myAddress: walletReady.walletAddress,
         toAddress,
         amount,
         currency,
         txFee,
+        memo,
       });
     },
-    [send],
+    [openConfirm, send],
   );
 
   if (
@@ -333,6 +355,22 @@ function ComponentBase({
           />
         </SelectAndTextInputContainer>
 
+        {/* Memo */}
+        <div className="memo-description">
+          <p>Memo (Optional)</p>
+          <p />
+        </div>
+
+        <TextInput
+          className="memo"
+          fullWidth
+          placeholder="MEMO"
+          value={memo}
+          onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
+            setMemo(target.value)
+          }
+        />
+
         <TxFeeList className="receipt">
           <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
             {formatUST(demicrofy(txFee))} UST
@@ -358,11 +396,14 @@ function ComponentBase({
               currency,
               amount,
               txFee.toString() as uUST,
+              memo,
             )
           }
         >
           Send
         </ActionButton>
+
+        {confirmElement}
       </Dialog>
     </Modal>
   );
@@ -380,7 +421,8 @@ const Component = styled(ComponentBase)`
   }
 
   .address-description,
-  .amount-description {
+  .amount-description,
+  .memo-description {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -400,6 +442,10 @@ const Component = styled(ComponentBase)`
   }
 
   .amount {
+    margin-bottom: 20px;
+  }
+
+  .memo {
     margin-bottom: 30px;
   }
 
