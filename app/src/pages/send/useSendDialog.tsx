@@ -236,9 +236,7 @@ function ComponentBase({
   }, [amount, currency, bank, fixedGas]);
 
   const invalidMemo = useMemo(() => {
-    return /[<>]/.test(memo)
-      ? 'The characters < and > are not allowed'
-      : undefined;
+    return /[<>]/.test(memo) ? 'Characters < and > are not allowed' : undefined;
   }, [memo]);
 
   const submit = useCallback(
