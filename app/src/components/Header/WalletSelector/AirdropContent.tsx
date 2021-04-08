@@ -1,3 +1,5 @@
+import { IconButton } from '@material-ui/core';
+import { Close } from '@material-ui/icons';
 import { FlatButton } from '@terra-dev/neumorphism-ui/components/FlatButton';
 import airdropImage from 'components/Header/assets/airdrop.svg';
 import { Link } from 'react-router-dom';
@@ -25,7 +27,13 @@ const parachute = keyframes`
   }
 `;
 
-function AirdropBase({ className }: { className?: string }) {
+function AirdropBase({
+  className,
+  onClose,
+}: {
+  className?: string;
+  onClose: () => void;
+}) {
   return (
     <div className={className}>
       <img src={airdropImage} alt="Airdrop!" />
@@ -34,6 +42,9 @@ function AirdropBase({ className }: { className?: string }) {
       <FlatButton component={Link} to="/airdrop">
         Claim
       </FlatButton>
+      <IconButton className="close" size="small" onClick={onClose}>
+        <Close />
+      </IconButton>
     </div>
   );
 }
@@ -41,6 +52,8 @@ function AirdropBase({ className }: { className?: string }) {
 export const AirdropContent = styled(AirdropBase)`
   margin: 30px;
   text-align: center;
+
+  position: relative;
 
   img {
     animation: ${parachute} 6s ease-in-out infinite;
@@ -68,5 +81,15 @@ export const AirdropContent = styled(AirdropBase)`
     height: 28px;
 
     background-color: ${({ theme }) => theme.colors.positive};
+  }
+
+  .close {
+    position: absolute;
+    right: -20px;
+    top: -20px;
+
+    svg {
+      font-size: 16px;
+    }
   }
 `;

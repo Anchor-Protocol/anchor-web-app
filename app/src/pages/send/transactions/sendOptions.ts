@@ -26,49 +26,60 @@ export const sendOptions = createOperationOptions({
     gasAdjustment,
     fixedGas,
     storage,
-  }: OperationDependency<{}>) => [
-    ({
-      myAddress,
-      toAddress,
-      currency,
-      amount,
-      txFee,
-    }: {
-      myAddress: string;
-      toAddress: string;
-      currency: CurrencyInfo;
-      amount: Token;
-      txFee: uUST;
-    }): Msg[] => {
-      storage.set('txFee', txFee);
+  }: OperationDependency<{}>) => {
+    let hoistedMemo: string | undefined;
 
-      if (!!currency.cw20Address) {
-        return fabricateCw20Transfer({
-          amount,
-          address: myAddress,
-          contractAddress: currency.cw20Address,
-          recipient: toAddress,
-        });
-      } else {
-        return [
-          new MsgSend(myAddress, toAddress, [
-            new Coin(
-              `u${currency.value}`,
-              new Int(new Dec(amount).mul(1000000)).toString(),
-            ),
-          ]),
-        ];
-      }
-    }, // -> Msg[]
-    createOptions(() => ({
-      fee: new StdFee(gasFee, floor(storage.get('txFee')) + 'uusd'),
-      gasAdjustment,
-    })), // -> CreateTxOptions
-    timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<StringifiedTxResult>
-    parseTxResult, // -> TxResult
-    merge(getTxInfo(client, signal), () => ({ fixedGas })), // -> { TxResult, TxInfo, fixedGas }
-    pickEmptyResult, // -> TransactionResult
-  ],
+    return [
+      ({
+        myAddress,
+        toAddress,
+        currency,
+        memo,
+        amount,
+        txFee,
+      }: {
+        myAddress: string;
+        toAddress: string;
+        currency: CurrencyInfo;
+        memo?: string;
+        amount: Token;
+        txFee: uUST;
+      }): Msg[] => {
+        hoistedMemo = memo;
+
+        storage.set('txFee', txFee);
+
+        if (!!currency.cw20Address) {
+          return fabricateCw20Transfer({
+            amount,
+            address: myAddress,
+            contractAddress: currency.cw20Address,
+            recipient: toAddress,
+          });
+        } else {
+          return [
+            new MsgSend(myAddress, toAddress, [
+              new Coin(
+                `u${currency.value}`,
+                new Int(new Dec(amount).mul(1000000)).toString(),
+              ),
+            ]),
+          ];
+        }
+      }, // -> Msg[]
+      merge(
+        createOptions(() => ({
+          fee: new StdFee(gasFee, floor(storage.get('txFee')) + 'uusd'),
+          gasAdjustment,
+        })), // -> CreateTxOptions
+        () => ({ memo: hoistedMemo }), // -> { memo?: stirng }
+      ),
+      timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<StringifiedTxResult>
+      parseTxResult, // -> TxResult
+      merge(getTxInfo(client, signal), () => ({ fixedGas })), // -> { TxResult, TxInfo, fixedGas }
+      pickEmptyResult, // -> TransactionResult
+    ];
+  },
   renderBroadcast: renderBroadcastTransaction,
   //breakOnError: true,
 });

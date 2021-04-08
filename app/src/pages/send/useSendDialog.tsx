@@ -21,6 +21,7 @@ import {
   WalletReady,
 } from '@anchor-protocol/wallet-provider';
 import { Modal, NativeSelect as MuiNativeSelect } from '@material-ui/core';
+import { Warning } from '@material-ui/icons';
 import { min } from '@terra-dev/big-math';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
@@ -163,6 +164,8 @@ function ComponentBase({
 
   const [currency, setCurrency] = useState<CurrencyInfo>(() => currencies[0]);
 
+  const [memo, setMemo] = useState<string>('');
+
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
@@ -175,6 +178,12 @@ function ComponentBase({
   //  maxIntegerPoinsts: currency.integerPoints,
   //  maxDecimalPoints: currency.decimalPoints,
   //});
+
+  const memoWarning = useMemo(() => {
+    return memo.trim().length === 0
+      ? 'Please double check if the transaction requires a memo'
+      : undefined;
+  }, [memo]);
 
   // ---------------------------------------------
   // callbacks
@@ -226,20 +235,26 @@ function ComponentBase({
       : undefined;
   }, [amount, currency, bank, fixedGas]);
 
+  const invalidMemo = useMemo(() => {
+    return /[<>]/.test(memo) ? 'Characters < and > are not allowed' : undefined;
+  }, [memo]);
+
   const submit = useCallback(
-    (
+    async (
       walletReady: WalletReady,
       toAddress: string,
       currency: CurrencyInfo,
       amount: Token,
       txFee: uUST,
+      memo: string,
     ) => {
-      send({
+      await send({
         myAddress: walletReady.walletAddress,
         toAddress,
         amount,
         currency,
         txFee,
+        memo,
       });
     },
     [send],
@@ -333,6 +348,35 @@ function ComponentBase({
           />
         </SelectAndTextInputContainer>
 
+        {/* Memo */}
+        <div className="memo-description">
+          <p>Memo (Optional)</p>
+          <p />
+        </div>
+
+        <TextInput
+          className="memo"
+          fullWidth
+          placeholder="MEMO"
+          value={memo}
+          error={!!invalidMemo}
+          helperText={invalidMemo}
+          onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
+            setMemo(target.value)
+          }
+        />
+
+        <div className="memo-warning">
+          {memoWarning && (
+            <WarningMessage>
+              <IconSpan>
+                <Warning /> Please double check if the transaction requires a
+                memo
+              </IconSpan>
+            </WarningMessage>
+          )}
+        </div>
+
         <TxFeeList className="receipt">
           <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
             {formatUST(demicrofy(txFee))} UST
@@ -348,6 +392,7 @@ function ComponentBase({
             !!invalidAddress ||
             !!invalidAmount ||
             !!invalidTxFee ||
+            !!invalidMemo ||
             big(currency.getWithdrawable(bank, fixedGas)).lte(0)
           }
           onClick={() =>
@@ -358,6 +403,7 @@ function ComponentBase({
               currency,
               amount,
               txFee.toString() as uUST,
+              memo,
             )
           }
         >
@@ -367,6 +413,24 @@ function ComponentBase({
     </Modal>
   );
 }
+
+const WarningMessage = styled.div`
+  color: ${({ theme }) => theme.colors.negative};
+
+  text-align: center;
+
+  font-size: 13px;
+
+  padding: 5px;
+  border: 1px solid ${({ theme }) => theme.colors.negative};
+  border-radius: 5px;
+
+  svg {
+    margin-right: 10px;
+  }
+
+  margin-bottom: 20px;
+`;
 
 const Component = styled(ComponentBase)`
   width: 720px;
@@ -380,7 +444,8 @@ const Component = styled(ComponentBase)`
   }
 
   .address-description,
-  .amount-description {
+  .amount-description,
+  .memo-description {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -400,7 +465,15 @@ const Component = styled(ComponentBase)`
   }
 
   .amount {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
+  }
+
+  .memo-warning {
+    padding: 20px 0;
+
+    &:empty {
+      min-height: 30px;
+    }
   }
 
   .receipt {
