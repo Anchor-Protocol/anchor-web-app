@@ -235,6 +235,12 @@ function ComponentBase({
       : undefined;
   }, [amount, currency, bank, fixedGas]);
 
+  const invalidMemo = useMemo(() => {
+    return /[<>]/.test(memo)
+      ? 'The characters < and > are not allowed'
+      : undefined;
+  }, [memo]);
+
   const submit = useCallback(
     async (
       walletReady: WalletReady,
@@ -355,18 +361,23 @@ function ComponentBase({
           fullWidth
           placeholder="MEMO"
           value={memo}
+          error={!!invalidMemo}
+          helperText={invalidMemo}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             setMemo(target.value)
           }
         />
 
-        {memoWarning && (
-          <WarningMessage>
-            <IconSpan>
-              <Warning /> Please double check if the transaction requires a memo
-            </IconSpan>
-          </WarningMessage>
-        )}
+        <div className="memo-warning">
+          {memoWarning && (
+            <WarningMessage>
+              <IconSpan>
+                <Warning /> Please double check if the transaction requires a
+                memo
+              </IconSpan>
+            </WarningMessage>
+          )}
+        </div>
 
         <TxFeeList className="receipt">
           <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
@@ -383,6 +394,7 @@ function ComponentBase({
             !!invalidAddress ||
             !!invalidAmount ||
             !!invalidTxFee ||
+            !!invalidMemo ||
             big(currency.getWithdrawable(bank, fixedGas)).lte(0)
           }
           onClick={() =>
@@ -458,8 +470,12 @@ const Component = styled(ComponentBase)`
     margin-bottom: 20px;
   }
 
-  .memo {
-    margin-bottom: 20px;
+  .memo-warning {
+    padding: 20px 0;
+
+    &:empty {
+      min-height: 30px;
+    }
   }
 
   .receipt {
