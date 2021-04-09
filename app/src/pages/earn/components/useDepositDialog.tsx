@@ -160,7 +160,7 @@ function ComponentBase({
     depositResult?.status === 'fault'
   ) {
     return (
-      <Modal open disableBackdropClick>
+      <Modal open disableBackdropClick disableEnforceFocus>
         <Dialog className={className}>
           <TransactionRenderer result={depositResult} onExit={closeDialog} />
         </Dialog>

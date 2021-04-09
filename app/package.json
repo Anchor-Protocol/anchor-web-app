@@ -53,6 +53,10 @@
     "@rocket-scripts/utils": "^2.0.0",
     "@sentry/react": "^6.2.1",
     "@sentry/tracing": "^6.2.1",
+    "@terra-dev/network": "^0.1.0",
+    "@terra-dev/terra-connect": "^0.1.0",
+    "@terra-dev/terra-connect-webextension": "^0.1.0",
+    "@terra-dev/wallet": "^0.1.0",
     "@terra-money/terra.js": "^1.4.2",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
@@ -96,6 +100,7 @@
     "react-scripts": "4.0.3",
     "react-spinners-kit": "^1.9.1",
     "react-use-clipboard": "^1.0.7",
+    "readable-stream": "^3.6.0",
     "resize-observer-polyfill": "^1.5.1",
     "rocket-punch": "^2.4.1",
     "styled-components": "^5.2.1",
@@ -111,6 +116,7 @@
     "@types/d3-selection": "^2.0.0",
     "@types/d3-shape": "^2.0.0",
     "@types/numeral": "^2.0.0",
-    "@types/react-is": "^17.0.0"
+    "@types/react-is": "^17.0.0",
+    "@types/readable-stream": "^2.3.9"
   }
 }

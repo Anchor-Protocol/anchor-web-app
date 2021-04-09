@@ -26,6 +26,10 @@ __metadata:
     "@rocket-scripts/utils": ^2.0.0
     "@sentry/react": ^6.2.1
     "@sentry/tracing": ^6.2.1
+    "@terra-dev/network": ^0.1.0
+    "@terra-dev/terra-connect": ^0.1.0
+    "@terra-dev/terra-connect-webextension": ^0.1.0
+    "@terra-dev/wallet": ^0.1.0
     "@terra-money/terra.js": ^1.4.2
     "@testing-library/jest-dom": ^5.11.9
     "@testing-library/react": ^11.2.5
@@ -47,6 +51,7 @@ __metadata:
     "@types/react-dom": ^17.0.1
     "@types/react-is": ^17.0.0
     "@types/react-router-dom": ^5.1.7
+    "@types/readable-stream": ^2.3.9
     "@types/styled-components": ^5.1.7
     "@types/testing-library__jest-dom": ^5.9.5
     big.js: ^6.0.3
@@ -75,6 +80,7 @@ __metadata:
     react-scripts: 4.0.3
     react-spinners-kit: ^1.9.1
     react-use-clipboard: ^1.0.7
+    readable-stream: ^3.6.0
     resize-observer-polyfill: ^1.5.1
     rocket-punch: ^2.4.1
     styled-components: ^5.2.1
@@ -241,6 +247,10 @@ __metadata:
     "@storybook/preset-create-react-app": ^3.1.6
     "@storybook/react": ^6.1.20
     "@storybook/theming": ^6.1.20
+    "@terra-dev/network": ^0.1.0
+    "@terra-dev/terra-connect": ^0.1.0
+    "@terra-dev/terra-connect-webextension": ^0.1.0
+    "@terra-dev/wallet": ^0.1.0
     "@terra-money/terra.js": ^1.4.2
     "@testing-library/jest-dom": ^5.11.9
     "@testing-library/react": ^11.2.5
@@ -268,6 +278,7 @@ __metadata:
     "@types/react": ^17.0.2
     "@types/react-dom": ^17.0.1
     "@types/react-router-dom": ^5.1.7
+    "@types/readable-stream": ^2.3.9
     "@types/styled-components": ^5.1.7
     "@types/testing-library__jest-dom": ^5.9.5
     big.js: ^6.0.3
@@ -297,6 +308,7 @@ __metadata:
     react-router-dom: ^5.2.0
     react-scripts: 4.0.3
     react-spring: ^8.0.27
+    readable-stream: ^3.6.0
     resize-observer-polyfill: ^1.5.1
     rocket-punch: ^2.4.1
     rxjs: ^6.6.6
@@ -4087,7 +4099,108 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@terra-money/terra.js@npm:^1.3.6, @terra-money/terra.js@npm:^1.4.2":
+"@terra-dev/crypto@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@terra-dev/crypto@npm:0.1.0"
+  dependencies:
+    crypto-js: ^4.0.0
+  checksum: c68b2c03fad4fc68989de754a9cb7dbe0e37b42991625944ee6866eb8ebe53a24179966f07ae766112f8ea61a2752696268c77f6ff1310c0d6935456d189395e
+  languageName: node
+  linkType: hard
+
+"@terra-dev/network@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@terra-dev/network@npm:0.1.0"
+  checksum: bb1a6ad991c40a7385d4d1f4ed8d67eea568bbe2825f722ba285e8404a9f839e164216fd98f1150286ba28f2723cf683dc789a367c49d0acc7fc83359e06461b
+  languageName: node
+  linkType: hard
+
+"@terra-dev/safari-webextension-storage-change-listener@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@terra-dev/safari-webextension-storage-change-listener@npm:0.1.0"
+  dependencies:
+    fast-deep-equal: ^3.1.3
+    rxjs: ^6.6.7
+    webextension-polyfill-ts: ^0.25.0
+  checksum: b9aba2b1b599009a90b5fb10f5edc89c18fbdfbddd2c0bee450bac3d57d9239cb28daea69aa02208149acd5eaf77489bede8dc267ed33bdb74c4c9a1e25ebdfb
+  languageName: node
+  linkType: hard
+
+"@terra-dev/terra-connect-webextension@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@terra-dev/terra-connect-webextension@npm:0.1.0"
+  dependencies:
+    "@terra-dev/network": ^0.1.0
+    "@terra-dev/terra-connect": ^0.1.0
+    "@terra-dev/tx": ^0.1.0
+    "@terra-dev/wallet": ^0.1.0
+    "@terra-dev/webextension-network-storage": ^0.1.0
+    "@terra-dev/webextension-wallet-storage": ^0.1.0
+    bowser: ^2.11.0
+    rxjs: ^6.6.7
+  checksum: d2575706c422ba5a4cd661557a108f6566fa7199d281195c42348f0f433a73adea9a28aaf59d7c97f2525ceed6c97d72859d1f6e9b95fc17d1ab35f44c803a36
+  languageName: node
+  linkType: hard
+
+"@terra-dev/terra-connect@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@terra-dev/terra-connect@npm:0.1.0"
+  dependencies:
+    "@terra-dev/network": ^0.1.0
+    "@terra-dev/tx": ^0.1.0
+    "@terra-dev/wallet": ^0.1.0
+    rxjs: ^6.6.7
+  checksum: dec7acfaedfe5dea5cb80b3998eda234f07b68d23758eb2873447f252d0622ed688d60bd0dc9ab42552b8a4c3786117246bf9245ef8dee32a9bad39dba5aa885
+  languageName: node
+  linkType: hard
+
+"@terra-dev/tx@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@terra-dev/tx@npm:0.1.0"
+  dependencies:
+    "@terra-dev/network": ^0.1.0
+    "@terra-dev/wallet": ^0.1.0
+    "@terra-money/terra.js": ^1.6.0
+    rxjs: ^6.6.7
+  checksum: 1d5e716f91c5fb20c764f9a29bcf227dfd7aaa1cf289d844243f07dffc838c537260502bfed1cf7dd400426ceed37044c6b235d5842f7eff86b1411f2fe318d7
+  languageName: node
+  linkType: hard
+
+"@terra-dev/wallet@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@terra-dev/wallet@npm:0.1.0"
+  dependencies:
+    "@terra-dev/crypto": ^0.1.0
+    "@terra-money/terra.js": ^1.6.0
+  checksum: b05d07373b63f90efd0bcae2b45d3698c665f4209e1017a54fa717f4efe90661dc3a2a037fa4b27c5ab48bc813b22597f529f3875f44c4be7610c6ee527dfb88
+  languageName: node
+  linkType: hard
+
+"@terra-dev/webextension-network-storage@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@terra-dev/webextension-network-storage@npm:0.1.0"
+  dependencies:
+    "@terra-dev/network": ^0.1.0
+    "@terra-dev/safari-webextension-storage-change-listener": ^0.1.0
+    rxjs: ^6.6.7
+    webextension-polyfill-ts: ^0.25.0
+  checksum: 72cf1ccb60caeea259de2b03fa2db3b39052de47e1e78903977858883b8ee1cfe9ca2c9a306c7174861809c6b775ecb5f3b701246df736200eb0fc8e250a17d0
+  languageName: node
+  linkType: hard
+
+"@terra-dev/webextension-wallet-storage@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@terra-dev/webextension-wallet-storage@npm:0.1.0"
+  dependencies:
+    "@terra-dev/safari-webextension-storage-change-listener": ^0.1.0
+    "@terra-dev/wallet": ^0.1.0
+    rxjs: ^6.6.7
+    webextension-polyfill-ts: ^0.25.0
+  checksum: 560cd02855e2b0609b835ce458af50ca77e9dbb3f7b7b036649c6ab41454c35fd4fdce41f2bf0d2e64ca36f1ac5daaa6d511d8c8a759cd9ce843c93b6dc10a39
+  languageName: node
+  linkType: hard
+
+"@terra-money/terra.js@npm:^1.3.6, @terra-money/terra.js@npm:^1.4.2, @terra-money/terra.js@npm:^1.6.0":
   version: 1.6.0
   resolution: "@terra-money/terra.js@npm:1.6.0"
   dependencies:
@@ -4818,6 +4931,16 @@ __metadata:
   dependencies:
     "@types/react": "*"
   checksum: 5ac6dfc02c1b0cd3c6e85b9447e0a7eeff471cdd10e4b308f6f647678bf5fe996a6f2283ebac129f89e53abb533943633641c26420f25f0095b4de8a9cdb59b1
+  languageName: node
+  linkType: hard
+
+"@types/readable-stream@npm:^2.3.9":
+  version: 2.3.9
+  resolution: "@types/readable-stream@npm:2.3.9"
+  dependencies:
+    "@types/node": "*"
+    safe-buffer: "*"
+  checksum: f48e49365083aad9efe67689da1053cf099d5d6b26a359e4b60238d286ad5609cb11368cf6ed97376f76418293f1c2c88b4be97cd3f64556c477ee6b2ba4f242
   languageName: node
   linkType: hard
 
@@ -8576,6 +8699,13 @@ __metadata:
   version: 3.3.0
   resolution: "crypto-js@npm:3.3.0"
   checksum: 7cf8de489f9f25084a3b22cc6e944e2e11e03b6374777a7a554739ee27e3b35d5dfdac490e0a66bc191c9ecbbea13ad716f59345657335b39d95f9bc19c40ac5
+  languageName: node
+  linkType: hard
+
+"crypto-js@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "crypto-js@npm:4.0.0"
+  checksum: fdd1415b9e4b317f6ac7f055a00495dabea6aa93ab82ccd63866b0a76d2da9587942764816a8a7976cb23b8bbfd7eea23ccb852b3fef218d166cc5db8c008ab3
   languageName: node
   linkType: hard
 
@@ -19779,12 +19909,19 @@ resolve@^0.6.1:
   languageName: node
   linkType: hard
 
-"rxjs@npm:^6.6.0, rxjs@npm:^6.6.6":
-  version: 6.6.6
-  resolution: "rxjs@npm:6.6.6"
+"rxjs@npm:^6.6.0, rxjs@npm:^6.6.6, rxjs@npm:^6.6.7":
+  version: 6.6.7
+  resolution: "rxjs@npm:6.6.7"
   dependencies:
     tslib: ^1.9.0
-  checksum: c97b410e791b3259439be48cd37119b63eedc3809a5895d884a7ac27a6934ae4ec246be3d76f1b2f3b47c72a96500ad30977545dc8b0f4a0f98c52f5f773a8ea
+  checksum: 1146975cbd5388ee5e61450235dc5670931e43cce71813f567977d334acc4d75c6e8d9d293df67e1fb31510b99fc8957943d4a9b550d109e4dc69967a8471543
+  languageName: node
+  linkType: hard
+
+"safe-buffer@npm:*, safe-buffer@npm:>=5.1.0, safe-buffer@npm:^5.0.1, safe-buffer@npm:^5.1.0, safe-buffer@npm:^5.1.1, safe-buffer@npm:^5.1.2, safe-buffer@npm:^5.2.0, safe-buffer@npm:~5.2.0":
+  version: 5.2.1
+  resolution: "safe-buffer@npm:5.2.1"
+  checksum: 0bb57f0d8f9d1fa4fe35ad8a2db1f83a027d48f2822d59ede88fd5cd4ddad83c0b497213feb7a70fbf90597a70c5217f735b0eb1850df40ce9b4ae81dd22b3f9
   languageName: node
   linkType: hard
 
@@ -19799,13 +19936,6 @@ resolve@^0.6.1:
   version: 5.1.2
   resolution: "safe-buffer@npm:5.1.2"
   checksum: 2708587c1b5e70a5e420714ceb59f30f5791c6e831d39812125a008eca63a4ac18578abd020a0776ea497ff03b4543f2b2a223a7b9073bf2d6c7af9ec6829218
-  languageName: node
-  linkType: hard
-
-"safe-buffer@npm:>=5.1.0, safe-buffer@npm:^5.0.1, safe-buffer@npm:^5.1.0, safe-buffer@npm:^5.1.1, safe-buffer@npm:^5.1.2, safe-buffer@npm:^5.2.0, safe-buffer@npm:~5.2.0":
-  version: 5.2.1
-  resolution: "safe-buffer@npm:5.2.1"
-  checksum: 0bb57f0d8f9d1fa4fe35ad8a2db1f83a027d48f2822d59ede88fd5cd4ddad83c0b497213feb7a70fbf90597a70c5217f735b0eb1850df40ce9b4ae81dd22b3f9
   languageName: node
   linkType: hard
 
@@ -22672,6 +22802,22 @@ resolve@^0.6.1:
   version: 1.1.1
   resolution: "web-vitals@npm:1.1.1"
   checksum: e84e449f46d5bdae9bc3d9d03647e654970bbe7fd448ecc8051ae06bcb869aa29cdcd16486786db416ca7a6e43a2f87e0f66662437ec5679761bcdd753a8c055
+  languageName: node
+  linkType: hard
+
+"webextension-polyfill-ts@npm:^0.25.0":
+  version: 0.25.0
+  resolution: "webextension-polyfill-ts@npm:0.25.0"
+  dependencies:
+    webextension-polyfill: ^0.7.0
+  checksum: e48181987d78447adaf646e7ad316b7a84edd276329ff11cee7a3f237f16ce81147d2214a998a1f0b29a0ce7324788ab3f353c4ab4818e160ab32e6f70c571f4
+  languageName: node
+  linkType: hard
+
+"webextension-polyfill@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "webextension-polyfill@npm:0.7.0"
+  checksum: e040196a73b0341eec283450265c3af424a27473fe8573b4a50dd3e36d03105cdd354fa27f5ceeee7d87f2574df4bfc709ba7268e2f58816fcd2f1ab3608f15d
   languageName: node
   linkType: hard
 

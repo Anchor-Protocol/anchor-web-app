@@ -1,4 +1,4 @@
-import { Extension } from '@terra-money/terra.js';
+import { Extension } from '@terra-money/terra.js.extension/Extension';
 import { MutableRefObject } from 'react';
 import { UserDeniedError } from './errors';
 import { StationNetworkInfo } from './types';
@@ -7,7 +7,7 @@ type ConnectResponse = { address?: string };
 type PostResponse = any;
 type InfoResponse = StationNetworkInfo;
 
-interface FixedExtension {
+export interface FixedExtension {
   isAvailable: () => boolean;
   post: (data: object) => Promise<PostResponse>;
   info: () => Promise<InfoResponse>;

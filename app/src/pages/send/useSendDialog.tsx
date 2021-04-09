@@ -266,7 +266,7 @@ function ComponentBase({
     sendResult?.status === 'fault'
   ) {
     return (
-      <Modal open disableBackdropClick>
+      <Modal open disableBackdropClick disableEnforceFocus>
         <Dialog className={className}>
           <TransactionRenderer result={sendResult} onExit={closeDialog} />
         </Dialog>

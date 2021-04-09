@@ -1,8 +1,9 @@
 import type { HumanAddr } from '@anchor-protocol/types/contracts';
-import { useIsDesktopChrome } from '@terra-dev/is-desktop-chrome';
-import { AccAddress, Extension } from '@terra-money/terra.js';
+import { AccAddress } from '@terra-money/terra.js';
+import { createExtension } from '@terra-money/terra.js.extension';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { extensionFixer } from './extensionFixer';
+import { extensionFixer, FixedExtension } from './extensionFixer';
+import { intervalCheck } from './internal/intervalCheck';
 import { StationNetworkInfo, WalletStatus, WalletStatusType } from './types';
 import { WalletContext, WalletProviderProps, WalletState } from './useWallet';
 
@@ -11,21 +12,6 @@ const storage = localStorage;
 const WALLET_ADDRESS: string = '__anchor_terra_station_wallet_address__';
 const STORED_WALLET_ADDRESS: string = '__anchor_stored_wallet_address__';
 
-async function intervalCheck(
-  count: number,
-  fn: () => boolean,
-  intervalMs: number = 500,
-): Promise<boolean> {
-  let i: number = -1;
-  while (++i < count) {
-    if (fn()) {
-      return true;
-    }
-    await new Promise((resolve) => setTimeout(resolve, intervalMs));
-  }
-  return false;
-}
-
 const initialStoredWalletAddress = localStorage.getItem(STORED_WALLET_ADDRESS);
 
 export function ChromeExtensionWalletProvider({
@@ -33,14 +19,22 @@ export function ChromeExtensionWalletProvider({
   defaultNetwork,
   enableWatchConnection = true,
 }: WalletProviderProps) {
-  const isDesktopChrome = useIsDesktopChrome();
+  const isDesktopChrome = true; //useIsDesktopChrome();
 
   const inTransactionProgress = useRef<boolean>(false);
 
-  const extension = useMemo(() => {
-    const extension = new Extension();
-    return extensionFixer(extension, inTransactionProgress);
+  const extension = useRef<FixedExtension>();
+
+  useEffect(() => {
+    createExtension().then((rawExtension) => {
+      extension.current = extensionFixer(rawExtension, inTransactionProgress);
+    });
   }, []);
+
+  //const extension = useMemo(() => {
+  //  const extension = createExtension();
+  //  return extensionFixer(extension, inTransactionProgress);
+  //}, []);
 
   const storedWalletAddress = useRef<HumanAddr | undefined>(
     initialStoredWalletAddress
@@ -104,10 +98,15 @@ export function ChromeExtensionWalletProvider({
       // check available use chrome extension
       // ---------------------------------------------
       const isExtensionInstalled = watingExtensionScriptInjection
-        ? await intervalCheck(20, () => extension.isAvailable())
-        : extension.isAvailable();
+        ? await intervalCheck(
+            20,
+            () => extension.current?.isAvailable() ?? false,
+          )
+        : extension.current?.isAvailable();
 
       firstCheck.current = true;
+
+      if (!extension.current) return;
 
       // if extension is not installed
       // does not need check more
@@ -137,7 +136,7 @@ export function ChromeExtensionWalletProvider({
       // ---------------------------------------------
       // get wallet network info
       // ---------------------------------------------
-      const infoPayload = await extension.info();
+      const infoPayload = await extension.current.info();
 
       const network: StationNetworkInfo = (infoPayload ??
         defaultNetwork) as any;
@@ -161,7 +160,7 @@ export function ChromeExtensionWalletProvider({
         );
 
         if (storedWalletAddress && AccAddress.validate(storedWalletAddress)) {
-          const connectResult = await extension.connect();
+          const connectResult = await extension.current.connect();
 
           if (
             connectResult?.address &&
@@ -200,7 +199,7 @@ export function ChromeExtensionWalletProvider({
         });
       }
     },
-    [defaultNetwork, extension, isDesktopChrome],
+    [defaultNetwork, isDesktopChrome],
   );
 
   const install = useCallback(() => {
@@ -211,7 +210,7 @@ export function ChromeExtensionWalletProvider({
   }, []);
 
   const connect = useCallback(async () => {
-    const result = await extension.connect();
+    const result = await extension.current?.connect();
 
     if (result?.address) {
       const walletAddress: string = result.address;
@@ -219,7 +218,7 @@ export function ChromeExtensionWalletProvider({
 
       await checkStatus();
     }
-  }, [checkStatus, extension]);
+  }, [checkStatus]);
 
   const disconnect = useCallback(() => {
     storedWalletAddress.current = undefined;
@@ -230,12 +229,12 @@ export function ChromeExtensionWalletProvider({
     checkStatus();
   }, [checkStatus]);
 
-  const post = useCallback<WalletState['post']>(
-    (data) => {
-      return extension.post(data);
-    },
-    [extension],
-  );
+  const post = useCallback<WalletState['post']>((data) => {
+    if (!extension.current) {
+      throw new Error(`do not post before extension initialized`);
+    }
+    return extension.current.post(data);
+  }, []);
 
   const provideAddress = useCallback(
     (address: HumanAddr) => {
@@ -251,7 +250,9 @@ export function ChromeExtensionWalletProvider({
 
   useEffect(() => {
     if (isDesktopChrome) {
-      checkStatus(true);
+      setTimeout(() => {
+        checkStatus(true);
+      });
     }
   }, [checkStatus, isDesktopChrome]);
 

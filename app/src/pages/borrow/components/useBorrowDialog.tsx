@@ -233,7 +233,7 @@ function ComponentBase({
     borrowResult?.status === 'fault'
   ) {
     return (
-      <Modal open disableBackdropClick>
+      <Modal open disableBackdropClick disableEnforceFocus>
         <Dialog className={className}>
           <TransactionRenderer result={borrowResult} onExit={closeDialog} />
         </Dialog>

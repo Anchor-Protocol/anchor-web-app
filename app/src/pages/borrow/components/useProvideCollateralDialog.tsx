@@ -210,7 +210,7 @@ function ComponentBase({
     provideCollateralResult?.status === 'fault'
   ) {
     return (
-      <Modal open disableBackdropClick>
+      <Modal open disableBackdropClick disableEnforceFocus>
         <Dialog className={className}>
           <TransactionRenderer
             result={provideCollateralResult}
