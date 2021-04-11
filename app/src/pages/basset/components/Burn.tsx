@@ -154,7 +154,6 @@ export function Burn() {
       const broadcasted = await burn({
         address: walletReady.walletAddress,
         amount: burnAmount,
-        bAsset: burnCurrency.value,
         txFee: fixedGas.toString() as uUST,
       });
 
@@ -162,7 +161,7 @@ export function Burn() {
         init();
       }
     },
-    [burn, burnCurrency.value, fixedGas, init],
+    [burn, fixedGas, init],
   );
 
   // ---------------------------------------------

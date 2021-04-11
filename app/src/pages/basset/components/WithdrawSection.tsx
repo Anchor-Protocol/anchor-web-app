@@ -113,7 +113,6 @@ export function WithdrawSection({
     async (walletReady: WalletReady) => {
       await withdraw({
         address: walletReady.walletAddress,
-        bAsset: 'bluna',
         txFee: fixedGas.toString() as uUST,
       });
     },

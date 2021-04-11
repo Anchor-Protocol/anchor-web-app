@@ -1,3 +1,4 @@
+import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import {
   demicrofy,
   formatUST,
@@ -143,8 +144,8 @@ function ComponentBase({
 
       await deposit({
         address: status.walletAddress,
+        market: MARKET_DENOMS.UUSD,
         amount: depositAmount,
-        symbol: 'usd',
         txFee: txFee!.toString() as uUST,
       });
     },

@@ -1,4 +1,4 @@
-import { fabricateRedeemStable } from '@anchor-protocol/anchor.js';
+import { fabricateMarketRedeemStable } from '@anchor-protocol/anchor.js';
 import {
   createOperationOptions,
   effect,
@@ -28,7 +28,7 @@ export const withdrawOptions = createOperationOptions({
     gasFee,
     fixedGas,
   }: OperationDependency<{}>) => [
-    effect(fabricateRedeemStable, takeTxFee(storage)), // Option -> ((AddressProvider) -> MsgExecuteContract[])
+    effect(fabricateMarketRedeemStable, takeTxFee(storage)), // Option -> ((AddressProvider) -> MsgExecuteContract[])
     createContractMsg(addressProvider), // -> MsgExecuteContract[]
     createOptions(() => ({
       fee: new StdFee(gasFee, fixedGas + 'uusd'),

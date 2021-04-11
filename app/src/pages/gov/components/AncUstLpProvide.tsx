@@ -182,8 +182,8 @@ export function AncUstLpProvide() {
     ) => {
       const broadcasted = await provide({
         address: walletReady.walletAddress,
-        tokenAmount: ancAmount,
-        nativeAmount: ustAmount,
+        token_amount: ancAmount,
+        native_amount: ustAmount,
         quote: 'uusd',
         txFee,
       });

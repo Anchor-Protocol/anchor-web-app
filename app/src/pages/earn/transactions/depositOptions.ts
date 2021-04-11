@@ -1,4 +1,4 @@
-import { fabricateDepositStableCoin } from '@anchor-protocol/anchor.js';
+import { fabricateMarketDepositStableCoin } from '@anchor-protocol/anchor.js';
 import { floor } from '@terra-dev/big-math';
 import {
   createOperationOptions,
@@ -28,7 +28,7 @@ export const depositOptions = createOperationOptions({
     gasFee,
     gasAdjustment,
   }: OperationDependency<{}>) => [
-    effect(fabricateDepositStableCoin, takeTxFee(storage)), // Option -> ((AddressProvider) -> MsgExecuteContract[])
+    effect(fabricateMarketDepositStableCoin, takeTxFee(storage)), // Option -> ((AddressProvider) -> MsgExecuteContract[])
     createContractMsg(addressProvider), // -> MsgExecuteContract[]
     createOptions(() => ({
       fee: new StdFee(gasFee, floor(storage.get('txFee')) + 'uusd'),
