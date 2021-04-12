@@ -76,6 +76,10 @@ export function RewardsBase({ className }: RewardsProps) {
       userLPStakingInfo.bond_amount,
     );
 
+    const LPValue = big(ancPrice.USTPoolSize)
+      .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare)
+      .mul(2) as uUST<Big>;
+
     const withdrawableAssets = {
       anc: big(ancPrice.ANCPoolSize)
         .mul(totalUserLPHolding)
@@ -86,35 +90,50 @@ export function RewardsBase({ className }: RewardsProps) {
     };
 
     const staked = userLPStakingInfo.bond_amount;
+    const stakedValue = big(staked).mul(LPValue) as uUST<Big>;
 
     const stakable = userLPBalance.balance;
+    const stakableValue = big(stakable).mul(LPValue) as uUST<Big>;
 
     const reward = userLPStakingInfo.pending_reward;
+    const rewardValue = big(reward).mul(ancPrice.ANCPrice) as uUST<Big>;
 
-    return { withdrawableAssets, staked, stakable, reward };
+    return {
+      withdrawableAssets,
+      LPValue,
+      staked,
+      stakedValue,
+      stakable,
+      stakableValue,
+      reward,
+      rewardValue,
+    };
   }, [ancPrice, lpStakingState, userLPBalance, userLPStakingInfo]);
 
   const govGorvernance = useMemo(() => {
-    if (!userGovStakingInfo || !userANCBalance) {
+    if (!userGovStakingInfo || !userANCBalance || !ancPrice) {
       return undefined;
     }
 
     const staked = big(userGovStakingInfo.balance) as uANC<Big>;
+    const stakedValue = staked.mul(ancPrice.ANCPrice) as uUST<Big>;
 
-    const stakable = userANCBalance.balance;
+    const stakable = big(userANCBalance.balance) as uANC<Big>;
+    const stakableValue = stakable.mul(ancPrice.ANCPrice) as uUST<Big>;
 
-    return { staked, stakable };
-  }, [userANCBalance, userGovStakingInfo]);
+    return { staked, stakedValue, stakable, stakableValue };
+  }, [userANCBalance, userGovStakingInfo, ancPrice]);
 
   const ustBorrow = useMemo(() => {
-    if (!marketState || !borrowerInfo) {
+    if (!marketState || !borrowerInfo || !ancPrice) {
       return undefined;
     }
 
     const reward = big(borrowerInfo.pending_rewards) as uANC<Big>;
+    const rewardValue = reward.mul(ancPrice.ANCPrice) as uUST<Big>;
 
-    return { reward };
-  }, [borrowerInfo, marketState]);
+    return { reward, rewardValue };
+  }, [borrowerInfo, marketState, ancPrice]);
 
   const total = useMemo(() => {
     if (!ustBorrow || !ancUstLp || !ancPrice) {
@@ -162,15 +181,15 @@ export function RewardsBase({ className }: RewardsProps) {
         </h3>
 
         <HorizontalScrollTable
-          minWidth={1100}
+          minWidth={1200}
           startPadding={20}
           endPadding={20}
         >
           <colgroup>
             <col style={{ minWidth: 210 }} />
-            <col style={{ minWidth: 205 }} />
-            <col style={{ minWidth: 340 }} />
-            <col style={{ minWidth: 160 }} />
+            <col style={{ minWidth: 180 }} />
+            <col style={{ minWidth: 240 }} />
+            <col style={{ minWidth: 240 }} />
             <col style={{ minWidth: 200 }} />
             <col style={{ minWidth: 100 }} />
           </colgroup>
@@ -214,18 +233,44 @@ export function RewardsBase({ className }: RewardsProps) {
                 %
               </td>
               <td>
-                {govGorvernance?.staked
-                  ? formatANCWithPostfixUnits(demicrofy(govGorvernance.staked))
-                  : 0}{' '}
-                ANC
+                <p>
+                  {govGorvernance?.staked
+                    ? formatANCWithPostfixUnits(
+                        demicrofy(govGorvernance.staked),
+                      )
+                    : 0}{' '}
+                  ANC
+                </p>
+                <p className="subtext">
+                  <IconSpan>
+                    {govGorvernance?.stakedValue
+                      ? formatUSTWithPostfixUnits(
+                          demicrofy(govGorvernance.stakedValue),
+                        )
+                      : 0}{' '}
+                    UST <InfoTooltip>Staked ANC value in UST</InfoTooltip>
+                  </IconSpan>
+                </p>
               </td>
               <td>
-                {govGorvernance?.stakable
-                  ? formatANCWithPostfixUnits(
-                      demicrofy(govGorvernance.stakable),
-                    )
-                  : 0}{' '}
-                ANC
+                <p>
+                  {govGorvernance?.stakable
+                    ? formatANCWithPostfixUnits(
+                        demicrofy(govGorvernance.stakable),
+                      )
+                    : 0}{' '}
+                  ANC
+                </p>
+                <p className="subtext">
+                  <IconSpan>
+                    {govGorvernance?.stakableValue
+                      ? formatUSTWithPostfixUnits(
+                          demicrofy(govGorvernance.stakableValue),
+                        )
+                      : 0}{' '}
+                    UST <InfoTooltip>Stakeable ANC value in UST</InfoTooltip>
+                  </IconSpan>
+                </p>
               </td>
               <td>
                 <IconSpan>
@@ -256,7 +301,7 @@ export function RewardsBase({ className }: RewardsProps) {
             <tr>
               <td>
                 <p>ANC-UST LP</p>
-                <p style={{ fontSize: 12 }}>
+                <p className="subtext">
                   <IconSpan>
                     {ancUstLp?.withdrawableAssets
                       ? formatANCWithPostfixUnits(
@@ -283,23 +328,60 @@ export function RewardsBase({ className }: RewardsProps) {
                 %
               </td>
               <td>
-                {ancUstLp?.staked ? formatLP(demicrofy(ancUstLp.staked)) : 0} LP
+                <p>
+                  {ancUstLp?.staked ? formatLP(demicrofy(ancUstLp.staked)) : 0}{' '}
+                  LP
+                </p>
+                <p className="subtext">
+                  <IconSpan>
+                    {ancUstLp?.stakedValue
+                      ? formatUSTWithPostfixUnits(
+                          demicrofy(ancUstLp.stakedValue),
+                        )
+                      : 0}{' '}
+                    UST <InfoTooltip>Staked LP value in UST</InfoTooltip>
+                  </IconSpan>
+                </p>
               </td>
               <td
                 className={
                   big(ancUstLp?.stakable ?? 0).gt(0) ? 'warning' : undefined
                 }
               >
-                {ancUstLp?.stakable
-                  ? formatLP(demicrofy(ancUstLp.stakable))
-                  : 0}{' '}
-                LP
+                <p>
+                  {ancUstLp?.stakable
+                    ? formatLP(demicrofy(ancUstLp.stakable))
+                    : 0}{' '}
+                  LP
+                </p>
+                <p className="subtext">
+                  <IconSpan>
+                    {ancUstLp?.stakableValue
+                      ? formatUSTWithPostfixUnits(
+                          demicrofy(ancUstLp.stakableValue),
+                        )
+                      : 0}{' '}
+                    UST <InfoTooltip>Stakeable LP value in UST</InfoTooltip>
+                  </IconSpan>
+                </p>
               </td>
               <td>
-                {ancUstLp?.reward
-                  ? formatANCWithPostfixUnits(demicrofy(ancUstLp.reward))
-                  : 0}{' '}
-                ANC
+                <p>
+                  {ancUstLp?.reward
+                    ? formatANCWithPostfixUnits(demicrofy(ancUstLp.reward))
+                    : 0}{' '}
+                  ANC
+                </p>
+                <p className="subtext">
+                  <IconSpan>
+                    {ancUstLp?.rewardValue
+                      ? formatUSTWithPostfixUnits(
+                          demicrofy(ancUstLp.rewardValue),
+                        )
+                      : 0}{' '}
+                    UST <InfoTooltip>Reward ANC value in UST</InfoTooltip>
+                  </IconSpan>
+                </p>
               </td>
               <td>
                 <MoreMenu size="25px">
@@ -347,10 +429,22 @@ export function RewardsBase({ className }: RewardsProps) {
               <td></td>
               <td></td>
               <td>
-                {ustBorrow?.reward
-                  ? formatUSTWithPostfixUnits(demicrofy(ustBorrow.reward))
-                  : 0}{' '}
-                ANC
+                <p>
+                  {ustBorrow?.reward
+                    ? formatUSTWithPostfixUnits(demicrofy(ustBorrow.reward))
+                    : 0}{' '}
+                  ANC
+                </p>
+                <p className="subtext">
+                  <IconSpan>
+                    {ustBorrow?.rewardValue
+                      ? formatUSTWithPostfixUnits(
+                          demicrofy(ustBorrow.rewardValue),
+                        )
+                      : 0}{' '}
+                    UST <InfoTooltip>Reward ANC value in UST</InfoTooltip>
+                  </IconSpan>
+                </p>
               </td>
               <td>
                 <MoreMenu size="25px">
@@ -402,6 +496,11 @@ export const Rewards = styled(RewardsBase)`
       td {
         font-size: 16px;
         letter-spacing: -0.3px;
+
+        .subtext {
+          font-size: 12px;
+          color: ${({ theme }) => theme.dimTextColor};
+        }
       }
     }
 
