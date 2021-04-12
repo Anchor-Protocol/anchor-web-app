@@ -1,4 +1,4 @@
-import { fabricatebAssetClaim } from '@anchor-protocol/anchor.js';
+import { fabricatebAssetClaimRewards } from '@anchor-protocol/anchor.js';
 import {
   createOperationOptions,
   merge,
@@ -25,7 +25,7 @@ export const claimOptions = createOperationOptions({
     gasFee,
     gasAdjustment,
   }: OperationDependency<{}>) => [
-    fabricatebAssetClaim, // Option -> ((AddressProvider) -> MsgExecuteContract[])
+    fabricatebAssetClaimRewards, // Option -> ((AddressProvider) -> MsgExecuteContract[])
     createContractMsg(addressProvider), // -> MsgExecuteContract[]
     createOptions(() => ({
       fee: new StdFee(gasFee, fixedGas + 'uusd'),

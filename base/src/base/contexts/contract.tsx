@@ -1,4 +1,5 @@
 import type { AddressMap, AddressProvider } from '@anchor-protocol/anchor.js';
+import { COLLATERAL_DENOMS, MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import { ContractAddress, CW20Addr, HumanAddr } from '@anchor-protocol/types';
 import type { ReactNode } from 'react';
 import { Consumer, Context, createContext, useContext, useMemo } from 'react';
@@ -47,14 +48,17 @@ export function createContractAddress(
 ): ContractAddress {
   return {
     bluna: {
-      reward: addressProvider.blunaReward('') as HumanAddr,
-      hub: addressProvider.blunaHub('') as HumanAddr,
+      reward: addressProvider.bLunaReward() as HumanAddr,
+      hub: addressProvider.bLunaHub() as HumanAddr,
       airdropRegistry: addressProvider.airdrop() as HumanAddr,
     },
     moneyMarket: {
-      market: addressProvider.market('') as HumanAddr,
-      custody: addressProvider.custody('') as HumanAddr,
-      overseer: addressProvider.overseer('') as HumanAddr,
+      market: addressProvider.market(MARKET_DENOMS.UUSD) as HumanAddr,
+      custody: addressProvider.custody(
+        MARKET_DENOMS.UUSD,
+        COLLATERAL_DENOMS.UBLUNA,
+      ) as HumanAddr,
+      overseer: addressProvider.overseer(MARKET_DENOMS.UUSD) as HumanAddr,
       oracle: addressProvider.oracle() as HumanAddr,
       interestModel: addressProvider.interest() as HumanAddr,
       distributionModel: addressMap.mmDistributionModel as HumanAddr,
@@ -76,11 +80,11 @@ export function createContractAddress(
       ancUstPair: addressProvider.terraswapAncUstPair() as HumanAddr,
     },
     cw20: {
-      bLuna: addressProvider.blunaToken('') as CW20Addr,
-      aUST: addressProvider.aTerra('') as CW20Addr,
+      bLuna: addressProvider.bLunaToken() as CW20Addr,
+      aUST: addressProvider.aTerra(MARKET_DENOMS.UUSD) as CW20Addr,
       ANC: addressProvider.ANC() as CW20Addr,
       AncUstLP: addressProvider.terraswapAncUstLPToken() as CW20Addr,
-      bLunaLunaLP: addressProvider.terraswapblunaLunaLPToken('') as CW20Addr,
+      bLunaLunaLP: addressProvider.terraswapblunaLunaLPToken() as CW20Addr,
     },
   };
 }

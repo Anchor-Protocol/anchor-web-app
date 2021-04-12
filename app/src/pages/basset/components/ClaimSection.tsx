@@ -63,8 +63,6 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
     async (walletReady: WalletReady) => {
       await claim({
         address: walletReady.walletAddress,
-        bAsset: 'bluna',
-        recipient: undefined,
       });
     },
     [claim],
