@@ -181,15 +181,15 @@ export function RewardsBase({ className }: RewardsProps) {
         </h3>
 
         <HorizontalScrollTable
-          minWidth={1100}
+          minWidth={1200}
           startPadding={20}
           endPadding={20}
         >
           <colgroup>
             <col style={{ minWidth: 210 }} />
-            <col style={{ minWidth: 205 }} />
-            <col style={{ minWidth: 340 }} />
-            <col style={{ minWidth: 160 }} />
+            <col style={{ minWidth: 180 }} />
+            <col style={{ minWidth: 240 }} />
+            <col style={{ minWidth: 240 }} />
             <col style={{ minWidth: 200 }} />
             <col style={{ minWidth: 100 }} />
           </colgroup>
@@ -241,7 +241,7 @@ export function RewardsBase({ className }: RewardsProps) {
                     : 0}{' '}
                   ANC
                 </p>
-                <p style={{ fontSize: 12 }}>
+                <p className="subtext">
                   <IconSpan>
                     {govGorvernance?.stakedValue
                       ? formatUSTWithPostfixUnits(
@@ -261,7 +261,7 @@ export function RewardsBase({ className }: RewardsProps) {
                     : 0}{' '}
                   ANC
                 </p>
-                <p style={{ fontSize: 12 }}>
+                <p className="subtext">
                   <IconSpan>
                     {govGorvernance?.stakableValue
                       ? formatUSTWithPostfixUnits(
@@ -301,7 +301,7 @@ export function RewardsBase({ className }: RewardsProps) {
             <tr>
               <td>
                 <p>ANC-UST LP</p>
-                <p style={{ fontSize: 12 }}>
+                <p className="subtext">
                   <IconSpan>
                     {ancUstLp?.withdrawableAssets
                       ? formatANCWithPostfixUnits(
@@ -332,7 +332,7 @@ export function RewardsBase({ className }: RewardsProps) {
                   {ancUstLp?.staked ? formatLP(demicrofy(ancUstLp.staked)) : 0}{' '}
                   LP
                 </p>
-                <p style={{ fontSize: 12 }}>
+                <p className="subtext">
                   <IconSpan>
                     {ancUstLp?.stakedValue
                       ? formatUSTWithPostfixUnits(
@@ -354,7 +354,7 @@ export function RewardsBase({ className }: RewardsProps) {
                     : 0}{' '}
                   LP
                 </p>
-                <p style={{ fontSize: 12 }}>
+                <p className="subtext">
                   <IconSpan>
                     {ancUstLp?.stakableValue
                       ? formatUSTWithPostfixUnits(
@@ -372,7 +372,7 @@ export function RewardsBase({ className }: RewardsProps) {
                     : 0}{' '}
                   ANC
                 </p>
-                <p style={{ fontSize: 12 }}>
+                <p className="subtext">
                   <IconSpan>
                     {ancUstLp?.rewardValue
                       ? formatUSTWithPostfixUnits(
@@ -435,7 +435,7 @@ export function RewardsBase({ className }: RewardsProps) {
                     : 0}{' '}
                   ANC
                 </p>
-                <p style={{ fontSize: 12 }}>
+                <p className="subtext">
                   <IconSpan>
                     {ustBorrow?.rewardValue
                       ? formatUSTWithPostfixUnits(
@@ -496,6 +496,11 @@ export const Rewards = styled(RewardsBase)`
       td {
         font-size: 16px;
         letter-spacing: -0.3px;
+
+        .subtext {
+          font-size: 12px;
+          color: ${({ theme }) => theme.dimTextColor};
+        }
       }
     }
 
