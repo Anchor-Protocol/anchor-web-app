@@ -98,6 +98,8 @@ IDE
 - [packages/src/@terra-dev/use-router-scroll-restoration/README.md](packages/src/@terra-dev/use-router-scroll-restoration/README.md)
 - [packages/src/@terra-dev/use-string-bytes-length/README.md](packages/src/@terra-dev/use-string-bytes-length/README.md)
 - [packages/src/@terra-dev/use-time-end/README.md](packages/src/@terra-dev/use-time-end/README.md)
+- [packages/src/@terra-dev/walletconnect-qrcode-modal/README.md](packages/src/@terra-dev/walletconnect-qrcode-modal/README.md)
+- [packages/src/@terra-dev/walletconnect/README.md](packages/src/@terra-dev/walletconnect/README.md)
 
 <!-- /index -->
 

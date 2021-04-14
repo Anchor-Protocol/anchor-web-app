@@ -1,5 +1,5 @@
 import { Extension } from '@terra-money/terra.js';
-import { UserDeniedError } from '../errors';
+import { UserDeniedError } from './errors';
 
 export interface StationNetworkInfo {
   name: string;

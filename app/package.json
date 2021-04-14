@@ -70,6 +70,8 @@
     "@types/react-router-dom": "^5.1.7",
     "@types/styled-components": "^5.1.7",
     "@types/testing-library__jest-dom": "^5.9.5",
+    "@walletconnect/client": "^1.4.1",
+    "@walletconnect/types": "^1.4.1",
     "big.js": "^6.0.3",
     "bignumber.js": "^9.0.1",
     "bowser": "^2.11.0",
