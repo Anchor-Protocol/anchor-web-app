@@ -1,6 +1,6 @@
 import type { uANC } from '@anchor-protocol/types';
 import { cw20, moneyMarket, WASMContractResult } from '@anchor-protocol/types';
-import { useUserWallet } from '@anchor-protocol/wallet-provider';
+import { useConnectedWallet } from '@anchor-protocol/wallet-provider2';
 import { gql, useQuery } from '@apollo/client';
 import { createMap, useMap } from '@terra-dev/use-map';
 import { useContractAddress } from 'base/contexts/contract';
@@ -107,7 +107,7 @@ export function useClaimableUstBorrow(): MappedQueryResult<
 
   const { data: lastSyncedHeight } = useLastSyncedHeight();
 
-  const userWallet = useUserWallet();
+  const userWallet = useConnectedWallet();
 
   const variables = useMemo(() => {
     if (

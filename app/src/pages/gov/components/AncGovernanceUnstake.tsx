@@ -10,8 +10,8 @@ import {
 import { ANC, uANC } from '@anchor-protocol/types';
 import {
   useConnectedWallet,
-  WalletReady,
-} from '@anchor-protocol/wallet-provider';
+  ConnectedWallet,
+} from '@anchor-protocol/wallet-provider2';
 import { InputAdornment } from '@material-ui/core';
 import { max } from '@terra-dev/big-math';
 import { useOperation } from '@terra-dev/broadcastable-operation';
@@ -96,7 +96,7 @@ export function AncGovernanceUnstake() {
   }, []);
 
   const proceed = useCallback(
-    async (walletReady: WalletReady, ancAmount: ANC) => {
+    async (walletReady: ConnectedWallet, ancAmount: ANC) => {
       const broadcasted = await unstake({
         address: walletReady.walletAddress,
         amount: ancAmount,

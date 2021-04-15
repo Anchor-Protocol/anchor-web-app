@@ -1,8 +1,5 @@
 import { Discord } from '@anchor-protocol/icons';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { useWallet } from '@anchor-protocol/wallet-provider';
-import { useTheme } from 'base/contexts/theme';
-import { useLastSyncedHeight } from 'base/queries/lastSyncedHeight';
+import { useWallet } from '@anchor-protocol/wallet-provider2';
 import { IconButton } from '@material-ui/core';
 import {
   Brightness3,
@@ -12,8 +9,11 @@ import {
   Telegram,
   Twitter,
 } from '@material-ui/icons';
-import c from 'color';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { useTheme } from 'base/contexts/theme';
 import { screen } from 'base/env';
+import { useLastSyncedHeight } from 'base/queries/lastSyncedHeight';
+import c from 'color';
 import React, { CSSProperties } from 'react';
 import styled from 'styled-components';
 
@@ -23,7 +23,7 @@ export interface FooterProps {
 }
 
 function FooterBase({ className, style }: FooterProps) {
-  const { status } = useWallet();
+  const { network } = useWallet();
   const { data: lastSyncedHeight } = useLastSyncedHeight();
 
   const { themeColor, updateTheme } = useTheme();
@@ -32,14 +32,14 @@ function FooterBase({ className, style }: FooterProps) {
     <footer className={className} style={style}>
       <div>
         <a
-          href={`https://finder.terra.money/${status.network.chainID}/blocks/${lastSyncedHeight}`}
+          href={`https://finder.terra.money/${network.chainID}/blocks/${lastSyncedHeight}`}
           target="_blank"
           rel="noreferrer"
         >
           <IconSpan>
             <FiberManualRecord className="point" />{' '}
-            {status.network.name.toLowerCase().indexOf('mainnet') !== 0 && (
-              <b>[{status.network.name.toUpperCase()}] </b>
+            {network.name.toLowerCase().indexOf('mainnet') !== 0 && (
+              <b>[{network.name.toUpperCase()}] </b>
             )}
             Latest Block: {lastSyncedHeight}
           </IconSpan>

@@ -1,12 +1,15 @@
-import { useWallet, WalletStatusType } from '@anchor-protocol/wallet-provider';
+import {
+  useConnectedWallet,
+  useWallet,
+} from '@anchor-protocol/wallet-provider2';
 import { Modal } from '@material-ui/core';
 import { buttonBaseStyle } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
 import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
 import { useBank } from 'base/contexts/bank';
-import { WalletDetailContent } from 'components/Header/WalletSelector/WalletDetailContent';
 import React, { ReactNode, useCallback } from 'react';
 import styled from 'styled-components';
+import { WalletDetailContent } from './WalletDetailContent';
 
 interface FormParams {
   className?: string;
@@ -25,7 +28,8 @@ function ComponentBase({
   className,
   closeDialog,
 }: DialogProps<FormParams, FormReturn>) {
-  const { status, disconnect } = useWallet();
+  const { disconnect } = useWallet();
+  const connectedWallet = useConnectedWallet();
 
   const bank = useBank();
 
@@ -37,9 +41,10 @@ function ComponentBase({
   return (
     <Modal open onClose={() => closeDialog()}>
       <Dialog className={className} onClose={() => closeDialog()}>
-        {status.status === WalletStatusType.WALLET_ADDRESS_CONNECTED && (
+        {!!connectedWallet && (
           <WalletDetailContent
-            status={status}
+            walletAddress={connectedWallet.walletAddress}
+            network={connectedWallet.network}
             closePopup={() => {}}
             disconnectWallet={disconnectWallet}
             bank={bank}

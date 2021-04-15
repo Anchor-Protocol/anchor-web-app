@@ -11,8 +11,8 @@ import {
 import { ANC, AncUstLP, UST, uUST } from '@anchor-protocol/types';
 import {
   useConnectedWallet,
-  WalletReady,
-} from '@anchor-protocol/wallet-provider';
+  ConnectedWallet,
+} from '@anchor-protocol/wallet-provider2';
 import { Input, InputAdornment } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { isZero } from '@terra-dev/is-zero';
@@ -115,7 +115,7 @@ export function AncUstLpWithdraw() {
   }, []);
 
   const proceed = useCallback(
-    async (walletReady: WalletReady, lpAmount: AncUstLP, txFee: uUST) => {
+    async (walletReady: ConnectedWallet, lpAmount: AncUstLP, txFee: uUST) => {
       const broadcasted = await withdraw({
         address: walletReady.walletAddress,
         amount: lpAmount,

@@ -1,6 +1,6 @@
 import type { DateTime, uUST } from '@anchor-protocol/types';
 import { Denom, HumanAddr } from '@anchor-protocol/types';
-import { useUserWallet } from '@anchor-protocol/wallet-provider';
+import { useConnectedWallet } from '@anchor-protocol/wallet-provider2';
 import { gql, useQuery } from '@apollo/client';
 import { useSubscription } from '@terra-dev/broadcastable-operation';
 import { createMap, Mapped, useMap } from '@terra-dev/use-map';
@@ -74,7 +74,7 @@ export function useTransactionHistory(): MappedQueryResult<
   RawData,
   Data
 > {
-  const userWallet = useUserWallet();
+  const userWallet = useConnectedWallet();
 
   const variables = useMemo(() => {
     if (!userWallet) return undefined;

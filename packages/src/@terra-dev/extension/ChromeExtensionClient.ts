@@ -152,6 +152,12 @@ export class ChromeExtensionClient {
     this.checkStatus();
   };
 
+  recheckStatus = () => {
+    if (!this._extension.inTransactionProgress()) {
+      this.checkStatus(false);
+    }
+  };
+
   post = <SendData extends {}, Payload extends {}>(
     data: SendData,
   ): Promise<{ name: string; payload: Payload }> => {

@@ -1,6 +1,6 @@
+import { TxResult } from '@anchor-protocol/wallet-provider2';
 import { Data } from '../queries/txInfos';
 import { ReactNode } from 'react';
-import { TxResult } from '../transactions/tx';
 
 export interface TransactionResult {
   txInfo: Data;

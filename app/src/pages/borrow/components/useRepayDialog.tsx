@@ -9,10 +9,9 @@ import {
 } from '@anchor-protocol/notation';
 import { Rate, UST, uUST } from '@anchor-protocol/types';
 import {
+  ConnectedWallet,
   useConnectedWallet,
-  useWallet,
-  WalletReady,
-} from '@anchor-protocol/wallet-provider';
+} from '@anchor-protocol/wallet-provider2';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
@@ -77,14 +76,12 @@ function ComponentBase({
     marketState,
   } = useMarketNotNullable();
 
-  const { status } = useWallet();
-
   const connectedWallet = useConnectedWallet();
 
   const { fixedGas, blocksPerYear } = useConstants();
 
   const [repay, repayResult] = useOperation(repayOptions, {
-    walletStatus: status,
+    walletAddress: connectedWallet!.walletAddress,
   });
 
   // ---------------------------------------------
@@ -168,7 +165,7 @@ function ComponentBase({
 
   const proceed = useCallback(
     async (
-      walletReady: WalletReady,
+      walletReady: ConnectedWallet,
       repayAmount: UST,
       txFee: uUST<BigSource> | undefined,
     ) => {

@@ -14,7 +14,6 @@ import { createOptions } from 'base/transactions/createOptions';
 import { getTxInfo } from 'base/transactions/getTxInfo';
 import { postContractMsg } from 'base/transactions/postContractMsg';
 import { takeTxFee } from 'base/transactions/takeTxFee';
-import { parseTxResult } from 'base/transactions/tx';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { AncPrice } from 'pages/gov/models/ancPrice';
 import { pickAncUstLpProvideResult } from 'pages/gov/transactions/pickAncUstLpProvideResult';
@@ -40,8 +39,7 @@ export const ancUstLpProvideOptions = createOperationOptions({
       fee: new StdFee(gasFee, floor(storage.get('txFee')) + 'uusd'),
       gasAdjustment,
     })), // -> CreateTxOptions
-    timeout(postContractMsg(post), 1000 * 60 * 20), // -> Promise<StringifiedTxResult>
-    parseTxResult, // -> TxResult
+    timeout(postContractMsg(post), 1000 * 60 * 20), // -> Promise<TxResult>
     merge(
       getTxInfo(client, signal), // -> { TxResult, TxInfo }
       () => ({ fixedGas, bank, ancPrice }), // -> { fixedGas, bank, ancPrice }

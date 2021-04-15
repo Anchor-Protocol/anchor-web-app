@@ -10,7 +10,7 @@ import type {
   UST,
   uUST,
 } from '@anchor-protocol/types';
-import { useUserWallet } from '@anchor-protocol/wallet-provider';
+import { useConnectedWallet } from '@anchor-protocol/wallet-provider2';
 import { BigSource } from 'big.js';
 import type { ReactNode } from 'react';
 import {
@@ -42,7 +42,7 @@ export interface Bank {
 const BankContext: Context<Bank> = createContext<Bank>();
 
 export function BankProvider({ children }: BankProviderProps) {
-  const userWallet = useUserWallet();
+  const userWallet = useConnectedWallet();
 
   const { data: taxData, refetch: refetchTax } = useTax();
 

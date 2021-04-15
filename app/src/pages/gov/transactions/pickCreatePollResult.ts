@@ -7,7 +7,7 @@ import { TxHashLink } from 'base/components/TxHashLink';
 import { TransactionResult } from 'base/models/transaction';
 import { Data } from 'base/queries/txInfos';
 import { createElement } from 'react';
-import { TxResult } from 'base/transactions/tx';
+import { TxResult } from '@anchor-protocol/wallet-provider2';
 
 interface Params {
   txResult: TxResult;

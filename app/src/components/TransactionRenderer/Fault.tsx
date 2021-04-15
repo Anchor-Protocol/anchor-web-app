@@ -4,10 +4,12 @@ import {
 } from '@terra-dev/broadcastable-operation';
 import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
 import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
-import { UserDeniedError } from '@anchor-protocol/wallet-provider';
+import {
+  TxFailedError,
+  UserDeniedError,
+} from '@anchor-protocol/wallet-provider2';
 import { IconButton } from '@material-ui/core';
 import { Close, FileCopy } from '@material-ui/icons';
-import { TxFailedError } from 'base/errors/TxFailedError';
 import { TxInfoError } from 'base/errors/TxInfoError';
 import { TxInfoParseError } from 'base/errors/TxInfoParseError';
 import React from 'react';

@@ -15,7 +15,7 @@ import {
   pickEvent,
   pickRawLog,
 } from 'base/queries/txInfos';
-import { TxResult } from 'base/transactions/tx';
+import { TxResult } from '@anchor-protocol/wallet-provider2';
 import big, { BigSource } from 'big.js';
 import { createElement } from 'react';
 

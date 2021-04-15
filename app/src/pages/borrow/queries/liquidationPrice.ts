@@ -4,7 +4,7 @@ import {
   StableDenom,
   WASMContractResult,
 } from '@anchor-protocol/types';
-import { useUserWallet } from '@anchor-protocol/wallet-provider';
+import { useConnectedWallet } from '@anchor-protocol/wallet-provider2';
 import { gql, useQuery } from '@apollo/client';
 import { useSubscription } from '@terra-dev/broadcastable-operation';
 import { createMap, useMap } from '@terra-dev/use-map';
@@ -142,7 +142,7 @@ export function useLiquidationPrice(): MappedQueryResult<
   RawData,
   Data
 > {
-  const userWallet = useUserWallet();
+  const userWallet = useConnectedWallet();
 
   const address = useContractAddress();
 

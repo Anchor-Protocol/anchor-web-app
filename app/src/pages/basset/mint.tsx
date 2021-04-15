@@ -8,9 +8,9 @@ import {
 } from '@anchor-protocol/notation';
 import { bLuna, Luna, uUST } from '@anchor-protocol/types';
 import {
+  ConnectedWallet,
   useConnectedWallet,
-  WalletReady,
-} from '@anchor-protocol/wallet-provider';
+} from '@anchor-protocol/wallet-provider2';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
@@ -172,7 +172,7 @@ function MintBase({ className }: MintProps) {
 
   const proceed = useCallback(
     async (
-      walletReady: WalletReady,
+      walletReady: ConnectedWallet,
       bondAmount: Luna,
       selectedValidator: string,
     ) => {

@@ -5,6 +5,7 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { Rate, ubLuna, uLuna, uUST } from '@anchor-protocol/types';
+import { TxResult } from '@anchor-protocol/wallet-provider2';
 import { TxHashLink } from 'base/components/TxHashLink';
 import { TxInfoParseError } from 'base/errors/TxInfoParseError';
 import { TransactionResult } from 'base/models/transaction';
@@ -14,7 +15,6 @@ import {
   pickEvent,
   pickRawLog,
 } from 'base/queries/txInfos';
-import { TxResult } from 'base/transactions/tx';
 import big, { BigSource } from 'big.js';
 import { createElement } from 'react';
 

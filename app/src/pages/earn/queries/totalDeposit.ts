@@ -8,7 +8,7 @@ import type {
   uaUST,
   WASMContractResult,
 } from '@anchor-protocol/types';
-import { useUserWallet } from '@anchor-protocol/wallet-provider';
+import { useConnectedWallet } from '@anchor-protocol/wallet-provider2';
 import { gql, useQuery } from '@apollo/client';
 import { useEventBusListener } from '@terra-dev/event-bus';
 import { createMap, Mapped, useMap } from '@terra-dev/use-map';
@@ -116,7 +116,7 @@ export const query = gql`
 
 export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
   const { moneyMarket, cw20 } = useContractAddress();
-  const userWallet = useUserWallet();
+  const userWallet = useConnectedWallet();
 
   const { data: lastSyncedHeight } = useLastSyncedHeight();
 

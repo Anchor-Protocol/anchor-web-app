@@ -1,3 +1,6 @@
+import { HumanAddr } from '@anchor-protocol/types';
+import { useInterval } from '@terra-dev/use-interval';
+import { AccAddress, CreateTxOptions } from '@terra-money/terra.js';
 import React, {
   Consumer,
   Context,
@@ -10,8 +13,10 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { useLocation } from 'react-router-dom';
 import { NetworkInfo, WalletStatus } from './models';
 import { WalletController, WalletControllerOptions } from './provider';
+import { TxResult } from './tx';
 
 export interface WalletProviderProps extends WalletControllerOptions {
   children: ReactNode;
@@ -28,6 +33,8 @@ export interface Wallet {
   walletAddress: string | null;
   connect: (type: ConnectType) => void;
   disconnect: () => void;
+  recheckExtensionStatus: () => void;
+  post: (tx: CreateTxOptions) => Promise<TxResult>;
 }
 
 // @ts-ignore
@@ -65,6 +72,14 @@ export function WalletProvider({
     controller.current.disconnect();
   }, []);
 
+  const recheckExtensionStatus = useCallback(() => {
+    controller.current.recheckExtensionStatus();
+  }, []);
+
+  const post = useCallback(async (tx: CreateTxOptions) => {
+    return controller.current.post(tx);
+  }, []);
+
   useEffect(() => {
     const statusSubscription = controller.current.status().subscribe({
       next: setStatus,
@@ -94,8 +109,18 @@ export function WalletProvider({
       walletAddress,
       connect,
       disconnect,
+      recheckExtensionStatus,
+      post,
     }),
-    [connect, disconnect, network, status, walletAddress],
+    [
+      connect,
+      disconnect,
+      network,
+      post,
+      recheckExtensionStatus,
+      status,
+      walletAddress,
+    ],
   );
 
   return (
@@ -105,6 +130,61 @@ export function WalletProvider({
 
 export function useWallet(): Wallet {
   return useContext(WalletContext);
+}
+
+export interface ConnectedWallet {
+  network: NetworkInfo;
+  walletAddress: HumanAddr;
+}
+
+export function useConnectedWallet(): ConnectedWallet | undefined {
+  const { status, network, walletAddress } = useContext(WalletContext);
+
+  if (
+    status === WalletStatus.WALLET_CONNECTED &&
+    typeof walletAddress === 'string' &&
+    AccAddress.validate(walletAddress)
+  ) {
+    return {
+      network,
+      walletAddress: walletAddress as HumanAddr,
+    };
+  } else {
+    return undefined;
+  }
+}
+
+const interval = 1000 * 60;
+
+export function useRouterWalletStatusRecheck() {
+  const { pathname } = useLocation();
+  const { recheckExtensionStatus } = useContext(WalletContext);
+
+  const lastCheckTime = useRef<number>(Date.now());
+
+  const check = useCallback(() => {
+    recheckExtensionStatus();
+    lastCheckTime.current = Date.now();
+  }, [recheckExtensionStatus]);
+
+  useEffect(() => {
+    check();
+  }, [check, pathname]);
+
+  const tick = useCallback(() => {
+    const now = Date.now();
+
+    if (now > lastCheckTime.current + interval) {
+      check();
+    }
+  }, [check]);
+
+  useInterval(tick, interval);
+}
+
+export function RouterWalletStatusRecheck() {
+  useRouterWalletStatusRecheck();
+  return null;
 }
 
 export const WalletConsumer: Consumer<Wallet> = WalletContext.Consumer;

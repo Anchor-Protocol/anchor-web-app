@@ -1,5 +1,5 @@
 import { demicrofy, formatUST, truncate } from '@anchor-protocol/notation';
-import { useWallet } from '@anchor-protocol/wallet-provider';
+import { useWallet } from '@anchor-protocol/wallet-provider2';
 import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
 import { Pagination } from '@terra-dev/neumorphism-ui/components/Pagination';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
@@ -23,7 +23,7 @@ export function TransactionHistorySection({
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { status } = useWallet();
+  const { network } = useWallet();
 
   // ---------------------------------------------
   // queries
@@ -82,7 +82,7 @@ export function TransactionHistorySection({
                           ? 'Deposit from'
                           : 'Redeem to'}{' '}
                         <a
-                          href={`https://finder.terra.money/${status.network.chainID}/tx/${TxHash}`}
+                          href={`https://finder.terra.money/${network.chainID}/tx/${TxHash}`}
                           target="_blank"
                           rel="noreferrer"
                         >

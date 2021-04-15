@@ -8,10 +8,7 @@ import {
   formatUSTWithPostfixUnits,
   truncate,
 } from '@anchor-protocol/notation';
-import {
-  WalletReady,
-  WalletStatusType,
-} from '@anchor-protocol/wallet-provider';
+import { NetworkInfo } from '@anchor-protocol/wallet-provider2';
 import { Check, KeyboardArrowRight } from '@material-ui/icons';
 import { FlatButton } from '@terra-dev/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
@@ -22,7 +19,8 @@ import styled from 'styled-components';
 
 interface WalletDetailContentProps {
   className?: string;
-  status: WalletReady;
+  network: NetworkInfo;
+  walletAddress: string;
   closePopup: () => void;
   disconnectWallet: () => void;
   bank: Bank;
@@ -31,22 +29,23 @@ interface WalletDetailContentProps {
 
 export function WalletDetailContentBase({
   className,
-  status,
+  walletAddress,
+  network,
   disconnectWallet,
   closePopup,
   bank,
   openSend,
 }: WalletDetailContentProps) {
-  const [isCopied, setCopied] = useClipboard(status.walletAddress, {
+  const [isCopied, setCopied] = useClipboard(walletAddress, {
     successDuration: 1000 * 5,
   });
 
   const viewOnTerraFinder = useCallback(() => {
     window.open(
-      `https://finder.terra.money/${status.network.chainID}/account/${status.walletAddress}`,
+      `https://finder.terra.money/${network.chainID}/account/${walletAddress}`,
       '_blank',
     );
-  }, [status]);
+  }, [network.chainID, walletAddress]);
 
   return (
     <div className={className}>
@@ -55,7 +54,7 @@ export function WalletDetailContentBase({
           <Wallet />
         </div>
 
-        <h2 className="wallet-address">{truncate(status.walletAddress)}</h2>
+        <h2 className="wallet-address">{truncate(walletAddress)}</h2>
 
         <button className="copy-wallet-address" onClick={setCopied}>
           <IconSpan>COPY ADDRESS {isCopied && <Check />}</IconSpan>
@@ -102,18 +101,16 @@ export function WalletDetailContentBase({
           )}
         </ul>
 
-        {status.status === WalletStatusType.CONNECTED && (
-          <div className="send">
-            <FlatButton
-              onClick={() => {
-                openSend();
-                closePopup();
-              }}
-            >
-              SEND
-            </FlatButton>
-          </div>
-        )}
+        <div className="send">
+          <FlatButton
+            onClick={() => {
+              openSend();
+              closePopup();
+            }}
+          >
+            SEND
+          </FlatButton>
+        </div>
 
         <div className="outlink">
           <button onClick={viewOnTerraFinder}>

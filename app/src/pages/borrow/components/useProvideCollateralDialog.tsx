@@ -10,10 +10,9 @@ import {
 } from '@anchor-protocol/notation';
 import { bLuna, Rate, uUST } from '@anchor-protocol/types';
 import {
+  ConnectedWallet,
   useConnectedWallet,
-  useWallet,
-  WalletReady,
-} from '@anchor-protocol/wallet-provider';
+} from '@anchor-protocol/wallet-provider2';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
@@ -74,8 +73,6 @@ function ComponentBase({
     oraclePrice,
   } = useMarketNotNullable();
 
-  const { status } = useWallet();
-
   const connectedWallet = useConnectedWallet();
 
   const { fixedGas } = useConstants();
@@ -85,7 +82,7 @@ function ComponentBase({
   const [provideCollateral, provideCollateralResult] = useOperation(
     provideCollateralOptions,
     {
-      walletStatus: status,
+      walletAddress: connectedWallet!.walletAddress,
     },
   );
 
@@ -154,7 +151,7 @@ function ComponentBase({
 
   const proceed = useCallback(
     async (
-      walletReady: WalletReady,
+      walletReady: ConnectedWallet,
       depositAmount: bLuna,
       txFee: uUST<BigSource> | undefined,
     ) => {

@@ -1,5 +1,5 @@
 import type { DateTime, JSDateTime, Rate, uUST } from '@anchor-protocol/types';
-import { useUserWallet } from '@anchor-protocol/wallet-provider';
+import { useConnectedWallet } from '@anchor-protocol/wallet-provider2';
 import { gql, useQuery } from '@apollo/client';
 import { floor } from '@terra-dev/big-math';
 import { useEventBus } from '@terra-dev/event-bus';
@@ -227,7 +227,7 @@ export function useInterestEarned(
 ): MappedQueryResult<RawVariables, RawData, Data> {
   const { dispatch } = useEventBus();
 
-  const userWallet = useUserWallet();
+  const userWallet = useConnectedWallet();
 
   const variables = useMemo(() => {
     if (!userWallet) return undefined;

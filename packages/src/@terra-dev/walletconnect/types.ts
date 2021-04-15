@@ -32,7 +32,7 @@ export type Session = SessionRequested | SessionConnected | SessionDisconnected;
 // ---------------------------------------------
 // tx
 // ---------------------------------------------
-export interface TxResult {
+export interface WalletConnectTxResult {
   height: number;
   raw_log: string;
   txhash: string;

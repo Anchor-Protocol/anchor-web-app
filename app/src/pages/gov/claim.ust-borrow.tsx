@@ -7,8 +7,8 @@ import {
 import { uANC } from '@anchor-protocol/types';
 import {
   useConnectedWallet,
-  WalletReady,
-} from '@anchor-protocol/wallet-provider';
+  ConnectedWallet,
+} from '@anchor-protocol/wallet-provider2';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
@@ -71,7 +71,7 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
   );
 
   const proceed = useCallback(
-    async (walletReady: WalletReady) => {
+    async (walletReady: ConnectedWallet) => {
       await claim({
         address: walletReady.walletAddress,
         market: MARKET_DENOMS.UUSD,

@@ -7,14 +7,13 @@ import {
   timeout,
 } from '@terra-dev/broadcastable-operation';
 import { StdFee } from '@terra-money/terra.js';
-import { renderBroadcastTransaction } from 'components/TransactionRenderer';
-import { pickWithdrawResult } from 'pages/earn/transactions/pickWithdrawResult';
 import { createContractMsg } from 'base/transactions/createContractMsg';
 import { createOptions } from 'base/transactions/createOptions';
 import { getTxInfo } from 'base/transactions/getTxInfo';
 import { postContractMsg } from 'base/transactions/postContractMsg';
 import { injectTxFee, takeTxFee } from 'base/transactions/takeTxFee';
-import { parseTxResult } from 'base/transactions/tx';
+import { renderBroadcastTransaction } from 'components/TransactionRenderer';
+import { pickWithdrawResult } from 'pages/earn/transactions/pickWithdrawResult';
 
 export const withdrawOptions = createOperationOptions({
   id: 'earn/withdarw',
@@ -34,8 +33,7 @@ export const withdrawOptions = createOperationOptions({
       fee: new StdFee(gasFee, fixedGas + 'uusd'),
       gasAdjustment,
     })), // -> CreateTxOptions
-    timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<StringifiedTxResult>
-    parseTxResult, // -> TxResult
+    timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<TxResult>
     merge(
       getTxInfo(client, signal), // -> { TxResult, TxInfo }
       injectTxFee(storage), // -> { txFee }

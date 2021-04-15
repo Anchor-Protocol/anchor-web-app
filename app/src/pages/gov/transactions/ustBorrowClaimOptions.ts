@@ -6,13 +6,12 @@ import {
   timeout,
 } from '@terra-dev/broadcastable-operation';
 import { StdFee } from '@terra-money/terra.js';
-import { renderBroadcastTransaction } from 'components/TransactionRenderer';
-import { pickAncUstLpClaimResult } from 'pages/gov/transactions/pickAncUstLpClaimResult';
 import { createContractMsg } from 'base/transactions/createContractMsg';
 import { createOptions } from 'base/transactions/createOptions';
 import { getTxInfo } from 'base/transactions/getTxInfo';
 import { postContractMsg } from 'base/transactions/postContractMsg';
-import { parseTxResult } from 'base/transactions/tx';
+import { renderBroadcastTransaction } from 'components/TransactionRenderer';
+import { pickAncUstLpClaimResult } from 'pages/gov/transactions/pickAncUstLpClaimResult';
 
 export const ustBorrowClaimOptions = createOperationOptions({
   id: 'gov/ustBorrowClaim',
@@ -32,8 +31,7 @@ export const ustBorrowClaimOptions = createOperationOptions({
       fee: new StdFee(gasFee, fixedGas + 'uusd'),
       gasAdjustment,
     })), // -> CreateTxOptions
-    timeout(postContractMsg(post), 1000 * 60 * 20), // -> Promise<StringifiedTxResult>
-    parseTxResult, // -> TxResult
+    timeout(postContractMsg(post), 1000 * 60 * 20), // -> Promise<TxResult>
     merge(getTxInfo(client, signal), () => ({ fixedGas })), // -> { TxResult, TxInfo, fixedGas }
     pickAncUstLpClaimResult, // -> TransactionResult
   ],

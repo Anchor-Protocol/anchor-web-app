@@ -1,9 +1,11 @@
-import { useWallet, WalletStatusType } from '@anchor-protocol/wallet-provider';
+import {
+  ConnectType,
+  useWallet,
+  WalletStatus,
+} from '@anchor-protocol/wallet-provider2';
 import { ClickAwayListener } from '@material-ui/core';
-import { useIsDesktopChrome } from '@terra-dev/is-desktop-chrome';
 import { useBank } from 'base/contexts/bank';
 import { AirdropContent } from 'components/Header/WalletSelector/AirdropContent';
-import { useViewAddressDialog } from 'components/Header/WalletSelector/useViewAddressDialog';
 import { useAirdrop } from 'pages/airdrop/queries/useAirdrop';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import { useCallback, useState } from 'react';
@@ -24,9 +26,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { status, install, connect, disconnect } = useWallet();
-
-  const isDesktopChrome = useIsDesktopChrome();
+  const { status, connect, disconnect, walletAddress, network } = useWallet();
 
   const bank = useBank();
 
@@ -35,8 +35,6 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   const matchAirdrop = useRouteMatch('/airdrop');
 
   const [openSendDialog, sendDialogElement] = useSendDialog();
-
-  const [openViewAddress, viewAddressElement] = useViewAddressDialog();
 
   const [closed, setClosed] = useState(() => airdropClosed);
 
@@ -54,7 +52,8 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   // callbacks
   // ---------------------------------------------
   const connectWallet = useCallback(() => {
-    connect();
+    // TODO
+    connect(ConnectType.EXTENSION);
     setOpen(false);
   }, [connect]);
 
@@ -85,8 +84,8 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
-  switch (status.status) {
-    case WalletStatusType.INITIALIZING:
+  switch (status) {
+    case WalletStatus.INITIALIZING:
       return (
         <div className={className}>
           <NotConnectedButton disabled>
@@ -94,70 +93,25 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
           </NotConnectedButton>
         </div>
       );
-    case WalletStatusType.NOT_CONNECTED:
-    case WalletStatusType.NOT_INSTALLED:
-    case WalletStatusType.UNAVAILABLE:
-      if (isDesktopChrome) {
-        if (status.status === WalletStatusType.NOT_CONNECTED) {
-          return (
-            <div className={className}>
-              <NotConnectedButton onClick={connectWallet}>
-                Connect Wallet
-              </NotConnectedButton>
-            </div>
-          );
-        } else if (status.status === WalletStatusType.NOT_INSTALLED) {
-          return (
-            <div className={className}>
-              <NotConnectedButton onClick={install}>
-                Please Install Wallet
-              </NotConnectedButton>
-            </div>
-          );
-        }
-      }
-
+    case WalletStatus.WALLET_NOT_CONNECTED:
       return (
         <div className={className}>
-          <NotConnectedButton onClick={() => openViewAddress({})}>
-            View an address
+          <NotConnectedButton onClick={connectWallet}>
+            Connect Wallet
           </NotConnectedButton>
-          {viewAddressElement}
         </div>
       );
-
-    //return (
-    //  <ClickAwayListener onClickAway={onClickAway}>
-    //    <div className={className}>
-    //      <NotConnectedButton onClick={toggleOpen}>
-    //        Connect Wallet
-    //      </NotConnectedButton>
-    //
-    //      {open && (
-    //        <DropdownContainer>
-    //          <WalletConnectContent
-    //            status={status}
-    //            closePopup={() => setOpen(false)}
-    //            installWallet={install}
-    //            provideWallet={provideWallet}
-    //            connectWallet={connectWallet}
-    //          />
-    //        </DropdownContainer>
-    //      )}
-    //
-    //      {provideAddressElement}
-    //    </div>
-    //  </ClickAwayListener>
-    //);
-    case WalletStatusType.CONNECTED:
-    case WalletStatusType.WALLET_ADDRESS_CONNECTED:
-      return (
+    case WalletStatus.WALLET_CONNECTED:
+      return walletAddress ? (
         <ClickAwayListener onClickAway={onClickAway}>
           <div className={className}>
-            <ConnectedButton status={status} bank={bank} onClick={toggleOpen} />
+            <ConnectedButton
+              walletAddress={walletAddress}
+              bank={bank}
+              onClick={toggleOpen}
+            />
 
             {!closed &&
-              status.status === WalletStatusType.CONNECTED &&
               airdrop &&
               airdrop !== 'in-progress' &&
               !open &&
@@ -171,7 +125,8 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
               <DropdownContainer>
                 <WalletDetailContent
                   bank={bank}
-                  status={status}
+                  walletAddress={walletAddress}
+                  network={network}
                   closePopup={() => setOpen(false)}
                   disconnectWallet={disconnectWallet}
                   openSend={() => openSendDialog({})}
@@ -182,7 +137,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
             {sendDialogElement}
           </div>
         </ClickAwayListener>
-      );
+      ) : null;
   }
 }
 

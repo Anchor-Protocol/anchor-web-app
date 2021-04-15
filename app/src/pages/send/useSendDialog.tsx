@@ -18,8 +18,8 @@ import {
 import { Token, UST, uToken, uUST } from '@anchor-protocol/types';
 import {
   useConnectedWallet,
-  WalletReady,
-} from '@anchor-protocol/wallet-provider';
+  ConnectedWallet,
+} from '@anchor-protocol/wallet-provider2';
 import { Modal, NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { Warning } from '@material-ui/icons';
 import { min } from '@terra-dev/big-math';
@@ -241,7 +241,7 @@ function ComponentBase({
 
   const submit = useCallback(
     async (
-      walletReady: WalletReady,
+      walletReady: ConnectedWallet,
       toAddress: string,
       currency: CurrencyInfo,
       amount: Token,

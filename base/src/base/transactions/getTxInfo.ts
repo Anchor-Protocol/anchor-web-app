@@ -1,8 +1,8 @@
+import { TxResult } from '@anchor-protocol/wallet-provider2';
 import { OperationStop } from '@terra-dev/broadcastable-operation';
 import { ApolloClient } from '@apollo/client';
 import { TxInfoError } from '../errors/TxInfoError';
 import { Data, queryTxInfo } from '../queries/txInfos';
-import { TxResult } from './tx';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 

@@ -1,5 +1,5 @@
 import { TerraWalletconnectQrcodeModal } from '@terra-dev/walletconnect-qrcode-modal';
-import { Session, SessionStatus, TxResult } from './types';
+import { Session, SessionStatus, WalletConnectTxResult } from './types';
 import { CreateTxOptions } from '@terra-money/terra.js';
 import WalletConnect from '@walletconnect/client';
 import {
@@ -33,7 +33,7 @@ export interface WalletConnectControllerOptions {
 export interface WalletConnectController {
   session: () => Observable<Session>;
   getLatestSession: () => Session;
-  post: (tx: CreateTxOptions) => Promise<TxResult>;
+  post: (tx: CreateTxOptions) => Promise<WalletConnectTxResult>;
   disconnect: () => void;
 }
 
@@ -177,7 +177,7 @@ export function connectWallet(
     return sessionSubject.getValue();
   }
 
-  function post(tx: CreateTxOptions): Promise<TxResult> {
+  function post(tx: CreateTxOptions): Promise<WalletConnectTxResult> {
     if (!connector || !connector.connected) {
       throw new Error(`WalletConnect is not connected!`);
     }

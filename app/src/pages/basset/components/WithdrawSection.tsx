@@ -1,9 +1,9 @@
 import { demicrofy, formatLuna } from '@anchor-protocol/notation';
 import type { uLuna, uUST } from '@anchor-protocol/types';
 import {
+  ConnectedWallet,
   useConnectedWallet,
-  WalletReady,
-} from '@anchor-protocol/wallet-provider';
+} from '@anchor-protocol/wallet-provider2';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
@@ -110,7 +110,7 @@ export function WithdrawSection({
   );
 
   const proceed = useCallback(
-    async (walletReady: WalletReady) => {
+    async (walletReady: ConnectedWallet) => {
       await withdraw({
         address: walletReady.walletAddress,
         txFee: fixedGas.toString() as uUST,

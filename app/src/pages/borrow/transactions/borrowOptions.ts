@@ -1,5 +1,5 @@
 import { fabricateMarketBorrow } from '@anchor-protocol/anchor.js';
-import { WalletStatus } from '@anchor-protocol/wallet-provider';
+import { HumanAddr } from '@anchor-protocol/types';
 import {
   createOperationOptions,
   effect,
@@ -13,14 +13,13 @@ import { createOptions } from 'base/transactions/createOptions';
 import { getTxInfo } from 'base/transactions/getTxInfo';
 import { postContractMsg } from 'base/transactions/postContractMsg';
 import { injectTxFee, takeTxFee } from 'base/transactions/takeTxFee';
-import { parseTxResult } from 'base/transactions/tx';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { passTxInfo } from 'pages/borrow/transactions/passTxInfo';
 import { pickBorrowResult } from 'pages/borrow/transactions/pickBorrowResult';
 import { refetchMarket } from 'pages/borrow/transactions/refetchMarket';
 
 interface DependencyList {
-  walletStatus: WalletStatus;
+  walletAddress: HumanAddr;
 }
 
 export const borrowOptions = createOperationOptions({
@@ -30,7 +29,7 @@ export const borrowOptions = createOperationOptions({
     addressProvider,
     post,
     client,
-    walletStatus,
+    walletAddress,
     signal,
     storage,
     gasAdjustment,
@@ -43,12 +42,11 @@ export const borrowOptions = createOperationOptions({
       fee: new StdFee(gasFee, fixedGas + 'uusd'),
       gasAdjustment,
     })), // -> CreateTxOptions
-    timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<StringifiedTxResult>
-    parseTxResult, // -> TxResult
+    timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<TxResult>
     getTxInfo(client, signal), // -> { TxResult, TxInfo }
     merge(
       passTxInfo,
-      refetchMarket(address, client, walletStatus), // -> { loanAmount, borrowInfo... }
+      refetchMarket(address, client, walletAddress), // -> { loanAmount, borrowInfo... }
       injectTxFee(storage), // -> { txFee }
     ),
     pickBorrowResult, // -> TransactionResult

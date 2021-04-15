@@ -5,10 +5,10 @@ import {
 import { QueryDependencyProvider } from '@anchor-protocol/queries';
 import { ContractAddress, Rate, uUST } from '@anchor-protocol/types';
 import {
-  ChromeExtensionWalletProvider,
   RouterWalletStatusRecheck,
   useWallet,
-} from '@anchor-protocol/wallet-provider';
+  WalletProvider,
+} from '@anchor-protocol/wallet-provider2';
 import {
   ApolloClient,
   ApolloError,
@@ -19,6 +19,7 @@ import {
 import { captureException } from '@sentry/react';
 import { OperationBroadcaster } from '@terra-dev/broadcastable-operation';
 import { GlobalDependency } from '@terra-dev/broadcastable-operation/global';
+import { StationNetworkInfo } from '@terra-dev/extension';
 import { GlobalStyle } from '@terra-dev/neumorphism-ui/themes/GlobalStyle';
 import { SnackbarProvider } from '@terra-dev/snackbar';
 import { GoogleAnalytics } from '@terra-dev/use-google-analytics';
@@ -42,10 +43,7 @@ const operationBroadcasterErrorReporter =
   process.env.NODE_ENV === 'production' ? captureException : undefined;
 
 function Providers({ children }: { children: ReactNode }) {
-  const {
-    post,
-    status: { network },
-  } = useWallet();
+  const { post, network } = useWallet();
 
   const isMainnet = useMemo(() => /^columbus/.test(network.chainID), [
     network.chainID,
@@ -100,7 +98,7 @@ function Providers({ children }: { children: ReactNode }) {
       addressProvider,
       address,
       client,
-      post: post as any,
+      post,
       ...constants,
     }),
     [address, addressProvider, client, constants, post],
@@ -153,18 +151,35 @@ function Providers({ children }: { children: ReactNode }) {
   );
 }
 
-export function AppProviders({
-  children,
-  enableWatchConnection = true,
-}: {
-  children: ReactNode;
-  enableWatchConnection?: boolean;
-}) {
+const walletConnectChainIds = new Map<number, StationNetworkInfo>([
+  [
+    0,
+    {
+      chainID: 'columbus-4',
+      fcd: 'https://fcd.terra.dev',
+      lcd: 'https://lcd.terra.dev',
+      name: 'mainnet',
+      ws: 'wss://fcd.terra.dev',
+    },
+  ],
+  [
+    1,
+    {
+      chainID: 'tequila-0004',
+      fcd: 'https://tequila-fcd.terra.dev',
+      lcd: 'https://tequila-lcd.terra.dev',
+      name: 'testnet',
+      ws: 'wss://tequila-ws.terra.dev',
+    },
+  ],
+]);
+
+export function AppProviders2({ children }: { children: ReactNode }) {
   return (
     /** Terra Station Wallet Address :: useWallet() */
-    <ChromeExtensionWalletProvider
+    <WalletProvider
       defaultNetwork={defaultNetwork}
-      enableWatchConnection={enableWatchConnection}
+      walletConnectChainIds={walletConnectChainIds}
     >
       <Providers>
         {/* Router Actions ======================== */}
@@ -184,6 +199,6 @@ export function AppProviders({
         <BroadcastingContainer />
         <SnackbarContainer />
       </Providers>
-    </ChromeExtensionWalletProvider>
+    </WalletProvider>
   );
 }

@@ -7,11 +7,7 @@ import type {
   WASMContractResult,
 } from '@anchor-protocol/types';
 import { ContractAddress } from '@anchor-protocol/types';
-import {
-  useUserWallet,
-  WalletStatus,
-  WalletStatusType,
-} from '@anchor-protocol/wallet-provider';
+import { useConnectedWallet } from '@anchor-protocol/wallet-provider2';
 import { ApolloClient, gql, useQuery } from '@apollo/client';
 import { createMap, map, Mapped, useMap } from '@terra-dev/use-map';
 import { useContractAddress } from 'base/contexts/contract';
@@ -119,7 +115,7 @@ export function useMarketUserOverview({
 }): MappedQueryResult<RawVariables, RawData, Data> {
   const { moneyMarket } = useContractAddress();
 
-  const userWallet = useUserWallet();
+  const userWallet = useConnectedWallet();
 
   const variables = useMemo(() => {
     if (!userWallet || typeof currentBlock !== 'number') return undefined;
@@ -170,16 +166,9 @@ export function useMarketUserOverview({
 export function queryMarketUserOverview(
   client: ApolloClient<any>,
   address: ContractAddress,
-  walletStatus: WalletStatus,
+  walletAddress: HumanAddr,
   currentBlock: MarketState['currentBlock'],
 ): Promise<MappedApolloQueryResult<RawData, Data>> {
-  if (
-    walletStatus.status !== WalletStatusType.CONNECTED &&
-    walletStatus.status !== WalletStatusType.WALLET_ADDRESS_CONNECTED
-  ) {
-    throw new Error(`Wallet is not ready`);
-  }
-
   return client
     .query<RawData, RawVariables>({
       query,
@@ -188,14 +177,14 @@ export function queryMarketUserOverview(
         marketContractAddress: address.moneyMarket.market,
         marketBorrowerQuery: {
           borrower_info: {
-            borrower: walletStatus.walletAddress,
+            borrower: walletAddress,
             block_height: currentBlock,
           },
         },
         custodyContractAddress: address.moneyMarket.custody,
         custodyBorrowerQuery: {
           borrower: {
-            address: walletStatus.walletAddress,
+            address: walletAddress,
           },
         },
       }),

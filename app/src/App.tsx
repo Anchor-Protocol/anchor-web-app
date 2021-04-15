@@ -1,5 +1,5 @@
 import { useIsDesktopChrome } from '@terra-dev/is-desktop-chrome';
-import { AppProviders } from 'base/AppProviders';
+import { AppProviders2 } from 'base/AppProviders2';
 import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
 import { MessageBox } from 'components/MessageBox';
@@ -16,7 +16,7 @@ export function App() {
   const isDesktopChrome = useIsDesktopChrome();
 
   return (
-    <AppProviders>
+    <AppProviders2>
       <div>
         <GlobalStyle />
         <Header />
@@ -40,7 +40,7 @@ export function App() {
           <Redirect to="/earn" />
         </Switch>
       </div>
-    </AppProviders>
+    </AppProviders2>
   );
 }
 

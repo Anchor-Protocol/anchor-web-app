@@ -13,13 +13,12 @@ import {
   timeout,
 } from '@terra-dev/broadcastable-operation';
 import { Dec, Int, MsgExecuteContract, StdFee } from '@terra-money/terra.js';
-import { renderBroadcastTransaction } from 'components/TransactionRenderer';
-import { pickAncGovernanceStakeResult } from 'pages/gov/transactions/pickAncGovernanceStakeResult';
 import { createContractMsg } from 'base/transactions/createContractMsg';
 import { createOptions } from 'base/transactions/createOptions';
 import { getTxInfo } from 'base/transactions/getTxInfo';
 import { postContractMsg } from 'base/transactions/postContractMsg';
-import { parseTxResult } from 'base/transactions/tx';
+import { renderBroadcastTransaction } from 'components/TransactionRenderer';
+import { pickAncGovernanceStakeResult } from 'pages/gov/transactions/pickAncGovernanceStakeResult';
 
 export const ancGovernanceStakeOptions = createOperationOptions({
   id: 'gov/ancGovernanceStake',
@@ -39,8 +38,7 @@ export const ancGovernanceStakeOptions = createOperationOptions({
       fee: new StdFee(gasFee, fixedGas + 'uusd'),
       gasAdjustment,
     })), // -> CreateTxOptions
-    timeout(postContractMsg(post), 1000 * 60 * 20), // -> Promise<StringifiedTxResult>
-    parseTxResult, // -> TxResult
+    timeout(postContractMsg(post), 1000 * 60 * 20), // -> Promise<TxResult>
     merge(getTxInfo(client, signal), () => ({ fixedGas })), // -> { TxResult, TxInfo, fixedGas }
     pickAncGovernanceStakeResult, // -> TransactionResult
   ],

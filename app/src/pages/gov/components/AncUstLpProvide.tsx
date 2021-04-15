@@ -15,8 +15,8 @@ import {
 import { ANC, UST, uUST } from '@anchor-protocol/types';
 import {
   useConnectedWallet,
-  WalletReady,
-} from '@anchor-protocol/wallet-provider';
+  ConnectedWallet,
+} from '@anchor-protocol/wallet-provider2';
 import { InputAdornment } from '@material-ui/core';
 import { min } from '@terra-dev/big-math';
 import { useOperation } from '@terra-dev/broadcastable-operation';
@@ -175,7 +175,7 @@ export function AncUstLpProvide() {
 
   const proceed = useCallback(
     async (
-      walletReady: WalletReady,
+      walletReady: ConnectedWallet,
       ancAmount: ANC,
       ustAmount: UST,
       txFee: uUST,

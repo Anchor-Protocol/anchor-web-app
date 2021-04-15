@@ -22,8 +22,8 @@ import {
 } from '@anchor-protocol/types';
 import {
   useConnectedWallet,
-  WalletReady,
-} from '@anchor-protocol/wallet-provider';
+  ConnectedWallet,
+} from '@anchor-protocol/wallet-provider2';
 import { useApolloClient } from '@apollo/client';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { min } from '@terra-dev/big-math';
@@ -262,7 +262,7 @@ export function TradeBuy() {
 
   const proceed = useCallback(
     async (
-      walletReady: WalletReady,
+      walletReady: ConnectedWallet,
       fromAmount: UST,
       ancPrice: AncPrice,
       txFee: uUST,

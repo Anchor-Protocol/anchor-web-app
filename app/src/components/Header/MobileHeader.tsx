@@ -1,5 +1,5 @@
 import { Menu, MenuClose, Wallet } from '@anchor-protocol/icons';
-import { useWallet, WalletStatusType } from '@anchor-protocol/wallet-provider';
+import { useWallet } from '@anchor-protocol/wallet-provider2';
 import { IconButton } from '@material-ui/core';
 import { Launch } from '@material-ui/icons';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
@@ -13,7 +13,6 @@ import { govPathname } from 'pages/gov/env';
 import React, { useCallback, useState } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
-import { useViewAddressDialog } from 'components/Header/WalletSelector/useViewAddressDialog';
 
 export interface MobileHeaderProps {
   className?: string;
@@ -26,17 +25,18 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
 
   const { status } = useWallet();
 
-  const [openProvideAddress, provideAddressElement] = useViewAddressDialog();
-
   const [openWalletDetail, walletDetailElement] = useWalletDetailDialog();
 
+  console.log('MobileHeader.tsx..MobileHeaderBase()', status, openWalletDetail);
+
   const toggleWallet = useCallback(() => {
-    if (status.status === WalletStatusType.WALLET_ADDRESS_CONNECTED) {
-      openWalletDetail({});
-    } else {
-      openProvideAddress({});
-    }
-  }, [openProvideAddress, openWalletDetail, status.status]);
+    // TODO
+    //if (status.status === WalletStatusType.WALLET_ADDRESS_CONNECTED) {
+    //  openWalletDetail({});
+    //} else {
+    //  openProvideAddress({});
+    //}
+  }, []);
 
   return (
     <>
@@ -103,7 +103,6 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
       {open && <div style={{ height: headerHeight }} />}
 
       {walletDetailElement}
-      {provideAddressElement}
     </>
   );
 }

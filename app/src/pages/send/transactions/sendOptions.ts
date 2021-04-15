@@ -12,7 +12,6 @@ import { createOptions } from 'base/transactions/createOptions';
 import { getTxInfo } from 'base/transactions/getTxInfo';
 import { pickEmptyResult } from 'base/transactions/pickEmptyResult';
 import { postContractMsg } from 'base/transactions/postContractMsg';
-import { parseTxResult } from 'base/transactions/tx';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { CurrencyInfo } from 'pages/send/models/currency';
 
@@ -74,8 +73,7 @@ export const sendOptions = createOperationOptions({
         })), // -> CreateTxOptions
         () => ({ memo: hoistedMemo }), // -> { memo?: stirng }
       ),
-      timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<StringifiedTxResult>
-      parseTxResult, // -> TxResult
+      timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<TxResult>
       merge(getTxInfo(client, signal), () => ({ fixedGas })), // -> { TxResult, TxInfo, fixedGas }
       pickEmptyResult, // -> TransactionResult
     ];

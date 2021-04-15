@@ -1,16 +1,16 @@
 import { truncate } from '@anchor-protocol/notation';
-import { useWallet } from '@anchor-protocol/wallet-provider';
+import { useWallet } from '@anchor-protocol/wallet-provider2';
 
 export interface TxHashProps {
   txHash: string;
 }
 
 export function TxHashLink({ txHash }: TxHashProps) {
-  const { status } = useWallet();
+  const { network } = useWallet();
 
   return (
     <a
-      href={`https://finder.terra.money/${status.network.chainID}/tx/${txHash}`}
+      href={`https://finder.terra.money/${network.chainID}/tx/${txHash}`}
       target="_blank"
       rel="noreferrer"
     >

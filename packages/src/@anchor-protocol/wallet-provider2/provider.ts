@@ -8,14 +8,15 @@ import {
   connectWallet,
   connectWalletIfSessionExists,
   SessionStatus,
-  TxResult,
   WalletConnectController,
   WalletConnectControllerOptions,
+  WalletConnectTxResult,
 } from '@terra-dev/walletconnect';
 import { AccAddress, CreateTxOptions } from '@terra-money/terra.js';
 import { BehaviorSubject, combineLatest, interval, race } from 'rxjs';
 import { filter, mapTo } from 'rxjs/operators';
 import { NetworkInfo, WalletStatus } from './models';
+import { TxResult } from './tx';
 
 export interface WalletControllerOptions
   extends WalletConnectControllerOptions {
@@ -167,6 +168,12 @@ export class WalletController {
     };
   };
 
+  recheckExtensionStatus = () => {
+    if (this.disableExtension) {
+      this.extension.recheckStatus();
+    }
+  };
+
   connectToExtension = () => {
     this.extension.connect().then((success) => {
       if (success) {
@@ -198,10 +205,22 @@ export class WalletController {
 
     if (this.disableExtension) {
       return this.extension
-        .post<CreateTxOptions, TxResult>(tx)
-        .then(({ payload }) => payload);
+        .post<CreateTxOptions, WalletConnectTxResult>(tx)
+        .then(
+          ({ payload }) =>
+            ({
+              ...tx,
+              result: payload,
+            } as TxResult),
+        );
     } else if (this.walletConnect) {
-      return this.walletConnect.post(tx);
+      return this.walletConnect.post(tx).then(
+        (result) =>
+          ({
+            ...tx,
+            result,
+          } as TxResult),
+      );
     } else {
       throw new Error(`Can't post tx. there is no connected session!`);
     }

@@ -1,5 +1,8 @@
-import { ContractAddress, moneyMarket } from '@anchor-protocol/types';
-import { WalletStatus } from '@anchor-protocol/wallet-provider';
+import {
+  ContractAddress,
+  HumanAddr,
+  moneyMarket,
+} from '@anchor-protocol/types';
 import { ApolloClient } from '@apollo/client';
 import { queryMarketOverview } from '../queries/marketOverview';
 import { queryMarketState } from '../queries/marketState';
@@ -8,7 +11,7 @@ import { queryMarketUserOverview } from '../queries/marketUserOverview';
 export const refetchMarket = (
   address: ContractAddress,
   client: ApolloClient<any>,
-  walletStatus: WalletStatus,
+  walletAddress: HumanAddr,
 ) => async (_: {}): Promise<{
   marketState?: moneyMarket.market.StateResponse;
   borrowRate?: moneyMarket.interestModel.BorrowRateResponse;
@@ -36,7 +39,7 @@ export const refetchMarket = (
     },
   ] = await Promise.all([
     queryMarketOverview(client, address, marketBalance, marketState),
-    queryMarketUserOverview(client, address, walletStatus, currentBlock),
+    queryMarketUserOverview(client, address, walletAddress, currentBlock),
   ]);
 
   return {
