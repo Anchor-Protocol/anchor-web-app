@@ -20,7 +20,7 @@ export interface WalletSelectorProps {
   className?: string;
 }
 
-let airdropClosed: boolean = false;
+let _airdropClosed: boolean = false;
 
 function WalletSelectorBase({ className }: WalletSelectorProps) {
   // ---------------------------------------------
@@ -36,17 +36,17 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
 
   const [openSendDialog, sendDialogElement] = useSendDialog();
 
-  const [closed, setClosed] = useState(() => airdropClosed);
-
-  const closeAirdrop = useCallback(() => {
-    setClosed(true);
-    airdropClosed = true;
-  }, []);
-
   // ---------------------------------------------
   // states
   // ---------------------------------------------
   const [open, setOpen] = useState(false);
+
+  const [airdropClosed, setAirdropClosed] = useState(() => _airdropClosed);
+
+  const closeAirdrop = useCallback(() => {
+    setAirdropClosed(true);
+    _airdropClosed = true;
+  }, []);
 
   // ---------------------------------------------
   // callbacks
@@ -115,7 +115,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
               onClick={toggleOpen}
             />
 
-            {!closed &&
+            {!airdropClosed &&
               airdrop &&
               airdrop !== 'in-progress' &&
               !open &&
