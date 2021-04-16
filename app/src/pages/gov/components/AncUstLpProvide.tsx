@@ -119,26 +119,32 @@ export function AncUstLpProvide() {
   }, [ancAmount, bank.userBalances.uANC, connectedWallet]);
 
   const invalidUstAmount = useMemo(() => {
-    if (ustAmount.length === 0 || !connectedWallet) return undefined;
+    if (ustAmount.length === 0 || !connectedWallet || !simulation)
+      return undefined;
 
-    return big(microfy(ustAmount)).gt(bank.userBalances.uUSD)
+    return big(microfy(ustAmount))
+      .plus(simulation.txFee)
+      .plus(fixedGas)
+      .gt(bank.userBalances.uUSD)
       ? 'Not enough assets'
       : undefined;
-  }, [bank.userBalances.uUSD, connectedWallet, ustAmount]);
+  }, [
+    bank.userBalances.uUSD,
+    connectedWallet,
+    fixedGas,
+    simulation,
+    ustAmount,
+  ]);
 
   const invalidNextTransaction = useMemo(() => {
-    if (
-      ustAmount.length === 0 ||
-      !ustBalance ||
-      !simulation ||
-      !!invalidUstAmount
-    ) {
+    if (ustAmount.length === 0 || !simulation || !!invalidUstAmount) {
       return undefined;
     }
 
     const remainUUSD = big(bank.userBalances.uUSD)
       .minus(microfy(ustAmount))
-      .minus(simulation.txFee);
+      .minus(simulation.txFee)
+      .minus(fixedGas);
 
     if (remainUUSD.lt(fixedGas)) {
       return 'You may run out of USD balance needed for future transactions.';
@@ -151,7 +157,6 @@ export function AncUstLpProvide() {
     invalidUstAmount,
     simulation,
     ustAmount,
-    ustBalance,
   ]);
 
   const updateAncAmount = useCallback(
