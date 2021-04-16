@@ -113,11 +113,11 @@ export class ChromeExtensionClient {
           storeAddress(connectResult.address);
         }
 
-        if (
-          connectResult.address &&
-          this._walletAddress.getValue() !== connectResult.address
-        ) {
-          this._walletAddress.next(connectResult.address);
+        if (!!connectResult.address) {
+          if (this._walletAddress.getValue() !== connectResult.address) {
+            this._walletAddress.next(connectResult.address);
+          }
+
           this._status.next(ChromeExtensionStatus.WALLET_CONNECTED);
         }
       } else {

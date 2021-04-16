@@ -57,14 +57,11 @@ export class WalletController {
       this.enableWalletConnect(draftWalletConnect);
     } else if (isDesktopChrome()) {
       const extensionConnectionCheckSubscription = race(
-        this.extension
-          .status()
-          .pipe(
-            filter(
-              (extensionStatus) =>
-                extensionStatus === ChromeExtensionStatus.WALLET_CONNECTED,
-            ),
-          ),
+        this.extension.status().pipe(
+          filter((extensionStatus) => {
+            return extensionStatus !== ChromeExtensionStatus.INITIALIZING;
+          }),
+        ),
         interval(1000 * 10).pipe(mapTo(null)),
       ).subscribe({
         next: (status) => {
@@ -126,6 +123,7 @@ export class WalletController {
     });
 
     this.disableExtension = () => {
+      this.extension.disconnect();
       extensionSubscription.unsubscribe();
     };
   };
@@ -148,7 +146,8 @@ export class WalletController {
           case SessionStatus.CONNECTED:
             this._status.next(WalletStatus.WALLET_CONNECTED);
             this._network.next(
-              this.options.walletConnectChainIds.get(status.chainId)!,
+              this.options.walletConnectChainIds.get(status.chainId) ??
+                this.options.defaultNetwork,
             );
             this._walletAddress.next(status.terraAddress);
             break;

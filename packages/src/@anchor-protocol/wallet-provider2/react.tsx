@@ -47,63 +47,75 @@ export function WalletProvider({
   connectorOpts,
   pushServerOpts,
 }: WalletProviderProps) {
-  const controller = useRef<WalletController>(
-    new WalletController({
-      defaultNetwork,
-      walletConnectChainIds,
-      connectorOpts,
-      pushServerOpts,
-    }),
+  const [controller] = useState<WalletController>(
+    () =>
+      new WalletController({
+        defaultNetwork,
+        walletConnectChainIds,
+        connectorOpts,
+        pushServerOpts,
+      }),
   );
 
   const [status, setStatus] = useState<WalletStatus>(WalletStatus.INITIALIZING);
   const [network, setNetwork] = useState<NetworkInfo>(defaultNetwork);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
-  const connect = useCallback((type: ConnectType) => {
-    if (type === ConnectType.EXTENSION) {
-      controller.current.connectToExtension();
-    } else {
-      controller.current.connectToWalletConnect();
-    }
-  }, []);
+  const connect = useCallback(
+    (type: ConnectType) => {
+      if (type === ConnectType.EXTENSION) {
+        controller.connectToExtension();
+      } else {
+        controller.connectToWalletConnect();
+      }
+    },
+    [controller],
+  );
 
   const disconnect = useCallback(() => {
-    controller.current.disconnect();
-  }, []);
+    controller.disconnect();
+  }, [controller]);
 
   const recheckExtensionStatus = useCallback(() => {
-    controller.current.recheckExtensionStatus();
-  }, []);
+    controller.recheckExtensionStatus();
+  }, [controller]);
 
-  const post = useCallback(async (tx: CreateTxOptions) => {
-    return controller.current.post(tx);
-  }, []);
+  const post = useCallback(
+    async (tx: CreateTxOptions) => {
+      return controller.post(tx);
+    },
+    [controller],
+  );
 
   useEffect(() => {
-    const statusSubscription = controller.current.status().subscribe({
-      next: setStatus,
+    const statusSubscription = controller.status().subscribe({
+      next: (value) => {
+        setStatus(value);
+      },
     });
 
-    const networkSubscription = controller.current.network().subscribe({
-      next: setNetwork,
+    const networkSubscription = controller.network().subscribe({
+      next: (value) => {
+        console.log('react.tsx..next()', value);
+        setNetwork(value);
+      },
     });
 
-    const walletAddressSubscription = controller.current
-      .walletAddress()
-      .subscribe({
-        next: setWalletAddress,
-      });
+    const walletAddressSubscription = controller.walletAddress().subscribe({
+      next: (value) => {
+        setWalletAddress(value);
+      },
+    });
 
     return () => {
       statusSubscription.unsubscribe();
       networkSubscription.unsubscribe();
       walletAddressSubscription.unsubscribe();
     };
-  }, []);
+  }, [controller]);
 
-  const state = useMemo<Wallet>(
-    () => ({
+  const state = useMemo<Wallet>(() => {
+    return {
       status,
       network,
       walletAddress,
@@ -111,17 +123,16 @@ export function WalletProvider({
       disconnect,
       recheckExtensionStatus,
       post,
-    }),
-    [
-      connect,
-      disconnect,
-      network,
-      post,
-      recheckExtensionStatus,
-      status,
-      walletAddress,
-    ],
-  );
+    };
+  }, [
+    connect,
+    disconnect,
+    network,
+    post,
+    recheckExtensionStatus,
+    status,
+    walletAddress,
+  ]);
 
   return (
     <WalletContext.Provider value={state}>{children}</WalletContext.Provider>
@@ -140,18 +151,22 @@ export interface ConnectedWallet {
 export function useConnectedWallet(): ConnectedWallet | undefined {
   const { status, network, walletAddress } = useContext(WalletContext);
 
-  if (
-    status === WalletStatus.WALLET_CONNECTED &&
-    typeof walletAddress === 'string' &&
-    AccAddress.validate(walletAddress)
-  ) {
-    return {
-      network,
-      walletAddress: walletAddress as HumanAddr,
-    };
-  } else {
-    return undefined;
-  }
+  const value = useMemo(() => {
+    if (
+      status === WalletStatus.WALLET_CONNECTED &&
+      typeof walletAddress === 'string' &&
+      AccAddress.validate(walletAddress)
+    ) {
+      return {
+        network,
+        walletAddress: walletAddress as HumanAddr,
+      };
+    } else {
+      return undefined;
+    }
+  }, [network, status, walletAddress]);
+
+  return value;
 }
 
 const interval = 1000 * 60;

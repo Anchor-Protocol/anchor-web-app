@@ -5,12 +5,12 @@ import {
 } from '@anchor-protocol/wallet-provider2';
 import { ClickAwayListener } from '@material-ui/core';
 import { useBank } from 'base/contexts/bank';
-import { AirdropContent } from 'components/Header/WalletSelector/AirdropContent';
 import { useAirdrop } from 'pages/airdrop/queries/useAirdrop';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import { useCallback, useState } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import styled from 'styled-components';
+import { AirdropContent } from './AirdropContent';
 import { ConnectedButton } from './ConnectedButton';
 import { DropdownContainer } from './DropdownContainer';
 import { NotConnectedButton } from './NotConnectedButton';
@@ -53,13 +53,15 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   // ---------------------------------------------
   const connectWallet = useCallback(() => {
     // TODO
+    console.log('index.tsx..() connect wallet????');
+    //connect(ConnectType.WALLETCONNECT);
     connect(ConnectType.EXTENSION);
     setOpen(false);
   }, [connect]);
 
   const disconnectWallet = useCallback(() => {
     disconnect();
-    window.location.reload();
+    //window.location.reload();
   }, [disconnect]);
 
   //const provideWallet = useCallback(

@@ -93,7 +93,7 @@ export function connectWallet(
         status: SessionStatus.CONNECTED,
         peerMeta: payload.params[0],
         terraAddress: payload.params[0].accounts[0],
-        chainId: payload.params[0].accounts[0],
+        chainId: payload.params[0].chainId,
       });
     });
 
