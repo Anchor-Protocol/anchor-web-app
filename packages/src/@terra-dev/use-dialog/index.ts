@@ -18,7 +18,7 @@ export function useDialog<Param = {}, Return = void>(
     Return
   > | null>(null);
 
-  const openDialog: OpenDialog<Param, Return> = useCallback(
+  const openDialog: OpenDialog<any, Return> = useCallback(
     async (props: Param) => {
       return new Promise<Return>((resolve) => {
         setDialogProps({

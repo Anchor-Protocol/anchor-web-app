@@ -1,4 +1,4 @@
-import { DialogProps, useDialog } from '@terra-dev/use-dialog';
+import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
 import {
   Dialog,
   DialogActions,
@@ -10,8 +10,8 @@ import React, { ReactNode } from 'react';
 import { ActionButton } from './ActionButton';
 import { useAlertStyles } from './useAlert';
 
-export function useConfirm() {
-  return useDialog(Component);
+export function useConfirm(): [OpenDialog<ConfirmParams, boolean>, ReactNode] {
+  return useDialog(Component as any);
 }
 
 export interface ConfirmParams {

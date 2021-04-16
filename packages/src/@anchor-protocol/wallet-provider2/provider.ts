@@ -204,14 +204,13 @@ export class WalletController {
 
     if (this.disableExtension) {
       return this.extension
-        .post<CreateTxOptions, WalletConnectTxResult>(tx)
-        .then(
-          ({ payload }) =>
-            ({
-              ...tx,
-              result: payload,
-            } as TxResult),
-        );
+        .post<CreateTxOptions, { result: WalletConnectTxResult }>(tx)
+        .then(({ payload }) => {
+          return {
+            ...tx,
+            result: payload.result,
+          } as TxResult;
+        });
     } else if (this.walletConnect) {
       return this.walletConnect.post(tx).then(
         (result) =>
