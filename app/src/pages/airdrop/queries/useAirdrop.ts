@@ -6,7 +6,7 @@ import {
   uANC,
   WASMContractResult,
 } from '@anchor-protocol/types';
-import { useConnectedWallet } from '@anchor-protocol/wallet-provider2';
+import { useConnectedWallet } from '@anchor-protocol/wallet-provider';
 import { ApolloClient, gql, useApolloClient } from '@apollo/client';
 import { useSubscription } from '@terra-dev/broadcastable-operation';
 import { createMap, map } from '@terra-dev/use-map';

@@ -3,7 +3,7 @@ import {
   ConnectType,
   useWallet,
   WalletStatus,
-} from '@anchor-protocol/wallet-provider2';
+} from '@anchor-protocol/wallet-provider';
 import { IconButton } from '@material-ui/core';
 import { Launch } from '@material-ui/icons';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';

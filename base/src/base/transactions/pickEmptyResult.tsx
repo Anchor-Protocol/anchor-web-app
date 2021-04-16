@@ -1,4 +1,4 @@
-import { TxResult } from '@anchor-protocol/wallet-provider2';
+import { TxResult } from '@anchor-protocol/wallet-provider';
 import { TxHashLink } from '../components/TxHashLink';
 import { TransactionResult } from '../models/transaction';
 import { Data } from '../queries/txInfos';

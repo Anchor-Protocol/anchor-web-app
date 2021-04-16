@@ -9,7 +9,7 @@ import {
   RouterWalletStatusRecheck,
   useWallet,
   WalletProvider,
-} from '@anchor-protocol/wallet-provider2';
+} from '@anchor-protocol/wallet-provider';
 import {
   ApolloClient,
   ApolloError,

@@ -1,5 +1,5 @@
 import { truncate } from '@anchor-protocol/notation';
-import { useWallet } from '@anchor-protocol/wallet-provider2';
+import { useWallet } from '@anchor-protocol/wallet-provider';
 
 export interface TxHashProps {
   txHash: string;

@@ -1,5 +1,5 @@
 import type { DateTime, JSDateTime, Rate, uUST } from '@anchor-protocol/types';
-import { useConnectedWallet } from '@anchor-protocol/wallet-provider2';
+import { useConnectedWallet } from '@anchor-protocol/wallet-provider';
 import { gql, useQuery } from '@apollo/client';
 import { floor } from '@terra-dev/big-math';
 import { useEventBus } from '@terra-dev/event-bus';

@@ -8,7 +8,7 @@ import {
   formatUSTWithPostfixUnits,
   truncate,
 } from '@anchor-protocol/notation';
-import { NetworkInfo } from '@anchor-protocol/wallet-provider2';
+import { NetworkInfo } from '@anchor-protocol/wallet-provider';
 import { Check, KeyboardArrowRight } from '@material-ui/icons';
 import { FlatButton } from '@terra-dev/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';

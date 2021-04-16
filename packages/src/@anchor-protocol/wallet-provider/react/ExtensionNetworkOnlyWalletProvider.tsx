@@ -1,4 +1,4 @@
-import { WalletController } from '@anchor-protocol/wallet-provider2/controller';
+import { WalletController } from '../controller';
 import { StationNetworkInfo } from '@terra-dev/extension';
 import { CreateTxOptions } from '@terra-money/terra.js';
 import React, {

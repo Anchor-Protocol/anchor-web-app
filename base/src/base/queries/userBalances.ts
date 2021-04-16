@@ -7,7 +7,7 @@ import type {
   uLuna,
   uUST,
 } from '@anchor-protocol/types';
-import { useConnectedWallet } from '@anchor-protocol/wallet-provider2';
+import { useConnectedWallet } from '@anchor-protocol/wallet-provider';
 import { gql, useQuery } from '@apollo/client';
 import { useSubscription } from '@terra-dev/broadcastable-operation';
 import { createMap, Mapped, useMap } from '@terra-dev/use-map';

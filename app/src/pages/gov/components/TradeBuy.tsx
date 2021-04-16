@@ -23,7 +23,7 @@ import {
 import {
   useConnectedWallet,
   ConnectedWallet,
-} from '@anchor-protocol/wallet-provider2';
+} from '@anchor-protocol/wallet-provider';
 import { useApolloClient } from '@apollo/client';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { min } from '@terra-dev/big-math';

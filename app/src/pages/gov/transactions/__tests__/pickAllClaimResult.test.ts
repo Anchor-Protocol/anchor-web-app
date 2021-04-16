@@ -1,5 +1,5 @@
 import { uUST } from '@anchor-protocol/types';
-import { TxResult } from '@anchor-protocol/wallet-provider2';
+import { TxResult } from '@anchor-protocol/wallet-provider';
 import { pickAllClaimResult } from 'pages/gov/transactions/pickAllClaimResult';
 import json from './fixtures/claim-all.json';
 

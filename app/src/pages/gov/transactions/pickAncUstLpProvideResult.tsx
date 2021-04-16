@@ -20,7 +20,7 @@ import {
   pickRawLog,
 } from 'base/queries/txInfos';
 import { createElement } from 'react';
-import { TxResult } from '@anchor-protocol/wallet-provider2';
+import { TxResult } from '@anchor-protocol/wallet-provider';
 
 interface Params {
   txResult: TxResult;

@@ -6,7 +6,7 @@ import {
   uaUST,
   WASMContractResult,
 } from '@anchor-protocol/types';
-import { useConnectedWallet } from '@anchor-protocol/wallet-provider2';
+import { useConnectedWallet } from '@anchor-protocol/wallet-provider';
 import { gql, useQuery } from '@apollo/client';
 import { useEventBus } from '@terra-dev/event-bus';
 import { createMap, useMap } from '@terra-dev/use-map';

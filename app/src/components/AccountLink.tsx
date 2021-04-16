@@ -1,5 +1,5 @@
 import { truncate as _truncate } from '@anchor-protocol/notation';
-import { useWallet } from '@anchor-protocol/wallet-provider2';
+import { useWallet } from '@anchor-protocol/wallet-provider';
 import React from 'react';
 import styled from 'styled-components';
 

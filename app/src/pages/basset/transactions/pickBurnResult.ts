@@ -5,7 +5,7 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { Rate, ubLuna, uLuna, uUST } from '@anchor-protocol/types';
-import { TxResult } from '@anchor-protocol/wallet-provider2';
+import { TxResult } from '@anchor-protocol/wallet-provider';
 import { TxHashLink } from 'base/components/TxHashLink';
 import { TxInfoParseError } from 'base/errors/TxInfoParseError';
 import { TransactionResult } from 'base/models/transaction';

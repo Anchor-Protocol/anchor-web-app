@@ -10,7 +10,7 @@ import type {
   UST,
   uUST,
 } from '@anchor-protocol/types';
-import { useConnectedWallet } from '@anchor-protocol/wallet-provider2';
+import { useConnectedWallet } from '@anchor-protocol/wallet-provider';
 import { BigSource } from 'big.js';
 import type { ReactNode } from 'react';
 import {

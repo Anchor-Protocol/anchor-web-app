@@ -1,7 +1,7 @@
 import {
   useConnectedWallet,
   useWallet,
-} from '@anchor-protocol/wallet-provider2';
+} from '@anchor-protocol/wallet-provider';
 import { Modal } from '@material-ui/core';
 import { buttonBaseStyle } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';

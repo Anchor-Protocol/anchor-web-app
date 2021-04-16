@@ -2,7 +2,7 @@ import {
   ConnectType,
   useWallet,
   WalletStatus,
-} from '@anchor-protocol/wallet-provider2';
+} from '@anchor-protocol/wallet-provider';
 import { ClickAwayListener } from '@material-ui/core';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { useBank } from 'base/contexts/bank';

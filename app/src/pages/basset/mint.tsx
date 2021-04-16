@@ -10,7 +10,7 @@ import { bLuna, Luna, uUST } from '@anchor-protocol/types';
 import {
   ConnectedWallet,
   useConnectedWallet,
-} from '@anchor-protocol/wallet-provider2';
+} from '@anchor-protocol/wallet-provider';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';

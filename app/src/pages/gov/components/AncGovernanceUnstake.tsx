@@ -11,7 +11,7 @@ import { ANC, uANC } from '@anchor-protocol/types';
 import {
   useConnectedWallet,
   ConnectedWallet,
-} from '@anchor-protocol/wallet-provider2';
+} from '@anchor-protocol/wallet-provider';
 import { InputAdornment } from '@material-ui/core';
 import { max } from '@terra-dev/big-math';
 import { useOperation } from '@terra-dev/broadcastable-operation';

@@ -1,6 +1,6 @@
 import type { uANC } from '@anchor-protocol/types';
 import { anchorToken, cw20, WASMContractResult } from '@anchor-protocol/types';
-import { useConnectedWallet } from '@anchor-protocol/wallet-provider2';
+import { useConnectedWallet } from '@anchor-protocol/wallet-provider';
 import { gql, useQuery } from '@apollo/client';
 import { useSubscription } from '@terra-dev/broadcastable-operation';
 import { createMap, useMap } from '@terra-dev/use-map';

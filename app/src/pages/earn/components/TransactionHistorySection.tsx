@@ -1,5 +1,5 @@
 import { demicrofy, formatUST, truncate } from '@anchor-protocol/notation';
-import { useWallet } from '@anchor-protocol/wallet-provider2';
+import { useWallet } from '@anchor-protocol/wallet-provider';
 import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
 import { Pagination } from '@terra-dev/neumorphism-ui/components/Pagination';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';

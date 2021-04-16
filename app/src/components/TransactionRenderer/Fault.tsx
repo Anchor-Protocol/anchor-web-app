@@ -7,7 +7,7 @@ import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
 import {
   TxFailedError,
   UserDeniedError,
-} from '@anchor-protocol/wallet-provider2';
+} from '@anchor-protocol/wallet-provider';
 import { IconButton } from '@material-ui/core';
 import { Close, FileCopy } from '@material-ui/icons';
 import { TxInfoError } from 'base/errors/TxInfoError';
