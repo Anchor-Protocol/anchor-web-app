@@ -13,6 +13,7 @@ import { WalletDetailContent } from './WalletDetailContent';
 
 interface FormParams {
   className?: string;
+  openSend: () => void;
 }
 
 type FormReturn = void;
@@ -27,6 +28,7 @@ export function useWalletDetailDialog(): [
 function ComponentBase({
   className,
   closeDialog,
+  openSend,
 }: DialogProps<FormParams, FormReturn>) {
   const { disconnect } = useWallet();
   const connectedWallet = useConnectedWallet();
@@ -45,10 +47,10 @@ function ComponentBase({
           <WalletDetailContent
             walletAddress={connectedWallet.walletAddress}
             network={connectedWallet.network}
-            closePopup={() => {}}
+            closePopup={closeDialog}
             disconnectWallet={disconnectWallet}
             bank={bank}
-            openSend={() => {}}
+            openSend={openSend}
           />
         )}
       </Dialog>

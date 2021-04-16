@@ -14,6 +14,7 @@ import logoUrl from 'components/Header/assets/Logo.svg';
 import { useWalletDetailDialog } from 'components/Header/WalletSelector/useWalletDetailDialog';
 import { headerHeight, links } from 'env';
 import { govPathname } from 'pages/gov/env';
+import { useSendDialog } from 'pages/send/useSendDialog';
 import React, { useCallback, useState } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
@@ -31,13 +32,17 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
 
   const [openWalletDetail, walletDetailElement] = useWalletDetailDialog();
 
+  const [openSendDialog, sendDialogElement] = useSendDialog();
+
   const toggleWallet = useCallback(() => {
     if (status === WalletStatus.WALLET_CONNECTED) {
-      openWalletDetail({});
+      openWalletDetail({
+        openSend: () => openSendDialog({}),
+      });
     } else if (status === WalletStatus.WALLET_NOT_CONNECTED) {
       connect(ConnectType.WALLETCONNECT);
     }
-  }, [connect, openWalletDetail, status]);
+  }, [connect, openSendDialog, openWalletDetail, status]);
 
   return (
     <>
@@ -104,6 +109,7 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
       {open && <div style={{ height: headerHeight }} />}
 
       {walletDetailElement}
+      {sendDialogElement}
     </>
   );
 }

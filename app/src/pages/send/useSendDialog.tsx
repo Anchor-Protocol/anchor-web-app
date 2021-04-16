@@ -369,7 +369,7 @@ function ComponentBase({
         <div className="memo-warning">
           {memoWarning && (
             <WarningMessage>
-              <IconSpan>
+              <IconSpan wordBreak={false}>
                 <Warning /> Please double check if the transaction requires a
                 memo
               </IconSpan>
