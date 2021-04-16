@@ -37,8 +37,9 @@ function ComponentBase({
 
   const disconnectWallet = useCallback(() => {
     disconnect();
-    window.location.reload();
-  }, [disconnect]);
+    closeDialog();
+    //window.location.reload();
+  }, [closeDialog, disconnect]);
 
   return (
     <Modal open onClose={() => closeDialog()}>
