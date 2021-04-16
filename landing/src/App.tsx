@@ -1,4 +1,4 @@
-import { AppProviders } from 'base/AppProviders';
+import { LandingProviders } from 'base/AppProviders';
 import { Header } from 'components/Header';
 import { Index } from 'pages/index';
 import { Market } from 'pages/market-simple';
@@ -6,7 +6,7 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 
 export function App() {
   return (
-    <AppProviders enableWatchConnection={false}>
+    <LandingProviders>
       <div>
         <Header />
         <Switch>
@@ -23,6 +23,6 @@ export function App() {
           <Redirect to="/" />
         </Switch>
       </div>
-    </AppProviders>
+    </LandingProviders>
   );
 }

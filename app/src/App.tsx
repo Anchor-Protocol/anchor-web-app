@@ -1,4 +1,4 @@
-import { AppProviders2 } from 'base/AppProviders2';
+import { AppProviders } from 'base/AppProviders';
 import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
 import { Airdrop } from 'pages/airdrop';
@@ -11,7 +11,7 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 
 export function App() {
   return (
-    <AppProviders2>
+    <AppProviders>
       <div>
         <GlobalStyle />
         <Header />
@@ -24,6 +24,6 @@ export function App() {
           <Redirect to="/earn" />
         </Switch>
       </div>
-    </AppProviders2>
+    </AppProviders>
   );
 }

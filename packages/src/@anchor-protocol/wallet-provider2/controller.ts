@@ -100,23 +100,27 @@ export class WalletController {
       this.disableWalletConnect = null;
     }
 
+    if (this.disableExtension) {
+      return;
+    }
+
     const extensionSubscription = combineLatest([
       this.extension.status(),
       this.extension.networkInfo(),
       this.extension.walletAddress(),
     ]).subscribe({
       next: ([status, networkInfo, walletAddress]) => {
+        this._network.next(networkInfo);
+
         if (
           status === ChromeExtensionStatus.WALLET_CONNECTED &&
           typeof walletAddress === 'string' &&
           AccAddress.validate(walletAddress)
         ) {
           this._status.next(WalletStatus.WALLET_CONNECTED);
-          this._network.next(networkInfo);
           this._walletAddress.next(walletAddress);
         } else {
           this._status.next(WalletStatus.WALLET_NOT_CONNECTED);
-          this._network.next(this.options.defaultNetwork);
           this._walletAddress.next(null);
         }
       },
