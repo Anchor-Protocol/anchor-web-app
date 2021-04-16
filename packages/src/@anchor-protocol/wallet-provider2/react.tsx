@@ -96,7 +96,6 @@ export function WalletProvider({
 
     const networkSubscription = controller.network().subscribe({
       next: (value) => {
-        console.log('react.tsx..next()', value);
         setNetwork(value);
       },
     });

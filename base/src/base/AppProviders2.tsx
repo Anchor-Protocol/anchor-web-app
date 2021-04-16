@@ -180,6 +180,11 @@ export function AppProviders2({ children }: { children: ReactNode }) {
     <WalletProvider
       defaultNetwork={defaultNetwork}
       walletConnectChainIds={walletConnectChainIds}
+      connectorOpts={
+        {
+          //bridge: 'https://34.64.174.176:5001/',
+        }
+      }
     >
       <Providers>
         {/* Router Actions ======================== */}

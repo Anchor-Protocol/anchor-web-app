@@ -53,9 +53,11 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   // ---------------------------------------------
   const connectWallet = useCallback(() => {
     // TODO
+    // if extension installed - open modal (EXTENSION OR WALLETCONNECT)
+    // else - connect(ConnectType.WALLETCONNECT)
     console.log('index.tsx..() connect wallet????');
-    //connect(ConnectType.WALLETCONNECT);
-    connect(ConnectType.EXTENSION);
+    connect(ConnectType.WALLETCONNECT);
+    //connect(ConnectType.EXTENSION);
     setOpen(false);
   }, [connect]);
 
