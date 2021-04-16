@@ -1,5 +1,3 @@
-import { NeumorphismTheme } from '../themes/Theme';
-import { DialogProps, useDialog } from '@terra-dev/use-dialog';
 import {
   createStyles,
   Dialog,
@@ -9,7 +7,9 @@ import {
   DialogTitle,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
 import { ReactNode } from 'react';
+import { NeumorphismTheme } from '../themes/Theme';
 import { ActionButton } from './ActionButton';
 
 export const useAlertStyles = makeStyles((theme: NeumorphismTheme) =>
@@ -29,8 +29,8 @@ export interface AlertParams {
   agree?: string;
 }
 
-export function useAlert() {
-  return useDialog(Component);
+export function useAlert(): [OpenDialog<AlertParams, boolean>, ReactNode] {
+  return useDialog(Component as any);
 }
 
 export function Component({
