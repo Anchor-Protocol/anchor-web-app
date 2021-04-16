@@ -6,7 +6,7 @@
   "scripts": {
     "test": "react-scripts test --colors",
     "coverage": "react-scripts test --colors --coverage",
-    "build": "rocket-punch build --strict",
+    "build": "rocket-punch build",
     "publish": "rocket-punch publish",
     "doctor": "rocket-punch doctor",
     "storybook": "start-storybook -h localhost -p 6006 -s public",

@@ -1,8 +1,4 @@
-import {
-  clearStore,
-  getStoredAddress,
-  storeAddress,
-} from '@terra-dev/extension/storage';
+import { clearStore, getStoredAddress, storeAddress } from './storage';
 import { isDesktopChrome } from '@terra-dev/is-desktop-chrome';
 import { AccAddress, Extension } from '@terra-money/terra.js';
 import { BehaviorSubject } from 'rxjs';
