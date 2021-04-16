@@ -75,6 +75,7 @@ IDE
 - [packages/src/@anchor-protocol/icons/README.md](packages/src/@anchor-protocol/icons/README.md)
 - [packages/src/@anchor-protocol/notation/README.md](packages/src/@anchor-protocol/notation/README.md)
 - [packages/src/@anchor-protocol/token-icons/README.md](packages/src/@anchor-protocol/token-icons/README.md)
+- [packages/src/@anchor-protocol/wallet-provider/README.md](packages/src/@anchor-protocol/wallet-provider/README.md)
 - [packages/src/@terra-dev/audit-fastdom/README.md](packages/src/@terra-dev/audit-fastdom/README.md)
 - [packages/src/@terra-dev/big-interpolate/README.md](packages/src/@terra-dev/big-interpolate/README.md)
 - [packages/src/@terra-dev/big-math/README.md](packages/src/@terra-dev/big-math/README.md)
