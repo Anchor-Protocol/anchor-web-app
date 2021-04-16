@@ -4,6 +4,7 @@ import {
   WalletStatus,
 } from '@anchor-protocol/wallet-provider2';
 import { ClickAwayListener } from '@material-ui/core';
+import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { useBank } from 'base/contexts/bank';
 import { useAirdrop } from 'pages/airdrop/queries/useAirdrop';
 import { useSendDialog } from 'pages/send/useSendDialog';
@@ -26,7 +27,14 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { status, connect, disconnect, walletAddress, network } = useWallet();
+  const {
+    status,
+    connect,
+    disconnect,
+    walletAddress,
+    network,
+    availableExtension,
+  } = useWallet();
 
   const bank = useBank();
 
@@ -39,7 +47,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   // ---------------------------------------------
   // states
   // ---------------------------------------------
-  const [open, setOpen] = useState(false);
+  const [openDetail, setOpenDetail] = useState<boolean>(false);
 
   const [airdropClosed, setAirdropClosed] = useState(() => _airdropClosed);
 
@@ -52,17 +60,16 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   // callbacks
   // ---------------------------------------------
   const connectWallet = useCallback(() => {
-    // TODO
-    // if extension installed - open modal (EXTENSION OR WALLETCONNECT)
-    // else - connect(ConnectType.WALLETCONNECT)
-    console.log('index.tsx..() connect wallet????');
-    connect(ConnectType.WALLETCONNECT);
-    //connect(ConnectType.EXTENSION);
-    setOpen(false);
-  }, [connect]);
+    if (availableExtension) {
+      setOpenDetail(true);
+    } else {
+      connect(ConnectType.WALLETCONNECT);
+    }
+  }, [availableExtension, connect]);
 
   const disconnectWallet = useCallback(() => {
     disconnect();
+    setOpenDetail(false);
     //window.location.reload();
   }, [disconnect]);
 
@@ -78,11 +85,11 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   //);
 
   const toggleOpen = useCallback(() => {
-    setOpen((prev) => !prev);
+    setOpenDetail((prev) => !prev);
   }, []);
 
   const onClickAway = useCallback(() => {
-    setOpen(false);
+    setOpenDetail(false);
   }, []);
 
   // ---------------------------------------------
@@ -99,11 +106,37 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
       );
     case WalletStatus.WALLET_NOT_CONNECTED:
       return (
-        <div className={className}>
-          <NotConnectedButton onClick={connectWallet}>
-            Connect Wallet
-          </NotConnectedButton>
-        </div>
+        <ClickAwayListener onClickAway={onClickAway}>
+          <div className={className}>
+            <NotConnectedButton onClick={connectWallet}>
+              Connect Wallet
+            </NotConnectedButton>
+
+            {openDetail && (
+              <DropdownContainer>
+                <ConnectTypeContent>
+                  <ActionButton
+                    onClick={() => {
+                      connect(ConnectType.WALLETCONNECT);
+                      setOpenDetail(false);
+                    }}
+                  >
+                    Wallet Connect
+                  </ActionButton>
+
+                  <ActionButton
+                    onClick={() => {
+                      connect(ConnectType.EXTENSION);
+                      setOpenDetail(false);
+                    }}
+                  >
+                    Extension
+                  </ActionButton>
+                </ConnectTypeContent>
+              </DropdownContainer>
+            )}
+          </div>
+        </ClickAwayListener>
       );
     case WalletStatus.WALLET_CONNECTED:
       return walletAddress ? (
@@ -118,20 +151,20 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
             {!airdropClosed &&
               airdrop &&
               airdrop !== 'in-progress' &&
-              !open &&
+              !openDetail &&
               !matchAirdrop && (
                 <DropdownContainer>
                   <AirdropContent onClose={closeAirdrop} />
                 </DropdownContainer>
               )}
 
-            {open && (
+            {openDetail && (
               <DropdownContainer>
                 <WalletDetailContent
                   bank={bank}
                   walletAddress={walletAddress}
                   network={network}
-                  closePopup={() => setOpen(false)}
+                  closePopup={() => setOpenDetail(false)}
                   disconnectWallet={disconnectWallet}
                   openSend={() => openSendDialog({})}
                 />
@@ -149,4 +182,13 @@ export const WalletSelector = styled(WalletSelectorBase)`
   display: inline-block;
   position: relative;
   text-align: left;
+`;
+
+const ConnectTypeContent = styled.section`
+  padding: 32px 28px;
+
+  button {
+    width: 100%;
+    height: 22px;
+  }
 `;

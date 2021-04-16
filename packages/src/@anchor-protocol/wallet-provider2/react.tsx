@@ -35,6 +35,7 @@ export interface Wallet {
   disconnect: () => void;
   recheckExtensionStatus: () => void;
   post: (tx: CreateTxOptions) => Promise<TxResult>;
+  availableExtension: boolean;
 }
 
 // @ts-ignore
@@ -60,6 +61,7 @@ export function WalletProvider({
   const [status, setStatus] = useState<WalletStatus>(WalletStatus.INITIALIZING);
   const [network, setNetwork] = useState<NetworkInfo>(defaultNetwork);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const [availableExtension, setAvailableExtension] = useState<boolean>(false);
 
   const connect = useCallback(
     (type: ConnectType) => {
@@ -106,6 +108,8 @@ export function WalletProvider({
       },
     });
 
+    setAvailableExtension(controller.availableExtension() === true);
+
     return () => {
       statusSubscription.unsubscribe();
       networkSubscription.unsubscribe();
@@ -122,8 +126,10 @@ export function WalletProvider({
       disconnect,
       recheckExtensionStatus,
       post,
+      availableExtension,
     };
   }, [
+    availableExtension,
     connect,
     disconnect,
     network,
