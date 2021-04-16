@@ -1,5 +1,9 @@
 import { Menu, MenuClose, Wallet } from '@anchor-protocol/icons';
-import { useWallet } from '@anchor-protocol/wallet-provider2';
+import {
+  ConnectType,
+  useWallet,
+  WalletStatus,
+} from '@anchor-protocol/wallet-provider2';
 import { IconButton } from '@material-ui/core';
 import { Launch } from '@material-ui/icons';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
@@ -23,20 +27,17 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
 
   const { themeColor } = useTheme();
 
-  const { status } = useWallet();
+  const { status, connect } = useWallet();
 
   const [openWalletDetail, walletDetailElement] = useWalletDetailDialog();
 
-  console.log('MobileHeader.tsx..MobileHeaderBase()', status, openWalletDetail);
-
   const toggleWallet = useCallback(() => {
-    // TODO
-    //if (status.status === WalletStatusType.WALLET_ADDRESS_CONNECTED) {
-    //  openWalletDetail({});
-    //} else {
-    //  openProvideAddress({});
-    //}
-  }, []);
+    if (status === WalletStatus.WALLET_CONNECTED) {
+      openWalletDetail({});
+    } else if (status === WalletStatus.WALLET_NOT_CONNECTED) {
+      connect(ConnectType.WALLETCONNECT);
+    }
+  }, [connect, openWalletDetail, status]);
 
   return (
     <>
