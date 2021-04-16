@@ -18,7 +18,7 @@ import {
   WalletReady,
 } from '@anchor-protocol/wallet-provider';
 import { InputAdornment } from '@material-ui/core';
-import { min } from '@terra-dev/big-math';
+import { max, min } from '@terra-dev/big-math';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { isZero } from '@terra-dev/is-zero';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
@@ -79,8 +79,11 @@ export function AncUstLpProvide() {
   // ---------------------------------------------
   const ustBalance = useMemo(() => {
     const txFee = min(
-      big(big(bank.userBalances.uUSD).minus(fixedGas)).div(
-        big(1).plus(bank.tax.taxRate),
+      max(
+        big(big(bank.userBalances.uUSD).minus(fixedGas)).div(
+          big(big(1).plus(bank.tax.taxRate)).mul(bank.tax.taxRate),
+        ),
+        0,
       ),
       bank.tax.maxTaxUUSD,
     );
