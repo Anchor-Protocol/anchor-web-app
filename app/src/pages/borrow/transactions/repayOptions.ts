@@ -1,4 +1,4 @@
-import { fabricateRepay } from '@anchor-protocol/anchor.js';
+import { fabricateMarketRepay } from '@anchor-protocol/anchor.js';
 import { floor } from '@terra-dev/big-math';
 import {
   createOperationOptions,
@@ -37,7 +37,7 @@ export const repayOptions = createOperationOptions({
     gasFee,
     gasAdjustment,
   }: OperationDependency<DependencyList>) => [
-    effect(fabricateRepay, takeTxFee(storage)), // Option -> ((AddressProvider) -> MsgExecuteContract[])
+    effect(fabricateMarketRepay, takeTxFee(storage)), // Option -> ((AddressProvider) -> MsgExecuteContract[])
     createContractMsg(addressProvider), // -> MsgExecuteContract[]
     createOptions(() => ({
       fee: new StdFee(gasFee, floor(storage.get('txFee')) + 'uusd'),

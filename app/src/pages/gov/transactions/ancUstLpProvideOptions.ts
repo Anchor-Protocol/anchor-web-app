@@ -1,4 +1,4 @@
-import { fabricateTerraSwapProvideLiquidityANC } from '@anchor-protocol/anchor.js';
+import { fabricateTerraswapProvideLiquidityANC } from '@anchor-protocol/anchor.js';
 import { floor } from '@terra-dev/big-math';
 import {
   createOperationOptions,
@@ -34,7 +34,7 @@ export const ancUstLpProvideOptions = createOperationOptions({
     ancPrice,
     storage,
   }: OperationDependency<{ bank: Bank; ancPrice: AncPrice | undefined }>) => [
-    effect(fabricateTerraSwapProvideLiquidityANC, takeTxFee(storage)), // Option -> ((AddressProvider) -> MsgExecuteContract[])
+    effect(fabricateTerraswapProvideLiquidityANC, takeTxFee(storage)), // Option -> ((AddressProvider) -> MsgExecuteContract[])
     createContractMsg(addressProvider), // -> MsgExecuteContract[]
     createOptions(() => ({
       fee: new StdFee(gasFee, floor(storage.get('txFee')) + 'uusd'),

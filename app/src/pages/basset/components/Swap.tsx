@@ -248,16 +248,15 @@ export function Swap() {
       const broadcasted = await swap({
         address: walletReady.walletAddress,
         amount: burnAmount,
-        bAsset: burnCurrency.value,
-        beliefPrice: formatExecuteMsgNumber(big(1).div(beliefPrice)),
-        maxSpread,
+        belief_price: formatExecuteMsgNumber(big(1).div(beliefPrice)),
+        max_spread: maxSpread,
       });
 
       if (!broadcasted) {
         init();
       }
     },
-    [swap, burnCurrency.value, init],
+    [swap, init],
   );
 
   // ---------------------------------------------

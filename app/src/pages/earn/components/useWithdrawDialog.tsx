@@ -1,3 +1,4 @@
+import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import {
   demicrofy,
   formatUST,
@@ -107,8 +108,8 @@ function ComponentBase({
     ) => {
       await withdraw({
         address: status.walletAddress,
+        market: MARKET_DENOMS.UUSD,
         amount: big(withdrawAmount).div(exchangeRate).toString(),
-        symbol: 'usd',
         txFee: txFee!.toString() as uUST,
       });
     },

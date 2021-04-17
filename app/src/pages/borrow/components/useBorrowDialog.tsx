@@ -1,3 +1,4 @@
+import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import {
   demicrofy,
   formatRate,
@@ -178,9 +179,8 @@ function ComponentBase({
     ) => {
       await borrow({
         address: walletReady.walletAddress,
-        market: 'ust',
+        market: MARKET_DENOMS.UUSD,
         amount: borrowAmount,
-        withdrawTo: undefined,
         txFee: txFee!.toString() as uUST,
       });
     },

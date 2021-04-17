@@ -1,3 +1,4 @@
+import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import {
   demicrofy,
   formatANCWithPostfixUnits,
@@ -73,7 +74,7 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
     async (walletReady: WalletReady) => {
       await claim({
         address: walletReady.walletAddress,
-        market: 'usd',
+        market: MARKET_DENOMS.UUSD,
       });
     },
     [claim],
