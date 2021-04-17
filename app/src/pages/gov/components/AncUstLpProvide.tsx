@@ -23,6 +23,7 @@ import { useOperation } from '@terra-dev/broadcastable-operation';
 import { isZero } from '@terra-dev/is-zero';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
+import { useConfirm } from '@terra-dev/neumorphism-ui/components/useConfirm';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
 import big, { Big } from 'big.js';
@@ -37,13 +38,21 @@ import { ancUstLpUstSimulation } from 'pages/gov/logics/ancUstLpUstSimulation';
 import { AncUstLpSimulation } from 'pages/gov/models/ancUstLpSimulation';
 import { useANCPrice } from 'pages/gov/queries/ancPrice';
 import { ancUstLpProvideOptions } from 'pages/gov/transactions/ancUstLpProvideOptions';
-import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import React, {
+  ChangeEvent,
+  ReactNode,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react';
 
 export function AncUstLpProvide() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
+
+  const [openConfirm, confirmElement] = useConfirm();
 
   const { fixedGas } = useConstants();
 
@@ -88,9 +97,12 @@ export function AncUstLpProvide() {
       bank.tax.maxTaxUUSD,
     );
 
-    return big(bank.userBalances.uUSD)
-      .minus(txFee)
-      .minus(fixedGas * 2) as uUST<Big>;
+    return max(
+      big(bank.userBalances.uUSD)
+        .minus(txFee)
+        .minus(fixedGas * 2),
+      0,
+    ) as uUST<Big>;
   }, [bank.tax.maxTaxUUSD, bank.tax.taxRate, bank.userBalances.uUSD, fixedGas]);
 
   const invalidTxFee = useMemo(
@@ -107,12 +119,45 @@ export function AncUstLpProvide() {
   }, [ancAmount, bank.userBalances.uANC, connectedWallet]);
 
   const invalidUstAmount = useMemo(() => {
-    if (ustAmount.length === 0 || !connectedWallet) return undefined;
+    if (ustAmount.length === 0 || !connectedWallet || !simulation)
+      return undefined;
 
-    return big(microfy(ustAmount)).gt(bank.userBalances.uUSD)
+    return big(microfy(ustAmount))
+      .plus(simulation.txFee)
+      .plus(fixedGas)
+      .gt(bank.userBalances.uUSD)
       ? 'Not enough assets'
       : undefined;
-  }, [bank.userBalances.uUSD, connectedWallet, ustAmount]);
+  }, [
+    bank.userBalances.uUSD,
+    connectedWallet,
+    fixedGas,
+    simulation,
+    ustAmount,
+  ]);
+
+  const invalidNextTransaction = useMemo(() => {
+    if (ustAmount.length === 0 || !simulation || !!invalidUstAmount) {
+      return undefined;
+    }
+
+    const remainUUSD = big(bank.userBalances.uUSD)
+      .minus(microfy(ustAmount))
+      .minus(simulation.txFee)
+      .minus(fixedGas);
+
+    if (remainUUSD.lt(fixedGas)) {
+      return 'You may run out of USD balance needed for future transactions.';
+    }
+
+    return undefined;
+  }, [
+    bank.userBalances.uUSD,
+    fixedGas,
+    invalidUstAmount,
+    simulation,
+    ustAmount,
+  ]);
 
   const updateAncAmount = useCallback(
     (nextAncAmount: string) => {
@@ -182,7 +227,20 @@ export function AncUstLpProvide() {
       ancAmount: ANC,
       ustAmount: UST,
       txFee: uUST,
+      confirm: ReactNode,
     ) => {
+      if (confirm) {
+        const userConfirm = await openConfirm({
+          description: confirm,
+          agree: 'Proceed',
+          disagree: 'Cancel',
+        });
+
+        if (!userConfirm) {
+          return;
+        }
+      }
+
       const broadcasted = await provide({
         address: walletReady.walletAddress,
         token_amount: ancAmount,
@@ -195,7 +253,7 @@ export function AncUstLpProvide() {
         init();
       }
     },
-    [init, provide],
+    [init, openConfirm, provide],
   );
 
   // ---------------------------------------------
@@ -323,9 +381,22 @@ export function AncUstLpProvide() {
         )}
       </TxFeeList>
 
+      {invalidNextTransaction && ustBalance && (
+        <MessageBox style={{ marginTop: 30, marginBottom: 0 }}>
+          {invalidNextTransaction}
+        </MessageBox>
+      )}
+
       {/* Submit */}
       <ActionButton
         className="submit"
+        style={
+          invalidNextTransaction
+            ? {
+                backgroundColor: '#c12535',
+              }
+            : undefined
+        }
         disabled={
           !connectedWallet ||
           ancAmount.length === 0 ||
@@ -345,11 +416,14 @@ export function AncUstLpProvide() {
             ancAmount,
             ustAmount,
             simulation.txFee.toFixed() as uUST,
+            invalidNextTransaction,
           )
         }
       >
         Add Liquidity
       </ActionButton>
+
+      {confirmElement}
     </>
   );
 }
