@@ -5,18 +5,18 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { Rate, ubLuna, uLuna, uUST } from '@anchor-protocol/types';
-import big, { BigSource } from 'big.js';
 import { TxHashLink } from 'base/components/TxHashLink';
 import { TxInfoParseError } from 'base/errors/TxInfoParseError';
 import { TransactionResult } from 'base/models/transaction';
 import {
   Data,
-  pickAttributeValue,
+  pickAttributeValueByKey,
   pickEvent,
   pickRawLog,
 } from 'base/queries/txInfos';
-import { createElement } from 'react';
 import { TxResult } from 'base/transactions/tx';
+import big, { BigSource } from 'big.js';
+import { createElement } from 'react';
 
 interface Params {
   txResult: TxResult;
@@ -45,13 +45,15 @@ export function pickBurnResult({
     );
   }
 
-  const burnedAmount = pickAttributeValue<uLuna>(fromContract, 4);
-  const expectedAmount = pickAttributeValue<ubLuna>(fromContract, 16);
-
-  console.log(
-    'pickBurnResult.ts..pickBurnResult()',
-    burnedAmount,
-    expectedAmount,
+  const burnedAmount = pickAttributeValueByKey<uLuna>(
+    fromContract,
+    'amount',
+    (attrs) => attrs[0],
+  );
+  const expectedAmount = pickAttributeValueByKey<ubLuna>(
+    fromContract,
+    'amount',
+    (attrs) => attrs.reverse()[0],
   );
 
   const exchangeRate =

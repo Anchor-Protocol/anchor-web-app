@@ -53,7 +53,7 @@ export const sendOptions = createOperationOptions({
           return fabricateCw20Transfer({
             amount,
             address: myAddress,
-            contractAddress: currency.cw20Address,
+            contract_address: currency.cw20Address,
             recipient: toAddress,
           });
         } else {

@@ -42,9 +42,9 @@ export const defaultNetwork = {
 
 export const columbusContractAddresses: AddressMap = {
   bLunaHub: 'terra1mtwph2juhj0rvjz7dy92gvl6xvukaxu8rfv8ts',
-  blunaToken: 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp',
-  blunaReward: 'terra17yap3mhph35pcwvhza38c2lkj7gzywzy05h7l0',
-  blunaAirdrop: 'terra199t7hg7w5vymehhg834r6799pju2q3a0ya7ae9',
+  bLunaToken: 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp',
+  bLunaReward: 'terra17yap3mhph35pcwvhza38c2lkj7gzywzy05h7l0',
+  bLunaAirdrop: 'terra199t7hg7w5vymehhg834r6799pju2q3a0ya7ae9',
   mmInterestModel: 'terra1kq8zzq5hufas9t0kjsjc62t2kucfnx8txf547n',
   mmOracle: 'terra1cgg6yef7qcdm070qftghfulaxmllgmvk77nc7t',
   mmMarket: 'terra1sepfj7s0aeg5967uxnfk4thzlerrsktkpelm5s',
@@ -64,16 +64,19 @@ export const columbusContractAddresses: AddressMap = {
   staking: 'terra1897an2xux840p9lrh6py3ryankc6mspw49xse3',
   ANC: 'terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76',
   airdrop: 'terra146ahqn6d3qgdvmj8cj96hh03dzmeedhsf0kxqm',
-  team: 'terra1pm54pmw3ej0vfwn3gtn6cdmaqxt0x37e9jt0za',
-  vesting: 'terra10evq9zxk2m86n3n3xnpw28jpqwp628c6dzuq42',
-  terraswapFactory: '',
+  // TODO
+  team_vesting: '',
+  investor_vesting: '',
+  //team: 'terra1pm54pmw3ej0vfwn3gtn6cdmaqxt0x37e9jt0za',
+  //vesting: 'terra10evq9zxk2m86n3n3xnpw28jpqwp628c6dzuq42',
+  //terraswapFactory: '',
 };
 
 export const tequilaContractAddresses: AddressMap = {
   bLunaHub: 'terra1fflas6wv4snv8lsda9knvq2w0cyt493r8puh2e',
-  blunaToken: 'terra1u0t35drzyy0mujj8rkdyzhe264uls4ug3wdp3x',
-  blunaReward: 'terra1ac24j6pdxh53czqyrkr6ygphdeftg7u3958tl2',
-  blunaAirdrop: 'terra1334h20c9ewxguw9p9vdxzmr8994qj4qu77ux6q',
+  bLunaToken: 'terra1u0t35drzyy0mujj8rkdyzhe264uls4ug3wdp3x',
+  bLunaReward: 'terra1ac24j6pdxh53czqyrkr6ygphdeftg7u3958tl2',
+  bLunaAirdrop: 'terra1334h20c9ewxguw9p9vdxzmr8994qj4qu77ux6q',
   mmInterestModel: 'terra1m25aqupscdw2kw4tnq5ql6hexgr34mr76azh5x',
   mmOracle: 'terra1p4gg3p2ue6qy2qfuxtrmgv2ec3f4jmgqtazum8',
   mmMarket: 'terra15dwd5mj8v59wpj0wvt233mf5efdff808c5tkal',
@@ -93,9 +96,12 @@ export const tequilaContractAddresses: AddressMap = {
   staking: 'terra19nxz35c8f7t3ghdxrxherym20tux8eccar0c3k',
   ANC: 'terra1747mad58h0w4y589y3sk84r5efqdev9q4r02pc',
   airdrop: 'terra1u5ywhlve3wugzqslqvm8ks2j0nsvrqjx0mgxpk',
-  terraswapFactory: '',
-  vesting: 'terra19f6ktw4qpjj9p9m49y8mhf6pr9807d44xdcus7',
-  team: 'terra1x7ted5g0g6ntyqdaqmjwtzcctvvrdju49vs8pl',
+  // TODO
+  team_vesting: '',
+  investor_vesting: '',
+  //vesting: 'terra19f6ktw4qpjj9p9m49y8mhf6pr9807d44xdcus7',
+  //team: 'terra1x7ted5g0g6ntyqdaqmjwtzcctvvrdju49vs8pl',
+  //terraswapFactory: '',
 };
 
 export const screen = {

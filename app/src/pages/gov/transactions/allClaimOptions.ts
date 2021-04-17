@@ -1,7 +1,9 @@
 import {
   fabricateMarketClaimRewards,
   fabricateStakingWithdraw,
+  MARKET_DENOMS,
 } from '@anchor-protocol/anchor.js';
+import { HumanAddr } from '@anchor-protocol/types';
 import {
   createOperationOptions,
   merge,
@@ -9,12 +11,11 @@ import {
   OperationStop,
   timeout,
 } from '@terra-dev/broadcastable-operation';
-import { HumanAddr } from '@anchor-protocol/types';
+import { MsgExecuteContract, StdFee } from '@terra-money/terra.js';
 import { createOptions } from 'base/transactions/createOptions';
 import { getTxInfo } from 'base/transactions/getTxInfo';
 import { postContractMsg } from 'base/transactions/postContractMsg';
 import { parseTxResult } from 'base/transactions/tx';
-import { MsgExecuteContract, StdFee } from '@terra-money/terra.js';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { pickAllClaimResult } from 'pages/gov/transactions/pickAllClaimResult';
 
@@ -53,7 +54,7 @@ export const allClaimOptions = createOperationOptions({
         contracts.push(
           ...fabricateMarketClaimRewards({
             address: walletAddress,
-            market: 'usd',
+            market: MARKET_DENOMS.UUSD,
           })(addressProvider),
         );
       }

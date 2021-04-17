@@ -1,3 +1,4 @@
+import { COLLATERAL_DENOMS, MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import {
   demicrofy,
   formatLuna,
@@ -185,7 +186,8 @@ function ComponentBase({
     ) => {
       await redeemCollateral({
         address: walletReady.walletAddress,
-        market: 'ust',
+        market: MARKET_DENOMS.UUSD,
+        collateral: COLLATERAL_DENOMS.UBLUNA,
         amount: redeemAmount.length > 0 ? redeemAmount : '0',
         txFee: txFee!.toString() as uUST,
       });

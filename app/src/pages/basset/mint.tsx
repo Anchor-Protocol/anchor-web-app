@@ -179,7 +179,6 @@ function MintBase({ className }: MintProps) {
       const broadcasted = await mint({
         address: walletReady.walletAddress,
         amount: bondAmount,
-        bAsset: mintCurrency.value,
         validator: selectedValidator,
         txFee: fixedGas.toString() as uUST,
       });
@@ -188,7 +187,7 @@ function MintBase({ className }: MintProps) {
         init();
       }
     },
-    [fixedGas, init, mint, mintCurrency.value],
+    [fixedGas, init, mint],
   );
 
   // ---------------------------------------------

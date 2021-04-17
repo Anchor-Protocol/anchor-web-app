@@ -1,4 +1,4 @@
-import { fabricateBorrow } from '@anchor-protocol/anchor.js';
+import { fabricateMarketBorrow } from '@anchor-protocol/anchor.js';
 import { WalletStatus } from '@anchor-protocol/wallet-provider';
 import {
   createOperationOptions,
@@ -37,7 +37,7 @@ export const borrowOptions = createOperationOptions({
     gasFee,
     fixedGas,
   }: OperationDependency<DependencyList>) => [
-    effect(fabricateBorrow, takeTxFee(storage)), // Option -> ((AddressProvider) -> MsgExecuteContract[])
+    effect(fabricateMarketBorrow, takeTxFee(storage)), // Option -> ((AddressProvider) -> MsgExecuteContract[])
     createContractMsg(addressProvider), // -> MsgExecuteContract[]
     createOptions(() => ({
       fee: new StdFee(gasFee, fixedGas + 'uusd'),

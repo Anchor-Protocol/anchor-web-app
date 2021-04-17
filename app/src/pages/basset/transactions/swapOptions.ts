@@ -1,4 +1,4 @@
-import { fabricatebSwapbLuna } from '@anchor-protocol/anchor.js';
+import { fabricateTerraswapSwapbLuna } from '@anchor-protocol/anchor.js';
 import {
   createOperationOptions,
   merge,
@@ -6,13 +6,13 @@ import {
   timeout,
 } from '@terra-dev/broadcastable-operation';
 import { StdFee } from '@terra-money/terra.js';
-import { renderBroadcastTransaction } from 'components/TransactionRenderer';
-import { pickSwapResult } from 'pages/basset/transactions/pickSwapResult';
 import { createContractMsg } from 'base/transactions/createContractMsg';
 import { createOptions } from 'base/transactions/createOptions';
 import { getTxInfo } from 'base/transactions/getTxInfo';
 import { postContractMsg } from 'base/transactions/postContractMsg';
 import { parseTxResult } from 'base/transactions/tx';
+import { renderBroadcastTransaction } from 'components/TransactionRenderer';
+import { pickSwapResult } from 'pages/basset/transactions/pickSwapResult';
 
 export const swapOptions = createOperationOptions({
   id: 'basset/swap',
@@ -26,7 +26,7 @@ export const swapOptions = createOperationOptions({
     gasFee,
     gasAdjustment,
   }: OperationDependency<{}>) => [
-    fabricatebSwapbLuna, // Option -> ((AddressProvider) -> MsgExecuteContract[])
+    fabricateTerraswapSwapbLuna, // Option -> ((AddressProvider) -> MsgExecuteContract[])
     createContractMsg(addressProvider), // -> MsgExecuteContract[]
     createOptions(() => ({
       fee: new StdFee(gasFee, fixedGas + 'uusd'),
