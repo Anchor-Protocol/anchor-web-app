@@ -26,12 +26,13 @@ import {
 } from '@anchor-protocol/wallet-provider';
 import { useApolloClient } from '@apollo/client';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
-import { min } from '@terra-dev/big-math';
+import { max, min } from '@terra-dev/big-math';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { isZero } from '@terra-dev/is-zero';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { NumberMuiInput } from '@terra-dev/neumorphism-ui/components/NumberMuiInput';
 import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
+import { useConfirm } from '@terra-dev/neumorphism-ui/components/useConfirm';
 import { useResolveLast } from '@terra-dev/use-resolve-last';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
@@ -53,6 +54,7 @@ import { useANCPrice } from 'pages/gov/queries/ancPrice';
 import { buyOptions } from 'pages/gov/transactions/buyOptions';
 import React, {
   ChangeEvent,
+  ReactNode,
   useCallback,
   useEffect,
   useMemo,
@@ -72,6 +74,8 @@ export function TradeBuy() {
   // dependencies
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
+
+  const [openConfirm, confirmElement] = useConfirm();
 
   const { fixedGas } = useConstants();
 
@@ -110,15 +114,21 @@ export function TradeBuy() {
   // ---------------------------------------------
   const ustBalance = useMemo(() => {
     const txFee = min(
-      big(big(bank.userBalances.uUSD).minus(fixedGas)).div(
-        big(1).plus(bank.tax.taxRate),
+      max(
+        big(big(bank.userBalances.uUSD).minus(fixedGas)).div(
+          big(big(1).plus(bank.tax.taxRate)).mul(bank.tax.taxRate),
+        ),
+        0,
       ),
       bank.tax.maxTaxUUSD,
     );
 
-    return big(bank.userBalances.uUSD)
-      .minus(txFee)
-      .minus(fixedGas * 2) as uUST<Big>;
+    return max(
+      big(bank.userBalances.uUSD)
+        .minus(txFee)
+        .minus(fixedGas * 2),
+      0,
+    ) as uUST<Big>;
   }, [bank.tax.maxTaxUUSD, bank.tax.taxRate, bank.userBalances.uUSD, fixedGas]);
 
   const invalidTxFee = useMemo(
@@ -127,12 +137,45 @@ export function TradeBuy() {
   );
 
   const invalidFromAmount = useMemo(() => {
-    if (fromAmount.length === 0 || !connectedWallet) return undefined;
+    if (fromAmount.length === 0 || !connectedWallet || !simulation)
+      return undefined;
 
-    return microfy(fromAmount).gt(bank.userBalances.uUSD)
+    return big(microfy(fromAmount))
+      .plus(simulation.txFee)
+      .plus(fixedGas)
+      .gt(bank.userBalances.uUSD)
       ? 'Not enough assets'
       : undefined;
-  }, [bank.userBalances.uUSD, fromAmount, connectedWallet]);
+  }, [
+    fromAmount,
+    connectedWallet,
+    simulation,
+    fixedGas,
+    bank.userBalances.uUSD,
+  ]);
+
+  const invalidNextTransaction = useMemo(() => {
+    if (fromAmount.length === 0 || !simulation || !!invalidFromAmount) {
+      return undefined;
+    }
+
+    const remainUUSD = big(bank.userBalances.uUSD)
+      .minus(microfy(fromAmount))
+      .minus(simulation.txFee)
+      .minus(fixedGas);
+
+    if (remainUUSD.lt(fixedGas)) {
+      return 'You may run out of USD balance needed for future transactions.';
+    }
+
+    return undefined;
+  }, [
+    bank.userBalances.uUSD,
+    fixedGas,
+    fromAmount,
+    invalidFromAmount,
+    simulation,
+  ]);
 
   // ---------------------------------------------
   // effects
@@ -266,7 +309,20 @@ export function TradeBuy() {
       fromAmount: UST,
       ancPrice: AncPrice,
       txFee: uUST,
+      confirm: ReactNode,
     ) => {
+      if (confirm) {
+        const userConfirm = await openConfirm({
+          description: confirm,
+          agree: 'Proceed',
+          disagree: 'Cancel',
+        });
+
+        if (!userConfirm) {
+          return;
+        }
+      }
+
       const broadcasted = await buy({
         address: walletReady.walletAddress,
         amount: fromAmount,
@@ -282,7 +338,7 @@ export function TradeBuy() {
         init();
       }
     },
-    [buy, init],
+    [buy, init, openConfirm],
   );
 
   // ---------------------------------------------
@@ -423,9 +479,22 @@ export function TradeBuy() {
         </TxFeeList>
       )}
 
+      {invalidNextTransaction && ustBalance && (
+        <MessageBox style={{ marginTop: 30, marginBottom: 30 }}>
+          {invalidNextTransaction}
+        </MessageBox>
+      )}
+
       {/* Submit */}
       <ActionButton
         className="submit"
+        style={
+          invalidNextTransaction
+            ? {
+                backgroundColor: '#c12535',
+              }
+            : undefined
+        }
         disabled={
           !connectedWallet ||
           !ancPrice ||
@@ -440,11 +509,19 @@ export function TradeBuy() {
           connectedWallet &&
           ancPrice &&
           simulation &&
-          proceed(connectedWallet, fromAmount, ancPrice, simulation.txFee)
+          proceed(
+            connectedWallet,
+            fromAmount,
+            ancPrice,
+            simulation.txFee,
+            invalidNextTransaction,
+          )
         }
       >
         Proceed
       </ActionButton>
+
+      {confirmElement}
     </>
   );
 }
