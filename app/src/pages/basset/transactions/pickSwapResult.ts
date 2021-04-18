@@ -81,7 +81,7 @@ export function pickSwapResult({
       },
       tradingFee1 &&
         tradingFee2 && {
-          name: 'Tranding Fee',
+          name: 'Trading Fee',
           value:
             formatLuna(
               demicrofy(big(tradingFee1).plus(tradingFee2) as uLuna<Big>),
