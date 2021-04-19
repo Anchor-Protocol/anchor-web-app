@@ -55,6 +55,8 @@ export const Announcement = styled(AnnouncementBase)`
   word-break: keep-all;
   white-space: nowrap;
 
+  letter-spacing: -0.05em;
+
   figure {
     text-align: center;
 
