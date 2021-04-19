@@ -1,3 +1,4 @@
+import { HumanAddr } from '@anchor-protocol/types';
 import { useWallet, WalletStatusType } from '@anchor-protocol/wallet-provider';
 import { ClickAwayListener } from '@material-ui/core';
 import { useIsDesktopChrome } from '@terra-dev/is-desktop-chrome';
@@ -7,12 +8,11 @@ import { AirdropContent } from 'components/Header/WalletSelector/AirdropContent'
 import { AnnouncementContent } from 'components/Header/WalletSelector/AnnouncementContent';
 import { useViewAddressDialog } from 'components/Header/WalletSelector/useViewAddressDialog';
 import { useAirdrop } from 'pages/airdrop/queries/useAirdrop';
-import { BurnUserAnnouncementContent } from 'pages/announcement/components/BurnUserAnnouncementContent';
-import { MintUserAnnouncementContent } from 'pages/announcement/components/MintUserAnnouncementContent';
+import { Announcement } from 'pages/announcement/components/Announcement';
 import { useIsBurnUser } from 'pages/announcement/data/useIsBurnUser';
 import { useIsMintUser } from 'pages/announcement/data/useIsMintUser';
 import { useSendDialog } from 'pages/send/useSendDialog';
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import styled from 'styled-components';
 import { ConnectedButton } from './ConnectedButton';
@@ -187,16 +187,14 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                 !open && (
                   <DropdownBox>
                     <AnnouncementContent onClose={closeAnnouncement}>
-                      {announcementBurnUser && (
-                        <BurnUserAnnouncementContent
-                          {...announcementBurnUser}
-                        />
-                      )}
-                      {announcementMintUser && (
-                        <MintUserAnnouncementContent
-                          {...announcementMintUser}
-                        />
-                      )}
+                      <Announcement
+                        address={
+                          (announcementBurnUser?.address ??
+                            announcementMintUser?.address) as HumanAddr
+                        }
+                        minterAmount={announcementMintUser?.amount}
+                        burnAmount={announcementBurnUser?.amount}
+                      />
                     </AnnouncementContent>
                   </DropdownBox>
                 )}

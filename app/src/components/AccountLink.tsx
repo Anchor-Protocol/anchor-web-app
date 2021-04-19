@@ -7,6 +7,7 @@ export interface AccountLinkProps {
   address: string;
   truncate?: boolean;
   className?: string;
+  underline?: boolean;
 }
 
 function AccountLinkBase({ address, truncate, className }: AccountLinkProps) {
@@ -26,4 +27,6 @@ function AccountLinkBase({ address, truncate, className }: AccountLinkProps) {
 
 export const AccountLink = styled(AccountLinkBase)`
   color: ${({ theme }) => theme.textColor};
+  ${({ underline = false }) =>
+    underline ? 'text-decoration: underline !important;' : ''};
 `;
