@@ -22,8 +22,13 @@ function AnnouncementBase({
       <h2>Announcement of bLuna burn incident</h2>
       <p>
         Details :{' '}
-        <a href="https://google.com" target="_blank" rel="noreferrer">
-          https://medium/link/to...
+        <a
+          href="https://t.me/anchor_official/47029"
+          target="_blank"
+          rel="noreferrer"
+          style={{ textDecoration: 'underline' }}
+        >
+          https://t.me/anchor_official/47029
         </a>
       </p>
       <p style={{ marginTop: '2em' }}>
