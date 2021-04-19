@@ -50,13 +50,8 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
 
   const [airdropClosed, setAirdropClosed] = useState(() => _airdropClosed);
 
-  const [burnAnnouncementClosed, closeBurnAnnouncement] = usePeriodMessage({
-    id: 'burn-announcement',
-    period: 1000 * 60 * 60 * 8,
-  });
-
-  const [mintAnnouncementClosed, closeMintAnnouncement] = usePeriodMessage({
-    id: 'mint-announcement',
+  const [announcementClosed, closeAnnouncement] = usePeriodMessage({
+    id: 'announcement',
     period: 1000 * 60 * 60 * 8,
   });
 
@@ -187,20 +182,24 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                     <AirdropContent onClose={closeAirdrop} />
                   </DropdownBox>
                 )}
-              {!!announcementBurnUser && !burnAnnouncementClosed && !open && (
-                <DropdownBox>
-                  <AnnouncementContent onClose={closeBurnAnnouncement}>
-                    <BurnUserAnnouncementContent {...announcementBurnUser} />
-                  </AnnouncementContent>
-                </DropdownBox>
-              )}
-              {!!announcementMintUser && !mintAnnouncementClosed && !open && (
-                <DropdownBox>
-                  <AnnouncementContent onClose={closeMintAnnouncement}>
-                    <MintUserAnnouncementContent {...announcementMintUser} />
-                  </AnnouncementContent>
-                </DropdownBox>
-              )}
+              {(!!announcementBurnUser || !!announcementMintUser) &&
+                !announcementClosed &&
+                !open && (
+                  <DropdownBox>
+                    <AnnouncementContent onClose={closeAnnouncement}>
+                      {announcementBurnUser && (
+                        <BurnUserAnnouncementContent
+                          {...announcementBurnUser}
+                        />
+                      )}
+                      {announcementMintUser && (
+                        <MintUserAnnouncementContent
+                          {...announcementMintUser}
+                        />
+                      )}
+                    </AnnouncementContent>
+                  </DropdownBox>
+                )}
             </DropdownContainer>
 
             {open && (
