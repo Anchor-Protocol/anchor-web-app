@@ -31,6 +31,7 @@ export async function getAnnouncementUser(
         mint?: uLuna | null;
         burn?: uLuna | null;
       } = {}) => {
+        console.log('announcement.ts..()', { address, mint, burn });
         return mint || burn
           ? {
               address,
