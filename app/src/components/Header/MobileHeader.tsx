@@ -1,6 +1,6 @@
 import { Menu, MenuClose, Wallet } from '@anchor-protocol/icons';
 import {
-  useConnectedWallet,
+  useUserWallet,
   useWallet,
   WalletStatusType,
 } from '@anchor-protocol/wallet-provider';
@@ -29,7 +29,7 @@ export interface MobileHeaderProps {
 function MobileHeaderBase({ className }: MobileHeaderProps) {
   const [open, setOpen] = useState<boolean>(false);
 
-  const connectedWallet = useConnectedWallet();
+  const connectedWallet = useUserWallet();
 
   const firstAnnouncementOpen = useRef<boolean>(true);
 

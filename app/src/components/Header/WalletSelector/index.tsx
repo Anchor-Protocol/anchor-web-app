@@ -1,5 +1,5 @@
 import {
-  useConnectedWallet,
+  useUserWallet,
   useWallet,
   WalletStatusType,
 } from '@anchor-protocol/wallet-provider';
@@ -34,7 +34,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   // ---------------------------------------------
   const { status, install, connect, disconnect } = useWallet();
 
-  const connectedWallet = useConnectedWallet();
+  const connectedWallet = useUserWallet();
 
   const announcementUser = useAnnouncementUser(
     connectedWallet?.walletAddress ?? null,
