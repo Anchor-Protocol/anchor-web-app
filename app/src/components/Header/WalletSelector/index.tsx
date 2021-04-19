@@ -1,16 +1,22 @@
 import { useWallet, WalletStatusType } from '@anchor-protocol/wallet-provider';
 import { ClickAwayListener } from '@material-ui/core';
 import { useIsDesktopChrome } from '@terra-dev/is-desktop-chrome';
+import { usePeriodMessage } from '@terra-dev/use-period-message';
 import { useBank } from 'base/contexts/bank';
 import { AirdropContent } from 'components/Header/WalletSelector/AirdropContent';
+import { AnnouncementContent } from 'components/Header/WalletSelector/AnnouncementContent';
 import { useViewAddressDialog } from 'components/Header/WalletSelector/useViewAddressDialog';
 import { useAirdrop } from 'pages/airdrop/queries/useAirdrop';
+import { BurnUserAnnouncementContent } from 'pages/announcement/components/BurnUserAnnouncementContent';
+import { MintUserAnnouncementContent } from 'pages/announcement/components/MintUserAnnouncementContent';
+import { useIsBurnUser } from 'pages/announcement/data/useIsBurnUser';
+import { useIsMintUser } from 'pages/announcement/data/useIsMintUser';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import { useCallback, useState } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import styled from 'styled-components';
 import { ConnectedButton } from './ConnectedButton';
-import { DropdownContainer } from './DropdownContainer';
+import { DropdownBox, DropdownContainer } from './DropdownContainer';
 import { NotConnectedButton } from './NotConnectedButton';
 import { WalletDetailContent } from './WalletDetailContent';
 
@@ -18,13 +24,17 @@ export interface WalletSelectorProps {
   className?: string;
 }
 
-let airdropClosed: boolean = false;
+let _airdropClosed: boolean = false;
 
 function WalletSelectorBase({ className }: WalletSelectorProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
   const { status, install, connect, disconnect } = useWallet();
+
+  const announcementBurnUser = useIsBurnUser();
+
+  const announcementMintUser = useIsMintUser();
 
   const isDesktopChrome = useIsDesktopChrome();
 
@@ -38,11 +48,21 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
 
   const [openViewAddress, viewAddressElement] = useViewAddressDialog();
 
-  const [closed, setClosed] = useState(() => airdropClosed);
+  const [airdropClosed, setAirdropClosed] = useState(() => _airdropClosed);
+
+  const [burnAnnouncementClosed, closeBurnAnnouncement] = usePeriodMessage({
+    id: 'burn-announcement',
+    period: 1000 * 60 * 60 * 8,
+  });
+
+  const [mintAnnouncementClosed, closeMintAnnouncement] = usePeriodMessage({
+    id: 'mint-announcement',
+    period: 1000 * 60 * 60 * 8,
+  });
 
   const closeAirdrop = useCallback(() => {
-    setClosed(true);
-    airdropClosed = true;
+    setAirdropClosed(true);
+    _airdropClosed = true;
   }, []);
 
   // ---------------------------------------------
@@ -156,26 +176,44 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
           <div className={className}>
             <ConnectedButton status={status} bank={bank} onClick={toggleOpen} />
 
-            {!closed &&
-              status.status === WalletStatusType.CONNECTED &&
-              airdrop &&
-              airdrop !== 'in-progress' &&
-              !open &&
-              !matchAirdrop && (
-                <DropdownContainer>
-                  <AirdropContent onClose={closeAirdrop} />
-                </DropdownContainer>
+            <DropdownContainer>
+              {!airdropClosed &&
+                status.status === WalletStatusType.CONNECTED &&
+                airdrop &&
+                airdrop !== 'in-progress' &&
+                !open &&
+                !matchAirdrop && (
+                  <DropdownBox>
+                    <AirdropContent onClose={closeAirdrop} />
+                  </DropdownBox>
+                )}
+              {!!announcementBurnUser && !burnAnnouncementClosed && !open && (
+                <DropdownBox>
+                  <AnnouncementContent onClose={closeBurnAnnouncement}>
+                    <BurnUserAnnouncementContent {...announcementBurnUser} />
+                  </AnnouncementContent>
+                </DropdownBox>
               )}
+              {!!announcementMintUser && !mintAnnouncementClosed && !open && (
+                <DropdownBox>
+                  <AnnouncementContent onClose={closeMintAnnouncement}>
+                    <MintUserAnnouncementContent {...announcementMintUser} />
+                  </AnnouncementContent>
+                </DropdownBox>
+              )}
+            </DropdownContainer>
 
             {open && (
               <DropdownContainer>
-                <WalletDetailContent
-                  bank={bank}
-                  status={status}
-                  closePopup={() => setOpen(false)}
-                  disconnectWallet={disconnectWallet}
-                  openSend={() => openSendDialog({})}
-                />
+                <DropdownBox>
+                  <WalletDetailContent
+                    bank={bank}
+                    status={status}
+                    closePopup={() => setOpen(false)}
+                    disconnectWallet={disconnectWallet}
+                    openSend={() => openSendDialog({})}
+                  />
+                </DropdownBox>
               </DropdownContainer>
             )}
 

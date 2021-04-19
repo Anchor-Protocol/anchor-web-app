@@ -4,16 +4,20 @@ import { IconButton } from '@material-ui/core';
 import { Launch } from '@material-ui/icons';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { IconToggleButton } from '@terra-dev/neumorphism-ui/components/IconToggleButton';
+import { usePeriodMessage } from '@terra-dev/use-period-message';
 import { useTheme } from 'base/contexts/theme';
 import { onProduction } from 'base/env';
 import logoUrl from 'components/Header/assets/Logo.svg';
+import { useViewAddressDialog } from 'components/Header/WalletSelector/useViewAddressDialog';
 import { useWalletDetailDialog } from 'components/Header/WalletSelector/useWalletDetailDialog';
 import { headerHeight, links } from 'env';
+import { useAnnouncementDialog } from 'pages/announcement/components/useAnnouncementDialog';
+import { useIsBurnUser } from 'pages/announcement/data/useIsBurnUser';
+import { useIsMintUser } from 'pages/announcement/data/useIsMintUser';
 import { govPathname } from 'pages/gov/env';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
-import { useViewAddressDialog } from 'components/Header/WalletSelector/useViewAddressDialog';
 
 export interface MobileHeaderProps {
   className?: string;
@@ -21,6 +25,46 @@ export interface MobileHeaderProps {
 
 function MobileHeaderBase({ className }: MobileHeaderProps) {
   const [open, setOpen] = useState<boolean>(false);
+
+  const firstAnnouncementOpen = useRef<boolean>(true);
+
+  const announcementBurnUser = useIsBurnUser();
+
+  const announcementMintUser = useIsMintUser();
+
+  const [
+    openAnnouncementDialog,
+    announcementDialogElement,
+  ] = useAnnouncementDialog();
+
+  const [announcementClosed, closeAnnouncement] = usePeriodMessage({
+    id: 'announcement',
+    period: 1000 * 60 * 60 * 8,
+  });
+
+  useEffect(() => {
+    if (
+      (!!announcementBurnUser || !!announcementMintUser) &&
+      !announcementDialogElement &&
+      !announcementClosed &&
+      firstAnnouncementOpen.current
+    ) {
+      firstAnnouncementOpen.current = false;
+
+      openAnnouncementDialog({
+        burnUser: announcementBurnUser,
+        mintUser: announcementMintUser,
+        onHide: closeAnnouncement,
+      });
+    }
+  }, [
+    announcementBurnUser,
+    announcementClosed,
+    announcementDialogElement,
+    announcementMintUser,
+    closeAnnouncement,
+    openAnnouncementDialog,
+  ]);
 
   const { themeColor } = useTheme();
 
@@ -104,6 +148,9 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
 
       {walletDetailElement}
       {provideAddressElement}
+      {!walletDetailElement &&
+        !provideAddressElement &&
+        announcementDialogElement}
     </>
   );
 }

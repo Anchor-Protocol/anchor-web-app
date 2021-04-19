@@ -8,6 +8,12 @@ export const DropdownContainer = styled.div`
   transform: translateX(-50%);
   z-index: 1000;
 
+  > :not(:last-child) {
+    margin-bottom: 15px;
+  }
+`;
+
+export const DropdownBox = styled.div`
   min-width: 260px;
 
   border: 1px solid ${({ theme }) => theme.highlightBackgroundColor};
