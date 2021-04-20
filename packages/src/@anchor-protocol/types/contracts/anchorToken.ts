@@ -113,7 +113,8 @@ export namespace anchorToken {
       | moneyMarket.overseer.UpdateConfig
       | moneyMarket.market.UpdateConfig
       | moneyMarket.interestModel.UpdateConfig
-      | moneyMarket.distributionModel.UpdateConfig;
+      | moneyMarket.distributionModel.UpdateConfig
+      | anchorToken.community.Spend;
 
     /**
      * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/anchor-token/gov#poll
