@@ -5,6 +5,7 @@ import {
   OperationTimeoutError,
 } from '@terra-dev/broadcastable-operation';
 import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
+import { TxHashLink } from 'base/components/TxHashLink';
 import { TxFailedError } from 'base/errors/TxFailedError';
 import { TxInfoError } from 'base/errors/TxInfoError';
 import { TxInfoParseError } from 'base/errors/TxInfoParseError';
@@ -15,6 +16,33 @@ export interface FaultProps {
   result: FaultResult<unknown[]>;
 }
 
+const channels = (
+  <ul>
+    <li>
+      Discord :{' '}
+      <a href="https://discord.gg/9aUYgpKZ9c" target="_blank" rel="noreferrer">
+        https://discord.gg/9aUYgpKZ9c
+      </a>
+    </li>
+    <li>
+      Telegram :{' '}
+      <a href="https://t.me/anchor_official" target="_blank" rel="noreferrer">
+        https://t.me/anchor_official
+      </a>
+    </li>
+    <li>
+      Github Issues :{' '}
+      <a
+        href="https://github.com/Anchor-Protocol/anchor-web-app/issues"
+        target="_blank"
+        rel="noreferrer"
+      >
+        https://github.com/Anchor-Protocol/anchor-web-app
+      </a>
+    </li>
+  </ul>
+);
+
 const txFailedMessage = (
   <div style={{ lineHeight: '1.8em' }}>
     <p>
@@ -22,40 +50,41 @@ const txFailedMessage = (
       WebApp.
     </p>
     <p>
-      If the problem still persists,
-      <br />
-      please report your error ID to admin through anyone of the following
+      If the problem still persists, please report your error ID to admin
+      through anyone of the following channels.
+    </p>
+
+    {channels}
+  </div>
+);
+
+const txParseFailedMessage = (txhash: string) => (
+  <div style={{ lineHeight: '1.8em' }}>
+    <p>
+      The transaction was broadcasted, but there was an error in parsing the
+      results.
+    </p>
+    <p>
+      Please report your error ID to admin through anyone of the following
       channels.
     </p>
 
-    <ul>
-      <li>
-        Discord :{' '}
-        <a
-          href="https://discord.gg/9aUYgpKZ9c"
-          target="_blank"
-          rel="noreferrer"
-        >
-          https://discord.gg/9aUYgpKZ9c
-        </a>
-      </li>
-      <li>
-        Telegram :{' '}
-        <a href="https://t.me/anchor_official" target="_blank" rel="noreferrer">
-          https://t.me/anchor_official
-        </a>
-      </li>
-      <li>
-        Github Issues :{' '}
-        <a
-          href="https://github.com/Anchor-Protocol/anchor-web-app/issues"
-          target="_blank"
-          rel="noreferrer"
-        >
-          https://github.com/Anchor-Protocol/anchor-web-app
-        </a>
-      </li>
-    </ul>
+    <p>
+      <b>Tx hash :</b> <TxHashLink txHash={txhash} />
+    </p>
+
+    {channels}
+  </div>
+);
+
+const uncaughtErrorMessage = (
+  <div style={{ lineHeight: '1.8em' }}>
+    <p>
+      Please report your error ID to admin through anyone of the following
+      channels.
+    </p>
+
+    {channels}
   </div>
 );
 
@@ -94,16 +123,19 @@ export function Fault({ result: { error, errorId } }: FaultProps) {
         ) : // failed parse the txInfo (front-end error)
         error instanceof TxInfoParseError ? (
           <>
-            <h2>Parse TxInfo Failed</h2>
+            <h2>Failed to parse transaction results</h2>
             <HorizontalHeavyRuler />
-            <ErrorView errorId={errorId} text={error.toString()} />
+            <ErrorView
+              errorId={errorId}
+              text={txParseFailedMessage(error.txResult.result.txhash)}
+            />
           </>
         ) : (
           // uncaught errors...
           <>
-            <h2>Failure</h2>
+            <h2>Oops, something went wrong!</h2>
             <HorizontalHeavyRuler />
-            <ErrorView text={String(error)} />
+            <ErrorView errorId={errorId} text={uncaughtErrorMessage} />
           </>
         )
       }
