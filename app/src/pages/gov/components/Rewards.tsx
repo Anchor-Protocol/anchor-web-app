@@ -277,7 +277,7 @@ export function RewardsBase({ className }: RewardsProps) {
                   Automatically re-staked{' '}
                   <InfoTooltip>
                     A portion of excess interest and bAsset staking rewards are
-                    automatically distributed to ANC stakers.
+                    automatically distributed to ANC stakers
                   </InfoTooltip>
                 </IconSpan>
               </td>

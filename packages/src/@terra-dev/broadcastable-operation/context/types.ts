@@ -35,6 +35,7 @@ export type Fault<Snapshot extends Array<any>> = {
   status: 'fault';
   sanpshots: Snapshot;
   error: unknown;
+  errorId: string | undefined | null;
   reset: () => void;
 };
 

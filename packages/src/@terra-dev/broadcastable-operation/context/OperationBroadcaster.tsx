@@ -17,7 +17,7 @@ import { Broadcasting, EventType, OperationResult, Subscriber } from './types';
 export interface OperationBroadcasterProps {
   children: ReactNode;
   dependency: GlobalDependency;
-  errorReporter?: (error: unknown) => void;
+  errorReporter?: (error: unknown) => string;
 }
 
 export interface OperationBroadcasterState {
@@ -39,7 +39,7 @@ export interface OperationBroadcasterState {
   // deps
   globalDependency: MutableRefObject<GlobalDependency>;
   // error reporter
-  errorReporter?: (error: unknown) => void;
+  errorReporter?: (error: unknown) => string;
 }
 
 // @ts-ignore
@@ -48,6 +48,7 @@ const OperationBroadcasterContext: Context<OperationBroadcasterState> = createCo
 export function OperationBroadcaster({
   children,
   dependency,
+  errorReporter,
 }: OperationBroadcasterProps) {
   const abortControllers = useRef<Map<string, AbortController>>(new Map());
   const subscribers = useRef<Set<Subscriber>>(new Set());
@@ -129,6 +130,7 @@ export function OperationBroadcaster({
       setAbortController,
       removeAbortController,
       globalDependency,
+      errorReporter,
     }),
     [
       broadcast,
@@ -139,6 +141,7 @@ export function OperationBroadcaster({
       getAbortController,
       setAbortController,
       removeAbortController,
+      errorReporter,
     ],
   );
 

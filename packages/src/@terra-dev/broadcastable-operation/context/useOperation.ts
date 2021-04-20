@@ -288,6 +288,8 @@ export function useOperation(
           return;
         }
 
+        let errorId: string | undefined | null = null;
+
         if (
           process.env.NODE_ENV === 'development' &&
           (breakOnError === true ||
@@ -295,13 +297,14 @@ export function useOperation(
         ) {
           throw error;
         } else if (errorReporter) {
-          errorReporter(error);
+          errorId = errorReporter(error);
         }
 
         updateResult({
           status: 'fault',
           sanpshots: snapshots.slice(),
           error,
+          errorId,
           reset: () => {
             initResult();
           },

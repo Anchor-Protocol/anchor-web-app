@@ -4,16 +4,62 @@ import {
   Fault as FaultResult,
   OperationTimeoutError,
 } from '@terra-dev/broadcastable-operation';
+import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
 import { TxFailedError } from 'base/errors/TxFailedError';
 import { TxInfoError } from 'base/errors/TxInfoError';
 import { TxInfoParseError } from 'base/errors/TxInfoParseError';
-import React from 'react';
+import React, { ReactNode } from 'react';
+import styled from 'styled-components';
 
 export interface FaultProps {
   result: FaultResult<unknown[]>;
 }
 
-export function Fault({ result: { error } }: FaultProps) {
+const txFailedMessage = (
+  <div style={{ lineHeight: '1.8em' }}>
+    <p>
+      If you are using multiple wallets, please retry after refreshing the
+      WebApp.
+    </p>
+    <p>
+      If the problem still persists,
+      <br />
+      please report your error ID to admin through anyone of the following
+      channels.
+    </p>
+
+    <ul>
+      <li>
+        Discord :{' '}
+        <a
+          href="https://discord.gg/9aUYgpKZ9c"
+          target="_blank"
+          rel="noreferrer"
+        >
+          https://discord.gg/9aUYgpKZ9c
+        </a>
+      </li>
+      <li>
+        Telegram :{' '}
+        <a href="https://t.me/anchor_official" target="_blank" rel="noreferrer">
+          https://t.me/anchor_official
+        </a>
+      </li>
+      <li>
+        Github Issues :{' '}
+        <a
+          href="https://github.com/Anchor-Protocol/anchor-web-app/issues"
+          target="_blank"
+          rel="noreferrer"
+        >
+          https://github.com/Anchor-Protocol/anchor-web-app
+        </a>
+      </li>
+    </ul>
+  </div>
+);
+
+export function Fault({ result: { error, errorId } }: FaultProps) {
   return (
     <article>
       <figure data-state="fault">
@@ -21,41 +67,43 @@ export function Fault({ result: { error } }: FaultProps) {
       </figure>
 
       {
-        // timeout(postContractMessage) + post() of <ChromeExtensionWalletProvider>
+        // user denied the tx in wallet
         error instanceof UserDeniedError ? (
           <>
             <h2>User Denied</h2>
           </>
-        ) : error instanceof OperationTimeoutError ? (
+        ) : // timeout(postContractMessage) + post() of wallet
+        error instanceof OperationTimeoutError ? (
           <>
             <h2>Operation Timeout</h2>
           </>
-        ) : // parseTxResult
+        ) : // error caused in parseTxResult()
         error instanceof TxFailedError ? (
           <>
-            <h2>Transaction Failed</h2>
-            {/*<HorizontalHeavyRuler />*/}
-            {/*<ErrorView text={error.toString()} />*/}
+            <h2>Failed to broadcast transaction</h2>
+            <HorizontalHeavyRuler />
+            <ErrorView errorId={errorId} text={txFailedMessage} />
           </>
-        ) : // getTxInfo
+        ) : // getTxInfo() the tx is failed
         error instanceof TxInfoError ? (
           <>
             <h2>Tx Failed</h2>
-            {/*<HorizontalHeavyRuler />*/}
-            {/*<ErrorView text={error.toString()} />*/}
+            <HorizontalHeavyRuler />
+            <ErrorView errorId={errorId} text={error.toString()} />
           </>
-        ) : error instanceof TxInfoParseError ? (
+        ) : // failed parse the txInfo (front-end error)
+        error instanceof TxInfoParseError ? (
           <>
             <h2>Parse TxInfo Failed</h2>
-            {/*<HorizontalHeavyRuler />*/}
-            {/*<ErrorView text={error.toString()} />*/}
+            <HorizontalHeavyRuler />
+            <ErrorView errorId={errorId} text={error.toString()} />
           </>
         ) : (
           // uncaught errors...
           <>
             <h2>Failure</h2>
-            {/*<HorizontalHeavyRuler />*/}
-            {/*<ErrorView text={String(error)} />*/}
+            <HorizontalHeavyRuler />
+            <ErrorView text={String(error)} />
           </>
         )
       }
@@ -63,46 +111,48 @@ export function Fault({ result: { error } }: FaultProps) {
   );
 }
 
-//function ErrorViewBase({
-//  text,
-//  className,
-//}: {
-//  text: string;
-//  className?: string;
-//}) {
-//  const [, setClipboard] = useClipboard(text);
-//
-//  return (
-//    <div className={className}>
-//      <pre>{text}</pre>
-//      <Tooltip title="Copy Error Message" placement="top">
-//        <IconButton size="small" onClick={setClipboard}>
-//          <FileCopy />
-//        </IconButton>
-//      </Tooltip>
-//    </div>
-//  );
-//}
-//
-//const ErrorView = styled(ErrorViewBase)`
-//  font-size: 12px;
-//
-//  pre {
-//    max-height: 400px;
-//    overflow-y: auto;
-//    word-break: break-all;
-//    white-space: break-spaces;
-//  }
-//
-//  position: relative;
-//
-//  button {
-//    position: absolute;
-//    right: 0;
-//    top: -8px;
-//
-//    svg {
-//      font-size: 1.2em;
-//    }
-//  }
-//`;
+function ErrorViewBase({
+  text,
+  className,
+  errorId,
+}: {
+  text: ReactNode;
+  className?: string;
+  errorId?: string | null;
+}) {
+  return (
+    <div className={className}>
+      <div>
+        {typeof text === 'string' ? <pre>{text}</pre> : text}
+        {errorId && (
+          <p style={{ marginTop: 20, opacity: 0.5 }}>
+            <b>Error ID</b>: {errorId}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+const ErrorView = styled(ErrorViewBase)`
+  font-size: 12px;
+
+  pre {
+    max-height: 400px;
+    overflow-y: auto;
+    word-break: break-all;
+    white-space: break-spaces;
+  }
+
+  position: relative;
+
+  button {
+    position: absolute;
+    right: 0;
+    top: -8px;
+
+    svg {
+      font-size: 1.2em;
+    }
+  }
+`;
