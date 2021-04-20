@@ -276,8 +276,8 @@ export function RewardsBase({ className }: RewardsProps) {
                 <IconSpan>
                   Automatically re-staked{' '}
                   <InfoTooltip>
-                    Protocol fee paid from withdrawing collateral is distributed
-                    to ANC stakers and increases staked ANC
+                    A portion of excess interest and bAsset staking rewards are
+                    automatically distributed to ANC stakers
                   </InfoTooltip>
                 </IconSpan>
               </td>

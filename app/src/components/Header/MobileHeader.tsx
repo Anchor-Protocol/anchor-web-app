@@ -125,8 +125,8 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
             className="logo"
             href={
               onProduction
-                ? 'https://anchorprotocol.com'
-                : 'https://dev.anchor.money'
+                ? 'https://anchorprotocol.com/dashboard'
+                : 'https://dev.anchor.money/dashboard'
             }
           >
             <img src={logoUrl} alt="logo" />
