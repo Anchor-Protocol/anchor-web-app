@@ -1,7 +1,7 @@
 import { anchorToken } from '@anchor-protocol/types';
-import { useContractNickname } from 'base/contexts/contract';
+import { useContract, useContractNickname } from 'base/contexts/contract';
 import { AccountLink } from 'components/AccountLink';
-import { getMsgDetails } from 'pages/gov/logics/getMsgDetails';
+import { getMsgDetails } from '../logics/getMsgDetails';
 import React, { Fragment, useMemo } from 'react';
 
 export interface PollMsgRendererProps {
@@ -9,6 +9,7 @@ export interface PollMsgRendererProps {
 }
 
 export function PollMsgRenderer({ msg }: PollMsgRendererProps) {
+  const { address } = useContract();
   const nickname = useContractNickname();
 
   const contractNickname = useMemo(
@@ -36,7 +37,7 @@ export function PollMsgRenderer({ msg }: PollMsgRendererProps) {
       </article>
 
       <article>
-        {getMsgDetails(msg).map(({ name, value }) => (
+        {getMsgDetails(address, msg).map(({ name, value }) => (
           <Fragment key={name}>
             <h4>{name}</h4>
             <p>{value}</p>

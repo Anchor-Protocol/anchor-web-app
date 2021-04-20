@@ -1,7 +1,7 @@
 import { formatRate } from '@anchor-protocol/notation';
 import { anchorToken, cw20, Rate, uANC } from '@anchor-protocol/types';
 import big from 'big.js';
-import { getMsgTitle } from 'pages/gov/logics/getMsgTitle';
+import { getMsgTitle } from './getMsgTitle';
 
 export interface PollDetail {
   poll: anchorToken.gov.PollResponse;

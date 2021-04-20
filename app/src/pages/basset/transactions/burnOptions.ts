@@ -1,4 +1,4 @@
-import { fabricatebAssetBurn } from '@anchor-protocol/anchor.js';
+import { fabricatebAssetUnbond } from '@anchor-protocol/anchor.js';
 import { floor } from '@terra-dev/big-math';
 import {
   createOperationOptions,
@@ -28,7 +28,7 @@ export const burnOptions = createOperationOptions({
     gasFee,
     gasAdjustment,
   }: OperationDependency<{}>) => [
-    effect(fabricatebAssetBurn, takeTxFee(storage)), // Option -> ((AddressProvider) -> MsgExecuteContract[])
+    effect(fabricatebAssetUnbond, takeTxFee(storage)), // Option -> ((AddressProvider) -> MsgExecuteContract[])
     createContractMsg(addressProvider), // -> MsgExecuteContract[]
     createOptions(() => ({
       fee: new StdFee(gasFee, floor(storage.get('txFee')) + 'uusd'),

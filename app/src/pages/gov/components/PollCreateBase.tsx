@@ -27,10 +27,6 @@ import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { validateTxFee } from 'logics/validateTxFee';
-import { FormLayout } from 'pages/gov/components/FormLayout';
-import { validateLinkAddress } from 'pages/gov/logics/validateLinkAddress';
-import { usePollConfig } from 'pages/gov/queries/pollConfig';
-import { createPollOptions } from 'pages/gov/transactions/createPollOptions';
 import React, {
   ChangeEvent,
   ReactNode,
@@ -39,6 +35,10 @@ import React, {
   useState,
 } from 'react';
 import { useHistory } from 'react-router-dom';
+import { validateLinkAddress } from '../logics/validateLinkAddress';
+import { usePollConfig } from '../queries/pollConfig';
+import { createPollOptions } from '../transactions/createPollOptions';
+import { FormLayout } from './FormLayout';
 
 export interface PollCreateBaseProps {
   pollTitle: ReactNode;
