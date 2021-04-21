@@ -71,24 +71,11 @@ export class WalletController {
       defaultNetwork: options.defaultNetwork,
     });
 
-    // 1. check if readonly wallet session is exists
-    const draftReadonlyWallet = reConnectIfSessionExists();
+    let numSessionCheck: number = 0;
 
-    if (draftReadonlyWallet) {
-      this.enableReadonlyWallet(draftReadonlyWallet);
-      return;
-    }
-
-    // 2. check if walletconnect sesison is exists
-    const draftWalletConnect = wcConnectIfSessionExists(options);
-
-    if (
-      draftWalletConnect &&
-      draftWalletConnect.getLatestSession().status ===
-        WalletConnectSessionStatus.CONNECTED
-    ) {
-      this.enableWalletConnect(draftWalletConnect);
-    } else if (isDesktopChrome()) {
+    // wait checking the availability of the chrome extension
+    // 0. check if extension wallet session is exists
+    if (isDesktopChrome()) {
       const extensionConnectionCheckSubscription = race(
         this.extension.status().pipe(
           filter((extensionStatus) => {
@@ -106,14 +93,41 @@ export class WalletController {
             ]);
           }
 
-          if (status === ChromeExtensionStatus.WALLET_CONNECTED) {
+          if (
+            status === ChromeExtensionStatus.WALLET_CONNECTED &&
+            !this.disableWalletConnect &&
+            !this.disableReadonlyWallet
+          ) {
             extensionConnectionCheckSubscription.unsubscribe();
             this.enableExtension();
+          } else if (numSessionCheck === 0) {
+            numSessionCheck += 1;
           } else {
             this._status.next(WalletStatus.WALLET_NOT_CONNECTED);
           }
         },
       });
+    }
+
+    // 1. check if readonly wallet session is exists
+    const draftReadonlyWallet = reConnectIfSessionExists();
+
+    if (draftReadonlyWallet) {
+      this.enableReadonlyWallet(draftReadonlyWallet);
+      return;
+    }
+
+    // 2. check if walletconnect sesison is exists
+    const draftWalletConnect = wcConnectIfSessionExists(options);
+
+    if (
+      draftWalletConnect &&
+      draftWalletConnect.getLatestSession().status ===
+        WalletConnectSessionStatus.CONNECTED
+    ) {
+      this.enableWalletConnect(draftWalletConnect);
+    } else if (numSessionCheck === 0) {
+      numSessionCheck += 1;
     } else {
       this._status.next(WalletStatus.WALLET_NOT_CONNECTED);
     }
