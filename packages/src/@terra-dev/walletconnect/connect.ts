@@ -146,7 +146,7 @@ export function connect(
     connector = draftConnector;
 
     if (!draftConnector.connected) {
-      draftConnector.createSession();
+      draftConnector.createSession().catch(console.error);
 
       if (qrcodeModal instanceof TerraWalletconnectQrcodeModal) {
         qrcodeModal.setCloseCallback(() => {
@@ -168,7 +168,7 @@ export function connect(
   // methods
   // ---------------------------------------------
   function disconnect() {
-    if (connector) {
+    if (connector && connector.connected) {
       try {
         connector.killSession();
       } catch {}
