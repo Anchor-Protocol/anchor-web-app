@@ -85,6 +85,8 @@ export class WalletController {
         interval(1000 * 10).pipe(mapTo(null)),
       ).subscribe({
         next: (status) => {
+          extensionConnectionCheckSubscription.unsubscribe();
+
           if (status !== ChromeExtensionStatus.UNAVAILABLE) {
             this._availableConnectTypes.next([
               ConnectType.READONLY,
@@ -98,7 +100,6 @@ export class WalletController {
             !this.disableWalletConnect &&
             !this.disableReadonlyWallet
           ) {
-            extensionConnectionCheckSubscription.unsubscribe();
             this.enableExtension();
           } else if (numSessionCheck === 0) {
             numSessionCheck += 1;
@@ -107,6 +108,8 @@ export class WalletController {
           }
         },
       });
+    } else {
+      numSessionCheck += 1;
     }
 
     // 1. check if readonly wallet session is exists
