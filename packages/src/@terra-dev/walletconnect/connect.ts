@@ -215,7 +215,7 @@ export function connect(
 
     return connector.sendCustomRequest({
       id,
-      method: 'terra',
+      method: 'send',
       params: [serializedTxOptions],
     });
   }
