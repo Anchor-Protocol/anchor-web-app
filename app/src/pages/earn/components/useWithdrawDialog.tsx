@@ -188,6 +188,7 @@ function ComponentBase({
           className="proceed"
           disabled={
             !connectedWallet ||
+            !connectedWallet.availablePost ||
             withdrawAmount.length === 0 ||
             big(withdrawAmount).lte(0) ||
             !!invalidWithdrawAmount

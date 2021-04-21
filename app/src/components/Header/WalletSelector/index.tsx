@@ -1,4 +1,8 @@
-import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
+import {
+  ConnectType,
+  useWallet,
+  WalletStatus,
+} from '@anchor-protocol/wallet-provider';
 import { ClickAwayListener } from '@material-ui/core';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { useBank } from 'base/contexts/bank';
@@ -146,6 +150,10 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                 <DropdownBox>
                   <WalletDetailContent
                     bank={bank}
+                    availablePost={
+                      wallets[0].connectType === ConnectType.CHROME_EXTENSION ||
+                      wallets[0].connectType === ConnectType.WALLETCONNECT
+                    }
                     walletAddress={wallets[0].terraAddress}
                     network={network}
                     closePopup={() => setOpenDropdown(false)}

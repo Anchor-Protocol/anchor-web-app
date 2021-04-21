@@ -402,6 +402,7 @@ export function TradeSell() {
         className="submit"
         disabled={
           !connectedWallet ||
+          !connectedWallet.availablePost ||
           !ancPrice ||
           fromAmount.length === 0 ||
           big(fromAmount).lte(0) ||

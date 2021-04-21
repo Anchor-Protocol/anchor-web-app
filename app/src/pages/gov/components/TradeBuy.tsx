@@ -497,6 +497,7 @@ export function TradeBuy() {
         }
         disabled={
           !connectedWallet ||
+          !connectedWallet.availablePost ||
           !ancPrice ||
           fromAmount.length === 0 ||
           big(fromAmount).lte(0) ||

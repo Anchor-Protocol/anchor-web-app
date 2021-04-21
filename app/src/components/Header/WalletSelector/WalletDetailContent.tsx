@@ -25,6 +25,7 @@ interface WalletDetailContentProps {
   disconnectWallet: () => void;
   bank: Bank;
   openSend: () => void;
+  availablePost: boolean;
 }
 
 export function WalletDetailContentBase({
@@ -35,6 +36,7 @@ export function WalletDetailContentBase({
   closePopup,
   bank,
   openSend,
+  availablePost,
 }: WalletDetailContentProps) {
   const [isCopied, setCopied] = useClipboard(walletAddress, {
     successDuration: 1000 * 5,
@@ -101,16 +103,18 @@ export function WalletDetailContentBase({
           )}
         </ul>
 
-        <div className="send">
-          <FlatButton
-            onClick={() => {
-              openSend();
-              closePopup();
-            }}
-          >
-            SEND
-          </FlatButton>
-        </div>
+        {availablePost && (
+          <div className="send">
+            <FlatButton
+              onClick={() => {
+                openSend();
+                closePopup();
+              }}
+            >
+              SEND
+            </FlatButton>
+          </div>
+        )}
 
         <div className="outlink">
           <button onClick={viewOnTerraFinder}>

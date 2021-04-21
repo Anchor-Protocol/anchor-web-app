@@ -304,6 +304,7 @@ function ComponentBase({
           className="proceed"
           disabled={
             !connectedWallet ||
+            !connectedWallet.availablePost ||
             depositAmount.length === 0 ||
             big(depositAmount).lte(0) ||
             !!invalidTxFee ||

@@ -148,6 +148,7 @@ export function AncGovernanceStake() {
         className="submit"
         disabled={
           !connectedWallet ||
+          !connectedWallet.availablePost ||
           ancAmount.length === 0 ||
           big(ancAmount).lte(0) ||
           !!invalidTxFee ||

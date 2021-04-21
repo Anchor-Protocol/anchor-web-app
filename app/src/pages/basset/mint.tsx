@@ -367,6 +367,7 @@ function MintBase({ className }: MintProps) {
         className="submit"
         disabled={
           !connectedWallet ||
+          !connectedWallet.availablePost ||
           bondAmount.length === 0 ||
           big(bondAmount).lte(0) ||
           !!invalidBondAmount ||

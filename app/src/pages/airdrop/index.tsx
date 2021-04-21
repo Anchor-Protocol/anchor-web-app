@@ -137,7 +137,9 @@ function AirdropBase({ className }: AirdropProps) {
 
         <ActionButton
           className="proceed"
-          disabled={!connectedWallet || !airdrop}
+          disabled={
+            !connectedWallet || !connectedWallet.availablePost || !airdrop
+          }
           onClick={() =>
             connectedWallet && airdrop && proceed(connectedWallet, airdrop)
           }

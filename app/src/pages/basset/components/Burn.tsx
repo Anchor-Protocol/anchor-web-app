@@ -322,6 +322,7 @@ export function Burn() {
         className="submit"
         disabled={
           !connectedWallet ||
+          !connectedWallet.availablePost ||
           burnAmount.length === 0 ||
           big(burnAmount).lte(0) ||
           !!invalidTxFee ||

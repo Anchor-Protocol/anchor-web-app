@@ -151,6 +151,7 @@ function ClaimAllBase({ className }: ClaimAllProps) {
           className="proceed"
           disabled={
             !connectedWallet ||
+            !connectedWallet.availablePost ||
             !claimingLpStaingInfoPendingRewards ||
             !claimingBorrowerInfoPendingRewards ||
             !claiming ||

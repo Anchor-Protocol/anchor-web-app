@@ -118,6 +118,7 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
         className="submit"
         disabled={
           !connectedWallet ||
+          !connectedWallet.availablePost ||
           !!invalidTxFee ||
           claimableRewards.lte(fixedGas) ||
           disabled

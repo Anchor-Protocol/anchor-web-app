@@ -242,6 +242,7 @@ export function AncUstLpWithdraw() {
         className="submit"
         disabled={
           !connectedWallet ||
+          !connectedWallet.availablePost ||
           lpAmount.length === 0 ||
           big(lpAmount).lte(0) ||
           !simulation ||

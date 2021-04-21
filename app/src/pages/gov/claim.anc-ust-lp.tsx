@@ -129,7 +129,10 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
         <ActionButton
           className="proceed"
           disabled={
-            !connectedWallet || !claiming || claiming.lte(MINIMUM_CLAIM_BALANCE)
+            !connectedWallet ||
+            !connectedWallet.availablePost ||
+            !claiming ||
+            claiming.lte(MINIMUM_CLAIM_BALANCE)
           }
           onClick={() => connectedWallet && proceed(connectedWallet)}
         >

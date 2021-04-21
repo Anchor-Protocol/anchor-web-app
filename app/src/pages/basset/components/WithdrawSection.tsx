@@ -188,6 +188,7 @@ export function WithdrawSection({
         className="submit"
         disabled={
           !connectedWallet ||
+          !connectedWallet.availablePost ||
           !!invalidTxFee ||
           withdrawableAmount.lte(0) ||
           disabled

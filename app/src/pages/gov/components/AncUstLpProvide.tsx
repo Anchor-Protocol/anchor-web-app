@@ -399,6 +399,7 @@ export function AncUstLpProvide() {
         }
         disabled={
           !connectedWallet ||
+          !connectedWallet.availablePost ||
           ancAmount.length === 0 ||
           ustAmount.length === 0 ||
           big(ancAmount).lte(0) ||

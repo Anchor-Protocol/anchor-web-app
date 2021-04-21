@@ -273,6 +273,7 @@ export function PollCreateBase({
           disabled={
             submitDisabled ||
             !connectedWallet ||
+            !connectedWallet.availablePost ||
             title.length === 0 ||
             description.length === 0 ||
             !!invalidUserANCBalance ||
