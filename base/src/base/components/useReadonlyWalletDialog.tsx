@@ -1,6 +1,7 @@
 import { Modal } from '@material-ui/core';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
+import { NativeSelect } from '@terra-dev/neumorphism-ui/components/NativeSelect';
 import { TextInput } from '@terra-dev/neumorphism-ui/components/TextInput';
 import { ReadonlyWalletSession } from '@terra-dev/readonly-wallet';
 import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
@@ -34,7 +35,7 @@ function ComponentBase({
   networks,
   closeDialog,
 }: DialogProps<FormParams, FormReturn>) {
-  //const [network, setNetwork] = useState<NetworkInfo>(networks[0]);
+  const [chainID, setChainID] = useState<string>(() => networks[0].chainID);
   const [address, setAddress] = useState<string>('');
 
   const invalidAddress = useMemo(() => {
@@ -46,11 +47,13 @@ function ComponentBase({
   }, [address]);
 
   const submit = useCallback(
-    (terraAddress: string) => {
+    (terraAddress: string, networkChainID: string) => {
       if (AccAddress.validate(terraAddress)) {
         closeDialog({
           terraAddress,
-          network: networks.reverse()[0],
+          network:
+            networks.find(({ chainID }) => chainID === networkChainID) ??
+            networks[0],
         });
       }
     },
@@ -60,7 +63,27 @@ function ComponentBase({
   return (
     <Modal open onClose={() => closeDialog(null)}>
       <Dialog className={className} onClose={() => closeDialog(null)}>
-        <h1>View an address</h1>
+        <h1>Readonly Wallet</h1>
+
+        {/* Network */}
+        <div className="network-description">
+          <p>Network</p>
+          <p />
+        </div>
+
+        <NativeSelect
+          fullWidth
+          value={chainID}
+          onChange={({ target }: ChangeEvent<HTMLSelectElement>) =>
+            setChainID(target.value)
+          }
+        >
+          {networks.map(({ chainID, name }) => (
+            <option key={chainID} value={chainID}>
+              {name} ({chainID})
+            </option>
+          ))}
+        </NativeSelect>
 
         {/* Address */}
         <div className="address-description">
@@ -84,7 +107,7 @@ function ComponentBase({
         <ActionButton
           className="connect"
           disabled={address.length === 0 || !!invalidAddress}
-          onClick={() => submit(address)}
+          onClick={() => submit(address, chainID)}
         >
           View
         </ActionButton>
@@ -104,7 +127,7 @@ const Component = styled(ComponentBase)`
   }
 
   .address-description,
-  .amount-description {
+  .network-description {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -116,6 +139,10 @@ const Component = styled(ComponentBase)`
     }
 
     margin-bottom: 12px;
+  }
+
+  .address-description {
+    margin-top: 24px;
   }
 
   .connect {
