@@ -1,3 +1,5 @@
+import { Tooltip } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { Launch } from '@material-ui/icons';
 import { onProduction } from 'base/env';
 import logoUrl from 'components/Header/assets/Logo.svg';
@@ -6,25 +8,47 @@ import { links, screen } from 'env';
 import { govPathname } from 'pages/gov/env';
 import React from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
-import styled, { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle, DefaultTheme } from 'styled-components';
 
 export interface DesktopHeaderProps {
   className?: string;
 }
 
+export const useTooltipStyle = makeStyles<DefaultTheme>(() => ({
+  tooltip: {
+    position: 'relative',
+    borderRadius: 0,
+    color: '#4BDB4B',
+    backgroundColor: 'transparent',
+    fontSize: 12,
+    fontWeight: 600,
+    padding: 0,
+    top: -3,
+    boxShadow: '1px 1px 6px 0px rgba(0,0,0,0.2)',
+  },
+}));
+
 function DesktopHeaderBase({ className }: DesktopHeaderProps) {
+  const tooltipClasses = useTooltipStyle();
+
   return (
     <header className={className}>
-      <a
-        className="logo"
-        href={
-          onProduction
-            ? 'https://anchorprotocol.com'
-            : 'https://dev.anchor.money'
-        }
+      <Tooltip
+        title="Go to Dashboard"
+        placement="right"
+        classes={tooltipClasses}
       >
-        <img src={logoUrl} alt="logo" />
-      </a>
+        <a
+          className="logo"
+          href={
+            onProduction
+              ? 'https://anchorprotocol.com/dashboard'
+              : 'https://dev.anchor.money/dashboard'
+          }
+        >
+          <img src={logoUrl} alt="logo" />
+        </a>
+      </Tooltip>
 
       <nav className="menu">
         <NavMenu to="/earn" title="EARN" docsTo={links.earn} />
@@ -188,6 +212,13 @@ export const DesktopHeader = styled(DesktopHeaderBase)`
     position: absolute;
     top: 18px;
     left: 100px;
+
+    transition: transform 0.17s ease-in-out;
+    transform-origin: center;
+
+    &:hover {
+      transform: scale(1.1);
+    }
   }
 
   @media (min-width: ${desktopLayoutBreak}px) {
