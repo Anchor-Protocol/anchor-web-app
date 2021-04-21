@@ -15,6 +15,12 @@ export function getMsgDetails(
       return [
         {
           name: 'Recipient',
+          value: createElement(AccountLink, {
+            address: communitySpend.spend.recipient,
+          }),
+        },
+        {
+          name: 'Amount',
           value: formatANC(demicrofy(communitySpend.spend.amount)) + ' ANC',
         },
       ];
