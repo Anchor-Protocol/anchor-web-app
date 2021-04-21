@@ -86,14 +86,17 @@ export function connect(
       throw new Error(`WalletConnect is not defined!`);
     }
 
-    // ? : 테스트 상에서 발생되지 않고 있음
     connector.on('session_update', async (error, payload) => {
       if (error) throw error;
 
-      const { chainId, accounts } = payload.params[0];
+      sessionSubject.next({
+        status: WalletConnectSessionStatus.CONNECTED,
+        peerMeta: payload.params[0],
+        terraAddress: payload.params[0].accounts[0],
+        chainId: payload.params[0].chainId,
+      });
 
-      console.log('app.tsx..()', chainId, accounts);
-      debugger;
+      console.log('WALLETCONNECT SESSION UPDATED:', payload.params[0]);
     });
 
     connector.on('connect', (error, payload) => {

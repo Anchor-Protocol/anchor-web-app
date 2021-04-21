@@ -226,15 +226,8 @@ export class WalletController {
   };
 
   private enableReadonlyWallet = (readonlyWallet: ReadonlyWalletController) => {
-    if (this.disableWalletConnect) {
-      this.disableWalletConnect();
-      this.disableWalletConnect = null;
-    }
-
-    if (this.disableExtension) {
-      this.disableExtension();
-      this.disableExtension = null;
-    }
+    this.disableWalletConnect?.();
+    this.disableExtension?.();
 
     if (this.readonlyWallet === readonlyWallet) {
       return;
@@ -259,19 +252,13 @@ export class WalletController {
     this.disableReadonlyWallet = () => {
       readonlyWallet.disconnect();
       this.readonlyWallet = null;
+      this.disableReadonlyWallet = null;
     };
   };
 
   private enableExtension = () => {
-    if (this.disableReadonlyWallet) {
-      this.disableReadonlyWallet();
-      this.disableReadonlyWallet = null;
-    }
-
-    if (this.disableWalletConnect) {
-      this.disableWalletConnect();
-      this.disableWalletConnect = null;
-    }
+    this.disableReadonlyWallet?.();
+    this.disableWalletConnect?.();
 
     if (this.disableExtension) {
       return;
@@ -308,19 +295,13 @@ export class WalletController {
     this.disableExtension = () => {
       this.extension.disconnect();
       extensionSubscription.unsubscribe();
+      this.disableExtension = null;
     };
   };
 
   private enableWalletConnect = (walletConnect: WalletConnectController) => {
-    if (this.disableReadonlyWallet) {
-      this.disableReadonlyWallet();
-      this.disableReadonlyWallet = null;
-    }
-
-    if (this.disableExtension) {
-      this.disableExtension();
-      this.disableExtension = null;
-    }
+    this.disableReadonlyWallet?.();
+    this.disableExtension?.();
 
     if (this.walletConnect === walletConnect) {
       return;
@@ -362,6 +343,7 @@ export class WalletController {
       walletConnect.disconnect();
       this.walletConnect = null;
       walletConnectSessionSubscription.unsubscribe();
+      this.disableWalletConnect = null;
     };
   };
 }
