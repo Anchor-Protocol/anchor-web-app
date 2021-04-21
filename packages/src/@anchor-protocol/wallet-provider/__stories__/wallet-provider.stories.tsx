@@ -1,5 +1,4 @@
 import {
-  ConnectType,
   useWallet,
   WalletProvider,
   WalletStatus,
@@ -21,6 +20,12 @@ export default {
       <WalletProvider
         defaultNetwork={defaultNetwork}
         walletConnectChainIds={new Map()}
+        createReadonlyWalletSession={() =>
+          Promise.resolve({
+            terraAddress: 'terra12hnhh5vtyg5juqnzm43970nh4fw42pt27nw9g9',
+            network: defaultNetwork,
+          })
+        }
       >
         <Story />
       </WalletProvider>
@@ -28,12 +33,12 @@ export default {
   ],
 };
 
-export const Handle_Status = () => {
+export const Connect = () => {
   const {
     status,
     network,
-    walletAddress,
-    availableExtension,
+    wallets,
+    availableConnectTypes,
     connect,
     disconnect,
   } = useWallet();
@@ -46,8 +51,8 @@ export const Handle_Status = () => {
             {
               status,
               network,
-              walletAddress,
-              availableExtension,
+              wallets,
+              availableConnectTypes,
             },
             null,
             2,
@@ -58,14 +63,11 @@ export const Handle_Status = () => {
       <section style={{ margin: '20px 0' }}>
         {status === WalletStatus.WALLET_NOT_CONNECTED ? (
           <>
-            <button onClick={() => connect(ConnectType.WALLETCONNECT)}>
-              Connect with Wallet Connect
-            </button>
-            {availableExtension && (
-              <button onClick={() => connect(ConnectType.EXTENSION)}>
-                Connect with Extension
+            {availableConnectTypes.map((connectType) => (
+              <button key={connectType} onClick={() => connect(connectType)}>
+                Connect with {connectType}
               </button>
-            )}
+            ))}
           </>
         ) : status === WalletStatus.WALLET_CONNECTED ? (
           <button onClick={() => disconnect()}>Disconnect</button>
