@@ -1,4 +1,7 @@
-import { UserDeniedError } from '@anchor-protocol/wallet-provider';
+import {
+  TxFailedError,
+  UserDeniedError,
+} from '@anchor-protocol/wallet-provider';
 import { Close } from '@material-ui/icons';
 import {
   Fault as FaultResult,
@@ -6,7 +9,6 @@ import {
 } from '@terra-dev/broadcastable-operation';
 import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
 import { TxHashLink } from 'base/components/TxHashLink';
-import { TxFailedError } from 'base/errors/TxFailedError';
 import { TxInfoError } from 'base/errors/TxInfoError';
 import { TxInfoParseError } from 'base/errors/TxInfoParseError';
 import React, { ReactNode } from 'react';
