@@ -1,6 +1,7 @@
+import { isMobile } from '@terra-dev/is-mobile';
 import { IQRCodeModal, IQRCodeModalOptions } from '@walletconnect/types';
 import QRCode from 'qrcode.react';
-import React, { createElement } from 'react';
+import React, { createElement, useCallback } from 'react';
 import { render } from 'react-dom';
 import useCopyClipboard from 'react-use-clipboard';
 import styled, { keyframes } from 'styled-components';
@@ -60,11 +61,26 @@ function TerraQRCodeModalBase({
     successDuration: 1000 * 5,
   });
 
+  const openTerraStationMobile = useCallback(() => {
+    const schemeUri = `terrastation://wallet_connect?payload=${encodeURIComponent(
+      uri,
+    )}`;
+
+    window.open(schemeUri);
+  }, [uri]);
+
   return (
     <div className={className}>
       <div onClick={onClose} />
       <figure>
         <QRCode value={uri} size={300} />
+        {isMobile() && (
+          <div>
+            <button onClick={openTerraStationMobile}>
+              Connect with Terra Station Mobile
+            </button>
+          </div>
+        )}
         <div>
           <button onClick={setCopied}>
             Copy Clipboard{isCopied ? ' (Copied)' : ''}

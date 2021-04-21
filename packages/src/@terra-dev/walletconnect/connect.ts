@@ -1,3 +1,4 @@
+import { isMobile } from '@terra-dev/is-mobile';
 import { TerraWalletconnectQrcodeModal } from '@terra-dev/walletconnect-qrcode-modal';
 import { CreateTxOptions } from '@terra-money/terra.js';
 import WalletConnect from '@walletconnect/client';
@@ -191,21 +192,31 @@ export function connect(
       throw new Error(`WalletConnect is not connected!`);
     }
 
+    const id = Date.now();
+
+    const serializedTxOptions = {
+      msgs: tx.msgs.map((msg) => msg.toJSON()),
+      fee: tx.fee?.toJSON(),
+      memo: tx.memo,
+      gasPrices: tx.gasPrices?.toString(),
+      gasAdjustment: tx.gasAdjustment?.toString(),
+      account_number: tx.account_number,
+      sequence: tx.sequence,
+      feeDenoms: tx.feeDenoms,
+    };
+
+    if (isMobile()) {
+      window.open(
+        `terrastation://wallet_connect_confirm?id=${id}&params=${JSON.stringify(
+          serializedTxOptions,
+        )}`,
+      );
+    }
+
     return connector.sendCustomRequest({
-      id: Date.now(),
+      id,
       method: 'terra',
-      params: [
-        {
-          msgs: tx.msgs.map((msg) => msg.toJSON()),
-          fee: tx.fee?.toJSON(),
-          memo: tx.memo,
-          gasPrices: tx.gasPrices?.toString(),
-          gasAdjustment: tx.gasAdjustment?.toString(),
-          account_number: tx.account_number,
-          sequence: tx.sequence,
-          feeDenoms: tx.feeDenoms,
-        },
-      ],
+      params: [serializedTxOptions],
     });
   }
 
