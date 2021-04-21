@@ -1,8 +1,4 @@
-import {
-  ConnectType,
-  useWallet,
-  WalletStatus,
-} from '@anchor-protocol/wallet-provider';
+import { useWallet, WalletStatus } from '@anchor-protocol/wallet-provider';
 import { ClickAwayListener } from '@material-ui/core';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { useBank } from 'base/contexts/bank';
@@ -13,7 +9,7 @@ import { useRouteMatch } from 'react-router-dom';
 import styled from 'styled-components';
 import { AirdropContent } from './AirdropContent';
 import { ConnectedButton } from './ConnectedButton';
-import { DropdownContainer } from './DropdownContainer';
+import { DropdownBox, DropdownContainer } from './DropdownContainer';
 import { NotConnectedButton } from './NotConnectedButton';
 import { WalletDetailContent } from './WalletDetailContent';
 
@@ -31,9 +27,9 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
     status,
     connect,
     disconnect,
-    walletAddress,
+    wallets,
     network,
-    availableExtension,
+    availableConnectTypes,
   } = useWallet();
 
   const bank = useBank();
@@ -47,7 +43,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   // ---------------------------------------------
   // states
   // ---------------------------------------------
-  const [openDetail, setOpenDetail] = useState<boolean>(false);
+  const [openDropdown, setOpenDropdown] = useState<boolean>(false);
 
   const [airdropClosed, setAirdropClosed] = useState(() => _airdropClosed);
 
@@ -60,36 +56,25 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   // callbacks
   // ---------------------------------------------
   const connectWallet = useCallback(() => {
-    if (availableExtension) {
-      setOpenDetail(true);
-    } else {
-      connect(ConnectType.WALLETCONNECT);
+    if (availableConnectTypes.length > 1) {
+      setOpenDropdown(true);
+    } else if (availableConnectTypes.length === 1) {
+      connect(availableConnectTypes[0]);
     }
-  }, [availableExtension, connect]);
+  }, [availableConnectTypes, connect]);
 
   const disconnectWallet = useCallback(() => {
     disconnect();
-    setOpenDetail(false);
+    setOpenDropdown(false);
     //window.location.reload();
   }, [disconnect]);
 
-  //const provideWallet = useCallback(
-  //  (address?: HumanAddr) => {
-  //    if (address) {
-  //      connectWalletAddress(address);
-  //    } else {
-  //      openProvideAddress({});
-  //    }
-  //  },
-  //  [openProvideAddress, connectWalletAddress],
-  //);
-
   const toggleOpen = useCallback(() => {
-    setOpenDetail((prev) => !prev);
+    setOpenDropdown((prev) => !prev);
   }, []);
 
   const onClickAway = useCallback(() => {
-    setOpenDetail(false);
+    setOpenDropdown(false);
   }, []);
 
   // ---------------------------------------------
@@ -112,38 +97,34 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
               Connect Wallet
             </NotConnectedButton>
 
-            {openDetail && (
+            {openDropdown && (
               <DropdownContainer>
-                <ConnectTypeContent>
-                  <ActionButton
-                    onClick={() => {
-                      connect(ConnectType.WALLETCONNECT);
-                      setOpenDetail(false);
-                    }}
-                  >
-                    Wallet Connect
-                  </ActionButton>
-
-                  <ActionButton
-                    onClick={() => {
-                      connect(ConnectType.EXTENSION);
-                      setOpenDetail(false);
-                    }}
-                  >
-                    Extension
-                  </ActionButton>
-                </ConnectTypeContent>
+                <DropdownBox>
+                  <ConnectTypeContent>
+                    {availableConnectTypes.map((connectType) => (
+                      <ActionButton
+                        key={connectType}
+                        onClick={() => {
+                          connect(connectType);
+                          setOpenDropdown(false);
+                        }}
+                      >
+                        {connectType}
+                      </ActionButton>
+                    ))}
+                  </ConnectTypeContent>
+                </DropdownBox>
               </DropdownContainer>
             )}
           </div>
         </ClickAwayListener>
       );
     case WalletStatus.WALLET_CONNECTED:
-      return walletAddress ? (
+      return wallets.length > 0 ? (
         <ClickAwayListener onClickAway={onClickAway}>
           <div className={className}>
             <ConnectedButton
-              walletAddress={walletAddress}
+              walletAddress={wallets[0].terraAddress}
               bank={bank}
               onClick={toggleOpen}
             />
@@ -151,23 +132,27 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
             {!airdropClosed &&
               airdrop &&
               airdrop !== 'in-progress' &&
-              !openDetail &&
+              !openDropdown &&
               !matchAirdrop && (
                 <DropdownContainer>
-                  <AirdropContent onClose={closeAirdrop} />
+                  <DropdownBox>
+                    <AirdropContent onClose={closeAirdrop} />
+                  </DropdownBox>
                 </DropdownContainer>
               )}
 
-            {openDetail && (
+            {openDropdown && (
               <DropdownContainer>
-                <WalletDetailContent
-                  bank={bank}
-                  walletAddress={walletAddress}
-                  network={network}
-                  closePopup={() => setOpenDetail(false)}
-                  disconnectWallet={disconnectWallet}
-                  openSend={() => openSendDialog({})}
-                />
+                <DropdownBox>
+                  <WalletDetailContent
+                    bank={bank}
+                    walletAddress={wallets[0].terraAddress}
+                    network={network}
+                    closePopup={() => setOpenDropdown(false)}
+                    disconnectWallet={disconnectWallet}
+                    openSend={() => openSendDialog({})}
+                  />
+                </DropdownBox>
               </DropdownContainer>
             )}
 

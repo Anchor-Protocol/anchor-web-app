@@ -1,14 +1,7 @@
-import { CreateTxOptions } from '@terra-money/terra.js';
-import React, {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 import { WalletController, WalletControllerOptions } from '../controller';
-import { NetworkInfo, WalletStatus } from '../models';
-import { ConnectType, Wallet, WalletContext } from './useWallet';
+import { ConnectType, NetworkInfo, WalletInfo, WalletStatus } from '../types';
+import { Wallet, WalletContext } from './useWallet';
 
 export interface WalletProviderProps extends WalletControllerOptions {
   children: ReactNode;
@@ -20,6 +13,7 @@ export function WalletProvider({
   walletConnectChainIds,
   connectorOpts,
   pushServerOpts,
+  createReadonlyWalletSession,
 }: WalletProviderProps) {
   const [controller] = useState<WalletController>(
     () =>
@@ -28,41 +22,26 @@ export function WalletProvider({
         walletConnectChainIds,
         connectorOpts,
         pushServerOpts,
+        createReadonlyWalletSession,
       }),
   );
 
+  const [availableConnectTypes, setAvailableConnectTypes] = useState<
+    ConnectType[]
+  >(() => []);
   const [status, setStatus] = useState<WalletStatus>(WalletStatus.INITIALIZING);
   const [network, setNetwork] = useState<NetworkInfo>(defaultNetwork);
-  const [walletAddress, setWalletAddress] = useState<string | null>(null);
-  const [availableExtension, setAvailableExtension] = useState<boolean>(false);
-
-  const connect = useCallback(
-    (type: ConnectType) => {
-      if (type === ConnectType.EXTENSION) {
-        controller.connectToExtension();
-      } else {
-        controller.connectToWalletConnect();
-      }
-    },
-    [controller],
-  );
-
-  const disconnect = useCallback(() => {
-    controller.disconnect();
-  }, [controller]);
-
-  const recheckExtensionStatus = useCallback(() => {
-    controller.recheckExtensionStatus();
-  }, [controller]);
-
-  const post = useCallback(
-    async (tx: CreateTxOptions) => {
-      return controller.post(tx);
-    },
-    [controller],
-  );
+  const [wallets, setWallets] = useState<WalletInfo[]>(() => []);
 
   useEffect(() => {
+    const availableConnectTypesSubscription = controller
+      .availableConnectTypes()
+      .subscribe({
+        next: (value) => {
+          setAvailableConnectTypes(value);
+        },
+      });
+
     const statusSubscription = controller.status().subscribe({
       next: (value) => {
         setStatus(value);
@@ -75,41 +54,40 @@ export function WalletProvider({
       },
     });
 
-    const walletAddressSubscription = controller.walletAddress().subscribe({
+    const walletsSubscription = controller.wallets().subscribe({
       next: (value) => {
-        setWalletAddress(value);
+        setWallets(value);
       },
     });
 
-    setAvailableExtension(controller.availableExtension() === true);
-
     return () => {
+      availableConnectTypesSubscription.unsubscribe();
       statusSubscription.unsubscribe();
       networkSubscription.unsubscribe();
-      walletAddressSubscription.unsubscribe();
+      walletsSubscription.unsubscribe();
     };
   }, [controller]);
 
   const state = useMemo<Wallet>(() => {
     return {
+      availableConnectTypes,
       status,
       network,
-      walletAddress,
-      connect,
-      disconnect,
-      recheckExtensionStatus,
-      post,
-      availableExtension,
+      wallets,
+      connect: controller.connect,
+      disconnect: controller.disconnect,
+      post: controller.post,
+      recheckStatus: controller.recheckStatus,
     };
   }, [
-    availableExtension,
-    connect,
-    disconnect,
+    availableConnectTypes,
+    controller.connect,
+    controller.disconnect,
+    controller.post,
+    controller.recheckStatus,
     network,
-    post,
-    recheckExtensionStatus,
     status,
-    walletAddress,
+    wallets,
   ]);
 
   return (

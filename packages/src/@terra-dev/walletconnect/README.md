@@ -15,28 +15,31 @@ import { IClientMeta } from '@walletconnect/types';
 // ---------------------------------------------
 // session
 // ---------------------------------------------
-export enum SessionStatus {
+export enum WalletConnectSessionStatus {
   REQUESTED = 'REQUESTED',
   CONNECTED = 'CONNECTED',
   DISCONNECTED = 'DISCONNECTED',
 }
 
-export interface SessionRequested {
-  status: SessionStatus.REQUESTED;
+export interface WalletConnectSessionRequested {
+  status: WalletConnectSessionStatus.REQUESTED;
 }
 
-export interface SessionConnected {
-  status: SessionStatus.CONNECTED;
+export interface WalletConnectSessionConnected {
+  status: WalletConnectSessionStatus.CONNECTED;
   chainId: number;
   terraAddress: string;
   peerMeta: IClientMeta;
 }
 
-export interface SessionDisconnected {
-  status: SessionStatus.DISCONNECTED;
+export interface WalletConnectSessionDisconnected {
+  status: WalletConnectSessionStatus.DISCONNECTED;
 }
 
-export type Session = SessionRequested | SessionConnected | SessionDisconnected;
+export type WalletConnectSession =
+  | WalletConnectSessionRequested
+  | WalletConnectSessionConnected
+  | WalletConnectSessionDisconnected;
 
 // ---------------------------------------------
 // tx
@@ -55,17 +58,9 @@ export interface WalletConnectTxResult {
 [connect.ts](connect.ts)
 
 ````ts
-export function connectWalletIfSessionExists(
-  options: WalletConnectControllerOptions = {},
-): WalletConnectController | null {}
-
-export function connectWallet(
-  options: WalletConnectControllerOptions = {},
-): WalletConnectController {}
-
 export interface WalletConnectControllerOptions {
   /**
-   * Configuration parameter of `new WalletConnect(connectorOpts)`
+   * Configuration parameter that `new WalletConnect(connectorOpts)`
    *
    * @default
    * ```js
@@ -77,7 +72,7 @@ export interface WalletConnectControllerOptions {
    */
   connectorOpts?: IWalletConnectOptions;
   /**
-   * Configuration parameter of `new WalletConnect(_, pushServerOpts)`
+   * Configuration parameter that `new WalletConnect(_, pushServerOpts)`
    *
    * @default undefined
    */
@@ -85,8 +80,8 @@ export interface WalletConnectControllerOptions {
 }
 
 export interface WalletConnectController {
-  session: () => Observable<Session>;
-  getLatestSession: () => Session;
+  session: () => Observable<WalletConnectSession>;
+  getLatestSession: () => WalletConnectSession;
   post: (tx: CreateTxOptions) => Promise<WalletConnectTxResult>;
   disconnect: () => void;
 }

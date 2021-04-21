@@ -9,7 +9,7 @@ import {
   RouterWalletStatusRecheck,
   useWallet,
   WalletProvider,
-} from '@anchor-protocol/wallet-provider';
+} from '@anchor-protocol/wallet-provider/react';
 import {
   ApolloClient,
   ApolloError,
@@ -20,11 +20,13 @@ import {
 import { captureException } from '@sentry/react';
 import { OperationBroadcaster } from '@terra-dev/broadcastable-operation';
 import { GlobalDependency } from '@terra-dev/broadcastable-operation/global';
-import { StationNetworkInfo } from '@terra-dev/extension';
+import { StationNetworkInfo } from '@terra-dev/chrome-extension';
 import { GlobalStyle } from '@terra-dev/neumorphism-ui/themes/GlobalStyle';
+import { ReadonlyWalletSession } from '@terra-dev/readonly-wallet';
 import { SnackbarProvider } from '@terra-dev/snackbar';
 import { GoogleAnalytics } from '@terra-dev/use-google-analytics';
 import { RouterScrollRestoration } from '@terra-dev/use-router-scroll-restoration';
+import { useReadonlyWalletDialog } from 'base/components/useReadonlyWalletDialog';
 import React, { ReactNode, useCallback, useMemo } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { BroadcastingContainer } from './components/BroadcastingContainer';
@@ -176,6 +178,17 @@ const walletConnectChainIds = new Map<number, StationNetworkInfo>([
 ]);
 
 export function AppProviders({ children }: { children: ReactNode }) {
+  const [
+    openReadonlyWalletSelector,
+    readonlyWalletSelectorElement,
+  ] = useReadonlyWalletDialog();
+
+  const createReadonlyWalletSession = useCallback((): Promise<ReadonlyWalletSession | null> => {
+    return openReadonlyWalletSelector({
+      networks: Array.from(walletConnectChainIds.values()),
+    });
+  }, [openReadonlyWalletSelector]);
+
   return (
     /** Terra Station Wallet Address :: useWallet() */
     <WalletProvider
@@ -184,6 +197,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
       connectorOpts={{
         bridge: 'https://bridge.interus.net',
       }}
+      createReadonlyWalletSession={createReadonlyWalletSession}
     >
       <Providers>
         {/* Router Actions ======================== */}
@@ -202,6 +216,8 @@ export function AppProviders({ children }: { children: ReactNode }) {
         {/** Operation Result Broadcasting Render Container (Snackbar...) */}
         <BroadcastingContainer />
         <SnackbarContainer />
+
+        {readonlyWalletSelectorElement}
       </Providers>
     </WalletProvider>
   );

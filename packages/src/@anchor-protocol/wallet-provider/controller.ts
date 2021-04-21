@@ -1,58 +1,91 @@
 import {
-  ChromeExtensionClient,
+  ChromeExtensionController,
   ChromeExtensionStatus,
   StationNetworkInfo,
-} from '@terra-dev/extension';
+} from '@terra-dev/chrome-extension';
 import { isDesktopChrome } from '@terra-dev/is-desktop-chrome';
 import {
-  connectWallet,
-  connectWalletIfSessionExists,
-  SessionStatus,
+  connect as reConnect,
+  connectIfSessionExists as reConnectIfSessionExists,
+  ReadonlyWalletController,
+  ReadonlyWalletSession,
+} from '@terra-dev/readonly-wallet';
+import {
+  connect as wcConnect,
+  connectIfSessionExists as wcConnectIfSessionExists,
   WalletConnectController,
   WalletConnectControllerOptions,
+  WalletConnectSessionStatus,
   WalletConnectTxResult,
 } from '@terra-dev/walletconnect';
 import { AccAddress, CreateTxOptions } from '@terra-money/terra.js';
-import { BehaviorSubject, combineLatest, interval, race } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  interval,
+  Observable,
+  race,
+} from 'rxjs';
 import { filter, mapTo } from 'rxjs/operators';
-import { NetworkInfo, WalletStatus } from './models';
 import { TxResult } from './tx';
+import { ConnectType, NetworkInfo, WalletInfo, WalletStatus } from './types';
 
 export interface WalletControllerOptions
   extends WalletConnectControllerOptions {
   defaultNetwork: StationNetworkInfo;
   walletConnectChainIds: Map<number, StationNetworkInfo>;
+  createReadonlyWalletSession: () => Promise<ReadonlyWalletSession | null>;
 }
 
 export class WalletController {
-  readonly extension: ChromeExtensionClient;
+  private extension: ChromeExtensionController;
   private walletConnect: WalletConnectController | null = null;
+  private readonlyWallet: ReadonlyWalletController | null = null;
 
-  readonly _status: BehaviorSubject<WalletStatus>;
-  readonly _network: BehaviorSubject<NetworkInfo>;
-  readonly _walletAddress: BehaviorSubject<string | null>;
+  private _availableConnectTypes: BehaviorSubject<ConnectType[]>;
+  private _status: BehaviorSubject<WalletStatus>;
+  private _network: BehaviorSubject<NetworkInfo>;
+  private _wallets: BehaviorSubject<WalletInfo[]>;
 
+  private disableReadonlyWallet: (() => void) | null = null;
   private disableExtension: (() => void) | null = null;
   private disableWalletConnect: (() => void) | null = null;
 
   constructor(readonly options: WalletControllerOptions) {
+    this._availableConnectTypes = new BehaviorSubject<ConnectType[]>([
+      ConnectType.READONLY,
+      ConnectType.WALLETCONNECT,
+    ]);
+
     this._status = new BehaviorSubject<WalletStatus>(WalletStatus.INITIALIZING);
+
     this._network = new BehaviorSubject<NetworkInfo>({
       name: options.defaultNetwork.name,
       chainID: options.defaultNetwork.chainID,
     });
-    this._walletAddress = new BehaviorSubject<string | null>(null);
 
-    this.extension = new ChromeExtensionClient({
+    this._wallets = new BehaviorSubject<WalletInfo[]>([]);
+
+    this.extension = new ChromeExtensionController({
       enableWalletConnection: true,
       defaultNetwork: options.defaultNetwork,
     });
 
-    const draftWalletConnect = connectWalletIfSessionExists(options);
+    // 1. check if readonly wallet session is exists
+    const draftReadonlyWallet = reConnectIfSessionExists();
+
+    if (draftReadonlyWallet) {
+      this.enableReadonlyWallet(draftReadonlyWallet);
+      return;
+    }
+
+    // 2. check if walletconnect sesison is exists
+    const draftWalletConnect = wcConnectIfSessionExists(options);
 
     if (
       draftWalletConnect &&
-      draftWalletConnect.getLatestSession().status === SessionStatus.CONNECTED
+      draftWalletConnect.getLatestSession().status ===
+        WalletConnectSessionStatus.CONNECTED
     ) {
       this.enableWalletConnect(draftWalletConnect);
     } else if (isDesktopChrome()) {
@@ -65,6 +98,14 @@ export class WalletController {
         interval(1000 * 10).pipe(mapTo(null)),
       ).subscribe({
         next: (status) => {
+          if (status !== ChromeExtensionStatus.UNAVAILABLE) {
+            this._availableConnectTypes.next([
+              ConnectType.READONLY,
+              ConnectType.CHROME_EXTENSION,
+              ConnectType.WALLETCONNECT,
+            ]);
+          }
+
           if (status === ChromeExtensionStatus.WALLET_CONNECTED) {
             extensionConnectionCheckSubscription.unsubscribe();
             this.enableExtension();
@@ -78,118 +119,58 @@ export class WalletController {
     }
   }
 
-  status = () => {
+  availableConnectTypes = (): Observable<ConnectType[]> => {
+    return this._availableConnectTypes.asObservable();
+  };
+
+  status = (): Observable<WalletStatus> => {
     return this._status.asObservable();
   };
 
-  network = () => {
+  network = (): Observable<NetworkInfo> => {
     return this._network.asObservable();
   };
 
-  walletAddress = () => {
-    return this._walletAddress.asObservable();
+  wallets = (): Observable<WalletInfo[]> => {
+    return this._wallets.asObservable();
   };
 
-  availableExtension = () => {
-    return isDesktopChrome();
-  };
-
-  enableExtension = () => {
-    if (this.disableWalletConnect) {
-      this.disableWalletConnect();
-      this.disableWalletConnect = null;
-    }
-
-    if (this.disableExtension) {
-      return;
-    }
-
-    const extensionSubscription = combineLatest([
-      this.extension.status(),
-      this.extension.networkInfo(),
-      this.extension.walletAddress(),
-    ]).subscribe({
-      next: ([status, networkInfo, walletAddress]) => {
-        this._network.next(networkInfo);
-
-        if (
-          status === ChromeExtensionStatus.WALLET_CONNECTED &&
-          typeof walletAddress === 'string' &&
-          AccAddress.validate(walletAddress)
-        ) {
-          this._status.next(WalletStatus.WALLET_CONNECTED);
-          this._walletAddress.next(walletAddress);
-        } else {
-          this._status.next(WalletStatus.WALLET_NOT_CONNECTED);
-          this._walletAddress.next(null);
-        }
-      },
-    });
-
-    this.disableExtension = () => {
-      this.extension.disconnect();
-      extensionSubscription.unsubscribe();
-    };
-  };
-
-  enableWalletConnect = (walletConnect: WalletConnectController) => {
-    if (this.disableExtension) {
-      this.disableExtension();
-      this.disableExtension = null;
-    }
-
-    if (this.walletConnect) {
-      this.walletConnect.disconnect();
-    }
-
-    this.walletConnect = walletConnect;
-
-    const sessionSubscription = walletConnect.session().subscribe({
-      next: (status) => {
-        switch (status.status) {
-          case SessionStatus.CONNECTED:
-            this._status.next(WalletStatus.WALLET_CONNECTED);
-            this._network.next(
-              this.options.walletConnectChainIds.get(status.chainId) ??
-                this.options.defaultNetwork,
-            );
-            this._walletAddress.next(status.terraAddress);
-            break;
-          default:
-            this._status.next(WalletStatus.WALLET_NOT_CONNECTED);
-            this._network.next(this.options.defaultNetwork);
-            this._walletAddress.next(null);
-            break;
-        }
-      },
-    });
-
-    this.disableWalletConnect = () => {
-      walletConnect.disconnect();
-      this.walletConnect = null;
-      sessionSubscription.unsubscribe();
-    };
-  };
-
-  recheckExtensionStatus = () => {
+  recheckStatus = () => {
     if (this.disableExtension) {
       this.extension.recheckStatus();
     }
   };
 
-  connectToExtension = () => {
-    this.extension.connect().then((success) => {
-      if (success) {
-        this.enableExtension();
-      }
-    });
-  };
-
-  connectToWalletConnect = () => {
-    this.enableWalletConnect(connectWallet(this.options));
+  connect = (type: ConnectType) => {
+    switch (type) {
+      case ConnectType.READONLY:
+        this.options
+          .createReadonlyWalletSession()
+          .then((readonlyWalletSession) => {
+            if (readonlyWalletSession) {
+              this.enableReadonlyWallet(reConnect(readonlyWalletSession));
+            }
+          });
+        break;
+      case ConnectType.WALLETCONNECT:
+        this.enableWalletConnect(wcConnect(this.options));
+        break;
+      case ConnectType.CHROME_EXTENSION:
+        this.extension.connect().then((success) => {
+          if (success) {
+            this.enableExtension();
+          }
+        });
+        break;
+      default:
+        throw new Error(`Unknown ConnectType!`);
+    }
   };
 
   disconnect = () => {
+    this.disableReadonlyWallet?.();
+    this.disableReadonlyWallet = null;
+
     this.disableExtension?.();
     this.disableExtension = null;
 
@@ -198,14 +179,13 @@ export class WalletController {
 
     this._status.next(WalletStatus.WALLET_NOT_CONNECTED);
     this._network.next(this.options.defaultNetwork);
-    this._walletAddress.next(null);
+    this._wallets.next([]);
   };
 
-  post = async (tx: CreateTxOptions): Promise<TxResult> => {
-    if (!this.disableExtension && !this.disableWalletConnect) {
-      throw new Error(`Wallet not connected!`);
-    }
-
+  post = async (
+    tx: CreateTxOptions,
+    txTarget: { network?: NetworkInfo; terraAddress?: string } = {},
+  ): Promise<TxResult> => {
     if (this.disableExtension) {
       return this.extension
         .post<CreateTxOptions, { result: WalletConnectTxResult }>(tx)
@@ -224,7 +204,147 @@ export class WalletController {
           } as TxResult),
       );
     } else {
-      throw new Error(`Can't post tx. there is no connected session!`);
+      throw new Error(`There are no connections that can be posting tx!`);
     }
+  };
+
+  private enableReadonlyWallet = (readonlyWallet: ReadonlyWalletController) => {
+    if (this.disableWalletConnect) {
+      this.disableWalletConnect();
+      this.disableWalletConnect = null;
+    }
+
+    if (this.disableExtension) {
+      this.disableExtension();
+      this.disableExtension = null;
+    }
+
+    if (this.readonlyWallet === readonlyWallet) {
+      return;
+    }
+
+    if (this.readonlyWallet) {
+      this.readonlyWallet.disconnect();
+    }
+
+    this.readonlyWallet = readonlyWallet;
+
+    this._status.next(WalletStatus.WALLET_CONNECTED);
+    this._network.next(readonlyWallet.network);
+    this._wallets.next([
+      {
+        connectType: ConnectType.READONLY,
+        terraAddress: readonlyWallet.terraAddress,
+        design: 'readonly',
+      },
+    ]);
+
+    this.disableReadonlyWallet = () => {
+      readonlyWallet.disconnect();
+      this.readonlyWallet = null;
+    };
+  };
+
+  private enableExtension = () => {
+    if (this.disableReadonlyWallet) {
+      this.disableReadonlyWallet();
+      this.disableReadonlyWallet = null;
+    }
+
+    if (this.disableWalletConnect) {
+      this.disableWalletConnect();
+      this.disableWalletConnect = null;
+    }
+
+    if (this.disableExtension) {
+      return;
+    }
+
+    const extensionSubscription = combineLatest([
+      this.extension.status(),
+      this.extension.networkInfo(),
+      this.extension.terraAddress(),
+    ]).subscribe({
+      next: ([status, networkInfo, terraAddress]) => {
+        this._network.next(networkInfo);
+
+        if (
+          status === ChromeExtensionStatus.WALLET_CONNECTED &&
+          typeof terraAddress === 'string' &&
+          AccAddress.validate(terraAddress)
+        ) {
+          this._status.next(WalletStatus.WALLET_CONNECTED);
+          this._wallets.next([
+            {
+              connectType: ConnectType.CHROME_EXTENSION,
+              terraAddress,
+              design: 'extension',
+            },
+          ]);
+        } else {
+          this._status.next(WalletStatus.WALLET_NOT_CONNECTED);
+          this._wallets.next([]);
+        }
+      },
+    });
+
+    this.disableExtension = () => {
+      this.extension.disconnect();
+      extensionSubscription.unsubscribe();
+    };
+  };
+
+  private enableWalletConnect = (walletConnect: WalletConnectController) => {
+    if (this.disableReadonlyWallet) {
+      this.disableReadonlyWallet();
+      this.disableReadonlyWallet = null;
+    }
+
+    if (this.disableExtension) {
+      this.disableExtension();
+      this.disableExtension = null;
+    }
+
+    if (this.walletConnect === walletConnect) {
+      return;
+    }
+
+    if (this.walletConnect) {
+      this.walletConnect.disconnect();
+    }
+
+    this.walletConnect = walletConnect;
+
+    const walletConnectSessionSubscription = walletConnect.session().subscribe({
+      next: (status) => {
+        switch (status.status) {
+          case WalletConnectSessionStatus.CONNECTED:
+            this._status.next(WalletStatus.WALLET_CONNECTED);
+            this._network.next(
+              this.options.walletConnectChainIds.get(status.chainId) ??
+                this.options.defaultNetwork,
+            );
+            this._wallets.next([
+              {
+                connectType: ConnectType.WALLETCONNECT,
+                terraAddress: status.terraAddress,
+                design: 'walletconnect',
+              },
+            ]);
+            break;
+          default:
+            this._status.next(WalletStatus.WALLET_NOT_CONNECTED);
+            this._network.next(this.options.defaultNetwork);
+            this._wallets.next([]);
+            break;
+        }
+      },
+    });
+
+    this.disableWalletConnect = () => {
+      walletConnect.disconnect();
+      this.walletConnect = null;
+      walletConnectSessionSubscription.unsubscribe();
+    };
   };
 }

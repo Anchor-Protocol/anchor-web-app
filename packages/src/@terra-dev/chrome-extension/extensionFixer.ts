@@ -1,5 +1,5 @@
+import { UserDeniedError } from '@terra-dev/wallet-types';
 import { Extension } from '@terra-money/terra.js';
-import { UserDeniedError } from './errors';
 
 export interface StationNetworkInfo {
   name: string;

@@ -11,31 +11,32 @@ import { ChromeExtensionStatus } from './types';
 
 const desktopChrome: boolean = isDesktopChrome() === true;
 
-interface ChromeExtensionClientOptions {
+interface ChromeExtensionControllerOptions {
   defaultNetwork: StationNetworkInfo;
   enableWalletConnection: boolean;
 }
 
-export class ChromeExtensionClient {
+export class ChromeExtensionController {
   readonly _status: BehaviorSubject<ChromeExtensionStatus>;
   readonly _networkInfo: BehaviorSubject<StationNetworkInfo>;
-  readonly _walletAddress: BehaviorSubject<string | null>;
+  readonly _terraAddress: BehaviorSubject<string | null>;
   readonly _extension: FixedExtension;
 
   private doneFirstCheck = false;
 
-  constructor(readonly options: ChromeExtensionClientOptions) {
+  constructor(readonly options: ChromeExtensionControllerOptions) {
     this._status = new BehaviorSubject<ChromeExtensionStatus>(
       desktopChrome
         ? ChromeExtensionStatus.INITIALIZING
         : ChromeExtensionStatus.UNAVAILABLE,
     );
+
     this._networkInfo = new BehaviorSubject<StationNetworkInfo>(
       options.defaultNetwork,
     );
-    this._walletAddress = new BehaviorSubject<string | null>(
-      getStoredAddress(),
-    );
+
+    this._terraAddress = new BehaviorSubject<string | null>(getStoredAddress());
+
     this._extension = extensionFixer(new Extension());
 
     if (desktopChrome) {
@@ -51,8 +52,8 @@ export class ChromeExtensionClient {
     return this._networkInfo.asObservable();
   };
 
-  walletAddress = () => {
-    return this._walletAddress.asObservable();
+  terraAddress = () => {
+    return this._terraAddress.asObservable();
   };
 
   checkStatus = async (waitingExtensionScriptInjection: boolean = false) => {
@@ -110,8 +111,8 @@ export class ChromeExtensionClient {
         }
 
         if (!!connectResult.address) {
-          if (this._walletAddress.getValue() !== connectResult.address) {
-            this._walletAddress.next(connectResult.address);
+          if (this._terraAddress.getValue() !== connectResult.address) {
+            this._terraAddress.next(connectResult.address);
           }
 
           this._status.next(ChromeExtensionStatus.WALLET_CONNECTED);
@@ -122,11 +123,11 @@ export class ChromeExtensionClient {
         }
 
         this._status.next(ChromeExtensionStatus.WALLET_NOT_CONNECTED);
-        this._walletAddress.next(null);
+        this._terraAddress.next(null);
       }
     } else {
       this._status.next(ChromeExtensionStatus.WALLET_NOT_CONNECTED);
-      this._walletAddress.next(null);
+      this._terraAddress.next(null);
     }
   };
 

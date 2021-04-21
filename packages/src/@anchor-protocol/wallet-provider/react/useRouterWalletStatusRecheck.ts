@@ -7,14 +7,14 @@ const interval = 1000 * 60;
 
 export function useRouterWalletStatusRecheck() {
   const { pathname } = useLocation();
-  const { recheckExtensionStatus } = useContext(WalletContext);
+  const { recheckStatus } = useContext(WalletContext);
 
   const lastCheckTime = useRef<number>(Date.now());
 
   const check = useCallback(() => {
-    recheckExtensionStatus();
+    recheckStatus();
     lastCheckTime.current = Date.now();
-  }, [recheckExtensionStatus]);
+  }, [recheckStatus]);
 
   useEffect(() => {
     check();

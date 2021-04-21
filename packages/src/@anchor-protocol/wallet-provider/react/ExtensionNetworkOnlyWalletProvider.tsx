@@ -1,6 +1,7 @@
-import { WalletController } from '../controller';
-import { StationNetworkInfo } from '@terra-dev/extension';
-import { CreateTxOptions } from '@terra-money/terra.js';
+import {
+  ChromeExtensionController,
+  StationNetworkInfo,
+} from '@terra-dev/chrome-extension';
 import React, {
   ReactNode,
   useCallback,
@@ -8,71 +9,58 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { NetworkInfo, WalletStatus } from '../models';
+import { NetworkInfo, WalletStatus } from '../types';
 import { Wallet, WalletContext } from './useWallet';
+
+export interface ExtensionNetworkOnlyWalletProviderProps {
+  children: ReactNode;
+  defaultNetwork: StationNetworkInfo;
+}
 
 export function ExtensionNetworkOnlyWalletProvider({
   children,
   defaultNetwork,
-}: {
-  children: ReactNode;
-  defaultNetwork: StationNetworkInfo;
-}) {
-  const [controller] = useState<WalletController>(
+}: ExtensionNetworkOnlyWalletProviderProps) {
+  const [controller] = useState<ChromeExtensionController>(
     () =>
-      new WalletController({
+      new ChromeExtensionController({
         defaultNetwork,
-        walletConnectChainIds: new Map(),
+        enableWalletConnection: false,
       }),
   );
 
   const [network, setNetwork] = useState<NetworkInfo>(defaultNetwork);
 
-  const [availableExtension, setAvailableExtension] = useState<boolean>(false);
-
-  const recheckExtensionStatus = useCallback(() => {
-    controller.recheckExtensionStatus();
-  }, [controller]);
-
-  const post = useCallback(
-    async (tx: CreateTxOptions) => {
-      return controller.post(tx);
-    },
-    [controller],
-  );
+  const post = useCallback(async () => {
+    throw new Error(
+      `<ExtensionNetworkOnlyWalletProvider> does not support post()`,
+    );
+  }, []);
 
   useEffect(() => {
-    const networkSubscription = controller.network().subscribe({
+    const networkSubscription = controller.networkInfo().subscribe({
       next: (value) => {
         setNetwork(value);
       },
     });
-
-    setAvailableExtension(controller.availableExtension() === true);
 
     return () => {
       networkSubscription.unsubscribe();
     };
   }, [controller]);
 
-  useEffect(() => {
-    if (availableExtension) {
-      controller.enableExtension();
-    }
-  }, [availableExtension, controller]);
-
   const state = useMemo<Wallet>(() => {
     return {
+      availableConnectTypes: [],
       status: WalletStatus.WALLET_NOT_CONNECTED,
       network,
-      walletAddress: null,
+      wallets: [],
       connect: () => {},
       disconnect: () => {},
-      recheckExtensionStatus,
       post,
-      availableExtension,
+      recheckStatus: controller.recheckStatus,
     };
-  }, [availableExtension, network, post, recheckExtensionStatus]);
+  }, [controller.recheckStatus, network, post]);
 
   return (
     <WalletContext.Provider value={state}>{children}</WalletContext.Provider>

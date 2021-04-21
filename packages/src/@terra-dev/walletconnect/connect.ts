@@ -1,5 +1,4 @@
 import { TerraWalletconnectQrcodeModal } from '@terra-dev/walletconnect-qrcode-modal';
-import { Session, SessionStatus, WalletConnectTxResult } from './types';
 import { CreateTxOptions } from '@terra-money/terra.js';
 import WalletConnect from '@walletconnect/client';
 import {
@@ -7,10 +6,15 @@ import {
   IWalletConnectOptions,
 } from '@walletconnect/types';
 import { BehaviorSubject, Observable } from 'rxjs';
+import {
+  WalletConnectSession,
+  WalletConnectSessionStatus,
+  WalletConnectTxResult,
+} from './types';
 
 export interface WalletConnectControllerOptions {
   /**
-   * Configuration parameter of `new WalletConnect(connectorOpts)`
+   * Configuration parameter that `new WalletConnect(connectorOpts)`
    *
    * @default
    * ```js
@@ -23,7 +27,7 @@ export interface WalletConnectControllerOptions {
   connectorOpts?: IWalletConnectOptions;
 
   /**
-   * Configuration parameter of `new WalletConnect(_, pushServerOpts)`
+   * Configuration parameter that `new WalletConnect(_, pushServerOpts)`
    *
    * @default undefined
    */
@@ -31,32 +35,36 @@ export interface WalletConnectControllerOptions {
 }
 
 export interface WalletConnectController {
-  session: () => Observable<Session>;
-  getLatestSession: () => Session;
+  session: () => Observable<WalletConnectSession>;
+  getLatestSession: () => WalletConnectSession;
   post: (tx: CreateTxOptions) => Promise<WalletConnectTxResult>;
   disconnect: () => void;
 }
 
-export function connectWalletIfSessionExists(
+const WALLETCONNECT_STORAGE_KEY = 'walletconnect';
+
+export function connectIfSessionExists(
   options: WalletConnectControllerOptions = {},
 ): WalletConnectController | null {
-  const cachedSession = localStorage.getItem('walletconnect');
+  const storedSession = localStorage.getItem(WALLETCONNECT_STORAGE_KEY);
 
-  if (typeof cachedSession === 'string') {
-    return connectWallet(options);
+  if (typeof storedSession === 'string') {
+    return connect(options);
   }
 
   return null;
 }
 
-export function connectWallet(
+export function connect(
   options: WalletConnectControllerOptions = {},
 ): WalletConnectController {
   let connector: WalletConnect | null = null;
 
-  let sessionSubject: BehaviorSubject<Session> = new BehaviorSubject<Session>({
-    status: SessionStatus.DISCONNECTED,
-  });
+  let sessionSubject: BehaviorSubject<WalletConnectSession> = new BehaviorSubject<WalletConnectSession>(
+    {
+      status: WalletConnectSessionStatus.DISCONNECTED,
+    },
+  );
 
   const qrcodeModal =
     options.connectorOpts?.qrcodeModal ?? new TerraWalletconnectQrcodeModal();
@@ -84,13 +92,14 @@ export function connectWallet(
       const { chainId, accounts } = payload.params[0];
 
       console.log('app.tsx..()', chainId, accounts);
+      debugger;
     });
 
     connector.on('connect', (error, payload) => {
       if (error) throw error;
 
       sessionSubject.next({
-        status: SessionStatus.CONNECTED,
+        status: WalletConnectSessionStatus.CONNECTED,
         peerMeta: payload.params[0],
         terraAddress: payload.params[0].accounts[0],
         chainId: payload.params[0].chainId,
@@ -101,7 +110,7 @@ export function connectWallet(
       if (error) throw error;
 
       sessionSubject.next({
-        status: SessionStatus.DISCONNECTED,
+        status: WalletConnectSessionStatus.DISCONNECTED,
       });
     });
   }
@@ -125,7 +134,7 @@ export function connectWallet(
     initEvents();
 
     sessionSubject.next({
-      status: SessionStatus.CONNECTED,
+      status: WalletConnectSessionStatus.CONNECTED,
       peerMeta: draftConnector.peerMeta!,
       terraAddress: draftConnector.accounts[0],
       chainId: draftConnector.chainId,
@@ -141,7 +150,7 @@ export function connectWallet(
       if (qrcodeModal instanceof TerraWalletconnectQrcodeModal) {
         qrcodeModal.setCloseCallback(() => {
           sessionSubject.next({
-            status: SessionStatus.DISCONNECTED,
+            status: WalletConnectSessionStatus.DISCONNECTED,
           });
         });
       }
@@ -149,7 +158,7 @@ export function connectWallet(
       initEvents();
 
       sessionSubject.next({
-        status: SessionStatus.REQUESTED,
+        status: WalletConnectSessionStatus.REQUESTED,
       });
     }
   }
@@ -165,15 +174,15 @@ export function connectWallet(
     }
 
     sessionSubject.next({
-      status: SessionStatus.DISCONNECTED,
+      status: WalletConnectSessionStatus.DISCONNECTED,
     });
   }
 
-  function session(): Observable<Session> {
+  function session(): Observable<WalletConnectSession> {
     return sessionSubject.asObservable();
   }
 
-  function getLatestSession(): Session {
+  function getLatestSession(): WalletConnectSession {
     return sessionSubject.getValue();
   }
 

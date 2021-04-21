@@ -1,22 +1,20 @@
 import { CreateTxOptions } from '@terra-money/terra.js';
 import { Consumer, Context, createContext, useContext } from 'react';
-import { NetworkInfo, WalletStatus } from '../models';
 import { TxResult } from '../tx';
-
-export enum ConnectType {
-  EXTENSION = 'EXTENSION',
-  WALLETCONNECT = 'WALLETCONNECT',
-}
+import { ConnectType, NetworkInfo, WalletInfo, WalletStatus } from '../types';
 
 export interface Wallet {
+  availableConnectTypes: ConnectType[];
   status: WalletStatus;
   network: NetworkInfo;
-  walletAddress: string | null;
+  wallets: WalletInfo[];
   connect: (type: ConnectType) => void;
   disconnect: () => void;
-  recheckExtensionStatus: () => void;
-  post: (tx: CreateTxOptions) => Promise<TxResult>;
-  availableExtension: boolean;
+  recheckStatus: () => void;
+  post: (
+    tx: CreateTxOptions,
+    txTarget?: { network?: NetworkInfo; terraAddress?: string },
+  ) => Promise<TxResult>;
 }
 
 // @ts-ignore

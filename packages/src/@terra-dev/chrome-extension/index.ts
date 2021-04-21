@@ -1,4 +1,3 @@
-export * from './ChromeExtensionClient';
+export * from './ChromeExtensionController';
 export * from './types';
-export * from './storage';
 export type { StationNetworkInfo } from './extensionFixer';

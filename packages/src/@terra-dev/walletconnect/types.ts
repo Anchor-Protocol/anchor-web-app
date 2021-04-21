@@ -6,28 +6,31 @@ import { IClientMeta } from '@walletconnect/types';
 // ---------------------------------------------
 // session
 // ---------------------------------------------
-export enum SessionStatus {
+export enum WalletConnectSessionStatus {
   REQUESTED = 'REQUESTED',
   CONNECTED = 'CONNECTED',
   DISCONNECTED = 'DISCONNECTED',
 }
 
-export interface SessionRequested {
-  status: SessionStatus.REQUESTED;
+export interface WalletConnectSessionRequested {
+  status: WalletConnectSessionStatus.REQUESTED;
 }
 
-export interface SessionConnected {
-  status: SessionStatus.CONNECTED;
+export interface WalletConnectSessionConnected {
+  status: WalletConnectSessionStatus.CONNECTED;
   chainId: number;
   terraAddress: string;
   peerMeta: IClientMeta;
 }
 
-export interface SessionDisconnected {
-  status: SessionStatus.DISCONNECTED;
+export interface WalletConnectSessionDisconnected {
+  status: WalletConnectSessionStatus.DISCONNECTED;
 }
 
-export type Session = SessionRequested | SessionConnected | SessionDisconnected;
+export type WalletConnectSession =
+  | WalletConnectSessionRequested
+  | WalletConnectSessionConnected
+  | WalletConnectSessionDisconnected;
 
 // ---------------------------------------------
 // tx
