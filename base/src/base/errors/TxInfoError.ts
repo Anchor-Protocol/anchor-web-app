@@ -2,7 +2,7 @@ import { Data as TxInfoData } from '../queries/txInfos';
 
 export class TxInfoError extends Error {
   constructor(public readonly log: TxInfoData[number]['RawLog']) {
-    super(JSON.stringify(log, null, 2));
+    super(JSON.stringify(log));
     this.name = 'TxInfoError';
   }
 
