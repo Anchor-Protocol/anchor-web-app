@@ -8,10 +8,10 @@ import {
   formatUSTWithPostfixUnits,
   truncate,
 } from '@anchor-protocol/notation';
-import { NetworkInfo } from '@anchor-protocol/wallet-provider';
 import { Check, KeyboardArrowRight } from '@material-ui/icons';
 import { FlatButton } from '@terra-dev/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { NetworkInfo } from '@terra-dev/wallet-types';
 import { Bank } from 'base/contexts/bank';
 import { useCallback } from 'react';
 import useClipboard from 'react-use-clipboard';

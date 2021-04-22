@@ -10,6 +10,7 @@ import {
   ReadonlyWalletController,
   ReadonlyWalletSession,
 } from '@terra-dev/readonly-wallet';
+import { NetworkInfo } from '@terra-dev/wallet-types';
 import {
   connect as wcConnect,
   connectIfSessionExists as wcConnectIfSessionExists,
@@ -28,12 +29,12 @@ import {
 } from 'rxjs';
 import { filter, mapTo } from 'rxjs/operators';
 import { TxResult } from './tx';
-import { ConnectType, NetworkInfo, WalletInfo, WalletStatus } from './types';
+import { ConnectType, WalletInfo, WalletStatus } from './types';
 
 export interface WalletControllerOptions
   extends WalletConnectControllerOptions {
   defaultNetwork: StationNetworkInfo;
-  walletConnectChainIds: Map<number, StationNetworkInfo>;
+  walletConnectChainIds: Record<number, StationNetworkInfo>;
   createReadonlyWalletSession: () => Promise<ReadonlyWalletSession | null>;
 }
 
@@ -319,7 +320,7 @@ export class WalletController {
           case WalletConnectSessionStatus.CONNECTED:
             this._status.next(WalletStatus.WALLET_CONNECTED);
             this._network.next(
-              this.options.walletConnectChainIds.get(status.chainId) ??
+              this.options.walletConnectChainIds[status.chainId] ??
                 this.options.defaultNetwork,
             );
             this._wallets.next([

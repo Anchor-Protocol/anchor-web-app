@@ -1,7 +1,8 @@
+import { NetworkInfo } from '@terra-dev/wallet-types';
 import { CreateTxOptions } from '@terra-money/terra.js';
 import { Consumer, Context, createContext, useContext } from 'react';
 import { TxResult } from '../tx';
-import { ConnectType, NetworkInfo, WalletInfo, WalletStatus } from '../types';
+import { ConnectType, WalletInfo, WalletStatus } from '../types';
 
 export interface Wallet {
   availableConnectTypes: ConnectType[];

@@ -2,6 +2,7 @@ import {
   ChromeExtensionController,
   StationNetworkInfo,
 } from '@terra-dev/chrome-extension';
+import { NetworkInfo } from '@terra-dev/wallet-types';
 import React, {
   ReactNode,
   useCallback,
@@ -9,7 +10,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { NetworkInfo, WalletStatus } from '../types';
+import { WalletStatus } from '../types';
 import { Wallet, WalletContext } from './useWallet';
 
 export interface ExtensionNetworkOnlyWalletProviderProps {

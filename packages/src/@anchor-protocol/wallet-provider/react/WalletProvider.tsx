@@ -1,6 +1,7 @@
+import { NetworkInfo } from '@terra-dev/wallet-types';
 import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 import { WalletController, WalletControllerOptions } from '../controller';
-import { ConnectType, NetworkInfo, WalletInfo, WalletStatus } from '../types';
+import { ConnectType, WalletInfo, WalletStatus } from '../types';
 import { Wallet, WalletContext } from './useWallet';
 
 export interface WalletProviderProps extends WalletControllerOptions {

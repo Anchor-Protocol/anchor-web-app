@@ -26,6 +26,7 @@ import { ReadonlyWalletSession } from '@terra-dev/readonly-wallet';
 import { SnackbarProvider } from '@terra-dev/snackbar';
 import { GoogleAnalytics } from '@terra-dev/use-google-analytics';
 import { RouterScrollRestoration } from '@terra-dev/use-router-scroll-restoration';
+import { NetworkInfo } from '@terra-dev/wallet-types';
 import { useReadonlyWalletDialog } from 'base/components/useReadonlyWalletDialog';
 import React, { ReactNode, useCallback, useMemo } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -154,28 +155,22 @@ function Providers({ children }: { children: ReactNode }) {
   );
 }
 
-const walletConnectChainIds = new Map<number, StationNetworkInfo>([
-  [
-    0,
-    {
-      chainID: 'columbus-4',
-      fcd: 'https://fcd.terra.dev',
-      lcd: 'https://lcd.terra.dev',
-      name: 'mainnet',
-      ws: 'wss://fcd.terra.dev',
-    },
-  ],
-  [
-    1,
-    {
-      chainID: 'tequila-0004',
-      fcd: 'https://tequila-fcd.terra.dev',
-      lcd: 'https://tequila-lcd.terra.dev',
-      name: 'testnet',
-      ws: 'wss://tequila-ws.terra.dev',
-    },
-  ],
-]);
+const walletConnectChainIds: Record<number, StationNetworkInfo> = {
+  0: {
+    chainID: 'tequila-0004',
+    fcd: 'https://tequila-fcd.terra.dev',
+    lcd: 'https://tequila-lcd.terra.dev',
+    name: 'testnet',
+    ws: 'wss://tequila-ws.terra.dev',
+  },
+  1: {
+    chainID: 'columbus-4',
+    fcd: 'https://fcd.terra.dev',
+    lcd: 'https://lcd.terra.dev',
+    name: 'mainnet',
+    ws: 'wss://fcd.terra.dev',
+  },
+};
 
 export function AppProviders({ children }: { children: ReactNode }) {
   const [
@@ -185,7 +180,13 @@ export function AppProviders({ children }: { children: ReactNode }) {
 
   const createReadonlyWalletSession = useCallback((): Promise<ReadonlyWalletSession | null> => {
     return openReadonlyWalletSelector({
-      networks: Array.from(walletConnectChainIds.values()),
+      networks: Object.keys(walletConnectChainIds).reduce(
+        (networksArray, i) => {
+          networksArray.push(walletConnectChainIds[parseInt(i)]);
+          return networksArray;
+        },
+        [] as NetworkInfo[],
+      ),
     });
   }, [openReadonlyWalletSelector]);
 

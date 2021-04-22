@@ -1,8 +1,9 @@
 import { HumanAddr } from '@anchor-protocol/types';
+import { NetworkInfo } from '@terra-dev/wallet-types';
 import { AccAddress, CreateTxOptions } from '@terra-money/terra.js';
 import { useContext, useMemo } from 'react';
 import { TxResult } from '../tx';
-import { ConnectType, NetworkInfo, WalletStatus } from '../types';
+import { ConnectType, WalletStatus } from '../types';
 import { WalletContext } from './useWallet';
 
 export interface ConnectedWallet {
