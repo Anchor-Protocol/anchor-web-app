@@ -39,10 +39,7 @@ import {
 } from './env';
 
 const operationBroadcasterErrorReporter =
-  process.env.NODE_ENV === 'production'
-    ? (error: unknown) =>
-        captureException(error instanceof Error ? error.toString() : error)
-    : undefined;
+  process.env.NODE_ENV === 'production' ? captureException : undefined;
 
 function Providers({ children }: { children: ReactNode }) {
   const {

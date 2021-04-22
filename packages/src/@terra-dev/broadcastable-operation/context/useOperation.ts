@@ -1,5 +1,6 @@
+import { UserDeniedError } from '@anchor-protocol/wallet-provider';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { OperationStop } from '../errors';
+import { OperationStop, OperationTimeoutError } from '../errors';
 import { aborted, subscribeAbort } from './internal/subscribeAbort';
 import { useOperationBroadcaster } from './OperationBroadcaster';
 import type { OperationOptions, OperationResult, Operator } from './types';
@@ -297,7 +298,13 @@ export function useOperation(
         ) {
           throw error;
         } else if (errorReporter) {
-          errorId = errorReporter(error);
+          if (
+            error instanceof UserDeniedError ||
+            error instanceof OperationTimeoutError
+          ) {
+          } else {
+            errorId = errorReporter(error);
+          }
         }
 
         updateResult({
