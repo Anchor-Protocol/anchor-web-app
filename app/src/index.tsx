@@ -13,6 +13,7 @@ if (process.env.NODE_ENV === 'production') {
     integrations: [new Integrations.BrowserTracing()],
 
     tracesSampleRate: 1.0,
+    maxValueLength: 800,
   });
 
   configErrorBoundary(Sentry.ErrorBoundary);
