@@ -19,7 +19,7 @@ export default {
     (Story: ComponentType) => (
       <WalletProvider
         defaultNetwork={defaultNetwork}
-        walletConnectChainIds={new Map()}
+        walletConnectChainIds={{}}
         createReadonlyWalletSession={() =>
           Promise.resolve({
             terraAddress: 'terra12hnhh5vtyg5juqnzm43970nh4fw42pt27nw9g9',
