@@ -2,7 +2,7 @@ import { TxResult } from '../transactions/tx';
 
 export class TxFailedError extends Error {
   constructor(public readonly txResult: TxResult) {
-    super(JSON.stringify(txResult, null, 2));
+    super(JSON.stringify(txResult));
     this.name = 'TxFailedError';
   }
 
