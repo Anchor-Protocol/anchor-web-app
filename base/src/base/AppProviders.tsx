@@ -25,6 +25,7 @@ import { GlobalStyle } from '@terra-dev/neumorphism-ui/themes/GlobalStyle';
 import { ReadonlyWalletSession } from '@terra-dev/readonly-wallet';
 import { SnackbarProvider } from '@terra-dev/snackbar';
 import { GoogleAnalytics } from '@terra-dev/use-google-analytics';
+import { useLongtimeNoSee } from '@terra-dev/use-longtime-no-see';
 import { RouterScrollRestoration } from '@terra-dev/use-router-scroll-restoration';
 import { NetworkInfo } from '@terra-dev/wallet-types';
 import { useReadonlyWalletDialog } from 'base/components/useReadonlyWalletDialog';
@@ -189,6 +190,10 @@ export function AppProviders({ children }: { children: ReactNode }) {
       ),
     });
   }, [openReadonlyWalletSelector]);
+
+  // If the user didn't see the app over 10 minutes,
+  // reload browser for more stablity when the user visit again.
+  useLongtimeNoSee({ longtime: 1000 * 60 * 10, onSee: window.location.reload });
 
   return (
     /** Terra Station Wallet Address :: useWallet() */
