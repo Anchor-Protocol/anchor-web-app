@@ -211,7 +211,7 @@ export function connect(
     if (isMobile()) {
       window.open(
         `terrastation://wallet_connect_confirm?id=${id}&params=${JSON.stringify(
-          serializedTxOptions,
+          [serializedTxOptions],
         )}`,
       );
     }
