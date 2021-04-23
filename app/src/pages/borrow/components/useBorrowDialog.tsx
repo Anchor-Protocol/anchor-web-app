@@ -292,6 +292,18 @@ function ComponentBase({
           />
         </figure>
 
+        {nextLtv?.gt(bLunaSafeLtv) && (
+          <MessageBox
+            level="error"
+            hide={{ id: 'borrow-ltv', period: 1000 * 60 * 60 * 24 * 5 }}
+            style={{ userSelect: 'none', fontSize: 12 }}
+          >
+            Caution: If the loan-to-value ratio (LTV) reaches the maximum (MAX
+            LTV), a portion of your collateral may be immediately liquidated to
+            repay part of the loan.
+          </MessageBox>
+        )}
+
         {txFee && receiveAmount && (
           <TxFeeList className="receipt">
             <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
