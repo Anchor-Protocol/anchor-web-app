@@ -194,10 +194,9 @@ export function Burn() {
         level="info"
         hide={{ id: 'burn', period: 1000 * 60 * 60 * 24 * 7 }}
       >
-        Default bLuna redemptions take at least 21 days to process.
-        <br />
-        Slashing events during the 21 days may affect the final amount
-        withdrawn.
+        Default bLuna redemptions take at least 21 days to process. Slashing
+        events during the 21 days may affect the final amount withdrawn.
+        Redemptions are processed in 3-day batches and may take up to 24 days.
       </MessageBox>
 
       {/* Burn (bAsset) */}
