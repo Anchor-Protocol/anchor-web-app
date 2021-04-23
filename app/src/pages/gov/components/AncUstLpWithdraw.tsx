@@ -12,7 +12,7 @@ import { ANC, AncUstLP, UST, uUST } from '@anchor-protocol/types';
 import {
   useConnectedWallet,
   ConnectedWallet,
-} from '@anchor-protocol/wallet-provider';
+} from '@terra-money/wallet-provider';
 import { Input, InputAdornment } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { isZero } from '@terra-dev/is-zero';

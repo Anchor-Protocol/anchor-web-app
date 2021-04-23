@@ -16,7 +16,7 @@ import { ANC, UST, uUST } from '@anchor-protocol/types';
 import {
   useConnectedWallet,
   ConnectedWallet,
-} from '@anchor-protocol/wallet-provider';
+} from '@terra-money/wallet-provider';
 import { InputAdornment } from '@material-ui/core';
 import { max, min } from '@terra-dev/big-math';
 import { useOperation } from '@terra-dev/broadcastable-operation';

@@ -1,5 +1,5 @@
 import { Discord } from '@anchor-protocol/icons';
-import { useWallet } from '@anchor-protocol/wallet-provider';
+import { useWallet } from '@terra-money/wallet-provider';
 import { IconButton } from '@material-ui/core';
 import {
   Brightness3,

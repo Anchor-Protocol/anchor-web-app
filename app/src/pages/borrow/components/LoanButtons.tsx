@@ -1,4 +1,4 @@
-import { useConnectedWallet } from '@anchor-protocol/wallet-provider';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import big from 'big.js';
 import { useBorrowDialog } from 'pages/borrow/components/useBorrowDialog';

@@ -24,7 +24,7 @@
   - \~~`storeAddress()`~~
   - \~~`clearStore()`~~
   - `clearStoredSession()`
-- \[x] @anchor-protocol/wallet-provider
+- \[x] @terra-money/wallet-provider
   - `WalletController`
     - `availableConnectTypes(): Observable<{CHROME_EXTENSION, WALLETCONNECT}>`
     - `status(): Observable<WalletStatus>`

@@ -4,7 +4,7 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { Rate, uUST } from '@anchor-protocol/types';
-import { useConnectedWallet } from '@anchor-protocol/wallet-provider';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';

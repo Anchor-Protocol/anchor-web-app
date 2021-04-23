@@ -1,4 +1,4 @@
-import { TxResult } from '@anchor-protocol/wallet-provider';
+import { TxResult } from '@terra-money/wallet-provider';
 import { InProgress } from '@terra-dev/broadcastable-operation';
 import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';

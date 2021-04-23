@@ -16,7 +16,7 @@
       "HTTPS=true SSL_CRT_FILE=$LOCALHOST_HTTPS_CERT SSL_KEY_FILE=$LOCALHOST_HTTPS_KEY PORT=9433 BROWSER=none yarn run react-app-rewired start",
       {
         "command": "HTTPS=true PORT=9433 TS_NODE_PROJECT=tsconfig.script.json node -r ts-node/register -r tsconfig-paths/register scripts/start.ts",
-        "wait": "5000"
+        "wait": "15000"
       }
     ]
   },

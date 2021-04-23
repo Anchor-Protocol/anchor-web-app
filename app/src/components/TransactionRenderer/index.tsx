@@ -7,7 +7,7 @@ import { WaitingTransaction } from 'components/TransactionRenderer/WaitingTransa
 import { TransactionResult } from 'base/models/transaction';
 import React from 'react';
 import styled from 'styled-components';
-import { findTxResult } from '@anchor-protocol/wallet-provider';
+import { findTxResult } from '@terra-money/wallet-provider';
 
 export interface TransactionRendererProps {
   result: OperationResult<TransactionResult, unknown[]>;

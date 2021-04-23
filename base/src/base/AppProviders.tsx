@@ -9,7 +9,7 @@ import {
   RouterWalletStatusRecheck,
   useWallet,
   WalletProvider,
-} from '@anchor-protocol/wallet-provider/react';
+} from '@terra-money/wallet-provider/react';
 import {
   ApolloClient,
   ApolloError,

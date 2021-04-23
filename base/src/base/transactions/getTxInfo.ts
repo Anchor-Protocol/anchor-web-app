@@ -1,4 +1,4 @@
-import { TxResult } from '@anchor-protocol/wallet-provider';
+import { TxResult } from '@terra-money/wallet-provider';
 import { OperationStop } from '@terra-dev/broadcastable-operation';
 import { ApolloClient } from '@apollo/client';
 import { TxInfoError } from '../errors/TxInfoError';

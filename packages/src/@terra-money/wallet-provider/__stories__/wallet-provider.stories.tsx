@@ -2,7 +2,7 @@ import {
   useWallet,
   WalletProvider,
   WalletStatus,
-} from '@anchor-protocol/wallet-provider';
+} from '@terra-money/wallet-provider';
 import React, { ComponentType } from 'react';
 
 const defaultNetwork = {

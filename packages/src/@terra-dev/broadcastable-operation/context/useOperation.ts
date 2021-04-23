@@ -1,4 +1,4 @@
-import { UserDeniedError } from '@anchor-protocol/wallet-provider';
+import { UserDeniedError } from '@terra-money/wallet-provider';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { OperationStop, OperationTimeoutError } from '../errors';
 import { aborted, subscribeAbort } from './internal/subscribeAbort';

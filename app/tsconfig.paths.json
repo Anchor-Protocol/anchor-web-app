@@ -5,6 +5,9 @@
       "@terra-dev/*": [
         "../../packages/src/@terra-dev/*"
       ],
+      "@terra-money/*": [
+        "../../packages/src/@terra-money/*"
+      ],
       "@anchor-protocol/*": [
         "../../packages/src/@anchor-protocol/*"
       ],

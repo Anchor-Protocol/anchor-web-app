@@ -8,7 +8,7 @@ import type {
   uaUST,
   WASMContractResult,
 } from '@anchor-protocol/types';
-import { useConnectedWallet } from '@anchor-protocol/wallet-provider';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { gql, useQuery } from '@apollo/client';
 import { useEventBusListener } from '@terra-dev/event-bus';
 import { createMap, Mapped, useMap } from '@terra-dev/use-map';

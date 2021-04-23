@@ -19,7 +19,7 @@ import { Token, UST, uToken, uUST } from '@anchor-protocol/types';
 import {
   useConnectedWallet,
   ConnectedWallet,
-} from '@anchor-protocol/wallet-provider';
+} from '@terra-money/wallet-provider';
 import { Modal, NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { Warning } from '@material-ui/icons';
 import { min } from '@terra-dev/big-math';

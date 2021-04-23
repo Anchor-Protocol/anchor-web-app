@@ -1,4 +1,4 @@
-import { TxResult } from '@anchor-protocol/wallet-provider';
+import { TxResult } from '@terra-money/wallet-provider';
 import { Data } from '../queries/txInfos';
 import { ReactNode } from 'react';
 

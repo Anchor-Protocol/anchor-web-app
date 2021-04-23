@@ -6,7 +6,7 @@ import {
 import {
   ConnectedWallet,
   useConnectedWallet,
-} from '@anchor-protocol/wallet-provider';
+} from '@terra-money/wallet-provider';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';

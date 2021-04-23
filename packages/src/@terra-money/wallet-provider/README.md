@@ -1,11 +1,11 @@
-# `@anchor-protocol/wallet-provider`
+# `@terra-money/wallet-provider`
 
 <https://anchor-storybook.vercel.app/?path=/story/core-wallet-provider--handle-status>
 
 # Usage
 
 ```jsx
-import { WalletProvider } from '@anchor-protocol/wallet-provider';
+import { WalletProvider } from '@terra-money/wallet-provider';
 
 const mainnet = {
   chainID: 'columbus-4',
@@ -41,7 +41,7 @@ function App() {
 ```
 
 ```jsx
-import { useWallet } from '@anchor-protocol/wallet-provider';
+import { useWallet } from '@terra-money/wallet-provider';
 
 function Component() {
   const {

@@ -1,7 +1,4 @@
-import {
-  TxFailedError,
-  UserDeniedError,
-} from '@anchor-protocol/wallet-provider';
+import { TxFailedError, UserDeniedError } from '@terra-money/wallet-provider';
 import { Close } from '@material-ui/icons';
 import {
   Fault as FaultResult,
