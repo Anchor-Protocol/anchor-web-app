@@ -218,7 +218,7 @@ export function connect(
 
     return connector.sendCustomRequest({
       id,
-      method: 'send',
+      method: 'post',
       params: [serializedTxOptions],
     });
   }
