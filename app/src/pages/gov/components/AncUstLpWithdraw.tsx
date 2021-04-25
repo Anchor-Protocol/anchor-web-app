@@ -71,8 +71,9 @@ export function AncUstLpWithdraw() {
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () =>
+      !!connectedWallet && validateTxFee(bank, simulation?.txFee ?? fixedGas),
+    [connectedWallet, bank, simulation?.txFee, fixedGas],
   );
 
   const invalidLpAmount = useMemo(() => {
