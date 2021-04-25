@@ -146,6 +146,9 @@ export const Dialog = styled(DialogBase)`
 
   @media (max-width: 699px) {
     max-width: 100vw;
+    max-height: 100vh;
+
+    overflow-y: auto;
 
     bottom: 0;
     left: 0;
