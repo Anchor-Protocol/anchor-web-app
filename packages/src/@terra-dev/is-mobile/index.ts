@@ -1,4 +1,5 @@
 import MobileDetect from 'mobile-detect';
+import { useMemo } from 'react';
 
 export const isMobile = () => {
   const mobileDetect = new MobileDetect(navigator.userAgent);
@@ -7,5 +8,5 @@ export const isMobile = () => {
 };
 
 export function useIsMobile() {
-  return isMobile();
+  return useMemo(() => isMobile(), []);
 }

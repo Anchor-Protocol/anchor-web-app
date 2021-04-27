@@ -1,4 +1,4 @@
-import { isMobile } from '@terra-dev/is-mobile';
+import { useIsMobile } from '@terra-dev/is-mobile';
 import { IQRCodeModal, IQRCodeModalOptions } from '@walletconnect/types';
 import QRCode from 'qrcode.react';
 import React, { createElement, useCallback, useMemo } from 'react';
@@ -57,6 +57,8 @@ function TerraQRCodeModalBase({
   className?: string;
   onClose: () => void;
 }) {
+  const isMobile = useIsMobile();
+
   const [isCopied, setCopied] = useCopyClipboard(uri, {
     successDuration: 1000 * 5,
   });
@@ -73,21 +75,36 @@ function TerraQRCodeModalBase({
   return (
     <div className={className}>
       <div onClick={onClose} />
-      <figure>
-        <QRCode value={schemeUri} size={300} />
-        {isMobile() && (
-          <div>
-            <button onClick={openTerraStationMobile}>
-              Connect with Terra Station Mobile
-            </button>
+      {isMobile ? (
+        <section className="mobile">
+          <h1>Wallet Connect</h1>
+
+          <button onClick={openTerraStationMobile} className="flat-button">
+            Open Terra Station Mobile
+          </button>
+
+          <div className="separator">
+            <hr />
+            <span>or</span>
           </div>
-        )}
-        <div>
+
           <button onClick={setCopied}>
             Copy Clipboard{isCopied ? ' (Copied)' : ''}
           </button>
-        </div>
-      </figure>
+
+          <QRCode value={schemeUri} size={110} />
+        </section>
+      ) : (
+        <section className="desktop">
+          <h1>Wallet Connect</h1>
+
+          <QRCode value={schemeUri} size={240} />
+
+          <button onClick={setCopied}>
+            Copy Clipboard{isCopied ? ' (Copied)' : ''}
+          </button>
+        </section>
+      )}
     </div>
   );
 }
@@ -139,14 +156,100 @@ const TerraQRCodeModal = styled(TerraQRCodeModalBase)`
     animation: ${modalEnter} 0.2s ease-in-out;
   }
 
-  > figure {
-    padding: 30px;
-
+  > section {
     border-radius: 25px;
 
     background-color: #ffffff;
     box-shadow: 0 4px 18px 3px rgba(0, 0, 0, 0.43);
 
     animation: ${figureEnter} 0.2s ease-in-out;
+
+    button {
+      display: block;
+      outline: none;
+      background-color: transparent;
+      width: 100%;
+      height: 32px;
+      font-size: 13px;
+      letter-spacing: -0.2px;
+      border-radius: 18px;
+      border: solid 1px #2c2c2c;
+
+      &.flat-button {
+        border: 0;
+        color: #ffffff;
+        background-color: #2c2c2c;
+      }
+    }
+
+    .separator {
+      height: 12px;
+
+      position: relative;
+
+      hr {
+        position: absolute;
+        top: 5px;
+        left: 0;
+        right: 0;
+
+        border: 0;
+        border-bottom: 1px dashed #cccccc;
+      }
+
+      span {
+        display: block;
+
+        position: absolute;
+        top: -4px;
+        left: 50%;
+        transform: translateX(-50%);
+
+        font-size: 12px;
+        color: #c2c2c2;
+        background-color: #ffffff;
+        padding: 0 2px;
+      }
+    }
+
+    &.desktop {
+      padding: 50px 60px;
+
+      h1 {
+        font-size: 27px;
+        font-weight: 500;
+
+        text-align: center;
+
+        margin-bottom: 24px;
+      }
+
+      button {
+        margin-top: 20px;
+      }
+    }
+
+    &.mobile {
+      padding: 40px 30px;
+      min-width: 320px;
+
+      h1 {
+        font-size: 22px;
+        font-weight: 500;
+
+        text-align: center;
+
+        margin-bottom: 30px;
+      }
+
+      .separator {
+        margin: 10px 0;
+      }
+
+      canvas {
+        display: block;
+        margin: 16px auto 0 auto;
+      }
+    }
   }
 `;

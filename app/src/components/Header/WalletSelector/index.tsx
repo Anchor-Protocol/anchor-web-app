@@ -1,10 +1,13 @@
+import { Wallet, Walletconnect } from '@anchor-protocol/icons';
+import { ClickAwayListener } from '@material-ui/core';
+import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
+import { FlatButton } from '@terra-dev/neumorphism-ui/components/FlatButton';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import {
   ConnectType,
   useWallet,
   WalletStatus,
 } from '@terra-money/wallet-provider';
-import { ClickAwayListener } from '@material-ui/core';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { useBank } from 'base/contexts/bank';
 import { useAirdrop } from 'pages/airdrop/queries/useAirdrop';
 import { useSendDialog } from 'pages/send/useSendDialog';
@@ -105,17 +108,57 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
               <DropdownContainer>
                 <DropdownBox>
                   <ConnectTypeContent>
-                    {availableConnectTypes.map((connectType) => (
-                      <ActionButton
-                        key={connectType}
+                    {availableConnectTypes.some(
+                      (connectType) =>
+                        connectType === ConnectType.CHROME_EXTENSION,
+                    ) && (
+                      <FlatButton
+                        className="connect-chrome-extension"
                         onClick={() => {
-                          connect(connectType);
+                          connect(ConnectType.CHROME_EXTENSION);
                           setOpenDropdown(false);
                         }}
                       >
-                        {connectType}
-                      </ActionButton>
-                    ))}
+                        <IconSpan>
+                          <Wallet />
+                          Chrome Extension
+                        </IconSpan>
+                      </FlatButton>
+                    )}
+
+                    {availableConnectTypes.some(
+                      (connectType) =>
+                        connectType === ConnectType.WALLETCONNECT,
+                    ) && (
+                      <FlatButton
+                        className="connect-walletconnect"
+                        onClick={() => {
+                          connect(ConnectType.WALLETCONNECT);
+                          setOpenDropdown(false);
+                        }}
+                      >
+                        <IconSpan>
+                          <Walletconnect />
+                          Wallet Connect
+                        </IconSpan>
+                      </FlatButton>
+                    )}
+
+                    <hr />
+
+                    {availableConnectTypes.some(
+                      (connectType) => connectType === ConnectType.READONLY,
+                    ) && (
+                      <BorderButton
+                        className="connect-readonly"
+                        onClick={() => {
+                          connect(ConnectType.READONLY);
+                          setOpenDropdown(false);
+                        }}
+                      >
+                        View an address
+                      </BorderButton>
+                    )}
                   </ConnectTypeContent>
                 </DropdownBox>
               </DropdownContainer>
@@ -180,8 +223,41 @@ export const WalletSelector = styled(WalletSelectorBase)`
 const ConnectTypeContent = styled.section`
   padding: 32px 28px;
 
+  display: flex;
+  flex-direction: column;
+
   button {
     width: 100%;
-    height: 22px;
+    height: 32px;
+
+    &:first-child {
+      margin-bottom: 8px;
+    }
+
+    svg,
+    .MuiSvgIcon-root {
+      //transform: scale(1.2) translateY(0.13em);
+      margin-right: 0.4em;
+    }
+  }
+
+  hr {
+    margin: 12px 0;
+
+    border: 0;
+    border-bottom: 1px dashed
+      ${({ theme }) =>
+        theme.palette.type === 'light'
+          ? '#e5e5e5'
+          : 'rgba(255, 255, 255, 0.1)'};
+  }
+
+  .connect-chrome-extension,
+  .connect-walletconnect {
+    background-color: ${({ theme }) => theme.colors.positive};
+  }
+
+  .connect-readonly {
+    border: 1px solid ${({ theme }) => theme.dimTextColor};
   }
 `;
