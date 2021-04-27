@@ -159,6 +159,17 @@ export class WalletController {
     }
   };
 
+  install = (type: ConnectType) => {
+    if (type === ConnectType.CHROME_EXTENSION) {
+      window.open(
+        'https://chrome.google.com/webstore/detail/terra-station/aiifbnbfobpmeekipheeijimdpnlpgpp',
+        '_blank',
+      );
+    } else {
+      console.warn(`ConnectType "${type}" does not support install() function`);
+    }
+  };
+
   connect = (type: ConnectType) => {
     switch (type) {
       case ConnectType.READONLY:
@@ -202,6 +213,7 @@ export class WalletController {
 
   post = async (
     tx: CreateTxOptions,
+    // TODO not work at this time. for the future extension
     txTarget: { network?: NetworkInfo; terraAddress?: string } = {},
   ): Promise<TxResult> => {
     if (this.disableExtension) {
@@ -211,16 +223,34 @@ export class WalletController {
           return {
             ...tx,
             result: payload.result,
+            success: true,
           } as TxResult;
+        })
+        .catch((error) => {
+          console.log('controller.ts..() extension error', error);
+          if (process.env.NODE_ENV === 'development') {
+            debugger;
+          }
+          throw error;
         });
     } else if (this.walletConnect) {
-      return this.walletConnect.post(tx).then(
-        (result) =>
-          ({
-            ...tx,
-            result,
-          } as TxResult),
-      );
+      return this.walletConnect
+        .post(tx)
+        .then(
+          (result) =>
+            ({
+              ...tx,
+              result,
+              success: true,
+            } as TxResult),
+        )
+        .catch((error) => {
+          console.log('controller.ts..() walletconnect error', error);
+          if (process.env.NODE_ENV === 'development') {
+            debugger;
+          }
+          throw error;
+        });
     } else {
       throw new Error(`There are no connections that can be posting tx!`);
     }

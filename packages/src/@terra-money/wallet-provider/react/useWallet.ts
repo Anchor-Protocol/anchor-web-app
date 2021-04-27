@@ -9,6 +9,7 @@ export interface Wallet {
   status: WalletStatus;
   network: NetworkInfo;
   wallets: WalletInfo[];
+  install: (type: ConnectType) => void;
   connect: (type: ConnectType) => void;
   disconnect: () => void;
   recheckStatus: () => void;

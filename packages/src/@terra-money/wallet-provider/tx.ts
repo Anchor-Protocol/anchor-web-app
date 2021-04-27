@@ -1,19 +1,12 @@
-import { CreateTxOptions } from '@terra-money/terra.js';
+import { TxResult } from '@terra-dev/wallet-types';
+
+export type { TxResult } from '@terra-dev/wallet-types';
 
 export interface StringifiedTxResult {
   fee: string;
   gasAdjustment: string;
   id: number;
   msgs: string[];
-  result: {
-    height: number;
-    raw_log: string;
-    txhash: string;
-  };
-  success: boolean;
-}
-
-export interface TxResult extends CreateTxOptions {
   result: {
     height: number;
     raw_log: string;

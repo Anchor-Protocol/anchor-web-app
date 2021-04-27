@@ -1,4 +1,4 @@
-import { UserDeniedError } from '@terra-dev/wallet-types';
+import { UserDenied } from '@terra-dev/wallet-types';
 import { Extension } from '@terra-money/terra.js';
 
 export interface StationNetworkInfo {
@@ -48,7 +48,7 @@ export function extensionFixer(extension: Extension): FixedExtension {
     const [resolve, reject] = postResolvers.get(payload.id)!;
 
     if (error && 'code' in error && error.code === 1 && reject) {
-      reject(new UserDeniedError());
+      reject(new UserDenied());
     } else if (resolve) {
       resolve({ name: 'onPost', payload });
     }

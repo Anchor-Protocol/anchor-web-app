@@ -1,4 +1,4 @@
-import { TxFailedError, UserDeniedError } from '@terra-money/wallet-provider';
+import { CreateTxFailed, UserDenied } from '@terra-money/wallet-provider';
 import { Close } from '@material-ui/icons';
 import {
   Fault as FaultResult,
@@ -96,7 +96,7 @@ export function Fault({ result: { error, errorId } }: FaultProps) {
 
       {
         // user denied the tx in wallet
-        error instanceof UserDeniedError ? (
+        error instanceof UserDenied ? (
           <>
             <h2>User Denied</h2>
           </>
@@ -106,7 +106,7 @@ export function Fault({ result: { error, errorId } }: FaultProps) {
             <h2>Operation Timeout</h2>
           </>
         ) : // error caused in parseTxResult()
-        error instanceof TxFailedError ? (
+        error instanceof CreateTxFailed ? (
           <>
             <h2>Failed to broadcast transaction</h2>
             <HorizontalHeavyRuler />

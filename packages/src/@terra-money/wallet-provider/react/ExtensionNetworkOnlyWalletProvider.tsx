@@ -56,8 +56,15 @@ export function ExtensionNetworkOnlyWalletProvider({
       status: WalletStatus.WALLET_NOT_CONNECTED,
       network,
       wallets: [],
-      connect: () => {},
-      disconnect: () => {},
+      install: () => {
+        throw new Error('not implemented!');
+      },
+      connect: () => {
+        throw new Error('not implemented!');
+      },
+      disconnect: () => {
+        throw new Error('not implemented!');
+      },
       post,
       recheckStatus: controller.recheckStatus,
     };
