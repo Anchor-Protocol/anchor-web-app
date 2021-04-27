@@ -230,7 +230,10 @@ const ConnectTypeContent = styled.section`
     width: 100%;
     height: 32px;
 
-    &:first-child {
+    font-size: 12px;
+    font-weight: 700;
+
+    &.connect-chrome-extension {
       margin-bottom: 8px;
     }
 

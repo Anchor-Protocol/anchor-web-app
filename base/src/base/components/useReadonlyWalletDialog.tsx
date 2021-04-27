@@ -63,7 +63,7 @@ function ComponentBase({
   return (
     <Modal open onClose={() => closeDialog(null)}>
       <Dialog className={className} onClose={() => closeDialog(null)}>
-        <h1>Readonly Wallet</h1>
+        <h1>View an Address</h1>
 
         {/* Network */}
         <div className="network-description">
