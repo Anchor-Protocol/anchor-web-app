@@ -198,6 +198,8 @@ export function Burn() {
         <br />
         Slashing events during the 21 days may affect the final amount
         withdrawn.
+        <br />
+        Redemptions are processed in 3-day batches and may take up to 24 days.
       </MessageBox>
 
       {/* Burn (bAsset) */}
