@@ -1,3 +1,10 @@
+import {
+  demicrofy,
+  formatANCWithPostfixUnits,
+  formatRate,
+} from '@anchor-protocol/notation';
+import { Rate } from '@anchor-protocol/types';
+import { Schedule } from '@material-ui/icons';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
@@ -5,18 +12,11 @@ import { HorizontalRuler } from '@terra-dev/neumorphism-ui/components/Horizontal
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import {
-  demicrofy,
-  formatANCWithPostfixUnits,
-  formatRate,
-} from '@anchor-protocol/notation';
-import {
   rulerLightColor,
   rulerShadowColor,
 } from '@terra-dev/styled-neumorphism';
-import { Rate } from '@anchor-protocol/types';
 import { TimeEnd } from '@terra-dev/use-time-end';
 import { useLastSyncedHeight } from 'base/queries/lastSyncedHeight';
-import { Schedule } from '@material-ui/icons';
 import { AccountLink } from 'components/AccountLink';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { useCodeViewerDialog } from 'components/useCodeViewerDialog';
@@ -31,6 +31,7 @@ import { PollStatusSpan } from 'pages/gov/components/PollStatusSpan';
 import { PollVoters } from 'pages/gov/components/PollVoters';
 import { usePollVoteDialog } from 'pages/gov/components/usePollVoteDialog';
 import { extractPollDetail } from 'pages/gov/logics/extractPollDetail';
+import { isLinkHttp } from 'pages/gov/logics/isLinkHttp';
 import { useCanIVote } from 'pages/gov/queries/canIVote';
 import { usePoll } from 'pages/gov/queries/poll';
 import { useTotalStaked } from 'pages/gov/queries/totalStaked';
@@ -150,7 +151,7 @@ function PollDetailBase({ className, match }: PollDetailProps) {
           <article>
             <h4>Link</h4>
             <p>
-              {pollDetail.poll.link ? (
+              {isLinkHttp(pollDetail.poll.link) ? (
                 <a href={pollDetail.poll.link} target="_blank" rel="noreferrer">
                   {pollDetail.poll.link}
                 </a>
