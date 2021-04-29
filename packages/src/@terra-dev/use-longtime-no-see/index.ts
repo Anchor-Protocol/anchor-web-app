@@ -23,7 +23,7 @@ export function useLongtimeNoSee({ longtime, onSee }: Props) {
     function callback() {
       if (document.hidden) {
         lastInvisibleTime = Date.now();
-      } else {
+      } else if (lastInvisibleTime > 0) {
         const t = Date.now() - lastInvisibleTime;
         if (t > longtimeRef.current) {
           onSeeRef.current(t);
