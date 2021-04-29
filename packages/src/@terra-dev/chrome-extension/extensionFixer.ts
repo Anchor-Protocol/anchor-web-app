@@ -1,3 +1,8 @@
+import {
+  ChromeExtensionCreateTxFailed,
+  ChromeExtensionTxFailed,
+  ChromeExtensionUnspecifiedError,
+} from '@terra-dev/chrome-extension/errors';
 import { UserDenied } from '@terra-dev/wallet-types';
 import { Extension } from '@terra-money/terra.js';
 
@@ -47,8 +52,33 @@ export function extensionFixer(extension: Extension): FixedExtension {
 
     const [resolve, reject] = postResolvers.get(payload.id)!;
 
-    if (error && 'code' in error && error.code === 1 && reject) {
-      reject(new UserDenied());
+    if (!payload.success) {
+      if (error && 'code' in error) {
+        switch (error.code) {
+          // @see https://github.com/terra-project/station/blob/main/src/extension/Confirm.tsx#L182
+          case 1:
+            reject(new UserDenied());
+            break;
+          // @see https://github.com/terra-project/station/blob/main/src/extension/Confirm.tsx#L137
+          case 2:
+            if (error.data) {
+              const { txhash } = error.data;
+              reject(new ChromeExtensionTxFailed(txhash, error.message));
+            } else {
+              reject(new ChromeExtensionTxFailed(undefined, error.message));
+            }
+            break;
+          // @see https://github.com/terra-project/station/blob/main/src/extension/Confirm.tsx#L153
+          case 3:
+            reject(new ChromeExtensionCreateTxFailed(error.message));
+            break;
+          default:
+            reject(new ChromeExtensionUnspecifiedError(error.message));
+            break;
+        }
+      } else {
+        reject(new ChromeExtensionUnspecifiedError());
+      }
     } else if (resolve) {
       resolve({ name: 'onPost', payload });
     }

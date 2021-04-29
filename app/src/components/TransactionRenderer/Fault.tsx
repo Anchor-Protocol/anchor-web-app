@@ -1,10 +1,15 @@
-import { CreateTxFailed, UserDenied } from '@terra-money/wallet-provider';
 import { Close } from '@material-ui/icons';
 import {
   Fault as FaultResult,
   OperationTimeoutError,
 } from '@terra-dev/broadcastable-operation';
 import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
+import {
+  CreateTxFailed,
+  TxFailed,
+  TxUnspecifiedError,
+  UserDenied,
+} from '@terra-money/wallet-provider';
 import { TxHashLink } from 'base/components/TxHashLink';
 import { TxInfoError } from 'base/errors/TxInfoError';
 import { TxInfoParseError } from 'base/errors/TxInfoParseError';
@@ -42,7 +47,44 @@ const channels = (
   </ul>
 );
 
-const txFailedMessage = (
+const createTxFailedMessage = (message: string) => (
+  <div style={{ lineHeight: '1.8em' }}>
+    <p>{message}</p>
+    <p style={{ opacity: 0.7 }}>
+      If you are using multiple wallets, please retry after refreshing the
+      WebApp.
+    </p>
+    <p style={{ opacity: 0.7 }}>
+      If the problem still persists, please report your error ID to admin
+      through anyone of the following channels.
+    </p>
+
+    {channels}
+  </div>
+);
+
+const txFailedMessage = (txhash: string | undefined, message: string) => (
+  <div style={{ lineHeight: '1.8em' }}>
+    {txhash && (
+      <p>
+        TxHash: <TxHashLink txHash={txhash} />
+      </p>
+    )}
+    <p>{message}</p>
+    <p style={{ opacity: 0.7 }}>
+      If you are using multiple wallets, please retry after refreshing the
+      WebApp.
+    </p>
+    <p style={{ opacity: 0.7 }}>
+      If the problem still persists, please report your error ID to admin
+      through anyone of the following channels.
+    </p>
+
+    {channels}
+  </div>
+);
+
+const txUnspecifiedErrorMessage = (
   <div style={{ lineHeight: '1.8em' }}>
     <p>
       If you are using multiple wallets, please retry after refreshing the
@@ -105,36 +147,50 @@ export function Fault({ result: { error, errorId } }: FaultProps) {
           <>
             <h2>Operation Timeout</h2>
           </>
-        ) : // error caused in parseTxResult()
-        error instanceof CreateTxFailed ? (
+        ) : error instanceof CreateTxFailed ? (
           <>
             <h2>Failed to broadcast transaction</h2>
             <HorizontalHeavyRuler />
-            <ErrorView errorId={errorId} text={txFailedMessage} />
+            <ErrorView errorId={errorId}>
+              {createTxFailedMessage(error.message)}
+            </ErrorView>
+          </>
+        ) : error instanceof TxFailed ? (
+          <>
+            <h2>Failed to transaction</h2>
+            <HorizontalHeavyRuler />
+            <ErrorView errorId={errorId}>
+              {txFailedMessage(error.txhash, error.message)}
+            </ErrorView>
+          </>
+        ) : error instanceof TxUnspecifiedError ? (
+          <>
+            <h2>Failed to transaction</h2>
+            <HorizontalHeavyRuler />
+            <ErrorView errorId={errorId}>{txUnspecifiedErrorMessage}</ErrorView>
           </>
         ) : // getTxInfo() the tx is failed
         error instanceof TxInfoError ? (
           <>
-            <h2>Tx Failed</h2>
+            <h2>Failed to transaction</h2>
             <HorizontalHeavyRuler />
-            <ErrorView errorId={errorId} text={error.toString()} />
+            <ErrorView errorId={errorId} children={error.toString()} />
           </>
         ) : // failed parse the txInfo (front-end error)
         error instanceof TxInfoParseError ? (
           <>
             <h2>Failed to parse transaction results</h2>
             <HorizontalHeavyRuler />
-            <ErrorView
-              errorId={errorId}
-              text={txParseFailedMessage(error.txResult.result.txhash)}
-            />
+            <ErrorView errorId={errorId}>
+              {txParseFailedMessage(error.txResult.result.txhash)}
+            </ErrorView>
           </>
         ) : (
           // uncaught errors...
           <>
             <h2>Oops, something went wrong!</h2>
             <HorizontalHeavyRuler />
-            <ErrorView errorId={errorId} text={uncaughtErrorMessage} />
+            <ErrorView errorId={errorId}>{uncaughtErrorMessage}</ErrorView>
           </>
         )
       }
@@ -143,18 +199,18 @@ export function Fault({ result: { error, errorId } }: FaultProps) {
 }
 
 function ErrorViewBase({
-  text,
+  children,
   className,
   errorId,
 }: {
-  text: ReactNode;
+  children: ReactNode;
   className?: string;
   errorId?: string | null;
 }) {
   return (
     <div className={className}>
       <div>
-        {typeof text === 'string' ? <pre>{text}</pre> : text}
+        {typeof children === 'string' ? <pre>{children}</pre> : children}
         {errorId && (
           <p style={{ marginTop: 20, opacity: 0.5 }}>
             <b>Error ID</b>: {errorId}

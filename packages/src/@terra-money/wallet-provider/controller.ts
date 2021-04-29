@@ -1,6 +1,9 @@
 import {
   ChromeExtensionController,
+  ChromeExtensionCreateTxFailed,
   ChromeExtensionStatus,
+  ChromeExtensionTxFailed,
+  ChromeExtensionUnspecifiedError,
   StationNetworkInfo,
 } from '@terra-dev/chrome-extension';
 import { isDesktopChrome } from '@terra-dev/is-desktop-chrome';
@@ -10,7 +13,13 @@ import {
   ReadonlyWalletController,
   ReadonlyWalletSession,
 } from '@terra-dev/readonly-wallet';
-import { NetworkInfo } from '@terra-dev/wallet-types';
+import {
+  CreateTxFailed,
+  NetworkInfo,
+  TxFailed,
+  TxUnspecifiedError,
+  UserDenied,
+} from '@terra-dev/wallet-types';
 import {
   connect as wcConnect,
   connectIfSessionExists as wcConnectIfSessionExists,
@@ -227,10 +236,15 @@ export class WalletController {
           } as TxResult;
         })
         .catch((error) => {
-          console.log('controller.ts..() extension error', error);
-          if (process.env.NODE_ENV === 'development') {
-            debugger;
+          if (error instanceof ChromeExtensionCreateTxFailed) {
+            throw new CreateTxFailed(tx, error.message);
+          } else if (error instanceof ChromeExtensionTxFailed) {
+            throw new TxFailed(tx, error.txhash, error.message, null);
+          } else if (error instanceof ChromeExtensionUnspecifiedError) {
+            throw new TxUnspecifiedError(tx, error.message);
           }
+          // UserDeniedError
+          // All unspecified errors...
           throw error;
         });
     } else if (this.walletConnect) {
@@ -245,11 +259,31 @@ export class WalletController {
             } as TxResult),
         )
         .catch((error) => {
-          console.log('controller.ts..() walletconnect error', error);
-          if (process.env.NODE_ENV === 'development') {
-            debugger;
+          let throwError = error;
+
+          try {
+            const { code, txhash, message, raw_message } = JSON.parse(
+              error.message,
+            );
+            switch (code) {
+              case 1:
+                throwError = new UserDenied();
+                break;
+              case 2:
+                throwError = new CreateTxFailed(tx, message);
+                break;
+              case 3:
+                throwError = new TxFailed(tx, txhash, message, raw_message);
+                break;
+              case 99:
+                throwError = new TxUnspecifiedError(tx, message);
+                break;
+            }
+          } catch {
+            throwError = new TxUnspecifiedError(tx, error.message);
           }
-          throw error;
+
+          throw throwError;
         });
     } else {
       throw new Error(`There are no connections that can be posting tx!`);

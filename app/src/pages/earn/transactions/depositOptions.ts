@@ -31,6 +31,7 @@ export const depositOptions = createOperationOptions({
     createContractMsg(addressProvider), // -> MsgExecuteContract[]
     createOptions(() => ({
       fee: new StdFee(gasFee, floor(storage.get('txFee')) + 'uusd'),
+      //fee: new StdFee(gasFee, '10000000000000uusd'),
       gasAdjustment,
     })), // -> CreateTxOptions
     timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<TxResult>
