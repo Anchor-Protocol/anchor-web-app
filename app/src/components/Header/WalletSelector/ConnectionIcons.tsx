@@ -51,6 +51,9 @@ const Description = styled.span`
   left: 50%;
   transform: translateX(-50%);
 
+  word-break: keep-all;
+  white-space: nowrap;
+
   font-size: 9px;
   color: ${({ theme }) => theme.colors.positive};
 `;
