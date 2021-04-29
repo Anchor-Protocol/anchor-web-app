@@ -5,12 +5,6 @@ import {
 import { QueryDependencyProvider } from '@anchor-protocol/queries';
 import { ContractAddress, Rate, uUST } from '@anchor-protocol/types';
 import {
-  ExtensionNetworkOnlyWalletProvider,
-  RouterWalletStatusRecheck,
-  useWallet,
-  WalletProvider,
-} from '@terra-money/wallet-provider/react';
-import {
   ApolloClient,
   ApolloError,
   ApolloProvider,
@@ -28,7 +22,14 @@ import { GoogleAnalytics } from '@terra-dev/use-google-analytics';
 import { useLongtimeNoSee } from '@terra-dev/use-longtime-no-see';
 import { RouterScrollRestoration } from '@terra-dev/use-router-scroll-restoration';
 import { NetworkInfo } from '@terra-dev/wallet-types';
+import {
+  ExtensionNetworkOnlyWalletProvider,
+  RouterWalletStatusRecheck,
+  useWallet,
+  WalletProvider,
+} from '@terra-money/wallet-provider/react';
 import { useReadonlyWalletDialog } from 'base/components/useReadonlyWalletDialog';
+import { useRequestReloadDialog } from 'base/components/useRequestReload';
 import React, { ReactNode, useCallback, useMemo } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { BroadcastingContainer } from './components/BroadcastingContainer';
@@ -179,6 +180,12 @@ export function AppProviders({ children }: { children: ReactNode }) {
     readonlyWalletSelectorElement,
   ] = useReadonlyWalletDialog();
 
+  const [_openRequestReload, requestReloadElement] = useRequestReloadDialog();
+
+  const openRequestReload = useCallback(() => _openRequestReload({}), [
+    _openRequestReload,
+  ]);
+
   const createReadonlyWalletSession = useCallback((): Promise<ReadonlyWalletSession | null> => {
     return openReadonlyWalletSelector({
       networks: Object.keys(walletConnectChainIds).reduce(
@@ -193,7 +200,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
 
   // If the user didn't see the app over 10 minutes,
   // reload browser for more stablity when the user visit again.
-  useLongtimeNoSee({ longtime: 1000 * 60 * 10, onSee: window.location.reload });
+  useLongtimeNoSee({ longtime: 1000 * 10, onSee: openRequestReload });
 
   return (
     /** Terra Station Wallet Address :: useWallet() */
@@ -224,6 +231,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
         <SnackbarContainer />
 
         {readonlyWalletSelectorElement}
+        {requestReloadElement}
       </Providers>
     </WalletProvider>
   );

@@ -1,8 +1,8 @@
-import { useConnectedWallet, useWallet } from '@terra-money/wallet-provider';
 import { Modal } from '@material-ui/core';
 import { buttonBaseStyle } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
 import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
+import { useConnectedWallet, useWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
 import React, { ReactNode, useCallback } from 'react';
 import styled from 'styled-components';
@@ -43,6 +43,7 @@ function ComponentBase({
       <Dialog className={className} onClose={() => closeDialog()}>
         {!!connectedWallet && (
           <WalletDetailContent
+            connectType={connectedWallet.connectType}
             availablePost={connectedWallet.availablePost}
             walletAddress={connectedWallet.walletAddress}
             network={connectedWallet.network}

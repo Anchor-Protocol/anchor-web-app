@@ -13,6 +13,7 @@ export interface ConnectedWallet {
   design?: string;
   post: (tx: CreateTxOptions) => Promise<TxResult>;
   availablePost: boolean;
+  connectType: ConnectType;
 }
 
 export function useConnectedWallet(): ConnectedWallet | undefined {
@@ -38,6 +39,7 @@ export function useConnectedWallet(): ConnectedWallet | undefined {
           availablePost:
             connectType === ConnectType.CHROME_EXTENSION ||
             connectType === ConnectType.WALLETCONNECT,
+          connectType,
         };
       } else {
         return undefined;

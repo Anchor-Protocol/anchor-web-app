@@ -1,4 +1,3 @@
-import { Wallet } from '@anchor-protocol/icons';
 import {
   demicrofy,
   formatANC,
@@ -12,7 +11,9 @@ import { Check, KeyboardArrowRight } from '@material-ui/icons';
 import { FlatButton } from '@terra-dev/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { NetworkInfo } from '@terra-dev/wallet-types';
+import { ConnectType } from '@terra-money/wallet-provider';
 import { Bank } from 'base/contexts/bank';
+import { ConnectionIcons } from 'components/Header/WalletSelector/ConnectionIcons';
 import { useCallback } from 'react';
 import useClipboard from 'react-use-clipboard';
 import styled from 'styled-components';
@@ -26,6 +27,7 @@ interface WalletDetailContentProps {
   bank: Bank;
   openSend: () => void;
   availablePost: boolean;
+  connectType: ConnectType;
 }
 
 export function WalletDetailContentBase({
@@ -37,6 +39,7 @@ export function WalletDetailContentBase({
   bank,
   openSend,
   availablePost,
+  connectType,
 }: WalletDetailContentProps) {
   const [isCopied, setCopied] = useClipboard(walletAddress, {
     successDuration: 1000 * 5,
@@ -52,9 +55,7 @@ export function WalletDetailContentBase({
   return (
     <div className={className}>
       <section>
-        <div className="wallet-icon">
-          <Wallet />
-        </div>
+        <ConnectionIcons className="wallet-icon" connectType={connectType} />
 
         <h2 className="wallet-address">{truncate(walletAddress)}</h2>
 
@@ -149,21 +150,6 @@ export function WalletDetailContentBase({
 export const WalletDetailContent = styled(WalletDetailContentBase)`
   > section {
     padding: 32px 28px;
-
-    .wallet-icon {
-      width: 38px;
-      height: 38px;
-      background-color: #000000;
-      border-radius: 50%;
-      color: #ffffff;
-
-      display: grid;
-      place-content: center;
-
-      svg {
-        font-size: 16px;
-      }
-    }
 
     .wallet-address {
       margin-top: 15px;

@@ -1,4 +1,4 @@
-import { Wallet, Walletconnect } from '@anchor-protocol/icons';
+import { Terra, Walletconnect } from '@anchor-protocol/icons';
 import { ClickAwayListener } from '@material-ui/core';
 import { isDesktopChrome } from '@terra-dev/is-desktop-chrome';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
@@ -122,7 +122,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                         }}
                       >
                         <IconSpan>
-                          <Wallet />
+                          <Terra />
                           Chrome Extension
                         </IconSpan>
                       </FlatButton>
@@ -135,7 +135,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                         }}
                       >
                         <IconSpan>
-                          <Wallet />
+                          <Terra />
                           Install Chrome Extension
                         </IconSpan>
                       </BorderButton>
@@ -207,6 +207,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
               <DropdownContainer>
                 <DropdownBox>
                   <WalletDetailContent
+                    connectType={wallets[0].connectType}
                     bank={bank}
                     availablePost={
                       wallets[0].connectType === ConnectType.CHROME_EXTENSION ||

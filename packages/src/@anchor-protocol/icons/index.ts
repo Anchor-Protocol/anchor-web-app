@@ -13,6 +13,7 @@ import { ReactComponent as MenuCloseIcon } from './assets/MenuClose.svg';
 import { ReactComponent as PlusIcon } from './assets/Plus.svg';
 import { ReactComponent as WalletIcon } from './assets/Wallet.svg';
 import { ReactComponent as WalletconnectIcon } from './assets/Walletconnect.svg';
+import { ReactComponent as TerraIcon } from './assets/Terra.svg';
 import { createMaterialIcon } from './createMaterialIcon';
 
 export const Discord = createMaterialIcon(DiscordIcon);
@@ -30,3 +31,4 @@ export const BorrowValue = createMaterialIcon(BorrowValueIcon);
 export const CollateralValue = createMaterialIcon(CollateralValueIcon);
 export const Plus = createMaterialIcon(PlusIcon);
 export const Walletconnect = createMaterialIcon(WalletconnectIcon);
+export const Terra = createMaterialIcon(TerraIcon);
