@@ -1,5 +1,6 @@
 import { Wallet, Walletconnect } from '@anchor-protocol/icons';
 import { ClickAwayListener } from '@material-ui/core';
+import { isDesktopChrome } from '@terra-dev/is-desktop-chrome';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { FlatButton } from '@terra-dev/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
@@ -31,6 +32,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   // dependencies
   // ---------------------------------------------
   const {
+    install,
     status,
     connect,
     disconnect,
@@ -111,7 +113,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                     {availableConnectTypes.some(
                       (connectType) =>
                         connectType === ConnectType.CHROME_EXTENSION,
-                    ) && (
+                    ) ? (
                       <FlatButton
                         className="connect-chrome-extension"
                         onClick={() => {
@@ -124,7 +126,20 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                           Chrome Extension
                         </IconSpan>
                       </FlatButton>
-                    )}
+                    ) : isDesktopChrome() ? (
+                      <BorderButton
+                        className="install-chrome-extension"
+                        onClick={() => {
+                          install(ConnectType.CHROME_EXTENSION);
+                          setOpenDropdown(false);
+                        }}
+                      >
+                        <IconSpan>
+                          <Wallet />
+                          Install Chrome Extension
+                        </IconSpan>
+                      </BorderButton>
+                    ) : null}
 
                     {availableConnectTypes.some(
                       (connectType) =>
@@ -233,7 +248,8 @@ const ConnectTypeContent = styled.section`
     font-size: 12px;
     font-weight: 700;
 
-    &.connect-chrome-extension {
+    &.connect-chrome-extension,
+    &.install-chrome-extension {
       margin-bottom: 8px;
     }
 
@@ -260,7 +276,13 @@ const ConnectTypeContent = styled.section`
     background-color: ${({ theme }) => theme.colors.positive};
   }
 
+  .install-chrome-extension {
+    border: 1px solid ${({ theme }) => theme.colors.positive};
+    color: ${({ theme }) => theme.colors.positive};
+  }
+
   .connect-readonly {
     border: 1px solid ${({ theme }) => theme.dimTextColor};
+    color: ${({ theme }) => theme.dimTextColor};
   }
 `;

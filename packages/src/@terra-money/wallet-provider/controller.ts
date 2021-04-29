@@ -92,7 +92,7 @@ export class WalletController {
             return extensionStatus !== ChromeExtensionStatus.INITIALIZING;
           }),
         ),
-        interval(1000 * 10).pipe(mapTo(null)),
+        interval(1000 * 10).pipe(mapTo(ChromeExtensionStatus.UNAVAILABLE)),
       ).subscribe({
         next: (status) => {
           extensionConnectionCheckSubscription.unsubscribe();
