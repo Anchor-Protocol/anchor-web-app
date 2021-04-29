@@ -59,14 +59,14 @@ function TerraQRCodeModalBase({
 }) {
   const isMobile = useIsMobile();
 
-  const [isCopied, setCopied] = useCopyClipboard(uri, {
-    successDuration: 1000 * 5,
-  });
-
   const schemeUri = useMemo(
     () => `terrastation://wallet_connect?payload=${encodeURIComponent(uri)}`,
     [uri],
   );
+
+  const [isCopied, setCopied] = useCopyClipboard(schemeUri, {
+    successDuration: 1000 * 5,
+  });
 
   const openTerraStationMobile = useCallback(() => {
     window.open(schemeUri);
