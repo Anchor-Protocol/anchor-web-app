@@ -15,6 +15,7 @@ export function WalletProvider({
   connectorOpts,
   pushServerOpts,
   createReadonlyWalletSession,
+  waitingChromeExtensionInstallCheck,
 }: WalletProviderProps) {
   const [controller] = useState<WalletController>(
     () =>
@@ -24,6 +25,7 @@ export function WalletProvider({
         connectorOpts,
         pushServerOpts,
         createReadonlyWalletSession,
+        waitingChromeExtensionInstallCheck,
       }),
   );
 

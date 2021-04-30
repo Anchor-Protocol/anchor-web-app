@@ -38,6 +38,7 @@ import {
   race,
 } from 'rxjs';
 import { filter, mapTo } from 'rxjs/operators';
+import { CHROME_EXTENSION_INSTALL_URL } from './env';
 import { TxResult } from './tx';
 import { ConnectType, WalletInfo, WalletStatus } from './types';
 
@@ -45,10 +46,23 @@ export interface WalletControllerOptions
   extends WalletConnectControllerOptions {
   defaultNetwork: StationNetworkInfo;
   walletConnectChainIds: Record<number, StationNetworkInfo>;
+
+  /**
+   * run at executing the `connect(ConnectType.READONLY)`
+   */
   createReadonlyWalletSession?: (
     networks: NetworkInfo[],
   ) => Promise<ReadonlyWalletSession | null>;
+
+  /**
+   * miliseconds to wait checking chrome extension is installed
+   *
+   * @default 1000 * 3 miliseconds
+   */
+  waitingChromeExtensionInstallCheck?: number;
 }
+
+const defaultWaitingChromeExtensionInstallCheck = 1000 * 3;
 
 export class WalletController {
   private extension: ChromeExtensionController;
@@ -98,7 +112,10 @@ export class WalletController {
             return extensionStatus !== ChromeExtensionStatus.INITIALIZING;
           }),
         ),
-        interval(1000 * 10).pipe(mapTo(ChromeExtensionStatus.UNAVAILABLE)),
+        interval(
+          this.options.waitingChromeExtensionInstallCheck ??
+            defaultWaitingChromeExtensionInstallCheck,
+        ).pipe(mapTo(ChromeExtensionStatus.UNAVAILABLE)),
       ).subscribe({
         next: (status) => {
           extensionConnectionCheckSubscription.unsubscribe();
@@ -185,10 +202,7 @@ export class WalletController {
 
   install = (type: ConnectType) => {
     if (type === ConnectType.CHROME_EXTENSION) {
-      window.open(
-        'https://chrome.google.com/webstore/detail/terra-station/aiifbnbfobpmeekipheeijimdpnlpgpp',
-        '_blank',
-      );
+      window.open(CHROME_EXTENSION_INSTALL_URL, '_blank');
     } else {
       console.warn(`ConnectType "${type}" does not support install() function`);
     }
