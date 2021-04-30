@@ -119,7 +119,7 @@ const modalEnter = keyframes`
   }
 `;
 
-const figureEnter = keyframes`
+const sectionEnter = keyframes`
   0% {
     opacity: 0;
     transform: scale(0.4);
@@ -164,9 +164,11 @@ const TerraQRCodeModal = styled(TerraQRCodeModalBase)`
     background-color: #ffffff;
     box-shadow: 0 4px 18px 3px rgba(0, 0, 0, 0.43);
 
-    animation: ${figureEnter} 0.2s ease-in-out;
+    animation: ${sectionEnter} 0.2s ease-in-out;
 
     button {
+      cursor: pointer;
+
       display: block;
       outline: none;
       background-color: transparent;

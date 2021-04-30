@@ -13,6 +13,7 @@ import {
   ReadonlyWalletController,
   ReadonlyWalletSession,
 } from '@terra-dev/readonly-wallet';
+import { readonlyWalletModal } from '@terra-dev/readonly-wallet-modal';
 import {
   CreateTxFailed,
   NetworkInfo,
@@ -44,7 +45,9 @@ export interface WalletControllerOptions
   extends WalletConnectControllerOptions {
   defaultNetwork: StationNetworkInfo;
   walletConnectChainIds: Record<number, StationNetworkInfo>;
-  createReadonlyWalletSession: () => Promise<ReadonlyWalletSession | null>;
+  createReadonlyWalletSession?: (
+    networks: NetworkInfo[],
+  ) => Promise<ReadonlyWalletSession | null>;
 }
 
 export class WalletController {
@@ -194,13 +197,19 @@ export class WalletController {
   connect = (type: ConnectType) => {
     switch (type) {
       case ConnectType.READONLY:
-        this.options
-          .createReadonlyWalletSession()
-          .then((readonlyWalletSession) => {
-            if (readonlyWalletSession) {
-              this.enableReadonlyWallet(reConnect(readonlyWalletSession));
-            }
-          });
+        const networks: NetworkInfo[] = Object.keys(
+          this.options.walletConnectChainIds,
+        ).map((chainId) => this.options.walletConnectChainIds[+chainId]);
+
+        const createReadonlyWalletSession =
+          this.options.createReadonlyWalletSession?.(networks) ??
+          readonlyWalletModal({ networks });
+
+        createReadonlyWalletSession.then((readonlyWalletSession) => {
+          if (readonlyWalletSession) {
+            this.enableReadonlyWallet(reConnect(readonlyWalletSession));
+          }
+        });
         break;
       case ConnectType.WALLETCONNECT:
         this.enableWalletConnect(wcConnect(this.options));

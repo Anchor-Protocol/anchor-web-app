@@ -186,17 +186,14 @@ export function AppProviders({ children }: { children: ReactNode }) {
     _openRequestReload,
   ]);
 
-  const createReadonlyWalletSession = useCallback((): Promise<ReadonlyWalletSession | null> => {
-    return openReadonlyWalletSelector({
-      networks: Object.keys(walletConnectChainIds).reduce(
-        (networksArray, i) => {
-          networksArray.push(walletConnectChainIds[parseInt(i)]);
-          return networksArray;
-        },
-        [] as NetworkInfo[],
-      ),
-    });
-  }, [openReadonlyWalletSelector]);
+  const createReadonlyWalletSession = useCallback(
+    (networks: NetworkInfo[]): Promise<ReadonlyWalletSession | null> => {
+      return openReadonlyWalletSelector({
+        networks,
+      });
+    },
+    [openReadonlyWalletSelector],
+  );
 
   // If the user didn't see the app over 10 minutes,
   // reload browser for more stablity when the user visit again.
