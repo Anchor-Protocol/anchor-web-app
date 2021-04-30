@@ -431,7 +431,7 @@ export function RewardsBase({ className }: RewardsProps) {
               <td>
                 <p>
                   {ustBorrow?.reward
-                    ? formatUSTWithPostfixUnits(demicrofy(ustBorrow.reward))
+                    ? formatANCWithPostfixUnits(demicrofy(ustBorrow.reward))
                     : 0}{' '}
                   ANC
                 </p>
