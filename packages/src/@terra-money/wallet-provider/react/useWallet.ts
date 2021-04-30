@@ -6,6 +6,7 @@ import { ConnectType, WalletInfo, WalletStatus } from '../types';
 
 export interface Wallet {
   availableConnectTypes: ConnectType[];
+  availableInstallTypes: ConnectType[];
   status: WalletStatus;
   network: NetworkInfo;
   wallets: WalletInfo[];

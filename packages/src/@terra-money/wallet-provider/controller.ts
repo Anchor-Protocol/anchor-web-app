@@ -53,6 +53,7 @@ export class WalletController {
   private readonlyWallet: ReadonlyWalletController | null = null;
 
   private _availableConnectTypes: BehaviorSubject<ConnectType[]>;
+  private _availableInstallTypes: BehaviorSubject<ConnectType[]>;
   private _status: BehaviorSubject<WalletStatus>;
   private _network: BehaviorSubject<NetworkInfo>;
   private _wallets: BehaviorSubject<WalletInfo[]>;
@@ -66,6 +67,8 @@ export class WalletController {
       ConnectType.READONLY,
       ConnectType.WALLETCONNECT,
     ]);
+
+    this._availableInstallTypes = new BehaviorSubject<ConnectType[]>([]);
 
     this._status = new BehaviorSubject<WalletStatus>(WalletStatus.INITIALIZING);
 
@@ -103,6 +106,11 @@ export class WalletController {
               ConnectType.CHROME_EXTENSION,
               ConnectType.WALLETCONNECT,
             ]);
+          } else if (
+            status === ChromeExtensionStatus.UNAVAILABLE &&
+            isDesktopChrome()
+          ) {
+            this._availableInstallTypes.next([ConnectType.CHROME_EXTENSION]);
           }
 
           if (
@@ -148,6 +156,10 @@ export class WalletController {
 
   availableConnectTypes = (): Observable<ConnectType[]> => {
     return this._availableConnectTypes.asObservable();
+  };
+
+  availableInstallTypes = (): Observable<ConnectType[]> => {
+    return this._availableInstallTypes.asObservable();
   };
 
   status = (): Observable<WalletStatus> => {

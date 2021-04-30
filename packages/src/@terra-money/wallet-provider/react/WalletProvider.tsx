@@ -30,6 +30,9 @@ export function WalletProvider({
   const [availableConnectTypes, setAvailableConnectTypes] = useState<
     ConnectType[]
   >(() => []);
+  const [availableInstallTypes, setAvailableInstallTypes] = useState<
+    ConnectType[]
+  >(() => []);
   const [status, setStatus] = useState<WalletStatus>(WalletStatus.INITIALIZING);
   const [network, setNetwork] = useState<NetworkInfo>(defaultNetwork);
   const [wallets, setWallets] = useState<WalletInfo[]>(() => []);
@@ -40,6 +43,14 @@ export function WalletProvider({
       .subscribe({
         next: (value) => {
           setAvailableConnectTypes(value);
+        },
+      });
+
+    const availableInstallTypesSubscription = controller
+      .availableInstallTypes()
+      .subscribe({
+        next: (value) => {
+          setAvailableInstallTypes(value);
         },
       });
 
@@ -63,6 +74,7 @@ export function WalletProvider({
 
     return () => {
       availableConnectTypesSubscription.unsubscribe();
+      availableInstallTypesSubscription.unsubscribe();
       statusSubscription.unsubscribe();
       networkSubscription.unsubscribe();
       walletsSubscription.unsubscribe();
@@ -72,6 +84,7 @@ export function WalletProvider({
   const state = useMemo<Wallet>(() => {
     return {
       availableConnectTypes,
+      availableInstallTypes,
       status,
       network,
       wallets,
@@ -83,6 +96,7 @@ export function WalletProvider({
     };
   }, [
     availableConnectTypes,
+    availableInstallTypes,
     controller.connect,
     controller.disconnect,
     controller.install,

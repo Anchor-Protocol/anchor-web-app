@@ -53,6 +53,7 @@ export function ExtensionNetworkOnlyWalletProvider({
   const state = useMemo<Wallet>(() => {
     return {
       availableConnectTypes: [],
+      availableInstallTypes: [],
       status: WalletStatus.WALLET_NOT_CONNECTED,
       network,
       wallets: [],
