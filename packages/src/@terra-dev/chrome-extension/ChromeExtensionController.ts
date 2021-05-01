@@ -99,13 +99,14 @@ export class ChromeExtensionController {
         storageStoredWalletAddress &&
         AccAddress.validate(storageStoredWalletAddress)
       ) {
+        this._status.next(ChromeExtensionStatus.WALLET_CONNECTED);
+
         const connectResult = await this._extension.connect();
 
         // if address of extension is not same with the address of localStorage
         if (
           connectResult.address &&
-          AccAddress.validate(connectResult.address) &&
-          connectResult.address !== storageStoredWalletAddress
+          AccAddress.validate(connectResult.address)
         ) {
           storeAddress(connectResult.address);
         }
@@ -114,8 +115,9 @@ export class ChromeExtensionController {
           if (this._terraAddress.getValue() !== connectResult.address) {
             this._terraAddress.next(connectResult.address);
           }
-
-          this._status.next(ChromeExtensionStatus.WALLET_CONNECTED);
+        } else {
+          clearStore();
+          this._status.next(ChromeExtensionStatus.WALLET_NOT_CONNECTED);
         }
       } else {
         if (storageStoredWalletAddress) {
