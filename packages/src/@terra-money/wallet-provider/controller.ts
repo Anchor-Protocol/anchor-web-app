@@ -36,6 +36,7 @@ import {
   interval,
   Observable,
   race,
+  Subscription,
 } from 'rxjs';
 import { filter, mapTo } from 'rxjs/operators';
 import { CHROME_EXTENSION_INSTALL_URL } from './env';
@@ -106,7 +107,9 @@ export class WalletController {
     // wait checking the availability of the chrome extension
     // 0. check if extension wallet session is exists
     if (isDesktopChrome()) {
-      const extensionConnectionCheckSubscription = race(
+      let extensionConnectionCheckSubscription: Subscription;
+
+      extensionConnectionCheckSubscription = race(
         this.extension.status().pipe(
           filter((extensionStatus) => {
             return extensionStatus !== ChromeExtensionStatus.INITIALIZING;
