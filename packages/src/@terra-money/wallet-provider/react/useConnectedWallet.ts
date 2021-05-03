@@ -37,6 +37,7 @@ export function useConnectedWallet(): ConnectedWallet | undefined {
             return post(tx, { network, terraAddress });
           },
           availablePost:
+            connectType === ConnectType.WEBEXTENSION ||
             connectType === ConnectType.CHROME_EXTENSION ||
             connectType === ConnectType.WALLETCONNECT,
           connectType,

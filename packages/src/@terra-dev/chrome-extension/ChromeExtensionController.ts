@@ -11,7 +11,7 @@ import { ChromeExtensionStatus } from './types';
 
 const desktopChrome: boolean = isDesktopChrome() === true;
 
-interface ChromeExtensionControllerOptions {
+export interface ChromeExtensionControllerOptions {
   defaultNetwork: StationNetworkInfo;
   enableWalletConnection: boolean;
 }

@@ -1,6 +1,5 @@
 import { Terra, Walletconnect } from '@anchor-protocol/icons';
 import { ClickAwayListener } from '@material-ui/core';
-import { isDesktopChrome } from '@terra-dev/is-desktop-chrome';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { FlatButton } from '@terra-dev/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
@@ -39,6 +38,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
     wallets,
     network,
     availableConnectTypes,
+    availableInstallTypes,
   } = useWallet();
 
   const bank = useBank();
@@ -111,9 +111,24 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                 <DropdownBox>
                   <ConnectTypeContent>
                     {availableConnectTypes.some(
-                      (connectType) =>
-                        connectType === ConnectType.CHROME_EXTENSION,
+                      (connectType) => connectType === ConnectType.WEBEXTENSION,
                     ) ? (
+                      <FlatButton
+                        className="connect-chrome-extension"
+                        onClick={() => {
+                          connect(ConnectType.WEBEXTENSION);
+                          setOpenDropdown(false);
+                        }}
+                      >
+                        <IconSpan>
+                          <Terra />
+                          Web Extension
+                        </IconSpan>
+                      </FlatButton>
+                    ) : availableConnectTypes.some(
+                        (connectType) =>
+                          connectType === ConnectType.CHROME_EXTENSION,
+                      ) ? (
                       <FlatButton
                         className="connect-chrome-extension"
                         onClick={() => {
@@ -126,7 +141,10 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                           Chrome Extension
                         </IconSpan>
                       </FlatButton>
-                    ) : isDesktopChrome() ? (
+                    ) : availableInstallTypes.some(
+                        (connectType) =>
+                          connectType === ConnectType.CHROME_EXTENSION,
+                      ) ? (
                       <BorderButton
                         className="install-chrome-extension"
                         onClick={() => {
@@ -210,6 +228,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                     connectType={wallets[0].connectType}
                     bank={bank}
                     availablePost={
+                      wallets[0].connectType === ConnectType.WEBEXTENSION ||
                       wallets[0].connectType === ConnectType.CHROME_EXTENSION ||
                       wallets[0].connectType === ConnectType.WALLETCONNECT
                     }

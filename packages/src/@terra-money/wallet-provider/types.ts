@@ -6,6 +6,7 @@ export enum WalletStatus {
 
 export enum ConnectType {
   CHROME_EXTENSION = 'CHROME_EXTENSION',
+  WEBEXTENSION = 'WEBEXTENSION',
   WALLETCONNECT = 'WALLETCONNECT',
   READONLY = 'READONLY',
 }

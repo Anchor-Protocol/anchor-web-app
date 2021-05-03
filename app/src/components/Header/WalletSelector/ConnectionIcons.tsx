@@ -13,6 +13,8 @@ function ConnectionIconsBase({ className, connectType }: ConnectionIconsProps) {
     <div className={className}>
       {connectType === ConnectType.CHROME_EXTENSION ? (
         <Description>CHROME EXTENSION</Description>
+      ) : connectType === ConnectType.WEBEXTENSION ? (
+        <Description>WEB EXTENSION</Description>
       ) : connectType === ConnectType.WALLETCONNECT ? (
         <Description>WALLETCONNECT</Description>
       ) : null}
@@ -23,7 +25,8 @@ function ConnectionIconsBase({ className, connectType }: ConnectionIconsProps) {
 
       {connectType !== ConnectType.READONLY && <Line />}
 
-      {connectType === ConnectType.CHROME_EXTENSION ? (
+      {connectType === ConnectType.CHROME_EXTENSION ||
+      connectType === ConnectType.WEBEXTENSION ? (
         <Icon>
           <Terra />
         </Icon>
