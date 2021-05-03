@@ -225,7 +225,7 @@ function ComponentBase({
     repayResult?.status === 'fault'
   ) {
     return (
-      <Modal open disableBackdropClick>
+      <Modal open disableBackdropClick disableEnforceFocus>
         <Dialog className={className}>
           <TransactionRenderer result={repayResult} onExit={closeDialog} />
         </Dialog>
