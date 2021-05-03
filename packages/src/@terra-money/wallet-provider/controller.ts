@@ -264,27 +264,30 @@ export class WalletController {
     txTarget: { network?: NetworkInfo; terraAddress?: string } = {},
   ): Promise<TxResult> => {
     if (this.disableExtension) {
-      return this.extension
-        .post<CreateTxOptions, { result: WalletConnectTxResult }>(tx)
-        .then(({ payload }) => {
-          return {
-            ...tx,
-            result: payload.result,
-            success: true,
-          } as TxResult;
-        })
-        .catch((error) => {
-          if (error instanceof ChromeExtensionCreateTxFailed) {
-            throw new CreateTxFailed(tx, error.message);
-          } else if (error instanceof ChromeExtensionTxFailed) {
-            throw new TxFailed(tx, error.txhash, error.message, null);
-          } else if (error instanceof ChromeExtensionUnspecifiedError) {
-            throw new TxUnspecifiedError(tx, error.message);
-          }
-          // UserDeniedError
-          // All unspecified errors...
-          throw error;
-        });
+      return (
+        this.extension
+          // TODO make WalletConnectTxResult to common type
+          .post<CreateTxOptions, { result: WalletConnectTxResult }>(tx)
+          .then(({ payload }) => {
+            return {
+              ...tx,
+              result: payload.result,
+              success: true,
+            } as TxResult;
+          })
+          .catch((error) => {
+            if (error instanceof ChromeExtensionCreateTxFailed) {
+              throw new CreateTxFailed(tx, error.message);
+            } else if (error instanceof ChromeExtensionTxFailed) {
+              throw new TxFailed(tx, error.txhash, error.message, null);
+            } else if (error instanceof ChromeExtensionUnspecifiedError) {
+              throw new TxUnspecifiedError(tx, error.message);
+            }
+            // UserDeniedError
+            // All unspecified errors...
+            throw error;
+          })
+      );
     } else if (this.walletConnect) {
       return this.walletConnect
         .post(tx)
