@@ -69,7 +69,7 @@ function TerraQRCodeModalBase({
   });
 
   const openTerraStationMobile = useCallback(() => {
-    window.open(schemeUri);
+    window.location.href = schemeUri;
   }, [schemeUri]);
 
   return (
