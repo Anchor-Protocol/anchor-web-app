@@ -8,7 +8,7 @@ import {
   formatUST,
   microfy,
 } from '@anchor-protocol/notation';
-import { ANC, AncUstLP, UST, uUST } from '@anchor-protocol/types';
+import { ANC, AncUstLP, UST } from '@anchor-protocol/types';
 import {
   useConnectedWallet,
   WalletReady,
@@ -71,9 +71,8 @@ export function AncUstLpWithdraw() {
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () =>
-      !!connectedWallet && validateTxFee(bank, simulation?.txFee ?? fixedGas),
-    [connectedWallet, bank, simulation?.txFee, fixedGas],
+    () => !!connectedWallet && validateTxFee(bank, fixedGas),
+    [connectedWallet, bank, fixedGas],
   );
 
   const invalidLpAmount = useMemo(() => {
@@ -116,11 +115,10 @@ export function AncUstLpWithdraw() {
   }, []);
 
   const proceed = useCallback(
-    async (walletReady: WalletReady, lpAmount: AncUstLP, txFee: uUST) => {
+    async (walletReady: WalletReady, lpAmount: AncUstLP) => {
       const broadcasted = await withdraw({
         address: walletReady.walletAddress,
         amount: lpAmount,
-        txFee,
       });
 
       if (!broadcasted) {
@@ -250,9 +248,7 @@ export function AncUstLpWithdraw() {
           !!invalidLpAmount
         }
         onClick={() =>
-          connectedWallet &&
-          simulation &&
-          proceed(connectedWallet, lpAmount, simulation.txFee.toFixed() as uUST)
+          connectedWallet && simulation && proceed(connectedWallet, lpAmount)
         }
       >
         Remove Liquidity
