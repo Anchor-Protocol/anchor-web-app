@@ -1,8 +1,6 @@
 import { fabricateTerraswapWithdrawLiquidityANC } from '@anchor-protocol/anchor.js';
-import { floor } from '@terra-dev/big-math';
 import {
   createOperationOptions,
-  effect,
   merge,
   OperationDependency,
   timeout,
@@ -12,7 +10,6 @@ import { createContractMsg } from 'base/transactions/createContractMsg';
 import { createOptions } from 'base/transactions/createOptions';
 import { getTxInfo } from 'base/transactions/getTxInfo';
 import { postContractMsg } from 'base/transactions/postContractMsg';
-import { takeTxFee } from 'base/transactions/takeTxFee';
 import { parseTxResult } from 'base/transactions/tx';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { pickAncUstLpWithdrawResult } from 'pages/gov/transactions/pickAncUstLpWithdrawResult';
@@ -28,12 +25,11 @@ export const ancUstLpWithdrawOptions = createOperationOptions({
     fixedGas,
     gasFee,
     gasAdjustment,
-    storage,
   }: OperationDependency<{}>) => [
-    effect(fabricateTerraswapWithdrawLiquidityANC, takeTxFee(storage)), // Option -> ((AddressProvider) -> MsgExecuteContract[])
+    fabricateTerraswapWithdrawLiquidityANC, // Option -> ((AddressProvider) -> MsgExecuteContract[])
     createContractMsg(addressProvider), // -> MsgExecuteContract[]
     createOptions(() => ({
-      fee: new StdFee(gasFee, floor(storage.get('txFee')) + 'uusd'),
+      fee: new StdFee(gasFee, fixedGas + 'uusd'),
       gasAdjustment,
     })), // -> CreateTxOptions
     timeout(postContractMsg(post), 1000 * 60 * 20), // -> Promise<StringifiedTxResult>
