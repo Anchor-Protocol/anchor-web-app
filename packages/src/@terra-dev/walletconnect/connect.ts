@@ -209,7 +209,9 @@ export function connect(
     };
 
     if (isMobile()) {
-      window.open(`terrastation://`);
+      window.location.href = `terrastation://wallet_connect_confirm?id=${id}&handshakeTopic=${
+        connector.handshakeTopic
+      }&params=${JSON.stringify([serializedTxOptions])}`;
     }
 
     return connector.sendCustomRequest({

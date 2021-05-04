@@ -3,8 +3,8 @@ $schema: https://rocket-hangar.github.io/rocket-punch/schemas/packages.json
   version: 0.10.0
   tag: latest
 '@terra-money/*':
-  version: 0.10.0
+  version: 0.10.1
   tag: latest
 '@terra-dev/*':
-  version: 0.10.0
+  version: 0.10.1
   tag: latest
