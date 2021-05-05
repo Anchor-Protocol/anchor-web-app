@@ -8,31 +8,25 @@
 import { WalletProvider } from '@terra-money/wallet-provider';
 
 const mainnet = {
-  chainID: 'columbus-4',
-  fcd: 'https://fcd.terra.dev',
-  lcd: 'https://lcd.terra.dev',
   name: 'mainnet',
-  ws: 'wss://fcd.terra.dev',
+  chainID: 'columbus-4',
+  lcd: 'https://lcd.terra.dev',
 };
 
 const testnet = {
-  chainID: 'tequila-0004',
-  fcd: 'https://tequila-fcd.terra.dev',
-  lcd: 'https://tequila-lcd.terra.dev',
   name: 'testnet',
-  ws: 'wss://tequila-ws.terra.dev',
+  chainID: 'tequila-0004',
+  lcd: 'https://tequila-lcd.terra.dev',
 };
 
 function App() {
   return (
     <WalletProvider
       defaultNetwork={mainnet}
-      walletConnectChainIds={
-        new Map([
-          [1, mainnet],
-          [2, testnet],
-        ])
-      }
+      walletConnectChainIds={{
+        0: testnet,
+        1: mainnet,
+      }}
     >
       <YOUR_APP />
     </WalletProvider>

@@ -3,21 +3,12 @@ import {
   ChromeExtensionTxFailed,
   ChromeExtensionUnspecifiedError,
 } from '@terra-dev/chrome-extension/errors';
-import { UserDenied } from '@terra-dev/wallet-types';
+import { NetworkInfo, UserDenied } from '@terra-dev/wallet-types';
 import { Extension } from '@terra-money/terra.js';
-
-export interface StationNetworkInfo {
-  name: string;
-  chainID: string;
-  lcd: string;
-  fcd: string;
-  /** WebSocket Address */
-  ws: string;
-}
 
 type ConnectResponse = { address?: string };
 type PostResponse = any;
-type InfoResponse = StationNetworkInfo;
+type InfoResponse = NetworkInfo;
 
 export interface FixedExtension {
   isAvailable: () => boolean;

@@ -1,24 +1,21 @@
-import { clearStore, getStoredAddress, storeAddress } from './storage';
 import { isDesktopChrome } from '@terra-dev/is-desktop-chrome';
+import { NetworkInfo } from '@terra-dev/wallet-types';
 import { AccAddress, Extension } from '@terra-money/terra.js';
 import { BehaviorSubject } from 'rxjs';
-import {
-  extensionFixer,
-  FixedExtension,
-  StationNetworkInfo,
-} from './extensionFixer';
+import { extensionFixer, FixedExtension } from './extensionFixer';
+import { clearStore, getStoredAddress, storeAddress } from './storage';
 import { ChromeExtensionStatus } from './types';
 
 const desktopChrome: boolean = isDesktopChrome() === true;
 
 export interface ChromeExtensionControllerOptions {
-  defaultNetwork: StationNetworkInfo;
+  defaultNetwork: NetworkInfo;
   enableWalletConnection: boolean;
 }
 
 export class ChromeExtensionController {
   readonly _status: BehaviorSubject<ChromeExtensionStatus>;
-  readonly _networkInfo: BehaviorSubject<StationNetworkInfo>;
+  readonly _networkInfo: BehaviorSubject<NetworkInfo>;
   readonly _terraAddress: BehaviorSubject<string | null>;
   readonly _extension: FixedExtension;
 
@@ -31,7 +28,7 @@ export class ChromeExtensionController {
         : ChromeExtensionStatus.UNAVAILABLE,
     );
 
-    this._networkInfo = new BehaviorSubject<StationNetworkInfo>(
+    this._networkInfo = new BehaviorSubject<NetworkInfo>(
       options.defaultNetwork,
     );
 

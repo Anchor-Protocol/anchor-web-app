@@ -6,11 +6,9 @@ import {
 import React, { ComponentType } from 'react';
 
 const defaultNetwork = {
-  chainID: 'tequila-0004',
-  fcd: 'https://tequila-fcd.terra.dev',
-  lcd: 'https://tequila-lcd.terra.dev',
   name: 'testnet',
-  ws: 'wss://tequila-ws.terra.dev',
+  chainID: 'tequila-0004',
+  lcd: 'https://tequila-lcd.terra.dev',
 };
 
 export default {

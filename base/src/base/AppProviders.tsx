@@ -14,20 +14,19 @@ import {
 import { captureException } from '@sentry/react';
 import { OperationBroadcaster } from '@terra-dev/broadcastable-operation';
 import { GlobalDependency } from '@terra-dev/broadcastable-operation/global';
-import { StationNetworkInfo } from '@terra-dev/chrome-extension';
 import { GlobalStyle } from '@terra-dev/neumorphism-ui/themes/GlobalStyle';
 import { ReadonlyWalletSession } from '@terra-dev/readonly-wallet';
 import { SnackbarProvider } from '@terra-dev/snackbar';
 import { GoogleAnalytics } from '@terra-dev/use-google-analytics';
 import { useLongtimeNoSee } from '@terra-dev/use-longtime-no-see';
 import { RouterScrollRestoration } from '@terra-dev/use-router-scroll-restoration';
-import { NetworkInfo } from '@terra-dev/wallet-types';
 import {
   ExtensionNetworkOnlyWalletProvider,
   RouterWalletStatusRecheck,
   useWallet,
   WalletProvider,
 } from '@terra-money/wallet-provider/react';
+import { NetworkInfo } from '@terra-money/wallet-provider';
 import { useReadonlyWalletDialog } from 'base/components/useReadonlyWalletDialog';
 import { useRequestReloadDialog } from 'base/components/useRequestReload';
 import React, { ReactNode, useCallback, useMemo } from 'react';
@@ -157,20 +156,16 @@ function Providers({ children }: { children: ReactNode }) {
   );
 }
 
-const walletConnectChainIds: Record<number, StationNetworkInfo> = {
+const walletConnectChainIds: Record<number, NetworkInfo> = {
   0: {
-    chainID: 'tequila-0004',
-    fcd: 'https://tequila-fcd.terra.dev',
-    lcd: 'https://tequila-lcd.terra.dev',
     name: 'testnet',
-    ws: 'wss://tequila-ws.terra.dev',
+    chainID: 'tequila-0004',
+    lcd: 'https://tequila-lcd.terra.dev',
   },
   1: {
-    chainID: 'columbus-4',
-    fcd: 'https://fcd.terra.dev',
-    lcd: 'https://lcd.terra.dev',
     name: 'mainnet',
-    ws: 'wss://fcd.terra.dev',
+    chainID: 'columbus-4',
+    lcd: 'https://lcd.terra.dev',
   },
 };
 

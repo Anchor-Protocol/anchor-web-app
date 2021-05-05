@@ -4,7 +4,6 @@ import {
   ChromeExtensionStatus,
   ChromeExtensionTxFailed,
   ChromeExtensionUnspecifiedError,
-  StationNetworkInfo,
 } from '@terra-dev/chrome-extension';
 import { isDesktopChrome } from '@terra-dev/is-desktop-chrome';
 import {
@@ -48,8 +47,8 @@ import { checkAvailableExtension } from './utils/checkAvailableExtension';
 
 export interface WalletControllerOptions
   extends WalletConnectControllerOptions {
-  defaultNetwork: StationNetworkInfo;
-  walletConnectChainIds: Record<number, StationNetworkInfo>;
+  defaultNetwork: NetworkInfo;
+  walletConnectChainIds: Record<number, NetworkInfo>;
 
   /**
    * run at executing the `connect(ConnectType.READONLY)`
@@ -95,17 +94,9 @@ export class WalletController {
 
     this._status = new BehaviorSubject<WalletStatus>(WalletStatus.INITIALIZING);
 
-    this._network = new BehaviorSubject<NetworkInfo>({
-      name: options.defaultNetwork.name,
-      chainID: options.defaultNetwork.chainID,
-    });
+    this._network = new BehaviorSubject<NetworkInfo>(options.defaultNetwork);
 
     this._wallets = new BehaviorSubject<WalletInfo[]>([]);
-
-    //this.chromeExtension = new ChromeExtensionController({
-    //  enableWalletConnection: true,
-    //  defaultNetwork: options.defaultNetwork,
-    //});
 
     let numSessionCheck: number = 0;
 

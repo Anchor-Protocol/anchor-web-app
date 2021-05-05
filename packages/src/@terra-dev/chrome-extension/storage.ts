@@ -2,7 +2,8 @@ import { AccAddress } from '@terra-money/terra.js';
 
 export const storage = localStorage;
 
-export const WALLET_ADDRESS: string = '__anchor_terra_station_wallet_address__';
+export const WALLET_ADDRESS: string =
+  '__terra_chrome_extension_wallet_address__';
 
 export function getStoredAddress(): string | null {
   const address = storage.getItem(WALLET_ADDRESS);

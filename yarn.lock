@@ -37,12 +37,12 @@ __metadata:
     "@types/d3-shape": ^2.0.0
     "@types/eslint": ^7.2.10
     "@types/jest": ^26.0.23
-    "@types/node": ^15.0.1
+    "@types/node": ^15.0.2
     "@types/numeral": ^2.0.1
     "@types/postcss-nested": ^4.2.3
     "@types/puppeteer": ^5.4.3
     "@types/ramda": ^0.27.40
-    "@types/react": ^17.0.4
+    "@types/react": ^17.0.5
     "@types/react-dom": ^17.0.3
     "@types/react-is": ^17.0.0
     "@types/react-router-dom": ^5.1.7
@@ -50,14 +50,14 @@ __metadata:
     "@types/testing-library__jest-dom": ^5.9.5
     "@walletconnect/client": ^1.4.1
     "@walletconnect/types": ^1.4.1
-    big.js: ^6.1.0
+    big.js: ^6.1.1
     bignumber.js: ^9.0.1
     bowser: ^2.11.0
     color: ^3.1.3
     d3-scale: ^3.3.0
     d3-selection: ^2.0.0
     d3-shape: ^2.1.0
-    date-fns: ^2.21.1
+    date-fns: ^2.21.2
     downshift: ^6.1.3
     fastdom: ^1.0.10
     graphql: ^15.5.0
@@ -65,7 +65,7 @@ __metadata:
     mobile-detect: ^1.4.5
     multiplerun: ^2.0.1
     numeral: ^2.0.6
-    puppeteer: ^9.0.0
+    puppeteer: ^9.1.1
     react: ^17.0.2
     react-app-rewire-alias: ^1.0.3
     react-app-rewired: ^2.1.8
@@ -78,7 +78,7 @@ __metadata:
     react-use-clipboard: ^1.0.7
     resize-observer-polyfill: ^1.5.1
     rocket-punch: ^2.5.0
-    styled-components: ^5.2.3
+    styled-components: ^5.3.0
     ts-node: ^9.1.1
     tsconfig-paths: ^3.9.0
     typescript: ^4.2.4
@@ -107,10 +107,10 @@ __metadata:
     "@types/eslint": ^7.2.10
     "@types/gl-matrix": ^3.2.0
     "@types/jest": ^26.0.23
-    "@types/node": ^15.0.1
+    "@types/node": ^15.0.2
     "@types/postcss-nested": ^4.2.3
     "@types/ramda": ^0.27.40
-    "@types/react": ^17.0.4
+    "@types/react": ^17.0.5
     "@types/react-dom": ^17.0.3
     "@types/react-responsive": ^8.0.2
     "@types/react-router-dom": ^5.1.7
@@ -131,7 +131,7 @@ __metadata:
     graphql: ^15.5.0
     graphql-tag: ^2.12.4
     multiplerun: ^2.0.1
-    puppeteer: ^9.0.0
+    puppeteer: ^9.1.1
     raw-loader: ^4.0.2
     react: ^17.0.2
     react-app-rewire-alias: ^1.0.3
@@ -147,7 +147,7 @@ __metadata:
     rocket-punch: ^2.5.0
     smooth-scroll: ^16.1.3
     stats.js: ^0.17.0
-    styled-components: ^5.2.3
+    styled-components: ^5.3.0
     ts-node: ^9.1.1
     tsconfig-paths: ^3.9.0
     typescript: ^4.2.4
@@ -176,10 +176,10 @@ __metadata:
     "@types/eslint": ^7.2.10
     "@types/gl-matrix": ^3.2.0
     "@types/jest": ^26.0.23
-    "@types/node": ^15.0.1
+    "@types/node": ^15.0.2
     "@types/postcss-nested": ^4.2.3
     "@types/ramda": ^0.27.40
-    "@types/react": ^17.0.4
+    "@types/react": ^17.0.5
     "@types/react-dom": ^17.0.3
     "@types/react-responsive": ^8.0.2
     "@types/react-router-dom": ^5.1.7
@@ -200,7 +200,7 @@ __metadata:
     graphql: ^15.5.0
     graphql-tag: ^2.12.4
     multiplerun: ^2.0.1
-    puppeteer: ^9.0.0
+    puppeteer: ^9.1.1
     raw-loader: ^4.0.2
     react: ^17.0.2
     react-app-rewire-alias: ^1.0.3
@@ -217,7 +217,7 @@ __metadata:
     rocket-punch: ^2.5.0
     smooth-scroll: ^16.1.3
     stats.js: ^0.17.0
-    styled-components: ^5.2.3
+    styled-components: ^5.3.0
     ts-node: ^9.1.1
     tsconfig-paths: ^3.9.0
     typescript: ^4.2.4
@@ -242,7 +242,7 @@ __metadata:
     "@storybook/preset-create-react-app": ^3.1.7
     "@storybook/react": ^6.2.9
     "@storybook/theming": ^6.2.9
-    "@terra-dev/web-extension": ^0.2.1
+    "@terra-dev/web-extension": ^0.3.0
     "@terra-money/terra.js": ^1.7.0
     "@testing-library/jest-dom": ^5.12.0
     "@testing-library/react": ^11.2.6
@@ -261,21 +261,21 @@ __metadata:
     "@types/fs-extra": ^9.0.11
     "@types/glob": ^7.1.3
     "@types/jest": ^26.0.23
-    "@types/node": ^15.0.1
+    "@types/node": ^15.0.2
     "@types/numeral": ^2.0.1
     "@types/postcss-nested": ^4.2.3
     "@types/prettier": ^2.2.3
     "@types/puppeteer": ^5.4.3
     "@types/qrcode.react": ^1.0.1
     "@types/ramda": ^0.27.40
-    "@types/react": ^17.0.4
+    "@types/react": ^17.0.5
     "@types/react-dom": ^17.0.3
     "@types/react-router-dom": ^5.1.7
     "@types/styled-components": ^5.1.9
     "@types/testing-library__jest-dom": ^5.9.5
     "@walletconnect/client": ^1.4.1
     "@walletconnect/types": ^1.4.1
-    big.js: ^6.1.0
+    big.js: ^6.1.1
     bignumber.js: ^9.0.1
     bowser: ^2.11.0
     color: ^3.1.3
@@ -285,12 +285,12 @@ __metadata:
     d3-selection: ^2.0.0
     d3-shape: ^2.1.0
     d3-timer: ^2.0.0
-    date-fns: ^2.21.1
+    date-fns: ^2.21.2
     downshift: ^6.1.3
     event-target-shim: ^6.0.2
     fast-deep-equal: ^3.1.3
     fastdom: ^1.0.10
-    fs-extra: ^9.1.0
+    fs-extra: ^10.0.0
     glob: ^7.1.6
     graphql: ^15.5.0
     immer: ^9.0.2
@@ -308,7 +308,7 @@ __metadata:
     rocket-punch: ^2.5.0
     rxjs: ^7.0.0
     sib-api-v3-typescript: ^2.2.1
-    styled-components: ^5.2.3
+    styled-components: ^5.3.0
     typescript: ^4.2.4
     use-resize-observer: ^7.0.0
   languageName: unknown
@@ -4423,39 +4423,39 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@terra-dev/safari-webextension-storage-change-listener@npm:^0.2.1":
-  version: 0.2.1
-  resolution: "@terra-dev/safari-webextension-storage-change-listener@npm:0.2.1"
+"@terra-dev/safari-webextension-storage-change-listener@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "@terra-dev/safari-webextension-storage-change-listener@npm:0.3.0"
   dependencies:
     fast-deep-equal: ^3.1.3
     rxjs: ^7.0.0
     webextension-polyfill-ts: ^0.25.0
-  checksum: 7dd3069d6529b147a129ae153967768908accf47b3b387309790331552924ee6b5b2e96ab6a020c4b720ff5d776250bbd561391d8a62d460477e0ef4593766eb
+  checksum: c7e146d42dc84f77456730875e0963beb22f9008e0315fe2ffb0ad38d3c9ff7e7f70ac71ba03920e317c3d560c13942264bccd554fd6493f06e3e8ebcacab240
   languageName: node
   linkType: hard
 
-"@terra-dev/wallet@npm:^0.2.1":
-  version: 0.2.1
-  resolution: "@terra-dev/wallet@npm:0.2.1"
+"@terra-dev/wallet@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "@terra-dev/wallet@npm:0.3.0"
   dependencies:
     "@terra-money/key-utils": ^1.0.2
     "@terra-money/terra.js": ^1.7.0
-  checksum: dbcf9f9584b6381b3cd6a99e0c645ae600eeddb80f3441525407c77a516e0991b760b81a0e00afff977fd58840349bad7aeaceeb9e4f9709cfaa3e416b7b67aa
+  checksum: 2153e198599578e2fb388789ba6381630acbf7d2ebe57cc23aadbb1246acf2d23844bafc2547c507e799e9367696e978228a4d375b934a594064eb1402fe6579
   languageName: node
   linkType: hard
 
-"@terra-dev/web-extension@npm:^0.2.1":
-  version: 0.2.1
-  resolution: "@terra-dev/web-extension@npm:0.2.1"
+"@terra-dev/web-extension@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "@terra-dev/web-extension@npm:0.3.0"
   dependencies:
-    "@terra-dev/safari-webextension-storage-change-listener": ^0.2.1
-    "@terra-dev/wallet": ^0.2.1
+    "@terra-dev/safari-webextension-storage-change-listener": ^0.3.0
+    "@terra-dev/wallet": ^0.3.0
     "@terra-money/terra.js": ^1.7.0
     bowser: ^2.11.0
     post-message-stream: ^3.0.0
     rxjs: ^7.0.0
     webextension-polyfill-ts: ^0.25.0
-  checksum: ca25db4f4f0490ce83f01fbbdeff6c38658e3c159c412204e81a633fdc8c5cb7dfefafd7686b10735da039c5b10c5172aa743493501e9285eaa71146024a3871
+  checksum: 61af521e1194291a9b737fa4d252f535bbfcf35175af8ed9ccca2e80470c6bc7ead738403197725196d284691a0b26fc5bc4b4d96a54298f428b75c2ed8b791f
   languageName: node
   linkType: hard
 
@@ -4971,10 +4971,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^15.0.1":
-  version: 15.0.1
-  resolution: "@types/node@npm:15.0.1"
-  checksum: 4e4fb69394efb224272ad7c6b6dc16a381b97e46a8f3c21d33fec51ef13a4d635f571b446d127eae333ea6a763f304b787f4b3f73e24e1f3b05a21b481900dfb
+"@types/node@npm:*, @types/node@npm:^15.0.2":
+  version: 15.0.2
+  resolution: "@types/node@npm:15.0.2"
+  checksum: ea8dd741bf16ad3318cca505783b7c211a5c8bea49202f99ba88d2ce8a804e994e1fd1b575b994e434e8b8ead810da966d588ea112998f8fe8d95cd74c396f8a
   languageName: node
   linkType: hard
 
@@ -5196,14 +5196,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:>=16.9.0, @types/react@npm:^17.0.4":
-  version: 17.0.4
-  resolution: "@types/react@npm:17.0.4"
+"@types/react@npm:*, @types/react@npm:>=16.9.0, @types/react@npm:^17.0.5":
+  version: 17.0.5
+  resolution: "@types/react@npm:17.0.5"
   dependencies:
     "@types/prop-types": "*"
     "@types/scheduler": "*"
     csstype: ^3.0.2
-  checksum: d7a8121faa889d52148df392751b771be16a45369872e9ad2b5db3d5bb8f76e684db27c2447b440441e3da1f353d434fa20fdcb45b3a56a296aab0757862da77
+  checksum: f9793e8113f14122d6ed20643b4fe27d30e10d7c80571a1d238c13f8171864f2a7b337194bf41310724498586ed4560fffd081a2d21e488afbb1aca33534189b
   languageName: node
   linkType: hard
 
@@ -7204,10 +7204,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"big.js@npm:^6.1.0":
-  version: 6.1.0
-  resolution: "big.js@npm:6.1.0"
-  checksum: 5bd3652ef32b44cdafbf3921b901f0dc747b5076d37c7ba2ddc7901a7a8ede7a3a27957ae8c1484499c8929abab9ebb0d774c00799eb818379bde31e6989a617
+"big.js@npm:^6.1.1":
+  version: 6.1.1
+  resolution: "big.js@npm:6.1.1"
+  checksum: b1885aa6f80eb85c50fffe8ad6f295c238fe45091d02389ef5620469b381187d9ebc9d438476da0a34ccc28d4f946d0bb0fbf523d0ebceb46b26d02e3b6ceca3
   languageName: node
   linkType: hard
 
@@ -9293,10 +9293,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^2.21.1":
-  version: 2.21.1
-  resolution: "date-fns@npm:2.21.1"
-  checksum: 00a2ddea1047c4ce6eaadda76a0ee0782d1cfe65061641bbff94f7a70d2d6ab12dac89e027b39d49710bdb2cf264bc1a4e096b0324c7de79699296a4c19f4a40
+"date-fns@npm:^2.21.2":
+  version: 2.21.2
+  resolution: "date-fns@npm:2.21.2"
+  checksum: 044e5af3aa7e2d4988747c435700a6ebf6b744b75a9d514cb599d5f8f058d69cc43060e008be33ec8a4ebccb8416b8cdfceb6f13800625e2bc2e57da043b2398
   languageName: node
   linkType: hard
 
@@ -11444,6 +11444,17 @@ __metadata:
     path-is-absolute: ^1.0.0
     rimraf: ^2.2.8
   checksum: 2d2fb184b406f94a92fc064cf8497f11aa5a313dd5482978eba3a7c61e758d39009f3ee60d7fd20bb8af8ae9196a46a00cec0259c1185139f1ab7d8ac4fec668
+  languageName: node
+  linkType: hard
+
+"fs-extra@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "fs-extra@npm:10.0.0"
+  dependencies:
+    graceful-fs: ^4.2.0
+    jsonfile: ^6.0.1
+    universalify: ^2.0.0
+  checksum: 84632d143fe3125b8c3c2b1fedbbdfcfb84fc3e087522b4e138cc07edf574619925713a6609f6d5e53ede2e31ab319c7d528ea4a4a770ba6622a16bf4447cd8b
   languageName: node
   linkType: hard
 
@@ -18353,9 +18364,9 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"puppeteer@npm:^9.0.0":
-  version: 9.0.0
-  resolution: "puppeteer@npm:9.0.0"
+"puppeteer@npm:^9.1.1":
+  version: 9.1.1
+  resolution: "puppeteer@npm:9.1.1"
   dependencies:
     debug: ^4.1.0
     devtools-protocol: 0.0.869402
@@ -18369,7 +18380,7 @@ fsevents@^1.2.7:
     tar-fs: ^2.0.0
     unbzip2-stream: ^1.3.3
     ws: ^7.2.3
-  checksum: 35af7ab296f91cac69be93d99914b5b6c7fc8d5f38f5b3484c4fb917d34b4f819d93795580f8052793236414069f613469a208e23ba86e6f65ed812504be57dd
+  checksum: d680e469c2ac724bae1bb7087748b903a7a965fe00f622e17fd40aafd9589351bfa0c472fc200a717706d04f846788e63ab9d07e2d418f994612cb2c0cb68943
   languageName: node
   linkType: hard
 
@@ -21336,9 +21347,9 @@ resolve@^0.6.1:
   languageName: node
   linkType: hard
 
-"styled-components@npm:^5.2.3":
-  version: 5.2.3
-  resolution: "styled-components@npm:5.2.3"
+"styled-components@npm:^5.3.0":
+  version: 5.3.0
+  resolution: "styled-components@npm:5.3.0"
   dependencies:
     "@babel/helper-module-imports": ^7.0.0
     "@babel/traverse": ^7.4.5
@@ -21354,7 +21365,7 @@ resolve@^0.6.1:
     react: ">= 16.8.0"
     react-dom: ">= 16.8.0"
     react-is: ">= 16.8.0"
-  checksum: fca12eec3e1f714227d702bc9aa15a93a76571d9e2dba14d5180ae78488b3df5434718e7705d6f1fed2ae71d8113d129e14548623410d3e9bd781172e9617174
+  checksum: 1f94f92b5dab0b0a965646079604c184e9ef31fd0546881408039a5b4d9a4ebe73b6bb62b05912f06b68392352f1fed4c2dd66a74888b2446226aa0105b681c9
   languageName: node
   linkType: hard
 

@@ -1,7 +1,4 @@
-import {
-  ChromeExtensionController,
-  StationNetworkInfo,
-} from '@terra-dev/chrome-extension';
+import { ChromeExtensionController } from '@terra-dev/chrome-extension';
 import { NetworkInfo } from '@terra-dev/wallet-types';
 import React, {
   ReactNode,
@@ -15,7 +12,7 @@ import { Wallet, WalletContext } from './useWallet';
 
 export interface ExtensionNetworkOnlyWalletProviderProps {
   children: ReactNode;
-  defaultNetwork: StationNetworkInfo;
+  defaultNetwork: NetworkInfo;
 }
 
 export function ExtensionNetworkOnlyWalletProvider({
