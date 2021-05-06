@@ -242,7 +242,7 @@ __metadata:
     "@storybook/preset-create-react-app": ^3.1.7
     "@storybook/react": ^6.2.9
     "@storybook/theming": ^6.2.9
-    "@terra-dev/web-extension": ^0.3.0
+    "@terra-dev/web-extension": ^0.4.0
     "@terra-money/terra.js": ^1.7.0
     "@testing-library/jest-dom": ^5.12.0
     "@testing-library/react": ^11.2.6
@@ -4423,39 +4423,41 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@terra-dev/safari-webextension-storage-change-listener@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "@terra-dev/safari-webextension-storage-change-listener@npm:0.3.0"
+"@terra-dev/safari-webextension-storage-change-listener@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "@terra-dev/safari-webextension-storage-change-listener@npm:0.4.0"
   dependencies:
     fast-deep-equal: ^3.1.3
     rxjs: ^7.0.0
     webextension-polyfill-ts: ^0.25.0
-  checksum: c7e146d42dc84f77456730875e0963beb22f9008e0315fe2ffb0ad38d3c9ff7e7f70ac71ba03920e317c3d560c13942264bccd554fd6493f06e3e8ebcacab240
+  checksum: a20f7276c011ea5fd2fd29533a8a5e0b6b5b9e1c6aad94a458bca7dc2a45c97f56cc87afe1e22280906fbb572fa1fa8c0cd6d707864f31aea1002faf5292b607
   languageName: node
   linkType: hard
 
-"@terra-dev/wallet@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "@terra-dev/wallet@npm:0.3.0"
+"@terra-dev/wallet@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "@terra-dev/wallet@npm:0.4.0"
   dependencies:
     "@terra-money/key-utils": ^1.0.2
     "@terra-money/terra.js": ^1.7.0
-  checksum: 2153e198599578e2fb388789ba6381630acbf7d2ebe57cc23aadbb1246acf2d23844bafc2547c507e799e9367696e978228a4d375b934a594064eb1402fe6579
+  checksum: 1c902ba3bd441909c14f6ec6d8a2430bf5d6641cd13fadf2f2bc40a56a77e8099c22fb59b23c5f2482c619a2cc7b11a250e84d12d8ed533e20274307c35ae804
   languageName: node
   linkType: hard
 
-"@terra-dev/web-extension@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "@terra-dev/web-extension@npm:0.3.0"
+"@terra-dev/web-extension@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "@terra-dev/web-extension@npm:0.4.0"
   dependencies:
-    "@terra-dev/safari-webextension-storage-change-listener": ^0.3.0
-    "@terra-dev/wallet": ^0.3.0
+    "@terra-dev/safari-webextension-storage-change-listener": ^0.4.0
+    "@terra-dev/wallet": ^0.4.0
+    "@terra-money/key-utils": ^1.0.2
     "@terra-money/terra.js": ^1.7.0
     bowser: ^2.11.0
     post-message-stream: ^3.0.0
+    react: ^17.0.2
     rxjs: ^7.0.0
     webextension-polyfill-ts: ^0.25.0
-  checksum: 61af521e1194291a9b737fa4d252f535bbfcf35175af8ed9ccca2e80470c6bc7ead738403197725196d284691a0b26fc5bc4b4d96a54298f428b75c2ed8b791f
+  checksum: 9826df3c0c17231598a26776f3b38326bace0333678205c28738d9b5f313607dbdfcc138aec83b48e98c2589c6e392ef8355791bbfb8039cb234b7421511cca2
   languageName: node
   linkType: hard
 

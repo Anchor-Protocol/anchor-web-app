@@ -30,9 +30,13 @@ import {
 } from '@terra-dev/walletconnect';
 import {
   WebExtensionController,
+  WebExtensionCreateTxFailed,
   WebExtensionStatusType,
-  WebExtensionTxResult,
+  WebExtensionTxFailed,
+  WebExtensionTxProgress,
   WebExtensionTxStatus,
+  WebExtensionTxSucceed,
+  WebExtensionUserDenied,
 } from '@terra-dev/web-extension';
 import { AccAddress, CreateTxOptions } from '@terra-money/terra.js';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
@@ -380,7 +384,9 @@ export class WalletController {
             tx,
           })
           .subscribe({
-            next: (extensionTxResult: WebExtensionTxResult) => {
+            next: (
+              extensionTxResult: WebExtensionTxProgress | WebExtensionTxSucceed,
+            ) => {
               switch (extensionTxResult.status) {
                 case WebExtensionTxStatus.SUCCEED:
                   resolve({
@@ -390,20 +396,30 @@ export class WalletController {
                   });
                   subscription.unsubscribe();
                   break;
-                case WebExtensionTxStatus.DENIED:
-                  reject(new UserDenied());
-                  subscription.unsubscribe();
-                  break;
-                case WebExtensionTxStatus.FAIL:
-                  reject(
-                    new CreateTxFailed(tx, String(extensionTxResult.error)),
-                  );
-                  subscription.unsubscribe();
-                  break;
               }
             },
             error: (error) => {
-              reject(new TxUnspecifiedError(tx, String(error)));
+              if (error instanceof WebExtensionUserDenied) {
+                reject(new UserDenied());
+              } else if (error instanceof WebExtensionCreateTxFailed) {
+                reject(new CreateTxFailed(tx, error.message));
+              } else if (error instanceof WebExtensionTxFailed) {
+                reject(
+                  new TxFailed(
+                    tx,
+                    error.txhash,
+                    error.message,
+                    error.raw_message,
+                  ),
+                );
+              } else {
+                reject(
+                  new TxUnspecifiedError(
+                    tx,
+                    'message' in error ? error.message : String(error),
+                  ),
+                );
+              }
               subscription.unsubscribe();
             },
           });
@@ -523,6 +539,10 @@ export class WalletController {
         localStorage.removeItem(WEB_EXTENSION_CONNECTED_KEY);
         this._status.next(WalletStatus.WALLET_NOT_CONNECTED);
         this._wallets.next([]);
+
+        if (!status.isApproved && this.disableWebExtension) {
+          this.disableWebExtension();
+        }
       }
     });
 
@@ -538,7 +558,7 @@ export class WalletController {
     }
 
     this.disableWebExtension = () => {
-      localStorage.setItem(WEB_EXTENSION_CONNECTED_KEY, 'false');
+      localStorage.removeItem(WEB_EXTENSION_CONNECTED_KEY);
       extensionSubscription.unsubscribe();
       this.disableWebExtension = null;
     };
