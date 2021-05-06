@@ -1,9 +1,8 @@
 import { useIsMobile } from '@terra-dev/is-mobile';
 import { IQRCodeModal, IQRCodeModalOptions } from '@walletconnect/types';
 import QRCode from 'qrcode.react';
-import React, { createElement, useCallback, useMemo } from 'react';
+import React, { createElement, useCallback, useEffect, useMemo } from 'react';
 import { render } from 'react-dom';
-import useCopyClipboard from 'react-use-clipboard';
 import styled, { keyframes } from 'styled-components';
 
 export class TerraWalletconnectQrcodeModal implements IQRCodeModal {
@@ -64,13 +63,19 @@ function TerraQRCodeModalBase({
     [uri],
   );
 
-  const [isCopied, setCopied] = useCopyClipboard(schemeUri, {
-    successDuration: 1000 * 5,
-  });
+  //const [isCopied, setCopied] = useCopyClipboard(schemeUri, {
+  //  successDuration: 1000 * 5,
+  //});
 
   const openTerraStationMobile = useCallback(() => {
     window.location.href = schemeUri;
   }, [schemeUri]);
+
+  useEffect(() => {
+    if (isMobile) {
+      window.location.href = schemeUri;
+    }
+  }, [isMobile, schemeUri]);
 
   return (
     <div className={className}>
@@ -82,27 +87,12 @@ function TerraQRCodeModalBase({
           <button onClick={openTerraStationMobile} className="flat-button">
             Open Terra Station Mobile
           </button>
-
-          <div className="separator">
-            <hr />
-            <span>or</span>
-          </div>
-
-          <button onClick={setCopied}>
-            Copy Clipboard{isCopied ? ' (Copied)' : ''}
-          </button>
-
-          <QRCode value={schemeUri} size={110} />
         </section>
       ) : (
         <section className="desktop">
           <h1>Wallet Connect</h1>
 
           <QRCode value={schemeUri} size={240} />
-
-          <button onClick={setCopied}>
-            Copy Clipboard{isCopied ? ' (Copied)' : ''}
-          </button>
         </section>
       )}
     </div>
