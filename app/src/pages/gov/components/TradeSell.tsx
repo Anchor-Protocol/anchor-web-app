@@ -242,7 +242,6 @@ export function TradeSell() {
       walletReady: ConnectedWallet,
       burnAmount: ANC,
       ancPrice: AncPrice,
-      txFee: uUST,
     ) => {
       const broadcasted = await sell({
         address: walletReady.walletAddress,
@@ -251,7 +250,6 @@ export function TradeSell() {
           big(ancPrice.ANCPoolSize).div(ancPrice.USTPoolSize),
         ),
         maxSpread: MAX_SPREAD.toString(),
-        txFee,
       });
 
       if (!broadcasted) {
@@ -413,8 +411,7 @@ export function TradeSell() {
         onClick={() =>
           connectedWallet &&
           ancPrice &&
-          simulation &&
-          proceed(connectedWallet, fromAmount, ancPrice, simulation.txFee)
+          proceed(connectedWallet, fromAmount, ancPrice)
         }
       >
         Proceed

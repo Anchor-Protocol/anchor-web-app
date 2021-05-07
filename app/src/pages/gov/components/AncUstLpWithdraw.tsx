@@ -8,17 +8,17 @@ import {
   formatUST,
   microfy,
 } from '@anchor-protocol/notation';
-import { ANC, AncUstLP, UST, uUST } from '@anchor-protocol/types';
-import {
-  useConnectedWallet,
-  ConnectedWallet,
-} from '@terra-money/wallet-provider';
+import { ANC, AncUstLP, UST } from '@anchor-protocol/types';
 import { Input, InputAdornment } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { isZero } from '@terra-dev/is-zero';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
+import {
+  ConnectedWallet,
+  useConnectedWallet,
+} from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
 import big, { Big } from 'big.js';
@@ -116,11 +116,10 @@ export function AncUstLpWithdraw() {
   }, []);
 
   const proceed = useCallback(
-    async (walletReady: ConnectedWallet, lpAmount: AncUstLP, txFee: uUST) => {
+    async (walletReady: ConnectedWallet, lpAmount: AncUstLP) => {
       const broadcasted = await withdraw({
         address: walletReady.walletAddress,
         amount: lpAmount,
-        txFee,
       });
 
       if (!broadcasted) {
@@ -250,11 +249,7 @@ export function AncUstLpWithdraw() {
           !!invalidTxFee ||
           !!invalidLpAmount
         }
-        onClick={() =>
-          connectedWallet &&
-          simulation &&
-          proceed(connectedWallet, lpAmount, simulation.txFee.toFixed() as uUST)
-        }
+        onClick={() => connectedWallet && proceed(connectedWallet, lpAmount)}
       >
         Remove Liquidity
       </ActionButton>
