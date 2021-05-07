@@ -58,10 +58,12 @@ function TerraQRCodeModalBase({
 }) {
   const isMobile = useIsMobile();
 
-  const schemeUri = useMemo(
-    () => `terrastation://wallet_connect?payload=${encodeURIComponent(uri)}`,
-    [uri],
-  );
+  const schemeUri = useMemo(() => {
+    const query = encodeURIComponent(
+      `action=wallet_connect&payload=${encodeURIComponent(uri)}`,
+    );
+    return `https://terrastation.page.link/?link=https://terra.money?${query}&apn=money.terra.station&ibi=money.terra.station&isi=1548434735`;
+  }, [uri]);
 
   //const [isCopied, setCopied] = useCopyClipboard(schemeUri, {
   //  successDuration: 1000 * 5,

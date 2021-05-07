@@ -201,7 +201,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
       walletConnectChainIds={walletConnectChainIds}
       connectorOpts={{
         //bridge: 'https://bridge.interus.net',
-        bridge: 'https://relay.interus.net/',
+        bridge: 'https://pancakeswap.bridge.walletconnect.org/',
       }}
       createReadonlyWalletSession={createReadonlyWalletSession}
     >
