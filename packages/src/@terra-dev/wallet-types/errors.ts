@@ -54,6 +54,17 @@ export class TxFailed extends Error {
   };
 }
 
+export class Timeout extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'Timeout';
+  }
+
+  toString = () => {
+    return `[${this.name} message="${this.message}"]`;
+  };
+}
+
 export class TxUnspecifiedError extends Error {
   constructor(public readonly tx: CreateTxOptions, message: string) {
     super(message);

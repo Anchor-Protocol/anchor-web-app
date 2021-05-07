@@ -7,9 +7,6 @@
 [types.ts](types.ts)
 
 ```ts
-// 대기중 -> 접속됨     -> 접속 종료됨
-//      -> 접속 거부됨 ->
-// 접속됨
 import { IClientMeta } from '@walletconnect/types';
 
 // ---------------------------------------------

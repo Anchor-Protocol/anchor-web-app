@@ -8,6 +8,13 @@ import {
 } from '@walletconnect/types';
 import { BehaviorSubject, Observable } from 'rxjs';
 import {
+  WalletConnectCreateTxFailed,
+  WalletConnectTimeout,
+  WalletConnectTxFailed,
+  WalletConnectTxUnspecifiedError,
+  WalletConnectUserDenied,
+} from './errors';
+import {
   WalletConnectSession,
   WalletConnectSessionStatus,
   WalletConnectTxResult,
@@ -190,6 +197,16 @@ export function connect(
     return sessionSubject.getValue();
   }
 
+  /**
+   * post transaction
+   *
+   * @param tx transaction data
+   * @throws WalletConnectUserDenied
+   * @throws WalletConnectCreateTxFailed
+   * @throws WalletConnectTxFailed
+   * @throws WalletConnectTimeout
+   * @throws WalletConnectTxUnspecifiedError
+   */
   function post(tx: CreateTxOptions): Promise<WalletConnectTxResult> {
     if (!connector || !connector.connected) {
       throw new Error(`WalletConnect is not connected!`);
@@ -214,11 +231,46 @@ export function connect(
       }&params=${JSON.stringify([serializedTxOptions])}`;
     }
 
-    return connector.sendCustomRequest({
-      id,
-      method: 'post',
-      params: [serializedTxOptions],
-    });
+    return connector
+      .sendCustomRequest({
+        id,
+        method: 'post',
+        params: [serializedTxOptions],
+      })
+      .catch((error) => {
+        let throwError = error;
+
+        try {
+          const { code, txhash, message, raw_message } = JSON.parse(
+            error.message,
+          );
+          switch (code) {
+            case 1:
+              throwError = new WalletConnectUserDenied();
+              break;
+            case 2:
+              throwError = new WalletConnectCreateTxFailed(message);
+              break;
+            case 3:
+              throwError = new WalletConnectTxFailed(
+                txhash,
+                message,
+                raw_message,
+              );
+              break;
+            case 4:
+              throwError = new WalletConnectTimeout(message);
+              break;
+            case 99:
+              throwError = new WalletConnectTxUnspecifiedError(message);
+              break;
+          }
+        } catch {
+          throwError = new WalletConnectTxUnspecifiedError(error.message);
+        }
+
+        throw throwError;
+      });
   }
 
   // ---------------------------------------------

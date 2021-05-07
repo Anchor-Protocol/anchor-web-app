@@ -14,6 +14,18 @@ export interface Wallet {
   connect: (type: ConnectType) => void;
   disconnect: () => void;
   recheckStatus: () => void;
+
+  /**
+   * post transaction
+   *
+   * @param tx Transaction data
+   * @param txTarget - not work at this time. for the future extension
+   * @throws UserDenied user denied the tx
+   * @throws CreateTxFailed did not create txhash (error dose not broadcasted)
+   * @throws TxFailed created txhash (error broadcated)
+   * @throws Timeout user does not act anything in some time
+   * @throws TxUnspecifiedError unknown error
+   */
   post: (
     tx: CreateTxOptions,
     txTarget?: { network?: NetworkInfo; terraAddress?: string },

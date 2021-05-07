@@ -16,6 +16,7 @@ import { readonlyWalletModal } from '@terra-dev/readonly-wallet-modal';
 import {
   CreateTxFailed,
   NetworkInfo,
+  Timeout,
   TxFailed,
   TxUnspecifiedError,
   UserDenied,
@@ -25,8 +26,13 @@ import {
   connectIfSessionExists as wcConnectIfSessionExists,
   WalletConnectController,
   WalletConnectControllerOptions,
+  WalletConnectCreateTxFailed,
   WalletConnectSessionStatus,
+  WalletConnectTimeout,
+  WalletConnectTxFailed,
   WalletConnectTxResult,
+  WalletConnectTxUnspecifiedError,
+  WalletConnectUserDenied,
 } from '@terra-dev/walletconnect';
 import {
   WebExtensionController,
@@ -315,11 +321,25 @@ export class WalletController {
     this._wallets.next([]);
   };
 
+  /**
+   * post transaction
+   *
+   * @param tx Transaction data
+   * @param txTarget - not work at this time. for the future extension
+   * @throws UserDenied user denied the tx
+   * @throws CreateTxFailed did not create txhash (error dose not broadcasted)
+   * @throws TxFailed created txhash (error broadcated)
+   * @throws Timeout user does not act anything in some time
+   * @throws TxUnspecifiedError unknown error
+   */
   post = async (
     tx: CreateTxOptions,
     // TODO not work at this time. for the future extension
     txTarget: { network?: NetworkInfo; terraAddress?: string } = {},
   ): Promise<TxResult> => {
+    // ---------------------------------------------
+    // chrome extension - legacy extension
+    // ---------------------------------------------
     if (this.disableChromeExtension) {
       if (!this.chromeExtension) {
         throw new Error(`chromeExtension instance not created!`);
@@ -349,7 +369,11 @@ export class WalletController {
             throw error;
           })
       );
-    } else if (this.disableWebExtension) {
+    }
+    // ---------------------------------------------
+    // web extension - new extension
+    // ---------------------------------------------
+    else if (this.disableWebExtension) {
       return new Promise<TxResult>((resolve, reject) => {
         if (!this.webExtension) {
           reject(new Error(`webExtension instance not created!`));
@@ -424,7 +448,11 @@ export class WalletController {
             },
           });
       });
-    } else if (this.walletConnect) {
+    }
+    // ---------------------------------------------
+    // wallet connect
+    // ---------------------------------------------
+    else if (this.walletConnect) {
       return this.walletConnect
         .post(tx)
         .then(
@@ -439,25 +467,27 @@ export class WalletController {
           let throwError = error;
 
           try {
-            const { code, txhash, message, raw_message } = JSON.parse(
-              error.message,
-            );
-            switch (code) {
-              case 1:
-                throwError = new UserDenied();
-                break;
-              case 2:
-                throwError = new CreateTxFailed(tx, message);
-                break;
-              case 3:
-                throwError = new TxFailed(tx, txhash, message, raw_message);
-                break;
-              case 99:
-                throwError = new TxUnspecifiedError(tx, message);
-                break;
+            if (error instanceof WalletConnectUserDenied) {
+              throwError = new UserDenied();
+            } else if (error instanceof WalletConnectCreateTxFailed) {
+              throwError = new CreateTxFailed(tx, error.message);
+            } else if (error instanceof WalletConnectTxFailed) {
+              throwError = new TxFailed(
+                tx,
+                error.txhash,
+                error.message,
+                error.raw_message,
+              );
+            } else if (error instanceof WalletConnectTimeout) {
+              throwError = new Timeout(error.message);
+            } else if (error instanceof WalletConnectTxUnspecifiedError) {
+              throwError = new TxUnspecifiedError(tx, error.message);
             }
           } catch {
-            throwError = new TxUnspecifiedError(tx, error.message);
+            throwError = new TxUnspecifiedError(
+              tx,
+              'message' in error ? error.message : String(error),
+            );
           }
 
           throw throwError;
@@ -466,6 +496,10 @@ export class WalletController {
       throw new Error(`There are no connections that can be posting tx!`);
     }
   };
+
+  // ================================================================
+  // connect type changing
+  // ================================================================
 
   private enableReadonlyWallet = (readonlyWallet: ReadonlyWalletController) => {
     this.disableWalletConnect?.();
