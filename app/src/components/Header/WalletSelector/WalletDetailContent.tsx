@@ -7,7 +7,7 @@ import {
   formatUSTWithPostfixUnits,
   truncate,
 } from '@anchor-protocol/notation';
-import { Check, HelpOutline, KeyboardArrowRight } from '@material-ui/icons';
+import { Check, Launch, KeyboardArrowRight } from '@material-ui/icons';
 import { FlatButton } from '@terra-dev/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
@@ -131,7 +131,7 @@ export function WalletDetailContentBase({
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <HelpOutline />
+                  Docs <Launch />
                 </FlatButton>
               </div>
             </div>
@@ -260,7 +260,7 @@ export const WalletDetailContent = styled(WalletDetailContentBase)`
 
           img {
             height: 24px;
-            transform: translateX(13px);
+            transform: translateX(5px);
           }
 
           border-top-right-radius: 0;
@@ -268,14 +268,17 @@ export const WalletDetailContent = styled(WalletDetailContentBase)`
         }
 
         > :last-child {
-          width: 30px;
+          font-size: 12px;
+
+          width: 60px;
           height: 28px;
           margin-left: 1px;
           background-color: ${({ theme }) => theme.colors.positive};
 
           svg {
+            margin-left: 3px;
             font-size: 1em;
-            transform: scale(1.2);
+            transform: scale(1.1);
           }
 
           border-top-left-radius: 0;
