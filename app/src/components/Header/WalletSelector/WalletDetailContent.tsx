@@ -7,7 +7,7 @@ import {
   formatUSTWithPostfixUnits,
   truncate,
 } from '@anchor-protocol/notation';
-import { Check, Launch, KeyboardArrowRight } from '@material-ui/icons';
+import { Check, KeyboardArrowRight, Launch } from '@material-ui/icons';
 import { FlatButton } from '@terra-dev/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
@@ -18,7 +18,6 @@ import { ConnectionIcons } from 'components/Header/WalletSelector/ConnectionIcon
 import { useCallback } from 'react';
 import useClipboard from 'react-use-clipboard';
 import styled from 'styled-components';
-import bridgeImage from './assets/bridge.png';
 
 interface WalletDetailContentProps {
   className?: string;
@@ -120,7 +119,7 @@ export function WalletDetailContentBase({
                     target="_blank"
                     rel="noreferrer"
                   >
-                    <img src={bridgeImage} alt="Terra Bridge" />
+                    <img src="/assets/bridge.png" alt="Terra Bridge" />
                   </FlatButton>
                 </Tooltip>
                 <FlatButton
