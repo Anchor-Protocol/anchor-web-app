@@ -5,7 +5,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; img-src 'self'; script-src 'self' 'unsafe-inline' https://mantle.anchorprotocol.com https://www.googletagmanager.com https://www.google-analytics.com https://o247107.ingest.sentry.io https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; report-uri https://o247107.ingest.sentry.io/api/5636828/security/?sentry_key=f33dd06d6f5948bfb06d809d0d0a274c"
+          "value": "default-src 'self'; img-src 'self'; connect-src 'self' https://mantle.anchorprotocol.com https://www.googletagmanager.com https://www.google-analytics.com https://o247107.ingest.sentry.io https://cloudflareinsights.com; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://o247107.ingest.sentry.io https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; report-uri https://o247107.ingest.sentry.io/api/5636828/security/?sentry_key=f33dd06d6f5948bfb06d809d0d0a274c"
         },
         {
           "key": "X-Content-Type-Options",
