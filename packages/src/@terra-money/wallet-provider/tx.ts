@@ -22,7 +22,6 @@ export function findTxResult(values: any[]): TxResult | undefined {
       Array.isArray(value.msgs) &&
       'fee' in value &&
       'gasAdjustment' in value &&
-      'id' in value &&
       'result' in value &&
       'success' in value
     );
