@@ -150,9 +150,17 @@ export const PollCreate = styled(PollCreateBase)`
     margin-top: 60px;
 
     width: 100%;
-    height: 54px;
+    min-height: 54px;
+    height: auto;
     font-size: 16px;
     border-radius: 27px;
+
+    padding: 10px;
+
+    span {
+      word-break: break-word;
+      white-space: break-spaces;
+    }
 
     svg {
       transform: scale(1.2) translateY(0.1em);
