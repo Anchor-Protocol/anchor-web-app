@@ -10,7 +10,7 @@ import {
 } from '../interestEarned';
 import { sub } from 'date-fns';
 
-describe('queries/interestEarned', () => {
+describe.skip('queries/interestEarned', () => {
   test('should get result from query', async () => {
     const data = await testClient
       .query<RawData, RawVariables>({
