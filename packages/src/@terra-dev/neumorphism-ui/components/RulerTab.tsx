@@ -170,4 +170,12 @@ export const RulerTab: <T>(
     pointer-events: none;
     opacity: 0.3;
   }
+
+  @media (max-width: 500px) {
+    ul {
+      li {
+        font-size: 14px;
+      }
+    }
+  }
 `;
