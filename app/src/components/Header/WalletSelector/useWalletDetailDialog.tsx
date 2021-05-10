@@ -87,7 +87,7 @@ const Component = styled(ComponentBase)`
     margin-top: 40px;
 
     width: 100%;
-    height: 60px !important;
+    height: 40px !important;
 
     ${buttonBaseStyle};
 

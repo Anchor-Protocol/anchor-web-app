@@ -14,6 +14,7 @@ import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
 import { NetworkInfo } from '@terra-dev/wallet-types';
 import { ConnectType } from '@terra-money/wallet-provider';
 import { Bank } from 'base/contexts/bank';
+import big from 'big.js';
 import { ConnectionIcons } from 'components/Header/WalletSelector/ConnectionIcons';
 import { useCallback } from 'react';
 import useClipboard from 'react-use-clipboard';
@@ -65,30 +66,41 @@ export function WalletDetailContentBase({
         </button>
 
         <ul>
-          <li>
-            <span>UST</span>
-            <span>
-              {formatUSTWithPostfixUnits(demicrofy(bank.userBalances.uUSD))}
-            </span>
-          </li>
-          <li>
-            <span>aUST</span>
-            <span>
-              {formatAUSTWithPostfixUnits(demicrofy(bank.userBalances.uaUST))}
-            </span>
-          </li>
-          <li>
-            <span>Luna</span>
-            <span>{formatLuna(demicrofy(bank.userBalances.uLuna))}</span>
-          </li>
-          <li>
-            <span>bLuna</span>
-            <span>{formatLuna(demicrofy(bank.userBalances.ubLuna))}</span>
-          </li>
-          <li>
-            <span>ANC</span>
-            <span>{formatANC(demicrofy(bank.userBalances.uANC))}</span>
-          </li>
+          {big(bank.userBalances.uUSD).gt(0) && (
+            <li>
+              <span>UST</span>
+              <span>
+                {formatUSTWithPostfixUnits(demicrofy(bank.userBalances.uUSD))}
+              </span>
+            </li>
+          )}
+          {big(bank.userBalances.uaUST).gt(0) && (
+            <li>
+              <span>aUST</span>
+              <span>
+                {formatAUSTWithPostfixUnits(demicrofy(bank.userBalances.uaUST))}
+              </span>
+            </li>
+          )}
+          {big(bank.userBalances.uLuna).gt(0) && (
+            <li>
+              <span>Luna</span>
+              <span>{formatLuna(demicrofy(bank.userBalances.uLuna))}</span>
+            </li>
+          )}
+          {big(bank.userBalances.ubLuna).gt(0) && (
+            <li>
+              <span>bLuna</span>
+              <span>{formatLuna(demicrofy(bank.userBalances.ubLuna))}</span>
+            </li>
+          )}
+          {big(bank.userBalances.uANC).gt(0) && (
+            <li>
+              <span>ANC</span>
+              <span>{formatANC(demicrofy(bank.userBalances.uANC))}</span>
+            </li>
+          )}
+
           {process.env.NODE_ENV === 'development' && (
             <>
               <li>

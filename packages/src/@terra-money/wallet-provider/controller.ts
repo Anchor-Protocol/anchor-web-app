@@ -173,7 +173,9 @@ export class WalletController {
             }),
           )
           .subscribe((chromeExtensionStatus) => {
-            subscription.unsubscribe();
+            try {
+              subscription.unsubscribe();
+            } catch {}
 
             if (
               chromeExtensionStatus ===

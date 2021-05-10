@@ -273,4 +273,10 @@ export const Overview = styled(OverviewBase)`
       }
     }
   }
+
+  @media (max-width: ${screen.mobile.max}px) {
+    article > div {
+      padding: 20px;
+    }
+  }
 `;

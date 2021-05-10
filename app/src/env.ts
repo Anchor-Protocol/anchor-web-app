@@ -34,6 +34,6 @@ export const BODY_MARGIN_TOP = {
   tablet: 20,
 };
 
-export const headerHeight = 84;
+export const mobileHeaderHeight = 68;
 
 // build: vercel trigger build - 21.05.10

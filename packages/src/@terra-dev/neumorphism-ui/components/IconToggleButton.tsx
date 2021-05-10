@@ -35,6 +35,7 @@ function IconToggleButtonBase({
         onClick && onClick(event);
         onChange(!on);
       }}
+      data-on={on}
     >
       {on ? createElement(onIcon) : createElement(offIcon)}
     </button>
@@ -45,6 +46,7 @@ export const IconToggleButton = styled(IconToggleButtonBase)`
   border: none;
   outline: none;
   background-color: transparent;
+  padding: 0;
 
   cursor: pointer;
 
