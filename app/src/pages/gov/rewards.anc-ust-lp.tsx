@@ -213,7 +213,7 @@ export const RewardsAncUstLp = styled(RewardsAncUstLpBase)`
   }
 
   .subtab {
-    margin-bottom: 70px;
+    margin-bottom: 40px;
   }
 
   .form {
@@ -277,6 +277,10 @@ export const RewardsAncUstLp = styled(RewardsAncUstLpBase)`
 
       grid-template-columns: 1fr;
       grid-gap: 20px;
+    }
+
+    .subtab {
+      margin-bottom: 20px;
     }
   }
 `;

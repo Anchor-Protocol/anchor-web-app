@@ -147,9 +147,21 @@ export const AncUstLpStakeOverview = styled(AncUstLpStakeOverviewBase)`
 
   @media (max-width: 500px) {
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(3, 90px);
+    grid-template-rows: repeat(3, 60px);
 
     li {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+
+      span {
+        margin-bottom: 0;
+      }
+
+      p {
+        font-size: 15px;
+      }
+
       &:not(:last-child) {
         border-right: 0;
         border-bottom: 1px solid
