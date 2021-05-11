@@ -25,9 +25,14 @@ export interface SnackbarProviderProps {
       }) => ReactNode);
 }
 
+export interface SnackbarControl {
+  close: () => void;
+  update: (element: ReactElement<SnackbarProps>, resetTimer?: boolean) => void;
+}
+
 export interface SnackbarState {
   snackbarContainerRef: RefObject<HTMLDivElement>;
-  addSnackbar: (element: ReactElement<SnackbarProps>) => () => void;
+  addSnackbar: (element: ReactElement<SnackbarProps>) => SnackbarControl;
   removeAllSnackbars: () => void;
 }
 
@@ -68,6 +73,48 @@ export function SnackbarProvider({
         });
       };
 
+      const onUpdate = (
+        updateElement: ReactElement<SnackbarProps>,
+        resetTimer: boolean = true,
+      ) => {
+        setContents((prevContents) => {
+          const index = prevContents.findIndex(
+            ({ props }) => props.primaryId === primaryId,
+          );
+
+          if (index > -1) {
+            if (
+              resetTimer &&
+              typeof updateElement.props.autoClose === 'number'
+            ) {
+              timer.stop(() => {});
+              timer.start(updateElement.props.autoClose, onClose);
+            }
+
+            const nextContents = [...prevContents];
+            nextContents.splice(
+              index,
+              1,
+              cloneElement(updateElement, {
+                key: primaryId,
+                primaryId,
+                onClose: () => {
+                  if (typeof element.props.onClose === 'function') {
+                    element.props.onClose();
+                  }
+                  onClose();
+                },
+                timer,
+              }),
+            );
+
+            return nextContents;
+          }
+
+          return prevContents;
+        });
+      };
+
       const content = cloneElement(element, {
         key: primaryId,
         primaryId,
@@ -84,7 +131,7 @@ export function SnackbarProvider({
         return [...prevContents, content];
       });
 
-      return onClose;
+      return { close: onClose, update: onUpdate };
     },
     [timer],
   );
