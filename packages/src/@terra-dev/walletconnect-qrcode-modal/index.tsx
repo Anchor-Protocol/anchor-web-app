@@ -1,7 +1,7 @@
-import { useIsMobile } from '@terra-dev/is-mobile';
+import { isMobile, useIsMobile } from '@terra-dev/is-mobile';
 import { IQRCodeModal, IQRCodeModalOptions } from '@walletconnect/types';
 import QRCode from 'qrcode.react';
-import React, { createElement, useCallback, useEffect, useMemo } from 'react';
+import React, { createElement, useCallback } from 'react';
 import { render } from 'react-dom';
 import styled, { keyframes } from 'styled-components';
 
@@ -21,8 +21,14 @@ export class TerraWalletconnectQrcodeModal implements IQRCodeModal {
   ) => {
     const modalContainer = window.document.createElement('div');
 
+    const query = encodeURIComponent(
+      `action=wallet_connect&payload=${encodeURIComponent(uri)}`,
+    );
+
+    const schemeUri = `https://terrastation.page.link/?link=https://terra.money?${query}&apn=money.terra.station&ibi=money.terra.station&isi=1548434735`;
+
     const modal = createElement(TerraQRCodeModal, {
-      uri,
+      schemeUri,
       onClose: () => {
         if (this.callback) {
           this.callback();
@@ -31,6 +37,10 @@ export class TerraWalletconnectQrcodeModal implements IQRCodeModal {
         this.close();
       },
     });
+
+    if (isMobile()) {
+      window.location.href = schemeUri;
+    }
 
     render(modal, modalContainer);
     window.document.querySelector('body')?.appendChild(modalContainer);
@@ -48,36 +58,19 @@ export class TerraWalletconnectQrcodeModal implements IQRCodeModal {
 }
 
 function TerraQRCodeModalBase({
-  uri,
+  schemeUri,
   className,
   onClose,
 }: {
-  uri: string;
+  schemeUri: string;
   className?: string;
   onClose: () => void;
 }) {
   const isMobile = useIsMobile();
 
-  const schemeUri = useMemo(() => {
-    const query = encodeURIComponent(
-      `action=wallet_connect&payload=${encodeURIComponent(uri)}`,
-    );
-    return `https://terrastation.page.link/?link=https://terra.money?${query}&apn=money.terra.station&ibi=money.terra.station&isi=1548434735`;
-  }, [uri]);
-
-  //const [isCopied, setCopied] = useCopyClipboard(schemeUri, {
-  //  successDuration: 1000 * 5,
-  //});
-
   const openTerraStationMobile = useCallback(() => {
     window.location.href = schemeUri;
   }, [schemeUri]);
-
-  useEffect(() => {
-    if (isMobile) {
-      window.location.href = schemeUri;
-    }
-  }, [isMobile, schemeUri]);
 
   return (
     <div className={className}>

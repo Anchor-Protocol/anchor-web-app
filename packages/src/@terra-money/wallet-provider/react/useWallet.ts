@@ -23,7 +23,7 @@ export interface Wallet {
    * @throws UserDenied user denied the tx
    * @throws CreateTxFailed did not create txhash (error dose not broadcasted)
    * @throws TxFailed created txhash (error broadcated)
-   * @throws Timeout user does not act anything in some time
+   * @throws Timeout user does not act anything in specific time
    * @throws TxUnspecifiedError unknown error
    */
   post: (
