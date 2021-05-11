@@ -202,11 +202,11 @@ export function connect(
    * post transaction
    *
    * @param tx transaction data
-   * @throws WalletConnectUserDenied
-   * @throws WalletConnectCreateTxFailed
-   * @throws WalletConnectTxFailed
-   * @throws WalletConnectTimeout
-   * @throws WalletConnectTxUnspecifiedError
+   * @throws { WalletConnectUserDenied }
+   * @throws { WalletConnectCreateTxFailed }
+   * @throws { WalletConnectTxFailed }
+   * @throws { WalletConnectTimeout }
+   * @throws { WalletConnectTxUnspecifiedError }
    */
   function post(tx: CreateTxOptions): Promise<WalletConnectTxResult> {
     if (!connector || !connector.connected) {

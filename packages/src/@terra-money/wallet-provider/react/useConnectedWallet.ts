@@ -1,9 +1,9 @@
 import { NetworkInfo } from '@terra-dev/wallet-types';
 import { AccAddress, CreateTxOptions } from '@terra-money/terra.js';
-import { useContext, useMemo } from 'react';
+import { useMemo } from 'react';
 import { TxResult } from '../tx';
 import { ConnectType, WalletStatus } from '../types';
-import { WalletContext } from './useWallet';
+import { useWallet } from './useWallet';
 
 type HumanAddr = string & { __type: 'HumanAddr' };
 
@@ -18,7 +18,7 @@ export interface ConnectedWallet {
 }
 
 export function useConnectedWallet(): ConnectedWallet | undefined {
-  const { status, network, wallets, post } = useContext(WalletContext);
+  const { status, network, wallets, post } = useWallet();
 
   const value = useMemo<ConnectedWallet | undefined>(() => {
     try {

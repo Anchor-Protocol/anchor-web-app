@@ -45,7 +45,7 @@ import {
   WebExtensionUserDenied,
 } from '@terra-dev/web-extension';
 import { AccAddress, CreateTxOptions } from '@terra-money/terra.js';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import {
   CHROME_EXTENSION_INSTALL_URL,
@@ -57,7 +57,36 @@ import { checkAvailableExtension } from './utils/checkAvailableExtension';
 
 export interface WalletControllerOptions
   extends WalletConnectControllerOptions {
+  /**
+   * fallback network if controller is not connected
+   */
   defaultNetwork: NetworkInfo;
+
+  /**
+   * for walletconnect
+   *
+   * @example
+   * ```
+   * const mainnet: NetworkInfo = {
+   *  name: 'mainnet',
+   *  chainID: 'columbus-4',
+   *  lcd: 'https://lcd.terra.dev',
+   * }
+   *
+   * const testnet: NetworkInfo = {
+   *  name: 'testnet',
+   *  chainID: 'tequila-0004',
+   *  lcd: 'https://tequila-lcd.terra.dev',
+   * }
+   *
+   * const walletConnectChainIds: Record<number, NetworkInfo> = {
+   *   0: testnet,
+   *   1: mainnet,
+   * }
+   *
+   * <WalletProvider walletConnectChainIds={walletConnectChainIds}>
+   * ```
+   */
   walletConnectChainIds: Record<number, NetworkInfo>;
 
   /**
@@ -68,14 +97,22 @@ export interface WalletControllerOptions
   ) => Promise<ReadonlyWalletSession | null>;
 
   /**
-   * miliseconds to wait checking chrome extension is installed
+   * milliseconds to wait checking chrome extension is installed
    *
    * @default 1000 * 3 miliseconds
    */
   waitingChromeExtensionInstallCheck?: number;
+
+  /**
+   * milliseconds to re-create wallet connect instance when reactivate after deactivate
+   *
+   * @default 1000 * 60 * 5
+   */
+  walletConnectInstanceRecreateTimes?: number;
 }
 
 const defaultWaitingChromeExtensionInstallCheck = 1000 * 3;
+const defaultWalletConnectInstanceRecreateTimes = 1000 * 60 * 5;
 
 export class WalletController {
   private chromeExtension: ChromeExtensionController | null = null;
@@ -227,32 +264,39 @@ export class WalletController {
     }
   }
 
+  /** @see Wallet#availableConnectTypes */
   availableConnectTypes = (): Observable<ConnectType[]> => {
     return this._availableConnectTypes.asObservable();
   };
 
+  /** @see Wallet#availableInstallTypes */
   availableInstallTypes = (): Observable<ConnectType[]> => {
     return this._availableInstallTypes.asObservable();
   };
 
+  /** @see Wallet#status */
   status = (): Observable<WalletStatus> => {
     return this._status.asObservable();
   };
 
+  /** @see Wallet#network */
   network = (): Observable<NetworkInfo> => {
     return this._network.asObservable();
   };
 
+  /** @see Wallet#wallets */
   wallets = (): Observable<WalletInfo[]> => {
     return this._wallets.asObservable();
   };
 
+  /** @see Wallet#recheckStatus */
   recheckStatus = () => {
     if (this.disableChromeExtension) {
       this.chromeExtension?.recheckStatus();
     }
   };
 
+  /** @see Wallet#install */
   install = (type: ConnectType) => {
     if (type === ConnectType.CHROME_EXTENSION) {
       window.open(CHROME_EXTENSION_INSTALL_URL, '_blank');
@@ -269,6 +313,7 @@ export class WalletController {
     }
   };
 
+  /** @see Wallet#connect */
   connect = (type: ConnectType) => {
     switch (type) {
       case ConnectType.READONLY:
@@ -304,6 +349,7 @@ export class WalletController {
     }
   };
 
+  /** @see Wallet#disconnect */
   disconnect = () => {
     this.disableReadonlyWallet?.();
     this.disableReadonlyWallet = null;
@@ -323,17 +369,7 @@ export class WalletController {
     this._wallets.next([]);
   };
 
-  /**
-   * post transaction
-   *
-   * @param tx Transaction data
-   * @param txTarget - not work at this time. for the future extension
-   * @throws UserDenied user denied the tx
-   * @throws CreateTxFailed did not create txhash (error dose not broadcasted)
-   * @throws TxFailed created txhash (error broadcated)
-   * @throws Timeout user does not act anything in some time
-   * @throws TxUnspecifiedError unknown error
-   */
+  /** @see Wallet#post */
   post = async (
     tx: CreateTxOptions,
     // TODO not work at this time. for the future extension
@@ -500,6 +536,7 @@ export class WalletController {
   };
 
   // ================================================================
+  // internal
   // connect type changing
   // ================================================================
 
@@ -659,37 +696,71 @@ export class WalletController {
 
     this.walletConnect = walletConnect;
 
-    const walletConnectSessionSubscription = walletConnect.session().subscribe({
-      next: (status) => {
-        switch (status.status) {
-          case WalletConnectSessionStatus.CONNECTED:
-            this._status.next(WalletStatus.WALLET_CONNECTED);
-            this._network.next(
-              this.options.walletConnectChainIds[status.chainId] ??
-                this.options.defaultNetwork,
-            );
-            this._wallets.next([
-              {
-                connectType: ConnectType.WALLETCONNECT,
-                terraAddress: status.terraAddress,
-                design: 'walletconnect',
-              },
-            ]);
-            break;
-          default:
-            this._status.next(WalletStatus.WALLET_NOT_CONNECTED);
-            this._network.next(this.options.defaultNetwork);
-            this._wallets.next([]);
-            break;
+    const subscribeWalletConnect = (
+      wc: WalletConnectController,
+    ): Subscription => {
+      return wc.session().subscribe({
+        next: (status) => {
+          switch (status.status) {
+            case WalletConnectSessionStatus.CONNECTED:
+              this._status.next(WalletStatus.WALLET_CONNECTED);
+              this._network.next(
+                this.options.walletConnectChainIds[status.chainId] ??
+                  this.options.defaultNetwork,
+              );
+              this._wallets.next([
+                {
+                  connectType: ConnectType.WALLETCONNECT,
+                  terraAddress: status.terraAddress,
+                  design: 'walletconnect',
+                },
+              ]);
+              break;
+            default:
+              this._status.next(WalletStatus.WALLET_NOT_CONNECTED);
+              this._network.next(this.options.defaultNetwork);
+              this._wallets.next([]);
+              break;
+          }
+        },
+      });
+    };
+
+    let walletConnectSessionSubscription = subscribeWalletConnect(
+      walletConnect,
+    );
+
+    let lastInvisibleTime = -1;
+
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        lastInvisibleTime = Date.now();
+      } else if (lastInvisibleTime > 0) {
+        const t = Date.now() - lastInvisibleTime;
+        const recreateTime =
+          this.options.walletConnectInstanceRecreateTimes ??
+          defaultWalletConnectInstanceRecreateTimes;
+
+        if (t > recreateTime) {
+          const newWalletConnect = wcConnect(this.options, true);
+          this.walletConnect = newWalletConnect;
+          walletConnectSessionSubscription = subscribeWalletConnect(
+            newWalletConnect,
+          );
         }
-      },
-    });
+
+        lastInvisibleTime = -1;
+      }
+    };
+
+    document.addEventListener('visibilitychange', onVisibilityChange);
 
     this.disableWalletConnect = () => {
-      walletConnect.disconnect();
+      this.walletConnect?.disconnect();
       this.walletConnect = null;
       walletConnectSessionSubscription.unsubscribe();
       this.disableWalletConnect = null;
+      document.removeEventListener('visibilitychange', onVisibilityChange);
     };
   };
 }

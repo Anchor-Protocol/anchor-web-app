@@ -1,5 +1,6 @@
 import { CreateTxOptions } from '@terra-money/terra.js';
 
+/** User denied the request */
 export class UserDenied extends Error {
   constructor() {
     super('User Dinied');
@@ -11,9 +12,7 @@ export class UserDenied extends Error {
   };
 }
 
-/**
- * Failed to create tx (did not make a txhash)
- */
+/** Failed to create tx (did not make a txhash) */
 export class CreateTxFailed extends Error {
   constructor(public readonly tx: CreateTxOptions, message: string) {
     super(message);
@@ -29,9 +28,7 @@ export class CreateTxFailed extends Error {
   };
 }
 
-/**
- * Failed process the tx (maked a txhash)
- */
+/** Failed process the tx (maked a txhash) */
 export class TxFailed extends Error {
   constructor(
     public readonly tx: CreateTxOptions,
@@ -54,6 +51,7 @@ export class TxFailed extends Error {
   };
 }
 
+/** the user did not complete the action during a specific time */
 export class Timeout extends Error {
   constructor(message: string) {
     super(message);
@@ -65,6 +63,7 @@ export class Timeout extends Error {
   };
 }
 
+/** Unknown error */
 export class TxUnspecifiedError extends Error {
   constructor(public readonly tx: CreateTxOptions, message: string) {
     super(message);
