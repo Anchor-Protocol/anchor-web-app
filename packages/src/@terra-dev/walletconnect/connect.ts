@@ -57,7 +57,7 @@ export function connectIfSessionExists(
   const storedSession = localStorage.getItem(WALLETCONNECT_STORAGE_KEY);
 
   if (typeof storedSession === 'string') {
-    return connect(options);
+    return connect(options, true);
   }
 
   return null;
@@ -65,6 +65,7 @@ export function connectIfSessionExists(
 
 export function connect(
   options: WalletConnectControllerOptions = {},
+  useCachedSession: boolean = false,
 ): WalletConnectController {
   let connector: WalletConnect | null = null;
 
@@ -131,7 +132,7 @@ export function connect(
   // ---------------------------------------------
   const cachedSession = localStorage.getItem('walletconnect');
 
-  if (typeof cachedSession === 'string') {
+  if (typeof cachedSession === 'string' && useCachedSession) {
     const draftConnector = new WalletConnect(
       {
         ...connectorOpts,
