@@ -1,8 +1,17 @@
 # `@terra-money/wallet-provider`
 
-<https://anchor-storybook.vercel.app/?path=/story/core-wallet-provider--handle-status>
+- Storybook: <https://anchor-storybook.vercel.app/?path=/story/core-wallet-provider--handle-status>
+- Documentation (Korean): <https://www.notion.so/ssen/terra-money-wallet-provider-0-12-2-3dee9af5a294484ca3ff56f8df17c7f0>
 
-# Usage
+# Install
+
+```sh
+yarn add @terra-money/wallet-provider
+```
+
+# API Usage
+
+## `<WalletProvider>`
 
 ```jsx
 import { WalletProvider } from '@terra-money/wallet-provider';
@@ -34,6 +43,8 @@ function App() {
 }
 ```
 
+## `useWallet()`
+
 ```jsx
 import { useWallet } from '@terra-money/wallet-provider';
 
@@ -41,11 +52,30 @@ function Component() {
   const {
     status,
     network,
-    walletAddress,
-    availableExtension,
+    availableConnectTypes,
     connect,
+    availableInstallTypes,
+    install,
+    wallets,
     disconnect,
+    recheckStatus,
+    post,
   } = useWallet();
+
+  return null;
+}
+```
+
+## `useConnectedWallet()`
+
+```jsx
+import {
+  useConnectedWallet,
+  ConnectedWallet,
+} from '@terra-money/wallet-provider';
+
+function Component() {
+  const connectedWallet: ConnectedWallet | undefined = useConnectedWallet();
 
   return null;
 }
