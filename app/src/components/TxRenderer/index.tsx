@@ -4,8 +4,8 @@ import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/Horiz
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxReceipt, TxRender, TxStreamPhase } from 'models/tx';
 import React from 'react';
-import { GuardSpinner, PushSpinner } from 'react-spinners-kit';
-import styled, { useTheme } from 'styled-components';
+import styled from 'styled-components';
+import loadingImage from './assets/loading_image.gif';
 
 export interface TxRendererProps {
   txRender: TxRender;
@@ -13,15 +13,13 @@ export interface TxRendererProps {
 }
 
 export function TxRenderer({ txRender, onExit }: TxRendererProps) {
-  const { dimTextColor } = useTheme();
-
   switch (txRender.phase) {
     case TxStreamPhase.POST:
       return (
         <Layout>
           <article>
             <figure data-state={txRender.phase}>
-              <PushSpinner color={dimTextColor} />
+              <img src={loadingImage} alt="Waiting for Terra Station..." />
             </figure>
 
             <h2>Waiting for Terra Station...</h2>
@@ -37,7 +35,7 @@ export function TxRenderer({ txRender, onExit }: TxRendererProps) {
         <Layout>
           <article>
             <figure data-state={txRender.phase}>
-              <GuardSpinner />
+              <img src={loadingImage} alt="Waiting for receipt..." />
             </figure>
 
             <h2>Waiting for receipt...</h2>
@@ -140,6 +138,13 @@ const Layout = styled.section`
         font-size: 3em;
       }
 
+      img {
+        font-size: 7em;
+        width: 1em;
+        height: 1em;
+        border-radius: 50%;
+      }
+
       &[data-state='${TxStreamPhase.FAILED}'] {
         color: ${({ theme }) => theme.colors.negative};
       }
@@ -150,6 +155,7 @@ const Layout = styled.section`
 
       &[data-state='${TxStreamPhase.POST}'],
       &[data-state='${TxStreamPhase.BROADCAST}'] {
+        height: 8em;
         border: none;
         transform: scale(1.3);
       }
