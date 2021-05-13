@@ -1,10 +1,10 @@
+import { NetworkInfo, UserDenied } from '@terra-dev/wallet-types';
+import { Extension } from '@terra-money/terra.js';
 import {
   ChromeExtensionCreateTxFailed,
   ChromeExtensionTxFailed,
   ChromeExtensionUnspecifiedError,
-} from '@terra-dev/chrome-extension/errors';
-import { NetworkInfo, UserDenied } from '@terra-dev/wallet-types';
-import { Extension } from '@terra-money/terra.js';
+} from './errors';
 
 type ConnectResponse = { address?: string };
 type PostResponse = any;

@@ -34,9 +34,7 @@ class SocketTransport implements ITransportLib {
 
   // -- constructor ----------------------------------------------------- //
 
-  constructor(opts: ISocketTransportOptions) {
-    console.log('index.ts..constructor() ????', opts);
-
+  constructor(private opts: ISocketTransportOptions) {
     this._protocol = opts.protocol;
     this._version = opts.version;
     this._url = '';
@@ -154,7 +152,6 @@ class SocketTransport implements ITransportLib {
     this._nextSocket.onerror = (event: Event) => this._socketError(event);
 
     this._nextSocket.onclose = () => {
-      console.log('index.ts..onclose() nextSocket.onclose');
       this._nextSocket = null;
       this._socketCreate();
     };
@@ -172,7 +169,6 @@ class SocketTransport implements ITransportLib {
     if (this._socket) {
       this._socket.onclose = () => {
         // empty
-        console.log('index.ts..onclose() !!!!');
       };
       this._socket.close();
     }
@@ -180,12 +176,6 @@ class SocketTransport implements ITransportLib {
 
   private _socketSend(socketMessage: ISocketMessage) {
     const message: string = JSON.stringify(socketMessage);
-
-    console.log(
-      'index.ts.._socketSend()',
-      this._socket,
-      this._socket?.readyState,
-    );
 
     if (this._socket && this._socket.readyState === 1) {
       this._socket.send(message);
@@ -211,15 +201,6 @@ class SocketTransport implements ITransportLib {
       silent: true,
     });
 
-    const payload = JSON.parse(socketMessage.payload);
-
-    console.log(
-      'index.ts.._socketReceive()',
-      this._socket,
-      this._socket?.readyState,
-      socketMessage,
-      payload,
-    );
     if (this._socket && this._socket.readyState === 1) {
       const events = this._events.filter((event) => event.event === 'message');
       if (events && events.length) {
@@ -247,7 +228,7 @@ class SocketTransport implements ITransportLib {
       }),
     );
 
-    this._subscriptions = [];
+    this._subscriptions = this.opts.subscriptions || [];
   }
 
   private _setToQueue(socketMessage: ISocketMessage) {
@@ -255,7 +236,6 @@ class SocketTransport implements ITransportLib {
   }
 
   private _pushQueue() {
-    console.log('index.ts.._pushQueue()', this._queue);
     const queue = this._queue;
 
     queue.forEach((socketMessage: ISocketMessage) =>

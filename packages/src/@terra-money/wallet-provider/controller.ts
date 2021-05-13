@@ -102,17 +102,9 @@ export interface WalletControllerOptions
    * @default 1000 * 3 miliseconds
    */
   waitingChromeExtensionInstallCheck?: number;
-
-  /**
-   * milliseconds to re-create wallet connect instance when reactivate after deactivate
-   *
-   * @default 1000 * 60 * 5
-   */
-  walletConnectInstanceRecreateTimes?: number;
 }
 
 const defaultWaitingChromeExtensionInstallCheck = 1000 * 3;
-const defaultWalletConnectInstanceRecreateTimes = 1000 * 60 * 5;
 
 export class WalletController {
   private chromeExtension: ChromeExtensionController | null = null;
@@ -726,42 +718,15 @@ export class WalletController {
       });
     };
 
-    let walletConnectSessionSubscription = subscribeWalletConnect(
+    const walletConnectSessionSubscription = subscribeWalletConnect(
       walletConnect,
     );
-
-    let lastInvisibleTime = -1;
-
-    const onVisibilityChange = () => {
-      if (document.hidden) {
-        lastInvisibleTime = Date.now();
-      } else if (lastInvisibleTime > 0) {
-        const t = Date.now() - lastInvisibleTime;
-        const recreateTime =
-          this.options.walletConnectInstanceRecreateTimes ??
-          defaultWalletConnectInstanceRecreateTimes;
-
-        if (t > recreateTime) {
-          this.walletConnect?.destroy();
-          const newWalletConnect = wcConnect(this.options, true);
-          this.walletConnect = newWalletConnect;
-          walletConnectSessionSubscription = subscribeWalletConnect(
-            newWalletConnect,
-          );
-        }
-
-        lastInvisibleTime = -1;
-      }
-    };
-
-    document.addEventListener('visibilitychange', onVisibilityChange);
 
     this.disableWalletConnect = () => {
       this.walletConnect?.disconnect();
       this.walletConnect = null;
       walletConnectSessionSubscription.unsubscribe();
       this.disableWalletConnect = null;
-      document.removeEventListener('visibilitychange', onVisibilityChange);
     };
   };
 }

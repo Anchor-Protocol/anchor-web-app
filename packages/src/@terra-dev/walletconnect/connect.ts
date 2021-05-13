@@ -1,14 +1,13 @@
 import { isMobile } from '@terra-dev/is-mobile';
 import { TerraWalletconnectQrcodeModal } from '@terra-dev/walletconnect-qrcode-modal';
 import { CreateTxOptions } from '@terra-money/terra.js';
-import WalletConnect from '@walletconnect/client';
 import Connector from '@walletconnect/core';
 import * as cryptoLib from '@walletconnect/iso-crypto';
-import { uuid } from '@walletconnect/utils';
 import {
   IPushServerOptions,
   IWalletConnectOptions,
 } from '@walletconnect/types';
+import { uuid } from '@walletconnect/utils';
 import { BehaviorSubject, Observable } from 'rxjs';
 import {
   WalletConnectCreateTxFailed,
@@ -17,6 +16,7 @@ import {
   WalletConnectTxUnspecifiedError,
   WalletConnectUserDenied,
 } from './errors';
+import SocketTransport from './impl/socket-transport';
 import {
   WalletConnectSession,
   WalletConnectSessionStatus,
@@ -50,7 +50,6 @@ export interface WalletConnectController {
   getLatestSession: () => WalletConnectSession;
   post: (tx: CreateTxOptions) => Promise<WalletConnectTxResult>;
   disconnect: () => void;
-  destroy: () => void;
 }
 
 const WALLETCONNECT_STORAGE_KEY = 'walletconnect';
@@ -71,7 +70,7 @@ export function connect(
   options: WalletConnectControllerOptions = {},
   useCachedSession: boolean = false,
 ): WalletConnectController {
-  let connector: WalletConnect | null = null;
+  let connector: Connector | null = null;
 
   let sessionSubject: BehaviorSubject<WalletConnectSession> = new BehaviorSubject<WalletConnectSession>(
     {
@@ -85,11 +84,6 @@ export function connect(
   const connectorOpts: IWalletConnectOptions = {
     bridge: 'https://bridge.walletconnect.org',
     qrcodeModal,
-    //transport: new SocketTransport({
-    //  protocol: 'wc',
-    //  version: 1,
-    //  url: '',
-    //}),
     ...options.connectorOpts,
   };
 
@@ -98,8 +92,6 @@ export function connect(
   // ---------------------------------------------
   // event listeners
   // ---------------------------------------------
-  let visibilitychangeHandler: EventListener | null = null;
-
   function initEvents() {
     if (!connector) {
       throw new Error(`WalletConnect is not defined!`);
@@ -136,16 +128,6 @@ export function connect(
         status: WalletConnectSessionStatus.DISCONNECTED,
       });
     });
-
-    visibilitychangeHandler = () => {
-      //@ts-ignore
-      console.log(
-        'connect.ts..visibilitychangeHandler()',
-        connector?.connected,
-      );
-    };
-
-    document.addEventListener('visibilitychange', visibilitychangeHandler);
   }
 
   // ---------------------------------------------
@@ -163,14 +145,13 @@ export function connect(
       },
       pushServerOpts,
       cryptoLib,
-      //transport: new SocketTransport({
-      //  protocol: 'wc',
-      //  version: 1,
-      //  url: connectorOpts.bridge!,
-      //  subscriptions: [clientId],
-      //}),
+      transport: new SocketTransport({
+        protocol: 'wc',
+        version: 1,
+        url: connectorOpts.bridge!,
+        subscriptions: [clientId],
+      }),
     });
-    console.log('connect.ts..connect()', draftConnector.clientId, clientId);
     draftConnector.clientId = clientId;
 
     connector = draftConnector;
@@ -189,14 +170,13 @@ export function connect(
       connectorOpts,
       pushServerOpts,
       cryptoLib,
-      //transport: new SocketTransport({
-      //  protocol: 'wc',
-      //  version: 1,
-      //  url: connectorOpts.bridge!,
-      //  subscriptions: [clientId],
-      //}),
+      transport: new SocketTransport({
+        protocol: 'wc',
+        version: 1,
+        url: connectorOpts.bridge!,
+        subscriptions: [clientId],
+      }),
     });
-    console.log('connect.ts..connect()', draftConnector.clientId, clientId);
     draftConnector.clientId = clientId;
 
     connector = draftConnector;
@@ -224,11 +204,6 @@ export function connect(
   // methods
   // ---------------------------------------------
   function disconnect() {
-    if (!!visibilitychangeHandler) {
-      document.removeEventListener('visibilitychange', visibilitychangeHandler);
-      visibilitychangeHandler = null;
-    }
-
     if (connector && connector.connected) {
       try {
         connector.killSession();
@@ -238,13 +213,6 @@ export function connect(
     sessionSubject.next({
       status: WalletConnectSessionStatus.DISCONNECTED,
     });
-  }
-
-  function destroy() {
-    try {
-      // @ts-ignore force close socket
-      connector?._transport.close();
-    } catch {}
   }
 
   function session(): Observable<WalletConnectSession> {
@@ -339,6 +307,5 @@ export function connect(
     getLatestSession,
     post,
     disconnect,
-    destroy,
   };
 }
