@@ -95,7 +95,7 @@ __metadata:
   resolution: "@anchor-web-app/base@workspace:base"
   dependencies:
     "@apollo/client": ^3.3.16
-    "@material-ui/core": ^4.11.4
+    "@material-ui/core": ^4.11.3
     "@material-ui/icons": ^4.11.2
     "@rocket-scripts/utils": ^3.1.1
     "@terra-money/terra.js": ^1.7.0
@@ -278,8 +278,10 @@ __metadata:
     "@types/react-router-dom": ^5.1.7
     "@types/styled-components": ^5.1.9
     "@types/testing-library__jest-dom": ^5.9.5
-    "@walletconnect/client": ^1.4.1
+    "@walletconnect/core": ^1.4.1
+    "@walletconnect/iso-crypto": ^1.4.1
     "@walletconnect/types": ^1.4.1
+    "@walletconnect/utils": ^1.4.1
     big.js: ^6.1.1
     bignumber.js: ^9.0.1
     bowser: ^2.11.0
@@ -316,6 +318,7 @@ __metadata:
     styled-components: ^5.3.0
     typescript: ^4.2.4
     use-resize-observer: ^7.0.0
+    ws: ^7.4.4
   languageName: unknown
   linkType: soft
 
@@ -2052,16 +2055,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.1, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.13.10, @babel/runtime@npm:^7.3.1, @babel/runtime@npm:^7.4.4, @babel/runtime@npm:^7.5.0, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.7.6, @babel/runtime@npm:^7.8.3, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2":
-  version: 7.13.10
-  resolution: "@babel/runtime@npm:7.13.10"
-  dependencies:
-    regenerator-runtime: ^0.13.4
-  checksum: 22014226b96a8c8e8d4e8bcdb011f317d1b32881aef424a669dc6ceaee14993d3609172967853cbf9c25c724c25145d45885b6c9df56ba241c12820776607f1f
-  languageName: node
-  linkType: hard
-
-"@babel/runtime@npm:^7.6.2":
+"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.1, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.13.10, @babel/runtime@npm:^7.3.1, @babel/runtime@npm:^7.4.4, @babel/runtime@npm:^7.5.0, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.6.2, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.7.6, @babel/runtime@npm:^7.8.3, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2":
   version: 7.14.0
   resolution: "@babel/runtime@npm:7.14.0"
   dependencies:
@@ -4592,7 +4586,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/user-event@npm:*":
+"@testing-library/user-event@npm:*, @testing-library/user-event@npm:^13.1.8":
   version: 13.1.9
   resolution: "@testing-library/user-event@npm:13.1.9"
   dependencies:
@@ -4600,17 +4594,6 @@ __metadata:
   peerDependencies:
     "@testing-library/dom": ">=7.21.4"
   checksum: c1430ef9eba6e5e5bb733c72700e0dc54993bbd6fd0481b3cb46b22f6b9c3a0b5306615b0cb718bab8f11b3fe0e5c911cd7253166646697410ed32fa527a7967
-  languageName: node
-  linkType: hard
-
-"@testing-library/user-event@npm:^13.1.8":
-  version: 13.1.8
-  resolution: "@testing-library/user-event@npm:13.1.8"
-  dependencies:
-    "@babel/runtime": ^7.12.5
-  peerDependencies:
-    "@testing-library/dom": ">=7.21.4"
-  checksum: bc7760cb34f06b44193e80fb0429945c75b5891995142a524ff5252e5caa7777616d1e1a6247f255621adfea33f9718ab3e8f7b10efec58b38ee84a63b3c2586
   languageName: node
   linkType: hard
 
