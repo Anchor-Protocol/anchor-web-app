@@ -1,3 +1,4 @@
+import { useCloudflareAnalytics } from '@terra-dev/use-cloudflare-analytics';
 import { AppProviders } from 'base/AppProviders';
 import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
@@ -8,8 +9,11 @@ import { Earn } from 'pages/earn';
 import { Governance } from 'pages/gov';
 import { govPathname } from 'pages/gov/env';
 import { Redirect, Route, Switch } from 'react-router-dom';
+import { cloudFlareOption } from './env';
 
 export function App() {
+  useCloudflareAnalytics(cloudFlareOption);
+
   return (
     <AppProviders>
       <div>

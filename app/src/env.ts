@@ -36,4 +36,13 @@ export const BODY_MARGIN_TOP = {
 
 export const mobileHeaderHeight = 68;
 
+export const cloudFlareOption = {
+  token: '53059bc341e44118afa382ac686bd39e',
+  hostnames: [
+    'app.anchorprotocol.com',
+    'app.anchor.money',
+    'app.anchor.finance',
+  ],
+};
+
 // build: vercel trigger build - 21.05.10
