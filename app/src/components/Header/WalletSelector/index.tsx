@@ -94,7 +94,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
       return (
         <div className={className}>
           <NotConnectedButton disabled>
-            Initialzing Wallet...
+            Initializing Wallet...
           </NotConnectedButton>
         </div>
       );

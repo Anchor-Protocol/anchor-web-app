@@ -742,6 +742,7 @@ export class WalletController {
           defaultWalletConnectInstanceRecreateTimes;
 
         if (t > recreateTime) {
+          this.walletConnect?.destroy();
           const newWalletConnect = wcConnect(this.options, true);
           this.walletConnect = newWalletConnect;
           walletConnectSessionSubscription = subscribeWalletConnect(
