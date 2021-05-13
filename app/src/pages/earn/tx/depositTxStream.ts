@@ -105,6 +105,8 @@ export function depositTxStream(
         $.client,
         savedTx,
       )(txResult).then((txInfo) => {
+        // TODO Dispatch Data Refresh Event -> useSubscription() 실행 되도록...
+
         const rawLog = pickRawLog(txInfo, 0);
 
         if (!rawLog) {
