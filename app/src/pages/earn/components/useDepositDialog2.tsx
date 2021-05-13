@@ -11,6 +11,7 @@ import { useApolloClient } from '@apollo/client';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus, useStream } from '@rx-stream/react';
 import { useOperationBroadcaster } from '@terra-dev/broadcastable-operation';
+import { useEventBus } from '@terra-dev/event-bus';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
@@ -73,6 +74,8 @@ function ComponentBase({
   const [openConfirm, confirmElement] = useConfirm();
 
   const [deposit, depositResult] = useStream(depositTxStream);
+
+  const { dispatch } = useEventBus();
 
   // ---------------------------------------------
   // states
@@ -164,6 +167,7 @@ function ComponentBase({
         gasFee,
         post: connectedWallet?.post,
         reportError: errorReporter,
+        dispatchEvent: dispatch,
       });
     },
     [
@@ -171,6 +175,7 @@ function ComponentBase({
       client,
       connectedWallet,
       deposit,
+      dispatch,
       errorReporter,
       gasAdjustment,
       gasFee,

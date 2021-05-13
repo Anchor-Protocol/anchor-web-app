@@ -1,5 +1,6 @@
 import type { DateTime, uUST } from '@anchor-protocol/types';
 import { Denom, HumanAddr } from '@anchor-protocol/types';
+import { useEventBusListener } from '@terra-dev/event-bus';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { gql, useQuery } from '@apollo/client';
 import { useSubscription } from '@terra-dev/broadcastable-operation';
@@ -104,6 +105,10 @@ export function useTransactionHistory(): MappedQueryResult<
     if (event === 'done') {
       setTimeout(_refetch, 2000);
     }
+  });
+
+  useEventBusListener('tx-completed', () => {
+    setTimeout(_refetch, 2000);
   });
 
   const data = useMap(_data, dataMap);

@@ -8,10 +8,10 @@ import type {
   uaUST,
   WASMContractResult,
 } from '@anchor-protocol/types';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { gql, useQuery } from '@apollo/client';
 import { useEventBusListener } from '@terra-dev/event-bus';
 import { createMap, Mapped, useMap } from '@terra-dev/use-map';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useContractAddress } from 'base/contexts/contract';
 import { useLastSyncedHeight } from 'base/queries/lastSyncedHeight';
 import { parseResult } from 'base/queries/parseResult';
@@ -118,7 +118,10 @@ export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
   const { moneyMarket, cw20 } = useContractAddress();
   const userWallet = useConnectedWallet();
 
-  const { data: lastSyncedHeight } = useLastSyncedHeight();
+  const {
+    data: lastSyncedHeight,
+    refetch: refetchLastSyncedHeight,
+  } = useLastSyncedHeight();
 
   const variables = useMemo(() => {
     if (
@@ -162,7 +165,13 @@ export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
 
   useEventBusListener('interest-earned-updated', () => {
     if (userWallet) {
-      _refetch();
+      refetchLastSyncedHeight();
+    }
+  });
+
+  useEventBusListener('tx-completed', () => {
+    if (userWallet) {
+      refetchLastSyncedHeight();
     }
   });
 

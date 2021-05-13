@@ -38,6 +38,7 @@ export function depositTxStream(
     client: ApolloClient<any>;
     post: (tx: CreateTxOptions) => Promise<TxResult>;
     reportError?: (error: unknown) => string;
+    dispatchEvent: (eventType: string) => void;
   },
 ): Observable<TxRender> {
   let savedTx: CreateTxOptions;
@@ -105,7 +106,7 @@ export function depositTxStream(
         $.client,
         savedTx,
       )(txResult).then((txInfo) => {
-        // TODO Dispatch Data Refresh Event -> useSubscription() 실행 되도록...
+        $.dispatchEvent('tx-completed');
 
         const rawLog = pickRawLog(txInfo, 0);
 
