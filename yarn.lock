@@ -20,9 +20,11 @@ __metadata:
   dependencies:
     "@anchor-protocol/anchor.js": ^1.0.1
     "@apollo/client": ^3.3.16
-    "@material-ui/core": ^4.11.4
+    "@material-ui/core": ^4.11.3
     "@material-ui/icons": ^4.11.2
     "@rocket-scripts/utils": ^3.1.1
+    "@rx-stream/pipe": ^0.7.0
+    "@rx-stream/react": ^0.7.0
     "@sentry/react": ^6.3.5
     "@sentry/tracing": ^6.3.5
     "@terra-money/terra.js": ^1.7.0
@@ -78,6 +80,7 @@ __metadata:
     react-use-clipboard: ^1.0.7
     resize-observer-polyfill: ^1.5.1
     rocket-punch: ^2.5.0
+    rxjs: ^7.0.1
     styled-components: ^5.3.0
     ts-node: ^9.1.1
     tsconfig-paths: ^3.9.0
@@ -3063,6 +3066,25 @@ __metadata:
   peerDependencies:
     rollup: ^1.20.0||^2.0.0
   checksum: 45da6411e045d1b034242a8144f4a5e8c02ff1b68a2e0857807f5bb4b091c416f2015e075057f0f0dec200e7b35efe6ed4e301b43e365cedea09192f01a6839b
+  languageName: node
+  linkType: hard
+
+"@rx-stream/pipe@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "@rx-stream/pipe@npm:0.7.0"
+  dependencies:
+    rxjs: ^7.0.0
+  checksum: a0e9aad44d54cd3abb86beb14b5eb850b525c6f88dbd57bf44cddd1f4d10933c0db80a509503df77ec7bc38be5d28fb73282df048b1020ad428d3e28c4ddebae
+  languageName: node
+  linkType: hard
+
+"@rx-stream/react@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "@rx-stream/react@npm:0.7.0"
+  dependencies:
+    react: ^17.0.2
+    rxjs: ^7.0.0
+  checksum: 76d4053458512bfd1ccee2ec7768dd4d2b5939c5146e410d86caa75b1609acad5a0c1e1309492e6f9a2c5098549c5517ede0faadb9a993a00f39e7c19f79ddb1
   languageName: node
   linkType: hard
 
@@ -20011,12 +20033,12 @@ resolve@^0.6.1:
   languageName: node
   linkType: hard
 
-"rxjs@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "rxjs@npm:7.0.0"
+"rxjs@npm:^7.0.0, rxjs@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "rxjs@npm:7.0.1"
   dependencies:
     tslib: ~2.1.0
-  checksum: e0d08420f94474c73a14e57b7a1bcbf7010791817e06e5a16a998a8e151b89bd0b4a4883203cb86906a81b0e052cb99cfe3d96b652de4c744282f4d60a51d73e
+  checksum: 5268539238140320c8217a4548199a4e5b6b4d6e683e1a6cf4c83f31dd36f05accb65c740d91947505693b78e2b8e3b21eb7726421b1ba64f4e161f60d2499a8
   languageName: node
   linkType: hard
 

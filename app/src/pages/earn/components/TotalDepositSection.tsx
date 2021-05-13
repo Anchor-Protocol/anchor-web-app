@@ -13,7 +13,7 @@ import { BigSource } from 'big.js';
 import React, { useCallback, useMemo } from 'react';
 import { totalDepositUST } from '../logics/totalDepositUST';
 import { useDeposit } from '../queries/totalDeposit';
-import { useDepositDialog } from './useDepositDialog';
+import { useDepositDialog } from './useDepositDialog2';
 import { useWithdrawDialog } from './useWithdrawDialog';
 
 export interface TotalDepositSectionProps {
