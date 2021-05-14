@@ -153,7 +153,7 @@ class SocketTransport implements ITransportLib {
 
     this._nextSocket.onclose = () => {
       this._nextSocket = null;
-      this._socketCreate();
+      setTimeout(this._socketCreate, 500);
     };
   }
 
