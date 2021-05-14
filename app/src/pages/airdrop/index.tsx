@@ -26,10 +26,13 @@ import React, { useCallback, useMemo } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { SwishSpinner } from 'react-spinners-kit';
 import styled from 'styled-components';
+import { uUST } from '@anchor-protocol/types';
 
 export interface AirdropProps {
   className?: string;
 }
+  
+const airdropTxFee: uUST<number> = 50000;
 
 function AirdropBase({ className }: AirdropProps) {
   // ---------------------------------------------
@@ -38,8 +41,6 @@ function AirdropBase({ className }: AirdropProps) {
   const connectedWallet = useConnectedWallet();
 
   const history = useHistory();
-
-  const { fixedGas } = useConstants();
 
   const [airdrop] = useAirdrop();
 
@@ -51,8 +52,8 @@ function AirdropBase({ className }: AirdropProps) {
   const bank = useBank();
 
   const invalidTxFee = useMemo(
-    () => connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => connectedWallet && validateTxFee(bank, airdropTxFee),
+    [bank, connectedWallet],
   );
 
   const exit = useCallback(() => {
@@ -131,7 +132,7 @@ function AirdropBase({ className }: AirdropProps) {
 
         <TxFeeList className="receipt">
           <TxFeeListItem label="Tx Fee">
-            {formatUST(demicrofy(fixedGas))} UST
+            {formatUST(demicrofy(airdropTxFee))} UST
           </TxFeeListItem>
         </TxFeeList>
 
