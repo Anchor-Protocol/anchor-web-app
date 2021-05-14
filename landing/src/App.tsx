@@ -25,9 +25,7 @@ export function App() {
             {/*<Redirect to="/" />*/}
             <Route exact path="/" component={Index} />
             <Route path="/dashboard" component={Market} />
-            {process.env.NODE_ENV === 'development' && (
-              <Route path="/dashboard-new" component={MarketNew} />
-            )}
+            <Route path="/dashboard-new" component={MarketNew} />
             <Redirect to="/" />
           </Switch>
         </div>
