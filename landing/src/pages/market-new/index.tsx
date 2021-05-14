@@ -12,6 +12,11 @@ import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/Hori
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import {
+  horizontalRuler,
+  pressed,
+  verticalRuler,
+} from '@terra-dev/styled-neumorphism';
 import { Footer } from 'base/components/Footer';
 import { useConstants } from 'base/contexts/contants';
 import big, { Big } from 'big.js';
@@ -20,7 +25,7 @@ import { useMarketBluna } from 'pages/market-new/queries/marketBluna';
 import { useMarketBorrow } from 'pages/market-new/queries/marketBorrow';
 import { useMarketUST } from 'pages/market-new/queries/marketUST';
 import React, { useMemo } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { useMarketCollaterals } from './queries/marketCollateral';
 import { useMarketDeposit } from './queries/marketDeposit';
 
@@ -102,7 +107,7 @@ function MarketBase({ className }: MarketProps) {
             <Section className="total-value-locked">
               <section>
                 <h2>TOTAL VALUE LOCKED</h2>
-                <p>
+                <p className="amount">
                   <AnimateNumber format={formatUSTWithPostfixUnits}>
                     {totalValueLocked
                       ? demicrofy(totalValueLocked.totalValueLocked)
@@ -113,7 +118,9 @@ function MarketBase({ className }: MarketProps) {
                 <figure>
                   <svg></svg>
                   <div>
-                    <h3>Total Deposit</h3>
+                    <h3>
+                      <i /> Total Deposit
+                    </h3>
                     <p>
                       ${' '}
                       <AnimateNumber format={formatUSTWithPostfixUnits}>
@@ -122,9 +129,9 @@ function MarketBase({ className }: MarketProps) {
                           : (0 as UST<number>)}
                       </AnimateNumber>
                     </p>
-                  </div>
-                  <div>
-                    <h3>Total Collateral</h3>
+                    <h3>
+                      <i /> Total Collateral
+                    </h3>
                     <p>
                       ${' '}
                       <AnimateNumber format={formatUSTWithPostfixUnits}>
@@ -141,7 +148,7 @@ function MarketBase({ className }: MarketProps) {
 
               <section>
                 <h2>YIELD RESERVE</h2>
-                <p>
+                <p className="amount">
                   <AnimateNumber format={formatUSTWithPostfixUnits}>
                     {totalValueLocked
                       ? demicrofy(totalValueLocked.yieldReserve)
@@ -156,9 +163,9 @@ function MarketBase({ className }: MarketProps) {
               <header>
                 <div>
                   <h2>
-                    ANC PRICE <span>+ 0.32%</span>
+                    ANC PRICE<span>+0.32%</span>
                   </h2>
-                  <p>
+                  <p className="amount">
                     5.013<span>UST</span>
                   </p>
                 </div>
@@ -195,13 +202,13 @@ function MarketBase({ className }: MarketProps) {
             </Section>
           </div>
 
-          <Section className="stable-coin">
+          <Section className="stablecoin">
             <header>
               <div>
                 <h2>
-                  TOTAL DEPOSIT<span>+ 2.32%</span>
+                  TOTAL DEPOSIT<span>+2.32%</span>
                 </h2>
-                <p>
+                <p className="amount">
                   <AnimateNumber format={formatUSTWithPostfixUnits}>
                     {stableCoin
                       ? demicrofy(stableCoin.totalDeposit)
@@ -214,7 +221,7 @@ function MarketBase({ className }: MarketProps) {
                 <h2>
                   TOTAL BORROW<span>-0.32%</span>
                 </h2>
-                <p>
+                <p className="amount">
                   <AnimateNumber format={formatUSTWithPostfixUnits}>
                     {stableCoin
                       ? demicrofy(stableCoin.totalBorrow)
@@ -223,6 +230,7 @@ function MarketBase({ className }: MarketProps) {
                   <span>UST</span>
                 </p>
               </div>
+              <div />
             </header>
 
             <figure>
@@ -327,7 +335,7 @@ function MarketBase({ className }: MarketProps) {
                 <h2>
                   TOTAL COLLATERAL VALUE<span>+ 2.32%</span>
                 </h2>
-                <p>
+                <p className="amount">
                   <AnimateNumber format={formatUSTWithPostfixUnits}>
                     {collaterals
                       ? demicrofy(collaterals.mainTotalCollateralValue)
@@ -430,17 +438,42 @@ function MarketBase({ className }: MarketProps) {
   );
 }
 
+const hHeavyRuler = css`
+  padding: 0;
+  margin: 0;
+
+  border: 0;
+
+  height: 5px;
+  border-radius: 3px;
+
+  ${({ theme }) =>
+    pressed({
+      color: theme.backgroundColor,
+      distance: 1,
+      intensity: theme.intensity,
+    })};
+`;
+
+const hRuler = css`
+  ${({ theme }) =>
+    horizontalRuler({
+      color: theme.backgroundColor,
+      intensity: theme.intensity,
+    })};
+`;
+
+const vRuler = css`
+  ${({ theme }) =>
+    verticalRuler({
+      color: theme.backgroundColor,
+      intensity: theme.intensity,
+    })};
+`;
+
 export const Market = styled(MarketBase)`
   background-color: ${({ theme }) => theme.backgroundColor};
   color: ${({ theme }) => theme.textColor};
-
-  h2 {
-    font-size: 15px;
-  }
-
-  pre {
-    font-size: 13px;
-  }
 
   h1 {
     margin: 0 0 50px 0;
@@ -450,8 +483,181 @@ export const Market = styled(MarketBase)`
     color: ${({ theme }) => theme.textColor};
   }
 
+  h2 {
+    font-size: 13px;
+    font-weight: 700;
+
+    margin-bottom: 8px;
+
+    span {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 22px;
+      margin-left: 10px;
+      background-color: ${({ theme }) => theme.colors.positive};
+      color: ${({ theme }) => theme.highlightBackgroundColor};
+    }
+  }
+
+  h3 {
+    font-size: 12px;
+    font-weight: 700;
+    color: ${({ theme }) => theme.dimTextColor};
+  }
+
+  // TODO remove
+  pre {
+    font-size: 13px;
+  }
+
+  .anc-price,
+  .stablecoin,
+  .collaterals {
+    figure {
+      box-sizing: border-box;
+      min-height: 200px;
+      border: 5px dashed ${({ theme }) => theme.textColor};
+      padding: 20px;
+      border-radius: 30px;
+    }
+  }
+
+  .amount {
+    font-size: 36px;
+    font-weight: 700;
+
+    span:last-child {
+      margin-left: 8px;
+      font-size: 20px;
+    }
+  }
+
+  .total-value-locked {
+    figure {
+      margin-top: 39px;
+
+      display: flex;
+      align-items: center;
+
+      > svg {
+        width: 152px;
+        height: 152px;
+        border-radius: 50%;
+        border: 10px solid ${({ theme }) => theme.textColor};
+
+        margin-right: 44px;
+      }
+
+      > div {
+        h3 {
+          display: flex;
+          align-items: center;
+
+          i {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background-color: ${({ theme }) => theme.dimTextColor};
+            border-radius: 3px;
+            margin-right: 3px;
+          }
+
+          margin-bottom: 8px;
+        }
+
+        p {
+          font-size: 18px;
+
+          &:nth-of-type(1) {
+            margin-bottom: 27px;
+          }
+        }
+      }
+    }
+  }
+
+  .anc-price {
+    header {
+      display: flex;
+      align-items: center;
+
+      > div:first-child {
+        flex: 1;
+      }
+
+      > div:not(:first-child) {
+        h3 {
+          margin-bottom: 10px;
+        }
+
+        p {
+          font-size: 18px;
+
+          span:last-child {
+            margin-left: 5px;
+            font-size: 12px;
+          }
+        }
+
+        &:last-child {
+          margin-left: 30px;
+        }
+      }
+
+      margin-bottom: 15px;
+    }
+  }
+
+  .anc-buyback > .NeuSection-content {
+    display: flex;
+    justify-content: space-between;
+
+    max-width: 1000px;
+
+    padding: 40px 60px;
+
+    hr {
+      ${vRuler};
+    }
+
+    p {
+      font-size: 27px;
+      font-weight: 700;
+
+      word-break: keep-all;
+      white-space: nowrap;
+
+      span {
+        font-size: 18px;
+        margin-left: 5px;
+        color: ${({ theme }) => theme.dimTextColor};
+
+        &:first-child {
+          margin-right: 20px;
+        }
+      }
+    }
+  }
+
+  .stablecoin {
+    header {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+
+      margin-bottom: 15px;
+    }
+  }
+
+  .collaterals {
+    header {
+      margin-bottom: 15px;
+    }
+  }
+
   .stablecoin-market,
   .basset-market {
+    margin-top: 40px;
+
     table {
       thead {
         th {
@@ -553,34 +759,51 @@ export const Market = styled(MarketBase)`
 
       display: grid;
       grid-template-columns: 500px 1fr 1fr;
-      grid-template-rows: repeat(3, 1fr);
+      grid-template-rows: repeat(5, 1fr);
 
       .total-value-locked {
         grid-column: 1/2;
-        grid-row: 1/4;
+        grid-row: 1/6;
+
+        hr {
+          ${hHeavyRuler};
+          margin-top: 80px;
+          margin-bottom: 40px;
+        }
       }
 
       .anc-price {
         grid-column: 2/4;
-        grid-row: 1/3;
+        grid-row: 1/5;
       }
 
       .anc-buyback {
         grid-column: 2/4;
-        grid-row: 3/4;
+        grid-row: 5/6;
       }
     }
   }
 
   // align section contents to horizontal
-  @media (min-width: ${screen.pc.min}px) and (max-width: 1399px) {
+  @media (min-width: 900px) and (max-width: 1399px) {
     .summary-section {
+      .total-value-locked > .NeuSection-content {
+        max-width: 700px;
+        display: flex;
+        justify-content: space-between;
+
+        hr {
+          ${vRuler};
+          margin-left: 40px;
+          margin-right: 40px;
+        }
+      }
     }
   }
 
   // under tablet
   // align section contents to horizontal
-  @media (max-width: ${screen.tablet.max}px) {
+  @media (max-width: 899px) {
     padding: 20px 30px 30px 30px;
 
     .NeuSection-root {
@@ -588,6 +811,94 @@ export const Market = styled(MarketBase)`
 
       .NeuSection-content {
         padding: 30px;
+      }
+    }
+
+    .summary-section {
+      .total-value-locked {
+        display: block;
+
+        hr {
+          ${hHeavyRuler};
+          margin-top: 30px;
+          margin-bottom: 30px;
+        }
+      }
+
+      .anc-price {
+        header {
+          display: block;
+
+          > div:first-child {
+            margin-bottom: 10px;
+          }
+
+          > div:not(:first-child) {
+            display: grid;
+            grid-template-columns: 160px 1fr;
+            grid-template-rows: 28px;
+            align-items: center;
+
+            h3 {
+              margin: 0;
+            }
+
+            p {
+              font-size: 18px;
+
+              span:last-child {
+                margin-left: 5px;
+                font-size: 12px;
+              }
+            }
+
+            &:first-child {
+              flex: 1;
+
+              p {
+                font-size: 36px;
+                font-weight: 700;
+
+                span {
+                  font-size: 20px;
+                }
+              }
+            }
+
+            &:last-child {
+              margin-left: 0;
+            }
+          }
+
+          margin-bottom: 15px;
+        }
+      }
+
+      .anc-buyback > .NeuSection-content {
+        display: block;
+
+        hr {
+          ${hRuler};
+          margin: 15px 0;
+        }
+
+        p {
+          font-size: 27px;
+          font-weight: 700;
+
+          word-break: keep-all;
+          white-space: nowrap;
+
+          span {
+            font-size: 18px;
+            margin-left: 5px;
+            color: ${({ theme }) => theme.dimTextColor};
+
+            &:first-child {
+              margin-right: 20px;
+            }
+          }
+        }
       }
     }
   }
@@ -602,6 +913,26 @@ export const Market = styled(MarketBase)`
 
       .NeuSection-content {
         padding: 20px;
+      }
+    }
+
+    .summary-section {
+      .total-value-locked {
+        figure {
+          > svg {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+
+            margin-right: 30px;
+          }
+
+          > div {
+            p:nth-of-type(1) {
+              margin-bottom: 12px;
+            }
+          }
+        }
       }
     }
   }
