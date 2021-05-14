@@ -1,4 +1,11 @@
-import { DateTime, Rate, ubLuna, uLuna, uUST } from '@anchor-protocol/types';
+import {
+  DateTime,
+  Rate,
+  ubLuna,
+  uLuna,
+  UST,
+  uUST,
+} from '@anchor-protocol/types';
 import { useQuery, UseQueryResult } from 'react-query';
 import { REFERSH_INTERVAL } from '../env';
 
@@ -10,7 +17,7 @@ export interface MarketBlunaResponse {
   total_bond_amount: ubLuna;
   undelegation_batch_id: number;
   timestamp: number;
-  bLuna_price: uUST;
+  bLuna_price: UST;
   exchange_rate: Rate;
   actual_unbonded_amount: ubLuna;
   block_height: number;

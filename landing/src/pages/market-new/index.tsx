@@ -1,6 +1,21 @@
-import { Rate, uUST } from '@anchor-protocol/types';
+import {
+  AnimateNumber,
+  demicrofy,
+  formatLunaWithPostfixUnits,
+  formatRate,
+  formatUSTWithPostfixUnits,
+  formatUTokenInteger,
+} from '@anchor-protocol/notation';
+import { TokenIcon } from '@anchor-protocol/token-icons';
+import { Luna, Rate, UST, uUST } from '@anchor-protocol/types';
+import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { Footer } from 'base/components/Footer';
 import { useConstants } from 'base/contexts/contants';
 import big, { Big } from 'big.js';
+import { screen } from 'env';
 import { useMarketBluna } from 'pages/market-new/queries/marketBluna';
 import { useMarketBorrow } from 'pages/market-new/queries/marketBorrow';
 import { useMarketUST } from 'pages/market-new/queries/marketUST';
@@ -22,7 +37,7 @@ function MarketBase({ className }: MarketProps) {
   const { data: marketUST } = useMarketUST();
   const { data: marketBluna } = useMarketBluna();
 
-  const totalValueLockedBox = useMemo(() => {
+  const totalValueLocked = useMemo(() => {
     if (!marketDeposit || !marketCollaterals || !marketUST) {
       return undefined;
     }
@@ -37,7 +52,7 @@ function MarketBase({ className }: MarketProps) {
     };
   }, [marketCollaterals, marketDeposit, marketUST]);
 
-  const stableCoinBox = useMemo(() => {
+  const stableCoin = useMemo(() => {
     if (!marketDeposit || !marketBorrow || !marketUST) {
       return undefined;
     }
@@ -56,7 +71,7 @@ function MarketBase({ className }: MarketProps) {
     };
   }, [blocksPerYear, marketBorrow, marketDeposit, marketUST]);
 
-  const collateralsBox = useMemo(() => {
+  const collaterals = useMemo(() => {
     if (!marketCollaterals || !marketBluna) {
       return undefined;
     }
@@ -72,46 +87,522 @@ function MarketBase({ className }: MarketProps) {
       totalCollateralDiff: 'TODO: API not ready...',
       totalCollateralValue: big(
         marketCollaterals.collaterals.find(({ bluna }) => !!bluna)?.bluna ?? 1,
-      ).mul(marketBluna.bLuna_price),
+      ).mul(marketBluna.bLuna_price) as uUST<Big>,
       totalCollateralValueDiff: 'TODO: API not ready...',
     };
   }, [marketBluna, marketCollaterals]);
 
   return (
     <div className={className}>
-      <section>
-        <h1>Total Value Locked box</h1>
-        <pre>{JSON.stringify(totalValueLockedBox, null, 2)}</pre>
-      </section>
+      <main>
+        <div className="content-layout">
+          <h1>DASHBOARD</h1>
 
-      <section>
-        <h1>ANC Price box</h1>
-        <pre>TODO: API not ready...</pre>
-      </section>
+          <div className="summary-section">
+            <Section className="total-value-locked">
+              <section>
+                <h2>TOTAL VALUE LOCKED</h2>
+                <p>
+                  <AnimateNumber format={formatUSTWithPostfixUnits}>
+                    {totalValueLocked
+                      ? demicrofy(totalValueLocked.totalValueLocked)
+                      : (0 as UST<number>)}
+                  </AnimateNumber>
+                  <span>UST</span>
+                </p>
+                <figure>
+                  <svg></svg>
+                  <div>
+                    <h3>Total Deposit</h3>
+                    <p>
+                      ${' '}
+                      <AnimateNumber format={formatUSTWithPostfixUnits}>
+                        {totalValueLocked
+                          ? demicrofy(totalValueLocked.totalDeposit)
+                          : (0 as UST<number>)}
+                      </AnimateNumber>
+                    </p>
+                  </div>
+                  <div>
+                    <h3>Total Collateral</h3>
+                    <p>
+                      ${' '}
+                      <AnimateNumber format={formatUSTWithPostfixUnits}>
+                        {totalValueLocked
+                          ? demicrofy(totalValueLocked.totalCollaterals)
+                          : (0 as UST<number>)}
+                      </AnimateNumber>
+                    </p>
+                  </div>
+                </figure>
+              </section>
 
-      <section>
-        <h1>ANC Buyback box</h1>
-        <pre>TODO: API not ready...</pre>
-      </section>
+              <hr />
 
-      <section>
-        <h1>Stablecoin box</h1>
-        <pre>{JSON.stringify(stableCoinBox, null, 2)}</pre>
-      </section>
+              <section>
+                <h2>YIELD RESERVE</h2>
+                <p>
+                  <AnimateNumber format={formatUSTWithPostfixUnits}>
+                    {totalValueLocked
+                      ? demicrofy(totalValueLocked.yieldReserve)
+                      : (0 as UST<number>)}
+                  </AnimateNumber>
+                  <span>UST</span>
+                </p>
+              </section>
+            </Section>
 
-      <section>
-        <h1>Collaterals box</h1>
-        <pre>{JSON.stringify(collateralsBox, null, 2)}</pre>
-      </section>
+            <Section className="anc-price">
+              <header>
+                <div>
+                  <h2>
+                    ANC PRICE <span>+ 0.32%</span>
+                  </h2>
+                  <p>
+                    5.013<span>UST</span>
+                  </p>
+                </div>
+                <div>
+                  <h3>Circulating supply</h3>
+                  <p>
+                    50,840,183<span>ANC</span>
+                  </p>
+                </div>
+                <div>
+                  <h3>ANC Market Cap</h3>
+                  <p>
+                    250,840,183<span>UST</span>
+                  </p>
+                </div>
+              </header>
+              <figure>TODO: API not ready...</figure>
+            </Section>
+
+            <Section className="anc-buyback">
+              <section>
+                <h2>ANC BUYBACK (24HR)</h2>
+                <p>
+                  815<span>ANC</span> 12,249<span>UST</span>
+                </p>
+              </section>
+              <hr />
+              <section>
+                <h2>ANC BUYBACK (TOTAL)</h2>
+                <p>
+                  12,947<span>ANC</span> 194,383<span>UST</span>
+                </p>
+              </section>
+            </Section>
+          </div>
+
+          <Section className="stable-coin">
+            <header>
+              <div>
+                <h2>
+                  TOTAL DEPOSIT<span>+ 2.32%</span>
+                </h2>
+                <p>
+                  <AnimateNumber format={formatUSTWithPostfixUnits}>
+                    {stableCoin
+                      ? demicrofy(stableCoin.totalDeposit)
+                      : (0 as UST<number>)}
+                  </AnimateNumber>
+                  <span>UST</span>
+                </p>
+              </div>
+              <div>
+                <h2>
+                  TOTAL BORROW<span>-0.32%</span>
+                </h2>
+                <p>
+                  <AnimateNumber format={formatUSTWithPostfixUnits}>
+                    {stableCoin
+                      ? demicrofy(stableCoin.totalBorrow)
+                      : (0 as UST<number>)}
+                  </AnimateNumber>
+                  <span>UST</span>
+                </p>
+              </div>
+            </header>
+
+            <figure>
+              <pre>{JSON.stringify(stableCoin, null, 2)}</pre>
+            </figure>
+
+            <HorizontalScrollTable minWidth={900} className="stablecoin-market">
+              <colgroup>
+                <col style={{ width: 300 }} />
+                <col style={{ width: 200 }} />
+                <col style={{ width: 200 }} />
+                <col style={{ width: 200 }} />
+                <col style={{ width: 200 }} />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>STABLECOIN MARKET</th>
+                  <th>
+                    <IconSpan>
+                      Total Deposit{' '}
+                      <InfoTooltip>
+                        Total deposited value of this stablecoin market in USD
+                      </InfoTooltip>
+                    </IconSpan>
+                  </th>
+                  <th>
+                    <IconSpan>
+                      Deposit APY{' '}
+                      <InfoTooltip>
+                        Annualized deposit interest of this stablecoin market
+                      </InfoTooltip>
+                    </IconSpan>
+                  </th>
+                  <th>
+                    <IconSpan>
+                      Total Borrow{' '}
+                      <InfoTooltip>
+                        Total borrow value of this stable coin market in USD
+                      </InfoTooltip>
+                    </IconSpan>
+                  </th>
+                  <th>
+                    <IconSpan>
+                      Borrow APR{' '}
+                      <InfoTooltip>Annualized borrow interest</InfoTooltip>
+                    </IconSpan>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <div>
+                      <i>
+                        <TokenIcon token="ust" />
+                      </i>
+                      <div>
+                        <div className="coin">UST</div>
+                        <p className="name">Terra USD</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="value">
+                      <AnimateNumber format={formatUTokenInteger}>
+                        {stableCoin
+                          ? stableCoin.totalDeposit
+                          : (0 as uUST<number>)}
+                      </AnimateNumber>
+                      <span>UST</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="value">
+                      <AnimateNumber format={formatRate}>
+                        {18.23 as Rate<number>}
+                      </AnimateNumber>
+                      <span>%</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="value">
+                      <AnimateNumber format={formatUTokenInteger}>
+                        {stableCoin
+                          ? stableCoin.totalBorrow
+                          : (0 as uUST<number>)}
+                      </AnimateNumber>
+                      <span>UST</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="value">{0}%</div>
+                  </td>
+                </tr>
+              </tbody>
+            </HorizontalScrollTable>
+          </Section>
+
+          <Section className="collaterals">
+            <header>
+              <div>
+                <h2>
+                  TOTAL COLLATERAL VALUE<span>+ 2.32%</span>
+                </h2>
+                <p>
+                  <AnimateNumber format={formatUSTWithPostfixUnits}>
+                    {collaterals
+                      ? demicrofy(collaterals.mainTotalCollateralValue)
+                      : (0 as UST<number>)}
+                  </AnimateNumber>
+                  <span>UST</span>
+                </p>
+              </div>
+            </header>
+
+            <figure>
+              <pre>{JSON.stringify(collaterals, null, 2)}</pre>
+            </figure>
+
+            <HorizontalScrollTable minWidth={800} className="basset-market">
+              <colgroup>
+                <col style={{ width: 300 }} />
+                <col style={{ width: 300 }} />
+                <col style={{ width: 300 }} />
+                <col style={{ width: 300 }} />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>bASSET MARKET</th>
+                  <th>
+                    <IconSpan>
+                      Price <InfoTooltip>Oracle price of bAsset</InfoTooltip>
+                    </IconSpan>
+                  </th>
+                  <th>
+                    <IconSpan>
+                      Total Collateral{' '}
+                      <InfoTooltip>
+                        Total collateral value in bASSET
+                      </InfoTooltip>
+                    </IconSpan>
+                  </th>
+                  <th>
+                    <IconSpan>
+                      Total Collateral Value{' '}
+                      <InfoTooltip>Total collateral value in USD</InfoTooltip>
+                    </IconSpan>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <div>
+                      <i>
+                        <TokenIcon token="bluna" />
+                      </i>
+                      <div>
+                        <div className="coin">bLUNA</div>
+                        <p className="name">Bonded Luna</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="value">
+                      <AnimateNumber format={formatUSTWithPostfixUnits}>
+                        {collaterals
+                          ? collaterals.blunaPrice
+                          : (0 as UST<number>)}
+                      </AnimateNumber>
+                      <span>UST</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="value">
+                      <AnimateNumber format={formatLunaWithPostfixUnits}>
+                        {collaterals?.totalCollateral
+                          ? demicrofy(collaterals.totalCollateral)
+                          : (0 as Luna<number>)}
+                      </AnimateNumber>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="value">
+                      <AnimateNumber
+                        format={formatUSTWithPostfixUnits}
+                        id="collateral-value"
+                      >
+                        {collaterals
+                          ? demicrofy(collaterals.totalCollateralValue)
+                          : (0 as UST<number>)}
+                      </AnimateNumber>
+                      <span>UST</span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </HorizontalScrollTable>
+          </Section>
+        </div>
+
+        <Footer style={{ margin: '60px 0' }} />
+      </main>
     </div>
   );
 }
 
 export const Market = styled(MarketBase)`
-  padding: 20px;
+  background-color: ${({ theme }) => theme.backgroundColor};
+  color: ${({ theme }) => theme.textColor};
 
-  section {
-    border: 1px solid black;
-    padding: 10px;
+  h2 {
+    font-size: 15px;
+  }
+
+  pre {
+    font-size: 13px;
+  }
+
+  h1 {
+    margin: 0 0 50px 0;
+
+    font-size: 44px;
+    font-weight: 900;
+    color: ${({ theme }) => theme.textColor};
+  }
+
+  .stablecoin-market,
+  .basset-market {
+    table {
+      thead {
+        th {
+          text-align: right;
+
+          &:first-child {
+            font-weight: bold;
+            color: ${({ theme }) => theme.textColor};
+            text-align: left;
+          }
+        }
+      }
+
+      tbody {
+        td {
+          text-align: right;
+
+          .value,
+          .coin {
+            font-size: 18px;
+          }
+
+          .volatility,
+          .name {
+            font-size: 13px;
+            color: ${({ theme }) => theme.dimTextColor};
+          }
+
+          &:first-child > div {
+            text-decoration: none;
+            color: currentColor;
+
+            text-align: left;
+
+            display: flex;
+
+            align-items: center;
+
+            i {
+              width: 60px;
+              height: 60px;
+
+              margin-right: 15px;
+
+              svg,
+              img {
+                display: block;
+                width: 60px;
+                height: 60px;
+              }
+            }
+
+            .coin {
+              font-weight: bold;
+
+              grid-column: 2;
+              grid-row: 1/2;
+            }
+
+            .name {
+              grid-column: 2;
+              grid-row: 2;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // ---------------------------------------------
+  // layout
+  // ---------------------------------------------
+  main {
+    .content-layout {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 0;
+    }
+  }
+
+  // pc
+  padding: 50px 100px 100px 100px;
+
+  .NeuSection-root {
+    margin-bottom: 40px;
+  }
+
+  // align section contents to origin
+  @media (min-width: 1400px) {
+    .summary-section {
+      grid-gap: 40px;
+      margin-bottom: 40px;
+
+      .NeuSection-root {
+        margin-bottom: 0;
+      }
+
+      height: 586px;
+
+      display: grid;
+      grid-template-columns: 500px 1fr 1fr;
+      grid-template-rows: repeat(3, 1fr);
+
+      .total-value-locked {
+        grid-column: 1/2;
+        grid-row: 1/4;
+      }
+
+      .anc-price {
+        grid-column: 2/4;
+        grid-row: 1/3;
+      }
+
+      .anc-buyback {
+        grid-column: 2/4;
+        grid-row: 3/4;
+      }
+    }
+  }
+
+  // align section contents to horizontal
+  @media (min-width: ${screen.pc.min}px) and (max-width: 1399px) {
+    .summary-section {
+    }
+  }
+
+  // under tablet
+  // align section contents to horizontal
+  @media (max-width: ${screen.tablet.max}px) {
+    padding: 20px 30px 30px 30px;
+
+    .NeuSection-root {
+      margin-bottom: 40px;
+
+      .NeuSection-content {
+        padding: 30px;
+      }
+    }
+  }
+
+  // under mobile
+  // align section contents to vertical
+  @media (max-width: ${screen.mobile.max}px) {
+    padding: 10px 20px 30px 20px;
+
+    .NeuSection-root {
+      margin-bottom: 40px;
+
+      .NeuSection-content {
+        padding: 20px;
+      }
+    }
   }
 `;
