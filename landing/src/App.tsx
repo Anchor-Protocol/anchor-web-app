@@ -1,4 +1,29 @@
 import { LandingProviders } from 'base/AppProviders';
+import {
+  ArcElement,
+  BarController,
+  BarElement,
+  BubbleController,
+  CategoryScale,
+  Chart,
+  DoughnutController,
+  Filler,
+  Legend,
+  LinearScale,
+  LineController,
+  LineElement,
+  LogarithmicScale,
+  PieController,
+  PointElement,
+  PolarAreaController,
+  RadarController,
+  RadialLinearScale,
+  ScatterController,
+  TimeScale,
+  TimeSeriesScale,
+  Title,
+  Tooltip,
+} from 'chart.js';
 import { Header } from 'components/Header';
 import { Index } from 'pages/index';
 import { Market as MarketNew } from 'pages/market-new';
@@ -7,6 +32,31 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
 const queryClient = new QueryClient();
+
+Chart.register(
+  ArcElement,
+  LineElement,
+  BarElement,
+  PointElement,
+  BarController,
+  BubbleController,
+  DoughnutController,
+  LineController,
+  PieController,
+  PolarAreaController,
+  RadarController,
+  ScatterController,
+  CategoryScale,
+  LinearScale,
+  LogarithmicScale,
+  RadialLinearScale,
+  TimeScale,
+  TimeSeriesScale,
+  Filler,
+  Legend,
+  Title,
+  Tooltip,
+);
 
 export function App() {
   return (

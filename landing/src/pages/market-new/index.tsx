@@ -21,11 +21,12 @@ import { Footer } from 'base/components/Footer';
 import { useConstants } from 'base/contexts/contants';
 import big, { Big } from 'big.js';
 import { screen } from 'env';
+import { TotalValueLockedDoughnutChart } from 'pages/market-new/components/TotalValueLockedDoughnutChart';
 import { useMarketBluna } from 'pages/market-new/queries/marketBluna';
 import { useMarketBorrow } from 'pages/market-new/queries/marketBorrow';
 import { useMarketUST } from 'pages/market-new/queries/marketUST';
 import React, { useMemo } from 'react';
-import styled, { css } from 'styled-components';
+import styled, { css, useTheme } from 'styled-components';
 import { useMarketCollaterals } from './queries/marketCollateral';
 import { useMarketDeposit } from './queries/marketDeposit';
 
@@ -34,6 +35,8 @@ export interface MarketProps {
 }
 
 function MarketBase({ className }: MarketProps) {
+  const theme = useTheme();
+
   const { blocksPerYear } = useConstants();
 
   const { data: marketDeposit } = useMarketDeposit();
@@ -116,10 +119,22 @@ function MarketBase({ className }: MarketProps) {
                   <span>UST</span>
                 </p>
                 <figure>
-                  <svg></svg>
+                  <div className="chart">
+                    <TotalValueLockedDoughnutChart
+                      totalDeposit={
+                        totalValueLocked?.totalDeposit ?? ('0' as uUST)
+                      }
+                      totalCollaterals={
+                        totalValueLocked?.totalCollaterals ?? ('1' as uUST)
+                      }
+                      totalDepositColor={theme.colors.positive}
+                      totalCollateralsColor={theme.textColor}
+                    />
+                  </div>
                   <div>
                     <h3>
-                      <i /> Total Deposit
+                      <i style={{ backgroundColor: theme.colors.positive }} />{' '}
+                      Total Deposit
                     </h3>
                     <p>
                       ${' '}
@@ -130,7 +145,8 @@ function MarketBase({ className }: MarketProps) {
                       </AnimateNumber>
                     </p>
                     <h3>
-                      <i /> Total Collateral
+                      <i style={{ backgroundColor: theme.textColor }} /> Total
+                      Collaterals
                     </h3>
                     <p>
                       ${' '}
@@ -163,22 +179,31 @@ function MarketBase({ className }: MarketProps) {
               <header>
                 <div>
                   <h2>
-                    ANC PRICE<span>+0.32%</span>
+                    ANC PRICE
+                    <span>
+                      <s>+0.32%</s>
+                    </span>
                   </h2>
                   <p className="amount">
-                    5.013<span>UST</span>
+                    <s>
+                      5.013<span>UST</span>
+                    </s>
                   </p>
                 </div>
                 <div>
                   <h3>Circulating supply</h3>
                   <p>
-                    50,840,183<span>ANC</span>
+                    <s>
+                      50,840,183<span>ANC</span>
+                    </s>
                   </p>
                 </div>
                 <div>
                   <h3>ANC Market Cap</h3>
                   <p>
-                    250,840,183<span>UST</span>
+                    <s>
+                      250,840,183<span>UST</span>
+                    </s>
                   </p>
                 </div>
               </header>
@@ -188,16 +213,34 @@ function MarketBase({ className }: MarketProps) {
             <Section className="anc-buyback">
               <section>
                 <h2>ANC BUYBACK (24HR)</h2>
-                <p>
-                  815<span>ANC</span> 12,249<span>UST</span>
-                </p>
+                <div>
+                  <p>
+                    <s>
+                      815<span>ANC</span>
+                    </s>
+                  </p>
+                  <p>
+                    <s>
+                      12,249<span>UST</span>
+                    </s>
+                  </p>
+                </div>
               </section>
               <hr />
               <section>
                 <h2>ANC BUYBACK (TOTAL)</h2>
-                <p>
-                  12,947<span>ANC</span> 194,383<span>UST</span>
-                </p>
+                <div>
+                  <p>
+                    <s>
+                      12,947<span>ANC</span>
+                    </s>
+                  </p>
+                  <p>
+                    <s>
+                      194,383<span>UST</span>
+                    </s>
+                  </p>
+                </div>
               </section>
             </Section>
           </div>
@@ -206,7 +249,10 @@ function MarketBase({ className }: MarketProps) {
             <header>
               <div>
                 <h2>
-                  TOTAL DEPOSIT<span>+2.32%</span>
+                  TOTAL DEPOSIT
+                  <span>
+                    <s>+2.32%</s>
+                  </span>
                 </h2>
                 <p className="amount">
                   <AnimateNumber format={formatUSTWithPostfixUnits}>
@@ -219,7 +265,10 @@ function MarketBase({ className }: MarketProps) {
               </div>
               <div>
                 <h2>
-                  TOTAL BORROW<span>-0.32%</span>
+                  TOTAL BORROW
+                  <span>
+                    <s>-0.32%</s>
+                  </span>
                 </h2>
                 <p className="amount">
                   <AnimateNumber format={formatUSTWithPostfixUnits}>
@@ -300,15 +349,17 @@ function MarketBase({ className }: MarketProps) {
                           ? stableCoin.totalDeposit
                           : (0 as uUST<number>)}
                       </AnimateNumber>
-                      <span>UST</span>
+                      <span> UST</span>
                     </div>
                   </td>
                   <td>
                     <div className="value">
-                      <AnimateNumber format={formatRate}>
-                        {18.23 as Rate<number>}
-                      </AnimateNumber>
-                      <span>%</span>
+                      <s>
+                        <AnimateNumber format={formatRate}>
+                          {18.23 as Rate<number>}
+                        </AnimateNumber>
+                        <span>%</span>
+                      </s>
                     </div>
                   </td>
                   <td>
@@ -318,11 +369,13 @@ function MarketBase({ className }: MarketProps) {
                           ? stableCoin.totalBorrow
                           : (0 as uUST<number>)}
                       </AnimateNumber>
-                      <span>UST</span>
+                      <span> UST</span>
                     </div>
                   </td>
                   <td>
-                    <div className="value">{0}%</div>
+                    <div className="value">
+                      <s>{0}%</s>
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -333,7 +386,10 @@ function MarketBase({ className }: MarketProps) {
             <header>
               <div>
                 <h2>
-                  TOTAL COLLATERAL VALUE<span>+ 2.32%</span>
+                  TOTAL COLLATERAL VALUE
+                  <span>
+                    <s>+ 2.32%</s>
+                  </span>
                 </h2>
                 <p className="amount">
                   <AnimateNumber format={formatUSTWithPostfixUnits}>
@@ -341,7 +397,7 @@ function MarketBase({ className }: MarketProps) {
                       ? demicrofy(collaterals.mainTotalCollateralValue)
                       : (0 as UST<number>)}
                   </AnimateNumber>
-                  <span>UST</span>
+                  <span> UST</span>
                 </p>
               </div>
             </header>
@@ -401,7 +457,7 @@ function MarketBase({ className }: MarketProps) {
                           ? collaterals.blunaPrice
                           : (0 as UST<number>)}
                       </AnimateNumber>
-                      <span>UST</span>
+                      <span> UST</span>
                     </div>
                   </td>
                   <td>
@@ -423,7 +479,7 @@ function MarketBase({ className }: MarketProps) {
                           ? demicrofy(collaterals.totalCollateralValue)
                           : (0 as UST<number>)}
                       </AnimateNumber>
-                      <span>UST</span>
+                      <span> UST</span>
                     </div>
                   </td>
                 </tr>
@@ -508,6 +564,7 @@ export const Market = styled(MarketBase)`
   // TODO remove
   pre {
     font-size: 13px;
+    overflow: hidden;
   }
 
   .anc-price,
@@ -539,11 +596,9 @@ export const Market = styled(MarketBase)`
       display: flex;
       align-items: center;
 
-      > svg {
+      > .chart {
         width: 152px;
         height: 152px;
-        border-radius: 50%;
-        border: 10px solid ${({ theme }) => theme.textColor};
 
         margin-right: 44px;
       }
@@ -557,7 +612,6 @@ export const Market = styled(MarketBase)`
             display: inline-block;
             width: 12px;
             height: 12px;
-            background-color: ${({ theme }) => theme.dimTextColor};
             border-radius: 3px;
             margin-right: 3px;
           }
@@ -620,20 +674,24 @@ export const Market = styled(MarketBase)`
       ${vRuler};
     }
 
-    p {
-      font-size: 27px;
-      font-weight: 700;
+    section {
+      div {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 20px;
 
-      word-break: keep-all;
-      white-space: nowrap;
+        p {
+          font-size: 27px;
+          font-weight: 700;
 
-      span {
-        font-size: 18px;
-        margin-left: 5px;
-        color: ${({ theme }) => theme.dimTextColor};
+          word-break: keep-all;
+          white-space: nowrap;
 
-        &:first-child {
-          margin-right: 20px;
+          span {
+            font-size: 18px;
+            margin-left: 5px;
+            color: ${({ theme }) => theme.dimTextColor};
+          }
         }
       }
     }
@@ -806,6 +864,10 @@ export const Market = styled(MarketBase)`
   @media (max-width: 899px) {
     padding: 20px 30px 30px 30px;
 
+    h1 {
+      margin-bottom: 20px;
+    }
+
     .NeuSection-root {
       margin-bottom: 40px;
 
@@ -881,23 +943,15 @@ export const Market = styled(MarketBase)`
           ${hRuler};
           margin: 15px 0;
         }
+      }
+    }
 
-        p {
-          font-size: 27px;
-          font-weight: 700;
+    .stablecoin {
+      header {
+        grid-template-columns: repeat(2, 1fr);
 
-          word-break: keep-all;
-          white-space: nowrap;
-
-          span {
-            font-size: 18px;
-            margin-left: 5px;
-            color: ${({ theme }) => theme.dimTextColor};
-
-            &:first-child {
-              margin-right: 20px;
-            }
-          }
+        > div:empty {
+          display: none;
         }
       }
     }
@@ -907,6 +961,10 @@ export const Market = styled(MarketBase)`
   // align section contents to vertical
   @media (max-width: ${screen.mobile.max}px) {
     padding: 10px 20px 30px 20px;
+
+    h1 {
+      margin-bottom: 10px;
+    }
 
     .NeuSection-root {
       margin-bottom: 40px;
@@ -919,10 +977,9 @@ export const Market = styled(MarketBase)`
     .summary-section {
       .total-value-locked {
         figure {
-          > svg {
+          > .chart {
             width: 120px;
             height: 120px;
-            border-radius: 50%;
 
             margin-right: 30px;
           }
@@ -932,6 +989,30 @@ export const Market = styled(MarketBase)`
               margin-bottom: 12px;
             }
           }
+        }
+      }
+
+      .anc-buyback > .NeuSection-content {
+        section {
+          div {
+            grid-template-columns: 1fr;
+            grid-template-rows: repeat(2, 30px);
+            grid-gap: 15px;
+          }
+        }
+      }
+    }
+
+    .stablecoin {
+      header {
+        display: block;
+
+        > div:first-child {
+          margin-bottom: 15px;
+        }
+
+        > div:empty {
+          display: none;
         }
       }
     }
