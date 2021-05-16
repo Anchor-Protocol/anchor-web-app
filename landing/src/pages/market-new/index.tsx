@@ -21,6 +21,7 @@ import { Footer } from 'base/components/Footer';
 import { useConstants } from 'base/contexts/contants';
 import big, { Big } from 'big.js';
 import { screen } from 'env';
+import { ANCPriceChart } from 'pages/market-new/components/ANCPriceChart';
 import { TotalValueLockedDoughnutChart } from 'pages/market-new/components/TotalValueLockedDoughnutChart';
 import { useMarketBluna } from 'pages/market-new/queries/marketBluna';
 import { useMarketBorrow } from 'pages/market-new/queries/marketBorrow';
@@ -207,7 +208,11 @@ function MarketBase({ className }: MarketProps) {
                   </p>
                 </div>
               </header>
-              <figure>TODO: API not ready...</figure>
+              <figure>
+                <div>
+                  <ANCPriceChart />
+                </div>
+              </figure>
             </Section>
 
             <Section className="anc-buyback">
@@ -567,7 +572,6 @@ export const Market = styled(MarketBase)`
     overflow: hidden;
   }
 
-  .anc-price,
   .stablecoin,
   .collaterals {
     figure {
@@ -660,6 +664,13 @@ export const Market = styled(MarketBase)`
 
       margin-bottom: 15px;
     }
+
+    figure {
+      > div {
+        width: 100%;
+        height: 220px;
+      }
+    }
   }
 
   .anc-buyback > .NeuSection-content {
@@ -676,11 +687,11 @@ export const Market = styled(MarketBase)`
 
     section {
       div {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        grid-gap: 20px;
+        display: flex;
 
         p {
+          display: inline-block;
+
           font-size: 27px;
           font-weight: 700;
 
@@ -691,6 +702,10 @@ export const Market = styled(MarketBase)`
             font-size: 18px;
             margin-left: 5px;
             color: ${({ theme }) => theme.dimTextColor};
+          }
+
+          &:first-child {
+            margin-right: 20px;
           }
         }
       }
@@ -939,6 +954,16 @@ export const Market = styled(MarketBase)`
       .anc-buyback > .NeuSection-content {
         display: block;
 
+        section {
+          div {
+            display: block;
+
+            p {
+              display: block;
+            }
+          }
+        }
+
         hr {
           ${hRuler};
           margin: 15px 0;
@@ -988,16 +1013,6 @@ export const Market = styled(MarketBase)`
             p:nth-of-type(1) {
               margin-bottom: 12px;
             }
-          }
-        }
-      }
-
-      .anc-buyback > .NeuSection-content {
-        section {
-          div {
-            grid-template-columns: 1fr;
-            grid-template-rows: repeat(2, 30px);
-            grid-gap: 15px;
           }
         }
       }
