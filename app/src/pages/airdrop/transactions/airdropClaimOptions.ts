@@ -37,7 +37,7 @@ export const airdropClaimOptions = createOperationOptions({
       ] as MsgExecuteContract[];
     }, // -> MsgExecuteContract[]
     createOptions(() => ({
-      fee: new StdFee(gasFee, fixedGas + 'uusd'),
+      fee: new StdFee(300000, '50000uusd'),
       gasAdjustment,
     })), // -> CreateTxOptions
     timeout(postContractMsg(post), 1000 * 60 * 20), // -> Promise<TxResult>
