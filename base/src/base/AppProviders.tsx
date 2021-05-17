@@ -1,7 +1,4 @@
-import {
-  AddressProvider,
-  AddressProviderFromJson,
-} from '@anchor-protocol/anchor.js';
+import { AddressMap, AddressProvider } from '@anchor-protocol/anchor.js';
 import { QueryDependencyProvider } from '@anchor-protocol/queries';
 import { ContractAddress, Rate, uUST } from '@anchor-protocol/types';
 import {
@@ -20,31 +17,33 @@ import { SnackbarProvider } from '@terra-dev/snackbar';
 import { GoogleAnalytics } from '@terra-dev/use-google-analytics';
 import { useLongtimeNoSee } from '@terra-dev/use-longtime-no-see';
 import { RouterScrollRestoration } from '@terra-dev/use-router-scroll-restoration';
+import { NetworkInfo } from '@terra-money/wallet-provider';
 import {
   ExtensionNetworkOnlyWalletProvider,
   RouterWalletStatusRecheck,
   useWallet,
   WalletProvider,
 } from '@terra-money/wallet-provider/react';
-import { NetworkInfo } from '@terra-money/wallet-provider';
 import { TerraWebappProvider } from '@terra-money/webapp-provider';
 import { useReadonlyWalletDialog } from 'base/components/useReadonlyWalletDialog';
 import { useRequestReloadDialog } from 'base/components/useRequestReload';
 import React, { ReactNode, useCallback, useMemo } from 'react';
+import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { BroadcastingContainer } from './components/BroadcastingContainer';
 import { SnackbarContainer } from './components/SnackbarContainer';
 import { BankProvider } from './contexts/bank';
 import { Constants, ConstantsProvider } from './contexts/contants';
-import { ContractProvider, createContractAddress } from './contexts/contract';
+import { ContractProvider } from './contexts/contract';
 import { ThemeProvider } from './contexts/theme';
 import {
+  ADDRESS_PROVIDERS,
+  ADDRESSES,
   columbusContractAddresses,
   defaultNetwork,
   GA_TRACKING_ID,
   tequilaContractAddresses,
 } from './env';
-import { QueryClient, QueryClientProvider } from 'react-query';
 
 const queryClient = new QueryClient();
 
@@ -58,17 +57,17 @@ function Providers({ children }: { children: ReactNode }) {
     network.chainID,
   ]);
 
-  const addressMap = useMemo(() => {
+  const addressMap = useMemo<AddressMap>(() => {
     return isMainnet ? columbusContractAddresses : tequilaContractAddresses;
   }, [isMainnet]);
 
   const addressProvider = useMemo<AddressProvider>(() => {
-    return new AddressProviderFromJson(addressMap);
-  }, [addressMap]);
+    return isMainnet ? ADDRESS_PROVIDERS.mainnet : ADDRESS_PROVIDERS.testnet;
+  }, [isMainnet]);
 
   const address = useMemo<ContractAddress>(() => {
-    return createContractAddress(addressProvider, addressMap);
-  }, [addressMap, addressProvider]);
+    return isMainnet ? ADDRESSES.mainnet : ADDRESSES.testnet;
+  }, [isMainnet]);
 
   const client = useMemo<ApolloClient<any>>(() => {
     const httpLink = new HttpLink({

@@ -1,5 +1,9 @@
-import { AddressMap } from '@anchor-protocol/anchor.js';
+import {
+  AddressMap,
+  AddressProviderFromJson,
+} from '@anchor-protocol/anchor.js';
 import { Rate } from '@anchor-protocol/types';
+import { createContractAddress } from 'base/contexts/contract';
 
 export const GA_TRACKING_ID = 'G-H42LRVHR5Y';
 
@@ -102,6 +106,22 @@ export const tequilaContractAddresses: AddressMap = {
   //vesting: 'terra19f6ktw4qpjj9p9m49y8mhf6pr9807d44xdcus7',
   //team: 'terra1x7ted5g0g6ntyqdaqmjwtzcctvvrdju49vs8pl',
   //terraswapFactory: '',
+};
+
+export const ADDRESS_PROVIDERS = {
+  mainnet: new AddressProviderFromJson(columbusContractAddresses),
+  testnet: new AddressProviderFromJson(tequilaContractAddresses),
+};
+
+export const ADDRESSES = {
+  mainnet: createContractAddress(
+    ADDRESS_PROVIDERS.mainnet,
+    columbusContractAddresses,
+  ),
+  testnet: createContractAddress(
+    ADDRESS_PROVIDERS.testnet,
+    tequilaContractAddresses,
+  ),
 };
 
 export const screen = {

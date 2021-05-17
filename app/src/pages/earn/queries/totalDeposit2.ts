@@ -8,8 +8,12 @@ import type {
 } from '@anchor-protocol/types';
 import { useEventBusListener } from '@terra-dev/event-bus';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
-import { useContractAddress } from 'base/contexts/contract';
+import {
+  MantleFetch,
+  useNetworkBoundValue,
+  useTerraWebapp,
+} from '@terra-money/webapp-provider';
+import { ADDRESSES } from 'base/env';
 import { useQuery } from 'react-query';
 
 export interface RawData {
@@ -65,18 +69,14 @@ interface TotalDepositParams {
   mantleFetch: MantleFetch;
   variables: Variables;
   fetchBlockHeight: () => Promise<number>;
+  blockHeight: number;
 }
 
 export async function totalDeposit({
   mantleFetch,
   mantleEndpoint,
   variables,
-  fetchBlockHeight,
 }: TotalDepositParams): Promise<Data> {
-  console.log('totalDeposit2.ts..totalDeposit()');
-
-  variables.moneyMarketEpochQuery.epoch_state.block_height = await fetchBlockHeight();
-
   const data = await mantleFetch<RawVariables, RawData>(
     query,
     {
@@ -97,8 +97,6 @@ export async function totalDeposit({
 }
 
 export function useTotalDeposit() {
-  const { moneyMarket, cw20 } = useContractAddress();
-
   const userWallet = useConnectedWallet();
 
   const {
@@ -106,14 +104,23 @@ export function useTotalDeposit() {
     refetchBlockHeight,
     mantleEndpoint,
     mantleFetch,
+    network,
   } = useTerraWebapp();
 
+  const { moneyMarket, cw20 } = useNetworkBoundValue(network, ADDRESSES);
+
   const result = useQuery(
-    ['EARN_TOTAL_DEPOSIT', userWallet, mantleEndpoint],
-    () =>
-      totalDeposit({
+    [
+      'EARN_TOTAL_DEPOSIT',
+      userWallet?.walletAddress,
+      network.name,
+      mantleEndpoint,
+    ],
+    () => {
+      return totalDeposit({
         mantleEndpoint,
         mantleFetch,
+        blockHeight,
         fetchBlockHeight: refetchBlockHeight,
         variables: {
           anchorTokenContract: cw20.aUST,
@@ -129,7 +136,8 @@ export function useTotalDeposit() {
             },
           },
         },
-      }),
+      });
+    },
     {
       refetchInterval: 1000 * 60 * 3,
       enabled: blockHeight > 0 && !!userWallet,

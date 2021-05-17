@@ -82,9 +82,11 @@ export class BlockHeightBoundNetworkController {
 
   private _network: NetworkInfo;
 
-  private _invalid: boolean = false;
+  private _inProgress: boolean = false;
 
   private _timeoutId: number = 0;
+
+  private _ignoreBefore: number = Number.MAX_SAFE_INTEGER;
 
   private _resolvers: Set<(blockHeight: number) => void> = new Set<
     (blockHeight: number) => void
@@ -101,15 +103,19 @@ export class BlockHeightBoundNetworkController {
       blockHeight: -1,
     });
 
-    this.refresh();
+    this.refresh(Date.now());
   }
 
   refetch = (nextNetwork?: NetworkInfo) => {
+    const time = Date.now();
+
     if (nextNetwork) {
       this._network = nextNetwork;
+      this._ignoreBefore = time;
+      this._inProgress = false;
     }
 
-    this.refresh();
+    this.refresh(time);
 
     return new Promise<number>((resolve) => {
       this._resolvers.add(resolve);
@@ -125,51 +131,55 @@ export class BlockHeightBoundNetworkController {
     this._resolvers.clear();
   };
 
-  private refresh = () => {
-    if (this._invalid) {
+  private refresh = (time: number) => {
+    if (this._inProgress) {
       return;
     }
 
     clearTimeout(this._timeoutId);
 
-    this._invalid = true;
+    this._inProgress = true;
 
-    setTimeout(() => {
-      this.props
-        .mantleFetch<{}, Data>(
-          query,
-          {},
-          this.props.mantleEndpoints[this._network.name],
-          {},
-        )
-        .then(({ LastSyncedHeight }) => {
-          this._states.next({
-            network: this._network,
-            blockHeight: LastSyncedHeight,
-          });
+    this.props
+      .mantleFetch<{}, Data>(
+        query,
+        {},
+        this.props.mantleEndpoints[this._network.name],
+        {},
+      )
+      .then(({ LastSyncedHeight }) => {
+        if (time < this._ignoreBefore) {
+          this._inProgress = false;
+          this.refresh(Date.now());
+          return;
+        }
 
-          if (this._resolvers.size > 0) {
-            for (const resolve of this._resolvers) {
-              resolve(LastSyncedHeight);
-            }
-
-            this._resolvers.clear();
+        if (this._resolvers.size > 0) {
+          for (const resolve of this._resolvers) {
+            resolve(LastSyncedHeight);
           }
 
-          this._invalid = false;
+          this._resolvers.clear();
+        }
 
-          this._timeoutId = (setTimeout(
-            this.refresh,
-            this.props.intervalMs,
-          ) as unknown) as number;
-        })
-        .catch((error) => {
-          console.error(error);
-
-          this._invalid = false;
-
-          setTimeout(this.refresh, 500);
+        this._states.next({
+          network: this._network,
+          blockHeight: LastSyncedHeight,
         });
-    }, 100);
+
+        this._inProgress = false;
+
+        this._timeoutId = (setTimeout(
+          this.refresh,
+          this.props.intervalMs,
+        ) as unknown) as number;
+      })
+      .catch((error) => {
+        console.error(error);
+
+        this._inProgress = false;
+
+        setTimeout(this.refresh, 500);
+      });
   };
 }
