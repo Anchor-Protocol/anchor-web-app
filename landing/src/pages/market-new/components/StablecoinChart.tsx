@@ -1,15 +1,11 @@
-import {
-  rulerLightColor,
-  rulerShadowColor,
-} from '@terra-dev/styled-neumorphism';
 import { Chart } from 'chart.js';
 import { ChartTooltip } from 'pages/market-new/components/ChartTooltip';
 import React, { useEffect, useRef } from 'react';
 import styled, { useTheme } from 'styled-components';
 
-export interface ANCPriceChartProps {}
+export interface StablecoinChartProps {}
 
-export function ANCPriceChart(_: ANCPriceChartProps) {
+export function StablecoinChart(_: StablecoinChartProps) {
   const theme = useTheme();
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -28,44 +24,6 @@ export function ANCPriceChart(_: ANCPriceChartProps) {
     } else {
       chartRef.current = new Chart(canvasRef.current!, {
         type: 'line',
-        plugins: [
-          {
-            id: 'custom-y-axis-draw',
-            afterDraw(chart) {
-              const ctx = chart.ctx;
-              ctx.save();
-              ctx.globalCompositeOperation = 'destination-over';
-
-              const xScale = chart.scales.x;
-              const yScale = chart.scales.y;
-
-              let i: number = yScale.ticks.length;
-
-              while (--i >= 0) {
-                const y = yScale.getPixelForTick(i);
-                ctx.strokeStyle = rulerShadowColor({
-                  intensity: theme.intensity,
-                  color: theme.backgroundColor,
-                });
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(xScale.left, y);
-                ctx.lineTo(xScale.right, y);
-                ctx.stroke();
-                ctx.strokeStyle = rulerLightColor({
-                  intensity: theme.intensity,
-                  color: theme.backgroundColor,
-                });
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(xScale.left, y + 1);
-                ctx.lineTo(xScale.right, y + 1);
-                ctx.stroke();
-              }
-              ctx.restore();
-            },
-          },
-        ],
         options: {
           maintainAspectRatio: false,
           plugins: {
@@ -84,11 +42,17 @@ export function ANCPriceChart(_: ANCPriceChartProps) {
                 }
 
                 const div1 = element.querySelector('div:nth-child(1)');
+                const div2 = element.querySelector('div:nth-child(2)');
                 const hr = element.querySelector('hr');
 
                 if (div1) {
                   // TODO binding data...
                   div1.innerHTML = `5.4 UST <span>Tue, 4 Apr</span>`;
+                }
+
+                if (div2) {
+                  // TODO binding data...
+                  div2.innerHTML = `5.4 UST <span>Tue, 4 Apr</span>`;
                 }
 
                 if (hr) {
@@ -118,17 +82,7 @@ export function ANCPriceChart(_: ANCPriceChartProps) {
               },
             },
             y: {
-              grace: '25%',
-              grid: {
-                display: false,
-                drawBorder: false,
-              },
-              ticks: {
-                font: {
-                  size: 11,
-                },
-                color: theme.dimTextColor,
-              },
+              display: false,
             },
           },
           elements: {
@@ -143,6 +97,11 @@ export function ANCPriceChart(_: ANCPriceChartProps) {
             {
               data: [0, 10, 5, 2, 20, 30, 45],
               borderColor: theme.colors.positive,
+              borderWidth: 2,
+            },
+            {
+              data: [10, 30, 15, 8, 20, 13, 2],
+              borderColor: theme.textColor,
               borderWidth: 2,
             },
           ],
@@ -160,6 +119,7 @@ export function ANCPriceChart(_: ANCPriceChartProps) {
     theme.backgroundColor,
     theme.colors.positive,
     theme.dimTextColor,
+    theme.textColor,
     theme.intensity,
   ]);
 
@@ -175,6 +135,7 @@ export function ANCPriceChart(_: ANCPriceChartProps) {
       <ChartTooltip ref={tooltipRef}>
         <hr />
         <section>
+          <div />
           <div />
         </section>
       </ChartTooltip>

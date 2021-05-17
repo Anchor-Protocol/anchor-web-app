@@ -22,6 +22,8 @@ import { useConstants } from 'base/contexts/contants';
 import big, { Big } from 'big.js';
 import { screen } from 'env';
 import { ANCPriceChart } from 'pages/market-new/components/ANCPriceChart';
+import { CollateralsChart } from 'pages/market-new/components/CollateralsChart';
+import { StablecoinChart } from 'pages/market-new/components/StablecoinChart';
 import { TotalValueLockedDoughnutChart } from 'pages/market-new/components/TotalValueLockedDoughnutChart';
 import { useMarketBluna } from 'pages/market-new/queries/marketBluna';
 import { useMarketBorrow } from 'pages/market-new/queries/marketBorrow';
@@ -288,7 +290,9 @@ function MarketBase({ className }: MarketProps) {
             </header>
 
             <figure>
-              <pre>{JSON.stringify(stableCoin, null, 2)}</pre>
+              <div>
+                <StablecoinChart />
+              </div>
             </figure>
 
             <HorizontalScrollTable minWidth={900} className="stablecoin-market">
@@ -408,7 +412,9 @@ function MarketBase({ className }: MarketProps) {
             </header>
 
             <figure>
-              <pre>{JSON.stringify(collaterals, null, 2)}</pre>
+              <div>
+                <CollateralsChart />
+              </div>
             </figure>
 
             <HorizontalScrollTable minWidth={800} className="basset-market">
@@ -572,17 +578,6 @@ export const Market = styled(MarketBase)`
     overflow: hidden;
   }
 
-  .stablecoin,
-  .collaterals {
-    figure {
-      box-sizing: border-box;
-      min-height: 200px;
-      border: 5px dashed ${({ theme }) => theme.textColor};
-      padding: 20px;
-      border-radius: 30px;
-    }
-  }
-
   .amount {
     font-size: 36px;
     font-weight: 700;
@@ -719,11 +714,25 @@ export const Market = styled(MarketBase)`
 
       margin-bottom: 15px;
     }
+
+    figure {
+      > div {
+        width: 100%;
+        height: 220px;
+      }
+    }
   }
 
   .collaterals {
     header {
       margin-bottom: 15px;
+    }
+
+    figure {
+      > div {
+        width: 100%;
+        height: 220px;
+      }
     }
   }
 
