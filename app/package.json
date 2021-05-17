@@ -94,6 +94,7 @@
     "numeral": "^2.0.6",
     "puppeteer": "^9.1.1",
     "react": "^17.0.2",
+    "react-query": "^3.16.0",
     "react-app-rewire-alias": "^1.0.3",
     "react-app-rewired": "^2.1.8",
     "react-dom": "^17.0.2",
@@ -114,6 +115,7 @@
     "web-vitals": "^1.1.1"
   },
   "devDependencies": {
+    "@ssen/jest-transform": "^2.5.0",
     "@types/big.js": "^6.0.2",
     "@types/d3-scale": "^3.2.2",
     "@types/d3-selection": "^2.0.0",

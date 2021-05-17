@@ -27,6 +27,7 @@ import {
   WalletProvider,
 } from '@terra-money/wallet-provider/react';
 import { NetworkInfo } from '@terra-money/wallet-provider';
+import { TerraWebappProvider } from '@terra-money/webapp-provider';
 import { useReadonlyWalletDialog } from 'base/components/useReadonlyWalletDialog';
 import { useRequestReloadDialog } from 'base/components/useRequestReload';
 import React, { ReactNode, useCallback, useMemo } from 'react';
@@ -43,6 +44,9 @@ import {
   GA_TRACKING_ID,
   tequilaContractAddresses,
 } from './env';
+import { QueryClient, QueryClientProvider } from 'react-query';
+
+const queryClient = new QueryClient();
 
 const operationBroadcasterErrorReporter =
   process.env.NODE_ENV === 'production' ? captureException : undefined;
@@ -116,42 +120,46 @@ function Providers({ children }: { children: ReactNode }) {
   return (
     /** React App routing :: <Link>, <NavLink>, useLocation(), useRouteMatch()... */
     <Router>
-      {/** Serve Constants */}
-      <ConstantsProvider {...constants}>
-        {/** Smart Contract Address :: useAddressProvider() */}
-        <ContractProvider
-          addressProvider={addressProvider}
-          addressMap={addressMap}
-        >
-          {/** Set GraphQL environenments :: useQuery(), useApolloClient()... */}
-          <ApolloProvider client={client}>
-            {/** Broadcastable Query Provider :: useBroadCastableQuery(), useQueryBroadCaster() */}
-            <OperationBroadcaster
-              dependency={operationGlobalDependency}
-              errorReporter={operationBroadcasterErrorReporter}
+      <QueryClientProvider client={queryClient}>
+        <TerraWebappProvider>
+          {/** Serve Constants */}
+          <ConstantsProvider {...constants}>
+            {/** Smart Contract Address :: useAddressProvider() */}
+            <ContractProvider
+              addressProvider={addressProvider}
+              addressMap={addressMap}
             >
-              {/** Query dependencies :: @anchor-protocol/queries, useWasmQuery()... */}
-              <QueryDependencyProvider
-                client={client}
-                address={address}
-                onError={onQueryError}
-              >
-                {/** User Balances (uUSD, uLuna, ubLuna, uaUST...) :: useBank() */}
-                <BankProvider>
-                  {/** Theme Providing to Styled-Components and Material-UI */}
-                  <ThemeProvider initialTheme="light">
-                    {/** Snackbar Provider :: useSnackbar() */}
-                    <SnackbarProvider>
-                      {/** Application Layout */}
-                      {children}
-                    </SnackbarProvider>
-                  </ThemeProvider>
-                </BankProvider>
-              </QueryDependencyProvider>
-            </OperationBroadcaster>
-          </ApolloProvider>
-        </ContractProvider>
-      </ConstantsProvider>
+              {/** Set GraphQL environenments :: useQuery(), useApolloClient()... */}
+              <ApolloProvider client={client}>
+                {/** Broadcastable Query Provider :: useBroadCastableQuery(), useQueryBroadCaster() */}
+                <OperationBroadcaster
+                  dependency={operationGlobalDependency}
+                  errorReporter={operationBroadcasterErrorReporter}
+                >
+                  {/** Query dependencies :: @anchor-protocol/queries, useWasmQuery()... */}
+                  <QueryDependencyProvider
+                    client={client}
+                    address={address}
+                    onError={onQueryError}
+                  >
+                    {/** User Balances (uUSD, uLuna, ubLuna, uaUST...) :: useBank() */}
+                    <BankProvider>
+                      {/** Theme Providing to Styled-Components and Material-UI */}
+                      <ThemeProvider initialTheme="light">
+                        {/** Snackbar Provider :: useSnackbar() */}
+                        <SnackbarProvider>
+                          {/** Application Layout */}
+                          {children}
+                        </SnackbarProvider>
+                      </ThemeProvider>
+                    </BankProvider>
+                  </QueryDependencyProvider>
+                </OperationBroadcaster>
+              </ApolloProvider>
+            </ContractProvider>
+          </ConstantsProvider>
+        </TerraWebappProvider>
+      </QueryClientProvider>
     </Router>
   );
 }

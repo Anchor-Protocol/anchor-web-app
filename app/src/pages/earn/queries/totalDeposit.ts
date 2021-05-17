@@ -128,8 +128,9 @@ export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
       !userWallet ||
       typeof lastSyncedHeight !== 'number' ||
       lastSyncedHeight === 0
-    )
+    ) {
       return undefined;
+    }
 
     return mapVariables({
       anchorTokenContract: cw20.aUST,

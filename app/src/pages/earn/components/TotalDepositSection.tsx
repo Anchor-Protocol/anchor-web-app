@@ -4,15 +4,15 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { Rate, uUST } from '@anchor-protocol/types';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
-import { BigSource } from 'big.js';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
+import big, { Big, BigSource } from 'big.js';
+import { useTotalDeposit } from 'pages/earn/queries/totalDeposit2';
 import React, { useCallback, useMemo } from 'react';
 import { totalDepositUST } from '../logics/totalDepositUST';
-import { useDeposit } from '../queries/totalDeposit';
 import { useDepositDialog } from './useDepositDialog2';
 import { useWithdrawDialog } from './useWithdrawDialog';
 
@@ -29,16 +29,17 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const {
-    data: { aUSTBalance, exchangeRate },
-  } = useDeposit();
+  const { data } = useTotalDeposit();
 
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
   const totalDeposit = useMemo(
-    () => totalDepositUST(aUSTBalance, exchangeRate),
-    [aUSTBalance, exchangeRate],
+    () =>
+      data
+        ? totalDepositUST(data.aUSTBalance, data.exchangeRate)
+        : (big(0) as uUST<Big>),
+    [data],
   );
 
   // ---------------------------------------------
@@ -86,17 +87,15 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
 
       <aside className="total-deposit-buttons">
         <ActionButton
-          disabled={!connectedWallet || !totalDeposit}
+          disabled={!connectedWallet || !totalDeposit || !data}
           onClick={() => openDeposit()}
         >
           Deposit
         </ActionButton>
         <ActionButton
-          disabled={
-            !connectedWallet || !totalDeposit || !exchangeRate?.exchange_rate
-          }
+          disabled={!connectedWallet || !totalDeposit || !data}
           onClick={() =>
-            openWithdraw(totalDeposit, exchangeRate!.exchange_rate)
+            data && openWithdraw(totalDeposit, data.exchangeRate.exchange_rate)
           }
         >
           Withdraw

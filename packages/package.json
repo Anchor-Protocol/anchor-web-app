@@ -109,6 +109,7 @@
     "ws": "^7.4.4"
   },
   "devDependencies": {
+    "@ssen/jest-transform": "^2.5.0",
     "@types/big.js": "^6.0.2",
     "@types/d3-ease": "^2.0.0",
     "@types/d3-interpolate": "^2.0.0",

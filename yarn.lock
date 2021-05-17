@@ -27,6 +27,7 @@ __metadata:
     "@rx-stream/react": ^0.7.0
     "@sentry/react": ^6.3.5
     "@sentry/tracing": ^6.3.5
+    "@ssen/jest-transform": ^2.5.0
     "@terra-money/terra.js": ^1.7.0
     "@testing-library/jest-dom": ^5.12.0
     "@testing-library/react": ^11.2.6
@@ -141,6 +142,7 @@ __metadata:
     react-app-rewire-alias: ^1.0.3
     react-app-rewired: ^2.1.8
     react-dom: ^17.0.2
+    react-query: ^3.16.0
     react-responsive: ^8.2.0
     react-router-dom: ^5.2.0
     react-scripts: 4.0.3
@@ -165,9 +167,10 @@ __metadata:
   resolution: "@anchor-web-app/landing@workspace:landing"
   dependencies:
     "@apollo/client": ^3.3.16
-    "@material-ui/core": ^4.11.4
+    "@material-ui/core": ^4.11.3
     "@material-ui/icons": ^4.11.2
     "@rocket-scripts/utils": ^3.1.1
+    "@ssen/jest-transform": ^2.5.0
     "@terra-money/terra.js": ^1.7.0
     "@testing-library/jest-dom": ^5.12.0
     "@testing-library/react": ^11.2.6
@@ -240,6 +243,7 @@ __metadata:
     "@apollo/client": ^3.3.16
     "@material-ui/core": ^4.11.3
     "@material-ui/icons": ^4.11.2
+    "@ssen/jest-transform": ^2.5.0
     "@storybook/addon-actions": ^6.2.9
     "@storybook/addon-essentials": ^6.2.9
     "@storybook/addon-links": ^6.2.9
