@@ -111,7 +111,7 @@ function HorizontalGraphBarBase<T>({
       return {
         x: padding,
         y: padding,
-        width: r * (width - padding * 2),
+        width: Math.min(r * (width - padding * 2), width - padding * 2),
         height: barHeight - padding * 2,
         rx: boxRadius - padding,
         ry: boxRadius - padding,
