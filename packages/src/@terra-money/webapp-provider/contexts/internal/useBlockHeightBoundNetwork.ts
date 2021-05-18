@@ -27,19 +27,15 @@ export interface BlockHeightBoundNetwork {
   refetchBlockHeight: () => Promise<number>;
 }
 
+const STORAGE_KEY = (network: NetworkInfo) =>
+  `__terra-${network.name}-latest-block-height__`;
+
 export function useBlockHeightBoundNetwork({
   mantleEndpoints,
   mantleFetch,
   intervalMs = 1000 * 60 * 3,
 }: Props): BlockHeightBoundNetwork {
   const { network } = useWallet();
-
-  const [states, setStates] = useState<
-    Omit<BlockHeightBoundNetwork, 'refetchBlockHeight'>
-  >(() => ({
-    network,
-    blockHeight: 0,
-  }));
 
   const [controller] = useState<BlockHeightBoundNetworkController>(
     () =>
@@ -49,6 +45,13 @@ export function useBlockHeightBoundNetwork({
         intervalMs,
       }),
   );
+
+  const [states, setStates] = useState<
+    Omit<BlockHeightBoundNetwork, 'refetchBlockHeight'>
+  >(() => ({
+    network,
+    blockHeight: controller.storageBlockHeight,
+  }));
 
   const refetchBlockHeight = useCallback(() => {
     return controller.refetch();
@@ -100,10 +103,15 @@ export class BlockHeightBoundNetworkController {
       blockHeight: number;
     }>({
       network,
-      blockHeight: -1,
+      blockHeight: this.storageBlockHeight,
     });
 
     this.refresh(Date.now());
+  }
+
+  get storageBlockHeight() {
+    const storageBlockHeight = localStorage.getItem(STORAGE_KEY(this._network));
+    return storageBlockHeight ? +storageBlockHeight : 0;
   }
 
   refetch = (nextNetwork?: NetworkInfo) => {
@@ -166,6 +174,11 @@ export class BlockHeightBoundNetworkController {
           network: this._network,
           blockHeight: LastSyncedHeight,
         });
+
+        localStorage.setItem(
+          STORAGE_KEY(this._network),
+          LastSyncedHeight.toString(),
+        );
 
         this._inProgress = false;
 
