@@ -4,13 +4,13 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { Rate, uUST } from '@anchor-protocol/types';
+import { useEarnTotalDeposit } from '@anchor-protocol/webapp-provider';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big, BigSource } from 'big.js';
-import { useTotalDeposit } from 'pages/earn/queries/totalDeposit2';
 import React, { useCallback, useMemo } from 'react';
 import { totalDepositUST } from '../logics/totalDepositUST';
 import { useDepositDialog } from './useDepositDialog2';
@@ -29,7 +29,7 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const { data } = useTotalDeposit();
+  const { data } = useEarnTotalDeposit();
 
   // ---------------------------------------------
   // logics

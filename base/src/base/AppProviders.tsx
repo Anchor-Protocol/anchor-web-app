@@ -1,6 +1,7 @@
 import { AddressMap, AddressProvider } from '@anchor-protocol/anchor.js';
 import { QueryDependencyProvider } from '@anchor-protocol/queries';
 import { ContractAddress, Rate, uUST } from '@anchor-protocol/types';
+import { AnchorWebappProvider } from '@anchor-protocol/webapp-provider';
 import {
   ApolloClient,
   ApolloError,
@@ -121,42 +122,44 @@ function Providers({ children }: { children: ReactNode }) {
     <Router>
       <QueryClientProvider client={queryClient}>
         <TerraWebappProvider>
-          {/** Serve Constants */}
-          <ConstantsProvider {...constants}>
-            {/** Smart Contract Address :: useAddressProvider() */}
-            <ContractProvider
-              addressProvider={addressProvider}
-              addressMap={addressMap}
-            >
-              {/** Set GraphQL environenments :: useQuery(), useApolloClient()... */}
-              <ApolloProvider client={client}>
-                {/** Broadcastable Query Provider :: useBroadCastableQuery(), useQueryBroadCaster() */}
-                <OperationBroadcaster
-                  dependency={operationGlobalDependency}
-                  errorReporter={operationBroadcasterErrorReporter}
-                >
-                  {/** Query dependencies :: @anchor-protocol/queries, useWasmQuery()... */}
-                  <QueryDependencyProvider
-                    client={client}
-                    address={address}
-                    onError={onQueryError}
+          <AnchorWebappProvider>
+            {/** Serve Constants */}
+            <ConstantsProvider {...constants}>
+              {/** Smart Contract Address :: useAddressProvider() */}
+              <ContractProvider
+                addressProvider={addressProvider}
+                addressMap={addressMap}
+              >
+                {/** Set GraphQL environenments :: useQuery(), useApolloClient()... */}
+                <ApolloProvider client={client}>
+                  {/** Broadcastable Query Provider :: useBroadCastableQuery(), useQueryBroadCaster() */}
+                  <OperationBroadcaster
+                    dependency={operationGlobalDependency}
+                    errorReporter={operationBroadcasterErrorReporter}
                   >
-                    {/** User Balances (uUSD, uLuna, ubLuna, uaUST...) :: useBank() */}
-                    <BankProvider>
-                      {/** Theme Providing to Styled-Components and Material-UI */}
-                      <ThemeProvider initialTheme="light">
-                        {/** Snackbar Provider :: useSnackbar() */}
-                        <SnackbarProvider>
-                          {/** Application Layout */}
-                          {children}
-                        </SnackbarProvider>
-                      </ThemeProvider>
-                    </BankProvider>
-                  </QueryDependencyProvider>
-                </OperationBroadcaster>
-              </ApolloProvider>
-            </ContractProvider>
-          </ConstantsProvider>
+                    {/** Query dependencies :: @anchor-protocol/queries, useWasmQuery()... */}
+                    <QueryDependencyProvider
+                      client={client}
+                      address={address}
+                      onError={onQueryError}
+                    >
+                      {/** User Balances (uUSD, uLuna, ubLuna, uaUST...) :: useBank() */}
+                      <BankProvider>
+                        {/** Theme Providing to Styled-Components and Material-UI */}
+                        <ThemeProvider initialTheme="light">
+                          {/** Snackbar Provider :: useSnackbar() */}
+                          <SnackbarProvider>
+                            {/** Application Layout */}
+                            {children}
+                          </SnackbarProvider>
+                        </ThemeProvider>
+                      </BankProvider>
+                    </QueryDependencyProvider>
+                  </OperationBroadcaster>
+                </ApolloProvider>
+              </ContractProvider>
+            </ConstantsProvider>
+          </AnchorWebappProvider>
         </TerraWebappProvider>
       </QueryClientProvider>
     </Router>

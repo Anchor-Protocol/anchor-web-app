@@ -6,34 +6,30 @@ import type {
   uaUST,
   WASMContractResult,
 } from '@anchor-protocol/types';
+import { useAnchorContractAddress } from '@anchor-protocol/webapp-provider';
 import { useEventBusListener } from '@terra-dev/event-bus';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import {
-  MantleFetch,
-  useNetworkBoundValue,
-  useTerraWebapp,
-} from '@terra-money/webapp-provider';
-import { ADDRESSES } from 'base/env';
+import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
 import { useQuery } from 'react-query';
 
-export interface RawData {
+export interface EarnTotalDepositRawData {
   aUSTBalance: WASMContractResult;
   exchangeRate: WASMContractResult;
 }
 
-export interface Data {
+export interface EarnTotalDepositData {
   aUSTBalance: WASMContractResult<cw20.BalanceResponse<uaUST>>;
   exchangeRate: WASMContractResult<moneyMarket.market.EpochStateResponse>;
 }
 
-export interface RawVariables {
+export interface EarnTotalDepositRawVariables {
   anchorTokenContract: string;
   anchorTokenBalanceQuery: string;
   moneyMarketContract: string;
   moneyMarketEpochQuery: string;
 }
 
-export interface Variables {
+export interface EarnTotalDepositVariables {
   anchorTokenContract: CW20Addr;
   anchorTokenBalanceQuery: cw20.Balance;
   moneyMarketContract: HumanAddr;
@@ -41,7 +37,7 @@ export interface Variables {
 }
 
 // language=graphql
-export const query = `
+export const earnTotalDepositQuery = `
   query __totalDeposit(
     $anchorTokenContract: String!
     $anchorTokenBalanceQuery: String!
@@ -64,21 +60,24 @@ export const query = `
   }
 `;
 
-interface TotalDepositParams {
+export interface EarnTotalDepositParams {
   mantleEndpoint: string;
   mantleFetch: MantleFetch;
-  variables: Variables;
+  variables: EarnTotalDepositVariables;
   fetchBlockHeight: () => Promise<number>;
   blockHeight: number;
 }
 
-export async function totalDeposit({
+export async function earnTotalDeposit({
   mantleFetch,
   mantleEndpoint,
   variables,
-}: TotalDepositParams): Promise<Data> {
-  const data = await mantleFetch<RawVariables, RawData>(
-    query,
+}: EarnTotalDepositParams): Promise<EarnTotalDepositData> {
+  const data = await mantleFetch<
+    EarnTotalDepositRawVariables,
+    EarnTotalDepositRawData
+  >(
+    earnTotalDepositQuery,
     {
       anchorTokenContract: variables.anchorTokenContract,
       anchorTokenBalanceQuery: JSON.stringify(
@@ -96,7 +95,7 @@ export async function totalDeposit({
   };
 }
 
-export function useTotalDeposit() {
+export function useEarnTotalDeposit() {
   const userWallet = useConnectedWallet();
 
   const {
@@ -107,7 +106,7 @@ export function useTotalDeposit() {
     network,
   } = useTerraWebapp();
 
-  const { moneyMarket, cw20 } = useNetworkBoundValue(network, ADDRESSES);
+  const { moneyMarket, cw20 } = useAnchorContractAddress(network);
 
   const result = useQuery(
     [
@@ -117,7 +116,7 @@ export function useTotalDeposit() {
       mantleEndpoint,
     ],
     () => {
-      return totalDeposit({
+      return earnTotalDeposit({
         mantleEndpoint,
         mantleFetch,
         blockHeight,
