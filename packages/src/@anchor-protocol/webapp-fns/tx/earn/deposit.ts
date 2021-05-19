@@ -9,38 +9,39 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { Rate, uaUST, uUST } from '@anchor-protocol/types';
-import { ApolloClient } from '@apollo/client';
 import { pipe } from '@rx-stream/pipe';
 import { floor } from '@terra-dev/big-math';
-import { OperationTimeoutError } from '@terra-dev/broadcastable-operation';
 import { txTimeout } from '@terra-dev/tx-helpers';
 import { Timeout, TxResult, UserDenied } from '@terra-dev/wallet-types';
 import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
-import { TxHashLink } from 'base/components/TxHashLink';
 import {
+  MantleFetch,
   pickAttributeValue,
   pickEvent,
   pickRawLog,
-} from 'base/queries/txInfos';
+  pollTxInfo,
+  TxHashLink,
+  TxResultRendering,
+  TxStreamPhase,
+} from '@terra-money/webapp-fns';
 import big, { BigSource } from 'big.js';
-import { parseError, TxRender, TxStreamPhase } from 'models/tx';
-import { pollTxInfo } from 'queries/pollTxInfo';
 import { createElement } from 'react';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-export function depositTxStream(
+export function earnDepositTx(
   $: Parameters<typeof fabricateMarketDepositStableCoin>[0] & {
     gasFee: uUST<number>;
     gasAdjustment: Rate<number>;
     txFee: uUST;
     addressProvider: AddressProvider;
-    client: ApolloClient<any>;
+    mantleEndpoint: string;
+    mantleFetch: MantleFetch;
     post: (tx: CreateTxOptions) => Promise<TxResult>;
-    reportError?: (error: unknown) => string;
-    dispatchEvent: (eventType: string) => void;
+    txErrorReporter?: (error: unknown) => string;
+    onTxSucceed?: () => void;
   },
-): Observable<TxRender> {
+): Observable<TxResultRendering> {
   let savedTx: CreateTxOptions;
   let savedTxResult: TxResult;
 
@@ -79,7 +80,7 @@ export function depositTxStream(
 
         phase: TxStreamPhase.POST,
         receipts: [],
-      } as TxRender<CreateTxOptions>;
+      } as TxResultRendering<CreateTxOptions>;
     },
     // ---------------------------------------------
     // post tx to wallet
@@ -94,7 +95,7 @@ export function depositTxStream(
 
             phase: TxStreamPhase.BROADCAST,
             receipts: [txHashReceipt()],
-          } as TxRender<TxResult>;
+          } as TxResultRendering<TxResult>;
         },
       );
     },
@@ -102,11 +103,13 @@ export function depositTxStream(
     // waiting broadcast result
     // ---------------------------------------------
     ({ value: txResult }) => {
-      return pollTxInfo(
-        $.client,
-        savedTx,
-      )(txResult).then((txInfo) => {
-        $.dispatchEvent('tx-completed');
+      return pollTxInfo({
+        mantleEndpoint: $.mantleEndpoint,
+        mantleFetch: $.mantleFetch,
+        tx: savedTx,
+        txhash: txResult.result.txhash,
+      }).then((txInfo) => {
+        // TODO invalidate react query
 
         const rawLog = pickRawLog(txInfo, 0);
 
@@ -115,9 +118,9 @@ export function depositTxStream(
             value: null,
 
             phase: TxStreamPhase.SUCCEED,
-            receiptErrors: [{ title: 'Undefined the RawLog' }],
+            receiptErrors: [{ error: new Error('Undefined the RawLog') }],
             receipts: [txHashReceipt(), txFeeReceipt()],
-          } as TxRender;
+          } as TxResultRendering;
         }
 
         const fromContract = pickEvent(rawLog, 'from_contract');
@@ -127,9 +130,11 @@ export function depositTxStream(
             value: null,
 
             phase: TxStreamPhase.SUCCEED,
-            receiptErrors: [{ title: `Undefined the from_contract event` }],
+            receiptErrors: [
+              { error: new Error(`Undefined the from_contract event`) },
+            ],
             receipts: [txHashReceipt(), txFeeReceipt()],
-          } as TxRender;
+          } as TxResultRendering;
         }
 
         try {
@@ -167,15 +172,15 @@ export function depositTxStream(
               txHashReceipt(),
               txFeeReceipt(),
             ],
-          } as TxRender;
+          } as TxResultRendering;
         } catch (error) {
           return {
             value: null,
 
             phase: TxStreamPhase.SUCCEED,
-            receiptErrors: [{ title: 'Failed to parse Tx result' }],
+            receiptErrors: [{ error: new Error('Failed to parse Tx result') }],
             receipts: [txHashReceipt(), txFeeReceipt()],
-          } as TxRender;
+          } as TxResultRendering;
         }
       });
     },
@@ -185,20 +190,16 @@ export function depositTxStream(
     // ---------------------------------------------
     catchError((error) => {
       const errorId =
-        $.reportError &&
-        !(
-          error instanceof UserDenied ||
-          error instanceof Timeout ||
-          error instanceof OperationTimeoutError
-        )
-          ? $.reportError(error)
+        $.txErrorReporter &&
+        !(error instanceof UserDenied || error instanceof Timeout)
+          ? $.txErrorReporter(error)
           : undefined;
 
-      return Promise.resolve<TxRender>({
+      return Promise.resolve<TxResultRendering>({
         value: null,
 
         phase: TxStreamPhase.FAILED,
-        failedReason: parseError(error, errorId),
+        failedReason: { error, errorId },
         receipts: [txHashReceipt()],
       });
     }),

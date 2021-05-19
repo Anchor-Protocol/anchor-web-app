@@ -1,4 +1,9 @@
-import { NetworkInfo } from '@terra-dev/wallet-types';
+import { useWallet } from '@terra-money/wallet-provider';
+import {
+  defaultMantleFetch,
+  lastSyncedHeightQuery,
+  MantleFetch,
+} from '@terra-money/webapp-fns';
 import React, {
   Consumer,
   Context,
@@ -8,20 +13,9 @@ import React, {
   useMemo,
 } from 'react';
 import { DEFAULT_MANTLE_ENDPOINTS } from '../env';
-import { useBlockHeightBoundNetwork } from './internal/useBlockHeightBoundNetwork';
-
-export type MantleFetch = <Variables extends {}, Data>(
-  query: string,
-  variables: Variables,
-  endpoint: string,
-  requestInit?: Omit<RequestInit, 'method' | 'body'>,
-) => Promise<Data>;
 
 export interface TerraWebappProviderProps {
   children: ReactNode;
-
-  // block height
-  blockHeightRefetchIntervalMs?: number;
 
   // mantle
   mantleEndpoints?: Record<string, string>;
@@ -35,70 +29,49 @@ export interface TerraWebappProviderProps {
 }
 
 export interface TerraWebapp {
-  // network
-  blockHeight: number;
-  network: NetworkInfo;
-  refetchBlockHeight: () => Promise<number>;
+  // functions
+  lastSyncedHeight: () => Promise<number>;
 
   // mantle
   mantleEndpoint: string;
   mantleFetch: MantleFetch;
+
+  // sentry captureException()
+  txErrorReporter?: (error: unknown) => string;
 }
 
 // @ts-ignore
 export const TerraWebappContext: Context<TerraWebapp> = createContext<TerraWebapp>();
 
-const defaultMantleFetch: MantleFetch = <Variables extends {}, Data>(
-  query: string,
-  variables: Variables,
-  endpoint: string,
-  requestInit?: Omit<RequestInit, 'method' | 'body'>,
-) => {
-  return fetch(endpoint, {
-    ...requestInit,
-    method: 'POST',
-    headers: {
-      ...requestInit?.headers,
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    },
-    body: JSON.stringify({
-      query,
-      variables,
-    }),
-  })
-    .then((res) => res.json())
-    .then(({ data }) => data) as Promise<Data>;
-};
-
 export function TerraWebappProvider({
   children,
   mantleEndpoints = DEFAULT_MANTLE_ENDPOINTS,
   mantleFetch = defaultMantleFetch,
-  blockHeightRefetchIntervalMs = 1000 * 60 * 3,
   txRefetchMap = {},
   txErrorReporter,
 }: TerraWebappProviderProps) {
-  const {
-    network,
-    blockHeight,
-    refetchBlockHeight,
-  } = useBlockHeightBoundNetwork({
-    mantleEndpoints,
-    mantleFetch,
-    intervalMs: blockHeightRefetchIntervalMs,
-  });
+  const { network } = useWallet();
+
+  const mantleEndpoint = useMemo(() => {
+    return mantleEndpoints[network.name] ?? mantleEndpoints['mainnet'];
+  }, [mantleEndpoints, network.name]);
+
+  const lastSyncedHeight = useMemo(() => {
+    return () =>
+      lastSyncedHeightQuery({
+        mantleEndpoint,
+        mantleFetch,
+      });
+  }, [mantleEndpoint, mantleFetch]);
 
   const states = useMemo<TerraWebapp>(
     () => ({
-      network,
-      blockHeight,
-      refetchBlockHeight,
-      mantleEndpoint:
-        mantleEndpoints[network.name] ?? mantleEndpoints['mainnet'],
+      lastSyncedHeight,
+      mantleEndpoint,
       mantleFetch,
+      txErrorReporter,
     }),
-    [blockHeight, mantleEndpoints, mantleFetch, network, refetchBlockHeight],
+    [lastSyncedHeight, mantleEndpoint, mantleFetch, txErrorReporter],
   );
 
   return (

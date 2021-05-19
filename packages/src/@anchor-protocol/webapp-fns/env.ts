@@ -1,4 +1,6 @@
 import { AddressMap } from '@anchor-protocol/anchor.js';
+import { Rate, uUST } from '@anchor-protocol/types';
+import { AnchorContants } from './types';
 
 export const DEFAULT_ADDESS_MAP: Record<string, AddressMap> = {
   mainnet: {
@@ -62,5 +64,20 @@ export const DEFAULT_ADDESS_MAP: Record<string, AddressMap> = {
     //vesting: 'terra19f6ktw4qpjj9p9m49y8mhf6pr9807d44xdcus7',
     //team: 'terra1x7ted5g0g6ntyqdaqmjwtzcctvvrdju49vs8pl',
     //terraswapFactory: '',
+  },
+};
+
+export const DEFAULT_ANCHOR_TX_CONSTANTS: Record<string, AnchorContants> = {
+  mainnet: {
+    gasFee: 1000000 as uUST<number>,
+    fixedGas: 250000 as uUST<number>,
+    blocksPerYear: 4906443,
+    gasAdjustment: 1.6 as Rate<number>,
+  },
+  testnet: {
+    gasFee: 6000000 as uUST<number>,
+    fixedGas: 3500000 as uUST<number>,
+    blocksPerYear: 4906443,
+    gasAdjustment: 1.4 as Rate<number>,
   },
 };

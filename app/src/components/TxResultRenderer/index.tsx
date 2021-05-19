@@ -2,29 +2,37 @@ import { Close, Done as DoneIcon } from '@material-ui/icons';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { TxReceipt, TxRender, TxStreamPhase } from 'models/tx';
+import {
+  TxReceipt,
+  TxResultRendering,
+  TxStreamPhase,
+} from '@terra-money/webapp-fns';
+import { renderTxFailedReason } from 'components/TxResultRenderer/renderTxFailedReason';
 import React from 'react';
 import styled from 'styled-components';
 import loadingImage from './assets/loading_image.gif';
 
-export interface TxRendererProps {
-  txRender: TxRender;
+export interface TxResultRendererProps {
+  resultRendering: TxResultRendering;
   onExit: () => void;
 }
 
-export function TxRenderer({ txRender, onExit }: TxRendererProps) {
-  switch (txRender.phase) {
+export function TxResultRenderer({
+  resultRendering,
+  onExit,
+}: TxResultRendererProps) {
+  switch (resultRendering.phase) {
     case TxStreamPhase.POST:
       return (
         <Layout>
           <article>
-            <figure data-state={txRender.phase}>
+            <figure data-state={resultRendering.phase}>
               <img src={loadingImage} alt="Waiting for Terra Station..." />
             </figure>
 
             <h2>Waiting for Terra Station...</h2>
 
-            <Receipts txRender={txRender} />
+            <Receipts resultRendering={resultRendering} />
 
             <SubmitButton onClick={() => onExit?.()}>Stop</SubmitButton>
           </article>
@@ -34,13 +42,13 @@ export function TxRenderer({ txRender, onExit }: TxRendererProps) {
       return (
         <Layout>
           <article>
-            <figure data-state={txRender.phase}>
+            <figure data-state={resultRendering.phase}>
               <img src={loadingImage} alt="Waiting for receipt..." />
             </figure>
 
             <h2>Waiting for receipt...</h2>
 
-            <Receipts txRender={txRender} />
+            <Receipts resultRendering={resultRendering} />
           </article>
         </Layout>
       );
@@ -48,13 +56,13 @@ export function TxRenderer({ txRender, onExit }: TxRendererProps) {
       return (
         <Layout>
           <article>
-            <figure data-state={txRender.phase}>
+            <figure data-state={resultRendering.phase}>
               <DoneIcon />
             </figure>
 
             <h2>Complete!</h2>
 
-            <Receipts txRender={txRender} />
+            <Receipts resultRendering={resultRendering} />
 
             <SubmitButton onClick={() => onExit?.()}>OK</SubmitButton>
           </article>
@@ -64,18 +72,14 @@ export function TxRenderer({ txRender, onExit }: TxRendererProps) {
       return (
         <Layout>
           <article>
-            <figure data-state={txRender.phase}>
+            <figure data-state={resultRendering.phase}>
               <Close />
             </figure>
 
-            {txRender.failedReason && (
-              <>
-                <h2>{txRender.failedReason.title}</h2>
-                {txRender.failedReason.contents}
-              </>
-            )}
+            {resultRendering.failedReason &&
+              renderTxFailedReason(resultRendering.failedReason)}
 
-            <Receipts txRender={txRender} />
+            <Receipts resultRendering={resultRendering} />
 
             <SubmitButton onClick={() => onExit?.()}>OK</SubmitButton>
           </article>
@@ -84,8 +88,8 @@ export function TxRenderer({ txRender, onExit }: TxRendererProps) {
   }
 }
 
-function Receipts({ txRender }: { txRender: TxRender }) {
-  const filteredReceipts = txRender.receipts.filter(
+function Receipts({ resultRendering }: { resultRendering: TxResultRendering }) {
+  const filteredReceipts = resultRendering.receipts.filter(
     (receipt): receipt is TxReceipt => !!receipt,
   );
 

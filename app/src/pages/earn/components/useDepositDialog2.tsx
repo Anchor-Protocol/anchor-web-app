@@ -1,4 +1,3 @@
-import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import {
   demicrofy,
   formatUST,
@@ -7,10 +6,12 @@ import {
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { UST, uUST } from '@anchor-protocol/types';
-import { useApolloClient } from '@apollo/client';
+import {
+  useAnchorWebapp,
+  useEarnDepositTx,
+} from '@anchor-protocol/webapp-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
-import { StreamStatus, useStream } from '@rx-stream/react';
-import { useOperationBroadcaster } from '@terra-dev/broadcastable-operation';
+import { StreamStatus } from '@rx-stream/react';
 import { useEventBus } from '@terra-dev/event-bus';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
@@ -19,27 +20,21 @@ import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import { useConfirm } from '@terra-dev/neumorphism-ui/components/useConfirm';
 import type { DialogProps, OpenDialog } from '@terra-dev/use-dialog';
 import { useDialog } from '@terra-dev/use-dialog';
-import {
-  ConnectedWallet,
-  useConnectedWallet,
-} from '@terra-money/wallet-provider';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
-import { useAddressProvider } from 'base/contexts/contract';
 import big, { BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { TxRenderer } from 'components/TxRenderer';
+import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
-import { depositRecommendationAmount } from 'pages/earn/logics/depositRecommendationAmount';
-import { depositSendAmount } from 'pages/earn/logics/depositSendAmount';
-import { depositTxFee } from 'pages/earn/logics/depositTxFee';
-import { validateDepositAmount } from 'pages/earn/logics/validateDepositAmount';
-import { validateDepositNextTransaction } from 'pages/earn/logics/validateDepositNextTransaction';
-import { depositTxStream } from 'pages/earn/tx/depositTxStream';
 import type { ReactNode } from 'react';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { depositRecommendationAmount } from '../logics/depositRecommendationAmount';
+import { depositSendAmount } from '../logics/depositSendAmount';
+import { depositTxFee } from '../logics/depositTxFee';
+import { validateDepositAmount } from '../logics/validateDepositAmount';
+import { validateDepositNextTransaction } from '../logics/validateDepositNextTransaction';
 
 interface FormParams {
   className?: string;
@@ -63,17 +58,11 @@ function ComponentBase({
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const { fixedGas, gasFee, gasAdjustment } = useConstants();
-
-  const addressProvider = useAddressProvider();
-
-  const client = useApolloClient();
-
-  const { errorReporter } = useOperationBroadcaster();
+  const { contants } = useAnchorWebapp();
 
   const [openConfirm, confirmElement] = useConfirm();
 
-  const [deposit, depositResult] = useStream(depositTxStream);
+  const [deposit, depositResult] = useEarnDepositTx();
 
   const { dispatch } = useEventBus();
 
@@ -90,25 +79,24 @@ function ComponentBase({
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const txFee = useMemo(() => depositTxFee(depositAmount, bank, fixedGas), [
-    bank,
-    depositAmount,
-    fixedGas,
-  ]);
+  const txFee = useMemo(
+    () => depositTxFee(depositAmount, bank, contants.fixedGas),
+    [bank, contants.fixedGas, depositAmount],
+  );
 
   const sendAmount = useMemo(() => depositSendAmount(depositAmount, txFee), [
     depositAmount,
     txFee,
   ]);
 
-  const maxAmount = useMemo(() => depositRecommendationAmount(bank, fixedGas), [
-    bank,
-    fixedGas,
-  ]);
+  const maxAmount = useMemo(
+    () => depositRecommendationAmount(bank, contants.fixedGas),
+    [bank, contants.fixedGas],
+  );
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(bank, contants.fixedGas),
+    [connectedWallet, bank, contants.fixedGas],
   );
 
   const invalidDepositAmount = useMemo(
@@ -122,10 +110,17 @@ function ComponentBase({
         depositAmount,
         bank,
         txFee,
-        fixedGas,
+        contants.fixedGas,
         !!invalidDepositAmount || !maxAmount,
       ),
-    [bank, depositAmount, fixedGas, invalidDepositAmount, maxAmount, txFee],
+    [
+      bank,
+      contants.fixedGas,
+      depositAmount,
+      invalidDepositAmount,
+      maxAmount,
+      txFee,
+    ],
   );
 
   // ---------------------------------------------
@@ -137,12 +132,11 @@ function ComponentBase({
 
   const proceed = useCallback(
     async (
-      status: ConnectedWallet,
-      depositAmount: string,
+      depositAmount: UST,
       txFee: uUST<BigSource> | undefined,
       confirm: ReactNode,
     ) => {
-      if (!connectedWallet) return;
+      if (!connectedWallet || !deposit) return;
 
       if (confirm) {
         const userConfirm = await openConfirm({
@@ -156,44 +150,29 @@ function ComponentBase({
         }
       }
 
-      await deposit({
-        address: status.walletAddress,
-        market: MARKET_DENOMS.UUSD,
-        amount: depositAmount,
+      deposit({
+        depositAmount,
         txFee: txFee!.toString() as uUST,
-        gasAdjustment,
-        addressProvider,
-        client,
-        gasFee,
-        post: connectedWallet?.post,
-        reportError: errorReporter,
-        dispatchEvent: dispatch,
+        onTxSucceed: () => dispatch('tx-completed'),
       });
     },
-    [
-      addressProvider,
-      client,
-      connectedWallet,
-      deposit,
-      dispatch,
-      errorReporter,
-      gasAdjustment,
-      gasFee,
-      openConfirm,
-    ],
+    [connectedWallet, deposit, dispatch, openConfirm],
   );
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
   if (
-    depositResult.status === StreamStatus.IN_PROGRESS ||
-    depositResult.status === StreamStatus.DONE
+    depositResult?.status === StreamStatus.IN_PROGRESS ||
+    depositResult?.status === StreamStatus.DONE
   ) {
     return (
       <Modal open disableBackdropClick disableEnforceFocus>
         <Dialog className={className}>
-          <TxRenderer txRender={depositResult.value} onExit={closeDialog} />
+          <TxResultRenderer
+            resultRendering={depositResult.value}
+            onExit={closeDialog}
+          />
         </Dialog>
       </Modal>
     );
@@ -273,19 +252,12 @@ function ComponentBase({
           disabled={
             !connectedWallet ||
             !connectedWallet.availablePost ||
+            !deposit ||
             depositAmount.length === 0 ||
             big(depositAmount).lte(0) ||
             !!invalidDepositAmount
           }
-          onClick={() =>
-            connectedWallet &&
-            proceed(
-              connectedWallet,
-              depositAmount,
-              txFee,
-              invalidNextTransaction,
-            )
-          }
+          onClick={() => proceed(depositAmount, txFee, invalidNextTransaction)}
         >
           Proceed
         </ActionButton>

@@ -4,7 +4,7 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { Rate, uUST } from '@anchor-protocol/types';
-import { useEarnTotalDeposit } from '@anchor-protocol/webapp-provider';
+import { useEarnTotalDepositQuery } from '@anchor-protocol/webapp-provider';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
@@ -29,7 +29,7 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const { data } = useEarnTotalDeposit();
+  const { data } = useEarnTotalDepositQuery();
 
   // ---------------------------------------------
   // logics

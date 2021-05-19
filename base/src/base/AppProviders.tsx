@@ -13,8 +13,10 @@ import { captureException } from '@sentry/react';
 import { OperationBroadcaster } from '@terra-dev/broadcastable-operation';
 import { GlobalDependency } from '@terra-dev/broadcastable-operation/global';
 import { GlobalStyle } from '@terra-dev/neumorphism-ui/themes/GlobalStyle';
+import { patchReactQueryFocusRefetching } from '@terra-dev/patch-react-query-focus-refetching';
 import { ReadonlyWalletSession } from '@terra-dev/readonly-wallet';
 import { SnackbarProvider } from '@terra-dev/snackbar';
+import { BrowserInactiveProvider } from '@terra-dev/use-browser-inactive';
 import { GoogleAnalytics } from '@terra-dev/use-google-analytics';
 import { useLongtimeNoSee } from '@terra-dev/use-longtime-no-see';
 import { RouterScrollRestoration } from '@terra-dev/use-router-scroll-restoration';
@@ -45,6 +47,8 @@ import {
   GA_TRACKING_ID,
   tequilaContractAddresses,
 } from './env';
+
+patchReactQueryFocusRefetching();
 
 const queryClient = new QueryClient();
 
@@ -121,46 +125,50 @@ function Providers({ children }: { children: ReactNode }) {
     /** React App routing :: <Link>, <NavLink>, useLocation(), useRouteMatch()... */
     <Router>
       <QueryClientProvider client={queryClient}>
-        <TerraWebappProvider>
-          <AnchorWebappProvider>
-            {/** Serve Constants */}
-            <ConstantsProvider {...constants}>
-              {/** Smart Contract Address :: useAddressProvider() */}
-              <ContractProvider
-                addressProvider={addressProvider}
-                addressMap={addressMap}
-              >
-                {/** Set GraphQL environenments :: useQuery(), useApolloClient()... */}
-                <ApolloProvider client={client}>
-                  {/** Broadcastable Query Provider :: useBroadCastableQuery(), useQueryBroadCaster() */}
-                  <OperationBroadcaster
-                    dependency={operationGlobalDependency}
-                    errorReporter={operationBroadcasterErrorReporter}
-                  >
-                    {/** Query dependencies :: @anchor-protocol/queries, useWasmQuery()... */}
-                    <QueryDependencyProvider
-                      client={client}
-                      address={address}
-                      onError={onQueryError}
+        <BrowserInactiveProvider>
+          <TerraWebappProvider
+            txErrorReporter={operationBroadcasterErrorReporter}
+          >
+            <AnchorWebappProvider>
+              {/** Serve Constants */}
+              <ConstantsProvider {...constants}>
+                {/** Smart Contract Address :: useAddressProvider() */}
+                <ContractProvider
+                  addressProvider={addressProvider}
+                  addressMap={addressMap}
+                >
+                  {/** Set GraphQL environenments :: useQuery(), useApolloClient()... */}
+                  <ApolloProvider client={client}>
+                    {/** Broadcastable Query Provider :: useBroadCastableQuery(), useQueryBroadCaster() */}
+                    <OperationBroadcaster
+                      dependency={operationGlobalDependency}
+                      errorReporter={operationBroadcasterErrorReporter}
                     >
-                      {/** User Balances (uUSD, uLuna, ubLuna, uaUST...) :: useBank() */}
-                      <BankProvider>
-                        {/** Theme Providing to Styled-Components and Material-UI */}
-                        <ThemeProvider initialTheme="light">
-                          {/** Snackbar Provider :: useSnackbar() */}
-                          <SnackbarProvider>
-                            {/** Application Layout */}
-                            {children}
-                          </SnackbarProvider>
-                        </ThemeProvider>
-                      </BankProvider>
-                    </QueryDependencyProvider>
-                  </OperationBroadcaster>
-                </ApolloProvider>
-              </ContractProvider>
-            </ConstantsProvider>
-          </AnchorWebappProvider>
-        </TerraWebappProvider>
+                      {/** Query dependencies :: @anchor-protocol/queries, useWasmQuery()... */}
+                      <QueryDependencyProvider
+                        client={client}
+                        address={address}
+                        onError={onQueryError}
+                      >
+                        {/** User Balances (uUSD, uLuna, ubLuna, uaUST...) :: useBank() */}
+                        <BankProvider>
+                          {/** Theme Providing to Styled-Components and Material-UI */}
+                          <ThemeProvider initialTheme="light">
+                            {/** Snackbar Provider :: useSnackbar() */}
+                            <SnackbarProvider>
+                              {/** Application Layout */}
+                              {children}
+                            </SnackbarProvider>
+                          </ThemeProvider>
+                        </BankProvider>
+                      </QueryDependencyProvider>
+                    </OperationBroadcaster>
+                  </ApolloProvider>
+                </ContractProvider>
+              </ConstantsProvider>
+            </AnchorWebappProvider>
+          </TerraWebappProvider>
+        </BrowserInactiveProvider>
       </QueryClientProvider>
     </Router>
   );
