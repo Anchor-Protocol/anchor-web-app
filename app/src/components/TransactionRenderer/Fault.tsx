@@ -9,6 +9,7 @@ import { TxHashLink } from 'base/components/TxHashLink';
 import { TxFailedError } from 'base/errors/TxFailedError';
 import { TxInfoError } from 'base/errors/TxInfoError';
 import { TxInfoParseError } from 'base/errors/TxInfoParseError';
+import { TxResult } from 'base/transactions/tx';
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';
 
@@ -43,8 +44,16 @@ const channels = (
   </ul>
 );
 
-const txFailedMessage = (
+const txFailedMessage = (txResult: TxResult) => (
   <div style={{ lineHeight: '1.8em' }}>
+    {txResult.result && (
+      <>
+        <p>
+          TxHash: <TxHashLink txHash={txResult.result.txhash} />
+        </p>
+        <p>{txResult.result.raw_log}</p>
+      </>
+    )}
     <p>
       If you are using multiple wallets, please retry after refreshing the
       WebApp.
@@ -111,7 +120,10 @@ export function Fault({ result: { error, errorId } }: FaultProps) {
           <>
             <h2>Failed to broadcast transaction</h2>
             <HorizontalHeavyRuler />
-            <ErrorView errorId={errorId} text={txFailedMessage} />
+            <ErrorView
+              errorId={errorId}
+              text={txFailedMessage(error.txResult)}
+            />
           </>
         ) : // getTxInfo() the tx is failed
         error instanceof TxInfoError ? (
