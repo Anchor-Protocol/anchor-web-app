@@ -49,7 +49,7 @@ export function useAnchorLPRewards(): MappedQueryResult<
   } = useQuery<RawData, RawVariables>(query, {
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
-    pollInterval: 1000 * 60,
+    pollInterval: 1000 * 60 * 10,
     onError,
   });
 
