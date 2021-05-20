@@ -3,8 +3,10 @@ import {
   demicrofy,
   formatLunaWithPostfixUnits,
   formatRate,
+  formatUST,
   formatUSTWithPostfixUnits,
   formatUTokenInteger,
+  formatUTokenIntegerWithoutPostfixUnits,
 } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import { Luna, Rate, UST, uUST } from '@anchor-protocol/types';
@@ -114,10 +116,12 @@ function MarketBase({ className }: MarketProps) {
               <section>
                 <h2>TOTAL VALUE LOCKED</h2>
                 <p className="amount">
-                  <AnimateNumber format={formatUSTWithPostfixUnits}>
+                  <AnimateNumber
+                    format={formatUTokenIntegerWithoutPostfixUnits}
+                  >
                     {totalValueLocked
-                      ? demicrofy(totalValueLocked.totalValueLocked)
-                      : (0 as UST<number>)}
+                      ? totalValueLocked.totalValueLocked
+                      : (0 as uUST<number>)}
                   </AnimateNumber>
                   <span>UST</span>
                 </p>
@@ -141,10 +145,12 @@ function MarketBase({ className }: MarketProps) {
                     </h3>
                     <p>
                       ${' '}
-                      <AnimateNumber format={formatUSTWithPostfixUnits}>
+                      <AnimateNumber
+                        format={formatUTokenIntegerWithoutPostfixUnits}
+                      >
                         {totalValueLocked
-                          ? demicrofy(totalValueLocked.totalDeposit)
-                          : (0 as UST<number>)}
+                          ? totalValueLocked.totalDeposit
+                          : (0 as uUST<number>)}
                       </AnimateNumber>
                     </p>
                     <h3>
@@ -153,10 +159,12 @@ function MarketBase({ className }: MarketProps) {
                     </h3>
                     <p>
                       ${' '}
-                      <AnimateNumber format={formatUSTWithPostfixUnits}>
+                      <AnimateNumber
+                        format={formatUTokenIntegerWithoutPostfixUnits}
+                      >
                         {totalValueLocked
-                          ? demicrofy(totalValueLocked.totalCollaterals)
-                          : (0 as UST<number>)}
+                          ? totalValueLocked.totalCollaterals
+                          : (0 as uUST<number>)}
                       </AnimateNumber>
                     </p>
                   </div>
@@ -168,10 +176,12 @@ function MarketBase({ className }: MarketProps) {
               <section>
                 <h2>YIELD RESERVE</h2>
                 <p className="amount">
-                  <AnimateNumber format={formatUSTWithPostfixUnits}>
+                  <AnimateNumber
+                    format={formatUTokenIntegerWithoutPostfixUnits}
+                  >
                     {totalValueLocked
-                      ? demicrofy(totalValueLocked.yieldReserve)
-                      : (0 as UST<number>)}
+                      ? totalValueLocked.yieldReserve
+                      : (0 as uUST<number>)}
                   </AnimateNumber>
                   <span>UST</span>
                 </p>
@@ -262,10 +272,10 @@ function MarketBase({ className }: MarketProps) {
                   </span>
                 </h2>
                 <p className="amount">
-                  <AnimateNumber format={formatUSTWithPostfixUnits}>
-                    {stableCoin
-                      ? demicrofy(stableCoin.totalDeposit)
-                      : (0 as UST<number>)}
+                  <AnimateNumber
+                    format={formatUTokenIntegerWithoutPostfixUnits}
+                  >
+                    {stableCoin ? stableCoin.totalDeposit : (0 as uUST<number>)}
                   </AnimateNumber>
                   <span>UST</span>
                 </p>
@@ -278,10 +288,10 @@ function MarketBase({ className }: MarketProps) {
                   </span>
                 </h2>
                 <p className="amount">
-                  <AnimateNumber format={formatUSTWithPostfixUnits}>
-                    {stableCoin
-                      ? demicrofy(stableCoin.totalBorrow)
-                      : (0 as UST<number>)}
+                  <AnimateNumber
+                    format={formatUTokenIntegerWithoutPostfixUnits}
+                  >
+                    {stableCoin ? stableCoin.totalBorrow : (0 as uUST<number>)}
                   </AnimateNumber>
                   <span>UST</span>
                 </p>
@@ -353,12 +363,12 @@ function MarketBase({ className }: MarketProps) {
                   </td>
                   <td>
                     <div className="value">
+                      ${' '}
                       <AnimateNumber format={formatUTokenInteger}>
                         {stableCoin
                           ? stableCoin.totalDeposit
                           : (0 as uUST<number>)}
                       </AnimateNumber>
-                      <span> UST</span>
                     </div>
                   </td>
                   <td>
@@ -373,12 +383,12 @@ function MarketBase({ className }: MarketProps) {
                   </td>
                   <td>
                     <div className="value">
+                      ${' '}
                       <AnimateNumber format={formatUTokenInteger}>
                         {stableCoin
                           ? stableCoin.totalBorrow
                           : (0 as uUST<number>)}
                       </AnimateNumber>
-                      <span> UST</span>
                     </div>
                   </td>
                   <td>
@@ -401,10 +411,12 @@ function MarketBase({ className }: MarketProps) {
                   </span>
                 </h2>
                 <p className="amount">
-                  <AnimateNumber format={formatUSTWithPostfixUnits}>
+                  <AnimateNumber
+                    format={formatUTokenIntegerWithoutPostfixUnits}
+                  >
                     {collaterals
-                      ? demicrofy(collaterals.mainTotalCollateralValue)
-                      : (0 as UST<number>)}
+                      ? collaterals.mainTotalCollateralValue
+                      : (0 as uUST<number>)}
                   </AnimateNumber>
                   <span> UST</span>
                 </p>
@@ -463,12 +475,12 @@ function MarketBase({ className }: MarketProps) {
                   </td>
                   <td>
                     <div className="value">
-                      <AnimateNumber format={formatUSTWithPostfixUnits}>
+                      ${' '}
+                      <AnimateNumber format={formatUST}>
                         {collaterals
                           ? collaterals.blunaPrice
                           : (0 as UST<number>)}
                       </AnimateNumber>
-                      <span> UST</span>
                     </div>
                   </td>
                   <td>
@@ -482,6 +494,7 @@ function MarketBase({ className }: MarketProps) {
                   </td>
                   <td>
                     <div className="value">
+                      ${' '}
                       <AnimateNumber
                         format={formatUSTWithPostfixUnits}
                         id="collateral-value"
@@ -490,7 +503,6 @@ function MarketBase({ className }: MarketProps) {
                           ? demicrofy(collaterals.totalCollateralValue)
                           : (0 as UST<number>)}
                       </AnimateNumber>
-                      <span> UST</span>
                     </div>
                   </td>
                 </tr>
