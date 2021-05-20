@@ -1,6 +1,5 @@
-import { configErrorBoundary } from '@terra-dev/neumorphism-ui/components/configErrorBoundary';
 import * as Sentry from '@sentry/react';
-import { Integrations } from '@sentry/tracing';
+import { configErrorBoundary } from '@terra-dev/neumorphism-ui/components/configErrorBoundary';
 import { SENTRY_DSN } from 'base/env';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -10,9 +9,8 @@ import reportWebVitals from './reportWebVitals';
 if (process.env.NODE_ENV === 'production') {
   Sentry.init({
     dsn: SENTRY_DSN,
-    integrations: [new Integrations.BrowserTracing()],
-
-    tracesSampleRate: 1.0,
+    //integrations: [new Integrations.BrowserTracing()],
+    //tracesSampleRate: 1.0,
     maxValueLength: 2000,
   });
 
