@@ -81,7 +81,7 @@ export function usePoll(
   } = useQuery<RawData, RawVariables>(query, {
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
-    //pollInterval: 1000 * 60,
+    //pollInterval: 1000 * 60 * 10,
     variables,
     onError,
   });
