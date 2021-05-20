@@ -208,7 +208,7 @@ export function useLiquidationPrice(): MappedQueryResult<
     skip: !variables,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
-    pollInterval: 1000 * 60 * 10,
+    pollInterval: 1000 * 60 * 3,
     variables,
     onError,
   });
