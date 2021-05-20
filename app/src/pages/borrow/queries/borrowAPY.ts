@@ -71,7 +71,7 @@ export function useBorrowAPY(): MappedQueryResult<{}, RawData, Data> {
   >(query, {
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
-    pollInterval: 1000 * 60 * 10,
+    pollInterval: 1000 * 60 * 3,
     onError,
   });
 
