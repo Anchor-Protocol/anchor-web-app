@@ -42,6 +42,8 @@ export function extensionFixer(
 
     if (error && 'code' in error && error.code === 1 && reject) {
       reject(new UserDeniedError());
+    } else if (error && 'message' in error && reject) {
+      reject(new Error(error.message));
     } else if (resolve) {
       resolve({ name: 'onPost', payload });
     }

@@ -86,8 +86,9 @@ const txParseFailedMessage = (txhash: string) => (
   </div>
 );
 
-const uncaughtErrorMessage = (
+const uncaughtErrorMessage = (error: unknown) => (
   <div style={{ lineHeight: '1.8em' }}>
+    {error instanceof Error && <p>{error.message}</p>}
     <p>
       Please report your error ID to admin through anyone of the following
       channels.
@@ -147,7 +148,7 @@ export function Fault({ result: { error, errorId } }: FaultProps) {
           <>
             <h2>Oops, something went wrong!</h2>
             <HorizontalHeavyRuler />
-            <ErrorView errorId={errorId} text={uncaughtErrorMessage} />
+            <ErrorView errorId={errorId} text={uncaughtErrorMessage(error)} />
           </>
         )
       }
