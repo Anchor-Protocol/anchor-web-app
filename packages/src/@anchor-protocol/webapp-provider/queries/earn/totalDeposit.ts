@@ -1,12 +1,20 @@
-import { earnTotalDepositQuery } from '@anchor-protocol/webapp-fns';
+import {
+  EarnTotalDepositData,
+  earnTotalDepositQuery,
+} from '@anchor-protocol/webapp-fns';
 import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
 import { useEventBusListener } from '@terra-dev/event-bus';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useTerraWebapp } from '@terra-money/webapp-provider';
-import { useQuery } from 'react-query';
+import {
+  EMPTY_QUERY_RESULT,
+  useTerraWebapp,
+} from '@terra-money/webapp-provider';
+import { useQuery, UseQueryResult } from 'react-query';
 
-export function useEarnTotalDepositQuery() {
+export function useEarnTotalDepositQuery(): UseQueryResult<
+  EarnTotalDepositData | undefined
+> {
   const connectedWallet = useConnectedWallet();
 
   const { mantleFetch, mantleEndpoint, lastSyncedHeight } = useTerraWebapp();
@@ -66,5 +74,5 @@ export function useEarnTotalDepositQuery() {
     }
   });
 
-  return result;
+  return !!connectedWallet ? result : EMPTY_QUERY_RESULT;
 }

@@ -1,5 +1,3 @@
-import { ReactNode } from 'react';
-
 export enum TxStreamPhase {
   /** in progress post (wait allow from chrome extension or walletconnect) */
   POST = 'POST',
@@ -20,8 +18,8 @@ export interface TxErrorRendering {
 }
 
 export interface TxReceipt {
-  name: ReactNode;
-  value: ReactNode;
+  name: string | JSX.Element;
+  value: string | JSX.Element;
 }
 
 export interface TxResultRendering<T = unknown> {

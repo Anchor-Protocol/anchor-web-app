@@ -20,7 +20,7 @@ type RawLogMsg = {
   events: RawLogEvent[];
 };
 
-interface RxInfoRawData {
+interface TxInfoRawData {
   TxInfos: {
     TxHash: string;
     Success: boolean;
@@ -60,7 +60,7 @@ export async function txInfoQuery({
   mantleFetch,
   variables,
 }: TxInfoQueryParams): Promise<TxInfoData> {
-  const { TxInfos } = await mantleFetch<TxInfoVariables, RxInfoRawData>(
+  const { TxInfos } = await mantleFetch<TxInfoVariables, TxInfoRawData>(
     TX_INFO_QUERY,
     variables,
     `${mantleEndpoint}?txinfo&txhash=${variables.txhash}`,
