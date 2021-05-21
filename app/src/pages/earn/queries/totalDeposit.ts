@@ -161,7 +161,7 @@ export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
   });
 
   useEventBusListener('interest-earned-updated', () => {
-    if (userWallet) {
+    if (userWallet && !!variables) {
       _refetch();
     }
   });
