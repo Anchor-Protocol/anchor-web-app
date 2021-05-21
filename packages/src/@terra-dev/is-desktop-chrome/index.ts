@@ -1,8 +1,15 @@
+import { isMathWallet } from '@terra-dev/mathwallet';
 import { getParser } from 'bowser';
 import MobileDetect from 'mobile-detect';
 
 export const isDesktopChrome = () => {
-  const browser = getParser(navigator.userAgent);
+  const userAgent = navigator.userAgent;
+
+  if (isMathWallet(userAgent)) {
+    return true;
+  }
+
+  const browser = getParser(userAgent);
   const mobileDetect = new MobileDetect(navigator.userAgent);
 
   return (
