@@ -127,7 +127,7 @@ export function useExpectedInterest(): MappedQueryResult<
   const { dispatch } = useEventBus();
 
   const variables = useMemo(() => {
-    if (!userWallet || lastSyncedHeight === 0) {
+    if (!userWallet || !lastSyncedHeight || lastSyncedHeight === 0) {
       return undefined;
     }
 
@@ -141,13 +141,13 @@ export function useExpectedInterest(): MappedQueryResult<
       moneyMarketContract: address.moneyMarket.market,
       moneyMarketEpochStateQuery: {
         epoch_state: {
-          block_height: lastSyncedHeight,
+          block_height: lastSyncedHeight + 3,
         },
       },
       overseerContract: address.moneyMarket.overseer,
       overseerEpochStateQuery: {
         epoch_state: {
-          block_height: lastSyncedHeight,
+          block_height: lastSyncedHeight + 3,
         },
       },
     });
@@ -168,7 +168,7 @@ export function useExpectedInterest(): MappedQueryResult<
     error,
     ...result
   } = useQuery<RawData, RawVariables>(query, {
-    skip: !variables,
+    skip: !variables || !userWallet,
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     //pollInterval: 1000 * 60 * 10,
@@ -180,7 +180,9 @@ export function useExpectedInterest(): MappedQueryResult<
   const refetch = useRefetch(_refetch, dataMap);
 
   useEffect(() => {
-    dispatch('interest-earned-updated');
+    if (variables) {
+      dispatch('interest-earned-updated');
+    }
   }, [variables, dispatch]);
 
   return {
