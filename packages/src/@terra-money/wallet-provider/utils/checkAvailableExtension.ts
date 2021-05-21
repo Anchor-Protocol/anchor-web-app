@@ -1,3 +1,4 @@
+import { isMathWallet } from '@terra-dev/mathwallet';
 import { ConnectType } from '../types';
 
 const interval = 500;
@@ -8,6 +9,11 @@ export async function checkAvailableExtension(
   return new Promise<
     ConnectType.CHROME_EXTENSION | ConnectType.WEBEXTENSION | null
   >((resolve) => {
+    if (isMathWallet(navigator.userAgent)) {
+      resolve(ConnectType.CHROME_EXTENSION);
+      return;
+    }
+
     const start = Date.now();
 
     function check() {

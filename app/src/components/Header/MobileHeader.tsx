@@ -1,5 +1,6 @@
 import { Menu, MenuClose, MenuWallet } from '@anchor-protocol/icons';
 import { Launch } from '@material-ui/icons';
+import { isMathWallet } from '@terra-dev/mathwallet';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { IconToggleButton } from '@terra-dev/neumorphism-ui/components/IconToggleButton';
 import {
@@ -36,7 +37,11 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
         openSend: () => openSendDialog({}),
       });
     } else if (status === WalletStatus.WALLET_NOT_CONNECTED) {
-      connect(ConnectType.WALLETCONNECT);
+      connect(
+        isMathWallet(navigator.userAgent)
+          ? ConnectType.CHROME_EXTENSION
+          : ConnectType.WALLETCONNECT,
+      );
     }
   }, [connect, openSendDialog, openWalletDetail, status]);
 
