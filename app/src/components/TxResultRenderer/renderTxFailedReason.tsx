@@ -81,11 +81,11 @@ const txFailedMessage = (txhash: string | undefined, message: string) => (
 const txUnspecifiedErrorMessage = (message: string | undefined | null) => (
   <div style={{ lineHeight: '1.8em' }}>
     {typeof message === 'string' && <p>{message}</p>}
-    <p>
+    <p style={{ opacity: typeof message === 'string' ? 0.7 : undefined }}>
       If you are using multiple wallets, please retry after refreshing the
       WebApp.
     </p>
-    <p>
+    <p style={{ opacity: typeof message === 'string' ? 0.7 : undefined }}>
       If the problem still persists, please report your error ID to admin
       through anyone of the following channels.
     </p>
@@ -100,11 +100,11 @@ const txParseFailedMessage = (
 ) => (
   <div style={{ lineHeight: '1.8em' }}>
     {typeof message === 'string' && <p>{message}</p>}
-    <p>
+    <p style={{ opacity: typeof message === 'string' ? 0.7 : undefined }}>
       The transaction was broadcasted, but there was an error in parsing the
       results.
     </p>
-    <p>
+    <p style={{ opacity: typeof message === 'string' ? 0.7 : undefined }}>
       Please report your error ID to admin through anyone of the following
       channels.
     </p>
@@ -120,7 +120,7 @@ const txParseFailedMessage = (
 const uncaughtErrorMessage = (message: string | null | undefined) => (
   <div style={{ lineHeight: '1.8em' }}>
     {typeof message === 'string' && <p>{message}</p>}
-    <p>
+    <p style={{ opacity: typeof message === 'string' ? 0.7 : undefined }}>
       Please report your error ID to admin through anyone of the following
       channels.
     </p>
