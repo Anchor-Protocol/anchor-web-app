@@ -78,8 +78,9 @@ const txFailedMessage = (txhash: string | undefined, message: string) => (
   </div>
 );
 
-const txUnspecifiedErrorMessage = (
+const txUnspecifiedErrorMessage = (message: string | undefined | null) => (
   <div style={{ lineHeight: '1.8em' }}>
+    {typeof message === 'string' && <p>{message}</p>}
     <p>
       If you are using multiple wallets, please retry after refreshing the
       WebApp.
@@ -93,8 +94,12 @@ const txUnspecifiedErrorMessage = (
   </div>
 );
 
-const txParseFailedMessage = (txhash: string) => (
+const txParseFailedMessage = (
+  txhash: string,
+  message: string | null | undefined,
+) => (
   <div style={{ lineHeight: '1.8em' }}>
+    {typeof message === 'string' && <p>{message}</p>}
     <p>
       The transaction was broadcasted, but there was an error in parsing the
       results.
@@ -112,8 +117,9 @@ const txParseFailedMessage = (txhash: string) => (
   </div>
 );
 
-const uncaughtErrorMessage = (
+const uncaughtErrorMessage = (message: string | null | undefined) => (
   <div style={{ lineHeight: '1.8em' }}>
+    {typeof message === 'string' && <p>{message}</p>}
     <p>
       Please report your error ID to admin through anyone of the following
       channels.
@@ -178,7 +184,7 @@ export function renderTxFailedReason({
       <>
         <h2>Failed to transaction</h2>
         <div>
-          <pre>{txUnspecifiedErrorMessage}</pre>
+          <pre>{txUnspecifiedErrorMessage(error.message)}</pre>
           {errorId && (
             <p>
               <b>Error ID</b>: {errorId}
@@ -213,7 +219,9 @@ export function renderTxFailedReason({
       <>
         <h2>Failed to parse transaction results</h2>
         <div>
-          <pre>{txParseFailedMessage(error.txResult.result.txhash)}</pre>
+          <pre>
+            {txParseFailedMessage(error.txResult.result.txhash, error.message)}
+          </pre>
           {errorId && (
             <p>
               <b>Error ID</b>: {errorId}
@@ -230,7 +238,11 @@ export function renderTxFailedReason({
       <>
         <h2>Oops, something went wrong!</h2>
         <div>
-          <pre>{uncaughtErrorMessage}</pre>
+          <pre>
+            {uncaughtErrorMessage(
+              error instanceof Error ? error.message : String(error),
+            )}
+          </pre>
           {errorId && (
             <p>
               <b>Error ID</b>: {errorId}
