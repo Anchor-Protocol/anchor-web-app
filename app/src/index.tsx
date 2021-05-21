@@ -11,7 +11,7 @@ if (process.env.NODE_ENV === 'production') {
     dsn: SENTRY_DSN,
     //integrations: [new Integrations.BrowserTracing()],
     //tracesSampleRate: 1.0,
-    maxValueLength: 2000,
+    maxValueLength: 800,
   });
 
   configErrorBoundary(Sentry.ErrorBoundary);
