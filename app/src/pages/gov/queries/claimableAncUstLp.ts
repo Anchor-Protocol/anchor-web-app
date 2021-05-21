@@ -112,7 +112,7 @@ export function useClaimableAncUstLp(): MappedQueryResult<
       UserLPStakingInfoQuery: {
         staker_info: {
           staker: userWallet.walletAddress,
-          block_height: lastSyncedHeight,
+          block_height: lastSyncedHeight + 3,
         },
       },
     });

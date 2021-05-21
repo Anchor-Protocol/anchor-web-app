@@ -45,4 +45,4 @@ export const cloudFlareOption = {
   ],
 };
 
-// build: vercel trigger build - 21.05.10
+// build: vercel trigger build - 21.05.21

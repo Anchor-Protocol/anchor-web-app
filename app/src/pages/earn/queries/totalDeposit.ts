@@ -142,7 +142,7 @@ export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
       moneyMarketContract: moneyMarket.market,
       moneyMarketEpochQuery: {
         epoch_state: {
-          block_height: lastSyncedHeight,
+          block_height: lastSyncedHeight + 3,
         },
       },
     });
@@ -165,13 +165,13 @@ export function useDeposit(): MappedQueryResult<RawVariables, RawData, Data> {
   });
 
   useEventBusListener('interest-earned-updated', () => {
-    if (userWallet) {
+    if (userWallet && !!variables) {
       refetchLastSyncedHeight();
     }
   });
 
   useEventBusListener('tx-completed', () => {
-    if (userWallet) {
+    if (userWallet && !!variables) {
       refetchLastSyncedHeight();
     }
   });
