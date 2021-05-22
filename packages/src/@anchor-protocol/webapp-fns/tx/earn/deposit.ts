@@ -109,7 +109,7 @@ export function earnDepositTx(
         tx: savedTx,
         txhash: txResult.result.txhash,
       }).then((txInfo) => {
-        // TODO invalidate react query
+        $.onTxSucceed?.();
 
         const rawLog = pickRawLog(txInfo, 0);
 

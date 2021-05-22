@@ -1,7 +1,10 @@
 import { AddressMap, AddressProvider } from '@anchor-protocol/anchor.js';
 import { QueryDependencyProvider } from '@anchor-protocol/queries';
 import { ContractAddress, Rate, uUST } from '@anchor-protocol/types';
-import { AnchorWebappProvider } from '@anchor-protocol/webapp-provider';
+import {
+  ANCHOR_TX_REFETCH_MAP,
+  AnchorWebappProvider,
+} from '@anchor-protocol/webapp-provider';
 import {
   ApolloClient,
   ApolloError,
@@ -179,6 +182,7 @@ function Providers({ children }: { children: ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <BrowserInactiveProvider>
           <TerraWebappProvider
+            txRefetchMap={ANCHOR_TX_REFETCH_MAP}
             txErrorReporter={operationBroadcasterErrorReporter}
           >
             <WebappBankProvider

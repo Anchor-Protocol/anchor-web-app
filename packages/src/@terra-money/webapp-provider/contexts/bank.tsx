@@ -82,8 +82,17 @@ export interface Bank<
   refetchTax: () => Promise<TaxDataType>;
 }
 
-// @ts-ignore
-const BankContext: Context<Bank> = createContext<Bank>();
+const BankContext: Context<Bank> = createContext<Bank>({
+  tokenBalances: {},
+  refetchTokenBalances: () => Promise.resolve({}),
+  tax: {
+    taxRate: '0',
+  },
+  refetchTax: () =>
+    Promise.resolve({
+      taxRate: '0',
+    }),
+});
 
 export function BankProvider({
   children,

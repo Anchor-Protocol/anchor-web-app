@@ -1,10 +1,13 @@
 import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import { UST, uUST } from '@anchor-protocol/types';
-import { earnDepositTx } from '@anchor-protocol/webapp-fns';
+import { ANCHOR_TX_KEY, earnDepositTx } from '@anchor-protocol/webapp-fns';
 import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank, useTerraWebapp } from '@terra-money/webapp-provider';
+import {
+  useRefetchQueries,
+  useTerraWebapp,
+} from '@terra-money/webapp-provider';
 import { BigSource } from 'big.js';
 import { useCallback } from 'react';
 
@@ -21,7 +24,7 @@ export function useEarnDepositTx() {
 
   const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
 
-  const { refetchTokenBalances } = useBank();
+  const refetchQueries = useRefetchQueries();
 
   const stream = useCallback(
     ({ depositAmount, txFee, onTxSucceed }: EarnDepositTxParams) => {
@@ -48,7 +51,7 @@ export function useEarnDepositTx() {
         // side effect
         onTxSucceed: () => {
           onTxSucceed?.();
-          refetchTokenBalances();
+          refetchQueries(ANCHOR_TX_KEY.EARN_DEPOSIT);
         },
       });
     },
@@ -60,7 +63,7 @@ export function useEarnDepositTx() {
       mantleEndpoint,
       mantleFetch,
       txErrorReporter,
-      refetchTokenBalances,
+      refetchQueries,
     ],
   );
 

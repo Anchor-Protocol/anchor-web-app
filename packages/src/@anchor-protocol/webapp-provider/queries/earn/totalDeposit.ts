@@ -1,4 +1,5 @@
 import {
+  ANCHOR_QUERY_KEY,
   EarnTotalDepositData,
   earnTotalDepositQuery,
 } from '@anchor-protocol/webapp-fns';
@@ -27,7 +28,7 @@ export function useEarnTotalDepositQuery(): UseQueryResult<
 
   const result = useQuery(
     [
-      'EARN_TOTAL_DEPOSIT',
+      ANCHOR_QUERY_KEY.EARN_TOTAL_DEPOSIT,
       connectedWallet?.walletAddress,
       mantleEndpoint,
       mantleFetch,
@@ -63,12 +64,6 @@ export function useEarnTotalDepositQuery(): UseQueryResult<
 
   // TODO remove
   useEventBusListener('interest-earned-updated', () => {
-    if (connectedWallet && !browserInactive) {
-      result.refetch();
-    }
-  });
-
-  useEventBusListener('tx-completed', () => {
     if (connectedWallet && !browserInactive) {
       result.refetch();
     }

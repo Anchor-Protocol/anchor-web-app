@@ -85,7 +85,7 @@ export async function earnTotalDepositQuery({
       moneyMarketContract: variables.moneyMarketContract,
       moneyMarketEpochQuery: JSON.stringify(variables.moneyMarketEpochQuery),
     },
-    mantleEndpoint + '?earn--total-deposit',
+    `${mantleEndpoint}?earn--total-deposit`,
   );
 
   return {

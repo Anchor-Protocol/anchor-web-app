@@ -4,19 +4,14 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { Rate, uUST } from '@anchor-protocol/types';
-import {
-  AnchorTax,
-  AnchorTokenBalances,
-  useEarnTotalDepositQuery,
-} from '@anchor-protocol/webapp-provider';
+import { useEarnTotalDepositQuery } from '@anchor-protocol/webapp-provider';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank } from '@terra-money/webapp-provider';
 import big, { Big, BigSource } from 'big.js';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { totalDepositUST } from '../logics/totalDepositUST';
 import { useDepositDialog } from './useDepositDialog2';
 import { useWithdrawDialog } from './useWithdrawDialog';
@@ -30,16 +25,6 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
   // dependencies
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
-
-  const { tokenBalances, tax } = useBank<AnchorTokenBalances, AnchorTax>();
-
-  useEffect(() => {
-    console.log('TotalDepositSection.tsx..()', tokenBalances.uUST);
-  }, [tokenBalances]);
-
-  useEffect(() => {
-    console.log('TotalDepositSection.tsx..()', tax.taxRate, tax.maxTaxUUSD);
-  }, [tax]);
 
   // ---------------------------------------------
   // queries

@@ -1,5 +1,6 @@
 import { AddressMap } from '@anchor-protocol/anchor.js';
 import { Rate, uUST } from '@anchor-protocol/types';
+import { TERRA_QUERY_KEY } from '@terra-money/webapp-fns';
 import { AnchorContants } from './types';
 
 export const DEFAULT_ADDESS_MAP: Record<string, AddressMap> = {
@@ -80,4 +81,19 @@ export const DEFAULT_ANCHOR_TX_CONSTANTS: Record<string, AnchorContants> = {
     blocksPerYear: 4906443,
     gasAdjustment: 1.4 as Rate<number>,
   },
+};
+
+export enum ANCHOR_TX_KEY {
+  EARN_DEPOSIT = 'ANCHOR_TX_EARN_DEPOSIT',
+}
+
+export enum ANCHOR_QUERY_KEY {
+  EARN_TOTAL_DEPOSIT = 'ANCHOR_QUERY_EARN_TOTAL_DEPOSIT',
+}
+
+export const ANCHOR_TX_REFETCH_MAP: Record<string, string[]> = {
+  [ANCHOR_TX_KEY.EARN_DEPOSIT]: [
+    TERRA_QUERY_KEY.TOKEN_BALANCES,
+    ANCHOR_QUERY_KEY.EARN_TOTAL_DEPOSIT,
+  ],
 };

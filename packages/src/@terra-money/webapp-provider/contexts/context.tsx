@@ -38,6 +38,8 @@ export interface TerraWebapp {
 
   // sentry captureException()
   txErrorReporter?: (error: unknown) => string;
+
+  txRefetchMap: Record<string, string[]>;
 }
 
 // @ts-ignore
@@ -70,8 +72,15 @@ export function TerraWebappProvider({
       mantleEndpoint,
       mantleFetch,
       txErrorReporter,
+      txRefetchMap,
     }),
-    [lastSyncedHeight, mantleEndpoint, mantleFetch, txErrorReporter],
+    [
+      lastSyncedHeight,
+      mantleEndpoint,
+      mantleFetch,
+      txRefetchMap,
+      txErrorReporter,
+    ],
   );
 
   return (
