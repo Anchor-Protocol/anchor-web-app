@@ -27,3 +27,22 @@ export const EMPTY_QUERY_RESULT: UseQueryResult<undefined> = {
   remove: () => {},
   refetch: () => Promise.resolve(EMPTY_QUERY_RESULT),
 };
+
+export const DEFAULT_NATIVE_TOKEN_KEYS = {
+  uLuna: 'uluna',
+  uSDR: 'usdr',
+  uUST: 'uusd',
+  uKRW: 'ukrw',
+  uMNT: 'umnt',
+  uEUR: 'ueur',
+  uCNY: 'ucny',
+  uJPY: 'ujpy',
+  uGBP: 'ugbp',
+  uINR: 'uinr',
+  uCAD: 'ucad',
+  uCHF: 'uchf',
+  uAUD: 'uaud',
+  uSGD: 'usgd',
+  uTHB: 'uthb',
+  uSEK: 'usek',
+};

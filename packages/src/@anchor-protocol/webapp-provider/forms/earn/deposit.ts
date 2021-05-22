@@ -14,7 +14,7 @@ export function useEarnDepositForm(): EarnDepositFormReturn {
   //  return new EarnDepositForm({
   //    isConnected: !!connectedWallet,
   //    fixedGas: contants.fixedGas,
-  //
+  //    taxRate:
   //  })
   //})
 

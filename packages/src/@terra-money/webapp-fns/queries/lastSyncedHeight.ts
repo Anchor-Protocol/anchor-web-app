@@ -12,8 +12,11 @@ interface LastSyncedHeight {
 }
 
 class BlockHeightFetcher {
-  private resolvers = new Set<(blockHeight: number) => void>();
+  private resolvers = new Set<
+    [(blockHeight: number) => void, (error: unknown) => void]
+  >();
   private fetched: boolean = false;
+  private failedCount: number = 0;
 
   constructor(
     private mantleEndpoint: string,
@@ -21,8 +24,8 @@ class BlockHeightFetcher {
   ) {}
 
   fetchBlockHeight = () => {
-    return new Promise<number>((resolve) => {
-      this.resolvers.add(resolve);
+    return new Promise<number>((resolve, reject) => {
+      this.resolvers.add([resolve, reject]);
       this.fetch();
     });
   };
@@ -40,18 +43,29 @@ class BlockHeightFetcher {
       this.mantleEndpoint + '?last-synced-height',
     )
       .then(({ LastSyncedHeight }) => {
-        for (const resolver of this.resolvers) {
-          resolver(LastSyncedHeight);
+        for (const [resolve] of this.resolvers) {
+          resolve(LastSyncedHeight);
         }
         this.resolvers.clear();
         this.fetched = false;
+        this.failedCount = 0;
       })
       .catch((error) => {
-        console.error(error);
-        setTimeout(() => {
+        if (this.failedCount > 4) {
+          for (const [, reject] of this.resolvers) {
+            reject(error);
+          }
+          this.resolvers.clear();
           this.fetched = false;
-          this.fetch();
-        }, 100);
+          this.failedCount = 0;
+        } else {
+          console.error(error);
+          setTimeout(() => {
+            this.fetched = false;
+            this.failedCount += 1;
+            this.fetch();
+          }, 100);
+        }
       });
   };
 }
