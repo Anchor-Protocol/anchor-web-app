@@ -1,12 +1,13 @@
 import {
   AddressProvider,
-  fabricateMarketDepositStableCoin,
+  fabricateMarketRedeemStable,
 } from '@anchor-protocol/anchor.js';
 import {
   demicrofy,
   formatAUSTWithPostfixUnits,
   formatFluidDecimalPoints,
   formatUSTWithPostfixUnits,
+  stripUUSD,
 } from '@anchor-protocol/notation';
 import { Rate, uaUST, uUST } from '@anchor-protocol/types';
 import { pipe } from '@rx-stream/pipe';
@@ -16,7 +17,7 @@ import { Timeout, TxResult, UserDenied } from '@terra-dev/wallet-types';
 import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
 import {
   MantleFetch,
-  pickAttributeValue,
+  pickAttributeValueByKey,
   pickEvent,
   pickRawLog,
   pollTxInfo,
@@ -29,8 +30,8 @@ import { createElement } from 'react';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-export function earnDepositTx(
-  $: Parameters<typeof fabricateMarketDepositStableCoin>[0] & {
+export function earnWithdrawTx(
+  $: Parameters<typeof fabricateMarketRedeemStable>[0] & {
     gasFee: uUST<number>;
     gasAdjustment: Rate<number>;
     txFee: uUST;
@@ -68,11 +69,9 @@ export function earnDepositTx(
     // create tx
     // ---------------------------------------------
     (_: void) => {
-      //throw new Timeout('Shit...!!!!');
-
       return {
         value: {
-          msgs: fabricateMarketDepositStableCoin($)($.addressProvider),
+          msgs: fabricateMarketRedeemStable($)($.addressProvider),
           fee: new StdFee($.gasFee, floor($.txFee) + 'uusd'),
           gasAdjustment: $.gasAdjustment,
         },
@@ -123,28 +122,44 @@ export function earnDepositTx(
         }
 
         const fromContract = pickEvent(rawLog, 'from_contract');
+        const transfer = pickEvent(rawLog, 'transfer');
 
-        if (!fromContract) {
+        if (!fromContract || !transfer) {
           return {
             value: null,
 
             phase: TxStreamPhase.SUCCEED,
             receiptErrors: [
-              { error: new Error(`Undefined the from_contract event`) },
+              {
+                error: new Error(
+                  `Undefined the from_contract or transfer event`,
+                ),
+              },
             ],
             receipts: [txHashReceipt(), txFeeReceipt()],
           } as TxResultRendering;
         }
 
         try {
-          const depositAmount = pickAttributeValue<uUST>(fromContract, 4);
+          const withdrawAmountUUSD = pickAttributeValueByKey<string>(
+            transfer,
+            'amount',
+            (attrs) => attrs.reverse()[0],
+          );
 
-          const receivedAmount = pickAttributeValue<uaUST>(fromContract, 3);
+          const withdrawAmount = withdrawAmountUUSD
+            ? stripUUSD(withdrawAmountUUSD)
+            : undefined;
+
+          const burnAmount = pickAttributeValueByKey<uaUST>(
+            fromContract,
+            'burn_amount',
+          );
 
           const exchangeRate =
-            depositAmount &&
-            receivedAmount &&
-            (big(depositAmount).div(receivedAmount) as
+            withdrawAmount &&
+            burnAmount &&
+            (big(withdrawAmount).div(burnAmount) as
               | Rate<BigSource>
               | undefined);
 
@@ -153,16 +168,15 @@ export function earnDepositTx(
 
             phase: TxStreamPhase.SUCCEED,
             receipts: [
-              depositAmount && {
-                name: 'Deposit Amount',
+              withdrawAmount && {
+                name: 'Withdraw Amount',
                 value:
-                  formatUSTWithPostfixUnits(demicrofy(depositAmount)) + ' UST',
+                  formatUSTWithPostfixUnits(demicrofy(withdrawAmount)) + ' UST',
               },
-              receivedAmount && {
-                name: 'Received Amount',
+              burnAmount && {
+                name: 'Returned Amount',
                 value:
-                  formatAUSTWithPostfixUnits(demicrofy(receivedAmount)) +
-                  ' aUST',
+                  formatAUSTWithPostfixUnits(demicrofy(burnAmount)) + ' aUST',
               },
               exchangeRate && {
                 name: 'Exchange Rate',
