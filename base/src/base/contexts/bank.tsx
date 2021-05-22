@@ -41,6 +41,7 @@ export interface Bank {
 // @ts-ignore
 const BankContext: Context<Bank> = createContext<Bank>();
 
+// TODO remove after refactoring done
 export function BankProvider({ children }: BankProviderProps) {
   const userWallet = useConnectedWallet();
 
@@ -113,6 +114,7 @@ export function BankProvider({ children }: BankProviderProps) {
   return <BankContext.Provider value={state}>{children}</BankContext.Provider>;
 }
 
+// TODO remove after refactoring done
 export function useBank(): Bank {
   return useContext(BankContext);
 }

@@ -241,6 +241,7 @@ export const query = gql`
   }
 `;
 
+// TODO remove after refactoring done
 export function useUserBalances(): MappedQueryResult<
   RawVariables,
   RawData,

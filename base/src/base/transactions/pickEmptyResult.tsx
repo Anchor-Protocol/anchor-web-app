@@ -9,6 +9,7 @@ interface Params {
   txInfo: Data;
 }
 
+// TODO remove after refactoring done
 export function pickEmptyResult({
   txInfo,
   txResult,

@@ -5,6 +5,7 @@ import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { captureException } from '@sentry/react';
 
+// TODO remove after refactoring done
 export function useQueryErrorHandler(): (error: ApolloError) => void {
   const { addSnackbar } = useSnackbar();
 

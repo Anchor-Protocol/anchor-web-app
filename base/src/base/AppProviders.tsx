@@ -103,22 +103,27 @@ const maxCapTokenDenoms: Record<string, string> = {
 function Providers({ children }: { children: ReactNode }) {
   const { post, network } = useWallet();
 
+  // TODO remove after refactoring done
   const isMainnet = useMemo(() => /^columbus/.test(network.chainID), [
     network.chainID,
   ]);
 
+  // TODO remove after refactoring done
   const addressMap = useMemo<AddressMap>(() => {
     return isMainnet ? columbusContractAddresses : tequilaContractAddresses;
   }, [isMainnet]);
 
+  // TODO remove after refactoring done
   const addressProvider = useMemo<AddressProvider>(() => {
     return isMainnet ? ADDRESS_PROVIDERS.mainnet : ADDRESS_PROVIDERS.testnet;
   }, [isMainnet]);
 
+  // TODO remove after refactoring done
   const address = useMemo<ContractAddress>(() => {
     return isMainnet ? ADDRESSES.mainnet : ADDRESSES.testnet;
   }, [isMainnet]);
 
+  // TODO remove after refactoring done
   const client = useMemo<ApolloClient<any>>(() => {
     const httpLink = new HttpLink({
       uri: ({ operationName }) =>
@@ -133,6 +138,7 @@ function Providers({ children }: { children: ReactNode }) {
     });
   }, [isMainnet]);
 
+  // TODO remove after refactoring done
   const constants = useMemo<Constants>(
     () =>
       isMainnet
@@ -151,6 +157,7 @@ function Providers({ children }: { children: ReactNode }) {
     [isMainnet],
   );
 
+  // TODO remove after refactoring done
   const operationGlobalDependency = useMemo<GlobalDependency>(
     () => ({
       addressProvider,
@@ -179,27 +186,45 @@ function Providers({ children }: { children: ReactNode }) {
               maxCapTokenDenoms={maxCapTokenDenoms}
             >
               <AnchorWebappProvider>
-                {/** Serve Constants */}
+                {/**
+                 Serve Constants
+                 TODO remove after refactoring done
+                 */}
                 <ConstantsProvider {...constants}>
-                  {/** Smart Contract Address :: useAddressProvider() */}
+                  {/**
+                   Smart Contract Address :: useAddressProvider()
+                   TODO remove after refactoring done
+                   */}
                   <ContractProvider
                     addressProvider={addressProvider}
                     addressMap={addressMap}
                   >
-                    {/** Set GraphQL environenments :: useQuery(), useApolloClient()... */}
+                    {/**
+                     Set GraphQL environenments :: useQuery(), useApolloClient()...
+                     TODO remove after refactoring done
+                     */}
                     <ApolloProvider client={client}>
-                      {/** Broadcastable Query Provider :: useBroadCastableQuery(), useQueryBroadCaster() */}
+                      {/**
+                       Broadcastable Query Provider :: useBroadCastableQuery(), useQueryBroadCaster()
+                       TODO remove after refactoring done
+                       */}
                       <OperationBroadcaster
                         dependency={operationGlobalDependency}
                         errorReporter={operationBroadcasterErrorReporter}
                       >
-                        {/** Query dependencies :: @anchor-protocol/queries, useWasmQuery()... */}
+                        {/**
+                         Query dependencies :: @anchor-protocol/queries, useWasmQuery()...
+                         TODO remove after refactoring done
+                         */}
                         <QueryDependencyProvider
                           client={client}
                           address={address}
                           onError={onQueryError}
                         >
-                          {/** User Balances (uUSD, uLuna, ubLuna, uaUST...) :: useBank() */}
+                          {/**
+                           User Balances (uUSD, uLuna, ubLuna, uaUST...) :: useBank()
+                           TODO remove after refactoring done
+                           */}
                           <BankProvider>
                             {/** Theme Providing to Styled-Components and Material-UI */}
                             <ThemeProvider initialTheme="light">

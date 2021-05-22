@@ -1,5 +1,6 @@
 import { Data as TxInfoData } from '../queries/txInfos';
 
+// TODO remove after refactoring done
 export class TxInfoError extends Error {
   constructor(public readonly log: TxInfoData[number]['RawLog']) {
     super(JSON.stringify(log));

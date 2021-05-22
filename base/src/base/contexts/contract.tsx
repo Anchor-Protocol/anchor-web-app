@@ -18,6 +18,7 @@ export interface ContractState {
 // @ts-ignore
 const ContractContext: Context<ContractState> = createContext<ContractState>();
 
+// TODO remove after refactoring done
 export function ContractProvider({
   children,
   addressProvider,
@@ -98,6 +99,7 @@ export function useContractNickname(): (addr: HumanAddr | CW20Addr) => string {
   };
 }
 
+// TODO remove after refactoring done
 export function useContract(): ContractState {
   return useContext(ContractContext);
 }
@@ -108,6 +110,7 @@ export function useAddressProvider(): AddressProvider {
   return addressProvider;
 }
 
+// TODO remove after refactoring done
 export function useContractAddress(): ContractAddress {
   const { address } = useContext(ContractContext);
   return address;

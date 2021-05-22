@@ -23,6 +23,7 @@ export const query = gql`
   }
 `;
 
+// TODO remove after refactoring done
 export function useLastSyncedHeight(): Omit<QueryResult<RawData>, 'data'> & {
   data: Data | undefined;
 } {
@@ -43,6 +44,7 @@ export function useLastSyncedHeight(): Omit<QueryResult<RawData>, 'data'> & {
   };
 }
 
+// TODO remove after refactoring done
 export function queryLastSyncedHeight(
   client: ApolloClient<any>,
 ): Promise<Omit<ApolloQueryResult<RawData>, 'data'> & { data: Data }> {

@@ -1,6 +1,7 @@
 import { TxResult } from '@terra-money/wallet-provider';
 import { Data } from '../queries/txInfos';
 
+// TODO remove after refactoring done
 export class TxInfoParseError extends Error {
   constructor(
     public readonly txResult: TxResult,

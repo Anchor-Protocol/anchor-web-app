@@ -6,6 +6,7 @@ import { Data, queryTxInfo } from '../queries/txInfos';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// TODO remove after refactoring done
 export const getTxInfo = (
   client: ApolloClient<any>,
   signal: AbortSignal,
