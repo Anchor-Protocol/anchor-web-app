@@ -12,6 +12,7 @@ export interface EarnDepositFormStates {
   invalidTxFee?: string;
   invalidDepositAmount?: string;
   invalidNextTxFee?: string;
+  availablePost: boolean;
 }
 
 export interface EarnDepositFormDependency {
@@ -32,8 +33,10 @@ export class EarnDepositForm {
     initialStates?: Pick<EarnDepositFormStates, 'depositAmount'>,
   ) {
     this._dependency = initialDependency;
-    this._states = initialStates ?? {
+    this._states = {
       depositAmount: '' as UST,
+      ...initialStates,
+      availablePost: false,
     };
     this._subject = new BehaviorSubject<EarnDepositFormStates>(this._states);
 
@@ -42,7 +45,19 @@ export class EarnDepositForm {
     }
   }
 
-  updateStates = (states: Pick<EarnDepositFormStates, 'depositAmount'>) => {
+  destroy = () => {
+    this._subject.unsubscribe();
+  };
+
+  states = () => {
+    return this._subject.asObservable();
+  };
+
+  getLastStates = () => {
+    return this._subject.getValue();
+  };
+
+  userInput = (states: Pick<EarnDepositFormStates, 'depositAmount'>) => {
     this._states = {
       ...this._states,
       ...states,
@@ -51,7 +66,7 @@ export class EarnDepositForm {
     this.process();
   };
 
-  updateDependency = (dependency: Partial<EarnDepositFormDependency>) => {
+  dependency = (dependency: Partial<EarnDepositFormDependency>) => {
     this._dependency = {
       ...this._dependency,
       ...dependency,
@@ -60,7 +75,7 @@ export class EarnDepositForm {
     this.process();
   };
 
-  process = () => {
+  private process = () => {
     const { depositAmount } = this._states;
     const {
       fixedGas,
@@ -73,6 +88,7 @@ export class EarnDepositForm {
     if (depositAmount.length === 0 || depositAmount.trim() === '0') {
       this._subject.next({
         depositAmount: '' as UST,
+        availablePost: false,
       });
     } else {
       // txFee
@@ -151,6 +167,11 @@ export class EarnDepositForm {
         invalidTxFee,
         invalidDepositAmount,
         invalidNextTxFee,
+        availablePost:
+          isConnected &&
+          big(depositAmount).gt(0) &&
+          !invalidTxFee &&
+          !invalidDepositAmount,
       });
     }
   };

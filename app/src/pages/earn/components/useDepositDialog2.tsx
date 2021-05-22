@@ -7,7 +7,7 @@ import {
 } from '@anchor-protocol/notation';
 import { UST, uUST } from '@anchor-protocol/types';
 import {
-  useAnchorWebapp,
+  useEarnDepositForm,
   useEarnDepositTx,
 } from '@anchor-protocol/webapp-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
@@ -21,20 +21,13 @@ import { useConfirm } from '@terra-dev/neumorphism-ui/components/useConfirm';
 import type { DialogProps, OpenDialog } from '@terra-dev/use-dialog';
 import { useDialog } from '@terra-dev/use-dialog';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank } from 'base/contexts/bank';
-import big, { BigSource } from 'big.js';
+import { BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
-import { validateTxFee } from 'logics/validateTxFee';
 import type { ReactNode } from 'react';
-import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import React, { ChangeEvent, useCallback } from 'react';
 import styled from 'styled-components';
-import { depositRecommendationAmount } from '../logics/depositRecommendationAmount';
-import { depositSendAmount } from '../logics/depositSendAmount';
-import { depositTxFee } from '../logics/depositTxFee';
-import { validateDepositAmount } from '../logics/validateDepositAmount';
-import { validateDepositNextTransaction } from '../logics/validateDepositNextTransaction';
 
 interface FormParams {
   className?: string;
@@ -58,77 +51,23 @@ function ComponentBase({
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const { contants } = useAnchorWebapp();
-
   const [openConfirm, confirmElement] = useConfirm();
 
   const [deposit, depositResult] = useEarnDepositTx();
 
-  const { dispatch } = useEventBus();
-
-  // ---------------------------------------------
-  // states
-  // ---------------------------------------------
-  const [depositAmount, setDepositAmount] = useState<UST>('' as UST);
-
-  // ---------------------------------------------
-  // queries
-  // ---------------------------------------------
-  const bank = useBank();
-
-  // ---------------------------------------------
-  // logics
-  // ---------------------------------------------
-  const txFee = useMemo(
-    () => depositTxFee(depositAmount, bank, contants.fixedGas),
-    [bank, contants.fixedGas, depositAmount],
-  );
-
-  const sendAmount = useMemo(() => depositSendAmount(depositAmount, txFee), [
+  const {
     depositAmount,
     txFee,
-  ]);
+    sendAmount,
+    maxAmount,
+    invalidTxFee,
+    invalidNextTxFee,
+    invalidDepositAmount,
+    updateDepositAmount,
+    availablePost,
+  } = useEarnDepositForm();
 
-  const maxAmount = useMemo(
-    () => depositRecommendationAmount(bank, contants.fixedGas),
-    [bank, contants.fixedGas],
-  );
-
-  const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, contants.fixedGas),
-    [connectedWallet, bank, contants.fixedGas],
-  );
-
-  const invalidDepositAmount = useMemo(
-    () => validateDepositAmount(depositAmount, bank, txFee),
-    [bank, depositAmount, txFee],
-  );
-
-  const invalidNextTransaction = useMemo(
-    () =>
-      validateDepositNextTransaction(
-        depositAmount,
-        bank,
-        txFee,
-        contants.fixedGas,
-        !!invalidDepositAmount || !maxAmount,
-      ),
-    [
-      bank,
-      contants.fixedGas,
-      depositAmount,
-      invalidDepositAmount,
-      maxAmount,
-      txFee,
-    ],
-  );
-
-  // ---------------------------------------------
-  // callbacks
-  // ---------------------------------------------
-  const updateDepositAmount = useCallback((nextDepositAmount: string) => {
-    setDepositAmount(nextDepositAmount as UST);
-  }, []);
+  const { dispatch } = useEventBus();
 
   const proceed = useCallback(
     async (
@@ -136,7 +75,9 @@ function ComponentBase({
       txFee: uUST<BigSource> | undefined,
       confirm: ReactNode,
     ) => {
-      if (!connectedWallet || !deposit) return;
+      if (!connectedWallet || !deposit) {
+        return;
+      }
 
       if (confirm) {
         const userConfirm = await openConfirm({
@@ -193,7 +134,7 @@ function ComponentBase({
           label="AMOUNT"
           error={!!invalidDepositAmount}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
-            updateDepositAmount(target.value)
+            updateDepositAmount(target.value as UST)
           }
           InputProps={{
             endAdornment: <InputAdornment position="end">UST</InputAdornment>,
@@ -234,16 +175,16 @@ function ComponentBase({
           </TxFeeList>
         )}
 
-        {invalidNextTransaction && maxAmount && (
+        {invalidNextTxFee && maxAmount && (
           <MessageBox style={{ marginTop: 30, marginBottom: 0 }}>
-            {invalidNextTransaction}
+            {invalidNextTxFee}
           </MessageBox>
         )}
 
         <ActionButton
           className="proceed"
           style={
-            invalidNextTransaction
+            invalidNextTxFee
               ? {
                   backgroundColor: '#c12535',
                 }
@@ -253,11 +194,9 @@ function ComponentBase({
             !connectedWallet ||
             !connectedWallet.availablePost ||
             !deposit ||
-            depositAmount.length === 0 ||
-            big(depositAmount).lte(0) ||
-            !!invalidDepositAmount
+            !availablePost
           }
-          onClick={() => proceed(depositAmount, txFee, invalidNextTransaction)}
+          onClick={() => proceed(depositAmount, txFee, invalidNextTxFee)}
         >
           Proceed
         </ActionButton>

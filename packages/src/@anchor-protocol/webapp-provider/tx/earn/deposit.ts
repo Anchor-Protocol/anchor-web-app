@@ -4,7 +4,7 @@ import { earnDepositTx } from '@anchor-protocol/webapp-fns';
 import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useTerraWebapp } from '@terra-money/webapp-provider';
+import { useBank, useTerraWebapp } from '@terra-money/webapp-provider';
 import { BigSource } from 'big.js';
 import { useCallback } from 'react';
 
@@ -20,6 +20,8 @@ export function useEarnDepositTx() {
   const { addressProvider, contants } = useAnchorWebapp();
 
   const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
+
+  const { refetchTokenBalances } = useBank();
 
   const stream = useCallback(
     ({ depositAmount, txFee, onTxSucceed }: EarnDepositTxParams) => {
@@ -44,7 +46,10 @@ export function useEarnDepositTx() {
         // error
         txErrorReporter,
         // side effect
-        onTxSucceed,
+        onTxSucceed: () => {
+          onTxSucceed?.();
+          refetchTokenBalances();
+        },
       });
     },
     [
@@ -55,6 +60,7 @@ export function useEarnDepositTx() {
       mantleEndpoint,
       mantleFetch,
       txErrorReporter,
+      refetchTokenBalances,
     ],
   );
 
