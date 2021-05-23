@@ -6,19 +6,13 @@ import {
 import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
 import { useEventBusListener } from '@terra-dev/event-bus';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
-import {
-  EMPTY_QUERY_RESULT,
-  useTerraWebapp,
-} from '@terra-money/webapp-provider';
+import { useTerraWebapp } from '@terra-money/webapp-provider';
 import { useCallback } from 'react';
 import { useQuery, UseQueryResult } from 'react-query';
 
 export function useEarnEpochStatesQuery(): UseQueryResult<
   EarnEpochStatesData | undefined
 > {
-  const connectedWallet = useConnectedWallet();
-
   const { mantleFetch, mantleEndpoint, lastSyncedHeight } = useTerraWebapp();
 
   const {
@@ -55,16 +49,16 @@ export function useEarnEpochStatesQuery(): UseQueryResult<
 
   const result = useQuery(ANCHOR_QUERY_KEY.EARN_EPOCH_STATES, queryFn, {
     refetchInterval: browserInactive && 1000 * 60 * 5,
-    enabled: !browserInactive && !!connectedWallet,
+    enabled: !browserInactive,
     keepPreviousData: true,
   });
 
   // TODO remove
   useEventBusListener('interest-earned-updated', () => {
-    if (connectedWallet && !browserInactive) {
+    if (!browserInactive) {
       result.refetch();
     }
   });
 
-  return !!connectedWallet ? result : EMPTY_QUERY_RESULT;
+  return result;
 }

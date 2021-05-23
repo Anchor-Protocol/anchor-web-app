@@ -71,7 +71,7 @@ export async function earnEpochStatesQuery({
   variables.moneyMarketEpochStateQuery.epoch_state.block_height =
     blockHeight + 1;
 
-  const data = await mantleFetch<
+  const rawData = await mantleFetch<
     EarnEpochStatesRawVariables,
     EarnEpochStatesRawData
   >(
@@ -85,12 +85,12 @@ export async function earnEpochStatesQuery({
       overseerEpochStateQuery: JSON.stringify(
         variables.overseerEpochStateQuery,
       ),
-    } as EarnEpochStatesRawVariables,
-    `${mantleEndpoint}?earn--epoch_states`,
+    },
+    `${mantleEndpoint}?earn--epoch-states`,
   );
 
   return {
-    moneyMarketEpochState: JSON.parse(data.moneyMarketEpochState.Result),
-    overseerEpochState: JSON.parse(data.overseerEpochState.Result),
+    moneyMarketEpochState: JSON.parse(rawData.moneyMarketEpochState.Result),
+    overseerEpochState: JSON.parse(rawData.overseerEpochState.Result),
   };
 }
