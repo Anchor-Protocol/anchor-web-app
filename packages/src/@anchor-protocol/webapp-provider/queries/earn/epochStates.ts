@@ -1,8 +1,7 @@
 import {
   ANCHOR_QUERY_KEY,
-  AnchorTokenBalances,
-  EarnTotalDepositData,
-  earnTotalDepositQuery,
+  EarnEpochStatesData,
+  earnEpochStatesQuery,
 } from '@anchor-protocol/webapp-fns';
 import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
 import { useEventBusListener } from '@terra-dev/event-bus';
@@ -10,14 +9,13 @@ import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import {
   EMPTY_QUERY_RESULT,
-  useBank,
   useTerraWebapp,
 } from '@terra-money/webapp-provider';
 import { useCallback } from 'react';
 import { useQuery, UseQueryResult } from 'react-query';
 
-export function useEarnTotalDepositQuery(): UseQueryResult<
-  EarnTotalDepositData | undefined
+export function useEarnEpochStatesQuery(): UseQueryResult<
+  EarnEpochStatesData | undefined
 > {
   const connectedWallet = useConnectedWallet();
 
@@ -29,20 +27,21 @@ export function useEarnTotalDepositQuery(): UseQueryResult<
 
   const { browserInactive } = useBrowserInactive();
 
-  const { refetchTokenBalances } = useBank<AnchorTokenBalances>();
-
   const queryFn = useCallback(() => {
-    return earnTotalDepositQuery({
+    return earnEpochStatesQuery({
       mantleEndpoint,
       mantleFetch,
       lastSyncedHeight,
-      fetchTokenBalances: refetchTokenBalances,
       variables: {
         moneyMarketContract: moneyMarket.market,
-        epochStateQuery: {
+        overseerContract: moneyMarket.overseer,
+        moneyMarketEpochStateQuery: {
           epoch_state: {
             block_height: -1,
           },
+        },
+        overseerEpochStateQuery: {
+          epoch_state: {},
         },
       },
     });
@@ -51,10 +50,10 @@ export function useEarnTotalDepositQuery(): UseQueryResult<
     mantleEndpoint,
     mantleFetch,
     moneyMarket.market,
-    refetchTokenBalances,
+    moneyMarket.overseer,
   ]);
 
-  const result = useQuery(ANCHOR_QUERY_KEY.EARN_TOTAL_DEPOSIT, queryFn, {
+  const result = useQuery(ANCHOR_QUERY_KEY.EARN_EPOCH_STATES, queryFn, {
     refetchInterval: browserInactive && 1000 * 60 * 5,
     enabled: !browserInactive && !!connectedWallet,
     keepPreviousData: true,

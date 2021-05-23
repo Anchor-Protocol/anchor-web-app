@@ -18,7 +18,7 @@ export interface EarnDepositFormReturn extends EarnDepositFormStates {
 export function useEarnDepositForm(): EarnDepositFormReturn {
   const connectedWallet = useConnectedWallet();
 
-  const { contants } = useAnchorWebapp();
+  const { constants } = useAnchorWebapp();
 
   const { tokenBalances, tax } = useBank<AnchorTokenBalances, AnchorTax>();
 
@@ -26,7 +26,7 @@ export function useEarnDepositForm(): EarnDepositFormReturn {
     earnDepositForm,
     {
       isConnected: !!connectedWallet,
-      fixedGas: contants.fixedGas,
+      fixedGas: constants.fixedGas,
       taxRate: tax.taxRate,
       maxTaxUUSD: tax.maxTaxUUSD,
       userUUSTBalance: tokenBalances.uUST,

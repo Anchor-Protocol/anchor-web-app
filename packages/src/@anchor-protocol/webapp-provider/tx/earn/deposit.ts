@@ -20,7 +20,7 @@ export interface EarnDepositTxParams {
 export function useEarnDepositTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { addressProvider, contants } = useAnchorWebapp();
+  const { addressProvider, constants } = useAnchorWebapp();
 
   const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
 
@@ -41,8 +41,8 @@ export function useEarnDepositTx() {
         // post
         post: connectedWallet.post,
         txFee: txFee.toString() as uUST,
-        gasFee: contants.gasFee,
-        gasAdjustment: contants.gasAdjustment,
+        gasFee: constants.gasFee,
+        gasAdjustment: constants.gasAdjustment,
         // query
         mantleEndpoint,
         mantleFetch,
@@ -58,8 +58,8 @@ export function useEarnDepositTx() {
     [
       connectedWallet,
       addressProvider,
-      contants.gasFee,
-      contants.gasAdjustment,
+      constants.gasFee,
+      constants.gasAdjustment,
       mantleEndpoint,
       mantleFetch,
       txErrorReporter,

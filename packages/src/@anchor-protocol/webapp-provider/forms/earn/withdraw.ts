@@ -1,17 +1,18 @@
-import { UST, uUST } from '@anchor-protocol/types';
+import { UST } from '@anchor-protocol/types';
 import {
   AnchorTokenBalances,
+  computeTotalDeposit,
   earnWithdrawForm,
   EarnWithdrawFormStates,
 } from '@anchor-protocol/webapp-fns';
 import {
   useAnchorWebapp,
-  useEarnTotalDepositQuery,
+  useEarnEpochStatesQuery,
 } from '@anchor-protocol/webapp-provider';
 import { useForm } from '@terra-dev/use-form';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from '@terra-money/webapp-provider';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 export interface EarnWithdrawFormReturn extends EarnWithdrawFormStates {
   updateWithdrawAmount: (withdrawAmount: UST) => void;
@@ -20,19 +21,28 @@ export interface EarnWithdrawFormReturn extends EarnWithdrawFormStates {
 export function useEarnWithdrawForm(): EarnWithdrawFormReturn {
   const connectedWallet = useConnectedWallet();
 
-  const { contants } = useAnchorWebapp();
+  const { constants } = useAnchorWebapp();
 
   const { tokenBalances } = useBank<AnchorTokenBalances>();
 
-  const { data } = useEarnTotalDepositQuery();
+  const { data } = useEarnEpochStatesQuery();
+
+  const { totalDeposit } = useMemo(() => {
+    return {
+      totalDeposit: computeTotalDeposit(
+        tokenBalances.uaUST,
+        data?.moneyMarketEpochState,
+      ),
+    };
+  }, [data?.moneyMarketEpochState, tokenBalances.uaUST]);
 
   const [input, states] = useForm(
     earnWithdrawForm,
     {
       isConnected: !!connectedWallet,
-      fixedGas: contants.fixedGas,
+      fixedGas: constants.fixedGas,
       userUUSTBalance: tokenBalances.uUST,
-      totalDeposit: data?.totalDeposit ?? ('0' as uUST),
+      totalDeposit: totalDeposit,
     },
     () => ({ withdrawAmount: '0' as UST }),
   );

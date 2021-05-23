@@ -1,4 +1,3 @@
-import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import {
   demicrofy,
   formatUST,
@@ -6,42 +5,38 @@ import {
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { Rate, UST, uUST } from '@anchor-protocol/types';
+import { aUST, UST, uUST } from '@anchor-protocol/types';
 import {
-  useConnectedWallet,
-  ConnectedWallet,
-} from '@terra-money/wallet-provider';
+  AnchorTokenBalances,
+  computeTotalDeposit,
+  useEarnEpochStatesQuery,
+  useEarnWithdrawForm,
+  useEarnWithdrawTx,
+} from '@anchor-protocol/webapp-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
-import { useOperation } from '@terra-dev/broadcastable-operation';
+import { StreamStatus } from '@rx-stream/react';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import type { DialogProps, OpenDialog } from '@terra-dev/use-dialog';
 import { useDialog } from '@terra-dev/use-dialog';
-import { useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
-import big, { Big, BigSource } from 'big.js';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
+import { useBank } from '@terra-money/webapp-provider';
+import big, { BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
-import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { validateTxFee } from 'logics/validateTxFee';
-import { validateWithdrawAmount } from 'pages/earn/logics/validateWithdrawAmount';
-import { withdrawReceiveAmount } from 'pages/earn/logics/withdrawReceiveAmount';
+import { TxResultRenderer } from 'components/TxResultRenderer';
 import type { ReactNode } from 'react';
-import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import React, { ChangeEvent, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
-import { withdrawOptions } from '../transactions/withdrawOptions';
 
 interface FormParams {
   className?: string;
-  totalDeposit: uUST<BigSource>;
-  exchangeRate: Rate<BigSource>;
 }
 
 type FormReturn = void;
 
-/** @deprecated */
 export function useWithdrawDialog(): [
   OpenDialog<FormParams, FormReturn>,
   ReactNode,
@@ -52,83 +47,78 @@ export function useWithdrawDialog(): [
 function ComponentBase({
   className,
   closeDialog,
-  totalDeposit,
-  exchangeRate,
 }: DialogProps<FormParams, FormReturn>) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const { fixedGas } = useConstants();
-
-  const [withdraw, withdrawResult] = useOperation(withdrawOptions, {});
+  const [withdraw, withdrawResult] = useEarnWithdrawTx();
 
   // ---------------------------------------------
   // states
   // ---------------------------------------------
-  const [withdrawAmount, setWithdrawAmount] = useState<UST>('' as UST);
+  const {
+    withdrawAmount,
+    receiveAmount,
+    txFee,
+    invalidTxFee,
+    invalidWithdrawAmount,
+    updateWithdrawAmount,
+    availablePost,
+  } = useEarnWithdrawForm();
 
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const bank = useBank();
+  const {
+    tokenBalances: { uaUST },
+  } = useBank<AnchorTokenBalances>();
+
+  const { data } = useEarnEpochStatesQuery();
 
   // ---------------------------------------------
-  // logics
+  // computes
   // ---------------------------------------------
-  const txFee = useMemo(() => big(fixedGas) as uUST<Big>, [fixedGas]);
-
-  const receiveAmount = useMemo(
-    () => withdrawReceiveAmount(withdrawAmount, txFee),
-    [txFee, withdrawAmount],
-  );
-
-  const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
-  );
-
-  const invalidWithdrawAmount = useMemo(
-    () => validateWithdrawAmount(withdrawAmount, bank, totalDeposit, txFee),
-    [bank, totalDeposit, txFee, withdrawAmount],
-  );
+  const { totalDeposit } = useMemo(() => {
+    return {
+      totalDeposit: computeTotalDeposit(uaUST, data?.moneyMarketEpochState),
+    };
+  }, [data?.moneyMarketEpochState, uaUST]);
 
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
-  const updateWithdrawAmount = useCallback((nextWithdrawAmount: string) => {
-    setWithdrawAmount(nextWithdrawAmount as UST);
-  }, []);
-
   const proceed = useCallback(
-    async (
-      status: ConnectedWallet,
-      withdrawAmount: string,
-      txFee: uUST<BigSource> | undefined,
-    ) => {
-      await withdraw({
-        address: status.walletAddress,
-        market: MARKET_DENOMS.UUSD,
-        amount: big(withdrawAmount).div(exchangeRate).toString(),
+    async (withdrawAmount: UST, txFee: uUST<BigSource> | undefined) => {
+      if (!connectedWallet || !withdraw || !data) {
+        return;
+      }
+
+      withdraw({
+        withdrawAmount: big(withdrawAmount)
+          .div(data.moneyMarketEpochState.exchange_rate)
+          .toString() as aUST,
         txFee: txFee!.toString() as uUST,
       });
     },
-    [exchangeRate, withdraw],
+    [connectedWallet, data, withdraw],
   );
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
   if (
-    withdrawResult?.status === 'in-progress' ||
-    withdrawResult?.status === 'done' ||
-    withdrawResult?.status === 'fault'
+    withdrawResult?.status === StreamStatus.IN_PROGRESS ||
+    withdrawResult?.status === StreamStatus.DONE
   ) {
     return (
       <Modal open disableBackdropClick disableEnforceFocus>
         <Dialog className={className}>
-          <TransactionRenderer result={withdrawResult} onExit={closeDialog} />
+          <TxResultRenderer
+            resultRendering={withdrawResult.value}
+            onExit={closeDialog}
+          />
         </Dialog>
       </Modal>
     );
@@ -149,7 +139,7 @@ function ComponentBase({
           label="AMOUNT"
           error={!!invalidWithdrawAmount}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
-            updateWithdrawAmount(target.value)
+            updateWithdrawAmount(target.value as UST)
           }
           InputProps={{
             endAdornment: <InputAdornment position="end">UST</InputAdornment>,
@@ -166,6 +156,7 @@ function ComponentBase({
                 cursor: 'pointer',
               }}
               onClick={() =>
+                totalDeposit.gt(0) &&
                 updateWithdrawAmount(formatUSTInput(demicrofy(totalDeposit)))
               }
             >
@@ -190,13 +181,10 @@ function ComponentBase({
           disabled={
             !connectedWallet ||
             !connectedWallet.availablePost ||
-            withdrawAmount.length === 0 ||
-            big(withdrawAmount).lte(0) ||
-            !!invalidWithdrawAmount
+            !withdraw ||
+            !availablePost
           }
-          onClick={() =>
-            connectedWallet && proceed(connectedWallet, withdrawAmount, txFee)
-          }
+          onClick={() => proceed(withdrawAmount, txFee)}
         >
           Proceed
         </ActionButton>

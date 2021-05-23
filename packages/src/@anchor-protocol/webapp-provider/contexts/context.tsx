@@ -23,14 +23,14 @@ import React, {
 export interface AnchorWebappProviderProps {
   children: ReactNode;
   contractAddressMaps?: Record<string, AddressMap>;
-  contants?: Record<string, AnchorContants>;
+  constants?: Record<string, AnchorContants>;
 }
 
 export interface AnchorWebapp {
   contractAddressMap: AddressMap;
   addressProvider: AddressProvider;
   contractAddress: ContractAddress;
-  contants: AnchorContants;
+  constants: AnchorContants;
 }
 
 // @ts-ignore
@@ -39,7 +39,7 @@ const AnchorWebappContext: Context<AnchorWebapp> = createContext<AnchorWebapp>()
 export function AnchorWebappProvider({
   children,
   contractAddressMaps = DEFAULT_ADDESS_MAP,
-  contants = DEFAULT_ANCHOR_TX_CONSTANTS,
+  constants = DEFAULT_ANCHOR_TX_CONSTANTS,
 }: AnchorWebappProviderProps) {
   const { network } = useWallet();
 
@@ -69,14 +69,14 @@ export function AnchorWebappProvider({
       contractAddressMap: contractAddressMaps[network.name],
       addressProvider: addressProviders[network.name],
       contractAddress: contractAddresses[network.name],
-      contants: contants[network.name],
+      constants: constants[network.name],
     }),
     [
       addressProviders,
       contractAddressMaps,
       contractAddresses,
       network.name,
-      contants,
+      constants,
     ],
   );
 

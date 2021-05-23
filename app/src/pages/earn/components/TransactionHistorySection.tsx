@@ -1,21 +1,16 @@
 import { demicrofy, formatUST, truncate } from '@anchor-protocol/notation';
-import { useWallet } from '@terra-money/wallet-provider';
+import { useEarnTransactionHistoryQuery } from '@anchor-protocol/webapp-provider';
 import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
 import { Pagination } from '@terra-dev/neumorphism-ui/components/Pagination';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { useArrayPagination } from '@terra-dev/use-array-pagination';
-import {
-  useTransactionHistory,
-  Data,
-} from 'pages/earn/queries/transactionHistory';
+import { useWallet } from '@terra-money/wallet-provider';
 import { useMemo } from 'react';
 import styled from 'styled-components';
 
 export interface TransactionHistorySectionProps {
   className?: string;
 }
-
-const emptyArray: Data['transactionHistory'] = [];
 
 export function TransactionHistorySection({
   className,
@@ -29,14 +24,19 @@ export function TransactionHistorySection({
   // queries
   // ---------------------------------------------
   const {
-    data: { transactionHistory = emptyArray },
-  } = useTransactionHistory();
+    data: { transactionHistory } = {},
+  } = useEarnTransactionHistoryQuery();
 
+  // ---------------------------------------------
+  // computes
+  // ---------------------------------------------
   const filteredHistory = useMemo(() => {
-    return transactionHistory.filter(
-      ({ TransactionType }) =>
-        TransactionType === 'deposit_stable' ||
-        TransactionType === 'redeem_stable',
+    return (
+      transactionHistory?.filter(
+        ({ TransactionType }) =>
+          TransactionType === 'deposit_stable' ||
+          TransactionType === 'redeem_stable',
+      ) ?? []
     );
   }, [transactionHistory]);
 
