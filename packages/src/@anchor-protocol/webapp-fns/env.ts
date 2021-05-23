@@ -1,6 +1,7 @@
 import { AddressMap } from '@anchor-protocol/anchor.js';
 import { Rate, uUST } from '@anchor-protocol/types';
 import { TERRA_QUERY_KEY } from '@terra-money/webapp-fns';
+import { TxRefetchMap } from '@terra-money/webapp-provider';
 import { AnchorContants } from './types';
 
 export const DEFAULT_ADDESS_MAP: Record<string, AddressMap> = {
@@ -94,15 +95,21 @@ export enum ANCHOR_QUERY_KEY {
   EARN_TRANSACTION_HISTORY = 'ANCHOR_QUERY_EARN_TRANSACTION_HISTORY',
 }
 
-export const ANCHOR_TX_REFETCH_MAP: Record<string, string[]> = {
+export const ANCHOR_TX_REFETCH_MAP: TxRefetchMap = {
   [ANCHOR_TX_KEY.EARN_DEPOSIT]: [
     TERRA_QUERY_KEY.TOKEN_BALANCES,
     ANCHOR_QUERY_KEY.EARN_EPOCH_STATES,
-    ANCHOR_QUERY_KEY.EARN_TRANSACTION_HISTORY,
+    {
+      queryKey: ANCHOR_QUERY_KEY.EARN_TRANSACTION_HISTORY,
+      wait: 1000 * 3,
+    },
   ],
   [ANCHOR_TX_KEY.EARN_WITHDRAW]: [
     TERRA_QUERY_KEY.TOKEN_BALANCES,
     ANCHOR_QUERY_KEY.EARN_EPOCH_STATES,
-    ANCHOR_QUERY_KEY.EARN_TRANSACTION_HISTORY,
+    {
+      queryKey: ANCHOR_QUERY_KEY.EARN_TRANSACTION_HISTORY,
+      wait: 1000 * 3,
+    },
   ],
 };

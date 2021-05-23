@@ -13,6 +13,7 @@ import React, {
   useMemo,
 } from 'react';
 import { DEFAULT_MANTLE_ENDPOINTS } from '../env';
+import { TxRefetchMap } from '../types';
 
 export interface TerraWebappProviderProps {
   children: ReactNode;
@@ -22,7 +23,7 @@ export interface TerraWebappProviderProps {
   mantleFetch?: MantleFetch;
 
   // refetch map
-  txRefetchMap?: Record<string, string[]>;
+  txRefetchMap?: TxRefetchMap;
 
   // sentry captureException()
   txErrorReporter?: (error: unknown) => string;
@@ -39,7 +40,7 @@ export interface TerraWebapp {
   // sentry captureException()
   txErrorReporter?: (error: unknown) => string;
 
-  txRefetchMap: Record<string, string[]>;
+  txRefetchMap: TxRefetchMap;
 }
 
 // @ts-ignore

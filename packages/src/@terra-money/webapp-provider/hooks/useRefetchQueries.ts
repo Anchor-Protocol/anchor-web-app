@@ -1,8 +1,21 @@
 import { TERRA_QUERY_KEY } from '@terra-money/webapp-fns';
+import { QueryRefetch } from '@terra-money/webapp-provider/types';
 import { useCallback } from 'react';
 import { useQueryClient } from 'react-query';
 import { useBank } from '../contexts/bank';
 import { useTerraWebapp } from '../contexts/context';
+
+function runRefetch(queryRefetch: string | QueryRefetch): Promise<string> {
+  return new Promise<string>((resolve) => {
+    if (typeof queryRefetch === 'string') {
+      resolve(queryRefetch);
+    } else if (typeof queryRefetch.wait === 'number') {
+      setTimeout(() => resolve(queryRefetch.queryKey), queryRefetch.wait);
+    } else {
+      resolve(queryRefetch.queryKey);
+    }
+  });
+}
 
 export function useRefetchQueries() {
   const queryClient = useQueryClient();
@@ -12,11 +25,11 @@ export function useRefetchQueries() {
 
   return useCallback(
     (txKey: string) => {
-      const queryKeys = txRefetchMap[txKey];
+      const queryRefetches = txRefetchMap[txKey];
 
-      if (queryKeys) {
-        for (const queryKey of queryKeys) {
-          switch (queryKey) {
+      if (queryRefetches) {
+        for (const queryRefetch of queryRefetches) {
+          switch (queryRefetch) {
             case TERRA_QUERY_KEY.TOKEN_BALANCES:
               refetchTokenBalances();
               break;
@@ -24,9 +37,11 @@ export function useRefetchQueries() {
               refetchTax();
               break;
             default:
-              queryClient.invalidateQueries(queryKey, {
-                refetchActive: true,
-                refetchInactive: false,
+              runRefetch(queryRefetch).then((queryKey) => {
+                queryClient.invalidateQueries(queryKey, {
+                  refetchActive: true,
+                  refetchInactive: false,
+                });
               });
               break;
           }
