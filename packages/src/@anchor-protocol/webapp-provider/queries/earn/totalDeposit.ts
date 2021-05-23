@@ -13,6 +13,7 @@ import {
   useBank,
   useTerraWebapp,
 } from '@terra-money/webapp-provider';
+import { useCallback } from 'react';
 import { useQuery, UseQueryResult } from 'react-query';
 
 export function useEarnTotalDepositQuery(): UseQueryResult<
@@ -30,37 +31,34 @@ export function useEarnTotalDepositQuery(): UseQueryResult<
 
   const { refetchTokenBalances } = useBank<AnchorTokenBalances>();
 
-  const result = useQuery(
-    [
-      ANCHOR_QUERY_KEY.EARN_TOTAL_DEPOSIT,
-      connectedWallet?.walletAddress,
+  const queryFn = useCallback(() => {
+    return earnTotalDepositQuery({
       mantleEndpoint,
       mantleFetch,
       lastSyncedHeight,
-      refetchTokenBalances,
-    ],
-    () => {
-      return earnTotalDepositQuery({
-        mantleEndpoint,
-        mantleFetch,
-        lastSyncedHeight,
-        fetchTokenBalances: refetchTokenBalances,
-        variables: {
-          moneyMarketContract: moneyMarket.market,
-          epochStateQuery: {
-            epoch_state: {
-              block_height: -1,
-            },
+      fetchTokenBalances: refetchTokenBalances,
+      variables: {
+        moneyMarketContract: moneyMarket.market,
+        epochStateQuery: {
+          epoch_state: {
+            block_height: -1,
           },
         },
-      });
-    },
-    {
-      refetchInterval: browserInactive && 1000 * 60 * 5,
-      enabled: !browserInactive && !!connectedWallet,
-      keepPreviousData: true,
-    },
-  );
+      },
+    });
+  }, [
+    lastSyncedHeight,
+    mantleEndpoint,
+    mantleFetch,
+    moneyMarket.market,
+    refetchTokenBalances,
+  ]);
+
+  const result = useQuery(ANCHOR_QUERY_KEY.EARN_TOTAL_DEPOSIT, queryFn, {
+    refetchInterval: browserInactive && 1000 * 60 * 5,
+    enabled: !browserInactive && !!connectedWallet,
+    keepPreviousData: true,
+  });
 
   // TODO remove
   useEventBusListener('interest-earned-updated', () => {

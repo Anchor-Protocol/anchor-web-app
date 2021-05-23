@@ -45,6 +45,7 @@ import {
   WebExtensionUserDenied,
 } from '@terra-dev/web-extension';
 import { AccAddress, CreateTxOptions } from '@terra-money/terra.js';
+import deepEqual from 'fast-deep-equal';
 import { BehaviorSubject, combineLatest, Observable, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import {
@@ -531,6 +532,16 @@ export class WalletController {
   // internal
   // connect type changing
   // ================================================================
+  private updateWallets = (nextWallets: WalletInfo[]) => {
+    const prevWallets = this._wallets.getValue();
+
+    if (
+      nextWallets.length !== prevWallets.length ||
+      !deepEqual(prevWallets, nextWallets)
+    ) {
+      this._wallets.next(nextWallets);
+    }
+  };
 
   private enableReadonlyWallet = (readonlyWallet: ReadonlyWalletController) => {
     this.disableWalletConnect?.();
@@ -549,7 +560,7 @@ export class WalletController {
 
     this._status.next(WalletStatus.WALLET_CONNECTED);
     this._network.next(readonlyWallet.network);
-    this._wallets.next([
+    this.updateWallets([
       {
         connectType: ConnectType.READONLY,
         terraAddress: readonlyWallet.terraAddress,
@@ -592,7 +603,7 @@ export class WalletController {
                   itemWallet.terraAddress === states.focusedWalletAddress,
               ) ?? states.wallets[0]
             : states.wallets[0];
-          this._wallets.next([
+          this.updateWallets([
             {
               connectType: ConnectType.WEBEXTENSION,
               terraAddress: focusedWallet.terraAddress,
@@ -603,7 +614,7 @@ export class WalletController {
       } else if (status.type === WebExtensionStatusType.NO_AVAILABLE) {
         localStorage.removeItem(WEB_EXTENSION_CONNECTED_KEY);
         this._status.next(WalletStatus.WALLET_NOT_CONNECTED);
-        this._wallets.next([]);
+        this.updateWallets([]);
 
         if (!status.isApproved && this.disableWebExtension) {
           this.disableWebExtension();
@@ -652,7 +663,7 @@ export class WalletController {
           AccAddress.validate(terraAddress)
         ) {
           this._status.next(WalletStatus.WALLET_CONNECTED);
-          this._wallets.next([
+          this.updateWallets([
             {
               connectType: ConnectType.CHROME_EXTENSION,
               terraAddress,
@@ -661,7 +672,7 @@ export class WalletController {
           ]);
         } else {
           this._status.next(WalletStatus.WALLET_NOT_CONNECTED);
-          this._wallets.next([]);
+          this.updateWallets([]);
         }
       },
     });
@@ -700,7 +711,7 @@ export class WalletController {
                 this.options.walletConnectChainIds[status.chainId] ??
                   this.options.defaultNetwork,
               );
-              this._wallets.next([
+              this.updateWallets([
                 {
                   connectType: ConnectType.WALLETCONNECT,
                   terraAddress: status.terraAddress,
@@ -711,7 +722,7 @@ export class WalletController {
             default:
               this._status.next(WalletStatus.WALLET_NOT_CONNECTED);
               this._network.next(this.options.defaultNetwork);
-              this._wallets.next([]);
+              this.updateWallets([]);
               break;
           }
         },

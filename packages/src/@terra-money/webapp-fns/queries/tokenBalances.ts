@@ -119,6 +119,14 @@ class TokenBalancesFetcher {
           const { nativeTokenBalances, ...cw20TokenBalances } = rawData;
           const data: TokenBalancesData = {};
 
+          for (const [, tokenKey] of this.nativeTokenKeys) {
+            data[tokenKey] = '0';
+          }
+
+          for (const [tokenKey] of this.cw20TokenContracts) {
+            data[tokenKey] = '0';
+          }
+
           for (const { Denom, Amount } of nativeTokenBalances.Result) {
             const key = this.nativeTokenKeys.get(Denom);
 
