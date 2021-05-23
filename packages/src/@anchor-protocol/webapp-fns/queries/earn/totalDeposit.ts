@@ -1,55 +1,43 @@
 import {
-  cw20,
-  CW20Addr,
   HumanAddr,
   moneyMarket,
   uaUST,
+  uUST,
   WASMContractResult,
 } from '@anchor-protocol/types';
 import { MantleFetch } from '@terra-money/webapp-fns';
+import big from 'big.js';
+import { AnchorTokenBalances } from '../../types';
 
 export interface EarnTotalDepositRawData {
-  aUSTBalance: WASMContractResult;
-  exchangeRate: WASMContractResult;
+  epochState: WASMContractResult;
 }
 
 export interface EarnTotalDepositData {
-  aUSTBalance: WASMContractResult<cw20.BalanceResponse<uaUST>>;
-  exchangeRate: WASMContractResult<moneyMarket.market.EpochStateResponse>;
+  epochState: WASMContractResult<moneyMarket.market.EpochStateResponse>;
+  uaUST: uaUST;
+  totalDeposit: uUST;
 }
 
 export interface EarnTotalDepositRawVariables {
-  anchorTokenContract: string;
-  anchorTokenBalanceQuery: string;
   moneyMarketContract: string;
-  moneyMarketEpochQuery: string;
+  epochStateQuery: string;
 }
 
 export interface EarnTotalDepositVariables {
-  anchorTokenContract: CW20Addr;
-  anchorTokenBalanceQuery: cw20.Balance;
   moneyMarketContract: HumanAddr;
-  moneyMarketEpochQuery: moneyMarket.market.EpochState;
+  epochStateQuery: moneyMarket.market.EpochState;
 }
 
 // language=graphql
 export const EARN_TOTAL_DEPOSIT_QUERY = `
   query (
-    $anchorTokenContract: String!
-    $anchorTokenBalanceQuery: String!
     $moneyMarketContract: String!
-    $moneyMarketEpochQuery: String!
+    $epochStateQuery: String!
   ) {
-    aUSTBalance: WasmContractsContractAddressStore(
-      ContractAddress: $anchorTokenContract
-      QueryMsg: $anchorTokenBalanceQuery
-    ) {
-      Result
-    }
-
-    exchangeRate: WasmContractsContractAddressStore(
+    epochState: WasmContractsContractAddressStore(
       ContractAddress: $moneyMarketContract
-      QueryMsg: $moneyMarketEpochQuery
+      QueryMsg: $epochStateQuery
     ) {
       Result
     }
@@ -60,6 +48,7 @@ export interface EarnTotalDepositQueryParams {
   mantleEndpoint: string;
   mantleFetch: MantleFetch;
   variables: EarnTotalDepositVariables;
+  fetchTokenBalances: () => Promise<AnchorTokenBalances>;
   lastSyncedHeight: () => Promise<number>;
 }
 
@@ -67,10 +56,13 @@ export async function earnTotalDepositQuery({
   mantleFetch,
   mantleEndpoint,
   variables,
+  fetchTokenBalances,
   lastSyncedHeight,
 }: EarnTotalDepositQueryParams): Promise<EarnTotalDepositData> {
-  variables.moneyMarketEpochQuery.epoch_state.block_height =
-    (await lastSyncedHeight()) + 1;
+  const { uaUST } = await fetchTokenBalances();
+  const blockHeight = await lastSyncedHeight();
+
+  variables.epochStateQuery.epoch_state.block_height = blockHeight + 1;
 
   const data = await mantleFetch<
     EarnTotalDepositRawVariables,
@@ -78,18 +70,21 @@ export async function earnTotalDepositQuery({
   >(
     EARN_TOTAL_DEPOSIT_QUERY,
     {
-      anchorTokenContract: variables.anchorTokenContract,
-      anchorTokenBalanceQuery: JSON.stringify(
-        variables.anchorTokenBalanceQuery,
-      ),
       moneyMarketContract: variables.moneyMarketContract,
-      moneyMarketEpochQuery: JSON.stringify(variables.moneyMarketEpochQuery),
+      epochStateQuery: JSON.stringify(variables.epochStateQuery),
     },
     `${mantleEndpoint}?earn--total-deposit`,
   );
 
+  const epochState = JSON.parse(data.epochState.Result);
+
+  const totalDeposit = big(uaUST)
+    .mul(epochState?.exchange_rate ?? '1')
+    .toString() as uUST;
+
   return {
-    aUSTBalance: JSON.parse(data.aUSTBalance.Result),
-    exchangeRate: JSON.parse(data.exchangeRate.Result),
+    epochState,
+    uaUST,
+    totalDeposit,
   };
 }

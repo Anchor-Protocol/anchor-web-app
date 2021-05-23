@@ -57,6 +57,10 @@ class TokenBalancesFetcher {
   private nativeTokenKeys: Map<string, string>;
   private readonly cw20TokenContracts: [string, string][];
 
+  private lastWalletAddrress: string | null = null;
+  private abortController: AbortController | null = null;
+  private debounceId: number = -1;
+
   constructor(
     private mantleEndpoint: string,
     private mantleFetch: MantleFetch,
@@ -87,64 +91,79 @@ class TokenBalancesFetcher {
 
   private fetch = (walletAddress: string) => {
     if (this.fetched) {
-      return;
+      if (this.lastWalletAddrress === walletAddress) {
+        return;
+      } else {
+        if (this.debounceId > -1) clearTimeout(this.debounceId);
+        this.abortController?.abort();
+      }
     }
 
     this.fetched = true;
 
     const query = TOKEN_BALANCES_QUERY(walletAddress, this.cw20TokenContracts);
 
-    this.mantleFetch<{}, TokenBalancesRawData>(
-      query,
-      {},
-      this.mantleEndpoint + '?token-balances',
-    )
-      .then((rawData) => {
-        const { nativeTokenBalances, ...cw20TokenBalances } = rawData;
-        const data: TokenBalancesData = {};
+    this.lastWalletAddrress = walletAddress;
 
-        for (const { Denom, Amount } of nativeTokenBalances.Result) {
-          const key = this.nativeTokenKeys.get(Denom);
+    this.debounceId = (setTimeout(() => {
+      this.debounceId = -1;
+      this.abortController = new AbortController();
 
-          if (key) {
-            data[key] = Amount;
+      this.mantleFetch<{}, TokenBalancesRawData>(
+        query,
+        {},
+        `${this.mantleEndpoint}?token-balances`,
+        { signal: this.abortController.signal },
+      )
+        .then((rawData) => {
+          const { nativeTokenBalances, ...cw20TokenBalances } = rawData;
+          const data: TokenBalancesData = {};
+
+          for (const { Denom, Amount } of nativeTokenBalances.Result) {
+            const key = this.nativeTokenKeys.get(Denom);
+
+            if (key) {
+              data[key] = Amount;
+            }
           }
-        }
 
-        Object.keys(cw20TokenBalances).forEach((cw20TokenKey) => {
-          const result = cw20TokenBalances[cw20TokenKey].Result;
+          Object.keys(cw20TokenBalances).forEach((cw20TokenKey) => {
+            const result = cw20TokenBalances[cw20TokenKey].Result;
 
-          if (typeof result === 'string') {
-            const { balance }: { balance: string } = JSON.parse(result);
+            if (typeof result === 'string') {
+              const { balance }: { balance: string } = JSON.parse(result);
 
-            data[cw20TokenKey] = balance;
-          }
-        });
+              data[cw20TokenKey] = balance;
+            }
+          });
 
-        for (const [resolve] of this.resolvers) {
-          resolve(data);
-        }
-        this.resolvers.clear();
-        this.fetched = false;
-        this.failedCount = 0;
-      })
-      .catch((error) => {
-        if (this.failedCount > 4) {
-          for (const [, reject] of this.resolvers) {
-            reject(error);
+          for (const [resolve] of this.resolvers) {
+            resolve(data);
           }
           this.resolvers.clear();
           this.fetched = false;
           this.failedCount = 0;
-        } else {
-          console.error(error);
-          setTimeout(() => {
+          this.lastWalletAddrress = null;
+        })
+        .catch((error) => {
+          if (this.failedCount > 4) {
+            for (const [, reject] of this.resolvers) {
+              reject(error);
+            }
+            this.resolvers.clear();
             this.fetched = false;
-            this.failedCount += 1;
-            this.fetch(walletAddress);
-          }, 100);
-        }
-      });
+            this.failedCount = 0;
+            this.lastWalletAddrress = null;
+          } else {
+            console.log('Retry fetch:', error);
+            setTimeout(() => {
+              this.fetched = false;
+              this.failedCount += 1;
+              this.fetch(walletAddress);
+            }, 100);
+          }
+        });
+    }, 100) as unknown) as number;
   };
 }
 

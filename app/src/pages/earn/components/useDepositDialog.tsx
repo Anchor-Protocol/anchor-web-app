@@ -43,6 +43,7 @@ interface FormParams {
 
 type FormReturn = void;
 
+/** @deprecated */
 export function useDepositDialog(): [
   OpenDialog<FormParams, FormReturn>,
   ReactNode,

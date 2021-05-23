@@ -158,19 +158,18 @@ export function BankProvider({
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
-  const fetchTokenBalances = useMemo<
+  const fetchTokenBalances = useCallback<
     () => Promise<Record<string, string>>
   >(() => {
     return status === WalletStatus.WALLET_CONNECTED && wallets.length > 0
-      ? () =>
-          tokenBalancesQuery({
-            nativeTokenKeys,
-            cw20TokenContracts: cw20TokenContracts[network.name],
-            walletAddress: wallets[0].terraAddress,
-            mantleEndpoint,
-            mantleFetch,
-          })
-      : () => Promise.resolve(emptyTokenBalances);
+      ? tokenBalancesQuery({
+          nativeTokenKeys,
+          cw20TokenContracts: cw20TokenContracts[network.name],
+          walletAddress: wallets[0].terraAddress,
+          mantleEndpoint,
+          mantleFetch,
+        })
+      : Promise.resolve(emptyTokenBalances);
   }, [
     cw20TokenContracts,
     emptyTokenBalances,
@@ -182,13 +181,12 @@ export function BankProvider({
     wallets,
   ]);
 
-  const fetchTax = useMemo<() => Promise<TaxData>>(() => {
-    return () =>
-      taxQuery({
-        mantleEndpoint,
-        mantleFetch,
-        maxCapTokenDenoms,
-      });
+  const fetchTax = useCallback<() => Promise<TaxData>>(() => {
+    return taxQuery({
+      mantleEndpoint,
+      mantleFetch,
+      maxCapTokenDenoms,
+    });
   }, [mantleEndpoint, mantleFetch, maxCapTokenDenoms]);
 
   const fetchTokenBalancesRef = useRef(fetchTokenBalances);
@@ -220,7 +218,7 @@ export function BankProvider({
   }, [browserInactive, fetchTax]);
 
   const refetchTokenBalances = useCallback(() => {
-    return fetchTokenBalancesRef.current().then((nextTokenBalances) => {
+    return fetchTokenBalances().then((nextTokenBalances) => {
       setTokenBalances((prevTokenBalances) => {
         return !deepEqual(prevTokenBalances, nextTokenBalances)
           ? nextTokenBalances
@@ -228,7 +226,7 @@ export function BankProvider({
       });
       return nextTokenBalances;
     });
-  }, []);
+  }, [fetchTokenBalances]);
 
   const refetchTax = useCallback(() => {
     return fetchTaxRef.current().then((nextTax) => {

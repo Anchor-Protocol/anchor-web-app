@@ -1,5 +1,5 @@
 import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
-import { UST, uUST } from '@anchor-protocol/types';
+import { aUST, uUST } from '@anchor-protocol/types';
 import { ANCHOR_TX_KEY, earnWithdrawTx } from '@anchor-protocol/webapp-fns';
 import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
 import { useStream } from '@rx-stream/react';
@@ -12,7 +12,7 @@ import { BigSource } from 'big.js';
 import { useCallback } from 'react';
 
 export interface EarnWithdrawTxParams {
-  withdrawAmount: UST;
+  withdrawAmount: aUST;
   txFee: uUST<BigSource>;
   onTxSucceed?: () => void;
 }

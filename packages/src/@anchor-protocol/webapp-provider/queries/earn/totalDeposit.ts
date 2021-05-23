@@ -1,5 +1,6 @@
 import {
   ANCHOR_QUERY_KEY,
+  AnchorTokenBalances,
   EarnTotalDepositData,
   earnTotalDepositQuery,
 } from '@anchor-protocol/webapp-fns';
@@ -9,6 +10,7 @@ import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import {
   EMPTY_QUERY_RESULT,
+  useBank,
   useTerraWebapp,
 } from '@terra-money/webapp-provider';
 import { useQuery, UseQueryResult } from 'react-query';
@@ -21,10 +23,12 @@ export function useEarnTotalDepositQuery(): UseQueryResult<
   const { mantleFetch, mantleEndpoint, lastSyncedHeight } = useTerraWebapp();
 
   const {
-    contractAddress: { moneyMarket, cw20 },
+    contractAddress: { moneyMarket },
   } = useAnchorWebapp();
 
   const { browserInactive } = useBrowserInactive();
+
+  const { refetchTokenBalances } = useBank<AnchorTokenBalances>();
 
   const result = useQuery(
     [
@@ -33,21 +37,17 @@ export function useEarnTotalDepositQuery(): UseQueryResult<
       mantleEndpoint,
       mantleFetch,
       lastSyncedHeight,
+      refetchTokenBalances,
     ],
     () => {
       return earnTotalDepositQuery({
         mantleEndpoint,
         mantleFetch,
         lastSyncedHeight,
+        fetchTokenBalances: refetchTokenBalances,
         variables: {
-          anchorTokenContract: cw20.aUST,
-          anchorTokenBalanceQuery: {
-            balance: {
-              address: connectedWallet!.walletAddress,
-            },
-          },
           moneyMarketContract: moneyMarket.market,
-          moneyMarketEpochQuery: {
+          epochStateQuery: {
             epoch_state: {
               block_height: -1,
             },

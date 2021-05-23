@@ -3,18 +3,16 @@ import {
   demicrofy,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
-import { Rate, uUST } from '@anchor-protocol/types';
+import { UST } from '@anchor-protocol/types';
 import { useEarnTotalDepositQuery } from '@anchor-protocol/webapp-provider';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import big, { Big, BigSource } from 'big.js';
-import React, { useCallback, useMemo } from 'react';
-import { totalDepositUST } from '../logics/totalDepositUST';
+import React, { useCallback } from 'react';
 import { useDepositDialog } from './useDepositDialog2';
-import { useWithdrawDialog } from './useWithdrawDialog';
+import { useWithdrawDialog } from './useWithdrawDialog2';
 
 export interface TotalDepositSectionProps {
   className?: string;
@@ -32,17 +30,6 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
   const { data } = useEarnTotalDepositQuery();
 
   // ---------------------------------------------
-  // logics
-  // ---------------------------------------------
-  const totalDeposit = useMemo(
-    () =>
-      data
-        ? totalDepositUST(data.aUSTBalance, data.exchangeRate)
-        : (big(0) as uUST<Big>),
-    [data],
-  );
-
-  // ---------------------------------------------
   // dialogs
   // ---------------------------------------------
   const [openDepositDialog, depositDialogElement] = useDepositDialog();
@@ -52,17 +39,9 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
     await openDepositDialog({});
   }, [openDepositDialog]);
 
-  const openWithdraw = useCallback(
-    async (totalDeposit: uUST<BigSource>, exchangeRate: Rate<BigSource>) => {
-      if (totalDeposit) {
-        await openWithdrawDialog({
-          totalDeposit,
-          exchangeRate,
-        });
-      }
-    },
-    [openWithdrawDialog],
-  );
+  const openWithdraw = useCallback(async () => {
+    await openWithdrawDialog({});
+  }, [openWithdrawDialog]);
 
   // ---------------------------------------------
   // presentation
@@ -80,23 +59,21 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
 
       <div className="amount">
         <AnimateNumber format={formatUSTWithPostfixUnits}>
-          {demicrofy(totalDeposit)}
+          {data ? demicrofy(data.totalDeposit) : ('0' as UST)}
         </AnimateNumber>{' '}
         UST
       </div>
 
       <aside className="total-deposit-buttons">
         <ActionButton
-          disabled={!connectedWallet || !totalDeposit || !data}
-          onClick={() => openDeposit()}
+          disabled={!connectedWallet || !data}
+          onClick={openDeposit}
         >
           Deposit
         </ActionButton>
         <ActionButton
-          disabled={!connectedWallet || !totalDeposit || !data}
-          onClick={() =>
-            data && openWithdraw(totalDeposit, data.exchangeRate.exchange_rate)
-          }
+          disabled={!connectedWallet || !data}
+          onClick={openWithdraw}
         >
           Withdraw
         </ActionButton>
