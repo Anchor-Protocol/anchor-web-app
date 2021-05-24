@@ -155,7 +155,7 @@ function MarketBase({ className }: MarketProps) {
                     </p>
                     <h3>
                       <i style={{ backgroundColor: theme.textColor }} /> Total
-                      Collaterals
+                      Collateral
                     </h3>
                     <p>
                       ${' '}
@@ -204,7 +204,7 @@ function MarketBase({ className }: MarketProps) {
                   </p>
                 </div>
                 <div>
-                  <h3>Circulating supply</h3>
+                  <h3>Circulating Supply</h3>
                   <p>
                     <s>
                       50,840,183<span>ANC</span>

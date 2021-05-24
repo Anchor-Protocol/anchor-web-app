@@ -43,7 +43,7 @@ export function TotalValueLockedDoughnutChart({
           },
         },
         data: {
-          labels: ['Total Deposit', 'Total Collaterals'],
+          labels: ['Total Deposit', 'Total Collateral'],
           datasets: [
             {
               data: [+totalDeposit, +totalCollaterals],
