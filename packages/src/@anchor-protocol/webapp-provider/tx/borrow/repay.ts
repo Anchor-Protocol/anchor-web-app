@@ -1,6 +1,6 @@
 import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import { UST, uUST } from '@anchor-protocol/types';
-import { ANCHOR_TX_KEY, borrowBorrowTx } from '@anchor-protocol/webapp-fns';
+import { ANCHOR_TX_KEY, borrowRepayTx } from '@anchor-protocol/webapp-fns';
 import { useAnchorWebapp } from '@anchor-protocol/webapp-provider/contexts/context';
 import { useBorrowBorrowerQuery } from '@anchor-protocol/webapp-provider/queries/borrow/borrower';
 import { useBorrowMarketQuery } from '@anchor-protocol/webapp-provider/queries/borrow/market';
@@ -14,11 +14,11 @@ import {
 import { useCallback } from 'react';
 
 export interface BorrowBorrowTxParams {
-  borrowAmount: UST;
+  repayAmount: UST;
   onTxSucceed?: () => void;
 }
 
-export function useBorrowBorrowTx() {
+export function useBorrowRepayTx() {
   const connectedWallet = useConnectedWallet();
 
   const { addressProvider, constants } = useAnchorWebapp();
@@ -34,16 +34,16 @@ export function useBorrowBorrowTx() {
   const { dispatch } = useOperationBroadcaster();
 
   const stream = useCallback(
-    ({ borrowAmount, onTxSucceed }: BorrowBorrowTxParams) => {
+    ({ repayAmount, onTxSucceed }: BorrowBorrowTxParams) => {
       if (!connectedWallet || !connectedWallet.availablePost) {
         throw new Error('Can not post!');
       }
 
-      return borrowBorrowTx({
+      return borrowRepayTx({
         address: connectedWallet.walletAddress,
-        market: MARKET_DENOMS.UUSD,
-        amount: borrowAmount,
         addressProvider,
+        amount: repayAmount,
+        market: MARKET_DENOMS.UUSD,
         // post
         post: connectedWallet.post,
         txFee: constants.fixedGas.toString() as uUST,

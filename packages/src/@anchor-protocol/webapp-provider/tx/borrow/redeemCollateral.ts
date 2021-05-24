@@ -1,9 +1,9 @@
-import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
-import { UST, uUST } from '@anchor-protocol/types';
-import { ANCHOR_TX_KEY, borrowBorrowTx } from '@anchor-protocol/webapp-fns';
-import { useAnchorWebapp } from '@anchor-protocol/webapp-provider/contexts/context';
-import { useBorrowBorrowerQuery } from '@anchor-protocol/webapp-provider/queries/borrow/borrower';
-import { useBorrowMarketQuery } from '@anchor-protocol/webapp-provider/queries/borrow/market';
+import { COLLATERAL_DENOMS, MARKET_DENOMS } from '@anchor-protocol/anchor.js';
+import { bLuna, uUST } from '@anchor-protocol/types';
+import {
+  ANCHOR_TX_KEY,
+  borrowRedeemCollateralTx,
+} from '@anchor-protocol/webapp-fns';
 import { useStream } from '@rx-stream/react';
 import { useOperationBroadcaster } from '@terra-dev/broadcastable-operation';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
@@ -12,9 +12,12 @@ import {
   useTerraWebapp,
 } from '@terra-money/webapp-provider';
 import { useCallback } from 'react';
+import { useAnchorWebapp } from '../../contexts/context';
+import { useBorrowBorrowerQuery } from '../../queries/borrow/borrower';
+import { useBorrowMarketQuery } from '../../queries/borrow/market';
 
 export interface BorrowBorrowTxParams {
-  borrowAmount: UST;
+  redeemAmount: bLuna;
   onTxSucceed?: () => void;
 }
 
@@ -34,16 +37,17 @@ export function useBorrowBorrowTx() {
   const { dispatch } = useOperationBroadcaster();
 
   const stream = useCallback(
-    ({ borrowAmount, onTxSucceed }: BorrowBorrowTxParams) => {
+    ({ redeemAmount, onTxSucceed }: BorrowBorrowTxParams) => {
       if (!connectedWallet || !connectedWallet.availablePost) {
         throw new Error('Can not post!');
       }
 
-      return borrowBorrowTx({
+      return borrowRedeemCollateralTx({
         address: connectedWallet.walletAddress,
-        market: MARKET_DENOMS.UUSD,
-        amount: borrowAmount,
         addressProvider,
+        amount: redeemAmount,
+        market: MARKET_DENOMS.UUSD,
+        collateral: COLLATERAL_DENOMS.UBLUNA,
         // post
         post: connectedWallet.post,
         txFee: constants.fixedGas.toString() as uUST,
