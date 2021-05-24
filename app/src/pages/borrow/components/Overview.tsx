@@ -11,16 +11,19 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { Rate, uUST } from '@anchor-protocol/types';
+import {
+  useAnchorWebapp,
+  useBorrowBorrowerQuery,
+  useBorrowMarketQuery,
+} from '@anchor-protocol/webapp-provider';
 import { IconCircle } from '@terra-dev/neumorphism-ui/components/IconCircle';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { TooltipIconCircle } from '@terra-dev/neumorphism-ui/components/TooltipIconCircle';
-import { useConstants } from 'base/contexts/contants';
 import big, { Big, BigSource } from 'big.js';
 import { screen } from 'env';
 import { BorrowLimitGraph } from 'pages/borrow/components/BorrowLimitGraph';
-import { useMarket } from 'pages/borrow/context/market';
 import { apr as _apr } from 'pages/borrow/logics/apr';
 import { borrowed as _borrowed } from 'pages/borrow/logics/borrowed';
 import { collaterals as _collaterals } from 'pages/borrow/logics/collaterals';
@@ -34,14 +37,16 @@ export interface OverviewProps {
 
 function OverviewBase({ className }: OverviewProps) {
   const {
-    borrowRate,
-    loanAmount,
-    borrowInfo,
-    oraclePrice,
-    bLunaMaxLtv,
-  } = useMarket();
+    data: { borrowRate, oraclePrice, bLunaMaxLtv } = {},
+  } = useBorrowMarketQuery();
 
-  const { blocksPerYear } = useConstants();
+  const {
+    data: { marketBorrowerInfo, custodyBorrower } = {},
+  } = useBorrowBorrowerQuery();
+
+  const {
+    constants: { blocksPerYear },
+  } = useAnchorWebapp();
 
   const apr = useMemo(() => _apr(borrowRate, blocksPerYear), [
     blocksPerYear,
@@ -52,11 +57,13 @@ function OverviewBase({ className }: OverviewProps) {
     data: { borrowerDistributionAPYs },
   } = useBorrowAPY();
 
-  const borrowed = useMemo(() => _borrowed(loanAmount), [loanAmount]);
+  const borrowed = useMemo(() => _borrowed(marketBorrowerInfo), [
+    marketBorrowerInfo,
+  ]);
 
   const collaterals = useMemo(
-    () => _collaterals(borrowInfo, oraclePrice?.rate),
-    [borrowInfo, oraclePrice?.rate],
+    () => _collaterals(custodyBorrower, oraclePrice?.rate),
+    [custodyBorrower, oraclePrice?.rate],
   );
 
   return (
@@ -182,7 +189,7 @@ function OverviewBase({ className }: OverviewProps) {
         <BorrowLimitGraph
           bLunaMaxLtv={bLunaMaxLtv ?? (0 as Rate<BigSource>)}
           collateralValue={collaterals}
-          loanAmount={loanAmount?.loan_amount ?? (0 as uUST<BigSource>)}
+          loanAmount={marketBorrowerInfo?.loan_amount ?? (0 as uUST<BigSource>)}
         />
       </figure>
     </Section>

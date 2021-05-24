@@ -31,7 +31,7 @@ interface TxInfoRawData {
 export type TxInfoData = {
   TxHash: string;
   Success: boolean;
-  RawLog?: RawLogMsg[];
+  RawLog?: RawLogMsg[] | string;
 }[];
 
 export interface TxInfoVariables {
@@ -67,10 +67,10 @@ export async function txInfoQuery({
   );
 
   return TxInfos.map(({ TxHash, Success, RawLog: _RawLog }) => {
-    let RawLog: TxInfoData[number]['RawLog'] | undefined = undefined;
+    let RawLog: TxInfoData[number]['RawLog'] = _RawLog;
 
     try {
-      RawLog = JSON.parse(_RawLog);
+      RawLog = JSON.parse(_RawLog) ?? _RawLog;
     } catch {}
 
     return {
@@ -119,9 +119,13 @@ export async function pollTxInfo({
       const fail = txInfo.find(({ Success }) => !Success);
 
       if (fail) {
-        const message = Array.isArray(fail.RawLog)
-          ? fail.RawLog.map(({ log }) => log).join('\n')
-          : `Failed broadcast the "${txhash}"`;
+        console.log('txInfo.ts..pollTxInfo()', fail);
+        const message =
+          typeof fail.RawLog === 'string'
+            ? fail.RawLog
+            : Array.isArray(fail.RawLog)
+            ? fail.RawLog.map(({ log }) => log).join('\n')
+            : `Failed broadcast the "${txhash}"`;
 
         if (tx) {
           throw new TxFailed(tx, txhash, message, fail.RawLog);

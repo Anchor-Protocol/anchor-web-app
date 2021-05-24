@@ -11,8 +11,8 @@ export interface BorrowBorrowerRawData {
 }
 
 export interface BorrowBorrowerData {
-  marketBorrowerInfo: WASMContractResult<moneyMarket.market.BorrowerInfoResponse>;
-  custodyBorrower: WASMContractResult<moneyMarket.custody.BorrowerResponse>;
+  marketBorrowerInfo: moneyMarket.market.BorrowerInfoResponse;
+  custodyBorrower: moneyMarket.custody.BorrowerResponse;
 }
 
 export interface BorrowBorrowerRawVariables {

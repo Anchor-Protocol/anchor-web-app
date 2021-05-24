@@ -10,6 +10,9 @@ export * from './queries/earn/apyHistory';
 export * from './queries/earn/transactionHistory';
 export * from './queries/borrow/market';
 export * from './queries/borrow/borrower';
+export * from './queries/borrow/apy';
+export * from './queries/borrow/liquidationPrice';
 
 export * from './tx/earn/deposit';
 export * from './tx/earn/withdraw';
+export * from './tx/borrow/borrow';

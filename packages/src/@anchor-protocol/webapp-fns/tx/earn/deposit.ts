@@ -68,8 +68,6 @@ export function earnDepositTx(
     // create tx
     // ---------------------------------------------
     (_: void) => {
-      //throw new Timeout('Shit...!!!!');
-
       return {
         value: {
           msgs: fabricateMarketDepositStableCoin($)($.addressProvider),

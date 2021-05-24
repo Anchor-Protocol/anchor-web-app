@@ -1,31 +1,32 @@
+import { StableDenom } from '@anchor-protocol/types';
 import {
   ANCHOR_QUERY_KEY,
-  BorrowBorrowerData,
-  borrowBorrowerQuery,
+  BorrowLiquidationPriceData,
+  borrowLiquidationPriceQuery,
 } from '@anchor-protocol/webapp-fns';
-import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
+import { useAnchorWebapp } from '@anchor-protocol/webapp-provider/contexts/context';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useTerraWebapp } from '@terra-money/webapp-provider';
 import { useCallback } from 'react';
 import { useQuery, UseQueryResult } from 'react-query';
 
-export function useBorrowBorrowerQuery(): UseQueryResult<
-  BorrowBorrowerData | undefined
+export function useBorrowLiquidationPriceQuery(): UseQueryResult<
+  BorrowLiquidationPriceData | undefined
 > {
   const connectedWallet = useConnectedWallet();
 
   const { mantleFetch, mantleEndpoint, lastSyncedHeight } = useTerraWebapp();
 
   const {
-    contractAddress: { moneyMarket },
+    contractAddress: { moneyMarket, cw20 },
   } = useAnchorWebapp();
 
   const { browserInactive } = useBrowserInactive();
 
   const queryFn = useCallback(() => {
     return !!connectedWallet
-      ? borrowBorrowerQuery({
+      ? borrowLiquidationPriceQuery({
           mantleEndpoint,
           mantleFetch,
           lastSyncedHeight,
@@ -37,10 +38,28 @@ export function useBorrowBorrowerQuery(): UseQueryResult<
                 block_height: -1,
               },
             },
-            custodyContract: moneyMarket.custody,
-            custodyBorrowerQuery: {
-              borrower: {
-                address: connectedWallet.walletAddress,
+            overseerContract: moneyMarket.overseer,
+            overseerBorrowlimitQuery: {
+              borrow_limit: {
+                borrower: connectedWallet.walletAddress,
+                block_time: -1,
+              },
+            },
+            overseerCollateralsQuery: {
+              collaterals: {
+                borrower: connectedWallet.walletAddress,
+              },
+            },
+            overseerWhitelistQuery: {
+              whitelist: {
+                collateral_token: cw20.bLuna,
+              },
+            },
+            oracleContract: moneyMarket.oracle,
+            oraclePriceQuery: {
+              price: {
+                base: cw20.bLuna,
+                quote: 'uusd' as StableDenom,
               },
             },
           },
@@ -48,14 +67,16 @@ export function useBorrowBorrowerQuery(): UseQueryResult<
       : Promise.resolve(undefined);
   }, [
     connectedWallet,
+    cw20.bLuna,
     lastSyncedHeight,
     mantleEndpoint,
     mantleFetch,
-    moneyMarket.custody,
     moneyMarket.market,
+    moneyMarket.oracle,
+    moneyMarket.overseer,
   ]);
 
-  return useQuery(ANCHOR_QUERY_KEY.BORROW_BORROWER, queryFn, {
+  return useQuery(ANCHOR_QUERY_KEY.BORROW_LIQUIDATION_PRICE, queryFn, {
     refetchInterval: browserInactive && !!connectedWallet && 1000 * 60 * 5,
     enabled: !browserInactive && !!connectedWallet,
     keepPreviousData: true,

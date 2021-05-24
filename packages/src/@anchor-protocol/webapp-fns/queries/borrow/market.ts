@@ -1,10 +1,13 @@
 import {
   HumanAddr,
   moneyMarket,
+  Rate,
   uUST,
   WASMContractResult,
 } from '@anchor-protocol/types';
 import { MantleFetch } from '@terra-money/webapp-fns';
+import big from 'big.js';
+import { ANCHOR_RATIO } from '../../env';
 
 export interface BorrowMarketStateRawData {
   marketBalances: {
@@ -17,7 +20,7 @@ export interface BorrowMarketStateData {
   marketBalances: {
     uUST: uUST;
   };
-  marketState: WASMContractResult<moneyMarket.market.StateResponse>;
+  marketState: moneyMarket.market.StateResponse;
 }
 
 export interface BorrowMarketStateRawVariables {
@@ -32,9 +35,12 @@ export interface BorrowMarketRawData {
 }
 
 export interface BorrowMarketData extends BorrowMarketStateData {
-  borrowRate: WASMContractResult<moneyMarket.interestModel.BorrowRateResponse>;
-  oraclePrice: WASMContractResult<moneyMarket.oracle.PriceResponse>;
-  overseerWhitelist: WASMContractResult<moneyMarket.overseer.WhitelistResponse>;
+  borrowRate: moneyMarket.interestModel.BorrowRateResponse;
+  oraclePrice: moneyMarket.oracle.PriceResponse;
+  overseerWhitelist: moneyMarket.overseer.WhitelistResponse;
+
+  bLunaMaxLtv?: Rate;
+  bLunaSafeLtv?: Rate;
 }
 
 export interface BorrowMarketRawVariables {
@@ -63,7 +69,7 @@ export const BORROW_MARKET_STATE_QUERY = `
     $marketContract: String!
     $marketStateQuery: String!
   ) {
-    marketBalance: BankBalancesAddress(Address: $marketContract) {
+    marketBalances: BankBalancesAddress(Address: $marketContract) {
       Result {
         Denom
         Amount
@@ -166,10 +172,26 @@ export async function borrowMarketQuery({
     `${mantleEndpoint}?borrow--market`,
   );
 
-  return {
+  const data: Omit<BorrowMarketData, 'bLunaMaxLtv' | 'bLunaSafeLtv'> = {
     ...stateData,
     borrowRate: JSON.parse(rawData.borrowRate.Result),
     oraclePrice: JSON.parse(rawData.oraclePrice.Result),
     overseerWhitelist: JSON.parse(rawData.overseerWhitelist.Result),
+  };
+
+  const bLunaMaxLtv = data.overseerWhitelist.elems.find(
+    ({ collateral_token }) =>
+      collateral_token ===
+      variables.overseerWhitelistQuery.whitelist.collateral_token,
+  )?.max_ltv;
+
+  const bLunaSafeLtv = bLunaMaxLtv
+    ? (big(bLunaMaxLtv).mul(ANCHOR_RATIO).toFixed() as Rate)
+    : undefined;
+
+  return {
+    ...data,
+    bLunaMaxLtv,
+    bLunaSafeLtv,
   };
 }

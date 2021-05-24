@@ -11,8 +11,8 @@ export interface EarnEpochStatesRawData {
 }
 
 export interface EarnEpochStatesData {
-  moneyMarketEpochState: WASMContractResult<moneyMarket.market.EpochStateResponse>;
-  overseerEpochState: WASMContractResult<moneyMarket.overseer.EpochStateResponse>;
+  moneyMarketEpochState: moneyMarket.market.EpochStateResponse;
+  overseerEpochState: moneyMarket.overseer.EpochStateResponse;
 }
 
 export interface EarnEpochStatesRawVariables {

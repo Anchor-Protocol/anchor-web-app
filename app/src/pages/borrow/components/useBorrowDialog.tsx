@@ -1,4 +1,3 @@
-import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import {
   demicrofy,
   formatRate,
@@ -7,13 +6,17 @@ import {
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { Rate, UST, uUST } from '@anchor-protocol/types';
+import { Rate, UST } from '@anchor-protocol/types';
 import {
-  ConnectedWallet,
-  useConnectedWallet,
-} from '@terra-money/wallet-provider';
+  BorrowBorrowerData,
+  BorrowMarketData,
+  useAnchorWebapp,
+  useBorrowBorrowerQuery,
+  useBorrowBorrowTx,
+  useBorrowMarketQuery,
+} from '@anchor-protocol/webapp-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
-import { useOperation } from '@terra-dev/broadcastable-operation';
+import { StreamStatus } from '@rx-stream/react';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
@@ -21,15 +24,14 @@ import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import type { DialogProps, OpenDialog } from '@terra-dev/use-dialog';
 import { useDialog } from '@terra-dev/use-dialog';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
-import big, { Big, BigSource } from 'big.js';
+import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
-import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
 import { LTVGraph } from 'pages/borrow/components/LTVGraph';
-import { useMarketNotNullable } from 'pages/borrow/context/market';
 import { apr as _apr } from 'pages/borrow/logics/apr';
 import { borrowAmountToLtv } from 'pages/borrow/logics/borrowAmountToLtv';
 import { borrowMax } from 'pages/borrow/logics/borrowMax';
@@ -40,13 +42,14 @@ import { borrowTxFee } from 'pages/borrow/logics/borrowTxFee';
 import { currentLtv as _currentLtv } from 'pages/borrow/logics/currentLtv';
 import { ltvToBorrowAmount } from 'pages/borrow/logics/ltvToBorrowAmount';
 import { validateBorrowAmount } from 'pages/borrow/logics/validateBorrowAmount';
-import { borrowOptions } from 'pages/borrow/transactions/borrowOptions';
 import type { ChangeEvent, ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 interface FormParams {
   className?: string;
+  fallbackBorrowMarket: BorrowMarketData;
+  fallbackBorrowBorrower: BorrowBorrowerData;
 }
 
 type FormReturn = void;
@@ -61,26 +64,35 @@ export function useBorrowDialog(): [
 function ComponentBase({
   className,
   closeDialog,
+  fallbackBorrowMarket,
+  fallbackBorrowBorrower,
 }: DialogProps<FormParams, FormReturn>) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const {
-    loanAmount,
-    borrowInfo,
-    oraclePrice,
-    bLunaMaxLtv,
-    bLunaSafeLtv,
-    borrowRate,
-  } = useMarketNotNullable();
-
   const connectedWallet = useConnectedWallet();
 
-  const { fixedGas, blocksPerYear } = useConstants();
+  const {
+    constants: { fixedGas, blocksPerYear },
+  } = useAnchorWebapp();
 
-  const [borrow, borrowResult] = useOperation(borrowOptions, {
-    walletAddress: connectedWallet!.walletAddress,
-  });
+  const {
+    data: {
+      borrowRate,
+      oraclePrice,
+      bLunaMaxLtv = '0.5' as Rate,
+      bLunaSafeLtv = '0.3' as Rate,
+    } = fallbackBorrowMarket,
+  } = useBorrowMarketQuery();
+
+  const {
+    data: {
+      marketBorrowerInfo: loanAmount,
+      custodyBorrower: borrowInfo,
+    } = fallbackBorrowBorrower,
+  } = useBorrowBorrowerQuery();
+
+  const [borrow, borrowResult] = useBorrowBorrowTx();
 
   // ---------------------------------------------
   // states
@@ -169,19 +181,14 @@ function ComponentBase({
   }, []);
 
   const proceed = useCallback(
-    async (
-      walletReady: ConnectedWallet,
-      borrowAmount: UST,
-      txFee: uUST<BigSource> | undefined,
-    ) => {
-      await borrow({
-        address: walletReady.walletAddress,
-        market: MARKET_DENOMS.UUSD,
-        amount: borrowAmount,
-        txFee: txFee!.toString() as uUST,
-      });
+    (borrowAmount: UST) => {
+      if (!connectedWallet || !borrow) {
+        return;
+      }
+
+      borrow({ borrowAmount });
     },
-    [borrow],
+    [borrow, connectedWallet],
   );
 
   const onLtvChange = useCallback(
@@ -225,14 +232,16 @@ function ComponentBase({
   );
 
   if (
-    borrowResult?.status === 'in-progress' ||
-    borrowResult?.status === 'done' ||
-    borrowResult?.status === 'fault'
+    borrowResult?.status === StreamStatus.IN_PROGRESS ||
+    borrowResult?.status === StreamStatus.DONE
   ) {
     return (
       <Modal open disableBackdropClick disableEnforceFocus>
         <Dialog className={className}>
-          <TransactionRenderer result={borrowResult} onExit={closeDialog} />
+          <TxResultRenderer
+            resultRendering={borrowResult.value}
+            onExit={closeDialog}
+          />
         </Dialog>
       </Modal>
     );
@@ -320,14 +329,13 @@ function ComponentBase({
           disabled={
             !connectedWallet ||
             !connectedWallet.availablePost ||
+            !borrow ||
             borrowAmount.length === 0 ||
             big(borrowAmount).lte(0) ||
             !!invalidTxFee ||
             !!invalidBorrowAmount
           }
-          onClick={() =>
-            connectedWallet && proceed(connectedWallet, borrowAmount, txFee)
-          }
+          onClick={() => connectedWallet && proceed(borrowAmount)}
         >
           Proceed
         </ActionButton>
