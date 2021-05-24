@@ -117,5 +117,6 @@ export function demicrofy<
   : C extends uToken
   ? Token<Big>
   : never {
-  return big(amount).div(MICRO) as any;
+  const value = big(amount).div(MICRO);
+  return (value < big(0.001) ? big(0) : value) as any;
 }
