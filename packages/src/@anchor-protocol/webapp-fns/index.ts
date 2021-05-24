@@ -21,3 +21,6 @@ export * from './queries/borrow/liquidationPrice';
 export * from './tx/earn/deposit';
 export * from './tx/earn/withdraw';
 export * from './tx/borrow/borrow';
+export * from './tx/borrow/repay';
+export * from './tx/borrow/provideCollateral';
+export * from './tx/borrow/reddemCollateral';

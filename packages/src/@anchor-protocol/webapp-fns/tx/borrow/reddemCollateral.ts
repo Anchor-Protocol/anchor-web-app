@@ -1,37 +1,37 @@
 import {
   AddressProvider,
-  fabricateMarketRedeemStable,
+  fabricateRedeemCollateral,
 } from '@anchor-protocol/anchor.js';
+import { demicrofy, formatLuna, formatRate } from '@anchor-protocol/notation';
+import { Rate, ubLuna, uUST } from '@anchor-protocol/types';
 import {
-  demicrofy,
-  formatAUSTWithPostfixUnits,
-  formatFluidDecimalPoints,
-  formatUSTWithPostfixUnits,
-  stripUUSD,
-} from '@anchor-protocol/notation';
-import { Rate, uaUST, uUST } from '@anchor-protocol/types';
+  BorrowBorrowerData,
+  BorrowMarketData,
+  computeCurrentLtv,
+} from '@anchor-protocol/webapp-fns';
 import { pipe } from '@rx-stream/pipe';
 import { floor } from '@terra-dev/big-math';
 import { TxResult } from '@terra-dev/wallet-types';
 import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
 import {
   MantleFetch,
-  pickAttributeValueByKey,
+  pickAttributeValue,
   pickEvent,
   pickRawLog,
   TxResultRendering,
   TxStreamPhase,
 } from '@terra-money/webapp-fns';
-import big, { BigSource } from 'big.js';
+import { QueryObserverResult } from 'react-query';
 import { Observable } from 'rxjs';
 import { _catchTxError } from '../internal/_catchTxError';
 import { _createTxOptions } from '../internal/_createTxOptions';
 import { _pollTxInfo } from '../internal/_pollTxInfo';
 import { _postTx } from '../internal/_postTx';
 import { TxHelper } from '../internal/TxHelper';
+import { _fetchBorrowData } from './_fetchBorrowData';
 
-export function earnWithdrawTx(
-  $: Parameters<typeof fabricateMarketRedeemStable>[0] & {
+export function borrowRedeemCollateralTx(
+  $: Parameters<typeof fabricateRedeemCollateral>[0] & {
     gasFee: uUST<number>;
     gasAdjustment: Rate<number>;
     txFee: uUST;
@@ -40,6 +40,12 @@ export function earnWithdrawTx(
     mantleFetch: MantleFetch;
     post: (tx: CreateTxOptions) => Promise<TxResult>;
     txErrorReporter?: (error: unknown) => string;
+    borrowMarketQuery: () => Promise<
+      QueryObserverResult<BorrowMarketData | undefined>
+    >;
+    borrowBorrowerQuery: () => Promise<
+      QueryObserverResult<BorrowBorrowerData | undefined>
+    >;
     onTxSucceed?: () => void;
   },
 ): Observable<TxResultRendering> {
@@ -47,65 +53,54 @@ export function earnWithdrawTx(
 
   return pipe(
     _createTxOptions({
-      msgs: fabricateMarketRedeemStable($)($.addressProvider),
+      msgs: fabricateRedeemCollateral($)($.addressProvider),
       fee: new StdFee($.gasFee, floor($.txFee) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),
     _postTx({ helper, ...$ }),
     _pollTxInfo({ helper, ...$ }),
-    ({ value: txInfo }) => {
-      const rawLog = pickRawLog(txInfo, 0);
+    _fetchBorrowData({ helper, ...$ }),
+    ({ value: { txInfo, borrowMarket, borrowBorrower } }) => {
+      if (!borrowMarket || !borrowBorrower) {
+        return helper.failedToCreateReceipt(
+          new Error('Failed to load borrow data'),
+        );
+      }
+
+      const rawLog = pickRawLog(txInfo, 1);
 
       if (!rawLog) {
         return helper.failedToFindRawLog();
       }
 
       const fromContract = pickEvent(rawLog, 'from_contract');
-      const transfer = pickEvent(rawLog, 'transfer');
 
-      if (!fromContract || !transfer) {
-        return helper.failedToFindEvents('from_contract', 'transfer');
+      if (!fromContract) {
+        return helper.failedToFindEvents('from_contract');
       }
 
       try {
-        const withdrawAmountUUSD = pickAttributeValueByKey<string>(
-          transfer,
-          'amount',
-          (attrs) => attrs.reverse()[0],
-        );
+        const redeemedAmount = pickAttributeValue<ubLuna>(fromContract, 16);
 
-        const withdrawAmount = withdrawAmountUUSD
-          ? stripUUSD(withdrawAmountUUSD)
-          : undefined;
-
-        const burnAmount = pickAttributeValueByKey<uaUST>(
-          fromContract,
-          'burn_amount',
-        );
-
-        const exchangeRate =
-          withdrawAmount &&
-          burnAmount &&
-          (big(withdrawAmount).div(burnAmount) as Rate<BigSource> | undefined);
+        const newLtv =
+          computeCurrentLtv(
+            borrowBorrower.marketBorrowerInfo,
+            borrowBorrower.custodyBorrower,
+            borrowMarket.oraclePrice,
+          ) ?? ('0' as Rate);
 
         return {
           value: null,
 
           phase: TxStreamPhase.SUCCEED,
           receipts: [
-            withdrawAmount && {
-              name: 'Withdraw Amount',
-              value:
-                formatUSTWithPostfixUnits(demicrofy(withdrawAmount)) + ' UST',
+            redeemedAmount && {
+              name: 'Redeemed Amount',
+              value: formatLuna(demicrofy(redeemedAmount)) + ' bLuna',
             },
-            burnAmount && {
-              name: 'Returned Amount',
-              value:
-                formatAUSTWithPostfixUnits(demicrofy(burnAmount)) + ' aUST',
-            },
-            exchangeRate && {
-              name: 'Exchange Rate',
-              value: formatFluidDecimalPoints(exchangeRate, 6),
+            newLtv && {
+              name: 'New LTV',
+              value: formatRate(newLtv) + ' %',
             },
             helper.txHashReceipt(),
             helper.txFeeReceipt(),
