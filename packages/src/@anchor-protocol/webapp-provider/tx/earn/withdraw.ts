@@ -3,6 +3,7 @@ import { aUST, uUST } from '@anchor-protocol/types';
 import { ANCHOR_TX_KEY, earnWithdrawTx } from '@anchor-protocol/webapp-fns';
 import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
 import { useStream } from '@rx-stream/react';
+import { useOperationBroadcaster } from '@terra-dev/broadcastable-operation';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import {
   useRefetchQueries,
@@ -25,6 +26,9 @@ export function useEarnWithdrawTx() {
   const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
 
   const refetchQueries = useRefetchQueries();
+
+  // TODO remove
+  const { dispatch } = useOperationBroadcaster();
 
   const stream = useCallback(
     ({ withdrawAmount, txFee, onTxSucceed }: EarnWithdrawTxParams) => {
@@ -52,6 +56,7 @@ export function useEarnWithdrawTx() {
         onTxSucceed: () => {
           onTxSucceed?.();
           refetchQueries(ANCHOR_TX_KEY.EARN_WITHDRAW);
+          dispatch('', 'done');
         },
       });
     },
@@ -64,6 +69,7 @@ export function useEarnWithdrawTx() {
       mantleFetch,
       txErrorReporter,
       refetchQueries,
+      dispatch,
     ],
   );
 

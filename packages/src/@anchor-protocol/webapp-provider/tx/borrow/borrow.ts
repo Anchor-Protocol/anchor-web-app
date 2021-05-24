@@ -5,6 +5,7 @@ import { useAnchorWebapp } from '@anchor-protocol/webapp-provider/contexts/conte
 import { useBorrowBorrowerQuery } from '@anchor-protocol/webapp-provider/queries/borrow/borrower';
 import { useBorrowMarketQuery } from '@anchor-protocol/webapp-provider/queries/borrow/market';
 import { useStream } from '@rx-stream/react';
+import { useOperationBroadcaster } from '@terra-dev/broadcastable-operation';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import {
   useRefetchQueries,
@@ -28,6 +29,9 @@ export function useBorrowBorrowTx() {
   const { refetch: borrowBorrowerQuery } = useBorrowBorrowerQuery();
 
   const refetchQueries = useRefetchQueries();
+
+  // TODO remove
+  const { dispatch } = useOperationBroadcaster();
 
   const stream = useCallback(
     ({ borrowAmount, onTxSucceed }: BorrowBorrowTxParams) => {
@@ -56,6 +60,7 @@ export function useBorrowBorrowTx() {
         onTxSucceed: () => {
           onTxSucceed?.();
           refetchQueries(ANCHOR_TX_KEY.BORROW_BORROW);
+          dispatch('', 'done');
         },
       });
     },
@@ -67,6 +72,7 @@ export function useBorrowBorrowTx() {
       constants.fixedGas,
       constants.gasAdjustment,
       constants.gasFee,
+      dispatch,
       mantleEndpoint,
       mantleFetch,
       refetchQueries,
