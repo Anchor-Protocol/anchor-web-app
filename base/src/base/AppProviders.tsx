@@ -298,8 +298,8 @@ export function AppProviders({ children }: { children: ReactNode }) {
       walletConnectChainIds={walletConnectChainIds}
       connectorOpts={{
         //bridge: 'https://bridge.interus.net',
-        bridge: 'https://pancakeswap.bridge.walletconnect.org/',
-        //bridge: 'https://tequila-walletconnect.terra.dev/',
+        //bridge: 'https://pancakeswap.bridge.walletconnect.org/',
+        bridge: 'https://tequila-walletconnect.terra.dev/',
       }}
       createReadonlyWalletSession={createReadonlyWalletSession}
     >
