@@ -16,12 +16,12 @@ import { useAnchorWebapp } from '../../contexts/context';
 import { useBorrowBorrowerQuery } from '../../queries/borrow/borrower';
 import { useBorrowMarketQuery } from '../../queries/borrow/market';
 
-export interface BorrowBorrowTxParams {
+export interface BorrowProvideCollateralTxParams {
   depositAmount: bLuna;
   onTxSucceed?: () => void;
 }
 
-export function useBorrowBorrowTx() {
+export function useBorrowProvideCollateralTx() {
   const connectedWallet = useConnectedWallet();
 
   const { addressProvider, constants } = useAnchorWebapp();
@@ -37,7 +37,7 @@ export function useBorrowBorrowTx() {
   const { dispatch } = useOperationBroadcaster();
 
   const stream = useCallback(
-    ({ depositAmount, onTxSucceed }: BorrowBorrowTxParams) => {
+    ({ depositAmount, onTxSucceed }: BorrowProvideCollateralTxParams) => {
       if (!connectedWallet || !connectedWallet.availablePost) {
         throw new Error('Can not post!');
       }

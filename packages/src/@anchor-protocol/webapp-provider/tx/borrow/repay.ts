@@ -13,7 +13,7 @@ import {
 } from '@terra-money/webapp-provider';
 import { useCallback } from 'react';
 
-export interface BorrowBorrowTxParams {
+export interface BorrowRepayTxParams {
   repayAmount: UST;
   onTxSucceed?: () => void;
 }
@@ -34,7 +34,7 @@ export function useBorrowRepayTx() {
   const { dispatch } = useOperationBroadcaster();
 
   const stream = useCallback(
-    ({ repayAmount, onTxSucceed }: BorrowBorrowTxParams) => {
+    ({ repayAmount, onTxSucceed }: BorrowRepayTxParams) => {
       if (!connectedWallet || !connectedWallet.availablePost) {
         throw new Error('Can not post!');
       }
