@@ -1,7 +1,5 @@
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
-import { Tab } from '@terra-dev/neumorphism-ui/components/Tab';
-import { Swap as SwapTabContent } from 'pages/basset/components/Swap';
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { Burn as BurnTabContent } from './components/Burn';
 
@@ -9,44 +7,13 @@ export interface BurnProps {
   className?: string;
 }
 
-interface Item {
-  label: string;
-  value: string;
-}
-
-const tabItems: Item[] = [
-  {
-    label: 'BURN',
-    value: 'burn',
-  },
-  {
-    label: 'INSTANT BURN',
-    value: 'instant_burn',
-  },
-];
-
 function BurnBase({ className }: BurnProps) {
   // ---------------------------------------------
   // states
   // ---------------------------------------------
-  const [tab, setTab] = useState<Item>(() => tabItems[0]);
-
   return (
     <Section className={className}>
-      <Tab
-        className="tab"
-        style={{ maxWidth: 400 }}
-        items={tabItems}
-        selectedItem={tab ?? tabItems[0]}
-        onChange={setTab}
-        labelFunction={({ label }) => label}
-        keyFunction={({ value }) => value}
-        height={46}
-        borderRadius={30}
-        fontSize={12}
-      />
-
-      {tab === tabItems[0] ? <BurnTabContent /> : <SwapTabContent />}
+      <BurnTabContent />
     </Section>
   );
 }
