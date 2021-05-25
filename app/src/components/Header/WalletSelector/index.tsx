@@ -122,7 +122,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                       >
                         <IconSpan>
                           <Terra />
-                          Web Extension
+                          Terra Station (extension)
                         </IconSpan>
                       </FlatButton>
                     ) : availableConnectTypes.some(
@@ -138,7 +138,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                       >
                         <IconSpan>
                           <Terra />
-                          Chrome Extension
+                          Terra Station (extension)
                         </IconSpan>
                       </FlatButton>
                     ) : availableInstallTypes.some(
@@ -172,7 +172,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                       >
                         <IconSpan>
                           <Walletconnect />
-                          Wallet Connect
+                          Terra Station (mobile)
                         </IconSpan>
                       </FlatButton>
                     )}
