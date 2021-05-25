@@ -1,9 +1,6 @@
 import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import { UST, uUST } from '@anchor-protocol/types';
-import { ANCHOR_TX_KEY, borrowBorrowTx } from '@anchor-protocol/webapp-fns';
-import { useAnchorWebapp } from '@anchor-protocol/webapp-provider/contexts/context';
-import { useBorrowBorrowerQuery } from '@anchor-protocol/webapp-provider/queries/borrow/borrower';
-import { useBorrowMarketQuery } from '@anchor-protocol/webapp-provider/queries/borrow/market';
+import { borrowBorrowTx } from '@anchor-protocol/webapp-fns';
 import { useStream } from '@rx-stream/react';
 import { useOperationBroadcaster } from '@terra-dev/broadcastable-operation';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
@@ -12,6 +9,10 @@ import {
   useTerraWebapp,
 } from '@terra-money/webapp-provider';
 import { useCallback } from 'react';
+import { useAnchorWebapp } from '../../contexts/context';
+import { ANCHOR_TX_KEY } from '../../env';
+import { useBorrowBorrowerQuery } from '../../queries/borrow/borrower';
+import { useBorrowMarketQuery } from '../../queries/borrow/market';
 
 export interface BorrowBorrowTxParams {
   borrowAmount: UST;
@@ -45,6 +46,7 @@ export function useBorrowBorrowTx() {
         amount: borrowAmount,
         addressProvider,
         // post
+        network: connectedWallet.network,
         post: connectedWallet.post,
         txFee: constants.fixedGas.toString() as uUST,
         gasFee: constants.gasFee,

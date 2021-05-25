@@ -1,7 +1,5 @@
 import { AddressMap } from '@anchor-protocol/anchor.js';
 import { Rate, uUST } from '@anchor-protocol/types';
-import { TERRA_QUERY_KEY } from '@terra-money/webapp-fns';
-import { TxRefetchMap } from '@terra-money/webapp-provider';
 import { AnchorContants } from './types';
 
 export const DEFAULT_ADDESS_MAP: Record<string, AddressMap> = {
@@ -85,39 +83,3 @@ export const DEFAULT_ANCHOR_TX_CONSTANTS: Record<string, AnchorContants> = {
 };
 
 export const ANCHOR_RATIO: Rate<number> = 0.7 as Rate<number>;
-
-export enum ANCHOR_TX_KEY {
-  EARN_DEPOSIT = 'ANCHOR_TX_EARN_DEPOSIT',
-  EARN_WITHDRAW = 'ANCHOR_TX_EARN_WITHDRAW',
-  BORROW_BORROW = 'ANCHOR_TX_BORROW_BORROW',
-}
-
-export enum ANCHOR_QUERY_KEY {
-  EARN_EPOCH_STATES = 'ANCHOR_QUERY_EARN_EPOCH_STATES',
-  EARN_APY_HISTORY = 'ANCHOR_QUERY_EARN_APY_HISTORY',
-  EARN_TRANSACTION_HISTORY = 'ANCHOR_QUERY_EARN_TRANSACTION_HISTORY',
-  BORROW_MARKET = 'ANCHOR_QUERY_BORROW_MARKET',
-  BORROW_BORROWER = 'ANCHOR_QUERY_BORROW_BORROWER',
-  BORROW_APY = 'ANCHOR_QUERY_BORROW_APY',
-  BORROW_LIQUIDATION_PRICE = 'ANCHOR_QUERY_BORROW_LIQUIDATION_PRICE',
-}
-
-export const ANCHOR_TX_REFETCH_MAP: TxRefetchMap = {
-  [ANCHOR_TX_KEY.EARN_DEPOSIT]: [
-    TERRA_QUERY_KEY.TOKEN_BALANCES,
-    ANCHOR_QUERY_KEY.EARN_EPOCH_STATES,
-    {
-      queryKey: ANCHOR_QUERY_KEY.EARN_TRANSACTION_HISTORY,
-      wait: 1000 * 3,
-    },
-  ],
-  [ANCHOR_TX_KEY.EARN_WITHDRAW]: [
-    TERRA_QUERY_KEY.TOKEN_BALANCES,
-    ANCHOR_QUERY_KEY.EARN_EPOCH_STATES,
-    {
-      queryKey: ANCHOR_QUERY_KEY.EARN_TRANSACTION_HISTORY,
-      wait: 1000 * 3,
-    },
-  ],
-  [ANCHOR_TX_KEY.BORROW_BORROW]: [TERRA_QUERY_KEY.TOKEN_BALANCES],
-};

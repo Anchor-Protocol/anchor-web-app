@@ -1,14 +1,14 @@
 import { HumanAddr } from '@anchor-protocol/types';
 import {
-  ANCHOR_QUERY_KEY,
   EarnEpochStatesData,
   earnEpochStatesQuery,
 } from '@anchor-protocol/webapp-fns';
-import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
 import { useEventBusListener } from '@terra-dev/event-bus';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
 import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
+import { useAnchorWebapp } from '../../contexts/context';
+import { ANCHOR_QUERY_KEY } from '../../env';
 
 const queryFn = ({
   queryKey: [

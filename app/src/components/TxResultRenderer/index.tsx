@@ -1,16 +1,16 @@
 import { Close, Done as DoneIcon } from '@material-ui/icons';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
-import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import {
   TxReceipt,
   TxResultRendering,
   TxStreamPhase,
 } from '@terra-money/webapp-fns';
-import { renderTxFailedReason } from 'components/TxResultRenderer/renderTxFailedReason';
+import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import React from 'react';
 import styled from 'styled-components';
 import loadingImage from './assets/loading_image.gif';
+import { renderTxFailedReason } from './renderTxFailedReason';
 
 export interface TxResultRendererProps {
   resultRendering: TxResultRendering;
@@ -98,11 +98,27 @@ function Receipts({ resultRendering }: { resultRendering: TxResultRendering }) {
       <HorizontalHeavyRuler />
 
       <TxFeeList showRuler={false}>
-        {filteredReceipts.map(({ name, value }, i) => (
-          <TxFeeListItem key={'detail' + i} label={name}>
-            {value}
-          </TxFeeListItem>
-        ))}
+        {filteredReceipts.map((receipt, i) => {
+          const name =
+            typeof receipt.name === 'string' ? (
+              receipt.name
+            ) : (
+              <span dangerouslySetInnerHTML={{ __html: receipt.name.html }} />
+            );
+
+          const value =
+            typeof receipt.value === 'string' ? (
+              receipt.value
+            ) : (
+              <span dangerouslySetInnerHTML={{ __html: receipt.value.html }} />
+            );
+
+          return (
+            <TxFeeListItem key={'detail' + i} label={name}>
+              {value}
+            </TxFeeListItem>
+          );
+        })}
       </TxFeeList>
     </>
   ) : null;

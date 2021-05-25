@@ -6,7 +6,8 @@ import {
   TxUnspecifiedError,
   UserDenied,
 } from '@terra-dev/wallet-types';
-import { TxErrorRendering, TxHashLink } from '@terra-money/webapp-fns';
+import { TxErrorRendering } from '@terra-money/webapp-fns';
+import { TxHashLink } from 'base/components/TxHashLink';
 import { TxInfoError } from 'base/errors/TxInfoError';
 import { TxInfoParseError } from 'base/errors/TxInfoParseError';
 import React, { ReactNode } from 'react';

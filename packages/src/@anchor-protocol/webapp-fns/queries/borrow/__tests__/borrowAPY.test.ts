@@ -1,5 +1,5 @@
+import { TEST_MANTLE_ENDPOINT } from '@anchor-protocol/webapp-fns/test-env';
 import { defaultMantleFetch } from '@terra-money/webapp-fns';
-import { TEST_MANTLE_ENDPOINT } from '../../test-env';
 import { borrowAPYQuery } from '../apy';
 
 describe('queries/borrowAPY', () => {

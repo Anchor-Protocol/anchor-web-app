@@ -4,8 +4,8 @@ import {
   AddressProviderFromJson,
 } from '@anchor-protocol/anchor.js';
 import { ContractAddress, HumanAddr } from '@anchor-protocol/types';
-import { createAnchorContractAddress } from '@anchor-protocol/webapp-fns';
-import { DEFAULT_ADDESS_MAP } from '@anchor-protocol/webapp-fns/env';
+import { DEFAULT_ADDESS_MAP } from './env';
+import { createAnchorContractAddress } from './functions/createAnchorContractAddress';
 
 export const TEST_ADDRESS_MAP: AddressMap = DEFAULT_ADDESS_MAP['testnet'];
 

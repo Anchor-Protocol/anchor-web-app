@@ -5,14 +5,12 @@ import {
   earnWithdrawForm,
   EarnWithdrawFormStates,
 } from '@anchor-protocol/webapp-fns';
-import {
-  useAnchorWebapp,
-  useEarnEpochStatesQuery,
-} from '@anchor-protocol/webapp-provider';
 import { useForm } from '@terra-dev/use-form';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from '@terra-money/webapp-provider';
 import { useCallback, useMemo } from 'react';
+import { useAnchorWebapp } from '../../contexts/context';
+import { useEarnEpochStatesQuery } from '../../queries/earn/epochStates';
 
 export interface EarnWithdrawFormReturn extends EarnWithdrawFormStates {
   updateWithdrawAmount: (withdrawAmount: UST) => void;

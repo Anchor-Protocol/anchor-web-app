@@ -1,9 +1,6 @@
 import { COLLATERAL_DENOMS, MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import { bLuna, uUST } from '@anchor-protocol/types';
-import {
-  ANCHOR_TX_KEY,
-  borrowRedeemCollateralTx,
-} from '@anchor-protocol/webapp-fns';
+import { borrowRedeemCollateralTx } from '@anchor-protocol/webapp-fns';
 import { useStream } from '@rx-stream/react';
 import { useOperationBroadcaster } from '@terra-dev/broadcastable-operation';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
@@ -13,6 +10,7 @@ import {
 } from '@terra-money/webapp-provider';
 import { useCallback } from 'react';
 import { useAnchorWebapp } from '../../contexts/context';
+import { ANCHOR_TX_KEY } from '../../env';
 import { useBorrowBorrowerQuery } from '../../queries/borrow/borrower';
 import { useBorrowMarketQuery } from '../../queries/borrow/market';
 
@@ -49,6 +47,7 @@ export function useBorrowRedeemCollateralTx() {
         market: MARKET_DENOMS.UUSD,
         collateral: COLLATERAL_DENOMS.UBLUNA,
         // post
+        network: connectedWallet.network,
         post: connectedWallet.post,
         txFee: constants.fixedGas.toString() as uUST,
         gasFee: constants.gasFee,
@@ -63,7 +62,7 @@ export function useBorrowRedeemCollateralTx() {
         // side effect
         onTxSucceed: () => {
           onTxSucceed?.();
-          refetchQueries(ANCHOR_TX_KEY.BORROW_BORROW);
+          refetchQueries(ANCHOR_TX_KEY.BORROW_REDEEM_COLLATERAL);
           dispatch('', 'done');
         },
       });

@@ -1,7 +1,6 @@
 import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import { UST, uUST } from '@anchor-protocol/types';
-import { ANCHOR_TX_KEY, earnDepositTx } from '@anchor-protocol/webapp-fns';
-import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
+import { earnDepositTx } from '@anchor-protocol/webapp-fns';
 import { useStream } from '@rx-stream/react';
 import { useOperationBroadcaster } from '@terra-dev/broadcastable-operation';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
@@ -11,6 +10,8 @@ import {
 } from '@terra-money/webapp-provider';
 import { BigSource } from 'big.js';
 import { useCallback } from 'react';
+import { useAnchorWebapp } from '../../contexts/context';
+import { ANCHOR_TX_KEY } from '../../env';
 
 export interface EarnDepositTxParams {
   depositAmount: UST;
@@ -43,6 +44,7 @@ export function useEarnDepositTx() {
         amount: depositAmount,
         addressProvider,
         // post
+        network: connectedWallet.network,
         post: connectedWallet.post,
         txFee: txFee.toString() as uUST,
         gasFee: constants.gasFee,

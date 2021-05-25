@@ -11,7 +11,7 @@ import {
 import { Rate, uaUST, uUST } from '@anchor-protocol/types';
 import { pipe } from '@rx-stream/pipe';
 import { floor } from '@terra-dev/big-math';
-import { TxResult } from '@terra-dev/wallet-types';
+import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
 import {
   MantleFetch,
@@ -34,6 +34,7 @@ export function earnDepositTx(
     gasFee: uUST<number>;
     gasAdjustment: Rate<number>;
     txFee: uUST;
+    network: NetworkInfo;
     addressProvider: AddressProvider;
     mantleEndpoint: string;
     mantleFetch: MantleFetch;
@@ -42,7 +43,7 @@ export function earnDepositTx(
     onTxSucceed?: () => void;
   },
 ): Observable<TxResultRendering> {
-  const helper = new TxHelper($.txFee);
+  const helper = new TxHelper($);
 
   return pipe(
     _createTxOptions({

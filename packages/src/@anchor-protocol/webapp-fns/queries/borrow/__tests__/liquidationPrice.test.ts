@@ -1,13 +1,13 @@
 import { StableDenom } from '@anchor-protocol/types';
 import {
-  defaultMantleFetch,
-  lastSyncedHeightQuery,
-} from '@terra-money/webapp-fns';
-import {
   TEST_ADDRESSES,
   TEST_MANTLE_ENDPOINT,
   TEST_WALLET_ADDRESS,
-} from '../../test-env';
+} from '@anchor-protocol/webapp-fns/test-env';
+import {
+  defaultMantleFetch,
+  lastSyncedHeightQuery,
+} from '@terra-money/webapp-fns';
 import { borrowLiquidationPriceQuery } from '../liquidationPrice';
 
 describe('queries/liquidationPrice', () => {

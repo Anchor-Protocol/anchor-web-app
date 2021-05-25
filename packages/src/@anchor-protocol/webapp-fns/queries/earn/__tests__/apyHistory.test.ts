@@ -1,6 +1,6 @@
 import { JSDateTime } from '@anchor-protocol/types';
+import { TEST_MANTLE_ENDPOINT } from '@anchor-protocol/webapp-fns/test-env';
 import { defaultMantleFetch } from '@terra-money/webapp-fns';
-import { TEST_MANTLE_ENDPOINT } from '../../test-env';
 import { earnAPYHistoryQuery } from '../apyHistory';
 
 describe('queries/apyHistory', () => {

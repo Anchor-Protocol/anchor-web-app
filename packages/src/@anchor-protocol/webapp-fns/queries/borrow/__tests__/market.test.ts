@@ -1,6 +1,9 @@
 import { StableDenom, uUST } from '@anchor-protocol/types';
+import {
+  TEST_ADDRESSES,
+  TEST_MANTLE_ENDPOINT,
+} from '@anchor-protocol/webapp-fns/test-env';
 import { defaultMantleFetch } from '@terra-money/webapp-fns';
-import { TEST_ADDRESSES, TEST_MANTLE_ENDPOINT } from '../../test-env';
 import { borrowMarketQuery } from '../market';
 
 describe('queries/market', () => {

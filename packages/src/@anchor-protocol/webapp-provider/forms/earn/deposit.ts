@@ -5,11 +5,11 @@ import {
   earnDepositForm,
   EarnDepositFormStates,
 } from '@anchor-protocol/webapp-fns';
-import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
 import { useForm } from '@terra-dev/use-form';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from '@terra-money/webapp-provider';
 import { useCallback } from 'react';
+import { useAnchorWebapp } from '../../contexts/context';
 
 export interface EarnDepositFormReturn extends EarnDepositFormStates {
   updateDepositAmount: (depositAmount: UST) => void;

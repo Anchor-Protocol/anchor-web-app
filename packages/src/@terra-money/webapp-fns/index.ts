@@ -1,8 +1,6 @@
 export * from './env';
 export * from './types';
 
-export * from './components/TxHashLink';
-
 export * from './functions/mantleFetch';
 
 export * from './models/tx';

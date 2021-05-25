@@ -4,14 +4,9 @@ import {
 } from '@anchor-protocol/anchor.js';
 import { demicrofy, formatLuna, formatRate } from '@anchor-protocol/notation';
 import { Rate, ubLuna, uUST } from '@anchor-protocol/types';
-import {
-  BorrowBorrowerData,
-  BorrowMarketData,
-  computeCurrentLtv,
-} from '@anchor-protocol/webapp-fns';
 import { pipe } from '@rx-stream/pipe';
 import { floor } from '@terra-dev/big-math';
-import { TxResult } from '@terra-dev/wallet-types';
+import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
 import {
   MantleFetch,
@@ -23,6 +18,9 @@ import {
 } from '@terra-money/webapp-fns';
 import { QueryObserverResult } from 'react-query';
 import { Observable } from 'rxjs';
+import { computeCurrentLtv } from '../../computes/borrow/computeCurrentLtv';
+import { BorrowBorrowerData } from '../../queries/borrow/borrower';
+import { BorrowMarketData } from '../../queries/borrow/market';
 import { _catchTxError } from '../internal/_catchTxError';
 import { _createTxOptions } from '../internal/_createTxOptions';
 import { _pollTxInfo } from '../internal/_pollTxInfo';
@@ -35,6 +33,7 @@ export function borrowProvideCollateralTx(
     gasFee: uUST<number>;
     gasAdjustment: Rate<number>;
     txFee: uUST;
+    network: NetworkInfo;
     addressProvider: AddressProvider;
     mantleEndpoint: string;
     mantleFetch: MantleFetch;
@@ -49,7 +48,7 @@ export function borrowProvideCollateralTx(
     onTxSucceed?: () => void;
   },
 ): Observable<TxResultRendering> {
-  const helper = new TxHelper($.txFee);
+  const helper = new TxHelper($);
 
   return pipe(
     _createTxOptions({

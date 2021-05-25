@@ -18,8 +18,8 @@ export interface TxErrorRendering {
 }
 
 export interface TxReceipt {
-  name: string | JSX.Element;
-  value: string | JSX.Element;
+  name: string | { html: string };
+  value: string | { html: string };
 }
 
 export interface TxResultRendering<T = unknown> {

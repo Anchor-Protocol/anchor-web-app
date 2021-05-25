@@ -1,11 +1,8 @@
-import {
-  ANCHOR_QUERY_KEY,
-  BorrowAPYData,
-  borrowAPYQuery,
-} from '@anchor-protocol/webapp-fns';
+import { BorrowAPYData, borrowAPYQuery } from '@anchor-protocol/webapp-fns';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
 import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
+import { ANCHOR_QUERY_KEY } from '../../env';
 
 const queryFn = ({
   queryKey: [, mantleEndpoint, mantleFetch],

@@ -1,9 +1,9 @@
 import { TERRA_QUERY_KEY } from '@terra-money/webapp-fns';
-import { QueryRefetch } from '@terra-money/webapp-provider/types';
 import { useCallback } from 'react';
 import { useQueryClient } from 'react-query';
 import { useBank } from '../contexts/bank';
 import { useTerraWebapp } from '../contexts/context';
+import { QueryRefetch } from '../types';
 
 function runRefetch(queryRefetch: string | QueryRefetch): Promise<string> {
   return new Promise<string>((resolve) => {

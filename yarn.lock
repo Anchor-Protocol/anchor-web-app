@@ -245,6 +245,8 @@ __metadata:
     "@apollo/client": ^3.3.16
     "@material-ui/core": ^4.11.3
     "@material-ui/icons": ^4.11.2
+    "@rx-stream/pipe": ^0.7.0
+    "@rx-stream/react": ^0.7.0
     "@ssen/jest-transform": ^2.5.0
     "@storybook/addon-actions": ^6.2.9
     "@storybook/addon-essentials": ^6.2.9
@@ -286,6 +288,8 @@ __metadata:
     "@types/react-router-dom": ^5.1.7
     "@types/styled-components": ^5.1.9
     "@types/testing-library__jest-dom": ^5.9.5
+    "@types/testing-library__user-event": ^4.2.0
+    "@types/ws": ^7.4.4
     "@walletconnect/core": ^1.4.1
     "@walletconnect/iso-crypto": ^1.4.1
     "@walletconnect/types": ^1.4.1
@@ -315,6 +319,7 @@ __metadata:
     qrcode.react: ^1.0.1
     react: ^17.0.2
     react-dom: ^17.0.2
+    react-query: ^3.16.0
     react-router-dom: ^5.2.0
     react-scripts: 4.0.3
     react-spring: ^8.0.27
@@ -5397,6 +5402,15 @@ __metadata:
     "@types/webpack-sources": "*"
     source-map: ^0.6.0
   checksum: 5e10ad206accc6a9ec3dbea1b79625d441dc2d93cad61daa8ba77eea0a7b659f7ca605078ec06189e9b7eb48fa244b6cfc617771e8fc579cdd9b26546e8c3120
+  languageName: node
+  linkType: hard
+
+"@types/ws@npm:^7.4.4":
+  version: 7.4.4
+  resolution: "@types/ws@npm:7.4.4"
+  dependencies:
+    "@types/node": "*"
+  checksum: 6a02b3164250813510c5e73998a2bbca1fb98dc23428d70c2c6d664dfbac3fde32cd8d4eb34c335a0221f49a6f02d71b09645b236b01de1aea85f80352f67e1f
   languageName: node
   linkType: hard
 

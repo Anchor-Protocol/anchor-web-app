@@ -1,8 +1,11 @@
 import {
+  TEST_ADDRESSES,
+  TEST_MANTLE_ENDPOINT,
+} from '@anchor-protocol/webapp-fns/test-env';
+import {
   defaultMantleFetch,
   lastSyncedHeightQuery,
 } from '@terra-money/webapp-fns';
-import { TEST_ADDRESSES, TEST_MANTLE_ENDPOINT } from '../../test-env';
 import { earnEpochStatesQuery } from '../epochStates';
 
 describe('queries/epochStates', () => {

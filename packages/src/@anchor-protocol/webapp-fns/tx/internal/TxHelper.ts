@@ -3,20 +3,19 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { uUST } from '@anchor-protocol/types';
-import { TxResult } from '@terra-dev/wallet-types';
+import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import { CreateTxOptions } from '@terra-money/terra.js';
 import {
-  TxHashLink,
+  TxReceipt,
   TxResultRendering,
   TxStreamPhase,
 } from '@terra-money/webapp-fns';
-import { createElement } from 'react';
 
 export class TxHelper {
   private _savedTx: CreateTxOptions | null = null;
   private _savedTxResult: TxResult | null = null;
 
-  constructor(private txFee: uUST) {}
+  constructor(private $: { txFee: uUST; network: NetworkInfo }) {}
 
   get savedTx(): CreateTxOptions {
     if (!this._savedTx) {
@@ -33,25 +32,33 @@ export class TxHelper {
     this._savedTxResult = txResult;
   };
 
-  txHashReceipt = () => {
-    return this._savedTxResult
-      ? {
-          name: 'Tx Hash',
-          value: createElement(TxHashLink, {
-            txHash: this._savedTxResult.result.txhash,
-          }),
-        }
-      : null;
-  };
+  txHashReceipt = (): TxReceipt | null => {
+    if (!this._savedTxResult) {
+      return null;
+    }
 
-  txFeeReceipt = () => {
+    const chainID = this.$.network.chainID;
+    const txhash = this._savedTxResult.result.txhash;
+    const html = `<a href="https://finder.terra.money/${chainID}/tx/${txhash}" target="_blank" rel="noreferrer">${truncate(
+      txhash,
+    )}</a>`;
+
     return {
-      name: 'Tx Fee',
-      value: formatUSTWithPostfixUnits(demicrofy(this.txFee)) + ' UST',
+      name: 'Tx Hash',
+      value: {
+        html,
+      },
     };
   };
 
-  failedToCreateReceipt = (error: Error) => {
+  txFeeReceipt = (): TxReceipt => {
+    return {
+      name: 'Tx Fee',
+      value: formatUSTWithPostfixUnits(demicrofy(this.$.txFee)) + ' UST',
+    };
+  };
+
+  failedToCreateReceipt = (error: Error): TxResultRendering => {
     return {
       value: null,
 
@@ -61,17 +68,26 @@ export class TxHelper {
     } as TxResultRendering;
   };
 
-  failedToFindRawLog = () => {
+  failedToFindRawLog = (): TxResultRendering => {
     return this.failedToCreateReceipt(new Error('Undefined RawLog'));
   };
 
-  failedToFindEvents = (...events: string[]) => {
+  failedToFindEvents = (...events: string[]): TxResultRendering => {
     return this.failedToCreateReceipt(
       new Error(`Undefined events "${events.join(', ')}"`),
     );
   };
 
-  failedToParseTxResult = () => {
+  failedToParseTxResult = (): TxResultRendering => {
     return this.failedToCreateReceipt(new Error('Failed to parse TxResult'));
   };
+}
+
+function truncate(
+  text: string = '',
+  [h, t]: [number, number] = [6, 6],
+): string {
+  const head = text.slice(0, h);
+  const tail = text.slice(-1 * t, text.length);
+  return text.length > h + t ? [head, tail].join('...') : text;
 }
