@@ -6,7 +6,7 @@ import {
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { Rate, UST } from '@anchor-protocol/types';
+import { Rate, UST, uUST } from '@anchor-protocol/types';
 import {
   BorrowBorrowerData,
   BorrowMarketData,
@@ -17,6 +17,7 @@ import {
 } from '@anchor-protocol/webapp-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
+import { max } from '@terra-dev/big-math';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
@@ -137,10 +138,27 @@ function ComponentBase({
     borrowRate,
   ]);
 
-  const totalBorrows = useMemo(
-    () => repayTotalBorrows(marketState, borrowRate, loanAmount, blockHeight),
-    [borrowRate, blockHeight, loanAmount, marketState],
-  );
+  const maxRepayingAmount = useMemo(() => {
+    const totalBorrowed = repayTotalBorrows(
+      marketState,
+      borrowRate,
+      loanAmount,
+      blockHeight,
+    );
+    return big(bank.userBalances.uUSD).gte(totalBorrowed)
+      ? totalBorrowed
+      : (max(
+          0,
+          big(bank.userBalances.uUSD).minus(big(fixedGas).mul(2)),
+        ) as uUST<Big>);
+  }, [
+    marketState,
+    borrowRate,
+    loanAmount,
+    blockHeight,
+    bank.userBalances.uUSD,
+    fixedGas,
+  ]);
 
   const txFee = useMemo(() => repayTxFee(repayAmount, bank, fixedGas), [
     bank,
@@ -267,17 +285,17 @@ function ComponentBase({
         <div className="wallet" aria-invalid={!!invalidAssetAmount}>
           <span>{invalidAssetAmount}</span>
           <span>
-            Total Borrowed:{' '}
+            Max:{' '}
             <span
               style={{
                 textDecoration: 'underline',
                 cursor: 'pointer',
               }}
               onClick={() =>
-                updateRepayAmount(formatUSTInput(demicrofy(totalBorrows)))
+                updateRepayAmount(formatUSTInput(demicrofy(maxRepayingAmount)))
               }
             >
-              {formatUST(demicrofy(totalBorrows))} UST
+              {formatUST(demicrofy(maxRepayingAmount))} UST
             </span>
           </span>
         </div>
