@@ -173,6 +173,12 @@ function ComponentBase({
     [redeemAmount, withdrawableMaxAmount],
   );
 
+  const invalidOver40Ltv = useMemo(() => {
+    return nextLtv?.gt(0.4)
+      ? 'Cannot withdraw more than the 40% LTV'
+      : undefined;
+  }, [nextLtv]);
+
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
@@ -261,7 +267,7 @@ function ComponentBase({
           maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="WITHDRAW AMOUNT"
-          error={!!invalidRedeemAmount}
+          error={!!invalidRedeemAmount || !!invalidOver40Ltv}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateRedeemAmount(target.value)
           }
@@ -270,8 +276,11 @@ function ComponentBase({
           }}
         />
 
-        <div className="wallet" aria-invalid={!!invalidRedeemAmount}>
-          <span>{invalidRedeemAmount}</span>
+        <div
+          className="wallet"
+          aria-invalid={!!invalidRedeemAmount || !!invalidOver40Ltv}
+        >
+          <span>{invalidRedeemAmount ?? invalidOver40Ltv}</span>
           <span>
             Withdrawable:{' '}
             <span
@@ -334,7 +343,8 @@ function ComponentBase({
             redeemAmount.length === 0 ||
             big(redeemAmount).lte(0) ||
             !!invalidTxFee ||
-            !!invalidRedeemAmount
+            !!invalidRedeemAmount ||
+            !!invalidOver40Ltv
           }
           onClick={() =>
             connectedWallet && proceed(connectedWallet, redeemAmount, txFee)

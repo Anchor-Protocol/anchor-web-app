@@ -89,8 +89,6 @@ function ComponentBase({
     } = fallbackBorrowMarket,
   } = useBorrowMarketQuery();
 
-  console.log('useBorrowDialog.tsx..ComponentBase()', bLunaMaxLtv);
-
   const {
     data: {
       marketBorrowerInfo: loanAmount,
@@ -183,6 +181,10 @@ function ComponentBase({
     [borrowAmount, max],
   );
 
+  const invalidOver40Ltv = useMemo(() => {
+    return nextLtv?.gt(0.4) ? 'Cannot borrow more than the 40% LTV' : undefined;
+  }, [nextLtv]);
+
   const invalidOverSafeLtv = useMemo(() => {
     return nextLtv?.gt(bLunaSafeLtv)
       ? 'Warning : Are you sure you want to borrow above the recommended LTV?'
@@ -201,8 +203,6 @@ function ComponentBase({
       if (!connectedWallet || !borrow) {
         return;
       }
-
-      console.log('useBorrowDialog.tsx..()', confirm);
 
       if (confirm) {
         const userConfirm = await openConfirm({
@@ -290,7 +290,7 @@ function ComponentBase({
           maxIntegerPoinsts={UST_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="BORROW AMOUNT"
-          error={!!invalidBorrowAmount}
+          error={!!invalidBorrowAmount || !!invalidOver40Ltv}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateBorrowAmount(target.value)
           }
@@ -299,8 +299,11 @@ function ComponentBase({
           }}
         />
 
-        <div className="wallet" aria-invalid={!!invalidBorrowAmount}>
-          <span>{invalidBorrowAmount}</span>
+        <div
+          className="wallet"
+          aria-invalid={!!invalidBorrowAmount || !!invalidOver40Ltv}
+        >
+          <span>{invalidBorrowAmount ?? invalidOver40Ltv}</span>
           <span>
             {formatRate(bLunaSafeLtv)}% LTV:{' '}
             <span
@@ -363,7 +366,8 @@ function ComponentBase({
             borrowAmount.length === 0 ||
             big(borrowAmount).lte(0) ||
             !!invalidTxFee ||
-            !!invalidBorrowAmount
+            !!invalidBorrowAmount ||
+            !!invalidOver40Ltv
           }
           onClick={() =>
             connectedWallet && proceed(borrowAmount, invalidOverSafeLtv)
