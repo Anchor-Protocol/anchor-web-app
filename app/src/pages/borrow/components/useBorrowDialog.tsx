@@ -6,7 +6,7 @@ import {
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { Rate, UST } from '@anchor-protocol/types';
+import { Rate, UST, uUST } from '@anchor-protocol/types';
 import {
   BorrowBorrowerData,
   BorrowMarketData,
@@ -199,7 +199,7 @@ function ComponentBase({
   }, []);
 
   const proceed = useCallback(
-    async (borrowAmount: UST, confirm: ReactNode) => {
+    async (borrowAmount: UST, txFee: uUST, confirm: ReactNode) => {
       if (!connectedWallet || !borrow) {
         return;
       }
@@ -216,7 +216,7 @@ function ComponentBase({
         }
       }
 
-      borrow({ borrowAmount });
+      borrow({ borrowAmount, txFee });
     },
     [borrow, connectedWallet, openConfirm],
   );
@@ -369,7 +369,10 @@ function ComponentBase({
             !!invalidBorrowAmount ||
             !!invalidOver40Ltv
           }
-          onClick={() => proceed(borrowAmount, invalidOverSafeLtv)}
+          onClick={() =>
+            txFee &&
+            proceed(borrowAmount, txFee.toFixed() as uUST, invalidOverSafeLtv)
+          }
         >
           Proceed
         </ActionButton>

@@ -16,6 +16,7 @@ import { useBorrowMarketQuery } from '../../queries/borrow/market';
 
 export interface BorrowRepayTxParams {
   repayAmount: UST;
+  txFee: uUST;
   onTxSucceed?: () => void;
 }
 
@@ -35,7 +36,7 @@ export function useBorrowRepayTx() {
   const { dispatch } = useOperationBroadcaster();
 
   const stream = useCallback(
-    ({ repayAmount, onTxSucceed }: BorrowRepayTxParams) => {
+    ({ repayAmount, onTxSucceed, txFee }: BorrowRepayTxParams) => {
       if (!connectedWallet || !connectedWallet.availablePost) {
         throw new Error('Can not post!');
       }
@@ -48,7 +49,7 @@ export function useBorrowRepayTx() {
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        txFee: constants.fixedGas.toString() as uUST,
+        txFee,
         gasFee: constants.gasFee,
         gasAdjustment: constants.gasAdjustment,
         // query
@@ -71,7 +72,6 @@ export function useBorrowRepayTx() {
       borrowBorrowerQuery,
       borrowMarketQuery,
       connectedWallet,
-      constants.fixedGas,
       constants.gasAdjustment,
       constants.gasFee,
       dispatch,

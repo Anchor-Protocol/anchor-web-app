@@ -194,12 +194,12 @@ function ComponentBase({
   }, []);
 
   const proceed = useCallback(
-    (repayAmount: UST) => {
+    (repayAmount: UST, txFee: uUST) => {
       if (!connectedWallet || !repay) {
         return;
       }
 
-      repay({ repayAmount });
+      repay({ repayAmount, txFee });
     },
     [connectedWallet, repay],
   );
@@ -337,12 +337,13 @@ function ComponentBase({
             !connectedWallet ||
             !connectedWallet.availablePost ||
             !repay ||
+            !txFee ||
             repayAmount.length === 0 ||
             big(repayAmount).lte(0) ||
             !!invalidTxFee ||
             !!invalidAssetAmount
           }
-          onClick={() => proceed(repayAmount)}
+          onClick={() => txFee && proceed(repayAmount, txFee.toFixed() as uUST)}
         >
           Proceed
         </ActionButton>
