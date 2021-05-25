@@ -13,6 +13,7 @@ export interface BorrowBorrowerRawData {
 export interface BorrowBorrowerData {
   marketBorrowerInfo: moneyMarket.market.BorrowerInfoResponse;
   custodyBorrower: moneyMarket.custody.BorrowerResponse;
+  blockHeight: number;
 }
 
 export interface BorrowBorrowerRawVariables {
@@ -90,5 +91,6 @@ export async function borrowBorrowerQuery({
   return {
     marketBorrowerInfo: JSON.parse(rawData.marketBorrowerInfo.Result),
     custodyBorrower: JSON.parse(rawData.custodyBorrower.Result),
+    blockHeight: blockHeight + 1,
   };
 }

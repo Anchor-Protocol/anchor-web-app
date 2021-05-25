@@ -1,3 +1,4 @@
+import { HumanAddr } from '@anchor-protocol/types';
 import {
   ANCHOR_QUERY_KEY,
   EarnEpochStatesData,
@@ -6,9 +7,39 @@ import {
 import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
 import { useEventBusListener } from '@terra-dev/event-bus';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
-import { useTerraWebapp } from '@terra-money/webapp-provider';
-import { useCallback } from 'react';
-import { useQuery, UseQueryResult } from 'react-query';
+import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
+import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
+
+const queryFn = ({
+  queryKey: [
+    ,
+    mantleEndpoint,
+    mantleFetch,
+    lastSyncedHeight,
+    moneyMarketContract,
+    overseerContract,
+  ],
+}: QueryFunctionContext<
+  [string, string, MantleFetch, () => Promise<number>, HumanAddr, HumanAddr]
+>) => {
+  return earnEpochStatesQuery({
+    mantleEndpoint,
+    mantleFetch,
+    lastSyncedHeight,
+    variables: {
+      moneyMarketContract,
+      overseerContract,
+      moneyMarketEpochStateQuery: {
+        epoch_state: {
+          block_height: -1,
+        },
+      },
+      overseerEpochStateQuery: {
+        epoch_state: {},
+      },
+    },
+  });
+};
 
 export function useEarnEpochStatesQuery(): UseQueryResult<
   EarnEpochStatesData | undefined
@@ -21,37 +52,22 @@ export function useEarnEpochStatesQuery(): UseQueryResult<
 
   const { browserInactive } = useBrowserInactive();
 
-  const queryFn = useCallback(() => {
-    return earnEpochStatesQuery({
+  const result = useQuery(
+    [
+      ANCHOR_QUERY_KEY.EARN_EPOCH_STATES,
       mantleEndpoint,
       mantleFetch,
       lastSyncedHeight,
-      variables: {
-        moneyMarketContract: moneyMarket.market,
-        overseerContract: moneyMarket.overseer,
-        moneyMarketEpochStateQuery: {
-          epoch_state: {
-            block_height: -1,
-          },
-        },
-        overseerEpochStateQuery: {
-          epoch_state: {},
-        },
-      },
-    });
-  }, [
-    lastSyncedHeight,
-    mantleEndpoint,
-    mantleFetch,
-    moneyMarket.market,
-    moneyMarket.overseer,
-  ]);
-
-  const result = useQuery(ANCHOR_QUERY_KEY.EARN_EPOCH_STATES, queryFn, {
-    refetchInterval: browserInactive && 1000 * 60 * 5,
-    enabled: !browserInactive,
-    keepPreviousData: true,
-  });
+      moneyMarket.market,
+      moneyMarket.overseer,
+    ],
+    queryFn,
+    {
+      refetchInterval: browserInactive && 1000 * 60 * 5,
+      enabled: !browserInactive,
+      keepPreviousData: true,
+    },
+  );
 
   // TODO remove
   useEventBusListener('interest-earned-updated', () => {

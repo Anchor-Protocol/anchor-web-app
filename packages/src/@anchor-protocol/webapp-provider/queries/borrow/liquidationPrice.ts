@@ -1,15 +1,84 @@
-import { StableDenom } from '@anchor-protocol/types';
+import { CW20Addr, HumanAddr, StableDenom } from '@anchor-protocol/types';
 import {
   ANCHOR_QUERY_KEY,
   BorrowLiquidationPriceData,
   borrowLiquidationPriceQuery,
 } from '@anchor-protocol/webapp-fns';
-import { useAnchorWebapp } from '@anchor-protocol/webapp-provider/contexts/context';
+import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useTerraWebapp } from '@terra-money/webapp-provider';
-import { useCallback } from 'react';
-import { useQuery, UseQueryResult } from 'react-query';
+import {
+  ConnectedWallet,
+  useConnectedWallet,
+} from '@terra-money/wallet-provider';
+import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
+import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
+
+const queryFn = ({
+  queryKey: [
+    ,
+    mantleEndpoint,
+    mantleFetch,
+    connectedWallet,
+    lastSyncedHeight,
+    marketContract,
+    overseerContract,
+    oracleContract,
+    bLunaContract,
+  ],
+}: QueryFunctionContext<
+  [
+    string,
+    string,
+    MantleFetch,
+    ConnectedWallet | undefined,
+    () => Promise<number>,
+    HumanAddr,
+    HumanAddr,
+    HumanAddr,
+    CW20Addr,
+  ]
+>) => {
+  return !!connectedWallet
+    ? borrowLiquidationPriceQuery({
+        mantleEndpoint,
+        mantleFetch,
+        lastSyncedHeight,
+        variables: {
+          marketContract,
+          marketBorrowerInfoQuery: {
+            borrower_info: {
+              borrower: connectedWallet.walletAddress,
+              block_height: -1,
+            },
+          },
+          overseerContract,
+          overseerBorrowlimitQuery: {
+            borrow_limit: {
+              borrower: connectedWallet.walletAddress,
+              block_time: -1,
+            },
+          },
+          overseerCollateralsQuery: {
+            collaterals: {
+              borrower: connectedWallet.walletAddress,
+            },
+          },
+          overseerWhitelistQuery: {
+            whitelist: {
+              collateral_token: bLunaContract,
+            },
+          },
+          oracleContract,
+          oraclePriceQuery: {
+            price: {
+              base: bLunaContract,
+              quote: 'uusd' as StableDenom,
+            },
+          },
+        },
+      })
+    : Promise.resolve(undefined);
+};
 
 export function useBorrowLiquidationPriceQuery(): UseQueryResult<
   BorrowLiquidationPriceData | undefined
@@ -24,61 +93,23 @@ export function useBorrowLiquidationPriceQuery(): UseQueryResult<
 
   const { browserInactive } = useBrowserInactive();
 
-  const queryFn = useCallback(() => {
-    return !!connectedWallet
-      ? borrowLiquidationPriceQuery({
-          mantleEndpoint,
-          mantleFetch,
-          lastSyncedHeight,
-          variables: {
-            marketContract: moneyMarket.market,
-            marketBorrowerInfoQuery: {
-              borrower_info: {
-                borrower: connectedWallet.walletAddress,
-                block_height: -1,
-              },
-            },
-            overseerContract: moneyMarket.overseer,
-            overseerBorrowlimitQuery: {
-              borrow_limit: {
-                borrower: connectedWallet.walletAddress,
-                block_time: -1,
-              },
-            },
-            overseerCollateralsQuery: {
-              collaterals: {
-                borrower: connectedWallet.walletAddress,
-              },
-            },
-            overseerWhitelistQuery: {
-              whitelist: {
-                collateral_token: cw20.bLuna,
-              },
-            },
-            oracleContract: moneyMarket.oracle,
-            oraclePriceQuery: {
-              price: {
-                base: cw20.bLuna,
-                quote: 'uusd' as StableDenom,
-              },
-            },
-          },
-        })
-      : Promise.resolve(undefined);
-  }, [
-    connectedWallet,
-    cw20.bLuna,
-    lastSyncedHeight,
-    mantleEndpoint,
-    mantleFetch,
-    moneyMarket.market,
-    moneyMarket.oracle,
-    moneyMarket.overseer,
-  ]);
-
-  return useQuery(ANCHOR_QUERY_KEY.BORROW_LIQUIDATION_PRICE, queryFn, {
-    refetchInterval: browserInactive && !!connectedWallet && 1000 * 60 * 5,
-    enabled: !browserInactive && !!connectedWallet,
-    keepPreviousData: true,
-  });
+  return useQuery(
+    [
+      ANCHOR_QUERY_KEY.BORROW_LIQUIDATION_PRICE,
+      mantleEndpoint,
+      mantleFetch,
+      connectedWallet,
+      lastSyncedHeight,
+      moneyMarket.market,
+      moneyMarket.overseer,
+      moneyMarket.oracle,
+      cw20.bLuna,
+    ],
+    queryFn,
+    {
+      refetchInterval: browserInactive && !!connectedWallet && 1000 * 60 * 5,
+      enabled: !browserInactive && !!connectedWallet,
+      keepPreviousData: true,
+    },
+  );
 }

@@ -33,20 +33,20 @@ import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
-import { LTVGraph } from 'pages/borrow/components/LTVGraph';
-import { apr as _apr } from 'pages/borrow/logics/apr';
-import { borrowAmountToLtv } from 'pages/borrow/logics/borrowAmountToLtv';
-import { borrowMax } from 'pages/borrow/logics/borrowMax';
-import { borrowNextLtv } from 'pages/borrow/logics/borrowNextLtv';
-import { borrowReceiveAmount } from 'pages/borrow/logics/borrowReceiveAmount';
-import { borrowSafeMax } from 'pages/borrow/logics/borrowSafeMax';
-import { borrowTxFee } from 'pages/borrow/logics/borrowTxFee';
-import { currentLtv as _currentLtv } from 'pages/borrow/logics/currentLtv';
-import { ltvToBorrowAmount } from 'pages/borrow/logics/ltvToBorrowAmount';
-import { validateBorrowAmount } from 'pages/borrow/logics/validateBorrowAmount';
 import type { ChangeEvent, ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { apr as _apr } from '../logics/apr';
+import { borrowAmountToLtv } from '../logics/borrowAmountToLtv';
+import { borrowMax } from '../logics/borrowMax';
+import { borrowNextLtv } from '../logics/borrowNextLtv';
+import { borrowReceiveAmount } from '../logics/borrowReceiveAmount';
+import { borrowSafeMax } from '../logics/borrowSafeMax';
+import { borrowTxFee } from '../logics/borrowTxFee';
+import { currentLtv as _currentLtv } from '../logics/currentLtv';
+import { ltvToBorrowAmount } from '../logics/ltvToBorrowAmount';
+import { validateBorrowAmount } from '../logics/validateBorrowAmount';
+import { LTVGraph } from './LTVGraph';
 
 interface FormParams {
   className?: string;
@@ -80,6 +80,18 @@ function ComponentBase({
     constants: { fixedGas, blocksPerYear },
   } = useAnchorWebapp();
 
+  const [borrow, borrowResult] = useBorrowBorrowTx();
+
+  // ---------------------------------------------
+  // states
+  // ---------------------------------------------
+  const [borrowAmount, setBorrowAmount] = useState<UST>('' as UST);
+
+  // ---------------------------------------------
+  // queries
+  // ---------------------------------------------
+  const bank = useBank();
+
   const {
     data: {
       borrowRate,
@@ -95,18 +107,6 @@ function ComponentBase({
       custodyBorrower: borrowInfo,
     } = fallbackBorrowBorrower,
   } = useBorrowBorrowerQuery();
-
-  const [borrow, borrowResult] = useBorrowBorrowTx();
-
-  // ---------------------------------------------
-  // states
-  // ---------------------------------------------
-  const [borrowAmount, setBorrowAmount] = useState<UST>('' as UST);
-
-  // ---------------------------------------------
-  // queries
-  // ---------------------------------------------
-  const bank = useBank();
 
   // ---------------------------------------------
   // calculate
@@ -369,9 +369,7 @@ function ComponentBase({
             !!invalidBorrowAmount ||
             !!invalidOver40Ltv
           }
-          onClick={() =>
-            connectedWallet && proceed(borrowAmount, invalidOverSafeLtv)
-          }
+          onClick={() => proceed(borrowAmount, invalidOverSafeLtv)}
         >
           Proceed
         </ActionButton>

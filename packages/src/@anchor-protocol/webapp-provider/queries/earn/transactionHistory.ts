@@ -4,10 +4,28 @@ import {
   earnTransactionHistoryQuery,
 } from '@anchor-protocol/webapp-fns';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useTerraWebapp } from '@terra-money/webapp-provider';
-import { useCallback } from 'react';
-import { useQuery, UseQueryResult } from 'react-query';
+import {
+  ConnectedWallet,
+  useConnectedWallet,
+} from '@terra-money/wallet-provider';
+import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
+import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
+
+const queryFn = ({
+  queryKey: [, connectedWallet, mantleEndpoint, mantleFetch],
+}: QueryFunctionContext<
+  [string, ConnectedWallet | undefined, string, MantleFetch]
+>) => {
+  return connectedWallet?.walletAddress
+    ? earnTransactionHistoryQuery({
+        mantleEndpoint,
+        mantleFetch,
+        variables: {
+          walletAddress: connectedWallet.walletAddress,
+        },
+      })
+    : Promise.resolve({ transactionHistory: [] });
+};
 
 export function useEarnTransactionHistoryQuery(): UseQueryResult<
   EarnTransactionHistoryData | undefined
@@ -18,20 +36,17 @@ export function useEarnTransactionHistoryQuery(): UseQueryResult<
 
   const connectedWallet = useConnectedWallet();
 
-  const queryFn = useCallback(() => {
-    return connectedWallet?.walletAddress
-      ? earnTransactionHistoryQuery({
-          mantleEndpoint,
-          mantleFetch,
-          variables: {
-            walletAddress: connectedWallet.walletAddress,
-          },
-        })
-      : Promise.resolve({ transactionHistory: [] });
-  }, [connectedWallet, mantleEndpoint, mantleFetch]);
-
-  return useQuery(ANCHOR_QUERY_KEY.EARN_TRANSACTION_HISTORY, queryFn, {
-    enabled: !browserInactive && !!connectedWallet,
-    keepPreviousData: true,
-  });
+  return useQuery(
+    [
+      ANCHOR_QUERY_KEY.EARN_TRANSACTION_HISTORY,
+      connectedWallet,
+      mantleEndpoint,
+      mantleFetch,
+    ],
+    queryFn,
+    {
+      enabled: !browserInactive && !!connectedWallet,
+      keepPreviousData: true,
+    },
+  );
 }

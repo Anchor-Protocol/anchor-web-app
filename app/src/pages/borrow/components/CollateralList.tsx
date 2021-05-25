@@ -32,11 +32,9 @@ export function CollateralList({ className }: CollateralListProps) {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const { data: { oraclePrice } = {} } = useBorrowMarketQuery();
+  const { data: borrowMarket } = useBorrowMarketQuery();
 
-  const {
-    data: { marketBorrowerInfo: loanAmount, custodyBorrower: borrowInfo } = {},
-  } = useBorrowBorrowerQuery();
+  const { data: borrowBorrower } = useBorrowBorrowerQuery();
 
   const { data: { liquidationPrice } = {} } = useBorrowLiquidationPriceQuery();
 
@@ -51,13 +49,17 @@ export function CollateralList({ className }: CollateralListProps) {
   ] = useRedeemCollateralDialog();
 
   const collaterals = useMemo(
-    () => _collaterals(borrowInfo, 1 as UST<number>),
-    [borrowInfo],
+    () => _collaterals(borrowBorrower?.custodyBorrower, 1 as UST<number>),
+    [borrowBorrower?.custodyBorrower],
   );
 
   const collateralsInUST = useMemo(
-    () => _collaterals(borrowInfo, oraclePrice?.rate),
-    [borrowInfo, oraclePrice?.rate],
+    () =>
+      _collaterals(
+        borrowBorrower?.custodyBorrower,
+        borrowMarket?.oraclePrice.rate,
+      ),
+    [borrowBorrower?.custodyBorrower, borrowMarket?.oraclePrice.rate],
   );
 
   // ---------------------------------------------
@@ -109,7 +111,9 @@ export function CollateralList({ className }: CollateralListProps) {
             </td>
             <td>
               <div className="value">
-                {oraclePrice ? formatUSTWithPostfixUnits(oraclePrice.rate) : 0}{' '}
+                {borrowMarket?.oraclePrice
+                  ? formatUSTWithPostfixUnits(borrowMarket.oraclePrice.rate)
+                  : 0}{' '}
                 UST
               </div>
               <p className="volatility">
@@ -129,24 +133,36 @@ export function CollateralList({ className }: CollateralListProps) {
             </td>
             <td>
               <BorderButton
-                disabled={!connectedWallet}
-                onClick={() => {
-                  openProvideCollateralDialog({});
-                }}
+                disabled={!connectedWallet || !borrowMarket || !borrowBorrower}
+                onClick={() =>
+                  borrowMarket &&
+                  borrowBorrower &&
+                  openProvideCollateralDialog({
+                    fallbackBorrowMarket: borrowMarket,
+                    fallbackBorrowBorrower: borrowBorrower,
+                  })
+                }
               >
                 Provide
               </BorderButton>
               <BorderButton
                 disabled={
                   !connectedWallet ||
-                  !borrowInfo ||
-                  !loanAmount ||
-                  (big(borrowInfo.balance).minus(borrowInfo.spendable).eq(0) &&
-                    big(loanAmount.loan_amount).lte(0))
+                  !borrowMarket ||
+                  !borrowBorrower ||
+                  (big(borrowBorrower.custodyBorrower.balance)
+                    .minus(borrowBorrower.custodyBorrower.spendable)
+                    .eq(0) &&
+                    big(borrowBorrower.marketBorrowerInfo.loan_amount).lte(0))
                 }
-                onClick={() => {
-                  openRedeemCollateralDialog({});
-                }}
+                onClick={() =>
+                  borrowMarket &&
+                  borrowBorrower &&
+                  openRedeemCollateralDialog({
+                    fallbackBorrowMarket: borrowMarket,
+                    fallbackBorrowBorrower: borrowBorrower,
+                  })
+                }
               >
                 Withdraw
               </BorderButton>

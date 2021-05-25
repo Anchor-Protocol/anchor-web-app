@@ -3,7 +3,6 @@ import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { screen } from 'env';
 import { LoanButtons } from 'pages/borrow/components/LoanButtons';
 import { Overview } from 'pages/borrow/components/Overview';
-import { MarketProvider } from 'pages/borrow/context/market';
 import React from 'react';
 import styled from 'styled-components';
 import { CollateralList } from './components/CollateralList';
@@ -14,21 +13,19 @@ export interface BorrowProps {
 
 function BorrowBase({ className }: BorrowProps) {
   return (
-    <MarketProvider>
-      <PaddedLayout className={className}>
-        <div className="market">
-          <h1>
-            <TokenIcon token="ust" /> UST
-          </h1>
-          <div className="loan-buttons">
-            <LoanButtons />
-          </div>
+    <PaddedLayout className={className}>
+      <div className="market">
+        <h1>
+          <TokenIcon token="ust" /> UST
+        </h1>
+        <div className="loan-buttons">
+          <LoanButtons />
         </div>
+      </div>
 
-        <Overview className="borrow" />
-        <CollateralList className="collateral-list" />
-      </PaddedLayout>
-    </MarketProvider>
+      <Overview className="borrow" />
+      <CollateralList className="collateral-list" />
+    </PaddedLayout>
   );
 }
 

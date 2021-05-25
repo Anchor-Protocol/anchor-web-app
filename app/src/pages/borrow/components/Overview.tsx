@@ -13,6 +13,7 @@ import {
 import { Rate, uUST } from '@anchor-protocol/types';
 import {
   useAnchorWebapp,
+  useBorrowAPYQuery,
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
 } from '@anchor-protocol/webapp-provider';
@@ -23,13 +24,12 @@ import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { TooltipIconCircle } from '@terra-dev/neumorphism-ui/components/TooltipIconCircle';
 import big, { Big, BigSource } from 'big.js';
 import { screen } from 'env';
-import { BorrowLimitGraph } from 'pages/borrow/components/BorrowLimitGraph';
-import { apr as _apr } from 'pages/borrow/logics/apr';
-import { borrowed as _borrowed } from 'pages/borrow/logics/borrowed';
-import { collaterals as _collaterals } from 'pages/borrow/logics/collaterals';
-import { useBorrowAPY } from 'pages/borrow/queries/borrowAPY';
 import { useMemo } from 'react';
 import styled from 'styled-components';
+import { apr as _apr } from '../logics/apr';
+import { borrowed as _borrowed } from '../logics/borrowed';
+import { collaterals as _collaterals } from '../logics/collaterals';
+import { BorrowLimitGraph } from './BorrowLimitGraph';
 
 export interface OverviewProps {
   className?: string;
@@ -48,14 +48,12 @@ function OverviewBase({ className }: OverviewProps) {
     constants: { blocksPerYear },
   } = useAnchorWebapp();
 
+  const { data: { borrowerDistributionAPYs } = {} } = useBorrowAPYQuery();
+
   const apr = useMemo(() => _apr(borrowRate, blocksPerYear), [
     blocksPerYear,
     borrowRate,
   ]);
-
-  const {
-    data: { borrowerDistributionAPYs },
-  } = useBorrowAPY();
 
   const borrowed = useMemo(() => _borrowed(marketBorrowerInfo), [
     marketBorrowerInfo,

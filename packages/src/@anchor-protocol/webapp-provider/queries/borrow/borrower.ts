@@ -1,3 +1,4 @@
+import { HumanAddr } from '@anchor-protocol/types';
 import {
   ANCHOR_QUERY_KEY,
   BorrowBorrowerData,
@@ -5,10 +6,57 @@ import {
 } from '@anchor-protocol/webapp-fns';
 import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useTerraWebapp } from '@terra-money/webapp-provider';
-import { useCallback } from 'react';
-import { useQuery, UseQueryResult } from 'react-query';
+import {
+  ConnectedWallet,
+  useConnectedWallet,
+} from '@terra-money/wallet-provider';
+import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
+import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
+
+const queryFn = ({
+  queryKey: [
+    ,
+    mantleEndpoint,
+    mantleFetch,
+    connectedWallet,
+    lastSyncedHeight,
+    marketContract,
+    custodyContract,
+  ],
+}: QueryFunctionContext<
+  [
+    string,
+    string,
+    MantleFetch,
+    ConnectedWallet | undefined,
+    () => Promise<number>,
+    HumanAddr,
+    HumanAddr,
+  ]
+>) => {
+  return !!connectedWallet
+    ? borrowBorrowerQuery({
+        mantleEndpoint,
+        mantleFetch,
+        lastSyncedHeight,
+        variables: {
+          marketContract,
+          marketBorrowerInfoQuery: {
+            borrower_info: {
+              borrower: connectedWallet.walletAddress,
+              block_height: -1,
+            },
+          },
+          custodyContract,
+          custodyBorrowerQuery: {
+            borrower: {
+              address: connectedWallet.walletAddress,
+            },
+          },
+        },
+      })
+    : Promise.resolve(undefined);
+};
 
 export function useBorrowBorrowerQuery(): UseQueryResult<
   BorrowBorrowerData | undefined
@@ -23,41 +71,21 @@ export function useBorrowBorrowerQuery(): UseQueryResult<
 
   const { browserInactive } = useBrowserInactive();
 
-  const queryFn = useCallback(() => {
-    return !!connectedWallet
-      ? borrowBorrowerQuery({
-          mantleEndpoint,
-          mantleFetch,
-          lastSyncedHeight,
-          variables: {
-            marketContract: moneyMarket.market,
-            marketBorrowerInfoQuery: {
-              borrower_info: {
-                borrower: connectedWallet.walletAddress,
-                block_height: -1,
-              },
-            },
-            custodyContract: moneyMarket.custody,
-            custodyBorrowerQuery: {
-              borrower: {
-                address: connectedWallet.walletAddress,
-              },
-            },
-          },
-        })
-      : Promise.resolve(undefined);
-  }, [
-    connectedWallet,
-    lastSyncedHeight,
-    mantleEndpoint,
-    mantleFetch,
-    moneyMarket.custody,
-    moneyMarket.market,
-  ]);
-
-  return useQuery(ANCHOR_QUERY_KEY.BORROW_BORROWER, queryFn, {
-    refetchInterval: browserInactive && !!connectedWallet && 1000 * 60 * 5,
-    enabled: !browserInactive && !!connectedWallet,
-    keepPreviousData: true,
-  });
+  return useQuery(
+    [
+      ANCHOR_QUERY_KEY.BORROW_BORROWER,
+      mantleEndpoint,
+      mantleFetch,
+      connectedWallet,
+      lastSyncedHeight,
+      moneyMarket.market,
+      moneyMarket.custody,
+    ],
+    queryFn,
+    {
+      refetchInterval: browserInactive && !!connectedWallet && 1000 * 60 * 5,
+      enabled: !browserInactive && !!connectedWallet,
+      keepPreviousData: true,
+    },
+  );
 }

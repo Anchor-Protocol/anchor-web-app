@@ -6,6 +6,7 @@ import {
 } from '@anchor-protocol/notation';
 import { anc160gif, GifIcon, TokenIcon } from '@anchor-protocol/token-icons';
 import { Rate, uANC, UST, uToken } from '@anchor-protocol/types';
+import { useBorrowAPYQuery } from '@anchor-protocol/webapp-provider';
 import { ChevronRight } from '@material-ui/icons';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
@@ -16,7 +17,6 @@ import { TooltipLabel } from '@terra-dev/neumorphism-ui/components/TooltipLabel'
 import big, { Big } from 'big.js';
 import { Circles } from 'components/Circles';
 import { screen } from 'env';
-import { useBorrowAPY } from 'pages/borrow/queries/borrowAPY';
 import {
   ancGovernancePathname,
   ancUstLpPathname,
@@ -39,9 +39,7 @@ function OverviewBase({ className }: OverviewProps) {
     data: { ancPrice },
   } = useANCPrice();
 
-  const {
-    data: { govRewards, lpRewards },
-  } = useBorrowAPY();
+  const { data: { govRewards, lpRewards } = {} } = useBorrowAPYQuery();
 
   const {
     data: { apyLPRewards },
@@ -71,9 +69,9 @@ function OverviewBase({ className }: OverviewProps) {
     let defaultTooltip = 'LP rewards APR';
 
     if (apyLPRewards && apyLPRewards.length > 0) {
-      const apr = big(big(apyLPRewards[0].APY).div(365).plus(1)).pow(
-        365,
-      ).minus(1) as Rate<Big>;
+      const apr = big(big(apyLPRewards[0].APY).div(365).plus(1))
+        .pow(365)
+        .minus(1) as Rate<Big>;
 
       return `${formatRate(apr).toString()}% (if compounded daily)`;
     }

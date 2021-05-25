@@ -114,7 +114,9 @@ export function BankProvider({ children }: BankProviderProps) {
   return <BankContext.Provider value={state}>{children}</BankContext.Provider>;
 }
 
-// TODO remove after refactoring done
+/**
+ * @deprecated use insteadof @terra-money/webapp-provider
+ */
 export function useBank(): Bank {
   return useContext(BankContext);
 }

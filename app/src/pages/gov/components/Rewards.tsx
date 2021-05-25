@@ -6,6 +6,7 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { uANC, uUST } from '@anchor-protocol/types';
+import { useBorrowAPYQuery } from '@anchor-protocol/webapp-provider';
 import { MenuItem } from '@material-ui/core';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
@@ -14,7 +15,6 @@ import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import big, { Big } from 'big.js';
 import { screen } from 'env';
-import { useBorrowAPY } from 'pages/borrow/queries/borrowAPY';
 import { MoreMenu } from 'pages/gov/components/MoreMenu';
 import { SubHeader } from 'pages/gov/components/SubHeader';
 import {
@@ -61,8 +61,8 @@ export function RewardsBase({ className }: RewardsProps) {
   } = useClaimableUstBorrow();
 
   const {
-    data: { govRewards, lpRewards, borrowerDistributionAPYs },
-  } = useBorrowAPY();
+    data: { govRewards, lpRewards, borrowerDistributionAPYs } = {},
+  } = useBorrowAPYQuery();
 
   // ---------------------------------------------
   // logics

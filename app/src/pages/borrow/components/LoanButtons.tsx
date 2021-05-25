@@ -5,10 +5,10 @@ import {
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
-import { useBorrowDialog } from 'pages/borrow/components/useBorrowDialog';
-import { useRepayDialog } from 'pages/borrow/components/useRepayDialog';
-import { borrowed as _borrowed } from 'pages/borrow/logics/borrowed';
 import { useMemo } from 'react';
+import { borrowed as _borrowed } from '../logics/borrowed';
+import { useBorrowDialog } from './useBorrowDialog';
+import { useRepayDialog } from './useRepayDialog';
 
 export function LoanButtons() {
   // ---------------------------------------------
@@ -52,10 +52,20 @@ export function LoanButtons() {
         Borrow
       </ActionButton>
       <ActionButton
-        disabled={!connectedWallet || borrowed.lte(0)}
-        onClick={() => {
-          openRepayDialog({});
-        }}
+        disabled={
+          !connectedWallet ||
+          !borrowMarket ||
+          !borrowBorrower ||
+          borrowed.lte(0)
+        }
+        onClick={() =>
+          borrowMarket &&
+          borrowBorrower &&
+          openRepayDialog({
+            fallbackBorrowMarket: borrowMarket,
+            fallbackBorrowBorrower: borrowBorrower,
+          })
+        }
       >
         Repay
       </ActionButton>
