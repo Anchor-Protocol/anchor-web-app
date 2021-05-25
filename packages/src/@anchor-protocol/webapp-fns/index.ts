@@ -17,6 +17,12 @@ export * from './queries/borrow/market';
 export * from './queries/borrow/borrower';
 export * from './queries/borrow/apy';
 export * from './queries/borrow/liquidationPrice';
+export * from './queries/bond/bAssetExchangeRate';
+export * from './queries/bond/bLunaPrice';
+export * from './queries/bond/claimableRewards';
+export * from './queries/bond/validators';
+export * from './queries/bond/withdrawableAmount';
+export * from './queries/bond/withdrawHistory';
 
 export * from './tx/earn/deposit';
 export * from './tx/earn/withdraw';
