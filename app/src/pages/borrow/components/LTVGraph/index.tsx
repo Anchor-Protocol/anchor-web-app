@@ -91,13 +91,12 @@ export function LTVGraph({
   );
 
   const color = useMemo(() => {
-    return nextLtv?.gte(maxLtv)
+    return nextLtv?.gte(0.4)
       ? theme.colors.negative
       : nextLtv?.gte(safeLtv)
       ? theme.colors.warning
       : theme.colors.positive;
   }, [
-    maxLtv,
     nextLtv,
     safeLtv,
     theme.colors.negative,
