@@ -34,8 +34,8 @@ export const links = {
     ? 'https://docs.anchorprotocol.com/protocol/overview'
     : 'https://app.gitbook.com/@anchor-protocol/s/anchor-2/protocol/overview',
   easierIntegration: onProduction
-    ? 'https://docs.anchorprotocol.com/developers-terra/anchor.js'
-    : 'https://app.gitbook.com/@anchor-protocol/s/anchor-2/developers-terra/anchor.js',
+    ? 'https://docs.anchorprotocol.com/developers-earn/anchor-earn-sdk'
+    : 'https://app.gitbook.com/@anchor-protocol/s/anchor-2/developers-earn/anchor-earn-sdk',
   frictionlessAccess: onProduction
     ? 'https://app.anchorprotocol.com'
     : 'https://app-staging.anchorprotocol.com/earn',
