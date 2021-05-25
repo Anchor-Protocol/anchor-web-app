@@ -17,16 +17,18 @@ import {
 } from '@anchor-protocol/webapp-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
+import { min } from '@terra-dev/big-math';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
+import { useConfirm } from '@terra-dev/neumorphism-ui/components/useConfirm';
 import type { DialogProps, OpenDialog } from '@terra-dev/use-dialog';
 import { useDialog } from '@terra-dev/use-dialog';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
-import big, { Big } from 'big.js';
+import big, { Big, BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
@@ -72,6 +74,8 @@ function ComponentBase({
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
+  const [openConfirm, confirmElement] = useConfirm();
+
   const {
     constants: { fixedGas, blocksPerYear },
   } = useAnchorWebapp();
@@ -84,6 +88,8 @@ function ComponentBase({
       bLunaSafeLtv = '0.3' as Rate,
     } = fallbackBorrowMarket,
   } = useBorrowMarketQuery();
+
+  console.log('useBorrowDialog.tsx..ComponentBase()', bLunaMaxLtv);
 
   const {
     data: {
@@ -130,6 +136,10 @@ function ComponentBase({
     [amountToLtv, borrowAmount, currentLtv],
   );
 
+  const userMaxLtv = useMemo(() => {
+    return min(bLunaMaxLtv, big(0.4)) as Rate<BigSource>;
+  }, [bLunaMaxLtv]);
+
   const apr = useMemo(() => _apr(borrowRate, blocksPerYear), [
     blocksPerYear,
     borrowRate,
@@ -173,6 +183,12 @@ function ComponentBase({
     [borrowAmount, max],
   );
 
+  const invalidOverSafeLtv = useMemo(() => {
+    return nextLtv?.gt(bLunaSafeLtv)
+      ? 'Warning : Are you sure you want to borrow above the recommended LTV?'
+      : undefined;
+  }, [bLunaSafeLtv, nextLtv]);
+
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
@@ -181,14 +197,28 @@ function ComponentBase({
   }, []);
 
   const proceed = useCallback(
-    (borrowAmount: UST) => {
+    async (borrowAmount: UST, confirm: ReactNode) => {
       if (!connectedWallet || !borrow) {
         return;
       }
 
+      console.log('useBorrowDialog.tsx..()', confirm);
+
+      if (confirm) {
+        const userConfirm = await openConfirm({
+          description: confirm,
+          agree: 'Proceed',
+          disagree: 'Cancel',
+        });
+
+        if (!userConfirm) {
+          return;
+        }
+      }
+
       borrow({ borrowAmount });
     },
-    [borrow, connectedWallet],
+    [borrow, connectedWallet, openConfirm],
   );
 
   const onLtvChange = useCallback(
@@ -272,7 +302,7 @@ function ComponentBase({
         <div className="wallet" aria-invalid={!!invalidBorrowAmount}>
           <span>{invalidBorrowAmount}</span>
           <span>
-            Safe Max:{' '}
+            {formatRate(bLunaSafeLtv)}% LTV:{' '}
             <span
               style={{
                 textDecoration: 'underline',
@@ -295,7 +325,7 @@ function ComponentBase({
             currentLtv={currentLtv}
             nextLtv={nextLtv}
             userMinLtv={currentLtv}
-            userMaxLtv={bLunaMaxLtv}
+            userMaxLtv={userMaxLtv}
             onStep={ltvStepFunction}
             onChange={onLtvChange}
           />
@@ -335,10 +365,14 @@ function ComponentBase({
             !!invalidTxFee ||
             !!invalidBorrowAmount
           }
-          onClick={() => connectedWallet && proceed(borrowAmount)}
+          onClick={() =>
+            connectedWallet && proceed(borrowAmount, invalidOverSafeLtv)
+          }
         >
           Proceed
         </ActionButton>
+
+        {confirmElement}
       </Dialog>
     </Modal>
   );

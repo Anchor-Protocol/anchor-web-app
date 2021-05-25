@@ -9,6 +9,7 @@ import {
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { bLuna, Rate, uUST } from '@anchor-protocol/types';
+import { min } from '@terra-dev/big-math';
 import {
   ConnectedWallet,
   useConnectedWallet,
@@ -122,6 +123,10 @@ function ComponentBase({
     () => redeemCollateralNextLtv(redeemAmount, currentLtv, amountToLtv),
     [amountToLtv, currentLtv, redeemAmount],
   );
+
+  const userMaxLtv = useMemo(() => {
+    return min(bLunaMaxLtv, big(0.4)) as Rate<BigSource>;
+  }, [bLunaMaxLtv]);
 
   const withdrawableAmount = useMemo(
     () =>
@@ -307,7 +312,7 @@ function ComponentBase({
             currentLtv={currentLtv}
             nextLtv={nextLtv}
             userMinLtv={currentLtv}
-            userMaxLtv={bLunaMaxLtv}
+            userMaxLtv={userMaxLtv}
             onStep={ltvStepFunction}
             onChange={onLtvChange}
           />
