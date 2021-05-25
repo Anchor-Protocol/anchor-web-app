@@ -1,12 +1,21 @@
 {
   "headers": [
     {
-      "source": "/(.*)",
+      "source": "/earn",
       "headers": [
         {
-          "key" : "Cache-Control",
-          "value" : "public, max-age=0, must-revalidate"
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate"
         },
+        {
+          "key": "Age",
+          "value": "60"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
         {
           "key": "X-Content-Type-Options",
           "value": "nosniff"
