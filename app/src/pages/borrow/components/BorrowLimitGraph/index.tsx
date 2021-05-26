@@ -27,6 +27,8 @@ export interface Data {
 }
 
 export interface BorrowLimitGraphProps {
+  ltv: Rate<BigSource>;
+  bLunaSafeLtv: Rate<BigSource>;
   bLunaMaxLtv: Rate<BigSource>;
   collateralValue: uUST<BigSource>;
   loanAmount: uUST<BigSource>;
@@ -70,43 +72,57 @@ const labelRenderer = (
 };
 
 export function BorrowLimitGraph({
-  bLunaMaxLtv,
+  ltv: _ltv,
+  bLunaSafeLtv: _bLunaSafeLtv,
+  bLunaMaxLtv: _bLunaMaxLtv,
   collateralValue,
   loanAmount,
 }: BorrowLimitGraphProps) {
   const theme = useTheme();
 
-  const { borrowLimit, borrowLimitRate } = useMemo(() => {
+  const {
+    borrowLimit,
+    borrowLimitRate,
+    ltv,
+    bLunaMaxLtv,
+    bLunaSafeLtv,
+  } = useMemo(() => {
+    const ltv = big(_ltv) as Rate<Big>;
+    const bLunaSafeLtv = big(_bLunaSafeLtv) as Rate<Big>;
+    const bLunaMaxLtv = big(_bLunaMaxLtv) as Rate<Big>;
     const borrowLimit = big(collateralValue).mul(bLunaMaxLtv) as uUST<Big>;
     return {
+      ltv,
+      bLunaSafeLtv,
+      bLunaMaxLtv,
       borrowLimit,
       //borrowLimitRate: big(1) as Rate<Big>,
       borrowLimitRate: !borrowLimit.eq(0)
         ? (big(loanAmount).div(borrowLimit) as Rate<Big>)
         : (big(0) as Rate<Big>),
     };
-  }, [bLunaMaxLtv, collateralValue, loanAmount]);
+  }, [_bLunaMaxLtv, _bLunaSafeLtv, _ltv, collateralValue, loanAmount]);
 
   return (
     <HorizontalGraphBar<Data>
       min={0}
-      max={1}
+      max={bLunaMaxLtv.toNumber()}
       animate
       data={
-        borrowLimitRate.gt(0)
+        ltv.gt(0)
           ? [
               {
                 position: 'top',
-                label: `${formatRate(borrowLimitRate)}%`,
-                color: borrowLimitRate.gte(1)
+                label: `${formatRate(ltv)}%`,
+                color: ltv.gte(0.4)
                   ? theme.colors.negative
-                  : borrowLimitRate.gte(0.7)
+                  : ltv.gte(bLunaSafeLtv)
                   ? theme.colors.warning
                   : theme.colors.positive,
-                value: borrowLimitRate.toNumber(),
-                tooltip: borrowLimitRate.gte(1)
+                value: ltv.toNumber(),
+                tooltip: ltv.gte(0.4)
                   ? "Loan can be liquidated anytime upon another user's request. Repay loans with stablecoins or deposit more collateral to prevent liquidation."
-                  : borrowLimitRate.gte(0.7)
+                  : borrowLimitRate.gte(bLunaSafeLtv)
                   ? 'Loan is close to liquidation. Repay loan with stablecoins or deposit more collateral.'
                   : undefined,
               },

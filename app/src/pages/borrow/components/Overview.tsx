@@ -10,7 +10,7 @@ import {
   formatRate,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
-import { Rate, uUST } from '@anchor-protocol/types';
+import { Rate } from '@anchor-protocol/types';
 import {
   useAnchorWebapp,
   useBorrowAPYQuery,
@@ -22,8 +22,9 @@ import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { TooltipIconCircle } from '@terra-dev/neumorphism-ui/components/TooltipIconCircle';
-import big, { Big, BigSource } from 'big.js';
+import big, { Big } from 'big.js';
 import { screen } from 'env';
+import { currentLtv as _currentLtv } from 'pages/borrow/logics/currentLtv';
 import { useMemo } from 'react';
 import styled from 'styled-components';
 import { apr as _apr } from '../logics/apr';
@@ -37,7 +38,7 @@ export interface OverviewProps {
 
 function OverviewBase({ className }: OverviewProps) {
   const {
-    data: { borrowRate, oraclePrice, bLunaMaxLtv } = {},
+    data: { borrowRate, oraclePrice, bLunaSafeLtv, bLunaMaxLtv } = {},
   } = useBorrowMarketQuery();
 
   const {
@@ -49,6 +50,14 @@ function OverviewBase({ className }: OverviewProps) {
   } = useAnchorWebapp();
 
   const { data: { borrowerDistributionAPYs } = {} } = useBorrowAPYQuery();
+
+  const currentLtv = useMemo(
+    () =>
+      marketBorrowerInfo && custodyBorrower && oraclePrice
+        ? _currentLtv(marketBorrowerInfo, custodyBorrower, oraclePrice)
+        : undefined,
+    [custodyBorrower, marketBorrowerInfo, oraclePrice],
+  );
 
   const apr = useMemo(() => _apr(borrowRate, blocksPerYear), [
     blocksPerYear,
@@ -183,13 +192,17 @@ function OverviewBase({ className }: OverviewProps) {
         </div>
       </article>
 
-      <figure>
-        <BorrowLimitGraph
-          bLunaMaxLtv={bLunaMaxLtv ?? (0 as Rate<BigSource>)}
-          collateralValue={collaterals}
-          loanAmount={marketBorrowerInfo?.loan_amount ?? (0 as uUST<BigSource>)}
-        />
-      </figure>
+      {currentLtv && bLunaSafeLtv && bLunaMaxLtv && marketBorrowerInfo && (
+        <figure>
+          <BorrowLimitGraph
+            ltv={currentLtv}
+            bLunaSafeLtv={bLunaSafeLtv}
+            bLunaMaxLtv={bLunaMaxLtv}
+            collateralValue={collaterals}
+            loanAmount={marketBorrowerInfo.loan_amount}
+          />
+        </figure>
+      )}
     </Section>
   );
 }
