@@ -137,13 +137,7 @@ export function LTVGraph({
         {
           position: 'bottom',
           label: nextLtv
-            ? `${
-                nextLtv.gt(0.3999) && nextLtv.lt(0.4)
-                  ? formatRate(0.4 as Rate<number>)
-                  : nextLtv.lt(1)
-                  ? formatRate(nextLtv)
-                  : '>100'
-              }%`
+            ? `${nextLtv.lt(1) ? formatRate(nextLtv) : '>100'}%`
             : '',
           color,
           value: nextLtv
