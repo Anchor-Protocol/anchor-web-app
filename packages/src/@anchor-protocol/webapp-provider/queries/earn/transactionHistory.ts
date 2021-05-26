@@ -7,7 +7,11 @@ import {
   ConnectedWallet,
   useConnectedWallet,
 } from '@terra-money/wallet-provider';
-import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
+import {
+  EMPTY_QUERY_RESULT,
+  MantleFetch,
+  useTerraWebapp,
+} from '@terra-money/webapp-provider';
 import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
@@ -36,7 +40,7 @@ export function useEarnTransactionHistoryQuery(): UseQueryResult<
 
   const connectedWallet = useConnectedWallet();
 
-  return useQuery(
+  const result = useQuery(
     [
       ANCHOR_QUERY_KEY.EARN_TRANSACTION_HISTORY,
       connectedWallet,
@@ -49,4 +53,6 @@ export function useEarnTransactionHistoryQuery(): UseQueryResult<
       keepPreviousData: true,
     },
   );
+
+  return connectedWallet ? result : EMPTY_QUERY_RESULT;
 }

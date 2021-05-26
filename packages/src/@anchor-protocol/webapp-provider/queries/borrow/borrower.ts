@@ -8,7 +8,11 @@ import {
   ConnectedWallet,
   useConnectedWallet,
 } from '@terra-money/wallet-provider';
-import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
+import {
+  EMPTY_QUERY_RESULT,
+  MantleFetch,
+  useTerraWebapp,
+} from '@terra-money/webapp-provider';
 import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
@@ -71,7 +75,7 @@ export function useBorrowBorrowerQuery(): UseQueryResult<
 
   const { browserInactive } = useBrowserInactive();
 
-  return useQuery(
+  const result = useQuery(
     [
       ANCHOR_QUERY_KEY.BORROW_BORROWER,
       mantleEndpoint,
@@ -88,4 +92,6 @@ export function useBorrowBorrowerQuery(): UseQueryResult<
       keepPreviousData: true,
     },
   );
+
+  return connectedWallet ? result : EMPTY_QUERY_RESULT;
 }
