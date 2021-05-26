@@ -222,7 +222,9 @@ export const DesktopHeader = styled(DesktopHeaderBase)`
   }
 
   @media (max-width: ${mobileLayoutBreak}px) {
-    justify-content: center;
+    justify-content: space-between;
+
+    padding: 0 40px;
 
     //.wallet {
     //  display: none;
