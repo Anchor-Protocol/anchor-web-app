@@ -181,7 +181,7 @@ export function BorrowLimitGraph({
     >
       <GraphLabel style={{ left: 0 }}>
         <IconSpan>
-          LTV <InfoTooltip>Loan to Value ratio</InfoTooltip>
+          LTV <InfoTooltip>Loan-to-value ratio</InfoTooltip>
         </IconSpan>
       </GraphLabel>
       <GraphLabel style={{ right: 0 }}>
