@@ -20,6 +20,7 @@ import { useLastSyncedHeight } from 'base/queries/lastSyncedHeight';
 import { AccountLink } from 'components/AccountLink';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { useCodeViewerDialog } from 'components/useCodeViewerDialog';
+import { screen } from 'env';
 import {
   Description,
   DescriptionGrid,
@@ -294,6 +295,9 @@ export const PollDetail = styled(PollDetailBase)`
 
           font-size: 24px;
           font-weight: 500;
+
+          word-break: break-word;
+          white-space: break-spaces;
         }
       }
 
@@ -373,6 +377,19 @@ export const PollDetail = styled(PollDetailBase)`
       }
 
       margin-bottom: 76px;
+    }
+  }
+
+  @media (max-width: ${screen.mobile.max}px) {
+    .content {
+      .content-title {
+        flex-direction: column;
+
+        .MuiButtonBase-root {
+          margin-top: 16px;
+          width: 100%;
+        }
+      }
     }
   }
 `;

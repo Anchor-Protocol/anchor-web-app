@@ -16,7 +16,7 @@ import {
   pickRawLog,
 } from 'base/queries/txInfos';
 import { createElement } from 'react';
-import { TxResult } from 'base/transactions/tx';
+import { TxResult } from '@terra-money/wallet-provider';
 
 interface Params {
   txResult: TxResult;

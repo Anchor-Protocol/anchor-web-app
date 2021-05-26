@@ -4,7 +4,6 @@ import {
   formatUSTWithPostfixUnits,
   truncate,
 } from '@anchor-protocol/notation';
-import { WalletReady } from '@anchor-protocol/wallet-provider';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { Bank } from 'base/contexts/bank';
 import { ButtonHTMLAttributes, DetailedHTMLProps } from 'react';
@@ -18,12 +17,12 @@ interface ConnectedButtonProps
     >,
     'children'
   > {
-  status: WalletReady;
+  walletAddress: string;
   bank: Bank;
 }
 
 function ConnectedButtonBase({
-  status,
+  walletAddress,
   bank,
   ...buttonProps
 }: ConnectedButtonProps) {
@@ -33,7 +32,7 @@ function ConnectedButtonBase({
         <span className="wallet-icon">
           <Wallet />
         </span>
-        <span className="wallet-address">{truncate(status.walletAddress)}</span>
+        <span className="wallet-address">{truncate(walletAddress)}</span>
         <div className="wallet-balance">
           {formatUSTWithPostfixUnits(demicrofy(bank.userBalances.uUSD))} UST
         </div>

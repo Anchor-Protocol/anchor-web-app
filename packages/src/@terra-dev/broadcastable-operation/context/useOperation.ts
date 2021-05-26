@@ -1,4 +1,4 @@
-import { UserDeniedError } from '@anchor-protocol/wallet-provider';
+import { UserDenied } from '@terra-money/wallet-provider';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { OperationStop, OperationTimeoutError } from '../errors';
 import { aborted, subscribeAbort } from './internal/subscribeAbort';
@@ -299,7 +299,7 @@ export function useOperation(
           throw error;
         } else if (errorReporter) {
           if (
-            error instanceof UserDeniedError ||
+            error instanceof UserDenied ||
             error instanceof OperationTimeoutError
           ) {
           } else {

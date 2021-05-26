@@ -1,6 +1,6 @@
 import type { uANC } from '@anchor-protocol/types';
 import { anchorToken, cw20, WASMContractResult } from '@anchor-protocol/types';
-import { useUserWallet } from '@anchor-protocol/wallet-provider';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { gql, useQuery } from '@apollo/client';
 import { useSubscription } from '@terra-dev/broadcastable-operation';
 import { createMap, useMap } from '@terra-dev/use-map';
@@ -87,7 +87,7 @@ export function useRewardsAncGovernance(): MappedQueryResult<
   RawData,
   Data
 > {
-  const userWallet = useUserWallet();
+  const userWallet = useConnectedWallet();
 
   const { anchorToken, cw20 } = useContractAddress();
 

@@ -75,7 +75,6 @@ IDE
 - [packages/src/@anchor-protocol/icons/README.md](packages/src/@anchor-protocol/icons/README.md)
 - [packages/src/@anchor-protocol/notation/README.md](packages/src/@anchor-protocol/notation/README.md)
 - [packages/src/@anchor-protocol/token-icons/README.md](packages/src/@anchor-protocol/token-icons/README.md)
-- [packages/src/@anchor-protocol/wallet-provider/README.md](packages/src/@anchor-protocol/wallet-provider/README.md)
 - [packages/src/@terra-dev/audit-fastdom/README.md](packages/src/@terra-dev/audit-fastdom/README.md)
 - [packages/src/@terra-dev/big-interpolate/README.md](packages/src/@terra-dev/big-interpolate/README.md)
 - [packages/src/@terra-dev/big-math/README.md](packages/src/@terra-dev/big-math/README.md)
@@ -98,6 +97,9 @@ IDE
 - [packages/src/@terra-dev/use-router-scroll-restoration/README.md](packages/src/@terra-dev/use-router-scroll-restoration/README.md)
 - [packages/src/@terra-dev/use-string-bytes-length/README.md](packages/src/@terra-dev/use-string-bytes-length/README.md)
 - [packages/src/@terra-dev/use-time-end/README.md](packages/src/@terra-dev/use-time-end/README.md)
+- [packages/src/@terra-dev/walletconnect-qrcode-modal/README.md](packages/src/@terra-dev/walletconnect-qrcode-modal/README.md)
+- [packages/src/@terra-dev/walletconnect/README.md](packages/src/@terra-dev/walletconnect/README.md)
+- [packages/src/@terra-money/wallet-provider/README.md](packages/src/@terra-money/wallet-provider/README.md)
 
 <!-- /index -->
 

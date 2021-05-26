@@ -1,12 +1,12 @@
 import { uUST } from '@anchor-protocol/types';
-import { TxResult } from 'base/transactions/tx';
+import { TxResult } from '@terra-money/wallet-provider';
 import { pickAllClaimResult } from 'pages/gov/transactions/pickAllClaimResult';
 import json from './fixtures/claim-all.json';
 
 describe('pickAllClaimResult', () => {
   test('should get result', () => {
     const result = pickAllClaimResult({
-      txResult: json.txResult as TxResult,
+      txResult: (json.txResult as unknown) as TxResult,
       txInfo: json.txInfo,
       fixedGas: 350000 as uUST<number>,
     });

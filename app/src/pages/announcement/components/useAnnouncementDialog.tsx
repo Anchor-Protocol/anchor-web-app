@@ -29,7 +29,7 @@ function ComponentBase({
   onHide,
 }: DialogProps<FormParams, FormReturn>) {
   return (
-    <Modal open disableBackdropClick>
+    <Modal open disableBackdropClick disableEnforceFocus>
       <Dialog className={className} onClose={() => closeDialog()}>
         {user && (
           <Announcement

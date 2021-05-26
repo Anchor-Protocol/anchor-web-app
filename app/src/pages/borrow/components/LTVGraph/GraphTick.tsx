@@ -6,11 +6,11 @@ export const GraphTick = styled.span`
   color: ${({ theme }) => theme.dimTextColor};
 
   top: -28px;
-  transform: translateX(-50%);
-  
+  transform: translateX(-100%);
+
   word-break: keep-all;
   white-space: nowrap;
-  
+
   user-select: none;
 
   &::before {
@@ -18,7 +18,7 @@ export const GraphTick = styled.span`
     height: 11px;
     border-left: solid 1px currentColor;
     position: absolute;
-    left: calc(50% - 1px);
+    left: calc(100% - 1px);
     bottom: -13px;
     z-index: 1;
   }

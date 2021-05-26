@@ -18,8 +18,8 @@ import {
 import { Token, UST, uToken, uUST } from '@anchor-protocol/types';
 import {
   useConnectedWallet,
-  WalletReady,
-} from '@anchor-protocol/wallet-provider';
+  ConnectedWallet,
+} from '@terra-money/wallet-provider';
 import { Modal, NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { Warning } from '@material-ui/icons';
 import { min } from '@terra-dev/big-math';
@@ -241,7 +241,7 @@ function ComponentBase({
 
   const submit = useCallback(
     async (
-      walletReady: WalletReady,
+      walletReady: ConnectedWallet,
       toAddress: string,
       currency: CurrencyInfo,
       amount: Token,
@@ -266,7 +266,7 @@ function ComponentBase({
     sendResult?.status === 'fault'
   ) {
     return (
-      <Modal open disableBackdropClick>
+      <Modal open disableBackdropClick disableEnforceFocus>
         <Dialog className={className}>
           <TransactionRenderer result={sendResult} onExit={closeDialog} />
         </Dialog>
@@ -369,7 +369,7 @@ function ComponentBase({
         <div className="memo-warning">
           {memoWarning && (
             <WarningMessage>
-              <IconSpan>
+              <IconSpan wordBreak={false}>
                 <Warning /> Please double check if the transaction requires a
                 memo
               </IconSpan>

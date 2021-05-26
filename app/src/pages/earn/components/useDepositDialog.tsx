@@ -1,4 +1,3 @@
-import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import {
   demicrofy,
   formatUST,
@@ -8,11 +7,11 @@ import {
 } from '@anchor-protocol/notation';
 import { UST, uUST } from '@anchor-protocol/types';
 import {
-  useConnectedWallet,
-  WalletReady,
-} from '@anchor-protocol/wallet-provider';
+  useEarnDepositForm,
+  useEarnDepositTx,
+} from '@anchor-protocol/webapp-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
-import { useOperation } from '@terra-dev/broadcastable-operation';
+import { StreamStatus } from '@rx-stream/react';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
@@ -20,22 +19,14 @@ import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import { useConfirm } from '@terra-dev/neumorphism-ui/components/useConfirm';
 import type { DialogProps, OpenDialog } from '@terra-dev/use-dialog';
 import { useDialog } from '@terra-dev/use-dialog';
-import { useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
-import big, { BigSource } from 'big.js';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
+import { BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
-import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { validateTxFee } from 'logics/validateTxFee';
-import { depositRecommendationAmount } from 'pages/earn/logics/depositRecommendationAmount';
-import { depositSendAmount } from 'pages/earn/logics/depositSendAmount';
-import { depositTxFee } from 'pages/earn/logics/depositTxFee';
-import { validateDepositAmount } from 'pages/earn/logics/validateDepositAmount';
-import { validateDepositNextTransaction } from 'pages/earn/logics/validateDepositNextTransaction';
+import { TxResultRenderer } from 'components/TxResultRenderer';
 import type { ReactNode } from 'react';
-import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import React, { ChangeEvent, useCallback } from 'react';
 import styled from 'styled-components';
-import { depositOptions } from '../transactions/depositOptions';
 
 interface FormParams {
   className?: string;
@@ -59,77 +50,38 @@ function ComponentBase({
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const { fixedGas } = useConstants();
-
-  const [deposit, depositResult] = useOperation(depositOptions, {});
-
   const [openConfirm, confirmElement] = useConfirm();
+
+  const [deposit, depositResult] = useEarnDepositTx();
 
   // ---------------------------------------------
   // states
   // ---------------------------------------------
-  const [depositAmount, setDepositAmount] = useState<UST>('' as UST);
-
-  // ---------------------------------------------
-  // queries
-  // ---------------------------------------------
-  const bank = useBank();
-
-  // ---------------------------------------------
-  // logics
-  // ---------------------------------------------
-  const txFee = useMemo(() => depositTxFee(depositAmount, bank, fixedGas), [
-    bank,
-    depositAmount,
-    fixedGas,
-  ]);
-
-  const sendAmount = useMemo(() => depositSendAmount(depositAmount, txFee), [
+  const {
     depositAmount,
     txFee,
-  ]);
-
-  const maxAmount = useMemo(() => depositRecommendationAmount(bank, fixedGas), [
-    bank,
-    fixedGas,
-  ]);
-
-  const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
-  );
-
-  const invalidDepositAmount = useMemo(
-    () => validateDepositAmount(depositAmount, bank, txFee),
-    [bank, depositAmount, txFee],
-  );
-
-  const invalidNextTransaction = useMemo(
-    () =>
-      validateDepositNextTransaction(
-        depositAmount,
-        bank,
-        txFee,
-        fixedGas,
-        !!invalidDepositAmount || !maxAmount,
-      ),
-    [bank, depositAmount, fixedGas, invalidDepositAmount, maxAmount, txFee],
-  );
+    sendAmount,
+    maxAmount,
+    invalidTxFee,
+    invalidNextTxFee,
+    invalidDepositAmount,
+    updateDepositAmount,
+    availablePost,
+  } = useEarnDepositForm();
 
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
-  const updateDepositAmount = useCallback((nextDepositAmount: string) => {
-    setDepositAmount(nextDepositAmount as UST);
-  }, []);
-
   const proceed = useCallback(
     async (
-      status: WalletReady,
-      depositAmount: string,
+      depositAmount: UST,
       txFee: uUST<BigSource> | undefined,
       confirm: ReactNode,
     ) => {
+      if (!connectedWallet || !deposit) {
+        return;
+      }
+
       if (confirm) {
         const userConfirm = await openConfirm({
           description: confirm,
@@ -142,28 +94,28 @@ function ComponentBase({
         }
       }
 
-      await deposit({
-        address: status.walletAddress,
-        market: MARKET_DENOMS.UUSD,
-        amount: depositAmount,
+      deposit({
+        depositAmount,
         txFee: txFee!.toString() as uUST,
       });
     },
-    [deposit, openConfirm],
+    [connectedWallet, deposit, openConfirm],
   );
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
   if (
-    depositResult?.status === 'in-progress' ||
-    depositResult?.status === 'done' ||
-    depositResult?.status === 'fault'
+    depositResult?.status === StreamStatus.IN_PROGRESS ||
+    depositResult?.status === StreamStatus.DONE
   ) {
     return (
-      <Modal open disableBackdropClick>
+      <Modal open disableBackdropClick disableEnforceFocus>
         <Dialog className={className}>
-          <TransactionRenderer result={depositResult} onExit={closeDialog} />
+          <TxResultRenderer
+            resultRendering={depositResult.value}
+            onExit={closeDialog}
+          />
         </Dialog>
       </Modal>
     );
@@ -184,7 +136,7 @@ function ComponentBase({
           label="AMOUNT"
           error={!!invalidDepositAmount}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
-            updateDepositAmount(target.value)
+            updateDepositAmount(target.value as UST)
           }
           InputProps={{
             endAdornment: <InputAdornment position="end">UST</InputAdornment>,
@@ -225,16 +177,16 @@ function ComponentBase({
           </TxFeeList>
         )}
 
-        {invalidNextTransaction && maxAmount && (
+        {invalidNextTxFee && maxAmount && (
           <MessageBox style={{ marginTop: 30, marginBottom: 0 }}>
-            {invalidNextTransaction}
+            {invalidNextTxFee}
           </MessageBox>
         )}
 
         <ActionButton
           className="proceed"
           style={
-            invalidNextTransaction
+            invalidNextTxFee
               ? {
                   backgroundColor: '#c12535',
                 }
@@ -242,19 +194,11 @@ function ComponentBase({
           }
           disabled={
             !connectedWallet ||
-            depositAmount.length === 0 ||
-            big(depositAmount).lte(0) ||
-            !!invalidDepositAmount
+            !connectedWallet.availablePost ||
+            !deposit ||
+            !availablePost
           }
-          onClick={() =>
-            connectedWallet &&
-            proceed(
-              connectedWallet,
-              depositAmount,
-              txFee,
-              invalidNextTransaction,
-            )
-          }
+          onClick={() => proceed(depositAmount, txFee, invalidNextTxFee)}
         >
           Proceed
         </ActionButton>

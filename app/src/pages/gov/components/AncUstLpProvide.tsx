@@ -15,8 +15,8 @@ import {
 import { ANC, UST, uUST } from '@anchor-protocol/types';
 import {
   useConnectedWallet,
-  WalletReady,
-} from '@anchor-protocol/wallet-provider';
+  ConnectedWallet,
+} from '@terra-money/wallet-provider';
 import { InputAdornment } from '@material-ui/core';
 import { max, min } from '@terra-dev/big-math';
 import { useOperation } from '@terra-dev/broadcastable-operation';
@@ -223,7 +223,7 @@ export function AncUstLpProvide() {
 
   const proceed = useCallback(
     async (
-      walletReady: WalletReady,
+      walletReady: ConnectedWallet,
       ancAmount: ANC,
       ustAmount: UST,
       txFee: uUST,
@@ -399,6 +399,7 @@ export function AncUstLpProvide() {
         }
         disabled={
           !connectedWallet ||
+          !connectedWallet.availablePost ||
           ancAmount.length === 0 ||
           ustAmount.length === 0 ||
           big(ancAmount).lte(0) ||

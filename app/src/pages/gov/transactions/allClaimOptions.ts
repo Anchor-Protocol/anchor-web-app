@@ -15,7 +15,6 @@ import { MsgExecuteContract, StdFee } from '@terra-money/terra.js';
 import { createOptions } from 'base/transactions/createOptions';
 import { getTxInfo } from 'base/transactions/getTxInfo';
 import { postContractMsg } from 'base/transactions/postContractMsg';
-import { parseTxResult } from 'base/transactions/tx';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { pickAllClaimResult } from 'pages/gov/transactions/pickAllClaimResult';
 
@@ -69,8 +68,7 @@ export const allClaimOptions = createOperationOptions({
       fee: new StdFee(gasFee, fixedGas + 'uusd'),
       gasAdjustment,
     })), // -> CreateTxOptions
-    timeout(postContractMsg(post), 1000 * 60 * 20), // -> Promise<StringifiedTxResult>
-    parseTxResult, // -> TxResult
+    timeout(postContractMsg(post), 1000 * 60 * 20), // -> Promise<TxResult>
     merge(getTxInfo(client, signal), () => ({ fixedGas })), // -> { TxResult, TxInfo, fixedGas }
     pickAllClaimResult, // -> TransactionResult
   ],

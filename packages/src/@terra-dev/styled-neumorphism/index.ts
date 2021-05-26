@@ -218,6 +218,30 @@ export function horizontalRuler({
   `;
 }
 
+export function verticalRuler({
+  intensity,
+  ...colors
+}: Pick<NeumorphismValues, 'intensity'> &
+  ({ color: string } | { leftColor: string; rightColor: string })) {
+  const { leftColor, rightColor } =
+    'leftColor' in colors
+      ? colors
+      : {
+          leftColor: colors.color,
+          rightColor: colors.color,
+        };
+  return `
+    padding: 0;
+    border-left: 1px solid ${rulerShadowColor({ intensity, color: leftColor })};
+    border-right: 1px solid ${rulerLightColor({
+      intensity,
+      color: rightColor,
+    })};
+    border-top: 0;
+    border-bottom: 0;
+  `;
+}
+
 export function horizontalDashedRuler({
   intensity,
   dash = 4,

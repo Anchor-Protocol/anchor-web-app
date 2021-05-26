@@ -6,8 +6,8 @@ import {
 import { uANC } from '@anchor-protocol/types';
 import {
   useConnectedWallet,
-  WalletReady,
-} from '@anchor-protocol/wallet-provider';
+  ConnectedWallet,
+} from '@terra-money/wallet-provider';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
@@ -94,7 +94,7 @@ function ClaimAllBase({ className }: ClaimAllProps) {
 
   const proceed = useCallback(
     async (
-      walletReady: WalletReady,
+      walletReady: ConnectedWallet,
       claimMoneyMarketRewards: boolean,
       cliamLpStakingRewards: boolean,
     ) => {
@@ -151,6 +151,7 @@ function ClaimAllBase({ className }: ClaimAllProps) {
           className="proceed"
           disabled={
             !connectedWallet ||
+            !connectedWallet.availablePost ||
             !claimingLpStaingInfoPendingRewards ||
             !claimingBorrowerInfoPendingRewards ||
             !claiming ||

@@ -8,9 +8,9 @@ import {
 } from '@anchor-protocol/notation';
 import { bLuna, Luna, uUST } from '@anchor-protocol/types';
 import {
+  ConnectedWallet,
   useConnectedWallet,
-  WalletReady,
-} from '@anchor-protocol/wallet-provider';
+} from '@terra-money/wallet-provider';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
@@ -172,7 +172,7 @@ function MintBase({ className }: MintProps) {
 
   const proceed = useCallback(
     async (
-      walletReady: WalletReady,
+      walletReady: ConnectedWallet,
       bondAmount: Luna,
       selectedValidator: string,
     ) => {
@@ -367,6 +367,7 @@ function MintBase({ className }: MintProps) {
         className="submit"
         disabled={
           !connectedWallet ||
+          !connectedWallet.availablePost ||
           bondAmount.length === 0 ||
           big(bondAmount).lte(0) ||
           !!invalidBondAmount ||

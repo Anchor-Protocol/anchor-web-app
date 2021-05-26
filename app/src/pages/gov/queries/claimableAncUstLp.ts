@@ -1,6 +1,6 @@
 import type { uAncUstLP } from '@anchor-protocol/types';
 import { anchorToken, cw20, WASMContractResult } from '@anchor-protocol/types';
-import { useUserWallet } from '@anchor-protocol/wallet-provider';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { gql, useQuery } from '@apollo/client';
 import { createMap, useMap } from '@terra-dev/use-map';
 import { useContractAddress } from 'base/contexts/contract';
@@ -89,7 +89,7 @@ export function useClaimableAncUstLp(): MappedQueryResult<
 > {
   const { data: lastSyncedHeight } = useLastSyncedHeight();
 
-  const userWallet = useUserWallet();
+  const userWallet = useConnectedWallet();
 
   const { anchorToken, cw20 } = useContractAddress();
 

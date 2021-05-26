@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 
-export const IconSpan = styled.span`
-  word-break: keep-all;
-  white-space: nowrap;
+export const IconSpan = styled.span<{ wordBreak?: boolean }>`
+  word-break: ${({ wordBreak = true }) => (wordBreak ? 'keep-all' : 'unset')};
+  white-space: ${({ wordBreak = true }) => (wordBreak ? 'nowrap' : 'unset')};
 
   svg,
   .MuiSvgIcon-root {

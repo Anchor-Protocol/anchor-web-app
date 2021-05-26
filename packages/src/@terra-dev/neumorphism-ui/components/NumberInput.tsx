@@ -13,6 +13,8 @@ export function NumberInput({
   maxDecimalPoints,
   maxIntegerPoinsts,
   onChange,
+  inputMode = type === 'decimal' ? 'decimal' : 'numeric',
+  pattern = '[0-9.]*',
   ...props
 }: NumberInputProps) {
   const handlers = useRestrictedNumberInput({
@@ -21,5 +23,15 @@ export function NumberInput({
     maxDecimalPoints,
     onChange,
   });
-  return <TextInput {...props} type="text" {...handlers} />;
+  return (
+    <TextInput
+      {...props}
+      type="text"
+      inputProps={{
+        inputMode,
+        pattern,
+      }}
+      {...handlers}
+    />
+  );
 }

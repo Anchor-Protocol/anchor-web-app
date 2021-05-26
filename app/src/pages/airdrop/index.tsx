@@ -4,9 +4,9 @@ import {
   formatUST,
 } from '@anchor-protocol/notation';
 import {
+  ConnectedWallet,
   useConnectedWallet,
-  WalletReady,
-} from '@anchor-protocol/wallet-provider';
+} from '@terra-money/wallet-provider';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
@@ -60,7 +60,7 @@ function AirdropBase({ className }: AirdropProps) {
   }, [history]);
 
   const proceed = useCallback(
-    async (walletReady: WalletReady, airdrop: AirdropData) => {
+    async (walletReady: ConnectedWallet, airdrop: AirdropData) => {
       await claim({
         address: walletReady.walletAddress,
         airdrop,
@@ -137,7 +137,12 @@ function AirdropBase({ className }: AirdropProps) {
 
         <ActionButton
           className="proceed"
-          disabled={!connectedWallet || !airdrop || !!invalidTxFee}
+          disabled={
+            !connectedWallet ||
+            !connectedWallet.availablePost ||
+            !airdrop ||
+            !!invalidTxFee
+          }
           onClick={() =>
             connectedWallet && airdrop && proceed(connectedWallet, airdrop)
           }

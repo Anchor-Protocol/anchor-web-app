@@ -10,7 +10,7 @@ import type {
   UST,
   uUST,
 } from '@anchor-protocol/types';
-import { useUserWallet } from '@anchor-protocol/wallet-provider';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { BigSource } from 'big.js';
 import type { ReactNode } from 'react';
 import {
@@ -41,8 +41,9 @@ export interface Bank {
 // @ts-ignore
 const BankContext: Context<Bank> = createContext<Bank>();
 
+// TODO remove after refactoring done
 export function BankProvider({ children }: BankProviderProps) {
-  const userWallet = useUserWallet();
+  const userWallet = useConnectedWallet();
 
   const { data: taxData, refetch: refetchTax } = useTax();
 
@@ -113,6 +114,9 @@ export function BankProvider({ children }: BankProviderProps) {
   return <BankContext.Provider value={state}>{children}</BankContext.Provider>;
 }
 
+/**
+ * @deprecated use insteadof @terra-money/webapp-provider
+ */
 export function useBank(): Bank {
   return useContext(BankContext);
 }

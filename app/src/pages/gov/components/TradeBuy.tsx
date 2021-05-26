@@ -22,8 +22,8 @@ import {
 } from '@anchor-protocol/types';
 import {
   useConnectedWallet,
-  WalletReady,
-} from '@anchor-protocol/wallet-provider';
+  ConnectedWallet,
+} from '@terra-money/wallet-provider';
 import { useApolloClient } from '@apollo/client';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { max, min } from '@terra-dev/big-math';
@@ -305,7 +305,7 @@ export function TradeBuy() {
 
   const proceed = useCallback(
     async (
-      walletReady: WalletReady,
+      walletReady: ConnectedWallet,
       fromAmount: UST,
       ancPrice: AncPrice,
       txFee: uUST,
@@ -497,6 +497,7 @@ export function TradeBuy() {
         }
         disabled={
           !connectedWallet ||
+          !connectedWallet.availablePost ||
           !ancPrice ||
           fromAmount.length === 0 ||
           big(fromAmount).lte(0) ||

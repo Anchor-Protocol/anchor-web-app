@@ -1,9 +1,4 @@
-import React, {
-  Component,
-  ComponentType,
-  ReactElement,
-  RefObject,
-} from 'react';
+import React, { Component, ComponentType, ReactElement } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { MultiTimer } from './MultiTimer';
 
@@ -14,32 +9,14 @@ export interface SnackbarProps {
   onClose?: () => void;
   primaryId?: number;
   timer?: MultiTimer;
-  controlRef?: RefObject<SnackbarControlRef | undefined>;
 }
 
-interface SnackbarState {
-  content: ReactElement;
-}
+interface SnackbarState {}
 
-export interface SnackbarControlRef {
-  close: () => void;
-  updateContent: (children: ReactElement, resetTimer?: boolean) => void;
-}
-
-export class SnackbarBase
-  extends Component<SnackbarProps, SnackbarState>
-  implements SnackbarControlRef {
+export class SnackbarBase extends Component<SnackbarProps, SnackbarState> {
   static defaultProps: Partial<SnackbarProps> = {
     autoClose: 5000,
   };
-
-  constructor(props: SnackbarProps) {
-    super(props);
-
-    this.state = {
-      content: props.children,
-    };
-  }
 
   render() {
     return (
@@ -48,7 +25,7 @@ export class SnackbarBase
         onMouseEnter={this.onMouseEnter}
         onMouseLeave={this.onMouseLeave}
       >
-        {React.cloneElement(this.state.content, {
+        {React.cloneElement(this.props.children, {
           close: this.onClose,
         })}
       </div>
@@ -59,41 +36,14 @@ export class SnackbarBase
     if (typeof this.props.autoClose === 'number' && this.props.timer) {
       this.props.timer.start(this.props.autoClose, this.onClose);
     }
-
-    if (this.props.controlRef) {
-      //@ts-ignore
-      this.props.controlRef.current = this;
-    }
   }
 
   componentWillUnmount() {
     this.onClose();
-
-    if (this.props.controlRef) {
-      //@ts-ignore
-      this.props.controlRef.current = undefined;
-    }
   }
 
   close = () => {
     this.onClose();
-  };
-
-  updateContent = (children: ReactElement, resetTimer: boolean = true) => {
-    if (
-      resetTimer &&
-      typeof this.props.autoClose === 'number' &&
-      this.props.timer
-    ) {
-      this.props.timer.stop(this.onClose);
-      this.props.timer.start(this.props.autoClose, this.onClose);
-    }
-
-    this.setState({
-      content: children,
-    });
-
-    this.forceUpdate();
   };
 
   private onMouseEnter = () => {

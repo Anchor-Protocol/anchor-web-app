@@ -158,3 +158,16 @@ export function formatUTokenInteger(n: uToken<BigSource>): string {
   const bn = big(n).div(MICRO);
   return bn.gte(M) ? iFormatter(bn.div(M)) + 'M' : iFormatter(bn);
 }
+
+export function formatUTokenIntegerWithoutPostfixUnits(
+  n: uToken<BigSource>,
+): string {
+  const bn = big(n).div(MICRO);
+  return iFormatter(bn);
+}
+
+export function formatTokenIntegerWithoutPostfixUnits(
+  n: uToken<BigSource>,
+): string {
+  return iFormatter(n);
+}

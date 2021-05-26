@@ -10,8 +10,8 @@ import {
 import { ANC } from '@anchor-protocol/types';
 import {
   useConnectedWallet,
-  WalletReady,
-} from '@anchor-protocol/wallet-provider';
+  ConnectedWallet,
+} from '@terra-money/wallet-provider';
 import { InputAdornment } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
@@ -72,7 +72,7 @@ export function AncGovernanceStake() {
   }, []);
 
   const proceed = useCallback(
-    async (walletReady: WalletReady, ancAmount: ANC) => {
+    async (walletReady: ConnectedWallet, ancAmount: ANC) => {
       const broadcasted = await stake({
         address: walletReady.walletAddress,
         amount: ancAmount,
@@ -148,6 +148,7 @@ export function AncGovernanceStake() {
         className="submit"
         disabled={
           !connectedWallet ||
+          !connectedWallet.availablePost ||
           ancAmount.length === 0 ||
           big(ancAmount).lte(0) ||
           !!invalidTxFee ||

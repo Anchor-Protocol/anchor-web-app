@@ -6,6 +6,8 @@ export interface ConstantsProviderProps extends Constants {
   children: ReactNode;
 }
 
+// TODO remove after refactoring done
+/** @deprecated */
 export interface Constants {
   gasFee: uUST<number>;
   fixedGas: uUST<number>;
@@ -16,6 +18,8 @@ export interface Constants {
 // @ts-ignore
 const ConstantsContext: Context<Constants> = createContext<Constants>();
 
+// TODO remove after refactoring done
+/** @deprecated */
 export function ConstantsProvider({
   children,
   ...constants
@@ -27,6 +31,8 @@ export function ConstantsProvider({
   );
 }
 
+// TODO remove after refactoring done
+/** @deprecated */
 export function useConstants(): Constants {
   return useContext(ConstantsContext);
 }

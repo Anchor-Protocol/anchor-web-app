@@ -1,15 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <title>btn_menu</title>
-    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Landing_Mobile" transform="translate(-319.000000, -118.000000)">
-            <g id="GNB" transform="translate(24.000000, 118.000000)">
-                <g id="btn_menu" transform="translate(295.000000, 0.000000)">
-                    <rect id="Rectangle" stroke="currentColor" stroke-width="2" x="1" y="1" width="30" height="30" rx="2"></rect>
-                    <rect id="Rectangle" fill="currentColor" x="9" y="12" width="14" height="2" rx="1"></rect>
-                    <rect id="Rectangle" fill="currentColor" x="9" y="18" width="10" height="2" rx="1"></rect>
-                </g>
-            </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22">
+    <g fill="none" fill-rule="evenodd">
+        <g fill="currentColor" fill-rule="nonzero">
+            <path d="M353.308 23c.934 0 1.692.758 1.692 1.692v18.616c0 .934-.758 1.692-1.692 1.692h-18.616c-.934 0-1.692-.758-1.692-1.692V24.692c0-.934.758-1.692 1.692-1.692h18.616zm.692 1h-20v20h20V24zm-8.5 12c.276 0 .5.224.5.5s-.224.5-.5.5h-6c-.276 0-.5-.224-.5-.5s.224-.5.5-.5h6zm3-5c.276 0 .5.224.5.5s-.224.5-.5.5h-9c-.276 0-.5-.224-.5-.5s.224-.5.5-.5h9z" transform="translate(-333 -23)"/>
         </g>
     </g>
 </svg>

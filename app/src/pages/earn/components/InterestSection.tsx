@@ -9,23 +9,27 @@ import {
   APYChart,
   APYChartItem,
 } from '@anchor-protocol/webapp-charts/APYChart';
+import {
+  AnchorTokenBalances,
+  computeCurrentAPY,
+  useAnchorWebapp,
+  useEarnAPYHistoryQuery,
+  useEarnEpochStatesQuery,
+} from '@anchor-protocol/webapp-provider';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { Tab } from '@terra-dev/neumorphism-ui/components/Tab';
 import { TooltipLabel } from '@terra-dev/neumorphism-ui/components/TooltipLabel';
-import { useConstants } from 'base/contexts/contants';
+import { useBank } from '@terra-money/webapp-provider';
 import big, { Big } from 'big.js';
-import { currentAPY } from 'pages/earn/logics/currentAPY';
-import { useAPYHistory } from 'pages/earn/queries/apyHistory';
-import { useExpectedInterest } from 'pages/earn/queries/expectedInterest';
-import { useInterest } from 'pages/earn/queries/interest';
-import { Period } from 'pages/earn/queries/interestEarned';
 import { useMemo, useState } from 'react';
 
 export interface InterestSectionProps {
   className?: string;
 }
+
+export type Period = 'total' | 'year' | 'month' | 'week' | 'day';
 
 interface Item {
   label: string;
@@ -52,7 +56,10 @@ const tabItems: Item[] = [
 ];
 
 export function InterestSection({ className }: InterestSectionProps) {
-  const { blocksPerYear } = useConstants();
+  // ---------------------------------------------
+  // dependencies
+  // ---------------------------------------------
+  const { constants } = useAnchorWebapp();
 
   // ---------------------------------------------
   // states
@@ -63,30 +70,26 @@ export function InterestSection({ className }: InterestSectionProps) {
   // queries
   // ---------------------------------------------
   const {
-    data: { marketStatus },
-  } = useInterest();
+    tokenBalances: { uaUST },
+  } = useBank<AnchorTokenBalances>();
+
+  const { data: { apyHistory } = {} } = useEarnAPYHistoryQuery();
 
   const {
-    data: { apyHistory },
-  } = useAPYHistory();
-
-  const {
-    data: { aUSTBalance, moneyMarketEpochState, overseerEpochState },
-  } = useExpectedInterest();
+    data: { moneyMarketEpochState, overseerEpochState } = {},
+  } = useEarnEpochStatesQuery();
 
   // ---------------------------------------------
-  // logics
+  // computes
   // ---------------------------------------------
-  const expectedReturn = useMemo(() => {
-    if (!aUSTBalance || !moneyMarketEpochState || !overseerEpochState) {
+  const expectedInterest = useMemo(() => {
+    if (!moneyMarketEpochState || !overseerEpochState) {
       return undefined;
     }
 
-    const ustBalance = big(aUSTBalance.balance).mul(
-      moneyMarketEpochState.exchange_rate,
-    );
+    const ustBalance = big(uaUST).mul(moneyMarketEpochState.exchange_rate);
     const annualizedInterestRate = big(overseerEpochState.deposit_rate).mul(
-      blocksPerYear,
+      constants.blocksPerYear,
     );
 
     return ustBalance
@@ -101,38 +104,38 @@ export function InterestSection({ className }: InterestSectionProps) {
           : 1,
       ) as uUST<Big>;
   }, [
-    aUSTBalance,
-    blocksPerYear,
+    constants.blocksPerYear,
     moneyMarketEpochState,
     overseerEpochState,
     tab.value,
+    uaUST,
   ]);
 
-  const apy = useMemo(() => currentAPY(marketStatus, blocksPerYear), [
-    blocksPerYear,
-    marketStatus,
-  ]);
+  const apy = useMemo(() => {
+    return computeCurrentAPY(overseerEpochState, constants.blocksPerYear);
+  }, [constants.blocksPerYear, overseerEpochState]);
 
   const apyChartItems = useMemo<APYChartItem[] | undefined>(() => {
     const history = apyHistory
       ?.map(({ Timestamp, DepositRate }) => ({
         date: new Date(Timestamp * 1000),
-        value: (parseFloat(DepositRate) * blocksPerYear) as Rate<number>,
+        value: (parseFloat(DepositRate) *
+          constants.blocksPerYear) as Rate<number>,
       }))
       .reverse();
 
-    return history && marketStatus
+    return history && overseerEpochState
       ? [
           ...history,
           {
             date: new Date(),
-            value: big(marketStatus.deposit_rate)
-              .mul(blocksPerYear)
+            value: big(overseerEpochState.deposit_rate)
+              .mul(constants.blocksPerYear)
               .toNumber() as Rate<number>,
           },
         ]
       : undefined;
-  }, [apyHistory, blocksPerYear, marketStatus]);
+  }, [apyHistory, constants.blocksPerYear, overseerEpochState]);
 
   // ---------------------------------------------
   // presentation
@@ -183,7 +186,9 @@ export function InterestSection({ className }: InterestSectionProps) {
         <div className="amount">
           <span>
             <AnimateNumber format={formatUSTWithPostfixUnits}>
-              {expectedReturn ? demicrofy(expectedReturn) : (0 as UST<number>)}
+              {expectedInterest
+                ? demicrofy(expectedInterest)
+                : (0 as UST<number>)}
             </AnimateNumber>{' '}
             UST
           </span>

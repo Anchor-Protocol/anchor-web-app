@@ -1,11 +1,12 @@
+import { TxResult } from '@terra-money/wallet-provider';
 import { OperationStop } from '@terra-dev/broadcastable-operation';
 import { ApolloClient } from '@apollo/client';
 import { TxInfoError } from '../errors/TxInfoError';
 import { Data, queryTxInfo } from '../queries/txInfos';
-import { TxResult } from './tx';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// TODO remove after refactoring done
 export const getTxInfo = (
   client: ApolloClient<any>,
   signal: AbortSignal,

@@ -1,6 +1,6 @@
+import { TxResult } from '@terra-money/wallet-provider';
 import { Data } from '../queries/txInfos';
 import { ReactNode } from 'react';
-import { TxResult } from '../transactions/tx';
 
 export interface TransactionResult {
   txInfo: Data;

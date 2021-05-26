@@ -66,6 +66,7 @@ export const query = gql`
   }
 `;
 
+// TODO remove after refactoring done
 export function useTax(): MappedQueryResult<RawVariables, RawData, Data> {
   const variables = useMemo(() => {
     return mapVariables({});

@@ -45,6 +45,29 @@ export const Basic = () => {
   );
 };
 
+export const OverData = () => {
+  return (
+    <HorizontalGraphBar
+      style={{ margin: '50px 0' }}
+      min={0}
+      max={100}
+      data={[{ value: 150, color: '#4da3ee' }]}
+      colorFunction={colorFunction}
+      valueFunction={valueFunction}
+      labelRenderer={({ value }, rect) => {
+        return (
+          <GraphTick style={{ left: rect.x + rect.width }}>
+            VALUE: {value}
+          </GraphTick>
+        );
+      }}
+    >
+      <GraphLabel style={{ left: 0 }}>Borrow Limit</GraphLabel>
+      <GraphLabel style={{ right: 0 }}>$246k</GraphLabel>
+    </HorizontalGraphBar>
+  );
+};
+
 export const Animate = () => {
   const [data, setData] = useState(() => [{ value: 50, color: '#4da3ee' }]);
 

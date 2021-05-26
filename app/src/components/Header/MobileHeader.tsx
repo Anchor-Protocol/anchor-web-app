@@ -1,25 +1,20 @@
-import { Menu, MenuClose, Wallet } from '@anchor-protocol/icons';
-import {
-  useUserWallet,
-  useWallet,
-  WalletStatusType,
-} from '@anchor-protocol/wallet-provider';
-import { IconButton } from '@material-ui/core';
+import { Menu, MenuClose, MenuWallet } from '@anchor-protocol/icons';
 import { Launch } from '@material-ui/icons';
+import { isMathWallet } from '@terra-dev/mathwallet';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { IconToggleButton } from '@terra-dev/neumorphism-ui/components/IconToggleButton';
-import { usePeriodMessage } from '@terra-dev/use-period-message';
-import { useTheme } from 'base/contexts/theme';
-import { onProduction } from 'base/env';
+import {
+  ConnectType,
+  useWallet,
+  WalletStatus,
+} from '@terra-money/wallet-provider';
 import logoUrl from 'components/Header/assets/Logo.svg';
-import { useViewAddressDialog } from 'components/Header/WalletSelector/useViewAddressDialog';
 import { useWalletDetailDialog } from 'components/Header/WalletSelector/useWalletDetailDialog';
-import { headerHeight, links } from 'env';
-import { useAnnouncementDialog } from 'pages/announcement/components/useAnnouncementDialog';
-import { useAnnouncementUser } from 'pages/announcement/queries/announcement';
+import { links, mobileHeaderHeight } from 'env';
 import { govPathname } from 'pages/gov/env';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { useSendDialog } from 'pages/send/useSendDialog';
+import React, { useCallback, useState } from 'react';
+import { NavLink, useRouteMatch } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 
 export interface MobileHeaderProps {
@@ -29,69 +24,29 @@ export interface MobileHeaderProps {
 function MobileHeaderBase({ className }: MobileHeaderProps) {
   const [open, setOpen] = useState<boolean>(false);
 
-  const connectedWallet = useUserWallet();
-
-  const firstAnnouncementOpen = useRef<boolean>(true);
-
-  const announcementUser = useAnnouncementUser(
-    connectedWallet?.walletAddress ?? null,
-  );
-
-  const [
-    openAnnouncementDialog,
-    announcementDialogElement,
-  ] = useAnnouncementDialog();
-
-  const [announcementClosed, closeAnnouncement] = usePeriodMessage({
-    id: 'announcement',
-    period: 1000 * 60 * 60 * 8,
-  });
-
-  useEffect(() => {
-    if (
-      announcementUser &&
-      !announcementDialogElement &&
-      !announcementClosed &&
-      firstAnnouncementOpen.current
-    ) {
-      firstAnnouncementOpen.current = false;
-
-      openAnnouncementDialog({
-        user: announcementUser,
-        onHide: closeAnnouncement,
-      });
-    }
-  }, [
-    announcementClosed,
-    announcementDialogElement,
-    announcementUser,
-    closeAnnouncement,
-    openAnnouncementDialog,
-  ]);
-
-  const { themeColor } = useTheme();
-
-  const { status } = useWallet();
-
-  const [openProvideAddress, provideAddressElement] = useViewAddressDialog();
+  const { status, connect } = useWallet();
 
   const [openWalletDetail, walletDetailElement] = useWalletDetailDialog();
 
+  const [openSendDialog, sendDialogElement] = useSendDialog();
+
   const toggleWallet = useCallback(() => {
-    if (status.status === WalletStatusType.WALLET_ADDRESS_CONNECTED) {
-      openWalletDetail({});
-    } else {
-      openProvideAddress({});
+    if (status === WalletStatus.WALLET_CONNECTED) {
+      openWalletDetail({
+        openSend: () => openSendDialog({}),
+      });
+    } else if (status === WalletStatus.WALLET_NOT_CONNECTED) {
+      connect(
+        isMathWallet(navigator.userAgent)
+          ? ConnectType.CHROME_EXTENSION
+          : ConnectType.WALLETCONNECT,
+      );
     }
-  }, [openProvideAddress, openWalletDetail, status.status]);
+  }, [connect, openSendDialog, openWalletDetail, status]);
 
   return (
     <>
-      <header
-        className={className}
-        data-dark={themeColor === 'dark'}
-        data-open={open}
-      >
+      <header className={className} data-open={open}>
         {open && (
           <nav>
             <NavMenu
@@ -120,23 +75,21 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
             />
           </nav>
         )}
-        <section>
-          <a
-            className="logo"
-            href={
-              onProduction
-                ? 'https://anchorprotocol.com/dashboard'
-                : 'https://dev.anchor.money/dashboard'
-            }
-          >
+        <section className="header">
+          <a className="logo" href="https://anchorprotocol.com/dashboard">
             <img src={logoUrl} alt="logo" />
           </a>
 
           <div />
 
-          <IconButton onClick={toggleWallet}>
-            <Wallet />
-          </IconButton>
+          <IconToggleButton
+            on={!!walletDetailElement}
+            onChange={(open) => {
+              open && toggleWallet();
+            }}
+            onIcon={MenuWallet}
+            offIcon={MenuWallet}
+          />
 
           <IconToggleButton
             on={open}
@@ -147,13 +100,10 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
         </section>
       </header>
 
-      {open && <div style={{ height: headerHeight }} />}
+      {open && <div style={{ height: mobileHeaderHeight }} />}
 
       {walletDetailElement}
-      {provideAddressElement}
-      {!walletDetailElement &&
-        !provideAddressElement &&
-        announcementDialogElement}
+      {sendDialogElement}
     </>
   );
 }
@@ -173,9 +123,9 @@ function NavMenu({
 
   return (
     <div data-active={!!match}>
-      <Link to={to} onClick={close}>
+      <NavLink to={to} onClick={close}>
         {title}
-      </Link>
+      </NavLink>
       <a href={docsTo} target="_blank" rel="noreferrer" onClick={close}>
         <IconSpan>
           Docs <Launch />
@@ -201,23 +151,23 @@ export const MobileHeader = styled(MobileHeaderBase)`
   // ---------------------------------------------
   // style
   // ---------------------------------------------
-  > section {
+  > section.header {
     display: flex;
     align-items: center;
     justify-content: space-between;
 
-    background-color: #ffffff;
+    background-color: #101010;
 
     a {
       text-decoration: none;
-      color: #333333;
+      color: #555555;
     }
 
     button {
-      color: #333333;
+      color: #555555;
 
-      &:last-child {
-        margin-left: 10px;
+      &[data-on='true'] {
+        color: #ffffff;
       }
     }
 
@@ -227,64 +177,35 @@ export const MobileHeader = styled(MobileHeaderBase)`
   }
 
   > nav {
-    background-color: #ffffff;
+    background-color: #101010;
 
     > div {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-    }
-
-    a:first-child {
-      font-size: 36px;
-      font-weight: 700;
-      letter-spacing: -0.2px;
-      text-decoration: none;
-
-      color: #696969;
-
-      &:hover {
-        color: #515151;
-      }
-
-      &.active {
-        color: #333333;
-      }
-    }
-
-    a:last-child {
-      font-size: 16px;
-      text-decoration: none;
-
-      color: #696969;
-
-      svg {
-        font-size: 1em;
-      }
-    }
-  }
-
-  &[data-dark='true'] {
-    > section {
-      background-color: #000000;
-
-      a {
-        color: rgba(255, 255, 255, 0.5);
-      }
-    }
-
-    nav {
-      background-color: #000000;
 
       a:first-child {
-        color: rgba(255, 255, 255, 0.35);
+        flex: 1;
 
-        &:hover {
-          color: rgba(255, 255, 255, 0.5);
-        }
+        font-size: 36px;
+        font-weight: 700;
+        letter-spacing: -0.2px;
+        text-decoration: none;
+
+        color: #666666;
 
         &.active {
-          color: rgba(255, 255, 255, 0.6);
+          color: #f4f4f5;
+        }
+      }
+
+      a:last-child {
+        font-size: 16px;
+        text-decoration: none;
+
+        color: #666666;
+
+        svg {
+          font-size: 1em;
         }
       }
     }
@@ -293,10 +214,10 @@ export const MobileHeader = styled(MobileHeaderBase)`
   // ---------------------------------------------
   // layout
   // ---------------------------------------------
-  > section {
+  > section.header {
     position: relative;
-    height: ${headerHeight}px;
-    padding: 0 24px;
+    height: ${mobileHeaderHeight}px;
+    padding: 0 20px;
 
     display: flex;
     align-items: center;
@@ -304,22 +225,28 @@ export const MobileHeader = styled(MobileHeaderBase)`
 
     a.logo {
       img {
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
+      }
+    }
+
+    button {
+      &:last-child {
+        margin-left: 30px;
       }
     }
 
     svg {
-      font-size: 32px;
+      font-size: 26px;
     }
   }
 
   > nav {
     position: absolute;
-    top: ${headerHeight}px;
+    top: ${mobileHeaderHeight}px;
     left: 0;
     width: 100vw;
-    height: calc(100vh - ${headerHeight}px);
+    height: calc(100vh - ${mobileHeaderHeight}px);
 
     display: flex;
     flex-direction: column;

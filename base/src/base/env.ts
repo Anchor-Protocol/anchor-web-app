@@ -1,5 +1,9 @@
-import { AddressMap } from '@anchor-protocol/anchor.js';
+import {
+  AddressMap,
+  AddressProviderFromJson,
+} from '@anchor-protocol/anchor.js';
 import { Rate } from '@anchor-protocol/types';
+import { createContractAddress } from 'base/contexts/contract';
 
 export const GA_TRACKING_ID = 'G-H42LRVHR5Y';
 
@@ -104,6 +108,22 @@ export const tequilaContractAddresses: AddressMap = {
   //terraswapFactory: '',
 };
 
+export const ADDRESS_PROVIDERS = {
+  mainnet: new AddressProviderFromJson(columbusContractAddresses),
+  testnet: new AddressProviderFromJson(tequilaContractAddresses),
+};
+
+export const ADDRESSES = {
+  mainnet: createContractAddress(
+    ADDRESS_PROVIDERS.mainnet,
+    columbusContractAddresses,
+  ),
+  testnet: createContractAddress(
+    ADDRESS_PROVIDERS.testnet,
+    tequilaContractAddresses,
+  ),
+};
+
 export const screen = {
   mobile: { max: 530 },
   // mobile : @media (max-width: ${screen.mobile.max}px)
@@ -116,4 +136,4 @@ export const screen = {
   // huge monitor : @media (min-width: ${screen.monitor.min}px)
 } as const;
 
-// build: trigger force build - 21.04.30
+// build: trigger force build - 21.05.26-cache-control.4

@@ -18,7 +18,6 @@ import { createContractMsg } from 'base/transactions/createContractMsg';
 import { createOptions } from 'base/transactions/createOptions';
 import { getTxInfo } from 'base/transactions/getTxInfo';
 import { postContractMsg } from 'base/transactions/postContractMsg';
-import { parseTxResult } from 'base/transactions/tx';
 import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { pickSellResult } from 'pages/gov/transactions/pickSellResult';
 
@@ -42,7 +41,6 @@ export const sellOptions = createOperationOptions({
       gasAdjustment,
     })), // -> CreateTxOptions
     timeout(postContractMsg(post), 1000 * 60 * 20), // -> Promise<StringifiedTxResult>
-    parseTxResult, // -> TxResult
     merge(
       getTxInfo(client, signal), // -> { TxResult, TxInfo }
       () => ({

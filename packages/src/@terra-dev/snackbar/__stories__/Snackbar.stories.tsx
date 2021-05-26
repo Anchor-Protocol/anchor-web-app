@@ -1,15 +1,15 @@
 import {
-  Snackbar,
-  SnackbarControlRef,
-  SnackbarProvider,
-  useSnackbar,
-} from '@terra-dev/snackbar';
-import {
   IconButton,
   SnackbarContent as MuiSnackbarContent,
   SnackbarContentProps,
 } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
+import {
+  Snackbar,
+  SnackbarControl,
+  SnackbarProvider,
+  useSnackbar,
+} from '@terra-dev/snackbar';
 import React, { ComponentType, useRef } from 'react';
 import styled from 'styled-components';
 
@@ -79,18 +79,18 @@ export const CustomElement = () => {
 export const Control = () => {
   const { addSnackbar, snackbarContainerRef } = useSnackbar();
 
-  const controlRef = useRef<SnackbarControlRef>();
+  const snackbarControlRef = useRef<SnackbarControl | null>(null);
 
   return (
     <div>
       <button
         onClick={() => {
-          controlRef.current?.close();
+          snackbarControlRef.current?.close();
 
           count++;
 
-          addSnackbar(
-            <Snackbar controlRef={controlRef} autoClose={false}>
+          snackbarControlRef.current = addSnackbar(
+            <Snackbar autoClose={false}>
               <MuiSnackbarContent message={`${count} HELLO SNACKBAR!`} />
             </Snackbar>,
           );
@@ -101,7 +101,7 @@ export const Control = () => {
 
       <button
         onClick={() => {
-          controlRef.current?.close();
+          snackbarControlRef.current?.close();
         }}
       >
         Close Snackbar
@@ -109,10 +109,14 @@ export const Control = () => {
 
       <button
         onClick={() => {
-          controlRef.current?.updateContent(
-            <MuiSnackbarContent
-              message={`CHANAGED CONTENT! ${Math.floor(Math.random() * 1000)}`}
-            />,
+          snackbarControlRef.current?.update(
+            <Snackbar autoClose={false}>
+              <MuiSnackbarContent
+                message={`CHANAGED CONTENT! ${Math.floor(
+                  Math.random() * 1000,
+                )}`}
+              />
+            </Snackbar>,
           );
         }}
       >
@@ -157,7 +161,12 @@ export const With_Action = () => {
 };
 
 const ActionSnackbar = styled(
-  ({ close, ...props }: SnackbarContentProps & { close?: () => void }) => {
+  ({
+    close,
+    ...props
+  }: SnackbarContentProps & {
+    close?: () => void;
+  }) => {
     return (
       <MuiSnackbarContent
         {...props}

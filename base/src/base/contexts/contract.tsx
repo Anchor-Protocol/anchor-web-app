@@ -1,6 +1,6 @@
 import type { AddressMap, AddressProvider } from '@anchor-protocol/anchor.js';
-import { COLLATERAL_DENOMS, MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import { ContractAddress, CW20Addr, HumanAddr } from '@anchor-protocol/types';
+import { createAnchorContractAddress } from '@anchor-protocol/webapp-provider';
 import type { ReactNode } from 'react';
 import { Consumer, Context, createContext, useContext, useMemo } from 'react';
 
@@ -18,13 +18,14 @@ export interface ContractState {
 // @ts-ignore
 const ContractContext: Context<ContractState> = createContext<ContractState>();
 
+// TODO remove after refactoring done
 export function ContractProvider({
   children,
   addressProvider,
   addressMap,
 }: ContractProviderProps) {
   const state = useMemo<ContractState>(() => {
-    const address: ContractAddress = createContractAddress(
+    const address: ContractAddress = createAnchorContractAddress(
       addressProvider,
       addressMap,
     );
@@ -42,52 +43,10 @@ export function ContractProvider({
   );
 }
 
-export function createContractAddress(
-  addressProvider: AddressProvider,
-  addressMap: AddressMap,
-): ContractAddress {
-  return {
-    bluna: {
-      reward: addressProvider.bLunaReward() as HumanAddr,
-      hub: addressProvider.bLunaHub() as HumanAddr,
-      airdropRegistry: addressProvider.airdrop() as HumanAddr,
-    },
-    moneyMarket: {
-      market: addressProvider.market(MARKET_DENOMS.UUSD) as HumanAddr,
-      custody: addressProvider.custody(
-        MARKET_DENOMS.UUSD,
-        COLLATERAL_DENOMS.UBLUNA,
-      ) as HumanAddr,
-      overseer: addressProvider.overseer(MARKET_DENOMS.UUSD) as HumanAddr,
-      oracle: addressProvider.oracle() as HumanAddr,
-      interestModel: addressProvider.interest() as HumanAddr,
-      distributionModel: addressMap.mmDistributionModel as HumanAddr,
-    },
-    liquidation: {
-      liquidationContract: addressProvider.liquidation() as HumanAddr,
-    },
-    anchorToken: {
-      gov: addressProvider.gov() as HumanAddr,
-      staking: addressProvider.staking() as HumanAddr,
-      community: addressProvider.community() as HumanAddr,
-      distributor: addressProvider.distributor() as HumanAddr,
-      investorLock: addressProvider.investorLock() as HumanAddr,
-      teamLock: addressProvider.teamLock() as HumanAddr,
-      collector: addressProvider.collector() as HumanAddr,
-    },
-    terraswap: {
-      blunaLunaPair: addressProvider.terraswapblunaLunaPair() as HumanAddr,
-      ancUstPair: addressProvider.terraswapAncUstPair() as HumanAddr,
-    },
-    cw20: {
-      bLuna: addressProvider.bLunaToken() as CW20Addr,
-      aUST: addressProvider.aTerra(MARKET_DENOMS.UUSD) as CW20Addr,
-      ANC: addressProvider.ANC() as CW20Addr,
-      AncUstLP: addressProvider.terraswapAncUstLPToken() as CW20Addr,
-      bLunaLunaLP: addressProvider.terraswapblunaLunaLPToken() as CW20Addr,
-    },
-  };
-}
+/**
+ * @deprecated use insteadof createAnchorContractAddress of @anchor-protocol/webapp-provider
+ */
+export { createAnchorContractAddress as createContractAddress } from '@anchor-protocol/webapp-provider';
 
 export function useContractNickname(): (addr: HumanAddr | CW20Addr) => string {
   const { address } = useContext(ContractContext);
@@ -140,6 +99,7 @@ export function useContractNickname(): (addr: HumanAddr | CW20Addr) => string {
   };
 }
 
+// TODO remove after refactoring done
 export function useContract(): ContractState {
   return useContext(ContractContext);
 }
@@ -150,6 +110,7 @@ export function useAddressProvider(): AddressProvider {
   return addressProvider;
 }
 
+// TODO remove after refactoring done
 export function useContractAddress(): ContractAddress {
   const { address } = useContext(ContractContext);
   return address;

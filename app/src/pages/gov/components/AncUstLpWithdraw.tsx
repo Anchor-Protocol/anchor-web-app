@@ -9,16 +9,16 @@ import {
   microfy,
 } from '@anchor-protocol/notation';
 import { ANC, AncUstLP, UST } from '@anchor-protocol/types';
-import {
-  useConnectedWallet,
-  WalletReady,
-} from '@anchor-protocol/wallet-provider';
 import { Input, InputAdornment } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { isZero } from '@terra-dev/is-zero';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
+import {
+  ConnectedWallet,
+  useConnectedWallet,
+} from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
 import big, { Big } from 'big.js';
@@ -71,8 +71,9 @@ export function AncUstLpWithdraw() {
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [connectedWallet, bank, fixedGas],
+    () =>
+      !!connectedWallet && validateTxFee(bank, simulation?.txFee ?? fixedGas),
+    [connectedWallet, bank, simulation?.txFee, fixedGas],
   );
 
   const invalidLpAmount = useMemo(() => {
@@ -115,7 +116,7 @@ export function AncUstLpWithdraw() {
   }, []);
 
   const proceed = useCallback(
-    async (walletReady: WalletReady, lpAmount: AncUstLP) => {
+    async (walletReady: ConnectedWallet, lpAmount: AncUstLP) => {
       const broadcasted = await withdraw({
         address: walletReady.walletAddress,
         amount: lpAmount,
@@ -241,15 +242,14 @@ export function AncUstLpWithdraw() {
         className="submit"
         disabled={
           !connectedWallet ||
+          !connectedWallet.availablePost ||
           lpAmount.length === 0 ||
           big(lpAmount).lte(0) ||
           !simulation ||
           !!invalidTxFee ||
           !!invalidLpAmount
         }
-        onClick={() =>
-          connectedWallet && simulation && proceed(connectedWallet, lpAmount)
-        }
+        onClick={() => connectedWallet && proceed(connectedWallet, lpAmount)}
       >
         Remove Liquidity
       </ActionButton>

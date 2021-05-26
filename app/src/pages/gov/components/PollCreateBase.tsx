@@ -7,8 +7,8 @@ import {
 import { ANC, uUST } from '@anchor-protocol/types';
 import {
   useConnectedWallet,
-  WalletReady,
-} from '@anchor-protocol/wallet-provider';
+  ConnectedWallet,
+} from '@terra-money/wallet-provider';
 import { InputAdornment } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
@@ -119,7 +119,7 @@ export function PollCreateBase({
 
   const submit = useCallback(
     async (
-      walletReady: WalletReady,
+      walletReady: ConnectedWallet,
       title: string,
       description: string,
       link: string,
@@ -273,6 +273,7 @@ export function PollCreateBase({
           disabled={
             submitDisabled ||
             !connectedWallet ||
+            !connectedWallet.availablePost ||
             title.length === 0 ||
             description.length === 0 ||
             !!invalidUserANCBalance ||

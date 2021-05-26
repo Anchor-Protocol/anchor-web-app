@@ -1,5 +1,6 @@
 import { ApolloClient, ApolloQueryResult, gql } from '@apollo/client';
 
+/** @deprecated use @terra-money/webapp-provider */
 export interface RawData {
   TxInfos: {
     TxHash: string;
@@ -8,29 +9,35 @@ export interface RawData {
   }[];
 }
 
+/** @deprecated use @terra-money/webapp-provider */
 export type RawLogAttribute = {
   key: string;
   value: string;
 };
 
+/** @deprecated use @terra-money/webapp-provider */
 export type RawLogEvent = {
   type: string;
   attributes: RawLogAttribute[];
 };
 
+/** @deprecated use @terra-money/webapp-provider */
 export type RawLogMsg = {
   msg_index: number;
   log: string;
   events: RawLogEvent[];
 };
 
+/** @deprecated use @terra-money/webapp-provider */
 export type Data = {
   TxHash: string;
   Success: boolean;
   RawLog: RawLogMsg[] | string;
 }[];
 
+/** @deprecated use @terra-money/webapp-provider */
 export function mapData({ TxInfos }: RawData): Data {
+  console.log('txInfos.ts..mapData()', TxInfos);
   return TxInfos.map(({ TxHash, Success, RawLog }) => {
     let rawLog: Data[number]['RawLog'] | string;
 
@@ -48,16 +55,20 @@ export function mapData({ TxInfos }: RawData): Data {
   });
 }
 
+/** @deprecated use @terra-money/webapp-provider */
 export interface RawVariables {
   txHash: string;
 }
 
+/** @deprecated use @terra-money/webapp-provider */
 export type Variables = RawVariables;
 
+/** @deprecated use @terra-money/webapp-provider */
 export function mapVariables(variables: Variables): RawVariables {
   return variables;
 }
 
+/** @deprecated use @terra-money/webapp-provider */
 export const query = gql`
   query __txInfos($txHash: String!) {
     TxInfos(TxHash: $txHash) {
@@ -68,6 +79,7 @@ export const query = gql`
   }
 `;
 
+/** @deprecated use @terra-money/webapp-provider */
 export function queryTxInfo(
   client: ApolloClient<any>,
   txHash: string,
@@ -88,10 +100,12 @@ export function queryTxInfo(
     });
 }
 
+/** @deprecated use @terra-money/webapp-provider */
 export function pickRawLog(txInfo: Data, index: number): RawLogMsg | undefined {
   return Array.isArray(txInfo[0].RawLog) ? txInfo[0].RawLog[index] : undefined;
 }
 
+/** @deprecated use @terra-money/webapp-provider */
 export function pickEvent(
   rawLog: RawLogMsg,
   type: string,
@@ -99,6 +113,7 @@ export function pickEvent(
   return rawLog.events.find((event) => event.type === type);
 }
 
+/** @deprecated use @terra-money/webapp-provider */
 export function pickAttributeValue<T extends string>(
   fromContract: RawLogEvent,
   index: number,
@@ -107,6 +122,7 @@ export function pickAttributeValue<T extends string>(
   return attr ? (attr.value as T) : undefined;
 }
 
+/** @deprecated use @terra-money/webapp-provider */
 export function pickAttributeValueByKey<T extends string>(
   fromContract: RawLogEvent,
   key: string,

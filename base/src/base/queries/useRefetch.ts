@@ -3,6 +3,7 @@ import { ApolloQueryResult } from '@apollo/client';
 import { MappedApolloQueryResult } from '../queries/types';
 import { useCallback } from 'react';
 
+// TODO remove after refactoring done
 export function useRefetch<RawVariables, RawData, Data>(
   refetch: (
     variables?: Partial<RawVariables>,

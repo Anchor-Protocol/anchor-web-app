@@ -1,14 +1,15 @@
+import { TxResult } from '@terra-money/wallet-provider';
 import { TxHashLink } from '../components/TxHashLink';
 import { TransactionResult } from '../models/transaction';
 import { Data } from '../queries/txInfos';
 import { createElement } from 'react';
-import { TxResult } from '../transactions/tx';
 
 interface Params {
   txResult: TxResult;
   txInfo: Data;
 }
 
+// TODO remove after refactoring done
 export function pickEmptyResult({
   txInfo,
   txResult,

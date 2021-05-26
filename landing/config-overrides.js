@@ -10,6 +10,11 @@ module.exports = {
           ...rule,
           oneOf: [
             {
+              test: /\.(graphql|gql)$/,
+              exclude: /node_modules/,
+              use: [require.resolve('raw-loader')],
+            },
+            {
               test: /\.(glsl|vs|fs|vert|frag)$/,
               exclude: /node_modules/,
               use: [
@@ -35,6 +40,13 @@ module.exports = {
     return config;
   },
   jest: (config) => {
+    config.transform = {
+      '\\.(graphql|gql)$': require.resolve(
+        '@ssen/jest-transform/transform/text',
+      ),
+      ...config.transform,
+    };
+
     config.modulePaths.push(
       '<rootDir>/src/',
       '<rootDir>/../base/src/',

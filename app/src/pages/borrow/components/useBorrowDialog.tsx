@@ -1,4 +1,3 @@
-import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import {
   demicrofy,
   formatRate,
@@ -9,45 +8,50 @@ import {
 } from '@anchor-protocol/notation';
 import { Rate, UST, uUST } from '@anchor-protocol/types';
 import {
-  useConnectedWallet,
-  useWallet,
-  WalletReady,
-} from '@anchor-protocol/wallet-provider';
+  BorrowBorrowerData,
+  BorrowMarketData,
+  useAnchorWebapp,
+  useBorrowBorrowerQuery,
+  useBorrowBorrowTx,
+  useBorrowMarketQuery,
+} from '@anchor-protocol/webapp-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
-import { useOperation } from '@terra-dev/broadcastable-operation';
+import { StreamStatus } from '@rx-stream/react';
+import { min } from '@terra-dev/big-math';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
+import { useConfirm } from '@terra-dev/neumorphism-ui/components/useConfirm';
 import type { DialogProps, OpenDialog } from '@terra-dev/use-dialog';
 import { useDialog } from '@terra-dev/use-dialog';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
 import big, { Big, BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
-import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
-import { LTVGraph } from 'pages/borrow/components/LTVGraph';
-import { useMarketNotNullable } from 'pages/borrow/context/market';
-import { apr as _apr } from 'pages/borrow/logics/apr';
-import { borrowAmountToLtv } from 'pages/borrow/logics/borrowAmountToLtv';
-import { borrowMax } from 'pages/borrow/logics/borrowMax';
-import { borrowNextLtv } from 'pages/borrow/logics/borrowNextLtv';
-import { borrowReceiveAmount } from 'pages/borrow/logics/borrowReceiveAmount';
-import { borrowSafeMax } from 'pages/borrow/logics/borrowSafeMax';
-import { borrowTxFee } from 'pages/borrow/logics/borrowTxFee';
-import { currentLtv as _currentLtv } from 'pages/borrow/logics/currentLtv';
-import { ltvToBorrowAmount } from 'pages/borrow/logics/ltvToBorrowAmount';
-import { validateBorrowAmount } from 'pages/borrow/logics/validateBorrowAmount';
-import { borrowOptions } from 'pages/borrow/transactions/borrowOptions';
 import type { ChangeEvent, ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { apr as _apr } from '../logics/apr';
+import { borrowAmountToLtv } from '../logics/borrowAmountToLtv';
+import { borrowMax } from '../logics/borrowMax';
+import { borrowNextLtv } from '../logics/borrowNextLtv';
+import { borrowReceiveAmount } from '../logics/borrowReceiveAmount';
+import { borrowSafeMax } from '../logics/borrowSafeMax';
+import { borrowTxFee } from '../logics/borrowTxFee';
+import { currentLtv as _currentLtv } from '../logics/currentLtv';
+import { ltvToBorrowAmount } from '../logics/ltvToBorrowAmount';
+import { validateBorrowAmount } from '../logics/validateBorrowAmount';
+import { LTVGraph } from './LTVGraph';
 
 interface FormParams {
   className?: string;
+  fallbackBorrowMarket: BorrowMarketData;
+  fallbackBorrowBorrower: BorrowBorrowerData;
 }
 
 type FormReturn = void;
@@ -62,28 +66,21 @@ export function useBorrowDialog(): [
 function ComponentBase({
   className,
   closeDialog,
+  fallbackBorrowMarket,
+  fallbackBorrowBorrower,
 }: DialogProps<FormParams, FormReturn>) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const {
-    loanAmount,
-    borrowInfo,
-    oraclePrice,
-    bLunaMaxLtv,
-    bLunaSafeLtv,
-    borrowRate,
-  } = useMarketNotNullable();
-
-  const { status } = useWallet();
-
   const connectedWallet = useConnectedWallet();
 
-  const { fixedGas, blocksPerYear } = useConstants();
+  const [openConfirm, confirmElement] = useConfirm();
 
-  const [borrow, borrowResult] = useOperation(borrowOptions, {
-    walletStatus: status,
-  });
+  const {
+    constants: { fixedGas, blocksPerYear },
+  } = useAnchorWebapp();
+
+  const [borrow, borrowResult] = useBorrowBorrowTx();
 
   // ---------------------------------------------
   // states
@@ -94,6 +91,22 @@ function ComponentBase({
   // queries
   // ---------------------------------------------
   const bank = useBank();
+
+  const {
+    data: {
+      borrowRate,
+      oraclePrice,
+      bLunaMaxLtv = '0.5' as Rate,
+      bLunaSafeLtv = '0.3' as Rate,
+    } = fallbackBorrowMarket,
+  } = useBorrowMarketQuery();
+
+  const {
+    data: {
+      marketBorrowerInfo: loanAmount,
+      custodyBorrower: borrowInfo,
+    } = fallbackBorrowBorrower,
+  } = useBorrowBorrowerQuery();
 
   // ---------------------------------------------
   // calculate
@@ -120,6 +133,10 @@ function ComponentBase({
     () => borrowNextLtv(borrowAmount, currentLtv, amountToLtv),
     [amountToLtv, borrowAmount, currentLtv],
   );
+
+  const userMaxLtv = useMemo(() => {
+    return min(bLunaMaxLtv, big(0.4)) as Rate<BigSource>;
+  }, [bLunaMaxLtv]);
 
   const apr = useMemo(() => _apr(borrowRate, blocksPerYear), [
     blocksPerYear,
@@ -164,6 +181,18 @@ function ComponentBase({
     [borrowAmount, max],
   );
 
+  const invalidOver40Ltv = useMemo(() => {
+    return nextLtv?.gt(0.4)
+      ? 'Cannot borrow when LTV is above 40%.'
+      : undefined;
+  }, [nextLtv]);
+
+  const invalidOverSafeLtv = useMemo(() => {
+    return nextLtv?.gt(bLunaSafeLtv)
+      ? 'WARNING: Are you sure you want to borrow above the recommended LTV? Crypto markets can be very volatile and you may be subject to liquidation in events of downward price swings of the bAsset.'
+      : undefined;
+  }, [bLunaSafeLtv, nextLtv]);
+
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
@@ -172,19 +201,26 @@ function ComponentBase({
   }, []);
 
   const proceed = useCallback(
-    async (
-      walletReady: WalletReady,
-      borrowAmount: UST,
-      txFee: uUST<BigSource> | undefined,
-    ) => {
-      await borrow({
-        address: walletReady.walletAddress,
-        market: MARKET_DENOMS.UUSD,
-        amount: borrowAmount,
-        txFee: txFee!.toString() as uUST,
-      });
+    async (borrowAmount: UST, txFee: uUST, confirm: ReactNode) => {
+      if (!connectedWallet || !borrow) {
+        return;
+      }
+
+      if (confirm) {
+        const userConfirm = await openConfirm({
+          description: confirm,
+          agree: 'Proceed',
+          disagree: 'Cancel',
+        });
+
+        if (!userConfirm) {
+          return;
+        }
+      }
+
+      borrow({ borrowAmount, txFee });
     },
-    [borrow],
+    [borrow, connectedWallet, openConfirm],
   );
 
   const onLtvChange = useCallback(
@@ -228,14 +264,16 @@ function ComponentBase({
   );
 
   if (
-    borrowResult?.status === 'in-progress' ||
-    borrowResult?.status === 'done' ||
-    borrowResult?.status === 'fault'
+    borrowResult?.status === StreamStatus.IN_PROGRESS ||
+    borrowResult?.status === StreamStatus.DONE
   ) {
     return (
-      <Modal open disableBackdropClick>
+      <Modal open disableBackdropClick disableEnforceFocus>
         <Dialog className={className}>
-          <TransactionRenderer result={borrowResult} onExit={closeDialog} />
+          <TxResultRenderer
+            resultRendering={borrowResult.value}
+            onExit={closeDialog}
+          />
         </Dialog>
       </Modal>
     );
@@ -254,7 +292,7 @@ function ComponentBase({
           maxIntegerPoinsts={UST_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="BORROW AMOUNT"
-          error={!!invalidBorrowAmount}
+          error={!!invalidBorrowAmount || !!invalidOver40Ltv}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateBorrowAmount(target.value)
           }
@@ -263,10 +301,13 @@ function ComponentBase({
           }}
         />
 
-        <div className="wallet" aria-invalid={!!invalidBorrowAmount}>
-          <span>{invalidBorrowAmount}</span>
+        <div
+          className="wallet"
+          aria-invalid={!!invalidBorrowAmount || !!invalidOver40Ltv}
+        >
+          <span>{invalidBorrowAmount ?? invalidOver40Ltv}</span>
           <span>
-            Safe Max:{' '}
+            {formatRate(bLunaSafeLtv)}% LTV:{' '}
             <span
               style={{
                 textDecoration: 'underline',
@@ -289,7 +330,7 @@ function ComponentBase({
             currentLtv={currentLtv}
             nextLtv={nextLtv}
             userMinLtv={currentLtv}
-            userMaxLtv={bLunaMaxLtv}
+            userMaxLtv={userMaxLtv}
             onStep={ltvStepFunction}
             onChange={onLtvChange}
           />
@@ -301,9 +342,10 @@ function ComponentBase({
             hide={{ id: 'borrow-ltv', period: 1000 * 60 * 60 * 24 * 5 }}
             style={{ userSelect: 'none', fontSize: 12 }}
           >
-            Caution: If the loan-to-value ratio (LTV) reaches the maximum (MAX
-            LTV), a portion of your collateral may be immediately liquidated to
-            repay part of the loan.
+            Caution: Borrowing is available only up to 40% LTV. If the
+            loan-to-value ratio (LTV) reaches the maximum (50% LTV), a portion
+            of your collateral may be immediately liquidated to repay part of
+            the loan.
           </MessageBox>
         )}
 
@@ -322,17 +364,24 @@ function ComponentBase({
           className="proceed"
           disabled={
             !connectedWallet ||
+            !connectedWallet.availablePost ||
+            !borrow ||
             borrowAmount.length === 0 ||
             big(borrowAmount).lte(0) ||
+            big(receiveAmount ?? 0).lte(0) ||
             !!invalidTxFee ||
-            !!invalidBorrowAmount
+            !!invalidBorrowAmount ||
+            !!invalidOver40Ltv
           }
           onClick={() =>
-            connectedWallet && proceed(connectedWallet, borrowAmount, txFee)
+            txFee &&
+            proceed(borrowAmount, txFee.toFixed() as uUST, invalidOverSafeLtv)
           }
         >
           Proceed
         </ActionButton>
+
+        {confirmElement}
       </Dialog>
     </Modal>
   );

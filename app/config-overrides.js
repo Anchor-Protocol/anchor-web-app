@@ -4,6 +4,24 @@ const path = require('path');
 
 module.exports = {
   webpack: (config) => {
+    config.module.rules = config.module.rules.map((rule) => {
+      if (Array.isArray(rule.oneOf)) {
+        return {
+          ...rule,
+          oneOf: [
+            {
+              test: /\.(graphql|gql)$/,
+              exclude: /node_modules/,
+              use: [require.resolve('raw-loader')],
+            },
+            ...rule.oneOf,
+          ],
+        };
+      }
+
+      return rule;
+    });
+
     aliasDangerous({
       ...getWebpackAlias(path.resolve(__dirname, '../packages')),
       ...getWebpackAlias(path.resolve(__dirname, '../base')),
@@ -14,6 +32,13 @@ module.exports = {
     return config;
   },
   jest: (config) => {
+    config.transform = {
+      '\\.(graphql|gql)$': require.resolve(
+        '@ssen/jest-transform/transform/text',
+      ),
+      ...config.transform,
+    };
+    
     config.modulePaths.push(
       '<rootDir>/src/',
       '<rootDir>/../base/src/',

@@ -10,8 +10,8 @@ import {
 import { AncUstLP } from '@anchor-protocol/types';
 import {
   useConnectedWallet,
-  WalletReady,
-} from '@anchor-protocol/wallet-provider';
+  ConnectedWallet,
+} from '@terra-money/wallet-provider';
 import { InputAdornment } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
@@ -72,7 +72,7 @@ export function AncUstLpUnstake() {
   }, []);
 
   const proceed = useCallback(
-    async (walletReady: WalletReady, lpAmount: AncUstLP) => {
+    async (walletReady: ConnectedWallet, lpAmount: AncUstLP) => {
       const broadcasted = await unstake({
         address: walletReady.walletAddress,
         amount: lpAmount,
@@ -152,6 +152,7 @@ export function AncUstLpUnstake() {
         className="submit"
         disabled={
           !connectedWallet ||
+          !connectedWallet.availablePost ||
           lpAmount.length === 0 ||
           big(lpAmount).lte(0) ||
           !!invalidTxFee ||

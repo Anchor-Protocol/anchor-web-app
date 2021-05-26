@@ -1,15 +1,16 @@
-import { useWallet, WalletStatusType } from '@anchor-protocol/wallet-provider';
 import { Modal } from '@material-ui/core';
 import { buttonBaseStyle } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
 import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
+import { useConnectedWallet, useWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
-import { WalletDetailContent } from 'components/Header/WalletSelector/WalletDetailContent';
 import React, { ReactNode, useCallback } from 'react';
 import styled from 'styled-components';
+import { WalletDetailContent } from './WalletDetailContent';
 
 interface FormParams {
   className?: string;
+  openSend: () => void;
 }
 
 type FormReturn = void;
@@ -24,26 +25,32 @@ export function useWalletDetailDialog(): [
 function ComponentBase({
   className,
   closeDialog,
+  openSend,
 }: DialogProps<FormParams, FormReturn>) {
-  const { status, disconnect } = useWallet();
+  const { disconnect } = useWallet();
+  const connectedWallet = useConnectedWallet();
 
   const bank = useBank();
 
   const disconnectWallet = useCallback(() => {
     disconnect();
-    window.location.reload();
-  }, [disconnect]);
+    closeDialog();
+    //window.location.reload();
+  }, [closeDialog, disconnect]);
 
   return (
     <Modal open onClose={() => closeDialog()}>
       <Dialog className={className} onClose={() => closeDialog()}>
-        {status.status === WalletStatusType.WALLET_ADDRESS_CONNECTED && (
+        {!!connectedWallet && (
           <WalletDetailContent
-            status={status}
-            closePopup={() => {}}
+            connectType={connectedWallet.connectType}
+            availablePost={connectedWallet.availablePost}
+            walletAddress={connectedWallet.walletAddress}
+            network={connectedWallet.network}
+            closePopup={closeDialog}
             disconnectWallet={disconnectWallet}
             bank={bank}
-            openSend={() => {}}
+            openSend={openSend}
           />
         )}
       </Dialog>
@@ -80,7 +87,7 @@ const Component = styled(ComponentBase)`
     margin-top: 40px;
 
     width: 100%;
-    height: 60px !important;
+    height: 40px !important;
 
     ${buttonBaseStyle};
 

@@ -1,0 +1,4 @@
+export enum TERRA_QUERY_KEY {
+  TOKEN_BALANCES = 'TOKEN_BALANCES',
+  TAX = 'TAX',
+}

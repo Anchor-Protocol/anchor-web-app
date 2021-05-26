@@ -76,7 +76,7 @@ export const Pagination = styled(PaginationBase)`
   padding: 0;
 
   display: flex;
-  gap: 10px;
+  gap: 5px;
 
   li {
     cursor: pointer;

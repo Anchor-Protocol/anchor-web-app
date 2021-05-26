@@ -1,8 +1,8 @@
 import { demicrofy, formatUST } from '@anchor-protocol/notation';
 import {
+  ConnectedWallet,
   useConnectedWallet,
-  WalletReady,
-} from '@anchor-protocol/wallet-provider';
+} from '@terra-money/wallet-provider';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
@@ -60,7 +60,7 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
   // callbacks
   // ---------------------------------------------
   const proceed = useCallback(
-    async (walletReady: WalletReady) => {
+    async (walletReady: ConnectedWallet) => {
       await claim({
         address: walletReady.walletAddress,
       });
@@ -118,6 +118,7 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
         className="submit"
         disabled={
           !connectedWallet ||
+          !connectedWallet.availablePost ||
           !!invalidTxFee ||
           claimableRewards.lte(fixedGas) ||
           disabled

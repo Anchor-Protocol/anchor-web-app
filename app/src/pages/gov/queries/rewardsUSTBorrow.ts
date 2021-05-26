@@ -1,5 +1,5 @@
 import { moneyMarket, WASMContractResult } from '@anchor-protocol/types';
-import { useUserWallet } from '@anchor-protocol/wallet-provider';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { gql, useQuery } from '@apollo/client';
 import { createMap, useMap } from '@terra-dev/use-map';
 import { useContractAddress } from 'base/contexts/contract';
@@ -80,7 +80,7 @@ export function useRewardsUSTBorrow(): MappedQueryResult<
   RawData,
   Data
 > {
-  const userWallet = useUserWallet();
+  const userWallet = useConnectedWallet();
 
   const { moneyMarket } = useContractAddress();
 

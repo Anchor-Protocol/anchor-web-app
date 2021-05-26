@@ -1,7 +1,6 @@
 import { Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Launch } from '@material-ui/icons';
-import { onProduction } from 'base/env';
 import logoUrl from 'components/Header/assets/Logo.svg';
 import { WalletSelector } from 'components/Header/WalletSelector';
 import { links, screen } from 'env';
@@ -38,14 +37,7 @@ function DesktopHeaderBase({ className }: DesktopHeaderProps) {
         placement="right"
         classes={tooltipClasses}
       >
-        <a
-          className="logo"
-          href={
-            onProduction
-              ? 'https://anchorprotocol.com/dashboard'
-              : 'https://dev.anchor.money/dashboard'
-          }
-        >
+        <a className="logo" href="https://anchorprotocol.com/dashboard">
           <img src={logoUrl} alt="logo" />
         </a>
       </Tooltip>

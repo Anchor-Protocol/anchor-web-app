@@ -5,17 +5,19 @@ import {
 } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import { UST } from '@anchor-protocol/types';
-import { useConnectedWallet } from '@anchor-protocol/wallet-provider';
+import {
+  useBorrowBorrowerQuery,
+  useBorrowLiquidationPriceQuery,
+  useBorrowMarketQuery,
+} from '@anchor-protocol/webapp-provider';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
-import { useContractAddress } from 'base/contexts/contract';
-import big, { Big } from 'big.js';
-import { useLiquidationPrice } from 'pages/borrow/queries/liquidationPrice';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
+import big from 'big.js';
 import { useMemo } from 'react';
-import { useMarket } from '../context/market';
 import { collaterals as _collaterals } from '../logics/collaterals';
 import { useProvideCollateralDialog } from './useProvideCollateralDialog';
 import { useRedeemCollateralDialog } from './useRedeemCollateralDialog';
@@ -28,21 +30,13 @@ export function CollateralList({ className }: CollateralListProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { ready, borrowInfo, oraclePrice, loanAmount, refetch } = useMarket();
-
-  const address = useContractAddress();
-
-  const {
-    data: {
-      marketBorrowerInfo,
-      oraclePriceInfo,
-      overseerBorrowLimit,
-      overseerWhitelist,
-      overseerCollaterals,
-    },
-  } = useLiquidationPrice();
-
   const connectedWallet = useConnectedWallet();
+
+  const { data: borrowMarket } = useBorrowMarketQuery();
+
+  const { data: borrowBorrower } = useBorrowBorrowerQuery();
+
+  const { data: { liquidationPrice } = {} } = useBorrowLiquidationPriceQuery();
 
   const [
     openProvideCollateralDialog,
@@ -54,53 +48,18 @@ export function CollateralList({ className }: CollateralListProps) {
     redeemCollateralDialogElement,
   ] = useRedeemCollateralDialog();
 
-  // ---------------------------------------------
-  // compute
-  // ---------------------------------------------
-  const liquidationPrice = useMemo(() => {
-    if (
-      !marketBorrowerInfo ||
-      !oraclePriceInfo ||
-      !overseerBorrowLimit ||
-      !overseerWhitelist ||
-      !overseerCollaterals ||
-      overseerCollaterals.collaterals.length === 0
-    ) {
-      return undefined;
-    }
-
-    const bLunaCollateral = overseerCollaterals.collaterals.find(
-      ([contractAddress]) => contractAddress === address.cw20.bLuna,
-    );
-
-    const bLunaWhitelist = overseerWhitelist.elems.find(
-      ({ collateral_token }) => address.cw20.bLuna,
-    );
-
-    if (!bLunaCollateral || !bLunaWhitelist) {
-      return undefined;
-    }
-
-    return big(marketBorrowerInfo.loan_amount).div(
-      big(bLunaCollateral[1]).mul(bLunaWhitelist.max_ltv),
-    ) as UST<Big>;
-  }, [
-    address.cw20.bLuna,
-    marketBorrowerInfo,
-    oraclePriceInfo,
-    overseerBorrowLimit,
-    overseerCollaterals,
-    overseerWhitelist,
-  ]);
-
   const collaterals = useMemo(
-    () => _collaterals(borrowInfo, 1 as UST<number>),
-    [borrowInfo],
+    () => _collaterals(borrowBorrower?.custodyBorrower, 1 as UST<number>),
+    [borrowBorrower?.custodyBorrower],
   );
 
   const collateralsInUST = useMemo(
-    () => _collaterals(borrowInfo, oraclePrice?.rate),
-    [borrowInfo, oraclePrice?.rate],
+    () =>
+      _collaterals(
+        borrowBorrower?.custodyBorrower,
+        borrowMarket?.oraclePrice.rate,
+      ),
+    [borrowBorrower?.custodyBorrower, borrowMarket?.oraclePrice.rate],
   );
 
   // ---------------------------------------------
@@ -152,7 +111,9 @@ export function CollateralList({ className }: CollateralListProps) {
             </td>
             <td>
               <div className="value">
-                {oraclePrice ? formatUSTWithPostfixUnits(oraclePrice.rate) : 0}{' '}
+                {borrowMarket?.oraclePrice
+                  ? formatUSTWithPostfixUnits(borrowMarket.oraclePrice.rate)
+                  : 0}{' '}
                 UST
               </div>
               <p className="volatility">
@@ -172,27 +133,36 @@ export function CollateralList({ className }: CollateralListProps) {
             </td>
             <td>
               <BorderButton
-                disabled={!connectedWallet || !ready}
-                onClick={() => {
-                  refetch();
-                  openProvideCollateralDialog({});
-                }}
+                disabled={!connectedWallet || !borrowMarket || !borrowBorrower}
+                onClick={() =>
+                  borrowMarket &&
+                  borrowBorrower &&
+                  openProvideCollateralDialog({
+                    fallbackBorrowMarket: borrowMarket,
+                    fallbackBorrowBorrower: borrowBorrower,
+                  })
+                }
               >
                 Provide
               </BorderButton>
               <BorderButton
                 disabled={
                   !connectedWallet ||
-                  !ready ||
-                  !borrowInfo ||
-                  !loanAmount ||
-                  (big(borrowInfo.balance).minus(borrowInfo.spendable).eq(0) &&
-                    big(loanAmount.loan_amount).lte(0))
+                  !borrowMarket ||
+                  !borrowBorrower ||
+                  (big(borrowBorrower.custodyBorrower.balance)
+                    .minus(borrowBorrower.custodyBorrower.spendable)
+                    .eq(0) &&
+                    big(borrowBorrower.marketBorrowerInfo.loan_amount).lte(0))
                 }
-                onClick={() => {
-                  refetch();
-                  openRedeemCollateralDialog({});
-                }}
+                onClick={() =>
+                  borrowMarket &&
+                  borrowBorrower &&
+                  openRedeemCollateralDialog({
+                    fallbackBorrowMarket: borrowMarket,
+                    fallbackBorrowBorrower: borrowBorrower,
+                  })
+                }
               >
                 Withdraw
               </BorderButton>

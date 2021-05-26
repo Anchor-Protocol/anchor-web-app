@@ -12,6 +12,8 @@ export function NumberMuiInput({
   maxDecimalPoints,
   maxIntegerPoinsts,
   onChange,
+  inputMode = type === 'decimal' ? 'decimal' : 'numeric',
+  pattern = '[0-9.]*',
   ...props
 }: NumberMuiInputProps) {
   const handlers = useRestrictedNumberInput({
@@ -20,5 +22,15 @@ export function NumberMuiInput({
     maxDecimalPoints,
     onChange,
   });
-  return <Input {...props} type="text" {...handlers} />;
+  return (
+    <Input
+      {...props}
+      type="text"
+      inputProps={{
+        inputMode,
+        pattern,
+      }}
+      {...handlers}
+    />
+  );
 }

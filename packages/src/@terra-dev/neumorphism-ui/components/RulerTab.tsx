@@ -1,5 +1,6 @@
-import { CSSProperties, ReactElement, ReactNode } from 'react';
+import { CSSProperties, ReactElement, ReactNode, useMemo } from 'react';
 import styled from 'styled-components';
+import useResizeObserver from 'use-resize-observer/polyfilled';
 import { HorizontalHeavyRuler } from './HorizontalHeavyRuler';
 import { TabBaseProps } from './Tab';
 import { Tooltip } from './Tooltip';
@@ -23,7 +24,7 @@ const defaultHeight: number = 50;
 function RulerTabBase<T>({
   className,
   rulerWidth = defaultRulerWidth,
-  itemWidth = defaultItemWidth,
+  itemWidth: _itemWidth = defaultItemWidth,
   items,
   selectedItem,
   onChange,
@@ -34,9 +35,18 @@ function RulerTabBase<T>({
   style,
   disabled,
 }: RulerTabProps<T>) {
+  const { ref, width: containerWidth = 700 } = useResizeObserver();
+
+  const itemWidth = useMemo(() => {
+    return containerWidth > 500
+      ? _itemWidth
+      : Math.floor(containerWidth / items.length);
+  }, [_itemWidth, containerWidth, items.length]);
+
   return (
     <div
       className={className}
+      ref={ref}
       style={style}
       aria-disabled={disabled || undefined}
     >
@@ -159,5 +169,13 @@ export const RulerTab: <T>(
   &[aria-disabled='true'] {
     pointer-events: none;
     opacity: 0.3;
+  }
+
+  @media (max-width: 500px) {
+    ul {
+      li {
+        font-size: 14px;
+      }
+    }
   }
 `;

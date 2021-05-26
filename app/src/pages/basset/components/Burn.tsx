@@ -8,9 +8,9 @@ import {
 } from '@anchor-protocol/notation';
 import type { bLuna, Luna, uUST } from '@anchor-protocol/types';
 import {
+  ConnectedWallet,
   useConnectedWallet,
-  WalletReady,
-} from '@anchor-protocol/wallet-provider';
+} from '@terra-money/wallet-provider';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
@@ -150,7 +150,7 @@ export function Burn() {
   }, []);
 
   const proceed = useCallback(
-    async (walletReady: WalletReady, burnAmount: bLuna) => {
+    async (walletReady: ConnectedWallet, burnAmount: bLuna) => {
       const broadcasted = await burn({
         address: walletReady.walletAddress,
         amount: burnAmount,
@@ -324,6 +324,7 @@ export function Burn() {
         className="submit"
         disabled={
           !connectedWallet ||
+          !connectedWallet.availablePost ||
           burnAmount.length === 0 ||
           big(burnAmount).lte(0) ||
           !!invalidTxFee ||

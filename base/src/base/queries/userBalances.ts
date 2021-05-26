@@ -7,7 +7,7 @@ import type {
   uLuna,
   uUST,
 } from '@anchor-protocol/types';
-import { useUserWallet } from '@anchor-protocol/wallet-provider';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { gql, useQuery } from '@apollo/client';
 import { useSubscription } from '@terra-dev/broadcastable-operation';
 import { createMap, Mapped, useMap } from '@terra-dev/use-map';
@@ -241,6 +241,7 @@ export const query = gql`
   }
 `;
 
+// TODO remove after refactoring done
 export function useUserBalances(): MappedQueryResult<
   RawVariables,
   RawData,
@@ -248,7 +249,7 @@ export function useUserBalances(): MappedQueryResult<
 > {
   const { cw20 } = useContractAddress();
 
-  const userWallet = useUserWallet();
+  const userWallet = useConnectedWallet();
 
   const variables = useMemo(() => {
     if (!userWallet) return undefined;
@@ -283,7 +284,7 @@ export function useUserBalances(): MappedQueryResult<
   });
 
   useSubscription((id, event) => {
-    if (event === 'done') {
+    if (event === 'done' && !!userWallet) {
       _refetch();
     }
   });

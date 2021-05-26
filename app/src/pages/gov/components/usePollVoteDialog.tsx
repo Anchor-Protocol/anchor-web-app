@@ -10,8 +10,8 @@ import {
 import { ANC, uANC } from '@anchor-protocol/types';
 import {
   useConnectedWallet,
-  WalletReady,
-} from '@anchor-protocol/wallet-provider';
+  ConnectedWallet,
+} from '@terra-money/wallet-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { ThumbDownOutlined, ThumbUpOutlined } from '@material-ui/icons';
 import { useOperation } from '@terra-dev/broadcastable-operation';
@@ -100,7 +100,11 @@ function ComponentBase({
   const txFee = fixedGas;
 
   const submit = useCallback(
-    async (walletReady: WalletReady, voteFor: 'yes' | 'no', amount: ANC) => {
+    async (
+      walletReady: ConnectedWallet,
+      voteFor: 'yes' | 'no',
+      amount: ANC,
+    ) => {
       await vote({
         address: walletReady.walletAddress,
         poll_id: pollId,
@@ -117,7 +121,7 @@ function ComponentBase({
     voteResult?.status === 'fault'
   ) {
     return (
-      <Modal open disableBackdropClick>
+      <Modal open disableBackdropClick disableEnforceFocus>
         <Dialog className={className}>
           <TransactionRenderer result={voteResult} onExit={closeDialog} />
         </Dialog>

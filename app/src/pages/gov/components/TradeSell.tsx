@@ -14,8 +14,8 @@ import {
 import { ANC, Denom, terraswap, uANC, UST, uUST } from '@anchor-protocol/types';
 import {
   useConnectedWallet,
-  WalletReady,
-} from '@anchor-protocol/wallet-provider';
+  ConnectedWallet,
+} from '@terra-money/wallet-provider';
 import { useApolloClient } from '@apollo/client';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
@@ -238,7 +238,11 @@ export function TradeSell() {
   }, []);
 
   const proceed = useCallback(
-    async (walletReady: WalletReady, burnAmount: ANC, ancPrice: AncPrice) => {
+    async (
+      walletReady: ConnectedWallet,
+      burnAmount: ANC,
+      ancPrice: AncPrice,
+    ) => {
       const broadcasted = await sell({
         address: walletReady.walletAddress,
         amount: burnAmount,
@@ -396,6 +400,7 @@ export function TradeSell() {
         className="submit"
         disabled={
           !connectedWallet ||
+          !connectedWallet.availablePost ||
           !ancPrice ||
           fromAmount.length === 0 ||
           big(fromAmount).lte(0) ||
@@ -406,7 +411,6 @@ export function TradeSell() {
         onClick={() =>
           connectedWallet &&
           ancPrice &&
-          simulation &&
           proceed(connectedWallet, fromAmount, ancPrice)
         }
       >

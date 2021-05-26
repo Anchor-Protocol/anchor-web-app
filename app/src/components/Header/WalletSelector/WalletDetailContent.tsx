@@ -1,4 +1,3 @@
-import { Wallet } from '@anchor-protocol/icons';
 import {
   demicrofy,
   formatANC,
@@ -8,85 +7,100 @@ import {
   formatUSTWithPostfixUnits,
   truncate,
 } from '@anchor-protocol/notation';
-import {
-  WalletReady,
-  WalletStatusType,
-} from '@anchor-protocol/wallet-provider';
 import { Check, KeyboardArrowRight, Launch } from '@material-ui/icons';
 import { FlatButton } from '@terra-dev/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
+import { NetworkInfo } from '@terra-dev/wallet-types';
+import { ConnectType } from '@terra-money/wallet-provider';
 import { Bank } from 'base/contexts/bank';
+import big from 'big.js';
+import { ConnectionIcons } from 'components/Header/WalletSelector/ConnectionIcons';
 import { useCallback } from 'react';
 import useClipboard from 'react-use-clipboard';
 import styled from 'styled-components';
 
 interface WalletDetailContentProps {
   className?: string;
-  status: WalletReady;
+  network: NetworkInfo;
+  walletAddress: string;
   closePopup: () => void;
   disconnectWallet: () => void;
   bank: Bank;
   openSend: () => void;
+  availablePost: boolean;
+  connectType: ConnectType;
 }
 
 export function WalletDetailContentBase({
   className,
-  status,
+  walletAddress,
+  network,
   disconnectWallet,
   closePopup,
   bank,
   openSend,
+  availablePost,
+  connectType,
 }: WalletDetailContentProps) {
-  const [isCopied, setCopied] = useClipboard(status.walletAddress, {
+  const [isCopied, setCopied] = useClipboard(walletAddress, {
     successDuration: 1000 * 5,
   });
 
   const viewOnTerraFinder = useCallback(() => {
     window.open(
-      `https://finder.terra.money/${status.network.chainID}/account/${status.walletAddress}`,
+      `https://finder.terra.money/${network.chainID}/account/${walletAddress}`,
       '_blank',
     );
-  }, [status]);
+  }, [network.chainID, walletAddress]);
 
   return (
     <div className={className}>
       <section>
-        <div className="wallet-icon">
-          <Wallet />
-        </div>
+        <ConnectionIcons className="wallet-icon" connectType={connectType} />
 
-        <h2 className="wallet-address">{truncate(status.walletAddress)}</h2>
+        <h2 className="wallet-address">{truncate(walletAddress)}</h2>
 
         <button className="copy-wallet-address" onClick={setCopied}>
           <IconSpan>COPY ADDRESS {isCopied && <Check />}</IconSpan>
         </button>
 
         <ul>
-          <li>
-            <span>UST</span>
-            <span>
-              {formatUSTWithPostfixUnits(demicrofy(bank.userBalances.uUSD))}
-            </span>
-          </li>
-          <li>
-            <span>aUST</span>
-            <span>
-              {formatAUSTWithPostfixUnits(demicrofy(bank.userBalances.uaUST))}
-            </span>
-          </li>
-          <li>
-            <span>Luna</span>
-            <span>{formatLuna(demicrofy(bank.userBalances.uLuna))}</span>
-          </li>
-          <li>
-            <span>bLuna</span>
-            <span>{formatLuna(demicrofy(bank.userBalances.ubLuna))}</span>
-          </li>
-          <li>
-            <span>ANC</span>
-            <span>{formatANC(demicrofy(bank.userBalances.uANC))}</span>
-          </li>
+          {big(bank.userBalances.uUSD).gt(0) && (
+            <li>
+              <span>UST</span>
+              <span>
+                {formatUSTWithPostfixUnits(demicrofy(bank.userBalances.uUSD))}
+              </span>
+            </li>
+          )}
+          {big(bank.userBalances.uaUST).gt(0) && (
+            <li>
+              <span>aUST</span>
+              <span>
+                {formatAUSTWithPostfixUnits(demicrofy(bank.userBalances.uaUST))}
+              </span>
+            </li>
+          )}
+          {big(bank.userBalances.uLuna).gt(0) && (
+            <li>
+              <span>Luna</span>
+              <span>{formatLuna(demicrofy(bank.userBalances.uLuna))}</span>
+            </li>
+          )}
+          {big(bank.userBalances.ubLuna).gt(0) && (
+            <li>
+              <span>bLuna</span>
+              <span>{formatLuna(demicrofy(bank.userBalances.ubLuna))}</span>
+            </li>
+          )}
+          {big(bank.userBalances.uANC).gt(0) && (
+            <li>
+              <span>ANC</span>
+              <span>{formatANC(demicrofy(bank.userBalances.uANC))}</span>
+            </li>
+          )}
+
           {process.env.NODE_ENV === 'development' && (
             <>
               <li>
@@ -103,7 +117,7 @@ export function WalletDetailContentBase({
           )}
         </ul>
 
-        {status.status === WalletStatusType.CONNECTED && (
+        {availablePost && (
           <>
             <div className="bridge">
               <div>
@@ -178,21 +192,6 @@ export const WalletDetailContent = styled(WalletDetailContentBase)`
   > section {
     padding: 32px 28px;
 
-    .wallet-icon {
-      width: 38px;
-      height: 38px;
-      background-color: #000000;
-      border-radius: 50%;
-      color: #ffffff;
-
-      display: grid;
-      place-content: center;
-
-      svg {
-        font-size: 16px;
-      }
-    }
-
     .wallet-address {
       margin-top: 15px;
 
@@ -266,7 +265,6 @@ export const WalletDetailContent = styled(WalletDetailContentBase)`
         > :first-child {
           flex: 1;
           height: 28px;
-
           background-color: ${({ theme }) => theme.colors.positive};
 
           img {
@@ -283,9 +281,7 @@ export const WalletDetailContent = styled(WalletDetailContentBase)`
 
           width: 60px;
           height: 28px;
-
           margin-left: 1px;
-
           background-color: ${({ theme }) => theme.colors.positive};
 
           svg {

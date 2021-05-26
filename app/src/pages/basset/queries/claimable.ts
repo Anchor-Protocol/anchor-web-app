@@ -1,5 +1,5 @@
 import { bluna, WASMContractResult } from '@anchor-protocol/types';
-import { useUserWallet } from '@anchor-protocol/wallet-provider';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { gql, useQuery } from '@apollo/client';
 import { useSubscription } from '@terra-dev/broadcastable-operation';
 import { createMap, Mapped, useMap } from '@terra-dev/use-map';
@@ -91,7 +91,7 @@ export const query = gql`
 export function useClaimable(): MappedQueryResult<RawVariables, RawData, Data> {
   const { bluna } = useContractAddress();
 
-  const userWallet = useUserWallet();
+  const userWallet = useConnectedWallet();
 
   const variables = useMemo(() => {
     if (!userWallet) return undefined;

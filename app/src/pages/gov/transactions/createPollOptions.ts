@@ -8,14 +8,13 @@ import {
   timeout,
 } from '@terra-dev/broadcastable-operation';
 import { StdFee } from '@terra-money/terra.js';
-import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 import { createContractMsg } from 'base/transactions/createContractMsg';
 import { createOptions } from 'base/transactions/createOptions';
 import { getTxInfo } from 'base/transactions/getTxInfo';
 import { pickEmptyResult } from 'base/transactions/pickEmptyResult';
 import { postContractMsg } from 'base/transactions/postContractMsg';
 import { injectTxFee, takeTxFee } from 'base/transactions/takeTxFee';
-import { parseTxResult } from 'base/transactions/tx';
+import { renderBroadcastTransaction } from 'components/TransactionRenderer';
 
 export const createPollOptions = createOperationOptions({
   id: 'gov/create-poll',
@@ -34,8 +33,7 @@ export const createPollOptions = createOperationOptions({
       fee: new StdFee(gasFee, floor(storage.get('txFee')) + 'uusd'),
       gasAdjustment,
     })), // -> CreateTxOptions
-    timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<StringifiedTxResult>
-    parseTxResult, // -> TxResult
+    timeout(postContractMsg(post), 1000 * 60 * 2), // -> Promise<TxResult>
     merge(
       getTxInfo(client, signal), // -> { TxResult, TxInfo }
       injectTxFee(storage), // -> { txFee }
