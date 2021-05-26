@@ -13,10 +13,11 @@ import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
 import big, { Big, BigSource } from 'big.js';
-import { GraphMarkerTick } from 'pages/borrow/components/BorrowLimitGraph/GraphMarkerTick';
 import React, { useMemo } from 'react';
+import { useMediaQuery } from 'react-responsive';
 import { useTheme } from 'styled-components';
 import { GraphLabel } from './GraphLabel';
+import { GraphMarkerTick } from './GraphMarkerTick';
 import { GraphTick } from './GraphTick';
 
 export interface Data {
@@ -106,6 +107,8 @@ export function BorrowLimitGraph({
 }: BorrowLimitGraphProps) {
   const theme = useTheme();
 
+  const isSmallScreen = useMediaQuery({ maxWidth: 700 });
+
   const { borrowLimit, ltv, bLunaMaxLtv, bLunaSafeLtv } = useMemo(() => {
     const ltv = big(_ltv) as Rate<Big>;
     const bLunaSafeLtv = big(_bLunaSafeLtv) as Rate<Big>;
@@ -131,7 +134,9 @@ export function BorrowLimitGraph({
       data={[
         {
           position: 'top-marker',
-          label: `${formatRate(bLunaMaxLtv)}% LTV (MAX)`,
+          label: `${formatRate(bLunaMaxLtv)}% LTV${
+            isSmallScreen ? '' : ' (MAX)'
+          }`,
           color: 'rgba(0, 0, 0, 0)',
           textAlign: 'right',
           value: big(bLunaMaxLtv).toNumber(),

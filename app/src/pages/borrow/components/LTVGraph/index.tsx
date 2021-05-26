@@ -10,6 +10,7 @@ import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
 import big, { Big, BigSource } from 'big.js';
 import React, { useCallback, useMemo } from 'react';
+import { useMediaQuery } from 'react-responsive';
 import { useTheme } from 'styled-components';
 import { GraphLabel } from './GraphLabel';
 import { GraphTick } from './GraphTick';
@@ -76,6 +77,8 @@ export function LTVGraph({
 }: LTVGraphProps) {
   const theme = useTheme();
 
+  const isSmallScreen = useMediaQuery({ maxWidth: 700 });
+
   const step = useCallback(
     (draftLtv: number) => {
       return onStep(big(draftLtv) as Rate<Big>).toNumber();
@@ -111,7 +114,7 @@ export function LTVGraph({
       data={[
         {
           position: 'top',
-          label: `${formatRate(maxLtv)}% LTV (MAX)`,
+          label: `${formatRate(maxLtv)}% LTV${isSmallScreen ? '' : ' (MAX)'}`,
           color: 'rgba(0, 0, 0, 0)',
           value: big(maxLtv).toNumber(),
           tooltip:
