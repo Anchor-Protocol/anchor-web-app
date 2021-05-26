@@ -343,7 +343,7 @@ function ComponentBase({
             style={{ userSelect: 'none', fontSize: 12 }}
           >
             Caution: Borrowing is available only up to 40% LTV. If the
-            loan-to-value ratio (LTV) reaches the maximum (MAX LTV), a portion
+            loan-to-value ratio (LTV) reaches the maximum (50% LTV), a portion
             of your collateral may be immediately liquidated to repay part of
             the loan.
           </MessageBox>
