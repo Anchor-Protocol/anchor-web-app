@@ -23,6 +23,7 @@ export interface Data {
   label: string;
   value: number;
   color: string;
+  dimText?: boolean;
   tooltip?: string;
 }
 
@@ -37,7 +38,7 @@ export interface BorrowLimitGraphProps {
 const colorFunction = ({ color }: Data) => color;
 const valueFunction = ({ value }: Data) => value;
 const labelRenderer = (
-  { position, label, tooltip }: Data,
+  { position, label, tooltip, dimText }: Data,
   rect: Rect,
   i: number,
 ) => {
@@ -46,13 +47,13 @@ const labelRenderer = (
       key={'label' + i}
       style={{
         transform: `translateX(${rect.x + rect.width}px)`,
-        opacity: label.length === 0 ? 0 : 1,
+        opacity: label.length === 0 ? 0 : dimText ? 0.7 : 1,
       }}
     >
       <span>
         {tooltip ? (
           <Tooltip title={tooltip} placement="top">
-            <IconSpan style={{ cursor: 'help' }}>
+            <IconSpan style={{ cursor: 'help', letterSpacing: '-0.5px' }}>
               <sup>
                 <InfoOutlined />
               </sup>{' '}
@@ -80,13 +81,7 @@ export function BorrowLimitGraph({
 }: BorrowLimitGraphProps) {
   const theme = useTheme();
 
-  const {
-    borrowLimit,
-    borrowLimitRate,
-    ltv,
-    bLunaMaxLtv,
-    bLunaSafeLtv,
-  } = useMemo(() => {
+  const { borrowLimit, ltv, bLunaMaxLtv, bLunaSafeLtv } = useMemo(() => {
     const ltv = big(_ltv) as Rate<Big>;
     const bLunaSafeLtv = big(_bLunaSafeLtv) as Rate<Big>;
     const bLunaMaxLtv = big(_bLunaMaxLtv) as Rate<Big>;
@@ -108,35 +103,48 @@ export function BorrowLimitGraph({
       min={0}
       max={bLunaMaxLtv.toNumber()}
       animate
-      data={
+      data={[
+        {
+          position: 'top',
+          label: `${formatRate(bLunaMaxLtv)}% LTV (MAX)`,
+          color: 'rgba(0, 0, 0, 0)',
+          value: big(bLunaMaxLtv).toNumber(),
+          dimText: true,
+          tooltip:
+            'Maximum allowed loan to value (LTV) ratio, collaterals will be liquidated when the LTV is bigger than this value.',
+        },
+        {
+          position: 'top',
+          label: `${formatRate(bLunaSafeLtv)}% LTV`,
+          color: 'rgba(0, 0, 0, 0)',
+          value: big(bLunaSafeLtv).toNumber(),
+          dimText: true,
+          tooltip: 'Recommended LTV',
+        },
         ltv.gt(0)
-          ? [
-              {
-                position: 'top',
-                label: `${formatRate(ltv)}%`,
-                color: ltv.gte(0.4)
-                  ? theme.colors.negative
-                  : ltv.gte(bLunaSafeLtv)
-                  ? theme.colors.warning
-                  : theme.colors.positive,
-                value: ltv.toNumber(),
-                tooltip: ltv.gte(0.4)
-                  ? "Loan can be liquidated anytime upon another user's request. Repay loans with stablecoins or deposit more collateral to prevent liquidation."
-                  : borrowLimitRate.gte(bLunaSafeLtv)
-                  ? 'Loan is close to liquidation. Repay loan with stablecoins or deposit more collateral.'
-                  : undefined,
-              },
-            ]
-          : [
-              {
-                position: 'top',
-                label: '',
-                color: theme.colors.positive,
-                value: 0,
-                tooltip: undefined,
-              },
-            ]
-      }
+          ? {
+              position: 'top',
+              label: `${formatRate(ltv)}%`,
+              color: ltv.gte(0.4)
+                ? theme.colors.negative
+                : ltv.gte(bLunaSafeLtv)
+                ? theme.colors.warning
+                : theme.colors.positive,
+              value: ltv.toNumber(),
+              tooltip: ltv.gte(bLunaMaxLtv)
+                ? "Loan can be liquidated anytime upon another user's request. Repay loans with stablecoins or deposit more collateral to prevent liquidation."
+                : ltv.gte(bLunaSafeLtv)
+                ? 'Loan is close to liquidation. Repay loan with stablecoins or deposit more collateral.'
+                : undefined,
+            }
+          : {
+              position: 'top',
+              label: '',
+              color: theme.colors.positive,
+              value: 0,
+              tooltip: undefined,
+            },
+      ]}
       colorFunction={colorFunction}
       valueFunction={valueFunction}
       labelRenderer={labelRenderer}
