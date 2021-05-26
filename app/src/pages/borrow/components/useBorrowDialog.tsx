@@ -367,6 +367,7 @@ function ComponentBase({
             !borrow ||
             borrowAmount.length === 0 ||
             big(borrowAmount).lte(0) ||
+            big(receiveAmount ?? 0).lte(0) ||
             !!invalidTxFee ||
             !!invalidBorrowAmount ||
             !!invalidOver40Ltv
