@@ -224,8 +224,8 @@ export const DesktopHeader = styled(DesktopHeaderBase)`
   @media (max-width: ${mobileLayoutBreak}px) {
     justify-content: center;
 
-    .wallet {
-      display: none;
-    }
+    //.wallet {
+    //  display: none;
+    //}
   }
 `;

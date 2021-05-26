@@ -41,6 +41,8 @@ function ConnectedButtonBase({
   );
 }
 
+const mobileLayoutBreak = 950;
+
 export const ConnectedButton = styled(ConnectedButtonBase)`
   height: 26px;
   border-radius: 20px;
@@ -87,5 +89,11 @@ export const ConnectedButton = styled(ConnectedButtonBase)`
   &:hover {
     border: 1px solid ${({ theme }) => theme.colors.positive};
     background-color: rgba(255, 255, 255, 0.04);
+  }
+
+  @media (max-width: ${mobileLayoutBreak}px) {
+    .wallet-balance {
+      display: none;
+    }
   }
 `;
