@@ -13,17 +13,18 @@ import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
 import big, { Big, BigSource } from 'big.js';
+import { GraphMarkerTick } from 'pages/borrow/components/BorrowLimitGraph/GraphMarkerTick';
 import React, { useMemo } from 'react';
 import { useTheme } from 'styled-components';
 import { GraphLabel } from './GraphLabel';
 import { GraphTick } from './GraphTick';
 
 export interface Data {
-  position: 'top' | 'bottom';
+  position: 'top' | 'top-marker' | 'bottom';
   label: string;
   value: number;
   color: string;
-  dimText?: boolean;
+  textAlign?: 'left' | 'center' | 'right';
   tooltip?: string;
 }
 
@@ -38,7 +39,7 @@ export interface BorrowLimitGraphProps {
 const colorFunction = ({ color }: Data) => color;
 const valueFunction = ({ value }: Data) => value;
 const labelRenderer = (
-  { position, label, tooltip, dimText }: Data,
+  { position, label, tooltip, textAlign = 'center' }: Data,
   rect: Rect,
   i: number,
 ) => {
@@ -47,7 +48,31 @@ const labelRenderer = (
       key={'label' + i}
       style={{
         transform: `translateX(${rect.x + rect.width}px)`,
-        opacity: label.length === 0 ? 0 : dimText ? 0.7 : 1,
+        opacity: label.length === 0 ? 0 : 1,
+      }}
+    >
+      <span>
+        {tooltip ? (
+          <Tooltip title={tooltip} placement="top">
+            <IconSpan style={{ cursor: 'help' }}>
+              <sup>
+                <InfoOutlined />
+              </sup>{' '}
+              {label}
+            </IconSpan>
+          </Tooltip>
+        ) : (
+          label
+        )}
+      </span>
+    </GraphTick>
+  ) : position === 'top-marker' ? (
+    <GraphMarkerTick
+      key={'label' + i}
+      textAlign={textAlign}
+      style={{
+        transform: `translateX(${rect.x + rect.width}px)`,
+        opacity: label.length === 0 ? 0 : 1,
       }}
     >
       <span>
@@ -64,7 +89,7 @@ const labelRenderer = (
           label
         )}
       </span>
-    </GraphTick>
+    </GraphMarkerTick>
   ) : (
     <GraphLabel key={'label' + i} style={{ left: rect.x + rect.width }}>
       {label}
@@ -105,20 +130,19 @@ export function BorrowLimitGraph({
       animate
       data={[
         {
-          position: 'top',
+          position: 'top-marker',
           label: `${formatRate(bLunaMaxLtv)}% LTV (MAX)`,
           color: 'rgba(0, 0, 0, 0)',
+          textAlign: 'right',
           value: big(bLunaMaxLtv).toNumber(),
-          dimText: true,
           tooltip:
             'Maximum allowed loan to value (LTV) ratio, collaterals will be liquidated when the LTV is bigger than this value.',
         },
         {
-          position: 'top',
+          position: 'top-marker',
           label: `${formatRate(bLunaSafeLtv)}% LTV`,
           color: 'rgba(0, 0, 0, 0)',
           value: big(bLunaSafeLtv).toNumber(),
-          dimText: true,
           tooltip: 'Recommended LTV',
         },
         ltv.gt(0)

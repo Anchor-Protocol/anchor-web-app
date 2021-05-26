@@ -189,7 +189,7 @@ function ComponentBase({
 
   const invalidOver40Ltv = useMemo(() => {
     return nextLtv?.gt(0.4)
-      ? 'Cannot withdraw more than the 40% LTV'
+      ? 'Cannot withdraw when LTV is above 40%'
       : undefined;
   }, [nextLtv]);
 

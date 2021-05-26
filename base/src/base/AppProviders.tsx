@@ -297,9 +297,11 @@ export function AppProviders({ children }: { children: ReactNode }) {
       defaultNetwork={defaultNetwork}
       walletConnectChainIds={walletConnectChainIds}
       connectorOpts={{
-        //bridge: 'https://bridge.interus.net',
+        //bridge: 'https://relay01.interus.net/',
+        //bridge: 'https://relay02.interus.net/',
         //bridge: 'https://pancakeswap.bridge.walletconnect.org/',
         bridge: 'https://walletconnect.terra.dev/',
+        //bridge: 'https://tequila-walletconnect.terra.dev/',
         //bridge: onProduction
         //  ? 'https://walletconnect.terra.dev/'
         //  : 'https://tequila-walletconnect.terra.dev/',
