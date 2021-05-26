@@ -271,7 +271,7 @@ export const Earn = styled(EarnBase)`
     }
 
     .transaction-history {
-      height: 440px;
+      height: 480px;
 
       ul.list {
         li {
