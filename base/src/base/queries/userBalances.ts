@@ -284,7 +284,7 @@ export function useUserBalances(): MappedQueryResult<
   });
 
   useSubscription((id, event) => {
-    if (event === 'done') {
+    if (event === 'done' && !!userWallet) {
       _refetch();
     }
   });

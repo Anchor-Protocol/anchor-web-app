@@ -8,7 +8,6 @@ import {
   useWallet,
   WalletStatus,
 } from '@terra-money/wallet-provider';
-import { onProduction } from 'base/env';
 import logoUrl from 'components/Header/assets/Logo.svg';
 import { useWalletDetailDialog } from 'components/Header/WalletSelector/useWalletDetailDialog';
 import { links, mobileHeaderHeight } from 'env';
@@ -77,14 +76,7 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
           </nav>
         )}
         <section className="header">
-          <a
-            className="logo"
-            href={
-              onProduction
-                ? 'https://anchorprotocol.com/dashboard'
-                : 'https://dev.anchor.money/dashboard'
-            }
-          >
+          <a className="logo" href="https://anchorprotocol.com/dashboard">
             <img src={logoUrl} alt="logo" />
           </a>
 
