@@ -142,6 +142,7 @@ export function BorrowLimitGraph({
           position: 'top-marker',
           label: `${formatRate(bLunaSafeLtv)}% LTV`,
           color: 'rgba(0, 0, 0, 0)',
+          textAlign: 'right',
           value: big(bLunaSafeLtv).toNumber(),
           tooltip: 'Recommended LTV',
         },
