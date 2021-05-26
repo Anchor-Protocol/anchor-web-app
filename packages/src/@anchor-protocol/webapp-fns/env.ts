@@ -73,12 +73,14 @@ export const DEFAULT_ANCHOR_TX_CONSTANTS: Record<string, AnchorContants> = {
     fixedGas: 250000 as uUST<number>,
     blocksPerYear: 4906443,
     gasAdjustment: 1.6 as Rate<number>,
+    epochsPerYear: 2096,
   },
   testnet: {
     gasFee: 6000000 as uUST<number>,
     fixedGas: 3500000 as uUST<number>,
     blocksPerYear: 4906443,
     gasAdjustment: 1.4 as Rate<number>,
+    epochsPerYear: 2096,
   },
 };
 

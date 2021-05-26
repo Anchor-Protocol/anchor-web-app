@@ -14,6 +14,7 @@ export interface AnchorContants {
   fixedGas: uUST<number>;
   blocksPerYear: number;
   gasAdjustment: Rate<number>;
+  epochsPerYear: number;
 }
 
 /**

@@ -31,6 +31,7 @@ import { apr as _apr } from '../logics/apr';
 import { borrowed as _borrowed } from '../logics/borrowed';
 import { collaterals as _collaterals } from '../logics/collaterals';
 import { BorrowLimitGraph } from './BorrowLimitGraph';
+import { EstimatedAPR } from './EstimatedAPR';
 
 export interface OverviewProps {
   className?: string;
@@ -190,6 +191,7 @@ function OverviewBase({ className }: OverviewProps) {
             </Circles>
           </div>
         </div>
+      <EstimatedAPR />
       </article>
 
       {currentLtv && bLunaSafeLtv && bLunaMaxLtv && marketBorrowerInfo && (
