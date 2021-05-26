@@ -187,7 +187,7 @@ function ComponentBase({
 
   const invalidOverSafeLtv = useMemo(() => {
     return nextLtv?.gt(bLunaSafeLtv)
-      ? 'Warning : Are you sure you want to borrow above the recommended LTV?'
+      ? 'WARNING: Are you sure you want to borrow above the recommended LTV? Crypto markets can be very volatile and you may be subject to liquidation in events of downward price swings of the bAsset.'
       : undefined;
   }, [bLunaSafeLtv, nextLtv]);
 

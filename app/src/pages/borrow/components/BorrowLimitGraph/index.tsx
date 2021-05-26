@@ -132,9 +132,9 @@ export function BorrowLimitGraph({
       </GraphLabel>
       <GraphLabel style={{ right: 0 }}>
         <IconSpan>
-          Borrow Limit{' '}
+          Borrow Limit: ${formatUSTWithPostfixUnits(demicrofy(borrowLimit))}{' '}
           <InfoTooltip>
-            ${formatUSTWithPostfixUnits(demicrofy(borrowLimit))}
+            The maximum amount of liability permitted from deposited collaterals
           </InfoTooltip>
         </IconSpan>
       </GraphLabel>
