@@ -342,9 +342,10 @@ function ComponentBase({
             hide={{ id: 'borrow-ltv', period: 1000 * 60 * 60 * 24 * 5 }}
             style={{ userSelect: 'none', fontSize: 12 }}
           >
-            Caution: If the loan-to-value ratio (LTV) reaches the maximum (MAX
-            LTV), a portion of your collateral may be immediately liquidated to
-            repay part of the loan.
+            Caution: Borrowing is available only up to 40% LTV. If the
+            loan-to-value ratio (LTV) reaches the maximum (MAX LTV), a portion
+            of your collateral may be immediately liquidated to repay part of
+            the loan.
           </MessageBox>
         )}
 
