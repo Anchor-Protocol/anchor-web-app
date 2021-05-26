@@ -7,9 +7,16 @@ import { ChartTooltip } from 'pages/market-new/components/ChartTooltip';
 import React, { useEffect, useRef } from 'react';
 import styled, { useTheme } from 'styled-components';
 
-export interface ANCPriceChartProps {}
+export interface ANCPriceChartItem {
+  value: number;
+  label: string;
+}
 
-export function ANCPriceChart(_: ANCPriceChartProps) {
+export interface ANCPriceChartProps {
+  data: ANCPriceChartItem[] | null;
+}
+
+export function ANCPriceChart({ data }: ANCPriceChartProps) {
   const theme = useTheme();
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -18,13 +25,16 @@ export function ANCPriceChart(_: ANCPriceChartProps) {
 
   useEffect(() => {
     if (chartRef.current) {
-      //const chart = chartRef.current;
-      //chart.data.datasets[0].data = [+totalDeposit, +totalCollaterals];
-      //chart.data.datasets[0].backgroundColor = [
-      //  totalDepositColor,
-      //  totalCollateralsColor,
-      //];
-      //chart.update();
+      if (data) {
+        const chart = chartRef.current;
+        chart.data.labels = data.map(({ label }) => label);
+        chart.data.datasets[0].data = data.map(({ value }) => value);
+        //chart.data.datasets[0].backgroundColor = [
+        //  totalDepositColor,
+        //  totalCollateralsColor,
+        //];
+        chart.update();
+      }
     } else {
       chartRef.current = new Chart(canvasRef.current!, {
         type: 'line',
@@ -87,8 +97,11 @@ export function ANCPriceChart(_: ANCPriceChartProps) {
                 const hr = element.querySelector('hr');
 
                 if (div1) {
-                  // TODO binding data...
-                  div1.innerHTML = `5.4 UST <span>Tue, 4 Apr</span>`;
+                  try {
+                    const item = data![tooltip.dataPoints[0].dataIndex];
+                    // TODO binding data...
+                    div1.innerHTML = `${item.value} UST <span>${item.label}</span>`;
+                  } catch {}
                 }
 
                 if (hr) {
@@ -138,10 +151,10 @@ export function ANCPriceChart(_: ANCPriceChartProps) {
           },
         },
         data: {
-          labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+          labels: data?.map(({ label }) => label) ?? [],
           datasets: [
             {
-              data: [0, 10, 5, 2, 20, 30, 45],
+              data: data?.map(({ value }) => value) ?? [],
               borderColor: theme.colors.positive,
               borderWidth: 2,
             },
@@ -157,6 +170,7 @@ export function ANCPriceChart(_: ANCPriceChartProps) {
       };
     }
   }, [
+    data,
     theme.backgroundColor,
     theme.colors.positive,
     theme.dimTextColor,

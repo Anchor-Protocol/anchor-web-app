@@ -30,13 +30,22 @@ import { TotalValueLockedDoughnutChart } from 'pages/market-new/components/Total
 import { useMarketBluna } from 'pages/market-new/queries/marketBluna';
 import { useMarketBorrow } from 'pages/market-new/queries/marketBorrow';
 import { useMarketUST } from 'pages/market-new/queries/marketUST';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import styled, { css, useTheme } from 'styled-components';
 import { useMarketCollaterals } from './queries/marketCollateral';
 import { useMarketDeposit } from './queries/marketDeposit';
 
 export interface MarketProps {
   className?: string;
+}
+
+function createRandomData(): { value: number; label: string }[] {
+  return Array.from({ length: Math.random() * 20 }).map((_, i) => {
+    return {
+      value: Math.floor(Math.random() * 100),
+      label: 'Label' + i,
+    };
+  });
 }
 
 function MarketBase({ className }: MarketProps) {
@@ -49,6 +58,10 @@ function MarketBase({ className }: MarketProps) {
   const { data: marketCollaterals } = useMarketCollaterals();
   const { data: marketUST } = useMarketUST();
   const { data: marketBluna } = useMarketBluna();
+
+  const [ancPriceChartData, setAncPriceChartData] = useState<
+    { value: number; label: string }[] | null
+  >(null);
 
   const totalValueLocked = useMemo(() => {
     if (!marketDeposit || !marketCollaterals || !marketUST) {
@@ -191,7 +204,7 @@ function MarketBase({ className }: MarketProps) {
             <Section className="anc-price">
               <header>
                 <div>
-                  <h2>
+                  <h2 onClick={() => setAncPriceChartData(createRandomData())}>
                     ANC PRICE
                     <span>
                       <s>+0.32%</s>
@@ -222,7 +235,7 @@ function MarketBase({ className }: MarketProps) {
               </header>
               <figure>
                 <div>
-                  <ANCPriceChart />
+                  <ANCPriceChart data={ancPriceChartData} />
                 </div>
               </figure>
             </Section>
