@@ -181,31 +181,32 @@ export const MobileHeader = styled(MobileHeaderBase)`
 
     > div {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-    }
 
-    a:first-child {
-      font-size: 36px;
-      font-weight: 700;
-      letter-spacing: -0.2px;
-      text-decoration: none;
+      a:first-child {
+        flex: 1;
 
-      color: #666666;
+        font-size: 36px;
+        font-weight: 700;
+        letter-spacing: -0.2px;
+        text-decoration: none;
 
-      &.active {
-        color: #f4f4f5;
+        color: #666666;
+
+        &.active {
+          color: #f4f4f5;
+        }
       }
-    }
 
-    a:last-child {
-      font-size: 16px;
-      text-decoration: none;
+      a:last-child {
+        font-size: 16px;
+        text-decoration: none;
 
-      color: #666666;
+        color: #666666;
 
-      svg {
-        font-size: 1em;
+        svg {
+          font-size: 1em;
+        }
       }
     }
   }
