@@ -60,7 +60,10 @@ export function CollateralsChart({ data }: CollateralsChartProps) {
                     div1.innerHTML = `${formatUSTWithPostfixUnits(
                       demicrofy(item.total_value),
                     )} UST <span>${mediumDay(item.timestamp)}</span>`;
-                  } catch {}
+                    console.log('CollateralsChart.tsx..external()', item, div1);
+                  } catch (error) {
+                    console.error(error);
+                  }
                 }
 
                 if (hr) {
