@@ -29,11 +29,13 @@ import { ANCPriceChart } from './components/ANCPriceChart';
 import { CollateralsChart } from './components/CollateralsChart';
 import { StablecoinChart } from './components/StablecoinChart';
 import { TotalValueLockedDoughnutChart } from './components/TotalValueLockedDoughnutChart';
+import { useMarketANC } from './queries/marketANC';
 import { useMarketANCPriceHistory } from './queries/marketANCPriceHistory';
 import { useMarketBluna } from './queries/marketBluna';
 import { useMarketBorrow } from './queries/marketBorrow';
 import { useMarketCollaterals } from './queries/marketCollateral';
 import { useMarketDeposit } from './queries/marketDeposit';
+import { useMarketDepositAndBorrowHistory } from './queries/marketDepositAndBorrowHistory';
 import { useMarketUST } from './queries/marketUST';
 
 export interface MarketProps {
@@ -50,8 +52,12 @@ function MarketBase({ className }: MarketProps) {
   const { data: marketCollaterals } = useMarketCollaterals();
   const { data: marketUST } = useMarketUST();
   const { data: marketBluna } = useMarketBluna();
+  const { data: marketANC } = useMarketANC();
 
   const { data: marketANCPriceHistory } = useMarketANCPriceHistory();
+  const {
+    data: marketDepositAndBorrowHistory,
+  } = useMarketDepositAndBorrowHistory();
 
   const totalValueLocked = useMemo(() => {
     if (!marketDeposit || !marketCollaterals || !marketUST) {
@@ -69,42 +75,67 @@ function MarketBase({ className }: MarketProps) {
   }, [marketCollaterals, marketDeposit, marketUST]);
 
   const ancPrice = useMemo(() => {
-    if (!marketANCPriceHistory || marketANCPriceHistory.length === 0) {
+    if (
+      !marketANCPriceHistory ||
+      marketANCPriceHistory.length === 0 ||
+      !marketANC
+    ) {
       return undefined;
     }
 
-    const last = marketANCPriceHistory[marketANCPriceHistory.length - 1];
+    const last = marketANC;
     const last1DayBefore =
       marketANCPriceHistory[marketANCPriceHistory.length - 2];
 
     return {
-      updown: big(big(last.anc_price).minus(last1DayBefore.anc_price)).div(
-        last1DayBefore.anc_price,
-      ) as Rate<Big>,
+      ancPriceDiff: big(
+        big(last.anc_price).minus(last1DayBefore.anc_price),
+      ).div(last1DayBefore.anc_price) as Rate<Big>,
       ancPrice: last.anc_price,
       circulatingSupply: last.anc_circulating_supply,
-      ancMarketCap: '100000' as uUST,
+      ancMarketCap: big(last.anc_price).mul(
+        last.anc_circulating_supply,
+      ) as uUST<Big>,
     };
-  }, [marketANCPriceHistory]);
+  }, [marketANC, marketANCPriceHistory]);
 
   const stableCoin = useMemo(() => {
-    if (!marketDeposit || !marketBorrow || !marketUST) {
+    if (
+      !marketDeposit ||
+      !marketBorrow ||
+      !marketUST ||
+      !marketDepositAndBorrowHistory ||
+      marketDepositAndBorrowHistory.total_ust_deposit_and_borrow.length === 0
+    ) {
       return undefined;
     }
+
+    const last1DayBefore =
+      marketDepositAndBorrowHistory.total_ust_deposit_and_borrow[
+        marketDepositAndBorrowHistory.total_ust_deposit_and_borrow.length - 2
+      ];
 
     return {
       totalDeposit: marketDeposit.total_ust_deposits,
       totalBorrow: marketBorrow.total_borrowed,
-      totalDepositGraph: 'TODO: API not ready...',
-      totalBorrowGraph: 'TODO: API not ready...',
-      totalDepositDiff: 'TODO: API not ready...',
-      totalBorrowDiff: 'TODO: API not ready...',
+      totalDepositDiff: big(
+        big(marketDeposit.total_ust_deposits).minus(last1DayBefore.deposit),
+      ).div(last1DayBefore.deposit) as Rate<Big>,
+      totalBorrowDiff: big(
+        big(marketBorrow.total_borrowed).minus(last1DayBefore.total_borrowed),
+      ).div(last1DayBefore.total_borrowed) as Rate<Big>,
       depositAPR: big(marketUST.deposit_rate).mul(blocksPerYear) as Rate<Big>,
       depositAPRDiff: 'TODO: API not ready...',
       borrowAPR: big(marketUST.borrow_rate).mul(blocksPerYear) as Rate<Big>,
       borrowAPRDiff: 'TODO: API not ready...',
     };
-  }, [blocksPerYear, marketBorrow, marketDeposit, marketUST]);
+  }, [
+    blocksPerYear,
+    marketBorrow,
+    marketDeposit,
+    marketDepositAndBorrowHistory,
+    marketUST,
+  ]);
 
   const collaterals = useMemo(() => {
     if (!marketCollaterals || !marketBluna) {
@@ -216,9 +247,9 @@ function MarketBase({ className }: MarketProps) {
                   <h2>
                     ANC PRICE
                     {ancPrice && (
-                      <span>
-                        {big(ancPrice.updown).gte(0) ? '+' : '-'}
-                        {formatRate(ancPrice.updown)}%
+                      <span data-negative={big(ancPrice.ancPriceDiff).lt(0)}>
+                        {big(ancPrice.ancPriceDiff).gte(0) ? '+' : '-'}
+                        {formatRate(ancPrice.ancPriceDiff)}%
                       </span>
                     )}
                   </h2>
@@ -241,9 +272,12 @@ function MarketBase({ className }: MarketProps) {
                 <div>
                   <h3>ANC Market Cap</h3>
                   <p>
-                    <s>
-                      250,840,183<span>UST</span>
-                    </s>
+                    {ancPrice
+                      ? formatUTokenIntegerWithoutPostfixUnits(
+                          ancPrice.ancMarketCap,
+                        )
+                      : 0}
+                    <span>UST</span>
                   </p>
                 </div>
               </header>
@@ -293,10 +327,16 @@ function MarketBase({ className }: MarketProps) {
             <header>
               <div>
                 <h2>
-                  TOTAL DEPOSIT
-                  <span>
-                    <s>+2.32%</s>
-                  </span>
+                  <i style={{ backgroundColor: theme.textColor }} /> TOTAL
+                  DEPOSIT
+                  {stableCoin && (
+                    <span
+                      data-negative={big(stableCoin.totalDepositDiff).lt(0)}
+                    >
+                      {big(stableCoin.totalDepositDiff).gte(0) ? '+' : '-'}
+                      {formatRate(stableCoin.totalDepositDiff)}%
+                    </span>
+                  )}
                 </h2>
                 <p className="amount">
                   <AnimateNumber
@@ -309,10 +349,14 @@ function MarketBase({ className }: MarketProps) {
               </div>
               <div>
                 <h2>
-                  TOTAL BORROW
-                  <span>
-                    <s>-0.32%</s>
-                  </span>
+                  <i style={{ backgroundColor: theme.colors.positive }} /> TOTAL
+                  BORROW
+                  {stableCoin && (
+                    <span data-negative={big(stableCoin.totalBorrowDiff).lt(0)}>
+                      {big(stableCoin.totalBorrowDiff).gte(0) ? '+' : '-'}
+                      {formatRate(stableCoin.totalBorrowDiff)}%
+                    </span>
+                  )}
                 </h2>
                 <p className="amount">
                   <AnimateNumber
@@ -328,7 +372,7 @@ function MarketBase({ className }: MarketProps) {
 
             <figure>
               <div>
-                <StablecoinChart />
+                <StablecoinChart data={marketDepositAndBorrowHistory} />
               </div>
             </figure>
 
@@ -602,6 +646,10 @@ export const Market = styled(MarketBase)`
       margin-left: 10px;
       background-color: ${({ theme }) => theme.colors.positive};
       color: ${({ theme }) => theme.highlightBackgroundColor};
+
+      &[data-negative='true'] {
+        background-color: ${({ theme }) => theme.colors.negative};
+      }
     }
   }
 
@@ -609,12 +657,6 @@ export const Market = styled(MarketBase)`
     font-size: 12px;
     font-weight: 700;
     color: ${({ theme }) => theme.dimTextColor};
-  }
-
-  // TODO remove
-  pre {
-    font-size: 13px;
-    overflow: hidden;
   }
 
   .amount {
@@ -750,6 +792,17 @@ export const Market = styled(MarketBase)`
     header {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
+
+      h2 {
+        i {
+          display: inline-block;
+          width: 12px;
+          height: 12px;
+          border-radius: 3px;
+          margin-right: 3px;
+          transform: translateY(1px);
+        }
+      }
 
       margin-bottom: 15px;
     }

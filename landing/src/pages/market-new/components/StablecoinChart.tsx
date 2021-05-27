@@ -1,11 +1,20 @@
+import {
+  demicrofy,
+  formatUSTWithPostfixUnits,
+} from '@anchor-protocol/notation';
+import big from 'big.js';
 import { Chart } from 'chart.js';
-import { ChartTooltip } from 'pages/market-new/components/ChartTooltip';
 import React, { useEffect, useRef } from 'react';
 import styled, { useTheme } from 'styled-components';
+import { MarketDepositAndBorrowHistory } from '../queries/marketDepositAndBorrowHistory';
+import { ChartTooltip } from './ChartTooltip';
+import { mediumDay, shortDay } from './internal/dateFormatters';
 
-export interface StablecoinChartProps {}
+export interface StablecoinChartProps {
+  data: MarketDepositAndBorrowHistory | null | undefined;
+}
 
-export function StablecoinChart(_: StablecoinChartProps) {
+export function StablecoinChart({ data }: StablecoinChartProps) {
   const theme = useTheme();
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -14,13 +23,19 @@ export function StablecoinChart(_: StablecoinChartProps) {
 
   useEffect(() => {
     if (chartRef.current) {
-      //const chart = chartRef.current;
-      //chart.data.datasets[0].data = [+totalDeposit, +totalCollaterals];
-      //chart.data.datasets[0].backgroundColor = [
-      //  totalDepositColor,
-      //  totalCollateralsColor,
-      //];
-      //chart.update();
+      if (data) {
+        const chart = chartRef.current;
+        chart.data.labels = data.total_ust_deposit_and_borrow.map(
+          ({ timestamp }) => shortDay(timestamp),
+        );
+        chart.data.datasets[0].data = data.total_ust_deposit_and_borrow.map(
+          ({ deposit }) => big(deposit).toNumber(),
+        );
+        chart.data.datasets[1].data = data.total_ust_deposit_and_borrow.map(
+          ({ total_borrowed }) => big(total_borrowed).toNumber(),
+        );
+        chart.update();
+      }
     } else {
       chartRef.current = new Chart(canvasRef.current!, {
         type: 'line',
@@ -45,14 +60,20 @@ export function StablecoinChart(_: StablecoinChartProps) {
                 const div2 = element.querySelector('div:nth-child(2)');
                 const hr = element.querySelector('hr');
 
-                if (div1) {
-                  // TODO binding data...
-                  div1.innerHTML = `5.4 UST <span>Tue, 4 Apr</span>`;
-                }
+                if (div1 && div2) {
+                  try {
+                    const item = data!.total_ust_deposit_and_borrow[
+                      tooltip.dataPoints[0].dataIndex
+                    ];
 
-                if (div2) {
-                  // TODO binding data...
-                  div2.innerHTML = `5.4 UST <span>Tue, 4 Apr</span>`;
+                    div1.innerHTML = `${formatUSTWithPostfixUnits(
+                      demicrofy(item.deposit),
+                    )} UST <span>${mediumDay(item.timestamp)}</span>`;
+
+                    div2.innerHTML = `${formatUSTWithPostfixUnits(
+                      demicrofy(item.total_borrowed),
+                    )} UST <span>${mediumDay(item.timestamp)}</span>`;
+                  } catch {}
                 }
 
                 if (hr) {
@@ -92,15 +113,24 @@ export function StablecoinChart(_: StablecoinChartProps) {
           },
         },
         data: {
-          labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+          labels:
+            data?.total_ust_deposit_and_borrow.map(({ timestamp }) =>
+              shortDay(timestamp),
+            ) ?? [],
           datasets: [
             {
-              data: [0, 10, 5, 2, 20, 30, 45],
+              data:
+                data?.total_ust_deposit_and_borrow.map(({ deposit }) =>
+                  big(deposit).toNumber(),
+                ) ?? [],
               borderColor: theme.colors.positive,
               borderWidth: 2,
             },
             {
-              data: [10, 30, 15, 8, 20, 13, 2],
+              data:
+                data?.total_ust_deposit_and_borrow.map(({ total_borrowed }) =>
+                  big(total_borrowed).toNumber(),
+                ) ?? [],
               borderColor: theme.textColor,
               borderWidth: 2,
             },
@@ -121,6 +151,7 @@ export function StablecoinChart(_: StablecoinChartProps) {
     theme.dimTextColor,
     theme.textColor,
     theme.intensity,
+    data,
   ]);
 
   useEffect(() => {
@@ -135,7 +166,7 @@ export function StablecoinChart(_: StablecoinChartProps) {
       <ChartTooltip ref={tooltipRef}>
         <hr />
         <section>
-          <div />
+          <div style={{ backgroundColor: theme.colors.positive }} />
           <div />
         </section>
       </ChartTooltip>
