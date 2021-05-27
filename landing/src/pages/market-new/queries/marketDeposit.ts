@@ -1,5 +1,5 @@
 import { uUST } from '@anchor-protocol/types';
-import { REFERSH_INTERVAL } from 'pages/market-new/env';
+import { REFRESH_INTERVAL } from 'pages/market-new/env';
 import { useQuery, UseQueryResult } from 'react-query';
 
 export interface MarketDepositResponse {
@@ -18,6 +18,6 @@ export function queryMarketDeposit() {
 
 export function useMarketDeposit(): UseQueryResult<MarketDepositResponse> {
   return useQuery('marketDeposit', queryMarketDeposit, {
-    refetchInterval: REFERSH_INTERVAL,
+    refetchInterval: REFRESH_INTERVAL,
   });
 }

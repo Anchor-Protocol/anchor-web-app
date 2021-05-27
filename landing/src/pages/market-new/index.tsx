@@ -23,29 +23,21 @@ import { Footer } from 'base/components/Footer';
 import { useConstants } from 'base/contexts/contants';
 import big, { Big } from 'big.js';
 import { screen } from 'env';
-import { ANCPriceChart } from 'pages/market-new/components/ANCPriceChart';
-import { CollateralsChart } from 'pages/market-new/components/CollateralsChart';
-import { StablecoinChart } from 'pages/market-new/components/StablecoinChart';
-import { TotalValueLockedDoughnutChart } from 'pages/market-new/components/TotalValueLockedDoughnutChart';
-import { useMarketBluna } from 'pages/market-new/queries/marketBluna';
-import { useMarketBorrow } from 'pages/market-new/queries/marketBorrow';
-import { useMarketUST } from 'pages/market-new/queries/marketUST';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import styled, { css, useTheme } from 'styled-components';
+import { ANCPriceChart } from './components/ANCPriceChart';
+import { CollateralsChart } from './components/CollateralsChart';
+import { StablecoinChart } from './components/StablecoinChart';
+import { TotalValueLockedDoughnutChart } from './components/TotalValueLockedDoughnutChart';
+import { useMarketANCPriceHistory } from './queries/marketANCPriceHistory';
+import { useMarketBluna } from './queries/marketBluna';
+import { useMarketBorrow } from './queries/marketBorrow';
 import { useMarketCollaterals } from './queries/marketCollateral';
 import { useMarketDeposit } from './queries/marketDeposit';
+import { useMarketUST } from './queries/marketUST';
 
 export interface MarketProps {
   className?: string;
-}
-
-function createRandomData(): { value: number; label: string }[] {
-  return Array.from({ length: Math.random() * 20 }).map((_, i) => {
-    return {
-      value: Math.floor(Math.random() * 100),
-      label: 'Label' + i,
-    };
-  });
 }
 
 function MarketBase({ className }: MarketProps) {
@@ -59,9 +51,7 @@ function MarketBase({ className }: MarketProps) {
   const { data: marketUST } = useMarketUST();
   const { data: marketBluna } = useMarketBluna();
 
-  const [ancPriceChartData, setAncPriceChartData] = useState<
-    { value: number; label: string }[] | null
-  >(null);
+  const { data: marketANCPriceHistory } = useMarketANCPriceHistory();
 
   const totalValueLocked = useMemo(() => {
     if (!marketDeposit || !marketCollaterals || !marketUST) {
@@ -77,6 +67,25 @@ function MarketBase({ className }: MarketProps) {
       yieldReserve: marketUST.overseer_ust_balance,
     };
   }, [marketCollaterals, marketDeposit, marketUST]);
+
+  const ancPrice = useMemo(() => {
+    if (!marketANCPriceHistory || marketANCPriceHistory.length === 0) {
+      return undefined;
+    }
+
+    const last = marketANCPriceHistory[marketANCPriceHistory.length - 1];
+    const last1DayBefore =
+      marketANCPriceHistory[marketANCPriceHistory.length - 2];
+
+    return {
+      updown: big(big(last.anc_price).minus(last1DayBefore.anc_price)).div(
+        last1DayBefore.anc_price,
+      ) as Rate<Big>,
+      ancPrice: last.anc_price,
+      circulatingSupply: last.anc_circulating_supply,
+      ancMarketCap: '100000' as uUST,
+    };
+  }, [marketANCPriceHistory]);
 
   const stableCoin = useMemo(() => {
     if (!marketDeposit || !marketBorrow || !marketUST) {
@@ -204,24 +213,29 @@ function MarketBase({ className }: MarketProps) {
             <Section className="anc-price">
               <header>
                 <div>
-                  <h2 onClick={() => setAncPriceChartData(createRandomData())}>
+                  <h2>
                     ANC PRICE
-                    <span>
-                      <s>+0.32%</s>
-                    </span>
+                    {ancPrice && (
+                      <span>
+                        {big(ancPrice.updown).gte(0) ? '+' : '-'}
+                        {formatRate(ancPrice.updown)}%
+                      </span>
+                    )}
                   </h2>
                   <p className="amount">
-                    <s>
-                      5.013<span>UST</span>
-                    </s>
+                    {ancPrice ? formatUST(ancPrice.ancPrice) : 0}
+                    <span>UST</span>
                   </p>
                 </div>
                 <div>
                   <h3>Circulating Supply</h3>
                   <p>
-                    <s>
-                      50,840,183<span>ANC</span>
-                    </s>
+                    {ancPrice
+                      ? formatUTokenIntegerWithoutPostfixUnits(
+                          ancPrice.circulatingSupply,
+                        )
+                      : 0}
+                    <span>ANC</span>
                   </p>
                 </div>
                 <div>
@@ -235,7 +249,7 @@ function MarketBase({ className }: MarketProps) {
               </header>
               <figure>
                 <div>
-                  <ANCPriceChart data={ancPriceChartData} />
+                  <ANCPriceChart data={marketANCPriceHistory} />
                 </div>
               </figure>
             </Section>

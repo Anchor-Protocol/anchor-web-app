@@ -202,6 +202,7 @@ __metadata:
     d3-scale: ^3.3.0
     d3-shape: ^2.1.0
     dat.gui: ^0.7.7
+    date-fns: ^2.21.3
     downshift: ^6.1.3
     fastdom: ^1.0.10
     gl-matrix: ^3.3.0
@@ -9395,6 +9396,13 @@ __metadata:
   version: 2.21.2
   resolution: "date-fns@npm:2.21.2"
   checksum: 044e5af3aa7e2d4988747c435700a6ebf6b744b75a9d514cb599d5f8f058d69cc43060e008be33ec8a4ebccb8416b8cdfceb6f13800625e2bc2e57da043b2398
+  languageName: node
+  linkType: hard
+
+"date-fns@npm:^2.21.3":
+  version: 2.21.3
+  resolution: "date-fns@npm:2.21.3"
+  checksum: a88c9da180cde3a3426c09cacf3f6bffb615e31d73e458da90e9d5304432eea2e0b360f40ee4fd5ca187659e8a7f8f667db902a3eb033e8d2d1522b1cc1b9e32
   languageName: node
   linkType: hard
 

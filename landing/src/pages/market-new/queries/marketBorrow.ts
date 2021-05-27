@@ -1,5 +1,5 @@
 import { uUST } from '@anchor-protocol/types';
-import { REFERSH_INTERVAL } from 'pages/market-new/env';
+import { REFRESH_INTERVAL } from 'pages/market-new/env';
 import { useQuery, UseQueryResult } from 'react-query';
 
 export interface MarketBorrowResponse {
@@ -18,6 +18,6 @@ export function queryMarketBorrow() {
 
 export function useMarketBorrow(): UseQueryResult<MarketBorrowResponse> {
   return useQuery('marketBorrow', queryMarketBorrow, {
-    refetchInterval: REFERSH_INTERVAL,
+    refetchInterval: REFRESH_INTERVAL,
   });
 }

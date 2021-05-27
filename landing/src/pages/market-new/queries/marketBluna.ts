@@ -7,7 +7,7 @@ import {
   uUST,
 } from '@anchor-protocol/types';
 import { useQuery, UseQueryResult } from 'react-query';
-import { REFERSH_INTERVAL } from '../env';
+import { REFRESH_INTERVAL } from '../env';
 
 export interface MarketBlunaResponse {
   last_processed_batch: number;
@@ -40,6 +40,6 @@ export function queryMarketBluna() {
 
 export function useMarketBluna(): UseQueryResult<MarketBlunaResponse> {
   return useQuery('marketBluna', queryMarketBluna, {
-    refetchInterval: REFERSH_INTERVAL,
+    refetchInterval: REFRESH_INTERVAL,
   });
 }

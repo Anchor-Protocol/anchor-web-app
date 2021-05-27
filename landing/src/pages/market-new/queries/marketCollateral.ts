@@ -1,6 +1,6 @@
 import { ubLuna, uUST } from '@anchor-protocol/types';
 import { useQuery, UseQueryResult } from 'react-query';
-import { REFERSH_INTERVAL } from '../env';
+import { REFRESH_INTERVAL } from '../env';
 
 export interface MarketCollateralResponse {
   total_value: uUST;
@@ -19,6 +19,6 @@ export function queryMarketCollaterals() {
 
 export function useMarketCollaterals(): UseQueryResult<MarketCollateralResponse> {
   return useQuery('marketCollaterals', queryMarketCollaterals, {
-    refetchInterval: REFERSH_INTERVAL,
+    refetchInterval: REFRESH_INTERVAL,
   });
 }

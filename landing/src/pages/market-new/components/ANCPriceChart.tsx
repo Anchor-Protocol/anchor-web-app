@@ -1,19 +1,21 @@
+import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
 import {
   rulerLightColor,
   rulerShadowColor,
 } from '@terra-dev/styled-neumorphism';
+import big from 'big.js';
 import { Chart } from 'chart.js';
-import { ChartTooltip } from 'pages/market-new/components/ChartTooltip';
+import {
+  mediumDay,
+  shortDay,
+} from 'pages/market-new/components/internal/dateFormatters';
 import React, { useEffect, useRef } from 'react';
 import styled, { useTheme } from 'styled-components';
-
-export interface ANCPriceChartItem {
-  value: number;
-  label: string;
-}
+import { MarketANCPriceHistory } from '../queries/marketANCPriceHistory';
+import { ChartTooltip } from './ChartTooltip';
 
 export interface ANCPriceChartProps {
-  data: ANCPriceChartItem[] | null;
+  data: MarketANCPriceHistory[] | null | undefined;
 }
 
 export function ANCPriceChart({ data }: ANCPriceChartProps) {
@@ -27,12 +29,10 @@ export function ANCPriceChart({ data }: ANCPriceChartProps) {
     if (chartRef.current) {
       if (data) {
         const chart = chartRef.current;
-        chart.data.labels = data.map(({ label }) => label);
-        chart.data.datasets[0].data = data.map(({ value }) => value);
-        //chart.data.datasets[0].backgroundColor = [
-        //  totalDepositColor,
-        //  totalCollateralsColor,
-        //];
+        chart.data.labels = data.map(({ timestamp }) => shortDay(timestamp));
+        chart.data.datasets[0].data = data.map(({ anc_price }) =>
+          big(anc_price).toNumber(),
+        );
         chart.update();
       }
     } else {
@@ -99,8 +99,9 @@ export function ANCPriceChart({ data }: ANCPriceChartProps) {
                 if (div1) {
                   try {
                     const item = data![tooltip.dataPoints[0].dataIndex];
-                    // TODO binding data...
-                    div1.innerHTML = `${item.value} UST <span>${item.label}</span>`;
+                    div1.innerHTML = `${formatUSTWithPostfixUnits(
+                      item.anc_price,
+                    )} UST <span>${mediumDay(item.timestamp)}</span>`;
                   } catch {}
                 }
 
@@ -151,10 +152,11 @@ export function ANCPriceChart({ data }: ANCPriceChartProps) {
           },
         },
         data: {
-          labels: data?.map(({ label }) => label) ?? [],
+          labels: data?.map(({ timestamp }) => shortDay(timestamp)) ?? [],
           datasets: [
             {
-              data: data?.map(({ value }) => value) ?? [],
+              data:
+                data?.map(({ anc_price }) => big(anc_price).toNumber()) ?? [],
               borderColor: theme.colors.positive,
               borderWidth: 2,
             },

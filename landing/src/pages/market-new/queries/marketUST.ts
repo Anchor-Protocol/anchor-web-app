@@ -1,5 +1,5 @@
 import { Rate, uaUST, ubLuna, uUST } from '@anchor-protocol/types';
-import { REFERSH_INTERVAL } from 'pages/market-new/env';
+import { REFRESH_INTERVAL } from 'pages/market-new/env';
 import { useQuery, UseQueryResult } from 'react-query';
 
 export interface MarketUSTResponse {
@@ -35,6 +35,6 @@ export function queryMarketUST() {
 
 export function useMarketUST(): UseQueryResult<MarketUSTResponse> {
   return useQuery('marketUST', queryMarketUST, {
-    refetchInterval: REFERSH_INTERVAL,
+    refetchInterval: REFRESH_INTERVAL,
   });
 }
