@@ -1,30 +1,30 @@
 import { bluna, WASMContractResult } from '@anchor-protocol/types';
 import { MantleFetch } from '@terra-money/webapp-fns';
 
-export interface BondBAssetExchangeRateRawData {
+export interface BondBLunaExchangeRateRawData {
   state: WASMContractResult;
   parameters: WASMContractResult;
 }
 
-export interface BondBAssetExchangeRateData {
+export interface BondBLunaExchangeRateData {
   state: bluna.hub.StateResponse;
   parameters: bluna.hub.ParametersResponse;
 }
 
-export interface BondBAssetExchangeRateRawVariables {
+export interface BondBLunaExchangeRateRawVariables {
   bLunaHubContract: string;
   stateQuery: string;
   parametersQuery: string;
 }
 
-export interface BondBAssetExchangeRateVariables {
+export interface BondBLunaExchangeRateVariables {
   bLunaHubContract: string;
   stateQuery: bluna.hub.State;
   parametersQuery: bluna.hub.Parameters;
 }
 
 // language=graphql
-export const BOND_BASSET_EXCHANGE_RATE_QUERY = `
+export const BOND_BLUNA_EXCHANGE_RATE_QUERY = `
   query (
     $bLunaHubContract: String!
     $stateQuery: String!
@@ -46,28 +46,28 @@ export const BOND_BASSET_EXCHANGE_RATE_QUERY = `
   }
 `;
 
-export interface BondBAssetExchangeRateQueryParams {
+export interface BondBLunaExchangeRateQueryParams {
   mantleEndpoint: string;
   mantleFetch: MantleFetch;
-  variables: BondBAssetExchangeRateVariables;
+  variables: BondBLunaExchangeRateVariables;
 }
 
-export async function bondBAssetExchangeRateQuery({
+export async function bondBLunaExchangeRateQuery({
   mantleEndpoint,
   mantleFetch,
   variables,
-}: BondBAssetExchangeRateQueryParams): Promise<BondBAssetExchangeRateData> {
+}: BondBLunaExchangeRateQueryParams): Promise<BondBLunaExchangeRateData> {
   const rawData = await mantleFetch<
-    BondBAssetExchangeRateRawVariables,
-    BondBAssetExchangeRateRawData
+    BondBLunaExchangeRateRawVariables,
+    BondBLunaExchangeRateRawData
   >(
-    BOND_BASSET_EXCHANGE_RATE_QUERY,
+    BOND_BLUNA_EXCHANGE_RATE_QUERY,
     {
       bLunaHubContract: variables.bLunaHubContract,
       stateQuery: JSON.stringify(variables.stateQuery),
       parametersQuery: JSON.stringify(variables.parametersQuery),
     },
-    `${mantleEndpoint}?bond--basset-exchange-rate`,
+    `${mantleEndpoint}?bond--bluna-exchange-rate`,
   );
 
   return {

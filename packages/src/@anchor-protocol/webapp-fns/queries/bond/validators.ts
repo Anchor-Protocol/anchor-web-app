@@ -41,7 +41,7 @@ export interface BondValidatorsVariables {
 
 // language=graphql
 export const BOND_VALIDATORS_QUERY = `
-  query __validators(
+  query (
     $bLunaHubContract: String!
     $whitelistedValidatorsQuery: String!
   ) {

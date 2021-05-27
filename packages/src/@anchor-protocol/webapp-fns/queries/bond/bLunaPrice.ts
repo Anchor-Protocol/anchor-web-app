@@ -18,23 +18,23 @@ export interface BondBLunaPriceData {
 }
 
 export interface BondBLunaPriceRawVariables {
-  terraswapContract: string;
+  bLunaLunaPairContract: string;
   terraswapPoolQuery: string;
 }
 
 export interface BondBLunaPriceVariables {
-  terraswapContract: HumanAddr;
+  bLunaLunaPairContract: HumanAddr;
   terraswapPoolQuery: terraswap.Pool;
 }
 
 // language=graphql
 export const BOND_BLUNA_PRICE_QUERY = `
   query (
-    $terraswapContract: String!
+    $bLunaLunaPairContract: String!
     $terraswapPoolQuery: String!
   ) {
     terraswapPool: WasmContractsContractAddressStore(
-      ContractAddress: $terraswapContract
+      ContractAddress: $bLunaLunaPairContract
       QueryMsg: $terraswapPoolQuery
     ) {
       Result
@@ -59,7 +59,7 @@ export async function bondBLunaPriceQuery({
   >(
     BOND_BLUNA_PRICE_QUERY,
     {
-      terraswapContract: variables.terraswapContract,
+      bLunaLunaPairContract: variables.bLunaLunaPairContract,
       terraswapPoolQuery: JSON.stringify(variables.terraswapPoolQuery),
     },
     `${mantleEndpoint}?bond--bluna-price`,

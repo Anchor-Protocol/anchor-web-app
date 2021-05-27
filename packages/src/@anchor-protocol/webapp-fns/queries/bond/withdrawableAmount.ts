@@ -6,10 +6,16 @@ export interface BondWithdrawableAmountRawData {
   unbondedRequests: WASMContractResult;
 }
 
+export interface BondWithdrawHistoryRawData {
+  allHistory: WASMContractResult;
+  parameters: WASMContractResult;
+}
+
 export interface BondWithdrawableAmountData {
   withdrawableUnbonded: bluna.hub.WithdrawableUnbondedResponse;
   unbondedRequests: bluna.hub.UnbondRequestsResponse;
-  unbondedRequestsStartFrom: number;
+  allHistory: bluna.hub.AllHistoryResponse;
+  parameters?: bluna.hub.ParametersResponse;
 }
 
 export interface BondWithdrawableAmountRawVariables {
@@ -18,15 +24,23 @@ export interface BondWithdrawableAmountRawVariables {
   unbondedRequestsQuery: string;
 }
 
+export interface BondWithdrawHistoryRawVariables {
+  bLunaHubContract: string;
+  allHistoryQuery: string;
+  parametersQuery: string;
+}
+
 export interface BondWithdrawableAmountVariables {
   bLunaHubContract: HumanAddr;
   withdrawableUnbondedQuery: bluna.hub.WithdrawableUnbonded;
   unbondedRequestsQuery: bluna.hub.UnbondRequests;
+  allHistoryQuery: bluna.hub.AllHistory;
+  parametersQuery: bluna.hub.Parameters;
 }
 
 // language=graphql
 export const BOND_WITHDRAWABLE_AMOUNT_QUERY = `
-  query __withdrawable(
+  query (
     $bLunaHubContract: String!
     $withdrawableUnbondedQuery: String!
     $unbondedRequestsQuery: String!
@@ -47,6 +61,29 @@ export const BOND_WITHDRAWABLE_AMOUNT_QUERY = `
   }
 `;
 
+// language=graphql
+export const BOND_WITHDRAW_HISTORY_QUERY = `
+  query (
+    $bLunaHubContract: String!
+    $allHistoryQuery: String!
+    $parametersQuery: String!
+  ) {
+    allHistory: WasmContractsContractAddressStore(
+      ContractAddress: $bLunaHubContract
+      QueryMsg: $allHistoryQuery
+    ) {
+      Result
+    }
+
+    parameters: WasmContractsContractAddressStore(
+      ContractAddress: $bLunaHubContract
+      QueryMsg: $parametersQuery
+    ) {
+      Result
+    }
+  }
+`;
+
 export interface BondWithdrawableAmountQueryParams {
   mantleEndpoint: string;
   mantleFetch: MantleFetch;
@@ -58,7 +95,7 @@ export async function bondWithdrawableAmountQuery({
   mantleFetch,
   variables,
 }: BondWithdrawableAmountQueryParams): Promise<BondWithdrawableAmountData> {
-  const rawData = await mantleFetch<
+  const withdrawableAmountRawData = await mantleFetch<
     BondWithdrawableAmountRawVariables,
     BondWithdrawableAmountRawData
   >(
@@ -73,19 +110,50 @@ export async function bondWithdrawableAmountQuery({
     `${mantleEndpoint}?bond--withdrawable-requests`,
   );
 
-  const unbondedRequests: bluna.hub.UnbondRequestsResponse = JSON.parse(
-    rawData.unbondedRequests.Result,
-  );
+  const withdrawableAmountData: Pick<
+    BondWithdrawableAmountData,
+    'unbondedRequests' | 'withdrawableUnbonded'
+  > = JSON.parse(withdrawableAmountRawData.unbondedRequests.Result);
 
-  return {
-    withdrawableUnbonded: JSON.parse(rawData.withdrawableUnbonded.Result),
-    unbondedRequests,
-    unbondedRequestsStartFrom:
-      unbondedRequests.requests.length > 0
-        ? Math.max(
-            0,
-            Math.min(...unbondedRequests.requests.map(([index]) => index)) - 1,
-          )
-        : -1,
-  };
+  const unbondedRequestsStartFrom: number =
+    withdrawableAmountData.unbondedRequests.requests.length > 0
+      ? Math.max(
+          0,
+          Math.min(
+            ...withdrawableAmountData.unbondedRequests.requests.map(
+              ([index]) => index,
+            ),
+          ) - 1,
+        )
+      : 0;
+
+  if (unbondedRequestsStartFrom > 0) {
+    variables.allHistoryQuery.all_history.start_from = unbondedRequestsStartFrom;
+
+    const withdrawHistoryRawData = await mantleFetch<
+      BondWithdrawHistoryRawVariables,
+      BondWithdrawHistoryRawData
+    >(
+      BOND_WITHDRAW_HISTORY_QUERY,
+      {
+        bLunaHubContract: variables.bLunaHubContract,
+        allHistoryQuery: JSON.stringify(variables.allHistoryQuery),
+        parametersQuery: JSON.stringify(variables.parametersQuery),
+      },
+      `${mantleEndpoint}?bond--withdraw-history`,
+    );
+
+    return {
+      ...withdrawableAmountData,
+      allHistory: JSON.parse(withdrawHistoryRawData.allHistory.Result),
+      parameters: JSON.parse(withdrawHistoryRawData.parameters.Result),
+    };
+  } else {
+    return {
+      ...withdrawableAmountData,
+      allHistory: {
+        history: [],
+      },
+    };
+  }
 }
