@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 
+const mobileLayoutBreak = 950;
+
 export const DropdownContainer = styled.div`
   position: absolute;
   display: block;
@@ -10,6 +12,10 @@ export const DropdownContainer = styled.div`
 
   > :not(:last-child) {
     margin-bottom: 15px;
+  }
+
+  @media (max-width: ${mobileLayoutBreak}px) {
+    transform: translateX(-65%);
   }
 `;
 
