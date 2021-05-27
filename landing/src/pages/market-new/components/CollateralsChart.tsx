@@ -21,6 +21,12 @@ export function CollateralsChart({ data }: CollateralsChartProps) {
   const tooltipRef = useRef<HTMLDivElement | null>(null);
   const chartRef = useRef<Chart | null>(null);
 
+  const dataRef = useRef(data);
+
+  useEffect(() => {
+    dataRef.current = data;
+  }, [data]);
+
   useEffect(() => {
     if (chartRef.current) {
       if (data) {
@@ -54,15 +60,14 @@ export function CollateralsChart({ data }: CollateralsChartProps) {
                 const div1 = element.querySelector('div:nth-child(1)');
                 const hr = element.querySelector('hr');
 
-                console.log('CollateralsChart.tsx..external()', tooltip);
-
                 if (div1) {
                   try {
-                    const item = data![tooltip.dataPoints[0].dataIndex];
+                    const item = dataRef.current![
+                      tooltip.dataPoints[0].dataIndex
+                    ];
                     div1.innerHTML = `${formatUSTWithPostfixUnits(
                       demicrofy(item.total_value),
                     )} UST <span>${mediumDay(item.timestamp)}</span>`;
-                    console.log('CollateralsChart.tsx..external()', item, div1);
                   } catch (error) {
                     console.error(error);
                   }

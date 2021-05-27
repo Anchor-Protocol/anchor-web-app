@@ -21,6 +21,12 @@ export function StablecoinChart({ data }: StablecoinChartProps) {
   const tooltipRef = useRef<HTMLDivElement | null>(null);
   const chartRef = useRef<Chart | null>(null);
 
+  const dataRef = useRef(data);
+
+  useEffect(() => {
+    dataRef.current = data;
+  }, [data]);
+
   useEffect(() => {
     if (chartRef.current) {
       if (data) {
@@ -62,7 +68,7 @@ export function StablecoinChart({ data }: StablecoinChartProps) {
 
                 if (div1 && div2) {
                   try {
-                    const item = data!.total_ust_deposit_and_borrow[
+                    const item = dataRef.current!.total_ust_deposit_and_borrow[
                       tooltip.dataPoints[0].dataIndex
                     ];
 

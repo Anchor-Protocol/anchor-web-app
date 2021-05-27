@@ -25,6 +25,12 @@ export function ANCPriceChart({ data }: ANCPriceChartProps) {
   const tooltipRef = useRef<HTMLDivElement | null>(null);
   const chartRef = useRef<Chart | null>(null);
 
+  const dataRef = useRef(data);
+
+  useEffect(() => {
+    dataRef.current = data;
+  }, [data]);
+
   useEffect(() => {
     if (chartRef.current) {
       if (data) {
@@ -98,7 +104,9 @@ export function ANCPriceChart({ data }: ANCPriceChartProps) {
 
                 if (div1) {
                   try {
-                    const item = data![tooltip.dataPoints[0].dataIndex];
+                    const item = dataRef.current![
+                      tooltip.dataPoints[0].dataIndex
+                    ];
                     div1.innerHTML = `${formatUSTWithPostfixUnits(
                       item.anc_price,
                     )} UST <span>${mediumDay(item.timestamp)}</span>`;
