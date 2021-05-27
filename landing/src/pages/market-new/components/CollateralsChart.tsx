@@ -43,7 +43,7 @@ export function CollateralsChart({ data }: CollateralsChartProps) {
             tooltip: {
               enabled: false,
 
-              external({ chart, tooltip }) {
+              external: ({ chart, tooltip }) => {
                 let element = tooltipRef.current!;
 
                 if (tooltip.opacity === 0) {
