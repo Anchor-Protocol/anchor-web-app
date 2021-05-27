@@ -8,8 +8,8 @@ import {
 } from '@terra-money/webapp-fns';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import React from 'react';
-import styled from 'styled-components';
-import loadingImage from './assets/loading_image.gif';
+import { GuardSpinner, PushSpinner } from 'react-spinners-kit';
+import styled, { useTheme } from 'styled-components';
 import { renderTxFailedReason } from './renderTxFailedReason';
 
 export interface TxResultRendererProps {
@@ -21,13 +21,15 @@ export function TxResultRenderer({
   resultRendering,
   onExit,
 }: TxResultRendererProps) {
+  const { dimTextColor } = useTheme();
+
   switch (resultRendering.phase) {
     case TxStreamPhase.POST:
       return (
         <Layout>
           <article>
             <figure data-state={resultRendering.phase}>
-              <img src={loadingImage} alt="Waiting for Terra Station..." />
+              <PushSpinner color={dimTextColor} />
             </figure>
 
             <h2>Waiting for Terra Station...</h2>
@@ -43,7 +45,7 @@ export function TxResultRenderer({
         <Layout>
           <article>
             <figure data-state={resultRendering.phase}>
-              <img src={loadingImage} alt="Waiting for receipt..." />
+              <GuardSpinner />
             </figure>
 
             <h2>Waiting for receipt...</h2>

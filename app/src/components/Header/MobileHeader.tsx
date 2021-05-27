@@ -9,13 +9,14 @@ import {
   WalletStatus,
 } from '@terra-money/wallet-provider';
 import logoUrl from 'components/Header/assets/Logo.svg';
-import { useWalletDetailDialog } from 'components/Header/WalletSelector/useWalletDetailDialog';
 import { links, mobileHeaderHeight } from 'env';
 import { govPathname } from 'pages/gov/env';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import React, { useCallback, useState } from 'react';
 import { NavLink, useRouteMatch } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
+import { useWalletDetailDialog } from './WalletSelector/useWalletDetailDialog';
+import { ViewAddressButton } from './WalletSelector/ViewAddressButton';
 
 export interface MobileHeaderProps {
   className?: string;
@@ -43,6 +44,14 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
       );
     }
   }, [connect, openSendDialog, openWalletDetail, status]);
+
+  const viewAddress = useCallback(() => {
+    setOpen(false);
+
+    if (status === WalletStatus.WALLET_NOT_CONNECTED) {
+      connect(ConnectType.READONLY);
+    }
+  }, [connect, status]);
 
   return (
     <>
@@ -73,6 +82,10 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
               docsTo={links.gov}
               close={() => setOpen(false)}
             />
+
+            {status === WalletStatus.WALLET_NOT_CONNECTED && (
+              <ViewAddressButton onClick={viewAddress} />
+            )}
           </nav>
         )}
         <section className="header">

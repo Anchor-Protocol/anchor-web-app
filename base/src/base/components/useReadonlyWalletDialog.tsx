@@ -35,7 +35,7 @@ function ComponentBase({
   networks,
   closeDialog,
 }: DialogProps<FormParams, FormReturn>) {
-  const [chainID, setChainID] = useState<string>(() => networks[0].chainID);
+  const [chainID, setChainID] = useState<string>(() => networks[1].chainID);
   const [address, setAddress] = useState<string>('');
 
   const invalidAddress = useMemo(() => {
