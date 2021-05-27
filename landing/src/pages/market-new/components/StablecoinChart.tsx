@@ -103,6 +103,7 @@ export function StablecoinChart({ data }: StablecoinChartProps) {
               },
             },
             y: {
+              grace: '25%',
               display: false,
             },
           },

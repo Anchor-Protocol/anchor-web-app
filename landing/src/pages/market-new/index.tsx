@@ -34,6 +34,7 @@ import { useMarketANCPriceHistory } from './queries/marketANCPriceHistory';
 import { useMarketBluna } from './queries/marketBluna';
 import { useMarketBorrow } from './queries/marketBorrow';
 import { useMarketCollaterals } from './queries/marketCollateral';
+import { useMarketCollateralsHistory } from './queries/marketCollateralsHistory';
 import { useMarketDeposit } from './queries/marketDeposit';
 import { useMarketDepositAndBorrowHistory } from './queries/marketDepositAndBorrowHistory';
 import { useMarketUST } from './queries/marketUST';
@@ -58,6 +59,7 @@ function MarketBase({ className }: MarketProps) {
   const {
     data: marketDepositAndBorrowHistory,
   } = useMarketDepositAndBorrowHistory();
+  const { data: marketCollateralsHistory } = useMarketCollateralsHistory();
 
   const totalValueLocked = useMemo(() => {
     if (!marketDeposit || !marketCollaterals || !marketUST) {
@@ -138,9 +140,17 @@ function MarketBase({ className }: MarketProps) {
   ]);
 
   const collaterals = useMemo(() => {
-    if (!marketCollaterals || !marketBluna) {
+    if (
+      !marketCollaterals ||
+      !marketBluna ||
+      !marketCollateralsHistory ||
+      marketCollateralsHistory.length === 0
+    ) {
       return undefined;
     }
+
+    const last1DayBefore =
+      marketCollateralsHistory[marketCollateralsHistory.length - 2];
 
     return {
       mainTotalCollateralValue: marketCollaterals.total_value,
@@ -150,13 +160,15 @@ function MarketBase({ className }: MarketProps) {
       totalCollateral: marketCollaterals.collaterals.find(
         ({ bluna }) => !!bluna,
       )?.bluna,
-      totalCollateralDiff: 'TODO: API not ready...',
+      totalCollateralDiff: big(
+        big(marketCollaterals.total_value).minus(last1DayBefore.total_value),
+      ).div(last1DayBefore.total_value) as Rate<Big>,
       totalCollateralValue: big(
         marketCollaterals.collaterals.find(({ bluna }) => !!bluna)?.bluna ?? 1,
       ).mul(marketBluna.bLuna_price) as uUST<Big>,
       totalCollateralValueDiff: 'TODO: API not ready...',
     };
-  }, [marketBluna, marketCollaterals]);
+  }, [marketBluna, marketCollaterals, marketCollateralsHistory]);
 
   return (
     <div className={className}>
@@ -248,7 +260,7 @@ function MarketBase({ className }: MarketProps) {
                     ANC PRICE
                     {ancPrice && (
                       <span data-negative={big(ancPrice.ancPriceDiff).lt(0)}>
-                        {big(ancPrice.ancPriceDiff).gte(0) ? '+' : '-'}
+                        {big(ancPrice.ancPriceDiff).gte(0) ? '+' : ''}
                         {formatRate(ancPrice.ancPriceDiff)}%
                       </span>
                     )}
@@ -333,7 +345,7 @@ function MarketBase({ className }: MarketProps) {
                     <span
                       data-negative={big(stableCoin.totalDepositDiff).lt(0)}
                     >
-                      {big(stableCoin.totalDepositDiff).gte(0) ? '+' : '-'}
+                      {big(stableCoin.totalDepositDiff).gte(0) ? '+' : ''}
                       {formatRate(stableCoin.totalDepositDiff)}%
                     </span>
                   )}
@@ -353,7 +365,7 @@ function MarketBase({ className }: MarketProps) {
                   BORROW
                   {stableCoin && (
                     <span data-negative={big(stableCoin.totalBorrowDiff).lt(0)}>
-                      {big(stableCoin.totalBorrowDiff).gte(0) ? '+' : '-'}
+                      {big(stableCoin.totalBorrowDiff).gte(0) ? '+' : ''}
                       {formatRate(stableCoin.totalBorrowDiff)}%
                     </span>
                   )}
@@ -477,9 +489,14 @@ function MarketBase({ className }: MarketProps) {
               <div>
                 <h2>
                   TOTAL COLLATERAL VALUE
-                  <span>
-                    <s>+ 2.32%</s>
-                  </span>
+                  {collaterals && (
+                    <span
+                      data-negative={big(collaterals.totalCollateralDiff).lt(0)}
+                    >
+                      {big(collaterals.totalCollateralDiff).gte(0) ? '+' : ''}
+                      {formatRate(collaterals.totalCollateralDiff)}%
+                    </span>
+                  )}
                 </h2>
                 <p className="amount">
                   <AnimateNumber
@@ -496,7 +513,7 @@ function MarketBase({ className }: MarketProps) {
 
             <figure>
               <div>
-                <CollateralsChart />
+                <CollateralsChart data={marketCollateralsHistory} />
               </div>
             </figure>
 
@@ -962,7 +979,7 @@ export const Market = styled(MarketBase)`
   @media (min-width: 900px) and (max-width: 1399px) {
     .summary-section {
       .total-value-locked > .NeuSection-content {
-        max-width: 700px;
+        max-width: 800px;
         display: flex;
         justify-content: space-between;
 
