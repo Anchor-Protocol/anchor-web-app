@@ -52,7 +52,6 @@ import {
   columbusContractAddresses,
   defaultNetwork,
   GA_TRACKING_ID,
-  onProduction,
   tequilaContractAddresses,
 } from './env';
 
@@ -267,6 +266,17 @@ const walletConnectChainIds: Record<number, NetworkInfo> = {
   },
 };
 
+const relayServer = (() => {
+  const servers = [
+    'https://relay01.interus.net',
+    'https://relay02.interus.net',
+    'https://relay03.interus.net',
+  ];
+  return servers[Math.min(Math.floor(Math.random() * 3), 2)];
+})();
+
+console.log('AppProviders.tsx..()', relayServer);
+
 export function AppProviders({ children }: { children: ReactNode }) {
   const [
     openReadonlyWalletSelector,
@@ -298,9 +308,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
       defaultNetwork={defaultNetwork}
       walletConnectChainIds={walletConnectChainIds}
       connectorOpts={{
-        bridge: onProduction
-          ? 'https://walletconnect.terra.dev/'
-          : 'https://tequila-walletconnect.terra.dev/',
+        bridge: relayServer,
       }}
       createReadonlyWalletSession={createReadonlyWalletSession}
     >
