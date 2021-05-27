@@ -364,7 +364,7 @@ function MarketBase({ className }: MarketProps) {
             <header>
               <div>
                 <h2>
-                  <i style={{ backgroundColor: theme.textColor }} /> TOTAL
+                  <i style={{ backgroundColor: theme.colors.positive }} /> TOTAL
                   DEPOSIT
                   {stableCoin && (
                     <span
@@ -386,7 +386,7 @@ function MarketBase({ className }: MarketProps) {
               </div>
               <div>
                 <h2>
-                  <i style={{ backgroundColor: theme.colors.positive }} /> TOTAL
+                  <i style={{ backgroundColor: theme.textColor }} /> TOTAL
                   BORROW
                   {stableCoin && (
                     <span data-negative={big(stableCoin.totalBorrowDiff).lt(0)}>
