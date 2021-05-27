@@ -29,6 +29,7 @@ import { Index } from 'pages/index';
 import { Market as MarketNew } from 'pages/market-new';
 import { Market } from 'pages/market-simple';
 import { Redirect, Route, Switch } from 'react-router-dom';
+import { GlobalStyle } from './components/GlobalStyle';
 
 Chart.register(
   ArcElement,
@@ -59,6 +60,7 @@ export function App() {
   return (
     <LandingProviders>
       <div>
+        <GlobalStyle />
         <Header />
         <Switch>
           {/*<Route exact path="/" component={Index} />*/}

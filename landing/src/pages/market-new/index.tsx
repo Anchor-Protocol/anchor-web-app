@@ -25,6 +25,8 @@ import big, { Big } from 'big.js';
 import { screen } from 'env';
 import React, { useMemo } from 'react';
 import styled, { css, useTheme } from 'styled-components';
+import { useMarket } from '../market-simple/queries/market';
+import { useStableCoinMarket } from '../market-simple/queries/stableCoinMarket';
 import { ANCPriceChart } from './components/ANCPriceChart';
 import { CollateralsChart } from './components/CollateralsChart';
 import { StablecoinChart } from './components/StablecoinChart';
@@ -47,6 +49,29 @@ function MarketBase({ className }: MarketProps) {
   const theme = useTheme();
 
   const { blocksPerYear } = useConstants();
+
+  const {
+    data: { uUSD, state },
+  } = useMarket();
+
+  const {
+    data: { borrowRate, epochState },
+  } = useStableCoinMarket({ uUSD, state });
+
+  const stableCoinLegacy = useMemo(() => {
+    if (!borrowRate || !epochState) {
+      return undefined;
+    }
+
+    const depositRate = big(epochState.deposit_rate).mul(
+      blocksPerYear,
+    ) as Rate<Big>;
+
+    return {
+      depositRate,
+      borrowRate: big(borrowRate.rate).mul(blocksPerYear) as Rate<Big>,
+    };
+  }, [blocksPerYear, borrowRate, epochState]);
 
   const { data: marketDeposit } = useMarketDeposit();
   const { data: marketBorrow } = useMarketBorrow();
@@ -456,12 +481,12 @@ function MarketBase({ className }: MarketProps) {
                   </td>
                   <td>
                     <div className="value">
-                      <s>
-                        <AnimateNumber format={formatRate}>
-                          {18.23 as Rate<number>}
-                        </AnimateNumber>
-                        <span>%</span>
-                      </s>
+                      <AnimateNumber format={formatRate}>
+                        {stableCoinLegacy
+                          ? stableCoinLegacy.depositRate
+                          : (0 as Rate<number>)}
+                      </AnimateNumber>
+                      <span>%</span>
                     </div>
                   </td>
                   <td>
@@ -476,7 +501,12 @@ function MarketBase({ className }: MarketProps) {
                   </td>
                   <td>
                     <div className="value">
-                      <s>{0}%</s>
+                      <AnimateNumber format={formatRate}>
+                        {stableCoinLegacy
+                          ? stableCoinLegacy.borrowRate
+                          : (0 as Rate<number>)}
+                      </AnimateNumber>
+                      <span>%</span>
                     </div>
                   </td>
                 </tr>
