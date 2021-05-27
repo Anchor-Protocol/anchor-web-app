@@ -54,6 +54,8 @@ export function CollateralsChart({ data }: CollateralsChartProps) {
                 const div1 = element.querySelector('div:nth-child(1)');
                 const hr = element.querySelector('hr');
 
+                console.log('CollateralsChart.tsx..external()', tooltip);
+
                 if (div1) {
                   try {
                     const item = data![tooltip.dataPoints[0].dataIndex];
