@@ -327,6 +327,7 @@ function ComponentBase({
             disabled={!connectedWallet || max.lte(0)}
             maxLtv={bLunaMaxLtv}
             safeLtv={bLunaSafeLtv}
+            dangerLtv={0.4 as Rate<number>}
             currentLtv={currentLtv}
             nextLtv={nextLtv}
             userMinLtv={currentLtv}
