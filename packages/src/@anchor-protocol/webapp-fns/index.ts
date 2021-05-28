@@ -29,3 +29,8 @@ export * from './tx/borrow/borrow';
 export * from './tx/borrow/repay';
 export * from './tx/borrow/provideCollateral';
 export * from './tx/borrow/reddemCollateral';
+export * from './tx/bond/mint';
+export * from './tx/bond/burn';
+export * from './tx/bond/swap';
+export * from './tx/bond/withdraw';
+export * from './tx/bond/claim';
