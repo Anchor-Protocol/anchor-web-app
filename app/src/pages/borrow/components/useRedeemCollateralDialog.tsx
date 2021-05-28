@@ -20,7 +20,6 @@ import {
 } from '@anchor-protocol/webapp-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { min } from '@terra-dev/big-math';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
@@ -31,7 +30,7 @@ import type { DialogProps, OpenDialog } from '@terra-dev/use-dialog';
 import { useDialog } from '@terra-dev/use-dialog';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
-import big, { Big, BigSource } from 'big.js';
+import big, { Big } from 'big.js';
 import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
@@ -139,7 +138,7 @@ function ComponentBase({
   );
 
   const userMaxLtv = useMemo(() => {
-    return min(bLunaMaxLtv, big(0.4)) as Rate<BigSource>;
+    return bLunaMaxLtv;
   }, [bLunaMaxLtv]);
 
   const withdrawableAmount = useMemo(
@@ -186,12 +185,6 @@ function ComponentBase({
     () => validateRedeemAmount(redeemAmount, withdrawableMaxAmount),
     [redeemAmount, withdrawableMaxAmount],
   );
-
-  const invalidOver40Ltv = useMemo(() => {
-    return nextLtv?.gt(0.4)
-      ? 'Cannot withdraw when LTV is above 40%'
-      : undefined;
-  }, [nextLtv]);
 
   // ---------------------------------------------
   // callbacks
@@ -276,7 +269,7 @@ function ComponentBase({
           maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="WITHDRAW AMOUNT"
-          error={!!invalidRedeemAmount || !!invalidOver40Ltv}
+          error={!!invalidRedeemAmount}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateRedeemAmount(target.value)
           }
@@ -285,11 +278,8 @@ function ComponentBase({
           }}
         />
 
-        <div
-          className="wallet"
-          aria-invalid={!!invalidRedeemAmount || !!invalidOver40Ltv}
-        >
-          <span>{invalidRedeemAmount ?? invalidOver40Ltv}</span>
+        <div className="wallet" aria-invalid={!!invalidRedeemAmount}>
+          <span>{invalidRedeemAmount}</span>
           <span>
             Withdrawable:{' '}
             <span
@@ -327,6 +317,7 @@ function ComponentBase({
             disabled={!connectedWallet}
             maxLtv={bLunaMaxLtv}
             safeLtv={bLunaSafeLtv}
+            dangerLtv={0.4 as Rate<number>}
             currentLtv={currentLtv}
             nextLtv={nextLtv}
             userMinLtv={currentLtv}
@@ -335,6 +326,23 @@ function ComponentBase({
             onChange={onLtvChange}
           />
         </figure>
+
+        {nextLtv?.gt(bLunaSafeLtv) && (
+          <MessageBox
+            level="error"
+            hide={{
+              id: 'redeem-collateral-ltv',
+              period: 1000 * 60 * 60 * 24 * 5,
+            }}
+            style={{ userSelect: 'none', fontSize: 12 }}
+          >
+            Caution: As current LTV is above recommended LTV, there is an
+            increased probability fluctuations in collateral value may trigger
+            immediate liquidations. It is strongly recommended to keep the LTV
+            below the maximum by repaying loans with stablecoins or providing
+            additional collateral.
+          </MessageBox>
+        )}
 
         {redeemAmount.length > 0 && (
           <TxFeeList className="receipt">
@@ -353,8 +361,7 @@ function ComponentBase({
             redeemAmount.length === 0 ||
             big(redeemAmount).lte(0) ||
             !!invalidTxFee ||
-            !!invalidRedeemAmount ||
-            !!invalidOver40Ltv
+            !!invalidRedeemAmount
           }
           onClick={() => proceed(redeemAmount)}
         >

@@ -26,6 +26,7 @@ export interface Data {
 export interface LTVGraphProps {
   maxLtv: Rate<BigSource>;
   safeLtv: Rate<BigSource>;
+  dangerLtv: Rate<BigSource>;
   currentLtv: Rate<Big> | undefined;
   nextLtv: Rate<Big> | undefined;
   // draftLtv => (fix with amount format 0.000 -> fixed ltv)
@@ -69,6 +70,7 @@ export function LTVGraph({
   maxLtv,
   safeLtv,
   nextLtv,
+  dangerLtv,
   userMaxLtv,
   userMinLtv,
   onChange,
@@ -94,12 +96,13 @@ export function LTVGraph({
   );
 
   const color = useMemo(() => {
-    return nextLtv?.gte(0.4)
+    return nextLtv?.gte(dangerLtv)
       ? theme.colors.negative
       : nextLtv?.gte(safeLtv)
       ? theme.colors.warning
       : theme.colors.positive;
   }, [
+    dangerLtv,
     nextLtv,
     safeLtv,
     theme.colors.negative,

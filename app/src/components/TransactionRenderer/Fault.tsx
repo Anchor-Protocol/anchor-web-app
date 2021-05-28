@@ -130,6 +130,8 @@ const uncaughtErrorMessage = (
 );
 
 export function Fault({ result: { error, errorId } }: FaultProps) {
+  const hasErrorMessage = error instanceof Error && error.message.length > 0;
+
   return (
     <article>
       <figure data-state="fault">
@@ -151,37 +153,42 @@ export function Fault({ result: { error, errorId } }: FaultProps) {
           <>
             <h2>Failed to broadcast transaction</h2>
             <HorizontalHeavyRuler />
-            <ErrorView errorId={errorId}>
+            <ErrorView errorId={!hasErrorMessage ? errorId : undefined}>
               {createTxFailedMessage(error.message)}
             </ErrorView>
           </>
         ) : error instanceof TxFailed ? (
           <>
-            <h2>Failed to transaction</h2>
+            <h2>Transaction failed</h2>
             <HorizontalHeavyRuler />
-            <ErrorView errorId={errorId}>
+            <ErrorView errorId={!hasErrorMessage ? errorId : undefined}>
               {txFailedMessage(error.txhash, error.message)}
             </ErrorView>
           </>
         ) : error instanceof TxUnspecifiedError ? (
           <>
-            <h2>Failed to transaction</h2>
+            <h2>Transaction failed</h2>
             <HorizontalHeavyRuler />
-            <ErrorView errorId={errorId}>{txUnspecifiedErrorMessage}</ErrorView>
+            <ErrorView errorId={!hasErrorMessage ? errorId : undefined}>
+              {txUnspecifiedErrorMessage}
+            </ErrorView>
           </>
         ) : // getTxInfo() the tx is failed
         error instanceof TxInfoError ? (
           <>
-            <h2>Failed to transaction</h2>
+            <h2>Transaction failed</h2>
             <HorizontalHeavyRuler />
-            <ErrorView errorId={errorId} children={error.toString()} />
+            <ErrorView
+              errorId={!hasErrorMessage ? errorId : undefined}
+              children={error.toString()}
+            />
           </>
         ) : // failed parse the txInfo (front-end error)
         error instanceof TxInfoParseError ? (
           <>
             <h2>Failed to parse transaction results</h2>
             <HorizontalHeavyRuler />
-            <ErrorView errorId={errorId}>
+            <ErrorView errorId={!hasErrorMessage ? errorId : undefined}>
               {txParseFailedMessage(error.txResult.result.txhash)}
             </ErrorView>
           </>
@@ -190,7 +197,9 @@ export function Fault({ result: { error, errorId } }: FaultProps) {
           <>
             <h2>Oops, something went wrong!</h2>
             <HorizontalHeavyRuler />
-            <ErrorView errorId={errorId}>{uncaughtErrorMessage}</ErrorView>
+            <ErrorView errorId={!hasErrorMessage ? errorId : undefined}>
+              {uncaughtErrorMessage}
+            </ErrorView>
           </>
         )
       }
