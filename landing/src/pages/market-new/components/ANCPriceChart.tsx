@@ -5,17 +5,14 @@ import {
 } from '@terra-dev/styled-neumorphism';
 import big from 'big.js';
 import { Chart } from 'chart.js';
-import {
-  mediumDay,
-  shortDay,
-} from 'pages/market-new/components/internal/dateFormatters';
 import React, { useEffect, useRef } from 'react';
 import styled, { useTheme } from 'styled-components';
-import { MarketANCPriceHistory } from '../queries/marketANCPriceHistory';
+import { MarketANCHistory } from '../queries/marketANC';
 import { ChartTooltip } from './ChartTooltip';
+import { mediumDay, shortDay } from './internal/dateFormatters';
 
 export interface ANCPriceChartProps {
-  data: MarketANCPriceHistory[] | null | undefined;
+  data: MarketANCHistory[] | null | undefined;
 }
 
 export function ANCPriceChart({ data }: ANCPriceChartProps) {

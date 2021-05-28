@@ -1,6 +1,6 @@
 import { Rate, uaUST, ubLuna, uUST } from '@anchor-protocol/types';
-import { REFRESH_INTERVAL } from 'pages/market-new/env';
 import { useQuery, UseQueryResult } from 'react-query';
+import { REFRESH_INTERVAL } from '../env';
 
 export interface MarketUSTResponse {
   borrow_rate: Rate;

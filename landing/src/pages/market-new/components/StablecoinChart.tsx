@@ -6,12 +6,12 @@ import big from 'big.js';
 import { Chart } from 'chart.js';
 import React, { useEffect, useRef } from 'react';
 import styled, { useTheme } from 'styled-components';
-import { MarketDepositAndBorrowHistory } from '../queries/marketDepositAndBorrowHistory';
+import { MarketDepositAndBorrow } from '../queries/marketDepositAndBorrow';
 import { ChartTooltip } from './ChartTooltip';
 import { mediumDay, shortDay } from './internal/dateFormatters';
 
 export interface StablecoinChartProps {
-  data: MarketDepositAndBorrowHistory | null | undefined;
+  data: MarketDepositAndBorrow[] | null | undefined;
 }
 
 export function StablecoinChart({ data }: StablecoinChartProps) {
@@ -31,14 +31,12 @@ export function StablecoinChart({ data }: StablecoinChartProps) {
     if (chartRef.current) {
       if (data) {
         const chart = chartRef.current;
-        chart.data.labels = data.total_ust_deposit_and_borrow.map(
-          ({ timestamp }) => shortDay(timestamp),
+        chart.data.labels = data.map(({ timestamp }) => shortDay(timestamp));
+        chart.data.datasets[0].data = data.map(({ total_ust_deposits }) =>
+          big(total_ust_deposits).toNumber(),
         );
-        chart.data.datasets[0].data = data.total_ust_deposit_and_borrow.map(
-          ({ deposit }) => big(deposit).toNumber(),
-        );
-        chart.data.datasets[1].data = data.total_ust_deposit_and_borrow.map(
-          ({ total_borrowed }) => big(total_borrowed).toNumber(),
+        chart.data.datasets[1].data = data.map(({ total_borrowed }) =>
+          big(total_borrowed).toNumber(),
         );
         chart.update();
       }
@@ -68,12 +66,12 @@ export function StablecoinChart({ data }: StablecoinChartProps) {
 
                 if (div1 && div2) {
                   try {
-                    const item = dataRef.current!.total_ust_deposit_and_borrow[
+                    const item = dataRef.current![
                       tooltip.dataPoints[0].dataIndex
                     ];
 
                     div1.innerHTML = `${formatUSTWithPostfixUnits(
-                      demicrofy(item.deposit),
+                      demicrofy(item.total_ust_deposits),
                     )} UST <span>${mediumDay(item.timestamp)}</span>`;
 
                     div2.innerHTML = `${formatUSTWithPostfixUnits(
@@ -120,22 +118,19 @@ export function StablecoinChart({ data }: StablecoinChartProps) {
           },
         },
         data: {
-          labels:
-            data?.total_ust_deposit_and_borrow.map(({ timestamp }) =>
-              shortDay(timestamp),
-            ) ?? [],
+          labels: data?.map(({ timestamp }) => shortDay(timestamp)) ?? [],
           datasets: [
             {
               data:
-                data?.total_ust_deposit_and_borrow.map(({ deposit }) =>
-                  big(deposit).toNumber(),
+                data?.map(({ total_ust_deposits }) =>
+                  big(total_ust_deposits).toNumber(),
                 ) ?? [],
               borderColor: theme.colors.positive,
               borderWidth: 2,
             },
             {
               data:
-                data?.total_ust_deposit_and_borrow.map(({ total_borrowed }) =>
+                data?.map(({ total_borrowed }) =>
                   big(total_borrowed).toNumber(),
                 ) ?? [],
               borderColor: theme.textColor,

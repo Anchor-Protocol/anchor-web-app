@@ -32,13 +32,9 @@ import { CollateralsChart } from './components/CollateralsChart';
 import { StablecoinChart } from './components/StablecoinChart';
 import { TotalValueLockedDoughnutChart } from './components/TotalValueLockedDoughnutChart';
 import { useMarketANC } from './queries/marketANC';
-import { useMarketANCPriceHistory } from './queries/marketANCPriceHistory';
 import { useMarketBluna } from './queries/marketBluna';
-import { useMarketBorrow } from './queries/marketBorrow';
-import { useMarketCollaterals } from './queries/marketCollateral';
-import { useMarketCollateralsHistory } from './queries/marketCollateralsHistory';
-import { useMarketDeposit } from './queries/marketDeposit';
-import { useMarketDepositAndBorrowHistory } from './queries/marketDepositAndBorrowHistory';
+import { useMarketCollaterals } from './queries/marketCollaterals';
+import { useMarketDepositAndBorrow } from './queries/marketDepositAndBorrow';
 import { useMarketUST } from './queries/marketUST';
 
 export interface MarketProps {
@@ -73,46 +69,34 @@ function MarketBase({ className }: MarketProps) {
     };
   }, [blocksPerYear, borrowRate, epochState]);
 
-  const { data: marketDeposit } = useMarketDeposit();
-  const { data: marketBorrow } = useMarketBorrow();
-  const { data: marketCollaterals } = useMarketCollaterals();
   const { data: marketUST } = useMarketUST();
   const { data: marketBluna } = useMarketBluna();
   const { data: marketANC } = useMarketANC();
-
-  const { data: marketANCPriceHistory } = useMarketANCPriceHistory();
-  const {
-    data: marketDepositAndBorrowHistory,
-  } = useMarketDepositAndBorrowHistory();
-  const { data: marketCollateralsHistory } = useMarketCollateralsHistory();
+  const { data: marketDepositAndBorrow } = useMarketDepositAndBorrow();
+  const { data: marketCollaterals } = useMarketCollaterals();
 
   const totalValueLocked = useMemo(() => {
-    if (!marketDeposit || !marketCollaterals || !marketUST) {
+    if (!marketDepositAndBorrow?.now || !marketCollaterals?.now || !marketUST) {
       return undefined;
     }
 
     return {
-      totalDeposit: marketDeposit.total_ust_deposits,
-      totalCollaterals: marketCollaterals.total_value,
-      totalValueLocked: big(marketDeposit.total_ust_deposits).plus(
-        marketCollaterals.total_value,
-      ) as uUST<Big>,
+      totalDeposit: marketDepositAndBorrow?.now.total_ust_deposits,
+      totalCollaterals: marketCollaterals?.now.total_value,
+      totalValueLocked: big(
+        marketDepositAndBorrow?.now.total_ust_deposits,
+      ).plus(marketCollaterals?.now.total_value) as uUST<Big>,
       yieldReserve: marketUST.overseer_ust_balance,
     };
-  }, [marketCollaterals, marketDeposit, marketUST]);
+  }, [marketCollaterals?.now, marketDepositAndBorrow?.now, marketUST]);
 
   const ancPrice = useMemo(() => {
-    if (
-      !marketANCPriceHistory ||
-      marketANCPriceHistory.length === 0 ||
-      !marketANC
-    ) {
+    if (!marketANC || marketANC.history.length === 0) {
       return undefined;
     }
 
-    const last = marketANC;
-    const last1DayBefore =
-      marketANCPriceHistory[marketANCPriceHistory.length - 2];
+    const last = marketANC.now;
+    const last1DayBefore = marketANC.history[marketANC.history.length - 2];
 
     return {
       ancPriceDiff: big(
@@ -124,76 +108,65 @@ function MarketBase({ className }: MarketProps) {
         last.anc_circulating_supply,
       ) as uUST<Big>,
     };
-  }, [marketANC, marketANCPriceHistory]);
+  }, [marketANC]);
 
   const stableCoin = useMemo(() => {
     if (
-      !marketDeposit ||
-      !marketBorrow ||
       !marketUST ||
-      !marketDepositAndBorrowHistory ||
-      marketDepositAndBorrowHistory.total_ust_deposit_and_borrow.length === 0
+      !marketDepositAndBorrow ||
+      marketDepositAndBorrow.history.length === 0
     ) {
       return undefined;
     }
 
+    const last = marketDepositAndBorrow.now;
     const last1DayBefore =
-      marketDepositAndBorrowHistory.total_ust_deposit_and_borrow[
-        marketDepositAndBorrowHistory.total_ust_deposit_and_borrow.length - 2
-      ];
+      marketDepositAndBorrow.history[marketDepositAndBorrow.history.length - 2];
 
     return {
-      totalDeposit: marketDeposit.total_ust_deposits,
-      totalBorrow: marketBorrow.total_borrowed,
+      totalDeposit: last.total_ust_deposits,
+      totalBorrow: last.total_borrowed,
       totalDepositDiff: big(
-        big(marketDeposit.total_ust_deposits).minus(last1DayBefore.deposit),
-      ).div(last1DayBefore.deposit) as Rate<Big>,
+        big(last.total_ust_deposits).minus(last1DayBefore.total_ust_deposits),
+      ).div(last1DayBefore.total_ust_deposits) as Rate<Big>,
       totalBorrowDiff: big(
-        big(marketBorrow.total_borrowed).minus(last1DayBefore.total_borrowed),
+        big(last.total_borrowed).minus(last1DayBefore.total_borrowed),
       ).div(last1DayBefore.total_borrowed) as Rate<Big>,
       depositAPR: big(marketUST.deposit_rate).mul(blocksPerYear) as Rate<Big>,
       depositAPRDiff: 'TODO: API not ready...',
       borrowAPR: big(marketUST.borrow_rate).mul(blocksPerYear) as Rate<Big>,
       borrowAPRDiff: 'TODO: API not ready...',
     };
-  }, [
-    blocksPerYear,
-    marketBorrow,
-    marketDeposit,
-    marketDepositAndBorrowHistory,
-    marketUST,
-  ]);
+  }, [blocksPerYear, marketDepositAndBorrow, marketUST]);
 
   const collaterals = useMemo(() => {
     if (
       !marketCollaterals ||
       !marketBluna ||
-      !marketCollateralsHistory ||
-      marketCollateralsHistory.length === 0
+      marketCollaterals.history.length === 0
     ) {
       return undefined;
     }
 
+    const last = marketCollaterals.now;
     const last1DayBefore =
-      marketCollateralsHistory[marketCollateralsHistory.length - 2];
+      marketCollaterals.history[marketCollaterals.history.length - 2];
 
     return {
-      mainTotalCollateralValue: marketCollaterals.total_value,
+      mainTotalCollateralValue: last.total_value,
       totalCollateralValueGraph: 'TODO: API not ready...',
       blunaPrice: marketBluna.bLuna_price,
       blunaPriceDiff: 'TODO: API not ready...',
-      totalCollateral: marketCollaterals.collaterals.find(
-        ({ bluna }) => !!bluna,
-      )?.bluna,
+      totalCollateral: last.collaterals.find(({ bluna }) => !!bluna)?.bluna,
       totalCollateralDiff: big(
-        big(marketCollaterals.total_value).minus(last1DayBefore.total_value),
+        big(last.total_value).minus(last1DayBefore.total_value),
       ).div(last1DayBefore.total_value) as Rate<Big>,
       totalCollateralValue: big(
-        marketCollaterals.collaterals.find(({ bluna }) => !!bluna)?.bluna ?? 1,
+        last.collaterals.find(({ bluna }) => !!bluna)?.bluna ?? 1,
       ).mul(marketBluna.bLuna_price) as uUST<Big>,
       totalCollateralValueDiff: 'TODO: API not ready...',
     };
-  }, [marketBluna, marketCollaterals, marketCollateralsHistory]);
+  }, [marketBluna, marketCollaterals]);
 
   return (
     <div className={className}>
@@ -320,7 +293,7 @@ function MarketBase({ className }: MarketProps) {
               </header>
               <figure>
                 <div>
-                  <ANCPriceChart data={marketANCPriceHistory} />
+                  <ANCPriceChart data={marketANC?.history} />
                 </div>
               </figure>
             </Section>
@@ -409,7 +382,7 @@ function MarketBase({ className }: MarketProps) {
 
             <figure>
               <div>
-                <StablecoinChart data={marketDepositAndBorrowHistory} />
+                <StablecoinChart data={marketDepositAndBorrow?.history} />
               </div>
             </figure>
 
@@ -543,7 +516,7 @@ function MarketBase({ className }: MarketProps) {
 
             <figure>
               <div>
-                <CollateralsChart data={marketCollateralsHistory} />
+                <CollateralsChart data={marketCollaterals?.history} />
               </div>
             </figure>
 

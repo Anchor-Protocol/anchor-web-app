@@ -6,7 +6,7 @@ import big from 'big.js';
 import { Chart } from 'chart.js';
 import React, { useEffect, useRef } from 'react';
 import styled, { useTheme } from 'styled-components';
-import { MarketCollateralsHistory } from '../queries/marketCollateralsHistory';
+import { MarketCollateralsHistory } from '../queries/marketCollaterals';
 import { ChartTooltip } from './ChartTooltip';
 import { mediumDay, shortDay } from './internal/dateFormatters';
 

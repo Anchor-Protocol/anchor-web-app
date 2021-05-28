@@ -32,7 +32,7 @@ export const formatDemimal = ({
   const ii = delimiter ? numeral(i).format('0,0') : i;
   const dd = d ? '.' + d : '';
 
-  return ii + dd;
+  return (ii === '0' && num[0] === '-' ? '-' : '') + ii + dd;
 };
 
 export const formatInteger = ({ delimiter }: { delimiter: boolean }) => (
@@ -66,7 +66,7 @@ export function formatFluidDecimalPoints(
   const ii = delimiter ? numeral(i).format('0,0') : i;
   const dd = d ? '.' + d : '';
 
-  return ii + dd;
+  return (ii === '0' && num[0] === '-' ? '-' : '') + ii + dd;
 }
 
 // ---------------------------------------------
