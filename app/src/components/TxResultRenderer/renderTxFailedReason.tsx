@@ -141,60 +141,34 @@ export function renderTxFailedReason({
     return (
       <>
         <h2>Failed to broadcast transaction</h2>
-        <div>
-          <pre>{createTxFailedMessage(error.message)}</pre>
-          {errorId && (
-            <p>
-              <b>Error ID</b>: {errorId}
-            </p>
-          )}
-        </div>
-        <div style={{ display: 'none' }}>
-          <pre>{JSON.stringify(error.tx, null, 2)}</pre>
-        </div>
+        <ErrorMessageView error={error} errorId={errorId}>
+          {createTxFailedMessage(error.message)}
+        </ErrorMessageView>
       </>
     );
   } else if (error instanceof TxFailed) {
     return (
       <>
-        <h2>Failed to transaction</h2>
-        <div>
-          <pre>{txFailedMessage(error.txhash, error.message)}</pre>
-          {errorId && (
-            <p>
-              <b>Error ID</b>: {errorId}
-            </p>
-          )}
-        </div>
-        <div style={{ display: 'none' }}>
-          <pre>{error.raw_message}</pre>
-        </div>
+        <h2>Transaction failed</h2>
+        <ErrorMessageView error={error} errorId={errorId}>
+          {txFailedMessage(error.txhash, error.message)}
+        </ErrorMessageView>
       </>
     );
   } else if (error instanceof Timeout) {
     return (
       <>
         <h2>Timeout</h2>
-        <div>
-          <pre>{error.message}</pre>
-        </div>
+        <div>{error.message}</div>
       </>
     );
   } else if (error instanceof TxUnspecifiedError) {
     return (
       <>
-        <h2>Failed to transaction</h2>
-        <div>
-          <pre>{txUnspecifiedErrorMessage(error.message)}</pre>
-          {errorId && (
-            <p>
-              <b>Error ID</b>: {errorId}
-            </p>
-          )}
-        </div>
-        <div style={{ display: 'none' }}>
-          <pre>{error.toString()}</pre>
-        </div>
+        <h2>Transaction failed</h2>
+        <ErrorMessageView error={error} errorId={errorId}>
+          {txUnspecifiedErrorMessage(error.message)}
+        </ErrorMessageView>
       </>
     );
   }
@@ -204,56 +178,56 @@ export function renderTxFailedReason({
   } else if (error instanceof TxInfoError) {
     return (
       <>
-        <h2>Failed to transaction</h2>
-        <div>
-          <pre>{error.message}</pre>
-          {errorId && (
-            <p>
-              <b>Error ID</b>: {errorId}
-            </p>
-          )}
-        </div>
+        <h2>Transaction failed</h2>
+        <ErrorMessageView error={error} errorId={errorId}>
+          {error.message}
+        </ErrorMessageView>
       </>
     );
   } else if (error instanceof TxInfoParseError) {
     return (
       <>
         <h2>Failed to parse transaction results</h2>
-        <div>
-          <pre>
-            {txParseFailedMessage(error.txResult.result.txhash, error.message)}
-          </pre>
-          {errorId && (
-            <p>
-              <b>Error ID</b>: {errorId}
-            </p>
-          )}
-        </div>
-        <div style={{ display: 'none' }}>
-          <pre>{error.toString()}</pre>
-        </div>
+        <ErrorMessageView error={error} errorId={errorId}>
+          {txParseFailedMessage(error.txResult.result.txhash, error.message)}
+        </ErrorMessageView>
       </>
     );
   } else {
     return (
       <>
         <h2>Oops, something went wrong!</h2>
-        <div>
-          <pre>
-            {uncaughtErrorMessage(
-              error instanceof Error ? error.message : String(error),
-            )}
-          </pre>
-          {errorId && (
-            <p>
-              <b>Error ID</b>: {errorId}
-            </p>
+        <ErrorMessageView error={error} errorId={errorId}>
+          {uncaughtErrorMessage(
+            error instanceof Error ? error.message : String(error),
           )}
-        </div>
-        <div style={{ display: 'none' }}>
-          <pre>{String(error)}</pre>
-        </div>
+        </ErrorMessageView>
       </>
     );
   }
+}
+
+function ErrorMessageView({
+  children,
+  error,
+  errorId,
+}: {
+  children: ReactNode;
+  error: unknown;
+  errorId?: string | null;
+}) {
+  return (
+    <div>
+      {error instanceof Error && error.message.length > 0 ? (
+        <div style={{ lineHeight: '1.8em' }}>{error.message}</div>
+      ) : (
+        children
+      )}
+      {!(error instanceof Error && error.message.length > 0) && errorId && (
+        <p>
+          <b>Error ID</b>: {errorId}
+        </p>
+      )}
+    </div>
+  );
 }
