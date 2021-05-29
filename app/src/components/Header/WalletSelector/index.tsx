@@ -44,6 +44,22 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   const bank = useBank();
 
   const [airdrop] = useAirdrop();
+  //const airdrop = useMemo<Airdrop | 'in-progress' | null>(
+  //  () => ({
+  //    createdAt: '',
+  //    id: 1,
+  //    stage: 1,
+  //    address: '',
+  //    staked: '100000000' as uANC,
+  //    total: '100000000' as uANC,
+  //    rate: '0.1' as Rate,
+  //    amount: '100000000' as uANC,
+  //    proof: '',
+  //    merkleRoot: '',
+  //    claimable: true,
+  //  }),
+  //  [],
+  //);
 
   const matchAirdrop = useRouteMatch('/airdrop');
 

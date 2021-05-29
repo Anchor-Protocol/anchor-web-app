@@ -9,7 +9,9 @@ import {
   WalletStatus,
 } from '@terra-money/wallet-provider';
 import logoUrl from 'components/Header/assets/Logo.svg';
+import { AirdropContent } from 'components/Header/WalletSelector/AirdropContent';
 import { links, mobileHeaderHeight } from 'env';
+import { useAirdrop } from 'pages/airdrop/queries/useAirdrop';
 import { govPathname } from 'pages/gov/env';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import React, { useCallback, useState } from 'react';
@@ -22,6 +24,8 @@ export interface MobileHeaderProps {
   className?: string;
 }
 
+let _airdropClosed: boolean = false;
+
 function MobileHeaderBase({ className }: MobileHeaderProps) {
   const [open, setOpen] = useState<boolean>(false);
 
@@ -30,6 +34,33 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
   const [openWalletDetail, walletDetailElement] = useWalletDetailDialog();
 
   const [openSendDialog, sendDialogElement] = useSendDialog();
+
+  const [airdrop] = useAirdrop();
+  //const airdrop = useMemo<Airdrop | 'in-progress' | null>(
+  //  () => ({
+  //    createdAt: '',
+  //    id: 1,
+  //    stage: 1,
+  //    address: '',
+  //    staked: '100000000' as uANC,
+  //    total: '100000000' as uANC,
+  //    rate: '0.1' as Rate,
+  //    amount: '100000000' as uANC,
+  //    proof: '',
+  //    merkleRoot: '',
+  //    claimable: true,
+  //  }),
+  //  [],
+  //);
+
+  const matchAirdrop = useRouteMatch('/airdrop');
+
+  const [airdropClosed, setAirdropClosed] = useState(() => _airdropClosed);
+
+  const closeAirdrop = useCallback(() => {
+    setAirdropClosed(true);
+    _airdropClosed = true;
+  }, []);
 
   const toggleWallet = useCallback(() => {
     if (status === WalletStatus.WALLET_CONNECTED) {
@@ -111,6 +142,16 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
             offIcon={Menu}
           />
         </section>
+
+        {!open &&
+          !airdropClosed &&
+          airdrop &&
+          airdrop !== 'in-progress' &&
+          !matchAirdrop && (
+            <section className="airdrop">
+              <AirdropContent onClose={closeAirdrop} isMobileLayout />
+            </section>
+          )}
       </header>
 
       {open && <div style={{ height: mobileHeaderHeight }} />}
@@ -222,6 +263,11 @@ export const MobileHeader = styled(MobileHeaderBase)`
         }
       }
     }
+  }
+
+  .airdrop {
+    padding-bottom: 20px;
+    background-color: ${({ theme }) => theme.backgroundColor};
   }
 
   // ---------------------------------------------
