@@ -111,20 +111,19 @@ export async function bondWithdrawableAmountQuery({
     `${mantleEndpoint}?bond--withdrawable-requests`,
   );
 
-  const withdrawableAmountData: Pick<
-    BondWithdrawableAmountData,
-    'unbondedRequests' | 'withdrawableUnbonded'
-  > = JSON.parse(withdrawableAmountRawData.unbondedRequests.Result);
+  const unbondedRequests: bluna.hub.UnbondRequestsResponse = JSON.parse(
+    withdrawableAmountRawData.unbondedRequests.Result,
+  );
+
+  const withdrawableUnbonded: bluna.hub.WithdrawableUnbondedResponse = JSON.parse(
+    withdrawableAmountRawData.withdrawableUnbonded.Result,
+  );
 
   const unbondedRequestsStartFrom: number =
-    withdrawableAmountData.unbondedRequests.requests.length > 0
+    unbondedRequests.requests.length > 0
       ? Math.max(
           0,
-          Math.min(
-            ...withdrawableAmountData.unbondedRequests.requests.map(
-              ([index]) => index,
-            ),
-          ) - 1,
+          Math.min(...unbondedRequests.requests.map(([index]) => index)) - 1,
         )
       : 0;
 
@@ -145,14 +144,16 @@ export async function bondWithdrawableAmountQuery({
     );
 
     return {
-      ...withdrawableAmountData,
+      withdrawableUnbonded,
+      unbondedRequests,
+      unbondedRequestsStartFrom,
       allHistory: JSON.parse(withdrawHistoryRawData.allHistory.Result),
       parameters: JSON.parse(withdrawHistoryRawData.parameters.Result),
-      unbondedRequestsStartFrom,
     };
   } else {
     return {
-      ...withdrawableAmountData,
+      withdrawableUnbonded,
+      unbondedRequests,
       unbondedRequestsStartFrom,
       allHistory: {
         history: [],
