@@ -7,7 +7,6 @@ import {
   useRefetchQueries,
   useTerraWebapp,
 } from '@terra-money/webapp-provider';
-import { BigSource } from 'big.js';
 import { useCallback } from 'react';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
@@ -15,7 +14,6 @@ import { ANCHOR_TX_KEY } from '../../env';
 export interface BondMintTxParams {
   bondAmount: Luna;
   validator: string;
-  txFee: uUST<BigSource>;
   onTxSucceed?: () => void;
 }
 
@@ -32,7 +30,7 @@ export function useBondMintTx() {
   const { dispatch } = useOperationBroadcaster();
 
   const stream = useCallback(
-    ({ bondAmount, validator, txFee, onTxSucceed }: BondMintTxParams) => {
+    ({ bondAmount, validator, onTxSucceed }: BondMintTxParams) => {
       if (!connectedWallet || !connectedWallet.availablePost) {
         throw new Error('Can not post!');
       }
@@ -46,7 +44,7 @@ export function useBondMintTx() {
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        txFee: txFee.toString() as uUST,
+        txFee: constants.fixedGas.toString() as uUST,
         gasFee: constants.gasFee,
         gasAdjustment: constants.gasAdjustment,
         // query
@@ -65,6 +63,7 @@ export function useBondMintTx() {
     [
       connectedWallet,
       addressProvider,
+      constants.fixedGas,
       constants.gasFee,
       constants.gasAdjustment,
       mantleEndpoint,

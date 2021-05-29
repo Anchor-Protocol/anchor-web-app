@@ -16,6 +16,7 @@ export interface BondWithdrawableAmountData {
   unbondedRequests: bluna.hub.UnbondRequestsResponse;
   allHistory: bluna.hub.AllHistoryResponse;
   parameters?: bluna.hub.ParametersResponse;
+  unbondedRequestsStartFrom: number;
 }
 
 export interface BondWithdrawableAmountRawVariables {
@@ -147,10 +148,12 @@ export async function bondWithdrawableAmountQuery({
       ...withdrawableAmountData,
       allHistory: JSON.parse(withdrawHistoryRawData.allHistory.Result),
       parameters: JSON.parse(withdrawHistoryRawData.parameters.Result),
+      unbondedRequestsStartFrom,
     };
   } else {
     return {
       ...withdrawableAmountData,
+      unbondedRequestsStartFrom,
       allHistory: {
         history: [],
       },

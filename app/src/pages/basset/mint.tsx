@@ -6,13 +6,15 @@ import {
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { bLuna, Luna, uUST } from '@anchor-protocol/types';
+import { bLuna, Luna } from '@anchor-protocol/types';
 import {
-  ConnectedWallet,
-  useConnectedWallet,
-} from '@terra-money/wallet-provider';
+  useAnchorWebapp,
+  useBondBLunaExchangeRateQuery,
+  useBondMintTx,
+  useBondValidators,
+} from '@anchor-protocol/webapp-provider';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
-import { useOperation } from '@terra-dev/broadcastable-operation';
+import { StreamStatus } from '@rx-stream/react';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
@@ -20,22 +22,19 @@ import { NativeSelect } from '@terra-dev/neumorphism-ui/components/NativeSelect'
 import { NumberMuiInput } from '@terra-dev/neumorphism-ui/components/NumberMuiInput';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
 import big, { Big } from 'big.js';
 import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
-import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
 import { pegRecovery } from 'pages/basset/logics/pegRecovery';
 import { validateBondAmount } from 'pages/basset/logics/validateBondAmount';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { useExchangeRate } from './queries/exchangeRate';
 import * as val from './queries/validators';
-import { useValidators } from './queries/validators';
-import { mintOptions } from './transactions/mintOptions';
 
 export interface MintProps {
   className?: string;
@@ -55,9 +54,11 @@ function MintBase({ className }: MintProps) {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const { fixedGas } = useConstants();
+  const {
+    constants: { fixedGas },
+  } = useAnchorWebapp();
 
-  const [mint, mintResult] = useOperation(mintOptions, {});
+  const [mint, mintResult] = useBondMintTx();
 
   // ---------------------------------------------
   // states
@@ -81,17 +82,11 @@ function MintBase({ className }: MintProps) {
   // ---------------------------------------------
   const bank = useBank();
 
-  const {
-    data: { whitelistedValidators },
-  } = useValidators({
-    bAsset: mintCurrency.value,
-  });
+  const { data: { whitelistedValidators } = {} } = useBondValidators();
 
   const {
-    data: { exchangeRate, parameters },
-  } = useExchangeRate({
-    bAsset: mintCurrency.value,
-  });
+    data: { state: exchangeRate, parameters } = {},
+  } = useBondBLunaExchangeRateQuery();
 
   // ---------------------------------------------
   // logics
@@ -171,36 +166,45 @@ function MintBase({ className }: MintProps) {
   }, []);
 
   const proceed = useCallback(
-    async (
-      walletReady: ConnectedWallet,
-      bondAmount: Luna,
-      selectedValidator: string,
-    ) => {
-      const broadcasted = await mint({
-        address: walletReady.walletAddress,
-        amount: bondAmount,
-        validator: selectedValidator,
-        txFee: fixedGas.toString() as uUST,
-      });
-
-      if (!broadcasted) {
-        init();
+    (bondAmount: Luna, selectedValidator: string) => {
+      if (!connectedWallet || !mint) {
+        return;
       }
+
+      mint({
+        bondAmount,
+        validator: selectedValidator,
+        onTxSucceed: () => {
+          init();
+        },
+      });
     },
-    [fixedGas, init, mint],
+    [connectedWallet, init, mint],
   );
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
   if (
-    mintResult?.status === 'in-progress' ||
-    mintResult?.status === 'done' ||
-    mintResult?.status === 'fault'
+    mintResult?.status === StreamStatus.IN_PROGRESS ||
+    mintResult?.status === StreamStatus.DONE
   ) {
     return (
       <Section className={className}>
-        <TransactionRenderer result={mintResult} onExit={init} />
+        <TxResultRenderer
+          resultRendering={mintResult.value}
+          onExit={() => {
+            init();
+            switch (mintResult.status) {
+              case StreamStatus.IN_PROGRESS:
+                mintResult.abort();
+                break;
+              case StreamStatus.DONE:
+                mintResult.clear();
+                break;
+            }
+          }}
+        />
       </Section>
     );
   }
@@ -368,6 +372,7 @@ function MintBase({ className }: MintProps) {
         disabled={
           !connectedWallet ||
           !connectedWallet.availablePost ||
+          !mint ||
           bondAmount.length === 0 ||
           big(bondAmount).lte(0) ||
           !!invalidBondAmount ||
@@ -375,13 +380,8 @@ function MintBase({ className }: MintProps) {
           !selectedValidator
         }
         onClick={() =>
-          connectedWallet &&
-          selectedValidator?.OperatorAddress &&
-          proceed(
-            connectedWallet,
-            bondAmount,
-            selectedValidator.OperatorAddress,
-          )
+          selectedValidator &&
+          proceed(bondAmount, selectedValidator.OperatorAddress)
         }
       >
         Mint

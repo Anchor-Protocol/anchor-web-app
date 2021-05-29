@@ -1,25 +1,22 @@
 import { demicrofy, formatLuna } from '@anchor-protocol/notation';
-import type { uLuna, uUST } from '@anchor-protocol/types';
+import type { uLuna } from '@anchor-protocol/types';
 import {
-  ConnectedWallet,
-  useConnectedWallet,
-} from '@terra-money/wallet-provider';
-import { useOperation } from '@terra-dev/broadcastable-operation';
+  useAnchorWebapp,
+  useBondWithdrawableAmount,
+  useBondWithdrawTx,
+} from '@anchor-protocol/webapp-provider';
+import { StreamStatus } from '@rx-stream/react';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { NativeSelect } from '@terra-dev/neumorphism-ui/components/NativeSelect';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
-import { TransactionRenderer } from 'components/TransactionRenderer';
+import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
-import { withdrawAllHistory } from 'pages/basset/logics/withdrawAllHistory';
-import { useWithdrawable } from 'pages/basset/queries/withdrawable';
-import { useWithdrawHistory } from 'pages/basset/queries/withdrawHistory';
-import { withdrawOptions } from 'pages/basset/transactions/withdrawOptions';
 import React, {
   ChangeEvent,
   useCallback,
@@ -27,6 +24,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { withdrawAllHistory } from '../logics/withdrawAllHistory';
 
 export interface WithdrawSectionProps {
   disabled: boolean;
@@ -49,9 +47,11 @@ export function WithdrawSection({
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const { fixedGas } = useConstants();
+  const {
+    constants: { fixedGas },
+  } = useAnchorWebapp();
 
-  const [withdraw, withdrawResult] = useOperation(withdrawOptions, {});
+  const [withdraw, withdrawResult] = useBondWithdrawTx();
 
   // ---------------------------------------------
   // states
@@ -66,16 +66,14 @@ export function WithdrawSection({
   const bank = useBank();
 
   const {
-    data: { withdrawableAmount: _withdrawableAmount, withdrawRequests },
-  } = useWithdrawable({
-    bAsset: 'bluna',
-  });
-
-  const {
-    data: { allHistory, parameters },
-  } = useWithdrawHistory({
-    withdrawRequestsStartFrom: withdrawRequests?.startFrom,
-  });
+    data: {
+      withdrawableUnbonded: _withdrawableAmount,
+      unbondedRequests: withdrawRequests,
+      unbondedRequestsStartFrom,
+      allHistory,
+      parameters,
+    } = {},
+  } = useBondWithdrawableAmount();
 
   // ---------------------------------------------
   // logics
@@ -86,8 +84,14 @@ export function WithdrawSection({
   );
 
   const withdrawHistory = useMemo(
-    () => withdrawAllHistory(withdrawRequests, allHistory, parameters),
-    [allHistory, parameters, withdrawRequests],
+    () =>
+      withdrawAllHistory(
+        withdrawRequests,
+        unbondedRequestsStartFrom ?? -1,
+        allHistory,
+        parameters,
+      ),
+    [allHistory, parameters, unbondedRequestsStartFrom, withdrawRequests],
   );
 
   const withdrawableAmount = useMemo(
@@ -109,34 +113,34 @@ export function WithdrawSection({
     [],
   );
 
-  const proceed = useCallback(
-    async (walletReady: ConnectedWallet) => {
-      await withdraw({
-        address: walletReady.walletAddress,
-        txFee: fixedGas.toString() as uUST,
-      });
-    },
-    [fixedGas, withdraw],
-  );
+  const proceed = useCallback(() => {
+    if (!connectedWallet || !withdraw) {
+      return;
+    }
+
+    withdraw({});
+  }, [connectedWallet, withdraw]);
 
   // ---------------------------------------------
   // effects
   // ---------------------------------------------
   useEffect(() => {
-    onProgress(withdrawResult?.status === 'in-progress');
+    onProgress(withdrawResult?.status === StreamStatus.IN_PROGRESS);
   }, [onProgress, withdrawResult?.status]);
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
   if (
-    withdrawResult?.status === 'in-progress' ||
-    withdrawResult?.status === 'done' ||
-    withdrawResult?.status === 'fault'
+    withdrawResult?.status === StreamStatus.IN_PROGRESS ||
+    withdrawResult?.status === StreamStatus.DONE
   ) {
     return (
       <Section>
-        <TransactionRenderer result={withdrawResult} />
+        <TxResultRenderer
+          resultRendering={withdrawResult.value}
+          onExit={() => {}}
+        />
       </Section>
     );
   }
@@ -189,11 +193,12 @@ export function WithdrawSection({
         disabled={
           !connectedWallet ||
           !connectedWallet.availablePost ||
+          !withdraw ||
           !!invalidTxFee ||
           withdrawableAmount.lte(0) ||
           disabled
         }
-        onClick={() => connectedWallet && proceed(connectedWallet)}
+        onClick={() => proceed()}
       >
         Withdraw
       </ActionButton>

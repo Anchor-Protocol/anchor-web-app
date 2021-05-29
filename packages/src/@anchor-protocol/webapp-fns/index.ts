@@ -10,6 +10,8 @@ export * from './computes/borrow/computeCurrentLtv';
 export * from './forms/earn/deposit';
 export * from './forms/earn/withdraw';
 
+export * from './queries/terraswap/simulation';
+export * from './queries/terraswap/reverseSimulation';
 export * from './queries/earn/epochStates';
 export * from './queries/earn/apyHistory';
 export * from './queries/earn/transactionHistory';

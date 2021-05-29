@@ -1,21 +1,20 @@
 import { demicrofy, formatUST } from '@anchor-protocol/notation';
 import {
-  ConnectedWallet,
-  useConnectedWallet,
-} from '@terra-money/wallet-provider';
-import { useOperation } from '@terra-dev/broadcastable-operation';
+  useAnchorWebapp,
+  useBondClaimableRewards,
+  useBondClaimTx,
+} from '@anchor-protocol/webapp-provider';
+import { StreamStatus } from '@rx-stream/react';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
 import big from 'big.js';
 import { MessageBox } from 'components/MessageBox';
-import { TransactionRenderer } from 'components/TransactionRenderer';
+import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
-import { useClaimable } from 'pages/basset/queries/claimable';
-import { claimOptions } from 'pages/basset/transactions/claimOptions';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { claimableRewards as _claimableRewards } from '../logics/claimableRewards';
 
@@ -30,9 +29,11 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const { fixedGas } = useConstants();
+  const {
+    constants: { fixedGas },
+  } = useAnchorWebapp();
 
-  const [claim, claimResult] = useOperation(claimOptions, {});
+  const [claim, claimResult] = useBondClaimTx();
 
   // ---------------------------------------------
   // queries
@@ -40,8 +41,8 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
   const bank = useBank();
 
   const {
-    data: { rewardState, claimableReward },
-  } = useClaimable();
+    data: { rewardState, claimableReward } = {},
+  } = useBondClaimableRewards();
 
   // ---------------------------------------------
   // logics
@@ -59,33 +60,34 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
-  const proceed = useCallback(
-    async (walletReady: ConnectedWallet) => {
-      await claim({
-        address: walletReady.walletAddress,
-      });
-    },
-    [claim],
-  );
+  const proceed = useCallback(() => {
+    if (!connectedWallet || !claim) {
+      return;
+    }
+
+    claim({});
+  }, [claim, connectedWallet]);
 
   // ---------------------------------------------
   // effects
   // ---------------------------------------------
   useEffect(() => {
-    onProgress(claimResult?.status === 'in-progress');
+    onProgress(claimResult?.status === StreamStatus.IN_PROGRESS);
   }, [claimResult?.status, onProgress]);
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
   if (
-    claimResult?.status === 'in-progress' ||
-    claimResult?.status === 'done' ||
-    claimResult?.status === 'fault'
+    claimResult?.status === StreamStatus.IN_PROGRESS ||
+    claimResult?.status === StreamStatus.DONE
   ) {
     return (
       <Section>
-        <TransactionRenderer result={claimResult} />
+        <TxResultRenderer
+          resultRendering={claimResult.value}
+          onExit={() => {}}
+        />
       </Section>
     );
   }
@@ -119,11 +121,12 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
         disabled={
           !connectedWallet ||
           !connectedWallet.availablePost ||
+          !claim ||
           !!invalidTxFee ||
           claimableRewards.lte(fixedGas) ||
           disabled
         }
-        onClick={() => connectedWallet && proceed(connectedWallet)}
+        onClick={() => proceed()}
       >
         Claim
       </ActionButton>
