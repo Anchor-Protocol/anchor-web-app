@@ -1,6 +1,6 @@
 import { HumanAddr } from '@anchor-protocol/types';
 import {
-  BondBLunaExchangeRateData,
+  BondBLunaPriceData,
   bondBLunaPriceQuery,
 } from '@anchor-protocol/webapp-fns';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
@@ -25,7 +25,7 @@ const queryFn = ({
 };
 
 export function useBondBLunaPriceQuery(): UseQueryResult<
-  BondBLunaExchangeRateData | undefined
+  BondBLunaPriceData | undefined
 > {
   const { mantleFetch, mantleEndpoint } = useTerraWebapp();
 

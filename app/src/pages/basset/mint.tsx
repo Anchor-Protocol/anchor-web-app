@@ -8,6 +8,7 @@ import {
 } from '@anchor-protocol/notation';
 import { bLuna, Luna } from '@anchor-protocol/types';
 import {
+  StakingValidator,
   useAnchorWebapp,
   useBondBLunaExchangeRateQuery,
   useBondMintTx,
@@ -34,7 +35,6 @@ import { pegRecovery } from 'pages/basset/logics/pegRecovery';
 import { validateBondAmount } from 'pages/basset/logics/validateBondAmount';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import * as val from './queries/validators';
 
 export interface MintProps {
   className?: string;
@@ -73,9 +73,10 @@ function MintBase({ className }: MintProps) {
     () => bAssetCurrencies[0],
   );
 
-  const [selectedValidator, setSelectedValidator] = useState<
-    val.Data['validators'][number] | null
-  >(null);
+  const [
+    selectedValidator,
+    setSelectedValidator,
+  ] = useState<StakingValidator | null>(null);
 
   // ---------------------------------------------
   // queries

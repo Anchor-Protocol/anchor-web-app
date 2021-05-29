@@ -21,6 +21,7 @@ import { terraswap } from '@anchor-protocol/types';
 import {
   terraswapSimulationQuery,
   useAnchorWebapp,
+  useBondBLunaPriceQuery,
   useBondSwapTx,
 } from '@anchor-protocol/webapp-provider';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
@@ -50,7 +51,8 @@ import { swapBurnSimulation } from '../logics/swapBurnSimulation';
 import { swapGetSimulation } from '../logics/swapGetSimulation';
 import { validateBurnAmount } from '../logics/validateBurnAmount';
 import { SwapSimulation } from '../models/swapSimulation';
-import { useTerraswapBLunaPrice } from '../queries/terraswapBLunaPrice';
+
+//import { useTerraswapBLunaPrice } from '../queries/terraswapBLunaPrice';
 
 interface Item {
   label: string;
@@ -94,9 +96,11 @@ export function Swap() {
   // ---------------------------------------------
   const bank = useBank();
 
-  const {
-    data: { terraswapPoolInfo: bLunaPrice },
-  } = useTerraswapBLunaPrice();
+  const { data: { bLunaPrice } = {} } = useBondBLunaPriceQuery();
+
+  //const {
+  //  data: { terraswapPoolInfo: bLunaPrice },
+  //} = useTerraswapBLunaPrice();
 
   // ---------------------------------------------
   // logics
