@@ -3,7 +3,7 @@ import { CreateTxOptions } from '@terra-money/terra.js';
 /** User denied the request */
 export class UserDenied extends Error {
   constructor() {
-    super('User Dinied');
+    super('User Denied');
     this.name = 'UserDenied';
   }
 
