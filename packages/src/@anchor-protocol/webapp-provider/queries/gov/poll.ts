@@ -36,7 +36,7 @@ export function useGovPollQuery(
 
   const result = useQuery(
     [
-      ANCHOR_QUERY_KEY.GOV_DISTRIBUTION_MODEL_UPDATE_CONFIG,
+      ANCHOR_QUERY_KEY.GOV_POLL,
       mantleEndpoint,
       mantleFetch,
       anchorToken.gov,

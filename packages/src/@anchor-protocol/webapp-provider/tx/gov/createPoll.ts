@@ -1,6 +1,6 @@
-import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
-import { aUST, uUST } from '@anchor-protocol/types';
-import { earnWithdrawTx } from '@anchor-protocol/webapp-fns';
+import { ExecuteMsg } from '@anchor-protocol/anchor.js';
+import { ANC, uUST } from '@anchor-protocol/types';
+import { govCreatePollTx } from '@anchor-protocol/webapp-fns';
 import { useStream } from '@rx-stream/react';
 import { useOperationBroadcaster } from '@terra-dev/broadcastable-operation';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
@@ -12,13 +12,17 @@ import { useCallback } from 'react';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 
-export interface EarnWithdrawTxParams {
-  withdrawAmount: aUST;
-  txFee: uUST;
+export interface GovCreatePollTxParams {
+  amount: ANC;
+  title: string;
+  description: string;
+  link: string | undefined;
+  executeMsgs: ExecuteMsg[];
+
   onTxSucceed?: () => void;
 }
 
-export function useEarnWithdrawTx() {
+export function useGovCreatePollTx() {
   const connectedWallet = useConnectedWallet();
 
   const { addressProvider, constants } = useAnchorWebapp();
@@ -31,20 +35,30 @@ export function useEarnWithdrawTx() {
   const { dispatch } = useOperationBroadcaster();
 
   const stream = useCallback(
-    ({ withdrawAmount, txFee, onTxSucceed }: EarnWithdrawTxParams) => {
+    ({
+      amount,
+      title,
+      description,
+      link,
+      executeMsgs,
+      onTxSucceed,
+    }: GovCreatePollTxParams) => {
       if (!connectedWallet || !connectedWallet.availablePost) {
         throw new Error('Can not post!');
       }
 
-      return earnWithdrawTx({
-        // fabricateMarketReedeemStableCoin
+      return govCreatePollTx({
+        // fabricateGovCreatePoll
         address: connectedWallet.walletAddress,
-        market: MARKET_DENOMS.UUSD,
-        amount: withdrawAmount,
+        amount,
+        title,
+        description,
+        link,
+        execute_msgs: executeMsgs,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        txFee: txFee.toString() as uUST,
+        fixedGas: constants.fixedGas.toString() as uUST,
         gasFee: constants.gasFee,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
@@ -56,16 +70,17 @@ export function useEarnWithdrawTx() {
         // side effect
         onTxSucceed: () => {
           onTxSucceed?.();
-          refetchQueries(ANCHOR_TX_KEY.EARN_WITHDRAW);
+          refetchQueries(ANCHOR_TX_KEY.GOV_CREATE_POLL);
           dispatch('', 'done');
         },
       });
     },
     [
       connectedWallet,
-      addressProvider,
+      constants.fixedGas,
       constants.gasFee,
       constants.gasAdjustment,
+      addressProvider,
       mantleEndpoint,
       mantleFetch,
       txErrorReporter,

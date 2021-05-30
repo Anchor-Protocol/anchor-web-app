@@ -45,13 +45,13 @@ export function useBorrowBorrowTx() {
         address: connectedWallet.walletAddress,
         market: MARKET_DENOMS.UUSD,
         amount: borrowAmount,
-        addressProvider,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         txFee,
         gasFee: constants.gasFee,
         gasAdjustment: constants.gasAdjustment,
+        addressProvider,
         // query
         mantleEndpoint,
         mantleFetch,

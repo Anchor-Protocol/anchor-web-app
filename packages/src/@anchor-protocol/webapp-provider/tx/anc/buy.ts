@@ -1,50 +1,64 @@
-import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
-import { aUST, uUST } from '@anchor-protocol/types';
-import { earnWithdrawTx } from '@anchor-protocol/webapp-fns';
+import { formatExecuteMsgNumber } from '@anchor-protocol/notation';
+import { UST, uUST } from '@anchor-protocol/types';
+import { ancBuyTx } from '@anchor-protocol/webapp-fns';
+import { useAncPriceQuery } from '@anchor-protocol/webapp-provider';
 import { useStream } from '@rx-stream/react';
 import { useOperationBroadcaster } from '@terra-dev/broadcastable-operation';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import {
+  useBank,
   useRefetchQueries,
   useTerraWebapp,
 } from '@terra-money/webapp-provider';
+import big from 'big.js';
 import { useCallback } from 'react';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 
-export interface EarnWithdrawTxParams {
-  withdrawAmount: aUST;
+export interface AncBuyTxParams {
+  fromAmount: UST;
   txFee: uUST;
+
   onTxSucceed?: () => void;
 }
 
-export function useEarnWithdrawTx() {
+export function useAncBuyTx() {
   const connectedWallet = useConnectedWallet();
 
   const { addressProvider, constants } = useAnchorWebapp();
+
+  const { tax } = useBank();
 
   const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
 
   const refetchQueries = useRefetchQueries();
 
+  const { data: { ancPrice } = {} } = useAncPriceQuery();
+
   // TODO remove
   const { dispatch } = useOperationBroadcaster();
 
   const stream = useCallback(
-    ({ withdrawAmount, txFee, onTxSucceed }: EarnWithdrawTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost) {
+    ({ fromAmount, txFee, onTxSucceed }: AncBuyTxParams) => {
+      if (!connectedWallet || !connectedWallet.availablePost || !ancPrice) {
         throw new Error('Can not post!');
       }
 
-      return earnWithdrawTx({
-        // fabricateMarketReedeemStableCoin
+      return ancBuyTx({
+        // fabricatebBuy
         address: connectedWallet.walletAddress,
-        market: MARKET_DENOMS.UUSD,
-        amount: withdrawAmount,
+        amount: fromAmount,
+        denom: 'uusd',
+        beliefPrice: formatExecuteMsgNumber(
+          big(ancPrice.USTPoolSize).div(ancPrice.ANCPoolSize),
+        ),
+        maxSpread: '0.1',
         // post
+        tax,
         network: connectedWallet.network,
         post: connectedWallet.post,
-        txFee: txFee.toString() as uUST,
+        txFee,
+        fixedGas: constants.fixedGas.toString() as uUST,
         gasFee: constants.gasFee,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
@@ -56,16 +70,19 @@ export function useEarnWithdrawTx() {
         // side effect
         onTxSucceed: () => {
           onTxSucceed?.();
-          refetchQueries(ANCHOR_TX_KEY.EARN_WITHDRAW);
+          refetchQueries(ANCHOR_TX_KEY.ANC_BUY);
           dispatch('', 'done');
         },
       });
     },
     [
       connectedWallet,
-      addressProvider,
+      ancPrice,
+      constants.fixedGas,
       constants.gasFee,
       constants.gasAdjustment,
+      addressProvider,
+      tax,
       mantleEndpoint,
       mantleFetch,
       txErrorReporter,

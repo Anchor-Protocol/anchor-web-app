@@ -42,16 +42,16 @@ export function useBorrowProvideCollateralTx() {
 
       return borrowProvideCollateralTx({
         address: connectedWallet.walletAddress,
-        addressProvider,
         amount: depositAmount,
         market: MARKET_DENOMS.UUSD,
         collateral: COLLATERAL_DENOMS.UBLUNA,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        txFee: constants.fixedGas.toString() as uUST,
+        fixedGas: constants.fixedGas.toString() as uUST,
         gasFee: constants.gasFee,
         gasAdjustment: constants.gasAdjustment,
+        addressProvider,
         // query
         mantleEndpoint,
         mantleFetch,

@@ -1,17 +1,14 @@
 import {
   AddressProvider,
-  fabricatebAssetWithdrawUnbonded,
+  fabricateGovCastVote,
 } from '@anchor-protocol/anchor.js';
-import { demicrofy, formatLuna, stripULuna } from '@anchor-protocol/notation';
 import { Rate, uUST } from '@anchor-protocol/types';
 import { pipe } from '@rx-stream/pipe';
+import { floor } from '@terra-dev/big-math';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
 import {
   MantleFetch,
-  pickAttributeValue,
-  pickEvent,
-  pickRawLog,
   TxResultRendering,
   TxStreamPhase,
 } from '@terra-money/webapp-fns';
@@ -22,11 +19,11 @@ import { _pollTxInfo } from '../internal/_pollTxInfo';
 import { _postTx } from '../internal/_postTx';
 import { TxHelper } from '../internal/TxHelper';
 
-export function bondWithdrawTx(
-  $: Parameters<typeof fabricatebAssetWithdrawUnbonded>[0] & {
+export function govVoteTx(
+  $: Parameters<typeof fabricateGovCastVote>[0] & {
     gasFee: uUST<number>;
     gasAdjustment: Rate<number>;
-    fixedGas: uUST;
+    txFee: uUST;
     network: NetworkInfo;
     addressProvider: AddressProvider;
     mantleEndpoint: string;
@@ -36,45 +33,23 @@ export function bondWithdrawTx(
     onTxSucceed?: () => void;
   },
 ): Observable<TxResultRendering> {
-  const helper = new TxHelper({ ...$, txFee: $.fixedGas });
+  const helper = new TxHelper($);
 
   return pipe(
     _createTxOptions({
-      msgs: fabricatebAssetWithdrawUnbonded($)($.addressProvider),
-      fee: new StdFee($.gasFee, $.fixedGas + 'uusd'),
+      msgs: fabricateGovCastVote($)($.addressProvider),
+      fee: new StdFee($.gasFee, floor($.txFee) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),
     _postTx({ helper, ...$ }),
     _pollTxInfo({ helper, ...$ }),
-    ({ value: txInfo }) => {
-      const rawLog = pickRawLog(txInfo, 0);
-
-      if (!rawLog) {
-        return helper.failedToFindRawLog();
-      }
-
-      const transfer = pickEvent(rawLog, 'transfer');
-
-      if (!transfer) {
-        return helper.failedToFindEvents('transfer');
-      }
-
+    () => {
       try {
-        const unbondedAmount = pickAttributeValue<string>(transfer, 2);
-
         return {
           value: null,
 
           phase: TxStreamPhase.SUCCEED,
-          receipts: [
-            !!unbondedAmount && {
-              name: 'Unbonded Amount',
-              value:
-                formatLuna(demicrofy(stripULuna(unbondedAmount))) + ' Luna',
-            },
-            helper.txHashReceipt(),
-            helper.txFeeReceipt(),
-          ],
+          receipts: [helper.txHashReceipt()],
         } as TxResultRendering;
       } catch (error) {
         return helper.failedToParseTxResult();

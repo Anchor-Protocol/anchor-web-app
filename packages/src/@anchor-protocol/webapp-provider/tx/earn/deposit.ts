@@ -8,14 +8,13 @@ import {
   useRefetchQueries,
   useTerraWebapp,
 } from '@terra-money/webapp-provider';
-import { BigSource } from 'big.js';
 import { useCallback } from 'react';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 
 export interface EarnDepositTxParams {
   depositAmount: UST;
-  txFee: uUST<BigSource>;
+  txFee: uUST;
   onTxSucceed?: () => void;
 }
 
@@ -42,13 +41,13 @@ export function useEarnDepositTx() {
         address: connectedWallet.walletAddress,
         market: MARKET_DENOMS.UUSD,
         amount: depositAmount,
-        addressProvider,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         txFee: txFee.toString() as uUST,
         gasFee: constants.gasFee,
         gasAdjustment: constants.gasAdjustment,
+        addressProvider,
         // query
         mantleEndpoint,
         mantleFetch,

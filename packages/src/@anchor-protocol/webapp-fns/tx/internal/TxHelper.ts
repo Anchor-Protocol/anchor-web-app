@@ -10,6 +10,7 @@ import {
   TxResultRendering,
   TxStreamPhase,
 } from '@terra-money/webapp-fns';
+import { BigSource } from 'big.js';
 
 export class TxHelper {
   private _savedTx: CreateTxOptions | null = null;
@@ -51,10 +52,11 @@ export class TxHelper {
     };
   };
 
-  txFeeReceipt = (): TxReceipt => {
+  txFeeReceipt = (txFee?: uUST<BigSource>): TxReceipt => {
     return {
       name: 'Tx Fee',
-      value: formatUSTWithPostfixUnits(demicrofy(this.$.txFee)) + ' UST',
+      value:
+        formatUSTWithPostfixUnits(demicrofy(txFee ?? this.$.txFee)) + ' UST',
     };
   };
 

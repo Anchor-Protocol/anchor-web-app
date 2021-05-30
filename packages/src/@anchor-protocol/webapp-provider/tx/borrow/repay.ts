@@ -43,7 +43,6 @@ export function useBorrowRepayTx() {
 
       return borrowRepayTx({
         address: connectedWallet.walletAddress,
-        addressProvider,
         amount: repayAmount,
         market: MARKET_DENOMS.UUSD,
         // post
@@ -52,6 +51,7 @@ export function useBorrowRepayTx() {
         txFee,
         gasFee: constants.gasFee,
         gasAdjustment: constants.gasAdjustment,
+        addressProvider,
         // query
         mantleEndpoint,
         mantleFetch,

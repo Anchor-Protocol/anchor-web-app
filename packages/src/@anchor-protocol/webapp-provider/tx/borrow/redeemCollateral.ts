@@ -42,16 +42,16 @@ export function useBorrowRedeemCollateralTx() {
 
       return borrowRedeemCollateralTx({
         address: connectedWallet.walletAddress,
-        addressProvider,
         amount: redeemAmount,
         market: MARKET_DENOMS.UUSD,
         collateral: COLLATERAL_DENOMS.UBLUNA,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        txFee: constants.fixedGas.toString() as uUST,
+        fixedGas: constants.fixedGas.toString() as uUST,
         gasFee: constants.gasFee,
         gasAdjustment: constants.gasAdjustment,
+        addressProvider,
         // query
         mantleEndpoint,
         mantleFetch,

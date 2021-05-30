@@ -1,34 +1,29 @@
 import {
   AddressProvider,
-  fabricateProvideCollateral,
+  fabricateStakingUnbond,
 } from '@anchor-protocol/anchor.js';
-import { demicrofy, formatLuna, formatRate } from '@anchor-protocol/notation';
-import { Rate, ubLuna, uUST } from '@anchor-protocol/types';
+import { demicrofy, formatLP } from '@anchor-protocol/notation';
+import { Rate, uAncUstLP, uUST } from '@anchor-protocol/types';
 import { pipe } from '@rx-stream/pipe';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
 import {
   MantleFetch,
-  pickAttributeValue,
+  pickAttributeValueByKey,
   pickEvent,
   pickRawLog,
   TxResultRendering,
   TxStreamPhase,
 } from '@terra-money/webapp-fns';
-import { QueryObserverResult } from 'react-query';
 import { Observable } from 'rxjs';
-import { computeCurrentLtv } from '../../computes/borrow/computeCurrentLtv';
-import { BorrowBorrowerData } from '../../queries/borrow/borrower';
-import { BorrowMarketData } from '../../queries/borrow/market';
 import { _catchTxError } from '../internal/_catchTxError';
 import { _createTxOptions } from '../internal/_createTxOptions';
 import { _pollTxInfo } from '../internal/_pollTxInfo';
 import { _postTx } from '../internal/_postTx';
 import { TxHelper } from '../internal/TxHelper';
-import { _fetchBorrowData } from './_fetchBorrowData';
 
-export function borrowProvideCollateralTx(
-  $: Parameters<typeof fabricateProvideCollateral>[0] & {
+export function ancAncUstLpUnstakeTx(
+  $: Parameters<typeof fabricateStakingUnbond>[0] & {
     gasFee: uUST<number>;
     gasAdjustment: Rate<number>;
     fixedGas: uUST;
@@ -38,12 +33,6 @@ export function borrowProvideCollateralTx(
     mantleFetch: MantleFetch;
     post: (tx: CreateTxOptions) => Promise<TxResult>;
     txErrorReporter?: (error: unknown) => string;
-    borrowMarketQuery: () => Promise<
-      QueryObserverResult<BorrowMarketData | undefined>
-    >;
-    borrowBorrowerQuery: () => Promise<
-      QueryObserverResult<BorrowBorrowerData | undefined>
-    >;
     onTxSucceed?: () => void;
   },
 ): Observable<TxResultRendering> {
@@ -51,21 +40,14 @@ export function borrowProvideCollateralTx(
 
   return pipe(
     _createTxOptions({
-      msgs: fabricateProvideCollateral($)($.addressProvider),
+      msgs: fabricateStakingUnbond($)($.addressProvider),
       fee: new StdFee($.gasFee, $.fixedGas + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),
     _postTx({ helper, ...$ }),
     _pollTxInfo({ helper, ...$ }),
-    _fetchBorrowData({ helper, ...$ }),
-    ({ value: { txInfo, borrowMarket, borrowBorrower } }) => {
-      if (!borrowMarket || !borrowBorrower) {
-        return helper.failedToCreateReceipt(
-          new Error('Failed to load borrow data'),
-        );
-      }
-
-      const rawLog = pickRawLog(txInfo, 1);
+    ({ value: txInfo }) => {
+      const rawLog = pickRawLog(txInfo, 0);
 
       if (!rawLog) {
         return helper.failedToFindRawLog();
@@ -78,30 +60,19 @@ export function borrowProvideCollateralTx(
       }
 
       try {
-        const collateralizedAmount = pickAttributeValue<ubLuna>(
+        const amount = pickAttributeValueByKey<uAncUstLP>(
           fromContract,
-          7,
+          'amount',
         );
-
-        const newLtv =
-          computeCurrentLtv(
-            borrowBorrower.marketBorrowerInfo,
-            borrowBorrower.custodyBorrower,
-            borrowMarket.oraclePrice,
-          ) ?? ('0' as Rate);
 
         return {
           value: null,
 
           phase: TxStreamPhase.SUCCEED,
           receipts: [
-            collateralizedAmount && {
-              name: 'Collateralized Amount',
-              value: formatLuna(demicrofy(collateralizedAmount)) + ' bLuna',
-            },
-            newLtv && {
-              name: 'New LTV',
-              value: formatRate(newLtv) + ' %',
+            amount && {
+              name: 'Amount',
+              value: formatLP(demicrofy(amount)) + ' ANC-UST LP',
             },
             helper.txHashReceipt(),
             helper.txFeeReceipt(),

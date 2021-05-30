@@ -36,13 +36,13 @@ export function useBondWithdrawTx() {
       return bondWithdrawTx({
         // fabricatebAssetWithdrawUnbonded
         address: connectedWallet.walletAddress,
-        addressProvider,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        txFee: constants.fixedGas.toString() as uUST,
+        fixedGas: constants.fixedGas.toString() as uUST,
         gasFee: constants.gasFee,
         gasAdjustment: constants.gasAdjustment,
+        addressProvider,
         // query
         mantleEndpoint,
         mantleFetch,
