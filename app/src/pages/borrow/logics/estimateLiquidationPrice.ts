@@ -7,8 +7,7 @@ export function estimateLiquidationPrice(
   bLunaMaxLtv: Rate<BigSource>,
   oracle: moneyMarket.oracle.PriceResponse,
 ): UST<BigSource> {
-  // formula:
-  // oracle price * (nextLtv / maxLtv)
+  // formula: oracle price * (nextLtv / maxLtv)
   if (nextLtv) {
     return big(oracle.rate).mul(big(nextLtv).div(big(bLunaMaxLtv))) as UST<Big>;
   }
