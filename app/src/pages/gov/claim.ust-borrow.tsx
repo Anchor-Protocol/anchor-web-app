@@ -5,13 +5,14 @@ import {
   formatUST,
 } from '@anchor-protocol/notation';
 import { uANC } from '@anchor-protocol/types';
-import {
-  useConnectedWallet,
-  ConnectedWallet,
-} from '@terra-money/wallet-provider';
+import { useRewardsClaimableUstBorrowRewardsQuery } from '@anchor-protocol/webapp-provider';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import {
+  ConnectedWallet,
+  useConnectedWallet,
+} from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
 import big, { Big } from 'big.js';
@@ -21,7 +22,6 @@ import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { validateTxFee } from 'logics/validateTxFee';
 import { MINIMUM_CLAIM_BALANCE } from 'pages/gov/env';
-import { useClaimableUstBorrow } from 'pages/gov/queries/claimableUstBorrow';
 import { ustBorrowClaimOptions } from 'pages/gov/transactions/ustBorrowClaimOptions';
 import React, { useCallback, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -49,8 +49,11 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
   const bank = useBank();
 
   const {
-    data: { borrowerInfo, userANCBalance },
-  } = useClaimableUstBorrow();
+    data: { borrowerInfo, userANCBalance } = {},
+  } = useRewardsClaimableUstBorrowRewardsQuery();
+  //const {
+  //  data: { borrowerInfo, userANCBalance },
+  //} = useClaimableUstBorrow();
 
   // ---------------------------------------------
   // logics

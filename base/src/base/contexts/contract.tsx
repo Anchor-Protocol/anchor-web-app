@@ -100,6 +100,9 @@ export function useContractNickname(): (addr: HumanAddr | CW20Addr) => string {
 }
 
 // TODO remove after refactoring done
+/**
+ * @deprecated
+ */
 export function useContract(): ContractState {
   return useContext(ContractContext);
 }
@@ -111,6 +114,9 @@ export function useAddressProvider(): AddressProvider {
 }
 
 // TODO remove after refactoring done
+/**
+ * @deprecated
+ */
 export function useContractAddress(): ContractAddress {
   const { address } = useContext(ContractContext);
   return address;

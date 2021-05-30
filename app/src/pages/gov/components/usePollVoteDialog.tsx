@@ -9,9 +9,10 @@ import {
 } from '@anchor-protocol/notation';
 import { ANC, uANC } from '@anchor-protocol/types';
 import {
-  useConnectedWallet,
-  ConnectedWallet,
-} from '@terra-money/wallet-provider';
+  useAnchorWebapp,
+  useGovVoteAvailableQuery,
+  useRewardsAncGovernanceRewardsQuery,
+} from '@anchor-protocol/webapp-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { ThumbDownOutlined, ThumbUpOutlined } from '@material-ui/icons';
 import { useOperation } from '@terra-dev/broadcastable-operation';
@@ -21,15 +22,16 @@ import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import { flat } from '@terra-dev/styled-neumorphism';
 import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
+import {
+  ConnectedWallet,
+  useConnectedWallet,
+} from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { validateTxFee } from 'logics/validateTxFee';
-import { useCanIVote } from 'pages/gov/queries/canIVote';
-import { useRewardsAncGovernance } from 'pages/gov/queries/rewardsAncGovernance';
 import { voteOptions } from 'pages/gov/transactions/voteOptions';
 import React, {
   ChangeEvent,
@@ -63,15 +65,22 @@ function ComponentBase({
 
   const connectedWallet = useConnectedWallet();
 
-  const { fixedGas } = useConstants();
+  const {
+    constants: { fixedGas },
+  } = useAnchorWebapp();
+  //const { fixedGas } = useConstants();
 
   const bank = useBank();
 
   const {
-    data: { userGovStakingInfo },
-  } = useRewardsAncGovernance();
+    data: { userGovStakingInfo } = {},
+  } = useRewardsAncGovernanceRewardsQuery();
+  //const {
+  //  data: { userGovStakingInfo },
+  //} = useRewardsAncGovernance();
 
-  const canIVote = useCanIVote(pollId);
+  const canIVote = useGovVoteAvailableQuery(pollId);
+  //const canIVote = useCanIVote(pollId);
 
   const [voteFor, setVoteFor] = useState<null | 'yes' | 'no'>(null);
   const [amount, setAmount] = useState<ANC>('' as ANC);

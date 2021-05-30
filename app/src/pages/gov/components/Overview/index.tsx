@@ -5,8 +5,17 @@ import {
   formatUTokenDecimal2,
 } from '@anchor-protocol/notation';
 import { anc160gif, GifIcon, TokenIcon } from '@anchor-protocol/token-icons';
-import { Rate, uANC, UST, uToken } from '@anchor-protocol/types';
-import { useBorrowAPYQuery } from '@anchor-protocol/webapp-provider';
+import { HumanAddr, Rate, uANC, UST, uToken } from '@anchor-protocol/types';
+import {
+  useAncBalanceQuery,
+  useAnchorWebapp,
+  useAncLpStakingStateQuery,
+  useAncPriceQuery,
+  useAncTokenInfoQuery,
+  useBorrowAPYQuery,
+  useGovStateQuery,
+  useRewardsAnchorLpRewardsQuery,
+} from '@anchor-protocol/webapp-provider';
 import { ChevronRight } from '@material-ui/icons';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
@@ -22,10 +31,6 @@ import {
   ancUstLpPathname,
   govPathname,
 } from 'pages/gov/env';
-import { useAnchorLPRewards } from 'pages/gov/queries/anchorLPRewards';
-import { useANCPrice } from 'pages/gov/queries/ancPrice';
-import { useLPStakingState } from 'pages/gov/queries/lpStakingState';
-import { useTotalStakedMain } from 'pages/gov/queries/totalStakedMain';
 import React, { useMemo } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
@@ -35,35 +40,64 @@ export interface OverviewProps {
 }
 
 function OverviewBase({ className }: OverviewProps) {
-  const {
-    data: { ancPrice },
-  } = useANCPrice();
+  const { contractAddress } = useAnchorWebapp();
+
+  const { data: { ancPrice } = {} } = useAncPriceQuery();
+  //const {
+  //  data: { ancPrice },
+  //} = useANCPrice();
 
   const { data: { govRewards, lpRewards } = {} } = useBorrowAPYQuery();
 
   const {
-    data: { apyLPRewards },
-  } = useAnchorLPRewards();
+    data: { anchorLpRewards: apyLPRewards } = {},
+  } = useRewardsAnchorLpRewardsQuery();
+  //const {
+  //  data: { apyLPRewards },
+  //} = useAnchorLPRewards();
 
   const history = useHistory();
 
+  const { data: { ancTokenInfo } = {} } = useAncTokenInfoQuery();
+  const { data: { ancBalance: govANCBalance } = {} } = useAncBalanceQuery(
+    contractAddress.anchorToken.gov,
+  );
+  const { data: { ancBalance: communityANCBalance } = {} } = useAncBalanceQuery(
+    contractAddress.anchorToken.community,
+  );
   const {
-    data: {
-      ancTokenInfo,
-      govANCBalance,
-      communityANCBalance,
-      distributorANCBalance,
-      lpStakingANCBalance,
-      airdropANCBalance,
-      investorTeamLockANCBalance,
-      govState,
-      govConfig,
-    },
-  } = useTotalStakedMain();
+    data: { ancBalance: distributorANCBalance } = {},
+  } = useAncBalanceQuery(contractAddress.anchorToken.distributor);
+  const { data: { ancBalance: lpStakingANCBalance } = {} } = useAncBalanceQuery(
+    contractAddress.anchorToken.staking,
+  );
+  const { data: { ancBalance: airdropANCBalance } = {} } = useAncBalanceQuery(
+    'terra146ahqn6d3qgdvmj8cj96hh03dzmeedhsf0kxqm' as HumanAddr,
+  );
+  const {
+    data: { ancBalance: investorTeamLockANCBalance } = {},
+  } = useAncBalanceQuery(
+    'terra1dp0taj85ruc299rkdvzp4z5pfg6z6swaed74e6' as HumanAddr,
+  );
+  const { data: { govState, govConfig } = {} } = useGovStateQuery();
+  //const {
+  //  data: {
+  //    ancTokenInfo,
+  //    govANCBalance,
+  //    communityANCBalance,
+  //    distributorANCBalance,
+  //    lpStakingANCBalance,
+  //    airdropANCBalance,
+  //    investorTeamLockANCBalance,
+  //    govState,
+  //    govConfig,
+  //  },
+  //} = useTotalStakedMain();
 
-  const {
-    data: { lpStakingState },
-  } = useLPStakingState();
+  const { data: { lpStakingState } = {} } = useAncLpStakingStateQuery();
+  //const {
+  //  data: { lpStakingState },
+  //} = useLPStakingState();
 
   const ancUstLpAprTooltip = useMemo(() => {
     let defaultTooltip = 'LP rewards APR';

@@ -12,10 +12,7 @@ import {
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
 } from '@anchor-protocol/notation';
 import { ANC, Denom, terraswap, uANC, UST, uUST } from '@anchor-protocol/types';
-import {
-  useConnectedWallet,
-  ConnectedWallet,
-} from '@terra-money/wallet-provider';
+import { useAncPriceQuery } from '@anchor-protocol/webapp-provider';
 import { useApolloClient } from '@apollo/client';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
@@ -24,6 +21,10 @@ import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton'
 import { NumberMuiInput } from '@terra-dev/neumorphism-ui/components/NumberMuiInput';
 import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
 import { useResolveLast } from '@terra-dev/use-resolve-last';
+import {
+  ConnectedWallet,
+  useConnectedWallet,
+} from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
 import { useContractAddress } from 'base/contexts/contract';
@@ -40,7 +41,6 @@ import { sellFromSimulation } from 'pages/gov/logics/sellFromSimulation';
 import { sellToSimulation } from 'pages/gov/logics/sellToSimulation';
 import { AncPrice } from 'pages/gov/models/ancPrice';
 import { TradeSimulation } from 'pages/gov/models/tradeSimulation';
-import { useANCPrice } from 'pages/gov/queries/ancPrice';
 import { sellOptions } from 'pages/gov/transactions/sellOptions';
 import React, {
   ChangeEvent,
@@ -92,9 +92,10 @@ export function TradeSell() {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const {
-    data: { ancPrice },
-  } = useANCPrice();
+  const { data: { ancPrice } = {} } = useAncPriceQuery();
+  //const {
+  //  data: { ancPrice },
+  //} = useANCPrice();
 
   // ---------------------------------------------
   // logics

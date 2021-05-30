@@ -4,6 +4,13 @@ import {
   formatRate,
 } from '@anchor-protocol/notation';
 import { Rate } from '@anchor-protocol/types';
+import {
+  useAncBalanceQuery,
+  useAnchorWebapp,
+  useGovPollQuery,
+  useGovStateQuery,
+  useGovVoteAvailableQuery,
+} from '@anchor-protocol/webapp-provider';
 import { Schedule } from '@material-ui/icons';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
@@ -33,9 +40,6 @@ import { PollVoters } from 'pages/gov/components/PollVoters';
 import { usePollVoteDialog } from 'pages/gov/components/usePollVoteDialog';
 import { extractPollDetail } from 'pages/gov/logics/extractPollDetail';
 import { isLinkHttp } from 'pages/gov/logics/isLinkHttp';
-import { useCanIVote } from 'pages/gov/queries/canIVote';
-import { usePoll } from 'pages/gov/queries/poll';
-import { useTotalStaked } from 'pages/gov/queries/totalStaked';
 import { useMemo } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import styled from 'styled-components';
@@ -45,15 +49,23 @@ export interface PollDetailProps extends RouteComponentProps<{ id: string }> {
 }
 
 function PollDetailBase({ className, match }: PollDetailProps) {
-  const {
-    data: { poll },
-  } = usePoll(+match.params.id);
+  const { contractAddress } = useAnchorWebapp();
 
-  const {
-    data: { govANCBalance, govState, govConfig },
-  } = useTotalStaked();
+  const { data: { poll } = {} } = useGovPollQuery(+match.params.id);
+  //const {
+  //  data: { poll },
+  //} = usePoll(+match.params.id);
 
-  const canIVote = useCanIVote(poll?.id);
+  const { data: { ancBalance: govANCBalance } = {} } = useAncBalanceQuery(
+    contractAddress.anchorToken.gov,
+  );
+  const { data: { govState, govConfig } = {} } = useGovStateQuery();
+  //const {
+  //  data: { govANCBalance, govState, govConfig },
+  //} = useTotalStaked();
+
+  const canIVote = useGovVoteAvailableQuery(poll?.id);
+  //const canIVote = useCanIVote(poll?.id);
 
   const [openVoteDialog, voteDialogElement] = usePollVoteDialog();
 

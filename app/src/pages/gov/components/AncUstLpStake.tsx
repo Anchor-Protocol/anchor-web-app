@@ -8,14 +8,15 @@ import {
   microfy,
 } from '@anchor-protocol/notation';
 import { AncUstLP } from '@anchor-protocol/types';
-import {
-  useConnectedWallet,
-  ConnectedWallet,
-} from '@terra-money/wallet-provider';
+import { useRewardsAncUstLpRewardsQuery } from '@anchor-protocol/webapp-provider';
 import { InputAdornment } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
+import {
+  ConnectedWallet,
+  useConnectedWallet,
+} from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
 import big from 'big.js';
@@ -23,7 +24,6 @@ import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { validateTxFee } from 'logics/validateTxFee';
-import { useRewardsAncUstLp } from 'pages/gov/queries/rewardsAncUstLp';
 import { ancUstLpStakeOptions } from 'pages/gov/transactions/ancUstLpStakeOptions';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
@@ -47,9 +47,10 @@ export function AncUstLpStake() {
   // ---------------------------------------------
   const bank = useBank();
 
-  const {
-    data: { userLPBalance },
-  } = useRewardsAncUstLp();
+  const { data: { userLPBalance } = {} } = useRewardsAncUstLpRewardsQuery();
+  //const {
+  //  data: { userLPBalance },
+  //} = useRewardsAncUstLp();
 
   // ---------------------------------------------
   // logics

@@ -5,10 +5,7 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { ANC, uUST } from '@anchor-protocol/types';
-import {
-  useConnectedWallet,
-  ConnectedWallet,
-} from '@terra-money/wallet-provider';
+import { useGovConfigQuery } from '@anchor-protocol/webapp-provider';
 import { InputAdornment } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
@@ -20,6 +17,10 @@ import {
   BytesValid,
   useValidateStringBytes,
 } from '@terra-dev/use-string-bytes-length';
+import {
+  ConnectedWallet,
+  useConnectedWallet,
+} from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
 import big from 'big.js';
@@ -36,7 +37,6 @@ import React, {
 } from 'react';
 import { useHistory } from 'react-router-dom';
 import { validateLinkAddress } from '../logics/validateLinkAddress';
-import { usePollConfig } from '../queries/pollConfig';
 import { createPollOptions } from '../transactions/createPollOptions';
 import { FormLayout } from './FormLayout';
 
@@ -80,9 +80,10 @@ export function PollCreateBase({
   // ---------------------------------------------
   const bank = useBank();
 
-  const {
-    data: { pollConfig },
-  } = usePollConfig();
+  const { data: { govConfig: pollConfig } = {} } = useGovConfigQuery();
+  //const {
+  //  data: { pollConfig },
+  //} = usePollConfig();
 
   // ---------------------------------------------
   // logics

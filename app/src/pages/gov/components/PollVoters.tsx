@@ -1,11 +1,11 @@
-import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
-import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
 import {
   demicrofy,
   formatANCWithPostfixUnits,
 } from '@anchor-protocol/notation';
+import { useGovVotersQuery } from '@anchor-protocol/webapp-provider';
+import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
+import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
 import { AccountLink } from 'components/AccountLink';
-import { useVoters } from 'pages/gov/queries/voters';
 import styled from 'styled-components';
 
 export interface PollVotersProps {
@@ -14,7 +14,8 @@ export interface PollVotersProps {
 }
 
 function PollVotersBase({ className, pollId }: PollVotersProps) {
-  const [voters, isLast, loadMore] = useVoters(pollId);
+  const { voters, isLast, loadMore } = useGovVotersQuery(pollId);
+  //const [voters, isLast, loadMore] = useVoters(pollId);
 
   return (
     <div className={className}>

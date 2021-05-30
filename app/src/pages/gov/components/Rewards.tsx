@@ -6,7 +6,14 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { uANC, uUST } from '@anchor-protocol/types';
-import { useBorrowAPYQuery } from '@anchor-protocol/webapp-provider';
+import {
+  useAncLpStakingStateQuery,
+  useAncPriceQuery,
+  useBorrowAPYQuery,
+  useRewardsAncGovernanceRewardsQuery,
+  useRewardsClaimableAncUstLpRewardsQuery,
+  useRewardsClaimableUstBorrowRewardsQuery,
+} from '@anchor-protocol/webapp-provider';
 import { MenuItem } from '@material-ui/core';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
@@ -23,11 +30,6 @@ import {
   govPathname,
   ustBorrowPathname,
 } from 'pages/gov/env';
-import { useANCPrice } from 'pages/gov/queries/ancPrice';
-import { useClaimableAncUstLp } from 'pages/gov/queries/claimableAncUstLp';
-import { useClaimableUstBorrow } from 'pages/gov/queries/claimableUstBorrow';
-import { useLPStakingState } from 'pages/gov/queries/lpStakingState';
-import { useRewardsAncGovernance } from 'pages/gov/queries/rewardsAncGovernance';
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -40,25 +42,36 @@ export function RewardsBase({ className }: RewardsProps) {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const {
-    data: { ancPrice },
-  } = useANCPrice();
+  const { data: { ancPrice } = {} } = useAncPriceQuery();
+  //const {
+  //  data: { ancPrice },
+  //} = useANCPrice();
+
+  const { data: { lpStakingState } = {} } = useAncLpStakingStateQuery();
+  //const {
+  //  data: { lpStakingState },
+  //} = useLPStakingState();
 
   const {
-    data: { lpStakingState },
-  } = useLPStakingState();
+    data: { lPBalance: userLPBalance, lPStakerInfo: userLPStakingInfo } = {},
+  } = useRewardsClaimableAncUstLpRewardsQuery();
+  //const {
+  //  data: { userLPStakingInfo, userLPBalance },
+  //} = useClaimableAncUstLp();
 
   const {
-    data: { userLPStakingInfo, userLPBalance },
-  } = useClaimableAncUstLp();
+    data: { userANCBalance, userGovStakingInfo } = {},
+  } = useRewardsAncGovernanceRewardsQuery();
+  //const {
+  //  data: { userGovStakingInfo, userANCBalance },
+  //} = useRewardsAncGovernance();
 
   const {
-    data: { userGovStakingInfo, userANCBalance },
-  } = useRewardsAncGovernance();
-
-  const {
-    data: { borrowerInfo, marketState },
-  } = useClaimableUstBorrow();
+    data: { borrowerInfo, marketState } = {},
+  } = useRewardsClaimableUstBorrowRewardsQuery();
+  //const {
+  //  data: { borrowerInfo, marketState },
+  //} = useClaimableUstBorrow();
 
   const {
     data: { govRewards, lpRewards, borrowerDistributionAPYs } = {},
@@ -116,6 +129,7 @@ export function RewardsBase({ className }: RewardsProps) {
     }
 
     const staked = big(userGovStakingInfo.balance) as uANC<Big>;
+    console.log('Rewards.tsx..()', ancPrice.ANCPrice);
     const stakedValue = staked.mul(ancPrice.ANCPrice) as uUST<Big>;
 
     const stakable = big(userANCBalance.balance) as uANC<Big>;

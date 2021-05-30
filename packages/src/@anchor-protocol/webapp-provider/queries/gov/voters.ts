@@ -13,7 +13,7 @@ interface VotersReturn {
   reload: () => void;
 }
 
-export function useVoters(pollId: number): VotersReturn {
+export function useGovVotersQuery(pollId: number): VotersReturn {
   const { mantleFetch, mantleEndpoint } = useTerraWebapp();
 
   const {

@@ -4,10 +4,12 @@ import {
   uANC,
   uAncUstLP,
   UST,
+  uToken,
   uUST,
   WASMContractResult,
 } from '@anchor-protocol/types';
 import { MantleFetch } from '@terra-money/webapp-fns';
+import big from 'big.js';
 
 export interface AncPrice {
   ANCPoolSize: uANC;
@@ -66,7 +68,23 @@ export async function ancPriceQuery({
     `${mantleEndpoint}?anc--price`,
   );
 
+  const { assets, total_share }: terraswap.PoolResponse<uToken> = JSON.parse(
+    rawData.ancPrice.Result,
+  );
+
+  const ANCPoolSize = (assets[0].amount as unknown) as uANC;
+  const USTPoolSize = (assets[1].amount as unknown) as uUST;
+  const LPShare = (total_share as unknown) as uAncUstLP;
+  const ANCPrice = big(USTPoolSize)
+    .div(+ANCPoolSize === 0 ? '1' : ANCPoolSize)
+    .toString() as UST;
+
   return {
-    ancPrice: JSON.parse(rawData.ancPrice.Result),
+    ancPrice: {
+      ANCPoolSize,
+      USTPoolSize,
+      LPShare,
+      ANCPrice: ANCPrice.toLowerCase() === 'nan' ? ('0' as UST) : ANCPrice,
+    },
   };
 }

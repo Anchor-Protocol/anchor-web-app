@@ -9,6 +9,10 @@ import {
   microfy,
 } from '@anchor-protocol/notation';
 import { ANC, AncUstLP, UST } from '@anchor-protocol/types';
+import {
+  useAncPriceQuery,
+  useRewardsAncUstLpRewardsQuery,
+} from '@anchor-protocol/webapp-provider';
 import { Input, InputAdornment } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { isZero } from '@terra-dev/is-zero';
@@ -30,8 +34,6 @@ import { validateTxFee } from 'logics/validateTxFee';
 import { formatShareOfPool } from 'pages/gov/components/formatShareOfPool';
 import { ancUstLpLpSimulation } from 'pages/gov/logics/ancUstLpLpSimulation';
 import { AncUstLpSimulation } from 'pages/gov/models/ancUstLpSimulation';
-import { useANCPrice } from 'pages/gov/queries/ancPrice';
-import { useRewardsAncUstLp } from 'pages/gov/queries/rewardsAncUstLp';
 import { ancUstLpWithdrawOptions } from 'pages/gov/transactions/ancUstLpWithdrawOptions';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
@@ -59,13 +61,16 @@ export function AncUstLpWithdraw() {
   // ---------------------------------------------
   const bank = useBank();
 
-  const {
-    data: { ancPrice },
-  } = useANCPrice();
+  const { data: { ancPrice } = {} } = useAncPriceQuery();
 
-  const {
-    data: { userLPBalance },
-  } = useRewardsAncUstLp();
+  //const {
+  //  data: { ancPrice },
+  //} = useANCPrice();
+
+  const { data: { userLPBalance } = {} } = useRewardsAncUstLpRewardsQuery();
+  //const {
+  //  data: { userLPBalance },
+  //} = useRewardsAncUstLp();
 
   // ---------------------------------------------
   // logics

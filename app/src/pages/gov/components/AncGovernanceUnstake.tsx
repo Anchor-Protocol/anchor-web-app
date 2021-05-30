@@ -9,23 +9,26 @@ import {
 } from '@anchor-protocol/notation';
 import { ANC, uANC } from '@anchor-protocol/types';
 import {
-  useConnectedWallet,
-  ConnectedWallet,
-} from '@terra-money/wallet-provider';
+  useAncBalanceQuery,
+  useAnchorWebapp,
+  useGovStateQuery,
+  useRewardsAncGovernanceRewardsQuery,
+} from '@anchor-protocol/webapp-provider';
 import { InputAdornment } from '@material-ui/core';
 import { max } from '@terra-dev/big-math';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
+import {
+  ConnectedWallet,
+  useConnectedWallet,
+} from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { validateTxFee } from 'logics/validateTxFee';
-import { useRewardsAncGovernance } from 'pages/gov/queries/rewardsAncGovernance';
-import { useTotalStaked } from 'pages/gov/queries/totalStaked';
 import { ancGovernanceUnstakeOptions } from 'pages/gov/transactions/ancGovernanceUnstakeOptions';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
@@ -35,7 +38,11 @@ export function AncGovernanceUnstake() {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const { fixedGas } = useConstants();
+  //const { fixedGas } = useConstants();
+  const {
+    constants: { fixedGas },
+    contractAddress,
+  } = useAnchorWebapp();
 
   const [unstake, unstakeResult] = useOperation(
     ancGovernanceUnstakeOptions,
@@ -53,12 +60,19 @@ export function AncGovernanceUnstake() {
   const bank = useBank();
 
   const {
-    data: { userGovStakingInfo },
-  } = useRewardsAncGovernance();
+    data: { userGovStakingInfo } = {},
+  } = useRewardsAncGovernanceRewardsQuery();
+  //const {
+  //  data: { userGovStakingInfo },
+  //} = useRewardsAncGovernance();
 
-  const {
-    data: { govState, govANCBalance },
-  } = useTotalStaked();
+  const { data: { ancBalance: govANCBalance } = {} } = useAncBalanceQuery(
+    contractAddress.anchorToken.gov,
+  );
+  const { data: { govState } = {} } = useGovStateQuery();
+  //const {
+  //  data: { govState, govANCBalance },
+  //} = useTotalStaked();
 
   // ---------------------------------------------
   // logics

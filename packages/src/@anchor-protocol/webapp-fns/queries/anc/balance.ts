@@ -56,7 +56,7 @@ export async function ancBalanceQuery({
       ancContract: variables.ancContract,
       balanceQuery: JSON.stringify(variables.balanceQuery),
     },
-    `${mantleEndpoint}?anc--balance?address=${variables.ancContract}`,
+    `${mantleEndpoint}?anc--balance?address=${variables.balanceQuery.balance.address}`,
   );
 
   return {

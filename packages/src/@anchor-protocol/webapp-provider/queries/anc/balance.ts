@@ -1,7 +1,11 @@
 import { CW20Addr, HumanAddr } from '@anchor-protocol/types';
 import { AncBalanceData, ancBalanceQuery } from '@anchor-protocol/webapp-fns';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
-import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
+import {
+  EMPTY_QUERY_RESULT,
+  MantleFetch,
+  useTerraWebapp,
+} from '@terra-money/webapp-provider';
 import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
@@ -26,7 +30,7 @@ const queryFn = ({
 };
 
 export function useAncBalanceQuery(
-  walletAddress: HumanAddr,
+  walletAddress: HumanAddr | undefined | null,
 ): UseQueryResult<AncBalanceData | undefined> {
   const { mantleFetch, mantleEndpoint } = useTerraWebapp();
 
@@ -42,15 +46,15 @@ export function useAncBalanceQuery(
       mantleEndpoint,
       mantleFetch,
       cw20.ANC,
-      walletAddress,
+      walletAddress ?? ('' as HumanAddr),
     ],
     queryFn,
     {
-      refetchInterval: browserInactive && 1000 * 60 * 5,
-      enabled: !browserInactive,
+      refetchInterval: browserInactive && !!walletAddress && 1000 * 60 * 5,
+      enabled: !browserInactive || !walletAddress,
       keepPreviousData: true,
     },
   );
 
-  return result;
+  return walletAddress ? result : EMPTY_QUERY_RESULT;
 }

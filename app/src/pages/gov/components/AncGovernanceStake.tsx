@@ -8,14 +8,15 @@ import {
   microfy,
 } from '@anchor-protocol/notation';
 import { ANC } from '@anchor-protocol/types';
-import {
-  useConnectedWallet,
-  ConnectedWallet,
-} from '@terra-money/wallet-provider';
+import { useRewardsAncGovernanceRewardsQuery } from '@anchor-protocol/webapp-provider';
 import { InputAdornment } from '@material-ui/core';
 import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
+import {
+  ConnectedWallet,
+  useConnectedWallet,
+} from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
 import big from 'big.js';
@@ -23,7 +24,6 @@ import { MessageBox } from 'components/MessageBox';
 import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { validateTxFee } from 'logics/validateTxFee';
-import { useRewardsAncGovernance } from 'pages/gov/queries/rewardsAncGovernance';
 import { ancGovernanceStakeOptions } from 'pages/gov/transactions/ancGovernanceStakeOptions';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
@@ -48,8 +48,11 @@ export function AncGovernanceStake() {
   const bank = useBank();
 
   const {
-    data: { userANCBalance },
-  } = useRewardsAncGovernance();
+    data: { userANCBalance } = {},
+  } = useRewardsAncGovernanceRewardsQuery();
+  //const {
+  //  data: { userANCBalance },
+  //} = useRewardsAncGovernance();
 
   // ---------------------------------------------
   // logics

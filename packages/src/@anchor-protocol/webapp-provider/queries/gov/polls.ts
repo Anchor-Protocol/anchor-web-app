@@ -13,7 +13,7 @@ interface PollsReturn {
   reload: () => void;
 }
 
-export function usePolls(
+export function useGovPollsQuery(
   filter: anchorToken.gov.PollStatus | undefined,
 ): PollsReturn {
   const { mantleFetch, mantleEndpoint } = useTerraWebapp();
