@@ -4,7 +4,6 @@ import {
 } from '@anchor-protocol/anchor.js';
 import { Rate, uUST } from '@anchor-protocol/types';
 import { pipe } from '@rx-stream/pipe';
-import { floor } from '@terra-dev/big-math';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
 import {
@@ -23,7 +22,7 @@ export function govVoteTx(
   $: Parameters<typeof fabricateGovCastVote>[0] & {
     gasFee: uUST<number>;
     gasAdjustment: Rate<number>;
-    txFee: uUST;
+    fixedGas: uUST;
     network: NetworkInfo;
     addressProvider: AddressProvider;
     mantleEndpoint: string;
@@ -33,12 +32,12 @@ export function govVoteTx(
     onTxSucceed?: () => void;
   },
 ): Observable<TxResultRendering> {
-  const helper = new TxHelper($);
+  const helper = new TxHelper({ ...$, txFee: $.fixedGas });
 
   return pipe(
     _createTxOptions({
       msgs: fabricateGovCastVote($)($.addressProvider),
-      fee: new StdFee($.gasFee, floor($.txFee) + 'uusd'),
+      fee: new StdFee($.gasFee, $.fixedGas + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),
     _postTx({ helper, ...$ }),

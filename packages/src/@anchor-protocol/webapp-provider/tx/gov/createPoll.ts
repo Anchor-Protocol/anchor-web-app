@@ -17,7 +17,7 @@ export interface GovCreatePollTxParams {
   title: string;
   description: string;
   link: string | undefined;
-  executeMsgs: ExecuteMsg[];
+  executeMsgs: ExecuteMsg[] | undefined;
 
   onTxSucceed?: () => void;
 }
