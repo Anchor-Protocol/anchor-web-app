@@ -37,6 +37,7 @@ import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { apr as _apr } from '../logics/apr';
 import { currentLtv as _currentLtv } from '../logics/currentLtv';
+import { estimateLiquidationPrice } from '../logics/estimateLiquidationPrice';
 import { ltvToRepayAmount } from '../logics/ltvToRepayAmount';
 import { repayAmountToLtv } from '../logics/repayAmountToLtv';
 import { repayNextLtv } from '../logics/repayNextLtv';
@@ -131,6 +132,11 @@ function ComponentBase({
   const nextLtv = useMemo(
     () => repayNextLtv(repayAmount, currentLtv, amountToLtv),
     [amountToLtv, currentLtv, repayAmount],
+  );
+
+  const estimatedLiqPrice = useMemo(
+    () => estimateLiquidationPrice(nextLtv, bLunaMaxLtv, oraclePrice),
+    [nextLtv, bLunaMaxLtv, oraclePrice],
   );
 
   const apr = useMemo(() => _apr(borrowRate, blocksPerYear), [
@@ -314,6 +320,13 @@ function ComponentBase({
             onChange={onLtvChange}
           />
         </figure>
+
+        {nextLtv?.lt(currentLtv || 0) && (
+          <sup>
+            Estimated bLuna Liquidation Price: {formatUST(estimatedLiqPrice)}{' '}
+            UST
+          </sup>
+        )}
 
         {totalOutstandingLoan && txFee && sendAmount && (
           <TxFeeList className="receipt">

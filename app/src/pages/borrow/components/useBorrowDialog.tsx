@@ -44,6 +44,7 @@ import { borrowReceiveAmount } from '../logics/borrowReceiveAmount';
 import { borrowSafeMax } from '../logics/borrowSafeMax';
 import { borrowTxFee } from '../logics/borrowTxFee';
 import { currentLtv as _currentLtv } from '../logics/currentLtv';
+import { estimateLiquidationPrice } from '../logics/estimateLiquidationPrice';
 import { ltvToBorrowAmount } from '../logics/ltvToBorrowAmount';
 import { validateBorrowAmount } from '../logics/validateBorrowAmount';
 import { LTVGraph } from './LTVGraph';
@@ -132,6 +133,11 @@ function ComponentBase({
   const nextLtv = useMemo(
     () => borrowNextLtv(borrowAmount, currentLtv, amountToLtv),
     [amountToLtv, borrowAmount, currentLtv],
+  );
+
+  const estimatedLiqPrice = useMemo(
+    () => estimateLiquidationPrice(nextLtv, bLunaMaxLtv, oraclePrice),
+    [nextLtv, bLunaMaxLtv, oraclePrice],
   );
 
   const userMaxLtv = useMemo(() => {
@@ -336,6 +342,13 @@ function ComponentBase({
             onChange={onLtvChange}
           />
         </figure>
+
+        {nextLtv?.gt(currentLtv || 0) && (
+          <sup>
+            Estimated bLuna Liquidation Price: {formatUST(estimatedLiqPrice)}{' '}
+            UST
+          </sup>
+        )}
 
         {nextLtv?.gt(bLunaSafeLtv) && (
           <MessageBox
