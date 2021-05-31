@@ -345,7 +345,7 @@ function ComponentBase({
 
         {nextLtv?.gt(currentLtv || 0) && (
           <sup>
-            Estimated bLuna Liquidation Price: {formatUST(estimatedLiqPrice)}{' '}
+            Estimated bAsset Liquidation Price: {formatUST(estimatedLiqPrice)}{' '}
             UST
           </sup>
         )}
