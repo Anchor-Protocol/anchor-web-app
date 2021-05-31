@@ -2,11 +2,11 @@ import {
   demicrofy,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
+import { MarketDepositAndBorrow } from '@anchor-protocol/webapp-fns';
 import big from 'big.js';
 import { Chart } from 'chart.js';
 import React, { useEffect, useRef } from 'react';
 import styled, { useTheme } from 'styled-components';
-import { MarketDepositAndBorrow } from '../queries/marketDepositAndBorrow';
 import { ChartTooltip } from './ChartTooltip';
 import { mediumDay, shortDay } from './internal/dateFormatters';
 

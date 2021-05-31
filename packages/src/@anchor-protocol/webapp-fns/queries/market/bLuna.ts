@@ -6,10 +6,8 @@ import {
   UST,
   uUST,
 } from '@anchor-protocol/types';
-import { useQuery, UseQueryResult } from 'react-query';
-import { REFRESH_INTERVAL } from '../env';
 
-export interface MarketBlunaResponse {
+export interface MarketBLunaData {
   last_processed_batch: number;
   prev_hub_balance: ubLuna;
   hub_luna_balance: uLuna;
@@ -32,14 +30,12 @@ export interface MarketBlunaResponse {
   prev_reward_balance: ubLuna;
 }
 
-export function queryMarketBluna() {
-  return fetch(
-    `https://anchor-services.vercel.app/api/bassets/bluna`,
-  ).then((res) => res.json());
+export interface MarketBLunaQueryParams {
+  endpoint: string;
 }
 
-export function useMarketBluna(): UseQueryResult<MarketBlunaResponse> {
-  return useQuery('marketBluna', queryMarketBluna, {
-    refetchInterval: REFRESH_INTERVAL,
-  });
+export function marketBLunaQuery({
+  endpoint,
+}: MarketBLunaQueryParams): Promise<MarketBLunaData> {
+  return fetch(`${endpoint}/api/bassets/bluna`).then((res) => res.json());
 }

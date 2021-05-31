@@ -10,7 +10,15 @@ import {
 } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import { Luna, Rate, UST, uUST } from '@anchor-protocol/types';
-import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
+import {
+  useAnchorWebapp,
+  useMarketAncQuery,
+  useMarketBLunaQuery,
+  useMarketCollateralsQuery,
+  useMarketDepositAndBorrowQuery,
+  useMarketStableCoinQuery,
+  useMarketUstQuery,
+} from '@anchor-protocol/webapp-provider';
 import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
@@ -25,17 +33,10 @@ import big, { Big } from 'big.js';
 import { screen } from 'env';
 import React, { useMemo } from 'react';
 import styled, { css, useTheme } from 'styled-components';
-import { useMarket } from '../market-simple/queries/market';
-import { useStableCoinMarket } from '../market-simple/queries/stableCoinMarket';
 import { ANCPriceChart } from './components/ANCPriceChart';
 import { CollateralsChart } from './components/CollateralsChart';
 import { StablecoinChart } from './components/StablecoinChart';
 import { TotalValueLockedDoughnutChart } from './components/TotalValueLockedDoughnutChart';
-import { useMarketANC } from './queries/marketANC';
-import { useMarketBluna } from './queries/marketBluna';
-import { useMarketCollaterals } from './queries/marketCollaterals';
-import { useMarketDepositAndBorrow } from './queries/marketDepositAndBorrow';
-import { useMarketUST } from './queries/marketUST';
 
 export interface MarketProps {
   className?: string;
@@ -48,13 +49,7 @@ function MarketBase({ className }: MarketProps) {
     constants: { blocksPerYear },
   } = useAnchorWebapp();
 
-  const {
-    data: { uUSD, state },
-  } = useMarket();
-
-  const {
-    data: { borrowRate, epochState },
-  } = useStableCoinMarket({ uUSD, state });
+  const { data: { borrowRate, epochState } = {} } = useMarketStableCoinQuery();
 
   const stableCoinLegacy = useMemo(() => {
     if (!borrowRate || !epochState) {
@@ -71,11 +66,11 @@ function MarketBase({ className }: MarketProps) {
     };
   }, [blocksPerYear, borrowRate, epochState]);
 
-  const { data: marketUST } = useMarketUST();
-  const { data: marketBluna } = useMarketBluna();
-  const { data: marketANC } = useMarketANC();
-  const { data: marketDepositAndBorrow } = useMarketDepositAndBorrow();
-  const { data: marketCollaterals } = useMarketCollaterals();
+  const { data: marketUST } = useMarketUstQuery();
+  const { data: marketBluna } = useMarketBLunaQuery();
+  const { data: marketANC } = useMarketAncQuery();
+  const { data: marketDepositAndBorrow } = useMarketDepositAndBorrowQuery();
+  const { data: marketCollaterals } = useMarketCollateralsQuery();
 
   const totalValueLocked = useMemo(() => {
     if (!marketDepositAndBorrow?.now || !marketCollaterals?.now || !marketUST) {

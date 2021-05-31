@@ -8,7 +8,12 @@ import {
 } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import { Luna, Rate, UST, uUST } from '@anchor-protocol/types';
-import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
+import {
+  useAnchorWebapp,
+  useMarketBAssetQuery,
+  useMarketStableCoinQuery,
+  useMarketStateQuery,
+} from '@anchor-protocol/webapp-provider';
 import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
@@ -16,9 +21,6 @@ import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { Footer } from 'base/components/Footer';
 import big, { Big } from 'big.js';
 import { screen } from 'env';
-import { useBAssetMarket } from 'pages/market-simple/queries/bAssetMarket';
-import { useMarket } from 'pages/market-simple/queries/market';
-import { useStableCoinMarket } from 'pages/market-simple/queries/stableCoinMarket';
 import { useMemo } from 'react';
 import styled from 'styled-components';
 
@@ -32,31 +34,36 @@ function MarketBase({ className }: MarketProps) {
   } = useAnchorWebapp();
 
   const {
-    data: { uUSD, state },
-  } = useMarket();
+    data: { marketState: state, marketBalances: balances } = {},
+  } = useMarketStateQuery();
+  //const {
+  //  data: { uUSD, state },
+  //} = useMarket();
 
-  const {
-    data: { borrowRate, epochState },
-  } = useStableCoinMarket({ uUSD, state });
+  const { data: { borrowRate, epochState } = {} } = useMarketStableCoinQuery();
+  //const {
+  //  data: { borrowRate, epochState },
+  //} = useStableCoinMarket({ uUSD: balances?.uUST, state });
 
-  const {
-    data: { ubLuna, oraclePrice },
-  } = useBAssetMarket();
+  const { data: { oraclePrice, bLunaBalance } = {} } = useMarketBAssetQuery();
+  //const {
+  //  data: { ubLuna, oraclePrice },
+  //} = useBAssetMarket();
 
   const market = useMemo(() => {
-    if (!state || !uUSD) {
+    if (!state || !balances?.uUST) {
       return undefined;
     }
 
     const { total_liabilities, total_reserves } = state;
 
     return {
-      totalDeposit: big(uUSD)
+      totalDeposit: big(balances?.uUST)
         .plus(total_liabilities)
         .minus(total_reserves) as uUST<Big>,
       totalBorrow: total_liabilities,
     };
-  }, [state, uUSD]);
+  }, [balances?.uUST, state]);
 
   const stableCoin = useMemo(() => {
     if (!borrowRate || !epochState) {
@@ -74,16 +81,18 @@ function MarketBase({ className }: MarketProps) {
   }, [blocksPerYear, borrowRate, epochState]);
 
   const bAsset = useMemo(() => {
-    if (!ubLuna || !oraclePrice) {
+    if (!bLunaBalance || !oraclePrice) {
       return undefined;
     }
 
     return {
       price: oraclePrice.rate,
-      totalCollateral: ubLuna,
-      totalCollateralValue: big(oraclePrice.rate).mul(ubLuna) as uUST<Big>,
+      totalCollateral: bLunaBalance.balance,
+      totalCollateralValue: big(oraclePrice.rate).mul(
+        bLunaBalance.balance,
+      ) as uUST<Big>,
     };
-  }, [oraclePrice, ubLuna]);
+  }, [bLunaBalance, oraclePrice]);
 
   return (
     <div className={className}>

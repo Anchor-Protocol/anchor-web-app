@@ -1,8 +1,6 @@
 import { JSDateTime, uANC, UST, uUST } from '@anchor-protocol/types';
-import { useQuery, UseQueryResult } from 'react-query';
-import { REFRESH_INTERVAL } from '../env';
 
-export interface MarketANCHistory {
+export interface MarketAncHistory {
   anc_price: UST;
   anc_circulating_supply: uANC;
   timestamp: JSDateTime;
@@ -22,35 +20,31 @@ export interface MarketANCHistory {
   lp_total_supply: '53834637172380';
 }
 
-export interface MarketANCResponse {
-  now: MarketANCHistory;
-  history: MarketANCHistory[];
+export interface MarketAncData {
+  now: MarketAncHistory;
+  history: MarketAncHistory[];
 }
 
-export async function queryMarketANC() {
-  const now: MarketANCHistory = await fetch(
-    `https://anchor-services.vercel.app/api/anc`,
-  )
+export interface MarketAncQueryParams {
+  endpoint: string;
+}
+
+export async function marketAncQuery({
+  endpoint,
+}: MarketAncQueryParams): Promise<MarketAncData> {
+  const now: MarketAncHistory = await fetch(`${endpoint}/api/anc`)
     .then((res) => res.json())
-    .then((data: MarketANCHistory) => ({
+    .then((data: MarketAncHistory) => ({
       ...data,
       timestamp: Date.now() as JSDateTime,
     }));
 
-  const history: MarketANCHistory[] = await fetch(
-    `https://api.anchorprotocol.com/api/anc/1d`,
-  )
+  const history: MarketAncHistory[] = await fetch(`${endpoint}/api/anc/1d`)
     .then((res) => res.json())
-    .then((data: MarketANCHistory[]) => [...data.reverse(), now]);
+    .then((data: MarketAncHistory[]) => [...data.reverse(), now]);
 
   return {
     now,
     history,
   };
-}
-
-export function useMarketANC(): UseQueryResult<MarketANCResponse> {
-  return useQuery('marketANC', queryMarketANC, {
-    refetchInterval: REFRESH_INTERVAL,
-  });
 }

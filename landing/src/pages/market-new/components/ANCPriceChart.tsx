@@ -1,4 +1,5 @@
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
+import { MarketAncHistory } from '@anchor-protocol/webapp-fns';
 import {
   rulerLightColor,
   rulerShadowColor,
@@ -7,12 +8,11 @@ import big from 'big.js';
 import { Chart } from 'chart.js';
 import React, { useEffect, useRef } from 'react';
 import styled, { useTheme } from 'styled-components';
-import { MarketANCHistory } from '../queries/marketANC';
 import { ChartTooltip } from './ChartTooltip';
 import { mediumDay, shortDay } from './internal/dateFormatters';
 
 export interface ANCPriceChartProps {
-  data: MarketANCHistory[] | null | undefined;
+  data: MarketAncHistory[] | null | undefined;
 }
 
 export function ANCPriceChart({ data }: ANCPriceChartProps) {

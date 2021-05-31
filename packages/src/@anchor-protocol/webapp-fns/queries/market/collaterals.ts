@@ -1,6 +1,4 @@
 import { JSDateTime, ubLuna, uUST } from '@anchor-protocol/types';
-import { useQuery, UseQueryResult } from 'react-query';
-import { REFRESH_INTERVAL } from '../env';
 
 export interface MarketCollateralsHistory {
   timestamp: JSDateTime;
@@ -8,14 +6,20 @@ export interface MarketCollateralsHistory {
   collaterals: [{ bluna: ubLuna }];
 }
 
-export interface MarketCollateralsResponse {
+export interface MarketCollateralsData {
   now: MarketCollateralsHistory;
   history: MarketCollateralsHistory[];
 }
 
-export async function queryMarketCollaterals() {
+export interface MarketCollateralsQueryParams {
+  endpoint: string;
+}
+
+export async function marketCollateralsQuery({
+  endpoint,
+}: MarketCollateralsQueryParams): Promise<MarketCollateralsData> {
   const now: MarketCollateralsHistory = await fetch(
-    `https://anchor-services.vercel.app/api/collaterals`,
+    `${endpoint}/api/collaterals`,
   )
     .then((res) => res.json())
     .then((data: MarketCollateralsHistory) => ({
@@ -24,7 +28,7 @@ export async function queryMarketCollaterals() {
     }));
 
   const history: MarketCollateralsHistory[] = await fetch(
-    `https://api.anchorprotocol.com/api/collaterals/1d`,
+    `${endpoint}/api/collaterals/1d`,
   )
     .then((res) => res.json())
     .then((data: MarketCollateralsHistory[]) => [...data.reverse(), now]);
@@ -33,10 +37,4 @@ export async function queryMarketCollaterals() {
     now,
     history,
   };
-}
-
-export function useMarketCollaterals(): UseQueryResult<MarketCollateralsResponse> {
-  return useQuery('marketCollaterals', queryMarketCollaterals, {
-    refetchInterval: REFRESH_INTERVAL,
-  });
 }

@@ -1,8 +1,6 @@
 import { Rate, uaUST, ubLuna, uUST } from '@anchor-protocol/types';
-import { useQuery, UseQueryResult } from 'react-query';
-import { REFRESH_INTERVAL } from '../env';
 
-export interface MarketUSTResponse {
+export interface MarketUstData {
   borrow_rate: Rate;
   prev_aterra_supply: uaUST;
   deposit_rate: Rate;
@@ -27,14 +25,12 @@ export interface MarketUSTResponse {
   global_interest_index: Rate;
 }
 
-export function queryMarketUST() {
-  return fetch(
-    `https://anchor-services.vercel.app/api/market/ust`,
-  ).then((res) => res.json());
+export interface MarketUstQueryParams {
+  endpoint: string;
 }
 
-export function useMarketUST(): UseQueryResult<MarketUSTResponse> {
-  return useQuery('marketUST', queryMarketUST, {
-    refetchInterval: REFRESH_INTERVAL,
-  });
+export function marketUstQuery({
+  endpoint,
+}: MarketUstQueryParams): Promise<MarketUstData> {
+  return fetch(`${endpoint}/api/market/ust`).then((res) => res.json());
 }

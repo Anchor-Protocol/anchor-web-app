@@ -40,6 +40,14 @@ export * from './queries/rewards/claimableUstBorrowRewards';
 export * from './queries/rewards/ustBorrowRewards';
 export * from './queries/airdrop/check';
 export * from './queries/terra/lastSyncedHeight';
+export * from './queries/market/anc';
+export * from './queries/market/bAsset';
+export * from './queries/market/bLuna';
+export * from './queries/market/collaterals';
+export * from './queries/market/depositAndBorrow';
+export * from './queries/market/stableCoin';
+export * from './queries/market/state';
+export * from './queries/market/ust';
 
 export * from './tx/earn/deposit';
 export * from './tx/earn/withdraw';

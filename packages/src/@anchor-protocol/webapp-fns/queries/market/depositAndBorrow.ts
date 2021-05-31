@@ -1,6 +1,4 @@
 import { JSDateTime, uUST } from '@anchor-protocol/types';
-import { useQuery, UseQueryResult } from 'react-query';
-import { REFRESH_INTERVAL } from '../env';
 
 interface MarketDepositRaw {
   total_ust_deposits: uUST;
@@ -43,26 +41,32 @@ export interface MarketDepositAndBorrow {
   timestamp: JSDateTime;
 }
 
-export interface MarketDepositAndBorrowResponse {
+export interface MarketDepositAndBorrowData {
   now: MarketDepositAndBorrow;
   history: MarketDepositAndBorrow[];
 }
 
-export async function queryMarketDepositAndBorrow(): Promise<MarketDepositAndBorrowResponse> {
+export interface MarketDepositAndBorrowQueryParams {
+  endpoint: string;
+}
+
+export async function marketDepositAndBorrowQuery({
+  endpoint,
+}: MarketDepositAndBorrowQueryParams): Promise<MarketDepositAndBorrowData> {
   const deposit: MarketDepositRaw = await fetch(
-    `https://anchor-services.vercel.app/api/deposit`,
+    `${endpoint}/api/deposit`,
   ).then((res) => res.json());
 
   const depositHistory: MarketDepositHistoryRaw = await fetch(
-    `https://api.anchorprotocol.com/api/deposit/1d`,
+    `${endpoint}/api/deposit/1d`,
   ).then((res) => res.json());
 
   const borrow: MarketBorrowRaw = await fetch(
-    `https://anchor-services.vercel.app/api/borrow`,
+    `${endpoint}/api/borrow`,
   ).then((res) => res.json());
 
   const borrowHistory: MarketBorrowHistoryRaw = await fetch(
-    `https://api.anchorprotocol.com/api/borrow/1d`,
+    `${endpoint}/api/borrow/1d`,
   ).then((res) => res.json());
 
   const now = {
@@ -86,11 +90,4 @@ export async function queryMarketDepositAndBorrow(): Promise<MarketDepositAndBor
       now,
     ],
   };
-}
-
-export function useMarketDepositAndBorrow(): UseQueryResult<MarketDepositAndBorrowResponse> {
-  return useQuery('marketDepositAndBorrow', queryMarketDepositAndBorrow, {
-    refetchInterval: REFRESH_INTERVAL,
-    keepPreviousData: true,
-  });
 }
