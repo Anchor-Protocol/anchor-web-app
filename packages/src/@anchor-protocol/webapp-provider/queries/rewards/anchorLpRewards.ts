@@ -19,7 +19,7 @@ const queryFn = ({
 export function useRewardsAnchorLpRewardsQuery(): UseQueryResult<
   RewardsAnchorLpRewardsData | undefined
 > {
-  const { mantleFetch, mantleEndpoint } = useTerraWebapp();
+  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const { browserInactive } = useBrowserInactive();
 
@@ -30,6 +30,7 @@ export function useRewardsAnchorLpRewardsQuery(): UseQueryResult<
       refetchInterval: browserInactive && 1000 * 60 * 5,
       enabled: !browserInactive,
       keepPreviousData: true,
+      onError: queryErrorReporter,
     },
   );
 

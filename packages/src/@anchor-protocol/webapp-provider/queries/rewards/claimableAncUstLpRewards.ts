@@ -65,7 +65,12 @@ const queryFn = ({
 export function useRewardsClaimableAncUstLpRewardsQuery(): UseQueryResult<
   RewardsClaimableAncUstLpRewardsData | undefined
 > {
-  const { mantleFetch, mantleEndpoint, lastSyncedHeight } = useTerraWebapp();
+  const {
+    mantleFetch,
+    mantleEndpoint,
+    lastSyncedHeight,
+    queryErrorReporter,
+  } = useTerraWebapp();
 
   const connectedWallet = useConnectedWallet();
 
@@ -90,6 +95,7 @@ export function useRewardsClaimableAncUstLpRewardsQuery(): UseQueryResult<
       refetchInterval: browserInactive && 1000 * 60 * 5,
       enabled: !browserInactive && !!connectedWallet,
       keepPreviousData: true,
+      onError: queryErrorReporter,
     },
   );
 

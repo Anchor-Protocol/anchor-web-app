@@ -14,7 +14,7 @@ interface VotersReturn {
 }
 
 export function useGovVotersQuery(pollId: number): VotersReturn {
-  const { mantleFetch, mantleEndpoint } = useTerraWebapp();
+  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const {
     contractAddress: { anchorToken },
@@ -41,18 +41,26 @@ export function useGovVotersQuery(pollId: number): VotersReturn {
           },
         },
       },
-    }).then(({ voters }) => {
-      if (voters.voters) {
-        if (voters.voters.length > 0) {
-          setVoters(voters.voters);
-        }
+    })
+      .then(({ voters }) => {
+        if (voters.voters) {
+          if (voters.voters.length > 0) {
+            setVoters(voters.voters);
+          }
 
-        if (voters.voters.length < limit) {
-          setIsLast(true);
+          if (voters.voters.length < limit) {
+            setIsLast(true);
+          }
         }
-      }
-    });
-  }, [anchorToken.gov, mantleEndpoint, mantleFetch, pollId]);
+      })
+      .catch(queryErrorReporter);
+  }, [
+    anchorToken.gov,
+    mantleEndpoint,
+    mantleFetch,
+    pollId,
+    queryErrorReporter,
+  ]);
 
   const loadMore = useCallback(() => {
     if (voters.length > 0) {
@@ -69,21 +77,30 @@ export function useGovVotersQuery(pollId: number): VotersReturn {
             },
           },
         },
-      }).then(({ voters }) => {
-        if (voters.voters) {
-          setVoters((prev) => {
-            return Array.isArray(voters.voters) && voters.voters.length > 0
-              ? [...prev, ...voters.voters]
-              : prev;
-          });
+      })
+        .then(({ voters }) => {
+          if (voters.voters) {
+            setVoters((prev) => {
+              return Array.isArray(voters.voters) && voters.voters.length > 0
+                ? [...prev, ...voters.voters]
+                : prev;
+            });
 
-          if (voters.voters.length < limit) {
-            setIsLast(true);
+            if (voters.voters.length < limit) {
+              setIsLast(true);
+            }
           }
-        }
-      });
+        })
+        .catch(queryErrorReporter);
     }
-  }, [anchorToken.gov, mantleEndpoint, mantleFetch, pollId, voters]);
+  }, [
+    anchorToken.gov,
+    mantleEndpoint,
+    mantleFetch,
+    pollId,
+    queryErrorReporter,
+    voters,
+  ]);
 
   useEffect(() => {
     load();

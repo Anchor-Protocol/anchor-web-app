@@ -16,7 +16,7 @@ interface PollsReturn {
 export function useGovPollsQuery(
   filter: anchorToken.gov.PollStatus | undefined,
 ): PollsReturn {
-  const { mantleFetch, mantleEndpoint } = useTerraWebapp();
+  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const {
     contractAddress: { anchorToken },
@@ -43,16 +43,24 @@ export function useGovPollsQuery(
           },
         },
       },
-    }).then(({ polls }) => {
-      if (polls.polls.length > 0) {
-        setPolls(polls.polls);
-      }
+    })
+      .then(({ polls }) => {
+        if (polls.polls.length > 0) {
+          setPolls(polls.polls);
+        }
 
-      if (polls.polls.length < limit) {
-        setIsLast(true);
-      }
-    });
-  }, [anchorToken.gov, filter, mantleEndpoint, mantleFetch]);
+        if (polls.polls.length < limit) {
+          setIsLast(true);
+        }
+      })
+      .catch(queryErrorReporter);
+  }, [
+    anchorToken.gov,
+    filter,
+    mantleEndpoint,
+    mantleFetch,
+    queryErrorReporter,
+  ]);
 
   const loadMore = useCallback(() => {
     if (polls.length > 0) {
@@ -69,21 +77,30 @@ export function useGovPollsQuery(
             },
           },
         },
-      }).then(({ polls }) => {
-        if (polls.polls) {
-          setPolls((prev) => {
-            return Array.isArray(polls.polls) && polls.polls.length > 0
-              ? [...prev, ...polls.polls]
-              : prev;
-          });
+      })
+        .then(({ polls }) => {
+          if (polls.polls) {
+            setPolls((prev) => {
+              return Array.isArray(polls.polls) && polls.polls.length > 0
+                ? [...prev, ...polls.polls]
+                : prev;
+            });
 
-          if (polls.polls.length < limit) {
-            setIsLast(true);
+            if (polls.polls.length < limit) {
+              setIsLast(true);
+            }
           }
-        }
-      });
+        })
+        .catch(queryErrorReporter);
     }
-  }, [anchorToken.gov, filter, mantleEndpoint, mantleFetch, polls]);
+  }, [
+    anchorToken.gov,
+    filter,
+    mantleEndpoint,
+    mantleFetch,
+    polls,
+    queryErrorReporter,
+  ]);
 
   useEffect(() => {
     load();

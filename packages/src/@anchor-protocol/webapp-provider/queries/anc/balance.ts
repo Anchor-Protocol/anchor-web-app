@@ -32,7 +32,7 @@ const queryFn = ({
 export function useAncBalanceQuery(
   walletAddress: HumanAddr | undefined | null,
 ): UseQueryResult<AncBalanceData | undefined> {
-  const { mantleFetch, mantleEndpoint } = useTerraWebapp();
+  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const {
     contractAddress: { cw20 },
@@ -53,6 +53,7 @@ export function useAncBalanceQuery(
       refetchInterval: browserInactive && !!walletAddress && 1000 * 60 * 5,
       enabled: !browserInactive || !walletAddress,
       keepPreviousData: true,
+      onError: queryErrorReporter,
     },
   );
 

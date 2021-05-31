@@ -43,7 +43,7 @@ patchReactQueryFocusRefetching();
 
 const queryClient = new QueryClient();
 
-const operationBroadcasterErrorReporter =
+const errorReporter =
   process.env.NODE_ENV === 'production' ? captureException : undefined;
 
 const cw20TokenContracts: Record<string, Record<string, CW20Contract>> = {
@@ -117,7 +117,8 @@ function Providers({ children }: { children: ReactNode }) {
         <BrowserInactiveProvider>
           <TerraWebappProvider
             txRefetchMap={ANCHOR_TX_REFETCH_MAP}
-            txErrorReporter={operationBroadcasterErrorReporter}
+            txErrorReporter={errorReporter}
+            queryErrorReporter={errorReporter}
           >
             <WebappBankProvider
               cw20TokenContracts={cw20TokenContracts}

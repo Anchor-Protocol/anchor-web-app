@@ -67,7 +67,12 @@ export function useBorrowBorrowerQuery(): UseQueryResult<
 > {
   const connectedWallet = useConnectedWallet();
 
-  const { mantleFetch, mantleEndpoint, lastSyncedHeight } = useTerraWebapp();
+  const {
+    mantleFetch,
+    mantleEndpoint,
+    lastSyncedHeight,
+    queryErrorReporter,
+  } = useTerraWebapp();
 
   const {
     contractAddress: { moneyMarket },
@@ -90,6 +95,7 @@ export function useBorrowBorrowerQuery(): UseQueryResult<
       refetchInterval: browserInactive && !!connectedWallet && 1000 * 60 * 5,
       enabled: !browserInactive && !!connectedWallet,
       keepPreviousData: true,
+      onError: queryErrorReporter,
     },
   );
 

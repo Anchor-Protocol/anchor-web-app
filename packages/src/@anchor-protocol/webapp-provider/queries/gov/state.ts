@@ -25,7 +25,7 @@ const queryFn = ({
 };
 
 export function useGovStateQuery(): UseQueryResult<GovStateData | undefined> {
-  const { mantleFetch, mantleEndpoint } = useTerraWebapp();
+  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const {
     contractAddress: { anchorToken },
@@ -40,6 +40,7 @@ export function useGovStateQuery(): UseQueryResult<GovStateData | undefined> {
       refetchInterval: browserInactive && 1000 * 60 * 5,
       enabled: !browserInactive,
       keepPreviousData: true,
+      onError: queryErrorReporter,
     },
   );
 

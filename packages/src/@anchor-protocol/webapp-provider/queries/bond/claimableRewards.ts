@@ -52,7 +52,7 @@ export function useBondClaimableRewards(): UseQueryResult<
 > {
   const connectedWallet = useConnectedWallet();
 
-  const { mantleFetch, mantleEndpoint } = useTerraWebapp();
+  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const {
     contractAddress: { bluna },
@@ -73,6 +73,7 @@ export function useBondClaimableRewards(): UseQueryResult<
       refetchInterval: browserInactive && !!connectedWallet && 1000 * 60 * 5,
       enabled: !browserInactive && !!connectedWallet,
       keepPreviousData: true,
+      onError: queryErrorReporter,
     },
   );
 

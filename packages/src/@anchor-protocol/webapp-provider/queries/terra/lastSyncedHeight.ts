@@ -1,7 +1,7 @@
-import { ANCHOR_QUERY_KEY } from '../../env';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { useTerraWebapp } from '@terra-money/webapp-provider';
 import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
+import { ANCHOR_QUERY_KEY } from '../../env';
 
 const storageKey = '__anchor_last_synced_height__';
 
@@ -15,7 +15,7 @@ const queryFn = ({
 };
 
 export function useLastSyncedHeightQuery(): UseQueryResult<number> {
-  const { lastSyncedHeight } = useTerraWebapp();
+  const { lastSyncedHeight, queryErrorReporter } = useTerraWebapp();
 
   const { browserInactive } = useBrowserInactive();
 
@@ -26,6 +26,7 @@ export function useLastSyncedHeightQuery(): UseQueryResult<number> {
       refetchInterval: browserInactive && 1000 * 60,
       enabled: !browserInactive,
       keepPreviousData: true,
+      onError: queryErrorReporter,
       placeholderData: () => {
         return +(localStorage.getItem(storageKey) ?? '0');
       },

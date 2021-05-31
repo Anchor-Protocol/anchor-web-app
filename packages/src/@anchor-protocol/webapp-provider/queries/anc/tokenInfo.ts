@@ -27,7 +27,7 @@ const queryFn = ({
 export function useAncTokenInfoQuery(): UseQueryResult<
   AncTokenInfoData | undefined
 > {
-  const { mantleFetch, mantleEndpoint } = useTerraWebapp();
+  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const {
     contractAddress: { cw20 },
@@ -42,6 +42,7 @@ export function useAncTokenInfoQuery(): UseQueryResult<
       refetchInterval: browserInactive && 1000 * 60 * 5,
       enabled: !browserInactive,
       keepPreviousData: true,
+      onError: queryErrorReporter,
     },
   );
 

@@ -24,7 +24,7 @@ const queryFn = ({
 export function useEarnAPYHistoryQuery(): UseQueryResult<
   EarnAPYHistoryData | undefined
 > {
-  const { mantleFetch, mantleEndpoint } = useTerraWebapp();
+  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const { browserInactive } = useBrowserInactive();
 
@@ -35,6 +35,7 @@ export function useEarnAPYHistoryQuery(): UseQueryResult<
       refetchInterval: browserInactive && 1000 * 60 * 60,
       enabled: !browserInactive,
       keepPreviousData: true,
+      onError: queryErrorReporter,
     },
   );
 }

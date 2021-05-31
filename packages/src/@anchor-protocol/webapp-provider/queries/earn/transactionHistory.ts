@@ -34,7 +34,7 @@ const queryFn = ({
 export function useEarnTransactionHistoryQuery(): UseQueryResult<
   EarnTransactionHistoryData | undefined
 > {
-  const { mantleFetch, mantleEndpoint } = useTerraWebapp();
+  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const { browserInactive } = useBrowserInactive();
 
@@ -51,6 +51,7 @@ export function useEarnTransactionHistoryQuery(): UseQueryResult<
     {
       enabled: !browserInactive && !!connectedWallet,
       keepPreviousData: true,
+      onError: queryErrorReporter,
     },
   );
 

@@ -22,7 +22,7 @@ const queryFn = ({
 };
 
 export function useGovConfigQuery(): UseQueryResult<GovConfigData | undefined> {
-  const { mantleFetch, mantleEndpoint } = useTerraWebapp();
+  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const {
     contractAddress: { anchorToken },
@@ -37,6 +37,7 @@ export function useGovConfigQuery(): UseQueryResult<GovConfigData | undefined> {
       refetchInterval: browserInactive && 1000 * 60 * 5,
       enabled: !browserInactive,
       keepPreviousData: true,
+      onError: queryErrorReporter,
     },
   );
 

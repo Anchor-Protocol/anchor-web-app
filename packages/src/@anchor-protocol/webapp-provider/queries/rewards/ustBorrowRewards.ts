@@ -44,7 +44,7 @@ const queryFn = ({
 export function useRewardsUstBorrowRewardsQuery(): UseQueryResult<
   RewardsUstBorrowRewardsData | undefined
 > {
-  const { mantleFetch, mantleEndpoint } = useTerraWebapp();
+  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const connectedWallet = useConnectedWallet();
 
@@ -67,6 +67,7 @@ export function useRewardsUstBorrowRewardsQuery(): UseQueryResult<
       refetchInterval: browserInactive && 1000 * 60 * 5,
       enabled: !browserInactive && !!connectedWallet,
       keepPreviousData: true,
+      onError: queryErrorReporter,
     },
   );
 

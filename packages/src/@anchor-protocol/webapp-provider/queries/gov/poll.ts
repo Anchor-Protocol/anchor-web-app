@@ -26,7 +26,7 @@ const queryFn = ({
 export function useGovPollQuery(
   pollId: number,
 ): UseQueryResult<GovPollData | undefined> {
-  const { mantleFetch, mantleEndpoint } = useTerraWebapp();
+  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const {
     contractAddress: { anchorToken },
@@ -47,6 +47,7 @@ export function useGovPollQuery(
       refetchInterval: browserInactive && 1000 * 60 * 5,
       enabled: !browserInactive,
       keepPreviousData: true,
+      onError: queryErrorReporter,
     },
   );
 

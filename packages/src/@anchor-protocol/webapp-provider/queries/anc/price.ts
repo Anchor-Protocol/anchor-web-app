@@ -22,7 +22,7 @@ const queryFn = ({
 };
 
 export function useAncPriceQuery(): UseQueryResult<AncPriceData | undefined> {
-  const { mantleFetch, mantleEndpoint } = useTerraWebapp();
+  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const {
     contractAddress: { terraswap },
@@ -42,6 +42,7 @@ export function useAncPriceQuery(): UseQueryResult<AncPriceData | undefined> {
       refetchInterval: browserInactive && 1000 * 60 * 5,
       enabled: !browserInactive,
       keepPreviousData: true,
+      onError: queryErrorReporter,
     },
   );
 

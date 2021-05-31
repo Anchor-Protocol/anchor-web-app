@@ -27,7 +27,7 @@ const queryFn = ({
 export function useAncLpStakingStateQuery(): UseQueryResult<
   AncLpStakingStateData | undefined
 > {
-  const { mantleFetch, mantleEndpoint } = useTerraWebapp();
+  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const {
     contractAddress: { anchorToken },
@@ -47,6 +47,7 @@ export function useAncLpStakingStateQuery(): UseQueryResult<
       refetchInterval: browserInactive && 1000 * 60 * 5,
       enabled: !browserInactive,
       keepPreviousData: true,
+      onError: queryErrorReporter,
     },
   );
 

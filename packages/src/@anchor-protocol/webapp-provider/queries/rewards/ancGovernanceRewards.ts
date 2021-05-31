@@ -61,7 +61,7 @@ const queryFn = ({
 export function useRewardsAncGovernanceRewardsQuery(): UseQueryResult<
   RewardsAncGovernanceRewardsData | undefined
 > {
-  const { mantleFetch, mantleEndpoint } = useTerraWebapp();
+  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const connectedWallet = useConnectedWallet();
 
@@ -85,6 +85,7 @@ export function useRewardsAncGovernanceRewardsQuery(): UseQueryResult<
       refetchInterval: browserInactive && 1000 * 60 * 5,
       enabled: !browserInactive && !!connectedWallet,
       keepPreviousData: true,
+      onError: queryErrorReporter,
     },
   );
 

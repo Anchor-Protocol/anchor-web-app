@@ -27,7 +27,7 @@ const queryFn = ({
 export function useBondValidators(): UseQueryResult<
   BondValidatorsData | undefined
 > {
-  const { mantleFetch, mantleEndpoint } = useTerraWebapp();
+  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const { contractAddress } = useAnchorWebapp();
 
@@ -45,6 +45,7 @@ export function useBondValidators(): UseQueryResult<
       refetchInterval: browserInactive && 1000 * 60 * 5,
       enabled: !browserInactive,
       keepPreviousData: true,
+      onError: queryErrorReporter,
     },
   );
 }

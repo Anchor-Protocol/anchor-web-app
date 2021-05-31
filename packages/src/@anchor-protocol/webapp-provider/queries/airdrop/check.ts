@@ -34,7 +34,7 @@ const queryFn = ({
 };
 
 export function useAirdropCheckQuery(): UseQueryResult<Airdrop | undefined> {
-  const { mantleFetch, mantleEndpoint } = useTerraWebapp();
+  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const { browserInactive } = useBrowserInactive();
 
@@ -56,6 +56,7 @@ export function useAirdropCheckQuery(): UseQueryResult<Airdrop | undefined> {
     {
       enabled: !browserInactive && !!connectedWallet,
       keepPreviousData: true,
+      onError: queryErrorReporter,
     },
   );
 

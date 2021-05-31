@@ -31,7 +31,7 @@ const queryFn = ({
 export function useBondBLunaExchangeRateQuery(): UseQueryResult<
   BondBLunaExchangeRateData | undefined
 > {
-  const { mantleFetch, mantleEndpoint } = useTerraWebapp();
+  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const { contractAddress } = useAnchorWebapp();
 
@@ -49,6 +49,7 @@ export function useBondBLunaExchangeRateQuery(): UseQueryResult<
       refetchInterval: browserInactive && 1000 * 60 * 5,
       enabled: !browserInactive,
       keepPreviousData: true,
+      onError: queryErrorReporter,
     },
   );
 }
