@@ -2,7 +2,7 @@ import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import { uUST } from '@anchor-protocol/types';
 import { rewardsUstBorrowClaimTx } from '@anchor-protocol/webapp-fns';
 import { useStream } from '@rx-stream/react';
-import { useOperationBroadcaster } from '@terra-dev/broadcastable-operation';
+
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import {
   useRefetchQueries,
@@ -24,9 +24,6 @@ export function useRewardsUstBorrowClaimTx() {
   const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
 
   const refetchQueries = useRefetchQueries();
-
-  // TODO remove
-  const { dispatch } = useOperationBroadcaster();
 
   const stream = useCallback(
     ({ onTxSucceed }: RewardsUstBorrowClaimTxParams) => {
@@ -54,7 +51,6 @@ export function useRewardsUstBorrowClaimTx() {
         onTxSucceed: () => {
           onTxSucceed?.();
           refetchQueries(ANCHOR_TX_KEY.REWARDS_ANC_UST_LP_CLAIM);
-          dispatch('', 'done');
         },
       });
     },
@@ -68,7 +64,6 @@ export function useRewardsUstBorrowClaimTx() {
       mantleFetch,
       txErrorReporter,
       refetchQueries,
-      dispatch,
     ],
   );
 

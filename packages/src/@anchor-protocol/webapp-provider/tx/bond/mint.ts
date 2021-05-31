@@ -1,7 +1,7 @@
 import { Luna, uUST } from '@anchor-protocol/types';
 import { bondMintTx } from '@anchor-protocol/webapp-fns';
 import { useStream } from '@rx-stream/react';
-import { useOperationBroadcaster } from '@terra-dev/broadcastable-operation';
+
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import {
   useRefetchQueries,
@@ -25,9 +25,6 @@ export function useBondMintTx() {
   const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
 
   const refetchQueries = useRefetchQueries();
-
-  // TODO remove
-  const { dispatch } = useOperationBroadcaster();
 
   const stream = useCallback(
     ({ bondAmount, validator, onTxSucceed }: BondMintTxParams) => {
@@ -56,7 +53,6 @@ export function useBondMintTx() {
         onTxSucceed: () => {
           onTxSucceed?.();
           refetchQueries(ANCHOR_TX_KEY.EARN_DEPOSIT);
-          dispatch('', 'done');
         },
       });
     },
@@ -70,7 +66,6 @@ export function useBondMintTx() {
       mantleFetch,
       txErrorReporter,
       refetchQueries,
-      dispatch,
     ],
   );
 

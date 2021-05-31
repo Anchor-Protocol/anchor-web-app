@@ -1,7 +1,7 @@
 import { bLuna, Rate, uUST } from '@anchor-protocol/types';
 import { bondSwapTx } from '@anchor-protocol/webapp-fns';
 import { useStream } from '@rx-stream/react';
-import { useOperationBroadcaster } from '@terra-dev/broadcastable-operation';
+
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import {
   useRefetchQueries,
@@ -28,7 +28,6 @@ export function useBondSwapTx() {
   const refetchQueries = useRefetchQueries();
 
   // TODO remove
-  const { dispatch } = useOperationBroadcaster();
 
   const stream = useCallback(
     ({ burnAmount, beliefPrice, maxSpread, onTxSucceed }: BondSwapTxParams) => {
@@ -58,7 +57,6 @@ export function useBondSwapTx() {
         onTxSucceed: () => {
           onTxSucceed?.();
           refetchQueries(ANCHOR_TX_KEY.EARN_DEPOSIT);
-          dispatch('', 'done');
         },
       });
     },
@@ -72,7 +70,6 @@ export function useBondSwapTx() {
       mantleFetch,
       txErrorReporter,
       refetchQueries,
-      dispatch,
     ],
   );
 

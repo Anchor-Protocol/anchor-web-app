@@ -78,7 +78,6 @@ IDE
 - [packages/src/@terra-dev/audit-fastdom/README.md](packages/src/@terra-dev/audit-fastdom/README.md)
 - [packages/src/@terra-dev/big-interpolate/README.md](packages/src/@terra-dev/big-interpolate/README.md)
 - [packages/src/@terra-dev/big-math/README.md](packages/src/@terra-dev/big-math/README.md)
-- [packages/src/@terra-dev/broadcastable-operation/README.md](packages/src/@terra-dev/broadcastable-operation/README.md)
 - [packages/src/@terra-dev/event-bus/README.md](packages/src/@terra-dev/event-bus/README.md)
 - [packages/src/@terra-dev/is-desktop-chrome/README.md](packages/src/@terra-dev/is-desktop-chrome/README.md)
 - [packages/src/@terra-dev/is-touch-device/README.md](packages/src/@terra-dev/is-touch-device/README.md)

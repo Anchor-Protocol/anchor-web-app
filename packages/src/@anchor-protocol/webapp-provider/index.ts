@@ -7,6 +7,8 @@ export * from './contexts/context';
 export * from './forms/earn/deposit';
 export * from './forms/earn/withdraw';
 
+export * from './utils/contractNickname';
+
 export * from './queries/earn/epochStates';
 export * from './queries/earn/apyHistory';
 export * from './queries/earn/transactionHistory';

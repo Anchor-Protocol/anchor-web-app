@@ -1,7 +1,7 @@
 import { uUST } from '@anchor-protocol/types';
 import { rewardsAllClaimTx } from '@anchor-protocol/webapp-fns';
 import { useStream } from '@rx-stream/react';
-import { useOperationBroadcaster } from '@terra-dev/broadcastable-operation';
+
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import {
   useRefetchQueries,
@@ -25,9 +25,6 @@ export function useRewardsAllClaimTx() {
   const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
 
   const refetchQueries = useRefetchQueries();
-
-  // TODO remove
-  const { dispatch } = useOperationBroadcaster();
 
   const stream = useCallback(
     ({
@@ -59,7 +56,6 @@ export function useRewardsAllClaimTx() {
         onTxSucceed: () => {
           onTxSucceed?.();
           refetchQueries(ANCHOR_TX_KEY.REWARDS_ALL_CLAIM);
-          dispatch('', 'done');
         },
       });
     },
@@ -73,7 +69,6 @@ export function useRewardsAllClaimTx() {
       mantleFetch,
       txErrorReporter,
       refetchQueries,
-      dispatch,
     ],
   );
 

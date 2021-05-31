@@ -1,7 +1,7 @@
 import { CW20Addr, HumanAddr, Token, uUST } from '@anchor-protocol/types';
 import { terraSendTx } from '@anchor-protocol/webapp-fns';
 import { useStream } from '@rx-stream/react';
-import { useOperationBroadcaster } from '@terra-dev/broadcastable-operation';
+
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import {
   useRefetchQueries,
@@ -29,9 +29,6 @@ export function useTerraSendTx() {
   const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
 
   const refetchQueries = useRefetchQueries();
-
-  // TODO remove
-  const { dispatch } = useOperationBroadcaster();
 
   const stream = useCallback(
     ({
@@ -67,7 +64,6 @@ export function useTerraSendTx() {
         onTxSucceed: () => {
           onTxSucceed?.();
           refetchQueries(ANCHOR_TX_KEY.TERRA_SEND);
-          dispatch('', 'done');
         },
       });
     },
@@ -79,7 +75,6 @@ export function useTerraSendTx() {
       mantleFetch,
       txErrorReporter,
       refetchQueries,
-      dispatch,
     ],
   );
 

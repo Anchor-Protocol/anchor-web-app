@@ -5,6 +5,7 @@ import {
 } from '@anchor-protocol/notation';
 import { uANC } from '@anchor-protocol/types';
 import {
+  useAnchorWebapp,
   useRewardsAllClaimTx,
   useRewardsClaimableAncUstLpRewardsQuery,
   useRewardsClaimableUstBorrowRewardsQuery,
@@ -14,7 +15,6 @@ import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton'
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
 import big, { Big } from 'big.js';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { MessageBox } from 'components/MessageBox';
@@ -36,7 +36,9 @@ function ClaimAllBase({ className }: ClaimAllProps) {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const { fixedGas } = useConstants();
+  const {
+    constants: { fixedGas },
+  } = useAnchorWebapp();
 
   const [claim, claimResult] = useRewardsAllClaimTx();
 

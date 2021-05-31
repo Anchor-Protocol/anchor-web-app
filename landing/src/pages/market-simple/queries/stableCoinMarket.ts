@@ -1,11 +1,11 @@
 import { moneyMarket, uUST, WASMContractResult } from '@anchor-protocol/types';
+import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
+import { gql, useQuery } from '@apollo/client';
 import { createMap, useMap } from '@terra-dev/use-map';
-import { useContractAddress } from 'base/contexts/contract';
 import { parseResult } from 'base/queries/parseResult';
 import { MappedQueryResult } from 'base/queries/types';
 import { useQueryErrorHandler } from 'base/queries/useQueryErrorHandler';
 import { useRefetch } from 'base/queries/useRefetch';
-import { gql, useQuery } from '@apollo/client';
 import { useMemo } from 'react';
 
 export interface RawData {
@@ -84,7 +84,7 @@ export function useStableCoinMarket({
   uUSD: uUST | undefined;
   state: moneyMarket.market.StateResponse | undefined;
 }): MappedQueryResult<RawVariables, RawData, Data> {
-  const address = useContractAddress();
+  const { contractAddress: address } = useAnchorWebapp();
 
   const variables = useMemo(() => {
     if (!uUSD || !state) return undefined;

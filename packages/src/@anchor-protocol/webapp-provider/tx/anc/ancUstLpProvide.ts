@@ -1,7 +1,7 @@
 import { ANC, UST, uUST } from '@anchor-protocol/types';
 import { ancAncUstLpProvideTx } from '@anchor-protocol/webapp-fns';
 import { useStream } from '@rx-stream/react';
-import { useOperationBroadcaster } from '@terra-dev/broadcastable-operation';
+
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import {
   useBank,
@@ -32,9 +32,6 @@ export function useAncAncUstLpProvideTx() {
   const refetchQueries = useRefetchQueries();
 
   const { data: { ancPrice } = {} } = useAncPriceQuery();
-
-  // TODO remove
-  const { dispatch } = useOperationBroadcaster();
 
   const stream = useCallback(
     ({
@@ -73,7 +70,6 @@ export function useAncAncUstLpProvideTx() {
         onTxSucceed: () => {
           onTxSucceed?.();
           refetchQueries(ANCHOR_TX_KEY.ANC_ANC_UST_LP_PROVIDE);
-          dispatch('', 'done');
         },
       });
     },
@@ -89,7 +85,6 @@ export function useAncAncUstLpProvideTx() {
       mantleFetch,
       txErrorReporter,
       refetchQueries,
-      dispatch,
     ],
   );
 

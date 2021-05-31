@@ -1,7 +1,7 @@
 import { bLuna, uUST } from '@anchor-protocol/types';
 import { bondBurnTx } from '@anchor-protocol/webapp-fns';
 import { useStream } from '@rx-stream/react';
-import { useOperationBroadcaster } from '@terra-dev/broadcastable-operation';
+
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import {
   useRefetchQueries,
@@ -24,9 +24,6 @@ export function useBondBurnTx() {
   const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
 
   const refetchQueries = useRefetchQueries();
-
-  // TODO remove
-  const { dispatch } = useOperationBroadcaster();
 
   const stream = useCallback(
     ({ burnAmount, onTxSucceed }: BondBurnTxParams) => {
@@ -54,7 +51,6 @@ export function useBondBurnTx() {
         onTxSucceed: () => {
           onTxSucceed?.();
           refetchQueries(ANCHOR_TX_KEY.EARN_DEPOSIT);
-          dispatch('', 'done');
         },
       });
     },
@@ -68,7 +64,6 @@ export function useBondBurnTx() {
       mantleFetch,
       txErrorReporter,
       refetchQueries,
-      dispatch,
     ],
   );
 

@@ -10,6 +10,7 @@ import {
 } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import { Luna, Rate, UST, uUST } from '@anchor-protocol/types';
+import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
 import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
@@ -20,7 +21,6 @@ import {
   verticalRuler,
 } from '@terra-dev/styled-neumorphism';
 import { Footer } from 'base/components/Footer';
-import { useConstants } from 'base/contexts/contants';
 import big, { Big } from 'big.js';
 import { screen } from 'env';
 import { ANCPriceChart } from 'pages/market-new/components/ANCPriceChart';
@@ -42,7 +42,9 @@ export interface MarketProps {
 function MarketBase({ className }: MarketProps) {
   const theme = useTheme();
 
-  const { blocksPerYear } = useConstants();
+  const {
+    constants: { blocksPerYear },
+  } = useAnchorWebapp();
 
   const { data: marketDeposit } = useMarketDeposit();
   const { data: marketBorrow } = useMarketBorrow();

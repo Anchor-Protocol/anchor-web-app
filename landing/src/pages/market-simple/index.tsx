@@ -8,18 +8,18 @@ import {
 } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import { Luna, Rate, UST, uUST } from '@anchor-protocol/types';
-import { useConstants } from 'base/contexts/contants';
+import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
 import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { Footer } from 'base/components/Footer';
 import big, { Big } from 'big.js';
 import { screen } from 'env';
 import { useBAssetMarket } from 'pages/market-simple/queries/bAssetMarket';
 import { useMarket } from 'pages/market-simple/queries/market';
 import { useStableCoinMarket } from 'pages/market-simple/queries/stableCoinMarket';
 import { useMemo } from 'react';
-import { Footer } from 'base/components/Footer';
 import styled from 'styled-components';
 
 export interface MarketProps {
@@ -27,7 +27,9 @@ export interface MarketProps {
 }
 
 function MarketBase({ className }: MarketProps) {
-  const { blocksPerYear } = useConstants();
+  const {
+    constants: { blocksPerYear },
+  } = useAnchorWebapp();
 
   const {
     data: { uUSD, state },

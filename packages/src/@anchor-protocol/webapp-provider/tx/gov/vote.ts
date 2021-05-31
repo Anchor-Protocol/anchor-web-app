@@ -1,7 +1,7 @@
 import { ANC, uUST } from '@anchor-protocol/types';
 import { govVoteTx } from '@anchor-protocol/webapp-fns';
 import { useStream } from '@rx-stream/react';
-import { useOperationBroadcaster } from '@terra-dev/broadcastable-operation';
+
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import {
   useRefetchQueries,
@@ -27,9 +27,6 @@ export function useGovVoteTx() {
   const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
 
   const refetchQueries = useRefetchQueries();
-
-  // TODO remove
-  const { dispatch } = useOperationBroadcaster();
 
   const stream = useCallback(
     ({ amount, voteFor, pollId, onTxSucceed }: GovVoteTxParams) => {
@@ -59,7 +56,6 @@ export function useGovVoteTx() {
         onTxSucceed: () => {
           onTxSucceed?.();
           refetchQueries(ANCHOR_TX_KEY.GOV_VOTE);
-          dispatch('', 'done');
         },
       });
     },
@@ -73,7 +69,6 @@ export function useGovVoteTx() {
       mantleFetch,
       txErrorReporter,
       refetchQueries,
-      dispatch,
     ],
   );
 

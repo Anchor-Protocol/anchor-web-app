@@ -1,7 +1,7 @@
 import { AncUstLP, uUST } from '@anchor-protocol/types';
 import { ancAncUstLpStakeTx } from '@anchor-protocol/webapp-fns';
 import { useStream } from '@rx-stream/react';
-import { useOperationBroadcaster } from '@terra-dev/broadcastable-operation';
+
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import {
   useRefetchQueries,
@@ -24,9 +24,6 @@ export function useAncAncUstLpStakeTx() {
   const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
 
   const refetchQueries = useRefetchQueries();
-
-  // TODO remove
-  const { dispatch } = useOperationBroadcaster();
 
   const stream = useCallback(
     ({ lpAmount, onTxSucceed }: AncAncUstLpStakeTxParams) => {
@@ -54,7 +51,6 @@ export function useAncAncUstLpStakeTx() {
         onTxSucceed: () => {
           onTxSucceed?.();
           refetchQueries(ANCHOR_TX_KEY.ANC_ANC_UST_LP_STAKE);
-          dispatch('', 'done');
         },
       });
     },
@@ -68,7 +64,6 @@ export function useAncAncUstLpStakeTx() {
       mantleFetch,
       txErrorReporter,
       refetchQueries,
-      dispatch,
     ],
   );
 

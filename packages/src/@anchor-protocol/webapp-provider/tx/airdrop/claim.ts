@@ -1,6 +1,5 @@
 import { Airdrop, airdropClaimTx } from '@anchor-protocol/webapp-fns';
 import { useStream } from '@rx-stream/react';
-import { useOperationBroadcaster } from '@terra-dev/broadcastable-operation';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import {
   useRefetchQueries,
@@ -25,9 +24,6 @@ export function useAirdropClaimTx() {
 
   const refetchQueries = useRefetchQueries();
 
-  // TODO remove
-  const { dispatch } = useOperationBroadcaster();
-
   const stream = useCallback(
     ({ airdrop, onTxSucceed }: AirdropClaimTxParams) => {
       if (!connectedWallet || !connectedWallet.availablePost) {
@@ -51,7 +47,6 @@ export function useAirdropClaimTx() {
         onTxSucceed: () => {
           onTxSucceed?.();
           refetchQueries(ANCHOR_TX_KEY.AIRDROP_CLAIM);
-          dispatch('', 'done');
         },
       });
     },
@@ -63,7 +58,6 @@ export function useAirdropClaimTx() {
       mantleFetch,
       txErrorReporter,
       refetchQueries,
-      dispatch,
     ],
   );
 

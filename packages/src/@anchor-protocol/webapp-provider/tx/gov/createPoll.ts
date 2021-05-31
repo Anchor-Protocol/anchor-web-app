@@ -2,7 +2,7 @@ import { ExecuteMsg } from '@anchor-protocol/anchor.js';
 import { ANC, uUST } from '@anchor-protocol/types';
 import { govCreatePollTx } from '@anchor-protocol/webapp-fns';
 import { useStream } from '@rx-stream/react';
-import { useOperationBroadcaster } from '@terra-dev/broadcastable-operation';
+
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import {
   useRefetchQueries,
@@ -30,9 +30,6 @@ export function useGovCreatePollTx() {
   const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
 
   const refetchQueries = useRefetchQueries();
-
-  // TODO remove
-  const { dispatch } = useOperationBroadcaster();
 
   const stream = useCallback(
     ({
@@ -71,7 +68,6 @@ export function useGovCreatePollTx() {
         onTxSucceed: () => {
           onTxSucceed?.();
           refetchQueries(ANCHOR_TX_KEY.GOV_CREATE_POLL);
-          dispatch('', 'done');
         },
       });
     },
@@ -85,7 +81,6 @@ export function useGovCreatePollTx() {
       mantleFetch,
       txErrorReporter,
       refetchQueries,
-      dispatch,
     ],
   );
 

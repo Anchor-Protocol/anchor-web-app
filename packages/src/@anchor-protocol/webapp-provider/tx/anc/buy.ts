@@ -3,7 +3,7 @@ import { UST, uUST } from '@anchor-protocol/types';
 import { ancBuyTx } from '@anchor-protocol/webapp-fns';
 import { useAncPriceQuery } from '@anchor-protocol/webapp-provider';
 import { useStream } from '@rx-stream/react';
-import { useOperationBroadcaster } from '@terra-dev/broadcastable-operation';
+
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import {
   useBank,
@@ -34,9 +34,6 @@ export function useAncBuyTx() {
   const refetchQueries = useRefetchQueries();
 
   const { data: { ancPrice } = {} } = useAncPriceQuery();
-
-  // TODO remove
-  const { dispatch } = useOperationBroadcaster();
 
   const stream = useCallback(
     ({ fromAmount, txFee, onTxSucceed }: AncBuyTxParams) => {
@@ -71,7 +68,6 @@ export function useAncBuyTx() {
         onTxSucceed: () => {
           onTxSucceed?.();
           refetchQueries(ANCHOR_TX_KEY.ANC_BUY);
-          dispatch('', 'done');
         },
       });
     },
@@ -87,7 +83,6 @@ export function useAncBuyTx() {
       mantleFetch,
       txErrorReporter,
       refetchQueries,
-      dispatch,
     ],
   );
 

@@ -3,7 +3,7 @@ import {
   AddressProviderFromJson,
 } from '@anchor-protocol/anchor.js';
 import { Rate } from '@anchor-protocol/types';
-import { createContractAddress } from 'base/contexts/contract';
+import { createAnchorContractAddress } from '@anchor-protocol/webapp-fns';
 
 export const GA_TRACKING_ID = 'G-H42LRVHR5Y';
 
@@ -114,11 +114,11 @@ export const ADDRESS_PROVIDERS = {
 };
 
 export const ADDRESSES = {
-  mainnet: createContractAddress(
+  mainnet: createAnchorContractAddress(
     ADDRESS_PROVIDERS.mainnet,
     columbusContractAddresses,
   ),
-  testnet: createContractAddress(
+  testnet: createAnchorContractAddress(
     ADDRESS_PROVIDERS.testnet,
     tequilaContractAddresses,
   ),

@@ -1,7 +1,7 @@
 import { ANC, uUST } from '@anchor-protocol/types';
 import { ancGovernanceUnstakeTx } from '@anchor-protocol/webapp-fns';
 import { useStream } from '@rx-stream/react';
-import { useOperationBroadcaster } from '@terra-dev/broadcastable-operation';
+
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import {
   useRefetchQueries,
@@ -25,9 +25,6 @@ export function useAncGovernanceUnstakeTx() {
   const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
 
   const refetchQueries = useRefetchQueries();
-
-  // TODO remove
-  const { dispatch } = useOperationBroadcaster();
 
   const stream = useCallback(
     ({ ancAmount, onTxSucceed }: AncGovernanceUnstakeTxParams) => {
@@ -55,7 +52,6 @@ export function useAncGovernanceUnstakeTx() {
         onTxSucceed: () => {
           onTxSucceed?.();
           refetchQueries(ANCHOR_TX_KEY.ANC_GOVERNANCE_UNSTAKE);
-          dispatch('', 'done');
         },
       });
     },
@@ -69,7 +65,6 @@ export function useAncGovernanceUnstakeTx() {
       mantleFetch,
       txErrorReporter,
       refetchQueries,
-      dispatch,
     ],
   );
 

@@ -1,5 +1,3 @@
-import { AddressMap, AddressProvider } from '@anchor-protocol/anchor.js';
-import { ContractAddress, Rate, uUST } from '@anchor-protocol/types';
 import {
   ANCHOR_TX_REFETCH_MAP,
   AnchorWebappProvider,
@@ -11,8 +9,6 @@ import {
   InMemoryCache,
 } from '@apollo/client';
 import { captureException } from '@sentry/react';
-import { OperationBroadcaster } from '@terra-dev/broadcastable-operation';
-import { GlobalDependency } from '@terra-dev/broadcastable-operation/global';
 import { GlobalStyle } from '@terra-dev/neumorphism-ui/themes/GlobalStyle';
 import { patchReactQueryFocusRefetching } from '@terra-dev/patch-react-query-focus-refetching';
 import { ReadonlyWalletSession } from '@terra-dev/readonly-wallet';
@@ -40,18 +36,8 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { SnackbarContainer } from './components/SnackbarContainer';
 import { BankProvider } from './contexts/bank';
-import { Constants, ConstantsProvider } from './contexts/contants';
-import { ContractProvider } from './contexts/contract';
 import { ThemeProvider } from './contexts/theme';
-import {
-  ADDRESS_PROVIDERS,
-  ADDRESSES,
-  columbusContractAddresses,
-  defaultNetwork,
-  GA_TRACKING_ID,
-  onProduction,
-  tequilaContractAddresses,
-} from './env';
+import { ADDRESSES, defaultNetwork, GA_TRACKING_ID, onProduction } from './env';
 
 patchReactQueryFocusRefetching();
 
@@ -102,27 +88,12 @@ const maxCapTokenDenoms: Record<string, string> = {
 };
 
 function Providers({ children }: { children: ReactNode }) {
-  const { post, network } = useWallet();
+  const { network } = useWallet();
 
   // TODO remove after refactoring done
   const isMainnet = useMemo(() => /^columbus/.test(network.chainID), [
     network.chainID,
   ]);
-
-  // TODO remove after refactoring done
-  const addressMap = useMemo<AddressMap>(() => {
-    return isMainnet ? columbusContractAddresses : tequilaContractAddresses;
-  }, [isMainnet]);
-
-  // TODO remove after refactoring done
-  const addressProvider = useMemo<AddressProvider>(() => {
-    return isMainnet ? ADDRESS_PROVIDERS.mainnet : ADDRESS_PROVIDERS.testnet;
-  }, [isMainnet]);
-
-  // TODO remove after refactoring done
-  const address = useMemo<ContractAddress>(() => {
-    return isMainnet ? ADDRESSES.mainnet : ADDRESSES.testnet;
-  }, [isMainnet]);
 
   // TODO remove after refactoring done
   const client = useMemo<ApolloClient<any>>(() => {
@@ -139,37 +110,6 @@ function Providers({ children }: { children: ReactNode }) {
     });
   }, [isMainnet]);
 
-  // TODO remove after refactoring done
-  const constants = useMemo<Constants>(
-    () =>
-      isMainnet
-        ? {
-            gasFee: 1000000 as uUST<number>,
-            fixedGas: 250000 as uUST<number>,
-            blocksPerYear: 4906443,
-            gasAdjustment: 1.6 as Rate<number>,
-          }
-        : {
-            gasFee: 6000000 as uUST<number>,
-            fixedGas: 3500000 as uUST<number>,
-            blocksPerYear: 4906443,
-            gasAdjustment: 1.4 as Rate<number>,
-          },
-    [isMainnet],
-  );
-
-  // TODO remove after refactoring done
-  const operationGlobalDependency = useMemo<GlobalDependency>(
-    () => ({
-      addressProvider,
-      address,
-      client,
-      post,
-      ...constants,
-    }),
-    [address, addressProvider, client, constants, post],
-  );
-
   return (
     /** React App routing :: <Link>, <NavLink>, useLocation(), useRouteMatch()... */
     <Router>
@@ -185,49 +125,25 @@ function Providers({ children }: { children: ReactNode }) {
             >
               <AnchorWebappProvider>
                 {/**
-                 Serve Constants
+                 Set GraphQL environenments :: useQuery(), useApolloClient()...
                  TODO remove after refactoring done
                  */}
-                <ConstantsProvider {...constants}>
+                <ApolloProvider client={client}>
                   {/**
-                   Smart Contract Address :: useAddressProvider()
+                   User Balances (uUSD, uLuna, ubLuna, uaUST...) :: useBank()
                    TODO remove after refactoring done
                    */}
-                  <ContractProvider
-                    addressProvider={addressProvider}
-                    addressMap={addressMap}
-                  >
-                    {/**
-                     Set GraphQL environenments :: useQuery(), useApolloClient()...
-                     TODO remove after refactoring done
-                     */}
-                    <ApolloProvider client={client}>
-                      {/**
-                       Broadcastable Query Provider :: useBroadCastableQuery(), useQueryBroadCaster()
-                       TODO remove after refactoring done
-                       */}
-                      <OperationBroadcaster
-                        dependency={operationGlobalDependency}
-                        errorReporter={operationBroadcasterErrorReporter}
-                      >
-                        {/**
-                         User Balances (uUSD, uLuna, ubLuna, uaUST...) :: useBank()
-                         TODO remove after refactoring done
-                         */}
-                        <BankProvider>
-                          {/** Theme Providing to Styled-Components and Material-UI */}
-                          <ThemeProvider initialTheme="light">
-                            {/** Snackbar Provider :: useSnackbar() */}
-                            <SnackbarProvider>
-                              {/** Application Layout */}
-                              {children}
-                            </SnackbarProvider>
-                          </ThemeProvider>
-                        </BankProvider>
-                      </OperationBroadcaster>
-                    </ApolloProvider>
-                  </ContractProvider>
-                </ConstantsProvider>
+                  <BankProvider>
+                    {/** Theme Providing to Styled-Components and Material-UI */}
+                    <ThemeProvider initialTheme="light">
+                      {/** Snackbar Provider :: useSnackbar() */}
+                      <SnackbarProvider>
+                        {/** Application Layout */}
+                        {children}
+                      </SnackbarProvider>
+                    </ThemeProvider>
+                  </BankProvider>
+                </ApolloProvider>
               </AnchorWebappProvider>
             </WebappBankProvider>
           </TerraWebappProvider>

@@ -2,7 +2,7 @@ import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import { UST, uUST } from '@anchor-protocol/types';
 import { borrowBorrowTx } from '@anchor-protocol/webapp-fns';
 import { useStream } from '@rx-stream/react';
-import { useOperationBroadcaster } from '@terra-dev/broadcastable-operation';
+
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import {
   useRefetchQueries,
@@ -32,9 +32,6 @@ export function useBorrowBorrowTx() {
 
   const refetchQueries = useRefetchQueries();
 
-  // TODO remove
-  const { dispatch } = useOperationBroadcaster();
-
   const stream = useCallback(
     ({ borrowAmount, onTxSucceed, txFee }: BorrowBorrowTxParams) => {
       if (!connectedWallet || !connectedWallet.availablePost) {
@@ -63,7 +60,6 @@ export function useBorrowBorrowTx() {
         onTxSucceed: () => {
           onTxSucceed?.();
           refetchQueries(ANCHOR_TX_KEY.BORROW_BORROW);
-          dispatch('', 'done');
         },
       });
     },
@@ -74,7 +70,7 @@ export function useBorrowBorrowTx() {
       connectedWallet,
       constants.gasAdjustment,
       constants.gasFee,
-      dispatch,
+
       mantleEndpoint,
       mantleFetch,
       refetchQueries,
