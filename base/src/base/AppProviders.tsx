@@ -1,5 +1,4 @@
 import { AddressMap, AddressProvider } from '@anchor-protocol/anchor.js';
-import { QueryDependencyProvider } from '@anchor-protocol/queries';
 import { ContractAddress, Rate, uUST } from '@anchor-protocol/types';
 import {
   ANCHOR_TX_REFETCH_MAP,
@@ -7,7 +6,6 @@ import {
 } from '@anchor-protocol/webapp-provider';
 import {
   ApolloClient,
-  ApolloError,
   ApolloProvider,
   HttpLink,
   InMemoryCache,
@@ -173,10 +171,6 @@ function Providers({ children }: { children: ReactNode }) {
     [address, addressProvider, client, constants, post],
   );
 
-  const onQueryError = useCallback((error: ApolloError) => {
-    console.error('AppProviders.tsx..()', error);
-  }, []);
-
   return (
     /** React App routing :: <Link>, <NavLink>, useLocation(), useRouteMatch()... */
     <Router>
@@ -218,29 +212,19 @@ function Providers({ children }: { children: ReactNode }) {
                         errorReporter={operationBroadcasterErrorReporter}
                       >
                         {/**
-                         Query dependencies :: @anchor-protocol/queries, useWasmQuery()...
+                         User Balances (uUSD, uLuna, ubLuna, uaUST...) :: useBank()
                          TODO remove after refactoring done
                          */}
-                        <QueryDependencyProvider
-                          client={client}
-                          address={address}
-                          onError={onQueryError}
-                        >
-                          {/**
-                           User Balances (uUSD, uLuna, ubLuna, uaUST...) :: useBank()
-                           TODO remove after refactoring done
-                           */}
-                          <BankProvider>
-                            {/** Theme Providing to Styled-Components and Material-UI */}
-                            <ThemeProvider initialTheme="light">
-                              {/** Snackbar Provider :: useSnackbar() */}
-                              <SnackbarProvider>
-                                {/** Application Layout */}
-                                {children}
-                              </SnackbarProvider>
-                            </ThemeProvider>
-                          </BankProvider>
-                        </QueryDependencyProvider>
+                        <BankProvider>
+                          {/** Theme Providing to Styled-Components and Material-UI */}
+                          <ThemeProvider initialTheme="light">
+                            {/** Snackbar Provider :: useSnackbar() */}
+                            <SnackbarProvider>
+                              {/** Application Layout */}
+                              {children}
+                            </SnackbarProvider>
+                          </ThemeProvider>
+                        </BankProvider>
                       </OperationBroadcaster>
                     </ApolloProvider>
                   </ContractProvider>

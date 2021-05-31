@@ -1,4 +1,5 @@
 import { Menu, MenuClose, MenuWallet } from '@anchor-protocol/icons';
+import { useAirdropCheckQuery } from '@anchor-protocol/webapp-provider';
 import { Launch } from '@material-ui/icons';
 import { isMathWallet } from '@terra-dev/mathwallet';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
@@ -11,7 +12,6 @@ import {
 import logoUrl from 'components/Header/assets/Logo.svg';
 import { AirdropContent } from 'components/Header/WalletSelector/AirdropContent';
 import { links, mobileHeaderHeight } from 'env';
-import { useAirdrop } from 'pages/airdrop/queries/useAirdrop';
 import { govPathname } from 'pages/gov/env';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import React, { useCallback, useState } from 'react';
@@ -35,7 +35,7 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
 
   const [openSendDialog, sendDialogElement] = useSendDialog();
 
-  const [airdrop] = useAirdrop();
+  const { data: airdrop, isLoading: airdropIsLoading } = useAirdropCheckQuery();
   //const airdrop = useMemo<Airdrop | 'in-progress' | null>(
   //  () => ({
   //    createdAt: '',
@@ -146,7 +146,7 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
         {!open &&
           !airdropClosed &&
           airdrop &&
-          airdrop !== 'in-progress' &&
+          !airdropIsLoading &&
           !matchAirdrop && (
             <section className="airdrop">
               <AirdropContent onClose={closeAirdrop} isMobileLayout />

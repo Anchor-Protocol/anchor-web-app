@@ -40,6 +40,8 @@ export * from './queries/rewards/ancUstLpRewards';
 export * from './queries/rewards/claimableAncUstLpRewards';
 export * from './queries/rewards/claimableUstBorrowRewards';
 export * from './queries/rewards/ustBorrowRewards';
+export * from './queries/airdrop/isClaimed';
+export * from './queries/airdrop/check';
 
 export * from './tx/earn/deposit';
 export * from './tx/earn/withdraw';
@@ -65,3 +67,4 @@ export * from './tx/gov/vote';
 export * from './tx/rewards/allClaim';
 export * from './tx/rewards/ancUstLpClaim';
 export * from './tx/rewards/ustBorrowClaim';
+export * from './tx/airdrop/claim';
