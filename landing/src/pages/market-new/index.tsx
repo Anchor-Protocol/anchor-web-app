@@ -23,17 +23,19 @@ import {
 import { Footer } from 'base/components/Footer';
 import big, { Big } from 'big.js';
 import { screen } from 'env';
-import { ANCPriceChart } from 'pages/market-new/components/ANCPriceChart';
-import { CollateralsChart } from 'pages/market-new/components/CollateralsChart';
-import { StablecoinChart } from 'pages/market-new/components/StablecoinChart';
-import { TotalValueLockedDoughnutChart } from 'pages/market-new/components/TotalValueLockedDoughnutChart';
-import { useMarketBluna } from 'pages/market-new/queries/marketBluna';
-import { useMarketBorrow } from 'pages/market-new/queries/marketBorrow';
-import { useMarketUST } from 'pages/market-new/queries/marketUST';
 import React, { useMemo } from 'react';
 import styled, { css, useTheme } from 'styled-components';
-import { useMarketCollaterals } from './queries/marketCollateral';
-import { useMarketDeposit } from './queries/marketDeposit';
+import { useMarket } from '../market-simple/queries/market';
+import { useStableCoinMarket } from '../market-simple/queries/stableCoinMarket';
+import { ANCPriceChart } from './components/ANCPriceChart';
+import { CollateralsChart } from './components/CollateralsChart';
+import { StablecoinChart } from './components/StablecoinChart';
+import { TotalValueLockedDoughnutChart } from './components/TotalValueLockedDoughnutChart';
+import { useMarketANC } from './queries/marketANC';
+import { useMarketBluna } from './queries/marketBluna';
+import { useMarketCollaterals } from './queries/marketCollaterals';
+import { useMarketDepositAndBorrow } from './queries/marketDepositAndBorrow';
+import { useMarketUST } from './queries/marketUST';
 
 export interface MarketProps {
   className?: string;
@@ -46,62 +48,123 @@ function MarketBase({ className }: MarketProps) {
     constants: { blocksPerYear },
   } = useAnchorWebapp();
 
-  const { data: marketDeposit } = useMarketDeposit();
-  const { data: marketBorrow } = useMarketBorrow();
-  const { data: marketCollaterals } = useMarketCollaterals();
+  const {
+    data: { uUSD, state },
+  } = useMarket();
+
+  const {
+    data: { borrowRate, epochState },
+  } = useStableCoinMarket({ uUSD, state });
+
+  const stableCoinLegacy = useMemo(() => {
+    if (!borrowRate || !epochState) {
+      return undefined;
+    }
+
+    const depositRate = big(epochState.deposit_rate).mul(
+      blocksPerYear,
+    ) as Rate<Big>;
+
+    return {
+      depositRate,
+      borrowRate: big(borrowRate.rate).mul(blocksPerYear) as Rate<Big>,
+    };
+  }, [blocksPerYear, borrowRate, epochState]);
+
   const { data: marketUST } = useMarketUST();
   const { data: marketBluna } = useMarketBluna();
+  const { data: marketANC } = useMarketANC();
+  const { data: marketDepositAndBorrow } = useMarketDepositAndBorrow();
+  const { data: marketCollaterals } = useMarketCollaterals();
 
   const totalValueLocked = useMemo(() => {
-    if (!marketDeposit || !marketCollaterals || !marketUST) {
+    if (!marketDepositAndBorrow?.now || !marketCollaterals?.now || !marketUST) {
       return undefined;
     }
 
     return {
-      totalDeposit: marketDeposit.total_ust_deposits,
-      totalCollaterals: marketCollaterals.total_value,
-      totalValueLocked: big(marketDeposit.total_ust_deposits).plus(
-        marketCollaterals.total_value,
-      ) as uUST<Big>,
+      totalDeposit: marketDepositAndBorrow?.now.total_ust_deposits,
+      totalCollaterals: marketCollaterals?.now.total_value,
+      totalValueLocked: big(
+        marketDepositAndBorrow?.now.total_ust_deposits,
+      ).plus(marketCollaterals?.now.total_value) as uUST<Big>,
       yieldReserve: marketUST.overseer_ust_balance,
     };
-  }, [marketCollaterals, marketDeposit, marketUST]);
+  }, [marketCollaterals?.now, marketDepositAndBorrow?.now, marketUST]);
 
-  const stableCoin = useMemo(() => {
-    if (!marketDeposit || !marketBorrow || !marketUST) {
+  const ancPrice = useMemo(() => {
+    if (!marketANC || marketANC.history.length === 0) {
       return undefined;
     }
 
+    const last = marketANC.now;
+    const last1DayBefore = marketANC.history[marketANC.history.length - 2];
+
     return {
-      totalDeposit: marketDeposit.total_ust_deposits,
-      totalBorrow: marketBorrow.total_borrowed,
-      totalDepositGraph: 'TODO: API not ready...',
-      totalBorrowGraph: 'TODO: API not ready...',
-      totalDepositDiff: 'TODO: API not ready...',
-      totalBorrowDiff: 'TODO: API not ready...',
+      ancPriceDiff: big(
+        big(last.anc_price).minus(last1DayBefore.anc_price),
+      ).div(last1DayBefore.anc_price) as Rate<Big>,
+      ancPrice: last.anc_price,
+      circulatingSupply: last.anc_circulating_supply,
+      ancMarketCap: big(last.anc_price).mul(
+        last.anc_circulating_supply,
+      ) as uUST<Big>,
+    };
+  }, [marketANC]);
+
+  const stableCoin = useMemo(() => {
+    if (
+      !marketUST ||
+      !marketDepositAndBorrow ||
+      marketDepositAndBorrow.history.length === 0
+    ) {
+      return undefined;
+    }
+
+    const last = marketDepositAndBorrow.now;
+    const last1DayBefore =
+      marketDepositAndBorrow.history[marketDepositAndBorrow.history.length - 2];
+
+    return {
+      totalDeposit: last.total_ust_deposits,
+      totalBorrow: last.total_borrowed,
+      totalDepositDiff: big(
+        big(last.total_ust_deposits).minus(last1DayBefore.total_ust_deposits),
+      ).div(last1DayBefore.total_ust_deposits) as Rate<Big>,
+      totalBorrowDiff: big(
+        big(last.total_borrowed).minus(last1DayBefore.total_borrowed),
+      ).div(last1DayBefore.total_borrowed) as Rate<Big>,
       depositAPR: big(marketUST.deposit_rate).mul(blocksPerYear) as Rate<Big>,
       depositAPRDiff: 'TODO: API not ready...',
       borrowAPR: big(marketUST.borrow_rate).mul(blocksPerYear) as Rate<Big>,
       borrowAPRDiff: 'TODO: API not ready...',
     };
-  }, [blocksPerYear, marketBorrow, marketDeposit, marketUST]);
+  }, [blocksPerYear, marketDepositAndBorrow, marketUST]);
 
   const collaterals = useMemo(() => {
-    if (!marketCollaterals || !marketBluna) {
+    if (
+      !marketCollaterals ||
+      !marketBluna ||
+      marketCollaterals.history.length === 0
+    ) {
       return undefined;
     }
 
+    const last = marketCollaterals.now;
+    const last1DayBefore =
+      marketCollaterals.history[marketCollaterals.history.length - 2];
+
     return {
-      mainTotalCollateralValue: marketCollaterals.total_value,
+      mainTotalCollateralValue: last.total_value,
       totalCollateralValueGraph: 'TODO: API not ready...',
       blunaPrice: marketBluna.bLuna_price,
       blunaPriceDiff: 'TODO: API not ready...',
-      totalCollateral: marketCollaterals.collaterals.find(
-        ({ bluna }) => !!bluna,
-      )?.bluna,
-      totalCollateralDiff: 'TODO: API not ready...',
+      totalCollateral: last.collaterals.find(({ bluna }) => !!bluna)?.bluna,
+      totalCollateralDiff: big(
+        big(last.total_value).minus(last1DayBefore.total_value),
+      ).div(last1DayBefore.total_value) as Rate<Big>,
       totalCollateralValue: big(
-        marketCollaterals.collaterals.find(({ bluna }) => !!bluna)?.bluna ?? 1,
+        last.collaterals.find(({ bluna }) => !!bluna)?.bluna ?? 1,
       ).mul(marketBluna.bLuna_price) as uUST<Big>,
       totalCollateralValueDiff: 'TODO: API not ready...',
     };
@@ -195,36 +258,44 @@ function MarketBase({ className }: MarketProps) {
                 <div>
                   <h2>
                     ANC PRICE
-                    <span>
-                      <s>+0.32%</s>
-                    </span>
+                    {ancPrice && (
+                      <span data-negative={big(ancPrice.ancPriceDiff).lt(0)}>
+                        {big(ancPrice.ancPriceDiff).gte(0) ? '+' : ''}
+                        {formatRate(ancPrice.ancPriceDiff)}%
+                      </span>
+                    )}
                   </h2>
                   <p className="amount">
-                    <s>
-                      5.013<span>UST</span>
-                    </s>
+                    {ancPrice ? formatUST(ancPrice.ancPrice) : 0}
+                    <span>UST</span>
                   </p>
                 </div>
                 <div>
                   <h3>Circulating Supply</h3>
                   <p>
-                    <s>
-                      50,840,183<span>ANC</span>
-                    </s>
+                    {ancPrice
+                      ? formatUTokenIntegerWithoutPostfixUnits(
+                          ancPrice.circulatingSupply,
+                        )
+                      : 0}
+                    <span>ANC</span>
                   </p>
                 </div>
                 <div>
                   <h3>ANC Market Cap</h3>
                   <p>
-                    <s>
-                      250,840,183<span>UST</span>
-                    </s>
+                    {ancPrice
+                      ? formatUTokenIntegerWithoutPostfixUnits(
+                          ancPrice.ancMarketCap,
+                        )
+                      : 0}
+                    <span>UST</span>
                   </p>
                 </div>
               </header>
               <figure>
                 <div>
-                  <ANCPriceChart />
+                  <ANCPriceChart data={marketANC?.history} />
                 </div>
               </figure>
             </Section>
@@ -268,10 +339,16 @@ function MarketBase({ className }: MarketProps) {
             <header>
               <div>
                 <h2>
-                  TOTAL DEPOSIT
-                  <span>
-                    <s>+2.32%</s>
-                  </span>
+                  <i style={{ backgroundColor: theme.colors.positive }} /> TOTAL
+                  DEPOSIT
+                  {stableCoin && (
+                    <span
+                      data-negative={big(stableCoin.totalDepositDiff).lt(0)}
+                    >
+                      {big(stableCoin.totalDepositDiff).gte(0) ? '+' : ''}
+                      {formatRate(stableCoin.totalDepositDiff)}%
+                    </span>
+                  )}
                 </h2>
                 <p className="amount">
                   <AnimateNumber
@@ -284,10 +361,14 @@ function MarketBase({ className }: MarketProps) {
               </div>
               <div>
                 <h2>
-                  TOTAL BORROW
-                  <span>
-                    <s>-0.32%</s>
-                  </span>
+                  <i style={{ backgroundColor: theme.textColor }} /> TOTAL
+                  BORROW
+                  {stableCoin && (
+                    <span data-negative={big(stableCoin.totalBorrowDiff).lt(0)}>
+                      {big(stableCoin.totalBorrowDiff).gte(0) ? '+' : ''}
+                      {formatRate(stableCoin.totalBorrowDiff)}%
+                    </span>
+                  )}
                 </h2>
                 <p className="amount">
                   <AnimateNumber
@@ -303,7 +384,7 @@ function MarketBase({ className }: MarketProps) {
 
             <figure>
               <div>
-                <StablecoinChart />
+                <StablecoinChart data={marketDepositAndBorrow?.history} />
               </div>
             </figure>
 
@@ -375,12 +456,12 @@ function MarketBase({ className }: MarketProps) {
                   </td>
                   <td>
                     <div className="value">
-                      <s>
-                        <AnimateNumber format={formatRate}>
-                          {18.23 as Rate<number>}
-                        </AnimateNumber>
-                        <span>%</span>
-                      </s>
+                      <AnimateNumber format={formatRate}>
+                        {stableCoinLegacy
+                          ? stableCoinLegacy.depositRate
+                          : (0 as Rate<number>)}
+                      </AnimateNumber>
+                      <span>%</span>
                     </div>
                   </td>
                   <td>
@@ -395,7 +476,12 @@ function MarketBase({ className }: MarketProps) {
                   </td>
                   <td>
                     <div className="value">
-                      <s>{0}%</s>
+                      <AnimateNumber format={formatRate}>
+                        {stableCoinLegacy
+                          ? stableCoinLegacy.borrowRate
+                          : (0 as Rate<number>)}
+                      </AnimateNumber>
+                      <span>%</span>
                     </div>
                   </td>
                 </tr>
@@ -408,9 +494,14 @@ function MarketBase({ className }: MarketProps) {
               <div>
                 <h2>
                   TOTAL COLLATERAL VALUE
-                  <span>
-                    <s>+ 2.32%</s>
-                  </span>
+                  {collaterals && (
+                    <span
+                      data-negative={big(collaterals.totalCollateralDiff).lt(0)}
+                    >
+                      {big(collaterals.totalCollateralDiff).gte(0) ? '+' : ''}
+                      {formatRate(collaterals.totalCollateralDiff)}%
+                    </span>
+                  )}
                 </h2>
                 <p className="amount">
                   <AnimateNumber
@@ -427,7 +518,7 @@ function MarketBase({ className }: MarketProps) {
 
             <figure>
               <div>
-                <CollateralsChart />
+                <CollateralsChart data={marketCollaterals?.history} />
               </div>
             </figure>
 
@@ -577,6 +668,10 @@ export const Market = styled(MarketBase)`
       margin-left: 10px;
       background-color: ${({ theme }) => theme.colors.positive};
       color: ${({ theme }) => theme.highlightBackgroundColor};
+
+      &[data-negative='true'] {
+        background-color: ${({ theme }) => theme.colors.negative};
+      }
     }
   }
 
@@ -584,12 +679,6 @@ export const Market = styled(MarketBase)`
     font-size: 12px;
     font-weight: 700;
     color: ${({ theme }) => theme.dimTextColor};
-  }
-
-  // TODO remove
-  pre {
-    font-size: 13px;
-    overflow: hidden;
   }
 
   .amount {
@@ -725,6 +814,17 @@ export const Market = styled(MarketBase)`
     header {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
+
+      h2 {
+        i {
+          display: inline-block;
+          width: 12px;
+          height: 12px;
+          border-radius: 3px;
+          margin-right: 3px;
+          transform: translateY(1px);
+        }
+      }
 
       margin-bottom: 15px;
     }
@@ -884,7 +984,7 @@ export const Market = styled(MarketBase)`
   @media (min-width: 900px) and (max-width: 1399px) {
     .summary-section {
       .total-value-locked > .NeuSection-content {
-        max-width: 700px;
+        max-width: 800px;
         display: flex;
         justify-content: space-between;
 

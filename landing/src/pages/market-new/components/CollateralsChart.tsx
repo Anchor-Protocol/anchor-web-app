@@ -1,26 +1,42 @@
+import {
+  demicrofy,
+  formatUSTWithPostfixUnits,
+} from '@anchor-protocol/notation';
+import big from 'big.js';
 import { Chart } from 'chart.js';
-import { ChartTooltip } from 'pages/market-new/components/ChartTooltip';
 import React, { useEffect, useRef } from 'react';
 import styled, { useTheme } from 'styled-components';
+import { MarketCollateralsHistory } from '../queries/marketCollaterals';
+import { ChartTooltip } from './ChartTooltip';
+import { mediumDay, shortDay } from './internal/dateFormatters';
 
-export interface CollateralsChartProps {}
+export interface CollateralsChartProps {
+  data: MarketCollateralsHistory[] | null | undefined;
+}
 
-export function CollateralsChart(_: CollateralsChartProps) {
+export function CollateralsChart({ data }: CollateralsChartProps) {
   const theme = useTheme();
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
   const chartRef = useRef<Chart | null>(null);
 
+  const dataRef = useRef(data);
+
+  useEffect(() => {
+    dataRef.current = data;
+  }, [data]);
+
   useEffect(() => {
     if (chartRef.current) {
-      //const chart = chartRef.current;
-      //chart.data.datasets[0].data = [+totalDeposit, +totalCollaterals];
-      //chart.data.datasets[0].backgroundColor = [
-      //  totalDepositColor,
-      //  totalCollateralsColor,
-      //];
-      //chart.update();
+      if (data) {
+        const chart = chartRef.current;
+        chart.data.labels = data.map(({ timestamp }) => shortDay(timestamp));
+        chart.data.datasets[0].data = data.map(({ total_value }) =>
+          big(total_value).toNumber(),
+        );
+        chart.update();
+      }
     } else {
       chartRef.current = new Chart(canvasRef.current!, {
         type: 'line',
@@ -33,7 +49,7 @@ export function CollateralsChart(_: CollateralsChartProps) {
             tooltip: {
               enabled: false,
 
-              external({ chart, tooltip }) {
+              external: ({ chart, tooltip }) => {
                 let element = tooltipRef.current!;
 
                 if (tooltip.opacity === 0) {
@@ -45,8 +61,16 @@ export function CollateralsChart(_: CollateralsChartProps) {
                 const hr = element.querySelector('hr');
 
                 if (div1) {
-                  // TODO binding data...
-                  div1.innerHTML = `5.4 UST <span>Tue, 4 Apr</span>`;
+                  try {
+                    const item = dataRef.current![
+                      tooltip.dataPoints[0].dataIndex
+                    ];
+                    div1.innerHTML = `${formatUSTWithPostfixUnits(
+                      demicrofy(item.total_value),
+                    )} UST <span>${mediumDay(item.timestamp)}</span>`;
+                  } catch (error) {
+                    console.error(error);
+                  }
                 }
 
                 if (hr) {
@@ -76,6 +100,7 @@ export function CollateralsChart(_: CollateralsChartProps) {
               },
             },
             y: {
+              grace: '25%',
               display: false,
             },
           },
@@ -86,10 +111,12 @@ export function CollateralsChart(_: CollateralsChartProps) {
           },
         },
         data: {
-          labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+          labels: data?.map(({ timestamp }) => shortDay(timestamp)) ?? [],
           datasets: [
             {
-              data: [0, 10, 5, 2, 20, 30, 45],
+              data:
+                data?.map(({ total_value }) => big(total_value).toNumber()) ??
+                [],
               borderColor: theme.colors.positive,
               borderWidth: 2,
             },
@@ -105,6 +132,7 @@ export function CollateralsChart(_: CollateralsChartProps) {
       };
     }
   }, [
+    data,
     theme.backgroundColor,
     theme.colors.positive,
     theme.dimTextColor,

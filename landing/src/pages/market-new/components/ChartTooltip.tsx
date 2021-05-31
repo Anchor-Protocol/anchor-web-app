@@ -27,7 +27,8 @@ export const ChartTooltip = styled.div`
       font-size: 11px;
 
       span {
-        color: ${({ theme }) => theme.dimTextColor};
+        color: ${({ theme }) => theme.backgroundColor};
+        opacity: 0.7;
         margin-left: 10px;
       }
     }
