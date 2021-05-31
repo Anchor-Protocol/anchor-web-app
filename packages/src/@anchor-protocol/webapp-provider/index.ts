@@ -63,3 +63,4 @@ export * from './tx/rewards/allClaim';
 export * from './tx/rewards/ancUstLpClaim';
 export * from './tx/rewards/ustBorrowClaim';
 export * from './tx/airdrop/claim';
+export * from './tx/terra/send';
