@@ -11,28 +11,25 @@ import { ANC, uANC } from '@anchor-protocol/types';
 import {
   useAnchorWebapp,
   useGovVoteAvailableQuery,
+  useGovVoteTx,
   useRewardsAncGovernanceRewardsQuery,
 } from '@anchor-protocol/webapp-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { ThumbDownOutlined, ThumbUpOutlined } from '@material-ui/icons';
-import { useOperation } from '@terra-dev/broadcastable-operation';
+import { StreamStatus } from '@rx-stream/react';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import { flat } from '@terra-dev/styled-neumorphism';
 import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
-import {
-  ConnectedWallet,
-  useConnectedWallet,
-} from '@terra-money/wallet-provider';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
-import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
-import { voteOptions } from 'pages/gov/transactions/voteOptions';
 import React, {
   ChangeEvent,
   ReactNode,
@@ -61,7 +58,8 @@ function ComponentBase({
   closeDialog,
   pollId,
 }: DialogProps<FormParams, FormReturn>) {
-  const [vote, voteResult] = useOperation(voteOptions, {});
+  const [vote, voteResult] = useGovVoteTx();
+  //const [vote, voteResult] = useOperation(voteOptions, {});
 
   const connectedWallet = useConnectedWallet();
 
@@ -109,30 +107,38 @@ function ComponentBase({
   const txFee = fixedGas;
 
   const submit = useCallback(
-    async (
-      walletReady: ConnectedWallet,
-      voteFor: 'yes' | 'no',
-      amount: ANC,
-    ) => {
-      await vote({
-        address: walletReady.walletAddress,
-        poll_id: pollId,
-        vote: voteFor,
+    (voteFor: 'yes' | 'no', amount: ANC) => {
+      if (!connectedWallet || !vote) {
+        return;
+      }
+
+      vote({
+        pollId,
+        voteFor,
         amount,
       });
+      //await vote({
+      //  address: walletReady.walletAddress,
+      //  poll_id: pollId,
+      //  vote: voteFor,
+      //  amount,
+      //});
     },
-    [pollId, vote],
+    [connectedWallet, pollId, vote],
   );
 
   if (
-    voteResult?.status === 'in-progress' ||
-    voteResult?.status === 'done' ||
-    voteResult?.status === 'fault'
+    voteResult?.status === StreamStatus.IN_PROGRESS ||
+    voteResult?.status === StreamStatus.DONE
   ) {
     return (
       <Modal open disableBackdropClick disableEnforceFocus>
         <Dialog className={className}>
-          <TransactionRenderer result={voteResult} onExit={closeDialog} />
+          <TxResultRenderer
+            resultRendering={voteResult.value}
+            onExit={closeDialog}
+          />
+          {/*<TransactionRenderer result={voteResult} onExit={closeDialog} />*/}
         </Dialog>
       </Modal>
     );
@@ -221,17 +227,14 @@ function ComponentBase({
           disabled={
             !connectedWallet ||
             !canIVote ||
+            !vote ||
             amount.length === 0 ||
             !voteFor ||
             big(amount).lte(0) ||
             !!invalidTxFee ||
             !!invalidAmount
           }
-          onClick={() =>
-            connectedWallet &&
-            !!voteFor &&
-            submit(connectedWallet, voteFor, amount)
-          }
+          onClick={() => !!voteFor && submit(voteFor, amount)}
         >
           Submit
         </ActionButton>

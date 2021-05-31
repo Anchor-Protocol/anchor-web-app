@@ -8,23 +8,22 @@ import {
   microfy,
 } from '@anchor-protocol/notation';
 import { AncUstLP } from '@anchor-protocol/types';
-import { useRewardsAncUstLpRewardsQuery } from '@anchor-protocol/webapp-provider';
+import {
+  useAncAncUstLpUnstakeTx,
+  useAnchorWebapp,
+  useRewardsAncUstLpRewardsQuery,
+} from '@anchor-protocol/webapp-provider';
 import { InputAdornment } from '@material-ui/core';
-import { useOperation } from '@terra-dev/broadcastable-operation';
+import { StreamStatus } from '@rx-stream/react';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
-import {
-  ConnectedWallet,
-  useConnectedWallet,
-} from '@terra-money/wallet-provider';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
 import big from 'big.js';
 import { MessageBox } from 'components/MessageBox';
-import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
-import { ancUstLpUnstakeOptions } from 'pages/gov/transactions/ancUstLpUnstakeOptions';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 export function AncUstLpUnstake() {
@@ -33,9 +32,13 @@ export function AncUstLpUnstake() {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const { fixedGas } = useConstants();
+  const {
+    constants: { fixedGas },
+  } = useAnchorWebapp();
+  //const { fixedGas } = useConstants();
 
-  const [unstake, unstakeResult] = useOperation(ancUstLpUnstakeOptions, {});
+  const [unstake, unstakeResult] = useAncAncUstLpUnstakeTx();
+  //const [unstake, unstakeResult] = useOperation(ancUstLpUnstakeOptions, {});
 
   // ---------------------------------------------
   // states
@@ -73,28 +76,55 @@ export function AncUstLpUnstake() {
   }, []);
 
   const proceed = useCallback(
-    async (walletReady: ConnectedWallet, lpAmount: AncUstLP) => {
-      const broadcasted = await unstake({
-        address: walletReady.walletAddress,
-        amount: lpAmount,
+    (lpAmount: AncUstLP) => {
+      if (!connectedWallet || !unstake) {
+        return;
+      }
+
+      unstake({
+        lpAmount,
+        onTxSucceed: () => {
+          init();
+        },
       });
 
-      if (!broadcasted) {
-        init();
-      }
+      //const broadcasted = await unstake({
+      //  address: walletReady.walletAddress,
+      //  amount: lpAmount,
+      //});
+      //
+      //if (!broadcasted) {
+      //  init();
+      //}
     },
-    [init, unstake],
+    [connectedWallet, init, unstake],
   );
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
   if (
-    unstakeResult?.status === 'in-progress' ||
-    unstakeResult?.status === 'done' ||
-    unstakeResult?.status === 'fault'
+    unstakeResult?.status === StreamStatus.IN_PROGRESS ||
+    unstakeResult?.status === StreamStatus.DONE
   ) {
-    return <TransactionRenderer result={unstakeResult} onExit={init} />;
+    return (
+      <TxResultRenderer
+        resultRendering={unstakeResult.value}
+        onExit={() => {
+          init();
+
+          switch (unstakeResult.status) {
+            case StreamStatus.IN_PROGRESS:
+              unstakeResult.abort();
+              break;
+            case StreamStatus.DONE:
+              unstakeResult.clear();
+              break;
+          }
+        }}
+      />
+    );
+    //return <TransactionRenderer result={unstakeResult} onExit={init} />;
   }
 
   return (
@@ -154,12 +184,13 @@ export function AncUstLpUnstake() {
         disabled={
           !connectedWallet ||
           !connectedWallet.availablePost ||
+          !unstake ||
           lpAmount.length === 0 ||
           big(lpAmount).lte(0) ||
           !!invalidTxFee ||
           !!invalidLpAmount
         }
-        onClick={() => connectedWallet && proceed(connectedWallet, lpAmount)}
+        onClick={() => proceed(lpAmount)}
       >
         Unstake
       </ActionButton>

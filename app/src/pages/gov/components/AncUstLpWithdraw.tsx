@@ -10,31 +10,28 @@ import {
 } from '@anchor-protocol/notation';
 import { ANC, AncUstLP, UST } from '@anchor-protocol/types';
 import {
+  useAncAncUstLpWithdrawTx,
+  useAnchorWebapp,
   useAncPriceQuery,
   useRewardsAncUstLpRewardsQuery,
 } from '@anchor-protocol/webapp-provider';
 import { Input, InputAdornment } from '@material-ui/core';
-import { useOperation } from '@terra-dev/broadcastable-operation';
+import { StreamStatus } from '@rx-stream/react';
 import { isZero } from '@terra-dev/is-zero';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
-import {
-  ConnectedWallet,
-  useConnectedWallet,
-} from '@terra-money/wallet-provider';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
 import big, { Big } from 'big.js';
 import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
-import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
 import { formatShareOfPool } from 'pages/gov/components/formatShareOfPool';
 import { ancUstLpLpSimulation } from 'pages/gov/logics/ancUstLpLpSimulation';
 import { AncUstLpSimulation } from 'pages/gov/models/ancUstLpSimulation';
-import { ancUstLpWithdrawOptions } from 'pages/gov/transactions/ancUstLpWithdrawOptions';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 export function AncUstLpWithdraw() {
@@ -43,9 +40,13 @@ export function AncUstLpWithdraw() {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const { fixedGas } = useConstants();
+  const {
+    constants: { fixedGas },
+  } = useAnchorWebapp();
+  //const { fixedGas } = useConstants();
 
-  const [withdraw, withdrawResult] = useOperation(ancUstLpWithdrawOptions, {});
+  const [withdraw, withdrawResult] = useAncAncUstLpWithdrawTx();
+  //const [withdraw, withdrawResult] = useOperation(ancUstLpWithdrawOptions, {});
 
   // ---------------------------------------------
   // states
@@ -121,28 +122,55 @@ export function AncUstLpWithdraw() {
   }, []);
 
   const proceed = useCallback(
-    async (walletReady: ConnectedWallet, lpAmount: AncUstLP) => {
-      const broadcasted = await withdraw({
-        address: walletReady.walletAddress,
-        amount: lpAmount,
+    (lpAmount: AncUstLP) => {
+      if (!connectedWallet || !withdraw) {
+        return;
+      }
+
+      withdraw({
+        lpAmount,
+        onTxSucceed: () => {
+          init();
+        },
       });
 
-      if (!broadcasted) {
-        init();
-      }
+      //const broadcasted = await withdraw({
+      //  address: walletReady.walletAddress,
+      //  amount: lpAmount,
+      //});
+      //
+      //if (!broadcasted) {
+      //  init();
+      //}
     },
-    [init, withdraw],
+    [connectedWallet, init, withdraw],
   );
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
   if (
-    withdrawResult?.status === 'in-progress' ||
-    withdrawResult?.status === 'done' ||
-    withdrawResult?.status === 'fault'
+    withdrawResult?.status === StreamStatus.IN_PROGRESS ||
+    withdrawResult?.status === StreamStatus.DONE
   ) {
-    return <TransactionRenderer result={withdrawResult} onExit={init} />;
+    return (
+      <TxResultRenderer
+        resultRendering={withdrawResult.value}
+        onExit={() => {
+          init();
+
+          switch (withdrawResult.status) {
+            case StreamStatus.IN_PROGRESS:
+              withdrawResult.abort();
+              break;
+            case StreamStatus.DONE:
+              withdrawResult.clear();
+              break;
+          }
+        }}
+      />
+    );
+    //return <TransactionRenderer result={withdrawResult} onExit={init} />;
   }
 
   return (
@@ -248,13 +276,14 @@ export function AncUstLpWithdraw() {
         disabled={
           !connectedWallet ||
           !connectedWallet.availablePost ||
+          !withdraw ||
           lpAmount.length === 0 ||
           big(lpAmount).lte(0) ||
           !simulation ||
           !!invalidTxFee ||
           !!invalidLpAmount
         }
-        onClick={() => connectedWallet && proceed(connectedWallet, lpAmount)}
+        onClick={() => proceed(lpAmount)}
       >
         Remove Liquidity
       </ActionButton>

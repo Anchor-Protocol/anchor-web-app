@@ -4,7 +4,6 @@ import {
   demicrofy,
   formatANC,
   formatANCInput,
-  formatExecuteMsgNumber,
   formatFluidDecimalPoints,
   formatUST,
   formatUSTInput,
@@ -12,36 +11,32 @@ import {
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
 } from '@anchor-protocol/notation';
 import { ANC, Denom, terraswap, uANC, UST, uUST } from '@anchor-protocol/types';
-import { useAncPriceQuery } from '@anchor-protocol/webapp-provider';
+import {
+  useAnchorWebapp,
+  useAncPriceQuery,
+  useAncSellTx,
+} from '@anchor-protocol/webapp-provider';
 import { useApolloClient } from '@apollo/client';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
-import { useOperation } from '@terra-dev/broadcastable-operation';
+import { StreamStatus } from '@rx-stream/react';
 import { isZero } from '@terra-dev/is-zero';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { NumberMuiInput } from '@terra-dev/neumorphism-ui/components/NumberMuiInput';
 import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
 import { useResolveLast } from '@terra-dev/use-resolve-last';
-import {
-  ConnectedWallet,
-  useConnectedWallet,
-} from '@terra-money/wallet-provider';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
-import { useContractAddress } from 'base/contexts/contract';
 import { queryReverseSimulation } from 'base/queries/reverseSimulation';
 import { querySimulation } from 'base/queries/simulation';
 import big from 'big.js';
 import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
-import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
-import { MAX_SPREAD } from 'pages/gov/env';
 import { sellFromSimulation } from 'pages/gov/logics/sellFromSimulation';
 import { sellToSimulation } from 'pages/gov/logics/sellToSimulation';
-import { AncPrice } from 'pages/gov/models/ancPrice';
 import { TradeSimulation } from 'pages/gov/models/tradeSimulation';
-import { sellOptions } from 'pages/gov/transactions/sellOptions';
 import React, {
   ChangeEvent,
   useCallback,
@@ -64,15 +59,20 @@ export function TradeSell() {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const { fixedGas } = useConstants();
+  const {
+    constants: { fixedGas },
+    contractAddress: address,
+  } = useAnchorWebapp();
+  //const { fixedGas } = useConstants();
 
   const client = useApolloClient();
 
-  const address = useContractAddress();
+  //const address = useContractAddress();
 
   const bank = useBank();
 
-  const [sell, sellResult] = useOperation(sellOptions, { bank });
+  const [sell, sellResult] = useAncSellTx();
+  //const [sell, sellResult] = useOperation(sellOptions, { bank });
 
   // ---------------------------------------------
   // states
@@ -239,36 +239,63 @@ export function TradeSell() {
   }, []);
 
   const proceed = useCallback(
-    async (
-      walletReady: ConnectedWallet,
+    (
+      //walletReady: ConnectedWallet,
       burnAmount: ANC,
-      ancPrice: AncPrice,
+      //ancPrice: AncPrice,
     ) => {
-      const broadcasted = await sell({
-        address: walletReady.walletAddress,
-        amount: burnAmount,
-        beliefPrice: formatExecuteMsgNumber(
-          big(ancPrice.ANCPoolSize).div(ancPrice.USTPoolSize),
-        ),
-        maxSpread: MAX_SPREAD.toString(),
+      if (!connectedWallet || !sell) {
+        return;
+      }
+
+      sell({
+        burnAmount,
+        onTxSucceed: () => {
+          init();
+        },
       });
 
-      if (!broadcasted) {
-        init();
-      }
+      //const broadcasted = await sell({
+      //  address: walletReady.walletAddress,
+      //  amount: burnAmount,
+      //  beliefPrice: formatExecuteMsgNumber(
+      //    big(ancPrice.ANCPoolSize).div(ancPrice.USTPoolSize),
+      //  ),
+      //  maxSpread: MAX_SPREAD.toString(),
+      //});
+      //
+      //if (!broadcasted) {
+      //  init();
+      //}
     },
-    [sell, init],
+    [connectedWallet, sell, init],
   );
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
   if (
-    sellResult?.status === 'in-progress' ||
-    sellResult?.status === 'done' ||
-    sellResult?.status === 'fault'
+    sellResult?.status === StreamStatus.IN_PROGRESS ||
+    sellResult?.status === StreamStatus.DONE
   ) {
-    return <TransactionRenderer result={sellResult} onExit={init} />;
+    return (
+      <TxResultRenderer
+        resultRendering={sellResult.value}
+        onExit={() => {
+          init();
+
+          switch (sellResult.status) {
+            case StreamStatus.IN_PROGRESS:
+              sellResult.abort();
+              break;
+            case StreamStatus.DONE:
+              sellResult.clear();
+              break;
+          }
+        }}
+      />
+    );
+    //return <TransactionRenderer result={sellResult} onExit={init} />;
   }
 
   return (
@@ -402,6 +429,7 @@ export function TradeSell() {
         disabled={
           !connectedWallet ||
           !connectedWallet.availablePost ||
+          !sell ||
           !ancPrice ||
           fromAmount.length === 0 ||
           big(fromAmount).lte(0) ||
@@ -409,11 +437,7 @@ export function TradeSell() {
           !!invalidFromAmount ||
           big(simulation?.swapFee ?? 0).lte(0)
         }
-        onClick={() =>
-          connectedWallet &&
-          ancPrice &&
-          proceed(connectedWallet, fromAmount, ancPrice)
-        }
+        onClick={() => proceed(fromAmount)}
       >
         Proceed
       </ActionButton>

@@ -1,28 +1,26 @@
-import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import {
   demicrofy,
   formatANCWithPostfixUnits,
   formatUST,
 } from '@anchor-protocol/notation';
 import { uANC } from '@anchor-protocol/types';
-import { useRewardsClaimableUstBorrowRewardsQuery } from '@anchor-protocol/webapp-provider';
-import { useOperation } from '@terra-dev/broadcastable-operation';
+import {
+  useAnchorWebapp,
+  useRewardsClaimableUstBorrowRewardsQuery,
+  useRewardsUstBorrowClaimTx,
+} from '@anchor-protocol/webapp-provider';
+import { StreamStatus } from '@rx-stream/react';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
-import {
-  ConnectedWallet,
-  useConnectedWallet,
-} from '@terra-money/wallet-provider';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
 import big, { Big } from 'big.js';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { MessageBox } from 'components/MessageBox';
-import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
 import { MINIMUM_CLAIM_BALANCE } from 'pages/gov/env';
-import { ustBorrowClaimOptions } from 'pages/gov/transactions/ustBorrowClaimOptions';
 import React, { useCallback, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
@@ -37,9 +35,13 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const { fixedGas } = useConstants();
+  const {
+    constants: { fixedGas },
+  } = useAnchorWebapp();
+  //const { fixedGas } = useConstants();
 
-  const [claim, claimResult] = useOperation(ustBorrowClaimOptions, {});
+  const [claim, claimResult] = useRewardsUstBorrowClaimTx();
+  //const [claim, claimResult] = useOperation(ustBorrowClaimOptions, {});
 
   const history = useHistory();
 
@@ -73,31 +75,38 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
     [bank, fixedGas, connectedWallet],
   );
 
-  const proceed = useCallback(
-    async (walletReady: ConnectedWallet) => {
-      await claim({
-        address: walletReady.walletAddress,
-        market: MARKET_DENOMS.UUSD,
-      });
-    },
-    [claim],
-  );
+  const proceed = useCallback(() => {
+    if (!connectedWallet || !claim) {
+      return;
+    }
+
+    claim({});
+    //await claim({
+    //  address: walletReady.walletAddress,
+    //  market: MARKET_DENOMS.UUSD,
+    //});
+  }, [claim, connectedWallet]);
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
   if (
-    claimResult?.status === 'in-progress' ||
-    claimResult?.status === 'done' ||
-    claimResult?.status === 'fault'
+    claimResult?.status === StreamStatus.IN_PROGRESS ||
+    claimResult?.status === StreamStatus.DONE
   ) {
     const onExit =
-      claimResult.status === 'done' ? () => history.push('/gov') : undefined;
+      claimResult.status === StreamStatus.DONE
+        ? () => history.push('/gov')
+        : () => {};
 
     return (
       <CenteredLayout className={className} maxWidth={800}>
         <Section>
-          <TransactionRenderer result={claimResult} onExit={onExit} />
+          <TxResultRenderer
+            resultRendering={claimResult.value}
+            onExit={onExit}
+          />
+          {/*<TransactionRenderer result={claimResult} onExit={onExit} />*/}
         </Section>
       </CenteredLayout>
     );
@@ -128,10 +137,11 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
           disabled={
             !connectedWallet ||
             !connectedWallet.availablePost ||
+            !claim ||
             !claiming ||
             claiming.lte(MINIMUM_CLAIM_BALANCE)
           }
-          onClick={() => connectedWallet && proceed(connectedWallet)}
+          onClick={() => proceed()}
         >
           Claim
         </ActionButton>

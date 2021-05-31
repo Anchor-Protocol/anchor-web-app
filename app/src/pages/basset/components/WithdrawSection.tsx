@@ -139,7 +139,16 @@ export function WithdrawSection({
       <Section>
         <TxResultRenderer
           resultRendering={withdrawResult.value}
-          onExit={() => {}}
+          onExit={() => {
+            switch (withdrawResult.status) {
+              case StreamStatus.IN_PROGRESS:
+                withdrawResult.abort();
+                break;
+              case StreamStatus.DONE:
+                withdrawResult.clear();
+                break;
+            }
+          }}
         />
       </Section>
     );

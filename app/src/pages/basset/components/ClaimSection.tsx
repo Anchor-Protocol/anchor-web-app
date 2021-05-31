@@ -86,7 +86,16 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
       <Section>
         <TxResultRenderer
           resultRendering={claimResult.value}
-          onExit={() => {}}
+          onExit={() => {
+            switch (claimResult.status) {
+              case StreamStatus.IN_PROGRESS:
+                claimResult.abort();
+                break;
+              case StreamStatus.DONE:
+                claimResult.clear();
+                break;
+            }
+          }}
         />
       </Section>
     );

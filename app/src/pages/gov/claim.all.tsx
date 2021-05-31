@@ -5,26 +5,23 @@ import {
 } from '@anchor-protocol/notation';
 import { uANC } from '@anchor-protocol/types';
 import {
+  useRewardsAllClaimTx,
   useRewardsClaimableAncUstLpRewardsQuery,
   useRewardsClaimableUstBorrowRewardsQuery,
 } from '@anchor-protocol/webapp-provider';
-import { useOperation } from '@terra-dev/broadcastable-operation';
+import { StreamStatus } from '@rx-stream/react';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
-import {
-  ConnectedWallet,
-  useConnectedWallet,
-} from '@terra-money/wallet-provider';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
 import { useConstants } from 'base/contexts/contants';
 import big, { Big } from 'big.js';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { MessageBox } from 'components/MessageBox';
-import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
 import { MINIMUM_CLAIM_BALANCE } from 'pages/gov/env';
-import { allClaimOptions } from 'pages/gov/transactions/allClaimOptions';
 import React, { useCallback, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
@@ -41,7 +38,8 @@ function ClaimAllBase({ className }: ClaimAllProps) {
 
   const { fixedGas } = useConstants();
 
-  const [claim, claimResult] = useOperation(allClaimOptions, {});
+  const [claim, claimResult] = useRewardsAllClaimTx();
+  //const [claim, claimResult] = useOperation(allClaimOptions, {});
 
   const history = useHistory();
 
@@ -101,35 +99,44 @@ function ClaimAllBase({ className }: ClaimAllProps) {
   );
 
   const proceed = useCallback(
-    async (
-      walletReady: ConnectedWallet,
-      claimMoneyMarketRewards: boolean,
-      cliamLpStakingRewards: boolean,
-    ) => {
-      await claim({
-        walletAddress: walletReady.walletAddress,
-        cliamLpStakingRewards,
-        claimMoneyMarketRewards,
+    (claimMoneyMarketRewards: boolean, cliamLpStakingRewards: boolean) => {
+      if (!connectedWallet || !claim) {
+        return;
+      }
+
+      claim({
+        claimAncUstLp: cliamLpStakingRewards,
+        claimUstBorrow: claimMoneyMarketRewards,
       });
+      //await claim({
+      //  walletAddress: walletReady.walletAddress,
+      //  cliamLpStakingRewards,
+      //  claimMoneyMarketRewards,
+      //});
     },
-    [claim],
+    [claim, connectedWallet],
   );
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
   if (
-    claimResult?.status === 'in-progress' ||
-    claimResult?.status === 'done' ||
-    claimResult?.status === 'fault'
+    claimResult?.status === StreamStatus.IN_PROGRESS ||
+    claimResult?.status === StreamStatus.DONE
   ) {
     const onExit =
-      claimResult.status === 'done' ? () => history.push('/gov') : undefined;
+      claimResult.status === StreamStatus.DONE
+        ? () => history.push('/gov')
+        : () => {};
 
     return (
       <CenteredLayout className={className} maxWidth={800}>
         <Section>
-          <TransactionRenderer result={claimResult} onExit={onExit} />
+          <TxResultRenderer
+            resultRendering={claimResult.value}
+            onExit={onExit}
+          />
+          {/*<TransactionRenderer result={claimResult} onExit={onExit} />*/}
         </Section>
       </CenteredLayout>
     );
@@ -160,6 +167,7 @@ function ClaimAllBase({ className }: ClaimAllProps) {
           disabled={
             !connectedWallet ||
             !connectedWallet.availablePost ||
+            !claim ||
             !claimingLpStaingInfoPendingRewards ||
             !claimingBorrowerInfoPendingRewards ||
             !claiming ||
@@ -167,11 +175,9 @@ function ClaimAllBase({ className }: ClaimAllProps) {
               claimingLpStaingInfoPendingRewards.lt(MINIMUM_CLAIM_BALANCE))
           }
           onClick={() =>
-            connectedWallet &&
             claimingBorrowerInfoPendingRewards &&
             claimingLpStaingInfoPendingRewards &&
             proceed(
-              connectedWallet,
               claimingBorrowerInfoPendingRewards.gte(MINIMUM_CLAIM_BALANCE),
               claimingLpStaingInfoPendingRewards.gte(MINIMUM_CLAIM_BALANCE),
             )
