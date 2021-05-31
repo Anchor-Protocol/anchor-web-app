@@ -10,6 +10,7 @@ import {
   useGovPollQuery,
   useGovStateQuery,
   useGovVoteAvailableQuery,
+  useLastSyncedHeightQuery,
 } from '@anchor-protocol/webapp-provider';
 import { Schedule } from '@material-ui/icons';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
@@ -23,7 +24,6 @@ import {
   rulerShadowColor,
 } from '@terra-dev/styled-neumorphism';
 import { TimeEnd } from '@terra-dev/use-time-end';
-import { useLastSyncedHeight } from 'base/queries/lastSyncedHeight';
 import { AccountLink } from 'components/AccountLink';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { useCodeViewerDialog } from 'components/useCodeViewerDialog';
@@ -62,7 +62,7 @@ function PollDetailBase({ className, match }: PollDetailProps) {
 
   const [openVoteDialog, voteDialogElement] = usePollVoteDialog();
 
-  const { data: lastSyncedHeight } = useLastSyncedHeight();
+  const { data: lastSyncedHeight = 0 } = useLastSyncedHeightQuery();
 
   const [openCodeViewer, codeViewerElement] = useCodeViewerDialog();
 

@@ -37,6 +37,7 @@ export * from './queries/rewards/claimableAncUstLpRewards';
 export * from './queries/rewards/claimableUstBorrowRewards';
 export * from './queries/rewards/ustBorrowRewards';
 export * from './queries/airdrop/check';
+export * from './queries/terra/lastSyncedHeight';
 
 export * from './tx/earn/deposit';
 export * from './tx/earn/withdraw';

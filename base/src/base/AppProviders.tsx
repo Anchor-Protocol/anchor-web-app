@@ -38,7 +38,6 @@ import { useRequestReloadDialog } from 'base/components/useRequestReload';
 import React, { ReactNode, useCallback, useMemo } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { BroadcastingContainer } from './components/BroadcastingContainer';
 import { SnackbarContainer } from './components/SnackbarContainer';
 import { BankProvider } from './contexts/bank';
 import { Constants, ConstantsProvider } from './contexts/contants';
@@ -302,8 +301,6 @@ export function AppProviders({ children }: { children: ReactNode }) {
         {/* Layout ================================ */}
         {children}
         {/* Portal ================================ */}
-        {/** Operation Result Broadcasting Render Container (Snackbar...) */}
-        <BroadcastingContainer />
         <SnackbarContainer />
 
         {readonlyWalletSelectorElement}
@@ -331,8 +328,6 @@ export function LandingProviders({ children }: { children: ReactNode }) {
         {/* Layout ================================ */}
         {children}
         {/* Portal ================================ */}
-        {/** Operation Result Broadcasting Render Container (Snackbar...) */}
-        <BroadcastingContainer />
         <SnackbarContainer />
       </Providers>
     </ExtensionNetworkOnlyWalletProvider>

@@ -1,16 +1,33 @@
+import {
+  uANC,
+  uAncUstLP,
+  uaUST,
+  ubLuna,
+  ubLunaLunaLP,
+  uLuna,
+  uUST,
+} from '@anchor-protocol/types';
 import { AnchorTax, AnchorTokenBalances } from '@anchor-protocol/webapp-fns';
 import { useBank as useBank_ } from '@terra-money/webapp-provider';
 import type { ReactNode } from 'react';
 import { Consumer, Context, createContext, useContext, useMemo } from 'react';
-import { Data as TaxData } from '../queries/tax';
-import { Data as UserBalancesData } from '../queries/userBalances';
+
+export interface UserBalancesData {
+  uUSD: uUST<string>;
+  uLuna: uLuna<string>;
+  ubLuna: ubLuna<string>;
+  uaUST: uaUST<string>;
+  uANC: uANC<string>;
+  uAncUstLP: uAncUstLP<string>;
+  ubLunaLunaLP: ubLunaLunaLP<string>;
+}
 
 export interface BankProviderProps {
   children: ReactNode;
 }
 
 export interface Bank {
-  tax: TaxData;
+  tax: AnchorTax;
   refetchTax: () => void;
   userBalances: UserBalancesData;
   refetchUserBalances: () => void;

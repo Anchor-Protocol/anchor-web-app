@@ -1,4 +1,3 @@
-import { OperationTimeoutError } from '@terra-dev/broadcastable-operation';
 import {
   CreateTxFailed,
   Timeout,
@@ -8,8 +7,6 @@ import {
 } from '@terra-dev/wallet-types';
 import { TxErrorRendering } from '@terra-money/webapp-fns';
 import { TxHashLink } from 'base/components/TxHashLink';
-import { TxInfoError } from 'base/errors/TxInfoError';
-import { TxInfoParseError } from 'base/errors/TxInfoParseError';
 import React, { ReactNode } from 'react';
 
 // ----------------------------------------------------------------
@@ -95,29 +92,6 @@ const txUnspecifiedErrorMessage = (message: string | undefined | null) => (
   </div>
 );
 
-const txParseFailedMessage = (
-  txhash: string,
-  message: string | null | undefined,
-) => (
-  <div style={{ lineHeight: '1.8em' }}>
-    {typeof message === 'string' && <p>{message}</p>}
-    <p style={{ opacity: typeof message === 'string' ? 0.7 : undefined }}>
-      The transaction was broadcasted, but there was an error in parsing the
-      results.
-    </p>
-    <p style={{ opacity: typeof message === 'string' ? 0.7 : undefined }}>
-      Please report your error ID to admin through anyone of the following
-      channels.
-    </p>
-
-    <p>
-      <b>Tx hash :</b> <TxHashLink txHash={txhash} />
-    </p>
-
-    {channels}
-  </div>
-);
-
 const uncaughtErrorMessage = (message: string | null | undefined) => (
   <div style={{ lineHeight: '1.8em' }}>
     {typeof message === 'string' && <p>{message}</p>}
@@ -168,28 +142,6 @@ export function renderTxFailedReason({
         <h2>Transaction failed</h2>
         <ErrorMessageView error={error} errorId={errorId}>
           {txUnspecifiedErrorMessage(error.message)}
-        </ErrorMessageView>
-      </>
-    );
-  }
-  // legacy errors
-  else if (error instanceof OperationTimeoutError) {
-    return <h2>Timeout</h2>;
-  } else if (error instanceof TxInfoError) {
-    return (
-      <>
-        <h2>Transaction failed</h2>
-        <ErrorMessageView error={error} errorId={errorId}>
-          {error.message}
-        </ErrorMessageView>
-      </>
-    );
-  } else if (error instanceof TxInfoParseError) {
-    return (
-      <>
-        <h2>Failed to parse transaction results</h2>
-        <ErrorMessageView error={error} errorId={errorId}>
-          {txParseFailedMessage(error.txResult.result.txhash, error.message)}
         </ErrorMessageView>
       </>
     );

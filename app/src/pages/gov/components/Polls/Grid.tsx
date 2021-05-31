@@ -1,9 +1,9 @@
+import { useLastSyncedHeightQuery } from '@anchor-protocol/webapp-provider';
 import { Schedule } from '@material-ui/icons';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { TimeEnd } from '@terra-dev/use-time-end';
-import { useLastSyncedHeight } from 'base/queries/lastSyncedHeight';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
 import { PollStatusSpan } from 'pages/gov/components/PollStatusSpan';
 import { extractPollDetail } from 'pages/gov/logics/extractPollDetail';
@@ -26,7 +26,7 @@ function GridBase({
   onClick,
   onLoadMore,
 }: GridProps) {
-  const { data: lastSyncedHeight } = useLastSyncedHeight();
+  const { data: lastSyncedHeight = 0 } = useLastSyncedHeightQuery();
 
   const pollDetails = useMemo(() => {
     return govANCBalance && govState && govConfig && lastSyncedHeight

@@ -1,3 +1,4 @@
+import { useLastSyncedHeightQuery } from '@anchor-protocol/webapp-provider';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
@@ -5,7 +6,6 @@ import { TimeEnd } from '@terra-dev/use-time-end';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
 import { PollStatusSpan } from 'pages/gov/components/PollStatusSpan';
 import { extractPollDetail } from 'pages/gov/logics/extractPollDetail';
-import { useLastSyncedHeight } from 'base/queries/lastSyncedHeight';
 import { useMemo } from 'react';
 import styled from 'styled-components';
 import { PollTinyGraph } from './PollTinyGraph';
@@ -25,7 +25,7 @@ function ListBase({
   onClick,
   onLoadMore,
 }: ListProps) {
-  const { data: lastSyncedHeight } = useLastSyncedHeight();
+  const { data: lastSyncedHeight = 0 } = useLastSyncedHeightQuery();
 
   const pollDetails = useMemo(() => {
     return govANCBalance && govState && govConfig && lastSyncedHeight
