@@ -35,10 +35,8 @@ export function AncGovernanceStake() {
   const {
     constants: { fixedGas },
   } = useAnchorWebapp();
-  //const { fixedGas } = useConstants();
 
   const [stake, stakeResult] = useAncGovernanceStakeTx();
-  //const [stake, stakeResult] = useOperation(ancGovernanceStakeOptions, {});
 
   // ---------------------------------------------
   // states
@@ -53,9 +51,6 @@ export function AncGovernanceStake() {
   const {
     data: { userANCBalance } = {},
   } = useRewardsAncGovernanceRewardsQuery();
-  //const {
-  //  data: { userANCBalance },
-  //} = useRewardsAncGovernance();
 
   // ---------------------------------------------
   // logics
@@ -89,14 +84,6 @@ export function AncGovernanceStake() {
           init();
         },
       });
-      //const broadcasted = await stake({
-      //  address: walletReady.walletAddress,
-      //  amount: ancAmount,
-      //});
-
-      //if (!broadcasted) {
-      //  init();
-      //}
     },
     [connectedWallet, init, stake],
   );
@@ -125,7 +112,6 @@ export function AncGovernanceStake() {
         }}
       />
     );
-    //return <TransactionRenderer result={stakeResult} onExit={init} />;
   }
 
   return (

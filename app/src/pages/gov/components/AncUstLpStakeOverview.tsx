@@ -24,21 +24,12 @@ export interface AncUstLpStakeOverviewProps {
 
 function AncUstLpStakeOverviewBase({ className }: AncUstLpStakeOverviewProps) {
   const { data: { ancPrice } = {} } = useAncPriceQuery();
-  //const {
-  //  data: { ancPrice },
-  //} = useANCPrice();
 
   const { data: { lpStakingState } = {} } = useAncLpStakingStateQuery();
-  //const {
-  //  data: { lpStakingState },
-  //} = useLPStakingState();
 
   const {
     data: { lPBalance: userLPBalance, lPStakerInfo: userLPStakingInfo } = {},
   } = useRewardsClaimableAncUstLpRewardsQuery();
-  //const {
-  //  data: { userLPStakingInfo, userLPBalance },
-  //} = useClaimableAncUstLp();
 
   const ancUstLp = useMemo(() => {
     if (!ancPrice || !lpStakingState || !userLPStakingInfo || !userLPBalance) {

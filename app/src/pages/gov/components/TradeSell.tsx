@@ -63,16 +63,12 @@ export function TradeSell() {
     constants: { fixedGas },
     contractAddress: address,
   } = useAnchorWebapp();
-  //const { fixedGas } = useConstants();
 
   const client = useApolloClient();
-
-  //const address = useContractAddress();
 
   const bank = useBank();
 
   const [sell, sellResult] = useAncSellTx();
-  //const [sell, sellResult] = useOperation(sellOptions, { bank });
 
   // ---------------------------------------------
   // states
@@ -93,9 +89,6 @@ export function TradeSell() {
   // queries
   // ---------------------------------------------
   const { data: { ancPrice } = {} } = useAncPriceQuery();
-  //const {
-  //  data: { ancPrice },
-  //} = useANCPrice();
 
   // ---------------------------------------------
   // logics
@@ -239,11 +232,7 @@ export function TradeSell() {
   }, []);
 
   const proceed = useCallback(
-    (
-      //walletReady: ConnectedWallet,
-      burnAmount: ANC,
-      //ancPrice: AncPrice,
-    ) => {
+    (burnAmount: ANC) => {
       if (!connectedWallet || !sell) {
         return;
       }
@@ -254,19 +243,6 @@ export function TradeSell() {
           init();
         },
       });
-
-      //const broadcasted = await sell({
-      //  address: walletReady.walletAddress,
-      //  amount: burnAmount,
-      //  beliefPrice: formatExecuteMsgNumber(
-      //    big(ancPrice.ANCPoolSize).div(ancPrice.USTPoolSize),
-      //  ),
-      //  maxSpread: MAX_SPREAD.toString(),
-      //});
-      //
-      //if (!broadcasted) {
-      //  init();
-      //}
     },
     [connectedWallet, sell, init],
   );
@@ -295,7 +271,6 @@ export function TradeSell() {
         }}
       />
     );
-    //return <TransactionRenderer result={sellResult} onExit={init} />;
   }
 
   return (

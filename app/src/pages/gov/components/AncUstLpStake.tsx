@@ -35,10 +35,8 @@ export function AncUstLpStake() {
   const {
     constants: { fixedGas },
   } = useAnchorWebapp();
-  //const { fixedGas } = useConstants();
 
   const [stake, stakeResult] = useAncAncUstLpStakeTx();
-  //const [stake, stakeResult] = useOperation(ancUstLpStakeOptions, {});
 
   // ---------------------------------------------
   // states
@@ -51,9 +49,6 @@ export function AncUstLpStake() {
   const bank = useBank();
 
   const { data: { userLPBalance } = {} } = useRewardsAncUstLpRewardsQuery();
-  //const {
-  //  data: { userLPBalance },
-  //} = useRewardsAncUstLp();
 
   // ---------------------------------------------
   // logics
@@ -87,15 +82,6 @@ export function AncUstLpStake() {
           init();
         },
       });
-
-      //const broadcasted = await stake({
-      //  address: walletReady.walletAddress,
-      //  amount: lpAmount,
-      //});
-      //
-      //if (!broadcasted) {
-      //  init();
-      //}
     },
     [connectedWallet, init, stake],
   );
@@ -124,7 +110,6 @@ export function AncUstLpStake() {
         }}
       />
     );
-    //return <TransactionRenderer result={stakeResult} onExit={init} />;
   }
 
   return (

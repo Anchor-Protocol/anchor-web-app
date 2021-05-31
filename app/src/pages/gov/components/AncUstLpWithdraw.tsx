@@ -43,10 +43,8 @@ export function AncUstLpWithdraw() {
   const {
     constants: { fixedGas },
   } = useAnchorWebapp();
-  //const { fixedGas } = useConstants();
 
   const [withdraw, withdrawResult] = useAncAncUstLpWithdrawTx();
-  //const [withdraw, withdrawResult] = useOperation(ancUstLpWithdrawOptions, {});
 
   // ---------------------------------------------
   // states
@@ -64,14 +62,7 @@ export function AncUstLpWithdraw() {
 
   const { data: { ancPrice } = {} } = useAncPriceQuery();
 
-  //const {
-  //  data: { ancPrice },
-  //} = useANCPrice();
-
   const { data: { userLPBalance } = {} } = useRewardsAncUstLpRewardsQuery();
-  //const {
-  //  data: { userLPBalance },
-  //} = useRewardsAncUstLp();
 
   // ---------------------------------------------
   // logics
@@ -133,15 +124,6 @@ export function AncUstLpWithdraw() {
           init();
         },
       });
-
-      //const broadcasted = await withdraw({
-      //  address: walletReady.walletAddress,
-      //  amount: lpAmount,
-      //});
-      //
-      //if (!broadcasted) {
-      //  init();
-      //}
     },
     [connectedWallet, init, withdraw],
   );
@@ -170,7 +152,6 @@ export function AncUstLpWithdraw() {
         }}
       />
     );
-    //return <TransactionRenderer result={withdrawResult} onExit={init} />;
   }
 
   return (

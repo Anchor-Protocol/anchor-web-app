@@ -23,7 +23,6 @@ export function PollCreateSpendCommunityPool() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  //const address = useContractAddress();
   const { contractAddress: address } = useAnchorWebapp();
 
   // ---------------------------------------------
@@ -35,9 +34,6 @@ export function PollCreateSpendCommunityPool() {
   const { data: { ancBalance: communityAncBalance } = {} } = useAncBalanceQuery(
     address.anchorToken.community,
   );
-  //const {
-  //  data: { communityAncBalance },
-  //} = useCommunityAncBalance();
 
   const invalidAmount = useMemo(() => {
     if (amount.length === 0 || !communityAncBalance) {

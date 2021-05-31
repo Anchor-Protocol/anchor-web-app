@@ -60,12 +60,10 @@ export function PollCreateBase({
   const {
     constants: { fixedGas },
   } = useAnchorWebapp();
-  //const { fixedGas } = useConstants();
 
   const history = useHistory();
 
   const [createPoll, createPollResult] = useGovCreatePollTx();
-  //const [createPoll, createPollResult] = useOperation(createPollOptions, {});
 
   // ---------------------------------------------
   // states
@@ -84,9 +82,6 @@ export function PollCreateBase({
   const bank = useBank();
 
   const { data: { govConfig: pollConfig } = {} } = useGovConfigQuery();
-  //const {
-  //  data: { pollConfig },
-  //} = usePollConfig();
 
   // ---------------------------------------------
   // logics
@@ -146,16 +141,6 @@ export function PollCreateBase({
         link: link.length > 0 ? link : undefined,
         executeMsgs,
       });
-
-      //await createPoll({
-      //  address: walletReady.walletAddress,
-      //  amount,
-      //  title,
-      //  description,
-      //  link: link.length > 0 ? link : undefined,
-      //  execute_msgs,
-      //  txFee: txFee.toString() as uUST,
-      //});
     },
     [connectedWallet, createPoll, onCreateMsgs],
   );
@@ -174,7 +159,6 @@ export function PollCreateBase({
             resultRendering={createPollResult.value}
             onExit={goToGov}
           />
-          {/*<TransactionRenderer result={createPollResult} onExit={goToGov} />*/}
         </Section>
       </FormLayout>
     );

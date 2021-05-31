@@ -39,10 +39,8 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
   const {
     constants: { fixedGas },
   } = useAnchorWebapp();
-  //const { fixedGas } = useConstants();
 
   const [claim, claimResult] = useRewardsAncUstLpClaimTx();
-  //const [claim, claimResult] = useOperation(ancUstLpClaimOptions, {});
 
   const history = useHistory();
 
@@ -54,16 +52,10 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
   const {
     data: { userANCBalance } = {},
   } = useRewardsClaimableUstBorrowRewardsQuery();
-  //const {
-  //  data: { userANCBalance },
-  //} = useClaimableUstBorrow();
 
   const {
     data: { lPStakerInfo: userLPStakingInfo } = {},
   } = useRewardsClaimableAncUstLpRewardsQuery();
-  //const {
-  //  data: { userLPStakingInfo },
-  //} = useClaimableAncUstLp();
 
   // ---------------------------------------------
   // logics
@@ -89,9 +81,6 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
     }
 
     claim({});
-    //await claim({
-    //  address: walletReady.walletAddress,
-    //});
   }, [claim, connectedWallet]);
 
   // ---------------------------------------------
@@ -116,7 +105,6 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
             resultRendering={claimResult.value}
             onExit={onExit}
           />
-          {/*<TransactionRenderer result={claimResult} onExit={onExit} />*/}
         </Section>
       </CenteredLayout>
     );

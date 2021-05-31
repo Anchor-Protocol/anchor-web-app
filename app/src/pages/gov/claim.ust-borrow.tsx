@@ -38,10 +38,8 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
   const {
     constants: { fixedGas },
   } = useAnchorWebapp();
-  //const { fixedGas } = useConstants();
 
   const [claim, claimResult] = useRewardsUstBorrowClaimTx();
-  //const [claim, claimResult] = useOperation(ustBorrowClaimOptions, {});
 
   const history = useHistory();
 
@@ -53,9 +51,6 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
   const {
     data: { borrowerInfo, userANCBalance } = {},
   } = useRewardsClaimableUstBorrowRewardsQuery();
-  //const {
-  //  data: { borrowerInfo, userANCBalance },
-  //} = useClaimableUstBorrow();
 
   // ---------------------------------------------
   // logics
@@ -81,10 +76,6 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
     }
 
     claim({});
-    //await claim({
-    //  address: walletReady.walletAddress,
-    //  market: MARKET_DENOMS.UUSD,
-    //});
   }, [claim, connectedWallet]);
 
   // ---------------------------------------------
@@ -106,7 +97,6 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
             resultRendering={claimResult.value}
             onExit={onExit}
           />
-          {/*<TransactionRenderer result={claimResult} onExit={onExit} />*/}
         </Section>
       </CenteredLayout>
     );

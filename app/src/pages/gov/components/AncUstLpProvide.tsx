@@ -56,7 +56,6 @@ export function AncUstLpProvide() {
   const {
     constants: { fixedGas },
   } = useAnchorWebapp();
-  //const { fixedGas } = useConstants();
 
   // ---------------------------------------------
   // states
@@ -74,18 +73,11 @@ export function AncUstLpProvide() {
   const bank = useBank();
 
   const { data: { ancPrice } = {} } = useAncPriceQuery();
-  //const {
-  //  data: { ancPrice },
-  //} = useANCPrice();
 
   // ---------------------------------------------
   // transaction
   // ---------------------------------------------
   const [provide, provideResult] = useAncAncUstLpProvideTx();
-  //const [provide, provideResult] = useOperation(ancUstLpProvideOptions, {
-  //  bank,
-  //  ancPrice,
-  //});
 
   // ---------------------------------------------
   // logics
@@ -257,18 +249,6 @@ export function AncUstLpProvide() {
           init();
         },
       });
-
-      //const broadcasted = await provide({
-      //  address: walletReady.walletAddress,
-      //  token_amount: ancAmount,
-      //  native_amount: ustAmount,
-      //  quote: 'uusd',
-      //  txFee,
-      //});
-      //
-      //if (!broadcasted) {
-      //  init();
-      //}
     },
     [connectedWallet, init, openConfirm, provide],
   );
@@ -297,7 +277,6 @@ export function AncUstLpProvide() {
         }}
       />
     );
-    //return <TransactionRenderer result={provideResult} onExit={init} />;
   }
 
   return (

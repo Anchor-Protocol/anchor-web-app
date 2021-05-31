@@ -76,16 +76,12 @@ export function TradeBuy() {
     constants: { fixedGas },
     contractAddress: address,
   } = useAnchorWebapp();
-  //const { fixedGas } = useConstants();
 
   const client = useApolloClient();
-
-  //const address = useContractAddress();
 
   const bank = useBank();
 
   const [buy, buyResult] = useAncBuyTx();
-  //const [buy, buyResult] = useOperation(buyOptions, { bank });
 
   // ---------------------------------------------
   // states
@@ -106,9 +102,6 @@ export function TradeBuy() {
   // queries
   // ---------------------------------------------
   const { data: { ancPrice } = {} } = useAncPriceQuery();
-  //const {
-  //  data: { ancPrice },
-  //} = useANCPrice();
 
   // ---------------------------------------------
   // logics
@@ -305,13 +298,7 @@ export function TradeBuy() {
   }, []);
 
   const proceed = useCallback(
-    async (
-      //walletReady: ConnectedWallet,
-      fromAmount: UST,
-      //ancPrice: AncPrice,
-      txFee: uUST,
-      confirm: ReactNode,
-    ) => {
+    async (fromAmount: UST, txFee: uUST, confirm: ReactNode) => {
       if (!connectedWallet || !buy) {
         return;
       }
@@ -335,20 +322,6 @@ export function TradeBuy() {
           init();
         },
       });
-      //const broadcasted = await buy({
-      //  address: walletReady.walletAddress,
-      //  amount: fromAmount,
-      //  beliefPrice: formatExecuteMsgNumber(
-      //    big(ancPrice.USTPoolSize).div(ancPrice.ANCPoolSize),
-      //  ),
-      //  maxSpread: MAX_SPREAD.toString(),
-      //  denom: 'uusd',
-      //  txFee,
-      //});
-      //
-      //if (!broadcasted) {
-      //  init();
-      //}
     },
     [buy, connectedWallet, init, openConfirm],
   );
@@ -377,7 +350,6 @@ export function TradeBuy() {
         }}
       />
     );
-    //return <TransactionRenderer result={buyResult} onExit={init} />;
   }
 
   return (

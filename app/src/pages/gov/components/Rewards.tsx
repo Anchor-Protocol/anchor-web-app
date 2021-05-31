@@ -43,35 +43,20 @@ export function RewardsBase({ className }: RewardsProps) {
   // queries
   // ---------------------------------------------
   const { data: { ancPrice } = {} } = useAncPriceQuery();
-  //const {
-  //  data: { ancPrice },
-  //} = useANCPrice();
 
   const { data: { lpStakingState } = {} } = useAncLpStakingStateQuery();
-  //const {
-  //  data: { lpStakingState },
-  //} = useLPStakingState();
 
   const {
     data: { lPBalance: userLPBalance, lPStakerInfo: userLPStakingInfo } = {},
   } = useRewardsClaimableAncUstLpRewardsQuery();
-  //const {
-  //  data: { userLPStakingInfo, userLPBalance },
-  //} = useClaimableAncUstLp();
 
   const {
     data: { userANCBalance, userGovStakingInfo } = {},
   } = useRewardsAncGovernanceRewardsQuery();
-  //const {
-  //  data: { userGovStakingInfo, userANCBalance },
-  //} = useRewardsAncGovernance();
 
   const {
     data: { borrowerInfo, marketState } = {},
   } = useRewardsClaimableUstBorrowRewardsQuery();
-  //const {
-  //  data: { borrowerInfo, marketState },
-  //} = useClaimableUstBorrow();
 
   const {
     data: { govRewards, lpRewards, borrowerDistributionAPYs } = {},

@@ -15,7 +15,6 @@ export interface PollVotersProps {
 
 function PollVotersBase({ className, pollId }: PollVotersProps) {
   const { voters, isLast, loadMore } = useGovVotersQuery(pollId);
-  //const [voters, isLast, loadMore] = useVoters(pollId);
 
   return (
     <div className={className}>

@@ -59,26 +59,20 @@ function ComponentBase({
   pollId,
 }: DialogProps<FormParams, FormReturn>) {
   const [vote, voteResult] = useGovVoteTx();
-  //const [vote, voteResult] = useOperation(voteOptions, {});
 
   const connectedWallet = useConnectedWallet();
 
   const {
     constants: { fixedGas },
   } = useAnchorWebapp();
-  //const { fixedGas } = useConstants();
 
   const bank = useBank();
 
   const {
     data: { userGovStakingInfo } = {},
   } = useRewardsAncGovernanceRewardsQuery();
-  //const {
-  //  data: { userGovStakingInfo },
-  //} = useRewardsAncGovernance();
 
   const canIVote = useGovVoteAvailableQuery(pollId);
-  //const canIVote = useCanIVote(pollId);
 
   const [voteFor, setVoteFor] = useState<null | 'yes' | 'no'>(null);
   const [amount, setAmount] = useState<ANC>('' as ANC);
@@ -117,12 +111,6 @@ function ComponentBase({
         voteFor,
         amount,
       });
-      //await vote({
-      //  address: walletReady.walletAddress,
-      //  poll_id: pollId,
-      //  vote: voteFor,
-      //  amount,
-      //});
     },
     [connectedWallet, pollId, vote],
   );
@@ -138,7 +126,6 @@ function ComponentBase({
             resultRendering={voteResult.value}
             onExit={closeDialog}
           />
-          {/*<TransactionRenderer result={voteResult} onExit={closeDialog} />*/}
         </Dialog>
       </Modal>
     );

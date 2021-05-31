@@ -48,15 +48,12 @@ function PollsBase({ className }: PollsProps) {
   );
 
   const { polls, isLast, loadMore: loadMorePolls } = useGovPollsQuery(option);
-  //const [polls, isLast, loadMorePolls] = usePolls(option);
 
   const { data: { ancBalance: govANCBalance } = {} } = useAncBalanceQuery(
     contractAddress.anchorToken.gov,
   );
+
   const { data: { govState, govConfig } = {} } = useGovStateQuery();
-  //const {
-  //  data: { govANCBalance, govState, govConfig },
-  //} = useTotalStaked();
 
   const [view, setView] = useLocalStorage<'grid' | 'list'>(
     '__anchor_polls_view__',

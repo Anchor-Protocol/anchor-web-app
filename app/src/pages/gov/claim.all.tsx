@@ -39,7 +39,6 @@ function ClaimAllBase({ className }: ClaimAllProps) {
   const { fixedGas } = useConstants();
 
   const [claim, claimResult] = useRewardsAllClaimTx();
-  //const [claim, claimResult] = useOperation(allClaimOptions, {});
 
   const history = useHistory();
 
@@ -51,16 +50,10 @@ function ClaimAllBase({ className }: ClaimAllProps) {
   const {
     data: { borrowerInfo, userANCBalance } = {},
   } = useRewardsClaimableUstBorrowRewardsQuery();
-  //const {
-  //  data: { borrowerInfo, userANCBalance },
-  //} = useClaimableUstBorrow();
 
   const {
     data: { lPStakerInfo: userLPStakingInfo } = {},
   } = useRewardsClaimableAncUstLpRewardsQuery();
-  //const {
-  //  data: { userLPStakingInfo },
-  //} = useClaimableAncUstLp();
 
   // ---------------------------------------------
   // logics
@@ -108,11 +101,6 @@ function ClaimAllBase({ className }: ClaimAllProps) {
         claimAncUstLp: cliamLpStakingRewards,
         claimUstBorrow: claimMoneyMarketRewards,
       });
-      //await claim({
-      //  walletAddress: walletReady.walletAddress,
-      //  cliamLpStakingRewards,
-      //  claimMoneyMarketRewards,
-      //});
     },
     [claim, connectedWallet],
   );
@@ -136,7 +124,6 @@ function ClaimAllBase({ className }: ClaimAllProps) {
             resultRendering={claimResult.value}
             onExit={onExit}
           />
-          {/*<TransactionRenderer result={claimResult} onExit={onExit} />*/}
         </Section>
       </CenteredLayout>
     );

@@ -21,14 +21,10 @@ export function PollCreateModifyANCDistribution() {
   // dependencies
   // ---------------------------------------------
   const { contractAddress: address } = useAnchorWebapp();
-  //const address = useContractAddress();
 
   const {
     data: { distributionModelConfig } = {},
   } = useGovDistributionModelUpdateConfigQuery();
-  //const {
-  //  data: { distributionModelConfig },
-  //} = useDistributionModelConfig();
 
   // ---------------------------------------------
   // states

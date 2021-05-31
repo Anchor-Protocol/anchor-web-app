@@ -43,18 +43,12 @@ function OverviewBase({ className }: OverviewProps) {
   const { contractAddress } = useAnchorWebapp();
 
   const { data: { ancPrice } = {} } = useAncPriceQuery();
-  //const {
-  //  data: { ancPrice },
-  //} = useANCPrice();
 
   const { data: { govRewards, lpRewards } = {} } = useBorrowAPYQuery();
 
   const {
     data: { anchorLpRewards: apyLPRewards } = {},
   } = useRewardsAnchorLpRewardsQuery();
-  //const {
-  //  data: { apyLPRewards },
-  //} = useAnchorLPRewards();
 
   const history = useHistory();
 
@@ -80,24 +74,8 @@ function OverviewBase({ className }: OverviewProps) {
     'terra1dp0taj85ruc299rkdvzp4z5pfg6z6swaed74e6' as HumanAddr,
   );
   const { data: { govState, govConfig } = {} } = useGovStateQuery();
-  //const {
-  //  data: {
-  //    ancTokenInfo,
-  //    govANCBalance,
-  //    communityANCBalance,
-  //    distributorANCBalance,
-  //    lpStakingANCBalance,
-  //    airdropANCBalance,
-  //    investorTeamLockANCBalance,
-  //    govState,
-  //    govConfig,
-  //  },
-  //} = useTotalStakedMain();
 
   const { data: { lpStakingState } = {} } = useAncLpStakingStateQuery();
-  //const {
-  //  data: { lpStakingState },
-  //} = useLPStakingState();
 
   const ancUstLpAprTooltip = useMemo(() => {
     let defaultTooltip = 'LP rewards APR';

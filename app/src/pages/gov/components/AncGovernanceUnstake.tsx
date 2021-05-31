@@ -35,17 +35,12 @@ export function AncGovernanceUnstake() {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  //const { fixedGas } = useConstants();
   const {
     constants: { fixedGas },
     contractAddress,
   } = useAnchorWebapp();
 
   const [unstake, unstakeResult] = useAncGovernanceUnstakeTx();
-  //const [unstake, unstakeResult] = useOperation(
-  //  ancGovernanceUnstakeOptions,
-  //  {},
-  //);
 
   // ---------------------------------------------
   // states
@@ -60,17 +55,11 @@ export function AncGovernanceUnstake() {
   const {
     data: { userGovStakingInfo } = {},
   } = useRewardsAncGovernanceRewardsQuery();
-  //const {
-  //  data: { userGovStakingInfo },
-  //} = useRewardsAncGovernance();
 
   const { data: { ancBalance: govANCBalance } = {} } = useAncBalanceQuery(
     contractAddress.anchorToken.gov,
   );
   const { data: { govState } = {} } = useGovStateQuery();
-  //const {
-  //  data: { govState, govANCBalance },
-  //} = useTotalStaked();
 
   // ---------------------------------------------
   // logics
@@ -119,15 +108,6 @@ export function AncGovernanceUnstake() {
           init();
         },
       });
-
-      //const broadcasted = await unstake({
-      //  address: walletReady.walletAddress,
-      //  amount: ancAmount,
-      //});
-      //
-      //if (!broadcasted) {
-      //  init();
-      //}
     },
     [connectedWallet, init, unstake],
   );
@@ -156,7 +136,6 @@ export function AncGovernanceUnstake() {
         }}
       />
     );
-    //return <TransactionRenderer result={unstakeResult} onExit={init} />;
   }
 
   return (

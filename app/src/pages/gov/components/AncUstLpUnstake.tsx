@@ -35,10 +35,8 @@ export function AncUstLpUnstake() {
   const {
     constants: { fixedGas },
   } = useAnchorWebapp();
-  //const { fixedGas } = useConstants();
 
   const [unstake, unstakeResult] = useAncAncUstLpUnstakeTx();
-  //const [unstake, unstakeResult] = useOperation(ancUstLpUnstakeOptions, {});
 
   // ---------------------------------------------
   // states
@@ -51,9 +49,6 @@ export function AncUstLpUnstake() {
   const bank = useBank();
 
   const { data: { userLPStakingInfo } = {} } = useRewardsAncUstLpRewardsQuery();
-  //const {
-  //  data: { userLPStakingInfo },
-  //} = useRewardsAncUstLp();
 
   // ---------------------------------------------
   // logics
@@ -87,15 +82,6 @@ export function AncUstLpUnstake() {
           init();
         },
       });
-
-      //const broadcasted = await unstake({
-      //  address: walletReady.walletAddress,
-      //  amount: lpAmount,
-      //});
-      //
-      //if (!broadcasted) {
-      //  init();
-      //}
     },
     [connectedWallet, init, unstake],
   );
@@ -124,7 +110,6 @@ export function AncUstLpUnstake() {
         }}
       />
     );
-    //return <TransactionRenderer result={unstakeResult} onExit={init} />;
   }
 
   return (

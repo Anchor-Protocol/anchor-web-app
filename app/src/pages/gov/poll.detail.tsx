@@ -52,20 +52,13 @@ function PollDetailBase({ className, match }: PollDetailProps) {
   const { contractAddress } = useAnchorWebapp();
 
   const { data: { poll } = {} } = useGovPollQuery(+match.params.id);
-  //const {
-  //  data: { poll },
-  //} = usePoll(+match.params.id);
 
   const { data: { ancBalance: govANCBalance } = {} } = useAncBalanceQuery(
     contractAddress.anchorToken.gov,
   );
   const { data: { govState, govConfig } = {} } = useGovStateQuery();
-  //const {
-  //  data: { govANCBalance, govState, govConfig },
-  //} = useTotalStaked();
 
   const canIVote = useGovVoteAvailableQuery(poll?.id);
-  //const canIVote = useCanIVote(poll?.id);
 
   const [openVoteDialog, voteDialogElement] = usePollVoteDialog();
 
