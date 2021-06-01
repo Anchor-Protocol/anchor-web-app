@@ -2,12 +2,6 @@ import {
   ANCHOR_TX_REFETCH_MAP,
   AnchorWebappProvider,
 } from '@anchor-protocol/webapp-provider';
-import {
-  ApolloClient,
-  ApolloProvider,
-  HttpLink,
-  InMemoryCache,
-} from '@apollo/client';
 import { captureException } from '@sentry/react';
 import { GlobalStyle } from '@terra-dev/neumorphism-ui/themes/GlobalStyle';
 import { patchReactQueryFocusRefetching } from '@terra-dev/patch-react-query-focus-refetching';
@@ -21,7 +15,6 @@ import {
   ExtensionNetworkOnlyWalletProvider,
   NetworkInfo,
   RouterWalletStatusRecheck,
-  useWallet,
   WalletProvider,
 } from '@terra-money/wallet-provider';
 import {
@@ -31,11 +24,10 @@ import {
 } from '@terra-money/webapp-provider';
 import { useReadonlyWalletDialog } from 'base/components/useReadonlyWalletDialog';
 import { useRequestReloadDialog } from 'base/components/useRequestReload';
-import React, { ReactNode, useCallback, useMemo } from 'react';
+import React, { ReactNode, useCallback } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { SnackbarContainer } from './components/SnackbarContainer';
-import { BankProvider } from './contexts/bank';
 import { ThemeProvider } from './contexts/theme';
 import { ADDRESSES, defaultNetwork, GA_TRACKING_ID, onProduction } from './env';
 
@@ -88,28 +80,6 @@ const maxCapTokenDenoms: Record<string, string> = {
 };
 
 function Providers({ children }: { children: ReactNode }) {
-  const { network } = useWallet();
-
-  // TODO remove after refactoring done
-  const isMainnet = useMemo(() => /^columbus/.test(network.chainID), [
-    network.chainID,
-  ]);
-
-  // TODO remove after refactoring done
-  const client = useMemo<ApolloClient<any>>(() => {
-    const httpLink = new HttpLink({
-      uri: ({ operationName }) =>
-        isMainnet
-          ? `https://mantle.anchorprotocol.com?${operationName}`
-          : `https://tequila-mantle.anchorprotocol.com?${operationName}`,
-    });
-
-    return new ApolloClient({
-      cache: new InMemoryCache(),
-      link: httpLink,
-    });
-  }, [isMainnet]);
-
   return (
     /** React App routing :: <Link>, <NavLink>, useLocation(), useRouteMatch()... */
     <Router>
@@ -125,26 +95,14 @@ function Providers({ children }: { children: ReactNode }) {
               maxCapTokenDenoms={maxCapTokenDenoms}
             >
               <AnchorWebappProvider>
-                {/**
-                 Set GraphQL environenments :: useQuery(), useApolloClient()...
-                 TODO remove after refactoring done
-                 */}
-                <ApolloProvider client={client}>
-                  {/**
-                   User Balances (uUSD, uLuna, ubLuna, uaUST...) :: useBank()
-                   TODO remove after refactoring done
-                   */}
-                  <BankProvider>
-                    {/** Theme Providing to Styled-Components and Material-UI */}
-                    <ThemeProvider initialTheme="light">
-                      {/** Snackbar Provider :: useSnackbar() */}
-                      <SnackbarProvider>
-                        {/** Application Layout */}
-                        {children}
-                      </SnackbarProvider>
-                    </ThemeProvider>
-                  </BankProvider>
-                </ApolloProvider>
+                {/** Theme Providing to Styled-Components and Material-UI */}
+                <ThemeProvider initialTheme="light">
+                  {/** Snackbar Provider :: useSnackbar() */}
+                  <SnackbarProvider>
+                    {/** Application Layout */}
+                    {children}
+                  </SnackbarProvider>
+                </ThemeProvider>
               </AnchorWebappProvider>
             </WebappBankProvider>
           </TerraWebappProvider>

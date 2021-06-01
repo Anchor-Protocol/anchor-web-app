@@ -1,5 +1,5 @@
 import {
-  CW20Addr,
+  HumanAddr,
   terraswap,
   uToken,
   WASMContractResult,
@@ -20,7 +20,7 @@ export interface TerraswapReverseSimulationRawVariables {
 }
 
 export interface TerraswapReverseSimulationVariables {
-  tokenPairContract: CW20Addr;
+  tokenPairContract: HumanAddr;
   simulationQuery: terraswap.Simulation<uToken>;
 }
 
