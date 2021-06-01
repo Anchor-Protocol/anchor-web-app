@@ -50,7 +50,7 @@ export function useRewardsUstBorrowClaimTx() {
         // side effect
         onTxSucceed: () => {
           onTxSucceed?.();
-          refetchQueries(ANCHOR_TX_KEY.REWARDS_ANC_UST_LP_CLAIM);
+          refetchQueries(ANCHOR_TX_KEY.REWARDS_UST_BORROW_CLAIM);
         },
       });
     },
