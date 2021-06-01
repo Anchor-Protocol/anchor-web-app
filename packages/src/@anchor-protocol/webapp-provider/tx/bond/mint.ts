@@ -52,7 +52,7 @@ export function useBondMintTx() {
         // side effect
         onTxSucceed: () => {
           onTxSucceed?.();
-          refetchQueries(ANCHOR_TX_KEY.EARN_DEPOSIT);
+          refetchQueries(ANCHOR_TX_KEY.BOND_MINT);
         },
       });
     },
