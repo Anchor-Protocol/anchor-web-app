@@ -3,7 +3,6 @@ import {
   EarnEpochStatesData,
   earnEpochStatesQuery,
 } from '@anchor-protocol/webapp-fns';
-import { useEventBusListener } from '@terra-dev/event-bus';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
 import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
@@ -74,13 +73,6 @@ export function useEarnEpochStatesQuery(): UseQueryResult<
       onError: queryErrorReporter,
     },
   );
-
-  // TODO remove
-  useEventBusListener('interest-earned-updated', () => {
-    if (!browserInactive) {
-      result.refetch();
-    }
-  });
 
   return result;
 }
