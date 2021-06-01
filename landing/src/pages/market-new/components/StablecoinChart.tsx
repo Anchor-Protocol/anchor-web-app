@@ -8,7 +8,7 @@ import { Chart } from 'chart.js';
 import React, { useEffect, useRef } from 'react';
 import styled, { useTheme } from 'styled-components';
 import { ChartTooltip } from './ChartTooltip';
-import { mediumDay, xTimestampAixs } from './internal/dateFormatters';
+import { mediumDay, xTimestampAixs } from './internal/axisUtils';
 
 export interface StablecoinChartProps {
   data: MarketDepositAndBorrow[] | null | undefined;
@@ -68,17 +68,19 @@ export function StablecoinChart({ data }: StablecoinChartProps) {
 
                 if (div1 && div2) {
                   try {
-                    const item = dataRef.current![
-                      tooltip.dataPoints[0].dataIndex
-                    ];
-
-                    div1.innerHTML = `${formatUSTWithPostfixUnits(
+                    const i = tooltip.dataPoints[0].dataIndex;
+                    const isLast = i === dataRef.current!.length - 1;
+                    const item = dataRef.current![i];
+                    const deposits = formatUSTWithPostfixUnits(
                       demicrofy(item.total_ust_deposits),
-                    )} UST <span>${mediumDay(item.timestamp)}</span>`;
-
-                    div2.innerHTML = `${formatUSTWithPostfixUnits(
+                    );
+                    const borrows = formatUSTWithPostfixUnits(
                       demicrofy(item.total_borrowed),
-                    )} UST <span>${mediumDay(item.timestamp)}</span>`;
+                    );
+                    const date = isLast ? 'Now' : mediumDay(item.timestamp);
+
+                    div1.innerHTML = `${deposits} UST <span>${date}</span>`;
+                    div2.innerHTML = `${borrows} UST <span>${date}</span>`;
                   } catch {}
                 }
 

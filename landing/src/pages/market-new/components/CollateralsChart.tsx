@@ -8,7 +8,7 @@ import { Chart } from 'chart.js';
 import React, { useEffect, useRef } from 'react';
 import styled, { useTheme } from 'styled-components';
 import { ChartTooltip } from './ChartTooltip';
-import { mediumDay, xTimestampAixs } from './internal/dateFormatters';
+import { mediumDay, xTimestampAixs } from './internal/axisUtils';
 
 export interface CollateralsChartProps {
   data: MarketCollateralsHistory[] | null | undefined;
@@ -64,12 +64,14 @@ export function CollateralsChart({ data }: CollateralsChartProps) {
 
                 if (div1) {
                   try {
-                    const item = dataRef.current![
-                      tooltip.dataPoints[0].dataIndex
-                    ];
-                    div1.innerHTML = `${formatUSTWithPostfixUnits(
+                    const i = tooltip.dataPoints[0].dataIndex;
+                    const isLast = i === dataRef.current!.length - 1;
+                    const item = dataRef.current![i];
+                    const price = formatUSTWithPostfixUnits(
                       demicrofy(item.total_value),
-                    )} UST <span>${mediumDay(item.timestamp)}</span>`;
+                    );
+                    const date = isLast ? 'Now' : mediumDay(item.timestamp);
+                    div1.innerHTML = `${price} UST <span>${date}</span>`;
                   } catch (error) {
                     console.error(error);
                   }

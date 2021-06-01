@@ -31,7 +31,9 @@ import {
 } from '@terra-dev/styled-neumorphism';
 import { Footer } from 'base/components/Footer';
 import big, { Big } from 'big.js';
+import { format } from 'date-fns';
 import { screen } from 'env';
+import { findPrevDay } from 'pages/market-new/components/internal/axisUtils';
 import React, { useMemo } from 'react';
 import styled, { css, useTheme } from 'styled-components';
 import { ANCPriceChart } from './components/ANCPriceChart';
@@ -96,7 +98,15 @@ function MarketBase({ className }: MarketProps) {
     }
 
     const last = marketANC.now;
-    const last1DayBefore = marketANC.history[marketANC.history.length - 2];
+    const last1DayBefore =
+      marketANC.history.find(findPrevDay(last.timestamp)) ??
+      marketANC.history[marketANC.history.length - 2];
+
+    console.log(
+      'index.tsx..()',
+      format(last.timestamp, 'MMM d'),
+      format(last1DayBefore.timestamp, 'MMM d'),
+    );
 
     return {
       ancPriceDiff: big(
@@ -121,6 +131,7 @@ function MarketBase({ className }: MarketProps) {
 
     const last = marketDepositAndBorrow.now;
     const last1DayBefore =
+      marketDepositAndBorrow.history.find(findPrevDay(last.timestamp)) ??
       marketDepositAndBorrow.history[marketDepositAndBorrow.history.length - 2];
 
     return {
@@ -150,7 +161,9 @@ function MarketBase({ className }: MarketProps) {
 
     const last = marketCollaterals.now;
     const last1DayBefore =
+      marketCollaterals.history.find(findPrevDay(last.timestamp)) ??
       marketCollaterals.history[marketCollaterals.history.length - 2];
+    //marketCollaterals.history[marketCollaterals.history.length - 2];
 
     return {
       mainTotalCollateralValue: last.total_value,
