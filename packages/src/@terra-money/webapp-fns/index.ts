@@ -3,6 +3,8 @@ export * from './types';
 
 export * from './functions/mantleFetch';
 
+export * from './errors/MantleError';
+
 export * from './models/tx';
 
 export * from './queries/lastSyncedHeight';
