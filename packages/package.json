@@ -6,12 +6,11 @@
   "scripts": {
     "test": "react-scripts test --colors",
     "coverage": "react-scripts test --colors --coverage",
-    "build": "rocket-punch build",
-    "publish": "rocket-punch publish",
+    "build": "TS_NODE_PROJECT=tsconfig.script.json node -r ts-node/register -r tsconfig-paths/register scripts/build.ts",
+    "publish": "TS_NODE_PROJECT=tsconfig.script.json node -r ts-node/register -r tsconfig-paths/register scripts/publish.ts",
     "doctor": "rocket-punch doctor",
     "storybook": "start-storybook -h localhost -p 6006 -s public",
-    "build-storybook": "build-storybook -s public",
-    "scripts:generate.queries": "TS_NODE_PROJECT=tsconfig.script.json node -r ts-node/register -r tsconfig-paths/register scripts/generate.queries.ts"
+    "build-storybook": "build-storybook -s public"
   },
   "eslintConfig": {
     "extends": [
