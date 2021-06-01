@@ -98,7 +98,8 @@ import {
 } from '@terra-money/terra-walletconnect';
 
 // restore the session if the session is exists in the localStorage (e.g. browser reload...)
-const controller: WalletConnectController | null = connectWalletIfSessionExists();
+const controller: WalletConnectController | null =
+  connectWalletIfSessionExists();
 
 if (!controller) {
   // connect with interaction
@@ -128,10 +129,8 @@ controller.session().subscribe((session: Session) => {
 controller.getLatestSession();
 
 // transaction
-const {
-  txhash,
-  height,
-} = await controller.post(/* CreateTxOptions of terra.js */);
+const { txhash, height } =
+  await controller.post(/* CreateTxOptions of terra.js */);
 
 // disconnect session
 controller.disconnect();

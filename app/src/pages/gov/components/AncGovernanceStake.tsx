@@ -9,22 +9,21 @@ import {
 } from '@anchor-protocol/notation';
 import { ANC } from '@anchor-protocol/types';
 import {
-  useConnectedWallet,
-  ConnectedWallet,
-} from '@terra-money/wallet-provider';
+  useAncGovernanceStakeTx,
+  useAnchorWebapp,
+  useRewardsAncGovernanceRewardsQuery,
+} from '@anchor-protocol/webapp-provider';
 import { InputAdornment } from '@material-ui/core';
-import { useOperation } from '@terra-dev/broadcastable-operation';
+import { StreamStatus } from '@rx-stream/react';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
 import big from 'big.js';
 import { MessageBox } from 'components/MessageBox';
-import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
-import { useRewardsAncGovernance } from 'pages/gov/queries/rewardsAncGovernance';
-import { ancGovernanceStakeOptions } from 'pages/gov/transactions/ancGovernanceStakeOptions';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 export function AncGovernanceStake() {
@@ -33,9 +32,11 @@ export function AncGovernanceStake() {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const { fixedGas } = useConstants();
+  const {
+    constants: { fixedGas },
+  } = useAnchorWebapp();
 
-  const [stake, stakeResult] = useOperation(ancGovernanceStakeOptions, {});
+  const [stake, stakeResult] = useAncGovernanceStakeTx();
 
   // ---------------------------------------------
   // states
@@ -48,8 +49,8 @@ export function AncGovernanceStake() {
   const bank = useBank();
 
   const {
-    data: { userANCBalance },
-  } = useRewardsAncGovernance();
+    data: { userANCBalance } = {},
+  } = useRewardsAncGovernanceRewardsQuery();
 
   // ---------------------------------------------
   // logics
@@ -72,28 +73,45 @@ export function AncGovernanceStake() {
   }, []);
 
   const proceed = useCallback(
-    async (walletReady: ConnectedWallet, ancAmount: ANC) => {
-      const broadcasted = await stake({
-        address: walletReady.walletAddress,
-        amount: ancAmount,
-      });
-
-      if (!broadcasted) {
-        init();
+    (ancAmount: ANC) => {
+      if (!connectedWallet || !stake) {
+        return;
       }
+
+      stake({
+        ancAmount,
+        onTxSucceed: () => {
+          init();
+        },
+      });
     },
-    [init, stake],
+    [connectedWallet, init, stake],
   );
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
   if (
-    stakeResult?.status === 'in-progress' ||
-    stakeResult?.status === 'done' ||
-    stakeResult?.status === 'fault'
+    stakeResult?.status === StreamStatus.IN_PROGRESS ||
+    stakeResult?.status === StreamStatus.DONE
   ) {
-    return <TransactionRenderer result={stakeResult} onExit={init} />;
+    return (
+      <TxResultRenderer
+        resultRendering={stakeResult.value}
+        onExit={() => {
+          init();
+
+          switch (stakeResult.status) {
+            case StreamStatus.IN_PROGRESS:
+              stakeResult.abort();
+              break;
+            case StreamStatus.DONE:
+              stakeResult.clear();
+              break;
+          }
+        }}
+      />
+    );
   }
 
   return (
@@ -149,12 +167,13 @@ export function AncGovernanceStake() {
         disabled={
           !connectedWallet ||
           !connectedWallet.availablePost ||
+          !stake ||
           ancAmount.length === 0 ||
           big(ancAmount).lte(0) ||
           !!invalidTxFee ||
           !!invalidANCAmount
         }
-        onClick={() => connectedWallet && proceed(connectedWallet, ancAmount)}
+        onClick={() => proceed(ancAmount)}
       >
         Stake
       </ActionButton>

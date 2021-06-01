@@ -2,7 +2,7 @@ import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import { UST, uUST } from '@anchor-protocol/types';
 import { borrowRepayTx } from '@anchor-protocol/webapp-fns';
 import { useStream } from '@rx-stream/react';
-import { useOperationBroadcaster } from '@terra-dev/broadcastable-operation';
+
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import {
   useRefetchQueries,
@@ -32,9 +32,6 @@ export function useBorrowRepayTx() {
 
   const refetchQueries = useRefetchQueries();
 
-  // TODO remove
-  const { dispatch } = useOperationBroadcaster();
-
   const stream = useCallback(
     ({ repayAmount, onTxSucceed, txFee }: BorrowRepayTxParams) => {
       if (!connectedWallet || !connectedWallet.availablePost) {
@@ -43,7 +40,6 @@ export function useBorrowRepayTx() {
 
       return borrowRepayTx({
         address: connectedWallet.walletAddress,
-        addressProvider,
         amount: repayAmount,
         market: MARKET_DENOMS.UUSD,
         // post
@@ -52,6 +48,7 @@ export function useBorrowRepayTx() {
         txFee,
         gasFee: constants.gasFee,
         gasAdjustment: constants.gasAdjustment,
+        addressProvider,
         // query
         mantleEndpoint,
         mantleFetch,
@@ -63,7 +60,6 @@ export function useBorrowRepayTx() {
         onTxSucceed: () => {
           onTxSucceed?.();
           refetchQueries(ANCHOR_TX_KEY.BORROW_REPAY);
-          dispatch('', 'done');
         },
       });
     },
@@ -74,7 +70,7 @@ export function useBorrowRepayTx() {
       connectedWallet,
       constants.gasAdjustment,
       constants.gasFee,
-      dispatch,
+
       mantleEndpoint,
       mantleFetch,
       refetchQueries,

@@ -27,6 +27,9 @@ export interface TerraWebappProviderProps {
 
   // sentry captureException()
   txErrorReporter?: (error: unknown) => string;
+
+  // sentry captureException()
+  queryErrorReporter?: (error: unknown) => void;
 }
 
 export interface TerraWebapp {
@@ -40,6 +43,9 @@ export interface TerraWebapp {
   // sentry captureException()
   txErrorReporter?: (error: unknown) => string;
 
+  // sentry captureException()
+  queryErrorReporter?: (error: unknown) => void;
+
   txRefetchMap: TxRefetchMap;
 }
 
@@ -52,6 +58,7 @@ export function TerraWebappProvider({
   mantleFetch = defaultMantleFetch,
   txRefetchMap = {},
   txErrorReporter,
+  queryErrorReporter,
 }: TerraWebappProviderProps) {
   const { network } = useWallet();
 
@@ -74,13 +81,15 @@ export function TerraWebappProvider({
       mantleFetch,
       txErrorReporter,
       txRefetchMap,
+      queryErrorReporter,
     }),
     [
       lastSyncedHeight,
       mantleEndpoint,
       mantleFetch,
-      txRefetchMap,
       txErrorReporter,
+      txRefetchMap,
+      queryErrorReporter,
     ],
   );
 

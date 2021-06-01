@@ -1,20 +1,8 @@
-import { AddressMap, AddressProvider } from '@anchor-protocol/anchor.js';
-import { QueryDependencyProvider } from '@anchor-protocol/queries';
-import { ContractAddress, Rate, uUST } from '@anchor-protocol/types';
 import {
   ANCHOR_TX_REFETCH_MAP,
   AnchorWebappProvider,
 } from '@anchor-protocol/webapp-provider';
-import {
-  ApolloClient,
-  ApolloError,
-  ApolloProvider,
-  HttpLink,
-  InMemoryCache,
-} from '@apollo/client';
 import { captureException } from '@sentry/react';
-import { OperationBroadcaster } from '@terra-dev/broadcastable-operation';
-import { GlobalDependency } from '@terra-dev/broadcastable-operation/global';
 import { GlobalStyle } from '@terra-dev/neumorphism-ui/themes/GlobalStyle';
 import { patchReactQueryFocusRefetching } from '@terra-dev/patch-react-query-focus-refetching';
 import { ReadonlyWalletSession } from '@terra-dev/readonly-wallet';
@@ -27,7 +15,6 @@ import {
   ExtensionNetworkOnlyWalletProvider,
   NetworkInfo,
   RouterWalletStatusRecheck,
-  useWallet,
   WalletProvider,
 } from '@terra-money/wallet-provider';
 import {
@@ -37,30 +24,18 @@ import {
 } from '@terra-money/webapp-provider';
 import { useReadonlyWalletDialog } from 'base/components/useReadonlyWalletDialog';
 import { useRequestReloadDialog } from 'base/components/useRequestReload';
-import React, { ReactNode, useCallback, useMemo } from 'react';
+import React, { ReactNode, useCallback } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { BroadcastingContainer } from './components/BroadcastingContainer';
 import { SnackbarContainer } from './components/SnackbarContainer';
-import { BankProvider } from './contexts/bank';
-import { Constants, ConstantsProvider } from './contexts/contants';
-import { ContractProvider } from './contexts/contract';
 import { ThemeProvider } from './contexts/theme';
-import {
-  ADDRESS_PROVIDERS,
-  ADDRESSES,
-  columbusContractAddresses,
-  defaultNetwork,
-  GA_TRACKING_ID,
-  onProduction,
-  tequilaContractAddresses,
-} from './env';
+import { ADDRESSES, defaultNetwork, GA_TRACKING_ID, onProduction } from './env';
 
 patchReactQueryFocusRefetching();
 
 const queryClient = new QueryClient();
 
-const operationBroadcasterErrorReporter =
+const errorReporter =
   process.env.NODE_ENV === 'production' ? captureException : undefined;
 
 const cw20TokenContracts: Record<string, Record<string, CW20Contract>> = {
@@ -105,78 +80,6 @@ const maxCapTokenDenoms: Record<string, string> = {
 };
 
 function Providers({ children }: { children: ReactNode }) {
-  const { post, network } = useWallet();
-
-  // TODO remove after refactoring done
-  const isMainnet = useMemo(() => /^columbus/.test(network.chainID), [
-    network.chainID,
-  ]);
-
-  // TODO remove after refactoring done
-  const addressMap = useMemo<AddressMap>(() => {
-    return isMainnet ? columbusContractAddresses : tequilaContractAddresses;
-  }, [isMainnet]);
-
-  // TODO remove after refactoring done
-  const addressProvider = useMemo<AddressProvider>(() => {
-    return isMainnet ? ADDRESS_PROVIDERS.mainnet : ADDRESS_PROVIDERS.testnet;
-  }, [isMainnet]);
-
-  // TODO remove after refactoring done
-  const address = useMemo<ContractAddress>(() => {
-    return isMainnet ? ADDRESSES.mainnet : ADDRESSES.testnet;
-  }, [isMainnet]);
-
-  // TODO remove after refactoring done
-  const client = useMemo<ApolloClient<any>>(() => {
-    const httpLink = new HttpLink({
-      uri: ({ operationName }) =>
-        isMainnet
-          ? `https://mantle.anchorprotocol.com?${operationName}`
-          : `https://tequila-mantle.anchorprotocol.com?${operationName}`,
-    });
-
-    return new ApolloClient({
-      cache: new InMemoryCache(),
-      link: httpLink,
-    });
-  }, [isMainnet]);
-
-  // TODO remove after refactoring done
-  const constants = useMemo<Constants>(
-    () =>
-      isMainnet
-        ? {
-            gasFee: 1000000 as uUST<number>,
-            fixedGas: 250000 as uUST<number>,
-            blocksPerYear: 4906443,
-            gasAdjustment: 1.6 as Rate<number>,
-          }
-        : {
-            gasFee: 6000000 as uUST<number>,
-            fixedGas: 3500000 as uUST<number>,
-            blocksPerYear: 4906443,
-            gasAdjustment: 1.4 as Rate<number>,
-          },
-    [isMainnet],
-  );
-
-  // TODO remove after refactoring done
-  const operationGlobalDependency = useMemo<GlobalDependency>(
-    () => ({
-      addressProvider,
-      address,
-      client,
-      post,
-      ...constants,
-    }),
-    [address, addressProvider, client, constants, post],
-  );
-
-  const onQueryError = useCallback((error: ApolloError) => {
-    console.error('AppProviders.tsx..()', error);
-  }, []);
-
   return (
     /** React App routing :: <Link>, <NavLink>, useLocation(), useRouteMatch()... */
     <Router>
@@ -184,67 +87,22 @@ function Providers({ children }: { children: ReactNode }) {
         <BrowserInactiveProvider>
           <TerraWebappProvider
             txRefetchMap={ANCHOR_TX_REFETCH_MAP}
-            txErrorReporter={operationBroadcasterErrorReporter}
+            txErrorReporter={errorReporter}
+            queryErrorReporter={errorReporter}
           >
             <WebappBankProvider
               cw20TokenContracts={cw20TokenContracts}
               maxCapTokenDenoms={maxCapTokenDenoms}
             >
               <AnchorWebappProvider>
-                {/**
-                 Serve Constants
-                 TODO remove after refactoring done
-                 */}
-                <ConstantsProvider {...constants}>
-                  {/**
-                   Smart Contract Address :: useAddressProvider()
-                   TODO remove after refactoring done
-                   */}
-                  <ContractProvider
-                    addressProvider={addressProvider}
-                    addressMap={addressMap}
-                  >
-                    {/**
-                     Set GraphQL environenments :: useQuery(), useApolloClient()...
-                     TODO remove after refactoring done
-                     */}
-                    <ApolloProvider client={client}>
-                      {/**
-                       Broadcastable Query Provider :: useBroadCastableQuery(), useQueryBroadCaster()
-                       TODO remove after refactoring done
-                       */}
-                      <OperationBroadcaster
-                        dependency={operationGlobalDependency}
-                        errorReporter={operationBroadcasterErrorReporter}
-                      >
-                        {/**
-                         Query dependencies :: @anchor-protocol/queries, useWasmQuery()...
-                         TODO remove after refactoring done
-                         */}
-                        <QueryDependencyProvider
-                          client={client}
-                          address={address}
-                          onError={onQueryError}
-                        >
-                          {/**
-                           User Balances (uUSD, uLuna, ubLuna, uaUST...) :: useBank()
-                           TODO remove after refactoring done
-                           */}
-                          <BankProvider>
-                            {/** Theme Providing to Styled-Components and Material-UI */}
-                            <ThemeProvider initialTheme="light">
-                              {/** Snackbar Provider :: useSnackbar() */}
-                              <SnackbarProvider>
-                                {/** Application Layout */}
-                                {children}
-                              </SnackbarProvider>
-                            </ThemeProvider>
-                          </BankProvider>
-                        </QueryDependencyProvider>
-                      </OperationBroadcaster>
-                    </ApolloProvider>
-                  </ContractProvider>
-                </ConstantsProvider>
+                {/** Theme Providing to Styled-Components and Material-UI */}
+                <ThemeProvider initialTheme="light">
+                  {/** Snackbar Provider :: useSnackbar() */}
+                  <SnackbarProvider>
+                    {/** Application Layout */}
+                    {children}
+                  </SnackbarProvider>
+                </ThemeProvider>
               </AnchorWebappProvider>
             </WebappBankProvider>
           </TerraWebappProvider>
@@ -318,8 +176,6 @@ export function AppProviders({ children }: { children: ReactNode }) {
         {/* Layout ================================ */}
         {children}
         {/* Portal ================================ */}
-        {/** Operation Result Broadcasting Render Container (Snackbar...) */}
-        <BroadcastingContainer />
         <SnackbarContainer />
 
         {readonlyWalletSelectorElement}
@@ -347,8 +203,6 @@ export function LandingProviders({ children }: { children: ReactNode }) {
         {/* Layout ================================ */}
         {children}
         {/* Portal ================================ */}
-        {/** Operation Result Broadcasting Render Container (Snackbar...) */}
-        <BroadcastingContainer />
         <SnackbarContainer />
       </Providers>
     </ExtensionNetworkOnlyWalletProvider>

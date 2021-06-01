@@ -1,4 +1,3 @@
-import { EventBusProvider } from '@terra-dev/event-bus';
 import {
   rulerLightColor,
   rulerShadowColor,
@@ -19,11 +18,9 @@ function EarnBase({ className }: EarnProps) {
   return (
     <PaddedLayout className={className}>
       <section className="grid">
-        <EventBusProvider>
-          <TotalDepositSection className="total-deposit" />
-          <InterestSection className="interest" />
-          <TransactionHistorySection className="transaction-history" />
-        </EventBusProvider>
+        <TotalDepositSection className="total-deposit" />
+        <InterestSection className="interest" />
+        <TransactionHistorySection className="transaction-history" />
       </section>
     </PaddedLayout>
   );

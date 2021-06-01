@@ -1,66 +1,417 @@
-import { HorizontalRuler } from '@terra-dev/neumorphism-ui/components/HorizontalRuler';
+import {
+  AnimateNumber,
+  demicrofy,
+  formatLunaWithPostfixUnits,
+  formatRate,
+  formatUST,
+  formatUSTWithPostfixUnits,
+  formatUTokenInteger,
+  formatUTokenIntegerWithoutPostfixUnits,
+} from '@anchor-protocol/notation';
+import { TokenIcon } from '@anchor-protocol/token-icons';
+import { Luna, Rate, UST, uUST } from '@anchor-protocol/types';
+import {
+  useAnchorWebapp,
+  useMarketAncQuery,
+  useMarketBLunaQuery,
+  useMarketBuybackQuery,
+  useMarketCollateralsQuery,
+  useMarketDepositAndBorrowQuery,
+  useMarketStableCoinQuery,
+  useMarketUstQuery,
+} from '@anchor-protocol/webapp-provider';
 import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
-import { TokenIcon, tokens, Tokens } from '@anchor-protocol/token-icons';
+import {
+  horizontalRuler,
+  pressed,
+  verticalRuler,
+} from '@terra-dev/styled-neumorphism';
+import { Footer } from 'base/components/Footer';
+import big, { Big } from 'big.js';
+import { format } from 'date-fns';
 import { screen } from 'env';
-import { Link } from 'react-router-dom';
-import styled from 'styled-components';
+import React, { useMemo } from 'react';
+import styled, { css, useTheme } from 'styled-components';
+import { ANCPriceChart } from './components/ANCPriceChart';
+import { CollateralsChart } from './components/CollateralsChart';
+import { findPrevDay } from './components/internal/axisUtils';
+import { StablecoinChart } from './components/StablecoinChart';
+import { TotalValueLockedDoughnutChart } from './components/TotalValueLockedDoughnutChart';
 
 export interface MarketProps {
   className?: string;
 }
 
 function MarketBase({ className }: MarketProps) {
+  const theme = useTheme();
+
+  const {
+    constants: { blocksPerYear },
+  } = useAnchorWebapp();
+
+  const { data: { borrowRate, epochState } = {} } = useMarketStableCoinQuery();
+
+  const stableCoinLegacy = useMemo(() => {
+    if (!borrowRate || !epochState) {
+      return undefined;
+    }
+
+    const depositRate = big(epochState.deposit_rate).mul(
+      blocksPerYear,
+    ) as Rate<Big>;
+
+    return {
+      depositRate,
+      borrowRate: big(borrowRate.rate).mul(blocksPerYear) as Rate<Big>,
+    };
+  }, [blocksPerYear, borrowRate, epochState]);
+
+  const { data: marketUST } = useMarketUstQuery();
+  const { data: marketBluna } = useMarketBLunaQuery();
+  const { data: marketANC } = useMarketAncQuery();
+  const { data: marketDepositAndBorrow } = useMarketDepositAndBorrowQuery();
+  const { data: marketCollaterals } = useMarketCollateralsQuery();
+  const { data: marketBuybackTotal } = useMarketBuybackQuery('total');
+  const { data: marketBuyback72hrs } = useMarketBuybackQuery('72hrs');
+
+  const totalValueLocked = useMemo(() => {
+    if (!marketDepositAndBorrow?.now || !marketCollaterals?.now || !marketUST) {
+      return undefined;
+    }
+
+    return {
+      totalDeposit: marketDepositAndBorrow?.now.total_ust_deposits,
+      totalCollaterals: marketCollaterals?.now.total_value,
+      totalValueLocked: big(
+        marketDepositAndBorrow?.now.total_ust_deposits,
+      ).plus(marketCollaterals?.now.total_value) as uUST<Big>,
+      yieldReserve: marketUST.overseer_ust_balance,
+    };
+  }, [marketCollaterals?.now, marketDepositAndBorrow?.now, marketUST]);
+
+  const ancPrice = useMemo(() => {
+    if (!marketANC || marketANC.history.length === 0) {
+      return undefined;
+    }
+
+    const last = marketANC.now;
+    const last1DayBefore =
+      marketANC.history.find(findPrevDay(last.timestamp)) ??
+      marketANC.history[marketANC.history.length - 2];
+
+    console.log(
+      'index.tsx..()',
+      format(last.timestamp, 'MMM d'),
+      format(last1DayBefore.timestamp, 'MMM d'),
+    );
+
+    return {
+      ancPriceDiff: big(
+        big(last.anc_price).minus(last1DayBefore.anc_price),
+      ).div(last1DayBefore.anc_price) as Rate<Big>,
+      ancPrice: last.anc_price,
+      circulatingSupply: last.anc_circulating_supply,
+      ancMarketCap: big(last.anc_price).mul(
+        last.anc_circulating_supply,
+      ) as uUST<Big>,
+    };
+  }, [marketANC]);
+
+  const stableCoin = useMemo(() => {
+    if (
+      !marketUST ||
+      !marketDepositAndBorrow ||
+      marketDepositAndBorrow.history.length === 0
+    ) {
+      return undefined;
+    }
+
+    const last = marketDepositAndBorrow.now;
+    const last1DayBefore =
+      marketDepositAndBorrow.history.find(findPrevDay(last.timestamp)) ??
+      marketDepositAndBorrow.history[marketDepositAndBorrow.history.length - 2];
+
+    return {
+      totalDeposit: last.total_ust_deposits,
+      totalBorrow: last.total_borrowed,
+      totalDepositDiff: big(
+        big(last.total_ust_deposits).minus(last1DayBefore.total_ust_deposits),
+      ).div(last1DayBefore.total_ust_deposits) as Rate<Big>,
+      totalBorrowDiff: big(
+        big(last.total_borrowed).minus(last1DayBefore.total_borrowed),
+      ).div(last1DayBefore.total_borrowed) as Rate<Big>,
+      depositAPR: big(marketUST.deposit_rate).mul(blocksPerYear) as Rate<Big>,
+      depositAPRDiff: 'TODO: API not ready...',
+      borrowAPR: big(marketUST.borrow_rate).mul(blocksPerYear) as Rate<Big>,
+      borrowAPRDiff: 'TODO: API not ready...',
+    };
+  }, [blocksPerYear, marketDepositAndBorrow, marketUST]);
+
+  const collaterals = useMemo(() => {
+    if (
+      !marketCollaterals ||
+      !marketBluna ||
+      marketCollaterals.history.length === 0
+    ) {
+      return undefined;
+    }
+
+    const last = marketCollaterals.now;
+    const last1DayBefore =
+      marketCollaterals.history.find(findPrevDay(last.timestamp)) ??
+      marketCollaterals.history[marketCollaterals.history.length - 2];
+    //marketCollaterals.history[marketCollaterals.history.length - 2];
+
+    return {
+      mainTotalCollateralValue: last.total_value,
+      totalCollateralValueGraph: 'TODO: API not ready...',
+      blunaPrice: marketBluna.bLuna_price,
+      blunaPriceDiff: 'TODO: API not ready...',
+      totalCollateral: last.collaterals.find(({ bluna }) => !!bluna)?.bluna,
+      totalCollateralDiff: big(
+        big(last.total_value).minus(last1DayBefore.total_value),
+      ).div(last1DayBefore.total_value) as Rate<Big>,
+      totalCollateralValue: big(
+        last.collaterals.find(({ bluna }) => !!bluna)?.bluna ?? 1,
+      ).mul(marketBluna.bLuna_price) as uUST<Big>,
+      totalCollateralValueDiff: 'TODO: API not ready...',
+    };
+  }, [marketBluna, marketCollaterals]);
+
   return (
     <div className={className}>
       <main>
-        <h1>MARKET</h1>
-
         <div className="content-layout">
-          <Section className="total-deposit">
-            <h2>
-              TOTAL DEPOSIT <span>+12.89%</span>
-            </h2>
+          <h1>DASHBOARD</h1>
 
-            <div className="amount">$ 384,238,213</div>
+          <div className="summary-section">
+            <Section className="total-value-locked">
+              <section>
+                <h2>TOTAL VALUE LOCKED</h2>
+                <p className="amount">
+                  <AnimateNumber
+                    format={formatUTokenIntegerWithoutPostfixUnits}
+                  >
+                    {totalValueLocked
+                      ? totalValueLocked.totalValueLocked
+                      : (0 as uUST<number>)}
+                  </AnimateNumber>
+                  <span>UST</span>
+                </p>
+                <figure>
+                  <div className="chart">
+                    <TotalValueLockedDoughnutChart
+                      totalDeposit={
+                        totalValueLocked?.totalDeposit ?? ('0' as uUST)
+                      }
+                      totalCollaterals={
+                        totalValueLocked?.totalCollaterals ?? ('1' as uUST)
+                      }
+                      totalDepositColor={theme.colors.positive}
+                      totalCollateralsColor={theme.textColor}
+                    />
+                  </div>
+                  <div>
+                    <h3>
+                      <i style={{ backgroundColor: theme.colors.positive }} />{' '}
+                      Total Deposit
+                    </h3>
+                    <p>
+                      ${' '}
+                      <AnimateNumber
+                        format={formatUTokenIntegerWithoutPostfixUnits}
+                      >
+                        {totalValueLocked
+                          ? totalValueLocked.totalDeposit
+                          : (0 as uUST<number>)}
+                      </AnimateNumber>
+                    </p>
+                    <h3>
+                      <i style={{ backgroundColor: theme.textColor }} /> Total
+                      Collateral
+                    </h3>
+                    <p>
+                      ${' '}
+                      <AnimateNumber
+                        format={formatUTokenIntegerWithoutPostfixUnits}
+                      >
+                        {totalValueLocked
+                          ? totalValueLocked.totalCollaterals
+                          : (0 as uUST<number>)}
+                      </AnimateNumber>
+                    </p>
+                  </div>
+                </figure>
+              </section>
 
-            <HorizontalRuler />
+              <hr />
 
-            <article className="summary">
+              <section>
+                <h2>YIELD RESERVE</h2>
+                <p className="amount">
+                  <AnimateNumber
+                    format={formatUTokenIntegerWithoutPostfixUnits}
+                  >
+                    {totalValueLocked
+                      ? totalValueLocked.yieldReserve
+                      : (0 as uUST<number>)}
+                  </AnimateNumber>
+                  <span>UST</span>
+                </p>
+              </section>
+            </Section>
+
+            <Section className="anc-price">
+              <header>
+                <div>
+                  <h2>
+                    ANC PRICE
+                    {ancPrice && (
+                      <span data-negative={big(ancPrice.ancPriceDiff).lt(0)}>
+                        {big(ancPrice.ancPriceDiff).gte(0) ? '+' : ''}
+                        {formatRate(ancPrice.ancPriceDiff)}%
+                      </span>
+                    )}
+                  </h2>
+                  <p className="amount">
+                    {ancPrice ? formatUST(ancPrice.ancPrice) : 0}
+                    <span>UST</span>
+                  </p>
+                </div>
+                <div>
+                  <h3>Circulating Supply</h3>
+                  <p>
+                    {ancPrice
+                      ? formatUTokenIntegerWithoutPostfixUnits(
+                          ancPrice.circulatingSupply,
+                        )
+                      : 0}
+                    <span>ANC</span>
+                  </p>
+                </div>
+                <div>
+                  <h3>ANC Market Cap</h3>
+                  <p>
+                    {ancPrice
+                      ? formatUTokenIntegerWithoutPostfixUnits(
+                          ancPrice.ancMarketCap,
+                        )
+                      : 0}
+                    <span>UST</span>
+                  </p>
+                </div>
+              </header>
+              <figure>
+                <div>
+                  <ANCPriceChart data={marketANC?.history} />
+                </div>
+              </figure>
+            </Section>
+
+            <Section className="anc-buyback">
+              <section>
+                <h2>ANC BUYBACK (72HR)</h2>
+                <div>
+                  <p>
+                    {marketBuyback72hrs
+                      ? formatUTokenIntegerWithoutPostfixUnits(
+                          marketBuyback72hrs.buyback_amount,
+                        )
+                      : 0}
+                    <span>ANC</span>
+                  </p>
+                  <p>
+                    {marketBuyback72hrs
+                      ? formatUTokenIntegerWithoutPostfixUnits(
+                          marketBuyback72hrs.offer_amount,
+                        )
+                      : 0}
+                    <span>UST</span>
+                  </p>
+                </div>
+              </section>
+              <hr />
+              <section>
+                <h2>ANC BUYBACK (TOTAL)</h2>
+                <div>
+                  <p>
+                    {marketBuybackTotal
+                      ? formatUTokenIntegerWithoutPostfixUnits(
+                          marketBuybackTotal.buyback_amount,
+                        )
+                      : 0}
+                    <span>ANC</span>
+                  </p>
+                  <p>
+                    {marketBuybackTotal
+                      ? formatUTokenIntegerWithoutPostfixUnits(
+                          marketBuybackTotal.offer_amount,
+                        )
+                      : 0}
+                    <span>UST</span>
+                  </p>
+                </div>
+              </section>
+            </Section>
+          </div>
+
+          <Section className="stablecoin">
+            <header>
               <div>
-                <h4>24hr Deposit Volume</h4>
-                <p>$ 384,238</p>
+                <h2>
+                  <i style={{ backgroundColor: theme.colors.positive }} /> TOTAL
+                  DEPOSIT
+                  {stableCoin && (
+                    <span
+                      data-negative={big(stableCoin.totalDepositDiff).lt(0)}
+                    >
+                      {big(stableCoin.totalDepositDiff).gte(0) ? '+' : ''}
+                      {formatRate(stableCoin.totalDepositDiff)}%
+                    </span>
+                  )}
+                </h2>
+                <p className="amount">
+                  <AnimateNumber
+                    format={formatUTokenIntegerWithoutPostfixUnits}
+                  >
+                    {stableCoin ? stableCoin.totalDeposit : (0 as uUST<number>)}
+                  </AnimateNumber>
+                  <span>UST</span>
+                </p>
               </div>
               <div>
-                <h4># of Depositors</h4>
-                <p>1,238,213</p>
+                <h2>
+                  <i style={{ backgroundColor: theme.textColor }} /> TOTAL
+                  BORROW
+                  {stableCoin && (
+                    <span data-negative={big(stableCoin.totalBorrowDiff).lt(0)}>
+                      {big(stableCoin.totalBorrowDiff).gte(0) ? '+' : ''}
+                      {formatRate(stableCoin.totalBorrowDiff)}%
+                    </span>
+                  )}
+                </h2>
+                <p className="amount">
+                  <AnimateNumber
+                    format={formatUTokenIntegerWithoutPostfixUnits}
+                  >
+                    {stableCoin ? stableCoin.totalBorrow : (0 as uUST<number>)}
+                  </AnimateNumber>
+                  <span>UST</span>
+                </p>
               </div>
-            </article>
-          </Section>
+              <div />
+            </header>
 
-          <Section className="total-borrow">
-            <h2>
-              TOTAL BORROW <span>-8.90%</span>
-            </h2>
-
-            <div className="amount">$ 384,238,213</div>
-
-            <HorizontalRuler />
-
-            <article className="summary">
+            <figure>
               <div>
-                <h4>24hr Borrow Volume</h4>
-                <p>$ 384,238</p>
+                <StablecoinChart data={marketDepositAndBorrow?.history} />
               </div>
-              <div>
-                <h4># of Borrows</h4>
-                <p>1,238,213</p>
-              </div>
-            </article>
-          </Section>
+            </figure>
 
-          <Section className="stablecoin-market">
-            <HorizontalScrollTable minWidth={1000}>
+            <HorizontalScrollTable minWidth={900} className="stablecoin-market">
               <colgroup>
                 <col style={{ width: 300 }} />
                 <col style={{ width: 200 }} />
@@ -71,114 +422,251 @@ function MarketBase({ className }: MarketProps) {
               <thead>
                 <tr>
                   <th>STABLECOIN MARKET</th>
-                  <th>Total Deposit</th>
-                  <th>Deposit APY</th>
-                  <th>Total Borrow</th>
-                  <th>Borrow APR</th>
+                  <th>
+                    <IconSpan>
+                      Total Deposit{' '}
+                      <InfoTooltip>
+                        Total deposited value of this stablecoin market in USD
+                      </InfoTooltip>
+                    </IconSpan>
+                  </th>
+                  <th>
+                    <IconSpan>
+                      Deposit APY{' '}
+                      <InfoTooltip>
+                        Annualized deposit interest of this stablecoin market
+                      </InfoTooltip>
+                    </IconSpan>
+                  </th>
+                  <th>
+                    <IconSpan>
+                      Total Borrow{' '}
+                      <InfoTooltip>
+                        Total borrow value of this stable coin market in USD
+                      </InfoTooltip>
+                    </IconSpan>
+                  </th>
+                  <th>
+                    <IconSpan>
+                      Borrow APR{' '}
+                      <InfoTooltip>Annualized borrow interest</InfoTooltip>
+                    </IconSpan>
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {['UST', 'KRT'].map((stableCoinId: string) => (
-                  <tr key={'stablecoin-market' + stableCoinId}>
-                    <td>
-                      <Link to={`/stablecoins/${stableCoinId}`}>
-                        <i>
-                          <TokenIcon
-                            token={stableCoinId.toLowerCase() as Tokens}
-                          />
-                        </i>
-                        <div>
-                          <div className="coin">{stableCoinId}</div>
-                          <p className="name">Terra USD</p>
-                        </div>
-                      </Link>
-                    </td>
-                    <td>
-                      <div className="value">$ 233.56M</div>
-                      <p className="volatility">+1.89%</p>
-                    </td>
-                    <td>
-                      <div className="value">8.15%</div>
-                      <p className="volatility">-0.02</p>
-                    </td>
-                    <td>
-                      <div className="value">$ 76.56M</div>
-                      <p className="volatility">+0.21%</p>
-                    </td>
-                    <td>
-                      <div className="value">12.45%</div>
-                      <p className="volatility">+0.42</p>
-                    </td>
-                  </tr>
-                ))}
+                <tr>
+                  <td>
+                    <div>
+                      <i>
+                        <TokenIcon token="ust" />
+                      </i>
+                      <div>
+                        <div className="coin">UST</div>
+                        <p className="name">Terra USD</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="value">
+                      ${' '}
+                      <AnimateNumber format={formatUTokenInteger}>
+                        {stableCoin
+                          ? stableCoin.totalDeposit
+                          : (0 as uUST<number>)}
+                      </AnimateNumber>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="value">
+                      <AnimateNumber format={formatRate}>
+                        {stableCoinLegacy
+                          ? stableCoinLegacy.depositRate
+                          : (0 as Rate<number>)}
+                      </AnimateNumber>
+                      <span>%</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="value">
+                      ${' '}
+                      <AnimateNumber format={formatUTokenInteger}>
+                        {stableCoin
+                          ? stableCoin.totalBorrow
+                          : (0 as uUST<number>)}
+                      </AnimateNumber>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="value">
+                      <AnimateNumber format={formatRate}>
+                        {stableCoinLegacy
+                          ? stableCoinLegacy.borrowRate
+                          : (0 as Rate<number>)}
+                      </AnimateNumber>
+                      <span>%</span>
+                    </div>
+                  </td>
+                </tr>
               </tbody>
             </HorizontalScrollTable>
           </Section>
 
-          <Section className="basset-market">
-            <HorizontalScrollTable minWidth={800}>
+          <Section className="collaterals">
+            <header>
+              <div>
+                <h2>
+                  TOTAL COLLATERAL VALUE
+                  {collaterals && (
+                    <span
+                      data-negative={big(collaterals.totalCollateralDiff).lt(0)}
+                    >
+                      {big(collaterals.totalCollateralDiff).gte(0) ? '+' : ''}
+                      {formatRate(collaterals.totalCollateralDiff)}%
+                    </span>
+                  )}
+                </h2>
+                <p className="amount">
+                  <AnimateNumber
+                    format={formatUTokenIntegerWithoutPostfixUnits}
+                  >
+                    {collaterals
+                      ? collaterals.mainTotalCollateralValue
+                      : (0 as uUST<number>)}
+                  </AnimateNumber>
+                  <span> UST</span>
+                </p>
+              </div>
+            </header>
+
+            <figure>
+              <div>
+                <CollateralsChart data={marketCollaterals?.history} />
+              </div>
+            </figure>
+
+            <HorizontalScrollTable minWidth={800} className="basset-market">
               <colgroup>
                 <col style={{ width: 300 }} />
-                <col style={{ width: 200 }} />
-                <col style={{ width: 200 }} />
-                <col style={{ width: 200 }} />
+                <col style={{ width: 300 }} />
+                <col style={{ width: 300 }} />
+                <col style={{ width: 300 }} />
               </colgroup>
               <thead>
                 <tr>
                   <th>bASSET MARKET</th>
-                  <th>Price</th>
-                  <th>Total Loan</th>
-                  <th>Total Collateral</th>
+                  <th>
+                    <IconSpan>
+                      Price <InfoTooltip>Oracle price of bAsset</InfoTooltip>
+                    </IconSpan>
+                  </th>
+                  <th>
+                    <IconSpan>
+                      Total Collateral{' '}
+                      <InfoTooltip>
+                        Total collateral value in bASSET
+                      </InfoTooltip>
+                    </IconSpan>
+                  </th>
+                  <th>
+                    <IconSpan>
+                      Total Collateral Value{' '}
+                      <InfoTooltip>Total collateral value in USD</InfoTooltip>
+                    </IconSpan>
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {['bLuna', 'bDOT', 'bATOM'].map((bAssetId: string) => (
-                  <tr key={'basset-market' + bAssetId}>
-                    <td>
-                      <Link to={`/bassets/${bAssetId}`}>
-                        <i>
-                          <TokenIcon
-                            token={
-                              tokens.indexOf(bAssetId.toLowerCase() as Tokens) >
-                              -1
-                                ? (bAssetId.toLowerCase() as Tokens)
-                                : 'aust'
-                            }
-                          />
-                        </i>
-                        <div>
-                          <div className="coin">{bAssetId}</div>
-                          <p className="name">Bonded Luna</p>
-                        </div>
-                      </Link>
-                    </td>
-                    <td>
-                      <div className="value">$ 233.56M</div>
-                      <p className="volatility">+1.89%</p>
-                    </td>
-                    <td>
-                      <div className="value">8.15%</div>
-                      <p className="volatility">-0.02</p>
-                    </td>
-                    <td>
-                      <div className="value">$ 76.56M</div>
-                      <p className="volatility">+0.21%</p>
-                    </td>
-                  </tr>
-                ))}
+                <tr>
+                  <td>
+                    <div>
+                      <i>
+                        <TokenIcon token="bluna" />
+                      </i>
+                      <div>
+                        <div className="coin">bLUNA</div>
+                        <p className="name">Bonded Luna</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="value">
+                      ${' '}
+                      <AnimateNumber format={formatUST}>
+                        {collaterals
+                          ? collaterals.blunaPrice
+                          : (0 as UST<number>)}
+                      </AnimateNumber>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="value">
+                      <AnimateNumber format={formatLunaWithPostfixUnits}>
+                        {collaterals?.totalCollateral
+                          ? demicrofy(collaterals.totalCollateral)
+                          : (0 as Luna<number>)}
+                      </AnimateNumber>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="value">
+                      ${' '}
+                      <AnimateNumber
+                        format={formatUSTWithPostfixUnits}
+                        id="collateral-value"
+                      >
+                        {collaterals
+                          ? demicrofy(collaterals.totalCollateralValue)
+                          : (0 as UST<number>)}
+                      </AnimateNumber>
+                    </div>
+                  </td>
+                </tr>
               </tbody>
             </HorizontalScrollTable>
           </Section>
         </div>
+
+        <Footer style={{ margin: '60px 0' }} />
       </main>
     </div>
   );
 }
 
+const hHeavyRuler = css`
+  padding: 0;
+  margin: 0;
+
+  border: 0;
+
+  height: 5px;
+  border-radius: 3px;
+
+  ${({ theme }) =>
+    pressed({
+      color: theme.backgroundColor,
+      distance: 1,
+      intensity: theme.intensity,
+    })};
+`;
+
+const hRuler = css`
+  ${({ theme }) =>
+    horizontalRuler({
+      color: theme.backgroundColor,
+      intensity: theme.intensity,
+    })};
+`;
+
+const vRuler = css`
+  ${({ theme }) =>
+    verticalRuler({
+      color: theme.backgroundColor,
+      intensity: theme.intensity,
+    })};
+`;
+
 export const Market = styled(MarketBase)`
-  // ---------------------------------------------
-  // style
-  // ---------------------------------------------
   background-color: ${({ theme }) => theme.backgroundColor};
   color: ${({ theme }) => theme.textColor};
 
@@ -191,68 +679,204 @@ export const Market = styled(MarketBase)`
   }
 
   h2 {
-    margin: 0;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
-    letter-spacing: -0.3px;
-    color: ${({ theme }) => theme.textColor};
+
+    margin-bottom: 8px;
+
+    span {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 22px;
+      margin-left: 10px;
+      background-color: ${({ theme }) => theme.colors.positive};
+      color: ${({ theme }) => theme.highlightBackgroundColor};
+
+      &[data-negative='true'] {
+        background-color: ${({ theme }) => theme.colors.negative};
+      }
+    }
   }
 
-  hr {
-    margin: 30px 0;
+  h3 {
+    font-size: 12px;
+    font-weight: 700;
+    color: ${({ theme }) => theme.dimTextColor};
   }
 
-  .total-deposit,
-  .total-borrow {
-    h2 {
+  .amount {
+    font-size: 36px;
+    font-weight: 700;
+
+    span:last-child {
+      margin-left: 8px;
+      font-size: 20px;
+    }
+  }
+
+  .total-value-locked {
+    figure {
+      margin-top: 39px;
+
       display: flex;
       align-items: center;
 
-      span {
-        margin-left: 12px;
-        display: inline-block;
-        padding: 4px 8px;
-        background-color: #e95979;
-        border-radius: 12px;
-        color: #ffffff;
-        font-size: 11px;
+      > .chart {
+        width: 152px;
+        height: 152px;
+
+        margin-right: 44px;
       }
 
-      margin-bottom: 10px;
-    }
+      > div {
+        h3 {
+          display: flex;
+          align-items: center;
 
-    .amount {
-      font-size: 60px;
-      font-weight: 200;
-      letter-spacing: -1px;
-    }
+          i {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            margin-right: 3px;
+          }
 
-    .summary {
-      display: flex;
-
-      div {
-        flex: 1;
-
-        h4 {
-          color: ${({ theme }) => theme.dimTextColor};
-          font-size: 13px;
-          font-weight: 500;
-          margin-bottom: 5px;
+          margin-bottom: 8px;
         }
 
         p {
           font-size: 18px;
+
+          &:nth-of-type(1) {
+            margin-bottom: 27px;
+          }
+        }
+      }
+    }
+  }
+
+  .anc-price {
+    header {
+      display: flex;
+      align-items: center;
+
+      > div:first-child {
+        flex: 1;
+      }
+
+      > div:not(:first-child) {
+        h3 {
+          margin-bottom: 10px;
+        }
+
+        p {
+          font-size: 18px;
+
+          span:last-child {
+            margin-left: 5px;
+            font-size: 12px;
+          }
         }
 
         &:last-child {
-          text-align: right;
+          margin-left: 30px;
         }
+      }
+
+      margin-bottom: 15px;
+    }
+
+    figure {
+      > div {
+        width: 100%;
+        height: 220px;
+      }
+    }
+  }
+
+  .anc-buyback > .NeuSection-content {
+    display: flex;
+    justify-content: space-between;
+
+    max-width: 1000px;
+
+    padding: 40px 60px;
+
+    hr {
+      ${vRuler};
+    }
+
+    section {
+      div {
+        display: flex;
+
+        p {
+          display: inline-block;
+
+          font-size: 27px;
+          font-weight: 700;
+
+          word-break: keep-all;
+          white-space: nowrap;
+
+          span {
+            font-size: 18px;
+            margin-left: 5px;
+            color: ${({ theme }) => theme.dimTextColor};
+          }
+
+          &:first-child {
+            margin-right: 20px;
+          }
+        }
+      }
+    }
+  }
+
+  .stablecoin {
+    header {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+
+      h2 {
+        i {
+          display: inline-block;
+          width: 12px;
+          height: 12px;
+          border-radius: 3px;
+          margin-right: 3px;
+          transform: translateY(1px);
+        }
+      }
+
+      margin-bottom: 15px;
+    }
+
+    figure {
+      > div {
+        width: 100%;
+        height: 220px;
+      }
+    }
+  }
+
+  .collaterals {
+    header {
+      margin-bottom: 15px;
+    }
+
+    figure {
+      > div {
+        width: 100%;
+        height: 220px;
       }
     }
   }
 
   .stablecoin-market,
   .basset-market {
+    margin-top: 40px;
+
     table {
       thead {
         th {
@@ -267,12 +891,6 @@ export const Market = styled(MarketBase)`
       }
 
       tbody {
-        tr {
-          &:hover {
-            background-color: rgba(37, 117, 164, 0.05);
-          }
-        }
-
         td {
           text-align: right;
 
@@ -287,7 +905,7 @@ export const Market = styled(MarketBase)`
             color: ${({ theme }) => theme.dimTextColor};
           }
 
-          &:first-child > a {
+          &:first-child > div {
             text-decoration: none;
             color: currentColor;
 
@@ -331,51 +949,85 @@ export const Market = styled(MarketBase)`
   // ---------------------------------------------
   // layout
   // ---------------------------------------------
-  // pc
-  @media (min-width: ${screen.pc.min}px) {
-    padding: 100px;
-  }
-
-  @media (min-width: ${screen.pc.min}px) and (max-width: ${screen.pc.max}px) {
-    .NeuSection-root {
-      margin-bottom: 40px;
+  main {
+    .content-layout {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 0;
     }
   }
 
-  @media (min-width: ${screen.monitor.min}px) {
-    main {
-      max-width: 1440px;
-      margin: 0 auto;
+  // pc
+  padding: 50px 100px 100px 100px;
 
-      .content-layout {
-        display: grid;
+  .NeuSection-root {
+    margin-bottom: 40px;
+  }
 
-        grid-template-columns: 1fr 1fr;
-        grid-gap: 40px;
+  // align section contents to origin
+  @media (min-width: 1400px) {
+    .summary-section {
+      grid-gap: 40px;
+      margin-bottom: 40px;
 
-        .total-deposit {
-          grid-column: 1/2;
+      .NeuSection-root {
+        margin-bottom: 0;
+      }
+
+      height: 586px;
+
+      display: grid;
+      grid-template-columns: 500px 1fr 1fr;
+      grid-template-rows: repeat(5, 1fr);
+
+      .total-value-locked {
+        grid-column: 1/2;
+        grid-row: 1/6;
+
+        hr {
+          ${hHeavyRuler};
+          margin-top: 80px;
+          margin-bottom: 40px;
         }
+      }
 
-        .total-borrow {
-          grid-column: 2;
-        }
+      .anc-price {
+        grid-column: 2/4;
+        grid-row: 1/5;
+      }
 
-        .stablecoin-market {
-          grid-column: 1/3;
-        }
+      .anc-buyback {
+        grid-column: 2/4;
+        grid-row: 5/6;
+      }
+    }
+  }
 
-        .basset-market {
-          grid-column: 1/3;
+  // align section contents to horizontal
+  @media (min-width: 900px) and (max-width: 1399px) {
+    .summary-section {
+      .total-value-locked > .NeuSection-content {
+        max-width: 800px;
+        display: flex;
+        justify-content: space-between;
+
+        hr {
+          ${vRuler};
+          margin-left: 40px;
+          margin-right: 40px;
         }
       }
     }
   }
 
-  // tablet
-  @media (min-width: ${screen.tablet.min}px) and (max-width: ${screen.tablet
-      .max}px) {
-    padding: 30px;
+  // under tablet
+  // align section contents to horizontal
+  @media (max-width: 899px) {
+    padding: 20px 30px 30px 30px;
+
+    h1 {
+      margin-bottom: 20px;
+    }
 
     .NeuSection-root {
       margin-bottom: 40px;
@@ -384,17 +1036,165 @@ export const Market = styled(MarketBase)`
         padding: 30px;
       }
     }
+
+    .summary-section {
+      .total-value-locked {
+        display: block;
+
+        hr {
+          ${hHeavyRuler};
+          margin-top: 30px;
+          margin-bottom: 30px;
+        }
+      }
+
+      .anc-price {
+        header {
+          display: block;
+
+          > div:first-child {
+            margin-bottom: 10px;
+          }
+
+          > div:not(:first-child) {
+            display: grid;
+            grid-template-columns: 160px 1fr;
+            grid-template-rows: 28px;
+            align-items: center;
+
+            h3 {
+              margin: 0;
+            }
+
+            p {
+              font-size: 18px;
+
+              span:last-child {
+                margin-left: 5px;
+                font-size: 12px;
+              }
+            }
+
+            &:first-child {
+              flex: 1;
+
+              p {
+                font-size: 36px;
+                font-weight: 700;
+
+                span {
+                  font-size: 20px;
+                }
+              }
+            }
+
+            &:last-child {
+              margin-left: 0;
+            }
+          }
+
+          margin-bottom: 15px;
+        }
+      }
+
+      .anc-buyback > .NeuSection-content {
+        display: block;
+
+        section {
+          div {
+            display: block;
+
+            p {
+              display: block;
+            }
+          }
+        }
+
+        hr {
+          ${hRuler};
+          margin: 15px 0;
+        }
+      }
+    }
+
+    .stablecoin {
+      header {
+        grid-template-columns: repeat(2, 1fr);
+
+        > div:empty {
+          display: none;
+        }
+      }
+    }
   }
 
-  // mobile
+  // under mobile
+  // align section contents to vertical
   @media (max-width: ${screen.mobile.max}px) {
-    padding: 30px 20px;
+    padding: 10px 20px 30px 20px;
+
+    h1 {
+      margin-bottom: 10px;
+    }
 
     .NeuSection-root {
       margin-bottom: 40px;
 
       .NeuSection-content {
         padding: 20px;
+      }
+    }
+
+    .summary-section {
+      .total-value-locked {
+        figure {
+          > .chart {
+            width: 120px;
+            height: 120px;
+
+            margin-right: 30px;
+          }
+
+          > div {
+            p:nth-of-type(1) {
+              margin-bottom: 12px;
+            }
+          }
+        }
+      }
+    }
+
+    .stablecoin {
+      header {
+        display: block;
+
+        > div:first-child {
+          margin-bottom: 15px;
+        }
+
+        > div:empty {
+          display: none;
+        }
+      }
+    }
+  }
+
+  @media (min-width: 1400px) and (max-width: 1500px) {
+    .summary-section {
+      .anc-buyback > .NeuSection-content {
+        section {
+          div {
+            p {
+              letter-spacing: -1px;
+              font-size: 24px;
+
+              span {
+                letter-spacing: -1px;
+                font-size: 15px;
+              }
+            }
+          }
+        }
       }
     }
   }

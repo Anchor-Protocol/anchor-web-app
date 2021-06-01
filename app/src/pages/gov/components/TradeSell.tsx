@@ -4,7 +4,6 @@ import {
   demicrofy,
   formatANC,
   formatANCInput,
-  formatExecuteMsgNumber,
   formatFluidDecimalPoints,
   formatUST,
   formatUSTInput,
@@ -13,35 +12,31 @@ import {
 } from '@anchor-protocol/notation';
 import { ANC, Denom, terraswap, uANC, UST, uUST } from '@anchor-protocol/types';
 import {
-  useConnectedWallet,
-  ConnectedWallet,
-} from '@terra-money/wallet-provider';
-import { useApolloClient } from '@apollo/client';
+  terraswapReverseSimulationQuery,
+  terraswapSimulationQuery,
+  useAnchorWebapp,
+  useAncPriceQuery,
+  useAncSellTx,
+} from '@anchor-protocol/webapp-provider';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
-import { useOperation } from '@terra-dev/broadcastable-operation';
+import { StreamStatus } from '@rx-stream/react';
 import { isZero } from '@terra-dev/is-zero';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { NumberMuiInput } from '@terra-dev/neumorphism-ui/components/NumberMuiInput';
 import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
 import { useResolveLast } from '@terra-dev/use-resolve-last';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
+import { useTerraWebapp } from '@terra-money/webapp-provider';
 import { useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
-import { useContractAddress } from 'base/contexts/contract';
-import { queryReverseSimulation } from 'base/queries/reverseSimulation';
-import { querySimulation } from 'base/queries/simulation';
 import big from 'big.js';
 import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
-import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
-import { MAX_SPREAD } from 'pages/gov/env';
 import { sellFromSimulation } from 'pages/gov/logics/sellFromSimulation';
 import { sellToSimulation } from 'pages/gov/logics/sellToSimulation';
-import { AncPrice } from 'pages/gov/models/ancPrice';
 import { TradeSimulation } from 'pages/gov/models/tradeSimulation';
-import { useANCPrice } from 'pages/gov/queries/ancPrice';
-import { sellOptions } from 'pages/gov/transactions/sellOptions';
 import React, {
   ChangeEvent,
   useCallback,
@@ -64,15 +59,16 @@ export function TradeSell() {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const { fixedGas } = useConstants();
+  const { mantleEndpoint, mantleFetch } = useTerraWebapp();
 
-  const client = useApolloClient();
-
-  const address = useContractAddress();
+  const {
+    constants: { fixedGas },
+    contractAddress: address,
+  } = useAnchorWebapp();
 
   const bank = useBank();
 
-  const [sell, sellResult] = useOperation(sellOptions, { bank });
+  const [sell, sellResult] = useAncSellTx();
 
   // ---------------------------------------------
   // states
@@ -92,9 +88,7 @@ export function TradeSell() {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const {
-    data: { ancPrice },
-  } = useANCPrice();
+  const { data: { ancPrice } = {} } = useAncPriceQuery();
 
   // ---------------------------------------------
   // logics
@@ -162,30 +156,69 @@ export function TradeSell() {
         const amount = microfy(fromAmount).toString() as uANC;
 
         resolveSimulation(
-          querySimulation(
-            client,
-            address,
-            amount,
-            address.terraswap.ancUstPair,
-            {
-              token: {
-                contract_addr: address.cw20.ANC,
+          terraswapSimulationQuery({
+            mantleEndpoint,
+            mantleFetch,
+            variables: {
+              tokenPairContract: address.terraswap.ancUstPair,
+              simulationQuery: {
+                simulation: {
+                  offer_asset: {
+                    info: {
+                      token: {
+                        contract_addr: address.cw20.ANC,
+                      },
+                    },
+                    amount,
+                  },
+                },
               },
             },
-          ).then(({ data: { simulation } }) =>
-            simulation
+          }).then(({ simulation }) => {
+            return simulation
               ? sellToSimulation(
                   simulation as terraswap.SimulationResponse<uUST, uANC>,
                   amount,
                   bank.tax,
                   fixedGas,
                 )
-              : undefined,
-          ),
+              : undefined;
+          }),
         );
+
+        //resolveSimulation(
+        //  querySimulation(
+        //    client,
+        //    address,
+        //    amount,
+        //    address.terraswap.ancUstPair,
+        //    {
+        //      token: {
+        //        contract_addr: address.cw20.ANC,
+        //      },
+        //    },
+        //  ).then(({ data: { simulation } }) =>
+        //    simulation
+        //      ? sellToSimulation(
+        //          simulation as terraswap.SimulationResponse<uUST, uANC>,
+        //          amount,
+        //          bank.tax,
+        //          fixedGas,
+        //        )
+        //      : undefined,
+        //  ),
+        //);
       }
     },
-    [address, bank.tax, client, fixedGas, resolveSimulation],
+    [
+      address.cw20.ANC,
+      address.terraswap.ancUstPair,
+      bank.tax,
+      fixedGas,
+      mantleEndpoint,
+      mantleFetch,
+      resolveSimulation,
+    ],
   );
 
   const updateToAmount = useCallback(
@@ -206,30 +239,68 @@ export function TradeSell() {
         const amount = microfy(toAmount).toString() as uUST;
 
         resolveSimulation(
-          queryReverseSimulation(
-            client,
-            address,
-            amount,
-            address.terraswap.ancUstPair,
-            {
-              native_token: {
-                denom: 'uusd' as Denom,
+          terraswapReverseSimulationQuery({
+            mantleEndpoint,
+            mantleFetch,
+            variables: {
+              tokenPairContract: address.terraswap.ancUstPair,
+              simulationQuery: {
+                simulation: {
+                  offer_asset: {
+                    info: {
+                      native_token: {
+                        denom: 'uusd' as Denom,
+                      },
+                    },
+                    amount,
+                  },
+                },
               },
             },
-          ).then(({ data: { simulation } }) =>
-            simulation
+          }).then(({ simulation }) => {
+            return simulation
               ? sellFromSimulation(
                   simulation as terraswap.SimulationResponse<uUST, uANC>,
                   amount,
                   bank.tax,
                   fixedGas,
                 )
-              : undefined,
-          ),
+              : undefined;
+          }),
         );
+
+        //resolveSimulation(
+        //  queryReverseSimulation(
+        //    client,
+        //    address,
+        //    amount,
+        //    address.terraswap.ancUstPair,
+        //    {
+        //      native_token: {
+        //        denom: 'uusd' as Denom,
+        //      },
+        //    },
+        //  ).then(({ data: { simulation } }) =>
+        //    simulation
+        //      ? sellFromSimulation(
+        //          simulation as terraswap.SimulationResponse<uUST, uANC>,
+        //          amount,
+        //          bank.tax,
+        //          fixedGas,
+        //        )
+        //      : undefined,
+        //  ),
+        //);
       }
     },
-    [address, bank.tax, client, fixedGas, resolveSimulation],
+    [
+      address.terraswap.ancUstPair,
+      bank.tax,
+      fixedGas,
+      mantleEndpoint,
+      mantleFetch,
+      resolveSimulation,
+    ],
   );
 
   const init = useCallback(() => {
@@ -238,36 +309,45 @@ export function TradeSell() {
   }, []);
 
   const proceed = useCallback(
-    async (
-      walletReady: ConnectedWallet,
-      burnAmount: ANC,
-      ancPrice: AncPrice,
-    ) => {
-      const broadcasted = await sell({
-        address: walletReady.walletAddress,
-        amount: burnAmount,
-        beliefPrice: formatExecuteMsgNumber(
-          big(ancPrice.ANCPoolSize).div(ancPrice.USTPoolSize),
-        ),
-        maxSpread: MAX_SPREAD.toString(),
-      });
-
-      if (!broadcasted) {
-        init();
+    (burnAmount: ANC) => {
+      if (!connectedWallet || !sell) {
+        return;
       }
+
+      sell({
+        burnAmount,
+        onTxSucceed: () => {
+          init();
+        },
+      });
     },
-    [sell, init],
+    [connectedWallet, sell, init],
   );
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
   if (
-    sellResult?.status === 'in-progress' ||
-    sellResult?.status === 'done' ||
-    sellResult?.status === 'fault'
+    sellResult?.status === StreamStatus.IN_PROGRESS ||
+    sellResult?.status === StreamStatus.DONE
   ) {
-    return <TransactionRenderer result={sellResult} onExit={init} />;
+    return (
+      <TxResultRenderer
+        resultRendering={sellResult.value}
+        onExit={() => {
+          init();
+
+          switch (sellResult.status) {
+            case StreamStatus.IN_PROGRESS:
+              sellResult.abort();
+              break;
+            case StreamStatus.DONE:
+              sellResult.clear();
+              break;
+          }
+        }}
+      />
+    );
   }
 
   return (
@@ -401,6 +481,7 @@ export function TradeSell() {
         disabled={
           !connectedWallet ||
           !connectedWallet.availablePost ||
+          !sell ||
           !ancPrice ||
           fromAmount.length === 0 ||
           big(fromAmount).lte(0) ||
@@ -408,11 +489,7 @@ export function TradeSell() {
           !!invalidFromAmount ||
           big(simulation?.swapFee ?? 0).lte(0)
         }
-        onClick={() =>
-          connectedWallet &&
-          ancPrice &&
-          proceed(connectedWallet, fromAmount, ancPrice)
-        }
+        onClick={() => proceed(fromAmount)}
       >
         Proceed
       </ActionButton>

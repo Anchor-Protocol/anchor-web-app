@@ -1,4 +1,10 @@
 import { anchorToken } from '@anchor-protocol/types';
+import {
+  useAncBalanceQuery,
+  useAnchorWebapp,
+  useGovPollsQuery,
+  useGovStateQuery,
+} from '@anchor-protocol/webapp-provider';
 import { List, ViewModule } from '@material-ui/icons';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
@@ -10,8 +16,6 @@ import { links } from 'env';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
 import { SubHeader } from 'pages/gov/components/SubHeader';
 import { govPathname } from 'pages/gov/env';
-import { usePolls } from 'pages/gov/queries/polls';
-import { useTotalStaked } from 'pages/gov/queries/totalStaked';
 import { ChangeEvent, useCallback, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
@@ -37,15 +41,19 @@ const options: Item[] = [
 function PollsBase({ className }: PollsProps) {
   const history = useHistory();
 
+  const { contractAddress } = useAnchorWebapp();
+
   const [option, setOption] = useState<anchorToken.gov.PollStatus>(
     () => options[0].value,
   );
 
-  const [polls, isLast, loadMorePolls] = usePolls(option);
+  const { polls, isLast, loadMore: loadMorePolls } = useGovPollsQuery(option);
 
-  const {
-    data: { govANCBalance, govState, govConfig },
-  } = useTotalStaked();
+  const { data: { ancBalance: govANCBalance } = {} } = useAncBalanceQuery(
+    contractAddress.anchorToken.gov,
+  );
+
+  const { data: { govState, govConfig } = {} } = useGovStateQuery();
 
   const [view, setView] = useLocalStorage<'grid' | 'list'>(
     '__anchor_polls_view__',

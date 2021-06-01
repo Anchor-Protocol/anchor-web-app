@@ -9,24 +9,24 @@ import {
 } from '@anchor-protocol/notation';
 import { ANC, uANC } from '@anchor-protocol/types';
 import {
-  useConnectedWallet,
-  ConnectedWallet,
-} from '@terra-money/wallet-provider';
+  useAncBalanceQuery,
+  useAncGovernanceUnstakeTx,
+  useAnchorWebapp,
+  useGovStateQuery,
+  useRewardsAncGovernanceRewardsQuery,
+} from '@anchor-protocol/webapp-provider';
 import { InputAdornment } from '@material-ui/core';
+import { StreamStatus } from '@rx-stream/react';
 import { max } from '@terra-dev/big-math';
-import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
-import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
-import { useRewardsAncGovernance } from 'pages/gov/queries/rewardsAncGovernance';
-import { useTotalStaked } from 'pages/gov/queries/totalStaked';
-import { ancGovernanceUnstakeOptions } from 'pages/gov/transactions/ancGovernanceUnstakeOptions';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 export function AncGovernanceUnstake() {
@@ -35,12 +35,12 @@ export function AncGovernanceUnstake() {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const { fixedGas } = useConstants();
+  const {
+    constants: { fixedGas },
+    contractAddress,
+  } = useAnchorWebapp();
 
-  const [unstake, unstakeResult] = useOperation(
-    ancGovernanceUnstakeOptions,
-    {},
-  );
+  const [unstake, unstakeResult] = useAncGovernanceUnstakeTx();
 
   // ---------------------------------------------
   // states
@@ -53,12 +53,13 @@ export function AncGovernanceUnstake() {
   const bank = useBank();
 
   const {
-    data: { userGovStakingInfo },
-  } = useRewardsAncGovernance();
+    data: { userGovStakingInfo } = {},
+  } = useRewardsAncGovernanceRewardsQuery();
 
-  const {
-    data: { govState, govANCBalance },
-  } = useTotalStaked();
+  const { data: { ancBalance: govANCBalance } = {} } = useAncBalanceQuery(
+    contractAddress.anchorToken.gov,
+  );
+  const { data: { govState } = {} } = useGovStateQuery();
 
   // ---------------------------------------------
   // logics
@@ -96,28 +97,45 @@ export function AncGovernanceUnstake() {
   }, []);
 
   const proceed = useCallback(
-    async (walletReady: ConnectedWallet, ancAmount: ANC) => {
-      const broadcasted = await unstake({
-        address: walletReady.walletAddress,
-        amount: ancAmount,
-      });
-
-      if (!broadcasted) {
-        init();
+    async (ancAmount: ANC) => {
+      if (!connectedWallet || !unstake) {
+        return;
       }
+
+      unstake({
+        ancAmount,
+        onTxSucceed: () => {
+          init();
+        },
+      });
     },
-    [init, unstake],
+    [connectedWallet, init, unstake],
   );
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
   if (
-    unstakeResult?.status === 'in-progress' ||
-    unstakeResult?.status === 'done' ||
-    unstakeResult?.status === 'fault'
+    unstakeResult?.status === StreamStatus.IN_PROGRESS ||
+    unstakeResult?.status === StreamStatus.DONE
   ) {
-    return <TransactionRenderer result={unstakeResult} onExit={init} />;
+    return (
+      <TxResultRenderer
+        resultRendering={unstakeResult.value}
+        onExit={() => {
+          init();
+
+          switch (unstakeResult.status) {
+            case StreamStatus.IN_PROGRESS:
+              unstakeResult.abort();
+              break;
+            case StreamStatus.DONE:
+              unstakeResult.clear();
+              break;
+          }
+        }}
+      />
+    );
   }
 
   return (
@@ -173,12 +191,13 @@ export function AncGovernanceUnstake() {
         disabled={
           !connectedWallet ||
           !connectedWallet.availablePost ||
+          !unstake ||
           ancAmount.length === 0 ||
           big(ancAmount).lte(0) ||
           !!invalidTxFee ||
           !!invalidANCAmount
         }
-        onClick={() => connectedWallet && proceed(connectedWallet, ancAmount)}
+        onClick={() => proceed(ancAmount)}
       >
         Unstake
       </ActionButton>

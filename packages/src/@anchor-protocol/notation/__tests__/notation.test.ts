@@ -53,6 +53,10 @@ describe('notation', () => {
     expect(formatPercentage('1.00049312' as Percent)).toBe('1');
     expect(formatPercentage('1000.1234000' as Percent)).toBe('1,000.12');
     expect(formatPercentage('1000.120000' as Percent)).toBe('1,000.12');
+    expect(formatPercentage('-1000.120000' as Percent)).toBe('-1,000.12');
+
+    expect(formatRate('0.00725188639837987036' as Rate)).toBe('0.72');
+    expect(formatRate('-0.00725188639837987036' as Rate)).toBe('-0.72');
 
     expect(formatUSTInput('10.3436' as UST)).toBe('10.343');
     expect(formatAUSTInput('10.00' as aUST)).toBe('10');

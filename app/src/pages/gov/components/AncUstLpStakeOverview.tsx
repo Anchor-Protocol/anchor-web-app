@@ -4,15 +4,17 @@ import {
   formatLP,
 } from '@anchor-protocol/notation';
 import { uANC, uUST } from '@anchor-protocol/types';
+import {
+  useAncLpStakingStateQuery,
+  useAncPriceQuery,
+  useRewardsClaimableAncUstLpRewardsQuery,
+} from '@anchor-protocol/webapp-provider';
 import { TooltipLabel } from '@terra-dev/neumorphism-ui/components/TooltipLabel';
 import {
   rulerLightColor,
   rulerShadowColor,
 } from '@terra-dev/styled-neumorphism';
 import big, { Big } from 'big.js';
-import { useANCPrice } from 'pages/gov/queries/ancPrice';
-import { useClaimableAncUstLp } from 'pages/gov/queries/claimableAncUstLp';
-import { useLPStakingState } from 'pages/gov/queries/lpStakingState';
 import { useMemo } from 'react';
 import styled from 'styled-components';
 
@@ -21,17 +23,13 @@ export interface AncUstLpStakeOverviewProps {
 }
 
 function AncUstLpStakeOverviewBase({ className }: AncUstLpStakeOverviewProps) {
-  const {
-    data: { ancPrice },
-  } = useANCPrice();
+  const { data: { ancPrice } = {} } = useAncPriceQuery();
+
+  const { data: { lpStakingState } = {} } = useAncLpStakingStateQuery();
 
   const {
-    data: { lpStakingState },
-  } = useLPStakingState();
-
-  const {
-    data: { userLPStakingInfo, userLPBalance },
-  } = useClaimableAncUstLp();
+    data: { lPBalance: userLPBalance, lPStakerInfo: userLPStakingInfo } = {},
+  } = useRewardsClaimableAncUstLpRewardsQuery();
 
   const ancUstLp = useMemo(() => {
     if (!ancPrice || !lpStakingState || !userLPStakingInfo || !userLPBalance) {

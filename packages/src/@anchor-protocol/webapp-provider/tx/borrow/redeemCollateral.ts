@@ -2,7 +2,7 @@ import { COLLATERAL_DENOMS, MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import { bLuna, uUST } from '@anchor-protocol/types';
 import { borrowRedeemCollateralTx } from '@anchor-protocol/webapp-fns';
 import { useStream } from '@rx-stream/react';
-import { useOperationBroadcaster } from '@terra-dev/broadcastable-operation';
+
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import {
   useRefetchQueries,
@@ -31,9 +31,6 @@ export function useBorrowRedeemCollateralTx() {
 
   const refetchQueries = useRefetchQueries();
 
-  // TODO remove
-  const { dispatch } = useOperationBroadcaster();
-
   const stream = useCallback(
     ({ redeemAmount, onTxSucceed }: BorrowRedeemCollateralTxParams) => {
       if (!connectedWallet || !connectedWallet.availablePost) {
@@ -42,16 +39,16 @@ export function useBorrowRedeemCollateralTx() {
 
       return borrowRedeemCollateralTx({
         address: connectedWallet.walletAddress,
-        addressProvider,
         amount: redeemAmount,
         market: MARKET_DENOMS.UUSD,
         collateral: COLLATERAL_DENOMS.UBLUNA,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        txFee: constants.fixedGas.toString() as uUST,
+        fixedGas: constants.fixedGas.toString() as uUST,
         gasFee: constants.gasFee,
         gasAdjustment: constants.gasAdjustment,
+        addressProvider,
         // query
         mantleEndpoint,
         mantleFetch,
@@ -63,7 +60,6 @@ export function useBorrowRedeemCollateralTx() {
         onTxSucceed: () => {
           onTxSucceed?.();
           refetchQueries(ANCHOR_TX_KEY.BORROW_REDEEM_COLLATERAL);
-          dispatch('', 'done');
         },
       });
     },
@@ -75,7 +71,7 @@ export function useBorrowRedeemCollateralTx() {
       constants.fixedGas,
       constants.gasAdjustment,
       constants.gasFee,
-      dispatch,
+
       mantleEndpoint,
       mantleFetch,
       refetchQueries,

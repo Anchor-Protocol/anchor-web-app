@@ -1,31 +1,23 @@
 import { bluna, HumanAddr, WASMContractResult } from '@anchor-protocol/types';
 import { MantleFetch } from '@terra-money/webapp-fns';
 
+export interface StakingValidator {
+  OperatorAddress: string;
+  Description: {
+    Moniker: string;
+  };
+}
+
 export interface BondValidatorsRawData {
   validators: {
-    Result: {
-      OperatorAddress: string;
-      Description: {
-        Moniker: string;
-      };
-    }[];
+    Result: StakingValidator[];
   };
   hubWhitelistedValidators: WASMContractResult;
 }
 
 export interface BondValidatorsData {
-  validators: Array<{
-    OperatorAddress: string;
-    Description: {
-      Moniker: string;
-    };
-  }>;
-  whitelistedValidators: Array<{
-    OperatorAddress: string;
-    Description: {
-      Moniker: string;
-    };
-  }>;
+  validators: StakingValidator[];
+  whitelistedValidators: StakingValidator[];
   hubWhitelistedValidators: bluna.hub.WhitelistedValidatorsResponse;
 }
 
@@ -41,7 +33,7 @@ export interface BondValidatorsVariables {
 
 // language=graphql
 export const BOND_VALIDATORS_QUERY = `
-  query __validators(
+  query (
     $bLunaHubContract: String!
     $whitelistedValidatorsQuery: String!
   ) {

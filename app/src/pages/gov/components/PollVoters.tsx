@@ -1,21 +1,26 @@
-import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
-import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
 import {
   demicrofy,
   formatANCWithPostfixUnits,
 } from '@anchor-protocol/notation';
+import { anchorToken } from '@anchor-protocol/types';
+import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
+import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
 import { AccountLink } from 'components/AccountLink';
-import { useVoters } from 'pages/gov/queries/voters';
 import styled from 'styled-components';
 
 export interface PollVotersProps {
   className?: string;
-  pollId: number;
+  voters: anchorToken.gov.Voter[];
+  isLast: boolean;
+  loadMore: () => void;
 }
 
-function PollVotersBase({ className, pollId }: PollVotersProps) {
-  const [voters, isLast, loadMore] = useVoters(pollId);
-
+function PollVotersBase({
+  className,
+  voters,
+  isLast,
+  loadMore,
+}: PollVotersProps) {
   return (
     <div className={className}>
       <HorizontalScrollTable minWidth={800} startPadding={20} endPadding={20}>

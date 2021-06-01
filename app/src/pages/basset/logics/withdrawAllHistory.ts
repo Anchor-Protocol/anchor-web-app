@@ -10,15 +10,14 @@ interface History {
 }
 
 export function withdrawAllHistory(
-  unbondRequests:
-    | (bluna.hub.UnbondRequestsResponse & { startFrom: number })
-    | undefined,
+  unbondRequests: bluna.hub.UnbondRequestsResponse | undefined,
+  unbondedRequestsStartFrom: number,
   allHistory: bluna.hub.AllHistoryResponse | undefined,
   parameters: bluna.hub.ParametersResponse | undefined,
 ): History[] | undefined {
   if (
     !unbondRequests ||
-    unbondRequests.startFrom < 0 ||
+    unbondedRequestsStartFrom < 0 ||
     !allHistory ||
     !parameters
   ) {
@@ -26,7 +25,7 @@ export function withdrawAllHistory(
   }
 
   return unbondRequests.requests.map<History>(([index, amount]) => {
-    const historyIndex: number = index - unbondRequests.startFrom;
+    const historyIndex: number = index - unbondedRequestsStartFrom;
     const matchingHistory = allHistory.history[historyIndex - 1];
 
     const blunaAmount = big(amount) as ubLuna<Big>;

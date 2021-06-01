@@ -19,29 +19,27 @@ import type {
 } from '@anchor-protocol/types';
 import { terraswap } from '@anchor-protocol/types';
 import {
-  useConnectedWallet,
-  ConnectedWallet,
-} from '@terra-money/wallet-provider';
-import { useApolloClient } from '@apollo/client';
+  terraswapSimulationQuery,
+  useAnchorWebapp,
+  useBondBLunaPriceQuery,
+  useBondSwapTx,
+} from '@anchor-protocol/webapp-provider';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
-import { useOperation } from '@terra-dev/broadcastable-operation';
+import { StreamStatus } from '@rx-stream/react';
 import { isZero } from '@terra-dev/is-zero';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { NumberMuiInput } from '@terra-dev/neumorphism-ui/components/NumberMuiInput';
 import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
 import { useResolveLast } from '@terra-dev/use-resolve-last';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
+import { useTerraWebapp } from '@terra-money/webapp-provider';
 import { useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
-import { useContractAddress } from 'base/contexts/contract';
-import { querySimulation } from 'base/queries/simulation';
 import big from 'big.js';
 import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
-import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
-import { swapBurnSimulation } from 'pages/basset/logics/swapBurnSimulation';
-import { swapGetSimulation } from 'pages/basset/logics/swapGetSimulation';
 import React, {
   ChangeEvent,
   useCallback,
@@ -49,10 +47,12 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { swapBurnSimulation } from '../logics/swapBurnSimulation';
+import { swapGetSimulation } from '../logics/swapGetSimulation';
 import { validateBurnAmount } from '../logics/validateBurnAmount';
 import { SwapSimulation } from '../models/swapSimulation';
-import { useTerraswapBLunaPrice } from '../queries/terraswapBLunaPrice';
-import { swapOptions } from '../transactions/swapOptions';
+
+//import { useTerraswapBLunaPrice } from '../queries/terraswapBLunaPrice';
 
 interface Item {
   label: string;
@@ -68,13 +68,13 @@ export function Swap() {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const { fixedGas } = useConstants();
+  const { mantleEndpoint, mantleFetch } = useTerraWebapp();
+  const {
+    constants: { fixedGas },
+    contractAddress: address,
+  } = useAnchorWebapp();
 
-  const client = useApolloClient();
-
-  const address = useContractAddress();
-
-  const [swap, swapResult] = useOperation(swapOptions, {});
+  const [swap, swapResult] = useBondSwapTx();
 
   // ---------------------------------------------
   // states
@@ -96,9 +96,11 @@ export function Swap() {
   // ---------------------------------------------
   const bank = useBank();
 
-  const {
-    data: { terraswapPoolInfo: bLunaPrice },
-  } = useTerraswapBLunaPrice();
+  const { data: { bLunaPrice } = {} } = useBondBLunaPriceQuery();
+
+  //const {
+  //  data: { terraswapPoolInfo: bLunaPrice },
+  //} = useTerraswapBLunaPrice();
 
   // ---------------------------------------------
   // logics
@@ -164,29 +166,44 @@ export function Swap() {
         const amount = microfy(burnAmount).toString() as ubLuna;
 
         resolveSimulation(
-          querySimulation(
-            client,
-            address,
-            amount,
-            address.terraswap.blunaLunaPair,
-            {
-              token: {
-                contract_addr: address.cw20.bLuna,
+          terraswapSimulationQuery({
+            mantleEndpoint,
+            mantleFetch,
+            variables: {
+              tokenPairContract: address.terraswap.blunaLunaPair,
+              simulationQuery: {
+                simulation: {
+                  offer_asset: {
+                    info: {
+                      token: {
+                        contract_addr: address.cw20.bLuna,
+                      },
+                    },
+                    amount,
+                  },
+                },
               },
             },
-          ).then(({ data: { simulation } }) =>
-            simulation
+          }).then(({ simulation }) => {
+            return simulation
               ? swapGetSimulation(
                   simulation as terraswap.SimulationResponse<uLuna>,
                   amount,
                   bank.tax,
                 )
-              : undefined,
-          ),
+              : undefined;
+          }),
         );
       }
     },
-    [address, bank.tax, client, resolveSimulation],
+    [
+      address.cw20.bLuna,
+      address.terraswap.blunaLunaPair,
+      bank.tax,
+      mantleEndpoint,
+      mantleFetch,
+      resolveSimulation,
+    ],
   );
 
   const updateGetAmount = useCallback(
@@ -208,29 +225,43 @@ export function Swap() {
         const amount = microfy(getAmount).toString() as uLuna;
 
         resolveSimulation(
-          querySimulation(
-            client,
-            address,
-            amount,
-            address.terraswap.blunaLunaPair,
-            {
-              native_token: {
-                denom: 'uluna' as Denom,
+          terraswapSimulationQuery({
+            mantleEndpoint,
+            mantleFetch,
+            variables: {
+              tokenPairContract: address.terraswap.blunaLunaPair,
+              simulationQuery: {
+                simulation: {
+                  offer_asset: {
+                    info: {
+                      native_token: {
+                        denom: 'uluna' as Denom,
+                      },
+                    },
+                    amount,
+                  },
+                },
               },
             },
-          ).then(({ data: { simulation } }) =>
-            simulation
+          }).then(({ simulation }) => {
+            return simulation
               ? swapBurnSimulation(
                   simulation as terraswap.SimulationResponse<uLuna>,
                   amount,
                   bank.tax,
                 )
-              : undefined,
-          ),
+              : undefined;
+          }),
         );
       }
     },
-    [address, bank.tax, client, resolveSimulation],
+    [
+      address.terraswap.blunaLunaPair,
+      bank.tax,
+      mantleEndpoint,
+      mantleFetch,
+      resolveSimulation,
+    ],
   );
 
   const init = useCallback(() => {
@@ -239,35 +270,46 @@ export function Swap() {
   }, []);
 
   const proceed = useCallback(
-    async (
-      walletReady: ConnectedWallet,
-      burnAmount: bLuna,
-      beliefPrice: Rate,
-      maxSpread: Rate,
-    ) => {
-      const broadcasted = await swap({
-        address: walletReady.walletAddress,
-        amount: burnAmount,
-        belief_price: formatExecuteMsgNumber(big(1).div(beliefPrice)),
-        max_spread: maxSpread,
-      });
-
-      if (!broadcasted) {
-        init();
+    (burnAmount: bLuna, beliefPrice: Rate, maxSpread: Rate) => {
+      if (!connectedWallet || !swap) {
+        return;
       }
+
+      swap({
+        burnAmount,
+        beliefPrice: formatExecuteMsgNumber(big(1).div(beliefPrice)) as Rate,
+        maxSpread,
+        onTxSucceed: () => {
+          init();
+        },
+      });
     },
-    [swap, init],
+    [connectedWallet, swap, init],
   );
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
   if (
-    swapResult?.status === 'in-progress' ||
-    swapResult?.status === 'done' ||
-    swapResult?.status === 'fault'
+    swapResult?.status === StreamStatus.IN_PROGRESS ||
+    swapResult?.status === StreamStatus.DONE
   ) {
-    return <TransactionRenderer result={swapResult} onExit={init} />;
+    return (
+      <TxResultRenderer
+        resultRendering={swapResult.value}
+        onExit={() => {
+          init();
+          switch (swapResult.status) {
+            case StreamStatus.IN_PROGRESS:
+              swapResult.abort();
+              break;
+            case StreamStatus.DONE:
+              swapResult.clear();
+              break;
+          }
+        }}
+      />
+    );
   }
 
   return (
@@ -399,6 +441,8 @@ export function Swap() {
         disabled={
           !connectedWallet ||
           !connectedWallet.availablePost ||
+          !swap ||
+          !simulation ||
           burnAmount.length === 0 ||
           big(burnAmount).lte(0) ||
           !!invalidTxFee ||
@@ -406,13 +450,8 @@ export function Swap() {
           big(simulation?.swapFee ?? 0).lte(0)
         }
         onClick={() =>
-          connectedWallet &&
-          proceed(
-            connectedWallet,
-            burnAmount,
-            simulation!.beliefPrice,
-            simulation!.maxSpread,
-          )
+          simulation &&
+          proceed(burnAmount, simulation.beliefPrice, simulation.maxSpread)
         }
       >
         Burn

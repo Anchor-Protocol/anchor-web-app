@@ -15,15 +15,15 @@ import {
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { Token, UST, uToken, uUST } from '@anchor-protocol/types';
+import { HumanAddr, Token, UST, uToken, uUST } from '@anchor-protocol/types';
 import {
-  useConnectedWallet,
-  ConnectedWallet,
-} from '@terra-money/wallet-provider';
+  useAnchorWebapp,
+  useTerraSendTx,
+} from '@anchor-protocol/webapp-provider';
 import { Modal, NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { Warning } from '@material-ui/icons';
+import { StreamStatus } from '@rx-stream/react';
 import { min } from '@terra-dev/big-math';
-import { useOperation } from '@terra-dev/broadcastable-operation';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
@@ -32,16 +32,14 @@ import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/component
 import { TextInput } from '@terra-dev/neumorphism-ui/components/TextInput';
 import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
 import { AccAddress } from '@terra-money/terra.js';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { Bank, useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
-import { useContractAddress } from 'base/contexts/contract';
 import big, { Big, BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
-import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
 import { CurrencyInfo } from 'pages/send/models/currency';
-import { sendOptions } from 'pages/send/transactions/sendOptions';
 import React, {
   ChangeEvent,
   ReactNode,
@@ -73,11 +71,12 @@ function ComponentBase({
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const { fixedGas } = useConstants();
+  const {
+    constants: { fixedGas },
+    contractAddress: { cw20 },
+  } = useAnchorWebapp();
 
-  const { cw20 } = useContractAddress();
-
-  const [send, sendResult] = useOperation(sendOptions, {});
+  const [send, sendResult] = useTerraSendTx();
 
   const currencies = useMemo<CurrencyInfo[]>(
     () => [
@@ -241,34 +240,40 @@ function ComponentBase({
 
   const submit = useCallback(
     async (
-      walletReady: ConnectedWallet,
       toAddress: string,
       currency: CurrencyInfo,
       amount: Token,
       txFee: uUST,
       memo: string,
     ) => {
-      await send({
-        myAddress: walletReady.walletAddress,
-        toAddress,
+      if (!connectedWallet || !send) {
+        return;
+      }
+
+      send({
+        toWalletAddress: toAddress as HumanAddr,
         amount,
-        currency,
+        currency: currency.cw20Address
+          ? { cw20Contract: currency.cw20Address }
+          : { tokenDenom: currency.value },
         txFee,
         memo,
       });
     },
-    [send],
+    [connectedWallet, send],
   );
 
   if (
-    sendResult?.status === 'in-progress' ||
-    sendResult?.status === 'done' ||
-    sendResult?.status === 'fault'
+    sendResult?.status === StreamStatus.IN_PROGRESS ||
+    sendResult?.status === StreamStatus.DONE
   ) {
     return (
       <Modal open disableBackdropClick disableEnforceFocus>
         <Dialog className={className}>
-          <TransactionRenderer result={sendResult} onExit={closeDialog} />
+          <TxResultRenderer
+            resultRendering={sendResult.value}
+            onExit={closeDialog}
+          />
         </Dialog>
       </Modal>
     );
@@ -387,6 +392,7 @@ function ComponentBase({
           className="send"
           disabled={
             !connectedWallet ||
+            !send ||
             address.length === 0 ||
             amount.length === 0 ||
             !!invalidAddress ||
@@ -396,15 +402,7 @@ function ComponentBase({
             big(currency.getWithdrawable(bank, fixedGas)).lte(0)
           }
           onClick={() =>
-            connectedWallet &&
-            submit(
-              connectedWallet,
-              address,
-              currency,
-              amount,
-              txFee.toString() as uUST,
-              memo,
-            )
+            submit(address, currency, amount, txFee.toString() as uUST, memo)
           }
         >
           Send

@@ -1,12 +1,12 @@
 import { ExecuteMsg } from '@anchor-protocol/anchor.js';
+import { formatExecuteMsgNumber } from '@anchor-protocol/notation';
+import { anchorToken, CW20Addr, Rate } from '@anchor-protocol/types';
+import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
+import { InputAdornment } from '@material-ui/core';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { NativeSelect } from '@terra-dev/neumorphism-ui/components/NativeSelect';
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
-import { formatExecuteMsgNumber } from '@anchor-protocol/notation';
-import { anchorToken, CW20Addr, Rate } from '@anchor-protocol/types';
-import { useContractAddress } from 'base/contexts/contract';
-import { InputAdornment } from '@material-ui/core';
 import big from 'big.js';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
@@ -20,7 +20,7 @@ export function PollCreateModifyCollateralAttribute() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const address = useContractAddress();
+  const { contractAddress: address } = useAnchorWebapp();
 
   // ---------------------------------------------
   // states

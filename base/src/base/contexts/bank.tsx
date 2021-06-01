@@ -1,124 +1,53 @@
-import { microfy } from '@anchor-protocol/notation';
-import type {
-  Rate,
+import {
   uANC,
   uAncUstLP,
   uaUST,
   ubLuna,
   ubLunaLunaLP,
   uLuna,
-  UST,
   uUST,
 } from '@anchor-protocol/types';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { BigSource } from 'big.js';
-import type { ReactNode } from 'react';
-import {
-  Consumer,
-  Context,
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-} from 'react';
-import { Data as TaxData, useTax } from '../queries/tax';
-import {
-  Data as UserBalancesData,
-  useUserBalances,
-} from '../queries/userBalances';
+import { AnchorTax, AnchorTokenBalances } from '@anchor-protocol/webapp-fns';
+import { useBank as useBank_ } from '@terra-money/webapp-provider';
+import { useMemo } from 'react';
 
-export interface BankProviderProps {
-  children: ReactNode;
+export interface UserBalancesData {
+  uUSD: uUST<string>;
+  uLuna: uLuna<string>;
+  ubLuna: ubLuna<string>;
+  uaUST: uaUST<string>;
+  uANC: uANC<string>;
+  uAncUstLP: uAncUstLP<string>;
+  ubLunaLunaLP: ubLunaLunaLP<string>;
 }
 
 export interface Bank {
-  tax: TaxData;
+  tax: AnchorTax;
   refetchTax: () => void;
   userBalances: UserBalancesData;
   refetchUserBalances: () => void;
-}
-
-// @ts-ignore
-const BankContext: Context<Bank> = createContext<Bank>();
-
-// TODO remove after refactoring done
-export function BankProvider({ children }: BankProviderProps) {
-  const userWallet = useConnectedWallet();
-
-  const { data: taxData, refetch: refetchTax } = useTax();
-
-  const {
-    data: balancesData,
-    refetch: refetchUserBalances,
-  } = useUserBalances();
-
-  const state = useMemo<Bank>(() => {
-    const tax = {
-      taxRate: taxData.taxRate ?? ('0.1' as Rate),
-      maxTaxUUSD:
-        taxData.maxTaxUUSD ??
-        (microfy(0.1 as UST<BigSource>).toString() as uUST),
-    };
-
-    return !!userWallet
-      ? {
-          tax,
-          refetchTax,
-          userBalances: {
-            uUSD: balancesData.uUSD ?? ('0' as uUST),
-            uLuna: balancesData.uLuna ?? ('0' as uLuna),
-            uaUST: balancesData.uaUST ?? ('0' as uaUST),
-            ubLuna: balancesData.ubLuna ?? ('0' as ubLuna),
-            uANC: balancesData.uANC ?? ('0' as uANC),
-            uAncUstLP: balancesData.uAncUstLP ?? ('0' as uAncUstLP),
-            ubLunaLunaLP: balancesData.ubLunaLunaLP ?? ('0' as ubLunaLunaLP),
-          },
-          refetchUserBalances,
-        }
-      : {
-          tax,
-          refetchTax: () => {},
-          userBalances: {
-            uUSD: '0' as uUST,
-            uLuna: '0' as uLuna,
-            ubLuna: '0' as ubLuna,
-            uaUST: '0' as uaUST,
-            uANC: '0' as uANC,
-            uAncUstLP: '0' as uAncUstLP,
-            ubLunaLunaLP: '0' as ubLunaLunaLP,
-          },
-          refetchUserBalances,
-        };
-  }, [
-    balancesData.uANC,
-    balancesData.uAncUstLP,
-    balancesData.uLuna,
-    balancesData.uUSD,
-    balancesData.uaUST,
-    balancesData.ubLuna,
-    balancesData.ubLunaLunaLP,
-    refetchTax,
-    refetchUserBalances,
-    userWallet,
-    taxData.maxTaxUUSD,
-    taxData.taxRate,
-  ]);
-
-  useEffect(() => {
-    if (userWallet) {
-      refetchTax();
-      refetchUserBalances();
-    }
-  }, [refetchTax, refetchUserBalances, userWallet]);
-
-  return <BankContext.Provider value={state}>{children}</BankContext.Provider>;
 }
 
 /**
  * @deprecated use insteadof @terra-money/webapp-provider
  */
 export function useBank(): Bank {
-  return useContext(BankContext);
-}
+  const { tokenBalances, tax, refetchTax, refetchTokenBalances } = useBank_<
+    AnchorTokenBalances,
+    AnchorTax
+  >();
 
-export const BankConsumer: Consumer<Bank> = BankContext.Consumer;
+  const state = useMemo<Bank>(() => {
+    return {
+      tax,
+      refetchTax,
+      userBalances: {
+        ...tokenBalances,
+        uUSD: tokenBalances.uUST,
+      },
+      refetchUserBalances: refetchTokenBalances,
+    };
+  }, [tax, refetchTax, tokenBalances, refetchTokenBalances]);
+
+  return state;
+}

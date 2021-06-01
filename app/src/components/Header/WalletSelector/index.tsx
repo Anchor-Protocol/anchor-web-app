@@ -1,4 +1,5 @@
 import { Terra, Walletconnect } from '@anchor-protocol/icons';
+import { useAirdropCheckQuery } from '@anchor-protocol/webapp-provider';
 import { ClickAwayListener } from '@material-ui/core';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { FlatButton } from '@terra-dev/neumorphism-ui/components/FlatButton';
@@ -9,7 +10,6 @@ import {
   WalletStatus,
 } from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
-import { useAirdrop } from 'pages/airdrop/queries/useAirdrop';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import { useCallback, useState } from 'react';
 import { useRouteMatch } from 'react-router-dom';
@@ -43,7 +43,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
 
   const bank = useBank();
 
-  const [airdrop] = useAirdrop();
+  const { data: airdrop, isLoading: airdropIsLoading } = useAirdropCheckQuery();
   //const airdrop = useMemo<Airdrop | 'in-progress' | null>(
   //  () => ({
   //    createdAt: '',
@@ -227,7 +227,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
 
             {!airdropClosed &&
               airdrop &&
-              airdrop !== 'in-progress' &&
+              !airdropIsLoading &&
               !openDropdown &&
               !matchAirdrop && (
                 <DropdownContainer>

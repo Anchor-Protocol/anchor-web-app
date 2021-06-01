@@ -1,3 +1,18 @@
-import * as path from 'path';
+import path from 'path';
 
-export const src = path.resolve(__dirname, '../src');
+export const cwd = path.resolve(__dirname, '..')
+
+export const entry = {
+  '@anchor-protocol/*': {
+    version: '0.15.0',
+    tag: 'latest',
+  },
+  '@terra-money/*': {
+    version: '0.15.0',
+    tag: 'latest',
+  },
+  '@terra-dev/*': {
+    version: '0.15.0',
+    tag: 'latest',
+  },
+};

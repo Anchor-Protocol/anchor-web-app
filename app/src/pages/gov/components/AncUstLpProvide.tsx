@@ -14,30 +14,29 @@ import {
 } from '@anchor-protocol/notation';
 import { ANC, UST, uUST } from '@anchor-protocol/types';
 import {
-  useConnectedWallet,
-  ConnectedWallet,
-} from '@terra-money/wallet-provider';
+  useAncAncUstLpProvideTx,
+  useAnchorWebapp,
+  useAncPriceQuery,
+} from '@anchor-protocol/webapp-provider';
 import { InputAdornment } from '@material-ui/core';
+import { StreamStatus } from '@rx-stream/react';
 import { max, min } from '@terra-dev/big-math';
-import { useOperation } from '@terra-dev/broadcastable-operation';
 import { isZero } from '@terra-dev/is-zero';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import { useConfirm } from '@terra-dev/neumorphism-ui/components/useConfirm';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
 import big, { Big } from 'big.js';
 import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
-import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
 import { formatShareOfPool } from 'pages/gov/components/formatShareOfPool';
 import { ancUstLpAncSimulation } from 'pages/gov/logics/ancUstLpAncSimulation';
 import { ancUstLpUstSimulation } from 'pages/gov/logics/ancUstLpUstSimulation';
 import { AncUstLpSimulation } from 'pages/gov/models/ancUstLpSimulation';
-import { useANCPrice } from 'pages/gov/queries/ancPrice';
-import { ancUstLpProvideOptions } from 'pages/gov/transactions/ancUstLpProvideOptions';
 import React, {
   ChangeEvent,
   ReactNode,
@@ -54,7 +53,9 @@ export function AncUstLpProvide() {
 
   const [openConfirm, confirmElement] = useConfirm();
 
-  const { fixedGas } = useConstants();
+  const {
+    constants: { fixedGas },
+  } = useAnchorWebapp();
 
   // ---------------------------------------------
   // states
@@ -71,17 +72,12 @@ export function AncUstLpProvide() {
   // ---------------------------------------------
   const bank = useBank();
 
-  const {
-    data: { ancPrice },
-  } = useANCPrice();
+  const { data: { ancPrice } = {} } = useAncPriceQuery();
 
   // ---------------------------------------------
   // transaction
   // ---------------------------------------------
-  const [provide, provideResult] = useOperation(ancUstLpProvideOptions, {
-    bank,
-    ancPrice,
-  });
+  const [provide, provideResult] = useAncAncUstLpProvideTx();
 
   // ---------------------------------------------
   // logics
@@ -223,12 +219,16 @@ export function AncUstLpProvide() {
 
   const proceed = useCallback(
     async (
-      walletReady: ConnectedWallet,
+      //walletReady: ConnectedWallet,
       ancAmount: ANC,
       ustAmount: UST,
       txFee: uUST,
       confirm: ReactNode,
     ) => {
+      if (!connectedWallet || !provide) {
+        return;
+      }
+
       if (confirm) {
         const userConfirm = await openConfirm({
           description: confirm,
@@ -241,30 +241,42 @@ export function AncUstLpProvide() {
         }
       }
 
-      const broadcasted = await provide({
-        address: walletReady.walletAddress,
-        token_amount: ancAmount,
-        native_amount: ustAmount,
-        quote: 'uusd',
+      provide({
+        ancAmount,
+        ustAmount,
         txFee,
+        onTxSucceed: () => {
+          init();
+        },
       });
-
-      if (!broadcasted) {
-        init();
-      }
     },
-    [init, openConfirm, provide],
+    [connectedWallet, init, openConfirm, provide],
   );
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
   if (
-    provideResult?.status === 'in-progress' ||
-    provideResult?.status === 'done' ||
-    provideResult?.status === 'fault'
+    provideResult?.status === StreamStatus.IN_PROGRESS ||
+    provideResult?.status === StreamStatus.DONE
   ) {
-    return <TransactionRenderer result={provideResult} onExit={init} />;
+    return (
+      <TxResultRenderer
+        resultRendering={provideResult.value}
+        onExit={() => {
+          init();
+
+          switch (provideResult.status) {
+            case StreamStatus.IN_PROGRESS:
+              provideResult.abort();
+              break;
+            case StreamStatus.DONE:
+              provideResult.clear();
+              break;
+          }
+        }}
+      />
+    );
   }
 
   return (
@@ -400,6 +412,7 @@ export function AncUstLpProvide() {
         disabled={
           !connectedWallet ||
           !connectedWallet.availablePost ||
+          !provide ||
           ancAmount.length === 0 ||
           ustAmount.length === 0 ||
           big(ancAmount).lte(0) ||
@@ -410,10 +423,8 @@ export function AncUstLpProvide() {
           !!invalidUstAmount
         }
         onClick={() =>
-          connectedWallet &&
           simulation &&
           proceed(
-            connectedWallet,
             ancAmount,
             ustAmount,
             simulation.txFee.toFixed() as uUST,

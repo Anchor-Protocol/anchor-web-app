@@ -2,6 +2,7 @@
   "compilerOptions": {
     "downlevelIteration": true,
     "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
     "esModuleInterop": true,
     "module": "commonjs",
     "target": "ES2018",

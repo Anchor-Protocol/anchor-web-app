@@ -6,29 +6,28 @@ import {
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import type { bLuna, Luna, uUST } from '@anchor-protocol/types';
+import type { bLuna, Luna } from '@anchor-protocol/types';
 import {
-  ConnectedWallet,
-  useConnectedWallet,
-} from '@terra-money/wallet-provider';
+  useAnchorWebapp,
+  useBondBLunaExchangeRateQuery,
+  useBondBurnTx,
+} from '@anchor-protocol/webapp-provider';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
-import { useOperation } from '@terra-dev/broadcastable-operation';
+import { StreamStatus } from '@rx-stream/react';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { NumberMuiInput } from '@terra-dev/neumorphism-ui/components/NumberMuiInput';
 import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
 import big, { Big } from 'big.js';
 import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
-import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
 import { pegRecovery } from 'pages/basset/logics/pegRecovery';
 import { validateBurnAmount } from 'pages/basset/logics/validateBurnAmount';
-import { useExchangeRate } from 'pages/basset/queries/exchangeRate';
-import { burnOptions } from 'pages/basset/transactions/burnOptions';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 interface Item {
@@ -45,9 +44,11 @@ export function Burn() {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const { fixedGas } = useConstants();
+  const {
+    constants: { fixedGas },
+  } = useAnchorWebapp();
 
-  const [burn, burnResult] = useOperation(burnOptions, {});
+  const [burn, burnResult] = useBondBurnTx();
 
   // ---------------------------------------------
   // states
@@ -68,10 +69,8 @@ export function Burn() {
   const bank = useBank();
 
   const {
-    data: { exchangeRate, parameters },
-  } = useExchangeRate({
-    bAsset: getCurrency.value,
-  });
+    data: { state: exchangeRate, parameters } = {},
+  } = useBondBLunaExchangeRateQuery();
 
   // ---------------------------------------------
   // logics
@@ -150,29 +149,44 @@ export function Burn() {
   }, []);
 
   const proceed = useCallback(
-    async (walletReady: ConnectedWallet, burnAmount: bLuna) => {
-      const broadcasted = await burn({
-        address: walletReady.walletAddress,
-        amount: burnAmount,
-        txFee: fixedGas.toString() as uUST,
-      });
-
-      if (!broadcasted) {
-        init();
+    (burnAmount: bLuna) => {
+      if (!connectedWallet || !burn) {
+        return;
       }
+
+      burn({
+        burnAmount,
+        onTxSucceed: () => {
+          init();
+        },
+      });
     },
-    [burn, fixedGas, init],
+    [burn, connectedWallet, init],
   );
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
   if (
-    burnResult?.status === 'in-progress' ||
-    burnResult?.status === 'done' ||
-    burnResult?.status === 'fault'
+    burnResult?.status === StreamStatus.IN_PROGRESS ||
+    burnResult?.status === StreamStatus.DONE
   ) {
-    return <TransactionRenderer result={burnResult} onExit={init} />;
+    return (
+      <TxResultRenderer
+        resultRendering={burnResult.value}
+        onExit={() => {
+          init();
+          switch (burnResult.status) {
+            case StreamStatus.IN_PROGRESS:
+              burnResult.abort();
+              break;
+            case StreamStatus.DONE:
+              burnResult.clear();
+              break;
+          }
+        }}
+      />
+    );
   }
 
   return (
@@ -325,12 +339,13 @@ export function Burn() {
         disabled={
           !connectedWallet ||
           !connectedWallet.availablePost ||
+          !burn ||
           burnAmount.length === 0 ||
           big(burnAmount).lte(0) ||
           !!invalidTxFee ||
           !!invalidBurnAmount
         }
-        onClick={() => connectedWallet && proceed(connectedWallet, burnAmount)}
+        onClick={() => proceed(burnAmount)}
       >
         Burn
       </ActionButton>

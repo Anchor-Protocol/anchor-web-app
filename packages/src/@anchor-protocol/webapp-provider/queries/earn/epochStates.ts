@@ -3,7 +3,6 @@ import {
   EarnEpochStatesData,
   earnEpochStatesQuery,
 } from '@anchor-protocol/webapp-fns';
-import { useEventBusListener } from '@terra-dev/event-bus';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
 import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
@@ -44,7 +43,12 @@ const queryFn = ({
 export function useEarnEpochStatesQuery(): UseQueryResult<
   EarnEpochStatesData | undefined
 > {
-  const { mantleFetch, mantleEndpoint, lastSyncedHeight } = useTerraWebapp();
+  const {
+    mantleFetch,
+    mantleEndpoint,
+    lastSyncedHeight,
+    queryErrorReporter,
+  } = useTerraWebapp();
 
   const {
     contractAddress: { moneyMarket },
@@ -66,15 +70,9 @@ export function useEarnEpochStatesQuery(): UseQueryResult<
       refetchInterval: browserInactive && 1000 * 60 * 5,
       enabled: !browserInactive,
       keepPreviousData: true,
+      onError: queryErrorReporter,
     },
   );
-
-  // TODO remove
-  useEventBusListener('interest-earned-updated', () => {
-    if (!browserInactive) {
-      result.refetch();
-    }
-  });
 
   return result;
 }

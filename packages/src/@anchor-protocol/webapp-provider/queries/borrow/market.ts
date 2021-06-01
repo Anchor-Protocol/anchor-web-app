@@ -68,7 +68,7 @@ const queryFn = ({
 export function useBorrowMarketQuery(): UseQueryResult<
   BorrowMarketData | undefined
 > {
-  const { mantleFetch, mantleEndpoint } = useTerraWebapp();
+  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const {
     contractAddress: { moneyMarket, cw20 },
@@ -92,6 +92,7 @@ export function useBorrowMarketQuery(): UseQueryResult<
       refetchInterval: browserInactive && 1000 * 60 * 5,
       enabled: !browserInactive,
       keepPreviousData: true,
+      onError: queryErrorReporter,
     },
   );
 }

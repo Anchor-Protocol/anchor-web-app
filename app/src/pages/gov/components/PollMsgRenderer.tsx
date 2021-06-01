@@ -1,15 +1,18 @@
 import { anchorToken } from '@anchor-protocol/types';
-import { useContract, useContractNickname } from 'base/contexts/contract';
+import {
+  useAnchorWebapp,
+  useContractNickname,
+} from '@anchor-protocol/webapp-provider';
 import { AccountLink } from 'components/AccountLink';
-import { getMsgDetails } from '../logics/getMsgDetails';
 import React, { Fragment, useMemo } from 'react';
+import { getMsgDetails } from '../logics/getMsgDetails';
 
 export interface PollMsgRendererProps {
   msg: anchorToken.gov.ParsedExecuteMsg | null | undefined;
 }
 
 export function PollMsgRenderer({ msg }: PollMsgRendererProps) {
-  const { address } = useContract();
+  const { contractAddress: address } = useAnchorWebapp();
   const nickname = useContractNickname();
 
   const contractNickname = useMemo(

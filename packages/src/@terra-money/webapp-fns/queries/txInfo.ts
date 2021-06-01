@@ -4,17 +4,17 @@ import { MantleFetch } from '../types';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-type RawLogAttribute = {
+export type RawLogAttribute = {
   key: string;
   value: string;
 };
 
-type RawLogEvent = {
+export type RawLogEvent = {
   type: string;
   attributes: RawLogAttribute[];
 };
 
-type RawLogMsg = {
+export type RawLogMsg = {
   msg_index: number;
   log: string;
   events: RawLogEvent[];

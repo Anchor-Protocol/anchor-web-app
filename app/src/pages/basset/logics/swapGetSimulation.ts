@@ -1,7 +1,7 @@
 import type { Rate, ubLuna, uLuna, uUST } from '@anchor-protocol/types';
 import { terraswap } from '@anchor-protocol/types';
+import { AnchorTax } from '@anchor-protocol/webapp-fns';
 import { min } from '@terra-dev/big-math';
-import { Data as TaxData } from 'base/queries/tax';
 import big, { Big } from 'big.js';
 import { MAX_SPREAD } from 'pages/basset/env';
 import { SwapSimulation } from '../models/swapSimulation';
@@ -9,7 +9,7 @@ import { SwapSimulation } from '../models/swapSimulation';
 export function swapGetSimulation(
   simulation: terraswap.SimulationResponse<uLuna>,
   burnAmount: ubLuna,
-  { taxRate, maxTaxUUSD }: TaxData,
+  { taxRate, maxTaxUUSD }: AnchorTax,
 ): SwapSimulation<uLuna, ubLuna> {
   const beliefPrice = big(simulation.return_amount).div(burnAmount);
   const maxSpread = MAX_SPREAD;

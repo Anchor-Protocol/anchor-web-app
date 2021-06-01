@@ -4,13 +4,14 @@ import {
   formatANC,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
-import { ANC, uUST } from '@anchor-protocol/types';
+import { ANC } from '@anchor-protocol/types';
 import {
-  useConnectedWallet,
-  ConnectedWallet,
-} from '@terra-money/wallet-provider';
+  useAnchorWebapp,
+  useGovConfigQuery,
+  useGovCreatePollTx,
+} from '@anchor-protocol/webapp-provider';
 import { InputAdornment } from '@material-ui/core';
-import { useOperation } from '@terra-dev/broadcastable-operation';
+import { StreamStatus } from '@rx-stream/react';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
@@ -20,12 +21,12 @@ import {
   BytesValid,
   useValidateStringBytes,
 } from '@terra-dev/use-string-bytes-length';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
 import big from 'big.js';
 import { MessageBox } from 'components/MessageBox';
-import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
 import React, {
   ChangeEvent,
@@ -36,8 +37,6 @@ import React, {
 } from 'react';
 import { useHistory } from 'react-router-dom';
 import { validateLinkAddress } from '../logics/validateLinkAddress';
-import { usePollConfig } from '../queries/pollConfig';
-import { createPollOptions } from '../transactions/createPollOptions';
 import { FormLayout } from './FormLayout';
 
 export interface PollCreateBaseProps {
@@ -58,11 +57,13 @@ export function PollCreateBase({
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const { fixedGas } = useConstants();
+  const {
+    constants: { fixedGas },
+  } = useAnchorWebapp();
 
   const history = useHistory();
 
-  const [createPoll, createPollResult] = useOperation(createPollOptions, {});
+  const [createPoll, createPollResult] = useGovCreatePollTx();
 
   // ---------------------------------------------
   // states
@@ -80,9 +81,7 @@ export function PollCreateBase({
   // ---------------------------------------------
   const bank = useBank();
 
-  const {
-    data: { pollConfig },
-  } = usePollConfig();
+  const { data: { govConfig: pollConfig } = {} } = useGovConfigQuery();
 
   // ---------------------------------------------
   // logics
@@ -118,44 +117,48 @@ export function PollCreateBase({
   }, [history]);
 
   const submit = useCallback(
-    async (
-      walletReady: ConnectedWallet,
+    (
+      //walletReady: ConnectedWallet,
       title: string,
       description: string,
       link: string,
       amount: ANC,
     ) => {
-      const execute_msgs = onCreateMsgs();
-
-      if (execute_msgs && execute_msgs.length !== 1) {
+      if (!connectedWallet || !createPoll) {
         return;
       }
 
-      await createPoll({
-        address: walletReady.walletAddress,
+      const executeMsgs = onCreateMsgs();
+
+      if (executeMsgs && executeMsgs.length !== 1) {
+        return;
+      }
+
+      createPoll({
         amount,
         title,
         description,
         link: link.length > 0 ? link : undefined,
-        execute_msgs,
-        txFee: txFee.toString() as uUST,
+        executeMsgs,
       });
     },
-    [createPoll, onCreateMsgs, txFee],
+    [connectedWallet, createPoll, onCreateMsgs],
   );
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
   if (
-    createPollResult?.status === 'in-progress' ||
-    createPollResult?.status === 'done' ||
-    createPollResult?.status === 'fault'
+    createPollResult?.status === StreamStatus.IN_PROGRESS ||
+    createPollResult?.status === StreamStatus.DONE
   ) {
     return (
       <FormLayout>
         <Section>
-          <TransactionRenderer result={createPollResult} onExit={goToGov} />
+          <TxResultRenderer
+            resultRendering={createPollResult.value}
+            onExit={goToGov}
+          />
         </Section>
       </FormLayout>
     );
@@ -274,6 +277,7 @@ export function PollCreateBase({
             submitDisabled ||
             !connectedWallet ||
             !connectedWallet.availablePost ||
+            !createPoll ||
             title.length === 0 ||
             description.length === 0 ||
             !!invalidUserANCBalance ||
@@ -284,10 +288,8 @@ export function PollCreateBase({
             !!invalidLinkProtocol
           }
           onClick={() =>
-            connectedWallet &&
             pollConfig &&
             submit(
-              connectedWallet,
               title,
               description,
               link,

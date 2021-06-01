@@ -4,12 +4,11 @@ import {
   MAX_EXECUTE_MSG_DECIMALS,
 } from '@anchor-protocol/notation';
 import { moneyMarket, Rate } from '@anchor-protocol/types';
+import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
 import { InputAdornment } from '@material-ui/core';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
-import { useConstants } from 'base/contexts/contants';
-import { useContractAddress } from 'base/contexts/contract';
 import big from 'big.js';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
@@ -18,8 +17,10 @@ export function PollCreateModifyBorrowInterest() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const address = useContractAddress();
-  const { blocksPerYear } = useConstants();
+  const {
+    constants: { blocksPerYear },
+    contractAddress: address,
+  } = useAnchorWebapp();
 
   // ---------------------------------------------
   // states

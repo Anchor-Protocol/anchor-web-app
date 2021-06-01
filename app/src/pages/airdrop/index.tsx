@@ -3,34 +3,31 @@ import {
   formatANCWithPostfixUnits,
   formatUST,
 } from '@anchor-protocol/notation';
+import { uUST } from '@anchor-protocol/types';
 import {
-  ConnectedWallet,
-  useConnectedWallet,
-} from '@terra-money/wallet-provider';
-import { useOperation } from '@terra-dev/broadcastable-operation';
+  Airdrop as AirdropData,
+  useAirdropCheckQuery,
+  useAirdropClaimTx,
+} from '@anchor-protocol/webapp-provider';
+import { StreamStatus } from '@rx-stream/react';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { MessageBox } from 'components/MessageBox';
-import { TransactionRenderer } from 'components/TransactionRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
-import {
-  Airdrop as AirdropData,
-  useAirdrop,
-} from 'pages/airdrop/queries/useAirdrop';
-import { airdropClaimOptions } from 'pages/airdrop/transactions/airdropClaimOptions';
 import React, { useCallback, useMemo } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { SwishSpinner } from 'react-spinners-kit';
 import styled from 'styled-components';
-import { uUST } from '@anchor-protocol/types';
 
 export interface AirdropProps {
   className?: string;
 }
-  
+
 const airdropTxFee: uUST<number> = 50000 as uUST<number>;
 
 function AirdropBase({ className }: AirdropProps) {
@@ -41,9 +38,9 @@ function AirdropBase({ className }: AirdropProps) {
 
   const history = useHistory();
 
-  const [airdrop] = useAirdrop();
+  const { data: airdrop, isLoading } = useAirdropCheckQuery();
 
-  const [claim, claimResult] = useOperation(airdropClaimOptions, {});
+  const [claim, claimResult] = useAirdropClaimTx();
 
   // ---------------------------------------------
   // queries
@@ -60,34 +57,34 @@ function AirdropBase({ className }: AirdropProps) {
   }, [history]);
 
   const proceed = useCallback(
-    async (walletReady: ConnectedWallet, airdrop: AirdropData) => {
-      await claim({
-        address: walletReady.walletAddress,
-        airdrop,
-      });
+    (airdrop: AirdropData) => {
+      if (!connectedWallet || !claim) {
+        return;
+      }
+
+      claim({ airdrop });
     },
-    [claim],
+    [claim, connectedWallet],
   );
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
   if (
-    claimResult?.status === 'in-progress' ||
-    claimResult?.status === 'done' ||
-    claimResult?.status === 'fault'
+    claimResult?.status === StreamStatus.IN_PROGRESS ||
+    claimResult?.status === StreamStatus.DONE
   ) {
     return (
       <CenteredLayout className={className} maxWidth={800}>
         <Section>
-          <TransactionRenderer result={claimResult} onExit={exit} />
+          <TxResultRenderer resultRendering={claimResult.value} onExit={exit} />
         </Section>
       </CenteredLayout>
     );
   }
 
   // in-progress api check if there is an airdrop
-  if (airdrop === 'in-progress') {
+  if (isLoading) {
     return (
       <CenteredLayout className={className} maxWidth={800}>
         <Section>
@@ -140,12 +137,11 @@ function AirdropBase({ className }: AirdropProps) {
           disabled={
             !connectedWallet ||
             !connectedWallet.availablePost ||
+            !claim ||
             !airdrop ||
             !!invalidTxFee
           }
-          onClick={() =>
-            connectedWallet && airdrop && proceed(connectedWallet, airdrop)
-          }
+          onClick={() => airdrop && proceed(airdrop)}
         >
           Claim
         </ActionButton>

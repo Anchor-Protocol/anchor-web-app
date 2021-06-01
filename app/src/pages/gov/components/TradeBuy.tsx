@@ -3,7 +3,6 @@ import {
   demicrofy,
   formatANC,
   formatANCInput,
-  formatExecuteMsgNumber,
   formatFluidDecimalPoints,
   formatUST,
   formatUSTInput,
@@ -21,37 +20,33 @@ import {
   uUST,
 } from '@anchor-protocol/types';
 import {
-  useConnectedWallet,
-  ConnectedWallet,
-} from '@terra-money/wallet-provider';
-import { useApolloClient } from '@apollo/client';
+  terraswapReverseSimulationQuery,
+  terraswapSimulationQuery,
+  useAncBuyTx,
+  useAnchorWebapp,
+  useAncPriceQuery,
+} from '@anchor-protocol/webapp-provider';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
+import { StreamStatus } from '@rx-stream/react';
 import { max, min } from '@terra-dev/big-math';
-import { useOperation } from '@terra-dev/broadcastable-operation';
 import { isZero } from '@terra-dev/is-zero';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { NumberMuiInput } from '@terra-dev/neumorphism-ui/components/NumberMuiInput';
 import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
 import { useConfirm } from '@terra-dev/neumorphism-ui/components/useConfirm';
 import { useResolveLast } from '@terra-dev/use-resolve-last';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
+import { useTerraWebapp } from '@terra-money/webapp-provider';
 import { useBank } from 'base/contexts/bank';
-import { useConstants } from 'base/contexts/contants';
-import { useContractAddress } from 'base/contexts/contract';
-import { queryReverseSimulation } from 'base/queries/reverseSimulation';
-import { querySimulation } from 'base/queries/simulation';
 import big, { Big } from 'big.js';
 import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
-import { TransactionRenderer } from 'components/TransactionRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
-import { MAX_SPREAD } from 'pages/gov/env';
 import { buyFromSimulation } from 'pages/gov/logics/buyFromSimulation';
 import { buyToSimulation } from 'pages/gov/logics/buyToSimulation';
-import { AncPrice } from 'pages/gov/models/ancPrice';
 import { TradeSimulation } from 'pages/gov/models/tradeSimulation';
-import { useANCPrice } from 'pages/gov/queries/ancPrice';
-import { buyOptions } from 'pages/gov/transactions/buyOptions';
 import React, {
   ChangeEvent,
   ReactNode,
@@ -73,19 +68,20 @@ export function TradeBuy() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
+  const { mantleEndpoint, mantleFetch } = useTerraWebapp();
+
   const connectedWallet = useConnectedWallet();
 
   const [openConfirm, confirmElement] = useConfirm();
 
-  const { fixedGas } = useConstants();
-
-  const client = useApolloClient();
-
-  const address = useContractAddress();
+  const {
+    constants: { fixedGas },
+    contractAddress: address,
+  } = useAnchorWebapp();
 
   const bank = useBank();
 
-  const [buy, buyResult] = useOperation(buyOptions, { bank });
+  const [buy, buyResult] = useAncBuyTx();
 
   // ---------------------------------------------
   // states
@@ -105,9 +101,7 @@ export function TradeBuy() {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const {
-    data: { ancPrice },
-  } = useANCPrice();
+  const { data: { ancPrice } = {} } = useAncPriceQuery();
 
   // ---------------------------------------------
   // logics
@@ -227,30 +221,68 @@ export function TradeBuy() {
         const amount = microfy(fromAmount).toString() as uUST;
 
         resolveSimulation(
-          querySimulation(
-            client,
-            address,
-            amount,
-            address.terraswap.ancUstPair,
-            {
-              native_token: {
-                denom: 'uusd' as Denom,
+          terraswapSimulationQuery({
+            mantleEndpoint,
+            mantleFetch,
+            variables: {
+              tokenPairContract: address.terraswap.ancUstPair,
+              simulationQuery: {
+                simulation: {
+                  offer_asset: {
+                    info: {
+                      native_token: {
+                        denom: 'uusd' as Denom,
+                      },
+                    },
+                    amount,
+                  },
+                },
               },
             },
-          ).then(({ data: { simulation } }) =>
-            simulation
+          }).then(({ simulation }) => {
+            return simulation
               ? buyToSimulation(
                   simulation as terraswap.SimulationResponse<uANC>,
                   amount,
                   bank.tax,
                   fixedGas,
                 )
-              : undefined,
-          ),
+              : undefined;
+          }),
         );
+
+        //resolveSimulation(
+        //  querySimulation(
+        //    client,
+        //    address,
+        //    amount,
+        //    address.terraswap.ancUstPair,
+        //    {
+        //      native_token: {
+        //        denom: 'uusd' as Denom,
+        //      },
+        //    },
+        //  ).then(({ data: { simulation } }) =>
+        //    simulation
+        //      ? buyToSimulation(
+        //          simulation as terraswap.SimulationResponse<uANC>,
+        //          amount,
+        //          bank.tax,
+        //          fixedGas,
+        //        )
+        //      : undefined,
+        //  ),
+        //);
       }
     },
-    [address, bank.tax, client, fixedGas, resolveSimulation],
+    [
+      address.terraswap.ancUstPair,
+      bank.tax,
+      fixedGas,
+      mantleEndpoint,
+      mantleFetch,
+      resolveSimulation,
+    ],
   );
 
   const updateToAmount = useCallback(
@@ -272,30 +304,69 @@ export function TradeBuy() {
         const amount = microfy(toAmount).toString() as uANC;
 
         resolveSimulation(
-          queryReverseSimulation(
-            client,
-            address,
-            amount,
-            address.terraswap.ancUstPair,
-            {
-              token: {
-                contract_addr: address.cw20.ANC,
+          terraswapReverseSimulationQuery({
+            mantleEndpoint,
+            mantleFetch,
+            variables: {
+              tokenPairContract: address.terraswap.ancUstPair,
+              simulationQuery: {
+                simulation: {
+                  offer_asset: {
+                    info: {
+                      token: {
+                        contract_addr: address.cw20.ANC,
+                      },
+                    },
+                    amount,
+                  },
+                },
               },
             },
-          ).then(({ data: { simulation } }) =>
-            simulation
+          }).then(({ simulation }) => {
+            return simulation
               ? buyFromSimulation(
                   simulation as terraswap.SimulationResponse<uANC, uUST>,
                   amount,
                   bank.tax,
                   fixedGas,
                 )
-              : undefined,
-          ),
+              : undefined;
+          }),
         );
+
+        //resolveSimulation(
+        //  queryReverseSimulation(
+        //    client,
+        //    address,
+        //    amount,
+        //    address.terraswap.ancUstPair,
+        //    {
+        //      token: {
+        //        contract_addr: address.cw20.ANC,
+        //      },
+        //    },
+        //  ).then(({ data: { simulation } }) =>
+        //    simulation
+        //      ? buyFromSimulation(
+        //          simulation as terraswap.SimulationResponse<uANC, uUST>,
+        //          amount,
+        //          bank.tax,
+        //          fixedGas,
+        //        )
+        //      : undefined,
+        //  ),
+        //);
       }
     },
-    [address, bank.tax, client, fixedGas, resolveSimulation],
+    [
+      address.cw20.ANC,
+      address.terraswap.ancUstPair,
+      bank.tax,
+      fixedGas,
+      mantleEndpoint,
+      mantleFetch,
+      resolveSimulation,
+    ],
   );
 
   const init = useCallback(() => {
@@ -304,13 +375,11 @@ export function TradeBuy() {
   }, []);
 
   const proceed = useCallback(
-    async (
-      walletReady: ConnectedWallet,
-      fromAmount: UST,
-      ancPrice: AncPrice,
-      txFee: uUST,
-      confirm: ReactNode,
-    ) => {
+    async (fromAmount: UST, txFee: uUST, confirm: ReactNode) => {
+      if (!connectedWallet || !buy) {
+        return;
+      }
+
       if (confirm) {
         const userConfirm = await openConfirm({
           description: confirm,
@@ -323,33 +392,41 @@ export function TradeBuy() {
         }
       }
 
-      const broadcasted = await buy({
-        address: walletReady.walletAddress,
-        amount: fromAmount,
-        beliefPrice: formatExecuteMsgNumber(
-          big(ancPrice.USTPoolSize).div(ancPrice.ANCPoolSize),
-        ),
-        maxSpread: MAX_SPREAD.toString(),
-        denom: 'uusd',
+      buy({
+        fromAmount,
         txFee,
+        onTxSucceed: () => {
+          init();
+        },
       });
-
-      if (!broadcasted) {
-        init();
-      }
     },
-    [buy, init, openConfirm],
+    [buy, connectedWallet, init, openConfirm],
   );
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
   if (
-    buyResult?.status === 'in-progress' ||
-    buyResult?.status === 'done' ||
-    buyResult?.status === 'fault'
+    buyResult?.status === StreamStatus.IN_PROGRESS ||
+    buyResult?.status === StreamStatus.DONE
   ) {
-    return <TransactionRenderer result={buyResult} onExit={init} />;
+    return (
+      <TxResultRenderer
+        resultRendering={buyResult.value}
+        onExit={() => {
+          init();
+
+          switch (buyResult.status) {
+            case StreamStatus.IN_PROGRESS:
+              buyResult.abort();
+              break;
+            case StreamStatus.DONE:
+              buyResult.clear();
+              break;
+          }
+        }}
+      />
+    );
   }
 
   return (
@@ -498,6 +575,7 @@ export function TradeBuy() {
         disabled={
           !connectedWallet ||
           !connectedWallet.availablePost ||
+          !buy ||
           !ancPrice ||
           fromAmount.length === 0 ||
           big(fromAmount).lte(0) ||
@@ -510,13 +588,7 @@ export function TradeBuy() {
           connectedWallet &&
           ancPrice &&
           simulation &&
-          proceed(
-            connectedWallet,
-            fromAmount,
-            ancPrice,
-            simulation.txFee,
-            invalidNextTransaction,
-          )
+          proceed(fromAmount, simulation.txFee, invalidNextTransaction)
         }
       >
         Proceed
