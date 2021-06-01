@@ -5,165 +5,163 @@ import {
 import { MarketCollateralsHistory } from '@anchor-protocol/webapp-fns';
 import big from 'big.js';
 import { Chart } from 'chart.js';
-import React, { useEffect, useRef } from 'react';
-import styled, { useTheme } from 'styled-components';
+import React, { Component, createRef } from 'react';
+import styled, { DefaultTheme } from 'styled-components';
 import { ChartTooltip } from './ChartTooltip';
 import { mediumDay, xTimestampAixs } from './internal/axisUtils';
 
 export interface CollateralsChartProps {
-  data: MarketCollateralsHistory[] | null | undefined;
+  data: MarketCollateralsHistory[];
+  theme: DefaultTheme;
 }
 
-export function CollateralsChart({ data }: CollateralsChartProps) {
-  const theme = useTheme();
+export class CollateralsChart extends Component<CollateralsChartProps> {
+  private canvasRef = createRef<HTMLCanvasElement>();
+  private tooltipRef = createRef<HTMLDivElement>();
+  private chart!: Chart;
 
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const tooltipRef = useRef<HTMLDivElement | null>(null);
-  const chartRef = useRef<Chart | null>(null);
+  render() {
+    return (
+      <Container>
+        <canvas ref={this.canvasRef} />
+        <ChartTooltip ref={this.tooltipRef}>
+          <hr />
+          <section>
+            <div />
+          </section>
+        </ChartTooltip>
+      </Container>
+    );
+  }
 
-  const dataRef = useRef(data);
+  componentWillUnmount() {
+    this.chart.destroy();
+  }
 
-  useEffect(() => {
-    dataRef.current = data;
-  }, [data]);
+  shouldComponentUpdate(nextProps: Readonly<CollateralsChartProps>): boolean {
+    return (
+      this.props.data !== nextProps.data || this.props.theme !== nextProps.theme
+    );
+  }
 
-  useEffect(() => {
-    if (chartRef.current) {
-      if (data) {
-        const chart = chartRef.current;
-        chart.data.labels = xTimestampAixs(
-          data.map(({ timestamp }) => timestamp),
-        );
-        chart.data.datasets[0].data = data.map(({ total_value }) =>
-          big(total_value).toNumber(),
-        );
-        chart.update();
+  componentDidMount() {
+    this.createChart();
+  }
+
+  componentDidUpdate(prevProps: Readonly<CollateralsChartProps>) {
+    if (prevProps.data !== this.props.data) {
+      this.chart.data.labels = xTimestampAixs(
+        this.props.data.map(({ timestamp }) => timestamp),
+      );
+      this.chart.data.datasets[0].data = this.props.data.map(
+        ({ total_value }) => big(total_value).toNumber(),
+      );
+    }
+
+    if (prevProps.theme !== this.props.theme) {
+      if (this.chart.options.scales?.x?.ticks) {
+        this.chart.options.scales.x.ticks.color = this.props.theme.dimTextColor;
       }
-    } else {
-      chartRef.current = new Chart(canvasRef.current!, {
-        type: 'line',
-        options: {
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false,
-            },
-            tooltip: {
-              enabled: false,
+      this.chart.data.datasets[0].borderColor =
+        this.props.theme.colors.positive;
+    }
 
-              external: ({ chart, tooltip }) => {
-                let element = tooltipRef.current!;
+    this.chart.update();
+  }
 
-                if (tooltip.opacity === 0) {
-                  element.style.opacity = '0';
-                  return;
-                }
-
-                const div1 = element.querySelector('div:nth-child(1)');
-                const hr = element.querySelector('hr');
-
-                if (div1) {
-                  try {
-                    const i = tooltip.dataPoints[0].dataIndex;
-                    const isLast = i === dataRef.current!.length - 1;
-                    const item = dataRef.current![i];
-                    const price = formatUSTWithPostfixUnits(
-                      demicrofy(item.total_value),
-                    );
-                    const date = isLast ? 'Now' : mediumDay(item.timestamp);
-                    div1.innerHTML = `${price} UST <span>${date}</span>`;
-                  } catch (error) {
-                    console.error(error);
-                  }
-                }
-
-                if (hr) {
-                  hr.style.top = chart.scales.y.paddingTop + 'px';
-                  hr.style.height = chart.scales.y.height + 'px';
-                }
-
-                element.style.opacity = '1';
-                element.style.transform = `translateX(${tooltip.caretX}px)`;
-              },
-            },
+  private createChart = () => {
+    this.chart = new Chart(this.canvasRef.current!, {
+      type: 'line',
+      options: {
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
           },
-          interaction: {
-            intersect: false,
-            mode: 'index',
-          },
-          scales: {
-            x: {
-              grid: {
-                display: false,
-              },
-              ticks: {
-                autoSkip: false,
-                maxRotation: 0,
-                font: {
-                  size: 11,
-                },
-                color: theme.dimTextColor,
-              },
-            },
-            y: {
-              grace: '25%',
-              display: false,
-            },
-          },
-          elements: {
-            point: {
-              radius: 0,
+          tooltip: {
+            enabled: false,
+
+            external: ({ chart, tooltip }) => {
+              let element = this.tooltipRef.current!;
+
+              if (tooltip.opacity === 0) {
+                element.style.opacity = '0';
+                return;
+              }
+
+              const div1 = element.querySelector('div:nth-child(1)');
+              const hr = element.querySelector('hr');
+
+              if (div1) {
+                try {
+                  const i = tooltip.dataPoints[0].dataIndex;
+                  const isLast = i === this.props.data.length - 1;
+                  const item = this.props.data[i];
+                  const price = formatUSTWithPostfixUnits(
+                    demicrofy(item.total_value),
+                  );
+                  const date = isLast ? 'Now' : mediumDay(item.timestamp);
+                  div1.innerHTML = `${price} UST <span>${date}</span>`;
+                } catch (error) {
+                  console.error(error);
+                }
+              }
+
+              if (hr) {
+                hr.style.top = chart.scales.y.paddingTop + 'px';
+                hr.style.height = chart.scales.y.height + 'px';
+              }
+
+              element.style.opacity = '1';
+              element.style.transform = `translateX(${tooltip.caretX}px)`;
             },
           },
         },
-        data: {
-          labels: data
-            ? xTimestampAixs(data.map(({ timestamp }) => timestamp))
-            : [],
-          datasets: [
-            {
-              data:
-                data?.map(({ total_value }) => big(total_value).toNumber()) ??
-                [],
-              borderColor: theme.colors.positive,
-              borderWidth: 2,
-            },
-          ],
+        interaction: {
+          intersect: false,
+          mode: 'index',
         },
-      });
-    }
-
-    if (process.env.NODE_ENV === 'development') {
-      return () => {
-        chartRef.current?.destroy();
-        chartRef.current = null;
-      };
-    }
-  }, [
-    data,
-    theme.backgroundColor,
-    theme.colors.positive,
-    theme.dimTextColor,
-    theme.intensity,
-  ]);
-
-  useEffect(() => {
-    return () => {
-      chartRef.current?.destroy();
-    };
-  }, []);
-
-  return (
-    <Container>
-      <canvas ref={canvasRef} />
-      <ChartTooltip ref={tooltipRef}>
-        <hr />
-        <section>
-          <div />
-        </section>
-      </ChartTooltip>
-    </Container>
-  );
+        scales: {
+          x: {
+            grid: {
+              display: false,
+            },
+            ticks: {
+              autoSkip: false,
+              maxRotation: 0,
+              font: {
+                size: 11,
+              },
+              color: this.props.theme.dimTextColor,
+            },
+          },
+          y: {
+            grace: '25%',
+            display: false,
+          },
+        },
+        elements: {
+          point: {
+            radius: 0,
+          },
+        },
+      },
+      data: {
+        labels: xTimestampAixs(
+          this.props.data.map(({ timestamp }) => timestamp),
+        ),
+        datasets: [
+          {
+            data: this.props.data?.map(({ total_value }) =>
+              big(total_value).toNumber(),
+            ),
+            borderColor: this.props.theme.colors.positive,
+            borderWidth: 2,
+          },
+        ],
+      },
+    });
+  };
 }
 
 const Container = styled.div`
