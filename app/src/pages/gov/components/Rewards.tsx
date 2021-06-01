@@ -114,7 +114,6 @@ export function RewardsBase({ className }: RewardsProps) {
     }
 
     const staked = big(userGovStakingInfo.balance) as uANC<Big>;
-    console.log('Rewards.tsx..()', ancPrice.ANCPrice);
     const stakedValue = staked.mul(ancPrice.ANCPrice) as uUST<Big>;
 
     const stakable = big(userANCBalance.balance) as uANC<Big>;

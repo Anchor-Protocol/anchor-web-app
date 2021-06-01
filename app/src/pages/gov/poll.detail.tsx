@@ -10,6 +10,7 @@ import {
   useGovPollQuery,
   useGovStateQuery,
   useGovVoteAvailableQuery,
+  useGovVotersQuery,
   useLastSyncedHeightQuery,
 } from '@anchor-protocol/webapp-provider';
 import { Schedule } from '@material-ui/icons';
@@ -63,6 +64,8 @@ function PollDetailBase({ className, match }: PollDetailProps) {
   const [openVoteDialog, voteDialogElement] = usePollVoteDialog();
 
   const { data: lastSyncedHeight = 0 } = useLastSyncedHeightQuery();
+
+  const { voters, isLast, loadMore } = useGovVotersQuery(poll?.id);
 
   const [openCodeViewer, codeViewerElement] = useCodeViewerDialog();
 
@@ -260,10 +263,11 @@ function PollDetailBase({ className, match }: PollDetailProps) {
           </article>
         </section>
 
-        {poll &&
-          typeof lastSyncedHeight === 'number' &&
+        {!!poll &&
           poll.status === 'in_progress' &&
-          poll.end_height > lastSyncedHeight && <PollVoters pollId={poll.id} />}
+          poll.end_height > lastSyncedHeight && (
+            <PollVoters voters={voters} isLast={isLast} loadMore={loadMore} />
+          )}
       </Section>
 
       {voteDialogElement}

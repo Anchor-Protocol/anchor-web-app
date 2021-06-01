@@ -2,7 +2,7 @@ import {
   demicrofy,
   formatANCWithPostfixUnits,
 } from '@anchor-protocol/notation';
-import { useGovVotersQuery } from '@anchor-protocol/webapp-provider';
+import { anchorToken } from '@anchor-protocol/types';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
 import { AccountLink } from 'components/AccountLink';
@@ -10,12 +10,17 @@ import styled from 'styled-components';
 
 export interface PollVotersProps {
   className?: string;
-  pollId: number;
+  voters: anchorToken.gov.Voter[];
+  isLast: boolean;
+  loadMore: () => void;
 }
 
-function PollVotersBase({ className, pollId }: PollVotersProps) {
-  const { voters, isLast, loadMore } = useGovVotersQuery(pollId);
-
+function PollVotersBase({
+  className,
+  voters,
+  isLast,
+  loadMore,
+}: PollVotersProps) {
   return (
     <div className={className}>
       <HorizontalScrollTable minWidth={800} startPadding={20} endPadding={20}>

@@ -1,6 +1,6 @@
 import { anchorToken } from '@anchor-protocol/types';
 import { govVotersQuery } from '@anchor-protocol/webapp-fns';
-import { useAnchorWebapp } from '@anchor-protocol/webapp-provider/contexts/context';
+import { useAnchorWebapp } from '../../contexts/context';
 import { useTerraWebapp } from '@terra-money/webapp-provider';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -13,7 +13,7 @@ interface VotersReturn {
   reload: () => void;
 }
 
-export function useGovVotersQuery(pollId: number): VotersReturn {
+export function useGovVotersQuery(pollId?: number): VotersReturn {
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const {
@@ -28,6 +28,10 @@ export function useGovVotersQuery(pollId: number): VotersReturn {
     // initialize data
     setIsLast(false);
     setVoters([]);
+
+    if (typeof pollId !== 'number') {
+      return;
+    }
 
     govVotersQuery({
       mantleEndpoint,
@@ -63,6 +67,10 @@ export function useGovVotersQuery(pollId: number): VotersReturn {
   ]);
 
   const loadMore = useCallback(() => {
+    if (typeof pollId !== 'number') {
+      return;
+    }
+
     if (voters.length > 0) {
       govVotersQuery({
         mantleEndpoint,

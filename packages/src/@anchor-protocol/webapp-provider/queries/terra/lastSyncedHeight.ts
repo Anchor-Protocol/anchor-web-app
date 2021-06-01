@@ -1,26 +1,33 @@
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
-import { useTerraWebapp } from '@terra-money/webapp-provider';
+import {
+  lastSyncedHeightQuery,
+  MantleFetch,
+  useTerraWebapp,
+} from '@terra-money/webapp-provider';
 import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const storageKey = '__anchor_last_synced_height__';
+const storageKey = (mantleEndpoint: string) =>
+  `__anchor_last_synced_height__?mantle=${mantleEndpoint}`;
 
 const queryFn = ({
-  queryKey: [, lastSyncedHeight],
-}: QueryFunctionContext<[string, () => Promise<number>]>) => {
-  return lastSyncedHeight().then((blockHeight) => {
-    localStorage.setItem(storageKey, blockHeight.toString());
-    return blockHeight;
-  });
+  queryKey: [, mantleEndpoint, mantleFetch],
+}: QueryFunctionContext<[string, string, MantleFetch]>) => {
+  return lastSyncedHeightQuery({ mantleEndpoint, mantleFetch }).then(
+    (blockHeight) => {
+      localStorage.setItem(storageKey(mantleEndpoint), blockHeight.toString());
+      return blockHeight;
+    },
+  );
 };
 
 export function useLastSyncedHeightQuery(): UseQueryResult<number> {
-  const { lastSyncedHeight, queryErrorReporter } = useTerraWebapp();
+  const { mantleEndpoint, mantleFetch, queryErrorReporter } = useTerraWebapp();
 
   const { browserInactive } = useBrowserInactive();
 
   const result = useQuery(
-    [ANCHOR_QUERY_KEY.TERRA_LAST_SYNCED_HEIGHT, lastSyncedHeight],
+    [ANCHOR_QUERY_KEY.TERRA_LAST_SYNCED_HEIGHT, mantleEndpoint, mantleFetch],
     queryFn,
     {
       refetchInterval: browserInactive && 1000 * 60,
@@ -28,7 +35,7 @@ export function useLastSyncedHeightQuery(): UseQueryResult<number> {
       keepPreviousData: true,
       onError: queryErrorReporter,
       placeholderData: () => {
-        return +(localStorage.getItem(storageKey) ?? '0');
+        return +(localStorage.getItem(storageKey(mantleEndpoint)) ?? '0');
       },
     },
   );
