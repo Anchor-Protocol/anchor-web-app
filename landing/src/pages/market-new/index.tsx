@@ -1165,4 +1165,24 @@ export const Market = styled(MarketBase)`
       }
     }
   }
+
+  @media (min-width: 1400px) and (max-width: 1500px) {
+    .summary-section {
+      .anc-buyback > .NeuSection-content {
+        section {
+          div {
+            p {
+              letter-spacing: -1px;
+              font-size: 24px;
+
+              span {
+                letter-spacing: -1px;
+                font-size: 15px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 `;
