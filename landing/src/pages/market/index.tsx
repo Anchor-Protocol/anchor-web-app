@@ -1018,6 +1018,16 @@ export const Market = styled(MarketBase)`
         }
       }
     }
+
+    .stablecoin {
+      header {
+        grid-template-columns: repeat(2, 1fr);
+
+        > div:empty {
+          display: none;
+        }
+      }
+    }
   }
 
   // under tablet
@@ -1119,7 +1129,11 @@ export const Market = styled(MarketBase)`
 
     .stablecoin {
       header {
-        grid-template-columns: repeat(2, 1fr);
+        display: block;
+
+        > div:first-child {
+          margin-bottom: 15px;
+        }
 
         > div:empty {
           display: none;
@@ -1160,20 +1174,6 @@ export const Market = styled(MarketBase)`
               margin-bottom: 12px;
             }
           }
-        }
-      }
-    }
-
-    .stablecoin {
-      header {
-        display: block;
-
-        > div:first-child {
-          margin-bottom: 15px;
-        }
-
-        > div:empty {
-          display: none;
         }
       }
     }
