@@ -45,6 +45,8 @@ export interface MarketProps {
   className?: string;
 }
 
+const EMPTY_ARRAY: any[] = [];
+
 function MarketBase({ className }: MarketProps) {
   const theme = useTheme();
 
@@ -306,7 +308,10 @@ function MarketBase({ className }: MarketProps) {
               </header>
               <figure>
                 <div>
-                  <ANCPriceChart data={marketANC?.history} />
+                  <ANCPriceChart
+                    data={marketANC?.history ?? EMPTY_ARRAY}
+                    theme={theme}
+                  />
                 </div>
               </figure>
             </Section>
@@ -407,7 +412,10 @@ function MarketBase({ className }: MarketProps) {
 
             <figure>
               <div>
-                <StablecoinChart data={marketDepositAndBorrow?.history} />
+                <StablecoinChart
+                  data={marketDepositAndBorrow?.history ?? EMPTY_ARRAY}
+                  theme={theme}
+                />
               </div>
             </figure>
 
@@ -541,7 +549,10 @@ function MarketBase({ className }: MarketProps) {
 
             <figure>
               <div>
-                <CollateralsChart data={marketCollaterals?.history} />
+                <CollateralsChart
+                  data={marketCollaterals?.history ?? EMPTY_ARRAY}
+                  theme={theme}
+                />
               </div>
             </figure>
 
