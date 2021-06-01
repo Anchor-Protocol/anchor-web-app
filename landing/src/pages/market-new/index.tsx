@@ -14,6 +14,7 @@ import {
   useAnchorWebapp,
   useMarketAncQuery,
   useMarketBLunaQuery,
+  useMarketBuybackQuery,
   useMarketCollateralsQuery,
   useMarketDepositAndBorrowQuery,
   useMarketStableCoinQuery,
@@ -71,6 +72,8 @@ function MarketBase({ className }: MarketProps) {
   const { data: marketANC } = useMarketAncQuery();
   const { data: marketDepositAndBorrow } = useMarketDepositAndBorrowQuery();
   const { data: marketCollaterals } = useMarketCollateralsQuery();
+  const { data: marketBuybackTotal } = useMarketBuybackQuery('total');
+  const { data: marketBuyback72hrs } = useMarketBuybackQuery('72hrs');
 
   const totalValueLocked = useMemo(() => {
     if (!marketDepositAndBorrow?.now || !marketCollaterals?.now || !marketUST) {
@@ -297,17 +300,23 @@ function MarketBase({ className }: MarketProps) {
 
             <Section className="anc-buyback">
               <section>
-                <h2>ANC BUYBACK (24HR)</h2>
+                <h2>ANC BUYBACK (72HR)</h2>
                 <div>
                   <p>
-                    <s>
-                      815<span>ANC</span>
-                    </s>
+                    {marketBuyback72hrs
+                      ? formatUTokenIntegerWithoutPostfixUnits(
+                          marketBuyback72hrs.buyback_amount,
+                        )
+                      : 0}
+                    <span>ANC</span>
                   </p>
                   <p>
-                    <s>
-                      12,249<span>UST</span>
-                    </s>
+                    {marketBuyback72hrs
+                      ? formatUTokenIntegerWithoutPostfixUnits(
+                          marketBuyback72hrs.offer_amount,
+                        )
+                      : 0}
+                    <span>UST</span>
                   </p>
                 </div>
               </section>
@@ -316,14 +325,20 @@ function MarketBase({ className }: MarketProps) {
                 <h2>ANC BUYBACK (TOTAL)</h2>
                 <div>
                   <p>
-                    <s>
-                      12,947<span>ANC</span>
-                    </s>
+                    {marketBuybackTotal
+                      ? formatUTokenIntegerWithoutPostfixUnits(
+                          marketBuybackTotal.buyback_amount,
+                        )
+                      : 0}
+                    <span>ANC</span>
                   </p>
                   <p>
-                    <s>
-                      194,383<span>UST</span>
-                    </s>
+                    {marketBuybackTotal
+                      ? formatUTokenIntegerWithoutPostfixUnits(
+                          marketBuybackTotal.offer_amount,
+                        )
+                      : 0}
+                    <span>UST</span>
                   </p>
                 </div>
               </section>

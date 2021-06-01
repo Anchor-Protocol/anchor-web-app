@@ -1,0 +1,9 @@
+GET https://api.anchorprotocol.com/api/anc/buyback/total
+Accept: application/json
+
+###
+
+GET https://api.anchorprotocol.com/api/anc/buyback/72hrs
+Accept: application/json
+
+###

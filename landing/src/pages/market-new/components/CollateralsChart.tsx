@@ -8,7 +8,7 @@ import { Chart } from 'chart.js';
 import React, { useEffect, useRef } from 'react';
 import styled, { useTheme } from 'styled-components';
 import { ChartTooltip } from './ChartTooltip';
-import { mediumDay, shortDay } from './internal/dateFormatters';
+import { mediumDay, xTimestampAixs } from './internal/dateFormatters';
 
 export interface CollateralsChartProps {
   data: MarketCollateralsHistory[] | null | undefined;
@@ -31,7 +31,9 @@ export function CollateralsChart({ data }: CollateralsChartProps) {
     if (chartRef.current) {
       if (data) {
         const chart = chartRef.current;
-        chart.data.labels = data.map(({ timestamp }) => shortDay(timestamp));
+        chart.data.labels = xTimestampAixs(
+          data.map(({ timestamp }) => timestamp),
+        );
         chart.data.datasets[0].data = data.map(({ total_value }) =>
           big(total_value).toNumber(),
         );
@@ -93,6 +95,8 @@ export function CollateralsChart({ data }: CollateralsChartProps) {
                 display: false,
               },
               ticks: {
+                autoSkip: false,
+                maxRotation: 0,
                 font: {
                   size: 11,
                 },
@@ -111,7 +115,9 @@ export function CollateralsChart({ data }: CollateralsChartProps) {
           },
         },
         data: {
-          labels: data?.map(({ timestamp }) => shortDay(timestamp)) ?? [],
+          labels: data
+            ? xTimestampAixs(data.map(({ timestamp }) => timestamp))
+            : [],
           datasets: [
             {
               data:

@@ -8,7 +8,7 @@ import { Chart } from 'chart.js';
 import React, { useEffect, useRef } from 'react';
 import styled, { useTheme } from 'styled-components';
 import { ChartTooltip } from './ChartTooltip';
-import { mediumDay, shortDay } from './internal/dateFormatters';
+import { mediumDay, xTimestampAixs } from './internal/dateFormatters';
 
 export interface StablecoinChartProps {
   data: MarketDepositAndBorrow[] | null | undefined;
@@ -31,7 +31,9 @@ export function StablecoinChart({ data }: StablecoinChartProps) {
     if (chartRef.current) {
       if (data) {
         const chart = chartRef.current;
-        chart.data.labels = data.map(({ timestamp }) => shortDay(timestamp));
+        chart.data.labels = xTimestampAixs(
+          data.map(({ timestamp }) => timestamp),
+        );
         chart.data.datasets[0].data = data.map(({ total_ust_deposits }) =>
           big(total_ust_deposits).toNumber(),
         );
@@ -100,6 +102,8 @@ export function StablecoinChart({ data }: StablecoinChartProps) {
                 display: false,
               },
               ticks: {
+                autoSkip: false,
+                maxRotation: 0,
                 font: {
                   size: 11,
                 },
@@ -118,7 +122,9 @@ export function StablecoinChart({ data }: StablecoinChartProps) {
           },
         },
         data: {
-          labels: data?.map(({ timestamp }) => shortDay(timestamp)) ?? [],
+          labels: data
+            ? xTimestampAixs(data.map(({ timestamp }) => timestamp))
+            : [],
           datasets: [
             {
               data:
