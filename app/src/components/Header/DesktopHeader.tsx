@@ -226,6 +226,10 @@ export const DesktopHeader = styled(DesktopHeaderBase)`
 
     padding: 0 40px;
 
+    .logo {
+      left: 40px;
+    }
+
     //.wallet {
     //  display: none;
     //}

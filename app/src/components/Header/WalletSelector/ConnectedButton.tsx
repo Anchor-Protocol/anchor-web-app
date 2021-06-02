@@ -41,7 +41,7 @@ function ConnectedButtonBase({
   );
 }
 
-const mobileLayoutBreak = 950;
+const mobileLayoutBreak = 1100;
 
 export const ConnectedButton = styled(ConnectedButtonBase)`
   height: 26px;
