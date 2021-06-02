@@ -49,6 +49,7 @@ export function useAncAncUstLpProvideTx() {
         address: connectedWallet.walletAddress,
         token_amount: ancAmount,
         native_amount: ustAmount,
+        slippage_tolerance: '0.01',
         quote: 'uusd',
         // receipts
         ancPrice,
