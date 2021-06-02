@@ -126,16 +126,15 @@ const walletConnectChainIds: Record<number, NetworkInfo> = {
 };
 
 export function AppProviders({ children }: { children: ReactNode }) {
-  const [
-    openReadonlyWalletSelector,
-    readonlyWalletSelectorElement,
-  ] = useReadonlyWalletDialog();
+  const [openReadonlyWalletSelector, readonlyWalletSelectorElement] =
+    useReadonlyWalletDialog();
 
   const [_openRequestReload, requestReloadElement] = useRequestReloadDialog();
 
-  const openRequestReload = useCallback(() => _openRequestReload({}), [
-    _openRequestReload,
-  ]);
+  const openRequestReload = useCallback(
+    () => _openRequestReload({}),
+    [_openRequestReload],
+  );
 
   const createReadonlyWalletSession = useCallback(
     (networks: NetworkInfo[]): Promise<ReadonlyWalletSession | null> => {
@@ -146,9 +145,9 @@ export function AppProviders({ children }: { children: ReactNode }) {
     [openReadonlyWalletSelector],
   );
 
-  // If the user didn't see the app over 30 minutes,
+  // If the user didn't see the app over 60 minutes,
   // reload browser for more stablity when the user visit again.
-  useLongtimeNoSee({ longtime: 1000 * 60 * 30, onSee: openRequestReload });
+  useLongtimeNoSee({ longtime: 1000 * 60 * 60, onSee: openRequestReload });
 
   return (
     /** Terra Station Wallet Address :: useWallet() */
