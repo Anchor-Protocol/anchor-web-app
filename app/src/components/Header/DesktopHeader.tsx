@@ -37,7 +37,7 @@ function DesktopHeaderBase({ className }: DesktopHeaderProps) {
         placement="right"
         classes={tooltipClasses}
       >
-        <a className="logo" href="https://anchorprotocol.com/dashboard" target="_blank">
+        <a className="logo" href="https://anchorprotocol.com/dashboard" target="_blank" rel="noreferrer">
           <img src={logoUrl} alt="logo" />
         </a>
       </Tooltip>
