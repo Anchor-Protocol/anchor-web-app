@@ -120,7 +120,7 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
           </nav>
         )}
         <section className="header">
-          <a className="logo" href="https://anchorprotocol.com/dashboard">
+          <a className="logo" href="https://anchorprotocol.com/dashboard" target="_blank" rel="noreferrer">
             <img src={logoUrl} alt="logo" />
           </a>
 
