@@ -5,6 +5,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { App } from './App';
 import reportWebVitals from './reportWebVitals';
+import { register } from './serviceWorkderRegistration';
 
 if (process.env.NODE_ENV === 'production') {
   Sentry.init({
@@ -19,4 +20,5 @@ if (process.env.NODE_ENV === 'production') {
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
+register();
 reportWebVitals();
