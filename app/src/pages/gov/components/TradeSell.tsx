@@ -34,6 +34,7 @@ import { MessageBox } from 'components/MessageBox';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
+import { MAX_SPREAD } from 'pages/gov/env';
 import { sellFromSimulation } from 'pages/gov/logics/sellFromSimulation';
 import { sellToSimulation } from 'pages/gov/logics/sellToSimulation';
 import { TradeSimulation } from 'pages/gov/models/tradeSimulation';
@@ -316,6 +317,7 @@ export function TradeSell() {
 
       sell({
         burnAmount,
+        maxSpread: MAX_SPREAD,
         onTxSucceed: () => {
           init();
         },

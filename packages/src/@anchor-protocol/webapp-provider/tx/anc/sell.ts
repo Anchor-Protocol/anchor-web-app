@@ -16,6 +16,7 @@ import { ANCHOR_TX_KEY } from '../../env';
 
 export interface AncSellTxParams {
   burnAmount: ANC;
+  maxSpread: number;
 
   onTxSucceed?: () => void;
 }
@@ -32,7 +33,7 @@ export function useAncSellTx() {
   const { data: { ancPrice } = {} } = useAncPriceQuery();
 
   const stream = useCallback(
-    ({ burnAmount, onTxSucceed }: AncSellTxParams) => {
+    ({ burnAmount, maxSpread, onTxSucceed }: AncSellTxParams) => {
       if (!connectedWallet || !connectedWallet.availablePost || !ancPrice) {
         throw new Error('Can not post!');
       }
@@ -44,7 +45,7 @@ export function useAncSellTx() {
         beliefPrice: formatExecuteMsgNumber(
           big(ancPrice.ANCPoolSize).div(ancPrice.USTPoolSize),
         ),
-        maxSpread: '0.1',
+        maxSpread: maxSpread.toString(),
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
