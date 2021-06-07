@@ -49,7 +49,7 @@ export function useAncSellTx() {
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: constants.fixedGas.toString() as uUST,
-        gasFee: constants.gasFee,
+        gasFee: constants.txGasFee.ancSell,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
@@ -68,7 +68,7 @@ export function useAncSellTx() {
       connectedWallet,
       ancPrice,
       constants.fixedGas,
-      constants.gasFee,
+      constants.txGasFee.ancSell,
       constants.gasAdjustment,
       addressProvider,
       mantleEndpoint,

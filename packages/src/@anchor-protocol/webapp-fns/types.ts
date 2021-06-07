@@ -11,7 +11,7 @@ import {
 
 export interface AnchorContants {
   gasFee: uUST<number>;
-  txGasFee?: {
+  txGasFee: {
     earnDeposit: uUST<number>;
     earnWithdraw: uUST<number>;
     borrowBorrow: uUST<number>;

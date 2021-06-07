@@ -37,7 +37,7 @@ export function useRewardsAncUstLpClaimTx() {
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: constants.fixedGas.toString() as uUST,
-        gasFee: constants.gasFee,
+        gasFee: constants.txGasFee.rewardsAllClaim,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
@@ -55,7 +55,7 @@ export function useRewardsAncUstLpClaimTx() {
     [
       connectedWallet,
       constants.fixedGas,
-      constants.gasFee,
+      constants.txGasFee.rewardsAllClaim,
       constants.gasAdjustment,
       addressProvider,
       mantleEndpoint,
