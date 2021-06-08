@@ -3,7 +3,7 @@ import { AppProviders } from 'base/AppProviders';
 import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
 import { NotificationProvider } from 'contexts/notification';
-import { Jobs } from 'jobs/Jobs';
+import { JobsProvider } from 'jobs/Jobs';
 import { Airdrop } from 'pages/airdrop';
 import { BAsset } from 'pages/basset';
 import { Borrow } from 'pages/borrow';
@@ -19,19 +19,20 @@ export function App() {
   return (
     <AppProviders>
       <NotificationProvider>
-        <div>
-          <GlobalStyle />
-          <Header />
-          <Jobs />
-          <Switch>
-            <Route path="/earn" component={Earn} />
-            <Route path="/borrow" component={Borrow} />
-            <Route path="/bond" component={BAsset} />
-            <Route path="/airdrop" component={Airdrop} />
-            <Route path={`/${govPathname}`} component={Governance} />
-            <Redirect to="/earn" />
-          </Switch>
-        </div>
+        <JobsProvider>
+          <div>
+            <GlobalStyle />
+            <Header />
+            <Switch>
+              <Route path="/earn" component={Earn} />
+              <Route path="/borrow" component={Borrow} />
+              <Route path="/bond" component={BAsset} />
+              <Route path="/airdrop" component={Airdrop} />
+              <Route path={`/${govPathname}`} component={Governance} />
+              <Redirect to="/earn" />
+            </Switch>
+          </div>
+        </JobsProvider>
       </NotificationProvider>
     </AppProviders>
   );

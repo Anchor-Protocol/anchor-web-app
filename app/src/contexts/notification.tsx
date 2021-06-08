@@ -1,5 +1,3 @@
-import { firebaseOptions } from 'env';
-import firebase from 'firebase';
 import React, {
   Consumer,
   Context,
@@ -28,7 +26,7 @@ const NotificationContext: Context<NotificationState> =
   // @ts-ignore
   createContext<NotificationState>();
 
-firebase.initializeApp(firebaseOptions);
+//firebase.initializeApp(firebaseOptions);
 
 async function getNotificationPermission(): Promise<NotificationPermission> {
   if (
@@ -67,7 +65,7 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
     }
 
     getNotificationPermission().then((initialPermission) => {
-      console.log('notification.tsx..()', initialPermission);
+      console.log('Notification.permission is', initialPermission);
       setPermission(initialPermission);
     });
   }, []);

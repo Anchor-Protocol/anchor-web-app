@@ -24,6 +24,7 @@ import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { TooltipIconCircle } from '@terra-dev/neumorphism-ui/components/TooltipIconCircle';
 import big, { Big } from 'big.js';
 import { screen } from 'env';
+import { LiquidationAlertConfig } from 'pages/borrow/components/LiquidationAlertConfig';
 import { currentLtv as _currentLtv } from 'pages/borrow/logics/currentLtv';
 import { useMemo } from 'react';
 import styled from 'styled-components';
@@ -37,13 +38,11 @@ export interface OverviewProps {
 }
 
 function OverviewBase({ className }: OverviewProps) {
-  const {
-    data: { borrowRate, oraclePrice, bLunaSafeLtv, bLunaMaxLtv } = {},
-  } = useBorrowMarketQuery();
+  const { data: { borrowRate, oraclePrice, bLunaSafeLtv, bLunaMaxLtv } = {} } =
+    useBorrowMarketQuery();
 
-  const {
-    data: { marketBorrowerInfo, custodyBorrower } = {},
-  } = useBorrowBorrowerQuery();
+  const { data: { marketBorrowerInfo, custodyBorrower } = {} } =
+    useBorrowBorrowerQuery();
 
   const {
     constants: { blocksPerYear },
@@ -59,14 +58,15 @@ function OverviewBase({ className }: OverviewProps) {
     [custodyBorrower, marketBorrowerInfo, oraclePrice],
   );
 
-  const apr = useMemo(() => _apr(borrowRate, blocksPerYear), [
-    blocksPerYear,
-    borrowRate,
-  ]);
+  const apr = useMemo(
+    () => _apr(borrowRate, blocksPerYear),
+    [blocksPerYear, borrowRate],
+  );
 
-  const borrowed = useMemo(() => _borrowed(marketBorrowerInfo), [
-    marketBorrowerInfo,
-  ]);
+  const borrowed = useMemo(
+    () => _borrowed(marketBorrowerInfo),
+    [marketBorrowerInfo],
+  );
 
   const collaterals = useMemo(
     () => _collaterals(custodyBorrower, oraclePrice?.rate),
@@ -203,6 +203,8 @@ function OverviewBase({ className }: OverviewProps) {
           />
         </figure>
       )}
+
+      <LiquidationAlertConfig />
     </Section>
   );
 }
