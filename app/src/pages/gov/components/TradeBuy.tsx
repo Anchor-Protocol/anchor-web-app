@@ -44,6 +44,7 @@ import { MessageBox } from 'components/MessageBox';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
+import { useMaxSpread } from 'pages/gov/hooks/useMaxSpread';
 import { buyFromSimulation } from 'pages/gov/logics/buyFromSimulation';
 import { buyToSimulation } from 'pages/gov/logics/buyToSimulation';
 import { TradeSimulation } from 'pages/gov/models/tradeSimulation';
@@ -80,6 +81,8 @@ export function TradeBuy() {
   } = useAnchorWebapp();
 
   const bank = useBank();
+
+  const maxSpread = useMaxSpread();
 
   const [buy, buyResult] = useAncBuyTx();
 
@@ -246,6 +249,7 @@ export function TradeBuy() {
                   amount,
                   bank.tax,
                   fixedGas,
+                  maxSpread,
                 )
               : undefined;
           }),
@@ -281,6 +285,7 @@ export function TradeBuy() {
       fixedGas,
       mantleEndpoint,
       mantleFetch,
+      maxSpread,
       resolveSimulation,
     ],
   );
@@ -329,6 +334,7 @@ export function TradeBuy() {
                   amount,
                   bank.tax,
                   fixedGas,
+                  maxSpread,
                 )
               : undefined;
           }),
@@ -365,6 +371,7 @@ export function TradeBuy() {
       fixedGas,
       mantleEndpoint,
       mantleFetch,
+      maxSpread,
       resolveSimulation,
     ],
   );
@@ -395,12 +402,13 @@ export function TradeBuy() {
       buy({
         fromAmount,
         txFee,
+        maxSpread,
         onTxSucceed: () => {
           init();
         },
       });
     },
-    [buy, connectedWallet, init, openConfirm],
+    [buy, connectedWallet, init, maxSpread, openConfirm],
   );
 
   // ---------------------------------------------

@@ -34,6 +34,7 @@ import { MessageBox } from 'components/MessageBox';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
+import { useMaxSpread } from 'pages/gov/hooks/useMaxSpread';
 import { sellFromSimulation } from 'pages/gov/logics/sellFromSimulation';
 import { sellToSimulation } from 'pages/gov/logics/sellToSimulation';
 import { TradeSimulation } from 'pages/gov/models/tradeSimulation';
@@ -67,6 +68,8 @@ export function TradeSell() {
   } = useAnchorWebapp();
 
   const bank = useBank();
+
+  const maxSpread = useMaxSpread();
 
   const [sell, sellResult] = useAncSellTx();
 
@@ -181,6 +184,7 @@ export function TradeSell() {
                   amount,
                   bank.tax,
                   fixedGas,
+                  maxSpread,
                 )
               : undefined;
           }),
@@ -217,6 +221,7 @@ export function TradeSell() {
       fixedGas,
       mantleEndpoint,
       mantleFetch,
+      maxSpread,
       resolveSimulation,
     ],
   );
@@ -264,6 +269,7 @@ export function TradeSell() {
                   amount,
                   bank.tax,
                   fixedGas,
+                  maxSpread,
                 )
               : undefined;
           }),
@@ -299,6 +305,7 @@ export function TradeSell() {
       fixedGas,
       mantleEndpoint,
       mantleFetch,
+      maxSpread,
       resolveSimulation,
     ],
   );
@@ -316,12 +323,13 @@ export function TradeSell() {
 
       sell({
         burnAmount,
+        maxSpread,
         onTxSucceed: () => {
           init();
         },
       });
     },
-    [connectedWallet, sell, init],
+    [connectedWallet, sell, maxSpread, init],
   );
 
   // ---------------------------------------------

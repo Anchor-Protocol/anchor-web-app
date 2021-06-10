@@ -18,6 +18,7 @@ import { ANCHOR_TX_KEY } from '../../env';
 export interface AncBuyTxParams {
   fromAmount: UST;
   txFee: uUST;
+  maxSpread: number;
 
   onTxSucceed?: () => void;
 }
@@ -36,7 +37,7 @@ export function useAncBuyTx() {
   const { data: { ancPrice } = {} } = useAncPriceQuery();
 
   const stream = useCallback(
-    ({ fromAmount, txFee, onTxSucceed }: AncBuyTxParams) => {
+    ({ fromAmount, txFee, maxSpread, onTxSucceed }: AncBuyTxParams) => {
       if (!connectedWallet || !connectedWallet.availablePost || !ancPrice) {
         throw new Error('Can not post!');
       }
@@ -49,14 +50,14 @@ export function useAncBuyTx() {
         beliefPrice: formatExecuteMsgNumber(
           big(ancPrice.USTPoolSize).div(ancPrice.ANCPoolSize),
         ),
-        maxSpread: '0.1',
+        maxSpread: maxSpread.toString(),
         // post
         tax,
         network: connectedWallet.network,
         post: connectedWallet.post,
         txFee,
         fixedGas: constants.fixedGas.toString() as uUST,
-        gasFee: constants.gasFee,
+        gasFee: constants.txGasFee.ancBuy,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
@@ -74,11 +75,11 @@ export function useAncBuyTx() {
     [
       connectedWallet,
       ancPrice,
+      tax,
       constants.fixedGas,
-      constants.gasFee,
+      constants.txGasFee.ancBuy,
       constants.gasAdjustment,
       addressProvider,
-      tax,
       mantleEndpoint,
       mantleFetch,
       txErrorReporter,

@@ -45,7 +45,7 @@ export function useBondSwapTx() {
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: constants.fixedGas.toString() as uUST,
-        gasFee: constants.gasFee,
+        gasFee: constants.txGasFee.bondSwap,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
@@ -62,10 +62,10 @@ export function useBondSwapTx() {
     },
     [
       connectedWallet,
-      addressProvider,
       constants.fixedGas,
-      constants.gasFee,
+      constants.txGasFee.bondSwap,
       constants.gasAdjustment,
+      addressProvider,
       mantleEndpoint,
       mantleFetch,
       txErrorReporter,

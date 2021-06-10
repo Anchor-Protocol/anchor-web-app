@@ -4,4 +4,4 @@ export const ancGovernancePathname = 'anc-governance';
 export const ustBorrowPathname = 'ust-borrow';
 
 export const MINIMUM_CLAIM_BALANCE = 1;
-export const MAX_SPREAD = 0.1;
+//export const MAX_SPREAD = onProduction ? 0.1 : 0.99;

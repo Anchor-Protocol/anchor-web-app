@@ -37,7 +37,7 @@ export function useBondClaimTx() {
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: constants.fixedGas.toString() as uUST,
-        gasFee: constants.gasFee,
+        gasFee: constants.txGasFee.bondClaim,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
@@ -54,10 +54,10 @@ export function useBondClaimTx() {
     },
     [
       connectedWallet,
-      addressProvider,
       constants.fixedGas,
-      constants.gasFee,
+      constants.txGasFee.bondClaim,
       constants.gasAdjustment,
+      addressProvider,
       mantleEndpoint,
       mantleFetch,
       txErrorReporter,

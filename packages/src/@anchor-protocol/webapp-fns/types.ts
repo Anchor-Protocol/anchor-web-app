@@ -11,6 +11,32 @@ import {
 
 export interface AnchorContants {
   gasFee: uUST<number>;
+  txGasFee: {
+    earnDeposit: uUST<number>;
+    earnWithdraw: uUST<number>;
+    borrowBorrow: uUST<number>;
+    borrowRepay: uUST<number>;
+    borrowProvideCollateral: uUST<number>;
+    borrowRedeemCollateral: uUST<number>;
+    bondMint: uUST<number>;
+    bondBurn: uUST<number>;
+    bondSwap: uUST<number>;
+    bondClaim: uUST<number>;
+    bondWithdraw: uUST<number>;
+    ancAncUstLpProvide: uUST<number>;
+    ancAncUstLpWithdraw: uUST<number>;
+    ancAncUstLpStake: uUST<number>;
+    ancAncUstLpUnstake: uUST<number>;
+    ancBuy: uUST<number>;
+    ancSell: uUST<number>;
+    ancGovernanceStake: uUST<number>;
+    ancGovernanceUnstake: uUST<number>;
+    govCreatePoll: uUST<number>;
+    govVote: uUST<number>;
+    rewardsAllClaim: uUST<number>;
+    rewardsAncUstLpClaim: uUST<number>;
+    rewardsBorrowClaim: uUST<number>;
+  };
   fixedGas: uUST<number>;
   blocksPerYear: number;
   gasAdjustment: Rate<number>;
