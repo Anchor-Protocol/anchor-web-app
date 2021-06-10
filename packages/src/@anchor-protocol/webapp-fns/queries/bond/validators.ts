@@ -80,13 +80,14 @@ export async function bondValidatorsQuery({
     `${mantleEndpoint}?bond--validators`,
   );
 
-  const hubWhitelistedValidators: bluna.hub.WhitelistedValidatorsResponse = JSON.parse(
-    rawData.hubWhitelistedValidators.Result,
-  );
+  const hubWhitelistedValidators: bluna.hub.WhitelistedValidatorsResponse =
+    JSON.parse(rawData.hubWhitelistedValidators.Result);
 
   const filter: Set<string> = new Set(hubWhitelistedValidators.validators);
 
-  const validators = rawData.validators.Result;
+  const validators = rawData.validators.Result.sort(
+    () => Math.random() - Math.random(),
+  );
   const whitelistedValidators = validators.filter(({ OperatorAddress }) =>
     filter.has(OperatorAddress),
   );
