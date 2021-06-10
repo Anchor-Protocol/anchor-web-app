@@ -40,7 +40,9 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
             ltv as Rate,
           )}%) is above the set threshold (${formatRate(
             ratio as Rate<number>,
-          )}%) for ${truncate(connectedWallet.walletAddress)}`,
+          )}%) for ${truncate(
+            connectedWallet.walletAddress,
+          )}. Please repay loan or provide collateral to lower LTV.`,
           icon: '/logo.png',
         });
       }
