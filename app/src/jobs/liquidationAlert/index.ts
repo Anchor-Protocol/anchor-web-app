@@ -1,4 +1,4 @@
-import { formatRate } from '@anchor-protocol/notation';
+import { formatRate, truncate } from '@anchor-protocol/notation';
 import { Rate } from '@anchor-protocol/types';
 import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
@@ -35,8 +35,12 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
       });
 
       if (big(ltv).gte(ratio)) {
-        create('Liquidation Alert!', {
-          body: `Your Ltv is ${formatRate(ltv as Rate)}%`,
+        create('Anchor Borrow LTV Notification', {
+          body: `[Alert] LTV ratio (${formatRate(
+            ltv as Rate,
+          )}%) is above the set threshold (${formatRate(
+            ratio as Rate<number>,
+          )}%) for ${truncate(connectedWallet.walletAddress)}`,
           icon: '/logo.png',
         });
       }

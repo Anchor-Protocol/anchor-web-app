@@ -28,8 +28,8 @@ function NotificationContentBase({ className }: NotificationContentProps) {
   const sliderClasses = useSliderStyle();
 
   const testNotifications = useCallback(() => {
-    new Notification('Test Notification', {
-      body: 'LTV Notification is enabled',
+    new Notification('Anchor Borrow LTV Notification', {
+      body: 'Notifications have been enabled.',
     });
   }, []);
 
