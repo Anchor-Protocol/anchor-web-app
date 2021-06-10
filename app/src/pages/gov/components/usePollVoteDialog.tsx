@@ -68,9 +68,8 @@ function ComponentBase({
 
   const bank = useBank();
 
-  const {
-    data: { userGovStakingInfo } = {},
-  } = useRewardsAncGovernanceRewardsQuery();
+  const { data: { userGovStakingInfo } = {} } =
+    useRewardsAncGovernanceRewardsQuery();
 
   const canIVote = useGovVoteAvailableQuery(pollId);
 
@@ -172,7 +171,7 @@ function ComponentBase({
         <NumberInput
           className="amount"
           value={amount}
-          maxIntegerPoinsts={ANC_INPUT_MAXIMUM_INTEGER_POINTS}
+          maxIntegerPoints={ANC_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={ANC_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="AMOUNT"
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>

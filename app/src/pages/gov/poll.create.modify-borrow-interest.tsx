@@ -68,7 +68,8 @@ export function PollCreateModifyBorrowInterest() {
   // ---------------------------------------------
   const createMsgs = useCallback(
     (baseBorrowRate: string, interestMultiplier: string): ExecuteMsg[] => {
-      const interestModelConfig: moneyMarket.interestModel.UpdateConfig['update_config'] = {};
+      const interestModelConfig: moneyMarket.interestModel.UpdateConfig['update_config'] =
+        {};
 
       if (baseBorrowRate.length > 0) {
         interestModelConfig['base_rate'] = formatExecuteMsgNumber(
@@ -131,7 +132,7 @@ export function PollCreateModifyBorrowInterest() {
       <NumberInput
         placeholder="0.00"
         type="integer"
-        maxIntegerPoinsts={2}
+        maxIntegerPoints={2}
         InputProps={{
           endAdornment: <InputAdornment position="end">%</InputAdornment>,
         }}
@@ -161,7 +162,7 @@ export function PollCreateModifyBorrowInterest() {
 
       <NumberInput
         placeholder="0.00"
-        maxIntegerPoinsts={1}
+        maxIntegerPoints={1}
         maxDecimalPoints={MAX_EXECUTE_MSG_DECIMALS}
         value={interestMultiplier}
         disabled={inputDisabled.interestMultiplier}

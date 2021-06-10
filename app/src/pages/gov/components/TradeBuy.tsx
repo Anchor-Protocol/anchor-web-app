@@ -489,7 +489,7 @@ export function TradeBuy() {
           placeholder="0.00"
           error={!!invalidFromAmount}
           value={fromAmount}
-          maxIntegerPoinsts={UST_INPUT_MAXIMUM_INTEGER_POINTS}
+          maxIntegerPoints={UST_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateFromAmount(target.value)
@@ -526,7 +526,7 @@ export function TradeBuy() {
           placeholder="0.00"
           error={!!invalidFromAmount}
           value={toAmount}
-          maxIntegerPoinsts={5}
+          maxIntegerPoints={5}
           maxDecimalPoints={ANC_INPUT_MAXIMUM_DECIMAL_POINTS}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateToAmount(target.value)

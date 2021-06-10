@@ -408,7 +408,7 @@ export function TradeSell() {
           placeholder="0.00"
           error={!!invalidFromAmount}
           value={fromAmount}
-          maxIntegerPoinsts={ANC_INPUT_MAXIMUM_INTEGER_POINTS}
+          maxIntegerPoints={ANC_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={ANC_INPUT_MAXIMUM_DECIMAL_POINTS}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateFromAmount(target.value)
@@ -445,7 +445,7 @@ export function TradeSell() {
           placeholder="0.00"
           error={!!invalidFromAmount}
           value={toAmount}
-          maxIntegerPoinsts={5}
+          maxIntegerPoints={5}
           maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateToAmount(target.value)

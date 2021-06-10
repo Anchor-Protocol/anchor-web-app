@@ -28,18 +28,17 @@ export function useRestrictedInput(
     throw new Error('availableCharacters must be string or function');
   }, [availableCharacters]);
 
-  const onKeyPress: (
-    event: KeyboardEvent<HTMLInputElement>,
-  ) => void = useCallback(
-    (event: KeyboardEvent<HTMLInputElement>) => {
-      if (!test(event.key)) {
-        // prevent key press
-        event.preventDefault();
-        event.stopPropagation();
-      }
-    },
-    [test],
-  );
+  const onKeyPress: (event: KeyboardEvent<HTMLInputElement>) => void =
+    useCallback(
+      (event: KeyboardEvent<HTMLInputElement>) => {
+        if (!test(event.key)) {
+          // prevent key press
+          event.preventDefault();
+          event.stopPropagation();
+        }
+      },
+      [test],
+    );
 
   return {
     onKeyPress,
@@ -49,14 +48,14 @@ export function useRestrictedInput(
 export interface RestrictedNumberInputParams {
   type?: 'decimal' | 'integer';
   maxDecimalPoints?: number;
-  maxIntegerPoinsts?: number;
+  maxIntegerPoints?: number;
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export function useRestrictedNumberInput({
   type = 'decimal',
   maxDecimalPoints,
-  maxIntegerPoinsts,
+  maxIntegerPoints,
   onChange: _onChange,
 }: RestrictedNumberInputParams): RestrictedInputReturn {
   const { onKeyPress: restrictCharacters } = useRestrictedInput(
@@ -67,14 +66,14 @@ export function useRestrictedNumberInput({
     (nextValue: string): boolean => {
       return (
         Number.isNaN(+nextValue) ||
-        (typeof maxIntegerPoinsts === 'number' &&
-          new RegExp(`^[0-9]{${maxIntegerPoinsts + 1},}`).test(nextValue)) ||
+        (typeof maxIntegerPoints === 'number' &&
+          new RegExp(`^[0-9]{${maxIntegerPoints + 1},}`).test(nextValue)) ||
         (type === 'decimal' &&
           typeof maxDecimalPoints === 'number' &&
           new RegExp(`\\.[0-9]{${maxDecimalPoints + 1},}$`).test(nextValue))
       );
     },
-    [maxDecimalPoints, maxIntegerPoinsts, type],
+    [maxDecimalPoints, maxIntegerPoints, type],
   );
 
   const onKeyPress = useCallback(
@@ -85,11 +84,8 @@ export function useRestrictedNumberInput({
         return;
       }
 
-      const {
-        value,
-        selectionStart,
-        selectionEnd,
-      } = event.target as HTMLInputElement;
+      const { value, selectionStart, selectionEnd } =
+        event.target as HTMLInputElement;
 
       if (
         typeof selectionStart !== 'number' ||
@@ -124,11 +120,8 @@ export function useRestrictedNumberInput({
         event.stopPropagation();
       }
 
-      const {
-        value,
-        selectionStart,
-        selectionEnd,
-      } = event.target as HTMLInputElement;
+      const { value, selectionStart, selectionEnd } =
+        event.target as HTMLInputElement;
 
       if (
         typeof selectionStart !== 'number' ||

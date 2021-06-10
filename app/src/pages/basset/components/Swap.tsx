@@ -362,7 +362,7 @@ export function Swap() {
           placeholder="0.00"
           error={!!invalidBurnAmount}
           value={burnAmount}
-          maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
+          maxIntegerPoints={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateBurnAmount(target.value)
@@ -399,7 +399,7 @@ export function Swap() {
           placeholder="0.00"
           error={!!invalidBurnAmount}
           value={getAmount}
-          maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
+          maxIntegerPoints={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateGetAmount(target.value)

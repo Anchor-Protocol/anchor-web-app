@@ -81,10 +81,8 @@ function ComponentBase({
 
   const txFee = fixedGas;
 
-  const [
-    redeemCollateral,
-    redeemCollateralResult,
-  ] = useBorrowRedeemCollateralTx();
+  const [redeemCollateral, redeemCollateralResult] =
+    useBorrowRedeemCollateralTx();
 
   // ---------------------------------------------
   // states
@@ -266,7 +264,7 @@ function ComponentBase({
         <NumberInput
           className="amount"
           value={redeemAmount}
-          maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
+          maxIntegerPoints={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="WITHDRAW AMOUNT"
           error={!!invalidRedeemAmount}

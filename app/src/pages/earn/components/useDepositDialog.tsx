@@ -131,7 +131,7 @@ function ComponentBase({
         <NumberInput
           className="amount"
           value={depositAmount}
-          maxIntegerPoinsts={UST_INPUT_MAXIMUM_INTEGER_POINTS}
+          maxIntegerPoints={UST_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="AMOUNT"
           error={!!invalidDepositAmount}

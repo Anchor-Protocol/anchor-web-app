@@ -144,10 +144,10 @@ function ComponentBase({
     return min(bLunaMaxLtv, big(0.4)) as Rate<BigSource>;
   }, [bLunaMaxLtv]);
 
-  const apr = useMemo(() => _apr(borrowRate, blocksPerYear), [
-    blocksPerYear,
-    borrowRate,
-  ]);
+  const apr = useMemo(
+    () => _apr(borrowRate, blocksPerYear),
+    [blocksPerYear, borrowRate],
+  );
 
   const safeMax = useMemo(
     () =>
@@ -166,11 +166,10 @@ function ComponentBase({
     [bLunaMaxLtv, borrowInfo, loanAmount, oraclePrice],
   );
 
-  const txFee = useMemo(() => borrowTxFee(borrowAmount, bank, fixedGas), [
-    bank,
-    borrowAmount,
-    fixedGas,
-  ]);
+  const txFee = useMemo(
+    () => borrowTxFee(borrowAmount, bank, fixedGas),
+    [bank, borrowAmount, fixedGas],
+  );
 
   const receiveAmount = useMemo(
     () => borrowReceiveAmount(borrowAmount, txFee),
@@ -295,7 +294,7 @@ function ComponentBase({
         <NumberInput
           className="amount"
           value={borrowAmount}
-          maxIntegerPoinsts={UST_INPUT_MAXIMUM_INTEGER_POINTS}
+          maxIntegerPoints={UST_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="BORROW AMOUNT"
           error={!!invalidBorrowAmount || !!invalidOver40Ltv}

@@ -345,7 +345,7 @@ function ComponentBase({
           <NumberMuiInput
             placeholder="0"
             value={amount}
-            maxIntegerPoinsts={currency.integerPoints}
+            maxIntegerPoints={currency.integerPoints}
             maxDecimalPoints={currency.decimalPoints}
             onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
               setAmount(target.value as Token)

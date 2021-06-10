@@ -139,10 +139,10 @@ function ComponentBase({
     [nextLtv, bLunaMaxLtv, oraclePrice],
   );
 
-  const apr = useMemo(() => _apr(borrowRate, blocksPerYear), [
-    blocksPerYear,
-    borrowRate,
-  ]);
+  const apr = useMemo(
+    () => _apr(borrowRate, blocksPerYear),
+    [blocksPerYear, borrowRate],
+  );
 
   const maxRepayingAmount = useMemo(() => {
     const totalBorrowed = repayTotalBorrows(
@@ -166,21 +166,20 @@ function ComponentBase({
     fixedGas,
   ]);
 
-  const txFee = useMemo(() => repayTxFee(repayAmount, bank, fixedGas), [
-    bank,
-    fixedGas,
-    repayAmount,
-  ]);
+  const txFee = useMemo(
+    () => repayTxFee(repayAmount, bank, fixedGas),
+    [bank, fixedGas, repayAmount],
+  );
 
   const totalOutstandingLoan = useMemo(
     () => repayTotalOutstandingLoan(repayAmount, loanAmount),
     [loanAmount, repayAmount],
   );
 
-  const sendAmount = useMemo(() => repaySendAmount(repayAmount, txFee), [
-    repayAmount,
-    txFee,
-  ]);
+  const sendAmount = useMemo(
+    () => repaySendAmount(repayAmount, txFee),
+    [repayAmount, txFee],
+  );
 
   const invalidTxFee = useMemo(
     () => !!connectedWallet && validateTxFee(bank, fixedGas),
@@ -276,7 +275,7 @@ function ComponentBase({
         <NumberInput
           className="amount"
           value={repayAmount}
-          maxIntegerPoinsts={UST_INPUT_MAXIMUM_INTEGER_POINTS}
+          maxIntegerPoints={UST_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="REPAY AMOUNT"
           error={!!invalidAssetAmount}

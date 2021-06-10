@@ -10,18 +10,18 @@ export const Basic = () => {
     <Layout>
       <NumberInput label="NO OPTIONS" />
       <NumberInput label="NO OPTIONS" disabled />
-      <NumberInput label="MAX INTEGER = 6" maxIntegerPoinsts={6} />
-      <NumberInput label="MAX INTEGER = 6" maxIntegerPoinsts={6} disabled />
+      <NumberInput label="MAX INTEGER = 6" maxIntegerPoints={6} />
+      <NumberInput label="MAX INTEGER = 6" maxIntegerPoints={6} disabled />
       <NumberInput label="MAX DECIMAL = 6" maxDecimalPoints={6} />
       <NumberInput label="MAX DECIMAL = 6" maxDecimalPoints={6} disabled />
       <NumberInput
         label="MAX INTEGER = 6, DECIMAL = 6"
-        maxIntegerPoinsts={6}
+        maxIntegerPoints={6}
         maxDecimalPoints={6}
       />
       <NumberInput
         label="MAX INTEGER = 6, DECIMAL = 6"
-        maxIntegerPoinsts={6}
+        maxIntegerPoints={6}
         maxDecimalPoints={6}
         disabled
       />

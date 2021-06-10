@@ -68,17 +68,16 @@ export function Burn() {
   // ---------------------------------------------
   const bank = useBank();
 
-  const {
-    data: { state: exchangeRate, parameters } = {},
-  } = useBondBLunaExchangeRateQuery();
+  const { data: { state: exchangeRate, parameters } = {} } =
+    useBondBLunaExchangeRateQuery();
 
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const pegRecoveryFee = useMemo(() => pegRecovery(exchangeRate, parameters), [
-    exchangeRate,
-    parameters,
-  ]);
+  const pegRecoveryFee = useMemo(
+    () => pegRecovery(exchangeRate, parameters),
+    [exchangeRate, parameters],
+  );
 
   const invalidTxFee = useMemo(
     () => !!connectedWallet && validateTxFee(bank, fixedGas),
@@ -264,7 +263,7 @@ export function Burn() {
           placeholder="0.00"
           error={!!invalidBurnAmount}
           value={burnAmount}
-          maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
+          maxIntegerPoints={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateBurnAmount(target.value)
@@ -303,7 +302,7 @@ export function Burn() {
           placeholder="0.00"
           error={!!invalidBurnAmount}
           value={getAmount}
-          maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
+          maxIntegerPoints={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateGetAmount(target.value)

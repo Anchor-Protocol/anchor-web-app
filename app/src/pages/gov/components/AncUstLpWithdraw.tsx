@@ -51,9 +51,8 @@ export function AncUstLpWithdraw() {
   // ---------------------------------------------
   const [lpAmount, setLpAmount] = useState<AncUstLP>('' as AncUstLP);
 
-  const [simulation, setSimulation] = useState<AncUstLpSimulation<Big> | null>(
-    null,
-  );
+  const [simulation, setSimulation] =
+    useState<AncUstLpSimulation<Big> | null>(null);
 
   // ---------------------------------------------
   // queries
@@ -167,7 +166,7 @@ export function AncUstLpWithdraw() {
       <NumberInput
         className="amount"
         value={lpAmount}
-        maxIntegerPoinsts={ANC_INPUT_MAXIMUM_INTEGER_POINTS}
+        maxIntegerPoints={ANC_INPUT_MAXIMUM_INTEGER_POINTS}
         maxDecimalPoints={ANC_INPUT_MAXIMUM_DECIMAL_POINTS}
         error={!!invalidLpAmount}
         placeholder="0.00"

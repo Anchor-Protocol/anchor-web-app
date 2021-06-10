@@ -52,9 +52,8 @@ export function AncGovernanceUnstake() {
   // ---------------------------------------------
   const bank = useBank();
 
-  const {
-    data: { userGovStakingInfo } = {},
-  } = useRewardsAncGovernanceRewardsQuery();
+  const { data: { userGovStakingInfo } = {} } =
+    useRewardsAncGovernanceRewardsQuery();
 
   const { data: { ancBalance: govANCBalance } = {} } = useAncBalanceQuery(
     contractAddress.anchorToken.gov,
@@ -145,7 +144,7 @@ export function AncGovernanceUnstake() {
       <NumberInput
         className="amount"
         value={ancAmount}
-        maxIntegerPoinsts={ANC_INPUT_MAXIMUM_INTEGER_POINTS}
+        maxIntegerPoints={ANC_INPUT_MAXIMUM_INTEGER_POINTS}
         maxDecimalPoints={ANC_INPUT_MAXIMUM_DECIMAL_POINTS}
         error={!!invalidANCAmount}
         placeholder="0.00"

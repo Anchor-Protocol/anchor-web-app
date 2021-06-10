@@ -110,7 +110,7 @@ export function PollCreateModifyCollateralAttribute() {
       <NumberInput
         placeholder="MAX LTV"
         type="integer"
-        maxIntegerPoinsts={2}
+        maxIntegerPoints={2}
         InputProps={{
           endAdornment: <InputAdornment position="end">%</InputAdornment>,
         }}

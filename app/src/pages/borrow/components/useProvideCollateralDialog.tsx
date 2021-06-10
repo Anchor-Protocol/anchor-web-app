@@ -78,10 +78,8 @@ function ComponentBase({
 
   const txFee = fixedGas;
 
-  const [
-    provideCollateral,
-    provideCollateralResult,
-  ] = useBorrowProvideCollateralTx();
+  const [provideCollateral, provideCollateralResult] =
+    useBorrowProvideCollateralTx();
 
   // ---------------------------------------------
   // states
@@ -234,7 +232,7 @@ function ComponentBase({
         <NumberInput
           className="amount"
           value={depositAmount}
-          maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
+          maxIntegerPoints={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="DEPOSIT AMOUNT"
           error={!!invalidDepositAmount}

@@ -130,7 +130,7 @@ export function PollCreateSpendCommunityPool() {
 
       <NumberInput
         placeholder="0.00"
-        maxIntegerPoinsts={ANC_INPUT_MAXIMUM_INTEGER_POINTS}
+        maxIntegerPoints={ANC_INPUT_MAXIMUM_INTEGER_POINTS}
         maxDecimalPoints={ANC_INPUT_MAXIMUM_DECIMAL_POINTS}
         value={amount}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>

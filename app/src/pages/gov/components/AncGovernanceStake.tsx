@@ -48,9 +48,8 @@ export function AncGovernanceStake() {
   // ---------------------------------------------
   const bank = useBank();
 
-  const {
-    data: { userANCBalance } = {},
-  } = useRewardsAncGovernanceRewardsQuery();
+  const { data: { userANCBalance } = {} } =
+    useRewardsAncGovernanceRewardsQuery();
 
   // ---------------------------------------------
   // logics
@@ -121,7 +120,7 @@ export function AncGovernanceStake() {
       <NumberInput
         className="amount"
         value={ancAmount}
-        maxIntegerPoinsts={ANC_INPUT_MAXIMUM_INTEGER_POINTS}
+        maxIntegerPoints={ANC_INPUT_MAXIMUM_INTEGER_POINTS}
         maxDecimalPoints={ANC_INPUT_MAXIMUM_DECIMAL_POINTS}
         error={!!invalidANCAmount}
         placeholder="0.00"

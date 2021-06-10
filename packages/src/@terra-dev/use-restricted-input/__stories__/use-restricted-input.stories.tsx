@@ -25,7 +25,7 @@ export const Integer = () => {
 
   const inputProps = useRestrictedNumberInput({
     type: 'integer',
-    maxIntegerPoinsts: 4,
+    maxIntegerPoints: 4,
   });
 
   return (
@@ -43,7 +43,7 @@ export const Decimal = () => {
 
   const inputProps = useRestrictedNumberInput({
     type: 'decimal',
-    maxIntegerPoinsts: 4,
+    maxIntegerPoints: 4,
     maxDecimalPoints: 3,
   });
 

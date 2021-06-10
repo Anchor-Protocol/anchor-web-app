@@ -63,9 +63,8 @@ export function AncUstLpProvide() {
   const [ancAmount, setAncAmount] = useState<ANC>('' as ANC);
   const [ustAmount, setUstAmount] = useState<UST>('' as UST);
 
-  const [simulation, setSimulation] = useState<AncUstLpSimulation<Big> | null>(
-    null,
-  );
+  const [simulation, setSimulation] =
+    useState<AncUstLpSimulation<Big> | null>(null);
 
   // ---------------------------------------------
   // queries
@@ -292,7 +291,7 @@ export function AncUstLpProvide() {
       <NumberInput
         className="amount"
         value={ancAmount}
-        maxIntegerPoinsts={ANC_INPUT_MAXIMUM_INTEGER_POINTS}
+        maxIntegerPoints={ANC_INPUT_MAXIMUM_INTEGER_POINTS}
         maxDecimalPoints={ANC_INPUT_MAXIMUM_DECIMAL_POINTS}
         placeholder="0.00"
         error={!!invalidAncAmount}
@@ -333,7 +332,7 @@ export function AncUstLpProvide() {
       <NumberInput
         className="amount"
         value={ustAmount}
-        maxIntegerPoinsts={UST_INPUT_MAXIMUM_INTEGER_POINTS}
+        maxIntegerPoints={UST_INPUT_MAXIMUM_INTEGER_POINTS}
         maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
         placeholder="0.00"
         error={!!invalidUstAmount}

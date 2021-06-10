@@ -11,7 +11,7 @@ export type NumberInputProps = Omit<TextFieldProps, 'type'> &
 export function NumberInput({
   type = 'decimal',
   maxDecimalPoints,
-  maxIntegerPoinsts,
+  maxIntegerPoints,
   onChange,
   inputMode = type === 'decimal' ? 'decimal' : 'numeric',
   pattern = '[0-9.]*',
@@ -19,7 +19,7 @@ export function NumberInput({
 }: NumberInputProps) {
   const handlers = useRestrictedNumberInput({
     type,
-    maxIntegerPoinsts,
+    maxIntegerPoints,
     maxDecimalPoints,
     onChange,
   });
