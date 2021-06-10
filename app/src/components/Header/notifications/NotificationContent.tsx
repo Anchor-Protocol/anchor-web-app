@@ -182,7 +182,7 @@ const useSliderStyle = makeStyles((theme: DefaultTheme) => ({
 }));
 
 export const NotificationContent = styled(NotificationContentBase)`
-  width: 260px;
+  width: 100%;
 
   h2 {
     font-size: 13px;
