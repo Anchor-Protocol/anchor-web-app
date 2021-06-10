@@ -26,6 +26,7 @@ export function useEarnDepositForm(): EarnDepositFormReturn {
     earnDepositForm,
     {
       isConnected: !!connectedWallet,
+      txFixedGas: constants.gas.earnDeposit.fixedGas,
       fixedGas: constants.fixedGas,
       taxRate: tax.taxRate,
       maxTaxUUSD: tax.maxTaxUUSD,

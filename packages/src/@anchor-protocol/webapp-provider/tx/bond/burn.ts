@@ -38,8 +38,8 @@ export function useBondBurnTx() {
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        fixedGas: constants.fixedGas.toString() as uUST,
-        gasFee: constants.txGasFee.bondBurn,
+        fixedGas: constants.gas.bondBurn.fixedGas.toString() as uUST,
+        gasFee: constants.gas.bondBurn.gasFee,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
@@ -56,8 +56,8 @@ export function useBondBurnTx() {
     },
     [
       connectedWallet,
-      constants.fixedGas,
-      constants.txGasFee.bondBurn,
+      constants.gas.bondBurn.fixedGas,
+      constants.gas.bondBurn.gasFee,
       constants.gasAdjustment,
       addressProvider,
       mantleEndpoint,

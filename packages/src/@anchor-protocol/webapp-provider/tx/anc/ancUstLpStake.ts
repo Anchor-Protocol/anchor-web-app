@@ -38,8 +38,8 @@ export function useAncAncUstLpStakeTx() {
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        fixedGas: constants.fixedGas.toString() as uUST,
-        gasFee: constants.txGasFee.ancAncUstLpStake,
+        fixedGas: constants.gas.ancAncUstLpStake.fixedGas.toString() as uUST,
+        gasFee: constants.gas.ancAncUstLpStake.gasFee,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
@@ -56,8 +56,8 @@ export function useAncAncUstLpStakeTx() {
     },
     [
       connectedWallet,
-      constants.fixedGas,
-      constants.txGasFee.ancAncUstLpStake,
+      constants.gas.ancAncUstLpStake.fixedGas,
+      constants.gas.ancAncUstLpStake.gasFee,
       constants.gasAdjustment,
       addressProvider,
       mantleEndpoint,

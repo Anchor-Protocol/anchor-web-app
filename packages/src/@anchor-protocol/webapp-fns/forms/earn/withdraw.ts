@@ -8,6 +8,7 @@ export interface EarnWithdrawFormInput {
 
 export interface EarnWithdrawFormDependency {
   userUUSTBalance: uUST<BigSource>;
+  txFixedGas: uUST<BigSource>;
   fixedGas: uUST<BigSource>;
   totalDeposit: uUST<BigSource>;
   isConnected: boolean;
@@ -24,7 +25,7 @@ export interface EarnWithdrawFormStates extends EarnWithdrawFormInput {
 export function earnWithdrawForm(
   { withdrawAmount }: EarnWithdrawFormInput,
   {
-    fixedGas,
+    txFixedGas,
     totalDeposit,
     userUUSTBalance,
     isConnected,
@@ -37,7 +38,7 @@ export function earnWithdrawForm(
     };
   } else {
     // txFee
-    const txFee = big(fixedGas) as uUST<Big>;
+    const txFee = big(txFixedGas) as uUST<Big>;
 
     // receiveAmount
     const receiveAmount = microfy(withdrawAmount).minus(txFee) as uUST<Big>;

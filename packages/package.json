@@ -10,7 +10,8 @@
     "publish": "TS_NODE_PROJECT=tsconfig.script.json node -r ts-node/register -r tsconfig-paths/register scripts/publish.ts",
     "doctor": "rocket-punch doctor",
     "storybook": "start-storybook -h localhost -p 6006 -s public",
-    "build-storybook": "build-storybook -s public"
+    "build-storybook": "build-storybook -s public",
+    "extract-gasfee": "TS_NODE_PROJECT=tsconfig.script.json node -r ts-node/register -r tsconfig-paths/register scripts/extractGasFee.ts"
   },
   "eslintConfig": {
     "extends": [

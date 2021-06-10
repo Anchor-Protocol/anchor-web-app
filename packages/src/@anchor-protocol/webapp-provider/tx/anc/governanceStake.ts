@@ -39,8 +39,8 @@ export function useAncGovernanceStakeTx() {
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        fixedGas: constants.fixedGas.toString() as uUST,
-        gasFee: constants.txGasFee.ancGovernanceStake,
+        fixedGas: constants.gas.ancGovernanceStake.fixedGas.toString() as uUST,
+        gasFee: constants.gas.ancGovernanceStake.gasFee,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
@@ -57,8 +57,8 @@ export function useAncGovernanceStakeTx() {
     },
     [
       connectedWallet,
-      constants.fixedGas,
-      constants.txGasFee.ancGovernanceStake,
+      constants.gas.ancGovernanceStake.fixedGas,
+      constants.gas.ancGovernanceStake.gasFee,
       constants.gasAdjustment,
       addressProvider,
       mantleEndpoint,

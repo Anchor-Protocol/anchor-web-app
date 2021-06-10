@@ -9,33 +9,39 @@ import {
   uUST,
 } from '@anchor-protocol/types';
 
+interface Gas {
+  description: string;
+  gasFee: uUST<number>;
+  fixedGas: uUST<number>;
+}
+
 export interface AnchorContants {
   gasFee: uUST<number>;
-  txGasFee: {
-    earnDeposit: uUST<number>;
-    earnWithdraw: uUST<number>;
-    borrowBorrow: uUST<number>;
-    borrowRepay: uUST<number>;
-    borrowProvideCollateral: uUST<number>;
-    borrowRedeemCollateral: uUST<number>;
-    bondMint: uUST<number>;
-    bondBurn: uUST<number>;
-    bondSwap: uUST<number>;
-    bondClaim: uUST<number>;
-    bondWithdraw: uUST<number>;
-    ancAncUstLpProvide: uUST<number>;
-    ancAncUstLpWithdraw: uUST<number>;
-    ancAncUstLpStake: uUST<number>;
-    ancAncUstLpUnstake: uUST<number>;
-    ancBuy: uUST<number>;
-    ancSell: uUST<number>;
-    ancGovernanceStake: uUST<number>;
-    ancGovernanceUnstake: uUST<number>;
-    govCreatePoll: uUST<number>;
-    govVote: uUST<number>;
-    rewardsAllClaim: uUST<number>;
-    rewardsAncUstLpClaim: uUST<number>;
-    rewardsBorrowClaim: uUST<number>;
+  gas: {
+    earnDeposit: Gas;
+    earnWithdraw: Gas;
+    borrowBorrow: Gas;
+    borrowRepay: Gas;
+    borrowProvideCollateral: Gas;
+    borrowRedeemCollateral: Gas;
+    bondMint: Gas;
+    bondBurn: Gas;
+    bondSwap: Gas;
+    bondWithdraw: Gas;
+    bondClaim: Gas;
+    ancBuy: Gas;
+    ancSell: Gas;
+    ancGovernanceStake: Gas;
+    ancGovernanceUnstake: Gas;
+    ancAncUstLpProvide: Gas;
+    ancAncUstLpWithdraw: Gas;
+    ancAncUstLpStake: Gas;
+    ancAncUstLpUnstake: Gas;
+    rewardsAllClaim: Gas;
+    govCreatePoll: Gas;
+    govVote: Gas;
+    rewardsAncUstLpClaim: Gas;
+    rewardsUstBorrowClaim: Gas;
   };
   fixedGas: uUST<number>;
   blocksPerYear: number;

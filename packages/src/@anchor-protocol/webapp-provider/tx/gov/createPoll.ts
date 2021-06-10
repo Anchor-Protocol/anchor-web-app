@@ -55,8 +55,8 @@ export function useGovCreatePollTx() {
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        fixedGas: constants.fixedGas.toString() as uUST,
-        gasFee: constants.txGasFee.govCreatePoll,
+        fixedGas: constants.gas.govCreatePoll.fixedGas.toString() as uUST,
+        gasFee: constants.gas.govCreatePoll.gasFee,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
@@ -73,8 +73,8 @@ export function useGovCreatePollTx() {
     },
     [
       connectedWallet,
-      constants.fixedGas,
-      constants.txGasFee.govCreatePoll,
+      constants.gas.govCreatePoll.fixedGas,
+      constants.gas.govCreatePoll.gasFee,
       constants.gasAdjustment,
       addressProvider,
       mantleEndpoint,

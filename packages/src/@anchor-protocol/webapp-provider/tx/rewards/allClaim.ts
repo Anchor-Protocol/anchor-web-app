@@ -43,8 +43,8 @@ export function useRewardsAllClaimTx() {
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        fixedGas: constants.fixedGas.toString() as uUST,
-        gasFee: constants.txGasFee.rewardsAllClaim,
+        fixedGas: constants.gas.rewardsAllClaim.fixedGas.toString() as uUST,
+        gasFee: constants.gas.rewardsAllClaim.gasFee,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
@@ -61,8 +61,8 @@ export function useRewardsAllClaimTx() {
     },
     [
       connectedWallet,
-      constants.fixedGas,
-      constants.txGasFee.rewardsAllClaim,
+      constants.gas.rewardsAllClaim.fixedGas,
+      constants.gas.rewardsAllClaim.gasFee,
       constants.gasAdjustment,
       addressProvider,
       mantleEndpoint,

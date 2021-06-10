@@ -45,8 +45,9 @@ export function useBorrowRedeemCollateralTx() {
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        fixedGas: constants.fixedGas.toString() as uUST,
-        gasFee: constants.txGasFee.borrowRedeemCollateral,
+        fixedGas:
+          constants.gas.borrowRedeemCollateral.fixedGas.toString() as uUST,
+        gasFee: constants.gas.borrowRedeemCollateral.gasFee,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
@@ -68,9 +69,9 @@ export function useBorrowRedeemCollateralTx() {
       borrowBorrowerQuery,
       borrowMarketQuery,
       connectedWallet,
-      constants.fixedGas,
+      constants.gas.borrowRedeemCollateral.fixedGas,
+      constants.gas.borrowRedeemCollateral.gasFee,
       constants.gasAdjustment,
-      constants.txGasFee.borrowRedeemCollateral,
       mantleEndpoint,
       mantleFetch,
       refetchQueries,

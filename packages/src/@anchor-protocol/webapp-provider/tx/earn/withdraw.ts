@@ -42,7 +42,7 @@ export function useEarnWithdrawTx() {
         network: connectedWallet.network,
         post: connectedWallet.post,
         txFee: txFee.toString() as uUST,
-        gasFee: constants.txGasFee.earnWithdraw,
+        gasFee: constants.gas.earnWithdraw.gasFee,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
@@ -59,7 +59,7 @@ export function useEarnWithdrawTx() {
     },
     [
       connectedWallet,
-      constants.txGasFee.earnWithdraw,
+      constants.gas.earnWithdraw.gasFee,
       constants.gasAdjustment,
       addressProvider,
       mantleEndpoint,

@@ -40,8 +40,8 @@ export function useBondMintTx() {
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        fixedGas: constants.fixedGas.toString() as uUST,
-        gasFee: constants.txGasFee.bondMint,
+        fixedGas: constants.gas.bondMint.fixedGas.toString() as uUST,
+        gasFee: constants.gas.bondMint.gasFee,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
@@ -58,8 +58,8 @@ export function useBondMintTx() {
     },
     [
       connectedWallet,
-      constants.fixedGas,
-      constants.txGasFee.bondMint,
+      constants.gas.bondMint.fixedGas,
+      constants.gas.bondMint.gasFee,
       constants.gasAdjustment,
       addressProvider,
       mantleEndpoint,

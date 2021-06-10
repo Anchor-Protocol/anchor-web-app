@@ -59,7 +59,7 @@ export function useAncAncUstLpProvideTx() {
         post: connectedWallet.post,
         txFee: txFee.toString() as uUST,
         fixedGas: constants.fixedGas.toString() as uUST,
-        gasFee: constants.txGasFee.ancAncUstLpProvide,
+        gasFee: constants.gas.ancAncUstLpProvide.gasFee,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
@@ -79,7 +79,7 @@ export function useAncAncUstLpProvideTx() {
       ancPrice,
       tax,
       constants.fixedGas,
-      constants.txGasFee.ancAncUstLpProvide,
+      constants.gas.ancAncUstLpProvide.gasFee,
       constants.gasAdjustment,
       addressProvider,
       mantleEndpoint,

@@ -38,6 +38,7 @@ export function useEarnWithdrawForm(): EarnWithdrawFormReturn {
     earnWithdrawForm,
     {
       isConnected: !!connectedWallet,
+      txFixedGas: constants.gas.earnWithdraw.fixedGas,
       fixedGas: constants.fixedGas,
       userUUSTBalance: tokenBalances.uUST,
       totalDeposit: totalDeposit,

@@ -78,7 +78,7 @@ function ComponentBase({
   const [openConfirm, confirmElement] = useConfirm();
 
   const {
-    constants: { fixedGas, blocksPerYear },
+    constants: { gas, blocksPerYear },
   } = useAnchorWebapp();
 
   const [borrow, borrowResult] = useBorrowBorrowTx();
@@ -167,8 +167,8 @@ function ComponentBase({
   );
 
   const txFee = useMemo(
-    () => borrowTxFee(borrowAmount, bank, fixedGas),
-    [bank, borrowAmount, fixedGas],
+    () => borrowTxFee(borrowAmount, bank, gas.borrowBorrow.fixedGas),
+    [bank, borrowAmount, gas.borrowBorrow.fixedGas],
   );
 
   const receiveAmount = useMemo(
@@ -177,8 +177,8 @@ function ComponentBase({
   );
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(bank, gas.borrowBorrow.fixedGas),
+    [connectedWallet, bank, gas.borrowBorrow.fixedGas],
   );
 
   const invalidBorrowAmount = useMemo(

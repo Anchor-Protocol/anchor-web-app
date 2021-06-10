@@ -57,7 +57,7 @@ export function useAncBuyTx() {
         post: connectedWallet.post,
         txFee,
         fixedGas: constants.fixedGas.toString() as uUST,
-        gasFee: constants.txGasFee.ancBuy,
+        gasFee: constants.gas.ancBuy.gasFee,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
@@ -77,7 +77,7 @@ export function useAncBuyTx() {
       ancPrice,
       tax,
       constants.fixedGas,
-      constants.txGasFee.ancBuy,
+      constants.gas.ancBuy.gasFee,
       constants.gasAdjustment,
       addressProvider,
       mantleEndpoint,

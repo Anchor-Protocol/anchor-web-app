@@ -36,8 +36,8 @@ export function useBondClaimTx() {
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        fixedGas: constants.fixedGas.toString() as uUST,
-        gasFee: constants.txGasFee.bondClaim,
+        fixedGas: constants.gas.bondClaim.fixedGas.toString() as uUST,
+        gasFee: constants.gas.bondClaim.gasFee,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
@@ -54,8 +54,8 @@ export function useBondClaimTx() {
     },
     [
       connectedWallet,
-      constants.fixedGas,
-      constants.txGasFee.bondClaim,
+      constants.gas.bondClaim.fixedGas,
+      constants.gas.bondClaim.gasFee,
       constants.gasAdjustment,
       addressProvider,
       mantleEndpoint,

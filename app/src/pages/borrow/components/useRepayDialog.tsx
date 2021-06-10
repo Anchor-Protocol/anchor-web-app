@@ -75,7 +75,7 @@ function ComponentBase({
   const connectedWallet = useConnectedWallet();
 
   const {
-    constants: { fixedGas, blocksPerYear },
+    constants: { gas, blocksPerYear },
   } = useAnchorWebapp();
 
   const [repay, repayResult] = useBorrowRepayTx();
@@ -155,7 +155,9 @@ function ComponentBase({
       ? totalBorrowed
       : (max(
           0,
-          big(bank.userBalances.uUSD).minus(big(fixedGas).mul(2)),
+          big(bank.userBalances.uUSD).minus(
+            big(gas.borrowRepay.fixedGas).mul(2),
+          ),
         ) as uUST<Big>);
   }, [
     marketState,
@@ -163,12 +165,12 @@ function ComponentBase({
     loanAmount,
     blockHeight,
     bank.userBalances.uUSD,
-    fixedGas,
+    gas.borrowRepay.fixedGas,
   ]);
 
   const txFee = useMemo(
-    () => repayTxFee(repayAmount, bank, fixedGas),
-    [bank, fixedGas, repayAmount],
+    () => repayTxFee(repayAmount, bank, gas.borrowRepay.fixedGas),
+    [bank, gas.borrowRepay.fixedGas, repayAmount],
   );
 
   const totalOutstandingLoan = useMemo(
@@ -182,8 +184,8 @@ function ComponentBase({
   );
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(bank, gas.borrowRepay.fixedGas),
+    [connectedWallet, bank, gas.borrowRepay.fixedGas],
   );
 
   const invalidAssetAmount = useMemo(

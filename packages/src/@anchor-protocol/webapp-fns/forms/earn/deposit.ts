@@ -9,6 +9,7 @@ export interface EarnDepositFormInput {
 
 export interface EarnDepositFormDependency {
   userUUSTBalance: uUST<BigSource>;
+  txFixedGas: uUST<BigSource>;
   fixedGas: uUST<BigSource>;
   taxRate: Rate<BigSource>;
   maxTaxUUSD: uUST<BigSource>;
@@ -28,6 +29,7 @@ export interface EarnDepositFormStates extends EarnDepositFormInput {
 export function earnDepositForm(
   { depositAmount }: EarnDepositFormInput,
   {
+    txFixedGas,
     fixedGas,
     taxRate,
     maxTaxUUSD,
@@ -44,11 +46,11 @@ export function earnDepositForm(
     }
 
     const uAmount = microfy(depositAmount);
-    const ratioTxFee = big(uAmount.minus(fixedGas))
+    const ratioTxFee = big(uAmount.minus(txFixedGas))
       .div(big(1).add(taxRate))
       .mul(taxRate);
     const maxTax = big(maxTaxUUSD);
-    return max(min(ratioTxFee, maxTax), 0).plus(fixedGas) as uUST<Big>;
+    return max(min(ratioTxFee, maxTax), 0).plus(txFixedGas) as uUST<Big>;
   })();
 
   // sendAmount
@@ -69,13 +71,13 @@ export function earnDepositForm(
     //                   else without_fixed_gas - max_tax
 
     const userUUSD = big(userUUSTBalance);
-    const withoutFixedGas = userUUSD.minus(fixedGas);
+    const withoutFixedGas = userUUSD.minus(txFixedGas);
     const txFee = withoutFixedGas.mul(taxRate);
     const result = withoutFixedGas.minus(min(txFee, maxTaxUUSD));
 
-    return result.minus(fixedGas).lte(0)
+    return result.minus(txFixedGas).lte(0)
       ? (big(0) as uUST<Big>)
-      : (result.minus(fixedGas) as uUST<Big>);
+      : (result.minus(txFixedGas) as uUST<Big>);
   })();
 
   // invalidTxFee
