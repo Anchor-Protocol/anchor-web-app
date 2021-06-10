@@ -10,7 +10,6 @@ import {
   WalletStatus,
 } from '@terra-money/wallet-provider';
 import logoUrl from 'components/Header/assets/Logo.svg';
-import { MobileNotification } from 'components/Header/notifications/MobileNotification';
 import { AirdropContent } from 'components/Header/WalletSelector/AirdropContent';
 import { links, mobileHeaderHeight } from 'env';
 import { govPathname } from 'pages/gov/env';
@@ -132,7 +131,7 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
 
           <div />
 
-          <MobileNotification className="notification" />
+          {/*<MobileNotification className="notification" />*/}
 
           <IconToggleButton
             on={!!walletDetailElement}
