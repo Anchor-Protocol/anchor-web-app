@@ -11,6 +11,11 @@ interface Params {
 
 export function _postTx({ helper, post }: Params) {
   return ({ value: tx }: TxResultRendering<CreateTxOptions>) => {
+    console.log('GAS:', {
+      fee: tx.fee?.amount.toString(),
+      gasAdjustment: tx.gasAdjustment,
+    });
+
     helper.saveTx(tx);
     return Promise.race<TxResult>([post(tx), txTimeout<TxResult>()]).then(
       (txResult) => {

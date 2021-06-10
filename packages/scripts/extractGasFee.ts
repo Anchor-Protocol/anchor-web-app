@@ -28,8 +28,8 @@ Vote\t0.15\t138,296\t165955.2\t24893.28\t0.02489328\t\tgovVote
   .map(
     ([description, gasPrice, gasUsed, gasFee, fixedGas, gasInUst, , tx]) => ({
       description,
-      gasFee: Math.ceil(+gasFee),
-      fixedGas: Math.ceil(+fixedGas),
+      gasFee: Math.ceil(+gasUsed.replace(/,/g, '') * 1.2),
+      fixedGas: Math.ceil(+gasUsed.replace(/,/g, '') * 1.2 * 0.15),
       tx,
     }),
   )
