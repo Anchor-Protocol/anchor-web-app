@@ -1,4 +1,4 @@
-import { formatRate, truncate } from '@anchor-protocol/notation';
+import { formatRate } from '@anchor-protocol/notation';
 import { Rate } from '@anchor-protocol/types';
 import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
@@ -35,14 +35,8 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
       });
 
       if (big(ltv).gte(ratio)) {
-        create('Anchor Borrow LTV Notification', {
-          body: `[Alert] LTV ratio (${formatRate(
-            ltv as Rate,
-          )}%) is above the set threshold (${formatRate(
-            ratio as Rate<number>,
-          )}%) for ${truncate(
-            connectedWallet.walletAddress,
-          )}. Please repay loan or provide collateral to lower LTV.`,
+        create(`LTV is ${formatRate(ltv as Rate)}%`, {
+          body: `Lower borrow LTV on Anchor webapp to prevent liquidation.`,
           icon: '/logo.png',
         });
       }
@@ -68,6 +62,7 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
       console.log('LIQUIDATION ALERT: ON');
       const intervalId = setInterval(() => {
         jobCallbackRef.current();
+        // TODO change interval time
       }, 1000 * 30);
 
       jobCallbackRef.current();
