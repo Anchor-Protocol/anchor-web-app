@@ -6,6 +6,7 @@ import { useTerraWebapp } from '@terra-money/webapp-provider';
 import big from 'big.js';
 import { useNotification } from 'contexts/notification';
 import { useCallback, useEffect, useRef } from 'react';
+import { useHistory } from 'react-router-dom';
 import { userLtvQuery } from './userLtv';
 
 export interface LiquidationAlert {
@@ -18,6 +19,8 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
   const { contractAddress: address } = useAnchorWebapp();
   const connectedWallet = useConnectedWallet();
   const { permission, create } = useNotification();
+
+  const history = useHistory();
 
   console.log('index.ts..useLiquidationAlert()', ratio);
 
@@ -35,16 +38,23 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
       });
 
       if (big(ltv).gte(ratio)) {
-        create(`LTV is ${formatRate(ltv as Rate)}%`, {
+        const noti = create(`LTV is ${formatRate(ltv as Rate)}%`, {
           body: `Lower borrow LTV on Anchor webapp to prevent liquidation.`,
           icon: '/logo.png',
         });
+
+        if (noti) {
+          noti.addEventListener('click', () => {
+            history.push('/borrow');
+          });
+        }
       }
     } catch {}
   }, [
     address,
     connectedWallet,
     create,
+    history,
     mantleEndpoint,
     mantleFetch,
     permission,
@@ -62,8 +72,7 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
       console.log('LIQUIDATION ALERT: ON');
       const intervalId = setInterval(() => {
         jobCallbackRef.current();
-        // TODO change interval time
-      }, 1000 * 30);
+      }, 1000 * 60);
 
       jobCallbackRef.current();
 
