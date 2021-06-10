@@ -44,9 +44,15 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
         });
 
         if (noti) {
-          noti.addEventListener('click', () => {
+          const click = () => {
             history.push('/borrow');
-          });
+          };
+
+          noti.addEventListener('click', click);
+
+          setTimeout(() => {
+            noti.removeEventListener('click', click);
+          }, 1000 * 10);
         }
       }
     } catch {}
