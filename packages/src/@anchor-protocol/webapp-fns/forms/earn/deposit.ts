@@ -50,7 +50,9 @@ export function earnDepositForm(
       .div(big(1).add(taxRate))
       .mul(taxRate);
     const maxTax = big(maxTaxUUSD);
-    return max(min(ratioTxFee, maxTax), 0).plus(txFixedGas) as uUST<Big>;
+    return max(min(ratioTxFee, maxTax), 0)
+      .plus(txFixedGas)
+      .mul(1.1) as uUST<Big>;
   })();
 
   // sendAmount

@@ -6,7 +6,7 @@ Repay stable\t0.15\t253,160\t303792\t45568.8\t0.0455688\t\tborrowRepay
 Deposit collateral/Lock collateral\t0.15\t465,009\t558010.8\t83701.62\t0.08370162\t\tborrowProvideCollateral
 Unlockcollateral / WithdrawCollateral\t0.15\t630,070\t756084\t113412.6\t0.1134126\t\tborrowRedeemCollateral
 bond\t0.15\t460,554\t552664.8\t82899.72\t0.08289972\t\tbondMint
-burn\t0.15\t470,218\t564261.6\t84639.24\t0.08463924\t\tbondBurn
+burn\t0.15\t611409\t564261.6\t84639.24\t0.08463924\t\tbondBurn
 instant burn\t0.15\t363,314\t435976.8\t65396.52\t0.06539652\t\tbondSwap
 Withdraw unbonded\t0.15\t145,503\t174603.6\t26190.54\t0.02619054\t\tbondWithdraw
 Claim Rewards\t0.15\t154,175\t185010\t27751.5\t0.0277515\t\tbondClaim
@@ -28,8 +28,8 @@ Vote\t0.15\t138,296\t165955.2\t24893.28\t0.02489328\t\tgovVote
   .map(
     ([description, gasPrice, gasUsed, gasFee, fixedGas, gasInUst, , tx]) => ({
       description,
-      gasFee: Math.ceil(+gasUsed.replace(/,/g, '') * 1.2),
-      fixedGas: Math.ceil(+gasUsed.replace(/,/g, '') * 1.2 * 0.15),
+      gasFee: Math.ceil(+gasUsed.replace(/,/g, '') * 1.4),
+      fixedGas: Math.ceil(+gasUsed.replace(/,/g, '') * 1.4 * 0.15),
       tx,
     }),
   )
