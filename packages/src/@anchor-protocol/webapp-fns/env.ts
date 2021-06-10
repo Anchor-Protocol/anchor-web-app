@@ -2,7 +2,7 @@ import { AddressMap } from '@anchor-protocol/anchor.js';
 import { Rate, uUST } from '@anchor-protocol/types';
 import { AnchorContants } from './types';
 
-export const DEFAULT_ADDESS_MAP: Record<string, AddressMap> = {
+export const DEFAULT_ADDRESS_MAP: Record<string, AddressMap> = {
   mainnet: {
     bLunaHub: 'terra1mtwph2juhj0rvjz7dy92gvl6xvukaxu8rfv8ts',
     bLunaToken: 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp',

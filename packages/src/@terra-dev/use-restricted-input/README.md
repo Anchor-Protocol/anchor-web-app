@@ -21,7 +21,7 @@ export function useRestrictedInput(
 export function useRestrictedNumberInput({
   type = 'decimal',
   maxDecimalPoints,
-  maxIntegerPoinsts,
+  maxIntegerPoints,
   onChange: _onChange,
 }: RestrictedNumberInputParams): RestrictedInputReturn {}
 
@@ -34,7 +34,7 @@ export interface RestrictedInputReturn {
 export interface RestrictedNumberInputParams {
   type?: 'decimal' | 'integer';
   maxDecimalPoints?: number;
-  maxIntegerPoinsts?: number;
+  maxIntegerPoints?: number;
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 ```

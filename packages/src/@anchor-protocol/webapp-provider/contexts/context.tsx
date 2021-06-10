@@ -7,7 +7,7 @@ import { ContractAddress } from '@anchor-protocol/types';
 import {
   AnchorContants,
   createAnchorContractAddress,
-  DEFAULT_ADDESS_MAP,
+  DEFAULT_ADDRESS_MAP,
   DEFAULT_ANCHOR_TX_CONSTANTS,
 } from '@anchor-protocol/webapp-fns';
 import { useWallet } from '@terra-money/wallet-provider';
@@ -34,11 +34,12 @@ export interface AnchorWebapp {
 }
 
 // @ts-ignore
-const AnchorWebappContext: Context<AnchorWebapp> = createContext<AnchorWebapp>();
+const AnchorWebappContext: Context<AnchorWebapp> =
+  createContext<AnchorWebapp>();
 
 export function AnchorWebappProvider({
   children,
-  contractAddressMaps = DEFAULT_ADDESS_MAP,
+  contractAddressMaps = DEFAULT_ADDRESS_MAP,
   constants = DEFAULT_ANCHOR_TX_CONSTANTS,
 }: AnchorWebappProviderProps) {
   const { network } = useWallet();
