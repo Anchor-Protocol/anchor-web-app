@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg viewBox="0 0 43 27" version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g id="Artboard1" transform="matrix(1.00256,0,0,0.92721,-1288.44,-396.579)">
+        <rect x="1285.15" y="427.713" width="42.865" height="29.117" style="fill:none;"/>
+        <g transform="matrix(0.997447,0,0,1.0785,1299.73,441.527)">
+            <g transform="matrix(1,0,0,1,-11,-11)">
+                <path d="M13,2L13,3.274C14.2,3.61 15.276,4.242 16.146,5.085L15.456,5.809C14.303,4.689 12.732,4 11,4C7.47,4 4.609,6.861 4.609,10.391L4.609,16.141L2,17.842L2,18L3.818,18L2.863,19L1,19L1,17.3L3.609,15.6L3.609,10.391C3.609,7.002 5.889,4.146 9,3.274L9,2C9,0.895 9.895,0 11,0C12.105,0 13,0.895 13,2ZM12,3L12,2C12,1.448 11.552,1 11,1C10.448,1 10,1.448 10,2L10,3L12,3Z" style="fill:currentColor;"/>
+                <path d="M7.01,19L21,19L21,17.3L18.391,15.6L18.391,10.391C18.391,9.417 18.203,8.486 17.86,7.634L17.089,8.442C17.285,9.057 17.391,9.712 17.391,10.392L17.391,16.142L20,17.842L20,18L7.965,18L7.011,19L7.01,19ZM11,22C12.105,22 13,21.105 13,20L9,20C9,21.105 9.895,22 11,22Z" style="fill:currentColor;fill-rule:nonzero;"/>
+                <path d="M2.091,20.857L20.908,1.143L21.632,1.833L2.814,21.548L2.091,20.858L2.091,20.857Z" style="fill:currentColor;"/>
+            </g>
+        </g>
+    </g>
+</svg>

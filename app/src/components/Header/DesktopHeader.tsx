@@ -2,6 +2,7 @@ import { Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Launch } from '@material-ui/icons';
 import logoUrl from 'components/Header/assets/Logo.svg';
+import { DesktopNotification } from 'components/Header/notifications/DesktopNotification';
 import { WalletSelector } from 'components/Header/WalletSelector';
 import { links, screen } from 'env';
 import { govPathname } from 'pages/gov/env';
@@ -37,7 +38,12 @@ function DesktopHeaderBase({ className }: DesktopHeaderProps) {
         placement="right"
         classes={tooltipClasses}
       >
-        <a className="logo" href="https://anchorprotocol.com/dashboard" target="_blank" rel="noreferrer">
+        <a
+          className="logo"
+          href="https://anchorprotocol.com/dashboard"
+          target="_blank"
+          rel="noreferrer"
+        >
           <img src={logoUrl} alt="logo" />
         </a>
       </Tooltip>
@@ -48,6 +54,10 @@ function DesktopHeaderBase({ className }: DesktopHeaderProps) {
         <NavMenu to="/bond" title="BOND" docsTo={links.bond} />
         <NavMenu to={`/${govPathname}`} title="GOVERN" docsTo={links.gov} />
       </nav>
+
+      <div />
+
+      <DesktopNotification className="notification" />
 
       <section className="wallet">
         <WalletSelector />
@@ -177,7 +187,7 @@ export const DesktopHeader = styled(DesktopHeaderBase)`
   // layout
   // ---------------------------------------------
   display: flex;
-  justify-content: space-between;
+  //justify-content: space-between;
   align-items: flex-end;
 
   height: 88px;
@@ -193,6 +203,14 @@ export const DesktopHeader = styled(DesktopHeaderBase)`
         font-size: 18px;
       }
     }
+  }
+
+  > div:empty {
+    flex: 1;
+  }
+
+  .notification {
+    margin-right: 5px;
   }
 
   .wallet {
