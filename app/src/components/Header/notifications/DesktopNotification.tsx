@@ -84,6 +84,7 @@ export const DesktopNotification = styled(DesktopNotificationBase)`
   }
 
   .notification-dropdown-box {
+    min-width: 320px;
     padding: 28px;
   }
 `;
