@@ -42,8 +42,8 @@ function NotificationContentBase({ className }: NotificationContentProps) {
         <IconSpan>
           Notification{' '}
           <InfoTooltip>
-            Currently notifications only support desktop browsers, and require
-            the webapp to be open in a tab.
+            Currently notifications only support desktop browsers and require
+            the webapp to be open in a tab
           </InfoTooltip>
         </IconSpan>
       </h2>
