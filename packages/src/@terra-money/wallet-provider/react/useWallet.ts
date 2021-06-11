@@ -58,6 +58,13 @@ export interface Wallet {
   connect: (type: ConnectType) => void;
 
   /**
+   * manual connect to read only session
+   *
+   * @see Wallet#connectReadonly
+   */
+  connectReadonly: (terraAddress: string, network: NetworkInfo) => void;
+
+  /**
    * available install types on the browser
    *
    * in this time, this only contains [ConnectType.CHROME_EXTENSION]

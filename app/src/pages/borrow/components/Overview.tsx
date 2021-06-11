@@ -37,13 +37,11 @@ export interface OverviewProps {
 }
 
 function OverviewBase({ className }: OverviewProps) {
-  const {
-    data: { borrowRate, oraclePrice, bLunaSafeLtv, bLunaMaxLtv } = {},
-  } = useBorrowMarketQuery();
+  const { data: { borrowRate, oraclePrice, bLunaSafeLtv, bLunaMaxLtv } = {} } =
+    useBorrowMarketQuery();
 
-  const {
-    data: { marketBorrowerInfo, custodyBorrower } = {},
-  } = useBorrowBorrowerQuery();
+  const { data: { marketBorrowerInfo, custodyBorrower } = {} } =
+    useBorrowBorrowerQuery();
 
   const {
     constants: { blocksPerYear },
@@ -59,14 +57,15 @@ function OverviewBase({ className }: OverviewProps) {
     [custodyBorrower, marketBorrowerInfo, oraclePrice],
   );
 
-  const apr = useMemo(() => _apr(borrowRate, blocksPerYear), [
-    blocksPerYear,
-    borrowRate,
-  ]);
+  const apr = useMemo(
+    () => _apr(borrowRate, blocksPerYear),
+    [blocksPerYear, borrowRate],
+  );
 
-  const borrowed = useMemo(() => _borrowed(marketBorrowerInfo), [
-    marketBorrowerInfo,
-  ]);
+  const borrowed = useMemo(
+    () => _borrowed(marketBorrowerInfo),
+    [marketBorrowerInfo],
+  );
 
   const collaterals = useMemo(
     () => _collaterals(custodyBorrower, oraclePrice?.rate),

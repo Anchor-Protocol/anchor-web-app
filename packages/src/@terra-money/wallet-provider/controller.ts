@@ -342,6 +342,16 @@ export class WalletController {
     }
   };
 
+  /** @see Wallet#connectReadonly */
+  connectReadonly = (terraAddress: string, network: NetworkInfo) => {
+    this.enableReadonlyWallet(
+      reConnect({
+        terraAddress,
+        network,
+      }),
+    );
+  };
+
   /** @see Wallet#disconnect */
   disconnect = () => {
     this.disableReadonlyWallet?.();
@@ -548,7 +558,11 @@ export class WalletController {
     this.disableChromeExtension?.();
     this.disableWebExtension?.();
 
-    if (this.readonlyWallet === readonlyWallet) {
+    if (
+      this.readonlyWallet === readonlyWallet ||
+      (this.readonlyWallet?.terraAddress === readonlyWallet.terraAddress &&
+        this.readonlyWallet.network === readonlyWallet.network)
+    ) {
       return;
     }
 
@@ -729,9 +743,8 @@ export class WalletController {
       });
     };
 
-    const walletConnectSessionSubscription = subscribeWalletConnect(
-      walletConnect,
-    );
+    const walletConnectSessionSubscription =
+      subscribeWalletConnect(walletConnect);
 
     this.disableWalletConnect = () => {
       this.walletConnect?.disconnect();

@@ -120,11 +120,18 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
           </nav>
         )}
         <section className="header">
-          <a className="logo" href="https://anchorprotocol.com/dashboard" target="_blank" rel="noreferrer">
+          <a
+            className="logo"
+            href="https://anchorprotocol.com/dashboard"
+            target="_blank"
+            rel="noreferrer"
+          >
             <img src={logoUrl} alt="logo" />
           </a>
 
           <div />
+
+          {/*<MobileNotification className="notification" />*/}
 
           <IconToggleButton
             on={!!walletDetailElement}
@@ -287,6 +294,11 @@ export const MobileHeader = styled(MobileHeaderBase)`
         width: 28px;
         height: 28px;
       }
+    }
+
+    .notification {
+      margin-right: 15px;
+      transform: translateY(4px);
     }
 
     button {

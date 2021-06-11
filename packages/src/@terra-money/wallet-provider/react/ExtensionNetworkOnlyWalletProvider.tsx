@@ -60,6 +60,9 @@ export function ExtensionNetworkOnlyWalletProvider({
       connect: () => {
         throw new Error('not implemented!');
       },
+      connectReadonly: () => {
+        throw new Error('not implemented!');
+      },
       disconnect: () => {
         throw new Error('not implemented!');
       },
