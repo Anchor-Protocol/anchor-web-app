@@ -33,7 +33,7 @@ export function AncUstLpStake() {
   const connectedWallet = useConnectedWallet();
 
   const {
-    constants: { fixedGas },
+    constants: { gas },
   } = useAnchorWebapp();
 
   const [stake, stakeResult] = useAncAncUstLpStakeTx();
@@ -54,8 +54,9 @@ export function AncUstLpStake() {
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () =>
+      !!connectedWallet && validateTxFee(bank, gas.ancAncUstLpStake.fixedGas),
+    [bank, gas.ancAncUstLpStake.fixedGas, connectedWallet],
   );
 
   const invalidLpAmount = useMemo(() => {
@@ -153,7 +154,7 @@ export function AncUstLpStake() {
       {lpAmount.length > 0 && (
         <TxFeeList className="receipt">
           <TxFeeListItem label="Tx Fee">
-            {formatUST(demicrofy(fixedGas))} UST
+            {formatUST(demicrofy(gas.ancAncUstLpStake.fixedGas))} UST
           </TxFeeListItem>
         </TxFeeList>
       )}

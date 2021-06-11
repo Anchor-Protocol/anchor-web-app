@@ -36,7 +36,7 @@ export function AncGovernanceUnstake() {
   const connectedWallet = useConnectedWallet();
 
   const {
-    constants: { fixedGas },
+    constants: { gas },
     contractAddress,
   } = useAnchorWebapp();
 
@@ -79,8 +79,10 @@ export function AncGovernanceUnstake() {
   }, [govANCBalance, govState, userGovStakingInfo]);
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () =>
+      !!connectedWallet &&
+      validateTxFee(bank, gas.ancGovernanceUnstake.fixedGas),
+    [bank, gas.ancGovernanceUnstake.fixedGas, connectedWallet],
   );
 
   const invalidANCAmount = useMemo(() => {
@@ -179,7 +181,7 @@ export function AncGovernanceUnstake() {
       {ancAmount.length > 0 && (
         <TxFeeList className="receipt">
           <TxFeeListItem label="Tx Fee">
-            {formatUST(demicrofy(fixedGas))} UST
+            {formatUST(demicrofy(gas.ancGovernanceUnstake.fixedGas))} UST
           </TxFeeListItem>
         </TxFeeList>
       )}

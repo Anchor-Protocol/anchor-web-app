@@ -36,7 +36,7 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
   const connectedWallet = useConnectedWallet();
 
   const {
-    constants: { fixedGas },
+    constants: { gas },
   } = useAnchorWebapp();
 
   const [claim, claimResult] = useRewardsUstBorrowClaimTx();
@@ -48,9 +48,8 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
   // ---------------------------------------------
   const bank = useBank();
 
-  const {
-    data: { borrowerInfo, userANCBalance } = {},
-  } = useRewardsClaimableUstBorrowRewardsQuery();
+  const { data: { borrowerInfo, userANCBalance } = {} } =
+    useRewardsClaimableUstBorrowRewardsQuery();
 
   // ---------------------------------------------
   // logics
@@ -66,8 +65,10 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
   }, [claiming, userANCBalance]);
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () =>
+      !!connectedWallet &&
+      validateTxFee(bank, gas.rewardsUstBorrowClaim.fixedGas),
+    [bank, gas.rewardsUstBorrowClaim.fixedGas, connectedWallet],
   );
 
   const proceed = useCallback(() => {
@@ -118,7 +119,7 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
             ANC
           </TxFeeListItem>
           <TxFeeListItem label="Tx Fee">
-            {formatUST(demicrofy(fixedGas))} UST
+            {formatUST(demicrofy(gas.rewardsUstBorrowClaim.fixedGas))} UST
           </TxFeeListItem>
         </TxFeeList>
 

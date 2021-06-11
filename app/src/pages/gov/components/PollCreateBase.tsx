@@ -58,7 +58,7 @@ export function PollCreateBase({
   const connectedWallet = useConnectedWallet();
 
   const {
-    constants: { fixedGas },
+    constants: { gas },
   } = useAnchorWebapp();
 
   const history = useHistory();
@@ -68,8 +68,6 @@ export function PollCreateBase({
   // ---------------------------------------------
   // states
   // ---------------------------------------------
-  const txFee = fixedGas;
-
   const [title, setTitle] = useState<string>('');
 
   const [description, setDescription] = useState<string>('');
@@ -87,8 +85,8 @@ export function PollCreateBase({
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(bank, gas.govCreatePoll.fixedGas),
+    [bank, gas.govCreatePoll.fixedGas, connectedWallet],
   );
 
   const invalidTitleBytes = useValidateStringBytes(title, 4, 64);
@@ -267,7 +265,8 @@ export function PollCreateBase({
 
         <TxFeeList className="receipt">
           <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
-            {formatUSTWithPostfixUnits(demicrofy(txFee))} UST
+            {formatUSTWithPostfixUnits(demicrofy(gas.govCreatePoll.fixedGas))}{' '}
+            UST
           </TxFeeListItem>
         </TxFeeList>
 

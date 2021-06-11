@@ -54,7 +54,7 @@ export function AncUstLpProvide() {
   const [openConfirm, confirmElement] = useConfirm();
 
   const {
-    constants: { fixedGas },
+    constants: { gas, fixedGas },
   } = useAnchorWebapp();
 
   // ---------------------------------------------
@@ -84,9 +84,9 @@ export function AncUstLpProvide() {
   const ustBalance = useMemo(() => {
     const txFee = min(
       max(
-        big(big(bank.userBalances.uUSD).minus(fixedGas)).div(
-          big(big(1).plus(bank.tax.taxRate)).mul(bank.tax.taxRate),
-        ),
+        big(
+          big(bank.userBalances.uUSD).minus(gas.ancAncUstLpProvide.fixedGas),
+        ).div(big(big(1).plus(bank.tax.taxRate)).mul(bank.tax.taxRate)),
         0,
       ),
       bank.tax.maxTaxUUSD,
@@ -95,14 +95,20 @@ export function AncUstLpProvide() {
     return max(
       big(bank.userBalances.uUSD)
         .minus(txFee)
-        .minus(fixedGas * 2),
+        .minus(gas.ancAncUstLpProvide.fixedGas * 2),
       0,
     ) as uUST<Big>;
-  }, [bank.tax.maxTaxUUSD, bank.tax.taxRate, bank.userBalances.uUSD, fixedGas]);
+  }, [
+    bank.tax.maxTaxUUSD,
+    bank.tax.taxRate,
+    bank.userBalances.uUSD,
+    gas.ancAncUstLpProvide.fixedGas,
+  ]);
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () =>
+      !!connectedWallet && validateTxFee(bank, gas.ancAncUstLpProvide.fixedGas),
+    [bank, gas.ancAncUstLpProvide.fixedGas, connectedWallet],
   );
 
   const invalidAncAmount = useMemo(() => {
@@ -119,14 +125,14 @@ export function AncUstLpProvide() {
 
     return big(microfy(ustAmount))
       .plus(simulation.txFee)
-      .plus(fixedGas)
+      .plus(gas.ancAncUstLpProvide.fixedGas)
       .gt(bank.userBalances.uUSD)
       ? 'Not enough assets'
       : undefined;
   }, [
     bank.userBalances.uUSD,
     connectedWallet,
-    fixedGas,
+    gas.ancAncUstLpProvide.fixedGas,
     simulation,
     ustAmount,
   ]);
@@ -171,7 +177,7 @@ export function AncUstLpProvide() {
       const { ustAmount, ...nextSimulation } = ancUstLpAncSimulation(
         ancPrice,
         nextAncAmount as ANC,
-        fixedGas,
+        gas.ancAncUstLpProvide.fixedGas,
         bank,
       );
 
@@ -179,7 +185,7 @@ export function AncUstLpProvide() {
       ustAmount && setUstAmount(formatUSTInput(ustAmount));
       setSimulation(nextSimulation);
     },
-    [ancPrice, bank, fixedGas],
+    [ancPrice, bank, gas.ancAncUstLpProvide.fixedGas],
   );
 
   const updateUstAmount = useCallback(
@@ -199,7 +205,7 @@ export function AncUstLpProvide() {
       const { ancAmount, ...nextSimulation } = ancUstLpUstSimulation(
         ancPrice,
         nextUstAmount as UST,
-        fixedGas,
+        gas.ancAncUstLpProvide.fixedGas,
         bank,
       );
 
@@ -207,7 +213,7 @@ export function AncUstLpProvide() {
       setUstAmount(nextUstAmount as UST);
       setSimulation(nextSimulation);
     },
-    [ancPrice, bank, fixedGas],
+    [ancPrice, bank, gas.ancAncUstLpProvide.fixedGas],
   );
 
   const init = useCallback(() => {

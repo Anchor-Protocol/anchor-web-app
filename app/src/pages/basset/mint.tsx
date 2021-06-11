@@ -55,7 +55,7 @@ function MintBase({ className }: MintProps) {
   const connectedWallet = useConnectedWallet();
 
   const {
-    constants: { fixedGas },
+    constants: { gas },
   } = useAnchorWebapp();
 
   const [mint, mintResult] = useBondMintTx();
@@ -95,8 +95,8 @@ function MintBase({ className }: MintProps) {
   );
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(bank, gas.bondMint.fixedGas),
+    [connectedWallet, bank, gas.bondMint.fixedGas],
   );
 
   const invalidBondAmount = useMemo(
@@ -359,7 +359,7 @@ function MintBase({ className }: MintProps) {
         )}
         {bondAmount.length > 0 && (
           <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
-            {formatUST(demicrofy(fixedGas))} UST
+            {formatUST(demicrofy(gas.bondMint.fixedGas))} UST
           </TxFeeListItem>
         )}
       </TxFeeList>

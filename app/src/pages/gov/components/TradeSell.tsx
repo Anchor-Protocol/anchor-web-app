@@ -63,7 +63,7 @@ export function TradeSell() {
   const { mantleEndpoint, mantleFetch } = useTerraWebapp();
 
   const {
-    constants: { fixedGas },
+    constants: { gas },
     contractAddress: address,
   } = useAnchorWebapp();
 
@@ -97,8 +97,8 @@ export function TradeSell() {
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(bank, gas.ancSell.fixedGas),
+    [bank, gas.ancSell.fixedGas, connectedWallet],
   );
 
   const invalidFromAmount = useMemo(() => {
@@ -183,42 +183,19 @@ export function TradeSell() {
                   simulation as terraswap.SimulationResponse<uUST, uANC>,
                   amount,
                   bank.tax,
-                  fixedGas,
+                  gas.ancSell.fixedGas,
                   maxSpread,
                 )
               : undefined;
           }),
         );
-
-        //resolveSimulation(
-        //  querySimulation(
-        //    client,
-        //    address,
-        //    amount,
-        //    address.terraswap.ancUstPair,
-        //    {
-        //      token: {
-        //        contract_addr: address.cw20.ANC,
-        //      },
-        //    },
-        //  ).then(({ data: { simulation } }) =>
-        //    simulation
-        //      ? sellToSimulation(
-        //          simulation as terraswap.SimulationResponse<uUST, uANC>,
-        //          amount,
-        //          bank.tax,
-        //          fixedGas,
-        //        )
-        //      : undefined,
-        //  ),
-        //);
       }
     },
     [
       address.cw20.ANC,
       address.terraswap.ancUstPair,
       bank.tax,
-      fixedGas,
+      gas.ancSell.fixedGas,
       mantleEndpoint,
       mantleFetch,
       maxSpread,
@@ -268,41 +245,18 @@ export function TradeSell() {
                   simulation as terraswap.SimulationResponse<uUST, uANC>,
                   amount,
                   bank.tax,
-                  fixedGas,
+                  gas.ancSell.fixedGas,
                   maxSpread,
                 )
               : undefined;
           }),
         );
-
-        //resolveSimulation(
-        //  queryReverseSimulation(
-        //    client,
-        //    address,
-        //    amount,
-        //    address.terraswap.ancUstPair,
-        //    {
-        //      native_token: {
-        //        denom: 'uusd' as Denom,
-        //      },
-        //    },
-        //  ).then(({ data: { simulation } }) =>
-        //    simulation
-        //      ? sellFromSimulation(
-        //          simulation as terraswap.SimulationResponse<uUST, uANC>,
-        //          amount,
-        //          bank.tax,
-        //          fixedGas,
-        //        )
-        //      : undefined,
-        //  ),
-        //);
       }
     },
     [
       address.terraswap.ancUstPair,
       bank.tax,
-      fixedGas,
+      gas.ancSell.fixedGas,
       mantleEndpoint,
       mantleFetch,
       maxSpread,

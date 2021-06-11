@@ -76,10 +76,8 @@ function ComponentBase({
   const connectedWallet = useConnectedWallet();
 
   const {
-    constants: { fixedGas },
+    constants: { gas },
   } = useAnchorWebapp();
-
-  const txFee = fixedGas;
 
   const [redeemCollateral, redeemCollateralResult] =
     useBorrowRedeemCollateralTx();
@@ -175,8 +173,10 @@ function ComponentBase({
   );
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () =>
+      !!connectedWallet &&
+      validateTxFee(bank, gas.borrowRedeemCollateral.fixedGas),
+    [connectedWallet, bank, gas.borrowRedeemCollateral.fixedGas],
   );
 
   const invalidRedeemAmount = useMemo(
@@ -345,7 +345,7 @@ function ComponentBase({
         {redeemAmount.length > 0 && (
           <TxFeeList className="receipt">
             <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
-              {formatUST(demicrofy(txFee))} UST
+              {formatUST(demicrofy(gas.borrowRedeemCollateral.fixedGas))} UST
             </TxFeeListItem>
           </TxFeeList>
         )}

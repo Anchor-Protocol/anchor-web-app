@@ -63,7 +63,7 @@ function ComponentBase({
   const connectedWallet = useConnectedWallet();
 
   const {
-    constants: { fixedGas },
+    constants: { gas },
   } = useAnchorWebapp();
 
   const bank = useBank();
@@ -85,8 +85,8 @@ function ComponentBase({
   }, [userGovStakingInfo]);
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(bank, gas.govVote.fixedGas),
+    [bank, gas.govVote.fixedGas, connectedWallet],
   );
 
   const invalidAmount = useMemo(() => {
@@ -96,8 +96,6 @@ function ComponentBase({
 
     return maxVote && uanc.gt(maxVote) ? 'Not enough assets' : undefined;
   }, [amount, maxVote, connectedWallet]);
-
-  const txFee = fixedGas;
 
   const submit = useCallback(
     (voteFor: 'yes' | 'no', amount: ANC) => {
@@ -200,13 +198,11 @@ function ComponentBase({
           </span>
         </div>
 
-        {txFee && (
-          <TxFeeList className="receipt">
-            <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
-              {formatUST(demicrofy(txFee))} UST
-            </TxFeeListItem>
-          </TxFeeList>
-        )}
+        <TxFeeList className="receipt">
+          <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
+            {formatUST(demicrofy(gas.govVote.fixedGas))} UST
+          </TxFeeListItem>
+        </TxFeeList>
 
         <ActionButton
           className="submit"

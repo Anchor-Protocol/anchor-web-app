@@ -41,7 +41,7 @@ export function AncUstLpWithdraw() {
   const connectedWallet = useConnectedWallet();
 
   const {
-    constants: { fixedGas },
+    constants: { gas },
   } = useAnchorWebapp();
 
   const [withdraw, withdrawResult] = useAncAncUstLpWithdrawTx();
@@ -68,8 +68,17 @@ export function AncUstLpWithdraw() {
   // ---------------------------------------------
   const invalidTxFee = useMemo(
     () =>
-      !!connectedWallet && validateTxFee(bank, simulation?.txFee ?? fixedGas),
-    [connectedWallet, bank, simulation?.txFee, fixedGas],
+      !!connectedWallet &&
+      validateTxFee(
+        bank,
+        simulation?.txFee ?? gas.ancAncUstLpWithdraw.fixedGas,
+      ),
+    [
+      connectedWallet,
+      bank,
+      simulation?.txFee,
+      gas.ancAncUstLpWithdraw.fixedGas,
+    ],
   );
 
   const invalidLpAmount = useMemo(() => {
@@ -96,14 +105,14 @@ export function AncUstLpWithdraw() {
         ancPrice,
         userLPBalance,
         nextLpAmount as AncUstLP,
-        fixedGas,
+        gas.ancAncUstLpWithdraw.fixedGas,
         bank,
       );
 
       setLpAmount(nextLpAmount as AncUstLP);
       setSimulation(nextSimulation);
     },
-    [ancPrice, bank, fixedGas, userLPBalance],
+    [ancPrice, bank, gas.ancAncUstLpWithdraw.fixedGas, userLPBalance],
   );
 
   const init = useCallback(() => {

@@ -70,7 +70,7 @@ export function Swap() {
 
   const { mantleEndpoint, mantleFetch } = useTerraWebapp();
   const {
-    constants: { fixedGas },
+    constants: { gas },
     contractAddress: address,
   } = useAnchorWebapp();
 
@@ -106,8 +106,8 @@ export function Swap() {
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(bank, gas.bondSwap.fixedGas),
+    [connectedWallet, bank, gas.bondSwap.fixedGas],
   );
 
   const invalidBurnAmount = useMemo(
@@ -430,7 +430,7 @@ export function Swap() {
             {formatLuna(demicrofy(simulation.swapFee))} Luna
           </TxFeeListItem>
           <TxFeeListItem label="Tx Fee">
-            {formatUST(demicrofy(fixedGas))} UST
+            {formatUST(demicrofy(gas.bondSwap.fixedGas))} UST
           </TxFeeListItem>
         </TxFeeList>
       )}

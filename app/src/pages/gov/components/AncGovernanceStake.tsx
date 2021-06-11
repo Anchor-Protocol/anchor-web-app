@@ -33,7 +33,7 @@ export function AncGovernanceStake() {
   const connectedWallet = useConnectedWallet();
 
   const {
-    constants: { fixedGas },
+    constants: { gas },
   } = useAnchorWebapp();
 
   const [stake, stakeResult] = useAncGovernanceStakeTx();
@@ -55,8 +55,9 @@ export function AncGovernanceStake() {
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () =>
+      !!connectedWallet && validateTxFee(bank, gas.ancGovernanceStake.fixedGas),
+    [connectedWallet, bank, gas.ancGovernanceStake.fixedGas],
   );
 
   const invalidANCAmount = useMemo(() => {
@@ -155,7 +156,7 @@ export function AncGovernanceStake() {
       {ancAmount.length > 0 && (
         <TxFeeList className="receipt">
           <TxFeeListItem label="Tx Fee">
-            {formatUST(demicrofy(fixedGas))} UST
+            {formatUST(demicrofy(gas.ancGovernanceStake.fixedGas))} UST
           </TxFeeListItem>
         </TxFeeList>
       )}

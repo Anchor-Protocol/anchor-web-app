@@ -45,7 +45,7 @@ export function Burn() {
   const connectedWallet = useConnectedWallet();
 
   const {
-    constants: { fixedGas },
+    constants: { gas },
   } = useAnchorWebapp();
 
   const [burn, burnResult] = useBondBurnTx();
@@ -80,8 +80,8 @@ export function Burn() {
   );
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(bank, gas.bondBurn.fixedGas),
+    [connectedWallet, bank, gas.bondBurn.fixedGas],
   );
 
   const invalidBurnAmount = useMemo(
@@ -327,7 +327,7 @@ export function Burn() {
         )}
         {burnAmount.length > 0 && (
           <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
-            {formatUST(demicrofy(fixedGas))} UST
+            {formatUST(demicrofy(gas.bondBurn.fixedGas))} UST
           </TxFeeListItem>
         )}
       </TxFeeList>

@@ -73,10 +73,8 @@ function ComponentBase({
   const connectedWallet = useConnectedWallet();
 
   const {
-    constants: { fixedGas },
+    constants: { gas },
   } = useAnchorWebapp();
-
-  const txFee = fixedGas;
 
   const [provideCollateral, provideCollateralResult] =
     useBorrowProvideCollateralTx();
@@ -143,8 +141,10 @@ function ComponentBase({
   );
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () =>
+      !!connectedWallet &&
+      validateTxFee(bank, gas.borrowProvideCollateral.fixedGas),
+    [connectedWallet, bank, gas.borrowProvideCollateral.fixedGas],
   );
 
   const invalidDepositAmount = useMemo(
@@ -299,7 +299,7 @@ function ComponentBase({
         {depositAmount.length > 0 && (
           <TxFeeList className="receipt">
             <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
-              {formatUST(demicrofy(txFee))} UST
+              {formatUST(demicrofy(gas.borrowProvideCollateral.fixedGas))} UST
             </TxFeeListItem>
           </TxFeeList>
         )}

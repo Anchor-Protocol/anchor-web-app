@@ -30,7 +30,7 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
   const connectedWallet = useConnectedWallet();
 
   const {
-    constants: { fixedGas },
+    constants: { gas },
   } = useAnchorWebapp();
 
   const [claim, claimResult] = useBondClaimTx();
@@ -40,16 +40,15 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
   // ---------------------------------------------
   const bank = useBank();
 
-  const {
-    data: { rewardState, claimableReward } = {},
-  } = useBondClaimableRewards();
+  const { data: { rewardState, claimableReward } = {} } =
+    useBondClaimableRewards();
 
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(bank, gas.bondClaim.fixedGas),
+    [connectedWallet, bank, gas.bondClaim.fixedGas],
   );
 
   const claimableRewards = useMemo(
@@ -132,7 +131,7 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
           !connectedWallet.availablePost ||
           !claim ||
           !!invalidTxFee ||
-          claimableRewards.lte(fixedGas) ||
+          claimableRewards.lte(gas.bondClaim.fixedGas) ||
           disabled
         }
         onClick={() => proceed()}

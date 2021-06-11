@@ -76,7 +76,7 @@ export function TradeBuy() {
   const [openConfirm, confirmElement] = useConfirm();
 
   const {
-    constants: { fixedGas },
+    constants: { gas, fixedGas },
     contractAddress: address,
   } = useAnchorWebapp();
 
@@ -112,7 +112,7 @@ export function TradeBuy() {
   const ustBalance = useMemo(() => {
     const txFee = min(
       max(
-        big(big(bank.userBalances.uUSD).minus(fixedGas)).div(
+        big(big(bank.userBalances.uUSD).minus(gas.ancBuy.fixedGas)).div(
           big(big(1).plus(bank.tax.taxRate)).mul(bank.tax.taxRate),
         ),
         0,
@@ -123,14 +123,19 @@ export function TradeBuy() {
     return max(
       big(bank.userBalances.uUSD)
         .minus(txFee)
-        .minus(fixedGas * 2),
+        .minus(gas.ancBuy.fixedGas * 2),
       0,
     ) as uUST<Big>;
-  }, [bank.tax.maxTaxUUSD, bank.tax.taxRate, bank.userBalances.uUSD, fixedGas]);
+  }, [
+    bank.tax.maxTaxUUSD,
+    bank.tax.taxRate,
+    bank.userBalances.uUSD,
+    gas.ancBuy.fixedGas,
+  ]);
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(bank, gas.ancBuy.fixedGas),
+    [bank, gas.ancBuy.fixedGas, connectedWallet],
   );
 
   const invalidFromAmount = useMemo(() => {
@@ -139,7 +144,7 @@ export function TradeBuy() {
 
     return big(microfy(fromAmount))
       .plus(simulation.txFee)
-      .plus(fixedGas)
+      .plus(gas.ancBuy.fixedGas)
       .gt(bank.userBalances.uUSD)
       ? 'Not enough assets'
       : undefined;
@@ -147,7 +152,7 @@ export function TradeBuy() {
     fromAmount,
     connectedWallet,
     simulation,
-    fixedGas,
+    gas.ancBuy.fixedGas,
     bank.userBalances.uUSD,
   ]);
 
@@ -248,7 +253,7 @@ export function TradeBuy() {
                   simulation as terraswap.SimulationResponse<uANC>,
                   amount,
                   bank.tax,
-                  fixedGas,
+                  gas.ancBuy.fixedGas,
                   maxSpread,
                 )
               : undefined;
@@ -282,7 +287,7 @@ export function TradeBuy() {
     [
       address.terraswap.ancUstPair,
       bank.tax,
-      fixedGas,
+      gas.ancBuy.fixedGas,
       mantleEndpoint,
       mantleFetch,
       maxSpread,
@@ -333,7 +338,7 @@ export function TradeBuy() {
                   simulation as terraswap.SimulationResponse<uANC, uUST>,
                   amount,
                   bank.tax,
-                  fixedGas,
+                  gas.ancBuy.fixedGas,
                   maxSpread,
                 )
               : undefined;
@@ -368,7 +373,7 @@ export function TradeBuy() {
       address.cw20.ANC,
       address.terraswap.ancUstPair,
       bank.tax,
-      fixedGas,
+      gas.ancBuy.fixedGas,
       mantleEndpoint,
       mantleFetch,
       maxSpread,

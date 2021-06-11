@@ -48,7 +48,7 @@ export function WithdrawSection({
   const connectedWallet = useConnectedWallet();
 
   const {
-    constants: { fixedGas },
+    constants: { gas },
   } = useAnchorWebapp();
 
   const [withdraw, withdrawResult] = useBondWithdrawTx();
@@ -79,8 +79,8 @@ export function WithdrawSection({
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(bank, gas.bondWithdraw.fixedGas),
+    [connectedWallet, bank, gas.bondWithdraw.fixedGas],
   );
 
   const withdrawHistory = useMemo(
