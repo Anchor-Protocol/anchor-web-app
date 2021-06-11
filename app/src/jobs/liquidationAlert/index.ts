@@ -3,8 +3,10 @@ import { Rate } from '@anchor-protocol/types';
 import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useTerraWebapp } from '@terra-money/webapp-provider';
+import big from 'big.js';
 import { useNotification } from 'contexts/notification';
 import { useCallback, useEffect, useRef } from 'react';
+import { useHistory } from 'react-router-dom';
 import { userLtvQuery } from './userLtv';
 
 export interface LiquidationAlert {
@@ -17,6 +19,8 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
   const { contractAddress: address } = useAnchorWebapp();
   const connectedWallet = useConnectedWallet();
   const { permission, create } = useNotification();
+
+  const history = useHistory();
 
   console.log('index.ts..useLiquidationAlert()', ratio);
 
@@ -33,20 +37,34 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
         address,
       });
 
-      //if (big(ltv).gte(ratio)) {
-      create('Liquidation Alert!', {
-        body: `Your Ltv is ${formatRate(ltv as Rate)}%`,
-        icon: '/logo.png',
-      });
-      //}
+      if (big(ltv).gte(ratio)) {
+        const noti = create(`LTV is ${formatRate(ltv as Rate)}%`, {
+          body: `Lower borrow LTV on Anchor webapp to prevent liquidation.`,
+          icon: '/logo.png',
+        });
+
+        if (noti) {
+          const click = () => {
+            history.push('/borrow');
+          };
+
+          noti.addEventListener('click', click);
+
+          setTimeout(() => {
+            noti.removeEventListener('click', click);
+          }, 1000 * 10);
+        }
+      }
     } catch {}
   }, [
     address,
     connectedWallet,
     create,
+    history,
     mantleEndpoint,
     mantleFetch,
     permission,
+    ratio,
   ]);
 
   const jobCallbackRef = useRef(jobCallback);
@@ -57,10 +75,10 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
 
   useEffect(() => {
     if (connectedWallet && permission === 'granted' && enabled) {
-      console.log('index.ts..() enabled!');
+      console.log('LIQUIDATION ALERT: ON');
       const intervalId = setInterval(() => {
         jobCallbackRef.current();
-      }, 1000 * 30);
+      }, 1000 * 60);
 
       jobCallbackRef.current();
 
@@ -68,6 +86,6 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
         clearInterval(intervalId);
       };
     }
-    console.log('index.ts..() disabled!');
+    console.log('LIQUIDATION ALERT: OFF');
   }, [connectedWallet, enabled, permission]);
 }

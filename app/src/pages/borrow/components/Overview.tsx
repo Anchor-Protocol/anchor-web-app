@@ -24,7 +24,6 @@ import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { TooltipIconCircle } from '@terra-dev/neumorphism-ui/components/TooltipIconCircle';
 import big, { Big } from 'big.js';
 import { screen } from 'env';
-import { LiquidationAlertConfig } from 'pages/borrow/components/LiquidationAlertConfig';
 import { currentLtv as _currentLtv } from 'pages/borrow/logics/currentLtv';
 import { useMemo } from 'react';
 import styled from 'styled-components';
@@ -203,8 +202,6 @@ function OverviewBase({ className }: OverviewProps) {
           />
         </figure>
       )}
-
-      <LiquidationAlertConfig />
     </Section>
   );
 }
