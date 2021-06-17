@@ -108,7 +108,11 @@ export function renderTxFailedReason({
             <p style={{ opacity: 0.7 }}>
               The transaction requested has failed due to the following reason:
             </p>
-            <p>{error.message}</p>
+            <p>
+              {error.message
+                .replace('execute wasm contract failed:', '')
+                .replace('failed to execute message; message index: 0', '')}
+            </p>
             {error.txhash && (
               <p>
                 TxHash: <TxHashLink txHash={error.txhash} />
