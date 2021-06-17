@@ -27,7 +27,10 @@ __metadata:
     "@sentry/react": ^6.5.0
     "@sentry/tracing": ^6.5.0
     "@ssen/jest-transform": ^2.5.0
+    "@terra-dev/browser-check": ^0.16.0-alpha.6
+    "@terra-dev/wallet-types": ^0.16.0-alpha.6
     "@terra-money/terra.js": ^1.8.0
+    "@terra-money/wallet-provider": ^0.16.0-alpha.6
     "@testing-library/jest-dom": ^5.12.0
     "@testing-library/react": ^11.2.7
     "@testing-library/user-event": ^13.1.9
