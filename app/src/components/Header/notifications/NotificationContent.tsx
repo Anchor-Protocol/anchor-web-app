@@ -2,6 +2,8 @@ import { Slider, Switch } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { NotificationsNone } from '@material-ui/icons';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { useJobs } from 'jobs/Jobs';
 import React, { ChangeEvent, useCallback } from 'react';
 import styled, { DefaultTheme } from 'styled-components';
@@ -37,7 +39,13 @@ function NotificationContentBase({ className }: NotificationContentProps) {
     <div className={className}>
       <h2>
         <NotificationsNone />
-        Notification
+        <IconSpan>
+          Notification{' '}
+          <InfoTooltip>
+            Currently notifications only support desktop browsers and require
+            the webapp to be open in a tab
+          </InfoTooltip>
+        </IconSpan>
       </h2>
 
       <div className="switch">
@@ -193,7 +201,7 @@ export const NotificationContent = styled(NotificationContentBase)`
     display: flex;
     align-items: center;
 
-    svg {
+    > svg:first-child {
       font-size: 1.4em;
       margin-right: 0.2em;
     }
