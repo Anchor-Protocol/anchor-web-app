@@ -131,7 +131,8 @@ export function renderTxFailedReason({
             <p>
               {error.message
                 .replace('execute wasm contract failed:', '')
-                .replace('failed to execute message; message index: 0', '')}
+                .replace('failed to execute message; message index: 0', '')
+                .replace(': failed to execute message; message index: 0', '')}
             </p>
             {error.txhash && (
               <p>
