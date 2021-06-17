@@ -83,14 +83,31 @@ const uncaughtErrorMessage = (message: string | null | undefined) => (
   </div>
 );
 
+function instanceofWithName<E>(error: unknown, name: string): error is E {
+  return error instanceof Error && error.name === name;
+}
+
 export function renderTxFailedReason({
   error,
   errorId,
 }: TxErrorRendering): ReactNode {
+  console.log('renderTxFailedReason.tsx..renderTxFailedReason()', {
+    name: error instanceof Error && error.name,
+    className: TxFailed.name,
+    error,
+    isTxFailed: error instanceof TxFailed,
+  });
+
   // @terra-money/wallet-provider
-  if (error instanceof UserDenied) {
+  if (
+    error instanceof UserDenied ||
+    instanceofWithName<UserDenied>(error, 'UserDenied')
+  ) {
     return <h2>User Denied</h2>;
-  } else if (error instanceof CreateTxFailed) {
+  } else if (
+    error instanceof CreateTxFailed ||
+    instanceofWithName<CreateTxFailed>(error, 'CreateTxFailed')
+  ) {
     return (
       <>
         <h2>Failed to broadcast transaction</h2>
@@ -99,7 +116,10 @@ export function renderTxFailedReason({
         </ErrorMessageView>
       </>
     );
-  } else if (error instanceof TxFailed) {
+  } else if (
+    error instanceof TxFailed ||
+    instanceofWithName<TxFailed>(error, 'TxFailed')
+  ) {
     return (
       <>
         <h2>Transaction failed</h2>
@@ -159,14 +179,20 @@ export function renderTxFailedReason({
         </ErrorMessageView>
       </>
     );
-  } else if (error instanceof Timeout) {
+  } else if (
+    error instanceof Timeout ||
+    instanceofWithName<Timeout>(error, 'Timeout')
+  ) {
     return (
       <>
         <h2>Timeout</h2>
         <div>{error.message}</div>
       </>
     );
-  } else if (error instanceof TxUnspecifiedError) {
+  } else if (
+    error instanceof TxUnspecifiedError ||
+    instanceofWithName<TxUnspecifiedError>(error, 'TxUnspecifiedError')
+  ) {
     return (
       <>
         <h2>Transaction failed</h2>
