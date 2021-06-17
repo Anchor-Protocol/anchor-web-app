@@ -1,7 +1,7 @@
 import { Menu, MenuClose, MenuWallet } from '@anchor-protocol/icons';
 import { useAirdropCheckQuery } from '@anchor-protocol/webapp-provider';
 import { Launch } from '@material-ui/icons';
-import { isMathWallet } from '@terra-dev/mathwallet';
+import { isMathWallet } from '@terra-dev/browser-check';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { IconToggleButton } from '@terra-dev/neumorphism-ui/components/IconToggleButton';
 import {

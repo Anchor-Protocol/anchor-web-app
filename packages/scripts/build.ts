@@ -1,9 +1,14 @@
+import path from 'path';
 import { build } from 'rocket-punch';
-import { cwd, entry } from './env';
+import packages from '../.packages.json';
+
+const { $schema, ...entry } = packages;
+
+export const cwd = path.resolve(__dirname, '..');
 
 build({
   cwd,
-  entry,
+  entry: { ...entry },
   transformPackageJson: (packageName) => (computedPackageJson) => {
     const {
       dependencies = {},
@@ -25,31 +30,21 @@ build({
       delete dependencies['react-router-dom'];
       peerDependencies['react-router-dom'] = '^5.0.0';
     }
-    
+
     if ('react-query' in dependencies) {
       delete dependencies['react-query'];
       peerDependencies['react-query'] = '^3.14.0';
     }
-    
+
     if ('styled-components' in dependencies) {
       delete dependencies['styled-components'];
       peerDependencies['styled-components'] = '^5.0.0';
     }
 
     switch (packageName) {
-      case '@terra-money/wallet-provider':
       case '@anchor-protocol/notation':
-      case '@terra-dev/is-mobile':
       case '@terra-dev/sendinblue':
         peerDependenciesMeta['react'] = {
-          optional: true,
-        };
-        break;
-    }
-    
-    switch (packageName) {
-      case '@terra-money/wallet-provider':
-        peerDependenciesMeta['react-router-dom'] = {
           optional: true,
         };
         break;

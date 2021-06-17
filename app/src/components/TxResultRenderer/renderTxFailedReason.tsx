@@ -4,7 +4,7 @@ import {
   TxFailed,
   TxUnspecifiedError,
   UserDenied,
-} from '@terra-dev/wallet-types';
+} from '@terra-money/wallet-provider';
 import { TxErrorRendering } from '@terra-money/webapp-fns';
 import { TxHashLink } from 'base/components/TxHashLink';
 import React, { ReactNode } from 'react';
@@ -55,27 +55,6 @@ const createTxFailedMessage = (message: string) => (
   </div>
 );
 
-const txFailedMessage = (txhash: string | undefined, message: string) => (
-  <div style={{ lineHeight: '1.8em' }}>
-    {txhash && (
-      <p>
-        TxHash: <TxHashLink txHash={txhash} />
-      </p>
-    )}
-    <p>{message}</p>
-    <p style={{ opacity: 0.7 }}>
-      If you are using multiple wallets, please retry after refreshing the
-      WebApp.
-    </p>
-    <p style={{ opacity: 0.7 }}>
-      If the problem still persists, please report your error ID to admin
-      through anyone of the following channels.
-    </p>
-
-    {channels}
-  </div>
-);
-
 const txUnspecifiedErrorMessage = (message: string | undefined | null) => (
   <div style={{ lineHeight: '1.8em' }}>
     {typeof message === 'string' && <p>{message}</p>}
@@ -104,14 +83,31 @@ const uncaughtErrorMessage = (message: string | null | undefined) => (
   </div>
 );
 
+function instanceofWithName<E>(error: unknown, name: string): error is E {
+  return error instanceof Error && error.name === name;
+}
+
 export function renderTxFailedReason({
   error,
   errorId,
 }: TxErrorRendering): ReactNode {
+  console.log('renderTxFailedReason.tsx..renderTxFailedReason()', {
+    name: error instanceof Error && error.name,
+    className: TxFailed.name,
+    error,
+    isTxFailed: error instanceof TxFailed,
+  });
+
   // @terra-money/wallet-provider
-  if (error instanceof UserDenied) {
+  if (
+    error instanceof UserDenied ||
+    instanceofWithName<UserDenied>(error, 'UserDenied')
+  ) {
     return <h2>User Denied</h2>;
-  } else if (error instanceof CreateTxFailed) {
+  } else if (
+    error instanceof CreateTxFailed ||
+    instanceofWithName<CreateTxFailed>(error, 'CreateTxFailed')
+  ) {
     return (
       <>
         <h2>Failed to broadcast transaction</h2>
@@ -120,23 +116,84 @@ export function renderTxFailedReason({
         </ErrorMessageView>
       </>
     );
-  } else if (error instanceof TxFailed) {
+  } else if (
+    error instanceof TxFailed ||
+    instanceofWithName<TxFailed>(error, 'TxFailed')
+  ) {
     return (
       <>
         <h2>Transaction failed</h2>
-        <ErrorMessageView error={error} errorId={errorId}>
-          {txFailedMessage(error.txhash, error.message)}
+        <ErrorMessageView error={null}>
+          <div style={{ lineHeight: '1.8em' }}>
+            <p style={{ opacity: 0.7 }}>
+              The transaction requested has failed due to the following reason:
+            </p>
+            <p>
+              {error.message
+                .replace('execute wasm contract failed:', '')
+                .replace('failed to execute message; message index: 0', '')
+                .replace(': failed to execute message; message index: 0', '')}
+            </p>
+            {error.txhash && (
+              <p>
+                TxHash: <TxHashLink txHash={error.txhash} />
+              </p>
+            )}
+            <p style={{ opacity: 0.7, marginTop: '1em' }}>
+              For assistance, please report your error ID to admin through the
+              Anchor discord server under SUPPORT - error-ids.
+            </p>
+            <p>
+              Anchor Discord Server:{' '}
+              <a
+                href="https://discord.gg/9aUYgpKZ9c"
+                target="_blank"
+                rel="noreferrer"
+              >
+                https://discord.gg/9aUYgpKZ9c
+              </a>
+            </p>
+            <p style={{ opacity: 0.7, marginTop: '1em' }}>
+              Alternative lines of communication
+            </p>
+            <p>
+              Telegram Channel:{' '}
+              <a
+                href="https://t.me/anchor_official"
+                target="_blank"
+                rel="noreferrer"
+              >
+                https://t.me/anchor_official
+              </a>
+            </p>
+            <p>
+              Github Issues:{' '}
+              <a
+                href="https://github.com/Anchor-Protocol/anchor-web-app/issues"
+                target="_blank"
+                rel="noreferrer"
+              >
+                https://github.com/Anchor-Protocol/anchor-web-app
+              </a>
+            </p>
+          </div>
         </ErrorMessageView>
       </>
     );
-  } else if (error instanceof Timeout) {
+  } else if (
+    error instanceof Timeout ||
+    instanceofWithName<Timeout>(error, 'Timeout')
+  ) {
     return (
       <>
         <h2>Timeout</h2>
         <div>{error.message}</div>
       </>
     );
-  } else if (error instanceof TxUnspecifiedError) {
+  } else if (
+    error instanceof TxUnspecifiedError ||
+    instanceofWithName<TxUnspecifiedError>(error, 'TxUnspecifiedError')
+  ) {
     return (
       <>
         <h2>Transaction failed</h2>

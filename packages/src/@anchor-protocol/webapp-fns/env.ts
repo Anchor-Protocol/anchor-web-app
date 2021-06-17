@@ -69,15 +69,15 @@ export const DEFAULT_ADDESS_MAP: Record<string, AddressMap> = {
 
 export const DEFAULT_ANCHOR_TX_CONSTANTS: Record<string, AnchorContants> = {
   mainnet: {
-    gasFee: 1000000 as uUST<number>,
-    fixedGas: 250000 as uUST<number>,
-    blocksPerYear: 4906443,
+    gasFee: 1_000_000 as uUST<number>,
+    fixedGas: 250_000 as uUST<number>,
+    blocksPerYear: 4_656_810,
     gasAdjustment: 1.6 as Rate<number>,
   },
   testnet: {
-    gasFee: 6000000 as uUST<number>,
-    fixedGas: 3500000 as uUST<number>,
-    blocksPerYear: 4906443,
+    gasFee: 6_000_000 as uUST<number>,
+    fixedGas: 3_500_000 as uUST<number>,
+    blocksPerYear: 4_656_810,
     gasAdjustment: 1.4 as Rate<number>,
   },
 };

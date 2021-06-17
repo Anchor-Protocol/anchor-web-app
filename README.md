@@ -78,7 +78,6 @@ IDE
 - [packages/src/@terra-dev/audit-fastdom/README.md](packages/src/@terra-dev/audit-fastdom/README.md)
 - [packages/src/@terra-dev/big-interpolate/README.md](packages/src/@terra-dev/big-interpolate/README.md)
 - [packages/src/@terra-dev/big-math/README.md](packages/src/@terra-dev/big-math/README.md)
-- [packages/src/@terra-dev/is-desktop-chrome/README.md](packages/src/@terra-dev/is-desktop-chrome/README.md)
 - [packages/src/@terra-dev/is-touch-device/README.md](packages/src/@terra-dev/is-touch-device/README.md)
 - [packages/src/@terra-dev/is-zero/README.md](packages/src/@terra-dev/is-zero/README.md)
 - [packages/src/@terra-dev/neumorphism-ui/README.md](packages/src/@terra-dev/neumorphism-ui/README.md)
@@ -95,9 +94,6 @@ IDE
 - [packages/src/@terra-dev/use-router-scroll-restoration/README.md](packages/src/@terra-dev/use-router-scroll-restoration/README.md)
 - [packages/src/@terra-dev/use-string-bytes-length/README.md](packages/src/@terra-dev/use-string-bytes-length/README.md)
 - [packages/src/@terra-dev/use-time-end/README.md](packages/src/@terra-dev/use-time-end/README.md)
-- [packages/src/@terra-dev/walletconnect-qrcode-modal/README.md](packages/src/@terra-dev/walletconnect-qrcode-modal/README.md)
-- [packages/src/@terra-dev/walletconnect/README.md](packages/src/@terra-dev/walletconnect/README.md)
-- [packages/src/@terra-money/wallet-provider/README.md](packages/src/@terra-money/wallet-provider/README.md)
 
 <!-- /index -->
 
