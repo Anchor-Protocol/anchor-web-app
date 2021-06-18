@@ -6,7 +6,6 @@ import {
   UserDenied,
 } from '@terra-money/wallet-provider';
 import { TxErrorRendering } from '@terra-money/webapp-fns';
-import { TxHashLink } from 'base/components/TxHashLink';
 import React, { ReactNode } from 'react';
 
 // ----------------------------------------------------------------
@@ -91,13 +90,6 @@ export function renderTxFailedReason({
   error,
   errorId,
 }: TxErrorRendering): ReactNode {
-  console.log('renderTxFailedReason.tsx..renderTxFailedReason()', {
-    name: error instanceof Error && error.name,
-    className: TxFailed.name,
-    error,
-    isTxFailed: error instanceof TxFailed,
-  });
-
   // @terra-money/wallet-provider
   if (
     error instanceof UserDenied ||
@@ -132,16 +124,12 @@ export function renderTxFailedReason({
               {error.message
                 .replace('execute wasm contract failed:', '')
                 .replace('failed to execute message; message index: 0', '')
-                .replace(': failed to execute message; message index: 0', '')}
+                .replace(': failed to execute message; message index: 0', '')
+                .trim()}
             </p>
-            {error.txhash && (
-              <p>
-                TxHash: <TxHashLink txHash={error.txhash} />
-              </p>
-            )}
             <p style={{ opacity: 0.7, marginTop: '1em' }}>
-              For assistance, please report your error ID to admin through the
-              Anchor discord server under SUPPORT - error-ids.
+              For assistance, please report your Tx hash to admin through the
+              Anchor discord server under SUPPORT - error-support.
             </p>
             <p>
               Anchor Discord Server:{' '}

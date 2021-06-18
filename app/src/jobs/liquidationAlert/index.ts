@@ -22,8 +22,6 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
 
   const history = useHistory();
 
-  console.log('index.ts..useLiquidationAlert()', ratio);
-
   const jobCallback = useCallback(async () => {
     if (!connectedWallet || permission !== 'granted') {
       return;
@@ -75,7 +73,7 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
 
   useEffect(() => {
     if (connectedWallet && permission === 'granted' && enabled) {
-      console.log('LIQUIDATION ALERT: ON');
+      //console.log('LIQUIDATION ALERT: ON');
       const intervalId = setInterval(() => {
         jobCallbackRef.current();
       }, 1000 * 60);
@@ -86,6 +84,6 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
         clearInterval(intervalId);
       };
     }
-    console.log('LIQUIDATION ALERT: OFF');
+    //console.log('LIQUIDATION ALERT: OFF');
   }, [connectedWallet, enabled, permission]);
 }
