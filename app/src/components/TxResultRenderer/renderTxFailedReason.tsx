@@ -16,7 +16,7 @@ const channels = (
     <li>
       Discord :{' '}
       <a href="https://discord.gg/9aUYgpKZ9c" target="_blank" rel="noreferrer">
-        https://discord.gg/9aUYgpKZ9c
+        https://discord.gg/3gaVztyuT2
       </a>
     </li>
     <li>
