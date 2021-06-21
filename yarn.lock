@@ -261,6 +261,7 @@ __metadata:
     "@storybook/preset-create-react-app": ^3.1.7
     "@storybook/react": ^6.2.9
     "@storybook/theming": ^6.2.9
+    "@terra-dev/wallet-types": ^1.0.0
     "@terra-money/terra.js": ^1.8.4
     "@terra-money/wallet-provider": ^1.0.0
     "@testing-library/jest-dom": ^5.14.1

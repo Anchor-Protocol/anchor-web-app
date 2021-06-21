@@ -43,6 +43,7 @@
     "@material-ui/icons": "^4.11.2",
     "@rx-stream/pipe": "^0.7.0",
     "@rx-stream/react": "^0.7.0",
+    "@terra-dev/wallet-types": "^1.0.0",
     "@terra-money/terra.js": "^1.8.4",
     "@terra-money/wallet-provider": "^1.0.0",
     "big.js": "^6.1.1",
