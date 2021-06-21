@@ -1,11 +1,13 @@
 import { demicrofy, formatUST, truncate } from '@anchor-protocol/notation';
 import { useEarnTransactionHistoryQuery } from '@anchor-protocol/webapp-provider';
+import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
 import { Pagination } from '@terra-dev/neumorphism-ui/components/Pagination';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { useArrayPagination } from '@terra-dev/use-array-pagination';
 import { useWallet } from '@terra-money/wallet-provider';
 import { useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 export interface TransactionHistorySectionProps {
@@ -23,9 +25,8 @@ export function TransactionHistorySection({
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const {
-    data: { transactionHistory } = {},
-  } = useEarnTransactionHistoryQuery();
+  const { data: { transactionHistory } = {} } =
+    useEarnTransactionHistoryQuery();
 
   // ---------------------------------------------
   // computes
@@ -47,7 +48,12 @@ export function TransactionHistorySection({
   // ---------------------------------------------
   return (
     <Section className={className}>
-      <h2>TRANSACTION HISTORY</h2>
+      <Header>
+        <h2>TRANSACTION HISTORY</h2>
+        <BorderButton component={Link} to="/mypage">
+          More
+        </BorderButton>
+      </Header>
 
       <HorizontalHeavyRuler />
 
@@ -125,6 +131,23 @@ export function TransactionHistorySection({
     </Section>
   );
 }
+
+const Header = styled.header`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  h2 {
+    margin-bottom: 0 !important;
+  }
+
+  .MuiButtonBase-root {
+    width: 68px;
+    height: 32px;
+  }
+
+  margin-bottom: 14px;
+`;
 
 const EmptyMessage = styled.div`
   height: 280px;
