@@ -15,8 +15,8 @@ const channels = (
   <ul>
     <li>
       Discord :{' '}
-      <a href="https://discord.gg/9aUYgpKZ9c" target="_blank" rel="noreferrer">
-        https://discord.gg/9aUYgpKZ9c
+      <a href="https://discord.gg/3gaVztyuT2" target="_blank" rel="noreferrer">
+        https://discord.gg/3gaVztyuT2
       </a>
     </li>
     <li>
@@ -46,8 +46,8 @@ const createTxFailedMessage = (message: string) => (
       WebApp.
     </p>
     <p style={{ opacity: 0.7 }}>
-      If the problem still persists, please report your error ID to admin
-      through anyone of the following channels.
+      If the problem still persists, please report your error ID to an admin
+      through any of the following channels.
     </p>
 
     {channels}
@@ -62,8 +62,8 @@ const txUnspecifiedErrorMessage = (message: string | undefined | null) => (
       WebApp.
     </p>
     <p style={{ opacity: typeof message === 'string' ? 0.7 : undefined }}>
-      If the problem still persists, please report your error ID to admin
-      through anyone of the following channels.
+      If the problem still persists, please report your error ID to an admin
+      through any of the following channels.
     </p>
 
     {channels}
@@ -74,7 +74,7 @@ const uncaughtErrorMessage = (message: string | null | undefined) => (
   <div style={{ lineHeight: '1.8em' }}>
     {typeof message === 'string' && <p>{message}</p>}
     <p style={{ opacity: typeof message === 'string' ? 0.7 : undefined }}>
-      Please report your error ID to admin through anyone of the following
+      Please report your error ID to an admin through anyone of the following
       channels.
     </p>
 
@@ -128,17 +128,17 @@ export function renderTxFailedReason({
                 .trim()}
             </p>
             <p style={{ opacity: 0.7, marginTop: '1em' }}>
-              For assistance, please report your Tx hash to admin through the
-              Anchor discord server under SUPPORT - error-support.
+              For assistance, please report your Tx hash to an admin through the
+              Anchor Discord server under SUPPORT - #🆔│error-support.
             </p>
             <p>
               Anchor Discord Server:{' '}
               <a
-                href="https://discord.gg/9aUYgpKZ9c"
+                href="https://discord.gg/3gaVztyuT2"
                 target="_blank"
                 rel="noreferrer"
               >
-                https://discord.gg/9aUYgpKZ9c
+                https://discord.gg/3gaVztyuT2
               </a>
             </p>
             <p style={{ opacity: 0.7, marginTop: '1em' }}>
