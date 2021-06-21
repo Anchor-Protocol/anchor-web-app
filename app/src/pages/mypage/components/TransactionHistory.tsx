@@ -75,7 +75,7 @@ export const StyledTransactionHistory = styled(TransactionHistoryBase)`
 
     sub {
       color: ${({ theme }) => theme.dimTextColor};
-      font-size: 0.8em;
+      font-size: max(0.8em, 12px);
       vertical-align: unset;
     }
 
@@ -103,6 +103,10 @@ export const StyledTransactionHistory = styled(TransactionHistoryBase)`
       flex-direction: column;
       align-items: flex-start;
       justify-content: flex-start;
+
+      time {
+        margin-top: 1ex;
+      }
     }
   }
 `;
