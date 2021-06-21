@@ -11,10 +11,10 @@ import { BrowserInactiveProvider } from '@terra-dev/use-browser-inactive';
 import { GoogleAnalytics } from '@terra-dev/use-google-analytics';
 import { useLongtimeNoSee } from '@terra-dev/use-longtime-no-see';
 import { RouterScrollRestoration } from '@terra-dev/use-router-scroll-restoration';
+import { RouterWalletStatusRecheck } from '@terra-dev/use-router-wallet-status-recheck';
 import {
   ExtensionNetworkOnlyWalletProvider,
   NetworkInfo,
-  RouterWalletStatusRecheck,
   WalletProvider,
 } from '@terra-money/wallet-provider';
 import {
