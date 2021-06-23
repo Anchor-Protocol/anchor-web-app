@@ -5,12 +5,12 @@ __metadata:
   version: 4
   cacheKey: 8
 
-"@anchor-protocol/anchor.js@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "@anchor-protocol/anchor.js@npm:1.0.1"
+"@anchor-protocol/anchor.js@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@anchor-protocol/anchor.js@npm:1.0.2"
   dependencies:
-    "@terra-money/terra.js": ^1.3.6
-  checksum: 8e538b42aef0e32248778b2c335affcd0a217fa6b8e2728c4f5df065b5fd6e980a245ed38ee5238856d19601706a1149ee7123978cc00cdab3f351cffbd60243
+    "@terra-money/terra.js": ^1.8.3
+  checksum: 81fcbd69409d5e6d9cfab7d38b016d2b996b608192d2f03153c574550f204d600d2cde04113c964e8a32bcfb8574018a2e12276a9202f9d1c0fbf754a38056ab
   languageName: node
   linkType: hard
 
@@ -18,14 +18,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@anchor-web-app/app@workspace:app"
   dependencies:
-    "@anchor-protocol/anchor.js": ^1.0.1
+    "@anchor-protocol/anchor.js": ^1.0.2
     "@material-ui/core": ^4.11.3
     "@material-ui/icons": ^4.11.2
     "@rocket-scripts/utils": ^3.2.0
     "@rx-stream/pipe": ^0.7.0
     "@rx-stream/react": ^0.7.0
-    "@sentry/react": ^6.7.1
-    "@sentry/tracing": ^6.7.1
+    "@sentry/react": ^6.7.2
+    "@sentry/tracing": ^6.7.2
     "@ssen/jest-transform": ^3.0.0
     "@terra-dev/browser-check": ^1.0.0
     "@terra-dev/wallet-types": ^1.0.0
@@ -63,6 +63,7 @@ __metadata:
     downshift: ^6.1.3
     fastdom: ^1.0.10
     firebase: ^8.6.8
+    fix-hmr: ^1.0.1
     graphql: ^15.5.1
     graphql-request: ^3.4.0
     graphql-tag: ^2.12.4
@@ -246,7 +247,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@anchor-web-app/packages@workspace:packages"
   dependencies:
-    "@anchor-protocol/anchor.js": ^1.0.1
+    "@anchor-protocol/anchor.js": ^1.0.2
     "@material-ui/core": ^4.11.3
     "@material-ui/icons": ^4.11.2
     "@rx-stream/pipe": ^0.7.0
@@ -320,7 +321,7 @@ __metadata:
     react-router-dom: ^5.2.0
     react-scripts: 4.0.3
     resize-observer-polyfill: ^1.5.1
-    rocket-punch: ^3.0.0
+    rocket-punch: ^3.0.1
     rxjs: ^7.1.0
     styled-components: ^5.3.0
     typescript: ^4.3.4
@@ -3512,96 +3513,96 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/browser@npm:6.7.1":
-  version: 6.7.1
-  resolution: "@sentry/browser@npm:6.7.1"
+"@sentry/browser@npm:6.7.2":
+  version: 6.7.2
+  resolution: "@sentry/browser@npm:6.7.2"
   dependencies:
-    "@sentry/core": 6.7.1
-    "@sentry/types": 6.7.1
-    "@sentry/utils": 6.7.1
+    "@sentry/core": 6.7.2
+    "@sentry/types": 6.7.2
+    "@sentry/utils": 6.7.2
     tslib: ^1.9.3
-  checksum: 063fd468870699af5752c5f9ca9014547b2b59ca28117c2e6133c85c5f74e191ef6a51ee75980087d462096a7a7fbf20931fe7c055b0490123f0aa03cd18ec1f
+  checksum: e85bf58e320f05ee455c1a8e4db69ef2f75c211186ac1dad88c484375fd04470517718329d8cfe899ad136aa3c24a65878b7731a6c1c08cd6ad15b6c904b6f1f
   languageName: node
   linkType: hard
 
-"@sentry/core@npm:6.7.1":
-  version: 6.7.1
-  resolution: "@sentry/core@npm:6.7.1"
+"@sentry/core@npm:6.7.2":
+  version: 6.7.2
+  resolution: "@sentry/core@npm:6.7.2"
   dependencies:
-    "@sentry/hub": 6.7.1
-    "@sentry/minimal": 6.7.1
-    "@sentry/types": 6.7.1
-    "@sentry/utils": 6.7.1
+    "@sentry/hub": 6.7.2
+    "@sentry/minimal": 6.7.2
+    "@sentry/types": 6.7.2
+    "@sentry/utils": 6.7.2
     tslib: ^1.9.3
-  checksum: c2b62881c86a1583189484dcc55396f9914644afedb4e2d4cff71783f52466a184525efc340664b9cfc75d47b99d227fceeff5438c6b8914401cfc76ccceb105
+  checksum: 9ac8a226458649713b7f77e6904979781f6551f9137388215b0e8b583042fe71ce27eb2630817f31b70037fbc614bc7d03cf1df1194a7de0a25fd9cb4e60aa84
   languageName: node
   linkType: hard
 
-"@sentry/hub@npm:6.7.1":
-  version: 6.7.1
-  resolution: "@sentry/hub@npm:6.7.1"
+"@sentry/hub@npm:6.7.2":
+  version: 6.7.2
+  resolution: "@sentry/hub@npm:6.7.2"
   dependencies:
-    "@sentry/types": 6.7.1
-    "@sentry/utils": 6.7.1
+    "@sentry/types": 6.7.2
+    "@sentry/utils": 6.7.2
     tslib: ^1.9.3
-  checksum: 767cebf7a598601aa8766b17365b7de24bb93b49039af579d542516022c54959703d4cad93cc6205e3e8d2abf8651aeec2f5a1acf6e333ff9a0f29c594cc8620
+  checksum: a755591f45bef72b5c44dd082f40d57ec3d9a01bd50fcd2b7b952f816558b49cf129aa4695d98acd33a59a201d44dd7270ded224705c892c70247852f08e859c
   languageName: node
   linkType: hard
 
-"@sentry/minimal@npm:6.7.1":
-  version: 6.7.1
-  resolution: "@sentry/minimal@npm:6.7.1"
+"@sentry/minimal@npm:6.7.2":
+  version: 6.7.2
+  resolution: "@sentry/minimal@npm:6.7.2"
   dependencies:
-    "@sentry/hub": 6.7.1
-    "@sentry/types": 6.7.1
+    "@sentry/hub": 6.7.2
+    "@sentry/types": 6.7.2
     tslib: ^1.9.3
-  checksum: f91d2de1fb439a29307527f2da9b925634581a08f77e7224cbf973f0c2a0fc96c8fefbc3dc40a0cd59b4a049785fc92f0aabb5348163c9ee168476f352a26816
+  checksum: 4b587965d135a6e07b90785024d54ee7f80d1be709bb11af483645bb0204eaaa62969d55a15eed8adbd327dac72486a4a4d40e619c67a97c65786fdf8c040ae4
   languageName: node
   linkType: hard
 
-"@sentry/react@npm:^6.7.1":
-  version: 6.7.1
-  resolution: "@sentry/react@npm:6.7.1"
+"@sentry/react@npm:^6.7.2":
+  version: 6.7.2
+  resolution: "@sentry/react@npm:6.7.2"
   dependencies:
-    "@sentry/browser": 6.7.1
-    "@sentry/minimal": 6.7.1
-    "@sentry/types": 6.7.1
-    "@sentry/utils": 6.7.1
+    "@sentry/browser": 6.7.2
+    "@sentry/minimal": 6.7.2
+    "@sentry/types": 6.7.2
+    "@sentry/utils": 6.7.2
     hoist-non-react-statics: ^3.3.2
     tslib: ^1.9.3
   peerDependencies:
     react: 15.x || 16.x || 17.x
-  checksum: 86fa27510c4aaa3e251643d4c719274bf4224bbc4b0d22b1bade8616c6717e488f9fac50a4f5a6894b4edcccd2dd7a7812e75a7957f02b03cd93071d8f29b1de
+  checksum: dd57fcc67ded9bdeec26e06b280ba746dbcc94641922258fd70e2b38944023cf7c4646b0eb9c8fc008bcc9fdc8d3f5b98f96003471c960462a093b8e287e4691
   languageName: node
   linkType: hard
 
-"@sentry/tracing@npm:^6.7.1":
-  version: 6.7.1
-  resolution: "@sentry/tracing@npm:6.7.1"
+"@sentry/tracing@npm:^6.7.2":
+  version: 6.7.2
+  resolution: "@sentry/tracing@npm:6.7.2"
   dependencies:
-    "@sentry/hub": 6.7.1
-    "@sentry/minimal": 6.7.1
-    "@sentry/types": 6.7.1
-    "@sentry/utils": 6.7.1
+    "@sentry/hub": 6.7.2
+    "@sentry/minimal": 6.7.2
+    "@sentry/types": 6.7.2
+    "@sentry/utils": 6.7.2
     tslib: ^1.9.3
-  checksum: c255f6ede74332046c365ac0f3864162ffdd660dd4d66de45e14a422a52cac5c976a07ad4b636109fb8af9d688a7fc9f081b7ba6fbde0d634376e621a1ab28a1
+  checksum: 2d193466c3aa748b425349d2e547f5d091ea9bb3b82fa6c8500740337ca268d145e1381e8a3e50f07f1698e3e685eb322d32a5f3af7702529cdce2c6973e757e
   languageName: node
   linkType: hard
 
-"@sentry/types@npm:6.7.1":
-  version: 6.7.1
-  resolution: "@sentry/types@npm:6.7.1"
-  checksum: 224b4b29d79490714d47c0daf24ed31b387fa6549beeeea576c7654ed02057c84aea4c7289db43410c6411cc8517bbb32a3257159ff4e601100e1ee9e22c4516
+"@sentry/types@npm:6.7.2":
+  version: 6.7.2
+  resolution: "@sentry/types@npm:6.7.2"
+  checksum: a0446b040b64cf7eef1873596a0d013dc284a73e7371fc71c6d943127923f9f207204bfa13372b345c5c4e5b52aa7457ed0e3085b619694332ce70f615783e47
   languageName: node
   linkType: hard
 
-"@sentry/utils@npm:6.7.1":
-  version: 6.7.1
-  resolution: "@sentry/utils@npm:6.7.1"
+"@sentry/utils@npm:6.7.2":
+  version: 6.7.2
+  resolution: "@sentry/utils@npm:6.7.2"
   dependencies:
-    "@sentry/types": 6.7.1
+    "@sentry/types": 6.7.2
     tslib: ^1.9.3
-  checksum: 22ebd231e7e340e7c481225a5d95b56b2dbfe348c99b3fb94b55c642383c0e1e7d7f2079b7c3de4c1c0963f6c8220703e6084ab9df835e8c992f7ae8e26e835e
+  checksum: 795f44b2812c82526481f5f77b30a3bbb8f5407cbd1bc410e0d46e97ff6e26633287d67993a14eb4920623b00a2a3fdaf99845485d7f3a06ab30cf5ab49f1dcd
   languageName: node
   linkType: hard
 
@@ -5039,7 +5040,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@terra-money/terra.js@npm:^1.3.6, @terra-money/terra.js@npm:^1.7.0, @terra-money/terra.js@npm:^1.8.0, @terra-money/terra.js@npm:^1.8.4":
+"@terra-money/terra.js@npm:^1.7.0, @terra-money/terra.js@npm:^1.8.0, @terra-money/terra.js@npm:^1.8.3, @terra-money/terra.js@npm:^1.8.4":
   version: 1.8.4
   resolution: "@terra-money/terra.js@npm:1.8.4"
   dependencies:
@@ -11716,6 +11717,15 @@ __metadata:
     "@firebase/storage": 0.5.5
     "@firebase/util": 1.1.0
   checksum: 869be5707c6d2bfb8a08cea7f709374281ba14fc9ed2a1232639abf49afe4cbcad24875bebb508d19ae86b5a98ab83b669f73c6cb8b68ad8399d23ef6096c9ca
+  languageName: node
+  linkType: hard
+
+"fix-hmr@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "fix-hmr@npm:1.0.1"
+  dependencies:
+    react: ^17.0.2
+  checksum: 17c2e9c14755170f2eed7ec38a8fd64eb8964e600a63024c28573cc5c9c2d8e6487f58e398df0b354401c6e3904492d04dacd50606bdf088aa4ed3dd6e7ac5a2
   languageName: node
   linkType: hard
 
@@ -20389,9 +20399,9 @@ resolve@^0.6.1:
   languageName: node
   linkType: hard
 
-"rocket-punch@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "rocket-punch@npm:3.0.0"
+"rocket-punch@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "rocket-punch@npm:3.0.1"
   dependencies:
     "@ssen/bundle-import-rewrite": ^3.0.0
     "@ssen/collect-dependencies": ^3.0.0
@@ -20416,7 +20426,7 @@ resolve@^0.6.1:
     typescript: ^3.9.0 || ^4.0.0
   bin:
     rocket-punch: bin/rocket-punch.js
-  checksum: 4d8139eccf19e5ff85f02bf57023eb117d1365efdc489c635f9d621bb58244a12bef2f7370162d0b85c3f792f5543d07afe7e4482383e57d802bd1b892062f71
+  checksum: c73aa8a6f5cc08ee170d6aca2a28b60f114c64f958eb40fe6625b38b67698eac4eeb88b234db10b361782cdd96558af95457de699b3d0fbd1016d9b40614085b
   languageName: node
   linkType: hard
 

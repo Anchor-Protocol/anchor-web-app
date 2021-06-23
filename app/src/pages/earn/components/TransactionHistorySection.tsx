@@ -1,12 +1,9 @@
-import { demicrofy, formatUST, truncate } from '@anchor-protocol/notation';
-import { useEarnTransactionHistoryQuery } from '@anchor-protocol/webapp-provider';
+import { useMypageTxHistoryQuery } from '@anchor-protocol/webapp-provider';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
-import { Pagination } from '@terra-dev/neumorphism-ui/components/Pagination';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
-import { useArrayPagination } from '@terra-dev/use-array-pagination';
-import { useWallet } from '@terra-money/wallet-provider';
-import { useMemo } from 'react';
+import { TransactionHistoryList } from 'pages/mypage/components/TransactionHistoryList';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -18,30 +15,9 @@ export function TransactionHistorySection({
   className,
 }: TransactionHistorySectionProps) {
   // ---------------------------------------------
-  // dependencies
-  // ---------------------------------------------
-  const { network } = useWallet();
-
-  // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const { data: { transactionHistory } = {} } =
-    useEarnTransactionHistoryQuery();
-
-  // ---------------------------------------------
-  // computes
-  // ---------------------------------------------
-  const filteredHistory = useMemo(() => {
-    return (
-      transactionHistory?.filter(
-        ({ TransactionType }) =>
-          TransactionType === 'deposit_stable' ||
-          TransactionType === 'redeem_stable',
-      ) ?? []
-    );
-  }, [transactionHistory]);
-
-  const { page, pageIndex, paging } = useArrayPagination(filteredHistory, 3);
+  const { history } = useMypageTxHistoryQuery();
 
   // ---------------------------------------------
   // presentation
@@ -50,78 +26,17 @@ export function TransactionHistorySection({
     <Section className={className}>
       <Header>
         <h2>TRANSACTION HISTORY</h2>
-        <BorderButton component={Link} to="/mypage">
-          More
-        </BorderButton>
+        {history.length > 3 && (
+          <BorderButton component={Link} to="/mypage">
+            More
+          </BorderButton>
+        )}
       </Header>
 
       <HorizontalHeavyRuler />
 
-      {filteredHistory.length > 0 ? (
-        <>
-          <ul className="list">
-            {page.map(
-              (
-                {
-                  Address,
-                  TxHash,
-                  InAmount,
-                  OutAmount,
-                  TransactionType,
-                  Timestamp,
-                },
-                i,
-              ) => {
-                const datetime: Date = new Date(Timestamp * 1000);
-
-                return (
-                  <li key={'history' + TxHash + '-' + i}>
-                    <div className="amount">
-                      {TransactionType === 'deposit_stable'
-                        ? `+ ${formatUST(demicrofy(InAmount))}`
-                        : `- ${formatUST(demicrofy(OutAmount))}`}{' '}
-                      UST
-                    </div>
-                    <div className="detail">
-                      <span>
-                        {TransactionType === 'deposit_stable'
-                          ? 'Deposit from'
-                          : 'Redeem to'}{' '}
-                        <a
-                          href={`https://finder.terra.money/${network.chainID}/tx/${TxHash}`}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          {truncate(Address)}
-                        </a>
-                      </span>
-                      <time>
-                        {datetime.toLocaleDateString('en-US', {
-                          weekday: 'short',
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                        })}
-                        {', '}
-                        <span className="time">
-                          {datetime.toLocaleTimeString('en-US')}
-                        </span>
-                      </time>
-                    </div>
-                  </li>
-                );
-              },
-            )}
-          </ul>
-          <Pagination
-            className="pagination"
-            totalItems={filteredHistory.length}
-            pageIndex={pageIndex}
-            viewPages={7}
-            viewItems={3}
-            onChange={paging}
-          />
-        </>
+      {history.length > 0 ? (
+        <TransactionHistoryList history={history.slice(0, 3)} />
       ) : (
         <EmptyMessage>
           <h3>No transaction history</h3>
