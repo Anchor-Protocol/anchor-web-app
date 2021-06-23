@@ -63,7 +63,7 @@ __metadata:
     downshift: ^6.1.3
     fastdom: ^1.0.10
     firebase: ^8.6.8
-    fix-hmr: ^1.0.1
+    fix-hmr: ^1.0.2
     graphql: ^15.5.1
     graphql-request: ^3.4.0
     graphql-tag: ^2.12.4
@@ -11720,12 +11720,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fix-hmr@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "fix-hmr@npm:1.0.1"
+"fix-hmr@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "fix-hmr@npm:1.0.2"
   dependencies:
     react: ^17.0.2
-  checksum: 17c2e9c14755170f2eed7ec38a8fd64eb8964e600a63024c28573cc5c9c2d8e6487f58e398df0b354401c6e3904492d04dacd50606bdf088aa4ed3dd6e7ac5a2
+  checksum: 37706f08e4b1b23692b21d0c2605cde10af698c779d57e9f9916cb601fdcecba362efc0d4b2e18fd71bbca67303577ba80dcd5427a5185af54510d4b1af4903f
   languageName: node
   linkType: hard
 

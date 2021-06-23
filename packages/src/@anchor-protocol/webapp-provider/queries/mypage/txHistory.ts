@@ -10,6 +10,7 @@ interface TxHistoryReturn {
   isLast: boolean;
   loadMore: () => void;
   reload: () => void;
+  inProgress: boolean;
 }
 
 export function useMypageTxHistoryQuery(): TxHistoryReturn {
@@ -23,28 +24,43 @@ export function useMypageTxHistoryQuery(): TxHistoryReturn {
 
   const [next, setNext] = useState<string | null>(null);
 
+  const [inProgress, setInProgress] = useState<boolean>(true);
+
   const load = useCallback(() => {
     // initialize data
     setHistory([]);
     setNext(null);
 
     if (!connectedWallet) {
+      setInProgress(false);
       return;
     }
+
+    setInProgress(true);
 
     mypageTxHistoryQuery({
       endpoint,
       //walletAddress: 'terra1vz0k2glwuhzw3yjau0su5ejk3q9z2zj4ess86s',
       walletAddress: connectedWallet.walletAddress,
       offset: null,
-    }).then(({ history, next }) => {
-      setHistory(history);
-      setNext(next);
-    });
+    })
+      .then(({ history, next }) => {
+        setInProgress(false);
+        setHistory(history);
+        setNext(next);
+      })
+      .catch((error) => {
+        console.error(error);
+        setHistory([]);
+        setNext(null);
+        setInProgress(false);
+      });
   }, [connectedWallet, endpoint]);
 
   const loadMore = useCallback(() => {
     if (history.length > 0 && !!next && connectedWallet) {
+      setInProgress(true);
+
       mypageTxHistoryQuery({
         endpoint,
         //walletAddress: 'terra1vz0k2glwuhzw3yjau0su5ejk3q9z2zj4ess86s',
@@ -58,6 +74,8 @@ export function useMypageTxHistoryQuery(): TxHistoryReturn {
         });
 
         setNext(next);
+
+        setInProgress(false);
       });
     }
   }, [connectedWallet, endpoint, history.length, next]);
@@ -71,5 +89,6 @@ export function useMypageTxHistoryQuery(): TxHistoryReturn {
     isLast: !next,
     reload: load,
     loadMore,
+    inProgress,
   };
 }

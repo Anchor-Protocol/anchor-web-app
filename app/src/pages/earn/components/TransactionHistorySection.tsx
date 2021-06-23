@@ -2,7 +2,9 @@ import { useMypageTxHistoryQuery } from '@anchor-protocol/webapp-provider';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { TransactionHistoryEmptyMessage } from 'pages/mypage/components/TransactionHistoryEmptyMessage';
 import { TransactionHistoryList } from 'pages/mypage/components/TransactionHistoryList';
+import { TransactionHistoryProgressSpinner } from 'pages/mypage/components/TransactionHistoryProgressSpinner';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -17,7 +19,7 @@ export function TransactionHistorySection({
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const { history } = useMypageTxHistoryQuery();
+  const { history, inProgress } = useMypageTxHistoryQuery();
 
   // ---------------------------------------------
   // presentation
@@ -35,14 +37,18 @@ export function TransactionHistorySection({
 
       <HorizontalHeavyRuler />
 
-      {history.length > 0 ? (
-        <TransactionHistoryList history={history.slice(0, 3)} />
-      ) : (
-        <EmptyMessage>
-          <h3>No transaction history</h3>
-          <p>Looks like you haven't made any transactions yet.</p>
-        </EmptyMessage>
+      {history.length > 0 && (
+        <TransactionHistoryList
+          history={history.slice(0, 3)}
+          breakpoint={600}
+        />
       )}
+
+      {history.length === 0 && !inProgress && (
+        <TransactionHistoryEmptyMessage />
+      )}
+
+      {inProgress && <TransactionHistoryProgressSpinner size="large" />}
     </Section>
   );
 }
@@ -62,23 +68,4 @@ const Header = styled.header`
   }
 
   margin-bottom: 14px;
-`;
-
-const EmptyMessage = styled.div`
-  height: 280px;
-  display: grid;
-  place-content: center;
-  text-align: center;
-
-  h3 {
-    font-size: 18px;
-    font-weight: 500;
-
-    margin-bottom: 8px;
-  }
-
-  p {
-    font-size: 13px;
-    color: ${({ theme }) => theme.dimTextColor};
-  }
 `;

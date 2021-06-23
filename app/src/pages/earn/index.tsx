@@ -233,14 +233,7 @@ export const Earn = styled(EarnBase)`
   // under pc
   @media (max-width: ${screen.pc.max}px) {
     .transaction-history {
-      height: 430px;
-    }
-  }
-
-  // under tablet
-  @media (max-width: ${screen.tablet.max}px) {
-    .transaction-history {
-      height: 410px;
+      height: unset;
     }
   }
 
