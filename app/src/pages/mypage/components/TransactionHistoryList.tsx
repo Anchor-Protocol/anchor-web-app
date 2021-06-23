@@ -64,10 +64,12 @@ function TransactionHistoryListBase({
 const enter = keyframes`
   0% {
     opacity: 0;
+    background-color: rgba(255, 255, 255, 0.7);
   }
   
   100% {
     opacity: 1;
+    background-color: rgba(255, 255, 255, 0);
   }
 `;
 
