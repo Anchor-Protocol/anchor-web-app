@@ -86,7 +86,8 @@ export const StyledTransactionHistoryList = styled(TransactionHistoryListBase)`
   li {
     animation: ${enter} 0.3s ease-in-out;
     width: 100%;
-    height: 90px;
+    padding: 10px 0;
+    min-height: 90px;
     display: flex;
     align-items: center;
 
