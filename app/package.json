@@ -111,6 +111,7 @@
     "workbox-streams": "^6.1.5"
   },
   "devDependencies": {
+    "@peculiar/webcrypto": "^1.1.7",
     "@ssen/jest-transform": "^3.0.0",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
