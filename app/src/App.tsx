@@ -10,6 +10,7 @@ import { Borrow } from 'pages/borrow';
 import { Earn } from 'pages/earn';
 import { Governance } from 'pages/gov';
 import { govPathname } from 'pages/gov/env';
+import { Mypage } from 'pages/mypage';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { cloudFlareOption } from './env';
 
@@ -29,6 +30,7 @@ export function App() {
               <Route path="/bond" component={BAsset} />
               <Route path="/airdrop" component={Airdrop} />
               <Route path={`/${govPathname}`} component={Governance} />
+              <Route path="/mypage" component={Mypage} />
               <Redirect to="/earn" />
             </Switch>
           </div>

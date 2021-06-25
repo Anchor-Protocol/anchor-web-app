@@ -49,6 +49,7 @@ export * from './queries/market/stableCoin';
 export * from './queries/market/state';
 export * from './queries/market/ust';
 export * from './queries/market/buyback';
+export * from './queries/mypage/txHistory';
 
 export * from './tx/earn/deposit';
 export * from './tx/earn/withdraw';

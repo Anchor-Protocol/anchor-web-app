@@ -1,0 +1,7 @@
+GET https://api.anchorprotocol.com/api/history/terra1vz0k2glwuhzw3yjau0su5ejk3q9z2zj4ess86s
+Accept: application/json
+
+###
+
+GET https://api.anchorprotocol.com/api/history/terra1vz0k2glwuhzw3yjau0su5ejk3q9z2zj4ess86s?offset=AAAAAAA0uQYAAAAAAAAAAAAAAAAAAAADAAAAAAAAAAM=
+Accept: application/json
