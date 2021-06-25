@@ -1,6 +1,3 @@
-[![codecov](https://codecov.io/gh/Anchor-Protocol/anchor-web-app/branch/develop/graph/badge.svg?token=FDL5NJ27FS)](https://codecov.io/gh/Anchor-Protocol/anchor-web-app)
-[![TEST](https://github.com/Anchor-Protocol/anchor-web-app/actions/workflows/test.yml/badge.svg)](https://github.com/Anchor-Protocol/anchor-web-app/actions/workflows/test.yml)
-
 # Scripts
 
 Initialize this project
@@ -28,6 +25,16 @@ And you can run scripts
 - `yarn run packages:test`
 
 # Environments
+
+## Local SSL
+
+The system environment variable `LOCALHOST_HTTPS_CERT` and `LOCALHOST_HTTPS_KEY` are required when you run `yarn run app:start` or `yarn run landing:start` in local.
+
+(WebApp requires https certified by CA to test features such as connectivity and Notification with Walletconnect's wss.)
+
+1. First, you should refer to <https://github.com/FiloSottile/mkcert> to create a root CA on your Local System.
+2. Later, create SSL Cert and Key files using commands such as `mkcert localhost 127.0.0.1`.
+3. Enter the SSL Cert and Key file addresses in the `LOCALHOST_HTTPS_CERT` and `LOCALHOST_HTTPS_KEY` system environment variables.
 
 ## GraphQL
 
