@@ -7,6 +7,7 @@ import { useWallet } from '@terra-money/wallet-provider';
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import useResizeObserver from 'use-resize-observer/polyfilled';
+import { CallMade } from '@material-ui/icons';
 
 export interface TransactionHistoryListProps {
   className?: string;
@@ -35,11 +36,14 @@ function TransactionHistoryListBase({
             >
               <div>
                 <p>{tx_type}</p>
-                <p
-                  dangerouslySetInnerHTML={{
-                    __html: descriptions.join('<br/>'),
-                  }}
-                />
+                <p>
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html: descriptions.join('<br/>'),
+                    }}
+                  />
+                  <CallMade style={{ marginLeft: '0.5em' }} />
+                </p>
               </div>
               <time>
                 {datetime.toLocaleDateString('en-US', {
@@ -81,6 +85,16 @@ export const StyledTransactionHistoryList = styled(TransactionHistoryListBase)`
 
   li {
     animation: ${enter} 0.3s ease-in-out;
+    width: 100%;
+    height: 90px;
+    display: flex;
+    align-items: center;
+
+    cursor: pointer;
+
+    &:hover {
+      background-color: ${({ theme }) => theme.hoverBackgroundColor};
+    }
 
     &:not(:first-child) {
       border-top: 1px solid
@@ -104,18 +118,14 @@ export const StyledTransactionHistoryList = styled(TransactionHistoryListBase)`
       text-decoration: none;
       color: ${({ theme }) => theme.textColor};
 
+      flex: 1;
+
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 10px;
 
       padding: 12px 0;
-
-      cursor: pointer;
-
-      &:hover {
-        background-color: ${({ theme }) => theme.hoverBackgroundColor};
-      }
 
       p:nth-child(1) {
         font-size: 13px;
