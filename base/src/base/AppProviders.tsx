@@ -21,6 +21,7 @@ import {
   BankProvider as WebappBankProvider,
   CW20Contract,
   TerraWebappProvider,
+  webworkerMantleFetch,
 } from '@terra-money/webapp-provider';
 import { useReadonlyWalletDialog } from 'base/components/useReadonlyWalletDialog';
 import { useRequestReloadDialog } from 'base/components/useRequestReload';
@@ -86,6 +87,7 @@ function Providers({ children }: { children: ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <BrowserInactiveProvider>
           <TerraWebappProvider
+            mantleFetch={webworkerMantleFetch}
             txRefetchMap={ANCHOR_TX_REFETCH_MAP}
             txErrorReporter={errorReporter}
             queryErrorReporter={errorReporter}

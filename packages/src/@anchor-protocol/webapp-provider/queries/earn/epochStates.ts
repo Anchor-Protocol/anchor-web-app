@@ -4,11 +4,7 @@ import {
   earnEpochStatesQuery,
 } from '@anchor-protocol/webapp-fns';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
-import {
-  MantleFetch,
-  useTerraWebapp,
-  WasmQueryData,
-} from '@terra-money/webapp-provider';
+import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
 import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
@@ -60,7 +56,7 @@ const queryFn = ({
 };
 
 export function useEarnEpochStatesQuery(): UseQueryResult<
-  WasmQueryData<EarnEpochStates> | undefined
+  EarnEpochStates | undefined
 > {
   const { mantleFetch, mantleEndpoint, lastSyncedHeight, queryErrorReporter } =
     useTerraWebapp();

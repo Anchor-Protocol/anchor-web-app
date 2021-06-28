@@ -6,7 +6,7 @@ import {
   WasmQueryData,
 } from '@terra-money/webapp-fns';
 
-export interface EarnEpochStates {
+export interface EarnEpochStatesWasmQuery {
   moneyMarketEpochState: WasmQuery<
     moneyMarket.market.EpochState,
     moneyMarket.market.EpochStateResponse
@@ -17,28 +17,30 @@ export interface EarnEpochStates {
   >;
 }
 
+export type EarnEpochStates = WasmQueryData<EarnEpochStatesWasmQuery>;
+
 export type EarnEpochStatesQueryParams = Omit<
-  MantleParams<EarnEpochStates>,
-  'variables'
+  MantleParams<EarnEpochStatesWasmQuery>,
+  'query' | 'variables'
 > & {
   lastSyncedHeight: () => Promise<number>;
 };
 
 export async function earnEpochStatesQuery({
-  mantleFetch,
   mantleEndpoint,
   wasmQuery,
   lastSyncedHeight,
-}: EarnEpochStatesQueryParams): Promise<WasmQueryData<EarnEpochStates>> {
+  ...params
+}: EarnEpochStatesQueryParams): Promise<EarnEpochStates> {
   const blockHeight = await lastSyncedHeight();
 
   wasmQuery.moneyMarketEpochState.query.epoch_state.block_height =
     blockHeight + 1;
 
-  return await mantle<EarnEpochStates>({
+  return mantle<EarnEpochStatesWasmQuery>({
     mantleEndpoint: `${mantleEndpoint}?earn--epoch-states`,
-    mantleFetch,
     variables: {},
     wasmQuery,
+    ...params,
   });
 }

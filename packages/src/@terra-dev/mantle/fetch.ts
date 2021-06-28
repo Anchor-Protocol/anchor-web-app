@@ -38,3 +38,68 @@ export const defaultMantleFetch: MantleFetch = <Variables extends {}, Data>(
       return data;
     }) as Promise<Data>;
 };
+
+const workerPool: Worker[] = [];
+
+export const webworkerMantleFetch: MantleFetch = <Variables extends {}, Data>(
+  query: string,
+  variables: Variables,
+  endpoint: string,
+  requestInit?: Omit<RequestInit, 'method' | 'body'>,
+) => {
+  if (!window.Worker) {
+    return defaultMantleFetch(query, variables, endpoint, requestInit);
+  }
+
+  return new Promise<Data>((resolve, reject) => {
+    let aborted: boolean = false;
+    let init = requestInit?.signal
+      ? { ...requestInit, signal: undefined }
+      : requestInit;
+
+    const onAbort = () => {
+      aborted = true;
+      requestInit?.signal?.removeEventListener('abort', onAbort);
+    };
+
+    if (requestInit?.signal) {
+      requestInit.signal.addEventListener('abort', onAbort);
+    }
+
+    const worker: Worker =
+      workerPool.length > 0 ? workerPool.pop()! : new Worker('/fetchWorker.js');
+
+    console.log('fetch.ts..()', workerPool.length);
+
+    const onMessage = (event: MessageEvent) => {
+      if (!aborted) {
+        if ('error' in event.data) {
+          if (event.data.error.type === 'MantleError') {
+            reject(new MantleError(event.data.error.errors));
+          } else {
+            reject(new Error(event.data.error.error));
+          }
+        } else if ('data' in event.data) {
+          resolve(event.data.data);
+        } else {
+          console.error(event);
+          throw new Error(`Unknown message!`);
+        }
+      }
+
+      requestInit?.signal?.removeEventListener('abort', onAbort);
+      worker.removeEventListener('message', onMessage);
+
+      workerPool.push(worker);
+    };
+
+    worker.addEventListener('message', onMessage);
+
+    worker.postMessage({
+      query,
+      variables,
+      endpoint,
+      requestInit: init,
+    });
+  });
+};
