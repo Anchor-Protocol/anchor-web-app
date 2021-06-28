@@ -1,6 +1,6 @@
 import { parse, print } from 'graphql';
 import { defaultMantleFetch, MantleFetch } from './fetch';
-import { DOCUMENT_NODE, findSelectionSet } from './gql';
+import { createDocumentNode, findSelectionSet } from './gql';
 import {
   parseWasmQueryRawData,
   WasmQueryData,
@@ -9,12 +9,12 @@ import {
   wasmQueryToFields,
 } from './wasm';
 
-export interface MantleParams<WasmQuery, QueryVariables extends {}> {
+export interface MantleParams<WasmQuery, QueryVariables extends {} = {}> {
   query?: string;
   variables: QueryVariables;
   wasmQuery: WasmQueryInput<WasmQuery>;
   mantleFetch?: MantleFetch;
-  endpoint: string;
+  mantleEndpoint: string;
   requestInit?: Omit<RequestInit, 'method' | 'body'>;
 }
 
@@ -27,12 +27,12 @@ export async function mantle<
   variables,
   wasmQuery,
   mantleFetch = defaultMantleFetch,
-  endpoint,
+  mantleEndpoint,
   requestInit,
 }: MantleParams<WasmQuery, QueryVariables>): Promise<
   WasmQueryData<WasmQuery> & QueryResult
 > {
-  const document = query ? parse(query) : DOCUMENT_NODE;
+  const document = query ? parse(query) : createDocumentNode();
 
   const selectionSet = findSelectionSet(document);
 
@@ -50,7 +50,7 @@ export async function mantle<
   const rawData = await mantleFetch<
     QueryVariables,
     WasmQueryRawData<WasmQuery> & QueryResult
-  >(graphqlQuery, variables, endpoint, requestInit);
+  >(graphqlQuery, variables, mantleEndpoint, requestInit);
 
   return {
     ...rawData,

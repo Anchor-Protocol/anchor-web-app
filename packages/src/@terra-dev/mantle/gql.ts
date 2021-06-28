@@ -19,16 +19,18 @@ export function findSelectionSet(document: DocumentNode): SelectionSetNode {
   return (query as OperationDefinitionNode).selectionSet;
 }
 
-export const DOCUMENT_NODE: DocumentNode = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [],
+export function createDocumentNode(): DocumentNode {
+  return {
+    kind: 'Document',
+    definitions: [
+      {
+        kind: 'OperationDefinition',
+        operation: 'query',
+        selectionSet: {
+          kind: 'SelectionSet',
+          selections: [],
+        },
       },
-    },
-  ],
-};
+    ],
+  };
+}
