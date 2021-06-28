@@ -1,5 +1,11 @@
-import { MantleError } from '../errors/MantleError';
-import { MantleFetch } from '../types';
+import { MantleError } from './errors';
+
+export type MantleFetch = <Variables extends {}, Data>(
+  query: string,
+  variables: Variables,
+  endpoint: string,
+  requestInit?: Omit<RequestInit, 'method' | 'body'>,
+) => Promise<Data>;
 
 export const defaultMantleFetch: MantleFetch = <Variables extends {}, Data>(
   query: string,

@@ -59,9 +59,6 @@
   "resolutions": {
     "@material-ui/core": "4.11.3",
     "babel-loader": "8.1.0",
-    "webpack": "4.44.2",
-    "@terra-dev/browser-check": "^1.1.0-alpha.2",
-    "@terra-dev/wallet-types": "^1.1.0-alpha.2",
-    "@terra-money/wallet-provider": "^1.1.0-alpha.2"
+    "webpack": "4.44.2"
   }
 }

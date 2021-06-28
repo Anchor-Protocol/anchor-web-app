@@ -1,6 +1,6 @@
+import { MantleFetch } from '@terra-dev/mantle';
 import { Timeout, TxFailed } from '@terra-dev/wallet-types';
 import { CreateTxOptions } from '@terra-money/terra.js';
-import { MantleFetch } from '../types';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
