@@ -1,6 +1,6 @@
 import { HumanAddr } from '@anchor-protocol/types';
 import {
-  BorrowBorrowerData,
+  BorrowBorrower,
   borrowBorrowerQuery,
 } from '@anchor-protocol/webapp-fns';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
@@ -20,22 +20,26 @@ import { ANCHOR_QUERY_KEY } from '../../env';
 const queryFn = ({
   queryKey: [
     ,
-    mantleEndpoint,
-    mantleFetch,
-    connectedWallet,
-    lastSyncedHeight,
-    marketContract,
-    custodyContract,
+    {
+      mantleEndpoint,
+      mantleFetch,
+      connectedWallet,
+      lastSyncedHeight,
+      marketContract,
+      custodyContract,
+    },
   ],
 }: QueryFunctionContext<
   [
     string,
-    string,
-    MantleFetch,
-    ConnectedWallet | undefined,
-    () => Promise<number>,
-    HumanAddr,
-    HumanAddr,
+    {
+      mantleEndpoint: string;
+      mantleFetch: MantleFetch;
+      connectedWallet: ConnectedWallet | undefined;
+      lastSyncedHeight: () => Promise<number>;
+      marketContract: HumanAddr;
+      custodyContract: HumanAddr;
+    },
   ]
 >) => {
   return !!connectedWallet
@@ -43,18 +47,22 @@ const queryFn = ({
         mantleEndpoint,
         mantleFetch,
         lastSyncedHeight,
-        variables: {
-          marketContract,
-          marketBorrowerInfoQuery: {
-            borrower_info: {
-              borrower: connectedWallet.walletAddress,
-              block_height: -1,
+        wasmQuery: {
+          marketBorrowerInfo: {
+            contractAddress: marketContract,
+            query: {
+              borrower_info: {
+                borrower: connectedWallet.walletAddress,
+                block_height: -1,
+              },
             },
           },
-          custodyContract,
-          custodyBorrowerQuery: {
-            borrower: {
-              address: connectedWallet.walletAddress,
+          custodyBorrower: {
+            contractAddress: custodyContract,
+            query: {
+              borrower: {
+                address: connectedWallet.walletAddress,
+              },
             },
           },
         },
@@ -63,16 +71,12 @@ const queryFn = ({
 };
 
 export function useBorrowBorrowerQuery(): UseQueryResult<
-  BorrowBorrowerData | undefined
+  BorrowBorrower | undefined
 > {
   const connectedWallet = useConnectedWallet();
 
-  const {
-    mantleFetch,
-    mantleEndpoint,
-    lastSyncedHeight,
-    queryErrorReporter,
-  } = useTerraWebapp();
+  const { mantleFetch, mantleEndpoint, lastSyncedHeight, queryErrorReporter } =
+    useTerraWebapp();
 
   const {
     contractAddress: { moneyMarket },
@@ -83,12 +87,14 @@ export function useBorrowBorrowerQuery(): UseQueryResult<
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.BORROW_BORROWER,
-      mantleEndpoint,
-      mantleFetch,
-      connectedWallet,
-      lastSyncedHeight,
-      moneyMarket.market,
-      moneyMarket.custody,
+      {
+        mantleEndpoint,
+        mantleFetch,
+        connectedWallet,
+        lastSyncedHeight,
+        marketContract: moneyMarket.market,
+        custodyContract: moneyMarket.custody,
+      },
     ],
     queryFn,
     {

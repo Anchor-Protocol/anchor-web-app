@@ -1,5 +1,5 @@
 import { HumanAddr } from '@anchor-protocol/types';
-import { GovPollData, govPollQuery } from '@anchor-protocol/webapp-fns';
+import { GovPoll, govPollQuery } from '@anchor-protocol/webapp-fns';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
 import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
@@ -7,16 +7,28 @@ import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
 const queryFn = ({
-  queryKey: [, mantleEndpoint, mantleFetch, govContract, pollId],
-}: QueryFunctionContext<[string, string, MantleFetch, HumanAddr, number]>) => {
+  queryKey: [, { mantleEndpoint, mantleFetch, govContract, pollId }],
+}: QueryFunctionContext<
+  [
+    string,
+    {
+      mantleEndpoint: string;
+      mantleFetch: MantleFetch;
+      govContract: HumanAddr;
+      pollId: number;
+    },
+  ]
+>) => {
   return govPollQuery({
     mantleEndpoint,
     mantleFetch,
-    variables: {
-      govContract,
-      pollQuery: {
-        poll: {
-          poll_id: pollId,
+    wasmQuery: {
+      poll: {
+        contractAddress: govContract,
+        query: {
+          poll: {
+            poll_id: pollId,
+          },
         },
       },
     },
@@ -25,7 +37,7 @@ const queryFn = ({
 
 export function useGovPollQuery(
   pollId: number,
-): UseQueryResult<GovPollData | undefined> {
+): UseQueryResult<GovPoll | undefined> {
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const {
@@ -37,10 +49,12 @@ export function useGovPollQuery(
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.GOV_POLL,
-      mantleEndpoint,
-      mantleFetch,
-      anchorToken.gov,
-      pollId,
+      {
+        mantleEndpoint,
+        mantleFetch,
+        govContract: anchorToken.gov,
+        pollId,
+      },
     ],
     queryFn,
     {

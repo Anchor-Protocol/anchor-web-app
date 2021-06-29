@@ -1,6 +1,6 @@
 import { HumanAddr, uUST } from '@anchor-protocol/types';
 import {
-  MarketStableCoinData,
+  MarketStableCoin,
   marketStableCoinQuery,
 } from '@anchor-protocol/webapp-fns';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
@@ -13,42 +13,50 @@ import { useMarketStateQuery } from './state';
 const queryFn = ({
   queryKey: [
     ,
-    mantleEndpoint,
-    mantleFetch,
-    interestContract,
-    overseerContract,
-    uUSTBalance,
-    totalReserves,
-    totalLiabilities,
+    {
+      mantleEndpoint,
+      mantleFetch,
+      interestContract,
+      overseerContract,
+      uUSTBalance,
+      totalReserves,
+      totalLiabilities,
+    },
   ],
 }: QueryFunctionContext<
   [
     string,
-    string,
-    MantleFetch,
-    HumanAddr,
-    HumanAddr,
-    uUST | undefined,
-    uUST | undefined,
-    uUST | undefined,
+    {
+      mantleEndpoint: string;
+      mantleFetch: MantleFetch;
+      interestContract: HumanAddr;
+      overseerContract: HumanAddr;
+      uUSTBalance: uUST | undefined;
+      totalReserves: uUST | undefined;
+      totalLiabilities: uUST | undefined;
+    },
   ]
 >) => {
   return uUSTBalance && totalReserves && totalLiabilities
     ? marketStableCoinQuery({
         mantleEndpoint,
         mantleFetch,
-        variables: {
-          interestContract,
-          overseerContract,
-          borrowRateQuery: {
-            borrow_rate: {
-              market_balance: uUSTBalance,
-              total_reserves: totalReserves,
-              total_liabilities: totalLiabilities,
+        wasmQuery: {
+          borrowRate: {
+            contractAddress: interestContract,
+            query: {
+              borrow_rate: {
+                market_balance: uUSTBalance,
+                total_reserves: totalReserves,
+                total_liabilities: totalLiabilities,
+              },
             },
           },
-          epochStateQuery: {
-            epoch_state: {},
+          epochState: {
+            contractAddress: overseerContract,
+            query: {
+              epoch_state: {},
+            },
           },
         },
       })
@@ -56,7 +64,7 @@ const queryFn = ({
 };
 
 export function useMarketStableCoinQuery(): UseQueryResult<
-  MarketStableCoinData | undefined
+  MarketStableCoin | undefined
 > {
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
@@ -71,13 +79,15 @@ export function useMarketStableCoinQuery(): UseQueryResult<
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.MARKET_STABLE_COIN,
-      mantleEndpoint,
-      mantleFetch,
-      moneyMarket.interestModel,
-      moneyMarket.overseer,
-      marketBalances?.uUST,
-      marketState?.total_reserves,
-      marketState?.total_liabilities,
+      {
+        mantleEndpoint,
+        mantleFetch,
+        interestContract: moneyMarket.interestModel,
+        overseerContract: moneyMarket.overseer,
+        uUSTBalance: marketBalances?.uUST,
+        totalReserves: marketState?.total_reserves,
+        totalLiabilities: marketState?.total_liabilities,
+      },
     ],
     queryFn,
     {

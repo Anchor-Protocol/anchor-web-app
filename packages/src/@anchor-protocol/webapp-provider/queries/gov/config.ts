@@ -1,5 +1,5 @@
 import { HumanAddr } from '@anchor-protocol/types';
-import { GovConfigData, govConfigQuery } from '@anchor-protocol/webapp-fns';
+import { GovConfig, govConfigQuery } from '@anchor-protocol/webapp-fns';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
 import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
@@ -7,21 +7,32 @@ import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
 const queryFn = ({
-  queryKey: [, mantleEndpoint, mantleFetch, govContract],
-}: QueryFunctionContext<[string, string, MantleFetch, HumanAddr]>) => {
+  queryKey: [, { mantleEndpoint, mantleFetch, govContract }],
+}: QueryFunctionContext<
+  [
+    string,
+    {
+      mantleEndpoint: string;
+      mantleFetch: MantleFetch;
+      govContract: HumanAddr;
+    },
+  ]
+>) => {
   return govConfigQuery({
     mantleEndpoint,
     mantleFetch,
-    variables: {
-      govContract,
-      configQuery: {
-        config: {},
+    wasmQuery: {
+      govConfig: {
+        contractAddress: govContract,
+        query: {
+          config: {},
+        },
       },
     },
   });
 };
 
-export function useGovConfigQuery(): UseQueryResult<GovConfigData | undefined> {
+export function useGovConfigQuery(): UseQueryResult<GovConfig | undefined> {
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const {
@@ -31,7 +42,10 @@ export function useGovConfigQuery(): UseQueryResult<GovConfigData | undefined> {
   const { browserInactive } = useBrowserInactive();
 
   const result = useQuery(
-    [ANCHOR_QUERY_KEY.GOV_CONFIG, mantleEndpoint, mantleFetch, anchorToken.gov],
+    [
+      ANCHOR_QUERY_KEY.GOV_CONFIG,
+      { mantleEndpoint, mantleFetch, govContract: anchorToken.gov },
+    ],
     queryFn,
     {
       refetchInterval: browserInactive && 1000 * 60 * 5,

@@ -1,5 +1,5 @@
 import { HumanAddr } from '@anchor-protocol/types';
-import { GovStateData, govStateQuery } from '@anchor-protocol/webapp-fns';
+import { GovState, govStateQuery } from '@anchor-protocol/webapp-fns';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
 import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
@@ -7,24 +7,38 @@ import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
 const queryFn = ({
-  queryKey: [, mantleEndpoint, mantleFetch, govContract],
-}: QueryFunctionContext<[string, string, MantleFetch, HumanAddr]>) => {
+  queryKey: [, { mantleEndpoint, mantleFetch, govContract }],
+}: QueryFunctionContext<
+  [
+    string,
+    {
+      mantleEndpoint: string;
+      mantleFetch: MantleFetch;
+      govContract: HumanAddr;
+    },
+  ]
+>) => {
   return govStateQuery({
     mantleEndpoint,
     mantleFetch,
-    variables: {
-      govContract,
-      govStateQuery: {
-        state: {},
+    wasmQuery: {
+      govState: {
+        contractAddress: govContract,
+        query: {
+          state: {},
+        },
       },
-      govConfigQuery: {
-        config: {},
+      govConfig: {
+        contractAddress: govContract,
+        query: {
+          config: {},
+        },
       },
     },
   });
 };
 
-export function useGovStateQuery(): UseQueryResult<GovStateData | undefined> {
+export function useGovStateQuery(): UseQueryResult<GovState | undefined> {
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const {
@@ -34,7 +48,10 @@ export function useGovStateQuery(): UseQueryResult<GovStateData | undefined> {
   const { browserInactive } = useBrowserInactive();
 
   const result = useQuery(
-    [ANCHOR_QUERY_KEY.GOV_STATE, mantleEndpoint, mantleFetch, anchorToken.gov],
+    [
+      ANCHOR_QUERY_KEY.GOV_STATE,
+      { mantleEndpoint, mantleFetch, govContract: anchorToken.gov },
+    ],
     queryFn,
     {
       refetchInterval: browserInactive && 1000 * 60 * 5,

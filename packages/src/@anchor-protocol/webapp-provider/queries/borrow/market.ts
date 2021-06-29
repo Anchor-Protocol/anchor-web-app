@@ -1,8 +1,5 @@
 import { CW20Addr, HumanAddr, StableDenom, uUST } from '@anchor-protocol/types';
-import {
-  BorrowMarketData,
-  borrowMarketQuery,
-} from '@anchor-protocol/webapp-fns';
+import { BorrowMarket, borrowMarketQuery } from '@anchor-protocol/webapp-fns';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
 import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
@@ -12,53 +9,65 @@ import { ANCHOR_QUERY_KEY } from '../../env';
 const queryFn = ({
   queryKey: [
     ,
-    mantleEndpoint,
-    mantleFetch,
-    marketContract,
-    interestContract,
-    oracleContract,
-    overseerContract,
-    bLunaContract,
+    {
+      mantleEndpoint,
+      mantleFetch,
+      marketContract,
+      interestContract,
+      oracleContract,
+      overseerContract,
+      bLunaContract,
+    },
   ],
 }: QueryFunctionContext<
   [
     string,
-    string,
-    MantleFetch,
-    HumanAddr,
-    HumanAddr,
-    HumanAddr,
-    HumanAddr,
-    CW20Addr,
+    {
+      mantleEndpoint: string;
+      mantleFetch: MantleFetch;
+      marketContract: HumanAddr;
+      interestContract: HumanAddr;
+      oracleContract: HumanAddr;
+      overseerContract: HumanAddr;
+      bLunaContract: CW20Addr;
+    },
   ]
 >) => {
   return borrowMarketQuery({
     mantleEndpoint,
     mantleFetch,
-    variables: {
-      marketContract,
-      marketStateQuery: {
-        state: {},
-      },
-      interestContract,
-      interestBorrowRateQuery: {
-        borrow_rate: {
-          market_balance: '' as uUST,
-          total_liabilities: '' as uUST,
-          total_reserves: '' as uUST,
+    wasmQuery: {
+      marketState: {
+        contractAddress: marketContract,
+        query: {
+          state: {},
         },
       },
-      oracleContract,
-      oracleQuery: {
-        price: {
-          base: bLunaContract,
-          quote: 'uusd' as StableDenom,
+      overseerWhitelist: {
+        contractAddress: overseerContract,
+        query: {
+          whitelist: {
+            collateral_token: bLunaContract,
+          },
         },
       },
-      overseerContract: overseerContract,
-      overseerWhitelistQuery: {
-        whitelist: {
-          collateral_token: bLunaContract,
+      borrowRate: {
+        contractAddress: interestContract,
+        query: {
+          borrow_rate: {
+            market_balance: '0' as uUST,
+            total_reserves: '0' as uUST,
+            total_liabilities: '0' as uUST,
+          },
+        },
+      },
+      oraclePrice: {
+        contractAddress: oracleContract,
+        query: {
+          price: {
+            base: bLunaContract,
+            quote: 'uusd' as StableDenom,
+          },
         },
       },
     },
@@ -66,7 +75,7 @@ const queryFn = ({
 };
 
 export function useBorrowMarketQuery(): UseQueryResult<
-  BorrowMarketData | undefined
+  BorrowMarket | undefined
 > {
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
@@ -79,13 +88,15 @@ export function useBorrowMarketQuery(): UseQueryResult<
   return useQuery(
     [
       ANCHOR_QUERY_KEY.BORROW_MARKET,
-      mantleEndpoint,
-      mantleFetch,
-      moneyMarket.market,
-      moneyMarket.interestModel,
-      moneyMarket.oracle,
-      moneyMarket.overseer,
-      cw20.bLuna,
+      {
+        mantleEndpoint,
+        mantleFetch,
+        marketContract: moneyMarket.market,
+        interestContract: moneyMarket.interestModel,
+        oracleContract: moneyMarket.oracle,
+        overseerContract: moneyMarket.overseer,
+        bLunaContract: cw20.bLuna,
+      },
     ],
     queryFn,
     {

@@ -1,6 +1,6 @@
 import { CW20Addr, HumanAddr, StableDenom } from '@anchor-protocol/types';
 import {
-  BorrowLiquidationPriceData,
+  BorrowLiquidationPrice,
   borrowLiquidationPriceQuery,
 } from '@anchor-protocol/webapp-fns';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
@@ -20,26 +20,30 @@ import { ANCHOR_QUERY_KEY } from '../../env';
 const queryFn = ({
   queryKey: [
     ,
-    mantleEndpoint,
-    mantleFetch,
-    connectedWallet,
-    lastSyncedHeight,
-    marketContract,
-    overseerContract,
-    oracleContract,
-    bLunaContract,
+    {
+      mantleEndpoint,
+      mantleFetch,
+      connectedWallet,
+      lastSyncedHeight,
+      marketContract,
+      overseerContract,
+      oracleContract,
+      bLunaContract,
+    },
   ],
 }: QueryFunctionContext<
   [
     string,
-    string,
-    MantleFetch,
-    ConnectedWallet | undefined,
-    () => Promise<number>,
-    HumanAddr,
-    HumanAddr,
-    HumanAddr,
-    CW20Addr,
+    {
+      mantleEndpoint: string;
+      mantleFetch: MantleFetch;
+      connectedWallet: ConnectedWallet | undefined;
+      lastSyncedHeight: () => Promise<number>;
+      marketContract: HumanAddr;
+      overseerContract: HumanAddr;
+      oracleContract: HumanAddr;
+      bLunaContract: CW20Addr;
+    },
   ]
 >) => {
   return !!connectedWallet
@@ -47,36 +51,48 @@ const queryFn = ({
         mantleEndpoint,
         mantleFetch,
         lastSyncedHeight,
-        variables: {
-          marketContract,
-          marketBorrowerInfoQuery: {
-            borrower_info: {
-              borrower: connectedWallet.walletAddress,
-              block_height: -1,
+        wasmQuery: {
+          marketBorrowerInfo: {
+            contractAddress: marketContract,
+            query: {
+              borrower_info: {
+                borrower: connectedWallet.walletAddress,
+                block_height: -1,
+              },
             },
           },
-          overseerContract,
-          overseerBorrowlimitQuery: {
-            borrow_limit: {
-              borrower: connectedWallet.walletAddress,
-              block_time: -1,
+          overseerBorrowLimit: {
+            contractAddress: overseerContract,
+            query: {
+              borrow_limit: {
+                borrower: connectedWallet.walletAddress,
+                block_time: -1,
+              },
             },
           },
-          overseerCollateralsQuery: {
-            collaterals: {
-              borrower: connectedWallet.walletAddress,
+          overseerCollaterals: {
+            contractAddress: overseerContract,
+            query: {
+              collaterals: {
+                borrower: connectedWallet.walletAddress,
+              },
             },
           },
-          overseerWhitelistQuery: {
-            whitelist: {
-              collateral_token: bLunaContract,
+          overseerWhitelist: {
+            contractAddress: overseerContract,
+            query: {
+              whitelist: {
+                collateral_token: bLunaContract,
+              },
             },
           },
-          oracleContract,
-          oraclePriceQuery: {
-            price: {
-              base: bLunaContract,
-              quote: 'uusd' as StableDenom,
+          oraclePriceInfo: {
+            contractAddress: oracleContract,
+            query: {
+              price: {
+                base: bLunaContract,
+                quote: 'uusd' as StableDenom,
+              },
             },
           },
         },
@@ -85,16 +101,12 @@ const queryFn = ({
 };
 
 export function useBorrowLiquidationPriceQuery(): UseQueryResult<
-  BorrowLiquidationPriceData | undefined
+  BorrowLiquidationPrice | undefined
 > {
   const connectedWallet = useConnectedWallet();
 
-  const {
-    mantleFetch,
-    mantleEndpoint,
-    lastSyncedHeight,
-    queryErrorReporter,
-  } = useTerraWebapp();
+  const { mantleFetch, mantleEndpoint, lastSyncedHeight, queryErrorReporter } =
+    useTerraWebapp();
 
   const {
     contractAddress: { moneyMarket, cw20 },
@@ -105,14 +117,16 @@ export function useBorrowLiquidationPriceQuery(): UseQueryResult<
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.BORROW_LIQUIDATION_PRICE,
-      mantleEndpoint,
-      mantleFetch,
-      connectedWallet,
-      lastSyncedHeight,
-      moneyMarket.market,
-      moneyMarket.overseer,
-      moneyMarket.oracle,
-      cw20.bLuna,
+      {
+        mantleEndpoint,
+        mantleFetch,
+        connectedWallet,
+        lastSyncedHeight,
+        marketContract: moneyMarket.market,
+        overseerContract: moneyMarket.overseer,
+        oracleContract: moneyMarket.oracle,
+        bLunaContract: cw20.bLuna,
+      },
     ],
     queryFn,
     {

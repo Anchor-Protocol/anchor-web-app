@@ -8,10 +8,7 @@ import {
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { bLuna, Rate } from '@anchor-protocol/types';
-import {
-  BorrowBorrowerData,
-  BorrowMarketData,
-} from '@anchor-protocol/webapp-fns';
+import { BorrowBorrower, BorrowMarket } from '@anchor-protocol/webapp-fns';
 import {
   useAnchorWebapp,
   useBorrowBorrowerQuery,
@@ -51,8 +48,8 @@ import { LTVGraph } from './LTVGraph';
 
 interface FormParams {
   className?: string;
-  fallbackBorrowMarket: BorrowMarketData;
-  fallbackBorrowBorrower: BorrowBorrowerData;
+  fallbackBorrowMarket: BorrowMarket;
+  fallbackBorrowBorrower: BorrowBorrower;
 }
 
 type FormReturn = void;
@@ -81,10 +78,8 @@ function ComponentBase({
 
   const txFee = fixedGas;
 
-  const [
-    redeemCollateral,
-    redeemCollateralResult,
-  ] = useBorrowRedeemCollateralTx();
+  const [redeemCollateral, redeemCollateralResult] =
+    useBorrowRedeemCollateralTx();
 
   // ---------------------------------------------
   // states

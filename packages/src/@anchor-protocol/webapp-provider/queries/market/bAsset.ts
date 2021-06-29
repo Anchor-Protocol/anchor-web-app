@@ -1,8 +1,5 @@
 import { CW20Addr, HumanAddr, StableDenom } from '@anchor-protocol/types';
-import {
-  MarketBAssetData,
-  marketBAssetQuery,
-} from '@anchor-protocol/webapp-fns';
+import { MarketBAsset, marketBAssetQuery } from '@anchor-protocol/webapp-fns';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
 import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
@@ -12,30 +9,45 @@ import { ANCHOR_QUERY_KEY } from '../../env';
 const queryFn = ({
   queryKey: [
     ,
-    mantleEndpoint,
-    mantleFetch,
-    bLunaContract,
-    oracleContract,
-    custodyContract,
+    {
+      mantleEndpoint,
+      mantleFetch,
+      bLunaContract,
+      oracleContract,
+      custodyContract,
+    },
   ],
 }: QueryFunctionContext<
-  [string, string, MantleFetch, CW20Addr, HumanAddr, HumanAddr]
+  [
+    string,
+    {
+      mantleEndpoint: string;
+      mantleFetch: MantleFetch;
+      bLunaContract: CW20Addr;
+      oracleContract: HumanAddr;
+      custodyContract: HumanAddr;
+    },
+  ]
 >) => {
   return marketBAssetQuery({
     mantleEndpoint,
     mantleFetch,
-    variables: {
-      bLunaContract,
-      bLunaBalanceQuery: {
-        balance: {
-          address: custodyContract,
+    wasmQuery: {
+      bLunaBalance: {
+        contractAddress: bLunaContract,
+        query: {
+          balance: {
+            address: custodyContract,
+          },
         },
       },
-      oracleContract,
-      oraclePriceQuery: {
-        price: {
-          base: bLunaContract,
-          quote: 'uusd' as StableDenom,
+      oraclePrice: {
+        contractAddress: oracleContract,
+        query: {
+          price: {
+            base: bLunaContract,
+            quote: 'uusd' as StableDenom,
+          },
         },
       },
     },
@@ -43,7 +55,7 @@ const queryFn = ({
 };
 
 export function useMarketBAssetQuery(): UseQueryResult<
-  MarketBAssetData | undefined
+  MarketBAsset | undefined
 > {
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
@@ -56,11 +68,13 @@ export function useMarketBAssetQuery(): UseQueryResult<
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.MARKET_BASSET,
-      mantleEndpoint,
-      mantleFetch,
-      cw20.bLuna,
-      moneyMarket.oracle,
-      moneyMarket.custody,
+      {
+        mantleEndpoint,
+        mantleFetch,
+        bLunaContract: cw20.bLuna,
+        oracleContract: moneyMarket.oracle,
+        custodyContract: moneyMarket.custody,
+      },
     ],
     queryFn,
     {

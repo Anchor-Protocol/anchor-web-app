@@ -34,12 +34,14 @@ export function useGovPollsQuery(
     govPollsQuery({
       mantleEndpoint,
       mantleFetch,
-      variables: {
-        govContract: anchorToken.gov,
-        pollsQuery: {
-          polls: {
-            filter,
-            limit,
+      wasmQuery: {
+        polls: {
+          contractAddress: anchorToken.gov,
+          query: {
+            polls: {
+              filter,
+              limit,
+            },
           },
         },
       },
@@ -67,13 +69,15 @@ export function useGovPollsQuery(
       govPollsQuery({
         mantleEndpoint,
         mantleFetch,
-        variables: {
-          govContract: anchorToken.gov,
-          pollsQuery: {
-            polls: {
-              filter,
-              start_after: polls[polls.length - 1].id,
-              limit,
+        wasmQuery: {
+          polls: {
+            contractAddress: anchorToken.gov,
+            query: {
+              polls: {
+                filter,
+                limit,
+                start_after: polls[polls.length - 1].id,
+              },
             },
           },
         },

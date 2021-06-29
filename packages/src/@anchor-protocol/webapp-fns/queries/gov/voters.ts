@@ -1,61 +1,31 @@
+import { anchorToken } from '@anchor-protocol/types';
 import {
-  anchorToken,
-  HumanAddr,
-  WASMContractResult,
-} from '@anchor-protocol/types';
-import { MantleFetch } from '@terra-money/webapp-fns';
+  mantle,
+  MantleParams,
+  WasmQuery,
+  WasmQueryData,
+} from '@terra-money/webapp-fns';
 
-export interface GovVotersRawData {
-  voters: WASMContractResult;
+export interface GovVotersWasmQuery {
+  voters: WasmQuery<anchorToken.gov.Voters, anchorToken.gov.VotersResponse>;
 }
 
-export interface GovVotersData {
-  voters: anchorToken.gov.VotersResponse;
-}
+export type GovVoters = WasmQueryData<GovVotersWasmQuery>;
 
-export interface GovVotersRawVariables {
-  govContract: string;
-  votersQuery: string;
-}
-
-export interface GovVotersVariables {
-  govContract: HumanAddr;
-  votersQuery: anchorToken.gov.Voters;
-}
-
-// language=graphql
-export const GOV_VOTERS_QUERY = `
-  query ($govContract: String!, $votersQuery: String!) {
-    voters: WasmContractsContractAddressStore(
-      ContractAddress: $govContract
-      QueryMsg: $votersQuery
-    ) {
-      Result
-    }
-  }
-`;
-
-export interface GovVotersQueryParams {
-  mantleEndpoint: string;
-  mantleFetch: MantleFetch;
-  variables: GovVotersVariables;
-}
+export type GovVotersQueryParams = Omit<
+  MantleParams<GovVotersWasmQuery>,
+  'query' | 'variables'
+>;
 
 export async function govVotersQuery({
   mantleEndpoint,
-  mantleFetch,
-  variables,
-}: GovVotersQueryParams): Promise<GovVotersData> {
-  const rawData = await mantleFetch<GovVotersRawVariables, GovVotersRawData>(
-    GOV_VOTERS_QUERY,
-    {
-      govContract: variables.govContract,
-      votersQuery: JSON.stringify(variables.votersQuery),
-    },
-    `${mantleEndpoint}?gov--voters&start_after=${variables.votersQuery.voters.start_after}`,
-  );
-
-  return {
-    voters: JSON.parse(rawData.voters.Result),
-  };
+  wasmQuery,
+  ...params
+}: GovVotersQueryParams): Promise<GovVoters> {
+  return mantle<GovVotersWasmQuery>({
+    mantleEndpoint: `${mantleEndpoint}?gov--voters&start_after=${wasmQuery.voters.query.voters.start_after}`,
+    variables: {},
+    wasmQuery,
+    ...params,
+  });
 }

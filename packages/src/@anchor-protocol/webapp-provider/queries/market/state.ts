@@ -1,5 +1,5 @@
 import { HumanAddr } from '@anchor-protocol/types';
-import { MarketStateData, marketStateQuery } from '@anchor-protocol/webapp-fns';
+import { MarketState, marketStateQuery } from '@anchor-protocol/webapp-fns';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
 import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
@@ -7,23 +7,32 @@ import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
 const queryFn = ({
-  queryKey: [, mantleEndpoint, mantleFetch, marketContract],
-}: QueryFunctionContext<[string, string, MantleFetch, HumanAddr]>) => {
+  queryKey: [, { mantleEndpoint, mantleFetch, marketContract }],
+}: QueryFunctionContext<
+  [
+    string,
+    {
+      mantleEndpoint: string;
+      mantleFetch: MantleFetch;
+      marketContract: HumanAddr;
+    },
+  ]
+>) => {
   return marketStateQuery({
     mantleEndpoint,
     mantleFetch,
-    variables: {
-      marketContract,
-      marketStateQuery: {
-        state: {},
+    wasmQuery: {
+      marketState: {
+        contractAddress: marketContract,
+        query: {
+          state: {},
+        },
       },
     },
   });
 };
 
-export function useMarketStateQuery(): UseQueryResult<
-  MarketStateData | undefined
-> {
+export function useMarketStateQuery(): UseQueryResult<MarketState | undefined> {
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const {
@@ -35,9 +44,11 @@ export function useMarketStateQuery(): UseQueryResult<
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.MARKET_STATE,
-      mantleEndpoint,
-      mantleFetch,
-      moneyMarket.market,
+      {
+        mantleEndpoint,
+        mantleFetch,
+        marketContract: moneyMarket.market,
+      },
     ],
     queryFn,
     {

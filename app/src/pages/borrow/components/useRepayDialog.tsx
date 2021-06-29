@@ -8,8 +8,8 @@ import {
 } from '@anchor-protocol/notation';
 import { Rate, UST, uUST } from '@anchor-protocol/types';
 import {
-  BorrowBorrowerData,
-  BorrowMarketData,
+  BorrowBorrower,
+  BorrowMarket,
   useAnchorWebapp,
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
@@ -50,8 +50,8 @@ import { LTVGraph } from './LTVGraph';
 
 interface FormParams {
   className?: string;
-  fallbackBorrowMarket: BorrowMarketData;
-  fallbackBorrowBorrower: BorrowBorrowerData;
+  fallbackBorrowMarket: BorrowMarket;
+  fallbackBorrowBorrower: BorrowBorrower;
 }
 
 type FormReturn = void;
@@ -139,10 +139,10 @@ function ComponentBase({
     [nextLtv, bLunaMaxLtv, oraclePrice],
   );
 
-  const apr = useMemo(() => _apr(borrowRate, blocksPerYear), [
-    blocksPerYear,
-    borrowRate,
-  ]);
+  const apr = useMemo(
+    () => _apr(borrowRate, blocksPerYear),
+    [blocksPerYear, borrowRate],
+  );
 
   const maxRepayingAmount = useMemo(() => {
     const totalBorrowed = repayTotalBorrows(
@@ -166,21 +166,20 @@ function ComponentBase({
     fixedGas,
   ]);
 
-  const txFee = useMemo(() => repayTxFee(repayAmount, bank, fixedGas), [
-    bank,
-    fixedGas,
-    repayAmount,
-  ]);
+  const txFee = useMemo(
+    () => repayTxFee(repayAmount, bank, fixedGas),
+    [bank, fixedGas, repayAmount],
+  );
 
   const totalOutstandingLoan = useMemo(
     () => repayTotalOutstandingLoan(repayAmount, loanAmount),
     [loanAmount, repayAmount],
   );
 
-  const sendAmount = useMemo(() => repaySendAmount(repayAmount, txFee), [
-    repayAmount,
-    txFee,
-  ]);
+  const sendAmount = useMemo(
+    () => repaySendAmount(repayAmount, txFee),
+    [repayAmount, txFee],
+  );
 
   const invalidTxFee = useMemo(
     () => !!connectedWallet && validateTxFee(bank, fixedGas),

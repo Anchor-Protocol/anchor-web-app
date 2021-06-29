@@ -1,40 +1,38 @@
+import { moneyMarket, uUST } from '@anchor-protocol/types';
 import {
-  HumanAddr,
-  moneyMarket,
-  uUST,
-  WASMContractResult,
-} from '@anchor-protocol/types';
-import { MantleFetch } from '@terra-money/webapp-fns';
+  mantle,
+  MantleParams,
+  WasmQuery,
+  WasmQueryData,
+} from '@terra-money/webapp-fns';
 
-export interface MarketStateRawData {
+export interface MarketStateWasmQuery {
+  marketState: WasmQuery<
+    moneyMarket.market.State,
+    moneyMarket.market.StateResponse
+  >;
+}
+
+export interface MarketStateQueryVariables {
+  marketContract: string;
+}
+
+export interface MarketStateQueryResult {
   marketBalances: {
     Result: { Denom: string; Amount: string }[];
   };
-  marketState: WASMContractResult;
 }
 
-export interface MarketStateData {
+export type MarketState = WasmQueryData<MarketStateWasmQuery> & {
   marketBalances: {
     uUST: uUST;
   };
-  marketState: moneyMarket.market.StateResponse;
-}
-
-export interface MarketStateRawVariables {
-  marketContract: string;
-  marketStateQuery: string;
-}
-
-export interface MarketStateVariables {
-  marketContract: HumanAddr;
-  marketStateQuery: moneyMarket.market.State;
-}
+};
 
 // language=graphql
 export const MARKET_STATE_QUERY = `
   query (
     $marketContract: String!
-    $marketStateQuery: String!
   ) {
     marketBalances: BankBalancesAddress(Address: $marketContract) {
       Result {
@@ -42,46 +40,43 @@ export const MARKET_STATE_QUERY = `
         Amount
       }
     }
-
-    marketState: WasmContractsContractAddressStore(
-      ContractAddress: $marketContract
-      QueryMsg: $marketStateQuery
-    ) {
-      Result
-    }
   }
 `;
 
-export interface MarketStateQueryParams {
-  mantleEndpoint: string;
-  mantleFetch: MantleFetch;
-  variables: MarketStateVariables;
-}
+export type MarketStateQueryParams = Omit<
+  MantleParams<MarketStateWasmQuery>,
+  'query' | 'variables'
+>;
 
 export async function marketStateQuery({
   mantleEndpoint,
-  mantleFetch,
-  variables,
-}: MarketStateQueryParams): Promise<MarketStateData> {
-  const rawData = await mantleFetch<
-    MarketStateRawVariables,
-    MarketStateRawData
-  >(
-    MARKET_STATE_QUERY,
+  wasmQuery,
+  ...params
+}: MarketStateQueryParams): Promise<MarketState> {
+  const { marketState, marketBalances: _marketBalances } = await mantle<
+    MarketStateWasmQuery,
+    MarketStateQueryVariables,
+    MarketStateQueryResult
+  >({
+    mantleEndpoint: `${mantleEndpoint}?market--state`,
+    wasmQuery: {
+      marketState: wasmQuery.marketState,
+    },
+    variables: {
+      marketContract: wasmQuery.marketState.contractAddress,
+    },
+    query: MARKET_STATE_QUERY,
+    ...params,
+  });
+
+  const marketBalances: Pick<MarketState, 'marketBalances'>['marketBalances'] =
     {
-      marketContract: variables.marketContract,
-      marketStateQuery: JSON.stringify(variables.marketStateQuery),
-    },
-    `${mantleEndpoint}?market--state`,
-  );
-
-  const result: MarketStateData = {
-    marketBalances: {
-      uUST: (rawData.marketBalances.Result.find(({ Denom }) => Denom === 'uusd')
+      uUST: (_marketBalances.Result.find(({ Denom }) => Denom === 'uusd')
         ?.Amount ?? '0') as uUST,
-    },
-    marketState: JSON.parse(rawData.marketState.Result),
-  };
+    };
 
-  return result;
+  return {
+    marketState,
+    marketBalances,
+  };
 }

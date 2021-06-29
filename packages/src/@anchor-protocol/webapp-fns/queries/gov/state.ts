@@ -1,78 +1,30 @@
+import { anchorToken } from '@anchor-protocol/types';
 import {
-  anchorToken,
-  HumanAddr,
-  WASMContractResult,
-} from '@anchor-protocol/types';
-import { MantleFetch } from '@terra-money/webapp-fns';
+  mantle,
+  MantleParams,
+  WasmQuery,
+  WasmQueryData,
+} from '@terra-money/webapp-fns';
 
-export interface GovStateRawData {
-  govState: WASMContractResult;
-  govConfig: WASMContractResult;
+export interface GovStateWasmQuery {
+  govState: WasmQuery<anchorToken.gov.State, anchorToken.gov.StateResponse>;
+  govConfig: WasmQuery<anchorToken.gov.Config, anchorToken.gov.ConfigResponse>;
 }
 
-export interface GovStateData {
-  govState: anchorToken.gov.StateResponse;
-  govConfig: anchorToken.gov.ConfigResponse;
-}
+export type GovState = WasmQueryData<GovStateWasmQuery>;
 
-export interface GovStateRawVariables {
-  govContract: string;
-  govStateQuery: string;
-  govConfigQuery: string;
-}
-
-export interface GovStateVariables {
-  govContract: HumanAddr;
-  govStateQuery: anchorToken.gov.State;
-  govConfigQuery: anchorToken.gov.Config;
-}
-
-// language=graphql
-export const GOV_STATE_QUERY = `
-  query (
-    $govContract: String!
-    $govStateQuery: String!
-    $govConfigQuery: String!
-  ) {
-    govState: WasmContractsContractAddressStore(
-      ContractAddress: $govContract
-      QueryMsg: $govStateQuery
-    ) {
-      Result
-    }
-
-    govConfig: WasmContractsContractAddressStore(
-      ContractAddress: $govContract
-      QueryMsg: $govConfigQuery
-    ) {
-      Result
-    }
-  }
-`;
-
-export interface GovStateQueryParams {
-  mantleEndpoint: string;
-  mantleFetch: MantleFetch;
-  variables: GovStateVariables;
-}
+export type GovStateQueryParams = Omit<
+  MantleParams<GovStateWasmQuery>,
+  'query' | 'variables'
+>;
 
 export async function govStateQuery({
   mantleEndpoint,
-  mantleFetch,
-  variables,
-}: GovStateQueryParams): Promise<GovStateData> {
-  const rawData = await mantleFetch<GovStateRawVariables, GovStateRawData>(
-    GOV_STATE_QUERY,
-    {
-      govContract: variables.govContract,
-      govConfigQuery: JSON.stringify(variables.govConfigQuery),
-      govStateQuery: JSON.stringify(variables.govStateQuery),
-    },
-    `${mantleEndpoint}?gov--state`,
-  );
-
-  return {
-    govConfig: JSON.parse(rawData.govConfig.Result),
-    govState: JSON.parse(rawData.govState.Result),
-  };
+  ...params
+}: GovStateQueryParams): Promise<GovState> {
+  return mantle<GovStateWasmQuery>({
+    mantleEndpoint: `${mantleEndpoint}?gov--state`,
+    variables: {},
+    ...params,
+  });
 }
