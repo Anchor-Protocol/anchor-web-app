@@ -52,12 +52,14 @@ export async function airdropCheckQuery({
       const { isClaimed } = await airdropIsClaimedQuery({
         mantleEndpoint,
         mantleFetch,
-        variables: {
-          airdropContract: variables.airdropContract,
-          isClaimedQuery: {
-            is_claimed: {
-              address: variables.walletAddress,
-              stage,
+        wasmQuery: {
+          isClaimed: {
+            contractAddress: variables.airdropContract,
+            query: {
+              is_claimed: {
+                address: variables.walletAddress,
+                stage,
+              },
             },
           },
         },
