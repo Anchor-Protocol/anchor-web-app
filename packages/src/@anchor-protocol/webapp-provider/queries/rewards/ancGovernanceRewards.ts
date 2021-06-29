@@ -1,6 +1,6 @@
 import { CW20Addr, HumanAddr } from '@anchor-protocol/types';
 import {
-  RewardsAncGovernanceRewardsData,
+  RewardsAncGovernanceRewards,
   rewardsAncGovernanceRewardsQuery,
 } from '@anchor-protocol/webapp-fns';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
@@ -20,37 +20,39 @@ import { ANCHOR_QUERY_KEY } from '../../env';
 const queryFn = ({
   queryKey: [
     ,
-    mantleEndpoint,
-    mantleFetch,
-    govContract,
-    ancContract,
-    connectedWallet,
+    { mantleEndpoint, mantleFetch, govContract, ancContract, connectedWallet },
   ],
 }: QueryFunctionContext<
   [
     string,
-    string,
-    MantleFetch,
-    HumanAddr,
-    CW20Addr,
-    ConnectedWallet | undefined,
+    {
+      mantleEndpoint: string;
+      mantleFetch: MantleFetch;
+      govContract: HumanAddr;
+      ancContract: CW20Addr;
+      connectedWallet: ConnectedWallet | undefined;
+    },
   ]
 >) => {
   return !!connectedWallet
     ? rewardsAncGovernanceRewardsQuery({
         mantleEndpoint,
         mantleFetch,
-        variables: {
-          govContract,
-          ancContract,
-          govStakeInfoQuery: {
-            staker: {
-              address: connectedWallet.walletAddress,
+        wasmQuery: {
+          userGovStakingInfo: {
+            contractAddress: govContract,
+            query: {
+              staker: {
+                address: connectedWallet.walletAddress,
+              },
             },
           },
-          userAncBalanceQuery: {
-            balance: {
-              address: connectedWallet.walletAddress,
+          userANCBalance: {
+            contractAddress: ancContract,
+            query: {
+              balance: {
+                address: connectedWallet.walletAddress,
+              },
             },
           },
         },
@@ -59,7 +61,7 @@ const queryFn = ({
 };
 
 export function useRewardsAncGovernanceRewardsQuery(): UseQueryResult<
-  RewardsAncGovernanceRewardsData | undefined
+  RewardsAncGovernanceRewards | undefined
 > {
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
@@ -74,11 +76,13 @@ export function useRewardsAncGovernanceRewardsQuery(): UseQueryResult<
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.REWARDS_ANC_GOVERNANCE_REWARDS,
-      mantleEndpoint,
-      mantleFetch,
-      anchorToken.gov,
-      cw20.ANC,
-      connectedWallet,
+      {
+        mantleEndpoint,
+        mantleFetch,
+        govContract: anchorToken.gov,
+        ancContract: cw20.ANC,
+        connectedWallet,
+      },
     ],
     queryFn,
     {

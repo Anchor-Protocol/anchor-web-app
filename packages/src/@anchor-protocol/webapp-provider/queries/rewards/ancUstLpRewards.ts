@@ -1,6 +1,6 @@
 import { CW20Addr, HumanAddr } from '@anchor-protocol/types';
 import {
-  RewardsAncUstLpRewardsData,
+  RewardsAncUstLpRewards,
   rewardsAncUstLpRewardsQuery,
 } from '@anchor-protocol/webapp-fns';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
@@ -20,37 +20,45 @@ import { ANCHOR_QUERY_KEY } from '../../env';
 const queryFn = ({
   queryKey: [
     ,
-    mantleEndpoint,
-    mantleFetch,
-    stakingContract,
-    ancUstLpContract,
-    connectedWallet,
+    {
+      mantleEndpoint,
+      mantleFetch,
+      stakingContract,
+      ancUstLpContract,
+      connectedWallet,
+    },
   ],
 }: QueryFunctionContext<
   [
     string,
-    string,
-    MantleFetch,
-    HumanAddr,
-    CW20Addr,
-    ConnectedWallet | undefined,
+    {
+      mantleEndpoint: string;
+      mantleFetch: MantleFetch;
+      stakingContract: HumanAddr;
+      ancUstLpContract: CW20Addr;
+      connectedWallet: ConnectedWallet | undefined;
+    },
   ]
 >) => {
   return !!connectedWallet
     ? rewardsAncUstLpRewardsQuery({
         mantleEndpoint,
         mantleFetch,
-        variables: {
-          ancUstLpContract,
-          stakingContract,
-          lpStakerInfoQuery: {
-            staker_info: {
-              staker: connectedWallet.walletAddress,
+        wasmQuery: {
+          userLPBalance: {
+            contractAddress: ancUstLpContract,
+            query: {
+              balance: {
+                address: connectedWallet.walletAddress,
+              },
             },
           },
-          ancUstLpBalanceQuery: {
-            balance: {
-              address: connectedWallet.walletAddress,
+          userLPStakingInfo: {
+            contractAddress: stakingContract,
+            query: {
+              staker_info: {
+                staker: connectedWallet.walletAddress,
+              },
             },
           },
         },
@@ -59,7 +67,7 @@ const queryFn = ({
 };
 
 export function useRewardsAncUstLpRewardsQuery(): UseQueryResult<
-  RewardsAncUstLpRewardsData | undefined
+  RewardsAncUstLpRewards | undefined
 > {
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
@@ -74,11 +82,13 @@ export function useRewardsAncUstLpRewardsQuery(): UseQueryResult<
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.REWARDS_ANC_UST_LP_REWARDS,
-      mantleEndpoint,
-      mantleFetch,
-      anchorToken.staking,
-      cw20.AncUstLP,
-      connectedWallet,
+      {
+        mantleEndpoint,
+        mantleFetch,
+        stakingContract: anchorToken.staking,
+        ancUstLpContract: cw20.AncUstLP,
+        connectedWallet,
+      },
     ],
     queryFn,
     {
