@@ -1,65 +1,34 @@
+import { terraswap, uToken } from '@anchor-protocol/types';
 import {
-  HumanAddr,
-  terraswap,
-  uToken,
-  WASMContractResult,
-} from '@anchor-protocol/types';
-import { MantleFetch } from '@terra-money/webapp-fns';
+  mantle,
+  MantleParams,
+  WasmQuery,
+  WasmQueryData,
+} from '@terra-money/webapp-fns';
 
-export interface TerraswapSimulationRawData {
-  simulation: WASMContractResult;
+export interface TerraswapSimulationWasmQuery {
+  simulation: WasmQuery<
+    terraswap.Simulation<uToken>,
+    terraswap.SimulationResponse<uToken>
+  >;
 }
 
-export interface TerraswapSimulationData {
-  simulation: terraswap.SimulationResponse<uToken>;
-}
+export type TerraswapSimulation = WasmQueryData<TerraswapSimulationWasmQuery>;
 
-export interface TerraswapSimulationRawVariables {
-  tokenPairContract: string;
-  simulationQuery: string;
-}
-
-export interface TerraswapSimulationVariables {
-  tokenPairContract: HumanAddr;
-  simulationQuery: terraswap.Simulation<uToken>;
-}
-
-// language=graphql
-export const TERRASWAP_SIMULATION_QUERY = `
-  query($tokenPairContract: String!, $simulationQuery: String!) {
-    simulation: WasmContractsContractAddressStore(
-      ContractAddress: $tokenPairContract
-      QueryMsg: $simulationQuery
-    ) {
-      Result
-    }
-  }
-`;
-
-export interface TerraswapSimulationQueryParams {
-  mantleEndpoint: string;
-  mantleFetch: MantleFetch;
-  variables: TerraswapSimulationVariables;
-}
+export type TerraswapSimulationQueryParams = Omit<
+  MantleParams<TerraswapSimulationWasmQuery>,
+  'query' | 'variables'
+>;
 
 export async function terraswapSimulationQuery({
   mantleEndpoint,
-  mantleFetch,
-  variables,
-}: TerraswapSimulationQueryParams): Promise<TerraswapSimulationData> {
-  const rawData = await mantleFetch<
-    TerraswapSimulationRawVariables,
-    TerraswapSimulationRawData
-  >(
-    TERRASWAP_SIMULATION_QUERY,
-    {
-      tokenPairContract: variables.tokenPairContract,
-      simulationQuery: JSON.stringify(variables.simulationQuery),
-    },
-    `${mantleEndpoint}?terraswap--simulation?pair=${variables.tokenPairContract}`,
-  );
-
-  return {
-    simulation: JSON.parse(rawData.simulation.Result),
-  };
+  wasmQuery,
+  ...params
+}: TerraswapSimulationQueryParams): Promise<TerraswapSimulation> {
+  return mantle<TerraswapSimulationWasmQuery>({
+    mantleEndpoint: `${mantleEndpoint}?terraswap--simulation?pair=${wasmQuery.simulation.contractAddress}`,
+    variables: {},
+    wasmQuery,
+    ...params,
+  });
 }
