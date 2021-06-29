@@ -1,4 +1,4 @@
-import { MantleFetch } from '../types';
+import { MantleFetch } from '@terra-dev/mantle';
 
 // language=graphql
 const LAST_SYNCED_HEIGHT_QUERY = `

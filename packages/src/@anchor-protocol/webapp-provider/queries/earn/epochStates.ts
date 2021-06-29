@@ -1,6 +1,6 @@
 import { HumanAddr } from '@anchor-protocol/types';
 import {
-  EarnEpochStatesData,
+  EarnEpochStates,
   earnEpochStatesQuery,
 } from '@anchor-protocol/webapp-fns';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
@@ -12,43 +12,54 @@ import { ANCHOR_QUERY_KEY } from '../../env';
 const queryFn = ({
   queryKey: [
     ,
-    mantleEndpoint,
-    mantleFetch,
-    lastSyncedHeight,
-    moneyMarketContract,
-    overseerContract,
+    {
+      mantleEndpoint,
+      mantleFetch,
+      lastSyncedHeight,
+      moneyMarketContract,
+      overseerContract,
+    },
   ],
 }: QueryFunctionContext<
-  [string, string, MantleFetch, () => Promise<number>, HumanAddr, HumanAddr]
+  [
+    string,
+    {
+      mantleEndpoint: string;
+      mantleFetch: MantleFetch;
+      lastSyncedHeight: () => Promise<number>;
+      moneyMarketContract: HumanAddr;
+      overseerContract: HumanAddr;
+    },
+  ]
 >) => {
   return earnEpochStatesQuery({
     mantleEndpoint,
     mantleFetch,
     lastSyncedHeight,
-    variables: {
-      moneyMarketContract,
-      overseerContract,
-      moneyMarketEpochStateQuery: {
-        epoch_state: {
-          block_height: -1,
+    wasmQuery: {
+      moneyMarketEpochState: {
+        contractAddress: moneyMarketContract,
+        query: {
+          epoch_state: {
+            block_height: -1,
+          },
         },
       },
-      overseerEpochStateQuery: {
-        epoch_state: {},
+      overseerEpochState: {
+        contractAddress: overseerContract,
+        query: {
+          epoch_state: {},
+        },
       },
     },
   });
 };
 
 export function useEarnEpochStatesQuery(): UseQueryResult<
-  EarnEpochStatesData | undefined
+  EarnEpochStates | undefined
 > {
-  const {
-    mantleFetch,
-    mantleEndpoint,
-    lastSyncedHeight,
-    queryErrorReporter,
-  } = useTerraWebapp();
+  const { mantleFetch, mantleEndpoint, lastSyncedHeight, queryErrorReporter } =
+    useTerraWebapp();
 
   const {
     contractAddress: { moneyMarket },
@@ -59,11 +70,13 @@ export function useEarnEpochStatesQuery(): UseQueryResult<
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.EARN_EPOCH_STATES,
-      mantleEndpoint,
-      mantleFetch,
-      lastSyncedHeight,
-      moneyMarket.market,
-      moneyMarket.overseer,
+      {
+        mantleEndpoint,
+        mantleFetch,
+        lastSyncedHeight,
+        moneyMarketContract: moneyMarket.market,
+        overseerContract: moneyMarket.overseer,
+      },
     ],
     queryFn,
     {

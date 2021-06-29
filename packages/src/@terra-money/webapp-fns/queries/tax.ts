@@ -1,4 +1,4 @@
-import { MantleFetch } from '../types';
+import { MantleFetch } from '@terra-dev/mantle';
 
 export interface TaxRawData {
   taxRate: {
@@ -139,7 +139,7 @@ export function taxQuery<T = TaxData>({
     );
   }
 
-  return (fetchers
+  return fetchers
     .get(mantleEndpoint)!
-    .fetchTax() as Promise<unknown>) as Promise<T>;
+    .fetchTax() as Promise<unknown> as Promise<T>;
 }

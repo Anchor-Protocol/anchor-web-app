@@ -1,9 +1,6 @@
+export * from '@terra-dev/mantle';
+
 export * from './env';
-export * from './types';
-
-export * from './functions/mantleFetch';
-
-export * from './errors/MantleError';
 
 export * from './models/tx';
 

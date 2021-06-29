@@ -1,4 +1,4 @@
-import { MantleFetch } from '../types';
+import { MantleFetch } from '@terra-dev/mantle';
 
 export interface CW20Contract {
   contractAddress: string;
@@ -105,7 +105,7 @@ class TokenBalancesFetcher {
 
     this.lastWalletAddrress = walletAddress;
 
-    this.debounceId = (setTimeout(() => {
+    this.debounceId = setTimeout(() => {
       this.debounceId = -1;
       this.abortController = new AbortController();
 
@@ -171,7 +171,7 @@ class TokenBalancesFetcher {
             }, 100);
           }
         });
-    }, 100) as unknown) as number;
+    }, 100) as unknown as number;
   };
 }
 
@@ -207,7 +207,7 @@ export function tokenBalancesQuery<T = TokenBalancesData>({
     );
   }
 
-  return (fetchers
+  return fetchers
     .get(mantleEndpoint)!
-    .fetchTokenBalances(walletAddress) as Promise<unknown>) as Promise<T>;
+    .fetchTokenBalances(walletAddress) as Promise<unknown> as Promise<T>;
 }
