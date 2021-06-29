@@ -10,10 +10,12 @@ describe('queries/bLunaPrice', () => {
     const { bLunaPrice, terraswapPool } = await bondBLunaPriceQuery({
       mantleFetch: defaultMantleFetch,
       mantleEndpoint: TEST_MANTLE_ENDPOINT,
-      variables: {
-        bLunaLunaPairContract: TEST_ADDRESSES.terraswap.blunaLunaPair,
-        terraswapPoolQuery: {
-          pool: {},
+      wasmQuery: {
+        terraswapPool: {
+          contractAddress: TEST_ADDRESSES.terraswap.blunaLunaPair,
+          query: {
+            pool: {},
+          },
         },
       },
     });

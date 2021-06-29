@@ -1,9 +1,8 @@
 import { HumanAddr } from '@anchor-protocol/types';
 import {
-  BondBLunaExchangeRateData,
+  BondBLunaExchangeRate,
   bondBLunaExchangeRateQuery,
 } from '@anchor-protocol/webapp-fns';
-
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
 import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
@@ -11,25 +10,39 @@ import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
 const queryFn = ({
-  queryKey: [, mantleEndpoint, mantleFetch, bLunaHubContract],
-}: QueryFunctionContext<[string, string, MantleFetch, HumanAddr]>) => {
+  queryKey: [, { mantleEndpoint, mantleFetch, bLunaHubContract }],
+}: QueryFunctionContext<
+  [
+    string,
+    {
+      mantleEndpoint: string;
+      mantleFetch: MantleFetch;
+      bLunaHubContract: HumanAddr;
+    },
+  ]
+>) => {
   return bondBLunaExchangeRateQuery({
     mantleEndpoint,
     mantleFetch,
-    variables: {
-      bLunaHubContract,
-      stateQuery: {
-        state: {},
+    wasmQuery: {
+      state: {
+        contractAddress: bLunaHubContract,
+        query: {
+          state: {},
+        },
       },
-      parametersQuery: {
-        parameters: {},
+      parameters: {
+        contractAddress: bLunaHubContract,
+        query: {
+          parameters: {},
+        },
       },
     },
   });
 };
 
 export function useBondBLunaExchangeRateQuery(): UseQueryResult<
-  BondBLunaExchangeRateData | undefined
+  BondBLunaExchangeRate | undefined
 > {
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
@@ -40,9 +53,11 @@ export function useBondBLunaExchangeRateQuery(): UseQueryResult<
   return useQuery(
     [
       ANCHOR_QUERY_KEY.BOND_BLUNA_EXCHANGE_RATE,
-      mantleEndpoint,
-      mantleFetch,
-      contractAddress.bluna.hub,
+      {
+        mantleEndpoint,
+        mantleFetch,
+        bLunaHubContract: contractAddress.bluna.hub,
+      },
     ],
     queryFn,
     {

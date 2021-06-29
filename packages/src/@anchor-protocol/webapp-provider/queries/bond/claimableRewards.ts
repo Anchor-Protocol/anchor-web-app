@@ -1,6 +1,6 @@
 import { HumanAddr } from '@anchor-protocol/types';
 import {
-  BondClaimableRewardsData,
+  BondClaimableRewards,
   bondClaimableRewardsQuery,
 } from '@anchor-protocol/webapp-fns';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
@@ -20,26 +20,36 @@ import { ANCHOR_QUERY_KEY } from '../../env';
 const queryFn = ({
   queryKey: [
     ,
-    mantleEndpoint,
-    mantleFetch,
-    connectedWallet,
-    bAssetRewardContract,
+    { mantleEndpoint, mantleFetch, connectedWallet, bAssetRewardContract },
   ],
 }: QueryFunctionContext<
-  [string, string, MantleFetch, ConnectedWallet | undefined, HumanAddr]
+  [
+    string,
+    {
+      mantleEndpoint: string;
+      mantleFetch: MantleFetch;
+      connectedWallet: ConnectedWallet | undefined;
+      bAssetRewardContract: HumanAddr;
+    },
+  ]
 >) => {
   return connectedWallet?.walletAddress
     ? bondClaimableRewardsQuery({
         mantleEndpoint,
         mantleFetch,
-        variables: {
-          bAssetRewardContract,
-          rewardStateQuery: {
-            state: {},
+        wasmQuery: {
+          rewardState: {
+            contractAddress: bAssetRewardContract,
+            query: {
+              state: {},
+            },
           },
-          rewardHolderQuery: {
-            holder: {
-              address: connectedWallet.walletAddress,
+          claimableReward: {
+            contractAddress: bAssetRewardContract,
+            query: {
+              holder: {
+                address: connectedWallet.walletAddress,
+              },
             },
           },
         },
@@ -48,7 +58,7 @@ const queryFn = ({
 };
 
 export function useBondClaimableRewards(): UseQueryResult<
-  BondClaimableRewardsData | undefined
+  BondClaimableRewards | undefined
 > {
   const connectedWallet = useConnectedWallet();
 
@@ -63,10 +73,12 @@ export function useBondClaimableRewards(): UseQueryResult<
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.BOND_CLAIMABLE_REWARDS,
-      mantleEndpoint,
-      mantleFetch,
-      connectedWallet,
-      bluna.reward,
+      {
+        mantleEndpoint,
+        mantleFetch,
+        connectedWallet,
+        bAssetRewardContract: bluna.reward,
+      },
     ],
     queryFn,
     {

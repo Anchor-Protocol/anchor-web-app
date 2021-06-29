@@ -1,15 +1,17 @@
 import {
-  HumanAddr,
   terraswap,
   uANC,
   uAncUstLP,
   UST,
   uToken,
   uUST,
-  WASMContractResult,
 } from '@anchor-protocol/types';
-import { MantleFetch } from '@terra-money/webapp-fns';
+import { mantle, MantleParams, WasmQuery } from '@terra-money/webapp-fns';
 import big from 'big.js';
+
+export interface AncPriceWasmQuery {
+  ancPrice: WasmQuery<terraswap.Pool, terraswap.PoolResponse<uToken>>;
+}
 
 export interface AncPrice {
   ANCPoolSize: uANC;
@@ -18,63 +20,32 @@ export interface AncPrice {
   ANCPrice: UST;
 }
 
-export interface AncPriceRawData {
-  ancPrice: WASMContractResult;
-}
-
 export interface AncPriceData {
   ancPrice: AncPrice;
 }
 
-export interface AncPriceRawVariables {
-  ancUstPairContract: string;
-  poolInfoQuery: string;
-}
-
-export interface AncPriceVariables {
-  ancUstPairContract: HumanAddr;
-  poolInfoQuery: terraswap.Pool;
-}
-
-// language=graphql
-export const ANC_PRICE_QUERY = `
-  query ($ancUstPairContract: String!, $poolInfoQuery: String!) {
-    ancPrice: WasmContractsContractAddressStore(
-      ContractAddress: $ancUstPairContract
-      QueryMsg: $poolInfoQuery
-    ) {
-      Result
-    }
-  }
-`;
-
-export interface AncPriceQueryParams {
-  mantleEndpoint: string;
-  mantleFetch: MantleFetch;
-  variables: AncPriceVariables;
-}
+export type AncPriceQueryParams = Omit<
+  MantleParams<AncPriceWasmQuery>,
+  'query' | 'variables'
+>;
 
 export async function ancPriceQuery({
   mantleEndpoint,
-  mantleFetch,
-  variables,
+  wasmQuery,
+  ...params
 }: AncPriceQueryParams): Promise<AncPriceData> {
-  const rawData = await mantleFetch<AncPriceRawVariables, AncPriceRawData>(
-    ANC_PRICE_QUERY,
-    {
-      ancUstPairContract: variables.ancUstPairContract,
-      poolInfoQuery: JSON.stringify(variables.poolInfoQuery),
-    },
-    `${mantleEndpoint}?anc--price`,
-  );
+  const {
+    ancPrice: { assets, total_share },
+  } = await mantle<AncPriceWasmQuery>({
+    mantleEndpoint: `${mantleEndpoint}?anc--price`,
+    variables: {},
+    wasmQuery,
+    ...params,
+  });
 
-  const { assets, total_share }: terraswap.PoolResponse<uToken> = JSON.parse(
-    rawData.ancPrice.Result,
-  );
-
-  const ANCPoolSize = (assets[0].amount as unknown) as uANC;
-  const USTPoolSize = (assets[1].amount as unknown) as uUST;
-  const LPShare = (total_share as unknown) as uAncUstLP;
+  const ANCPoolSize = assets[0].amount as unknown as uANC;
+  const USTPoolSize = assets[1].amount as unknown as uUST;
+  const LPShare = total_share as unknown as uAncUstLP;
   const ANCPrice = big(USTPoolSize)
     .div(+ANCPoolSize === 0 ? '1' : ANCPoolSize)
     .toString() as UST;

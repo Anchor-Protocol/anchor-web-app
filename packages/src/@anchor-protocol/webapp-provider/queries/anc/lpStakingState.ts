@@ -1,6 +1,6 @@
 import { HumanAddr } from '@anchor-protocol/types';
 import {
-  AncLpStakingStateData,
+  AncLpStakingState,
   ancLpStakingStateQuery,
 } from '@anchor-protocol/webapp-fns';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
@@ -10,22 +10,39 @@ import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
 const queryFn = ({
-  queryKey: [, mantleEndpoint, mantleFetch, ancStakingContract],
-}: QueryFunctionContext<[string, string, MantleFetch, HumanAddr]>) => {
+  queryKey: [, { mantleEndpoint, mantleFetch, ancStakingContract }],
+}: QueryFunctionContext<
+  [
+    string,
+    {
+      mantleEndpoint: string;
+      mantleFetch: MantleFetch;
+      ancStakingContract: HumanAddr;
+    },
+  ]
+>) => {
   return ancLpStakingStateQuery({
     mantleEndpoint,
     mantleFetch,
-    variables: {
-      ancStakingContract,
-      lpStakingStateQuery: {
-        state: {},
+    wasmQuery: {
+      lpStakingState: {
+        contractAddress: ancStakingContract,
+        query: {
+          state: {},
+        },
       },
     },
+    //variables: {
+    //  ancStakingContract,
+    //  lpStakingStateQuery: {
+    //    state: {},
+    //  },
+    //},
   });
 };
 
 export function useAncLpStakingStateQuery(): UseQueryResult<
-  AncLpStakingStateData | undefined
+  AncLpStakingState | undefined
 > {
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
@@ -38,9 +55,11 @@ export function useAncLpStakingStateQuery(): UseQueryResult<
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.ANC_LP_STAKING_STATE,
-      mantleEndpoint,
-      mantleFetch,
-      anchorToken.staking,
+      {
+        mantleEndpoint,
+        mantleFetch,
+        ancStakingContract: anchorToken.staking,
+      },
     ],
     queryFn,
     {

@@ -7,17 +7,34 @@ import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
 const queryFn = ({
-  queryKey: [, mantleEndpoint, mantleFetch, ancUstPairContract],
-}: QueryFunctionContext<[string, string, MantleFetch, HumanAddr]>) => {
+  queryKey: [, { mantleEndpoint, mantleFetch, ancUstPairContract }],
+}: QueryFunctionContext<
+  [
+    string,
+    {
+      mantleEndpoint: string;
+      mantleFetch: MantleFetch;
+      ancUstPairContract: HumanAddr;
+    },
+  ]
+>) => {
   return ancPriceQuery({
     mantleEndpoint,
     mantleFetch,
-    variables: {
-      ancUstPairContract,
-      poolInfoQuery: {
-        pool: {},
+    wasmQuery: {
+      ancPrice: {
+        contractAddress: ancUstPairContract,
+        query: {
+          pool: {},
+        },
       },
     },
+    //variables: {
+    //  ancUstPairContract,
+    //  poolInfoQuery: {
+    //    pool: {},
+    //  },
+    //},
   });
 };
 
@@ -33,9 +50,11 @@ export function useAncPriceQuery(): UseQueryResult<AncPriceData | undefined> {
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.ANC_PRICE,
-      mantleEndpoint,
-      mantleFetch,
-      terraswap.ancUstPair,
+      {
+        mantleEndpoint,
+        mantleFetch,
+        ancUstPairContract: terraswap.ancUstPair,
+      },
     ],
     queryFn,
     {

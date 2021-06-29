@@ -11,14 +11,19 @@ describe('queries/claimableRewards', () => {
     const { rewardState, claimableReward } = await bondClaimableRewardsQuery({
       mantleFetch: defaultMantleFetch,
       mantleEndpoint: TEST_MANTLE_ENDPOINT,
-      variables: {
-        bAssetRewardContract: TEST_ADDRESSES.bluna.reward,
-        rewardStateQuery: {
-          state: {},
+      wasmQuery: {
+        rewardState: {
+          contractAddress: TEST_ADDRESSES.bluna.reward,
+          query: {
+            state: {},
+          },
         },
-        rewardHolderQuery: {
-          holder: {
-            address: TEST_WALLET_ADDRESS,
+        claimableReward: {
+          contractAddress: TEST_ADDRESSES.bluna.reward,
+          query: {
+            holder: {
+              address: TEST_WALLET_ADDRESS,
+            },
           },
         },
       },

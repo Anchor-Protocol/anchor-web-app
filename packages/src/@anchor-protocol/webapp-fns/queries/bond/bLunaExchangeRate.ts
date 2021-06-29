@@ -1,77 +1,33 @@
-import { bluna, WASMContractResult } from '@anchor-protocol/types';
-import { MantleFetch } from '@terra-money/webapp-fns';
+import { bluna } from '@anchor-protocol/types';
+import {
+  mantle,
+  MantleParams,
+  WasmQuery,
+  WasmQueryData,
+} from '@terra-money/webapp-fns';
 
-export interface BondBLunaExchangeRateRawData {
-  state: WASMContractResult;
-  parameters: WASMContractResult;
+export interface BondBLunaExchangeRateWasmQuery {
+  state: WasmQuery<bluna.hub.State, bluna.hub.StateResponse>;
+  parameters: WasmQuery<bluna.hub.Parameters, bluna.hub.ParametersResponse>;
 }
 
-export interface BondBLunaExchangeRateData {
-  state: bluna.hub.StateResponse;
-  parameters: bluna.hub.ParametersResponse;
-}
+export type BondBLunaExchangeRate =
+  WasmQueryData<BondBLunaExchangeRateWasmQuery>;
 
-export interface BondBLunaExchangeRateRawVariables {
-  bLunaHubContract: string;
-  stateQuery: string;
-  parametersQuery: string;
-}
-
-export interface BondBLunaExchangeRateVariables {
-  bLunaHubContract: string;
-  stateQuery: bluna.hub.State;
-  parametersQuery: bluna.hub.Parameters;
-}
-
-// language=graphql
-export const BOND_BLUNA_EXCHANGE_RATE_QUERY = `
-  query (
-    $bLunaHubContract: String!
-    $stateQuery: String!
-    $parametersQuery: String!
-  ) {
-    state: WasmContractsContractAddressStore(
-      ContractAddress: $bLunaHubContract
-      QueryMsg: $stateQuery
-    ) {
-      Result
-    }
-
-    parameters: WasmContractsContractAddressStore(
-      ContractAddress: $bLunaHubContract
-      QueryMsg: $parametersQuery
-    ) {
-      Result
-    }
-  }
-`;
-
-export interface BondBLunaExchangeRateQueryParams {
-  mantleEndpoint: string;
-  mantleFetch: MantleFetch;
-  variables: BondBLunaExchangeRateVariables;
-}
+export type BondBLunaExchangeRateQueryParams = Omit<
+  MantleParams<BondBLunaExchangeRateWasmQuery>,
+  'query' | 'variables'
+>;
 
 export async function bondBLunaExchangeRateQuery({
   mantleEndpoint,
-  mantleFetch,
-  variables,
-}: BondBLunaExchangeRateQueryParams): Promise<BondBLunaExchangeRateData> {
-  const rawData = await mantleFetch<
-    BondBLunaExchangeRateRawVariables,
-    BondBLunaExchangeRateRawData
-  >(
-    BOND_BLUNA_EXCHANGE_RATE_QUERY,
-    {
-      bLunaHubContract: variables.bLunaHubContract,
-      stateQuery: JSON.stringify(variables.stateQuery),
-      parametersQuery: JSON.stringify(variables.parametersQuery),
-    },
-    `${mantleEndpoint}?bond--bluna-exchange-rate`,
-  );
-
-  return {
-    state: JSON.parse(rawData.state.Result),
-    parameters: JSON.parse(rawData.parameters.Result),
-  };
+  wasmQuery,
+  ...params
+}: BondBLunaExchangeRateQueryParams): Promise<BondBLunaExchangeRate> {
+  return mantle<BondBLunaExchangeRateWasmQuery>({
+    mantleEndpoint: `${mantleEndpoint}?bond--bluna-exchange-rate`,
+    variables: {},
+    wasmQuery,
+    ...params,
+  });
 }

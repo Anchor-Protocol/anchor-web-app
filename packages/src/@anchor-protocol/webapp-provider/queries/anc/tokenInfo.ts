@@ -1,8 +1,5 @@
 import { CW20Addr } from '@anchor-protocol/types';
-import {
-  AncTokenInfoData,
-  ancTokenInfoQuery,
-} from '@anchor-protocol/webapp-fns';
+import { AncTokenInfo, ancTokenInfoQuery } from '@anchor-protocol/webapp-fns';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
 import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
@@ -10,22 +7,29 @@ import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
 const queryFn = ({
-  queryKey: [, mantleEndpoint, mantleFetch, ancContract],
-}: QueryFunctionContext<[string, string, MantleFetch, CW20Addr]>) => {
+  queryKey: [, { mantleEndpoint, mantleFetch, ancContract }],
+}: QueryFunctionContext<
+  [
+    string,
+    { mantleEndpoint: string; mantleFetch: MantleFetch; ancContract: CW20Addr },
+  ]
+>) => {
   return ancTokenInfoQuery({
     mantleEndpoint,
     mantleFetch,
-    variables: {
-      ancContract,
-      ancTokenInfoQuery: {
-        token_info: {},
+    wasmQuery: {
+      ancTokenInfo: {
+        contractAddress: ancContract,
+        query: {
+          token_info: {},
+        },
       },
     },
   });
 };
 
 export function useAncTokenInfoQuery(): UseQueryResult<
-  AncTokenInfoData | undefined
+  AncTokenInfo | undefined
 > {
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
@@ -36,7 +40,10 @@ export function useAncTokenInfoQuery(): UseQueryResult<
   const { browserInactive } = useBrowserInactive();
 
   const result = useQuery(
-    [ANCHOR_QUERY_KEY.ANC_TOKEN_INFO, mantleEndpoint, mantleFetch, cw20.ANC],
+    [
+      ANCHOR_QUERY_KEY.ANC_TOKEN_INFO,
+      { mantleEndpoint, mantleFetch, ancContract: cw20.ANC },
+    ],
     queryFn,
     {
       refetchInterval: browserInactive && 1000 * 60 * 5,

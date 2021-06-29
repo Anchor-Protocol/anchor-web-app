@@ -1,6 +1,6 @@
 import { HumanAddr } from '@anchor-protocol/types';
 import {
-  BondValidatorsData,
+  BondValidators,
   bondValidatorsQuery,
 } from '@anchor-protocol/webapp-fns';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
@@ -10,22 +10,33 @@ import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
 const queryFn = ({
-  queryKey: [, mantleEndpoint, mantleFetch, bLunaHubContract],
-}: QueryFunctionContext<[string, string, MantleFetch, HumanAddr]>) => {
+  queryKey: [, { mantleEndpoint, mantleFetch, bLunaHubContract }],
+}: QueryFunctionContext<
+  [
+    string,
+    {
+      mantleEndpoint: string;
+      mantleFetch: MantleFetch;
+      bLunaHubContract: HumanAddr;
+    },
+  ]
+>) => {
   return bondValidatorsQuery({
     mantleEndpoint,
     mantleFetch,
-    variables: {
-      bLunaHubContract,
-      whitelistedValidatorsQuery: {
-        whitelisted_validators: {},
+    wasmQuery: {
+      hubWhitelistedValidators: {
+        contractAddress: bLunaHubContract,
+        query: {
+          whitelisted_validators: {},
+        },
       },
     },
   });
 };
 
 export function useBondValidators(): UseQueryResult<
-  BondValidatorsData | undefined
+  BondValidators | undefined
 > {
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
@@ -36,9 +47,11 @@ export function useBondValidators(): UseQueryResult<
   return useQuery(
     [
       ANCHOR_QUERY_KEY.BOND_VALIDATORS,
-      mantleEndpoint,
-      mantleFetch,
-      contractAddress.bluna.hub,
+      {
+        mantleEndpoint,
+        mantleFetch,
+        bLunaHubContract: contractAddress.bluna.hub,
+      },
     ],
     queryFn,
     {

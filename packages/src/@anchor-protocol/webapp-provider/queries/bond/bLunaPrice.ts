@@ -1,6 +1,6 @@
 import { HumanAddr } from '@anchor-protocol/types';
 import {
-  BondBLunaPriceData,
+  BondBLunaPrice,
   bondBLunaPriceQuery,
 } from '@anchor-protocol/webapp-fns';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
@@ -10,22 +10,33 @@ import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
 const queryFn = ({
-  queryKey: [, mantleEndpoint, mantleFetch, bLunaLunaPairContract],
-}: QueryFunctionContext<[string, string, MantleFetch, HumanAddr]>) => {
+  queryKey: [, { mantleEndpoint, mantleFetch, bLunaLunaPairContract }],
+}: QueryFunctionContext<
+  [
+    string,
+    {
+      mantleEndpoint: string;
+      mantleFetch: MantleFetch;
+      bLunaLunaPairContract: HumanAddr;
+    },
+  ]
+>) => {
   return bondBLunaPriceQuery({
     mantleEndpoint,
     mantleFetch,
-    variables: {
-      bLunaLunaPairContract,
-      terraswapPoolQuery: {
-        pool: {},
+    wasmQuery: {
+      terraswapPool: {
+        contractAddress: bLunaLunaPairContract,
+        query: {
+          pool: {},
+        },
       },
     },
   });
 };
 
 export function useBondBLunaPriceQuery(): UseQueryResult<
-  BondBLunaPriceData | undefined
+  BondBLunaPrice | undefined
 > {
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
@@ -36,9 +47,11 @@ export function useBondBLunaPriceQuery(): UseQueryResult<
   return useQuery(
     [
       ANCHOR_QUERY_KEY.BOND_BLUNA_PRICE,
-      mantleEndpoint,
-      mantleFetch,
-      contractAddress.bluna.hub,
+      {
+        mantleEndpoint,
+        mantleFetch,
+        bLunaLunaPairContract: contractAddress.terraswap.blunaLunaPair,
+      },
     ],
     queryFn,
     {
