@@ -69,8 +69,6 @@ export const webworkerMantleFetch: MantleFetch = <Variables extends {}, Data>(
     const worker: Worker =
       workerPool.length > 0 ? workerPool.pop()! : new Worker('/fetchWorker.js');
 
-    console.log('fetch.ts..()', workerPool.length);
-
     const onMessage = (event: MessageEvent) => {
       if (!aborted) {
         if ('error' in event.data) {
@@ -90,7 +88,11 @@ export const webworkerMantleFetch: MantleFetch = <Variables extends {}, Data>(
       requestInit?.signal?.removeEventListener('abort', onAbort);
       worker.removeEventListener('message', onMessage);
 
-      workerPool.push(worker);
+      if (workerPool.length > 10) {
+        worker.terminate();
+      } else {
+        workerPool.push(worker);
+      }
     };
 
     worker.addEventListener('message', onMessage);
