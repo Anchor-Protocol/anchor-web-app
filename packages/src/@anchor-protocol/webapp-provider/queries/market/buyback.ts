@@ -2,16 +2,15 @@ import {
   MarketBuybackData,
   marketBuybackQuery,
 } from '@anchor-protocol/webapp-fns';
+import { createQueryFn } from '@terra-dev/react-query-utils';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { useTerraWebapp } from '@terra-money/webapp-provider';
-import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
+import { useQuery, UseQueryResult } from 'react-query';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = ({
-  queryKey: [, endpoint, time],
-}: QueryFunctionContext<[string, string, '72hrs' | 'total']>) => {
+const queryFn = createQueryFn((endpoint: string, time: '72hrs' | 'total') => {
   return marketBuybackQuery({ endpoint, time });
-};
+});
 
 export function useMarketBuybackQuery(
   time: '72hrs' | 'total',

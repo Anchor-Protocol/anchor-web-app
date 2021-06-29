@@ -3,23 +3,24 @@ import {
   EarnAPYHistoryData,
   earnAPYHistoryQuery,
 } from '@anchor-protocol/webapp-fns';
+import { createQueryFn } from '@terra-dev/react-query-utils';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
-import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
+import { useQuery, UseQueryResult } from 'react-query';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = ({
-  queryKey: [, mantleEndpoint, mantleFetch],
-}: QueryFunctionContext<[string, string, MantleFetch]>) => {
-  return earnAPYHistoryQuery({
-    mantleEndpoint,
-    mantleFetch,
-    variables: {
-      //timestampMax: (Date.now() - 1000 * 60 * 60 * 24) as JSDateTime,
-      timestampMax: (Date.now() - 1000 * 60 * 60) as JSDateTime,
-    },
-  });
-};
+const queryFn = createQueryFn(
+  (mantleEndpoint: string, mantleFetch: MantleFetch) => {
+    return earnAPYHistoryQuery({
+      mantleEndpoint,
+      mantleFetch,
+      variables: {
+        //timestampMax: (Date.now() - 1000 * 60 * 60 * 24) as JSDateTime,
+        timestampMax: (Date.now() - 1000 * 60 * 60) as JSDateTime,
+      },
+    });
+  },
+);
 
 export function useEarnAPYHistoryQuery(): UseQueryResult<
   EarnAPYHistoryData | undefined

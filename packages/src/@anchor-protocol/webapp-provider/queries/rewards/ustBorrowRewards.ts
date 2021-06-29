@@ -3,6 +3,7 @@ import {
   RewardsUstBorrowRewards,
   rewardsUstBorrowRewardsQuery,
 } from '@anchor-protocol/webapp-fns';
+import { createQueryFn } from '@terra-dev/react-query-utils';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import {
   ConnectedWallet,
@@ -13,60 +14,41 @@ import {
   MantleFetch,
   useTerraWebapp,
 } from '@terra-money/webapp-provider';
-import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
+import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = ({
-  queryKey: [
-    ,
-    { mantleEndpoint, mantleFetch, marketContract, connectedWallet },
-  ],
-}: QueryFunctionContext<
-  [
-    string,
-    {
-      mantleEndpoint: string;
-      mantleFetch: MantleFetch;
-      marketContract: HumanAddr;
-      connectedWallet: ConnectedWallet | undefined;
-    },
-  ]
->) => {
-  return !!connectedWallet
-    ? rewardsUstBorrowRewardsQuery({
-        mantleEndpoint,
-        mantleFetch,
-        wasmQuery: {
-          marketState: {
-            contractAddress: marketContract,
-            query: {
-              state: {},
+const queryFn = createQueryFn(
+  (
+    mantleEndpoint: string,
+    mantleFetch: MantleFetch,
+    marketContract: HumanAddr,
+    connectedWallet: ConnectedWallet | undefined,
+  ) => {
+    return !!connectedWallet
+      ? rewardsUstBorrowRewardsQuery({
+          mantleEndpoint,
+          mantleFetch,
+          wasmQuery: {
+            marketState: {
+              contractAddress: marketContract,
+              query: {
+                state: {},
+              },
             },
-          },
-          borrowerInfo: {
-            contractAddress: marketContract,
-            query: {
-              borrower_info: {
-                borrower: connectedWallet.walletAddress,
+            borrowerInfo: {
+              contractAddress: marketContract,
+              query: {
+                borrower_info: {
+                  borrower: connectedWallet.walletAddress,
+                },
               },
             },
           },
-        },
-        //variables: {
-        //  marketContract,
-        //  marketStateQuery: {
-        //    state: {},
-        //  },
-        //  borrowerInfoQuery: {
-        //    borrower_info: {
-        //      borrower: connectedWallet.walletAddress,
-        //    },
-        //  },
-        //},
-      })
-    : Promise.resolve(undefined);
-};
+        })
+      : Promise.resolve(undefined);
+  },
+);
 
 export function useRewardsUstBorrowRewardsQuery(): UseQueryResult<
   RewardsUstBorrowRewards | undefined
@@ -84,12 +66,10 @@ export function useRewardsUstBorrowRewardsQuery(): UseQueryResult<
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.REWARDS_UST_BORROW_REWARDS,
-      {
-        mantleEndpoint,
-        mantleFetch,
-        marketContract: moneyMarket.market,
-        connectedWallet,
-      },
+      mantleEndpoint,
+      mantleFetch,
+      moneyMarket.market,
+      connectedWallet,
     ],
     queryFn,
     {

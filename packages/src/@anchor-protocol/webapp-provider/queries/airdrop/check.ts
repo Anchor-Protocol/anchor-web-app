@@ -1,5 +1,6 @@
 import { HumanAddr } from '@anchor-protocol/types';
 import { Airdrop, airdropCheckQuery } from '@anchor-protocol/webapp-fns';
+import { createQueryFn } from '@terra-dev/react-query-utils';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import {
   ConnectedWallet,
@@ -10,28 +11,31 @@ import {
   MantleFetch,
   useTerraWebapp,
 } from '@terra-money/webapp-provider';
-import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
+import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = ({
-  queryKey: [, mantleEndpoint, mantleFetch, airdropContract, connectedWallet],
-}: QueryFunctionContext<
-  [string, string, MantleFetch, HumanAddr, ConnectedWallet | undefined]
->) => {
-  return connectedWallet &&
-    connectedWallet.network.chainID.startsWith('columbus')
-    ? airdropCheckQuery({
-        mantleEndpoint,
-        mantleFetch,
-        variables: {
-          airdropContract,
-          chainId: connectedWallet.network.chainID,
-          walletAddress: connectedWallet.walletAddress,
-        },
-      })
-    : undefined;
-};
+const queryFn = createQueryFn(
+  (
+    mantleEndpoint: string,
+    mantleFetch: MantleFetch,
+    airdropContract: HumanAddr,
+    connectedWallet: ConnectedWallet | undefined,
+  ) => {
+    return connectedWallet &&
+      connectedWallet.network.chainID.startsWith('columbus')
+      ? airdropCheckQuery({
+          mantleEndpoint,
+          mantleFetch,
+          variables: {
+            airdropContract,
+            chainId: connectedWallet.network.chainID,
+            walletAddress: connectedWallet.walletAddress,
+          },
+        })
+      : Promise.resolve(undefined);
+  },
+);
 
 export function useAirdropCheckQuery(): UseQueryResult<Airdrop | undefined> {
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
