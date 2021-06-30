@@ -16,6 +16,7 @@ import { useBank } from 'base/contexts/bank';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxResultRenderer } from 'components/TxResultRenderer';
+import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { validateTxFee } from 'logics/validateTxFee';
 import React, {
   ChangeEvent,
@@ -197,20 +198,22 @@ export function WithdrawSection({
         <MessageBox>{invalidTxFee}</MessageBox>
       )}
 
-      <ActionButton
-        className="submit"
-        disabled={
-          !connectedWallet ||
-          !connectedWallet.availablePost ||
-          !withdraw ||
-          !!invalidTxFee ||
-          withdrawableAmount.lte(0) ||
-          disabled
-        }
-        onClick={() => proceed()}
-      >
-        Withdraw
-      </ActionButton>
+      <ViewAddressWarning>
+        <ActionButton
+          className="submit"
+          disabled={
+            !connectedWallet ||
+            !connectedWallet.availablePost ||
+            !withdraw ||
+            !!invalidTxFee ||
+            withdrawableAmount.lte(0) ||
+            disabled
+          }
+          onClick={() => proceed()}
+        >
+          Withdraw
+        </ActionButton>
+      </ViewAddressWarning>
 
       {withdrawHistory && withdrawHistory.length > 0 && (
         <ul className="withdraw-history">

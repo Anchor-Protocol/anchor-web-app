@@ -39,6 +39,7 @@ import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
+import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { validateTxFee } from 'logics/validateTxFee';
 import React, {
   ChangeEvent,
@@ -440,26 +441,28 @@ export function Swap() {
       )}
 
       {/* Submit */}
-      <ActionButton
-        className="submit"
-        disabled={
-          !connectedWallet ||
-          !connectedWallet.availablePost ||
-          !swap ||
-          !simulation ||
-          burnAmount.length === 0 ||
-          big(burnAmount).lte(0) ||
-          !!invalidTxFee ||
-          !!invalidBurnAmount ||
-          big(simulation?.swapFee ?? 0).lte(0)
-        }
-        onClick={() =>
-          simulation &&
-          proceed(burnAmount, simulation.beliefPrice, simulation.maxSpread)
-        }
-      >
-        Burn
-      </ActionButton>
+      <ViewAddressWarning>
+        <ActionButton
+          className="submit"
+          disabled={
+            !connectedWallet ||
+            !connectedWallet.availablePost ||
+            !swap ||
+            !simulation ||
+            burnAmount.length === 0 ||
+            big(burnAmount).lte(0) ||
+            !!invalidTxFee ||
+            !!invalidBurnAmount ||
+            big(simulation?.swapFee ?? 0).lte(0)
+          }
+          onClick={() =>
+            simulation &&
+            proceed(burnAmount, simulation.beliefPrice, simulation.maxSpread)
+          }
+        >
+          Burn
+        </ActionButton>
+      </ViewAddressWarning>
     </>
   );
 }

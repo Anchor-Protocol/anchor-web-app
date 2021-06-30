@@ -14,6 +14,7 @@ import { useBank } from 'base/contexts/bank';
 import big from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxResultRenderer } from 'components/TxResultRenderer';
+import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { validateTxFee } from 'logics/validateTxFee';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { claimableRewards as _claimableRewards } from '../logics/claimableRewards';
@@ -40,9 +41,8 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
   // ---------------------------------------------
   const bank = useBank();
 
-  const {
-    data: { rewardState, claimableReward } = {},
-  } = useBondClaimableRewards();
+  const { data: { rewardState, claimableReward } = {} } =
+    useBondClaimableRewards();
 
   // ---------------------------------------------
   // logics
@@ -125,20 +125,22 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
         <MessageBox>{invalidTxFee}</MessageBox>
       )}
 
-      <ActionButton
-        className="submit"
-        disabled={
-          !connectedWallet ||
-          !connectedWallet.availablePost ||
-          !claim ||
-          !!invalidTxFee ||
-          claimableRewards.lte(fixedGas) ||
-          disabled
-        }
-        onClick={() => proceed()}
-      >
-        Claim
-      </ActionButton>
+      <ViewAddressWarning>
+        <ActionButton
+          className="submit"
+          disabled={
+            !connectedWallet ||
+            !connectedWallet.availablePost ||
+            !claim ||
+            !!invalidTxFee ||
+            claimableRewards.lte(fixedGas) ||
+            disabled
+          }
+          onClick={() => proceed()}
+        >
+          Claim
+        </ActionButton>
+      </ViewAddressWarning>
     </Section>
   );
 }

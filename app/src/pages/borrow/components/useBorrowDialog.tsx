@@ -32,6 +32,7 @@ import big, { Big, BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
+import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { validateTxFee } from 'logics/validateTxFee';
 import type { ChangeEvent, ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -373,26 +374,28 @@ function ComponentBase({
           </TxFeeList>
         )}
 
-        <ActionButton
-          className="proceed"
-          disabled={
-            !connectedWallet ||
-            !connectedWallet.availablePost ||
-            !borrow ||
-            borrowAmount.length === 0 ||
-            big(borrowAmount).lte(0) ||
-            big(receiveAmount ?? 0).lte(0) ||
-            !!invalidTxFee ||
-            !!invalidBorrowAmount ||
-            !!invalidOver40Ltv
-          }
-          onClick={() =>
-            txFee &&
-            proceed(borrowAmount, txFee.toFixed() as uUST, invalidOverSafeLtv)
-          }
-        >
-          Proceed
-        </ActionButton>
+        <ViewAddressWarning>
+          <ActionButton
+            className="proceed"
+            disabled={
+              !connectedWallet ||
+              !connectedWallet.availablePost ||
+              !borrow ||
+              borrowAmount.length === 0 ||
+              big(borrowAmount).lte(0) ||
+              big(receiveAmount ?? 0).lte(0) ||
+              !!invalidTxFee ||
+              !!invalidBorrowAmount ||
+              !!invalidOver40Ltv
+            }
+            onClick={() =>
+              txFee &&
+              proceed(borrowAmount, txFee.toFixed() as uUST, invalidOverSafeLtv)
+            }
+          >
+            Proceed
+          </ActionButton>
+        </ViewAddressWarning>
 
         {confirmElement}
       </Dialog>

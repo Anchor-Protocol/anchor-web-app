@@ -30,6 +30,7 @@ import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
+import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { validateTxFee } from 'logics/validateTxFee';
 import { pegRecovery } from 'pages/basset/logics/pegRecovery';
 import { validateBondAmount } from 'pages/basset/logics/validateBondAmount';
@@ -73,10 +74,8 @@ function MintBase({ className }: MintProps) {
     () => bAssetCurrencies[0],
   );
 
-  const [
-    selectedValidator,
-    setSelectedValidator,
-  ] = useState<StakingValidator | null>(null);
+  const [selectedValidator, setSelectedValidator] =
+    useState<StakingValidator | null>(null);
 
   // ---------------------------------------------
   // queries
@@ -85,17 +84,16 @@ function MintBase({ className }: MintProps) {
 
   const { data: { whitelistedValidators } = {} } = useBondValidators();
 
-  const {
-    data: { state: exchangeRate, parameters } = {},
-  } = useBondBLunaExchangeRateQuery();
+  const { data: { state: exchangeRate, parameters } = {} } =
+    useBondBLunaExchangeRateQuery();
 
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const pegRecoveryFee = useMemo(() => pegRecovery(exchangeRate, parameters), [
-    exchangeRate,
-    parameters,
-  ]);
+  const pegRecoveryFee = useMemo(
+    () => pegRecovery(exchangeRate, parameters),
+    [exchangeRate, parameters],
+  );
 
   const invalidTxFee = useMemo(
     () => !!connectedWallet && validateTxFee(bank, fixedGas),
@@ -368,25 +366,27 @@ function MintBase({ className }: MintProps) {
       </TxFeeList>
 
       {/* Submit */}
-      <ActionButton
-        className="submit"
-        disabled={
-          !connectedWallet ||
-          !connectedWallet.availablePost ||
-          !mint ||
-          bondAmount.length === 0 ||
-          big(bondAmount).lte(0) ||
-          !!invalidBondAmount ||
-          !!invalidTxFee ||
-          !selectedValidator
-        }
-        onClick={() =>
-          selectedValidator &&
-          proceed(bondAmount, selectedValidator.OperatorAddress)
-        }
-      >
-        Mint
-      </ActionButton>
+      <ViewAddressWarning>
+        <ActionButton
+          className="submit"
+          disabled={
+            !connectedWallet ||
+            !connectedWallet.availablePost ||
+            !mint ||
+            bondAmount.length === 0 ||
+            big(bondAmount).lte(0) ||
+            !!invalidBondAmount ||
+            !!invalidTxFee ||
+            !selectedValidator
+          }
+          onClick={() =>
+            selectedValidator &&
+            proceed(bondAmount, selectedValidator.OperatorAddress)
+          }
+        >
+          Mint
+        </ActionButton>
+      </ViewAddressWarning>
     </Section>
   );
 }

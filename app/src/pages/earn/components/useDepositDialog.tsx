@@ -24,6 +24,7 @@ import { BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
+import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import type { ReactNode } from 'react';
 import React, { ChangeEvent, useCallback } from 'react';
 import styled from 'styled-components';
@@ -183,25 +184,27 @@ function ComponentBase({
           </MessageBox>
         )}
 
-        <ActionButton
-          className="proceed"
-          style={
-            invalidNextTxFee
-              ? {
-                  backgroundColor: '#c12535',
-                }
-              : undefined
-          }
-          disabled={
-            !connectedWallet ||
-            !connectedWallet.availablePost ||
-            !deposit ||
-            !availablePost
-          }
-          onClick={() => proceed(depositAmount, txFee, invalidNextTxFee)}
-        >
-          Proceed
-        </ActionButton>
+        <ViewAddressWarning>
+          <ActionButton
+            className="proceed"
+            style={
+              invalidNextTxFee
+                ? {
+                    backgroundColor: '#c12535',
+                  }
+                : undefined
+            }
+            disabled={
+              !connectedWallet ||
+              !connectedWallet.availablePost ||
+              !deposit ||
+              !availablePost
+            }
+            onClick={() => proceed(depositAmount, txFee, invalidNextTxFee)}
+          >
+            Proceed
+          </ActionButton>
+        </ViewAddressWarning>
 
         {confirmElement}
       </Dialog>
