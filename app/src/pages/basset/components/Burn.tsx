@@ -25,6 +25,7 @@ import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
+import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { validateTxFee } from 'logics/validateTxFee';
 import { pegRecovery } from 'pages/basset/logics/pegRecovery';
 import { validateBurnAmount } from 'pages/basset/logics/validateBurnAmount';
@@ -68,17 +69,16 @@ export function Burn() {
   // ---------------------------------------------
   const bank = useBank();
 
-  const {
-    data: { state: exchangeRate, parameters } = {},
-  } = useBondBLunaExchangeRateQuery();
+  const { data: { state: exchangeRate, parameters } = {} } =
+    useBondBLunaExchangeRateQuery();
 
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const pegRecoveryFee = useMemo(() => pegRecovery(exchangeRate, parameters), [
-    exchangeRate,
-    parameters,
-  ]);
+  const pegRecoveryFee = useMemo(
+    () => pegRecovery(exchangeRate, parameters),
+    [exchangeRate, parameters],
+  );
 
   const invalidTxFee = useMemo(
     () => !!connectedWallet && validateTxFee(bank, fixedGas),
@@ -334,21 +334,23 @@ export function Burn() {
       </TxFeeList>
 
       {/* Submit */}
-      <ActionButton
-        className="submit"
-        disabled={
-          !connectedWallet ||
-          !connectedWallet.availablePost ||
-          !burn ||
-          burnAmount.length === 0 ||
-          big(burnAmount).lte(0) ||
-          !!invalidTxFee ||
-          !!invalidBurnAmount
-        }
-        onClick={() => proceed(burnAmount)}
-      >
-        Burn
-      </ActionButton>
+      <ViewAddressWarning>
+        <ActionButton
+          className="submit"
+          disabled={
+            !connectedWallet ||
+            !connectedWallet.availablePost ||
+            !burn ||
+            burnAmount.length === 0 ||
+            big(burnAmount).lte(0) ||
+            !!invalidTxFee ||
+            !!invalidBurnAmount
+          }
+          onClick={() => proceed(burnAmount)}
+        >
+          Burn
+        </ActionButton>
+      </ViewAddressWarning>
     </>
   );
 }

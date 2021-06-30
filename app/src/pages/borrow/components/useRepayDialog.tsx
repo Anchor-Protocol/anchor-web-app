@@ -31,6 +31,7 @@ import big, { Big, BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
+import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { validateTxFee } from 'logics/validateTxFee';
 import type { ReactNode } from 'react';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
@@ -344,22 +345,26 @@ function ComponentBase({
           </TxFeeList>
         )}
 
-        <ActionButton
-          className="proceed"
-          disabled={
-            !connectedWallet ||
-            !connectedWallet.availablePost ||
-            !repay ||
-            !txFee ||
-            repayAmount.length === 0 ||
-            big(repayAmount).lte(0) ||
-            !!invalidTxFee ||
-            !!invalidAssetAmount
-          }
-          onClick={() => txFee && proceed(repayAmount, txFee.toFixed() as uUST)}
-        >
-          Proceed
-        </ActionButton>
+        <ViewAddressWarning>
+          <ActionButton
+            className="proceed"
+            disabled={
+              !connectedWallet ||
+              !connectedWallet.availablePost ||
+              !repay ||
+              !txFee ||
+              repayAmount.length === 0 ||
+              big(repayAmount).lte(0) ||
+              !!invalidTxFee ||
+              !!invalidAssetAmount
+            }
+            onClick={() =>
+              txFee && proceed(repayAmount, txFee.toFixed() as uUST)
+            }
+          >
+            Proceed
+          </ActionButton>
+        </ViewAddressWarning>
       </Dialog>
     </Modal>
   );

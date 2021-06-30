@@ -32,6 +32,7 @@ import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
+import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { validateTxFee } from 'logics/validateTxFee';
 import type { ReactNode } from 'react';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
@@ -347,21 +348,23 @@ function ComponentBase({
           </TxFeeList>
         )}
 
-        <ActionButton
-          className="proceed"
-          disabled={
-            !connectedWallet ||
-            !connectedWallet.availablePost ||
-            !redeemCollateral ||
-            redeemAmount.length === 0 ||
-            big(redeemAmount).lte(0) ||
-            !!invalidTxFee ||
-            !!invalidRedeemAmount
-          }
-          onClick={() => proceed(redeemAmount)}
-        >
-          Proceed
-        </ActionButton>
+        <ViewAddressWarning>
+          <ActionButton
+            className="proceed"
+            disabled={
+              !connectedWallet ||
+              !connectedWallet.availablePost ||
+              !redeemCollateral ||
+              redeemAmount.length === 0 ||
+              big(redeemAmount).lte(0) ||
+              !!invalidTxFee ||
+              !!invalidRedeemAmount
+            }
+            onClick={() => proceed(redeemAmount)}
+          >
+            Proceed
+          </ActionButton>
+        </ViewAddressWarning>
       </Dialog>
     </Modal>
   );

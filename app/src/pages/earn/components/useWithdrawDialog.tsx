@@ -27,6 +27,7 @@ import big, { BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
+import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import type { ReactNode } from 'react';
 import React, { ChangeEvent, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
@@ -176,18 +177,20 @@ function ComponentBase({
           </TxFeeList>
         )}
 
-        <ActionButton
-          className="proceed"
-          disabled={
-            !connectedWallet ||
-            !connectedWallet.availablePost ||
-            !withdraw ||
-            !availablePost
-          }
-          onClick={() => proceed(withdrawAmount, txFee)}
-        >
-          Proceed
-        </ActionButton>
+        <ViewAddressWarning>
+          <ActionButton
+            className="proceed"
+            disabled={
+              !connectedWallet ||
+              !connectedWallet.availablePost ||
+              !withdraw ||
+              !availablePost
+            }
+            onClick={() => proceed(withdrawAmount, txFee)}
+          >
+            Proceed
+          </ActionButton>
+        </ViewAddressWarning>
       </Dialog>
     </Modal>
   );

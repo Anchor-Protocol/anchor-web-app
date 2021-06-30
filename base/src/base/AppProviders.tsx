@@ -149,7 +149,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
 
   // If the user didn't see the app over 60 minutes,
   // reload browser for more stablity when the user visit again.
-  useLongtimeNoSee({ longtime: 1000 * 60 * 60, onSee: openRequestReload });
+  useLongtimeNoSee({ longtime: 1000 * 60 * 60 * 3, onSee: openRequestReload });
 
   return (
     /** Terra Station Wallet Address :: useWallet() */
