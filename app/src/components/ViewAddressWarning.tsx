@@ -14,7 +14,6 @@ export function ViewAddressWarning({ children }: ViewAddressStrikeProps) {
     <Tooltip
       title="Currently in “View an Address” mode. To make transactions, please disconnect and reconnect using Terra Station (extension or mobile)."
       placement="bottom"
-      color="warning"
     >
       <Warning>{children}</Warning>
     </Tooltip>

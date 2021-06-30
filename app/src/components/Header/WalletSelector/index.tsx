@@ -202,7 +202,6 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                       <Tooltip
                         title="Read-only mode for viewing information. Please connect through Terra Station (extension or mobile) to make transactions."
                         placement="bottom"
-                        color="warning"
                       >
                         <BorderButton
                           className="connect-readonly"
