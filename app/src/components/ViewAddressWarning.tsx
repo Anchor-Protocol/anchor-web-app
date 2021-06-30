@@ -12,7 +12,7 @@ export function ViewAddressWarning({ children }: ViewAddressStrikeProps) {
 
   return connectedWallet?.connectType === ConnectType.READONLY ? (
     <Tooltip
-      title="Wallet is connected as 'View an Address'. Could not execute transaction."
+      title="Currently in “View an Address” mode. To make transactions, please disconnect and reconnect using Terra Station (extension or mobile)."
       placement="bottom"
       color="warning"
     >

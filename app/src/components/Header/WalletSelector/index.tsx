@@ -4,6 +4,7 @@ import { ClickAwayListener } from '@material-ui/core';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { FlatButton } from '@terra-dev/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
 import {
   ConnectType,
   useWallet,
@@ -198,15 +199,21 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                     {availableConnectTypes.some(
                       (connectType) => connectType === ConnectType.READONLY,
                     ) && (
-                      <BorderButton
-                        className="connect-readonly"
-                        onClick={() => {
-                          connect(ConnectType.READONLY);
-                          setOpenDropdown(false);
-                        }}
+                      <Tooltip
+                        title="Read-only mode for viewing information. Please connect through Terra Station (extension or mobile) to make transactions."
+                        placement="bottom"
+                        color="warning"
                       >
-                        View an address
-                      </BorderButton>
+                        <BorderButton
+                          className="connect-readonly"
+                          onClick={() => {
+                            connect(ConnectType.READONLY);
+                            setOpenDropdown(false);
+                          }}
+                        >
+                          View an address
+                        </BorderButton>
+                      </Tooltip>
                     )}
                   </ConnectTypeContent>
                 </DropdownBox>
