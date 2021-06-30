@@ -10,11 +10,13 @@ describe('queries/polls', () => {
     const { polls } = await govPollsQuery({
       mantleFetch: defaultMantleFetch,
       mantleEndpoint: TEST_MANTLE_ENDPOINT,
-      variables: {
-        govContract: TEST_ADDRESSES.anchorToken.gov,
-        pollsQuery: {
-          polls: {
-            limit: 6,
+      wasmQuery: {
+        polls: {
+          contractAddress: TEST_ADDRESSES.anchorToken.gov,
+          query: {
+            polls: {
+              limit: 6,
+            },
           },
         },
       },

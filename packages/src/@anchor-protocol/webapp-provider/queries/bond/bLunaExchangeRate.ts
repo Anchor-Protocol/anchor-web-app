@@ -1,35 +1,44 @@
 import { HumanAddr } from '@anchor-protocol/types';
 import {
-  BondBLunaExchangeRateData,
+  BondBLunaExchangeRate,
   bondBLunaExchangeRateQuery,
 } from '@anchor-protocol/webapp-fns';
-
+import { createQueryFn } from '@terra-dev/react-query-utils';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
-import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
+import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = ({
-  queryKey: [, mantleEndpoint, mantleFetch, bLunaHubContract],
-}: QueryFunctionContext<[string, string, MantleFetch, HumanAddr]>) => {
-  return bondBLunaExchangeRateQuery({
-    mantleEndpoint,
-    mantleFetch,
-    variables: {
-      bLunaHubContract,
-      stateQuery: {
-        state: {},
+const queryFn = createQueryFn(
+  (
+    mantleEndpoint: string,
+    mantleFetch: MantleFetch,
+    bLunaHubContract: HumanAddr,
+  ) => {
+    return bondBLunaExchangeRateQuery({
+      mantleEndpoint,
+      mantleFetch,
+      wasmQuery: {
+        state: {
+          contractAddress: bLunaHubContract,
+          query: {
+            state: {},
+          },
+        },
+        parameters: {
+          contractAddress: bLunaHubContract,
+          query: {
+            parameters: {},
+          },
+        },
       },
-      parametersQuery: {
-        parameters: {},
-      },
-    },
-  });
-};
+    });
+  },
+);
 
 export function useBondBLunaExchangeRateQuery(): UseQueryResult<
-  BondBLunaExchangeRateData | undefined
+  BondBLunaExchangeRate | undefined
 > {
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 

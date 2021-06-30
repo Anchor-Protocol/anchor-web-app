@@ -1,8 +1,9 @@
 import { HumanAddr } from '@anchor-protocol/types';
 import {
-  BondClaimableRewardsData,
+  BondClaimableRewards,
   bondClaimableRewardsQuery,
 } from '@anchor-protocol/webapp-fns';
+import { createQueryFn } from '@terra-dev/react-query-utils';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import {
   ConnectedWallet,
@@ -13,42 +14,44 @@ import {
   EMPTY_QUERY_RESULT,
   useTerraWebapp,
 } from '@terra-money/webapp-provider';
-import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
+import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = ({
-  queryKey: [
-    ,
-    mantleEndpoint,
-    mantleFetch,
-    connectedWallet,
-    bAssetRewardContract,
-  ],
-}: QueryFunctionContext<
-  [string, string, MantleFetch, ConnectedWallet | undefined, HumanAddr]
->) => {
-  return connectedWallet?.walletAddress
-    ? bondClaimableRewardsQuery({
-        mantleEndpoint,
-        mantleFetch,
-        variables: {
-          bAssetRewardContract,
-          rewardStateQuery: {
-            state: {},
-          },
-          rewardHolderQuery: {
-            holder: {
-              address: connectedWallet.walletAddress,
+const queryFn = createQueryFn(
+  (
+    mantleEndpoint: string,
+    mantleFetch: MantleFetch,
+    connectedWallet: ConnectedWallet | undefined,
+    bAssetRewardContract: HumanAddr,
+  ) => {
+    return connectedWallet?.walletAddress
+      ? bondClaimableRewardsQuery({
+          mantleEndpoint,
+          mantleFetch,
+          wasmQuery: {
+            rewardState: {
+              contractAddress: bAssetRewardContract,
+              query: {
+                state: {},
+              },
+            },
+            claimableReward: {
+              contractAddress: bAssetRewardContract,
+              query: {
+                holder: {
+                  address: connectedWallet.walletAddress,
+                },
+              },
             },
           },
-        },
-      })
-    : Promise.resolve(undefined);
-};
+        })
+      : Promise.resolve(undefined);
+  },
+);
 
 export function useBondClaimableRewards(): UseQueryResult<
-  BondClaimableRewardsData | undefined
+  BondClaimableRewards | undefined
 > {
   const connectedWallet = useConnectedWallet();
 

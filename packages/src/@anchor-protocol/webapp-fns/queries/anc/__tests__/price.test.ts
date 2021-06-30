@@ -7,10 +7,12 @@ describe('queries/ancPrice', () => {
     const { ancPrice } = await ancPriceQuery({
       mantleFetch: defaultMantleFetch,
       mantleEndpoint: TEST_MANTLE_ENDPOINT,
-      variables: {
-        ancUstPairContract: TEST_ADDRESSES.terraswap.ancUstPair,
-        poolInfoQuery: {
-          pool: {},
+      wasmQuery: {
+        ancPrice: {
+          contractAddress: TEST_ADDRESSES.terraswap.ancUstPair,
+          query: {
+            pool: {},
+          },
         },
       },
     });

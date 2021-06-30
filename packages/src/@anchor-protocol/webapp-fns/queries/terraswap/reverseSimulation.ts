@@ -1,65 +1,35 @@
+import { terraswap, uToken } from '@anchor-protocol/types';
 import {
-  HumanAddr,
-  terraswap,
-  uToken,
-  WASMContractResult,
-} from '@anchor-protocol/types';
-import { MantleFetch } from '@terra-money/webapp-fns';
+  mantle,
+  MantleParams,
+  WasmQuery,
+  WasmQueryData,
+} from '@terra-money/webapp-fns';
 
-export interface TerraswapReverseSimulationRawData {
-  simulation: WASMContractResult;
+export interface TerraswapReverseSimulationWasmQuery {
+  simulation: WasmQuery<
+    terraswap.Simulation<uToken>,
+    terraswap.SimulationResponse<uToken>
+  >;
 }
 
-export interface TerraswapReverseSimulationData {
-  simulation: terraswap.SimulationResponse<uToken>;
-}
+export type TerraswapReverseSimulation =
+  WasmQueryData<TerraswapReverseSimulationWasmQuery>;
 
-export interface TerraswapReverseSimulationRawVariables {
-  tokenPairContract: string;
-  simulationQuery: string;
-}
-
-export interface TerraswapReverseSimulationVariables {
-  tokenPairContract: HumanAddr;
-  simulationQuery: terraswap.Simulation<uToken>;
-}
-
-// language=graphql
-export const TERRASWAP_REVERSE_SIMULATION_QUERY = `
-  query($tokenPairContract: String!, $simulationQuery: String!) {
-    simulation: WasmContractsContractAddressStore(
-      ContractAddress: $tokenPairContract
-      QueryMsg: $simulationQuery
-    ) {
-      Result
-    }
-  }
-`;
-
-export interface TerraswapReverseSimulationQueryParams {
-  mantleEndpoint: string;
-  mantleFetch: MantleFetch;
-  variables: TerraswapReverseSimulationVariables;
-}
+export type TerraswapReverseSimulationQueryParams = Omit<
+  MantleParams<TerraswapReverseSimulationWasmQuery>,
+  'query' | 'variables'
+>;
 
 export async function terraswapReverseSimulationQuery({
   mantleEndpoint,
-  mantleFetch,
-  variables,
-}: TerraswapReverseSimulationQueryParams): Promise<TerraswapReverseSimulationData> {
-  const rawData = await mantleFetch<
-    TerraswapReverseSimulationRawVariables,
-    TerraswapReverseSimulationRawData
-  >(
-    TERRASWAP_REVERSE_SIMULATION_QUERY,
-    {
-      tokenPairContract: variables.tokenPairContract,
-      simulationQuery: JSON.stringify(variables.simulationQuery),
-    },
-    `${mantleEndpoint}?terraswap--reverse-simulation?pair=${variables.tokenPairContract}`,
-  );
-
-  return {
-    simulation: JSON.parse(rawData.simulation.Result),
-  };
+  wasmQuery,
+  ...params
+}: TerraswapReverseSimulationQueryParams): Promise<TerraswapReverseSimulation> {
+  return mantle<TerraswapReverseSimulationWasmQuery>({
+    mantleEndpoint: `${mantleEndpoint}?terraswap--reverse-simulation?pair=${wasmQuery.simulation.contractAddress}`,
+    variables: {},
+    wasmQuery,
+    ...params,
+  });
 }

@@ -1,27 +1,34 @@
 import { HumanAddr } from '@anchor-protocol/types';
-import { GovConfigData, govConfigQuery } from '@anchor-protocol/webapp-fns';
+import { GovConfig, govConfigQuery } from '@anchor-protocol/webapp-fns';
+import { createQueryFn } from '@terra-dev/react-query-utils';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
-import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
+import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = ({
-  queryKey: [, mantleEndpoint, mantleFetch, govContract],
-}: QueryFunctionContext<[string, string, MantleFetch, HumanAddr]>) => {
-  return govConfigQuery({
-    mantleEndpoint,
-    mantleFetch,
-    variables: {
-      govContract,
-      configQuery: {
-        config: {},
+const queryFn = createQueryFn(
+  (
+    mantleEndpoint: string,
+    mantleFetch: MantleFetch,
+    govContract: HumanAddr,
+  ) => {
+    return govConfigQuery({
+      mantleEndpoint,
+      mantleFetch,
+      wasmQuery: {
+        govConfig: {
+          contractAddress: govContract,
+          query: {
+            config: {},
+          },
+        },
       },
-    },
-  });
-};
+    });
+  },
+);
 
-export function useGovConfigQuery(): UseQueryResult<GovConfigData | undefined> {
+export function useGovConfigQuery(): UseQueryResult<GovConfig | undefined> {
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const {

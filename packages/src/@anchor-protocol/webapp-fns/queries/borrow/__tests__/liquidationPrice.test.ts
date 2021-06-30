@@ -20,37 +20,49 @@ describe('queries/liquidationPrice', () => {
           mantleFetch: defaultMantleFetch,
           mantleEndpoint: TEST_MANTLE_ENDPOINT,
         }),
-      variables: {
-        marketContract: TEST_ADDRESSES.moneyMarket.market,
-        marketBorrowerInfoQuery: {
-          borrower_info: {
-            borrower: TEST_WALLET_ADDRESS,
-            block_height: 0,
+      wasmQuery: {
+        marketBorrowerInfo: {
+          contractAddress: TEST_ADDRESSES.moneyMarket.market,
+          query: {
+            borrower_info: {
+              borrower: TEST_WALLET_ADDRESS,
+              block_height: 0,
+            },
           },
         },
-        overseerContract: TEST_ADDRESSES.moneyMarket.overseer,
-        overseerBorrowlimitQuery: {
-          borrow_limit: {
-            borrower: TEST_WALLET_ADDRESS,
-            block_time: 0,
+        overseerBorrowLimit: {
+          contractAddress: TEST_ADDRESSES.moneyMarket.overseer,
+          query: {
+            borrow_limit: {
+              borrower: TEST_WALLET_ADDRESS,
+              block_time: 0,
+            },
           },
         },
-        overseerCollateralsQuery: {
-          collaterals: {
-            borrower: TEST_WALLET_ADDRESS,
-            block_height: 0,
+        overseerCollaterals: {
+          contractAddress: TEST_ADDRESSES.moneyMarket.overseer,
+          query: {
+            collaterals: {
+              borrower: TEST_WALLET_ADDRESS,
+              block_height: 0,
+            },
           },
         },
-        overseerWhitelistQuery: {
-          whitelist: {
-            collateral_token: TEST_ADDRESSES.cw20.bLuna,
+        overseerWhitelist: {
+          contractAddress: TEST_ADDRESSES.moneyMarket.overseer,
+          query: {
+            whitelist: {
+              collateral_token: TEST_ADDRESSES.cw20.bLuna,
+            },
           },
         },
-        oracleContract: TEST_ADDRESSES.moneyMarket.oracle,
-        oraclePriceQuery: {
-          price: {
-            base: TEST_ADDRESSES.cw20.bLuna,
-            quote: 'uusd' as StableDenom,
+        oraclePriceInfo: {
+          contractAddress: TEST_ADDRESSES.moneyMarket.oracle,
+          query: {
+            price: {
+              base: TEST_ADDRESSES.cw20.bLuna,
+              quote: 'uusd' as StableDenom,
+            },
           },
         },
       },

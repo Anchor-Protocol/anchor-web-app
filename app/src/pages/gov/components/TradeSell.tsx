@@ -159,17 +159,19 @@ export function TradeSell() {
           terraswapSimulationQuery({
             mantleEndpoint,
             mantleFetch,
-            variables: {
-              tokenPairContract: address.terraswap.ancUstPair,
-              simulationQuery: {
-                simulation: {
-                  offer_asset: {
-                    info: {
-                      token: {
-                        contract_addr: address.cw20.ANC,
+            wasmQuery: {
+              simulation: {
+                contractAddress: address.terraswap.ancUstPair,
+                query: {
+                  simulation: {
+                    offer_asset: {
+                      info: {
+                        token: {
+                          contract_addr: address.cw20.ANC,
+                        },
                       },
+                      amount,
                     },
-                    amount,
                   },
                 },
               },
@@ -185,29 +187,6 @@ export function TradeSell() {
               : undefined;
           }),
         );
-
-        //resolveSimulation(
-        //  querySimulation(
-        //    client,
-        //    address,
-        //    amount,
-        //    address.terraswap.ancUstPair,
-        //    {
-        //      token: {
-        //        contract_addr: address.cw20.ANC,
-        //      },
-        //    },
-        //  ).then(({ data: { simulation } }) =>
-        //    simulation
-        //      ? sellToSimulation(
-        //          simulation as terraswap.SimulationResponse<uUST, uANC>,
-        //          amount,
-        //          bank.tax,
-        //          fixedGas,
-        //        )
-        //      : undefined,
-        //  ),
-        //);
       }
     },
     [
@@ -242,17 +221,19 @@ export function TradeSell() {
           terraswapReverseSimulationQuery({
             mantleEndpoint,
             mantleFetch,
-            variables: {
-              tokenPairContract: address.terraswap.ancUstPair,
-              simulationQuery: {
-                simulation: {
-                  offer_asset: {
-                    info: {
-                      native_token: {
-                        denom: 'uusd' as Denom,
+            wasmQuery: {
+              simulation: {
+                contractAddress: address.terraswap.ancUstPair,
+                query: {
+                  simulation: {
+                    offer_asset: {
+                      info: {
+                        native_token: {
+                          denom: 'uusd' as Denom,
+                        },
                       },
+                      amount,
                     },
-                    amount,
                   },
                 },
               },
@@ -268,29 +249,6 @@ export function TradeSell() {
               : undefined;
           }),
         );
-
-        //resolveSimulation(
-        //  queryReverseSimulation(
-        //    client,
-        //    address,
-        //    amount,
-        //    address.terraswap.ancUstPair,
-        //    {
-        //      native_token: {
-        //        denom: 'uusd' as Denom,
-        //      },
-        //    },
-        //  ).then(({ data: { simulation } }) =>
-        //    simulation
-        //      ? sellFromSimulation(
-        //          simulation as terraswap.SimulationResponse<uUST, uANC>,
-        //          amount,
-        //          bank.tax,
-        //          fixedGas,
-        //        )
-        //      : undefined,
-        //  ),
-        //);
       }
     },
     [

@@ -1,31 +1,38 @@
 import { HumanAddr } from '@anchor-protocol/types';
 import {
-  AncLpStakingStateData,
+  AncLpStakingState,
   ancLpStakingStateQuery,
 } from '@anchor-protocol/webapp-fns';
+import { createQueryFn } from '@terra-dev/react-query-utils';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
-import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
+import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = ({
-  queryKey: [, mantleEndpoint, mantleFetch, ancStakingContract],
-}: QueryFunctionContext<[string, string, MantleFetch, HumanAddr]>) => {
-  return ancLpStakingStateQuery({
-    mantleEndpoint,
-    mantleFetch,
-    variables: {
-      ancStakingContract,
-      lpStakingStateQuery: {
-        state: {},
+const queryFn = createQueryFn(
+  (
+    mantleEndpoint: string,
+    mantleFetch: MantleFetch,
+    ancStakingContract: HumanAddr,
+  ) => {
+    return ancLpStakingStateQuery({
+      mantleEndpoint,
+      mantleFetch,
+      wasmQuery: {
+        lpStakingState: {
+          contractAddress: ancStakingContract,
+          query: {
+            state: {},
+          },
+        },
       },
-    },
-  });
-};
+    });
+  },
+);
 
 export function useAncLpStakingStateQuery(): UseQueryResult<
-  AncLpStakingStateData | undefined
+  AncLpStakingState | undefined
 > {
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 

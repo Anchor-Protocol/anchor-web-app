@@ -1,8 +1,9 @@
 import { CW20Addr, HumanAddr } from '@anchor-protocol/types';
 import {
-  RewardsClaimableUstBorrowRewardsData,
+  RewardsClaimableUstBorrowRewards,
   rewardsClaimableUstBorrowRewardsQuery,
 } from '@anchor-protocol/webapp-fns';
+import { createQueryFn } from '@terra-dev/react-query-utils';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import {
   ConnectedWallet,
@@ -13,67 +14,59 @@ import {
   MantleFetch,
   useTerraWebapp,
 } from '@terra-money/webapp-provider';
-import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
+import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = ({
-  queryKey: [
-    ,
-    mantleEndpoint,
-    mantleFetch,
-    lastSyncedHeight,
-    ancContract,
-    marketContract,
-    connectedWallet,
-  ],
-}: QueryFunctionContext<
-  [
-    string,
-    string,
-    MantleFetch,
-    () => Promise<number>,
-    CW20Addr,
-    HumanAddr,
-    ConnectedWallet | undefined,
-  ]
->) => {
-  return !!connectedWallet
-    ? rewardsClaimableUstBorrowRewardsQuery({
-        mantleEndpoint,
-        mantleFetch,
-        lastSyncedHeight,
-        variables: {
-          ancContract,
-          marketContract,
-          borrowerInfoQuery: {
-            borrower_info: {
-              borrower: connectedWallet.walletAddress,
-              block_height: -1,
+const queryFn = createQueryFn(
+  (
+    mantleEndpoint: string,
+    mantleFetch: MantleFetch,
+    lastSyncedHeight: () => Promise<number>,
+    ancContract: CW20Addr,
+    marketContract: HumanAddr,
+    connectedWallet: ConnectedWallet | undefined,
+  ) => {
+    return !!connectedWallet
+      ? rewardsClaimableUstBorrowRewardsQuery({
+          mantleEndpoint,
+          mantleFetch,
+          lastSyncedHeight,
+          wasmQuery: {
+            borrowerInfo: {
+              contractAddress: marketContract,
+              query: {
+                borrower_info: {
+                  borrower: connectedWallet.walletAddress,
+                  block_height: -1,
+                },
+              },
+            },
+            marketState: {
+              contractAddress: marketContract,
+              query: {
+                state: {},
+              },
+            },
+            userANCBalance: {
+              contractAddress: ancContract,
+              query: {
+                balance: {
+                  address: connectedWallet.walletAddress,
+                },
+              },
             },
           },
-          marketStateQuery: {
-            state: {},
-          },
-          userAncBalanceQuery: {
-            balance: {
-              address: connectedWallet.walletAddress,
-            },
-          },
-        },
-      })
-    : Promise.resolve(undefined);
-};
+        })
+      : Promise.resolve(undefined);
+  },
+);
 
 export function useRewardsClaimableUstBorrowRewardsQuery(): UseQueryResult<
-  RewardsClaimableUstBorrowRewardsData | undefined
+  RewardsClaimableUstBorrowRewards | undefined
 > {
-  const {
-    mantleFetch,
-    mantleEndpoint,
-    lastSyncedHeight,
-    queryErrorReporter,
-  } = useTerraWebapp();
+  const { mantleFetch, mantleEndpoint, lastSyncedHeight, queryErrorReporter } =
+    useTerraWebapp();
 
   const connectedWallet = useConnectedWallet();
 

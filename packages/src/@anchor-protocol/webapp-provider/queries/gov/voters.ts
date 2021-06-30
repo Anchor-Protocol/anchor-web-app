@@ -1,8 +1,8 @@
 import { anchorToken } from '@anchor-protocol/types';
 import { govVotersQuery } from '@anchor-protocol/webapp-fns';
-import { useAnchorWebapp } from '../../contexts/context';
 import { useTerraWebapp } from '@terra-money/webapp-provider';
 import { useCallback, useEffect, useState } from 'react';
+import { useAnchorWebapp } from '../../contexts/context';
 
 const limit = 10;
 
@@ -36,12 +36,14 @@ export function useGovVotersQuery(pollId?: number): VotersReturn {
     govVotersQuery({
       mantleEndpoint,
       mantleFetch,
-      variables: {
-        govContract: anchorToken.gov,
-        votersQuery: {
-          voters: {
-            poll_id: pollId,
-            limit,
+      wasmQuery: {
+        voters: {
+          contractAddress: anchorToken.gov,
+          query: {
+            voters: {
+              poll_id: pollId,
+              limit,
+            },
           },
         },
       },
@@ -75,13 +77,15 @@ export function useGovVotersQuery(pollId?: number): VotersReturn {
       govVotersQuery({
         mantleEndpoint,
         mantleFetch,
-        variables: {
-          govContract: anchorToken.gov,
-          votersQuery: {
-            voters: {
-              poll_id: pollId,
-              limit,
-              start_after: voters[voters.length - 1].voter,
+        wasmQuery: {
+          voters: {
+            contractAddress: anchorToken.gov,
+            query: {
+              voters: {
+                poll_id: pollId,
+                limit,
+                start_after: voters[voters.length - 1].voter,
+              },
             },
           },
         },

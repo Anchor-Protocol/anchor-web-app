@@ -88,7 +88,7 @@ export const webworkerMantleFetch: MantleFetch = <Variables extends {}, Data>(
       requestInit?.signal?.removeEventListener('abort', onAbort);
       worker.removeEventListener('message', onMessage);
 
-      if (workerPool.length > 10) {
+      if (process.env.NODE_ENV === 'production' && workerPool.length > 10) {
         worker.terminate();
       } else {
         workerPool.push(worker);

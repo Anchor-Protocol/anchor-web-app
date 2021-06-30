@@ -10,10 +10,12 @@ describe('queries/validators', () => {
     const { validators, whitelistedValidators } = await bondValidatorsQuery({
       mantleFetch: defaultMantleFetch,
       mantleEndpoint: TEST_MANTLE_ENDPOINT,
-      variables: {
-        bLunaHubContract: TEST_ADDRESSES.bluna.hub,
-        whitelistedValidatorsQuery: {
-          whitelisted_validators: {},
+      wasmQuery: {
+        hubWhitelistedValidators: {
+          contractAddress: TEST_ADDRESSES.bluna.hub,
+          query: {
+            whitelisted_validators: {},
+          },
         },
       },
     });

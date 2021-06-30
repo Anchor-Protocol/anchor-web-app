@@ -1,5 +1,10 @@
-import { bluna, HumanAddr, WASMContractResult } from '@anchor-protocol/types';
-import { MantleFetch } from '@terra-money/webapp-fns';
+import { bluna } from '@anchor-protocol/types';
+import {
+  mantle,
+  MantleParams,
+  WasmQuery,
+  WasmQueryData,
+} from '@terra-money/webapp-fns';
 
 export interface StakingValidator {
   OperatorAddress: string;
@@ -8,35 +13,27 @@ export interface StakingValidator {
   };
 }
 
-export interface BondValidatorsRawData {
+export interface BondValidatorsWasmQuery {
+  hubWhitelistedValidators: WasmQuery<
+    bluna.hub.WhitelistedValidators,
+    bluna.hub.WhitelistedValidatorsResponse
+  >;
+}
+
+export type BondValidators = WasmQueryData<BondValidatorsWasmQuery> & {
+  validators: StakingValidator[];
+  whitelistedValidators: StakingValidator[];
+};
+
+export interface BondValidatorsQueryResult {
   validators: {
     Result: StakingValidator[];
   };
-  hubWhitelistedValidators: WASMContractResult;
-}
-
-export interface BondValidatorsData {
-  validators: StakingValidator[];
-  whitelistedValidators: StakingValidator[];
-  hubWhitelistedValidators: bluna.hub.WhitelistedValidatorsResponse;
-}
-
-export interface BondValidatorsRawVariables {
-  bLunaHubContract: string;
-  whitelistedValidatorsQuery: string;
-}
-
-export interface BondValidatorsVariables {
-  bLunaHubContract: HumanAddr;
-  whitelistedValidatorsQuery: bluna.hub.WhitelistedValidators;
 }
 
 // language=graphql
 export const BOND_VALIDATORS_QUERY = `
-  query (
-    $bLunaHubContract: String!
-    $whitelistedValidatorsQuery: String!
-  ) {
+  query {
     validators: StakingValidators {
       Result {
         OperatorAddress
@@ -45,47 +42,32 @@ export const BOND_VALIDATORS_QUERY = `
         }
       }
     }
-
-    hubWhitelistedValidators: WasmContractsContractAddressStore(
-      ContractAddress: $bLunaHubContract
-      QueryMsg: $whitelistedValidatorsQuery
-    ) {
-      Result
-    }
   }
 `;
 
-export interface BondValidatorsQueryParams {
-  mantleEndpoint: string;
-  mantleFetch: MantleFetch;
-  variables: BondValidatorsVariables;
-}
+export type BondValidatorsQueryParams = Omit<
+  MantleParams<BondValidatorsWasmQuery>,
+  'query' | 'variables'
+>;
 
 export async function bondValidatorsQuery({
   mantleEndpoint,
-  mantleFetch,
-  variables,
-}: BondValidatorsQueryParams): Promise<BondValidatorsData> {
-  const rawData = await mantleFetch<
-    BondValidatorsRawVariables,
-    BondValidatorsRawData
-  >(
-    BOND_VALIDATORS_QUERY,
-    {
-      bLunaHubContract: variables.bLunaHubContract,
-      whitelistedValidatorsQuery: JSON.stringify(
-        variables.whitelistedValidatorsQuery,
-      ),
-    },
-    `${mantleEndpoint}?bond--validators`,
-  );
-
-  const hubWhitelistedValidators: bluna.hub.WhitelistedValidatorsResponse =
-    JSON.parse(rawData.hubWhitelistedValidators.Result);
+  ...params
+}: BondValidatorsQueryParams): Promise<BondValidators> {
+  const { validators: _validators, hubWhitelistedValidators } = await mantle<
+    BondValidatorsWasmQuery,
+    {},
+    BondValidatorsQueryResult
+  >({
+    mantleEndpoint: `${mantleEndpoint}?bond--validators`,
+    query: BOND_VALIDATORS_QUERY,
+    variables: {},
+    ...params,
+  });
 
   const filter: Set<string> = new Set(hubWhitelistedValidators.validators);
 
-  const validators = rawData.validators.Result.sort(
+  const validators = _validators.Result.sort(
     () => Math.random() - Math.random(),
   );
   const whitelistedValidators = validators.filter(({ OperatorAddress }) =>

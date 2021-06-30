@@ -1,8 +1,9 @@
 import { HumanAddr } from '@anchor-protocol/types';
 import {
-  BondWithdrawableAmountData,
+  BondWithdrawableAmount,
   bondWithdrawableAmountQuery,
 } from '@anchor-protocol/webapp-fns';
+import { createQueryFn } from '@terra-dev/react-query-utils';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import {
   ConnectedWallet,
@@ -13,48 +14,62 @@ import {
   MantleFetch,
   useTerraWebapp,
 } from '@terra-money/webapp-provider';
-import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
+import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = ({
-  queryKey: [, mantleEndpoint, mantleFetch, connectedWallet, bLunaHubContract],
-}: QueryFunctionContext<
-  [string, string, MantleFetch, ConnectedWallet | undefined, HumanAddr]
->) => {
-  return connectedWallet?.walletAddress
-    ? bondWithdrawableAmountQuery({
-        mantleEndpoint,
-        mantleFetch,
-        variables: {
-          bLunaHubContract,
-          withdrawableUnbondedQuery: {
-            withdrawable_unbonded: {
-              block_time: Math.floor(Date.now() / 1000),
-              address: connectedWallet.walletAddress,
+const queryFn = createQueryFn(
+  (
+    mantleEndpoint: string,
+    mantleFetch: MantleFetch,
+    connectedWallet: ConnectedWallet | undefined,
+    bLunaHubContract: HumanAddr,
+  ) => {
+    return connectedWallet?.walletAddress
+      ? bondWithdrawableAmountQuery({
+          mantleEndpoint,
+          mantleFetch,
+          wasmQuery: {
+            withdrawableUnbonded: {
+              contractAddress: bLunaHubContract,
+              query: {
+                withdrawable_unbonded: {
+                  block_time: Math.floor(Date.now() / 1000),
+                  address: connectedWallet.walletAddress,
+                },
+              },
+            },
+            unbondedRequests: {
+              contractAddress: bLunaHubContract,
+              query: {
+                unbond_requests: {
+                  address: connectedWallet.walletAddress,
+                },
+              },
+            },
+            allHistory: {
+              contractAddress: bLunaHubContract,
+              query: {
+                all_history: {
+                  start_from: -1,
+                  limit: 100,
+                },
+              },
+            },
+            parameters: {
+              contractAddress: bLunaHubContract,
+              query: {
+                parameters: {},
+              },
             },
           },
-          unbondedRequestsQuery: {
-            unbond_requests: {
-              address: connectedWallet.walletAddress,
-            },
-          },
-          allHistoryQuery: {
-            all_history: {
-              start_from: -1,
-              limit: 100,
-            },
-          },
-          parametersQuery: {
-            parameters: {},
-          },
-        },
-      })
-    : Promise.resolve(undefined);
-};
+        })
+      : Promise.resolve(undefined);
+  },
+);
 
 export function useBondWithdrawableAmount(): UseQueryResult<
-  BondWithdrawableAmountData | undefined
+  BondWithdrawableAmount | undefined
 > {
   const connectedWallet = useConnectedWallet();
 

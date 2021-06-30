@@ -169,17 +169,19 @@ export function Swap() {
           terraswapSimulationQuery({
             mantleEndpoint,
             mantleFetch,
-            variables: {
-              tokenPairContract: address.terraswap.blunaLunaPair,
-              simulationQuery: {
-                simulation: {
-                  offer_asset: {
-                    info: {
-                      token: {
-                        contract_addr: address.cw20.bLuna,
+            wasmQuery: {
+              simulation: {
+                contractAddress: address.terraswap.blunaLunaPair,
+                query: {
+                  simulation: {
+                    offer_asset: {
+                      info: {
+                        token: {
+                          contract_addr: address.cw20.bLuna,
+                        },
                       },
+                      amount,
                     },
-                    amount,
                   },
                 },
               },
@@ -228,17 +230,19 @@ export function Swap() {
           terraswapSimulationQuery({
             mantleEndpoint,
             mantleFetch,
-            variables: {
-              tokenPairContract: address.terraswap.blunaLunaPair,
-              simulationQuery: {
-                simulation: {
-                  offer_asset: {
-                    info: {
-                      native_token: {
-                        denom: 'uluna' as Denom,
+            wasmQuery: {
+              simulation: {
+                contractAddress: address.terraswap.blunaLunaPair,
+                query: {
+                  simulation: {
+                    offer_asset: {
+                      info: {
+                        native_token: {
+                          denom: 'uluna' as Denom,
+                        },
                       },
+                      amount,
                     },
-                    amount,
                   },
                 },
               },

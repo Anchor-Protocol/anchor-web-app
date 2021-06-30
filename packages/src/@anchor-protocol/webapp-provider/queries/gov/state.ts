@@ -1,30 +1,40 @@
 import { HumanAddr } from '@anchor-protocol/types';
-import { GovStateData, govStateQuery } from '@anchor-protocol/webapp-fns';
+import { GovState, govStateQuery } from '@anchor-protocol/webapp-fns';
+import { createQueryFn } from '@terra-dev/react-query-utils';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
-import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
+import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = ({
-  queryKey: [, mantleEndpoint, mantleFetch, govContract],
-}: QueryFunctionContext<[string, string, MantleFetch, HumanAddr]>) => {
-  return govStateQuery({
-    mantleEndpoint,
-    mantleFetch,
-    variables: {
-      govContract,
-      govStateQuery: {
-        state: {},
+const queryFn = createQueryFn(
+  (
+    mantleEndpoint: string,
+    mantleFetch: MantleFetch,
+    govContract: HumanAddr,
+  ) => {
+    return govStateQuery({
+      mantleEndpoint,
+      mantleFetch,
+      wasmQuery: {
+        govState: {
+          contractAddress: govContract,
+          query: {
+            state: {},
+          },
+        },
+        govConfig: {
+          contractAddress: govContract,
+          query: {
+            config: {},
+          },
+        },
       },
-      govConfigQuery: {
-        config: {},
-      },
-    },
-  });
-};
+    });
+  },
+);
 
-export function useGovStateQuery(): UseQueryResult<GovStateData | undefined> {
+export function useGovStateQuery(): UseQueryResult<GovState | undefined> {
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const {

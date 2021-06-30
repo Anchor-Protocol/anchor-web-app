@@ -17,26 +17,37 @@ describe('queries/withdrawable', () => {
     } = await bondWithdrawableAmountQuery({
       mantleFetch: defaultMantleFetch,
       mantleEndpoint: TEST_MANTLE_ENDPOINT,
-      variables: {
-        bLunaHubContract: TEST_ADDRESSES.bluna.hub,
-        withdrawableUnbondedQuery: {
-          withdrawable_unbonded: {
-            address: TEST_WALLET_ADDRESS,
-            block_time: Math.floor(Date.now() / 1000),
+      wasmQuery: {
+        withdrawableUnbonded: {
+          contractAddress: TEST_ADDRESSES.bluna.hub,
+          query: {
+            withdrawable_unbonded: {
+              address: TEST_WALLET_ADDRESS,
+              block_time: Math.floor(Date.now() / 1000),
+            },
           },
         },
-        unbondedRequestsQuery: {
-          unbond_requests: {
-            address: TEST_WALLET_ADDRESS,
+        unbondedRequests: {
+          contractAddress: TEST_ADDRESSES.bluna.hub,
+          query: {
+            unbond_requests: {
+              address: TEST_WALLET_ADDRESS,
+            },
           },
         },
-        parametersQuery: {
-          parameters: {},
+        allHistory: {
+          contractAddress: TEST_ADDRESSES.bluna.hub,
+          query: {
+            all_history: {
+              start_from: -1,
+              limit: 100,
+            },
+          },
         },
-        allHistoryQuery: {
-          all_history: {
-            start_from: -1,
-            limit: 100,
+        parameters: {
+          contractAddress: TEST_ADDRESSES.bluna.hub,
+          query: {
+            parameters: {},
           },
         },
       },

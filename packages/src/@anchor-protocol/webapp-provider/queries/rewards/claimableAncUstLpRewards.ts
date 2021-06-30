@@ -1,8 +1,9 @@
 import { CW20Addr, HumanAddr } from '@anchor-protocol/types';
 import {
-  RewardsClaimableAncUstLpRewardsData,
+  RewardsClaimableAncUstLpRewards,
   rewardsClaimableAncUstLpRewardsQuery,
 } from '@anchor-protocol/webapp-fns';
+import { createQueryFn } from '@terra-dev/react-query-utils';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import {
   ConnectedWallet,
@@ -13,64 +14,53 @@ import {
   MantleFetch,
   useTerraWebapp,
 } from '@terra-money/webapp-provider';
-import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
+import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = ({
-  queryKey: [
-    ,
-    mantleEndpoint,
-    mantleFetch,
-    lastSyncedHeight,
-    ancUstLpContract,
-    ancUstLpStakingContract,
-    connectedWallet,
-  ],
-}: QueryFunctionContext<
-  [
-    string,
-    string,
-    MantleFetch,
-    () => Promise<number>,
-    CW20Addr,
-    HumanAddr,
-    ConnectedWallet | undefined,
-  ]
->) => {
-  return !!connectedWallet
-    ? rewardsClaimableAncUstLpRewardsQuery({
-        mantleEndpoint,
-        mantleFetch,
-        lastSyncedHeight,
-        variables: {
-          ancUstLpContract,
-          ancUstLpStakingContract,
-          ancUstLpBalanceQuery: {
-            balance: {
-              address: connectedWallet.walletAddress,
+const queryFn = createQueryFn(
+  (
+    mantleEndpoint: string,
+    mantleFetch: MantleFetch,
+    lastSyncedHeight: () => Promise<number>,
+    ancUstLpContract: CW20Addr,
+    ancUstLpStakingContract: HumanAddr,
+    connectedWallet: ConnectedWallet | undefined,
+  ) => {
+    return !!connectedWallet
+      ? rewardsClaimableAncUstLpRewardsQuery({
+          mantleEndpoint,
+          mantleFetch,
+          lastSyncedHeight,
+          wasmQuery: {
+            lPBalance: {
+              contractAddress: ancUstLpContract,
+              query: {
+                balance: {
+                  address: connectedWallet.walletAddress,
+                },
+              },
+            },
+            lPStakerInfo: {
+              contractAddress: ancUstLpStakingContract,
+              query: {
+                staker_info: {
+                  staker: connectedWallet.walletAddress,
+                  block_height: -1,
+                },
+              },
             },
           },
-          lPStakerInfoQuery: {
-            staker_info: {
-              staker: connectedWallet.walletAddress,
-              block_height: -1,
-            },
-          },
-        },
-      })
-    : Promise.resolve(undefined);
-};
+        })
+      : Promise.resolve(undefined);
+  },
+);
 
 export function useRewardsClaimableAncUstLpRewardsQuery(): UseQueryResult<
-  RewardsClaimableAncUstLpRewardsData | undefined
+  RewardsClaimableAncUstLpRewards | undefined
 > {
-  const {
-    mantleFetch,
-    mantleEndpoint,
-    lastSyncedHeight,
-    queryErrorReporter,
-  } = useTerraWebapp();
+  const { mantleFetch, mantleEndpoint, lastSyncedHeight, queryErrorReporter } =
+    useTerraWebapp();
 
   const connectedWallet = useConnectedWallet();
 

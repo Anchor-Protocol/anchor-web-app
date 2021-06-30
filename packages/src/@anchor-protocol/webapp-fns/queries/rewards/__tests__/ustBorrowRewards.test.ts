@@ -11,17 +11,33 @@ describe('queries/rewardsUSTBorrow', () => {
     const { marketState, borrowerInfo } = await rewardsUstBorrowRewardsQuery({
       mantleFetch: defaultMantleFetch,
       mantleEndpoint: TEST_MANTLE_ENDPOINT,
-      variables: {
-        marketContract: TEST_ADDRESSES.moneyMarket.market,
-        marketStateQuery: {
-          state: {},
+      wasmQuery: {
+        marketState: {
+          contractAddress: TEST_ADDRESSES.moneyMarket.market,
+          query: {
+            state: {},
+          },
         },
-        borrowerInfoQuery: {
-          borrower_info: {
-            borrower: TEST_WALLET_ADDRESS,
+        borrowerInfo: {
+          contractAddress: TEST_ADDRESSES.moneyMarket.market,
+          query: {
+            borrower_info: {
+              borrower: TEST_WALLET_ADDRESS,
+            },
           },
         },
       },
+      //variables: {
+      //  marketContract: TEST_ADDRESSES.moneyMarket.market,
+      //  marketStateQuery: {
+      //    state: {},
+      //  },
+      //  borrowerInfoQuery: {
+      //    borrower_info: {
+      //      borrower: TEST_WALLET_ADDRESS,
+      //    },
+      //  },
+      //},
     });
 
     expect(typeof marketState?.total_liabilities).toBe('string');

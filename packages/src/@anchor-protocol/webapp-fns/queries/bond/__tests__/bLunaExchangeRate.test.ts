@@ -1,8 +1,5 @@
 import { defaultMantleFetch } from '@terra-money/webapp-fns';
-import {
-  TEST_ADDRESSES,
-  TEST_MANTLE_ENDPOINT,
-} from '@anchor-protocol/webapp-fns/test-env';
+import { TEST_ADDRESSES, TEST_MANTLE_ENDPOINT } from '../../../test-env';
 import { bondBLunaExchangeRateQuery } from '../bLunaExchangeRate';
 
 describe('queries/bLunaExchangeRate', () => {
@@ -10,13 +7,18 @@ describe('queries/bLunaExchangeRate', () => {
     const { state, parameters } = await bondBLunaExchangeRateQuery({
       mantleFetch: defaultMantleFetch,
       mantleEndpoint: TEST_MANTLE_ENDPOINT,
-      variables: {
-        bLunaHubContract: TEST_ADDRESSES.bluna.hub,
-        stateQuery: {
-          state: {},
+      wasmQuery: {
+        state: {
+          contractAddress: TEST_ADDRESSES.bluna.hub,
+          query: {
+            state: {},
+          },
         },
-        parametersQuery: {
-          parameters: {},
+        parameters: {
+          contractAddress: TEST_ADDRESSES.bluna.hub,
+          query: {
+            parameters: {},
+          },
         },
       },
     });

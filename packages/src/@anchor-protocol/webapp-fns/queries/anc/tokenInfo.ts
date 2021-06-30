@@ -1,68 +1,31 @@
+import { cw20, uANC } from '@anchor-protocol/types';
 import {
-  cw20,
-  CW20Addr,
-  uANC,
-  WASMContractResult,
-} from '@anchor-protocol/types';
-import { MantleFetch } from '@terra-money/webapp-fns';
+  mantle,
+  MantleParams,
+  WasmQuery,
+  WasmQueryData,
+} from '@terra-money/webapp-fns';
 
-export interface AncTokenInfoRawData {
-  ancTokenInfo: WASMContractResult;
+export interface AncTokenInfoWasmQuery {
+  ancTokenInfo: WasmQuery<cw20.TokenInfo, cw20.TokenInfoResponse<uANC>>;
 }
 
-export interface AncTokenInfoData {
-  ancTokenInfo: cw20.TokenInfoResponse<uANC>;
-}
+export type AncTokenInfo = WasmQueryData<AncTokenInfoWasmQuery>;
 
-export interface AncTokenInfoRawVariables {
-  ancContract: string;
-  ancTokenInfoQuery: string;
-}
-
-export interface AncTokenInfoVariables {
-  ancContract: CW20Addr;
-  ancTokenInfoQuery: cw20.TokenInfo;
-}
-
-// language=graphql
-export const ANC_TOKEN_INFO_QUERY = `
-  query (
-    $ancContract: String!
-    $ancTokenInfoQuery: String!
-  ) {
-    ancTokenInfo: WasmContractsContractAddressStore(
-      ContractAddress: $ancContract
-      QueryMsg: $ancTokenInfoQuery
-    ) {
-      Result
-    }
-  }
-`;
-
-export interface AncTokenInfoQueryParams {
-  mantleEndpoint: string;
-  mantleFetch: MantleFetch;
-  variables: AncTokenInfoVariables;
-}
+export type AncTokenInfoQueryParams = Omit<
+  MantleParams<AncTokenInfoWasmQuery>,
+  'query' | 'variables'
+>;
 
 export async function ancTokenInfoQuery({
   mantleEndpoint,
-  mantleFetch,
-  variables,
-}: AncTokenInfoQueryParams): Promise<AncTokenInfoData> {
-  const rawData = await mantleFetch<
-    AncTokenInfoRawVariables,
-    AncTokenInfoRawData
-  >(
-    ANC_TOKEN_INFO_QUERY,
-    {
-      ancContract: variables.ancContract,
-      ancTokenInfoQuery: JSON.stringify(variables.ancTokenInfoQuery),
-    },
-    `${mantleEndpoint}?anc--token-info`,
-  );
-
-  return {
-    ancTokenInfo: JSON.parse(rawData.ancTokenInfo.Result),
-  };
+  wasmQuery,
+  ...params
+}: AncTokenInfoQueryParams): Promise<AncTokenInfo> {
+  return mantle<AncTokenInfoWasmQuery>({
+    mantleEndpoint: `${mantleEndpoint}?anc--token-info`,
+    variables: {},
+    wasmQuery,
+    ...params,
+  });
 }

@@ -9,8 +9,8 @@ import {
 } from '@anchor-protocol/notation';
 import { bLuna, Rate } from '@anchor-protocol/types';
 import {
-  BorrowBorrowerData,
-  BorrowMarketData,
+  BorrowBorrower,
+  BorrowMarket,
   useAnchorWebapp,
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
@@ -48,8 +48,8 @@ import { LTVGraph } from './LTVGraph';
 
 interface FormParams {
   className?: string;
-  fallbackBorrowMarket: BorrowMarketData;
-  fallbackBorrowBorrower: BorrowBorrowerData;
+  fallbackBorrowMarket: BorrowMarket;
+  fallbackBorrowBorrower: BorrowBorrower;
 }
 
 type FormReturn = void;
@@ -78,10 +78,8 @@ function ComponentBase({
 
   const txFee = fixedGas;
 
-  const [
-    provideCollateral,
-    provideCollateralResult,
-  ] = useBorrowProvideCollateralTx();
+  const [provideCollateral, provideCollateralResult] =
+    useBorrowProvideCollateralTx();
 
   // ---------------------------------------------
   // states

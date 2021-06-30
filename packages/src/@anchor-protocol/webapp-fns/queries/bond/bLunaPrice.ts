@@ -1,73 +1,36 @@
+import { bLuna, terraswap, uToken } from '@anchor-protocol/types';
 import {
-  bLuna,
-  HumanAddr,
-  terraswap,
-  uToken,
-  WASMContractResult,
-} from '@anchor-protocol/types';
-import { MantleFetch } from '@terra-money/webapp-fns';
+  mantle,
+  MantleParams,
+  WasmQuery,
+  WasmQueryData,
+} from '@terra-money/webapp-fns';
 import big from 'big.js';
 
-export interface BondBLunaPriceRawData {
-  terraswapPool: WASMContractResult;
+export interface BondBLunaPriceWasmQuery {
+  terraswapPool: WasmQuery<terraswap.Pool, terraswap.PoolResponse<uToken>>;
 }
 
-export interface BondBLunaPriceData {
-  terraswapPool: terraswap.PoolResponse<uToken>;
+export type BondBLunaPrice = WasmQueryData<BondBLunaPriceWasmQuery> & {
   bLunaPrice: bLuna;
-}
+};
 
-export interface BondBLunaPriceRawVariables {
-  bLunaLunaPairContract: string;
-  terraswapPoolQuery: string;
-}
-
-export interface BondBLunaPriceVariables {
-  bLunaLunaPairContract: HumanAddr;
-  terraswapPoolQuery: terraswap.Pool;
-}
-
-// language=graphql
-export const BOND_BLUNA_PRICE_QUERY = `
-  query (
-    $bLunaLunaPairContract: String!
-    $terraswapPoolQuery: String!
-  ) {
-    terraswapPool: WasmContractsContractAddressStore(
-      ContractAddress: $bLunaLunaPairContract
-      QueryMsg: $terraswapPoolQuery
-    ) {
-      Result
-    }
-  }
-`;
-
-export interface BondBLunaPriceQueryParams {
-  mantleEndpoint: string;
-  mantleFetch: MantleFetch;
-  variables: BondBLunaPriceVariables;
-}
+export type BondBLunaPriceQueryParams = Omit<
+  MantleParams<BondBLunaPriceWasmQuery>,
+  'query' | 'variables'
+>;
 
 export async function bondBLunaPriceQuery({
   mantleEndpoint,
-  mantleFetch,
-  variables,
-}: BondBLunaPriceQueryParams): Promise<BondBLunaPriceData> {
-  const rawData = await mantleFetch<
-    BondBLunaPriceRawVariables,
-    BondBLunaPriceRawData
-  >(
-    BOND_BLUNA_PRICE_QUERY,
-    {
-      bLunaLunaPairContract: variables.bLunaLunaPairContract,
-      terraswapPoolQuery: JSON.stringify(variables.terraswapPoolQuery),
-    },
-    `${mantleEndpoint}?bond--bluna-price`,
-  );
-
-  const terraswapPool: terraswap.PoolResponse<uToken> = JSON.parse(
-    rawData.terraswapPool.Result,
-  );
+  wasmQuery,
+  ...params
+}: BondBLunaPriceQueryParams): Promise<BondBLunaPrice> {
+  const { terraswapPool } = await mantle<BondBLunaPriceWasmQuery>({
+    mantleEndpoint: `${mantleEndpoint}?bond--bluna-price`,
+    variables: {},
+    wasmQuery,
+    ...params,
+  });
 
   return {
     terraswapPool,

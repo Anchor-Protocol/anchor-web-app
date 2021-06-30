@@ -1,57 +1,29 @@
-import { anchorToken, WASMContractResult } from '@anchor-protocol/types';
-import { MantleFetch } from '@terra-money/webapp-fns';
+import { anchorToken } from '@anchor-protocol/types';
+import {
+  mantle,
+  MantleParams,
+  WasmQuery,
+  WasmQueryData,
+} from '@terra-money/webapp-fns';
 
-export interface GovConfigRawData {
-  govConfig: WASMContractResult;
+export interface GovConfigWasmQuery {
+  govConfig: WasmQuery<anchorToken.gov.Config, anchorToken.gov.ConfigResponse>;
 }
 
-export interface GovConfigData {
-  govConfig: anchorToken.gov.ConfigResponse;
-}
+export type GovConfig = WasmQueryData<GovConfigWasmQuery>;
 
-export interface GovConfigRawVariables {
-  govContract: string;
-  configQuery: string;
-}
-
-export interface GovConfigVariables {
-  govContract: string;
-  configQuery: anchorToken.gov.Config;
-}
-
-// language=graphql
-export const GOV_CONFIG_QUERY = `
-  query ($govContract: String!, $configQuery: String!) {
-    govConfig: WasmContractsContractAddressStore(
-      ContractAddress: $govContract
-      QueryMsg: $configQuery
-    ) {
-      Result
-    }
-  }
-`;
-
-export interface GovConfigQueryParams {
-  mantleEndpoint: string;
-  mantleFetch: MantleFetch;
-  variables: GovConfigVariables;
-}
+export type GovConfigQueryParams = Omit<
+  MantleParams<GovConfigWasmQuery>,
+  'query' | 'variables'
+>;
 
 export async function govConfigQuery({
   mantleEndpoint,
-  mantleFetch,
-  variables,
-}: GovConfigQueryParams): Promise<GovConfigData> {
-  const rawData = await mantleFetch<GovConfigRawVariables, GovConfigRawData>(
-    GOV_CONFIG_QUERY,
-    {
-      govContract: variables.govContract,
-      configQuery: JSON.stringify(variables.configQuery),
-    },
-    `${mantleEndpoint}?gov--config`,
-  );
-
-  return {
-    govConfig: JSON.parse(rawData.govConfig.Result),
-  };
+  ...params
+}: GovConfigQueryParams): Promise<GovConfig> {
+  return mantle<GovConfigWasmQuery>({
+    mantleEndpoint: `${mantleEndpoint}?gov--config`,
+    variables: {},
+    ...params,
+  });
 }

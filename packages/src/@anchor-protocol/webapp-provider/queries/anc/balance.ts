@@ -1,43 +1,39 @@
 import { CW20Addr, HumanAddr } from '@anchor-protocol/types';
 import { AncBalance, ancBalanceQuery } from '@anchor-protocol/webapp-fns';
+import { createQueryFn } from '@terra-dev/react-query-utils';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import {
   EMPTY_QUERY_RESULT,
   MantleFetch,
   useTerraWebapp,
 } from '@terra-money/webapp-provider';
-import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
+import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = ({
-  queryKey: [, { mantleEndpoint, mantleFetch, ancContract, walletAddress }],
-}: QueryFunctionContext<
-  [
-    string,
-    {
-      mantleEndpoint: string;
-      mantleFetch: MantleFetch;
-      ancContract: CW20Addr;
-      walletAddress: HumanAddr;
-    },
-  ]
->) => {
-  return ancBalanceQuery({
-    mantleEndpoint,
-    mantleFetch,
-    wasmQuery: {
-      ancBalance: {
-        contractAddress: ancContract,
-        query: {
-          balance: {
-            address: walletAddress,
+const queryFn = createQueryFn(
+  (
+    mantleEndpoint: string,
+    mantleFetch: MantleFetch,
+    ancContract: CW20Addr,
+    walletAddress: HumanAddr,
+  ) => {
+    return ancBalanceQuery({
+      mantleEndpoint,
+      mantleFetch,
+      wasmQuery: {
+        ancBalance: {
+          contractAddress: ancContract,
+          query: {
+            balance: {
+              address: walletAddress,
+            },
           },
         },
       },
-    },
-  });
-};
+    });
+  },
+);
 
 export function useAncBalanceQuery(
   walletAddress: HumanAddr | undefined | null,
@@ -53,12 +49,10 @@ export function useAncBalanceQuery(
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.ANC_BALANCE,
-      {
-        mantleEndpoint,
-        mantleFetch,
-        ancContract: cw20.ANC,
-        walletAddress: walletAddress ?? ('' as HumanAddr),
-      },
+      mantleEndpoint,
+      mantleFetch,
+      cw20.ANC,
+      walletAddress ?? ('' as HumanAddr),
     ],
     queryFn,
     {

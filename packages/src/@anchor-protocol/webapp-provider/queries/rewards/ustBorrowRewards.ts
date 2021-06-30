@@ -1,8 +1,9 @@
 import { HumanAddr } from '@anchor-protocol/types';
 import {
-  RewardsUstBorrowRewardsData,
+  RewardsUstBorrowRewards,
   rewardsUstBorrowRewardsQuery,
 } from '@anchor-protocol/webapp-fns';
+import { createQueryFn } from '@terra-dev/react-query-utils';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import {
   ConnectedWallet,
@@ -13,36 +14,44 @@ import {
   MantleFetch,
   useTerraWebapp,
 } from '@terra-money/webapp-provider';
-import { QueryFunctionContext, useQuery, UseQueryResult } from 'react-query';
+import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = ({
-  queryKey: [, mantleEndpoint, mantleFetch, marketContract, connectedWallet],
-}: QueryFunctionContext<
-  [string, string, MantleFetch, HumanAddr, ConnectedWallet | undefined]
->) => {
-  return !!connectedWallet
-    ? rewardsUstBorrowRewardsQuery({
-        mantleEndpoint,
-        mantleFetch,
-        variables: {
-          marketContract,
-          marketStateQuery: {
-            state: {},
-          },
-          borrowerInfoQuery: {
-            borrower_info: {
-              borrower: connectedWallet.walletAddress,
+const queryFn = createQueryFn(
+  (
+    mantleEndpoint: string,
+    mantleFetch: MantleFetch,
+    marketContract: HumanAddr,
+    connectedWallet: ConnectedWallet | undefined,
+  ) => {
+    return !!connectedWallet
+      ? rewardsUstBorrowRewardsQuery({
+          mantleEndpoint,
+          mantleFetch,
+          wasmQuery: {
+            marketState: {
+              contractAddress: marketContract,
+              query: {
+                state: {},
+              },
+            },
+            borrowerInfo: {
+              contractAddress: marketContract,
+              query: {
+                borrower_info: {
+                  borrower: connectedWallet.walletAddress,
+                },
+              },
             },
           },
-        },
-      })
-    : Promise.resolve(undefined);
-};
+        })
+      : Promise.resolve(undefined);
+  },
+);
 
 export function useRewardsUstBorrowRewardsQuery(): UseQueryResult<
-  RewardsUstBorrowRewardsData | undefined
+  RewardsUstBorrowRewards | undefined
 > {
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 

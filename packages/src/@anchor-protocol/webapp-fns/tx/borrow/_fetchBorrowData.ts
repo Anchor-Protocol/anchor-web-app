@@ -4,17 +4,17 @@ import {
   TxStreamPhase,
 } from '@terra-money/webapp-fns';
 import { QueryObserverResult } from 'react-query';
-import { BorrowBorrowerData } from '../../queries/borrow/borrower';
-import { BorrowMarketData } from '../../queries/borrow/market';
+import { BorrowBorrower } from '../../queries/borrow/borrower';
+import { BorrowMarket } from '../../queries/borrow/market';
 import { TxHelper } from '../internal/TxHelper';
 
 interface Params {
   helper: TxHelper;
   borrowMarketQuery: () => Promise<
-    QueryObserverResult<BorrowMarketData | undefined>
+    QueryObserverResult<BorrowMarket | undefined>
   >;
   borrowBorrowerQuery: () => Promise<
-    QueryObserverResult<BorrowBorrowerData | undefined>
+    QueryObserverResult<BorrowBorrower | undefined>
   >;
 }
 
@@ -33,8 +33,8 @@ export function _fetchBorrowData({
           receipts: [helper.txHashReceipt(), helper.txFeeReceipt()],
         } as TxResultRendering<{
           txInfo: TxInfoData;
-          borrowMarket: BorrowMarketData;
-          borrowBorrower: BorrowBorrowerData;
+          borrowMarket: BorrowMarket;
+          borrowBorrower: BorrowBorrower;
         }>;
       },
     );

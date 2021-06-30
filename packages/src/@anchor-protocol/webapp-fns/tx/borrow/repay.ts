@@ -23,8 +23,8 @@ import {
 import { QueryObserverResult } from 'react-query';
 import { Observable } from 'rxjs';
 import { computeCurrentLtv } from '../../computes/borrow/computeCurrentLtv';
-import { BorrowBorrowerData } from '../../queries/borrow/borrower';
-import { BorrowMarketData } from '../../queries/borrow/market';
+import { BorrowBorrower } from '../../queries/borrow/borrower';
+import { BorrowMarket } from '../../queries/borrow/market';
 import { _catchTxError } from '../internal/_catchTxError';
 import { _createTxOptions } from '../internal/_createTxOptions';
 import { _pollTxInfo } from '../internal/_pollTxInfo';
@@ -44,10 +44,10 @@ export function borrowRepayTx(
     post: (tx: CreateTxOptions) => Promise<TxResult>;
     txErrorReporter?: (error: unknown) => string;
     borrowMarketQuery: () => Promise<
-      QueryObserverResult<BorrowMarketData | undefined>
+      QueryObserverResult<BorrowMarket | undefined>
     >;
     borrowBorrowerQuery: () => Promise<
-      QueryObserverResult<BorrowBorrowerData | undefined>
+      QueryObserverResult<BorrowBorrower | undefined>
     >;
     onTxSucceed?: () => void;
   },

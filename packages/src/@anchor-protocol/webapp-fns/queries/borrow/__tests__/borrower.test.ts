@@ -14,18 +14,22 @@ describe('queries/borrower', () => {
     const { custodyBorrower, marketBorrowerInfo } = await borrowBorrowerQuery({
       mantleFetch: defaultMantleFetch,
       mantleEndpoint: TEST_MANTLE_ENDPOINT,
-      variables: {
-        marketContract: TEST_ADDRESSES.moneyMarket.market,
-        marketBorrowerInfoQuery: {
-          borrower_info: {
-            borrower: TEST_WALLET_ADDRESS,
-            block_height: 0,
+      wasmQuery: {
+        marketBorrowerInfo: {
+          contractAddress: TEST_ADDRESSES.moneyMarket.market,
+          query: {
+            borrower_info: {
+              borrower: TEST_WALLET_ADDRESS,
+              block_height: 0,
+            },
           },
         },
-        custodyContract: TEST_ADDRESSES.moneyMarket.custody,
-        custodyBorrowerQuery: {
-          borrower: {
-            address: TEST_WALLET_ADDRESS,
+        custodyBorrower: {
+          contractAddress: TEST_ADDRESSES.moneyMarket.custody,
+          query: {
+            borrower: {
+              address: TEST_WALLET_ADDRESS,
+            },
           },
         },
       },

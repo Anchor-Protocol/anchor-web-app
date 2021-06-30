@@ -7,10 +7,12 @@ describe('queries/lpStakingState', () => {
     const { lpStakingState } = await ancLpStakingStateQuery({
       mantleFetch: defaultMantleFetch,
       mantleEndpoint: TEST_MANTLE_ENDPOINT,
-      variables: {
-        ancStakingContract: TEST_ADDRESSES.anchorToken.staking,
-        lpStakingStateQuery: {
-          state: {},
+      wasmQuery: {
+        lpStakingState: {
+          contractAddress: TEST_ADDRESSES.anchorToken.staking,
+          query: {
+            state: {},
+          },
         },
       },
     });

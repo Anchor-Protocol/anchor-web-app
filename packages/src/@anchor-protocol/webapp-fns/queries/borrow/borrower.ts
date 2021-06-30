@@ -1,96 +1,55 @@
+import { moneyMarket } from '@anchor-protocol/types';
 import {
-  HumanAddr,
-  moneyMarket,
-  WASMContractResult,
-} from '@anchor-protocol/types';
-import { MantleFetch } from '@terra-money/webapp-fns';
+  mantle,
+  MantleParams,
+  WasmQuery,
+  WasmQueryData,
+} from '@terra-money/webapp-fns';
 
-export interface BorrowBorrowerRawData {
-  marketBorrowerInfo: WASMContractResult;
-  custodyBorrower: WASMContractResult;
+export interface BorrowBorrowerWasmQuery {
+  marketBorrowerInfo: WasmQuery<
+    moneyMarket.market.BorrowerInfo,
+    moneyMarket.market.BorrowerInfoResponse
+  >;
+  custodyBorrower: WasmQuery<
+    moneyMarket.custody.Borrower,
+    moneyMarket.custody.BorrowerResponse
+  >;
 }
 
-export interface BorrowBorrowerData {
-  marketBorrowerInfo: moneyMarket.market.BorrowerInfoResponse;
-  custodyBorrower: moneyMarket.custody.BorrowerResponse;
+export type BorrowBorrower = WasmQueryData<BorrowBorrowerWasmQuery> & {
   blockHeight: number;
-}
+};
 
-export interface BorrowBorrowerRawVariables {
-  marketContract: string;
-  marketBorrowerInfoQuery: string;
-  custodyContract: string;
-  custodyBorrowerQuery: string;
-}
-
-export interface BorrowBorrowerVariables {
-  marketContract: HumanAddr;
-  marketBorrowerInfoQuery: moneyMarket.market.BorrowerInfo;
-  custodyContract: HumanAddr;
-  custodyBorrowerQuery: moneyMarket.custody.Borrower;
-}
-
-// language=graphql
-export const BORROW_BORROWER_QUERY = `
-  query(
-    $marketContract: String!
-    $marketBorrowerInfoQuery: String!
-    $custodyContract: String!
-    $custodyBorrowerQuery: String!
-  ) {
-    marketBorrowerInfo: WasmContractsContractAddressStore(
-      ContractAddress: $marketContract
-      QueryMsg: $marketBorrowerInfoQuery
-    ) {
-      Result
-    }
-
-    custodyBorrower: WasmContractsContractAddressStore(
-      ContractAddress: $custodyContract
-      QueryMsg: $custodyBorrowerQuery
-    ) {
-      Result
-    }
-  }
-`;
-
-export interface BorrowBorrowerQueryParams {
-  mantleEndpoint: string;
-  mantleFetch: MantleFetch;
-  variables: BorrowBorrowerVariables;
+export type BorrowBorrowerQueryParams = Omit<
+  MantleParams<BorrowBorrowerWasmQuery>,
+  'query' | 'variables'
+> & {
   lastSyncedHeight: () => Promise<number>;
-}
+};
 
 export async function borrowBorrowerQuery({
-  mantleFetch,
   mantleEndpoint,
-  variables,
+  wasmQuery,
   lastSyncedHeight,
-}: BorrowBorrowerQueryParams): Promise<BorrowBorrowerData> {
+  ...params
+}: BorrowBorrowerQueryParams): Promise<BorrowBorrower> {
   const blockHeight = await lastSyncedHeight();
 
-  variables.marketBorrowerInfoQuery.borrower_info.block_height =
+  wasmQuery.marketBorrowerInfo.query.borrower_info.block_height =
     blockHeight + 1;
 
-  const rawData = await mantleFetch<
-    BorrowBorrowerRawVariables,
-    BorrowBorrowerRawData
-  >(
-    BORROW_BORROWER_QUERY,
-    {
-      marketContract: variables.marketContract,
-      marketBorrowerInfoQuery: JSON.stringify(
-        variables.marketBorrowerInfoQuery,
-      ),
-      custodyContract: variables.custodyContract,
-      custodyBorrowerQuery: JSON.stringify(variables.custodyBorrowerQuery),
-    },
-    `${mantleEndpoint}?borrow--borrower`,
-  );
+  const { marketBorrowerInfo, custodyBorrower } =
+    await mantle<BorrowBorrowerWasmQuery>({
+      mantleEndpoint: `${mantleEndpoint}?borrow--borrower`,
+      variables: {},
+      wasmQuery,
+      ...params,
+    });
 
   return {
-    marketBorrowerInfo: JSON.parse(rawData.marketBorrowerInfo.Result),
-    custodyBorrower: JSON.parse(rawData.custodyBorrower.Result),
+    marketBorrowerInfo,
+    custodyBorrower,
     blockHeight: blockHeight + 1,
   };
 }
