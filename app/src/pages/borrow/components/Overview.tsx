@@ -8,7 +8,10 @@ import {
   AnimateNumber,
   demicrofy,
   formatRate,
+  formatUST,
   formatUSTWithPostfixUnits,
+  MICRO,
+  MILLION,
 } from '@anchor-protocol/notation';
 import { Rate } from '@anchor-protocol/types';
 import {
@@ -23,9 +26,10 @@ import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { TooltipIconCircle } from '@terra-dev/neumorphism-ui/components/TooltipIconCircle';
 import big, { Big } from 'big.js';
+import { SubAmount } from 'components/SubAmount';
 import { screen } from 'env';
 import { currentLtv as _currentLtv } from 'pages/borrow/logics/currentLtv';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { apr as _apr } from '../logics/apr';
 import { borrowed as _borrowed } from '../logics/borrowed';
@@ -89,6 +93,14 @@ function OverviewBase({ className }: OverviewProps) {
             <AnimateNumber format={formatUSTWithPostfixUnits}>
               {demicrofy(collaterals)}
             </AnimateNumber>
+            {collaterals.gt(MILLION * MICRO) && (
+              <SubAmount style={{ fontSize: '15px' }}>
+                <AnimateNumber format={formatUST}>
+                  {demicrofy(collaterals)}
+                </AnimateNumber>{' '}
+                UST
+              </SubAmount>
+            )}
           </div>
           <div>
             <CircleOnly>
@@ -113,6 +125,14 @@ function OverviewBase({ className }: OverviewProps) {
             <AnimateNumber format={formatUSTWithPostfixUnits}>
               {demicrofy(borrowed)}
             </AnimateNumber>
+            {borrowed.gt(MILLION * MICRO) && (
+              <SubAmount style={{ fontSize: '15px' }}>
+                <AnimateNumber format={formatUST}>
+                  {demicrofy(borrowed)}
+                </AnimateNumber>{' '}
+                UST
+              </SubAmount>
+            )}
           </div>
           <div>
             <LabelAndCircle>

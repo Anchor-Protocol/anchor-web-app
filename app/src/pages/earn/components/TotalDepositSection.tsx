@@ -1,7 +1,10 @@
 import {
   AnimateNumber,
   demicrofy,
+  formatUST,
   formatUSTWithPostfixUnits,
+  MICRO,
+  MILLION,
 } from '@anchor-protocol/notation';
 import {
   AnchorTokenBalances,
@@ -14,6 +17,7 @@ import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from '@terra-money/webapp-provider';
+import { SubAmount } from 'components/SubAmount';
 import React, { useCallback, useMemo } from 'react';
 import { useDepositDialog } from './useDepositDialog';
 import { useWithdrawDialog } from './useWithdrawDialog';
@@ -80,6 +84,14 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
           {demicrofy(totalDeposit)}
         </AnimateNumber>{' '}
         UST
+        {totalDeposit.gt(MILLION * MICRO) && (
+          <SubAmount style={{ fontSize: '16px' }}>
+            <AnimateNumber format={formatUST}>
+              {demicrofy(totalDeposit)}
+            </AnimateNumber>{' '}
+            UST
+          </SubAmount>
+        )}
       </div>
 
       <aside className="total-deposit-buttons">

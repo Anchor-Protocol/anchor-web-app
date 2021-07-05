@@ -56,7 +56,7 @@ export const LUNA_INPUT_MAXIMUM_DECIMAL_POINTS = 6;
 export const ANC_INPUT_MAXIMUM_INTEGER_POINTS = 14;
 export const ANC_INPUT_MAXIMUM_DECIMAL_POINTS = 6;
 
-const M = 1000000;
+export const MILLION = 1000000;
 
 // ---------------------------------------------
 // specific format functions
@@ -107,7 +107,7 @@ export function formatLP(n: LPToken<BigSource>): string {
 
 export function formatANCWithPostfixUnits(n: ANC<BigSource>): string {
   const bn = big(n);
-  return bn.gte(M) ? d3Formatter(bn.div(M)) + 'M' : formatANC(n);
+  return bn.gte(MILLION) ? d3Formatter(bn.div(MILLION)) + 'M' : formatANC(n);
 }
 
 export function formatUST(n: UST<BigSource>): string {
@@ -119,7 +119,7 @@ export function formatUST(n: UST<BigSource>): string {
 
 export function formatUSTWithPostfixUnits(n: UST<BigSource>): string {
   const bn = big(n);
-  return bn.gte(M) ? d2Formatter(bn.div(M)) + 'M' : formatUST(n);
+  return bn.gte(MILLION) ? d2Formatter(bn.div(MILLION)) + 'M' : formatUST(n);
 }
 
 export function formatAUST(n: aUST<BigSource>): string {
@@ -128,7 +128,7 @@ export function formatAUST(n: aUST<BigSource>): string {
 
 export function formatAUSTWithPostfixUnits(n: aUST<BigSource>): string {
   const bn = big(n);
-  return bn.gte(M) ? d3Formatter(bn.div(M)) + 'M' : d6Formatter(bn);
+  return bn.gte(MILLION) ? d3Formatter(bn.div(MILLION)) + 'M' : d6Formatter(bn);
 }
 
 export function formatLuna(n: Luna<BigSource> | bLuna<BigSource>): string {
@@ -139,7 +139,7 @@ export function formatLunaWithPostfixUnits(
   n: Luna<BigSource> | bLuna<BigSource>,
 ): string {
   const bn = big(n);
-  return bn.gte(M) ? d3Formatter(bn.div(M)) + 'M' : d3Formatter(bn);
+  return bn.gte(MILLION) ? d3Formatter(bn.div(MILLION)) + 'M' : d3Formatter(bn);
 }
 
 // ---------------------------------------------
@@ -147,16 +147,16 @@ export function formatLunaWithPostfixUnits(
 // ---------------------------------------------
 export function formatUTokenDecimal2(n: uToken<BigSource>): string {
   const bn = big(n).div(MICRO);
-  return bn.gte(M) ? d2Formatter(bn.div(M)) + 'M' : d2Formatter(bn);
+  return bn.gte(MILLION) ? d2Formatter(bn.div(MILLION)) + 'M' : d2Formatter(bn);
 }
 
 export function formatTokenInteger(n: Token<BigSource>): string {
-  return big(n).gte(M) ? iFormatter(n) + 'M' : iFormatter(n);
+  return big(n).gte(MILLION) ? iFormatter(n) + 'M' : iFormatter(n);
 }
 
 export function formatUTokenInteger(n: uToken<BigSource>): string {
   const bn = big(n).div(MICRO);
-  return bn.gte(M) ? iFormatter(bn.div(M)) + 'M' : iFormatter(bn);
+  return bn.gte(MILLION) ? iFormatter(bn.div(MILLION)) + 'M' : iFormatter(bn);
 }
 
 export function formatUTokenIntegerWithoutPostfixUnits(
