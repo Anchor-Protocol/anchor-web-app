@@ -253,7 +253,7 @@ export const Earn = styled(EarnBase)`
       }
 
       .total-deposit-buttons {
-        margin-top: 40px;
+        margin-top: 30px;
         display: grid;
         grid-template-columns: 1fr;
         grid-gap: 15px;
