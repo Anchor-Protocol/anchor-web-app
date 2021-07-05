@@ -3,6 +3,7 @@ import {
   demicrofy,
   formatUST,
   formatUSTWithPostfixUnits,
+  MICRO,
   MILLION,
 } from '@anchor-protocol/notation';
 import {
@@ -83,7 +84,7 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
           {demicrofy(totalDeposit)}
         </AnimateNumber>{' '}
         UST
-        {totalDeposit.gt(MILLION) && (
+        {totalDeposit.gt(MILLION * MICRO) && (
           <SubAmount style={{ fontSize: '16px' }}>
             <AnimateNumber format={formatUST}>
               {demicrofy(totalDeposit)}
