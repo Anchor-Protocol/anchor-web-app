@@ -90,7 +90,11 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
         {open && (
           <nav>
             {menus.map((itemMenu) => (
-              <NavMenu {...itemMenu} close={() => setOpen(false)} />
+              <NavMenu
+                key={'menu-' + itemMenu.to}
+                {...itemMenu}
+                close={() => setOpen(false)}
+              />
             ))}
 
             {status === WalletStatus.WALLET_NOT_CONNECTED && (
@@ -101,7 +105,7 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
         <section className="header">
           <a
             className="logo"
-            href="https://anchorprotocol.com/dashboard"
+            href="https://anchorprotocol.com"
             target="_blank"
             rel="noreferrer"
           >

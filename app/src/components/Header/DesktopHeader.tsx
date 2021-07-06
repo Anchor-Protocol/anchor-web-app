@@ -1,5 +1,3 @@
-import { Tooltip } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import { Launch } from '@material-ui/icons';
 import logoUrl from 'components/Header/assets/Logo.svg';
 import { DesktopNotification } from 'components/Header/notifications/DesktopNotification';
@@ -8,49 +6,27 @@ import { menus, RouteMenu } from 'configurations/menu';
 import { screen } from 'env';
 import React from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
-import styled, { createGlobalStyle, DefaultTheme } from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 
 export interface DesktopHeaderProps {
   className?: string;
 }
 
-export const useTooltipStyle = makeStyles<DefaultTheme>(() => ({
-  tooltip: {
-    position: 'relative',
-    borderRadius: 0,
-    color: '#4BDB4B',
-    backgroundColor: 'transparent',
-    fontSize: 12,
-    fontWeight: 600,
-    padding: 0,
-    top: -3,
-    boxShadow: '1px 1px 6px 0px rgba(0,0,0,0.2)',
-  },
-}));
-
 function DesktopHeaderBase({ className }: DesktopHeaderProps) {
-  const tooltipClasses = useTooltipStyle();
-
   return (
     <header className={className}>
-      <Tooltip
-        title="Open the Dashboard"
-        placement="right"
-        classes={tooltipClasses}
+      <a
+        className="logo"
+        href="https://anchorprotocol.com/"
+        target="_blank"
+        rel="noreferrer"
       >
-        <a
-          className="logo"
-          href="https://anchorprotocol.com/dashboard"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <img src={logoUrl} alt="logo" />
-        </a>
-      </Tooltip>
+        <img src={logoUrl} alt="logo" />
+      </a>
 
       <nav className="menu">
         {menus.map((itemMenu) => (
-          <NavMenu {...itemMenu} />
+          <NavMenu key={'menu-' + itemMenu.to} {...itemMenu} />
         ))}
       </nav>
 
