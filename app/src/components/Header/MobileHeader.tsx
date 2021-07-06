@@ -11,8 +11,8 @@ import {
 } from '@terra-money/wallet-provider';
 import logoUrl from 'components/Header/assets/Logo.svg';
 import { AirdropContent } from 'components/Header/WalletSelector/AirdropContent';
-import { links, mobileHeaderHeight } from 'env';
-import { govPathname } from 'pages/gov/env';
+import { menus, RouteMenu } from 'configurations/menu';
+import { mobileHeaderHeight } from 'env';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import React, { useCallback, useState } from 'react';
 import { NavLink, useRouteMatch } from 'react-router-dom';
@@ -89,30 +89,9 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
       <header className={className} data-open={open}>
         {open && (
           <nav>
-            <NavMenu
-              to="/earn"
-              title="EARN"
-              docsTo={links.earn}
-              close={() => setOpen(false)}
-            />
-            <NavMenu
-              to="/borrow"
-              title="BORROW"
-              docsTo={links.borrow}
-              close={() => setOpen(false)}
-            />
-            <NavMenu
-              to="/bond"
-              title="BOND"
-              docsTo={links.bond}
-              close={() => setOpen(false)}
-            />
-            <NavMenu
-              to={`/${govPathname}`}
-              title="GOVERN"
-              docsTo={links.gov}
-              close={() => setOpen(false)}
-            />
+            {menus.map((itemMenu) => (
+              <NavMenu {...itemMenu} close={() => setOpen(false)} />
+            ))}
 
             {status === WalletStatus.WALLET_NOT_CONNECTED && (
               <ViewAddressButton onClick={viewAddress} />
@@ -171,23 +150,24 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
 
 function NavMenu({
   to,
-  docsTo,
+  exact,
+  doc,
   title,
   close,
-}: {
-  to: string;
-  docsTo: string;
-  title: string;
+}: RouteMenu & {
   close: () => void;
 }) {
-  const match = useRouteMatch(to);
+  const match = useRouteMatch({
+    path: to,
+    exact,
+  });
 
   return (
     <div data-active={!!match}>
-      <NavLink to={to} onClick={close}>
+      <NavLink to={to} exact={exact} onClick={close}>
         {title}
       </NavLink>
-      <a href={docsTo} target="_blank" rel="noreferrer" onClick={close}>
+      <a href={doc} target="_blank" rel="noreferrer" onClick={close}>
         <IconSpan>
           Docs <Launch />
         </IconSpan>

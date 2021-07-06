@@ -17,6 +17,9 @@ export type ANC<T = string> = T & NominalType<'anc'>;
 export type ubLuna<T = string> = T & NominalType<'ubluna'>;
 export type bLuna<T = string> = T & NominalType<'bluna'>;
 
+export type ubEth<T = string> = T & NominalType<'ubeth'>;
+export type bEth<T = string> = T & NominalType<'beth'>;
+
 export type uAncUstLP<T = string> = T & NominalType<'uanc_ust_lp'>;
 export type AncUstLP<T = string> = T & NominalType<'anc_ust_lp'>;
 
@@ -32,11 +35,19 @@ export type uNativeToken<T = string> = T & NominalType<'uust' | 'uluna'>;
 
 export type NativeToken<T = string> = T & NominalType<'ust' | 'luna'>;
 
+export type ubAsset<T = string> = T & NominalType<'ubluna' | 'ubeth'>;
+
+export type bAsset<T = string> = T & NominalType<'bluna' | 'beth'>;
+
 export type uCW20Token<T = string> = T &
-  NominalType<'uaust' | 'uanc' | 'ubluna' | 'uanc_ust_lp' | 'ubluna_luna_lp'>;
+  NominalType<
+    'uaust' | 'uanc' | 'ubluna' | 'ubeth' | 'uanc_ust_lp' | 'ubluna_luna_lp'
+  >;
 
 export type CW20Token<T = string> = T &
-  NominalType<'aust' | 'anc' | 'bluna' | 'anc_ust_lp' | 'bluna_luna_lp'>;
+  NominalType<
+    'aust' | 'anc' | 'bluna' | 'beth' | 'anc_ust_lp' | 'bluna_luna_lp'
+  >;
 
 export type uLPToken<T = string> = T &
   NominalType<'uanc_ust_lp' | 'ubluna_luna_lp'>;
@@ -48,6 +59,7 @@ export type uToken<T = string> = T &
   NominalType<
     | 'uust'
     | 'uluna'
+    | 'ueth'
     | 'uaust'
     | 'uanc'
     | 'ubluna'
@@ -57,5 +69,12 @@ export type uToken<T = string> = T &
 
 export type Token<T = string> = T &
   NominalType<
-    'ust' | 'luna' | 'aust' | 'anc' | 'bluna' | 'anc_ust_lp' | 'bluna_luna_lp'
+    | 'ust'
+    | 'luna'
+    | 'aust'
+    | 'anc'
+    | 'bluna'
+    | 'beth'
+    | 'anc_ust_lp'
+    | 'bluna_luna_lp'
   >;

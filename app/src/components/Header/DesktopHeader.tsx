@@ -4,8 +4,8 @@ import { Launch } from '@material-ui/icons';
 import logoUrl from 'components/Header/assets/Logo.svg';
 import { DesktopNotification } from 'components/Header/notifications/DesktopNotification';
 import { WalletSelector } from 'components/Header/WalletSelector';
-import { links, screen } from 'env';
-import { govPathname } from 'pages/gov/env';
+import { menus, RouteMenu } from 'configurations/menu';
+import { screen } from 'env';
 import React from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import styled, { createGlobalStyle, DefaultTheme } from 'styled-components';
@@ -49,10 +49,9 @@ function DesktopHeaderBase({ className }: DesktopHeaderProps) {
       </Tooltip>
 
       <nav className="menu">
-        <NavMenu to="/earn" title="EARN" docsTo={links.earn} />
-        <NavMenu to="/borrow" title="BORROW" docsTo={links.borrow} />
-        <NavMenu to="/bond" title="BOND" docsTo={links.bond} />
-        <NavMenu to={`/${govPathname}`} title="GOVERN" docsTo={links.gov} />
+        {menus.map((itemMenu) => (
+          <NavMenu {...itemMenu} />
+        ))}
       </nav>
 
       <div />
@@ -68,23 +67,16 @@ function DesktopHeaderBase({ className }: DesktopHeaderProps) {
   );
 }
 
-function NavMenu({
-  to,
-  docsTo,
-  title,
-  className,
-}: {
-  className?: string;
-  to: string;
-  docsTo: string;
-  title: string;
-}) {
-  const match = useRouteMatch(to);
+function NavMenu({ to, exact, title, doc }: RouteMenu) {
+  const match = useRouteMatch({
+    path: to,
+    exact,
+  });
 
   return (
-    <div className={className} data-active={!!match}>
+    <div data-active={!!match}>
       <Link to={to}>{title}</Link>
-      <a href={docsTo} target="_blank" rel="noreferrer">
+      <a href={doc} target="_blank" rel="noreferrer">
         Docs
         <Launch />
       </a>

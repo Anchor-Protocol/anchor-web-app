@@ -41,13 +41,13 @@ import { findPrevDay } from './components/internal/axisUtils';
 import { StablecoinChart } from './components/StablecoinChart';
 import { TotalValueLockedDoughnutChart } from './components/TotalValueLockedDoughnutChart';
 
-export interface MarketProps {
+export interface DashboardProps {
   className?: string;
 }
 
 const EMPTY_ARRAY: any[] = [];
 
-function MarketBase({ className }: MarketProps) {
+function DashboardBase({ className }: DashboardProps) {
   const theme = useTheme();
 
   const {
@@ -677,7 +677,7 @@ const vRuler = css`
     })};
 `;
 
-export const Market = styled(MarketBase)`
+export const Dashboard = styled(DashboardBase)`
   background-color: ${({ theme }) => theme.backgroundColor};
   color: ${({ theme }) => theme.textColor};
 
