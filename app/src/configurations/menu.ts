@@ -1,5 +1,3 @@
-import { govPathname } from 'pages/gov/env';
-
 export interface RouteMenu {
   to: string;
   exact?: boolean;
@@ -35,7 +33,7 @@ export const menus: RouteMenu[] = [
     doc: 'https://docs.anchorprotocol.com/user-guide/webapp/bond',
   },
   {
-    to: `/${govPathname}`,
+    to: `/gov`,
     title: 'GOVERN',
     doc: 'https://docs.anchorprotocol.com/user-guide/webapp/govern',
   },

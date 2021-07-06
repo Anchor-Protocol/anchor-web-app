@@ -6,7 +6,7 @@ import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { screen } from 'env';
 import { AncGovernanceStake } from 'pages/gov/components/AncGovernanceStake';
 import { AncGovernanceUnstake } from 'pages/gov/components/AncGovernanceUnstake';
-import { ancGovernancePathname, govPathname } from 'pages/gov/env';
+import { ancGovernancePathname } from 'pages/gov/env';
 import React, { ReactNode, useCallback, useMemo } from 'react';
 import {
   Redirect,
@@ -36,7 +36,7 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
   const history = useHistory();
 
   const pageMatch = useRouteMatch<{ view: string }>(
-    `/${govPathname}/rewards/${ancGovernancePathname}/:view`,
+    `/gov/rewards/${ancGovernancePathname}/:view`,
   );
 
   const subTab = useMemo<Item | undefined>(() => {
@@ -51,7 +51,7 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
   const subTabChange = useCallback(
     (nextTab: Item) => {
       history.push({
-        pathname: `/${govPathname}/rewards/${ancGovernancePathname}/${nextTab.value}`,
+        pathname: `/gov/rewards/${ancGovernancePathname}/${nextTab.value}`,
       });
     },
     [history],
@@ -85,21 +85,21 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
         <div className="form">
           <Switch>
             <Route
-              path={`/${govPathname}/rewards/${ancGovernancePathname}/stake`}
+              path={`/gov/rewards/${ancGovernancePathname}/stake`}
               component={AncGovernanceStake}
             />
             <Route
-              path={`/${govPathname}/rewards/${ancGovernancePathname}/unstake`}
+              path={`/gov/rewards/${ancGovernancePathname}/unstake`}
               component={AncGovernanceUnstake}
             />
             <Redirect
               exact
-              path={`/${govPathname}/rewards/${ancGovernancePathname}`}
-              to={`/${govPathname}/rewards/${ancGovernancePathname}/stake`}
+              path={`/gov/rewards/${ancGovernancePathname}`}
+              to={`/gov/rewards/${ancGovernancePathname}/stake`}
             />
             <Redirect
-              path={`/${govPathname}/rewards/${ancGovernancePathname}/*`}
-              to={`/${govPathname}/rewards/${ancGovernancePathname}/stake`}
+              path={`/gov/rewards/${ancGovernancePathname}/*`}
+              to={`/gov/rewards/${ancGovernancePathname}/stake`}
             />
           </Switch>
         </div>

@@ -15,7 +15,6 @@ import { useLocalStorage } from '@terra-dev/use-local-storage';
 import { links } from 'env';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
 import { SubHeader } from 'pages/gov/components/SubHeader';
-import { govPathname } from 'pages/gov/env';
 import { ChangeEvent, useCallback, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
@@ -62,7 +61,7 @@ function PollsBase({ className }: PollsProps) {
 
   const onPollClick = useCallback(
     (poll: anchorToken.gov.PollResponse) => {
-      history.push(`/${govPathname}/poll/${poll.id}`);
+      history.push(`/gov/poll/${poll.id}`);
     },
     [history],
   );
@@ -123,7 +122,7 @@ function PollsBase({ className }: PollsProps) {
           >
             Join Forum
           </BorderButton>
-          <ActionButton component={Link} to={`/${govPathname}/poll/create`}>
+          <ActionButton component={Link} to={`/gov/poll/create`}>
             Create Poll
           </ActionButton>
         </div>

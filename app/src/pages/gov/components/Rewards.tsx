@@ -27,7 +27,6 @@ import { SubHeader } from 'pages/gov/components/SubHeader';
 import {
   ancGovernancePathname,
   ancUstLpPathname,
-  govPathname,
   ustBorrowPathname,
 } from 'pages/gov/env';
 import React, { useMemo } from 'react';
@@ -50,17 +49,14 @@ export function RewardsBase({ className }: RewardsProps) {
     data: { lPBalance: userLPBalance, lPStakerInfo: userLPStakingInfo } = {},
   } = useRewardsClaimableAncUstLpRewardsQuery();
 
-  const {
-    data: { userANCBalance, userGovStakingInfo } = {},
-  } = useRewardsAncGovernanceRewardsQuery();
+  const { data: { userANCBalance, userGovStakingInfo } = {} } =
+    useRewardsAncGovernanceRewardsQuery();
 
-  const {
-    data: { borrowerInfo, marketState } = {},
-  } = useRewardsClaimableUstBorrowRewardsQuery();
+  const { data: { borrowerInfo, marketState } = {} } =
+    useRewardsClaimableUstBorrowRewardsQuery();
 
-  const {
-    data: { govRewards, lpRewards, borrowerDistributionAPYs } = {},
-  } = useBorrowAPYQuery();
+  const { data: { govRewards, lpRewards, borrowerDistributionAPYs } = {} } =
+    useBorrowAPYQuery();
 
   // ---------------------------------------------
   // logics
@@ -154,7 +150,7 @@ export function RewardsBase({ className }: RewardsProps) {
           <h2>Rewards</h2>
         </div>
         <div>
-          <ActionButton component={Link} to={`/${govPathname}/claim/all`}>
+          <ActionButton component={Link} to={`/gov/claim/all`}>
             Claim All Rewards
           </ActionButton>
         </div>
@@ -283,13 +279,13 @@ export function RewardsBase({ className }: RewardsProps) {
                 <MoreMenu size="25px">
                   <MenuItem
                     component={Link}
-                    to={`/${govPathname}/rewards/${ancGovernancePathname}/stake`}
+                    to={`/gov/rewards/${ancGovernancePathname}/stake`}
                   >
                     Stake
                   </MenuItem>
                   <MenuItem
                     component={Link}
-                    to={`/${govPathname}/rewards/${ancGovernancePathname}/unstake`}
+                    to={`/gov/rewards/${ancGovernancePathname}/unstake`}
                   >
                     Unstake
                   </MenuItem>
@@ -385,31 +381,31 @@ export function RewardsBase({ className }: RewardsProps) {
                 <MoreMenu size="25px">
                   <MenuItem
                     component={Link}
-                    to={`/${govPathname}/rewards/${ancUstLpPathname}/provide`}
+                    to={`/gov/rewards/${ancUstLpPathname}/provide`}
                   >
                     Provide
                   </MenuItem>
                   <MenuItem
                     component={Link}
-                    to={`/${govPathname}/rewards/${ancUstLpPathname}/withdraw`}
+                    to={`/gov/rewards/${ancUstLpPathname}/withdraw`}
                   >
                     Withdraw
                   </MenuItem>
                   <MenuItem
                     component={Link}
-                    to={`/${govPathname}/rewards/${ancUstLpPathname}/stake`}
+                    to={`/gov/rewards/${ancUstLpPathname}/stake`}
                   >
                     Stake
                   </MenuItem>
                   <MenuItem
                     component={Link}
-                    to={`/${govPathname}/rewards/${ancUstLpPathname}/unstake`}
+                    to={`/gov/rewards/${ancUstLpPathname}/unstake`}
                   >
                     Unstake
                   </MenuItem>
                   <MenuItem
                     component={Link}
-                    to={`/${govPathname}/claim/${ancUstLpPathname}`}
+                    to={`/gov/claim/${ancUstLpPathname}`}
                   >
                     Claim
                   </MenuItem>
@@ -448,7 +444,7 @@ export function RewardsBase({ className }: RewardsProps) {
                 <MoreMenu size="25px">
                   <MenuItem
                     component={Link}
-                    to={`/${govPathname}/claim/${ustBorrowPathname}`}
+                    to={`/gov/claim/${ustBorrowPathname}`}
                   >
                     Claim
                   </MenuItem>

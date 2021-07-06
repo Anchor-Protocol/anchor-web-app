@@ -26,11 +26,7 @@ import { TooltipLabel } from '@terra-dev/neumorphism-ui/components/TooltipLabel'
 import big, { Big } from 'big.js';
 import { Circles } from 'components/Circles';
 import { screen } from 'env';
-import {
-  ancGovernancePathname,
-  ancUstLpPathname,
-  govPathname,
-} from 'pages/gov/env';
+import { ancGovernancePathname, ancUstLpPathname } from 'pages/gov/env';
 import React, { useMemo } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
@@ -46,9 +42,8 @@ function OverviewBase({ className }: OverviewProps) {
 
   const { data: { govRewards, lpRewards } = {} } = useBorrowAPYQuery();
 
-  const {
-    data: { anchorLpRewards: apyLPRewards } = {},
-  } = useRewardsAnchorLpRewardsQuery();
+  const { data: { anchorLpRewards: apyLPRewards } = {} } =
+    useRewardsAnchorLpRewardsQuery();
 
   const history = useHistory();
 
@@ -59,20 +54,18 @@ function OverviewBase({ className }: OverviewProps) {
   const { data: { ancBalance: communityANCBalance } = {} } = useAncBalanceQuery(
     contractAddress.anchorToken.community,
   );
-  const {
-    data: { ancBalance: distributorANCBalance } = {},
-  } = useAncBalanceQuery(contractAddress.anchorToken.distributor);
+  const { data: { ancBalance: distributorANCBalance } = {} } =
+    useAncBalanceQuery(contractAddress.anchorToken.distributor);
   const { data: { ancBalance: lpStakingANCBalance } = {} } = useAncBalanceQuery(
     contractAddress.anchorToken.staking,
   );
   const { data: { ancBalance: airdropANCBalance } = {} } = useAncBalanceQuery(
     'terra146ahqn6d3qgdvmj8cj96hh03dzmeedhsf0kxqm' as HumanAddr,
   );
-  const {
-    data: { ancBalance: investorTeamLockANCBalance } = {},
-  } = useAncBalanceQuery(
-    'terra1dp0taj85ruc299rkdvzp4z5pfg6z6swaed74e6' as HumanAddr,
-  );
+  const { data: { ancBalance: investorTeamLockANCBalance } = {} } =
+    useAncBalanceQuery(
+      'terra1dp0taj85ruc299rkdvzp4z5pfg6z6swaed74e6' as HumanAddr,
+    );
   const { data: { govState, govConfig } = {} } = useGovStateQuery();
 
   const { data: { lpStakingState } = {} } = useAncLpStakingStateQuery();
@@ -202,7 +195,7 @@ function OverviewBase({ className }: OverviewProps) {
           </span>
         </div>
         <div className="staking-buttons">
-          <BorderButton component={Link} to={`/${govPathname}/trade`}>
+          <BorderButton component={Link} to={`/gov/trade`}>
             Trade ANC
           </BorderButton>
           <Tooltip
@@ -211,7 +204,7 @@ function OverviewBase({ className }: OverviewProps) {
           >
             <BorderButton
               component={Link}
-              to={`/${govPathname}/rewards/${ancGovernancePathname}/stake`}
+              to={`/gov/rewards/${ancGovernancePathname}/stake`}
             >
               Gov Stake
             </BorderButton>
@@ -220,9 +213,7 @@ function OverviewBase({ className }: OverviewProps) {
       </Section>
       <Section
         className="lp"
-        onClick={() =>
-          history.push(`/${govPathname}/rewards/${ancUstLpPathname}/provide`)
-        }
+        onClick={() => history.push(`/gov/rewards/${ancUstLpPathname}/provide`)}
       >
         <Circles backgroundColors={['#ffffff', '#2C2C2C']}>
           <TokenIcon token="ust" style={{ fontSize: '1.1em' }} />

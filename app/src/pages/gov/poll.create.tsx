@@ -5,7 +5,6 @@ import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { ChevronRight, Forum } from '@material-ui/icons';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { links } from 'env';
-import { govPathname } from 'pages/gov/env';
 import { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -22,37 +21,37 @@ function PollCreateBase({ className }: PollCreateProps) {
 
         <ul>
           <PollLink
-            to={`/${govPathname}/poll/create/modify-anc-distribution`}
+            to={`/gov/poll/create/modify-anc-distribution`}
             title="Modify ANC Distribution"
             description="Modify the ANC distribution parameters"
           />
 
           <PollLink
-            to={`/${govPathname}/poll/create/modify-borrow-interest`}
+            to={`/gov/poll/create/modify-borrow-interest`}
             title="Modify Borrow Interest"
             description="Modify the interest model parameters "
           />
 
           <PollLink
-            to={`/${govPathname}/poll/create/modify-collateral-attribute`}
+            to={`/gov/poll/create/modify-collateral-attribute`}
             title="Modify Collateral Attribute"
             description="Modify the collateral attributes of an existing bAsset"
           />
 
           <PollLink
-            to={`/${govPathname}/poll/create/modify-market-parameters`}
+            to={`/gov/poll/create/modify-market-parameters`}
             title="Modify Market Parameters"
             description="Modify the market parameters"
           />
 
           <PollLink
-            to={`/${govPathname}/poll/create/spend-community-pool`}
+            to={`/gov/poll/create/spend-community-pool`}
             title="Spend Community Pool"
             description="Submit community pool spending poll"
           />
 
           <PollLink
-            to={`/${govPathname}/poll/create/text-proposal`}
+            to={`/gov/poll/create/text-proposal`}
             title="Text Proposal"
             description="Upload a text poll"
           />

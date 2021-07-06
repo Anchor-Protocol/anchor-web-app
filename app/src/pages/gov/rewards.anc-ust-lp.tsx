@@ -10,7 +10,7 @@ import { AncUstLpStake } from 'pages/gov/components/AncUstLpStake';
 import { AncUstLpStakeOverview } from 'pages/gov/components/AncUstLpStakeOverview';
 import { AncUstLpUnstake } from 'pages/gov/components/AncUstLpUnstake';
 import { AncUstLpWithdraw } from 'pages/gov/components/AncUstLpWithdraw';
-import { ancUstLpPathname, govPathname } from 'pages/gov/env';
+import { ancUstLpPathname } from 'pages/gov/env';
 import React, { ReactNode, useCallback, useMemo } from 'react';
 import {
   Redirect,
@@ -67,7 +67,7 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
   const history = useHistory();
 
   const pageMatch = useRouteMatch<{ view: string }>(
-    `/${govPathname}/rewards/${ancUstLpPathname}/:view`,
+    `/gov/rewards/${ancUstLpPathname}/:view`,
   );
 
   const tab = useMemo<Item | undefined>(() => {
@@ -86,8 +86,8 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
       history.push({
         pathname:
           nextTab.value === 'stake'
-            ? `/${govPathname}/rewards/${ancUstLpPathname}/stake`
-            : `/${govPathname}/rewards/${ancUstLpPathname}/provide`,
+            ? `/gov/rewards/${ancUstLpPathname}/stake`
+            : `/gov/rewards/${ancUstLpPathname}/provide`,
       });
     },
     [history],
@@ -109,7 +109,7 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
   const subTabChange = useCallback(
     (nextTab: Item) => {
       history.push({
-        pathname: `/${govPathname}/rewards/${ancUstLpPathname}/${nextTab.value}`,
+        pathname: `/gov/rewards/${ancUstLpPathname}/${nextTab.value}`,
       });
     },
     [history],
@@ -158,29 +158,29 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
 
           <Switch>
             <Route
-              path={`/${govPathname}/rewards/${ancUstLpPathname}/provide`}
+              path={`/gov/rewards/${ancUstLpPathname}/provide`}
               component={AncUstLpProvide}
             />
             <Route
-              path={`/${govPathname}/rewards/${ancUstLpPathname}/withdraw`}
+              path={`/gov/rewards/${ancUstLpPathname}/withdraw`}
               component={AncUstLpWithdraw}
             />
             <Route
-              path={`/${govPathname}/rewards/${ancUstLpPathname}/stake`}
+              path={`/gov/rewards/${ancUstLpPathname}/stake`}
               component={AncUstLpStake}
             />
             <Route
-              path={`/${govPathname}/rewards/${ancUstLpPathname}/unstake`}
+              path={`/gov/rewards/${ancUstLpPathname}/unstake`}
               component={AncUstLpUnstake}
             />
             <Redirect
               exact
-              path={`/${govPathname}/rewards/${ancUstLpPathname}`}
-              to={`/${govPathname}/rewards/${ancUstLpPathname}/provide`}
+              path={`/gov/rewards/${ancUstLpPathname}`}
+              to={`/gov/rewards/${ancUstLpPathname}/provide`}
             />
             <Redirect
-              path={`/${govPathname}/rewards/${ancUstLpPathname}/*`}
-              to={`/${govPathname}/rewards/${ancUstLpPathname}/provide`}
+              path={`/gov/rewards/${ancUstLpPathname}/*`}
+              to={`/gov/rewards/${ancUstLpPathname}/provide`}
             />
           </Switch>
         </div>
