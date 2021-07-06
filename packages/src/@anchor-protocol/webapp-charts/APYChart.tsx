@@ -100,9 +100,11 @@ export function APYChartBase({
   maxY: _maxY = Math.max,
   ...divProps
 }: APYChartProps) {
-  const { ref, width = 400, height = 200 } = useResizeObserver<HTMLDivElement>(
-    {},
-  );
+  const {
+    ref,
+    width = 400,
+    height = 200,
+  } = useResizeObserver<HTMLDivElement>({});
 
   const theme = useTheme();
 
@@ -174,6 +176,9 @@ export function APYChartBase({
     const rectWidth =
       rectRadius * 2 + (percentage.length + 4) * (fontSize * 0.85);
 
+    const textAnchor =
+      index < 1 ? 'start' : index > maxX - 1 ? 'end' : 'middle';
+
     return (
       <>
         <line
@@ -186,8 +191,9 @@ export function APYChartBase({
         <text
           x={x}
           y={margin.top - 7}
-          fontSize={10}
-          textAnchor="middle"
+          fontSize={14}
+          fontWeight={500}
+          textAnchor={textAnchor}
           {...palette.pointing.date}
         >
           {format(data[index].date, 'MMM dd, yyyy')}
