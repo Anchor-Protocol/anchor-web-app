@@ -195,7 +195,7 @@ export const Earn = styled(EarnBase)`
     .interest {
       .apy {
         figure {
-          height: 130px;
+          height: 150px;
         }
       }
     }

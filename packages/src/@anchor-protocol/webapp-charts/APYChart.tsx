@@ -1,7 +1,7 @@
-import { darkTheme } from '@terra-dev/neumorphism-ui/themes/darkTheme';
-import { lightTheme } from '@terra-dev/neumorphism-ui/themes/lightTheme';
 import { formatRate } from '@anchor-protocol/notation';
 import { Rate } from '@anchor-protocol/types';
+import { darkTheme } from '@terra-dev/neumorphism-ui/themes/darkTheme';
+import { lightTheme } from '@terra-dev/neumorphism-ui/themes/lightTheme';
 import { scaleLinear } from 'd3-scale';
 import { curveNatural, line } from 'd3-shape';
 import { format } from 'date-fns';
@@ -169,15 +169,26 @@ export function APYChartBase({
 
     const percentage = formatRate(data[index].value);
 
-    const isLeft = index > 1;
     const fontSize = 12;
     const rectRadius = 13;
     const rectHeight = 26;
-    const rectWidth =
-      rectRadius * 2 + (percentage.length + 4) * (fontSize * 0.85);
+    const rectWidth = rectRadius + (percentage.length + 4) * (fontSize * 0.85);
 
     const textAnchor =
-      index < 1 ? 'start' : index > maxX - 1 ? 'end' : 'middle';
+      window.innerWidth < 600
+        ? index < 1
+          ? 'start'
+          : index > maxX - 1
+          ? 'end'
+          : 'middle'
+        : 'middle';
+
+    const shiftX =
+      textAnchor === 'start'
+        ? rectWidth / 2
+        : textAnchor === 'end'
+        ? rectWidth / -2
+        : 0;
 
     return (
       <>
@@ -199,9 +210,10 @@ export function APYChartBase({
           {format(data[index].date, 'MMM dd, yyyy')}
         </text>
         <g transform={`translate(${x} ${y})`} filter="url(#dropshadow)">
+          <circle r={7} fill={palette.line.stroke} />
           <rect
-            x={isLeft ? rectRadius - rectWidth : -rectRadius}
-            y={rectHeight / -2}
+            x={rectWidth / -2 + shiftX}
+            y={rectHeight / -2 - 30}
             width={rectWidth}
             height={rectHeight}
             rx={rectRadius}
@@ -209,15 +221,14 @@ export function APYChartBase({
             fill="rgba(255, 255, 255, 0.9)"
           />
           <text
-            x={isLeft ? -rectRadius : rectRadius}
-            y={4}
-            width={rectWidth - rectRadius * 2}
+            x={shiftX}
+            y={4 - 30}
+            width={rectWidth}
             fontSize={fontSize}
-            textAnchor={isLeft ? 'end' : 'start'}
+            textAnchor="middle"
           >
             APY <tspan fontWeight="700">{percentage}%</tspan>
           </text>
-          <circle r={2} fill={palette.line.stroke} />
         </g>
       </>
     );
