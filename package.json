@@ -6,7 +6,6 @@
   "repository": "github:Anchor-Protocol/anchor",
   "workspaces": [
     "app",
-    "base",
     "landing",
     "packages"
   ],
@@ -17,8 +16,6 @@
     "app:build": "yarn workspace @anchor-web-app/app run build",
     "app:test": "yarn workspace @anchor-web-app/app run test",
     "app:coverage": "yarn workspace @anchor-web-app/app run coverage",
-    "base:test": "yarn workspace @anchor-web-app/base run test",
-    "base:coverage": "yarn workspace @anchor-web-app/base run coverage",
     "landing:start": "yarn workspace @anchor-web-app/landing run start",
     "landing:build": "yarn workspace @anchor-web-app/landing run build",
     "landing:test": "yarn workspace @anchor-web-app/landing run test",

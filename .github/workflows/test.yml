@@ -63,7 +63,6 @@ jobs:
       - name: Test
         run: |
           yarn run packages:coverage
-          yarn run base:coverage
           yarn run app:coverage
           yarn run landing:coverage
 
