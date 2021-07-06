@@ -40,14 +40,14 @@
     "@handbook/markdown-source-import": "^1.1.0",
     "@ssen/prettier-config": "^2.0.1",
     "@types/eslint": "^7.2.13",
-    "@types/prettier": "^2.3.0",
-    "eslint": "^7.29.0",
+    "@types/prettier": "^2.3.1",
+    "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-config-react-app": "^6.0.0",
-    "husky": "^6.0.0",
+    "husky": "^7.0.0",
     "jest-bin": "^0.3.0",
     "lint-staged": "^11.0.0",
-    "prettier": "^2.3.1",
+    "prettier": "^2.3.2",
     "react-scripts": "4.0.3"
   },
   "peerDependencies": {
