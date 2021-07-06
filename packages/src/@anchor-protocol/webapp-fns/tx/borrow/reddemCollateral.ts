@@ -84,7 +84,7 @@ export function borrowRedeemCollateralTx(
           computeCurrentLtv(
             borrowBorrower.marketBorrowerInfo,
             borrowBorrower.custodyBorrower,
-            borrowMarket.oraclePrice,
+            borrowMarket.bLunaOraclePrice,
           ) ?? ('0' as Rate);
 
         return {

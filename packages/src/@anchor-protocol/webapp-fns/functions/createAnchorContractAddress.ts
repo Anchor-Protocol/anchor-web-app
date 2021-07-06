@@ -16,6 +16,9 @@ export function createAnchorContractAddress(
       hub: addressProvider.bLunaHub() as HumanAddr,
       airdropRegistry: addressProvider.airdrop() as HumanAddr,
     },
+    beth: {
+      reward: addressProvider.bEthReward() as HumanAddr,
+    },
     moneyMarket: {
       market: addressProvider.market(MARKET_DENOMS.UUSD) as HumanAddr,
       custody: addressProvider.custody(
@@ -45,6 +48,7 @@ export function createAnchorContractAddress(
     },
     cw20: {
       bLuna: addressProvider.bLunaToken() as CW20Addr,
+      bEth: addressProvider.bEthToken() as CW20Addr,
       aUST: addressProvider.aTerra(MARKET_DENOMS.UUSD) as CW20Addr,
       ANC: addressProvider.ANC() as CW20Addr,
       AncUstLP: addressProvider.terraswapAncUstLPToken() as CW20Addr,

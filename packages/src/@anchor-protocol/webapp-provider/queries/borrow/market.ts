@@ -16,6 +16,7 @@ const queryFn = createQueryFn(
     oracleContract: HumanAddr,
     overseerContract: HumanAddr,
     bLunaContract: CW20Addr,
+    bEthContract: CW20Addr,
   ) => {
     return borrowMarketQuery({
       mantleEndpoint,
@@ -30,9 +31,7 @@ const queryFn = createQueryFn(
         overseerWhitelist: {
           contractAddress: overseerContract,
           query: {
-            whitelist: {
-              collateral_token: bLunaContract,
-            },
+            whitelist: {},
           },
         },
         borrowRate: {
@@ -45,11 +44,20 @@ const queryFn = createQueryFn(
             },
           },
         },
-        oraclePrice: {
+        bLunaOraclePrice: {
           contractAddress: oracleContract,
           query: {
             price: {
               base: bLunaContract,
+              quote: 'uusd' as StableDenom,
+            },
+          },
+        },
+        bEthOraclePrice: {
+          contractAddress: oracleContract,
+          query: {
+            price: {
+              base: bEthContract,
               quote: 'uusd' as StableDenom,
             },
           },
@@ -80,6 +88,7 @@ export function useBorrowMarketQuery(): UseQueryResult<
       moneyMarket.oracle,
       moneyMarket.overseer,
       cw20.bLuna,
+      cw20.bEth,
     ],
     queryFn,
     {

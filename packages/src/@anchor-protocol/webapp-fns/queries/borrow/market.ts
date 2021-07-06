@@ -17,7 +17,11 @@ export interface BorrowMarketWasmQuery {
     moneyMarket.interestModel.BorrowRate,
     moneyMarket.interestModel.BorrowRateResponse
   >;
-  oraclePrice: WasmQuery<
+  bLunaOraclePrice: WasmQuery<
+    moneyMarket.oracle.Price,
+    moneyMarket.oracle.PriceResponse
+  >;
+  bEthOraclePrice: WasmQuery<
     moneyMarket.oracle.Price,
     moneyMarket.oracle.PriceResponse
   >;
@@ -44,6 +48,9 @@ export type BorrowMarket = WasmQueryData<BorrowMarketWasmQuery> & {
 
   bLunaMaxLtv?: Rate;
   bLunaSafeLtv?: Rate;
+
+  bEthMaxLtv?: Rate;
+  bEthSafeLtv?: Rate;
 };
 
 // language=graphql
@@ -78,7 +85,7 @@ export async function borrowMarketQuery({
     BorrowMarketStateQueryVariables,
     BorrowMarketStateQueryResult
   >({
-    mantleEndpoint: `${mantleEndpoint}?borrow--market-states`,
+    mantleEndpoint: `${mantleEndpoint}?borrow--market-state`,
     wasmQuery: {
       marketState: wasmQuery.marketState,
     },
@@ -95,7 +102,7 @@ export async function borrowMarketQuery({
         ?.Amount ?? '0') as uUST,
     };
 
-  const { borrowRate, oraclePrice, overseerWhitelist } =
+  const { borrowRate, bLunaOraclePrice, bEthOraclePrice, overseerWhitelist } =
     await mantle<MarketWasmQuery>({
       mantleEndpoint: `${mantleEndpoint}?borrow--market`,
       variables: {},
@@ -110,7 +117,8 @@ export async function borrowMarketQuery({
             },
           },
         },
-        oraclePrice: wasmQuery.oraclePrice,
+        bLunaOraclePrice: wasmQuery.bLunaOraclePrice,
+        bEthOraclePrice: wasmQuery.bEthOraclePrice,
         overseerWhitelist: wasmQuery.overseerWhitelist,
       },
       ...params,
@@ -118,21 +126,32 @@ export async function borrowMarketQuery({
 
   const bLunaMaxLtv = overseerWhitelist.elems.find(
     ({ collateral_token }) =>
-      collateral_token ===
-      wasmQuery.overseerWhitelist.query.whitelist.collateral_token,
+      collateral_token === wasmQuery.bLunaOraclePrice.query.price.base,
   )?.max_ltv;
 
   const bLunaSafeLtv = bLunaMaxLtv
     ? (big(bLunaMaxLtv).mul(ANCHOR_RATIO).toFixed() as Rate)
     : undefined;
 
+  const bEthMaxLtv = overseerWhitelist.elems.find(
+    ({ collateral_token }) =>
+      collateral_token === wasmQuery.bEthOraclePrice.query.price.base,
+  )?.max_ltv;
+
+  const bEthSafeLtv = bEthMaxLtv
+    ? (big(bEthMaxLtv).mul(ANCHOR_RATIO).toFixed() as Rate)
+    : undefined;
+
   return {
     marketBalances,
     marketState,
     overseerWhitelist,
-    oraclePrice,
+    bLunaOraclePrice,
+    bEthOraclePrice,
     borrowRate,
     bLunaMaxLtv,
     bLunaSafeLtv,
+    bEthMaxLtv,
+    bEthSafeLtv,
   };
 }

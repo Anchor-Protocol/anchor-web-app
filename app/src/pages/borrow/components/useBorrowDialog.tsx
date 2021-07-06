@@ -97,7 +97,7 @@ function ComponentBase({
   const {
     data: {
       borrowRate,
-      oraclePrice,
+      bLunaOraclePrice,
       bLunaMaxLtv = '0.5' as Rate,
       bLunaSafeLtv = '0.3' as Rate,
     } = fallbackBorrowMarket,
@@ -114,21 +114,21 @@ function ComponentBase({
   // calculate
   // ---------------------------------------------
   const amountToLtv = useMemo(
-    () => borrowAmountToLtv(loanAmount, borrowInfo, oraclePrice),
-    [loanAmount, borrowInfo, oraclePrice],
+    () => borrowAmountToLtv(loanAmount, borrowInfo, bLunaOraclePrice),
+    [loanAmount, borrowInfo, bLunaOraclePrice],
   );
 
   const ltvToAmount = useMemo(
-    () => ltvToBorrowAmount(loanAmount, borrowInfo, oraclePrice),
-    [loanAmount, borrowInfo, oraclePrice],
+    () => ltvToBorrowAmount(loanAmount, borrowInfo, bLunaOraclePrice),
+    [loanAmount, borrowInfo, bLunaOraclePrice],
   );
 
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
   const currentLtv = useMemo(
-    () => _currentLtv(loanAmount, borrowInfo, oraclePrice),
-    [borrowInfo, loanAmount, oraclePrice],
+    () => _currentLtv(loanAmount, borrowInfo, bLunaOraclePrice),
+    [borrowInfo, loanAmount, bLunaOraclePrice],
   );
 
   const nextLtv = useMemo(
@@ -137,8 +137,8 @@ function ComponentBase({
   );
 
   const estimatedLiqPrice = useMemo(
-    () => estimateLiquidationPrice(nextLtv, bLunaMaxLtv, oraclePrice),
-    [nextLtv, bLunaMaxLtv, oraclePrice],
+    () => estimateLiquidationPrice(nextLtv, bLunaMaxLtv, bLunaOraclePrice),
+    [nextLtv, bLunaMaxLtv, bLunaOraclePrice],
   );
 
   const userMaxLtv = useMemo(() => {
@@ -155,16 +155,16 @@ function ComponentBase({
       borrowSafeMax(
         loanAmount,
         borrowInfo,
-        oraclePrice,
+        bLunaOraclePrice,
         bLunaSafeLtv,
         currentLtv,
       ),
-    [bLunaSafeLtv, borrowInfo, currentLtv, loanAmount, oraclePrice],
+    [bLunaSafeLtv, borrowInfo, currentLtv, loanAmount, bLunaOraclePrice],
   );
 
   const max = useMemo(
-    () => borrowMax(loanAmount, borrowInfo, oraclePrice, bLunaMaxLtv),
-    [bLunaMaxLtv, borrowInfo, loanAmount, oraclePrice],
+    () => borrowMax(loanAmount, borrowInfo, bLunaOraclePrice, bLunaMaxLtv),
+    [bLunaMaxLtv, borrowInfo, loanAmount, bLunaOraclePrice],
   );
 
   const txFee = useMemo(

@@ -23,7 +23,7 @@ import { useReadonlyWalletDialog } from 'components/dialogs/useReadonlyWalletDia
 import { useRequestReloadDialog } from 'components/dialogs/useRequestReloadDialog';
 import { SnackbarContainer } from 'components/SnackbarContainer';
 import { ThemeProvider } from 'contexts/theme';
-import { ADDRESSES, defaultNetwork, GA_TRACKING_ID, onProduction } from 'env';
+import { ADDRESSES, GA_TRACKING_ID, onProduction } from 'env';
 import React, { ReactNode, useCallback } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -110,17 +110,21 @@ function Providers({ children }: { children: ReactNode }) {
   );
 }
 
+const testnet = {
+  name: 'testnet',
+  chainID: 'tequila-0004',
+  lcd: 'https://tequila-lcd.terra.dev',
+};
+
+const mainnet = {
+  name: 'mainnet',
+  chainID: 'columbus-4',
+  lcd: 'https://lcd.terra.dev',
+};
+
 const walletConnectChainIds: Record<number, NetworkInfo> = {
-  0: {
-    name: 'testnet',
-    chainID: 'tequila-0004',
-    lcd: 'https://tequila-lcd.terra.dev',
-  },
-  1: {
-    name: 'mainnet',
-    chainID: 'columbus-4',
-    lcd: 'https://lcd.terra.dev',
-  },
+  0: testnet,
+  1: mainnet,
 };
 
 export function AppProviders({ children }: { children: ReactNode }) {
@@ -150,7 +154,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
   return (
     /** Terra Station Wallet Address :: useWallet() */
     <WalletProvider
-      defaultNetwork={defaultNetwork}
+      defaultNetwork={testnet}
       walletConnectChainIds={walletConnectChainIds}
       connectorOpts={{
         bridge: onProduction

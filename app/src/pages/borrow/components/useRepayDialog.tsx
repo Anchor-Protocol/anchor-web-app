@@ -94,7 +94,7 @@ function ComponentBase({
   const {
     data: {
       borrowRate,
-      oraclePrice,
+      bLunaOraclePrice,
       bLunaMaxLtv = '0.5' as Rate,
       bLunaSafeLtv = '0.3' as Rate,
       marketState,
@@ -113,21 +113,21 @@ function ComponentBase({
   // calculate
   // ---------------------------------------------
   const amountToLtv = useMemo(
-    () => repayAmountToLtv(loanAmount, borrowInfo, oraclePrice),
-    [loanAmount, borrowInfo, oraclePrice],
+    () => repayAmountToLtv(loanAmount, borrowInfo, bLunaOraclePrice),
+    [loanAmount, borrowInfo, bLunaOraclePrice],
   );
 
   const ltvToAmount = useMemo(
-    () => ltvToRepayAmount(loanAmount, borrowInfo, oraclePrice),
-    [loanAmount, borrowInfo, oraclePrice],
+    () => ltvToRepayAmount(loanAmount, borrowInfo, bLunaOraclePrice),
+    [loanAmount, borrowInfo, bLunaOraclePrice],
   );
 
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
   const currentLtv = useMemo(
-    () => _currentLtv(loanAmount, borrowInfo, oraclePrice),
-    [borrowInfo, loanAmount, oraclePrice],
+    () => _currentLtv(loanAmount, borrowInfo, bLunaOraclePrice),
+    [borrowInfo, loanAmount, bLunaOraclePrice],
   );
 
   const nextLtv = useMemo(
@@ -136,8 +136,8 @@ function ComponentBase({
   );
 
   const estimatedLiqPrice = useMemo(
-    () => estimateLiquidationPrice(nextLtv, bLunaMaxLtv, oraclePrice),
-    [nextLtv, bLunaMaxLtv, oraclePrice],
+    () => estimateLiquidationPrice(nextLtv, bLunaMaxLtv, bLunaOraclePrice),
+    [nextLtv, bLunaMaxLtv, bLunaOraclePrice],
   );
 
   const apr = useMemo(

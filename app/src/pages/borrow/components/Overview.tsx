@@ -41,8 +41,9 @@ export interface OverviewProps {
 }
 
 function OverviewBase({ className }: OverviewProps) {
-  const { data: { borrowRate, oraclePrice, bLunaSafeLtv, bLunaMaxLtv } = {} } =
-    useBorrowMarketQuery();
+  const {
+    data: { borrowRate, bLunaOraclePrice, bLunaSafeLtv, bLunaMaxLtv } = {},
+  } = useBorrowMarketQuery();
 
   const { data: { marketBorrowerInfo, custodyBorrower } = {} } =
     useBorrowBorrowerQuery();
@@ -55,10 +56,10 @@ function OverviewBase({ className }: OverviewProps) {
 
   const currentLtv = useMemo(
     () =>
-      marketBorrowerInfo && custodyBorrower && oraclePrice
-        ? _currentLtv(marketBorrowerInfo, custodyBorrower, oraclePrice)
+      marketBorrowerInfo && custodyBorrower && bLunaOraclePrice
+        ? _currentLtv(marketBorrowerInfo, custodyBorrower, bLunaOraclePrice)
         : undefined,
-    [custodyBorrower, marketBorrowerInfo, oraclePrice],
+    [custodyBorrower, marketBorrowerInfo, bLunaOraclePrice],
   );
 
   const apr = useMemo(
@@ -72,8 +73,8 @@ function OverviewBase({ className }: OverviewProps) {
   );
 
   const collaterals = useMemo(
-    () => _collaterals(custodyBorrower, oraclePrice?.rate),
-    [custodyBorrower, oraclePrice?.rate],
+    () => _collaterals(custodyBorrower, bLunaOraclePrice?.rate),
+    [custodyBorrower, bLunaOraclePrice?.rate],
   );
 
   return (

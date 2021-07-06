@@ -89,7 +89,7 @@ export function borrowBorrowTx(
           computeCurrentLtv(
             borrowBorrower.marketBorrowerInfo,
             borrowBorrower.custodyBorrower,
-            borrowMarket.oraclePrice,
+            borrowMarket.bLunaOraclePrice,
           ) ?? ('0' as Rate);
 
         const outstandingLoan = borrowBorrower.marketBorrowerInfo.loan_amount;

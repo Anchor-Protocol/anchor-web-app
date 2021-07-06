@@ -24,7 +24,7 @@ export async function userLtvQuery({
   mantleEndpoint,
   address,
 }: UserLtvQueryParams) {
-  const [{ oraclePrice }, { marketBorrowerInfo, custodyBorrower }] =
+  const [{ bLunaOraclePrice }, { marketBorrowerInfo, custodyBorrower }] =
     await Promise.all([
       borrowMarketQuery({
         mantleEndpoint,
@@ -54,11 +54,20 @@ export async function userLtvQuery({
               },
             },
           },
-          oraclePrice: {
+          bLunaOraclePrice: {
             contractAddress: address.moneyMarket.oracle,
             query: {
               price: {
                 base: address.cw20.bLuna,
+                quote: 'uusd' as StableDenom,
+              },
+            },
+          },
+          bEthOraclePrice: {
+            contractAddress: address.moneyMarket.oracle,
+            query: {
+              price: {
+                base: address.cw20.bEth,
                 quote: 'uusd' as StableDenom,
               },
             },
@@ -98,7 +107,7 @@ export async function userLtvQuery({
   return big(marketBorrowerInfo.loan_amount)
     .div(
       big(big(custodyBorrower.balance).minus(custodyBorrower.spendable)).mul(
-        oraclePrice.rate,
+        bLunaOraclePrice.rate,
       ),
     )
     .toFixed();

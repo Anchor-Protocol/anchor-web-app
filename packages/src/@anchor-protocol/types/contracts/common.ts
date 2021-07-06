@@ -17,12 +17,16 @@ export type WASMContractResult<T extends {} = {}> = {
 
 export interface ContractAddress {
   bluna: {
-    /** addressProvider.blunaReward() */
+    /** addressProvider.bLunaReward() */
     reward: HumanAddr;
-    /** addressProvider.blunaHub() */
+    /** addressProvider.bLunaHub() */
     hub: HumanAddr;
     /** addressProvider.airdrop() */
     airdropRegistry: HumanAddr;
+  };
+  beth: {
+    /** addressProvider.bEthReward() */
+    reward: HumanAddr;
   };
   moneyMarket: {
     /** addressProvider.market() */
@@ -65,8 +69,10 @@ export interface ContractAddress {
     ancUstPair: HumanAddr;
   };
   cw20: {
-    /** addressProvider.blunaToken() */
+    /** addressProvider.bLunaToken() */
     bLuna: CW20Addr;
+    /** addressProvider.bEthToken() */
+    bEth: CW20Addr;
     /** addressProvider.aTerra() */
     aUST: CW20Addr;
     /** addressProvider.ANC() */

@@ -94,7 +94,7 @@ function ComponentBase({
 
   const {
     data: {
-      oraclePrice,
+      bLunaOraclePrice,
       bLunaMaxLtv = '0.5' as Rate,
       bLunaSafeLtv = '0.3' as Rate,
     } = fallbackBorrowMarket,
@@ -111,26 +111,26 @@ function ComponentBase({
   // calculate
   // ---------------------------------------------
   const amountToLtv = useMemo(
-    () => depositAmountToLtv(loanAmount, borrowInfo, oraclePrice),
-    [loanAmount, borrowInfo, oraclePrice],
+    () => depositAmountToLtv(loanAmount, borrowInfo, bLunaOraclePrice),
+    [loanAmount, borrowInfo, bLunaOraclePrice],
   );
 
   const ltvToAmount = useMemo(
-    () => ltvToDepositAmount(loanAmount, borrowInfo, oraclePrice),
-    [loanAmount, borrowInfo, oraclePrice],
+    () => ltvToDepositAmount(loanAmount, borrowInfo, bLunaOraclePrice),
+    [loanAmount, borrowInfo, bLunaOraclePrice],
   );
 
   const amountToBorrowLimit = useMemo(
-    () => depositAmountToBorrowLimit(borrowInfo, oraclePrice, bLunaMaxLtv),
-    [borrowInfo, oraclePrice, bLunaMaxLtv],
+    () => depositAmountToBorrowLimit(borrowInfo, bLunaOraclePrice, bLunaMaxLtv),
+    [borrowInfo, bLunaOraclePrice, bLunaMaxLtv],
   );
 
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
   const currentLtv = useMemo(
-    () => _currentLtv(loanAmount, borrowInfo, oraclePrice),
-    [borrowInfo, loanAmount, oraclePrice],
+    () => _currentLtv(loanAmount, borrowInfo, bLunaOraclePrice),
+    [borrowInfo, loanAmount, bLunaOraclePrice],
   );
 
   const nextLtv = useMemo(

@@ -6,6 +6,7 @@ import {
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import { UST } from '@anchor-protocol/types';
 import {
+  useAnchorWebapp,
   useBorrowBorrowerQuery,
   useBorrowLiquidationPriceQuery,
   useBorrowMarketQuery,
@@ -30,23 +31,27 @@ export function CollateralList({ className }: CollateralListProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
+  const {
+    contractAddress: { cw20 },
+  } = useAnchorWebapp();
+
   const connectedWallet = useConnectedWallet();
 
   const { data: borrowMarket } = useBorrowMarketQuery();
 
   const { data: borrowBorrower } = useBorrowBorrowerQuery();
 
-  const { data: { liquidationPrice } = {} } = useBorrowLiquidationPriceQuery();
+  const { data: { liquidationPrice: bLunaLiquidationPrice } = {} } =
+    useBorrowLiquidationPriceQuery(cw20.bLuna);
 
-  const [
-    openProvideCollateralDialog,
-    provideCollateralDialogElement,
-  ] = useProvideCollateralDialog();
+  const { data: { liquidationPrice: bEthLiquidationPrice } = {} } =
+    useBorrowLiquidationPriceQuery(cw20.bEth);
 
-  const [
-    openRedeemCollateralDialog,
-    redeemCollateralDialogElement,
-  ] = useRedeemCollateralDialog();
+  const [openProvideCollateralDialog, provideCollateralDialogElement] =
+    useProvideCollateralDialog();
+
+  const [openRedeemCollateralDialog, redeemCollateralDialogElement] =
+    useRedeemCollateralDialog();
 
   const collaterals = useMemo(
     () => _collaterals(borrowBorrower?.custodyBorrower, 1 as UST<number>),
@@ -57,9 +62,9 @@ export function CollateralList({ className }: CollateralListProps) {
     () =>
       _collaterals(
         borrowBorrower?.custodyBorrower,
-        borrowMarket?.oraclePrice.rate,
+        borrowMarket?.bLunaOraclePrice.rate,
       ),
-    [borrowBorrower?.custodyBorrower, borrowMarket?.oraclePrice.rate],
+    [borrowBorrower?.custodyBorrower, borrowMarket?.bLunaOraclePrice.rate],
   );
 
   // ---------------------------------------------
@@ -105,20 +110,92 @@ export function CollateralList({ className }: CollateralListProps) {
                 <TokenIcon token="bluna" />
               </i>
               <div>
-                <div className="coin">bLuna</div>
-                <p className="name">Bonded Luna</p>
+                <div className="coin">bLUNA</div>
+                <p className="name">Bonded LUNA</p>
               </div>
             </td>
             <td>
               <div className="value">
-                {borrowMarket?.oraclePrice
-                  ? formatUSTWithPostfixUnits(borrowMarket.oraclePrice.rate)
+                {borrowMarket?.bLunaOraclePrice
+                  ? formatUSTWithPostfixUnits(
+                      borrowMarket.bLunaOraclePrice.rate,
+                    )
                   : 0}{' '}
                 UST
               </div>
               <p className="volatility">
-                {liquidationPrice
-                  ? formatUSTWithPostfixUnits(liquidationPrice)
+                {bLunaLiquidationPrice
+                  ? formatUSTWithPostfixUnits(bLunaLiquidationPrice)
+                  : 0}{' '}
+                UST
+              </p>
+            </td>
+            <td>
+              <div className="value">
+                {formatUSTWithPostfixUnits(demicrofy(collateralsInUST))} UST
+              </div>
+              <p className="volatility">
+                {formatLuna(demicrofy(collaterals))} bLUNA
+              </p>
+            </td>
+            <td>
+              <BorderButton
+                disabled={!connectedWallet || !borrowMarket || !borrowBorrower}
+                onClick={() =>
+                  borrowMarket &&
+                  borrowBorrower &&
+                  openProvideCollateralDialog({
+                    fallbackBorrowMarket: borrowMarket,
+                    fallbackBorrowBorrower: borrowBorrower,
+                  })
+                }
+              >
+                Provide
+              </BorderButton>
+              <BorderButton
+                disabled={
+                  !connectedWallet ||
+                  !borrowMarket ||
+                  !borrowBorrower ||
+                  (big(borrowBorrower.custodyBorrower.balance)
+                    .minus(borrowBorrower.custodyBorrower.spendable)
+                    .eq(0) &&
+                    big(borrowBorrower.marketBorrowerInfo.loan_amount).lte(0))
+                }
+                onClick={() =>
+                  borrowMarket &&
+                  borrowBorrower &&
+                  openRedeemCollateralDialog({
+                    fallbackBorrowMarket: borrowMarket,
+                    fallbackBorrowBorrower: borrowBorrower,
+                  })
+                }
+              >
+                Withdraw
+              </BorderButton>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <i>
+                <TokenIcon token="bluna" />
+              </i>
+              <div>
+                <div className="coin">bETH</div>
+                <p className="name">Bonded ETH</p>
+              </div>
+            </td>
+            <td>
+              <div className="value">
+                {borrowMarket?.bEthOraclePrice
+                  ? formatUSTWithPostfixUnits(borrowMarket.bEthOraclePrice.rate)
+                  : 0}{' '}
+                UST
+              </div>
+              <p className="volatility">
+                {bEthLiquidationPrice
+                  ? formatUSTWithPostfixUnits(bEthLiquidationPrice)
                   : 0}{' '}
                 UST
               </p>

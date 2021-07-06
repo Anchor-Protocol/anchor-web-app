@@ -55,7 +55,7 @@ export async function borrowLiquidationPriceQuery({
   wasmQuery.overseerBorrowLimit.query.borrow_limit.block_time = blockHeight + 1;
 
   const data = await mantle<BorrowLiquidationPriceWasmQuery>({
-    mantleEndpoint: `${mantleEndpoint}?borrow--liquidation-price`,
+    mantleEndpoint: `${mantleEndpoint}?borrow--liquidation-price&basset=${wasmQuery.oraclePriceInfo.query.price.base}`,
     variables: {},
     wasmQuery,
     ...params,
@@ -65,25 +65,24 @@ export async function borrowLiquidationPriceQuery({
     return data;
   }
 
-  const bLunaContractAddress =
-    wasmQuery.overseerWhitelist.query.whitelist.collateral_token;
+  const bAssetContractAddress = wasmQuery.oraclePriceInfo.query.price.base;
 
-  const bLunaCollateral = data.overseerCollaterals.collaterals.find(
-    ([contractAddress]) => contractAddress === bLunaContractAddress,
+  const bAssetCollateral = data.overseerCollaterals.collaterals.find(
+    ([contractAddress]) => contractAddress === bAssetContractAddress,
   );
 
-  const bLunaWhitelist = data.overseerWhitelist.elems.find(
-    ({ collateral_token }) => collateral_token === bLunaContractAddress,
+  const bAssetWhitelist = data.overseerWhitelist.elems.find(
+    ({ collateral_token }) => collateral_token === bAssetContractAddress,
   );
 
-  if (!bLunaCollateral || !bLunaWhitelist) {
+  if (!bAssetCollateral || !bAssetWhitelist) {
     return data;
   }
 
   return {
     ...data,
     liquidationPrice: big(data.marketBorrowerInfo.loan_amount)
-      .div(big(bLunaCollateral[1]).mul(bLunaWhitelist.max_ltv))
+      .div(big(bAssetCollateral[1]).mul(bAssetWhitelist.max_ltv))
       .toFixed() as UST,
   };
 }

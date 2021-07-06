@@ -27,7 +27,7 @@ const queryFn = createQueryFn(
     marketContract: HumanAddr,
     overseerContract: HumanAddr,
     oracleContract: HumanAddr,
-    bLunaContract: CW20Addr,
+    bAssetContract: CW20Addr,
   ) => {
     return !!connectedWallet
       ? borrowLiquidationPriceQuery({
@@ -65,7 +65,7 @@ const queryFn = createQueryFn(
               contractAddress: overseerContract,
               query: {
                 whitelist: {
-                  collateral_token: bLunaContract,
+                  collateral_token: bAssetContract,
                 },
               },
             },
@@ -73,7 +73,7 @@ const queryFn = createQueryFn(
               contractAddress: oracleContract,
               query: {
                 price: {
-                  base: bLunaContract,
+                  base: bAssetContract,
                   quote: 'uusd' as StableDenom,
                 },
               },
@@ -84,16 +84,16 @@ const queryFn = createQueryFn(
   },
 );
 
-export function useBorrowLiquidationPriceQuery(): UseQueryResult<
-  BorrowLiquidationPrice | undefined
-> {
+export function useBorrowLiquidationPriceQuery(
+  bAssetContract: CW20Addr,
+): UseQueryResult<BorrowLiquidationPrice | undefined> {
   const connectedWallet = useConnectedWallet();
 
   const { mantleFetch, mantleEndpoint, lastSyncedHeight, queryErrorReporter } =
     useTerraWebapp();
 
   const {
-    contractAddress: { moneyMarket, cw20 },
+    contractAddress: { moneyMarket },
   } = useAnchorWebapp();
 
   const { browserInactive } = useBrowserInactive();
@@ -108,7 +108,7 @@ export function useBorrowLiquidationPriceQuery(): UseQueryResult<
       moneyMarket.market,
       moneyMarket.overseer,
       moneyMarket.oracle,
-      cw20.bLuna,
+      bAssetContract,
     ],
     queryFn,
     {
