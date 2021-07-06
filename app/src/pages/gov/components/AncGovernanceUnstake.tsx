@@ -21,7 +21,7 @@ import { max } from '@terra-dev/big-math';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank } from 'base/contexts/bank';
+import { useBank } from 'contexts/bank';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
@@ -52,9 +52,8 @@ export function AncGovernanceUnstake() {
   // ---------------------------------------------
   const bank = useBank();
 
-  const {
-    data: { userGovStakingInfo } = {},
-  } = useRewardsAncGovernanceRewardsQuery();
+  const { data: { userGovStakingInfo } = {} } =
+    useRewardsAncGovernanceRewardsQuery();
 
   const { data: { ancBalance: govANCBalance } = {} } = useAncBalanceQuery(
     contractAddress.anchorToken.gov,

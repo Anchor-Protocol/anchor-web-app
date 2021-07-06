@@ -12,25 +12,21 @@ import { GoogleAnalytics } from '@terra-dev/use-google-analytics';
 import { useLongtimeNoSee } from '@terra-dev/use-longtime-no-see';
 import { RouterScrollRestoration } from '@terra-dev/use-router-scroll-restoration';
 import { RouterWalletStatusRecheck } from '@terra-dev/use-router-wallet-status-recheck';
-import {
-  ExtensionNetworkOnlyWalletProvider,
-  NetworkInfo,
-  WalletProvider,
-} from '@terra-money/wallet-provider';
+import { NetworkInfo, WalletProvider } from '@terra-money/wallet-provider';
 import {
   BankProvider as WebappBankProvider,
   CW20Contract,
   TerraWebappProvider,
   webworkerMantleFetch,
 } from '@terra-money/webapp-provider';
-import { useReadonlyWalletDialog } from 'base/components/useReadonlyWalletDialog';
-import { useRequestReloadDialog } from 'base/components/useRequestReload';
+import { SnackbarContainer } from 'components/SnackbarContainer';
+import { useReadonlyWalletDialog } from 'components/useReadonlyWalletDialog';
+import { useRequestReloadDialog } from 'components/useRequestReload';
+import { ThemeProvider } from 'contexts/theme';
+import { ADDRESSES, defaultNetwork, GA_TRACKING_ID, onProduction } from 'env';
 import React, { ReactNode, useCallback } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { SnackbarContainer } from './components/SnackbarContainer';
-import { ThemeProvider } from './contexts/theme';
-import { ADDRESSES, defaultNetwork, GA_TRACKING_ID, onProduction } from './env';
 
 patchReactQueryFocusRefetching();
 
@@ -183,29 +179,5 @@ export function AppProviders({ children }: { children: ReactNode }) {
         {requestReloadElement}
       </Providers>
     </WalletProvider>
-  );
-}
-
-export function LandingProviders({ children }: { children: ReactNode }) {
-  return (
-    /** Terra Station Wallet Address :: useWallet() */
-    <ExtensionNetworkOnlyWalletProvider defaultNetwork={defaultNetwork}>
-      <Providers>
-        {/* Router Actions ======================== */}
-        {/** Send Google Analytics Page view every Router's location changed */}
-        <GoogleAnalytics trackingId={GA_TRACKING_ID} />
-        {/** Scroll Restore every Router's basepath changed */}
-        <RouterScrollRestoration />
-        {/** Re-Check Terra Station Wallet Status every Router's pathname changed */}
-        <RouterWalletStatusRecheck />
-        {/* Theme ================================= */}
-        {/** Styled-Components Global CSS */}
-        <GlobalStyle />
-        {/* Layout ================================ */}
-        {children}
-        {/* Portal ================================ */}
-        <SnackbarContainer />
-      </Providers>
-    </ExtensionNetworkOnlyWalletProvider>
   );
 }

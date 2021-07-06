@@ -22,7 +22,7 @@ import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton'
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank } from 'base/contexts/bank';
+import { useBank } from 'contexts/bank';
 import big, { Big } from 'big.js';
 import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';

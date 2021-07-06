@@ -10,7 +10,7 @@ import {
   useWallet,
   WalletStatus,
 } from '@terra-money/wallet-provider';
-import { useBank } from 'base/contexts/bank';
+import { useBank } from 'contexts/bank';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import { useCallback, useState } from 'react';
 import { useRouteMatch } from 'react-router-dom';

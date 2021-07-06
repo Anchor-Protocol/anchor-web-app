@@ -1,5 +1,5 @@
 import { useCloudflareAnalytics } from '@terra-dev/use-cloudflare-analytics';
-import { AppProviders } from 'base/AppProviders';
+import { AppProviders } from 'configurations/AppProviders';
 import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
 import { NotificationProvider } from 'contexts/notification';

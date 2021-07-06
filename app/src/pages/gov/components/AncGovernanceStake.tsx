@@ -18,7 +18,7 @@ import { StreamStatus } from '@rx-stream/react';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank } from 'base/contexts/bank';
+import { useBank } from 'contexts/bank';
 import big from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
@@ -48,9 +48,8 @@ export function AncGovernanceStake() {
   // ---------------------------------------------
   const bank = useBank();
 
-  const {
-    data: { userANCBalance } = {},
-  } = useRewardsAncGovernanceRewardsQuery();
+  const { data: { userANCBalance } = {} } =
+    useRewardsAncGovernanceRewardsQuery();
 
   // ---------------------------------------------
   // logics

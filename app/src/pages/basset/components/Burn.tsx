@@ -19,7 +19,7 @@ import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { NumberMuiInput } from '@terra-dev/neumorphism-ui/components/NumberMuiInput';
 import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank } from 'base/contexts/bank';
+import { useBank } from 'contexts/bank';
 import big, { Big } from 'big.js';
 import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';

@@ -2,7 +2,7 @@ import { min } from '@terra-dev/big-math';
 import { demicrofy, microfy } from '@anchor-protocol/notation';
 import { ANC, Rate, uAncUstLP, uUST } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
-import { Bank } from 'base/contexts/bank';
+import { Bank } from 'contexts/bank';
 import { AncPrice } from 'pages/gov/models/ancPrice';
 import { AncUstLpSimulation } from 'pages/gov/models/ancUstLpSimulation';
 

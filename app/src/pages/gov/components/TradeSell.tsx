@@ -27,7 +27,7 @@ import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/component
 import { useResolveLast } from '@terra-dev/use-resolve-last';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useTerraWebapp } from '@terra-money/webapp-provider';
-import { useBank } from 'base/contexts/bank';
+import { useBank } from 'contexts/bank';
 import big from 'big.js';
 import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';

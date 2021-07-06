@@ -3,7 +3,7 @@ import { buttonBaseStyle } from '@terra-dev/neumorphism-ui/components/ActionButt
 import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
 import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
 import { useConnectedWallet, useWallet } from '@terra-money/wallet-provider';
-import { useBank } from 'base/contexts/bank';
+import { useBank } from 'contexts/bank';
 import React, { ReactNode, useCallback } from 'react';
 import styled from 'styled-components';
 import { WalletDetailContent } from './WalletDetailContent';

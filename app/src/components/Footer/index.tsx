@@ -11,8 +11,8 @@ import {
 } from '@material-ui/icons';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { useWallet } from '@terra-money/wallet-provider';
-import { useTheme } from 'base/contexts/theme';
-import { screen } from 'base/env';
+import { useTheme } from 'contexts/theme';
+import { screen } from 'env';
 import c from 'color';
 import React, { CSSProperties } from 'react';
 import styled from 'styled-components';

@@ -1,6 +1,6 @@
 import type { uUST } from '@anchor-protocol/types';
 import big, { BigSource } from 'big.js';
-import { Bank } from 'base/contexts/bank';
+import { Bank } from 'contexts/bank';
 import { ReactNode } from 'react';
 
 export function validateTxFee(bank: Bank, txFee: uUST<BigSource>): ReactNode {

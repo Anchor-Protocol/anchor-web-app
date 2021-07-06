@@ -8,7 +8,7 @@ import {
   uUST,
 } from '@anchor-protocol/types';
 import { max, min } from '@terra-dev/big-math';
-import { Bank } from 'base/contexts/bank';
+import { Bank } from 'contexts/bank';
 import big, { Big, BigSource } from 'big.js';
 import { AncPrice } from 'pages/gov/models/ancPrice';
 import { AncUstLpSimulation } from 'pages/gov/models/ancUstLpSimulation';

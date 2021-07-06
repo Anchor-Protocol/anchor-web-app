@@ -5,7 +5,7 @@ import {
   truncate,
 } from '@anchor-protocol/notation';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { Bank } from 'base/contexts/bank';
+import { Bank } from 'contexts/bank';
 import { ButtonHTMLAttributes, DetailedHTMLProps } from 'react';
 import styled from 'styled-components';
 

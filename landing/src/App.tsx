@@ -1,20 +1,17 @@
-import { LandingProviders } from 'base/AppProviders';
+import { GlobalStyle as NeumorphismGlobalStyle } from '@terra-dev/neumorphism-ui/themes/GlobalStyle';
 import { Header } from 'components/Header';
 import { Index } from 'pages/index';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import React from 'react';
 import { GlobalStyle } from './components/GlobalStyle';
 
 export function App() {
   return (
-    <LandingProviders>
-      <div>
-        <GlobalStyle />
-        <Header />
-        <Switch>
-          <Route exact path="/" component={Index} />
-          <Redirect to="/" />
-        </Switch>
-      </div>
-    </LandingProviders>
+    <div>
+      <NeumorphismGlobalStyle />
+      <GlobalStyle />
+
+      <Header />
+      <Index />
+    </div>
   );
 }

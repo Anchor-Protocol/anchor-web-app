@@ -1,6 +1,5 @@
 import { WebAppButton } from 'components/Header/WebAppButton';
 import { headerHeight, links } from 'env';
-import { Link, NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 
 export interface DesktopHeaderProps {
@@ -12,14 +11,15 @@ function DesktopHeaderBase({ className, color }: DesktopHeaderProps) {
   return (
     <header className={className} data-dark={color === 'dark'}>
       <section>
-        <Link to="/">ANCHOR</Link>
+        <span>ANCHOR</span>
       </section>
       <nav>
-        <NavLink to="/dashboard">DASHBOARD</NavLink>
+        <a href={links.app} target="anchor-webapp">
+          DASHBOARD
+        </a>
         <a href={links.developers} target="anchor-developers">
           DEVELOPERS
         </a>
-        {/*<NavLink to="/contact">CONTACT</NavLink>*/}
       </nav>
       <section>
         <WebAppButton />
@@ -43,9 +43,7 @@ export const DesktopHeader = styled(DesktopHeaderBase)`
     font-size: 16px;
     font-weight: 900;
 
-    a {
-      color: #333333;
-    }
+    color: #333333;
   }
 
   nav {

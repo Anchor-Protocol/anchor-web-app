@@ -1,6 +1,6 @@
+import { Labtop } from '@anchor-protocol/icons';
 import { links } from 'env';
 import styled from 'styled-components';
-import { Labtop } from '@anchor-protocol/icons';
 
 export interface WebAppButtonProps {
   className?: string;
@@ -11,8 +11,7 @@ function WebAppButtonBase({ className }: WebAppButtonProps) {
     <a
       className={`webapp ${className}`}
       href={links.app}
-      target="_blank"
-      rel="noreferrer"
+      target="anchor-webapp"
     >
       <Labtop /> WebApp
     </a>

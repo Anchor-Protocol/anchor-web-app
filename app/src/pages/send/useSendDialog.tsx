@@ -33,7 +33,7 @@ import { TextInput } from '@terra-dev/neumorphism-ui/components/TextInput';
 import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
 import { AccAddress } from '@terra-money/terra.js';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { Bank, useBank } from 'base/contexts/bank';
+import { Bank, useBank } from 'contexts/bank';
 import big, { Big, BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';

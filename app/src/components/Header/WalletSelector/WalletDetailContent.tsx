@@ -13,7 +13,7 @@ import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
 import { NetworkInfo } from '@terra-dev/wallet-types';
 import { ConnectType } from '@terra-money/wallet-provider';
-import { Bank } from 'base/contexts/bank';
+import { Bank } from 'contexts/bank';
 import big from 'big.js';
 import { ConnectionIcons } from 'components/Header/WalletSelector/ConnectionIcons';
 import { useCallback } from 'react';

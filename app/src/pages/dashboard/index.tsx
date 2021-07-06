@@ -29,7 +29,7 @@ import {
   pressed,
   verticalRuler,
 } from '@terra-dev/styled-neumorphism';
-import { Footer } from 'base/components/Footer';
+import { Footer } from 'components/Footer';
 import big, { Big } from 'big.js';
 import { format } from 'date-fns';
 import { screen } from 'env';

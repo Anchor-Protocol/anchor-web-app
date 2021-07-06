@@ -1,7 +1,7 @@
 import { microfy } from '@anchor-protocol/notation';
 import type { UST, uUST } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
-import { Bank } from 'base/contexts/bank';
+import { Bank } from 'contexts/bank';
 
 export function repayTxFee(
   repayAmount: UST,

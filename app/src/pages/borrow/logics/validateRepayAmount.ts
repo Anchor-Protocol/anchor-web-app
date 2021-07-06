@@ -1,6 +1,6 @@
 import { microfy } from '@anchor-protocol/notation';
 import type { UST } from '@anchor-protocol/types';
-import { Bank } from 'base/contexts/bank';
+import { Bank } from 'contexts/bank';
 import { ReactNode } from 'react';
 
 export function validateRepayAmount(repayAmount: UST, bank: Bank): ReactNode {
