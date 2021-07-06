@@ -1,4 +1,4 @@
 #!/bin/bash
 
 pwd;
-git diff --quiet HEAD^ HEAD ../{packages,landing}/src;
+git diff --quiet HEAD^ HEAD ../{packages,landing}/{src,public};
