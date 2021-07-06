@@ -6,7 +6,7 @@ import { useConnectedWallet, useWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'contexts/bank';
 import React, { ReactNode, useCallback } from 'react';
 import styled from 'styled-components';
-import { WalletDetailContent } from './WalletDetailContent';
+import { WalletDetailContent } from '../wallet/WalletDetailContent';
 
 interface FormParams {
   className?: string;

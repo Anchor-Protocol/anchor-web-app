@@ -3,7 +3,7 @@ import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
 import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';
-import { NotificationContent } from './NotificationContent';
+import { NotificationContent } from '../notifications/NotificationContent';
 
 interface FormParams {
   className?: string;

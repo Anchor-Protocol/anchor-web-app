@@ -1,11 +1,11 @@
 import { useWallet, WalletStatus } from '@terra-money/wallet-provider';
-import { ReactComponent as NotificationOff } from 'components/Header/assets/NotificationOff.svg';
-import { ReactComponent as NotificationOn } from 'components/Header/assets/NotificationOn.svg';
-import { useNotificationDialog } from 'components/Header/notifications/useNotificationDialog';
 import { useNotification } from 'contexts/notification';
 import { useJobs } from 'jobs/Jobs';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
+import { ReactComponent as NotificationOff } from '../assets/NotificationOff.svg';
+import { ReactComponent as NotificationOn } from '../assets/NotificationOn.svg';
+import { useNotificationDialog } from './useNotificationDialog';
 
 export interface MobileNotificationProps {
   className?: string;

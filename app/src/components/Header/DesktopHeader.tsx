@@ -1,12 +1,12 @@
 import { Launch } from '@material-ui/icons';
-import logoUrl from 'components/Header/assets/Logo.svg';
-import { DesktopNotification } from 'components/Header/notifications/DesktopNotification';
-import { WalletSelector } from 'components/Header/WalletSelector';
 import { menus, RouteMenu } from 'configurations/menu';
 import { screen } from 'env';
 import React from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
+import logoUrl from './assets/Logo.svg';
+import { DesktopNotification } from './desktop/DesktopNotification';
+import { WalletSelector } from './desktop/WalletSelector';
 
 export interface DesktopHeaderProps {
   className?: string;

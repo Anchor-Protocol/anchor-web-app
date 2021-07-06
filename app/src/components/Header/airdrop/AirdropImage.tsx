@@ -1,6 +1,6 @@
-import airdropImage from 'components/Header/assets/airdrop.svg';
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
+import airdropImage from '../assets/airdrop.svg';
 
 export interface AirdropImageProps {
   className?: string;

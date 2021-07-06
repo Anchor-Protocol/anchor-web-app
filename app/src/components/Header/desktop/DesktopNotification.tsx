@@ -6,11 +6,8 @@ import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { ReactComponent as NotificationOff } from '../assets/NotificationOff.svg';
 import { ReactComponent as NotificationOn } from '../assets/NotificationOn.svg';
-import {
-  DropdownBox,
-  DropdownContainer,
-} from '../WalletSelector/DropdownContainer';
-import { NotificationContent } from './NotificationContent';
+import { NotificationContent } from '../notifications/NotificationContent';
+import { DropdownBox, DropdownContainer } from './DropdownContainer';
 
 export interface DesktopNotificationProps {
   className?: string;

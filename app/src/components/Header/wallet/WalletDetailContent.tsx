@@ -15,7 +15,7 @@ import { NetworkInfo } from '@terra-dev/wallet-types';
 import { ConnectType } from '@terra-money/wallet-provider';
 import { Bank } from 'contexts/bank';
 import big from 'big.js';
-import { ConnectionIcons } from 'components/Header/WalletSelector/ConnectionIcons';
+import { ConnectionIcons } from './ConnectionIcons';
 import { useCallback } from 'react';
 import useClipboard from 'react-use-clipboard';
 import styled from 'styled-components';

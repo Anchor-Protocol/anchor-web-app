@@ -5,6 +5,9 @@ import {
 import { Rate } from '@anchor-protocol/types';
 import { createAnchorContractAddress } from '@anchor-protocol/webapp-fns';
 
+// ---------------------------------------------
+// style
+// ---------------------------------------------
 export const screen = {
   mobile: { max: 530 },
   // mobile : @media (max-width: ${screen.mobile.max}px)
@@ -17,10 +20,6 @@ export const screen = {
   // huge monitor : @media (min-width: ${screen.monitor.min}px)
 } as const;
 
-export const links = {
-  forum: 'https://forum.anchorprotocol.com/',
-};
-
 export const BODY_MARGIN_TOP = {
   pc: 50,
   mobile: 10,
@@ -29,6 +28,16 @@ export const BODY_MARGIN_TOP = {
 
 export const mobileHeaderHeight = 68;
 
+// ---------------------------------------------
+// links
+// ---------------------------------------------
+export const links = {
+  forum: 'https://forum.anchorprotocol.com/',
+};
+
+// ---------------------------------------------
+// environment
+// ---------------------------------------------
 export const cloudFlareOption = {
   token: '53059bc341e44118afa382ac686bd39e',
   hostnames: [
@@ -53,6 +62,9 @@ export const GA_TRACKING_ID = 'G-H42LRVHR5Y';
 export const SENTRY_DSN =
   'https://f33dd06d6f5948bfb06d809d0d0a274c@o247107.ingest.sentry.io/5636828';
 
+// ---------------------------------------------
+// chain
+// ---------------------------------------------
 export const SAFE_RATIO: Rate<number> = 0.7 as Rate<number>;
 
 export const onProduction =
@@ -62,22 +74,6 @@ export const onProduction =
   global.location.host === 'anchorprotocol.com' ||
   global.location.host === 'anchor.money' ||
   global.location.host === 'anchor.market';
-
-//export const defaultNetwork = onProduction
-//  ? {
-//      chainID: 'columbus-4',
-//      fcd: 'https://fcd.terra.dev',
-//      lcd: 'https://lcd.terra.dev',
-//      name: 'mainnet',
-//      ws: 'wss://fcd.terra.dev',
-//    }
-//  : {
-//      chainID: 'tequila-0004',
-//      fcd: 'https://tequila-fcd.terra.dev',
-//      lcd: 'https://tequila-lcd.terra.dev',
-//      name: 'testnet',
-//      ws: 'wss://tequila-ws.terra.dev',
-//    };
 
 export const defaultNetwork = {
   chainID: 'columbus-4',

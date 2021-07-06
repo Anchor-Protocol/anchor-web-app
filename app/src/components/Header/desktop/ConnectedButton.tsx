@@ -41,7 +41,7 @@ function ConnectedButtonBase({
   );
 }
 
-const mobileLayoutBreak = 1100;
+const smallLayoutBreak = 1300;
 
 export const ConnectedButton = styled(ConnectedButtonBase)`
   height: 26px;
@@ -91,7 +91,7 @@ export const ConnectedButton = styled(ConnectedButtonBase)`
     background-color: rgba(255, 255, 255, 0.04);
   }
 
-  @media (max-width: ${mobileLayoutBreak}px) {
+  @media (max-width: ${smallLayoutBreak}px) {
     .wallet-balance {
       display: none;
     }

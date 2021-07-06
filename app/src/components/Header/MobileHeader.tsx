@@ -9,16 +9,16 @@ import {
   useWallet,
   WalletStatus,
 } from '@terra-money/wallet-provider';
-import logoUrl from 'components/Header/assets/Logo.svg';
-import { AirdropContent } from 'components/Header/WalletSelector/AirdropContent';
 import { menus, RouteMenu } from 'configurations/menu';
 import { mobileHeaderHeight } from 'env';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import React, { useCallback, useState } from 'react';
 import { NavLink, useRouteMatch } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
-import { useWalletDetailDialog } from './WalletSelector/useWalletDetailDialog';
-import { ViewAddressButton } from './WalletSelector/ViewAddressButton';
+import { AirdropContent } from './airdrop/AirdropContent';
+import logoUrl from './assets/Logo.svg';
+import { useWalletDetailDialog } from './mobile/useWalletDetailDialog';
+import { ViewAddressButton } from './mobile/ViewAddressButton';
 
 export interface MobileHeaderProps {
   className?: string;
