@@ -3,8 +3,8 @@ import { demicrofy, microfy } from '@anchor-protocol/notation';
 import { Rate, uANC, uAncUstLP, UST, uUST } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
 import { Bank } from 'contexts/bank';
-import { AncPrice } from 'pages/gov/models/ancPrice';
-import { AncUstLpSimulation } from 'pages/gov/models/ancUstLpSimulation';
+import { AncPrice } from 'pages/trade/models/ancPrice';
+import { AncUstLpSimulation } from 'pages/trade/models/ancUstLpSimulation';
 
 export function ancUstLpUstSimulation(
   ancPrice: AncPrice,

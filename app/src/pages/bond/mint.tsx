@@ -32,8 +32,8 @@ import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { validateTxFee } from 'logics/validateTxFee';
-import { pegRecovery } from 'pages/basset/logics/pegRecovery';
-import { validateBondAmount } from 'pages/basset/logics/validateBondAmount';
+import { pegRecovery } from 'pages/bond/logics/pegRecovery';
+import { validateBondAmount } from 'pages/bond/logics/validateBondAmount';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 

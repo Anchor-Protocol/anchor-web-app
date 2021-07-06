@@ -1,8 +1,9 @@
-import { CenteredLayout } from 'components/layouts/CenteredLayout';
+import { PaddedLayout } from 'components/layouts/PaddedLayout';
+import { screen } from 'env';
 import React from 'react';
 import styled from 'styled-components';
+import { Rewards } from './components/Rewards';
 import { TransactionHistory } from './components/TransactionHistory';
-import { screen } from 'env';
 
 export interface MypageProps {
   className?: string;
@@ -10,10 +11,11 @@ export interface MypageProps {
 
 function MypageBase({ className }: MypageProps) {
   return (
-    <CenteredLayout className={className} maxWidth={940}>
-      <h1>Transaction History</h1>
+    <PaddedLayout className={className}>
+      <Rewards />
+      <h2>Transaction History</h2>
       <TransactionHistory />
-    </CenteredLayout>
+    </PaddedLayout>
   );
 }
 

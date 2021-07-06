@@ -28,7 +28,7 @@ import {
   ancGovernancePathname,
   ancUstLpPathname,
   ustBorrowPathname,
-} from 'pages/gov/env';
+} from 'pages/trade/env';
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -150,7 +150,7 @@ export function RewardsBase({ className }: RewardsProps) {
           <h2>Rewards</h2>
         </div>
         <div>
-          <ActionButton component={Link} to={`/gov/claim/all`}>
+          <ActionButton component={Link} to={`/claim/all`}>
             Claim All Rewards
           </ActionButton>
         </div>
@@ -279,13 +279,13 @@ export function RewardsBase({ className }: RewardsProps) {
                 <MoreMenu size="25px">
                   <MenuItem
                     component={Link}
-                    to={`/gov/rewards/${ancGovernancePathname}/stake`}
+                    to={`/${ancGovernancePathname}/stake`}
                   >
                     Stake
                   </MenuItem>
                   <MenuItem
                     component={Link}
-                    to={`/gov/rewards/${ancGovernancePathname}/unstake`}
+                    to={`/${ancGovernancePathname}/unstake`}
                   >
                     Unstake
                   </MenuItem>
@@ -381,32 +381,26 @@ export function RewardsBase({ className }: RewardsProps) {
                 <MoreMenu size="25px">
                   <MenuItem
                     component={Link}
-                    to={`/gov/rewards/${ancUstLpPathname}/provide`}
+                    to={`/${ancUstLpPathname}/provide`}
                   >
                     Provide
                   </MenuItem>
                   <MenuItem
                     component={Link}
-                    to={`/gov/rewards/${ancUstLpPathname}/withdraw`}
+                    to={`/${ancUstLpPathname}/withdraw`}
                   >
                     Withdraw
                   </MenuItem>
-                  <MenuItem
-                    component={Link}
-                    to={`/gov/rewards/${ancUstLpPathname}/stake`}
-                  >
+                  <MenuItem component={Link} to={`/${ancUstLpPathname}/stake`}>
                     Stake
                   </MenuItem>
                   <MenuItem
                     component={Link}
-                    to={`/gov/rewards/${ancUstLpPathname}/unstake`}
+                    to={`/${ancUstLpPathname}/unstake`}
                   >
                     Unstake
                   </MenuItem>
-                  <MenuItem
-                    component={Link}
-                    to={`/gov/claim/${ancUstLpPathname}`}
-                  >
+                  <MenuItem component={Link} to={`/claim/${ancUstLpPathname}`}>
                     Claim
                   </MenuItem>
                 </MoreMenu>
@@ -442,10 +436,7 @@ export function RewardsBase({ className }: RewardsProps) {
               </td>
               <td>
                 <MoreMenu size="25px">
-                  <MenuItem
-                    component={Link}
-                    to={`/gov/claim/${ustBorrowPathname}`}
-                  >
+                  <MenuItem component={Link} to={`/claim/${ustBorrowPathname}`}>
                     Claim
                   </MenuItem>
                 </MoreMenu>

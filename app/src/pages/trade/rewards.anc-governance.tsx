@@ -4,9 +4,9 @@ import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { Circles } from 'components/Circles';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { screen } from 'env';
-import { AncGovernanceStake } from 'pages/gov/components/AncGovernanceStake';
-import { AncGovernanceUnstake } from 'pages/gov/components/AncGovernanceUnstake';
-import { ancGovernancePathname } from 'pages/gov/env';
+import { AncGovernanceStake } from 'pages/trade/components/AncGovernanceStake';
+import { AncGovernanceUnstake } from 'pages/trade/components/AncGovernanceUnstake';
+import { ancGovernancePathname } from 'pages/trade/env';
 import React, { ReactNode, useCallback, useMemo } from 'react';
 import {
   Redirect,
@@ -36,7 +36,7 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
   const history = useHistory();
 
   const pageMatch = useRouteMatch<{ view: string }>(
-    `/gov/rewards/${ancGovernancePathname}/:view`,
+    `/${ancGovernancePathname}/:view`,
   );
 
   const subTab = useMemo<Item | undefined>(() => {
@@ -51,7 +51,7 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
   const subTabChange = useCallback(
     (nextTab: Item) => {
       history.push({
-        pathname: `/gov/rewards/${ancGovernancePathname}/${nextTab.value}`,
+        pathname: `/${ancGovernancePathname}/${nextTab.value}`,
       });
     },
     [history],
@@ -85,21 +85,21 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
         <div className="form">
           <Switch>
             <Route
-              path={`/gov/rewards/${ancGovernancePathname}/stake`}
+              path={`/${ancGovernancePathname}/stake`}
               component={AncGovernanceStake}
             />
             <Route
-              path={`/gov/rewards/${ancGovernancePathname}/unstake`}
+              path={`/${ancGovernancePathname}/unstake`}
               component={AncGovernanceUnstake}
             />
             <Redirect
               exact
-              path={`/gov/rewards/${ancGovernancePathname}`}
-              to={`/gov/rewards/${ancGovernancePathname}/stake`}
+              path={`/${ancGovernancePathname}`}
+              to={`/${ancGovernancePathname}/stake`}
             />
             <Redirect
-              path={`/gov/rewards/${ancGovernancePathname}/*`}
-              to={`/gov/rewards/${ancGovernancePathname}/stake`}
+              path={`/${ancGovernancePathname}/*`}
+              to={`/${ancGovernancePathname}/stake`}
             />
           </Switch>
         </div>

@@ -1,8 +1,8 @@
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { Tab } from '@terra-dev/neumorphism-ui/components/Tab';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
-import { TradeBuy } from 'pages/gov/components/TradeBuy';
-import { TradeSell } from 'pages/gov/components/TradeSell';
+import { TradeBuy } from 'pages/trade/components/TradeBuy';
+import { TradeSell } from 'pages/trade/components/TradeSell';
 import React, { ReactNode, useCallback, useMemo } from 'react';
 import {
   Redirect,
@@ -41,7 +41,7 @@ const tabItems: Item[] = [
 function TradeBase({ className }: RewardsPoolProps) {
   const history = useHistory();
 
-  const pageMatch = useRouteMatch<{ view: string }>(`/gov/trade/:view`);
+  const pageMatch = useRouteMatch<{ view: string }>(`/trade/:view`);
 
   const tab = useMemo<Item | undefined>(() => {
     switch (pageMatch?.params.view) {
@@ -55,8 +55,7 @@ function TradeBase({ className }: RewardsPoolProps) {
   const tabChange = useCallback(
     (nextTab: Item) => {
       history.push({
-        pathname:
-          nextTab.value === 'sell' ? `/gov/trade/sell` : `/gov/trade/buy`,
+        pathname: nextTab.value === 'sell' ? `/trade/sell` : `/trade/buy`,
       });
     },
     [history],
@@ -76,10 +75,10 @@ function TradeBase({ className }: RewardsPoolProps) {
 
       <Section>
         <Switch>
-          <Route path={`/gov/trade/buy`} component={TradeBuy} />
-          <Route path={`/gov/trade/sell`} component={TradeSell} />
-          <Redirect exact path={`/gov/trade`} to={`/gov/trade/buy`} />
-          <Redirect path={`/gov/trade/*`} to={`/gov/trade/buy`} />
+          <Route path={`/trade/buy`} component={TradeBuy} />
+          <Route path={`/trade/sell`} component={TradeSell} />
+          <Redirect exact path={`/trade`} to={`/trade/buy`} />
+          <Redirect path={`/trade/*`} to={`/trade/buy`} />
         </Switch>
       </Section>
     </CenteredLayout>

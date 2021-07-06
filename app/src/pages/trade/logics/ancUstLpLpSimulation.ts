@@ -10,8 +10,8 @@ import {
 import { max, min } from '@terra-dev/big-math';
 import { Bank } from 'contexts/bank';
 import big, { Big, BigSource } from 'big.js';
-import { AncPrice } from 'pages/gov/models/ancPrice';
-import { AncUstLpSimulation } from 'pages/gov/models/ancUstLpSimulation';
+import { AncPrice } from 'pages/trade/models/ancPrice';
+import { AncUstLpSimulation } from 'pages/trade/models/ancUstLpSimulation';
 
 export function ancUstLpLpSimulation(
   ancPrice: AncPrice,

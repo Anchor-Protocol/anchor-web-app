@@ -27,8 +27,8 @@ import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { validateTxFee } from 'logics/validateTxFee';
-import { pegRecovery } from 'pages/basset/logics/pegRecovery';
-import { validateBurnAmount } from 'pages/basset/logics/validateBurnAmount';
+import { pegRecovery } from 'pages/bond/logics/pegRecovery';
+import { validateBurnAmount } from 'pages/bond/logics/validateBurnAmount';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 interface Item {

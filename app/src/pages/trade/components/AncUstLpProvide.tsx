@@ -34,9 +34,9 @@ import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
 import { formatShareOfPool } from 'pages/gov/components/formatShareOfPool';
-import { ancUstLpAncSimulation } from 'pages/gov/logics/ancUstLpAncSimulation';
-import { ancUstLpUstSimulation } from 'pages/gov/logics/ancUstLpUstSimulation';
-import { AncUstLpSimulation } from 'pages/gov/models/ancUstLpSimulation';
+import { ancUstLpAncSimulation } from 'pages/trade/logics/ancUstLpAncSimulation';
+import { ancUstLpUstSimulation } from 'pages/trade/logics/ancUstLpUstSimulation';
+import { AncUstLpSimulation } from 'pages/trade/models/ancUstLpSimulation';
 import React, {
   ChangeEvent,
   ReactNode,

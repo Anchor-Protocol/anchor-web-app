@@ -3,7 +3,7 @@ import { terraswap } from '@anchor-protocol/types';
 import { AnchorTax } from '@anchor-protocol/webapp-fns';
 import { min } from '@terra-dev/big-math';
 import big, { Big } from 'big.js';
-import { MAX_SPREAD } from 'pages/basset/env';
+import { MAX_SPREAD } from 'pages/bond/env';
 import { SwapSimulation } from '../models/swapSimulation';
 
 export function swapGetSimulation(

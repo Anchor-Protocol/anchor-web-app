@@ -21,37 +21,37 @@ function PollCreateBase({ className }: PollCreateProps) {
 
         <ul>
           <PollLink
-            to={`/gov/poll/create/modify-anc-distribution`}
+            to={`/poll/create/modify-anc-distribution`}
             title="Modify ANC Distribution"
             description="Modify the ANC distribution parameters"
           />
 
           <PollLink
-            to={`/gov/poll/create/modify-borrow-interest`}
+            to={`/poll/create/modify-borrow-interest`}
             title="Modify Borrow Interest"
             description="Modify the interest model parameters "
           />
 
           <PollLink
-            to={`/gov/poll/create/modify-collateral-attribute`}
+            to={`/poll/create/modify-collateral-attribute`}
             title="Modify Collateral Attribute"
             description="Modify the collateral attributes of an existing bAsset"
           />
 
           <PollLink
-            to={`/gov/poll/create/modify-market-parameters`}
+            to={`/poll/create/modify-market-parameters`}
             title="Modify Market Parameters"
             description="Modify the market parameters"
           />
 
           <PollLink
-            to={`/gov/poll/create/spend-community-pool`}
+            to={`/poll/create/spend-community-pool`}
             title="Spend Community Pool"
             description="Submit community pool spending poll"
           />
 
           <PollLink
-            to={`/gov/poll/create/text-proposal`}
+            to={`/poll/create/text-proposal`}
             title="Text Proposal"
             description="Upload a text poll"
           />

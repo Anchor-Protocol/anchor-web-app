@@ -1,7 +1,6 @@
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { Overview } from './components/Overview';
 import { Polls } from './components/Polls';
-import { Rewards } from './components/Rewards';
 import styled from 'styled-components';
 
 export interface GovernanceMainProps {
@@ -12,7 +11,6 @@ function GovernanceMainBase({ className }: GovernanceMainProps) {
   return (
     <PaddedLayout className={className}>
       <Overview className="overview" />
-      <Rewards className="rewards" />
       <Polls className="polls" />
     </PaddedLayout>
   );

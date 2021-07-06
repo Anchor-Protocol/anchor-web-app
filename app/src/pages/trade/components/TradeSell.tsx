@@ -1,5 +1,6 @@
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
+  ANC_INPUT_MAXIMUM_INTEGER_POINTS,
   demicrofy,
   formatANC,
   formatANCInput,
@@ -8,48 +9,36 @@ import {
   formatUSTInput,
   microfy,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
-  UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import {
-  ANC,
-  Denom,
-  terraswap,
-  uANC,
-  UST,
-  uToken,
-  uUST,
-} from '@anchor-protocol/types';
+import { ANC, Denom, terraswap, uANC, UST, uUST } from '@anchor-protocol/types';
 import {
   terraswapReverseSimulationQuery,
   terraswapSimulationQuery,
-  useAncBuyTx,
   useAnchorWebapp,
   useAncPriceQuery,
+  useAncSellTx,
 } from '@anchor-protocol/webapp-provider';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { max, min } from '@terra-dev/big-math';
 import { isZero } from '@terra-dev/is-zero';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { NumberMuiInput } from '@terra-dev/neumorphism-ui/components/NumberMuiInput';
 import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
-import { useConfirm } from '@terra-dev/neumorphism-ui/components/useConfirm';
 import { useResolveLast } from '@terra-dev/use-resolve-last';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useTerraWebapp } from '@terra-money/webapp-provider';
 import { useBank } from 'contexts/bank';
-import big, { Big } from 'big.js';
+import big from 'big.js';
 import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
-import { buyFromSimulation } from 'pages/gov/logics/buyFromSimulation';
-import { buyToSimulation } from 'pages/gov/logics/buyToSimulation';
-import { TradeSimulation } from 'pages/gov/models/tradeSimulation';
+import { sellFromSimulation } from 'pages/trade/logics/sellFromSimulation';
+import { sellToSimulation } from 'pages/trade/logics/sellToSimulation';
+import { TradeSimulation } from 'pages/trade/models/tradeSimulation';
 import React, {
   ChangeEvent,
-  ReactNode,
   useCallback,
   useEffect,
   useMemo,
@@ -61,18 +50,16 @@ interface Item {
   value: string;
 }
 
-const fromCurrencies: Item[] = [{ label: 'UST', value: 'ust' }];
-const toCurrencies: Item[] = [{ label: 'ANC', value: 'anc' }];
+const fromCurrencies: Item[] = [{ label: 'ANC', value: 'anc' }];
+const toCurrencies: Item[] = [{ label: 'UST', value: 'ust' }];
 
-export function TradeBuy() {
+export function TradeSell() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { mantleEndpoint, mantleFetch } = useTerraWebapp();
-
   const connectedWallet = useConnectedWallet();
 
-  const [openConfirm, confirmElement] = useConfirm();
+  const { mantleEndpoint, mantleFetch } = useTerraWebapp();
 
   const {
     constants: { fixedGas },
@@ -81,16 +68,16 @@ export function TradeBuy() {
 
   const bank = useBank();
 
-  const [buy, buyResult] = useAncBuyTx();
+  const [sell, sellResult] = useAncSellTx();
 
   // ---------------------------------------------
   // states
   // ---------------------------------------------
-  const [fromAmount, setFromAmount] = useState<UST>('' as UST);
-  const [toAmount, setToAmount] = useState<ANC>('' as ANC);
+  const [fromAmount, setFromAmount] = useState<ANC>('' as ANC);
+  const [toAmount, setToAmount] = useState<UST>('' as UST);
 
   const [resolveSimulation, simulation] = useResolveLast<
-    TradeSimulation<uANC, uUST, uToken> | undefined | null
+    TradeSimulation<uUST, uANC, uANC> | undefined | null
   >(() => null);
 
   const [fromCurrency, setFromCurrency] = useState<Item>(
@@ -106,83 +93,31 @@ export function TradeBuy() {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const ustBalance = useMemo(() => {
-    const txFee = min(
-      max(
-        big(big(bank.userBalances.uUSD).minus(fixedGas)).div(
-          big(big(1).plus(bank.tax.taxRate)).mul(bank.tax.taxRate),
-        ),
-        0,
-      ),
-      bank.tax.maxTaxUUSD,
-    );
-
-    return max(
-      big(bank.userBalances.uUSD)
-        .minus(txFee)
-        .minus(fixedGas * 2),
-      0,
-    ) as uUST<Big>;
-  }, [bank.tax.maxTaxUUSD, bank.tax.taxRate, bank.userBalances.uUSD, fixedGas]);
-
   const invalidTxFee = useMemo(
     () => !!connectedWallet && validateTxFee(bank, fixedGas),
     [bank, fixedGas, connectedWallet],
   );
 
   const invalidFromAmount = useMemo(() => {
-    if (fromAmount.length === 0 || !connectedWallet || !simulation)
-      return undefined;
+    if (fromAmount.length === 0 || !connectedWallet) return undefined;
 
-    return big(microfy(fromAmount))
-      .plus(simulation.txFee)
-      .plus(fixedGas)
-      .gt(bank.userBalances.uUSD)
+    return microfy(fromAmount).gt(bank.userBalances.uANC)
       ? 'Not enough assets'
       : undefined;
-  }, [
-    fromAmount,
-    connectedWallet,
-    simulation,
-    fixedGas,
-    bank.userBalances.uUSD,
-  ]);
-
-  const invalidNextTransaction = useMemo(() => {
-    if (fromAmount.length === 0 || !simulation || !!invalidFromAmount) {
-      return undefined;
-    }
-
-    const remainUUSD = big(bank.userBalances.uUSD)
-      .minus(microfy(fromAmount))
-      .minus(simulation.txFee)
-      .minus(fixedGas);
-
-    if (remainUUSD.lt(fixedGas)) {
-      return 'You may run out of USD balance needed for future transactions.';
-    }
-
-    return undefined;
-  }, [
-    bank.userBalances.uUSD,
-    fixedGas,
-    fromAmount,
-    invalidFromAmount,
-    simulation,
-  ]);
+  }, [bank.userBalances.uANC, fromAmount, connectedWallet]);
 
   // ---------------------------------------------
   // effects
   // ---------------------------------------------
   useEffect(() => {
     if (simulation?.toAmount) {
-      setToAmount(formatANCInput(demicrofy(simulation.toAmount)));
+      setToAmount(formatUSTInput(demicrofy(simulation.toAmount)));
     }
   }, [simulation?.toAmount]);
 
   useEffect(() => {
     if (simulation?.fromAmount) {
-      setFromAmount(formatUSTInput(demicrofy(simulation.fromAmount)));
+      setFromAmount(formatANCInput(demicrofy(simulation.fromAmount)));
     }
   }, [simulation?.fromAmount]);
 
@@ -206,84 +141,22 @@ export function TradeBuy() {
   const updateFromAmount = useCallback(
     async (nextFromAmount: string) => {
       if (nextFromAmount.trim().length === 0) {
-        setToAmount('' as ANC);
-        setFromAmount('' as UST);
+        setToAmount('' as UST);
+        setFromAmount('' as ANC);
 
         resolveSimulation(null);
       } else if (isZero(nextFromAmount)) {
-        setToAmount('' as ANC);
-        setFromAmount(nextFromAmount as UST);
+        setToAmount('' as UST);
+        setFromAmount(nextFromAmount as ANC);
         resolveSimulation(null);
       } else {
-        const fromAmount: UST = nextFromAmount as UST;
+        const fromAmount: ANC = nextFromAmount as ANC;
         setFromAmount(fromAmount);
 
-        const amount = microfy(fromAmount).toString() as uUST;
+        const amount = microfy(fromAmount).toString() as uANC;
 
         resolveSimulation(
           terraswapSimulationQuery({
-            mantleEndpoint,
-            mantleFetch,
-            wasmQuery: {
-              simulation: {
-                contractAddress: address.terraswap.ancUstPair,
-                query: {
-                  simulation: {
-                    offer_asset: {
-                      info: {
-                        native_token: {
-                          denom: 'uusd' as Denom,
-                        },
-                      },
-                      amount,
-                    },
-                  },
-                },
-              },
-            },
-          }).then(({ simulation }) => {
-            return simulation
-              ? buyToSimulation(
-                  simulation as terraswap.SimulationResponse<uANC>,
-                  amount,
-                  bank.tax,
-                  fixedGas,
-                )
-              : undefined;
-          }),
-        );
-      }
-    },
-    [
-      address.terraswap.ancUstPair,
-      bank.tax,
-      fixedGas,
-      mantleEndpoint,
-      mantleFetch,
-      resolveSimulation,
-    ],
-  );
-
-  const updateToAmount = useCallback(
-    (nextToAmount: string) => {
-      if (nextToAmount.trim().length === 0) {
-        setFromAmount('' as UST);
-        setToAmount('' as ANC);
-
-        resolveSimulation(null);
-      } else if (isZero(nextToAmount)) {
-        console.log('TradeBuy.tsx..()', nextToAmount);
-        setFromAmount('' as UST);
-        setToAmount(nextToAmount as ANC);
-        resolveSimulation(null);
-      } else {
-        const toAmount: ANC = nextToAmount as ANC;
-        setToAmount(toAmount);
-
-        const amount = microfy(toAmount).toString() as uANC;
-
-        resolveSimulation(
-          terraswapReverseSimulationQuery({
             mantleEndpoint,
             mantleFetch,
             wasmQuery: {
@@ -305,8 +178,8 @@ export function TradeBuy() {
             },
           }).then(({ simulation }) => {
             return simulation
-              ? buyFromSimulation(
-                  simulation as terraswap.SimulationResponse<uANC, uUST>,
+              ? sellToSimulation(
+                  simulation as terraswap.SimulationResponse<uUST, uANC>,
                   amount,
                   bank.tax,
                   fixedGas,
@@ -327,59 +200,107 @@ export function TradeBuy() {
     ],
   );
 
+  const updateToAmount = useCallback(
+    (nextToAmount: string) => {
+      if (nextToAmount.trim().length === 0) {
+        setFromAmount('' as ANC);
+        setToAmount('' as UST);
+
+        resolveSimulation(null);
+      } else if (isZero(nextToAmount)) {
+        setFromAmount('' as ANC);
+        setToAmount(nextToAmount as UST);
+        resolveSimulation(null);
+      } else {
+        const toAmount: UST = nextToAmount as UST;
+        setToAmount(toAmount);
+
+        const amount = microfy(toAmount).toString() as uUST;
+
+        resolveSimulation(
+          terraswapReverseSimulationQuery({
+            mantleEndpoint,
+            mantleFetch,
+            wasmQuery: {
+              simulation: {
+                contractAddress: address.terraswap.ancUstPair,
+                query: {
+                  simulation: {
+                    offer_asset: {
+                      info: {
+                        native_token: {
+                          denom: 'uusd' as Denom,
+                        },
+                      },
+                      amount,
+                    },
+                  },
+                },
+              },
+            },
+          }).then(({ simulation }) => {
+            return simulation
+              ? sellFromSimulation(
+                  simulation as terraswap.SimulationResponse<uUST, uANC>,
+                  amount,
+                  bank.tax,
+                  fixedGas,
+                )
+              : undefined;
+          }),
+        );
+      }
+    },
+    [
+      address.terraswap.ancUstPair,
+      bank.tax,
+      fixedGas,
+      mantleEndpoint,
+      mantleFetch,
+      resolveSimulation,
+    ],
+  );
+
   const init = useCallback(() => {
-    setToAmount('' as ANC);
-    setFromAmount('' as UST);
+    setToAmount('' as UST);
+    setFromAmount('' as ANC);
   }, []);
 
   const proceed = useCallback(
-    async (fromAmount: UST, txFee: uUST, confirm: ReactNode) => {
-      if (!connectedWallet || !buy) {
+    (burnAmount: ANC) => {
+      if (!connectedWallet || !sell) {
         return;
       }
 
-      if (confirm) {
-        const userConfirm = await openConfirm({
-          description: confirm,
-          agree: 'Proceed',
-          disagree: 'Cancel',
-        });
-
-        if (!userConfirm) {
-          return;
-        }
-      }
-
-      buy({
-        fromAmount,
-        txFee,
+      sell({
+        burnAmount,
         onTxSucceed: () => {
           init();
         },
       });
     },
-    [buy, connectedWallet, init, openConfirm],
+    [connectedWallet, sell, init],
   );
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
   if (
-    buyResult?.status === StreamStatus.IN_PROGRESS ||
-    buyResult?.status === StreamStatus.DONE
+    sellResult?.status === StreamStatus.IN_PROGRESS ||
+    sellResult?.status === StreamStatus.DONE
   ) {
     return (
       <TxResultRenderer
-        resultRendering={buyResult.value}
+        resultRendering={sellResult.value}
         onExit={() => {
           init();
 
-          switch (buyResult.status) {
+          switch (sellResult.status) {
             case StreamStatus.IN_PROGRESS:
-              buyResult.abort();
+              sellResult.abort();
               break;
             case StreamStatus.DONE:
-              buyResult.clear();
+              sellResult.clear();
               break;
           }
         }}
@@ -410,13 +331,11 @@ export function TradeBuy() {
                 style={{ textDecoration: 'underline', cursor: 'pointer' }}
                 onClick={() =>
                   updateFromAmount(
-                    formatUSTInput(
-                      demicrofy(ustBalance ?? bank.userBalances.uUSD),
-                    ),
+                    formatANCInput(demicrofy(bank.userBalances.uANC)),
                   )
                 }
               >
-                {formatUST(demicrofy(ustBalance ?? bank.userBalances.uUSD))}{' '}
+                {formatANC(demicrofy(bank.userBalances.uANC))}{' '}
                 {fromCurrency.label}
               </span>
             </span>
@@ -439,8 +358,8 @@ export function TradeBuy() {
           placeholder="0.00"
           error={!!invalidFromAmount}
           value={fromAmount}
-          maxIntegerPoinsts={UST_INPUT_MAXIMUM_INTEGER_POINTS}
-          maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
+          maxIntegerPoinsts={ANC_INPUT_MAXIMUM_INTEGER_POINTS}
+          maxDecimalPoints={ANC_INPUT_MAXIMUM_DECIMAL_POINTS}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateFromAmount(target.value)
           }
@@ -477,7 +396,7 @@ export function TradeBuy() {
           error={!!invalidFromAmount}
           value={toAmount}
           maxIntegerPoinsts={5}
-          maxDecimalPoints={ANC_INPUT_MAXIMUM_DECIMAL_POINTS}
+          maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateToAmount(target.value)
           }
@@ -488,10 +407,10 @@ export function TradeBuy() {
         <TxFeeList className="receipt">
           <SwapListItem
             label="Price"
-            currencyA="UST"
-            currencyB="ANC"
+            currencyA="ANC"
+            currencyB="UST"
             exchangeRateAB={simulation.beliefPrice}
-            initialDirection="a/b"
+            initialDirection="b/a"
             formatExchangeRate={(price, direction) =>
               formatFluidDecimalPoints(
                 price,
@@ -503,10 +422,10 @@ export function TradeBuy() {
             }
           />
           <TxFeeListItem label="Minimum Received">
-            {formatANC(demicrofy(simulation.minimumReceived))} ANC
+            {formatUST(demicrofy(simulation.minimumReceived))} UST
           </TxFeeListItem>
           <TxFeeListItem label="Trading Fee">
-            {formatANC(demicrofy(simulation.swapFee))} ANC
+            {formatUST(demicrofy(simulation.swapFee))} UST
           </TxFeeListItem>
           <TxFeeListItem label="Tx Fee">
             {formatUST(demicrofy(simulation.txFee))} UST
@@ -514,45 +433,24 @@ export function TradeBuy() {
         </TxFeeList>
       )}
 
-      {invalidNextTransaction && ustBalance && (
-        <MessageBox style={{ marginTop: 30, marginBottom: 30 }}>
-          {invalidNextTransaction}
-        </MessageBox>
-      )}
-
       {/* Submit */}
       <ActionButton
         className="submit"
-        style={
-          invalidNextTransaction
-            ? {
-                backgroundColor: '#c12535',
-              }
-            : undefined
-        }
         disabled={
           !connectedWallet ||
           !connectedWallet.availablePost ||
-          !buy ||
+          !sell ||
           !ancPrice ||
           fromAmount.length === 0 ||
           big(fromAmount).lte(0) ||
           !!invalidTxFee ||
           !!invalidFromAmount ||
-          !simulation ||
           big(simulation?.swapFee ?? 0).lte(0)
         }
-        onClick={() =>
-          connectedWallet &&
-          ancPrice &&
-          simulation &&
-          proceed(fromAmount, simulation.txFee, invalidNextTransaction)
-        }
+        onClick={() => proceed(fromAmount)}
       >
         Proceed
       </ActionButton>
-
-      {confirmElement}
     </>
   );
 }

@@ -6,8 +6,9 @@ import {
 import { uANC } from '@anchor-protocol/types';
 import {
   useAnchorWebapp,
+  useRewardsAllClaimTx,
+  useRewardsClaimableAncUstLpRewardsQuery,
   useRewardsClaimableUstBorrowRewardsQuery,
-  useRewardsUstBorrowClaimTx,
 } from '@anchor-protocol/webapp-provider';
 import { StreamStatus } from '@rx-stream/react';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
@@ -20,16 +21,16 @@ import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
-import { MINIMUM_CLAIM_BALANCE } from 'pages/gov/env';
+import { MINIMUM_CLAIM_BALANCE } from 'pages/trade/env';
 import React, { useCallback, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
-export interface ClaimUstBorrowProps {
+export interface ClaimAllProps {
   className?: string;
 }
 
-function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
+function ClaimAllBase({ className }: ClaimAllProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
@@ -39,7 +40,7 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
     constants: { fixedGas },
   } = useAnchorWebapp();
 
-  const [claim, claimResult] = useRewardsUstBorrowClaimTx();
+  const [claim, claimResult] = useRewardsAllClaimTx();
 
   const history = useHistory();
 
@@ -51,13 +52,34 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
   const { data: { borrowerInfo, userANCBalance } = {} } =
     useRewardsClaimableUstBorrowRewardsQuery();
 
+  const { data: { lPStakerInfo: userLPStakingInfo } = {} } =
+    useRewardsClaimableAncUstLpRewardsQuery();
+
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const claiming = useMemo(() => {
+  const claimingBorrowerInfoPendingRewards = useMemo(() => {
     if (!borrowerInfo) return undefined;
     return big(borrowerInfo.pending_rewards) as uANC<Big>;
   }, [borrowerInfo]);
+
+  const claimingLpStaingInfoPendingRewards = useMemo(() => {
+    if (!userLPStakingInfo) return undefined;
+    return big(userLPStakingInfo.pending_reward) as uANC<Big>;
+  }, [userLPStakingInfo]);
+
+  const claiming = useMemo(() => {
+    if (
+      !claimingBorrowerInfoPendingRewards ||
+      !claimingLpStaingInfoPendingRewards
+    ) {
+      return undefined;
+    }
+
+    return claimingLpStaingInfoPendingRewards.plus(
+      claimingBorrowerInfoPendingRewards,
+    ) as uANC<Big>;
+  }, [claimingBorrowerInfoPendingRewards, claimingLpStaingInfoPendingRewards]);
 
   const ancAfterTx = useMemo(() => {
     if (!claiming || !userANCBalance) return undefined;
@@ -69,13 +91,19 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
     [bank, fixedGas, connectedWallet],
   );
 
-  const proceed = useCallback(() => {
-    if (!connectedWallet || !claim) {
-      return;
-    }
+  const proceed = useCallback(
+    (claimMoneyMarketRewards: boolean, cliamLpStakingRewards: boolean) => {
+      if (!connectedWallet || !claim) {
+        return;
+      }
 
-    claim({});
-  }, [claim, connectedWallet]);
+      claim({
+        claimAncUstLp: cliamLpStakingRewards,
+        claimUstBorrow: claimMoneyMarketRewards,
+      });
+    },
+    [claim, connectedWallet],
+  );
 
   // ---------------------------------------------
   // presentation
@@ -104,7 +132,7 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
   return (
     <CenteredLayout className={className} maxWidth={800}>
       <Section>
-        <h1>UST Borrow Claim</h1>
+        <h1>Claim All Rewards</h1>
 
         {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
 
@@ -127,10 +155,20 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
             !connectedWallet ||
             !connectedWallet.availablePost ||
             !claim ||
+            !claimingLpStaingInfoPendingRewards ||
+            !claimingBorrowerInfoPendingRewards ||
             !claiming ||
-            claiming.lte(MINIMUM_CLAIM_BALANCE)
+            (claimingBorrowerInfoPendingRewards.lt(MINIMUM_CLAIM_BALANCE) &&
+              claimingLpStaingInfoPendingRewards.lt(MINIMUM_CLAIM_BALANCE))
           }
-          onClick={() => proceed()}
+          onClick={() =>
+            claimingBorrowerInfoPendingRewards &&
+            claimingLpStaingInfoPendingRewards &&
+            proceed(
+              claimingBorrowerInfoPendingRewards.gte(MINIMUM_CLAIM_BALANCE),
+              claimingLpStaingInfoPendingRewards.gte(MINIMUM_CLAIM_BALANCE),
+            )
+          }
         >
           Claim
         </ActionButton>
@@ -139,7 +177,7 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
   );
 }
 
-export const ClaimUstBorrow = styled(ClaimUstBorrowBase)`
+export const ClaimAll = styled(ClaimAllBase)`
   h1 {
     font-size: 27px;
     text-align: center;

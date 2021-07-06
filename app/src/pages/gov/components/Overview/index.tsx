@@ -26,7 +26,7 @@ import { TooltipLabel } from '@terra-dev/neumorphism-ui/components/TooltipLabel'
 import big, { Big } from 'big.js';
 import { Circles } from 'components/Circles';
 import { screen } from 'env';
-import { ancGovernancePathname, ancUstLpPathname } from 'pages/gov/env';
+import { ancGovernancePathname, ancUstLpPathname } from 'pages/trade/env';
 import React, { useMemo } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
@@ -195,7 +195,7 @@ function OverviewBase({ className }: OverviewProps) {
           </span>
         </div>
         <div className="staking-buttons">
-          <BorderButton component={Link} to={`/gov/trade`}>
+          <BorderButton component={Link} to={`/trade`}>
             Trade ANC
           </BorderButton>
           <Tooltip
@@ -204,7 +204,7 @@ function OverviewBase({ className }: OverviewProps) {
           >
             <BorderButton
               component={Link}
-              to={`/gov/rewards/${ancGovernancePathname}/stake`}
+              to={`/${ancGovernancePathname}/stake`}
             >
               Gov Stake
             </BorderButton>
@@ -213,7 +213,7 @@ function OverviewBase({ className }: OverviewProps) {
       </Section>
       <Section
         className="lp"
-        onClick={() => history.push(`/gov/rewards/${ancUstLpPathname}/provide`)}
+        onClick={() => history.push(`/${ancUstLpPathname}/provide`)}
       >
         <Circles backgroundColors={['#ffffff', '#2C2C2C']}>
           <TokenIcon token="ust" style={{ fontSize: '1.1em' }} />

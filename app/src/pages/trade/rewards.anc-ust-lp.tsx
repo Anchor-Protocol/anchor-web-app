@@ -5,12 +5,12 @@ import { Tab } from '@terra-dev/neumorphism-ui/components/Tab';
 import { Circles } from 'components/Circles';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { screen } from 'env';
-import { AncUstLpProvide } from 'pages/gov/components/AncUstLpProvide';
-import { AncUstLpStake } from 'pages/gov/components/AncUstLpStake';
-import { AncUstLpStakeOverview } from 'pages/gov/components/AncUstLpStakeOverview';
-import { AncUstLpUnstake } from 'pages/gov/components/AncUstLpUnstake';
-import { AncUstLpWithdraw } from 'pages/gov/components/AncUstLpWithdraw';
-import { ancUstLpPathname } from 'pages/gov/env';
+import { AncUstLpProvide } from 'pages/trade/components/AncUstLpProvide';
+import { AncUstLpStake } from 'pages/trade/components/AncUstLpStake';
+import { AncUstLpStakeOverview } from 'pages/trade/components/AncUstLpStakeOverview';
+import { AncUstLpUnstake } from 'pages/trade/components/AncUstLpUnstake';
+import { AncUstLpWithdraw } from 'pages/trade/components/AncUstLpWithdraw';
+import { ancUstLpPathname } from 'pages/trade/env';
 import React, { ReactNode, useCallback, useMemo } from 'react';
 import {
   Redirect,
@@ -67,7 +67,7 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
   const history = useHistory();
 
   const pageMatch = useRouteMatch<{ view: string }>(
-    `/gov/rewards/${ancUstLpPathname}/:view`,
+    `/${ancUstLpPathname}/:view`,
   );
 
   const tab = useMemo<Item | undefined>(() => {
@@ -86,8 +86,8 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
       history.push({
         pathname:
           nextTab.value === 'stake'
-            ? `/gov/rewards/${ancUstLpPathname}/stake`
-            : `/gov/rewards/${ancUstLpPathname}/provide`,
+            ? `/${ancUstLpPathname}/stake`
+            : `/${ancUstLpPathname}/provide`,
       });
     },
     [history],
@@ -109,7 +109,7 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
   const subTabChange = useCallback(
     (nextTab: Item) => {
       history.push({
-        pathname: `/gov/rewards/${ancUstLpPathname}/${nextTab.value}`,
+        pathname: `/${ancUstLpPathname}/${nextTab.value}`,
       });
     },
     [history],
@@ -158,29 +158,29 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
 
           <Switch>
             <Route
-              path={`/gov/rewards/${ancUstLpPathname}/provide`}
+              path={`/${ancUstLpPathname}/provide`}
               component={AncUstLpProvide}
             />
             <Route
-              path={`/gov/rewards/${ancUstLpPathname}/withdraw`}
+              path={`/${ancUstLpPathname}/withdraw`}
               component={AncUstLpWithdraw}
             />
             <Route
-              path={`/gov/rewards/${ancUstLpPathname}/stake`}
+              path={`/${ancUstLpPathname}/stake`}
               component={AncUstLpStake}
             />
             <Route
-              path={`/gov/rewards/${ancUstLpPathname}/unstake`}
+              path={`/${ancUstLpPathname}/unstake`}
               component={AncUstLpUnstake}
             />
             <Redirect
               exact
-              path={`/gov/rewards/${ancUstLpPathname}`}
-              to={`/gov/rewards/${ancUstLpPathname}/provide`}
+              path={`/${ancUstLpPathname}`}
+              to={`/${ancUstLpPathname}/provide`}
             />
             <Redirect
-              path={`/gov/rewards/${ancUstLpPathname}/*`}
-              to={`/gov/rewards/${ancUstLpPathname}/provide`}
+              path={`/${ancUstLpPathname}/*`}
+              to={`/${ancUstLpPathname}/provide`}
             />
           </Switch>
         </div>

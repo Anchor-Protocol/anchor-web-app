@@ -61,7 +61,7 @@ function PollsBase({ className }: PollsProps) {
 
   const onPollClick = useCallback(
     (poll: anchorToken.gov.PollResponse) => {
-      history.push(`/gov/poll/${poll.id}`);
+      history.push(`/poll/${poll.id}`);
     },
     [history],
   );
@@ -122,7 +122,7 @@ function PollsBase({ className }: PollsProps) {
           >
             Join Forum
           </BorderButton>
-          <ActionButton component={Link} to={`/gov/poll/create`}>
+          <ActionButton component={Link} to={`/poll/create`}>
             Create Poll
           </ActionButton>
         </div>

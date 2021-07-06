@@ -30,8 +30,8 @@ import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { validateTxFee } from 'logics/validateTxFee';
 import { formatShareOfPool } from 'pages/gov/components/formatShareOfPool';
-import { ancUstLpLpSimulation } from 'pages/gov/logics/ancUstLpLpSimulation';
-import { AncUstLpSimulation } from 'pages/gov/models/ancUstLpSimulation';
+import { ancUstLpLpSimulation } from 'pages/trade/logics/ancUstLpLpSimulation';
+import { AncUstLpSimulation } from 'pages/trade/models/ancUstLpSimulation';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 export function AncUstLpWithdraw() {

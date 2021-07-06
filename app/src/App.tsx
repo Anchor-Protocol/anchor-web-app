@@ -5,18 +5,18 @@ import { AppProviders } from 'configurations/AppProviders';
 import { NotificationProvider } from 'contexts/notification';
 import { JobsProvider } from 'jobs/Jobs';
 import { Airdrop } from 'pages/airdrop';
-import { BAsset } from 'pages/basset';
+import { BAsset } from 'pages/bond';
 import { Borrow } from 'pages/borrow';
 import { Dashboard } from 'pages/dashboard';
 import { Earn } from 'pages/earn';
-import { ClaimAll } from 'pages/gov/claim.all';
-import { ClaimAncUstLp } from 'pages/gov/claim.anc-ust-lp';
-import { ClaimUstBorrow } from 'pages/gov/claim.ust-borrow';
+import { ClaimAll } from 'pages/trade/claim.all';
+import { ClaimAncUstLp } from 'pages/trade/claim.anc-ust-lp';
+import { ClaimUstBorrow } from 'pages/trade/claim.ust-borrow';
 import {
   ancGovernancePathname,
   ancUstLpPathname,
   ustBorrowPathname,
-} from 'pages/gov/env';
+} from 'pages/trade/env';
 import { GovernanceMain } from 'pages/gov/main';
 import { PollCreate } from 'pages/gov/poll.create';
 import { PollCreateModifyANCDistribution } from 'pages/gov/poll.create.modify-anc-distribution';
@@ -26,9 +26,9 @@ import { PollCreateModifyMarketParameters } from 'pages/gov/poll.create.modify-m
 import { PollCreateSpendCommunityPool } from 'pages/gov/poll.create.spend-community-pool';
 import { PollCreateTextProposal } from 'pages/gov/poll.create.text-proposal';
 import { PollDetail } from 'pages/gov/poll.detail';
-import { RewardsAncGovernance } from 'pages/gov/rewards.anc-governance';
-import { RewardsAncUstLp } from 'pages/gov/rewards.anc-ust-lp';
-import { Trade } from 'pages/gov/trade';
+import { RewardsAncGovernance } from 'pages/trade/rewards.anc-governance';
+import { RewardsAncUstLp } from 'pages/trade/rewards.anc-ust-lp';
+import { Trade } from 'pages/trade/trade';
 import { Mypage } from 'pages/mypage';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import './configurations/chartjs';
@@ -62,53 +62,56 @@ export function App() {
 
               {/* Governance */}
               <Route exact path={`/gov/`} component={GovernanceMain} />
-              <Route path={`/gov/trade`} component={Trade} />
-              <Route exact path={`/gov/poll/create`} component={PollCreate} />
+
+              {/* Poll */}
+              <Route exact path={`/poll/create`} component={PollCreate} />
               <Route
-                path={`/gov/poll/create/modify-anc-distribution`}
+                path={`/poll/create/modify-anc-distribution`}
                 component={PollCreateModifyANCDistribution}
               />
               <Route
-                path={`/gov/poll/create/modify-borrow-interest`}
+                path={`/poll/create/modify-borrow-interest`}
                 component={PollCreateModifyBorrowInterest}
               />
               <Route
-                path={`/gov/poll/create/modify-collateral-attribute`}
+                path={`/poll/create/modify-collateral-attribute`}
                 component={PollCreateModifyCollateralAttribute}
               />
               <Route
-                path={`/gov/poll/create/modify-market-parameters`}
+                path={`/poll/create/modify-market-parameters`}
                 component={PollCreateModifyMarketParameters}
               />
               <Route
-                path={`/gov/poll/create/spend-community-pool`}
+                path={`/poll/create/spend-community-pool`}
                 component={PollCreateSpendCommunityPool}
               />
               <Route
-                path={`/gov/poll/create/text-proposal`}
+                path={`/poll/create/text-proposal`}
                 component={PollCreateTextProposal}
               />
-              <Route path={`/gov/poll/:id`} component={PollDetail} />
+              <Route path={`/poll/:id`} component={PollDetail} />
 
-              {/* Rewards */}
+              {/* Trade */}
+              <Route path={`/trade`} component={Trade} />
               <Route
-                path={`/gov/rewards/${ancUstLpPathname}`}
+                path={`/${ancUstLpPathname}`}
                 component={RewardsAncUstLp}
               />
               <Route
-                path={`/gov/rewards/${ancGovernancePathname}`}
+                path={`/${ancGovernancePathname}`}
                 component={RewardsAncGovernance}
               />
-              <Route path={`/gov/claim/all`} component={ClaimAll} />
+              <Route path={`/claim/all`} component={ClaimAll} />
               <Route
-                path={`/gov/claim/${ancUstLpPathname}`}
+                path={`/claim/${ancUstLpPathname}`}
                 component={ClaimAncUstLp}
               />
               <Route
-                path={`/gov/claim/${ustBorrowPathname}`}
+                path={`/claim/${ustBorrowPathname}`}
                 component={ClaimUstBorrow}
               />
-              <Redirect path={`/gov/*`} to={`/gov/`} />
+
+              {/* Mypage */}
               <Route path="/mypage" component={Mypage} />
 
               <Redirect to="/" />
