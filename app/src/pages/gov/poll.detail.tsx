@@ -25,9 +25,9 @@ import {
   rulerShadowColor,
 } from '@terra-dev/styled-neumorphism';
 import { TimeEnd } from '@terra-dev/use-time-end';
-import { AccountLink } from 'components/AccountLink';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
-import { useCodeViewerDialog } from 'components/useCodeViewerDialog';
+import { AccountLink } from 'components/links/AccountLink';
+import { useCodeViewerDialog } from 'components/dialogs/useCodeViewerDialog';
 import { screen } from 'env';
 import {
   Description,

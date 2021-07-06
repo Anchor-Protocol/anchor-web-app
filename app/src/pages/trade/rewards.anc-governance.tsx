@@ -1,7 +1,7 @@
 import { anc80gif, GifIcon } from '@anchor-protocol/token-icons';
 import { RulerTab } from '@terra-dev/neumorphism-ui/components/RulerTab';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
-import { Circles } from 'components/Circles';
+import { Circles } from 'components/primitives/Circles';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { screen } from 'env';
 import { AncGovernanceStake } from 'pages/trade/components/AncGovernanceStake';

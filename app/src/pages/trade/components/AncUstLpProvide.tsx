@@ -28,7 +28,7 @@ import { useConfirm } from '@terra-dev/neumorphism-ui/components/useConfirm';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'contexts/bank';
 import big, { Big } from 'big.js';
-import { IconLineSeparator } from 'components/IconLineSeparator';
+import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';

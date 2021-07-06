@@ -1,6 +1,6 @@
 import { demicrofy, formatANC } from '@anchor-protocol/notation';
 import { anchorToken, ContractAddress } from '@anchor-protocol/types';
-import { AccountLink } from 'components/AccountLink';
+import { AccountLink } from 'components/links/AccountLink';
 import { createElement, ReactNode } from 'react';
 
 export function getMsgDetails(

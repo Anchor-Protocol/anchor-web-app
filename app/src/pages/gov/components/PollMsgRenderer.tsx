@@ -3,7 +3,7 @@ import {
   useAnchorWebapp,
   useContractNickname,
 } from '@anchor-protocol/webapp-provider';
-import { AccountLink } from 'components/AccountLink';
+import { AccountLink } from 'components/links/AccountLink';
 import React, { Fragment, useMemo } from 'react';
 import { getMsgDetails } from '../logics/getMsgDetails';
 

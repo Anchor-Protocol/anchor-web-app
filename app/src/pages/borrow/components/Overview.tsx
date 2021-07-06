@@ -26,7 +26,7 @@ import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { TooltipIconCircle } from '@terra-dev/neumorphism-ui/components/TooltipIconCircle';
 import big, { Big } from 'big.js';
-import { SubAmount } from 'components/SubAmount';
+import { SubAmount } from 'components/primitives/SubAmount';
 import { screen } from 'env';
 import { currentLtv as _currentLtv } from 'pages/borrow/logics/currentLtv';
 import React, { useMemo } from 'react';

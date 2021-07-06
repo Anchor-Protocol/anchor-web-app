@@ -24,7 +24,7 @@ import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
 import { TooltipLabel } from '@terra-dev/neumorphism-ui/components/TooltipLabel';
 import big, { Big } from 'big.js';
-import { Circles } from 'components/Circles';
+import { Circles } from 'components/primitives/Circles';
 import { screen } from 'env';
 import { ancGovernancePathname, ancUstLpPathname } from 'pages/trade/env';
 import React, { useMemo } from 'react';

@@ -19,9 +19,9 @@ import {
   TerraWebappProvider,
   webworkerMantleFetch,
 } from '@terra-money/webapp-provider';
+import { useReadonlyWalletDialog } from 'components/dialogs/useReadonlyWalletDialog';
+import { useRequestReloadDialog } from 'components/dialogs/useRequestReloadDialog';
 import { SnackbarContainer } from 'components/SnackbarContainer';
-import { useReadonlyWalletDialog } from 'components/useReadonlyWalletDialog';
-import { useRequestReloadDialog } from 'components/useRequestReload';
 import { ThemeProvider } from 'contexts/theme';
 import { ADDRESSES, defaultNetwork, GA_TRACKING_ID, onProduction } from 'env';
 import React, { ReactNode, useCallback } from 'react';

@@ -29,7 +29,7 @@ import { useDialog } from '@terra-dev/use-dialog';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'contexts/bank';
 import big, { Big, BigSource } from 'big.js';
-import { IconLineSeparator } from 'components/IconLineSeparator';
+import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';

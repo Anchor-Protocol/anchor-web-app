@@ -17,7 +17,7 @@ import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from '@terra-money/webapp-provider';
-import { SubAmount } from 'components/SubAmount';
+import { SubAmount } from 'components/primitives/SubAmount';
 import React, { useCallback, useMemo } from 'react';
 import { useDepositDialog } from './useDepositDialog';
 import { useWithdrawDialog } from './useWithdrawDialog';

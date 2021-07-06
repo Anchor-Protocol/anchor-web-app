@@ -5,7 +5,7 @@ import {
 import { anchorToken } from '@anchor-protocol/types';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
-import { AccountLink } from 'components/AccountLink';
+import { AccountLink } from 'components/links/AccountLink';
 import styled from 'styled-components';
 
 export interface PollVotersProps {
