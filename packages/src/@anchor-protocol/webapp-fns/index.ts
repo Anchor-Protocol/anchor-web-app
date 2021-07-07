@@ -19,6 +19,15 @@ export * from './computes/borrow/computeBorrowMax';
 export * from './computes/borrow/computeBorrowTxFee';
 export * from './computes/borrow/computeBorrowReceiveAmount';
 export * from './computes/borrow/validateBorrowAmount';
+export * from './computes/borrow/computeRepayAmountToLtv';
+export * from './computes/borrow/computeLtvToRepayAmount';
+export * from './computes/borrow/computeRepayNextLtv';
+export * from './computes/borrow/computeRepayTotalBorrowed';
+export * from './computes/borrow/computeMaxRepayingAmount';
+export * from './computes/borrow/computeRepayTxFee';
+export * from './computes/borrow/computeRepayTotalOutstandingLoan';
+export * from './computes/borrow/computeRepaySendAmount';
+export * from './computes/borrow/validateRepayAmount';
 
 export * from './forms/earn/deposit';
 export * from './forms/earn/withdraw';

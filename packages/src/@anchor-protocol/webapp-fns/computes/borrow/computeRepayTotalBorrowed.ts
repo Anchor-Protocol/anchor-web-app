@@ -2,10 +2,10 @@ import type { uUST } from '@anchor-protocol/types';
 import { moneyMarket } from '@anchor-protocol/types';
 import big, { Big } from 'big.js';
 
-export function repayTotalBorrows(
+export function computeRepayTotalBorrowed(
   marketState: moneyMarket.market.StateResponse,
-  borrowRate: moneyMarket.interestModel.BorrowRateResponse,
-  borrowInfo: moneyMarket.market.BorrowerInfoResponse,
+  interestModelBorrowRate: moneyMarket.interestModel.BorrowRateResponse,
+  marketBorrowerInfo: moneyMarket.market.BorrowerInfoResponse,
   currentBlock: number,
 ): uUST<Big> {
   const bufferBlocks = 20;
@@ -20,13 +20,15 @@ export function repayTotalBorrows(
   const passedBlock = big(currentBlock).minus(
     marketState.last_interest_updated,
   );
-  const interestFactor = passedBlock.mul(borrowRate.rate);
+  const interestFactor = passedBlock.mul(interestModelBorrowRate.rate);
   const globalFactorInterestIndex = big(marketState.global_interest_index).mul(
     big(1).plus(interestFactor),
   );
-  const bufferInterestFactor = big(borrowRate.rate).mul(bufferBlocks);
-  const totalBorrowsWithoutBuffer = big(borrowInfo.loan_amount).mul(
-    big(globalFactorInterestIndex).div(borrowInfo.interest_index),
+  const bufferInterestFactor = big(interestModelBorrowRate.rate).mul(
+    bufferBlocks,
+  );
+  const totalBorrowsWithoutBuffer = big(marketBorrowerInfo.loan_amount).mul(
+    big(globalFactorInterestIndex).div(marketBorrowerInfo.interest_index),
   );
   const totalBorrows = totalBorrowsWithoutBuffer.mul(
     big(1).plus(bufferInterestFactor),
@@ -34,7 +36,7 @@ export function repayTotalBorrows(
 
   //console.log('useRepayDialog.tsx..()', totalBorrows.toString(), marketUserOverview.loanAmount.loan_amount);
 
-  return (totalBorrows.lt(1000)
-    ? big(1000)
-    : totalBorrows.plus(1000)) as uUST<Big>;
+  return (
+    totalBorrows.lt(1000) ? big(1000) : totalBorrows.plus(1000)
+  ) as uUST<Big>;
 }

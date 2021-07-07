@@ -8,16 +8,28 @@ import {
 } from '@anchor-protocol/notation';
 import { Rate, UST, uUST } from '@anchor-protocol/types';
 import {
+  AnchorTax,
+  AnchorTokenBalances,
   BorrowBorrower,
-  BorrowMarket, computeBorrowAPR,
+  BorrowMarket,
+  computeBorrowAPR,
+  computeCurrentLtv,
+  computeLtvToRepayAmount,
+  computeMaxRepayingAmount,
+  computeRepayAmountToLtv,
+  computeRepayNextLtv,
+  computeRepaySendAmount,
+  computeRepayTotalOutstandingLoan,
+  computeRepayTxFee,
   useAnchorWebapp,
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
   useBorrowRepayTx,
+  validateRepayAmount,
+  validateTxFee,
 } from '@anchor-protocol/webapp-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { max } from '@terra-dev/big-math';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
@@ -26,27 +38,15 @@ import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import type { DialogProps, OpenDialog } from '@terra-dev/use-dialog';
 import { useDialog } from '@terra-dev/use-dialog';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank } from 'contexts/bank';
+import { useBank } from '@terra-money/webapp-provider';
 import big, { Big, BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { validateTxFee } from 'logics/validateTxFee';
 import type { ReactNode } from 'react';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { apr as _apr } from '../logics/apr';
-import { currentLtv as _currentLtv } from '../logics/currentLtv';
-import { estimateLiquidationPrice } from '../logics/estimateLiquidationPrice';
-import { ltvToRepayAmount } from '../logics/ltvToRepayAmount';
-import { repayAmountToLtv } from '../logics/repayAmountToLtv';
-import { repayNextLtv } from '../logics/repayNextLtv';
-import { repaySendAmount } from '../logics/repaySendAmount';
-import { repayTotalBorrows } from '../logics/repayTotalBorrows';
-import { repayTotalOutstandingLoan } from '../logics/repayTotalOutstandingLoan';
-import { repayTxFee } from '../logics/repayTxFee';
-import { validateRepayAmount } from '../logics/validateRepayAmount';
 import { LTVGraph } from './LTVGraph';
 
 interface FormParams {
@@ -89,22 +89,25 @@ function ComponentBase({
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const bank = useBank();
+  const { tokenBalances, tax } = useBank<AnchorTokenBalances, AnchorTax>();
 
   const {
     data: {
       borrowRate,
-      bLunaOraclePrice,
-      bLunaMaxLtv = '0.5' as Rate,
-      bLunaSafeLtv = '0.3' as Rate,
+      oraclePrices,
+      bAssetLtvsAvg,
+      //bLunaOraclePrice,
+      //bLunaMaxLtv = '0.5' as Rate,
+      //bLunaSafeLtv = '0.3' as Rate,
       marketState,
     } = fallbackBorrowMarket,
   } = useBorrowMarketQuery();
 
   const {
     data: {
-      marketBorrowerInfo: loanAmount,
-      bLunaCustodyBorrower: borrowInfo,
+      marketBorrowerInfo,
+      overseerCollaterals,
+      //bLunaCustodyBorrower: borrowInfo,
       blockHeight,
     } = fallbackBorrowBorrower,
   } = useBorrowBorrowerQuery();
@@ -113,31 +116,37 @@ function ComponentBase({
   // calculate
   // ---------------------------------------------
   const amountToLtv = useMemo(
-    () => repayAmountToLtv(loanAmount, borrowInfo, bLunaOraclePrice),
-    [loanAmount, borrowInfo, bLunaOraclePrice],
+    () =>
+      computeRepayAmountToLtv(
+        marketBorrowerInfo,
+        overseerCollaterals,
+        oraclePrices,
+      ),
+    [marketBorrowerInfo, overseerCollaterals, oraclePrices],
   );
 
   const ltvToAmount = useMemo(
-    () => ltvToRepayAmount(loanAmount, borrowInfo, bLunaOraclePrice),
-    [loanAmount, borrowInfo, bLunaOraclePrice],
+    () =>
+      computeLtvToRepayAmount(
+        marketBorrowerInfo,
+        overseerCollaterals,
+        oraclePrices,
+      ),
+    [marketBorrowerInfo, overseerCollaterals, oraclePrices],
   );
 
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
   const currentLtv = useMemo(
-    () => _currentLtv(loanAmount, borrowInfo, bLunaOraclePrice),
-    [borrowInfo, loanAmount, bLunaOraclePrice],
+    () =>
+      computeCurrentLtv(marketBorrowerInfo, overseerCollaterals, oraclePrices),
+    [marketBorrowerInfo, overseerCollaterals, oraclePrices],
   );
 
   const nextLtv = useMemo(
-    () => repayNextLtv(repayAmount, currentLtv, amountToLtv),
+    () => computeRepayNextLtv(repayAmount, currentLtv, amountToLtv),
     [amountToLtv, currentLtv, repayAmount],
-  );
-
-  const estimatedLiqPrice = useMemo(
-    () => estimateLiquidationPrice(nextLtv, bLunaMaxLtv, bLunaOraclePrice),
-    [nextLtv, bLunaMaxLtv, bLunaOraclePrice],
   );
 
   const apr = useMemo(
@@ -146,50 +155,46 @@ function ComponentBase({
   );
 
   const maxRepayingAmount = useMemo(() => {
-    const totalBorrowed = repayTotalBorrows(
+    return computeMaxRepayingAmount(
       marketState,
       borrowRate,
-      loanAmount,
+      marketBorrowerInfo,
       blockHeight,
+      tokenBalances.uUST,
+      fixedGas,
     );
-    return big(bank.userBalances.uUSD).gte(totalBorrowed)
-      ? totalBorrowed
-      : (max(
-          0,
-          big(bank.userBalances.uUSD).minus(big(fixedGas).mul(2)),
-        ) as uUST<Big>);
   }, [
     marketState,
     borrowRate,
-    loanAmount,
+    marketBorrowerInfo,
     blockHeight,
-    bank.userBalances.uUSD,
+    tokenBalances.uUST,
     fixedGas,
   ]);
 
   const txFee = useMemo(
-    () => repayTxFee(repayAmount, bank, fixedGas),
-    [bank, fixedGas, repayAmount],
+    () => computeRepayTxFee(repayAmount, tax, fixedGas),
+    [fixedGas, repayAmount, tax],
   );
 
   const totalOutstandingLoan = useMemo(
-    () => repayTotalOutstandingLoan(repayAmount, loanAmount),
-    [loanAmount, repayAmount],
+    () => computeRepayTotalOutstandingLoan(repayAmount, marketBorrowerInfo),
+    [marketBorrowerInfo, repayAmount],
   );
 
   const sendAmount = useMemo(
-    () => repaySendAmount(repayAmount, txFee),
+    () => computeRepaySendAmount(repayAmount, txFee),
     [repayAmount, txFee],
   );
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(tokenBalances.uUST, fixedGas),
+    [connectedWallet, tokenBalances.uUST, fixedGas],
   );
 
-  const invalidAssetAmount = useMemo(
-    () => validateRepayAmount(repayAmount, bank),
-    [bank, repayAmount],
+  const invalidRepayAmount = useMemo(
+    () => validateRepayAmount(repayAmount, tokenBalances.uUST),
+    [repayAmount, tokenBalances.uUST],
   );
 
   // ---------------------------------------------
@@ -279,7 +284,7 @@ function ComponentBase({
           maxIntegerPoinsts={UST_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="REPAY AMOUNT"
-          error={!!invalidAssetAmount}
+          error={!!invalidRepayAmount}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateRepayAmount(target.value)
           }
@@ -288,8 +293,8 @@ function ComponentBase({
           }}
         />
 
-        <div className="wallet" aria-invalid={!!invalidAssetAmount}>
-          <span>{invalidAssetAmount}</span>
+        <div className="wallet" aria-invalid={!!invalidRepayAmount}>
+          <span>{invalidRepayAmount}</span>
           <span>
             Max:{' '}
             <span
@@ -309,8 +314,8 @@ function ComponentBase({
         <figure className="graph">
           <LTVGraph
             disabled={!connectedWallet}
-            maxLtv={bLunaMaxLtv}
-            safeLtv={bLunaSafeLtv}
+            maxLtv={bAssetLtvsAvg.max}
+            safeLtv={bAssetLtvsAvg.safe}
             dangerLtv={0.4 as Rate<number>}
             currentLtv={currentLtv}
             nextLtv={nextLtv}
@@ -320,13 +325,6 @@ function ComponentBase({
             onChange={onLtvChange}
           />
         </figure>
-
-        {nextLtv?.lt(currentLtv || 0) && (
-          <sup>
-            Estimated bAsset Liquidation Price: {formatUST(estimatedLiqPrice)}{' '}
-            UST
-          </sup>
-        )}
 
         {totalOutstandingLoan && txFee && sendAmount && (
           <TxFeeList className="receipt">
@@ -356,7 +354,7 @@ function ComponentBase({
               repayAmount.length === 0 ||
               big(repayAmount).lte(0) ||
               !!invalidTxFee ||
-              !!invalidAssetAmount
+              !!invalidRepayAmount
             }
             onClick={() =>
               txFee && proceed(repayAmount, txFee.toFixed() as uUST)

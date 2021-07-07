@@ -1,11 +1,11 @@
 import { microfy } from '@anchor-protocol/notation';
 import type { UST, uUST } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
-import { Bank } from 'contexts/bank';
+import { AnchorTax } from '../../types';
 
-export function repayTxFee(
+export function computeRepayTxFee(
   repayAmount: UST,
-  bank: Bank,
+  tax: AnchorTax,
   fixedGas: uUST<BigSource>,
 ): uUST<Big> | undefined {
   if (repayAmount.length === 0) {
@@ -13,10 +13,10 @@ export function repayTxFee(
   }
 
   const amount = microfy(repayAmount);
-  const txFee = amount.mul(bank.tax.taxRate);
+  const txFee = amount.mul(tax.taxRate);
 
-  if (txFee.gt(bank.tax.maxTaxUUSD)) {
-    return big(bank.tax.maxTaxUUSD).plus(fixedGas) as uUST<Big>;
+  if (txFee.gt(tax.maxTaxUUSD)) {
+    return big(tax.maxTaxUUSD).plus(fixedGas) as uUST<Big>;
   } else {
     return txFee.plus(fixedGas) as uUST<Big>;
   }

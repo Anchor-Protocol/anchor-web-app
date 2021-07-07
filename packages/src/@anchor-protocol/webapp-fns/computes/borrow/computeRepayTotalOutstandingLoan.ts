@@ -3,11 +3,13 @@ import type { UST, uUST } from '@anchor-protocol/types';
 import { moneyMarket } from '@anchor-protocol/types';
 import big, { Big } from 'big.js';
 
-export function repayTotalOutstandingLoan(
+export function computeRepayTotalOutstandingLoan(
   repayAmount: UST,
-  borrowInfo: moneyMarket.market.BorrowerInfoResponse,
+  marketBorrowerInfo: moneyMarket.market.BorrowerInfoResponse,
 ): uUST<Big> | undefined {
   return repayAmount.length > 0
-    ? (big(borrowInfo.loan_amount).minus(microfy(repayAmount)) as uUST<Big>)
+    ? (big(marketBorrowerInfo.loan_amount).minus(
+        microfy(repayAmount),
+      ) as uUST<Big>)
     : undefined;
 }
