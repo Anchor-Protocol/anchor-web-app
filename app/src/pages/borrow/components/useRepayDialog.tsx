@@ -104,7 +104,7 @@ function ComponentBase({
   const {
     data: {
       marketBorrowerInfo: loanAmount,
-      custodyBorrower: borrowInfo,
+      bLunaCustodyBorrower: borrowInfo,
       blockHeight,
     } = fallbackBorrowBorrower,
   } = useBorrowBorrowerQuery();

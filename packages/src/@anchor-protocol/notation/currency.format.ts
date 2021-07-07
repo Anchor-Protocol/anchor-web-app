@@ -2,6 +2,7 @@ import {
   ANC,
   AncUstLP,
   aUST,
+  bAsset,
   bLuna,
   bLunaLunaLP,
   LPToken,
@@ -138,6 +139,15 @@ export function formatLuna(n: Luna<BigSource> | bLuna<BigSource>): string {
 export function formatLunaWithPostfixUnits(
   n: Luna<BigSource> | bLuna<BigSource>,
 ): string {
+  const bn = big(n);
+  return bn.gte(MILLION) ? d3Formatter(bn.div(MILLION)) + 'M' : d3Formatter(bn);
+}
+
+export function formatBAsset(n: bAsset<BigSource>): string {
+  return d6Formatter(n);
+}
+
+export function formatBAssetWithPostfixUnits(n: bAsset<BigSource>): string {
   const bn = big(n);
   return bn.gte(MILLION) ? d3Formatter(bn.div(MILLION)) + 'M' : d3Formatter(bn);
 }

@@ -1,4 +1,4 @@
-import { CW20Addr, HumanAddr, StableDenom, uUST } from '@anchor-protocol/types';
+import { HumanAddr, uUST } from '@anchor-protocol/types';
 import { BorrowMarket, borrowMarketQuery } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@terra-dev/react-query-utils';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
@@ -15,8 +15,6 @@ const queryFn = createQueryFn(
     interestContract: HumanAddr,
     oracleContract: HumanAddr,
     overseerContract: HumanAddr,
-    bLunaContract: CW20Addr,
-    bEthContract: CW20Addr,
   ) => {
     return borrowMarketQuery({
       mantleEndpoint,
@@ -44,24 +42,30 @@ const queryFn = createQueryFn(
             },
           },
         },
-        bLunaOraclePrice: {
+        oraclePrices: {
           contractAddress: oracleContract,
           query: {
-            price: {
-              base: bLunaContract,
-              quote: 'uusd' as StableDenom,
-            },
+            prices: {},
           },
         },
-        bEthOraclePrice: {
-          contractAddress: oracleContract,
-          query: {
-            price: {
-              base: bEthContract,
-              quote: 'uusd' as StableDenom,
-            },
-          },
-        },
+        //bLunaOraclePrice: {
+        //  contractAddress: oracleContract,
+        //  query: {
+        //    price: {
+        //      base: bLunaContract,
+        //      quote: 'uusd' as StableDenom,
+        //    },
+        //  },
+        //},
+        //bEthOraclePrice: {
+        //  contractAddress: oracleContract,
+        //  query: {
+        //    price: {
+        //      base: bEthContract,
+        //      quote: 'uusd' as StableDenom,
+        //    },
+        //  },
+        //},
       },
     });
   },
@@ -73,7 +77,7 @@ export function useBorrowMarketQuery(): UseQueryResult<
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const {
-    contractAddress: { moneyMarket, cw20 },
+    contractAddress: { moneyMarket },
   } = useAnchorWebapp();
 
   const { browserInactive } = useBrowserInactive();
@@ -87,8 +91,6 @@ export function useBorrowMarketQuery(): UseQueryResult<
       moneyMarket.interestModel,
       moneyMarket.oracle,
       moneyMarket.overseer,
-      cw20.bLuna,
-      cw20.bEth,
     ],
     queryFn,
     {

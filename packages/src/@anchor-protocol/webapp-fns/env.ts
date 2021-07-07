@@ -44,7 +44,7 @@ export const DEFAULT_ADDESS_MAP: Record<string, AddressMap> = {
     bLunaAirdrop: 'terra1334h20c9ewxguw9p9vdxzmr8994qj4qu77ux6q',
     bEthReward: 'terra1ja3snkedk4t0zp7z3ljd064hcln8dsv5x004na',
     bEthToken: 'terra19mkj9nec6e3y5754tlnuz4vem7lzh4n0lc2s3l',
-    mmCustodyBEth: '',
+    mmCustodyBEth: 'terra1j6fey5tl70k9fvrv7mea7ahfr8u2yv7l23w5e6',
     mmInterestModel: 'terra1m25aqupscdw2kw4tnq5ql6hexgr34mr76azh5x',
     mmOracle: 'terra1p4gg3p2ue6qy2qfuxtrmgv2ec3f4jmgqtazum8',
     mmMarket: 'terra15dwd5mj8v59wpj0wvt233mf5efdff808c5tkal',

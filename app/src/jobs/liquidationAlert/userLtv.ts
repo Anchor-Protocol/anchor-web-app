@@ -1,15 +1,10 @@
-import {
-  ContractAddress,
-  HumanAddr,
-  StableDenom,
-  uUST,
-} from '@anchor-protocol/types';
+import { ContractAddress, HumanAddr, uUST } from '@anchor-protocol/types';
 import {
   borrowBorrowerQuery,
   borrowMarketQuery,
+  computeCurrentLtv,
 } from '@anchor-protocol/webapp-fns';
 import { lastSyncedHeightQuery, MantleFetch } from '@terra-money/webapp-fns';
-import big from 'big.js';
 
 interface UserLtvQueryParams {
   mantleFetch: MantleFetch;
@@ -24,7 +19,7 @@ export async function userLtvQuery({
   mantleEndpoint,
   address,
 }: UserLtvQueryParams) {
-  const [{ bLunaOraclePrice }, { marketBorrowerInfo, custodyBorrower }] =
+  const [{ oraclePrices }, { marketBorrowerInfo, overseerCollaterals }] =
     await Promise.all([
       borrowMarketQuery({
         mantleEndpoint,
@@ -54,24 +49,30 @@ export async function userLtvQuery({
               },
             },
           },
-          bLunaOraclePrice: {
+          oraclePrices: {
             contractAddress: address.moneyMarket.oracle,
             query: {
-              price: {
-                base: address.cw20.bLuna,
-                quote: 'uusd' as StableDenom,
-              },
+              prices: {},
             },
           },
-          bEthOraclePrice: {
-            contractAddress: address.moneyMarket.oracle,
-            query: {
-              price: {
-                base: address.cw20.bEth,
-                quote: 'uusd' as StableDenom,
-              },
-            },
-          },
+          //bLunaOraclePrice: {
+          //  contractAddress: address.moneyMarket.oracle,
+          //  query: {
+          //    price: {
+          //      base: address.cw20.bLuna,
+          //      quote: 'uusd' as StableDenom,
+          //    },
+          //  },
+          //},
+          //bEthOraclePrice: {
+          //  contractAddress: address.moneyMarket.oracle,
+          //  query: {
+          //    price: {
+          //      base: address.cw20.bEth,
+          //      quote: 'uusd' as StableDenom,
+          //    },
+          //  },
+          //},
         },
       }),
       borrowBorrowerQuery({
@@ -92,23 +93,46 @@ export async function userLtvQuery({
               },
             },
           },
-          custodyBorrower: {
-            contractAddress: address.moneyMarket.custody,
+          overseerCollaterals: {
+            contractAddress: address.moneyMarket.overseer,
             query: {
-              borrower: {
-                address: walletAddress as HumanAddr,
+              collaterals: {
+                borrower: walletAddress as HumanAddr,
               },
             },
           },
+          overseerBorrowLimit: {
+            contractAddress: address.moneyMarket.overseer,
+            query: {
+              borrow_limit: {
+                borrower: walletAddress as HumanAddr,
+                block_time: -1,
+              },
+            },
+          },
+          //bLunaCustodyBorrower: {
+          //  contractAddress: address.moneyMarket.bLunaCustody,
+          //  query: {
+          //    borrower: {
+          //      address: walletAddress as HumanAddr,
+          //    },
+          //  },
+          //},
+          //bEthCustodyBorrower: {
+          //  contractAddress: address.moneyMarket.bEthCustody,
+          //  query: {
+          //    borrower: {
+          //      address: walletAddress as HumanAddr,
+          //    },
+          //  },
+          //},
         },
       }),
     ]);
 
-  return big(marketBorrowerInfo.loan_amount)
-    .div(
-      big(big(custodyBorrower.balance).minus(custodyBorrower.spendable)).mul(
-        bLunaOraclePrice.rate,
-      ),
-    )
-    .toFixed();
+  return computeCurrentLtv(
+    marketBorrowerInfo,
+    overseerCollaterals,
+    oraclePrices,
+  );
 }

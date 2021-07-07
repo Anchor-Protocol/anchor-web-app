@@ -88,8 +88,8 @@ export function borrowRepayTx(
         const newLtv =
           computeCurrentLtv(
             borrowBorrower.marketBorrowerInfo,
-            borrowBorrower.custodyBorrower,
-            borrowMarket.bLunaOraclePrice,
+            borrowBorrower.overseerCollaterals,
+            borrowMarket.oraclePrices,
           ) ?? ('0' as Rate);
 
         const outstandingLoan = borrowBorrower.marketBorrowerInfo.loan_amount;

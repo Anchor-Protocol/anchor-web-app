@@ -25,7 +25,9 @@ const queryFn = createQueryFn(
     connectedWallet: ConnectedWallet | undefined,
     lastSyncedHeight: () => Promise<number>,
     marketContract: HumanAddr,
-    custodyContract: HumanAddr,
+    overseerContract: HumanAddr,
+    //bLunaCustodyContract: HumanAddr,
+    //bEthCustodyContract: HumanAddr,
   ) => {
     return !!connectedWallet
       ? borrowBorrowerQuery({
@@ -42,14 +44,39 @@ const queryFn = createQueryFn(
                 },
               },
             },
-            custodyBorrower: {
-              contractAddress: custodyContract,
+            overseerCollaterals: {
+              contractAddress: overseerContract,
               query: {
-                borrower: {
-                  address: connectedWallet.walletAddress,
+                collaterals: {
+                  borrower: connectedWallet.walletAddress,
                 },
               },
             },
+            overseerBorrowLimit: {
+              contractAddress: overseerContract,
+              query: {
+                borrow_limit: {
+                  borrower: connectedWallet.walletAddress,
+                  block_time: -1,
+                },
+              },
+            },
+            //bLunaCustodyBorrower: {
+            //  contractAddress: bLunaCustodyContract,
+            //  query: {
+            //    borrower: {
+            //      address: connectedWallet.walletAddress,
+            //    },
+            //  },
+            //},
+            //bEthCustodyBorrower: {
+            //  contractAddress: bEthCustodyContract,
+            //  query: {
+            //    borrower: {
+            //      address: connectedWallet.walletAddress,
+            //    },
+            //  },
+            //},
           },
         })
       : Promise.resolve(undefined);
@@ -78,7 +105,9 @@ export function useBorrowBorrowerQuery(): UseQueryResult<
       connectedWallet,
       lastSyncedHeight,
       moneyMarket.market,
-      moneyMarket.custody,
+      moneyMarket.overseer,
+      //moneyMarket.bLunaCustody,
+      //moneyMarket.bEthCustody,
     ],
     queryFn,
     {

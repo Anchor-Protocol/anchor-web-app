@@ -4,12 +4,38 @@ import {
   COLLATERAL_DENOMS,
   MARKET_DENOMS,
 } from '@anchor-protocol/anchor.js';
-import { ContractAddress, CW20Addr, HumanAddr } from '@anchor-protocol/types';
+import {
+  CollateralInfo,
+  CollateralType,
+  ContractAddress,
+  CW20Addr,
+  HumanAddr,
+} from '@anchor-protocol/types';
 
 export function createAnchorContractAddress(
   addressProvider: AddressProvider,
   addressMap: AddressMap,
 ): ContractAddress {
+  const bLunaCollateral: CollateralInfo = {
+    type: CollateralType.bLuna,
+    denom: COLLATERAL_DENOMS.UBLUNA,
+    custody: addressProvider.custody(
+      MARKET_DENOMS.UUSD,
+      COLLATERAL_DENOMS.UBLUNA,
+    ) as HumanAddr,
+    token: addressProvider.bLunaToken() as CW20Addr,
+  };
+
+  const bEthCollateral: CollateralInfo = {
+    type: CollateralType.bEth,
+    denom: COLLATERAL_DENOMS.UBETH,
+    custody: addressProvider.custody(
+      MARKET_DENOMS.UUSD,
+      COLLATERAL_DENOMS.UBETH,
+    ) as HumanAddr,
+    token: addressProvider.bEthToken() as CW20Addr,
+  };
+
   return {
     bluna: {
       reward: addressProvider.bLunaReward() as HumanAddr,
@@ -21,10 +47,19 @@ export function createAnchorContractAddress(
     },
     moneyMarket: {
       market: addressProvider.market(MARKET_DENOMS.UUSD) as HumanAddr,
-      custody: addressProvider.custody(
-        MARKET_DENOMS.UUSD,
-        COLLATERAL_DENOMS.UBLUNA,
-      ) as HumanAddr,
+      collaterals: {
+        [CollateralType.bLuna]: bLunaCollateral,
+        [CollateralType.bEth]: bEthCollateral,
+      },
+      collateralsArray: [bLunaCollateral, bEthCollateral],
+      //bLunaCustody: addressProvider.custody(
+      //  MARKET_DENOMS.UUSD,
+      //  COLLATERAL_DENOMS.UBLUNA,
+      //) as HumanAddr,
+      //bEthCustody: addressProvider.custody(
+      //  MARKET_DENOMS.UUSD,
+      //  COLLATERAL_DENOMS.UBETH,
+      //) as HumanAddr,
       overseer: addressProvider.overseer(MARKET_DENOMS.UUSD) as HumanAddr,
       oracle: addressProvider.oracle() as HumanAddr,
       interestModel: addressProvider.interest() as HumanAddr,

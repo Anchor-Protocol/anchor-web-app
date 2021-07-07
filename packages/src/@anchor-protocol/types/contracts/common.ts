@@ -1,3 +1,4 @@
+import { COLLATERAL_DENOMS } from '@anchor-protocol/anchor.js';
 import { NominalType } from '../common';
 
 export type HumanAddr = string & NominalType<'HumanAddr'>;
@@ -10,6 +11,18 @@ export type AssetDenom = string & NominalType<'AssetDenom'>;
 export type Denom = StableDenom | bAssetDenom | AssetDenom;
 
 export type Base64EncodedJson = string & NominalType<'Base64EncodedJson'>;
+
+export enum CollateralType {
+  bLuna = 'bLuna',
+  bEth = 'bEth',
+}
+
+export interface CollateralInfo {
+  type: CollateralType;
+  denom: COLLATERAL_DENOMS;
+  custody: HumanAddr;
+  token: CW20Addr;
+}
 
 export type WASMContractResult<T extends {} = {}> = {
   Result: string;
@@ -31,8 +44,13 @@ export interface ContractAddress {
   moneyMarket: {
     /** addressProvider.market() */
     market: HumanAddr;
-    /** addressProvider.custody() */
-    custody: HumanAddr;
+
+    collaterals: Record<CollateralType, CollateralInfo>;
+    collateralsArray: CollateralInfo[];
+    ///** addressProvider.custody() */
+    //bLunaCustody: HumanAddr;
+    ///** addressProvider.custody() */
+    //bEthCustody: HumanAddr;
     /** addressProvider.overseer() */
     overseer: HumanAddr;
     /** addressProvider.oracle() */

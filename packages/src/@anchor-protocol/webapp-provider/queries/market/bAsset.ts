@@ -59,7 +59,7 @@ export function useMarketBAssetQuery(): UseQueryResult<
       mantleFetch,
       cw20.bLuna,
       moneyMarket.oracle,
-      moneyMarket.custody,
+      moneyMarket.bLunaCustody,
     ],
     queryFn,
     {

@@ -1,4 +1,4 @@
-import { uANC, uaToken, UST, uToken, uUST } from '../currencies';
+import { uANC, uaToken, ubAsset, UST, uUST } from '../currencies';
 import { Num, Rate } from '../units';
 import { bAssetDenom, CW20Addr, HumanAddr, StableDenom } from './common';
 
@@ -324,7 +324,7 @@ export namespace moneyMarket {
      */
     export interface Prices {
       prices: {
-        start_after?: HumanAddr;
+        start_after?: CW20Addr;
         limit?: number;
       };
     }
@@ -333,7 +333,11 @@ export namespace moneyMarket {
      * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/money-market/oracle#pricesresponse
      */
     export interface PricesResponse {
-      prices: Array<PriceResponse>;
+      prices: Array<{
+        asset: CW20Addr;
+        price: UST;
+        last_updated_time: number;
+      }>;
     }
   }
 
@@ -388,7 +392,7 @@ export namespace moneyMarket {
      */
     export interface CollateralsResponse {
       borrower: HumanAddr;
-      collaterals: Array<[CW20Addr, uToken]>;
+      collaterals: Array<[CW20Addr, ubAsset]>;
     }
 
     /**

@@ -11,10 +11,22 @@ export interface BorrowBorrowerWasmQuery {
     moneyMarket.market.BorrowerInfo,
     moneyMarket.market.BorrowerInfoResponse
   >;
-  custodyBorrower: WasmQuery<
-    moneyMarket.custody.Borrower,
-    moneyMarket.custody.BorrowerResponse
+  overseerCollaterals: WasmQuery<
+    moneyMarket.overseer.Collaterals,
+    moneyMarket.overseer.CollateralsResponse
   >;
+  overseerBorrowLimit: WasmQuery<
+    moneyMarket.overseer.BorrowLimit,
+    moneyMarket.overseer.BorrowLimitResponse
+  >;
+  //bLunaCustodyBorrower: WasmQuery<
+  //  moneyMarket.custody.Borrower,
+  //  moneyMarket.custody.BorrowerResponse
+  //>;
+  //bEthCustodyBorrower: WasmQuery<
+  //  moneyMarket.custody.Borrower,
+  //  moneyMarket.custody.BorrowerResponse
+  //>;
 }
 
 export type BorrowBorrower = WasmQueryData<BorrowBorrowerWasmQuery> & {
@@ -39,7 +51,9 @@ export async function borrowBorrowerQuery({
   wasmQuery.marketBorrowerInfo.query.borrower_info.block_height =
     blockHeight + 1;
 
-  const { marketBorrowerInfo, custodyBorrower } =
+  wasmQuery.overseerBorrowLimit.query.borrow_limit.block_time = blockHeight + 1;
+
+  const { marketBorrowerInfo, overseerCollaterals, overseerBorrowLimit } =
     await mantle<BorrowBorrowerWasmQuery>({
       mantleEndpoint: `${mantleEndpoint}?borrow--borrower`,
       variables: {},
@@ -49,7 +63,10 @@ export async function borrowBorrowerQuery({
 
   return {
     marketBorrowerInfo,
-    custodyBorrower,
+    overseerCollaterals,
+    overseerBorrowLimit,
+    //bLunaCustodyBorrower,
+    //bEthCustodyBorrower,
     blockHeight: blockHeight + 1,
   };
 }

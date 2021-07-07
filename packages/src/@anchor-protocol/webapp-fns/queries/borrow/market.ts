@@ -1,4 +1,4 @@
-import { moneyMarket, Rate, uUST } from '@anchor-protocol/types';
+import { CW20Addr, moneyMarket, Rate, uUST } from '@anchor-protocol/types';
 import {
   mantle,
   MantleParams,
@@ -7,6 +7,14 @@ import {
 } from '@terra-money/webapp-fns';
 import big from 'big.js';
 import { ANCHOR_RATIO } from '../../env';
+
+type BAssetLtvs = Map<
+  CW20Addr,
+  {
+    max: Rate;
+    safe: Rate;
+  }
+>;
 
 export interface BorrowMarketWasmQuery {
   marketState: WasmQuery<
@@ -17,14 +25,18 @@ export interface BorrowMarketWasmQuery {
     moneyMarket.interestModel.BorrowRate,
     moneyMarket.interestModel.BorrowRateResponse
   >;
-  bLunaOraclePrice: WasmQuery<
-    moneyMarket.oracle.Price,
-    moneyMarket.oracle.PriceResponse
+  oraclePrices: WasmQuery<
+    moneyMarket.oracle.Prices,
+    moneyMarket.oracle.PricesResponse
   >;
-  bEthOraclePrice: WasmQuery<
-    moneyMarket.oracle.Price,
-    moneyMarket.oracle.PriceResponse
-  >;
+  //bLunaOraclePrice: WasmQuery<
+  //  moneyMarket.oracle.Price,
+  //  moneyMarket.oracle.PriceResponse
+  //>;
+  //bEthOraclePrice: WasmQuery<
+  //  moneyMarket.oracle.Price,
+  //  moneyMarket.oracle.PriceResponse
+  //>;
   overseerWhitelist: WasmQuery<
     moneyMarket.overseer.Whitelist,
     moneyMarket.overseer.WhitelistResponse
@@ -46,11 +58,13 @@ export type BorrowMarket = WasmQueryData<BorrowMarketWasmQuery> & {
     uUST: uUST;
   };
 
-  bLunaMaxLtv?: Rate;
-  bLunaSafeLtv?: Rate;
+  bAssetLtvs: BAssetLtvs;
 
-  bEthMaxLtv?: Rate;
-  bEthSafeLtv?: Rate;
+  //bLunaMaxLtv?: Rate;
+  //bLunaSafeLtv?: Rate;
+  //
+  //bEthMaxLtv?: Rate;
+  //bEthSafeLtv?: Rate;
 };
 
 // language=graphql
@@ -102,7 +116,7 @@ export async function borrowMarketQuery({
         ?.Amount ?? '0') as uUST,
     };
 
-  const { borrowRate, bLunaOraclePrice, bEthOraclePrice, overseerWhitelist } =
+  const { borrowRate, oraclePrices, overseerWhitelist } =
     await mantle<MarketWasmQuery>({
       mantleEndpoint: `${mantleEndpoint}?borrow--market`,
       variables: {},
@@ -117,41 +131,67 @@ export async function borrowMarketQuery({
             },
           },
         },
-        bLunaOraclePrice: wasmQuery.bLunaOraclePrice,
-        bEthOraclePrice: wasmQuery.bEthOraclePrice,
+        oraclePrices: wasmQuery.oraclePrices,
+        //bLunaOraclePrice: wasmQuery.bLunaOraclePrice,
+        //bEthOraclePrice: wasmQuery.bEthOraclePrice,
         overseerWhitelist: wasmQuery.overseerWhitelist,
       },
       ...params,
     });
 
-  const bLunaMaxLtv = overseerWhitelist.elems.find(
-    ({ collateral_token }) =>
-      collateral_token === wasmQuery.bLunaOraclePrice.query.price.base,
-  )?.max_ltv;
+  const whitelistIndex: Map<
+    string,
+    moneyMarket.overseer.WhitelistResponse['elems'][number]
+  > = new Map();
 
-  const bLunaSafeLtv = bLunaMaxLtv
-    ? (big(bLunaMaxLtv).mul(ANCHOR_RATIO).toFixed() as Rate)
-    : undefined;
+  for (const elem of overseerWhitelist.elems) {
+    whitelistIndex.set(elem.collateral_token, elem);
+  }
 
-  const bEthMaxLtv = overseerWhitelist.elems.find(
-    ({ collateral_token }) =>
-      collateral_token === wasmQuery.bEthOraclePrice.query.price.base,
-  )?.max_ltv;
+  const bAssetLtvs: BAssetLtvs = new Map();
 
-  const bEthSafeLtv = bEthMaxLtv
-    ? (big(bEthMaxLtv).mul(ANCHOR_RATIO).toFixed() as Rate)
-    : undefined;
+  for (const price of oraclePrices.prices) {
+    const max = whitelistIndex.has(price.asset)
+      ? whitelistIndex.get(price.asset)?.max_ltv ?? ('0.7' as Rate)
+      : ('0.7' as Rate);
+
+    const safe = big(max).mul(ANCHOR_RATIO).toFixed() as Rate;
+
+    if (max && safe) {
+      bAssetLtvs.set(price.asset, { max, safe });
+    }
+  }
+
+  //const bLunaMaxLtv = overseerWhitelist.elems.find(
+  //  ({ collateral_token }) =>
+  //    collateral_token === wasmQuery.bLunaOraclePrice.query.price.base,
+  //)?.max_ltv;
+  //
+  //const bLunaSafeLtv = bLunaMaxLtv
+  //  ? (big(bLunaMaxLtv).mul(ANCHOR_RATIO).toFixed() as Rate)
+  //  : undefined;
+  //
+  //const bEthMaxLtv = overseerWhitelist.elems.find(
+  //  ({ collateral_token }) =>
+  //    collateral_token === wasmQuery.bEthOraclePrice.query.price.base,
+  //)?.max_ltv;
+  //
+  //const bEthSafeLtv = bEthMaxLtv
+  //  ? (big(bEthMaxLtv).mul(ANCHOR_RATIO).toFixed() as Rate)
+  //  : undefined;
 
   return {
     marketBalances,
     marketState,
     overseerWhitelist,
-    bLunaOraclePrice,
-    bEthOraclePrice,
+    oraclePrices,
+    //bLunaOraclePrice,
+    //bEthOraclePrice,
     borrowRate,
-    bLunaMaxLtv,
-    bLunaSafeLtv,
-    bEthMaxLtv,
-    bEthSafeLtv,
+    bAssetLtvs,
+    //bLunaMaxLtv,
+    //bLunaSafeLtv,
+    //bEthMaxLtv,
+    //bEthSafeLtv,
   };
 }

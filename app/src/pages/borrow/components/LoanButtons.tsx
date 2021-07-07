@@ -38,7 +38,7 @@ export function LoanButtons() {
           !connectedWallet ||
           !borrowMarket ||
           !borrowBorrower ||
-          big(borrowBorrower.custodyBorrower.balance ?? 0).lte(0)
+          big(borrowBorrower.bLunaCustodyBorrower.balance ?? 0).lte(0)
         }
         onClick={() =>
           borrowMarket &&

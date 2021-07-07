@@ -86,8 +86,8 @@ export function borrowProvideCollateralTx(
         const newLtv =
           computeCurrentLtv(
             borrowBorrower.marketBorrowerInfo,
-            borrowBorrower.custodyBorrower,
-            borrowMarket.bLunaOraclePrice,
+            borrowBorrower.overseerCollaterals,
+            borrowMarket.oraclePrices,
           ) ?? ('0' as Rate);
 
         return {

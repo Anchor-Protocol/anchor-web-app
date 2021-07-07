@@ -3,13 +3,21 @@ import { moneyMarket } from '@anchor-protocol/types';
 import big, { Big } from 'big.js';
 
 export function computeCurrentLtv(
-  borrowInfo: moneyMarket.market.BorrowerInfoResponse,
-  borrower: moneyMarket.custody.BorrowerResponse,
-  oracle: moneyMarket.oracle.PriceResponse,
+  marketBorrowerInfo: moneyMarket.market.BorrowerInfoResponse,
+  overseerCollaterals: moneyMarket.overseer.CollateralsResponse,
+  oraclePrices: moneyMarket.oracle.PricesResponse,
 ): Rate<Big> | undefined {
   try {
-    return big(borrowInfo.loan_amount).div(
-      big(big(borrower.balance).minus(borrower.spendable)).mul(oracle.rate),
+    const collateralTotalUST = overseerCollaterals.collaterals.reduce(
+      (total, [token, lockedAmount]) => {
+        const oracle = oraclePrices.prices.find(({ asset }) => asset === token);
+        return oracle ? total.plus(big(lockedAmount).mul(oracle.price)) : total;
+      },
+      big(0),
+    );
+
+    return big(marketBorrowerInfo.loan_amount).div(
+      collateralTotalUST,
     ) as Rate<Big>;
   } catch {
     return undefined;

@@ -3,6 +3,7 @@ import {
   AncUstLP,
   aToken,
   aUST,
+  bAsset,
   bLuna,
   bLunaLunaLP,
   CW20Token,
@@ -14,6 +15,7 @@ import {
   uAncUstLP,
   uaToken,
   uaUST,
+  ubAsset,
   ubLuna,
   ubLunaLunaLP,
   uCW20Token,
@@ -42,11 +44,12 @@ export function microfy<
     | AncUstLP<BigSource>
     | bLunaLunaLP<BigSource>
     // union tokens
+    | bAsset<BigSource>
     | aToken<BigSource>
     | NativeToken<BigSource>
     | CW20Token<BigSource>
     | LPToken<BigSource>
-    | Token<BigSource>
+    | Token<BigSource>,
 >(
   amount: C,
 ): C extends UST
@@ -63,6 +66,8 @@ export function microfy<
   ? uAncUstLP<Big>
   : C extends bLunaLunaLP
   ? ubLunaLunaLP<Big>
+  : C extends bAsset
+  ? ubAsset<Big>
   : C extends aToken
   ? uaToken<Big>
   : C extends NativeToken
@@ -88,8 +93,9 @@ export function demicrofy<
     | uAncUstLP<BigSource>
     | ubLunaLunaLP<BigSource>
     // union tokens
+    | ubAsset<BigSource>
     | uaToken<BigSource>
-    | uToken<BigSource>
+    | uToken<BigSource>,
 >(
   amount: C,
 ): C extends uUST
@@ -106,6 +112,8 @@ export function demicrofy<
   ? AncUstLP<Big>
   : C extends ubLunaLunaLP
   ? bLunaLunaLP<Big>
+  : C extends ubAsset
+  ? bAsset<Big>
   : C extends uaToken
   ? aToken<Big>
   : C extends uNativeToken

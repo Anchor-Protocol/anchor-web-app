@@ -12,7 +12,7 @@ export function useContractNickname(): (addr: HumanAddr | CW20Addr) => string {
         return `bLuna / Hub`;
       case address.moneyMarket.market:
         return `Money Market / Market`;
-      case address.moneyMarket.custody:
+      case address.moneyMarket.bLunaCustody:
         return `Money Market / Custody`;
       case address.moneyMarket.overseer:
         return `Money Market / Overseer`;
