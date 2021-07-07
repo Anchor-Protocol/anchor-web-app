@@ -4,7 +4,7 @@ import big, { Big, BigSource } from 'big.js';
 
 // (Loan_amount + borrow_amount) / ((Borrow_info.balance - Borrow_info.spendable - redeemed_collateral) * Oracleprice)
 
-export function borrowNextLtv(
+export function computeBorrowNextLtv(
   borrowAmount: UST,
   currentLtv: Rate<Big> | undefined,
   borrowAmountToLtv: (borrowAmount: uUST<BigSource>) => Rate<Big>,

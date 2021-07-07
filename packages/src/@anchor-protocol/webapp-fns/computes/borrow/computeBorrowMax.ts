@@ -1,19 +1,20 @@
-import type { Rate } from '@anchor-protocol/types';
+import type { Rate, uUST } from '@anchor-protocol/types';
 import { moneyMarket } from '@anchor-protocol/types';
-import big, { Big } from 'big.js';
+import big, { Big, BigSource } from 'big.js';
 import { computeCollateralTotalUST } from './computeCollateralTotalUST';
 
-export function computeCurrentLtv(
+export function computeBorrowMax(
   marketBorrowerInfo: moneyMarket.market.BorrowerInfoResponse,
   overseerCollaterals: moneyMarket.overseer.CollateralsResponse,
   oraclePrices: moneyMarket.oracle.PricesResponse,
-): Rate<Big> | undefined {
+  maxLtv: Rate<BigSource>,
+): uUST<Big> {
   const collateralTotalUST = computeCollateralTotalUST(
     overseerCollaterals,
     oraclePrices,
   );
 
-  return big(marketBorrowerInfo.loan_amount).div(
-    collateralTotalUST,
-  ) as Rate<Big>;
+  return big(maxLtv)
+    .mul(collateralTotalUST)
+    .minus(marketBorrowerInfo.loan_amount) as uUST<Big>;
 }

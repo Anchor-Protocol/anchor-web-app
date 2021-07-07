@@ -1,14 +1,14 @@
-import { min } from '@terra-dev/big-math';
 import { microfy } from '@anchor-protocol/notation';
 import type { UST, uUST } from '@anchor-protocol/types';
+import { min } from '@terra-dev/big-math';
 import big, { Big, BigSource } from 'big.js';
-import { Bank } from 'contexts/bank';
+import { AnchorTax } from '../../types';
 
 // Tx_fee = MIN(User_Input/(1+tax_rate) * tax_rate , Max_tax) + Fixed_Gas
 
-export function borrowTxFee(
+export function computeBorrowTxFee(
   borrowAmount: UST,
-  bank: Bank,
+  tax: AnchorTax,
   fixedGas: uUST<BigSource>,
 ) {
   if (borrowAmount.length === 0) {
@@ -17,9 +17,9 @@ export function borrowTxFee(
 
   const amount = microfy(borrowAmount);
 
-  const userAmountTxFee = big(amount.div(big(1).plus(bank.tax.taxRate))).mul(
-    bank.tax.taxRate,
+  const userAmountTxFee = big(amount.div(big(1).plus(tax.taxRate))).mul(
+    tax.taxRate,
   );
 
-  return min(userAmountTxFee, bank.tax.maxTaxUUSD).plus(fixedGas) as uUST<Big>;
+  return min(userAmountTxFee, tax.maxTaxUUSD).plus(fixedGas) as uUST<Big>;
 }

@@ -7,10 +7,10 @@ import {
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { bLuna, Rate } from '@anchor-protocol/types';
+import { bLuna, CW20Addr, Rate } from '@anchor-protocol/types';
 import {
   BorrowBorrower,
-  BorrowMarket,
+  BorrowMarket, computeCurrentLtv,
   useAnchorWebapp,
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
@@ -49,6 +49,7 @@ import { LTVGraph } from './LTVGraph';
 
 interface FormParams {
   className?: string;
+  collateralToken: CW20Addr;
   fallbackBorrowMarket: BorrowMarket;
   fallbackBorrowBorrower: BorrowBorrower;
 }
@@ -94,16 +95,15 @@ function ComponentBase({
 
   const {
     data: {
-      bLunaOraclePrice,
-      bLunaMaxLtv = '0.5' as Rate,
-      bLunaSafeLtv = '0.3' as Rate,
+      oraclePrices,
+      bAssetLtvs,
     } = fallbackBorrowMarket,
   } = useBorrowMarketQuery();
 
   const {
     data: {
       marketBorrowerInfo: loanAmount,
-      bLunaCustodyBorrower: borrowInfo,
+      overseerCollaterals,
     } = fallbackBorrowBorrower,
   } = useBorrowBorrowerQuery();
 
@@ -129,8 +129,8 @@ function ComponentBase({
   // logics
   // ---------------------------------------------
   const currentLtv = useMemo(
-    () => _currentLtv(loanAmount, borrowInfo, bLunaOraclePrice),
-    [borrowInfo, loanAmount, bLunaOraclePrice],
+    () => computeCurrentLtv(loanAmount, overseerCollaterals, oraclePrices),
+    [loanAmount, overseerCollaterals, oraclePrices],
   );
 
   const nextLtv = useMemo(

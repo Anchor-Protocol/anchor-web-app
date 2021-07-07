@@ -9,7 +9,7 @@ import {
 import { Rate, UST, uUST } from '@anchor-protocol/types';
 import {
   BorrowBorrower,
-  BorrowMarket,
+  BorrowMarket, computeBorrowAPR,
   useAnchorWebapp,
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
@@ -141,7 +141,7 @@ function ComponentBase({
   );
 
   const apr = useMemo(
-    () => _apr(borrowRate, blocksPerYear),
+    () => computeBorrowAPR(borrowRate, blocksPerYear),
     [blocksPerYear, borrowRate],
   );
 

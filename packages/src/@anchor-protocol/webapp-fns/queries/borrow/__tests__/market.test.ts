@@ -11,8 +11,7 @@ describe('queries/market', () => {
     const {
       marketState,
       borrowRate,
-      bLunaOraclePrice,
-      bEthOraclePrice,
+      oraclePrices,
       overseerWhitelist,
     } = await borrowMarketQuery({
       mantleFetch: defaultMantleFetch,
@@ -42,31 +41,18 @@ describe('queries/market', () => {
             },
           },
         },
-        bLunaOraclePrice: {
+        oraclePrices: {
           contractAddress: TEST_ADDRESSES.moneyMarket.oracle,
           query: {
-            price: {
-              base: TEST_ADDRESSES.cw20.bLuna,
-              quote: 'uusd' as StableDenom,
-            },
-          },
-        },
-        bEthOraclePrice: {
-          contractAddress: TEST_ADDRESSES.moneyMarket.oracle,
-          query: {
-            price: {
-              base: TEST_ADDRESSES.cw20.bEth,
-              quote: 'uusd' as StableDenom,
-            },
-          },
+            prices: {}
+          }
         },
       },
     });
 
     expect(typeof marketState.total_liabilities).toBe('string');
     expect(borrowRate).not.toBeUndefined();
-    expect(bLunaOraclePrice).not.toBeUndefined();
-    expect(bEthOraclePrice).not.toBeUndefined();
+    expect(oraclePrices).not.toBeUndefined();
     expect(overseerWhitelist).not.toBeUndefined();
   });
 });

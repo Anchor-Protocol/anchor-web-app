@@ -3,10 +3,22 @@ export * from './types';
 
 export * from './functions/createAnchorContractAddress';
 
+export * from './computes/common/validateTxFee';
 export * from './computes/earn/computeTotalDeposit';
 export * from './computes/earn/computeCurrentAPY';
 export * from './computes/borrow/computeCurrentLtv';
 export * from './computes/borrow/computeLiquidationPrice';
+export * from './computes/borrow/computeBorrowedAmount';
+export * from './computes/borrow/computeCollateralTotalUST';
+export * from './computes/borrow/computeBorrowAPR';
+export * from './computes/borrow/computeBorrowAmountToLtv';
+export * from './computes/borrow/computeLtvToBorrowAmount';
+export * from './computes/borrow/computeBorrowNextLtv';
+export * from './computes/borrow/computeBorrowSafeMax';
+export * from './computes/borrow/computeBorrowMax';
+export * from './computes/borrow/computeBorrowTxFee';
+export * from './computes/borrow/computeBorrowReceiveAmount';
+export * from './computes/borrow/validateBorrowAmount';
 
 export * from './forms/earn/deposit';
 export * from './forms/earn/withdraw';

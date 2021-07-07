@@ -1,4 +1,7 @@
+import { uUST } from '@anchor-protocol/types';
+import { computeBorrowedAmount } from '@anchor-protocol/webapp-fns';
 import {
+  computeCollateralTotalUST,
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
 } from '@anchor-protocol/webapp-provider';
@@ -6,7 +9,6 @@ import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton'
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
 import { useMemo } from 'react';
-import { borrowed as _borrowed } from '../logics/borrowed';
 import { useBorrowDialog } from './useBorrowDialog';
 import { useRepayDialog } from './useRepayDialog';
 
@@ -26,10 +28,19 @@ export function LoanButtons() {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const borrowed = useMemo(
-    () => _borrowed(borrowBorrower?.marketBorrowerInfo),
-    [borrowBorrower?.marketBorrowerInfo],
-  );
+  const collateralsInUST = useMemo(() => {
+    if (!borrowBorrower || !borrowMarket) {
+      return '0' as uUST;
+    }
+    return computeCollateralTotalUST(
+      borrowBorrower.overseerCollaterals,
+      borrowMarket.oraclePrices,
+    );
+  }, [borrowBorrower, borrowMarket]);
+
+  const borrowed = useMemo(() => {
+    return computeBorrowedAmount(borrowBorrower?.marketBorrowerInfo);
+  }, [borrowBorrower?.marketBorrowerInfo]);
 
   return (
     <>
@@ -38,7 +49,7 @@ export function LoanButtons() {
           !connectedWallet ||
           !borrowMarket ||
           !borrowBorrower ||
-          big(borrowBorrower.bLunaCustodyBorrower.balance ?? 0).lte(0)
+          big(collateralsInUST).lte(0)
         }
         onClick={() =>
           borrowMarket &&

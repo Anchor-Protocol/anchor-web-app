@@ -8,12 +8,25 @@ import {
 } from '@anchor-protocol/notation';
 import { Rate, UST, uUST } from '@anchor-protocol/types';
 import {
+  AnchorTax,
+  AnchorTokenBalances,
   BorrowBorrower,
   BorrowMarket,
+  computeBorrowAmountToLtv,
+  computeBorrowAPR,
+  computeBorrowMax,
+  computeBorrowNextLtv,
+  computeBorrowReceiveAmount,
+  computeBorrowSafeMax,
+  computeBorrowTxFee,
+  computeCurrentLtv,
+  computeLtvToBorrowAmount,
   useAnchorWebapp,
   useBorrowBorrowerQuery,
   useBorrowBorrowTx,
   useBorrowMarketQuery,
+  validateBorrowAmount,
+  validateTxFee,
 } from '@anchor-protocol/webapp-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
@@ -27,27 +40,15 @@ import { useConfirm } from '@terra-dev/neumorphism-ui/components/useConfirm';
 import type { DialogProps, OpenDialog } from '@terra-dev/use-dialog';
 import { useDialog } from '@terra-dev/use-dialog';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank } from 'contexts/bank';
+import { useBank } from '@terra-money/webapp-provider';
 import big, { Big, BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { validateTxFee } from 'logics/validateTxFee';
 import type { ChangeEvent, ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { apr as _apr } from '../logics/apr';
-import { borrowAmountToLtv } from '../logics/borrowAmountToLtv';
-import { borrowMax } from '../logics/borrowMax';
-import { borrowNextLtv } from '../logics/borrowNextLtv';
-import { borrowReceiveAmount } from '../logics/borrowReceiveAmount';
-import { borrowSafeMax } from '../logics/borrowSafeMax';
-import { borrowTxFee } from '../logics/borrowTxFee';
-import { currentLtv as _currentLtv } from '../logics/currentLtv';
-import { estimateLiquidationPrice } from '../logics/estimateLiquidationPrice';
-import { ltvToBorrowAmount } from '../logics/ltvToBorrowAmount';
-import { validateBorrowAmount } from '../logics/validateBorrowAmount';
 import { LTVGraph } from './LTVGraph';
 
 interface FormParams {
@@ -92,21 +93,24 @@ function ComponentBase({
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const bank = useBank();
+  const { tokenBalances, tax } = useBank<AnchorTokenBalances, AnchorTax>();
 
   const {
     data: {
       borrowRate,
-      bLunaOraclePrice,
-      bLunaMaxLtv = '0.5' as Rate,
-      bLunaSafeLtv = '0.3' as Rate,
+      oraclePrices,
+      bAssetLtvsAvg,
+      //bLunaOraclePrice,
+      //bLunaMaxLtv = '0.5' as Rate,
+      //bLunaSafeLtv = '0.3' as Rate,
     } = fallbackBorrowMarket,
   } = useBorrowMarketQuery();
 
   const {
     data: {
-      marketBorrowerInfo: loanAmount,
-      bLunaCustodyBorrower: borrowInfo,
+      marketBorrowerInfo,
+      overseerCollaterals,
+      //bLunaCustodyBorrower: borrowInfo,
     } = fallbackBorrowBorrower,
   } = useBorrowBorrowerQuery();
 
@@ -114,72 +118,90 @@ function ComponentBase({
   // calculate
   // ---------------------------------------------
   const amountToLtv = useMemo(
-    () => borrowAmountToLtv(loanAmount, borrowInfo, bLunaOraclePrice),
-    [loanAmount, borrowInfo, bLunaOraclePrice],
+    () =>
+      computeBorrowAmountToLtv(
+        marketBorrowerInfo,
+        overseerCollaterals,
+        oraclePrices,
+      ),
+    [marketBorrowerInfo, overseerCollaterals, oraclePrices],
   );
 
   const ltvToAmount = useMemo(
-    () => ltvToBorrowAmount(loanAmount, borrowInfo, bLunaOraclePrice),
-    [loanAmount, borrowInfo, bLunaOraclePrice],
+    () =>
+      computeLtvToBorrowAmount(
+        marketBorrowerInfo,
+        overseerCollaterals,
+        oraclePrices,
+      ),
+    [marketBorrowerInfo, overseerCollaterals, oraclePrices],
   );
 
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
   const currentLtv = useMemo(
-    () => _currentLtv(loanAmount, borrowInfo, bLunaOraclePrice),
-    [borrowInfo, loanAmount, bLunaOraclePrice],
+    () =>
+      computeCurrentLtv(marketBorrowerInfo, overseerCollaterals, oraclePrices),
+    [marketBorrowerInfo, overseerCollaterals, oraclePrices],
   );
 
   const nextLtv = useMemo(
-    () => borrowNextLtv(borrowAmount, currentLtv, amountToLtv),
+    () => computeBorrowNextLtv(borrowAmount, currentLtv, amountToLtv),
     [amountToLtv, borrowAmount, currentLtv],
   );
 
-  const estimatedLiqPrice = useMemo(
-    () => estimateLiquidationPrice(nextLtv, bLunaMaxLtv, bLunaOraclePrice),
-    [nextLtv, bLunaMaxLtv, bLunaOraclePrice],
-  );
-
   const userMaxLtv = useMemo(() => {
-    return min(bLunaMaxLtv, big(0.4)) as Rate<BigSource>;
-  }, [bLunaMaxLtv]);
+    return min(bAssetLtvsAvg.max, big(0.4)) as Rate<BigSource>;
+  }, [bAssetLtvsAvg.max]);
 
   const apr = useMemo(
-    () => _apr(borrowRate, blocksPerYear),
+    () => computeBorrowAPR(borrowRate, blocksPerYear),
     [blocksPerYear, borrowRate],
   );
 
   const safeMax = useMemo(
     () =>
-      borrowSafeMax(
-        loanAmount,
-        borrowInfo,
-        bLunaOraclePrice,
-        bLunaSafeLtv,
+      computeBorrowSafeMax(
+        marketBorrowerInfo,
+        overseerCollaterals,
+        oraclePrices,
+        bAssetLtvsAvg.safe,
         currentLtv,
       ),
-    [bLunaSafeLtv, borrowInfo, currentLtv, loanAmount, bLunaOraclePrice],
+    [
+      marketBorrowerInfo,
+      overseerCollaterals,
+      oraclePrices,
+      bAssetLtvsAvg.safe,
+      currentLtv,
+    ],
   );
 
   const max = useMemo(
-    () => borrowMax(loanAmount, borrowInfo, bLunaOraclePrice, bLunaMaxLtv),
-    [bLunaMaxLtv, borrowInfo, loanAmount, bLunaOraclePrice],
+    () =>
+      computeBorrowMax(
+        marketBorrowerInfo,
+        overseerCollaterals,
+        oraclePrices,
+        bAssetLtvsAvg.max,
+      ),
+    [marketBorrowerInfo, overseerCollaterals, oraclePrices, bAssetLtvsAvg.max],
   );
 
   const txFee = useMemo(
-    () => borrowTxFee(borrowAmount, bank, fixedGas),
-    [bank, borrowAmount, fixedGas],
+    () => computeBorrowTxFee(borrowAmount, tax, fixedGas),
+    [borrowAmount, fixedGas, tax],
   );
 
   const receiveAmount = useMemo(
-    () => borrowReceiveAmount(borrowAmount, txFee),
+    () => computeBorrowReceiveAmount(borrowAmount, txFee),
     [borrowAmount, txFee],
   );
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(tokenBalances.uUST, fixedGas),
+    [connectedWallet, tokenBalances.uUST, fixedGas],
   );
 
   const invalidBorrowAmount = useMemo(
@@ -194,10 +216,10 @@ function ComponentBase({
   }, [nextLtv]);
 
   const invalidOverSafeLtv = useMemo(() => {
-    return nextLtv?.gt(bLunaSafeLtv)
+    return nextLtv?.gt(bAssetLtvsAvg.safe)
       ? 'WARNING: Are you sure you want to borrow above the recommended LTV? Crypto markets can be very volatile and you may be subject to liquidation in events of downward price swings of the bAsset.'
       : undefined;
-  }, [bLunaSafeLtv, nextLtv]);
+  }, [bAssetLtvsAvg.safe, nextLtv]);
 
   // ---------------------------------------------
   // callbacks
@@ -313,7 +335,7 @@ function ComponentBase({
         >
           <span>{invalidBorrowAmount ?? invalidOver40Ltv}</span>
           <span>
-            {formatRate(bLunaSafeLtv)}% LTV:{' '}
+            {formatRate(bAssetLtvsAvg.safe)}% LTV:{' '}
             <span
               style={{
                 textDecoration: 'underline',
@@ -331,8 +353,8 @@ function ComponentBase({
         <figure className="graph">
           <LTVGraph
             disabled={!connectedWallet || max.lte(0)}
-            maxLtv={bLunaMaxLtv}
-            safeLtv={bLunaSafeLtv}
+            maxLtv={bAssetLtvsAvg.max}
+            safeLtv={bAssetLtvsAvg.safe}
             dangerLtv={0.4 as Rate<number>}
             currentLtv={currentLtv}
             nextLtv={nextLtv}
@@ -343,14 +365,7 @@ function ComponentBase({
           />
         </figure>
 
-        {nextLtv?.gt(currentLtv || 0) && (
-          <sup>
-            Estimated bAsset Liquidation Price: {formatUST(estimatedLiqPrice)}{' '}
-            UST
-          </sup>
-        )}
-
-        {nextLtv?.gt(bLunaSafeLtv) && (
+        {nextLtv?.gt(bAssetLtvsAvg.safe) && (
           <MessageBox
             level="error"
             hide={{ id: 'borrow-ltv', period: 1000 * 60 * 60 * 24 * 5 }}

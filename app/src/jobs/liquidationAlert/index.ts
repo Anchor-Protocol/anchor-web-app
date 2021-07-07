@@ -35,7 +35,7 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
         address,
       });
 
-      if (big(ltv).gte(ratio)) {
+      if (ltv && big(ltv).gte(ratio)) {
         const noti = create(`LTV is ${formatRate(ltv as Rate)}%`, {
           body: `Lower borrow LTV on Anchor webapp to prevent liquidation.`,
           icon: '/logo.png',

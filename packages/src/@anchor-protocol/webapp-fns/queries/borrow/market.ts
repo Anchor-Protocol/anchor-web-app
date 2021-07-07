@@ -8,13 +8,12 @@ import {
 import big from 'big.js';
 import { ANCHOR_RATIO } from '../../env';
 
-type BAssetLtvs = Map<
-  CW20Addr,
-  {
-    max: Rate;
-    safe: Rate;
-  }
->;
+type BAssetLtv = {
+  max: Rate;
+  safe: Rate;
+};
+
+type BAssetLtvs = Map<CW20Addr, BAssetLtv>;
 
 export interface BorrowMarketWasmQuery {
   marketState: WasmQuery<
@@ -59,6 +58,8 @@ export type BorrowMarket = WasmQueryData<BorrowMarketWasmQuery> & {
   };
 
   bAssetLtvs: BAssetLtvs;
+  bAssetLtvsSum: BAssetLtv;
+  bAssetLtvsAvg: BAssetLtv;
 
   //bLunaMaxLtv?: Rate;
   //bLunaSafeLtv?: Rate;
@@ -116,28 +117,31 @@ export async function borrowMarketQuery({
         ?.Amount ?? '0') as uUST,
     };
 
-  const { borrowRate, oraclePrices, overseerWhitelist } =
-    await mantle<MarketWasmQuery>({
-      mantleEndpoint: `${mantleEndpoint}?borrow--market`,
-      variables: {},
-      wasmQuery: {
-        borrowRate: {
-          ...wasmQuery.borrowRate,
-          query: {
-            borrow_rate: {
-              market_balance: marketBalances.uUST,
-              total_liabilities: marketState.total_liabilities,
-              total_reserves: marketState.total_reserves,
-            },
+  const {
+    borrowRate,
+    oraclePrices: _oraclePrices,
+    overseerWhitelist,
+  } = await mantle<MarketWasmQuery>({
+    mantleEndpoint: `${mantleEndpoint}?borrow--market`,
+    variables: {},
+    wasmQuery: {
+      borrowRate: {
+        ...wasmQuery.borrowRate,
+        query: {
+          borrow_rate: {
+            market_balance: marketBalances.uUST,
+            total_liabilities: marketState.total_liabilities,
+            total_reserves: marketState.total_reserves,
           },
         },
-        oraclePrices: wasmQuery.oraclePrices,
-        //bLunaOraclePrice: wasmQuery.bLunaOraclePrice,
-        //bEthOraclePrice: wasmQuery.bEthOraclePrice,
-        overseerWhitelist: wasmQuery.overseerWhitelist,
       },
-      ...params,
-    });
+      oraclePrices: wasmQuery.oraclePrices,
+      //bLunaOraclePrice: wasmQuery.bLunaOraclePrice,
+      //bEthOraclePrice: wasmQuery.bEthOraclePrice,
+      overseerWhitelist: wasmQuery.overseerWhitelist,
+    },
+    ...params,
+  });
 
   const whitelistIndex: Map<
     string,
@@ -150,10 +154,14 @@ export async function borrowMarketQuery({
 
   const bAssetLtvs: BAssetLtvs = new Map();
 
+  const oraclePrices: moneyMarket.oracle.PricesResponse =
+    //@ts-ignore
+    'Ok' in _oraclePrices ? _oraclePrices.Ok : _oraclePrices;
+
   for (const price of oraclePrices.prices) {
     const max = whitelistIndex.has(price.asset)
-      ? whitelistIndex.get(price.asset)?.max_ltv ?? ('0.7' as Rate)
-      : ('0.7' as Rate);
+      ? whitelistIndex.get(price.asset)?.max_ltv ?? ('0.5' as Rate)
+      : ('0.5' as Rate);
 
     const safe = big(max).mul(ANCHOR_RATIO).toFixed() as Rate;
 
@@ -161,6 +169,21 @@ export async function borrowMarketQuery({
       bAssetLtvs.set(price.asset, { max, safe });
     }
   }
+
+  const bAssetLtvsSum = Array.from(bAssetLtvs).reduce(
+    (total, [, { max, safe }]) => {
+      return {
+        max: big(total.max).plus(max).toFixed() as Rate,
+        safe: big(total.safe).plus(safe).toFixed() as Rate,
+      };
+    },
+    { max: '0' as Rate, safe: '0' as Rate },
+  );
+
+  const bAssetLtvsAvg = {
+    max: big(bAssetLtvsSum.max).div(bAssetLtvs.size).toFixed() as Rate,
+    safe: big(bAssetLtvsSum.safe).div(bAssetLtvs.size).toFixed() as Rate,
+  };
 
   //const bLunaMaxLtv = overseerWhitelist.elems.find(
   //  ({ collateral_token }) =>
@@ -189,6 +212,8 @@ export async function borrowMarketQuery({
     //bEthOraclePrice,
     borrowRate,
     bAssetLtvs,
+    bAssetLtvsSum,
+    bAssetLtvsAvg,
     //bLunaMaxLtv,
     //bLunaSafeLtv,
     //bEthMaxLtv,

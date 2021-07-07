@@ -7,7 +7,7 @@ import {
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { bLuna, Rate } from '@anchor-protocol/types';
+import { bLuna, CW20Addr, Rate } from '@anchor-protocol/types';
 import { BorrowBorrower, BorrowMarket } from '@anchor-protocol/webapp-fns';
 import {
   useAnchorWebapp,
@@ -49,6 +49,7 @@ import { LTVGraph } from './LTVGraph';
 
 interface FormParams {
   className?: string;
+  collateralToken: CW20Addr;
   fallbackBorrowMarket: BorrowMarket;
   fallbackBorrowBorrower: BorrowBorrower;
 }
