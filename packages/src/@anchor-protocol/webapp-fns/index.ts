@@ -10,7 +10,7 @@ export * from './computes/common/validateTxFee';
 export * from './computes/earn/computeTotalDeposit';
 export * from './computes/earn/computeCurrentAPY';
 export * from './computes/borrow/pickCollateral';
-export * from './computes/borrow/computeCollateralTotalLockedUST';
+export * from './computes/borrow/computeCollateralsTotalUST';
 export * from './computes/borrow/computeBorrowLimit';
 export * from './computes/borrow/computeCurrentLtv';
 export * from './computes/borrow/computeLiquidationPrice';

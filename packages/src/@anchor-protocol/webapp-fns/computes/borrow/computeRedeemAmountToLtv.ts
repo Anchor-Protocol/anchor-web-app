@@ -1,6 +1,6 @@
 import type { Rate, ubAsset } from '@anchor-protocol/types';
 import { CW20Addr, moneyMarket } from '@anchor-protocol/types';
-import { computeCollateralTotalLockedUST } from '@anchor-protocol/webapp-fns';
+import { computeCollateralsTotalUST } from '@anchor-protocol/webapp-fns';
 import big, { Big, BigSource } from 'big.js';
 
 export const computeRedeemAmountToLtv =
@@ -11,11 +11,17 @@ export const computeRedeemAmountToLtv =
     oraclePrices: moneyMarket.oracle.PricesResponse,
   ) =>
   (redeemAmount: ubAsset<BigSource>): Rate<Big> => {
-    const totalLockedUST = computeCollateralTotalLockedUST(
+    const collateralsVaue = computeCollateralsTotalUST(
       overseerCollaterals,
       oraclePrices,
       [collateralToken, big(redeemAmount).mul(-1) as ubAsset<Big>],
     );
 
-    return big(marketBorrowerInfo.loan_amount).div(totalLockedUST) as Rate<Big>;
+    if (big(collateralsVaue).eq(0)) {
+      throw new Error(`totalLockedUST can't be 0`);
+    }
+
+    return big(marketBorrowerInfo.loan_amount).div(
+      collateralsVaue,
+    ) as Rate<Big>;
   };

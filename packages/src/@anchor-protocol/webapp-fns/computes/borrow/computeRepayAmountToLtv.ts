@@ -1,6 +1,6 @@
 import { moneyMarket } from '@anchor-protocol/types';
 import type { Rate, uUST } from '@anchor-protocol/types';
-import { computeCollateralTotalLockedUST } from './computeCollateralTotalLockedUST';
+import { computeCollateralsTotalUST } from './computeCollateralsTotalUST';
 import big, { Big, BigSource } from 'big.js';
 
 export const computeRepayAmountToLtv =
@@ -10,12 +10,12 @@ export const computeRepayAmountToLtv =
     oraclePrices: moneyMarket.oracle.PricesResponse,
   ) =>
   (repayAmount: uUST<BigSource>): Rate<Big> => {
-    const totalLockedUST = computeCollateralTotalLockedUST(
+    const collateralsVaue = computeCollateralsTotalUST(
       overseerCollaterals,
       oraclePrices,
     );
 
     return big(big(marketBorrowerInfo.loan_amount).minus(repayAmount)).div(
-      totalLockedUST,
+      collateralsVaue,
     ) as Rate<Big>;
   };

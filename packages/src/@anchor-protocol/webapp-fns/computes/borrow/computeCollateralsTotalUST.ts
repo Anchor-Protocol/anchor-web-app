@@ -5,7 +5,7 @@ import { vectorizeOraclePrices } from './vectorizeOraclePrices';
 import { vectorizeOverseerCollaterals } from './vectorizeOverseerCollaterals';
 import { vectorizeVariations } from './vectorizeVariations';
 
-export function computeCollateralTotalLockedUST(
+export function computeCollateralsTotalUST(
   overseerCollaterals: moneyMarket.overseer.CollateralsResponse,
   oraclePrices: moneyMarket.oracle.PricesResponse,
   ...variation: Array<[CW20Addr, ubAsset<BigSource>]>
@@ -18,7 +18,7 @@ export function computeCollateralTotalLockedUST(
   const prices = vectorizeOraclePrices(vector, oraclePrices.prices);
   const variations = vectorizeVariations(vector, variation);
 
-  // sum([lockedAmounts] + [variations] * [prices])
+  // sum(([lockedAmounts] + [variations]) * [prices])
 
   const bAssetAmounts = vectorAdd(lockedAmounts, variations);
   const ustAmounts = vectorMultiply(bAssetAmounts, prices);

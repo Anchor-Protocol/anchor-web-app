@@ -18,7 +18,7 @@ import {
   computeBorrowAPR,
   computeBorrowedAmount,
   computeBorrowLimit,
-  computeCollateralTotalLockedUST,
+  computeCollateralsTotalUST,
   computeCurrentLtv,
   useAnchorWebapp,
   useBorrowAPYQuery,
@@ -65,9 +65,9 @@ function OverviewBase({ className }: OverviewProps) {
   // ---------------------------------------------
   const { currentLtv, borrowAPR, borrowedValue, collateralValue, borrowLimit } =
     useMemo(() => {
-      const collateralValue =
+      const collateralsValue =
         overseerCollaterals && oraclePrices
-          ? computeCollateralTotalLockedUST(overseerCollaterals, oraclePrices)
+          ? computeCollateralsTotalUST(overseerCollaterals, oraclePrices)
           : (big(0) as uUST<Big>);
 
       const currentLtv =
@@ -92,7 +92,7 @@ function OverviewBase({ className }: OverviewProps) {
         currentLtv,
         borrowAPR,
         borrowedValue,
-        collateralValue,
+        collateralValue: collateralsValue,
         borrowLimit,
       };
     }, [

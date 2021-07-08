@@ -1,7 +1,7 @@
 import type { Rate } from '@anchor-protocol/types';
 import { CW20Addr, moneyMarket, ubAsset } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
-import { computeCollateralTotalLockedUST } from './computeCollateralTotalLockedUST';
+import { computeCollateralsTotalUST } from './computeCollateralsTotalUST';
 
 export const computeLtvToRedeemAmount =
   (
@@ -19,14 +19,14 @@ export const computeLtvToRedeemAmount =
       throw new Error(`Can't find oracle of "${collateralToken}"`);
     }
 
-    const totalLockedUST = computeCollateralTotalLockedUST(
+    const collateralsVaue = computeCollateralsTotalUST(
       overseerCollaterals,
       oraclePrices,
     );
 
     const nextTotalLockedUST = big(marketBorrowerInfo.loan_amount).div(ltv);
 
-    const increasedUST = nextTotalLockedUST.minus(totalLockedUST);
+    const increasedUST = collateralsVaue.minus(nextTotalLockedUST);
 
     return increasedUST.div(oracle.price) as ubAsset<Big>;
 

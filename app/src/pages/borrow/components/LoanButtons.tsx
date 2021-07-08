@@ -1,7 +1,7 @@
 import { uUST } from '@anchor-protocol/types';
 import { computeBorrowedAmount } from '@anchor-protocol/webapp-fns';
 import {
-  computeCollateralTotalLockedUST,
+  computeCollateralsTotalUST,
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
 } from '@anchor-protocol/webapp-provider';
@@ -28,11 +28,11 @@ export function LoanButtons() {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const collateralsInUST = useMemo(() => {
+  const collateralsValue = useMemo(() => {
     if (!borrowBorrower || !borrowMarket) {
       return '0' as uUST;
     }
-    return computeCollateralTotalLockedUST(
+    return computeCollateralsTotalUST(
       borrowBorrower.overseerCollaterals,
       borrowMarket.oraclePrices,
     );
@@ -49,7 +49,7 @@ export function LoanButtons() {
           !connectedWallet ||
           !borrowMarket ||
           !borrowBorrower ||
-          big(collateralsInUST).lte(0)
+          big(collateralsValue).lte(0)
         }
         onClick={() =>
           borrowMarket &&

@@ -1,7 +1,7 @@
 import type { Rate, uUST } from '@anchor-protocol/types';
 import { moneyMarket } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
-import { computeCollateralTotalLockedUST } from './computeCollateralTotalLockedUST';
+import { computeCollateralsTotalUST } from './computeCollateralsTotalUST';
 
 // If user_ltv >= 0.35 or user_ltv == Null:
 //   SafeMax = 0
@@ -15,7 +15,7 @@ export function computeBorrowSafeMax(
   safeLtv: Rate<BigSource>,
   currentLtv: Rate<Big> | undefined,
 ): uUST<Big> {
-  const totalLockedUST = computeCollateralTotalLockedUST(
+  const collateralsVaue = computeCollateralsTotalUST(
     overseerCollaterals,
     oraclePrices,
   );
@@ -23,6 +23,6 @@ export function computeBorrowSafeMax(
   return !currentLtv || currentLtv.gte(safeLtv)
     ? (big(0) as uUST<Big>)
     : (big(safeLtv)
-        .mul(totalLockedUST)
+        .mul(collateralsVaue)
         .minus(marketBorrowerInfo.loan_amount) as uUST<Big>);
 }

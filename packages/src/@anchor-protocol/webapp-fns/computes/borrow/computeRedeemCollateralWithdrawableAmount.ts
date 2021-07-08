@@ -5,7 +5,7 @@ import big, { Big, BigSource } from 'big.js';
 // If user_ltv >= 0.35 or user_ltv == Null:
 //   withdrawable = borrow_info.spendable
 // else:
-//   withdrawable = borrow_info.balance - borrow_info.loan_amount / 0.35 / oracle_price
+//   withdrawable = borrow_info.balance - borrow_info.loan_amount / safe_ltv=0.35 / oracle_price
 
 export function computeRedeemCollateralWithdrawableAmount(
   marketBorrowerInfo: moneyMarket.market.BorrowerInfoResponse,
