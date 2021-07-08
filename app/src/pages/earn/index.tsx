@@ -1,5 +1,6 @@
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { screen } from 'env';
+import { InsuranceCoverageButton } from 'pages/earn/components/InsuranceCoverageButton';
 import React from 'react';
 import styled from 'styled-components';
 import { ExpectedInterestSection } from './components/ExpectedInterestSection';
@@ -13,6 +14,9 @@ export interface EarnProps {
 function EarnBase({ className }: EarnProps) {
   return (
     <PaddedLayout className={className}>
+      <ButtonContainer>
+        <InsuranceCoverageButton />
+      </ButtonContainer>
       <section className="grid">
         <TotalDepositSection className="total-deposit" />
         <InterestSection className="interest" />
@@ -21,6 +25,12 @@ function EarnBase({ className }: EarnProps) {
     </PaddedLayout>
   );
 }
+
+const ButtonContainer = styled.div`
+  height: 50px;
+  display: flex;
+  justify-content: flex-end;
+`;
 
 export const Earn = styled(EarnBase)`
   // ---------------------------------------------
