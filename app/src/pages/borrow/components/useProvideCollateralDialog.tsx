@@ -19,6 +19,8 @@ import {
   computeLtvToDepositAmount,
   computeProvideCollateralBorrowLimit,
   computeProvideCollateralNextLtv,
+  pickCollateral,
+  prettifyBAssetSymbol,
   useAnchorWebapp,
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
@@ -99,7 +101,12 @@ function ComponentBase({
   const ubAssetBalance = useCW20TokenBalance<ubAsset>(collateralToken);
 
   const {
-    data: { oraclePrices, bAssetLtvs, bAssetLtvsAvg } = fallbackBorrowMarket,
+    data: {
+      oraclePrices,
+      overseerWhitelist,
+      bAssetLtvs,
+      bAssetLtvsAvg,
+    } = fallbackBorrowMarket,
   } = useBorrowMarketQuery();
 
   const {
@@ -109,6 +116,11 @@ function ComponentBase({
   // ---------------------------------------------
   // calculate
   // ---------------------------------------------
+  const collateral = useMemo(
+    () => pickCollateral(collateralToken, overseerWhitelist),
+    [collateralToken, overseerWhitelist],
+  );
+
   const amountToLtv = useMemo(
     () =>
       computeDepositAmountToLtv(
@@ -260,7 +272,11 @@ function ComponentBase({
             updateDepositAmount(target.value)
           }
           InputProps={{
-            endAdornment: <InputAdornment position="end">bLUNA</InputAdornment>,
+            endAdornment: (
+              <InputAdornment position="end">
+                {prettifyBAssetSymbol(collateral.symbol)}
+              </InputAdornment>
+            ),
           }}
         />
 
@@ -279,7 +295,8 @@ function ComponentBase({
                 )
               }
             >
-              {formatBAsset(demicrofy(ubAssetBalance))} bLUNA
+              {formatBAsset(demicrofy(ubAssetBalance))}{' '}
+              {prettifyBAssetSymbol(collateral.symbol)}
             </span>
           </span>
         </div>

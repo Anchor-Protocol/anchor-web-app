@@ -20,6 +20,8 @@ import {
   computeRedeemCollateralMaxAmount,
   computeRedeemCollateralNextLtv,
   computeRedeemCollateralWithdrawableAmount,
+  pickCollateral,
+  prettifyBAssetSymbol,
   validateRedeemAmount,
   validateTxFee,
 } from '@anchor-protocol/webapp-fns';
@@ -103,6 +105,7 @@ function ComponentBase({
     data: {
       oraclePrices,
       bAssetLtvsAvg,
+      overseerWhitelist,
       //bLunaOraclePrice,
       //bLunaMaxLtv = '0.5' as Rate,
       //bLunaSafeLtv = '0.3' as Rate,
@@ -120,6 +123,11 @@ function ComponentBase({
   // ---------------------------------------------
   // calculate
   // ---------------------------------------------
+  const collateral = useMemo(
+    () => pickCollateral(collateralToken, overseerWhitelist),
+    [collateralToken, overseerWhitelist],
+  );
+
   const amountToLtv = useMemo(
     () =>
       computeRedeemAmountToLtv(
@@ -299,7 +307,11 @@ function ComponentBase({
             updateRedeemAmount(target.value)
           }
           InputProps={{
-            endAdornment: <InputAdornment position="end">bLUNA</InputAdornment>,
+            endAdornment: (
+              <InputAdornment position="end">
+                {prettifyBAssetSymbol(collateral.symbol)}
+              </InputAdornment>
+            ),
           }}
         />
 
@@ -318,7 +330,8 @@ function ComponentBase({
                 )
               }
             >
-              {formatLuna(demicrofy(withdrawableAmount))} bLUNA
+              {formatLuna(demicrofy(withdrawableAmount))}{' '}
+              {prettifyBAssetSymbol(collateral.symbol)}
             </span>
           </span>
         </div>
