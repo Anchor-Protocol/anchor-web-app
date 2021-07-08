@@ -13,5 +13,9 @@ export function computeCurrentLtv(
     oraclePrices,
   );
 
-  return big(marketBorrowerInfo.loan_amount).div(totalLockedUST) as Rate<Big>;
+  try {
+    return big(marketBorrowerInfo.loan_amount).div(totalLockedUST) as Rate<Big>;
+  } catch {
+    return undefined;
+  }
 }

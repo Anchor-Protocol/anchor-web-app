@@ -76,6 +76,7 @@ export type BorrowMarketQueryParams = Omit<
 export async function borrowMarketQuery({
   mantleEndpoint,
   wasmQuery,
+  //collateralVector,
   ...params
 }: BorrowMarketQueryParams): Promise<BorrowMarket> {
   type MarketStateWasmQuery = Pick<BorrowMarketWasmQuery, 'marketState'>;

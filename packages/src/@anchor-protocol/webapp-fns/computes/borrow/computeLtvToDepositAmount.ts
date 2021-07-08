@@ -19,7 +19,7 @@ export const computeLtvToDepositAmount =
     );
 
     if (!oracle) {
-      throw new Error(`Can't find oracle of "${collateralToken}"`);
+      throw new Error(`Can't find oracle for "${collateralToken}"`);
     }
 
     const totalLockedUST = computeCollateralTotalLockedUST(

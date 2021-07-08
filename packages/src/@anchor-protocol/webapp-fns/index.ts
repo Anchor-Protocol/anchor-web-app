@@ -1,6 +1,8 @@
 export * from './env';
 export * from './types';
 
+export * from './models/collaterals';
+
 export * from './functions/createAnchorContractAddress';
 export * from './functions/prettifyBAssetSymbol';
 
@@ -44,6 +46,11 @@ export * from './computes/borrow/computeRedeemCollateralWithdrawableAmount';
 export * from './computes/borrow/computeRedeemCollateralMaxAmount';
 export * from './computes/borrow/computeRedeemCollateralBorrowLimit';
 export * from './computes/borrow/validateRedeemAmount';
+export * from './computes/borrow/vectorizeOraclePrices';
+export * from './computes/borrow/vectorizeOverseerCollaterals';
+export * from './computes/borrow/vectorizeOverseerWhitelist';
+export * from './computes/borrow/vectorizeVariations';
+export * from './computes/borrow/vectorizeBAssetLtvs';
 
 export * from './forms/earn/deposit';
 export * from './forms/earn/withdraw';

@@ -57,6 +57,7 @@ import { LTVGraph } from './LTVGraph';
 interface FormParams {
   className?: string;
   collateralToken: CW20Addr;
+  collateralVector: CW20Addr[];
   fallbackBorrowMarket: BorrowMarket;
   fallbackBorrowBorrower: BorrowBorrower;
 }

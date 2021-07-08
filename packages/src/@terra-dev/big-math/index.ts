@@ -28,8 +28,30 @@ export function max(...numbers: BigSource[]): Big {
   return maximum;
 }
 
+export function sum(...numbers: BigSource[]): Big {
+  return numbers.reduce((total: Big, num) => {
+    return total.add(num);
+  }, big(0));
+}
+
 export function floor(number: BigSource): Big {
   const fixed = big(number).toFixed();
   const integer = fixed.split('.')[0];
   return integer.length > 0 ? big(integer) : big('0');
+}
+
+export function vectorAdd(a: BigSource[], b: BigSource[]): Big[] {
+  if (a.length !== b.length) {
+    throw new Error(`Not equal a and b`);
+  }
+
+  return a.map((value, i) => big(value).add(b[i]));
+}
+
+export function vectorMultiply(a: BigSource[], b: BigSource[]): Big[] {
+  if (a.length !== b.length) {
+    throw new Error(`Not equal a and b`);
+  }
+
+  return a.map((value, i) => big(value).mul(b[i]));
 }

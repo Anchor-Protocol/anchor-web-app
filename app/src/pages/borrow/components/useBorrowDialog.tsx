@@ -6,7 +6,7 @@ import {
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { Rate, UST, uUST } from '@anchor-protocol/types';
+import { CW20Addr, Rate, UST, uUST } from '@anchor-protocol/types';
 import {
   AnchorTax,
   AnchorTokenBalances,
@@ -53,6 +53,7 @@ import { LTVGraph } from './LTVGraph';
 
 interface FormParams {
   className?: string;
+  collateralVector: CW20Addr[];
   fallbackBorrowMarket: BorrowMarket;
   fallbackBorrowBorrower: BorrowBorrower;
 }

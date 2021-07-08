@@ -173,6 +173,7 @@ export function CollateralList({ className }: CollateralListProps) {
                       borrowBorrower &&
                       openProvideCollateralDialog({
                         collateralToken: token,
+                        collateralVector: collaterals.map(({ token }) => token),
                         fallbackBorrowMarket: borrowMarket,
                         fallbackBorrowBorrower: borrowBorrower,
                       })
@@ -195,6 +196,7 @@ export function CollateralList({ className }: CollateralListProps) {
                       borrowBorrower &&
                       openRedeemCollateralDialog({
                         collateralToken: token,
+                        collateralVector: collaterals.map(({ token }) => token),
                         fallbackBorrowMarket: borrowMarket,
                         fallbackBorrowBorrower: borrowBorrower,
                       })

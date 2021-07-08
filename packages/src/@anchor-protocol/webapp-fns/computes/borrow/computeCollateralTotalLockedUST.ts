@@ -1,22 +1,27 @@
 import { CW20Addr, moneyMarket, ubAsset, uUST } from '@anchor-protocol/types';
-import big, { Big, BigSource } from 'big.js';
+import { sum, vectorAdd, vectorMultiply } from '@terra-dev/big-math';
+import { Big, BigSource } from 'big.js';
+import { vectorizeOraclePrices } from './vectorizeOraclePrices';
+import { vectorizeOverseerCollaterals } from './vectorizeOverseerCollaterals';
+import { vectorizeVariations } from './vectorizeVariations';
 
 export function computeCollateralTotalLockedUST(
   overseerCollaterals: moneyMarket.overseer.CollateralsResponse,
   oraclePrices: moneyMarket.oracle.PricesResponse,
   ...variation: Array<[CW20Addr, ubAsset<BigSource>]>
 ): uUST<Big> {
-  return overseerCollaterals.collaterals.reduce(
-    (total, [token, lockedAmount]) => {
-      const oracle = oraclePrices.prices.find(({ asset }) => asset === token);
+  const vector = oraclePrices.prices.map(({ asset }) => asset);
+  const lockedAmounts = vectorizeOverseerCollaterals(
+    vector,
+    overseerCollaterals.collaterals,
+  );
+  const prices = vectorizeOraclePrices(vector, oraclePrices.prices);
+  const variations = vectorizeVariations(vector, variation);
 
-      const vari = variation?.find(
-        ([variationToken]) => variationToken === token,
-      );
-      const amount = vari ? big(lockedAmount).plus(vari[1]) : lockedAmount;
+  // sum([lockedAmounts] + [variations] * [prices])
 
-      return oracle ? total.plus(big(amount).mul(oracle.price)) : total;
-    },
-    big(0),
-  ) as uUST<Big>;
+  const bAssetAmounts = vectorAdd(lockedAmounts, variations);
+  const ustAmounts = vectorMultiply(bAssetAmounts, prices);
+
+  return sum(...ustAmounts) as uUST<Big>;
 }

@@ -19,14 +19,6 @@ export interface BorrowBorrowerWasmQuery {
     moneyMarket.overseer.BorrowLimit,
     moneyMarket.overseer.BorrowLimitResponse
   >;
-  //bLunaCustodyBorrower: WasmQuery<
-  //  moneyMarket.custody.Borrower,
-  //  moneyMarket.custody.BorrowerResponse
-  //>;
-  //bEthCustodyBorrower: WasmQuery<
-  //  moneyMarket.custody.Borrower,
-  //  moneyMarket.custody.BorrowerResponse
-  //>;
 }
 
 export type BorrowBorrower = WasmQueryData<BorrowBorrowerWasmQuery> & {

@@ -17,5 +17,7 @@ export const computeDepositAmountToLtv =
       [collateralToken, depositAmount],
     );
 
-    return big(marketBorrowerInfo.loan_amount).div(totalLockedUST) as Rate<Big>;
+    return big(marketBorrowerInfo.loan_amount).div(
+      big(totalLockedUST).eq(0) ? 1 : totalLockedUST,
+    ) as Rate<Big>;
   };
