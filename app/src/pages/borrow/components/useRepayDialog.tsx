@@ -138,24 +138,16 @@ function ComponentBase({
   // ---------------------------------------------
   // compute
   // ---------------------------------------------
-  const currentLtv = useMemo(
-    () =>
-      computeCurrentLtv(marketBorrowerInfo, overseerCollaterals, oraclePrices),
-    [marketBorrowerInfo, overseerCollaterals, oraclePrices],
-  );
+  const { currentLtv, apr, maxRepayingAmount, invalidTxFee } = useMemo(() => {
+    const currentLtv = computeCurrentLtv(
+      marketBorrowerInfo,
+      overseerCollaterals,
+      oraclePrices,
+    );
 
-  const nextLtv = useMemo(
-    () => computeRepayNextLtv(repayAmount, currentLtv, amountToLtv),
-    [amountToLtv, currentLtv, repayAmount],
-  );
+    const apr = computeBorrowAPR(borrowRate, blocksPerYear);
 
-  const apr = useMemo(
-    () => computeBorrowAPR(borrowRate, blocksPerYear),
-    [blocksPerYear, borrowRate],
-  );
-
-  const maxRepayingAmount = useMemo(() => {
-    return computeMaxRepayingAmount(
+    const maxRepayingAmount = computeMaxRepayingAmount(
       marketState,
       borrowRate,
       marketBorrowerInfo,
@@ -163,39 +155,63 @@ function ComponentBase({
       tokenBalances.uUST,
       fixedGas,
     );
+
+    const invalidTxFee =
+      !!connectedWallet && validateTxFee(tokenBalances.uUST, fixedGas);
+
+    return { currentLtv, apr, maxRepayingAmount, invalidTxFee };
   }, [
-    marketState,
-    borrowRate,
-    marketBorrowerInfo,
     blockHeight,
-    tokenBalances.uUST,
+    blocksPerYear,
+    borrowRate,
+    connectedWallet,
     fixedGas,
+    marketBorrowerInfo,
+    marketState,
+    oraclePrices,
+    overseerCollaterals,
+    tokenBalances.uUST,
   ]);
 
-  const txFee = useMemo(
-    () => computeRepayTxFee(repayAmount, tax, fixedGas),
-    [fixedGas, repayAmount, tax],
-  );
+  const {
+    nextLtv,
+    txFee,
+    totalOutstandingLoan,
+    sendAmount,
+    invalidRepayAmount,
+  } = useMemo(() => {
+    const nextLtv = computeRepayNextLtv(repayAmount, currentLtv, amountToLtv);
 
-  const totalOutstandingLoan = useMemo(
-    () => computeRepayTotalOutstandingLoan(repayAmount, marketBorrowerInfo),
-    [marketBorrowerInfo, repayAmount],
-  );
+    const txFee = computeRepayTxFee(repayAmount, tax, fixedGas);
 
-  const sendAmount = useMemo(
-    () => computeRepaySendAmount(repayAmount, txFee),
-    [repayAmount, txFee],
-  );
+    const totalOutstandingLoan = computeRepayTotalOutstandingLoan(
+      repayAmount,
+      marketBorrowerInfo,
+    );
 
-  const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(tokenBalances.uUST, fixedGas),
-    [connectedWallet, tokenBalances.uUST, fixedGas],
-  );
+    const sendAmount = computeRepaySendAmount(repayAmount, txFee);
 
-  const invalidRepayAmount = useMemo(
-    () => validateRepayAmount(repayAmount, tokenBalances.uUST),
-    [repayAmount, tokenBalances.uUST],
-  );
+    const invalidRepayAmount = validateRepayAmount(
+      repayAmount,
+      tokenBalances.uUST,
+    );
+
+    return {
+      nextLtv,
+      txFee,
+      totalOutstandingLoan,
+      sendAmount,
+      invalidRepayAmount,
+    };
+  }, [
+    amountToLtv,
+    currentLtv,
+    fixedGas,
+    marketBorrowerInfo,
+    repayAmount,
+    tax,
+    tokenBalances.uUST,
+  ]);
 
   // ---------------------------------------------
   // callbacks

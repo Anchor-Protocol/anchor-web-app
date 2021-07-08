@@ -140,86 +140,90 @@ function ComponentBase({
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const currentLtv = useMemo(
-    () =>
-      computeCurrentLtv(marketBorrowerInfo, overseerCollaterals, oraclePrices),
-    [marketBorrowerInfo, overseerCollaterals, oraclePrices],
-  );
+  const { currentLtv, userMaxLtv, apr, safeMax, max, invalidTxFee } =
+    useMemo(() => {
+      const currentLtv = computeCurrentLtv(
+        marketBorrowerInfo,
+        overseerCollaterals,
+        oraclePrices,
+      );
 
-  const nextLtv = useMemo(
-    () => computeBorrowNextLtv(borrowAmount, currentLtv, amountToLtv),
-    [amountToLtv, borrowAmount, currentLtv],
-  );
+      const userMaxLtv = min(bAssetLtvsAvg.max, big(0.4)) as Rate<BigSource>;
 
-  const userMaxLtv = useMemo(() => {
-    return min(bAssetLtvsAvg.max, big(0.4)) as Rate<BigSource>;
-  }, [bAssetLtvsAvg.max]);
+      const apr = computeBorrowAPR(borrowRate, blocksPerYear);
 
-  const apr = useMemo(
-    () => computeBorrowAPR(borrowRate, blocksPerYear),
-    [blocksPerYear, borrowRate],
-  );
-
-  const safeMax = useMemo(
-    () =>
-      computeBorrowSafeMax(
+      const safeMax = computeBorrowSafeMax(
         marketBorrowerInfo,
         overseerCollaterals,
         oraclePrices,
         bAssetLtvsAvg.safe,
         currentLtv,
-      ),
-    [
-      marketBorrowerInfo,
-      overseerCollaterals,
-      oraclePrices,
-      bAssetLtvsAvg.safe,
-      currentLtv,
-    ],
-  );
+      );
 
-  const max = useMemo(
-    () =>
-      computeBorrowMax(
+      const max = computeBorrowMax(
         marketBorrowerInfo,
         overseerCollaterals,
         oraclePrices,
         bAssetLtvsAvg.max,
-      ),
-    [marketBorrowerInfo, overseerCollaterals, oraclePrices, bAssetLtvsAvg.max],
-  );
+      );
 
-  const txFee = useMemo(
-    () => computeBorrowTxFee(borrowAmount, tax, fixedGas),
-    [borrowAmount, fixedGas, tax],
-  );
+      const invalidTxFee =
+        !!connectedWallet && validateTxFee(tokenBalances.uUST, fixedGas);
+      return { currentLtv, userMaxLtv, apr, safeMax, max, invalidTxFee };
+    }, [
+      bAssetLtvsAvg.max,
+      bAssetLtvsAvg.safe,
+      blocksPerYear,
+      borrowRate,
+      connectedWallet,
+      fixedGas,
+      marketBorrowerInfo,
+      oraclePrices,
+      overseerCollaterals,
+      tokenBalances.uUST,
+    ]);
 
-  const receiveAmount = useMemo(
-    () => computeBorrowReceiveAmount(borrowAmount, txFee),
-    [borrowAmount, txFee],
-  );
+  const {
+    nextLtv,
+    txFee,
+    receiveAmount,
+    invalidBorrowAmount,
+    invalidOver40Ltv,
+    invalidOverSafeLtv,
+  } = useMemo(() => {
+    const nextLtv = computeBorrowNextLtv(borrowAmount, currentLtv, amountToLtv);
 
-  const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(tokenBalances.uUST, fixedGas),
-    [connectedWallet, tokenBalances.uUST, fixedGas],
-  );
+    const txFee = computeBorrowTxFee(borrowAmount, tax, fixedGas);
 
-  const invalidBorrowAmount = useMemo(
-    () => validateBorrowAmount(borrowAmount, max),
-    [borrowAmount, max],
-  );
+    const receiveAmount = computeBorrowReceiveAmount(borrowAmount, txFee);
 
-  const invalidOver40Ltv = useMemo(() => {
-    return nextLtv?.gt(0.4)
+    const invalidBorrowAmount = validateBorrowAmount(borrowAmount, max);
+
+    const invalidOver40Ltv = nextLtv?.gt(0.4)
       ? 'Cannot borrow when LTV is above 40%.'
       : undefined;
-  }, [nextLtv]);
 
-  const invalidOverSafeLtv = useMemo(() => {
-    return nextLtv?.gt(bAssetLtvsAvg.safe)
+    const invalidOverSafeLtv = nextLtv?.gt(bAssetLtvsAvg.safe)
       ? 'WARNING: Are you sure you want to borrow above the recommended LTV? Crypto markets can be very volatile and you may be subject to liquidation in events of downward price swings of the bAsset.'
       : undefined;
-  }, [bAssetLtvsAvg.safe, nextLtv]);
+
+    return {
+      nextLtv,
+      txFee,
+      receiveAmount,
+      invalidBorrowAmount,
+      invalidOver40Ltv,
+      invalidOverSafeLtv,
+    };
+  }, [
+    amountToLtv,
+    bAssetLtvsAvg.safe,
+    borrowAmount,
+    currentLtv,
+    fixedGas,
+    max,
+    tax,
+  ]);
 
   // ---------------------------------------------
   // callbacks

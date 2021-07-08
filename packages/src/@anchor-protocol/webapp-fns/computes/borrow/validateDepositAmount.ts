@@ -1,15 +1,14 @@
 import { microfy } from '@anchor-protocol/notation';
-import type { bLuna } from '@anchor-protocol/types';
-import { Bank } from 'contexts/bank';
+import type { bAsset, ubAsset } from '@anchor-protocol/types';
 import { ReactNode } from 'react';
 
 export function validateDepositAmount(
-  depositAmount: bLuna,
-  bank: Bank,
+  depositAmount: bAsset,
+  balance: ubAsset,
 ): ReactNode {
   if (depositAmount.length === 0) {
     return undefined;
-  } else if (microfy(depositAmount).gt(bank.userBalances.ubLuna ?? 0)) {
+  } else if (microfy(depositAmount).gt(balance ?? 0)) {
     return `Not enough assets`;
   }
   return undefined;

@@ -1,8 +1,7 @@
 import { COLLATERAL_DENOMS, MARKET_DENOMS } from '@anchor-protocol/anchor.js';
-import { bLuna, uUST } from '@anchor-protocol/types';
+import { bAsset, uUST } from '@anchor-protocol/types';
 import { borrowRedeemCollateralTx } from '@anchor-protocol/webapp-fns';
 import { useStream } from '@rx-stream/react';
-
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import {
   useRefetchQueries,
@@ -15,7 +14,7 @@ import { useBorrowBorrowerQuery } from '../../queries/borrow/borrower';
 import { useBorrowMarketQuery } from '../../queries/borrow/market';
 
 export interface BorrowRedeemCollateralTxParams {
-  redeemAmount: bLuna;
+  redeemAmount: bAsset;
   onTxSucceed?: () => void;
 }
 

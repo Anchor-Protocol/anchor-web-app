@@ -80,6 +80,10 @@ export function formatLunaInput<C extends Luna<BigSource> | bLuna<BigSource>>(
   return d6InputFormatter(n) as any;
 }
 
+export function formatBAssetInput<C extends bAsset<BigSource>>(n: C): bAsset {
+  return d6InputFormatter(n) as any;
+}
+
 export function formatANCInput<C extends ANC<BigSource>>(
   n: C,
 ): C extends ANC<BigSource> ? ANC : never {

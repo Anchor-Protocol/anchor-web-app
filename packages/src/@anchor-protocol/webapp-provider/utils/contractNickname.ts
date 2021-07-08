@@ -1,4 +1,4 @@
-import { CW20Addr, HumanAddr } from '@anchor-protocol/types';
+import { CollateralType, CW20Addr, HumanAddr } from '@anchor-protocol/types';
 import { useAnchorWebapp } from '../contexts/context';
 
 export function useContractNickname(): (addr: HumanAddr | CW20Addr) => string {
@@ -12,8 +12,10 @@ export function useContractNickname(): (addr: HumanAddr | CW20Addr) => string {
         return `bLuna / Hub`;
       case address.moneyMarket.market:
         return `Money Market / Market`;
-      case address.moneyMarket.bLunaCustody:
-        return `Money Market / Custody`;
+      case address.moneyMarket.collaterals[CollateralType.bLuna].custody:
+        return `Money Market / bLUNA Custody`;
+      case address.moneyMarket.collaterals[CollateralType.bEth].custody:
+        return `Money Market / bETH Custody`;
       case address.moneyMarket.overseer:
         return `Money Market / Overseer`;
       case address.moneyMarket.oracle:

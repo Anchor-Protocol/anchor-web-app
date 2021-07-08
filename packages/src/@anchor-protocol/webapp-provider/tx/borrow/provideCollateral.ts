@@ -1,5 +1,5 @@
 import { COLLATERAL_DENOMS, MARKET_DENOMS } from '@anchor-protocol/anchor.js';
-import { bLuna, uUST } from '@anchor-protocol/types';
+import { bAsset, uUST } from '@anchor-protocol/types';
 import { borrowProvideCollateralTx } from '@anchor-protocol/webapp-fns';
 import { useStream } from '@rx-stream/react';
 
@@ -15,7 +15,7 @@ import { useBorrowBorrowerQuery } from '../../queries/borrow/borrower';
 import { useBorrowMarketQuery } from '../../queries/borrow/market';
 
 export interface BorrowProvideCollateralTxParams {
-  depositAmount: bLuna;
+  depositAmount: bAsset;
   onTxSucceed?: () => void;
 }
 

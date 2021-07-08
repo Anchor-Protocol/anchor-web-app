@@ -173,6 +173,7 @@ export function CollateralList({ className }: CollateralListProps) {
         <tbody>
           {collaterals.map(
             ({
+              token,
               icon,
               name,
               symbol,
@@ -181,7 +182,7 @@ export function CollateralList({ className }: CollateralListProps) {
               lockedAmount,
               lockedAmountInUST,
             }) => (
-              <tr>
+              <tr key={token}>
                 <td>
                   <i>{icon}</i>
                   <div>
@@ -215,6 +216,7 @@ export function CollateralList({ className }: CollateralListProps) {
                       borrowMarket &&
                       borrowBorrower &&
                       openProvideCollateralDialog({
+                        collateralToken: token,
                         fallbackBorrowMarket: borrowMarket,
                         fallbackBorrowBorrower: borrowBorrower,
                       })
@@ -227,7 +229,7 @@ export function CollateralList({ className }: CollateralListProps) {
                       !connectedWallet ||
                       !borrowMarket ||
                       !borrowBorrower ||
-                      (big(lockedAmount).eq(0) &&
+                      (big(lockedAmount).lte(0) &&
                         big(borrowBorrower.marketBorrowerInfo.loan_amount).lte(
                           0,
                         ))
@@ -236,6 +238,7 @@ export function CollateralList({ className }: CollateralListProps) {
                       borrowMarket &&
                       borrowBorrower &&
                       openRedeemCollateralDialog({
+                        collateralToken: token,
                         fallbackBorrowMarket: borrowMarket,
                         fallbackBorrowBorrower: borrowBorrower,
                       })

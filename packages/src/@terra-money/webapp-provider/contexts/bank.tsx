@@ -1,3 +1,4 @@
+import { CW20Addr } from '@anchor-protocol/types';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { useLongtimeNoSee } from '@terra-dev/use-longtime-no-see';
 import { useWallet, WalletStatus } from '@terra-money/wallet-provider';
@@ -73,10 +74,12 @@ export interface TokenBalancesProviderProps {
 
 export interface Bank<
   TokenBalancesType = Record<string, string>,
-  TaxDataType = TaxData
+  TaxDataType = TaxData,
 > {
   tokenBalances: TokenBalancesType;
   refetchTokenBalances: () => Promise<TokenBalancesType>;
+
+  cw20TokenContracts: Record<string, CW20Contract>;
 
   tax: TaxDataType;
   refetchTax: () => Promise<TaxDataType>;
@@ -88,6 +91,7 @@ const BankContext: Context<Bank> = createContext<Bank>({
   tax: {
     taxRate: '0',
   },
+  cw20TokenContracts: {},
   refetchTax: () =>
     Promise.resolve({
       taxRate: '0',
@@ -149,9 +153,8 @@ export function BankProvider({
     browserInactiveRef.current = browserInactive;
   }, [browserInactive]);
 
-  const [tokenBalances, setTokenBalances] = useState<Record<string, string>>(
-    emptyTokenBalances,
-  );
+  const [tokenBalances, setTokenBalances] =
+    useState<Record<string, string>>(emptyTokenBalances);
 
   const [tax, setTax] = useState<TaxData>(emptyTax);
 
@@ -279,10 +282,18 @@ export function BankProvider({
     () => ({
       tokenBalances,
       refetchTokenBalances,
+      cw20TokenContracts: cw20TokenContracts[network.name],
       tax,
       refetchTax,
     }),
-    [refetchTax, refetchTokenBalances, tax, tokenBalances],
+    [
+      cw20TokenContracts,
+      network.name,
+      refetchTax,
+      refetchTokenBalances,
+      tax,
+      tokenBalances,
+    ],
   );
 
   return <BankContext.Provider value={states}>{children}</BankContext.Provider>;
@@ -290,12 +301,25 @@ export function BankProvider({
 
 export function useBank<
   TokenBalancesType = Record<string, string>,
-  TaxDataType = TaxData
+  TaxDataType = TaxData,
 >(): Bank<TokenBalancesType, TaxDataType> {
-  return (useContext(BankContext) as unknown) as Bank<
+  return useContext(BankContext) as unknown as Bank<
     TokenBalancesType,
     TaxDataType
   >;
+}
+
+export function useCW20TokenBalance<T = string>(address: CW20Addr): T {
+  const { tokenBalances, cw20TokenContracts } = useBank();
+
+  return useMemo(() => {
+    const key = Object.keys(cw20TokenContracts).find(
+      (k) => cw20TokenContracts[k].contractAddress === address,
+    );
+    return (key && tokenBalances[key]
+      ? tokenBalances[key]
+      : '0') as unknown as T;
+  }, [address, cw20TokenContracts, tokenBalances]);
 }
 
 export const BankConsumer: Consumer<Bank> = BankContext.Consumer;

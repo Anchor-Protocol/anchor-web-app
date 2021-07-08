@@ -1,4 +1,9 @@
-import { CW20Addr, HumanAddr, StableDenom } from '@anchor-protocol/types';
+import {
+  CollateralType,
+  CW20Addr,
+  HumanAddr,
+  StableDenom,
+} from '@anchor-protocol/types';
 import { MarketBAsset, marketBAssetQuery } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@terra-dev/react-query-utils';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
@@ -59,7 +64,7 @@ export function useMarketBAssetQuery(): UseQueryResult<
       mantleFetch,
       cw20.bLuna,
       moneyMarket.oracle,
-      moneyMarket.bLunaCustody,
+      moneyMarket.collaterals[CollateralType.bLuna].custody,
     ],
     queryFn,
     {

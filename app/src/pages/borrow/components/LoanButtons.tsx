@@ -1,7 +1,7 @@
 import { uUST } from '@anchor-protocol/types';
 import { computeBorrowedAmount } from '@anchor-protocol/webapp-fns';
 import {
-  computeCollateralTotalUST,
+  computeCollateralTotalLockedUST,
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
 } from '@anchor-protocol/webapp-provider';
@@ -32,7 +32,7 @@ export function LoanButtons() {
     if (!borrowBorrower || !borrowMarket) {
       return '0' as uUST;
     }
-    return computeCollateralTotalUST(
+    return computeCollateralTotalLockedUST(
       borrowBorrower.overseerCollaterals,
       borrowMarket.oraclePrices,
     );

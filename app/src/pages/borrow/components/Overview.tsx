@@ -17,7 +17,7 @@ import { Rate, uUST } from '@anchor-protocol/types';
 import {
   computeBorrowAPR,
   computeBorrowedAmount,
-  computeCollateralTotalUST,
+  computeCollateralTotalLockedUST,
   computeCurrentLtv,
   useAnchorWebapp,
   useBorrowAPYQuery,
@@ -86,7 +86,7 @@ function OverviewBase({ className }: OverviewProps) {
 
   const collateralValue = useMemo(() => {
     return overseerCollaterals && oraclePrices
-      ? computeCollateralTotalUST(overseerCollaterals, oraclePrices)
+      ? computeCollateralTotalLockedUST(overseerCollaterals, oraclePrices)
       : (big(0) as uUST<Big>);
   }, [oraclePrices, overseerCollaterals]);
 

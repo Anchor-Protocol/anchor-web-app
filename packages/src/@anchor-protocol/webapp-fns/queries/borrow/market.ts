@@ -8,12 +8,12 @@ import {
 import big from 'big.js';
 import { ANCHOR_RATIO } from '../../env';
 
-type BAssetLtv = {
+export type BAssetLtv = {
   max: Rate;
   safe: Rate;
 };
 
-type BAssetLtvs = Map<CW20Addr, BAssetLtv>;
+export type BAssetLtvs = Map<CW20Addr, BAssetLtv>;
 
 export interface BorrowMarketWasmQuery {
   marketState: WasmQuery<
