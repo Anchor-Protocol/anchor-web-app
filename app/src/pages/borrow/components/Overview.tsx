@@ -17,6 +17,7 @@ import { Rate, uUST } from '@anchor-protocol/types';
 import {
   computeBorrowAPR,
   computeBorrowedAmount,
+  computeBorrowLimit,
   computeCollateralTotalLockedUST,
   computeCurrentLtv,
   useAnchorWebapp,
@@ -51,7 +52,7 @@ function OverviewBase({ className }: OverviewProps) {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const { data: { borrowRate, oraclePrices, bAssetLtvsAvg } = {} } =
+  const { data: { borrowRate, oraclePrices, bAssetLtvsAvg, bAssetLtvs } = {} } =
     useBorrowMarketQuery();
 
   const { data: { marketBorrowerInfo, overseerCollaterals } = {} } =
@@ -62,33 +63,46 @@ function OverviewBase({ className }: OverviewProps) {
   // ---------------------------------------------
   // computes
   // ---------------------------------------------
-  const currentLtv = useMemo(
-    () =>
-      marketBorrowerInfo && overseerCollaterals && oraclePrices
-        ? computeCurrentLtv(
-            marketBorrowerInfo,
-            overseerCollaterals,
-            oraclePrices,
-          )
-        : undefined,
-    [marketBorrowerInfo, overseerCollaterals, oraclePrices],
-  );
+  const { currentLtv, borrowAPR, borrowedValue, collateralValue, borrowLimit } =
+    useMemo(() => {
+      const collateralValue =
+        overseerCollaterals && oraclePrices
+          ? computeCollateralTotalLockedUST(overseerCollaterals, oraclePrices)
+          : (big(0) as uUST<Big>);
 
-  const borrowAPR = useMemo(
-    () => computeBorrowAPR(borrowRate, blocksPerYear),
-    [blocksPerYear, borrowRate],
-  );
+      const currentLtv =
+        marketBorrowerInfo && overseerCollaterals && oraclePrices
+          ? computeCurrentLtv(
+              marketBorrowerInfo,
+              overseerCollaterals,
+              oraclePrices,
+            )
+          : undefined;
 
-  const borrowedValue = useMemo(
-    () => computeBorrowedAmount(marketBorrowerInfo),
-    [marketBorrowerInfo],
-  );
+      const borrowAPR = computeBorrowAPR(borrowRate, blocksPerYear);
 
-  const collateralValue = useMemo(() => {
-    return overseerCollaterals && oraclePrices
-      ? computeCollateralTotalLockedUST(overseerCollaterals, oraclePrices)
-      : (big(0) as uUST<Big>);
-  }, [oraclePrices, overseerCollaterals]);
+      const borrowedValue = computeBorrowedAmount(marketBorrowerInfo);
+
+      const borrowLimit =
+        overseerCollaterals && oraclePrices && bAssetLtvs
+          ? computeBorrowLimit(overseerCollaterals, oraclePrices, bAssetLtvs)
+          : undefined;
+
+      return {
+        currentLtv,
+        borrowAPR,
+        borrowedValue,
+        collateralValue,
+        borrowLimit,
+      };
+    }, [
+      bAssetLtvs,
+      blocksPerYear,
+      borrowRate,
+      marketBorrowerInfo,
+      oraclePrices,
+      overseerCollaterals,
+    ]);
 
   // ---------------------------------------------
   // presentation
@@ -229,14 +243,13 @@ function OverviewBase({ className }: OverviewProps) {
         </div>
       </article>
 
-      {currentLtv && bAssetLtvsAvg && marketBorrowerInfo && (
+      {currentLtv && bAssetLtvsAvg && borrowLimit && (
         <figure>
           <BorrowLimitGraph
-            ltv={currentLtv}
-            bLunaSafeLtv={bAssetLtvsAvg.safe}
-            bLunaMaxLtv={bAssetLtvsAvg.max}
-            collateralValue={collateralValue}
-            loanAmount={marketBorrowerInfo.loan_amount}
+            currentLtv={currentLtv}
+            safeLtv={bAssetLtvsAvg.safe}
+            maxLtv={bAssetLtvsAvg.max}
+            borrowLimit={borrowLimit}
           />
         </figure>
       )}

@@ -48,24 +48,6 @@ const queryFn = createQueryFn(
             prices: {},
           },
         },
-        //bLunaOraclePrice: {
-        //  contractAddress: oracleContract,
-        //  query: {
-        //    price: {
-        //      base: bLunaContract,
-        //      quote: 'uusd' as StableDenom,
-        //    },
-        //  },
-        //},
-        //bEthOraclePrice: {
-        //  contractAddress: oracleContract,
-        //  query: {
-        //    price: {
-        //      base: bEthContract,
-        //      quote: 'uusd' as StableDenom,
-        //    },
-        //  },
-        //},
       },
     });
   },

@@ -28,14 +28,6 @@ export interface BorrowMarketWasmQuery {
     moneyMarket.oracle.Prices,
     moneyMarket.oracle.PricesResponse
   >;
-  //bLunaOraclePrice: WasmQuery<
-  //  moneyMarket.oracle.Price,
-  //  moneyMarket.oracle.PriceResponse
-  //>;
-  //bEthOraclePrice: WasmQuery<
-  //  moneyMarket.oracle.Price,
-  //  moneyMarket.oracle.PriceResponse
-  //>;
   overseerWhitelist: WasmQuery<
     moneyMarket.overseer.Whitelist,
     moneyMarket.overseer.WhitelistResponse
@@ -60,12 +52,6 @@ export type BorrowMarket = WasmQueryData<BorrowMarketWasmQuery> & {
   bAssetLtvs: BAssetLtvs;
   bAssetLtvsSum: BAssetLtv;
   bAssetLtvsAvg: BAssetLtv;
-
-  //bLunaMaxLtv?: Rate;
-  //bLunaSafeLtv?: Rate;
-  //
-  //bEthMaxLtv?: Rate;
-  //bEthSafeLtv?: Rate;
 };
 
 // language=graphql
@@ -136,8 +122,6 @@ export async function borrowMarketQuery({
         },
       },
       oraclePrices: wasmQuery.oraclePrices,
-      //bLunaOraclePrice: wasmQuery.bLunaOraclePrice,
-      //bEthOraclePrice: wasmQuery.bEthOraclePrice,
       overseerWhitelist: wasmQuery.overseerWhitelist,
     },
     ...params,
@@ -184,24 +168,6 @@ export async function borrowMarketQuery({
     max: big(bAssetLtvsSum.max).div(bAssetLtvs.size).toFixed() as Rate,
     safe: big(bAssetLtvsSum.safe).div(bAssetLtvs.size).toFixed() as Rate,
   };
-
-  //const bLunaMaxLtv = overseerWhitelist.elems.find(
-  //  ({ collateral_token }) =>
-  //    collateral_token === wasmQuery.bLunaOraclePrice.query.price.base,
-  //)?.max_ltv;
-  //
-  //const bLunaSafeLtv = bLunaMaxLtv
-  //  ? (big(bLunaMaxLtv).mul(ANCHOR_RATIO).toFixed() as Rate)
-  //  : undefined;
-  //
-  //const bEthMaxLtv = overseerWhitelist.elems.find(
-  //  ({ collateral_token }) =>
-  //    collateral_token === wasmQuery.bEthOraclePrice.query.price.base,
-  //)?.max_ltv;
-  //
-  //const bEthSafeLtv = bEthMaxLtv
-  //  ? (big(bEthMaxLtv).mul(ANCHOR_RATIO).toFixed() as Rate)
-  //  : undefined;
 
   return {
     marketBalances,
