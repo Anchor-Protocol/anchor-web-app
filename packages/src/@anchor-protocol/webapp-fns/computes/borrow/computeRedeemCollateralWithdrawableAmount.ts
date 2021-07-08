@@ -19,6 +19,9 @@ export function computeRedeemCollateralWithdrawableAmount(
 
   return big(0) as ubAsset<Big>;
 
+  // nextLtv 가 maxLtv 보다 크면 개별 collateral 의 spendable 까지만? (염병... spendable 을 모르고... locked 잖아...)
+  // 이건 개별 custody 의 spendable 을 받아야 해결 될 것 같은데...
+
   //const withdrawable =
   //  !nextLtv || nextLtv.gte(bLunaMaxLtv)
   //    ? big(borrower.spendable)

@@ -6,7 +6,7 @@ import {
   WasmQueryData,
 } from '@terra-money/webapp-fns';
 import big from 'big.js';
-import { ANCHOR_RATIO } from '../../env';
+import { ANCHOR_SAFE_RATIO } from '../../env';
 
 export type BAssetLtv = {
   max: Rate;
@@ -147,7 +147,7 @@ export async function borrowMarketQuery({
       ? whitelistIndex.get(price.asset)?.max_ltv ?? ('0.5' as Rate)
       : ('0.5' as Rate);
 
-    const safe = big(max).mul(ANCHOR_RATIO).toFixed() as Rate;
+    const safe = big(max).mul(ANCHOR_SAFE_RATIO).toFixed() as Rate;
 
     if (max && safe) {
       bAssetLtvs.set(price.asset, { max, safe });

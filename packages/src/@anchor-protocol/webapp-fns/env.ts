@@ -88,4 +88,4 @@ export const DEFAULT_ANCHOR_TX_CONSTANTS: Record<string, AnchorContants> = {
   },
 };
 
-export const ANCHOR_RATIO: Rate<number> = 0.7 as Rate<number>;
+export const ANCHOR_SAFE_RATIO: Rate<number> = 0.7 as Rate<number>;
