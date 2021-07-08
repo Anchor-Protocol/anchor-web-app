@@ -7,6 +7,7 @@ import { TokenIcon } from '@anchor-protocol/token-icons';
 import { CW20Addr, ubAsset, UST, uUST } from '@anchor-protocol/types';
 import {
   computeLiquidationPrice,
+  prettifyBAssetSymbol,
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
 } from '@anchor-protocol/webapp-provider';
@@ -70,7 +71,7 @@ export function CollateralList({ className }: CollateralListProps) {
           icon: <TokenIcon token="bluna" />,
           token: collateral_token,
           name,
-          symbol,
+          symbol: prettifyBAssetSymbol(symbol),
           price: oracle?.price ?? ('0' as UST),
           liquidationPrice: computeLiquidationPrice(
             collateral_token,
@@ -88,51 +89,6 @@ export function CollateralList({ className }: CollateralListProps) {
       },
     );
   }, [borrowBorrower, borrowMarket]);
-
-  //const collaterals = useMemo(() => {
-  //  const bLunaInUST = _collaterals(
-  //    borrowBorrower?.bLunaCustodyBorrower,
-  //    borrowMarket?.bLunaOraclePrice.rate,
-  //  );
-  //  const bLuna = _collaterals(
-  //    borrowBorrower?.bLunaCustodyBorrower,
-  //    1 as UST<number>,
-  //  );
-  //
-  //  const bEthInUST = _collaterals(
-  //    borrowBorrower?.bEthCustodyBorrower,
-  //    borrowMarket?.bEthOraclePrice.rate,
-  //  );
-  //  const bEth = _collaterals(
-  //    borrowBorrower?.bEthCustodyBorrower,
-  //    1 as UST<number>,
-  //  );
-  //
-  //  return {
-  //    bLunaInUST,
-  //    bLuna,
-  //    bEthInUST,
-  //    bEth,
-  //  };
-  //}, [
-  //  borrowBorrower?.bEthCustodyBorrower,
-  //  borrowBorrower?.bLunaCustodyBorrower,
-  //  borrowMarket?.bEthOraclePrice.rate,
-  //  borrowMarket?.bLunaOraclePrice.rate,
-  //]);
-  //const bLunaCollateralsInUST = useMemo(
-  //  () =>
-  //    _collaterals(
-  //      borrowBorrower?.bLunaCustodyBorrower,
-  //      borrowMarket?.bLunaOraclePrice.rate,
-  //    ),
-  //  [borrowBorrower?.bLunaCustodyBorrower, borrowMarket?.bLunaOraclePrice.rate],
-  //);
-  //
-  //const bLunaCollaterals = useMemo(
-  //  () => _collaterals(borrowBorrower?.bLunaCustodyBorrower, 1 as UST<number>),
-  //  [borrowBorrower?.bLunaCustodyBorrower],
-  //);
 
   // ---------------------------------------------
   // presentation

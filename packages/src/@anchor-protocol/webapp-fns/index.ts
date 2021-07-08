@@ -2,6 +2,7 @@ export * from './env';
 export * from './types';
 
 export * from './functions/createAnchorContractAddress';
+export * from './functions/prettifyBAssetSymbol';
 
 export * from './computes/common/validateTxFee';
 export * from './computes/earn/computeTotalDeposit';
