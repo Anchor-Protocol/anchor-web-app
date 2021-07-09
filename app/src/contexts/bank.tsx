@@ -2,6 +2,7 @@ import {
   uANC,
   uAncUstLP,
   uaUST,
+  ubEth,
   ubLuna,
   ubLunaLunaLP,
   uLuna,
@@ -15,6 +16,7 @@ export interface UserBalancesData {
   uUSD: uUST<string>;
   uLuna: uLuna<string>;
   ubLuna: ubLuna<string>;
+  ubEth: ubEth<string>;
   uaUST: uaUST<string>;
   uANC: uANC<string>;
   uAncUstLP: uAncUstLP<string>;

@@ -3,6 +3,7 @@ import {
   uANC,
   uAncUstLP,
   uaUST,
+  ubEth,
   ubLuna,
   ubLunaLunaLP,
   uLuna,
@@ -32,6 +33,7 @@ export interface AnchorTokenBalances {
   // cw20 tokens
   uaUST: uaUST;
   ubLuna: ubLuna;
+  ubEth: ubEth;
   uANC: uANC;
   uAncUstLP: uAncUstLP;
   ubLunaLunaLP: ubLunaLunaLP;

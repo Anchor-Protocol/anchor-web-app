@@ -43,6 +43,9 @@ const cw20TokenContracts: Record<string, Record<string, CW20Contract>> = {
     ubLuna: {
       contractAddress: ADDRESSES.mainnet.cw20.bLuna,
     },
+    ubEth: {
+      contractAddress: ADDRESSES.testnet.cw20.bEth,
+    },
     uANC: {
       contractAddress: ADDRESSES.mainnet.cw20.ANC,
     },
@@ -59,6 +62,9 @@ const cw20TokenContracts: Record<string, Record<string, CW20Contract>> = {
     },
     ubLuna: {
       contractAddress: ADDRESSES.testnet.cw20.bLuna,
+    },
+    ubEth: {
+      contractAddress: ADDRESSES.testnet.cw20.bEth,
     },
     uANC: {
       contractAddress: ADDRESSES.testnet.cw20.ANC,
