@@ -17,7 +17,6 @@ import {
   computeLtvToRedeemAmount,
   computeRedeemAmountToLtv,
   computeRedeemCollateralBorrowLimit,
-  computeRedeemCollateralMaxAmount,
   computeRedeemCollateralNextLtv,
   computeRedeemCollateralWithdrawableAmount,
   pickCollateral,
@@ -106,6 +105,7 @@ function ComponentBase({
     data: {
       oraclePrices,
       bAssetLtvsAvg,
+      bAssetLtvs,
       overseerWhitelist,
       //bLunaOraclePrice,
       //bLunaMaxLtv = '0.5' as Rate,
@@ -165,49 +165,40 @@ function ComponentBase({
     [amountToLtv, currentLtv, redeemAmount],
   );
 
-  // TODO
   const withdrawableAmount = useMemo(
     () =>
       computeRedeemCollateralWithdrawableAmount(
+        collateralToken,
         marketBorrowerInfo,
         overseerCollaterals,
         oraclePrices,
-        bAssetLtvsAvg.safe,
-        bAssetLtvsAvg.max,
-        nextLtv,
+        bAssetLtvs,
       ),
     [
+      collateralToken,
       marketBorrowerInfo,
       overseerCollaterals,
       oraclePrices,
-      bAssetLtvsAvg.safe,
-      bAssetLtvsAvg.max,
-      nextLtv,
+      bAssetLtvs,
     ],
   );
 
-  // TODO
-  const withdrawableMaxAmount = useMemo(
-    () =>
-      computeRedeemCollateralMaxAmount(
-        marketBorrowerInfo,
-        overseerCollaterals,
-        oraclePrices,
-        bAssetLtvsAvg.max,
-      ),
-    [marketBorrowerInfo, overseerCollaterals, oraclePrices, bAssetLtvsAvg.max],
-  );
-
-  // TODO
   const borrowLimit = useMemo(
     () =>
       computeRedeemCollateralBorrowLimit(
+        collateralToken,
         redeemAmount,
         overseerCollaterals,
         oraclePrices,
-        bAssetLtvsAvg.max,
+        bAssetLtvs,
       ),
-    [redeemAmount, overseerCollaterals, oraclePrices, bAssetLtvsAvg.max],
+    [
+      collateralToken,
+      redeemAmount,
+      overseerCollaterals,
+      oraclePrices,
+      bAssetLtvs,
+    ],
   );
 
   const invalidTxFee = useMemo(
@@ -216,8 +207,8 @@ function ComponentBase({
   );
 
   const invalidRedeemAmount = useMemo(
-    () => validateRedeemAmount(redeemAmount, withdrawableMaxAmount),
-    [redeemAmount, withdrawableMaxAmount],
+    () => validateRedeemAmount(redeemAmount, withdrawableAmount),
+    [redeemAmount, withdrawableAmount],
   );
 
   // ---------------------------------------------

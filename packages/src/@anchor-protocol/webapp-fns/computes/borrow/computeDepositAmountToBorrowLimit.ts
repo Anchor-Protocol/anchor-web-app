@@ -1,6 +1,6 @@
 import type { ubAsset, uUST } from '@anchor-protocol/types';
 import { CW20Addr, moneyMarket } from '@anchor-protocol/types';
-import { sum, vectorAdd, vectorMultiply } from '@terra-dev/big-math';
+import { sum, vectorPlus, vectorMultiply } from '@terra-dev/big-math';
 import { Big, BigSource } from 'big.js';
 import { BAssetLtvs } from '../../queries/borrow/market';
 import { vectorizeBAssetMaxLtvs } from './vectorizeBAssetLtvs';
@@ -30,7 +30,7 @@ export const computeDepositAmountToBorrowLimit =
 
     // sum(([lockedAmount] + [depositAmount]) * [oraclePrice] * [maxLtv])
 
-    const bAssetAmounts = vectorAdd(lockedAmounts, variations);
+    const bAssetAmounts = vectorPlus(lockedAmounts, variations);
     const ustAmounts = vectorMultiply(bAssetAmounts, prices);
     const maxLtvUstAmounts = vectorMultiply(ustAmounts, maxLtvs);
 

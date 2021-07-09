@@ -40,12 +40,20 @@ export function floor(number: BigSource): Big {
   return integer.length > 0 ? big(integer) : big('0');
 }
 
-export function vectorAdd(a: BigSource[], b: BigSource[]): Big[] {
+export function vectorPlus(a: BigSource[], b: BigSource[]): Big[] {
   if (a.length !== b.length) {
     throw new Error(`Not equal a and b`);
   }
 
-  return a.map((value, i) => big(value).add(b[i]));
+  return a.map((value, i) => big(value).plus(b[i]));
+}
+
+export function vectorMinus(a: BigSource[], b: BigSource[]): Big[] {
+  if (a.length !== b.length) {
+    throw new Error(`Not equal a and b`);
+  }
+
+  return a.map((value, i) => big(value).minus(b[i]));
 }
 
 export function vectorMultiply(a: BigSource[], b: BigSource[]): Big[] {
@@ -54,4 +62,12 @@ export function vectorMultiply(a: BigSource[], b: BigSource[]): Big[] {
   }
 
   return a.map((value, i) => big(value).mul(b[i]));
+}
+
+export function vectorDivision(a: BigSource[], b: BigSource[]): Big[] {
+  if (a.length !== b.length) {
+    throw new Error(`Not equal a and b`);
+  }
+
+  return a.map((value, i) => big(value).div(b[i]));
 }

@@ -1,5 +1,5 @@
 import { CW20Addr, moneyMarket, ubAsset, uUST } from '@anchor-protocol/types';
-import { sum, vectorAdd, vectorMultiply } from '@terra-dev/big-math';
+import { sum, vectorPlus, vectorMultiply } from '@terra-dev/big-math';
 import { Big, BigSource } from 'big.js';
 import { vectorizeOraclePrices } from './vectorizeOraclePrices';
 import { vectorizeOverseerCollaterals } from './vectorizeOverseerCollaterals';
@@ -20,7 +20,7 @@ export function computeCollateralsTotalUST(
 
   // sum(([lockedAmounts] + [variations]) * [prices])
 
-  const bAssetAmounts = vectorAdd(lockedAmounts, variations);
+  const bAssetAmounts = vectorPlus(lockedAmounts, variations);
   const ustAmounts = vectorMultiply(bAssetAmounts, prices);
 
   return sum(...ustAmounts) as uUST<Big>;

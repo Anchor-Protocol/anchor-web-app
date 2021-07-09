@@ -1,4 +1,3 @@
-import { formatUTokenInteger } from '@anchor-protocol/notation';
 import type { Rate } from '@anchor-protocol/types';
 import { moneyMarket } from '@anchor-protocol/types';
 import big, { Big } from 'big.js';
@@ -15,11 +14,6 @@ export function computeCurrentLtv(
   );
 
   try {
-    console.log(
-      'computeCurrentLtv.ts..computeCurrentLtv()',
-      formatUTokenInteger(marketBorrowerInfo.loan_amount),
-      formatUTokenInteger(collateralsVaue),
-    );
     return big(marketBorrowerInfo.loan_amount).div(
       collateralsVaue,
     ) as Rate<Big>;
