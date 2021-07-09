@@ -1,29 +1,51 @@
+import { Rate } from '@anchor-protocol/types';
+import { useBorrowMarketQuery } from '@anchor-protocol/webapp-provider';
 import { Slider, Switch } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { NotificationsNone } from '@material-ui/icons';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
+import big from 'big.js';
 import { useJobs } from 'jobs/Jobs';
-import React, { ChangeEvent, useCallback } from 'react';
+import React, { ChangeEvent, useCallback, useMemo } from 'react';
 import styled, { DefaultTheme } from 'styled-components';
 
 export interface NotificationContentProps {
   className?: string;
 }
 
-const marks = [
-  { value: 35, label: '35%' },
-  { value: 45, label: '45%' },
-  { value: 40, label: '40%' },
-  { value: 49, label: '49%' },
-];
-
 function valueLabelFormat(value: number) {
-  return value + '%';
+  return Math.floor(value) + '%';
+}
+
+function createMark(percent: number) {
+  return { value: percent, label: percent + '%' };
 }
 
 function NotificationContentBase({ className }: NotificationContentProps) {
+  const {
+    data: { bAssetLtvsAvg = { safe: '0.45' as Rate, max: '0.6' as Rate } } = {},
+  } = useBorrowMarketQuery();
+
+  const { safe, max, sliderMarks } = useMemo(() => {
+    const safe = big(bAssetLtvsAvg.safe).mul(100).toNumber();
+    const max = big(bAssetLtvsAvg.max).mul(100).toNumber();
+
+    const gap = Math.floor((max - safe) / 3);
+
+    return {
+      safe,
+      max: max - 1,
+      sliderMarks: [
+        createMark(safe),
+        createMark(safe + gap),
+        createMark(safe + gap * 2),
+        createMark(safe + gap * 3 - 1),
+      ],
+    };
+  }, [bAssetLtvsAvg.max, bAssetLtvsAvg.safe]);
+
   const { liquidationAlert, updateLiquidationAlert } = useJobs();
 
   const { focusVisible, ...switchClasses } = useSwitchStyle();
@@ -68,10 +90,10 @@ function NotificationContentBase({ className }: NotificationContentProps) {
           classes={sliderClasses}
           valueLabelDisplay="on"
           valueLabelFormat={valueLabelFormat}
-          marks={marks}
+          marks={sliderMarks}
           value={liquidationAlert.ratio * 100}
-          min={35}
-          max={49}
+          min={safe}
+          max={max}
           onChange={(_: any, newValue: number) => {
             updateLiquidationAlert({
               ...liquidationAlert,

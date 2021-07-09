@@ -158,6 +158,10 @@ function ComponentBase({
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
+  const userMaxLtv = useMemo(() => {
+    return big(bAssetLtvsAvg.max).minus(0.1) as Rate<Big>;
+  }, [bAssetLtvsAvg.max]);
+
   const currentLtv = useMemo(
     () =>
       computeCurrentLtv(marketBorrowerInfo, overseerCollaterals, oraclePrices),
@@ -352,7 +356,7 @@ function ComponentBase({
             disabled={!connectedWallet}
             maxLtv={bAssetLtvsAvg.max}
             safeLtv={bAssetLtvsAvg.safe}
-            dangerLtv={0.4 as Rate<number>}
+            dangerLtv={userMaxLtv}
             currentLtv={currentLtv}
             nextLtv={nextLtv}
             userMinLtv={currentLtv}

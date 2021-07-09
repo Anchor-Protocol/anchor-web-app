@@ -30,7 +30,6 @@ import {
 } from '@anchor-protocol/webapp-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { min } from '@terra-dev/big-math';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
@@ -148,7 +147,7 @@ function ComponentBase({
         oraclePrices,
       );
 
-      const userMaxLtv = min(bAssetLtvsAvg.max, big(0.4)) as Rate<BigSource>;
+      const userMaxLtv = big(bAssetLtvsAvg.max).minus(0.1) as Rate<BigSource>;
 
       const apr = computeBorrowAPR(borrowRate, blocksPerYear);
 
@@ -169,7 +168,14 @@ function ComponentBase({
 
       const invalidTxFee =
         !!connectedWallet && validateTxFee(tokenBalances.uUST, fixedGas);
-      return { currentLtv, userMaxLtv, apr, safeMax, max, invalidTxFee };
+      return {
+        currentLtv,
+        userMaxLtv,
+        apr,
+        safeMax,
+        max,
+        invalidTxFee,
+      };
     }, [
       bAssetLtvsAvg.max,
       bAssetLtvsAvg.safe,
@@ -199,8 +205,8 @@ function ComponentBase({
 
     const invalidBorrowAmount = validateBorrowAmount(borrowAmount, max);
 
-    const invalidOver40Ltv = nextLtv?.gt(0.4)
-      ? 'Cannot borrow when LTV is above 40%.'
+    const invalidOver40Ltv = nextLtv?.gt(userMaxLtv)
+      ? `Cannot borrow when LTV is above ${formatRate(userMaxLtv)}%.`
       : undefined;
 
     const invalidOverSafeLtv = nextLtv?.gt(bAssetLtvsAvg.safe)
@@ -223,6 +229,7 @@ function ComponentBase({
     fixedGas,
     max,
     tax,
+    userMaxLtv,
   ]);
 
   // ---------------------------------------------
@@ -359,7 +366,7 @@ function ComponentBase({
             disabled={!connectedWallet || max.lte(0)}
             maxLtv={bAssetLtvsAvg.max}
             safeLtv={bAssetLtvsAvg.safe}
-            dangerLtv={0.4 as Rate<number>}
+            dangerLtv={userMaxLtv}
             currentLtv={currentLtv}
             nextLtv={nextLtv}
             userMinLtv={currentLtv}
@@ -375,10 +382,10 @@ function ComponentBase({
             hide={{ id: 'borrow-ltv', period: 1000 * 60 * 60 * 24 * 5 }}
             style={{ userSelect: 'none', fontSize: 12 }}
           >
-            Caution: Borrowing is available only up to 40% LTV. If the
-            loan-to-value ratio (LTV) reaches the maximum (50% LTV), a portion
-            of your collateral may be immediately liquidated to repay part of
-            the loan.
+            Caution: Borrowing is available only up to {formatRate(userMaxLtv)}%
+            LTV. If the loan-to-value ratio (LTV) reaches the maximum (
+            {formatRate(bAssetLtvsAvg.max)}% LTV), a portion of your collateral
+            may be immediately liquidated to repay part of the loan.
           </MessageBox>
         )}
 

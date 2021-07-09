@@ -55,24 +55,6 @@ export async function userLtvQuery({
               prices: {},
             },
           },
-          //bLunaOraclePrice: {
-          //  contractAddress: address.moneyMarket.oracle,
-          //  query: {
-          //    price: {
-          //      base: address.cw20.bLuna,
-          //      quote: 'uusd' as StableDenom,
-          //    },
-          //  },
-          //},
-          //bEthOraclePrice: {
-          //  contractAddress: address.moneyMarket.oracle,
-          //  query: {
-          //    price: {
-          //      base: address.cw20.bEth,
-          //      quote: 'uusd' as StableDenom,
-          //    },
-          //  },
-          //},
         },
       }),
       borrowBorrowerQuery({
@@ -110,22 +92,6 @@ export async function userLtvQuery({
               },
             },
           },
-          //bLunaCustodyBorrower: {
-          //  contractAddress: address.moneyMarket.bLunaCustody,
-          //  query: {
-          //    borrower: {
-          //      address: walletAddress as HumanAddr,
-          //    },
-          //  },
-          //},
-          //bEthCustodyBorrower: {
-          //  contractAddress: address.moneyMarket.bEthCustody,
-          //  query: {
-          //    borrower: {
-          //      address: walletAddress as HumanAddr,
-          //    },
-          //  },
-          //},
         },
       }),
     ]);
