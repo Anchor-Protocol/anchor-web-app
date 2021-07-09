@@ -55,9 +55,6 @@ export function LoanButtons() {
           borrowMarket &&
           borrowBorrower &&
           openBorrowDialog({
-            collateralVector: borrowMarket.overseerWhitelist.elems.map(
-              ({ collateral_token }) => collateral_token,
-            ),
             fallbackBorrowMarket: borrowMarket,
             fallbackBorrowBorrower: borrowBorrower,
           })
@@ -76,9 +73,6 @@ export function LoanButtons() {
           borrowMarket &&
           borrowBorrower &&
           openRepayDialog({
-            collateralVector: borrowMarket.overseerWhitelist.elems.map(
-              ({ collateral_token }) => collateral_token,
-            ),
             fallbackBorrowMarket: borrowMarket,
             fallbackBorrowBorrower: borrowBorrower,
           })

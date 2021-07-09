@@ -49,12 +49,12 @@ import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import type { ChangeEvent, ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { pickCollateralDenom } from '../computes/pickCollateralDenom';
 import { LTVGraph } from './LTVGraph';
 
 interface FormParams {
   className?: string;
   collateralToken: CW20Addr;
-  collateralVector: CW20Addr[];
   fallbackBorrowMarket: BorrowMarket;
   fallbackBorrowBorrower: BorrowBorrower;
 }
@@ -72,7 +72,6 @@ function ComponentBase({
   className,
   closeDialog,
   collateralToken,
-  collateralVector,
   fallbackBorrowMarket,
   fallbackBorrowBorrower,
 }: DialogProps<FormParams, FormReturn>) {
@@ -122,6 +121,10 @@ function ComponentBase({
     () => pickCollateral(collateralToken, overseerWhitelist),
     [collateralToken, overseerWhitelist],
   );
+
+  const collateralDenom = useMemo(() => {
+    return pickCollateralDenom(collateral);
+  }, [collateral]);
 
   const amountToLtv = useMemo(
     () =>
@@ -195,13 +198,13 @@ function ComponentBase({
 
   const proceed = useCallback(
     (depositAmount: bAsset) => {
-      if (!connectedWallet || !provideCollateral) {
+      if (!connectedWallet || !provideCollateral || !collateralDenom) {
         return;
       }
 
-      provideCollateral({ depositAmount });
+      provideCollateral({ depositAmount, collateralDenom });
     },
-    [connectedWallet, provideCollateral],
+    [collateralDenom, connectedWallet, provideCollateral],
   );
 
   const onLtvChange = useCallback(

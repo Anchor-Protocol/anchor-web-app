@@ -15,6 +15,7 @@ import { useBorrowMarketQuery } from '../../queries/borrow/market';
 
 export interface BorrowRedeemCollateralTxParams {
   redeemAmount: bAsset;
+  collateralDenom: COLLATERAL_DENOMS;
   onTxSucceed?: () => void;
 }
 
@@ -31,7 +32,11 @@ export function useBorrowRedeemCollateralTx() {
   const refetchQueries = useRefetchQueries();
 
   const stream = useCallback(
-    ({ redeemAmount, onTxSucceed }: BorrowRedeemCollateralTxParams) => {
+    ({
+      redeemAmount,
+      collateralDenom,
+      onTxSucceed,
+    }: BorrowRedeemCollateralTxParams) => {
       if (!connectedWallet || !connectedWallet.availablePost) {
         throw new Error('Can not post!');
       }
@@ -40,7 +45,7 @@ export function useBorrowRedeemCollateralTx() {
         address: connectedWallet.walletAddress,
         amount: redeemAmount,
         market: MARKET_DENOMS.UUSD,
-        collateral: COLLATERAL_DENOMS.UBLUNA,
+        collateral: collateralDenom,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
