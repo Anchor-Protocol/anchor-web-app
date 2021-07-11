@@ -79,29 +79,6 @@ IDE
 
 <!-- index packages/src/**/README.md -->
 
-- [packages/src/@anchor-protocol/icons/README.md](packages/src/@anchor-protocol/icons/README.md)
-- [packages/src/@anchor-protocol/notation/README.md](packages/src/@anchor-protocol/notation/README.md)
-- [packages/src/@anchor-protocol/token-icons/README.md](packages/src/@anchor-protocol/token-icons/README.md)
-- [packages/src/@terra-dev/audit-fastdom/README.md](packages/src/@terra-dev/audit-fastdom/README.md)
-- [packages/src/@terra-dev/big-interpolate/README.md](packages/src/@terra-dev/big-interpolate/README.md)
-- [packages/src/@terra-dev/big-math/README.md](packages/src/@terra-dev/big-math/README.md)
-- [packages/src/@terra-dev/is-touch-device/README.md](packages/src/@terra-dev/is-touch-device/README.md)
-- [packages/src/@terra-dev/is-zero/README.md](packages/src/@terra-dev/is-zero/README.md)
-- [packages/src/@terra-dev/neumorphism-ui/README.md](packages/src/@terra-dev/neumorphism-ui/README.md)
-- [packages/src/@terra-dev/sendinblue/README.md](packages/src/@terra-dev/sendinblue/README.md)
-- [packages/src/@terra-dev/snackbar/README.md](packages/src/@terra-dev/snackbar/README.md)
-- [packages/src/@terra-dev/styled-neumorphism/README.md](packages/src/@terra-dev/styled-neumorphism/README.md)
-- [packages/src/@terra-dev/use-dialog/README.md](packages/src/@terra-dev/use-dialog/README.md)
-- [packages/src/@terra-dev/use-element-intersection/README.md](packages/src/@terra-dev/use-element-intersection/README.md)
-- [packages/src/@terra-dev/use-google-analytics/README.md](packages/src/@terra-dev/use-google-analytics/README.md)
-- [packages/src/@terra-dev/use-interval/README.md](packages/src/@terra-dev/use-interval/README.md)
-- [packages/src/@terra-dev/use-local-storage/README.md](packages/src/@terra-dev/use-local-storage/README.md)
-- [packages/src/@terra-dev/use-resolve-last/README.md](packages/src/@terra-dev/use-resolve-last/README.md)
-- [packages/src/@terra-dev/use-restricted-input/README.md](packages/src/@terra-dev/use-restricted-input/README.md)
-- [packages/src/@terra-dev/use-router-scroll-restoration/README.md](packages/src/@terra-dev/use-router-scroll-restoration/README.md)
-- [packages/src/@terra-dev/use-string-bytes-length/README.md](packages/src/@terra-dev/use-string-bytes-length/README.md)
-- [packages/src/@terra-dev/use-time-end/README.md](packages/src/@terra-dev/use-time-end/README.md)
-
 <!-- /index -->
 
 # License

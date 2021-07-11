@@ -26,7 +26,7 @@ module.exports = {
     });
 
     aliasDangerous({
-      ...getWebpackAlias(path.resolve(__dirname, '../packages')),
+      ...getWebpackAlias(path.resolve(__dirname, '../app')),
       ...getWebpackAlias(__dirname),
       env: path.join(__dirname, 'src/env.ts'),
     })(config);
