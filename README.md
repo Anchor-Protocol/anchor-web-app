@@ -14,15 +14,14 @@ And you can run scripts
 - `yarn run app:build` Build `/app` directory (`/app/build` directory will created)
 - `yarn run app:test`
 - `yarn run app:coverage`
+- `yarn run app:pack` Build `/app/src/@anchor-protocol` packages (`/app/out` directory will created)
+- `yarn run app:publish` Publish `/packages/out` directory to the NPM registry
+- `yarn run app:storybook` Development run Storybook
+- `yarn run app:build-storybook`
 - `yarn run landing:start` Development run `/landing` directory (web browser will open)
-- `yarn run landing:build` Build `/landing` directory (`/app/landing` directory will created)
+- `yarn run landing:build` Build `/landing` directory (`/landing/build` directory will created)
 - `yarn run landing:test`
 - `yarn run landing:coverage`
-- `yarn run packages:build` Build `/packages/src/@anchor-protocol` packages (`/packages/out` directory will created)
-- `yarn run packages:publish` Publish `/packages/out` directory to the NPM registry
-- `yarn run packages:storybook` Development run Storybook
-- `yarn run packages:build-storybook`
-- `yarn run packages:test`
 
 # Environments
 
@@ -51,33 +50,32 @@ IDE
 - JetBrains <https://plugins.jetbrains.com/plugin/8097-js-graphql>
 - VSCode <https://marketplace.visualstudio.com/items?itemName=GraphQL.vscode-graphql>
 
-# Domains
+# Sub packages
 
-## `/app`
+<!-- index app/src/**/README.md -->
 
-| master                           |
-| -------------------------------- |
-| <https://app.anchorprotocol.com> |
-| <https://app.anchor.money>       |
-| <https://app.anchor.market>      |
-
-## `/landing`
-
-| master                       |
-| ---------------------------- |
-| <https://anchorprotocol.com> |
-| <https://anchor.money>       |
-| <https://anchor.market>      |
-
-## `/packages`
-
-| develop                                     |
-| ------------------------------------------- |
-| <https://anchor-storybook.vercel.app/>      |
-| <https://www.npmjs.com/org/anchor-protocol> |
-| <https://www.npmjs.com/org/terra-dev>       |
-
-<!-- index packages/src/**/README.md -->
+- [app/src/@anchor-protocol/icons/README.md](app/src/@anchor-protocol/icons/README.md)
+- [app/src/@anchor-protocol/notation/README.md](app/src/@anchor-protocol/notation/README.md)
+- [app/src/@anchor-protocol/token-icons/README.md](app/src/@anchor-protocol/token-icons/README.md)
+- [app/src/@terra-dev/audit-fastdom/README.md](app/src/@terra-dev/audit-fastdom/README.md)
+- [app/src/@terra-dev/big-interpolate/README.md](app/src/@terra-dev/big-interpolate/README.md)
+- [app/src/@terra-dev/big-math/README.md](app/src/@terra-dev/big-math/README.md)
+- [app/src/@terra-dev/is-touch-device/README.md](app/src/@terra-dev/is-touch-device/README.md)
+- [app/src/@terra-dev/is-zero/README.md](app/src/@terra-dev/is-zero/README.md)
+- [app/src/@terra-dev/neumorphism-ui/README.md](app/src/@terra-dev/neumorphism-ui/README.md)
+- [app/src/@terra-dev/sendinblue/README.md](app/src/@terra-dev/sendinblue/README.md)
+- [app/src/@terra-dev/snackbar/README.md](app/src/@terra-dev/snackbar/README.md)
+- [app/src/@terra-dev/styled-neumorphism/README.md](app/src/@terra-dev/styled-neumorphism/README.md)
+- [app/src/@terra-dev/use-dialog/README.md](app/src/@terra-dev/use-dialog/README.md)
+- [app/src/@terra-dev/use-element-intersection/README.md](app/src/@terra-dev/use-element-intersection/README.md)
+- [app/src/@terra-dev/use-google-analytics/README.md](app/src/@terra-dev/use-google-analytics/README.md)
+- [app/src/@terra-dev/use-interval/README.md](app/src/@terra-dev/use-interval/README.md)
+- [app/src/@terra-dev/use-local-storage/README.md](app/src/@terra-dev/use-local-storage/README.md)
+- [app/src/@terra-dev/use-resolve-last/README.md](app/src/@terra-dev/use-resolve-last/README.md)
+- [app/src/@terra-dev/use-restricted-input/README.md](app/src/@terra-dev/use-restricted-input/README.md)
+- [app/src/@terra-dev/use-router-scroll-restoration/README.md](app/src/@terra-dev/use-router-scroll-restoration/README.md)
+- [app/src/@terra-dev/use-string-bytes-length/README.md](app/src/@terra-dev/use-string-bytes-length/README.md)
+- [app/src/@terra-dev/use-time-end/README.md](app/src/@terra-dev/use-time-end/README.md)
 
 <!-- /index -->
 
