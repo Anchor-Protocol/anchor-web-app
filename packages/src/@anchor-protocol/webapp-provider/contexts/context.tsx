@@ -33,8 +33,9 @@ export interface AnchorWebapp {
   constants: AnchorContants;
 }
 
-// @ts-ignore
-const AnchorWebappContext: Context<AnchorWebapp> = createContext<AnchorWebapp>();
+const AnchorWebappContext: Context<AnchorWebapp> =
+  // @ts-ignore
+  createContext<AnchorWebapp>();
 
 export function AnchorWebappProvider({
   children,
@@ -66,10 +67,13 @@ export function AnchorWebappProvider({
 
   const states = useMemo<AnchorWebapp>(
     () => ({
-      contractAddressMap: contractAddressMaps[network.name],
-      addressProvider: addressProviders[network.name],
-      contractAddress: contractAddresses[network.name],
-      constants: constants[network.name],
+      contractAddressMap:
+        contractAddressMaps[network.name] ?? contractAddressMaps['mainnet'],
+      addressProvider:
+        addressProviders[network.name] ?? addressProviders['mainnet'],
+      contractAddress:
+        contractAddresses[network.name] ?? contractAddresses['mainnet'],
+      constants: constants[network.name] ?? constants['mainnet'],
     }),
     [
       addressProviders,
