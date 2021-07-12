@@ -5,12 +5,12 @@ __metadata:
   version: 4
   cacheKey: 8
 
-"@anchor-protocol/anchor.js@npm:^1.1.0-alpha.1":
-  version: 1.1.0-alpha.1
-  resolution: "@anchor-protocol/anchor.js@npm:1.1.0-alpha.1"
+"@anchor-protocol/anchor.js@npm:^1.1.0-alpha.2":
+  version: 1.1.0-alpha.2
+  resolution: "@anchor-protocol/anchor.js@npm:1.1.0-alpha.2"
   dependencies:
     "@terra-money/terra.js": ^1.8.3
-  checksum: 472e71dae5ae5ac31f92404cb22e8f752d02011857486ef63117076c846785771a5b761e20655c0fe349dd3473c4dde8988e65162a627f24193a50430f1638b1
+  checksum: deaadb4257fec359646d142632d9426f1d7f09bc3333ec0ee1c6e1c53adf4e71b07977bcd227029b3e9f37600822a57d72e5d79b6b9b699d4fecea23931ea1cb
   languageName: node
   linkType: hard
 
@@ -18,7 +18,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@anchor-web-app/app@workspace:app"
   dependencies:
-    "@anchor-protocol/anchor.js": ^1.1.0-alpha.1
+    "@anchor-protocol/anchor.js": ^1.1.0-alpha.2
     "@material-ui/core": ^4.11.3
     "@material-ui/icons": ^4.11.2
     "@peculiar/webcrypto": ^1.1.7
