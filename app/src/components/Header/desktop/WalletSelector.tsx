@@ -10,9 +10,11 @@ import {
   useWallet,
   WalletStatus,
 } from '@terra-money/wallet-provider';
+import { IconOnlyWalletButton } from 'components/Header/desktop/IconOnlyWalletButton';
 import { useBank } from 'contexts/bank';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import { useCallback, useState } from 'react';
+import { useMediaQuery } from 'react-responsive';
 import { useRouteMatch } from 'react-router-dom';
 import styled from 'styled-components';
 import { AirdropContent } from '../airdrop/AirdropContent';
@@ -41,6 +43,8 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
     availableConnectTypes,
     availableInstallTypes,
   } = useWallet();
+
+  const isSmallScreen = useMediaQuery({ query: '(max-width: 1000px)' });
 
   const bank = useBank();
 
@@ -110,18 +114,26 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
     case WalletStatus.INITIALIZING:
       return (
         <div className={className}>
-          <NotConnectedButton disabled>
-            Initializing Wallet...
-          </NotConnectedButton>
+          {isSmallScreen ? (
+            <IconOnlyWalletButton disabled />
+          ) : (
+            <NotConnectedButton disabled>
+              Initializing Wallet...
+            </NotConnectedButton>
+          )}
         </div>
       );
     case WalletStatus.WALLET_NOT_CONNECTED:
       return (
         <ClickAwayListener onClickAway={onClickAway}>
           <div className={className}>
-            <NotConnectedButton onClick={connectWallet}>
-              Connect Wallet
-            </NotConnectedButton>
+            {isSmallScreen ? (
+              <IconOnlyWalletButton onClick={connectWallet} />
+            ) : (
+              <NotConnectedButton onClick={connectWallet}>
+                Connect Wallet
+              </NotConnectedButton>
+            )}
 
             {openDropdown && (
               <DropdownContainer>
@@ -225,11 +237,15 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
       return wallets.length > 0 ? (
         <ClickAwayListener onClickAway={onClickAway}>
           <div className={className}>
-            <ConnectedButton
-              walletAddress={wallets[0].terraAddress}
-              bank={bank}
-              onClick={toggleOpen}
-            />
+            {isSmallScreen ? (
+              <IconOnlyWalletButton onClick={toggleOpen} connected />
+            ) : (
+              <ConnectedButton
+                walletAddress={wallets[0].terraAddress}
+                bank={bank}
+                onClick={toggleOpen}
+              />
+            )}
 
             {!airdropClosed &&
               airdrop &&

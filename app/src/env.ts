@@ -36,7 +36,13 @@ export const mobileHeaderHeight = 68;
 // ---------------------------------------------
 export const links = {
   forum: 'https://forum.anchorprotocol.com/',
-};
+  docs: {
+    earn: 'https://docs.anchorprotocol.com/user-guide/webapp/earn',
+    borrow: 'https://docs.anchorprotocol.com/user-guide/webapp/borrow',
+    bond: 'https://docs.anchorprotocol.com/user-guide/webapp/bond',
+    gov: 'https://docs.anchorprotocol.com/user-guide/webapp/govern',
+  },
+} as const;
 
 // ---------------------------------------------
 // environment

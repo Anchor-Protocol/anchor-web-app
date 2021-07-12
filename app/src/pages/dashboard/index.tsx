@@ -31,6 +31,7 @@ import {
 } from '@terra-dev/styled-neumorphism';
 import { Footer } from 'components/Footer';
 import big, { Big } from 'big.js';
+import { PageTitle, TitleContainer } from 'components/primitives/PageTitle';
 import { format } from 'date-fns';
 import { screen } from 'env';
 import React, { useMemo } from 'react';
@@ -187,7 +188,9 @@ function DashboardBase({ className }: DashboardProps) {
     <div className={className}>
       <main>
         <div className="content-layout">
-          <h1>DASHBOARD</h1>
+          <TitleContainer>
+            <PageTitle title="DASHBOARD" />
+          </TitleContainer>
 
           <div className="summary-section">
             <Section className="total-value-locked">
@@ -680,14 +683,6 @@ const vRuler = css`
 export const Dashboard = styled(DashboardBase)`
   background-color: ${({ theme }) => theme.backgroundColor};
   color: ${({ theme }) => theme.textColor};
-
-  h1 {
-    margin: 0 0 50px 0;
-
-    font-size: 44px;
-    font-weight: 900;
-    color: ${({ theme }) => theme.textColor};
-  }
 
   h2 {
     font-size: 13px;

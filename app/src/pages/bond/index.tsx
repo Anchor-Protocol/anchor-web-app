@@ -1,6 +1,8 @@
 import { Tab } from '@terra-dev/neumorphism-ui/components/Tab';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
-import { useCallback, useMemo } from 'react';
+import { PageTitle, TitleContainer } from 'components/primitives/PageTitle';
+import { links } from 'env';
+import React, { useCallback, useMemo } from 'react';
 import {
   Redirect,
   Route,
@@ -55,6 +57,10 @@ function BAssetBase({ className, match, history }: BAssetProps) {
 
   return (
     <CenteredLayout className={className}>
+      <TitleContainer>
+        <PageTitle title="BOND" docs={links.docs.bond} />
+      </TitleContainer>
+
       <Tab
         className="tab"
         items={tabItems}

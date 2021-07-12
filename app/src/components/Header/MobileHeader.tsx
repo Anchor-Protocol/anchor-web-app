@@ -1,8 +1,6 @@
 import { Menu, MenuClose, MenuWallet } from '@anchor-protocol/icons';
 import { useAirdropCheckQuery } from '@anchor-protocol/webapp-provider';
-import { Launch } from '@material-ui/icons';
 import { isMathWallet } from '@terra-dev/browser-check';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { IconToggleButton } from '@terra-dev/neumorphism-ui/components/IconToggleButton';
 import {
   ConnectType,
@@ -155,7 +153,6 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
 function NavMenu({
   to,
   exact,
-  doc,
   title,
   close,
 }: RouteMenu & {
@@ -171,11 +168,6 @@ function NavMenu({
       <NavLink to={to} exact={exact} onClick={close}>
         {title}
       </NavLink>
-      <a href={doc} target="_blank" rel="noreferrer" onClick={close}>
-        <IconSpan>
-          Docs <Launch />
-        </IconSpan>
-      </a>
     </div>
   );
 }
@@ -228,7 +220,7 @@ export const MobileHeader = styled(MobileHeaderBase)`
       display: flex;
       align-items: center;
 
-      a:first-child {
+      a {
         flex: 1;
 
         font-size: 36px;
@@ -240,17 +232,6 @@ export const MobileHeader = styled(MobileHeaderBase)`
 
         &.active {
           color: #f4f4f5;
-        }
-      }
-
-      a:last-child {
-        font-size: 16px;
-        text-decoration: none;
-
-        color: #666666;
-
-        svg {
-          font-size: 1em;
         }
       }
     }

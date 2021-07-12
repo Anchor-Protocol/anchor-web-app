@@ -1,6 +1,7 @@
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
-import { screen } from 'env';
+import { PageTitle } from 'components/primitives/PageTitle';
+import { links, screen } from 'env';
 import { LoanButtons } from 'pages/borrow/components/LoanButtons';
 import { Overview } from 'pages/borrow/components/Overview';
 import React from 'react';
@@ -15,9 +16,14 @@ function BorrowBase({ className }: BorrowProps) {
   return (
     <PaddedLayout className={className}>
       <div className="market">
-        <h1>
-          <TokenIcon token="ust" /> UST
-        </h1>
+        <PageTitle
+          title={
+            <>
+              <TokenIcon token="ust" /> UST
+            </>
+          }
+          docs={links.docs.borrow}
+        />
         <div className="loan-buttons">
           <LoanButtons />
         </div>
@@ -39,10 +45,6 @@ export const Borrow = styled(BorrowBase)`
     margin-bottom: 40px;
 
     h1 {
-      font-size: 44px;
-      font-weight: 900;
-      color: ${({ theme }) => theme.textColor};
-
       img {
         transform: scale(1.3) translateY(3px);
         margin-right: 5px;

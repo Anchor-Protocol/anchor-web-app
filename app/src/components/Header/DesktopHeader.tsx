@@ -1,4 +1,3 @@
-import { Launch } from '@material-ui/icons';
 import { menus, RouteMenu } from 'configurations/menu';
 import { screen } from 'env';
 import React from 'react';
@@ -43,7 +42,7 @@ function DesktopHeaderBase({ className }: DesktopHeaderProps) {
   );
 }
 
-function NavMenu({ to, exact, title, doc }: RouteMenu) {
+function NavMenu({ to, exact, title }: RouteMenu) {
   const match = useRouteMatch({
     path: to,
     exact,
@@ -52,10 +51,6 @@ function NavMenu({ to, exact, title, doc }: RouteMenu) {
   return (
     <div data-active={!!match}>
       <Link to={to}>{title}</Link>
-      <a href={doc} target="_blank" rel="noreferrer">
-        Docs
-        <Launch />
-      </a>
     </div>
   );
 }
@@ -83,37 +78,17 @@ export const DesktopHeader = styled(DesktopHeaderBase)`
 
   .menu {
     > div {
-      padding: 6px 17px;
+      padding: 6px 12px;
 
       display: flex;
       align-items: center;
 
       a {
         color: rgba(255, 255, 255, 0.4);
-      }
-
-      a:first-child {
         font-size: 18px;
         font-weight: 900;
 
         text-decoration: none;
-      }
-
-      a:last-child {
-        display: none;
-
-        font-size: 12px;
-        font-weight: 500;
-
-        text-decoration: none;
-
-        position: relative;
-
-        svg {
-          margin-left: 2px;
-          font-size: 1em;
-          transform: translateY(2px);
-        }
       }
 
       &[data-active='true'] {
@@ -125,27 +100,6 @@ export const DesktopHeader = styled(DesktopHeaderBase)`
 
         a {
           color: ${({ theme }) => theme.textColor};
-        }
-
-        a:last-child {
-          display: inline-block;
-
-          margin-left: 17px;
-
-          &::before {
-            content: '';
-            display: block;
-
-            position: absolute;
-
-            background-color: ${({ theme }) => theme.colors.positive};
-
-            width: 1px;
-            height: 18px;
-
-            left: -8px;
-            top: -1px;
-          }
         }
       }
     }
