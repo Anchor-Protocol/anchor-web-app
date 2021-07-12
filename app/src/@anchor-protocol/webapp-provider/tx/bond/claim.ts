@@ -1,3 +1,4 @@
+import { COLLATERAL_DENOMS } from '@anchor-protocol/anchor.js';
 import { uUST } from '@anchor-protocol/types';
 import { bondClaimTx } from '@anchor-protocol/webapp-fns';
 import { useStream } from '@rx-stream/react';
@@ -15,7 +16,7 @@ export interface BondClaimTxParams {
   onTxSucceed?: () => void;
 }
 
-export function useBondClaimTx() {
+export function useBondClaimTx(rewardDenom: COLLATERAL_DENOMS) {
   const connectedWallet = useConnectedWallet();
 
   const { addressProvider, constants } = useAnchorWebapp();
@@ -33,6 +34,7 @@ export function useBondClaimTx() {
       return bondClaimTx({
         // fabricatebAssetClaimRewards
         address: connectedWallet.walletAddress,
+        rewardDenom,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
@@ -54,10 +56,11 @@ export function useBondClaimTx() {
     },
     [
       connectedWallet,
-      addressProvider,
+      rewardDenom,
       constants.fixedGas,
       constants.gasFee,
       constants.gasAdjustment,
+      addressProvider,
       mantleEndpoint,
       mantleFetch,
       txErrorReporter,

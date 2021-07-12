@@ -33,8 +33,8 @@ export interface AnchorWebapp {
   constants: AnchorContants;
 }
 
-// @ts-ignore
 const AnchorWebappContext: Context<AnchorWebapp> =
+  // @ts-ignore
   createContext<AnchorWebapp>();
 
 export function AnchorWebappProvider({

@@ -49,8 +49,8 @@ export interface TerraWebapp {
   txRefetchMap: TxRefetchMap;
 }
 
-// @ts-ignore
 export const TerraWebappContext: Context<TerraWebapp> =
+  // @ts-ignore
   createContext<TerraWebapp>();
 
 export function TerraWebappProvider({

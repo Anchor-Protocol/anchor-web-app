@@ -2,7 +2,7 @@ import type { ubLuna, uLuna } from '@anchor-protocol/types';
 import { bluna } from '@anchor-protocol/types';
 import big, { Big } from 'big.js';
 
-interface History {
+export interface WithdrawHistory {
   blunaAmount: ubLuna<Big>;
   lunaAmount?: uLuna<Big>;
   requestTime?: Date;
@@ -14,7 +14,7 @@ export function withdrawAllHistory(
   unbondedRequestsStartFrom: number,
   allHistory: bluna.hub.AllHistoryResponse | undefined,
   parameters: bluna.hub.ParametersResponse | undefined,
-): History[] | undefined {
+): WithdrawHistory[] | undefined {
   if (
     !unbondRequests ||
     unbondedRequestsStartFrom < 0 ||
@@ -24,7 +24,7 @@ export function withdrawAllHistory(
     return undefined;
   }
 
-  return unbondRequests.requests.map<History>(([index, amount]) => {
+  return unbondRequests.requests.map<WithdrawHistory>(([index, amount]) => {
     const historyIndex: number = index - unbondedRequestsStartFrom;
     const matchingHistory = allHistory.history[historyIndex - 1];
 

@@ -1,3 +1,4 @@
+import { COLLATERAL_DENOMS } from '@anchor-protocol/anchor.js';
 import { HumanAddr } from '@anchor-protocol/types';
 import {
   BondClaimableRewards,
@@ -50,15 +51,15 @@ const queryFn = createQueryFn(
   },
 );
 
-export function useBondClaimableRewards(): UseQueryResult<
-  BondClaimableRewards | undefined
-> {
+export function useBondClaimableRewards(
+  rewardDenom: COLLATERAL_DENOMS,
+): UseQueryResult<BondClaimableRewards | undefined> {
   const connectedWallet = useConnectedWallet();
 
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const {
-    contractAddress: { bluna },
+    contractAddress: { bluna, beth },
   } = useAnchorWebapp();
 
   const { browserInactive } = useBrowserInactive();
@@ -69,7 +70,7 @@ export function useBondClaimableRewards(): UseQueryResult<
       mantleEndpoint,
       mantleFetch,
       connectedWallet,
-      bluna.reward,
+      rewardDenom === COLLATERAL_DENOMS.UBETH ? beth.reward : bluna.reward,
     ],
     queryFn,
     {

@@ -1,30 +1,33 @@
+import { COLLATERAL_DENOMS } from '@anchor-protocol/anchor.js';
 import { demicrofy, formatUST } from '@anchor-protocol/notation';
 import {
+  AnchorTax,
+  AnchorTokenBalances,
   useAnchorWebapp,
   useBondClaimableRewards,
   useBondClaimTx,
+  validateTxFee,
 } from '@anchor-protocol/webapp-provider';
 import { StreamStatus } from '@rx-stream/react';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank } from 'contexts/bank';
-import big from 'big.js';
+import { useBank } from '@terra-money/webapp-provider';
 import { MessageBox } from 'components/MessageBox';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { validateTxFee } from 'logics/validateTxFee';
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { claimableRewards as _claimableRewards } from '../logics/claimableRewards';
+import { fixHMR } from 'fix-hmr';
+import React, { useCallback, useMemo } from 'react';
+import styled from 'styled-components';
+import { claimableRewards as _claimableRewards } from '../../logics/claimableRewards';
+import { RewardLayout } from './RewardLayout';
 
-export interface ClaimSectionProps {
-  disabled: boolean;
-  onProgress: (inProgress: boolean) => void;
+export interface ClaimEthProps {
+  className?: string;
 }
 
-export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
+function ClaimEthBase({ className }: ClaimEthProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
@@ -34,22 +37,22 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
     constants: { fixedGas },
   } = useAnchorWebapp();
 
-  const [claim, claimResult] = useBondClaimTx();
+  const [claim, claimResult] = useBondClaimTx(COLLATERAL_DENOMS.UBETH);
 
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const bank = useBank();
+  const { tokenBalances } = useBank<AnchorTokenBalances, AnchorTax>();
 
   const { data: { rewardState, claimableReward } = {} } =
-    useBondClaimableRewards();
+    useBondClaimableRewards(COLLATERAL_DENOMS.UBETH);
 
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(tokenBalances.uUST, fixedGas),
+    [connectedWallet, tokenBalances.uUST, fixedGas],
   );
 
   const claimableRewards = useMemo(
@@ -60,20 +63,13 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
-  const proceed = useCallback(() => {
+  const proceedClaim = useCallback(() => {
     if (!connectedWallet || !claim) {
       return;
     }
 
     claim({});
   }, [claim, connectedWallet]);
-
-  // ---------------------------------------------
-  // effects
-  // ---------------------------------------------
-  useEffect(() => {
-    onProgress(claimResult?.status === StreamStatus.IN_PROGRESS);
-  }, [claimResult?.status, onProgress]);
 
   // ---------------------------------------------
   // presentation
@@ -83,7 +79,7 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
     claimResult?.status === StreamStatus.DONE
   ) {
     return (
-      <Section>
+      <div className={className}>
         <TxResultRenderer
           resultRendering={claimResult.value}
           onExit={() => {
@@ -97,13 +93,17 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
             }
           }}
         />
-      </Section>
+      </div>
     );
   }
 
   return (
-    <Section>
-      <article className="claimable-rewards">
+    <div className={className}>
+      {!!invalidTxFee && claimableRewards.gt(0) && (
+        <MessageBox>{invalidTxFee}</MessageBox>
+      )}
+
+      <RewardLayout>
         <h4>
           <IconSpan>
             Claimable Rewards{' '}
@@ -114,33 +114,40 @@ export function ClaimSection({ disabled, onProgress }: ClaimSectionProps) {
             </InfoTooltip>
           </IconSpan>
         </h4>
+
         <p>
-          {claimableRewards.gt(0)
-            ? formatUST(demicrofy(claimableRewards)) + ' UST'
-            : '-'}
+          {claimableRewards.gt(0) ? (
+            <>
+              {formatUST(demicrofy(claimableRewards))}
+              <span>UST</span>
+            </>
+          ) : (
+            '-'
+          )}
         </p>
-      </article>
 
-      {!!invalidTxFee && big(claimableRewards).gt(0) && (
-        <MessageBox>{invalidTxFee}</MessageBox>
-      )}
-
-      <ViewAddressWarning>
-        <ActionButton
-          className="submit"
-          disabled={
-            !connectedWallet ||
-            !connectedWallet.availablePost ||
-            !claim ||
-            !!invalidTxFee ||
-            claimableRewards.lte(fixedGas) ||
-            disabled
-          }
-          onClick={() => proceed()}
-        >
-          Claim
-        </ActionButton>
-      </ViewAddressWarning>
-    </Section>
+        <ViewAddressWarning>
+          <ActionButton
+            className="submit"
+            disabled={
+              !connectedWallet ||
+              !connectedWallet.availablePost ||
+              !claim ||
+              !!invalidTxFee ||
+              claimableRewards.lte(fixedGas)
+            }
+            onClick={() => proceedClaim()}
+          >
+            Claim
+          </ActionButton>
+        </ViewAddressWarning>
+      </RewardLayout>
+    </div>
   );
 }
+
+export const StyledClaimEth = styled(ClaimEthBase)`
+  // TODO
+`;
+
+export const ClaimEth = fixHMR(StyledClaimEth);

@@ -1,7 +1,6 @@
-import {
-  AddressProvider,
-  fabricatebAssetClaimRewards,
-} from '@anchor-protocol/anchor.js';
+import { AddressProvider, COLLATERAL_DENOMS } from '@anchor-protocol/anchor.js';
+import { validateInput } from '@anchor-protocol/anchor.js/dist/utils/validate-input';
+import { validateAddress } from '@anchor-protocol/anchor.js/dist/utils/validation/address';
 import {
   demicrofy,
   formatUSTWithPostfixUnits,
@@ -10,7 +9,11 @@ import {
 import { Rate, uUST } from '@anchor-protocol/types';
 import { pipe } from '@rx-stream/pipe';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
-import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
+import {
+  CreateTxOptions,
+  MsgExecuteContract,
+  StdFee,
+} from '@terra-money/terra.js';
 import {
   MantleFetch,
   pickAttributeValue,
@@ -100,3 +103,28 @@ export function bondClaimTx(
     },
   )().pipe(_catchTxError({ helper, ...$ }));
 }
+
+interface Option {
+  address: string;
+  recipient?: string;
+  rewardDenom: COLLATERAL_DENOMS;
+}
+
+export const fabricatebAssetClaimRewards =
+  ({ address, recipient, rewardDenom }: Option) =>
+  (addressProvider: AddressProvider) => {
+    validateInput([validateAddress(address)]);
+
+    const rewardAddress =
+      rewardDenom === COLLATERAL_DENOMS.UBETH
+        ? addressProvider.bEthReward()
+        : addressProvider.bLunaReward();
+
+    return [
+      new MsgExecuteContract(address, rewardAddress, {
+        claim_rewards: {
+          recipient, // always
+        },
+      }),
+    ];
+  };
