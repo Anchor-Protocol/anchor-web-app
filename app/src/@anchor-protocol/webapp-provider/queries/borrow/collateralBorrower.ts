@@ -1,7 +1,7 @@
-import { HumanAddr } from '@anchor-protocol/types';
+import { CW20Addr, HumanAddr } from '@anchor-protocol/types';
 import {
-  BorrowBorrower,
-  borrowBorrowerQuery,
+  BorrowCollateralBorrower,
+  borrowCollateralBorrowerQuery,
 } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@terra-dev/react-query-utils';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
@@ -23,39 +23,18 @@ const queryFn = createQueryFn(
     mantleEndpoint: string,
     mantleFetch: MantleFetch,
     connectedWallet: ConnectedWallet | undefined,
-    lastSyncedHeight: () => Promise<number>,
-    marketContract: HumanAddr,
-    overseerContract: HumanAddr,
+    custodyContract: HumanAddr,
   ) => {
     return !!connectedWallet
-      ? borrowBorrowerQuery({
+      ? borrowCollateralBorrowerQuery({
           mantleEndpoint,
           mantleFetch,
-          lastSyncedHeight,
           wasmQuery: {
-            marketBorrowerInfo: {
-              contractAddress: marketContract,
+            custodyBorrower: {
+              contractAddress: custodyContract,
               query: {
-                borrower_info: {
-                  borrower: connectedWallet.walletAddress,
-                  block_height: -1,
-                },
-              },
-            },
-            overseerCollaterals: {
-              contractAddress: overseerContract,
-              query: {
-                collaterals: {
-                  borrower: connectedWallet.walletAddress,
-                },
-              },
-            },
-            overseerBorrowLimit: {
-              contractAddress: overseerContract,
-              query: {
-                borrow_limit: {
-                  borrower: connectedWallet.walletAddress,
-                  block_time: -1,
+                borrower: {
+                  address: connectedWallet.walletAddress,
                 },
               },
             },
@@ -65,13 +44,12 @@ const queryFn = createQueryFn(
   },
 );
 
-export function useBorrowBorrowerQuery(): UseQueryResult<
-  BorrowBorrower | undefined
-> {
+export function useBorrowCollateralBorrowerQuery(
+  collateralToken: CW20Addr,
+): UseQueryResult<BorrowCollateralBorrower | undefined> {
   const connectedWallet = useConnectedWallet();
 
-  const { mantleFetch, mantleEndpoint, lastSyncedHeight, queryErrorReporter } =
-    useTerraWebapp();
+  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const {
     contractAddress: { moneyMarket },
@@ -81,13 +59,13 @@ export function useBorrowBorrowerQuery(): UseQueryResult<
 
   const result = useQuery(
     [
-      ANCHOR_QUERY_KEY.BORROW_BORROWER,
+      ANCHOR_QUERY_KEY.BORROW_COLLATERAL_BORROWER,
       mantleEndpoint,
       mantleFetch,
       connectedWallet,
-      lastSyncedHeight,
-      moneyMarket.market,
-      moneyMarket.overseer,
+      moneyMarket.collateralsArray.find(
+        ({ token }) => token === collateralToken,
+      )!.custody,
     ],
     queryFn,
     {

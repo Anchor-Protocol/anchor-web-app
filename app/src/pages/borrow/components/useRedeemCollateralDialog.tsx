@@ -27,6 +27,7 @@ import {
 import {
   useAnchorWebapp,
   useBorrowBorrowerQuery,
+  useBorrowCollateralBorrowerQuery,
   useBorrowMarketQuery,
   useBorrowRedeemCollateralTx,
 } from '@anchor-protocol/webapp-provider';
@@ -121,6 +122,14 @@ function ComponentBase({
     } = fallbackBorrowBorrower,
   } = useBorrowBorrowerQuery();
 
+  const { data: { custodyBorrower } = {} } =
+    useBorrowCollateralBorrowerQuery(collateralToken);
+
+  console.log(
+    'useRedeemCollateralDialog.tsx..ComponentBase()',
+    custodyBorrower,
+  );
+
   // ---------------------------------------------
   // calculate
   // ---------------------------------------------
@@ -175,14 +184,18 @@ function ComponentBase({
 
   const withdrawableAmount = useMemo(
     () =>
-      computeRedeemCollateralWithdrawableAmount(
-        collateralToken,
-        marketBorrowerInfo,
-        overseerCollaterals,
-        oraclePrices,
-        bAssetLtvs,
-      ),
+      custodyBorrower
+        ? computeRedeemCollateralWithdrawableAmount(
+            collateralToken,
+            marketBorrowerInfo,
+            overseerCollaterals,
+            custodyBorrower,
+            oraclePrices,
+            bAssetLtvs,
+          )
+        : undefined,
     [
+      custodyBorrower,
       collateralToken,
       marketBorrowerInfo,
       overseerCollaterals,
@@ -326,12 +339,15 @@ function ComponentBase({
                 cursor: 'pointer',
               }}
               onClick={() =>
+                withdrawableAmount &&
                 updateRedeemAmount(
                   formatLunaInput(demicrofy(withdrawableAmount)),
                 )
               }
             >
-              {formatLuna(demicrofy(withdrawableAmount))}{' '}
+              {withdrawableAmount
+                ? formatLuna(demicrofy(withdrawableAmount))
+                : 0}{' '}
               {prettifyBAssetSymbol(collateral.symbol)}
             </span>
           </span>

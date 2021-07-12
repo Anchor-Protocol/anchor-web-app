@@ -63,6 +63,7 @@ export * from './queries/earn/transactionHistory';
 export * from './queries/borrow/market';
 export * from './queries/borrow/borrower';
 export * from './queries/borrow/apy';
+export * from './queries/borrow/collateralBorrower';
 export * from './queries/bond/bLunaExchangeRate';
 export * from './queries/bond/bLunaPrice';
 export * from './queries/bond/claimableRewards';

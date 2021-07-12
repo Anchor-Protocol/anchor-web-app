@@ -1,6 +1,7 @@
-import type { CW20Addr, ubAsset, uUST } from '@anchor-protocol/types';
+import { formatUTokenInteger } from '@anchor-protocol/notation';
+import type { CW20Addr, ubAsset, uToken, uUST } from '@anchor-protocol/types';
 import { moneyMarket } from '@anchor-protocol/types';
-import { max, sum, vectorDivision, vectorMultiply } from '@terra-dev/big-math';
+import { max, sum, vectorMultiply } from '@terra-dev/big-math';
 import big, { Big } from 'big.js';
 import { BAssetLtvs } from '../../queries/borrow/market';
 import { vectorizeBAssetSafeLtvs } from './vectorizeBAssetLtvs';
@@ -16,9 +17,16 @@ export function computeRedeemCollateralWithdrawableAmount(
   collateralToken: CW20Addr,
   marketBorrowerInfo: moneyMarket.market.BorrowerInfoResponse,
   overseerCollaterals: moneyMarket.overseer.CollateralsResponse,
+  custodyBorrower: moneyMarket.custody.BorrowerResponse,
   oraclePrices: moneyMarket.oracle.PricesResponse,
   bAssetLtvs: BAssetLtvs,
 ): ubAsset<Big> {
+  //return big(big(custodyBorrower.balance).minus(marketBorrowerInfo.loan_amount))
+  //  .div(bAssetLtvs.get(collateralToken)!.safe)
+  //  .div(
+  //    oraclePrices.prices.find(({ asset }) => collateralToken === asset)!.price,
+  //  ) as ubAsset<Big>;
+
   // bAsset 을 되찾는다
   // A:uust = loan_amount 에서 다른 bAsset 들의 금액을 제외 = loan_amount - (다른 bAsset 들의 [locked amount] * [oracle])
   // 되찾을 수 있는 bAsset 수량 = ((현재 bAsset 의 locked amount * oracle) - A) / oracle
@@ -54,13 +62,13 @@ export function computeRedeemCollateralWithdrawableAmount(
     otherBAssetsPrices,
   );
 
-  const otherBAssetsCollateralsValue = vectorDivision(
+  const otherBAssetsCollateralsValue = vectorMultiply(
     otherBAssetsLockedAmountsUST,
     otherBAssetsSafeLtvs,
   );
 
-  const loanAmount = big(marketBorrowerInfo.loan_amount).minus(
-    sum(...otherBAssetsCollateralsValue),
+  const loanAmount = sum(...otherBAssetsCollateralsValue).minus(
+    marketBorrowerInfo.loan_amount,
   ) as uUST<Big>;
 
   const price = oraclePrices.prices.find(
@@ -70,8 +78,19 @@ export function computeRedeemCollateralWithdrawableAmount(
   const safeLtv = bAssetLtvs.get(collateralToken)!.safe;
 
   const withdrawableUST = big(big(lockedAmount).mul(price)).minus(
-    big(loanAmount).div(safeLtv),
+    big(loanAmount).mul(safeLtv),
   ) as uUST<Big>;
+
+  console.log(
+    'computeRedeemCollateralWithdrawableAmount.ts..computeRedeemCollateralWithdrawableAmount()',
+    {
+      loanAmount: formatUTokenInteger(marketBorrowerInfo.loan_amount),
+      otherBAssetsCollateralsValue: formatUTokenInteger(
+        sum(...otherBAssetsCollateralsValue) as uToken<Big>,
+      ),
+      loanAmount2: formatUTokenInteger(loanAmount),
+    },
+  );
 
   return max(withdrawableUST.div(price), 0) as ubAsset<Big>;
 
