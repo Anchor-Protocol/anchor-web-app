@@ -27,7 +27,6 @@ import {
 import {
   useAnchorWebapp,
   useBorrowBorrowerQuery,
-  useBorrowCollateralBorrowerQuery,
   useBorrowMarketQuery,
   useBorrowRedeemCollateralTx,
 } from '@anchor-protocol/webapp-provider';
@@ -122,14 +121,6 @@ function ComponentBase({
     } = fallbackBorrowBorrower,
   } = useBorrowBorrowerQuery();
 
-  const { data: { custodyBorrower } = {} } =
-    useBorrowCollateralBorrowerQuery(collateralToken);
-
-  console.log(
-    'useRedeemCollateralDialog.tsx..ComponentBase()',
-    custodyBorrower,
-  );
-
   // ---------------------------------------------
   // calculate
   // ---------------------------------------------
@@ -184,18 +175,14 @@ function ComponentBase({
 
   const withdrawableAmount = useMemo(
     () =>
-      custodyBorrower
-        ? computeRedeemCollateralWithdrawableAmount(
-            collateralToken,
-            marketBorrowerInfo,
-            overseerCollaterals,
-            custodyBorrower,
-            oraclePrices,
-            bAssetLtvs,
-          )
-        : undefined,
+      computeRedeemCollateralWithdrawableAmount(
+        collateralToken,
+        marketBorrowerInfo,
+        overseerCollaterals,
+        oraclePrices,
+        bAssetLtvs,
+      ),
     [
-      custodyBorrower,
       collateralToken,
       marketBorrowerInfo,
       overseerCollaterals,
