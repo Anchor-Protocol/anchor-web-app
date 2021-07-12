@@ -17,7 +17,7 @@ import {
 } from '@terra-money/webapp-fns';
 import { QueryObserverResult } from 'react-query';
 import { Observable } from 'rxjs';
-import { computeCurrentLtv } from '../../computes/borrow/computeCurrentLtv';
+import { computeCurrentLtv } from '../../logics/borrow/computeCurrentLtv';
 import { BorrowBorrower } from '../../queries/borrow/borrower';
 import { BorrowMarket } from '../../queries/borrow/market';
 import { _catchTxError } from '../internal/_catchTxError';
