@@ -389,6 +389,47 @@ export const PollDetail = styled(PollDetailBase)`
     }
   }
 
+  @media (max-width: 650px) {
+    .detail {
+      .detail-voted {
+        margin-top: 20px;
+
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(3, auto);
+
+        article {
+          padding: 20px 0;
+
+          p {
+            font-size: 30px;
+          }
+
+          &:not(:first-child) {
+            border-left: 0;
+            border-top: 1px solid
+              ${({ theme }) =>
+                rulerLightColor({
+                  intensity: theme.intensity,
+                  color: theme.backgroundColor,
+                })};
+          }
+
+          &:not(:last-child) {
+            border-right: 0;
+            border-bottom: 1px solid
+              ${({ theme }) =>
+                rulerShadowColor({
+                  intensity: theme.intensity,
+                  color: theme.backgroundColor,
+                })};
+          }
+        }
+
+        margin-bottom: 20px;
+      }
+    }
+  }
+
   @media (max-width: ${screen.mobile.max}px) {
     .content {
       .content-title {

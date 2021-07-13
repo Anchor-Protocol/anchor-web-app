@@ -167,7 +167,8 @@ export function BankProvider({
     return status === WalletStatus.WALLET_CONNECTED && wallets.length > 0
       ? tokenBalancesQuery({
           nativeTokenKeys,
-          cw20TokenContracts: cw20TokenContracts[network.name],
+          cw20TokenContracts:
+            cw20TokenContracts[network.name] ?? cw20TokenContracts['mainnet'],
           walletAddress: wallets[0].terraAddress,
           mantleEndpoint,
           mantleFetch,
