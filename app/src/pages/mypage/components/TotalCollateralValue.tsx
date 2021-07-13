@@ -77,7 +77,7 @@ function TotalCollateralValueBase({ className }: TotalCollateralValueProps) {
               >
                 <th>
                   <i />
-                  <p>{label}</p>
+                  <span>{label}</span>
                 </th>
                 <td>
                   <p>{formatUSTWithPostfixUnits(demicrofy(ust))} UST</p>
@@ -122,53 +122,65 @@ export const StyledTotalCollateralValue = styled(TotalCollateralValueBase)`
     display: flex;
     justify-content: space-between;
 
-    ul {
-      padding: 0 0 0 12px;
-      list-style: none;
-
-      display: inline-grid;
-      grid-template-rows: repeat(4, auto);
-      grid-auto-flow: column;
-      grid-row-gap: 20px;
-      grid-column-gap: 50px;
-
-      li {
-        position: relative;
+    table {
+      tr {
+        height: 80px;
 
         i {
           background-color: currentColor;
 
-          position: absolute;
-          left: -12px;
-          top: 5px;
-
           display: inline-block;
-          min-width: 7px;
-          min-height: 7px;
-          max-width: 7px;
-          max-height: 7px;
+          min-width: 12px;
+          min-height: 12px;
+          max-width: 12px;
+          max-height: 12px;
+          border-radius: 3px;
 
           transition: transform 0.3s ease-out, border-radius 0.3s ease-out;
         }
 
-        p:nth-of-type(1) {
-          font-size: 12px;
-          font-weight: 500;
-          line-height: 1.5;
+        th {
+          padding-top: 10px;
+          padding-right: 10px;
 
-          color: ${({ theme }) => theme.textColor};
+          font-size: 13px;
+
+          text-align: left;
+          vertical-align: top;
+
+          span {
+            display: inline-block;
+            margin-left: 4px;
+            transform: translateY(-1px);
+            color: ${({ theme }) => theme.dimTextColor};
+          }
         }
 
-        p:nth-of-type(2) {
-          font-size: 13px;
-          line-height: 1.5;
+        td {
+          vertical-align: top;
 
-          color: ${({ theme }) => theme.textColor};
+          p:nth-of-type(1) {
+            font-size: 20px;
+            font-weight: 500;
+            line-height: 1.5;
+
+            color: ${({ theme }) => theme.textColor};
+          }
+
+          p:nth-of-type(2) {
+            margin-top: 4px;
+
+            font-size: 15px;
+            font-weight: 500;
+            line-height: 1.5;
+
+            color: ${({ theme }) => theme.dimTextColor};
+          }
         }
 
         &[data-focus='true'] {
           i {
-            transform: scale(2);
+            transform: scale(1.4);
             border-radius: 50%;
           }
         }
@@ -197,10 +209,6 @@ export const StyledTotalCollateralValue = styled(TotalCollateralValueBase)`
     .values {
       margin-top: 30px;
       display: block;
-
-      ul {
-        display: grid;
-      }
 
       canvas {
         display: none;

@@ -84,6 +84,14 @@ const BorrowRow = styled.div`
   > * {
     flex: 1;
   }
+
+  @media (max-width: 1200px) {
+    flex-direction: column;
+
+    > :nth-child(2) {
+      width: 100%;
+    }
+  }
 `;
 
 export const StyledMypage = styled(MypageBase)`

@@ -96,7 +96,7 @@ export const StyledTotalClaimableRewards = styled(TotalClaimableRewardsBase)`
     p {
       margin-top: 6px;
 
-      font-size: 16px;
+      font-size: 28px;
       font-weight: 500;
 
       span {
