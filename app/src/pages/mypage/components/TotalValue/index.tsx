@@ -7,7 +7,7 @@ import { Send } from '@material-ui/icons';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { fixHMR } from 'fix-hmr';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import useResizeObserver from 'use-resize-observer/polyfilled';
 import { TotalValueDoughnutChart } from './TotalValueDoughnutGraph';
@@ -38,6 +38,8 @@ const data: Item[] = [
 ];
 
 function TotalValueBase({ className }: TotalValueProps) {
+  const [focusedIndex, setFocusedIndex] = useState(-1);
+
   const { ref, width = 400 } = useResizeObserver();
 
   const isSmallLayout = useMemo(() => {
@@ -64,8 +66,12 @@ function TotalValueBase({ className }: TotalValueProps) {
       <div className="values">
         <ul>
           {data.map(({ label, amount }, i) => (
-            <li key={label}>
-              <i style={{ backgroundColor: colors[i] }} />
+            <li
+              key={label}
+              style={{ color: colors[i] }}
+              data-focus={i === focusedIndex}
+            >
+              <i />
               <p>{label}</p>
               <p>{formatUSTWithPostfixUnits(demicrofy(amount))} UST</p>
             </li>
@@ -73,7 +79,11 @@ function TotalValueBase({ className }: TotalValueProps) {
         </ul>
 
         {!isSmallLayout && (
-          <TotalValueDoughnutChart data={data} colors={colors} />
+          <TotalValueDoughnutChart
+            data={data}
+            colors={colors}
+            onFocus={setFocusedIndex}
+          />
         )}
       </div>
     </Section>
@@ -131,6 +141,8 @@ export const StyledTotalValue = styled(TotalValueBase)`
         position: relative;
 
         i {
+          background-color: currentColor;
+
           position: absolute;
           left: -12px;
           top: 5px;
@@ -140,17 +152,30 @@ export const StyledTotalValue = styled(TotalValueBase)`
           min-height: 7px;
           max-width: 7px;
           max-height: 7px;
+
+          transition: transform 0.3s ease-out, border-radius 0.3s ease-out;
         }
 
         p:nth-of-type(1) {
           font-size: 12px;
           font-weight: 500;
           line-height: 1.5;
+
+          color: ${({ theme }) => theme.textColor};
         }
 
         p:nth-of-type(2) {
           font-size: 13px;
           line-height: 1.5;
+
+          color: ${({ theme }) => theme.textColor};
+        }
+
+        &[data-focus='true'] {
+          i {
+            transform: scale(2);
+            border-radius: 50%;
+          }
         }
       }
     }

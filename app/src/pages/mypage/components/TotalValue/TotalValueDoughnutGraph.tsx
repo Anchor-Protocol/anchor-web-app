@@ -5,6 +5,7 @@ import { Item } from './types';
 export interface TotalValueDoughnutChartProps {
   data: Item[];
   colors: string[];
+  onFocus: (dataIndex: number) => void;
 }
 
 export class TotalValueDoughnutChart extends Component<TotalValueDoughnutChartProps> {
@@ -33,18 +34,17 @@ export class TotalValueDoughnutChart extends Component<TotalValueDoughnutChartPr
   }
 
   componentDidUpdate(prevProps: Readonly<TotalValueDoughnutChartProps>) {
-    if (this.props.data !== prevProps.data) {
-      //this.chart.data.datasets[0].data = [
-      //  +this.props.totalDeposit,
-      //  +this.props.totalCollaterals,
-      //];
-    }
-
-    if (this.props.colors !== prevProps.colors) {
-      //this.chart.data.datasets[0].backgroundColor = [
-      //  this.props.totalDepositColor,
-      //  this.props.totalCollateralsColor,
-      //];
+    if (
+      this.props.data !== prevProps.data ||
+      this.props.colors !== prevProps.colors
+    ) {
+      this.chart.data.labels = this.props.data.map(({ label }) => label);
+      this.chart.data.datasets[0].data = this.props.data.map(
+        ({ amount }) => +amount,
+      );
+      this.chart.data.datasets[0].backgroundColor = this.props.data.map(
+        (_, i) => this.props.colors[i],
+      );
     }
 
     this.chart.update();
@@ -63,6 +63,9 @@ export class TotalValueDoughnutChart extends Component<TotalValueDoughnutChartPr
           tooltip: {
             enabled: false,
           },
+        },
+        onHover: (event, elements) => {
+          this.props.onFocus(elements[0]?.index ?? -1);
         },
       },
       data: {
