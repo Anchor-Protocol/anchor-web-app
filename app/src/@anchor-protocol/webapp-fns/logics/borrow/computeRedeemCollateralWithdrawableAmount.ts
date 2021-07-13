@@ -1,5 +1,6 @@
 import type { CW20Addr, ubAsset } from '@anchor-protocol/types';
 import { moneyMarket } from '@anchor-protocol/types';
+import { max } from '@terra-dev/big-math';
 import big, { Big } from 'big.js';
 import { BAssetLtvs } from '../../queries/borrow/market';
 
@@ -30,8 +31,11 @@ export function computeRedeemCollateralWithdrawableAmount(
 
   const safeLtv = bAssetLtvs.get(collateralToken)!.safe;
 
-  return big(lockedAmount).minus(
-    big(marketBorrowerInfo.loan_amount).div(safeLtv).div(price),
+  return max(
+    big(lockedAmount).minus(
+      big(marketBorrowerInfo.loan_amount).div(safeLtv).div(price),
+    ),
+    0,
   ) as ubAsset<Big>;
 
   //const withdrawable =
