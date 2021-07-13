@@ -54,8 +54,8 @@ export class TotalValueDoughnutChart extends Component<TotalValueDoughnutChartPr
     this.chart = new Chart(this.canvasRef.current!, {
       type: 'doughnut',
       options: {
-        cutout: '80%',
-        radius: '90%',
+        cutout: '65%',
+        radius: '100%',
         plugins: {
           legend: {
             display: false,

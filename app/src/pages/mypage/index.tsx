@@ -50,7 +50,7 @@ function MypageBase({ className }: MypageProps) {
 
 const OverviewRow = styled.div`
   display: flex;
-  column-gap: 40px;
+  gap: 40px;
 
   .NeuSection-root {
     margin-bottom: 0;
@@ -63,11 +63,19 @@ const OverviewRow = styled.div`
   > :nth-child(2) {
     width: 532px;
   }
+
+  @media (max-width: 1200px) {
+    flex-direction: column;
+
+    > :nth-child(2) {
+      width: 100%;
+    }
+  }
 `;
 
 const BorrowRow = styled.div`
   display: flex;
-  column-gap: 40px;
+  gap: 40px;
 
   .NeuSection-root {
     margin-bottom: 0;

@@ -7,8 +7,10 @@ import { Send } from '@material-ui/icons';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { fixHMR } from 'fix-hmr';
-import React from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
+import useResizeObserver from 'use-resize-observer/polyfilled';
+import { TotalValueDoughnutChart } from './TotalValueDoughnutGraph';
 import { Item } from './types';
 
 export interface TotalValueProps {
@@ -28,7 +30,7 @@ const colors = [
 const data: Item[] = [
   { label: 'UST', amount: '130494000' as uUST },
   { label: 'Deposit', amount: '243512000' as uUST },
-  { label: 'Borrowing', amount: '7223295000' as uUST },
+  { label: 'Borrowing', amount: '722329000' as uUST },
   { label: 'Holding', amount: '223395000' as uUST },
   { label: 'Pool', amount: '1395000' as uUST },
   { label: 'Farming', amount: '95595000' as uUST },
@@ -36,13 +38,19 @@ const data: Item[] = [
 ];
 
 function TotalValueBase({ className }: TotalValueProps) {
+  const { ref, width = 400 } = useResizeObserver();
+
+  const isSmallLayout = useMemo(() => {
+    return width < 470;
+  }, [width]);
+
   return (
-    <Section className={className}>
-      <header>
+    <Section className={className} data-small-layout={isSmallLayout}>
+      <header ref={ref}>
         <div>
           <h4>Total Value</h4>
           <p>
-            93,238.03 <span>UST</span>
+            93,238.03<span> UST</span>
           </p>
         </div>
         <div>
@@ -53,15 +61,21 @@ function TotalValueBase({ className }: TotalValueProps) {
         </div>
       </header>
 
-      <ul>
-        {data.map(({ label, amount }, i) => (
-          <li key={label}>
-            <i style={{ backgroundColor: colors[i] }} />
-            <p>{label}</p>
-            <p>{formatUSTWithPostfixUnits(demicrofy(amount))} UST</p>
-          </li>
-        ))}
-      </ul>
+      <div className="values">
+        <ul>
+          {data.map(({ label, amount }, i) => (
+            <li key={label}>
+              <i style={{ backgroundColor: colors[i] }} />
+              <p>{label}</p>
+              <p>{formatUSTWithPostfixUnits(demicrofy(amount))} UST</p>
+            </li>
+          ))}
+        </ul>
+
+        {!isSmallLayout && (
+          <TotalValueDoughnutChart data={data} colors={colors} />
+        )}
+      </div>
     </Section>
   );
 }
@@ -77,7 +91,7 @@ export const StyledTotalValue = styled(TotalValueBase)`
     }
 
     p {
-      font-size: 36px;
+      font-size: clamp(20px, 8vw, 36px);
       font-weight: 500;
 
       span {
@@ -97,42 +111,79 @@ export const StyledTotalValue = styled(TotalValueBase)`
     }
   }
 
-  ul {
+  .values {
     margin-top: 50px;
 
-    padding: 0 0 0 12px;
-    list-style: none;
+    display: flex;
+    justify-content: space-between;
 
-    display: inline-grid;
-    grid-template-rows: repeat(4, auto);
-    grid-auto-flow: column;
-    grid-row-gap: 20px;
-    grid-column-gap: 50px;
+    ul {
+      padding: 0 0 0 12px;
+      list-style: none;
 
-    li {
-      position: relative;
+      display: inline-grid;
+      grid-template-rows: repeat(4, auto);
+      grid-auto-flow: column;
+      grid-row-gap: 20px;
+      grid-column-gap: 50px;
 
-      i {
-        position: absolute;
-        left: -12px;
-        top: 5px;
+      li {
+        position: relative;
 
-        display: inline-block;
-        min-width: 7px;
-        min-height: 7px;
-        max-width: 7px;
-        max-height: 7px;
+        i {
+          position: absolute;
+          left: -12px;
+          top: 5px;
+
+          display: inline-block;
+          min-width: 7px;
+          min-height: 7px;
+          max-width: 7px;
+          max-height: 7px;
+        }
+
+        p:nth-of-type(1) {
+          font-size: 12px;
+          font-weight: 500;
+          line-height: 1.5;
+        }
+
+        p:nth-of-type(2) {
+          font-size: 13px;
+          line-height: 1.5;
+        }
+      }
+    }
+
+    canvas {
+      min-width: 210px;
+      min-height: 210px;
+      max-width: 210px;
+      max-height: 210px;
+    }
+  }
+
+  &[data-small-layout='true'] {
+    header {
+      flex-direction: column;
+
+      button {
+        margin-top: 1em;
+
+        width: 100%;
+      }
+    }
+
+    .values {
+      margin-top: 30px;
+      display: block;
+
+      ul {
+        display: grid;
       }
 
-      p:nth-of-type(1) {
-        font-size: 12px;
-        font-weight: 500;
-        line-height: 1.5;
-      }
-
-      p:nth-of-type(2) {
-        font-size: 13px;
-        line-height: 1.5;
+      canvas {
+        display: none;
       }
     }
   }

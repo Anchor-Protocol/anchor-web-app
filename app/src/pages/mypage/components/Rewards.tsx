@@ -5,29 +5,21 @@ import {
   formatRate,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
-import { uANC, uUST } from '@anchor-protocol/types';
-import {
-  useAncLpStakingStateQuery,
-  useAncPriceQuery,
-  useBorrowAPYQuery,
-  useRewardsAncGovernanceRewardsQuery,
-  useRewardsClaimableAncUstLpRewardsQuery,
-  useRewardsClaimableUstBorrowRewardsQuery,
-} from '@anchor-protocol/webapp-provider';
 import { MenuItem } from '@material-ui/core';
 import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
-import big, { Big } from 'big.js';
+import big from 'big.js';
 import { screen } from 'env';
 import { MoreMenu } from 'pages/gov/components/MoreMenu';
+import { useRewards } from 'pages/mypage/logics/useRewards';
 import {
   ancGovernancePathname,
   ancUstLpPathname,
   ustBorrowPathname,
 } from 'pages/trade/env';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -36,107 +28,14 @@ export interface RewardsProps {
 }
 
 export function RewardsBase({ className }: RewardsProps) {
-  // ---------------------------------------------
-  // queries
-  // ---------------------------------------------
-  const { data: { ancPrice } = {} } = useAncPriceQuery();
-
-  const { data: { lpStakingState } = {} } = useAncLpStakingStateQuery();
-
   const {
-    data: { lPBalance: userLPBalance, lPStakerInfo: userLPStakingInfo } = {},
-  } = useRewardsClaimableAncUstLpRewardsQuery();
-
-  const { data: { userANCBalance, userGovStakingInfo } = {} } =
-    useRewardsAncGovernanceRewardsQuery();
-
-  const { data: { borrowerInfo, marketState } = {} } =
-    useRewardsClaimableUstBorrowRewardsQuery();
-
-  const { data: { govRewards, lpRewards, borrowerDistributionAPYs } = {} } =
-    useBorrowAPYQuery();
-
-  // ---------------------------------------------
-  // logics
-  // ---------------------------------------------
-  const ancUstLp = useMemo(() => {
-    if (!ancPrice || !lpStakingState || !userLPStakingInfo || !userLPBalance) {
-      return undefined;
-    }
-
-    const totalUserLPHolding = big(userLPBalance.balance).plus(
-      userLPStakingInfo.bond_amount,
-    );
-
-    const LPValue = big(ancPrice.USTPoolSize)
-      .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare)
-      .mul(2) as uUST<Big>;
-
-    const withdrawableAssets = {
-      anc: big(ancPrice.ANCPoolSize)
-        .mul(totalUserLPHolding)
-        .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare) as uANC<Big>,
-      ust: big(ancPrice.USTPoolSize)
-        .mul(totalUserLPHolding)
-        .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare) as uUST<Big>,
-    };
-
-    const staked = userLPStakingInfo.bond_amount;
-    const stakedValue = big(staked).mul(LPValue) as uUST<Big>;
-
-    const stakable = userLPBalance.balance;
-    const stakableValue = big(stakable).mul(LPValue) as uUST<Big>;
-
-    const reward = userLPStakingInfo.pending_reward;
-    const rewardValue = big(reward).mul(ancPrice.ANCPrice) as uUST<Big>;
-
-    return {
-      withdrawableAssets,
-      LPValue,
-      staked,
-      stakedValue,
-      stakable,
-      stakableValue,
-      reward,
-      rewardValue,
-    };
-  }, [ancPrice, lpStakingState, userLPBalance, userLPStakingInfo]);
-
-  const govGorvernance = useMemo(() => {
-    if (!userGovStakingInfo || !userANCBalance || !ancPrice) {
-      return undefined;
-    }
-
-    const staked = big(userGovStakingInfo.balance) as uANC<Big>;
-    const stakedValue = staked.mul(ancPrice.ANCPrice) as uUST<Big>;
-
-    const stakable = big(userANCBalance.balance) as uANC<Big>;
-    const stakableValue = stakable.mul(ancPrice.ANCPrice) as uUST<Big>;
-
-    return { staked, stakedValue, stakable, stakableValue };
-  }, [userANCBalance, userGovStakingInfo, ancPrice]);
-
-  const ustBorrow = useMemo(() => {
-    if (!marketState || !borrowerInfo || !ancPrice) {
-      return undefined;
-    }
-
-    const reward = big(borrowerInfo.pending_rewards) as uANC<Big>;
-    const rewardValue = reward.mul(ancPrice.ANCPrice) as uUST<Big>;
-
-    return { reward, rewardValue };
-  }, [borrowerInfo, marketState, ancPrice]);
-
-  const total = useMemo(() => {
-    if (!ustBorrow || !ancUstLp || !ancPrice) {
-      return undefined;
-    }
-
-    const reward = ustBorrow.reward.plus(ancUstLp.reward) as uANC<Big>;
-    const rewardValue = reward.mul(ancPrice.ANCPrice) as uUST<Big>;
-
-    return { reward, rewardValue };
-  }, [ancPrice, ancUstLp, ustBorrow]);
+    ancUstLp,
+    govRewards,
+    lpRewards,
+    govGorvernance,
+    ustBorrow,
+    borrowerDistributionAPYs,
+  } = useRewards();
 
   // ---------------------------------------------
   // presentation
@@ -144,31 +43,14 @@ export function RewardsBase({ className }: RewardsProps) {
   return (
     <section className={className}>
       <Section>
-        <h3>
-          <div>
-            <label>Total Reward</label>{' '}
-            {total?.reward
-              ? formatANCWithPostfixUnits(demicrofy(total.reward))
-              : 0}{' '}
-            ANC
-          </div>
-          <div>
-            <label>Total Reward Value</label>{' '}
-            {total?.rewardValue
-              ? formatUSTWithPostfixUnits(demicrofy(total.rewardValue))
-              : 0}{' '}
-            UST
-          </div>
-        </h3>
-
         <HorizontalScrollTable
-          minWidth={1200}
+          minWidth={1300}
           startPadding={20}
           endPadding={20}
         >
           <colgroup>
             <col style={{ minWidth: 210 }} />
-            <col style={{ minWidth: 180 }} />
+            <col style={{ minWidth: 100 }} />
             <col style={{ minWidth: 240 }} />
             <col style={{ minWidth: 240 }} />
             <col style={{ minWidth: 200 }} />
@@ -190,8 +72,14 @@ export function RewardsBase({ className }: RewardsProps) {
                     pools
                   </InfoTooltip>
                 </IconSpan>
+                <br />
+                Staked Value
               </th>
-              <th>Stakable</th>
+              <th>
+                Stakable
+                <br />
+                Stakable Value
+              </th>
               <th>
                 <IconSpan>
                   Reward{' '}
@@ -200,6 +88,8 @@ export function RewardsBase({ className }: RewardsProps) {
                     pool
                   </InfoTooltip>
                 </IconSpan>
+                <br />
+                Reward Value
               </th>
               <th>Actions</th>
             </tr>
@@ -440,27 +330,6 @@ export const Rewards = styled(RewardsBase)`
   // ---------------------------------------------
   // style
   // ---------------------------------------------
-  h3 {
-    display: flex;
-
-    > div:nth-of-type(2) {
-      margin-left: 40px;
-    }
-
-    font-size: 14px;
-    color: ${({ theme }) => theme.textColor};
-    font-weight: 700;
-
-    margin-bottom: 60px;
-
-    label {
-      color: ${({ theme }) => theme.dimTextColor};
-      font-weight: 500;
-
-      margin-right: 10px;
-    }
-  }
-
   table {
     min-width: 1000px;
 
