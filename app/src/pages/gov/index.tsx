@@ -5,6 +5,7 @@ import { PollCreateModifyANCDistribution } from 'pages/gov/poll.create.modify-an
 import { PollCreateModifyBorrowInterest } from 'pages/gov/poll.create.modify-borrow-interest';
 import { PollCreateModifyCollateralAttribute } from 'pages/gov/poll.create.modify-collateral-attribute';
 import { PollCreateModifyMarketParameters } from 'pages/gov/poll.create.modify-market-parameters';
+import { PollCreateRegisterCollateralAttributes } from 'pages/gov/poll.create.register-collateral-attributes';
 import { PollCreateSpendCommunityPool } from 'pages/gov/poll.create.spend-community-pool';
 import { PollCreateTextProposal } from 'pages/gov/poll.create.text-proposal';
 import { RewardsAncGovernance } from 'pages/gov/rewards.anc-governance';
@@ -84,6 +85,11 @@ export function Governance() {
       <Route
         path={`/${govPathname}/poll/create/spend-community-pool`}
         component={PollCreateSpendCommunityPool}
+      />
+
+      <Route
+        path={`/${govPathname}/poll/create/register-collateral-attributes`}
+        component={PollCreateRegisterCollateralAttributes}
       />
 
       <Route
