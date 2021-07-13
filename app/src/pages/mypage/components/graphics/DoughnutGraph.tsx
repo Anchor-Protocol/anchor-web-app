@@ -1,14 +1,18 @@
 import { Chart } from 'chart.js';
 import React, { Component, createRef } from 'react';
-import { Item } from './types';
 
-export interface TotalValueDoughnutChartProps {
-  data: Item[];
-  colors: string[];
+export interface ChartItem {
+  label: string;
+  value: number;
+  color: string;
+}
+
+export interface DoughnutChartProps {
+  data: ChartItem[];
   onFocus: (dataIndex: number) => void;
 }
 
-export class TotalValueDoughnutChart extends Component<TotalValueDoughnutChartProps> {
+export class DoughnutChart extends Component<DoughnutChartProps> {
   private canvasRef = createRef<HTMLCanvasElement>();
   private chart!: Chart;
 
@@ -20,30 +24,22 @@ export class TotalValueDoughnutChart extends Component<TotalValueDoughnutChartPr
     this.chart.destroy();
   }
 
-  shouldComponentUpdate(
-    nextProps: Readonly<TotalValueDoughnutChartProps>,
-  ): boolean {
-    return (
-      this.props.data !== nextProps.data ||
-      this.props.colors !== nextProps.colors
-    );
+  shouldComponentUpdate(nextProps: Readonly<DoughnutChartProps>): boolean {
+    return this.props.data !== nextProps.data;
   }
 
   componentDidMount() {
     this.createChart();
   }
 
-  componentDidUpdate(prevProps: Readonly<TotalValueDoughnutChartProps>) {
-    if (
-      this.props.data !== prevProps.data ||
-      this.props.colors !== prevProps.colors
-    ) {
+  componentDidUpdate(prevProps: Readonly<DoughnutChartProps>) {
+    if (this.props.data !== prevProps.data) {
       this.chart.data.labels = this.props.data.map(({ label }) => label);
       this.chart.data.datasets[0].data = this.props.data.map(
-        ({ amount }) => +amount,
+        ({ value }) => value,
       );
       this.chart.data.datasets[0].backgroundColor = this.props.data.map(
-        (_, i) => this.props.colors[i],
+        ({ color }) => color,
       );
     }
 
@@ -72,10 +68,8 @@ export class TotalValueDoughnutChart extends Component<TotalValueDoughnutChartPr
         labels: this.props.data.map(({ label }) => label),
         datasets: [
           {
-            data: this.props.data.map(({ amount }) => +amount),
-            backgroundColor: this.props.data.map(
-              (_, i) => this.props.colors[i],
-            ),
+            data: this.props.data.map(({ value }) => value),
+            backgroundColor: this.props.data.map(({ color }) => color),
             borderWidth: 0,
             hoverOffset: 0,
           },

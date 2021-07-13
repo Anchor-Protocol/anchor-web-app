@@ -10,8 +10,7 @@ import { fixHMR } from 'fix-hmr';
 import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import useResizeObserver from 'use-resize-observer/polyfilled';
-import { TotalValueDoughnutChart } from './TotalValueDoughnutGraph';
-import { Item } from './types';
+import { ChartItem, DoughnutChart } from '../graphics/DoughnutGraph';
 
 export interface TotalValueProps {
   className?: string;
@@ -26,6 +25,11 @@ const colors = [
   '#0e3311',
   '#101010',
 ];
+
+interface Item {
+  label: string;
+  amount: uUST;
+}
 
 const data: Item[] = [
   { label: 'UST', amount: '130494000' as uUST },
@@ -45,6 +49,14 @@ function TotalValueBase({ className }: TotalValueProps) {
   const isSmallLayout = useMemo(() => {
     return width < 470;
   }, [width]);
+
+  const chartData = useMemo<ChartItem[]>(() => {
+    return data.map(({ label, amount }, i) => ({
+      label,
+      value: +amount,
+      color: colors[i % colors.length],
+    }));
+  }, []);
 
   return (
     <Section className={className} data-small-layout={isSmallLayout}>
@@ -79,11 +91,7 @@ function TotalValueBase({ className }: TotalValueProps) {
         </ul>
 
         {!isSmallLayout && (
-          <TotalValueDoughnutChart
-            data={data}
-            colors={colors}
-            onFocus={setFocusedIndex}
-          />
+          <DoughnutChart data={chartData} onFocus={setFocusedIndex} />
         )}
       </div>
     </Section>
