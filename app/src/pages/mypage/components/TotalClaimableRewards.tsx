@@ -9,6 +9,7 @@ import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { fixHMR } from 'fix-hmr';
 import { useRewards } from 'pages/mypage/logics/useRewards';
 import React from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 export interface TotalClaimableRewardsProps {
@@ -46,7 +47,9 @@ function TotalClaimableRewardsBase({ className }: TotalClaimableRewardsProps) {
 
       <div className="spacer" />
 
-      <ActionButton className="claim">Claim All Rewards</ActionButton>
+      <ActionButton className="claim" component={Link} to={`/claim/all`}>
+        Claim All Rewards
+      </ActionButton>
     </Section>
   );
 }
