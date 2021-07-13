@@ -15,7 +15,6 @@ import {
   useRewardsClaimableUstBorrowRewardsQuery,
 } from '@anchor-protocol/webapp-provider';
 import { MenuItem } from '@material-ui/core';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
@@ -23,7 +22,6 @@ import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import big, { Big } from 'big.js';
 import { screen } from 'env';
 import { MoreMenu } from 'pages/gov/components/MoreMenu';
-import { SubHeader } from 'pages/gov/components/SubHeader';
 import {
   ancGovernancePathname,
   ancUstLpPathname,
@@ -145,17 +143,6 @@ export function RewardsBase({ className }: RewardsProps) {
   // ---------------------------------------------
   return (
     <section className={className}>
-      <SubHeader>
-        <div>
-          <h2>Rewards</h2>
-        </div>
-        <div>
-          <ActionButton component={Link} to={`/claim/all`}>
-            Claim All Rewards
-          </ActionButton>
-        </div>
-      </SubHeader>
-
       <Section>
         <h3>
           <div>
