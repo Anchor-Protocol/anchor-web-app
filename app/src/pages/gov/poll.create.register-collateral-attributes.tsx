@@ -83,18 +83,18 @@ export function PollCreateRegisterCollateralAttributes() {
       ) {
         msgs.push(
           {
-            contract: address.moneyMarket.overseer,
-            msg: Buffer.from(
-              JSON.stringify({
-                whitelist: registerWhitelist,
-              }),
-            ).toString('base64'),
-          },
-          {
             contract: address.moneyMarket.oracle,
             msg: Buffer.from(
               JSON.stringify({
                 register_feeder: registerFeeder,
+              }),
+            ).toString('base64'),
+          },
+          {
+            contract: address.moneyMarket.overseer,
+            msg: Buffer.from(
+              JSON.stringify({
+                whitelist: registerWhitelist,
               }),
             ).toString('base64'),
           },
