@@ -140,7 +140,10 @@ export function PollCreateRegisterCollateralAttributes() {
       <div className="description">
         <p>
           <IconSpan>
-            Collateral Name <InfoTooltip>Grant recipient address</InfoTooltip>
+            Collateral Name{' '}
+            <InfoTooltip>
+              Name of bAsset to be registered as collateral
+            </InfoTooltip>
           </IconSpan>
         </p>
         <p />
@@ -156,7 +159,7 @@ export function PollCreateRegisterCollateralAttributes() {
       <div className="description">
         <p>
           <IconSpan>
-            Symbol <InfoTooltip>Grant recipient address</InfoTooltip>
+            Symbol <InfoTooltip>Ticker symbol of the bAsset</InfoTooltip>
           </IconSpan>
         </p>
         <p />
@@ -173,7 +176,7 @@ export function PollCreateRegisterCollateralAttributes() {
         <p>
           <IconSpan>
             Token Contract Address{' '}
-            <InfoTooltip>Grant amount (in units of ANC)</InfoTooltip>
+            <InfoTooltip>Address of bAsset token contract</InfoTooltip>
           </IconSpan>
         </p>
         <p />
@@ -193,7 +196,9 @@ export function PollCreateRegisterCollateralAttributes() {
         <p>
           <IconSpan>
             Price Feeder{' '}
-            <InfoTooltip>Grant amount (in units of ANC)</InfoTooltip>
+            <InfoTooltip>
+              Address of the oracle price feeder for this bAsset
+            </InfoTooltip>
           </IconSpan>
         </p>
         <p />
@@ -212,7 +217,10 @@ export function PollCreateRegisterCollateralAttributes() {
       <div className="description">
         <p>
           <IconSpan>
-            Max LTV <InfoTooltip>Grant amount (in units of ANC)</InfoTooltip>
+            Max LTV{' '}
+            <InfoTooltip>
+              Maximum loan to value ratio allowed for collateral
+            </InfoTooltip>
           </IconSpan>
         </p>
         <p />
@@ -235,7 +243,9 @@ export function PollCreateRegisterCollateralAttributes() {
         <p>
           <IconSpan>
             Custody Contract Address{' '}
-            <InfoTooltip>Grant amount (in units of ANC)</InfoTooltip>
+            <InfoTooltip>
+              Address of custody contract for this bAsset
+            </InfoTooltip>
           </IconSpan>
         </p>
         <p />
