@@ -9,6 +9,7 @@ import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton'
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { Sub } from 'components/Sub';
 import { fixHMR } from 'fix-hmr';
+import { useSendDialog } from 'pages/send/useSendDialog';
 import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import useResizeObserver from 'use-resize-observer/polyfilled';
@@ -44,6 +45,8 @@ const data: Item[] = [
 ];
 
 function TotalValueBase({ className }: TotalValueProps) {
+  const [openSend, sendElement] = useSendDialog();
+
   const [focusedIndex, setFocusedIndex] = useState(-1);
 
   const { ref, width = 400 } = useResizeObserver();
@@ -73,7 +76,7 @@ function TotalValueBase({ className }: TotalValueProps) {
           </p>
         </div>
         <div>
-          <BorderButton>
+          <BorderButton onClick={() => openSend({})}>
             <Send />
             Send
           </BorderButton>
@@ -99,6 +102,8 @@ function TotalValueBase({ className }: TotalValueProps) {
           <DoughnutChart data={chartData} onFocus={setFocusedIndex} />
         )}
       </div>
+
+      {sendElement}
     </Section>
   );
 }
