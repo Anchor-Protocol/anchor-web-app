@@ -49,7 +49,7 @@ import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import type { ChangeEvent, ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { pickCollateralDenom } from '../computes/pickCollateralDenom';
+import { pickCollateralDenom } from '../logics/pickCollateralDenom';
 import { LTVGraph } from './LTVGraph';
 
 interface FormParams {
