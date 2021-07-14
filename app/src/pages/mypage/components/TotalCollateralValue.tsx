@@ -66,7 +66,9 @@ function TotalCollateralValueBase({ className }: TotalCollateralValueProps) {
         (ustAmount, i) =>
           ({
             label: prettifyBAssetSymbol(overseerWhitelist.elems[i].symbol),
-            ratio: big(ustAmount).div(total).toFixed() as Rate,
+            ratio: (total.gt(0)
+              ? big(ustAmount).div(total).toFixed()
+              : '0') as Rate,
             ust: ustAmount.toFixed() as uUST,
             asset: lockedAmounts[i] as ubAsset,
           } as Item),

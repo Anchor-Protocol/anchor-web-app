@@ -68,6 +68,8 @@ function BorrowedValueBase({ className }: BorrowedValueProps) {
 }
 
 export const StyledBorrowedValue = styled(BorrowedValueBase)`
+  min-height: 400px;
+
   header {
     display: flex;
     justify-content: space-between;
@@ -124,7 +126,7 @@ export const StyledBorrowedValue = styled(BorrowedValueBase)`
     header {
       flex-direction: column;
 
-      button {
+      a {
         margin-top: 1em;
 
         width: 100%;

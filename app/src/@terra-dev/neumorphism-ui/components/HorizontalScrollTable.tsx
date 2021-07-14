@@ -125,6 +125,7 @@ export const HorizontalScrollTable = styled(HorizontalScrollTableBase)`
   th {
     font-weight: 500;
     text-align: left;
+    line-height: 1.5;
   }
 
   > .scroll-container {

@@ -80,6 +80,7 @@ export * from './queries/gov/poll';
 export * from './queries/gov/polls';
 export * from './queries/gov/state';
 export * from './queries/gov/voters';
+export * from './queries/gov/myPolls';
 export * from './queries/rewards/ancGovernanceRewards';
 export * from './queries/rewards/anchorLpRewards';
 export * from './queries/rewards/ancUstLpRewards';
