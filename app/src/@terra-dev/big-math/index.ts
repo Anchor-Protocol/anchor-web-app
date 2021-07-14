@@ -34,6 +34,10 @@ export function sum(...numbers: BigSource[]): Big {
   }, big(0));
 }
 
+export function avg(...numbers: BigSource[]): Big {
+  return sum(...numbers).div(numbers.length);
+}
+
 export function floor(number: BigSource): Big {
   const fixed = big(number).toFixed();
   const integer = fixed.split('.')[0];
