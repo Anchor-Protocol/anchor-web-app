@@ -1,6 +1,8 @@
+import { Tab } from '@terra-dev/neumorphism-ui/components/Tab';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { PageTitle, TitleContainer } from 'components/primitives/PageTitle';
-import React from 'react';
+import React, { useState } from 'react';
+import { useMediaQuery } from 'react-responsive';
 import styled from 'styled-components';
 import { BorrowedValue } from './components/BorrowedValue';
 import { Earn } from './components/Earn';
@@ -15,7 +17,25 @@ export interface MypageProps {
   className?: string;
 }
 
+interface Item {
+  label: string;
+  value: string;
+}
+
+const tabItems: Item[] = [
+  { label: 'All', value: 'all' },
+  { label: 'Rewards', value: 'rewards' },
+  { label: 'Earn', value: 'earn' },
+  { label: 'Borrow', value: 'borrow' },
+  { label: 'Govern', value: 'govern' },
+  { label: 'History', value: 'history' },
+];
+
 function MypageBase({ className }: MypageProps) {
+  const isSmallLayout = useMediaQuery({ query: '(max-width: 1000px)' });
+
+  const [tab, setTab] = useState<Item>(() => tabItems[0]);
+
   return (
     <PaddedLayout className={className}>
       <TitleContainer>
@@ -27,23 +47,54 @@ function MypageBase({ className }: MypageProps) {
         <TotalClaimableRewards />
       </OverviewRow>
 
-      <h2>REWARDS</h2>
-      <Rewards />
+      {!isSmallLayout && (
+        <Tab
+          className="tab"
+          items={tabItems}
+          selectedItem={tab ?? tabItems[0]}
+          onChange={setTab}
+          labelFunction={({ label }) => label}
+          keyFunction={({ value }) => value}
+        />
+      )}
 
-      <h2>EARN</h2>
-      <Earn />
+      {(isSmallLayout || tab.value === 'all' || tab.value === 'rewards') && (
+        <>
+          <h2>REWARDS</h2>
+          <Rewards />
+        </>
+      )}
 
-      <h2>BORROW</h2>
-      <BorrowRow>
-        <TotalCollateralValue />
-        <BorrowedValue />
-      </BorrowRow>
+      {(isSmallLayout || tab.value === 'all' || tab.value === 'earn') && (
+        <>
+          <h2>EARN</h2>
+          <Earn />
+        </>
+      )}
 
-      <h2>GOVERN</h2>
-      <Govern />
+      {(isSmallLayout || tab.value === 'all' || tab.value === 'borrow') && (
+        <>
+          <h2>BORROW</h2>
+          <BorrowRow>
+            <TotalCollateralValue />
+            <BorrowedValue />
+          </BorrowRow>
+        </>
+      )}
 
-      <h2>TRANSACTION HISTORY</h2>
-      <TransactionHistory />
+      {(isSmallLayout || tab.value === 'all' || tab.value === 'govern') && (
+        <>
+          <h2>GOVERN</h2>
+          <Govern />
+        </>
+      )}
+
+      {(isSmallLayout || tab.value === 'all' || tab.value === 'history') && (
+        <>
+          <h2>TRANSACTION HISTORY</h2>
+          <TransactionHistory />
+        </>
+      )}
     </PaddedLayout>
   );
 }
@@ -100,6 +151,10 @@ export const StyledMypage = styled(MypageBase)`
     font-weight: 700;
     margin-top: 60px;
     margin-bottom: 20px;
+  }
+
+  .tab {
+    margin-top: 60px;
   }
 `;
 
