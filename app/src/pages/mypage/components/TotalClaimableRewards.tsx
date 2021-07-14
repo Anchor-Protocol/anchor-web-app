@@ -1,11 +1,14 @@
 import {
+  AnimateNumber,
   demicrofy,
   formatANCWithPostfixUnits,
   formatUST,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
+import { ANC, UST } from '@anchor-protocol/types';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { Sub } from 'components/Sub';
 import { fixHMR } from 'fix-hmr';
 import { useRewards } from 'pages/mypage/logics/useRewards';
 import React from 'react';
@@ -24,15 +27,17 @@ function TotalClaimableRewardsBase({ className }: TotalClaimableRewardsProps) {
       <header>
         <h4>Total Claimable Rewards</h4>
         <p>
-          {total?.reward
-            ? formatANCWithPostfixUnits(demicrofy(total.reward))
-            : 0}
-          <span> ANC</span>
+          <AnimateNumber format={formatANCWithPostfixUnits}>
+            {total?.reward ? demicrofy(total.reward) : (0 as ANC<number>)}
+          </AnimateNumber>
+          <Sub> ANC</Sub>
         </p>
         <p>
-          {total?.rewardValue
-            ? formatUSTWithPostfixUnits(demicrofy(total.rewardValue))
-            : 0}{' '}
+          <AnimateNumber format={formatUSTWithPostfixUnits}>
+            {total?.rewardValue
+              ? demicrofy(total.rewardValue)
+              : (0 as UST<number>)}
+          </AnimateNumber>{' '}
           UST
         </p>
       </header>
@@ -40,8 +45,10 @@ function TotalClaimableRewardsBase({ className }: TotalClaimableRewardsProps) {
       <div className="anc-price">
         <h5>ANC PRICE</h5>
         <p>
-          {ancPrice ? formatUST(ancPrice.ANCPrice) : 0}
-          <span> UST</span>
+          <AnimateNumber format={formatUST}>
+            {ancPrice ? ancPrice.ANCPrice : (0 as UST<number>)}
+          </AnimateNumber>
+          <Sub> UST</Sub>
         </p>
       </div>
 
@@ -72,7 +79,7 @@ export const StyledTotalClaimableRewards = styled(TotalClaimableRewardsBase)`
       font-size: clamp(20px, 8vw, 36px);
       font-weight: 500;
 
-      span {
+      sub {
         font-size: 20px;
       }
     }
@@ -99,7 +106,7 @@ export const StyledTotalClaimableRewards = styled(TotalClaimableRewardsBase)`
       font-size: 28px;
       font-weight: 500;
 
-      span {
+      sub {
         font-size: 13px;
       }
     }

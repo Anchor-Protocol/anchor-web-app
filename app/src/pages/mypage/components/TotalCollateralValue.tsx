@@ -1,4 +1,5 @@
 import {
+  AnimateNumber,
   demicrofy,
   formatBAssetWithPostfixUnits,
   formatRate,
@@ -15,6 +16,7 @@ import {
 import { sum, vectorMultiply } from '@terra-dev/big-math';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import big, { Big } from 'big.js';
+import { Sub } from 'components/Sub';
 import { fixHMR } from 'fix-hmr';
 import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
@@ -93,8 +95,10 @@ function TotalCollateralValueBase({ className }: TotalCollateralValueProps) {
       <header ref={ref}>
         <h4>Total Collateral Value</h4>
         <p>
-          {formatUSTWithPostfixUnits(demicrofy(total))}
-          <span> UST</span>
+          <AnimateNumber format={formatUSTWithPostfixUnits}>
+            {demicrofy(total)}
+          </AnimateNumber>
+          <Sub> UST</Sub>
         </p>
       </header>
 
@@ -142,7 +146,7 @@ export const StyledTotalCollateralValue = styled(TotalCollateralValueBase)`
       font-size: clamp(20px, 8vw, 36px);
       font-weight: 500;
 
-      span {
+      sub {
         font-size: 20px;
       }
     }

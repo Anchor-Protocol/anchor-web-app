@@ -1,11 +1,13 @@
 import {
+  AnimateNumber,
   demicrofy,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
-import { uUST } from '@anchor-protocol/types';
+import { UST, uUST } from '@anchor-protocol/types';
 import { Send } from '@material-ui/icons';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { Sub } from 'components/Sub';
 import { fixHMR } from 'fix-hmr';
 import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
@@ -64,7 +66,10 @@ function TotalValueBase({ className }: TotalValueProps) {
         <div>
           <h4>Total Value</h4>
           <p>
-            93,238.03<span> UST</span>
+            <AnimateNumber format={formatUSTWithPostfixUnits}>
+              {93238.03 as UST<number>}
+            </AnimateNumber>
+            <Sub> UST</Sub>
           </p>
         </div>
         <div>
@@ -112,7 +117,7 @@ export const StyledTotalValue = styled(TotalValueBase)`
       font-size: clamp(20px, 8vw, 36px);
       font-weight: 500;
 
-      span {
+      sub {
         font-size: 20px;
       }
     }
