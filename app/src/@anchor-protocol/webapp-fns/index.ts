@@ -9,6 +9,7 @@ export * from './functions/prettifyBAssetSymbol';
 export * from './logics/common/validateTxFee';
 export * from './logics/earn/computeTotalDeposit';
 export * from './logics/earn/computeCurrentAPY';
+export * from './logics/borrow/computeNetAPR';
 export * from './logics/borrow/pickCollateral';
 export * from './logics/borrow/computeCollateralsTotalUST';
 export * from './logics/borrow/computeBorrowLimit';

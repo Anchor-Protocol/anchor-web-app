@@ -10,7 +10,7 @@ import { fixHMR } from 'fix-hmr';
 import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import useResizeObserver from 'use-resize-observer/polyfilled';
-import { ChartItem, DoughnutChart } from '../graphics/DoughnutGraph';
+import { ChartItem, DoughnutChart } from './graphics/DoughnutGraph';
 
 export interface TotalValueProps {
   className?: string;

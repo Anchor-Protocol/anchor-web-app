@@ -13,28 +13,16 @@ import {
   MICRO,
   MILLION,
 } from '@anchor-protocol/notation';
-import { Rate, uUST } from '@anchor-protocol/types';
-import {
-  computeBorrowAPR,
-  computeBorrowedAmount,
-  computeBorrowLimit,
-  computeCollateralsTotalUST,
-  computeCurrentLtv,
-  useAnchorWebapp,
-  useBorrowAPYQuery,
-  useBorrowBorrowerQuery,
-  useBorrowMarketQuery,
-} from '@anchor-protocol/webapp-provider';
 import { IconCircle } from '@terra-dev/neumorphism-ui/components/IconCircle';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { TooltipIconCircle } from '@terra-dev/neumorphism-ui/components/TooltipIconCircle';
-import big, { Big } from 'big.js';
 import { SubAmount } from 'components/primitives/SubAmount';
 import { screen } from 'env';
-import React, { useMemo } from 'react';
+import React from 'react';
 import styled from 'styled-components';
+import { useBorrowOverviewData } from '../logics/useBorrowOverviewData';
 import { BorrowLimitGraph } from './BorrowLimitGraph';
 
 export interface OverviewProps {
@@ -42,67 +30,16 @@ export interface OverviewProps {
 }
 
 function OverviewBase({ className }: OverviewProps) {
-  // ---------------------------------------------
-  // dependencies
-  // ---------------------------------------------
   const {
-    constants: { blocksPerYear },
-  } = useAnchorWebapp();
-
-  // ---------------------------------------------
-  // queries
-  // ---------------------------------------------
-  const { data: { borrowRate, oraclePrices, bAssetLtvsAvg, bAssetLtvs } = {} } =
-    useBorrowMarketQuery();
-
-  const { data: { marketBorrowerInfo, overseerCollaterals } = {} } =
-    useBorrowBorrowerQuery();
-
-  const { data: { borrowerDistributionAPYs } = {} } = useBorrowAPYQuery();
-
-  // ---------------------------------------------
-  // computes
-  // ---------------------------------------------
-  const { currentLtv, borrowAPR, borrowedValue, collateralValue, borrowLimit } =
-    useMemo(() => {
-      const collateralsValue =
-        overseerCollaterals && oraclePrices
-          ? computeCollateralsTotalUST(overseerCollaterals, oraclePrices)
-          : (big(0) as uUST<Big>);
-
-      const currentLtv =
-        marketBorrowerInfo && overseerCollaterals && oraclePrices
-          ? computeCurrentLtv(
-              marketBorrowerInfo,
-              overseerCollaterals,
-              oraclePrices,
-            )
-          : undefined;
-
-      const borrowAPR = computeBorrowAPR(borrowRate, blocksPerYear);
-
-      const borrowedValue = computeBorrowedAmount(marketBorrowerInfo);
-
-      const borrowLimit =
-        overseerCollaterals && oraclePrices && bAssetLtvs
-          ? computeBorrowLimit(overseerCollaterals, oraclePrices, bAssetLtvs)
-          : undefined;
-
-      return {
-        currentLtv,
-        borrowAPR,
-        borrowedValue,
-        collateralValue: collateralsValue,
-        borrowLimit,
-      };
-    }, [
-      bAssetLtvs,
-      blocksPerYear,
-      borrowRate,
-      marketBorrowerInfo,
-      oraclePrices,
-      overseerCollaterals,
-    ]);
+    borrowAPR,
+    borrowedValue,
+    collateralValue,
+    borrowLimit,
+    bAssetLtvsAvg,
+    netAPR,
+    currentLtv,
+    borrowerDistributionAPYs,
+  } = useBorrowOverviewData();
 
   // ---------------------------------------------
   // presentation
@@ -195,14 +132,7 @@ function OverviewBase({ className }: OverviewProps) {
             </IconSpan>
           </h3>
           <div className="value">
-            <AnimateNumber format={formatRate}>
-              {borrowerDistributionAPYs && borrowerDistributionAPYs.length > 0
-                ? (big(borrowerDistributionAPYs[0].DistributionAPY).minus(
-                    borrowAPR,
-                  ) as Rate<Big>)
-                : (0 as Rate<number>)}
-            </AnimateNumber>{' '}
-            %
+            <AnimateNumber format={formatRate}>{netAPR}</AnimateNumber> %
           </div>
           <div>
             <Circles>

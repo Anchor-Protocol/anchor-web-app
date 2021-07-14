@@ -5,7 +5,16 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { Rate, ubAsset, uUST } from '@anchor-protocol/types';
+import {
+  prettifyBAssetSymbol,
+  useBorrowBorrowerQuery,
+  useBorrowMarketQuery,
+  vectorizeOraclePrices,
+  vectorizeOverseerCollaterals,
+} from '@anchor-protocol/webapp-provider';
+import { sum, vectorMultiply } from '@terra-dev/big-math';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import big, { Big } from 'big.js';
 import { fixHMR } from 'fix-hmr';
 import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
@@ -25,22 +34,44 @@ interface Item {
   ratio: Rate;
 }
 
-const data: Item[] = [
-  {
-    label: 'bLUNA',
-    ust: '2493489330000' as uUST,
-    asset: '1000000' as ubAsset,
-    ratio: '0.67' as Rate,
-  },
-  {
-    label: 'bETH',
-    ust: '969139000000' as uUST,
-    asset: '500000' as ubAsset,
-    ratio: '0.33' as Rate,
-  },
-];
-
 function TotalCollateralValueBase({ className }: TotalCollateralValueProps) {
+  const { data: { oraclePrices, overseerWhitelist } = {} } =
+    useBorrowMarketQuery();
+
+  const { data: { overseerCollaterals } = {} } = useBorrowBorrowerQuery();
+
+  const { total, collaterals } = useMemo(() => {
+    if (!overseerCollaterals || !oraclePrices || !overseerWhitelist) {
+      return { total: big(0) as uUST<Big>, collaterals: [] };
+    }
+
+    const vector = overseerWhitelist.elems
+      .reverse()
+      .map(({ collateral_token }) => collateral_token);
+    const lockedAmounts = vectorizeOverseerCollaterals(
+      vector,
+      overseerCollaterals.collaterals,
+    );
+    const prices = vectorizeOraclePrices(vector, oraclePrices.prices);
+
+    const ustAmounts = vectorMultiply(lockedAmounts, prices);
+
+    const total = sum(...ustAmounts) as uUST<Big>;
+
+    return {
+      total,
+      collaterals: ustAmounts.map(
+        (ustAmount, i) =>
+          ({
+            label: prettifyBAssetSymbol(overseerWhitelist.elems[i].symbol),
+            ratio: big(ustAmount).div(total).toFixed() as Rate,
+            ust: ustAmount.toFixed() as uUST,
+            asset: lockedAmounts[i] as ubAsset,
+          } as Item),
+      ),
+    };
+  }, [oraclePrices, overseerCollaterals, overseerWhitelist]);
+
   const [focusedIndex, setFocusedIndex] = useState(-1);
 
   const { ref, width = 400 } = useResizeObserver();
@@ -50,26 +81,27 @@ function TotalCollateralValueBase({ className }: TotalCollateralValueProps) {
   }, [width]);
 
   const chartData = useMemo<ChartItem[]>(() => {
-    return data.map(({ label, ust, asset, ratio }, i) => ({
+    return collaterals.map(({ label, ust, asset, ratio }, i) => ({
       label,
       value: +ust,
       color: colors[i % colors.length],
     }));
-  }, []);
+  }, [collaterals]);
 
   return (
     <Section className={className}>
       <header ref={ref}>
         <h4>Total Collateral Value</h4>
         <p>
-          492,185,238<span> UST</span>
+          {formatUSTWithPostfixUnits(demicrofy(total))}
+          <span> UST</span>
         </p>
       </header>
 
       <div className="values">
         <table>
           <tbody>
-            {data.map(({ label, ust, asset, ratio }, i) => (
+            {collaterals.map(({ label, ust, asset, ratio }, i) => (
               <tr
                 key={label}
                 style={{ color: colors[i] }}
