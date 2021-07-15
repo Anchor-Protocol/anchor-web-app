@@ -121,6 +121,18 @@ function ComponentBase({
     } = fallbackBorrowBorrower,
   } = useBorrowBorrowerQuery();
 
+  console.log(
+    JSON.stringify(
+      {
+        marketBorrowerInfo,
+        overseerCollaterals,
+        oraclePrices,
+      },
+      null,
+      2,
+    ),
+  );
+
   // ---------------------------------------------
   // calculate
   // ---------------------------------------------

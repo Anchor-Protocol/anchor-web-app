@@ -27,10 +27,10 @@ test('computeRedeemCollateralWithdrawableAmount()', () => {
   const { marketBorrowerInfo, overseerCollaterals, oraclePrices } = {
     marketBorrowerInfo: {
       borrower: 'terra12hnhh5vtyg5juqnzm43970nh4fw42pt27nw9g9',
-      interest_index: '1.059547310488768068',
-      loan_amount: '266919456',
-      pending_rewards: '30490297267.387372487768449174',
-      reward_index: '705.276055754695088744',
+      interest_index: '1.059697678315740162',
+      loan_amount: '0',
+      pending_rewards: '30516683864.33001176611976189',
+      reward_index: '705.381084001794613749',
     },
     overseerCollaterals: {
       borrower: 'terra12hnhh5vtyg5juqnzm43970nh4fw42pt27nw9g9',
@@ -43,13 +43,13 @@ test('computeRedeemCollateralWithdrawableAmount()', () => {
       prices: [
         {
           asset: 'terra19mkj9nec6e3y5754tlnuz4vem7lzh4n0lc2s3l',
-          last_updated_time: 1626249594,
-          price: '1898.04748761',
+          last_updated_time: 1626324557,
+          price: '1969.02528415',
         },
         {
           asset: 'terra1u0t35drzyy0mujj8rkdyzhe264uls4ug3wdp3x',
-          last_updated_time: 1626249589,
-          price: '6.828806619129518567',
+          last_updated_time: 1626324557,
+          price: '6.864343416935091223',
         },
       ],
     },
