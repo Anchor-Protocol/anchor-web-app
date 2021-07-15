@@ -43,6 +43,12 @@ export async function mantle<
 
   const graphqlQuery = print(document);
 
+  try {
+    if (process.env.MANTLE_GRAPHQL_PRINT) {
+      console.log(graphqlQuery);
+    }
+  } catch {}
+
   const wasmKeys: Array<keyof WasmQuery> = Object.keys(wasmQuery) as Array<
     keyof WasmQuery
   >;
