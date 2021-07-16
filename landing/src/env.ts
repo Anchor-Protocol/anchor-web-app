@@ -31,4 +31,4 @@ export const links = {
 export const sendinblueApiKey =
   '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';
 
-// force build : 210715
+// force build : 21.07.16
