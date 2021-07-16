@@ -1,6 +1,6 @@
 import type { CW20Addr, ubAsset } from '@anchor-protocol/types';
 import { moneyMarket } from '@anchor-protocol/types';
-import { max, sum, vectorMultiply } from '@terra-dev/big-math';
+import { max, min, sum, vectorMultiply } from '@terra-dev/big-math';
 import big, { Big } from 'big.js';
 import { BAssetLtvs } from '../../queries/borrow/market';
 import { vectorizeBAssetSafeLtvs } from './vectorizeBAssetLtvs';
@@ -53,10 +53,20 @@ export function computeRedeemCollateralWithdrawableAmount(
   const targetCollateralSafeLtv = bAssetLtvs.get(collateralToken)!.safe;
 
   // target_collateral_locked - (
-  //   (loan_amount - sum([other_collateral_locked] * [other_collateral_oracle_price] * [other_collateral_safe_ltv]))
+  //   (
+  //     loan_amount
+  //     -
+  //     min(
+  //       sum([other_collateral_locked] * [other_collateral_oracle_price] * [other_collateral_safe_ltv]),
+  //       loan_amount
+  //     )
+  //   )
   //   /
   //   (avg_safe_ltv * target_collateral_oracle_price)
   // )
+
+  // remain_loan_amount = loan_amount - min(loan_amount, 다른 collateral 들의 safe_ltv ust 를 빼고)
+  // target_locked_amount - (remain_loan_amount / target_oracle_price / target_safe_ltv)
 
   const targetCollateralPrice = oraclePrices.prices.find(
     ({ asset }) => collateralToken === asset,
@@ -65,7 +75,7 @@ export function computeRedeemCollateralWithdrawableAmount(
   const withdrawableAmount = big(targetCollateralLockedAmount).minus(
     big(
       big(marketBorrowerInfo.loan_amount).minus(
-        otherBAssetsCollateralsValueSum,
+        min(otherBAssetsCollateralsValueSum, marketBorrowerInfo.loan_amount),
       ),
     ).div(big(targetCollateralSafeLtv).mul(targetCollateralPrice)),
   );
