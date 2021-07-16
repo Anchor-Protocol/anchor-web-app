@@ -1,19 +1,11 @@
 import type { CW20Addr, ubAsset } from '@anchor-protocol/types';
 import { moneyMarket } from '@anchor-protocol/types';
-import { avg, max, sum, vectorMultiply } from '@terra-dev/big-math';
+import { max, sum, vectorMultiply } from '@terra-dev/big-math';
 import big, { Big } from 'big.js';
 import { BAssetLtvs } from '../../queries/borrow/market';
-import {
-  vectorizeBAssetMaxLtvs,
-  vectorizeBAssetSafeLtvs,
-} from './vectorizeBAssetLtvs';
+import { vectorizeBAssetSafeLtvs } from './vectorizeBAssetLtvs';
 import { vectorizeOraclePrices } from './vectorizeOraclePrices';
 import { vectorizeOverseerCollaterals } from './vectorizeOverseerCollaterals';
-
-// If user_ltv >= 0.35 or user_ltv == Null:
-//   withdrawable = borrow_info.spendable
-// else:
-//   withdrawable = borrow_info.balance - borrow_info.loan_amount / safe_ltv=0.35 / oracle_price
 
 export function computeRedeemCollateralWithdrawableAmount(
   collateralToken: CW20Addr,
@@ -43,10 +35,6 @@ export function computeRedeemCollateralWithdrawableAmount(
     otherBAssetsVector,
     oraclePrices.prices,
   );
-  const otherBAssetsMaxLtvs = vectorizeBAssetMaxLtvs(
-    otherBAssetsVector,
-    Array.from(bAssetLtvs),
-  );
   const otherBAssetsSafeLtvs = vectorizeBAssetSafeLtvs(
     otherBAssetsVector,
     Array.from(bAssetLtvs),
@@ -58,26 +46,29 @@ export function computeRedeemCollateralWithdrawableAmount(
   );
   const otherBAssetsCollateralsValue = vectorMultiply(
     otherBAssetsLockedAmountsUST,
-    otherBAssetsMaxLtvs,
+    otherBAssetsSafeLtvs,
   );
   const otherBAssetsCollateralsValueSum = sum(...otherBAssetsCollateralsValue);
 
-  // target_collateral_locked + (sum([other_collateral_locked] * [other_collateral_oracle_price] * [other_collateral_max_ltv]) - (loan_amount / avg([other_collateral_safe_ltv]))) / (target_collateral_max_ltv * target_collateral_oracle_price)
+  const targetCollateralSafeLtv = bAssetLtvs.get(collateralToken)!.safe;
+
+  // target_collateral_locked - (
+  //   (loan_amount - sum([other_collateral_locked] * [other_collateral_oracle_price] * [other_collateral_safe_ltv]))
+  //   /
+  //   (avg_safe_ltv * target_collateral_oracle_price)
+  // )
 
   const targetCollateralPrice = oraclePrices.prices.find(
     ({ asset }) => collateralToken === asset,
   )!.price;
 
-  const targetCollateralMaxLtv = bAssetLtvs.get(collateralToken)!.max;
+  const withdrawableAmount = big(targetCollateralLockedAmount).minus(
+    big(
+      big(marketBorrowerInfo.loan_amount).minus(
+        otherBAssetsCollateralsValueSum,
+      ),
+    ).div(big(targetCollateralSafeLtv).mul(targetCollateralPrice)),
+  );
 
-  return max(
-    big(targetCollateralLockedAmount).plus(
-      big(
-        otherBAssetsCollateralsValueSum.minus(
-          big(marketBorrowerInfo.loan_amount).div(avg(...otherBAssetsSafeLtvs)),
-        ),
-      ).div(big(targetCollateralMaxLtv).mul(targetCollateralPrice)),
-    ),
-    0,
-  ) as ubAsset<Big>;
+  return max(withdrawableAmount, 0) as ubAsset<Big>;
 }
