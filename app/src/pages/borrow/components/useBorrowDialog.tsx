@@ -97,8 +97,8 @@ function ComponentBase({
     data: {
       borrowRate,
       oraclePrice,
-      bLunaMaxLtv = '0.5' as Rate,
-      bLunaSafeLtv = '0.3' as Rate,
+      bLunaMaxLtv = '0.6' as Rate,
+      bLunaSafeLtv = '0.45' as Rate,
     } = fallbackBorrowMarket,
   } = useBorrowMarketQuery();
 

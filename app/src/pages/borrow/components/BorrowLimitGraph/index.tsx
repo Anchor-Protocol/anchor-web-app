@@ -155,7 +155,7 @@ export function BorrowLimitGraph({
           ? {
               position: 'top',
               label: `${formatRate(ltv)}%`,
-              color: ltv.gte(0.4)
+              color: ltv.gte(0.5)
                 ? theme.colors.negative
                 : ltv.gte(bLunaSafeLtv)
                 ? theme.colors.warning
