@@ -6,7 +6,7 @@ import {
   WasmQueryData,
 } from '@terra-money/webapp-fns';
 import big from 'big.js';
-import { ANCHOR_RATIO } from '../../env';
+import { ANCHOR_SAFE_RATIO } from '../../env';
 
 export interface BorrowMarketWasmQuery {
   marketState: WasmQuery<
@@ -123,7 +123,7 @@ export async function borrowMarketQuery({
   )?.max_ltv;
 
   const bLunaSafeLtv = bLunaMaxLtv
-    ? (big(bLunaMaxLtv).mul(ANCHOR_RATIO).toFixed() as Rate)
+    ? (big(bLunaMaxLtv).mul(ANCHOR_SAFE_RATIO).toFixed() as Rate)
     : undefined;
 
   return {
