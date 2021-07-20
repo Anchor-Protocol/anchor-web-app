@@ -95,8 +95,8 @@ function ComponentBase({
     data: {
       borrowRate,
       oraclePrice,
-      bLunaMaxLtv = '0.5' as Rate,
-      bLunaSafeLtv = '0.3' as Rate,
+      bLunaMaxLtv = '0.6' as Rate,
+      bLunaSafeLtv = '0.45' as Rate,
       marketState,
     } = fallbackBorrowMarket,
   } = useBorrowMarketQuery();
@@ -134,6 +134,10 @@ function ComponentBase({
     () => repayNextLtv(repayAmount, currentLtv, amountToLtv),
     [amountToLtv, currentLtv, repayAmount],
   );
+
+  const userMaxLtv = useMemo(() => {
+    return big(bLunaMaxLtv).minus(0.1) as Rate<BigSource>;
+  }, [bLunaMaxLtv]);
 
   const estimatedLiqPrice = useMemo(
     () => estimateLiquidationPrice(nextLtv, bLunaMaxLtv, oraclePrice),
@@ -311,7 +315,7 @@ function ComponentBase({
             disabled={!connectedWallet}
             maxLtv={bLunaMaxLtv}
             safeLtv={bLunaSafeLtv}
-            dangerLtv={0.4 as Rate<number>}
+            dangerLtv={userMaxLtv}
             currentLtv={currentLtv}
             nextLtv={nextLtv}
             userMinLtv={0 as Rate<BigSource>}
