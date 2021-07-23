@@ -6,6 +6,7 @@ import {
   demicrofy,
   formatANCInput,
   formatAUSTInput,
+  formatBAssetInput,
   formatLunaInput,
   formatUST,
   formatUSTInput,
@@ -141,6 +142,16 @@ function ComponentBase({
         cw20Address: cw20.bLuna,
       },
       {
+        label: 'bEth',
+        value: 'beth',
+        integerPoints: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
+        decimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
+        getWithdrawable: (bank: Bank) => bank.userBalances.ubEth,
+        getFormatWithdrawable: (bank: Bank) =>
+          formatBAssetInput(demicrofy(bank.userBalances.ubEth)),
+        cw20Address: cw20.bEth,
+      },
+      {
         label: 'ANC',
         value: 'anc',
         integerPoints: ANC_INPUT_MAXIMUM_INTEGER_POINTS,
@@ -151,7 +162,7 @@ function ComponentBase({
         cw20Address: cw20.ANC,
       },
     ],
-    [cw20.ANC, cw20.aUST, cw20.bLuna],
+    [cw20.ANC, cw20.aUST, cw20.bEth, cw20.bLuna],
   );
 
   // ---------------------------------------------

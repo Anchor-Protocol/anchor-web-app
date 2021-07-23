@@ -59,7 +59,7 @@ export type uToken<T = string> = T &
   NominalType<
     | 'uust'
     | 'uluna'
-    | 'ueth'
+    | 'ubeth'
     | 'uaust'
     | 'uanc'
     | 'ubluna'
