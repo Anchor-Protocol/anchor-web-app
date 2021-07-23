@@ -4,11 +4,30 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { UST, uUST } from '@anchor-protocol/types';
+import {
+  AnchorTax,
+  AnchorTokenBalances,
+  computeCollateralsTotalUST,
+  computeTotalDeposit,
+} from '@anchor-protocol/webapp-fns';
+import {
+  useAnchorWebapp,
+  useAncPriceQuery,
+  useBorrowBorrowerQuery,
+  useBorrowMarketQuery,
+  useEarnEpochStatesQuery,
+  useRewardsAncGovernanceRewardsQuery,
+  useRewardsAncUstLpRewardsQuery,
+} from '@anchor-protocol/webapp-provider';
 import { Send } from '@material-ui/icons';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { useBank } from '@terra-money/webapp-provider';
+import big, { Big, BigSource } from 'big.js';
 import { Sub } from 'components/Sub';
 import { fixHMR } from 'fix-hmr';
+import { computeHoldings } from 'pages/mypage/logics/computeHoldings';
+import { useRewards } from 'pages/mypage/logics/useRewards';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
@@ -31,25 +50,106 @@ const colors = [
 
 interface Item {
   label: string;
-  amount: uUST;
+  amount: uUST<BigSource>;
 }
 
-const data: Item[] = [
-  { label: 'UST', amount: '130494000' as uUST },
-  { label: 'Deposit', amount: '243512000' as uUST },
-  { label: 'Borrowing', amount: '722329000' as uUST },
-  { label: 'Holding', amount: '223395000' as uUST },
-  { label: 'Pool', amount: '1395000' as uUST },
-  { label: 'Farming', amount: '95595000' as uUST },
-  { label: 'Govern', amount: '94049000' as uUST },
-];
-
 function TotalValueBase({ className }: TotalValueProps) {
+  const { tokenBalances } = useBank<AnchorTokenBalances, AnchorTax>();
+
+  const { data: { moneyMarketEpochState } = {} } = useEarnEpochStatesQuery();
+
   const [openSend, sendElement] = useSendDialog();
+
+  const { total, ancUstLp } = useRewards();
+
+  const { data: { ancPrice } = {} } = useAncPriceQuery();
+
+  const { contractAddress } = useAnchorWebapp();
+
+  const { data: { userLPStakingInfo } = {} } = useRewardsAncUstLpRewardsQuery();
+
+  const { data: { userGovStakingInfo } = {} } =
+    useRewardsAncGovernanceRewardsQuery();
+
+  const { data: { oraclePrices } = {} } = useBorrowMarketQuery();
+
+  const { data: { marketBorrowerInfo, overseerCollaterals } = {} } =
+    useBorrowBorrowerQuery();
 
   const [focusedIndex, setFocusedIndex] = useState(-1);
 
   const { ref, width = 400 } = useResizeObserver();
+
+  const data = useMemo<Item[]>(() => {
+    return [
+      { label: 'UST', amount: tokenBalances.uUST },
+      {
+        label: 'Deposit',
+        amount: computeTotalDeposit(tokenBalances.uaUST, moneyMarketEpochState),
+      },
+      {
+        label: 'Borrowing',
+        amount:
+          overseerCollaterals && oraclePrices && marketBorrowerInfo && total
+            ? (computeCollateralsTotalUST(overseerCollaterals, oraclePrices)
+                .minus(marketBorrowerInfo.loan_amount)
+                .plus(total.rewardValue) as uUST<Big>)
+            : ('0' as uUST),
+      },
+      {
+        label: 'Holding',
+        amount: computeHoldings(
+          tokenBalances,
+          ancPrice,
+          contractAddress,
+          oraclePrices,
+        ),
+      },
+      {
+        label: 'Pool',
+        amount:
+          ancUstLp && ancPrice
+            ? (big(
+                big(ancUstLp.withdrawableAssets.anc).mul(ancPrice.ANCPrice),
+              ).plus(ancUstLp.withdrawableAssets.ust) as uUST<Big>)
+            : ('0' as uUST),
+      },
+      {
+        label: 'Farming',
+        amount:
+          userLPStakingInfo && ancPrice && userGovStakingInfo
+            ? (big(
+                big(ancPrice.USTPoolSize)
+                  .mul(userGovStakingInfo.balance)
+                  .div(ancPrice.LPShare),
+              )
+                .mul(2)
+                .plus(userLPStakingInfo.pending_reward) as uUST<Big>)
+            : ('0' as uUST),
+      },
+      {
+        label: 'Govern',
+        amount:
+          userGovStakingInfo && ancPrice
+            ? (big(userGovStakingInfo.balance).mul(
+                ancPrice.ANCPrice,
+              ) as uUST<Big>)
+            : ('0' as uUST),
+      },
+    ];
+  }, [
+    ancPrice,
+    ancUstLp,
+    contractAddress,
+    marketBorrowerInfo,
+    moneyMarketEpochState,
+    oraclePrices,
+    overseerCollaterals,
+    tokenBalances,
+    total,
+    userGovStakingInfo,
+    userLPStakingInfo,
+  ]);
 
   const isSmallLayout = useMemo(() => {
     return width < 470;
@@ -61,7 +161,7 @@ function TotalValueBase({ className }: TotalValueProps) {
       value: +amount,
       color: colors[i % colors.length],
     }));
-  }, []);
+  }, [data]);
 
   return (
     <Section className={className} data-small-layout={isSmallLayout}>

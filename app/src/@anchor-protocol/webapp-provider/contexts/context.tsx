@@ -3,7 +3,7 @@ import {
   AddressProvider,
   AddressProviderFromJson,
 } from '@anchor-protocol/anchor.js';
-import { ContractAddress } from '@anchor-protocol/types';
+import { ContractAddress, CW20Addr } from '@anchor-protocol/types';
 import {
   AnchorContants,
   createAnchorContractAddress,
@@ -31,6 +31,7 @@ export interface AnchorWebapp {
   addressProvider: AddressProvider;
   contractAddress: ContractAddress;
   constants: AnchorContants;
+  bAssetsVector: CW20Addr[];
 }
 
 const AnchorWebappContext: Context<AnchorWebapp> =
@@ -65,24 +66,26 @@ export function AnchorWebappProvider({
     };
   }, [contractAddressMaps]);
 
-  const states = useMemo<AnchorWebapp>(
-    () => ({
+  const states = useMemo<AnchorWebapp>(() => {
+    const contractAddress =
+      contractAddresses[network.name] ?? contractAddresses['mainnet'];
+
+    return {
       contractAddressMap:
         contractAddressMaps[network.name] ?? contractAddressMaps['mainnet'],
       addressProvider:
         addressProviders[network.name] ?? addressProviders['mainnet'],
-      contractAddress:
-        contractAddresses[network.name] ?? contractAddresses['mainnet'],
+      contractAddress,
       constants: constants[network.name] ?? constants['mainnet'],
-    }),
-    [
-      addressProviders,
-      contractAddressMaps,
-      contractAddresses,
-      network.name,
-      constants,
-    ],
-  );
+      bAssetsVector: [contractAddress.cw20.bEth, contractAddress.cw20.bLuna],
+    };
+  }, [
+    addressProviders,
+    contractAddressMaps,
+    contractAddresses,
+    network.name,
+    constants,
+  ]);
 
   return (
     <AnchorWebappContext.Provider value={states}>
