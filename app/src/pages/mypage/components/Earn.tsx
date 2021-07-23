@@ -87,7 +87,7 @@ function EarnBase({ className }: EarnProps) {
         </colgroup>
         <thead>
           <tr>
-            <th>Stable Coin</th>
+            <th>Stablecoin</th>
             <th>APY</th>
             <th>Deposit Amount</th>
             <th>Actions</th>
