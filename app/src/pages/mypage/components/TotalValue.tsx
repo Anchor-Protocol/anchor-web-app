@@ -21,6 +21,8 @@ import {
 } from '@anchor-protocol/webapp-provider';
 import { Send } from '@material-ui/icons';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { useBank } from '@terra-money/webapp-provider';
 import big, { Big, BigSource } from 'big.js';
@@ -50,6 +52,7 @@ const colors = [
 
 interface Item {
   label: string;
+  tooltip: string;
   amount: uUST<BigSource>;
 }
 
@@ -82,13 +85,20 @@ function TotalValueBase({ className }: TotalValueProps) {
 
   const data = useMemo<Item[]>(() => {
     return [
-      { label: 'UST', amount: tokenBalances.uUST },
+      {
+        label: 'UST',
+        tooltip: 'Total amount of UST held',
+        amount: tokenBalances.uUST,
+      },
       {
         label: 'Deposit',
+        tooltip: 'Total amount of UST deposited and interest generated',
         amount: computeTotalDeposit(tokenBalances.uaUST, moneyMarketEpochState),
       },
       {
         label: 'Borrowing',
+        tooltip:
+          'Total value of collateral value and pending rewards minus loan amount',
         amount:
           overseerCollaterals && oraclePrices && marketBorrowerInfo && total
             ? (computeCollateralsTotalUST(overseerCollaterals, oraclePrices)
@@ -97,7 +107,8 @@ function TotalValueBase({ className }: TotalValueProps) {
             : ('0' as uUST),
       },
       {
-        label: 'Holding',
+        label: 'Holdings',
+        tooltip: 'Total value of ANC and bAssets held',
         amount: computeHoldings(
           tokenBalances,
           ancPrice,
@@ -107,6 +118,7 @@ function TotalValueBase({ className }: TotalValueProps) {
       },
       {
         label: 'Pool',
+        tooltip: 'Total value of ANC and UST withdrawable from liquidity pools',
         amount:
           ancUstLp && ancPrice
             ? (big(
@@ -116,6 +128,7 @@ function TotalValueBase({ className }: TotalValueProps) {
       },
       {
         label: 'Farming',
+        tooltip: 'Total value of ANC LP tokens staked and pending rewards',
         amount:
           userLPStakingInfo && ancPrice && userGovStakingInfo
             ? (big(
@@ -129,6 +142,7 @@ function TotalValueBase({ className }: TotalValueProps) {
       },
       {
         label: 'Govern',
+        tooltip: 'Total value of staked ANC and unclaimed voting rewards',
         amount:
           userGovStakingInfo && ancPrice
             ? (big(userGovStakingInfo.balance).mul(
@@ -167,7 +181,15 @@ function TotalValueBase({ className }: TotalValueProps) {
     <Section className={className} data-small-layout={isSmallLayout}>
       <header ref={ref}>
         <div>
-          <h4>Total Value</h4>
+          <h4>
+            <IconSpan>
+              Total Value{' '}
+              <InfoTooltip>
+                Total value of deposits, borrowing, holdings, withdrawable
+                liquidity, rewards, staked ANC, and UST held
+              </InfoTooltip>
+            </IconSpan>
+          </h4>
           <p>
             <AnimateNumber format={formatUSTWithPostfixUnits}>
               {93238.03 as UST<number>}
@@ -185,14 +207,18 @@ function TotalValueBase({ className }: TotalValueProps) {
 
       <div className="values">
         <ul>
-          {data.map(({ label, amount }, i) => (
+          {data.map(({ label, tooltip, amount }, i) => (
             <li
               key={label}
               style={{ color: colors[i] }}
               data-focus={i === focusedIndex}
             >
               <i />
-              <p>{label}</p>
+              <p>
+                <IconSpan>
+                  {label} <InfoTooltip>{tooltip}</InfoTooltip>
+                </IconSpan>
+              </p>
               <p>{formatUSTWithPostfixUnits(demicrofy(amount))} UST</p>
             </li>
           ))}

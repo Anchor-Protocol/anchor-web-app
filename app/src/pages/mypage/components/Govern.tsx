@@ -1,6 +1,8 @@
 import { demicrofy, formatANC } from '@anchor-protocol/notation';
 import { useGovMyPollsQuery } from '@anchor-protocol/webapp-provider';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { fixHMR } from 'fix-hmr';
 import { Link } from 'react-router-dom';
@@ -31,8 +33,22 @@ function GovernBase({ className }: GovernProps) {
               <br />
               Poll ID
             </th>
-            <th>Vote</th>
-            <th>Vote ANC</th>
+            <th>
+              <IconSpan>
+                Vote{' '}
+                <InfoTooltip>
+                  User’s vote history on proposals in progress
+                </InfoTooltip>
+              </IconSpan>
+            </th>
+            <th>
+              <IconSpan>
+                Vote ANC{' '}
+                <InfoTooltip>
+                  Amount of staked ANC used as voting power
+                </InfoTooltip>
+              </IconSpan>
+            </th>
             <th>Actions</th>
           </tr>
         </thead>

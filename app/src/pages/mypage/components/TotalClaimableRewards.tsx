@@ -7,6 +7,8 @@ import {
 } from '@anchor-protocol/notation';
 import { ANC, UST } from '@anchor-protocol/types';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { Sub } from 'components/Sub';
 import { fixHMR } from 'fix-hmr';
@@ -25,7 +27,14 @@ function TotalClaimableRewardsBase({ className }: TotalClaimableRewardsProps) {
   return (
     <Section className={className}>
       <header>
-        <h4>Total Claimable Rewards</h4>
+        <h4>
+          <IconSpan>
+            Total Claimable Rewards{' '}
+            <InfoTooltip>
+              Total number of claimable ANC from UST Borrow and LP staking
+            </InfoTooltip>
+          </IconSpan>
+        </h4>
         <p>
           <AnimateNumber format={formatANCWithPostfixUnits}>
             {total?.reward ? demicrofy(total.reward) : (0 as ANC<number>)}

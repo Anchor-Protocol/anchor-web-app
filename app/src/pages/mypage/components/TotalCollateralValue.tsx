@@ -14,6 +14,8 @@ import {
   vectorizeOverseerCollaterals,
 } from '@anchor-protocol/webapp-provider';
 import { sum, vectorMultiply } from '@terra-dev/big-math';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import big, { Big } from 'big.js';
 import { Sub } from 'components/Sub';
@@ -95,7 +97,14 @@ function TotalCollateralValueBase({ className }: TotalCollateralValueProps) {
   return (
     <Section className={className}>
       <header ref={ref}>
-        <h4>Total Collateral Value</h4>
+        <h4>
+          <IconSpan>
+            Total Collateral Value{' '}
+            <InfoTooltip>
+              The total value of bAsset collaterals locked in Anchor
+            </InfoTooltip>
+          </IconSpan>
+        </h4>
         <p>
           <AnimateNumber format={formatUSTWithPostfixUnits}>
             {demicrofy(total)}

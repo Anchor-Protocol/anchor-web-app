@@ -5,6 +5,8 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
+import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { Sub } from 'components/Sub';
 import { fixHMR } from 'fix-hmr';
@@ -33,7 +35,12 @@ function BorrowedValueBase({ className }: BorrowedValueProps) {
     <Section className={className} data-small-layout={isSmallLayout}>
       <header ref={ref}>
         <div>
-          <h4>Borrowed Value</h4>
+          <h4>
+            <IconSpan>
+              Borrowed Value{' '}
+              <InfoTooltip>The total value borrowed from Anchor</InfoTooltip>
+            </IconSpan>
+          </h4>
           <p>
             <AnimateNumber format={formatUSTWithPostfixUnits}>
               {demicrofy(borrowedValue)}
@@ -49,7 +56,16 @@ function BorrowedValueBase({ className }: BorrowedValueProps) {
       </header>
 
       <div className="net-apr">
-        <h5>Net APR</h5>
+        <h5>
+          <IconSpan>
+            Net APR{' '}
+            <InfoTooltip>
+              Distribution APR - Borrow APR. When the net APR is a positive
+              number, ANC rewards distributed to borrowers are greater than the
+              interest to be paid for the loan
+            </InfoTooltip>
+          </IconSpan>
+        </h5>
         <p>{formatRate(netAPR)}%</p>
       </div>
 
