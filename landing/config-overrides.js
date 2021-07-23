@@ -34,7 +34,7 @@ module.exports = {
     return config;
   },
   jest: (config) => {
-    config.modulePaths.push('<rootDir>/src/', '<rootDir>/../packages/src/');
+    config.modulePaths.push('<rootDir>/src/', '<rootDir>/../app/src/');
 
     return config;
   },
