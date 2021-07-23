@@ -15,3 +15,13 @@ export function getMsgTitle(
 
   return 'TEXT';
 }
+
+export function isRegisterCollateralAttribute(
+  msgs: anchorToken.gov.ParsedExecuteMsg[],
+): boolean {
+  return (
+    msgs.length === 2 &&
+    msgs.some(({ msg }) => 'whitelist' in msg) &&
+    msgs.some(({ msg }) => 'register_feeder' in msg)
+  );
+}

@@ -12,7 +12,6 @@ describe('queries/withdrawable', () => {
       unbondedRequests,
       unbondedRequestsStartFrom,
       withdrawableUnbonded,
-      parameters,
       allHistory,
     } = await bondWithdrawableAmountQuery({
       mantleFetch: defaultMantleFetch,
@@ -56,7 +55,6 @@ describe('queries/withdrawable', () => {
     expect(Array.isArray(unbondedRequests.requests)).toBeTruthy();
     expect(typeof unbondedRequestsStartFrom).toBe('number');
     expect(withdrawableUnbonded).not.toBeUndefined();
-    expect(parameters).not.toBeUndefined();
     expect(Array.isArray(allHistory.history)).toBeTruthy();
   });
 });

@@ -27,7 +27,7 @@ export function JobsProvider({ children }: JobsProviderProps) {
     ratio: number;
   }>('__anchor_jobs_liquidation_alert__', () => ({
     enabled: false,
-    ratio: 0.45,
+    ratio: 0.5,
   }));
 
   useLiquidationAlert(liquidationAlert);

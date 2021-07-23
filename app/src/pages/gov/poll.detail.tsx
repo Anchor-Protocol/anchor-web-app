@@ -434,6 +434,7 @@ export const PollDetail = styled(PollDetailBase)`
     .content {
       .content-title {
         flex-direction: column;
+        align-items: flex-start;
 
         .MuiButtonBase-root {
           margin-top: 16px;

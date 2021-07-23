@@ -130,9 +130,9 @@ export function PollCreateBase({
 
       const executeMsgs = onCreateMsgs();
 
-      if (executeMsgs && executeMsgs.length !== 1) {
-        return;
-      }
+      //if (executeMsgs && executeMsgs.length !== 1) {
+      //  return;
+      //}
 
       createPoll({
         amount,

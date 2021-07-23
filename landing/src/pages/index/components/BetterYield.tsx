@@ -60,8 +60,8 @@ function BetterYieldBase({ className }: BetterYieldProps) {
           better yield
         </h2>
         <p>
-          Anchor yields stable and attractive - powered by staking returns from
-          multiple Proof of Stake blockchains.
+          Anchor's yield is stable and attractive - powered by staking returns
+          from multiple Proof of Stake blockchains.
           <br />
           <a href={links.betterYield} target="_blank" rel="noreferrer">
             Learn more <CircleArrowRight />

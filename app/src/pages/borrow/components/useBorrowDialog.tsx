@@ -17,7 +17,6 @@ import {
 } from '@anchor-protocol/webapp-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { min } from '@terra-dev/big-math';
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
@@ -98,8 +97,8 @@ function ComponentBase({
     data: {
       borrowRate,
       oraclePrice,
-      bLunaMaxLtv = '0.5' as Rate,
-      bLunaSafeLtv = '0.3' as Rate,
+      bLunaMaxLtv = '0.6' as Rate,
+      bLunaSafeLtv = '0.45' as Rate,
     } = fallbackBorrowMarket,
   } = useBorrowMarketQuery();
 
@@ -142,7 +141,7 @@ function ComponentBase({
   );
 
   const userMaxLtv = useMemo(() => {
-    return min(bLunaMaxLtv, big(0.4)) as Rate<BigSource>;
+    return big(bLunaMaxLtv).minus(0.1) as Rate<BigSource>;
   }, [bLunaMaxLtv]);
 
   const apr = useMemo(
@@ -188,10 +187,10 @@ function ComponentBase({
   );
 
   const invalidOver40Ltv = useMemo(() => {
-    return nextLtv?.gt(0.4)
-      ? 'Cannot borrow when LTV is above 40%.'
+    return nextLtv?.gt(userMaxLtv)
+      ? `Cannot borrow when LTV is above ${formatRate(userMaxLtv)}%.`
       : undefined;
-  }, [nextLtv]);
+  }, [nextLtv, userMaxLtv]);
 
   const invalidOverSafeLtv = useMemo(() => {
     return nextLtv?.gt(bLunaSafeLtv)
@@ -333,7 +332,7 @@ function ComponentBase({
             disabled={!connectedWallet || max.lte(0)}
             maxLtv={bLunaMaxLtv}
             safeLtv={bLunaSafeLtv}
-            dangerLtv={0.4 as Rate<number>}
+            dangerLtv={userMaxLtv}
             currentLtv={currentLtv}
             nextLtv={nextLtv}
             userMinLtv={currentLtv}
@@ -356,10 +355,10 @@ function ComponentBase({
             hide={{ id: 'borrow-ltv', period: 1000 * 60 * 60 * 24 * 5 }}
             style={{ userSelect: 'none', fontSize: 12 }}
           >
-            Caution: Borrowing is available only up to 40% LTV. If the
-            loan-to-value ratio (LTV) reaches the maximum (50% LTV), a portion
-            of your collateral may be immediately liquidated to repay part of
-            the loan.
+            Caution: Borrowing is available only up to {formatRate(userMaxLtv)}%
+            LTV. If the loan-to-value ratio (LTV) reaches the maximum (
+            {formatRate(bLunaMaxLtv)}% LTV), a portion of your collateral may be
+            immediately liquidated to repay part of the loan.
           </MessageBox>
         )}
 

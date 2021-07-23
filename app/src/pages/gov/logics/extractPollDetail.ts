@@ -1,7 +1,7 @@
 import { formatRate } from '@anchor-protocol/notation';
 import { anchorToken, cw20, Rate, uANC } from '@anchor-protocol/types';
 import big from 'big.js';
-import { getMsgTitle } from './getMsgTitle';
+import { getMsgTitle, isRegisterCollateralAttribute } from './getMsgTitle';
 
 export interface PollDetail {
   poll: anchorToken.gov.PollResponse;
@@ -84,7 +84,9 @@ export function extractPollDetail(
       };
     });
 
-    if (poll.execute_data.length > 1) {
+    if (isRegisterCollateralAttribute(msgs)) {
+      type = 'Register Collateral Attributes';
+    } else if (poll.execute_data.length > 1) {
       type = 'Multiple Execute';
     } else if (poll.execute_data.length === 1) {
       type = getMsgTitle(msgs[0]);
