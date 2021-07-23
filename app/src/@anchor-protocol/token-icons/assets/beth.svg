@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="60px" height="60px" viewBox="0 0 60 60" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>beth</title>
+    <g id="GNB" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Market" transform="translate(-160.000000, -1207.000000)">
+            <g id="beth" transform="translate(160.000000, 1207.000000)">
+                <rect id="thum-copy" opacity="0.200000003" x="0" y="0" width="60" height="60"></rect>
+                <path d="M30,53 C43.2548437,53 54,50.7614445 54,48.0000469 L54,44.0000281 L44.4023438,44.0000281 C40.3907812,43.3720926 35.4039375,43 30,43 C24.5960625,43 19.6092188,43.3720926 15.5976562,44.0000281 L6,44.0000281 L6,48.0000469 C6,48.0000469 6,48.0000469 6,48.0000469 C6,50.7614445 16.7451563,53 30,53 Z" id="Path" fill="#7AD162" fill-rule="nonzero"></path>
+                <ellipse id="Oval" fill="#2C581A" fill-rule="nonzero" cx="30" cy="44" rx="24" ry="5"></ellipse>
+                <path d="M17.3322251,44 L41.6677749,44 C46.7221225,40.2665032 50,34.2660395 50,27.5000139 C50,16.1781172 40.821868,7 29.5000469,7 C18.178132,7 9,16.1781172 9,27.5000139 C9,34.2660395 12.2778775,40.2665032 17.3322251,44 Z" id="Path" fill="#010101" fill-rule="nonzero"></path>
+                <path d="M21.7967422,25 L21.5727424,25.356579 C19.0461573,29.3788474 19.6104573,34.6466259 22.9293682,38.0214493 C24.8818625,40.0068966 27.4408398,40.9997151 30,41 C30,41 30,41 21.7967422,25 Z" id="Path" fill="#4BDB4B" fill-rule="nonzero"></path>
+                <path d="M30,29.8627693 L21,25 C30,41 30,41 30,41 C30,37.5153065 30,33.5222862 30,29.8627693 Z" id="Path" fill="#4BDB4B" fill-rule="nonzero" opacity="0.6"></path>
+                <path d="M38.2032414,25 L38.4272432,25.356579 C40.9538514,29.3788474 40.3895463,34.6466259 37.070605,38.0214493 C35.1180928,40.0068966 32.5590921,40.9997151 30,41 C30,41 30,41 38.2032414,25 Z" id="Path" fill="#4BDB4B" fill-rule="nonzero" opacity="0.6"></path>
+                <path d="M30,29.8627693 L39,25 C30,41 30,41 30,41 C30,37.5153065 30,33.5222862 30,29.8627693 Z" id="Path" fill="#4BDB4B" fill-rule="nonzero" opacity="0.2"></path>
+                <polygon id="Path" fill="#4BDB4B" fill-rule="nonzero" opacity="0.2" points="30 20 30 29 37 24.5029042"></polygon>
+                <polygon id="Path" fill="#4BDB4B" fill-rule="nonzero" opacity="0.6" points="30 20 23 24.5028023 30 29"></polygon>
+                <polygon id="Path" fill="#4BDB4B" fill-rule="nonzero" points="30 13 23 24 30 19.8864415"></polygon>
+                <polygon id="Path" fill="#4BDB4B" fill-rule="nonzero" opacity="0.6" points="30 19.8883612 37 24 30 13"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

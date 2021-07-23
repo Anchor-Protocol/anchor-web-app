@@ -1,4 +1,3 @@
-import { TokenIcon } from '@anchor-protocol/token-icons';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { PageTitle } from 'components/primitives/PageTitle';
 import { links, screen } from 'env';
@@ -16,14 +15,7 @@ function BorrowBase({ className }: BorrowProps) {
   return (
     <PaddedLayout className={className}>
       <div className="market">
-        <PageTitle
-          title={
-            <>
-              <TokenIcon token="ust" /> UST
-            </>
-          }
-          docs={links.docs.borrow}
-        />
+        <PageTitle title="BORROW" docs={links.docs.borrow} />
         <div className="loan-buttons">
           <LoanButtons />
         </div>

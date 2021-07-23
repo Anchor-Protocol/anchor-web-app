@@ -68,7 +68,11 @@ export function CollateralList({ className }: CollateralListProps) {
         );
 
         return {
-          icon: <TokenIcon token="bluna" />,
+          icon: (
+            <TokenIcon
+              token={symbol.toLowerCase() === 'beth' ? 'beth' : 'bluna'}
+            />
+          ),
           token: collateral_token,
           name,
           symbol: prettifyBAssetSymbol(symbol),

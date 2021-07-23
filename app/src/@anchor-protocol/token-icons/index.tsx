@@ -5,7 +5,15 @@ import anc160gif from './assets/anc@160.gif';
 
 export { anc80gif, anc160gif };
 
-export const tokens = ['ust', 'krt', 'aust', 'akrt', 'luna', 'bluna'] as const;
+export const tokens = [
+  'ust',
+  'krt',
+  'aust',
+  'akrt',
+  'luna',
+  'bluna',
+  'beth',
+] as const;
 export const variants = ['svg', '@2x', '@3x', '@4x'] as const;
 
 export type Tokens = typeof tokens[number];
@@ -62,6 +70,12 @@ export const tokenImages: Record<Tokens, Record<IconVariant, TokenImage>> = {
     '@2x': convert(require('./assets/bluna@2x.png')),
     '@3x': convert(require('./assets/bluna@3x.png')),
     '@4x': convert(require('./assets/bluna@4x.png')),
+  },
+  beth: {
+    'svg': convert(require('./assets/beth.svg')),
+    '@2x': convert(require('./assets/beth@2x.png')),
+    '@3x': convert(require('./assets/beth@3x.png')),
+    '@4x': convert(require('./assets/beth@4x.png')),
   },
 };
 
