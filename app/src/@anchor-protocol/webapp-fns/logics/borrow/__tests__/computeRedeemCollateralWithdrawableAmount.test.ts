@@ -109,7 +109,7 @@ test('computeRedeemCollateralWithdrawableAmount()', () => {
         { safe: '0.45', max: '0.6' },
       ],
     ] as any),
-  ).toNumber();
+  ).withdrawableAmount.toNumber();
 
   //expect(bLunaWithdrawableComputed).toBeCloseTo(+bLunaWithdrawable, 3);
 
@@ -128,7 +128,7 @@ test('computeRedeemCollateralWithdrawableAmount()', () => {
         { safe: '0.45', max: '0.6' },
       ],
     ] as any),
-  ).toNumber();
+  ).withdrawableAmount.toNumber();
 
   //expect(bEthWithdrawableComputed).toBeCloseTo(+bEthWithdrawable, 3);
 
