@@ -114,7 +114,9 @@ export namespace anchorToken {
       | moneyMarket.market.UpdateConfig
       | moneyMarket.interestModel.UpdateConfig
       | moneyMarket.distributionModel.UpdateConfig
-      | anchorToken.community.Spend;
+      | anchorToken.community.Spend
+      | moneyMarket.overseer.RegisterWhitelist
+      | moneyMarket.oracle.RegisterFeeder;
 
     /**
      * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/anchor-token/gov#poll

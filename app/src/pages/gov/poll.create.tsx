@@ -51,6 +51,12 @@ function PollCreateBase({ className }: PollCreateProps) {
           />
 
           <PollLink
+            to={`/poll/create/register-collateral-attributes`}
+            title="Register Collateral Attributes"
+            description="Register a bAsset as collateral"
+          />
+
+          <PollLink
             to={`/poll/create/text-proposal`}
             title="Text Proposal"
             description="Upload a text poll"

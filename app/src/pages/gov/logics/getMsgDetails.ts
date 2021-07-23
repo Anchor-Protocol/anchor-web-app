@@ -1,6 +1,10 @@
-import { demicrofy, formatANC } from '@anchor-protocol/notation';
-import { anchorToken, ContractAddress } from '@anchor-protocol/types';
-import { AccountLink } from 'components/links/AccountLink';
+import { demicrofy, formatANC, formatRate } from '@anchor-protocol/notation';
+import {
+  anchorToken,
+  ContractAddress,
+  moneyMarket,
+} from '@anchor-protocol/types';
+import { AccountLink } from 'components/AccountLink';
 import { createElement, ReactNode } from 'react';
 
 export function getMsgDetails(
@@ -22,6 +26,58 @@ export function getMsgDetails(
         {
           name: 'Amount',
           value: formatANC(demicrofy(communitySpend.spend.amount)) + ' ANC',
+        },
+      ];
+    } else if (
+      msg.contract === address.moneyMarket.overseer &&
+      'whitelist' in msg.msg
+    ) {
+      const registerWhitelist: moneyMarket.overseer.RegisterWhitelist = msg.msg;
+
+      return [
+        {
+          name: 'Collateral Name',
+          value: registerWhitelist.whitelist.name,
+        },
+        {
+          name: 'Symbol',
+          value: registerWhitelist.whitelist.symbol,
+        },
+        {
+          name: 'Token Contract Address',
+          value: createElement(AccountLink, {
+            address: registerWhitelist.whitelist.collateral_token,
+          }),
+        },
+        {
+          name: 'Custody Contract Address',
+          value: createElement(AccountLink, {
+            address: registerWhitelist.whitelist.custody_contract,
+          }),
+        },
+        {
+          name: 'Max LTV',
+          value: formatRate(registerWhitelist.whitelist.max_ltv) + '%',
+        },
+      ];
+    } else if (
+      msg.contract === address.moneyMarket.oracle &&
+      'register_feeder' in msg.msg
+    ) {
+      const registerFeeder: moneyMarket.oracle.RegisterFeeder = msg.msg;
+
+      return [
+        {
+          name: 'Asset',
+          value: createElement(AccountLink, {
+            address: registerFeeder.register_feeder.asset,
+          }),
+        },
+        {
+          name: 'Feeder',
+          value: createElement(AccountLink, {
+            address: registerFeeder.register_feeder.feeder,
+          }),
         },
       ];
     }

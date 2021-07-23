@@ -339,6 +339,13 @@ export namespace moneyMarket {
         last_updated_time: number;
       }>;
     }
+
+    export interface RegisterFeeder {
+      register_feeder: {
+        asset: CW20Addr;
+        feeder: HumanAddr;
+      };
+    }
   }
 
   export namespace overseer {
@@ -497,6 +504,19 @@ export namespace moneyMarket {
         custody_contract: HumanAddr;
         collateral_token: CW20Addr;
       }>;
+    }
+
+    /**
+     * @see https://docs.anchorprotocol.com/smart-contracts/money-market/overseer#whitelist
+     */
+    export interface RegisterWhitelist {
+      whitelist: {
+        name: string;
+        symbol: string;
+        collateral_token: CW20Addr;
+        custody_contract: HumanAddr;
+        max_ltv: Rate;
+      };
     }
   }
 }
