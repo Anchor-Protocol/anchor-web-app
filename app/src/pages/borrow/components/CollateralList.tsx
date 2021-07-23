@@ -32,7 +32,7 @@ interface CollateralInfo {
   name: string;
   symbol: string;
   price: UST;
-  liquidationPrice: UST;
+  liquidationPrice: UST | undefined;
   lockedAmount: ubAsset;
   lockedAmountInUST: uUST<BigSource>;
 }
@@ -77,14 +77,18 @@ export function CollateralList({ className }: CollateralListProps) {
           name,
           symbol: prettifyBAssetSymbol(symbol),
           price: oracle?.price ?? ('0' as UST),
-          liquidationPrice: computeLiquidationPrice(
-            collateral_token,
-            borrowBorrower.marketBorrowerInfo,
-            borrowBorrower.overseerBorrowLimit,
-            borrowBorrower.overseerCollaterals,
-            borrowMarket.overseerWhitelist,
-            borrowMarket.oraclePrices,
-          ),
+          liquidationPrice:
+            borrowBorrower.overseerCollaterals.collaterals.length === 1 &&
+            collateral
+              ? computeLiquidationPrice(
+                  collateral_token,
+                  borrowBorrower.marketBorrowerInfo,
+                  borrowBorrower.overseerBorrowLimit,
+                  borrowBorrower.overseerCollaterals,
+                  borrowMarket.overseerWhitelist,
+                  borrowMarket.oraclePrices,
+                )
+              : undefined,
           lockedAmount: collateral?.[1] ?? ('0' as ubAsset),
           lockedAmountInUST: big(collateral?.[1] ?? 0).mul(
             oracle?.price ?? 1,
@@ -155,7 +159,8 @@ export function CollateralList({ className }: CollateralListProps) {
                     {formatUSTWithPostfixUnits(price)} UST
                   </div>
                   <p className="volatility">
-                    {formatUSTWithPostfixUnits(liquidationPrice)} UST
+                    {liquidationPrice &&
+                      formatUSTWithPostfixUnits(liquidationPrice) + ' UST'}
                   </p>
                 </td>
                 <td>
