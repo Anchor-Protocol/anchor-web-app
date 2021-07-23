@@ -185,7 +185,7 @@ function ComponentBase({
     [amountToLtv, currentLtv, redeemAmount],
   );
 
-  const withdrawableAmount = useMemo(
+  const { withdrawableAmount, withdrawableMaxAmount } = useMemo(
     () =>
       computeRedeemCollateralWithdrawableAmount(
         collateralToken,
@@ -227,8 +227,8 @@ function ComponentBase({
   );
 
   const invalidRedeemAmount = useMemo(
-    () => validateRedeemAmount(redeemAmount, withdrawableAmount),
-    [redeemAmount, withdrawableAmount],
+    () => validateRedeemAmount(redeemAmount, withdrawableMaxAmount),
+    [redeemAmount, withdrawableMaxAmount],
   );
 
   // ---------------------------------------------
