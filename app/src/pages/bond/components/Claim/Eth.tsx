@@ -1,10 +1,11 @@
 import { COLLATERAL_DENOMS } from '@anchor-protocol/anchor.js';
 import { demicrofy, formatUST } from '@anchor-protocol/notation';
+import { uUST } from '@anchor-protocol/types';
 import {
   AnchorTax,
   AnchorTokenBalances,
   useAnchorWebapp,
-  useBondClaimableRewards,
+  useBondBEthClaimableRewards,
   useBondClaimTx,
   validateTxFee,
 } from '@anchor-protocol/webapp-provider';
@@ -14,13 +15,13 @@ import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from '@terra-money/webapp-provider';
+import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { fixHMR } from 'fix-hmr';
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
-import { claimableRewards as _claimableRewards } from '../../logics/claimableRewards';
 import { RewardLayout } from './RewardLayout';
 
 export interface ClaimEthProps {
@@ -44,8 +45,7 @@ function ClaimEthBase({ className }: ClaimEthProps) {
   // ---------------------------------------------
   const { tokenBalances } = useBank<AnchorTokenBalances, AnchorTax>();
 
-  const { data: { rewardState, claimableReward } = {} } =
-    useBondClaimableRewards(COLLATERAL_DENOMS.UBETH);
+  const { data: { claimableReward } = {} } = useBondBEthClaimableRewards();
 
   // ---------------------------------------------
   // logics
@@ -56,8 +56,8 @@ function ClaimEthBase({ className }: ClaimEthProps) {
   );
 
   const claimableRewards = useMemo(
-    () => _claimableRewards(claimableReward, rewardState),
-    [claimableReward, rewardState],
+    () => big(claimableReward?.rewards ?? 0) as uUST<Big>,
+    [claimableReward],
   );
 
   // ---------------------------------------------
