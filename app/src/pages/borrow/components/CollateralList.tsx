@@ -54,7 +54,7 @@ export function CollateralList({ className }: CollateralListProps) {
     useRedeemCollateralDialog();
 
   const collaterals = useMemo<CollateralInfo[]>(() => {
-    if (!borrowMarket || !borrowBorrower) {
+    if (!borrowMarket) {
       return [];
     }
 
@@ -63,7 +63,7 @@ export function CollateralList({ className }: CollateralListProps) {
         const oracle = borrowMarket.oraclePrices.prices.find(
           ({ asset }) => collateral_token === asset,
         );
-        const collateral = borrowBorrower.overseerCollaterals.collaterals.find(
+        const collateral = borrowBorrower?.overseerCollaterals.collaterals.find(
           ([collateralToken]) => collateral_token === collateralToken,
         );
 
@@ -78,6 +78,7 @@ export function CollateralList({ className }: CollateralListProps) {
           symbol: prettifyBAssetSymbol(symbol),
           price: oracle?.price ?? ('0' as UST),
           liquidationPrice:
+            borrowBorrower &&
             borrowBorrower.overseerCollaterals.collaterals.length === 1 &&
             collateral
               ? computeLiquidationPrice(
