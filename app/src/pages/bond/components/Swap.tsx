@@ -60,8 +60,8 @@ interface Item {
   value: string;
 }
 
-const burnCurrencies: Item[] = [{ label: 'bLuna', value: 'bluna' }];
-const getCurrencies: Item[] = [{ label: 'Luna', value: 'luna' }];
+const burnCurrencies: Item[] = [{ label: 'bLUNA', value: 'bluna' }];
+const getCurrencies: Item[] = [{ label: 'LUNA', value: 'luna' }];
 
 export function Swap() {
   // ---------------------------------------------
@@ -416,8 +416,8 @@ export function Swap() {
         <TxFeeList className="receipt">
           <SwapListItem
             label="Price"
-            currencyA="Luna"
-            currencyB="bLuna"
+            currencyA="LUNA"
+            currencyB="bLUNA"
             exchangeRateAB={simulation.beliefPrice}
             initialDirection="a/b"
             formatExchangeRate={(price) =>
@@ -429,10 +429,10 @@ export function Swap() {
             }
           />
           <TxFeeListItem label="Minimum Received">
-            {formatLuna(demicrofy(simulation.minimumReceived))} Luna
+            {formatLuna(demicrofy(simulation.minimumReceived))} LUNA
           </TxFeeListItem>
           <TxFeeListItem label="Trading Fee">
-            {formatLuna(demicrofy(simulation.swapFee))} Luna
+            {formatLuna(demicrofy(simulation.swapFee))} LUNA
           </TxFeeListItem>
           <TxFeeListItem label="Tx Fee">
             {formatUST(demicrofy(fixedGas))} UST

@@ -70,7 +70,7 @@ export function bondWithdrawTx(
             !!unbondedAmount && {
               name: 'Unbonded Amount',
               value:
-                formatLuna(demicrofy(stripULuna(unbondedAmount))) + ' Luna',
+                formatLuna(demicrofy(stripULuna(unbondedAmount))) + ' LUNA',
             },
             helper.txHashReceipt(),
             helper.txFeeReceipt(),

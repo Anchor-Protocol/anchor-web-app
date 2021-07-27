@@ -7,9 +7,9 @@ export function useContractNickname(): (addr: HumanAddr | CW20Addr) => string {
   return (addr: HumanAddr | CW20Addr) => {
     switch (addr) {
       case address.bluna.reward:
-        return `bLuna / Reward`;
+        return `bLUNA / Reward`;
       case address.bluna.hub:
-        return `bLuna / Hub`;
+        return `bLUNA / Hub`;
       case address.moneyMarket.market:
         return `Money Market / Market`;
       case address.moneyMarket.collaterals[CollateralType.bLuna].custody:
@@ -35,11 +35,11 @@ export function useContractNickname(): (addr: HumanAddr | CW20Addr) => string {
       case address.anchorToken.distributor:
         return `Anchor Token / Distributor`;
       case address.terraswap.blunaLunaPair:
-        return `Terraswap / bLuna-Luna Pair`;
+        return `Terraswap / bLUNA-LUNA Pair`;
       case address.terraswap.ancUstPair:
         return `Terraswap / ANC-UST Pair`;
       case address.cw20.bLuna:
-        return `bLuna`;
+        return `bLUNA`;
       case address.cw20.aUST:
         return `aUST`;
       case address.cw20.ANC:
@@ -47,7 +47,7 @@ export function useContractNickname(): (addr: HumanAddr | CW20Addr) => string {
       case address.cw20.AncUstLP:
         return `ANC-UST-LP`;
       case address.cw20.bLunaLunaLP:
-        return `bLuna-Luna-LP`;
+        return `bLUNA-LUNA-LP`;
       default:
         return '';
     }

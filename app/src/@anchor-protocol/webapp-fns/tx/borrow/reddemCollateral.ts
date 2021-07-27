@@ -94,7 +94,7 @@ export function borrowRedeemCollateralTx(
           receipts: [
             redeemedAmount && {
               name: 'Redeemed Amount',
-              value: formatLuna(demicrofy(redeemedAmount)) + ' bLuna',
+              value: formatLuna(demicrofy(redeemedAmount)) + ' bLUNA',
             },
             newLtv && {
               name: 'New LTV',

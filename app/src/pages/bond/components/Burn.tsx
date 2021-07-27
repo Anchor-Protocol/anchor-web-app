@@ -36,8 +36,8 @@ interface Item {
   value: string;
 }
 
-const assetCurrencies: Item[] = [{ label: 'Luna', value: 'luna' }];
-const bAssetCurrencies: Item[] = [{ label: 'bLuna', value: 'bluna' }];
+const assetCurrencies: Item[] = [{ label: 'LUNA', value: 'luna' }];
+const bAssetCurrencies: Item[] = [{ label: 'bLUNA', value: 'bluna' }];
 
 export function Burn() {
   // ---------------------------------------------
@@ -323,7 +323,7 @@ export function Burn() {
         )}
         {!!pegRecoveryFee && getAmount.length > 0 && (
           <TxFeeListItem label={<IconSpan>Peg Recovery Fee</IconSpan>}>
-            {formatLuna(demicrofy(pegRecoveryFee(getAmount)))} Luna
+            {formatLuna(demicrofy(pegRecoveryFee(getAmount)))} LUNA
           </TxFeeListItem>
         )}
         {burnAmount.length > 0 && (

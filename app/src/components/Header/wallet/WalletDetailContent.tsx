@@ -85,19 +85,19 @@ export function WalletDetailContentBase({
           )}
           {big(bank.userBalances.uLuna).gt(0) && (
             <li>
-              <span>Luna</span>
+              <span>LUNA</span>
               <span>{formatLuna(demicrofy(bank.userBalances.uLuna))}</span>
             </li>
           )}
           {big(bank.userBalances.ubLuna).gt(0) && (
             <li>
-              <span>bLuna</span>
+              <span>bLUNA</span>
               <span>{formatLuna(demicrofy(bank.userBalances.ubLuna))}</span>
             </li>
           )}
           {big(bank.userBalances.ubEth).gt(0) && (
             <li>
-              <span>bEth</span>
+              <span>bETH</span>
               <span>{formatBAsset(demicrofy(bank.userBalances.ubEth))}</span>
             </li>
           )}
@@ -115,7 +115,7 @@ export function WalletDetailContentBase({
                 <span>{formatLP(demicrofy(bank.userBalances.uAncUstLP))}</span>
               </li>
               <li>
-                <span>bLuna-Luna LP</span>
+                <span>bLUNA-LUNA LP</span>
                 <span>
                   {formatLP(demicrofy(bank.userBalances.ubLunaLunaLP))}
                 </span>

@@ -23,7 +23,7 @@ function WithdrawHistoryBase({
       {withdrawHistory?.map(
         ({ blunaAmount, lunaAmount, requestTime, claimableTime }, index) => (
           <li key={`withdraw-history-${index}`}>
-            <p>{formatLuna(demicrofy(blunaAmount))} bLuna</p>
+            <p>{formatLuna(demicrofy(blunaAmount))} bLUNA</p>
             <p>
               Requested time:{' '}
               <time>
@@ -40,7 +40,7 @@ function WithdrawHistoryBase({
               </time>
             </p>
             <p>
-              {lunaAmount ? `${formatLuna(demicrofy(lunaAmount))} Luna` : ''}
+              {lunaAmount ? `${formatLuna(demicrofy(lunaAmount))} LUNA` : ''}
             </p>
             <p>
               Claimable time:{' '}

@@ -123,7 +123,7 @@ function ComponentBase({
         cw20Address: cw20.aUST,
       },
       {
-        label: 'Luna',
+        label: 'LUNA',
         value: 'luna',
         integerPoints: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
@@ -132,7 +132,7 @@ function ComponentBase({
           formatLunaInput(demicrofy(bank.userBalances.uLuna)),
       },
       {
-        label: 'bLuna',
+        label: 'bLUNA',
         value: 'bluna',
         integerPoints: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
@@ -142,7 +142,7 @@ function ComponentBase({
         cw20Address: cw20.bLuna,
       },
       {
-        label: 'bEth',
+        label: 'bETH',
         value: 'beth',
         integerPoints: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,

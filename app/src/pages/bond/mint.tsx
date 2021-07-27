@@ -46,8 +46,8 @@ interface Item {
   value: string;
 }
 
-const assetCurrencies: Item[] = [{ label: 'Luna', value: 'luna' }];
-const bAssetCurrencies: Item[] = [{ label: 'bLuna', value: 'bluna' }];
+const assetCurrencies: Item[] = [{ label: 'LUNA', value: 'luna' }];
+const bAssetCurrencies: Item[] = [{ label: 'bLUNA', value: 'bluna' }];
 
 function MintBase({ className }: MintProps) {
   // ---------------------------------------------
@@ -355,7 +355,7 @@ function MintBase({ className }: MintProps) {
         )}
         {!!pegRecoveryFee && mintAmount.length > 0 && (
           <TxFeeListItem label={<IconSpan>Peg Recovery Fee</IconSpan>}>
-            {formatLuna(demicrofy(pegRecoveryFee(mintAmount)))} bLuna
+            {formatLuna(demicrofy(pegRecoveryFee(mintAmount)))} bLUNA
           </TxFeeListItem>
         )}
         {bondAmount.length > 0 && (

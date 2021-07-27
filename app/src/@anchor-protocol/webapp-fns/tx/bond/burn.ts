@@ -90,11 +90,11 @@ export function bondBurnTx(
           receipts: [
             burnedAmount && {
               name: 'Burned Amount',
-              value: formatLuna(demicrofy(burnedAmount)) + ' bLuna',
+              value: formatLuna(demicrofy(burnedAmount)) + ' bLUNA',
             },
             expectedAmount && {
               name: 'Expected Amount',
-              value: formatLuna(demicrofy(expectedAmount)) + ' Luna',
+              value: formatLuna(demicrofy(expectedAmount)) + ' LUNA',
             },
             exchangeRate && {
               name: 'Exchange Rate',

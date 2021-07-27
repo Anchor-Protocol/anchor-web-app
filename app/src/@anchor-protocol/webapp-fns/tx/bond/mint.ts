@@ -81,11 +81,11 @@ export function bondMintTx(
           receipts: [
             bondedAmount && {
               name: 'Bonded Amount',
-              value: formatLuna(demicrofy(bondedAmount)) + ' Luna',
+              value: formatLuna(demicrofy(bondedAmount)) + ' LUNA',
             },
             mintedAmount && {
               name: 'Minted Amount',
-              value: formatLuna(demicrofy(mintedAmount)) + ' bLuna',
+              value: formatLuna(demicrofy(mintedAmount)) + ' bLUNA',
             },
             exchangeRate && {
               name: 'Exchange Rate',

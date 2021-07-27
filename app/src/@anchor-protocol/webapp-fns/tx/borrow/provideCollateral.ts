@@ -97,7 +97,7 @@ export function borrowProvideCollateralTx(
           receipts: [
             collateralizedAmount && {
               name: 'Collateralized Amount',
-              value: formatLuna(demicrofy(collateralizedAmount)) + ' bLuna',
+              value: formatLuna(demicrofy(collateralizedAmount)) + ' bLUNA',
             },
             newLtv && {
               name: 'New LTV',

@@ -82,11 +82,11 @@ export function bondSwapTx(
           receipts: [
             paidAmount && {
               name: 'Paid Amount',
-              value: formatLuna(demicrofy(paidAmount)) + ' bLuna',
+              value: formatLuna(demicrofy(paidAmount)) + ' bLUNA',
             },
             boughtAmount && {
               name: 'Bought Amount',
-              value: formatLuna(demicrofy(boughtAmount)) + ' Luna',
+              value: formatLuna(demicrofy(boughtAmount)) + ' LUNA',
             },
             exchangeRate && {
               name: 'Exchange Rate',

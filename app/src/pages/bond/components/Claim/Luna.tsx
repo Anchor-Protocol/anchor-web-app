@@ -229,7 +229,7 @@ function ClaimLunaBase({ className }: ClaimLunaProps) {
           {withdrawableAmount.gt(0) ? (
             <>
               {formatLuna(demicrofy(withdrawableAmount))}
-              <span>Luna</span>
+              <span>LUNA</span>
             </>
           ) : (
             '-'

@@ -26,7 +26,7 @@ export function PollCreateModifyCollateralAttribute() {
   // states
   // ---------------------------------------------
   const bAssetItems = useMemo<Item[]>(() => {
-    return [{ label: 'bLuna', value: address.cw20.bLuna }];
+    return [{ label: 'bLUNA', value: address.cw20.bLuna }];
   }, [address.cw20.bLuna]);
 
   const [bAsset, setBAsset] = useState<Item>(() => bAssetItems[0]);
