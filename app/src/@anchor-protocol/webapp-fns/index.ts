@@ -5,6 +5,7 @@ export * from './models/collaterals';
 
 export * from './functions/createAnchorContractAddress';
 export * from './functions/prettifyBAssetSymbol';
+export * from './functions/getCollateralSymbol';
 
 export * from './logics/common/validateTxFee';
 export * from './logics/earn/computeTotalDeposit';

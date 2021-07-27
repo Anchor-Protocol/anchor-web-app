@@ -4,6 +4,7 @@ import {
 } from '@anchor-protocol/anchor.js';
 import { demicrofy, formatLuna, formatRate } from '@anchor-protocol/notation';
 import { Rate, ubLuna, uUST } from '@anchor-protocol/types';
+import { getCollateralSymbol } from '@anchor-protocol/webapp-fns/functions/getCollateralSymbol';
 import { pipe } from '@rx-stream/pipe';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
@@ -94,7 +95,9 @@ export function borrowRedeemCollateralTx(
           receipts: [
             redeemedAmount && {
               name: 'Redeemed Amount',
-              value: formatLuna(demicrofy(redeemedAmount)) + ' bLUNA',
+              value: `${formatLuna(
+                demicrofy(redeemedAmount),
+              )} ${getCollateralSymbol($.collateral)}`,
             },
             newLtv && {
               name: 'New LTV',
