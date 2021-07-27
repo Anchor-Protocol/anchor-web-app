@@ -119,10 +119,10 @@ function TotalValueBase({ className }: TotalValueProps) {
           ).plus(ancUstLp.withdrawableAssets.ust) as uUST<Big>)
         : ('0' as uUST);
     const farming =
-      userLPStakingInfo && ancPrice && userGovStakingInfo
+      userLPStakingInfo && ancPrice
         ? (big(
             big(ancPrice.USTPoolSize)
-              .mul(userGovStakingInfo.balance)
+              .mul(userLPStakingInfo.bond_amount)
               .div(ancPrice.LPShare),
           )
             .mul(2)
