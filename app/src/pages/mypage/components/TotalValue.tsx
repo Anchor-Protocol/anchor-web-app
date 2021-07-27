@@ -3,7 +3,7 @@ import {
   demicrofy,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
-import { UST, uUST } from '@anchor-protocol/types';
+import { uUST } from '@anchor-protocol/types';
 import {
   AnchorTax,
   AnchorTokenBalances,
@@ -20,10 +20,12 @@ import {
   useRewardsAncUstLpRewardsQuery,
 } from '@anchor-protocol/webapp-provider';
 import { Send } from '@material-ui/icons';
+import { sum } from '@terra-dev/big-math';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from '@terra-money/webapp-provider';
 import big, { Big, BigSource } from 'big.js';
 import { Sub } from 'components/Sub';
@@ -57,6 +59,8 @@ interface Item {
 }
 
 function TotalValueBase({ className }: TotalValueProps) {
+  const connectedWallet = useConnectedWallet();
+
   const { tokenBalances } = useBank<AnchorTokenBalances, AnchorTax>();
 
   const { data: { moneyMarketEpochState } = {} } = useEarnEpochStatesQuery();
@@ -83,77 +87,108 @@ function TotalValueBase({ className }: TotalValueProps) {
 
   const { ref, width = 400 } = useResizeObserver();
 
-  const data = useMemo<Item[]>(() => {
-    return [
-      {
-        label: 'UST',
-        tooltip: 'Total amount of UST held',
-        amount: tokenBalances.uUST,
-      },
-      {
-        label: 'Deposit',
-        tooltip: 'Total amount of UST deposited and interest generated',
-        amount: computeTotalDeposit(tokenBalances.uaUST, moneyMarketEpochState),
-      },
-      {
-        label: 'Borrowing',
-        tooltip:
-          'Total value of collateral value and pending rewards minus loan amount',
-        amount:
-          overseerCollaterals && oraclePrices && marketBorrowerInfo && total
-            ? (computeCollateralsTotalUST(overseerCollaterals, oraclePrices)
-                .minus(marketBorrowerInfo.loan_amount)
-                .plus(total.rewardValue) as uUST<Big>)
-            : ('0' as uUST),
-      },
-      {
-        label: 'Holdings',
-        tooltip: 'Total value of ANC and bAssets held',
-        amount: computeHoldings(
-          tokenBalances,
-          ancPrice,
-          contractAddress,
-          oraclePrices,
-        ),
-      },
-      {
-        label: 'Pool',
-        tooltip: 'Total value of ANC and UST withdrawable from liquidity pools',
-        amount:
-          ancUstLp && ancPrice
-            ? (big(
-                big(ancUstLp.withdrawableAssets.anc).mul(ancPrice.ANCPrice),
-              ).plus(ancUstLp.withdrawableAssets.ust) as uUST<Big>)
-            : ('0' as uUST),
-      },
-      {
-        label: 'Farming',
-        tooltip: 'Total value of ANC LP tokens staked and pending rewards',
-        amount:
-          userLPStakingInfo && ancPrice && userGovStakingInfo
-            ? (big(
-                big(ancPrice.USTPoolSize)
-                  .mul(userGovStakingInfo.balance)
-                  .div(ancPrice.LPShare),
-              )
-                .mul(2)
-                .plus(userLPStakingInfo.pending_reward) as uUST<Big>)
-            : ('0' as uUST),
-      },
-      {
-        label: 'Govern',
-        tooltip: 'Total value of staked ANC and unclaimed voting rewards',
-        amount:
-          userGovStakingInfo && ancPrice
-            ? (big(userGovStakingInfo.balance).mul(
-                ancPrice.ANCPrice,
-              ) as uUST<Big>)
-            : ('0' as uUST),
-      },
-    ];
+  const { totalValue, data } = useMemo<{
+    totalValue: uUST<BigSource>;
+    data: Item[];
+  }>(() => {
+    if (!connectedWallet) {
+      return { totalValue: '0' as uUST, data: [] };
+    }
+
+    const ust = tokenBalances.uUST;
+    const deposit = computeTotalDeposit(
+      tokenBalances.uaUST,
+      moneyMarketEpochState,
+    );
+    const borrowing =
+      overseerCollaterals && oraclePrices && marketBorrowerInfo && total
+        ? (computeCollateralsTotalUST(overseerCollaterals, oraclePrices)
+            .minus(marketBorrowerInfo.loan_amount)
+            .plus(total.rewardValue) as uUST<Big>)
+        : ('0' as uUST);
+    const holdings = computeHoldings(
+      tokenBalances,
+      ancPrice,
+      contractAddress,
+      oraclePrices,
+    );
+    const pool =
+      ancUstLp && ancPrice
+        ? (big(
+            big(ancUstLp.withdrawableAssets.anc).mul(ancPrice.ANCPrice),
+          ).plus(ancUstLp.withdrawableAssets.ust) as uUST<Big>)
+        : ('0' as uUST);
+    const farming =
+      userLPStakingInfo && ancPrice && userGovStakingInfo
+        ? (big(
+            big(ancPrice.USTPoolSize)
+              .mul(userGovStakingInfo.balance)
+              .div(ancPrice.LPShare),
+          )
+            .mul(2)
+            .plus(userLPStakingInfo.pending_reward) as uUST<Big>)
+        : ('0' as uUST);
+    const govern =
+      userGovStakingInfo && ancPrice
+        ? (big(userGovStakingInfo.balance).mul(ancPrice.ANCPrice) as uUST<Big>)
+        : ('0' as uUST);
+
+    const totalValue = sum(
+      ust,
+      deposit,
+      borrowing,
+      holdings,
+      pool,
+      farming,
+      govern,
+    ) as uUST<Big>;
+
+    return {
+      totalValue,
+      data: [
+        {
+          label: 'UST',
+          tooltip: 'Total amount of UST held',
+          amount: ust,
+        },
+        {
+          label: 'Deposit',
+          tooltip: 'Total amount of UST deposited and interest generated',
+          amount: deposit,
+        },
+        {
+          label: 'Borrowing',
+          tooltip:
+            'Total value of collateral value and pending rewards minus loan amount',
+          amount: borrowing,
+        },
+        {
+          label: 'Holdings',
+          tooltip: 'Total value of ANC and bAssets held',
+          amount: holdings,
+        },
+        {
+          label: 'Pool',
+          tooltip:
+            'Total value of ANC and UST withdrawable from liquidity pools',
+          amount: pool,
+        },
+        {
+          label: 'Farming',
+          tooltip: 'Total value of ANC LP tokens staked and pending rewards',
+          amount: farming,
+        },
+        {
+          label: 'Govern',
+          tooltip: 'Total value of staked ANC and unclaimed voting rewards',
+          amount: govern,
+        },
+      ],
+    };
   }, [
     ancPrice,
     ancUstLp,
+    connectedWallet,
     contractAddress,
     marketBorrowerInfo,
     moneyMarketEpochState,
@@ -192,13 +227,16 @@ function TotalValueBase({ className }: TotalValueProps) {
           </h4>
           <p>
             <AnimateNumber format={formatUSTWithPostfixUnits}>
-              {93238.03 as UST<number>}
+              {demicrofy(totalValue)}
             </AnimateNumber>
             <Sub> UST</Sub>
           </p>
         </div>
         <div>
-          <BorderButton onClick={() => openSend({})}>
+          <BorderButton
+            onClick={() => openSend({})}
+            disabled={!connectedWallet}
+          >
             <Send />
             Send
           </BorderButton>

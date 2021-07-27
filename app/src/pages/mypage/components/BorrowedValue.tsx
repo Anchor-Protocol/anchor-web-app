@@ -4,14 +4,16 @@ import {
   formatRate,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
+import { Rate, uUST } from '@anchor-protocol/types';
+import { BAssetLtv } from '@anchor-protocol/webapp-fns';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { Big, BigSource } from 'big.js';
 import { Sub } from 'components/Sub';
 import { fixHMR } from 'fix-hmr';
 import { BorrowLimitGraph } from 'pages/borrow/components/BorrowLimitGraph';
-import { useBorrowOverviewData } from 'pages/borrow/logics/useBorrowOverviewData';
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -19,12 +21,21 @@ import useResizeObserver from 'use-resize-observer/polyfilled';
 
 export interface BorrowedValueProps {
   className?: string;
+  borrowedValue: uUST<Big>;
+  netAPR: Rate<BigSource>;
+  currentLtv: Rate<Big> | undefined;
+  bAssetLtvsAvg: BAssetLtv | undefined;
+  borrowLimit: uUST<BigSource> | undefined;
 }
 
-function BorrowedValueBase({ className }: BorrowedValueProps) {
-  const { borrowedValue, netAPR, currentLtv, bAssetLtvsAvg, borrowLimit } =
-    useBorrowOverviewData();
-
+function BorrowedValueBase({
+  className,
+  borrowedValue,
+  borrowLimit,
+  currentLtv,
+  bAssetLtvsAvg,
+  netAPR,
+}: BorrowedValueProps) {
   const { ref, width = 400 } = useResizeObserver();
 
   const isSmallLayout = useMemo(() => {

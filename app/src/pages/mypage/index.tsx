@@ -1,15 +1,14 @@
 import { Tab } from '@terra-dev/neumorphism-ui/components/Tab';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { PageTitle, TitleContainer } from 'components/primitives/PageTitle';
+import { Borrow } from 'pages/mypage/components/Borrow';
 import React, { useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import styled from 'styled-components';
-import { BorrowedValue } from './components/BorrowedValue';
 import { Earn } from './components/Earn';
 import { Govern } from './components/Govern';
 import { Rewards } from './components/Rewards';
 import { TotalClaimableRewards } from './components/TotalClaimableRewards';
-import { TotalCollateralValue } from './components/TotalCollateralValue';
 import { TotalValue } from './components/TotalValue';
 import { TransactionHistory } from './components/TransactionHistory';
 
@@ -75,10 +74,7 @@ function MypageBase({ className }: MypageProps) {
       {(isSmallLayout || tab.value === 'all' || tab.value === 'borrow') && (
         <>
           <h2>BORROW</h2>
-          <BorrowRow>
-            <TotalCollateralValue />
-            <BorrowedValue />
-          </BorrowRow>
+          <Borrow />
         </>
       )}
 
@@ -113,27 +109,6 @@ const OverviewRow = styled.div`
 
   > :nth-child(2) {
     width: 532px;
-  }
-
-  @media (max-width: 1200px) {
-    flex-direction: column;
-
-    > :nth-child(2) {
-      width: 100%;
-    }
-  }
-`;
-
-const BorrowRow = styled.div`
-  display: flex;
-  gap: 40px;
-
-  .NeuSection-root {
-    margin-bottom: 0;
-  }
-
-  > * {
-    flex: 1;
   }
 
   @media (max-width: 1200px) {

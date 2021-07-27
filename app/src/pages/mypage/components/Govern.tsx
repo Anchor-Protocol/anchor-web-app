@@ -1,21 +1,29 @@
 import { demicrofy, formatANC } from '@anchor-protocol/notation';
 import { useGovMyPollsQuery } from '@anchor-protocol/webapp-provider';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
+import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { fixHMR } from 'fix-hmr';
+import { EmptySection } from 'pages/mypage/components/EmptySection';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import React from 'react';
-import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
 
 export interface GovernProps {
   className?: string;
 }
 
 function GovernBase({ className }: GovernProps) {
+  const connectedWallet = useConnectedWallet();
+
   const { data: myPolls = [] } = useGovMyPollsQuery();
+
+  if (!connectedWallet || myPolls.length === 0) {
+    return <EmptySection to="/poll/create">Create Poll</EmptySection>;
+  }
 
   return (
     <Section className={className}>

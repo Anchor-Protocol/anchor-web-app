@@ -43,7 +43,8 @@ export const ActionButton = styled(ButtonBase).attrs({ disableRipple: true })`
       })};
   }
 
-  &:disabled {
+  &:disabled,
+  &[aria-disabled='true'] {
     opacity: 0.3;
   }
 `;

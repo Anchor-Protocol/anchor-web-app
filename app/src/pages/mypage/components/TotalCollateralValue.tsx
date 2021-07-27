@@ -6,18 +6,10 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { Rate, ubAsset, uUST } from '@anchor-protocol/types';
-import {
-  prettifyBAssetSymbol,
-  useBorrowBorrowerQuery,
-  useBorrowMarketQuery,
-  vectorizeOraclePrices,
-  vectorizeOverseerCollaterals,
-} from '@anchor-protocol/webapp-provider';
-import { sum, vectorMultiply } from '@terra-dev/big-math';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
-import big, { Big } from 'big.js';
+import { Big } from 'big.js';
 import { Sub } from 'components/Sub';
 import { fixHMR } from 'fix-hmr';
 import React, { useMemo, useState } from 'react';
@@ -25,59 +17,26 @@ import styled from 'styled-components';
 import useResizeObserver from 'use-resize-observer/polyfilled';
 import { ChartItem, DoughnutChart } from './graphics/DoughnutGraph';
 
-export interface TotalCollateralValueProps {
-  className?: string;
-}
-
-const colors = ['#4bdb4b', '#1f1f1f'];
-
-interface Item {
+export interface CollateralItem {
   label: string;
   ust: uUST;
   asset: ubAsset;
   ratio: Rate;
 }
 
-function TotalCollateralValueBase({ className }: TotalCollateralValueProps) {
-  const { data: { oraclePrices, overseerWhitelist } = {} } =
-    useBorrowMarketQuery();
+export interface TotalCollateralValueProps {
+  className?: string;
+  total: uUST<Big>;
+  collaterals: CollateralItem[];
+}
 
-  const { data: { overseerCollaterals } = {} } = useBorrowBorrowerQuery();
+const colors = ['#4bdb4b', '#1f1f1f'];
 
-  const { total, collaterals } = useMemo(() => {
-    if (!overseerCollaterals || !oraclePrices || !overseerWhitelist) {
-      return { total: big(0) as uUST<Big>, collaterals: [] };
-    }
-
-    const vector = overseerWhitelist.elems
-      .reverse()
-      .map(({ collateral_token }) => collateral_token);
-    const lockedAmounts = vectorizeOverseerCollaterals(
-      vector,
-      overseerCollaterals.collaterals,
-    );
-    const prices = vectorizeOraclePrices(vector, oraclePrices.prices);
-
-    const ustAmounts = vectorMultiply(lockedAmounts, prices);
-
-    const total = sum(...ustAmounts) as uUST<Big>;
-
-    return {
-      total,
-      collaterals: ustAmounts.map(
-        (ustAmount, i) =>
-          ({
-            label: prettifyBAssetSymbol(overseerWhitelist.elems[i].symbol),
-            ratio: (total.gt(0)
-              ? big(ustAmount).div(total).toFixed()
-              : '0') as Rate,
-            ust: ustAmount.toFixed() as uUST,
-            asset: lockedAmounts[i] as ubAsset,
-          } as Item),
-      ),
-    };
-  }, [oraclePrices, overseerCollaterals, overseerWhitelist]);
-
+function TotalCollateralValueBase({
+  className,
+  total,
+  collaterals,
+}: TotalCollateralValueProps) {
   const [focusedIndex, setFocusedIndex] = useState(-1);
 
   const { ref, width = 400 } = useResizeObserver();

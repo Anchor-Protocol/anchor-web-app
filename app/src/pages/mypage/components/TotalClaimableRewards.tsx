@@ -10,6 +10,7 @@ import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton'
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { Sub } from 'components/Sub';
 import { fixHMR } from 'fix-hmr';
 import { useRewards } from 'pages/mypage/logics/useRewards';
@@ -22,6 +23,8 @@ export interface TotalClaimableRewardsProps {
 }
 
 function TotalClaimableRewardsBase({ className }: TotalClaimableRewardsProps) {
+  const connectedWallet = useConnectedWallet();
+
   const { total, ancPrice } = useRewards();
 
   return (
@@ -63,7 +66,12 @@ function TotalClaimableRewardsBase({ className }: TotalClaimableRewardsProps) {
 
       <div className="spacer" />
 
-      <ActionButton className="claim" component={Link} to={`/claim/all`}>
+      <ActionButton
+        className="claim"
+        component={Link}
+        to={`/claim/all`}
+        disabled={!connectedWallet}
+      >
         Claim All Rewards
       </ActionButton>
     </Section>
@@ -123,6 +131,7 @@ export const StyledTotalClaimableRewards = styled(TotalClaimableRewardsBase)`
 
   .spacer {
     flex: 1;
+    min-height: 60px;
   }
 
   @media (max-width: 1200px) {

@@ -22,6 +22,7 @@ import { useBank } from '@terra-money/webapp-provider';
 import { fixHMR } from 'fix-hmr';
 import { useDepositDialog } from 'pages/earn/components/useDepositDialog';
 import { useWithdrawDialog } from 'pages/earn/components/useWithdrawDialog';
+import { EmptySection } from 'pages/mypage/components/EmptySection';
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 
@@ -75,6 +76,10 @@ function EarnBase({ className }: EarnProps) {
   const openWithdraw = useCallback(async () => {
     await openWithdrawDialog({});
   }, [openWithdrawDialog]);
+
+  if (!connectedWallet || totalDeposit.lte(0)) {
+    return <EmptySection to="/earn">Go to Earn</EmptySection>;
+  }
 
   return (
     <Section className={className}>
