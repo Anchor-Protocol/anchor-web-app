@@ -153,7 +153,7 @@ export function RewardsBase({ className }: RewardsProps) {
                 </IconSpan>
               </td>
               <td>
-                <MoreMenu size="25px">
+                <MoreMenu>
                   <MenuItem
                     component={Link}
                     to={`/${ancGovernancePathname}/stake`}
@@ -255,7 +255,7 @@ export function RewardsBase({ className }: RewardsProps) {
                 </p>
               </td>
               <td>
-                <MoreMenu size="25px">
+                <MoreMenu>
                   <MenuItem
                     component={Link}
                     to={`/${ancUstLpPathname}/provide`}
@@ -312,7 +312,7 @@ export function RewardsBase({ className }: RewardsProps) {
                 </p>
               </td>
               <td>
-                <MoreMenu size="25px">
+                <MoreMenu>
                   <MenuItem component={Link} to={`/claim/${ustBorrowPathname}`}>
                     Claim
                   </MenuItem>
