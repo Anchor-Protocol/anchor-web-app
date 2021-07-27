@@ -5,8 +5,10 @@ import { EmbossButton } from '@terra-dev/neumorphism-ui/components/EmbossButton'
 import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';
+import bridgeMutual from './assets/bridgeMutual.svg';
 import insurAce from './assets/insurAce.svg';
 import nexusMutual from './assets/nexusMutual.svg';
+import unslashed from './assets/unslashed.svg';
 
 interface FormParams {
   className?: string;
@@ -30,39 +32,81 @@ function ComponentBase({
       <Dialog className={className} onClose={() => closeDialog()}>
         <h1>Get Insurance Coverage</h1>
 
-        <EmbossButton
-          component="a"
-          href="https://nexusmutual.io/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <span>
-            Nexus Mutual{' '}
-            <sub>
-              <Launch />
-            </sub>
-          </span>
-          <i>
-            <img src={nexusMutual} alt="Nexus Mutual" />
-          </i>
-        </EmbossButton>
+        <section>
+          <h2>UST Peg</h2>
 
-        <EmbossButton
-          component="a"
-          href="https://www.insurace.io/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <span>
-            InsurAce{' '}
-            <sub>
-              <Launch />
-            </sub>
-          </span>
-          <i>
-            <img src={insurAce} alt="InsurAce" />
-          </i>
-        </EmbossButton>
+          <EmbossButton
+            component="a"
+            href="https://nexusmutual.io/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>
+              Unslashed{' '}
+              <sub>
+                <Launch />
+              </sub>
+            </span>
+            <i>
+              <img src={unslashed} alt="Unslashed" />
+            </i>
+          </EmbossButton>
+        </section>
+
+        <section>
+          <h2>Smart Contracts</h2>
+
+          <EmbossButton
+            component="a"
+            href="https://nexusmutual.io/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>
+              Nexus Mutual{' '}
+              <sub>
+                <Launch />
+              </sub>
+            </span>
+            <i>
+              <img src={nexusMutual} alt="Nexus Mutual" />
+            </i>
+          </EmbossButton>
+
+          <EmbossButton
+            component="a"
+            href="https://www.insurace.io/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>
+              InsurAce{' '}
+              <sub>
+                <Launch />
+              </sub>
+            </span>
+            <i>
+              <img src={insurAce} alt="InsurAce" />
+            </i>
+          </EmbossButton>
+
+          <EmbossButton
+            component="a"
+            href="https://www.insurace.io/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>
+              Bridge Mutual{' '}
+              <sub>
+                <Launch />
+              </sub>
+            </span>
+            <i>
+              <img src={bridgeMutual} alt="Bridge Mutual" />
+            </i>
+          </EmbossButton>
+        </section>
       </Dialog>
     </Modal>
   );
@@ -72,12 +116,24 @@ const Component = styled(ComponentBase)`
   width: 458px;
 
   h1 {
-    font-size: 27px;
+    font-size: 24px;
     text-align: center;
     font-weight: 300;
 
-    margin-bottom: 50px;
+    margin-bottom: 41px;
     letter-spacing: -0.5px;
+  }
+
+  h2 {
+    font-size: 12px;
+    font-weight: 600;
+    color: ${({ theme }) => theme.dimTextColor};
+    margin-bottom: 8px;
+    line-height: 1;
+  }
+
+  section:first-of-type {
+    margin-bottom: 32px;
   }
 
   a {
@@ -109,9 +165,10 @@ const Component = styled(ComponentBase)`
     i {
       width: 40px;
       text-align: center;
+      transform: translateY(1px);
     }
 
-    &:last-of-type {
+    &:not(:first-of-type) {
       margin-top: 16px;
     }
   }
