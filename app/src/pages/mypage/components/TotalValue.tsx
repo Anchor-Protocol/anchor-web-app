@@ -17,7 +17,6 @@ import {
   useBorrowMarketQuery,
   useEarnEpochStatesQuery,
   useRewardsAncGovernanceRewardsQuery,
-  useRewardsAncUstLpRewardsQuery,
 } from '@anchor-protocol/webapp-provider';
 import { Send } from '@material-ui/icons';
 import { sum } from '@terra-dev/big-math';
@@ -73,8 +72,6 @@ function TotalValueBase({ className }: TotalValueProps) {
 
   const { contractAddress } = useAnchorWebapp();
 
-  const { data: { userLPStakingInfo } = {} } = useRewardsAncUstLpRewardsQuery();
-
   const { data: { userGovStakingInfo } = {} } =
     useRewardsAncGovernanceRewardsQuery();
 
@@ -118,16 +115,9 @@ function TotalValueBase({ className }: TotalValueProps) {
             big(ancUstLp.withdrawableAssets.anc).mul(ancPrice.ANCPrice),
           ).plus(ancUstLp.withdrawableAssets.ust) as uUST<Big>)
         : ('0' as uUST);
-    const farming =
-      userLPStakingInfo && ancPrice
-        ? (big(
-            big(ancPrice.USTPoolSize)
-              .mul(userLPStakingInfo.bond_amount)
-              .div(ancPrice.LPShare),
-          )
-            .mul(2)
-            .plus(userLPStakingInfo.pending_reward) as uUST<Big>)
-        : ('0' as uUST);
+    const farming = ancUstLp
+      ? (big(ancUstLp.stakedValue).plus(ancUstLp.rewardValue) as uUST<Big>)
+      : ('0' as uUST);
     const govern =
       userGovStakingInfo && ancPrice
         ? (big(userGovStakingInfo.balance).mul(ancPrice.ANCPrice) as uUST<Big>)
@@ -197,7 +187,6 @@ function TotalValueBase({ className }: TotalValueProps) {
     tokenBalances,
     total,
     userGovStakingInfo,
-    userLPStakingInfo,
   ]);
 
   const isSmallLayout = useMemo(() => {
