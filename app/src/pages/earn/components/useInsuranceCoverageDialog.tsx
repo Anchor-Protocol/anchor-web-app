@@ -37,7 +37,7 @@ function ComponentBase({
 
           <EmbossButton
             component="a"
-            href="https://app.unslashed.finance/capital"
+            href="https://unslashed.finance/"
             target="_blank"
             rel="noreferrer"
           >
