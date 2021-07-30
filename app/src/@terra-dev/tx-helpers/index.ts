@@ -1,6 +1,6 @@
 import { Timeout } from '@terra-dev/wallet-types';
 
-export function txTimeout<T>(ms: number = 1000 * 60 * 2): Promise<T> {
+export function txTimeout<T>(ms: number = 1000 * 60 * 5): Promise<T> {
   return new Promise<T>((_, reject) => {
     const timeoutId = setTimeout(() => {
       reject(
