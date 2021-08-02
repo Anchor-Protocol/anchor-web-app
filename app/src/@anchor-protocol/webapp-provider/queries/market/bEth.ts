@@ -1,4 +1,4 @@
-import { MarketUstData, marketUstQuery } from '@anchor-protocol/webapp-fns';
+import { MarketBEthData, marketBEthQuery } from '@anchor-protocol/webapp-fns';
 import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
 import { createQueryFn } from '@terra-dev/react-query-utils';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
@@ -7,10 +7,12 @@ import { useQuery, UseQueryResult } from 'react-query';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
 const queryFn = createQueryFn((endpoint: string) => {
-  return marketUstQuery({ endpoint });
+  return marketBEthQuery({ endpoint });
 });
 
-export function useMarketUstQuery(): UseQueryResult<MarketUstData | undefined> {
+export function useMarketBEthQuery(): UseQueryResult<
+  MarketBEthData | undefined
+> {
   const { queryErrorReporter } = useTerraWebapp();
 
   const { indexerApiEndpoint } = useAnchorWebapp();
@@ -18,7 +20,7 @@ export function useMarketUstQuery(): UseQueryResult<MarketUstData | undefined> {
   const { browserInactive } = useBrowserInactive();
 
   const result = useQuery(
-    [ANCHOR_QUERY_KEY.MARKET_UST, indexerApiEndpoint],
+    [ANCHOR_QUERY_KEY.MARKET_BETH, indexerApiEndpoint],
     queryFn,
     {
       refetchInterval: browserInactive && 1000 * 60 * 5,

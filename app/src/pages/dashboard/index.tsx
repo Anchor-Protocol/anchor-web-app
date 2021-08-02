@@ -1,6 +1,7 @@
 import {
   AnimateNumber,
   demicrofy,
+  formatBAssetWithPostfixUnits,
   formatLunaWithPostfixUnits,
   formatRate,
   formatUST,
@@ -9,10 +10,19 @@ import {
   formatUTokenIntegerWithoutPostfixUnits,
 } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
-import { Luna, Rate, UST, uUST } from '@anchor-protocol/types';
+import {
+  bAsset,
+  Luna,
+  Rate,
+  ubEth,
+  ubLuna,
+  UST,
+  uUST,
+} from '@anchor-protocol/types';
 import {
   useAnchorWebapp,
   useMarketAncQuery,
+  useMarketBEthQuery,
   useMarketBLunaQuery,
   useMarketBuybackQuery,
   useMarketCollateralsQuery,
@@ -29,10 +39,9 @@ import {
   pressed,
   verticalRuler,
 } from '@terra-dev/styled-neumorphism';
+import big, { Big, BigSource } from 'big.js';
 import { Footer } from 'components/Footer';
-import big, { Big } from 'big.js';
 import { PageTitle, TitleContainer } from 'components/primitives/PageTitle';
-import { format } from 'date-fns';
 import { screen } from 'env';
 import React, { useMemo } from 'react';
 import styled, { css, useTheme } from 'styled-components';
@@ -73,7 +82,8 @@ function DashboardBase({ className }: DashboardProps) {
   }, [blocksPerYear, borrowRate, epochState]);
 
   const { data: marketUST } = useMarketUstQuery();
-  const { data: marketBluna } = useMarketBLunaQuery();
+  const { data: marketBLuna } = useMarketBLunaQuery();
+  const { data: marketBEth } = useMarketBEthQuery();
   const { data: marketANC } = useMarketAncQuery();
   const { data: marketDepositAndBorrow } = useMarketDepositAndBorrowQuery();
   const { data: marketCollaterals } = useMarketCollateralsQuery();
@@ -103,13 +113,8 @@ function DashboardBase({ className }: DashboardProps) {
     const last = marketANC.now;
     const last1DayBefore =
       marketANC.history.find(findPrevDay(last.timestamp)) ??
-      marketANC.history[marketANC.history.length - 2];
-
-    console.log(
-      'index.tsx..()',
-      format(last.timestamp, 'MMM d'),
-      format(last1DayBefore.timestamp, 'MMM d'),
-    );
+      marketANC.history[marketANC.history.length - 2] ??
+      marketANC.history[marketANC.history.length - 1];
 
     return {
       ancPriceDiff: big(
@@ -156,7 +161,8 @@ function DashboardBase({ className }: DashboardProps) {
   const collaterals = useMemo(() => {
     if (
       !marketCollaterals ||
-      !marketBluna ||
+      !marketBLuna ||
+      !marketBEth ||
       marketCollaterals.history.length === 0
     ) {
       return undefined;
@@ -166,23 +172,41 @@ function DashboardBase({ className }: DashboardProps) {
     const last1DayBefore =
       marketCollaterals.history.find(findPrevDay(last.timestamp)) ??
       marketCollaterals.history[marketCollaterals.history.length - 2];
-    //marketCollaterals.history[marketCollaterals.history.length - 2];
+
+    const bLunaCollateral = last.collaterals.find(
+      ({ symbol }) => symbol.toLowerCase() === 'bluna',
+    );
+
+    const bEthCollateral = last.collaterals.find(
+      ({ symbol }) => symbol.toLowerCase() === 'beth',
+    );
 
     return {
       mainTotalCollateralValue: last.total_value,
       totalCollateralValueGraph: 'TODO: API not ready...',
-      blunaPrice: marketBluna.bLuna_price,
-      blunaPriceDiff: 'TODO: API not ready...',
-      totalCollateral: last.collaterals.find(({ bluna }) => !!bluna)?.bluna,
       totalCollateralDiff: big(
         big(last.total_value).minus(last1DayBefore.total_value),
       ).div(last1DayBefore.total_value) as Rate<Big>,
       totalCollateralValue: big(
-        last.collaterals.find(({ bluna }) => !!bluna)?.bluna ?? 1,
-      ).mul(marketBluna.bLuna_price) as uUST<Big>,
+        last.collaterals.reduce((total, { collateral, price }) => {
+          return total.plus(big(collateral).mul(price));
+        }, big(0)) as uUST<Big>,
+      ).mul(marketBLuna.bLuna_price) as uUST<Big>,
       totalCollateralValueDiff: 'TODO: API not ready...',
+      bLunaPrice: marketBLuna.bLuna_price,
+      bLunaPriceDiff: 'TODO: API not ready...',
+      bLunaTotalCollateral: (bLunaCollateral?.collateral ?? '0') as ubLuna,
+      bLunaTotalCollateralValue: (bLunaCollateral
+        ? big(bLunaCollateral.collateral).mul(bLunaCollateral.price)
+        : '0') as uUST<BigSource>,
+      bEthPrice: marketBEth.beth_price,
+      bEthPriceDiff: 'TODO: API not ready...',
+      bEthTotalCollateral: (bEthCollateral?.collateral ?? '0') as ubEth,
+      bEthTotalCollateralValue: (bEthCollateral
+        ? big(bEthCollateral.collateral).mul(bEthCollateral.price)
+        : '0') as uUST<BigSource>,
     };
-  }, [marketBluna, marketCollaterals]);
+  }, [marketBEth, marketBLuna, marketCollaterals]);
 
   return (
     <div className={className}>
@@ -608,7 +632,7 @@ function DashboardBase({ className }: DashboardProps) {
                       ${' '}
                       <AnimateNumber format={formatUST}>
                         {collaterals
-                          ? collaterals.blunaPrice
+                          ? collaterals.bLunaPrice
                           : (0 as UST<number>)}
                       </AnimateNumber>
                     </div>
@@ -616,8 +640,8 @@ function DashboardBase({ className }: DashboardProps) {
                   <td>
                     <div className="value">
                       <AnimateNumber format={formatLunaWithPostfixUnits}>
-                        {collaterals?.totalCollateral
-                          ? demicrofy(collaterals.totalCollateral)
+                        {collaterals?.bLunaTotalCollateral
+                          ? demicrofy(collaterals.bLunaTotalCollateral)
                           : (0 as Luna<number>)}
                       </AnimateNumber>
                     </div>
@@ -630,7 +654,52 @@ function DashboardBase({ className }: DashboardProps) {
                         id="collateral-value"
                       >
                         {collaterals
-                          ? demicrofy(collaterals.totalCollateralValue)
+                          ? demicrofy(collaterals.bLunaTotalCollateralValue)
+                          : (0 as UST<number>)}
+                      </AnimateNumber>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div>
+                      <i>
+                        <TokenIcon token="beth" />
+                      </i>
+                      <div>
+                        <div className="coin">bETH</div>
+                        <p className="name">Bonded ETH</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="value">
+                      ${' '}
+                      <AnimateNumber format={formatUST}>
+                        {collaterals
+                          ? collaterals.bEthPrice
+                          : (0 as UST<number>)}
+                      </AnimateNumber>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="value">
+                      <AnimateNumber format={formatBAssetWithPostfixUnits}>
+                        {collaterals?.bEthTotalCollateral
+                          ? demicrofy(collaterals.bEthTotalCollateral)
+                          : (0 as bAsset<number>)}
+                      </AnimateNumber>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="value">
+                      ${' '}
+                      <AnimateNumber
+                        format={formatUSTWithPostfixUnits}
+                        id="collateral-value"
+                      >
+                        {collaterals
+                          ? demicrofy(collaterals.bEthTotalCollateralValue)
                           : (0 as UST<number>)}
                       </AnimateNumber>
                     </div>

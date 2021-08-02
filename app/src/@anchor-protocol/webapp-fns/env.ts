@@ -8,9 +8,9 @@ export const DEFAULT_ADDESS_MAP: Record<string, AddressMap> = {
     bLunaToken: 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp',
     bLunaReward: 'terra17yap3mhph35pcwvhza38c2lkj7gzywzy05h7l0',
     bLunaAirdrop: 'terra199t7hg7w5vymehhg834r6799pju2q3a0ya7ae9',
-    bEthReward: '',
-    bEthToken: '',
-    mmCustodyBEth: '',
+    bEthReward: 'terra1939tzfn4hn960ychpcsjshu8jds3zdwlp8jed9',
+    bEthToken: 'terra1dzhzukyezv0etz22ud940z7adyv7xgcjkahuun',
+    mmCustodyBEth: 'terra10cxuzggyvvv44magvrh3thpdnk9cmlgk93gmx2',
     mmInterestModel: 'terra1kq8zzq5hufas9t0kjsjc62t2kucfnx8txf547n',
     mmOracle: 'terra1cgg6yef7qcdm070qftghfulaxmllgmvk77nc7t',
     mmMarket: 'terra1sepfj7s0aeg5967uxnfk4thzlerrsktkpelm5s',
@@ -86,6 +86,11 @@ export const DEFAULT_ANCHOR_TX_CONSTANTS: Record<string, AnchorContants> = {
     blocksPerYear: 4_656_810,
     gasAdjustment: 1.4 as Rate<number>,
   },
+};
+
+export const DEFAULT_ANCHOR_INDEXER_API_ENDPOINTS: Record<string, string> = {
+  mainnet: 'https://api.anchorprotocol.com/api',
+  testnet: 'https://anchor-services-tequila-anchor-protocol.vercel.app/api/v1',
 };
 
 export const ANCHOR_SAFE_RATIO: Rate<number> = 0.75 as Rate<number>;

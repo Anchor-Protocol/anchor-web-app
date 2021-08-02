@@ -2,6 +2,7 @@ import {
   MarketDepositAndBorrowData,
   marketDepositAndBorrowQuery,
 } from '@anchor-protocol/webapp-fns';
+import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
 import { createQueryFn } from '@terra-dev/react-query-utils';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { useTerraWebapp } from '@terra-money/webapp-provider';
@@ -17,13 +18,12 @@ export function useMarketDepositAndBorrowQuery(): UseQueryResult<
 > {
   const { queryErrorReporter } = useTerraWebapp();
 
+  const { indexerApiEndpoint } = useAnchorWebapp();
+
   const { browserInactive } = useBrowserInactive();
 
   const result = useQuery(
-    [
-      ANCHOR_QUERY_KEY.MARKET_DEPOSIT_AND_BORROW,
-      'https://anchor-services.vercel.app',
-    ],
+    [ANCHOR_QUERY_KEY.MARKET_DEPOSIT_AND_BORROW, indexerApiEndpoint],
     queryFn,
     {
       refetchInterval: browserInactive && 1000 * 60 * 5,

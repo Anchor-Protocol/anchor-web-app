@@ -1,4 +1,5 @@
 import { MarketAncData, marketAncQuery } from '@anchor-protocol/webapp-fns';
+import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
 import { createQueryFn } from '@terra-dev/react-query-utils';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { useTerraWebapp } from '@terra-money/webapp-provider';
@@ -12,10 +13,12 @@ const queryFn = createQueryFn((endpoint: string) => {
 export function useMarketAncQuery(): UseQueryResult<MarketAncData | undefined> {
   const { queryErrorReporter } = useTerraWebapp();
 
+  const { indexerApiEndpoint } = useAnchorWebapp();
+
   const { browserInactive } = useBrowserInactive();
 
   const result = useQuery(
-    [ANCHOR_QUERY_KEY.MARKET_ANC, 'https://anchor-services.vercel.app'],
+    [ANCHOR_QUERY_KEY.MARKET_ANC, indexerApiEndpoint],
     queryFn,
     {
       refetchInterval: browserInactive && 1000 * 60 * 5,

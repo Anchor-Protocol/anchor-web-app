@@ -32,5 +32,5 @@ export interface MarketUstQueryParams {
 export function marketUstQuery({
   endpoint,
 }: MarketUstQueryParams): Promise<MarketUstData> {
-  return fetch(`${endpoint}/api/market/ust`).then((res) => res.json());
+  return fetch(`${endpoint}/market/ust`).then((res) => res.json());
 }

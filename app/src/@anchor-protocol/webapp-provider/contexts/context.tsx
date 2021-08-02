@@ -8,6 +8,7 @@ import {
   AnchorContants,
   createAnchorContractAddress,
   DEFAULT_ADDESS_MAP,
+  DEFAULT_ANCHOR_INDEXER_API_ENDPOINTS,
   DEFAULT_ANCHOR_TX_CONSTANTS,
 } from '@anchor-protocol/webapp-fns';
 import { useWallet } from '@terra-money/wallet-provider';
@@ -24,6 +25,7 @@ export interface AnchorWebappProviderProps {
   children: ReactNode;
   contractAddressMaps?: Record<string, AddressMap>;
   constants?: Record<string, AnchorContants>;
+  indexerApiEndpoints?: Record<string, string>;
 }
 
 export interface AnchorWebapp {
@@ -32,6 +34,7 @@ export interface AnchorWebapp {
   contractAddress: ContractAddress;
   constants: AnchorContants;
   bAssetsVector: CW20Addr[];
+  indexerApiEndpoint: string;
 }
 
 const AnchorWebappContext: Context<AnchorWebapp> =
@@ -42,6 +45,7 @@ export function AnchorWebappProvider({
   children,
   contractAddressMaps = DEFAULT_ADDESS_MAP,
   constants = DEFAULT_ANCHOR_TX_CONSTANTS,
+  indexerApiEndpoints = DEFAULT_ANCHOR_INDEXER_API_ENDPOINTS,
 }: AnchorWebappProviderProps) {
   const { network } = useWallet();
 
@@ -77,14 +81,17 @@ export function AnchorWebappProvider({
         addressProviders[network.name] ?? addressProviders['mainnet'],
       contractAddress,
       constants: constants[network.name] ?? constants['mainnet'],
+      indexerApiEndpoint:
+        indexerApiEndpoints[network.name] ?? indexerApiEndpoints['mainnet'],
       bAssetsVector: [contractAddress.cw20.bEth, contractAddress.cw20.bLuna],
     };
   }, [
-    addressProviders,
-    contractAddressMaps,
     contractAddresses,
     network.name,
+    contractAddressMaps,
+    addressProviders,
     constants,
+    indexerApiEndpoints,
   ]);
 
   return (

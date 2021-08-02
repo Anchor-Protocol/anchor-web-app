@@ -18,7 +18,7 @@ export interface MarketBLunaData {
   bLuna_price: UST;
   exchange_rate: Rate;
   actual_unbonded_amount: ubLuna;
-  block_height: number;
+  height: number;
   total_balance: ubLuna;
   requested_with_fee: uUST;
   total_collateral: ubLuna;
@@ -37,5 +37,5 @@ export interface MarketBLunaQueryParams {
 export function marketBLunaQuery({
   endpoint,
 }: MarketBLunaQueryParams): Promise<MarketBLunaData> {
-  return fetch(`${endpoint}/api/bassets/bluna`).then((res) => res.json());
+  return fetch(`${endpoint}/bassets/bluna`).then((res) => res.json());
 }

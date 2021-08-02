@@ -2,6 +2,7 @@ import {
   MarketBuybackData,
   marketBuybackQuery,
 } from '@anchor-protocol/webapp-fns';
+import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
 import { createQueryFn } from '@terra-dev/react-query-utils';
 import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { useTerraWebapp } from '@terra-money/webapp-provider';
@@ -17,14 +18,12 @@ export function useMarketBuybackQuery(
 ): UseQueryResult<MarketBuybackData | undefined> {
   const { queryErrorReporter } = useTerraWebapp();
 
+  const { indexerApiEndpoint } = useAnchorWebapp();
+
   const { browserInactive } = useBrowserInactive();
 
   const result = useQuery(
-    [
-      ANCHOR_QUERY_KEY.MARKET_BUYBACK,
-      'https://anchor-services.vercel.app',
-      time,
-    ],
+    [ANCHOR_QUERY_KEY.MARKET_BUYBACK, indexerApiEndpoint, time],
     queryFn,
     {
       refetchInterval: browserInactive && 1000 * 60 * 5,
