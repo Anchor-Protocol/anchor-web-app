@@ -61,8 +61,8 @@ function AncUstLpStakeOverviewBase({ className }: AncUstLpStakeOverviewProps) {
   return (
     <ul className={className}>
       <li>
-        <TooltipLabel title="Stakable ANC-UST LP tokens" placement="top">
-          Stakable
+        <TooltipLabel title="Stakeable ANC-UST LP tokens" placement="top">
+          Stakeable
         </TooltipLabel>
         <p>
           {ancUstLp?.stakable ? formatLP(demicrofy(ancUstLp.stakable)) : 0} LP

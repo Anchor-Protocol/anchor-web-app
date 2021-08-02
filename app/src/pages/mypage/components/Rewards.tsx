@@ -76,9 +76,9 @@ export function RewardsBase({ className }: RewardsProps) {
                 Staked Value
               </th>
               <th>
-                Stakable
+                Stakeable
                 <br />
-                Stakable Value
+                Stakeable Value
               </th>
               <th>
                 <IconSpan>
