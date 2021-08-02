@@ -3,12 +3,24 @@ import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
 import { AppProviders } from 'configurations/AppProviders';
 import { NotificationProvider } from 'contexts/notification';
+import { cloudFlareOption } from 'env';
 import { JobsProvider } from 'jobs/Jobs';
 import { Airdrop } from 'pages/airdrop';
 import { BAsset } from 'pages/bond';
 import { Borrow } from 'pages/borrow';
 import { Dashboard } from 'pages/dashboard';
 import { Earn } from 'pages/earn';
+import { GovernanceMain } from 'pages/gov/main';
+import { PollCreate } from 'pages/gov/poll.create';
+import { PollCreateModifyANCDistribution } from 'pages/gov/poll.create.modify-anc-distribution';
+import { PollCreateModifyBorrowInterest } from 'pages/gov/poll.create.modify-borrow-interest';
+import { PollCreateModifyCollateralAttribute } from 'pages/gov/poll.create.modify-collateral-attribute';
+import { PollCreateModifyMarketParameters } from 'pages/gov/poll.create.modify-market-parameters';
+import { PollCreateRegisterCollateralAttributes } from 'pages/gov/poll.create.register-collateral-attributes';
+import { PollCreateSpendCommunityPool } from 'pages/gov/poll.create.spend-community-pool';
+import { PollCreateTextProposal } from 'pages/gov/poll.create.text-proposal';
+import { PollDetail } from 'pages/gov/poll.detail';
+import { Mypage } from 'pages/mypage';
 import { ClaimAll } from 'pages/trade/claim.all';
 import { ClaimAncUstLp } from 'pages/trade/claim.anc-ust-lp';
 import { ClaimUstBorrow } from 'pages/trade/claim.ust-borrow';
@@ -17,22 +29,11 @@ import {
   ancUstLpPathname,
   ustBorrowPathname,
 } from 'pages/trade/env';
-import { GovernanceMain } from 'pages/gov/main';
-import { PollCreate } from 'pages/gov/poll.create';
-import { PollCreateModifyANCDistribution } from 'pages/gov/poll.create.modify-anc-distribution';
-import { PollCreateModifyBorrowInterest } from 'pages/gov/poll.create.modify-borrow-interest';
-import { PollCreateModifyCollateralAttribute } from 'pages/gov/poll.create.modify-collateral-attribute';
-import { PollCreateModifyMarketParameters } from 'pages/gov/poll.create.modify-market-parameters';
-import { PollCreateSpendCommunityPool } from 'pages/gov/poll.create.spend-community-pool';
-import { PollCreateTextProposal } from 'pages/gov/poll.create.text-proposal';
-import { PollDetail } from 'pages/gov/poll.detail';
 import { RewardsAncGovernance } from 'pages/trade/rewards.anc-governance';
 import { RewardsAncUstLp } from 'pages/trade/rewards.anc-ust-lp';
 import { Trade } from 'pages/trade/trade';
-import { Mypage } from 'pages/mypage';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import './configurations/chartjs';
-import { cloudFlareOption } from 'env';
 
 export function App() {
   useCloudflareAnalytics(cloudFlareOption);
@@ -88,6 +89,10 @@ export function App() {
               <Route
                 path={`/poll/create/text-proposal`}
                 component={PollCreateTextProposal}
+              />
+              <Route
+                path={`/poll/create/register-collateral-attributes`}
+                component={PollCreateRegisterCollateralAttributes}
               />
               <Route path={`/poll/:id`} component={PollDetail} />
 
