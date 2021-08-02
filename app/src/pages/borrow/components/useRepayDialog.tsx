@@ -115,6 +115,10 @@ function ComponentBase({
   // ---------------------------------------------
   // calculate
   // ---------------------------------------------
+  const dangerLtv = useMemo(() => {
+    return big(bAssetLtvsAvg.max).minus(0.1) as Rate<Big>;
+  }, [bAssetLtvsAvg.max]);
+
   const amountToLtv = useMemo(
     () =>
       computeRepayAmountToLtv(
@@ -332,7 +336,7 @@ function ComponentBase({
             disabled={!connectedWallet}
             maxLtv={bAssetLtvsAvg.max}
             safeLtv={bAssetLtvsAvg.safe}
-            dangerLtv={0.4 as Rate<number>}
+            dangerLtv={dangerLtv}
             currentLtv={currentLtv}
             nextLtv={nextLtv}
             userMinLtv={0 as Rate<BigSource>}

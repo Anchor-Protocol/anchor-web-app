@@ -1,4 +1,4 @@
-import { uUST } from '@anchor-protocol/types';
+import { Rate, uUST } from '@anchor-protocol/types';
 import {
   computeBorrowAPR,
   computeBorrowedAmount,
@@ -81,6 +81,12 @@ export function useBorrowOverviewData() {
     return computeNetAPR(borrowerDistributionAPYs, borrowAPR);
   }, [borrowAPR, borrowerDistributionAPYs]);
 
+  const dangerLtv = useMemo(() => {
+    return (
+      bAssetLtvsAvg ? big(bAssetLtvsAvg.max).minus(0.1) : big(0.5)
+    ) as Rate<Big>;
+  }, [bAssetLtvsAvg]);
+
   return {
     blocksPerYear,
     borrowRate,
@@ -93,6 +99,7 @@ export function useBorrowOverviewData() {
     collateralValue,
     borrowLimit,
     netAPR,
+    dangerLtv,
     borrowerDistributionAPYs,
   };
 }

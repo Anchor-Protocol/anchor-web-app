@@ -38,6 +38,7 @@ function OverviewBase({ className }: OverviewProps) {
     bAssetLtvsAvg,
     netAPR,
     currentLtv,
+    dangerLtv,
     borrowerDistributionAPYs,
   } = useBorrowOverviewData();
 
@@ -179,6 +180,7 @@ function OverviewBase({ className }: OverviewProps) {
             currentLtv={currentLtv}
             safeLtv={bAssetLtvsAvg.safe}
             maxLtv={bAssetLtvsAvg.max}
+            dangerLtv={dangerLtv}
             borrowLimit={borrowLimit}
           />
         </figure>

@@ -24,6 +24,7 @@ export interface BorrowedValueProps {
   borrowedValue: uUST<Big>;
   netAPR: Rate<BigSource>;
   currentLtv: Rate<Big> | undefined;
+  dangerLtv: Rate<Big> | undefined;
   bAssetLtvsAvg: BAssetLtv | undefined;
   borrowLimit: uUST<BigSource> | undefined;
 }
@@ -34,6 +35,7 @@ function BorrowedValueBase({
   borrowLimit,
   currentLtv,
   bAssetLtvsAvg,
+  dangerLtv,
   netAPR,
 }: BorrowedValueProps) {
   const { ref, width = 400 } = useResizeObserver();
@@ -80,10 +82,11 @@ function BorrowedValueBase({
         <p>{formatRate(netAPR)}%</p>
       </div>
 
-      {currentLtv && bAssetLtvsAvg && borrowLimit && (
+      {currentLtv && bAssetLtvsAvg && dangerLtv && borrowLimit && (
         <figure>
           <BorrowLimitGraph
             currentLtv={currentLtv}
+            dangerLtv={dangerLtv}
             safeLtv={bAssetLtvsAvg.safe}
             maxLtv={bAssetLtvsAvg.max}
             borrowLimit={borrowLimit}

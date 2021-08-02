@@ -23,6 +23,7 @@ export interface BorrowLimitGraphProps {
   currentLtv: Rate<BigSource>;
   safeLtv: Rate<BigSource>;
   maxLtv: Rate<BigSource>;
+  dangerLtv: Rate<BigSource>;
   borrowLimit: uUST<BigSource>;
 }
 
@@ -30,19 +31,21 @@ export function BorrowLimitGraph({
   currentLtv: _currentLtv,
   safeLtv: _safeLtv,
   maxLtv: _maxLtv,
+  dangerLtv: _dangerLtv,
   borrowLimit,
 }: BorrowLimitGraphProps) {
   const theme = useTheme();
 
   const isSmallScreen = useMediaQuery({ maxWidth: 700 });
 
-  const { currentLtv, safeLtv, maxLtv } = useMemo(() => {
+  const { currentLtv, safeLtv, maxLtv, dangerLtv } = useMemo(() => {
     return {
       currentLtv: big(_currentLtv) as Rate<Big>,
       safeLtv: big(_safeLtv) as Rate<Big>,
       maxLtv: big(_maxLtv) as Rate<Big>,
+      dangerLtv: big(_dangerLtv) as Rate<Big>,
     };
-  }, [_currentLtv, _maxLtv, _safeLtv]);
+  }, [_currentLtv, _dangerLtv, _maxLtv, _safeLtv]);
 
   return (
     <HorizontalGraphBar<RenderData>
@@ -71,7 +74,7 @@ export function BorrowLimitGraph({
           ? {
               position: 'top',
               label: `${formatRate(currentLtv)}%`,
-              color: currentLtv.gte(0.4)
+              color: currentLtv.gte(dangerLtv)
                 ? theme.colors.negative
                 : currentLtv.gte(safeLtv)
                 ? theme.colors.warning
