@@ -3,7 +3,8 @@ import {
   mypageTxHistoryQuery,
 } from '@anchor-protocol/webapp-fns';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useAnchorWebapp } from '../../contexts/context';
 
 interface TxHistoryReturn {
   history: MypageTxHistory[];
@@ -16,9 +17,7 @@ interface TxHistoryReturn {
 export function useMypageTxHistoryQuery(): TxHistoryReturn {
   const connectedWallet = useConnectedWallet();
 
-  const endpoint = useMemo(() => {
-    return 'https://api.anchorprotocol.com';
-  }, []);
+  const { indexerApiEndpoint: endpoint } = useAnchorWebapp();
 
   const [history, setHistory] = useState<MypageTxHistory[]>([]);
 

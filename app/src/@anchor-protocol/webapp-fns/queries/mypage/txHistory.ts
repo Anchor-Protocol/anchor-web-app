@@ -27,7 +27,7 @@ export async function mypageTxHistoryQuery({
 }: MypageTxHistoryQueryParams): Promise<MypageTxHistoryData> {
   const offsetQuery = offset ? '?offset=' + offset : '';
   const data: MypageTxHistoryData = await fetch(
-    `${endpoint}/api/history/${walletAddress}${offsetQuery}`,
+    `${endpoint}/history/${walletAddress}${offsetQuery}`,
   ).then((res) => res.json());
 
   return data;
