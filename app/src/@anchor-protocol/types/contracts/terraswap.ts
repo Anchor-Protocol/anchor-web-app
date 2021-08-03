@@ -1,7 +1,28 @@
 import { uToken } from '../currencies';
-import { CW20Addr, Denom, HumanAddr } from './common';
+import { CW20Addr, Denom, HumanAddr, StableDenom } from './common';
 
 export namespace terraswap {
+  export type CW20AssetInfo = { token: { contract_addr: CW20Addr } };
+  export type NativeAssetInfo = { native_token: { denom: StableDenom } };
+
+  export type AssetInfo = CW20AssetInfo | NativeAssetInfo;
+
+  export interface Pair {
+    pair: {
+      asset_infos: [AssetInfo, AssetInfo];
+    };
+  }
+
+  export interface PairResponse {
+    asset_infos: [AssetInfo, AssetInfo];
+
+    /** Pair contract address */
+    contract_addr: HumanAddr;
+
+    /** LP contract address */
+    liquidity_token: CW20Addr;
+  }
+
   export interface Pool {
     pool: {};
   }

@@ -1,5 +1,4 @@
 import {
-  AddressMap,
   AddressProvider,
   COLLATERAL_DENOMS,
   MARKET_DENOMS,
@@ -11,10 +10,11 @@ import {
   CW20Addr,
   HumanAddr,
 } from '@anchor-protocol/types';
+import { ExpandAddressMap } from '../types';
 
 export function createAnchorContractAddress(
   addressProvider: AddressProvider,
-  addressMap: AddressMap,
+  addressMap: ExpandAddressMap,
 ): ContractAddress {
   const bLunaCollateral: CollateralInfo = {
     type: CollateralType.bLuna,
@@ -78,6 +78,7 @@ export function createAnchorContractAddress(
       collector: addressProvider.collector() as HumanAddr,
     },
     terraswap: {
+      factory: addressMap.terraswapFactory as HumanAddr,
       blunaLunaPair: addressProvider.terraswapblunaLunaPair() as HumanAddr,
       ancUstPair: addressProvider.terraswapAncUstPair() as HumanAddr,
     },

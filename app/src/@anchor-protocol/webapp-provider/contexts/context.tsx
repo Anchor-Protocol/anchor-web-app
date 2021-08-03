@@ -1,5 +1,4 @@
 import {
-  AddressMap,
   AddressProvider,
   AddressProviderFromJson,
 } from '@anchor-protocol/anchor.js';
@@ -10,6 +9,7 @@ import {
   DEFAULT_ADDESS_MAP,
   DEFAULT_ANCHOR_INDEXER_API_ENDPOINTS,
   DEFAULT_ANCHOR_TX_CONSTANTS,
+  ExpandAddressMap,
 } from '@anchor-protocol/webapp-fns';
 import { useWallet } from '@terra-money/wallet-provider';
 import React, {
@@ -23,13 +23,13 @@ import React, {
 
 export interface AnchorWebappProviderProps {
   children: ReactNode;
-  contractAddressMaps?: Record<string, AddressMap>;
+  contractAddressMaps?: Record<string, ExpandAddressMap>;
   constants?: Record<string, AnchorContants>;
   indexerApiEndpoints?: Record<string, string>;
 }
 
 export interface AnchorWebapp {
-  contractAddressMap: AddressMap;
+  contractAddressMap: ExpandAddressMap;
   addressProvider: AddressProvider;
   contractAddress: ContractAddress;
   constants: AnchorContants;

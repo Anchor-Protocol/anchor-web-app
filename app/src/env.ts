@@ -1,11 +1,9 @@
-import {
-  AddressMap,
-  AddressProviderFromJson,
-} from '@anchor-protocol/anchor.js';
+import { AddressProviderFromJson } from '@anchor-protocol/anchor.js';
 import { Rate } from '@anchor-protocol/types';
 import {
   createAnchorContractAddress,
   DEFAULT_ADDESS_MAP,
+  ExpandAddressMap,
 } from '@anchor-protocol/webapp-fns';
 
 // ---------------------------------------------
@@ -84,9 +82,9 @@ export const onProduction =
   global.location.host === 'anchor.money' ||
   global.location.host === 'anchor.market';
 
-export const columbusContractAddresses: AddressMap =
+export const columbusContractAddresses: ExpandAddressMap =
   DEFAULT_ADDESS_MAP['mainnet'];
-export const tequilaContractAddresses: AddressMap =
+export const tequilaContractAddresses: ExpandAddressMap =
   DEFAULT_ADDESS_MAP['testnet'];
 
 export const ADDRESS_PROVIDERS = {

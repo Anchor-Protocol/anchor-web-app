@@ -1,3 +1,4 @@
+import { AddressMap } from '@anchor-protocol/anchor.js';
 import {
   Rate,
   uANC,
@@ -51,4 +52,8 @@ export interface AnchorTokenBalances {
 export interface AnchorTax {
   taxRate: Rate;
   maxTaxUUSD: uUST;
+}
+
+export interface ExpandAddressMap extends AddressMap {
+  terraswapFactory: string;
 }

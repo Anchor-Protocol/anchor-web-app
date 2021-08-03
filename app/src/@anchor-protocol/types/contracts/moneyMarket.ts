@@ -232,7 +232,7 @@ export namespace moneyMarket {
      * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/money-market/market#epochstateresponse
      */
     export interface EpochStateResponse {
-      exchange_rate: Rate;
+      exchange_rate: UST;
       aterra_supply: Num;
     }
 

@@ -21,6 +21,7 @@ import {
 } from '@anchor-protocol/types';
 import {
   useAnchorWebapp,
+  useEarnEpochStatesQuery,
   useMarketAncQuery,
   useMarketBEthQuery,
   useMarketBLunaQuery,
@@ -81,6 +82,7 @@ function DashboardBase({ className }: DashboardProps) {
     };
   }, [blocksPerYear, borrowRate, epochState]);
 
+  const { data: { moneyMarketEpochState } = {} } = useEarnEpochStatesQuery();
   const { data: marketUST } = useMarketUstQuery();
   const { data: marketBLuna } = useMarketBLunaQuery();
   const { data: marketBEth } = useMarketBEthQuery();
@@ -212,9 +214,17 @@ function DashboardBase({ className }: DashboardProps) {
     <div className={className}>
       <main>
         <div className="content-layout">
-          <TitleContainer>
+          <TitleContainerAndExchangeRate>
             <PageTitle title="DASHBOARD" />
-          </TitleContainer>
+            {moneyMarketEpochState && (
+              <div>
+                1 <small>aUST</small> <TokenIcon token="aust" />{' '}
+                <small>≈</small>{' '}
+                {formatUST(moneyMarketEpochState.exchange_rate)}{' '}
+                <small>UST</small> <TokenIcon token="ust" />
+              </div>
+            )}
+          </TitleContainerAndExchangeRate>
 
           <div className="summary-section">
             <Section className="total-value-locked">
@@ -715,6 +725,36 @@ function DashboardBase({ className }: DashboardProps) {
     </div>
   );
 }
+
+const TitleContainerAndExchangeRate = styled(TitleContainer)`
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+
+  > :nth-child(2) {
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+
+    small {
+      font-size: 0.8em;
+    }
+
+    img {
+      transform: scale(1.2) translateY(0.1em);
+    }
+  }
+
+  @media (max-width: 700px) {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    > :nth-child(2) {
+      font-size: 18px;
+    }
+  }
+`;
 
 const hHeavyRuler = css`
   padding: 0;

@@ -81,6 +81,7 @@ export interface ContractAddress {
     collector: HumanAddr;
   };
   terraswap: {
+    factory: HumanAddr;
     /** addressProvider.terraswapblunaLunaPair() */
     blunaLunaPair: HumanAddr;
     /** addressProvider.terraswapbAncUstPair() */

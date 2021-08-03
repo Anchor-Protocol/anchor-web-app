@@ -1,8 +1,7 @@
-import { AddressMap } from '@anchor-protocol/anchor.js';
 import { Rate, uUST } from '@anchor-protocol/types';
-import { AnchorContants } from './types';
+import { AnchorContants, ExpandAddressMap } from './types';
 
-export const DEFAULT_ADDESS_MAP: Record<string, AddressMap> = {
+export const DEFAULT_ADDESS_MAP: Record<string, ExpandAddressMap> = {
   mainnet: {
     bLunaHub: 'terra1mtwph2juhj0rvjz7dy92gvl6xvukaxu8rfv8ts',
     bLunaToken: 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp',
@@ -35,7 +34,7 @@ export const DEFAULT_ADDESS_MAP: Record<string, AddressMap> = {
     investor_vesting: '',
     //team: 'terra1pm54pmw3ej0vfwn3gtn6cdmaqxt0x37e9jt0za',
     //vesting: 'terra10evq9zxk2m86n3n3xnpw28jpqwp628c6dzuq42',
-    //terraswapFactory: '',
+    terraswapFactory: 'terra1ulgw0td86nvs4wtpsc80thv6xelk76ut7a7apj',
   },
   testnet: {
     bLunaHub: 'terra1fflas6wv4snv8lsda9knvq2w0cyt493r8puh2e',
@@ -69,7 +68,7 @@ export const DEFAULT_ADDESS_MAP: Record<string, AddressMap> = {
     investor_vesting: '',
     //vesting: 'terra19f6ktw4qpjj9p9m49y8mhf6pr9807d44xdcus7',
     //team: 'terra1x7ted5g0g6ntyqdaqmjwtzcctvvrdju49vs8pl',
-    //terraswapFactory: '',
+    terraswapFactory: 'terra18qpjm4zkvqnpjpw0zn0tdr8gdzvt8au35v45xf',
   },
 };
 
