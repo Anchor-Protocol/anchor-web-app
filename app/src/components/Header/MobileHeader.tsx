@@ -12,6 +12,7 @@ import {
 import logoUrl from 'components/Header/assets/Logo.svg';
 import { AirdropContent } from 'components/Header/WalletSelector/AirdropContent';
 import { links, mobileHeaderHeight } from 'env';
+import { useBuyUstDialog } from 'pages/earn/components/useBuyUstDialog';
 import { govPathname } from 'pages/gov/env';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import React, { useCallback, useState } from 'react';
@@ -34,6 +35,8 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
   const [openWalletDetail, walletDetailElement] = useWalletDetailDialog();
 
   const [openSendDialog, sendDialogElement] = useSendDialog();
+
+  const [openBuyUstDialog, buyUstDialogElement] = useBuyUstDialog();
 
   const { data: airdrop, isLoading: airdropIsLoading } = useAirdropCheckQuery();
   //const airdrop = useMemo<Airdrop | 'in-progress' | null>(
@@ -66,6 +69,7 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
     if (status === WalletStatus.WALLET_CONNECTED) {
       openWalletDetail({
         openSend: () => openSendDialog({}),
+        openBuyUst: () => openBuyUstDialog({}),
       });
     } else if (status === WalletStatus.WALLET_NOT_CONNECTED) {
       connect(
@@ -74,7 +78,7 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
           : ConnectType.WALLETCONNECT,
       );
     }
-  }, [connect, openSendDialog, openWalletDetail, status]);
+  }, [connect, openBuyUstDialog, openSendDialog, openWalletDetail, status]);
 
   const viewAddress = useCallback(() => {
     setOpen(false);
@@ -165,6 +169,7 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
 
       {walletDetailElement}
       {sendDialogElement}
+      {buyUstDialogElement}
     </>
   );
 }

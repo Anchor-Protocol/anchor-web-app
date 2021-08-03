@@ -11,6 +11,7 @@ import { WalletDetailContent } from './WalletDetailContent';
 interface FormParams {
   className?: string;
   openSend: () => void;
+  openBuyUst: () => void;
 }
 
 type FormReturn = void;
@@ -26,6 +27,7 @@ function ComponentBase({
   className,
   closeDialog,
   openSend,
+  openBuyUst,
 }: DialogProps<FormParams, FormReturn>) {
   const { disconnect } = useWallet();
   const connectedWallet = useConnectedWallet();
@@ -51,6 +53,7 @@ function ComponentBase({
             disconnectWallet={disconnectWallet}
             bank={bank}
             openSend={openSend}
+            openBuyUst={openBuyUst}
           />
         )}
       </Dialog>

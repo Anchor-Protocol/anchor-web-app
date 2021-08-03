@@ -8,6 +8,7 @@ import {
   truncate,
 } from '@anchor-protocol/notation';
 import { Check, KeyboardArrowRight, Launch } from '@material-ui/icons';
+import { buttonBaseStyle } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { FlatButton } from '@terra-dev/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
@@ -16,7 +17,7 @@ import { ConnectType } from '@terra-money/wallet-provider';
 import { Bank } from 'base/contexts/bank';
 import big from 'big.js';
 import { ConnectionIcons } from 'components/Header/WalletSelector/ConnectionIcons';
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
 import useClipboard from 'react-use-clipboard';
 import styled from 'styled-components';
 
@@ -30,6 +31,7 @@ interface WalletDetailContentProps {
   openSend: () => void;
   availablePost: boolean;
   connectType: ConnectType;
+  openBuyUst: () => void;
 }
 
 export function WalletDetailContentBase({
@@ -40,6 +42,7 @@ export function WalletDetailContentBase({
   closePopup,
   bank,
   openSend,
+  openBuyUst,
   availablePost,
   connectType,
 }: WalletDetailContentProps) {
@@ -68,7 +71,17 @@ export function WalletDetailContentBase({
         <ul>
           {big(bank.userBalances.uUSD).gt(0) && (
             <li>
-              <span>UST</span>
+              <span>
+                UST{' '}
+                <BuyUstButton
+                  onClick={() => {
+                    openBuyUst();
+                    closePopup();
+                  }}
+                >
+                  BUY <Launch />
+                </BuyUstButton>
+              </span>
               <span>
                 {formatUSTWithPostfixUnits(demicrofy(bank.userBalances.uUSD))}
               </span>
@@ -187,6 +200,33 @@ export function WalletDetailContentBase({
     </div>
   );
 }
+
+const BuyUstButton = styled.button`
+  ${buttonBaseStyle};
+
+  background-color: transparent;
+  border: 1px solid ${({ theme }) => theme.hoverBackgroundColor};
+
+  height: 16px;
+  border-radius: 6px;
+  padding: 0 8px 1px 8px;
+
+  font-size: 9px;
+  color: ${({ theme }) => theme.colors.positive};
+
+  transform: translateY(-1.5px);
+
+  svg {
+    font-size: 1em;
+    margin-left: 1px;
+    transform: translateY(1px);
+  }
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.positive};
+    border-color: ${({ theme }) => theme.colors.positive};
+  }
+`;
 
 export const WalletDetailContent = styled(WalletDetailContentBase)`
   > section {

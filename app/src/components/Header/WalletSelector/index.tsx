@@ -11,6 +11,7 @@ import {
   WalletStatus,
 } from '@terra-money/wallet-provider';
 import { useBank } from 'base/contexts/bank';
+import { useBuyUstDialog } from 'pages/earn/components/useBuyUstDialog';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import { useCallback, useState } from 'react';
 import { useRouteMatch } from 'react-router-dom';
@@ -65,6 +66,8 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   const matchAirdrop = useRouteMatch('/airdrop');
 
   const [openSendDialog, sendDialogElement] = useSendDialog();
+
+  const [openBuyUstDialog, buyUstDialogElement] = useBuyUstDialog();
 
   // ---------------------------------------------
   // states
@@ -259,12 +262,14 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                     closePopup={() => setOpenDropdown(false)}
                     disconnectWallet={disconnectWallet}
                     openSend={() => openSendDialog({})}
+                    openBuyUst={() => openBuyUstDialog({})}
                   />
                 </DropdownBox>
               </DropdownContainer>
             )}
 
             {sendDialogElement}
+            {buyUstDialogElement}
           </div>
         </ClickAwayListener>
       ) : null;

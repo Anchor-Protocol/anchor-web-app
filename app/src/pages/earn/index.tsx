@@ -4,9 +4,10 @@ import {
 } from '@terra-dev/styled-neumorphism';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { screen } from 'env';
-import { InsuranceCoverageButton } from 'pages/earn/components/InsuranceCoverageButton';
 import React from 'react';
 import styled from 'styled-components';
+import { BuyUstButton } from './components/BuyUstButton';
+import { InsuranceCoverageButton } from './components/InsuranceCoverageButton';
 import { InterestSection } from './components/InterestSection';
 import { TotalDepositSection } from './components/TotalDepositSection';
 import { TransactionHistorySection } from './components/TransactionHistorySection';
@@ -20,6 +21,7 @@ function EarnBase({ className }: EarnProps) {
     <PaddedLayout className={className}>
       <ButtonContainer>
         <InsuranceCoverageButton />
+        <BuyUstButton />
       </ButtonContainer>
       <section className="grid">
         <TotalDepositSection className="total-deposit" />
@@ -34,6 +36,12 @@ const ButtonContainer = styled.div`
   height: 50px;
   display: flex;
   justify-content: flex-end;
+
+  @media (max-width: ${screen.tablet.max}px) {
+    button {
+      letter-spacing: -1px;
+    }
+  }
 `;
 
 export const Earn = styled(EarnBase)`
