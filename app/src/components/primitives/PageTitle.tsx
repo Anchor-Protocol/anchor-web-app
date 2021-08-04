@@ -60,7 +60,7 @@ export const FlexTitleContainer = styled.div`
 
   margin-bottom: 25px;
 
-  @media (max-width: 600px) {
+  @media (max-width: 700px) {
     flex-direction: column;
     align-items: flex-start;
 

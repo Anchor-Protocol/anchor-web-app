@@ -7,6 +7,7 @@ import { ExpectedInterestSection } from './components/ExpectedInterestSection';
 import { InsuranceCoverageButton } from './components/InsuranceCoverageButton';
 import { InterestSection } from './components/InterestSection';
 import { TotalDepositSection } from './components/TotalDepositSection';
+import { BuyUstButton } from './components/BuyUstButton';
 
 export interface EarnProps {
   className?: string;
@@ -17,7 +18,10 @@ function EarnBase({ className }: EarnProps) {
     <PaddedLayout className={className}>
       <FlexTitleContainer>
         <PageTitle title="EARN" docs={links.docs.earn} />
-        <InsuranceCoverageButton />
+        <Buttons>
+          <InsuranceCoverageButton />
+          <BuyUstButton />
+        </Buttons>
       </FlexTitleContainer>
       <section className="grid">
         <TotalDepositSection className="total-deposit" />
@@ -27,6 +31,18 @@ function EarnBase({ className }: EarnProps) {
     </PaddedLayout>
   );
 }
+
+const Buttons = styled.div`
+  display: flex;
+  gap: 10px;
+
+  @media (max-width: 700px) {
+    width: 100%;
+    gap: 0;
+    justify-content: stretch;
+    flex-direction: column;
+  }
+`;
 
 export const Earn = styled(EarnBase)`
   // ---------------------------------------------

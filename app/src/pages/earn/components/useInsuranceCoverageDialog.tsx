@@ -4,7 +4,7 @@ import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
 import { EmbossButton } from '@terra-dev/neumorphism-ui/components/EmbossButton';
 import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
 import React, { ReactNode } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import bridgeMutual from './assets/bridgeMutual.svg';
 import insurAce from './assets/insurAce.svg';
 import nexusMutual from './assets/nexusMutual.svg';
@@ -37,7 +37,7 @@ function ComponentBase({
 
           <EmbossButton
             component="a"
-            href="https://nexusmutual.io/"
+            href="https://unslashed.finance/"
             target="_blank"
             rel="noreferrer"
           >
@@ -92,7 +92,7 @@ function ComponentBase({
 
           <EmbossButton
             component="a"
-            href="https://www.insurace.io/"
+            href="https://www.bridgemutual.io/"
             target="_blank"
             rel="noreferrer"
           >
@@ -112,14 +112,11 @@ function ComponentBase({
   );
 }
 
-const Component = styled(ComponentBase)`
-  width: 458px;
-
+export const dialogStyle = css`
   h1 {
     font-size: 24px;
     text-align: center;
     font-weight: 300;
-
     margin-bottom: 41px;
     letter-spacing: -0.5px;
   }
@@ -139,11 +136,8 @@ const Component = styled(ComponentBase)`
   a {
     width: 100%;
     height: 60px;
-
     font-size: 16px;
-
     padding: 0 37px 0 27px;
-
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -172,4 +166,10 @@ const Component = styled(ComponentBase)`
       margin-top: 16px;
     }
   }
+`;
+
+const Component = styled(ComponentBase)`
+  width: 458px;
+
+  ${dialogStyle};
 `;
