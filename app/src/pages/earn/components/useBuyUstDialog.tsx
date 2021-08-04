@@ -75,7 +75,7 @@ function ComponentBase({
 
           <EmbossButton
             component="a"
-            href="https://global.transak.com/"
+            href="https://global.transak.com/?defaultCryptoCurrency=UST"
             target="_blank"
             rel="noreferrer"
           >
