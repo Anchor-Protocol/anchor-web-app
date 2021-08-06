@@ -72,14 +72,8 @@ export function RewardsBase({ className }: RewardsProps) {
                     pools
                   </InfoTooltip>
                 </IconSpan>
-                <br />
-                Staked Value
               </th>
-              <th>
-                Stakeable
-                <br />
-                Stakeable Value
-              </th>
+              <th>Stakeable</th>
               <th>
                 <IconSpan>
                   Reward{' '}
@@ -88,8 +82,6 @@ export function RewardsBase({ className }: RewardsProps) {
                     pool
                   </InfoTooltip>
                 </IconSpan>
-                <br />
-                Reward Value
               </th>
               <th>Actions</th>
             </tr>
@@ -114,12 +106,13 @@ export function RewardsBase({ className }: RewardsProps) {
                 </p>
                 <p className="subtext">
                   <IconSpan>
+                    ≈{' '}
                     {govGorvernance?.stakedValue
                       ? formatUSTWithPostfixUnits(
                           demicrofy(govGorvernance.stakedValue),
                         )
                       : 0}{' '}
-                    UST <InfoTooltip>Staked ANC value in UST</InfoTooltip>
+                    UST
                   </IconSpan>
                 </p>
               </td>
@@ -134,12 +127,13 @@ export function RewardsBase({ className }: RewardsProps) {
                 </p>
                 <p className="subtext">
                   <IconSpan>
+                    ≈{' '}
                     {govGorvernance?.stakableValue
                       ? formatUSTWithPostfixUnits(
                           demicrofy(govGorvernance.stakableValue),
                         )
                       : 0}{' '}
-                    UST <InfoTooltip>Stakeable ANC value in UST</InfoTooltip>
+                    UST
                   </IconSpan>
                 </p>
               </td>
@@ -174,6 +168,7 @@ export function RewardsBase({ className }: RewardsProps) {
                 <p>ANC-UST LP</p>
                 <p className="subtext">
                   <IconSpan>
+                    ≈{' '}
                     {ancUstLp?.withdrawableAssets
                       ? formatANCWithPostfixUnits(
                           demicrofy(ancUstLp.withdrawableAssets.anc),
@@ -185,10 +180,7 @@ export function RewardsBase({ className }: RewardsProps) {
                           demicrofy(ancUstLp.withdrawableAssets.ust),
                         )
                       : 0}{' '}
-                    UST{' '}
-                    <InfoTooltip>
-                      Amount of withdrawable assets from the ANC-UST pair
-                    </InfoTooltip>
+                    UST
                   </IconSpan>
                 </p>
               </td>
@@ -205,12 +197,13 @@ export function RewardsBase({ className }: RewardsProps) {
                 </p>
                 <p className="subtext">
                   <IconSpan>
+                    ≈{' '}
                     {ancUstLp?.stakedValue
                       ? formatUSTWithPostfixUnits(
                           demicrofy(ancUstLp.stakedValue),
                         )
                       : 0}{' '}
-                    UST <InfoTooltip>Staked LP value in UST</InfoTooltip>
+                    UST
                   </IconSpan>
                 </p>
               </td>
@@ -227,12 +220,13 @@ export function RewardsBase({ className }: RewardsProps) {
                 </p>
                 <p className="subtext">
                   <IconSpan>
+                    ≈{' '}
                     {ancUstLp?.stakableValue
                       ? formatUSTWithPostfixUnits(
                           demicrofy(ancUstLp.stakableValue),
                         )
                       : 0}{' '}
-                    UST <InfoTooltip>Stakeable LP value in UST</InfoTooltip>
+                    UST
                   </IconSpan>
                 </p>
               </td>
@@ -245,12 +239,13 @@ export function RewardsBase({ className }: RewardsProps) {
                 </p>
                 <p className="subtext">
                   <IconSpan>
+                    ≈{' '}
                     {ancUstLp?.rewardValue
                       ? formatUSTWithPostfixUnits(
                           demicrofy(ancUstLp.rewardValue),
                         )
                       : 0}{' '}
-                    UST <InfoTooltip>Reward ANC value in UST</InfoTooltip>
+                    UST
                   </IconSpan>
                 </p>
               </td>
@@ -302,12 +297,13 @@ export function RewardsBase({ className }: RewardsProps) {
                 </p>
                 <p className="subtext">
                   <IconSpan>
+                    ≈{' '}
                     {ustBorrow?.rewardValue
                       ? formatUSTWithPostfixUnits(
                           demicrofy(ustBorrow.rewardValue),
                         )
                       : 0}{' '}
-                    UST <InfoTooltip>Reward ANC value in UST</InfoTooltip>
+                    UST
                   </IconSpan>
                 </p>
               </td>
@@ -347,24 +343,24 @@ export const Rewards = styled(RewardsBase)`
 
     thead,
     tbody {
-      th:nth-child(2),
-      td:nth-child(2),
       th:nth-child(3),
       td:nth-child(3),
       th:nth-child(4),
       td:nth-child(4),
       th:nth-child(5),
       td:nth-child(5) {
-        text-align: center;
+        text-align: right;
       }
 
       .warning {
         color: ${({ theme }) => theme.colors.negative};
       }
 
+      th:nth-child(2),
+      td:nth-child(2),
       th:nth-child(6),
       td:nth-child(6) {
-        text-align: right;
+        text-align: center;
       }
     }
   }
