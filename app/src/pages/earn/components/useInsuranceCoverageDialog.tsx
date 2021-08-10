@@ -75,7 +75,7 @@ function ComponentBase({
 
           <EmbossButton
             component="a"
-            href="https://www.insurace.io/"
+            href="https://app.insurace.io/Insurance/Cart?id=56&referrer=1403699302269502414217348026580880651844264120067"
             target="_blank"
             rel="noreferrer"
           >
