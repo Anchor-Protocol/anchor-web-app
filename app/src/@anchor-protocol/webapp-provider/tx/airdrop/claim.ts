@@ -46,7 +46,9 @@ export function useAirdropClaimTx() {
         // side effect
         onTxSucceed: () => {
           onTxSucceed?.();
-          refetchQueries(ANCHOR_TX_KEY.AIRDROP_CLAIM);
+          setTimeout(() => {
+            refetchQueries(ANCHOR_TX_KEY.AIRDROP_CLAIM);
+          }, 2000);
         },
       });
     },

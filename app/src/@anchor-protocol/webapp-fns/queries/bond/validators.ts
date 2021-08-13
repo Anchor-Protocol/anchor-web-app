@@ -1,4 +1,4 @@
-import { bluna } from '@anchor-protocol/types';
+import { bluna, Num } from '@anchor-protocol/types';
 import {
   mantle,
   MantleParams,
@@ -45,6 +45,29 @@ export const BOND_VALIDATORS_QUERY = `
   }
 `;
 
+// language=graphql
+export const VALIDATOR_VOTING_POWER_QUERY = `
+  query ($address: String!) {
+    votingPower: StakingValidatorsValidatorAddr(ValidatorAddr: $address) {
+      Result {
+        Tokens
+      }
+    }
+  }
+`;
+
+interface ValidatorVotingPowerQueryParams {
+  address: string;
+}
+
+interface ValidatorVotingPowerQueryResult {
+  votingPower: {
+    Result: {
+      Tokens: Num;
+    };
+  };
+}
+
 export type BondValidatorsQueryParams = Omit<
   MantleParams<BondValidatorsWasmQuery>,
   'query' | 'variables'
@@ -52,6 +75,7 @@ export type BondValidatorsQueryParams = Omit<
 
 export async function bondValidatorsQuery({
   mantleEndpoint,
+  wasmQuery,
   ...params
 }: BondValidatorsQueryParams): Promise<BondValidators> {
   const { validators: _validators, hubWhitelistedValidators } = await mantle<
@@ -62,6 +86,7 @@ export async function bondValidatorsQuery({
     mantleEndpoint: `${mantleEndpoint}?bond--validators`,
     query: BOND_VALIDATORS_QUERY,
     variables: {},
+    wasmQuery,
     ...params,
   });
 
@@ -74,9 +99,34 @@ export async function bondValidatorsQuery({
     filter.has(OperatorAddress),
   );
 
+  const votingPowers = await Promise.all(
+    whitelistedValidators.map(({ OperatorAddress }) => {
+      return mantle<
+        {},
+        ValidatorVotingPowerQueryParams,
+        ValidatorVotingPowerQueryResult
+      >({
+        mantleEndpoint: `${mantleEndpoint}?bond-validator-voting-power=${OperatorAddress}`,
+        variables: {
+          address: OperatorAddress,
+        },
+        wasmQuery: {},
+        query: VALIDATOR_VOTING_POWER_QUERY,
+        ...params,
+      }).then(({ votingPower }) => {
+        return votingPower.Result.Tokens;
+      });
+    }),
+  );
+
+  const sortedValidators = whitelistedValidators
+    .map((validator, i) => [votingPowers[i], validator] as const)
+    .sort(([a], [b]) => +a - +b)
+    .map(([, validator]) => validator);
+
   return {
     validators,
-    whitelistedValidators,
+    whitelistedValidators: sortedValidators,
     hubWhitelistedValidators,
   };
 }
