@@ -39,9 +39,7 @@ export function useRewards() {
       return undefined;
     }
 
-    const totalUserLPHolding = big(userLPBalance.balance).plus(
-      userLPStakingInfo.bond_amount,
-    );
+    const totalUserLPHolding = big(userLPBalance.balance);
 
     const LPValue = big(ancPrice.USTPoolSize)
       .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare)
