@@ -5,12 +5,12 @@ __metadata:
   version: 4
   cacheKey: 8
 
-"@anchor-protocol/anchor.js@npm:^1.1.0-alpha.2":
-  version: 1.1.0-alpha.2
-  resolution: "@anchor-protocol/anchor.js@npm:1.1.0-alpha.2"
+"@anchor-protocol/anchor.js@npm:^1.1.0-alpha.5":
+  version: 1.1.0-alpha.5
+  resolution: "@anchor-protocol/anchor.js@npm:1.1.0-alpha.5"
   dependencies:
-    "@terra-money/terra.js": ^1.8.3
-  checksum: deaadb4257fec359646d142632d9426f1d7f09bc3333ec0ee1c6e1c53adf4e71b07977bcd227029b3e9f37600822a57d72e5d79b6b9b699d4fecea23931ea1cb
+    "@terra-money/terra.js": ^1.8.9
+  checksum: 8acda152f8009f6ead9f5d453e370735b1f447ad31aa117b73cc681d60fd6c47f642224684abf5d59d247ae174e74c39bf6689337d513faf7c666c29f4fb9500
   languageName: node
   linkType: hard
 
@@ -18,13 +18,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@anchor-web-app/app@workspace:app"
   dependencies:
-    "@anchor-protocol/anchor.js": ^1.1.0-alpha.2
+    "@anchor-protocol/anchor.js": ^1.1.0-alpha.5
     "@material-ui/core": ^4.11.3
     "@material-ui/icons": ^4.11.2
     "@peculiar/webcrypto": ^1.1.7
     "@rocket-scripts/utils": ^3.2.0
-    "@rx-stream/pipe": ^0.7.0
-    "@rx-stream/react": ^0.7.0
+    "@rx-stream/pipe": ^0.7.1
+    "@rx-stream/react": ^0.7.1
     "@sentry/react": ^6.8.0
     "@sentry/tracing": ^6.8.0
     "@ssen/jest-transform": ^3.0.0
@@ -3428,22 +3428,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rx-stream/pipe@npm:^0.7.0":
-  version: 0.7.0
-  resolution: "@rx-stream/pipe@npm:0.7.0"
+"@rx-stream/pipe@npm:^0.7.1":
+  version: 0.7.1
+  resolution: "@rx-stream/pipe@npm:0.7.1"
   dependencies:
     rxjs: ^7.0.0
-  checksum: 8ba6a1264cdc7043ade1629f658291474931d7f8e4a2ced7effcc816702eaec213b9a85b78492f9fffd61425e85fc3d3b99d33eccd2653706d8aef6fcb203f0e
+  checksum: 7fa6c371fb6f9e7b7695fc102aa15966b37cfeb4172d0a2563b421646f854e6db53001bb7cebc74a80f67a91fb48aa6bb9a9fa46504fc78cb46155b5f712fd27
   languageName: node
   linkType: hard
 
-"@rx-stream/react@npm:^0.7.0":
-  version: 0.7.0
-  resolution: "@rx-stream/react@npm:0.7.0"
+"@rx-stream/react@npm:^0.7.1":
+  version: 0.7.1
+  resolution: "@rx-stream/react@npm:0.7.1"
   dependencies:
     react: ^17.0.2
     rxjs: ^7.0.0
-  checksum: 4edcfe68883f2edf7b6513dc0bb7d6696b1c0da6b27e1bc28c0837626c4654188292c33a6b68a34bebcb1b9298073c838ceea6c866ab1ddf1fd643e5b4401fa4
+  checksum: e869a62f2e90a21fce55f823e017607ee9d47b5eff911e8dd7fcbe0ef66971af303c4c8d0bfa0b499e18af7e6a98b5234858911cdc9b4aaeaebd0010781a1f06
   languageName: node
   linkType: hard
 
@@ -5088,9 +5088,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@terra-money/terra.js@npm:^1.7.0, @terra-money/terra.js@npm:^1.8.0, @terra-money/terra.js@npm:^1.8.3, @terra-money/terra.js@npm:^1.8.5":
-  version: 1.8.5
-  resolution: "@terra-money/terra.js@npm:1.8.5"
+"@terra-money/terra.js@npm:^1.7.0, @terra-money/terra.js@npm:^1.8.0, @terra-money/terra.js@npm:^1.8.5, @terra-money/terra.js@npm:^1.8.9":
+  version: 1.8.9
+  resolution: "@terra-money/terra.js@npm:1.8.9"
   dependencies:
     axios: ^0.21.1
     bech32: ^2.0.0
@@ -5104,7 +5104,7 @@ __metadata:
     tmp: ^0.2.1
     utf-8-validate: ^5.0.5
     ws: ^7.4.2
-  checksum: 5a8ff8fe718e599a9177806c055c7532d77a035902b1f7701da160621fc211d62f3cf54a8d2849a417821533392e6c7f229bd2e7ee150db7e209dd4c2d05b429
+  checksum: 277a8e5746f7be8f5bd3f46fc5930c0305c1532c5c74fb923a3748a05a271b0dfc1b004ee7540fc715744fb56cc82d1c74246444ab68b68ab040d057036ddc51
   languageName: node
   linkType: hard
 
