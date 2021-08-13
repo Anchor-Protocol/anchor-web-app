@@ -1,4 +1,5 @@
 import { Rate } from '@anchor-protocol/types';
+import { useBorrowMarketQuery } from '@anchor-protocol/webapp-provider';
 import { Slider, Switch } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { NotificationsNone } from '@material-ui/icons';
@@ -23,7 +24,9 @@ function createMark(percent: number) {
 }
 
 function NotificationContentBase({ className }: NotificationContentProps) {
-  const bAssetLtvsAvg = { safe: '0.45' as Rate, max: '0.6' as Rate };
+  const {
+    data: { bAssetLtvsAvg = { safe: '0.45' as Rate, max: '0.6' as Rate } } = {},
+  } = useBorrowMarketQuery();
 
   const { safe, max, sliderMarks } = useMemo(() => {
     const safe = big(bAssetLtvsAvg.safe).mul(100).toNumber();

@@ -13,27 +13,16 @@ import {
   MICRO,
   MILLION,
 } from '@anchor-protocol/notation';
-import { Rate } from '@anchor-protocol/types';
-import {
-  useAnchorWebapp,
-  useBorrowAPYQuery,
-  useBorrowBorrowerQuery,
-  useBorrowMarketQuery,
-} from '@anchor-protocol/webapp-provider';
 import { IconCircle } from '@terra-dev/neumorphism-ui/components/IconCircle';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { TooltipIconCircle } from '@terra-dev/neumorphism-ui/components/TooltipIconCircle';
-import big, { Big } from 'big.js';
-import { SubAmount } from 'components/SubAmount';
+import { SubAmount } from 'components/primitives/SubAmount';
 import { screen } from 'env';
-import { currentLtv as _currentLtv } from 'pages/borrow/logics/currentLtv';
-import React, { useMemo } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { apr as _apr } from '../logics/apr';
-import { borrowed as _borrowed } from '../logics/borrowed';
-import { collaterals as _collaterals } from '../logics/collaterals';
+import { useBorrowOverviewData } from '../logics/useBorrowOverviewData';
 import { BorrowLimitGraph } from './BorrowLimitGraph';
 
 export interface OverviewProps {
@@ -41,41 +30,21 @@ export interface OverviewProps {
 }
 
 function OverviewBase({ className }: OverviewProps) {
-  const { data: { borrowRate, oraclePrice, bLunaSafeLtv, bLunaMaxLtv } = {} } =
-    useBorrowMarketQuery();
-
-  const { data: { marketBorrowerInfo, custodyBorrower } = {} } =
-    useBorrowBorrowerQuery();
-
   const {
-    constants: { blocksPerYear },
-  } = useAnchorWebapp();
+    borrowAPR,
+    borrowedValue,
+    collateralValue,
+    borrowLimit,
+    bAssetLtvsAvg,
+    netAPR,
+    currentLtv,
+    dangerLtv,
+    borrowerDistributionAPYs,
+  } = useBorrowOverviewData();
 
-  const { data: { borrowerDistributionAPYs } = {} } = useBorrowAPYQuery();
-
-  const currentLtv = useMemo(
-    () =>
-      marketBorrowerInfo && custodyBorrower && oraclePrice
-        ? _currentLtv(marketBorrowerInfo, custodyBorrower, oraclePrice)
-        : undefined,
-    [custodyBorrower, marketBorrowerInfo, oraclePrice],
-  );
-
-  const apr = useMemo(
-    () => _apr(borrowRate, blocksPerYear),
-    [blocksPerYear, borrowRate],
-  );
-
-  const borrowed = useMemo(
-    () => _borrowed(marketBorrowerInfo),
-    [marketBorrowerInfo],
-  );
-
-  const collaterals = useMemo(
-    () => _collaterals(custodyBorrower, oraclePrice?.rate),
-    [custodyBorrower, oraclePrice?.rate],
-  );
-
+  // ---------------------------------------------
+  // presentation
+  // ---------------------------------------------
   return (
     <Section className={className}>
       <article>
@@ -91,12 +60,12 @@ function OverviewBase({ className }: OverviewProps) {
           <div className="value">
             $
             <AnimateNumber format={formatUSTWithPostfixUnits}>
-              {demicrofy(collaterals)}
+              {demicrofy(collateralValue)}
             </AnimateNumber>
-            {collaterals.gt(MILLION * MICRO) && (
+            {collateralValue.gt(MILLION * MICRO) && (
               <SubAmount style={{ fontSize: '15px' }}>
                 <AnimateNumber format={formatUST}>
-                  {demicrofy(collaterals)}
+                  {demicrofy(collateralValue)}
                 </AnimateNumber>{' '}
                 UST
               </SubAmount>
@@ -123,12 +92,12 @@ function OverviewBase({ className }: OverviewProps) {
           <div className="value">
             $
             <AnimateNumber format={formatUSTWithPostfixUnits}>
-              {demicrofy(borrowed)}
+              {demicrofy(borrowedValue)}
             </AnimateNumber>
-            {borrowed.gt(MILLION * MICRO) && (
+            {borrowedValue.gt(MILLION * MICRO) && (
               <SubAmount style={{ fontSize: '15px' }}>
                 <AnimateNumber format={formatUST}>
-                  {demicrofy(borrowed)}
+                  {demicrofy(borrowedValue)}
                 </AnimateNumber>{' '}
                 UST
               </SubAmount>
@@ -138,7 +107,8 @@ function OverviewBase({ className }: OverviewProps) {
             <LabelAndCircle>
               <p>
                 <IconSpan>
-                  Borrowed: {formatUSTWithPostfixUnits(demicrofy(borrowed))} UST{' '}
+                  Borrowed:{' '}
+                  {formatUSTWithPostfixUnits(demicrofy(borrowedValue))} UST{' '}
                   <InfoTooltip>
                     The borrow amount for this specific stablecoin
                   </InfoTooltip>
@@ -163,14 +133,7 @@ function OverviewBase({ className }: OverviewProps) {
             </IconSpan>
           </h3>
           <div className="value">
-            <AnimateNumber format={formatRate}>
-              {borrowerDistributionAPYs && borrowerDistributionAPYs.length > 0
-                ? (big(borrowerDistributionAPYs[0].DistributionAPY).minus(
-                    apr,
-                  ) as Rate<Big>)
-                : (0 as Rate<number>)}
-            </AnimateNumber>{' '}
-            %
+            <AnimateNumber format={formatRate}>{netAPR}</AnimateNumber> %
           </div>
           <div>
             <Circles>
@@ -184,7 +147,7 @@ function OverviewBase({ className }: OverviewProps) {
                 </TooltipIconCircle>
                 <p>
                   Borrow APR
-                  <b>{formatRate(apr)}%</b>
+                  <b>{formatRate(borrowAPR)}%</b>
                 </p>
               </div>
               <div>
@@ -211,14 +174,14 @@ function OverviewBase({ className }: OverviewProps) {
         </div>
       </article>
 
-      {currentLtv && bLunaSafeLtv && bLunaMaxLtv && marketBorrowerInfo && (
+      {currentLtv && bAssetLtvsAvg && borrowLimit && (
         <figure>
           <BorrowLimitGraph
-            ltv={currentLtv}
-            bLunaSafeLtv={bLunaSafeLtv}
-            bLunaMaxLtv={bLunaMaxLtv}
-            collateralValue={collaterals}
-            loanAmount={marketBorrowerInfo.loan_amount}
+            currentLtv={currentLtv}
+            safeLtv={bAssetLtvsAvg.safe}
+            maxLtv={bAssetLtvsAvg.max}
+            dangerLtv={dangerLtv}
+            borrowLimit={borrowLimit}
           />
         </figure>
       )}

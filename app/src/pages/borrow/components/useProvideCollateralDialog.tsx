@@ -1,20 +1,32 @@
 import {
   demicrofy,
-  formatLuna,
-  formatLunaInput,
+  formatBAsset,
+  formatBAssetInput,
   formatUST,
   formatUSTInput,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { bLuna, Rate } from '@anchor-protocol/types';
+import { bAsset, bLuna, CW20Addr, Rate, ubAsset } from '@anchor-protocol/types';
 import {
+  AnchorTax,
+  AnchorTokenBalances,
   BorrowBorrower,
   BorrowMarket,
+  computeCurrentLtv,
+  computeDepositAmountToBorrowLimit,
+  computeDepositAmountToLtv,
+  computeLtvToDepositAmount,
+  computeProvideCollateralBorrowLimit,
+  computeProvideCollateralNextLtv,
+  pickCollateral,
+  prettifyBAssetSymbol,
   useAnchorWebapp,
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
   useBorrowProvideCollateralTx,
+  validateDepositAmount,
+  validateTxFee,
 } from '@anchor-protocol/webapp-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
@@ -27,28 +39,22 @@ import { TextInput } from '@terra-dev/neumorphism-ui/components/TextInput';
 import type { DialogProps, OpenDialog } from '@terra-dev/use-dialog';
 import { useDialog } from '@terra-dev/use-dialog';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank } from 'base/contexts/bank';
+import { useBank, useCW20TokenBalance } from '@terra-money/webapp-provider';
 import big, { Big, BigSource } from 'big.js';
-import { IconLineSeparator } from 'components/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
+import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { validateTxFee } from 'logics/validateTxFee';
 import type { ChangeEvent, ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { currentLtv as _currentLtv } from '../logics/currentLtv';
-import { depositAmountToBorrowLimit } from '../logics/depositAmountToBorrowLimit';
-import { depositAmountToLtv } from '../logics/depositAmountToLtv';
-import { ltvToDepositAmount } from '../logics/ltvToDepositAmount';
-import { provideCollateralBorrowLimit } from '../logics/provideCollateralBorrowLimit';
-import { provideCollateralNextLtv } from '../logics/provideCollateralNextLtv';
-import { validateDepositAmount } from '../logics/validateDepositAmount';
+import { pickCollateralDenom } from '../logics/pickCollateralDenom';
 import { LTVGraph } from './LTVGraph';
 
 interface FormParams {
   className?: string;
+  collateralToken: CW20Addr;
   fallbackBorrowMarket: BorrowMarket;
   fallbackBorrowBorrower: BorrowBorrower;
 }
@@ -65,6 +71,7 @@ export function useProvideCollateralDialog(): [
 function ComponentBase({
   className,
   closeDialog,
+  collateralToken,
   fallbackBorrowMarket,
   fallbackBorrowBorrower,
 }: DialogProps<FormParams, FormReturn>) {
@@ -85,77 +92,106 @@ function ComponentBase({
   // ---------------------------------------------
   // states
   // ---------------------------------------------
-  const [depositAmount, setDepositAmount] = useState<bLuna>('' as bLuna);
+  const [depositAmount, setDepositAmount] = useState<bAsset>('' as bAsset);
 
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const bank = useBank();
+  const { tokenBalances } = useBank<AnchorTokenBalances, AnchorTax>();
+
+  const ubAssetBalance = useCW20TokenBalance<ubAsset>(collateralToken);
 
   const {
     data: {
-      oraclePrice,
-      bLunaMaxLtv = '0.6' as Rate,
-      bLunaSafeLtv = '0.45' as Rate,
+      oraclePrices,
+      overseerWhitelist,
+      bAssetLtvs,
+      bAssetLtvsAvg,
     } = fallbackBorrowMarket,
   } = useBorrowMarketQuery();
 
   const {
-    data: {
-      marketBorrowerInfo: loanAmount,
-      custodyBorrower: borrowInfo,
-    } = fallbackBorrowBorrower,
+    data: { marketBorrowerInfo, overseerCollaterals } = fallbackBorrowBorrower,
   } = useBorrowBorrowerQuery();
 
   // ---------------------------------------------
   // calculate
   // ---------------------------------------------
+  const dangerLtv = useMemo(() => {
+    return big(bAssetLtvsAvg.max).minus(0.1) as Rate<Big>;
+  }, [bAssetLtvsAvg.max]);
+
+  const collateral = useMemo(
+    () => pickCollateral(collateralToken, overseerWhitelist),
+    [collateralToken, overseerWhitelist],
+  );
+
+  const collateralDenom = useMemo(() => {
+    return pickCollateralDenom(collateral);
+  }, [collateral]);
+
   const amountToLtv = useMemo(
-    () => depositAmountToLtv(loanAmount, borrowInfo, oraclePrice),
-    [loanAmount, borrowInfo, oraclePrice],
+    () =>
+      computeDepositAmountToLtv(
+        collateralToken,
+        marketBorrowerInfo,
+        overseerCollaterals,
+        oraclePrices,
+      ),
+    [collateralToken, marketBorrowerInfo, overseerCollaterals, oraclePrices],
   );
 
   const ltvToAmount = useMemo(
-    () => ltvToDepositAmount(loanAmount, borrowInfo, oraclePrice),
-    [loanAmount, borrowInfo, oraclePrice],
+    () =>
+      computeLtvToDepositAmount(
+        collateralToken,
+        marketBorrowerInfo,
+        overseerCollaterals,
+        oraclePrices,
+      ),
+    [collateralToken, marketBorrowerInfo, overseerCollaterals, oraclePrices],
   );
 
   const amountToBorrowLimit = useMemo(
-    () => depositAmountToBorrowLimit(borrowInfo, oraclePrice, bLunaMaxLtv),
-    [borrowInfo, oraclePrice, bLunaMaxLtv],
+    () =>
+      computeDepositAmountToBorrowLimit(
+        collateralToken,
+        overseerCollaterals,
+        oraclePrices,
+        bAssetLtvs,
+      ),
+    [collateralToken, overseerCollaterals, oraclePrices, bAssetLtvs],
   );
 
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
   const currentLtv = useMemo(
-    () => _currentLtv(loanAmount, borrowInfo, oraclePrice),
-    [borrowInfo, loanAmount, oraclePrice],
+    () =>
+      computeCurrentLtv(marketBorrowerInfo, overseerCollaterals, oraclePrices),
+    [marketBorrowerInfo, overseerCollaterals, oraclePrices],
   );
 
   const nextLtv = useMemo(
-    () => provideCollateralNextLtv(depositAmount, currentLtv, amountToLtv),
+    () =>
+      computeProvideCollateralNextLtv(depositAmount, currentLtv, amountToLtv),
     [amountToLtv, currentLtv, depositAmount],
   );
 
-  const userMaxLtv = useMemo(() => {
-    return big(bLunaMaxLtv).minus(0.1) as Rate<BigSource>;
-  }, [bLunaMaxLtv]);
-
   const borrowLimit = useMemo(
-    () => provideCollateralBorrowLimit(depositAmount, amountToBorrowLimit),
+    () =>
+      computeProvideCollateralBorrowLimit(depositAmount, amountToBorrowLimit),
     [amountToBorrowLimit, depositAmount],
   );
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(tokenBalances.uUST, fixedGas),
+    [connectedWallet, tokenBalances.uUST, fixedGas],
   );
 
-  const invalidDepositAmount = useMemo(
-    () => validateDepositAmount(depositAmount, bank),
-    [bank, depositAmount],
-  );
+  const invalidDepositAmount = useMemo(() => {
+    return validateDepositAmount(depositAmount, ubAssetBalance);
+  }, [depositAmount, ubAssetBalance]);
 
   // ---------------------------------------------
   // callbacks
@@ -165,21 +201,21 @@ function ComponentBase({
   }, []);
 
   const proceed = useCallback(
-    (depositAmount: bLuna) => {
-      if (!connectedWallet || !provideCollateral) {
+    (depositAmount: bAsset) => {
+      if (!connectedWallet || !provideCollateral || !collateralDenom) {
         return;
       }
 
-      provideCollateral({ depositAmount });
+      provideCollateral({ depositAmount, collateralDenom });
     },
-    [connectedWallet, provideCollateral],
+    [collateralDenom, connectedWallet, provideCollateral],
   );
 
   const onLtvChange = useCallback(
     (nextLtv: Rate<Big>) => {
       try {
         const nextAmount = ltvToAmount(nextLtv);
-        updateDepositAmount(formatLunaInput(demicrofy(nextAmount)));
+        updateDepositAmount(formatBAssetInput(demicrofy(nextAmount)));
       } catch {}
     },
     [ltvToAmount, updateDepositAmount],
@@ -245,7 +281,11 @@ function ComponentBase({
             updateDepositAmount(target.value)
           }
           InputProps={{
-            endAdornment: <InputAdornment position="end">bLUNA</InputAdornment>,
+            endAdornment: (
+              <InputAdornment position="end">
+                {prettifyBAssetSymbol(collateral.symbol)}
+              </InputAdornment>
+            ),
           }}
         />
 
@@ -260,11 +300,12 @@ function ComponentBase({
               }}
               onClick={() =>
                 updateDepositAmount(
-                  formatLunaInput(demicrofy(bank.userBalances.ubLuna)),
+                  formatBAssetInput(demicrofy(ubAssetBalance)),
                 )
               }
             >
-              {formatLuna(demicrofy(bank.userBalances.ubLuna))} bLUNA
+              {formatBAsset(demicrofy(ubAssetBalance))}{' '}
+              {prettifyBAssetSymbol(collateral.symbol)}
             </span>
           </span>
         </div>
@@ -288,9 +329,9 @@ function ComponentBase({
           <figure className="graph">
             <LTVGraph
               disabled={!connectedWallet}
-              maxLtv={bLunaMaxLtv}
-              safeLtv={bLunaSafeLtv}
-              dangerLtv={userMaxLtv}
+              maxLtv={bAssetLtvsAvg.max}
+              safeLtv={bAssetLtvsAvg.safe}
+              dangerLtv={dangerLtv}
               currentLtv={currentLtv}
               nextLtv={nextLtv}
               userMinLtv={0 as Rate<BigSource>}

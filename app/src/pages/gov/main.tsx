@@ -1,8 +1,10 @@
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
+import { PageTitle, TitleContainer } from 'components/primitives/PageTitle';
+import { links } from 'env';
+import React from 'react';
+import styled from 'styled-components';
 import { Overview } from './components/Overview';
 import { Polls } from './components/Polls';
-import { Rewards } from './components/Rewards';
-import styled from 'styled-components';
 
 export interface GovernanceMainProps {
   className?: string;
@@ -11,8 +13,10 @@ export interface GovernanceMainProps {
 function GovernanceMainBase({ className }: GovernanceMainProps) {
   return (
     <PaddedLayout className={className}>
+      <TitleContainer>
+        <PageTitle title="GOVERNANCE" docs={links.docs.gov} />
+      </TitleContainer>
       <Overview className="overview" />
-      <Rewards className="rewards" />
       <Polls className="polls" />
     </PaddedLayout>
   );

@@ -1,58 +1,32 @@
-import { Tooltip } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { Launch } from '@material-ui/icons';
-import logoUrl from 'components/Header/assets/Logo.svg';
-import { DesktopNotification } from 'components/Header/notifications/DesktopNotification';
-import { WalletSelector } from 'components/Header/WalletSelector';
-import { links, screen } from 'env';
-import { govPathname } from 'pages/gov/env';
+import { menus, RouteMenu } from 'configurations/menu';
+import { screen } from 'env';
 import React from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
-import styled, { createGlobalStyle, DefaultTheme } from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
+import logoUrl from './assets/Logo.svg';
+import { DesktopNotification } from './desktop/DesktopNotification';
+import { WalletSelector } from './desktop/WalletSelector';
 
 export interface DesktopHeaderProps {
   className?: string;
 }
 
-export const useTooltipStyle = makeStyles<DefaultTheme>(() => ({
-  tooltip: {
-    position: 'relative',
-    borderRadius: 0,
-    color: '#4BDB4B',
-    backgroundColor: 'transparent',
-    fontSize: 12,
-    fontWeight: 600,
-    padding: 0,
-    top: -3,
-    boxShadow: '1px 1px 6px 0px rgba(0,0,0,0.2)',
-  },
-}));
-
 function DesktopHeaderBase({ className }: DesktopHeaderProps) {
-  const tooltipClasses = useTooltipStyle();
-
   return (
     <header className={className}>
-      <Tooltip
-        title="Open the Dashboard"
-        placement="right"
-        classes={tooltipClasses}
+      <a
+        className="logo"
+        href="https://anchorprotocol.com/"
+        target="_blank"
+        rel="noreferrer"
       >
-        <a
-          className="logo"
-          href="https://anchorprotocol.com/dashboard"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <img src={logoUrl} alt="logo" />
-        </a>
-      </Tooltip>
+        <img src={logoUrl} alt="logo" />
+      </a>
 
       <nav className="menu">
-        <NavMenu to="/earn" title="EARN" docsTo={links.earn} />
-        <NavMenu to="/borrow" title="BORROW" docsTo={links.borrow} />
-        <NavMenu to="/bond" title="BOND" docsTo={links.bond} />
-        <NavMenu to={`/${govPathname}`} title="GOVERN" docsTo={links.gov} />
+        {menus.map((itemMenu) => (
+          <NavMenu key={'menu-' + itemMenu.to} {...itemMenu} />
+        ))}
       </nav>
 
       <div />
@@ -68,26 +42,15 @@ function DesktopHeaderBase({ className }: DesktopHeaderProps) {
   );
 }
 
-function NavMenu({
-  to,
-  docsTo,
-  title,
-  className,
-}: {
-  className?: string;
-  to: string;
-  docsTo: string;
-  title: string;
-}) {
-  const match = useRouteMatch(to);
+function NavMenu({ to, exact, title }: RouteMenu) {
+  const match = useRouteMatch({
+    path: to,
+    exact,
+  });
 
   return (
-    <div className={className} data-active={!!match}>
+    <div data-active={!!match}>
       <Link to={to}>{title}</Link>
-      <a href={docsTo} target="_blank" rel="noreferrer">
-        Docs
-        <Launch />
-      </a>
     </div>
   );
 }
@@ -115,37 +78,17 @@ export const DesktopHeader = styled(DesktopHeaderBase)`
 
   .menu {
     > div {
-      padding: 6px 17px;
+      padding: 6px 12px;
 
       display: flex;
       align-items: center;
 
       a {
         color: rgba(255, 255, 255, 0.4);
-      }
-
-      a:first-child {
         font-size: 18px;
         font-weight: 900;
 
         text-decoration: none;
-      }
-
-      a:last-child {
-        display: none;
-
-        font-size: 12px;
-        font-weight: 500;
-
-        text-decoration: none;
-
-        position: relative;
-
-        svg {
-          margin-left: 2px;
-          font-size: 1em;
-          transform: translateY(2px);
-        }
       }
 
       &[data-active='true'] {
@@ -157,27 +100,6 @@ export const DesktopHeader = styled(DesktopHeaderBase)`
 
         a {
           color: ${({ theme }) => theme.textColor};
-        }
-
-        a:last-child {
-          display: inline-block;
-
-          margin-left: 17px;
-
-          &::before {
-            content: '';
-            display: block;
-
-            position: absolute;
-
-            background-color: ${({ theme }) => theme.colors.positive};
-
-            width: 1px;
-            height: 18px;
-
-            left: -8px;
-            top: -1px;
-          }
         }
       }
     }

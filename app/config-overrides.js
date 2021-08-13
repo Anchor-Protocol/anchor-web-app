@@ -23,8 +23,6 @@ module.exports = {
     });
 
     aliasDangerous({
-      ...getWebpackAlias(path.resolve(__dirname, '../packages')),
-      ...getWebpackAlias(path.resolve(__dirname, '../base')),
       ...getWebpackAlias(__dirname),
       env: path.join(__dirname, 'src/env.ts'),
     })(config);
@@ -41,8 +39,6 @@ module.exports = {
     
     config.modulePaths.push(
       '<rootDir>/src/',
-      '<rootDir>/../base/src/',
-      '<rootDir>/../packages/src/',
     );
 
     return config;

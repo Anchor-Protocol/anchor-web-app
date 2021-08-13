@@ -25,10 +25,10 @@ function TransactionHistoryListBase({
 
   return (
     <ul className={className} ref={ref} data-break={width < breakpoint}>
-      {history.map(({ descriptions, timestamp, tx_hash, tx_type }) => {
+      {history.map(({ descriptions, timestamp, tx_hash, tx_type }, i) => {
         const datetime = new Date(timestamp);
         return (
-          <li key={'txhistory' + tx_hash}>
+          <li key={'txhistory' + tx_hash + '_' + i}>
             <a
               href={`https://finder.terra.money/${network.chainID}/tx/${tx_hash}`}
               target="_blank"

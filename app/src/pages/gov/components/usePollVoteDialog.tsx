@@ -24,7 +24,7 @@ import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import { flat } from '@terra-dev/styled-neumorphism';
 import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank } from 'base/contexts/bank';
+import { useBank } from 'contexts/bank';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
@@ -68,9 +68,8 @@ function ComponentBase({
 
   const bank = useBank();
 
-  const {
-    data: { userGovStakingInfo } = {},
-  } = useRewardsAncGovernanceRewardsQuery();
+  const { data: { userGovStakingInfo } = {} } =
+    useRewardsAncGovernanceRewardsQuery();
 
   const canIVote = useGovVoteAvailableQuery(pollId);
 

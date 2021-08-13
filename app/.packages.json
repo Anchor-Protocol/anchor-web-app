@@ -1,0 +1,15 @@
+{
+  "$schema": "https://rocket-hangar.github.io/rocket-punch/schemas/packages.json",
+  "@terra-dev/*": {
+    "version": "0.20.1",
+    "tag": "latest"
+  },
+  "@terra-money/*": {
+    "version": "0.20.1",
+    "tag": "latest"
+  },
+  "@anchor-protocol/*": {
+    "version": "0.20.1",
+    "tag": "latest"
+  }
+}

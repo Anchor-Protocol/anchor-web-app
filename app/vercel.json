@@ -1,15 +1,6 @@
 {
   "headers": [
     {
-      "source": "/earn",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-store, no-cache, must-revalidate"
-        }
-      ]
-    },
-    {
       "source": "/(.*).js",
       "headers": [
         {
@@ -27,7 +18,7 @@
         },
         {
           "key": "X-Frame-Options",
-          "value": "DENY"
+          "value": "sameorigin"
         },
         {
           "key": "X-XSS-Protection",

@@ -8,12 +8,25 @@ import {
 } from '@anchor-protocol/notation';
 import { Rate, UST, uUST } from '@anchor-protocol/types';
 import {
+  AnchorTax,
+  AnchorTokenBalances,
   BorrowBorrower,
   BorrowMarket,
+  computeBorrowAmountToLtv,
+  computeBorrowAPR,
+  computeBorrowMax,
+  computeBorrowNextLtv,
+  computeBorrowReceiveAmount,
+  computeBorrowSafeMax,
+  computeBorrowTxFee,
+  computeCurrentLtv,
+  computeLtvToBorrowAmount,
   useAnchorWebapp,
   useBorrowBorrowerQuery,
   useBorrowBorrowTx,
   useBorrowMarketQuery,
+  validateBorrowAmount,
+  validateTxFee,
 } from '@anchor-protocol/webapp-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
@@ -26,27 +39,15 @@ import { useConfirm } from '@terra-dev/neumorphism-ui/components/useConfirm';
 import type { DialogProps, OpenDialog } from '@terra-dev/use-dialog';
 import { useDialog } from '@terra-dev/use-dialog';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank } from 'base/contexts/bank';
+import { useBank } from '@terra-money/webapp-provider';
 import big, { Big, BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { validateTxFee } from 'logics/validateTxFee';
 import type { ChangeEvent, ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { apr as _apr } from '../logics/apr';
-import { borrowAmountToLtv } from '../logics/borrowAmountToLtv';
-import { borrowMax } from '../logics/borrowMax';
-import { borrowNextLtv } from '../logics/borrowNextLtv';
-import { borrowReceiveAmount } from '../logics/borrowReceiveAmount';
-import { borrowSafeMax } from '../logics/borrowSafeMax';
-import { borrowTxFee } from '../logics/borrowTxFee';
-import { currentLtv as _currentLtv } from '../logics/currentLtv';
-import { estimateLiquidationPrice } from '../logics/estimateLiquidationPrice';
-import { ltvToBorrowAmount } from '../logics/ltvToBorrowAmount';
-import { validateBorrowAmount } from '../logics/validateBorrowAmount';
 import { LTVGraph } from './LTVGraph';
 
 interface FormParams {
@@ -91,21 +92,24 @@ function ComponentBase({
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const bank = useBank();
+  const { tokenBalances, tax } = useBank<AnchorTokenBalances, AnchorTax>();
 
   const {
     data: {
       borrowRate,
-      oraclePrice,
-      bLunaMaxLtv = '0.6' as Rate,
-      bLunaSafeLtv = '0.45' as Rate,
+      oraclePrices,
+      bAssetLtvsAvg,
+      //bLunaOraclePrice,
+      //bLunaMaxLtv = '0.5' as Rate,
+      //bLunaSafeLtv = '0.3' as Rate,
     } = fallbackBorrowMarket,
   } = useBorrowMarketQuery();
 
   const {
     data: {
-      marketBorrowerInfo: loanAmount,
-      custodyBorrower: borrowInfo,
+      marketBorrowerInfo,
+      overseerCollaterals,
+      //bLunaCustodyBorrower: borrowInfo,
     } = fallbackBorrowBorrower,
   } = useBorrowBorrowerQuery();
 
@@ -113,90 +117,120 @@ function ComponentBase({
   // calculate
   // ---------------------------------------------
   const amountToLtv = useMemo(
-    () => borrowAmountToLtv(loanAmount, borrowInfo, oraclePrice),
-    [loanAmount, borrowInfo, oraclePrice],
+    () =>
+      computeBorrowAmountToLtv(
+        marketBorrowerInfo,
+        overseerCollaterals,
+        oraclePrices,
+      ),
+    [marketBorrowerInfo, overseerCollaterals, oraclePrices],
   );
 
   const ltvToAmount = useMemo(
-    () => ltvToBorrowAmount(loanAmount, borrowInfo, oraclePrice),
-    [loanAmount, borrowInfo, oraclePrice],
+    () =>
+      computeLtvToBorrowAmount(
+        marketBorrowerInfo,
+        overseerCollaterals,
+        oraclePrices,
+      ),
+    [marketBorrowerInfo, overseerCollaterals, oraclePrices],
   );
 
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const currentLtv = useMemo(
-    () => _currentLtv(loanAmount, borrowInfo, oraclePrice),
-    [borrowInfo, loanAmount, oraclePrice],
-  );
+  const { currentLtv, userMaxLtv, apr, safeMax, max, invalidTxFee } =
+    useMemo(() => {
+      const currentLtv = computeCurrentLtv(
+        marketBorrowerInfo,
+        overseerCollaterals,
+        oraclePrices,
+      );
 
-  const nextLtv = useMemo(
-    () => borrowNextLtv(borrowAmount, currentLtv, amountToLtv),
-    [amountToLtv, borrowAmount, currentLtv],
-  );
+      const userMaxLtv = big(bAssetLtvsAvg.max).minus(0.1) as Rate<BigSource>;
 
-  const estimatedLiqPrice = useMemo(
-    () => estimateLiquidationPrice(nextLtv, bLunaMaxLtv, oraclePrice),
-    [nextLtv, bLunaMaxLtv, oraclePrice],
-  );
+      const apr = computeBorrowAPR(borrowRate, blocksPerYear);
 
-  const userMaxLtv = useMemo(() => {
-    return big(bLunaMaxLtv).minus(0.1) as Rate<BigSource>;
-  }, [bLunaMaxLtv]);
-
-  const apr = useMemo(
-    () => _apr(borrowRate, blocksPerYear),
-    [blocksPerYear, borrowRate],
-  );
-
-  const safeMax = useMemo(
-    () =>
-      borrowSafeMax(
-        loanAmount,
-        borrowInfo,
-        oraclePrice,
-        bLunaSafeLtv,
+      const safeMax = computeBorrowSafeMax(
+        marketBorrowerInfo,
+        overseerCollaterals,
+        oraclePrices,
+        bAssetLtvsAvg.safe,
         currentLtv,
-      ),
-    [bLunaSafeLtv, borrowInfo, currentLtv, loanAmount, oraclePrice],
-  );
+      );
 
-  const max = useMemo(
-    () => borrowMax(loanAmount, borrowInfo, oraclePrice, bLunaMaxLtv),
-    [bLunaMaxLtv, borrowInfo, loanAmount, oraclePrice],
-  );
+      const max = computeBorrowMax(
+        marketBorrowerInfo,
+        overseerCollaterals,
+        oraclePrices,
+        bAssetLtvsAvg.max,
+      );
 
-  const txFee = useMemo(
-    () => borrowTxFee(borrowAmount, bank, fixedGas),
-    [bank, borrowAmount, fixedGas],
-  );
+      const invalidTxFee =
+        !!connectedWallet && validateTxFee(tokenBalances.uUST, fixedGas);
+      return {
+        currentLtv,
+        userMaxLtv,
+        apr,
+        safeMax,
+        max,
+        invalidTxFee,
+      };
+    }, [
+      bAssetLtvsAvg.max,
+      bAssetLtvsAvg.safe,
+      blocksPerYear,
+      borrowRate,
+      connectedWallet,
+      fixedGas,
+      marketBorrowerInfo,
+      oraclePrices,
+      overseerCollaterals,
+      tokenBalances.uUST,
+    ]);
 
-  const receiveAmount = useMemo(
-    () => borrowReceiveAmount(borrowAmount, txFee),
-    [borrowAmount, txFee],
-  );
+  const {
+    nextLtv,
+    txFee,
+    receiveAmount,
+    invalidBorrowAmount,
+    invalidOver40Ltv,
+    invalidOverSafeLtv,
+  } = useMemo(() => {
+    const nextLtv = computeBorrowNextLtv(borrowAmount, currentLtv, amountToLtv);
 
-  const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
-  );
+    const txFee = computeBorrowTxFee(borrowAmount, tax, fixedGas);
 
-  const invalidBorrowAmount = useMemo(
-    () => validateBorrowAmount(borrowAmount, max),
-    [borrowAmount, max],
-  );
+    const receiveAmount = computeBorrowReceiveAmount(borrowAmount, txFee);
 
-  const invalidOver40Ltv = useMemo(() => {
-    return nextLtv?.gt(userMaxLtv)
+    const invalidBorrowAmount = validateBorrowAmount(borrowAmount, max);
+
+    const invalidOver40Ltv = nextLtv?.gt(userMaxLtv)
       ? `Cannot borrow when LTV is above ${formatRate(userMaxLtv)}%.`
       : undefined;
-  }, [nextLtv, userMaxLtv]);
 
-  const invalidOverSafeLtv = useMemo(() => {
-    return nextLtv?.gt(bLunaSafeLtv)
+    const invalidOverSafeLtv = nextLtv?.gt(bAssetLtvsAvg.safe)
       ? 'WARNING: Are you sure you want to borrow above the recommended LTV? Crypto markets can be very volatile and you may be subject to liquidation in events of downward price swings of the bAsset.'
       : undefined;
-  }, [bLunaSafeLtv, nextLtv]);
+
+    return {
+      nextLtv,
+      txFee,
+      receiveAmount,
+      invalidBorrowAmount,
+      invalidOver40Ltv,
+      invalidOverSafeLtv,
+    };
+  }, [
+    amountToLtv,
+    bAssetLtvsAvg.safe,
+    borrowAmount,
+    currentLtv,
+    fixedGas,
+    max,
+    tax,
+    userMaxLtv,
+  ]);
 
   // ---------------------------------------------
   // callbacks
@@ -312,7 +346,7 @@ function ComponentBase({
         >
           <span>{invalidBorrowAmount ?? invalidOver40Ltv}</span>
           <span>
-            {formatRate(bLunaSafeLtv)}% LTV:{' '}
+            {formatRate(bAssetLtvsAvg.safe)}% LTV:{' '}
             <span
               style={{
                 textDecoration: 'underline',
@@ -330,8 +364,8 @@ function ComponentBase({
         <figure className="graph">
           <LTVGraph
             disabled={!connectedWallet || max.lte(0)}
-            maxLtv={bLunaMaxLtv}
-            safeLtv={bLunaSafeLtv}
+            maxLtv={bAssetLtvsAvg.max}
+            safeLtv={bAssetLtvsAvg.safe}
             dangerLtv={userMaxLtv}
             currentLtv={currentLtv}
             nextLtv={nextLtv}
@@ -342,14 +376,7 @@ function ComponentBase({
           />
         </figure>
 
-        {nextLtv?.gt(currentLtv || 0) && (
-          <sup>
-            Estimated bAsset Liquidation Price: {formatUST(estimatedLiqPrice)}{' '}
-            UST
-          </sup>
-        )}
-
-        {nextLtv?.gt(bLunaSafeLtv) && (
+        {nextLtv?.gt(bAssetLtvsAvg.safe) && (
           <MessageBox
             level="error"
             hide={{ id: 'borrow-ltv', period: 1000 * 60 * 60 * 24 * 5 }}
@@ -357,8 +384,8 @@ function ComponentBase({
           >
             Caution: Borrowing is available only up to {formatRate(userMaxLtv)}%
             LTV. If the loan-to-value ratio (LTV) reaches the maximum (
-            {formatRate(bLunaMaxLtv)}% LTV), a portion of your collateral may be
-            immediately liquidated to repay part of the loan.
+            {formatRate(bAssetLtvsAvg.max)}% LTV), a portion of your collateral
+            may be immediately liquidated to repay part of the loan.
           </MessageBox>
         )}
 

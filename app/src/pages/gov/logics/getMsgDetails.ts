@@ -4,7 +4,7 @@ import {
   ContractAddress,
   moneyMarket,
 } from '@anchor-protocol/types';
-import { AccountLink } from 'components/AccountLink';
+import { AccountLink } from 'components/links/AccountLink';
 import { createElement, ReactNode } from 'react';
 
 export function getMsgDetails(

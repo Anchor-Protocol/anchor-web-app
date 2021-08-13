@@ -1,6 +1,6 @@
-import { TokenIcon } from '@anchor-protocol/token-icons';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
-import { screen } from 'env';
+import { PageTitle } from 'components/primitives/PageTitle';
+import { links, screen } from 'env';
 import { LoanButtons } from 'pages/borrow/components/LoanButtons';
 import { Overview } from 'pages/borrow/components/Overview';
 import React from 'react';
@@ -15,9 +15,7 @@ function BorrowBase({ className }: BorrowProps) {
   return (
     <PaddedLayout className={className}>
       <div className="market">
-        <h1>
-          <TokenIcon token="ust" /> UST
-        </h1>
+        <PageTitle title="BORROW" docs={links.docs.borrow} />
         <div className="loan-buttons">
           <LoanButtons />
         </div>
@@ -39,10 +37,6 @@ export const Borrow = styled(BorrowBase)`
     margin-bottom: 40px;
 
     h1 {
-      font-size: 44px;
-      font-weight: 900;
-      color: ${({ theme }) => theme.textColor};
-
       img {
         transform: scale(1.3) translateY(3px);
         margin-right: 5px;
@@ -173,10 +167,10 @@ export const Borrow = styled(BorrowBase)`
       .max}px) {
     .market {
       flex-direction: column;
-      align-items: center;
+      align-items: flex-start;
 
       .loan-buttons {
-        width: 500px;
+        width: 100%;
         margin-top: 20px;
         grid-template-columns: repeat(2, 1fr);
       }
@@ -187,7 +181,7 @@ export const Borrow = styled(BorrowBase)`
   @media (max-width: ${screen.mobile.max}px) {
     .market {
       flex-direction: column;
-      align-items: center;
+      align-items: flex-start;
 
       .loan-buttons {
         width: 100%;

@@ -1,4 +1,4 @@
-import { Footer } from 'base/components/Footer';
+import { Footer } from 'components/Footer';
 import { BODY_MARGIN_TOP, screen } from 'env';
 import { ReactNode } from 'react';
 import styled from 'styled-components';

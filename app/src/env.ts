@@ -1,5 +1,14 @@
-import { onProduction } from 'base/env';
+import { AddressProviderFromJson } from '@anchor-protocol/anchor.js';
+import { Rate } from '@anchor-protocol/types';
+import {
+  createAnchorContractAddress,
+  DEFAULT_ADDESS_MAP,
+  ExpandAddressMap,
+} from '@anchor-protocol/webapp-fns';
 
+// ---------------------------------------------
+// style
+// ---------------------------------------------
 export const screen = {
   mobile: { max: 530 },
   // mobile : @media (max-width: ${screen.mobile.max}px)
@@ -12,22 +21,6 @@ export const screen = {
   // huge monitor : @media (min-width: ${screen.monitor.min}px)
 } as const;
 
-export const links = {
-  earn: onProduction
-    ? 'https://docs.anchorprotocol.com/user-guide/webapp/earn'
-    : 'https://app.gitbook.com/@anchor-protocol/s/anchor-2/user-guide/earn',
-  borrow: onProduction
-    ? 'https://docs.anchorprotocol.com/user-guide/webapp/borrow'
-    : 'https://app.gitbook.com/@anchor-protocol/s/anchor-2/user-guide/borrow',
-  bond: onProduction
-    ? 'https://docs.anchorprotocol.com/user-guide/webapp/bond'
-    : 'https://app.gitbook.com/@anchor-protocol/s/anchor-2/user-guide/bond',
-  gov: onProduction
-    ? 'https://docs.anchorprotocol.com/user-guide/webapp/govern'
-    : 'https://app.gitbook.com/@anchor-protocol/s/anchor-2/user-guide/govern',
-  forum: 'https://forum.anchorprotocol.com/',
-};
-
 export const BODY_MARGIN_TOP = {
   pc: 50,
   mobile: 10,
@@ -36,6 +29,22 @@ export const BODY_MARGIN_TOP = {
 
 export const mobileHeaderHeight = 68;
 
+// ---------------------------------------------
+// links
+// ---------------------------------------------
+export const links = {
+  forum: 'https://forum.anchorprotocol.com/',
+  docs: {
+    earn: 'https://docs.anchorprotocol.com/user-guide/webapp/earn',
+    borrow: 'https://docs.anchorprotocol.com/user-guide/webapp/borrow',
+    bond: 'https://docs.anchorprotocol.com/user-guide/webapp/bond',
+    gov: 'https://docs.anchorprotocol.com/user-guide/webapp/govern',
+  },
+} as const;
+
+// ---------------------------------------------
+// environment
+// ---------------------------------------------
 export const cloudFlareOption = {
   token: '53059bc341e44118afa382ac686bd39e',
   hostnames: [
@@ -55,4 +64,43 @@ export const firebaseOptions = {
   measurementId: 'G-GRHXHP1YRM',
 };
 
-// build: vercel trigger build - 21.05.21
+export const GA_TRACKING_ID = 'G-H42LRVHR5Y';
+
+export const SENTRY_DSN =
+  'https://f33dd06d6f5948bfb06d809d0d0a274c@o247107.ingest.sentry.io/5636828';
+
+// ---------------------------------------------
+// chain
+// ---------------------------------------------
+export const SAFE_RATIO: Rate<number> = 0.7 as Rate<number>;
+
+export const onProduction =
+  global.location.host === 'app.anchorprotocol.com' ||
+  global.location.host === 'app.anchor.money' ||
+  global.location.host === 'app.anchor.market' ||
+  global.location.host === 'anchorprotocol.com' ||
+  global.location.host === 'anchor.money' ||
+  global.location.host === 'anchor.market';
+
+export const columbusContractAddresses: ExpandAddressMap =
+  DEFAULT_ADDESS_MAP['mainnet'];
+export const tequilaContractAddresses: ExpandAddressMap =
+  DEFAULT_ADDESS_MAP['testnet'];
+
+export const ADDRESS_PROVIDERS = {
+  mainnet: new AddressProviderFromJson(columbusContractAddresses),
+  testnet: new AddressProviderFromJson(tequilaContractAddresses),
+};
+
+export const ADDRESSES = {
+  mainnet: createAnchorContractAddress(
+    ADDRESS_PROVIDERS.mainnet,
+    columbusContractAddresses,
+  ),
+  testnet: createAnchorContractAddress(
+    ADDRESS_PROVIDERS.testnet,
+    tequilaContractAddresses,
+  ),
+};
+
+// build: vercel trigger build - 21.07.29

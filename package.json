@@ -6,9 +6,7 @@
   "repository": "github:Anchor-Protocol/anchor",
   "workspaces": [
     "app",
-    "base",
-    "landing",
-    "packages"
+    "landing"
   ],
   "scripts": {
     "format": "prettier --write \"**/*.{js,ts,tsx}\"",
@@ -17,18 +15,14 @@
     "app:build": "yarn workspace @anchor-web-app/app run build",
     "app:test": "yarn workspace @anchor-web-app/app run test",
     "app:coverage": "yarn workspace @anchor-web-app/app run coverage",
-    "base:test": "yarn workspace @anchor-web-app/base run test",
-    "base:coverage": "yarn workspace @anchor-web-app/base run coverage",
+    "app:pack": "yarn workspace @anchor-web-app/app run pack",
+    "app:publish": "yarn workspace @anchor-web-app/app run publish",
+    "app:storybook": "yarn workspace @anchor-web-app/app run storybook",
+    "app:build-storybook": "yarn workspace @anchor-web-app/app run build-storybook",
     "landing:start": "yarn workspace @anchor-web-app/landing run start",
     "landing:build": "yarn workspace @anchor-web-app/landing run build",
     "landing:test": "yarn workspace @anchor-web-app/landing run test",
     "landing:coverage": "yarn workspace @anchor-web-app/landing run coverage",
-    "packages:build": "yarn workspace @anchor-web-app/packages run build",
-    "packages:publish": "yarn workspace @anchor-web-app/packages run publish",
-    "packages:storybook": "yarn workspace @anchor-web-app/packages run storybook",
-    "packages:build-storybook": "yarn workspace @anchor-web-app/packages run build-storybook",
-    "packages:test": "yarn workspace @anchor-web-app/packages run test",
-    "packages:coverage": "yarn workspace @anchor-web-app/packages run coverage",
     "graphql:download-schema": "npx apollo client:download-schema --endpoint \"https://tequila-mantle.anchorprotocol.com\" \"schema.graphql\"",
     "markdown:build": "markdown-source-import **/src/**/*.md",
     "postinstall": "husky install"
@@ -42,15 +36,15 @@
   "devDependencies": {
     "@handbook/markdown-source-import": "^1.1.0",
     "@ssen/prettier-config": "^2.0.1",
-    "@types/eslint": "^7.2.13",
-    "@types/prettier": "^2.3.0",
-    "eslint": "^7.29.0",
+    "@types/eslint": "^7.2.14",
+    "@types/prettier": "^2.3.2",
+    "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-config-react-app": "^6.0.0",
-    "husky": "^6.0.0",
+    "husky": "^7.0.1",
     "jest-bin": "^0.3.0",
     "lint-staged": "^11.0.0",
-    "prettier": "^2.3.1",
+    "prettier": "^2.3.2",
     "react-scripts": "4.0.3"
   },
   "peerDependencies": {

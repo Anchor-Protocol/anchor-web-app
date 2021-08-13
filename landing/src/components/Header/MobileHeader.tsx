@@ -3,7 +3,6 @@ import { IconToggleButton } from '@terra-dev/neumorphism-ui/components/IconToggl
 import { WebAppButton } from 'components/Header/WebAppButton';
 import { headerHeight, links } from 'env';
 import { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 
 export interface MobileHeaderProps {
@@ -23,9 +22,13 @@ function MobileHeaderBase({ className, color }: MobileHeaderProps) {
       >
         {open && (
           <nav>
-            <NavLink to="/dashboard" onClick={() => setOpen(false)}>
+            <a
+              href={links.app}
+              target="anchor-webapp"
+              onClick={() => setOpen(false)}
+            >
               DASHBOARD
-            </NavLink>
+            </a>
             <a
               href={links.developers}
               target="anchor-developers"
@@ -40,9 +43,7 @@ function MobileHeaderBase({ className, color }: MobileHeaderProps) {
           </nav>
         )}
         <section>
-          <Link to="/" onClick={() => setOpen(false)}>
-            ANCHOR
-          </Link>
+          <span onClick={() => setOpen(false)}>ANCHOR</span>
           <IconToggleButton
             on={open}
             onChange={setOpen}
@@ -75,8 +76,11 @@ export const MobileHeader = styled(MobileHeaderBase)`
   > section {
     background-color: #ffffff;
 
-    a {
-      text-decoration: none;
+    // logo
+    > :first-child {
+      font-size: 16px;
+      font-weight: 900;
+
       color: #333333;
     }
 

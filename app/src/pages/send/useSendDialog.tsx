@@ -6,6 +6,7 @@ import {
   demicrofy,
   formatANCInput,
   formatAUSTInput,
+  formatBAssetInput,
   formatLunaInput,
   formatUST,
   formatUSTInput,
@@ -33,7 +34,7 @@ import { TextInput } from '@terra-dev/neumorphism-ui/components/TextInput';
 import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
 import { AccAddress } from '@terra-money/terra.js';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { Bank, useBank } from 'base/contexts/bank';
+import { Bank, useBank } from 'contexts/bank';
 import big, { Big, BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
@@ -122,7 +123,7 @@ function ComponentBase({
         cw20Address: cw20.aUST,
       },
       {
-        label: 'Luna',
+        label: 'LUNA',
         value: 'luna',
         integerPoints: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
@@ -131,7 +132,7 @@ function ComponentBase({
           formatLunaInput(demicrofy(bank.userBalances.uLuna)),
       },
       {
-        label: 'bLuna',
+        label: 'bLUNA',
         value: 'bluna',
         integerPoints: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
@@ -139,6 +140,16 @@ function ComponentBase({
         getFormatWithdrawable: (bank: Bank) =>
           formatLunaInput(demicrofy(bank.userBalances.ubLuna)),
         cw20Address: cw20.bLuna,
+      },
+      {
+        label: 'bETH',
+        value: 'beth',
+        integerPoints: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
+        decimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
+        getWithdrawable: (bank: Bank) => bank.userBalances.ubEth,
+        getFormatWithdrawable: (bank: Bank) =>
+          formatBAssetInput(demicrofy(bank.userBalances.ubEth)),
+        cw20Address: cw20.bEth,
       },
       {
         label: 'ANC',
@@ -151,7 +162,7 @@ function ComponentBase({
         cw20Address: cw20.ANC,
       },
     ],
-    [cw20.ANC, cw20.aUST, cw20.bLuna],
+    [cw20.ANC, cw20.aUST, cw20.bEth, cw20.bLuna],
   );
 
   // ---------------------------------------------

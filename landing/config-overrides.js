@@ -10,11 +10,6 @@ module.exports = {
           ...rule,
           oneOf: [
             {
-              test: /\.(graphql|gql)$/,
-              exclude: /node_modules/,
-              use: [require.resolve('raw-loader')],
-            },
-            {
               test: /\.(glsl|vs|fs|vert|frag)$/,
               exclude: /node_modules/,
               use: [
@@ -31,8 +26,7 @@ module.exports = {
     });
 
     aliasDangerous({
-      ...getWebpackAlias(path.resolve(__dirname, '../packages')),
-      ...getWebpackAlias(path.resolve(__dirname, '../base')),
+      ...getWebpackAlias(path.resolve(__dirname, '../app')),
       ...getWebpackAlias(__dirname),
       env: path.join(__dirname, 'src/env.ts'),
     })(config);
@@ -40,18 +34,7 @@ module.exports = {
     return config;
   },
   jest: (config) => {
-    config.transform = {
-      '\\.(graphql|gql)$': require.resolve(
-        '@ssen/jest-transform/transform/text',
-      ),
-      ...config.transform,
-    };
-
-    config.modulePaths.push(
-      '<rootDir>/src/',
-      '<rootDir>/../base/src/',
-      '<rootDir>/../packages/src/',
-    );
+    config.modulePaths.push('<rootDir>/src/', '<rootDir>/../app/src/');
 
     return config;
   },

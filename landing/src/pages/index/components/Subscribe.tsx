@@ -14,9 +14,8 @@ export interface SubscribeProps {
 function SubscribeBase({ className }: SubscribeProps) {
   const [email, setEmail, validEmail] = useEmailInput();
 
-  const [subscribeEmail, { status }] = useSendinblueSubscription(
-    sendinblueApiKey,
-  );
+  const [subscribeEmail, { status }] =
+    useSendinblueSubscription(sendinblueApiKey);
 
   return (
     <section className={className}>
@@ -82,7 +81,7 @@ export const Subscribe = styled(SubscribeBase)`
 
   .email {
     font-size: 17px;
-    color: ${({ theme }) => theme.textColor};
+    color: #1f1f1f;
 
     margin-top: 24px;
 
@@ -124,7 +123,7 @@ export const Subscribe = styled(SubscribeBase)`
       border-radius: 0;
 
       border-left: 1px solid #e2e2e2;
-      color: ${({ theme }) => theme.textColor};
+      color: #1f1f1f;
 
       &:disabled {
         cursor: default;

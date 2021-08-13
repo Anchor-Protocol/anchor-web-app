@@ -1,5 +1,5 @@
 import { CW20Addr, Token, uToken, uUST } from '@anchor-protocol/types';
-import { Bank } from 'base/contexts/bank';
+import { Bank } from 'contexts/bank';
 import { BigSource } from 'big.js';
 
 export interface CurrencyInfo {

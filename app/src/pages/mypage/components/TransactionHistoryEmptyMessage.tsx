@@ -20,7 +20,7 @@ function TransactionHistoryEmptyMessageBase({
 export const StyledTransactionHistoryEmptyMessage = styled(
   TransactionHistoryEmptyMessageBase,
 )`
-  height: 280px;
+  height: 80px;
   display: grid;
   place-content: center;
   text-align: center;

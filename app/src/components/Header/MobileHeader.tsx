@@ -1,25 +1,23 @@
 import { Menu, MenuClose, MenuWallet } from '@anchor-protocol/icons';
 import { useAirdropCheckQuery } from '@anchor-protocol/webapp-provider';
-import { Launch } from '@material-ui/icons';
 import { isMathWallet } from '@terra-dev/browser-check';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { IconToggleButton } from '@terra-dev/neumorphism-ui/components/IconToggleButton';
 import {
   ConnectType,
   useWallet,
   WalletStatus,
 } from '@terra-money/wallet-provider';
-import logoUrl from 'components/Header/assets/Logo.svg';
-import { AirdropContent } from 'components/Header/WalletSelector/AirdropContent';
-import { links, mobileHeaderHeight } from 'env';
+import { menus, RouteMenu } from 'configurations/menu';
+import { mobileHeaderHeight } from 'env';
 import { useBuyUstDialog } from 'pages/earn/components/useBuyUstDialog';
-import { govPathname } from 'pages/gov/env';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import React, { useCallback, useState } from 'react';
 import { NavLink, useRouteMatch } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
-import { useWalletDetailDialog } from './WalletSelector/useWalletDetailDialog';
-import { ViewAddressButton } from './WalletSelector/ViewAddressButton';
+import { AirdropContent } from './airdrop/AirdropContent';
+import logoUrl from './assets/Logo.svg';
+import { useWalletDetailDialog } from './mobile/useWalletDetailDialog';
+import { ViewAddressButton } from './mobile/ViewAddressButton';
 
 export interface MobileHeaderProps {
   className?: string;
@@ -93,30 +91,13 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
       <header className={className} data-open={open}>
         {open && (
           <nav>
-            <NavMenu
-              to="/earn"
-              title="EARN"
-              docsTo={links.earn}
-              close={() => setOpen(false)}
-            />
-            <NavMenu
-              to="/borrow"
-              title="BORROW"
-              docsTo={links.borrow}
-              close={() => setOpen(false)}
-            />
-            <NavMenu
-              to="/bond"
-              title="BOND"
-              docsTo={links.bond}
-              close={() => setOpen(false)}
-            />
-            <NavMenu
-              to={`/${govPathname}`}
-              title="GOVERN"
-              docsTo={links.gov}
-              close={() => setOpen(false)}
-            />
+            {menus.map((itemMenu) => (
+              <NavMenu
+                key={'menu-' + itemMenu.to}
+                {...itemMenu}
+                close={() => setOpen(false)}
+              />
+            ))}
 
             {status === WalletStatus.WALLET_NOT_CONNECTED && (
               <ViewAddressButton onClick={viewAddress} />
@@ -126,7 +107,7 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
         <section className="header">
           <a
             className="logo"
-            href="https://anchorprotocol.com/dashboard"
+            href="https://anchorprotocol.com"
             target="_blank"
             rel="noreferrer"
           >
@@ -176,27 +157,22 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
 
 function NavMenu({
   to,
-  docsTo,
+  exact,
   title,
   close,
-}: {
-  to: string;
-  docsTo: string;
-  title: string;
+}: RouteMenu & {
   close: () => void;
 }) {
-  const match = useRouteMatch(to);
+  const match = useRouteMatch({
+    path: to,
+    exact,
+  });
 
   return (
     <div data-active={!!match}>
-      <NavLink to={to} onClick={close}>
+      <NavLink to={to} exact={exact} onClick={close}>
         {title}
       </NavLink>
-      <a href={docsTo} target="_blank" rel="noreferrer" onClick={close}>
-        <IconSpan>
-          Docs <Launch />
-        </IconSpan>
-      </a>
     </div>
   );
 }
@@ -249,7 +225,7 @@ export const MobileHeader = styled(MobileHeaderBase)`
       display: flex;
       align-items: center;
 
-      a:first-child {
+      a {
         flex: 1;
 
         font-size: 36px;
@@ -261,17 +237,6 @@ export const MobileHeader = styled(MobileHeaderBase)`
 
         &.active {
           color: #f4f4f5;
-        }
-      }
-
-      a:last-child {
-        font-size: 16px;
-        text-decoration: none;
-
-        color: #666666;
-
-        svg {
-          font-size: 1em;
         }
       }
     }

@@ -3,16 +3,13 @@
     "baseUrl": "src",
     "paths": {
       "@terra-dev/*": [
-        "../../packages/src/@terra-dev/*"
+        "../../app/src/@terra-dev/*"
       ],
       "@terra-money/*": [
-        "../../packages/src/@terra-money/*"
+        "../../app/src/@terra-money/*"
       ],
       "@anchor-protocol/*": [
-        "../../packages/src/@anchor-protocol/*"
-      ],
-      "base/*": [
-        "../../base/src/base/*"
+        "../../app/src/@anchor-protocol/*"
       ]
     }
   }
