@@ -86,7 +86,7 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
   ) {
     const onExit =
       claimResult.status === StreamStatus.DONE
-        ? () => history.push('/gov')
+        ? () => history.push('/mypage')
         : () => {};
 
     return (

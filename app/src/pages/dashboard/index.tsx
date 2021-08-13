@@ -1119,10 +1119,10 @@ export const Dashboard = styled(DashboardBase)`
   }
 
   // align section contents to horizontal
-  @media (min-width: 900px) and (max-width: 1399px) {
+  @media (min-width: 940px) and (max-width: 1399px) {
     .summary-section {
       .total-value-locked > .NeuSection-content {
-        max-width: 800px;
+        max-width: 840px;
         display: flex;
         justify-content: space-between;
 
@@ -1147,7 +1147,7 @@ export const Dashboard = styled(DashboardBase)`
 
   // under tablet
   // align section contents to horizontal
-  @media (max-width: 899px) {
+  @media (max-width: 939px) {
     padding: 20px 30px 30px 30px;
 
     h1 {
