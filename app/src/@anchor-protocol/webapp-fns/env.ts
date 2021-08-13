@@ -88,8 +88,8 @@ export const DEFAULT_ANCHOR_TX_CONSTANTS: Record<string, AnchorContants> = {
 };
 
 export const DEFAULT_ANCHOR_INDEXER_API_ENDPOINTS: Record<string, string> = {
-  mainnet: 'https://api.anchorprotocol.com/api',
-  testnet: 'https://anchor-services-tequila-anchor-protocol.vercel.app/api/v1',
+  mainnet: 'https://api.anchorprotocol.com/api/v1',
+  testnet: 'https://tequila-api.anchorprotocol.com/api/v1',
 };
 
 export const ANCHOR_SAFE_RATIO: Rate<number> = 0.75 as Rate<number>;
