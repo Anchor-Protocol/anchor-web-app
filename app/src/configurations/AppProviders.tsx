@@ -160,7 +160,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
   return (
     /** Terra Station Wallet Address :: useWallet() */
     <WalletProvider
-      defaultNetwork={testnet}
+      defaultNetwork={mainnet}
       walletConnectChainIds={walletConnectChainIds}
       connectorOpts={{
         bridge: onProduction

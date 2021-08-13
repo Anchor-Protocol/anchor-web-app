@@ -37,6 +37,9 @@ export async function airdropCheckQuery({
     return undefined;
   }
 
+  // sleep for airdrop claim resolving
+  await new Promise((resolve) => setTimeout(resolve, 1000 * 3));
+
   try {
     const airdrops: Airdrop[] = await fetch(
       `https://airdrop.anchorprotocol.com/api/get?address=${variables.walletAddress}&chainId=${variables.chainId}`,

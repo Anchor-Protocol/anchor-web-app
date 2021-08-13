@@ -686,7 +686,7 @@ function DashboardBase({ className }: DashboardProps) {
                     <div className="value">
                       ${' '}
                       <AnimateNumber format={formatUST}>
-                        {collaterals
+                        {collaterals?.bEthPrice
                           ? collaterals.bEthPrice
                           : (0 as UST<number>)}
                       </AnimateNumber>
@@ -708,7 +708,7 @@ function DashboardBase({ className }: DashboardProps) {
                         format={formatUSTWithPostfixUnits}
                         id="collateral-value"
                       >
-                        {collaterals
+                        {collaterals?.bEthTotalCollateralValue
                           ? demicrofy(collaterals.bEthTotalCollateralValue)
                           : (0 as UST<number>)}
                       </AnimateNumber>
