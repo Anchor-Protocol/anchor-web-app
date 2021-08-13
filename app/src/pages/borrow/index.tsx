@@ -167,10 +167,10 @@ export const Borrow = styled(BorrowBase)`
       .max}px) {
     .market {
       flex-direction: column;
-      align-items: center;
+      align-items: flex-start;
 
       .loan-buttons {
-        width: 500px;
+        width: 100%;
         margin-top: 20px;
         grid-template-columns: repeat(2, 1fr);
       }
@@ -181,7 +181,7 @@ export const Borrow = styled(BorrowBase)`
   @media (max-width: ${screen.mobile.max}px) {
     .market {
       flex-direction: column;
-      align-items: center;
+      align-items: flex-start;
 
       .loan-buttons {
         width: 100%;
