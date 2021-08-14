@@ -111,9 +111,9 @@ function TotalValueBase({ className }: TotalValueProps) {
     );
     const pool =
       ancUstLp && ancPrice
-        ? (big(
-            big(ancUstLp.withdrawableAssets.anc).mul(ancPrice.ANCPrice),
-          ).plus(ancUstLp.withdrawableAssets.ust) as uUST<Big>)
+        ? (big(big(ancUstLp.poolAssets.anc).mul(ancPrice.ANCPrice)).plus(
+            ancUstLp.poolAssets.ust,
+          ) as uUST<Big>)
         : ('0' as uUST);
     const farming = ancUstLp
       ? (big(ancUstLp.stakedValue).plus(ancUstLp.rewardValue) as uUST<Big>)

@@ -39,11 +39,22 @@ export function useRewards() {
       return undefined;
     }
 
-    const totalUserLPHolding = big(userLPBalance.balance);
+    const totalUserLPHolding = big(userLPBalance.balance).plus(
+      userLPStakingInfo.bond_amount,
+    );
 
     const LPValue = big(ancPrice.USTPoolSize)
       .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare)
       .mul(2) as uUST<Big>;
+
+    const poolAssets = {
+      anc: big(ancPrice.ANCPoolSize)
+        .mul(userLPBalance.balance)
+        .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare) as uANC<Big>,
+      ust: big(ancPrice.USTPoolSize)
+        .mul(userLPBalance.balance)
+        .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare) as uUST<Big>,
+    };
 
     const withdrawableAssets = {
       anc: big(ancPrice.ANCPoolSize)
@@ -65,6 +76,7 @@ export function useRewards() {
 
     return {
       withdrawableAssets,
+      poolAssets,
       LPValue,
       staked,
       stakedValue,
