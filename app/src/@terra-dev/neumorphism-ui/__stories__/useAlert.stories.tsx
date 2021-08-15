@@ -1,6 +1,6 @@
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { useAlert } from '@terra-dev/neumorphism-ui/components/useAlert';
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
 
 export default {
   title: 'components/useAlert',

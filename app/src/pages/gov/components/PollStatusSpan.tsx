@@ -1,5 +1,5 @@
 import { anchorToken } from '@anchor-protocol/types';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { useTheme } from 'styled-components';
 
 export interface StatusSpanProps {

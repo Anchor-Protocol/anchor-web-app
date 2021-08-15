@@ -1,4 +1,5 @@
 import { SkeletonText } from '@terra-dev/neumorphism-ui/components/SkeletonText';
+import React from 'react';
 
 export default {
   title: 'components/SkeletonText',

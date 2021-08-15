@@ -1,4 +1,4 @@
-import { CSSProperties, ReactElement, ReactNode, useMemo } from 'react';
+import React, { CSSProperties, ReactElement, ReactNode, useMemo } from 'react';
 import styled from 'styled-components';
 import useResizeObserver from 'use-resize-observer/polyfilled';
 import { HorizontalHeavyRuler } from './HorizontalHeavyRuler';

@@ -1,3 +1,5 @@
+import React from 'react';
+
 export const dropshadowFilter = (
   <filter id="dropshadow" x="-20%" y="-20%" width="200%" height="200%">
     <feDropShadow

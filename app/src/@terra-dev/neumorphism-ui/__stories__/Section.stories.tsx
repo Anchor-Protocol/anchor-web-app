@@ -1,4 +1,5 @@
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import React from 'react';
 
 export default {
   title: 'components/Section',

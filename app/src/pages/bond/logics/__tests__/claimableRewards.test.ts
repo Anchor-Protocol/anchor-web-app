@@ -1,4 +1,4 @@
-import { bluna } from '@anchor-web-app/packages/src/@anchor-protocol/types';
+import { bluna } from '@anchor-protocol/types';
 import { Dec, Int } from '@terra-money/terra.js';
 
 test('claimable rewards error case 1', () => {

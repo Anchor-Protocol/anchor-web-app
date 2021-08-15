@@ -1,6 +1,7 @@
 import { IconButton } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
 import { FlatButton } from '@terra-dev/neumorphism-ui/components/FlatButton';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { AirdropImage } from './AirdropImage';

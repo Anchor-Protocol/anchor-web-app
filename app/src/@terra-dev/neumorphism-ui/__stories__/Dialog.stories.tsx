@@ -7,6 +7,7 @@ import {
 import { Modal } from '@material-ui/core';
 import { useCallback, useState } from 'react';
 import { Icons } from '@storybook/components';
+import React from 'react';
 
 export default {
   title: 'components/Dialog',

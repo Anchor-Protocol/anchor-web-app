@@ -2,6 +2,7 @@ import { Wallet } from '@anchor-protocol/icons';
 import { ButtonBaseProps } from '@material-ui/core';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import React from 'react';
 import styled from 'styled-components';
 
 interface NotConnectedButtonProps extends ButtonBaseProps {}

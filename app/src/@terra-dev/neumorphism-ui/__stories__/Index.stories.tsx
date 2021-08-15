@@ -23,7 +23,7 @@ import {
   NativeSelect as MuiNativeSelect,
 } from '@material-ui/core';
 import { Warning } from '@material-ui/icons';
-import { ChangeEvent, Fragment, useState } from 'react';
+import React, { ChangeEvent, Fragment, useState } from 'react';
 import styled from 'styled-components';
 
 export default {

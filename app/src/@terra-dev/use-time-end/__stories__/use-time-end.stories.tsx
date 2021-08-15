@@ -1,3 +1,4 @@
+import React from 'react';
 import { DAY, HOUR, MINUTE, useTimeEnd, TimeEnd } from '../';
 
 export default {

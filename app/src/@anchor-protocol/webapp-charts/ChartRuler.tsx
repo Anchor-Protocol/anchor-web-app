@@ -2,6 +2,7 @@ import {
   rulerLightColor,
   rulerShadowColor,
 } from '@terra-dev/styled-neumorphism';
+import React from 'react';
 import { useTheme } from 'styled-components';
 
 export interface ChartRulerProps {

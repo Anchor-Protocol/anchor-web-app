@@ -1,5 +1,5 @@
 import { useLongtimeNoSee } from '@terra-dev/use-longtime-no-see';
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
 
 export default {
   title: 'packages/use-longtime-no-see',

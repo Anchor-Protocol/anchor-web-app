@@ -1,4 +1,5 @@
 import { CoinChart } from '@anchor-protocol/webapp-charts/CoinChart';
+import React from 'react';
 
 export default {
   title: 'anchor/CoinChart',

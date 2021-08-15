@@ -15,7 +15,7 @@ import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { TooltipLabel } from '@terra-dev/neumorphism-ui/components/TooltipLabel';
 import big from 'big.js';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useTheme } from 'styled-components';
 
 export interface InterestSectionProps {

@@ -5,7 +5,7 @@ import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { ChevronRight, Forum } from '@material-ui/icons';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { links } from 'env';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 

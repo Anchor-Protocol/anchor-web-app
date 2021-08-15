@@ -41,7 +41,7 @@ import { PollVoters } from 'pages/gov/components/PollVoters';
 import { usePollVoteDialog } from 'pages/gov/components/usePollVoteDialog';
 import { extractPollDetail } from 'pages/gov/logics/extractPollDetail';
 import { isLinkHttp } from 'pages/gov/logics/isLinkHttp';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import styled from 'styled-components';
 

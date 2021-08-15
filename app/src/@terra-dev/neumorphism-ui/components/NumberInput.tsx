@@ -3,6 +3,7 @@ import {
   RestrictedNumberInputParams,
   useRestrictedNumberInput,
 } from '@terra-dev/use-restricted-input';
+import React from 'react';
 import { TextInput } from './TextInput';
 
 export type NumberInputProps = Omit<TextFieldProps, 'type'> &

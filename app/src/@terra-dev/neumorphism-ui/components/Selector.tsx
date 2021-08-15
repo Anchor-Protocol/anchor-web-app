@@ -1,7 +1,7 @@
 import { HorizontalRuler } from './HorizontalRuler';
 import { flat } from '@terra-dev/styled-neumorphism';
 import { useSelect } from 'downshift';
-import { ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 import styled from 'styled-components';
 import c from 'color';
 import { ArrowDropDown, ArrowDropUp } from '@material-ui/icons';

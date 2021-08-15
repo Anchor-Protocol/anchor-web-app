@@ -1,5 +1,5 @@
 import { Pagination } from '@terra-dev/neumorphism-ui/components/Pagination';
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 export default {
   title: 'components/Pagination',

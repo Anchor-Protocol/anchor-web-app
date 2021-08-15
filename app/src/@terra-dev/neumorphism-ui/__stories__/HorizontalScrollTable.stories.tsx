@@ -1,4 +1,5 @@
 import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
+import React from 'react';
 
 export default {
   title: 'components/HorizontalScrollTable',

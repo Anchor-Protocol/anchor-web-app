@@ -1,5 +1,5 @@
 import { RulerTab } from '@terra-dev/neumorphism-ui/components/RulerTab';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 export default {
   title: 'components/RulerTab',

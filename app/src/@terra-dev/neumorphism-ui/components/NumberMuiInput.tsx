@@ -3,6 +3,7 @@ import {
   RestrictedNumberInputParams,
   useRestrictedNumberInput,
 } from '@terra-dev/use-restricted-input';
+import React from 'react';
 
 export type NumberMuiInputProps = Omit<InputProps, 'type'> &
   RestrictedNumberInputParams;

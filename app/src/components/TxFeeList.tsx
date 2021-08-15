@@ -2,7 +2,7 @@ import { HorizontalDashedRuler } from '@terra-dev/neumorphism-ui/components/Hori
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { SwapHoriz } from '@material-ui/icons';
 import big, { BigSource } from 'big.js';
-import {
+import React, {
   DetailedHTMLProps,
   HTMLAttributes,
   ReactNode,

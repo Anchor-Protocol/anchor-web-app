@@ -1,5 +1,5 @@
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import styled from 'styled-components';
 
 export interface FormLayoutProps {

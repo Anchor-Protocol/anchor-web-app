@@ -6,7 +6,7 @@ import {
 } from '@anchor-protocol/notation';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { Bank } from 'contexts/bank';
-import { ButtonHTMLAttributes, DetailedHTMLProps } from 'react';
+import React, { ButtonHTMLAttributes, DetailedHTMLProps } from 'react';
 import styled from 'styled-components';
 
 interface ConnectedButtonProps

@@ -1,5 +1,6 @@
 import { truncate } from '@anchor-protocol/notation';
 import { useWallet } from '@terra-money/wallet-provider';
+import React from 'react';
 
 export interface TxHashProps {
   txHash: string;

@@ -15,7 +15,7 @@ import { useLocalStorage } from '@terra-dev/use-local-storage';
 import { links } from 'env';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
 import { SubHeader } from 'pages/gov/components/SubHeader';
-import { ChangeEvent, useCallback, useState } from 'react';
+import React, { ChangeEvent, useCallback, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { Grid as GridView } from './Grid';

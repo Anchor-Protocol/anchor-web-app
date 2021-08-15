@@ -1,3 +1,4 @@
+import React from 'react';
 import { DetailedHTMLProps, HTMLAttributes } from 'react';
 import styled from 'styled-components';
 
