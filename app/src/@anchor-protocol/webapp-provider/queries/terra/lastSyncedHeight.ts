@@ -1,5 +1,4 @@
 import { createQueryFn } from '@terra-dev/react-query-utils';
-import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import {
   lastSyncedHeightQuery,
   MantleFetch,
@@ -28,14 +27,11 @@ const queryFn = createQueryFn(
 export function useLastSyncedHeightQuery(): UseQueryResult<number> {
   const { mantleEndpoint, mantleFetch, queryErrorReporter } = useTerraWebapp();
 
-  const { browserInactive } = useBrowserInactive();
-
   const result = useQuery(
     [ANCHOR_QUERY_KEY.TERRA_LAST_SYNCED_HEIGHT, mantleEndpoint, mantleFetch],
     queryFn,
     {
-      refetchInterval: browserInactive && 1000 * 60,
-      enabled: !browserInactive,
+      refetchInterval: 1000 * 60,
       keepPreviousData: true,
       onError: queryErrorReporter,
       placeholderData: () => {

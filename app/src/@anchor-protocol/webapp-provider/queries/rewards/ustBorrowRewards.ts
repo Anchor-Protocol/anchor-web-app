@@ -4,7 +4,6 @@ import {
   rewardsUstBorrowRewardsQuery,
 } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@terra-dev/react-query-utils';
-import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import {
   ConnectedWallet,
   useConnectedWallet,
@@ -61,8 +60,6 @@ export function useRewardsUstBorrowRewardsQuery(): UseQueryResult<
     contractAddress: { moneyMarket },
   } = useAnchorWebapp();
 
-  const { browserInactive } = useBrowserInactive();
-
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.REWARDS_UST_BORROW_REWARDS,
@@ -73,8 +70,8 @@ export function useRewardsUstBorrowRewardsQuery(): UseQueryResult<
     ],
     queryFn,
     {
-      refetchInterval: browserInactive && 1000 * 60 * 5,
-      enabled: !browserInactive && !!connectedWallet,
+      refetchInterval: 1000 * 60 * 1,
+      enabled: !!connectedWallet,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },

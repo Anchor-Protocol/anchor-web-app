@@ -1,7 +1,6 @@
 import { HumanAddr } from '@anchor-protocol/types';
 import { Airdrop, airdropCheckQuery } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@terra-dev/react-query-utils';
-import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import {
   ConnectedWallet,
   useConnectedWallet,
@@ -40,8 +39,6 @@ const queryFn = createQueryFn(
 export function useAirdropCheckQuery(): UseQueryResult<Airdrop | undefined> {
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
-  const { browserInactive } = useBrowserInactive();
-
   const connectedWallet = useConnectedWallet();
 
   const {
@@ -58,7 +55,7 @@ export function useAirdropCheckQuery(): UseQueryResult<Airdrop | undefined> {
     ],
     queryFn,
     {
-      enabled: !browserInactive && !!connectedWallet,
+      enabled: !!connectedWallet,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },

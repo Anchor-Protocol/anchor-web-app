@@ -4,7 +4,6 @@ import {
   earnAPYHistoryQuery,
 } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@terra-dev/react-query-utils';
-import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { ANCHOR_QUERY_KEY } from '../../env';
@@ -27,14 +26,11 @@ export function useEarnAPYHistoryQuery(): UseQueryResult<
 > {
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
-  const { browserInactive } = useBrowserInactive();
-
   return useQuery(
     [ANCHOR_QUERY_KEY.EARN_APY_HISTORY, mantleEndpoint, mantleFetch],
     queryFn,
     {
-      refetchInterval: browserInactive && 1000 * 60 * 60,
-      enabled: !browserInactive,
+      refetchInterval: 1000 * 60 * 60,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },
