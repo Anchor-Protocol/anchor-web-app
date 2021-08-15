@@ -22,8 +22,12 @@ export async function govPollsQuery({
   wasmQuery,
   ...params
 }: GovPollsQueryParams): Promise<GovPolls> {
+  const startAfter = wasmQuery.polls.query.polls.start_after
+    ? `&start_after=${wasmQuery.polls.query.polls.start_after}`
+    : '';
+
   return mantle<GovPollsWasmQuery>({
-    mantleEndpoint: `${mantleEndpoint}?gov--polls&start_after=${wasmQuery.polls.query.polls.start_after}`,
+    mantleEndpoint: `${mantleEndpoint}?gov--polls${startAfter}`,
     variables: {},
     wasmQuery,
     ...params,

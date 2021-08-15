@@ -54,7 +54,7 @@ export function useAncBalanceQuery(
     queryFn,
     {
       refetchInterval: !!walletAddress && 1000 * 60 * 2,
-      enabled: !walletAddress,
+      enabled: !!walletAddress,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },
