@@ -6,13 +6,8 @@
   "scripts": {
     "app:dev": "vite",
     "app:dev:browser": "HTTPS=true PORT=3000 TS_NODE_PROJECT=tsconfig.script.json node -r ts-node/register -r tsconfig-paths/register scripts/start.ts",
-    "dev": "multiplerun dev",
-    "start": "multiplerun start",
-    "start:pwa": "multiplerun pwa",
-    "start:chrome": "HTTPS=true SSL_CRT_FILE=$LOCALHOST_HTTPS_CERT SSL_KEY_FILE=$LOCALHOST_HTTPS_KEY PORT=9433 react-app-rewired start",
-    "app:start": "HTTPS=true SSL_CRT_FILE=$LOCALHOST_HTTPS_CERT SSL_KEY_FILE=$LOCALHOST_HTTPS_KEY PORT=9433 BROWSER=none yarn run react-app-rewired start",
-    "app:start:puppeteer": "HTTPS=true PORT=9433 TS_NODE_PROJECT=tsconfig.script.json node -r ts-node/register -r tsconfig-paths/register scripts/start.ts",
-    "build": "CI=true react-app-rewired build",
+    "start": "multiplerun dev",
+    "build": "tsc --noEmit && vite build",
     "test": "react-app-rewired test --colors",
     "coverage": "react-app-rewired test --colors --coverage",
     "pack": "TS_NODE_PROJECT=tsconfig.script.json node -r ts-node/register -r tsconfig-paths/register scripts/pack.ts",
@@ -21,17 +16,6 @@
     "build-storybook": "build-storybook -s public"
   },
   "multiplerun": {
-    "start": [
-      "yarn run app:start",
-      {
-        "command": "yarn run app:start:puppeteer",
-        "wait": "20000"
-      }
-    ],
-    "pwa": [
-      "yarn run build",
-      "serve build --ssl-cert $LOCALHOST_HTTPS_CERT --ssl-key $LOCALHOST_HTTPS_KEY --single"
-    ],
     "dev": [
       "yarn run tsc --watch --noEmit",
       [
@@ -54,18 +38,6 @@
       "!**/*.d.ts?(x)",
       "!**/*.stories.ts?(x)",
       "!**/__*__/**"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      "chrome > 60",
-      "firefox > 60",
-      "safari > 12"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
     ]
   },
   "dependencies": {
