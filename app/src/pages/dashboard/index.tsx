@@ -842,11 +842,9 @@ const StyledDashboard = styled(DashboardBase)`
     font-size: 36px;
     font-weight: 500;
 
-    letter-spacing: -0.05em;
-
     span:last-child {
       margin-left: 8px;
-      font-size: 20px;
+      font-size: 0.555555555555556em;
     }
   }
 
@@ -882,7 +880,6 @@ const StyledDashboard = styled(DashboardBase)`
 
         p {
           font-size: 18px;
-          letter-spacing: -0.07em;
 
           &:nth-of-type(1) {
             margin-bottom: 27px;
@@ -908,7 +905,6 @@ const StyledDashboard = styled(DashboardBase)`
 
         p {
           font-size: 18px;
-          letter-spacing: -0.07em;
 
           span:last-child {
             margin-left: 5px;
@@ -952,13 +948,13 @@ const StyledDashboard = styled(DashboardBase)`
           display: inline-block;
 
           font-size: 27px;
-          font-weight: 700;
+          font-weight: 500;
 
           word-break: keep-all;
           white-space: nowrap;
 
           span {
-            font-size: 18px;
+            font-size: 0.666666666666667em;
             margin-left: 5px;
             color: ${({ theme }) => theme.dimTextColor};
           }
@@ -1177,6 +1173,10 @@ const StyledDashboard = styled(DashboardBase)`
       margin-bottom: 20px;
     }
 
+    .amount {
+      font-size: 28px;
+    }
+
     .NeuSection-root {
       margin-bottom: 40px;
 
@@ -1193,6 +1193,14 @@ const StyledDashboard = styled(DashboardBase)`
           ${hHeavyRuler};
           margin-top: 30px;
           margin-bottom: 30px;
+        }
+
+        figure {
+          > div {
+            p {
+              font-size: 16px;
+            }
+          }
         }
       }
 
@@ -1215,7 +1223,7 @@ const StyledDashboard = styled(DashboardBase)`
             }
 
             p {
-              font-size: 18px;
+              font-size: 16px;
 
               span:last-child {
                 margin-left: 5px;
@@ -1254,6 +1262,10 @@ const StyledDashboard = styled(DashboardBase)`
 
             p {
               display: block;
+
+              font-size: 20px;
+
+              margin-top: 0.5em;
             }
           }
         }
@@ -1275,6 +1287,41 @@ const StyledDashboard = styled(DashboardBase)`
 
         > div:empty {
           display: none;
+        }
+      }
+    }
+
+    .stablecoin-market,
+    .basset-market {
+      table {
+        tbody {
+          td {
+            .value,
+            .coin {
+              font-size: 15px;
+            }
+
+            .volatility,
+            .name {
+              font-size: 12px;
+            }
+
+            &:first-child > div {
+              i {
+                width: 50px;
+                height: 50px;
+
+                margin-right: 10px;
+
+                svg,
+                img {
+                  display: block;
+                  width: 50px;
+                  height: 50px;
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -1318,19 +1365,11 @@ const StyledDashboard = styled(DashboardBase)`
   }
 
   @media (min-width: 1400px) and (max-width: 1500px) {
-    .summary-section {
-      .anc-buyback > .NeuSection-content {
-        section {
-          div {
-            p {
-              letter-spacing: -1px;
-              font-size: 24px;
-
-              span {
-                letter-spacing: -1px;
-                font-size: 15px;
-              }
-            }
+    .anc-buyback > .NeuSection-content {
+      section {
+        div {
+          p {
+            font-size: 20px;
           }
         }
       }
