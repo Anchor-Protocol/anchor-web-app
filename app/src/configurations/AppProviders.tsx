@@ -76,6 +76,27 @@ const cw20TokenContracts: Record<string, Record<string, CW20Contract>> = {
       contractAddress: ADDRESSES.testnet.cw20.bLunaLunaLP,
     },
   },
+  // TODO change to testnet
+  bombay: {
+    uaUST: {
+      contractAddress: ADDRESSES.testnet.cw20.aUST,
+    },
+    ubLuna: {
+      contractAddress: ADDRESSES.testnet.cw20.bLuna,
+    },
+    ubEth: {
+      contractAddress: ADDRESSES.testnet.cw20.bEth,
+    },
+    uANC: {
+      contractAddress: ADDRESSES.testnet.cw20.ANC,
+    },
+    uAncUstLP: {
+      contractAddress: ADDRESSES.testnet.cw20.AncUstLP,
+    },
+    ubLunaLunaLP: {
+      contractAddress: ADDRESSES.testnet.cw20.bLunaLunaLP,
+    },
+  },
 };
 
 const maxCapTokenDenoms: Record<string, string> = {
