@@ -13,6 +13,7 @@ import { mediumDay, xTimestampAixs } from './internal/axisUtils';
 export interface CollateralsChartProps {
   data: MarketCollateralsHistory[];
   theme: DefaultTheme;
+  isMobile: boolean;
 }
 
 export class CollateralsChart extends Component<CollateralsChartProps> {
@@ -40,7 +41,9 @@ export class CollateralsChart extends Component<CollateralsChartProps> {
 
   shouldComponentUpdate(nextProps: Readonly<CollateralsChartProps>): boolean {
     return (
-      this.props.data !== nextProps.data || this.props.theme !== nextProps.theme
+      this.props.data !== nextProps.data ||
+      this.props.theme !== nextProps.theme ||
+      this.props.isMobile !== nextProps.isMobile
     );
   }
 
@@ -64,6 +67,17 @@ export class CollateralsChart extends Component<CollateralsChartProps> {
       }
       this.chart.data.datasets[0].borderColor =
         this.props.theme.colors.positive;
+    }
+
+    if (prevProps.isMobile !== this.props.isMobile) {
+      if (
+        this.chart.options.scales?.x?.ticks &&
+        'maxRotation' in this.chart.options.scales.x.ticks
+      ) {
+        this.chart.options.scales.x.ticks.maxRotation = this.props.isMobile
+          ? undefined
+          : 0;
+      }
     }
 
     this.chart.update();
@@ -128,7 +142,7 @@ export class CollateralsChart extends Component<CollateralsChartProps> {
             },
             ticks: {
               autoSkip: false,
-              maxRotation: 0,
+              maxRotation: this.props.isMobile ? undefined : 0,
               font: {
                 size: 11,
               },

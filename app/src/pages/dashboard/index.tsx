@@ -44,7 +44,8 @@ import big, { Big, BigSource } from 'big.js';
 import { Footer } from 'components/Footer';
 import { PageTitle, TitleContainer } from 'components/primitives/PageTitle';
 import { screen } from 'env';
-import React, { useMemo } from 'react';
+import { fixHMR } from 'fix-hmr';
+import React, { useEffect, useMemo, useState } from 'react';
 import styled, { css, useTheme } from 'styled-components';
 import { ANCPriceChart } from './components/ANCPriceChart';
 import { CollateralsChart } from './components/CollateralsChart';
@@ -60,6 +61,21 @@ const EMPTY_ARRAY: any[] = [];
 
 function DashboardBase({ className }: DashboardProps) {
   const theme = useTheme();
+
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+
+  useEffect(() => {
+    function handler() {
+      setIsMobile(window.innerWidth < 500);
+    }
+
+    window.addEventListener('resize', handler);
+    handler();
+
+    return () => {
+      window.removeEventListener('resize', handler);
+    };
+  }, []);
 
   const {
     constants: { blocksPerYear },
@@ -348,6 +364,7 @@ function DashboardBase({ className }: DashboardProps) {
                   <ANCPriceChart
                     data={marketANC?.history ?? EMPTY_ARRAY}
                     theme={theme}
+                    isMobile={isMobile}
                   />
                 </div>
               </figure>
@@ -452,6 +469,7 @@ function DashboardBase({ className }: DashboardProps) {
                 <StablecoinChart
                   data={marketDepositAndBorrow?.history ?? EMPTY_ARRAY}
                   theme={theme}
+                  isMobile={isMobile}
                 />
               </div>
             </figure>
@@ -589,6 +607,7 @@ function DashboardBase({ className }: DashboardProps) {
                 <CollateralsChart
                   data={marketCollaterals?.history ?? EMPTY_ARRAY}
                   theme={theme}
+                  isMobile={isMobile}
                 />
               </div>
             </figure>
@@ -789,7 +808,7 @@ const vRuler = css`
     })};
 `;
 
-export const Dashboard = styled(DashboardBase)`
+const StyledDashboard = styled(DashboardBase)`
   background-color: ${({ theme }) => theme.backgroundColor};
   color: ${({ theme }) => theme.textColor};
 
@@ -822,6 +841,8 @@ export const Dashboard = styled(DashboardBase)`
   .amount {
     font-size: 36px;
     font-weight: 700;
+
+    letter-spacing: -0.05em;
 
     span:last-child {
       margin-left: 8px;
@@ -861,6 +882,7 @@ export const Dashboard = styled(DashboardBase)`
 
         p {
           font-size: 18px;
+          letter-spacing: -0.07em;
 
           &:nth-of-type(1) {
             margin-bottom: 27px;
@@ -886,6 +908,7 @@ export const Dashboard = styled(DashboardBase)`
 
         p {
           font-size: 18px;
+          letter-spacing: -0.07em;
 
           span:last-child {
             margin-left: 5px;
@@ -1314,3 +1337,5 @@ export const Dashboard = styled(DashboardBase)`
     }
   }
 `;
+
+export const Dashboard = fixHMR(StyledDashboard);

@@ -14,6 +14,7 @@ import { mediumDay, xTimestampAixs } from './internal/axisUtils';
 export interface ANCPriceChartProps {
   data: MarketAncHistory[];
   theme: DefaultTheme;
+  isMobile: boolean;
 }
 
 export class ANCPriceChart extends Component<ANCPriceChartProps> {
@@ -41,7 +42,9 @@ export class ANCPriceChart extends Component<ANCPriceChartProps> {
 
   shouldComponentUpdate(nextProps: Readonly<ANCPriceChartProps>): boolean {
     return (
-      this.props.data !== nextProps.data || this.props.theme !== nextProps.theme
+      this.props.data !== nextProps.data ||
+      this.props.theme !== nextProps.theme ||
+      this.props.isMobile !== nextProps.isMobile
     );
   }
 
@@ -68,6 +71,17 @@ export class ANCPriceChart extends Component<ANCPriceChartProps> {
       }
       this.chart.data.datasets[0].borderColor =
         this.props.theme.colors.positive;
+    }
+
+    if (prevProps.isMobile !== this.props.isMobile) {
+      if (
+        this.chart.options.scales?.x?.ticks &&
+        'maxRotation' in this.chart.options.scales.x.ticks
+      ) {
+        this.chart.options.scales.x.ticks.maxRotation = this.props.isMobile
+          ? undefined
+          : 0;
+      }
     }
 
     this.chart.update();
@@ -166,7 +180,7 @@ export class ANCPriceChart extends Component<ANCPriceChartProps> {
             },
             ticks: {
               autoSkip: false,
-              maxRotation: 0,
+              maxRotation: this.props.isMobile ? undefined : 0,
               font: {
                 size: 11,
               },
