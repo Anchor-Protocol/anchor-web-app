@@ -1173,6 +1173,12 @@ const StyledDashboard = styled(DashboardBase)`
       margin-bottom: 20px;
     }
 
+    h2 {
+      span {
+        padding: 3px 7px;
+      }
+    }
+
     .amount {
       font-size: 28px;
     }
