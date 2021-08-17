@@ -840,7 +840,7 @@ const StyledDashboard = styled(DashboardBase)`
 
   .amount {
     font-size: 36px;
-    font-weight: 700;
+    font-weight: 500;
 
     letter-spacing: -0.05em;
 
