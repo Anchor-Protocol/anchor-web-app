@@ -50,36 +50,6 @@ IDE
 - JetBrains <https://plugins.jetbrains.com/plugin/8097-js-graphql>
 - VSCode <https://marketplace.visualstudio.com/items?itemName=GraphQL.vscode-graphql>
 
-# Sub packages
-
-<!-- index app/src/**/README.md -->
-
-- [app/src/@anchor-protocol/icons/README.md](app/src/@anchor-protocol/icons/README.md)
-- [app/src/@anchor-protocol/notation/README.md](app/src/@anchor-protocol/notation/README.md)
-- [app/src/@anchor-protocol/token-icons/README.md](app/src/@anchor-protocol/token-icons/README.md)
-- [app/src/@terra-dev/audit-fastdom/README.md](app/src/@terra-dev/audit-fastdom/README.md)
-- [app/src/@terra-dev/big-interpolate/README.md](app/src/@terra-dev/big-interpolate/README.md)
-- [app/src/@terra-dev/big-math/README.md](app/src/@terra-dev/big-math/README.md)
-- [app/src/@terra-dev/is-touch-device/README.md](app/src/@terra-dev/is-touch-device/README.md)
-- [app/src/@terra-dev/is-zero/README.md](app/src/@terra-dev/is-zero/README.md)
-- [app/src/@terra-dev/neumorphism-ui/README.md](app/src/@terra-dev/neumorphism-ui/README.md)
-- [app/src/@terra-dev/sendinblue/README.md](app/src/@terra-dev/sendinblue/README.md)
-- [app/src/@terra-dev/snackbar/README.md](app/src/@terra-dev/snackbar/README.md)
-- [app/src/@terra-dev/styled-neumorphism/README.md](app/src/@terra-dev/styled-neumorphism/README.md)
-- [app/src/@terra-dev/use-dialog/README.md](app/src/@terra-dev/use-dialog/README.md)
-- [app/src/@terra-dev/use-element-intersection/README.md](app/src/@terra-dev/use-element-intersection/README.md)
-- [app/src/@terra-dev/use-google-analytics/README.md](app/src/@terra-dev/use-google-analytics/README.md)
-- [app/src/@terra-dev/use-interval/README.md](app/src/@terra-dev/use-interval/README.md)
-- [app/src/@terra-dev/use-local-storage/README.md](app/src/@terra-dev/use-local-storage/README.md)
-- [app/src/@terra-dev/use-resolve-last/README.md](app/src/@terra-dev/use-resolve-last/README.md)
-- [app/src/@terra-dev/use-restricted-input/README.md](app/src/@terra-dev/use-restricted-input/README.md)
-- [app/src/@terra-dev/use-router-scroll-restoration/README.md](app/src/@terra-dev/use-router-scroll-restoration/README.md)
-- [app/src/@terra-dev/use-string-bytes-length/README.md](app/src/@terra-dev/use-string-bytes-length/README.md)
-- [app/src/@terra-dev/use-time-end/README.md](app/src/@terra-dev/use-time-end/README.md)
-- [app/src/polyfills/README.md](app/src/polyfills/README.md)
-
-<!-- /index -->
-
 # License
 
 This software is licensed under the Apache 2.0 license. Read more about it [here](LICENSE).
