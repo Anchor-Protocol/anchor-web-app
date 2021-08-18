@@ -1,3 +1,5 @@
+import React from 'react';
+
 export interface ChartSliderThumbProps {
   backgroundColor: string;
   strokeColor: string;

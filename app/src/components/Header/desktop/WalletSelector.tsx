@@ -14,7 +14,7 @@ import { IconOnlyWalletButton } from 'components/Header/desktop/IconOnlyWalletBu
 import { useBank } from 'contexts/bank';
 import { useBuyUstDialog } from 'pages/earn/components/useBuyUstDialog';
 import { useSendDialog } from 'pages/send/useSendDialog';
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import { useRouteMatch } from 'react-router-dom';
 import styled from 'styled-components';

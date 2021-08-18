@@ -7,7 +7,7 @@ import { TimeEnd } from '@terra-dev/use-time-end';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
 import { PollStatusSpan } from 'pages/gov/components/PollStatusSpan';
 import { extractPollDetail } from 'pages/gov/logics/extractPollDetail';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { PollGraph } from './PollGraph';
 import { PollList } from './types';

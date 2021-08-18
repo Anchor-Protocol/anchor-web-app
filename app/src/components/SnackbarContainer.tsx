@@ -1,4 +1,5 @@
 import { useSnackbar } from '@terra-dev/snackbar';
+import React from 'react';
 import styled from 'styled-components';
 
 export interface SnackbarContainerProps {

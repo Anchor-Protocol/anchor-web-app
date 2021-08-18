@@ -1,5 +1,5 @@
 import { NeumorphismTheme } from '../themes/Theme';
-import { Component, CSSProperties, ReactElement } from 'react';
+import React, { Component, CSSProperties, ReactElement } from 'react';
 import styled, { withTheme } from 'styled-components';
 import { Rect } from './HorizontalGraphBar';
 

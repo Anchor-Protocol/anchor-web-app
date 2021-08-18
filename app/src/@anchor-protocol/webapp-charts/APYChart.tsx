@@ -5,7 +5,7 @@ import { lightTheme } from '@terra-dev/neumorphism-ui/themes/lightTheme';
 import { scaleLinear } from 'd3-scale';
 import { curveNatural, line } from 'd3-shape';
 import { format } from 'date-fns';
-import {
+import React, {
   DetailedHTMLProps,
   HTMLAttributes,
   ReactNode,

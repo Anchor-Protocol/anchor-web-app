@@ -13,6 +13,7 @@ import { mediumDay, xTimestampAixs } from './internal/axisUtils';
 export interface StablecoinChartProps {
   data: MarketDepositAndBorrow[];
   theme: DefaultTheme;
+  isMobile: boolean;
 }
 
 export class StablecoinChart extends Component<StablecoinChartProps> {
@@ -43,7 +44,9 @@ export class StablecoinChart extends Component<StablecoinChartProps> {
 
   shouldComponentUpdate(nextProps: Readonly<StablecoinChartProps>): boolean {
     return (
-      this.props.data !== nextProps.data || this.props.theme !== nextProps.theme
+      this.props.data !== nextProps.data ||
+      this.props.theme !== nextProps.theme ||
+      this.props.isMobile !== nextProps.isMobile
     );
   }
 
@@ -71,6 +74,17 @@ export class StablecoinChart extends Component<StablecoinChartProps> {
       this.chart.data.datasets[0].borderColor =
         this.props.theme.colors.positive;
       this.chart.data.datasets[1].borderColor = this.props.theme.textColor;
+    }
+
+    if (prevProps.isMobile !== this.props.isMobile) {
+      if (
+        this.chart.options.scales?.x?.ticks &&
+        'maxRotation' in this.chart.options.scales.x.ticks
+      ) {
+        this.chart.options.scales.x.ticks.maxRotation = this.props.isMobile
+          ? undefined
+          : 0;
+      }
     }
 
     this.chart.update();
@@ -139,7 +153,7 @@ export class StablecoinChart extends Component<StablecoinChartProps> {
             },
             ticks: {
               autoSkip: false,
-              maxRotation: 0,
+              maxRotation: this.props.isMobile ? undefined : 0,
               font: {
                 size: 11,
               },

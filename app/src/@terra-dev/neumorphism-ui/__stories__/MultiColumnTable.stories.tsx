@@ -2,6 +2,7 @@ import {
   MultiColumnTable,
   MultiColumnTableCell,
 } from '@terra-dev/neumorphism-ui/components/MultiColumnTable';
+import React from 'react';
 
 export default {
   title: 'components/MultiColumnTable',

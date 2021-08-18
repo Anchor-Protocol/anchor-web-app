@@ -1,4 +1,5 @@
 import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
+import React from 'react';
 import styled from 'styled-components';
 
 export default {

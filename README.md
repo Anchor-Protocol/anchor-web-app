@@ -76,6 +76,7 @@ IDE
 - [app/src/@terra-dev/use-router-scroll-restoration/README.md](app/src/@terra-dev/use-router-scroll-restoration/README.md)
 - [app/src/@terra-dev/use-string-bytes-length/README.md](app/src/@terra-dev/use-string-bytes-length/README.md)
 - [app/src/@terra-dev/use-time-end/README.md](app/src/@terra-dev/use-time-end/README.md)
+- [app/src/polyfills/README.md](app/src/polyfills/README.md)
 
 <!-- /index -->
 

@@ -4,7 +4,6 @@ import {
   bondValidatorsQuery,
 } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@terra-dev/react-query-utils';
-import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
@@ -38,8 +37,6 @@ export function useBondValidators(): UseQueryResult<
 
   const { contractAddress } = useAnchorWebapp();
 
-  const { browserInactive } = useBrowserInactive();
-
   return useQuery(
     [
       ANCHOR_QUERY_KEY.BOND_VALIDATORS,
@@ -49,8 +46,7 @@ export function useBondValidators(): UseQueryResult<
     ],
     queryFn,
     {
-      refetchInterval: browserInactive && 1000 * 60 * 5,
-      enabled: !browserInactive,
+      refetchInterval: 1000 * 60 * 10,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },

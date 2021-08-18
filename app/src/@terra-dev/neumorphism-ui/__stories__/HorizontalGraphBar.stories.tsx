@@ -4,7 +4,7 @@ import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton'
 import { HorizontalGraphBar } from '@terra-dev/neumorphism-ui/components/HorizontalGraphBar';
 import { HorizontalGraphSlider } from '@terra-dev/neumorphism-ui/components/HorizontalGraphSlider';
 import { sliderStep } from '@terra-dev/neumorphism-ui/components/sliderStep';
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 
 export default {

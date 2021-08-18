@@ -3,7 +3,6 @@ import {
   earnTransactionHistoryQuery,
 } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@terra-dev/react-query-utils';
-import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import {
   ConnectedWallet,
   useConnectedWallet,
@@ -39,8 +38,6 @@ export function useEarnTransactionHistoryQuery(): UseQueryResult<
 > {
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
-  const { browserInactive } = useBrowserInactive();
-
   const connectedWallet = useConnectedWallet();
 
   const result = useQuery(
@@ -52,7 +49,7 @@ export function useEarnTransactionHistoryQuery(): UseQueryResult<
     ],
     queryFn,
     {
-      enabled: !browserInactive && !!connectedWallet,
+      enabled: !!connectedWallet,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },

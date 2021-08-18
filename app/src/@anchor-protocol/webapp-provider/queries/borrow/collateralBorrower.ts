@@ -4,7 +4,6 @@ import {
   borrowCollateralBorrowerQuery,
 } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@terra-dev/react-query-utils';
-import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import {
   ConnectedWallet,
   useConnectedWallet,
@@ -55,8 +54,6 @@ export function useBorrowCollateralBorrowerQuery(
     contractAddress: { moneyMarket },
   } = useAnchorWebapp();
 
-  const { browserInactive } = useBrowserInactive();
-
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.BORROW_COLLATERAL_BORROWER,
@@ -69,8 +66,8 @@ export function useBorrowCollateralBorrowerQuery(
     ],
     queryFn,
     {
-      refetchInterval: browserInactive && !!connectedWallet && 1000 * 60 * 5,
-      enabled: !browserInactive && !!connectedWallet,
+      refetchInterval: !!connectedWallet && 1000 * 60 * 5,
+      enabled: !!connectedWallet,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },

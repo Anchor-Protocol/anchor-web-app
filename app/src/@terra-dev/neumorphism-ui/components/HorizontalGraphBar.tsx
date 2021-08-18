@@ -3,7 +3,7 @@ import { easeQuadInOut } from 'd3-ease';
 import { interpolate } from 'd3-interpolate';
 import { select } from 'd3-selection';
 import { timer } from 'd3-timer';
-import {
+import React, {
   DetailedHTMLProps,
   HTMLAttributes,
   ReactElement,

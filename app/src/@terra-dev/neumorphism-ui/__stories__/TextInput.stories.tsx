@@ -3,6 +3,7 @@ import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
 import { CircularProgress, InputAdornment } from '@material-ui/core';
 import { Warning, Error } from '@material-ui/icons';
 import styled from 'styled-components';
+import React from 'react';
 
 export default {
   title: 'components/TextInput',

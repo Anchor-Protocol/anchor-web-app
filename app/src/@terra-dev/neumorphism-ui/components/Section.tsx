@@ -1,5 +1,5 @@
 import { flat } from '@terra-dev/styled-neumorphism';
-import { DetailedHTMLProps, HTMLAttributes } from 'react';
+import React, { DetailedHTMLProps, HTMLAttributes } from 'react';
 import styled from 'styled-components';
 import { getErrorBoundary } from './configErrorBoundary';
 

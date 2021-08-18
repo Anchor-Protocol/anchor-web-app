@@ -1,6 +1,7 @@
 import { TextButton } from '@terra-dev/neumorphism-ui/components/TextButton';
 import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
 import { messageColors } from '@terra-dev/neumorphism-ui/themes/Theme';
+import React from 'react';
 import styled from 'styled-components';
 
 export default {

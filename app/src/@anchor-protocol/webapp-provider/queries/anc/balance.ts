@@ -1,7 +1,6 @@
 import { CW20Addr, HumanAddr } from '@anchor-protocol/types';
 import { AncBalance, ancBalanceQuery } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@terra-dev/react-query-utils';
-import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import {
   EMPTY_QUERY_RESULT,
   MantleFetch,
@@ -44,8 +43,6 @@ export function useAncBalanceQuery(
     contractAddress: { cw20 },
   } = useAnchorWebapp();
 
-  const { browserInactive } = useBrowserInactive();
-
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.ANC_BALANCE,
@@ -56,8 +53,8 @@ export function useAncBalanceQuery(
     ],
     queryFn,
     {
-      refetchInterval: browserInactive && !!walletAddress && 1000 * 60 * 5,
-      enabled: !browserInactive || !walletAddress,
+      refetchInterval: !!walletAddress && 1000 * 60 * 2,
+      enabled: !!walletAddress,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },

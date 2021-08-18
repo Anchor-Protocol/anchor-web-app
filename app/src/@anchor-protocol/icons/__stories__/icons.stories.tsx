@@ -1,5 +1,5 @@
 import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
-import { Children, ComponentType, ReactElement } from 'react';
+import React, { Children, ComponentType, ReactElement } from 'react';
 import styled from 'styled-components';
 import * as icons from '../';
 

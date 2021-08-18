@@ -8,7 +8,7 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { NeumorphismTheme } from '../themes/Theme';
 import { ActionButton } from './ActionButton';
 

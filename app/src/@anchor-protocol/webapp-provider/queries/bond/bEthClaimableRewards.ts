@@ -4,7 +4,6 @@ import {
   bondBEthClaimableRewardsQuery,
 } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@terra-dev/react-query-utils';
-import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import {
   ConnectedWallet,
   useConnectedWallet,
@@ -55,8 +54,6 @@ export function useBondBEthClaimableRewards(): UseQueryResult<
     contractAddress: { beth },
   } = useAnchorWebapp();
 
-  const { browserInactive } = useBrowserInactive();
-
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.BOND_BETH_CLAIMABLE_REWARDS,
@@ -67,8 +64,8 @@ export function useBondBEthClaimableRewards(): UseQueryResult<
     ],
     queryFn,
     {
-      refetchInterval: browserInactive && !!connectedWallet && 1000 * 60 * 5,
-      enabled: !browserInactive && !!connectedWallet,
+      refetchInterval: !!connectedWallet && 1000 * 60 * 5,
+      enabled: !!connectedWallet,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },

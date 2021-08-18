@@ -1,7 +1,6 @@
 import { HumanAddr } from '@anchor-protocol/types';
 import { govMyPollsQuery, MyPoll } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@terra-dev/react-query-utils';
-import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import {
   ConnectedWallet,
   useConnectedWallet,
@@ -38,8 +37,6 @@ export function useGovMyPollsQuery(): UseQueryResult<MyPoll[]> {
     contractAddress: { anchorToken },
   } = useAnchorWebapp();
 
-  const { browserInactive } = useBrowserInactive();
-
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.GOV_MYPOLLS,
@@ -50,8 +47,7 @@ export function useGovMyPollsQuery(): UseQueryResult<MyPoll[]> {
     ],
     queryFn,
     {
-      refetchInterval: browserInactive && 1000 * 60 * 5,
-      enabled: !browserInactive,
+      refetchInterval: 1000 * 60 * 5,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },

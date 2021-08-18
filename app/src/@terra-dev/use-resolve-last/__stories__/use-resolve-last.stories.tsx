@@ -1,4 +1,5 @@
 import { useResolveLast } from '@terra-dev/use-resolve-last/index';
+import React from 'react';
 
 export default {
   title: 'packages/use-resolve-last',

@@ -1,4 +1,4 @@
-import { DetailedHTMLProps, HTMLAttributes, useMemo } from 'react';
+import React, { DetailedHTMLProps, HTMLAttributes, useMemo } from 'react';
 import styled from 'styled-components';
 import { FirstPage, LastPage } from '@material-ui/icons';
 

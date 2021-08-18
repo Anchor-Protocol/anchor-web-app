@@ -4,7 +4,6 @@ import {
   rewardsAncGovernanceRewardsQuery,
 } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@terra-dev/react-query-utils';
-import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import {
   ConnectedWallet,
   useConnectedWallet,
@@ -64,8 +63,6 @@ export function useRewardsAncGovernanceRewardsQuery(): UseQueryResult<
     contractAddress: { anchorToken, cw20 },
   } = useAnchorWebapp();
 
-  const { browserInactive } = useBrowserInactive();
-
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.REWARDS_ANC_GOVERNANCE_REWARDS,
@@ -77,8 +74,8 @@ export function useRewardsAncGovernanceRewardsQuery(): UseQueryResult<
     ],
     queryFn,
     {
-      refetchInterval: browserInactive && 1000 * 60 * 5,
-      enabled: !browserInactive && !!connectedWallet,
+      refetchInterval: 1000 * 60 * 5,
+      enabled: !!connectedWallet,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },

@@ -1,4 +1,5 @@
 import { HorizontalRuler } from '@terra-dev/neumorphism-ui/components/HorizontalRuler';
+import React from 'react';
 import styled from 'styled-components';
 
 export default {

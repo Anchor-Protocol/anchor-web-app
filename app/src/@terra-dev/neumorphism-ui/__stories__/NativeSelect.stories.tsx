@@ -1,5 +1,5 @@
 import { NativeSelect } from '@terra-dev/neumorphism-ui/components/NativeSelect';
-import { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import styled from 'styled-components';
 
 export default {

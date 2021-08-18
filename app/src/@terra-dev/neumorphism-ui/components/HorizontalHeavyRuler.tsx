@@ -1,5 +1,5 @@
 import { pressed } from '@terra-dev/styled-neumorphism';
-import { DetailedHTMLProps, HTMLAttributes } from 'react';
+import React, { DetailedHTMLProps, HTMLAttributes } from 'react';
 import styled from 'styled-components';
 
 export interface HorizontalHeavyRulerProps

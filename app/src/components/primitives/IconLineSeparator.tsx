@@ -1,6 +1,6 @@
 import { ArrowDown } from '@anchor-protocol/icons';
 import c from 'color';
-import { ComponentType, DetailedHTMLProps, HTMLAttributes } from 'react';
+import React, { ComponentType, DetailedHTMLProps, HTMLAttributes } from 'react';
 import styled from 'styled-components';
 
 export interface IconLineSeparatorProps

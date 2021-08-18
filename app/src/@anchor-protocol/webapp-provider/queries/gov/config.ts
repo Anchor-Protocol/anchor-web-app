@@ -1,7 +1,6 @@
 import { HumanAddr } from '@anchor-protocol/types';
 import { GovConfig, govConfigQuery } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@terra-dev/react-query-utils';
-import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
@@ -35,14 +34,11 @@ export function useGovConfigQuery(): UseQueryResult<GovConfig | undefined> {
     contractAddress: { anchorToken },
   } = useAnchorWebapp();
 
-  const { browserInactive } = useBrowserInactive();
-
   const result = useQuery(
     [ANCHOR_QUERY_KEY.GOV_CONFIG, mantleEndpoint, mantleFetch, anchorToken.gov],
     queryFn,
     {
-      refetchInterval: browserInactive && 1000 * 60 * 5,
-      enabled: !browserInactive,
+      refetchInterval: 1000 * 60 * 5,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },

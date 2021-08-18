@@ -1,4 +1,5 @@
 import { horizontalDashedRuler } from '@terra-dev/styled-neumorphism';
+import React from 'react';
 import styled from 'styled-components';
 
 export interface HorizontalDashedRulerProps {

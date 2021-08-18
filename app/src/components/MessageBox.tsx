@@ -1,5 +1,5 @@
 import { Close } from '@material-ui/icons';
-import { CSSProperties, ReactNode, useCallback, useState } from 'react';
+import React, { CSSProperties, ReactNode, useCallback, useState } from 'react';
 import styled, { DefaultTheme, ThemeProps } from 'styled-components';
 
 const key = (id: string) => `__anchor_hide_message_${id}__`;

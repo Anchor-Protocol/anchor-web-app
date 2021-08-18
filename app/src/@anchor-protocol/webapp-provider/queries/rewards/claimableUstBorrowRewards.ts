@@ -4,7 +4,6 @@ import {
   rewardsClaimableUstBorrowRewardsQuery,
 } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@terra-dev/react-query-utils';
-import { useBrowserInactive } from '@terra-dev/use-browser-inactive';
 import {
   ConnectedWallet,
   useConnectedWallet,
@@ -74,8 +73,6 @@ export function useRewardsClaimableUstBorrowRewardsQuery(): UseQueryResult<
     contractAddress: { cw20, moneyMarket },
   } = useAnchorWebapp();
 
-  const { browserInactive } = useBrowserInactive();
-
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.REWARDS_CLAIMABLE_UST_BORROW_REWARDS,
@@ -88,8 +85,8 @@ export function useRewardsClaimableUstBorrowRewardsQuery(): UseQueryResult<
     ],
     queryFn,
     {
-      refetchInterval: browserInactive && 1000 * 60 * 5,
-      enabled: !browserInactive && !!connectedWallet,
+      refetchInterval: 1000 * 60 * 5,
+      enabled: !!connectedWallet,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },

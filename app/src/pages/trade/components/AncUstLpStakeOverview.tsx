@@ -15,7 +15,7 @@ import {
   rulerShadowColor,
 } from '@terra-dev/styled-neumorphism';
 import big, { Big } from 'big.js';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
 
 export interface AncUstLpStakeOverviewProps {

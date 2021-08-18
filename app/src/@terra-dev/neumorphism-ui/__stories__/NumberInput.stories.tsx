@@ -1,4 +1,5 @@
 import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
+import React from 'react';
 import styled from 'styled-components';
 
 export default {

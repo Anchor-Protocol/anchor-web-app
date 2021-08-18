@@ -1,5 +1,5 @@
 import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import styled from 'styled-components';
 import { anc160gif, anc80gif, GifIcon, TokenIcon, tokens, variants } from '../';
 

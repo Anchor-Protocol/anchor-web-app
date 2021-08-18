@@ -1,4 +1,5 @@
 import { AccountBalanceWallet } from '@material-ui/icons';
+import React from 'react';
 import styled from 'styled-components';
 
 export interface ViewAddressButtonProps {

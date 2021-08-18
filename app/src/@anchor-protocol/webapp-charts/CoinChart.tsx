@@ -1,6 +1,6 @@
 import { scaleLinear } from 'd3-scale';
 import { curveNatural, curveStep, line } from 'd3-shape';
-import {
+import React, {
   DetailedHTMLProps,
   HTMLAttributes,
   ReactNode,

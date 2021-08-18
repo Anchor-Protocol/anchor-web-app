@@ -1,6 +1,6 @@
 import { flat, softPressed } from '@terra-dev/styled-neumorphism';
 import c from 'color';
-import { CSSProperties, ReactElement, ReactNode, useMemo } from 'react';
+import React, { CSSProperties, ReactElement, ReactNode, useMemo } from 'react';
 import styled from 'styled-components';
 import useResizeObserver from 'use-resize-observer/polyfilled';
 import { Tooltip } from './Tooltip';

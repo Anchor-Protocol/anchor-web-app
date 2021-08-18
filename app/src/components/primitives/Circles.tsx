@@ -1,4 +1,4 @@
-import { isValidElement, ReactNode } from 'react';
+import React, { isValidElement, ReactNode } from 'react';
 import styled from 'styled-components';
 
 export interface CirclesProps {

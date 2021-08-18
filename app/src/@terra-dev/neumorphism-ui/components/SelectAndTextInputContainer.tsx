@@ -3,7 +3,7 @@ import {
   rulerShadowColor,
   softPressed,
 } from '@terra-dev/styled-neumorphism';
-import { DetailedHTMLProps, HTMLAttributes, ReactNode } from 'react';
+import React, { DetailedHTMLProps, HTMLAttributes, ReactNode } from 'react';
 import styled from 'styled-components';
 
 type GridTemplate = number | string; // of number | `${number}fr`

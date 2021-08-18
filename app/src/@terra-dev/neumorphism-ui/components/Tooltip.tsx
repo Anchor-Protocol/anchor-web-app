@@ -2,6 +2,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import MuiTooltip, {
   TooltipProps as MuiTooltipProps,
 } from '@material-ui/core/Tooltip';
+import React from 'react';
 import { MessageColor, NeumorphismTheme } from '../themes/Theme';
 
 export interface TooltipProps extends MuiTooltipProps {

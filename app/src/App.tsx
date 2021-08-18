@@ -32,6 +32,7 @@ import {
 import { RewardsAncGovernance } from 'pages/trade/rewards.anc-governance';
 import { RewardsAncUstLp } from 'pages/trade/rewards.anc-ust-lp';
 import { Trade } from 'pages/trade/trade';
+import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import './configurations/chartjs';
 

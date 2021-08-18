@@ -1,5 +1,5 @@
 import { isTouchDevice } from '@terra-dev/is-touch-device';
-import { Component, ReactNode } from 'react';
+import React, { Component, ReactNode } from 'react';
 import { Point } from './types';
 
 export interface ChartSliderProps {

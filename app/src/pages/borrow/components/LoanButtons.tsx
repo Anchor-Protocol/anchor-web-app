@@ -8,7 +8,7 @@ import {
 import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useBorrowDialog } from './useBorrowDialog';
 import { useRepayDialog } from './useRepayDialog';
 

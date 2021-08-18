@@ -1,5 +1,5 @@
 import type { DetailedHTMLProps, HTMLAttributes } from 'react';
-import { forwardRef } from 'react';
+import React, { forwardRef } from 'react';
 import styled, { createGlobalStyle, keyframes } from 'styled-components';
 import { MessageColor } from '../themes/Theme';
 import { getErrorBoundary } from './configErrorBoundary';

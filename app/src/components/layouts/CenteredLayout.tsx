@@ -1,6 +1,6 @@
 import { Footer } from 'components/Footer';
 import { BODY_MARGIN_TOP, screen } from 'env';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import styled from 'styled-components';
 
 export interface CenteredLayoutProps {
