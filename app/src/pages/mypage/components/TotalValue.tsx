@@ -66,7 +66,7 @@ function TotalValueBase({ className }: TotalValueProps) {
 
   const [openSend, sendElement] = useSendDialog();
 
-  const { total, ancUstLp } = useRewards();
+  const { ancUstLp, ustBorrow } = useRewards();
 
   const { data: { ancPrice } = {} } = useAncPriceQuery();
 
@@ -98,10 +98,10 @@ function TotalValueBase({ className }: TotalValueProps) {
       moneyMarketEpochState,
     );
     const borrowing =
-      overseerCollaterals && oraclePrices && marketBorrowerInfo && total
+      overseerCollaterals && oraclePrices && marketBorrowerInfo && ustBorrow
         ? (computeCollateralsTotalUST(overseerCollaterals, oraclePrices)
             .minus(marketBorrowerInfo.loan_amount)
-            .plus(total.rewardValue) as uUST<Big>)
+            .plus(ustBorrow.rewardValue) as uUST<Big>)
         : ('0' as uUST);
     const holdings = computeHoldings(
       tokenBalances,
@@ -185,8 +185,8 @@ function TotalValueBase({ className }: TotalValueProps) {
     oraclePrices,
     overseerCollaterals,
     tokenBalances,
-    total,
     userGovStakingInfo,
+    ustBorrow,
   ]);
 
   const isSmallLayout = useMemo(() => {
