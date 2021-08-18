@@ -41,9 +41,13 @@ export async function airdropCheckQuery({
   await new Promise((resolve) => setTimeout(resolve, 1000 * 3));
 
   try {
+    console.log('FETCH AIRDROP DATA');
+
     const airdrops: Airdrop[] = await fetch(
       `https://airdrop.anchorprotocol.com/api/get?address=${variables.walletAddress}&chainId=${variables.chainId}`,
     ).then((res) => res.json());
+
+    console.log('AIRDROPS:', JSON.stringify(airdrops, null, 2));
 
     if (airdrops.length === 0) {
       return undefined;
@@ -69,6 +73,7 @@ export async function airdropCheckQuery({
       });
 
       if (!isClaimed.is_claimed) {
+        console.log('NEXT CLAIM AIRDROP:', JSON.stringify(airdrop));
         return airdrop;
       }
     }
