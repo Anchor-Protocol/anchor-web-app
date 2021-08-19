@@ -1,6 +1,5 @@
 import { Menu, MenuClose, MenuWallet } from '@anchor-protocol/icons';
 import { useAirdropCheckQuery } from '@anchor-protocol/webapp-provider';
-import { isMathWallet } from '@terra-dev/browser-check';
 import { IconToggleButton } from '@terra-dev/neumorphism-ui/components/IconToggleButton';
 import {
   ConnectType,
@@ -28,7 +27,7 @@ let _airdropClosed: boolean = false;
 function MobileHeaderBase({ className }: MobileHeaderProps) {
   const [open, setOpen] = useState<boolean>(false);
 
-  const { status, connect } = useWallet();
+  const { status, connect, isChromeExtensionCompatibleBrowser } = useWallet();
 
   const [openWalletDetail, walletDetailElement] = useWalletDetailDialog();
 
@@ -71,12 +70,19 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
       });
     } else if (status === WalletStatus.WALLET_NOT_CONNECTED) {
       connect(
-        isMathWallet(navigator.userAgent)
+        isChromeExtensionCompatibleBrowser()
           ? ConnectType.CHROME_EXTENSION
           : ConnectType.WALLETCONNECT,
       );
     }
-  }, [connect, openBuyUstDialog, openSendDialog, openWalletDetail, status]);
+  }, [
+    connect,
+    isChromeExtensionCompatibleBrowser,
+    openBuyUstDialog,
+    openSendDialog,
+    openWalletDetail,
+    status,
+  ]);
 
   const viewAddress = useCallback(() => {
     setOpen(false);

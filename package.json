@@ -53,6 +53,7 @@
   "resolutions": {
     "@material-ui/core": "4.11.3",
     "babel-loader": "8.1.0",
-    "webpack": "4.44.2"
+    "webpack": "4.44.2",
+    "@terra-money/terra.js": "1.8.9"
   }
 }
