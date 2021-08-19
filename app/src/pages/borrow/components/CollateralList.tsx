@@ -11,6 +11,7 @@ import {
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
 } from '@anchor-protocol/webapp-provider';
+import { Launch } from '@material-ui/icons';
 import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
 import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
@@ -18,8 +19,8 @@ import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big, BigSource } from 'big.js';
-import React from 'react';
-import { ReactNode, useMemo } from 'react';
+import { BuyLink } from 'components/BuyButton';
+import React, { ReactNode, useMemo } from 'react';
 import { useProvideCollateralDialog } from './useProvideCollateralDialog';
 import { useRedeemCollateralDialog } from './useRedeemCollateralDialog';
 
@@ -152,7 +153,19 @@ export function CollateralList({ className }: CollateralListProps) {
                 <td>
                   <i>{icon}</i>
                   <div>
-                    <div className="coin">{symbol}</div>
+                    <div className="coin">
+                      {symbol}{' '}
+                      {symbol === 'bETH' && (
+                        <BuyLink
+                          href="https://anchor.lido.fi/"
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{ transform: 'translateY(-5px)' }}
+                        >
+                          GET <Launch />
+                        </BuyLink>
+                      )}
+                    </div>
                     <p className="name">{name}</p>
                   </div>
                 </td>
@@ -196,10 +209,8 @@ export function CollateralList({ className }: CollateralListProps) {
                       !connectedWallet ||
                       !borrowMarket ||
                       !borrowBorrower ||
-                      (big(lockedAmount).lte(0) &&
-                        big(borrowBorrower.marketBorrowerInfo.loan_amount).lte(
-                          0,
-                        ))
+                      big(lockedAmount).lte(0) ||
+                      big(borrowBorrower.marketBorrowerInfo.loan_amount).lte(0)
                     }
                     onClick={() =>
                       borrowMarket &&

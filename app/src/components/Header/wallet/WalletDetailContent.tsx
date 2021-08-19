@@ -9,13 +9,13 @@ import {
   truncate,
 } from '@anchor-protocol/notation';
 import { Check, KeyboardArrowRight, Launch } from '@material-ui/icons';
-import { buttonBaseStyle } from '@terra-dev/neumorphism-ui/components/ActionButton';
 import { FlatButton } from '@terra-dev/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
 import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
 import { NetworkInfo } from '@terra-dev/wallet-types';
 import { ConnectType } from '@terra-money/wallet-provider';
 import big from 'big.js';
+import { BuyButton, BuyLink } from 'components/BuyButton';
 import { Bank } from 'contexts/bank';
 import React, { useCallback } from 'react';
 import useClipboard from 'react-use-clipboard';
@@ -74,14 +74,14 @@ export function WalletDetailContentBase({
             <li>
               <span>
                 UST{' '}
-                <BuyUstButton
+                <BuyButton
                   onClick={() => {
                     openBuyUst();
                     closePopup();
                   }}
                 >
                   BUY <Launch />
-                </BuyUstButton>
+                </BuyButton>
               </span>
               <span>
                 {formatUSTWithPostfixUnits(demicrofy(bank.userBalances.uUSD))}
@@ -110,7 +110,16 @@ export function WalletDetailContentBase({
           )}
           {big(bank.userBalances.ubEth).gt(0) && (
             <li>
-              <span>bETH</span>
+              <span>
+                bETH{' '}
+                <BuyLink
+                  href="https://anchor.lido.fi/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  GET <Launch />
+                </BuyLink>
+              </span>
               <span>{formatBAsset(demicrofy(bank.userBalances.ubEth))}</span>
             </li>
           )}
@@ -207,33 +216,6 @@ export function WalletDetailContentBase({
     </div>
   );
 }
-
-const BuyUstButton = styled.button`
-  ${buttonBaseStyle};
-
-  background-color: transparent;
-  border: 1px solid ${({ theme }) => theme.hoverBackgroundColor};
-
-  height: 16px;
-  border-radius: 6px;
-  padding: 0 8px 1px 8px;
-
-  font-size: 9px;
-  color: ${({ theme }) => theme.colors.positive};
-
-  transform: translateY(-1.5px);
-
-  svg {
-    font-size: 1em;
-    margin-left: 1px;
-    transform: translateY(1px);
-  }
-
-  &:hover {
-    color: ${({ theme }) => theme.colors.positive};
-    border-color: ${({ theme }) => theme.colors.positive};
-  }
-`;
 
 export const WalletDetailContent = styled(WalletDetailContentBase)`
   > section {
