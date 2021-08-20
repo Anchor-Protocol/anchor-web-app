@@ -9,7 +9,6 @@ import {
 } from '@anchor-protocol/notation';
 import { Rate, uUST } from '@anchor-protocol/types';
 import { pipe } from '@rx-stream/pipe';
-import { floor } from '@terra-dev/big-math';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
 import {
@@ -37,6 +36,7 @@ export function borrowBorrowTx(
     gasFee: uUST<number>;
     gasAdjustment: Rate<number>;
     txFee: uUST;
+    fixedGas: uUST<number>;
     network: NetworkInfo;
     addressProvider: AddressProvider;
     mantleEndpoint: string;
@@ -57,7 +57,7 @@ export function borrowBorrowTx(
   return pipe(
     _createTxOptions({
       msgs: fabricateMarketBorrow($)($.addressProvider),
-      fee: new StdFee($.gasFee, floor($.txFee) + 'uusd'),
+      fee: new StdFee($.gasFee, $.fixedGas + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),
     _postTx({ helper, ...$ }),
