@@ -49,6 +49,7 @@ export function useBorrowBorrowTx() {
         gasFee: constants.gasFee,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
+        fixedGas: constants.fixedGas,
         // query
         mantleEndpoint,
         mantleFetch,
@@ -68,9 +69,9 @@ export function useBorrowBorrowTx() {
       borrowBorrowerQuery,
       borrowMarketQuery,
       connectedWallet,
+      constants.fixedGas,
       constants.gasAdjustment,
       constants.gasFee,
-
       mantleEndpoint,
       mantleFetch,
       refetchQueries,

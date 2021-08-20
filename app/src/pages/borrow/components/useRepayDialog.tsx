@@ -44,6 +44,8 @@ import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { EstimatedLiquidationPrice } from 'pages/borrow/components/EstimatedLiquidationPrice';
+import { estimateLiquidationPrice } from 'pages/borrow/logics/estimateLiquidationPrice';
 import type { ReactNode } from 'react';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
@@ -100,6 +102,7 @@ function ComponentBase({
       //bLunaMaxLtv = '0.5' as Rate,
       //bLunaSafeLtv = '0.3' as Rate,
       marketState,
+      overseerWhitelist,
     } = fallbackBorrowMarket,
   } = useBorrowMarketQuery();
 
@@ -180,11 +183,21 @@ function ComponentBase({
   const {
     nextLtv,
     txFee,
+    estimatedLiqPrice,
     totalOutstandingLoan,
     sendAmount,
     invalidRepayAmount,
   } = useMemo(() => {
     const nextLtv = computeRepayNextLtv(repayAmount, currentLtv, amountToLtv);
+
+    const estimatedLiqPrice = nextLtv
+      ? estimateLiquidationPrice(
+          nextLtv,
+          overseerWhitelist,
+          overseerCollaterals,
+          oraclePrices,
+        )
+      : null;
 
     const txFee = computeRepayTxFee(repayAmount, tax, fixedGas);
 
@@ -204,6 +217,7 @@ function ComponentBase({
       nextLtv,
       txFee,
       totalOutstandingLoan,
+      estimatedLiqPrice,
       sendAmount,
       invalidRepayAmount,
     };
@@ -212,6 +226,9 @@ function ComponentBase({
     currentLtv,
     fixedGas,
     marketBorrowerInfo,
+    oraclePrices,
+    overseerCollaterals,
+    overseerWhitelist,
     repayAmount,
     tax,
     tokenBalances.uUST,
@@ -345,6 +362,12 @@ function ComponentBase({
             onChange={onLtvChange}
           />
         </figure>
+
+        {nextLtv?.lt(currentLtv ?? 0) && (
+          <EstimatedLiquidationPrice>
+            {estimatedLiqPrice}
+          </EstimatedLiquidationPrice>
+        )}
 
         {totalOutstandingLoan && txFee && sendAmount && (
           <TxFeeList className="receipt">

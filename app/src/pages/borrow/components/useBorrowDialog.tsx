@@ -45,6 +45,8 @@ import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { EstimatedLiquidationPrice } from 'pages/borrow/components/EstimatedLiquidationPrice';
+import { estimateLiquidationPrice } from 'pages/borrow/logics/estimateLiquidationPrice';
 import type { ChangeEvent, ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
@@ -99,6 +101,7 @@ function ComponentBase({
       borrowRate,
       oraclePrices,
       bAssetLtvsAvg,
+      overseerWhitelist,
       //bLunaOraclePrice,
       //bLunaMaxLtv = '0.5' as Rate,
       //bLunaSafeLtv = '0.3' as Rate,
@@ -193,6 +196,7 @@ function ComponentBase({
     nextLtv,
     txFee,
     receiveAmount,
+    estimatedLiqPrice,
     invalidBorrowAmount,
     invalidOver40Ltv,
     invalidOverSafeLtv,
@@ -200,6 +204,17 @@ function ComponentBase({
     const nextLtv = computeBorrowNextLtv(borrowAmount, currentLtv, amountToLtv);
 
     const txFee = computeBorrowTxFee(borrowAmount, tax, fixedGas);
+
+    console.log('useBorrowDialog.tsx..()', overseerCollaterals.collaterals);
+
+    const estimatedLiqPrice = nextLtv
+      ? estimateLiquidationPrice(
+          nextLtv,
+          overseerWhitelist,
+          overseerCollaterals,
+          oraclePrices,
+        )
+      : null;
 
     const receiveAmount = computeBorrowReceiveAmount(borrowAmount, txFee);
 
@@ -217,6 +232,7 @@ function ComponentBase({
       nextLtv,
       txFee,
       receiveAmount,
+      estimatedLiqPrice,
       invalidBorrowAmount,
       invalidOver40Ltv,
       invalidOverSafeLtv,
@@ -228,6 +244,9 @@ function ComponentBase({
     currentLtv,
     fixedGas,
     max,
+    oraclePrices,
+    overseerCollaterals,
+    overseerWhitelist,
     tax,
     userMaxLtv,
   ]);
@@ -387,6 +406,12 @@ function ComponentBase({
             {formatRate(bAssetLtvsAvg.max)}% LTV), a portion of your collateral
             may be immediately liquidated to repay part of the loan.
           </MessageBox>
+        )}
+
+        {nextLtv?.gt(currentLtv ?? 0) && (
+          <EstimatedLiquidationPrice>
+            {estimatedLiqPrice}
+          </EstimatedLiquidationPrice>
         )}
 
         {txFee && receiveAmount && (
