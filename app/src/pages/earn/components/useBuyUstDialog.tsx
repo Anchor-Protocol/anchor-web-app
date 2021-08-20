@@ -75,7 +75,7 @@ function ComponentBase({
 
           <EmbossButton
             component="a"
-            href="https://global.transak.com/?apiKey=db70aca0-ca84-4344-8dcc-036f470414fc&cryptoCurrencyList=UST,LUNA&defaultCryptoCurrency=UST&networks=mainnet"
+            href="https://global.transak.com/?apiKey=db70aca0-ca84-4344-8dcc-036f470414fc&cryptoCurrencyList=UST,LUNA&defaultCryptoCurrency=UST&networks=terra"
             target="_blank"
             rel="noreferrer"
           >
