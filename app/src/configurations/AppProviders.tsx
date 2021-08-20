@@ -79,22 +79,22 @@ const cw20TokenContracts: Record<string, Record<string, CW20Contract>> = {
   // TODO change to testnet
   bombay: {
     uaUST: {
-      contractAddress: ADDRESSES.testnet.cw20.aUST,
+      contractAddress: ADDRESSES.bombay.cw20.aUST,
     },
     ubLuna: {
-      contractAddress: ADDRESSES.testnet.cw20.bLuna,
+      contractAddress: ADDRESSES.bombay.cw20.bLuna,
     },
     ubEth: {
-      contractAddress: ADDRESSES.testnet.cw20.bEth,
+      contractAddress: ADDRESSES.bombay.cw20.bEth,
     },
     uANC: {
-      contractAddress: ADDRESSES.testnet.cw20.ANC,
+      contractAddress: ADDRESSES.bombay.cw20.ANC,
     },
     uAncUstLP: {
-      contractAddress: ADDRESSES.testnet.cw20.AncUstLP,
+      contractAddress: ADDRESSES.bombay.cw20.AncUstLP,
     },
     ubLunaLunaLP: {
-      contractAddress: ADDRESSES.testnet.cw20.bLunaLunaLP,
+      contractAddress: ADDRESSES.bombay.cw20.bLunaLunaLP,
     },
   },
 };

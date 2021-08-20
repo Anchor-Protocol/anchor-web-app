@@ -86,10 +86,13 @@ export const columbusContractAddresses: ExpandAddressMap =
   DEFAULT_ADDESS_MAP['mainnet'];
 export const tequilaContractAddresses: ExpandAddressMap =
   DEFAULT_ADDESS_MAP['testnet'];
+export const bombayContractAddresses: ExpandAddressMap =
+  DEFAULT_ADDESS_MAP['bombay'];
 
 export const ADDRESS_PROVIDERS = {
   mainnet: new AddressProviderFromJson(columbusContractAddresses),
   testnet: new AddressProviderFromJson(tequilaContractAddresses),
+  bombay: new AddressProviderFromJson(bombayContractAddresses),
 };
 
 export const ADDRESSES = {
@@ -100,6 +103,10 @@ export const ADDRESSES = {
   testnet: createAnchorContractAddress(
     ADDRESS_PROVIDERS.testnet,
     tequilaContractAddresses,
+  ),
+  bombay: createAnchorContractAddress(
+    ADDRESS_PROVIDERS.bombay,
+    bombayContractAddresses,
   ),
 };
 
