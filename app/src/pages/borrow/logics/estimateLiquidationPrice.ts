@@ -39,9 +39,9 @@ export function estimateLiquidationPrice(
     const liqPrice = big(oracle.price).mul(
       big(nextLtv).div(whitelist.max_ltv),
     ) as UST<Big>;
-    return `Estimated liquidation ${prettifyBAssetSymbol(
+    return `Estimated ${prettifyBAssetSymbol(
       whitelist.symbol,
-    )} price: ${formatUST(liqPrice)}`;
+    )} liquidation price: ${formatUST(liqPrice)}`;
   }
 
   return null;
