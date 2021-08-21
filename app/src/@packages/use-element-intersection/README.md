@@ -33,7 +33,7 @@ export interface ElementIntersectionParams extends IntersectionObserverInit {
 
 ```tsx
 import { useElementIntersection } from '@packages/use-element-intersection';
-import { useRef } from 'react';
+import React, { useRef } from 'react';
 import styled from 'styled-components';
 
 export default {

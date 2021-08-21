@@ -34,6 +34,7 @@ It is helpful when you make a fetch requests by user input.
 
 ```tsx
 import { useResolveLast } from '@packages/use-resolve-last/index';
+import React from 'react';
 
 export default {
   title: 'packages/use-resolve-last',

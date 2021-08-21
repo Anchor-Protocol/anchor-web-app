@@ -65,6 +65,7 @@ describe('use-time-end', () => {
 [\_\_stories\_\_/use-time-end.stories.tsx](__stories__/use-time-end.stories.tsx)
 
 ```tsx
+import React from 'react';
 import { DAY, HOUR, MINUTE, useTimeEnd, TimeEnd } from '../';
 
 export default {

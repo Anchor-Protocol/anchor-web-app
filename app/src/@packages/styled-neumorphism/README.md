@@ -24,6 +24,7 @@ const Section = styled.section`
 
 ```tsx
 import { concave, convex, flat, pressed } from '@packages/styled-neumorphism';
+import React from 'react';
 import styled from 'styled-components';
 
 export default {

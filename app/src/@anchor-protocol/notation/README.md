@@ -98,7 +98,7 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { UST } from '@anchor-protocol/types';
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 export default {
   title: 'components/AnimateNumber',

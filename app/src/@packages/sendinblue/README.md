@@ -1,10 +1,7 @@
 # `@packages/sendinblue`
 
 ```jsx
-import {
-  useEmailInput,
-  useSendinblueSubscription,
-} from '@packages/sendinblue';
+import { useEmailInput, useSendinblueSubscription } from '@packages/sendinblue';
 
 function Component() {
   const [email, setEmail, validEmail] = useEmailInput();
