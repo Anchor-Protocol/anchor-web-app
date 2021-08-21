@@ -1,8 +1,8 @@
 import {
   HorizontalGraphBar,
   Rect,
-} from '@terra-dev/neumorphism-ui/components/HorizontalGraphBar';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+} from '@packages/neumorphism-ui/components/HorizontalGraphBar';
+import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
 import { formatRate } from '@anchor-protocol/notation';
 import { Rate } from '@anchor-protocol/types';
 import React from 'react';

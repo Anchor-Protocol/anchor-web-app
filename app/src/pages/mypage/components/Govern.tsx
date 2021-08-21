@@ -1,10 +1,10 @@
 import { demicrofy, formatANC } from '@anchor-protocol/notation';
 import { useGovMyPollsQuery } from '@anchor-protocol/webapp-provider';
-import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
-import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { BorderButton } from '@packages/neumorphism-ui/components/BorderButton';
+import { HorizontalScrollTable } from '@packages/neumorphism-ui/components/HorizontalScrollTable';
+import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@packages/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@packages/neumorphism-ui/components/Section';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { fixHMR } from 'fix-hmr';
 import { EmptySection } from 'pages/mypage/components/EmptySection';

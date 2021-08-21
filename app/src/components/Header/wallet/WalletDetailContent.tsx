@@ -9,9 +9,9 @@ import {
   truncate,
 } from '@anchor-protocol/notation';
 import { Check, KeyboardArrowRight, Launch } from '@material-ui/icons';
-import { FlatButton } from '@terra-dev/neumorphism-ui/components/FlatButton';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
+import { FlatButton } from '@packages/neumorphism-ui/components/FlatButton';
+import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
+import { Tooltip } from '@packages/neumorphism-ui/components/Tooltip';
 import { NetworkInfo } from '@terra-dev/wallet-types';
 import { ConnectType } from '@terra-money/wallet-provider';
 import big from 'big.js';

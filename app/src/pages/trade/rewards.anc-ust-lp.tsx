@@ -1,7 +1,7 @@
 import { anc80gif, GifIcon, TokenIcon } from '@anchor-protocol/token-icons';
-import { RulerTab } from '@terra-dev/neumorphism-ui/components/RulerTab';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
-import { Tab } from '@terra-dev/neumorphism-ui/components/Tab';
+import { RulerTab } from '@packages/neumorphism-ui/components/RulerTab';
+import { Section } from '@packages/neumorphism-ui/components/Section';
+import { Tab } from '@packages/neumorphism-ui/components/Tab';
 import { Circles } from 'components/primitives/Circles';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { screen } from 'env';

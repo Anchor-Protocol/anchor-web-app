@@ -1,5 +1,5 @@
 import { moneyMarket, uUST } from '@anchor-protocol/types';
-import { sum, vectorMultiply } from '@terra-dev/big-math';
+import { sum, vectorMultiply } from '@packages/big-math';
 import { Big, BigSource } from 'big.js';
 import { BAssetLtvs } from '../../queries/borrow/market';
 import { vectorizeBAssetMaxLtvs } from './vectorizeBAssetLtvs';

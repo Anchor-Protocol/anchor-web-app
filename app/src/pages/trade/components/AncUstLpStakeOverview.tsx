@@ -9,11 +9,11 @@ import {
   useAncPriceQuery,
   useRewardsClaimableAncUstLpRewardsQuery,
 } from '@anchor-protocol/webapp-provider';
-import { TooltipLabel } from '@terra-dev/neumorphism-ui/components/TooltipLabel';
+import { TooltipLabel } from '@packages/neumorphism-ui/components/TooltipLabel';
 import {
   rulerLightColor,
   rulerShadowColor,
-} from '@terra-dev/styled-neumorphism';
+} from '@packages/styled-neumorphism';
 import big, { Big } from 'big.js';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';

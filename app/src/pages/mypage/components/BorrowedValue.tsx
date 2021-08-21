@@ -6,10 +6,10 @@ import {
 } from '@anchor-protocol/notation';
 import { Rate, uUST } from '@anchor-protocol/types';
 import { BAssetLtv } from '@anchor-protocol/webapp-fns';
-import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { BorderButton } from '@packages/neumorphism-ui/components/BorderButton';
+import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@packages/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@packages/neumorphism-ui/components/Section';
 import { Big, BigSource } from 'big.js';
 import { Sub } from 'components/Sub';
 import { fixHMR } from 'fix-hmr';

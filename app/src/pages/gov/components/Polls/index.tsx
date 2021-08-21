@@ -6,12 +6,12 @@ import {
   useGovStateQuery,
 } from '@anchor-protocol/webapp-provider';
 import { List, ViewModule } from '@material-ui/icons';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { NativeSelect } from '@terra-dev/neumorphism-ui/components/NativeSelect';
-import { useLocalStorage } from '@terra-dev/use-local-storage';
+import { ActionButton } from '@packages/neumorphism-ui/components/ActionButton';
+import { BorderButton } from '@packages/neumorphism-ui/components/BorderButton';
+import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@packages/neumorphism-ui/components/InfoTooltip';
+import { NativeSelect } from '@packages/neumorphism-ui/components/NativeSelect';
+import { useLocalStorage } from '@packages/use-local-storage';
 import { links } from 'env';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
 import { SubHeader } from 'pages/gov/components/SubHeader';

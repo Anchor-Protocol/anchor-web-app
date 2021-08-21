@@ -6,7 +6,7 @@ import {
 import {
   defaultMantleFetch,
   lastSyncedHeightQuery,
-} from '@terra-money/webapp-fns';
+} from '@packages/webapp-fns';
 import { borrowBorrowerQuery } from '../borrower';
 
 describe('queries/borrower', () => {

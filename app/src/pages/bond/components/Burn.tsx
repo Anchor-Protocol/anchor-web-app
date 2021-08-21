@@ -14,10 +14,10 @@ import {
 } from '@anchor-protocol/webapp-provider';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { NumberMuiInput } from '@terra-dev/neumorphism-ui/components/NumberMuiInput';
-import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
+import { ActionButton } from '@packages/neumorphism-ui/components/ActionButton';
+import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
+import { NumberMuiInput } from '@packages/neumorphism-ui/components/NumberMuiInput';
+import { SelectAndTextInputContainer } from '@packages/neumorphism-ui/components/SelectAndTextInputContainer';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'contexts/bank';
 import big, { Big } from 'big.js';

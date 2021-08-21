@@ -9,7 +9,7 @@ import {
   TxReceipt,
   TxResultRendering,
   TxStreamPhase,
-} from '@terra-money/webapp-fns';
+} from '@packages/webapp-fns';
 import { BigSource } from 'big.js';
 
 export class TxHelper {

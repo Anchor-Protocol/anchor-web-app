@@ -18,7 +18,7 @@ import {
   pickRawLog,
   TxResultRendering,
   TxStreamPhase,
-} from '@terra-money/webapp-fns';
+} from '@packages/webapp-fns';
 import { QueryObserverResult } from 'react-query';
 import { Observable } from 'rxjs';
 import { computeCurrentLtv } from '../../logics/borrow/computeCurrentLtv';

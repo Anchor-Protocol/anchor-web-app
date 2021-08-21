@@ -6,9 +6,9 @@ import {
 import { moneyMarket, Rate } from '@anchor-protocol/types';
 import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
 import { InputAdornment } from '@material-ui/core';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
+import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@packages/neumorphism-ui/components/InfoTooltip';
+import { NumberInput } from '@packages/neumorphism-ui/components/NumberInput';
 import big from 'big.js';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
@@ -68,7 +68,8 @@ export function PollCreateModifyBorrowInterest() {
   // ---------------------------------------------
   const createMsgs = useCallback(
     (baseBorrowRate: string, interestMultiplier: string): ExecuteMsg[] => {
-      const interestModelConfig: moneyMarket.interestModel.UpdateConfig['update_config'] = {};
+      const interestModelConfig: moneyMarket.interestModel.UpdateConfig['update_config'] =
+        {};
 
       if (baseBorrowRate.length > 0) {
         interestModelConfig['base_rate'] = formatExecuteMsgNumber(

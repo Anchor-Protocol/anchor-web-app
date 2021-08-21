@@ -1,6 +1,6 @@
 import { microfy } from '@anchor-protocol/notation';
 import type { UST, uUST } from '@anchor-protocol/types';
-import { min } from '@terra-dev/big-math';
+import { min } from '@packages/big-math';
 import big, { Big, BigSource } from 'big.js';
 import { AnchorTax } from '../../types';
 

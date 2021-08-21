@@ -3,8 +3,8 @@ import {
   formatANCWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { anchorToken } from '@anchor-protocol/types';
-import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
-import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
+import { BorderButton } from '@packages/neumorphism-ui/components/BorderButton';
+import { HorizontalScrollTable } from '@packages/neumorphism-ui/components/HorizontalScrollTable';
 import { AccountLink } from 'components/links/AccountLink';
 import React from 'react';
 import styled from 'styled-components';

@@ -4,7 +4,7 @@ import {
   MantleParams,
   WasmQuery,
   WasmQueryData,
-} from '@terra-money/webapp-fns';
+} from '@packages/webapp-fns';
 
 export interface AncTokenInfoWasmQuery {
   ancTokenInfo: WasmQuery<cw20.TokenInfo, cw20.TokenInfoResponse<uANC>>;

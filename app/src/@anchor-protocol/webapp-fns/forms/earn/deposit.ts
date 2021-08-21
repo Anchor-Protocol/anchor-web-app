@@ -1,6 +1,6 @@
 import { microfy } from '@anchor-protocol/notation';
 import { Rate, UST, uUST } from '@anchor-protocol/types';
-import { max, min } from '@terra-dev/big-math';
+import { max, min } from '@packages/big-math';
 import big, { Big, BigSource } from 'big.js';
 
 export interface EarnDepositFormInput {

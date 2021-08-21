@@ -4,7 +4,7 @@ import {
   MantleParams,
   WasmQuery,
   WasmQueryData,
-} from '@terra-money/webapp-fns';
+} from '@packages/webapp-fns';
 
 export interface BondBLunaExchangeRateWasmQuery {
   state: WasmQuery<bluna.hub.State, bluna.hub.StateResponse>;

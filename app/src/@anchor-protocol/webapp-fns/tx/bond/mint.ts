@@ -18,7 +18,7 @@ import {
   pickRawLog,
   TxResultRendering,
   TxStreamPhase,
-} from '@terra-money/webapp-fns';
+} from '@packages/webapp-fns';
 import big, { BigSource } from 'big.js';
 import { Observable } from 'rxjs';
 import { _catchTxError } from '../internal/_catchTxError';

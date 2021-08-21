@@ -1,6 +1,6 @@
 import { ShieldPlus } from '@anchor-protocol/icons';
 import { ButtonBaseProps } from '@material-ui/core';
-import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
+import { BorderButton } from '@packages/neumorphism-ui/components/BorderButton';
 import React from 'react';
 import styled from 'styled-components';
 import { useInsuranceCoverageDialog } from './useInsuranceCoverageDialog';

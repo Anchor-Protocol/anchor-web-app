@@ -3,7 +3,7 @@ import { MarketAncHistory } from '@anchor-protocol/webapp-fns';
 import {
   rulerLightColor,
   rulerShadowColor,
-} from '@terra-dev/styled-neumorphism';
+} from '@packages/styled-neumorphism';
 import big from 'big.js';
 import { Chart } from 'chart.js';
 import React, { Component, createRef } from 'react';

@@ -3,7 +3,7 @@ import {
   pressed,
   rulerLightColor,
   rulerShadowColor,
-} from '@terra-dev/styled-neumorphism';
+} from '@packages/styled-neumorphism';
 import { fixHMR } from 'fix-hmr';
 import React from 'react';
 import styled from 'styled-components';

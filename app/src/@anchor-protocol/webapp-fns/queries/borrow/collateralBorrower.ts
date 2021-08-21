@@ -4,7 +4,7 @@ import {
   MantleParams,
   WasmQuery,
   WasmQueryData,
-} from '@terra-dev/mantle';
+} from '@packages/mantle';
 
 export interface BorrowCollateralBorrowerWasmQuery {
   custodyBorrower: WasmQuery<

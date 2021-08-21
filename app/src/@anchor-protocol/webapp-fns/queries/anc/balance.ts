@@ -4,7 +4,7 @@ import {
   MantleParams,
   WasmQuery,
   WasmQueryData,
-} from '@terra-money/webapp-fns';
+} from '@packages/webapp-fns';
 
 export interface AncBalanceWasmQuery {
   ancBalance: WasmQuery<cw20.Balance, cw20.BalanceResponse<uANC>>;

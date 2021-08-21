@@ -1,7 +1,7 @@
 import { microfy } from '@anchor-protocol/notation';
 import type { bAsset, CW20Addr, uUST } from '@anchor-protocol/types';
 import { moneyMarket } from '@anchor-protocol/types';
-import { sum, vectorMinus, vectorMultiply } from '@terra-dev/big-math';
+import { sum, vectorMinus, vectorMultiply } from '@packages/big-math';
 import big, { Big } from 'big.js';
 import { BAssetLtvs } from '../../queries/borrow/market';
 import { vectorizeBAssetMaxLtvs } from './vectorizeBAssetLtvs';

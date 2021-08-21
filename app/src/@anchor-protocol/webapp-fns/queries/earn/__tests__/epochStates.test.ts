@@ -5,7 +5,7 @@ import {
 import {
   defaultMantleFetch,
   lastSyncedHeightQuery,
-} from '@terra-money/webapp-fns';
+} from '@packages/webapp-fns';
 import { earnEpochStatesQuery } from '../epochStates';
 
 describe('queries/epochStates', () => {

@@ -1,9 +1,9 @@
 import { useLastSyncedHeightQuery } from '@anchor-protocol/webapp-provider';
 import { Schedule } from '@material-ui/icons';
-import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
-import { TimeEnd } from '@terra-dev/use-time-end';
+import { BorderButton } from '@packages/neumorphism-ui/components/BorderButton';
+import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
+import { Section } from '@packages/neumorphism-ui/components/Section';
+import { TimeEnd } from '@packages/use-time-end';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
 import { PollStatusSpan } from 'pages/gov/components/PollStatusSpan';
 import { extractPollDetail } from 'pages/gov/logics/extractPollDetail';

@@ -1,6 +1,6 @@
-import { darkTheme } from '@terra-dev/neumorphism-ui/themes/darkTheme';
-import { lightTheme } from '@terra-dev/neumorphism-ui/themes/lightTheme';
-import { ThemeProvider as NeumorphismThemeProvider } from '@terra-dev/neumorphism-ui/themes/ThemeProvider';
+import { darkTheme } from '@packages/neumorphism-ui/themes/darkTheme';
+import { lightTheme } from '@packages/neumorphism-ui/themes/lightTheme';
+import { ThemeProvider as NeumorphismThemeProvider } from '@packages/neumorphism-ui/themes/ThemeProvider';
 import type { ReactNode } from 'react';
 import React, {
   Consumer,

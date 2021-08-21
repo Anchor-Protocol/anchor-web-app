@@ -1,5 +1,5 @@
 import { anchorToken, HumanAddr, uANC } from '@anchor-protocol/types';
-import { mantle, MantleParams, WasmQuery } from '@terra-dev/mantle';
+import { mantle, MantleParams, WasmQuery } from '@packages/mantle';
 
 export type MyPoll = anchorToken.gov.PollResponse & {
   my: { vote: 'yes' | 'no'; balance: uANC } | undefined;

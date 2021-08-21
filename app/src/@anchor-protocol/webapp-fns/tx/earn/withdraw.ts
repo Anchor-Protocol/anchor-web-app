@@ -11,7 +11,7 @@ import {
 } from '@anchor-protocol/notation';
 import { Rate, uaUST, uUST } from '@anchor-protocol/types';
 import { pipe } from '@rx-stream/pipe';
-import { floor } from '@terra-dev/big-math';
+import { floor } from '@packages/big-math';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
 import {
@@ -21,7 +21,7 @@ import {
   pickRawLog,
   TxResultRendering,
   TxStreamPhase,
-} from '@terra-money/webapp-fns';
+} from '@packages/webapp-fns';
 import big, { BigSource } from 'big.js';
 import { Observable } from 'rxjs';
 import { _catchTxError } from '../internal/_catchTxError';

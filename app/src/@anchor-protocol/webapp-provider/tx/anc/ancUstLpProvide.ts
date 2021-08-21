@@ -7,7 +7,7 @@ import {
   useBank,
   useRefetchQueries,
   useTerraWebapp,
-} from '@terra-money/webapp-provider';
+} from '@packages/webapp-provider';
 import { useCallback } from 'react';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';

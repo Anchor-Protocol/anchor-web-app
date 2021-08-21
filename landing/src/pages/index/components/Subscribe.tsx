@@ -1,9 +1,6 @@
 import { InputBase } from '@material-ui/core';
 import { MailOutline } from '@material-ui/icons';
-import {
-  useEmailInput,
-  useSendinblueSubscription,
-} from '@terra-dev/sendinblue';
+import { useEmailInput, useSendinblueSubscription } from '@packages/sendinblue';
 import { links, sendinblueApiKey } from 'env';
 import styled from 'styled-components';
 

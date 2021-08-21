@@ -4,7 +4,7 @@ import {
   MantleParams,
   WasmQuery,
   WasmQueryData,
-} from '@terra-money/webapp-fns';
+} from '@packages/webapp-fns';
 
 export interface GovPollsWasmQuery {
   polls: WasmQuery<anchorToken.gov.Polls, anchorToken.gov.PollsResponse>;

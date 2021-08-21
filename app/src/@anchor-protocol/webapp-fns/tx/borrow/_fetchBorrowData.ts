@@ -2,7 +2,7 @@ import {
   TxInfoData,
   TxResultRendering,
   TxStreamPhase,
-} from '@terra-money/webapp-fns';
+} from '@packages/webapp-fns';
 import { QueryObserverResult } from 'react-query';
 import { BorrowBorrower } from '../../queries/borrow/borrower';
 import { BorrowMarket } from '../../queries/borrow/market';

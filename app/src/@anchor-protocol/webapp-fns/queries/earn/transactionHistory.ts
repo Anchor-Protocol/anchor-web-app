@@ -1,5 +1,5 @@
 import { DateTime, Denom, HumanAddr, uUST } from '@anchor-protocol/types';
-import { MantleFetch } from '@terra-money/webapp-fns';
+import { MantleFetch } from '@packages/webapp-fns';
 
 export interface EarnTransactionHistoryData {
   transactionHistory: {

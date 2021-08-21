@@ -6,10 +6,10 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { ANC, UST } from '@anchor-protocol/types';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { ActionButton } from '@packages/neumorphism-ui/components/ActionButton';
+import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@packages/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@packages/neumorphism-ui/components/Section';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { Sub } from 'components/Sub';
 import { fixHMR } from 'fix-hmr';

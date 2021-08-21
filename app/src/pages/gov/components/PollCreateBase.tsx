@@ -12,15 +12,15 @@ import {
 } from '@anchor-protocol/webapp-provider';
 import { InputAdornment } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
-import { TextInput } from '@terra-dev/neumorphism-ui/components/TextInput';
+import { ActionButton } from '@packages/neumorphism-ui/components/ActionButton';
+import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@packages/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@packages/neumorphism-ui/components/Section';
+import { TextInput } from '@packages/neumorphism-ui/components/TextInput';
 import {
   BytesValid,
   useValidateStringBytes,
-} from '@terra-dev/use-string-bytes-length';
+} from '@packages/use-string-bytes-length';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'contexts/bank';
 import big from 'big.js';

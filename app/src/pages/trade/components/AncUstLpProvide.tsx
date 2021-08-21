@@ -20,11 +20,11 @@ import {
 } from '@anchor-protocol/webapp-provider';
 import { InputAdornment } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { max, min } from '@terra-dev/big-math';
-import { isZero } from '@terra-dev/is-zero';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
-import { useConfirm } from '@terra-dev/neumorphism-ui/components/useConfirm';
+import { max, min } from '@packages/big-math';
+import { isZero } from '@packages/is-zero';
+import { ActionButton } from '@packages/neumorphism-ui/components/ActionButton';
+import { NumberInput } from '@packages/neumorphism-ui/components/NumberInput';
+import { useConfirm } from '@packages/neumorphism-ui/components/useConfirm';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'contexts/bank';
 import big, { Big } from 'big.js';

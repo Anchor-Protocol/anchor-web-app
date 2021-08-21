@@ -5,7 +5,7 @@ import {
   TxUnspecifiedError,
   UserDenied,
 } from '@terra-money/wallet-provider';
-import { TxErrorRendering } from '@terra-money/webapp-fns';
+import { TxErrorRendering } from '@packages/webapp-fns';
 import React, { ReactNode } from 'react';
 
 // ----------------------------------------------------------------

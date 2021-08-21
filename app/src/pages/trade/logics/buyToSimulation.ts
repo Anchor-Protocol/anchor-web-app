@@ -1,6 +1,6 @@
 import { Rate, terraswap, uANC, uUST } from '@anchor-protocol/types';
 import { AnchorTax } from '@anchor-protocol/webapp-fns';
-import { min } from '@terra-dev/big-math';
+import { min } from '@packages/big-math';
 import big, { Big, BigSource } from 'big.js';
 import { MAX_SPREAD } from 'pages/trade/env';
 import { TradeSimulation } from 'pages/trade/models/tradeSimulation';

@@ -1,7 +1,7 @@
-import { txTimeout } from '@terra-dev/tx-helpers';
+import { txTimeout } from '@packages/tx-helpers';
 import { TxResult } from '@terra-dev/wallet-types';
 import { CreateTxOptions } from '@terra-money/terra.js';
-import { TxResultRendering, TxStreamPhase } from '@terra-money/webapp-fns';
+import { TxResultRendering, TxStreamPhase } from '@packages/webapp-fns';
 import { TxHelper } from './TxHelper';
 
 interface Params {

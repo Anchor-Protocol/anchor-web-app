@@ -5,7 +5,7 @@ import {
   TxInfoData,
   TxResultRendering,
   TxStreamPhase,
-} from '@terra-money/webapp-fns';
+} from '@packages/webapp-fns';
 import { TxHelper } from './TxHelper';
 
 interface Params {

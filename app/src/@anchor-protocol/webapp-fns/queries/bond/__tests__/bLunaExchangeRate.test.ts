@@ -1,4 +1,4 @@
-import { defaultMantleFetch } from '@terra-money/webapp-fns';
+import { defaultMantleFetch } from '@packages/webapp-fns';
 import { TEST_ADDRESSES, TEST_MANTLE_ENDPOINT } from '../../../test-env';
 import { bondBLunaExchangeRateQuery } from '../bLunaExchangeRate';
 

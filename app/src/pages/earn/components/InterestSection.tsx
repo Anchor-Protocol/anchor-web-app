@@ -10,10 +10,10 @@ import {
   useEarnAPYHistoryQuery,
   useEarnEpochStatesQuery,
 } from '@anchor-protocol/webapp-provider';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
-import { TooltipLabel } from '@terra-dev/neumorphism-ui/components/TooltipLabel';
+import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@packages/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@packages/neumorphism-ui/components/Section';
+import { TooltipLabel } from '@packages/neumorphism-ui/components/TooltipLabel';
 import big from 'big.js';
 import React, { useMemo } from 'react';
 import { useTheme } from 'styled-components';

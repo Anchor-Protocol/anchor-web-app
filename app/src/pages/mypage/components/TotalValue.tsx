@@ -19,13 +19,13 @@ import {
   useRewardsAncGovernanceRewardsQuery,
 } from '@anchor-protocol/webapp-provider';
 import { Send } from '@material-ui/icons';
-import { sum } from '@terra-dev/big-math';
-import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { sum } from '@packages/big-math';
+import { BorderButton } from '@packages/neumorphism-ui/components/BorderButton';
+import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@packages/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@packages/neumorphism-ui/components/Section';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank } from '@terra-money/webapp-provider';
+import { useBank } from '@packages/webapp-provider';
 import big, { Big, BigSource } from 'big.js';
 import { Sub } from 'components/Sub';
 import { fixHMR } from 'fix-hmr';

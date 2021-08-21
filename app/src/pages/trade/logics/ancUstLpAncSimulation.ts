@@ -1,4 +1,4 @@
-import { min } from '@terra-dev/big-math';
+import { min } from '@packages/big-math';
 import { demicrofy, microfy } from '@anchor-protocol/notation';
 import { ANC, Rate, uAncUstLP, uUST } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';

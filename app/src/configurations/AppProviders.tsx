@@ -3,22 +3,22 @@ import {
   AnchorWebappProvider,
 } from '@anchor-protocol/webapp-provider';
 import { captureException } from '@sentry/react';
-import { GlobalStyle } from '@terra-dev/neumorphism-ui/themes/GlobalStyle';
-import { patchReactQueryFocusRefetching } from '@terra-dev/patch-react-query-focus-refetching';
+import { GlobalStyle } from '@packages/neumorphism-ui/themes/GlobalStyle';
+import { patchReactQueryFocusRefetching } from '@packages/patch-react-query-focus-refetching';
 import { ReadonlyWalletSession } from '@terra-dev/readonly-wallet';
-import { SnackbarProvider } from '@terra-dev/snackbar';
-import { BrowserInactiveProvider } from '@terra-dev/use-browser-inactive';
-import { GoogleAnalytics } from '@terra-dev/use-google-analytics';
-import { useLongtimeNoSee } from '@terra-dev/use-longtime-no-see';
-import { RouterScrollRestoration } from '@terra-dev/use-router-scroll-restoration';
-import { RouterWalletStatusRecheck } from '@terra-dev/use-router-wallet-status-recheck';
+import { SnackbarProvider } from '@packages/snackbar';
+import { BrowserInactiveProvider } from '@packages/use-browser-inactive';
+import { GoogleAnalytics } from '@packages/use-google-analytics';
+import { useLongtimeNoSee } from '@packages/use-longtime-no-see';
+import { RouterScrollRestoration } from '@packages/use-router-scroll-restoration';
+import { RouterWalletStatusRecheck } from '@packages/use-router-wallet-status-recheck';
 import { NetworkInfo, WalletProvider } from '@terra-money/wallet-provider';
 import {
   BankProvider as WebappBankProvider,
   CW20Contract,
   TerraWebappProvider,
   webworkerMantleFetch,
-} from '@terra-money/webapp-provider';
+} from '@packages/webapp-provider';
 import { useReadonlyWalletDialog } from 'components/dialogs/useReadonlyWalletDialog';
 import { useRequestReloadDialog } from 'components/dialogs/useRequestReloadDialog';
 import { SnackbarContainer } from 'components/SnackbarContainer';

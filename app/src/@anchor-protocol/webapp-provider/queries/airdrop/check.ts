@@ -1,6 +1,6 @@
 import { HumanAddr } from '@anchor-protocol/types';
 import { Airdrop, airdropCheckQuery } from '@anchor-protocol/webapp-fns';
-import { createQueryFn } from '@terra-dev/react-query-utils';
+import { createQueryFn } from '@packages/react-query-utils';
 import {
   ConnectedWallet,
   useConnectedWallet,
@@ -9,7 +9,7 @@ import {
   EMPTY_QUERY_RESULT,
   MantleFetch,
   useTerraWebapp,
-} from '@terra-money/webapp-provider';
+} from '@packages/webapp-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';

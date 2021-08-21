@@ -1,4 +1,4 @@
-import { useCloudflareAnalytics } from '@terra-dev/use-cloudflare-analytics';
+import { useCloudflareAnalytics } from '@packages/use-cloudflare-analytics';
 import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
 import { AppProviders } from 'configurations/AppProviders';

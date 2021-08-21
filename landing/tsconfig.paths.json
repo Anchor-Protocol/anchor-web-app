@@ -2,14 +2,8 @@
   "compilerOptions": {
     "baseUrl": "src",
     "paths": {
-      "@terra-dev/*": [
-        "../../app/src/@terra-dev/*"
-      ],
-      "@terra-money/*": [
-        "../../app/src/@terra-money/*"
-      ],
-      "@anchor-protocol/*": [
-        "../../app/src/@anchor-protocol/*"
+      "@packages/*": [
+        "../../app/src/@packages/*"
       ]
     }
   }

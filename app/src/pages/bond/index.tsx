@@ -1,4 +1,4 @@
-import { Tab } from '@terra-dev/neumorphism-ui/components/Tab';
+import { Tab } from '@packages/neumorphism-ui/components/Tab';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { PageTitle, TitleContainer } from 'components/primitives/PageTitle';
 import { links } from 'env';

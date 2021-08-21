@@ -10,7 +10,7 @@ import {
   MantleFetch,
   TxResultRendering,
   TxStreamPhase,
-} from '@terra-money/webapp-fns';
+} from '@packages/webapp-fns';
 import { Observable } from 'rxjs';
 import { Airdrop } from '../../queries/airdrop/check';
 import { _catchTxError } from '../internal/_catchTxError';

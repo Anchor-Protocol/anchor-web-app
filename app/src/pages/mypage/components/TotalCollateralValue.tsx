@@ -6,9 +6,9 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { Rate, ubAsset, uUST } from '@anchor-protocol/types';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@packages/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@packages/neumorphism-ui/components/Section';
 import { Big } from 'big.js';
 import { Sub } from 'components/Sub';
 import { fixHMR } from 'fix-hmr';

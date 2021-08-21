@@ -1,6 +1,6 @@
 import { useMypageTxHistoryQuery } from '@anchor-protocol/webapp-provider';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { ActionButton } from '@packages/neumorphism-ui/components/ActionButton';
+import { Section } from '@packages/neumorphism-ui/components/Section';
 import React from 'react';
 import styled from 'styled-components';
 import { TransactionHistoryEmptyMessage } from './TransactionHistoryEmptyMessage';

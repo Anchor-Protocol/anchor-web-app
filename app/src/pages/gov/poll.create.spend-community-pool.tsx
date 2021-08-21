@@ -11,10 +11,10 @@ import {
   useAncBalanceQuery,
   useAnchorWebapp,
 } from '@anchor-protocol/webapp-provider';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
-import { TextInput } from '@terra-dev/neumorphism-ui/components/TextInput';
+import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@packages/neumorphism-ui/components/InfoTooltip';
+import { NumberInput } from '@packages/neumorphism-ui/components/NumberInput';
+import { TextInput } from '@packages/neumorphism-ui/components/TextInput';
 import { AccAddress } from '@terra-money/terra.js';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';

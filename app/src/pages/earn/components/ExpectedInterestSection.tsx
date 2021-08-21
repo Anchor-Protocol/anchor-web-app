@@ -9,11 +9,11 @@ import {
   useAnchorWebapp,
   useEarnEpochStatesQuery,
 } from '@anchor-protocol/webapp-provider';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
-import { Tab } from '@terra-dev/neumorphism-ui/components/Tab';
-import { useBank } from '@terra-money/webapp-provider';
+import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@packages/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@packages/neumorphism-ui/components/Section';
+import { Tab } from '@packages/neumorphism-ui/components/Tab';
+import { useBank } from '@packages/webapp-provider';
 import big, { Big } from 'big.js';
 import React, { useMemo, useState } from 'react';
 

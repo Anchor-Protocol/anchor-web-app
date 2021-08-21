@@ -1,7 +1,7 @@
 import { fabricateCw20Transfer } from '@anchor-protocol/anchor.js';
 import { CW20Addr, HumanAddr, Rate, Token, uUST } from '@anchor-protocol/types';
 import { pipe } from '@rx-stream/pipe';
-import { floor } from '@terra-dev/big-math';
+import { floor } from '@packages/big-math';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import {
   Coin,
@@ -15,7 +15,7 @@ import {
   MantleFetch,
   TxResultRendering,
   TxStreamPhase,
-} from '@terra-money/webapp-fns';
+} from '@packages/webapp-fns';
 import { Observable } from 'rxjs';
 import { _catchTxError } from '../internal/_catchTxError';
 import { _createTxOptions } from '../internal/_createTxOptions';

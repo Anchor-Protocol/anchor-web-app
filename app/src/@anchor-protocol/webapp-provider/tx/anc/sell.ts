@@ -5,10 +5,7 @@ import { useAncPriceQuery } from '@anchor-protocol/webapp-provider';
 import { useStream } from '@rx-stream/react';
 
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import {
-  useRefetchQueries,
-  useTerraWebapp,
-} from '@terra-money/webapp-provider';
+import { useRefetchQueries, useTerraWebapp } from '@packages/webapp-provider';
 import big from 'big.js';
 import { useCallback } from 'react';
 import { useAnchorWebapp } from '../../contexts/context';

@@ -4,7 +4,7 @@ import {
   MantleParams,
   WasmQuery,
   WasmQueryData,
-} from '@terra-money/webapp-fns';
+} from '@packages/webapp-fns';
 import big from 'big.js';
 import { ANCHOR_SAFE_RATIO } from '../../env';
 

@@ -1,6 +1,6 @@
-import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
-import { pressed } from '@terra-dev/styled-neumorphism';
-import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
+import { Dialog } from '@packages/neumorphism-ui/components/Dialog';
+import { pressed } from '@packages/styled-neumorphism';
+import { DialogProps, OpenDialog, useDialog } from '@packages/use-dialog';
 import { Modal } from '@material-ui/core';
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';

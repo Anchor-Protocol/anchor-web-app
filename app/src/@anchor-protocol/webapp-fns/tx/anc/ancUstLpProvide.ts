@@ -11,7 +11,7 @@ import {
 } from '@anchor-protocol/notation';
 import { Rate, uANC, uAncUstLP, uUST } from '@anchor-protocol/types';
 import { pipe } from '@rx-stream/pipe';
-import { floor, min } from '@terra-dev/big-math';
+import { floor, min } from '@packages/big-math';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
 import {
@@ -22,7 +22,7 @@ import {
   TaxData,
   TxResultRendering,
   TxStreamPhase,
-} from '@terra-money/webapp-fns';
+} from '@packages/webapp-fns';
 import big, { Big } from 'big.js';
 import { Observable } from 'rxjs';
 import { AncPrice } from '../../queries/anc/price';

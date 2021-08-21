@@ -1,4 +1,4 @@
-import { Tab } from '@terra-dev/neumorphism-ui/components/Tab';
+import { Tab } from '@packages/neumorphism-ui/components/Tab';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { PageTitle, TitleContainer } from 'components/primitives/PageTitle';
 import { Borrow } from 'pages/mypage/components/Borrow';

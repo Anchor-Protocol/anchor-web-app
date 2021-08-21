@@ -4,7 +4,7 @@ import {
   borrowMarketQuery,
   computeCurrentLtv,
 } from '@anchor-protocol/webapp-fns';
-import { lastSyncedHeightQuery, MantleFetch } from '@terra-money/webapp-fns';
+import { lastSyncedHeightQuery, MantleFetch } from '@packages/webapp-fns';
 
 interface UserLtvQueryParams {
   mantleFetch: MantleFetch;

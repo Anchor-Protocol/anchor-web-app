@@ -1,6 +1,6 @@
 import { moneyMarket, uUST } from '@anchor-protocol/types';
 import { computeRepayTotalBorrowed } from './computeRepayTotalBorrowed';
-import { max } from '@terra-dev/big-math';
+import { max } from '@packages/big-math';
 import big, { Big, BigSource } from 'big.js';
 
 export function computeMaxRepayingAmount(

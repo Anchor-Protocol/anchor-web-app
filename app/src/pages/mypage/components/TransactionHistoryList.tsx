@@ -2,7 +2,7 @@ import { MypageTxHistory } from '@anchor-protocol/webapp-fns';
 import {
   rulerLightColor,
   rulerShadowColor,
-} from '@terra-dev/styled-neumorphism';
+} from '@packages/styled-neumorphism';
 import { useWallet } from '@terra-money/wallet-provider';
 import React from 'react';
 import styled, { keyframes } from 'styled-components';

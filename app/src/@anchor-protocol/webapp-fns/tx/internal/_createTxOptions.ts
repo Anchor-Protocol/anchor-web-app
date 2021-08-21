@@ -1,5 +1,5 @@
 import { CreateTxOptions } from '@terra-money/terra.js';
-import { TxResultRendering, TxStreamPhase } from '@terra-money/webapp-fns';
+import { TxResultRendering, TxStreamPhase } from '@packages/webapp-fns';
 
 export function _createTxOptions(tx: CreateTxOptions) {
   return (_: void) => {

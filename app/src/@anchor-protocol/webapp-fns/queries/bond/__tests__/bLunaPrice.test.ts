@@ -2,7 +2,7 @@ import {
   TEST_ADDRESSES,
   TEST_MANTLE_ENDPOINT,
 } from '@anchor-protocol/webapp-fns/test-env';
-import { defaultMantleFetch } from '@terra-money/webapp-fns';
+import { defaultMantleFetch } from '@packages/webapp-fns';
 import { bondBLunaPriceQuery } from '../bLunaPrice';
 
 describe('queries/bLunaPrice', () => {

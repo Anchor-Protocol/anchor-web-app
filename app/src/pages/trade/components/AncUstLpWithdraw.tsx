@@ -17,10 +17,10 @@ import {
 } from '@anchor-protocol/webapp-provider';
 import { Input, InputAdornment } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { isZero } from '@terra-dev/is-zero';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
-import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
+import { isZero } from '@packages/is-zero';
+import { ActionButton } from '@packages/neumorphism-ui/components/ActionButton';
+import { NumberInput } from '@packages/neumorphism-ui/components/NumberInput';
+import { SelectAndTextInputContainer } from '@packages/neumorphism-ui/components/SelectAndTextInputContainer';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'contexts/bank';
 import big, { Big } from 'big.js';

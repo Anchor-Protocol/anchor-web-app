@@ -14,17 +14,17 @@ import {
   useLastSyncedHeightQuery,
 } from '@anchor-protocol/webapp-provider';
 import { Schedule } from '@material-ui/icons';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
-import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
-import { HorizontalRuler } from '@terra-dev/neumorphism-ui/components/HorizontalRuler';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { ActionButton } from '@packages/neumorphism-ui/components/ActionButton';
+import { BorderButton } from '@packages/neumorphism-ui/components/BorderButton';
+import { HorizontalHeavyRuler } from '@packages/neumorphism-ui/components/HorizontalHeavyRuler';
+import { HorizontalRuler } from '@packages/neumorphism-ui/components/HorizontalRuler';
+import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
+import { Section } from '@packages/neumorphism-ui/components/Section';
 import {
   rulerLightColor,
   rulerShadowColor,
-} from '@terra-dev/styled-neumorphism';
-import { TimeEnd } from '@terra-dev/use-time-end';
+} from '@packages/styled-neumorphism';
+import { TimeEnd } from '@packages/use-time-end';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { AccountLink } from 'components/links/AccountLink';
 import { useCodeViewerDialog } from 'components/dialogs/useCodeViewerDialog';
