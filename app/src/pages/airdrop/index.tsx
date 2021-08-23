@@ -28,7 +28,7 @@ export interface AirdropProps {
   className?: string;
 }
 
-const airdropTxFee: u<UST<number>> = 50000 as u<UST<number>>;
+const airdropTxFee: u<UST<number>> = 127000 as u<UST<number>>;
 
 function AirdropBase({ className }: AirdropProps) {
   // ---------------------------------------------

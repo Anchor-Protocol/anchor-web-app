@@ -34,7 +34,7 @@ export function airdropClaimTx($: {
   onTxSucceed?: () => void;
 }): Observable<TxResultRendering> {
   const gasFee = $.gasFee ?? 300000;
-  const txFee = $.txFee ?? ('50000' as u<UST>);
+  const txFee = $.txFee ?? ('127000' as u<UST>);
 
   const helper = new TxHelper({ ...$, txFee });
 
