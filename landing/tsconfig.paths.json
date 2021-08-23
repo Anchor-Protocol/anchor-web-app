@@ -2,6 +2,9 @@
   "compilerOptions": {
     "baseUrl": "src",
     "paths": {
+      "@anchor-protocol/*": [
+        "../../app/src/@anchor-protocol/*"
+      ],
       "@libs/*": [
         "../../app/src/@libs/*"
       ]

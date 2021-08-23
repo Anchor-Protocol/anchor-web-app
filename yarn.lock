@@ -127,7 +127,7 @@ __metadata:
   dependencies:
     "@material-ui/core": ^4.11.3
     "@material-ui/icons": ^4.11.2
-    "@rocket-scripts/utils": ^3.2.0
+    "@rocket-scripts/read-package-alias": ^4.0.0-alpha.3
     "@ssen/jest-transform": ^3.0.0
     "@terra-money/terra.js": ^1.8.5
     "@testing-library/jest-dom": ^5.14.1
@@ -3339,6 +3339,15 @@ __metadata:
     react: 15.x || 16.x || 16.4.0-alpha.0911da3
     react-dom: 15.x || 16.x || 16.4.0-alpha.0911da3
   checksum: f64372497e0464a9fdfd79283fec3f4fd01ee093f1599d8a8035e0a41fbce22113bfa46dcea63aa8b7b4e0796e916f134aa8e3fccd3974be397e7c19468de3c4
+  languageName: node
+  linkType: hard
+
+"@rocket-scripts/read-package-alias@npm:^4.0.0-alpha.3":
+  version: 4.0.0-alpha.3
+  resolution: "@rocket-scripts/read-package-alias@npm:4.0.0-alpha.3"
+  dependencies:
+    fs-extra: ^10.0.0
+  checksum: 7f4a61cbcaea82def2ae7c3561878d40484ad5e03a9eeec1b006bbb72b8d2f750f9a238248b619db3bbcf91179a71865ba1ec8e0f8225d48e9affdefc7052c88
   languageName: node
   linkType: hard
 
