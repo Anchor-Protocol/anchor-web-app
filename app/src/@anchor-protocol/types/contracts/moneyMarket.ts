@@ -5,8 +5,9 @@ import {
   NativeDenom,
   Num,
   Rate,
+  UST,
 } from '@libs/types';
-import { uANC, uaToken, ubAsset, UST, uUST } from '../currencies';
+import { uANC, uaToken, ubAsset, uUST } from '../currencies';
 
 export namespace moneyMarket {
   export namespace custody {

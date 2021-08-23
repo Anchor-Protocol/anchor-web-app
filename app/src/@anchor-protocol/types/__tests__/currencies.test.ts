@@ -1,4 +1,5 @@
-import { Luna, uLuna } from '@anchor-protocol/types/currencies';
+import { uLuna } from '@anchor-protocol/types/currencies';
+import { Luna } from '@libs/types';
 import { Big, BigSource } from 'big.js';
 
 describe('types/currencies', () => {

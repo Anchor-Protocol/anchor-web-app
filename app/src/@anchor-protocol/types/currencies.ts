@@ -2,10 +2,7 @@ import { NominalType } from '@libs/types';
 
 // Native currencies
 export type uUST<T = string> = T & NominalType<'uust'>;
-export type UST<T = string> = T & NominalType<'ust'>;
-
 export type uLuna<T = string> = T & NominalType<'uluna'>;
-export type Luna<T = string> = T & NominalType<'luna'>;
 
 // CW20 currencies
 export type uaUST<T = string> = T & NominalType<'uaust'>;
@@ -32,8 +29,6 @@ export type uaToken<T = string> = T & NominalType<'uaust'>;
 export type aToken<T = string> = T & NominalType<'aust'>;
 
 export type uNativeToken<T = string> = T & NominalType<'uust' | 'uluna'>;
-
-export type NativeToken<T = string> = T & NominalType<'ust' | 'luna'>;
 
 export type ubAsset<T = string> = T & NominalType<'ubluna' | 'ubeth'>;
 
@@ -65,16 +60,4 @@ export type uToken<T = string> = T &
     | 'ubluna'
     | 'uanc_ust_lp'
     | 'ubluna_luna_lp'
-  >;
-
-export type Token<T = string> = T &
-  NominalType<
-    | 'ust'
-    | 'luna'
-    | 'aust'
-    | 'anc'
-    | 'bluna'
-    | 'beth'
-    | 'anc_ust_lp'
-    | 'bluna_luna_lp'
   >;
