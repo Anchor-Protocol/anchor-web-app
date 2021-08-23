@@ -57,9 +57,6 @@ jobs:
       - name: Lint
         run: yarn run lint
 
-      - name: Test build packages
-        run: yarn run app:pack
-
       - name: Test
         run: |
           yarn run app:coverage
