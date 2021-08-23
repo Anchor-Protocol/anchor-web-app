@@ -1,8 +1,6 @@
-import {
-  AnimateNumber,
-  formatUSTWithPostfixUnits,
-} from '@anchor-protocol/notation';
+import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
 import { UST } from '@anchor-protocol/types';
+import { AnimateNumber } from '@libs/ui';
 import React, { useCallback, useState } from 'react';
 
 export default {

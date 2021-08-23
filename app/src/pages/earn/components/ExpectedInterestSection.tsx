@@ -1,5 +1,5 @@
+import { AnimateNumber } from '@libs/ui';
 import {
-  AnimateNumber,
   demicrofy,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';

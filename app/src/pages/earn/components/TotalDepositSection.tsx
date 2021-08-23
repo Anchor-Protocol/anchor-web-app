@@ -1,5 +1,4 @@
 import {
-  AnimateNumber,
   demicrofy,
   formatUST,
   formatUSTWithPostfixUnits,
@@ -16,8 +15,9 @@ import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@libs/neumorphism-ui/components/Section';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
+import { AnimateNumber } from '@libs/ui';
 import { useBank } from '@libs/webapp-provider';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { SubAmount } from 'components/primitives/SubAmount';
 import React, { useCallback, useMemo } from 'react';
 import { useDepositDialog } from './useDepositDialog';

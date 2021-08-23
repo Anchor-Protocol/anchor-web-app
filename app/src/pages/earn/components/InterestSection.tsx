@@ -1,4 +1,5 @@
-import { AnimateNumber, formatRate } from '@anchor-protocol/notation';
+import { formatRate } from '@anchor-protocol/notation';
+import { AnimateNumber } from '@libs/ui';
 import { Rate } from '@anchor-protocol/types';
 import {
   APYChart,

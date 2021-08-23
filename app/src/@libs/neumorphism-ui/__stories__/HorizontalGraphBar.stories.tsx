@@ -1,4 +1,4 @@
-import { AnimateNumber } from '@anchor-protocol/notation';
+import { AnimateNumber } from '@libs/ui';
 import { floor } from '@libs/big-math';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { HorizontalGraphBar } from '@libs/neumorphism-ui/components/HorizontalGraphBar';

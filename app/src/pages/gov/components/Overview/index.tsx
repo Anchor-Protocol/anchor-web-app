@@ -1,5 +1,4 @@
 import {
-  AnimateNumber,
   formatRate,
   formatUSTWithPostfixUnits,
   formatUTokenDecimal2,
@@ -16,13 +15,14 @@ import {
   useGovStateQuery,
   useRewardsAnchorLpRewardsQuery,
 } from '@anchor-protocol/webapp-provider';
-import { ChevronRight } from '@material-ui/icons';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
 import { TooltipLabel } from '@libs/neumorphism-ui/components/TooltipLabel';
+import { AnimateNumber } from '@libs/ui';
+import { ChevronRight } from '@material-ui/icons';
 import big, { Big } from 'big.js';
 import { Circles } from 'components/primitives/Circles';
 import { screen } from 'env';

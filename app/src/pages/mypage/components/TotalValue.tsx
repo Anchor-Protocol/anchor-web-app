@@ -1,5 +1,4 @@
 import {
-  AnimateNumber,
   demicrofy,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
@@ -18,14 +17,15 @@ import {
   useEarnEpochStatesQuery,
   useRewardsAncGovernanceRewardsQuery,
 } from '@anchor-protocol/webapp-provider';
-import { Send } from '@material-ui/icons';
 import { sum } from '@libs/big-math';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@libs/neumorphism-ui/components/Section';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
+import { AnimateNumber } from '@libs/ui';
 import { useBank } from '@libs/webapp-provider';
+import { Send } from '@material-ui/icons';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big, BigSource } from 'big.js';
 import { Sub } from 'components/Sub';
 import { fixHMR } from 'fix-hmr';

@@ -4,8 +4,8 @@ import {
   BorrowValue,
   CollateralValue,
 } from '@anchor-protocol/icons';
+import { AnimateNumber } from '@libs/ui';
 import {
-  AnimateNumber,
   demicrofy,
   formatRate,
   formatUST,
