@@ -1,4 +1,4 @@
-import type { Rate, uUST } from '@anchor-protocol/types';
+import type { Rate, u, UST } from '@anchor-protocol/types';
 import { moneyMarket } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
 import { computeCollateralsTotalUST } from './computeCollateralsTotalUST';
@@ -14,15 +14,15 @@ export function computeBorrowSafeMax(
   oraclePrices: moneyMarket.oracle.PricesResponse,
   safeLtv: Rate<BigSource>,
   currentLtv: Rate<Big> | undefined,
-): uUST<Big> {
+): u<UST<Big>> {
   const collateralsVaue = computeCollateralsTotalUST(
     overseerCollaterals,
     oraclePrices,
   );
 
   return !currentLtv || currentLtv.gte(safeLtv)
-    ? (big(0) as uUST<Big>)
+    ? (big(0) as u<UST<Big>>)
     : (big(safeLtv)
         .mul(collateralsVaue)
-        .minus(marketBorrowerInfo.loan_amount) as uUST<Big>);
+        .minus(marketBorrowerInfo.loan_amount) as u<UST<Big>>);
 }

@@ -1,6 +1,6 @@
 import { anchorToken } from '@anchor-protocol/types';
 import { govPollsQuery } from '@anchor-protocol/webapp-fns';
-import { useTerraWebapp } from '@terra-money/webapp-provider';
+import { useTerraWebapp } from '@libs/webapp-provider';
 import { useCallback, useEffect, useState } from 'react';
 import { useAnchorWebapp } from '../../contexts/context';
 

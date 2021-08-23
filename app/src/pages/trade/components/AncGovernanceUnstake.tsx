@@ -1,13 +1,11 @@
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   ANC_INPUT_MAXIMUM_INTEGER_POINTS,
-  demicrofy,
   formatANC,
   formatANCInput,
   formatUST,
-  microfy,
 } from '@anchor-protocol/notation';
-import { ANC, uANC } from '@anchor-protocol/types';
+import { ANC, u } from '@anchor-protocol/types';
 import {
   useAncBalanceQuery,
   useAncGovernanceUnstakeTx,
@@ -15,17 +13,18 @@ import {
   useGovStateQuery,
   useRewardsAncGovernanceRewardsQuery,
 } from '@anchor-protocol/webapp-provider';
+import { max } from '@libs/big-math';
+import { demicrofy, microfy } from '@libs/formatter';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
 import { InputAdornment } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { max } from '@terra-dev/big-math';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank } from 'contexts/bank';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
+import { useBank } from 'contexts/bank';
 import { validateTxFee } from 'logics/validateTxFee';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
@@ -63,7 +62,7 @@ export function AncGovernanceUnstake() {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const unstakableBalance = useMemo<uANC<Big> | undefined>(() => {
+  const unstakableBalance = useMemo<u<ANC<Big>> | undefined>(() => {
     if (!govANCBalance || !userGovStakingInfo || !govState) return undefined;
 
     const lockedANC = max(
@@ -71,9 +70,9 @@ export function AncGovernanceUnstake() {
       ...userGovStakingInfo.locked_balance.map(([_, { balance }]) => balance),
     );
 
-    const unstakable = big(userGovStakingInfo.balance).minus(
-      lockedANC,
-    ) as uANC<Big>;
+    const unstakable = big(userGovStakingInfo.balance).minus(lockedANC) as u<
+      ANC<Big>
+    >;
 
     return unstakable;
   }, [govANCBalance, govState, userGovStakingInfo]);

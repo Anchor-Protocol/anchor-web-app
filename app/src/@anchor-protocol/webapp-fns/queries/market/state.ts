@@ -1,10 +1,10 @@
-import { moneyMarket, uUST } from '@anchor-protocol/types';
+import { moneyMarket, u, UST } from '@anchor-protocol/types';
 import {
   mantle,
   MantleParams,
   WasmQuery,
   WasmQueryData,
-} from '@terra-money/webapp-fns';
+} from '@libs/webapp-fns';
 
 export interface MarketStateWasmQuery {
   marketState: WasmQuery<
@@ -25,7 +25,7 @@ export interface MarketStateQueryResult {
 
 export type MarketState = WasmQueryData<MarketStateWasmQuery> & {
   marketBalances: {
-    uUST: uUST;
+    uUST: u<UST>;
   };
 };
 
@@ -72,7 +72,7 @@ export async function marketStateQuery({
   const marketBalances: Pick<MarketState, 'marketBalances'>['marketBalances'] =
     {
       uUST: (_marketBalances.Result.find(({ Denom }) => Denom === 'uusd')
-        ?.Amount ?? '0') as uUST,
+        ?.Amount ?? '0') as u<UST>,
     };
 
   return {

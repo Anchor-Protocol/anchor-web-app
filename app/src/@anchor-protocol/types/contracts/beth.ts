@@ -1,5 +1,4 @@
-import { uUST } from '../currencies';
-import { HumanAddr } from './common';
+import { HumanAddr, u, UST } from '@libs/types';
 
 export namespace beth {
   export namespace rewards {
@@ -10,7 +9,7 @@ export namespace beth {
     }
 
     export interface AccruedRewardsResponse {
-      rewards: uUST;
+      rewards: u<UST>;
     }
   }
 }

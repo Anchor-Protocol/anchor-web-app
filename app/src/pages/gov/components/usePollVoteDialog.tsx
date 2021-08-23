@@ -1,34 +1,33 @@
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   ANC_INPUT_MAXIMUM_INTEGER_POINTS,
-  demicrofy,
   formatANC,
   formatANCInput,
   formatUST,
-  microfy,
 } from '@anchor-protocol/notation';
-import { ANC, uANC } from '@anchor-protocol/types';
+import { ANC, u } from '@anchor-protocol/types';
 import {
   useAnchorWebapp,
   useGovVoteAvailableQuery,
   useGovVoteTx,
   useRewardsAncGovernanceRewardsQuery,
 } from '@anchor-protocol/webapp-provider';
+import { demicrofy, microfy } from '@libs/formatter';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
+import { flat } from '@libs/styled-neumorphism';
+import { DialogProps, OpenDialog, useDialog } from '@libs/use-dialog';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { ThumbDownOutlined, ThumbUpOutlined } from '@material-ui/icons';
 import { StreamStatus } from '@rx-stream/react';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
-import { flat } from '@terra-dev/styled-neumorphism';
-import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank } from 'contexts/bank';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
+import { useBank } from 'contexts/bank';
 import { validateTxFee } from 'logics/validateTxFee';
 import React, {
   ChangeEvent,
@@ -81,7 +80,7 @@ function ComponentBase({
       return undefined;
     }
 
-    return big(userGovStakingInfo.balance) as uANC<Big>;
+    return big(userGovStakingInfo.balance) as u<ANC<Big>>;
   }, [userGovStakingInfo]);
 
   const invalidTxFee = useMemo(

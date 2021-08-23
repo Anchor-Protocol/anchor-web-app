@@ -1,12 +1,10 @@
 import {
-  demicrofy,
-  formatRate,
   formatUST,
   formatUSTInput,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { Rate, UST, uUST } from '@anchor-protocol/types';
+import { Rate, u, UST } from '@anchor-protocol/types';
 import {
   AnchorTax,
   AnchorTokenBalances,
@@ -28,17 +26,18 @@ import {
   validateRepayAmount,
   validateTxFee,
 } from '@anchor-protocol/webapp-provider';
+import { demicrofy, formatRate } from '@libs/formatter';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
+import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
+import type { DialogProps, OpenDialog } from '@libs/use-dialog';
+import { useDialog } from '@libs/use-dialog';
+import { useBank } from '@libs/webapp-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
-import type { DialogProps, OpenDialog } from '@terra-dev/use-dialog';
-import { useDialog } from '@terra-dev/use-dialog';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank } from '@terra-money/webapp-provider';
 import big, { Big, BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
@@ -242,7 +241,7 @@ function ComponentBase({
   }, []);
 
   const proceed = useCallback(
-    (repayAmount: UST, txFee: uUST) => {
+    (repayAmount: UST, txFee: u<UST>) => {
       if (!connectedWallet || !repay) {
         return;
       }
@@ -400,7 +399,7 @@ function ComponentBase({
               !!invalidRepayAmount
             }
             onClick={() =>
-              txFee && proceed(repayAmount, txFee.toFixed() as uUST)
+              txFee && proceed(repayAmount, txFee.toFixed() as u<UST>)
             }
           >
             Proceed

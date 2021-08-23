@@ -1,5 +1,5 @@
 import { Menu, MenuClose } from '@anchor-protocol/icons';
-import { IconToggleButton } from '@terra-dev/neumorphism-ui/components/IconToggleButton';
+import { IconToggleButton } from '@libs/neumorphism-ui/components/IconToggleButton';
 import { WebAppButton } from 'components/Header/WebAppButton';
 import { headerHeight, links } from 'env';
 import { useState } from 'react';

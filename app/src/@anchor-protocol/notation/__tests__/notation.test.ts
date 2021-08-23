@@ -1,12 +1,11 @@
 import { aUST, bLuna, Luna, Percent, Rate, UST } from '@anchor-protocol/types';
+import { formatPercentage, formatRate } from '@libs/formatter';
 import {
   formatAUST,
   formatAUSTInput,
   formatAUSTWithPostfixUnits,
   formatLuna,
   formatLunaInput,
-  formatPercentage,
-  formatRate,
   formatUST,
   formatUSTInput,
   formatUSTWithPostfixUnits,

@@ -1,19 +1,9 @@
 import { AddressProvider, COLLATERAL_DENOMS } from '@anchor-protocol/anchor.js';
 import { validateInput } from '@anchor-protocol/anchor.js/dist/utils/validate-input';
 import { validateAddress } from '@anchor-protocol/anchor.js/dist/utils/validation/address';
-import {
-  demicrofy,
-  formatUSTWithPostfixUnits,
-  stripUUSD,
-} from '@anchor-protocol/notation';
-import { Rate, uUST } from '@anchor-protocol/types';
-import { pipe } from '@rx-stream/pipe';
-import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
-import {
-  CreateTxOptions,
-  MsgExecuteContract,
-  StdFee,
-} from '@terra-money/terra.js';
+import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
+import { Rate, u, UST } from '@anchor-protocol/types';
+import { demicrofy, stripUUSD } from '@libs/formatter';
 import {
   MantleFetch,
   pickAttributeValue,
@@ -21,7 +11,14 @@ import {
   pickRawLog,
   TxResultRendering,
   TxStreamPhase,
-} from '@terra-money/webapp-fns';
+} from '@libs/webapp-fns';
+import { pipe } from '@rx-stream/pipe';
+import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
+import {
+  CreateTxOptions,
+  MsgExecuteContract,
+  StdFee,
+} from '@terra-money/terra.js';
 import big, { Big } from 'big.js';
 import { Observable } from 'rxjs';
 import { _catchTxError } from '../internal/_catchTxError';
@@ -32,9 +29,9 @@ import { TxHelper } from '../internal/TxHelper';
 
 export function bondClaimTx(
   $: Parameters<typeof fabricatebAssetClaimRewards>[0] & {
-    gasFee: uUST<number>;
+    gasFee: u<UST<number>>;
     gasAdjustment: Rate<number>;
-    fixedGas: uUST;
+    fixedGas: u<UST>;
     network: NetworkInfo;
     addressProvider: AddressProvider;
     mantleEndpoint: string;
@@ -89,9 +86,9 @@ export function bondClaimTx(
               value:
                 formatUSTWithPostfixUnits(
                   demicrofy(
-                    big(txFee ? stripUUSD(txFee) : '0').plus(
-                      $.fixedGas,
-                    ) as uUST<Big>,
+                    big(txFee ? stripUUSD(txFee) : '0').plus($.fixedGas) as u<
+                      UST<Big>
+                    >,
                   ),
                 ) + ' UST',
             },

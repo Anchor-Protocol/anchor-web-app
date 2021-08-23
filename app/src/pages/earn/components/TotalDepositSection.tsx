@@ -1,9 +1,6 @@
 import {
-  AnimateNumber,
-  demicrofy,
   formatUST,
   formatUSTWithPostfixUnits,
-  MICRO,
   MILLION,
 } from '@anchor-protocol/notation';
 import {
@@ -11,13 +8,15 @@ import {
   computeTotalDeposit,
   useEarnEpochStatesQuery,
 } from '@anchor-protocol/webapp-provider';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { demicrofy, MICRO } from '@libs/formatter';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@libs/neumorphism-ui/components/Section';
+import { AnimateNumber } from '@libs/ui';
+import { useBank } from '@libs/webapp-provider';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank } from '@terra-money/webapp-provider';
 import { SubAmount } from 'components/primitives/SubAmount';
 import React, { useCallback, useMemo } from 'react';
 import { useDepositDialog } from './useDepositDialog';

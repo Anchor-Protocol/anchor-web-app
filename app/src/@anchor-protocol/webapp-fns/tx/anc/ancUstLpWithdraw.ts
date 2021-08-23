@@ -3,16 +3,12 @@ import {
   fabricateTerraswapWithdrawLiquidityANC,
 } from '@anchor-protocol/anchor.js';
 import {
-  demicrofy,
   formatANCWithPostfixUnits,
   formatLP,
   formatUSTWithPostfixUnits,
-  stripUUSD,
 } from '@anchor-protocol/notation';
-import { Rate, uANC, uAncUstLP, uUST } from '@anchor-protocol/types';
-import { pipe } from '@rx-stream/pipe';
-import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
-import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
+import { ANC, AncUstLP, Rate, u, UST } from '@anchor-protocol/types';
+import { demicrofy, stripUUSD } from '@libs/formatter';
 import {
   MantleFetch,
   pickAttributeValueByKey,
@@ -20,7 +16,10 @@ import {
   pickRawLog,
   TxResultRendering,
   TxStreamPhase,
-} from '@terra-money/webapp-fns';
+} from '@libs/webapp-fns';
+import { pipe } from '@rx-stream/pipe';
+import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
+import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
 import big, { Big } from 'big.js';
 import { Observable } from 'rxjs';
 import { _catchTxError } from '../internal/_catchTxError';
@@ -31,9 +30,9 @@ import { TxHelper } from '../internal/TxHelper';
 
 export function ancAncUstLpWithdrawTx(
   $: Parameters<typeof fabricateTerraswapWithdrawLiquidityANC>[0] & {
-    gasFee: uUST<number>;
+    gasFee: u<UST<number>>;
     gasAdjustment: Rate<number>;
-    fixedGas: uUST;
+    fixedGas: u<UST>;
     network: NetworkInfo;
     addressProvider: AddressProvider;
     mantleEndpoint: string;
@@ -68,12 +67,12 @@ export function ancAncUstLpWithdrawTx(
       }
 
       try {
-        const burned = pickAttributeValueByKey<uAncUstLP>(
+        const burned = pickAttributeValueByKey<u<AncUstLP>>(
           fromContract,
           'withdrawn_share',
         );
 
-        const receivedAnc = pickAttributeValueByKey<uANC>(
+        const receivedAnc = pickAttributeValueByKey<u<ANC>>(
           fromContract,
           'amount',
           (attrs) => attrs.reverse()[1],
@@ -92,7 +91,7 @@ export function ancAncUstLpWithdrawTx(
         const transferFee = transferAmount && stripUUSD(transferAmount);
 
         const txFee =
-          !!transferFee && (big($.fixedGas).plus(transferFee) as uUST<Big>);
+          !!transferFee && (big($.fixedGas).plus(transferFee) as u<UST<Big>>);
 
         return {
           value: null,

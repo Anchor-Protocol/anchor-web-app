@@ -1,6 +1,14 @@
-import { uANC, uaToken, ubAsset, UST, uUST } from '../currencies';
-import { Num, Rate } from '../units';
-import { bAssetDenom, CW20Addr, HumanAddr, StableDenom } from './common';
+import {
+  bAssetDenom,
+  CW20Addr,
+  HumanAddr,
+  NativeDenom,
+  Num,
+  Rate,
+  u,
+  UST,
+} from '@libs/types';
+import { ANC, aToken, bAsset } from '../currencies';
 
 export namespace moneyMarket {
   export namespace custody {
@@ -18,8 +26,8 @@ export namespace moneyMarket {
      */
     export interface BorrowerResponse {
       borrower: HumanAddr;
-      balance: uUST;
-      spendable: uUST;
+      balance: u<UST>;
+      spendable: u<UST>;
     }
 
     /**
@@ -56,7 +64,7 @@ export namespace moneyMarket {
       market_contract: HumanAddr;
       reward_contract: HumanAddr;
       liquidation_contract: HumanAddr;
-      stable_denom: StableDenom;
+      stable_denom: NativeDenom;
       basset_info: {
         name: string;
         symbol: bAssetDenom;
@@ -96,8 +104,8 @@ export namespace moneyMarket {
      */
     export interface ConfigResponse {
       owner: HumanAddr;
-      emission_cap: uANC;
-      emission_floor: uANC;
+      emission_cap: u<ANC>;
+      emission_floor: u<ANC>;
       increment_multiplier: Rate;
       decrement_multiplier: Rate;
     }
@@ -105,8 +113,8 @@ export namespace moneyMarket {
     export interface UpdateConfig {
       update_config: {
         owner?: HumanAddr;
-        emission_cap?: uANC;
-        emission_floor?: uANC;
+        emission_cap?: u<ANC>;
+        emission_floor?: u<ANC>;
         increment_multiplier?: Rate;
         decrement_multiplier?: Rate;
       };
@@ -119,9 +127,9 @@ export namespace moneyMarket {
      */
     export interface BorrowRate {
       borrow_rate: {
-        market_balance: uUST;
-        total_liabilities: uUST;
-        total_reserves: uUST;
+        market_balance: u<UST>;
+        total_liabilities: u<UST>;
+        total_reserves: u<UST>;
       };
     }
 
@@ -175,8 +183,8 @@ export namespace moneyMarket {
       borrower: HumanAddr;
       interest_index: Num;
       reward_index: Num;
-      loan_amount: uUST;
-      pending_rewards: uANC;
+      loan_amount: u<UST>;
+      pending_rewards: u<ANC>;
     }
 
     /**
@@ -214,7 +222,7 @@ export namespace moneyMarket {
       overseer_contract: HumanAddr;
       collector_contract: HumanAddr;
       distributor_contract: HumanAddr;
-      stable_denom: StableDenom;
+      stable_denom: NativeDenom;
       reserve_factor: Rate;
       max_borrow_factor: Rate;
     }
@@ -247,8 +255,8 @@ export namespace moneyMarket {
      * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/money-market/market#stateresponse
      */
     export interface StateResponse {
-      total_liabilities: uUST;
-      total_reserves: uUST;
+      total_liabilities: u<UST>;
+      total_reserves: u<UST>;
       last_interest_updated: number;
       last_reward_updated: number;
       global_interest_index: Num;
@@ -280,7 +288,7 @@ export namespace moneyMarket {
      */
     export interface ConfigResponse {
       owner: HumanAddr;
-      base_asset: StableDenom;
+      base_asset: NativeDenom;
     }
 
     /**
@@ -306,7 +314,7 @@ export namespace moneyMarket {
     export interface Price {
       price: {
         base: CW20Addr;
-        quote: StableDenom;
+        quote: NativeDenom;
       };
     }
 
@@ -399,7 +407,7 @@ export namespace moneyMarket {
      */
     export interface CollateralsResponse {
       borrower: HumanAddr;
-      collaterals: Array<[CW20Addr, ubAsset]>;
+      collaterals: Array<[CW20Addr, u<bAsset>]>;
     }
 
     /**
@@ -422,7 +430,7 @@ export namespace moneyMarket {
       target_deposit_rate: Rate;
       buffer_distribution_rate: Rate;
       anc_purchase_factor: Rate;
-      stable_denom: StableDenom;
+      stable_denom: NativeDenom;
       epoch_period: number;
       price_timeframe: number;
     }
@@ -455,7 +463,7 @@ export namespace moneyMarket {
      */
     export interface EpochStateResponse {
       deposit_rate: Rate;
-      prev_aterra_supply: uaToken;
+      prev_aterra_supply: u<aToken>;
       prev_exchange_rate: Rate;
       last_executed_height: number;
     }

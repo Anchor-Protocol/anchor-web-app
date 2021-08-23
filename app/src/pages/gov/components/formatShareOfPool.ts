@@ -1,5 +1,5 @@
-import { formatRate } from '@anchor-protocol/notation';
 import { Rate } from '@anchor-protocol/types';
+import { formatRate } from '@libs/formatter';
 import big, { BigSource } from 'big.js';
 
 export function formatShareOfPool(shareOfPool: Rate<BigSource>) {

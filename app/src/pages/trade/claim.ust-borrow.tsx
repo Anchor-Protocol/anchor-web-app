@@ -1,24 +1,24 @@
 import {
-  demicrofy,
   formatANCWithPostfixUnits,
   formatUST,
 } from '@anchor-protocol/notation';
-import { uANC } from '@anchor-protocol/types';
+import { ANC, u } from '@anchor-protocol/types';
 import {
   useAnchorWebapp,
   useRewardsClaimableUstBorrowRewardsQuery,
   useRewardsUstBorrowClaimTx,
 } from '@anchor-protocol/webapp-provider';
+import { demicrofy } from '@libs/formatter';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { Section } from '@libs/neumorphism-ui/components/Section';
 import { StreamStatus } from '@rx-stream/react';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank } from 'contexts/bank';
 import big, { Big } from 'big.js';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
+import { useBank } from 'contexts/bank';
 import { validateTxFee } from 'logics/validateTxFee';
 import { MINIMUM_CLAIM_BALANCE } from 'pages/trade/env';
 import React, { useCallback, useMemo } from 'react';
@@ -56,12 +56,12 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
   // ---------------------------------------------
   const claiming = useMemo(() => {
     if (!borrowerInfo) return undefined;
-    return big(borrowerInfo.pending_rewards) as uANC<Big>;
+    return big(borrowerInfo.pending_rewards) as u<ANC<Big>>;
   }, [borrowerInfo]);
 
   const ancAfterTx = useMemo(() => {
     if (!claiming || !userANCBalance) return undefined;
-    return claiming.plus(userANCBalance.balance) as uANC<Big>;
+    return claiming.plus(userANCBalance.balance) as u<ANC<Big>>;
   }, [claiming, userANCBalance]);
 
   const invalidTxFee = useMemo(

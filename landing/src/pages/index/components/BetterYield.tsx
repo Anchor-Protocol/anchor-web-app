@@ -7,7 +7,7 @@ import { animated, useSpring } from 'react-spring';
 import styled from 'styled-components';
 import circleBackground from './assets/circleBackground.png';
 import textBackground from './assets/textBackground.png';
-import { useElementIntersection } from '@terra-dev/use-element-intersection';
+import { useElementIntersection } from '@libs/use-element-intersection';
 import numeral from 'numeral';
 
 export interface BetterYieldProps {

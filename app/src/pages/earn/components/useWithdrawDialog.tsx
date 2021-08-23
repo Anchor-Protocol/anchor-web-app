@@ -1,11 +1,10 @@
 import {
-  demicrofy,
   formatUST,
   formatUSTInput,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { aUST, UST, uUST } from '@anchor-protocol/types';
+import { aUST, u, UST } from '@anchor-protocol/types';
 import {
   AnchorTokenBalances,
   computeTotalDeposit,
@@ -13,16 +12,17 @@ import {
   useEarnWithdrawForm,
   useEarnWithdrawTx,
 } from '@anchor-protocol/webapp-provider';
+import { demicrofy } from '@libs/formatter';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
+import type { DialogProps, OpenDialog } from '@libs/use-dialog';
+import { useDialog } from '@libs/use-dialog';
+import { useBank } from '@libs/webapp-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
-import type { DialogProps, OpenDialog } from '@terra-dev/use-dialog';
-import { useDialog } from '@terra-dev/use-dialog';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank } from '@terra-money/webapp-provider';
 import big, { BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
@@ -91,7 +91,7 @@ function ComponentBase({
   // callbacks
   // ---------------------------------------------
   const proceed = useCallback(
-    async (withdrawAmount: UST, txFee: uUST<BigSource> | undefined) => {
+    async (withdrawAmount: UST, txFee: u<UST<BigSource>> | undefined) => {
       if (!connectedWallet || !withdraw || !data) {
         return;
       }
@@ -100,7 +100,7 @@ function ComponentBase({
         withdrawAmount: big(withdrawAmount)
           .div(data.moneyMarketEpochState.exchange_rate)
           .toString() as aUST,
-        txFee: txFee!.toString() as uUST,
+        txFee: txFee!.toString() as u<UST>,
       });
     },
     [connectedWallet, data, withdraw],

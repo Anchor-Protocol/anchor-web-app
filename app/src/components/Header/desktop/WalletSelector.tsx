@@ -1,10 +1,10 @@
 import { Terra, Walletconnect } from '@anchor-protocol/icons';
 import { useAirdropCheckQuery } from '@anchor-protocol/webapp-provider';
 import { ClickAwayListener } from '@material-ui/core';
-import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
-import { FlatButton } from '@terra-dev/neumorphism-ui/components/FlatButton';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
+import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
+import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
 import {
   ConnectType,
   useWallet,

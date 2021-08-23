@@ -1,19 +1,20 @@
 import { AddressMap } from '@anchor-protocol/anchor.js';
 import {
+  ANC,
+  AncUstLP,
+  aUST,
+  bEth,
+  bLuna,
+  bLunaLunaLP,
+  Luna,
   Rate,
-  uANC,
-  uAncUstLP,
-  uaUST,
-  ubEth,
-  ubLuna,
-  ubLunaLunaLP,
-  uLuna,
-  uUST,
+  u,
+  UST,
 } from '@anchor-protocol/types';
 
 export interface AnchorContants {
-  gasFee: uUST<number>;
-  fixedGas: uUST<number>;
+  gasFee: u<UST<number>>;
+  fixedGas: u<UST<number>>;
   blocksPerYear: number;
   gasAdjustment: Rate<number>;
 }
@@ -29,15 +30,15 @@ export interface AnchorContants {
  */
 export interface AnchorTokenBalances {
   // native tokens
-  uUST: uUST;
-  uLuna: uLuna;
+  uUST: u<UST>;
+  uLuna: u<Luna>;
   // cw20 tokens
-  uaUST: uaUST;
-  ubLuna: ubLuna;
-  ubEth: ubEth;
-  uANC: uANC;
-  uAncUstLP: uAncUstLP;
-  ubLunaLunaLP: ubLunaLunaLP;
+  uaUST: u<aUST>;
+  ubLuna: u<bLuna>;
+  ubEth: u<bEth>;
+  uANC: u<ANC>;
+  uAncUstLP: u<AncUstLP>;
+  ubLunaLunaLP: u<bLunaLunaLP>;
 }
 
 /**
@@ -51,7 +52,7 @@ export interface AnchorTokenBalances {
  */
 export interface AnchorTax {
   taxRate: Rate;
-  maxTaxUUSD: uUST;
+  maxTaxUUSD: u<UST>;
 }
 
 export interface ExpandAddressMap extends AddressMap {

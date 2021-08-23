@@ -1,6 +1,6 @@
-import type { CW20Addr, ubAsset } from '@anchor-protocol/types';
+import type { bAsset, CW20Addr, u } from '@anchor-protocol/types';
 import { moneyMarket } from '@anchor-protocol/types';
-import { max, min, sum, vectorMultiply } from '@terra-dev/big-math';
+import { max, min, sum, vectorMultiply } from '@libs/big-math';
 import big, { Big } from 'big.js';
 import { BAssetLtvs } from '../../queries/borrow/market';
 import {
@@ -16,7 +16,10 @@ export function computeRedeemCollateralWithdrawableAmount(
   overseerCollaterals: moneyMarket.overseer.CollateralsResponse,
   oraclePrices: moneyMarket.oracle.PricesResponse,
   bAssetLtvs: BAssetLtvs,
-): { withdrawableAmount: ubAsset<Big>; withdrawableMaxAmount: ubAsset<Big> } {
+): {
+  withdrawableAmount: u<bAsset<Big>>;
+  withdrawableMaxAmount: u<bAsset<Big>>;
+} {
   const targetCollateralLockedAmount =
     overseerCollaterals.collaterals.find(
       ([token]) => collateralToken === token,
@@ -24,8 +27,8 @@ export function computeRedeemCollateralWithdrawableAmount(
 
   if (big(targetCollateralLockedAmount).lte(0)) {
     return {
-      withdrawableAmount: big(0) as ubAsset<Big>,
-      withdrawableMaxAmount: big(0) as ubAsset<Big>,
+      withdrawableAmount: big(0) as u<bAsset<Big>>,
+      withdrawableMaxAmount: big(0) as u<bAsset<Big>>,
     };
   }
 
@@ -98,7 +101,7 @@ export function computeRedeemCollateralWithdrawableAmount(
   );
 
   return {
-    withdrawableAmount: max(withdrawableAmount, 0) as ubAsset<Big>,
-    withdrawableMaxAmount: max(withdrawableMaxAmount, 0) as ubAsset<Big>,
+    withdrawableAmount: max(withdrawableAmount, 0) as u<bAsset<Big>>,
+    withdrawableMaxAmount: max(withdrawableMaxAmount, 0) as u<bAsset<Big>>,
   };
 }

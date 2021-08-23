@@ -1,11 +1,9 @@
 import {
-  AnimateNumber,
-  formatRate,
   formatUSTWithPostfixUnits,
   formatUTokenDecimal2,
 } from '@anchor-protocol/notation';
 import { anc160gif, GifIcon, TokenIcon } from '@anchor-protocol/token-icons';
-import { HumanAddr, Rate, uANC, UST, uToken } from '@anchor-protocol/types';
+import { ANC, HumanAddr, Rate, Token, u, UST } from '@anchor-protocol/types';
 import {
   useAncBalanceQuery,
   useAnchorWebapp,
@@ -16,13 +14,15 @@ import {
   useGovStateQuery,
   useRewardsAnchorLpRewardsQuery,
 } from '@anchor-protocol/webapp-provider';
+import { formatRate } from '@libs/formatter';
+import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@libs/neumorphism-ui/components/Section';
+import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
+import { TooltipLabel } from '@libs/neumorphism-ui/components/TooltipLabel';
+import { AnimateNumber } from '@libs/ui';
 import { ChevronRight } from '@material-ui/icons';
-import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
-import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
-import { TooltipLabel } from '@terra-dev/neumorphism-ui/components/TooltipLabel';
 import big, { Big } from 'big.js';
 import { Circles } from 'components/primitives/Circles';
 import { screen } from 'env';
@@ -97,14 +97,14 @@ function OverviewBase({ className }: OverviewProps) {
       !govConfig
     ) {
       return {
-        totalStaked: big(0) as uANC<Big>,
+        totalStaked: big(0) as u<ANC<Big>>,
         totalStakedRate: big(0) as Rate<Big>,
       };
     }
 
     const totalStaked = big(govANCBalance.balance).minus(
       govState.total_deposit,
-    ) as uANC<Big>;
+    ) as u<ANC<Big>>;
 
     const currentTotalSupply = big(ancTokenInfo.total_supply)
       .minus(communityANCBalance.balance)
@@ -252,7 +252,7 @@ function OverviewBase({ className }: OverviewProps) {
               <AnimateNumber format={formatUTokenDecimal2}>
                 {lpStakingState?.total_bond_amount
                   ? lpStakingState.total_bond_amount
-                  : (0 as uToken<number>)}
+                  : (0 as u<Token<number>>)}
               </AnimateNumber>
             </p>
           </div>

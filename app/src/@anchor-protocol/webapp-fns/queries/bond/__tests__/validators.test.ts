@@ -1,4 +1,4 @@
-import { defaultMantleFetch } from '@terra-money/webapp-fns';
+import { defaultMantleFetch } from '@libs/webapp-fns';
 import {
   TEST_ADDRESSES,
   TEST_MANTLE_ENDPOINT,

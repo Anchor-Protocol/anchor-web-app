@@ -1,26 +1,27 @@
 import {
-  uANC,
-  uAncUstLP,
-  uaUST,
-  ubEth,
-  ubLuna,
-  ubLunaLunaLP,
-  uLuna,
-  uUST,
+  ANC,
+  AncUstLP,
+  aUST,
+  bEth,
+  bLuna,
+  bLunaLunaLP,
+  Luna,
+  u,
+  UST,
 } from '@anchor-protocol/types';
 import { AnchorTax, AnchorTokenBalances } from '@anchor-protocol/webapp-fns';
-import { useBank as useBank_ } from '@terra-money/webapp-provider';
+import { useBank as useBank_ } from '@libs/webapp-provider';
 import { useMemo } from 'react';
 
 export interface UserBalancesData {
-  uUSD: uUST<string>;
-  uLuna: uLuna<string>;
-  ubLuna: ubLuna<string>;
-  ubEth: ubEth<string>;
-  uaUST: uaUST<string>;
-  uANC: uANC<string>;
-  uAncUstLP: uAncUstLP<string>;
-  ubLunaLunaLP: ubLunaLunaLP<string>;
+  uUSD: u<UST<string>>;
+  uLuna: u<Luna<string>>;
+  ubLuna: u<bLuna<string>>;
+  ubEth: u<bEth<string>>;
+  uaUST: u<aUST<string>>;
+  uANC: u<ANC<string>>;
+  uAncUstLP: u<AncUstLP<string>>;
+  ubLunaLunaLP: u<bLunaLunaLP<string>>;
 }
 
 export interface Bank {
@@ -31,7 +32,7 @@ export interface Bank {
 }
 
 /**
- * @deprecated use insteadof @terra-money/webapp-provider
+ * @deprecated use insteadof @libs/webapp-provider
  */
 export function useBank(): Bank {
   const { tokenBalances, tax, refetchTax, refetchTokenBalances } = useBank_<

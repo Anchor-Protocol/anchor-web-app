@@ -1,8 +1,8 @@
-import { formatRate } from '@anchor-protocol/notation';
 import { Rate } from '@anchor-protocol/types';
 import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
+import { formatRate } from '@libs/formatter';
+import { useTerraWebapp } from '@libs/webapp-provider';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useTerraWebapp } from '@terra-money/webapp-provider';
 import big from 'big.js';
 import { useNotification } from 'contexts/notification';
 import { useCallback, useEffect, useRef } from 'react';

@@ -1,4 +1,4 @@
-import { max } from '@terra-dev/big-math';
+import { max } from '@libs/big-math';
 
 describe('sample', () => {
   test('sample test', () => {

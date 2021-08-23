@@ -1,10 +1,10 @@
 import { Modal } from '@material-ui/core';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
-import { NativeSelect } from '@terra-dev/neumorphism-ui/components/NativeSelect';
-import { TextInput } from '@terra-dev/neumorphism-ui/components/TextInput';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
+import { NativeSelect } from '@libs/neumorphism-ui/components/NativeSelect';
+import { TextInput } from '@libs/neumorphism-ui/components/TextInput';
 import { ReadonlyWalletSession } from '@terra-dev/readonly-wallet';
-import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
+import { DialogProps, OpenDialog, useDialog } from '@libs/use-dialog';
 import { NetworkInfo } from '@terra-dev/wallet-types';
 import { AccAddress } from '@terra-money/terra.js';
 import React, {

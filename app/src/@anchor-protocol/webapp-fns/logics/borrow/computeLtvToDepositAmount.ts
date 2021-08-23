@@ -1,4 +1,4 @@
-import type { Rate, ubAsset } from '@anchor-protocol/types';
+import type { bAsset, Rate, u } from '@anchor-protocol/types';
 import { CW20Addr, moneyMarket } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
 import { computeCollateralsTotalUST } from './computeCollateralsTotalUST';
@@ -13,7 +13,7 @@ export const computeLtvToDepositAmount =
     overseerCollaterals: moneyMarket.overseer.CollateralsResponse,
     oraclePrices: moneyMarket.oracle.PricesResponse,
   ) =>
-  (ltv: Rate<BigSource>): ubAsset<Big> => {
+  (ltv: Rate<BigSource>): u<bAsset<Big>> => {
     const oracle = oraclePrices.prices.find(
       ({ asset }) => asset === collateralToken,
     );
@@ -31,5 +31,5 @@ export const computeLtvToDepositAmount =
 
     const increasedUST = nextCollateralsValue.minus(collateralsVaue);
 
-    return increasedUST.div(oracle.price) as ubAsset<Big>;
+    return increasedUST.div(oracle.price) as u<bAsset<Big>>;
   };

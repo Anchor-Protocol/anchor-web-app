@@ -2,11 +2,9 @@ import {
   AddressProvider,
   fabricateStakingUnbond,
 } from '@anchor-protocol/anchor.js';
-import { demicrofy, formatLP } from '@anchor-protocol/notation';
-import { Rate, uAncUstLP, uUST } from '@anchor-protocol/types';
-import { pipe } from '@rx-stream/pipe';
-import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
-import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
+import { formatLP } from '@anchor-protocol/notation';
+import { AncUstLP, Rate, u, UST } from '@anchor-protocol/types';
+import { demicrofy } from '@libs/formatter';
 import {
   MantleFetch,
   pickAttributeValueByKey,
@@ -14,7 +12,10 @@ import {
   pickRawLog,
   TxResultRendering,
   TxStreamPhase,
-} from '@terra-money/webapp-fns';
+} from '@libs/webapp-fns';
+import { pipe } from '@rx-stream/pipe';
+import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
+import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
 import { Observable } from 'rxjs';
 import { _catchTxError } from '../internal/_catchTxError';
 import { _createTxOptions } from '../internal/_createTxOptions';
@@ -24,9 +25,9 @@ import { TxHelper } from '../internal/TxHelper';
 
 export function ancAncUstLpUnstakeTx(
   $: Parameters<typeof fabricateStakingUnbond>[0] & {
-    gasFee: uUST<number>;
+    gasFee: u<UST<number>>;
     gasAdjustment: Rate<number>;
-    fixedGas: uUST;
+    fixedGas: u<UST>;
     network: NetworkInfo;
     addressProvider: AddressProvider;
     mantleEndpoint: string;
@@ -60,7 +61,7 @@ export function ancAncUstLpUnstakeTx(
       }
 
       try {
-        const amount = pickAttributeValueByKey<uAncUstLP>(
+        const amount = pickAttributeValueByKey<u<AncUstLP>>(
           fromContract,
           'amount',
         );

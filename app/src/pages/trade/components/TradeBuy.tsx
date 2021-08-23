@@ -1,24 +1,13 @@
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
-  demicrofy,
   formatANC,
   formatANCInput,
-  formatFluidDecimalPoints,
   formatUST,
   formatUSTInput,
-  microfy,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import {
-  ANC,
-  Denom,
-  terraswap,
-  uANC,
-  UST,
-  uToken,
-  uUST,
-} from '@anchor-protocol/types';
+import { ANC, Denom, terraswap, Token, u, UST } from '@anchor-protocol/types';
 import {
   terraswapReverseSimulationQuery,
   terraswapSimulationQuery,
@@ -26,23 +15,24 @@ import {
   useAnchorWebapp,
   useAncPriceQuery,
 } from '@anchor-protocol/webapp-provider';
+import { max, min } from '@libs/big-math';
+import { demicrofy, formatFluidDecimalPoints, microfy } from '@libs/formatter';
+import { isZero } from '@libs/is-zero';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { NumberMuiInput } from '@libs/neumorphism-ui/components/NumberMuiInput';
+import { SelectAndTextInputContainer } from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
+import { useConfirm } from '@libs/neumorphism-ui/components/useConfirm';
+import { useResolveLast } from '@libs/use-resolve-last';
+import { useTerraWebapp } from '@libs/webapp-provider';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { max, min } from '@terra-dev/big-math';
-import { isZero } from '@terra-dev/is-zero';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { NumberMuiInput } from '@terra-dev/neumorphism-ui/components/NumberMuiInput';
-import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
-import { useConfirm } from '@terra-dev/neumorphism-ui/components/useConfirm';
-import { useResolveLast } from '@terra-dev/use-resolve-last';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useTerraWebapp } from '@terra-money/webapp-provider';
-import { useBank } from 'contexts/bank';
 import big, { Big } from 'big.js';
-import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
+import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
+import { useBank } from 'contexts/bank';
 import { validateTxFee } from 'logics/validateTxFee';
 import { buyFromSimulation } from 'pages/trade/logics/buyFromSimulation';
 import { buyToSimulation } from 'pages/trade/logics/buyToSimulation';
@@ -90,7 +80,7 @@ export function TradeBuy() {
   const [toAmount, setToAmount] = useState<ANC>('' as ANC);
 
   const [resolveSimulation, simulation] = useResolveLast<
-    TradeSimulation<uANC, uUST, uToken> | undefined | null
+    TradeSimulation<ANC, UST, Token> | undefined | null
   >(() => null);
 
   const [fromCurrency, setFromCurrency] = useState<Item>(
@@ -122,7 +112,7 @@ export function TradeBuy() {
         .minus(txFee)
         .minus(fixedGas * 2),
       0,
-    ) as uUST<Big>;
+    ) as u<UST<Big>>;
   }, [bank.tax.maxTaxUUSD, bank.tax.taxRate, bank.userBalances.uUSD, fixedGas]);
 
   const invalidTxFee = useMemo(
@@ -218,7 +208,7 @@ export function TradeBuy() {
         const fromAmount: UST = nextFromAmount as UST;
         setFromAmount(fromAmount);
 
-        const amount = microfy(fromAmount).toString() as uUST;
+        const amount = microfy(fromAmount).toString() as u<UST>;
 
         resolveSimulation(
           terraswapSimulationQuery({
@@ -244,7 +234,7 @@ export function TradeBuy() {
           }).then(({ simulation }) => {
             return simulation
               ? buyToSimulation(
-                  simulation as terraswap.SimulationResponse<uANC>,
+                  simulation as terraswap.SimulationResponse<ANC>,
                   amount,
                   bank.tax,
                   fixedGas,
@@ -280,7 +270,7 @@ export function TradeBuy() {
         const toAmount: ANC = nextToAmount as ANC;
         setToAmount(toAmount);
 
-        const amount = microfy(toAmount).toString() as uANC;
+        const amount = microfy(toAmount).toString() as u<ANC>;
 
         resolveSimulation(
           terraswapReverseSimulationQuery({
@@ -306,7 +296,7 @@ export function TradeBuy() {
           }).then(({ simulation }) => {
             return simulation
               ? buyFromSimulation(
-                  simulation as terraswap.SimulationResponse<uANC, uUST>,
+                  simulation as terraswap.SimulationResponse<ANC, UST>,
                   amount,
                   bank.tax,
                   fixedGas,
@@ -333,7 +323,7 @@ export function TradeBuy() {
   }, []);
 
   const proceed = useCallback(
-    async (fromAmount: UST, txFee: uUST, confirm: ReactNode) => {
+    async (fromAmount: UST, txFee: u<UST>, confirm: ReactNode) => {
       if (!connectedWallet || !buy) {
         return;
       }

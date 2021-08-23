@@ -110,4 +110,4 @@ export const ADDRESSES = {
   ),
 };
 
-// build: vercel trigger build - 21.08.15
+// build: vercel trigger build - 21.08.24

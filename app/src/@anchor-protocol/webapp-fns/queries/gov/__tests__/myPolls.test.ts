@@ -4,7 +4,7 @@ import {
   TEST_MANTLE_ENDPOINT,
   TEST_WALLET_ADDRESS,
 } from '@anchor-protocol/webapp-fns/test-env';
-import { defaultMantleFetch } from '@terra-dev/mantle';
+import { defaultMantleFetch } from '@libs/mantle';
 
 describe('queries/myPolls', () => {
   test('should get result from query', async () => {

@@ -1,5 +1,5 @@
 import { Timeout, UserDenied } from '@terra-dev/wallet-types';
-import { TxResultRendering, TxStreamPhase } from '@terra-money/webapp-fns';
+import { TxResultRendering, TxStreamPhase } from '@libs/webapp-fns';
 import { OperatorFunction } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { TxHelper } from './TxHelper';

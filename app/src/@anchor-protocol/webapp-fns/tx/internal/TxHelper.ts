@@ -1,22 +1,16 @@
-import {
-  demicrofy,
-  formatUSTWithPostfixUnits,
-} from '@anchor-protocol/notation';
-import { uUST } from '@anchor-protocol/types';
+import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
+import { u, UST } from '@anchor-protocol/types';
+import { demicrofy, truncate } from '@libs/formatter';
+import { TxReceipt, TxResultRendering, TxStreamPhase } from '@libs/webapp-fns';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import { CreateTxOptions } from '@terra-money/terra.js';
-import {
-  TxReceipt,
-  TxResultRendering,
-  TxStreamPhase,
-} from '@terra-money/webapp-fns';
 import { BigSource } from 'big.js';
 
 export class TxHelper {
   private _savedTx: CreateTxOptions | null = null;
   private _savedTxResult: TxResult | null = null;
 
-  constructor(private $: { txFee: uUST; network: NetworkInfo }) {}
+  constructor(private $: { txFee: u<UST>; network: NetworkInfo }) {}
 
   get savedTx(): CreateTxOptions {
     if (!this._savedTx) {
@@ -52,7 +46,7 @@ export class TxHelper {
     };
   };
 
-  txFeeReceipt = (txFee?: uUST<BigSource>): TxReceipt => {
+  txFeeReceipt = (txFee?: u<UST<BigSource>>): TxReceipt => {
     return {
       name: 'Tx Fee',
       value:
@@ -85,11 +79,11 @@ export class TxHelper {
   };
 }
 
-function truncate(
-  text: string = '',
-  [h, t]: [number, number] = [6, 6],
-): string {
-  const head = text.slice(0, h);
-  const tail = text.slice(-1 * t, text.length);
-  return text.length > h + t ? [head, tail].join('...') : text;
-}
+//function truncate(
+//  text: string = '',
+//  [h, t]: [number, number] = [6, 6],
+//): string {
+//  const head = text.slice(0, h);
+//  const tail = text.slice(-1 * t, text.length);
+//  return text.length > h + t ? [head, tail].join('...') : text;
+//}

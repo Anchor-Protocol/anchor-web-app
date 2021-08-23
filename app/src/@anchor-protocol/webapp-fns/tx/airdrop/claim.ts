@@ -1,4 +1,9 @@
-import { HumanAddr, Rate, uUST } from '@anchor-protocol/types';
+import { HumanAddr, Rate, u, UST } from '@anchor-protocol/types';
+import {
+  MantleFetch,
+  TxResultRendering,
+  TxStreamPhase,
+} from '@libs/webapp-fns';
 import { pipe } from '@rx-stream/pipe';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import {
@@ -6,11 +11,6 @@ import {
   MsgExecuteContract,
   StdFee,
 } from '@terra-money/terra.js';
-import {
-  MantleFetch,
-  TxResultRendering,
-  TxStreamPhase,
-} from '@terra-money/webapp-fns';
 import { Observable } from 'rxjs';
 import { Airdrop } from '../../queries/airdrop/check';
 import { _catchTxError } from '../internal/_catchTxError';
@@ -23,9 +23,9 @@ export function airdropClaimTx($: {
   airdrop: Airdrop;
   walletAddress: HumanAddr;
   airdropContract: HumanAddr;
-  gasFee?: uUST<number>;
+  gasFee?: u<UST<number>>;
   gasAdjustment: Rate<number>;
-  txFee?: uUST;
+  txFee?: u<UST>;
   network: NetworkInfo;
   mantleEndpoint: string;
   mantleFetch: MantleFetch;
@@ -34,7 +34,7 @@ export function airdropClaimTx($: {
   onTxSucceed?: () => void;
 }): Observable<TxResultRendering> {
   const gasFee = $.gasFee ?? 300000;
-  const txFee = $.txFee ?? ('127000' as uUST);
+  const txFee = $.txFee ?? ('127000' as u<UST>);
 
   const helper = new TxHelper({ ...$, txFee });
 

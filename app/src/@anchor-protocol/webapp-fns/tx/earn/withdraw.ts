@@ -3,17 +3,16 @@ import {
   fabricateMarketRedeemStable,
 } from '@anchor-protocol/anchor.js';
 import {
-  demicrofy,
   formatAUSTWithPostfixUnits,
-  formatFluidDecimalPoints,
   formatUSTWithPostfixUnits,
-  stripUUSD,
 } from '@anchor-protocol/notation';
-import { Rate, uaUST, uUST } from '@anchor-protocol/types';
-import { pipe } from '@rx-stream/pipe';
-import { floor } from '@terra-dev/big-math';
-import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
-import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
+import { aUST, Rate, u, UST } from '@anchor-protocol/types';
+import { floor } from '@libs/big-math';
+import {
+  demicrofy,
+  formatFluidDecimalPoints,
+  stripUUSD,
+} from '@libs/formatter';
 import {
   MantleFetch,
   pickAttributeValueByKey,
@@ -21,7 +20,10 @@ import {
   pickRawLog,
   TxResultRendering,
   TxStreamPhase,
-} from '@terra-money/webapp-fns';
+} from '@libs/webapp-fns';
+import { pipe } from '@rx-stream/pipe';
+import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
+import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
 import big, { BigSource } from 'big.js';
 import { Observable } from 'rxjs';
 import { _catchTxError } from '../internal/_catchTxError';
@@ -32,9 +34,9 @@ import { TxHelper } from '../internal/TxHelper';
 
 export function earnWithdrawTx(
   $: Parameters<typeof fabricateMarketRedeemStable>[0] & {
-    gasFee: uUST<number>;
+    gasFee: u<UST<number>>;
     gasAdjustment: Rate<number>;
-    txFee: uUST;
+    txFee: u<UST>;
     network: NetworkInfo;
     addressProvider: AddressProvider;
     mantleEndpoint: string;
@@ -79,7 +81,7 @@ export function earnWithdrawTx(
           ? stripUUSD(withdrawAmountUUSD)
           : undefined;
 
-        const burnAmount = pickAttributeValueByKey<uaUST>(
+        const burnAmount = pickAttributeValueByKey<u<aUST>>(
           fromContract,
           'burn_amount',
         );

@@ -1,13 +1,13 @@
-import { cw20, uANC } from '@anchor-protocol/types';
+import { ANC, cw20 } from '@anchor-protocol/types';
 import {
   mantle,
   MantleParams,
   WasmQuery,
   WasmQueryData,
-} from '@terra-money/webapp-fns';
+} from '@libs/webapp-fns';
 
 export interface AncTokenInfoWasmQuery {
-  ancTokenInfo: WasmQuery<cw20.TokenInfo, cw20.TokenInfoResponse<uANC>>;
+  ancTokenInfo: WasmQuery<cw20.TokenInfo, cw20.TokenInfoResponse<ANC>>;
 }
 
 export type AncTokenInfo = WasmQueryData<AncTokenInfoWasmQuery>;

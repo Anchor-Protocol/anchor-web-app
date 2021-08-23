@@ -1,11 +1,11 @@
-import { uUST } from '@anchor-protocol/types';
+import { u, UST } from '@anchor-protocol/types';
 import { computeBorrowedAmount } from '@anchor-protocol/webapp-fns';
 import {
   computeCollateralsTotalUST,
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
 } from '@anchor-protocol/webapp-provider';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
 import React, { useMemo } from 'react';
@@ -30,7 +30,7 @@ export function LoanButtons() {
   // ---------------------------------------------
   const collateralsValue = useMemo(() => {
     if (!borrowBorrower || !borrowMarket) {
-      return '0' as uUST;
+      return '0' as u<UST>;
     }
     return computeCollateralsTotalUST(
       borrowBorrower.overseerCollaterals,

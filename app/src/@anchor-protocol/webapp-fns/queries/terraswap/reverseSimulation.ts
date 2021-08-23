@@ -1,15 +1,15 @@
-import { terraswap, uToken } from '@anchor-protocol/types';
+import { terraswap, Token } from '@anchor-protocol/types';
 import {
   mantle,
   MantleParams,
   WasmQuery,
   WasmQueryData,
-} from '@terra-money/webapp-fns';
+} from '@libs/webapp-fns';
 
 export interface TerraswapReverseSimulationWasmQuery {
   simulation: WasmQuery<
-    terraswap.Simulation<uToken>,
-    terraswap.SimulationResponse<uToken>
+    terraswap.Simulation<Token>,
+    terraswap.SimulationResponse<Token>
   >;
 }
 

@@ -1,6 +1,6 @@
 import { COLLATERAL_DENOMS } from '@anchor-protocol/anchor.js';
-import { demicrofy, formatUST } from '@anchor-protocol/notation';
-import { uUST } from '@anchor-protocol/types';
+import { formatUST } from '@anchor-protocol/notation';
+import { u, UST } from '@anchor-protocol/types';
 import {
   AnchorTax,
   AnchorTokenBalances,
@@ -9,12 +9,13 @@ import {
   useBondClaimTx,
   validateTxFee,
 } from '@anchor-protocol/webapp-provider';
+import { demicrofy } from '@libs/formatter';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
+import { useBank } from '@libs/webapp-provider';
 import { StreamStatus } from '@rx-stream/react';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank } from '@terra-money/webapp-provider';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxResultRenderer } from 'components/TxResultRenderer';
@@ -56,7 +57,7 @@ function ClaimEthBase({ className }: ClaimEthProps) {
   );
 
   const claimableRewards = useMemo(
-    () => big(claimableReward?.rewards ?? 0) as uUST<Big>,
+    () => big(claimableReward?.rewards ?? 0) as u<UST<Big>>,
     [claimableReward],
   );
 

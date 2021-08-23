@@ -2,8 +2,17 @@ import { AddressProvider } from '@anchor-protocol/anchor.js';
 import { createHookMsg } from '@anchor-protocol/anchor.js/dist/utils/cw20/create-hook-msg';
 import { validateInput } from '@anchor-protocol/anchor.js/dist/utils/validate-input';
 import { validateAddress } from '@anchor-protocol/anchor.js/dist/utils/validation/address';
-import { demicrofy, formatLP } from '@anchor-protocol/notation';
-import { Rate, uAncUstLP, uUST } from '@anchor-protocol/types';
+import { formatLP } from '@anchor-protocol/notation';
+import { AncUstLP, Rate, u, UST } from '@anchor-protocol/types';
+import { demicrofy } from '@libs/formatter';
+import {
+  MantleFetch,
+  pickAttributeValueByKey,
+  pickEvent,
+  pickRawLog,
+  TxResultRendering,
+  TxStreamPhase,
+} from '@libs/webapp-fns';
 import { pipe } from '@rx-stream/pipe';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import {
@@ -13,14 +22,6 @@ import {
   MsgExecuteContract,
   StdFee,
 } from '@terra-money/terra.js';
-import {
-  MantleFetch,
-  pickAttributeValueByKey,
-  pickEvent,
-  pickRawLog,
-  TxResultRendering,
-  TxStreamPhase,
-} from '@terra-money/webapp-fns';
 import { Observable } from 'rxjs';
 import { _catchTxError } from '../internal/_catchTxError';
 import { _createTxOptions } from '../internal/_createTxOptions';
@@ -30,9 +31,9 @@ import { TxHelper } from '../internal/TxHelper';
 
 export function ancAncUstLpStakeTx(
   $: Parameters<typeof fabricateStakingBond>[0] & {
-    gasFee: uUST<number>;
+    gasFee: u<UST<number>>;
     gasAdjustment: Rate<number>;
-    fixedGas: uUST;
+    fixedGas: u<UST>;
     network: NetworkInfo;
     addressProvider: AddressProvider;
     mantleEndpoint: string;
@@ -66,7 +67,7 @@ export function ancAncUstLpStakeTx(
       }
 
       try {
-        const amount = pickAttributeValueByKey<uAncUstLP>(
+        const amount = pickAttributeValueByKey<u<AncUstLP>>(
           fromContract,
           'amount',
         );

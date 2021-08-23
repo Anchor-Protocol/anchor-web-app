@@ -1,5 +1,5 @@
-import { NativeSelect } from '@terra-dev/neumorphism-ui/components/NativeSelect';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { NativeSelect } from '@libs/neumorphism-ui/components/NativeSelect';
+import { Section } from '@libs/neumorphism-ui/components/Section';
 import React, { ChangeEvent, useState } from 'react';
 import { ClaimEth } from './components/Claim/Eth';
 import { ClaimLuna } from './components/Claim/Luna';

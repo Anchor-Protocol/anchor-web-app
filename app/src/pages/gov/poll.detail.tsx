@@ -1,8 +1,4 @@
-import {
-  demicrofy,
-  formatANCWithPostfixUnits,
-  formatRate,
-} from '@anchor-protocol/notation';
+import { formatANCWithPostfixUnits } from '@anchor-protocol/notation';
 import { Rate } from '@anchor-protocol/types';
 import {
   useAncBalanceQuery,
@@ -13,21 +9,19 @@ import {
   useGovVotersQuery,
   useLastSyncedHeightQuery,
 } from '@anchor-protocol/webapp-provider';
+import { demicrofy, formatRate } from '@libs/formatter';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
+import { HorizontalHeavyRuler } from '@libs/neumorphism-ui/components/HorizontalHeavyRuler';
+import { HorizontalRuler } from '@libs/neumorphism-ui/components/HorizontalRuler';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { Section } from '@libs/neumorphism-ui/components/Section';
+import { rulerLightColor, rulerShadowColor } from '@libs/styled-neumorphism';
+import { TimeEnd } from '@libs/use-time-end';
 import { Schedule } from '@material-ui/icons';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
-import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
-import { HorizontalRuler } from '@terra-dev/neumorphism-ui/components/HorizontalRuler';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
-import {
-  rulerLightColor,
-  rulerShadowColor,
-} from '@terra-dev/styled-neumorphism';
-import { TimeEnd } from '@terra-dev/use-time-end';
+import { useCodeViewerDialog } from 'components/dialogs/useCodeViewerDialog';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { AccountLink } from 'components/links/AccountLink';
-import { useCodeViewerDialog } from 'components/dialogs/useCodeViewerDialog';
 import { screen } from 'env';
 import {
   Description,

@@ -1,23 +1,23 @@
-import { Rate, terraswap, uANC, uUST } from '@anchor-protocol/types';
+import { ANC, Rate, terraswap, u, UST } from '@anchor-protocol/types';
 import { AnchorTax } from '@anchor-protocol/webapp-fns';
-import { min } from '@terra-dev/big-math';
+import { min } from '@libs/big-math';
 import big, { Big, BigSource } from 'big.js';
 import { MAX_SPREAD } from 'pages/trade/env';
 import { TradeSimulation } from 'pages/trade/models/tradeSimulation';
 
 export function sellFromSimulation(
-  simulation: terraswap.SimulationResponse<uUST, uANC>,
-  toAmount: uUST,
+  simulation: terraswap.SimulationResponse<UST, ANC>,
+  toAmount: u<UST>,
   { taxRate, maxTaxUUSD }: AnchorTax,
-  fixedGas: uUST<BigSource>,
-): TradeSimulation<uUST, uANC, uANC> | null {
+  fixedGas: u<UST<BigSource>>,
+): TradeSimulation<UST, ANC, ANC> | null {
   try {
     const beliefPrice = big(toAmount).div(simulation.return_amount);
 
     const tax = min(
       big(toAmount).minus(big(toAmount).div(big(1).plus(taxRate))),
       maxTaxUUSD,
-    ) as uUST<Big>;
+    ) as u<UST<Big>>;
 
     const expectedAmount = big(simulation.return_amount).minus(tax);
 
@@ -25,14 +25,14 @@ export function sellFromSimulation(
 
     return {
       ...simulation,
-      minimumReceived: expectedAmount.mul(rate).toFixed() as uUST,
+      minimumReceived: expectedAmount.mul(rate).toFixed() as u<UST>,
       swapFee: big(simulation.commission_amount)
         .plus(simulation.spread_amount)
-        .toFixed() as uUST,
+        .toFixed() as u<UST>,
       beliefPrice: big(1).div(beliefPrice).toFixed() as Rate,
 
-      txFee: tax.plus(fixedGas).toFixed() as uUST,
-      fromAmount: big(simulation.return_amount).toString() as uANC,
+      txFee: tax.plus(fixedGas).toFixed() as u<UST>,
+      fromAmount: big(simulation.return_amount).toString() as u<ANC>,
     };
   } catch {
     return null;

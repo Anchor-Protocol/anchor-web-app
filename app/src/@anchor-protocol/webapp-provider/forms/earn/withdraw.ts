@@ -5,9 +5,9 @@ import {
   earnWithdrawForm,
   EarnWithdrawFormStates,
 } from '@anchor-protocol/webapp-fns';
-import { useForm } from '@terra-dev/use-form';
+import { useForm } from '@libs/use-form';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank } from '@terra-money/webapp-provider';
+import { useBank } from '@libs/webapp-provider';
 import { useCallback, useMemo } from 'react';
 import { useAnchorWebapp } from '../../contexts/context';
 import { useEarnEpochStatesQuery } from '../../queries/earn/epochStates';

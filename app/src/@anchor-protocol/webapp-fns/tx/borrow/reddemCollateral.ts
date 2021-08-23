@@ -2,12 +2,10 @@ import {
   AddressProvider,
   fabricateRedeemCollateral,
 } from '@anchor-protocol/anchor.js';
-import { demicrofy, formatLuna, formatRate } from '@anchor-protocol/notation';
-import { Rate, ubLuna, uUST } from '@anchor-protocol/types';
+import { formatLuna } from '@anchor-protocol/notation';
+import { bLuna, Rate, u, UST } from '@anchor-protocol/types';
 import { getCollateralSymbol } from '@anchor-protocol/webapp-fns/functions/getCollateralSymbol';
-import { pipe } from '@rx-stream/pipe';
-import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
-import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
+import { demicrofy, formatRate } from '@libs/formatter';
 import {
   MantleFetch,
   pickAttributeValue,
@@ -15,7 +13,10 @@ import {
   pickRawLog,
   TxResultRendering,
   TxStreamPhase,
-} from '@terra-money/webapp-fns';
+} from '@libs/webapp-fns';
+import { pipe } from '@rx-stream/pipe';
+import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
+import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
 import { QueryObserverResult } from 'react-query';
 import { Observable } from 'rxjs';
 import { computeCurrentLtv } from '../../logics/borrow/computeCurrentLtv';
@@ -30,9 +31,9 @@ import { _fetchBorrowData } from './_fetchBorrowData';
 
 export function borrowRedeemCollateralTx(
   $: Parameters<typeof fabricateRedeemCollateral>[0] & {
-    gasFee: uUST<number>;
+    gasFee: u<UST<number>>;
     gasAdjustment: Rate<number>;
-    fixedGas: uUST;
+    fixedGas: u<UST>;
     network: NetworkInfo;
     addressProvider: AddressProvider;
     mantleEndpoint: string;
@@ -79,7 +80,7 @@ export function borrowRedeemCollateralTx(
       }
 
       try {
-        const redeemedAmount = pickAttributeValue<ubLuna>(fromContract, 16);
+        const redeemedAmount = pickAttributeValue<u<bLuna>>(fromContract, 16);
 
         const newLtv =
           computeCurrentLtv(

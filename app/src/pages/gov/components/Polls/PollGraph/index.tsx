@@ -1,10 +1,10 @@
+import { Rate } from '@anchor-protocol/types';
+import { formatRate } from '@libs/formatter';
 import {
   HorizontalGraphBar,
   Rect,
-} from '@terra-dev/neumorphism-ui/components/HorizontalGraphBar';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { formatRate } from '@anchor-protocol/notation';
-import { Rate } from '@anchor-protocol/types';
+} from '@libs/neumorphism-ui/components/HorizontalGraphBar';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import React from 'react';
 import styled, { useTheme } from 'styled-components';
 import { GraphTick } from './GraphTick';

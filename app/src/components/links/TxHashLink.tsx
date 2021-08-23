@@ -1,4 +1,4 @@
-import { truncate } from '@anchor-protocol/notation';
+import { truncate } from '@libs/formatter';
 import { useWallet } from '@terra-money/wallet-provider';
 import React from 'react';
 

@@ -1,7 +1,7 @@
-import { microfy } from '@anchor-protocol/notation';
-import type { bAsset, CW20Addr, uUST } from '@anchor-protocol/types';
+import type { bAsset, CW20Addr, u, UST } from '@anchor-protocol/types';
 import { moneyMarket } from '@anchor-protocol/types';
-import { sum, vectorMinus, vectorMultiply } from '@terra-dev/big-math';
+import { sum, vectorMinus, vectorMultiply } from '@libs/big-math';
+import { microfy } from '@libs/formatter';
 import big, { Big } from 'big.js';
 import { BAssetLtvs } from '../../queries/borrow/market';
 import { vectorizeBAssetMaxLtvs } from './vectorizeBAssetLtvs';
@@ -17,7 +17,7 @@ export function computeRedeemCollateralBorrowLimit(
   overseerCollaterals: moneyMarket.overseer.CollateralsResponse,
   oraclePrices: moneyMarket.oracle.PricesResponse,
   bAssetLtvs: BAssetLtvs,
-): uUST<Big> | undefined {
+): u<UST<Big>> | undefined {
   if (redeemAmount.length === 0 || big(redeemAmount).lte(0)) {
     return undefined;
   }
@@ -40,7 +40,7 @@ export function computeRedeemCollateralBorrowLimit(
 
   const borrowLimit = sum(...borrowLimits);
 
-  return borrowLimit.lte(0) ? undefined : (borrowLimit as uUST<Big>);
+  return borrowLimit.lte(0) ? undefined : (borrowLimit as u<UST<Big>>);
 
   //const borrowLimit = big(
   //  big(

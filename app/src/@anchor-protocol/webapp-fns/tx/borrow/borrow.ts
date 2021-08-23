@@ -2,15 +2,9 @@ import {
   AddressProvider,
   fabricateMarketBorrow,
 } from '@anchor-protocol/anchor.js';
-import {
-  demicrofy,
-  formatRate,
-  formatUSTWithPostfixUnits,
-} from '@anchor-protocol/notation';
-import { Rate, uUST } from '@anchor-protocol/types';
-import { pipe } from '@rx-stream/pipe';
-import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
-import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
+import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
+import { Rate, u, UST } from '@anchor-protocol/types';
+import { demicrofy, formatRate } from '@libs/formatter';
 import {
   MantleFetch,
   pickAttributeValue,
@@ -18,7 +12,10 @@ import {
   pickRawLog,
   TxResultRendering,
   TxStreamPhase,
-} from '@terra-money/webapp-fns';
+} from '@libs/webapp-fns';
+import { pipe } from '@rx-stream/pipe';
+import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
+import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
 import { QueryObserverResult } from 'react-query';
 import { Observable } from 'rxjs';
 import { computeCurrentLtv } from '../../logics/borrow/computeCurrentLtv';
@@ -33,10 +30,10 @@ import { _fetchBorrowData } from './_fetchBorrowData';
 
 export function borrowBorrowTx(
   $: Parameters<typeof fabricateMarketBorrow>[0] & {
-    gasFee: uUST<number>;
+    gasFee: u<UST<number>>;
     gasAdjustment: Rate<number>;
-    txFee: uUST;
-    fixedGas: uUST<number>;
+    txFee: u<UST>;
+    fixedGas: u<UST<number>>;
     network: NetworkInfo;
     addressProvider: AddressProvider;
     mantleEndpoint: string;
@@ -83,7 +80,7 @@ export function borrowBorrowTx(
       }
 
       try {
-        const borrowedAmount = pickAttributeValue<uUST>(fromContract, 3);
+        const borrowedAmount = pickAttributeValue<u<UST>>(fromContract, 3);
 
         const newLtv =
           computeCurrentLtv(

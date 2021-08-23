@@ -1,12 +1,9 @@
-import { CW20Addr, HumanAddr, Token, uUST } from '@anchor-protocol/types';
+import { CW20Addr, HumanAddr, Token, u, UST } from '@anchor-protocol/types';
 import { terraSendTx } from '@anchor-protocol/webapp-fns';
+import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
 import { useStream } from '@rx-stream/react';
 
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import {
-  useRefetchQueries,
-  useTerraWebapp,
-} from '@terra-money/webapp-provider';
 import { useCallback } from 'react';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
@@ -16,7 +13,7 @@ export interface TerraSendTxParams {
   currency: { cw20Contract: CW20Addr } | { tokenDenom: string };
   memo?: string;
   amount: Token;
-  txFee: uUST;
+  txFee: u<UST>;
 
   onTxSucceed?: () => void;
 }

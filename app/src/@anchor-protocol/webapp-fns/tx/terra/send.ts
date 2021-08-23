@@ -1,7 +1,19 @@
 import { fabricateCw20Transfer } from '@anchor-protocol/anchor.js';
-import { CW20Addr, HumanAddr, Rate, Token, uUST } from '@anchor-protocol/types';
+import {
+  CW20Addr,
+  HumanAddr,
+  Rate,
+  Token,
+  u,
+  UST,
+} from '@anchor-protocol/types';
+import { floor } from '@libs/big-math';
+import {
+  MantleFetch,
+  TxResultRendering,
+  TxStreamPhase,
+} from '@libs/webapp-fns';
 import { pipe } from '@rx-stream/pipe';
-import { floor } from '@terra-dev/big-math';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import {
   Coin,
@@ -11,11 +23,6 @@ import {
   MsgSend,
   StdFee,
 } from '@terra-money/terra.js';
-import {
-  MantleFetch,
-  TxResultRendering,
-  TxStreamPhase,
-} from '@terra-money/webapp-fns';
 import { Observable } from 'rxjs';
 import { _catchTxError } from '../internal/_catchTxError';
 import { _createTxOptions } from '../internal/_createTxOptions';
@@ -29,9 +36,9 @@ export function terraSendTx($: {
   currency: { cw20Contract: CW20Addr } | { tokenDenom: string };
   memo?: string;
   amount: Token;
-  gasFee: uUST<number>;
+  gasFee: u<UST<number>>;
   gasAdjustment: Rate<number>;
-  txFee: uUST;
+  txFee: u<UST>;
   network: NetworkInfo;
   mantleEndpoint: string;
   mantleFetch: MantleFetch;

@@ -1,6 +1,6 @@
-import { microfy } from '@anchor-protocol/notation';
-import { Rate, UST, uUST } from '@anchor-protocol/types';
-import { max, min } from '@terra-dev/big-math';
+import { Rate, u, UST } from '@anchor-protocol/types';
+import { max, min } from '@libs/big-math';
+import { microfy } from '@libs/formatter';
 import big, { Big, BigSource } from 'big.js';
 
 export interface EarnDepositFormInput {
@@ -8,18 +8,18 @@ export interface EarnDepositFormInput {
 }
 
 export interface EarnDepositFormDependency {
-  userUUSTBalance: uUST<BigSource>;
-  fixedGas: uUST<BigSource>;
+  userUUSTBalance: u<UST<BigSource>>;
+  fixedGas: u<UST<BigSource>>;
   taxRate: Rate<BigSource>;
-  maxTaxUUSD: uUST<BigSource>;
+  maxTaxUUSD: u<UST<BigSource>>;
   isConnected: boolean;
 }
 
 export interface EarnDepositFormStates extends EarnDepositFormInput {
   availablePost: boolean;
-  maxAmount: uUST<BigSource>;
-  sendAmount?: uUST<BigSource>;
-  txFee?: uUST<BigSource>;
+  maxAmount: u<UST<BigSource>>;
+  sendAmount?: u<UST<BigSource>>;
+  txFee?: u<UST<BigSource>>;
   invalidTxFee?: string;
   invalidDepositAmount?: string;
   invalidNextTxFee?: string;
@@ -48,18 +48,18 @@ export function earnDepositForm(
       .div(big(1).add(taxRate))
       .mul(taxRate);
     const maxTax = big(maxTaxUUSD);
-    return max(min(ratioTxFee, maxTax), 0).plus(fixedGas) as uUST<Big>;
+    return max(min(ratioTxFee, maxTax), 0).plus(fixedGas) as u<UST<Big>>;
   })();
 
   // sendAmount
   const sendAmount = txFee
-    ? (microfy(depositAmount).plus(txFee) as uUST<Big>)
+    ? (microfy(depositAmount).plus(txFee) as u<UST<Big>>)
     : undefined;
 
   // maxAmount
   const maxAmount = (() => {
     if (!isConnected || big(userUUSTBalance).lte(0)) {
-      return big(0) as uUST<Big>;
+      return big(0) as u<UST<Big>>;
     }
 
     // MIN((User_UST_Balance - fixed_gas)/(1+Tax_rate) * tax_rate , Max_tax) + Fixed_Gas
@@ -74,8 +74,8 @@ export function earnDepositForm(
     const result = withoutFixedGas.minus(min(txFee, maxTaxUUSD));
 
     return result.minus(fixedGas).lte(0)
-      ? (big(0) as uUST<Big>)
-      : (result.minus(fixedGas) as uUST<Big>);
+      ? (big(0) as u<UST<Big>>)
+      : (result.minus(fixedGas) as u<UST<Big>>);
   })();
 
   // invalidTxFee

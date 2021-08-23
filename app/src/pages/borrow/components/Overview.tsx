@@ -5,19 +5,17 @@ import {
   CollateralValue,
 } from '@anchor-protocol/icons';
 import {
-  AnimateNumber,
-  demicrofy,
-  formatRate,
   formatUST,
   formatUSTWithPostfixUnits,
-  MICRO,
   MILLION,
 } from '@anchor-protocol/notation';
-import { IconCircle } from '@terra-dev/neumorphism-ui/components/IconCircle';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
-import { TooltipIconCircle } from '@terra-dev/neumorphism-ui/components/TooltipIconCircle';
+import { demicrofy, formatRate, MICRO } from '@libs/formatter';
+import { IconCircle } from '@libs/neumorphism-ui/components/IconCircle';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@libs/neumorphism-ui/components/Section';
+import { TooltipIconCircle } from '@libs/neumorphism-ui/components/TooltipIconCircle';
+import { AnimateNumber } from '@libs/ui';
 import { SubAmount } from 'components/primitives/SubAmount';
 import { screen } from 'env';
 import React from 'react';

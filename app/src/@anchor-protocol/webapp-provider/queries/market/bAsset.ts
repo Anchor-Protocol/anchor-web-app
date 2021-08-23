@@ -2,11 +2,11 @@ import {
   CollateralType,
   CW20Addr,
   HumanAddr,
-  StableDenom,
+  NativeDenom,
 } from '@anchor-protocol/types';
 import { MarketBAsset, marketBAssetQuery } from '@anchor-protocol/webapp-fns';
-import { createQueryFn } from '@terra-dev/react-query-utils';
-import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
+import { createQueryFn } from '@libs/react-query-utils';
+import { MantleFetch, useTerraWebapp } from '@libs/webapp-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
@@ -36,7 +36,7 @@ const queryFn = createQueryFn(
           query: {
             price: {
               base: bLunaContract,
-              quote: 'uusd' as StableDenom,
+              quote: 'uusd' as NativeDenom,
             },
           },
         },

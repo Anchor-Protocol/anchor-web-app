@@ -1,5 +1,5 @@
-import { CW20Addr, moneyMarket, ubAsset, uUST } from '@anchor-protocol/types';
-import { sum, vectorPlus, vectorMultiply } from '@terra-dev/big-math';
+import { bAsset, CW20Addr, moneyMarket, u, UST } from '@anchor-protocol/types';
+import { sum, vectorMultiply, vectorPlus } from '@libs/big-math';
 import { Big, BigSource } from 'big.js';
 import { vectorizeOraclePrices } from './vectorizeOraclePrices';
 import { vectorizeOverseerCollaterals } from './vectorizeOverseerCollaterals';
@@ -8,8 +8,8 @@ import { vectorizeVariations } from './vectorizeVariations';
 export function computeCollateralsTotalUST(
   overseerCollaterals: moneyMarket.overseer.CollateralsResponse,
   oraclePrices: moneyMarket.oracle.PricesResponse,
-  ...variation: Array<[CW20Addr, ubAsset<BigSource>]>
-): uUST<Big> {
+  ...variation: Array<[CW20Addr, u<bAsset<BigSource>>]>
+): u<UST<Big>> {
   const vector = oraclePrices.prices.map(({ asset }) => asset);
   const lockedAmounts = vectorizeOverseerCollaterals(
     vector,
@@ -23,5 +23,5 @@ export function computeCollateralsTotalUST(
   const bAssetAmounts = vectorPlus(lockedAmounts, variations);
   const ustAmounts = vectorMultiply(bAssetAmounts, prices);
 
-  return sum(...ustAmounts) as uUST<Big>;
+  return sum(...ustAmounts) as u<UST<Big>>;
 }

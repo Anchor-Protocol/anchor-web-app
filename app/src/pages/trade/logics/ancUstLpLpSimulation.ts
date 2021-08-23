@@ -1,23 +1,16 @@
-import { demicrofy, microfy } from '@anchor-protocol/notation';
-import {
-  AncUstLP,
-  cw20,
-  Rate,
-  uANC,
-  uAncUstLP,
-  uUST,
-} from '@anchor-protocol/types';
-import { max, min } from '@terra-dev/big-math';
-import { Bank } from 'contexts/bank';
+import { ANC, AncUstLP, cw20, Rate, u, UST } from '@anchor-protocol/types';
+import { max, min } from '@libs/big-math';
+import { demicrofy, microfy } from '@libs/formatter';
 import big, { Big, BigSource } from 'big.js';
+import { Bank } from 'contexts/bank';
 import { AncPrice } from 'pages/trade/models/ancPrice';
 import { AncUstLpSimulation } from 'pages/trade/models/ancUstLpSimulation';
 
 export function ancUstLpLpSimulation(
   ancPrice: AncPrice,
-  userLpBalance: cw20.BalanceResponse<uAncUstLP> | undefined,
+  userLpBalance: cw20.BalanceResponse<AncUstLP> | undefined,
   lpAmount: AncUstLP,
-  fixedGas: uUST<BigSource>,
+  fixedGas: u<UST<BigSource>>,
   bank: Bank,
 ): AncUstLpSimulation<Big> {
   if (lpAmount.length === 0) {
@@ -26,19 +19,19 @@ export function ancUstLpLpSimulation(
 
   const lp = microfy(lpAmount);
 
-  const anc = big(ancPrice.ANCPoolSize)
-    .mul(lp)
-    .div(ancPrice.LPShare) as uANC<Big>;
+  const anc = big(ancPrice.ANCPoolSize).mul(lp).div(ancPrice.LPShare) as u<
+    ANC<Big>
+  >;
 
-  const ust = big(ancPrice.USTPoolSize)
-    .mul(lp)
-    .div(ancPrice.LPShare) as uUST<Big>;
+  const ust = big(ancPrice.USTPoolSize).mul(lp).div(ancPrice.LPShare) as u<
+    UST<Big>
+  >;
 
-  const poolPrice = microfy(ancPrice.ANCPrice) as uUST<Big>;
+  const poolPrice = microfy(ancPrice.ANCPrice) as u<UST<Big>>;
 
   const lpFromTx = userLpBalance
-    ? (max(0, big(userLpBalance.balance).minus(lp)) as uAncUstLP<Big>)
-    : (big(0) as uAncUstLP<Big>);
+    ? (max(0, big(userLpBalance.balance).minus(lp)) as u<AncUstLP<Big>>)
+    : (big(0) as u<AncUstLP<Big>>);
 
   const shareOfPool = lpFromTx.div(
     big(ancPrice.LPShare).plus(lpFromTx),
@@ -46,7 +39,7 @@ export function ancUstLpLpSimulation(
 
   const txFee = min(ust.mul(bank.tax.taxRate), bank.tax.maxTaxUUSD).plus(
     fixedGas,
-  ) as uUST<Big>;
+  ) as u<UST<Big>>;
 
   return {
     poolPrice,

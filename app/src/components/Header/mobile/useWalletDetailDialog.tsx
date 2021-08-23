@@ -1,7 +1,7 @@
 import { Modal } from '@material-ui/core';
-import { buttonBaseStyle } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
-import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
+import { buttonBaseStyle } from '@libs/neumorphism-ui/components/ActionButton';
+import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
+import { DialogProps, OpenDialog, useDialog } from '@libs/use-dialog';
 import { useConnectedWallet, useWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'contexts/bank';
 import React, { ReactNode, useCallback } from 'react';

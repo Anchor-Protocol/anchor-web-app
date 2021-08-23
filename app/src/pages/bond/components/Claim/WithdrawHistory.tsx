@@ -1,9 +1,10 @@
-import { demicrofy, formatLuna } from '@anchor-protocol/notation';
+import { formatLuna } from '@anchor-protocol/notation';
+import { demicrofy } from '@libs/formatter';
 import {
   pressed,
   rulerLightColor,
   rulerShadowColor,
-} from '@terra-dev/styled-neumorphism';
+} from '@libs/styled-neumorphism';
 import { fixHMR } from 'fix-hmr';
 import React from 'react';
 import styled from 'styled-components';

@@ -1,6 +1,6 @@
 import { COLLATERAL_DENOMS } from '@anchor-protocol/anchor.js';
-import { demicrofy, formatLuna, formatUST } from '@anchor-protocol/notation';
-import { uLuna } from '@anchor-protocol/types';
+import { formatLuna, formatUST } from '@anchor-protocol/notation';
+import { Luna, u } from '@anchor-protocol/types';
 import {
   AnchorTax,
   AnchorTokenBalances,
@@ -11,13 +11,14 @@ import {
   useBondWithdrawTx,
   validateTxFee,
 } from '@anchor-protocol/webapp-provider';
+import { demicrofy } from '@libs/formatter';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { HorizontalHeavyRuler } from '@libs/neumorphism-ui/components/HorizontalHeavyRuler';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
+import { useBank } from '@libs/webapp-provider';
 import { StreamStatus } from '@rx-stream/react';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank } from '@terra-money/webapp-provider';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxResultRenderer } from 'components/TxResultRenderer';
@@ -80,7 +81,7 @@ function ClaimLunaBase({ className }: ClaimLunaProps) {
   );
 
   const withdrawableAmount = useMemo(
-    () => big(_withdrawableAmount?.withdrawable ?? 0) as uLuna<Big>,
+    () => big(_withdrawableAmount?.withdrawable ?? 0) as u<Luna<Big>>,
     [_withdrawableAmount?.withdrawable],
   );
 

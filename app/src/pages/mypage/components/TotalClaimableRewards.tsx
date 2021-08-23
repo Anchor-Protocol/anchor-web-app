@@ -1,15 +1,15 @@
 import {
-  AnimateNumber,
-  demicrofy,
   formatANCWithPostfixUnits,
   formatUST,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { ANC, UST } from '@anchor-protocol/types';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { demicrofy } from '@libs/formatter';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@libs/neumorphism-ui/components/Section';
+import { AnimateNumber } from '@libs/ui';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { Sub } from 'components/Sub';
 import { fixHMR } from 'fix-hmr';

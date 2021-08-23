@@ -1,7 +1,7 @@
-import { JSDateTime, uUST } from '@anchor-protocol/types';
+import { JSDateTime, u, UST } from '@anchor-protocol/types';
 
 interface MarketDepositRaw {
-  total_ust_deposits: uUST;
+  total_ust_deposits: u<UST>;
   total_depositors: {
     last_updated: number;
     holders: number;
@@ -10,7 +10,7 @@ interface MarketDepositRaw {
 
 interface MarketDepositHistoryRaw {
   total_ust_deposits: Array<{
-    deposit: uUST;
+    deposit: u<UST>;
     liability: '74481041162848.589699372014181516';
     timestamp: JSDateTime;
   }>;
@@ -23,7 +23,7 @@ interface MarketDepositHistoryRaw {
 }
 
 interface MarketBorrowRaw {
-  total_borrowed: uUST;
+  total_borrowed: u<UST>;
   borrowers: {
     last_updated: number;
     borrowers: number;
@@ -31,13 +31,13 @@ interface MarketBorrowRaw {
 }
 
 type MarketBorrowHistoryRaw = Array<{
-  total_borrowed: uUST;
+  total_borrowed: u<UST>;
   timestamp: JSDateTime;
 }>;
 
 export interface MarketDepositAndBorrow {
-  total_ust_deposits: uUST;
-  total_borrowed: uUST;
+  total_ust_deposits: u<UST>;
+  total_borrowed: u<UST>;
   timestamp: JSDateTime;
 }
 

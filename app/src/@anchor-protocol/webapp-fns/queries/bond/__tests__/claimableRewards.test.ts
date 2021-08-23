@@ -3,7 +3,7 @@ import {
   TEST_MANTLE_ENDPOINT,
   TEST_WALLET_ADDRESS,
 } from '@anchor-protocol/webapp-fns/test-env';
-import { defaultMantleFetch } from '@terra-money/webapp-fns';
+import { defaultMantleFetch } from '@libs/webapp-fns';
 import { bondClaimableRewardsQuery } from '../claimableRewards';
 
 describe('queries/claimableRewards', () => {

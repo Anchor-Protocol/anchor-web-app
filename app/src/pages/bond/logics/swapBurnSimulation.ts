@@ -1,16 +1,16 @@
-import type { Rate, ubLuna, uLuna, uUST } from '@anchor-protocol/types';
+import type { bLuna, Luna, Rate, u, UST } from '@anchor-protocol/types';
 import { terraswap } from '@anchor-protocol/types';
 import { AnchorTax } from '@anchor-protocol/webapp-fns';
-import { min } from '@terra-dev/big-math';
+import { min } from '@libs/big-math';
 import big, { Big } from 'big.js';
 import { MAX_SPREAD } from 'pages/bond/env';
 import { SwapSimulation } from '../models/swapSimulation';
 
 export function swapBurnSimulation(
-  simulation: terraswap.SimulationResponse<uLuna>,
-  getAmount: uLuna,
+  simulation: terraswap.SimulationResponse<Luna>,
+  getAmount: u<Luna>,
   { taxRate, maxTaxUUSD }: AnchorTax,
-): SwapSimulation<uLuna, ubLuna> {
+): SwapSimulation<Luna, bLuna> {
   const beliefPrice = big(1).div(big(simulation.return_amount).div(getAmount));
   const maxSpread = MAX_SPREAD;
 
@@ -19,13 +19,13 @@ export function swapBurnSimulation(
       .div(beliefPrice)
       .div(1 + taxRate),
     maxTaxUUSD,
-  ) as uUST<Big>;
+  ) as u<UST<Big>>;
   const expectedAmount = big(getAmount).div(beliefPrice).minus(tax);
   const rate = big(1).minus(maxSpread);
-  const minimumReceived = expectedAmount.mul(rate).toFixed() as uLuna;
+  const minimumReceived = expectedAmount.mul(rate).toFixed() as u<Luna>;
   const swapFee = big(simulation.commission_amount)
     .plus(simulation.spread_amount)
-    .toFixed() as uLuna;
+    .toFixed() as u<Luna>;
 
   return {
     ...simulation,
@@ -34,6 +34,6 @@ export function swapBurnSimulation(
     beliefPrice: beliefPrice.toFixed() as Rate,
     maxSpread: maxSpread.toString() as Rate,
 
-    burnAmount: big(getAmount).div(beliefPrice).toString() as ubLuna,
+    burnAmount: big(getAmount).div(beliefPrice).toString() as u<bLuna>,
   };
 }

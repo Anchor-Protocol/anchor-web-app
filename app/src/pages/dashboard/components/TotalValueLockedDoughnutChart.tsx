@@ -1,10 +1,10 @@
-import { uUST } from '@anchor-protocol/types';
+import { u, UST } from '@anchor-protocol/types';
 import { Chart } from 'chart.js';
 import React, { Component, createRef } from 'react';
 
 export interface TotalValueLockedDoughnutChartProps {
-  totalDeposit: uUST;
-  totalCollaterals: uUST;
+  totalDeposit: u<UST>;
+  totalCollaterals: u<UST>;
   totalDepositColor: string;
   totalCollateralsColor: string;
 }

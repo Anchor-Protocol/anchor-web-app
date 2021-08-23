@@ -1,11 +1,11 @@
 import { HumanAddr } from '@anchor-protocol/types';
 import { govMyPollsQuery, MyPoll } from '@anchor-protocol/webapp-fns';
-import { createQueryFn } from '@terra-dev/react-query-utils';
+import { createQueryFn } from '@libs/react-query-utils';
 import {
   ConnectedWallet,
   useConnectedWallet,
 } from '@terra-money/wallet-provider';
-import { MantleFetch, useTerraWebapp } from '@terra-money/webapp-provider';
+import { MantleFetch, useTerraWebapp } from '@libs/webapp-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';

@@ -1,16 +1,13 @@
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   ANC_INPUT_MAXIMUM_INTEGER_POINTS,
-  demicrofy,
   formatANC,
   formatANCInput,
-  formatFluidDecimalPoints,
   formatUST,
   formatUSTInput,
-  microfy,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
 } from '@anchor-protocol/notation';
-import { ANC, Denom, terraswap, uANC, UST, uUST } from '@anchor-protocol/types';
+import { ANC, Denom, terraswap, u, UST } from '@anchor-protocol/types';
 import {
   terraswapReverseSimulationQuery,
   terraswapSimulationQuery,
@@ -18,21 +15,22 @@ import {
   useAncPriceQuery,
   useAncSellTx,
 } from '@anchor-protocol/webapp-provider';
+import { demicrofy, formatFluidDecimalPoints, microfy } from '@libs/formatter';
+import { isZero } from '@libs/is-zero';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { NumberMuiInput } from '@libs/neumorphism-ui/components/NumberMuiInput';
+import { SelectAndTextInputContainer } from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
+import { useResolveLast } from '@libs/use-resolve-last';
+import { useTerraWebapp } from '@libs/webapp-provider';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { isZero } from '@terra-dev/is-zero';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { NumberMuiInput } from '@terra-dev/neumorphism-ui/components/NumberMuiInput';
-import { SelectAndTextInputContainer } from '@terra-dev/neumorphism-ui/components/SelectAndTextInputContainer';
-import { useResolveLast } from '@terra-dev/use-resolve-last';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useTerraWebapp } from '@terra-money/webapp-provider';
-import { useBank } from 'contexts/bank';
 import big from 'big.js';
-import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
+import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
+import { useBank } from 'contexts/bank';
 import { validateTxFee } from 'logics/validateTxFee';
 import { sellFromSimulation } from 'pages/trade/logics/sellFromSimulation';
 import { sellToSimulation } from 'pages/trade/logics/sellToSimulation';
@@ -77,7 +75,7 @@ export function TradeSell() {
   const [toAmount, setToAmount] = useState<UST>('' as UST);
 
   const [resolveSimulation, simulation] = useResolveLast<
-    TradeSimulation<uUST, uANC, uANC> | undefined | null
+    TradeSimulation<UST, ANC, ANC> | undefined | null
   >(() => null);
 
   const [fromCurrency, setFromCurrency] = useState<Item>(
@@ -153,7 +151,7 @@ export function TradeSell() {
         const fromAmount: ANC = nextFromAmount as ANC;
         setFromAmount(fromAmount);
 
-        const amount = microfy(fromAmount).toString() as uANC;
+        const amount = microfy(fromAmount).toString() as u<ANC>;
 
         resolveSimulation(
           terraswapSimulationQuery({
@@ -179,7 +177,7 @@ export function TradeSell() {
           }).then(({ simulation }) => {
             return simulation
               ? sellToSimulation(
-                  simulation as terraswap.SimulationResponse<uUST, uANC>,
+                  simulation as terraswap.SimulationResponse<UST, ANC>,
                   amount,
                   bank.tax,
                   fixedGas,
@@ -215,7 +213,7 @@ export function TradeSell() {
         const toAmount: UST = nextToAmount as UST;
         setToAmount(toAmount);
 
-        const amount = microfy(toAmount).toString() as uUST;
+        const amount = microfy(toAmount).toString() as u<UST>;
 
         resolveSimulation(
           terraswapReverseSimulationQuery({
@@ -241,7 +239,7 @@ export function TradeSell() {
           }).then(({ simulation }) => {
             return simulation
               ? sellFromSimulation(
-                  simulation as terraswap.SimulationResponse<uUST, uANC>,
+                  simulation as terraswap.SimulationResponse<UST, ANC>,
                   amount,
                   bank.tax,
                   fixedGas,

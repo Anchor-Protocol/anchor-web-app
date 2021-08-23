@@ -1,10 +1,10 @@
-import { ContractAddress, HumanAddr, uUST } from '@anchor-protocol/types';
+import { ContractAddress, HumanAddr, u, UST } from '@anchor-protocol/types';
 import {
   borrowBorrowerQuery,
   borrowMarketQuery,
   computeCurrentLtv,
 } from '@anchor-protocol/webapp-fns';
-import { lastSyncedHeightQuery, MantleFetch } from '@terra-money/webapp-fns';
+import { lastSyncedHeightQuery, MantleFetch } from '@libs/webapp-fns';
 
 interface UserLtvQueryParams {
   mantleFetch: MantleFetch;
@@ -43,9 +43,9 @@ export async function userLtvQuery({
             contractAddress: address.moneyMarket.interestModel,
             query: {
               borrow_rate: {
-                market_balance: '0' as uUST,
-                total_reserves: '0' as uUST,
-                total_liabilities: '0' as uUST,
+                market_balance: '0' as u<UST>,
+                total_reserves: '0' as u<UST>,
+                total_liabilities: '0' as u<UST>,
               },
             },
           },

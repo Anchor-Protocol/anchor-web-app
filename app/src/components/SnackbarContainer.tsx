@@ -1,4 +1,4 @@
-import { useSnackbar } from '@terra-dev/snackbar';
+import { useSnackbar } from '@libs/snackbar';
 import React from 'react';
 import styled from 'styled-components';
 

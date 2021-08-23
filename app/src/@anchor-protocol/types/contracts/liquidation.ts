@@ -1,6 +1,12 @@
-import { uUST } from '../currencies';
-import { Num, Rate } from '../units';
-import { CW20Addr, HumanAddr, StableDenom } from './common';
+import {
+  CW20Addr,
+  HumanAddr,
+  NativeDenom,
+  Num,
+  Rate,
+  u,
+  UST,
+} from '@libs/types';
 
 export namespace liquidation {
   export namespace liquidationContract {
@@ -18,7 +24,7 @@ export namespace liquidation {
     export interface BidResponse {
       collateral_token: HumanAddr;
       bidder: HumanAddr;
-      amount: uUST;
+      amount: u<UST>;
       premium_rate: Rate;
     }
 
@@ -71,7 +77,7 @@ export namespace liquidation {
     export interface ConfigResponse {
       owner: HumanAddr;
       oracle_contract: HumanAddr;
-      stable_denom: StableDenom;
+      stable_denom: NativeDenom;
       safe_ratio: Rate;
       bid_fee: Rate;
       max_premium_rate: Rate;
@@ -84,15 +90,15 @@ export namespace liquidation {
      */
     export interface LiquidationAmount {
       liquidation_amount: {
-        borrow_amount: uUST;
-        borrow_limit: uUST;
+        borrow_amount: u<UST>;
+        borrow_limit: u<UST>;
         collaterals: [
-          [CW20Addr, uUST], // (Cw20 contract address, Locked amount)
-          [CW20Addr, uUST],
+          [CW20Addr, u<UST>], // (Cw20 contract address, Locked amount)
+          [CW20Addr, u<UST>],
         ];
         collateral_prices: [
-          uUST, // Price of collateral
-          uUST,
+          u<UST>, // Price of collateral
+          u<UST>,
         ];
       };
     }
@@ -101,7 +107,7 @@ export namespace liquidation {
      * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/liquidations/liquidation-contract#liquidationamountresponse
      */
     export interface LiquidationAmountResponse {
-      collaterals: Array<[CW20Addr, uUST]>;
+      collaterals: Array<[CW20Addr, u<UST>]>;
     }
   }
 }

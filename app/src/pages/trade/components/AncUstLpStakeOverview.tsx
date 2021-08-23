@@ -1,19 +1,13 @@
-import {
-  demicrofy,
-  formatANCWithPostfixUnits,
-  formatLP,
-} from '@anchor-protocol/notation';
-import { uANC, uUST } from '@anchor-protocol/types';
+import { formatANCWithPostfixUnits, formatLP } from '@anchor-protocol/notation';
+import { ANC, u, UST } from '@anchor-protocol/types';
 import {
   useAncLpStakingStateQuery,
   useAncPriceQuery,
   useRewardsClaimableAncUstLpRewardsQuery,
 } from '@anchor-protocol/webapp-provider';
-import { TooltipLabel } from '@terra-dev/neumorphism-ui/components/TooltipLabel';
-import {
-  rulerLightColor,
-  rulerShadowColor,
-} from '@terra-dev/styled-neumorphism';
+import { demicrofy } from '@libs/formatter';
+import { TooltipLabel } from '@libs/neumorphism-ui/components/TooltipLabel';
+import { rulerLightColor, rulerShadowColor } from '@libs/styled-neumorphism';
 import big, { Big } from 'big.js';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
@@ -43,10 +37,10 @@ function AncUstLpStakeOverviewBase({ className }: AncUstLpStakeOverviewProps) {
     const withdrawableAssets = {
       anc: big(ancPrice.ANCPoolSize)
         .mul(totalUserLPHolding)
-        .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare) as uANC<Big>,
+        .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare) as u<ANC<Big>>,
       ust: big(ancPrice.USTPoolSize)
         .mul(totalUserLPHolding)
-        .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare) as uUST<Big>,
+        .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare) as u<UST<Big>>,
     };
 
     const staked = userLPStakingInfo.bond_amount;

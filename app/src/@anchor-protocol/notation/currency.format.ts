@@ -9,11 +9,10 @@ import {
   Luna,
   Token,
   UST,
-  uToken,
 } from '@anchor-protocol/types';
+import { formatDemimal, formatInteger, MICRO } from '@libs/formatter';
+import { u } from '@libs/types';
 import big, { BigSource } from 'big.js';
-import { MICRO } from './currency';
-import { formatDemimal, formatInteger } from './unit.format';
 
 // ---------------------------------------------
 // render
@@ -159,7 +158,7 @@ export function formatBAssetWithPostfixUnits(n: bAsset<BigSource>): string {
 // ---------------------------------------------
 // unspecific format functions
 // ---------------------------------------------
-export function formatUTokenDecimal2(n: uToken<BigSource>): string {
+export function formatUTokenDecimal2(n: u<Token<BigSource>>): string {
   const bn = big(n).div(MICRO);
   return bn.gte(MILLION) ? d2Formatter(bn.div(MILLION)) + 'M' : d2Formatter(bn);
 }
@@ -168,20 +167,20 @@ export function formatTokenInteger(n: Token<BigSource>): string {
   return big(n).gte(MILLION) ? iFormatter(n) + 'M' : iFormatter(n);
 }
 
-export function formatUTokenInteger(n: uToken<BigSource>): string {
+export function formatUTokenInteger(n: u<Token<BigSource>>): string {
   const bn = big(n).div(MICRO);
   return bn.gte(MILLION) ? iFormatter(bn.div(MILLION)) + 'M' : iFormatter(bn);
 }
 
 export function formatUTokenIntegerWithoutPostfixUnits(
-  n: uToken<BigSource>,
+  n: u<Token<BigSource>>,
 ): string {
   const bn = big(n).div(MICRO);
   return iFormatter(bn);
 }
 
 export function formatTokenIntegerWithoutPostfixUnits(
-  n: uToken<BigSource>,
+  n: u<Token<BigSource>>,
 ): string {
   return iFormatter(n);
 }

@@ -1,8 +1,8 @@
-import { anchorToken, HumanAddr, uANC } from '@anchor-protocol/types';
-import { mantle, MantleParams, WasmQuery } from '@terra-dev/mantle';
+import { ANC, anchorToken, HumanAddr, u } from '@anchor-protocol/types';
+import { mantle, MantleParams, WasmQuery } from '@libs/mantle';
 
 export type MyPoll = anchorToken.gov.PollResponse & {
-  my: { vote: 'yes' | 'no'; balance: uANC } | undefined;
+  my: { vote: 'yes' | 'no'; balance: u<ANC> } | undefined;
 };
 
 interface PollsWasmQuery {

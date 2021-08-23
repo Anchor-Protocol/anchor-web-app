@@ -3,8 +3,8 @@ import {
   marketDepositAndBorrowQuery,
 } from '@anchor-protocol/webapp-fns';
 import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
-import { createQueryFn } from '@terra-dev/react-query-utils';
-import { useTerraWebapp } from '@terra-money/webapp-provider';
+import { createQueryFn } from '@libs/react-query-utils';
+import { useTerraWebapp } from '@libs/webapp-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { ANCHOR_QUERY_KEY } from '../../env';
 

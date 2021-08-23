@@ -1,4 +1,4 @@
-import { uANC, uUST } from '@anchor-protocol/types';
+import { ANC, u, UST } from '@anchor-protocol/types';
 import {
   useAncLpStakingStateQuery,
   useAncPriceQuery,
@@ -45,34 +45,34 @@ export function useRewards() {
 
     const LPValue = big(ancPrice.USTPoolSize)
       .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare)
-      .mul(2) as uUST<Big>;
+      .mul(2) as u<UST<Big>>;
 
     const poolAssets = {
       anc: big(ancPrice.ANCPoolSize)
         .mul(userLPBalance.balance)
-        .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare) as uANC<Big>,
+        .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare) as u<ANC<Big>>,
       ust: big(ancPrice.USTPoolSize)
         .mul(userLPBalance.balance)
-        .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare) as uUST<Big>,
+        .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare) as u<UST<Big>>,
     };
 
     const withdrawableAssets = {
       anc: big(ancPrice.ANCPoolSize)
         .mul(totalUserLPHolding)
-        .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare) as uANC<Big>,
+        .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare) as u<ANC<Big>>,
       ust: big(ancPrice.USTPoolSize)
         .mul(totalUserLPHolding)
-        .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare) as uUST<Big>,
+        .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare) as u<UST<Big>>,
     };
 
     const staked = userLPStakingInfo.bond_amount;
-    const stakedValue = big(staked).mul(LPValue) as uUST<Big>;
+    const stakedValue = big(staked).mul(LPValue) as u<UST<Big>>;
 
     const stakable = userLPBalance.balance;
-    const stakableValue = big(stakable).mul(LPValue) as uUST<Big>;
+    const stakableValue = big(stakable).mul(LPValue) as u<UST<Big>>;
 
     const reward = userLPStakingInfo.pending_reward;
-    const rewardValue = big(reward).mul(ancPrice.ANCPrice) as uUST<Big>;
+    const rewardValue = big(reward).mul(ancPrice.ANCPrice) as u<UST<Big>>;
 
     return {
       withdrawableAssets,
@@ -92,11 +92,11 @@ export function useRewards() {
       return undefined;
     }
 
-    const staked = big(userGovStakingInfo.balance) as uANC<Big>;
-    const stakedValue = staked.mul(ancPrice.ANCPrice) as uUST<Big>;
+    const staked = big(userGovStakingInfo.balance) as u<ANC<Big>>;
+    const stakedValue = staked.mul(ancPrice.ANCPrice) as u<UST<Big>>;
 
-    const stakable = big(userANCBalance.balance) as uANC<Big>;
-    const stakableValue = stakable.mul(ancPrice.ANCPrice) as uUST<Big>;
+    const stakable = big(userANCBalance.balance) as u<ANC<Big>>;
+    const stakableValue = stakable.mul(ancPrice.ANCPrice) as u<UST<Big>>;
 
     return { staked, stakedValue, stakable, stakableValue };
   }, [userANCBalance, userGovStakingInfo, ancPrice]);
@@ -106,8 +106,8 @@ export function useRewards() {
       return undefined;
     }
 
-    const reward = big(borrowerInfo.pending_rewards) as uANC<Big>;
-    const rewardValue = reward.mul(ancPrice.ANCPrice) as uUST<Big>;
+    const reward = big(borrowerInfo.pending_rewards) as u<ANC<Big>>;
+    const rewardValue = reward.mul(ancPrice.ANCPrice) as u<UST<Big>>;
 
     return { reward, rewardValue };
   }, [borrowerInfo, marketState, ancPrice]);
@@ -117,8 +117,8 @@ export function useRewards() {
       return undefined;
     }
 
-    const reward = ustBorrow.reward.plus(ancUstLp.reward) as uANC<Big>;
-    const rewardValue = reward.mul(ancPrice.ANCPrice) as uUST<Big>;
+    const reward = ustBorrow.reward.plus(ancUstLp.reward) as u<ANC<Big>>;
+    const rewardValue = reward.mul(ancPrice.ANCPrice) as u<UST<Big>>;
 
     return { reward, rewardValue };
   }, [ancPrice, ancUstLp, ustBorrow]);

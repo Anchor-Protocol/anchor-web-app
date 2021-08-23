@@ -1,13 +1,12 @@
-import { ANC, UST, uUST } from '@anchor-protocol/types';
+import { ANC, u, UST } from '@anchor-protocol/types';
 import { ancAncUstLpProvideTx } from '@anchor-protocol/webapp-fns';
-import { useStream } from '@rx-stream/react';
-
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import {
   useBank,
   useRefetchQueries,
   useTerraWebapp,
-} from '@terra-money/webapp-provider';
+} from '@libs/webapp-provider';
+import { useStream } from '@rx-stream/react';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
@@ -16,7 +15,7 @@ import { useAncPriceQuery } from '../../queries/anc/price';
 export interface AncAncUstLpProvideTxParams {
   ancAmount: ANC;
   ustAmount: UST;
-  txFee: uUST;
+  txFee: u<UST>;
   onTxSucceed?: () => void;
 }
 
@@ -57,8 +56,8 @@ export function useAncAncUstLpProvideTx() {
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        txFee: txFee.toString() as uUST,
-        fixedGas: constants.fixedGas.toString() as uUST,
+        txFee: txFee.toString() as u<UST>,
+        fixedGas: constants.fixedGas.toString() as u<UST>,
         gasFee: constants.gasFee,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,

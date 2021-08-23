@@ -4,7 +4,7 @@ import {
   MantleParams,
   WasmQuery,
   WasmQueryData,
-} from '@terra-money/webapp-fns';
+} from '@libs/webapp-fns';
 
 export interface GovConfigWasmQuery {
   govConfig: WasmQuery<anchorToken.gov.Config, anchorToken.gov.ConfigResponse>;

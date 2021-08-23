@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/react';
-import { configErrorBoundary } from '@terra-dev/neumorphism-ui/components/configErrorBoundary';
+import { configErrorBoundary } from '@libs/neumorphism-ui/components/configErrorBoundary';
 import { SENTRY_DSN } from 'env';
 import React from 'react';
 import ReactDOM from 'react-dom';

@@ -1,4 +1,4 @@
-import { Tooltip } from '@terra-dev/neumorphism-ui/components/Tooltip';
+import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
 import { ConnectType, useConnectedWallet } from '@terra-money/wallet-provider';
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';

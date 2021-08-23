@@ -1,6 +1,6 @@
-import type { ubAsset, uUST } from '@anchor-protocol/types';
+import type { bAsset, u, UST } from '@anchor-protocol/types';
 import { CW20Addr, moneyMarket } from '@anchor-protocol/types';
-import { sum, vectorPlus, vectorMultiply } from '@terra-dev/big-math';
+import { sum, vectorMultiply, vectorPlus } from '@libs/big-math';
 import { Big, BigSource } from 'big.js';
 import { BAssetLtvs } from '../../queries/borrow/market';
 import { vectorizeBAssetMaxLtvs } from './vectorizeBAssetLtvs';
@@ -16,7 +16,7 @@ export const computeDepositAmountToBorrowLimit =
     bAssetLtvs: BAssetLtvs,
     //bLunaMaxLtv: Rate<BigSource>,
   ) =>
-  (depositAmount: ubAsset<BigSource>): uUST<Big> => {
+  (depositAmount: u<bAsset<BigSource>>): u<UST<Big>> => {
     const vector = oraclePrices.prices.map(({ asset }) => asset);
     const lockedAmounts = vectorizeOverseerCollaterals(
       vector,
@@ -34,7 +34,7 @@ export const computeDepositAmountToBorrowLimit =
     const ustAmounts = vectorMultiply(bAssetAmounts, prices);
     const maxLtvUstAmounts = vectorMultiply(ustAmounts, maxLtvs);
 
-    return sum(...maxLtvUstAmounts) as uUST<Big>;
+    return sum(...maxLtvUstAmounts) as u<UST<Big>>;
 
     //return overseerCollaterals.collaterals.reduce(
     //  (total, [token, lockedAmount]) => {

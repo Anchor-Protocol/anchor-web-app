@@ -1,5 +1,4 @@
 import {
-  demicrofy,
   formatBAsset,
   formatBAssetInput,
   formatUST,
@@ -7,7 +6,7 @@ import {
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { bAsset, bLuna, CW20Addr, Rate, ubAsset } from '@anchor-protocol/types';
+import { bAsset, bLuna, CW20Addr, Rate } from '@anchor-protocol/types';
 import {
   AnchorTax,
   AnchorTokenBalances,
@@ -28,18 +27,19 @@ import {
   validateDepositAmount,
   validateTxFee,
 } from '@anchor-protocol/webapp-provider';
+import { demicrofy } from '@libs/formatter';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
+import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
+import { TextInput } from '@libs/neumorphism-ui/components/TextInput';
+import type { DialogProps, OpenDialog } from '@libs/use-dialog';
+import { useDialog } from '@libs/use-dialog';
+import { useBank, useCW20TokenBalance } from '@libs/webapp-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
-import { TextInput } from '@terra-dev/neumorphism-ui/components/TextInput';
-import type { DialogProps, OpenDialog } from '@terra-dev/use-dialog';
-import { useDialog } from '@terra-dev/use-dialog';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank, useCW20TokenBalance } from '@terra-money/webapp-provider';
 import big, { Big, BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
@@ -99,7 +99,7 @@ function ComponentBase({
   // ---------------------------------------------
   const { tokenBalances } = useBank<AnchorTokenBalances, AnchorTax>();
 
-  const ubAssetBalance = useCW20TokenBalance<ubAsset>(collateralToken);
+  const ubAssetBalance = useCW20TokenBalance<bAsset>(collateralToken);
 
   const {
     data: {

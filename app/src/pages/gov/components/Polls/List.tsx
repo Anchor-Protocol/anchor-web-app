@@ -1,8 +1,8 @@
 import { useLastSyncedHeightQuery } from '@anchor-protocol/webapp-provider';
-import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
-import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
-import { TimeEnd } from '@terra-dev/use-time-end';
+import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
+import { HorizontalScrollTable } from '@libs/neumorphism-ui/components/HorizontalScrollTable';
+import { Section } from '@libs/neumorphism-ui/components/Section';
+import { TimeEnd } from '@libs/use-time-end';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
 import { PollStatusSpan } from 'pages/gov/components/PollStatusSpan';
 import { extractPollDetail } from 'pages/gov/logics/extractPollDetail';

@@ -1,7 +1,4 @@
-import {
-  rulerLightColor,
-  rulerShadowColor,
-} from '@terra-dev/styled-neumorphism';
+import { rulerLightColor, rulerShadowColor } from '@libs/styled-neumorphism';
 import React from 'react';
 import { useTheme } from 'styled-components';
 

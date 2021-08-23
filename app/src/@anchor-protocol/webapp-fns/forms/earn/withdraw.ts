@@ -1,5 +1,5 @@
-import { microfy } from '@anchor-protocol/notation';
-import { UST, uUST } from '@anchor-protocol/types';
+import { u, UST } from '@anchor-protocol/types';
+import { microfy } from '@libs/formatter';
 import big, { Big, BigSource } from 'big.js';
 
 export interface EarnWithdrawFormInput {
@@ -7,15 +7,15 @@ export interface EarnWithdrawFormInput {
 }
 
 export interface EarnWithdrawFormDependency {
-  userUUSTBalance: uUST<BigSource>;
-  fixedGas: uUST<BigSource>;
-  totalDeposit: uUST<BigSource>;
+  userUUSTBalance: u<UST<BigSource>>;
+  fixedGas: u<UST<BigSource>>;
+  totalDeposit: u<UST<BigSource>>;
   isConnected: boolean;
 }
 
 export interface EarnWithdrawFormStates extends EarnWithdrawFormInput {
-  receiveAmount?: uUST<BigSource>;
-  txFee?: uUST<BigSource>;
+  receiveAmount?: u<UST<BigSource>>;
+  txFee?: u<UST<BigSource>>;
   invalidTxFee?: string;
   invalidWithdrawAmount?: string;
   availablePost: boolean;
@@ -37,10 +37,10 @@ export function earnWithdrawForm(
     };
   } else {
     // txFee
-    const txFee = big(fixedGas) as uUST<Big>;
+    const txFee = big(fixedGas) as u<UST<Big>>;
 
     // receiveAmount
-    const receiveAmount = microfy(withdrawAmount).minus(txFee) as uUST<Big>;
+    const receiveAmount = microfy(withdrawAmount).minus(txFee) as u<UST<Big>>;
 
     // invalidTxFee
     const invalidTxFee = (() => {

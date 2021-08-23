@@ -1,22 +1,22 @@
 import {
-  demicrofy,
   formatBAsset,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
-import { CW20Addr, ubAsset, UST, uUST } from '@anchor-protocol/types';
+import { bAsset, CW20Addr, u, UST } from '@anchor-protocol/types';
 import {
   computeLiquidationPrice,
   prettifyBAssetSymbol,
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
 } from '@anchor-protocol/webapp-provider';
+import { demicrofy } from '@libs/formatter';
+import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
+import { HorizontalScrollTable } from '@libs/neumorphism-ui/components/HorizontalScrollTable';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@libs/neumorphism-ui/components/Section';
 import { Launch } from '@material-ui/icons';
-import { BorderButton } from '@terra-dev/neumorphism-ui/components/BorderButton';
-import { HorizontalScrollTable } from '@terra-dev/neumorphism-ui/components/HorizontalScrollTable';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big, BigSource } from 'big.js';
 import { BuyLink } from 'components/BuyButton';
@@ -35,8 +35,8 @@ interface CollateralInfo {
   symbol: string;
   price: UST;
   liquidationPrice: UST | undefined;
-  lockedAmount: ubAsset;
-  lockedAmountInUST: uUST<BigSource>;
+  lockedAmount: u<bAsset>;
+  lockedAmountInUST: u<UST<BigSource>>;
 }
 
 export function CollateralList({ className }: CollateralListProps) {
@@ -92,10 +92,10 @@ export function CollateralList({ className }: CollateralListProps) {
                   borrowMarket.oraclePrices,
                 )
               : undefined,
-          lockedAmount: collateral?.[1] ?? ('0' as ubAsset),
+          lockedAmount: collateral?.[1] ?? ('0' as u<bAsset>),
           lockedAmountInUST: big(collateral?.[1] ?? 0).mul(
             oracle?.price ?? 1,
-          ) as uUST<Big>,
+          ) as u<UST<Big>>,
         };
       },
     );

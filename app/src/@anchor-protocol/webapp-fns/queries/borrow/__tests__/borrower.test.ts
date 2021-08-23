@@ -3,10 +3,7 @@ import {
   TEST_MANTLE_ENDPOINT,
   TEST_WALLET_ADDRESS,
 } from '@anchor-protocol/webapp-fns/test-env';
-import {
-  defaultMantleFetch,
-  lastSyncedHeightQuery,
-} from '@terra-money/webapp-fns';
+import { defaultMantleFetch, lastSyncedHeightQuery } from '@libs/webapp-fns';
 import { borrowBorrowerQuery } from '../borrower';
 
 describe('queries/borrower', () => {

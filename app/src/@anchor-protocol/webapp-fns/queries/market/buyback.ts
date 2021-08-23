@@ -1,8 +1,8 @@
-import { JSDateTime, uANC, uUST } from '@anchor-protocol/types';
+import { ANC, JSDateTime, u, UST } from '@anchor-protocol/types';
 
 export interface MarketBuybackData {
-  offer_amount: uUST;
-  buyback_amount: uANC;
+  offer_amount: u<UST>;
+  buyback_amount: u<ANC>;
   height: number;
   timestamp: JSDateTime;
 }

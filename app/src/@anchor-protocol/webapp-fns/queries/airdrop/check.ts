@@ -1,5 +1,5 @@
-import { HumanAddr, Rate, uANC } from '@anchor-protocol/types';
-import { MantleFetch } from '@terra-money/webapp-fns';
+import { ANC, HumanAddr, Rate, u } from '@anchor-protocol/types';
+import { MantleFetch } from '@libs/webapp-fns';
 import { airdropIsClaimedQuery } from './isClaimed';
 
 export interface Airdrop {
@@ -7,10 +7,10 @@ export interface Airdrop {
   id: number;
   stage: number;
   address: string;
-  staked: uANC;
-  total: uANC;
+  staked: u<ANC>;
+  total: u<ANC>;
   rate: Rate;
-  amount: uANC;
+  amount: u<ANC>;
   proof: string; // JsonString<Array<string>>
   merkleRoot: string;
   claimable: boolean;

@@ -1,11 +1,7 @@
 import { Close, Done as DoneIcon } from '@material-ui/icons';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { HorizontalHeavyRuler } from '@terra-dev/neumorphism-ui/components/HorizontalHeavyRuler';
-import {
-  TxReceipt,
-  TxResultRendering,
-  TxStreamPhase,
-} from '@terra-money/webapp-fns';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { HorizontalHeavyRuler } from '@libs/neumorphism-ui/components/HorizontalHeavyRuler';
+import { TxReceipt, TxResultRendering, TxStreamPhase } from '@libs/webapp-fns';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import React from 'react';
 import { GuardSpinner, PushSpinner } from 'react-spinners-kit';

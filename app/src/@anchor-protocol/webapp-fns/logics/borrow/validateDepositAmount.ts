@@ -1,10 +1,10 @@
-import { microfy } from '@anchor-protocol/notation';
-import type { bAsset, ubAsset } from '@anchor-protocol/types';
+import type { bAsset, u } from '@anchor-protocol/types';
+import { microfy } from '@libs/formatter';
 import { ReactNode } from 'react';
 
 export function validateDepositAmount(
   depositAmount: bAsset,
-  balance: ubAsset,
+  balance: u<bAsset>,
 ): ReactNode {
   if (depositAmount.length === 0) {
     return undefined;

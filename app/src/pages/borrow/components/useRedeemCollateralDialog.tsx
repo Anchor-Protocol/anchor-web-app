@@ -1,7 +1,6 @@
 import {
-  demicrofy,
-  formatLuna,
-  formatLunaInput,
+  formatBAsset,
+  formatBAssetInput,
   formatUST,
   formatUSTInput,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
@@ -30,18 +29,19 @@ import {
   useBorrowMarketQuery,
   useBorrowRedeemCollateralTx,
 } from '@anchor-protocol/webapp-provider';
+import { demicrofy } from '@libs/formatter';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
+import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
+import { TextInput } from '@libs/neumorphism-ui/components/TextInput';
+import type { DialogProps, OpenDialog } from '@libs/use-dialog';
+import { useDialog } from '@libs/use-dialog';
+import { useBank } from '@libs/webapp-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { NumberInput } from '@terra-dev/neumorphism-ui/components/NumberInput';
-import { TextInput } from '@terra-dev/neumorphism-ui/components/TextInput';
-import type { DialogProps, OpenDialog } from '@terra-dev/use-dialog';
-import { useDialog } from '@terra-dev/use-dialog';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank } from '@terra-money/webapp-provider';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
@@ -256,7 +256,7 @@ function ComponentBase({
     (nextLtv: Rate<Big>) => {
       try {
         const nextAmount = ltvToAmount(nextLtv);
-        updateRedeemAmount(formatLunaInput(demicrofy(nextAmount)));
+        updateRedeemAmount(formatBAssetInput(demicrofy(nextAmount)));
       } catch {}
     },
     [ltvToAmount, updateRedeemAmount],
@@ -340,12 +340,12 @@ function ComponentBase({
               onClick={() =>
                 withdrawableAmount &&
                 updateRedeemAmount(
-                  formatLunaInput(demicrofy(withdrawableAmount)),
+                  formatBAssetInput(demicrofy(withdrawableAmount)),
                 )
               }
             >
               {withdrawableAmount
-                ? formatLuna(demicrofy(withdrawableAmount))
+                ? formatBAsset(demicrofy(withdrawableAmount))
                 : 0}{' '}
               {prettifyBAssetSymbol(collateral.symbol)}
             </span>

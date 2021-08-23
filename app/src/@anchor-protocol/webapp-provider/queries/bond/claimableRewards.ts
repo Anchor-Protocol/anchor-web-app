@@ -4,16 +4,13 @@ import {
   BondClaimableRewards,
   bondClaimableRewardsQuery,
 } from '@anchor-protocol/webapp-fns';
-import { createQueryFn } from '@terra-dev/react-query-utils';
+import { createQueryFn } from '@libs/react-query-utils';
 import {
   ConnectedWallet,
   useConnectedWallet,
 } from '@terra-money/wallet-provider';
-import { MantleFetch } from '@terra-money/webapp-fns';
-import {
-  EMPTY_QUERY_RESULT,
-  useTerraWebapp,
-} from '@terra-money/webapp-provider';
+import { MantleFetch } from '@libs/webapp-fns';
+import { EMPTY_QUERY_RESULT, useTerraWebapp } from '@libs/webapp-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';

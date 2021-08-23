@@ -1,10 +1,7 @@
 import { Wallet } from '@anchor-protocol/icons';
-import {
-  demicrofy,
-  formatUSTWithPostfixUnits,
-  truncate,
-} from '@anchor-protocol/notation';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
+import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
+import { demicrofy, truncate } from '@libs/formatter';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { Bank } from 'contexts/bank';
 import React, { ButtonHTMLAttributes, DetailedHTMLProps } from 'react';
 import styled from 'styled-components';

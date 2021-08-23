@@ -1,14 +1,13 @@
 import {
-  AnimateNumber,
-  demicrofy,
   formatBAssetWithPostfixUnits,
-  formatRate,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
-import { Rate, ubAsset, uUST } from '@anchor-protocol/types';
-import { IconSpan } from '@terra-dev/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@terra-dev/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
+import { bAsset, Rate, u, UST } from '@anchor-protocol/types';
+import { demicrofy, formatRate } from '@libs/formatter';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@libs/neumorphism-ui/components/Section';
+import { AnimateNumber } from '@libs/ui';
 import { Big } from 'big.js';
 import { Sub } from 'components/Sub';
 import { fixHMR } from 'fix-hmr';
@@ -19,14 +18,14 @@ import { ChartItem, DoughnutChart } from './graphics/DoughnutGraph';
 
 export interface CollateralItem {
   label: string;
-  ust: uUST;
-  asset: ubAsset;
+  ust: u<UST>;
+  asset: u<bAsset>;
   ratio: Rate;
 }
 
 export interface TotalCollateralValueProps {
   className?: string;
-  total: uUST<Big>;
+  total: u<UST<Big>>;
   collaterals: CollateralItem[];
 }
 

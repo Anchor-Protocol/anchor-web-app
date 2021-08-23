@@ -1,17 +1,17 @@
-import { anchorToken, cw20, uANC } from '@anchor-protocol/types';
+import { ANC, anchorToken, cw20, u } from '@anchor-protocol/types';
 import {
   mantle,
   MantleParams,
   WasmQuery,
   WasmQueryData,
-} from '@terra-money/webapp-fns';
+} from '@libs/webapp-fns';
 
 export interface RewardsAncGovernanceRewardsWasmQuery {
   userGovStakingInfo: WasmQuery<
     anchorToken.gov.Staker,
     anchorToken.gov.StakerResponse
   >;
-  userANCBalance: WasmQuery<cw20.Balance, cw20.BalanceResponse<uANC>>;
+  userANCBalance: WasmQuery<cw20.Balance, cw20.BalanceResponse<u<ANC>>>;
 }
 
 export type RewardsAncGovernanceRewards =

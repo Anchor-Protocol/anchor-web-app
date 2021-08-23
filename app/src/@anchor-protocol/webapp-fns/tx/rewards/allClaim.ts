@@ -4,15 +4,10 @@ import {
   fabricateStakingWithdraw,
   MARKET_DENOMS,
 } from '@anchor-protocol/anchor.js';
-import { demicrofy, formatLP } from '@anchor-protocol/notation';
-import { HumanAddr, Rate, uANC, uUST } from '@anchor-protocol/types';
-import { pipe } from '@rx-stream/pipe';
-import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
-import {
-  CreateTxOptions,
-  MsgExecuteContract,
-  StdFee,
-} from '@terra-money/terra.js';
+import { formatANC } from '@anchor-protocol/notation';
+import { ANC, HumanAddr, Rate } from '@anchor-protocol/types';
+import { demicrofy } from '@libs/formatter';
+import { u, UST } from '@libs/types';
 import {
   MantleFetch,
   pickAttributeValueByKey,
@@ -20,7 +15,14 @@ import {
   RawLogEvent,
   TxResultRendering,
   TxStreamPhase,
-} from '@terra-money/webapp-fns';
+} from '@libs/webapp-fns';
+import { pipe } from '@rx-stream/pipe';
+import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
+import {
+  CreateTxOptions,
+  MsgExecuteContract,
+  StdFee,
+} from '@terra-money/terra.js';
 import big, { Big } from 'big.js';
 import { Observable } from 'rxjs';
 import { _catchTxError } from '../internal/_catchTxError';
@@ -33,9 +35,9 @@ export function rewardsAllClaimTx($: {
   address: HumanAddr;
   claimAncUstLp: boolean;
   claimUstBorrow: boolean;
-  gasFee: uUST<number>;
+  gasFee: u<UST<number>>;
   gasAdjustment: Rate<number>;
-  fixedGas: uUST;
+  fixedGas: u<UST>;
   network: NetworkInfo;
   addressProvider: AddressProvider;
   mantleEndpoint: string;
@@ -96,13 +98,13 @@ export function rewardsAllClaimTx($: {
 
       try {
         const claimed = fromContracts.reduce((claimed, fromContract) => {
-          const amount = pickAttributeValueByKey<uANC>(
+          const amount = pickAttributeValueByKey<u<ANC>>(
             fromContract,
             'amount',
             (attrs) => attrs.reverse()[0],
           );
           return amount ? claimed.plus(amount) : claimed;
-        }, big(0)) as uANC<Big>;
+        }, big(0)) as u<ANC<Big>>;
 
         return {
           value: null,
@@ -111,7 +113,7 @@ export function rewardsAllClaimTx($: {
           receipts: [
             claimed && {
               name: 'Claimed',
-              value: formatLP(demicrofy(claimed)) + ' ANC',
+              value: formatANC(demicrofy(claimed)) + ' ANC',
             },
             helper.txHashReceipt(),
             helper.txFeeReceipt(),

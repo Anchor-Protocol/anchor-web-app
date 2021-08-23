@@ -1,13 +1,13 @@
-import { microfy } from '@anchor-protocol/notation';
-import type { bAsset, ubAsset, uUST } from '@anchor-protocol/types';
+import type { bAsset, u, UST } from '@anchor-protocol/types';
+import { microfy } from '@libs/formatter';
 import { Big, BigSource } from 'big.js';
 
 // New Borrow Limit = ((Borrow_info.balance - Borrow_info.spendable + provided_collateral) * Oracleprice) * Max_LTV
 
 export function computeProvideCollateralBorrowLimit(
   depositAmount: bAsset,
-  amountToBorrowLimit: (depositAmount: ubAsset<BigSource>) => uUST<Big>,
-): uUST<Big> | undefined {
+  amountToBorrowLimit: (depositAmount: u<bAsset<BigSource>>) => u<UST<Big>>,
+): u<UST<Big>> | undefined {
   return depositAmount.length > 0
     ? amountToBorrowLimit(microfy(depositAmount))
     : undefined;

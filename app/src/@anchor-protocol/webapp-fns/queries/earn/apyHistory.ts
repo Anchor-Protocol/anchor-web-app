@@ -1,5 +1,5 @@
 import { DateTime, JSDateTime, Rate } from '@anchor-protocol/types';
-import { MantleFetch } from '@terra-money/webapp-fns';
+import { MantleFetch } from '@libs/webapp-fns';
 
 export interface EarnAPYHistoryData {
   apyHistory: {

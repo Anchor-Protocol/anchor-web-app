@@ -1,8 +1,8 @@
 import { Modal } from '@material-ui/core';
 import { Launch } from '@material-ui/icons';
-import { Dialog } from '@terra-dev/neumorphism-ui/components/Dialog';
-import { EmbossButton } from '@terra-dev/neumorphism-ui/components/EmbossButton';
-import { DialogProps, OpenDialog, useDialog } from '@terra-dev/use-dialog';
+import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
+import { EmbossButton } from '@libs/neumorphism-ui/components/EmbossButton';
+import { DialogProps, OpenDialog, useDialog } from '@libs/use-dialog';
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';
 import bitfinex from './assets/bitfinex.svg';

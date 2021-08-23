@@ -1,4 +1,4 @@
-import { isTouchDevice } from '@terra-dev/is-touch-device';
+import { isTouchDevice } from '@libs/is-touch-device';
 import React, { Component, ReactNode } from 'react';
 import { Point } from './types';
 

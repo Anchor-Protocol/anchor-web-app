@@ -1,23 +1,23 @@
 import {
-  demicrofy,
   formatANCWithPostfixUnits,
   formatUST,
 } from '@anchor-protocol/notation';
-import { uUST } from '@anchor-protocol/types';
+import { u, UST } from '@anchor-protocol/types';
 import {
   Airdrop as AirdropData,
   useAirdropCheckQuery,
   useAirdropClaimTx,
 } from '@anchor-protocol/webapp-provider';
+import { demicrofy } from '@libs/formatter';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { Section } from '@libs/neumorphism-ui/components/Section';
 import { StreamStatus } from '@rx-stream/react';
-import { ActionButton } from '@terra-dev/neumorphism-ui/components/ActionButton';
-import { Section } from '@terra-dev/neumorphism-ui/components/Section';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank } from 'contexts/bank';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
+import { useBank } from 'contexts/bank';
 import { validateTxFee } from 'logics/validateTxFee';
 import React, { useCallback, useMemo } from 'react';
 import { Link, useHistory } from 'react-router-dom';
@@ -28,7 +28,7 @@ export interface AirdropProps {
   className?: string;
 }
 
-const airdropTxFee: uUST<number> = 127000 as uUST<number>;
+const airdropTxFee: u<UST<number>> = 127000 as u<UST<number>>;
 
 function AirdropBase({ className }: AirdropProps) {
   // ---------------------------------------------

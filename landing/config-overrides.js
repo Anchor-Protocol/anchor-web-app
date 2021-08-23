@@ -1,5 +1,5 @@
 const { aliasDangerous } = require('react-app-rewire-alias/lib/aliasDangerous');
-const { getWebpackAlias } = require('@rocket-scripts/utils');
+const { readPackageAlias } = require('@rocket-scripts/read-package-alias');
 const path = require('path');
 
 module.exports = {
@@ -26,8 +26,8 @@ module.exports = {
     });
 
     aliasDangerous({
-      ...getWebpackAlias(path.resolve(__dirname, '../app')),
-      ...getWebpackAlias(__dirname),
+      ...readPackageAlias(path.resolve(__dirname, '../app')),
+      ...readPackageAlias(__dirname),
       env: path.join(__dirname, 'src/env.ts'),
     })(config);
 
