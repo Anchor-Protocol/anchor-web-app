@@ -6,9 +6,9 @@ import {
 import { moneyMarket, Rate } from '@anchor-protocol/types';
 import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
 import { InputAdornment } from '@material-ui/core';
-import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@packages/neumorphism-ui/components/InfoTooltip';
-import { NumberInput } from '@packages/neumorphism-ui/components/NumberInput';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
+import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
 import big from 'big.js';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';

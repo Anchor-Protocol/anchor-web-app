@@ -31,15 +31,15 @@ import {
   useMarketStableCoinQuery,
   useMarketUstQuery,
 } from '@anchor-protocol/webapp-provider';
-import { HorizontalScrollTable } from '@packages/neumorphism-ui/components/HorizontalScrollTable';
-import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@packages/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@packages/neumorphism-ui/components/Section';
+import { HorizontalScrollTable } from '@libs/neumorphism-ui/components/HorizontalScrollTable';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@libs/neumorphism-ui/components/Section';
 import {
   horizontalRuler,
   pressed,
   verticalRuler,
-} from '@packages/styled-neumorphism';
+} from '@libs/styled-neumorphism';
 import big, { Big, BigSource } from 'big.js';
 import { Footer } from 'components/Footer';
 import { PageTitle, TitleContainer } from 'components/primitives/PageTitle';

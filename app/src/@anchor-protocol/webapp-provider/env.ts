@@ -1,5 +1,5 @@
-import { TERRA_QUERY_KEY } from '@packages/webapp-fns';
-import { TxRefetchMap } from '@packages/webapp-provider';
+import { TERRA_QUERY_KEY } from '@libs/webapp-fns';
+import { TxRefetchMap } from '@libs/webapp-provider';
 
 export enum ANCHOR_TX_KEY {
   EARN_DEPOSIT = 'ANCHOR_TX_EARN_DEPOSIT',

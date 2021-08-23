@@ -4,7 +4,7 @@ import {
   MantleParams,
   WasmQuery,
   WasmQueryData,
-} from '@packages/webapp-fns';
+} from '@libs/webapp-fns';
 
 export interface AncTokenInfoWasmQuery {
   ancTokenInfo: WasmQuery<cw20.TokenInfo, cw20.TokenInfoResponse<uANC>>;

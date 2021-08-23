@@ -17,12 +17,12 @@ import {
   useRewardsAnchorLpRewardsQuery,
 } from '@anchor-protocol/webapp-provider';
 import { ChevronRight } from '@material-ui/icons';
-import { BorderButton } from '@packages/neumorphism-ui/components/BorderButton';
-import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@packages/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@packages/neumorphism-ui/components/Section';
-import { Tooltip } from '@packages/neumorphism-ui/components/Tooltip';
-import { TooltipLabel } from '@packages/neumorphism-ui/components/TooltipLabel';
+import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@libs/neumorphism-ui/components/Section';
+import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
+import { TooltipLabel } from '@libs/neumorphism-ui/components/TooltipLabel';
 import big, { Big } from 'big.js';
 import { Circles } from 'components/primitives/Circles';
 import { screen } from 'env';

@@ -13,12 +13,12 @@ import {
   useAnchorWebapp,
   useEarnEpochStatesQuery,
 } from '@anchor-protocol/webapp-provider';
-import { ActionButton } from '@packages/neumorphism-ui/components/ActionButton';
-import { BorderButton } from '@packages/neumorphism-ui/components/BorderButton';
-import { HorizontalScrollTable } from '@packages/neumorphism-ui/components/HorizontalScrollTable';
-import { Section } from '@packages/neumorphism-ui/components/Section';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
+import { HorizontalScrollTable } from '@libs/neumorphism-ui/components/HorizontalScrollTable';
+import { Section } from '@libs/neumorphism-ui/components/Section';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank } from '@packages/webapp-provider';
+import { useBank } from '@libs/webapp-provider';
 import { fixHMR } from 'fix-hmr';
 import { useDepositDialog } from 'pages/earn/components/useDepositDialog';
 import { useWithdrawDialog } from 'pages/earn/components/useWithdrawDialog';

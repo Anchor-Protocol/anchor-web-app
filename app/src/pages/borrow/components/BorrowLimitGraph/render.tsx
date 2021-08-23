@@ -1,7 +1,7 @@
 import { InfoOutlined } from '@material-ui/icons';
-import { Rect } from '@packages/neumorphism-ui/components/HorizontalGraphBar';
-import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
-import { Tooltip } from '@packages/neumorphism-ui/components/Tooltip';
+import { Rect } from '@libs/neumorphism-ui/components/HorizontalGraphBar';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
 import React from 'react';
 import { GraphLabel } from './GraphLabel';
 import { GraphMarkerTick } from './GraphMarkerTick';

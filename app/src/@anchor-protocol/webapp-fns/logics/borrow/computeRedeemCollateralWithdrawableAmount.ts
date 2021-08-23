@@ -1,6 +1,6 @@
 import type { CW20Addr, ubAsset } from '@anchor-protocol/types';
 import { moneyMarket } from '@anchor-protocol/types';
-import { max, min, sum, vectorMultiply } from '@packages/big-math';
+import { max, min, sum, vectorMultiply } from '@libs/big-math';
 import big, { Big } from 'big.js';
 import { BAssetLtvs } from '../../queries/borrow/market';
 import {

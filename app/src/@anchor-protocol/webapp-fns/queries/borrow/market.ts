@@ -4,7 +4,7 @@ import {
   MantleParams,
   WasmQuery,
   WasmQueryData,
-} from '@packages/webapp-fns';
+} from '@libs/webapp-fns';
 import big from 'big.js';
 import { ANCHOR_SAFE_RATIO } from '../../env';
 

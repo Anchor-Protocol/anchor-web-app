@@ -29,7 +29,7 @@ import {
   pickRawLog,
   TxResultRendering,
   TxStreamPhase,
-} from '@packages/webapp-fns';
+} from '@libs/webapp-fns';
 import big, { Big } from 'big.js';
 import { Observable } from 'rxjs';
 import { _catchTxError } from '../internal/_catchTxError';

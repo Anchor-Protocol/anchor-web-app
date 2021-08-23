@@ -1,7 +1,7 @@
 import type { Rate, ubLuna, uLuna, uUST } from '@anchor-protocol/types';
 import { terraswap } from '@anchor-protocol/types';
 import { AnchorTax } from '@anchor-protocol/webapp-fns';
-import { min } from '@packages/big-math';
+import { min } from '@libs/big-math';
 import big, { Big } from 'big.js';
 import { MAX_SPREAD } from 'pages/bond/env';
 import { SwapSimulation } from '../models/swapSimulation';

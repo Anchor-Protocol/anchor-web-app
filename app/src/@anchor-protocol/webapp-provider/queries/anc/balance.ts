@@ -1,11 +1,11 @@
 import { CW20Addr, HumanAddr } from '@anchor-protocol/types';
 import { AncBalance, ancBalanceQuery } from '@anchor-protocol/webapp-fns';
-import { createQueryFn } from '@packages/react-query-utils';
+import { createQueryFn } from '@libs/react-query-utils';
 import {
   EMPTY_QUERY_RESULT,
   MantleFetch,
   useTerraWebapp,
-} from '@packages/webapp-provider';
+} from '@libs/webapp-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';

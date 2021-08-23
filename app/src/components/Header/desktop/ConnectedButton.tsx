@@ -4,7 +4,7 @@ import {
   formatUSTWithPostfixUnits,
   truncate,
 } from '@anchor-protocol/notation';
-import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { Bank } from 'contexts/bank';
 import React, { ButtonHTMLAttributes, DetailedHTMLProps } from 'react';
 import styled from 'styled-components';

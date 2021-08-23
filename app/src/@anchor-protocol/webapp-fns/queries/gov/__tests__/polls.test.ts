@@ -2,7 +2,7 @@ import {
   TEST_ADDRESSES,
   TEST_MANTLE_ENDPOINT,
 } from '@anchor-protocol/webapp-fns/test-env';
-import { defaultMantleFetch } from '@packages/webapp-fns';
+import { defaultMantleFetch } from '@libs/webapp-fns';
 import { govPollsQuery } from '../polls';
 
 describe('queries/polls', () => {

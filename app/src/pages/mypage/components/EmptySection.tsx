@@ -1,5 +1,5 @@
 import { ChevronRightRounded } from '@material-ui/icons';
-import { Section } from '@packages/neumorphism-ui/components/Section';
+import { Section } from '@libs/neumorphism-ui/components/Section';
 import { fixHMR } from 'fix-hmr';
 import React, { ReactNode } from 'react';
 import { Link } from 'react-router-dom';

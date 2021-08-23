@@ -5,7 +5,7 @@ import {
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
 } from '@anchor-protocol/webapp-provider';
-import { ActionButton } from '@packages/neumorphism-ui/components/ActionButton';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
 import React, { useMemo } from 'react';

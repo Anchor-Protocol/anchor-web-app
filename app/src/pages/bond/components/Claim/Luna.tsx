@@ -12,12 +12,12 @@ import {
   validateTxFee,
 } from '@anchor-protocol/webapp-provider';
 import { StreamStatus } from '@rx-stream/react';
-import { ActionButton } from '@packages/neumorphism-ui/components/ActionButton';
-import { HorizontalHeavyRuler } from '@packages/neumorphism-ui/components/HorizontalHeavyRuler';
-import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@packages/neumorphism-ui/components/InfoTooltip';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { HorizontalHeavyRuler } from '@libs/neumorphism-ui/components/HorizontalHeavyRuler';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank } from '@packages/webapp-provider';
+import { useBank } from '@libs/webapp-provider';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxResultRenderer } from 'components/TxResultRenderer';

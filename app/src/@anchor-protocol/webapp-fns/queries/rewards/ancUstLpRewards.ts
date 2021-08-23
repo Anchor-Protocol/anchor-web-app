@@ -4,7 +4,7 @@ import {
   MantleParams,
   WasmQuery,
   WasmQueryData,
-} from '@packages/webapp-fns';
+} from '@libs/webapp-fns';
 
 export interface RewardsAncUstLpRewardsWasmQuery {
   userLPBalance: WasmQuery<cw20.Balance, cw20.BalanceResponse<uAncUstLP>>;

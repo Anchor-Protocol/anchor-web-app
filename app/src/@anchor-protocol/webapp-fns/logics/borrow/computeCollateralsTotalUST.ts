@@ -1,5 +1,5 @@
 import { CW20Addr, moneyMarket, ubAsset, uUST } from '@anchor-protocol/types';
-import { sum, vectorPlus, vectorMultiply } from '@packages/big-math';
+import { sum, vectorPlus, vectorMultiply } from '@libs/big-math';
 import { Big, BigSource } from 'big.js';
 import { vectorizeOraclePrices } from './vectorizeOraclePrices';
 import { vectorizeOverseerCollaterals } from './vectorizeOverseerCollaterals';

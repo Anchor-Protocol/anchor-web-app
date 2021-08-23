@@ -1,4 +1,4 @@
-import { useCloudflareAnalytics } from '@packages/use-cloudflare-analytics';
+import { useCloudflareAnalytics } from '@libs/use-cloudflare-analytics';
 import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
 import { AppProviders } from 'configurations/AppProviders';

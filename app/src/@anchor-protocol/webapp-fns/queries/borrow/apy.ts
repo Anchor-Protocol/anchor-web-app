@@ -1,5 +1,5 @@
 import { DateTime, Rate } from '@anchor-protocol/types';
-import { MantleFetch } from '@packages/webapp-fns';
+import { MantleFetch } from '@libs/webapp-fns';
 
 export interface BorrowAPYData {
   borrowerDistributionAPYs: Array<{

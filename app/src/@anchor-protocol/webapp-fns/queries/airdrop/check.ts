@@ -1,5 +1,5 @@
 import { HumanAddr, Rate, uANC } from '@anchor-protocol/types';
-import { MantleFetch } from '@packages/webapp-fns';
+import { MantleFetch } from '@libs/webapp-fns';
 import { airdropIsClaimedQuery } from './isClaimed';
 
 export interface Airdrop {

@@ -1,9 +1,6 @@
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
 import { MarketAncHistory } from '@anchor-protocol/webapp-fns';
-import {
-  rulerLightColor,
-  rulerShadowColor,
-} from '@packages/styled-neumorphism';
+import { rulerLightColor, rulerShadowColor } from '@libs/styled-neumorphism';
 import big from 'big.js';
 import { Chart } from 'chart.js';
 import React, { Component, createRef } from 'react';

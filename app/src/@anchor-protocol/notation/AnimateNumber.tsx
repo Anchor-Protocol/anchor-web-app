@@ -1,4 +1,4 @@
-import { interpolateBig } from '@packages/big-interpolate';
+import { interpolateBig } from '@libs/big-interpolate';
 import big, { Big, BigSource } from 'big.js';
 import { easeCircleOut } from 'd3-ease';
 import { timer } from 'd3-timer';

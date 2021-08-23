@@ -1,5 +1,5 @@
-import { HorizontalDashedRuler } from '@packages/neumorphism-ui/components/HorizontalDashedRuler';
-import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
+import { HorizontalDashedRuler } from '@libs/neumorphism-ui/components/HorizontalDashedRuler';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { SwapHoriz } from '@material-ui/icons';
 import big, { BigSource } from 'big.js';
 import React, {

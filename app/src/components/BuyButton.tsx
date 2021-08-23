@@ -1,4 +1,4 @@
-import { buttonBaseStyle } from '@packages/neumorphism-ui/components/ActionButton';
+import { buttonBaseStyle } from '@libs/neumorphism-ui/components/ActionButton';
 import styled, { css } from 'styled-components';
 
 const buyButtonStyle = css`

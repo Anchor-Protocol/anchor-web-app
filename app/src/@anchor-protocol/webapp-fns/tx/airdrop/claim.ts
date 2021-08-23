@@ -10,7 +10,7 @@ import {
   MantleFetch,
   TxResultRendering,
   TxStreamPhase,
-} from '@packages/webapp-fns';
+} from '@libs/webapp-fns';
 import { Observable } from 'rxjs';
 import { Airdrop } from '../../queries/airdrop/check';
 import { _catchTxError } from '../internal/_catchTxError';

@@ -1,6 +1,6 @@
 import { ContractAddress, moneyMarket, uUST } from '@anchor-protocol/types';
 import { AnchorTokenBalances, AncPrice } from '@anchor-protocol/webapp-fns';
-import { sum, vectorMultiply } from '@packages/big-math';
+import { sum, vectorMultiply } from '@libs/big-math';
 import { Big } from 'big.js';
 
 export function computeHoldings(

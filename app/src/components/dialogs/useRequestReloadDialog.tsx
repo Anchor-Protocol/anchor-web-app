@@ -1,7 +1,7 @@
 import { Modal } from '@material-ui/core';
-import { ActionButton } from '@packages/neumorphism-ui/components/ActionButton';
-import { Dialog } from '@packages/neumorphism-ui/components/Dialog';
-import { DialogProps, OpenDialog, useDialog } from '@packages/use-dialog';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
+import { DialogProps, OpenDialog, useDialog } from '@libs/use-dialog';
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';
 

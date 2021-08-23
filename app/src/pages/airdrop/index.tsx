@@ -10,8 +10,8 @@ import {
   useAirdropClaimTx,
 } from '@anchor-protocol/webapp-provider';
 import { StreamStatus } from '@rx-stream/react';
-import { ActionButton } from '@packages/neumorphism-ui/components/ActionButton';
-import { Section } from '@packages/neumorphism-ui/components/Section';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { Section } from '@libs/neumorphism-ui/components/Section';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'contexts/bank';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';

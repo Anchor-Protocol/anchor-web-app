@@ -11,13 +11,13 @@ import {
   computeTotalDeposit,
   useEarnEpochStatesQuery,
 } from '@anchor-protocol/webapp-provider';
-import { ActionButton } from '@packages/neumorphism-ui/components/ActionButton';
-import { BorderButton } from '@packages/neumorphism-ui/components/BorderButton';
-import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@packages/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@packages/neumorphism-ui/components/Section';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@libs/neumorphism-ui/components/Section';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useBank } from '@packages/webapp-provider';
+import { useBank } from '@libs/webapp-provider';
 import { SubAmount } from 'components/primitives/SubAmount';
 import React, { useCallback, useMemo } from 'react';
 import { useDepositDialog } from './useDepositDialog';

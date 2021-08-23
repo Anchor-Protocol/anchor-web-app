@@ -5,8 +5,8 @@ import {
   StableDenom,
 } from '@anchor-protocol/types';
 import { MarketBAsset, marketBAssetQuery } from '@anchor-protocol/webapp-fns';
-import { createQueryFn } from '@packages/react-query-utils';
-import { MantleFetch, useTerraWebapp } from '@packages/webapp-provider';
+import { createQueryFn } from '@libs/react-query-utils';
+import { MantleFetch, useTerraWebapp } from '@libs/webapp-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';

@@ -1,7 +1,7 @@
 import { Wallet } from '@anchor-protocol/icons';
 import { ButtonBaseProps } from '@material-ui/core';
-import { BorderButton } from '@packages/neumorphism-ui/components/BorderButton';
-import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
+import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import React from 'react';
 import styled from 'styled-components';
 

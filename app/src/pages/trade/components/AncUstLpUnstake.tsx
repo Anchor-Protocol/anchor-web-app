@@ -15,8 +15,8 @@ import {
 } from '@anchor-protocol/webapp-provider';
 import { InputAdornment } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { ActionButton } from '@packages/neumorphism-ui/components/ActionButton';
-import { NumberInput } from '@packages/neumorphism-ui/components/NumberInput';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'contexts/bank';
 import big from 'big.js';

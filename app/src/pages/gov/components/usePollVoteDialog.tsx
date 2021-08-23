@@ -17,12 +17,12 @@ import {
 import { InputAdornment, Modal } from '@material-ui/core';
 import { ThumbDownOutlined, ThumbUpOutlined } from '@material-ui/icons';
 import { StreamStatus } from '@rx-stream/react';
-import { ActionButton } from '@packages/neumorphism-ui/components/ActionButton';
-import { Dialog } from '@packages/neumorphism-ui/components/Dialog';
-import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
-import { NumberInput } from '@packages/neumorphism-ui/components/NumberInput';
-import { flat } from '@packages/styled-neumorphism';
-import { DialogProps, OpenDialog, useDialog } from '@packages/use-dialog';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
+import { flat } from '@libs/styled-neumorphism';
+import { DialogProps, OpenDialog, useDialog } from '@libs/use-dialog';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'contexts/bank';
 import big, { Big } from 'big.js';

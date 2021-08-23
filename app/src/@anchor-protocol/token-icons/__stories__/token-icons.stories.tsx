@@ -1,4 +1,4 @@
-import { Tooltip } from '@packages/neumorphism-ui/components/Tooltip';
+import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';
 import { anc160gif, anc80gif, GifIcon, TokenIcon, tokens, variants } from '../';

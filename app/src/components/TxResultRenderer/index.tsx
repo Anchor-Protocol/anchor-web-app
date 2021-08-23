@@ -1,11 +1,7 @@
 import { Close, Done as DoneIcon } from '@material-ui/icons';
-import { ActionButton } from '@packages/neumorphism-ui/components/ActionButton';
-import { HorizontalHeavyRuler } from '@packages/neumorphism-ui/components/HorizontalHeavyRuler';
-import {
-  TxReceipt,
-  TxResultRendering,
-  TxStreamPhase,
-} from '@packages/webapp-fns';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { HorizontalHeavyRuler } from '@libs/neumorphism-ui/components/HorizontalHeavyRuler';
+import { TxReceipt, TxResultRendering, TxStreamPhase } from '@libs/webapp-fns';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import React from 'react';
 import { GuardSpinner, PushSpinner } from 'react-spinners-kit';

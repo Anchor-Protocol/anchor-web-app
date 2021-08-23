@@ -1,10 +1,5 @@
 import { moneyMarket } from '@anchor-protocol/types';
-import {
-  mantle,
-  MantleParams,
-  WasmQuery,
-  WasmQueryData,
-} from '@packages/mantle';
+import { mantle, MantleParams, WasmQuery, WasmQueryData } from '@libs/mantle';
 
 export interface BorrowCollateralBorrowerWasmQuery {
   custodyBorrower: WasmQuery<

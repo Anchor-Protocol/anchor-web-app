@@ -3,7 +3,7 @@ import {
   TEST_MANTLE_ENDPOINT,
   TEST_WALLET_ADDRESS,
 } from '@anchor-protocol/webapp-fns/test-env';
-import { defaultMantleFetch } from '@packages/webapp-fns';
+import { defaultMantleFetch } from '@libs/webapp-fns';
 import { bondWithdrawableAmountQuery } from '../withdrawableAmount';
 
 describe('queries/withdrawable', () => {

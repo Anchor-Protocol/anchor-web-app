@@ -5,11 +5,7 @@ import {
 import { uUST } from '@anchor-protocol/types';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import { CreateTxOptions } from '@terra-money/terra.js';
-import {
-  TxReceipt,
-  TxResultRendering,
-  TxStreamPhase,
-} from '@packages/webapp-fns';
+import { TxReceipt, TxResultRendering, TxStreamPhase } from '@libs/webapp-fns';
 import { BigSource } from 'big.js';
 
 export class TxHelper {

@@ -1,6 +1,6 @@
 import { Modal } from '@material-ui/core';
-import { Dialog } from '@packages/neumorphism-ui/components/Dialog';
-import { DialogProps, OpenDialog, useDialog } from '@packages/use-dialog';
+import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
+import { DialogProps, OpenDialog, useDialog } from '@libs/use-dialog';
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';
 import { NotificationContent } from '../notifications/NotificationContent';

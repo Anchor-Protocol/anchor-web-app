@@ -14,17 +14,14 @@ import {
   useLastSyncedHeightQuery,
 } from '@anchor-protocol/webapp-provider';
 import { Schedule } from '@material-ui/icons';
-import { ActionButton } from '@packages/neumorphism-ui/components/ActionButton';
-import { BorderButton } from '@packages/neumorphism-ui/components/BorderButton';
-import { HorizontalHeavyRuler } from '@packages/neumorphism-ui/components/HorizontalHeavyRuler';
-import { HorizontalRuler } from '@packages/neumorphism-ui/components/HorizontalRuler';
-import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
-import { Section } from '@packages/neumorphism-ui/components/Section';
-import {
-  rulerLightColor,
-  rulerShadowColor,
-} from '@packages/styled-neumorphism';
-import { TimeEnd } from '@packages/use-time-end';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
+import { HorizontalHeavyRuler } from '@libs/neumorphism-ui/components/HorizontalHeavyRuler';
+import { HorizontalRuler } from '@libs/neumorphism-ui/components/HorizontalRuler';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { Section } from '@libs/neumorphism-ui/components/Section';
+import { rulerLightColor, rulerShadowColor } from '@libs/styled-neumorphism';
+import { TimeEnd } from '@libs/use-time-end';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { AccountLink } from 'components/links/AccountLink';
 import { useCodeViewerDialog } from 'components/dialogs/useCodeViewerDialog';

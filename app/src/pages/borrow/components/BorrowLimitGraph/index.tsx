@@ -4,9 +4,9 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { Rate, uUST } from '@anchor-protocol/types';
-import { HorizontalGraphBar } from '@packages/neumorphism-ui/components/HorizontalGraphBar';
-import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@packages/neumorphism-ui/components/InfoTooltip';
+import { HorizontalGraphBar } from '@libs/neumorphism-ui/components/HorizontalGraphBar';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import big, { Big, BigSource } from 'big.js';
 import React, { useMemo } from 'react';
 import { useMediaQuery } from 'react-responsive';

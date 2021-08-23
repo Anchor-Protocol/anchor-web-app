@@ -6,10 +6,10 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { MenuItem } from '@material-ui/core';
-import { HorizontalScrollTable } from '@packages/neumorphism-ui/components/HorizontalScrollTable';
-import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@packages/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@packages/neumorphism-ui/components/Section';
+import { HorizontalScrollTable } from '@libs/neumorphism-ui/components/HorizontalScrollTable';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@libs/neumorphism-ui/components/Section';
 import big from 'big.js';
 import { screen } from 'env';
 import { MoreMenu } from 'pages/gov/components/MoreMenu';

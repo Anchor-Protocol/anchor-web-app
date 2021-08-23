@@ -6,7 +6,7 @@ import {
   uToken,
   uUST,
 } from '@anchor-protocol/types';
-import { mantle, MantleParams, WasmQuery } from '@packages/webapp-fns';
+import { mantle, MantleParams, WasmQuery } from '@libs/webapp-fns';
 import big from 'big.js';
 
 export interface AncPriceWasmQuery {

@@ -1,4 +1,4 @@
-import { useLocalStorageJson } from '@packages/use-local-storage';
+import { useLocalStorageJson } from '@libs/use-local-storage';
 import React, {
   Consumer,
   Context,

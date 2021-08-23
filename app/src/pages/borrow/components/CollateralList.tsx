@@ -12,11 +12,11 @@ import {
   useBorrowMarketQuery,
 } from '@anchor-protocol/webapp-provider';
 import { Launch } from '@material-ui/icons';
-import { BorderButton } from '@packages/neumorphism-ui/components/BorderButton';
-import { HorizontalScrollTable } from '@packages/neumorphism-ui/components/HorizontalScrollTable';
-import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@packages/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@packages/neumorphism-ui/components/Section';
+import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
+import { HorizontalScrollTable } from '@libs/neumorphism-ui/components/HorizontalScrollTable';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@libs/neumorphism-ui/components/Section';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big, BigSource } from 'big.js';
 import { BuyLink } from 'components/BuyButton';

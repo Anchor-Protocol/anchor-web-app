@@ -5,7 +5,7 @@ import {
   TxInfoData,
   TxResultRendering,
   TxStreamPhase,
-} from '@packages/webapp-fns';
+} from '@libs/webapp-fns';
 import { TxHelper } from './TxHelper';
 
 interface Params {

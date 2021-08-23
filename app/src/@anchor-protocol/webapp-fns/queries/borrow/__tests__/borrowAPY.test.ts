@@ -1,5 +1,5 @@
 import { TEST_MANTLE_ENDPOINT } from '@anchor-protocol/webapp-fns/test-env';
-import { defaultMantleFetch } from '@packages/webapp-fns';
+import { defaultMantleFetch } from '@libs/webapp-fns';
 import { borrowAPYQuery } from '../apy';
 
 describe('queries/borrowAPY', () => {

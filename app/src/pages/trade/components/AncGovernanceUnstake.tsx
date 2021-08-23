@@ -17,9 +17,9 @@ import {
 } from '@anchor-protocol/webapp-provider';
 import { InputAdornment } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { max } from '@packages/big-math';
-import { ActionButton } from '@packages/neumorphism-ui/components/ActionButton';
-import { NumberInput } from '@packages/neumorphism-ui/components/NumberInput';
+import { max } from '@libs/big-math';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from 'contexts/bank';
 import big, { Big } from 'big.js';

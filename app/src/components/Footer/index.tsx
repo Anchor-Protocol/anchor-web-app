@@ -9,7 +9,7 @@ import {
   Telegram,
   Twitter,
 } from '@material-ui/icons';
-import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { useWallet } from '@terra-money/wallet-provider';
 import { useTheme } from 'contexts/theme';
 import { screen } from 'env';

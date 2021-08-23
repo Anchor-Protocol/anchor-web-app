@@ -1,4 +1,4 @@
-import { useSnackbar } from '@packages/snackbar';
+import { useSnackbar } from '@libs/snackbar';
 import React from 'react';
 import styled from 'styled-components';
 

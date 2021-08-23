@@ -1,5 +1,5 @@
-import { Section } from '@packages/neumorphism-ui/components/Section';
-import { Tab } from '@packages/neumorphism-ui/components/Tab';
+import { Section } from '@libs/neumorphism-ui/components/Section';
+import { Tab } from '@libs/neumorphism-ui/components/Tab';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { TradeBuy } from 'pages/trade/components/TradeBuy';
 import { TradeSell } from 'pages/trade/components/TradeSell';

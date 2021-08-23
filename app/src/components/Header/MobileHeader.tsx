@@ -1,6 +1,6 @@
 import { Menu, MenuClose, MenuWallet } from '@anchor-protocol/icons';
 import { useAirdropCheckQuery } from '@anchor-protocol/webapp-provider';
-import { IconToggleButton } from '@packages/neumorphism-ui/components/IconToggleButton';
+import { IconToggleButton } from '@libs/neumorphism-ui/components/IconToggleButton';
 import {
   ConnectType,
   useWallet,

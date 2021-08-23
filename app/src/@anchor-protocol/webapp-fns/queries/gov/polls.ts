@@ -4,7 +4,7 @@ import {
   MantleParams,
   WasmQuery,
   WasmQueryData,
-} from '@packages/webapp-fns';
+} from '@libs/webapp-fns';
 
 export interface GovPollsWasmQuery {
   polls: WasmQuery<anchorToken.gov.Polls, anchorToken.gov.PollsResponse>;

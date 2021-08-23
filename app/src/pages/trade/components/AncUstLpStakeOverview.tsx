@@ -9,11 +9,8 @@ import {
   useAncPriceQuery,
   useRewardsClaimableAncUstLpRewardsQuery,
 } from '@anchor-protocol/webapp-provider';
-import { TooltipLabel } from '@packages/neumorphism-ui/components/TooltipLabel';
-import {
-  rulerLightColor,
-  rulerShadowColor,
-} from '@packages/styled-neumorphism';
+import { TooltipLabel } from '@libs/neumorphism-ui/components/TooltipLabel';
+import { rulerLightColor, rulerShadowColor } from '@libs/styled-neumorphism';
 import big, { Big } from 'big.js';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';

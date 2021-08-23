@@ -13,11 +13,11 @@ import {
   MICRO,
   MILLION,
 } from '@anchor-protocol/notation';
-import { IconCircle } from '@packages/neumorphism-ui/components/IconCircle';
-import { IconSpan } from '@packages/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@packages/neumorphism-ui/components/InfoTooltip';
-import { Section } from '@packages/neumorphism-ui/components/Section';
-import { TooltipIconCircle } from '@packages/neumorphism-ui/components/TooltipIconCircle';
+import { IconCircle } from '@libs/neumorphism-ui/components/IconCircle';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@libs/neumorphism-ui/components/Section';
+import { TooltipIconCircle } from '@libs/neumorphism-ui/components/TooltipIconCircle';
 import { SubAmount } from 'components/primitives/SubAmount';
 import { screen } from 'env';
 import React from 'react';

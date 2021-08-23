@@ -9,7 +9,7 @@ import {
   uUST,
 } from '@anchor-protocol/types';
 import { AnchorTax, AnchorTokenBalances } from '@anchor-protocol/webapp-fns';
-import { useBank as useBank_ } from '@packages/webapp-provider';
+import { useBank as useBank_ } from '@libs/webapp-provider';
 import { useMemo } from 'react';
 
 export interface UserBalancesData {
@@ -31,7 +31,7 @@ export interface Bank {
 }
 
 /**
- * @deprecated use insteadof @packages/webapp-provider
+ * @deprecated use insteadof @libs/webapp-provider
  */
 export function useBank(): Bank {
   const { tokenBalances, tax, refetchTax, refetchTokenBalances } = useBank_<
