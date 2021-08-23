@@ -1,9 +1,9 @@
+import { CW20Addr, Denom, HumanAddr, NativeDenom } from '@libs/types';
 import { uToken } from '../currencies';
-import { CW20Addr, Denom, HumanAddr, StableDenom } from './common';
 
 export namespace terraswap {
   export type CW20AssetInfo = { token: { contract_addr: CW20Addr } };
-  export type NativeAssetInfo = { native_token: { denom: StableDenom } };
+  export type NativeAssetInfo = { native_token: { denom: NativeDenom } };
 
   export type AssetInfo = CW20AssetInfo | NativeAssetInfo;
 

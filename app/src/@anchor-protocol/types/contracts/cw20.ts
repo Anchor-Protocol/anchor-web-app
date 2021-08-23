@@ -1,5 +1,5 @@
+import { HumanAddr } from '@libs/types';
 import { uToken } from '../currencies';
-import { HumanAddr } from './common';
 
 export namespace cw20 {
   export interface Balance {

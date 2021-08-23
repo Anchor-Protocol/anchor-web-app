@@ -1,5 +1,5 @@
+import { HumanAddr } from '@libs/types';
 import { uUST } from '../currencies';
-import { HumanAddr } from './common';
 
 export namespace beth {
   export namespace rewards {

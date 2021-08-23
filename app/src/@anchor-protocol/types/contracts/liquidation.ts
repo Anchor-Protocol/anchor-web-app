@@ -1,6 +1,5 @@
+import { CW20Addr, HumanAddr, NativeDenom, Num, Rate } from '@libs/types';
 import { uUST } from '../currencies';
-import { Num, Rate } from '../units';
-import { CW20Addr, HumanAddr, StableDenom } from './common';
 
 export namespace liquidation {
   export namespace liquidationContract {
@@ -71,7 +70,7 @@ export namespace liquidation {
     export interface ConfigResponse {
       owner: HumanAddr;
       oracle_contract: HumanAddr;
-      stable_denom: StableDenom;
+      stable_denom: NativeDenom;
       safe_ratio: Rate;
       bid_fee: Rate;
       max_premium_rate: Rate;

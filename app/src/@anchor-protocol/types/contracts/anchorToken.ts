@@ -1,7 +1,12 @@
-import { moneyMarket } from './moneyMarket';
+import {
+  Base64EncodedJson,
+  CanonicalAddr,
+  HumanAddr,
+  Num,
+  Rate,
+} from '@libs/types';
 import { uANC, uAncUstLP } from '../currencies';
-import { Num, Rate } from '../units';
-import { Base64EncodedJson, CanonicalAddr, HumanAddr } from './common';
+import { moneyMarket } from './moneyMarket';
 
 export namespace anchorToken {
   export namespace collector {

@@ -1,6 +1,5 @@
+import { AssetDenom, DateTime, Denom, HumanAddr, Num, Rate } from '@libs/types';
 import { ubLuna, uLuna, uToken } from '../currencies';
-import { DateTime, Num, Rate } from '../units';
-import { AssetDenom, Denom, HumanAddr } from './common';
 
 export namespace bluna {
   export namespace airdropRegistry {

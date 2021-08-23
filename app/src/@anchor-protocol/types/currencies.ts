@@ -1,4 +1,4 @@
-import { NominalType } from './common';
+import { NominalType } from '@libs/types';
 
 // Native currencies
 export type uUST<T = string> = T & NominalType<'uust'>;

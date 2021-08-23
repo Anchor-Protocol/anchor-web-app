@@ -2,7 +2,7 @@ import {
   CollateralType,
   CW20Addr,
   HumanAddr,
-  StableDenom,
+  NativeDenom,
 } from '@anchor-protocol/types';
 import { MarketBAsset, marketBAssetQuery } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@libs/react-query-utils';
@@ -36,7 +36,7 @@ const queryFn = createQueryFn(
           query: {
             price: {
               base: bLunaContract,
-              quote: 'uusd' as StableDenom,
+              quote: 'uusd' as NativeDenom,
             },
           },
         },

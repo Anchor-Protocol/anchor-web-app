@@ -1,6 +1,12 @@
+import {
+  bAssetDenom,
+  CW20Addr,
+  HumanAddr,
+  NativeDenom,
+  Num,
+  Rate,
+} from '@libs/types';
 import { uANC, uaToken, ubAsset, UST, uUST } from '../currencies';
-import { Num, Rate } from '../units';
-import { bAssetDenom, CW20Addr, HumanAddr, StableDenom } from './common';
 
 export namespace moneyMarket {
   export namespace custody {
@@ -56,7 +62,7 @@ export namespace moneyMarket {
       market_contract: HumanAddr;
       reward_contract: HumanAddr;
       liquidation_contract: HumanAddr;
-      stable_denom: StableDenom;
+      stable_denom: NativeDenom;
       basset_info: {
         name: string;
         symbol: bAssetDenom;
@@ -214,7 +220,7 @@ export namespace moneyMarket {
       overseer_contract: HumanAddr;
       collector_contract: HumanAddr;
       distributor_contract: HumanAddr;
-      stable_denom: StableDenom;
+      stable_denom: NativeDenom;
       reserve_factor: Rate;
       max_borrow_factor: Rate;
     }
@@ -280,7 +286,7 @@ export namespace moneyMarket {
      */
     export interface ConfigResponse {
       owner: HumanAddr;
-      base_asset: StableDenom;
+      base_asset: NativeDenom;
     }
 
     /**
@@ -306,7 +312,7 @@ export namespace moneyMarket {
     export interface Price {
       price: {
         base: CW20Addr;
-        quote: StableDenom;
+        quote: NativeDenom;
       };
     }
 
@@ -422,7 +428,7 @@ export namespace moneyMarket {
       target_deposit_rate: Rate;
       buffer_distribution_rate: Rate;
       anc_purchase_factor: Rate;
-      stable_denom: StableDenom;
+      stable_denom: NativeDenom;
       epoch_period: number;
       price_timeframe: number;
     }
