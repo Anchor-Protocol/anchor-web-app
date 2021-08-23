@@ -1,5 +1,5 @@
-import { isTouchDevice } from '@packages/is-touch-device';
-import { useElementIntersection } from '@packages/use-element-intersection';
+import { isTouchDevice } from '@libs/is-touch-device';
+import { useElementIntersection } from '@libs/use-element-intersection';
 import { GUI } from 'dat.gui';
 import { headerHeight, landingMobileLayout } from 'env';
 import { useEffect, useRef, useState } from 'react';

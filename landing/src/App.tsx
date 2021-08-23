@@ -1,4 +1,4 @@
-import { GlobalStyle as NeumorphismGlobalStyle } from '@packages/neumorphism-ui/themes/GlobalStyle';
+import { GlobalStyle as NeumorphismGlobalStyle } from '@libs/neumorphism-ui/themes/GlobalStyle';
 import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
 import { Index } from 'pages/index';
