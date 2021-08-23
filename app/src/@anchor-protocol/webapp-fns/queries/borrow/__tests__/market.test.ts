@@ -1,4 +1,4 @@
-import { uUST } from '@anchor-protocol/types';
+import { u, UST } from '@anchor-protocol/types';
 import {
   TEST_ADDRESSES,
   TEST_MANTLE_ENDPOINT,
@@ -29,9 +29,9 @@ describe('queries/market', () => {
             contractAddress: TEST_ADDRESSES.moneyMarket.interestModel,
             query: {
               borrow_rate: {
-                market_balance: '' as uUST,
-                total_reserves: '' as uUST,
-                total_liabilities: '' as uUST,
+                market_balance: '' as u<UST>,
+                total_reserves: '' as u<UST>,
+                total_liabilities: '' as u<UST>,
               },
             },
           },

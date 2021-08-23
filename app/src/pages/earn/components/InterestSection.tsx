@@ -1,5 +1,3 @@
-import { formatRate } from '@anchor-protocol/notation';
-import { AnimateNumber } from '@libs/ui';
 import { Rate } from '@anchor-protocol/types';
 import {
   APYChart,
@@ -11,10 +9,12 @@ import {
   useEarnAPYHistoryQuery,
   useEarnEpochStatesQuery,
 } from '@anchor-protocol/webapp-provider';
+import { formatRate } from '@libs/formatter';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { TooltipLabel } from '@libs/neumorphism-ui/components/TooltipLabel';
+import { AnimateNumber } from '@libs/ui';
 import big from 'big.js';
 import React, { useMemo } from 'react';
 import { useTheme } from 'styled-components';

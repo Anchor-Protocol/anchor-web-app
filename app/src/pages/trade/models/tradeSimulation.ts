@@ -1,16 +1,16 @@
-import { Rate, terraswap, uToken, uUST } from '@anchor-protocol/types';
+import { Rate, terraswap, Token, u, UST } from '@anchor-protocol/types';
 
 export interface TradeSimulation<
-  To extends uToken,
-  From extends uToken,
-  R extends uToken = To,
+  To extends Token,
+  From extends Token,
+  R extends Token = To,
 > extends terraswap.SimulationResponse<To, R> {
   beliefPrice: Rate;
-  minimumReceived: To;
-  swapFee: To;
+  minimumReceived: u<To>;
+  swapFee: u<To>;
 
-  txFee: uUST;
+  txFee: u<UST>;
 
-  toAmount?: To;
-  fromAmount?: From;
+  toAmount?: u<To>;
+  fromAmount?: u<From>;
 }

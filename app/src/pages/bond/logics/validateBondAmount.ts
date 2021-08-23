@@ -1,5 +1,5 @@
 import type { Luna } from '@anchor-protocol/types';
-import { microfy } from '@anchor-protocol/notation';
+import { microfy } from '@libs/formatter';
 import { Bank } from 'contexts/bank';
 import { ReactNode } from 'react';
 

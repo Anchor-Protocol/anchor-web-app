@@ -1,4 +1,4 @@
-import { anchorToken, cw20, uANC } from '@anchor-protocol/types';
+import { ANC, anchorToken, cw20, u } from '@anchor-protocol/types';
 import {
   mantle,
   MantleParams,
@@ -11,7 +11,7 @@ export interface RewardsAncGovernanceRewardsWasmQuery {
     anchorToken.gov.Staker,
     anchorToken.gov.StakerResponse
   >;
-  userANCBalance: WasmQuery<cw20.Balance, cw20.BalanceResponse<uANC>>;
+  userANCBalance: WasmQuery<cw20.Balance, cw20.BalanceResponse<u<ANC>>>;
 }
 
 export type RewardsAncGovernanceRewards =

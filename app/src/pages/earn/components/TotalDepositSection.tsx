@@ -1,8 +1,6 @@
 import {
-  demicrofy,
   formatUST,
   formatUSTWithPostfixUnits,
-  MICRO,
   MILLION,
 } from '@anchor-protocol/notation';
 import {
@@ -10,6 +8,7 @@ import {
   computeTotalDeposit,
   useEarnEpochStatesQuery,
 } from '@anchor-protocol/webapp-provider';
+import { demicrofy, MICRO } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';

@@ -1,5 +1,4 @@
-import { CW20Addr, Denom, HumanAddr, NativeDenom } from '@libs/types';
-import { uToken } from '../currencies';
+import { CW20Addr, Denom, HumanAddr, NativeDenom, Token, u } from '@libs/types';
 
 export namespace terraswap {
   export type CW20AssetInfo = { token: { contract_addr: CW20Addr } };
@@ -27,11 +26,11 @@ export namespace terraswap {
     pool: {};
   }
 
-  export interface PoolResponse<T extends uToken> {
+  export interface PoolResponse<T extends Token> {
     total_share: string;
     assets: [
       {
-        amount: T;
+        amount: u<T>;
         info: {
           token: {
             contract_addr: HumanAddr;
@@ -39,7 +38,7 @@ export namespace terraswap {
         };
       },
       {
-        amount: T;
+        amount: u<T>;
         info: {
           native_token: {
             denom: Denom;
@@ -61,19 +60,19 @@ export namespace terraswap {
         };
       };
 
-  export interface Simulation<T extends uToken> {
+  export interface Simulation<T extends Token> {
     simulation: {
       offer_asset: {
         info: SimulationInfo;
-        amount: T;
+        amount: u<T>;
       };
     };
   }
 
-  export interface SimulationResponse<T extends uToken, RT extends uToken = T> {
-    commission_amount: T;
-    return_amount: RT;
-    spread_amount: T;
+  export interface SimulationResponse<T extends Token, RT extends Token = T> {
+    commission_amount: u<T>;
+    return_amount: u<RT>;
+    spread_amount: u<T>;
   }
 
   export type ReverseSimulationInfo =
@@ -88,21 +87,21 @@ export namespace terraswap {
         };
       };
 
-  export interface ReverseSimulation<T extends uToken> {
+  export interface ReverseSimulation<T extends Token> {
     reverse_simulation: {
       ask_asset: {
         info: ReverseSimulationInfo;
-        amount: T;
+        amount: u<T>;
       };
     };
   }
 
   export interface ReverseSimulationResponse<
-    T extends uToken,
-    RT extends uToken = T,
+    T extends Token,
+    RT extends Token = T,
   > {
-    commission_amount: T;
-    offer_amount: RT;
-    spread_amount: T;
+    commission_amount: u<T>;
+    offer_amount: u<RT>;
+    spread_amount: u<T>;
   }
 }

@@ -2,14 +2,9 @@ import {
   AddressProvider,
   fabricateStakingWithdraw,
 } from '@anchor-protocol/anchor.js';
-import {
-  demicrofy,
-  formatANCWithPostfixUnits,
-} from '@anchor-protocol/notation';
-import { Rate, uANC, uUST } from '@anchor-protocol/types';
-import { pipe } from '@rx-stream/pipe';
-import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
-import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
+import { formatANCWithPostfixUnits } from '@anchor-protocol/notation';
+import { ANC, Rate, u, UST } from '@anchor-protocol/types';
+import { demicrofy } from '@libs/formatter';
 import {
   MantleFetch,
   pickAttributeValueByKey,
@@ -18,6 +13,9 @@ import {
   TxResultRendering,
   TxStreamPhase,
 } from '@libs/webapp-fns';
+import { pipe } from '@rx-stream/pipe';
+import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
+import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
 import { Observable } from 'rxjs';
 import { _catchTxError } from '../internal/_catchTxError';
 import { _createTxOptions } from '../internal/_createTxOptions';
@@ -27,9 +25,9 @@ import { TxHelper } from '../internal/TxHelper';
 
 export function rewardsAncUstLpClaimTx(
   $: Parameters<typeof fabricateStakingWithdraw>[0] & {
-    gasFee: uUST<number>;
+    gasFee: u<UST<number>>;
     gasAdjustment: Rate<number>;
-    fixedGas: uUST;
+    fixedGas: u<UST>;
     network: NetworkInfo;
     addressProvider: AddressProvider;
     mantleEndpoint: string;
@@ -63,7 +61,7 @@ export function rewardsAncUstLpClaimTx(
       }
 
       try {
-        const claimed = pickAttributeValueByKey<uANC>(
+        const claimed = pickAttributeValueByKey<u<ANC>>(
           fromContract,
           'amount',
           (attrs) => attrs.reverse()[0],

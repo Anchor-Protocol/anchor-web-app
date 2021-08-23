@@ -3,16 +3,12 @@ import {
   fabricateMarketDepositStableCoin,
 } from '@anchor-protocol/anchor.js';
 import {
-  demicrofy,
   formatAUSTWithPostfixUnits,
-  formatFluidDecimalPoints,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
-import { Rate, uaUST, uUST } from '@anchor-protocol/types';
-import { pipe } from '@rx-stream/pipe';
+import { aUST, Rate, u, UST } from '@anchor-protocol/types';
 import { floor } from '@libs/big-math';
-import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
-import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
+import { demicrofy, formatFluidDecimalPoints } from '@libs/formatter';
 import {
   MantleFetch,
   pickAttributeValue,
@@ -21,6 +17,9 @@ import {
   TxResultRendering,
   TxStreamPhase,
 } from '@libs/webapp-fns';
+import { pipe } from '@rx-stream/pipe';
+import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
+import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
 import big, { BigSource } from 'big.js';
 import { Observable } from 'rxjs';
 import { _catchTxError } from '../internal/_catchTxError';
@@ -31,9 +30,9 @@ import { TxHelper } from '../internal/TxHelper';
 
 export function earnDepositTx(
   $: Parameters<typeof fabricateMarketDepositStableCoin>[0] & {
-    gasFee: uUST<number>;
+    gasFee: u<UST<number>>;
     gasAdjustment: Rate<number>;
-    txFee: uUST;
+    txFee: u<UST>;
     network: NetworkInfo;
     addressProvider: AddressProvider;
     mantleEndpoint: string;
@@ -67,9 +66,9 @@ export function earnDepositTx(
       }
 
       try {
-        const depositAmount = pickAttributeValue<uUST>(fromContract, 4);
+        const depositAmount = pickAttributeValue<u<UST>>(fromContract, 4);
 
-        const receivedAmount = pickAttributeValue<uaUST>(fromContract, 3);
+        const receivedAmount = pickAttributeValue<u<aUST>>(fromContract, 3);
 
         const exchangeRate =
           depositAmount &&

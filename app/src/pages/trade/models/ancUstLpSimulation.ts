@@ -1,10 +1,10 @@
-import { ANC, AncUstLP, Rate, UST, uUST } from '@anchor-protocol/types';
+import { ANC, AncUstLP, Rate, u, UST } from '@anchor-protocol/types';
 
 export interface AncUstLpSimulation<T> {
-  poolPrice: uUST<T>;
+  poolPrice: u<UST<T>>;
   lpFromTx: AncUstLP<T>;
   shareOfPool: Rate<T>;
-  txFee: uUST<T>;
+  txFee: u<UST<T>>;
 
   ancAmount?: ANC<T>;
   ustAmount?: UST<T>;

@@ -1,5 +1,15 @@
-import { AssetDenom, DateTime, Denom, HumanAddr, Num, Rate } from '@libs/types';
-import { ubLuna, uLuna, uToken } from '../currencies';
+import {
+  AssetDenom,
+  DateTime,
+  Denom,
+  HumanAddr,
+  Luna,
+  Num,
+  Rate,
+  Token,
+  u,
+} from '@libs/types';
+import { bLuna } from '../currencies';
 
 export namespace bluna {
   export namespace airdropRegistry {
@@ -77,7 +87,7 @@ export namespace bluna {
       history: Array<{
         batch_id: number;
         time: DateTime;
-        amount: ubLuna;
+        amount: u<bLuna>;
         applied_exchange_rate: Rate;
         withdraw_rate: Rate;
         released: boolean;
@@ -113,7 +123,7 @@ export namespace bluna {
      */
     export interface CurrentBatchResponse {
       id: number;
-      requested_with_fee: ubLuna;
+      requested_with_fee: u<bLuna>;
     }
 
     /**
@@ -147,10 +157,10 @@ export namespace bluna {
      */
     export interface StateResponse {
       exchange_rate: Rate;
-      total_bond_amount: uLuna;
+      total_bond_amount: u<Luna>;
       last_index_modification: DateTime;
-      prev_hub_balance: uLuna;
-      actual_unbonded_amount: uLuna;
+      prev_hub_balance: u<Luna>;
+      actual_unbonded_amount: u<Luna>;
       last_unbonded_time: DateTime;
       last_processed_batch: number;
     }
@@ -169,7 +179,7 @@ export namespace bluna {
      */
     export interface UnbondRequestsResponse {
       address: HumanAddr;
-      requests: Array<[number, ubLuna]>;
+      requests: Array<[number, u<bLuna>]>;
     }
 
     /**
@@ -200,7 +210,7 @@ export namespace bluna {
      * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/bluna/hub-1#withdrawableunbondedresponse
      */
     export interface WithdrawableUnbondedResponse {
-      withdrawable: uLuna;
+      withdrawable: u<Luna>;
     }
   }
 
@@ -218,7 +228,7 @@ export namespace bluna {
      * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/bluna/reward#accruedrewardsresponse
      */
     export interface AccruedRewardsResponse {
-      amount: uToken; // depends on reward_denom of ConfigResponse
+      amount: u<Token>; // depends on reward_denom of ConfigResponse
     }
 
     /**
@@ -250,9 +260,9 @@ export namespace bluna {
      */
     export interface HolderResponse {
       address: HumanAddr;
-      balance: ubLuna;
+      balance: u<bLuna>;
       index: Num;
-      pending_rewards: uToken; // depends on reward_denom of ConfigResponse
+      pending_rewards: u<Token>; // depends on reward_denom of ConfigResponse
     }
 
     /**
@@ -284,7 +294,7 @@ export namespace bluna {
      */
     export interface StateResponse {
       global_index: Num;
-      total_balance: ubLuna;
+      total_balance: u<bLuna>;
     }
   }
 }

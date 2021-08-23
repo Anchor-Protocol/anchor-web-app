@@ -1,8 +1,6 @@
-import {
-  demicrofy,
-  formatUSTWithPostfixUnits,
-} from '@anchor-protocol/notation';
+import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
 import { MarketCollateralsHistory } from '@anchor-protocol/webapp-fns';
+import { demicrofy } from '@libs/formatter';
 import big from 'big.js';
 import { Chart } from 'chart.js';
 import React, { Component, createRef } from 'react';

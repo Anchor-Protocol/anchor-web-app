@@ -1,12 +1,13 @@
-import { JSDateTime, uANC, UST, uUST } from '@anchor-protocol/types';
+import { ANC } from '@anchor-protocol/types';
+import { JSDateTime, u, UST } from '@libs/types';
 
 export interface MarketAncHistory {
   anc_price: UST;
-  anc_circulating_supply: uANC;
+  anc_circulating_supply: u<ANC>;
   timestamp: JSDateTime;
   height: number;
-  pool_anc_amount: uANC;
-  pool_ust_amount: uUST;
+  pool_anc_amount: u<ANC>;
+  pool_ust_amount: u<UST>;
   govern_total_share: '20083749357366';
   investor_team_anc_holding: '300000000000000';
   shuttle_anc_holding: '4131371012544';

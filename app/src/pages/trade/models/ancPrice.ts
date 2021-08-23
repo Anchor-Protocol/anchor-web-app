@@ -1,8 +1,8 @@
-import { uANC, uAncUstLP, UST, uUST } from '@anchor-protocol/types';
+import { ANC, AncUstLP, u, UST } from '@anchor-protocol/types';
 
 export interface AncPrice {
-  ANCPoolSize: uANC<string>;
-  USTPoolSize: uUST<string>;
-  LPShare: uAncUstLP<string>;
+  ANCPoolSize: u<ANC<string>>;
+  USTPoolSize: u<UST<string>>;
+  LPShare: u<AncUstLP<string>>;
   ANCPrice: UST<string>;
 }

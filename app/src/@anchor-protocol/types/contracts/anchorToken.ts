@@ -4,8 +4,9 @@ import {
   HumanAddr,
   Num,
   Rate,
+  u,
 } from '@libs/types';
-import { uANC, uAncUstLP } from '../currencies';
+import { ANC, AncUstLP } from '../currencies';
 import { moneyMarket } from './moneyMarket';
 
 export namespace anchorToken {
@@ -43,7 +44,7 @@ export namespace anchorToken {
     export interface ConfigResponse {
       gov_contract: HumanAddr;
       anchor_token: HumanAddr;
-      spend_limit: uANC;
+      spend_limit: u<ANC>;
     }
 
     /**
@@ -52,7 +53,7 @@ export namespace anchorToken {
     export interface Spend {
       spend: {
         recipient: HumanAddr;
-        amount: uANC;
+        amount: u<ANC>;
       };
     }
   }
@@ -72,7 +73,7 @@ export namespace anchorToken {
       gov_contract: HumanAddr;
       anchor_token: HumanAddr;
       whitelist: Array<HumanAddr>;
-      spend_limit: uANC;
+      spend_limit: u<ANC>;
     }
   }
 
@@ -95,7 +96,7 @@ export namespace anchorToken {
       voting_period: number;
       timelock_period: number;
       expiration_period: number;
-      proposal_deposit: uANC;
+      proposal_deposit: u<ANC>;
       snapshot_period: number;
     }
 
@@ -143,12 +144,12 @@ export namespace anchorToken {
       title: string;
       description: string;
       link?: string;
-      deposit_amount: uANC;
+      deposit_amount: u<ANC>;
       execute_data?: Array<ExecuteMsg>;
-      yes_votes: uANC;
-      no_votes: uANC;
-      staked_amount?: uANC;
-      total_balance_at_end_poll: uANC;
+      yes_votes: u<ANC>;
+      no_votes: u<ANC>;
+      staked_amount?: u<ANC>;
+      total_balance_at_end_poll: u<ANC>;
     }
 
     /**
@@ -183,14 +184,14 @@ export namespace anchorToken {
      * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/anchor-token/gov#stakerresponse
      */
     export interface StakerResponse {
-      balance: uANC;
-      share: uANC;
+      balance: u<ANC>;
+      share: u<ANC>;
       locked_balance: Array<
         [
           number, // poll_id
           {
             vote: 'yes' | 'no';
-            balance: uANC;
+            balance: u<ANC>;
           },
         ]
       >;
@@ -208,14 +209,14 @@ export namespace anchorToken {
      */
     export interface StateResponse {
       poll_count: number;
-      total_share: uANC;
-      total_deposit: uANC;
+      total_share: u<ANC>;
+      total_deposit: u<ANC>;
     }
 
     export interface Voter {
       voter: HumanAddr;
       vote: 'yes' | 'no';
-      balance: uANC;
+      balance: u<ANC>;
     }
 
     /**
@@ -252,7 +253,7 @@ export namespace anchorToken {
     export interface ConfigResponse {
       anchor_token: HumanAddr;
       staking_token: HumanAddr;
-      distribution_schedule: Array<[number, number, uANC]>;
+      distribution_schedule: Array<[number, number, u<ANC>]>;
     }
 
     /**
@@ -271,8 +272,8 @@ export namespace anchorToken {
     export interface StakerInfoResponse {
       staker: HumanAddr;
       reward_index: Num;
-      bond_amount: uAncUstLP;
-      pending_reward: uANC;
+      bond_amount: u<AncUstLP>;
+      pending_reward: u<ANC>;
     }
 
     /**
@@ -289,7 +290,7 @@ export namespace anchorToken {
      */
     export interface StateResponse {
       last_distributed: number;
-      total_bond_amount: uAncUstLP;
+      total_bond_amount: u<AncUstLP>;
       global_reward_index: Num;
     }
   }

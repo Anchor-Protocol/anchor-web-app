@@ -1,8 +1,4 @@
-import {
-  demicrofy,
-  formatANCWithPostfixUnits,
-  formatRate,
-} from '@anchor-protocol/notation';
+import { formatANCWithPostfixUnits } from '@anchor-protocol/notation';
 import { Rate } from '@anchor-protocol/types';
 import {
   useAncBalanceQuery,
@@ -13,7 +9,7 @@ import {
   useGovVotersQuery,
   useLastSyncedHeightQuery,
 } from '@anchor-protocol/webapp-provider';
-import { Schedule } from '@material-ui/icons';
+import { demicrofy, formatRate } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { HorizontalHeavyRuler } from '@libs/neumorphism-ui/components/HorizontalHeavyRuler';
@@ -22,9 +18,10 @@ import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { rulerLightColor, rulerShadowColor } from '@libs/styled-neumorphism';
 import { TimeEnd } from '@libs/use-time-end';
+import { Schedule } from '@material-ui/icons';
+import { useCodeViewerDialog } from 'components/dialogs/useCodeViewerDialog';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { AccountLink } from 'components/links/AccountLink';
-import { useCodeViewerDialog } from 'components/dialogs/useCodeViewerDialog';
 import { screen } from 'env';
 import {
   Description,

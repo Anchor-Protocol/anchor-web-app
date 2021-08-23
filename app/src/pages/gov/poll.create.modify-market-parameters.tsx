@@ -1,12 +1,12 @@
 import { ExecuteMsg } from '@anchor-protocol/anchor.js';
-import { formatExecuteMsgNumber } from '@anchor-protocol/notation';
 import { moneyMarket, Rate } from '@anchor-protocol/types';
 import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
-import { InputAdornment } from '@material-ui/core';
 import { floor } from '@libs/big-math';
+import { formatExecuteMsgNumber } from '@libs/formatter';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
+import { InputAdornment } from '@material-ui/core';
 import big from 'big.js';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';

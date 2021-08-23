@@ -1,4 +1,4 @@
-import { DateTime, Denom, HumanAddr, uUST } from '@anchor-protocol/types';
+import { DateTime, Denom, HumanAddr, u, UST } from '@anchor-protocol/types';
 import { MantleFetch } from '@libs/webapp-fns';
 
 export interface EarnTransactionHistoryData {
@@ -6,9 +6,9 @@ export interface EarnTransactionHistoryData {
     Address: HumanAddr;
     Contract: string;
     Height: number;
-    InAmount: uUST;
+    InAmount: u<UST>;
     InDenom: Denom;
-    OutAmount: uUST;
+    OutAmount: u<UST>;
     OutDenom: Denom;
     Timestamp: DateTime;
     TransactionType: string;

@@ -1,5 +1,5 @@
-import { microfy } from '@anchor-protocol/notation';
-import type { bAsset, Rate, ubAsset } from '@anchor-protocol/types';
+import type { bAsset, Rate, u } from '@anchor-protocol/types';
+import { microfy } from '@libs/formatter';
 import big, { Big, BigSource } from 'big.js';
 
 // Loan_amount / ((Borrow_info.balance - Borrow_info.spendable - redeemed_collateral) * Oracleprice)
@@ -7,7 +7,7 @@ import big, { Big, BigSource } from 'big.js';
 export function computeRedeemCollateralNextLtv(
   redeemAmount: bAsset,
   currentLtv: Rate<Big> | undefined,
-  redeemAmountToLtv: (redeemAmount: ubAsset<BigSource>) => Rate<Big>,
+  redeemAmountToLtv: (redeemAmount: u<bAsset<BigSource>>) => Rate<Big>,
 ): Rate<Big> | undefined {
   if (redeemAmount.length === 0) {
     return currentLtv;

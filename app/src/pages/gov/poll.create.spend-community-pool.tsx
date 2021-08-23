@@ -2,15 +2,14 @@ import { ExecuteMsg } from '@anchor-protocol/anchor.js';
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   ANC_INPUT_MAXIMUM_INTEGER_POINTS,
-  demicrofy,
   formatANC,
-  microfy,
 } from '@anchor-protocol/notation';
-import { ANC, anchorToken, HumanAddr, uANC } from '@anchor-protocol/types';
+import { ANC, anchorToken, HumanAddr, u } from '@anchor-protocol/types';
 import {
   useAncBalanceQuery,
   useAnchorWebapp,
 } from '@anchor-protocol/webapp-provider';
+import { demicrofy, microfy } from '@libs/formatter';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
@@ -62,7 +61,7 @@ export function PollCreateSpendCommunityPool() {
     (recipient: string, amount: string): ExecuteMsg[] => {
       const spend: anchorToken.community.Spend['spend'] = {
         recipient: recipient as HumanAddr,
-        amount: microfy(amount as ANC).toFixed() as uANC,
+        amount: microfy(amount as ANC).toFixed() as u<ANC>,
       };
 
       const msgs: Omit<ExecuteMsg, 'order'>[] = [];

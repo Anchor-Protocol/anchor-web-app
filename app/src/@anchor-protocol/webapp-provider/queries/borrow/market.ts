@@ -1,4 +1,4 @@
-import { HumanAddr, uUST } from '@anchor-protocol/types';
+import { HumanAddr, u, UST } from '@anchor-protocol/types';
 import { BorrowMarket, borrowMarketQuery } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@libs/react-query-utils';
 import { MantleFetch, useTerraWebapp } from '@libs/webapp-provider';
@@ -35,9 +35,9 @@ const queryFn = createQueryFn(
           contractAddress: interestContract,
           query: {
             borrow_rate: {
-              market_balance: '0' as uUST,
-              total_reserves: '0' as uUST,
-              total_liabilities: '0' as uUST,
+              market_balance: '0' as u<UST>,
+              total_reserves: '0' as u<UST>,
+              total_liabilities: '0' as u<UST>,
             },
           },
         },

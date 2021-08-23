@@ -1,5 +1,5 @@
-import { formatRate } from '@anchor-protocol/notation';
-import { anchorToken, cw20, Rate, uANC } from '@anchor-protocol/types';
+import { ANC, anchorToken, cw20, Rate } from '@anchor-protocol/types';
+import { formatRate } from '@libs/formatter';
 import big from 'big.js';
 import { getMsgTitle, isRegisterCollateralAttribute } from './getMsgTitle';
 
@@ -32,7 +32,7 @@ export interface PollDetail {
 
 export function extractPollDetail(
   poll: anchorToken.gov.PollResponse,
-  govANCBalance: cw20.BalanceResponse<uANC>,
+  govANCBalance: cw20.BalanceResponse<ANC>,
   govState: anchorToken.gov.StateResponse,
   govConfig: anchorToken.gov.ConfigResponse,
   currentHeight: number,

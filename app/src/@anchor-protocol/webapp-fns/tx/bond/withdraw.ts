@@ -2,11 +2,9 @@ import {
   AddressProvider,
   fabricatebAssetWithdrawUnbonded,
 } from '@anchor-protocol/anchor.js';
-import { demicrofy, formatLuna, stripULuna } from '@anchor-protocol/notation';
-import { Rate, uUST } from '@anchor-protocol/types';
-import { pipe } from '@rx-stream/pipe';
-import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
-import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
+import { formatLuna } from '@anchor-protocol/notation';
+import { Rate, u, UST } from '@anchor-protocol/types';
+import { demicrofy, stripULuna } from '@libs/formatter';
 import {
   MantleFetch,
   pickAttributeValue,
@@ -15,6 +13,9 @@ import {
   TxResultRendering,
   TxStreamPhase,
 } from '@libs/webapp-fns';
+import { pipe } from '@rx-stream/pipe';
+import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
+import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
 import { Observable } from 'rxjs';
 import { _catchTxError } from '../internal/_catchTxError';
 import { _createTxOptions } from '../internal/_createTxOptions';
@@ -24,9 +25,9 @@ import { TxHelper } from '../internal/TxHelper';
 
 export function bondWithdrawTx(
   $: Parameters<typeof fabricatebAssetWithdrawUnbonded>[0] & {
-    gasFee: uUST<number>;
+    gasFee: u<UST<number>>;
     gasAdjustment: Rate<number>;
-    fixedGas: uUST;
+    fixedGas: u<UST>;
     network: NetworkInfo;
     addressProvider: AddressProvider;
     mantleEndpoint: string;

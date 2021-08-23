@@ -1,8 +1,6 @@
-import {
-  demicrofy,
-  formatANCWithPostfixUnits,
-} from '@anchor-protocol/notation';
+import { formatANCWithPostfixUnits } from '@anchor-protocol/notation';
 import { anchorToken } from '@anchor-protocol/types';
+import { demicrofy } from '@libs/formatter';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { HorizontalScrollTable } from '@libs/neumorphism-ui/components/HorizontalScrollTable';
 import { AccountLink } from 'components/links/AccountLink';

@@ -1,17 +1,16 @@
 import {
-  demicrofy,
   formatANC,
   formatAUSTWithPostfixUnits,
   formatBAsset,
   formatLP,
   formatLuna,
   formatUSTWithPostfixUnits,
-  truncate,
 } from '@anchor-protocol/notation';
-import { Check, KeyboardArrowRight, Launch } from '@material-ui/icons';
+import { demicrofy, truncate } from '@libs/formatter';
 import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
+import { Check, KeyboardArrowRight, Launch } from '@material-ui/icons';
 import { NetworkInfo } from '@terra-dev/wallet-types';
 import { ConnectType } from '@terra-money/wallet-provider';
 import big from 'big.js';

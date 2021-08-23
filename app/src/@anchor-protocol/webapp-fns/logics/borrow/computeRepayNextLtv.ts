@@ -1,5 +1,5 @@
-import { microfy } from '@anchor-protocol/notation';
-import type { Rate, UST, uUST } from '@anchor-protocol/types';
+import type { Rate, u, UST } from '@anchor-protocol/types';
+import { microfy } from '@libs/formatter';
 import big, { Big, BigSource } from 'big.js';
 
 // (Loan_amount - repay_amount) / ((Borrow_info.balance - Borrow_info.spendable) * Oracleprice)
@@ -7,7 +7,7 @@ import big, { Big, BigSource } from 'big.js';
 export function computeRepayNextLtv(
   repayAmount: UST,
   currentLtv: Rate<Big> | undefined,
-  repayAmountToLtv: (repayAmount: uUST<BigSource>) => Rate<Big>,
+  repayAmountToLtv: (repayAmount: u<UST<BigSource>>) => Rate<Big>,
 ): Rate<Big> | undefined {
   if (repayAmount.length === 0) {
     return currentLtv;

@@ -1,4 +1,4 @@
-import type { uUST } from '@anchor-protocol/types';
+import type { u, UST } from '@anchor-protocol/types';
 import { moneyMarket } from '@anchor-protocol/types';
 import big, { Big } from 'big.js';
 
@@ -7,7 +7,7 @@ export function computeRepayTotalBorrowed(
   interestModelBorrowRate: moneyMarket.interestModel.BorrowRateResponse,
   marketBorrowerInfo: moneyMarket.market.BorrowerInfoResponse,
   currentBlock: number,
-): uUST<Big> {
+): u<UST<Big>> {
   const bufferBlocks = 20;
 
   //- block_height = marketState.ts / currentBlock
@@ -36,7 +36,7 @@ export function computeRepayTotalBorrowed(
 
   //console.log('useRepayDialog.tsx..()', totalBorrows.toString(), marketUserOverview.loanAmount.loan_amount);
 
-  return (
-    totalBorrows.lt(1000) ? big(1000) : totalBorrows.plus(1000)
-  ) as uUST<Big>;
+  return (totalBorrows.lt(1000) ? big(1000) : totalBorrows.plus(1000)) as u<
+    UST<Big>
+  >;
 }

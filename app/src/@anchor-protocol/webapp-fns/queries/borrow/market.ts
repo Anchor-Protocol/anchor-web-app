@@ -1,4 +1,4 @@
-import { CW20Addr, moneyMarket, Rate, uUST } from '@anchor-protocol/types';
+import { CW20Addr, moneyMarket, Rate, u, UST } from '@anchor-protocol/types';
 import {
   mantle,
   MantleParams,
@@ -46,7 +46,7 @@ export interface BorrowMarketStateQueryResult {
 
 export type BorrowMarket = WasmQueryData<BorrowMarketWasmQuery> & {
   marketBalances: {
-    uUST: uUST;
+    uUST: u<UST>;
   };
 
   bAssetLtvs: BAssetLtvs;
@@ -101,7 +101,7 @@ export async function borrowMarketQuery({
   const marketBalances: Pick<BorrowMarket, 'marketBalances'>['marketBalances'] =
     {
       uUST: (_marketBalances.Result.find(({ Denom }) => Denom === 'uusd')
-        ?.Amount ?? '0') as uUST,
+        ?.Amount ?? '0') as u<UST>,
     };
 
   const {

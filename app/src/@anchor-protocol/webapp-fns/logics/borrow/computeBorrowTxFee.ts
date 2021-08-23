@@ -1,6 +1,6 @@
-import { microfy } from '@anchor-protocol/notation';
-import type { UST, uUST } from '@anchor-protocol/types';
+import type { u, UST } from '@anchor-protocol/types';
 import { min } from '@libs/big-math';
+import { microfy } from '@libs/formatter';
 import big, { Big, BigSource } from 'big.js';
 import { AnchorTax } from '../../types';
 
@@ -9,7 +9,7 @@ import { AnchorTax } from '../../types';
 export function computeBorrowTxFee(
   borrowAmount: UST,
   tax: AnchorTax,
-  fixedGas: uUST<BigSource>,
+  fixedGas: u<UST<BigSource>>,
 ) {
   if (borrowAmount.length === 0) {
     return undefined;
@@ -21,5 +21,5 @@ export function computeBorrowTxFee(
     tax.taxRate,
   );
 
-  return min(userAmountTxFee, tax.maxTaxUUSD).plus(fixedGas) as uUST<Big>;
+  return min(userAmountTxFee, tax.maxTaxUUSD).plus(fixedGas) as u<UST<Big>>;
 }

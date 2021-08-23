@@ -1,13 +1,13 @@
-import { CW20Addr } from '@libs/types';
+import { CW20Addr, u } from '@libs/types';
 import { useBrowserInactive } from '@libs/use-browser-inactive';
 import { useLongtimeNoSee } from '@libs/use-longtime-no-see';
-import { useWallet, WalletStatus } from '@terra-money/wallet-provider';
 import {
   CW20Contract,
   TaxData,
   taxQuery,
   tokenBalancesQuery,
 } from '@libs/webapp-fns';
+import { useWallet, WalletStatus } from '@terra-money/wallet-provider';
 import deepEqual from 'fast-deep-equal';
 import React, {
   Consumer,
@@ -310,7 +310,7 @@ export function useBank<
   >;
 }
 
-export function useCW20TokenBalance<T = string>(address: CW20Addr): T {
+export function useCW20TokenBalance<T = string>(address: CW20Addr): u<T> {
   const { tokenBalances, cw20TokenContracts } = useBank();
 
   return useMemo(() => {
@@ -319,7 +319,7 @@ export function useCW20TokenBalance<T = string>(address: CW20Addr): T {
     );
     return (key && tokenBalances[key]
       ? tokenBalances[key]
-      : '0') as unknown as T;
+      : '0') as unknown as u<T>;
   }, [address, cw20TokenContracts, tokenBalances]);
 }
 

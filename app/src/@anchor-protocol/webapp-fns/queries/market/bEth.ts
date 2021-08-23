@@ -1,15 +1,15 @@
-import { DateTime, Rate, ubEth, UST, uUST } from '@anchor-protocol/types';
+import { bEth, DateTime, Rate, u, UST } from '@anchor-protocol/types';
 
 export interface MarketBEthData {
-  total_collateral: ubEth;
+  total_collateral: u<bEth>;
   height: 5187647;
-  reward_ust_balance: uUST;
+  reward_ust_balance: u<UST>;
   timestamp: DateTime;
   global_index: Rate;
-  beth_total_supply: ubEth;
+  beth_total_supply: u<bEth>;
   beth_price: UST;
-  prev_reward_balance: ubEth;
-  total_balance: ubEth;
+  prev_reward_balance: u<bEth>;
+  total_balance: u<bEth>;
 }
 
 export interface MarketBEthQueryParams {

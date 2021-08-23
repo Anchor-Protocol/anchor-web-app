@@ -1,10 +1,7 @@
-import {
-  demicrofy,
-  formatRate,
-  formatUSTWithPostfixUnits,
-} from '@anchor-protocol/notation';
-import { Rate, uUST } from '@anchor-protocol/types';
+import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
+import { Rate, u, UST } from '@anchor-protocol/types';
 import { BAssetLtv } from '@anchor-protocol/webapp-fns';
+import { demicrofy, formatRate } from '@libs/formatter';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
@@ -21,12 +18,12 @@ import useResizeObserver from 'use-resize-observer/polyfilled';
 
 export interface BorrowedValueProps {
   className?: string;
-  borrowedValue: uUST<Big>;
+  borrowedValue: u<UST<Big>>;
   netAPR: Rate<BigSource>;
   currentLtv: Rate<Big> | undefined;
   dangerLtv: Rate<Big> | undefined;
   bAssetLtvsAvg: BAssetLtv | undefined;
-  borrowLimit: uUST<BigSource> | undefined;
+  borrowLimit: u<UST<BigSource>> | undefined;
 }
 
 function BorrowedValueBase({

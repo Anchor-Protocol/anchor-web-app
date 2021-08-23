@@ -1,9 +1,9 @@
-import { ANC, uUST } from '@anchor-protocol/types';
+import { ANC, u, UST } from '@anchor-protocol/types';
 import { ancGovernanceUnstakeTx } from '@anchor-protocol/webapp-fns';
+import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
 import { useStream } from '@rx-stream/react';
 
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
 import { useCallback } from 'react';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
@@ -36,7 +36,7 @@ export function useAncGovernanceUnstakeTx() {
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        fixedGas: constants.fixedGas.toString() as uUST,
+        fixedGas: constants.fixedGas.toString() as u<UST>,
         gasFee: constants.gasFee,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,

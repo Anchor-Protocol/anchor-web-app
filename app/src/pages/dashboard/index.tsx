@@ -1,9 +1,6 @@
-import { AnimateNumber } from '@libs/ui';
 import {
-  demicrofy,
   formatBAssetWithPostfixUnits,
   formatLunaWithPostfixUnits,
-  formatRate,
   formatUST,
   formatUSTWithPostfixUnits,
   formatUTokenInteger,
@@ -12,12 +9,12 @@ import {
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import {
   bAsset,
+  bEth,
+  bLuna,
   Luna,
   Rate,
-  ubEth,
-  ubLuna,
+  u,
   UST,
-  uUST,
 } from '@anchor-protocol/types';
 import {
   useAnchorWebapp,
@@ -31,6 +28,7 @@ import {
   useMarketStableCoinQuery,
   useMarketUstQuery,
 } from '@anchor-protocol/webapp-provider';
+import { demicrofy, formatRate } from '@libs/formatter';
 import { HorizontalScrollTable } from '@libs/neumorphism-ui/components/HorizontalScrollTable';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
@@ -40,6 +38,7 @@ import {
   pressed,
   verticalRuler,
 } from '@libs/styled-neumorphism';
+import { AnimateNumber } from '@libs/ui';
 import big, { Big, BigSource } from 'big.js';
 import { Footer } from 'components/Footer';
 import { PageTitle, TitleContainer } from 'components/primitives/PageTitle';
@@ -118,7 +117,7 @@ function DashboardBase({ className }: DashboardProps) {
       totalCollaterals: marketCollaterals?.now.total_value,
       totalValueLocked: big(
         marketDepositAndBorrow?.now.total_ust_deposits,
-      ).plus(marketCollaterals?.now.total_value) as uUST<Big>,
+      ).plus(marketCollaterals?.now.total_value) as u<UST<Big>>,
       yieldReserve: marketUST.overseer_ust_balance,
     };
   }, [marketCollaterals?.now, marketDepositAndBorrow?.now, marketUST]);
@@ -140,9 +139,9 @@ function DashboardBase({ className }: DashboardProps) {
       ).div(last1DayBefore.anc_price) as Rate<Big>,
       ancPrice: last.anc_price,
       circulatingSupply: last.anc_circulating_supply,
-      ancMarketCap: big(last.anc_price).mul(
-        last.anc_circulating_supply,
-      ) as uUST<Big>,
+      ancMarketCap: big(last.anc_price).mul(last.anc_circulating_supply) as u<
+        UST<Big>
+      >,
     };
   }, [marketANC]);
 
@@ -208,21 +207,21 @@ function DashboardBase({ className }: DashboardProps) {
       totalCollateralValue: big(
         last.collaterals.reduce((total, { collateral, price }) => {
           return total.plus(big(collateral).mul(price));
-        }, big(0)) as uUST<Big>,
-      ).mul(marketBLuna.bLuna_price) as uUST<Big>,
+        }, big(0)) as u<UST<Big>>,
+      ).mul(marketBLuna.bLuna_price) as u<UST<Big>>,
       totalCollateralValueDiff: 'TODO: API not ready...',
       bLunaPrice: marketBLuna.bLuna_price,
       bLunaPriceDiff: 'TODO: API not ready...',
-      bLunaTotalCollateral: (bLunaCollateral?.collateral ?? '0') as ubLuna,
+      bLunaTotalCollateral: (bLunaCollateral?.collateral ?? '0') as u<bLuna>,
       bLunaTotalCollateralValue: (bLunaCollateral
         ? big(bLunaCollateral.collateral).mul(bLunaCollateral.price)
-        : '0') as uUST<BigSource>,
+        : '0') as u<UST<BigSource>>,
       bEthPrice: marketBEth.beth_price,
       bEthPriceDiff: 'TODO: API not ready...',
-      bEthTotalCollateral: (bEthCollateral?.collateral ?? '0') as ubEth,
+      bEthTotalCollateral: (bEthCollateral?.collateral ?? '0') as u<bEth>,
       bEthTotalCollateralValue: (bEthCollateral
         ? big(bEthCollateral.collateral).mul(bEthCollateral.price)
-        : '0') as uUST<BigSource>,
+        : '0') as u<UST<BigSource>>,
     };
   }, [marketBEth, marketBLuna, marketCollaterals]);
 
@@ -252,7 +251,7 @@ function DashboardBase({ className }: DashboardProps) {
                   >
                     {totalValueLocked
                       ? totalValueLocked.totalValueLocked
-                      : (0 as uUST<number>)}
+                      : (0 as u<UST<number>>)}
                   </AnimateNumber>
                   <span>UST</span>
                 </p>
@@ -260,10 +259,10 @@ function DashboardBase({ className }: DashboardProps) {
                   <div className="chart">
                     <TotalValueLockedDoughnutChart
                       totalDeposit={
-                        totalValueLocked?.totalDeposit ?? ('0' as uUST)
+                        totalValueLocked?.totalDeposit ?? ('0' as u<UST>)
                       }
                       totalCollaterals={
-                        totalValueLocked?.totalCollaterals ?? ('1' as uUST)
+                        totalValueLocked?.totalCollaterals ?? ('1' as u<UST>)
                       }
                       totalDepositColor={theme.colors.positive}
                       totalCollateralsColor={theme.textColor}
@@ -281,7 +280,7 @@ function DashboardBase({ className }: DashboardProps) {
                       >
                         {totalValueLocked
                           ? totalValueLocked.totalDeposit
-                          : (0 as uUST<number>)}
+                          : (0 as u<UST<number>>)}
                       </AnimateNumber>
                     </p>
                     <h3>
@@ -295,7 +294,7 @@ function DashboardBase({ className }: DashboardProps) {
                       >
                         {totalValueLocked
                           ? totalValueLocked.totalCollaterals
-                          : (0 as uUST<number>)}
+                          : (0 as u<UST<number>>)}
                       </AnimateNumber>
                     </p>
                   </div>
@@ -312,7 +311,7 @@ function DashboardBase({ className }: DashboardProps) {
                   >
                     {totalValueLocked
                       ? totalValueLocked.yieldReserve
-                      : (0 as uUST<number>)}
+                      : (0 as u<UST<number>>)}
                   </AnimateNumber>
                   <span>UST</span>
                 </p>
@@ -436,7 +435,9 @@ function DashboardBase({ className }: DashboardProps) {
                   <AnimateNumber
                     format={formatUTokenIntegerWithoutPostfixUnits}
                   >
-                    {stableCoin ? stableCoin.totalDeposit : (0 as uUST<number>)}
+                    {stableCoin
+                      ? stableCoin.totalDeposit
+                      : (0 as u<UST<number>>)}
                   </AnimateNumber>
                   <span>UST</span>
                 </p>
@@ -456,7 +457,9 @@ function DashboardBase({ className }: DashboardProps) {
                   <AnimateNumber
                     format={formatUTokenIntegerWithoutPostfixUnits}
                   >
-                    {stableCoin ? stableCoin.totalBorrow : (0 as uUST<number>)}
+                    {stableCoin
+                      ? stableCoin.totalBorrow
+                      : (0 as u<UST<number>>)}
                   </AnimateNumber>
                   <span>UST</span>
                 </p>
@@ -536,7 +539,7 @@ function DashboardBase({ className }: DashboardProps) {
                       <AnimateNumber format={formatUTokenInteger}>
                         {stableCoin
                           ? stableCoin.totalDeposit
-                          : (0 as uUST<number>)}
+                          : (0 as u<UST<number>>)}
                       </AnimateNumber>
                     </div>
                   </td>
@@ -556,7 +559,7 @@ function DashboardBase({ className }: DashboardProps) {
                       <AnimateNumber format={formatUTokenInteger}>
                         {stableCoin
                           ? stableCoin.totalBorrow
-                          : (0 as uUST<number>)}
+                          : (0 as u<UST<number>>)}
                       </AnimateNumber>
                     </div>
                   </td>
@@ -595,7 +598,7 @@ function DashboardBase({ className }: DashboardProps) {
                   >
                     {collaterals
                       ? collaterals.mainTotalCollateralValue
-                      : (0 as uUST<number>)}
+                      : (0 as u<UST<number>>)}
                   </AnimateNumber>
                   <span> UST</span>
                 </p>

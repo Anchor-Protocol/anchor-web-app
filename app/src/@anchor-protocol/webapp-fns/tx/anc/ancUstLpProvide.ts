@@ -3,17 +3,13 @@ import {
   fabricateTerraswapProvideLiquidityANC,
 } from '@anchor-protocol/anchor.js';
 import {
-  demicrofy,
   formatANCWithPostfixUnits,
   formatLP,
   formatUSTWithPostfixUnits,
-  stripUUSD,
 } from '@anchor-protocol/notation';
-import { Rate, uANC, uAncUstLP, uUST } from '@anchor-protocol/types';
-import { pipe } from '@rx-stream/pipe';
+import { ANC, AncUstLP, Rate, u, UST } from '@anchor-protocol/types';
 import { floor, min } from '@libs/big-math';
-import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
-import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
+import { demicrofy, stripUUSD } from '@libs/formatter';
 import {
   MantleFetch,
   pickAttributeValueByKey,
@@ -23,6 +19,9 @@ import {
   TxResultRendering,
   TxStreamPhase,
 } from '@libs/webapp-fns';
+import { pipe } from '@rx-stream/pipe';
+import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
+import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
 import big, { Big } from 'big.js';
 import { Observable } from 'rxjs';
 import { AncPrice } from '../../queries/anc/price';
@@ -36,10 +35,10 @@ export function ancAncUstLpProvideTx(
   $: Parameters<typeof fabricateTerraswapProvideLiquidityANC>[0] & {
     ancPrice: AncPrice | undefined;
     tax: TaxData;
-    gasFee: uUST<number>;
+    gasFee: u<UST<number>>;
     gasAdjustment: Rate<number>;
-    txFee: uUST;
-    fixedGas: uUST;
+    txFee: u<UST>;
+    fixedGas: u<UST>;
     network: NetworkInfo;
     addressProvider: AddressProvider;
     mantleEndpoint: string;
@@ -74,7 +73,7 @@ export function ancAncUstLpProvideTx(
       }
 
       try {
-        const depositedAnc = pickAttributeValueByKey<uANC>(
+        const depositedAnc = pickAttributeValueByKey<u<ANC>>(
           fromContract,
           'amount',
         );
@@ -86,7 +85,7 @@ export function ancAncUstLpProvideTx(
 
         const depositedUst = depositedUusd && stripUUSD(depositedUusd);
 
-        const received = pickAttributeValueByKey<uAncUstLP>(
+        const received = pickAttributeValueByKey<u<AncUstLP>>(
           fromContract,
           'share',
         );
@@ -97,13 +96,13 @@ export function ancAncUstLpProvideTx(
           !!$.ancPrice &&
           (big(big(depositedAnc).mul($.ancPrice.ANCPrice)).plus(
             depositedUst,
-          ) as uUST<Big>);
+          ) as u<UST<Big>>);
 
         const txFee =
           simulatedUst &&
           (big($.fixedGas).plus(
             min(simulatedUst.mul($.tax.taxRate), $.tax.maxTaxUUSD),
-          ) as uUST<Big>);
+          ) as u<UST<Big>>);
 
         return {
           value: null,

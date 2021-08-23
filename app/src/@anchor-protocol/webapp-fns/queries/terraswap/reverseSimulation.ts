@@ -1,4 +1,4 @@
-import { terraswap, uToken } from '@anchor-protocol/types';
+import { terraswap, Token } from '@anchor-protocol/types';
 import {
   mantle,
   MantleParams,
@@ -8,8 +8,8 @@ import {
 
 export interface TerraswapReverseSimulationWasmQuery {
   simulation: WasmQuery<
-    terraswap.Simulation<uToken>,
-    terraswap.SimulationResponse<uToken>
+    terraswap.Simulation<Token>,
+    terraswap.SimulationResponse<Token>
   >;
 }
 

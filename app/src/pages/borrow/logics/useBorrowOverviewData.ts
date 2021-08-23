@@ -1,4 +1,4 @@
-import { Rate, uUST } from '@anchor-protocol/types';
+import { Rate, u, UST } from '@anchor-protocol/types';
 import {
   computeBorrowAPR,
   computeBorrowedAmount,
@@ -41,7 +41,7 @@ export function useBorrowOverviewData() {
       const collateralsValue =
         overseerCollaterals && oraclePrices
           ? computeCollateralsTotalUST(overseerCollaterals, oraclePrices)
-          : (big(0) as uUST<Big>);
+          : (big(0) as u<UST<Big>>);
 
       const currentLtv =
         marketBorrowerInfo && overseerCollaterals && oraclePrices

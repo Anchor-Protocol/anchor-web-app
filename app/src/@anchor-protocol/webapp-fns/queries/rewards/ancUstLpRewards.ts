@@ -1,4 +1,4 @@
-import { anchorToken, cw20, uAncUstLP } from '@anchor-protocol/types';
+import { anchorToken, AncUstLP, cw20 } from '@anchor-protocol/types';
 import {
   mantle,
   MantleParams,
@@ -7,7 +7,7 @@ import {
 } from '@libs/webapp-fns';
 
 export interface RewardsAncUstLpRewardsWasmQuery {
-  userLPBalance: WasmQuery<cw20.Balance, cw20.BalanceResponse<uAncUstLP>>;
+  userLPBalance: WasmQuery<cw20.Balance, cw20.BalanceResponse<AncUstLP>>;
   userLPStakingInfo: WasmQuery<
     anchorToken.staking.StakerInfo,
     anchorToken.staking.StakerInfoResponse

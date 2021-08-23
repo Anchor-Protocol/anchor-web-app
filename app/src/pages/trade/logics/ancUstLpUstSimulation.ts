@@ -1,6 +1,6 @@
+import { ANC, AncUstLP, Rate, u, UST } from '@anchor-protocol/types';
 import { min } from '@libs/big-math';
-import { demicrofy, microfy } from '@anchor-protocol/notation';
-import { Rate, uANC, uAncUstLP, UST, uUST } from '@anchor-protocol/types';
+import { demicrofy, microfy } from '@libs/formatter';
 import big, { Big, BigSource } from 'big.js';
 import { Bank } from 'contexts/bank';
 import { AncPrice } from 'pages/trade/models/ancPrice';
@@ -9,7 +9,7 @@ import { AncUstLpSimulation } from 'pages/trade/models/ancUstLpSimulation';
 export function ancUstLpUstSimulation(
   ancPrice: AncPrice,
   ustAmount: UST,
-  fixedGas: uUST<BigSource>,
+  fixedGas: u<UST<BigSource>>,
   bank: Bank,
 ): AncUstLpSimulation<Big> {
   if (ustAmount.length === 0) {
@@ -17,14 +17,14 @@ export function ancUstLpUstSimulation(
   }
 
   const ust = microfy(ustAmount);
-  const anc = big(ust).div(ancPrice.ANCPrice) as uANC<Big>;
+  const anc = big(ust).div(ancPrice.ANCPrice) as u<ANC<Big>>;
 
-  const poolPrice = microfy(ancPrice.ANCPrice) as uUST<Big>;
+  const poolPrice = microfy(ancPrice.ANCPrice) as u<UST<Big>>;
 
   const lpFromTx = min(
     anc.mul(ancPrice.LPShare).div(ancPrice.ANCPoolSize),
     ust.mul(ancPrice.LPShare).div(ancPrice.USTPoolSize),
-  ) as uAncUstLP<Big>;
+  ) as u<AncUstLP<Big>>;
 
   const shareOfPool = lpFromTx.div(
     big(ancPrice.LPShare).plus(lpFromTx),
@@ -32,7 +32,7 @@ export function ancUstLpUstSimulation(
 
   const txFee = min(ust.mul(bank.tax.taxRate), bank.tax.maxTaxUUSD).plus(
     fixedGas,
-  ) as uUST<Big>;
+  ) as u<UST<Big>>;
 
   return {
     poolPrice,

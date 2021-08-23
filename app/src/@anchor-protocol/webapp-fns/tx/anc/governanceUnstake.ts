@@ -1,11 +1,17 @@
 import { AddressProvider } from '@anchor-protocol/anchor.js';
 import { validateInput } from '@anchor-protocol/anchor.js/dist/utils/validate-input';
 import { validateAddress } from '@anchor-protocol/anchor.js/dist/utils/validation/address';
+import { formatANCWithPostfixUnits } from '@anchor-protocol/notation';
+import { ANC, Rate, u, UST } from '@anchor-protocol/types';
+import { demicrofy } from '@libs/formatter';
 import {
-  demicrofy,
-  formatANCWithPostfixUnits,
-} from '@anchor-protocol/notation';
-import { Rate, uANC, uUST } from '@anchor-protocol/types';
+  MantleFetch,
+  pickAttributeValueByKey,
+  pickEvent,
+  pickRawLog,
+  TxResultRendering,
+  TxStreamPhase,
+} from '@libs/webapp-fns';
 import { pipe } from '@rx-stream/pipe';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import {
@@ -15,14 +21,6 @@ import {
   MsgExecuteContract,
   StdFee,
 } from '@terra-money/terra.js';
-import {
-  MantleFetch,
-  pickAttributeValueByKey,
-  pickEvent,
-  pickRawLog,
-  TxResultRendering,
-  TxStreamPhase,
-} from '@libs/webapp-fns';
 import { Observable } from 'rxjs';
 import { _catchTxError } from '../internal/_catchTxError';
 import { _createTxOptions } from '../internal/_createTxOptions';
@@ -32,9 +30,9 @@ import { TxHelper } from '../internal/TxHelper';
 
 export function ancGovernanceUnstakeTx(
   $: Parameters<typeof fabricateGovWithdrawVotingTokens>[0] & {
-    gasFee: uUST<number>;
+    gasFee: u<UST<number>>;
     gasAdjustment: Rate<number>;
-    fixedGas: uUST;
+    fixedGas: u<UST>;
     network: NetworkInfo;
     addressProvider: AddressProvider;
     mantleEndpoint: string;
@@ -68,7 +66,7 @@ export function ancGovernanceUnstakeTx(
       }
 
       try {
-        const amount = pickAttributeValueByKey<uANC>(fromContract, 'amount');
+        const amount = pickAttributeValueByKey<u<ANC>>(fromContract, 'amount');
 
         return {
           value: null,

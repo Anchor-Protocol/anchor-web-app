@@ -3,7 +3,6 @@ import {
   ANC_INPUT_MAXIMUM_INTEGER_POINTS,
   AUST_INPUT_MAXIMUM_DECIMAL_POINTS,
   AUST_INPUT_MAXIMUM_INTEGER_POINTS,
-  demicrofy,
   formatANCInput,
   formatAUSTInput,
   formatBAssetInput,
@@ -12,19 +11,16 @@ import {
   formatUSTInput,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
-  microfy,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { HumanAddr, Token, UST, uToken, uUST } from '@anchor-protocol/types';
+import { HumanAddr, Token, u, UST } from '@anchor-protocol/types';
 import {
   useAnchorWebapp,
   useTerraSendTx,
 } from '@anchor-protocol/webapp-provider';
-import { Modal, NativeSelect as MuiNativeSelect } from '@material-ui/core';
-import { Warning } from '@material-ui/icons';
-import { StreamStatus } from '@rx-stream/react';
 import { min } from '@libs/big-math';
+import { demicrofy, microfy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
@@ -32,13 +28,16 @@ import { NumberMuiInput } from '@libs/neumorphism-ui/components/NumberMuiInput';
 import { SelectAndTextInputContainer } from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
 import { TextInput } from '@libs/neumorphism-ui/components/TextInput';
 import { DialogProps, OpenDialog, useDialog } from '@libs/use-dialog';
+import { Modal, NativeSelect as MuiNativeSelect } from '@material-ui/core';
+import { Warning } from '@material-ui/icons';
+import { StreamStatus } from '@rx-stream/react';
 import { AccAddress } from '@terra-money/terra.js';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { Bank, useBank } from 'contexts/bank';
 import big, { Big, BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
+import { Bank, useBank } from 'contexts/bank';
 import { validateTxFee } from 'logics/validateTxFee';
 import { CurrencyInfo } from 'pages/send/models/currency';
 import React, {
@@ -86,7 +85,7 @@ function ComponentBase({
         value: 'usd',
         integerPoints: UST_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: UST_INPUT_MAXIMUM_DECIMAL_POINTS,
-        getWithdrawable: (bank: Bank, fixedGas: uUST<BigSource>) => {
+        getWithdrawable: (bank: Bank, fixedGas: u<UST<BigSource>>) => {
           return big(bank.userBalances.uUSD)
             .minus(
               min(
@@ -95,9 +94,9 @@ function ComponentBase({
               ),
             )
             .minus(fixedGas)
-            .toString() as uToken;
+            .toString() as u<Token>;
         },
-        getFormatWithdrawable: (bank: Bank, fixedGas: uUST<BigSource>) => {
+        getFormatWithdrawable: (bank: Bank, fixedGas: u<UST<BigSource>>) => {
           return formatUSTInput(
             demicrofy(
               big(bank.userBalances.uUSD)
@@ -107,7 +106,7 @@ function ComponentBase({
                     bank.tax.maxTaxUUSD,
                   ),
                 )
-                .minus(fixedGas) as uUST<Big>,
+                .minus(fixedGas) as u<UST<Big>>,
             ),
           );
         },
@@ -221,7 +220,7 @@ function ComponentBase({
     return min(
       microfy(amount as UST).mul(bank.tax.taxRate),
       bank.tax.maxTaxUUSD,
-    ).plus(fixedGas) as uUST<Big>;
+    ).plus(fixedGas) as u<UST<Big>>;
   }, [amount, bank.tax.maxTaxUUSD, bank.tax.taxRate, currency.value, fixedGas]);
 
   const invalidTxFee = useMemo(
@@ -254,7 +253,7 @@ function ComponentBase({
       toAddress: string,
       currency: CurrencyInfo,
       amount: Token,
-      txFee: uUST,
+      txFee: u<UST>,
       memo: string,
     ) => {
       if (!connectedWallet || !send) {
@@ -413,7 +412,7 @@ function ComponentBase({
             big(currency.getWithdrawable(bank, fixedGas)).lte(0)
           }
           onClick={() =>
-            submit(address, currency, amount, txFee.toString() as uUST, memo)
+            submit(address, currency, amount, txFee.toString() as u<UST>, memo)
           }
         >
           Send

@@ -1,5 +1,4 @@
-import { HumanAddr } from '@libs/types';
-import { uToken } from '../currencies';
+import { HumanAddr, Token, u } from '@libs/types';
 
 export namespace cw20 {
   export interface Balance {
@@ -8,18 +7,18 @@ export namespace cw20 {
     };
   }
 
-  export interface BalanceResponse<T extends uToken> {
-    balance: T;
+  export interface BalanceResponse<T extends Token> {
+    balance: u<T>;
   }
 
   export interface TokenInfo {
     token_info: {};
   }
 
-  export interface TokenInfoResponse<T extends uToken> {
+  export interface TokenInfoResponse<T extends Token> {
     decimals: number;
     name: string;
     symbol: symbol;
-    total_supply: T;
+    total_supply: u<T>;
   }
 }

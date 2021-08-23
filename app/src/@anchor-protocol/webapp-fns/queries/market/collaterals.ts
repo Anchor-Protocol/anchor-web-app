@@ -1,9 +1,9 @@
-import { JSDateTime, ubAsset, UST, uUST } from '@anchor-protocol/types';
+import { bAsset, JSDateTime, u, UST } from '@anchor-protocol/types';
 
 export interface MarketCollateralsHistory {
   timestamp: JSDateTime;
-  total_value: uUST;
-  collaterals: Array<{ symbol: string; collateral: ubAsset; price: UST }>;
+  total_value: u<UST>;
+  collaterals: Array<{ symbol: string; collateral: u<bAsset>; price: UST }>;
 }
 
 export interface MarketCollateralsData {

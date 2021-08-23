@@ -1,4 +1,4 @@
-import { cw20, moneyMarket, uANC } from '@anchor-protocol/types';
+import { ANC, cw20, moneyMarket } from '@anchor-protocol/types';
 import {
   mantle,
   MantleParams,
@@ -11,7 +11,7 @@ export interface RewardsClaimableUstBorrowRewardsWasmQuery {
     moneyMarket.market.BorrowerInfo,
     moneyMarket.market.BorrowerInfoResponse
   >;
-  userANCBalance: WasmQuery<cw20.Balance, cw20.BalanceResponse<uANC>>;
+  userANCBalance: WasmQuery<cw20.Balance, cw20.BalanceResponse<ANC>>;
   marketState: WasmQuery<
     moneyMarket.market.State,
     moneyMarket.market.StateResponse

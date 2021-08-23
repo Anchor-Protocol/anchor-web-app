@@ -2,15 +2,9 @@ import {
   AddressProvider,
   fabricateTerraswapSwapbLuna,
 } from '@anchor-protocol/anchor.js';
-import {
-  demicrofy,
-  formatFluidDecimalPoints,
-  formatLuna,
-} from '@anchor-protocol/notation';
-import { Rate, ubLuna, uLuna, uUST } from '@anchor-protocol/types';
-import { pipe } from '@rx-stream/pipe';
-import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
-import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
+import { formatLuna } from '@anchor-protocol/notation';
+import { bLuna, Luna, Rate, u, UST } from '@anchor-protocol/types';
+import { demicrofy, formatFluidDecimalPoints } from '@libs/formatter';
 import {
   MantleFetch,
   pickAttributeValue,
@@ -19,6 +13,9 @@ import {
   TxResultRendering,
   TxStreamPhase,
 } from '@libs/webapp-fns';
+import { pipe } from '@rx-stream/pipe';
+import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
+import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
 import big, { Big, BigSource } from 'big.js';
 import { Observable } from 'rxjs';
 import { _catchTxError } from '../internal/_catchTxError';
@@ -29,9 +26,9 @@ import { TxHelper } from '../internal/TxHelper';
 
 export function bondSwapTx(
   $: Parameters<typeof fabricateTerraswapSwapbLuna>[0] & {
-    gasFee: uUST<number>;
+    gasFee: u<UST<number>>;
     gasAdjustment: Rate<number>;
-    fixedGas: uUST;
+    fixedGas: u<UST>;
     network: NetworkInfo;
     addressProvider: AddressProvider;
     mantleEndpoint: string;
@@ -65,10 +62,10 @@ export function bondSwapTx(
       }
 
       try {
-        const boughtAmount = pickAttributeValue<uLuna>(fromContract, 18);
-        const paidAmount = pickAttributeValue<ubLuna>(fromContract, 17);
-        const tradingFee1 = pickAttributeValue<uLuna>(fromContract, 20);
-        const tradingFee2 = pickAttributeValue<uLuna>(fromContract, 21);
+        const boughtAmount = pickAttributeValue<u<Luna>>(fromContract, 18);
+        const paidAmount = pickAttributeValue<u<bLuna>>(fromContract, 17);
+        const tradingFee1 = pickAttributeValue<u<Luna>>(fromContract, 20);
+        const tradingFee2 = pickAttributeValue<u<Luna>>(fromContract, 21);
 
         const exchangeRate =
           boughtAmount &&
@@ -98,7 +95,9 @@ export function bondSwapTx(
                 name: 'Trading Fee',
                 value:
                   formatLuna(
-                    demicrofy(big(tradingFee1).plus(tradingFee2) as uLuna<Big>),
+                    demicrofy(
+                      big(tradingFee1).plus(tradingFee2) as u<Luna<Big>>,
+                    ),
                   ) + ' Luna',
               },
             helper.txFeeReceipt(),

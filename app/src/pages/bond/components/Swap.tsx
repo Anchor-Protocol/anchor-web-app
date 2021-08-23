@@ -1,22 +1,11 @@
 import {
-  demicrofy,
-  formatExecuteMsgNumber,
-  formatFluidDecimalPoints,
   formatLuna,
   formatLunaInput,
   formatUST,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
-  microfy,
 } from '@anchor-protocol/notation';
-import type {
-  bLuna,
-  Denom,
-  Luna,
-  Rate,
-  ubLuna,
-  uLuna,
-} from '@anchor-protocol/types';
+import type { bLuna, Denom, Luna, Rate, u } from '@anchor-protocol/types';
 import { terraswap } from '@anchor-protocol/types';
 import {
   terraswapSimulationQuery,
@@ -24,22 +13,28 @@ import {
   useBondBLunaPriceQuery,
   useBondSwapTx,
 } from '@anchor-protocol/webapp-provider';
-import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
-import { StreamStatus } from '@rx-stream/react';
+import {
+  demicrofy,
+  formatExecuteMsgNumber,
+  formatFluidDecimalPoints,
+  microfy,
+} from '@libs/formatter';
 import { isZero } from '@libs/is-zero';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { NumberMuiInput } from '@libs/neumorphism-ui/components/NumberMuiInput';
 import { SelectAndTextInputContainer } from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
 import { useResolveLast } from '@libs/use-resolve-last';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useTerraWebapp } from '@libs/webapp-provider';
-import { useBank } from 'contexts/bank';
+import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
+import { StreamStatus } from '@rx-stream/react';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
-import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { MessageBox } from 'components/MessageBox';
+import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { useBank } from 'contexts/bank';
 import { validateTxFee } from 'logics/validateTxFee';
 import React, {
   ChangeEvent,
@@ -84,7 +79,7 @@ export function Swap() {
   const [getAmount, setGetAmount] = useState<Luna>('' as Luna);
 
   const [resolveSimulation, simulation] = useResolveLast<
-    SwapSimulation<uLuna, ubLuna> | undefined | null
+    SwapSimulation<Luna, bLuna> | undefined | null
   >(() => null);
 
   const [burnCurrency, setBurnCurrency] = useState<Item>(
@@ -164,7 +159,7 @@ export function Swap() {
         const burnAmount: bLuna = nextBurnAmount as bLuna;
         setBurnAmount(burnAmount);
 
-        const amount = microfy(burnAmount).toString() as ubLuna;
+        const amount = microfy(burnAmount).toString() as u<bLuna>;
 
         resolveSimulation(
           terraswapSimulationQuery({
@@ -190,7 +185,7 @@ export function Swap() {
           }).then(({ simulation }) => {
             return simulation
               ? swapGetSimulation(
-                  simulation as terraswap.SimulationResponse<uLuna>,
+                  simulation as terraswap.SimulationResponse<Luna>,
                   amount,
                   bank.tax,
                 )
@@ -225,7 +220,7 @@ export function Swap() {
         const getAmount: Luna = nextGetAmount as Luna;
         setGetAmount(getAmount);
 
-        const amount = microfy(getAmount).toString() as uLuna;
+        const amount = microfy(getAmount).toString() as u<Luna>;
 
         resolveSimulation(
           terraswapSimulationQuery({
@@ -251,7 +246,7 @@ export function Swap() {
           }).then(({ simulation }) => {
             return simulation
               ? swapBurnSimulation(
-                  simulation as terraswap.SimulationResponse<uLuna>,
+                  simulation as terraswap.SimulationResponse<Luna>,
                   amount,
                   bank.tax,
                 )

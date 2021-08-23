@@ -7,12 +7,19 @@ import {
   validateIsNumber,
 } from '@anchor-protocol/anchor.js/dist/utils/validation/number';
 import {
-  demicrofy,
   formatANCWithPostfixUnits,
   formatUSTWithPostfixUnits,
-  stripUUSD,
 } from '@anchor-protocol/notation';
-import { Rate, uANC, UST, uUST } from '@anchor-protocol/types';
+import { ANC, Rate, u, UST } from '@anchor-protocol/types';
+import { demicrofy, stripUUSD } from '@libs/formatter';
+import {
+  MantleFetch,
+  pickAttributeValueByKey,
+  pickEvent,
+  pickRawLog,
+  TxResultRendering,
+  TxStreamPhase,
+} from '@libs/webapp-fns';
 import { pipe } from '@rx-stream/pipe';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import {
@@ -22,14 +29,6 @@ import {
   MsgExecuteContract,
   StdFee,
 } from '@terra-money/terra.js';
-import {
-  MantleFetch,
-  pickAttributeValueByKey,
-  pickEvent,
-  pickRawLog,
-  TxResultRendering,
-  TxStreamPhase,
-} from '@libs/webapp-fns';
 import big, { Big } from 'big.js';
 import { Observable } from 'rxjs';
 import { _catchTxError } from '../internal/_catchTxError';
@@ -40,9 +39,9 @@ import { TxHelper } from '../internal/TxHelper';
 
 export function ancSellTx(
   $: Parameters<typeof fabricatebSell>[0] & {
-    gasFee: uUST<number>;
+    gasFee: u<UST<number>>;
     gasAdjustment: Rate<number>;
-    fixedGas: uUST;
+    fixedGas: u<UST>;
     network: NetworkInfo;
     addressProvider: AddressProvider;
     mantleEndpoint: string;
@@ -78,25 +77,25 @@ export function ancSellTx(
 
       try {
         // sold
-        const offer_amount = pickAttributeValueByKey<uUST>(
+        const offer_amount = pickAttributeValueByKey<u<UST>>(
           fromContract,
           'offer_amount',
         );
         // earned
-        const return_amount = pickAttributeValueByKey<uANC>(
+        const return_amount = pickAttributeValueByKey<u<ANC>>(
           fromContract,
           'return_amount',
         );
-        const spread_amount = pickAttributeValueByKey<uUST>(
+        const spread_amount = pickAttributeValueByKey<u<UST>>(
           fromContract,
           'spread_amount',
         );
-        const commission_amount = pickAttributeValueByKey<uUST>(
+        const commission_amount = pickAttributeValueByKey<u<UST>>(
           fromContract,
           'commission_amount',
         );
         const transfer_amount = stripUUSD(
-          pickAttributeValueByKey<uUST>(
+          pickAttributeValueByKey<u<UST>>(
             transfer,
             'amount',
             (attrs) => attrs[0],
@@ -109,9 +108,9 @@ export function ancSellTx(
             : undefined;
         const tradingFee =
           spread_amount && commission_amount
-            ? (big(spread_amount).plus(commission_amount) as uUST<Big>)
+            ? (big(spread_amount).plus(commission_amount) as u<UST<Big>>)
             : undefined;
-        const txFee = big($.fixedGas).plus(transfer_amount) as uUST<Big>;
+        const txFee = big($.fixedGas).plus(transfer_amount) as u<UST<Big>>;
 
         return {
           value: null,

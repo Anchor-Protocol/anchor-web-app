@@ -1,5 +1,5 @@
-import { formatRate } from '@anchor-protocol/notation';
 import { Rate } from '@anchor-protocol/types';
+import { formatRate } from '@libs/formatter';
 import { darkTheme } from '@libs/neumorphism-ui/themes/darkTheme';
 import { lightTheme } from '@libs/neumorphism-ui/themes/lightTheme';
 import { scaleLinear } from 'd3-scale';

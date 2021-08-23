@@ -1,17 +1,17 @@
 import { ExecuteMsg } from '@anchor-protocol/anchor.js';
-import {
-  formatExecuteMsgNumber,
-  MAX_EXECUTE_MSG_DECIMALS,
-} from '@anchor-protocol/notation';
-import { moneyMarket, Rate, uANC } from '@anchor-protocol/types';
+import { ANC, moneyMarket, Rate, u } from '@anchor-protocol/types';
 import {
   useAnchorWebapp,
   useGovDistributionModelUpdateConfigQuery,
 } from '@anchor-protocol/webapp-provider';
-import { InputAdornment } from '@material-ui/core';
+import {
+  formatExecuteMsgNumber,
+  MAX_EXECUTE_MSG_DECIMALS,
+} from '@libs/formatter';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
+import { InputAdornment } from '@material-ui/core';
 import big from 'big.js';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
@@ -137,13 +137,13 @@ export function PollCreateModifyANCDistribution() {
       if (borrowerEmissionCap.length > 0) {
         distributionModelConfig['emission_cap'] = formatExecuteMsgNumber(
           borrowerEmissionCap,
-        ) as uANC;
+        ) as u<ANC>;
       }
 
       if (borrowerEmissionFloor.length > 0) {
         distributionModelConfig['emission_floor'] = formatExecuteMsgNumber(
           borrowerEmissionFloor,
-        ) as uANC;
+        ) as u<ANC>;
       }
 
       if (incrementMultiplier.length > 0) {

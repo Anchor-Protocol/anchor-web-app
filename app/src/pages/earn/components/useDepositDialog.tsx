@@ -1,17 +1,15 @@
 import {
-  demicrofy,
   formatUST,
   formatUSTInput,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { UST, uUST } from '@anchor-protocol/types';
+import { u, UST } from '@anchor-protocol/types';
 import {
   useEarnDepositForm,
   useEarnDepositTx,
 } from '@anchor-protocol/webapp-provider';
-import { InputAdornment, Modal } from '@material-ui/core';
-import { StreamStatus } from '@rx-stream/react';
+import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
@@ -19,6 +17,8 @@ import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
 import { useConfirm } from '@libs/neumorphism-ui/components/useConfirm';
 import type { DialogProps, OpenDialog } from '@libs/use-dialog';
 import { useDialog } from '@libs/use-dialog';
+import { InputAdornment, Modal } from '@material-ui/core';
+import { StreamStatus } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
@@ -76,7 +76,7 @@ function ComponentBase({
   const proceed = useCallback(
     async (
       depositAmount: UST,
-      txFee: uUST<BigSource> | undefined,
+      txFee: u<UST<BigSource>> | undefined,
       confirm: ReactNode,
     ) => {
       if (!connectedWallet || !deposit) {
@@ -97,7 +97,7 @@ function ComponentBase({
 
       deposit({
         depositAmount,
-        txFee: txFee!.toString() as uUST,
+        txFee: txFee!.toString() as u<UST>,
       });
     },
     [connectedWallet, deposit, openConfirm],

@@ -1,9 +1,10 @@
-import { demicrofy, formatANC, formatRate } from '@anchor-protocol/notation';
+import { formatANC } from '@anchor-protocol/notation';
 import {
   anchorToken,
   ContractAddress,
   moneyMarket,
 } from '@anchor-protocol/types';
+import { demicrofy, formatRate } from '@libs/formatter';
 import { AccountLink } from 'components/links/AccountLink';
 import { createElement, ReactNode } from 'react';
 

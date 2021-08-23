@@ -1,4 +1,4 @@
-import { cw20, uANC } from '@anchor-protocol/types';
+import { ANC, cw20 } from '@anchor-protocol/types';
 import {
   mantle,
   MantleParams,
@@ -7,7 +7,7 @@ import {
 } from '@libs/webapp-fns';
 
 export interface AncBalanceWasmQuery {
-  ancBalance: WasmQuery<cw20.Balance, cw20.BalanceResponse<uANC>>;
+  ancBalance: WasmQuery<cw20.Balance, cw20.BalanceResponse<ANC>>;
 }
 
 export type AncBalance = WasmQueryData<AncBalanceWasmQuery>;

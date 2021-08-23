@@ -1,10 +1,10 @@
 import {
-  demicrofy,
   formatANCWithPostfixUnits,
   formatUST,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { ANC, UST } from '@anchor-protocol/types';
+import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';

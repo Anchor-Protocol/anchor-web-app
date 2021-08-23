@@ -1,4 +1,4 @@
-import type { Rate, ubAsset } from '@anchor-protocol/types';
+import type { bAsset, Rate, u } from '@anchor-protocol/types';
 import { moneyMarket } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
 
@@ -10,8 +10,8 @@ export function computeRedeemCollateralMaxAmount(
   overseerCollaterals: moneyMarket.overseer.CollateralsResponse,
   oraclePrices: moneyMarket.oracle.PricesResponse,
   maxLtv: Rate<BigSource>,
-): ubAsset<Big> {
-  return big(0) as ubAsset<Big>;
+): u<bAsset<Big>> {
+  return big(0) as u<bAsset<Big>>;
   //const withdrawable = big(borrower.balance).minus(
   //  big(borrowInfo.loan_amount).div(bLunaMaxLtv).div(oracle.rate),
   //);

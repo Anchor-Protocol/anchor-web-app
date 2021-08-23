@@ -1,5 +1,5 @@
 import type { Rate } from '@anchor-protocol/types';
-import { CW20Addr, moneyMarket, ubAsset } from '@anchor-protocol/types';
+import { bAsset, CW20Addr, moneyMarket, u } from '@anchor-protocol/types';
 import big, { Big, BigSource } from 'big.js';
 import { computeCollateralsTotalUST } from './computeCollateralsTotalUST';
 
@@ -28,7 +28,7 @@ export const computeLtvToRedeemAmount =
 
     const increasedUST = collateralsVaue.minus(nextTotalLockedUST);
 
-    return increasedUST.div(oracle.price) as ubAsset<Big>;
+    return increasedUST.div(oracle.price) as u<bAsset<Big>>;
 
     //return big(borrower.balance).minus(
     //  big(borrowInfo.loan_amount).div(big(ltv).mul(oracle.rate)),

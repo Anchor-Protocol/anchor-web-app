@@ -1,4 +1,4 @@
-import { ContractAddress, moneyMarket, uUST } from '@anchor-protocol/types';
+import { ContractAddress, moneyMarket, u, UST } from '@anchor-protocol/types';
 import { AnchorTokenBalances, AncPrice } from '@anchor-protocol/webapp-fns';
 import { sum, vectorMultiply } from '@libs/big-math';
 import { Big } from 'big.js';
@@ -10,7 +10,7 @@ export function computeHoldings(
   oraclePrices: moneyMarket.oracle.PricesResponse | undefined,
 ) {
   if (!ancPrice || !oraclePrices) {
-    return '0' as uUST;
+    return '0' as u<UST>;
   }
 
   const holdingsVector = [
@@ -32,5 +32,5 @@ export function computeHoldings(
 
   const holdingsUst = vectorMultiply(holdingsVector, holdingsPriceVector);
 
-  return sum(...holdingsUst) as uUST<Big>;
+  return sum(...holdingsUst) as u<UST<Big>>;
 }

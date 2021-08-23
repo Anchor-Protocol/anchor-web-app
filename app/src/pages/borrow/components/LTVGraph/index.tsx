@@ -1,6 +1,5 @@
-import { formatRate } from '@anchor-protocol/notation';
 import type { Rate } from '@anchor-protocol/types';
-import { InfoOutlined } from '@material-ui/icons';
+import { formatRate } from '@libs/formatter';
 import {
   HorizontalGraphBar,
   Rect,
@@ -8,6 +7,7 @@ import {
 import { HorizontalGraphSlider } from '@libs/neumorphism-ui/components/HorizontalGraphSlider';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
+import { InfoOutlined } from '@material-ui/icons';
 import big, { Big, BigSource } from 'big.js';
 import React, { useCallback, useMemo } from 'react';
 import { useMediaQuery } from 'react-responsive';

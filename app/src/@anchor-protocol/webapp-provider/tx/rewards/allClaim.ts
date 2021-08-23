@@ -1,9 +1,9 @@
-import { uUST } from '@anchor-protocol/types';
 import { rewardsAllClaimTx } from '@anchor-protocol/webapp-fns';
+import { u, UST } from '@libs/types';
+import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
 import { useStream } from '@rx-stream/react';
 
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
 import { useCallback } from 'react';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
@@ -40,7 +40,7 @@ export function useRewardsAllClaimTx() {
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        fixedGas: constants.fixedGas.toString() as uUST,
+        fixedGas: constants.fixedGas.toString() as u<UST>,
         gasFee: constants.gasFee,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,

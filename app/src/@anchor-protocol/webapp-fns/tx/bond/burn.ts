@@ -2,15 +2,9 @@ import {
   AddressProvider,
   fabricatebAssetUnbond,
 } from '@anchor-protocol/anchor.js';
-import {
-  demicrofy,
-  formatFluidDecimalPoints,
-  formatLuna,
-} from '@anchor-protocol/notation';
-import { Rate, ubLuna, uLuna, uUST } from '@anchor-protocol/types';
-import { pipe } from '@rx-stream/pipe';
-import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
-import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
+import { formatLuna } from '@anchor-protocol/notation';
+import { bLuna, Luna, Rate, u, UST } from '@anchor-protocol/types';
+import { demicrofy, formatFluidDecimalPoints } from '@libs/formatter';
 import {
   MantleFetch,
   pickAttributeValueByKey,
@@ -19,6 +13,9 @@ import {
   TxResultRendering,
   TxStreamPhase,
 } from '@libs/webapp-fns';
+import { pipe } from '@rx-stream/pipe';
+import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
+import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
 import big, { BigSource } from 'big.js';
 import { Observable } from 'rxjs';
 import { _catchTxError } from '../internal/_catchTxError';
@@ -29,9 +26,9 @@ import { TxHelper } from '../internal/TxHelper';
 
 export function bondBurnTx(
   $: Parameters<typeof fabricatebAssetUnbond>[0] & {
-    gasFee: uUST<number>;
+    gasFee: u<UST<number>>;
     gasAdjustment: Rate<number>;
-    fixedGas: uUST;
+    fixedGas: u<UST>;
     network: NetworkInfo;
     addressProvider: AddressProvider;
     mantleEndpoint: string;
@@ -65,12 +62,12 @@ export function bondBurnTx(
       }
 
       try {
-        const burnedAmount = pickAttributeValueByKey<uLuna>(
+        const burnedAmount = pickAttributeValueByKey<u<Luna>>(
           fromContract,
           'amount',
           (attrs) => attrs[0],
         );
-        const expectedAmount = pickAttributeValueByKey<ubLuna>(
+        const expectedAmount = pickAttributeValueByKey<u<bLuna>>(
           fromContract,
           'amount',
           (attrs) => attrs.reverse()[0],

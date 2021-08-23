@@ -1,11 +1,11 @@
-import { formatExecuteMsgNumber } from '@anchor-protocol/notation';
-import { ANC, uUST } from '@anchor-protocol/types';
+import { ANC, u, UST } from '@anchor-protocol/types';
 import { ancSellTx } from '@anchor-protocol/webapp-fns';
 import { useAncPriceQuery } from '@anchor-protocol/webapp-provider';
+import { formatExecuteMsgNumber } from '@libs/formatter';
+import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
 import { useStream } from '@rx-stream/react';
 
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
 import big from 'big.js';
 import { useCallback } from 'react';
 import { useAnchorWebapp } from '../../contexts/context';
@@ -45,7 +45,7 @@ export function useAncSellTx() {
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        fixedGas: constants.fixedGas.toString() as uUST,
+        fixedGas: constants.fixedGas.toString() as u<UST>,
         gasFee: constants.gasFee,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,

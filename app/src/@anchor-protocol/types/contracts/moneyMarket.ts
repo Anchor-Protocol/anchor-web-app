@@ -5,9 +5,10 @@ import {
   NativeDenom,
   Num,
   Rate,
+  u,
   UST,
 } from '@libs/types';
-import { uANC, uaToken, ubAsset, uUST } from '../currencies';
+import { ANC, aToken, bAsset } from '../currencies';
 
 export namespace moneyMarket {
   export namespace custody {
@@ -25,8 +26,8 @@ export namespace moneyMarket {
      */
     export interface BorrowerResponse {
       borrower: HumanAddr;
-      balance: uUST;
-      spendable: uUST;
+      balance: u<UST>;
+      spendable: u<UST>;
     }
 
     /**
@@ -103,8 +104,8 @@ export namespace moneyMarket {
      */
     export interface ConfigResponse {
       owner: HumanAddr;
-      emission_cap: uANC;
-      emission_floor: uANC;
+      emission_cap: u<ANC>;
+      emission_floor: u<ANC>;
       increment_multiplier: Rate;
       decrement_multiplier: Rate;
     }
@@ -112,8 +113,8 @@ export namespace moneyMarket {
     export interface UpdateConfig {
       update_config: {
         owner?: HumanAddr;
-        emission_cap?: uANC;
-        emission_floor?: uANC;
+        emission_cap?: u<ANC>;
+        emission_floor?: u<ANC>;
         increment_multiplier?: Rate;
         decrement_multiplier?: Rate;
       };
@@ -126,9 +127,9 @@ export namespace moneyMarket {
      */
     export interface BorrowRate {
       borrow_rate: {
-        market_balance: uUST;
-        total_liabilities: uUST;
-        total_reserves: uUST;
+        market_balance: u<UST>;
+        total_liabilities: u<UST>;
+        total_reserves: u<UST>;
       };
     }
 
@@ -182,8 +183,8 @@ export namespace moneyMarket {
       borrower: HumanAddr;
       interest_index: Num;
       reward_index: Num;
-      loan_amount: uUST;
-      pending_rewards: uANC;
+      loan_amount: u<UST>;
+      pending_rewards: u<ANC>;
     }
 
     /**
@@ -254,8 +255,8 @@ export namespace moneyMarket {
      * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/money-market/market#stateresponse
      */
     export interface StateResponse {
-      total_liabilities: uUST;
-      total_reserves: uUST;
+      total_liabilities: u<UST>;
+      total_reserves: u<UST>;
       last_interest_updated: number;
       last_reward_updated: number;
       global_interest_index: Num;
@@ -406,7 +407,7 @@ export namespace moneyMarket {
      */
     export interface CollateralsResponse {
       borrower: HumanAddr;
-      collaterals: Array<[CW20Addr, ubAsset]>;
+      collaterals: Array<[CW20Addr, u<bAsset>]>;
     }
 
     /**
@@ -462,7 +463,7 @@ export namespace moneyMarket {
      */
     export interface EpochStateResponse {
       deposit_rate: Rate;
-      prev_aterra_supply: uaToken;
+      prev_aterra_supply: u<aToken>;
       prev_exchange_rate: Rate;
       last_executed_height: number;
     }

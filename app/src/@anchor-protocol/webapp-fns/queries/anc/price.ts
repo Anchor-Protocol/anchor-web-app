@@ -1,22 +1,22 @@
 import {
+  ANC,
+  AncUstLP,
   terraswap,
-  uANC,
-  uAncUstLP,
+  Token,
+  u,
   UST,
-  uToken,
-  uUST,
 } from '@anchor-protocol/types';
 import { mantle, MantleParams, WasmQuery } from '@libs/webapp-fns';
 import big from 'big.js';
 
 export interface AncPriceWasmQuery {
-  ancPrice: WasmQuery<terraswap.Pool, terraswap.PoolResponse<uToken>>;
+  ancPrice: WasmQuery<terraswap.Pool, terraswap.PoolResponse<Token>>;
 }
 
 export interface AncPrice {
-  ANCPoolSize: uANC;
-  USTPoolSize: uUST;
-  LPShare: uAncUstLP;
+  ANCPoolSize: u<ANC>;
+  USTPoolSize: u<UST>;
+  LPShare: u<AncUstLP>;
   ANCPrice: UST;
 }
 
@@ -43,9 +43,9 @@ export async function ancPriceQuery({
     ...params,
   });
 
-  const ANCPoolSize = assets[0].amount as unknown as uANC;
-  const USTPoolSize = assets[1].amount as unknown as uUST;
-  const LPShare = total_share as unknown as uAncUstLP;
+  const ANCPoolSize = assets[0].amount as unknown as u<ANC>;
+  const USTPoolSize = assets[1].amount as unknown as u<UST>;
+  const LPShare = total_share as unknown as u<AncUstLP>;
   const ANCPrice = big(USTPoolSize)
     .div(+ANCPoolSize === 0 ? '1' : ANCPoolSize)
     .toString() as UST;

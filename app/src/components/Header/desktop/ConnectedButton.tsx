@@ -1,9 +1,6 @@
 import { Wallet } from '@anchor-protocol/icons';
-import {
-  demicrofy,
-  formatUSTWithPostfixUnits,
-  truncate,
-} from '@anchor-protocol/notation';
+import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
+import { demicrofy, truncate } from '@libs/formatter';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { Bank } from 'contexts/bank';
 import React, { ButtonHTMLAttributes, DetailedHTMLProps } from 'react';

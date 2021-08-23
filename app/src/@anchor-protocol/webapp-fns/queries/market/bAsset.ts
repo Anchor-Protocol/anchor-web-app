@@ -1,4 +1,4 @@
-import { cw20, moneyMarket, ubLuna } from '@anchor-protocol/types';
+import { bLuna, cw20, moneyMarket } from '@anchor-protocol/types';
 import {
   mantle,
   MantleParams,
@@ -7,7 +7,7 @@ import {
 } from '@libs/webapp-fns';
 
 export interface MarketBAssetWasmQuery {
-  bLunaBalance: WasmQuery<cw20.Balance, cw20.BalanceResponse<ubLuna>>;
+  bLunaBalance: WasmQuery<cw20.Balance, cw20.BalanceResponse<bLuna>>;
   oraclePrice: WasmQuery<
     moneyMarket.oracle.Price,
     moneyMarket.oracle.PriceResponse

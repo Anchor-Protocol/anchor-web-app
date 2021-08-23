@@ -1,9 +1,6 @@
-import {
-  demicrofy,
-  formatRate,
-  formatUSTWithPostfixUnits,
-} from '@anchor-protocol/notation';
-import { Rate, uUST } from '@anchor-protocol/types';
+import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
+import { Rate, u, UST } from '@anchor-protocol/types';
+import { demicrofy, formatRate } from '@libs/formatter';
 import { HorizontalGraphBar } from '@libs/neumorphism-ui/components/HorizontalGraphBar';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
@@ -24,7 +21,7 @@ export interface BorrowLimitGraphProps {
   safeLtv: Rate<BigSource>;
   maxLtv: Rate<BigSource>;
   dangerLtv: Rate<BigSource>;
-  borrowLimit: uUST<BigSource>;
+  borrowLimit: u<UST<BigSource>>;
 }
 
 export function BorrowLimitGraph({

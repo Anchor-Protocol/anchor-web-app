@@ -1,4 +1,4 @@
-import { Rate, ubAsset, uUST } from '@anchor-protocol/types';
+import { bAsset, Rate, u, UST } from '@anchor-protocol/types';
 import {
   prettifyBAssetSymbol,
   useBorrowBorrowerQuery,
@@ -35,7 +35,7 @@ export function Borrow() {
 
   const { totalCollateralValue, collaterals } = useMemo(() => {
     if (!overseerCollaterals || !oraclePrices || !overseerWhitelist) {
-      return { totalCollateralValue: big(0) as uUST<Big>, collaterals: [] };
+      return { totalCollateralValue: big(0) as u<UST<Big>>, collaterals: [] };
     }
 
     const vector = overseerWhitelist.elems
@@ -49,7 +49,7 @@ export function Borrow() {
 
     const ustAmounts = vectorMultiply(lockedAmounts, prices);
 
-    const totalCollateralValue = sum(...ustAmounts) as uUST<Big>;
+    const totalCollateralValue = sum(...ustAmounts) as u<UST<Big>>;
 
     return {
       totalCollateralValue,
@@ -60,8 +60,8 @@ export function Borrow() {
             ratio: (totalCollateralValue.gt(0)
               ? big(ustAmount).div(totalCollateralValue).toFixed()
               : '0') as Rate,
-            ust: ustAmount.toFixed() as uUST,
-            asset: lockedAmounts[i] as ubAsset,
+            ust: ustAmount.toFixed() as u<UST>,
+            asset: lockedAmounts[i] as u<bAsset>,
           } as CollateralItem),
       ),
     };

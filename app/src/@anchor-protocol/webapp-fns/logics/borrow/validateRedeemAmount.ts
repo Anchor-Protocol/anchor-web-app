@@ -1,11 +1,11 @@
-import { microfy } from '@anchor-protocol/notation';
-import type { bAsset, ubAsset } from '@anchor-protocol/types';
+import type { bAsset, u } from '@anchor-protocol/types';
+import { microfy } from '@libs/formatter';
 import { BigSource } from 'big.js';
 import { ReactNode } from 'react';
 
 export function validateRedeemAmount(
   redeemAmount: bAsset,
-  withdrawableMaxAmount: ubAsset<BigSource> | undefined,
+  withdrawableMaxAmount: u<bAsset<BigSource>> | undefined,
 ): ReactNode {
   if (redeemAmount.length === 0 || !withdrawableMaxAmount) {
     return undefined;

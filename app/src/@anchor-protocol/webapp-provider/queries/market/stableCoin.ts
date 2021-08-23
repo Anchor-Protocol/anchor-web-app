@@ -1,4 +1,4 @@
-import { HumanAddr, uUST } from '@anchor-protocol/types';
+import { HumanAddr, u, UST } from '@anchor-protocol/types';
 import {
   MarketStableCoin,
   marketStableCoinQuery,
@@ -16,9 +16,9 @@ const queryFn = createQueryFn(
     mantleFetch: MantleFetch,
     interestContract: HumanAddr,
     overseerContract: HumanAddr,
-    uUSTBalance: uUST | undefined,
-    totalReserves: uUST | undefined,
-    totalLiabilities: uUST | undefined,
+    uUSTBalance: u<UST> | undefined,
+    totalReserves: u<UST> | undefined,
+    totalLiabilities: u<UST> | undefined,
   ) => {
     return uUSTBalance && totalReserves && totalLiabilities
       ? marketStableCoinQuery({
