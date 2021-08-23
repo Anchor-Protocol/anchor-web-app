@@ -7,3 +7,4 @@ export * from './contexts/context';
 export * from './contexts/bank';
 
 export * from './hooks/useRefetchQueries';
+export * from './hooks/useGasPrice';
