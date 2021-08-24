@@ -28,7 +28,4 @@ export const links = {
   terra: 'https://terra.money/',
 };
 
-export const sendinblueApiKey =
-  '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';
-
 // force build : 21.08.24

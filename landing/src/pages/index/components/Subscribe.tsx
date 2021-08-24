@@ -1,7 +1,7 @@
-import { InputBase } from '@material-ui/core';
-import { MailOutline } from '@material-ui/icons';
-import { useEmailInput, useSendinblueSubscription } from '@libs/sendinblue';
-import { links, sendinblueApiKey } from 'env';
+//import { useEmailInput, useSendinblueSubscription } from '@libs/sendinblue';
+//import { InputBase } from '@material-ui/core';
+//import { MailOutline } from '@material-ui/icons';
+import { links } from 'env';
 import styled from 'styled-components';
 
 export interface SubscribeProps {
@@ -9,40 +9,41 @@ export interface SubscribeProps {
 }
 
 function SubscribeBase({ className }: SubscribeProps) {
-  const [email, setEmail, validEmail] = useEmailInput();
+  //const [email, setEmail, validEmail] = useEmailInput();
+  //
+  //const [subscribeEmail, { status }] = useSendinblueSubscription('EMPTY');
 
-  const [subscribeEmail, { status }] =
-    useSendinblueSubscription(sendinblueApiKey);
+  // TODO Remove until security check
 
   return (
     <section className={className}>
-      <p>
-        Sign up for our newsletter to receive product news, updates and special
-        invites.
-      </p>
-      {status === 'in-progress' ? (
-        <div className="email">
-          <MailOutline /> Please wait...
-        </div>
-      ) : status === 'success' ? (
-        <div className="email">
-          <MailOutline /> Thanks for subscribing.
-        </div>
-      ) : (
-        <div className="email">
-          <MailOutline />
-          <InputBase
-            type="email"
-            fullWidth
-            placeholder="Enter Your email address"
-            value={email}
-            onChange={({ target }) => setEmail(target.value)}
-          />
-          <button disabled={!validEmail} onClick={() => subscribeEmail(email)}>
-            Subscribe
-          </button>
-        </div>
-      )}
+      {/*<p>*/}
+      {/*  Sign up for our newsletter to receive product news, updates and special*/}
+      {/*  invites.*/}
+      {/*</p>*/}
+      {/*{status === 'in-progress' ? (*/}
+      {/*  <div className="email">*/}
+      {/*    <MailOutline /> Please wait...*/}
+      {/*  </div>*/}
+      {/*) : status === 'success' ? (*/}
+      {/*  <div className="email">*/}
+      {/*    <MailOutline /> Thanks for subscribing.*/}
+      {/*  </div>*/}
+      {/*) : (*/}
+      {/*  <div className="email">*/}
+      {/*    <MailOutline />*/}
+      {/*    <InputBase*/}
+      {/*      type="email"*/}
+      {/*      fullWidth*/}
+      {/*      placeholder="Enter Your email address"*/}
+      {/*      value={email}*/}
+      {/*      onChange={({ target }) => setEmail(target.value)}*/}
+      {/*    />*/}
+      {/*    <button disabled={!validEmail} onClick={() => subscribeEmail(email)}>*/}
+      {/*      Subscribe*/}
+      {/*    </button>*/}
+      {/*  </div>*/}
+      {/*)}*/}
       <div className="links">
         <a href={links.contact} target="_blank" rel="noreferrer">
           CONTACT
