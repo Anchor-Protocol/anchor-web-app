@@ -2,7 +2,7 @@ import {
   AddressProvider,
   fabricateGovCastVote,
 } from '@anchor-protocol/anchor.js';
-import { Rate, u, UST } from '@anchor-protocol/types';
+import { Gas, Rate, u, UST } from '@anchor-protocol/types';
 import {
   MantleFetch,
   TxResultRendering,
@@ -20,7 +20,7 @@ import { TxHelper } from '../internal/TxHelper';
 
 export function govVoteTx(
   $: Parameters<typeof fabricateGovCastVote>[0] & {
-    gasFee: u<UST<number>>;
+    gasFee: Gas;
     gasAdjustment: Rate<number>;
     fixedGas: u<UST>;
     network: NetworkInfo;

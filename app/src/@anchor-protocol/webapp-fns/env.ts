@@ -1,4 +1,4 @@
-import { Rate, u, UST } from '@anchor-protocol/types';
+import { Gas, Rate, u, UST } from '@anchor-protocol/types';
 import { AnchorContants, ExpandAddressMap } from './types';
 
 export const DEFAULT_ADDESS_MAP: Record<string, ExpandAddressMap> = {
@@ -108,19 +108,20 @@ export const DEFAULT_ADDESS_MAP: Record<string, ExpandAddressMap> = {
 
 export const DEFAULT_ANCHOR_TX_CONSTANTS: Record<string, AnchorContants> = {
   mainnet: {
-    gasFee: 1_000_000 as u<UST<number>>,
+    // FIXME re-named gasFee -> gasWanted
+    gasWanted: 1_000_000 as Gas,
     fixedGas: 635_000 as u<UST<number>>,
     blocksPerYear: 4_656_810,
     gasAdjustment: 1.6 as Rate<number>,
   },
   testnet: {
-    gasFee: 1_000_000 as u<UST<number>>,
+    gasWanted: 1_000_000 as Gas,
     fixedGas: 635_000 as u<UST<number>>,
     blocksPerYear: 4_656_810,
     gasAdjustment: 1.6 as Rate<number>,
   },
   bombay: {
-    gasFee: 1_000_000 as u<UST<number>>,
+    gasWanted: 1_000_000 as Gas,
     fixedGas: 635_000 as u<UST<number>>,
     blocksPerYear: 4_656_810,
     gasAdjustment: 1.6 as Rate<number>,

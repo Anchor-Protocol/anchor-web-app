@@ -3,7 +3,7 @@ import {
   fabricateStakingUnbond,
 } from '@anchor-protocol/anchor.js';
 import { formatLP } from '@anchor-protocol/notation';
-import { AncUstLP, Rate, u, UST } from '@anchor-protocol/types';
+import { AncUstLP, Gas, Rate, u, UST } from '@anchor-protocol/types';
 import { demicrofy } from '@libs/formatter';
 import {
   MantleFetch,
@@ -25,7 +25,7 @@ import { TxHelper } from '../internal/TxHelper';
 
 export function ancAncUstLpUnstakeTx(
   $: Parameters<typeof fabricateStakingUnbond>[0] & {
-    gasFee: u<UST<number>>;
+    gasFee: Gas;
     gasAdjustment: Rate<number>;
     fixedGas: u<UST>;
     network: NetworkInfo;

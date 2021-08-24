@@ -7,7 +7,7 @@ import {
   formatLP,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
-import { ANC, AncUstLP, Rate, u, UST } from '@anchor-protocol/types';
+import { ANC, AncUstLP, Gas, Rate, u, UST } from '@anchor-protocol/types';
 import { demicrofy, stripUUSD } from '@libs/formatter';
 import {
   MantleFetch,
@@ -30,7 +30,7 @@ import { TxHelper } from '../internal/TxHelper';
 
 export function ancAncUstLpWithdrawTx(
   $: Parameters<typeof fabricateTerraswapWithdrawLiquidityANC>[0] & {
-    gasFee: u<UST<number>>;
+    gasFee: Gas;
     gasAdjustment: Rate<number>;
     fixedGas: u<UST>;
     network: NetworkInfo;

@@ -1,6 +1,7 @@
 import { fabricateCw20Transfer } from '@anchor-protocol/anchor.js';
 import {
   CW20Addr,
+  Gas,
   HumanAddr,
   Rate,
   Token,
@@ -36,7 +37,7 @@ export function terraSendTx($: {
   currency: { cw20Contract: CW20Addr } | { tokenDenom: string };
   memo?: string;
   amount: Token;
-  gasFee: u<UST<number>>;
+  gasFee: Gas;
   gasAdjustment: Rate<number>;
   txFee: u<UST>;
   network: NetworkInfo;

@@ -48,7 +48,7 @@ export function useBorrowProvideCollateralTx() {
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: constants.fixedGas.toString() as u<UST>,
-        gasFee: constants.gasFee,
+        gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
@@ -72,7 +72,7 @@ export function useBorrowProvideCollateralTx() {
       connectedWallet,
       constants.fixedGas,
       constants.gasAdjustment,
-      constants.gasFee,
+      constants.gasWanted,
 
       mantleEndpoint,
       mantleFetch,

@@ -43,7 +43,7 @@ export function useBorrowRepayTx() {
         network: connectedWallet.network,
         post: connectedWallet.post,
         txFee,
-        gasFee: constants.gasFee,
+        gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
@@ -66,7 +66,7 @@ export function useBorrowRepayTx() {
       borrowMarketQuery,
       connectedWallet,
       constants.gasAdjustment,
-      constants.gasFee,
+      constants.gasWanted,
 
       mantleEndpoint,
       mantleFetch,

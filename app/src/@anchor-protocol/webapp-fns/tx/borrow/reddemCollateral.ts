@@ -3,7 +3,7 @@ import {
   fabricateRedeemCollateral,
 } from '@anchor-protocol/anchor.js';
 import { formatLuna } from '@anchor-protocol/notation';
-import { bLuna, Rate, u, UST } from '@anchor-protocol/types';
+import { bLuna, Gas, Rate, u, UST } from '@anchor-protocol/types';
 import { getCollateralSymbol } from '@anchor-protocol/webapp-fns/functions/getCollateralSymbol';
 import { demicrofy, formatRate } from '@libs/formatter';
 import {
@@ -31,7 +31,7 @@ import { _fetchBorrowData } from './_fetchBorrowData';
 
 export function borrowRedeemCollateralTx(
   $: Parameters<typeof fabricateRedeemCollateral>[0] & {
-    gasFee: u<UST<number>>;
+    gasFee: Gas;
     gasAdjustment: Rate<number>;
     fixedGas: u<UST>;
     network: NetworkInfo;

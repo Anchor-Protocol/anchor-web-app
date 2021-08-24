@@ -2,7 +2,7 @@ import { AddressProvider, COLLATERAL_DENOMS } from '@anchor-protocol/anchor.js';
 import { validateInput } from '@anchor-protocol/anchor.js/dist/utils/validate-input';
 import { validateAddress } from '@anchor-protocol/anchor.js/dist/utils/validation/address';
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
-import { Rate, u, UST } from '@anchor-protocol/types';
+import { Gas, Rate, u, UST } from '@anchor-protocol/types';
 import { demicrofy, stripUUSD } from '@libs/formatter';
 import {
   MantleFetch,
@@ -29,7 +29,7 @@ import { TxHelper } from '../internal/TxHelper';
 
 export function bondClaimTx(
   $: Parameters<typeof fabricatebAssetClaimRewards>[0] & {
-    gasFee: u<UST<number>>;
+    gasFee: Gas;
     gasAdjustment: Rate<number>;
     fixedGas: u<UST>;
     network: NetworkInfo;

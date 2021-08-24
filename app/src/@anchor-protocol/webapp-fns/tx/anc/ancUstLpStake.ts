@@ -3,7 +3,7 @@ import { createHookMsg } from '@anchor-protocol/anchor.js/dist/utils/cw20/create
 import { validateInput } from '@anchor-protocol/anchor.js/dist/utils/validate-input';
 import { validateAddress } from '@anchor-protocol/anchor.js/dist/utils/validation/address';
 import { formatLP } from '@anchor-protocol/notation';
-import { AncUstLP, Rate, u, UST } from '@anchor-protocol/types';
+import { AncUstLP, Gas, Rate, u, UST } from '@anchor-protocol/types';
 import { demicrofy } from '@libs/formatter';
 import {
   MantleFetch,
@@ -31,7 +31,7 @@ import { TxHelper } from '../internal/TxHelper';
 
 export function ancAncUstLpStakeTx(
   $: Parameters<typeof fabricateStakingBond>[0] & {
-    gasFee: u<UST<number>>;
+    gasFee: Gas;
     gasAdjustment: Rate<number>;
     fixedGas: u<UST>;
     network: NetworkInfo;

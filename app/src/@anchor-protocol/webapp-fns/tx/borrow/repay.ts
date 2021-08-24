@@ -3,7 +3,7 @@ import {
   fabricateMarketRepay,
 } from '@anchor-protocol/anchor.js';
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
-import { Rate, u, UST } from '@anchor-protocol/types';
+import { Gas, Rate, u, UST } from '@anchor-protocol/types';
 import { floor } from '@libs/big-math';
 import { demicrofy, formatRate } from '@libs/formatter';
 import {
@@ -31,7 +31,7 @@ import { _fetchBorrowData } from './_fetchBorrowData';
 
 export function borrowRepayTx(
   $: Parameters<typeof fabricateMarketRepay>[0] & {
-    gasFee: u<UST<number>>;
+    gasFee: Gas;
     gasAdjustment: Rate<number>;
     txFee: u<UST>;
     network: NetworkInfo;
@@ -54,6 +54,7 @@ export function borrowRepayTx(
   return pipe(
     _createTxOptions({
       msgs: fabricateMarketRepay($)($.addressProvider),
+      // FIXME repay's txFee is not fixed_gas (user ust transfer)
       fee: new StdFee($.gasFee, floor($.txFee) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),

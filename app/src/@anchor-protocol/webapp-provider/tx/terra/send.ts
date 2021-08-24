@@ -50,7 +50,7 @@ export function useTerraSendTx() {
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        gasFee: constants.gasFee,
+        gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
         // query
         mantleEndpoint,
@@ -66,7 +66,7 @@ export function useTerraSendTx() {
     },
     [
       connectedWallet,
-      constants.gasFee,
+      constants.gasWanted,
       constants.gasAdjustment,
       mantleEndpoint,
       mantleFetch,

@@ -3,7 +3,7 @@ import {
   fabricatebAssetWithdrawUnbonded,
 } from '@anchor-protocol/anchor.js';
 import { formatLuna } from '@anchor-protocol/notation';
-import { Rate, u, UST } from '@anchor-protocol/types';
+import { Gas, Rate, u, UST } from '@anchor-protocol/types';
 import { demicrofy, stripULuna } from '@libs/formatter';
 import {
   MantleFetch,
@@ -25,7 +25,7 @@ import { TxHelper } from '../internal/TxHelper';
 
 export function bondWithdrawTx(
   $: Parameters<typeof fabricatebAssetWithdrawUnbonded>[0] & {
-    gasFee: u<UST<number>>;
+    gasFee: Gas;
     gasAdjustment: Rate<number>;
     fixedGas: u<UST>;
     network: NetworkInfo;

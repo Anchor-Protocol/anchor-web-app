@@ -1,4 +1,4 @@
-import { HumanAddr, Rate, u, UST } from '@anchor-protocol/types';
+import { Gas, HumanAddr, Rate, u, UST } from '@anchor-protocol/types';
 import {
   MantleFetch,
   TxResultRendering,
@@ -23,7 +23,7 @@ export function airdropClaimTx($: {
   airdrop: Airdrop;
   walletAddress: HumanAddr;
   airdropContract: HumanAddr;
-  gasFee?: u<UST<number>>;
+  gasFee?: Gas;
   gasAdjustment: Rate<number>;
   txFee?: u<UST>;
   network: NetworkInfo;
