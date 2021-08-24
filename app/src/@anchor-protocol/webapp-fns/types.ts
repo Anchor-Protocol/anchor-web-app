@@ -6,17 +6,26 @@ import {
   bEth,
   bLuna,
   bLunaLunaLP,
+  Gas,
   Luna,
   Rate,
   u,
   UST,
 } from '@anchor-protocol/types';
 
-export interface AnchorContants {
-  gasFee: u<UST<number>>;
-  fixedGas: u<UST<number>>;
+export interface AnchorContantsInput {
+  gasWanted: Gas;
+  fixedGasGas: Gas;
+  airdropGasWanted: Gas;
+  airdropGasGas: Gas;
+  //fixedGas: u<UST<number>>;
   blocksPerYear: number;
   gasAdjustment: Rate<number>;
+}
+
+export interface AnchorConstants extends AnchorContantsInput {
+  fixedGas: u<UST<number>>;
+  airdropGas: u<UST<number>>;
 }
 
 /**

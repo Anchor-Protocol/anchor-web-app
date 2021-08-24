@@ -7,7 +7,7 @@ import {
   formatLP,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
-import { ANC, AncUstLP, Rate, u, UST } from '@anchor-protocol/types';
+import { ANC, AncUstLP, Gas, Rate, u, UST } from '@anchor-protocol/types';
 import { floor, min } from '@libs/big-math';
 import { demicrofy, stripUUSD } from '@libs/formatter';
 import {
@@ -35,7 +35,7 @@ export function ancAncUstLpProvideTx(
   $: Parameters<typeof fabricateTerraswapProvideLiquidityANC>[0] & {
     ancPrice: AncPrice | undefined;
     tax: TaxData;
-    gasFee: u<UST<number>>;
+    gasFee: Gas;
     gasAdjustment: Rate<number>;
     txFee: u<UST>;
     fixedGas: u<UST>;

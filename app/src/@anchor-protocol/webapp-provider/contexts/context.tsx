@@ -2,16 +2,19 @@ import {
   AddressProvider,
   AddressProviderFromJson,
 } from '@anchor-protocol/anchor.js';
-import { ContractAddress, CW20Addr } from '@anchor-protocol/types';
+import { ContractAddress, CW20Addr, u, UST } from '@anchor-protocol/types';
 import {
-  AnchorContants,
+  AnchorConstants,
+  AnchorContantsInput,
   createAnchorContractAddress,
   DEFAULT_ADDESS_MAP,
   DEFAULT_ANCHOR_INDEXER_API_ENDPOINTS,
   DEFAULT_ANCHOR_TX_CONSTANTS,
   ExpandAddressMap,
 } from '@anchor-protocol/webapp-fns';
+import { useTerraWebapp } from '@libs/webapp-provider';
 import { useWallet } from '@terra-money/wallet-provider';
+import big from 'big.js';
 import React, {
   Consumer,
   Context,
@@ -24,7 +27,7 @@ import React, {
 export interface AnchorWebappProviderProps {
   children: ReactNode;
   contractAddressMaps?: Record<string, ExpandAddressMap>;
-  constants?: Record<string, AnchorContants>;
+  constants?: Record<string, AnchorContantsInput>;
   indexerApiEndpoints?: Record<string, string>;
 }
 
@@ -32,7 +35,7 @@ export interface AnchorWebapp {
   contractAddressMap: ExpandAddressMap;
   addressProvider: AddressProvider;
   contractAddress: ContractAddress;
-  constants: AnchorContants;
+  constants: AnchorConstants;
   bAssetsVector: CW20Addr[];
   indexerApiEndpoint: string;
 }
@@ -48,6 +51,8 @@ export function AnchorWebappProvider({
   indexerApiEndpoints = DEFAULT_ANCHOR_INDEXER_API_ENDPOINTS,
 }: AnchorWebappProviderProps) {
   const { network } = useWallet();
+
+  const { gasPrice } = useTerraWebapp();
 
   const { addressProviders, contractAddresses } = useMemo(() => {
     const keys = Object.keys(contractAddressMaps);
@@ -74,13 +79,24 @@ export function AnchorWebappProvider({
     const contractAddress =
       contractAddresses[network.name] ?? contractAddresses['mainnet'];
 
+    const constantsInput = constants[network.name] ?? constants['mainnet'];
+    const calculateGasCalculated = {
+      ...constantsInput,
+      fixedGas: Math.floor(
+        big(constantsInput.fixedGasGas).mul(gasPrice.uusd).toNumber(),
+      ) as u<UST<number>>,
+      airdropGas: Math.floor(
+        big(constantsInput.airdropGasGas).mul(gasPrice.uusd).toNumber(),
+      ) as u<UST<number>>,
+    };
+
     return {
       contractAddressMap:
         contractAddressMaps[network.name] ?? contractAddressMaps['mainnet'],
       addressProvider:
         addressProviders[network.name] ?? addressProviders['mainnet'],
       contractAddress,
-      constants: constants[network.name] ?? constants['mainnet'],
+      constants: calculateGasCalculated,
       indexerApiEndpoint:
         indexerApiEndpoints[network.name] ?? indexerApiEndpoints['mainnet'],
       bAssetsVector: [contractAddress.cw20.bEth, contractAddress.cw20.bLuna],
@@ -88,9 +104,10 @@ export function AnchorWebappProvider({
   }, [
     contractAddresses,
     network.name,
+    constants,
+    gasPrice.uusd,
     contractAddressMaps,
     addressProviders,
-    constants,
     indexerApiEndpoints,
   ]);
 

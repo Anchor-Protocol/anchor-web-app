@@ -2,7 +2,7 @@ import { AddressProvider } from '@anchor-protocol/anchor.js';
 import { validateInput } from '@anchor-protocol/anchor.js/dist/utils/validate-input';
 import { validateAddress } from '@anchor-protocol/anchor.js/dist/utils/validation/address';
 import { formatANCWithPostfixUnits } from '@anchor-protocol/notation';
-import { ANC, Rate, u, UST } from '@anchor-protocol/types';
+import { ANC, Gas, Rate, u, UST } from '@anchor-protocol/types';
 import { demicrofy } from '@libs/formatter';
 import {
   MantleFetch,
@@ -30,7 +30,7 @@ import { TxHelper } from '../internal/TxHelper';
 
 export function ancGovernanceUnstakeTx(
   $: Parameters<typeof fabricateGovWithdrawVotingTokens>[0] & {
-    gasFee: u<UST<number>>;
+    gasFee: Gas;
     gasAdjustment: Rate<number>;
     fixedGas: u<UST>;
     network: NetworkInfo;

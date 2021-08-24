@@ -1,4 +1,4 @@
-import { HumanAddr, Rate, u, UST } from '@anchor-protocol/types';
+import { Gas, HumanAddr, Rate, u, UST } from '@anchor-protocol/types';
 import {
   MantleFetch,
   TxResultRendering,
@@ -23,9 +23,9 @@ export function airdropClaimTx($: {
   airdrop: Airdrop;
   walletAddress: HumanAddr;
   airdropContract: HumanAddr;
-  gasFee?: u<UST<number>>;
+  gasFee: Gas;
   gasAdjustment: Rate<number>;
-  txFee?: u<UST>;
+  txFee: u<UST>;
   network: NetworkInfo;
   mantleEndpoint: string;
   mantleFetch: MantleFetch;
@@ -33,10 +33,11 @@ export function airdropClaimTx($: {
   txErrorReporter?: (error: unknown) => string;
   onTxSucceed?: () => void;
 }): Observable<TxResultRendering> {
-  const gasFee = $.gasFee ?? 300000;
-  const txFee = $.txFee ?? ('127000' as u<UST>);
+  // FIXME remove hard coding (moved to src/webapp-fns/env.ts)
+  //const gasFee = $.gasFee ?? 300000;
+  //const txFee = $.txFee ?? ('127000' as u<UST>);
 
-  const helper = new TxHelper({ ...$, txFee });
+  const helper = new TxHelper({ ...$ });
 
   return pipe(
     _createTxOptions({
@@ -49,7 +50,7 @@ export function airdropClaimTx($: {
           },
         }),
       ],
-      fee: new StdFee(gasFee, txFee + 'uusd'),
+      fee: new StdFee($.gasFee, $.txFee + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),
     _postTx({ helper, ...$ }),

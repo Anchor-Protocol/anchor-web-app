@@ -9,7 +9,7 @@ import {
   formatANCWithPostfixUnits,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
-import { ANC, Rate, u, UST } from '@anchor-protocol/types';
+import { ANC, Gas, Rate, u, UST } from '@anchor-protocol/types';
 import { floor, min } from '@libs/big-math';
 import { demicrofy } from '@libs/formatter';
 import {
@@ -42,7 +42,7 @@ import { TxHelper } from '../internal/TxHelper';
 
 export function ancBuyTx(
   $: Parameters<typeof fabricatebBuy>[0] & {
-    gasFee: u<UST<number>>;
+    gasFee: Gas;
     gasAdjustment: Rate<number>;
     txFee: u<UST>;
     fixedGas: u<UST>;

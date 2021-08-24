@@ -6,7 +6,7 @@ import {
   formatAUSTWithPostfixUnits,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
-import { aUST, Rate, u, UST } from '@anchor-protocol/types';
+import { aUST, Gas, Rate, u, UST } from '@anchor-protocol/types';
 import { floor } from '@libs/big-math';
 import { demicrofy, formatFluidDecimalPoints } from '@libs/formatter';
 import {
@@ -30,7 +30,7 @@ import { TxHelper } from '../internal/TxHelper';
 
 export function earnDepositTx(
   $: Parameters<typeof fabricateMarketDepositStableCoin>[0] & {
-    gasFee: u<UST<number>>;
+    gasFee: Gas;
     gasAdjustment: Rate<number>;
     txFee: u<UST>;
     network: NetworkInfo;

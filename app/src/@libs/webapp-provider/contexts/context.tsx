@@ -1,9 +1,12 @@
-import { useWallet } from '@terra-money/wallet-provider';
 import {
+  DEFAULT_GAS_PRICE_ENDPOINT,
   defaultMantleFetch,
+  FALLBACK_GAS_PRICE,
+  GasPrice,
   lastSyncedHeightQuery,
   MantleFetch,
 } from '@libs/webapp-fns';
+import { useWallet } from '@terra-money/wallet-provider';
 import React, {
   Consumer,
   Context,
@@ -13,6 +16,7 @@ import React, {
   useMemo,
 } from 'react';
 import { DEFAULT_MANTLE_ENDPOINTS } from '../env';
+import { useGasPriceQuery } from '../queries/gasPrice';
 import { TxRefetchMap } from '../types';
 
 export interface TerraWebappProviderProps {
@@ -21,6 +25,10 @@ export interface TerraWebappProviderProps {
   // mantle
   mantleEndpoints?: Record<string, string>;
   mantleFetch?: MantleFetch;
+
+  // gas
+  gasPriceEndpoint?: Record<string, string>;
+  fallbackGasPrice?: Record<string, GasPrice>;
 
   // refetch map
   txRefetchMap?: TxRefetchMap;
@@ -40,6 +48,9 @@ export interface TerraWebapp {
   mantleEndpoint: string;
   mantleFetch: MantleFetch;
 
+  // gas
+  gasPrice: GasPrice;
+
   // sentry captureException()
   txErrorReporter?: (error: unknown) => string;
 
@@ -55,6 +66,8 @@ export const TerraWebappContext: Context<TerraWebapp> =
 
 export function TerraWebappProvider({
   children,
+  gasPriceEndpoint = DEFAULT_GAS_PRICE_ENDPOINT,
+  fallbackGasPrice = FALLBACK_GAS_PRICE,
   mantleEndpoints = DEFAULT_MANTLE_ENDPOINTS,
   mantleFetch = defaultMantleFetch,
   txRefetchMap = {},
@@ -75,11 +88,20 @@ export function TerraWebappProvider({
       });
   }, [mantleEndpoint, mantleFetch]);
 
+  const {
+    data: gasPrice = fallbackGasPrice[network.name] ??
+      fallbackGasPrice['mainnet'],
+  } = useGasPriceQuery(
+    gasPriceEndpoint[network.name] ?? gasPriceEndpoint['mainnet'],
+    queryErrorReporter,
+  );
+
   const states = useMemo<TerraWebapp>(
     () => ({
       lastSyncedHeight,
       mantleEndpoint,
       mantleFetch,
+      gasPrice,
       txErrorReporter,
       txRefetchMap,
       queryErrorReporter,
@@ -88,6 +110,7 @@ export function TerraWebappProvider({
       lastSyncedHeight,
       mantleEndpoint,
       mantleFetch,
+      gasPrice,
       txErrorReporter,
       txRefetchMap,
       queryErrorReporter,

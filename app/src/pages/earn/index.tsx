@@ -3,11 +3,11 @@ import { FlexTitleContainer, PageTitle } from 'components/primitives/PageTitle';
 import { links, screen } from 'env';
 import React from 'react';
 import styled from 'styled-components';
+import { BuyUstButton } from './components/BuyUstButton';
 import { ExpectedInterestSection } from './components/ExpectedInterestSection';
 import { InsuranceCoverageButton } from './components/InsuranceCoverageButton';
 import { InterestSection } from './components/InterestSection';
 import { TotalDepositSection } from './components/TotalDepositSection';
-import { BuyUstButton } from './components/BuyUstButton';
 
 export interface EarnProps {
   className?: string;

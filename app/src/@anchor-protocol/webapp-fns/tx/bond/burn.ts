@@ -3,7 +3,7 @@ import {
   fabricatebAssetUnbond,
 } from '@anchor-protocol/anchor.js';
 import { formatLuna } from '@anchor-protocol/notation';
-import { bLuna, Luna, Rate, u, UST } from '@anchor-protocol/types';
+import { bLuna, Gas, Luna, Rate, u, UST } from '@anchor-protocol/types';
 import { demicrofy, formatFluidDecimalPoints } from '@libs/formatter';
 import {
   MantleFetch,
@@ -26,7 +26,7 @@ import { TxHelper } from '../internal/TxHelper';
 
 export function bondBurnTx(
   $: Parameters<typeof fabricatebAssetUnbond>[0] & {
-    gasFee: u<UST<number>>;
+    gasFee: Gas;
     gasAdjustment: Rate<number>;
     fixedGas: u<UST>;
     network: NetworkInfo;

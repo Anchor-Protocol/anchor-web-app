@@ -39,7 +39,7 @@ export function useEarnDepositTx() {
         network: connectedWallet.network,
         post: connectedWallet.post,
         txFee: txFee.toString() as u<UST>,
-        gasFee: constants.gasFee,
+        gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
@@ -57,7 +57,7 @@ export function useEarnDepositTx() {
     [
       connectedWallet,
       addressProvider,
-      constants.gasFee,
+      constants.gasWanted,
       constants.gasAdjustment,
       mantleEndpoint,
       mantleFetch,

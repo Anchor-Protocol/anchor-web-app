@@ -5,7 +5,7 @@ import {
   MARKET_DENOMS,
 } from '@anchor-protocol/anchor.js';
 import { formatANC } from '@anchor-protocol/notation';
-import { ANC, HumanAddr, Rate } from '@anchor-protocol/types';
+import { ANC, Gas, HumanAddr, Rate } from '@anchor-protocol/types';
 import { demicrofy } from '@libs/formatter';
 import { u, UST } from '@libs/types';
 import {
@@ -35,7 +35,7 @@ export function rewardsAllClaimTx($: {
   address: HumanAddr;
   claimAncUstLp: boolean;
   claimUstBorrow: boolean;
-  gasFee: u<UST<number>>;
+  gasFee: Gas;
   gasAdjustment: Rate<number>;
   fixedGas: u<UST>;
   network: NetworkInfo;

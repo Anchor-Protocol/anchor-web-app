@@ -3,7 +3,7 @@ import {
   fabricateMarketBorrow,
 } from '@anchor-protocol/anchor.js';
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
-import { Rate, u, UST } from '@anchor-protocol/types';
+import { Gas, Rate, u, UST } from '@anchor-protocol/types';
 import { demicrofy, formatRate } from '@libs/formatter';
 import {
   MantleFetch,
@@ -30,7 +30,7 @@ import { _fetchBorrowData } from './_fetchBorrowData';
 
 export function borrowBorrowTx(
   $: Parameters<typeof fabricateMarketBorrow>[0] & {
-    gasFee: u<UST<number>>;
+    gasFee: Gas;
     gasAdjustment: Rate<number>;
     txFee: u<UST>;
     fixedGas: u<UST<number>>;
@@ -54,6 +54,7 @@ export function borrowBorrowTx(
   return pipe(
     _createTxOptions({
       msgs: fabricateMarketBorrow($)($.addressProvider),
+      // FIXME borrow's txFee is fixed_gas
       fee: new StdFee($.gasFee, $.fixedGas + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),

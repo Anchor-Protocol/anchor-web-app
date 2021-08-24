@@ -3,7 +3,7 @@ import {
   fabricateStakingWithdraw,
 } from '@anchor-protocol/anchor.js';
 import { formatANCWithPostfixUnits } from '@anchor-protocol/notation';
-import { ANC, Rate, u, UST } from '@anchor-protocol/types';
+import { ANC, Gas, Rate, u, UST } from '@anchor-protocol/types';
 import { demicrofy } from '@libs/formatter';
 import {
   MantleFetch,
@@ -25,7 +25,7 @@ import { TxHelper } from '../internal/TxHelper';
 
 export function rewardsAncUstLpClaimTx(
   $: Parameters<typeof fabricateStakingWithdraw>[0] & {
-    gasFee: u<UST<number>>;
+    gasFee: Gas;
     gasAdjustment: Rate<number>;
     fixedGas: u<UST>;
     network: NetworkInfo;
