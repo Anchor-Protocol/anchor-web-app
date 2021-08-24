@@ -2,11 +2,11 @@ import {
   formatANCWithPostfixUnits,
   formatUST,
 } from '@anchor-protocol/notation';
-import { u, UST } from '@anchor-protocol/types';
 import {
   Airdrop as AirdropData,
   useAirdropCheckQuery,
   useAirdropClaimTx,
+  useAnchorWebapp,
 } from '@anchor-protocol/webapp-provider';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
@@ -28,7 +28,8 @@ export interface AirdropProps {
   className?: string;
 }
 
-const airdropTxFee: u<UST<number>> = 127000 as u<UST<number>>;
+// FIXME remove hard coding (moved to src/webapp-fns/env.ts)
+//const airdropTxFee: u<UST<number>> = 127000 as u<UST<number>>;
 
 function AirdropBase({ className }: AirdropProps) {
   // ---------------------------------------------
@@ -42,14 +43,16 @@ function AirdropBase({ className }: AirdropProps) {
 
   const [claim, claimResult] = useAirdropClaimTx();
 
+  const { constants } = useAnchorWebapp();
+
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
   const bank = useBank();
 
   const invalidTxFee = useMemo(
-    () => connectedWallet && validateTxFee(bank, airdropTxFee),
-    [bank, connectedWallet],
+    () => connectedWallet && validateTxFee(bank, constants.airdropGas),
+    [bank, connectedWallet, constants.airdropGas],
   );
 
   const exit = useCallback(() => {
@@ -128,7 +131,7 @@ function AirdropBase({ className }: AirdropProps) {
 
         <TxFeeList className="receipt">
           <TxFeeListItem label="Tx Fee">
-            {formatUST(demicrofy(airdropTxFee))} UST
+            {formatUST(demicrofy(constants.airdropGas))} UST
           </TxFeeListItem>
         </TxFeeList>
 

@@ -1,5 +1,5 @@
-import { Gas, Rate, u, UST } from '@anchor-protocol/types';
-import { AnchorContants, ExpandAddressMap } from './types';
+import { Gas, Rate } from '@anchor-protocol/types';
+import { AnchorContantsInput, ExpandAddressMap } from './types';
 
 export const DEFAULT_ADDESS_MAP: Record<string, ExpandAddressMap> = {
   mainnet: {
@@ -106,27 +106,39 @@ export const DEFAULT_ADDESS_MAP: Record<string, ExpandAddressMap> = {
   },
 };
 
-export const DEFAULT_ANCHOR_TX_CONSTANTS: Record<string, AnchorContants> = {
-  mainnet: {
-    // FIXME re-named gasFee -> gasWanted
-    gasWanted: 1_000_000 as Gas,
-    fixedGas: 635_000 as u<UST<number>>,
-    blocksPerYear: 4_656_810,
-    gasAdjustment: 1.6 as Rate<number>,
-  },
-  testnet: {
-    gasWanted: 1_000_000 as Gas,
-    fixedGas: 635_000 as u<UST<number>>,
-    blocksPerYear: 4_656_810,
-    gasAdjustment: 1.6 as Rate<number>,
-  },
-  bombay: {
-    gasWanted: 1_000_000 as Gas,
-    fixedGas: 635_000 as u<UST<number>>,
-    blocksPerYear: 4_656_810,
-    gasAdjustment: 1.6 as Rate<number>,
-  },
-};
+export const DEFAULT_ANCHOR_TX_CONSTANTS: Record<string, AnchorContantsInput> =
+  {
+    mainnet: {
+      // FIXME re-named gasFee -> gasWanted
+      gasWanted: 1_000_000 as Gas,
+      // FIXME fixedGas = gas(1_671_053) * gas_price(0.38uusd) = 635_000uusd
+      fixedGasGas: 1_671_053 as Gas,
+      //fixedGas: 635_000 as u<UST<number>>,
+      airdropGasWanted: 300_000 as Gas,
+      // FIXME airdropFixedGas = gas(334_211) * gas_price(0.38uusd) = 127_000uusd
+      airdropGasGas: 334_211 as Gas,
+      blocksPerYear: 4_656_810,
+      gasAdjustment: 1.6 as Rate<number>,
+    },
+    testnet: {
+      gasWanted: 1_000_000 as Gas,
+      fixedGasGas: 1_671_053 as Gas,
+      //fixedGas: 635_000 as u<UST<number>>,
+      airdropGasWanted: 300_000 as Gas,
+      airdropGasGas: 334_211 as Gas,
+      blocksPerYear: 4_656_810,
+      gasAdjustment: 1.6 as Rate<number>,
+    },
+    bombay: {
+      gasWanted: 1_000_000 as Gas,
+      fixedGasGas: 1_671_053 as Gas,
+      //fixedGas: 635_000 as u<UST<number>>,
+      airdropGasWanted: 300_000 as Gas,
+      airdropGasGas: 334_211 as Gas,
+      blocksPerYear: 4_656_810,
+      gasAdjustment: 1.6 as Rate<number>,
+    },
+  };
 
 export const DEFAULT_ANCHOR_INDEXER_API_ENDPOINTS: Record<string, string> = {
   mainnet: 'https://api.anchorprotocol.com/api/v1',

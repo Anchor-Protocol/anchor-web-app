@@ -13,11 +13,19 @@ import {
   UST,
 } from '@anchor-protocol/types';
 
-export interface AnchorContants {
+export interface AnchorContantsInput {
   gasWanted: Gas;
-  fixedGas: u<UST<number>>;
+  fixedGasGas: Gas;
+  airdropGasWanted: Gas;
+  airdropGasGas: Gas;
+  //fixedGas: u<UST<number>>;
   blocksPerYear: number;
   gasAdjustment: Rate<number>;
+}
+
+export interface AnchorConstants extends AnchorContantsInput {
+  fixedGas: u<UST<number>>;
+  airdropGas: u<UST<number>>;
 }
 
 /**
