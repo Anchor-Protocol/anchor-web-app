@@ -46,7 +46,7 @@ export const links = {
 // environment
 // ---------------------------------------------
 export const cloudFlareOption = {
-  token: '53059bc341e44118afa382ac686bd39e',
+  token: process.env.CLOUD_FLARE_TOKEN,
   hostnames: [
     'app.anchorprotocol.com',
     'app.anchor.money',
@@ -54,20 +54,9 @@ export const cloudFlareOption = {
   ],
 };
 
-export const firebaseOptions = {
-  apiKey: 'AIzaSyBWlk1KY16SFu7VES06h3wRcib20VE7X3M',
-  authDomain: 'fcm-test-26055.firebaseapp.com',
-  projectId: 'fcm-test-26055',
-  storageBucket: 'fcm-test-26055.appspot.com',
-  messagingSenderId: '823490469792',
-  appId: '1:823490469792:web:9499ddd14486262c27cec5',
-  measurementId: 'G-GRHXHP1YRM',
-};
+export const GA_TRACKING_ID = process.env.GA_TRACKING_ID;
 
-export const GA_TRACKING_ID = 'G-H42LRVHR5Y';
-
-export const SENTRY_DSN =
-  'https://f33dd06d6f5948bfb06d809d0d0a274c@o247107.ingest.sentry.io/5636828';
+export const SENTRY_DSN = process.env.SENTRY_DSN;
 
 // ---------------------------------------------
 // chain
