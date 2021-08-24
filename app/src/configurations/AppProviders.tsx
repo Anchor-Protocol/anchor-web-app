@@ -193,7 +193,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
       <Providers>
         {/* Router Actions ======================== */}
         {/** Send Google Analytics Page view every Router's location changed */}
-        <GoogleAnalytics trackingId={GA_TRACKING_ID} />
+        {GA_TRACKING_ID && <GoogleAnalytics trackingId={GA_TRACKING_ID} />}
         {/** Scroll Restore every Router's basepath changed */}
         <RouterScrollRestoration />
         {/** Re-Check Terra Station Wallet Status every Router's pathname changed */}

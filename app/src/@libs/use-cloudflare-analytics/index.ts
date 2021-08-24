@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 
 interface Options {
-  token: string;
+  token: string | undefined;
   hostnames: string[];
 }
 
 export function useCloudflareAnalytics({ token, hostnames }: Options) {
   useEffect(() => {
-    if (hostnames.includes(window.location.hostname)) {
+    if (token && hostnames.includes(window.location.hostname)) {
       const script = document.createElement('script');
       script.defer = true;
       script.src = 'https://static.cloudflareinsights.com/beacon.min.js';
