@@ -56,7 +56,7 @@ export function useAirdropCheckQuery(): UseQueryResult<Airdrop | undefined> {
     queryFn,
     {
       enabled: !!connectedWallet,
-      keepPreviousData: true,
+      keepPreviousData: false,
       onError: queryErrorReporter,
     },
   );
