@@ -1,6 +1,6 @@
 import { ANC, HumanAddr, Rate, u } from '@anchor-protocol/types';
 import { airdropStageCache } from '@anchor-protocol/webapp-fns/caches/airdropStage';
-import { MantleFetch } from '@libs/webapp-fns';
+import { defaultMantleFetch, MantleFetch } from '@libs/webapp-fns';
 import { airdropIsClaimedQuery } from './isClaimed';
 
 export interface Airdrop {
@@ -45,7 +45,7 @@ export async function airdropCheckQuery(
       return undefined;
     }
 
-    const claimedStages = airdropStageCache.get(variables.walletAddress) ?? [];
+    const claimedStages = airdropStageCache.get(walletAddress) ?? [];
 
     for (const airdrop of airdrops) {
       const { stage } = airdrop;
