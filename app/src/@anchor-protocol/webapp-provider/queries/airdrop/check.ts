@@ -1,5 +1,6 @@
 import { HumanAddr } from '@anchor-protocol/types';
 import { Airdrop, airdropCheckQuery } from '@anchor-protocol/webapp-fns';
+import { airdropStageCache } from '@anchor-protocol/webapp-fns/caches/airdropStage';
 import { createQueryFn } from '@libs/react-query-utils';
 import {
   ConnectedWallet,
@@ -61,5 +62,11 @@ export function useAirdropCheckQuery(): UseQueryResult<Airdrop | undefined> {
     },
   );
 
-  return connectedWallet ? result : EMPTY_QUERY_RESULT;
+  return connectedWallet &&
+    result.data &&
+    !(airdropStageCache.get(connectedWallet.walletAddress) ?? []).includes(
+      result.data.stage,
+    )
+    ? result
+    : EMPTY_QUERY_RESULT;
 }
