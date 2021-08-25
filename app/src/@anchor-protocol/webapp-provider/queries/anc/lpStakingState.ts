@@ -1,34 +1,14 @@
-import { HumanAddr } from '@anchor-protocol/types';
 import {
   AncLpStakingState,
   ancLpStakingStateQuery,
 } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@libs/react-query-utils';
-import { MantleFetch, useTerraWebapp } from '@libs/webapp-provider';
+import { useTerraWebapp } from '@libs/webapp-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = createQueryFn(
-  (
-    mantleEndpoint: string,
-    mantleFetch: MantleFetch,
-    ancStakingContract: HumanAddr,
-  ) => {
-    return ancLpStakingStateQuery({
-      mantleEndpoint,
-      mantleFetch,
-      wasmQuery: {
-        lpStakingState: {
-          contractAddress: ancStakingContract,
-          query: {
-            state: {},
-          },
-        },
-      },
-    });
-  },
-);
+const queryFn = createQueryFn(ancLpStakingStateQuery);
 
 export function useAncLpStakingStateQuery(): UseQueryResult<
   AncLpStakingState | undefined
@@ -42,9 +22,9 @@ export function useAncLpStakingStateQuery(): UseQueryResult<
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.ANC_LP_STAKING_STATE,
+      anchorToken.staking,
       mantleEndpoint,
       mantleFetch,
-      anchorToken.staking,
     ],
     queryFn,
     {

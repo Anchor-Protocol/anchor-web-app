@@ -1,12 +1,13 @@
-import { bluna } from '@anchor-protocol/types';
+import { bluna, HumanAddr } from '@anchor-protocol/types';
 import {
+  defaultMantleFetch,
   mantle,
-  MantleParams,
+  MantleFetch,
   WasmQuery,
   WasmQueryData,
 } from '@libs/webapp-fns';
 
-export interface AirdropIsClaimedWasmQuery {
+interface AirdropIsClaimedWasmQuery {
   isClaimed: WasmQuery<
     bluna.airdropRegistry.IsClaimed,
     bluna.airdropRegistry.IsClaimedResponse
@@ -15,20 +16,29 @@ export interface AirdropIsClaimedWasmQuery {
 
 export type AirdropIsClaimed = WasmQueryData<AirdropIsClaimedWasmQuery>;
 
-export type AirdropIsClaimedQueryParams = Omit<
-  MantleParams<AirdropIsClaimedWasmQuery>,
-  'query' | 'variables'
->;
-
-export async function airdropIsClaimedQuery({
-  mantleEndpoint,
-  wasmQuery,
-  ...params
-}: AirdropIsClaimedQueryParams): Promise<AirdropIsClaimed> {
+export async function airdropIsClaimedQuery(
+  airdropAddr: HumanAddr,
+  walletAddr: HumanAddr,
+  airdropStage: number,
+  mantleEndpoint: string,
+  mantleFetch: MantleFetch = defaultMantleFetch,
+  requestInit?: RequestInit,
+): Promise<AirdropIsClaimed> {
   return mantle<AirdropIsClaimedWasmQuery>({
-    mantleEndpoint: `${mantleEndpoint}?airdrop--is-claimed&address=${wasmQuery.isClaimed.query.is_claimed.address}&stage=${wasmQuery.isClaimed.query.is_claimed.stage}`,
+    mantleEndpoint: `${mantleEndpoint}?airdrop--is-claimed&address=${walletAddr}&stage=${airdropStage}`,
+    mantleFetch,
+    requestInit,
     variables: {},
-    wasmQuery,
-    ...params,
+    wasmQuery: {
+      isClaimed: {
+        contractAddress: airdropAddr,
+        query: {
+          is_claimed: {
+            address: walletAddr,
+            stage: airdropStage,
+          },
+        },
+      },
+    },
   });
 }

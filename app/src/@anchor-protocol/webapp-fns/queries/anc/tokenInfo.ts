@@ -1,31 +1,36 @@
-import { ANC, cw20 } from '@anchor-protocol/types';
+import { ANC, cw20, CW20Addr } from '@anchor-protocol/types';
 import {
+  defaultMantleFetch,
   mantle,
-  MantleParams,
+  MantleFetch,
   WasmQuery,
   WasmQueryData,
 } from '@libs/webapp-fns';
 
-export interface AncTokenInfoWasmQuery {
+interface AncTokenInfoWasmQuery {
   ancTokenInfo: WasmQuery<cw20.TokenInfo, cw20.TokenInfoResponse<ANC>>;
 }
 
 export type AncTokenInfo = WasmQueryData<AncTokenInfoWasmQuery>;
 
-export type AncTokenInfoQueryParams = Omit<
-  MantleParams<AncTokenInfoWasmQuery>,
-  'query' | 'variables'
->;
-
-export async function ancTokenInfoQuery({
-  mantleEndpoint,
-  wasmQuery,
-  ...params
-}: AncTokenInfoQueryParams): Promise<AncTokenInfo> {
+export async function ancTokenInfoQuery(
+  ancTokenAddr: CW20Addr,
+  mantleEndpoint: string,
+  mantleFetch: MantleFetch = defaultMantleFetch,
+  requestInit?: RequestInit,
+): Promise<AncTokenInfo> {
   return mantle<AncTokenInfoWasmQuery>({
     mantleEndpoint: `${mantleEndpoint}?anc--token-info`,
+    mantleFetch,
+    requestInit,
     variables: {},
-    wasmQuery,
-    ...params,
+    wasmQuery: {
+      ancTokenInfo: {
+        contractAddress: ancTokenAddr,
+        query: {
+          token_info: {},
+        },
+      },
+    },
   });
 }

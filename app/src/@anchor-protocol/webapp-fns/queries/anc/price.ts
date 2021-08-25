@@ -1,15 +1,21 @@
 import {
   ANC,
   AncUstLP,
+  HumanAddr,
   terraswap,
   Token,
   u,
   UST,
 } from '@anchor-protocol/types';
-import { mantle, MantleParams, WasmQuery } from '@libs/webapp-fns';
+import {
+  defaultMantleFetch,
+  mantle,
+  MantleFetch,
+  WasmQuery,
+} from '@libs/webapp-fns';
 import big from 'big.js';
 
-export interface AncPriceWasmQuery {
+interface AncPriceWasmQuery {
   ancPrice: WasmQuery<terraswap.Pool, terraswap.PoolResponse<Token>>;
 }
 
@@ -24,23 +30,27 @@ export interface AncPriceData {
   ancPrice: AncPrice;
 }
 
-export type AncPriceQueryParams = Omit<
-  MantleParams<AncPriceWasmQuery>,
-  'query' | 'variables'
->;
-
-export async function ancPriceQuery({
-  mantleEndpoint,
-  wasmQuery,
-  ...params
-}: AncPriceQueryParams): Promise<AncPriceData> {
+export async function ancPriceQuery(
+  ancUstPairAddr: HumanAddr,
+  mantleEndpoint: string,
+  mantleFetch: MantleFetch = defaultMantleFetch,
+  requestInit?: RequestInit,
+): Promise<AncPriceData> {
   const {
     ancPrice: { assets, total_share },
   } = await mantle<AncPriceWasmQuery>({
     mantleEndpoint: `${mantleEndpoint}?anc--price`,
+    mantleFetch,
+    requestInit,
     variables: {},
-    wasmQuery,
-    ...params,
+    wasmQuery: {
+      ancPrice: {
+        contractAddress: ancUstPairAddr,
+        query: {
+          pool: {},
+        },
+      },
+    },
   });
 
   const ANCPoolSize = assets[0].amount as unknown as u<ANC>;

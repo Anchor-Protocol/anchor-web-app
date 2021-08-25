@@ -23,15 +23,13 @@ const queryFn = createQueryFn(
   ) => {
     return connectedWallet &&
       connectedWallet.network.chainID.startsWith('columbus')
-      ? airdropCheckQuery({
+      ? airdropCheckQuery(
+          airdropContract,
+          connectedWallet.walletAddress,
+          connectedWallet.network.chainID,
           mantleEndpoint,
           mantleFetch,
-          variables: {
-            airdropContract,
-            chainId: connectedWallet.network.chainID,
-            walletAddress: connectedWallet.walletAddress,
-          },
-        })
+        )
       : Promise.resolve(undefined);
   },
 );

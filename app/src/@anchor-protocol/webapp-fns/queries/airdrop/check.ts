@@ -1,5 +1,5 @@
 import { ANC, HumanAddr, Rate, u } from '@anchor-protocol/types';
-import { MantleFetch } from '@libs/webapp-fns';
+import { defaultMantleFetch, MantleFetch } from '@libs/webapp-fns';
 import { airdropIsClaimedQuery } from './isClaimed';
 
 export interface Airdrop {
@@ -16,24 +16,15 @@ export interface Airdrop {
   claimable: boolean;
 }
 
-export interface AirdropCheckVariables {
-  airdropContract: HumanAddr;
-  walletAddress: HumanAddr;
-  chainId: string;
-}
-
-export interface AirdropCheckQueryParams {
-  mantleEndpoint: string;
-  mantleFetch: MantleFetch;
-  variables: AirdropCheckVariables;
-}
-
-export async function airdropCheckQuery({
-  mantleEndpoint,
-  mantleFetch,
-  variables,
-}: AirdropCheckQueryParams): Promise<Airdrop | undefined> {
-  if (!variables.chainId.startsWith('columbus')) {
+export async function airdropCheckQuery(
+  airdropContract: HumanAddr,
+  walletAddress: HumanAddr,
+  chainId: string,
+  mantleEndpoint: string,
+  mantleFetch: MantleFetch = defaultMantleFetch,
+  requestInit?: RequestInit,
+): Promise<Airdrop | undefined> {
+  if (!chainId.startsWith('columbus')) {
     return undefined;
   }
 
@@ -44,7 +35,7 @@ export async function airdropCheckQuery({
     console.log('FETCH AIRDROP DATA');
 
     const airdrops: Airdrop[] = await fetch(
-      `https://airdrop.anchorprotocol.com/api/get?address=${variables.walletAddress}&chainId=${variables.chainId}`,
+      `https://airdrop.anchorprotocol.com/api/get?address=${walletAddress}&chainId=${chainId}`,
     ).then((res) => res.json());
 
     console.log('AIRDROPS:', JSON.stringify(airdrops, null, 2));
@@ -56,21 +47,14 @@ export async function airdropCheckQuery({
     for (const airdrop of airdrops) {
       const { stage } = airdrop;
 
-      const { isClaimed } = await airdropIsClaimedQuery({
+      const { isClaimed } = await airdropIsClaimedQuery(
+        airdropContract,
+        walletAddress,
+        stage,
         mantleEndpoint,
         mantleFetch,
-        wasmQuery: {
-          isClaimed: {
-            contractAddress: variables.airdropContract,
-            query: {
-              is_claimed: {
-                address: variables.walletAddress,
-                stage,
-              },
-            },
-          },
-        },
-      });
+        requestInit,
+      );
 
       if (!isClaimed.is_claimed) {
         console.log('NEXT CLAIM AIRDROP:', JSON.stringify(airdrop));

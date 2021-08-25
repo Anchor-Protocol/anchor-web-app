@@ -1,12 +1,13 @@
-import { beth } from '@anchor-protocol/types';
+import { beth, HumanAddr } from '@anchor-protocol/types';
 import {
+  defaultMantleFetch,
   mantle,
-  MantleParams,
+  MantleFetch,
   WasmQuery,
   WasmQueryData,
 } from '@libs/webapp-fns';
 
-export interface BondBEthClaimableRewardsWasmQuery {
+interface BondBEthClaimableRewardsWasmQuery {
   claimableReward: WasmQuery<
     beth.rewards.AccruedRewards,
     beth.rewards.AccruedRewardsResponse
@@ -16,18 +17,27 @@ export interface BondBEthClaimableRewardsWasmQuery {
 export type BondBEthClaimableRewards =
   WasmQueryData<BondBEthClaimableRewardsWasmQuery>;
 
-export type BondBEthClaimableRewardsQueryParams = Omit<
-  MantleParams<BondBEthClaimableRewardsWasmQuery>,
-  'query' | 'variables'
->;
-
-export async function bondBEthClaimableRewardsQuery({
-  mantleEndpoint,
-  ...params
-}: BondBEthClaimableRewardsQueryParams): Promise<BondBEthClaimableRewards> {
+export async function bondBEthClaimableRewardsQuery(
+  bEthRewardAddr: HumanAddr,
+  walletAddr: HumanAddr,
+  mantleEndpoint: string,
+  mantleFetch: MantleFetch = defaultMantleFetch,
+  requestInit?: RequestInit,
+): Promise<BondBEthClaimableRewards> {
   return mantle<BondBEthClaimableRewardsWasmQuery>({
     mantleEndpoint: `${mantleEndpoint}?bond--beth-claimable-rewards`,
+    mantleFetch,
+    requestInit,
     variables: {},
-    ...params,
+    wasmQuery: {
+      claimableReward: {
+        contractAddress: bEthRewardAddr,
+        query: {
+          accrued_rewards: {
+            address: walletAddr,
+          },
+        },
+      },
+    },
   });
 }
