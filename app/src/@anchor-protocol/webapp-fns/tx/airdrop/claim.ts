@@ -1,4 +1,5 @@
 import { Gas, HumanAddr, Rate, u, UST } from '@anchor-protocol/types';
+import { airdropStageCache } from '@anchor-protocol/webapp-fns/caches/airdropStage';
 import {
   MantleFetch,
   TxResultRendering,
@@ -57,6 +58,13 @@ export function airdropClaimTx($: {
     _pollTxInfo({ helper, ...$ }),
     () => {
       try {
+        // FIXME cache claimed stages
+        const claimedStages = airdropStageCache.get($.walletAddress) ?? [];
+        airdropStageCache.set($.walletAddress, [
+          ...claimedStages,
+          $.airdrop.stage,
+        ]);
+
         return {
           value: null,
 
