@@ -1,5 +1,6 @@
 import { ANC, HumanAddr, Rate, u } from '@anchor-protocol/types';
-import { defaultMantleFetch, MantleFetch } from '@libs/webapp-fns';
+import { airdropStageCache } from '@anchor-protocol/webapp-fns/caches/airdropStage';
+import { MantleFetch } from '@libs/webapp-fns';
 import { airdropIsClaimedQuery } from './isClaimed';
 
 export interface Airdrop {
@@ -44,6 +45,8 @@ export async function airdropCheckQuery(
       return undefined;
     }
 
+    const claimedStages = airdropStageCache.get(variables.walletAddress) ?? [];
+
     for (const airdrop of airdrops) {
       const { stage } = airdrop;
 
@@ -56,7 +59,8 @@ export async function airdropCheckQuery(
         requestInit,
       );
 
-      if (!isClaimed.is_claimed) {
+      // FIXME double check if the stage is not claimed
+      if (!isClaimed.is_claimed && !claimedStages.includes(stage)) {
         console.log('NEXT CLAIM AIRDROP:', JSON.stringify(airdrop));
         return airdrop;
       }
