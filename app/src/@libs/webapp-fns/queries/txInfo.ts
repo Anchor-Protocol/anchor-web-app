@@ -107,7 +107,8 @@ export async function pollTxInfo({
   tx,
   txhash,
 }: PollTxInfoParams): Promise<TxInfoData> {
-  const until = Date.now() + 1000 * 60;
+  const until = Date.now() + 1000 * 60 * 60;
+  const untilInterval = Date.now() + 1000 * 60;
   //const until = Date.now() + 100;
 
   while (true) {
@@ -137,8 +138,10 @@ export async function pollTxInfo({
       }
 
       return txInfo;
-    } else if (Date.now() < until) {
+    } else if (Date.now() < untilInterval) {
       await sleep(500);
+    } else if (Date.now() < until) {
+      await sleep(1000 * 10);
     } else {
       throw new PollingTimeout(
         `Transaction queued. To verify the status, please check the transaction hash below.`,
