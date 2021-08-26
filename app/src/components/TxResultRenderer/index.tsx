@@ -1,7 +1,8 @@
-import { Close, Done as DoneIcon } from '@material-ui/icons';
+import { PollingTimeout } from '@anchor-protocol/webapp-fns';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { HorizontalHeavyRuler } from '@libs/neumorphism-ui/components/HorizontalHeavyRuler';
 import { TxReceipt, TxResultRendering, TxStreamPhase } from '@libs/webapp-fns';
+import { AccessTime, Close, Done as DoneIcon } from '@material-ui/icons';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import React from 'react';
 import { GuardSpinner, PushSpinner } from 'react-spinners-kit';
@@ -44,7 +45,13 @@ export function TxResultRenderer({
               <GuardSpinner />
             </figure>
 
-            <h2>Waiting for receipt...</h2>
+            <h2>
+              <span>Waiting for receipt...</span>
+              <p>
+                Transaction broadcasted. There is no need to send another until
+                it has been complete.
+              </p>
+            </h2>
 
             <Receipts resultRendering={resultRendering} />
           </article>
@@ -70,9 +77,15 @@ export function TxResultRenderer({
       return (
         <Layout>
           <article>
-            <figure data-state={resultRendering.phase}>
-              <Close />
-            </figure>
+            {resultRendering.failedReason?.error instanceof PollingTimeout ? (
+              <figure data-state={TxStreamPhase.SUCCEED}>
+                <AccessTime />
+              </figure>
+            ) : (
+              <figure data-state={resultRendering.phase}>
+                <Close />
+              </figure>
+            )}
 
             {resultRendering.failedReason &&
               renderTxFailedReason(resultRendering.failedReason)}
@@ -185,6 +198,13 @@ const Layout = styled.section`
       text-align: center;
       margin-top: 1em;
       margin-bottom: 1.2em;
+
+      p {
+        margin: 1em 0;
+        font-weight: 500;
+        font-size: 12px;
+        color: ${({ theme }) => theme.dimTextColor};
+      }
     }
 
     > hr {

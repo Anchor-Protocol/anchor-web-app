@@ -1,5 +1,6 @@
 import { HumanAddr } from '@anchor-protocol/types';
 import { Airdrop, airdropCheckQuery } from '@anchor-protocol/webapp-fns';
+import { airdropStageCache } from '@anchor-protocol/webapp-fns/caches/airdropStage';
 import { createQueryFn } from '@libs/react-query-utils';
 import {
   ConnectedWallet,
@@ -23,15 +24,13 @@ const queryFn = createQueryFn(
   ) => {
     return connectedWallet &&
       connectedWallet.network.chainID.startsWith('columbus')
-      ? airdropCheckQuery({
+      ? airdropCheckQuery(
+          airdropContract,
+          connectedWallet.walletAddress,
+          connectedWallet.network.chainID,
           mantleEndpoint,
           mantleFetch,
-          variables: {
-            airdropContract,
-            chainId: connectedWallet.network.chainID,
-            walletAddress: connectedWallet.walletAddress,
-          },
-        })
+        )
       : Promise.resolve(undefined);
   },
 );
@@ -61,5 +60,11 @@ export function useAirdropCheckQuery(): UseQueryResult<Airdrop | undefined> {
     },
   );
 
-  return connectedWallet ? result : EMPTY_QUERY_RESULT;
+  return connectedWallet &&
+    result.data &&
+    !(airdropStageCache.get(connectedWallet.walletAddress) ?? []).includes(
+      result.data.stage,
+    )
+    ? result
+    : EMPTY_QUERY_RESULT;
 }

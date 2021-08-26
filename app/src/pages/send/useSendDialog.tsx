@@ -37,6 +37,7 @@ import big, { Big, BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
+import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { Bank, useBank } from 'contexts/bank';
 import { validateTxFee } from 'logics/validateTxFee';
 import { CurrencyInfo } from 'pages/send/models/currency';
@@ -398,25 +399,33 @@ function ComponentBase({
           </TxFeeListItem>
         </TxFeeList>
 
-        <ActionButton
-          className="send"
-          disabled={
-            !connectedWallet ||
-            !send ||
-            address.length === 0 ||
-            amount.length === 0 ||
-            !!invalidAddress ||
-            !!invalidAmount ||
-            !!invalidTxFee ||
-            !!invalidMemo ||
-            big(currency.getWithdrawable(bank, fixedGas)).lte(0)
-          }
-          onClick={() =>
-            submit(address, currency, amount, txFee.toString() as u<UST>, memo)
-          }
-        >
-          Send
-        </ActionButton>
+        <ViewAddressWarning>
+          <ActionButton
+            className="send"
+            disabled={
+              !connectedWallet ||
+              !send ||
+              address.length === 0 ||
+              amount.length === 0 ||
+              !!invalidAddress ||
+              !!invalidAmount ||
+              !!invalidTxFee ||
+              !!invalidMemo ||
+              big(currency.getWithdrawable(bank, fixedGas)).lte(0)
+            }
+            onClick={() =>
+              submit(
+                address,
+                currency,
+                amount,
+                txFee.toString() as u<UST>,
+                memo,
+              )
+            }
+          >
+            Send
+          </ActionButton>
+        </ViewAddressWarning>
       </Dialog>
     </Modal>
   );

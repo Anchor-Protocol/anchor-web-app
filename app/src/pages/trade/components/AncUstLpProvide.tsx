@@ -30,6 +30,7 @@ import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
+import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useBank } from 'contexts/bank';
 import { validateTxFee } from 'logics/validateTxFee';
 import { formatShareOfPool } from 'pages/gov/components/formatShareOfPool';
@@ -399,40 +400,42 @@ export function AncUstLpProvide() {
       )}
 
       {/* Submit */}
-      <ActionButton
-        className="submit"
-        style={
-          invalidNextTransaction
-            ? {
-                backgroundColor: '#c12535',
-              }
-            : undefined
-        }
-        disabled={
-          !connectedWallet ||
-          !connectedWallet.availablePost ||
-          !provide ||
-          ancAmount.length === 0 ||
-          ustAmount.length === 0 ||
-          big(ancAmount).lte(0) ||
-          big(ustAmount).lte(0) ||
-          !simulation ||
-          !!invalidTxFee ||
-          !!invalidAncAmount ||
-          !!invalidUstAmount
-        }
-        onClick={() =>
-          simulation &&
-          proceed(
-            ancAmount,
-            ustAmount,
-            simulation.txFee.toFixed() as u<UST>,
-            invalidNextTransaction,
-          )
-        }
-      >
-        Add Liquidity
-      </ActionButton>
+      <ViewAddressWarning>
+        <ActionButton
+          className="submit"
+          style={
+            invalidNextTransaction
+              ? {
+                  backgroundColor: '#c12535',
+                }
+              : undefined
+          }
+          disabled={
+            !connectedWallet ||
+            !connectedWallet.availablePost ||
+            !provide ||
+            ancAmount.length === 0 ||
+            ustAmount.length === 0 ||
+            big(ancAmount).lte(0) ||
+            big(ustAmount).lte(0) ||
+            !simulation ||
+            !!invalidTxFee ||
+            !!invalidAncAmount ||
+            !!invalidUstAmount
+          }
+          onClick={() =>
+            simulation &&
+            proceed(
+              ancAmount,
+              ustAmount,
+              simulation.txFee.toFixed() as u<UST>,
+              invalidNextTransaction,
+            )
+          }
+        >
+          Add Liquidity
+        </ActionButton>
+      </ViewAddressWarning>
 
       {confirmElement}
     </>

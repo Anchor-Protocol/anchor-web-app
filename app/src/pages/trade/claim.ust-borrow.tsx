@@ -18,6 +18,7 @@ import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
+import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useBank } from 'contexts/bank';
 import { validateTxFee } from 'logics/validateTxFee';
 import { MINIMUM_CLAIM_BALANCE } from 'pages/trade/env';
@@ -121,19 +122,21 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
           </TxFeeListItem>
         </TxFeeList>
 
-        <ActionButton
-          className="proceed"
-          disabled={
-            !connectedWallet ||
-            !connectedWallet.availablePost ||
-            !claim ||
-            !claiming ||
-            claiming.lte(MINIMUM_CLAIM_BALANCE)
-          }
-          onClick={() => proceed()}
-        >
-          Claim
-        </ActionButton>
+        <ViewAddressWarning>
+          <ActionButton
+            className="proceed"
+            disabled={
+              !connectedWallet ||
+              !connectedWallet.availablePost ||
+              !claim ||
+              !claiming ||
+              claiming.lte(MINIMUM_CLAIM_BALANCE)
+            }
+            onClick={() => proceed()}
+          >
+            Claim
+          </ActionButton>
+        </ViewAddressWarning>
       </Section>
     </CenteredLayout>
   );

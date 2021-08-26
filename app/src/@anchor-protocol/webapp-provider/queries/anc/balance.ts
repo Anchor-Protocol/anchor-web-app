@@ -1,38 +1,12 @@
-import { CW20Addr, HumanAddr } from '@anchor-protocol/types';
+import { HumanAddr } from '@anchor-protocol/types';
 import { AncBalance, ancBalanceQuery } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@libs/react-query-utils';
-import {
-  EMPTY_QUERY_RESULT,
-  MantleFetch,
-  useTerraWebapp,
-} from '@libs/webapp-provider';
+import { EMPTY_QUERY_RESULT, useTerraWebapp } from '@libs/webapp-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = createQueryFn(
-  (
-    mantleEndpoint: string,
-    mantleFetch: MantleFetch,
-    ancContract: CW20Addr,
-    walletAddress: HumanAddr,
-  ) => {
-    return ancBalanceQuery({
-      mantleEndpoint,
-      mantleFetch,
-      wasmQuery: {
-        ancBalance: {
-          contractAddress: ancContract,
-          query: {
-            balance: {
-              address: walletAddress,
-            },
-          },
-        },
-      },
-    });
-  },
-);
+const queryFn = createQueryFn(ancBalanceQuery);
 
 export function useAncBalanceQuery(
   walletAddress: HumanAddr | undefined | null,
@@ -46,10 +20,10 @@ export function useAncBalanceQuery(
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.ANC_BALANCE,
-      mantleEndpoint,
-      mantleFetch,
       cw20.ANC,
       walletAddress ?? ('' as HumanAddr),
+      mantleEndpoint,
+      mantleFetch,
     ],
     queryFn,
     {

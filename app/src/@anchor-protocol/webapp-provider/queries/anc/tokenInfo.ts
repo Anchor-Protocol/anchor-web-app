@@ -1,27 +1,11 @@
-import { CW20Addr } from '@anchor-protocol/types';
 import { AncTokenInfo, ancTokenInfoQuery } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@libs/react-query-utils';
-import { MantleFetch, useTerraWebapp } from '@libs/webapp-provider';
+import { useTerraWebapp } from '@libs/webapp-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = createQueryFn(
-  (mantleEndpoint: string, mantleFetch: MantleFetch, ancContract: CW20Addr) => {
-    return ancTokenInfoQuery({
-      mantleEndpoint,
-      mantleFetch,
-      wasmQuery: {
-        ancTokenInfo: {
-          contractAddress: ancContract,
-          query: {
-            token_info: {},
-          },
-        },
-      },
-    });
-  },
-);
+const queryFn = createQueryFn(ancTokenInfoQuery);
 
 export function useAncTokenInfoQuery(): UseQueryResult<
   AncTokenInfo | undefined
@@ -33,7 +17,7 @@ export function useAncTokenInfoQuery(): UseQueryResult<
   } = useAnchorWebapp();
 
   const result = useQuery(
-    [ANCHOR_QUERY_KEY.ANC_TOKEN_INFO, mantleEndpoint, mantleFetch, cw20.ANC],
+    [ANCHOR_QUERY_KEY.ANC_TOKEN_INFO, cw20.ANC, mantleEndpoint, mantleFetch],
     queryFn,
     {
       refetchInterval: 1000 * 60 * 10,

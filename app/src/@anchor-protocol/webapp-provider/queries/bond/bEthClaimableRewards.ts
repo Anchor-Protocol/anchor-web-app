@@ -4,12 +4,12 @@ import {
   bondBEthClaimableRewardsQuery,
 } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@libs/react-query-utils';
+import { MantleFetch } from '@libs/webapp-fns';
+import { EMPTY_QUERY_RESULT, useTerraWebapp } from '@libs/webapp-provider';
 import {
   ConnectedWallet,
   useConnectedWallet,
 } from '@terra-money/wallet-provider';
-import { MantleFetch } from '@libs/webapp-fns';
-import { EMPTY_QUERY_RESULT, useTerraWebapp } from '@libs/webapp-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
@@ -22,20 +22,12 @@ const queryFn = createQueryFn(
     bEthRewardContract: HumanAddr,
   ) => {
     return connectedWallet?.walletAddress
-      ? bondBEthClaimableRewardsQuery({
+      ? bondBEthClaimableRewardsQuery(
+          bEthRewardContract,
+          connectedWallet.walletAddress,
           mantleEndpoint,
           mantleFetch,
-          wasmQuery: {
-            claimableReward: {
-              contractAddress: bEthRewardContract,
-              query: {
-                accrued_rewards: {
-                  address: connectedWallet.walletAddress,
-                },
-              },
-            },
-          },
-        })
+        )
       : Promise.resolve(undefined);
   },
 );
