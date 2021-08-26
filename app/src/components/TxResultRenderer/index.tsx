@@ -44,7 +44,13 @@ export function TxResultRenderer({
               <GuardSpinner />
             </figure>
 
-            <h2>Waiting for receipt...</h2>
+            <h2>
+              <span>Waiting for receipt...</span>
+              <p>
+                Transaction broadcasted. There is no need to send another until
+                it has been complete.
+              </p>
+            </h2>
 
             <Receipts resultRendering={resultRendering} />
           </article>
@@ -185,6 +191,13 @@ const Layout = styled.section`
       text-align: center;
       margin-top: 1em;
       margin-bottom: 1.2em;
+
+      p {
+        margin: 1em 0;
+        font-weight: 500;
+        font-size: 12px;
+        color: ${({ theme }) => theme.dimTextColor};
+      }
     }
 
     > hr {

@@ -1,3 +1,4 @@
+import { PollingTimeout } from '@anchor-protocol/webapp-fns';
 import {
   CreateTxFailed,
   Timeout,
@@ -175,7 +176,17 @@ export function renderTxFailedReason({
     return (
       <>
         <h2>Timeout</h2>
-        <div>{error.message}</div>
+        <div style={{ marginBottom: '1em' }}>{error.message}</div>
+      </>
+    );
+  } else if (
+    error instanceof PollingTimeout ||
+    instanceofWithName<PollingTimeout>(error, 'PollingTimeout')
+  ) {
+    return (
+      <>
+        <h2>Timeout</h2>
+        <div style={{ marginBottom: '1em' }}>{error.message}</div>
       </>
     );
   } else if (
