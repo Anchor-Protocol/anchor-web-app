@@ -26,6 +26,7 @@ import big from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
+import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useBank } from 'contexts/bank';
 import { validateTxFee } from 'logics/validateTxFee';
 import React, {
@@ -271,34 +272,36 @@ export function PollCreateBase({
           </TxFeeListItem>
         </TxFeeList>
 
-        <ActionButton
-          className="proceed"
-          disabled={
-            submitDisabled ||
-            !connectedWallet ||
-            !connectedWallet.availablePost ||
-            !createPoll ||
-            title.length === 0 ||
-            description.length === 0 ||
-            !!invalidUserANCBalance ||
-            !!invalidTxFee ||
-            !!invalidTitleBytes ||
-            !!invalidDescriptionBytes ||
-            !!invalidLinkBytes ||
-            !!invalidLinkProtocol
-          }
-          onClick={() =>
-            pollConfig &&
-            submit(
-              title,
-              description,
-              link,
-              demicrofy(pollConfig.proposal_deposit).toString() as ANC,
-            )
-          }
-        >
-          Submit
-        </ActionButton>
+        <ViewAddressWarning>
+          <ActionButton
+            className="proceed"
+            disabled={
+              submitDisabled ||
+              !connectedWallet ||
+              !connectedWallet.availablePost ||
+              !createPoll ||
+              title.length === 0 ||
+              description.length === 0 ||
+              !!invalidUserANCBalance ||
+              !!invalidTxFee ||
+              !!invalidTitleBytes ||
+              !!invalidDescriptionBytes ||
+              !!invalidLinkBytes ||
+              !!invalidLinkProtocol
+            }
+            onClick={() =>
+              pollConfig &&
+              submit(
+                title,
+                description,
+                link,
+                demicrofy(pollConfig.proposal_deposit).toString() as ANC,
+              )
+            }
+          >
+            Submit
+          </ActionButton>
+        </ViewAddressWarning>
       </Section>
     </FormLayout>
   );

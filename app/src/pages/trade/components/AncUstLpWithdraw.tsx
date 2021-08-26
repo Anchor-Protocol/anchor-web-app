@@ -26,6 +26,7 @@ import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
+import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useBank } from 'contexts/bank';
 import { validateTxFee } from 'logics/validateTxFee';
 import { formatShareOfPool } from 'pages/gov/components/formatShareOfPool';
@@ -251,22 +252,24 @@ export function AncUstLpWithdraw() {
       </TxFeeList>
 
       {/* Submit */}
-      <ActionButton
-        className="submit"
-        disabled={
-          !connectedWallet ||
-          !connectedWallet.availablePost ||
-          !withdraw ||
-          lpAmount.length === 0 ||
-          big(lpAmount).lte(0) ||
-          !simulation ||
-          !!invalidTxFee ||
-          !!invalidLpAmount
-        }
-        onClick={() => proceed(lpAmount)}
-      >
-        Remove Liquidity
-      </ActionButton>
+      <ViewAddressWarning>
+        <ActionButton
+          className="submit"
+          disabled={
+            !connectedWallet ||
+            !connectedWallet.availablePost ||
+            !withdraw ||
+            lpAmount.length === 0 ||
+            big(lpAmount).lte(0) ||
+            !simulation ||
+            !!invalidTxFee ||
+            !!invalidLpAmount
+          }
+          onClick={() => proceed(lpAmount)}
+        >
+          Remove Liquidity
+        </ActionButton>
+      </ViewAddressWarning>
     </>
   );
 }

@@ -21,6 +21,7 @@ import big from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
+import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useBank } from 'contexts/bank';
 import { validateTxFee } from 'logics/validateTxFee';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
@@ -158,21 +159,23 @@ export function AncUstLpStake() {
       )}
 
       {/* Submit */}
-      <ActionButton
-        className="submit"
-        disabled={
-          !connectedWallet ||
-          !connectedWallet.availablePost ||
-          !stake ||
-          lpAmount.length === 0 ||
-          big(lpAmount).lte(0) ||
-          !!invalidTxFee ||
-          !!invalidLpAmount
-        }
-        onClick={() => proceed(lpAmount)}
-      >
-        Stake
-      </ActionButton>
+      <ViewAddressWarning>
+        <ActionButton
+          className="submit"
+          disabled={
+            !connectedWallet ||
+            !connectedWallet.availablePost ||
+            !stake ||
+            lpAmount.length === 0 ||
+            big(lpAmount).lte(0) ||
+            !!invalidTxFee ||
+            !!invalidLpAmount
+          }
+          onClick={() => proceed(lpAmount)}
+        >
+          Stake
+        </ActionButton>
+      </ViewAddressWarning>
     </>
   );
 }

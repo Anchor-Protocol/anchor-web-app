@@ -32,6 +32,7 @@ import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
+import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useBank } from 'contexts/bank';
 import { validateTxFee } from 'logics/validateTxFee';
 import { buyFromSimulation } from 'pages/trade/logics/buyFromSimulation';
@@ -511,36 +512,38 @@ export function TradeBuy() {
       )}
 
       {/* Submit */}
-      <ActionButton
-        className="submit"
-        style={
-          invalidNextTransaction
-            ? {
-                backgroundColor: '#c12535',
-              }
-            : undefined
-        }
-        disabled={
-          !connectedWallet ||
-          !connectedWallet.availablePost ||
-          !buy ||
-          !ancPrice ||
-          fromAmount.length === 0 ||
-          big(fromAmount).lte(0) ||
-          !!invalidTxFee ||
-          !!invalidFromAmount ||
-          !simulation ||
-          big(simulation?.swapFee ?? 0).lte(0)
-        }
-        onClick={() =>
-          connectedWallet &&
-          ancPrice &&
-          simulation &&
-          proceed(fromAmount, simulation.txFee, invalidNextTransaction)
-        }
-      >
-        Proceed
-      </ActionButton>
+      <ViewAddressWarning>
+        <ActionButton
+          className="submit"
+          style={
+            invalidNextTransaction
+              ? {
+                  backgroundColor: '#c12535',
+                }
+              : undefined
+          }
+          disabled={
+            !connectedWallet ||
+            !connectedWallet.availablePost ||
+            !buy ||
+            !ancPrice ||
+            fromAmount.length === 0 ||
+            big(fromAmount).lte(0) ||
+            !!invalidTxFee ||
+            !!invalidFromAmount ||
+            !simulation ||
+            big(simulation?.swapFee ?? 0).lte(0)
+          }
+          onClick={() =>
+            connectedWallet &&
+            ancPrice &&
+            simulation &&
+            proceed(fromAmount, simulation.txFee, invalidNextTransaction)
+          }
+        >
+          Proceed
+        </ActionButton>
+      </ViewAddressWarning>
 
       {confirmElement}
     </>

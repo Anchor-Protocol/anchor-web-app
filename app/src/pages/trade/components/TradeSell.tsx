@@ -30,6 +30,7 @@ import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
+import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useBank } from 'contexts/bank';
 import { validateTxFee } from 'logics/validateTxFee';
 import { sellFromSimulation } from 'pages/trade/logics/sellFromSimulation';
@@ -432,23 +433,25 @@ export function TradeSell() {
       )}
 
       {/* Submit */}
-      <ActionButton
-        className="submit"
-        disabled={
-          !connectedWallet ||
-          !connectedWallet.availablePost ||
-          !sell ||
-          !ancPrice ||
-          fromAmount.length === 0 ||
-          big(fromAmount).lte(0) ||
-          !!invalidTxFee ||
-          !!invalidFromAmount ||
-          big(simulation?.swapFee ?? 0).lte(0)
-        }
-        onClick={() => proceed(fromAmount)}
-      >
-        Proceed
-      </ActionButton>
+      <ViewAddressWarning>
+        <ActionButton
+          className="submit"
+          disabled={
+            !connectedWallet ||
+            !connectedWallet.availablePost ||
+            !sell ||
+            !ancPrice ||
+            fromAmount.length === 0 ||
+            big(fromAmount).lte(0) ||
+            !!invalidTxFee ||
+            !!invalidFromAmount ||
+            big(simulation?.swapFee ?? 0).lte(0)
+          }
+          onClick={() => proceed(fromAmount)}
+        >
+          Proceed
+        </ActionButton>
+      </ViewAddressWarning>
     </>
   );
 }
