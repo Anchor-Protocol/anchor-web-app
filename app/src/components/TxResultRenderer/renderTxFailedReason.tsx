@@ -185,7 +185,7 @@ export function renderTxFailedReason({
   ) {
     return (
       <>
-        <h2>Timeout</h2>
+        <h2>Transaction Queued</h2>
         <div style={{ marginBottom: '1em' }}>{error.message}</div>
       </>
     );

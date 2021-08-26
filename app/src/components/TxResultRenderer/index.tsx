@@ -1,7 +1,8 @@
-import { Close, Done as DoneIcon } from '@material-ui/icons';
+import { PollingTimeout } from '@anchor-protocol/webapp-fns';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { HorizontalHeavyRuler } from '@libs/neumorphism-ui/components/HorizontalHeavyRuler';
 import { TxReceipt, TxResultRendering, TxStreamPhase } from '@libs/webapp-fns';
+import { AccessTime, Close, Done as DoneIcon } from '@material-ui/icons';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import React from 'react';
 import { GuardSpinner, PushSpinner } from 'react-spinners-kit';
@@ -76,9 +77,15 @@ export function TxResultRenderer({
       return (
         <Layout>
           <article>
-            <figure data-state={resultRendering.phase}>
-              <Close />
-            </figure>
+            {resultRendering.failedReason?.error instanceof PollingTimeout ? (
+              <figure data-state={TxStreamPhase.SUCCEED}>
+                <AccessTime />
+              </figure>
+            ) : (
+              <figure data-state={resultRendering.phase}>
+                <Close />
+              </figure>
+            )}
 
             {resultRendering.failedReason &&
               renderTxFailedReason(resultRendering.failedReason)}
