@@ -34,7 +34,7 @@ export class CollateralsChart extends Component<CollateralsChartProps> {
   }
 
   componentWillUnmount() {
-    this.chart.destroy();
+    this.chart?.destroy();
   }
 
   shouldComponentUpdate(nextProps: Readonly<CollateralsChartProps>): boolean {

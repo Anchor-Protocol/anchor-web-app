@@ -21,7 +21,7 @@ export class DoughnutChart extends Component<DoughnutChartProps> {
   }
 
   componentWillUnmount() {
-    this.chart.destroy();
+    this.chart?.destroy();
   }
 
   shouldComponentUpdate(nextProps: Readonly<DoughnutChartProps>): boolean {
