@@ -139,6 +139,7 @@ export function TradeBuy() {
     bank.userBalances.uUSD,
   ]);
 
+  // FIXME anc buy real tx fee is fixed_gas (simulation.txFee is no matter)
   const invalidNextTransaction = useMemo(() => {
     if (fromAmount.length === 0 || !simulation || !!invalidFromAmount) {
       return undefined;
@@ -146,8 +147,7 @@ export function TradeBuy() {
 
     const remainUUSD = big(bank.userBalances.uUSD)
       .minus(microfy(fromAmount))
-      //.minus(simulation.txFee)
-      .minus(fixedGas);
+      .minus(simulation.txFee);
 
     if (remainUUSD.lt(fixedGas)) {
       return 'You may run out of USD balance needed for future transactions.';
