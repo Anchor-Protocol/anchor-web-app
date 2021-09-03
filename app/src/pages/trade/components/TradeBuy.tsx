@@ -146,7 +146,7 @@ export function TradeBuy() {
 
     const remainUUSD = big(bank.userBalances.uUSD)
       .minus(microfy(fromAmount))
-      .minus(simulation.txFee)
+      //.minus(simulation.txFee)
       .minus(fixedGas);
 
     if (remainUUSD.lt(fixedGas)) {
