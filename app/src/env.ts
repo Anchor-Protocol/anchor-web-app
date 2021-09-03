@@ -1,5 +1,4 @@
 import { AddressProviderFromJson } from '@anchor-protocol/anchor.js';
-import { Rate } from '@anchor-protocol/types';
 import {
   createAnchorContractAddress,
   DEFAULT_ADDESS_MAP,
@@ -46,7 +45,7 @@ export const links = {
 // environment
 // ---------------------------------------------
 export const cloudFlareOption = {
-  token: process.env.CLOUD_FLARE_TOKEN,
+  token: process.env.REACT_APP_CLOUD_FLARE_TOKEN,
   hostnames: [
     'app.anchorprotocol.com',
     'app.anchor.money',
@@ -54,15 +53,13 @@ export const cloudFlareOption = {
   ],
 };
 
-export const GA_TRACKING_ID = process.env.GA_TRACKING_ID;
+export const GA_TRACKING_ID = process.env.REACT_APP_GA_TRACKING_ID;
 
-export const SENTRY_DSN = process.env.SENTRY_DSN;
+export const SENTRY_DSN = process.env.REACT_APP_SENTRY_DSN;
 
 // ---------------------------------------------
 // chain
 // ---------------------------------------------
-export const SAFE_RATIO: Rate<number> = 0.7 as Rate<number>;
-
 export const onProduction =
   global.location.host === 'app.anchorprotocol.com' ||
   global.location.host === 'app.anchor.money' ||
