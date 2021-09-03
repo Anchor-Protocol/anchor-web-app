@@ -132,6 +132,7 @@ export function AncUstLpProvide() {
     ustAmount,
   ]);
 
+  // FIXME anc-ust lp withdraw real tx fee is fixed_gas (simulation.txFee is no matter)
   const invalidNextTransaction = useMemo(() => {
     if (ustAmount.length === 0 || !simulation || !!invalidUstAmount) {
       return undefined;
@@ -139,8 +140,7 @@ export function AncUstLpProvide() {
 
     const remainUUSD = big(bank.userBalances.uUSD)
       .minus(microfy(ustAmount))
-      .minus(simulation.txFee)
-      .minus(fixedGas);
+      .minus(simulation.txFee);
 
     if (remainUUSD.lt(fixedGas)) {
       return 'You may run out of USD balance needed for future transactions.';

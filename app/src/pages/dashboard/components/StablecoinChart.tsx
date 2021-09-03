@@ -37,7 +37,7 @@ export class StablecoinChart extends Component<StablecoinChartProps> {
   }
 
   componentWillUnmount() {
-    this.chart.destroy();
+    this.chart?.destroy();
   }
 
   shouldComponentUpdate(nextProps: Readonly<StablecoinChartProps>): boolean {

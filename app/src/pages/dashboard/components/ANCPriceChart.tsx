@@ -34,7 +34,7 @@ export class ANCPriceChart extends Component<ANCPriceChartProps> {
   }
 
   componentWillUnmount() {
-    this.chart.destroy();
+    this.chart?.destroy();
   }
 
   shouldComponentUpdate(nextProps: Readonly<ANCPriceChartProps>): boolean {

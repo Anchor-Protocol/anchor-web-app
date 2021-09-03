@@ -18,7 +18,7 @@ export class TotalValueLockedDoughnutChart extends Component<TotalValueLockedDou
   }
 
   componentWillUnmount() {
-    this.chart.destroy();
+    this.chart?.destroy();
   }
 
   shouldComponentUpdate(
