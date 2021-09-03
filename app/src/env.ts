@@ -45,7 +45,7 @@ export const links = {
 // environment
 // ---------------------------------------------
 export const cloudFlareOption = {
-  token: process.env.REACT_APP_CLOUD_FLARE_TOKEN,
+  token: import.meta.env.VITE_CLOUD_FLARE_TOKEN,
   hostnames: [
     'app.anchorprotocol.com',
     'app.anchor.money',
@@ -53,9 +53,9 @@ export const cloudFlareOption = {
   ],
 };
 
-export const GA_TRACKING_ID = process.env.REACT_APP_GA_TRACKING_ID;
+export const GA_TRACKING_ID = import.meta.env.VITE_GA_TRACKING_ID;
 
-export const SENTRY_DSN = process.env.REACT_APP_SENTRY_DSN;
+export const SENTRY_DSN = import.meta.env.VITE_SENTRY_DSN;
 
 // ---------------------------------------------
 // chain

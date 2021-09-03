@@ -6,7 +6,7 @@ import ReactDOM from 'react-dom';
 import { App } from './App';
 import reportWebVitals from './reportWebVitals';
 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production' && typeof SENTRY_DSN === 'string') {
   Sentry.init({
     dsn: SENTRY_DSN,
     //integrations: [new Integrations.BrowserTracing()],
