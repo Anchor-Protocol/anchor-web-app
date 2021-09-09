@@ -18,7 +18,9 @@ export function computeMaxUstBalanceForUstTransfer(
 
   const result = withoutFixedGas.minus(min(txFee, tax.maxTaxUUSD));
 
-  return result.minus(fixedGas).lte(0)
+  const exitFee = big(fixedGas).mul(2);
+
+  return result.minus(exitFee).lte(0)
     ? (big(0) as u<UST<Big>>)
-    : (result.minus(fixedGas) as u<UST<Big>>);
+    : (result.minus(exitFee) as u<UST<Big>>);
 }

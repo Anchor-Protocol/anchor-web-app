@@ -118,7 +118,7 @@ export function TradeBuy() {
     return max(
       big(bank.userBalances.uUSD)
         .minus(txFee)
-        .minus(fixedGas * 2),
+        .minus(fixedGas * 3),
       0,
     ) as u<UST<Big>>;
   }, [bank.tax.maxTaxUUSD, bank.tax.taxRate, bank.userBalances.uUSD, fixedGas]);
@@ -154,10 +154,11 @@ export function TradeBuy() {
 
     const remainUUSD = big(bank.userBalances.uUSD)
       .minus(microfy(fromAmount))
-      .minus(simulation.txFee);
+      .minus(simulation.txFee)
+      .minus(fixedGas);
 
     if (remainUUSD.lt(fixedGas)) {
-      return 'You may run out of USD balance needed for future transactions.';
+      return 'Leaving less UST in your account may lead to insufficient transaction fees for future transactions.';
     }
 
     return undefined;
@@ -415,6 +416,10 @@ export function TradeBuy() {
                 }
               >
                 {formatUST(demicrofy(ustBalance ?? bank.userBalances.uUSD))}{' '}
+                {/*/{' '}*/}
+                {/*{formatUST(demicrofy(bank.userBalances.uUSD))}{' '}*/}
+                {/*={' '}*/}
+                {/*{formatUST(demicrofy(big(bank.userBalances.uUSD).minus(simulation?.txFee ?? 0).minus(ustBalance ?? 0) as u<UST<Big>>))}{' '}*/}
                 {fromCurrency.label}
               </span>
             </span>

@@ -189,8 +189,8 @@ export const cw20BuyTokenForm = <T extends Token>({
               big(ustBalance)
                 .minus(microfy(ustAmount!))
                 .minus(txFee)
-                .lt(fixedGas)
-                ? 'You may run out of USD balance needed for future transactions'
+                .lt(big(fixedGas).mul(2))
+                ? 'Leaving less UST in your account may lead to insufficient transaction fees for future transactions.'
                 : null;
 
             return {
@@ -277,8 +277,11 @@ export const cw20BuyTokenForm = <T extends Token>({
             const warningNextTxFee =
               connected &&
               availableTx &&
-              big(ustBalance).minus(return_amount).minus(txFee).lt(fixedGas)
-                ? 'You may run out of USD balance needed for future transactions'
+              big(ustBalance)
+                .minus(return_amount)
+                .minus(txFee)
+                .lt(big(fixedGas).mul(2))
+                ? 'Leaving less UST in your account may lead to insufficient transaction fees for future transactions.'
                 : null;
 
             return {

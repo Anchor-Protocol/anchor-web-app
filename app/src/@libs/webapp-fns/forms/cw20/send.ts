@@ -140,8 +140,8 @@ export const sendForm = <T extends Token>({
       connected &&
       availableTx &&
       isUst &&
-      big(balance).minus(microfy(amount!)).minus(txFee).lt(fixedGas)
-        ? 'You may run out of USD balance needed for future transactions'
+      big(balance).minus(microfy(amount!)).minus(txFee).lt(big(fixedGas).mul(2))
+        ? 'Leaving less UST in your account may lead to insufficient transaction fees for future transactions.'
         : null;
 
     const warningEmptyMemo =

@@ -1,7 +1,9 @@
-import { Rate, u, UST } from '@anchor-protocol/types';
+import { u, UST } from '@anchor-protocol/types';
+import { AnchorTax } from '@anchor-protocol/webapp-fns/types';
 import { max, min } from '@libs/big-math';
 import { microfy } from '@libs/formatter';
 import { FormReturn } from '@libs/use-form';
+import { computeMaxUstBalanceForUstTransfer } from '@libs/webapp-fns';
 import big, { Big, BigSource } from 'big.js';
 
 export interface EarnDepositFormInput {
@@ -11,8 +13,9 @@ export interface EarnDepositFormInput {
 export interface EarnDepositFormDependency {
   userUUSTBalance: u<UST<BigSource>>;
   fixedGas: u<UST<BigSource>>;
-  taxRate: Rate<BigSource>;
-  maxTaxUUSD: u<UST<BigSource>>;
+  tax: AnchorTax;
+  //taxRate: Rate<BigSource>;
+  //maxTaxUUSD: u<UST<BigSource>>;
   isConnected: boolean;
 }
 
@@ -31,8 +34,9 @@ export interface EarnDepositFormAsyncStates {}
 export const earnDepositForm =
   ({
     fixedGas,
-    taxRate,
-    maxTaxUUSD,
+    tax,
+    //taxRate,
+    //maxTaxUUSD,
     userUUSTBalance,
     isConnected,
   }: EarnDepositFormDependency) =>
@@ -53,9 +57,9 @@ export const earnDepositForm =
 
       const uAmount = microfy(depositAmount);
       const ratioTxFee = big(uAmount.minus(fixedGas))
-        .div(big(1).add(taxRate))
-        .mul(taxRate);
-      const maxTax = big(maxTaxUUSD);
+        .div(big(1).add(tax.taxRate))
+        .mul(tax.taxRate);
+      const maxTax = big(tax.maxTaxUUSD);
       return max(min(ratioTxFee, maxTax), 0).plus(fixedGas) as u<UST<Big>>;
     })();
 
@@ -65,26 +69,11 @@ export const earnDepositForm =
       : undefined;
 
     // maxAmount
-    const maxAmount = (() => {
-      if (!isConnected || big(userUUSTBalance).lte(0)) {
-        return big(0) as u<UST<Big>>;
-      }
-
-      // MIN((User_UST_Balance - fixed_gas)/(1+Tax_rate) * tax_rate , Max_tax) + Fixed_Gas
-      // without_fixed_gas = (uusd balance - fixed_gas)
-      // tax_fee = without_fixed_gas * tax_rate
-      // without_tax_fee = if (tax_fee < max_tax) without_fixed_gas - tax_fee
-      //                   else without_fixed_gas - max_tax
-
-      const userUUSD = big(userUUSTBalance);
-      const withoutFixedGas = userUUSD.minus(fixedGas);
-      const txFee = withoutFixedGas.mul(taxRate);
-      const result = withoutFixedGas.minus(min(txFee, maxTaxUUSD));
-
-      return result.minus(fixedGas).lte(0)
-        ? (big(0) as u<UST<Big>>)
-        : (result.minus(fixedGas) as u<UST<Big>>);
-    })();
+    const maxAmount = computeMaxUstBalanceForUstTransfer(
+      userUUSTBalance,
+      tax,
+      fixedGas,
+    );
 
     // invalidTxFee
     const invalidTxFee = (() => {
@@ -119,8 +108,8 @@ export const earnDepositForm =
         .minus(microfy(depositAmount))
         .minus(txFee ?? 0);
 
-      return remainUUSD.lt(fixedGas)
-        ? `You may run out of USD balance needed for future transactions.`
+      return remainUUSD.lt(big(fixedGas).mul(2))
+        ? `Leaving less UST in your account may lead to insufficient transaction fees for future transactions.`
         : undefined;
     })();
 
