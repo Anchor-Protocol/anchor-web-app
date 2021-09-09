@@ -1,10 +1,10 @@
-import { darkTheme } from '../src/@terra-dev/neumorphism-ui/themes/darkTheme';
+import { darkTheme } from '../src/@libs/neumorphism-ui/themes/darkTheme';
 import {
   globalStyle,
   GlobalStyle,
-} from '../src/@terra-dev/neumorphism-ui/themes/GlobalStyle';
-import { lightTheme } from '../src/@terra-dev/neumorphism-ui/themes/lightTheme';
-import { ThemeProvider } from '../src/@terra-dev/neumorphism-ui/themes/ThemeProvider';
+} from '../src/@libs/neumorphism-ui/themes/GlobalStyle';
+import { lightTheme } from '../src/@libs/neumorphism-ui/themes/lightTheme';
+import { ThemeProvider } from '../src/@libs/neumorphism-ui/themes/ThemeProvider';
 import { createGlobalStyle } from 'styled-components';
 import { theme } from './theme';
 
