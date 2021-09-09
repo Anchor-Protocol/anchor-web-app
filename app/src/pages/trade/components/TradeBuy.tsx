@@ -7,7 +7,14 @@ import {
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { ANC, Denom, terraswap, Token, u, UST } from '@anchor-protocol/types';
+import {
+  ANC,
+  NativeDenom,
+  terraswap,
+  Token,
+  u,
+  UST,
+} from '@anchor-protocol/types';
 import {
   terraswapReverseSimulationQuery,
   terraswapSimulationQuery,
@@ -223,7 +230,7 @@ export function TradeBuy() {
                     offer_asset: {
                       info: {
                         native_token: {
-                          denom: 'uusd' as Denom,
+                          denom: 'uusd' as NativeDenom,
                         },
                       },
                       amount,
@@ -235,7 +242,7 @@ export function TradeBuy() {
           }).then(({ simulation }) => {
             return simulation
               ? buyToSimulation(
-                  simulation as terraswap.SimulationResponse<ANC>,
+                  simulation as terraswap.pair.SimulationResponse<ANC>,
                   amount,
                   bank.tax,
                   fixedGas,
@@ -297,7 +304,7 @@ export function TradeBuy() {
           }).then(({ simulation }) => {
             return simulation
               ? buyFromSimulation(
-                  simulation as terraswap.SimulationResponse<ANC, UST>,
+                  simulation as terraswap.pair.SimulationResponse<ANC, UST>,
                   amount,
                   bank.tax,
                   fixedGas,

@@ -7,7 +7,7 @@ import {
   taxQuery,
   tokenBalancesQuery,
 } from '@libs/webapp-fns';
-import { useWallet, WalletStatus } from '@terra-money/wallet-provider';
+import { useWallet, WalletStatus } from '@terra-dev/use-wallet';
 import deepEqual from 'fast-deep-equal';
 import React, {
   Consumer,

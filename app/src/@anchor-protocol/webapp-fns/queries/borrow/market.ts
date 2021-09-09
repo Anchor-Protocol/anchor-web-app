@@ -1,10 +1,5 @@
 import { CW20Addr, moneyMarket, Rate, u, UST } from '@anchor-protocol/types';
-import {
-  mantle,
-  MantleParams,
-  WasmQuery,
-  WasmQueryData,
-} from '@libs/webapp-fns';
+import { mantle, MantleParams, WasmQuery, WasmQueryData } from '@libs/mantle';
 import big from 'big.js';
 import { ANCHOR_SAFE_RATIO } from '../../env';
 

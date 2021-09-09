@@ -5,7 +5,7 @@ import {
   MantleFetch,
   WasmQuery,
   WasmQueryData,
-} from '@libs/webapp-fns';
+} from '@libs/mantle';
 
 interface AncBalanceWasmQuery {
   ancBalance: WasmQuery<cw20.Balance, cw20.BalanceResponse<ANC>>;

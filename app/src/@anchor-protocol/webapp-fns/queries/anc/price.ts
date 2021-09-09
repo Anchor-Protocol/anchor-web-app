@@ -12,11 +12,14 @@ import {
   mantle,
   MantleFetch,
   WasmQuery,
-} from '@libs/webapp-fns';
+} from '@libs/mantle';
 import big from 'big.js';
 
 interface AncPriceWasmQuery {
-  ancPrice: WasmQuery<terraswap.Pool, terraswap.PoolResponse<Token>>;
+  ancPrice: WasmQuery<
+    terraswap.pair.Pool,
+    terraswap.pair.PoolResponse<Token, Token>
+  >;
 }
 
 export interface AncPrice {

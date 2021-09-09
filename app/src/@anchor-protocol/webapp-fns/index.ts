@@ -1,8 +1,6 @@
 export * from './env';
 export * from './types';
 
-export * from './errors/PollingTimeout';
-
 export * from './models/collaterals';
 
 export * from './functions/createAnchorContractAddress';

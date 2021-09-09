@@ -1,6 +1,6 @@
 import { ANC, HumanAddr, Rate, u } from '@anchor-protocol/types';
 import { airdropStageCache } from '@anchor-protocol/webapp-fns/caches/airdropStage';
-import { defaultMantleFetch, MantleFetch } from '@libs/webapp-fns';
+import { defaultMantleFetch, MantleFetch } from '@libs/mantle';
 import { airdropIsClaimedQuery } from './isClaimed';
 
 export interface Airdrop {

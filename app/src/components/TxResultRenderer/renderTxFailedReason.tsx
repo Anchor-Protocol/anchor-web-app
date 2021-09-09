@@ -1,4 +1,4 @@
-import { PollingTimeout } from '@anchor-protocol/webapp-fns';
+import { PollingTimeout } from '@libs/webapp-fns';
 import {
   CreateTxFailed,
   Timeout,

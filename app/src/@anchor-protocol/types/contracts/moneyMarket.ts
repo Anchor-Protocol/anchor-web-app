@@ -1,5 +1,4 @@
 import {
-  bAssetDenom,
   CW20Addr,
   HumanAddr,
   NativeDenom,
@@ -67,7 +66,7 @@ export namespace moneyMarket {
       stable_denom: NativeDenom;
       basset_info: {
         name: string;
-        symbol: bAssetDenom;
+        symbol: string;
         decimals: number;
       };
     }
@@ -507,7 +506,7 @@ export namespace moneyMarket {
     export interface WhitelistResponse {
       elems: Array<{
         name: string;
-        symbol: bAssetDenom;
+        symbol: string;
         max_ltv: Rate;
         custody_contract: HumanAddr;
         collateral_token: CW20Addr;

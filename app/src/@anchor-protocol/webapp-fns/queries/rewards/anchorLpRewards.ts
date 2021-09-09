@@ -1,5 +1,5 @@
 import { DateTime, Num } from '@anchor-protocol/types';
-import { MantleFetch } from '@libs/webapp-fns';
+import { MantleFetch } from '@libs/mantle';
 
 export interface RewardsAnchorLpRewardsData {
   anchorLpRewards: Array<{

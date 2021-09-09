@@ -1,10 +1,5 @@
 import { anchorToken } from '@anchor-protocol/types';
-import {
-  mantle,
-  MantleParams,
-  WasmQuery,
-  WasmQueryData,
-} from '@libs/webapp-fns';
+import { mantle, MantleParams, WasmQuery, WasmQueryData } from '@libs/mantle';
 
 export interface GovPollsWasmQuery {
   polls: WasmQuery<anchorToken.gov.Polls, anchorToken.gov.PollsResponse>;

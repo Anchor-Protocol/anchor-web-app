@@ -4,7 +4,7 @@ import {
   bondBEthClaimableRewardsQuery,
 } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@libs/react-query-utils';
-import { MantleFetch } from '@libs/webapp-fns';
+import { MantleFetch } from '@libs/mantle';
 import { EMPTY_QUERY_RESULT, useTerraWebapp } from '@libs/webapp-provider';
 import {
   ConnectedWallet,

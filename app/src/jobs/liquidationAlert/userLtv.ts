@@ -4,7 +4,8 @@ import {
   borrowMarketQuery,
   computeCurrentLtv,
 } from '@anchor-protocol/webapp-fns';
-import { lastSyncedHeightQuery, MantleFetch } from '@libs/webapp-fns';
+import { MantleFetch } from '@libs/mantle';
+import { lastSyncedHeightQuery } from '@libs/webapp-fns';
 
 interface UserLtvQueryParams {
   mantleFetch: MantleFetch;
