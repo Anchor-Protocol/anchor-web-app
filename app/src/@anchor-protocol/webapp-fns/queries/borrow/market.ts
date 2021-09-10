@@ -282,8 +282,12 @@ async function borrowMarketWithoutOraclePrices({
 }): Promise<WasmQueryData<MarketWasmQuery>> {
   type WithoutOraclePrices = Omit<MarketWasmQuery, 'oraclePrices'>;
 
+  const cryptocompareApiKey = process.env.VITE_APP_CRYPTOCOMPARE
+    ? `&api_key=${process.env.VITE_CRYPTOCOMPARE}`
+    : '';
+
   const ethPrice = await fetch(
-    'https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD',
+    `https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD${cryptocompareApiKey}`,
   ).then((res) => res.json() as Promise<{ USD: number }>);
 
   const { lunaPair } = await mantle<LunaUstPairQuery>({
