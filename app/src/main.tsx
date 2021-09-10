@@ -12,6 +12,9 @@ if (process.env.NODE_ENV === 'production' && typeof SENTRY_DSN === 'string') {
     //integrations: [new Integrations.BrowserTracing()],
     //tracesSampleRate: 1.0,
     maxValueLength: 800,
+    // may some lib (maybe chart.js) have problem this error in some browsers https://github.com/WICG/resize-observer/issues/38
+    // but, failed investigating. this error still investigation
+    ignoreErrors: ['ResizeObserver loop limit exceeded'],
   });
 
   configErrorBoundary(Sentry.ErrorBoundary);
