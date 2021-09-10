@@ -17,6 +17,7 @@ import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
+import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useBank } from 'contexts/bank';
 import { validateTxFee } from 'logics/validateTxFee';
 import React, { useCallback, useMemo } from 'react';
@@ -135,19 +136,21 @@ function AirdropBase({ className }: AirdropProps) {
           </TxFeeListItem>
         </TxFeeList>
 
-        <ActionButton
-          className="proceed"
-          disabled={
-            !connectedWallet ||
-            !connectedWallet.availablePost ||
-            !claim ||
-            !airdrop ||
-            !!invalidTxFee
-          }
-          onClick={() => airdrop && proceed(airdrop)}
-        >
-          Claim
-        </ActionButton>
+        <ViewAddressWarning>
+          <ActionButton
+            className="proceed"
+            disabled={
+              !connectedWallet ||
+              !connectedWallet.availablePost ||
+              !claim ||
+              !airdrop ||
+              !!invalidTxFee
+            }
+            onClick={() => airdrop && proceed(airdrop)}
+          >
+            Claim
+          </ActionButton>
+        </ViewAddressWarning>
       </Section>
     </CenteredLayout>
   );
