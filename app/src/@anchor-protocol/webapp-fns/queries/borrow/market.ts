@@ -282,7 +282,7 @@ async function borrowMarketWithoutOraclePrices({
 }): Promise<WasmQueryData<MarketWasmQuery>> {
   type WithoutOraclePrices = Omit<MarketWasmQuery, 'oraclePrices'>;
 
-  const cryptocompareApiKey = import.meta.env.VITE_APP_CRYPTOCOMPARE
+  const cryptocompareApiKey = import.meta.env.VITE_CRYPTOCOMPARE
     ? `&api_key=${import.meta.env.VITE_CRYPTOCOMPARE}`
     : '';
 
