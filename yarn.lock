@@ -37,7 +37,7 @@ __metadata:
     "@storybook/preset-create-react-app": ^3.2.0
     "@storybook/react": ^6.3.4
     "@storybook/theming": ^6.3.4
-    "@terra-dev/wallet-types": ^1.2.4
+    "@terra-dev/wallet-types": ^2.1.0-alpha.1
     "@terra-money/terra.js": 1.8.9
     "@terra-money/wallet-provider": ^2.1.0-alpha.1
     "@testing-library/jest-dom": ^5.14.1
@@ -4859,15 +4859,6 @@ __metadata:
   peerDependencies:
     react: ^17.0.0
   checksum: 2977b8b0fa82c005a02b8329058e5c1ff99c5aa69d3b913ed121a6114c7ee6e72026e9d757eac551b3d3dbd9944cec153f221422ce108bc475657ca3e579f08c
-  languageName: node
-  linkType: hard
-
-"@terra-dev/wallet-types@npm:^1.2.4":
-  version: 1.2.4
-  resolution: "@terra-dev/wallet-types@npm:1.2.4"
-  dependencies:
-    "@terra-money/terra.js": ^1.8.0
-  checksum: e2c767b3d6227b607cbaf215f068c3447c6c51b17cebda35cba29cdf5d4940cd6e10bcc8a84edfaf140f934dfcccf3e63ee1ce1373ae28a80fcec5dcaead8a7a
   languageName: node
   linkType: hard
 

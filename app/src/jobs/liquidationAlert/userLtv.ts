@@ -23,6 +23,9 @@ export async function userLtvQuery({
   const [{ oraclePrices }, { marketBorrowerInfo, overseerCollaterals }] =
     await Promise.all([
       borrowMarketQuery({
+        terraswapFactoryAddr: address.terraswap.factory,
+        bEthTokenAddr: address.cw20.bEth,
+        bLunaTokenAddr: address.cw20.bLuna,
         mantleEndpoint,
         mantleFetch,
         wasmQuery: {
