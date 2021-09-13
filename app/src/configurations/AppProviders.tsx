@@ -27,6 +27,7 @@ import { ADDRESSES, GA_TRACKING_ID, onProduction } from 'env';
 import React, { ReactNode, useCallback } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { LCDClient } from '@terra-money/terra.js';
 
 patchReactQueryFocusRefetching();
 
@@ -148,6 +149,10 @@ const mainnet = {
   chainID: 'columbus-4',
   lcd: 'https://lcd.terra.dev',
 };
+
+// need to force create LCD at least once to get dictToB64/b64ToDict to work correctly
+// TODO: remove me after col-5
+new LCDClient({ URL: 'https://bombay-lcd.terra.dev', chainID: 'bombay-10' });
 
 const walletConnectChainIds: Record<number, NetworkInfo> = {
   0: testnet,

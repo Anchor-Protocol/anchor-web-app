@@ -4,7 +4,7 @@ export const DEFAULT_MANTLE_ENDPOINTS = {
   mainnet: 'https://mantle.anchorprotocol.com',
   testnet: 'https://tequila-mantle.anchorprotocol.com',
   // TODO change to bombay
-  bombay: 'https://tequila-mantle.anchorprotocol.com',
+  bombay: 'https://bombay-mantle.terra.dev',
 } as const;
 
 export const EMPTY_QUERY_RESULT: UseQueryResult<undefined> = {
