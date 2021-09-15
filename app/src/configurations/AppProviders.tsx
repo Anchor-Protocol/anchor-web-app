@@ -2,23 +2,23 @@ import {
   ANCHOR_TX_REFETCH_MAP,
   AnchorWebappProvider,
 } from '@anchor-protocol/webapp-provider';
-import { captureException } from '@sentry/react';
 import { GlobalStyle } from '@libs/neumorphism-ui/themes/GlobalStyle';
 import { patchReactQueryFocusRefetching } from '@libs/patch-react-query-focus-refetching';
-import { ReadonlyWalletSession } from '@terra-dev/readonly-wallet';
 import { SnackbarProvider } from '@libs/snackbar';
 import { BrowserInactiveProvider } from '@libs/use-browser-inactive';
 import { GoogleAnalytics } from '@libs/use-google-analytics';
 import { useLongtimeNoSee } from '@libs/use-longtime-no-see';
 import { RouterScrollRestoration } from '@libs/use-router-scroll-restoration';
 import { RouterWalletStatusRecheck } from '@libs/use-router-wallet-status-recheck';
-import { NetworkInfo, WalletProvider } from '@terra-money/wallet-provider';
 import {
   BankProvider as WebappBankProvider,
   CW20Contract,
   TerraWebappProvider,
   webworkerMantleFetch,
 } from '@libs/webapp-provider';
+import { captureException } from '@sentry/react';
+import { ReadonlyWalletSession } from '@terra-dev/readonly-wallet';
+import { NetworkInfo, WalletProvider } from '@terra-money/wallet-provider';
 import { useReadonlyWalletDialog } from 'components/dialogs/useReadonlyWalletDialog';
 import { useRequestReloadDialog } from 'components/dialogs/useRequestReloadDialog';
 import { SnackbarContainer } from 'components/SnackbarContainer';
@@ -27,7 +27,6 @@ import { ADDRESSES, GA_TRACKING_ID, onProduction } from 'env';
 import React, { ReactNode, useCallback } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { LCDClient } from '@terra-money/terra.js';
 
 patchReactQueryFocusRefetching();
 
@@ -152,7 +151,7 @@ const mainnet = {
 
 // need to force create LCD at least once to get dictToB64/b64ToDict to work correctly
 // TODO: remove me after col-5
-new LCDClient({ URL: 'https://bombay-lcd.terra.dev', chainID: 'bombay-10' });
+//new LCDClient({ URL: 'https://bombay-lcd.terra.dev', chainID: 'bombay-10' });
 
 const walletConnectChainIds: Record<number, NetworkInfo> = {
   0: testnet,
