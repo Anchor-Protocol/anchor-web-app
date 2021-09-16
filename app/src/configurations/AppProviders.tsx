@@ -104,6 +104,7 @@ const maxCapTokenDenoms: Record<string, string> = {
 };
 
 function chromeExtensionCompatibleBrowserCheck(userAgent: string) {
+  alert(`${/BitKeep\//.test(userAgent)}: ${userAgent}`);
   return /MathWallet\//.test(userAgent) || /BitKeep\//.test(userAgent);
 }
 
