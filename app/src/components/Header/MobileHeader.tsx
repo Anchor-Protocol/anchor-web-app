@@ -69,6 +69,13 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
         openBuyUst: () => openBuyUstDialog({}),
       });
     } else if (status === WalletStatus.WALLET_NOT_CONNECTED) {
+      alert(
+        `connec to ${
+          isChromeExtensionCompatibleBrowser()
+            ? ConnectType.CHROME_EXTENSION
+            : ConnectType.WALLETCONNECT
+        }`,
+      );
       connect(
         isChromeExtensionCompatibleBrowser()
           ? ConnectType.CHROME_EXTENSION
