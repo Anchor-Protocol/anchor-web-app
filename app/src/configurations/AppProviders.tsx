@@ -103,6 +103,10 @@ const maxCapTokenDenoms: Record<string, string> = {
   maxTaxUUSD: 'uusd',
 };
 
+function chromeExtensionCompatibleBrowserCheck(userAgent: string) {
+  return /MathWallet\//.test(userAgent) || /BitKeep\//.test(userAgent);
+}
+
 function Providers({ children }: { children: ReactNode }) {
   return (
     /** React App routing :: <Link>, <NavLink>, useLocation(), useRouteMatch()... */
@@ -193,6 +197,9 @@ export function AppProviders({ children }: { children: ReactNode }) {
           : 'https://tequila-walletconnect.terra.dev/',
       }}
       createReadonlyWalletSession={createReadonlyWalletSession}
+      dangerously__chromeExtensionCompatibleBrowserCheck={
+        chromeExtensionCompatibleBrowserCheck
+      }
     >
       <Providers>
         {/* Router Actions ======================== */}
