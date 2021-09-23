@@ -4,7 +4,8 @@ import {
   borrowMarketQuery,
   computeCurrentLtv,
 } from '@anchor-protocol/webapp-fns';
-import { lastSyncedHeightQuery, MantleFetch } from '@libs/webapp-fns';
+import { MantleFetch } from '@libs/mantle';
+import { lastSyncedHeightQuery } from '@libs/webapp-fns';
 
 interface UserLtvQueryParams {
   mantleFetch: MantleFetch;
@@ -22,6 +23,9 @@ export async function userLtvQuery({
   const [{ oraclePrices }, { marketBorrowerInfo, overseerCollaterals }] =
     await Promise.all([
       borrowMarketQuery({
+        terraswapFactoryAddr: address.terraswap.factory,
+        bEthTokenAddr: address.cw20.bEth,
+        bLunaTokenAddr: address.cw20.bLuna,
         mantleEndpoint,
         mantleFetch,
         wasmQuery: {

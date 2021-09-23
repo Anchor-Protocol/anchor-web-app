@@ -1,4 +1,4 @@
-import { PollingTimeout } from '@anchor-protocol/webapp-fns';
+import { PollingTimeout } from '@libs/webapp-fns';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { HorizontalHeavyRuler } from '@libs/neumorphism-ui/components/HorizontalHeavyRuler';
 import { TxReceipt, TxResultRendering, TxStreamPhase } from '@libs/webapp-fns';

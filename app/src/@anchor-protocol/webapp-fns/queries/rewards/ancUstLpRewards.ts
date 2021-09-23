@@ -1,10 +1,5 @@
 import { anchorToken, AncUstLP, cw20 } from '@anchor-protocol/types';
-import {
-  mantle,
-  MantleParams,
-  WasmQuery,
-  WasmQueryData,
-} from '@libs/webapp-fns';
+import { mantle, MantleParams, WasmQuery, WasmQueryData } from '@libs/mantle';
 
 export interface RewardsAncUstLpRewardsWasmQuery {
   userLPBalance: WasmQuery<cw20.Balance, cw20.BalanceResponse<AncUstLP>>;

@@ -1,9 +1,7 @@
+import { MantleFetch } from '@libs/mantle';
 import { createQueryFn } from '@libs/react-query-utils';
-import {
-  lastSyncedHeightQuery,
-  MantleFetch,
-  useTerraWebapp,
-} from '@libs/webapp-provider';
+import { lastSyncedHeightQuery } from '@libs/webapp-fns';
+import { useTerraWebapp } from '@libs/webapp-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { ANCHOR_QUERY_KEY } from '../../env';
 

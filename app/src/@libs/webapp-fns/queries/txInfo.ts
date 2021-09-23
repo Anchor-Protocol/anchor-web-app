@@ -1,5 +1,5 @@
-import { PollingTimeout } from '@anchor-protocol/webapp-fns/errors/PollingTimeout';
 import { MantleFetch } from '@libs/mantle';
+import { PollingTimeout } from '@libs/webapp-fns';
 import { TxFailed } from '@terra-dev/wallet-types';
 import { CreateTxOptions } from '@terra-money/terra.js';
 

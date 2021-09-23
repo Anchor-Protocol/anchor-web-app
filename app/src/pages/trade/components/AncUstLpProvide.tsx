@@ -96,7 +96,7 @@ export function AncUstLpProvide() {
     return max(
       big(bank.userBalances.uUSD)
         .minus(txFee)
-        .minus(fixedGas * 2),
+        .minus(fixedGas * 3),
       0,
     ) as u<UST<Big>>;
   }, [bank.tax.maxTaxUUSD, bank.tax.taxRate, bank.userBalances.uUSD, fixedGas]);
@@ -142,8 +142,8 @@ export function AncUstLpProvide() {
       .minus(microfy(ustAmount))
       .minus(simulation.txFee);
 
-    if (remainUUSD.lt(fixedGas)) {
-      return 'You may run out of USD balance needed for future transactions.';
+    if (remainUUSD.lt(big(fixedGas).mul(2))) {
+      return 'Leaving less UST in your account may lead to insufficient transaction fees for future transactions.';
     }
 
     return undefined;
@@ -361,6 +361,10 @@ export function AncUstLpProvide() {
             }
           >
             {formatUST(demicrofy(ustBalance ?? bank.userBalances.uUSD))} UST
+            {/*/{' '}*/}
+            {/*{formatUST(demicrofy(bank.userBalances.uUSD))}{' '}*/}
+            {/*={' '}*/}
+            {/*{formatUST(demicrofy(big(bank.userBalances.uUSD).minus(simulation?.txFee ?? 0).minus(ustBalance ?? 0) as u<UST<Big>>))}{' '}*/}
           </span>
         </span>
       </div>

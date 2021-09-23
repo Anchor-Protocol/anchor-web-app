@@ -1,14 +1,4 @@
-import {
-  AssetDenom,
-  DateTime,
-  Denom,
-  HumanAddr,
-  Luna,
-  Num,
-  Rate,
-  Token,
-  u,
-} from '@libs/types';
+import { DateTime, HumanAddr, Luna, Num, Rate, Token, u } from '@libs/types';
 import { bLuna } from '../currencies';
 
 export namespace bluna {
@@ -18,7 +8,7 @@ export namespace bluna {
      */
     export interface AirdropInfo {
       airdrop_info: {
-        airdrop_token?: Denom;
+        airdrop_token?: string;
         start_after?: string;
         limit?: number;
       };
@@ -29,7 +19,7 @@ export namespace bluna {
      */
     export interface AirdropInfoResponse {
       airdrop_info: Array<{
-        airdrop_token: Denom;
+        airdrop_token: string;
         info: {
           airdrop_token_contract: HumanAddr;
           airdrop_contract: HumanAddr;
@@ -65,7 +55,7 @@ export namespace bluna {
       owner: HumanAddr;
       hub_contract: HumanAddr;
       reward_contract: HumanAddr;
-      airdrop_tokens: Array<Denom>;
+      airdrop_tokens: Array<string>;
     }
   }
 
@@ -138,11 +128,11 @@ export namespace bluna {
      */
     export interface ParametersResponse {
       epoch_period: number;
-      underlying_coin_denom: AssetDenom;
+      underlying_coin_denom: string;
       unbonding_period: number;
       peg_recovery_fee: Rate;
       er_threshold: Rate;
-      reward_denom: Denom;
+      reward_denom: string;
     }
 
     /**
@@ -243,7 +233,7 @@ export namespace bluna {
      */
     export interface ConfigResponse {
       hub_contract: HumanAddr;
-      reward_denom: Denom;
+      reward_denom: string;
     }
 
     /**

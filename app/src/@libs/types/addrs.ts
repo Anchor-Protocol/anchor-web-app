@@ -6,9 +6,9 @@ export type CW20Addr = string & NominalType<'CW20Addr'>;
 export type LPAddr = string & NominalType<'LPAddr'>;
 
 export type NativeDenom = string & NominalType<'NativeDenom'>;
-export type bAssetDenom = string & NominalType<'bAssetDenom'>;
-export type AssetDenom = string & NominalType<'AssetDenom'>;
-export type Denom = NativeDenom | bAssetDenom | AssetDenom;
+//export type bAssetDenom = string & NominalType<'bAssetDenom'>;
+//export type AssetDenom = string & NominalType<'AssetDenom'>;
+//export type Denom = NativeDenom | bAssetDenom | AssetDenom;
 
 export type Base64EncodedJson = string & NominalType<'Base64EncodedJson'>;
 

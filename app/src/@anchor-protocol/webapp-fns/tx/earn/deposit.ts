@@ -9,24 +9,26 @@ import {
 import { aUST, Gas, Rate, u, UST } from '@anchor-protocol/types';
 import { floor } from '@libs/big-math';
 import { demicrofy, formatFluidDecimalPoints } from '@libs/formatter';
+import { MantleFetch } from '@libs/mantle';
 import {
-  MantleFetch,
   pickAttributeValue,
   pickEvent,
   pickRawLog,
   TxResultRendering,
   TxStreamPhase,
 } from '@libs/webapp-fns';
+import {
+  _catchTxError,
+  _createTxOptions,
+  _pollTxInfo,
+  _postTx,
+  TxHelper,
+} from '@libs/webapp-fns/tx/internal';
 import { pipe } from '@rx-stream/pipe';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
 import big, { BigSource } from 'big.js';
 import { Observable } from 'rxjs';
-import { _catchTxError } from '../internal/_catchTxError';
-import { _createTxOptions } from '../internal/_createTxOptions';
-import { _pollTxInfo } from '../internal/_pollTxInfo';
-import { _postTx } from '../internal/_postTx';
-import { TxHelper } from '../internal/TxHelper';
 
 export function earnDepositTx(
   $: Parameters<typeof fabricateMarketDepositStableCoin>[0] & {

@@ -7,7 +7,14 @@ import {
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { ANC, Denom, terraswap, Token, u, UST } from '@anchor-protocol/types';
+import {
+  ANC,
+  NativeDenom,
+  terraswap,
+  Token,
+  u,
+  UST,
+} from '@anchor-protocol/types';
 import {
   terraswapReverseSimulationQuery,
   terraswapSimulationQuery,
@@ -111,7 +118,7 @@ export function TradeBuy() {
     return max(
       big(bank.userBalances.uUSD)
         .minus(txFee)
-        .minus(fixedGas * 2),
+        .minus(fixedGas * 3),
       0,
     ) as u<UST<Big>>;
   }, [bank.tax.maxTaxUUSD, bank.tax.taxRate, bank.userBalances.uUSD, fixedGas]);
@@ -147,10 +154,11 @@ export function TradeBuy() {
 
     const remainUUSD = big(bank.userBalances.uUSD)
       .minus(microfy(fromAmount))
-      .minus(simulation.txFee);
+      .minus(simulation.txFee)
+      .minus(fixedGas);
 
     if (remainUUSD.lt(fixedGas)) {
-      return 'You may run out of USD balance needed for future transactions.';
+      return 'Leaving less UST in your account may lead to insufficient transaction fees for future transactions.';
     }
 
     return undefined;
@@ -223,7 +231,7 @@ export function TradeBuy() {
                     offer_asset: {
                       info: {
                         native_token: {
-                          denom: 'uusd' as Denom,
+                          denom: 'uusd' as NativeDenom,
                         },
                       },
                       amount,
@@ -235,7 +243,7 @@ export function TradeBuy() {
           }).then(({ simulation }) => {
             return simulation
               ? buyToSimulation(
-                  simulation as terraswap.SimulationResponse<ANC>,
+                  simulation as terraswap.pair.SimulationResponse<ANC>,
                   amount,
                   bank.tax,
                   fixedGas,
@@ -297,7 +305,7 @@ export function TradeBuy() {
           }).then(({ simulation }) => {
             return simulation
               ? buyFromSimulation(
-                  simulation as terraswap.SimulationResponse<ANC, UST>,
+                  simulation as terraswap.pair.SimulationResponse<ANC, UST>,
                   amount,
                   bank.tax,
                   fixedGas,
@@ -408,6 +416,10 @@ export function TradeBuy() {
                 }
               >
                 {formatUST(demicrofy(ustBalance ?? bank.userBalances.uUSD))}{' '}
+                {/*/{' '}*/}
+                {/*{formatUST(demicrofy(bank.userBalances.uUSD))}{' '}*/}
+                {/*={' '}*/}
+                {/*{formatUST(demicrofy(big(bank.userBalances.uUSD).minus(simulation?.txFee ?? 0).minus(ustBalance ?? 0) as u<UST<Big>>))}{' '}*/}
                 {fromCurrency.label}
               </span>
             </span>

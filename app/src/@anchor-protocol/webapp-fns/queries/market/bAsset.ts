@@ -1,10 +1,5 @@
 import { bLuna, cw20, moneyMarket } from '@anchor-protocol/types';
-import {
-  mantle,
-  MantleParams,
-  WasmQuery,
-  WasmQueryData,
-} from '@libs/webapp-fns';
+import { mantle, MantleParams, WasmQuery, WasmQueryData } from '@libs/mantle';
 
 export interface MarketBAssetWasmQuery {
   bLunaBalance: WasmQuery<cw20.Balance, cw20.BalanceResponse<bLuna>>;

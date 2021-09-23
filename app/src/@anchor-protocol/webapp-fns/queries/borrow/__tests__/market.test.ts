@@ -3,13 +3,16 @@ import {
   TEST_ADDRESSES,
   TEST_MANTLE_ENDPOINT,
 } from '@anchor-protocol/webapp-fns/test-env';
-import { defaultMantleFetch } from '@libs/webapp-fns';
+import { defaultMantleFetch } from '@libs/mantle';
 import { borrowMarketQuery } from '../market';
 
 describe('queries/market', () => {
   test('should get result from query', async () => {
     const { marketState, borrowRate, oraclePrices, overseerWhitelist } =
       await borrowMarketQuery({
+        bEthTokenAddr: TEST_ADDRESSES.cw20.bEth,
+        bLunaTokenAddr: TEST_ADDRESSES.cw20.bLuna,
+        terraswapFactoryAddr: TEST_ADDRESSES.terraswap.factory,
         mantleFetch: defaultMantleFetch,
         mantleEndpoint: TEST_MANTLE_ENDPOINT,
         wasmQuery: {

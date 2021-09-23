@@ -1,6 +1,5 @@
-import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
-import { u, UST } from '@anchor-protocol/types';
-import { demicrofy, truncate } from '@libs/formatter';
+import { formatUToken } from '@libs/formatter';
+import { u, UST } from '@libs/types';
 import { TxReceipt, TxResultRendering, TxStreamPhase } from '@libs/webapp-fns';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import { CreateTxOptions } from '@terra-money/terra.js';
@@ -49,8 +48,7 @@ export class TxHelper {
   txFeeReceipt = (txFee?: u<UST<BigSource>>): TxReceipt => {
     return {
       name: 'Tx Fee',
-      value:
-        formatUSTWithPostfixUnits(demicrofy(txFee ?? this.$.txFee)) + ' UST',
+      value: formatUToken(txFee ?? this.$.txFee) + ' UST',
     };
   };
 
@@ -79,11 +77,11 @@ export class TxHelper {
   };
 }
 
-//function truncate(
-//  text: string = '',
-//  [h, t]: [number, number] = [6, 6],
-//): string {
-//  const head = text.slice(0, h);
-//  const tail = text.slice(-1 * t, text.length);
-//  return text.length > h + t ? [head, tail].join('...') : text;
-//}
+function truncate(
+  text: string = '',
+  [h, t]: [number, number] = [6, 6],
+): string {
+  const head = text.slice(0, h);
+  const tail = text.slice(-1 * t, text.length);
+  return text.length > h + t ? [head, tail].join('...') : text;
+}

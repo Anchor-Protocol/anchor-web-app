@@ -27,8 +27,9 @@ export function useEarnDepositForm(): EarnDepositFormReturn {
     {
       isConnected: !!connectedWallet,
       fixedGas: constants.fixedGas,
-      taxRate: tax.taxRate,
-      maxTaxUUSD: tax.maxTaxUUSD,
+      tax,
+      //taxRate: tax.taxRate,
+      //maxTaxUUSD: tax.maxTaxUUSD,
       userUUSTBalance: tokenBalances.uUST,
     },
     () => ({ depositAmount: '' as UST }),

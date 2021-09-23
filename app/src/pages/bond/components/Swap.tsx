@@ -5,7 +5,7 @@ import {
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import type { bLuna, Denom, Luna, Rate, u } from '@anchor-protocol/types';
+import type { bLuna, Luna, NativeDenom, Rate, u } from '@anchor-protocol/types';
 import { terraswap } from '@anchor-protocol/types';
 import {
   terraswapSimulationQuery,
@@ -185,7 +185,7 @@ export function Swap() {
           }).then(({ simulation }) => {
             return simulation
               ? swapGetSimulation(
-                  simulation as terraswap.SimulationResponse<Luna>,
+                  simulation as terraswap.pair.SimulationResponse<Luna>,
                   amount,
                   bank.tax,
                 )
@@ -234,7 +234,7 @@ export function Swap() {
                     offer_asset: {
                       info: {
                         native_token: {
-                          denom: 'uluna' as Denom,
+                          denom: 'uluna' as NativeDenom,
                         },
                       },
                       amount,
@@ -246,7 +246,7 @@ export function Swap() {
           }).then(({ simulation }) => {
             return simulation
               ? swapBurnSimulation(
-                  simulation as terraswap.SimulationResponse<Luna>,
+                  simulation as terraswap.pair.SimulationResponse<Luna>,
                   amount,
                   bank.tax,
                 )

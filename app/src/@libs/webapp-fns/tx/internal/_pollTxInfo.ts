@@ -1,11 +1,11 @@
-import { TxResult } from '@terra-dev/wallet-types';
+import { MantleFetch } from '@libs/mantle';
 import {
-  MantleFetch,
   pollTxInfo,
   TxInfoData,
   TxResultRendering,
   TxStreamPhase,
 } from '@libs/webapp-fns';
+import { TxResult } from '@terra-dev/wallet-types';
 import { TxHelper } from './TxHelper';
 
 interface Params {
