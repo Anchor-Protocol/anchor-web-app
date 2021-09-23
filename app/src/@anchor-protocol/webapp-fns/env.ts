@@ -4,13 +4,17 @@ import { AnchorContantsInput, ExpandAddressMap } from './types';
 // ---------------------------------------------
 // TODO migration col4 -> col5
 // ---------------------------------------------
-// TODO change block height
+// FIXME change block height
 // TODO set undefined after col-5 up
-export const MAINTANANCE_DOWN_BLOCK: number | undefined = 5_443_198;
+export const MAINTANANCE_DOWN_BLOCK: number | undefined = undefined;
 
-// TODO to true before oracle bot ready
+// FIXME change to true after down block-height
+// TODO change to false after col-5 up
+export const FORCE_MAINTANANCE_DOWN: boolean = true;
+
+// FIXME to true before oracle bot ready
 // TODO to false after oracle bot ready
-export const USE_EXTERNAL_ORACLE_PRICE = false;
+export const USE_EXTERNAL_ORACLE_PRICE = true;
 
 export const DEFAULT_ADDESS_MAP: Record<string, ExpandAddressMap> = {
   mainnet: {

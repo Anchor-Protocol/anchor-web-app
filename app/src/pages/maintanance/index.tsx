@@ -1,4 +1,7 @@
-import { MAINTANANCE_DOWN_BLOCK } from '@anchor-protocol/webapp-fns';
+import {
+  FORCE_MAINTANANCE_DOWN,
+  MAINTANANCE_DOWN_BLOCK,
+} from '@anchor-protocol/webapp-fns';
 import { useTerraWebapp } from '@libs/webapp-provider';
 import React, { ReactElement, useEffect, useState } from 'react';
 
@@ -8,7 +11,9 @@ export function MaintananceBlocker({ children }: { children: ReactElement }) {
   const [maintananceDown, setMaintananceDown] = useState<boolean>(true);
 
   useEffect(() => {
-    if (typeof MAINTANANCE_DOWN_BLOCK === 'number') {
+    if (FORCE_MAINTANANCE_DOWN) {
+      setMaintananceDown(true);
+    } else if (typeof MAINTANANCE_DOWN_BLOCK === 'number') {
       const downBlockHeight = MAINTANANCE_DOWN_BLOCK;
 
       function check() {
