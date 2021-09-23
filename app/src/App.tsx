@@ -20,6 +20,7 @@ import { PollCreateRegisterCollateralAttributes } from 'pages/gov/poll.create.re
 import { PollCreateSpendCommunityPool } from 'pages/gov/poll.create.spend-community-pool';
 import { PollCreateTextProposal } from 'pages/gov/poll.create.text-proposal';
 import { PollDetail } from 'pages/gov/poll.detail';
+import { MaintanaceRoute, Maintanance } from 'pages/maintanance';
 import { Mypage } from 'pages/mypage';
 import { ClaimAll } from 'pages/trade/claim.all';
 import { ClaimAncUstLp } from 'pages/trade/claim.anc-ust-lp';
@@ -47,6 +48,10 @@ export function App() {
             <GlobalStyle />
             <Header />
             <Switch>
+              {/* Maintanance */}
+              <Route path="/maintanance" component={Maintanance} />
+              <MaintanaceRoute />
+
               {/* Dashboard */}
               <Route path="/" exact component={Dashboard} />
 
