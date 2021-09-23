@@ -82,9 +82,10 @@ export enum TERRA_QUERY_KEY {
 }
 
 export const DEFAULT_GAS_PRICE_ENDPOINT: Record<string, string> = {
-  mainnet: 'https://fcd.terra.dev/v1/txs/gas_prices',
+  mainnet: 'https://moonshine-fcd.terra.dev/v1/txs/gas_prices',
   testnet: 'https://tequila-fcd.terra.dev/v1/txs/gas_prices',
   bombay: 'https://bombay-fcd.terra.dev/v1/txs/gas_prices',
+  moonshine: 'https://moonshine-fcd.terra.dev/v1/txs/gas_prices',
 };
 
 export const FALLBACK_GAS_PRICE: Record<string, GasPrice> = {
