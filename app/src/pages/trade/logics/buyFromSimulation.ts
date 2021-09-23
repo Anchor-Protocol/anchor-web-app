@@ -7,7 +7,7 @@ import { MAX_SPREAD } from 'pages/trade/env';
 import { TradeSimulation } from 'pages/trade/models/tradeSimulation';
 
 export function buyFromSimulation(
-  simulation: terraswap.SimulationResponse<ANC, UST>,
+  simulation: terraswap.pair.SimulationResponse<ANC, UST>,
   toAmount: u<ANC>,
   { taxRate, maxTaxUUSD }: AnchorTax,
   fixedGas: u<UST<BigSource>>,

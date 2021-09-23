@@ -1,10 +1,5 @@
 import { bluna } from '@anchor-protocol/types';
-import {
-  mantle,
-  MantleParams,
-  WasmQuery,
-  WasmQueryData,
-} from '@libs/webapp-fns';
+import { mantle, MantleParams, WasmQuery, WasmQueryData } from '@libs/mantle';
 
 export interface BondClaimableRewardsWasmQuery {
   rewardState: WasmQuery<bluna.reward.State, bluna.reward.StateResponse>;

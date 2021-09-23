@@ -7,7 +7,7 @@ import { MAX_SPREAD } from 'pages/bond/env';
 import { SwapSimulation } from '../models/swapSimulation';
 
 export function swapGetSimulation(
-  simulation: terraswap.SimulationResponse<Luna>,
+  simulation: terraswap.pair.SimulationResponse<Luna>,
   burnAmount: u<bLuna>,
   { taxRate, maxTaxUUSD }: AnchorTax,
 ): SwapSimulation<Luna, bLuna> {

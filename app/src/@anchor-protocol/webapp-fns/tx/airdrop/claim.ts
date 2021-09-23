@@ -1,10 +1,7 @@
 import { Gas, HumanAddr, Rate, u, UST } from '@anchor-protocol/types';
 import { airdropStageCache } from '@anchor-protocol/webapp-fns/caches/airdropStage';
-import {
-  MantleFetch,
-  TxResultRendering,
-  TxStreamPhase,
-} from '@libs/webapp-fns';
+import { MantleFetch } from '@libs/mantle';
+import { TxResultRendering, TxStreamPhase } from '@libs/webapp-fns';
 import { pipe } from '@rx-stream/pipe';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import {
@@ -14,11 +11,13 @@ import {
 } from '@terra-money/terra.js';
 import { Observable } from 'rxjs';
 import { Airdrop } from '../../queries/airdrop/check';
-import { _catchTxError } from '../internal/_catchTxError';
-import { _createTxOptions } from '../internal/_createTxOptions';
-import { _pollTxInfo } from '../internal/_pollTxInfo';
-import { _postTx } from '../internal/_postTx';
-import { TxHelper } from '../internal/TxHelper';
+import {
+  TxHelper,
+  _postTx,
+  _pollTxInfo,
+  _createTxOptions,
+  _catchTxError,
+} from '@libs/webapp-fns/tx/internal';
 
 export function airdropClaimTx($: {
   airdrop: Airdrop;

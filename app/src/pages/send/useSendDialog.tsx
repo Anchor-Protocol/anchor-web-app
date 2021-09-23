@@ -94,7 +94,7 @@ function ComponentBase({
                 bank.tax.maxTaxUUSD,
               ),
             )
-            .minus(fixedGas)
+            .minus(big(fixedGas).mul(2))
             .toString() as u<Token>;
         },
         getFormatWithdrawable: (bank: Bank, fixedGas: u<UST<BigSource>>) => {
@@ -107,7 +107,7 @@ function ComponentBase({
                     bank.tax.maxTaxUUSD,
                   ),
                 )
-                .minus(fixedGas) as u<UST<Big>>,
+                .minus(big(fixedGas).mul(2)) as u<UST<Big>>,
             ),
           );
         },

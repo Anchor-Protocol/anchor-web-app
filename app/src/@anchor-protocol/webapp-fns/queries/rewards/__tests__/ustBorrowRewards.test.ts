@@ -1,4 +1,4 @@
-import { defaultMantleFetch } from '@libs/webapp-fns';
+import { defaultMantleFetch } from '@libs/mantle';
 import {
   TEST_ADDRESSES,
   TEST_MANTLE_ENDPOINT,

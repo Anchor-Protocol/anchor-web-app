@@ -1,10 +1,5 @@
 import { anchorToken } from '@anchor-protocol/types';
-import {
-  mantle,
-  MantleParams,
-  WasmQuery,
-  WasmQueryData,
-} from '@libs/webapp-fns';
+import { mantle, MantleParams, WasmQuery, WasmQueryData } from '@libs/mantle';
 
 export interface GovStateWasmQuery {
   govState: WasmQuery<anchorToken.gov.State, anchorToken.gov.StateResponse>;

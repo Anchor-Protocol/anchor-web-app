@@ -5,7 +5,7 @@ import {
   MantleFetch,
   WasmQuery,
   WasmQueryData,
-} from '@libs/webapp-fns';
+} from '@libs/mantle';
 
 interface AncTokenInfoWasmQuery {
   ancTokenInfo: WasmQuery<cw20.TokenInfo, cw20.TokenInfoResponse<ANC>>;

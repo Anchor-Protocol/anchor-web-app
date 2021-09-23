@@ -5,7 +5,8 @@ import {
   ConnectedWallet,
   useConnectedWallet,
 } from '@terra-money/wallet-provider';
-import { MantleFetch, useTerraWebapp } from '@libs/webapp-provider';
+import { MantleFetch } from '@libs/mantle';
+import { useTerraWebapp } from '@libs/webapp-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';

@@ -3,16 +3,13 @@ import {
   RewardsAncGovernanceRewards,
   rewardsAncGovernanceRewardsQuery,
 } from '@anchor-protocol/webapp-fns';
+import { MantleFetch } from '@libs/mantle';
 import { createQueryFn } from '@libs/react-query-utils';
+import { EMPTY_QUERY_RESULT, useTerraWebapp } from '@libs/webapp-provider';
 import {
   ConnectedWallet,
   useConnectedWallet,
 } from '@terra-money/wallet-provider';
-import {
-  EMPTY_QUERY_RESULT,
-  MantleFetch,
-  useTerraWebapp,
-} from '@libs/webapp-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';

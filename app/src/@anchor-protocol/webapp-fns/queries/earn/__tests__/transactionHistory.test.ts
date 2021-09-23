@@ -2,7 +2,7 @@ import {
   TEST_MANTLE_ENDPOINT,
   TEST_WALLET_ADDRESS,
 } from '@anchor-protocol/webapp-fns/test-env';
-import { defaultMantleFetch } from '@libs/webapp-fns';
+import { defaultMantleFetch } from '@libs/mantle';
 import { earnTransactionHistoryQuery } from '../transactionHistory';
 
 describe('queries/transactionHistory', () => {

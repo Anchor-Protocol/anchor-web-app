@@ -5,14 +5,21 @@ import {
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
 import { Gas, Rate, u, UST } from '@anchor-protocol/types';
 import { demicrofy, formatRate } from '@libs/formatter';
+import { MantleFetch } from '@libs/mantle';
 import {
-  MantleFetch,
   pickAttributeValue,
   pickEvent,
   pickRawLog,
   TxResultRendering,
   TxStreamPhase,
 } from '@libs/webapp-fns';
+import {
+  _catchTxError,
+  _createTxOptions,
+  _pollTxInfo,
+  _postTx,
+  TxHelper,
+} from '@libs/webapp-fns/tx/internal';
 import { pipe } from '@rx-stream/pipe';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
@@ -21,11 +28,6 @@ import { Observable } from 'rxjs';
 import { computeCurrentLtv } from '../../logics/borrow/computeCurrentLtv';
 import { BorrowBorrower } from '../../queries/borrow/borrower';
 import { BorrowMarket } from '../../queries/borrow/market';
-import { _catchTxError } from '../internal/_catchTxError';
-import { _createTxOptions } from '../internal/_createTxOptions';
-import { _pollTxInfo } from '../internal/_pollTxInfo';
-import { _postTx } from '../internal/_postTx';
-import { TxHelper } from '../internal/TxHelper';
 import { _fetchBorrowData } from './_fetchBorrowData';
 
 export function borrowBorrowTx(

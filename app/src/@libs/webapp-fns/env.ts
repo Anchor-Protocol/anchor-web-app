@@ -5,8 +5,10 @@ import {
   CNY,
   DKK,
   EUR,
+  Gas,
   GBP,
   HKD,
+  HumanAddr,
   IDR,
   INR,
   JPY,
@@ -15,18 +17,68 @@ import {
   MNT,
   NOK,
   PHP,
+  Rate,
   SDR,
   SEK,
   SGD,
+  TerraContractAddress,
   THB,
   u,
   UST,
 } from '@libs/types';
 import { GasPrice } from './models/gasPrice';
+import { TerraContantsInput } from './types';
+
+export const DEFAULT_TERRA_CONTRACT_ADDRESS: Record<
+  string,
+  TerraContractAddress
+> = {
+  mainnet: {
+    terraswap: {
+      factory: 'terra1ulgw0td86nvs4wtpsc80thv6xelk76ut7a7apj' as HumanAddr,
+    },
+  },
+  testnet: {
+    terraswap: {
+      factory: 'terra18qpjm4zkvqnpjpw0zn0tdr8gdzvt8au35v45xf' as HumanAddr,
+    },
+  },
+};
+
+export const DEFAULT_TERRA_CONSTANTS: Record<string, TerraContantsInput> = {
+  mainnet: {
+    gasFee: 1_000_000 as Gas,
+    fixedGasGas: 1_671_053 as Gas,
+    //fixedGas: 635_000 as u<UST<number>>,
+    blocksPerYear: 4_656_810,
+    gasAdjustment: 1.6 as Rate<number>,
+  },
+
+  testnet: {
+    gasFee: 1_000_000 as Gas,
+    fixedGasGas: 1_671_053 as Gas,
+    //fixedGas: 635_000 as u<UST<number>>,
+    blocksPerYear: 4_656_810,
+    gasAdjustment: 1.6 as Rate<number>,
+  },
+};
+
+export enum TERRA_TX_KEYS {
+  CW20_BUY = 'NEBULA_TX_CW20_BUY',
+  CW20_SELL = 'NEBULA_TX_CW20_SELL',
+  SEND = 'NEBULA_TX_SEND',
+}
 
 export enum TERRA_QUERY_KEY {
-  TOKEN_BALANCES = 'TOKEN_BALANCES',
-  TAX = 'TAX',
+  TOKEN_BALANCES = 'TERRA_QUERY_TOKEN_BALANCES',
+  TAX = 'TERRA_QUERY_TAX',
+  CW20_BALANCE = 'TERRA_QUERY_CW20_BALANCE',
+  CW20_ICONS = 'TERRA_QUERY_CW20_ICONS',
+  CW20_TOKEN_INFO = 'NEBULA_QUERY_CW20_TOKEN_INFO',
+  STAKING_POOL_INFO = 'NEBULA_QUERY_STAKING_CLUSTER_POOL_INFO_LIST',
+  TERRASWAP_PAIR = 'NEBULA_QUERY_TERRASWAP_PAIR',
+  TERRASWAP_POOL = 'NEBULA_QUERY_TERRASWAP_POOL',
+  TERRA_BALANCES = 'NEBULA_QUERY_TERRA_BALANCES',
 }
 
 export const DEFAULT_GAS_PRICE_ENDPOINT: Record<string, string> = {

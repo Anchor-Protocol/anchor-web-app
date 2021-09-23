@@ -1,14 +1,12 @@
 import { bLuna, terraswap, Token } from '@anchor-protocol/types';
-import {
-  mantle,
-  MantleParams,
-  WasmQuery,
-  WasmQueryData,
-} from '@libs/webapp-fns';
+import { mantle, MantleParams, WasmQuery, WasmQueryData } from '@libs/mantle';
 import big from 'big.js';
 
 export interface BondBLunaPriceWasmQuery {
-  terraswapPool: WasmQuery<terraswap.Pool, terraswap.PoolResponse<Token>>;
+  terraswapPool: WasmQuery<
+    terraswap.pair.Pool,
+    terraswap.pair.PoolResponse<Token, Token>
+  >;
 }
 
 export type BondBLunaPrice = WasmQueryData<BondBLunaPriceWasmQuery> & {

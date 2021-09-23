@@ -2,7 +2,8 @@ import {
   TEST_ADDRESSES,
   TEST_MANTLE_ENDPOINT,
 } from '@anchor-protocol/webapp-fns/test-env';
-import { defaultMantleFetch, lastSyncedHeightQuery } from '@libs/webapp-fns';
+import { defaultMantleFetch } from '@libs/mantle';
+import { lastSyncedHeightQuery } from '@libs/webapp-fns';
 import { earnEpochStatesQuery } from '../epochStates';
 
 describe('queries/epochStates', () => {

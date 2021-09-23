@@ -5,7 +5,7 @@ import {
   MantleFetch,
   WasmQuery,
   WasmQueryData,
-} from '@libs/webapp-fns';
+} from '@libs/mantle';
 
 interface AirdropIsClaimedWasmQuery {
   isClaimed: WasmQuery<

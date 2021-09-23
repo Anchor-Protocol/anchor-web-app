@@ -9,7 +9,7 @@ import {
   ConnectedWallet,
   useConnectedWallet,
 } from '@terra-money/wallet-provider';
-import { MantleFetch } from '@libs/webapp-fns';
+import { MantleFetch } from '@libs/mantle';
 import { EMPTY_QUERY_RESULT, useTerraWebapp } from '@libs/webapp-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
