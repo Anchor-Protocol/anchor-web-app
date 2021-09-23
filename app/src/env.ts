@@ -6,13 +6,6 @@ import {
 } from '@anchor-protocol/webapp-fns';
 
 // ---------------------------------------------
-// TODO migration col4 -> col5
-// ---------------------------------------------
-// TODO to false before oracle bot ready
-// TODO to true after oracle bot ready
-export const USE_ORACLE_PRICE = true;
-
-// ---------------------------------------------
 // style
 // ---------------------------------------------
 export const screen = {

@@ -11,7 +11,7 @@ import {
 import { mantle, MantleParams, WasmQuery, WasmQueryData } from '@libs/mantle';
 import { terraswapPoolQuery } from '@libs/webapp-fns';
 import big from 'big.js';
-import { ANCHOR_SAFE_RATIO } from '../../env';
+import { ANCHOR_SAFE_RATIO, USE_EXTERNAL_ORACLE_PRICE } from '../../env';
 
 export type BAssetLtv = {
   max: Rate;
@@ -132,16 +132,27 @@ export async function borrowMarketQuery({
     borrowRate,
     oraclePrices: _oraclePrices,
     overseerWhitelist,
-  } = await borrowMarketWithoutOraclePrices({
-    mantleEndpoint,
-    wasmQuery,
-    marketBalances,
-    marketState,
-    bLunaTokenAddr,
-    bEthTokenAddr,
-    terraswapFactoryAddr,
-    ...params,
-  });
+  } = USE_EXTERNAL_ORACLE_PRICE
+    ? await borrowMarketWithoutOraclePrices({
+        mantleEndpoint,
+        wasmQuery,
+        marketBalances,
+        marketState,
+        bLunaTokenAddr,
+        bEthTokenAddr,
+        terraswapFactoryAddr,
+        ...params,
+      })
+    : await borrowMarket({
+        mantleEndpoint,
+        wasmQuery,
+        marketBalances,
+        marketState,
+        bLunaTokenAddr,
+        bEthTokenAddr,
+        terraswapFactoryAddr,
+        ...params,
+      });
 
   //const {
   //  borrowRate,

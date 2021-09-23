@@ -1,5 +1,8 @@
 import { u, UST } from '@anchor-protocol/types';
-import { computeBorrowedAmount } from '@anchor-protocol/webapp-fns';
+import {
+  computeBorrowedAmount,
+  USE_EXTERNAL_ORACLE_PRICE,
+} from '@anchor-protocol/webapp-fns';
 import {
   computeCollateralsTotalUST,
   useBorrowBorrowerQuery,
@@ -46,6 +49,7 @@ export function LoanButtons() {
     <>
       <ActionButton
         disabled={
+          USE_EXTERNAL_ORACLE_PRICE ||
           !connectedWallet ||
           !borrowMarket ||
           !borrowBorrower ||

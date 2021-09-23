@@ -9,6 +9,7 @@ import {
   prettifyBAssetSymbol,
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
+  USE_EXTERNAL_ORACLE_PRICE,
 } from '@anchor-protocol/webapp-provider';
 import { demicrofy } from '@libs/formatter';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
@@ -206,6 +207,7 @@ export function CollateralList({ className }: CollateralListProps) {
                   </BorderButton>
                   <BorderButton
                     disabled={
+                      USE_EXTERNAL_ORACLE_PRICE ||
                       !connectedWallet ||
                       !borrowMarket ||
                       !borrowBorrower ||
