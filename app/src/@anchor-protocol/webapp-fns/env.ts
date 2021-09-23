@@ -6,7 +6,7 @@ import { AnchorContantsInput, ExpandAddressMap } from './types';
 // ---------------------------------------------
 // TODO change block height
 // TODO set undefined after col-5 up
-export const MAINTANANCE_DOWN_BLOCK: number | undefined = 4_724_000;
+export const MAINTANANCE_DOWN_BLOCK: number | undefined = 5_443_198;
 
 // TODO to true before oracle bot ready
 // TODO to false after oracle bot ready

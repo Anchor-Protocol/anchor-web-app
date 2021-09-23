@@ -1,33 +1,32 @@
 import { MAINTANANCE_DOWN_BLOCK } from '@anchor-protocol/webapp-fns';
 import { useTerraWebapp } from '@libs/webapp-provider';
-import React, { useEffect, useState } from 'react';
-import { Redirect } from 'react-router-dom';
+import React, { ReactElement, useEffect, useState } from 'react';
 
-export function Maintanance() {
-  return <div>Maintanance page...</div>;
-}
-
-export function MaintanaceRoute() {
+export function MaintananceBlocker({ children }: { children: ReactElement }) {
   const { lastSyncedHeight } = useTerraWebapp();
 
-  const [shutdown, setShutdown] = useState<boolean>(false);
+  const [maintananceDown, setMaintananceDown] = useState<boolean>(true);
 
   useEffect(() => {
-    if (typeof MAINTANANCE_DOWN_BLOCK === 'number' && !shutdown) {
-      const block = MAINTANANCE_DOWN_BLOCK;
-      const intervalId = setInterval(() => {
+    if (typeof MAINTANANCE_DOWN_BLOCK === 'number') {
+      const downBlockHeight = MAINTANANCE_DOWN_BLOCK;
+
+      function check() {
         lastSyncedHeight().then((blockHeight) => {
-          if (blockHeight > block) {
-            setShutdown(true);
-          }
+          console.log('MAINTANANCE_DOWN', { blockHeight, downBlockHeight });
+          setMaintananceDown(blockHeight > downBlockHeight);
         });
-      }, 1000 * 10);
+      }
+
+      const intervalId = setInterval(check, 1000 * 10);
+
+      check();
 
       return () => {
         clearInterval(intervalId);
       };
     }
-  }, [lastSyncedHeight, shutdown]);
+  }, [lastSyncedHeight]);
 
-  return shutdown ? <Redirect to="/maintanace" /> : null;
+  return maintananceDown ? <div>Under maintenance...</div> : children;
 }
