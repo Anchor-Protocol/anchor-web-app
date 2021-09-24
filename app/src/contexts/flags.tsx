@@ -31,7 +31,7 @@ export function FlagsProvider({ children }: FlagsProviderProps) {
   useEffect(() => {
     function task() {
       fetch(
-        'https://raw.githubusercontent.com/Anchor-Protocol/anchor-web-assets/main/flags.json',
+        `https://anchor-protocol.github.io/anchor-web-assets/flags.json?timestamp=${Date.now()}`,
       )
         .then((res) => res.json())
         .then(setFlags);

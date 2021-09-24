@@ -34,6 +34,8 @@ export function MaintenanceBlocker({ children }: { children: ReactElement }) {
       return () => {
         clearInterval(intervalId);
       };
+    } else {
+      setMaintenanceDown(false);
     }
   }, [forceMaintenanceDown, lastSyncedHeight, maintenanceDownBlock]);
 
