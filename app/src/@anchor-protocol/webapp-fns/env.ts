@@ -6,11 +6,11 @@ import { AnchorContantsInput, ExpandAddressMap } from './types';
 // ---------------------------------------------
 // FIXME change block height
 // TODO set undefined after col-5 up
-export const MAINTANANCE_DOWN_BLOCK: number | undefined = undefined;
+export const MAINTENANCE_DOWN_BLOCK: number | undefined = undefined;
 
 // FIXME change to true after down block-height
 // TODO change to false after col-5 up
-export const FORCE_MAINTANANCE_DOWN: boolean = true;
+export const FORCE_MAINTENANCE_DOWN: boolean = true;
 
 // FIXME to true before oracle bot ready
 // TODO to false after oracle bot ready

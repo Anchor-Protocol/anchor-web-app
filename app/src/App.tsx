@@ -20,7 +20,7 @@ import { PollCreateRegisterCollateralAttributes } from 'pages/gov/poll.create.re
 import { PollCreateSpendCommunityPool } from 'pages/gov/poll.create.spend-community-pool';
 import { PollCreateTextProposal } from 'pages/gov/poll.create.text-proposal';
 import { PollDetail } from 'pages/gov/poll.detail';
-import { MaintananceBlocker } from 'pages/maintanance';
+import { MaintenanceBlocker } from 'pages/maintenance';
 import { Mypage } from 'pages/mypage';
 import { ClaimAll } from 'pages/trade/claim.all';
 import { ClaimAncUstLp } from 'pages/trade/claim.anc-ust-lp';
@@ -42,7 +42,7 @@ export function App() {
 
   return (
     <AppProviders>
-      <MaintananceBlocker>
+      <MaintenanceBlocker>
         <NotificationProvider>
           <JobsProvider>
             <div>
@@ -127,7 +127,7 @@ export function App() {
             </div>
           </JobsProvider>
         </NotificationProvider>
-      </MaintananceBlocker>
+      </MaintenanceBlocker>
     </AppProviders>
   );
 }
