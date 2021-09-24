@@ -5,12 +5,12 @@ __metadata:
   version: 4
   cacheKey: 8
 
-"@anchor-protocol/anchor.js@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "@anchor-protocol/anchor.js@npm:1.1.0"
+"@anchor-protocol/anchor.js@npm:^1.2.0-alpha.5":
+  version: 1.2.0-alpha.5
+  resolution: "@anchor-protocol/anchor.js@npm:1.2.0-alpha.5"
   dependencies:
-    "@terra-money/terra.js": ^1.8.9
-  checksum: c02d95c8a6ebce794861fd6d81d39c91c630266bc6750fc01d7ecfcdbcbbb9c59b0020c33125dce38f7e79ea19d7dfa13763eb633053c130e9a9486442eb553e
+    "@terra-money/terra.js": ^2.1.0-beta.2
+  checksum: 9d30a202fbe36a18fd5c8950f9c49e734aabe53267c4c889c59d2ee28487ec82028d8677d0c468ac2c74b055e02c77476be29fa36300301452211812202e9ba2
   languageName: node
   linkType: hard
 
@@ -18,7 +18,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@anchor-web-app/app@workspace:app"
   dependencies:
-    "@anchor-protocol/anchor.js": ^1.1.0
+    "@anchor-protocol/anchor.js": ^1.2.0-alpha.5
     "@material-ui/core": ^4.11.3
     "@material-ui/icons": ^4.11.2
     "@peculiar/webcrypto": ^1.1.7
@@ -38,7 +38,7 @@ __metadata:
     "@storybook/react": ^6.3.4
     "@storybook/theming": ^6.3.4
     "@terra-dev/wallet-types": ^2.1.0-alpha.1
-    "@terra-money/terra.js": 1.8.9
+    "@terra-money/terra.js": 2.0.8
     "@terra-money/wallet-provider": ^2.1.0-alpha.1
     "@testing-library/jest-dom": ^5.14.1
     "@testing-library/react": ^12.0.0
@@ -4940,9 +4940,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@terra-money/terra.js@npm:1.8.9":
-  version: 1.8.9
-  resolution: "@terra-money/terra.js@npm:1.8.9"
+"@terra-money/terra.js@npm:2.0.8":
+  version: 2.0.8
+  resolution: "@terra-money/terra.js@npm:2.0.8"
   dependencies:
     axios: ^0.21.1
     bech32: ^2.0.0
@@ -4956,7 +4956,7 @@ __metadata:
     tmp: ^0.2.1
     utf-8-validate: ^5.0.5
     ws: ^7.4.2
-  checksum: 277a8e5746f7be8f5bd3f46fc5930c0305c1532c5c74fb923a3748a05a271b0dfc1b004ee7540fc715744fb56cc82d1c74246444ab68b68ab040d057036ddc51
+  checksum: eca4ad21945ae266f2b679216f4c115a0b7423f50fdc3079d007b47f67b211c402d164a5805cf7c683b7d1ba3d7c317bc19f64a7cf1a60f86fcb822e35e5402e
   languageName: node
   linkType: hard
 

@@ -39,7 +39,7 @@
     ]
   },
   "dependencies": {
-    "@anchor-protocol/anchor.js": "^1.1.0",
+    "@anchor-protocol/anchor.js": "^1.2.0-alpha.5",
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
     "@rocket-scripts/utils": "^3.2.0",
@@ -48,7 +48,7 @@
     "@sentry/react": "^6.8.0",
     "@sentry/tracing": "^6.8.0",
     "@terra-dev/wallet-types": "^2.1.0-alpha.1",
-    "@terra-money/terra.js": "1.8.9",
+    "@terra-money/terra.js": "2.0.8",
     "@terra-money/wallet-provider": "^2.1.0-alpha.1",
     "big.js": "^6.1.1",
     "color": "^3.1.3",
