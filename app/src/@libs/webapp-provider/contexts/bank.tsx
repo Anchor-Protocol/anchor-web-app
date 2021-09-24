@@ -125,7 +125,9 @@ export function BankProvider({
 
     const [networkName] = Object.keys(cw20TokenContracts);
 
-    Object.keys(cw20TokenContracts[networkName]).forEach((tokenKey) => {
+    Object.keys(
+      cw20TokenContracts[networkName] ?? cw20TokenContracts['mainnet'],
+    ).forEach((tokenKey) => {
       data[tokenKey] = '0';
     });
 
@@ -283,7 +285,8 @@ export function BankProvider({
     () => ({
       tokenBalances,
       refetchTokenBalances,
-      cw20TokenContracts: cw20TokenContracts[network.name],
+      cw20TokenContracts:
+        cw20TokenContracts[network.name] ?? cw20TokenContracts['mainnet'],
       tax,
       refetchTax,
     }),
@@ -314,6 +317,7 @@ export function useCW20TokenBalance<T = string>(address: CW20Addr): u<T> {
   const { tokenBalances, cw20TokenContracts } = useBank();
 
   return useMemo(() => {
+    console.log('bank.tsx..()', cw20TokenContracts);
     const key = Object.keys(cw20TokenContracts).find(
       (k) => cw20TokenContracts[k].contractAddress === address,
     );

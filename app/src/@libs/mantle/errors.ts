@@ -8,9 +8,12 @@ export class MantleError extends Error {
   constructor(public readonly errors: MantleErrorItem[]) {
     super(
       errors
-        .map(({ message, path }, i) => `${i} [${path.join(', ')}]: ${message}`)
+        .map(({ message, path }, i) =>
+          path ? `${i} [${path.join(', ')}]: ${message}` : '',
+        )
         .join('\n'),
     );
+    console.log('errors.ts..constructor()', errors);
     this.name = 'MantleError';
   }
 
