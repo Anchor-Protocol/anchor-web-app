@@ -22,6 +22,7 @@ import { NetworkInfo, WalletProvider } from '@terra-money/wallet-provider';
 import { useReadonlyWalletDialog } from 'components/dialogs/useReadonlyWalletDialog';
 import { useRequestReloadDialog } from 'components/dialogs/useRequestReloadDialog';
 import { SnackbarContainer } from 'components/SnackbarContainer';
+import { FlagsProvider } from 'contexts/flags';
 import { ThemeProvider } from 'contexts/theme';
 import { ADDRESSES, GA_TRACKING_ID, onProduction } from 'env';
 import React, { ReactNode, useCallback } from 'react';
@@ -108,30 +109,32 @@ function Providers({ children }: { children: ReactNode }) {
     /** React App routing :: <Link>, <NavLink>, useLocation(), useRouteMatch()... */
     <Router>
       <QueryClientProvider client={queryClient}>
-        <BrowserInactiveProvider>
-          <TerraWebappProvider
-            mantleFetch={webworkerMantleFetch}
-            txRefetchMap={ANCHOR_TX_REFETCH_MAP}
-            txErrorReporter={errorReporter}
-            queryErrorReporter={errorReporter}
-          >
-            <WebappBankProvider
-              cw20TokenContracts={cw20TokenContracts}
-              maxCapTokenDenoms={maxCapTokenDenoms}
+        <FlagsProvider>
+          <BrowserInactiveProvider>
+            <TerraWebappProvider
+              mantleFetch={webworkerMantleFetch}
+              txRefetchMap={ANCHOR_TX_REFETCH_MAP}
+              txErrorReporter={errorReporter}
+              queryErrorReporter={errorReporter}
             >
-              <AnchorWebappProvider>
-                {/** Theme Providing to Styled-Components and Material-UI */}
-                <ThemeProvider initialTheme="light">
-                  {/** Snackbar Provider :: useSnackbar() */}
-                  <SnackbarProvider>
-                    {/** Application Layout */}
-                    {children}
-                  </SnackbarProvider>
-                </ThemeProvider>
-              </AnchorWebappProvider>
-            </WebappBankProvider>
-          </TerraWebappProvider>
-        </BrowserInactiveProvider>
+              <WebappBankProvider
+                cw20TokenContracts={cw20TokenContracts}
+                maxCapTokenDenoms={maxCapTokenDenoms}
+              >
+                <AnchorWebappProvider>
+                  {/** Theme Providing to Styled-Components and Material-UI */}
+                  <ThemeProvider initialTheme="light">
+                    {/** Snackbar Provider :: useSnackbar() */}
+                    <SnackbarProvider>
+                      {/** Application Layout */}
+                      {children}
+                    </SnackbarProvider>
+                  </ThemeProvider>
+                </AnchorWebappProvider>
+              </WebappBankProvider>
+            </TerraWebappProvider>
+          </BrowserInactiveProvider>
+        </FlagsProvider>
       </QueryClientProvider>
     </Router>
   );

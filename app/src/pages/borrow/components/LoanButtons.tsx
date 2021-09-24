@@ -1,8 +1,5 @@
 import { u, UST } from '@anchor-protocol/types';
-import {
-  computeBorrowedAmount,
-  USE_EXTERNAL_ORACLE_PRICE,
-} from '@anchor-protocol/webapp-fns';
+import { computeBorrowedAmount } from '@anchor-protocol/webapp-fns';
 import {
   computeCollateralsTotalUST,
   useBorrowBorrowerQuery,
@@ -11,6 +8,7 @@ import {
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
+import { useFlags } from 'contexts/flags';
 import React, { useMemo } from 'react';
 import { useBorrowDialog } from './useBorrowDialog';
 import { useRepayDialog } from './useRepayDialog';
@@ -19,6 +17,8 @@ export function LoanButtons() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
+  const { useExternalOraclePrice } = useFlags();
+
   const { data: borrowMarket } = useBorrowMarketQuery();
 
   const { data: borrowBorrower } = useBorrowBorrowerQuery();
@@ -49,7 +49,7 @@ export function LoanButtons() {
     <>
       <ActionButton
         disabled={
-          USE_EXTERNAL_ORACLE_PRICE ||
+          useExternalOraclePrice ||
           !connectedWallet ||
           !borrowMarket ||
           !borrowBorrower ||

@@ -15,6 +15,7 @@ describe('queries/market', () => {
         terraswapFactoryAddr: TEST_ADDRESSES.terraswap.factory,
         mantleFetch: defaultMantleFetch,
         mantleEndpoint: TEST_MANTLE_ENDPOINT,
+        useExternalOraclePrice: false,
         wasmQuery: {
           marketState: {
             contractAddress: TEST_ADDRESSES.moneyMarket.market,

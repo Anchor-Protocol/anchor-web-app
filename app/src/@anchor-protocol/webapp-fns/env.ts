@@ -1,21 +1,6 @@
 import { Gas, Rate } from '@anchor-protocol/types';
 import { AnchorContantsInput, ExpandAddressMap } from './types';
 
-// ---------------------------------------------
-// TODO migration col4 -> col5
-// ---------------------------------------------
-// FIXME change block height
-// TODO set undefined after col-5 up
-export const MAINTENANCE_DOWN_BLOCK: number | undefined = undefined;
-
-// FIXME change to true after down block-height
-// TODO change to false after col-5 up
-export const FORCE_MAINTENANCE_DOWN: boolean = true;
-
-// FIXME to true before oracle bot ready
-// TODO to false after oracle bot ready
-export const USE_EXTERNAL_ORACLE_PRICE = true;
-
 export const DEFAULT_ADDESS_MAP: Record<string, ExpandAddressMap> = {
   mainnet: {
     bLunaHub: 'terra1mtwph2juhj0rvjz7dy92gvl6xvukaxu8rfv8ts',

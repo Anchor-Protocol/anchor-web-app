@@ -1,8 +1,5 @@
-import {
-  FORCE_MAINTENANCE_DOWN,
-  MAINTENANCE_DOWN_BLOCK,
-} from '@anchor-protocol/webapp-fns';
 import { useTerraWebapp } from '@libs/webapp-provider';
+import { useFlags } from 'contexts/flags';
 import React, { ReactElement, useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { ReactComponent as Logo } from './assets/logo.svg';
@@ -11,18 +8,22 @@ import { ReactComponent as Wheel } from './assets/wheel.svg';
 export function MaintenanceBlocker({ children }: { children: ReactElement }) {
   const { lastSyncedHeight } = useTerraWebapp();
 
-  const [maintenanceDown, setMaintenanceDown] = useState<boolean>(true);
+  const { maintenanceDownBlock, forceMaintenanceDown } = useFlags();
+
+  const [maintenanceDown, setMaintenanceDown] =
+    useState<boolean>(forceMaintenanceDown);
 
   useEffect(() => {
-    if (FORCE_MAINTENANCE_DOWN) {
+    if (forceMaintenanceDown) {
       setMaintenanceDown(true);
-    } else if (typeof MAINTENANCE_DOWN_BLOCK === 'number') {
-      const downBlockHeight = MAINTENANCE_DOWN_BLOCK;
-
+    } else if (maintenanceDownBlock > 0) {
       function check() {
         lastSyncedHeight().then((blockHeight) => {
-          console.log('MAINTANANCE_DOWN', { blockHeight, downBlockHeight });
-          setMaintenanceDown(blockHeight > downBlockHeight);
+          console.log('MAINTANANCE_DOWN', {
+            blockHeight,
+            maintenanceDownBlock,
+          });
+          setMaintenanceDown(blockHeight > maintenanceDownBlock);
         });
       }
 
@@ -34,7 +35,7 @@ export function MaintenanceBlocker({ children }: { children: ReactElement }) {
         clearInterval(intervalId);
       };
     }
-  }, [lastSyncedHeight]);
+  }, [forceMaintenanceDown, lastSyncedHeight, maintenanceDownBlock]);
 
   return maintenanceDown ? (
     <Container>
