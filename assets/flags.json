@@ -1,0 +1,5 @@
+{
+  "maintenanceDownBlock": -1,
+  "forceMaintenanceDown": true,
+  "useExternalOraclePrice": true
+}
