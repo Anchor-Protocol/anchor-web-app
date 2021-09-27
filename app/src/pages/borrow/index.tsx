@@ -19,20 +19,36 @@ function BorrowBase({ className }: BorrowProps) {
         level="info"
         hide={{ id: 'borrow_liq', period: 1000 * 60 * 60 * 24 }}
       >
-        Columbus-5 chain migration is scheduled to happen at block height{' '}
-        <b>4,724,000</b>.
-        <br />
-        Anchor protocol will not be accessible during this time, until chain and
-        contracts have been migrated.
-        <br />
-        <br />
-        After contract migrations, there will be a 3-hour grace period before
-        the price oracle feeder is started, to allow users to repay / provide
-        collateral.
-        <br />
-        <br />
-        Even so, Anchor team strongly advises borrow users to take precautionary
-        measures to manage positions before the chain is halted.
+        <p>
+          The Columbus-5 chain migration is scheduled to occur at block height
+          4,724,000.
+        </p>
+
+        <p>
+          Anchor Protocol will not be accessible until the chain and contracts
+          have been fully migrated.
+        </p>
+
+        <p>
+          Users are strongly advised to take precautionary measures to manage
+          borrow positions prior to the chain halt.
+        </p>
+
+        <p>
+          To further reduce the risk of liquidation, there will be a 3-hour
+          period post-migration in which users can repay / provide collateral
+          before the price oracle feeder is re-started.
+        </p>
+
+        <h4>Estimated halt time</h4>
+
+        <ul>
+          <li>Wed Sep 29 2021 23:00:00 GMT-0800 (PDT)</li>
+          <li>Thu Sep 30 2021 07:00:00 GMT+0000 (UTC)</li>
+          <li>Thu Sep 30 2021 16:00:00 GMT+0900 (KST)</li>
+        </ul>
+
+        <h4>Estimated time for migrations: 2 hours</h4>
       </MessageBox>
 
       <div className="market">

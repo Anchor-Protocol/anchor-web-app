@@ -43,7 +43,7 @@ function MessageBoxBase({ className, style, children, hide }: MessageBoxProps) {
 
   return !hidden ? (
     <article className={className} style={style}>
-      <p>{children}</p>
+      <section>{children}</section>
       {!!hide && (
         <footer>
           <button className="close" onClick={updateHidden}>
@@ -70,11 +70,20 @@ const StyledMessageBox = styled(MessageBoxBase)`
   padding: 20px;
   margin: 20px 0;
 
-  > p {
+  > section {
     max-width: 1000px;
     text-align: left;
     word-break: break-word;
     white-space: break-spaces;
+
+    p {
+      margin-bottom: 0.5em;
+    }
+
+    h4 {
+      margin-top: 1em;
+      margin-bottom: 0.5em;
+    }
   }
 
   > footer {
