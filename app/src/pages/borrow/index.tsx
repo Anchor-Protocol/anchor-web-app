@@ -5,6 +5,7 @@ import { LoanButtons } from 'pages/borrow/components/LoanButtons';
 import { Overview } from 'pages/borrow/components/Overview';
 import React from 'react';
 import styled from 'styled-components';
+import { MessageBox } from './components/Col5LiqMessageBox';
 import { CollateralList } from './components/CollateralList';
 
 export interface BorrowProps {
@@ -14,6 +15,26 @@ export interface BorrowProps {
 function BorrowBase({ className }: BorrowProps) {
   return (
     <PaddedLayout className={className}>
+      <MessageBox
+        level="info"
+        hide={{ id: 'borrow_liq', period: 1000 * 60 * 60 * 24 }}
+      >
+        Columbus-5 chain migration is scheduled to happen at block height{' '}
+        <b>4,724,000</b>.
+        <br />
+        Anchor protocol will not be accessible during this time, until chain and
+        contracts have been migrated.
+        <br />
+        <br />
+        After contract migrations, there will be a 3-hour grace period before
+        the price oracle feeder is started, to allow users to repay / provide
+        collateral.
+        <br />
+        <br />
+        Even so, Anchor team strongly advises borrow users to take precautionary
+        measures to manage positions before the chain is halted.
+      </MessageBox>
+
       <div className="market">
         <PageTitle title="BORROW" docs={links.docs.borrow} />
         <div className="loan-buttons">
