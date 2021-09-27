@@ -297,8 +297,8 @@ async function borrowMarketWithoutOraclePrices({
 }): Promise<WasmQueryData<MarketWasmQuery>> {
   type WithoutOraclePrices = Omit<MarketWasmQuery, 'oraclePrices'>;
 
-  const cryptocompareApiKey = import.meta.env.VITE_CRYPTOCOMPARE
-    ? `&api_key=${import.meta.env.VITE_CRYPTOCOMPARE}`
+  const cryptocompareApiKey = process.env.VITE_CRYPTOCOMPARE
+    ? `&api_key=${process.env.VITE_CRYPTOCOMPARE}`
     : '';
 
   const ethPrice = await fetch(

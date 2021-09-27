@@ -18,7 +18,11 @@ import {
 } from '@libs/webapp-provider';
 import { captureException } from '@sentry/react';
 import { ReadonlyWalletSession } from '@terra-dev/readonly-wallet';
-import { NetworkInfo, WalletProvider } from '@terra-money/wallet-provider';
+import {
+  NetworkInfo,
+  WalletControllerChainOptions,
+  WalletProvider,
+} from '@terra-money/wallet-provider';
 import { useReadonlyWalletDialog } from 'components/dialogs/useReadonlyWalletDialog';
 import { useRequestReloadDialog } from 'components/dialogs/useRequestReloadDialog';
 import { SnackbarContainer } from 'components/SnackbarContainer';
@@ -140,24 +144,11 @@ function Providers({ children }: { children: ReactNode }) {
   );
 }
 
-const testnet = {
-  name: 'testnet',
-  chainID: 'tequila-0004',
-  lcd: 'https://tequila-lcd.terra.dev',
-};
-
-const mainnet = {
-  name: 'mainnet',
-  chainID: 'columbus-4',
-  lcd: 'https://lcd.terra.dev',
-};
-
-const walletConnectChainIds: Record<number, NetworkInfo> = {
-  0: testnet,
-  1: mainnet,
-};
-
-export function AppProviders({ children }: { children: ReactNode }) {
+export function AppProviders({
+  children,
+  walletConnectChainIds,
+  defaultNetwork,
+}: { children: ReactNode } & WalletControllerChainOptions) {
   const [openReadonlyWalletSelector, readonlyWalletSelectorElement] =
     useReadonlyWalletDialog();
 
@@ -184,7 +175,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
   return (
     /** Terra Station Wallet Address :: useWallet() */
     <WalletProvider
-      defaultNetwork={mainnet}
+      defaultNetwork={defaultNetwork}
       walletConnectChainIds={walletConnectChainIds}
       connectorOpts={{
         bridge: onProduction
