@@ -1,10 +1,3 @@
-import { AddressProviderFromJson } from '@anchor-protocol/anchor.js';
-import {
-  createAnchorContractAddress,
-  DEFAULT_ADDESS_MAP,
-  ExpandAddressMap,
-} from '@anchor-protocol/webapp-fns';
-
 // ---------------------------------------------
 // style
 // ---------------------------------------------
@@ -68,32 +61,32 @@ export const onProduction =
   global.location.host === 'anchor.money' ||
   global.location.host === 'anchor.market';
 
-export const columbusContractAddresses: ExpandAddressMap =
-  DEFAULT_ADDESS_MAP['mainnet'];
-export const tequilaContractAddresses: ExpandAddressMap =
-  DEFAULT_ADDESS_MAP['testnet'];
-export const bombayContractAddresses: ExpandAddressMap =
-  DEFAULT_ADDESS_MAP['bombay'];
-
-export const ADDRESS_PROVIDERS = {
-  mainnet: new AddressProviderFromJson(columbusContractAddresses),
-  testnet: new AddressProviderFromJson(tequilaContractAddresses),
-  bombay: new AddressProviderFromJson(bombayContractAddresses),
-};
-
-export const ADDRESSES = {
-  mainnet: createAnchorContractAddress(
-    ADDRESS_PROVIDERS.mainnet,
-    columbusContractAddresses,
-  ),
-  testnet: createAnchorContractAddress(
-    ADDRESS_PROVIDERS.testnet,
-    tequilaContractAddresses,
-  ),
-  bombay: createAnchorContractAddress(
-    ADDRESS_PROVIDERS.bombay,
-    bombayContractAddresses,
-  ),
-};
+//export const columbusContractAddresses: ExpandAddressMap =
+//  DEFAULT_ADDESS_MAP['mainnet'];
+//export const tequilaContractAddresses: ExpandAddressMap =
+//  DEFAULT_ADDESS_MAP['testnet'];
+//export const bombayContractAddresses: ExpandAddressMap =
+//  DEFAULT_ADDESS_MAP['bombay'];
+//
+//export const ADDRESS_PROVIDERS = {
+//  mainnet: new AddressProviderFromJson(columbusContractAddresses),
+//  testnet: new AddressProviderFromJson(tequilaContractAddresses),
+//  bombay: new AddressProviderFromJson(bombayContractAddresses),
+//};
+//
+//export const ADDRESSES = {
+//  mainnet: createAnchorContractAddress(
+//    ADDRESS_PROVIDERS.mainnet,
+//    columbusContractAddresses,
+//  ),
+//  testnet: createAnchorContractAddress(
+//    ADDRESS_PROVIDERS.testnet,
+//    tequilaContractAddresses,
+//  ),
+//  bombay: createAnchorContractAddress(
+//    ADDRESS_PROVIDERS.bombay,
+//    bombayContractAddresses,
+//  ),
+//};
 
 // build: vercel trigger build - 21.09.23

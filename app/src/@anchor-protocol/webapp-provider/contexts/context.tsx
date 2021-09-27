@@ -13,6 +13,7 @@ import {
   ExpandAddressMap,
 } from '@anchor-protocol/webapp-fns';
 import { useTerraWebapp } from '@libs/webapp-provider';
+import { NetworkInfo } from '@terra-dev/wallet-types';
 import { useWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
 import React, {
@@ -26,9 +27,9 @@ import React, {
 
 export interface AnchorWebappProviderProps {
   children: ReactNode;
-  contractAddressMaps?: Record<string, ExpandAddressMap>;
-  constants?: Record<string, AnchorContantsInput>;
-  indexerApiEndpoints?: Record<string, string>;
+  contractAddressMaps?: (network: NetworkInfo) => ExpandAddressMap;
+  constants?: (network: NetworkInfo) => AnchorContantsInput;
+  indexerApiEndpoints?: (network: NetworkInfo) => string;
 }
 
 export interface AnchorWebapp {
@@ -54,62 +55,59 @@ export function AnchorWebappProvider({
 
   const { gasPrice } = useTerraWebapp();
 
-  const { addressProviders, contractAddresses } = useMemo(() => {
-    const keys = Object.keys(contractAddressMaps);
-    const draftAddressProviders: Record<string, AddressProvider> = {};
-    const draftContractAddresses: Record<string, ContractAddress> = {};
-
-    for (const key of keys) {
-      draftAddressProviders[key] = new AddressProviderFromJson(
-        contractAddressMaps[key],
-      );
-      draftContractAddresses[key] = createAnchorContractAddress(
-        draftAddressProviders[key],
-        contractAddressMaps[key],
-      );
-    }
-
-    return {
-      addressProviders: draftAddressProviders,
-      contractAddresses: draftContractAddresses,
-    };
-  }, [contractAddressMaps]);
+  //const { addressProviders, contractAddresses } = useMemo(() => {
+  //  const keys = Object.keys(contractAddressMaps);
+  //  const draftAddressProviders: Record<string, AddressProvider> = {};
+  //  const draftContractAddresses: Record<string, ContractAddress> = {};
+  //
+  //  for (const key of keys) {
+  //    draftAddressProviders[key] = new AddressProviderFromJson(
+  //      contractAddressMaps[key],
+  //    );
+  //    draftContractAddresses[key] = createAnchorContractAddress(
+  //      draftAddressProviders[key],
+  //      contractAddressMaps[key],
+  //    );
+  //  }
+  //
+  //  return {
+  //    addressProviders: draftAddressProviders,
+  //    contractAddresses: draftContractAddresses,
+  //  };
+  //}, [contractAddressMaps]);
 
   const states = useMemo<AnchorWebapp>(() => {
-    const contractAddress =
-      contractAddresses[network.name] ?? contractAddresses['mainnet'];
+    const contractAddressMap = contractAddressMaps(network);
+    const addressProvider = new AddressProviderFromJson(contractAddressMap);
+    const contractAddress = createAnchorContractAddress(
+      addressProvider,
+      contractAddressMap,
+    );
 
-    const constantsInput = constants[network.name] ?? constants['mainnet'];
+    const constantsInput = constants(network);
+
+    const fixedFee = big(constantsInput.fixedGasGas)
+      .mul(gasPrice.uusd)
+      .toNumber();
+    const airdropFee = big(constantsInput.airdropGasGas)
+      .mul(gasPrice.uusd)
+      .toNumber();
+
     const calculateGasCalculated = {
       ...constantsInput,
-      fixedGas: Math.floor(
-        big(constantsInput.fixedGasGas).mul(gasPrice.uusd).toNumber(),
-      ) as u<UST<number>>,
-      airdropGas: Math.floor(
-        big(constantsInput.airdropGasGas).mul(gasPrice.uusd).toNumber(),
-      ) as u<UST<number>>,
+      fixedGas: Math.floor(fixedFee) as u<UST<number>>,
+      airdropGas: Math.floor(airdropFee) as u<UST<number>>,
     };
 
     return {
-      contractAddressMap:
-        contractAddressMaps[network.name] ?? contractAddressMaps['mainnet'],
-      addressProvider:
-        addressProviders[network.name] ?? addressProviders['mainnet'],
+      contractAddressMap: contractAddressMaps(network),
+      addressProvider,
       contractAddress,
       constants: calculateGasCalculated,
-      indexerApiEndpoint:
-        indexerApiEndpoints[network.name] ?? indexerApiEndpoints['mainnet'],
+      indexerApiEndpoint: indexerApiEndpoints(network),
       bAssetsVector: [contractAddress.cw20.bEth, contractAddress.cw20.bLuna],
     };
-  }, [
-    contractAddresses,
-    network.name,
-    constants,
-    gasPrice.uusd,
-    contractAddressMaps,
-    addressProviders,
-    indexerApiEndpoints,
-  ]);
+  }, [contractAddressMaps, network, constants, gasPrice, indexerApiEndpoints]);
 
   return (
     <AnchorWebappContext.Provider value={states}>

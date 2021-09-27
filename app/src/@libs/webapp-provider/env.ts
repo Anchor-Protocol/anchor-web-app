@@ -1,12 +1,17 @@
+import { NetworkInfo } from '@terra-dev/wallet-types';
 import { UseQueryResult } from 'react-query';
 
-export const DEFAULT_MANTLE_ENDPOINTS = {
-  mainnet: 'https://moonshine-mantle.terra.dev',
-  testnet: 'https://tequila-mantle.anchorprotocol.com',
-  // TODO change to bombay
-  bombay: 'https://tequila-mantle.anchorprotocol.com',
-  moonshine: 'https://moonshine-mantle.terra.dev',
-} as const;
+export const DEFAULT_MANTLE_ENDPOINTS = (network: NetworkInfo): string => {
+  if (network.chainID.startsWith('tequila')) {
+    return 'https://tequila-mantle.anchorprotocol.com';
+  } else if (network.chainID.startsWith('bombay')) {
+    return 'https://bombay-mantle.mantle.dev';
+  } else if (network.chainID === 'columbus-4') {
+    return 'https://mantle.anchorprotocol.com';
+  } else {
+    return 'https://mantle.terra.dev';
+  }
+};
 
 export const EMPTY_QUERY_RESULT: UseQueryResult<undefined> = {
   data: undefined,

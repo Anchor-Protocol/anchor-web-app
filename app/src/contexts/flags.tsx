@@ -39,7 +39,7 @@ export function FlagsProvider({ children }: FlagsProviderProps) {
 
     task();
 
-    const intervalId = setInterval(task, 1000 * 10);
+    const intervalId = setInterval(task, 1000 * 30);
 
     return () => {
       clearInterval(intervalId);

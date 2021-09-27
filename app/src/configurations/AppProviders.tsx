@@ -1,6 +1,9 @@
+import { AddressProviderFromJson } from '@anchor-protocol/anchor.js';
 import {
   ANCHOR_TX_REFETCH_MAP,
   AnchorWebappProvider,
+  createAnchorContractAddress,
+  DEFAULT_ADDESS_MAP,
 } from '@anchor-protocol/webapp-provider';
 import { webworkerMantleFetch } from '@libs/mantle';
 import { GlobalStyle } from '@libs/neumorphism-ui/themes/GlobalStyle';
@@ -28,7 +31,7 @@ import { useRequestReloadDialog } from 'components/dialogs/useRequestReloadDialo
 import { SnackbarContainer } from 'components/SnackbarContainer';
 import { FlagsProvider } from 'contexts/flags';
 import { ThemeProvider } from 'contexts/theme';
-import { ADDRESSES, GA_TRACKING_ID, onProduction } from 'env';
+import { GA_TRACKING_ID, onProduction } from 'env';
 import React, { ReactNode, useCallback } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -40,68 +43,98 @@ const queryClient = new QueryClient();
 const errorReporter =
   process.env.NODE_ENV === 'production' ? captureException : undefined;
 
-const cw20TokenContracts: Record<string, Record<string, CW20Contract>> = {
-  mainnet: {
+const cw20TokenContracts = (
+  network: NetworkInfo,
+): Record<string, CW20Contract> => {
+  const contractAddressMap = DEFAULT_ADDESS_MAP(network);
+  const addressProvider = new AddressProviderFromJson(contractAddressMap);
+  const contractAddress = createAnchorContractAddress(
+    addressProvider,
+    contractAddressMap,
+  );
+
+  return {
     uaUST: {
-      contractAddress: ADDRESSES.mainnet.cw20.aUST,
+      contractAddress: contractAddress.cw20.aUST,
     },
     ubLuna: {
-      contractAddress: ADDRESSES.mainnet.cw20.bLuna,
+      contractAddress: contractAddress.cw20.bLuna,
     },
     ubEth: {
-      contractAddress: ADDRESSES.mainnet.cw20.bEth,
+      contractAddress: contractAddress.cw20.bEth,
     },
     uANC: {
-      contractAddress: ADDRESSES.mainnet.cw20.ANC,
+      contractAddress: contractAddress.cw20.ANC,
     },
     uAncUstLP: {
-      contractAddress: ADDRESSES.mainnet.cw20.AncUstLP,
+      contractAddress: contractAddress.cw20.AncUstLP,
     },
     ubLunaLunaLP: {
-      contractAddress: ADDRESSES.mainnet.cw20.bLunaLunaLP,
+      contractAddress: contractAddress.cw20.bLunaLunaLP,
     },
-  },
-  testnet: {
-    uaUST: {
-      contractAddress: ADDRESSES.testnet.cw20.aUST,
-    },
-    ubLuna: {
-      contractAddress: ADDRESSES.testnet.cw20.bLuna,
-    },
-    ubEth: {
-      contractAddress: ADDRESSES.testnet.cw20.bEth,
-    },
-    uANC: {
-      contractAddress: ADDRESSES.testnet.cw20.ANC,
-    },
-    uAncUstLP: {
-      contractAddress: ADDRESSES.testnet.cw20.AncUstLP,
-    },
-    ubLunaLunaLP: {
-      contractAddress: ADDRESSES.testnet.cw20.bLunaLunaLP,
-    },
-  },
-  // TODO change to testnet
-  bombay: {
-    uaUST: {
-      contractAddress: ADDRESSES.bombay.cw20.aUST,
-    },
-    ubLuna: {
-      contractAddress: ADDRESSES.bombay.cw20.bLuna,
-    },
-    ubEth: {
-      contractAddress: ADDRESSES.bombay.cw20.bEth,
-    },
-    uANC: {
-      contractAddress: ADDRESSES.bombay.cw20.ANC,
-    },
-    uAncUstLP: {
-      contractAddress: ADDRESSES.bombay.cw20.AncUstLP,
-    },
-    ubLunaLunaLP: {
-      contractAddress: ADDRESSES.bombay.cw20.bLunaLunaLP,
-    },
-  },
+  };
+
+  //mainnet: {
+  //  uaUST: {
+  //    contractAddress: ADDRESSES.mainnet.cw20.aUST,
+  //  },
+  //  ubLuna: {
+  //    contractAddress: ADDRESSES.mainnet.cw20.bLuna,
+  //  },
+  //  ubEth: {
+  //    contractAddress: ADDRESSES.mainnet.cw20.bEth,
+  //  },
+  //  uANC: {
+  //    contractAddress: ADDRESSES.mainnet.cw20.ANC,
+  //  },
+  //  uAncUstLP: {
+  //    contractAddress: ADDRESSES.mainnet.cw20.AncUstLP,
+  //  },
+  //  ubLunaLunaLP: {
+  //    contractAddress: ADDRESSES.mainnet.cw20.bLunaLunaLP,
+  //  },
+  //},
+  //testnet: {
+  //  uaUST: {
+  //    contractAddress: ADDRESSES.testnet.cw20.aUST,
+  //  },
+  //  ubLuna: {
+  //    contractAddress: ADDRESSES.testnet.cw20.bLuna,
+  //  },
+  //  ubEth: {
+  //    contractAddress: ADDRESSES.testnet.cw20.bEth,
+  //  },
+  //  uANC: {
+  //    contractAddress: ADDRESSES.testnet.cw20.ANC,
+  //  },
+  //  uAncUstLP: {
+  //    contractAddress: ADDRESSES.testnet.cw20.AncUstLP,
+  //  },
+  //  ubLunaLunaLP: {
+  //    contractAddress: ADDRESSES.testnet.cw20.bLunaLunaLP,
+  //  },
+  //},
+  //// TODO change to testnet
+  //bombay: {
+  //  uaUST: {
+  //    contractAddress: ADDRESSES.bombay.cw20.aUST,
+  //  },
+  //  ubLuna: {
+  //    contractAddress: ADDRESSES.bombay.cw20.bLuna,
+  //  },
+  //  ubEth: {
+  //    contractAddress: ADDRESSES.bombay.cw20.bEth,
+  //  },
+  //  uANC: {
+  //    contractAddress: ADDRESSES.bombay.cw20.ANC,
+  //  },
+  //  uAncUstLP: {
+  //    contractAddress: ADDRESSES.bombay.cw20.AncUstLP,
+  //  },
+  //  ubLunaLunaLP: {
+  //    contractAddress: ADDRESSES.bombay.cw20.bLunaLunaLP,
+  //  },
+  //},
 };
 
 const maxCapTokenDenoms: Record<string, string> = {
