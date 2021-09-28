@@ -73,68 +73,6 @@ const cw20TokenContracts = (
       contractAddress: contractAddress.cw20.bLunaLunaLP,
     },
   };
-
-  //mainnet: {
-  //  uaUST: {
-  //    contractAddress: ADDRESSES.mainnet.cw20.aUST,
-  //  },
-  //  ubLuna: {
-  //    contractAddress: ADDRESSES.mainnet.cw20.bLuna,
-  //  },
-  //  ubEth: {
-  //    contractAddress: ADDRESSES.mainnet.cw20.bEth,
-  //  },
-  //  uANC: {
-  //    contractAddress: ADDRESSES.mainnet.cw20.ANC,
-  //  },
-  //  uAncUstLP: {
-  //    contractAddress: ADDRESSES.mainnet.cw20.AncUstLP,
-  //  },
-  //  ubLunaLunaLP: {
-  //    contractAddress: ADDRESSES.mainnet.cw20.bLunaLunaLP,
-  //  },
-  //},
-  //testnet: {
-  //  uaUST: {
-  //    contractAddress: ADDRESSES.testnet.cw20.aUST,
-  //  },
-  //  ubLuna: {
-  //    contractAddress: ADDRESSES.testnet.cw20.bLuna,
-  //  },
-  //  ubEth: {
-  //    contractAddress: ADDRESSES.testnet.cw20.bEth,
-  //  },
-  //  uANC: {
-  //    contractAddress: ADDRESSES.testnet.cw20.ANC,
-  //  },
-  //  uAncUstLP: {
-  //    contractAddress: ADDRESSES.testnet.cw20.AncUstLP,
-  //  },
-  //  ubLunaLunaLP: {
-  //    contractAddress: ADDRESSES.testnet.cw20.bLunaLunaLP,
-  //  },
-  //},
-  //// TODO change to testnet
-  //bombay: {
-  //  uaUST: {
-  //    contractAddress: ADDRESSES.bombay.cw20.aUST,
-  //  },
-  //  ubLuna: {
-  //    contractAddress: ADDRESSES.bombay.cw20.bLuna,
-  //  },
-  //  ubEth: {
-  //    contractAddress: ADDRESSES.bombay.cw20.bEth,
-  //  },
-  //  uANC: {
-  //    contractAddress: ADDRESSES.bombay.cw20.ANC,
-  //  },
-  //  uAncUstLP: {
-  //    contractAddress: ADDRESSES.bombay.cw20.AncUstLP,
-  //  },
-  //  ubLunaLunaLP: {
-  //    contractAddress: ADDRESSES.bombay.cw20.bLunaLunaLP,
-  //  },
-  //},
 };
 
 const maxCapTokenDenoms: Record<string, string> = {
