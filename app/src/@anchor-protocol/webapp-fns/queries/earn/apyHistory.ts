@@ -1,5 +1,4 @@
-import { DateTime, JSDateTime, Rate } from '@anchor-protocol/types';
-import { MantleFetch } from '@libs/mantle';
+import { DateTime, Rate } from '@anchor-protocol/types';
 
 export interface EarnAPYHistoryData {
   apyHistory: {
@@ -9,46 +8,25 @@ export interface EarnAPYHistoryData {
   }[];
 }
 
-export interface EarnAPYHistoryRawVariables {
-  timestampMax: DateTime;
-}
-
-export interface EarnAPYHistoryVariables {
-  timestampMax: JSDateTime;
-}
-
-// TODO (API) ?
-// language=graphql
-export const EARN_APY_HISTORY_QUERY = `
-  query ($timestampMax: Int!) {
-    apyHistory: AnchorDepositRateHistory(
-      Order: DESC
-      Limit: 9
-      Timestamp_range: [0, $timestampMax]
-    ) {
-      Timestamp
-      Height
-      DepositRate
-    }
-  }
-`;
-
-export interface EarnAPYHistoryQueryParams {
-  mantleEndpoint: string;
-  mantleFetch: MantleFetch;
-  variables: EarnAPYHistoryVariables;
-}
-
-export async function earnAPYHistoryQuery({
-  mantleEndpoint,
-  mantleFetch,
-  variables,
-}: EarnAPYHistoryQueryParams): Promise<EarnAPYHistoryData> {
-  return await mantleFetch<EarnAPYHistoryRawVariables, EarnAPYHistoryData>(
-    EARN_APY_HISTORY_QUERY,
-    {
-      timestampMax: Math.floor(variables.timestampMax / 1000) as DateTime,
-    } as EarnAPYHistoryRawVariables,
-    `${mantleEndpoint}?earn--apy-history`,
-  );
+export async function earnAPYHistoryQuery(): Promise<EarnAPYHistoryData> {
+  return fetch('https://api.anchorprotocol.com/api/v2/deposit-rate')
+    .then((res) => res.json())
+    .then(
+      (
+        data: Array<{
+          timestamp: DateTime;
+          height: number;
+          deposit_rate: Rate;
+        }>,
+      ) => {
+        return data.map(({ deposit_rate, height, timestamp }) => ({
+          Timestamp: timestamp,
+          Height: height,
+          DepositRate: deposit_rate,
+        }));
+      },
+    )
+    .then((arr) => ({
+      apyHistory: arr,
+    }));
 }

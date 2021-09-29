@@ -1,15 +1,14 @@
 import {
   CW20Addr,
+  DateTime,
   HumanAddr,
   moneyMarket,
-  NativeDenom,
   Rate,
   terraswap,
   u,
   UST,
 } from '@anchor-protocol/types';
 import { mantle, MantleParams, WasmQuery, WasmQueryData } from '@libs/mantle';
-import { terraswapPoolQuery } from '@libs/webapp-fns';
 import big from 'big.js';
 import { ANCHOR_SAFE_RATIO } from '../../env';
 
@@ -297,46 +296,6 @@ async function borrowMarketWithoutOraclePrices({
 }): Promise<WasmQueryData<MarketWasmQuery>> {
   type WithoutOraclePrices = Omit<MarketWasmQuery, 'oraclePrices'>;
 
-  const cryptocompareApiKey = process.env.VITE_CRYPTOCOMPARE
-    ? `&api_key=${process.env.VITE_CRYPTOCOMPARE}`
-    : '';
-
-  // TODO (API) https://api.anchorprotocol.com/api/v2/nominal-oracle-prices
-  const ethPrice = await fetch(
-    `https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD${cryptocompareApiKey}`,
-  ).then((res) => res.json() as Promise<{ USD: number }>);
-
-  const { lunaPair } = await mantle<LunaUstPairQuery>({
-    mantleEndpoint,
-    variables: {},
-    wasmQuery: {
-      lunaPair: {
-        contractAddress: terraswapFactoryAddr,
-        query: {
-          pair: {
-            asset_infos: [
-              {
-                native_token: {
-                  denom: 'uluna' as NativeDenom,
-                },
-              },
-              {
-                native_token: {
-                  denom: 'uusd' as NativeDenom,
-                },
-              },
-            ],
-          },
-        },
-      },
-    },
-  });
-
-  const { terraswapPoolInfo } = await terraswapPoolQuery(
-    lunaPair.contract_addr,
-    mantleEndpoint,
-  );
-
   const { borrowRate, overseerWhitelist } = await mantle<WithoutOraclePrices>({
     mantleEndpoint: `${mantleEndpoint}?borrow--market`,
     variables: {},
@@ -357,6 +316,31 @@ async function borrowMarketWithoutOraclePrices({
     ...params,
   });
 
+  const { bLunaPrice, bEthPrice } = await fetch(
+    'https://api.anchorprotocol.com/api/v2/nominal-oracle-prices',
+  )
+    .then((res) => res.json())
+    .then(
+      ({
+        prices,
+      }: {
+        timestamp: DateTime;
+        prices: Array<{ token_address: CW20Addr; denom: string; rate: UST }>;
+      }) => {
+        return {
+          bLunaPrice: prices.find(
+            ({ denom }) => denom.toLowerCase() === 'bluna',
+          )?.rate,
+          bEthPrice: prices.find(({ denom }) => denom.toLowerCase() === 'beth')
+            ?.rate,
+        };
+      },
+    );
+
+  if (!bLunaPrice || !bEthPrice) {
+    throw new Error(`Can't get bLUNA / bETH prices!`);
+  }
+
   return {
     borrowRate,
     overseerWhitelist,
@@ -364,12 +348,12 @@ async function borrowMarketWithoutOraclePrices({
       prices: [
         {
           asset: bEthTokenAddr,
-          price: ethPrice.USD.toString() as UST,
+          price: bEthPrice as UST,
           last_updated_time: Date.now() / 1000,
         },
         {
           asset: bLunaTokenAddr,
-          price: terraswapPoolInfo.tokenPrice,
+          price: bLunaPrice as UST,
           last_updated_time: Date.now() / 1000,
         },
       ],
