@@ -24,7 +24,7 @@ export function FlagsProvider({ children }: FlagsProviderProps) {
   const [flags] = useState<Flags>(() => ({
     maintenanceDownBlock: -1,
     forceMaintenanceDown: false,
-    useExternalOraclePrice: true,
+    useExternalOraclePrice: false,
   }));
 
   return (
