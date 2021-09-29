@@ -9,6 +9,7 @@ export interface RewardsAnchorLpRewardsData {
   }>;
 }
 
+// TODO (API) https://api.anchorprotocol.com/api/v2/ust-lp-reward
 // language=graphql
 export const REWARDS_ANCHOR_LP_REWARDS_QUERY = `
   query  {

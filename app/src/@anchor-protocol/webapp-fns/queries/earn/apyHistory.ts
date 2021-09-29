@@ -17,6 +17,7 @@ export interface EarnAPYHistoryVariables {
   timestampMax: JSDateTime;
 }
 
+// TODO (API) ?
 // language=graphql
 export const EARN_APY_HISTORY_QUERY = `
   query ($timestampMax: Int!) {

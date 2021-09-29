@@ -21,6 +21,7 @@ export interface BorrowAPYData {
   }>;
 }
 
+// TODO (API) https://api.anchorprotocol.com/api/v2/distribution-apy
 // language=graphql
 export const BORROW_APY_QUERY = `
   query {

@@ -301,6 +301,7 @@ async function borrowMarketWithoutOraclePrices({
     ? `&api_key=${process.env.VITE_CRYPTOCOMPARE}`
     : '';
 
+  // TODO (API) https://api.anchorprotocol.com/api/v2/nominal-oracle-prices
   const ethPrice = await fetch(
     `https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD${cryptocompareApiKey}`,
   ).then((res) => res.json() as Promise<{ USD: number }>);
