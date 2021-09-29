@@ -1,7 +1,5 @@
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
-import { MessageBox } from 'components/MessageBox';
 import { PageTitle } from 'components/primitives/PageTitle';
-import { useFlags } from 'contexts/flags';
 import { links, screen } from 'env';
 import { LoanButtons } from 'pages/borrow/components/LoanButtons';
 import { Overview } from 'pages/borrow/components/Overview';
@@ -14,22 +12,8 @@ export interface BorrowProps {
 }
 
 function BorrowBase({ className }: BorrowProps) {
-  const { useExternalOraclePrice } = useFlags();
-
   return (
     <PaddedLayout className={className}>
-      {useExternalOraclePrice && (
-        <MessageBox level="info" style={{ lineHeight: 1.4 }}>
-          This is a modified version of the Anchor protocol Web app. <br />
-          Operations requiring price oracle (Borrow / Provide Collateral) will
-          not be available during this time.
-          <br />
-          For more information refer to{' '}
-          <a href="https://twitter.com/anchor_protocol/status/1438311757458534403?s=21">
-            https://twitter.com/anchor_protocol/status/1438311757458534403?s=21
-          </a>
-        </MessageBox>
-      )}
       <div className="market">
         <PageTitle title="BORROW" docs={links.docs.borrow} />
         <div className="loan-buttons">

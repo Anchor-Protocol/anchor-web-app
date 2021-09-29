@@ -15,6 +15,7 @@ export interface Flags {
   maintenanceDownBlock: number;
   forceMaintenanceDown: boolean;
   useExternalOraclePrice: boolean;
+  oracleFeedResumeTime: string;
 }
 
 // @ts-ignore
@@ -25,6 +26,7 @@ export function FlagsProvider({ children }: FlagsProviderProps) {
     maintenanceDownBlock: -1,
     forceMaintenanceDown: false,
     useExternalOraclePrice: true,
+    oracleFeedResumeTime: 'Thu Sep 30 2021 xx:xx:xx UTC',
   }));
 
   return (
