@@ -4,7 +4,6 @@ import React, {
   createContext,
   ReactNode,
   useContext,
-  useEffect,
   useState,
 } from 'react';
 
@@ -22,29 +21,11 @@ export interface Flags {
 const FlagsContext: Context<Flags> = createContext<Flags>();
 
 export function FlagsProvider({ children }: FlagsProviderProps) {
-  const [flags, setFlags] = useState<Flags>(() => ({
+  const [flags] = useState<Flags>(() => ({
     maintenanceDownBlock: -1,
     forceMaintenanceDown: false,
-    useExternalOraclePrice: false,
+    useExternalOraclePrice: true,
   }));
-
-  useEffect(() => {
-    function task() {
-      fetch(
-        `https://anchor-protocol.github.io/anchor-web-assets/flags.json?timestamp=${Date.now()}`,
-      )
-        .then((res) => res.json())
-        .then(setFlags);
-    }
-
-    task();
-
-    const intervalId = setInterval(task, 1000 * 30);
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, []);
 
   return (
     <FlagsContext.Provider value={flags}>{children}</FlagsContext.Provider>
