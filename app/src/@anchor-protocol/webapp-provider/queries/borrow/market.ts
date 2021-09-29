@@ -1,8 +1,9 @@
-import { HumanAddr, u, UST } from '@anchor-protocol/types';
+import { CW20Addr, HumanAddr, u, UST } from '@anchor-protocol/types';
 import { BorrowMarket, borrowMarketQuery } from '@anchor-protocol/webapp-fns';
-import { createQueryFn } from '@libs/react-query-utils';
 import { MantleFetch } from '@libs/mantle';
+import { createQueryFn } from '@libs/react-query-utils';
 import { useTerraWebapp } from '@libs/webapp-provider';
+import { useFlags } from 'contexts/flags';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
@@ -15,10 +16,18 @@ const queryFn = createQueryFn(
     interestContract: HumanAddr,
     oracleContract: HumanAddr,
     overseerContract: HumanAddr,
+    terraswapFactoryAddr: HumanAddr,
+    bEthTokenAddr: CW20Addr,
+    bLunaTokenAddr: CW20Addr,
+    useExternalOraclePrice: boolean,
   ) => {
     return borrowMarketQuery({
+      terraswapFactoryAddr,
+      bLunaTokenAddr,
+      bEthTokenAddr,
       mantleEndpoint,
       mantleFetch,
+      useExternalOraclePrice,
       wasmQuery: {
         marketState: {
           contractAddress: marketContract,
@@ -56,10 +65,12 @@ const queryFn = createQueryFn(
 export function useBorrowMarketQuery(): UseQueryResult<
   BorrowMarket | undefined
 > {
+  const { useExternalOraclePrice } = useFlags();
+
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
   const {
-    contractAddress: { moneyMarket },
+    contractAddress: { moneyMarket, terraswap, cw20 },
   } = useAnchorWebapp();
 
   return useQuery(
@@ -71,6 +82,10 @@ export function useBorrowMarketQuery(): UseQueryResult<
       moneyMarket.interestModel,
       moneyMarket.oracle,
       moneyMarket.overseer,
+      terraswap.factory,
+      cw20.bEth,
+      cw20.bLuna,
+      useExternalOraclePrice,
     ],
     queryFn,
     {

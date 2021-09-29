@@ -10,8 +10,12 @@ describe('queries/market', () => {
   test('should get result from query', async () => {
     const { marketState, borrowRate, oraclePrices, overseerWhitelist } =
       await borrowMarketQuery({
+        bEthTokenAddr: TEST_ADDRESSES.cw20.bEth,
+        bLunaTokenAddr: TEST_ADDRESSES.cw20.bLuna,
+        terraswapFactoryAddr: TEST_ADDRESSES.terraswap.factory,
         mantleFetch: defaultMantleFetch,
         mantleEndpoint: TEST_MANTLE_ENDPOINT,
+        useExternalOraclePrice: false,
         wasmQuery: {
           marketState: {
             contractAddress: TEST_ADDRESSES.moneyMarket.market,

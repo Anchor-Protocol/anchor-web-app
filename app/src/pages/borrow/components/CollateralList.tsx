@@ -20,6 +20,7 @@ import { Launch } from '@material-ui/icons';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big, BigSource } from 'big.js';
 import { BuyLink } from 'components/BuyButton';
+import { useFlags } from 'contexts/flags';
 import React, { ReactNode, useMemo } from 'react';
 import { useProvideCollateralDialog } from './useProvideCollateralDialog';
 import { useRedeemCollateralDialog } from './useRedeemCollateralDialog';
@@ -43,6 +44,8 @@ export function CollateralList({ className }: CollateralListProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
+  const { useExternalOraclePrice } = useFlags();
+
   const connectedWallet = useConnectedWallet();
 
   const { data: borrowMarket } = useBorrowMarketQuery();
@@ -206,6 +209,7 @@ export function CollateralList({ className }: CollateralListProps) {
                   </BorderButton>
                   <BorderButton
                     disabled={
+                      useExternalOraclePrice ||
                       !connectedWallet ||
                       !borrowMarket ||
                       !borrowBorrower ||

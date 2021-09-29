@@ -4,6 +4,7 @@ import { formatRate } from '@libs/formatter';
 import { useTerraWebapp } from '@libs/webapp-provider';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
+import { useFlags } from 'contexts/flags';
 import { useNotification } from 'contexts/notification';
 import { useCallback, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -20,6 +21,8 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
   const connectedWallet = useConnectedWallet();
   const { permission, create } = useNotification();
 
+  const { useExternalOraclePrice } = useFlags();
+
   const history = useHistory();
 
   const jobCallback = useCallback(async () => {
@@ -33,6 +36,7 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
         mantleFetch,
         mantleEndpoint,
         address,
+        useExternalOraclePrice,
       });
 
       if (ltv && big(ltv).gte(ratio)) {
@@ -63,6 +67,7 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
     mantleFetch,
     permission,
     ratio,
+    useExternalOraclePrice,
   ]);
 
   const jobCallbackRef = useRef(jobCallback);

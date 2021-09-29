@@ -6,7 +6,11 @@ import { ContractAddress, HumanAddr } from '@anchor-protocol/types';
 import { DEFAULT_ADDESS_MAP } from './env';
 import { createAnchorContractAddress } from './functions/createAnchorContractAddress';
 
-export const TEST_ADDRESS_MAP = DEFAULT_ADDESS_MAP['testnet'];
+export const TEST_ADDRESS_MAP = DEFAULT_ADDESS_MAP({
+  name: 'testnet',
+  chainID: 'tequila-004',
+  lcd: 'https://tequila-lcd.terra.dev',
+});
 
 export const TEST_ADDRESS_PROVIDER: AddressProvider =
   new AddressProviderFromJson(TEST_ADDRESS_MAP);

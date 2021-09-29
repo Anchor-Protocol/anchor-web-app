@@ -1,4 +1,5 @@
 import { useCloudflareAnalytics } from '@libs/use-cloudflare-analytics';
+import { useChainOptions } from '@terra-money/wallet-provider';
 import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
 import { AppProviders } from 'configurations/AppProviders';
@@ -20,6 +21,7 @@ import { PollCreateRegisterCollateralAttributes } from 'pages/gov/poll.create.re
 import { PollCreateSpendCommunityPool } from 'pages/gov/poll.create.spend-community-pool';
 import { PollCreateTextProposal } from 'pages/gov/poll.create.text-proposal';
 import { PollDetail } from 'pages/gov/poll.detail';
+import { MaintenanceBlocker } from 'pages/maintenance';
 import { Mypage } from 'pages/mypage';
 import { ClaimAll } from 'pages/trade/claim.all';
 import { ClaimAncUstLp } from 'pages/trade/claim.anc-ust-lp';
@@ -39,92 +41,98 @@ import './configurations/chartjs';
 export function App() {
   useCloudflareAnalytics(cloudFlareOption);
 
+  const chainOptions = useChainOptions();
+
   return (
-    <AppProviders>
-      <NotificationProvider>
-        <JobsProvider>
-          <div>
-            <GlobalStyle />
-            <Header />
-            <Switch>
-              {/* Dashboard */}
-              <Route path="/" exact component={Dashboard} />
+    chainOptions && (
+      <AppProviders {...chainOptions}>
+        <MaintenanceBlocker>
+          <NotificationProvider>
+            <JobsProvider>
+              <div>
+                <GlobalStyle />
+                <Header />
+                <Switch>
+                  {/* Dashboard */}
+                  <Route path="/" exact component={Dashboard} />
 
-              {/* Earn */}
-              <Route path="/earn" component={Earn} />
+                  {/* Earn */}
+                  <Route path="/earn" component={Earn} />
 
-              {/* Borrow */}
-              <Route path="/borrow" component={Borrow} />
+                  {/* Borrow */}
+                  <Route path="/borrow" component={Borrow} />
 
-              {/* Bond */}
-              <Route path="/bond" component={BAsset} />
+                  {/* Bond */}
+                  <Route path="/bond" component={BAsset} />
 
-              {/* Airdrop */}
-              <Route path="/airdrop" component={Airdrop} />
+                  {/* Airdrop */}
+                  <Route path="/airdrop" component={Airdrop} />
 
-              {/* Governance */}
-              <Route exact path={`/gov/`} component={GovernanceMain} />
+                  {/* Governance */}
+                  <Route exact path={`/gov/`} component={GovernanceMain} />
 
-              {/* Poll */}
-              <Route exact path={`/poll/create`} component={PollCreate} />
-              <Route
-                path={`/poll/create/modify-anc-distribution`}
-                component={PollCreateModifyANCDistribution}
-              />
-              <Route
-                path={`/poll/create/modify-borrow-interest`}
-                component={PollCreateModifyBorrowInterest}
-              />
-              <Route
-                path={`/poll/create/modify-collateral-attribute`}
-                component={PollCreateModifyCollateralAttribute}
-              />
-              <Route
-                path={`/poll/create/modify-market-parameters`}
-                component={PollCreateModifyMarketParameters}
-              />
-              <Route
-                path={`/poll/create/spend-community-pool`}
-                component={PollCreateSpendCommunityPool}
-              />
-              <Route
-                path={`/poll/create/text-proposal`}
-                component={PollCreateTextProposal}
-              />
-              <Route
-                path={`/poll/create/register-collateral-attributes`}
-                component={PollCreateRegisterCollateralAttributes}
-              />
-              <Route path={`/poll/:id`} component={PollDetail} />
+                  {/* Poll */}
+                  <Route exact path={`/poll/create`} component={PollCreate} />
+                  <Route
+                    path={`/poll/create/modify-anc-distribution`}
+                    component={PollCreateModifyANCDistribution}
+                  />
+                  <Route
+                    path={`/poll/create/modify-borrow-interest`}
+                    component={PollCreateModifyBorrowInterest}
+                  />
+                  <Route
+                    path={`/poll/create/modify-collateral-attribute`}
+                    component={PollCreateModifyCollateralAttribute}
+                  />
+                  <Route
+                    path={`/poll/create/modify-market-parameters`}
+                    component={PollCreateModifyMarketParameters}
+                  />
+                  <Route
+                    path={`/poll/create/spend-community-pool`}
+                    component={PollCreateSpendCommunityPool}
+                  />
+                  <Route
+                    path={`/poll/create/text-proposal`}
+                    component={PollCreateTextProposal}
+                  />
+                  <Route
+                    path={`/poll/create/register-collateral-attributes`}
+                    component={PollCreateRegisterCollateralAttributes}
+                  />
+                  <Route path={`/poll/:id`} component={PollDetail} />
 
-              {/* Trade */}
-              <Route path={`/trade`} component={Trade} />
-              <Route
-                path={`/${ancUstLpPathname}`}
-                component={RewardsAncUstLp}
-              />
-              <Route
-                path={`/${ancGovernancePathname}`}
-                component={RewardsAncGovernance}
-              />
-              <Route path={`/claim/all`} component={ClaimAll} />
-              <Route
-                path={`/claim/${ancUstLpPathname}`}
-                component={ClaimAncUstLp}
-              />
-              <Route
-                path={`/claim/${ustBorrowPathname}`}
-                component={ClaimUstBorrow}
-              />
+                  {/* Trade */}
+                  <Route path={`/trade`} component={Trade} />
+                  <Route
+                    path={`/${ancUstLpPathname}`}
+                    component={RewardsAncUstLp}
+                  />
+                  <Route
+                    path={`/${ancGovernancePathname}`}
+                    component={RewardsAncGovernance}
+                  />
+                  <Route path={`/claim/all`} component={ClaimAll} />
+                  <Route
+                    path={`/claim/${ancUstLpPathname}`}
+                    component={ClaimAncUstLp}
+                  />
+                  <Route
+                    path={`/claim/${ustBorrowPathname}`}
+                    component={ClaimUstBorrow}
+                  />
 
-              {/* Mypage */}
-              <Route path="/mypage" component={Mypage} />
+                  {/* Mypage */}
+                  <Route path="/mypage" component={Mypage} />
 
-              <Redirect to="/" />
-            </Switch>
-          </div>
-        </JobsProvider>
-      </NotificationProvider>
-    </AppProviders>
+                  <Redirect to="/" />
+                </Switch>
+              </div>
+            </JobsProvider>
+          </NotificationProvider>
+        </MaintenanceBlocker>
+      </AppProviders>
+    )
   );
 }

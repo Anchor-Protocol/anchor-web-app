@@ -8,6 +8,7 @@ import {
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
+import { useFlags } from 'contexts/flags';
 import React, { useMemo } from 'react';
 import { useBorrowDialog } from './useBorrowDialog';
 import { useRepayDialog } from './useRepayDialog';
@@ -16,6 +17,8 @@ export function LoanButtons() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
+  const { useExternalOraclePrice } = useFlags();
+
   const { data: borrowMarket } = useBorrowMarketQuery();
 
   const { data: borrowBorrower } = useBorrowBorrowerQuery();
@@ -46,6 +49,7 @@ export function LoanButtons() {
     <>
       <ActionButton
         disabled={
+          useExternalOraclePrice ||
           !connectedWallet ||
           !borrowMarket ||
           !borrowBorrower ||

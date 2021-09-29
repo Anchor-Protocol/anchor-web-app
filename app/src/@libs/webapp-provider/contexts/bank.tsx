@@ -8,6 +8,7 @@ import {
   tokenBalancesQuery,
 } from '@libs/webapp-fns';
 import { useWallet, WalletStatus } from '@terra-dev/use-wallet';
+import { NetworkInfo } from '@terra-dev/wallet-types';
 import deepEqual from 'fast-deep-equal';
 import React, {
   Consumer,
@@ -57,7 +58,7 @@ export interface TokenBalancesProviderProps {
    * }
    * ```
    */
-  cw20TokenContracts: Record<string, Record<string, CW20Contract>>;
+  cw20TokenContracts: (network: NetworkInfo) => Record<string, CW20Contract>;
 
   /**
    * max cap denoms
@@ -123,14 +124,12 @@ export function BankProvider({
       data[tokenKey] = '0';
     });
 
-    const [networkName] = Object.keys(cw20TokenContracts);
-
-    Object.keys(cw20TokenContracts[networkName]).forEach((tokenKey) => {
+    Object.keys(cw20TokenContracts(network)).forEach((tokenKey) => {
       data[tokenKey] = '0';
     });
 
     return data as Record<string, string>;
-  }, [cw20TokenContracts, nativeTokenKeys]);
+  }, [cw20TokenContracts, nativeTokenKeys, network]);
 
   const emptyTax = useMemo<TaxData>(() => {
     const data: TaxData = {
@@ -167,8 +166,7 @@ export function BankProvider({
     return status === WalletStatus.WALLET_CONNECTED && wallets.length > 0
       ? tokenBalancesQuery({
           nativeTokenKeys,
-          cw20TokenContracts:
-            cw20TokenContracts[network.name] ?? cw20TokenContracts['mainnet'],
+          cw20TokenContracts: cw20TokenContracts(network),
           walletAddress: wallets[0].terraAddress,
           mantleEndpoint,
           mantleFetch,
@@ -180,7 +178,7 @@ export function BankProvider({
     mantleEndpoint,
     mantleFetch,
     nativeTokenKeys,
-    network.name,
+    network,
     status,
     wallets,
   ]);
@@ -283,13 +281,13 @@ export function BankProvider({
     () => ({
       tokenBalances,
       refetchTokenBalances,
-      cw20TokenContracts: cw20TokenContracts[network.name],
+      cw20TokenContracts: cw20TokenContracts(network),
       tax,
       refetchTax,
     }),
     [
       cw20TokenContracts,
-      network.name,
+      network,
       refetchTax,
       refetchTokenBalances,
       tax,
@@ -314,6 +312,7 @@ export function useCW20TokenBalance<T = string>(address: CW20Addr): u<T> {
   const { tokenBalances, cw20TokenContracts } = useBank();
 
   return useMemo(() => {
+    console.log('bank.tsx..()', cw20TokenContracts);
     const key = Object.keys(cw20TokenContracts).find(
       (k) => cw20TokenContracts[k].contractAddress === address,
     );

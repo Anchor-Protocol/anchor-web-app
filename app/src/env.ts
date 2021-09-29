@@ -1,10 +1,3 @@
-import { AddressProviderFromJson } from '@anchor-protocol/anchor.js';
-import {
-  createAnchorContractAddress,
-  DEFAULT_ADDESS_MAP,
-  ExpandAddressMap,
-} from '@anchor-protocol/webapp-fns';
-
 // ---------------------------------------------
 // style
 // ---------------------------------------------
@@ -45,7 +38,7 @@ export const links = {
 // environment
 // ---------------------------------------------
 export const cloudFlareOption = {
-  token: import.meta.env.VITE_CLOUD_FLARE_TOKEN,
+  token: process.env.VITE_CLOUD_FLARE_TOKEN,
   hostnames: [
     'app.anchorprotocol.com',
     'app.anchor.money',
@@ -53,9 +46,9 @@ export const cloudFlareOption = {
   ],
 };
 
-export const GA_TRACKING_ID = import.meta.env.VITE_GA_TRACKING_ID;
+export const GA_TRACKING_ID = process.env.VITE_GA_TRACKING_ID;
 
-export const SENTRY_DSN = import.meta.env.VITE_SENTRY_DSN;
+export const SENTRY_DSN = process.env.VITE_SENTRY_DSN;
 
 // ---------------------------------------------
 // chain
@@ -68,32 +61,32 @@ export const onProduction =
   global.location.host === 'anchor.money' ||
   global.location.host === 'anchor.market';
 
-export const columbusContractAddresses: ExpandAddressMap =
-  DEFAULT_ADDESS_MAP['mainnet'];
-export const tequilaContractAddresses: ExpandAddressMap =
-  DEFAULT_ADDESS_MAP['testnet'];
-export const bombayContractAddresses: ExpandAddressMap =
-  DEFAULT_ADDESS_MAP['bombay'];
-
-export const ADDRESS_PROVIDERS = {
-  mainnet: new AddressProviderFromJson(columbusContractAddresses),
-  testnet: new AddressProviderFromJson(tequilaContractAddresses),
-  bombay: new AddressProviderFromJson(bombayContractAddresses),
-};
-
-export const ADDRESSES = {
-  mainnet: createAnchorContractAddress(
-    ADDRESS_PROVIDERS.mainnet,
-    columbusContractAddresses,
-  ),
-  testnet: createAnchorContractAddress(
-    ADDRESS_PROVIDERS.testnet,
-    tequilaContractAddresses,
-  ),
-  bombay: createAnchorContractAddress(
-    ADDRESS_PROVIDERS.bombay,
-    bombayContractAddresses,
-  ),
-};
+//export const columbusContractAddresses: ExpandAddressMap =
+//  DEFAULT_ADDESS_MAP['mainnet'];
+//export const tequilaContractAddresses: ExpandAddressMap =
+//  DEFAULT_ADDESS_MAP['testnet'];
+//export const bombayContractAddresses: ExpandAddressMap =
+//  DEFAULT_ADDESS_MAP['bombay'];
+//
+//export const ADDRESS_PROVIDERS = {
+//  mainnet: new AddressProviderFromJson(columbusContractAddresses),
+//  testnet: new AddressProviderFromJson(tequilaContractAddresses),
+//  bombay: new AddressProviderFromJson(bombayContractAddresses),
+//};
+//
+//export const ADDRESSES = {
+//  mainnet: createAnchorContractAddress(
+//    ADDRESS_PROVIDERS.mainnet,
+//    columbusContractAddresses,
+//  ),
+//  testnet: createAnchorContractAddress(
+//    ADDRESS_PROVIDERS.testnet,
+//    tequilaContractAddresses,
+//  ),
+//  bombay: createAnchorContractAddress(
+//    ADDRESS_PROVIDERS.bombay,
+//    bombayContractAddresses,
+//  ),
+//};
 
 // build: vercel trigger build - 21.09.23

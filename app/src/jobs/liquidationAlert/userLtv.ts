@@ -12,6 +12,7 @@ interface UserLtvQueryParams {
   mantleEndpoint: string;
   walletAddress: string;
   address: ContractAddress;
+  useExternalOraclePrice: boolean;
 }
 
 export async function userLtvQuery({
@@ -19,12 +20,17 @@ export async function userLtvQuery({
   mantleFetch,
   mantleEndpoint,
   address,
+  useExternalOraclePrice,
 }: UserLtvQueryParams) {
   const [{ oraclePrices }, { marketBorrowerInfo, overseerCollaterals }] =
     await Promise.all([
       borrowMarketQuery({
+        terraswapFactoryAddr: address.terraswap.factory,
+        bEthTokenAddr: address.cw20.bEth,
+        bLunaTokenAddr: address.cw20.bLuna,
         mantleEndpoint,
         mantleFetch,
+        useExternalOraclePrice,
         wasmQuery: {
           marketState: {
             contractAddress: address.moneyMarket.market,

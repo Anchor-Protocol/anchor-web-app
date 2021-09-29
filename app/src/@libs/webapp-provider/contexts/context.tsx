@@ -11,6 +11,7 @@ import {
   TerraContantsInput,
 } from '@libs/webapp-fns';
 import { useWallet } from '@terra-dev/use-wallet';
+import { NetworkInfo } from '@terra-dev/wallet-types';
 import big from 'big.js';
 import React, {
   Consumer,
@@ -27,16 +28,16 @@ import { TxRefetchMap } from '../types';
 export interface TerraWebappProviderProps {
   children: ReactNode;
 
-  contractAddress?: Record<string, TerraContractAddress>;
-  constants?: Record<string, TerraContantsInput>;
+  contractAddress?: (network: NetworkInfo) => TerraContractAddress;
+  constants?: (network: NetworkInfo) => TerraContantsInput;
 
   // mantle
-  mantleEndpoints?: Record<string, string>;
+  mantleEndpoints?: (network: NetworkInfo) => string;
   mantleFetch?: MantleFetch;
 
   // gas
-  gasPriceEndpoint?: Record<string, string>;
-  fallbackGasPrice?: Record<string, GasPrice>;
+  gasPriceEndpoint?: (network: NetworkInfo) => string;
+  fallbackGasPrice?: (network: NetworkInfo) => GasPrice;
 
   // refetch map
   txRefetchMap?: TxRefetchMap;
@@ -90,8 +91,8 @@ export function TerraWebappProvider({
   const { network } = useWallet();
 
   const mantleEndpoint = useMemo(() => {
-    return mantleEndpoints[network.name] ?? mantleEndpoints['mainnet'];
-  }, [mantleEndpoints, network.name]);
+    return mantleEndpoints(network);
+  }, [mantleEndpoints, network]);
 
   const lastSyncedHeight = useMemo(() => {
     return () =>
@@ -101,16 +102,14 @@ export function TerraWebappProvider({
       });
   }, [mantleEndpoint, mantleFetch]);
 
-  const {
-    data: gasPrice = fallbackGasPrice[network.name] ??
-      fallbackGasPrice['mainnet'],
-  } = useGasPriceQuery(
-    gasPriceEndpoint[network.name] ?? gasPriceEndpoint['mainnet'],
+  const { data: gasPrice = fallbackGasPrice(network) } = useGasPriceQuery(
+    gasPriceEndpoint(network),
     queryErrorReporter,
   );
 
   const states = useMemo<TerraWebapp>(() => {
-    const constantsInput = constants[network.name] ?? constants['mainnet'];
+    const constantsInput = constants(network);
+
     const calculateGasCalculated = {
       ...constantsInput,
       fixedGas: Math.floor(
@@ -126,13 +125,12 @@ export function TerraWebappProvider({
       txErrorReporter,
       txRefetchMap,
       queryErrorReporter,
-      contractAddress:
-        contractAddress[network.name] ?? contractAddress['mainnet'],
+      contractAddress: contractAddress(network),
       constants: calculateGasCalculated,
     };
   }, [
     constants,
-    network.name,
+    network,
     gasPrice,
     lastSyncedHeight,
     mantleEndpoint,

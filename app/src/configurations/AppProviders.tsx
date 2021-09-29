@@ -1,6 +1,9 @@
+import { AddressProviderFromJson } from '@anchor-protocol/anchor.js';
 import {
   ANCHOR_TX_REFETCH_MAP,
   AnchorWebappProvider,
+  createAnchorContractAddress,
+  DEFAULT_ADDESS_MAP,
 } from '@anchor-protocol/webapp-provider';
 import { webworkerMantleFetch } from '@libs/mantle';
 import { GlobalStyle } from '@libs/neumorphism-ui/themes/GlobalStyle';
@@ -18,12 +21,17 @@ import {
 } from '@libs/webapp-provider';
 import { captureException } from '@sentry/react';
 import { ReadonlyWalletSession } from '@terra-dev/readonly-wallet';
-import { NetworkInfo, WalletProvider } from '@terra-money/wallet-provider';
+import {
+  NetworkInfo,
+  WalletControllerChainOptions,
+  WalletProvider,
+} from '@terra-money/wallet-provider';
 import { useReadonlyWalletDialog } from 'components/dialogs/useReadonlyWalletDialog';
 import { useRequestReloadDialog } from 'components/dialogs/useRequestReloadDialog';
 import { SnackbarContainer } from 'components/SnackbarContainer';
+import { FlagsProvider } from 'contexts/flags';
 import { ThemeProvider } from 'contexts/theme';
-import { ADDRESSES, GA_TRACKING_ID, onProduction } from 'env';
+import { GA_TRACKING_ID, onProduction } from 'env';
 import React, { ReactNode, useCallback } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -35,68 +43,36 @@ const queryClient = new QueryClient();
 const errorReporter =
   process.env.NODE_ENV === 'production' ? captureException : undefined;
 
-const cw20TokenContracts: Record<string, Record<string, CW20Contract>> = {
-  mainnet: {
+const cw20TokenContracts = (
+  network: NetworkInfo,
+): Record<string, CW20Contract> => {
+  const contractAddressMap = DEFAULT_ADDESS_MAP(network);
+  const addressProvider = new AddressProviderFromJson(contractAddressMap);
+  const contractAddress = createAnchorContractAddress(
+    addressProvider,
+    contractAddressMap,
+  );
+
+  return {
     uaUST: {
-      contractAddress: ADDRESSES.mainnet.cw20.aUST,
+      contractAddress: contractAddress.cw20.aUST,
     },
     ubLuna: {
-      contractAddress: ADDRESSES.mainnet.cw20.bLuna,
+      contractAddress: contractAddress.cw20.bLuna,
     },
     ubEth: {
-      contractAddress: ADDRESSES.mainnet.cw20.bEth,
+      contractAddress: contractAddress.cw20.bEth,
     },
     uANC: {
-      contractAddress: ADDRESSES.mainnet.cw20.ANC,
+      contractAddress: contractAddress.cw20.ANC,
     },
     uAncUstLP: {
-      contractAddress: ADDRESSES.mainnet.cw20.AncUstLP,
+      contractAddress: contractAddress.cw20.AncUstLP,
     },
     ubLunaLunaLP: {
-      contractAddress: ADDRESSES.mainnet.cw20.bLunaLunaLP,
+      contractAddress: contractAddress.cw20.bLunaLunaLP,
     },
-  },
-  testnet: {
-    uaUST: {
-      contractAddress: ADDRESSES.testnet.cw20.aUST,
-    },
-    ubLuna: {
-      contractAddress: ADDRESSES.testnet.cw20.bLuna,
-    },
-    ubEth: {
-      contractAddress: ADDRESSES.testnet.cw20.bEth,
-    },
-    uANC: {
-      contractAddress: ADDRESSES.testnet.cw20.ANC,
-    },
-    uAncUstLP: {
-      contractAddress: ADDRESSES.testnet.cw20.AncUstLP,
-    },
-    ubLunaLunaLP: {
-      contractAddress: ADDRESSES.testnet.cw20.bLunaLunaLP,
-    },
-  },
-  // TODO change to testnet
-  bombay: {
-    uaUST: {
-      contractAddress: ADDRESSES.bombay.cw20.aUST,
-    },
-    ubLuna: {
-      contractAddress: ADDRESSES.bombay.cw20.bLuna,
-    },
-    ubEth: {
-      contractAddress: ADDRESSES.bombay.cw20.bEth,
-    },
-    uANC: {
-      contractAddress: ADDRESSES.bombay.cw20.ANC,
-    },
-    uAncUstLP: {
-      contractAddress: ADDRESSES.bombay.cw20.AncUstLP,
-    },
-    ubLunaLunaLP: {
-      contractAddress: ADDRESSES.bombay.cw20.bLunaLunaLP,
-    },
-  },
+  };
 };
 
 const maxCapTokenDenoms: Record<string, string> = {
@@ -108,53 +84,42 @@ function Providers({ children }: { children: ReactNode }) {
     /** React App routing :: <Link>, <NavLink>, useLocation(), useRouteMatch()... */
     <Router>
       <QueryClientProvider client={queryClient}>
-        <BrowserInactiveProvider>
-          <TerraWebappProvider
-            mantleFetch={webworkerMantleFetch}
-            txRefetchMap={ANCHOR_TX_REFETCH_MAP}
-            txErrorReporter={errorReporter}
-            queryErrorReporter={errorReporter}
-          >
-            <WebappBankProvider
-              cw20TokenContracts={cw20TokenContracts}
-              maxCapTokenDenoms={maxCapTokenDenoms}
+        <FlagsProvider>
+          <BrowserInactiveProvider>
+            <TerraWebappProvider
+              mantleFetch={webworkerMantleFetch}
+              txRefetchMap={ANCHOR_TX_REFETCH_MAP}
+              txErrorReporter={errorReporter}
+              queryErrorReporter={errorReporter}
             >
-              <AnchorWebappProvider>
-                {/** Theme Providing to Styled-Components and Material-UI */}
-                <ThemeProvider initialTheme="light">
-                  {/** Snackbar Provider :: useSnackbar() */}
-                  <SnackbarProvider>
-                    {/** Application Layout */}
-                    {children}
-                  </SnackbarProvider>
-                </ThemeProvider>
-              </AnchorWebappProvider>
-            </WebappBankProvider>
-          </TerraWebappProvider>
-        </BrowserInactiveProvider>
+              <WebappBankProvider
+                cw20TokenContracts={cw20TokenContracts}
+                maxCapTokenDenoms={maxCapTokenDenoms}
+              >
+                <AnchorWebappProvider>
+                  {/** Theme Providing to Styled-Components and Material-UI */}
+                  <ThemeProvider initialTheme="light">
+                    {/** Snackbar Provider :: useSnackbar() */}
+                    <SnackbarProvider>
+                      {/** Application Layout */}
+                      {children}
+                    </SnackbarProvider>
+                  </ThemeProvider>
+                </AnchorWebappProvider>
+              </WebappBankProvider>
+            </TerraWebappProvider>
+          </BrowserInactiveProvider>
+        </FlagsProvider>
       </QueryClientProvider>
     </Router>
   );
 }
 
-const testnet = {
-  name: 'testnet',
-  chainID: 'tequila-0004',
-  lcd: 'https://tequila-lcd.terra.dev',
-};
-
-const mainnet = {
-  name: 'mainnet',
-  chainID: 'columbus-4',
-  lcd: 'https://lcd.terra.dev',
-};
-
-const walletConnectChainIds: Record<number, NetworkInfo> = {
-  0: testnet,
-  1: mainnet,
-};
-
-export function AppProviders({ children }: { children: ReactNode }) {
+export function AppProviders({
+  children,
+  walletConnectChainIds,
+  defaultNetwork,
+}: { children: ReactNode } & WalletControllerChainOptions) {
   const [openReadonlyWalletSelector, readonlyWalletSelectorElement] =
     useReadonlyWalletDialog();
 
@@ -181,7 +146,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
   return (
     /** Terra Station Wallet Address :: useWallet() */
     <WalletProvider
-      defaultNetwork={mainnet}
+      defaultNetwork={defaultNetwork}
       walletConnectChainIds={walletConnectChainIds}
       connectorOpts={{
         bridge: onProduction
