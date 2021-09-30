@@ -1,14 +1,9 @@
-import { TEST_MANTLE_ENDPOINT } from '@anchor-protocol/webapp-fns/test-env';
-import { defaultMantleFetch } from '@libs/mantle';
 import { borrowAPYQuery } from '../apy';
 
 describe('queries/borrowAPY', () => {
   test('should get result from query', async () => {
     const { borrowerDistributionAPYs, lpRewards, govRewards } =
-      await borrowAPYQuery({
-        mantleFetch: defaultMantleFetch,
-        mantleEndpoint: TEST_MANTLE_ENDPOINT,
-      });
+      await borrowAPYQuery();
 
     expect(Array.isArray(borrowerDistributionAPYs)).toBeTruthy();
     expect(Array.isArray(govRewards)).toBeTruthy();

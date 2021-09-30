@@ -1,4 +1,3 @@
-import { useWallet } from '@terra-dev/use-wallet';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { PageTitle } from 'components/primitives/PageTitle';
 import { links, screen } from 'env';
@@ -6,7 +5,6 @@ import { LoanButtons } from 'pages/borrow/components/LoanButtons';
 import { Overview } from 'pages/borrow/components/Overview';
 import React from 'react';
 import styled from 'styled-components';
-import { MessageBox } from './components/Col5LiqMessageBox';
 import { CollateralList } from './components/CollateralList';
 
 export interface BorrowProps {
@@ -14,47 +12,8 @@ export interface BorrowProps {
 }
 
 function BorrowBase({ className }: BorrowProps) {
-  const { network } = useWallet();
-
   return (
     <PaddedLayout className={className}>
-      {network.chainID === 'columbus-4' && (
-        <MessageBox
-          level="info"
-          hide={{ id: 'borrow_liq', period: 1000 * 60 * 60 * 24 }}
-        >
-          <p>
-            The Columbus-5 chain migration is scheduled to occur at block height
-            4,724,000.
-          </p>
-
-          <p>
-            Anchor Protocol will not be accessible until the chain and contracts
-            have been fully migrated.
-          </p>
-
-          <p>
-            Users are strongly advised to take precautionary measures to manage
-            borrow positions prior to the chain halt.
-          </p>
-
-          <p>
-            To further reduce the risk of liquidation, there will be a 3-hour
-            period post-migration in which users can repay / provide collateral
-            before the price oracle feeder is re-started.
-          </p>
-
-          <h4>Estimated halt time</h4>
-
-          <ul>
-            <li>Wed Sep 29 2021 23:00:00 GMT-0800 (PDT)</li>
-            <li>Thu Sep 30 2021 07:00:00 GMT+0000 (UTC)</li>
-            <li>Thu Sep 30 2021 16:00:00 GMT+0900 (KST)</li>
-          </ul>
-
-          <h4>Estimated time for migrations: 2 hours</h4>
-        </MessageBox>
-      )}
       <div className="market">
         <PageTitle title="BORROW" docs={links.docs.borrow} />
         <div className="loan-buttons">
