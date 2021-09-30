@@ -2,14 +2,10 @@ import { NetworkInfo } from '@terra-dev/wallet-types';
 import { UseQueryResult } from 'react-query';
 
 export const DEFAULT_MANTLE_ENDPOINTS = (network: NetworkInfo): string => {
-  if (network.chainID.startsWith('tequila')) {
-    return 'https://tequila-mantle.anchorprotocol.com';
-  } else if (network.chainID.startsWith('bombay')) {
-    return 'https://bombay-mantle.terra.dev';
-  } else if (network.chainID === 'columbus-4') {
-    return 'https://mantle.anchorprotocol.com';
-  } else {
+  if (network.chainID.startsWith('columbus')) {
     return 'https://mantle.terra.dev';
+  } else {
+    return 'https://bombay-mantle.terra.dev';
   }
 };
 

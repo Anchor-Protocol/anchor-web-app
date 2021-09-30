@@ -33,16 +33,16 @@ import { TerraContantsInput } from './types';
 export const DEFAULT_TERRA_CONTRACT_ADDRESS = (
   network: NetworkInfo,
 ): TerraContractAddress => {
-  if (network.chainID.startsWith('tequila')) {
+  if (network.chainID.startsWith('columbus')) {
     return {
       terraswap: {
-        factory: 'terra18qpjm4zkvqnpjpw0zn0tdr8gdzvt8au35v45xf' as HumanAddr,
+        factory: 'terra1ulgw0td86nvs4wtpsc80thv6xelk76ut7a7apj' as HumanAddr,
       },
     };
   } else {
     return {
       terraswap: {
-        factory: 'terra1ulgw0td86nvs4wtpsc80thv6xelk76ut7a7apj' as HumanAddr,
+        factory: 'terra18qpjm4zkvqnpjpw0zn0tdr8gdzvt8au35v45xf' as HumanAddr,
       },
     };
   }
@@ -79,9 +79,7 @@ export enum TERRA_QUERY_KEY {
 }
 
 export const DEFAULT_GAS_PRICE_ENDPOINT = (network: NetworkInfo): string => {
-  if (network.chainID.startsWith('tequila')) {
-    return 'https://tequila-fcd.terra.dev/v1/txs/gas_prices';
-  } else if (network.chainID.startsWith('bombay')) {
+  if (network.chainID.startsWith('bombay')) {
     return 'https://bombay-fcd.terra.dev/v1/txs/gas_prices';
   } else {
     return 'https://fcd.terra.dev/v1/txs/gas_prices';
@@ -89,32 +87,7 @@ export const DEFAULT_GAS_PRICE_ENDPOINT = (network: NetworkInfo): string => {
 };
 
 export const FALLBACK_GAS_PRICE = (network: NetworkInfo): GasPrice => {
-  if (network.chainID.startsWith('tequila')) {
-    return {
-      uluna: '0.15' as u<Luna>,
-      usdr: '0.1018' as u<SDR>,
-      uusd: '0.15' as u<UST>,
-      ukrw: '178.05' as u<KRW>,
-      umnt: '431.6259' as u<MNT>,
-      ueur: '0.125' as u<EUR>,
-      ucny: '0.97' as u<CNY>,
-      ujpy: '16' as u<JPY>,
-      ugbp: '0.11' as u<GBP>,
-      uinr: '11' as u<INR>,
-      ucad: '0.19' as u<CAD>,
-      uchf: '0.13' as u<CHF>,
-      uaud: '0.19' as u<AUD>,
-      usgd: '0.2' as u<SGD>,
-      uthb: '4.62' as u<THB>,
-      usek: '1.25' as u<SEK>,
-      unok: '1.25' as u<NOK>,
-      udkk: '0.9' as u<DKK>,
-      // copied from mainnet
-      uhkd: '2.950842' as u<HKD>,
-      uidr: '5450.0' as u<IDR>,
-      uphp: '19.0' as u<PHP>,
-    };
-  } else if (network.chainID.startsWith('bombay')) {
+  if (network.chainID.startsWith('bombay')) {
     return {
       uluna: '0.15' as u<Luna>,
       usdr: '0.1018' as u<SDR>,
