@@ -4904,9 +4904,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@terra-money/terra.js@npm:2.0.8":
-  version: 2.0.8
-  resolution: "@terra-money/terra.js@npm:2.0.8"
+"@terra-money/terra.js@npm:2.0.11":
+  version: 2.0.11
+  resolution: "@terra-money/terra.js@npm:2.0.11"
   dependencies:
     axios: ^0.21.1
     bech32: ^2.0.0
@@ -4920,7 +4920,7 @@ __metadata:
     tmp: ^0.2.1
     utf-8-validate: ^5.0.5
     ws: ^7.4.2
-  checksum: eca4ad21945ae266f2b679216f4c115a0b7423f50fdc3079d007b47f67b211c402d164a5805cf7c683b7d1ba3d7c317bc19f64a7cf1a60f86fcb822e35e5402e
+  checksum: 813cd40f8ca425850ccca9a781ce95f76c62cff2b2a6e87cfdee69bb394332d0cc2a3aeff1d02faa794f6e591b1e26c476af1db221932401c7614ef8a6f9350a
   languageName: node
   linkType: hard
 
