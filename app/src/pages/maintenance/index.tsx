@@ -1,4 +1,5 @@
 import { useTerraWebapp } from '@libs/webapp-provider';
+import { useWallet } from '@terra-dev/use-wallet';
 import { useFlags } from 'contexts/flags';
 import React, { ReactElement, useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
@@ -13,7 +14,14 @@ export function MaintenanceBlocker({ children }: { children: ReactElement }) {
   const [maintenanceDown, setMaintenanceDown] =
     useState<boolean>(forceMaintenanceDown);
 
+  const { network } = useWallet();
+
   useEffect(() => {
+    if (!network.chainID.startsWith('columbus')) {
+      setMaintenanceDown(false);
+      return;
+    }
+
     if (forceMaintenanceDown) {
       setMaintenanceDown(true);
     } else if (maintenanceDownBlock > 0) {
@@ -37,7 +45,12 @@ export function MaintenanceBlocker({ children }: { children: ReactElement }) {
     } else {
       setMaintenanceDown(false);
     }
-  }, [forceMaintenanceDown, lastSyncedHeight, maintenanceDownBlock]);
+  }, [
+    forceMaintenanceDown,
+    lastSyncedHeight,
+    maintenanceDownBlock,
+    network.chainID,
+  ]);
 
   return maintenanceDown ? (
     <Container>

@@ -6,6 +6,7 @@ import { AppProviders } from 'configurations/AppProviders';
 import { NotificationProvider } from 'contexts/notification';
 import { cloudFlareOption } from 'env';
 import { JobsProvider } from 'jobs/Jobs';
+import { OraclePriceWarning } from 'OraclePriceWarning';
 import { Airdrop } from 'pages/airdrop';
 import { BAsset } from 'pages/bond';
 import { Borrow } from 'pages/borrow';
@@ -52,6 +53,7 @@ export function App() {
               <div>
                 <GlobalStyle />
                 <Header />
+                <OraclePriceWarning />
                 <Switch>
                   {/* Dashboard */}
                   <Route path="/" exact component={Dashboard} />
