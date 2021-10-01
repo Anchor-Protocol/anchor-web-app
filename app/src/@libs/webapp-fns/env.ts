@@ -1,3 +1,4 @@
+import { AppContractAddress } from '@libs/app-provider';
 import {
   AUD,
   CAD,
@@ -21,7 +22,6 @@ import {
   SDR,
   SEK,
   SGD,
-  TerraContractAddress,
   THB,
   u,
   UST,
@@ -32,7 +32,7 @@ import { TerraContantsInput } from './types';
 
 export const DEFAULT_TERRA_CONTRACT_ADDRESS = (
   network: NetworkInfo,
-): TerraContractAddress => {
+): AppContractAddress => {
   if (network.chainID.startsWith('columbus')) {
     return {
       terraswap: {

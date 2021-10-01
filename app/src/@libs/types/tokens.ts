@@ -1,4 +1,3 @@
-import { NativeDenom } from './addrs';
 import { NominalType } from './common';
 import { terraswap } from './contracts';
 
@@ -36,33 +35,57 @@ export type Luna<T = string> = T & NominalType<'luna'>;
 export type LP<T = string> = T & NominalType<'lp'>;
 
 // Union currencies
-export type NativeToken<T = string> = T & NominalType<'ust' | 'krt' | 'luna'>;
+export type NativeToken<T = string> = T &
+  NominalType<
+    | 'ust'
+    | 'aud'
+    | 'cad'
+    | 'chf'
+    | 'cny'
+    | 'dkk'
+    | 'eur'
+    | 'gbp'
+    | 'hkd'
+    | 'idr'
+    | 'inr'
+    | 'jpy'
+    | 'krw'
+    | 'mnt'
+    | 'nok'
+    | 'php'
+    | 'sdr'
+    | 'sek'
+    | 'sgd'
+    | 'thb'
+    | 'krt'
+    | 'luna'
+  >;
 
 // All currencies
 export type Token<T = string> = T & NominalType<string>;
 
 // utility constants
 export const NATIVE_TOKEN_ASSET_INFOS: terraswap.AssetInfo[] = [
-  { native_token: { denom: 'uusd' as NativeDenom } },
-  { native_token: { denom: 'uluna' as NativeDenom } },
-  { native_token: { denom: 'uaud' as NativeDenom } },
-  { native_token: { denom: 'ucad' as NativeDenom } },
-  { native_token: { denom: 'uchf' as NativeDenom } },
-  { native_token: { denom: 'ucny' as NativeDenom } },
-  { native_token: { denom: 'udkk' as NativeDenom } },
-  { native_token: { denom: 'ueur' as NativeDenom } },
-  { native_token: { denom: 'ugbp' as NativeDenom } },
-  { native_token: { denom: 'uhkd' as NativeDenom } },
-  { native_token: { denom: 'uidr' as NativeDenom } },
-  { native_token: { denom: 'uinr' as NativeDenom } },
-  { native_token: { denom: 'ujpy' as NativeDenom } },
-  { native_token: { denom: 'ukrw' as NativeDenom } },
-  { native_token: { denom: 'umnt' as NativeDenom } },
-  { native_token: { denom: 'unok' as NativeDenom } },
-  { native_token: { denom: 'uphp' as NativeDenom } },
-  { native_token: { denom: 'usdr' as NativeDenom } },
-  { native_token: { denom: 'usek' as NativeDenom } },
-  { native_token: { denom: 'usgd' as NativeDenom } },
-  { native_token: { denom: 'uthb' as NativeDenom } },
-  { native_token: { denom: 'ukrt' as NativeDenom } },
+  { native_token: { denom: 'uusd' } },
+  { native_token: { denom: 'uluna' } },
+  { native_token: { denom: 'uaud' } },
+  { native_token: { denom: 'ucad' } },
+  { native_token: { denom: 'uchf' } },
+  { native_token: { denom: 'ucny' } },
+  { native_token: { denom: 'udkk' } },
+  { native_token: { denom: 'ueur' } },
+  { native_token: { denom: 'ugbp' } },
+  { native_token: { denom: 'uhkd' } },
+  { native_token: { denom: 'uidr' } },
+  { native_token: { denom: 'uinr' } },
+  { native_token: { denom: 'ujpy' } },
+  { native_token: { denom: 'ukrw' } },
+  { native_token: { denom: 'umnt' } },
+  { native_token: { denom: 'unok' } },
+  { native_token: { denom: 'uphp' } },
+  { native_token: { denom: 'usdr' } },
+  { native_token: { denom: 'usek' } },
+  { native_token: { denom: 'usgd' } },
+  { native_token: { denom: 'uthb' } },
+  { native_token: { denom: 'ukrt' } },
 ];

@@ -1,5 +1,6 @@
+import { AppContractAddress } from '@libs/app-provider';
 import { defaultMantleFetch, MantleFetch } from '@libs/mantle';
-import { TerraContractAddress, u, UST } from '@libs/types';
+import { u, UST } from '@libs/types';
 import {
   DEFAULT_GAS_PRICE_ENDPOINT,
   DEFAULT_TERRA_CONSTANTS,
@@ -28,7 +29,7 @@ import { TxRefetchMap } from '../types';
 export interface TerraWebappProviderProps {
   children: ReactNode;
 
-  contractAddress?: (network: NetworkInfo) => TerraContractAddress;
+  contractAddress?: (network: NetworkInfo) => AppContractAddress;
   constants?: (network: NetworkInfo) => TerraContantsInput;
 
   // mantle
@@ -50,7 +51,7 @@ export interface TerraWebappProviderProps {
 }
 
 export interface TerraWebapp {
-  contractAddress: TerraContractAddress;
+  contractAddress: AppContractAddress;
   constants: TerraContants;
 
   // functions
