@@ -49,7 +49,7 @@
     "@sentry/tracing": "^6.8.0",
     "@terra-dev/use-wallet": "^2.2.0",
     "@terra-dev/wallet-types": "^2.2.0",
-    "@terra-money/terra.js": "^2.0.11",
+    "@terra-money/terra.js": "^2.0.14",
     "@terra-money/wallet-provider": "^2.2.0",
     "big.js": "^6.1.1",
     "color": "^3.1.3",

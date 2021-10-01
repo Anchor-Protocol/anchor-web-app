@@ -39,7 +39,7 @@ __metadata:
     "@storybook/theming": ^6.3.4
     "@terra-dev/use-wallet": ^2.2.0
     "@terra-dev/wallet-types": ^2.2.0
-    "@terra-money/terra.js": ^2.0.11
+    "@terra-money/terra.js": ^2.0.14
     "@terra-money/wallet-provider": ^2.2.0
     "@testing-library/jest-dom": ^5.14.1
     "@testing-library/react": ^12.0.0
@@ -4904,9 +4904,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@terra-money/terra.js@npm:2.0.11":
-  version: 2.0.11
-  resolution: "@terra-money/terra.js@npm:2.0.11"
+"@terra-money/terra.js@npm:2.0.14":
+  version: 2.0.14
+  resolution: "@terra-money/terra.js@npm:2.0.14"
   dependencies:
     axios: ^0.21.1
     bech32: ^2.0.0
@@ -4920,7 +4920,7 @@ __metadata:
     tmp: ^0.2.1
     utf-8-validate: ^5.0.5
     ws: ^7.4.2
-  checksum: 813cd40f8ca425850ccca9a781ce95f76c62cff2b2a6e87cfdee69bb394332d0cc2a3aeff1d02faa794f6e591b1e26c476af1db221932401c7614ef8a6f9350a
+  checksum: 2820ebedadfa0ab1d91b38b1d91ddb6a8a71975e69b56fa83235a331b19529b6f0c116ceb4c739e6029621ed4ccb732ee0a336b42e9ce6e9f2395aa0333e6251
   languageName: node
   linkType: hard
 
