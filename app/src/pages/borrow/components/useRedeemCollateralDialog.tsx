@@ -24,11 +24,11 @@ import {
   validateTxFee,
 } from '@anchor-protocol/webapp-fns';
 import {
-  useAnchorWebapp,
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
   useBorrowRedeemCollateralTx,
 } from '@anchor-protocol/webapp-provider';
+import { useFixedFee } from '@libs/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
@@ -82,9 +82,7 @@ function ComponentBase({
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const {
-    constants: { fixedFee },
-  } = useAnchorWebapp();
+  const fixedFee = useFixedFee();
 
   const txFee = fixedFee;
 

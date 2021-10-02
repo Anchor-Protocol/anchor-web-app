@@ -99,6 +99,7 @@ const BankContext: Context<Bank> = createContext<Bank>({
     }),
 });
 
+/** @deprecated */
 export function BankProvider({
   children,
   nativeTokenKeys = DEFAULT_NATIVE_TOKEN_KEYS,
@@ -298,6 +299,7 @@ export function BankProvider({
   return <BankContext.Provider value={states}>{children}</BankContext.Provider>;
 }
 
+// TODO replace
 export function useBank<
   TokenBalancesType = Record<string, string>,
   TaxDataType = TaxData,

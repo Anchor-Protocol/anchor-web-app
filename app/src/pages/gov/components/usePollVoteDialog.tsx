@@ -7,11 +7,11 @@ import {
 } from '@anchor-protocol/notation';
 import { ANC, u } from '@anchor-protocol/types';
 import {
-  useAnchorWebapp,
   useGovVoteAvailableQuery,
   useGovVoteTx,
   useRewardsAncGovernanceRewardsQuery,
 } from '@anchor-protocol/webapp-provider';
+import { useFixedFee } from '@libs/app-provider';
 import { demicrofy, microfy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
@@ -61,9 +61,7 @@ function ComponentBase({
 
   const connectedWallet = useConnectedWallet();
 
-  const {
-    constants: { fixedFee },
-  } = useAnchorWebapp();
+  const fixedFee = useFixedFee();
 
   const bank = useBank();
 

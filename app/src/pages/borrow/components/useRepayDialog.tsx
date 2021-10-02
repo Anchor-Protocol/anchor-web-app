@@ -26,6 +26,7 @@ import {
   validateRepayAmount,
   validateTxFee,
 } from '@anchor-protocol/webapp-provider';
+import { useFixedFee } from '@libs/app-provider';
 import { demicrofy, formatRate } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
@@ -77,8 +78,10 @@ function ComponentBase({
   const connectedWallet = useConnectedWallet();
 
   const {
-    constants: { fixedFee, blocksPerYear },
+    constants: { blocksPerYear },
   } = useAnchorWebapp();
+
+  const fixedFee = useFixedFee();
 
   const [repay, repayResult] = useBorrowRepayTx();
 

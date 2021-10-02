@@ -8,9 +8,9 @@ import {
 import { AncUstLP } from '@anchor-protocol/types';
 import {
   useAncAncUstLpStakeTx,
-  useAnchorWebapp,
   useRewardsAncUstLpRewardsQuery,
 } from '@anchor-protocol/webapp-provider';
+import { useFixedFee } from '@libs/app-provider';
 import { demicrofy, microfy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
@@ -32,9 +32,7 @@ export function AncUstLpStake() {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const {
-    constants: { fixedFee },
-  } = useAnchorWebapp();
+  const fixedFee = useFixedFee();
 
   const [stake, stakeResult] = useAncAncUstLpStakeTx();
 

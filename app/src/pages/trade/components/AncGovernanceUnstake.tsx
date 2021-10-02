@@ -13,6 +13,7 @@ import {
   useGovStateQuery,
   useRewardsAncGovernanceRewardsQuery,
 } from '@anchor-protocol/webapp-provider';
+import { useFixedFee } from '@libs/app-provider';
 import { max } from '@libs/big-math';
 import { demicrofy, microfy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
@@ -35,10 +36,9 @@ export function AncGovernanceUnstake() {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const {
-    constants: { fixedFee },
-    contractAddress,
-  } = useAnchorWebapp();
+  const fixedFee = useFixedFee();
+
+  const { contractAddress } = useAnchorWebapp();
 
   const [unstake, unstakeResult] = useAncGovernanceUnstakeTx();
 

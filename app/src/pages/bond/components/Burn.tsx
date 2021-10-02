@@ -7,10 +7,10 @@ import {
 } from '@anchor-protocol/notation';
 import type { bLuna, Luna } from '@anchor-protocol/types';
 import {
-  useAnchorWebapp,
   useBondBLunaExchangeRateQuery,
   useBondBurnTx,
 } from '@anchor-protocol/webapp-provider';
+import { useFixedFee } from '@libs/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
@@ -45,9 +45,7 @@ export function Burn() {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const {
-    constants: { fixedFee },
-  } = useAnchorWebapp();
+  const fixedFee = useFixedFee();
 
   const [burn, burnResult] = useBondBurnTx();
 

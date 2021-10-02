@@ -1,18 +1,10 @@
-import {
-  AddressProvider,
-  AddressProviderFromJson,
-} from '@anchor-protocol/anchor.js';
+import { AddressProvider } from '@anchor-protocol/anchor.js';
 import { CW20Addr, u, UST } from '@anchor-protocol/types';
+import { ExpandAddressMap } from '@anchor-protocol/webapp-fns';
 import {
-  AnchorConstants,
-  AnchorContantsInput,
-  createAnchorContractAddress,
-  DEFAULT_ADDESS_MAP,
-  DEFAULT_ANCHOR_INDEXER_API_ENDPOINTS,
-  DEFAULT_ANCHOR_TX_CONSTANTS,
-  ExpandAddressMap,
-} from '@anchor-protocol/webapp-fns';
-import { AnchorContractAddress } from '@anchor-protocol/webapp-provider';
+  AnchorConstants2,
+  AnchorContractAddress,
+} from '@anchor-protocol/webapp-provider';
 import { useTerraWebapp } from '@libs/webapp-provider';
 import { NetworkInfo } from '@terra-dev/wallet-types';
 import { useWallet } from '@terra-money/wallet-provider';
@@ -26,18 +18,24 @@ import React, {
   useMemo,
 } from 'react';
 
+export interface AnchorContractAddressMaps {
+  addressMap: ExpandAddressMap;
+  addressProvider: AddressProvider;
+  contractAddress: AnchorContractAddress;
+}
+
 export interface AnchorWebappProviderProps {
   children: ReactNode;
-  contractAddressMaps?: (network: NetworkInfo) => ExpandAddressMap;
-  constants?: (network: NetworkInfo) => AnchorContantsInput;
-  indexerApiEndpoints?: (network: NetworkInfo) => string;
+  contractAddressMaps: (network: NetworkInfo) => AnchorContractAddressMaps;
+  constants: (network: NetworkInfo) => AnchorConstants2;
+  indexerApiEndpoints: (network: NetworkInfo) => string;
 }
 
 export interface AnchorWebapp {
   contractAddressMap: ExpandAddressMap;
   addressProvider: AddressProvider;
   contractAddress: AnchorContractAddress;
-  constants: AnchorConstants;
+  constants: AnchorConstants2;
   bAssetsVector: CW20Addr[];
   indexerApiEndpoint: string;
 }
@@ -48,9 +46,9 @@ const AnchorWebappContext: Context<AnchorWebapp> =
 
 export function AnchorWebappProvider({
   children,
-  contractAddressMaps = DEFAULT_ADDESS_MAP,
-  constants = DEFAULT_ANCHOR_TX_CONSTANTS,
-  indexerApiEndpoints = DEFAULT_ANCHOR_INDEXER_API_ENDPOINTS,
+  contractAddressMaps,
+  constants,
+  indexerApiEndpoints,
 }: AnchorWebappProviderProps) {
   const { network } = useWallet();
 
@@ -78,12 +76,8 @@ export function AnchorWebappProvider({
   //}, [contractAddressMaps]);
 
   const states = useMemo<AnchorWebapp>(() => {
-    const contractAddressMap = contractAddressMaps(network);
-    const addressProvider = new AddressProviderFromJson(contractAddressMap);
-    const contractAddress = createAnchorContractAddress(
-      addressProvider,
-      contractAddressMap,
-    );
+    const { addressProvider, contractAddress, addressMap } =
+      contractAddressMaps(network);
 
     const constantsInput = constants(network);
 
@@ -99,7 +93,7 @@ export function AnchorWebappProvider({
     };
 
     return {
-      contractAddressMap: contractAddressMaps(network),
+      contractAddressMap: addressMap,
       addressProvider,
       contractAddress,
       constants: calculateGasCalculated,

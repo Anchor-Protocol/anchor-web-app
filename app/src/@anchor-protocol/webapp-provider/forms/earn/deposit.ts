@@ -5,11 +5,11 @@ import {
   earnDepositForm,
   EarnDepositFormStates,
 } from '@anchor-protocol/webapp-fns';
+import { useFixedFee } from '@libs/app-provider';
 import { useForm } from '@libs/use-form';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useBank } from '@libs/webapp-provider';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
-import { useAnchorWebapp } from '../../contexts/context';
 
 export interface EarnDepositFormReturn extends EarnDepositFormStates {
   updateDepositAmount: (depositAmount: UST) => void;
@@ -18,7 +18,7 @@ export interface EarnDepositFormReturn extends EarnDepositFormStates {
 export function useEarnDepositForm(): EarnDepositFormReturn {
   const connectedWallet = useConnectedWallet();
 
-  const { constants } = useAnchorWebapp();
+  const fixedFee = useFixedFee();
 
   const { tokenBalances, tax } = useBank<AnchorTokenBalances, AnchorTax>();
 
@@ -26,7 +26,7 @@ export function useEarnDepositForm(): EarnDepositFormReturn {
     earnDepositForm,
     {
       isConnected: !!connectedWallet,
-      fixedGas: constants.fixedFee,
+      fixedGas: fixedFee,
       tax,
       //taxRate: tax.taxRate,
       //maxTaxUUSD: tax.maxTaxUUSD,

@@ -4,11 +4,11 @@ import { u, UST } from '@anchor-protocol/types';
 import {
   AnchorTax,
   AnchorTokenBalances,
-  useAnchorWebapp,
   useBondBEthClaimableRewards,
   useBondClaimTx,
   validateTxFee,
 } from '@anchor-protocol/webapp-provider';
+import { useFixedFee } from '@libs/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
@@ -35,9 +35,7 @@ function ClaimEthBase({ className }: ClaimEthProps) {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const {
-    constants: { fixedFee },
-  } = useAnchorWebapp();
+  const fixedFee = useFixedFee();
 
   const [claim, claimResult] = useBondClaimTx(COLLATERAL_DENOMS.UBETH);
 

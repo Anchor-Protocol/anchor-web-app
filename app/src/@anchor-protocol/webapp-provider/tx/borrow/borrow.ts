@@ -1,6 +1,7 @@
 import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import { u, UST } from '@anchor-protocol/types';
 import { borrowBorrowTx } from '@anchor-protocol/webapp-fns';
+import { useFixedFee } from '@libs/app-provider';
 import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
 import { useStream } from '@rx-stream/react';
 
@@ -29,6 +30,8 @@ export function useBorrowBorrowTx() {
 
   const refetchQueries = useRefetchQueries();
 
+  const fixedFee = useFixedFee();
+
   const stream = useCallback(
     ({ borrowAmount, onTxSucceed, txFee }: BorrowBorrowTxParams) => {
       if (!connectedWallet || !connectedWallet.availablePost) {
@@ -46,7 +49,7 @@ export function useBorrowBorrowTx() {
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
-        fixedGas: constants.fixedFee,
+        fixedGas: fixedFee,
         // query
         mantleEndpoint,
         mantleFetch,
@@ -66,9 +69,9 @@ export function useBorrowBorrowTx() {
       borrowBorrowerQuery,
       borrowMarketQuery,
       connectedWallet,
-      constants.fixedFee,
       constants.gasAdjustment,
       constants.gasWanted,
+      fixedFee,
       mantleEndpoint,
       mantleFetch,
       refetchQueries,

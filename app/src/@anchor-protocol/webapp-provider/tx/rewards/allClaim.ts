@@ -1,5 +1,5 @@
 import { rewardsAllClaimTx } from '@anchor-protocol/webapp-fns';
-import { u, UST } from '@libs/types';
+import { useFixedFee } from '@libs/app-provider';
 import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
 import { useStream } from '@rx-stream/react';
 
@@ -23,6 +23,8 @@ export function useRewardsAllClaimTx() {
 
   const refetchQueries = useRefetchQueries();
 
+  const fixedFee = useFixedFee();
+
   const stream = useCallback(
     ({
       claimAncUstLp,
@@ -40,7 +42,7 @@ export function useRewardsAllClaimTx() {
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        fixedGas: constants.fixedFee.toString() as u<UST>,
+        fixedGas: fixedFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
@@ -58,7 +60,7 @@ export function useRewardsAllClaimTx() {
     },
     [
       connectedWallet,
-      constants.fixedFee,
+      fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,
       addressProvider,

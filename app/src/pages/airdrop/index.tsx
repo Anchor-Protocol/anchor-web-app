@@ -8,6 +8,7 @@ import {
   useAirdropClaimTx,
   useAnchorWebapp,
 } from '@anchor-protocol/webapp-provider';
+import { useGasPrice } from '@libs/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Section } from '@libs/neumorphism-ui/components/Section';
@@ -46,14 +47,16 @@ function AirdropBase({ className }: AirdropProps) {
 
   const { constants } = useAnchorWebapp();
 
+  const airdropFee = useGasPrice(constants.airdropGas, 'uusd');
+
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
   const bank = useBank();
 
   const invalidTxFee = useMemo(
-    () => connectedWallet && validateTxFee(bank, constants.airdropFee),
-    [bank, connectedWallet, constants.airdropFee],
+    () => connectedWallet && validateTxFee(bank, airdropFee),
+    [airdropFee, bank, connectedWallet],
   );
 
   const exit = useCallback(() => {
@@ -132,7 +135,7 @@ function AirdropBase({ className }: AirdropProps) {
 
         <TxFeeList className="receipt">
           <TxFeeListItem label="Tx Fee">
-            {formatUST(demicrofy(constants.airdropFee))} UST
+            {formatUST(demicrofy(airdropFee))} UST
           </TxFeeListItem>
         </TxFeeList>
 

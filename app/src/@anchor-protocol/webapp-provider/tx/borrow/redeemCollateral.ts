@@ -1,6 +1,7 @@
 import { COLLATERAL_DENOMS, MARKET_DENOMS } from '@anchor-protocol/anchor.js';
-import { bAsset, u, UST } from '@anchor-protocol/types';
+import { bAsset } from '@anchor-protocol/types';
 import { borrowRedeemCollateralTx } from '@anchor-protocol/webapp-fns';
+import { useFixedFee } from '@libs/app-provider';
 import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
@@ -26,6 +27,8 @@ export function useBorrowRedeemCollateralTx() {
   const { refetch: borrowMarketQuery } = useBorrowMarketQuery();
   const { refetch: borrowBorrowerQuery } = useBorrowBorrowerQuery();
 
+  const fixedFee = useFixedFee();
+
   const refetchQueries = useRefetchQueries();
 
   const stream = useCallback(
@@ -46,7 +49,7 @@ export function useBorrowRedeemCollateralTx() {
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        fixedGas: constants.fixedFee.toString() as u<UST>,
+        fixedGas: fixedFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
@@ -69,10 +72,9 @@ export function useBorrowRedeemCollateralTx() {
       borrowBorrowerQuery,
       borrowMarketQuery,
       connectedWallet,
-      constants.fixedFee,
       constants.gasAdjustment,
       constants.gasWanted,
-
+      fixedFee,
       mantleEndpoint,
       mantleFetch,
       refetchQueries,

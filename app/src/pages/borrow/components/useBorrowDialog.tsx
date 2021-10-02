@@ -26,6 +26,7 @@ import {
   validateBorrowAmount,
   validateTxFee,
 } from '@anchor-protocol/webapp-provider';
+import { useFixedFee } from '@libs/app-provider';
 import { demicrofy, formatRate } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
@@ -79,8 +80,10 @@ function ComponentBase({
 
   const [openConfirm, confirmElement] = useConfirm();
 
+  const fixedFee = useFixedFee();
+
   const {
-    constants: { fixedFee, blocksPerYear },
+    constants: { blocksPerYear },
   } = useAnchorWebapp();
 
   const [borrow, borrowResult] = useBorrowBorrowTx();

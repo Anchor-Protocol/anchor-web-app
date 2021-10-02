@@ -8,11 +8,11 @@ import {
 import { bLuna, Luna } from '@anchor-protocol/types';
 import {
   StakingValidator,
-  useAnchorWebapp,
   useBondBLunaExchangeRateQuery,
   useBondMintTx,
   useBondValidators,
 } from '@anchor-protocol/webapp-provider';
+import { useFixedFee } from '@libs/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { HorizontalHeavyRuler } from '@libs/neumorphism-ui/components/HorizontalHeavyRuler';
@@ -55,9 +55,7 @@ function MintBase({ className }: MintProps) {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const {
-    constants: { fixedFee },
-  } = useAnchorWebapp();
+  const fixedFee = useFixedFee();
 
   const [mint, mintResult] = useBondMintTx();
 

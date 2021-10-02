@@ -1,5 +1,6 @@
-import { Luna, u, UST } from '@anchor-protocol/types';
+import { Luna } from '@anchor-protocol/types';
 import { bondMintTx } from '@anchor-protocol/webapp-fns';
+import { useFixedFee } from '@libs/app-provider';
 import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
 import { useStream } from '@rx-stream/react';
 
@@ -21,6 +22,8 @@ export function useBondMintTx() {
 
   const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
 
+  const fixedFee = useFixedFee();
+
   const refetchQueries = useRefetchQueries();
 
   const stream = useCallback(
@@ -37,7 +40,7 @@ export function useBondMintTx() {
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        fixedGas: constants.fixedFee.toString() as u<UST>,
+        fixedGas: fixedFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
@@ -55,10 +58,10 @@ export function useBondMintTx() {
     },
     [
       connectedWallet,
-      addressProvider,
-      constants.fixedFee,
+      fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,
+      addressProvider,
       mantleEndpoint,
       mantleFetch,
       txErrorReporter,

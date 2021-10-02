@@ -4,13 +4,13 @@ import { Luna, u } from '@anchor-protocol/types';
 import {
   AnchorTax,
   AnchorTokenBalances,
-  useAnchorWebapp,
   useBondClaimableRewards,
   useBondClaimTx,
   useBondWithdrawableAmount,
   useBondWithdrawTx,
   validateTxFee,
 } from '@anchor-protocol/webapp-provider';
+import { useFixedFee } from '@libs/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { HorizontalHeavyRuler } from '@libs/neumorphism-ui/components/HorizontalHeavyRuler';
@@ -41,9 +41,7 @@ function ClaimLunaBase({ className }: ClaimLunaProps) {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const {
-    constants: { fixedFee },
-  } = useAnchorWebapp();
+  const fixedFee = useFixedFee();
 
   const [claim, claimResult] = useBondClaimTx(COLLATERAL_DENOMS.UBLUNA);
 

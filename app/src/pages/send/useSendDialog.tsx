@@ -19,6 +19,7 @@ import {
   useAnchorWebapp,
   useTerraSendTx,
 } from '@anchor-protocol/webapp-provider';
+import { useFixedFee } from '@libs/app-provider';
 import { min } from '@libs/big-math';
 import { demicrofy, microfy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
@@ -72,8 +73,9 @@ function ComponentBase({
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
+  const fixedFee = useFixedFee();
+
   const {
-    constants: { fixedFee },
     contractAddress: { cw20 },
   } = useAnchorWebapp();
 

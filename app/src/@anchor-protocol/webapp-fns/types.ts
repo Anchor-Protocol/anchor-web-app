@@ -6,27 +6,21 @@ import {
   bEth,
   bLuna,
   bLunaLunaLP,
-  Gas,
   Luna,
   Rate,
   u,
   UST,
 } from '@anchor-protocol/types';
 
-export interface AnchorContantsInput {
-  gasWanted: Gas;
-  fixedGas: Gas;
-  airdropGasWanted: Gas;
-  airdropGas: Gas;
-  //fixedGas: u<UST<number>>;
-  blocksPerYear: number;
-  gasAdjustment: Rate<number>;
-}
-
-export interface AnchorConstants extends AnchorContantsInput {
-  fixedFee: u<UST<number>>;
-  airdropFee: u<UST<number>>;
-}
+//export interface AnchorConstants {
+//  gasWanted: Gas;
+//  fixedGas: Gas;
+//  airdropGasWanted: Gas;
+//  airdropGas: Gas;
+//  //fixedGas: u<UST<number>>;
+//  blocksPerYear: number;
+//  gasAdjustment: Rate<number>;
+//}
 
 /**
  * You can cast the token values as nominal types

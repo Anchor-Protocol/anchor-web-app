@@ -1,10 +1,8 @@
-import { AddressProviderFromJson } from '@anchor-protocol/anchor.js';
 import {
   ANCHOR_TX_REFETCH_MAP,
   AnchorWebappProvider,
-  createAnchorContractAddress,
-  DEFAULT_ADDESS_MAP,
 } from '@anchor-protocol/webapp-provider';
+import { AppProvider } from '@libs/app-provider';
 import { webworkerMantleFetch } from '@libs/mantle';
 import { GlobalStyle } from '@libs/neumorphism-ui/themes/GlobalStyle';
 import { patchReactQueryFocusRefetching } from '@libs/patch-react-query-focus-refetching';
@@ -14,7 +12,7 @@ import { GoogleAnalytics } from '@libs/use-google-analytics';
 import { useLongtimeNoSee } from '@libs/use-longtime-no-see';
 import { RouterScrollRestoration } from '@libs/use-router-scroll-restoration';
 import { RouterWalletStatusRecheck } from '@libs/use-router-wallet-status-recheck';
-import { CW20Contract } from '@libs/webapp-fns';
+import { CW20Contract, DEFAULT_TERRA_CONTRACT_ADDRESS } from '@libs/webapp-fns';
 import {
   BankProvider as WebappBankProvider,
   TerraWebappProvider,
@@ -29,6 +27,11 @@ import {
 import { useReadonlyWalletDialog } from 'components/dialogs/useReadonlyWalletDialog';
 import { useRequestReloadDialog } from 'components/dialogs/useRequestReloadDialog';
 import { SnackbarContainer } from 'components/SnackbarContainer';
+import {
+  ANCHOR_CONSTANTS,
+  ANCHOR_CONTRACT_ADDRESS,
+  ANCHOR_INDEXER_API_ENDPOINTS,
+} from 'configurations/env';
 import { ThemeProvider } from 'contexts/theme';
 import { GA_TRACKING_ID, onProduction } from 'env';
 import React, { ReactNode, useCallback } from 'react';
@@ -42,15 +45,11 @@ const queryClient = new QueryClient();
 const errorReporter =
   process.env.NODE_ENV === 'production' ? captureException : undefined;
 
+/** @deprecated */
 const cw20TokenContracts = (
   network: NetworkInfo,
 ): Record<string, CW20Contract> => {
-  const contractAddressMap = DEFAULT_ADDESS_MAP(network);
-  const addressProvider = new AddressProviderFromJson(contractAddressMap);
-  const contractAddress = createAnchorContractAddress(
-    addressProvider,
-    contractAddressMap,
-  );
+  const { contractAddress } = ANCHOR_CONTRACT_ADDRESS(network);
 
   return {
     uaUST: {
@@ -83,30 +82,40 @@ function Providers({ children }: { children: ReactNode }) {
     /** React App routing :: <Link>, <NavLink>, useLocation(), useRouteMatch()... */
     <Router>
       <QueryClientProvider client={queryClient}>
-        <BrowserInactiveProvider>
-          <TerraWebappProvider
-            mantleFetch={webworkerMantleFetch}
-            txRefetchMap={ANCHOR_TX_REFETCH_MAP}
-            txErrorReporter={errorReporter}
-            queryErrorReporter={errorReporter}
-          >
-            <WebappBankProvider
-              cw20TokenContracts={cw20TokenContracts}
-              maxCapTokenDenoms={maxCapTokenDenoms}
+        <AppProvider
+          contractAddress={DEFAULT_TERRA_CONTRACT_ADDRESS}
+          constants={ANCHOR_CONSTANTS}
+          refetchMap={ANCHOR_TX_REFETCH_MAP}
+        >
+          <BrowserInactiveProvider>
+            <TerraWebappProvider
+              mantleFetch={webworkerMantleFetch}
+              txRefetchMap={ANCHOR_TX_REFETCH_MAP}
+              txErrorReporter={errorReporter}
+              queryErrorReporter={errorReporter}
             >
-              <AnchorWebappProvider>
-                {/** Theme Providing to Styled-Components and Material-UI */}
-                <ThemeProvider initialTheme="light">
-                  {/** Snackbar Provider :: useSnackbar() */}
-                  <SnackbarProvider>
-                    {/** Application Layout */}
-                    {children}
-                  </SnackbarProvider>
-                </ThemeProvider>
-              </AnchorWebappProvider>
-            </WebappBankProvider>
-          </TerraWebappProvider>
-        </BrowserInactiveProvider>
+              <WebappBankProvider
+                cw20TokenContracts={cw20TokenContracts}
+                maxCapTokenDenoms={maxCapTokenDenoms}
+              >
+                <AnchorWebappProvider
+                  contractAddressMaps={ANCHOR_CONTRACT_ADDRESS}
+                  constants={ANCHOR_CONSTANTS}
+                  indexerApiEndpoints={ANCHOR_INDEXER_API_ENDPOINTS}
+                >
+                  {/** Theme Providing to Styled-Components and Material-UI */}
+                  <ThemeProvider initialTheme="light">
+                    {/** Snackbar Provider :: useSnackbar() */}
+                    <SnackbarProvider>
+                      {/** Application Layout */}
+                      {children}
+                    </SnackbarProvider>
+                  </ThemeProvider>
+                </AnchorWebappProvider>
+              </WebappBankProvider>
+            </TerraWebappProvider>
+          </BrowserInactiveProvider>
+        </AppProvider>
       </QueryClientProvider>
     </Router>
   );

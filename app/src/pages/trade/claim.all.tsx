@@ -4,11 +4,11 @@ import {
 } from '@anchor-protocol/notation';
 import { ANC, u } from '@anchor-protocol/types';
 import {
-  useAnchorWebapp,
   useRewardsAllClaimTx,
   useRewardsClaimableAncUstLpRewardsQuery,
   useRewardsClaimableUstBorrowRewardsQuery,
 } from '@anchor-protocol/webapp-provider';
+import { useFixedFee } from '@libs/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Section } from '@libs/neumorphism-ui/components/Section';
@@ -37,9 +37,7 @@ function ClaimAllBase({ className }: ClaimAllProps) {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const {
-    constants: { fixedFee },
-  } = useAnchorWebapp();
+  const fixedFee = useFixedFee();
 
   const [claim, claimResult] = useRewardsAllClaimTx();
 

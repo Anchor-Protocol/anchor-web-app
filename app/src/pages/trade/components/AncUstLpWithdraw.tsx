@@ -9,10 +9,10 @@ import {
 import { ANC, AncUstLP, UST } from '@anchor-protocol/types';
 import {
   useAncAncUstLpWithdrawTx,
-  useAnchorWebapp,
   useAncPriceQuery,
   useRewardsAncUstLpRewardsQuery,
 } from '@anchor-protocol/webapp-provider';
+import { useFixedFee } from '@libs/app-provider';
 import { demicrofy, microfy } from '@libs/formatter';
 import { isZero } from '@libs/is-zero';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
@@ -40,9 +40,7 @@ export function AncUstLpWithdraw() {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const {
-    constants: { fixedFee },
-  } = useAnchorWebapp();
+  const fixedFee = useFixedFee();
 
   const [withdraw, withdrawResult] = useAncAncUstLpWithdrawTx();
 

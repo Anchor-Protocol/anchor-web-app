@@ -35,7 +35,7 @@ export function borrowBorrowTx(
     gasFee: Gas;
     gasAdjustment: Rate<number>;
     txFee: u<UST>;
-    fixedGas: u<UST<number>>;
+    fixedGas: u<UST>;
     network: NetworkInfo;
     addressProvider: AddressProvider;
     mantleEndpoint: string;

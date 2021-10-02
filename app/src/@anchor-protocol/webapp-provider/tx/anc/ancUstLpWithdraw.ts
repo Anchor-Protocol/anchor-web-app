@@ -1,5 +1,6 @@
-import { AncUstLP, u, UST } from '@anchor-protocol/types';
+import { AncUstLP } from '@anchor-protocol/types';
 import { ancAncUstLpWithdrawTx } from '@anchor-protocol/webapp-fns';
+import { useFixedFee } from '@libs/app-provider';
 import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
 import { useStream } from '@rx-stream/react';
 
@@ -18,6 +19,8 @@ export function useAncAncUstLpWithdrawTx() {
 
   const { addressProvider, constants } = useAnchorWebapp();
 
+  const fixedFee = useFixedFee();
+
   const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
 
   const refetchQueries = useRefetchQueries();
@@ -35,7 +38,7 @@ export function useAncAncUstLpWithdrawTx() {
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        fixedGas: constants.fixedFee.toString() as u<UST>,
+        fixedGas: fixedFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
@@ -53,7 +56,7 @@ export function useAncAncUstLpWithdrawTx() {
     },
     [
       connectedWallet,
-      constants.fixedFee,
+      fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,
       addressProvider,

@@ -1,5 +1,5 @@
-import { u, UST } from '@anchor-protocol/types';
 import { bondWithdrawTx } from '@anchor-protocol/webapp-fns';
+import { useFixedFee } from '@libs/app-provider';
 import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
 import { useStream } from '@rx-stream/react';
 
@@ -19,6 +19,8 @@ export function useBondWithdrawTx() {
 
   const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
 
+  const fixedFee = useFixedFee();
+
   const refetchQueries = useRefetchQueries();
 
   const stream = useCallback(
@@ -33,7 +35,7 @@ export function useBondWithdrawTx() {
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        fixedGas: constants.fixedFee.toString() as u<UST>,
+        fixedGas: fixedFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
@@ -51,10 +53,10 @@ export function useBondWithdrawTx() {
     },
     [
       connectedWallet,
-      addressProvider,
-      constants.fixedFee,
+      fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,
+      addressProvider,
       mantleEndpoint,
       mantleFetch,
       txErrorReporter,

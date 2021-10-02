@@ -22,6 +22,7 @@ import {
   useAnchorWebapp,
   useAncPriceQuery,
 } from '@anchor-protocol/webapp-provider';
+import { useFixedFee } from '@libs/app-provider';
 import { max, min } from '@libs/big-math';
 import { demicrofy, formatFluidDecimalPoints, microfy } from '@libs/formatter';
 import { isZero } from '@libs/is-zero';
@@ -72,10 +73,9 @@ export function TradeBuy() {
 
   const [openConfirm, confirmElement] = useConfirm();
 
-  const {
-    constants: { fixedFee },
-    contractAddress: address,
-  } = useAnchorWebapp();
+  const fixedFee = useFixedFee();
+
+  const { contractAddress: address } = useAnchorWebapp();
 
   const bank = useBank();
 
@@ -116,9 +116,7 @@ export function TradeBuy() {
     );
 
     return max(
-      big(bank.userBalances.uUSD)
-        .minus(txFee)
-        .minus(fixedFee * 3),
+      big(bank.userBalances.uUSD).minus(txFee).minus(big(fixedFee).mul(3)),
       0,
     ) as u<UST<Big>>;
   }, [bank.tax.maxTaxUUSD, bank.tax.taxRate, bank.userBalances.uUSD, fixedFee]);

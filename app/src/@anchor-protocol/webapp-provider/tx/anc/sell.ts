@@ -1,6 +1,7 @@
-import { ANC, u, UST } from '@anchor-protocol/types';
+import { ANC } from '@anchor-protocol/types';
 import { ancSellTx } from '@anchor-protocol/webapp-fns';
 import { useAncPriceQuery } from '@anchor-protocol/webapp-provider';
+import { useFixedFee } from '@libs/app-provider';
 import { formatExecuteMsgNumber } from '@libs/formatter';
 import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
 import { useStream } from '@rx-stream/react';
@@ -24,6 +25,8 @@ export function useAncSellTx() {
 
   const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
 
+  const fixedFee = useFixedFee();
+
   const refetchQueries = useRefetchQueries();
 
   const { data: { ancPrice } = {} } = useAncPriceQuery();
@@ -45,7 +48,7 @@ export function useAncSellTx() {
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        fixedGas: constants.fixedFee.toString() as u<UST>,
+        fixedGas: fixedFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
@@ -64,7 +67,7 @@ export function useAncSellTx() {
     [
       connectedWallet,
       ancPrice,
-      constants.fixedFee,
+      fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,
       addressProvider,

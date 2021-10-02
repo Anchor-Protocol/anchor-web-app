@@ -1,4 +1,5 @@
 import { Airdrop, airdropClaimTx } from '@anchor-protocol/webapp-fns';
+import { useGasPrice } from '@libs/app-provider';
 import { u, UST } from '@libs/types';
 import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
 import { useStream } from '@rx-stream/react';
@@ -17,6 +18,8 @@ export function useAirdropClaimTx() {
   const connectedWallet = useConnectedWallet();
 
   const { constants, contractAddress } = useAnchorWebapp();
+
+  const airdropFee = useGasPrice(constants.airdropGas, 'uusd');
 
   const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
 
@@ -37,7 +40,7 @@ export function useAirdropClaimTx() {
         post: connectedWallet.post,
         gasAdjustment: constants.gasAdjustment,
         gasFee: constants.airdropGasWanted,
-        txFee: constants.airdropFee.toFixed() as u<UST>,
+        txFee: airdropFee as u<UST>,
         // query
         mantleEndpoint,
         mantleFetch,
@@ -55,7 +58,7 @@ export function useAirdropClaimTx() {
       contractAddress.bluna.airdropRegistry,
       constants.gasAdjustment,
       constants.airdropGasWanted,
-      constants.airdropFee,
+      airdropFee,
       mantleEndpoint,
       mantleFetch,
       txErrorReporter,

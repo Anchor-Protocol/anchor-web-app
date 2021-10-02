@@ -13,6 +13,7 @@ import {
   useBondBLunaPriceQuery,
   useBondSwapTx,
 } from '@anchor-protocol/webapp-provider';
+import { useFixedFee } from '@libs/app-provider';
 import {
   demicrofy,
   formatExecuteMsgNumber,
@@ -65,10 +66,9 @@ export function Swap() {
   const connectedWallet = useConnectedWallet();
 
   const { mantleEndpoint, mantleFetch } = useTerraWebapp();
-  const {
-    constants: { fixedFee },
-    contractAddress: address,
-  } = useAnchorWebapp();
+  const { contractAddress: address } = useAnchorWebapp();
+
+  const fixedFee = useFixedFee();
 
   const [swap, swapResult] = useBondSwapTx();
 

@@ -1,5 +1,6 @@
-import { ANC, u, UST } from '@anchor-protocol/types';
+import { ANC } from '@anchor-protocol/types';
 import { govVoteTx } from '@anchor-protocol/webapp-fns';
+import { useFixedFee } from '@libs/app-provider';
 import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
 import { useStream } from '@rx-stream/react';
 
@@ -25,6 +26,8 @@ export function useGovVoteTx() {
 
   const refetchQueries = useRefetchQueries();
 
+  const fixedFee = useFixedFee();
+
   const stream = useCallback(
     ({ amount, voteFor, pollId, onTxSucceed }: GovVoteTxParams) => {
       if (!connectedWallet || !connectedWallet.availablePost) {
@@ -40,7 +43,7 @@ export function useGovVoteTx() {
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        fixedGas: constants.fixedFee.toString() as u<UST>,
+        fixedGas: fixedFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
@@ -58,7 +61,7 @@ export function useGovVoteTx() {
     },
     [
       connectedWallet,
-      constants.fixedFee,
+      fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,
       addressProvider,

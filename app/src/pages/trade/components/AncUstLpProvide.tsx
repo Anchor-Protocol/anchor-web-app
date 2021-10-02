@@ -13,9 +13,9 @@ import {
 import { ANC, u, UST } from '@anchor-protocol/types';
 import {
   useAncAncUstLpProvideTx,
-  useAnchorWebapp,
   useAncPriceQuery,
 } from '@anchor-protocol/webapp-provider';
+import { useFixedFee } from '@libs/app-provider';
 import { max, min } from '@libs/big-math';
 import { demicrofy, microfy } from '@libs/formatter';
 import { isZero } from '@libs/is-zero';
@@ -53,9 +53,7 @@ export function AncUstLpProvide() {
 
   const [openConfirm, confirmElement] = useConfirm();
 
-  const {
-    constants: { fixedFee },
-  } = useAnchorWebapp();
+  const fixedFee = useFixedFee();
 
   // ---------------------------------------------
   // states
@@ -94,9 +92,7 @@ export function AncUstLpProvide() {
     );
 
     return max(
-      big(bank.userBalances.uUSD)
-        .minus(txFee)
-        .minus(fixedFee * 3),
+      big(bank.userBalances.uUSD).minus(txFee).minus(big(fixedFee).mul(3)),
       0,
     ) as u<UST<Big>>;
   }, [bank.tax.maxTaxUUSD, bank.tax.taxRate, bank.userBalances.uUSD, fixedFee]);

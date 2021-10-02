@@ -15,6 +15,7 @@ import {
   useAncPriceQuery,
   useAncSellTx,
 } from '@anchor-protocol/webapp-provider';
+import { useFixedFee } from '@libs/app-provider';
 import { demicrofy, formatFluidDecimalPoints, microfy } from '@libs/formatter';
 import { isZero } from '@libs/is-zero';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
@@ -60,10 +61,9 @@ export function TradeSell() {
 
   const { mantleEndpoint, mantleFetch } = useTerraWebapp();
 
-  const {
-    constants: { fixedFee },
-    contractAddress: address,
-  } = useAnchorWebapp();
+  const fixedFee = useFixedFee();
+
+  const { contractAddress: address } = useAnchorWebapp();
 
   const bank = useBank();
 
