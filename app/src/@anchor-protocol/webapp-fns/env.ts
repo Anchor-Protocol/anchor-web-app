@@ -81,11 +81,11 @@ export const DEFAULT_ANCHOR_TX_CONSTANTS = (
     // FIXME re-named gasFee -> gasWanted
     gasWanted: 1_000_000 as Gas,
     // FIXME fixedGas = gas(1_671_053) * gas_price(0.38uusd) = 635_000uusd
-    fixedGasGas: 1_671_053 as Gas,
+    fixedGas: 1_671_053 as Gas,
     //fixedGas: 635_000 as u<UST<number>>,
     airdropGasWanted: 300_000 as Gas,
     // FIXME airdropFixedGas = gas(334_211) * gas_price(0.38uusd) = 127_000uusd
-    airdropGasGas: 334_211 as Gas,
+    airdropGas: 334_211 as Gas,
     blocksPerYear: 4_656_810,
     gasAdjustment: 1.6 as Rate<number>,
   };

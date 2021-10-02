@@ -61,7 +61,7 @@ export function TradeSell() {
   const { mantleEndpoint, mantleFetch } = useTerraWebapp();
 
   const {
-    constants: { fixedGas },
+    constants: { fixedFee },
     contractAddress: address,
   } = useAnchorWebapp();
 
@@ -93,8 +93,8 @@ export function TradeSell() {
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(bank, fixedFee),
+    [bank, fixedFee, connectedWallet],
   );
 
   const invalidFromAmount = useMemo(() => {
@@ -181,7 +181,7 @@ export function TradeSell() {
                   simulation as terraswap.pair.SimulationResponse<UST, ANC>,
                   amount,
                   bank.tax,
-                  fixedGas,
+                  fixedFee,
                 )
               : undefined;
           }),
@@ -192,7 +192,7 @@ export function TradeSell() {
       address.cw20.ANC,
       address.terraswap.ancUstPair,
       bank.tax,
-      fixedGas,
+      fixedFee,
       mantleEndpoint,
       mantleFetch,
       resolveSimulation,
@@ -243,7 +243,7 @@ export function TradeSell() {
                   simulation as terraswap.pair.SimulationResponse<UST, ANC>,
                   amount,
                   bank.tax,
-                  fixedGas,
+                  fixedFee,
                 )
               : undefined;
           }),
@@ -253,7 +253,7 @@ export function TradeSell() {
     [
       address.terraswap.ancUstPair,
       bank.tax,
-      fixedGas,
+      fixedFee,
       mantleEndpoint,
       mantleFetch,
       resolveSimulation,

@@ -73,7 +73,7 @@ export function TradeBuy() {
   const [openConfirm, confirmElement] = useConfirm();
 
   const {
-    constants: { fixedGas },
+    constants: { fixedFee },
     contractAddress: address,
   } = useAnchorWebapp();
 
@@ -107,7 +107,7 @@ export function TradeBuy() {
   const ustBalance = useMemo(() => {
     const txFee = min(
       max(
-        big(big(bank.userBalances.uUSD).minus(fixedGas)).div(
+        big(big(bank.userBalances.uUSD).minus(fixedFee)).div(
           big(big(1).plus(bank.tax.taxRate)).mul(bank.tax.taxRate),
         ),
         0,
@@ -118,14 +118,14 @@ export function TradeBuy() {
     return max(
       big(bank.userBalances.uUSD)
         .minus(txFee)
-        .minus(fixedGas * 3),
+        .minus(fixedFee * 3),
       0,
     ) as u<UST<Big>>;
-  }, [bank.tax.maxTaxUUSD, bank.tax.taxRate, bank.userBalances.uUSD, fixedGas]);
+  }, [bank.tax.maxTaxUUSD, bank.tax.taxRate, bank.userBalances.uUSD, fixedFee]);
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(bank, fixedFee),
+    [bank, fixedFee, connectedWallet],
   );
 
   const invalidFromAmount = useMemo(() => {
@@ -134,7 +134,7 @@ export function TradeBuy() {
 
     return big(microfy(fromAmount))
       .plus(simulation.txFee)
-      .plus(fixedGas)
+      .plus(fixedFee)
       .gt(bank.userBalances.uUSD)
       ? 'Not enough assets'
       : undefined;
@@ -142,7 +142,7 @@ export function TradeBuy() {
     fromAmount,
     connectedWallet,
     simulation,
-    fixedGas,
+    fixedFee,
     bank.userBalances.uUSD,
   ]);
 
@@ -155,16 +155,16 @@ export function TradeBuy() {
     const remainUUSD = big(bank.userBalances.uUSD)
       .minus(microfy(fromAmount))
       .minus(simulation.txFee)
-      .minus(fixedGas);
+      .minus(fixedFee);
 
-    if (remainUUSD.lt(fixedGas)) {
+    if (remainUUSD.lt(fixedFee)) {
       return 'Leaving less UST in your account may lead to insufficient transaction fees for future transactions.';
     }
 
     return undefined;
   }, [
     bank.userBalances.uUSD,
-    fixedGas,
+    fixedFee,
     fromAmount,
     invalidFromAmount,
     simulation,
@@ -246,7 +246,7 @@ export function TradeBuy() {
                   simulation as terraswap.pair.SimulationResponse<ANC>,
                   amount,
                   bank.tax,
-                  fixedGas,
+                  fixedFee,
                 )
               : undefined;
           }),
@@ -256,7 +256,7 @@ export function TradeBuy() {
     [
       address.terraswap.ancUstPair,
       bank.tax,
-      fixedGas,
+      fixedFee,
       mantleEndpoint,
       mantleFetch,
       resolveSimulation,
@@ -308,7 +308,7 @@ export function TradeBuy() {
                   simulation as terraswap.pair.SimulationResponse<ANC, UST>,
                   amount,
                   bank.tax,
-                  fixedGas,
+                  fixedFee,
                 )
               : undefined;
           }),
@@ -319,7 +319,7 @@ export function TradeBuy() {
       address.cw20.ANC,
       address.terraswap.ancUstPair,
       bank.tax,
-      fixedGas,
+      fixedFee,
       mantleEndpoint,
       mantleFetch,
       resolveSimulation,

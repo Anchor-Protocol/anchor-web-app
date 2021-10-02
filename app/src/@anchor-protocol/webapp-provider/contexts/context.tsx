@@ -2,7 +2,7 @@ import {
   AddressProvider,
   AddressProviderFromJson,
 } from '@anchor-protocol/anchor.js';
-import { ContractAddress, CW20Addr, u, UST } from '@anchor-protocol/types';
+import { CW20Addr, u, UST } from '@anchor-protocol/types';
 import {
   AnchorConstants,
   AnchorContantsInput,
@@ -12,6 +12,7 @@ import {
   DEFAULT_ANCHOR_TX_CONSTANTS,
   ExpandAddressMap,
 } from '@anchor-protocol/webapp-fns';
+import { AnchorContractAddress } from '@anchor-protocol/webapp-provider';
 import { useTerraWebapp } from '@libs/webapp-provider';
 import { NetworkInfo } from '@terra-dev/wallet-types';
 import { useWallet } from '@terra-money/wallet-provider';
@@ -35,7 +36,7 @@ export interface AnchorWebappProviderProps {
 export interface AnchorWebapp {
   contractAddressMap: ExpandAddressMap;
   addressProvider: AddressProvider;
-  contractAddress: ContractAddress;
+  contractAddress: AnchorContractAddress;
   constants: AnchorConstants;
   bAssetsVector: CW20Addr[];
   indexerApiEndpoint: string;
@@ -86,17 +87,15 @@ export function AnchorWebappProvider({
 
     const constantsInput = constants(network);
 
-    const fixedFee = big(constantsInput.fixedGasGas)
-      .mul(gasPrice.uusd)
-      .toNumber();
-    const airdropFee = big(constantsInput.airdropGasGas)
+    const fixedFee = big(constantsInput.fixedGas).mul(gasPrice.uusd).toNumber();
+    const airdropFee = big(constantsInput.airdropGas)
       .mul(gasPrice.uusd)
       .toNumber();
 
     const calculateGasCalculated = {
       ...constantsInput,
-      fixedGas: Math.floor(fixedFee) as u<UST<number>>,
-      airdropGas: Math.floor(airdropFee) as u<UST<number>>,
+      fixedFee: Math.floor(fixedFee) as u<UST<number>>,
+      airdropFee: Math.floor(airdropFee) as u<UST<number>>,
     };
 
     return {

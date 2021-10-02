@@ -37,7 +37,7 @@ export function useAirdropClaimTx() {
         post: connectedWallet.post,
         gasAdjustment: constants.gasAdjustment,
         gasFee: constants.airdropGasWanted,
-        txFee: constants.airdropGas.toFixed() as u<UST>,
+        txFee: constants.airdropFee.toFixed() as u<UST>,
         // query
         mantleEndpoint,
         mantleFetch,
@@ -55,7 +55,7 @@ export function useAirdropClaimTx() {
       contractAddress.bluna.airdropRegistry,
       constants.gasAdjustment,
       constants.airdropGasWanted,
-      constants.airdropGas,
+      constants.airdropFee,
       mantleEndpoint,
       mantleFetch,
       txErrorReporter,

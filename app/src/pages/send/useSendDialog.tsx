@@ -73,7 +73,7 @@ function ComponentBase({
   const connectedWallet = useConnectedWallet();
 
   const {
-    constants: { fixedGas },
+    constants: { fixedFee },
     contractAddress: { cw20 },
   } = useAnchorWebapp();
 
@@ -215,14 +215,14 @@ function ComponentBase({
   // ---------------------------------------------
   const txFee = useMemo(() => {
     if (amount.length === 0 || currency.value !== 'usd') {
-      return fixedGas;
+      return fixedFee;
     }
 
     return min(
       microfy(amount as UST).mul(bank.tax.taxRate),
       bank.tax.maxTaxUUSD,
-    ).plus(fixedGas) as u<UST<Big>>;
-  }, [amount, bank.tax.maxTaxUUSD, bank.tax.taxRate, currency.value, fixedGas]);
+    ).plus(fixedFee) as u<UST<Big>>;
+  }, [amount, bank.tax.maxTaxUUSD, bank.tax.taxRate, currency.value, fixedFee]);
 
   const invalidTxFee = useMemo(
     () => !!connectedWallet && validateTxFee(bank, txFee),
@@ -240,10 +240,10 @@ function ComponentBase({
   const invalidAmount = useMemo(() => {
     if (amount.length === 0) return undefined;
 
-    return microfy(amount as Token).gt(currency.getWithdrawable(bank, fixedGas))
+    return microfy(amount as Token).gt(currency.getWithdrawable(bank, fixedFee))
       ? 'Not enough assets'
       : undefined;
-  }, [amount, currency, bank, fixedGas]);
+  }, [amount, currency, bank, fixedFee]);
 
   const invalidMemo = useMemo(() => {
     return /[<>]/.test(memo) ? 'Characters < and > are not allowed' : undefined;
@@ -333,11 +333,11 @@ function ComponentBase({
                 style={{ textDecoration: 'underline', cursor: 'pointer' }}
                 onClick={() =>
                   setAmount(
-                    currency.getFormatWithdrawable(bank, fixedGas) as Token,
+                    currency.getFormatWithdrawable(bank, fixedFee) as Token,
                   )
                 }
               >
-                {currency.getFormatWithdrawable(bank, fixedGas)}{' '}
+                {currency.getFormatWithdrawable(bank, fixedFee)}{' '}
                 {currency.label}
               </span>
             </span>
@@ -411,7 +411,7 @@ function ComponentBase({
               !!invalidAmount ||
               !!invalidTxFee ||
               !!invalidMemo ||
-              big(currency.getWithdrawable(bank, fixedGas)).lte(0)
+              big(currency.getWithdrawable(bank, fixedFee)).lte(0)
             }
             onClick={() =>
               submit(

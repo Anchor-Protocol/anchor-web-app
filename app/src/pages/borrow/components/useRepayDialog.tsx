@@ -77,7 +77,7 @@ function ComponentBase({
   const connectedWallet = useConnectedWallet();
 
   const {
-    constants: { fixedGas, blocksPerYear },
+    constants: { fixedFee, blocksPerYear },
   } = useAnchorWebapp();
 
   const [repay, repayResult] = useBorrowRepayTx();
@@ -159,11 +159,11 @@ function ComponentBase({
       marketBorrowerInfo,
       blockHeight,
       tokenBalances.uUST,
-      fixedGas,
+      fixedFee,
     );
 
     const invalidTxFee =
-      !!connectedWallet && validateTxFee(tokenBalances.uUST, fixedGas);
+      !!connectedWallet && validateTxFee(tokenBalances.uUST, fixedFee);
 
     return { currentLtv, apr, maxRepayingAmount, invalidTxFee };
   }, [
@@ -171,7 +171,7 @@ function ComponentBase({
     blocksPerYear,
     borrowRate,
     connectedWallet,
-    fixedGas,
+    fixedFee,
     marketBorrowerInfo,
     marketState,
     oraclePrices,
@@ -198,7 +198,7 @@ function ComponentBase({
         )
       : null;
 
-    const txFee = computeRepayTxFee(repayAmount, tax, fixedGas);
+    const txFee = computeRepayTxFee(repayAmount, tax, fixedFee);
 
     const totalOutstandingLoan = computeRepayTotalOutstandingLoan(
       repayAmount,
@@ -223,7 +223,7 @@ function ComponentBase({
   }, [
     amountToLtv,
     currentLtv,
-    fixedGas,
+    fixedFee,
     marketBorrowerInfo,
     oraclePrices,
     overseerCollaterals,

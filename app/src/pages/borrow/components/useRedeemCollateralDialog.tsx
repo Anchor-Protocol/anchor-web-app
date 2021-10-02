@@ -83,10 +83,10 @@ function ComponentBase({
   const connectedWallet = useConnectedWallet();
 
   const {
-    constants: { fixedGas },
+    constants: { fixedFee },
   } = useAnchorWebapp();
 
-  const txFee = fixedGas;
+  const txFee = fixedFee;
 
   const [redeemCollateral, redeemCollateralResult] =
     useBorrowRedeemCollateralTx();
@@ -222,8 +222,8 @@ function ComponentBase({
   );
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(tokenBalances.uUST, fixedGas),
-    [connectedWallet, tokenBalances.uUST, fixedGas],
+    () => !!connectedWallet && validateTxFee(tokenBalances.uUST, fixedFee),
+    [connectedWallet, tokenBalances.uUST, fixedFee],
   );
 
   const invalidRedeemAmount = useMemo(

@@ -52,8 +52,8 @@ function AirdropBase({ className }: AirdropProps) {
   const bank = useBank();
 
   const invalidTxFee = useMemo(
-    () => connectedWallet && validateTxFee(bank, constants.airdropGas),
-    [bank, connectedWallet, constants.airdropGas],
+    () => connectedWallet && validateTxFee(bank, constants.airdropFee),
+    [bank, connectedWallet, constants.airdropFee],
   );
 
   const exit = useCallback(() => {
@@ -132,7 +132,7 @@ function AirdropBase({ className }: AirdropProps) {
 
         <TxFeeList className="receipt">
           <TxFeeListItem label="Tx Fee">
-            {formatUST(demicrofy(constants.airdropGas))} UST
+            {formatUST(demicrofy(constants.airdropFee))} UST
           </TxFeeListItem>
         </TxFeeList>
 

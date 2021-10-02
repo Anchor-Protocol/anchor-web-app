@@ -62,7 +62,7 @@ function ComponentBase({
   const connectedWallet = useConnectedWallet();
 
   const {
-    constants: { fixedGas },
+    constants: { fixedFee },
   } = useAnchorWebapp();
 
   const bank = useBank();
@@ -84,8 +84,8 @@ function ComponentBase({
   }, [userGovStakingInfo]);
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(bank, fixedFee),
+    [bank, fixedFee, connectedWallet],
   );
 
   const invalidAmount = useMemo(() => {
@@ -96,7 +96,7 @@ function ComponentBase({
     return maxVote && uanc.gt(maxVote) ? 'Not enough assets' : undefined;
   }, [amount, maxVote, connectedWallet]);
 
-  const txFee = fixedGas;
+  const txFee = fixedFee;
 
   const submit = useCallback(
     (voteFor: 'yes' | 'no', amount: ANC) => {

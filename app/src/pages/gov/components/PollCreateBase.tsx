@@ -59,7 +59,7 @@ export function PollCreateBase({
   const connectedWallet = useConnectedWallet();
 
   const {
-    constants: { fixedGas },
+    constants: { fixedFee },
   } = useAnchorWebapp();
 
   const history = useHistory();
@@ -69,7 +69,7 @@ export function PollCreateBase({
   // ---------------------------------------------
   // states
   // ---------------------------------------------
-  const txFee = fixedGas;
+  const txFee = fixedFee;
 
   const [title, setTitle] = useState<string>('');
 
@@ -88,8 +88,8 @@ export function PollCreateBase({
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(bank, fixedFee),
+    [bank, fixedFee, connectedWallet],
   );
 
   const invalidTitleBytes = useValidateStringBytes(title, 4, 64);

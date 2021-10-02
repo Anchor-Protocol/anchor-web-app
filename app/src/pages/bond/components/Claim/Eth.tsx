@@ -36,7 +36,7 @@ function ClaimEthBase({ className }: ClaimEthProps) {
   const connectedWallet = useConnectedWallet();
 
   const {
-    constants: { fixedGas },
+    constants: { fixedFee },
   } = useAnchorWebapp();
 
   const [claim, claimResult] = useBondClaimTx(COLLATERAL_DENOMS.UBETH);
@@ -52,8 +52,8 @@ function ClaimEthBase({ className }: ClaimEthProps) {
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(tokenBalances.uUST, fixedGas),
-    [connectedWallet, tokenBalances.uUST, fixedGas],
+    () => !!connectedWallet && validateTxFee(tokenBalances.uUST, fixedFee),
+    [connectedWallet, tokenBalances.uUST, fixedFee],
   );
 
   const claimableRewards = useMemo(
@@ -135,7 +135,7 @@ function ClaimEthBase({ className }: ClaimEthProps) {
               !connectedWallet.availablePost ||
               !claim ||
               !!invalidTxFee ||
-              claimableRewards.lte(fixedGas)
+              claimableRewards.lte(fixedFee)
             }
             onClick={() => proceedClaim()}
           >

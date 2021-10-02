@@ -80,7 +80,7 @@ function ComponentBase({
   const [openConfirm, confirmElement] = useConfirm();
 
   const {
-    constants: { fixedGas, blocksPerYear },
+    constants: { fixedFee, blocksPerYear },
   } = useAnchorWebapp();
 
   const [borrow, borrowResult] = useBorrowBorrowTx();
@@ -169,7 +169,7 @@ function ComponentBase({
       );
 
       const invalidTxFee =
-        !!connectedWallet && validateTxFee(tokenBalances.uUST, fixedGas);
+        !!connectedWallet && validateTxFee(tokenBalances.uUST, fixedFee);
       return {
         currentLtv,
         userMaxLtv,
@@ -184,7 +184,7 @@ function ComponentBase({
       blocksPerYear,
       borrowRate,
       connectedWallet,
-      fixedGas,
+      fixedFee,
       marketBorrowerInfo,
       oraclePrices,
       overseerCollaterals,
@@ -202,7 +202,7 @@ function ComponentBase({
   } = useMemo(() => {
     const nextLtv = computeBorrowNextLtv(borrowAmount, currentLtv, amountToLtv);
 
-    const txFee = computeBorrowTxFee(borrowAmount, tax, fixedGas);
+    const txFee = computeBorrowTxFee(borrowAmount, tax, fixedFee);
 
     console.log('useBorrowDialog.tsx..()', overseerCollaterals.collaterals);
 
@@ -241,7 +241,7 @@ function ComponentBase({
     bAssetLtvsAvg.safe,
     borrowAmount,
     currentLtv,
-    fixedGas,
+    fixedFee,
     max,
     oraclePrices,
     overseerCollaterals,

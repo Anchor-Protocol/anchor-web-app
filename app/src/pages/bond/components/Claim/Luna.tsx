@@ -42,7 +42,7 @@ function ClaimLunaBase({ className }: ClaimLunaProps) {
   const connectedWallet = useConnectedWallet();
 
   const {
-    constants: { fixedGas },
+    constants: { fixedFee },
   } = useAnchorWebapp();
 
   const [claim, claimResult] = useBondClaimTx(COLLATERAL_DENOMS.UBLUNA);
@@ -71,8 +71,8 @@ function ClaimLunaBase({ className }: ClaimLunaProps) {
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(tokenBalances.uUST, fixedGas),
-    [connectedWallet, tokenBalances.uUST, fixedGas],
+    () => !!connectedWallet && validateTxFee(tokenBalances.uUST, fixedFee),
+    [connectedWallet, tokenBalances.uUST, fixedFee],
   );
 
   const claimableRewards = useMemo(
@@ -202,7 +202,7 @@ function ClaimLunaBase({ className }: ClaimLunaProps) {
               !connectedWallet.availablePost ||
               !claim ||
               !!invalidTxFee ||
-              claimableRewards.lte(fixedGas)
+              claimableRewards.lte(fixedFee)
             }
             onClick={() => proceedClaim()}
           >

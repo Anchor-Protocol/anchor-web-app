@@ -34,7 +34,7 @@ export function useBondClaimTx(rewardDenom: COLLATERAL_DENOMS) {
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        fixedGas: constants.fixedGas.toString() as u<UST>,
+        fixedGas: constants.fixedFee.toString() as u<UST>,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
@@ -53,7 +53,7 @@ export function useBondClaimTx(rewardDenom: COLLATERAL_DENOMS) {
     [
       connectedWallet,
       rewardDenom,
-      constants.fixedGas,
+      constants.fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,
       addressProvider,

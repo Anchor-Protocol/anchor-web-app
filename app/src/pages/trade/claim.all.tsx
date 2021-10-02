@@ -38,7 +38,7 @@ function ClaimAllBase({ className }: ClaimAllProps) {
   const connectedWallet = useConnectedWallet();
 
   const {
-    constants: { fixedGas },
+    constants: { fixedFee },
   } = useAnchorWebapp();
 
   const [claim, claimResult] = useRewardsAllClaimTx();
@@ -88,8 +88,8 @@ function ClaimAllBase({ className }: ClaimAllProps) {
   }, [claiming, userANCBalance]);
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(bank, fixedFee),
+    [bank, fixedFee, connectedWallet],
   );
 
   const proceed = useCallback(
@@ -146,7 +146,7 @@ function ClaimAllBase({ className }: ClaimAllProps) {
             ANC
           </TxFeeListItem>
           <TxFeeListItem label="Tx Fee">
-            {formatUST(demicrofy(fixedGas))} UST
+            {formatUST(demicrofy(fixedFee))} UST
           </TxFeeListItem>
         </TxFeeList>
 

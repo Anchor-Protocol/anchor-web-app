@@ -1,9 +1,10 @@
-import { ContractAddress, HumanAddr, u, UST } from '@anchor-protocol/types';
+import { HumanAddr, u, UST } from '@anchor-protocol/types';
 import {
   borrowBorrowerQuery,
   borrowMarketQuery,
   computeCurrentLtv,
 } from '@anchor-protocol/webapp-fns';
+import { AnchorContractAddress } from '@anchor-protocol/webapp-provider';
 import { MantleFetch } from '@libs/mantle';
 import { lastSyncedHeightQuery } from '@libs/webapp-fns';
 
@@ -11,7 +12,7 @@ interface UserLtvQueryParams {
   mantleFetch: MantleFetch;
   mantleEndpoint: string;
   walletAddress: string;
-  address: ContractAddress;
+  address: AnchorContractAddress;
   useExternalOraclePrice: boolean;
 }
 

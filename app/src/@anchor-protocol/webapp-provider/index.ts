@@ -1,6 +1,7 @@
 export * from '@anchor-protocol/webapp-fns';
 
 export * from './env';
+export * from './types';
 
 export * from './contexts/context';
 

@@ -15,17 +15,17 @@ import {
 
 export interface AnchorContantsInput {
   gasWanted: Gas;
-  fixedGasGas: Gas;
+  fixedGas: Gas;
   airdropGasWanted: Gas;
-  airdropGasGas: Gas;
+  airdropGas: Gas;
   //fixedGas: u<UST<number>>;
   blocksPerYear: number;
   gasAdjustment: Rate<number>;
 }
 
 export interface AnchorConstants extends AnchorContantsInput {
-  fixedGas: u<UST<number>>;
-  airdropGas: u<UST<number>>;
+  fixedFee: u<UST<number>>;
+  airdropFee: u<UST<number>>;
 }
 
 /**

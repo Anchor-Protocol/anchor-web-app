@@ -6,16 +6,16 @@ import {
 import {
   CollateralInfo,
   CollateralType,
-  ContractAddress,
   CW20Addr,
   HumanAddr,
 } from '@anchor-protocol/types';
+import { AnchorContractAddress } from '@anchor-protocol/webapp-provider';
 import { ExpandAddressMap } from '../types';
 
 export function createAnchorContractAddress(
   addressProvider: AddressProvider,
   addressMap: ExpandAddressMap,
-): ContractAddress {
+): AnchorContractAddress {
   const bLunaCollateral: CollateralInfo = {
     type: CollateralType.bLuna,
     denom: COLLATERAL_DENOMS.UBLUNA,
