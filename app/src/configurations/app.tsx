@@ -91,9 +91,9 @@ export function AppProviders({
     [openReadonlyWalletSelector],
   );
 
-  // If the user didn't see the app over 60 minutes,
+  // If the user didn't see the app over 2 days,
   // reload browser for more stablity when the user visit again.
-  useLongtimeNoSee({ longtime: 1000 * 60 * 60 * 3, onSee: openRequestReload });
+  useLongtimeNoSee({ longtime: 1000 * 60 * 60 * 48, onSee: openRequestReload });
 
   return (
     /** Terra Station Wallet Address :: useWallet() */
