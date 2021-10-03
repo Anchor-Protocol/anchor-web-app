@@ -7,7 +7,6 @@ import { webworkerMantleFetch } from '@libs/mantle';
 import { GlobalStyle } from '@libs/neumorphism-ui/themes/GlobalStyle';
 import { patchReactQueryFocusRefetching } from '@libs/patch-react-query-focus-refetching';
 import { SnackbarProvider } from '@libs/snackbar';
-import { BrowserInactiveProvider } from '@libs/use-browser-inactive';
 import { GoogleAnalytics } from '@libs/use-google-analytics';
 import { useLongtimeNoSee } from '@libs/use-longtime-no-see';
 import { RouterScrollRestoration } from '@libs/use-router-scroll-restoration';
@@ -51,27 +50,25 @@ function Providers({ children }: { children: ReactNode }) {
           constants={ANCHOR_CONSTANTS}
           refetchMap={ANCHOR_TX_REFETCH_MAP}
         >
-          <BrowserInactiveProvider>
-            <TerraWebappProvider
-              mantleFetch={webworkerMantleFetch}
-              txRefetchMap={ANCHOR_TX_REFETCH_MAP}
-              txErrorReporter={errorReporter}
-              queryErrorReporter={errorReporter}
+          <TerraWebappProvider
+            mantleFetch={webworkerMantleFetch}
+            txRefetchMap={ANCHOR_TX_REFETCH_MAP}
+            txErrorReporter={errorReporter}
+            queryErrorReporter={errorReporter}
+          >
+            <AnchorWebappProvider
+              indexerApiEndpoints={ANCHOR_INDEXER_API_ENDPOINTS}
             >
-              <AnchorWebappProvider
-                indexerApiEndpoints={ANCHOR_INDEXER_API_ENDPOINTS}
-              >
-                {/** Theme Providing to Styled-Components and Material-UI */}
-                <ThemeProvider initialTheme="light">
-                  {/** Snackbar Provider :: useSnackbar() */}
-                  <SnackbarProvider>
-                    {/** Application Layout */}
-                    {children}
-                  </SnackbarProvider>
-                </ThemeProvider>
-              </AnchorWebappProvider>
-            </TerraWebappProvider>
-          </BrowserInactiveProvider>
+              {/** Theme Providing to Styled-Components and Material-UI */}
+              <ThemeProvider initialTheme="light">
+                {/** Snackbar Provider :: useSnackbar() */}
+                <SnackbarProvider>
+                  {/** Application Layout */}
+                  {children}
+                </SnackbarProvider>
+              </ThemeProvider>
+            </AnchorWebappProvider>
+          </TerraWebappProvider>
         </AppProvider>
       </QueryClientProvider>
     </Router>

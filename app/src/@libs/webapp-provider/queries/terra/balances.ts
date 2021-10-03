@@ -1,6 +1,5 @@
 import { createQueryFn } from '@libs/react-query-utils';
 import { terraswap } from '@libs/types';
-import { useBrowserInactive } from '@libs/use-browser-inactive';
 import {
   TERRA_QUERY_KEY,
   TerraBalances,
@@ -19,8 +18,6 @@ export function useTerraBalancesQuery(
 
   const connectedWallet = useConnectedWallet();
 
-  const { browserInactive } = useBrowserInactive();
-
   const result = useQuery(
     [
       TERRA_QUERY_KEY.TERRA_BALANCES,
@@ -31,8 +28,7 @@ export function useTerraBalancesQuery(
     ],
     queryFn,
     {
-      refetchInterval: !!connectedWallet && browserInactive && 1000 * 60 * 5,
-      enabled: !browserInactive,
+      refetchInterval: !!connectedWallet && 1000 * 60 * 5,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },

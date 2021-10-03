@@ -1,6 +1,5 @@
 import { createQueryFn } from '@libs/react-query-utils';
 import { terraswap } from '@libs/types';
-import { useBrowserInactive } from '@libs/use-browser-inactive';
 import {
   TERRA_QUERY_KEY,
   TerraswapPair,
@@ -17,8 +16,6 @@ export function useTerraswapPairQuery(
   const { mantleFetch, mantleEndpoint, queryErrorReporter, contractAddress } =
     useTerraWebapp();
 
-  const { browserInactive } = useBrowserInactive();
-
   const result = useQuery(
     [
       TERRA_QUERY_KEY.TERRASWAP_PAIR,
@@ -29,8 +26,7 @@ export function useTerraswapPairQuery(
     ],
     queryFn,
     {
-      refetchInterval: browserInactive && 1000 * 60 * 5,
-      enabled: !browserInactive,
+      refetchInterval: 1000 * 60 * 5,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },

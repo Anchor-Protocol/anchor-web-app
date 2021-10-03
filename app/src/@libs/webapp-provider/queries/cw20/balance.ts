@@ -1,6 +1,5 @@
 import { createQueryFn } from '@libs/react-query-utils';
 import { CW20Addr, HumanAddr, Token } from '@libs/types';
-import { useBrowserInactive } from '@libs/use-browser-inactive';
 import {
   CW20Balance,
   cw20BalanceQuery,
@@ -17,8 +16,6 @@ export function useCW20BalanceQuery<T extends Token>(
 ): UseQueryResult<CW20Balance<T> | undefined> {
   const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
 
-  const { browserInactive } = useBrowserInactive();
-
   const result = useQuery(
     [
       TERRA_QUERY_KEY.CW20_BALANCE,
@@ -29,8 +26,7 @@ export function useCW20BalanceQuery<T extends Token>(
     ],
     queryFn as any,
     {
-      refetchInterval: browserInactive && 1000 * 60 * 5,
-      enabled: !browserInactive,
+      refetchInterval: 1000 * 60 * 5,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },
