@@ -1,6 +1,6 @@
 import { moneyMarket, u, UST } from '@anchor-protocol/types';
-import { AnchorTokenBalances, AncPrice } from '@anchor-protocol/webapp-fns';
-import { AnchorContractAddress } from '@anchor-protocol/webapp-provider';
+import { AnchorTokenBalances, AncPrice } from '@anchor-protocol/app-fns';
+import { AnchorContractAddress } from '@anchor-protocol/app-provider';
 import { sum, vectorMultiply } from '@libs/big-math';
 import { Big } from 'big.js';
 

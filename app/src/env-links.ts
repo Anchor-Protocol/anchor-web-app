@@ -1,4 +1,4 @@
-import { ANCHOR_TX_REFETCH_MAP } from '@anchor-protocol/webapp-provider';
+import { ANCHOR_TX_REFETCH_MAP } from '@anchor-protocol/app-provider';
 
 //console.log(DEFAULT_TERRA_CONTRACT_ADDRESS);
 //console.log(DEFAULT_TERRA_CONSTANTS);

@@ -15,14 +15,11 @@ import {
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { HumanAddr, Token, u, UST } from '@anchor-protocol/types';
-import {
-  useAnchorWebapp,
-  useTerraSendTx,
-} from '@anchor-protocol/webapp-provider';
+import { useAnchorWebapp, useTerraSendTx } from '@anchor-protocol/app-provider';
 import {
   AnchorBank,
   useAnchorBank,
-} from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
+} from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
 import { min } from '@libs/big-math';
 import { demicrofy, microfy } from '@libs/formatter';

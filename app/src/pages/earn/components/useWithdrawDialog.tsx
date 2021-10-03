@@ -10,8 +10,8 @@ import {
   useEarnEpochStatesQuery,
   useEarnWithdrawForm,
   useEarnWithdrawTx,
-} from '@anchor-protocol/webapp-provider';
-import { useAnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
+} from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';

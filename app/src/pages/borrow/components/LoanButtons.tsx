@@ -1,10 +1,10 @@
 import { u, UST } from '@anchor-protocol/types';
-import { computeBorrowedAmount } from '@anchor-protocol/webapp-fns';
+import { computeBorrowedAmount } from '@anchor-protocol/app-fns';
 import {
   computeCollateralsTotalUST,
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
-} from '@anchor-protocol/webapp-provider';
+} from '@anchor-protocol/app-provider';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';

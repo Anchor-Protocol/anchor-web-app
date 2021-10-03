@@ -3,7 +3,7 @@ import { ANC, moneyMarket, Rate, u } from '@anchor-protocol/types';
 import {
   useAnchorWebapp,
   useGovDistributionModelUpdateConfigQuery,
-} from '@anchor-protocol/webapp-provider';
+} from '@anchor-protocol/app-provider';
 import {
   formatExecuteMsgNumber,
   MAX_EXECUTE_MSG_DECIMALS,

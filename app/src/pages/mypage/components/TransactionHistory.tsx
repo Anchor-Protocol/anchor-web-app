@@ -1,4 +1,4 @@
-import { useMypageTxHistoryQuery } from '@anchor-protocol/webapp-provider';
+import { useMypageTxHistoryQuery } from '@anchor-protocol/app-provider';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import React from 'react';

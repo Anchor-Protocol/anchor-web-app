@@ -3,7 +3,7 @@ import { u, UST } from '@anchor-protocol/types';
 import {
   computeCollateralsTotalUST,
   computeTotalDeposit,
-} from '@anchor-protocol/webapp-fns';
+} from '@anchor-protocol/app-fns';
 import {
   useAnchorWebapp,
   useAncPriceQuery,
@@ -11,8 +11,8 @@ import {
   useBorrowMarketQuery,
   useEarnEpochStatesQuery,
   useRewardsAncGovernanceRewardsQuery,
-} from '@anchor-protocol/webapp-provider';
-import { useAnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
+} from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { sum } from '@libs/big-math';
 import { demicrofy } from '@libs/formatter';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';

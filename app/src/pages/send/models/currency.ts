@@ -1,5 +1,5 @@
 import { CW20Addr, Token, u, UST } from '@anchor-protocol/types';
-import { AnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
+import { AnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { BigSource } from 'big.js';
 
 export interface CurrencyInfo {

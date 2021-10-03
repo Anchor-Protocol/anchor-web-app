@@ -3,12 +3,12 @@ import { TokenIcon } from '@anchor-protocol/token-icons';
 import {
   computeCurrentAPY,
   computeTotalDeposit,
-} from '@anchor-protocol/webapp-fns';
+} from '@anchor-protocol/app-fns';
 import {
   useAnchorWebapp,
   useEarnEpochStatesQuery,
-} from '@anchor-protocol/webapp-provider';
-import { useAnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
+} from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { demicrofy, formatRate } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';

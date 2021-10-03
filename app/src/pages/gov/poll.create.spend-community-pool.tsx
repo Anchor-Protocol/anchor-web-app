@@ -8,7 +8,7 @@ import { ANC, anchorToken, HumanAddr, u } from '@anchor-protocol/types';
 import {
   useAncBalanceQuery,
   useAnchorWebapp,
-} from '@anchor-protocol/webapp-provider';
+} from '@anchor-protocol/app-provider';
 import { demicrofy, microfy } from '@libs/formatter';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';

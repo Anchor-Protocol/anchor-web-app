@@ -5,7 +5,7 @@ import {
   useBorrowMarketQuery,
   vectorizeOraclePrices,
   vectorizeOverseerCollaterals,
-} from '@anchor-protocol/webapp-provider';
+} from '@anchor-protocol/app-provider';
 import { sum, vectorMultiply } from '@libs/big-math';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big } from 'big.js';

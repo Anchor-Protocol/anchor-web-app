@@ -1,4 +1,4 @@
-import { MypageTxHistory } from '@anchor-protocol/webapp-fns';
+import { MypageTxHistory } from '@anchor-protocol/app-fns';
 import { rulerLightColor, rulerShadowColor } from '@libs/styled-neumorphism';
 import { useWallet } from '@terra-money/wallet-provider';
 import React from 'react';

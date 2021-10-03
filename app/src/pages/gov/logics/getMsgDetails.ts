@@ -1,6 +1,6 @@
 import { formatANC } from '@anchor-protocol/notation';
 import { anchorToken, moneyMarket } from '@anchor-protocol/types';
-import { AnchorContractAddress } from '@anchor-protocol/webapp-provider';
+import { AnchorContractAddress } from '@anchor-protocol/app-provider';
 import { demicrofy, formatRate } from '@libs/formatter';
 import { AccountLink } from 'components/links/AccountLink';
 import { createElement, ReactNode } from 'react';

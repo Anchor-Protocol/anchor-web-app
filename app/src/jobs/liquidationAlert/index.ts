@@ -1,5 +1,5 @@
 import { Rate } from '@anchor-protocol/types';
-import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
+import { useAnchorWebapp } from '@anchor-protocol/app-provider';
 import { formatRate } from '@libs/formatter';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';

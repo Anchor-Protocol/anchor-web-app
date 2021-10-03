@@ -13,7 +13,7 @@ import {
 import {
   AnchorConstants2,
   AnchorContractAddress,
-} from '@anchor-protocol/webapp-provider';
+} from '@anchor-protocol/app-provider';
 import { Gas, Rate } from '@libs/types';
 import { NetworkInfo } from '@terra-money/wallet-provider';
 

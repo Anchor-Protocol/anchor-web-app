@@ -6,8 +6,8 @@ import { ANC, u } from '@anchor-protocol/types';
 import {
   useRewardsClaimableUstBorrowRewardsQuery,
   useRewardsUstBorrowClaimTx,
-} from '@anchor-protocol/webapp-provider';
-import { useAnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
+} from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';

@@ -1,6 +1,6 @@
 import type { bLuna, Luna, Rate, u, UST } from '@anchor-protocol/types';
 import { terraswap } from '@anchor-protocol/types';
-import { AnchorTax } from '@anchor-protocol/webapp-fns';
+import { AnchorTax } from '@anchor-protocol/app-fns';
 import { min } from '@libs/big-math';
 import big, { Big } from 'big.js';
 import { MAX_SPREAD } from 'pages/bond/env';

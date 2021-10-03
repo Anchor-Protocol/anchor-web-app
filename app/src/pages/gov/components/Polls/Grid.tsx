@@ -1,4 +1,4 @@
-import { useLastSyncedHeightQuery } from '@anchor-protocol/webapp-provider';
+import { useLastSyncedHeightQuery } from '@anchor-protocol/app-provider';
 import { Schedule } from '@material-ui/icons';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';

@@ -3,8 +3,8 @@ import {
   borrowBorrowerQuery,
   borrowMarketQuery,
   computeCurrentLtv,
-} from '@anchor-protocol/webapp-fns';
-import { AnchorContractAddress } from '@anchor-protocol/webapp-provider';
+} from '@anchor-protocol/app-fns';
+import { AnchorContractAddress } from '@anchor-protocol/app-provider';
 import { lastSyncedHeightQuery } from '@libs/app-fns';
 import { HiveQueryClient } from '@libs/query-client';
 

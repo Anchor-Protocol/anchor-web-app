@@ -1,5 +1,5 @@
 import type { u, UST } from '@anchor-protocol/types';
-import { AnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
+import { AnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import big, { BigSource } from 'big.js';
 import { ReactNode } from 'react';
 

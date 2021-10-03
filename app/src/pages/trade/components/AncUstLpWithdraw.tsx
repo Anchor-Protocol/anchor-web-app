@@ -11,8 +11,8 @@ import {
   useAncAncUstLpWithdrawTx,
   useAncPriceQuery,
   useRewardsAncUstLpRewardsQuery,
-} from '@anchor-protocol/webapp-provider';
-import { useAnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
+} from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
 import { demicrofy, microfy } from '@libs/formatter';
 import { isZero } from '@libs/is-zero';

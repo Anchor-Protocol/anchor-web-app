@@ -10,7 +10,7 @@ import {
   useBorrowAPYQuery,
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
-} from '@anchor-protocol/webapp-provider';
+} from '@anchor-protocol/app-provider';
 import big, { Big } from 'big.js';
 import { useMemo } from 'react';
 

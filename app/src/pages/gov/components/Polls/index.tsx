@@ -4,7 +4,7 @@ import {
   useAnchorWebapp,
   useGovPollsQuery,
   useGovStateQuery,
-} from '@anchor-protocol/webapp-provider';
+} from '@anchor-protocol/app-provider';
 import { List, ViewModule } from '@material-ui/icons';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';

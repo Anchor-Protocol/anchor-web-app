@@ -1,5 +1,5 @@
 import { ANC, AncUstLP, cw20, Rate, u, UST } from '@anchor-protocol/types';
-import { AnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
+import { AnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { max, min } from '@libs/big-math';
 import { demicrofy, microfy } from '@libs/formatter';
 import big, { Big, BigSource } from 'big.js';

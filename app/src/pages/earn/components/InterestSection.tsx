@@ -8,7 +8,7 @@ import {
   useAnchorWebapp,
   useEarnAPYHistoryQuery,
   useEarnEpochStatesQuery,
-} from '@anchor-protocol/webapp-provider';
+} from '@anchor-protocol/app-provider';
 import { formatRate } from '@libs/formatter';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';

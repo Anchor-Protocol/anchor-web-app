@@ -8,7 +8,7 @@ import { u, UST } from '@anchor-protocol/types';
 import {
   useEarnDepositForm,
   useEarnDepositTx,
-} from '@anchor-protocol/webapp-provider';
+} from '@anchor-protocol/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';

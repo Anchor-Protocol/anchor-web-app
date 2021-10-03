@@ -1,7 +1,7 @@
 import {
   ANCHOR_TX_REFETCH_MAP,
   AnchorWebappProvider,
-} from '@anchor-protocol/webapp-provider';
+} from '@anchor-protocol/app-provider';
 import { AppProvider } from '@libs/app-provider';
 import { GlobalStyle } from '@libs/neumorphism-ui/themes/GlobalStyle';
 import { patchReactQueryFocusRefetching } from '@libs/patch-react-query-focus-refetching';

@@ -1,6 +1,6 @@
 import { ExecuteMsg } from '@anchor-protocol/anchor.js';
 import { CW20Addr, HumanAddr, moneyMarket, Rate } from '@anchor-protocol/types';
-import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
+import { useAnchorWebapp } from '@anchor-protocol/app-provider';
 import { InputAdornment } from '@material-ui/core';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';

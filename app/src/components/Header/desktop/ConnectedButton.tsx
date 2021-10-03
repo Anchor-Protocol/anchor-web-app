@@ -1,6 +1,6 @@
 import { Wallet } from '@anchor-protocol/icons';
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
-import { AnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
+import { AnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { demicrofy, truncate } from '@libs/formatter';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import React, { ButtonHTMLAttributes, DetailedHTMLProps } from 'react';

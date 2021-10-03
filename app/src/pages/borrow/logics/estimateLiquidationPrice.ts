@@ -1,7 +1,7 @@
 import { formatUST } from '@anchor-protocol/notation';
 import type { Rate, UST } from '@anchor-protocol/types';
 import { CW20Addr, moneyMarket } from '@anchor-protocol/types';
-import { prettifyBAssetSymbol } from '@anchor-protocol/webapp-fns';
+import { prettifyBAssetSymbol } from '@anchor-protocol/app-fns';
 import big, { Big } from 'big.js';
 
 export function estimateLiquidationPrice(
