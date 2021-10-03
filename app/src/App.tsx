@@ -2,7 +2,7 @@ import { useCloudflareAnalytics } from '@libs/use-cloudflare-analytics';
 import { useChainOptions } from '@terra-money/wallet-provider';
 import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
-import { AppProviders } from 'configurations/AppProviders';
+import { AppProviders } from 'configurations/app';
 import { NotificationProvider } from 'contexts/notification';
 import { cloudFlareOption } from 'env';
 import { JobsProvider } from 'jobs/Jobs';
