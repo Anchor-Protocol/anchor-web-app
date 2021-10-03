@@ -7,12 +7,7 @@ import {
   u,
   UST,
 } from '@anchor-protocol/types';
-import {
-  defaultMantleFetch,
-  mantle,
-  MantleFetch,
-  WasmQuery,
-} from '@libs/mantle';
+import { QueryClient, wasmFetch, WasmQuery } from '@libs/query-client';
 import big from 'big.js';
 
 interface AncPriceWasmQuery {
@@ -33,19 +28,16 @@ export interface AncPriceData {
   ancPrice: AncPrice;
 }
 
+/** @deprecated use @libs/app-fns */
 export async function ancPriceQuery(
   ancUstPairAddr: HumanAddr,
-  mantleEndpoint: string,
-  mantleFetch: MantleFetch = defaultMantleFetch,
-  requestInit?: RequestInit,
+  queryClient: QueryClient,
 ): Promise<AncPriceData> {
   const {
     ancPrice: { assets, total_share },
-  } = await mantle<AncPriceWasmQuery>({
-    mantleEndpoint: `${mantleEndpoint}?anc--price`,
-    mantleFetch,
-    requestInit,
-    variables: {},
+  } = await wasmFetch<AncPriceWasmQuery>({
+    ...queryClient,
+    id: `anc--price`,
     wasmQuery: {
       ancPrice: {
         contractAddress: ancUstPairAddr,

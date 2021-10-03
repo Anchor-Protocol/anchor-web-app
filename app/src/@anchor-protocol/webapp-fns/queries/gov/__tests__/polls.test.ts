@@ -1,26 +1,16 @@
-import {
-  TEST_ADDRESSES,
-  TEST_MANTLE_ENDPOINT,
-} from '@anchor-protocol/webapp-fns/test-env';
-import { defaultMantleFetch } from '@libs/mantle';
+import { TEST_ADDRESSES } from '@anchor-protocol/webapp-fns/test-env';
+import { TEST_LCD_CLIENT } from '@libs/app-fns/test-env';
 import { govPollsQuery } from '../polls';
 
 describe('queries/polls', () => {
   test('should get result from query', async () => {
-    const { polls } = await govPollsQuery({
-      mantleFetch: defaultMantleFetch,
-      mantleEndpoint: TEST_MANTLE_ENDPOINT,
-      wasmQuery: {
-        polls: {
-          contractAddress: TEST_ADDRESSES.anchorToken.gov,
-          query: {
-            polls: {
-              limit: 6,
-            },
-          },
-        },
+    const { polls } = await govPollsQuery(
+      TEST_ADDRESSES.anchorToken.gov,
+      {
+        limit: 6,
       },
-    });
+      TEST_LCD_CLIENT,
+    );
 
     expect(Array.isArray(polls?.polls)).toBeTruthy();
   });

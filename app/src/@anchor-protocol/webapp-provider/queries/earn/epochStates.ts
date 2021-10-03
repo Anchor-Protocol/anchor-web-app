@@ -1,65 +1,27 @@
-import { HumanAddr } from '@anchor-protocol/types';
 import {
   EarnEpochStates,
   earnEpochStatesQuery,
 } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@libs/react-query-utils';
-import { MantleFetch } from '@libs/mantle';
-import { useTerraWebapp } from '@libs/webapp-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = createQueryFn(
-  (
-    mantleEndpoint: string,
-    mantleFetch: MantleFetch,
-    lastSyncedHeight: () => Promise<number>,
-    moneyMarketContract: HumanAddr,
-    overseerContract: HumanAddr,
-  ) => {
-    return earnEpochStatesQuery({
-      mantleEndpoint,
-      mantleFetch,
-      lastSyncedHeight,
-      wasmQuery: {
-        moneyMarketEpochState: {
-          contractAddress: moneyMarketContract,
-          query: {
-            epoch_state: {
-              block_height: -1,
-            },
-          },
-        },
-        overseerEpochState: {
-          contractAddress: overseerContract,
-          query: {
-            epoch_state: {},
-          },
-        },
-      },
-    });
-  },
-);
+const queryFn = createQueryFn(earnEpochStatesQuery);
 
 export function useEarnEpochStatesQuery(): UseQueryResult<
   EarnEpochStates | undefined
 > {
-  const { mantleFetch, mantleEndpoint, lastSyncedHeight, queryErrorReporter } =
-    useTerraWebapp();
-
-  const {
-    contractAddress: { moneyMarket },
-  } = useAnchorWebapp();
+  const { queryClient, contractAddress, lastSyncedHeight, queryErrorReporter } =
+    useAnchorWebapp();
 
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.EARN_EPOCH_STATES,
-      mantleEndpoint,
-      mantleFetch,
+      contractAddress.moneyMarket.market,
+      contractAddress.moneyMarket.overseer,
       lastSyncedHeight,
-      moneyMarket.market,
-      moneyMarket.overseer,
+      queryClient,
     ],
     queryFn,
     {

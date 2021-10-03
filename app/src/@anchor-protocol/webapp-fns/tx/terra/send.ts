@@ -8,16 +8,16 @@ import {
   u,
   UST,
 } from '@anchor-protocol/types';
-import { floor } from '@libs/big-math';
-import { MantleFetch } from '@libs/mantle';
-import { TxResultRendering, TxStreamPhase } from '@libs/webapp-fns';
+import { TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import {
   _catchTxError,
   _createTxOptions,
   _pollTxInfo,
   _postTx,
   TxHelper,
-} from '@libs/webapp-fns/tx/internal';
+} from '@libs/app-fns/tx/internal';
+import { floor } from '@libs/big-math';
+import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import {
@@ -40,8 +40,7 @@ export function terraSendTx($: {
   gasAdjustment: Rate<number>;
   txFee: u<UST>;
   network: NetworkInfo;
-  mantleEndpoint: string;
-  mantleFetch: MantleFetch;
+  queryClient: QueryClient;
   post: (tx: CreateTxOptions) => Promise<TxResult>;
   txErrorReporter?: (error: unknown) => string;
   onTxSucceed?: () => void;

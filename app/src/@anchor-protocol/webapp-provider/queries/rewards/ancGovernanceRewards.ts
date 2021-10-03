@@ -1,73 +1,31 @@
-import { CW20Addr, HumanAddr } from '@anchor-protocol/types';
 import {
   RewardsAncGovernanceRewards,
   rewardsAncGovernanceRewardsQuery,
 } from '@anchor-protocol/webapp-fns';
-import { MantleFetch } from '@libs/mantle';
+import { EMPTY_QUERY_RESULT } from '@libs/app-provider';
 import { createQueryFn } from '@libs/react-query-utils';
-import { EMPTY_QUERY_RESULT, useTerraWebapp } from '@libs/webapp-provider';
-import {
-  ConnectedWallet,
-  useConnectedWallet,
-} from '@terra-money/wallet-provider';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = createQueryFn(
-  (
-    mantleEndpoint: string,
-    mantleFetch: MantleFetch,
-    govContract: HumanAddr,
-    ancContract: CW20Addr,
-    connectedWallet: ConnectedWallet | undefined,
-  ) => {
-    return !!connectedWallet
-      ? rewardsAncGovernanceRewardsQuery({
-          mantleEndpoint,
-          mantleFetch,
-          wasmQuery: {
-            userGovStakingInfo: {
-              contractAddress: govContract,
-              query: {
-                staker: {
-                  address: connectedWallet.walletAddress,
-                },
-              },
-            },
-            userANCBalance: {
-              contractAddress: ancContract,
-              query: {
-                balance: {
-                  address: connectedWallet.walletAddress,
-                },
-              },
-            },
-          },
-        })
-      : Promise.resolve(undefined);
-  },
-);
+const queryFn = createQueryFn(rewardsAncGovernanceRewardsQuery);
 
 export function useRewardsAncGovernanceRewardsQuery(): UseQueryResult<
   RewardsAncGovernanceRewards | undefined
 > {
-  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
+  const { queryClient, contractAddress, queryErrorReporter } =
+    useAnchorWebapp();
 
   const connectedWallet = useConnectedWallet();
-
-  const {
-    contractAddress: { anchorToken, cw20 },
-  } = useAnchorWebapp();
 
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.REWARDS_ANC_GOVERNANCE_REWARDS,
-      mantleEndpoint,
-      mantleFetch,
-      anchorToken.gov,
-      cw20.ANC,
-      connectedWallet,
+      connectedWallet?.walletAddress,
+      contractAddress.anchorToken.gov,
+      contractAddress.cw20.ANC,
+      queryClient,
     ],
     queryFn,
     {

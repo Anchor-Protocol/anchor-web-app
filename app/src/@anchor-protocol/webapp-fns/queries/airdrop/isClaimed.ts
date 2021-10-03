@@ -1,11 +1,10 @@
 import { bluna, HumanAddr } from '@anchor-protocol/types';
 import {
-  defaultMantleFetch,
-  mantle,
-  MantleFetch,
+  QueryClient,
+  wasmFetch,
   WasmQuery,
   WasmQueryData,
-} from '@libs/mantle';
+} from '@libs/query-client';
 
 interface AirdropIsClaimedWasmQuery {
   isClaimed: WasmQuery<
@@ -20,15 +19,11 @@ export async function airdropIsClaimedQuery(
   airdropAddr: HumanAddr,
   walletAddr: HumanAddr,
   airdropStage: number,
-  mantleEndpoint: string,
-  mantleFetch: MantleFetch = defaultMantleFetch,
-  requestInit?: RequestInit,
+  queryClient: QueryClient,
 ): Promise<AirdropIsClaimed> {
-  return mantle<AirdropIsClaimedWasmQuery>({
-    mantleEndpoint: `${mantleEndpoint}?airdrop--is-claimed&address=${walletAddr}&stage=${airdropStage}`,
-    mantleFetch,
-    requestInit,
-    variables: {},
+  return wasmFetch<AirdropIsClaimedWasmQuery>({
+    ...queryClient,
+    id: `airdrop--is-claimed&address=${walletAddr}&stage=${airdropStage}`,
     wasmQuery: {
       isClaimed: {
         contractAddress: airdropAddr,

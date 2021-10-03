@@ -3,7 +3,6 @@ import {
   marketCollateralsQuery,
 } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@libs/react-query-utils';
-import { useTerraWebapp } from '@libs/webapp-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
@@ -15,9 +14,7 @@ const queryFn = createQueryFn((endpoint: string) => {
 export function useMarketCollateralsQuery(): UseQueryResult<
   MarketCollateralsData | undefined
 > {
-  const { queryErrorReporter } = useTerraWebapp();
-
-  const { indexerApiEndpoint } = useAnchorWebapp();
+  const { indexerApiEndpoint, queryErrorReporter } = useAnchorWebapp();
 
   const result = useQuery(
     [ANCHOR_QUERY_KEY.MARKET_COLLATERALS, indexerApiEndpoint],

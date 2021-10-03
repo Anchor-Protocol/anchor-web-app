@@ -1,6 +1,5 @@
 import { anchorToken } from '@anchor-protocol/types';
 import { govPollsQuery } from '@anchor-protocol/webapp-fns';
-import { useTerraWebapp } from '@libs/webapp-provider';
 import { useCallback, useEffect, useState } from 'react';
 import { useAnchorWebapp } from '../../contexts/context';
 
@@ -13,14 +12,12 @@ interface PollsReturn {
   reload: () => void;
 }
 
+// TODO use react-query infinite sroll
 export function useGovPollsQuery(
   filter: anchorToken.gov.PollStatus | undefined,
 ): PollsReturn {
-  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
-
-  const {
-    contractAddress: { anchorToken },
-  } = useAnchorWebapp();
+  const { queryClient, contractAddress, queryErrorReporter } =
+    useAnchorWebapp();
 
   const [polls, setPolls] = useState<anchorToken.gov.PollResponse[]>([]);
 
@@ -31,21 +28,14 @@ export function useGovPollsQuery(
     setIsLast(false);
     setPolls([]);
 
-    govPollsQuery({
-      mantleEndpoint,
-      mantleFetch,
-      wasmQuery: {
-        polls: {
-          contractAddress: anchorToken.gov,
-          query: {
-            polls: {
-              filter,
-              limit,
-            },
-          },
-        },
+    govPollsQuery(
+      contractAddress.anchorToken.gov,
+      {
+        filter,
+        limit,
       },
-    })
+      queryClient,
+    )
       .then(({ polls }) => {
         if (polls.polls.length > 0) {
           setPolls(polls.polls);
@@ -57,31 +47,23 @@ export function useGovPollsQuery(
       })
       .catch(queryErrorReporter);
   }, [
-    anchorToken.gov,
+    contractAddress.anchorToken.gov,
     filter,
-    mantleEndpoint,
-    mantleFetch,
+    queryClient,
     queryErrorReporter,
   ]);
 
   const loadMore = useCallback(() => {
     if (polls.length > 0) {
-      govPollsQuery({
-        mantleEndpoint,
-        mantleFetch,
-        wasmQuery: {
-          polls: {
-            contractAddress: anchorToken.gov,
-            query: {
-              polls: {
-                filter,
-                limit,
-                start_after: polls[polls.length - 1].id,
-              },
-            },
-          },
+      govPollsQuery(
+        contractAddress.anchorToken.gov,
+        {
+          filter,
+          limit,
+          start_after: polls[polls.length - 1].id,
         },
-      })
+        queryClient,
+      )
         .then(({ polls }) => {
           if (polls.polls) {
             setPolls((prev) => {
@@ -98,11 +80,10 @@ export function useGovPollsQuery(
         .catch(queryErrorReporter);
     }
   }, [
-    anchorToken.gov,
+    contractAddress.anchorToken.gov,
     filter,
-    mantleEndpoint,
-    mantleFetch,
     polls,
+    queryClient,
     queryErrorReporter,
   ]);
 

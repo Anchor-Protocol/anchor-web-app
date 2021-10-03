@@ -1,6 +1,6 @@
 import { ANC, HumanAddr, Rate, u } from '@anchor-protocol/types';
-import { airdropStageCache } from '@anchor-protocol/webapp-fns/caches/airdropStage';
-import { defaultMantleFetch, MantleFetch } from '@libs/mantle';
+import { QueryClient } from '@libs/query-client';
+import { airdropStageCache } from '../../caches/airdropStage';
 import { airdropIsClaimedQuery } from './isClaimed';
 
 export interface Airdrop {
@@ -18,14 +18,12 @@ export interface Airdrop {
 }
 
 export async function airdropCheckQuery(
+  walletAddress: HumanAddr | undefined,
   airdropContract: HumanAddr,
-  walletAddress: HumanAddr,
   chainId: string,
-  mantleEndpoint: string,
-  mantleFetch: MantleFetch = defaultMantleFetch,
-  requestInit?: RequestInit,
+  queryClient: QueryClient,
 ): Promise<Airdrop | undefined> {
-  if (!chainId.startsWith('columbus')) {
+  if (!walletAddress || !chainId.startsWith('columbus')) {
     return undefined;
   }
 
@@ -56,9 +54,7 @@ export async function airdropCheckQuery(
         airdropContract,
         walletAddress,
         stage,
-        mantleEndpoint,
-        mantleFetch,
-        requestInit,
+        queryClient,
       );
 
       // FIXME double check if the stage is not claimed

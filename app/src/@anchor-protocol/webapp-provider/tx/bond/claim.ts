@@ -1,7 +1,6 @@
 import { COLLATERAL_DENOMS } from '@anchor-protocol/anchor.js';
 import { bondClaimTx } from '@anchor-protocol/webapp-fns';
-import { useFixedFee } from '@libs/app-provider';
-import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
+import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
@@ -15,9 +14,8 @@ export interface BondClaimTxParams {
 export function useBondClaimTx(rewardDenom: COLLATERAL_DENOMS) {
   const connectedWallet = useConnectedWallet();
 
-  const { addressProvider, constants } = useAnchorWebapp();
-
-  const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
+  const { queryClient, txErrorReporter, addressProvider, constants } =
+    useAnchorWebapp();
 
   const fixedFee = useFixedFee();
 
@@ -41,8 +39,7 @@ export function useBondClaimTx(rewardDenom: COLLATERAL_DENOMS) {
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
-        mantleEndpoint,
-        mantleFetch,
+        queryClient,
         // error
         txErrorReporter,
         // side effect
@@ -59,8 +56,7 @@ export function useBondClaimTx(rewardDenom: COLLATERAL_DENOMS) {
       constants.gasWanted,
       constants.gasAdjustment,
       addressProvider,
-      mantleEndpoint,
-      mantleFetch,
+      queryClient,
       txErrorReporter,
       refetchQueries,
     ],

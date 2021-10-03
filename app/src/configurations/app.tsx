@@ -3,7 +3,6 @@ import {
   AnchorWebappProvider,
 } from '@anchor-protocol/webapp-provider';
 import { AppProvider } from '@libs/app-provider';
-import { webworkerMantleFetch } from '@libs/mantle';
 import { GlobalStyle } from '@libs/neumorphism-ui/themes/GlobalStyle';
 import { patchReactQueryFocusRefetching } from '@libs/patch-react-query-focus-refetching';
 import { SnackbarProvider } from '@libs/snackbar';
@@ -11,7 +10,6 @@ import { GoogleAnalytics } from '@libs/use-google-analytics';
 import { useLongtimeNoSee } from '@libs/use-longtime-no-see';
 import { RouterScrollRestoration } from '@libs/use-router-scroll-restoration';
 import { RouterWalletStatusRecheck } from '@libs/use-router-wallet-status-recheck';
-import { TerraWebappProvider } from '@libs/webapp-provider';
 import { captureException } from '@sentry/react';
 import { ReadonlyWalletSession } from '@terra-dev/readonly-wallet';
 import {
@@ -46,29 +44,25 @@ function Providers({ children }: { children: ReactNode }) {
     <Router>
       <QueryClientProvider client={queryClient}>
         <AppProvider
+          defaultQueryClient="lcd"
           contractAddress={ANCHOR_CONTRACT_ADDRESS2}
           constants={ANCHOR_CONSTANTS}
           refetchMap={ANCHOR_TX_REFETCH_MAP}
+          txErrorReporter={errorReporter}
+          queryErrorReporter={errorReporter}
         >
-          <TerraWebappProvider
-            mantleFetch={webworkerMantleFetch}
-            txRefetchMap={ANCHOR_TX_REFETCH_MAP}
-            txErrorReporter={errorReporter}
-            queryErrorReporter={errorReporter}
+          <AnchorWebappProvider
+            indexerApiEndpoints={ANCHOR_INDEXER_API_ENDPOINTS}
           >
-            <AnchorWebappProvider
-              indexerApiEndpoints={ANCHOR_INDEXER_API_ENDPOINTS}
-            >
-              {/** Theme Providing to Styled-Components and Material-UI */}
-              <ThemeProvider initialTheme="light">
-                {/** Snackbar Provider :: useSnackbar() */}
-                <SnackbarProvider>
-                  {/** Application Layout */}
-                  {children}
-                </SnackbarProvider>
-              </ThemeProvider>
-            </AnchorWebappProvider>
-          </TerraWebappProvider>
+            {/** Theme Providing to Styled-Components and Material-UI */}
+            <ThemeProvider initialTheme="light">
+              {/** Snackbar Provider :: useSnackbar() */}
+              <SnackbarProvider>
+                {/** Application Layout */}
+                {children}
+              </SnackbarProvider>
+            </ThemeProvider>
+          </AnchorWebappProvider>
         </AppProvider>
       </QueryClientProvider>
     </Router>

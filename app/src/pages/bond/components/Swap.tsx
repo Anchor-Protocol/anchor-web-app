@@ -8,12 +8,12 @@ import {
 import type { bLuna, Luna, NativeDenom, Rate, u } from '@anchor-protocol/types';
 import { terraswap } from '@anchor-protocol/types';
 import {
-  terraswapSimulationQuery,
   useAnchorWebapp,
   useBondBLunaPriceQuery,
   useBondSwapTx,
 } from '@anchor-protocol/webapp-provider';
 import { useAnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
+import { terraswapSimulationQuery } from '@libs/app-fns';
 import { useFixedFee } from '@libs/app-provider';
 import {
   demicrofy,
@@ -26,7 +26,6 @@ import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { NumberMuiInput } from '@libs/neumorphism-ui/components/NumberMuiInput';
 import { SelectAndTextInputContainer } from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
 import { useResolveLast } from '@libs/use-resolve-last';
-import { useTerraWebapp } from '@libs/webapp-provider';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
@@ -65,8 +64,7 @@ export function Swap() {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const { mantleEndpoint, mantleFetch } = useTerraWebapp();
-  const { contractAddress: address } = useAnchorWebapp();
+  const { queryClient, contractAddress: address } = useAnchorWebapp();
 
   const fixedFee = useFixedFee();
 
@@ -162,27 +160,18 @@ export function Swap() {
         const amount = microfy(burnAmount).toString() as u<bLuna>;
 
         resolveSimulation(
-          terraswapSimulationQuery({
-            mantleEndpoint,
-            mantleFetch,
-            wasmQuery: {
-              simulation: {
-                contractAddress: address.terraswap.blunaLunaPair,
-                query: {
-                  simulation: {
-                    offer_asset: {
-                      info: {
-                        token: {
-                          contract_addr: address.cw20.bLuna,
-                        },
-                      },
-                      amount,
-                    },
-                  },
+          terraswapSimulationQuery(
+            address.terraswap.blunaLunaPair,
+            {
+              info: {
+                token: {
+                  contract_addr: address.cw20.bLuna,
                 },
               },
+              amount,
             },
-          }).then(({ simulation }) => {
+            queryClient,
+          ).then(({ simulation }) => {
             return simulation
               ? swapGetSimulation(
                   simulation as terraswap.pair.SimulationResponse<Luna>,
@@ -198,8 +187,7 @@ export function Swap() {
       address.cw20.bLuna,
       address.terraswap.blunaLunaPair,
       bank.tax,
-      mantleEndpoint,
-      mantleFetch,
+      queryClient,
       resolveSimulation,
     ],
   );
@@ -223,27 +211,18 @@ export function Swap() {
         const amount = microfy(getAmount).toString() as u<Luna>;
 
         resolveSimulation(
-          terraswapSimulationQuery({
-            mantleEndpoint,
-            mantleFetch,
-            wasmQuery: {
-              simulation: {
-                contractAddress: address.terraswap.blunaLunaPair,
-                query: {
-                  simulation: {
-                    offer_asset: {
-                      info: {
-                        native_token: {
-                          denom: 'uluna' as NativeDenom,
-                        },
-                      },
-                      amount,
-                    },
-                  },
+          terraswapSimulationQuery(
+            address.terraswap.blunaLunaPair,
+            {
+              info: {
+                native_token: {
+                  denom: 'uluna' as NativeDenom,
                 },
               },
+              amount,
             },
-          }).then(({ simulation }) => {
+            queryClient,
+          ).then(({ simulation }) => {
             return simulation
               ? swapBurnSimulation(
                   simulation as terraswap.pair.SimulationResponse<Luna>,
@@ -255,13 +234,7 @@ export function Swap() {
         );
       }
     },
-    [
-      address.terraswap.blunaLunaPair,
-      bank.tax,
-      mantleEndpoint,
-      mantleFetch,
-      resolveSimulation,
-    ],
+    [address.terraswap.blunaLunaPair, bank.tax, queryClient, resolveSimulation],
   );
 
   const init = useCallback(() => {

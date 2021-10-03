@@ -1,52 +1,25 @@
-import { HumanAddr } from '@anchor-protocol/types';
 import {
   GovDistributionModelUpdateConfig,
   govDistributionModelUpdateConfigQuery,
 } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@libs/react-query-utils';
-import { MantleFetch } from '@libs/mantle';
-import { useTerraWebapp } from '@libs/webapp-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = createQueryFn(
-  (
-    mantleEndpoint: string,
-    mantleFetch: MantleFetch,
-    distributionModelContract: HumanAddr,
-  ) => {
-    return govDistributionModelUpdateConfigQuery({
-      mantleEndpoint,
-      mantleFetch,
-      wasmQuery: {
-        distributionModelConfig: {
-          contractAddress: distributionModelContract,
-          query: {
-            config: {},
-          },
-        },
-      },
-    });
-  },
-);
+const queryFn = createQueryFn(govDistributionModelUpdateConfigQuery);
 
 export function useGovDistributionModelUpdateConfigQuery(): UseQueryResult<
   GovDistributionModelUpdateConfig | undefined
 > {
-  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
-
-  const {
-    contractAddress: { moneyMarket },
-  } = useAnchorWebapp();
+  const { queryClient, contractAddress, queryErrorReporter } =
+    useAnchorWebapp();
 
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.GOV_DISTRIBUTION_MODEL_UPDATE_CONFIG,
-
-      mantleEndpoint,
-      mantleFetch,
-      moneyMarket.distributionModel,
+      contractAddress.moneyMarket.distributionModel,
+      queryClient,
     ],
     queryFn,
     {

@@ -1,5 +1,10 @@
-import { bluna, Num } from '@anchor-protocol/types';
-import { mantle, MantleParams, WasmQuery, WasmQueryData } from '@libs/mantle';
+import { bluna, HumanAddr, Num } from '@anchor-protocol/types';
+import {
+  hiveFetch,
+  HiveQueryClient,
+  WasmQuery,
+  WasmQueryData,
+} from '@libs/query-client';
 
 export interface StakingValidator {
   OperatorAddress: string;
@@ -8,7 +13,7 @@ export interface StakingValidator {
   };
 }
 
-export interface BondValidatorsWasmQuery {
+interface BondValidatorsWasmQuery {
   hubWhitelistedValidators: WasmQuery<
     bluna.hub.WhitelistedValidators,
     bluna.hub.WhitelistedValidatorsResponse
@@ -20,7 +25,7 @@ export type BondValidators = WasmQueryData<BondValidatorsWasmQuery> & {
   whitelistedValidators: StakingValidator[];
 };
 
-export interface BondValidatorsQueryResult {
+interface BondValidatorsQueryResult {
   validators: {
     Result: StakingValidator[];
   };
@@ -63,26 +68,27 @@ interface ValidatorVotingPowerQueryResult {
   };
 }
 
-export type BondValidatorsQueryParams = Omit<
-  MantleParams<BondValidatorsWasmQuery>,
-  'query' | 'variables'
->;
-
-export async function bondValidatorsQuery({
-  mantleEndpoint,
-  wasmQuery,
-  ...params
-}: BondValidatorsQueryParams): Promise<BondValidators> {
-  const { validators: _validators, hubWhitelistedValidators } = await mantle<
+export async function bondValidatorsQuery(
+  bLunaHubContract: HumanAddr,
+  hiveQueryClient: HiveQueryClient,
+): Promise<BondValidators> {
+  const { validators: _validators, hubWhitelistedValidators } = await hiveFetch<
     BondValidatorsWasmQuery,
     {},
     BondValidatorsQueryResult
   >({
-    mantleEndpoint: `${mantleEndpoint}?bond--validators`,
+    ...hiveQueryClient,
+    id: `bond--validators`,
     query: BOND_VALIDATORS_QUERY,
     variables: {},
-    wasmQuery,
-    ...params,
+    wasmQuery: {
+      hubWhitelistedValidators: {
+        contractAddress: bLunaHubContract,
+        query: {
+          whitelisted_validators: {},
+        },
+      },
+    },
   });
 
   const filter: Set<string> = new Set(hubWhitelistedValidators.validators);
@@ -96,18 +102,18 @@ export async function bondValidatorsQuery({
 
   const votingPowers = await Promise.all(
     whitelistedValidators.map(({ OperatorAddress }) => {
-      return mantle<
+      return hiveFetch<
         {},
         ValidatorVotingPowerQueryParams,
         ValidatorVotingPowerQueryResult
       >({
-        mantleEndpoint: `${mantleEndpoint}?bond-validator-voting-power=${OperatorAddress}`,
+        ...hiveQueryClient,
+        id: `bond-validator-voting-power=${OperatorAddress}`,
         variables: {
           address: OperatorAddress,
         },
         wasmQuery: {},
         query: VALIDATOR_VOTING_POWER_QUERY,
-        ...params,
       }).then(({ votingPower }) => {
         return votingPower.Result.Tokens;
       });

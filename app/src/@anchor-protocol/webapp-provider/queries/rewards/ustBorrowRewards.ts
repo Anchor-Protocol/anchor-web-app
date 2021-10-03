@@ -1,69 +1,30 @@
-import { HumanAddr } from '@anchor-protocol/types';
 import {
   RewardsUstBorrowRewards,
   rewardsUstBorrowRewardsQuery,
 } from '@anchor-protocol/webapp-fns';
+import { EMPTY_QUERY_RESULT } from '@libs/app-provider';
 import { createQueryFn } from '@libs/react-query-utils';
-import {
-  ConnectedWallet,
-  useConnectedWallet,
-} from '@terra-money/wallet-provider';
-import { MantleFetch } from '@libs/mantle';
-import { EMPTY_QUERY_RESULT, useTerraWebapp } from '@libs/webapp-provider';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = createQueryFn(
-  (
-    mantleEndpoint: string,
-    mantleFetch: MantleFetch,
-    marketContract: HumanAddr,
-    connectedWallet: ConnectedWallet | undefined,
-  ) => {
-    return !!connectedWallet
-      ? rewardsUstBorrowRewardsQuery({
-          mantleEndpoint,
-          mantleFetch,
-          wasmQuery: {
-            marketState: {
-              contractAddress: marketContract,
-              query: {
-                state: {},
-              },
-            },
-            borrowerInfo: {
-              contractAddress: marketContract,
-              query: {
-                borrower_info: {
-                  borrower: connectedWallet.walletAddress,
-                },
-              },
-            },
-          },
-        })
-      : Promise.resolve(undefined);
-  },
-);
+const queryFn = createQueryFn(rewardsUstBorrowRewardsQuery);
 
 export function useRewardsUstBorrowRewardsQuery(): UseQueryResult<
   RewardsUstBorrowRewards | undefined
 > {
-  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
+  const { queryClient, contractAddress, queryErrorReporter } =
+    useAnchorWebapp();
 
   const connectedWallet = useConnectedWallet();
-
-  const {
-    contractAddress: { moneyMarket },
-  } = useAnchorWebapp();
 
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.REWARDS_UST_BORROW_REWARDS,
-      mantleEndpoint,
-      mantleFetch,
-      moneyMarket.market,
-      connectedWallet,
+      connectedWallet?.walletAddress,
+      contractAddress.moneyMarket.market,
+      queryClient,
     ],
     queryFn,
     {

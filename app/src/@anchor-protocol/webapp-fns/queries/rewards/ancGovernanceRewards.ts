@@ -1,7 +1,19 @@
-import { ANC, anchorToken, cw20, u } from '@anchor-protocol/types';
-import { mantle, MantleParams, WasmQuery, WasmQueryData } from '@libs/mantle';
+import {
+  ANC,
+  anchorToken,
+  cw20,
+  CW20Addr,
+  HumanAddr,
+  u,
+} from '@anchor-protocol/types';
+import {
+  QueryClient,
+  wasmFetch,
+  WasmQuery,
+  WasmQueryData,
+} from '@libs/query-client';
 
-export interface RewardsAncGovernanceRewardsWasmQuery {
+interface RewardsAncGovernanceRewardsWasmQuery {
   userGovStakingInfo: WasmQuery<
     anchorToken.gov.Staker,
     anchorToken.gov.StakerResponse
@@ -12,18 +24,36 @@ export interface RewardsAncGovernanceRewardsWasmQuery {
 export type RewardsAncGovernanceRewards =
   WasmQueryData<RewardsAncGovernanceRewardsWasmQuery>;
 
-export type RewardsAncGovernanceRewardsQueryParams = Omit<
-  MantleParams<RewardsAncGovernanceRewardsWasmQuery>,
-  'query' | 'variables'
->;
+export async function rewardsAncGovernanceRewardsQuery(
+  walletAddr: HumanAddr | undefined,
+  govContract: HumanAddr,
+  ancContract: CW20Addr,
+  queryClient: QueryClient,
+): Promise<RewardsAncGovernanceRewards | undefined> {
+  if (!walletAddr) {
+    return undefined;
+  }
 
-export async function rewardsAncGovernanceRewardsQuery({
-  mantleEndpoint,
-  ...params
-}: RewardsAncGovernanceRewardsQueryParams): Promise<RewardsAncGovernanceRewards> {
-  return mantle<RewardsAncGovernanceRewardsWasmQuery>({
-    mantleEndpoint: `${mantleEndpoint}?rewards--anc-governance-rewards`,
-    variables: {},
-    ...params,
+  return wasmFetch<RewardsAncGovernanceRewardsWasmQuery>({
+    ...queryClient,
+    id: `rewards--anc-governance-rewards`,
+    wasmQuery: {
+      userGovStakingInfo: {
+        contractAddress: govContract,
+        query: {
+          staker: {
+            address: walletAddr,
+          },
+        },
+      },
+      userANCBalance: {
+        contractAddress: ancContract,
+        query: {
+          balance: {
+            address: walletAddr,
+          },
+        },
+      },
+    },
   });
 }

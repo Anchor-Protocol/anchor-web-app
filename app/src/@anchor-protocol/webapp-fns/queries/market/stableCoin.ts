@@ -1,7 +1,12 @@
-import { moneyMarket } from '@anchor-protocol/types';
-import { mantle, MantleParams, WasmQuery, WasmQueryData } from '@libs/mantle';
+import { HumanAddr, moneyMarket, u, UST } from '@anchor-protocol/types';
+import {
+  QueryClient,
+  wasmFetch,
+  WasmQuery,
+  WasmQueryData,
+} from '@libs/query-client';
 
-export interface MarketStableCoinWasmQuery {
+interface MarketStableCoinWasmQuery {
   borrowRate: WasmQuery<
     moneyMarket.interestModel.BorrowRate,
     moneyMarket.interestModel.BorrowRateResponse
@@ -14,18 +19,38 @@ export interface MarketStableCoinWasmQuery {
 
 export type MarketStableCoin = WasmQueryData<MarketStableCoinWasmQuery>;
 
-export type MarketStableCoinQueryParams = Omit<
-  MantleParams<MarketStableCoinWasmQuery>,
-  'query' | 'variables'
->;
+export async function marketStableCoinQuery(
+  interestContract: HumanAddr,
+  overseerContract: HumanAddr,
+  uUSTBalance: u<UST> | undefined,
+  totalReserves: u<UST> | undefined,
+  totalLiabilities: u<UST> | undefined,
+  queryClient: QueryClient,
+): Promise<MarketStableCoin | undefined> {
+  if (!uUSTBalance || !totalReserves || !totalLiabilities) {
+    return undefined;
+  }
 
-export async function marketStableCoinQuery({
-  mantleEndpoint,
-  ...params
-}: MarketStableCoinQueryParams): Promise<MarketStableCoin> {
-  return mantle<MarketStableCoinWasmQuery>({
-    mantleEndpoint: `${mantleEndpoint}?market--stable-coin`,
-    variables: {},
-    ...params,
+  return wasmFetch<MarketStableCoinWasmQuery>({
+    ...queryClient,
+    id: `market--stable-coin`,
+    wasmQuery: {
+      borrowRate: {
+        contractAddress: interestContract,
+        query: {
+          borrow_rate: {
+            market_balance: uUSTBalance,
+            total_reserves: totalReserves,
+            total_liabilities: totalLiabilities,
+          },
+        },
+      },
+      epochState: {
+        contractAddress: overseerContract,
+        query: {
+          epoch_state: {},
+        },
+      },
+    },
   });
 }

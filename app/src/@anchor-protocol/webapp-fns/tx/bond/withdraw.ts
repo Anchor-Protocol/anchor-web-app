@@ -4,26 +4,26 @@ import {
 } from '@anchor-protocol/anchor.js';
 import { formatLuna } from '@anchor-protocol/notation';
 import { Gas, Rate, u, UST } from '@anchor-protocol/types';
-import { demicrofy, stripULuna } from '@libs/formatter';
-import { MantleFetch } from '@libs/mantle';
 import {
   pickAttributeValue,
   pickEvent,
   pickRawLog,
   TxResultRendering,
   TxStreamPhase,
-} from '@libs/webapp-fns';
+} from '@libs/app-fns';
+import {
+  _catchTxError,
+  _createTxOptions,
+  _pollTxInfo,
+  _postTx,
+  TxHelper,
+} from '@libs/app-fns/tx/internal';
+import { demicrofy, stripULuna } from '@libs/formatter';
+import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
 import { Observable } from 'rxjs';
-import {
-  TxHelper,
-  _postTx,
-  _pollTxInfo,
-  _createTxOptions,
-  _catchTxError,
-} from '@libs/webapp-fns/tx/internal';
 
 export function bondWithdrawTx(
   $: Parameters<typeof fabricatebAssetWithdrawUnbonded>[0] & {
@@ -32,8 +32,7 @@ export function bondWithdrawTx(
     fixedGas: u<UST>;
     network: NetworkInfo;
     addressProvider: AddressProvider;
-    mantleEndpoint: string;
-    mantleFetch: MantleFetch;
+    queryClient: QueryClient;
     post: (tx: CreateTxOptions) => Promise<TxResult>;
     txErrorReporter?: (error: unknown) => string;
     onTxSucceed?: () => void;

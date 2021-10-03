@@ -1,70 +1,33 @@
 import { COLLATERAL_DENOMS } from '@anchor-protocol/anchor.js';
-import { HumanAddr } from '@anchor-protocol/types';
 import {
   BondClaimableRewards,
   bondClaimableRewardsQuery,
 } from '@anchor-protocol/webapp-fns';
+import { EMPTY_QUERY_RESULT } from '@libs/app-provider';
 import { createQueryFn } from '@libs/react-query-utils';
-import {
-  ConnectedWallet,
-  useConnectedWallet,
-} from '@terra-money/wallet-provider';
-import { MantleFetch } from '@libs/mantle';
-import { EMPTY_QUERY_RESULT, useTerraWebapp } from '@libs/webapp-provider';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = createQueryFn(
-  (
-    mantleEndpoint: string,
-    mantleFetch: MantleFetch,
-    connectedWallet: ConnectedWallet | undefined,
-    bAssetRewardContract: HumanAddr,
-  ) => {
-    return connectedWallet?.walletAddress
-      ? bondClaimableRewardsQuery({
-          mantleEndpoint,
-          mantleFetch,
-          wasmQuery: {
-            rewardState: {
-              contractAddress: bAssetRewardContract,
-              query: {
-                state: {},
-              },
-            },
-            claimableReward: {
-              contractAddress: bAssetRewardContract,
-              query: {
-                holder: {
-                  address: connectedWallet.walletAddress,
-                },
-              },
-            },
-          },
-        })
-      : Promise.resolve(undefined);
-  },
-);
+const queryFn = createQueryFn(bondClaimableRewardsQuery);
 
 export function useBondClaimableRewards(
   rewardDenom: COLLATERAL_DENOMS,
 ): UseQueryResult<BondClaimableRewards | undefined> {
   const connectedWallet = useConnectedWallet();
 
-  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
-
-  const {
-    contractAddress: { bluna, beth },
-  } = useAnchorWebapp();
+  const { queryClient, queryErrorReporter, contractAddress } =
+    useAnchorWebapp();
 
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.BOND_CLAIMABLE_REWARDS,
-      mantleEndpoint,
-      mantleFetch,
-      connectedWallet,
-      rewardDenom === COLLATERAL_DENOMS.UBETH ? beth.reward : bluna.reward,
+      connectedWallet?.walletAddress,
+      rewardDenom === COLLATERAL_DENOMS.UBETH
+        ? contractAddress.beth.reward
+        : contractAddress.bluna.reward,
+      queryClient,
     ],
     queryFn,
     {

@@ -1,8 +1,7 @@
 import { ANC, u, UST } from '@anchor-protocol/types';
 import { ancAncUstLpProvideTx } from '@anchor-protocol/webapp-fns';
 import { useAnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
-import { useFixedFee } from '@libs/app-provider';
-import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
+import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
@@ -20,13 +19,12 @@ export interface AncAncUstLpProvideTxParams {
 export function useAncAncUstLpProvideTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { addressProvider, constants } = useAnchorWebapp();
+  const { queryClient, txErrorReporter, addressProvider, constants } =
+    useAnchorWebapp();
 
   const { tax } = useAnchorBank();
 
   const fixedFee = useFixedFee();
-
-  const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
 
   const refetchQueries = useRefetchQueries();
 
@@ -62,8 +60,7 @@ export function useAncAncUstLpProvideTx() {
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
-        mantleEndpoint,
-        mantleFetch,
+        queryClient,
         // error
         txErrorReporter,
         // side effect
@@ -81,8 +78,7 @@ export function useAncAncUstLpProvideTx() {
       constants.gasWanted,
       constants.gasAdjustment,
       addressProvider,
-      mantleEndpoint,
-      mantleFetch,
+      queryClient,
       txErrorReporter,
       refetchQueries,
     ],

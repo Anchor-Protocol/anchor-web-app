@@ -1,7 +1,12 @@
-import { moneyMarket } from '@anchor-protocol/types';
-import { mantle, MantleParams, WasmQuery, WasmQueryData } from '@libs/mantle';
+import { HumanAddr, moneyMarket } from '@anchor-protocol/types';
+import {
+  QueryClient,
+  wasmFetch,
+  WasmQuery,
+  WasmQueryData,
+} from '@libs/query-client';
 
-export interface BorrowCollateralBorrowerWasmQuery {
+interface BorrowCollateralBorrowerWasmQuery {
   custodyBorrower: WasmQuery<
     moneyMarket.custody.Borrower,
     moneyMarket.custody.BorrowerResponse
@@ -11,18 +16,27 @@ export interface BorrowCollateralBorrowerWasmQuery {
 export type BorrowCollateralBorrower =
   WasmQueryData<BorrowCollateralBorrowerWasmQuery>;
 
-export type BorrowCollateralBorrowerQueryParams = Omit<
-  MantleParams<BorrowCollateralBorrowerWasmQuery>,
-  'query' | 'variables'
->;
+export async function borrowCollateralBorrowerQuery(
+  walletAddr: HumanAddr | undefined,
+  custodyContract: HumanAddr,
+  queryClient: QueryClient,
+): Promise<BorrowCollateralBorrower | undefined> {
+  if (!walletAddr) {
+    return undefined;
+  }
 
-export async function borrowCollateralBorrowerQuery({
-  mantleEndpoint,
-  ...params
-}: BorrowCollateralBorrowerQueryParams): Promise<BorrowCollateralBorrower> {
-  return mantle<BorrowCollateralBorrowerWasmQuery>({
-    mantleEndpoint: `${mantleEndpoint}?borrow--collateral-borrower`,
-    variables: {},
-    ...params,
+  return wasmFetch<BorrowCollateralBorrowerWasmQuery>({
+    ...queryClient,
+    id: `borrow--collateral-borrower`,
+    wasmQuery: {
+      custodyBorrower: {
+        contractAddress: custodyContract,
+        query: {
+          borrower: {
+            address: walletAddr,
+          },
+        },
+      },
+    },
   });
 }

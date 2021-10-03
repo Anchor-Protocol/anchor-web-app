@@ -1,10 +1,8 @@
 import { COLLATERAL_DENOMS, MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import { bAsset } from '@anchor-protocol/types';
 import { borrowProvideCollateralTx } from '@anchor-protocol/webapp-fns';
-import { useFixedFee } from '@libs/app-provider';
-import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
+import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
-
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
 import { useAnchorWebapp } from '../../contexts/context';
@@ -21,9 +19,8 @@ export interface BorrowProvideCollateralTxParams {
 export function useBorrowProvideCollateralTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { addressProvider, constants } = useAnchorWebapp();
-
-  const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
+  const { queryClient, txErrorReporter, addressProvider, constants } =
+    useAnchorWebapp();
 
   const { refetch: borrowMarketQuery } = useBorrowMarketQuery();
   const { refetch: borrowBorrowerQuery } = useBorrowBorrowerQuery();
@@ -55,8 +52,7 @@ export function useBorrowProvideCollateralTx() {
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
-        mantleEndpoint,
-        mantleFetch,
+        queryClient,
         borrowMarketQuery,
         borrowBorrowerQuery,
         // error
@@ -76,8 +72,7 @@ export function useBorrowProvideCollateralTx() {
       constants.gasAdjustment,
       constants.gasWanted,
       fixedFee,
-      mantleEndpoint,
-      mantleFetch,
+      queryClient,
       refetchQueries,
       txErrorReporter,
     ],

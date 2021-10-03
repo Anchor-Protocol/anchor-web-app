@@ -1,38 +1,17 @@
-import { defaultMantleFetch } from '@libs/mantle';
-import {
-  TEST_ADDRESSES,
-  TEST_MANTLE_ENDPOINT,
-  TEST_WALLET_ADDRESS,
-} from '../../../test-env';
+import { TEST_HIVE_CLIENT } from '@libs/app-fns/test-env';
+import { TEST_ADDRESSES, TEST_WALLET_ADDRESS } from '../../../test-env';
 import { rewardsAncGovernanceRewardsQuery } from '../ancGovernanceRewards';
 
 describe('queries/rewardsAncGovernance', () => {
   test('should get result from query', async () => {
-    const { userANCBalance, userGovStakingInfo } =
-      await rewardsAncGovernanceRewardsQuery({
-        mantleFetch: defaultMantleFetch,
-        mantleEndpoint: TEST_MANTLE_ENDPOINT,
-        wasmQuery: {
-          userGovStakingInfo: {
-            contractAddress: TEST_ADDRESSES.anchorToken.gov,
-            query: {
-              staker: {
-                address: TEST_WALLET_ADDRESS,
-              },
-            },
-          },
-          userANCBalance: {
-            contractAddress: TEST_ADDRESSES.cw20.ANC,
-            query: {
-              balance: {
-                address: TEST_WALLET_ADDRESS,
-              },
-            },
-          },
-        },
-      });
+    const result = await rewardsAncGovernanceRewardsQuery(
+      TEST_WALLET_ADDRESS,
+      TEST_ADDRESSES.anchorToken.gov,
+      TEST_ADDRESSES.cw20.ANC,
+      TEST_HIVE_CLIENT,
+    );
 
-    expect(typeof userGovStakingInfo?.balance).toBe('string');
-    expect(typeof userANCBalance?.balance).toBe('string');
+    expect(typeof result?.userGovStakingInfo?.balance).toBe('string');
+    expect(typeof result?.userANCBalance?.balance).toBe('string');
   });
 });

@@ -1,9 +1,8 @@
 import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import { aUST, u, UST } from '@anchor-protocol/types';
 import { earnWithdrawTx } from '@anchor-protocol/webapp-fns';
-import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
+import { useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
-
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
 import { useAnchorWebapp } from '../../contexts/context';
@@ -18,9 +17,8 @@ export interface EarnWithdrawTxParams {
 export function useEarnWithdrawTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { addressProvider, constants } = useAnchorWebapp();
-
-  const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
+  const { addressProvider, constants, queryClient, txErrorReporter } =
+    useAnchorWebapp();
 
   const refetchQueries = useRefetchQueries();
 
@@ -43,8 +41,7 @@ export function useEarnWithdrawTx() {
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
-        mantleEndpoint,
-        mantleFetch,
+        queryClient,
         // error
         txErrorReporter,
         // side effect
@@ -56,11 +53,10 @@ export function useEarnWithdrawTx() {
     },
     [
       connectedWallet,
-      addressProvider,
       constants.gasWanted,
       constants.gasAdjustment,
-      mantleEndpoint,
-      mantleFetch,
+      addressProvider,
+      queryClient,
       txErrorReporter,
       refetchQueries,
     ],

@@ -1,27 +1,13 @@
-import { defaultMantleFetch } from '@libs/mantle';
-import { TEST_ADDRESSES, TEST_MANTLE_ENDPOINT } from '../../../test-env';
+import { TEST_LCD_CLIENT } from '@libs/app-fns/test-env';
+import { TEST_ADDRESSES } from '../../../test-env';
 import { bondBLunaExchangeRateQuery } from '../bLunaExchangeRate';
 
 describe('queries/bLunaExchangeRate', () => {
   test('should get result from query', async () => {
-    const { state, parameters } = await bondBLunaExchangeRateQuery({
-      mantleFetch: defaultMantleFetch,
-      mantleEndpoint: TEST_MANTLE_ENDPOINT,
-      wasmQuery: {
-        state: {
-          contractAddress: TEST_ADDRESSES.bluna.hub,
-          query: {
-            state: {},
-          },
-        },
-        parameters: {
-          contractAddress: TEST_ADDRESSES.bluna.hub,
-          query: {
-            parameters: {},
-          },
-        },
-      },
-    });
+    const { state, parameters } = await bondBLunaExchangeRateQuery(
+      TEST_ADDRESSES.bluna.hub,
+      TEST_LCD_CLIENT,
+    );
 
     expect(+state.exchange_rate).not.toBeNaN();
     expect(state).not.toBeUndefined();

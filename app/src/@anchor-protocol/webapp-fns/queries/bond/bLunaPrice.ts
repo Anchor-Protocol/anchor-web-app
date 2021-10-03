@@ -1,8 +1,13 @@
-import { bLuna, terraswap, Token } from '@anchor-protocol/types';
-import { mantle, MantleParams, WasmQuery, WasmQueryData } from '@libs/mantle';
+import { bLuna, HumanAddr, terraswap, Token } from '@anchor-protocol/types';
+import {
+  QueryClient,
+  wasmFetch,
+  WasmQuery,
+  WasmQueryData,
+} from '@libs/query-client';
 import big from 'big.js';
 
-export interface BondBLunaPriceWasmQuery {
+interface BondBLunaPriceWasmQuery {
   terraswapPool: WasmQuery<
     terraswap.pair.Pool,
     terraswap.pair.PoolResponse<Token, Token>
@@ -13,21 +18,21 @@ export type BondBLunaPrice = WasmQueryData<BondBLunaPriceWasmQuery> & {
   bLunaPrice: bLuna;
 };
 
-export type BondBLunaPriceQueryParams = Omit<
-  MantleParams<BondBLunaPriceWasmQuery>,
-  'query' | 'variables'
->;
-
-export async function bondBLunaPriceQuery({
-  mantleEndpoint,
-  wasmQuery,
-  ...params
-}: BondBLunaPriceQueryParams): Promise<BondBLunaPrice> {
-  const { terraswapPool } = await mantle<BondBLunaPriceWasmQuery>({
-    mantleEndpoint: `${mantleEndpoint}?bond--bluna-price`,
-    variables: {},
-    wasmQuery,
-    ...params,
+export async function bondBLunaPriceQuery(
+  bLunaLunaPairContract: HumanAddr,
+  queryClient: QueryClient,
+): Promise<BondBLunaPrice> {
+  const { terraswapPool } = await wasmFetch<BondBLunaPriceWasmQuery>({
+    ...queryClient,
+    id: `bond--bluna-price`,
+    wasmQuery: {
+      terraswapPool: {
+        contractAddress: bLunaLunaPairContract,
+        query: {
+          pool: {},
+        },
+      },
+    },
   });
 
   return {

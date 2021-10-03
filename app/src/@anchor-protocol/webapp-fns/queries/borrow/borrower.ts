@@ -1,7 +1,12 @@
-import { moneyMarket } from '@anchor-protocol/types';
-import { mantle, MantleParams, WasmQuery, WasmQueryData } from '@libs/mantle';
+import { HumanAddr, moneyMarket } from '@anchor-protocol/types';
+import {
+  QueryClient,
+  wasmFetch,
+  WasmQuery,
+  WasmQueryData,
+} from '@libs/query-client';
 
-export interface BorrowBorrowerWasmQuery {
+interface BorrowBorrowerWasmQuery {
   marketBorrowerInfo: WasmQuery<
     moneyMarket.market.BorrowerInfo,
     moneyMarket.market.BorrowerInfoResponse
@@ -20,32 +25,51 @@ export type BorrowBorrower = WasmQueryData<BorrowBorrowerWasmQuery> & {
   blockHeight: number;
 };
 
-export type BorrowBorrowerQueryParams = Omit<
-  MantleParams<BorrowBorrowerWasmQuery>,
-  'query' | 'variables'
-> & {
-  lastSyncedHeight: () => Promise<number>;
-};
+export async function borrowBorrowerQuery(
+  walletAddr: HumanAddr | undefined,
+  lastSyncedHeight: () => Promise<number>,
+  marketContract: HumanAddr,
+  overseerContract: HumanAddr,
+  queryClient: QueryClient,
+): Promise<BorrowBorrower | undefined> {
+  if (!walletAddr) {
+    return undefined;
+  }
 
-export async function borrowBorrowerQuery({
-  mantleEndpoint,
-  wasmQuery,
-  lastSyncedHeight,
-  ...params
-}: BorrowBorrowerQueryParams): Promise<BorrowBorrower> {
   const blockHeight = await lastSyncedHeight();
 
-  wasmQuery.marketBorrowerInfo.query.borrower_info.block_height =
-    blockHeight + 1;
-
-  wasmQuery.overseerBorrowLimit.query.borrow_limit.block_time = blockHeight + 1;
-
   const { marketBorrowerInfo, overseerCollaterals, overseerBorrowLimit } =
-    await mantle<BorrowBorrowerWasmQuery>({
-      mantleEndpoint: `${mantleEndpoint}?borrow--borrower`,
-      variables: {},
-      wasmQuery,
-      ...params,
+    await wasmFetch<BorrowBorrowerWasmQuery>({
+      ...queryClient,
+      id: `borrow--borrower`,
+      wasmQuery: {
+        marketBorrowerInfo: {
+          contractAddress: marketContract,
+          query: {
+            borrower_info: {
+              borrower: walletAddr,
+              block_height: blockHeight + 1,
+            },
+          },
+        },
+        overseerCollaterals: {
+          contractAddress: overseerContract,
+          query: {
+            collaterals: {
+              borrower: walletAddr,
+            },
+          },
+        },
+        overseerBorrowLimit: {
+          contractAddress: overseerContract,
+          query: {
+            borrow_limit: {
+              borrower: walletAddr,
+              block_time: blockHeight + 1,
+            },
+          },
+        },
+      },
     });
 
   return {

@@ -1,29 +1,27 @@
-import { u, UST } from '@anchor-protocol/types';
-import { AnchorTax } from '@anchor-protocol/webapp-fns/types';
+import { Rate, u, UST } from '@anchor-protocol/types';
+import { computeMaxUstBalanceForUstTransfer } from '@libs/app-fns';
 import { max, min } from '@libs/big-math';
 import { microfy } from '@libs/formatter';
 import { FormReturn } from '@libs/use-form';
-import { computeMaxUstBalanceForUstTransfer } from '@libs/webapp-fns';
-import big, { Big, BigSource } from 'big.js';
+import big, { Big } from 'big.js';
 
 export interface EarnDepositFormInput {
   depositAmount: UST;
 }
 
 export interface EarnDepositFormDependency {
-  userUUSTBalance: u<UST<BigSource>>;
-  fixedGas: u<UST<BigSource>>;
-  tax: AnchorTax;
-  //taxRate: Rate<BigSource>;
-  //maxTaxUUSD: u<UST<BigSource>>;
+  userUUSTBalance: u<UST>;
+  fixedGas: u<UST>;
+  taxRate: Rate;
+  maxTaxUUSD: u<UST>;
   isConnected: boolean;
 }
 
 export interface EarnDepositFormStates extends EarnDepositFormInput {
   availablePost: boolean;
-  maxAmount: u<UST<BigSource>>;
-  sendAmount?: u<UST<BigSource>>;
-  txFee?: u<UST<BigSource>>;
+  maxAmount: u<UST>;
+  sendAmount?: u<UST>;
+  txFee?: u<UST>;
   invalidTxFee?: string;
   invalidDepositAmount?: string;
   invalidNextTxFee?: string;
@@ -34,9 +32,8 @@ export interface EarnDepositFormAsyncStates {}
 export const earnDepositForm =
   ({
     fixedGas,
-    tax,
-    //taxRate,
-    //maxTaxUUSD,
+    taxRate,
+    maxTaxUUSD,
     userUUSTBalance,
     isConnected,
   }: EarnDepositFormDependency) =>
@@ -57,9 +54,9 @@ export const earnDepositForm =
 
       const uAmount = microfy(depositAmount);
       const ratioTxFee = big(uAmount.minus(fixedGas))
-        .div(big(1).add(tax.taxRate))
-        .mul(tax.taxRate);
-      const maxTax = big(tax.maxTaxUUSD);
+        .div(big(1).add(taxRate))
+        .mul(taxRate);
+      const maxTax = big(maxTaxUUSD);
       return max(min(ratioTxFee, maxTax), 0).plus(fixedGas) as u<UST<Big>>;
     })();
 
@@ -71,7 +68,8 @@ export const earnDepositForm =
     // maxAmount
     const maxAmount = computeMaxUstBalanceForUstTransfer(
       userUUSTBalance,
-      tax,
+      taxRate,
+      maxTaxUUSD,
       fixedGas,
     );
 
@@ -116,9 +114,9 @@ export const earnDepositForm =
     return [
       {
         depositAmount,
-        txFee,
-        sendAmount,
-        maxAmount,
+        txFee: txFee?.toFixed() as u<UST>,
+        sendAmount: sendAmount?.toFixed() as u<UST>,
+        maxAmount: maxAmount?.toFixed() as u<UST>,
         invalidTxFee,
         invalidDepositAmount,
         invalidNextTxFee,

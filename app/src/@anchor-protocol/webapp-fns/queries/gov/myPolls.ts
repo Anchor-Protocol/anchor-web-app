@@ -1,5 +1,5 @@
 import { ANC, anchorToken, HumanAddr, u } from '@anchor-protocol/types';
-import { mantle, MantleParams, WasmQuery } from '@libs/mantle';
+import { QueryClient, wasmFetch, WasmQuery } from '@libs/query-client';
 
 export type MyPoll = anchorToken.gov.PollResponse & {
   my: { vote: 'yes' | 'no'; balance: u<ANC> } | undefined;
@@ -13,23 +13,18 @@ interface StakerWasmQuery {
   staker: WasmQuery<anchorToken.gov.Staker, anchorToken.gov.StakerResponse>;
 }
 
-export type GovMyPollsQueryParams = Omit<
-  MantleParams<{}>,
-  'query' | 'variables' | 'wasmQuery'
-> & {
-  govContract: HumanAddr;
-  walletAddress: HumanAddr;
-};
+export async function govMyPollsQuery(
+  walletAddr: HumanAddr | undefined,
+  govContract: HumanAddr,
+  queryClient: QueryClient,
+): Promise<MyPoll[]> {
+  if (!walletAddr) {
+    return [];
+  }
 
-export async function govMyPollsQuery({
-  mantleEndpoint,
-  govContract,
-  walletAddress,
-  ...mantleParams
-}: GovMyPollsQueryParams): Promise<MyPoll[]> {
-  const { polls } = await mantle<PollsWasmQuery>({
-    mantleEndpoint: `${mantleEndpoint}?gov--my-polls`,
-    variables: {},
+  const { polls } = await wasmFetch<PollsWasmQuery>({
+    ...queryClient,
+    id: `gov--my-polls`,
     wasmQuery: {
       polls: {
         contractAddress: govContract,
@@ -41,22 +36,21 @@ export async function govMyPollsQuery({
         },
       },
     },
-    ...mantleParams,
   });
 
   if (polls.polls.length === 0) {
     return [];
   }
 
-  const { staker } = await mantle<StakerWasmQuery>({
-    mantleEndpoint: `${mantleEndpoint}?gov--my-polls-staker`,
-    variables: {},
+  const { staker } = await wasmFetch<StakerWasmQuery>({
+    ...queryClient,
+    id: `gov--my-polls-staker`,
     wasmQuery: {
       staker: {
         contractAddress: govContract,
         query: {
           staker: {
-            address: walletAddress,
+            address: walletAddr,
           },
         },
       },

@@ -1,7 +1,7 @@
-import { PollingTimeout } from '@libs/webapp-fns';
+import { PollingTimeout } from '@libs/app-fns';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { HorizontalHeavyRuler } from '@libs/neumorphism-ui/components/HorizontalHeavyRuler';
-import { TxReceipt, TxResultRendering, TxStreamPhase } from '@libs/webapp-fns';
+import { TxReceipt, TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import { AccessTime, Close, Done as DoneIcon } from '@material-ui/icons';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import React from 'react';

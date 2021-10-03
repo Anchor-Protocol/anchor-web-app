@@ -1,55 +1,26 @@
-import { HumanAddr } from '@anchor-protocol/types';
 import {
   BondBLunaExchangeRate,
   bondBLunaExchangeRateQuery,
 } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@libs/react-query-utils';
-import { MantleFetch } from '@libs/mantle';
-import { useTerraWebapp } from '@libs/webapp-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = createQueryFn(
-  (
-    mantleEndpoint: string,
-    mantleFetch: MantleFetch,
-    bLunaHubContract: HumanAddr,
-  ) => {
-    return bondBLunaExchangeRateQuery({
-      mantleEndpoint,
-      mantleFetch,
-      wasmQuery: {
-        state: {
-          contractAddress: bLunaHubContract,
-          query: {
-            state: {},
-          },
-        },
-        parameters: {
-          contractAddress: bLunaHubContract,
-          query: {
-            parameters: {},
-          },
-        },
-      },
-    });
-  },
-);
+const queryFn = createQueryFn(bondBLunaExchangeRateQuery);
 
 export function useBondBLunaExchangeRateQuery(): UseQueryResult<
   BondBLunaExchangeRate | undefined
 > {
-  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
+  const { queryClient, queryErrorReporter } = useAnchorWebapp();
 
   const { contractAddress } = useAnchorWebapp();
 
   return useQuery(
     [
       ANCHOR_QUERY_KEY.BOND_BLUNA_EXCHANGE_RATE,
-      mantleEndpoint,
-      mantleFetch,
       contractAddress.bluna.hub,
+      queryClient,
     ],
     queryFn,
     {

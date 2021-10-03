@@ -1,52 +1,17 @@
-import { u, UST } from '@anchor-protocol/types';
-import {
-  TEST_ADDRESSES,
-  TEST_MANTLE_ENDPOINT,
-} from '@anchor-protocol/webapp-fns/test-env';
-import { defaultMantleFetch } from '@libs/mantle';
+import { TEST_ADDRESSES } from '@anchor-protocol/webapp-fns/test-env';
+import { TEST_HIVE_CLIENT } from '@libs/app-fns/test-env';
 import { borrowMarketQuery } from '../market';
 
 describe('queries/market', () => {
   test('should get result from query', async () => {
     const { marketState, borrowRate, oraclePrices, overseerWhitelist } =
-      await borrowMarketQuery({
-        bEthTokenAddr: TEST_ADDRESSES.cw20.bEth,
-        bLunaTokenAddr: TEST_ADDRESSES.cw20.bLuna,
-        terraswapFactoryAddr: TEST_ADDRESSES.terraswap.factory,
-        mantleFetch: defaultMantleFetch,
-        mantleEndpoint: TEST_MANTLE_ENDPOINT,
-        useExternalOraclePrice: false,
-        wasmQuery: {
-          marketState: {
-            contractAddress: TEST_ADDRESSES.moneyMarket.market,
-            query: {
-              state: {},
-            },
-          },
-          overseerWhitelist: {
-            contractAddress: TEST_ADDRESSES.moneyMarket.overseer,
-            query: {
-              whitelist: {},
-            },
-          },
-          borrowRate: {
-            contractAddress: TEST_ADDRESSES.moneyMarket.interestModel,
-            query: {
-              borrow_rate: {
-                market_balance: '' as u<UST>,
-                total_reserves: '' as u<UST>,
-                total_liabilities: '' as u<UST>,
-              },
-            },
-          },
-          oraclePrices: {
-            contractAddress: TEST_ADDRESSES.moneyMarket.oracle,
-            query: {
-              prices: {},
-            },
-          },
-        },
-      });
+      await borrowMarketQuery(
+        TEST_ADDRESSES.moneyMarket.market,
+        TEST_ADDRESSES.moneyMarket.interestModel,
+        TEST_ADDRESSES.moneyMarket.oracle,
+        TEST_ADDRESSES.moneyMarket.overseer,
+        TEST_HIVE_CLIENT,
+      );
 
     expect(typeof marketState.total_liabilities).toBe('string');
     expect(borrowRate).not.toBeUndefined();

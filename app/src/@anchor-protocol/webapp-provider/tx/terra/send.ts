@@ -1,8 +1,7 @@
 import { CW20Addr, HumanAddr, Token, u, UST } from '@anchor-protocol/types';
 import { terraSendTx } from '@anchor-protocol/webapp-fns';
-import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
+import { useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
-
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
 import { useAnchorWebapp } from '../../contexts/context';
@@ -21,9 +20,7 @@ export interface TerraSendTxParams {
 export function useTerraSendTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { constants } = useAnchorWebapp();
-
-  const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
+  const { queryClient, txErrorReporter, constants } = useAnchorWebapp();
 
   const refetchQueries = useRefetchQueries();
 
@@ -53,8 +50,7 @@ export function useTerraSendTx() {
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
         // query
-        mantleEndpoint,
-        mantleFetch,
+        queryClient,
         // error
         txErrorReporter,
         // side effect
@@ -68,8 +64,7 @@ export function useTerraSendTx() {
       connectedWallet,
       constants.gasWanted,
       constants.gasAdjustment,
-      mantleEndpoint,
-      mantleFetch,
+      queryClient,
       txErrorReporter,
       refetchQueries,
     ],

@@ -9,13 +9,12 @@ import {
 } from '@anchor-protocol/notation';
 import { ANC, NativeDenom, terraswap, u, UST } from '@anchor-protocol/types';
 import {
-  terraswapReverseSimulationQuery,
-  terraswapSimulationQuery,
   useAnchorWebapp,
   useAncPriceQuery,
   useAncSellTx,
 } from '@anchor-protocol/webapp-provider';
 import { useAnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
+import { terraswapSimulationQuery } from '@libs/app-fns';
 import { useFixedFee } from '@libs/app-provider';
 import { demicrofy, formatFluidDecimalPoints, microfy } from '@libs/formatter';
 import { isZero } from '@libs/is-zero';
@@ -23,7 +22,6 @@ import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { NumberMuiInput } from '@libs/neumorphism-ui/components/NumberMuiInput';
 import { SelectAndTextInputContainer } from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
 import { useResolveLast } from '@libs/use-resolve-last';
-import { useTerraWebapp } from '@libs/webapp-provider';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
@@ -59,11 +57,9 @@ export function TradeSell() {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const { mantleEndpoint, mantleFetch } = useTerraWebapp();
-
   const fixedFee = useFixedFee();
 
-  const { contractAddress: address } = useAnchorWebapp();
+  const { queryClient, contractAddress: address } = useAnchorWebapp();
 
   const bank = useAnchorBank();
 
@@ -155,27 +151,18 @@ export function TradeSell() {
         const amount = microfy(fromAmount).toString() as u<ANC>;
 
         resolveSimulation(
-          terraswapSimulationQuery({
-            mantleEndpoint,
-            mantleFetch,
-            wasmQuery: {
-              simulation: {
-                contractAddress: address.terraswap.ancUstPair,
-                query: {
-                  simulation: {
-                    offer_asset: {
-                      info: {
-                        token: {
-                          contract_addr: address.cw20.ANC,
-                        },
-                      },
-                      amount,
-                    },
-                  },
+          terraswapSimulationQuery(
+            address.terraswap.ancUstPair,
+            {
+              info: {
+                token: {
+                  contract_addr: address.cw20.ANC,
                 },
               },
+              amount,
             },
-          }).then(({ simulation }) => {
+            queryClient,
+          ).then(({ simulation }) => {
             return simulation
               ? sellToSimulation(
                   simulation as terraswap.pair.SimulationResponse<UST, ANC>,
@@ -193,8 +180,7 @@ export function TradeSell() {
       address.terraswap.ancUstPair,
       bank.tax,
       fixedFee,
-      mantleEndpoint,
-      mantleFetch,
+      queryClient,
       resolveSimulation,
     ],
   );
@@ -217,27 +203,18 @@ export function TradeSell() {
         const amount = microfy(toAmount).toString() as u<UST>;
 
         resolveSimulation(
-          terraswapReverseSimulationQuery({
-            mantleEndpoint,
-            mantleFetch,
-            wasmQuery: {
-              simulation: {
-                contractAddress: address.terraswap.ancUstPair,
-                query: {
-                  simulation: {
-                    offer_asset: {
-                      info: {
-                        native_token: {
-                          denom: 'uusd' as NativeDenom,
-                        },
-                      },
-                      amount,
-                    },
-                  },
+          terraswapSimulationQuery(
+            address.terraswap.ancUstPair,
+            {
+              info: {
+                native_token: {
+                  denom: 'uusd' as NativeDenom,
                 },
               },
+              amount,
             },
-          }).then(({ simulation }) => {
+            queryClient,
+          ).then(({ simulation }) => {
             return simulation
               ? sellFromSimulation(
                   simulation as terraswap.pair.SimulationResponse<UST, ANC>,
@@ -254,8 +231,7 @@ export function TradeSell() {
       address.terraswap.ancUstPair,
       bank.tax,
       fixedFee,
-      mantleEndpoint,
-      mantleFetch,
+      queryClient,
       resolveSimulation,
     ],
   );

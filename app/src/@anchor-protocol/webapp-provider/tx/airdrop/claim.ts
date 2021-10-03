@@ -1,7 +1,6 @@
 import { Airdrop, airdropClaimTx } from '@anchor-protocol/webapp-fns';
-import { useGasPrice } from '@libs/app-provider';
+import { useGasPrice, useRefetchQueries } from '@libs/app-provider';
 import { u, UST } from '@libs/types';
-import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
@@ -17,11 +16,10 @@ export interface AirdropClaimTxParams {
 export function useAirdropClaimTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { constants, contractAddress } = useAnchorWebapp();
+  const { queryClient, txErrorReporter, constants, contractAddress } =
+    useAnchorWebapp();
 
   const airdropFee = useGasPrice(constants.airdropGas, 'uusd');
-
-  const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
 
   const refetchQueries = useRefetchQueries();
 
@@ -42,8 +40,7 @@ export function useAirdropClaimTx() {
         gasFee: constants.airdropGasWanted,
         txFee: airdropFee as u<UST>,
         // query
-        mantleEndpoint,
-        mantleFetch,
+        queryClient,
         // error
         txErrorReporter,
         // side effect
@@ -59,8 +56,7 @@ export function useAirdropClaimTx() {
       constants.gasAdjustment,
       constants.airdropGasWanted,
       airdropFee,
-      mantleEndpoint,
-      mantleFetch,
+      queryClient,
       txErrorReporter,
       refetchQueries,
     ],

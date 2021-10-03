@@ -1,50 +1,24 @@
-import { HumanAddr } from '@anchor-protocol/types';
 import { govMyPollsQuery, MyPoll } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@libs/react-query-utils';
-import {
-  ConnectedWallet,
-  useConnectedWallet,
-} from '@terra-money/wallet-provider';
-import { MantleFetch } from '@libs/mantle';
-import { useTerraWebapp } from '@libs/webapp-provider';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = createQueryFn(
-  (
-    mantleEndpoint: string,
-    mantleFetch: MantleFetch,
-    connectedWallet: ConnectedWallet | undefined,
-    govContract: HumanAddr,
-  ) => {
-    return connectedWallet?.walletAddress
-      ? govMyPollsQuery({
-          mantleEndpoint,
-          mantleFetch,
-          walletAddress: connectedWallet.walletAddress,
-          govContract,
-        })
-      : Promise.resolve([]);
-  },
-);
+const queryFn = createQueryFn(govMyPollsQuery);
 
 export function useGovMyPollsQuery(): UseQueryResult<MyPoll[]> {
-  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
-
   const connectedWallet = useConnectedWallet();
 
-  const {
-    contractAddress: { anchorToken },
-  } = useAnchorWebapp();
+  const { queryClient, contractAddress, queryErrorReporter } =
+    useAnchorWebapp();
 
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.GOV_MYPOLLS,
-      mantleEndpoint,
-      mantleFetch,
-      connectedWallet,
-      anchorToken.gov,
+      connectedWallet?.walletAddress,
+      contractAddress.anchorToken.gov,
+      queryClient,
     ],
     queryFn,
     {

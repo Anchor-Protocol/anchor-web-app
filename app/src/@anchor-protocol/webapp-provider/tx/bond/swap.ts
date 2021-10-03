@@ -1,9 +1,7 @@
 import { bLuna, Rate } from '@anchor-protocol/types';
 import { bondSwapTx } from '@anchor-protocol/webapp-fns';
-import { useFixedFee } from '@libs/app-provider';
-import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
+import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
-
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
 import { useAnchorWebapp } from '../../contexts/context';
@@ -19,9 +17,8 @@ export interface BondSwapTxParams {
 export function useBondSwapTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { addressProvider, constants } = useAnchorWebapp();
-
-  const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
+  const { queryClient, txErrorReporter, addressProvider, constants } =
+    useAnchorWebapp();
 
   const refetchQueries = useRefetchQueries();
 
@@ -49,8 +46,7 @@ export function useBondSwapTx() {
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
-        mantleEndpoint,
-        mantleFetch,
+        queryClient,
         // error
         txErrorReporter,
         // side effect
@@ -66,8 +62,7 @@ export function useBondSwapTx() {
       constants.gasWanted,
       constants.gasAdjustment,
       addressProvider,
-      mantleEndpoint,
-      mantleFetch,
+      queryClient,
       txErrorReporter,
       refetchQueries,
     ],

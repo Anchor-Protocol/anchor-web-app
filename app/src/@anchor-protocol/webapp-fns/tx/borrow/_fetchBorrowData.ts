@@ -1,5 +1,5 @@
-import { TxInfoData, TxResultRendering, TxStreamPhase } from '@libs/webapp-fns';
-import { TxHelper } from '@libs/webapp-fns/tx/internal';
+import { TxInfoData, TxResultRendering, TxStreamPhase } from '@libs/app-fns';
+import { TxHelper } from '@libs/app-fns/tx/internal';
 import { QueryObserverResult } from 'react-query';
 import { BorrowBorrower } from '../../queries/borrow/borrower';
 import { BorrowMarket } from '../../queries/borrow/market';

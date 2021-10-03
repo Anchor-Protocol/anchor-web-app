@@ -1,11 +1,9 @@
 import { ANC } from '@anchor-protocol/types';
 import { ancSellTx } from '@anchor-protocol/webapp-fns';
 import { useAncPriceQuery } from '@anchor-protocol/webapp-provider';
-import { useFixedFee } from '@libs/app-provider';
+import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { formatExecuteMsgNumber } from '@libs/formatter';
-import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
 import { useStream } from '@rx-stream/react';
-
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
 import { useCallback } from 'react';
@@ -21,9 +19,8 @@ export interface AncSellTxParams {
 export function useAncSellTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { addressProvider, constants } = useAnchorWebapp();
-
-  const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
+  const { queryClient, txErrorReporter, addressProvider, constants } =
+    useAnchorWebapp();
 
   const fixedFee = useFixedFee();
 
@@ -53,8 +50,7 @@ export function useAncSellTx() {
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
-        mantleEndpoint,
-        mantleFetch,
+        queryClient,
         // error
         txErrorReporter,
         // side effect
@@ -71,8 +67,7 @@ export function useAncSellTx() {
       constants.gasWanted,
       constants.gasAdjustment,
       addressProvider,
-      mantleEndpoint,
-      mantleFetch,
+      queryClient,
       txErrorReporter,
       refetchQueries,
     ],

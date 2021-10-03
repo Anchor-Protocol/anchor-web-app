@@ -6,23 +6,23 @@ import {
 } from '@anchor-protocol/anchor.js';
 import { formatANC } from '@anchor-protocol/notation';
 import { ANC, Gas, HumanAddr, Rate } from '@anchor-protocol/types';
-import { demicrofy } from '@libs/formatter';
-import { MantleFetch } from '@libs/mantle';
-import { u, UST } from '@libs/types';
 import {
   pickAttributeValueByKey,
   pickEvent,
   RawLogEvent,
   TxResultRendering,
   TxStreamPhase,
-} from '@libs/webapp-fns';
+} from '@libs/app-fns';
 import {
   _catchTxError,
   _createTxOptions,
   _pollTxInfo,
   _postTx,
   TxHelper,
-} from '@libs/webapp-fns/tx/internal';
+} from '@libs/app-fns/tx/internal';
+import { demicrofy } from '@libs/formatter';
+import { QueryClient } from '@libs/query-client';
+import { u, UST } from '@libs/types';
 import { pipe } from '@rx-stream/pipe';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import {
@@ -42,8 +42,7 @@ export function rewardsAllClaimTx($: {
   fixedGas: u<UST>;
   network: NetworkInfo;
   addressProvider: AddressProvider;
-  mantleEndpoint: string;
-  mantleFetch: MantleFetch;
+  queryClient: QueryClient;
   post: (tx: CreateTxOptions) => Promise<TxResult>;
   txErrorReporter?: (error: unknown) => string;
   onTxSucceed?: () => void;

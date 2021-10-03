@@ -4,7 +4,6 @@ import {
 } from '@anchor-protocol/webapp-fns';
 import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
 import { createQueryFn } from '@libs/react-query-utils';
-import { useTerraWebapp } from '@libs/webapp-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
@@ -15,9 +14,7 @@ const queryFn = createQueryFn((endpoint: string, time: '72hrs' | 'total') => {
 export function useMarketBuybackQuery(
   time: '72hrs' | 'total',
 ): UseQueryResult<MarketBuybackData | undefined> {
-  const { queryErrorReporter } = useTerraWebapp();
-
-  const { indexerApiEndpoint } = useAnchorWebapp();
+  const { queryErrorReporter, indexerApiEndpoint } = useAnchorWebapp();
 
   const result = useQuery(
     [ANCHOR_QUERY_KEY.MARKET_BUYBACK, indexerApiEndpoint, time],

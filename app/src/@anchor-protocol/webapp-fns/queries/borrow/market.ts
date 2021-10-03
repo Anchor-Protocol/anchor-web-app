@@ -1,14 +1,17 @@
 import {
   CW20Addr,
-  DateTime,
   HumanAddr,
   moneyMarket,
   Rate,
-  terraswap,
   u,
   UST,
 } from '@anchor-protocol/types';
-import { mantle, MantleParams, WasmQuery, WasmQueryData } from '@libs/mantle';
+import {
+  hiveFetch,
+  HiveQueryClient,
+  WasmQuery,
+  WasmQueryData,
+} from '@libs/query-client';
 import big from 'big.js';
 import { ANCHOR_SAFE_RATIO } from '../../env';
 
@@ -19,7 +22,7 @@ export type BAssetLtv = {
 
 export type BAssetLtvs = Map<CW20Addr, BAssetLtv>;
 
-export interface BorrowMarketWasmQuery {
+interface BorrowMarketWasmQuery {
   marketState: WasmQuery<
     moneyMarket.market.State,
     moneyMarket.market.StateResponse
@@ -72,43 +75,35 @@ export const BORROW_MARKET_STATE_QUERY = `
   }
 `;
 
-export type BorrowMarketQueryParams = Omit<
-  MantleParams<BorrowMarketWasmQuery>,
-  'query' | 'variables'
-> & {
-  terraswapFactoryAddr: HumanAddr;
-  bEthTokenAddr: CW20Addr;
-  bLunaTokenAddr: CW20Addr;
-  useExternalOraclePrice: boolean;
-};
-
 type MarketStateWasmQuery = Pick<BorrowMarketWasmQuery, 'marketState'>;
 type MarketWasmQuery = Omit<BorrowMarketWasmQuery, 'marketState'>;
 
-export async function borrowMarketQuery({
-  mantleEndpoint,
-  wasmQuery,
-  //collateralVector,
-  bLunaTokenAddr,
-  bEthTokenAddr,
-  terraswapFactoryAddr,
-  useExternalOraclePrice,
-  ...params
-}: BorrowMarketQueryParams): Promise<BorrowMarket> {
-  const { marketBalances: _marketBalances, marketState } = await mantle<
+export async function borrowMarketQuery(
+  marketContract: HumanAddr,
+  interestContract: HumanAddr,
+  oracleContract: HumanAddr,
+  overseerContract: HumanAddr,
+  hiveQueryClient: HiveQueryClient,
+): Promise<BorrowMarket> {
+  const { marketBalances: _marketBalances, marketState } = await hiveFetch<
     MarketStateWasmQuery,
     BorrowMarketStateQueryVariables,
     BorrowMarketStateQueryResult
   >({
-    mantleEndpoint: `${mantleEndpoint}?borrow--market-state`,
+    ...hiveQueryClient,
+    id: `borrow--market-state`,
     wasmQuery: {
-      marketState: wasmQuery.marketState,
+      marketState: {
+        contractAddress: marketContract,
+        query: {
+          state: {},
+        },
+      },
     },
     variables: {
-      marketContract: wasmQuery.marketState.contractAddress,
+      marketContract,
     },
     query: BORROW_MARKET_STATE_QUERY,
-    ...params,
   });
 
   const marketBalances: Pick<BorrowMarket, 'marketBalances'>['marketBalances'] =
@@ -117,69 +112,39 @@ export async function borrowMarketQuery({
         ?.Amount ?? '0') as u<UST>,
     };
 
-  //const {
-  //  borrowRate,
-  //  oraclePrices: _oraclePrices,
-  //  overseerWhitelist,
-  //} = await borrowMarket({
-  //  mantleEndpoint,
-  //  wasmQuery,
-  //  marketBalances,
-  //  marketState,
-  //  ...params,
-  //});
-
   const {
     borrowRate,
     oraclePrices: _oraclePrices,
     overseerWhitelist,
-  } = useExternalOraclePrice
-    ? await borrowMarketWithoutOraclePrices({
-        mantleEndpoint,
-        wasmQuery,
-        marketBalances,
-        marketState,
-        bLunaTokenAddr,
-        bEthTokenAddr,
-        terraswapFactoryAddr,
-        useExternalOraclePrice,
-        ...params,
-      })
-    : await borrowMarket({
-        mantleEndpoint,
-        wasmQuery,
-        marketBalances,
-        marketState,
-        bLunaTokenAddr,
-        bEthTokenAddr,
-        terraswapFactoryAddr,
-        useExternalOraclePrice,
-        ...params,
-      });
-
-  //const {
-  //  borrowRate,
-  //  oraclePrices: _oraclePrices,
-  //  overseerWhitelist,
-  //} = await mantle<MarketWasmQuery>({
-  //  mantleEndpoint: `${mantleEndpoint}?borrow--market`,
-  //  variables: {},
-  //  wasmQuery: {
-  //    borrowRate: {
-  //      ...wasmQuery.borrowRate,
-  //      query: {
-  //        borrow_rate: {
-  //          market_balance: marketBalances.uUST,
-  //          total_liabilities: marketState.total_liabilities,
-  //          total_reserves: marketState.total_reserves,
-  //        },
-  //      },
-  //    },
-  //    oraclePrices: wasmQuery.oraclePrices,
-  //    overseerWhitelist: wasmQuery.overseerWhitelist,
-  //  },
-  //  ...params,
-  //});
+  } = await hiveFetch<MarketWasmQuery>({
+    ...hiveQueryClient,
+    id: `borrow--market`,
+    variables: {},
+    wasmQuery: {
+      borrowRate: {
+        contractAddress: interestContract,
+        query: {
+          borrow_rate: {
+            market_balance: marketBalances.uUST,
+            total_liabilities: marketState.total_liabilities,
+            total_reserves: marketState.total_reserves,
+          },
+        },
+      },
+      oraclePrices: {
+        contractAddress: oracleContract,
+        query: {
+          prices: {},
+        },
+      },
+      overseerWhitelist: {
+        contractAddress: overseerContract,
+        query: {
+          whitelist: {},
+        },
+      },
+    },
+  });
 
   const whitelistIndex: Map<
     string,
@@ -238,125 +203,5 @@ export async function borrowMarketQuery({
     //bLunaSafeLtv,
     //bEthMaxLtv,
     //bEthSafeLtv,
-  };
-}
-
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
-function borrowMarket({
-  mantleEndpoint,
-  wasmQuery,
-  marketBalances,
-  marketState,
-  ...params
-}: BorrowMarketQueryParams & {
-  marketBalances: Pick<BorrowMarket, 'marketBalances'>['marketBalances'];
-  marketState: moneyMarket.market.StateResponse;
-}): Promise<WasmQueryData<MarketWasmQuery>> {
-  return mantle<MarketWasmQuery>({
-    mantleEndpoint: `${mantleEndpoint}?borrow--market`,
-    variables: {},
-    wasmQuery: {
-      borrowRate: {
-        ...wasmQuery.borrowRate,
-        query: {
-          borrow_rate: {
-            market_balance: marketBalances.uUST,
-            total_liabilities: marketState.total_liabilities,
-            total_reserves: marketState.total_reserves,
-          },
-        },
-      },
-      oraclePrices: wasmQuery.oraclePrices,
-      overseerWhitelist: wasmQuery.overseerWhitelist,
-    },
-    ...params,
-  });
-}
-
-interface LunaUstPairQuery {
-  lunaPair: WasmQuery<terraswap.factory.Pair, terraswap.factory.PairResponse>;
-}
-
-async function borrowMarketWithoutOraclePrices({
-  mantleEndpoint,
-  wasmQuery,
-  marketBalances,
-  marketState,
-  terraswapFactoryAddr,
-  bLunaTokenAddr,
-  bEthTokenAddr,
-  ...params
-}: BorrowMarketQueryParams & {
-  marketBalances: Pick<BorrowMarket, 'marketBalances'>['marketBalances'];
-  marketState: moneyMarket.market.StateResponse;
-  terraswapFactoryAddr: HumanAddr;
-  bEthTokenAddr: CW20Addr;
-  bLunaTokenAddr: CW20Addr;
-}): Promise<WasmQueryData<MarketWasmQuery>> {
-  type WithoutOraclePrices = Omit<MarketWasmQuery, 'oraclePrices'>;
-
-  const { borrowRate, overseerWhitelist } = await mantle<WithoutOraclePrices>({
-    mantleEndpoint: `${mantleEndpoint}?borrow--market`,
-    variables: {},
-    wasmQuery: {
-      borrowRate: {
-        ...wasmQuery.borrowRate,
-        query: {
-          borrow_rate: {
-            market_balance: marketBalances.uUST,
-            total_liabilities: marketState.total_liabilities,
-            total_reserves: marketState.total_reserves,
-          },
-        },
-      },
-      //oraclePrices: wasmQuery.oraclePrices,
-      overseerWhitelist: wasmQuery.overseerWhitelist,
-    },
-    ...params,
-  });
-
-  const { bLunaPrice, bEthPrice } = await fetch(
-    'https://api.anchorprotocol.com/api/v2/nominal-oracle-prices',
-  )
-    .then((res) => res.json())
-    .then(
-      ({
-        prices,
-      }: {
-        timestamp: DateTime;
-        prices: Array<{ token_address: CW20Addr; denom: string; rate: UST }>;
-      }) => {
-        return {
-          bLunaPrice: prices.find(
-            ({ denom }) => denom.toLowerCase() === 'bluna',
-          )?.rate,
-          bEthPrice: prices.find(({ denom }) => denom.toLowerCase() === 'beth')
-            ?.rate,
-        };
-      },
-    );
-
-  if (!bLunaPrice || !bEthPrice) {
-    throw new Error(`Can't get bLUNA / bETH prices!`);
-  }
-
-  return {
-    borrowRate,
-    overseerWhitelist,
-    oraclePrices: {
-      prices: [
-        {
-          asset: bEthTokenAddr,
-          price: bEthPrice as UST,
-          last_updated_time: Date.now() / 1000,
-        },
-        {
-          asset: bLunaTokenAddr,
-          price: bLunaPrice as UST,
-          last_updated_time: Date.now() / 1000,
-        },
-      ],
-    },
   };
 }

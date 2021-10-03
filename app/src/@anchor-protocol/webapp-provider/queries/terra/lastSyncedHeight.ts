@@ -1,39 +1,34 @@
-import { MantleFetch } from '@libs/mantle';
+import { useAnchorWebapp } from '@anchor-protocol/webapp-provider/contexts/context';
+import { lastSyncedHeightQuery } from '@libs/app-fns';
+import { QueryClient } from '@libs/query-client';
 import { createQueryFn } from '@libs/react-query-utils';
-import { lastSyncedHeightQuery } from '@libs/webapp-fns';
-import { useTerraWebapp } from '@libs/webapp-provider';
+import { useWallet } from '@terra-money/wallet-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
 const storageKey = (mantleEndpoint: string) =>
   `__anchor_last_synced_height__?mantle=${mantleEndpoint}`;
 
-const queryFn = createQueryFn(
-  (mantleEndpoint: string, mantleFetch: MantleFetch) => {
-    return lastSyncedHeightQuery({ mantleEndpoint, mantleFetch }).then(
-      (blockHeight) => {
-        localStorage.setItem(
-          storageKey(mantleEndpoint),
-          blockHeight.toString(),
-        );
-        return blockHeight;
-      },
-    );
-  },
-);
+const queryFn = createQueryFn((queryClient: QueryClient, chainID: string) => {
+  return lastSyncedHeightQuery(queryClient).then((blockHeight) => {
+    localStorage.setItem(storageKey(chainID), blockHeight.toString());
+    return blockHeight;
+  });
+});
 
 export function useLastSyncedHeightQuery(): UseQueryResult<number> {
-  const { mantleEndpoint, mantleFetch, queryErrorReporter } = useTerraWebapp();
+  const { network } = useWallet();
+  const { queryClient, queryErrorReporter } = useAnchorWebapp();
 
   const result = useQuery(
-    [ANCHOR_QUERY_KEY.TERRA_LAST_SYNCED_HEIGHT, mantleEndpoint, mantleFetch],
+    [ANCHOR_QUERY_KEY.TERRA_LAST_SYNCED_HEIGHT, queryClient, network.chainID],
     queryFn,
     {
       refetchInterval: 1000 * 60,
       keepPreviousData: true,
       onError: queryErrorReporter,
       placeholderData: () => {
-        return +(localStorage.getItem(storageKey(mantleEndpoint)) ?? '0');
+        return +(localStorage.getItem(storageKey(network.chainID)) ?? '0');
       },
     },
   );

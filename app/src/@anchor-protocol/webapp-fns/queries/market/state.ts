@@ -1,7 +1,12 @@
-import { moneyMarket, u, UST } from '@anchor-protocol/types';
-import { mantle, MantleParams, WasmQuery, WasmQueryData } from '@libs/mantle';
+import { HumanAddr, moneyMarket, u, UST } from '@anchor-protocol/types';
+import {
+  hiveFetch,
+  HiveQueryClient,
+  WasmQuery,
+  WasmQueryData,
+} from '@libs/query-client';
 
-export interface MarketStateWasmQuery {
+interface MarketStateWasmQuery {
   marketState: WasmQuery<
     moneyMarket.market.State,
     moneyMarket.market.StateResponse
@@ -12,7 +17,7 @@ export interface MarketStateQueryVariables {
   marketContract: string;
 }
 
-export interface MarketStateQueryResult {
+interface MarketStateQueryResult {
   marketBalances: {
     Result: { Denom: string; Amount: string }[];
   };
@@ -38,30 +43,29 @@ export const MARKET_STATE_QUERY = `
   }
 `;
 
-export type MarketStateQueryParams = Omit<
-  MantleParams<MarketStateWasmQuery>,
-  'query' | 'variables'
->;
-
-export async function marketStateQuery({
-  mantleEndpoint,
-  wasmQuery,
-  ...params
-}: MarketStateQueryParams): Promise<MarketState> {
-  const { marketState, marketBalances: _marketBalances } = await mantle<
+export async function marketStateQuery(
+  marketContract: HumanAddr,
+  hiveQueryClient: HiveQueryClient,
+): Promise<MarketState> {
+  const { marketState, marketBalances: _marketBalances } = await hiveFetch<
     MarketStateWasmQuery,
     MarketStateQueryVariables,
     MarketStateQueryResult
   >({
-    mantleEndpoint: `${mantleEndpoint}?market--state`,
+    ...hiveQueryClient,
+    id: `market--state`,
     wasmQuery: {
-      marketState: wasmQuery.marketState,
+      marketState: {
+        contractAddress: marketContract,
+        query: {
+          state: {},
+        },
+      },
     },
     variables: {
-      marketContract: wasmQuery.marketState.contractAddress,
+      marketContract: marketContract,
     },
     query: MARKET_STATE_QUERY,
-    ...params,
   });
 
   const marketBalances: Pick<MarketState, 'marketBalances'>['marketBalances'] =

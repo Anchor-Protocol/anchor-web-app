@@ -1,7 +1,18 @@
-import { anchorToken, AncUstLP, cw20 } from '@anchor-protocol/types';
-import { mantle, MantleParams, WasmQuery, WasmQueryData } from '@libs/mantle';
+import {
+  anchorToken,
+  AncUstLP,
+  cw20,
+  CW20Addr,
+  HumanAddr,
+} from '@anchor-protocol/types';
+import {
+  QueryClient,
+  wasmFetch,
+  WasmQuery,
+  WasmQueryData,
+} from '@libs/query-client';
 
-export interface RewardsClaimableAncUstLpRewardsWasmQuery {
+interface RewardsClaimableAncUstLpRewardsWasmQuery {
   lPBalance: WasmQuery<cw20.Balance, cw20.BalanceResponse<AncUstLP>>;
   lPStakerInfo: WasmQuery<
     anchorToken.staking.StakerInfo,
@@ -12,27 +23,40 @@ export interface RewardsClaimableAncUstLpRewardsWasmQuery {
 export type RewardsClaimableAncUstLpRewards =
   WasmQueryData<RewardsClaimableAncUstLpRewardsWasmQuery>;
 
-export type RewardsClaimableAncUstLpRewardsQueryParams = Omit<
-  MantleParams<RewardsClaimableAncUstLpRewardsWasmQuery>,
-  'query' | 'variables'
-> & {
-  lastSyncedHeight: () => Promise<number>;
-};
+export async function rewardsClaimableAncUstLpRewardsQuery(
+  walletAddr: HumanAddr | undefined,
+  ancUstLpContract: CW20Addr,
+  ancUstLpStakingContract: HumanAddr,
+  lastSyncedHeight: () => Promise<number>,
+  queryClient: QueryClient,
+): Promise<RewardsClaimableAncUstLpRewards | undefined> {
+  if (!walletAddr) {
+    return undefined;
+  }
 
-export async function rewardsClaimableAncUstLpRewardsQuery({
-  mantleEndpoint,
-  wasmQuery,
-  lastSyncedHeight,
-  ...params
-}: RewardsClaimableAncUstLpRewardsQueryParams): Promise<RewardsClaimableAncUstLpRewards> {
   const blockHeight = await lastSyncedHeight();
 
-  wasmQuery.lPStakerInfo.query.staker_info.block_height = blockHeight + 1;
-
-  return mantle<RewardsClaimableAncUstLpRewardsWasmQuery>({
-    mantleEndpoint: `${mantleEndpoint}?rewards--claimable-anc-ust-lp-rewards`,
-    variables: {},
-    wasmQuery,
-    ...params,
+  return wasmFetch<RewardsClaimableAncUstLpRewardsWasmQuery>({
+    ...queryClient,
+    id: `rewards--claimable-anc-ust-lp-rewards`,
+    wasmQuery: {
+      lPBalance: {
+        contractAddress: ancUstLpContract,
+        query: {
+          balance: {
+            address: walletAddr,
+          },
+        },
+      },
+      lPStakerInfo: {
+        contractAddress: ancUstLpStakingContract,
+        query: {
+          staker_info: {
+            staker: walletAddr,
+            block_height: blockHeight + 1,
+          },
+        },
+      },
+    },
   });
 }

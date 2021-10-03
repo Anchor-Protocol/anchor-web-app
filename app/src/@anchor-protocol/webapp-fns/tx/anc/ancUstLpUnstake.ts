@@ -4,26 +4,26 @@ import {
 } from '@anchor-protocol/anchor.js';
 import { formatLP } from '@anchor-protocol/notation';
 import { AncUstLP, Gas, Rate, u, UST } from '@anchor-protocol/types';
-import { demicrofy } from '@libs/formatter';
-import { MantleFetch } from '@libs/mantle';
 import {
   pickAttributeValueByKey,
   pickEvent,
   pickRawLog,
   TxResultRendering,
   TxStreamPhase,
-} from '@libs/webapp-fns';
+} from '@libs/app-fns';
+import {
+  _catchTxError,
+  _createTxOptions,
+  _pollTxInfo,
+  _postTx,
+  TxHelper,
+} from '@libs/app-fns/tx/internal';
+import { demicrofy } from '@libs/formatter';
+import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
 import { Observable } from 'rxjs';
-import {
-  TxHelper,
-  _postTx,
-  _pollTxInfo,
-  _createTxOptions,
-  _catchTxError,
-} from '@libs/webapp-fns/tx/internal';
 
 export function ancAncUstLpUnstakeTx(
   $: Parameters<typeof fabricateStakingUnbond>[0] & {
@@ -32,8 +32,7 @@ export function ancAncUstLpUnstakeTx(
     fixedGas: u<UST>;
     network: NetworkInfo;
     addressProvider: AddressProvider;
-    mantleEndpoint: string;
-    mantleFetch: MantleFetch;
+    queryClient: QueryClient;
     post: (tx: CreateTxOptions) => Promise<TxResult>;
     txErrorReporter?: (error: unknown) => string;
     onTxSucceed?: () => void;

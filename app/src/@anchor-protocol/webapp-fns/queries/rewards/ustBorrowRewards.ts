@@ -1,7 +1,12 @@
-import { moneyMarket } from '@anchor-protocol/types';
-import { mantle, MantleParams, WasmQuery, WasmQueryData } from '@libs/mantle';
+import { HumanAddr, moneyMarket } from '@anchor-protocol/types';
+import {
+  QueryClient,
+  wasmFetch,
+  WasmQuery,
+  WasmQueryData,
+} from '@libs/query-client';
 
-export interface RewardsUstBorrowRewardsWasmQuery {
+interface RewardsUstBorrowRewardsWasmQuery {
   borrowerInfo: WasmQuery<
     moneyMarket.market.BorrowerInfo,
     moneyMarket.market.BorrowerInfoResponse
@@ -15,18 +20,33 @@ export interface RewardsUstBorrowRewardsWasmQuery {
 export type RewardsUstBorrowRewards =
   WasmQueryData<RewardsUstBorrowRewardsWasmQuery>;
 
-export type RewardsUstBorrowRewardsQueryParams = Omit<
-  MantleParams<RewardsUstBorrowRewardsWasmQuery>,
-  'query' | 'variables'
->;
+export async function rewardsUstBorrowRewardsQuery(
+  walletAddr: HumanAddr | undefined,
+  marketContract: HumanAddr,
+  queryClient: QueryClient,
+): Promise<RewardsUstBorrowRewards | undefined> {
+  if (!walletAddr) {
+    return undefined;
+  }
 
-export async function rewardsUstBorrowRewardsQuery({
-  mantleEndpoint,
-  ...params
-}: RewardsUstBorrowRewardsQueryParams): Promise<RewardsUstBorrowRewards> {
-  return mantle<RewardsUstBorrowRewardsWasmQuery>({
-    mantleEndpoint: `${mantleEndpoint}?rewards--ust-borrow-rewards`,
-    variables: {},
-    ...params,
+  return wasmFetch<RewardsUstBorrowRewardsWasmQuery>({
+    ...queryClient,
+    id: `rewards--ust-borrow-rewards`,
+    wasmQuery: {
+      marketState: {
+        contractAddress: marketContract,
+        query: {
+          state: {},
+        },
+      },
+      borrowerInfo: {
+        contractAddress: marketContract,
+        query: {
+          borrower_info: {
+            borrower: walletAddr,
+          },
+        },
+      },
+    },
   });
 }

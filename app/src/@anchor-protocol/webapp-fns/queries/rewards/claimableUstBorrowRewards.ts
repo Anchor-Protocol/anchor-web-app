@@ -1,7 +1,18 @@
-import { ANC, cw20, moneyMarket } from '@anchor-protocol/types';
-import { mantle, MantleParams, WasmQuery, WasmQueryData } from '@libs/mantle';
+import {
+  ANC,
+  cw20,
+  CW20Addr,
+  HumanAddr,
+  moneyMarket,
+} from '@anchor-protocol/types';
+import {
+  QueryClient,
+  wasmFetch,
+  WasmQuery,
+  WasmQueryData,
+} from '@libs/query-client';
 
-export interface RewardsClaimableUstBorrowRewardsWasmQuery {
+interface RewardsClaimableUstBorrowRewardsWasmQuery {
   borrowerInfo: WasmQuery<
     moneyMarket.market.BorrowerInfo,
     moneyMarket.market.BorrowerInfoResponse
@@ -16,27 +27,46 @@ export interface RewardsClaimableUstBorrowRewardsWasmQuery {
 export type RewardsClaimableUstBorrowRewards =
   WasmQueryData<RewardsClaimableUstBorrowRewardsWasmQuery>;
 
-export type RewardsClaimableUstBorrowRewardsQueryParams = Omit<
-  MantleParams<RewardsClaimableUstBorrowRewardsWasmQuery>,
-  'query' | 'variables'
-> & {
-  lastSyncedHeight: () => Promise<number>;
-};
+export async function rewardsClaimableUstBorrowRewardsQuery(
+  walletAddr: HumanAddr | undefined,
+  ancContract: CW20Addr,
+  marketContract: HumanAddr,
+  lastSyncedHeight: () => Promise<number>,
+  queryClient: QueryClient,
+): Promise<RewardsClaimableUstBorrowRewards | undefined> {
+  if (!walletAddr) {
+    return undefined;
+  }
 
-export async function rewardsClaimableUstBorrowRewardsQuery({
-  mantleEndpoint,
-  wasmQuery,
-  lastSyncedHeight,
-  ...params
-}: RewardsClaimableUstBorrowRewardsQueryParams): Promise<RewardsClaimableUstBorrowRewards> {
   const blockHeight = await lastSyncedHeight();
 
-  wasmQuery.borrowerInfo.query.borrower_info.block_height = blockHeight + 1;
-
-  return mantle<RewardsClaimableUstBorrowRewardsWasmQuery>({
-    mantleEndpoint: `${mantleEndpoint}?rewards--claimable-ust-borrow-rewards`,
-    variables: {},
-    wasmQuery,
-    ...params,
+  return wasmFetch<RewardsClaimableUstBorrowRewardsWasmQuery>({
+    ...queryClient,
+    id: `rewards--claimable-ust-borrow-rewards`,
+    wasmQuery: {
+      borrowerInfo: {
+        contractAddress: marketContract,
+        query: {
+          borrower_info: {
+            borrower: walletAddr,
+            block_height: blockHeight + 1,
+          },
+        },
+      },
+      marketState: {
+        contractAddress: marketContract,
+        query: {
+          state: {},
+        },
+      },
+      userANCBalance: {
+        contractAddress: ancContract,
+        query: {
+          balance: {
+            address: walletAddr,
+          },
+        },
+      },
+    },
   });
 }

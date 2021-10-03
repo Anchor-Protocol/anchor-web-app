@@ -1,19 +1,17 @@
 import { govMyPollsQuery } from '@anchor-protocol/webapp-fns';
 import {
   TEST_ADDRESSES,
-  TEST_MANTLE_ENDPOINT,
   TEST_WALLET_ADDRESS,
 } from '@anchor-protocol/webapp-fns/test-env';
-import { defaultMantleFetch } from '@libs/mantle';
+import { TEST_LCD_CLIENT } from '@libs/app-fns/test-env';
 
 describe('queries/myPolls', () => {
   test('should get result from query', async () => {
-    const myPolls = await govMyPollsQuery({
-      mantleFetch: defaultMantleFetch,
-      mantleEndpoint: TEST_MANTLE_ENDPOINT,
-      govContract: TEST_ADDRESSES.anchorToken.gov,
-      walletAddress: TEST_WALLET_ADDRESS,
-    });
+    const myPolls = await govMyPollsQuery(
+      TEST_WALLET_ADDRESS,
+      TEST_ADDRESSES.anchorToken.gov,
+      TEST_LCD_CLIENT,
+    );
 
     expect(Array.isArray(myPolls)).toBeTruthy();
   });

@@ -1,11 +1,10 @@
 import { anchorToken, HumanAddr } from '@anchor-protocol/types';
 import {
-  defaultMantleFetch,
-  mantle,
-  MantleFetch,
+  QueryClient,
+  wasmFetch,
   WasmQuery,
   WasmQueryData,
-} from '@libs/mantle';
+} from '@libs/query-client';
 
 interface AncLpStakingStateWasmQuery {
   lpStakingState: WasmQuery<
@@ -18,15 +17,11 @@ export type AncLpStakingState = WasmQueryData<AncLpStakingStateWasmQuery>;
 
 export async function ancLpStakingStateQuery(
   ancStakingAddr: HumanAddr,
-  mantleEndpoint: string,
-  mantleFetch: MantleFetch = defaultMantleFetch,
-  requestInit?: RequestInit,
+  queryClient: QueryClient,
 ): Promise<AncLpStakingState> {
-  return mantle<AncLpStakingStateWasmQuery>({
-    mantleEndpoint: `${mantleEndpoint}?anc--lp-staking-state`,
-    mantleFetch,
-    requestInit,
-    variables: {},
+  return wasmFetch<AncLpStakingStateWasmQuery>({
+    ...queryClient,
+    id: `anc--lp-staking-state`,
     wasmQuery: {
       lpStakingState: {
         contractAddress: ancStakingAddr,

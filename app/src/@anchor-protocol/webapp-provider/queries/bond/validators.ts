@@ -1,49 +1,26 @@
-import { HumanAddr } from '@anchor-protocol/types';
 import {
   BondValidators,
   bondValidatorsQuery,
 } from '@anchor-protocol/webapp-fns';
 import { createQueryFn } from '@libs/react-query-utils';
-import { MantleFetch } from '@libs/mantle';
-import { useTerraWebapp } from '@libs/webapp-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = createQueryFn(
-  (
-    mantleEndpoint: string,
-    mantleFetch: MantleFetch,
-    bLunaHubContract: HumanAddr,
-  ) => {
-    return bondValidatorsQuery({
-      mantleEndpoint,
-      mantleFetch,
-      wasmQuery: {
-        hubWhitelistedValidators: {
-          contractAddress: bLunaHubContract,
-          query: {
-            whitelisted_validators: {},
-          },
-        },
-      },
-    });
-  },
-);
+const queryFn = createQueryFn(bondValidatorsQuery);
 
 export function useBondValidators(): UseQueryResult<
   BondValidators | undefined
 > {
-  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
+  const { hiveQueryClient, queryErrorReporter } = useAnchorWebapp();
 
   const { contractAddress } = useAnchorWebapp();
 
   return useQuery(
     [
       ANCHOR_QUERY_KEY.BOND_VALIDATORS,
-      mantleEndpoint,
-      mantleFetch,
       contractAddress.bluna.hub,
+      hiveQueryClient,
     ],
     queryFn,
     {

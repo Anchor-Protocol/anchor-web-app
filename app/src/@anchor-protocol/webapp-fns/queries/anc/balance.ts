@@ -1,11 +1,10 @@
 import { ANC, cw20, CW20Addr, HumanAddr } from '@anchor-protocol/types';
 import {
-  defaultMantleFetch,
-  mantle,
-  MantleFetch,
+  QueryClient,
+  wasmFetch,
   WasmQuery,
   WasmQueryData,
-} from '@libs/mantle';
+} from '@libs/query-client';
 
 interface AncBalanceWasmQuery {
   ancBalance: WasmQuery<cw20.Balance, cw20.BalanceResponse<ANC>>;
@@ -14,17 +13,17 @@ interface AncBalanceWasmQuery {
 export type AncBalance = WasmQueryData<AncBalanceWasmQuery>;
 
 export async function ancBalanceQuery(
+  walletAddr: HumanAddr | undefined,
   ancTokenAddr: CW20Addr,
-  walletAddr: HumanAddr,
-  mantleEndpoint: string,
-  mantleFetch: MantleFetch = defaultMantleFetch,
-  requestInit?: RequestInit,
-): Promise<AncBalance> {
-  return mantle<AncBalanceWasmQuery>({
-    mantleEndpoint: `${mantleEndpoint}?anc--balance?address=${walletAddr}`,
-    mantleFetch,
-    requestInit,
-    variables: {},
+  queryClient: QueryClient,
+): Promise<AncBalance | undefined> {
+  if (!walletAddr) {
+    return undefined;
+  }
+
+  return wasmFetch<AncBalanceWasmQuery>({
+    ...queryClient,
+    id: `anc--balance?address=${walletAddr}`,
     wasmQuery: {
       ancBalance: {
         contractAddress: ancTokenAddr,

@@ -12,7 +12,6 @@ export * from './utils/contractNickname';
 
 export * from './queries/earn/epochStates';
 export * from './queries/earn/apyHistory';
-export * from './queries/earn/transactionHistory';
 export * from './queries/borrow/market';
 export * from './queries/borrow/borrower';
 export * from './queries/borrow/apy';

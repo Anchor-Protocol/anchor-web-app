@@ -1,55 +1,23 @@
 import {
   TEST_ADDRESSES,
-  TEST_MANTLE_ENDPOINT,
   TEST_WALLET_ADDRESS,
 } from '@anchor-protocol/webapp-fns/test-env';
-import { defaultMantleFetch } from '@libs/mantle';
-import { lastSyncedHeightQuery } from '@libs/webapp-fns';
+import { lastSyncedHeightQuery } from '@libs/app-fns';
+import { TEST_LCD_CLIENT } from '@libs/app-fns/test-env';
 import { borrowBorrowerQuery } from '../borrower';
 
 describe('queries/borrower', () => {
   test('should get result from query', async () => {
-    const { marketBorrowerInfo, overseerCollaterals, overseerBorrowLimit } =
-      await borrowBorrowerQuery({
-        mantleFetch: defaultMantleFetch,
-        mantleEndpoint: TEST_MANTLE_ENDPOINT,
-        wasmQuery: {
-          marketBorrowerInfo: {
-            contractAddress: TEST_ADDRESSES.moneyMarket.market,
-            query: {
-              borrower_info: {
-                borrower: TEST_WALLET_ADDRESS,
-                block_height: 0,
-              },
-            },
-          },
-          overseerCollaterals: {
-            contractAddress: TEST_ADDRESSES.moneyMarket.overseer,
-            query: {
-              collaterals: {
-                borrower: TEST_WALLET_ADDRESS,
-              },
-            },
-          },
-          overseerBorrowLimit: {
-            contractAddress: TEST_ADDRESSES.moneyMarket.overseer,
-            query: {
-              borrow_limit: {
-                borrower: TEST_WALLET_ADDRESS,
-                block_time: -1,
-              },
-            },
-          },
-        },
-        lastSyncedHeight: () =>
-          lastSyncedHeightQuery({
-            mantleFetch: defaultMantleFetch,
-            mantleEndpoint: TEST_MANTLE_ENDPOINT,
-          }),
-      });
+    const result = await borrowBorrowerQuery(
+      TEST_WALLET_ADDRESS,
+      () => lastSyncedHeightQuery(TEST_LCD_CLIENT),
+      TEST_ADDRESSES.moneyMarket.market,
+      TEST_ADDRESSES.moneyMarket.overseer,
+      TEST_LCD_CLIENT,
+    );
 
-    expect(marketBorrowerInfo).not.toBeUndefined();
-    expect(overseerCollaterals).not.toBeUndefined();
-    expect(overseerBorrowLimit).not.toBeUndefined();
+    expect(result?.marketBorrowerInfo).not.toBeUndefined();
+    expect(result?.overseerCollaterals).not.toBeUndefined();
+    expect(result?.overseerBorrowLimit).not.toBeUndefined();
   });
 });

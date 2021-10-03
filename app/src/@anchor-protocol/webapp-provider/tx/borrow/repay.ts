@@ -1,9 +1,8 @@
 import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import { u, UST } from '@anchor-protocol/types';
 import { borrowRepayTx } from '@anchor-protocol/webapp-fns';
-import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
+import { useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
-
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
 import { useAnchorWebapp } from '../../contexts/context';
@@ -20,9 +19,8 @@ export interface BorrowRepayTxParams {
 export function useBorrowRepayTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { addressProvider, constants } = useAnchorWebapp();
-
-  const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
+  const { queryClient, txErrorReporter, addressProvider, constants } =
+    useAnchorWebapp();
 
   const { refetch: borrowMarketQuery } = useBorrowMarketQuery();
   const { refetch: borrowBorrowerQuery } = useBorrowBorrowerQuery();
@@ -47,8 +45,7 @@ export function useBorrowRepayTx() {
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
-        mantleEndpoint,
-        mantleFetch,
+        queryClient,
         borrowMarketQuery,
         borrowBorrowerQuery,
         // error
@@ -67,9 +64,7 @@ export function useBorrowRepayTx() {
       connectedWallet,
       constants.gasAdjustment,
       constants.gasWanted,
-
-      mantleEndpoint,
-      mantleFetch,
+      queryClient,
       refetchQueries,
       txErrorReporter,
     ],

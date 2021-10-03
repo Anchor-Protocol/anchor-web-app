@@ -1,53 +1,29 @@
-import { HumanAddr } from '@anchor-protocol/types';
 import { Airdrop, airdropCheckQuery } from '@anchor-protocol/webapp-fns';
 import { airdropStageCache } from '@anchor-protocol/webapp-fns/caches/airdropStage';
+import { EMPTY_QUERY_RESULT } from '@libs/app-provider';
 import { createQueryFn } from '@libs/react-query-utils';
-import {
-  ConnectedWallet,
-  useConnectedWallet,
-} from '@terra-money/wallet-provider';
-import { MantleFetch } from '@libs/mantle';
-import { EMPTY_QUERY_RESULT, useTerraWebapp } from '@libs/webapp-provider';
+import { useConnectedWallet, useWallet } from '@terra-money/wallet-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = createQueryFn(
-  (
-    mantleEndpoint: string,
-    mantleFetch: MantleFetch,
-    airdropContract: HumanAddr,
-    connectedWallet: ConnectedWallet | undefined,
-  ) => {
-    return connectedWallet &&
-      connectedWallet.network.chainID.startsWith('columbus')
-      ? airdropCheckQuery(
-          airdropContract,
-          connectedWallet.walletAddress,
-          connectedWallet.network.chainID,
-          mantleEndpoint,
-          mantleFetch,
-        )
-      : Promise.resolve(undefined);
-  },
-);
+const queryFn = createQueryFn(airdropCheckQuery);
 
 export function useAirdropCheckQuery(): UseQueryResult<Airdrop | undefined> {
-  const { mantleFetch, mantleEndpoint, queryErrorReporter } = useTerraWebapp();
+  const { queryClient, contractAddress, queryErrorReporter } =
+    useAnchorWebapp();
 
   const connectedWallet = useConnectedWallet();
 
-  const {
-    contractAddress: { bluna },
-  } = useAnchorWebapp();
+  const { network } = useWallet();
 
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.AIRDROP_CHECK,
-      mantleEndpoint,
-      mantleFetch,
-      bluna.airdropRegistry,
-      connectedWallet,
+      connectedWallet?.walletAddress,
+      contractAddress.bluna.airdropRegistry,
+      network.chainID,
+      queryClient,
     ],
     queryFn,
     {

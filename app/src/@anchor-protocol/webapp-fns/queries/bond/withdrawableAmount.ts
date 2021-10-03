@@ -1,7 +1,12 @@
-import { bluna } from '@anchor-protocol/types';
-import { mantle, MantleParams, WasmQuery, WasmQueryData } from '@libs/mantle';
+import { bluna, HumanAddr } from '@anchor-protocol/types';
+import {
+  QueryClient,
+  wasmFetch,
+  WasmQuery,
+  WasmQueryData,
+} from '@libs/query-client';
 
-export interface BondWithdrawableAmountWasmQuery {
+interface WithdrawableAmountWasmQuery {
   withdrawableUnbonded: WasmQuery<
     bluna.hub.WithdrawableUnbonded,
     bluna.hub.WithdrawableUnbondedResponse
@@ -10,9 +15,15 @@ export interface BondWithdrawableAmountWasmQuery {
     bluna.hub.UnbondRequests,
     bluna.hub.UnbondRequestsResponse
   >;
+}
+
+interface WithdrawableHistoryWasmQuery {
   allHistory: WasmQuery<bluna.hub.AllHistory, bluna.hub.AllHistoryResponse>;
   parameters: WasmQuery<bluna.hub.Parameters, bluna.hub.ParametersResponse>;
 }
+
+type BondWithdrawableAmountWasmQuery = WithdrawableAmountWasmQuery &
+  WithdrawableHistoryWasmQuery;
 
 export type BondWithdrawableAmount = Omit<
   WasmQueryData<BondWithdrawableAmountWasmQuery>,
@@ -22,34 +33,38 @@ export type BondWithdrawableAmount = Omit<
   parameters?: bluna.hub.ParametersResponse;
 };
 
-export type BondWithdrawableAmountQueryParams = Omit<
-  MantleParams<BondWithdrawableAmountWasmQuery>,
-  'query' | 'variables'
->;
-
-export async function bondWithdrawableAmountQuery({
-  mantleEndpoint,
-  wasmQuery,
-  ...params
-}: BondWithdrawableAmountQueryParams): Promise<BondWithdrawableAmount> {
-  type WithdrawableAmountWasmQuery = Pick<
-    BondWithdrawableAmountWasmQuery,
-    'withdrawableUnbonded' | 'unbondedRequests'
-  >;
-  type WithdrawableHistoryWasmQuery = Pick<
-    BondWithdrawableAmountWasmQuery,
-    'allHistory' | 'parameters'
-  >;
+export async function bondWithdrawableAmountQuery(
+  walletAddr: HumanAddr | undefined,
+  bLunaHubContract: HumanAddr,
+  queryClient: QueryClient,
+): Promise<BondWithdrawableAmount | undefined> {
+  if (!walletAddr) {
+    return undefined;
+  }
 
   const { withdrawableUnbonded, unbondedRequests } =
-    await mantle<WithdrawableAmountWasmQuery>({
-      mantleEndpoint: `${mantleEndpoint}?bond--withdrawable-requests`,
-      variables: {},
+    await wasmFetch<WithdrawableAmountWasmQuery>({
+      ...queryClient,
+      id: `bond--withdrawable-requests`,
       wasmQuery: {
-        withdrawableUnbonded: wasmQuery.withdrawableUnbonded,
-        unbondedRequests: wasmQuery.unbondedRequests,
+        withdrawableUnbonded: {
+          contractAddress: bLunaHubContract,
+          query: {
+            withdrawable_unbonded: {
+              block_time: Math.floor(Date.now() / 1000),
+              address: walletAddr,
+            },
+          },
+        },
+        unbondedRequests: {
+          contractAddress: bLunaHubContract,
+          query: {
+            unbond_requests: {
+              address: walletAddr,
+            },
+          },
+        },
       },
-      ...params,
     });
 
   const unbondedRequestsStartFrom: number =
@@ -61,18 +76,27 @@ export async function bondWithdrawableAmountQuery({
       : 0;
 
   if (unbondedRequestsStartFrom > 0) {
-    wasmQuery.allHistory.query.all_history.start_from =
-      unbondedRequestsStartFrom;
-
     const { allHistory, parameters } =
-      await mantle<WithdrawableHistoryWasmQuery>({
-        mantleEndpoint: `${mantleEndpoint}?bond--withdraw-history`,
-        variables: {},
+      await wasmFetch<WithdrawableHistoryWasmQuery>({
+        ...queryClient,
+        id: `bond--withdraw-history`,
         wasmQuery: {
-          allHistory: wasmQuery.allHistory,
-          parameters: wasmQuery.parameters,
+          allHistory: {
+            contractAddress: bLunaHubContract,
+            query: {
+              all_history: {
+                start_from: unbondedRequestsStartFrom,
+                limit: 100,
+              },
+            },
+          },
+          parameters: {
+            contractAddress: bLunaHubContract,
+            query: {
+              parameters: {},
+            },
+          },
         },
-        ...params,
       });
 
     return {

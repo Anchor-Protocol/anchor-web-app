@@ -1,7 +1,12 @@
-import { moneyMarket } from '@anchor-protocol/types';
-import { mantle, MantleParams, WasmQuery, WasmQueryData } from '@libs/mantle';
+import { HumanAddr, moneyMarket } from '@anchor-protocol/types';
+import {
+  QueryClient,
+  wasmFetch,
+  WasmQuery,
+  WasmQueryData,
+} from '@libs/query-client';
 
-export interface EarnEpochStatesWasmQuery {
+interface EarnEpochStatesWasmQuery {
   moneyMarketEpochState: WasmQuery<
     moneyMarket.market.EpochState,
     moneyMarket.market.EpochStateResponse
@@ -14,28 +19,32 @@ export interface EarnEpochStatesWasmQuery {
 
 export type EarnEpochStates = WasmQueryData<EarnEpochStatesWasmQuery>;
 
-export type EarnEpochStatesQueryParams = Omit<
-  MantleParams<EarnEpochStatesWasmQuery>,
-  'query' | 'variables'
-> & {
-  lastSyncedHeight: () => Promise<number>;
-};
-
-export async function earnEpochStatesQuery({
-  mantleEndpoint,
-  wasmQuery,
-  lastSyncedHeight,
-  ...params
-}: EarnEpochStatesQueryParams): Promise<EarnEpochStates> {
+export async function earnEpochStatesQuery(
+  moneyMarketContract: HumanAddr,
+  overseerContract: HumanAddr,
+  lastSyncedHeight: () => Promise<number>,
+  queryClient: QueryClient,
+): Promise<EarnEpochStates> {
   const blockHeight = await lastSyncedHeight();
 
-  wasmQuery.moneyMarketEpochState.query.epoch_state.block_height =
-    blockHeight + 1;
-
-  return mantle<EarnEpochStatesWasmQuery>({
-    mantleEndpoint: `${mantleEndpoint}?earn--epoch-states`,
-    variables: {},
-    wasmQuery,
-    ...params,
+  return wasmFetch<EarnEpochStatesWasmQuery>({
+    ...queryClient,
+    id: `earn--epoch-states`,
+    wasmQuery: {
+      moneyMarketEpochState: {
+        contractAddress: moneyMarketContract,
+        query: {
+          epoch_state: {
+            block_height: blockHeight + 1,
+          },
+        },
+      },
+      overseerEpochState: {
+        contractAddress: overseerContract,
+        query: {
+          epoch_state: {},
+        },
+      },
+    },
   });
 }

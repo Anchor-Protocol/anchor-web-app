@@ -1,4 +1,4 @@
-import { PollingTimeout } from '@libs/webapp-fns';
+import { PollingTimeout } from '@libs/app-fns';
 import {
   CreateTxFailed,
   Timeout,
@@ -6,7 +6,7 @@ import {
   TxUnspecifiedError,
   UserDenied,
 } from '@terra-money/wallet-provider';
-import { TxErrorRendering } from '@libs/webapp-fns';
+import { TxErrorRendering } from '@libs/app-fns';
 import React, { ReactNode } from 'react';
 
 // ----------------------------------------------------------------
