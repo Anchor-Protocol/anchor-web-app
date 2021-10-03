@@ -20,13 +20,13 @@ import {
 import { useReadonlyWalletDialog } from 'components/dialogs/useReadonlyWalletDialog';
 import { useRequestReloadDialog } from 'components/dialogs/useRequestReloadDialog';
 import { SnackbarContainer } from 'components/SnackbarContainer';
+import { ThemeProvider } from 'contexts/theme';
 import {
   ANCHOR_CONSTANTS,
-  ANCHOR_CONTRACT_ADDRESS2,
+  ANCHOR_CONTRACT_ADDRESS,
   ANCHOR_INDEXER_API_ENDPOINTS,
-} from 'configurations/env';
-import { ThemeProvider } from 'contexts/theme';
-import { GA_TRACKING_ID, onProduction } from 'env';
+  GA_TRACKING_ID,
+} from 'env';
 import React, { ReactNode, useCallback } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -45,7 +45,7 @@ function Providers({ children }: { children: ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <AppProvider
           defaultQueryClient="lcd"
-          contractAddress={ANCHOR_CONTRACT_ADDRESS2}
+          contractAddress={ANCHOR_CONTRACT_ADDRESS}
           constants={ANCHOR_CONSTANTS}
           refetchMap={ANCHOR_TX_REFETCH_MAP}
           txErrorReporter={errorReporter}
@@ -102,11 +102,7 @@ export function AppProviders({
     <WalletProvider
       defaultNetwork={defaultNetwork}
       walletConnectChainIds={walletConnectChainIds}
-      connectorOpts={{
-        bridge: onProduction
-          ? 'https://walletconnect.terra.dev/'
-          : 'https://tequila-walletconnect.terra.dev/',
-      }}
+      connectorOpts={{ bridge: 'https://walletconnect.terra.dev/' }}
       createReadonlyWalletSession={createReadonlyWalletSession}
     >
       <Providers>

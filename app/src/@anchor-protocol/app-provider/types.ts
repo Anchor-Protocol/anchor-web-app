@@ -77,7 +77,7 @@ export interface AnchorContractAddress extends AppContractAddress {
   };
 }
 
-export interface AnchorConstants2 extends AppConstants {
+export interface AnchorConstants extends AppConstants {
   airdropGasWanted: Gas;
   airdropGas: Gas;
 }

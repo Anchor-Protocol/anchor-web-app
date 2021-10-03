@@ -5,7 +5,7 @@ import {
 } from '@anchor-protocol/anchor.js/dist/address-provider/provider';
 import { CollateralType, CW20Addr } from '@anchor-protocol/types';
 import {
-  AnchorConstants2,
+  AnchorConstants,
   AnchorContractAddress,
 } from '@anchor-protocol/app-provider';
 import { App, useApp } from '@libs/app-provider';
@@ -62,12 +62,9 @@ export function AnchorWebappProvider({
   );
 }
 
-export function useAnchorWebapp(): App<
-  AnchorContractAddress,
-  AnchorConstants2
-> &
+export function useAnchorWebapp(): App<AnchorContractAddress, AnchorConstants> &
   AnchorWebapp {
-  const app = useApp<AnchorContractAddress, AnchorConstants2>();
+  const app = useApp<AnchorContractAddress, AnchorConstants>();
   const anchorApp = useContext(AnchorWebappContext);
 
   return useMemo(() => {
