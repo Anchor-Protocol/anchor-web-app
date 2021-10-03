@@ -77,6 +77,7 @@ export const TerraWebappContext: Context<TerraWebapp> =
   // @ts-ignore
   createContext<TerraWebapp>();
 
+/** @deprecated */
 export function TerraWebappProvider({
   children,
   gasPriceEndpoint = DEFAULT_GAS_PRICE_ENDPOINT,
@@ -149,6 +150,7 @@ export function TerraWebappProvider({
   );
 }
 
+/** @deprecated */
 export function useTerraWebapp(): TerraWebapp {
   return useContext(TerraWebappContext);
 }

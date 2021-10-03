@@ -1,4 +1,3 @@
-import { CW20Addr, u } from '@libs/types';
 import { useBrowserInactive } from '@libs/use-browser-inactive';
 import { useLongtimeNoSee } from '@libs/use-longtime-no-see';
 import {
@@ -11,7 +10,6 @@ import { useWallet, WalletStatus } from '@terra-dev/use-wallet';
 import { NetworkInfo } from '@terra-dev/wallet-types';
 import deepEqual from 'fast-deep-equal';
 import React, {
-  Consumer,
   Context,
   createContext,
   ReactNode,
@@ -310,18 +308,18 @@ export function useBank<
   >;
 }
 
-export function useCW20TokenBalance<T = string>(address: CW20Addr): u<T> {
-  const { tokenBalances, cw20TokenContracts } = useBank();
-
-  return useMemo(() => {
-    console.log('bank.tsx..()', cw20TokenContracts);
-    const key = Object.keys(cw20TokenContracts).find(
-      (k) => cw20TokenContracts[k].contractAddress === address,
-    );
-    return (key && tokenBalances[key]
-      ? tokenBalances[key]
-      : '0') as unknown as u<T>;
-  }, [address, cw20TokenContracts, tokenBalances]);
-}
-
-export const BankConsumer: Consumer<Bank> = BankContext.Consumer;
+//export function useCW20TokenBalance<T = string>(address: CW20Addr): u<T> {
+//  const { tokenBalances, cw20TokenContracts } = useBank();
+//
+//  return useMemo(() => {
+//    console.log('bank.tsx..()', cw20TokenContracts);
+//    const key = Object.keys(cw20TokenContracts).find(
+//      (k) => cw20TokenContracts[k].contractAddress === address,
+//    );
+//    return (key && tokenBalances[key]
+//      ? tokenBalances[key]
+//      : '0') as unknown as u<T>;
+//  }, [address, cw20TokenContracts, tokenBalances]);
+//}
+//
+//export const BankConsumer: Consumer<Bank> = BankContext.Consumer;

@@ -1,14 +1,16 @@
 import { AddressProvider } from '@anchor-protocol/anchor.js';
-import { CW20Addr, u, UST } from '@anchor-protocol/types';
-import { ExpandAddressMap } from '@anchor-protocol/webapp-fns';
+import {
+  COLLATERAL_DENOMS,
+  MARKET_DENOMS,
+} from '@anchor-protocol/anchor.js/dist/address-provider/provider';
+import { CollateralType, CW20Addr } from '@anchor-protocol/types';
 import {
   AnchorConstants2,
   AnchorContractAddress,
 } from '@anchor-protocol/webapp-provider';
-import { useTerraWebapp } from '@libs/webapp-provider';
+import { App, useApp } from '@libs/app-provider';
 import { NetworkInfo } from '@terra-dev/wallet-types';
 import { useWallet } from '@terra-money/wallet-provider';
-import big from 'big.js';
 import React, {
   Consumer,
   Context,
@@ -18,24 +20,13 @@ import React, {
   useMemo,
 } from 'react';
 
-export interface AnchorContractAddressMaps {
-  addressMap: ExpandAddressMap;
-  addressProvider: AddressProvider;
-  contractAddress: AnchorContractAddress;
-}
-
 export interface AnchorWebappProviderProps {
   children: ReactNode;
-  contractAddressMaps: (network: NetworkInfo) => AnchorContractAddressMaps;
-  constants: (network: NetworkInfo) => AnchorConstants2;
   indexerApiEndpoints: (network: NetworkInfo) => string;
 }
 
 export interface AnchorWebapp {
-  contractAddressMap: ExpandAddressMap;
   addressProvider: AddressProvider;
-  contractAddress: AnchorContractAddress;
-  constants: AnchorConstants2;
   bAssetsVector: CW20Addr[];
   indexerApiEndpoint: string;
 }
@@ -46,61 +37,23 @@ const AnchorWebappContext: Context<AnchorWebapp> =
 
 export function AnchorWebappProvider({
   children,
-  contractAddressMaps,
-  constants,
   indexerApiEndpoints,
 }: AnchorWebappProviderProps) {
   const { network } = useWallet();
 
-  const { gasPrice } = useTerraWebapp();
-
-  //const { addressProviders, contractAddresses } = useMemo(() => {
-  //  const keys = Object.keys(contractAddressMaps);
-  //  const draftAddressProviders: Record<string, AddressProvider> = {};
-  //  const draftContractAddresses: Record<string, ContractAddress> = {};
-  //
-  //  for (const key of keys) {
-  //    draftAddressProviders[key] = new AddressProviderFromJson(
-  //      contractAddressMaps[key],
-  //    );
-  //    draftContractAddresses[key] = createAnchorContractAddress(
-  //      draftAddressProviders[key],
-  //      contractAddressMaps[key],
-  //    );
-  //  }
-  //
-  //  return {
-  //    addressProviders: draftAddressProviders,
-  //    contractAddresses: draftContractAddresses,
-  //  };
-  //}, [contractAddressMaps]);
+  const { contractAddress } = useApp<AnchorContractAddress>();
 
   const states = useMemo<AnchorWebapp>(() => {
-    const { addressProvider, contractAddress, addressMap } =
-      contractAddressMaps(network);
-
-    const constantsInput = constants(network);
-
-    const fixedFee = big(constantsInput.fixedGas).mul(gasPrice.uusd).toNumber();
-    const airdropFee = big(constantsInput.airdropGas)
-      .mul(gasPrice.uusd)
-      .toNumber();
-
-    const calculateGasCalculated = {
-      ...constantsInput,
-      fixedFee: Math.floor(fixedFee) as u<UST<number>>,
-      airdropFee: Math.floor(airdropFee) as u<UST<number>>,
-    };
+    const addressProvider = new AddressProviderFromContractAddress(
+      contractAddress,
+    );
 
     return {
-      contractAddressMap: addressMap,
       addressProvider,
-      contractAddress,
-      constants: calculateGasCalculated,
       indexerApiEndpoint: indexerApiEndpoints(network),
       bAssetsVector: [contractAddress.cw20.bEth, contractAddress.cw20.bLuna],
     };
-  }, [contractAddressMaps, network, constants, gasPrice, indexerApiEndpoints]);
+  }, [contractAddress, indexerApiEndpoints, network]);
 
   return (
     <AnchorWebappContext.Provider value={states}>
@@ -109,9 +62,109 @@ export function AnchorWebappProvider({
   );
 }
 
-export function useAnchorWebapp(): AnchorWebapp {
-  return useContext(AnchorWebappContext);
+export function useAnchorWebapp(): App<
+  AnchorContractAddress,
+  AnchorConstants2
+> &
+  AnchorWebapp {
+  const app = useApp<AnchorContractAddress, AnchorConstants2>();
+  const anchorApp = useContext(AnchorWebappContext);
+
+  return useMemo(() => {
+    return {
+      ...app,
+      ...anchorApp,
+    };
+  }, [anchorApp, app]);
 }
 
 export const AnchorWebappConsumer: Consumer<AnchorWebapp> =
   AnchorWebappContext.Consumer;
+
+class AddressProviderFromContractAddress implements AddressProvider {
+  constructor(private data: AnchorContractAddress) {}
+
+  bLunaReward() {
+    return this.data.bluna.reward;
+  }
+  bLunaHub() {
+    return this.data.bluna.hub;
+  }
+  bLunaToken() {
+    return this.data.cw20.bLuna;
+  }
+  bEthReward() {
+    return this.data.beth.reward;
+  }
+  bEthToken() {
+    return this.data.cw20.bEth;
+  }
+  market(denom: MARKET_DENOMS) {
+    return this.data.moneyMarket.market;
+  }
+  custody(denom: MARKET_DENOMS, collateral: COLLATERAL_DENOMS) {
+    switch (collateral) {
+      case COLLATERAL_DENOMS.UBLUNA: {
+        return this.data.moneyMarket.collaterals[CollateralType.bLuna].custody;
+      }
+      case COLLATERAL_DENOMS.UBETH: {
+        return this.data.moneyMarket.collaterals[CollateralType.bEth].custody;
+      }
+    }
+    throw new Error(`Unknown collateral type "${collateral}"`);
+  }
+  overseer(denom: MARKET_DENOMS) {
+    return this.data.moneyMarket.overseer;
+  }
+  aTerra(denom: MARKET_DENOMS) {
+    return this.data.cw20.aUST;
+  }
+  oracle() {
+    return this.data.moneyMarket.oracle;
+  }
+  interest() {
+    return this.data.moneyMarket.interestModel;
+  }
+  liquidation() {
+    return this.data.liquidation.liquidationContract;
+  }
+  terraswapblunaLunaPair() {
+    return this.data.terraswap.blunaLunaPair;
+  }
+  terraswapblunaLunaLPToken() {
+    return this.data.cw20.bLunaLunaLP;
+  }
+  gov() {
+    return this.data.anchorToken.gov;
+  }
+  terraswapAncUstPair() {
+    return this.data.terraswap.ancUstPair;
+  }
+  terraswapAncUstLPToken() {
+    return this.data.cw20.AncUstLP;
+  }
+  collector() {
+    return this.data.anchorToken.collector;
+  }
+  staking() {
+    return this.data.anchorToken.staking;
+  }
+  community() {
+    return this.data.anchorToken.community;
+  }
+  distributor() {
+    return this.data.anchorToken.distributor;
+  }
+  ANC() {
+    return this.data.cw20.ANC;
+  }
+  airdrop() {
+    return this.data.bluna.airdropRegistry;
+  }
+  investorLock() {
+    return this.data.anchorToken.investorLock;
+  }
+  teamLock() {
+    return this.data.anchorToken.teamLock;
+  }
+}

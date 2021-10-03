@@ -12,6 +12,7 @@ import {
 import { AnchorContractAddress } from '@anchor-protocol/webapp-provider';
 import { ExpandAddressMap } from '../types';
 
+/** @deprecated */
 export function createAnchorContractAddress(
   addressProvider: AddressProvider,
   addressMap: ExpandAddressMap,

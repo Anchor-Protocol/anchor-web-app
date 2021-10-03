@@ -12,7 +12,7 @@ import { GoogleAnalytics } from '@libs/use-google-analytics';
 import { useLongtimeNoSee } from '@libs/use-longtime-no-see';
 import { RouterScrollRestoration } from '@libs/use-router-scroll-restoration';
 import { RouterWalletStatusRecheck } from '@libs/use-router-wallet-status-recheck';
-import { CW20Contract, DEFAULT_TERRA_CONTRACT_ADDRESS } from '@libs/webapp-fns';
+import { CW20Contract } from '@libs/webapp-fns';
 import {
   BankProvider as WebappBankProvider,
   TerraWebappProvider,
@@ -29,7 +29,7 @@ import { useRequestReloadDialog } from 'components/dialogs/useRequestReloadDialo
 import { SnackbarContainer } from 'components/SnackbarContainer';
 import {
   ANCHOR_CONSTANTS,
-  ANCHOR_CONTRACT_ADDRESS,
+  ANCHOR_CONTRACT_ADDRESS2,
   ANCHOR_INDEXER_API_ENDPOINTS,
 } from 'configurations/env';
 import { ThemeProvider } from 'contexts/theme';
@@ -49,7 +49,7 @@ const errorReporter =
 const cw20TokenContracts = (
   network: NetworkInfo,
 ): Record<string, CW20Contract> => {
-  const { contractAddress } = ANCHOR_CONTRACT_ADDRESS(network);
+  const contractAddress = ANCHOR_CONTRACT_ADDRESS2(network);
 
   return {
     uaUST: {
@@ -83,7 +83,7 @@ function Providers({ children }: { children: ReactNode }) {
     <Router>
       <QueryClientProvider client={queryClient}>
         <AppProvider
-          contractAddress={DEFAULT_TERRA_CONTRACT_ADDRESS}
+          contractAddress={ANCHOR_CONTRACT_ADDRESS2}
           constants={ANCHOR_CONSTANTS}
           refetchMap={ANCHOR_TX_REFETCH_MAP}
         >
@@ -99,8 +99,6 @@ function Providers({ children }: { children: ReactNode }) {
                 maxCapTokenDenoms={maxCapTokenDenoms}
               >
                 <AnchorWebappProvider
-                  contractAddressMaps={ANCHOR_CONTRACT_ADDRESS}
-                  constants={ANCHOR_CONSTANTS}
                   indexerApiEndpoints={ANCHOR_INDEXER_API_ENDPOINTS}
                 >
                   {/** Theme Providing to Styled-Components and Material-UI */}

@@ -26,7 +26,7 @@ import {
   validateDepositAmount,
   validateTxFee,
 } from '@anchor-protocol/webapp-provider';
-import { useFixedFee } from '@libs/app-provider';
+import { useCW20Balance, useFixedFee } from '@libs/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
@@ -36,7 +36,7 @@ import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
 import { TextInput } from '@libs/neumorphism-ui/components/TextInput';
 import type { DialogProps, OpenDialog } from '@libs/use-dialog';
 import { useDialog } from '@libs/use-dialog';
-import { useBank, useCW20TokenBalance } from '@libs/webapp-provider';
+import { useBank } from '@libs/webapp-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
@@ -97,7 +97,10 @@ function ComponentBase({
   // ---------------------------------------------
   const { tokenBalances } = useBank<AnchorTokenBalances, AnchorTax>();
 
-  const ubAssetBalance = useCW20TokenBalance<bAsset>(collateralToken);
+  const ubAssetBalance = useCW20Balance<bAsset>(
+    collateralToken,
+    connectedWallet?.walletAddress,
+  );
 
   const {
     data: {
