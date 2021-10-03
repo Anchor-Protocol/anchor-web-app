@@ -11,6 +11,7 @@ import {
   useGovVoteTx,
   useRewardsAncGovernanceRewardsQuery,
 } from '@anchor-protocol/webapp-provider';
+import { useAnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
 import { demicrofy, microfy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
@@ -27,7 +28,6 @@ import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
-import { useBank } from 'contexts/bank';
 import { validateTxFee } from 'logics/validateTxFee';
 import React, {
   ChangeEvent,
@@ -63,7 +63,7 @@ function ComponentBase({
 
   const fixedFee = useFixedFee();
 
-  const bank = useBank();
+  const bank = useAnchorBank();
 
   const { data: { userGovStakingInfo } = {} } =
     useRewardsAncGovernanceRewardsQuery();

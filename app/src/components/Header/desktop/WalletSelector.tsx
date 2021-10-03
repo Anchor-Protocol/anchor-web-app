@@ -1,17 +1,17 @@
 import { Terra, Walletconnect } from '@anchor-protocol/icons';
 import { useAirdropCheckQuery } from '@anchor-protocol/webapp-provider';
-import { ClickAwayListener } from '@material-ui/core';
+import { useAnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
+import { ClickAwayListener } from '@material-ui/core';
 import {
   ConnectType,
   useWallet,
   WalletStatus,
 } from '@terra-money/wallet-provider';
 import { IconOnlyWalletButton } from 'components/Header/desktop/IconOnlyWalletButton';
-import { useBank } from 'contexts/bank';
 import { useBuyUstDialog } from 'pages/earn/components/useBuyUstDialog';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import React, { useCallback, useState } from 'react';
@@ -47,7 +47,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
 
   const isSmallScreen = useMediaQuery({ query: '(max-width: 1000px)' });
 
-  const bank = useBank();
+  const bank = useAnchorBank();
 
   const { data: airdrop, isLoading: airdropIsLoading } = useAirdropCheckQuery();
   //const airdrop = useMemo<Airdrop | 'in-progress' | null>(

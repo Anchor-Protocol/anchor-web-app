@@ -2,21 +2,19 @@ import { COLLATERAL_DENOMS } from '@anchor-protocol/anchor.js';
 import { formatLuna, formatUST } from '@anchor-protocol/notation';
 import { Luna, u } from '@anchor-protocol/types';
 import {
-  AnchorTax,
-  AnchorTokenBalances,
   useBondClaimableRewards,
   useBondClaimTx,
   useBondWithdrawableAmount,
   useBondWithdrawTx,
   validateTxFee,
 } from '@anchor-protocol/webapp-provider';
+import { useAnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { HorizontalHeavyRuler } from '@libs/neumorphism-ui/components/HorizontalHeavyRuler';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
-import { useBank } from '@libs/webapp-provider';
 import { StreamStatus } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big } from 'big.js';
@@ -50,7 +48,7 @@ function ClaimLunaBase({ className }: ClaimLunaProps) {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const { tokenBalances } = useBank<AnchorTokenBalances, AnchorTax>();
+  const { tokenBalances } = useAnchorBank();
 
   const { data: { rewardState, claimableReward } = {} } =
     useBondClaimableRewards(COLLATERAL_DENOMS.UBLUNA);

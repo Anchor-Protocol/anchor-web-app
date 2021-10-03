@@ -1,13 +1,12 @@
 import { UST } from '@anchor-protocol/types';
 import {
-  AnchorTokenBalances,
   computeTotalDeposit,
   earnWithdrawForm,
   EarnWithdrawFormStates,
 } from '@anchor-protocol/webapp-fns';
+import { useAnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
 import { useForm } from '@libs/use-form';
-import { useBank } from '@libs/webapp-provider';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback, useMemo } from 'react';
 import { useEarnEpochStatesQuery } from '../../queries/earn/epochStates';
@@ -21,7 +20,7 @@ export function useEarnWithdrawForm(): EarnWithdrawFormReturn {
 
   const fixedFee = useFixedFee();
 
-  const { tokenBalances } = useBank<AnchorTokenBalances>();
+  const { tokenBalances } = useAnchorBank();
 
   const { data } = useEarnEpochStatesQuery();
 

@@ -10,6 +10,7 @@ import {
   useBondBLunaExchangeRateQuery,
   useBondBurnTx,
 } from '@anchor-protocol/webapp-provider';
+import { useAnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
@@ -25,7 +26,6 @@ import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { useBank } from 'contexts/bank';
 import { validateTxFee } from 'logics/validateTxFee';
 import { pegRecovery } from 'pages/bond/logics/pegRecovery';
 import { validateBurnAmount } from 'pages/bond/logics/validateBurnAmount';
@@ -65,7 +65,7 @@ export function Burn() {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const bank = useBank();
+  const bank = useAnchorBank();
 
   const { data: { state: exchangeRate, parameters } = {} } =
     useBondBLunaExchangeRateQuery();

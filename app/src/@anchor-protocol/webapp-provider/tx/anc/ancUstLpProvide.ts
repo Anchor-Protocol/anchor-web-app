@@ -1,11 +1,8 @@
 import { ANC, u, UST } from '@anchor-protocol/types';
 import { ancAncUstLpProvideTx } from '@anchor-protocol/webapp-fns';
+import { useAnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
-import {
-  useBank,
-  useRefetchQueries,
-  useTerraWebapp,
-} from '@libs/webapp-provider';
+import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
@@ -25,7 +22,7 @@ export function useAncAncUstLpProvideTx() {
 
   const { addressProvider, constants } = useAnchorWebapp();
 
-  const { tax } = useBank();
+  const { tax } = useAnchorBank();
 
   const fixedFee = useFixedFee();
 

@@ -1,8 +1,6 @@
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
 import { u, UST } from '@anchor-protocol/types';
 import {
-  AnchorTax,
-  AnchorTokenBalances,
   computeCollateralsTotalUST,
   computeTotalDeposit,
 } from '@anchor-protocol/webapp-fns';
@@ -14,6 +12,7 @@ import {
   useEarnEpochStatesQuery,
   useRewardsAncGovernanceRewardsQuery,
 } from '@anchor-protocol/webapp-provider';
+import { useAnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
 import { sum } from '@libs/big-math';
 import { demicrofy } from '@libs/formatter';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
@@ -21,7 +20,6 @@ import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { AnimateNumber } from '@libs/ui';
-import { useBank } from '@libs/webapp-provider';
 import { Send } from '@material-ui/icons';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big, BigSource } from 'big.js';
@@ -58,7 +56,7 @@ interface Item {
 function TotalValueBase({ className }: TotalValueProps) {
   const connectedWallet = useConnectedWallet();
 
-  const { tokenBalances } = useBank<AnchorTokenBalances, AnchorTax>();
+  const { tokenBalances } = useAnchorBank();
 
   const { data: { moneyMarketEpochState } = {} } = useEarnEpochStatesQuery();
 

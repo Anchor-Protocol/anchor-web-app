@@ -6,8 +6,6 @@ import {
 } from '@anchor-protocol/notation';
 import { Rate, u, UST } from '@anchor-protocol/types';
 import {
-  AnchorTax,
-  AnchorTokenBalances,
   BorrowBorrower,
   BorrowMarket,
   computeBorrowAPR,
@@ -26,6 +24,7 @@ import {
   validateRepayAmount,
   validateTxFee,
 } from '@anchor-protocol/webapp-provider';
+import { useAnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
 import { demicrofy, formatRate } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
@@ -35,7 +34,6 @@ import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
 import type { DialogProps, OpenDialog } from '@libs/use-dialog';
 import { useDialog } from '@libs/use-dialog';
-import { useBank } from '@libs/webapp-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
@@ -93,7 +91,7 @@ function ComponentBase({
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const { tokenBalances, tax } = useBank<AnchorTokenBalances, AnchorTax>();
+  const { tokenBalances, tax } = useAnchorBank();
 
   const {
     data: {

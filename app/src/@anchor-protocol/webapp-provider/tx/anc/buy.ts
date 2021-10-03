@@ -1,13 +1,10 @@
 import { u, UST } from '@anchor-protocol/types';
 import { ancBuyTx } from '@anchor-protocol/webapp-fns';
 import { useAncPriceQuery } from '@anchor-protocol/webapp-provider';
+import { useAnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
 import { formatExecuteMsgNumber } from '@libs/formatter';
-import {
-  useBank,
-  useRefetchQueries,
-  useTerraWebapp,
-} from '@libs/webapp-provider';
+import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
 import { useStream } from '@rx-stream/react';
 
 import { useConnectedWallet } from '@terra-money/wallet-provider';
@@ -28,7 +25,7 @@ export function useAncBuyTx() {
 
   const { addressProvider, constants } = useAnchorWebapp();
 
-  const { tax } = useBank();
+  const { tax } = useAnchorBank();
 
   const { mantleEndpoint, mantleFetch, txErrorReporter } = useTerraWebapp();
 

@@ -1,7 +1,6 @@
 import { TERRA_QUERY_KEY } from '@libs/webapp-fns';
 import { useCallback } from 'react';
 import { useQueryClient } from 'react-query';
-import { useBank } from '../contexts/bank';
 import { useTerraWebapp } from '../contexts/context';
 import { QueryRefetch } from '../types';
 
@@ -21,7 +20,7 @@ export function useRefetchQueries() {
   const queryClient = useQueryClient();
 
   const { txRefetchMap } = useTerraWebapp();
-  const { refetchTax, refetchTokenBalances } = useBank();
+  //const { refetchTax, refetchTokenBalances } = useAnchorBank();
 
   return useCallback(
     (txKey: string) => {
@@ -31,10 +30,10 @@ export function useRefetchQueries() {
         for (const queryRefetch of queryRefetches) {
           switch (queryRefetch) {
             case TERRA_QUERY_KEY.TOKEN_BALANCES:
-              refetchTokenBalances();
+              //refetchTokenBalances();
               break;
             case TERRA_QUERY_KEY.TAX:
-              refetchTax();
+              //refetchTax();
               break;
             default:
               runRefetch(queryRefetch).then((queryKey) => {
@@ -48,6 +47,6 @@ export function useRefetchQueries() {
         }
       }
     },
-    [queryClient, refetchTax, refetchTokenBalances, txRefetchMap],
+    [queryClient, txRefetchMap],
   );
 }

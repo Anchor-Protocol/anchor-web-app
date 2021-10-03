@@ -2,18 +2,16 @@ import { COLLATERAL_DENOMS } from '@anchor-protocol/anchor.js';
 import { formatUST } from '@anchor-protocol/notation';
 import { u, UST } from '@anchor-protocol/types';
 import {
-  AnchorTax,
-  AnchorTokenBalances,
   useBondBEthClaimableRewards,
   useBondClaimTx,
   validateTxFee,
 } from '@anchor-protocol/webapp-provider';
+import { useAnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
-import { useBank } from '@libs/webapp-provider';
 import { StreamStatus } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big } from 'big.js';
@@ -42,7 +40,7 @@ function ClaimEthBase({ className }: ClaimEthProps) {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const { tokenBalances } = useBank<AnchorTokenBalances, AnchorTax>();
+  const { tokenBalances } = useAnchorBank();
 
   const { data: { claimableReward } = {} } = useBondBEthClaimableRewards();
 

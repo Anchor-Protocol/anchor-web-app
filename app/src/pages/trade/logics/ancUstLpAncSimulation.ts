@@ -1,8 +1,8 @@
 import { ANC, AncUstLP, Rate, u, UST } from '@anchor-protocol/types';
+import { AnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
 import { min } from '@libs/big-math';
 import { demicrofy, microfy } from '@libs/formatter';
 import big, { Big, BigSource } from 'big.js';
-import { Bank } from 'contexts/bank';
 import { AncPrice } from 'pages/trade/models/ancPrice';
 import { AncUstLpSimulation } from 'pages/trade/models/ancUstLpSimulation';
 
@@ -10,7 +10,7 @@ export function ancUstLpAncSimulation(
   ancPrice: AncPrice,
   ancAmount: ANC,
   fixedGas: u<UST<BigSource>>,
-  bank: Bank,
+  bank: AnchorBank,
 ): AncUstLpSimulation<Big> {
   if (ancAmount.length === 0) {
     throw new Error(`Can't not be ancAmount is empty string`);

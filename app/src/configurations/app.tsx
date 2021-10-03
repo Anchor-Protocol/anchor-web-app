@@ -12,11 +12,7 @@ import { GoogleAnalytics } from '@libs/use-google-analytics';
 import { useLongtimeNoSee } from '@libs/use-longtime-no-see';
 import { RouterScrollRestoration } from '@libs/use-router-scroll-restoration';
 import { RouterWalletStatusRecheck } from '@libs/use-router-wallet-status-recheck';
-import { CW20Contract } from '@libs/webapp-fns';
-import {
-  BankProvider as WebappBankProvider,
-  TerraWebappProvider,
-} from '@libs/webapp-provider';
+import { TerraWebappProvider } from '@libs/webapp-provider';
 import { captureException } from '@sentry/react';
 import { ReadonlyWalletSession } from '@terra-dev/readonly-wallet';
 import {
@@ -45,38 +41,6 @@ const queryClient = new QueryClient();
 const errorReporter =
   process.env.NODE_ENV === 'production' ? captureException : undefined;
 
-/** @deprecated */
-const cw20TokenContracts = (
-  network: NetworkInfo,
-): Record<string, CW20Contract> => {
-  const contractAddress = ANCHOR_CONTRACT_ADDRESS2(network);
-
-  return {
-    uaUST: {
-      contractAddress: contractAddress.cw20.aUST,
-    },
-    ubLuna: {
-      contractAddress: contractAddress.cw20.bLuna,
-    },
-    ubEth: {
-      contractAddress: contractAddress.cw20.bEth,
-    },
-    uANC: {
-      contractAddress: contractAddress.cw20.ANC,
-    },
-    uAncUstLP: {
-      contractAddress: contractAddress.cw20.AncUstLP,
-    },
-    ubLunaLunaLP: {
-      contractAddress: contractAddress.cw20.bLunaLunaLP,
-    },
-  };
-};
-
-const maxCapTokenDenoms: Record<string, string> = {
-  maxTaxUUSD: 'uusd',
-};
-
 function Providers({ children }: { children: ReactNode }) {
   return (
     /** React App routing :: <Link>, <NavLink>, useLocation(), useRouteMatch()... */
@@ -94,23 +58,18 @@ function Providers({ children }: { children: ReactNode }) {
               txErrorReporter={errorReporter}
               queryErrorReporter={errorReporter}
             >
-              <WebappBankProvider
-                cw20TokenContracts={cw20TokenContracts}
-                maxCapTokenDenoms={maxCapTokenDenoms}
+              <AnchorWebappProvider
+                indexerApiEndpoints={ANCHOR_INDEXER_API_ENDPOINTS}
               >
-                <AnchorWebappProvider
-                  indexerApiEndpoints={ANCHOR_INDEXER_API_ENDPOINTS}
-                >
-                  {/** Theme Providing to Styled-Components and Material-UI */}
-                  <ThemeProvider initialTheme="light">
-                    {/** Snackbar Provider :: useSnackbar() */}
-                    <SnackbarProvider>
-                      {/** Application Layout */}
-                      {children}
-                    </SnackbarProvider>
-                  </ThemeProvider>
-                </AnchorWebappProvider>
-              </WebappBankProvider>
+                {/** Theme Providing to Styled-Components and Material-UI */}
+                <ThemeProvider initialTheme="light">
+                  {/** Snackbar Provider :: useSnackbar() */}
+                  <SnackbarProvider>
+                    {/** Application Layout */}
+                    {children}
+                  </SnackbarProvider>
+                </ThemeProvider>
+              </AnchorWebappProvider>
             </TerraWebappProvider>
           </BrowserInactiveProvider>
         </AppProvider>

@@ -19,6 +19,10 @@ import {
   useAnchorWebapp,
   useTerraSendTx,
 } from '@anchor-protocol/webapp-provider';
+import {
+  AnchorBank,
+  useAnchorBank,
+} from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
 import { min } from '@libs/big-math';
 import { demicrofy, microfy } from '@libs/formatter';
@@ -39,7 +43,6 @@ import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { Bank, useBank } from 'contexts/bank';
 import { validateTxFee } from 'logics/validateTxFee';
 import { CurrencyInfo } from 'pages/send/models/currency';
 import React, {
@@ -88,7 +91,7 @@ function ComponentBase({
         value: 'usd',
         integerPoints: UST_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: UST_INPUT_MAXIMUM_DECIMAL_POINTS,
-        getWithdrawable: (bank: Bank, fixedGas: u<UST<BigSource>>) => {
+        getWithdrawable: (bank: AnchorBank, fixedGas: u<UST<BigSource>>) => {
           return big(bank.userBalances.uUSD)
             .minus(
               min(
@@ -99,7 +102,10 @@ function ComponentBase({
             .minus(big(fixedGas).mul(2))
             .toString() as u<Token>;
         },
-        getFormatWithdrawable: (bank: Bank, fixedGas: u<UST<BigSource>>) => {
+        getFormatWithdrawable: (
+          bank: AnchorBank,
+          fixedGas: u<UST<BigSource>>,
+        ) => {
           return formatUSTInput(
             demicrofy(
               big(bank.userBalances.uUSD)
@@ -119,8 +125,8 @@ function ComponentBase({
         value: 'aust',
         integerPoints: AUST_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: AUST_INPUT_MAXIMUM_DECIMAL_POINTS,
-        getWithdrawable: (bank: Bank) => bank.userBalances.uaUST,
-        getFormatWithdrawable: (bank: Bank) =>
+        getWithdrawable: (bank: AnchorBank) => bank.userBalances.uaUST,
+        getFormatWithdrawable: (bank: AnchorBank) =>
           formatAUSTInput(demicrofy(bank.userBalances.uaUST)),
         cw20Address: cw20.aUST,
       },
@@ -129,8 +135,8 @@ function ComponentBase({
         value: 'luna',
         integerPoints: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
-        getWithdrawable: (bank: Bank) => bank.userBalances.uLuna,
-        getFormatWithdrawable: (bank: Bank) =>
+        getWithdrawable: (bank: AnchorBank) => bank.userBalances.uLuna,
+        getFormatWithdrawable: (bank: AnchorBank) =>
           formatLunaInput(demicrofy(bank.userBalances.uLuna)),
       },
       {
@@ -138,8 +144,8 @@ function ComponentBase({
         value: 'bluna',
         integerPoints: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
-        getWithdrawable: (bank: Bank) => bank.userBalances.ubLuna,
-        getFormatWithdrawable: (bank: Bank) =>
+        getWithdrawable: (bank: AnchorBank) => bank.userBalances.ubLuna,
+        getFormatWithdrawable: (bank: AnchorBank) =>
           formatLunaInput(demicrofy(bank.userBalances.ubLuna)),
         cw20Address: cw20.bLuna,
       },
@@ -148,8 +154,8 @@ function ComponentBase({
         value: 'beth',
         integerPoints: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
-        getWithdrawable: (bank: Bank) => bank.userBalances.ubEth,
-        getFormatWithdrawable: (bank: Bank) =>
+        getWithdrawable: (bank: AnchorBank) => bank.userBalances.ubEth,
+        getFormatWithdrawable: (bank: AnchorBank) =>
           formatBAssetInput(demicrofy(bank.userBalances.ubEth)),
         cw20Address: cw20.bEth,
       },
@@ -158,8 +164,8 @@ function ComponentBase({
         value: 'anc',
         integerPoints: ANC_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
-        getWithdrawable: (bank: Bank) => bank.userBalances.uANC,
-        getFormatWithdrawable: (bank: Bank) =>
+        getWithdrawable: (bank: AnchorBank) => bank.userBalances.uANC,
+        getFormatWithdrawable: (bank: AnchorBank) =>
           formatANCInput(demicrofy(bank.userBalances.uANC)),
         cw20Address: cw20.ANC,
       },
@@ -181,7 +187,7 @@ function ComponentBase({
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const bank = useBank();
+  const bank = useAnchorBank();
 
   // ---------------------------------------------
   // computed

@@ -22,6 +22,7 @@ import {
   useAnchorWebapp,
   useAncPriceQuery,
 } from '@anchor-protocol/webapp-provider';
+import { useAnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
 import { max, min } from '@libs/big-math';
 import { demicrofy, formatFluidDecimalPoints, microfy } from '@libs/formatter';
@@ -41,7 +42,6 @@ import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { useBank } from 'contexts/bank';
 import { validateTxFee } from 'logics/validateTxFee';
 import { buyFromSimulation } from 'pages/trade/logics/buyFromSimulation';
 import { buyToSimulation } from 'pages/trade/logics/buyToSimulation';
@@ -77,7 +77,7 @@ export function TradeBuy() {
 
   const { contractAddress: address } = useAnchorWebapp();
 
-  const bank = useBank();
+  const bank = useAnchorBank();
 
   const [buy, buyResult] = useAncBuyTx();
 

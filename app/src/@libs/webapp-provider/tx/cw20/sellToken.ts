@@ -1,16 +1,8 @@
+import { useAnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
 import { formatExecuteMsgNumber } from '@libs/formatter';
 import { CW20Addr, HumanAddr, Rate, Token, u, UST } from '@libs/types';
-import {
-  cw20SellTokenTx,
-  Tax,
-  TERRA_TX_KEYS,
-  TokenBalances,
-} from '@libs/webapp-fns';
-import {
-  useBank,
-  useRefetchQueries,
-  useTerraWebapp,
-} from '@libs/webapp-provider';
+import { cw20SellTokenTx, TERRA_TX_KEYS } from '@libs/webapp-fns';
+import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
 import { useConnectedWallet } from '@terra-dev/use-wallet';
 import big from 'big.js';
 import { useCallback } from 'react';
@@ -36,7 +28,7 @@ export function useCW20SellTokenTx<T extends Token>(
 
   const refetchQueries = useRefetchQueries();
 
-  const { tax } = useBank<TokenBalances, Tax>();
+  const { tax } = useAnchorBank();
 
   const { data: { terraswapPool } = {} } =
     useTerraswapPoolQuery<Token>(tokenUstPairAddr);

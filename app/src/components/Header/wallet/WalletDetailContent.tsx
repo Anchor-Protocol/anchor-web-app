@@ -6,6 +6,7 @@ import {
   formatLuna,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
+import { AnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
 import { demicrofy, truncate } from '@libs/formatter';
 import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
@@ -15,7 +16,6 @@ import { NetworkInfo } from '@terra-dev/wallet-types';
 import { ConnectType } from '@terra-money/wallet-provider';
 import big from 'big.js';
 import { BuyButton, BuyLink } from 'components/BuyButton';
-import { Bank } from 'contexts/bank';
 import React, { useCallback } from 'react';
 import useClipboard from 'react-use-clipboard';
 import styled from 'styled-components';
@@ -27,7 +27,7 @@ interface WalletDetailContentProps {
   walletAddress: string;
   closePopup: () => void;
   disconnectWallet: () => void;
-  bank: Bank;
+  bank: AnchorBank;
   openSend: () => void;
   availablePost: boolean;
   connectType: ConnectType;
@@ -69,7 +69,7 @@ export function WalletDetailContentBase({
         </button>
 
         <ul>
-          {big(bank.userBalances.uUSD).gt(0) && (
+          {big(bank.tokenBalances.uUSD).gt(0) && (
             <li>
               <span>
                 UST{' '}
@@ -83,31 +83,33 @@ export function WalletDetailContentBase({
                 </BuyButton>
               </span>
               <span>
-                {formatUSTWithPostfixUnits(demicrofy(bank.userBalances.uUSD))}
+                {formatUSTWithPostfixUnits(demicrofy(bank.tokenBalances.uUSD))}
               </span>
             </li>
           )}
-          {big(bank.userBalances.uaUST).gt(0) && (
+          {big(bank.tokenBalances.uaUST).gt(0) && (
             <li>
               <span>aUST</span>
               <span>
-                {formatAUSTWithPostfixUnits(demicrofy(bank.userBalances.uaUST))}
+                {formatAUSTWithPostfixUnits(
+                  demicrofy(bank.tokenBalances.uaUST),
+                )}
               </span>
             </li>
           )}
-          {big(bank.userBalances.uLuna).gt(0) && (
+          {big(bank.tokenBalances.uLuna).gt(0) && (
             <li>
               <span>LUNA</span>
-              <span>{formatLuna(demicrofy(bank.userBalances.uLuna))}</span>
+              <span>{formatLuna(demicrofy(bank.tokenBalances.uLuna))}</span>
             </li>
           )}
-          {big(bank.userBalances.ubLuna).gt(0) && (
+          {big(bank.tokenBalances.ubLuna).gt(0) && (
             <li>
               <span>bLUNA</span>
-              <span>{formatLuna(demicrofy(bank.userBalances.ubLuna))}</span>
+              <span>{formatLuna(demicrofy(bank.tokenBalances.ubLuna))}</span>
             </li>
           )}
-          {big(bank.userBalances.ubEth).gt(0) && (
+          {big(bank.tokenBalances.ubEth).gt(0) && (
             <li>
               <span>
                 bETH{' '}
@@ -119,13 +121,13 @@ export function WalletDetailContentBase({
                   GET <Launch />
                 </BuyLink>
               </span>
-              <span>{formatBAsset(demicrofy(bank.userBalances.ubEth))}</span>
+              <span>{formatBAsset(demicrofy(bank.tokenBalances.ubEth))}</span>
             </li>
           )}
-          {big(bank.userBalances.uANC).gt(0) && (
+          {big(bank.tokenBalances.uANC).gt(0) && (
             <li>
               <span>ANC</span>
-              <span>{formatANC(demicrofy(bank.userBalances.uANC))}</span>
+              <span>{formatANC(demicrofy(bank.tokenBalances.uANC))}</span>
             </li>
           )}
 
@@ -133,12 +135,12 @@ export function WalletDetailContentBase({
             <>
               <li>
                 <span>ANC-UST LP</span>
-                <span>{formatLP(demicrofy(bank.userBalances.uAncUstLP))}</span>
+                <span>{formatLP(demicrofy(bank.tokenBalances.uAncUstLP))}</span>
               </li>
               <li>
                 <span>bLUNA-LUNA LP</span>
                 <span>
-                  {formatLP(demicrofy(bank.userBalances.ubLunaLunaLP))}
+                  {formatLP(demicrofy(bank.tokenBalances.ubLunaLunaLP))}
                 </span>
               </li>
             </>

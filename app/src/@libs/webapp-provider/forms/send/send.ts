@@ -1,3 +1,4 @@
+import { useAnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
 import { Token } from '@libs/types';
 import { useForm } from '@libs/use-form';
 import {
@@ -5,10 +6,8 @@ import {
   SendForm,
   SendFormInput,
   SendTokenInfo,
-  Tax,
-  TokenBalances,
 } from '@libs/webapp-fns';
-import { useBank, useTerraWebapp } from '@libs/webapp-provider';
+import { useTerraWebapp } from '@libs/webapp-provider';
 import { useConnectedWallet } from '@terra-dev/use-wallet';
 import { useSendBalanceQuery } from '../../queries/send/balance';
 
@@ -31,7 +30,7 @@ export function useSendForm<T extends Token>({ tokenInfo }: SendFormParams) {
       : tokenInfo.assetInfo.token.contract_addr,
   );
 
-  const { tax, tokenBalances } = useBank<TokenBalances, Tax>();
+  const { tax, tokenBalances } = useAnchorBank();
 
   const form: SendForm<T> = sendForm;
 

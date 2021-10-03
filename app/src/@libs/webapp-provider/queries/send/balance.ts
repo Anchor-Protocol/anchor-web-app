@@ -1,6 +1,5 @@
+import { useAnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
 import { CW20Addr, NativeDenom, Token, u } from '@libs/types';
-import { TokenBalances } from '@libs/webapp-fns';
-import { useBank } from '@libs/webapp-provider';
 import { useConnectedWallet } from '@terra-dev/use-wallet';
 import { useMemo } from 'react';
 import { useCW20BalanceQuery } from '../cw20/balance';
@@ -10,7 +9,7 @@ export function useSendBalanceQuery<T extends Token>(
 ): u<T> {
   const connectedWallet = useConnectedWallet();
 
-  const { tokenBalances } = useBank<TokenBalances>();
+  const { tokenBalances } = useAnchorBank();
 
   const { data: { tokenBalance } = {} } = useCW20BalanceQuery<Token>(
     token.length > 10 ? (token as CW20Addr) : undefined,

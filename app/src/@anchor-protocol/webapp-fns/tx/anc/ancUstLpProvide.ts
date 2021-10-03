@@ -8,6 +8,7 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { ANC, AncUstLP, Gas, Rate, u, UST } from '@anchor-protocol/types';
+import { AnchorTax } from '@anchor-protocol/webapp-fns/types';
 import { floor, min } from '@libs/big-math';
 import { demicrofy, stripUUSD } from '@libs/formatter';
 import { MantleFetch } from '@libs/mantle';
@@ -15,28 +16,27 @@ import {
   pickAttributeValueByKey,
   pickEvent,
   pickRawLog,
-  TaxData,
   TxResultRendering,
   TxStreamPhase,
 } from '@libs/webapp-fns';
+import {
+  _catchTxError,
+  _createTxOptions,
+  _pollTxInfo,
+  _postTx,
+  TxHelper,
+} from '@libs/webapp-fns/tx/internal';
 import { pipe } from '@rx-stream/pipe';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
 import big, { Big } from 'big.js';
 import { Observable } from 'rxjs';
 import { AncPrice } from '../../queries/anc/price';
-import {
-  TxHelper,
-  _postTx,
-  _pollTxInfo,
-  _createTxOptions,
-  _catchTxError,
-} from '@libs/webapp-fns/tx/internal';
 
 export function ancAncUstLpProvideTx(
   $: Parameters<typeof fabricateTerraswapProvideLiquidityANC>[0] & {
     ancPrice: AncPrice | undefined;
-    tax: TaxData;
+    tax: AnchorTax;
     gasFee: Gas;
     gasAdjustment: Rate<number>;
     txFee: u<UST>;

@@ -2,7 +2,6 @@
 // @see ~/scripts/create-index.ts
 export * from './env';
 export * from './types';
-export * from './contexts/bank';
 export * from './contexts/context';
 export * from './forms/cw20/buyToken';
 export * from './forms/cw20/sellToken';

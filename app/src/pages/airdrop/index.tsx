@@ -8,6 +8,7 @@ import {
   useAirdropClaimTx,
   useAnchorWebapp,
 } from '@anchor-protocol/webapp-provider';
+import { useAnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
 import { useGasPrice } from '@libs/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
@@ -19,7 +20,6 @@ import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { useBank } from 'contexts/bank';
 import { validateTxFee } from 'logics/validateTxFee';
 import React, { useCallback, useMemo } from 'react';
 import { Link, useHistory } from 'react-router-dom';
@@ -52,7 +52,7 @@ function AirdropBase({ className }: AirdropProps) {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const bank = useBank();
+  const bank = useAnchorBank();
 
   const invalidTxFee = useMemo(
     () => connectedWallet && validateTxFee(bank, airdropFee),

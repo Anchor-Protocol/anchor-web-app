@@ -1,13 +1,12 @@
+import { useAnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
 import { CW20Addr, HumanAddr, Token, u } from '@libs/types';
 import { useForm } from '@libs/use-form';
 import {
   CW20SellTokenForm,
   cw20SellTokenForm,
   CW20SellTokenFormInput,
-  Tax,
-  TokenBalances,
 } from '@libs/webapp-fns';
-import { useBank, useTerraWebapp } from '@libs/webapp-provider';
+import { useTerraWebapp } from '@libs/webapp-provider';
 import { useConnectedWallet } from '@terra-dev/use-wallet';
 import { useCW20BalanceQuery } from '../../queries/cw20/balance';
 
@@ -28,7 +27,7 @@ export function useCW20SellTokenForm<T extends Token>({
     constants: { fixedGas },
   } = useTerraWebapp();
 
-  const { tax, tokenBalances } = useBank<TokenBalances, Tax>();
+  const { tax, tokenBalances } = useAnchorBank();
 
   const { data: { tokenBalance } = {} } = useCW20BalanceQuery<T>(
     tokenAddr,

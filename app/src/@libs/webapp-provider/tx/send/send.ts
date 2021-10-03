@@ -1,10 +1,7 @@
+import { useAnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
 import { HumanAddr, terraswap, Token, u, UST } from '@libs/types';
-import { sendTx, Tax, TERRA_TX_KEYS, TokenBalances } from '@libs/webapp-fns';
-import {
-  useBank,
-  useRefetchQueries,
-  useTerraWebapp,
-} from '@libs/webapp-provider';
+import { sendTx, TERRA_TX_KEYS } from '@libs/webapp-fns';
+import { useRefetchQueries, useTerraWebapp } from '@libs/webapp-provider';
 import { useConnectedWallet } from '@terra-dev/use-wallet';
 import { useCallback } from 'react';
 
@@ -26,7 +23,7 @@ export function useSendTx() {
 
   const refetchQueries = useRefetchQueries();
 
-  const { tax } = useBank<TokenBalances, Tax>();
+  const { tax } = useAnchorBank();
 
   const stream = useCallback(
     ({ asset, memo, toAddr, amount, txFee, onTxSucceed }: SendTxParams) => {

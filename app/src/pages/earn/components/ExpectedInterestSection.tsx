@@ -1,17 +1,16 @@
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
 import { u, UST } from '@anchor-protocol/types';
-import { AnchorTokenBalances } from '@anchor-protocol/webapp-fns';
 import {
   useAnchorWebapp,
   useEarnEpochStatesQuery,
 } from '@anchor-protocol/webapp-provider';
+import { useAnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
 import { demicrofy } from '@libs/formatter';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { Tab } from '@libs/neumorphism-ui/components/Tab';
 import { AnimateNumber } from '@libs/ui';
-import { useBank } from '@libs/webapp-provider';
 import big, { Big } from 'big.js';
 import React, { useMemo, useState } from 'react';
 
@@ -54,7 +53,7 @@ export function ExpectedInterestSection({
 
   const {
     tokenBalances: { uaUST },
-  } = useBank<AnchorTokenBalances>();
+  } = useAnchorBank();
 
   const { data: { moneyMarketEpochState, overseerEpochState } = {} } =
     useEarnEpochStatesQuery();

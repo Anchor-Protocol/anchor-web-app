@@ -1,13 +1,11 @@
 import { UST } from '@anchor-protocol/types';
 import {
-  AnchorTax,
-  AnchorTokenBalances,
   earnDepositForm,
   EarnDepositFormStates,
 } from '@anchor-protocol/webapp-fns';
+import { useAnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
 import { useForm } from '@libs/use-form';
-import { useBank } from '@libs/webapp-provider';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
 
@@ -20,7 +18,7 @@ export function useEarnDepositForm(): EarnDepositFormReturn {
 
   const fixedFee = useFixedFee();
 
-  const { tokenBalances, tax } = useBank<AnchorTokenBalances, AnchorTax>();
+  const { tokenBalances, tax } = useAnchorBank();
 
   const [input, states] = useForm(
     earnDepositForm,

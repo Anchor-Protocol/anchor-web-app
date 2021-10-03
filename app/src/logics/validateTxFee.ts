@@ -1,10 +1,13 @@
 import type { u, UST } from '@anchor-protocol/types';
+import { AnchorBank } from '@anchor-protocol/webapp-provider/hooks/useAnchorBank';
 import big, { BigSource } from 'big.js';
-import { Bank } from 'contexts/bank';
 import { ReactNode } from 'react';
 
 /** @deprecated */
-export function validateTxFee(bank: Bank, txFee: u<UST<BigSource>>): ReactNode {
+export function validateTxFee(
+  bank: AnchorBank,
+  txFee: u<UST<BigSource>>,
+): ReactNode {
   if (big(bank.userBalances.uUSD ?? 0).lt(txFee)) {
     return 'Not enough transaction fees';
   }
