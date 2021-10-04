@@ -40,7 +40,7 @@ import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { validateTxFee } from 'logics/validateTxFee';
+import { validateTxFee } from '@anchor-protocol/app-fns';
 import { CurrencyInfo } from 'pages/send/models/currency';
 import React, {
   ChangeEvent,
@@ -89,10 +89,10 @@ function ComponentBase({
         integerPoints: UST_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: UST_INPUT_MAXIMUM_DECIMAL_POINTS,
         getWithdrawable: (bank: AnchorBank, fixedGas: u<UST<BigSource>>) => {
-          return big(bank.userBalances.uUSD)
+          return big(bank.tokenBalances.uUST)
             .minus(
               min(
-                big(bank.userBalances.uUSD).mul(bank.tax.taxRate),
+                big(bank.tokenBalances.uUST).mul(bank.tax.taxRate),
                 bank.tax.maxTaxUUSD,
               ),
             )
@@ -105,10 +105,10 @@ function ComponentBase({
         ) => {
           return formatUSTInput(
             demicrofy(
-              big(bank.userBalances.uUSD)
+              big(bank.tokenBalances.uUST)
                 .minus(
                   min(
-                    big(bank.userBalances.uUSD).mul(bank.tax.taxRate),
+                    big(bank.tokenBalances.uUST).mul(bank.tax.taxRate),
                     bank.tax.maxTaxUUSD,
                   ),
                 )
@@ -122,9 +122,9 @@ function ComponentBase({
         value: 'aust',
         integerPoints: AUST_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: AUST_INPUT_MAXIMUM_DECIMAL_POINTS,
-        getWithdrawable: (bank: AnchorBank) => bank.userBalances.uaUST,
+        getWithdrawable: (bank: AnchorBank) => bank.tokenBalances.uaUST,
         getFormatWithdrawable: (bank: AnchorBank) =>
-          formatAUSTInput(demicrofy(bank.userBalances.uaUST)),
+          formatAUSTInput(demicrofy(bank.tokenBalances.uaUST)),
         cw20Address: cw20.aUST,
       },
       {
@@ -132,18 +132,18 @@ function ComponentBase({
         value: 'luna',
         integerPoints: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
-        getWithdrawable: (bank: AnchorBank) => bank.userBalances.uLuna,
+        getWithdrawable: (bank: AnchorBank) => bank.tokenBalances.uLuna,
         getFormatWithdrawable: (bank: AnchorBank) =>
-          formatLunaInput(demicrofy(bank.userBalances.uLuna)),
+          formatLunaInput(demicrofy(bank.tokenBalances.uLuna)),
       },
       {
         label: 'bLUNA',
         value: 'bluna',
         integerPoints: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
-        getWithdrawable: (bank: AnchorBank) => bank.userBalances.ubLuna,
+        getWithdrawable: (bank: AnchorBank) => bank.tokenBalances.ubLuna,
         getFormatWithdrawable: (bank: AnchorBank) =>
-          formatLunaInput(demicrofy(bank.userBalances.ubLuna)),
+          formatLunaInput(demicrofy(bank.tokenBalances.ubLuna)),
         cw20Address: cw20.bLuna,
       },
       {
@@ -151,9 +151,9 @@ function ComponentBase({
         value: 'beth',
         integerPoints: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
-        getWithdrawable: (bank: AnchorBank) => bank.userBalances.ubEth,
+        getWithdrawable: (bank: AnchorBank) => bank.tokenBalances.ubEth,
         getFormatWithdrawable: (bank: AnchorBank) =>
-          formatBAssetInput(demicrofy(bank.userBalances.ubEth)),
+          formatBAssetInput(demicrofy(bank.tokenBalances.ubEth)),
         cw20Address: cw20.bEth,
       },
       {
@@ -161,9 +161,9 @@ function ComponentBase({
         value: 'anc',
         integerPoints: ANC_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
-        getWithdrawable: (bank: AnchorBank) => bank.userBalances.uANC,
+        getWithdrawable: (bank: AnchorBank) => bank.tokenBalances.uANC,
         getFormatWithdrawable: (bank: AnchorBank) =>
-          formatANCInput(demicrofy(bank.userBalances.uANC)),
+          formatANCInput(demicrofy(bank.tokenBalances.uANC)),
         cw20Address: cw20.ANC,
       },
     ],
@@ -230,7 +230,7 @@ function ComponentBase({
   }, [amount, bank.tax.maxTaxUUSD, bank.tax.taxRate, currency.value, fixedFee]);
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, txFee),
+    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, txFee),
     [bank, connectedWallet, txFee],
   );
 

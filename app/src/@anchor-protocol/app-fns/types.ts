@@ -34,7 +34,6 @@ import {
 export interface AnchorTokenBalances {
   // native tokens
   uUST: u<UST>;
-  uUSD: u<UST>;
   uLuna: u<Luna>;
   // cw20 tokens
   uaUST: u<aUST>;

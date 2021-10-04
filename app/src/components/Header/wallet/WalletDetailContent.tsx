@@ -69,7 +69,7 @@ export function WalletDetailContentBase({
         </button>
 
         <ul>
-          {big(bank.tokenBalances.uUSD).gt(0) && (
+          {big(bank.tokenBalances.uUST).gt(0) && (
             <li>
               <span>
                 UST{' '}
@@ -83,7 +83,7 @@ export function WalletDetailContentBase({
                 </BuyButton>
               </span>
               <span>
-                {formatUSTWithPostfixUnits(demicrofy(bank.tokenBalances.uUSD))}
+                {formatUSTWithPostfixUnits(demicrofy(bank.tokenBalances.uUST))}
               </span>
             </li>
           )}

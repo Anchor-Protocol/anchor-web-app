@@ -32,7 +32,7 @@ import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { validateTxFee } from 'logics/validateTxFee';
+import { validateTxFee } from '@anchor-protocol/app-fns';
 import { formatShareOfPool } from 'pages/gov/components/formatShareOfPool';
 import { ancUstLpAncSimulation } from 'pages/trade/logics/ancUstLpAncSimulation';
 import { ancUstLpUstSimulation } from 'pages/trade/logics/ancUstLpUstSimulation';
@@ -83,7 +83,7 @@ export function AncUstLpProvide() {
   const ustBalance = useMemo(() => {
     const txFee = min(
       max(
-        big(big(bank.userBalances.uUSD).minus(fixedFee)).div(
+        big(big(bank.tokenBalances.uUST).minus(fixedFee)).div(
           big(big(1).plus(bank.tax.taxRate)).mul(bank.tax.taxRate),
         ),
         0,
@@ -92,23 +92,28 @@ export function AncUstLpProvide() {
     );
 
     return max(
-      big(bank.userBalances.uUSD).minus(txFee).minus(big(fixedFee).mul(3)),
+      big(bank.tokenBalances.uUST).minus(txFee).minus(big(fixedFee).mul(3)),
       0,
     ) as u<UST<Big>>;
-  }, [bank.tax.maxTaxUUSD, bank.tax.taxRate, bank.userBalances.uUSD, fixedFee]);
+  }, [
+    bank.tax.maxTaxUUSD,
+    bank.tax.taxRate,
+    bank.tokenBalances.uUST,
+    fixedFee,
+  ]);
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedFee),
+    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
     [bank, fixedFee, connectedWallet],
   );
 
   const invalidAncAmount = useMemo(() => {
     if (ancAmount.length === 0 || !connectedWallet) return undefined;
 
-    return big(microfy(ancAmount)).gt(bank.userBalances.uANC)
+    return big(microfy(ancAmount)).gt(bank.tokenBalances.uANC)
       ? 'Not enough assets'
       : undefined;
-  }, [ancAmount, bank.userBalances.uANC, connectedWallet]);
+  }, [ancAmount, bank.tokenBalances.uANC, connectedWallet]);
 
   const invalidUstAmount = useMemo(() => {
     if (ustAmount.length === 0 || !connectedWallet || !simulation)
@@ -117,11 +122,11 @@ export function AncUstLpProvide() {
     return big(microfy(ustAmount))
       .plus(simulation.txFee)
       .plus(fixedFee)
-      .gt(bank.userBalances.uUSD)
+      .gt(bank.tokenBalances.uUST)
       ? 'Not enough assets'
       : undefined;
   }, [
-    bank.userBalances.uUSD,
+    bank.tokenBalances.uUST,
     connectedWallet,
     fixedFee,
     simulation,
@@ -134,7 +139,7 @@ export function AncUstLpProvide() {
       return undefined;
     }
 
-    const remainUUSD = big(bank.userBalances.uUSD)
+    const remainUUSD = big(bank.tokenBalances.uUST)
       .minus(microfy(ustAmount))
       .minus(simulation.txFee);
 
@@ -144,7 +149,7 @@ export function AncUstLpProvide() {
 
     return undefined;
   }, [
-    bank.userBalances.uUSD,
+    bank.tokenBalances.uUST,
     fixedFee,
     invalidUstAmount,
     simulation,
@@ -310,10 +315,12 @@ export function AncUstLpProvide() {
               cursor: 'pointer',
             }}
             onClick={() =>
-              updateAncAmount(formatANCInput(demicrofy(bank.userBalances.uANC)))
+              updateAncAmount(
+                formatANCInput(demicrofy(bank.tokenBalances.uANC)),
+              )
             }
           >
-            {formatANC(demicrofy(bank.userBalances.uANC))} ANC
+            {formatANC(demicrofy(bank.tokenBalances.uANC))} ANC
           </span>
         </span>
       </div>
@@ -352,15 +359,17 @@ export function AncUstLpProvide() {
             }}
             onClick={() =>
               updateUstAmount(
-                formatUSTInput(demicrofy(ustBalance ?? bank.userBalances.uUSD)),
+                formatUSTInput(
+                  demicrofy(ustBalance ?? bank.tokenBalances.uUST),
+                ),
               )
             }
           >
-            {formatUST(demicrofy(ustBalance ?? bank.userBalances.uUSD))} UST
+            {formatUST(demicrofy(ustBalance ?? bank.tokenBalances.uUST))} UST
             {/*/{' '}*/}
-            {/*{formatUST(demicrofy(bank.userBalances.uUSD))}{' '}*/}
+            {/*{formatUST(demicrofy(bank.tokenBalances.uUST))}{' '}*/}
             {/*={' '}*/}
-            {/*{formatUST(demicrofy(big(bank.userBalances.uUSD).minus(simulation?.txFee ?? 0).minus(ustBalance ?? 0) as u<UST<Big>>))}{' '}*/}
+            {/*{formatUST(demicrofy(big(bank.tokenBalances.uUST).minus(simulation?.txFee ?? 0).minus(ustBalance ?? 0) as u<UST<Big>>))}{' '}*/}
           </span>
         </span>
       </div>

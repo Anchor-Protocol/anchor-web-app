@@ -9,7 +9,7 @@ export function validateBurnAmount(
 ): ReactNode {
   if (burnAmount.length === 0) {
     return undefined;
-  } else if (microfy(burnAmount).gt(bank.userBalances.ubLuna ?? 0)) {
+  } else if (microfy(burnAmount).gt(bank.tokenBalances.ubLuna ?? 0)) {
     return `Not enough bAssets`;
   }
   return undefined;

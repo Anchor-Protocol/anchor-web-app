@@ -28,7 +28,7 @@ import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { validateTxFee } from 'logics/validateTxFee';
+import { validateTxFee } from '@anchor-protocol/app-fns';
 import React, {
   ChangeEvent,
   ReactNode,
@@ -86,7 +86,7 @@ export function PollCreateBase({
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedFee),
+    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
     [bank, fixedFee, connectedWallet],
   );
 
@@ -103,10 +103,10 @@ export function PollCreateBase({
       return undefined;
     }
 
-    return big(bank.userBalances.uANC).lt(pollConfig.proposal_deposit)
+    return big(bank.tokenBalances.uANC).lt(pollConfig.proposal_deposit)
       ? `Not enough ANC`
       : undefined;
-  }, [bank.userBalances.uANC, pollConfig, connectedWallet]);
+  }, [bank.tokenBalances.uANC, pollConfig, connectedWallet]);
 
   // ---------------------------------------------
   // callbacks

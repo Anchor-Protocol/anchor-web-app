@@ -23,7 +23,7 @@ import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { validateTxFee } from 'logics/validateTxFee';
+import { validateTxFee } from '@anchor-protocol/app-fns';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 export function AncUstLpStake() {
@@ -52,7 +52,7 @@ export function AncUstLpStake() {
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedFee),
+    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
     [bank, fixedFee, connectedWallet],
   );
 

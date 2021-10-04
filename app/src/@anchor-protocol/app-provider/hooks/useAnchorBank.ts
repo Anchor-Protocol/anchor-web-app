@@ -1,3 +1,4 @@
+import { AnchorTax, AnchorTokenBalances } from '@anchor-protocol/app-fns';
 import {
   ANC,
   AncUstLP,
@@ -6,7 +7,6 @@ import {
   bLuna,
   bLunaLunaLP,
 } from '@anchor-protocol/types';
-import { AnchorTax, AnchorTokenBalances } from '@anchor-protocol/app-fns';
 import {
   useCW20Balance,
   useTerraNativeBalances,
@@ -19,7 +19,6 @@ import { useAnchorWebapp } from '../contexts/context';
 export interface AnchorBank {
   tax: AnchorTax;
   tokenBalances: AnchorTokenBalances;
-  userBalances: AnchorTokenBalances;
   refetchTax: () => void;
   refetchUserBalances: () => void;
 }
@@ -66,25 +65,21 @@ export function useAnchorBank(): AnchorBank {
   );
 
   return useMemo(() => {
-    const tokenBalances = {
-      uUST,
-      uUSD: uUST,
-      uANC,
-      uAncUstLP,
-      uaUST,
-      ubEth,
-      ubLuna,
-      ubLunaLunaLP,
-      uLuna,
-    };
-
     return {
       tax: {
         taxRate,
         maxTaxUUSD: maxTax,
       },
-      tokenBalances,
-      userBalances: tokenBalances,
+      tokenBalances: {
+        uUST,
+        uANC,
+        uAncUstLP,
+        uaUST,
+        ubEth,
+        ubLuna,
+        ubLunaLunaLP,
+        uLuna,
+      },
       refetchTax: () => {},
       refetchUserBalances: () => {},
     };

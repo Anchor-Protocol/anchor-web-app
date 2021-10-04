@@ -20,7 +20,7 @@ import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { validateTxFee } from 'logics/validateTxFee';
+import { validateTxFee } from '@anchor-protocol/app-fns';
 import { MINIMUM_CLAIM_BALANCE } from 'pages/trade/env';
 import React, { useCallback, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -64,7 +64,7 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
   }, [claiming, userANCBalance]);
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedFee),
+    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
     [bank, fixedFee, connectedWallet],
   );
 

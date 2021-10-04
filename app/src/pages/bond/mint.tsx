@@ -31,7 +31,7 @@ import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { validateTxFee } from 'logics/validateTxFee';
+import { validateTxFee } from '@anchor-protocol/app-fns';
 import { pegRecovery } from 'pages/bond/logics/pegRecovery';
 import { validateBondAmount } from 'pages/bond/logics/validateBondAmount';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
@@ -94,7 +94,7 @@ function MintBase({ className }: MintProps) {
   );
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedFee),
+    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
     [bank, fixedFee, connectedWallet],
   );
 
@@ -240,11 +240,11 @@ function MintBase({ className }: MintProps) {
                 style={{ textDecoration: 'underline', cursor: 'pointer' }}
                 onClick={() =>
                   updateBondAmount(
-                    formatLunaInput(demicrofy(bank.userBalances.uLuna)),
+                    formatLunaInput(demicrofy(bank.tokenBalances.uLuna)),
                   )
                 }
               >
-                {formatLuna(demicrofy(bank.userBalances.uLuna))}{' '}
+                {formatLuna(demicrofy(bank.tokenBalances.uLuna))}{' '}
                 {bondCurrency.label}
               </span>
             </span>

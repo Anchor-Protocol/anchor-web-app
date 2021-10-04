@@ -35,7 +35,7 @@ import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { validateTxFee } from 'logics/validateTxFee';
+import { validateTxFee } from '@anchor-protocol/app-fns';
 import React, {
   ChangeEvent,
   useCallback,
@@ -100,7 +100,7 @@ export function Swap() {
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedFee),
+    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
     [bank, fixedFee, connectedWallet],
   );
 
@@ -308,11 +308,11 @@ export function Swap() {
                 style={{ textDecoration: 'underline', cursor: 'pointer' }}
                 onClick={() =>
                   updateBurnAmount(
-                    formatLunaInput(demicrofy(bank.userBalances.ubLuna)),
+                    formatLunaInput(demicrofy(bank.tokenBalances.ubLuna)),
                   )
                 }
               >
-                {formatLuna(demicrofy(bank.userBalances.ubLuna))}{' '}
+                {formatLuna(demicrofy(bank.tokenBalances.ubLuna))}{' '}
                 {burnCurrency.label}
               </span>
             </span>

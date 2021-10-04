@@ -26,7 +26,7 @@ import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { validateTxFee } from 'logics/validateTxFee';
+import { validateTxFee } from '@anchor-protocol/app-fns';
 import { pegRecovery } from 'pages/bond/logics/pegRecovery';
 import { validateBurnAmount } from 'pages/bond/logics/validateBurnAmount';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
@@ -79,7 +79,7 @@ export function Burn() {
   );
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedFee),
+    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
     [bank, fixedFee, connectedWallet],
   );
 
@@ -233,11 +233,11 @@ export function Burn() {
                 style={{ textDecoration: 'underline', cursor: 'pointer' }}
                 onClick={() =>
                   updateBurnAmount(
-                    formatLunaInput(demicrofy(bank.userBalances.ubLuna)),
+                    formatLunaInput(demicrofy(bank.tokenBalances.ubLuna)),
                   )
                 }
               >
-                {formatLuna(demicrofy(bank.userBalances.ubLuna))}{' '}
+                {formatLuna(demicrofy(bank.tokenBalances.ubLuna))}{' '}
                 {burnCurrency.label}
               </span>
             </span>

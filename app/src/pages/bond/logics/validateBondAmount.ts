@@ -9,7 +9,7 @@ export function validateBondAmount(
 ): ReactNode {
   if (bondAmount.length === 0) {
     return undefined;
-  } else if (microfy(bondAmount).gt(bank.userBalances.uLuna ?? 0)) {
+  } else if (microfy(bondAmount).gt(bank.tokenBalances.uLuna ?? 0)) {
     return `Not enough assets`;
   }
   return undefined;

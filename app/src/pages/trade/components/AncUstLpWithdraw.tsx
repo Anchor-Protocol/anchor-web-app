@@ -28,7 +28,7 @@ import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { validateTxFee } from 'logics/validateTxFee';
+import { validateTxFee } from '@anchor-protocol/app-fns';
 import { formatShareOfPool } from 'pages/gov/components/formatShareOfPool';
 import { ancUstLpLpSimulation } from 'pages/trade/logics/ancUstLpLpSimulation';
 import { AncUstLpSimulation } from 'pages/trade/models/ancUstLpSimulation';
@@ -66,17 +66,17 @@ export function AncUstLpWithdraw() {
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedFee),
+    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
     [connectedWallet, bank, fixedFee],
   );
 
   const invalidLpAmount = useMemo(() => {
     if (lpAmount.length === 0 || !connectedWallet) return undefined;
 
-    return big(microfy(lpAmount)).gt(bank.userBalances.uAncUstLP)
+    return big(microfy(lpAmount)).gt(bank.tokenBalances.uAncUstLP)
       ? 'Not enough assets'
       : undefined;
-  }, [bank.userBalances.uAncUstLP, lpAmount, connectedWallet]);
+  }, [bank.tokenBalances.uAncUstLP, lpAmount, connectedWallet]);
 
   const updateLpAmount = useCallback(
     (nextLpAmount: string) => {
@@ -187,11 +187,11 @@ export function AncUstLpWithdraw() {
             }}
             onClick={() =>
               updateLpAmount(
-                formatLPInput(demicrofy(bank.userBalances.uAncUstLP)),
+                formatLPInput(demicrofy(bank.tokenBalances.uAncUstLP)),
               )
             }
           >
-            {formatLP(demicrofy(bank.userBalances.uAncUstLP))} LP
+            {formatLP(demicrofy(bank.tokenBalances.uAncUstLP))} LP
           </span>
         </span>
       </div>

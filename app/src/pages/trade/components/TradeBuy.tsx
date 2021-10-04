@@ -40,7 +40,7 @@ import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { validateTxFee } from 'logics/validateTxFee';
+import { validateTxFee } from '@anchor-protocol/app-fns';
 import { buyFromSimulation } from 'pages/trade/logics/buyFromSimulation';
 import { buyToSimulation } from 'pages/trade/logics/buyToSimulation';
 import { TradeSimulation } from 'pages/trade/models/tradeSimulation';
@@ -103,7 +103,7 @@ export function TradeBuy() {
   const ustBalance = useMemo(() => {
     const txFee = min(
       max(
-        big(big(bank.userBalances.uUSD).minus(fixedFee)).div(
+        big(big(bank.tokenBalances.uUST).minus(fixedFee)).div(
           big(big(1).plus(bank.tax.taxRate)).mul(bank.tax.taxRate),
         ),
         0,
@@ -112,13 +112,18 @@ export function TradeBuy() {
     );
 
     return max(
-      big(bank.userBalances.uUSD).minus(txFee).minus(big(fixedFee).mul(3)),
+      big(bank.tokenBalances.uUST).minus(txFee).minus(big(fixedFee).mul(3)),
       0,
     ) as u<UST<Big>>;
-  }, [bank.tax.maxTaxUUSD, bank.tax.taxRate, bank.userBalances.uUSD, fixedFee]);
+  }, [
+    bank.tax.maxTaxUUSD,
+    bank.tax.taxRate,
+    bank.tokenBalances.uUST,
+    fixedFee,
+  ]);
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedFee),
+    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
     [bank, fixedFee, connectedWallet],
   );
 
@@ -129,7 +134,7 @@ export function TradeBuy() {
     return big(microfy(fromAmount))
       .plus(simulation.txFee)
       .plus(fixedFee)
-      .gt(bank.userBalances.uUSD)
+      .gt(bank.tokenBalances.uUST)
       ? 'Not enough assets'
       : undefined;
   }, [
@@ -137,7 +142,7 @@ export function TradeBuy() {
     connectedWallet,
     simulation,
     fixedFee,
-    bank.userBalances.uUSD,
+    bank.tokenBalances.uUST,
   ]);
 
   // FIXME anc buy real tx fee is fixed_gas (simulation.txFee is no matter)
@@ -146,7 +151,7 @@ export function TradeBuy() {
       return undefined;
     }
 
-    const remainUUSD = big(bank.userBalances.uUSD)
+    const remainUUSD = big(bank.tokenBalances.uUST)
       .minus(microfy(fromAmount))
       .minus(simulation.txFee)
       .minus(fixedFee);
@@ -157,7 +162,7 @@ export function TradeBuy() {
 
     return undefined;
   }, [
-    bank.userBalances.uUSD,
+    bank.tokenBalances.uUST,
     fixedFee,
     fromAmount,
     invalidFromAmount,
@@ -384,16 +389,16 @@ export function TradeBuy() {
                 onClick={() =>
                   updateFromAmount(
                     formatUSTInput(
-                      demicrofy(ustBalance ?? bank.userBalances.uUSD),
+                      demicrofy(ustBalance ?? bank.tokenBalances.uUST),
                     ),
                   )
                 }
               >
-                {formatUST(demicrofy(ustBalance ?? bank.userBalances.uUSD))}{' '}
+                {formatUST(demicrofy(ustBalance ?? bank.tokenBalances.uUST))}{' '}
                 {/*/{' '}*/}
-                {/*{formatUST(demicrofy(bank.userBalances.uUSD))}{' '}*/}
+                {/*{formatUST(demicrofy(bank.tokenBalances.uUST))}{' '}*/}
                 {/*={' '}*/}
-                {/*{formatUST(demicrofy(big(bank.userBalances.uUSD).minus(simulation?.txFee ?? 0).minus(ustBalance ?? 0) as u<UST<Big>>))}{' '}*/}
+                {/*{formatUST(demicrofy(big(bank.tokenBalances.uUST).minus(simulation?.txFee ?? 0).minus(ustBalance ?? 0) as u<UST<Big>>))}{' '}*/}
                 {fromCurrency.label}
               </span>
             </span>

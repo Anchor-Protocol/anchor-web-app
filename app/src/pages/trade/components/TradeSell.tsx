@@ -31,7 +31,7 @@ import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { validateTxFee } from 'logics/validateTxFee';
+import { validateTxFee } from '@anchor-protocol/app-fns';
 import { sellFromSimulation } from 'pages/trade/logics/sellFromSimulation';
 import { sellToSimulation } from 'pages/trade/logics/sellToSimulation';
 import { TradeSimulation } from 'pages/trade/models/tradeSimulation';
@@ -89,17 +89,17 @@ export function TradeSell() {
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedFee),
+    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
     [bank, fixedFee, connectedWallet],
   );
 
   const invalidFromAmount = useMemo(() => {
     if (fromAmount.length === 0 || !connectedWallet) return undefined;
 
-    return microfy(fromAmount).gt(bank.userBalances.uANC)
+    return microfy(fromAmount).gt(bank.tokenBalances.uANC)
       ? 'Not enough assets'
       : undefined;
-  }, [bank.userBalances.uANC, fromAmount, connectedWallet]);
+  }, [bank.tokenBalances.uANC, fromAmount, connectedWallet]);
 
   // ---------------------------------------------
   // effects
@@ -306,11 +306,11 @@ export function TradeSell() {
                 style={{ textDecoration: 'underline', cursor: 'pointer' }}
                 onClick={() =>
                   updateFromAmount(
-                    formatANCInput(demicrofy(bank.userBalances.uANC)),
+                    formatANCInput(demicrofy(bank.tokenBalances.uANC)),
                   )
                 }
               >
-                {formatANC(demicrofy(bank.userBalances.uANC))}{' '}
+                {formatANC(demicrofy(bank.tokenBalances.uANC))}{' '}
                 {fromCurrency.label}
               </span>
             </span>
