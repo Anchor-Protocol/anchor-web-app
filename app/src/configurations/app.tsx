@@ -1,7 +1,4 @@
-import {
-  ANCHOR_TX_REFETCH_MAP,
-  AnchorWebappProvider,
-} from '@anchor-protocol/app-provider';
+import { AnchorWebappProvider } from '@anchor-protocol/app-provider';
 import { AppProvider } from '@libs/app-provider';
 import { GlobalStyle } from '@libs/neumorphism-ui/themes/GlobalStyle';
 import { patchReactQueryFocusRefetching } from '@libs/patch-react-query-focus-refetching';
@@ -25,6 +22,7 @@ import {
   ANCHOR_CONSTANTS,
   ANCHOR_CONTRACT_ADDRESS,
   ANCHOR_INDEXER_API_ENDPOINTS,
+  ANCHOR_TX_REFETCH_MAP,
   GA_TRACKING_ID,
 } from 'env';
 import React, { ReactNode, useCallback } from 'react';
