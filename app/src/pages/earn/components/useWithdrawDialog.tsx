@@ -1,3 +1,10 @@
+import { computeTotalDeposit } from '@anchor-protocol/app-fns';
+import {
+  useEarnEpochStatesQuery,
+  useEarnWithdrawForm,
+  useEarnWithdrawTx,
+} from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import {
   formatUST,
   formatUSTInput,
@@ -5,13 +12,6 @@ import {
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { aUST, u, UST } from '@anchor-protocol/types';
-import {
-  computeTotalDeposit,
-  useEarnEpochStatesQuery,
-  useEarnWithdrawForm,
-  useEarnWithdrawTx,
-} from '@anchor-protocol/app-provider';
-import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';

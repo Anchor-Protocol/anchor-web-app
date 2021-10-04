@@ -1,13 +1,4 @@
 import {
-  formatBAsset,
-  formatBAssetInput,
-  formatUST,
-  formatUSTInput,
-  LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
-  LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
-} from '@anchor-protocol/notation';
-import { bAsset, bLuna, CW20Addr, Rate } from '@anchor-protocol/types';
-import {
   BorrowBorrower,
   BorrowMarket,
   computeCurrentLtv,
@@ -18,13 +9,24 @@ import {
   computeProvideCollateralNextLtv,
   pickCollateral,
   prettifyBAssetSymbol,
+  validateDepositAmount,
+  validateTxFee,
+} from '@anchor-protocol/app-fns';
+import {
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
   useBorrowProvideCollateralTx,
-  validateDepositAmount,
-  validateTxFee,
 } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
+import {
+  formatBAsset,
+  formatBAssetInput,
+  formatUST,
+  formatUSTInput,
+  LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
+  LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
+} from '@anchor-protocol/notation';
+import { bAsset, bLuna, CW20Addr, Rate } from '@anchor-protocol/types';
 import { useCW20Balance, useFixedFee } from '@libs/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';

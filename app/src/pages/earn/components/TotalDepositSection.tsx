@@ -1,13 +1,11 @@
+import { computeTotalDeposit } from '@anchor-protocol/app-fns';
+import { useEarnEpochStatesQuery } from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import {
   formatUST,
   formatUSTWithPostfixUnits,
   MILLION,
 } from '@anchor-protocol/notation';
-import {
-  computeTotalDeposit,
-  useEarnEpochStatesQuery,
-} from '@anchor-protocol/app-provider';
-import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { demicrofy, MICRO } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';

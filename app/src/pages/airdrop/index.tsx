@@ -1,9 +1,11 @@
 import {
   Airdrop as AirdropData,
+  validateTxFee,
+} from '@anchor-protocol/app-fns';
+import {
   useAirdropCheckQuery,
   useAirdropClaimTx,
   useAnchorWebapp,
-  validateTxFee,
 } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import {

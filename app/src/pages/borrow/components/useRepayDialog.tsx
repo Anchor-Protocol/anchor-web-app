@@ -1,11 +1,4 @@
 import {
-  formatUST,
-  formatUSTInput,
-  UST_INPUT_MAXIMUM_DECIMAL_POINTS,
-  UST_INPUT_MAXIMUM_INTEGER_POINTS,
-} from '@anchor-protocol/notation';
-import { Rate, u, UST } from '@anchor-protocol/types';
-import {
   BorrowBorrower,
   BorrowMarket,
   computeBorrowAPR,
@@ -17,14 +10,23 @@ import {
   computeRepaySendAmount,
   computeRepayTotalOutstandingLoan,
   computeRepayTxFee,
+  validateRepayAmount,
+  validateTxFee,
+} from '@anchor-protocol/app-fns';
+import {
   useAnchorWebapp,
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
   useBorrowRepayTx,
-  validateRepayAmount,
-  validateTxFee,
 } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
+import {
+  formatUST,
+  formatUSTInput,
+  UST_INPUT_MAXIMUM_DECIMAL_POINTS,
+  UST_INPUT_MAXIMUM_INTEGER_POINTS,
+} from '@anchor-protocol/notation';
+import { Rate, u, UST } from '@anchor-protocol/types';
 import { useFixedFee } from '@libs/app-provider';
 import { demicrofy, formatRate } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';

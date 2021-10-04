@@ -1,4 +1,3 @@
-import { Rate, u, UST } from '@anchor-protocol/types';
 import {
   computeBorrowAPR,
   computeBorrowedAmount,
@@ -6,11 +5,14 @@ import {
   computeCollateralsTotalUST,
   computeCurrentLtv,
   computeNetAPR,
+} from '@anchor-protocol/app-fns';
+import {
   useAnchorWebapp,
   useBorrowAPYQuery,
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
 } from '@anchor-protocol/app-provider';
+import { Rate, u, UST } from '@anchor-protocol/types';
 import big, { Big } from 'big.js';
 import { useMemo } from 'react';
 

@@ -1,14 +1,14 @@
+import { computeCurrentAPY } from '@anchor-protocol/app-fns';
+import {
+  useAnchorWebapp,
+  useEarnAPYHistoryQuery,
+  useEarnEpochStatesQuery,
+} from '@anchor-protocol/app-provider';
 import { Rate } from '@anchor-protocol/types';
 import {
   APYChart,
   APYChartItem,
 } from '@anchor-protocol/webapp-charts/APYChart';
-import {
-  computeCurrentAPY,
-  useAnchorWebapp,
-  useEarnAPYHistoryQuery,
-  useEarnEpochStatesQuery,
-} from '@anchor-protocol/app-provider';
 import { formatRate } from '@libs/formatter';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
