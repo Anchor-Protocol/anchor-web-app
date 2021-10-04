@@ -1,6 +1,5 @@
-import { ANC } from '@anchor-protocol/types';
 import { ancSellTx } from '@anchor-protocol/app-fns';
-import { useAncPriceQuery } from '@anchor-protocol/app-provider';
+import { ANC } from '@anchor-protocol/types';
 import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { formatExecuteMsgNumber } from '@libs/formatter';
 import { useStream } from '@rx-stream/react';
@@ -9,6 +8,7 @@ import big from 'big.js';
 import { useCallback } from 'react';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
+import { useAncPriceQuery } from '../../queries/anc/price';
 
 export interface AncSellTxParams {
   burnAmount: ANC;

@@ -4,7 +4,6 @@ import {
 } from '@anchor-protocol/anchor.js';
 import { formatLuna } from '@anchor-protocol/notation';
 import { bLuna, Gas, Rate, u, UST } from '@anchor-protocol/types';
-import { getCollateralSymbol } from '@anchor-protocol/app-fns/functions/getCollateralSymbol';
 import {
   pickAttributeValue,
   pickEvent,
@@ -26,6 +25,7 @@ import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
 import { QueryObserverResult } from 'react-query';
 import { Observable } from 'rxjs';
+import { getCollateralSymbol } from '../../functions/getCollateralSymbol';
 import { computeCurrentLtv } from '../../logics/borrow/computeCurrentLtv';
 import { BorrowBorrower } from '../../queries/borrow/borrower';
 import { BorrowMarket } from '../../queries/borrow/market';

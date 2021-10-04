@@ -8,7 +8,6 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { ANC, AncUstLP, Gas, Rate, u, UST } from '@anchor-protocol/types';
-import { AnchorTax } from '@anchor-protocol/app-fns/types';
 import {
   pickAttributeValueByKey,
   pickEvent,
@@ -32,6 +31,7 @@ import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
 import big, { Big } from 'big.js';
 import { Observable } from 'rxjs';
 import { AncPrice } from '../../queries/anc/price';
+import { AnchorTax } from '../../types';
 
 export function ancAncUstLpProvideTx(
   $: Parameters<typeof fabricateTerraswapProvideLiquidityANC>[0] & {

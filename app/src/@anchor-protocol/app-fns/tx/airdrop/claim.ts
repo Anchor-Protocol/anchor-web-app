@@ -1,5 +1,4 @@
 import { Gas, HumanAddr, Rate, u, UST } from '@anchor-protocol/types';
-import { airdropStageCache } from '@anchor-protocol/app-fns/caches/airdropStage';
 import { TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import {
   _catchTxError,
@@ -17,6 +16,7 @@ import {
   StdFee,
 } from '@terra-money/terra.js';
 import { Observable } from 'rxjs';
+import { airdropStageCache } from '../../caches/airdropStage';
 import { Airdrop } from '../../queries/airdrop/check';
 
 export function airdropClaimTx($: {

@@ -10,7 +10,6 @@ import {
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { ANC, Gas, Rate, u, UST } from '@anchor-protocol/types';
-import { AnchorTax } from '@anchor-protocol/app-fns/types';
 import {
   pickAttributeValueByKey,
   pickEvent,
@@ -41,6 +40,7 @@ import {
 } from '@terra-money/terra.js';
 import big, { Big } from 'big.js';
 import { Observable } from 'rxjs';
+import { AnchorTax } from '../../types';
 
 export function ancBuyTx(
   $: Parameters<typeof fabricatebBuy>[0] & {

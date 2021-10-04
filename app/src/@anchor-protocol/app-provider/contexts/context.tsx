@@ -4,10 +4,6 @@ import {
   MARKET_DENOMS,
 } from '@anchor-protocol/anchor.js/dist/address-provider/provider';
 import { CollateralType, CW20Addr } from '@anchor-protocol/types';
-import {
-  AnchorConstants,
-  AnchorContractAddress,
-} from '@anchor-protocol/app-provider';
 import { App, useApp } from '@libs/app-provider';
 import { NetworkInfo } from '@terra-dev/wallet-types';
 import { useWallet } from '@terra-money/wallet-provider';
@@ -19,6 +15,7 @@ import React, {
   useContext,
   useMemo,
 } from 'react';
+import { AnchorConstants, AnchorContractAddress } from '../types';
 
 export interface AnchorWebappProviderProps {
   children: ReactNode;

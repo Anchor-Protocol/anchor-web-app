@@ -1,14 +1,14 @@
-import { UST } from '@anchor-protocol/types';
 import {
   computeTotalDeposit,
   earnWithdrawForm,
   EarnWithdrawFormStates,
 } from '@anchor-protocol/app-fns';
-import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
+import { UST } from '@anchor-protocol/types';
 import { useFixedFee } from '@libs/app-provider';
 import { useForm } from '@libs/use-form';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback, useMemo } from 'react';
+import { useAnchorBank } from '../../hooks/useAnchorBank';
 import { useEarnEpochStatesQuery } from '../../queries/earn/epochStates';
 
 export interface EarnWithdrawFormReturn extends EarnWithdrawFormStates {

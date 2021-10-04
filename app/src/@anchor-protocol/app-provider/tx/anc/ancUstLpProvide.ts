@@ -1,12 +1,12 @@
-import { ANC, u, UST } from '@anchor-protocol/types';
 import { ancAncUstLpProvideTx } from '@anchor-protocol/app-fns';
-import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
+import { ANC, u, UST } from '@anchor-protocol/types';
 import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
+import { useAnchorBank } from '../../hooks/useAnchorBank';
 import { useAncPriceQuery } from '../../queries/anc/price';
 
 export interface AncAncUstLpProvideTxParams {

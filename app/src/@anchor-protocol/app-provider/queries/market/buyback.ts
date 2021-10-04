@@ -2,9 +2,9 @@ import {
   MarketBuybackData,
   marketBuybackQuery,
 } from '@anchor-protocol/app-fns';
-import { useAnchorWebapp } from '@anchor-protocol/app-provider';
 import { createQueryFn } from '@libs/react-query-utils';
 import { useQuery, UseQueryResult } from 'react-query';
+import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
 const queryFn = createQueryFn((endpoint: string, time: '72hrs' | 'total') => {

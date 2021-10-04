@@ -1,7 +1,7 @@
 import type { bAsset, Rate, u } from '@anchor-protocol/types';
 import { CW20Addr, moneyMarket } from '@anchor-protocol/types';
-import { computeCollateralsTotalUST } from '@anchor-protocol/app-fns';
 import big, { Big, BigSource } from 'big.js';
+import { computeCollateralsTotalUST } from './computeCollateralsTotalUST';
 
 export const computeRedeemAmountToLtv =
   (
