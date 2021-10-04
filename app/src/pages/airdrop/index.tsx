@@ -21,7 +21,7 @@ import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { TxResultRenderer } from 'components/TxResultRenderer';
+import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import React, { useCallback, useMemo } from 'react';
 import { Link, useHistory } from 'react-router-dom';
