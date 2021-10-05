@@ -59,17 +59,6 @@ export const links = {
 // ---------------------------------------------
 // environment
 // ---------------------------------------------
-export const cloudFlareOption = {
-  token: process.env.VITE_CLOUD_FLARE_TOKEN,
-  hostnames: [
-    'app.anchorprotocol.com',
-    'app.anchor.money',
-    'app.anchor.finance',
-  ],
-};
-
-export const GA_TRACKING_ID = process.env.VITE_GA_TRACKING_ID;
-
 export const SENTRY_DSN = process.env.VITE_SENTRY_DSN;
 
 // ---------------------------------------------

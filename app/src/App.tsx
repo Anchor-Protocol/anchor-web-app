@@ -1,10 +1,8 @@
-import { useCloudflareAnalytics } from '@libs/use-cloudflare-analytics';
 import { useChainOptions } from '@terra-money/wallet-provider';
 import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
 import { AppProviders } from 'configurations/app';
 import { NotificationProvider } from 'contexts/notification';
-import { cloudFlareOption } from 'env';
 import { JobsProvider } from 'jobs/Jobs';
 import { Airdrop } from 'pages/airdrop';
 import { BAsset } from 'pages/bond';
@@ -35,11 +33,10 @@ import { RewardsAncUstLp } from 'pages/trade/rewards.anc-ust-lp';
 import { Trade } from 'pages/trade/trade';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
+import { WarnningBanner } from 'WarningBanner';
 import './configurations/chartjs';
 
 export function App() {
-  useCloudflareAnalytics(cloudFlareOption);
-
   const chainOptions = useChainOptions();
 
   return (
@@ -50,6 +47,7 @@ export function App() {
             <div>
               <GlobalStyle />
               <Header />
+              <WarnningBanner />
               <Switch>
                 {/* Dashboard */}
                 <Route path="/" exact component={Dashboard} />

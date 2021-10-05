@@ -3,7 +3,6 @@ import { AppProvider } from '@libs/app-provider';
 import { GlobalStyle } from '@libs/neumorphism-ui/themes/GlobalStyle';
 import { patchReactQueryFocusRefetching } from '@libs/patch-react-query-focus-refetching';
 import { SnackbarProvider } from '@libs/snackbar';
-import { GoogleAnalytics } from '@libs/use-google-analytics';
 import { useLongtimeNoSee } from '@libs/use-longtime-no-see';
 import { RouterScrollRestoration } from '@libs/use-router-scroll-restoration';
 import { RouterWalletStatusRecheck } from '@libs/use-router-wallet-status-recheck';
@@ -23,7 +22,6 @@ import {
   ANCHOR_CONTRACT_ADDRESS,
   ANCHOR_INDEXER_API_ENDPOINTS,
   ANCHOR_TX_REFETCH_MAP,
-  GA_TRACKING_ID,
 } from 'env';
 import React, { ReactNode, useCallback } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
@@ -105,10 +103,6 @@ export function AppProviders({
     >
       <Providers>
         {/* Router Actions ======================== */}
-        {/** Send Google Analytics Page view every Router's location changed */}
-        {typeof GA_TRACKING_ID === 'string' && (
-          <GoogleAnalytics trackingId={GA_TRACKING_ID} />
-        )}
         {/** Scroll Restore every Router's basepath changed */}
         <RouterScrollRestoration />
         {/** Re-Check Terra Station Wallet Status every Router's pathname changed */}
