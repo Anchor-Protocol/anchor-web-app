@@ -1,10 +1,8 @@
-import { useCloudflareAnalytics } from '@libs/use-cloudflare-analytics';
 import { useChainOptions } from '@terra-money/wallet-provider';
 import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
 import { AppProviders } from 'configurations/AppProviders';
 import { NotificationProvider } from 'contexts/notification';
-import { cloudFlareOption } from 'env';
 import { JobsProvider } from 'jobs/Jobs';
 import { Airdrop } from 'pages/airdrop';
 import { BAsset } from 'pages/bond';
@@ -39,8 +37,6 @@ import { WarnningBanner } from 'WarningBanner';
 import './configurations/chartjs';
 
 export function App() {
-  useCloudflareAnalytics(cloudFlareOption);
-
   const chainOptions = useChainOptions();
 
   return (
