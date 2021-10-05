@@ -63,8 +63,10 @@ export async function hiveFetch<
     requestInit,
   );
 
-  return {
+  const result = {
     ...rawData,
     ...parseWasmQueryRawData<WasmQueries>(rawData, wasmKeys),
   } as WasmQueryData<WasmQueries> & GraphqlQueryResult;
+
+  return result;
 }

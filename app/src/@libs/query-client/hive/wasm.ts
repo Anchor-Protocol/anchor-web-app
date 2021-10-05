@@ -51,6 +51,13 @@ export function wasmQueryToFields<T>(queries: WasmQueryInput<T>): FieldNode[] {
                 value: 'Result',
               },
             },
+            {
+              kind: 'Field',
+              name: {
+                kind: 'Name',
+                value: 'Height',
+              },
+            },
           ],
         },
       } as FieldNode,
@@ -64,6 +71,15 @@ export function parseWasmQueryRawData<T>(
 ): WasmQueryData<T> {
   return keys.reduce((res, key) => {
     res[key] = JSON.parse(data[key].Result);
+
+    const blockHeight: number = +data[key].Height;
+
+    if (
+      typeof res.$blockHeight !== 'number' ||
+      blockHeight > res.$blockHeight
+    ) {
+      res.$blockHeight = blockHeight;
+    }
     return res;
   }, {} as WasmQueryData<T>);
 }
