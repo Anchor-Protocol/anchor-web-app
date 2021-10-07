@@ -11,7 +11,7 @@ export function claimableRewards(
     ? (big(
         new Int(
           new Int(holder.balance).mul(
-            new Dec(state.global_index).sub(new Dec(holder.index)),
+            new Dec(state.global_index).minus(new Dec(holder.index)),
           ),
         )
           .add(new Int(holder.pending_rewards))
