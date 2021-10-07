@@ -1,6 +1,7 @@
 import { ancAncUstLpProvideTx } from '@anchor-protocol/app-fns';
 import { ANC, u, UST } from '@anchor-protocol/types';
 import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
+import { dropDecimalPoints } from '@libs/formatter';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
@@ -54,7 +55,7 @@ export function useAncAncUstLpProvideTx() {
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        txFee: txFee.toString() as u<UST>,
+        txFee: dropDecimalPoints(txFee) as u<UST>,
         fixedGas: fixedFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
