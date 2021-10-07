@@ -24,7 +24,7 @@ To access or use the Interface, you must be able to form a legally binding contr
 
 ### 4. Modification of this Agreement
 
-We reserve the right, in our sole discretion, to modify this Agreement from time to time. If we make any modifications, we will notify you by updating the date at the top of the Agreement and by maintaining a current version of the Agreement at \[link]. All modifications will be effective when they are posted, and your continued use of the Interface will serve as confirmation of your acceptance of those modifications. If you do not agree with any modifications to this Agreement, you must immediately stop accessing and using the Interface.
+We reserve the right, in our sole discretion, to modify this Agreement from time to time. If we make any modifications, we will notify you by updating the date at the top of the Agreement and by maintaining a current version of the Agreement at [app.anchorprotocol.com/terms](https://app.anchorprotocol.com/terms). All modifications will be effective when they are posted, and your continued use of the Interface will serve as confirmation of your acceptance of those modifications. If you do not agree with any modifications to this Agreement, you must immediately stop accessing and using the Interface.
 
 ### 5. Proprietary Rights
 
@@ -129,4 +129,4 @@ Terraform Labs PTE, LTD is a company incorporated in Singapore, with a registere
 
 ### 21. Contacting Us
 
-If you have any question about this Agreement, or if you wish to contact us for any reason whatsoever, please send us an email at legal@anchorprotocol.com.
+If you have any question about this Agreement, or if you wish to contact us for any reason whatsoever, please send us an email at <legal@anchorprotocol.com>.
