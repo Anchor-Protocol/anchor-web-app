@@ -2,7 +2,6 @@ import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import { earnDepositTx } from '@anchor-protocol/app-fns';
 import { u, UST } from '@anchor-protocol/types';
 import { useRefetchQueries } from '@libs/app-provider';
-import { dropDecimalPoints } from '@libs/formatter';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
@@ -37,7 +36,7 @@ export function useEarnDepositTx() {
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
-        txFee: dropDecimalPoints(txFee) as u<UST>,
+        txFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,

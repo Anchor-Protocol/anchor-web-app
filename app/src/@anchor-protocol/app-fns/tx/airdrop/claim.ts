@@ -7,6 +7,7 @@ import {
   _postTx,
   TxHelper,
 } from '@libs/app-fns/tx/internal';
+import { floor } from '@libs/big-math';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
@@ -49,7 +50,7 @@ export function airdropClaimTx($: {
           },
         }),
       ],
-      fee: new StdFee($.gasFee, $.txFee + 'uusd'),
+      fee: new StdFee($.gasFee, floor($.txFee) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),
     _postTx({ helper, ...$ }),

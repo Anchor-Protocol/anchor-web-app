@@ -1,4 +1,5 @@
 import { GasPrice } from '@libs/app-fns';
+import { floor } from '@libs/big-math';
 import { Gas, u, UST } from '@libs/types';
 import big, { BigSource } from 'big.js';
 import { useMemo } from 'react';
@@ -12,8 +13,7 @@ export function useGasPrice<Denom extends keyof GasPrice>(
 
   // TODO global memoization?
   return useMemo(() => {
-    const fee = big(gas).mul(gasPrice[denom]).toFixed();
-    return fee.split('.')[0] as GasPrice[Denom];
+    return floor(big(gas).mul(gasPrice[denom])).toFixed() as GasPrice[Denom];
   }, [denom, gas, gasPrice]);
 }
 

@@ -18,6 +18,7 @@ import {
   _postTx,
   TxHelper,
 } from '@libs/app-fns/tx/internal';
+import { floor } from '@libs/big-math';
 import { demicrofy, formatRate } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
@@ -55,7 +56,7 @@ export function borrowRedeemCollateralTx(
   return pipe(
     _createTxOptions({
       msgs: fabricateRedeemCollateral($)($.addressProvider),
-      fee: new StdFee($.gasFee, $.fixedGas + 'uusd'),
+      fee: new StdFee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),
     _postTx({ helper, ...$ }),

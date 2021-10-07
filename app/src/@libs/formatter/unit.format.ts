@@ -47,8 +47,6 @@ export const formatInteger =
     return delimiter ? numeral(i).format('0,0') : i;
   };
 
-export const dropDecimalPoints = formatInteger({ delimiter: false });
-
 export function formatFluidDecimalPoints(
   n: BigSource,
   numDecimalPoints: number,

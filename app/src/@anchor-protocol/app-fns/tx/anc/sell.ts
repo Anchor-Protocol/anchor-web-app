@@ -25,6 +25,7 @@ import {
   _postTx,
   TxHelper,
 } from '@libs/app-fns/tx/internal';
+import { floor } from '@libs/big-math';
 import { demicrofy, stripUUSD } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
@@ -57,7 +58,7 @@ export function ancSellTx(
   return pipe(
     _createTxOptions({
       msgs: fabricatebSell($)($.addressProvider),
-      fee: new StdFee($.gasFee, $.fixedGas + 'uusd'),
+      fee: new StdFee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),
     _postTx({ helper, ...$ }),
