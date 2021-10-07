@@ -12,7 +12,8 @@ export function useGasPrice<Denom extends keyof GasPrice>(
 
   // TODO global memoization?
   return useMemo(() => {
-    return big(gas).mul(gasPrice[denom]).toFixed() as GasPrice[Denom];
+    const fee = big(gas).mul(gasPrice[denom]).toFixed();
+    return fee.split('.')[0] as GasPrice[Denom];
   }, [denom, gas, gasPrice]);
 }
 
