@@ -16,7 +16,7 @@ import { useBuyUstDialog } from 'pages/earn/components/useBuyUstDialog';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import React, { useCallback, useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
-import { useRouteMatch } from 'react-router-dom';
+import { useRouteMatch, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { AirdropContent } from '../airdrop/AirdropContent';
 import { WalletDetailContent } from '../wallet/WalletDetailContent';
@@ -229,6 +229,11 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                         </BorderButton>
                       </Tooltip>
                     )}
+
+                    <TermsMessage>
+                      By connecting, I accept Anchor's{' '}
+                      <Link to="/terms">Terms of Service</Link>
+                    </TermsMessage>
                   </ConnectTypeContent>
                 </DropdownBox>
               </DropdownContainer>
@@ -291,6 +296,20 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
       ) : null;
   }
 }
+
+const TermsMessage = styled.p`
+  margin-top: 1.5em;
+
+  font-size: 11px;
+  line-height: 1.5;
+
+  color: ${({ theme }) => theme.dimTextColor};
+
+  a {
+    text-decoration: underline;
+    color: ${({ theme }) => theme.colors.positive};
+  }
+`;
 
 export const WalletSelector = styled(WalletSelectorBase)`
   display: inline-block;

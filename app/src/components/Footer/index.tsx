@@ -16,6 +16,7 @@ import { screen } from 'env';
 import c from 'color';
 import React, { CSSProperties } from 'react';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
 export interface FooterProps {
   className?: string;
@@ -44,6 +45,10 @@ function FooterBase({ className, style }: FooterProps) {
             Latest Block: {lastSyncedHeight}
           </IconSpan>
         </a>
+
+        <Link to="/terms" style={{ marginLeft: 28 }}>
+          Terms
+        </Link>
       </div>
       <div>
         <IconButton
