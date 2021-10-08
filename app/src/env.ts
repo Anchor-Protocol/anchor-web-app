@@ -65,11 +65,12 @@ export const SENTRY_DSN = process.env.VITE_SENTRY_DSN;
 // chain
 // ---------------------------------------------
 export function ANCHOR_QUERY_CLIENT(network: NetworkInfo): 'lcd' | 'hive' {
-  if (network.chainID.startsWith('bombay')) {
-    return 'lcd';
-  } else {
-    return 'hive';
-  }
+  //if (network.chainID.startsWith('bombay')) {
+  //  return 'lcd';
+  //} else {
+  //  return 'hive';
+  //}
+  return 'hive';
 }
 
 export function ANCHOR_CONSTANTS(network: NetworkInfo): AnchorConstants {
@@ -227,12 +228,14 @@ export const ANCHOR_CONTRACT_ADDRESS = (
 };
 
 export const ANCHOR_INDEXER_API_ENDPOINTS = (network: NetworkInfo): string => {
-  if (network.chainID.startsWith('bombay')) {
-    // TODO bombay-api
-    return 'https://tequila-api.anchorprotocol.com/api/v1';
-  } else {
-    return 'https://api.anchorprotocol.com/api/v1';
-  }
+  //if (network.chainID.startsWith('bombay')) {
+  //  return 'https://tequila-api.anchorprotocol.com/api/v1';
+  //} else {
+  //  return 'https://api.anchorprotocol.com/api/v1';
+  //}
+
+  // TODO restore testnet api endpoint
+  return 'https://api.anchorprotocol.com/api/v1';
 };
 
 // ---------------------------------------------
