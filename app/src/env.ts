@@ -65,12 +65,12 @@ export const SENTRY_DSN = process.env.VITE_SENTRY_DSN;
 // chain
 // ---------------------------------------------
 export function ANCHOR_QUERY_CLIENT(network: NetworkInfo): 'lcd' | 'hive' {
-  //if (network.chainID.startsWith('bombay')) {
-  //  return 'lcd';
-  //} else {
-  //  return 'hive';
-  //}
-  return 'hive';
+  if (network.chainID.startsWith('bombay')) {
+    return 'lcd';
+  } else {
+    return 'hive';
+  }
+  //return 'hive';
 }
 
 export function ANCHOR_CONSTANTS(network: NetworkInfo): AnchorConstants {

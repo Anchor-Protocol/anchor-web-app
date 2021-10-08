@@ -1,4 +1,4 @@
-import { QueryClient } from '@libs/query-client';
+import { LcdFetchError, QueryClient } from '@libs/query-client';
 import { Gas, ISODateFormat, Num } from '@libs/types';
 import { TxFailed } from '@terra-dev/wallet-types';
 import { CreateTxOptions } from '@terra-money/terra.js';
@@ -98,16 +98,27 @@ export async function txInfoQuery({
                   RawLog: result.logs,
                 },
               ];
-            } else if ('code' in result) {
+            } else {
+              return [];
+            }
+          })
+          .catch((error) => {
+            if (error instanceof LcdFetchError) {
               return [
                 {
-                  TxHash: result.txhash,
+                  TxHash: error.txhash,
                   Success: false,
-                  RawLog: result.raw_log,
+                  RawLog: error.raw_log,
                 },
               ];
             } else {
-              return [];
+              return [
+                {
+                  TxHash: 'unknown',
+                  Success: false,
+                  RawLog: String(error),
+                },
+              ];
             }
           })
       : queryClient
