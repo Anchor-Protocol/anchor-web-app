@@ -1,4 +1,8 @@
-import { AnchorWebappProvider } from '@anchor-protocol/app-provider';
+import {
+  AnchorConstants,
+  AnchorContractAddress,
+  AnchorWebappProvider,
+} from '@anchor-protocol/app-provider';
 import { AppProvider } from '@libs/app-provider';
 import { GlobalStyle } from '@libs/neumorphism-ui/themes/GlobalStyle';
 import { patchReactQueryFocusRefetching } from '@libs/patch-react-query-focus-refetching';
@@ -21,6 +25,7 @@ import {
   ANCHOR_CONSTANTS,
   ANCHOR_CONTRACT_ADDRESS,
   ANCHOR_INDEXER_API_ENDPOINTS,
+  ANCHOR_QUERY_CLIENT,
   ANCHOR_TX_REFETCH_MAP,
 } from 'env';
 import React, { ReactNode, useCallback } from 'react';
@@ -39,8 +44,8 @@ function Providers({ children }: { children: ReactNode }) {
     /** React App routing :: <Link>, <NavLink>, useLocation(), useRouteMatch()... */
     <Router>
       <QueryClientProvider client={queryClient}>
-        <AppProvider
-          defaultQueryClient="lcd"
+        <AppProvider<AnchorContractAddress, AnchorConstants>
+          defaultQueryClient={ANCHOR_QUERY_CLIENT}
           contractAddress={ANCHOR_CONTRACT_ADDRESS}
           constants={ANCHOR_CONSTANTS}
           refetchMap={ANCHOR_TX_REFETCH_MAP}
