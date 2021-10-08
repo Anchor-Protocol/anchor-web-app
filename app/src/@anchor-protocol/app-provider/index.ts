@@ -3,6 +3,7 @@
 export * from './env';
 export * from './types';
 export * from './contexts/context';
+export * from './forms/borrow/borrow';
 export * from './forms/earn/deposit';
 export * from './forms/earn/withdraw';
 export * from './hooks/useAnchorBank';

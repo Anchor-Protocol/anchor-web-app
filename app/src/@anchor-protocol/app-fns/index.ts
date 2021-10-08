@@ -3,6 +3,7 @@
 export * from './env';
 export * from './types';
 export * from './caches/airdropStage';
+export * from './forms/borrow/borrow';
 export * from './forms/earn/deposit';
 export * from './forms/earn/withdraw';
 export * from './functions/getCollateralSymbol';
@@ -20,6 +21,7 @@ export * from './logics/borrow/computeCollateralsTotalUST';
 export * from './logics/borrow/computeCurrentLtv';
 export * from './logics/borrow/computeDepositAmountToBorrowLimit';
 export * from './logics/borrow/computeDepositAmountToLtv';
+export * from './logics/borrow/computeEstimateLiquidationPrice';
 export * from './logics/borrow/computeLiquidationPrice';
 export * from './logics/borrow/computeLtvToBorrowAmount';
 export * from './logics/borrow/computeLtvToDepositAmount';
