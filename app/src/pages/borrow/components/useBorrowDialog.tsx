@@ -105,14 +105,15 @@ function ComponentBase({
 
   const onLtvChange = useCallback(
     (nextLtv: Rate<Big>) => {
+      const ltvToAmount = states.ltvToAmount;
       try {
-        const nextAmount = states.ltvToAmount(nextLtv);
+        const nextAmount = ltvToAmount(nextLtv);
         input({
           borrowAmount: formatUSTInput(demicrofy(nextAmount)),
         });
       } catch {}
     },
-    [input, states],
+    [input, states.ltvToAmount],
   );
 
   // ---------------------------------------------
