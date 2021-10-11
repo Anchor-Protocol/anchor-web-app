@@ -1,3 +1,6 @@
+import { validateTxFee } from '@anchor-protocol/app-fns';
+import { useAnchorWebapp, useBondSwapTx } from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import {
   formatLuna,
   formatLunaInput,
@@ -7,12 +10,6 @@ import {
 } from '@anchor-protocol/notation';
 import type { bLuna, Luna, NativeDenom, Rate, u } from '@anchor-protocol/types';
 import { terraswap } from '@anchor-protocol/types';
-import {
-  useAnchorWebapp,
-  useBondBLunaPriceQuery,
-  useBondSwapTx,
-} from '@anchor-protocol/app-provider';
-import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { terraswapSimulationQuery } from '@libs/app-fns';
 import { useFixedFee } from '@libs/app-provider';
 import {
@@ -32,10 +29,9 @@ import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
-import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
+import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { validateTxFee } from '@anchor-protocol/app-fns';
 import React, {
   ChangeEvent,
   useCallback,
@@ -89,12 +85,6 @@ export function Swap() {
   // queries
   // ---------------------------------------------
   const bank = useAnchorBank();
-
-  const { data: { bLunaPrice } = {} } = useBondBLunaPriceQuery();
-
-  //const {
-  //  data: { terraswapPoolInfo: bLunaPrice },
-  //} = useTerraswapBLunaPrice();
 
   // ---------------------------------------------
   // logics
@@ -380,7 +370,7 @@ export function Swap() {
         />
       </SelectAndTextInputContainer>
 
-      {burnAmount.length > 0 && bLunaPrice && simulation && (
+      {burnAmount.length > 0 && simulation && (
         <TxFeeList className="receipt">
           <SwapListItem
             label="Price"

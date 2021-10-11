@@ -17,11 +17,7 @@ export function estimatedAmountOfClaimBAsset(
   //    , Max_tax
   // ) + Fixed_gas
   const txFee = min(
-    big(
-      big(claimableRewards).minus(
-        big(claimableRewards).div(big(1).plus(taxRate)),
-      ),
-    ).mul(taxRate),
+    big(big(claimableRewards).div(big(1).plus(taxRate))).mul(taxRate),
     maxTaxUUSD,
   ).plus(fixedFee) as u<UST<Big>>;
 
