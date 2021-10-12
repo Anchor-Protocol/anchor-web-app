@@ -1,13 +1,11 @@
+import { computeTotalDeposit } from '@anchor-protocol/app-fns';
+import { useEarnEpochStatesQuery } from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import {
   formatUST,
   formatUSTWithPostfixUnits,
   MILLION,
 } from '@anchor-protocol/notation';
-import {
-  AnchorTokenBalances,
-  computeTotalDeposit,
-  useEarnEpochStatesQuery,
-} from '@anchor-protocol/webapp-provider';
 import { demicrofy, MICRO } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
@@ -15,7 +13,6 @@ import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { AnimateNumber } from '@libs/ui';
-import { useBank } from '@libs/webapp-provider';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { SubAmount } from 'components/primitives/SubAmount';
 import React, { useCallback, useMemo } from 'react';
@@ -37,7 +34,7 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
   // ---------------------------------------------
   const {
     tokenBalances: { uaUST },
-  } = useBank<AnchorTokenBalances>();
+  } = useAnchorBank();
 
   const { data: { moneyMarketEpochState } = {} } = useEarnEpochStatesQuery();
 

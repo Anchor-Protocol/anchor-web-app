@@ -1,5 +1,5 @@
 import { ANC, Rate, terraswap, u, UST } from '@anchor-protocol/types';
-import { AnchorTax } from '@anchor-protocol/webapp-fns';
+import { AnchorTax } from '@anchor-protocol/app-fns';
 import { min } from '@libs/big-math';
 import big, { Big, BigSource } from 'big.js';
 import { MAX_SPREAD } from 'pages/trade/env';

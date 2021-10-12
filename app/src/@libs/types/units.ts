@@ -9,3 +9,5 @@ export type Num<T = string> = T & NominalType<'number'>;
 export type JSDateTime = number & NominalType<'jsdatetime'>;
 
 export type DateTime = number & NominalType<'datetime'>;
+
+export type ISODateFormat = string & NominalType<'isodateformat'>;

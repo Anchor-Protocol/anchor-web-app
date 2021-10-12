@@ -1,6 +1,6 @@
 import { ExecuteMsg } from '@anchor-protocol/anchor.js';
 import { moneyMarket, Rate } from '@anchor-protocol/types';
-import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
+import { useAnchorWebapp } from '@anchor-protocol/app-provider';
 import {
   formatExecuteMsgNumber,
   MAX_EXECUTE_MSG_DECIMALS,

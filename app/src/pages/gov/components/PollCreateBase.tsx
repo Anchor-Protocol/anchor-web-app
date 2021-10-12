@@ -5,10 +5,11 @@ import {
 } from '@anchor-protocol/notation';
 import { ANC } from '@anchor-protocol/types';
 import {
-  useAnchorWebapp,
   useGovConfigQuery,
   useGovCreatePollTx,
-} from '@anchor-protocol/webapp-provider';
+} from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
+import { useFixedFee } from '@libs/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
@@ -25,10 +26,9 @@ import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { TxResultRenderer } from 'components/TxResultRenderer';
+import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { useBank } from 'contexts/bank';
-import { validateTxFee } from 'logics/validateTxFee';
+import { validateTxFee } from '@anchor-protocol/app-fns';
 import React, {
   ChangeEvent,
   ReactNode,
@@ -58,9 +58,7 @@ export function PollCreateBase({
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const {
-    constants: { fixedGas },
-  } = useAnchorWebapp();
+  const fixedFee = useFixedFee();
 
   const history = useHistory();
 
@@ -69,7 +67,7 @@ export function PollCreateBase({
   // ---------------------------------------------
   // states
   // ---------------------------------------------
-  const txFee = fixedGas;
+  const txFee = fixedFee;
 
   const [title, setTitle] = useState<string>('');
 
@@ -80,7 +78,7 @@ export function PollCreateBase({
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const bank = useBank();
+  const bank = useAnchorBank();
 
   const { data: { govConfig: pollConfig } = {} } = useGovConfigQuery();
 
@@ -88,8 +86,8 @@ export function PollCreateBase({
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
+    [bank, fixedFee, connectedWallet],
   );
 
   const invalidTitleBytes = useValidateStringBytes(title, 4, 64);
@@ -105,10 +103,10 @@ export function PollCreateBase({
       return undefined;
     }
 
-    return big(bank.userBalances.uANC).lt(pollConfig.proposal_deposit)
+    return big(bank.tokenBalances.uANC).lt(pollConfig.proposal_deposit)
       ? `Not enough ANC`
       : undefined;
-  }, [bank.userBalances.uANC, pollConfig, connectedWallet]);
+  }, [bank.tokenBalances.uANC, pollConfig, connectedWallet]);
 
   // ---------------------------------------------
   // callbacks

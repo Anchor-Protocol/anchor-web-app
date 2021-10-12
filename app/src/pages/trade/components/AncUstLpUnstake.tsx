@@ -8,9 +8,10 @@ import {
 import { AncUstLP } from '@anchor-protocol/types';
 import {
   useAncAncUstLpUnstakeTx,
-  useAnchorWebapp,
   useRewardsAncUstLpRewardsQuery,
-} from '@anchor-protocol/webapp-provider';
+} from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
+import { useFixedFee } from '@libs/app-provider';
 import { demicrofy, microfy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
@@ -20,10 +21,9 @@ import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { TxResultRenderer } from 'components/TxResultRenderer';
+import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { useBank } from 'contexts/bank';
-import { validateTxFee } from 'logics/validateTxFee';
+import { validateTxFee } from '@anchor-protocol/app-fns';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 export function AncUstLpUnstake() {
@@ -32,9 +32,7 @@ export function AncUstLpUnstake() {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const {
-    constants: { fixedGas },
-  } = useAnchorWebapp();
+  const fixedFee = useFixedFee();
 
   const [unstake, unstakeResult] = useAncAncUstLpUnstakeTx();
 
@@ -46,7 +44,7 @@ export function AncUstLpUnstake() {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const bank = useBank();
+  const bank = useAnchorBank();
 
   const { data: { userLPStakingInfo } = {} } = useRewardsAncUstLpRewardsQuery();
 
@@ -54,8 +52,8 @@ export function AncUstLpUnstake() {
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
+    [bank, fixedFee, connectedWallet],
   );
 
   const invalidLpAmount = useMemo(() => {
@@ -158,7 +156,7 @@ export function AncUstLpUnstake() {
       {lpAmount.length > 0 && (
         <TxFeeList className="receipt">
           <TxFeeListItem label="Tx Fee">
-            {formatUST(demicrofy(fixedGas))} UST
+            {formatUST(demicrofy(fixedFee))} UST
           </TxFeeListItem>
         </TxFeeList>
       )}

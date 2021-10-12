@@ -8,7 +8,7 @@ import { u, UST } from '@anchor-protocol/types';
 import {
   useEarnDepositForm,
   useEarnDepositTx,
-} from '@anchor-protocol/webapp-provider';
+} from '@anchor-protocol/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
@@ -23,7 +23,7 @@ import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { TxResultRenderer } from 'components/TxResultRenderer';
+import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import type { ReactNode } from 'react';
 import React, { ChangeEvent, useCallback } from 'react';

@@ -1,9 +1,9 @@
-import { Modal } from '@material-ui/core';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { buttonBaseStyle } from '@libs/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
 import { DialogProps, OpenDialog, useDialog } from '@libs/use-dialog';
+import { Modal } from '@material-ui/core';
 import { useConnectedWallet, useWallet } from '@terra-money/wallet-provider';
-import { useBank } from 'contexts/bank';
 import React, { ReactNode, useCallback } from 'react';
 import styled from 'styled-components';
 import { WalletDetailContent } from '../wallet/WalletDetailContent';
@@ -32,7 +32,7 @@ function ComponentBase({
   const { disconnect } = useWallet();
   const connectedWallet = useConnectedWallet();
 
-  const bank = useBank();
+  const bank = useAnchorBank();
 
   const disconnectWallet = useCallback(() => {
     disconnect();

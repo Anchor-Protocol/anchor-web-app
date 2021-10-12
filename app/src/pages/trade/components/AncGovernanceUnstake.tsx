@@ -12,7 +12,9 @@ import {
   useAnchorWebapp,
   useGovStateQuery,
   useRewardsAncGovernanceRewardsQuery,
-} from '@anchor-protocol/webapp-provider';
+} from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
+import { useFixedFee } from '@libs/app-provider';
 import { max } from '@libs/big-math';
 import { demicrofy, microfy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
@@ -23,10 +25,9 @@ import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { TxResultRenderer } from 'components/TxResultRenderer';
+import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { useBank } from 'contexts/bank';
-import { validateTxFee } from 'logics/validateTxFee';
+import { validateTxFee } from '@anchor-protocol/app-fns';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 export function AncGovernanceUnstake() {
@@ -35,10 +36,9 @@ export function AncGovernanceUnstake() {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const {
-    constants: { fixedGas },
-    contractAddress,
-  } = useAnchorWebapp();
+  const fixedFee = useFixedFee();
+
+  const { contractAddress } = useAnchorWebapp();
 
   const [unstake, unstakeResult] = useAncGovernanceUnstakeTx();
 
@@ -50,7 +50,7 @@ export function AncGovernanceUnstake() {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const bank = useBank();
+  const bank = useAnchorBank();
 
   const { data: { userGovStakingInfo } = {} } =
     useRewardsAncGovernanceRewardsQuery();
@@ -79,8 +79,8 @@ export function AncGovernanceUnstake() {
   }, [govANCBalance, govState, userGovStakingInfo]);
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
+    [bank, fixedFee, connectedWallet],
   );
 
   const invalidANCAmount = useMemo(() => {
@@ -179,7 +179,7 @@ export function AncGovernanceUnstake() {
       {ancAmount.length > 0 && (
         <TxFeeList className="receipt">
           <TxFeeListItem label="Tx Fee">
-            {formatUST(demicrofy(fixedGas))} UST
+            {formatUST(demicrofy(fixedFee))} UST
           </TxFeeListItem>
         </TxFeeList>
       )}

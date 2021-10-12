@@ -1,6 +1,6 @@
 import { ExecuteMsg } from '@anchor-protocol/anchor.js';
 import { moneyMarket, Rate } from '@anchor-protocol/types';
-import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
+import { useAnchorWebapp } from '@anchor-protocol/app-provider';
 import { floor } from '@libs/big-math';
 import { formatExecuteMsgNumber } from '@libs/formatter';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';

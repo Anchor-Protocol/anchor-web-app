@@ -13,7 +13,7 @@ import {
   useBorrowAPYQuery,
   useGovStateQuery,
   useRewardsAnchorLpRewardsQuery,
-} from '@anchor-protocol/webapp-provider';
+} from '@anchor-protocol/app-provider';
 import { formatRate } from '@libs/formatter';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';

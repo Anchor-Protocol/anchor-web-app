@@ -1,8 +1,8 @@
 import { Wallet } from '@anchor-protocol/icons';
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
+import { AnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { demicrofy, truncate } from '@libs/formatter';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
-import { Bank } from 'contexts/bank';
 import React, { ButtonHTMLAttributes, DetailedHTMLProps } from 'react';
 import styled from 'styled-components';
 
@@ -15,7 +15,7 @@ interface ConnectedButtonProps
     'children'
   > {
   walletAddress: string;
-  bank: Bank;
+  bank: AnchorBank;
 }
 
 function ConnectedButtonBase({
@@ -31,7 +31,7 @@ function ConnectedButtonBase({
         </span>
         <span className="wallet-address">{truncate(walletAddress)}</span>
         <div className="wallet-balance">
-          {formatUSTWithPostfixUnits(demicrofy(bank.userBalances.uUSD))} UST
+          {formatUSTWithPostfixUnits(demicrofy(bank.tokenBalances.uUST))} UST
         </div>
       </IconSpan>
     </button>

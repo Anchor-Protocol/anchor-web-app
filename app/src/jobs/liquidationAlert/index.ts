@@ -1,7 +1,6 @@
 import { Rate } from '@anchor-protocol/types';
-import { useAnchorWebapp } from '@anchor-protocol/webapp-provider';
+import { useAnchorWebapp } from '@anchor-protocol/app-provider';
 import { formatRate } from '@libs/formatter';
-import { useTerraWebapp } from '@libs/webapp-provider';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
 import { useNotification } from 'contexts/notification';
@@ -15,8 +14,7 @@ export interface LiquidationAlert {
 }
 
 export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
-  const { mantleEndpoint, mantleFetch } = useTerraWebapp();
-  const { contractAddress: address } = useAnchorWebapp();
+  const { hiveQueryClient, contractAddress: address } = useAnchorWebapp();
   const connectedWallet = useConnectedWallet();
   const { permission, create } = useNotification();
 
@@ -30,10 +28,8 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
     try {
       const ltv = await userLtvQuery({
         walletAddress: connectedWallet.walletAddress,
-        mantleFetch,
-        mantleEndpoint,
         address,
-        useExternalOraclePrice: false,
+        hiveQueryClient,
       });
 
       if (ltv && big(ltv).gte(ratio)) {
@@ -60,8 +56,7 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
     connectedWallet,
     create,
     history,
-    mantleEndpoint,
-    mantleFetch,
+    hiveQueryClient,
     permission,
     ratio,
   ]);

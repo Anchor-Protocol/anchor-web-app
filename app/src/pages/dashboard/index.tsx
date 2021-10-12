@@ -27,7 +27,7 @@ import {
   useMarketDepositAndBorrowQuery,
   useMarketStableCoinQuery,
   useMarketUstQuery,
-} from '@anchor-protocol/webapp-provider';
+} from '@anchor-protocol/app-provider';
 import { demicrofy, formatRate } from '@libs/formatter';
 import { HorizontalScrollTable } from '@libs/neumorphism-ui/components/HorizontalScrollTable';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';

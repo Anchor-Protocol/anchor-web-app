@@ -1,6 +1,6 @@
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
 import { Rate, u, UST } from '@anchor-protocol/types';
-import { BAssetLtv } from '@anchor-protocol/webapp-fns';
+import { BAssetLtv } from '@anchor-protocol/app-fns';
 import { demicrofy, formatRate } from '@libs/formatter';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';

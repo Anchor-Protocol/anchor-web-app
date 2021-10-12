@@ -2,7 +2,7 @@ import { anchorToken } from '@anchor-protocol/types';
 import {
   useAnchorWebapp,
   useContractNickname,
-} from '@anchor-protocol/webapp-provider';
+} from '@anchor-protocol/app-provider';
 import { AccountLink } from 'components/links/AccountLink';
 import React, { Fragment, useMemo } from 'react';
 import { getMsgDetails } from '../logics/getMsgDetails';

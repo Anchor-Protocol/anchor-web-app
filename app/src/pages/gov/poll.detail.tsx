@@ -8,7 +8,7 @@ import {
   useGovVoteAvailableQuery,
   useGovVotersQuery,
   useLastSyncedHeightQuery,
-} from '@anchor-protocol/webapp-provider';
+} from '@anchor-protocol/app-provider';
 import { demicrofy, formatRate } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';

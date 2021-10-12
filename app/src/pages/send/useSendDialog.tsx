@@ -15,10 +15,12 @@ import {
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { HumanAddr, Token, u, UST } from '@anchor-protocol/types';
+import { useAnchorWebapp, useTerraSendTx } from '@anchor-protocol/app-provider';
 import {
-  useAnchorWebapp,
-  useTerraSendTx,
-} from '@anchor-protocol/webapp-provider';
+  AnchorBank,
+  useAnchorBank,
+} from '@anchor-protocol/app-provider/hooks/useAnchorBank';
+import { useFixedFee } from '@libs/app-provider';
 import { min } from '@libs/big-math';
 import { demicrofy, microfy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
@@ -36,10 +38,9 @@ import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big, BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { TxResultRenderer } from 'components/TxResultRenderer';
+import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { Bank, useBank } from 'contexts/bank';
-import { validateTxFee } from 'logics/validateTxFee';
+import { validateTxFee } from '@anchor-protocol/app-fns';
 import { CurrencyInfo } from 'pages/send/models/currency';
 import React, {
   ChangeEvent,
@@ -72,8 +73,9 @@ function ComponentBase({
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
+  const fixedFee = useFixedFee();
+
   const {
-    constants: { fixedGas },
     contractAddress: { cw20 },
   } = useAnchorWebapp();
 
@@ -86,24 +88,27 @@ function ComponentBase({
         value: 'usd',
         integerPoints: UST_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: UST_INPUT_MAXIMUM_DECIMAL_POINTS,
-        getWithdrawable: (bank: Bank, fixedGas: u<UST<BigSource>>) => {
-          return big(bank.userBalances.uUSD)
+        getWithdrawable: (bank: AnchorBank, fixedGas: u<UST<BigSource>>) => {
+          return big(bank.tokenBalances.uUST)
             .minus(
               min(
-                big(bank.userBalances.uUSD).mul(bank.tax.taxRate),
+                big(bank.tokenBalances.uUST).mul(bank.tax.taxRate),
                 bank.tax.maxTaxUUSD,
               ),
             )
             .minus(big(fixedGas).mul(2))
             .toString() as u<Token>;
         },
-        getFormatWithdrawable: (bank: Bank, fixedGas: u<UST<BigSource>>) => {
+        getFormatWithdrawable: (
+          bank: AnchorBank,
+          fixedGas: u<UST<BigSource>>,
+        ) => {
           return formatUSTInput(
             demicrofy(
-              big(bank.userBalances.uUSD)
+              big(bank.tokenBalances.uUST)
                 .minus(
                   min(
-                    big(bank.userBalances.uUSD).mul(bank.tax.taxRate),
+                    big(bank.tokenBalances.uUST).mul(bank.tax.taxRate),
                     bank.tax.maxTaxUUSD,
                   ),
                 )
@@ -117,9 +122,9 @@ function ComponentBase({
         value: 'aust',
         integerPoints: AUST_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: AUST_INPUT_MAXIMUM_DECIMAL_POINTS,
-        getWithdrawable: (bank: Bank) => bank.userBalances.uaUST,
-        getFormatWithdrawable: (bank: Bank) =>
-          formatAUSTInput(demicrofy(bank.userBalances.uaUST)),
+        getWithdrawable: (bank: AnchorBank) => bank.tokenBalances.uaUST,
+        getFormatWithdrawable: (bank: AnchorBank) =>
+          formatAUSTInput(demicrofy(bank.tokenBalances.uaUST)),
         cw20Address: cw20.aUST,
       },
       {
@@ -127,18 +132,18 @@ function ComponentBase({
         value: 'luna',
         integerPoints: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
-        getWithdrawable: (bank: Bank) => bank.userBalances.uLuna,
-        getFormatWithdrawable: (bank: Bank) =>
-          formatLunaInput(demicrofy(bank.userBalances.uLuna)),
+        getWithdrawable: (bank: AnchorBank) => bank.tokenBalances.uLuna,
+        getFormatWithdrawable: (bank: AnchorBank) =>
+          formatLunaInput(demicrofy(bank.tokenBalances.uLuna)),
       },
       {
         label: 'bLUNA',
         value: 'bluna',
         integerPoints: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
-        getWithdrawable: (bank: Bank) => bank.userBalances.ubLuna,
-        getFormatWithdrawable: (bank: Bank) =>
-          formatLunaInput(demicrofy(bank.userBalances.ubLuna)),
+        getWithdrawable: (bank: AnchorBank) => bank.tokenBalances.ubLuna,
+        getFormatWithdrawable: (bank: AnchorBank) =>
+          formatLunaInput(demicrofy(bank.tokenBalances.ubLuna)),
         cw20Address: cw20.bLuna,
       },
       {
@@ -146,9 +151,9 @@ function ComponentBase({
         value: 'beth',
         integerPoints: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
-        getWithdrawable: (bank: Bank) => bank.userBalances.ubEth,
-        getFormatWithdrawable: (bank: Bank) =>
-          formatBAssetInput(demicrofy(bank.userBalances.ubEth)),
+        getWithdrawable: (bank: AnchorBank) => bank.tokenBalances.ubEth,
+        getFormatWithdrawable: (bank: AnchorBank) =>
+          formatBAssetInput(demicrofy(bank.tokenBalances.ubEth)),
         cw20Address: cw20.bEth,
       },
       {
@@ -156,9 +161,9 @@ function ComponentBase({
         value: 'anc',
         integerPoints: ANC_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
-        getWithdrawable: (bank: Bank) => bank.userBalances.uANC,
-        getFormatWithdrawable: (bank: Bank) =>
-          formatANCInput(demicrofy(bank.userBalances.uANC)),
+        getWithdrawable: (bank: AnchorBank) => bank.tokenBalances.uANC,
+        getFormatWithdrawable: (bank: AnchorBank) =>
+          formatANCInput(demicrofy(bank.tokenBalances.uANC)),
         cw20Address: cw20.ANC,
       },
     ],
@@ -179,7 +184,7 @@ function ComponentBase({
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const bank = useBank();
+  const bank = useAnchorBank();
 
   // ---------------------------------------------
   // computed
@@ -215,17 +220,17 @@ function ComponentBase({
   // ---------------------------------------------
   const txFee = useMemo(() => {
     if (amount.length === 0 || currency.value !== 'usd') {
-      return fixedGas;
+      return fixedFee;
     }
 
     return min(
       microfy(amount as UST).mul(bank.tax.taxRate),
       bank.tax.maxTaxUUSD,
-    ).plus(fixedGas) as u<UST<Big>>;
-  }, [amount, bank.tax.maxTaxUUSD, bank.tax.taxRate, currency.value, fixedGas]);
+    ).plus(fixedFee) as u<UST<Big>>;
+  }, [amount, bank.tax.maxTaxUUSD, bank.tax.taxRate, currency.value, fixedFee]);
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, txFee),
+    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, txFee),
     [bank, connectedWallet, txFee],
   );
 
@@ -240,10 +245,10 @@ function ComponentBase({
   const invalidAmount = useMemo(() => {
     if (amount.length === 0) return undefined;
 
-    return microfy(amount as Token).gt(currency.getWithdrawable(bank, fixedGas))
+    return microfy(amount as Token).gt(currency.getWithdrawable(bank, fixedFee))
       ? 'Not enough assets'
       : undefined;
-  }, [amount, currency, bank, fixedGas]);
+  }, [amount, currency, bank, fixedFee]);
 
   const invalidMemo = useMemo(() => {
     return /[<>]/.test(memo) ? 'Characters < and > are not allowed' : undefined;
@@ -333,11 +338,11 @@ function ComponentBase({
                 style={{ textDecoration: 'underline', cursor: 'pointer' }}
                 onClick={() =>
                   setAmount(
-                    currency.getFormatWithdrawable(bank, fixedGas) as Token,
+                    currency.getFormatWithdrawable(bank, fixedFee) as Token,
                   )
                 }
               >
-                {currency.getFormatWithdrawable(bank, fixedGas)}{' '}
+                {currency.getFormatWithdrawable(bank, fixedFee)}{' '}
                 {currency.label}
               </span>
             </span>
@@ -411,7 +416,7 @@ function ComponentBase({
               !!invalidAmount ||
               !!invalidTxFee ||
               !!invalidMemo ||
-              big(currency.getWithdrawable(bank, fixedGas)).lte(0)
+              big(currency.getWithdrawable(bank, fixedFee)).lte(0)
             }
             onClick={() =>
               submit(

@@ -1,4 +1,13 @@
 import {
+  BorrowBorrower,
+  BorrowMarket,
+  prettifyBAssetSymbol,
+} from '@anchor-protocol/app-fns';
+import {
+  useBorrowProvideCollateralForm,
+  useBorrowProvideCollateralTx,
+} from '@anchor-protocol/app-provider';
+import {
   formatBAsset,
   formatBAssetInput,
   formatUST,
@@ -7,26 +16,6 @@ import {
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { bAsset, bLuna, CW20Addr, Rate } from '@anchor-protocol/types';
-import {
-  AnchorTax,
-  AnchorTokenBalances,
-  BorrowBorrower,
-  BorrowMarket,
-  computeCurrentLtv,
-  computeDepositAmountToBorrowLimit,
-  computeDepositAmountToLtv,
-  computeLtvToDepositAmount,
-  computeProvideCollateralBorrowLimit,
-  computeProvideCollateralNextLtv,
-  pickCollateral,
-  prettifyBAssetSymbol,
-  useAnchorWebapp,
-  useBorrowBorrowerQuery,
-  useBorrowMarketQuery,
-  useBorrowProvideCollateralTx,
-  validateDepositAmount,
-  validateTxFee,
-} from '@anchor-protocol/webapp-provider';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
@@ -36,20 +25,18 @@ import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
 import { TextInput } from '@libs/neumorphism-ui/components/TextInput';
 import type { DialogProps, OpenDialog } from '@libs/use-dialog';
 import { useDialog } from '@libs/use-dialog';
-import { useBank, useCW20TokenBalance } from '@libs/webapp-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big, BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
+import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import type { ChangeEvent, ReactNode } from 'react';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
-import { pickCollateralDenom } from '../logics/pickCollateralDenom';
 import { LTVGraph } from './LTVGraph';
 
 interface FormParams {
@@ -80,157 +67,47 @@ function ComponentBase({
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const {
-    constants: { fixedGas },
-  } = useAnchorWebapp();
+  const [postTx, txResult] = useBorrowProvideCollateralTx();
 
-  const txFee = fixedGas;
-
-  const [provideCollateral, provideCollateralResult] =
-    useBorrowProvideCollateralTx();
-
-  // ---------------------------------------------
-  // states
-  // ---------------------------------------------
-  const [depositAmount, setDepositAmount] = useState<bAsset>('' as bAsset);
-
-  // ---------------------------------------------
-  // queries
-  // ---------------------------------------------
-  const { tokenBalances } = useBank<AnchorTokenBalances, AnchorTax>();
-
-  const ubAssetBalance = useCW20TokenBalance<bAsset>(collateralToken);
-
-  const {
-    data: {
-      oraclePrices,
-      overseerWhitelist,
-      bAssetLtvs,
-      bAssetLtvsAvg,
-    } = fallbackBorrowMarket,
-  } = useBorrowMarketQuery();
-
-  const {
-    data: { marketBorrowerInfo, overseerCollaterals } = fallbackBorrowBorrower,
-  } = useBorrowBorrowerQuery();
-
-  // ---------------------------------------------
-  // calculate
-  // ---------------------------------------------
-  const dangerLtv = useMemo(() => {
-    return big(bAssetLtvsAvg.max).minus(0.1) as Rate<Big>;
-  }, [bAssetLtvsAvg.max]);
-
-  const collateral = useMemo(
-    () => pickCollateral(collateralToken, overseerWhitelist),
-    [collateralToken, overseerWhitelist],
+  const [input, states] = useBorrowProvideCollateralForm(
+    collateralToken,
+    fallbackBorrowMarket,
+    fallbackBorrowBorrower,
   );
-
-  const collateralDenom = useMemo(() => {
-    return pickCollateralDenom(collateral);
-  }, [collateral]);
-
-  const amountToLtv = useMemo(
-    () =>
-      computeDepositAmountToLtv(
-        collateralToken,
-        marketBorrowerInfo,
-        overseerCollaterals,
-        oraclePrices,
-      ),
-    [collateralToken, marketBorrowerInfo, overseerCollaterals, oraclePrices],
-  );
-
-  const ltvToAmount = useMemo(
-    () =>
-      computeLtvToDepositAmount(
-        collateralToken,
-        marketBorrowerInfo,
-        overseerCollaterals,
-        oraclePrices,
-      ),
-    [collateralToken, marketBorrowerInfo, overseerCollaterals, oraclePrices],
-  );
-
-  const amountToBorrowLimit = useMemo(
-    () =>
-      computeDepositAmountToBorrowLimit(
-        collateralToken,
-        overseerCollaterals,
-        oraclePrices,
-        bAssetLtvs,
-      ),
-    [collateralToken, overseerCollaterals, oraclePrices, bAssetLtvs],
-  );
-
-  // ---------------------------------------------
-  // logics
-  // ---------------------------------------------
-  const currentLtv = useMemo(
-    () =>
-      computeCurrentLtv(marketBorrowerInfo, overseerCollaterals, oraclePrices),
-    [marketBorrowerInfo, overseerCollaterals, oraclePrices],
-  );
-
-  const nextLtv = useMemo(
-    () =>
-      computeProvideCollateralNextLtv(depositAmount, currentLtv, amountToLtv),
-    [amountToLtv, currentLtv, depositAmount],
-  );
-
-  const borrowLimit = useMemo(
-    () =>
-      computeProvideCollateralBorrowLimit(depositAmount, amountToBorrowLimit),
-    [amountToBorrowLimit, depositAmount],
-  );
-
-  const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(tokenBalances.uUST, fixedGas),
-    [connectedWallet, tokenBalances.uUST, fixedGas],
-  );
-
-  const invalidDepositAmount = useMemo(() => {
-    return validateDepositAmount(depositAmount, ubAssetBalance);
-  }, [depositAmount, ubAssetBalance]);
 
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
-  const updateDepositAmount = useCallback((nextDepositAmount: string) => {
-    setDepositAmount(nextDepositAmount as bLuna);
-  }, []);
+  const updateDepositAmount = useCallback(
+    (nextDepositAmount: string) => {
+      input({ depositAmount: nextDepositAmount as bLuna });
+    },
+    [input],
+  );
 
   const proceed = useCallback(
     (depositAmount: bAsset) => {
-      if (!connectedWallet || !provideCollateral || !collateralDenom) {
+      if (!connectedWallet || !postTx || !states.collateralDenom) {
         return;
       }
 
-      provideCollateral({ depositAmount, collateralDenom });
+      postTx({
+        depositAmount,
+        collateralDenom: states.collateralDenom,
+      });
     },
-    [collateralDenom, connectedWallet, provideCollateral],
+    [connectedWallet, postTx, states.collateralDenom],
   );
 
   const onLtvChange = useCallback(
     (nextLtv: Rate<Big>) => {
+      const ltvToAmount = states.ltvToAmount;
       try {
         const nextAmount = ltvToAmount(nextLtv);
-        updateDepositAmount(formatBAssetInput(demicrofy(nextAmount)));
+        input({ depositAmount: formatBAssetInput(demicrofy(nextAmount)) });
       } catch {}
     },
-    [ltvToAmount, updateDepositAmount],
-  );
-
-  const ltvStepFunction = useCallback(
-    (draftLtv: Rate<Big>): Rate<Big> => {
-      try {
-        const draftAmount = ltvToAmount(draftLtv);
-        return amountToLtv(draftAmount);
-      } catch {
-        return draftLtv;
-      }
-    },
-    [ltvToAmount, amountToLtv],
+    [input, states.ltvToAmount],
   );
 
   // ---------------------------------------------
@@ -248,14 +125,14 @@ function ComponentBase({
   );
 
   if (
-    provideCollateralResult?.status === StreamStatus.IN_PROGRESS ||
-    provideCollateralResult?.status === StreamStatus.DONE
+    txResult?.status === StreamStatus.IN_PROGRESS ||
+    txResult?.status === StreamStatus.DONE
   ) {
     return (
       <Modal open disableBackdropClick disableEnforceFocus>
         <Dialog className={className}>
           <TxResultRenderer
-            resultRendering={provideCollateralResult.value}
+            resultRendering={txResult.value}
             onExit={closeDialog}
           />
         </Dialog>
@@ -268,29 +145,31 @@ function ComponentBase({
       <Dialog className={className} onClose={() => closeDialog()}>
         {title}
 
-        {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
+        {!!states.invalidTxFee && (
+          <MessageBox>{states.invalidTxFee}</MessageBox>
+        )}
 
         <NumberInput
           className="amount"
-          value={depositAmount}
+          value={states.depositAmount}
           maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="DEPOSIT AMOUNT"
-          error={!!invalidDepositAmount}
+          error={!!states.invalidDepositAmount}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateDepositAmount(target.value)
           }
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                {prettifyBAssetSymbol(collateral.symbol)}
+                {prettifyBAssetSymbol(states.collateral.symbol)}
               </InputAdornment>
             ),
           }}
         />
 
-        <div className="wallet" aria-invalid={!!invalidDepositAmount}>
-          <span>{invalidDepositAmount}</span>
+        <div className="wallet" aria-invalid={!!states.invalidDepositAmount}>
+          <span>{states.invalidDepositAmount}</span>
           <span>
             Wallet:{' '}
             <span
@@ -300,12 +179,12 @@ function ComponentBase({
               }}
               onClick={() =>
                 updateDepositAmount(
-                  formatBAssetInput(demicrofy(ubAssetBalance)),
+                  formatBAssetInput(demicrofy(states.userBAssetBalance)),
                 )
               }
             >
-              {formatBAsset(demicrofy(ubAssetBalance))}{' '}
-              {prettifyBAssetSymbol(collateral.symbol)}
+              {formatBAsset(demicrofy(states.userBAssetBalance))}{' '}
+              {prettifyBAssetSymbol(states.collateral.symbol)}
             </span>
           </span>
         </div>
@@ -314,7 +193,11 @@ function ComponentBase({
 
         <TextInput
           className="limit"
-          value={borrowLimit ? formatUSTInput(demicrofy(borrowLimit)) : ''}
+          value={
+            states.borrowLimit
+              ? formatUSTInput(demicrofy(states.borrowLimit))
+              : ''
+          }
           label="NEW BORROW LIMIT"
           readOnly
           InputProps={{
@@ -325,27 +208,27 @@ function ComponentBase({
           style={{ pointerEvents: 'none' }}
         />
 
-        {big(currentLtv ?? 0).gt(0) && (
+        {big(states.currentLtv ?? 0).gt(0) && (
           <figure className="graph">
             <LTVGraph
               disabled={!connectedWallet}
-              maxLtv={bAssetLtvsAvg.max}
-              safeLtv={bAssetLtvsAvg.safe}
-              dangerLtv={dangerLtv}
-              currentLtv={currentLtv}
-              nextLtv={nextLtv}
+              maxLtv={states.bAssetLtvsAvg.max}
+              safeLtv={states.bAssetLtvsAvg.safe}
+              dangerLtv={states.dangerLtv}
+              currentLtv={states.currentLtv}
+              nextLtv={states.nextLtv}
               userMinLtv={0 as Rate<BigSource>}
-              userMaxLtv={currentLtv}
-              onStep={ltvStepFunction}
+              userMaxLtv={states.currentLtv}
+              onStep={states.ltvStepFunction}
               onChange={onLtvChange}
             />
           </figure>
         )}
 
-        {depositAmount.length > 0 && (
+        {states.depositAmount.length > 0 && (
           <TxFeeList className="receipt">
             <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
-              {formatUST(demicrofy(txFee))} UST
+              {formatUST(demicrofy(states.txFee))} UST
             </TxFeeListItem>
           </TxFeeList>
         )}
@@ -356,13 +239,10 @@ function ComponentBase({
             disabled={
               !connectedWallet ||
               !connectedWallet.availablePost ||
-              !provideCollateral ||
-              depositAmount.length === 0 ||
-              big(depositAmount).lte(0) ||
-              !!invalidTxFee ||
-              !!invalidDepositAmount
+              !postTx ||
+              !states.availablePost
             }
-            onClick={() => proceed(depositAmount)}
+            onClick={() => proceed(states.depositAmount)}
           >
             Proceed
           </ActionButton>

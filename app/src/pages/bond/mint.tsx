@@ -1,3 +1,10 @@
+import { StakingValidator, validateTxFee } from '@anchor-protocol/app-fns';
+import {
+  useBondBLunaExchangeRateQuery,
+  useBondMintTx,
+  useBondValidators,
+} from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import {
   formatLuna,
   formatLunaInput,
@@ -6,13 +13,7 @@ import {
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { bLuna, Luna } from '@anchor-protocol/types';
-import {
-  StakingValidator,
-  useAnchorWebapp,
-  useBondBLunaExchangeRateQuery,
-  useBondMintTx,
-  useBondValidators,
-} from '@anchor-protocol/webapp-provider';
+import { useFixedFee } from '@libs/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { HorizontalHeavyRuler } from '@libs/neumorphism-ui/components/HorizontalHeavyRuler';
@@ -28,10 +29,8 @@ import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { TxResultRenderer } from 'components/TxResultRenderer';
+import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { useBank } from 'contexts/bank';
-import { validateTxFee } from 'logics/validateTxFee';
 import { pegRecovery } from 'pages/bond/logics/pegRecovery';
 import { validateBondAmount } from 'pages/bond/logics/validateBondAmount';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
@@ -55,9 +54,7 @@ function MintBase({ className }: MintProps) {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const {
-    constants: { fixedGas },
-  } = useAnchorWebapp();
+  const fixedFee = useFixedFee();
 
   const [mint, mintResult] = useBondMintTx();
 
@@ -80,7 +77,7 @@ function MintBase({ className }: MintProps) {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const bank = useBank();
+  const bank = useAnchorBank();
 
   const { data: { whitelistedValidators } = {} } = useBondValidators();
 
@@ -96,8 +93,8 @@ function MintBase({ className }: MintProps) {
   );
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
+    [bank, fixedFee, connectedWallet],
   );
 
   const invalidBondAmount = useMemo(
@@ -242,11 +239,11 @@ function MintBase({ className }: MintProps) {
                 style={{ textDecoration: 'underline', cursor: 'pointer' }}
                 onClick={() =>
                   updateBondAmount(
-                    formatLunaInput(demicrofy(bank.userBalances.uLuna)),
+                    formatLunaInput(demicrofy(bank.tokenBalances.uLuna)),
                   )
                 }
               >
-                {formatLuna(demicrofy(bank.userBalances.uLuna))}{' '}
+                {formatLuna(demicrofy(bank.tokenBalances.uLuna))}{' '}
                 {bondCurrency.label}
               </span>
             </span>
@@ -360,7 +357,7 @@ function MintBase({ className }: MintProps) {
         )}
         {bondAmount.length > 0 && (
           <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
-            {formatUST(demicrofy(fixedGas))} UST
+            {formatUST(demicrofy(fixedFee))} UST
           </TxFeeListItem>
         )}
       </TxFeeList>

@@ -1,5 +1,5 @@
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
-import { MarketCollateralsHistory } from '@anchor-protocol/webapp-fns';
+import { MarketCollateralsHistory } from '@anchor-protocol/app-fns';
 import { demicrofy } from '@libs/formatter';
 import big from 'big.js';
 import { Chart } from 'chart.js';

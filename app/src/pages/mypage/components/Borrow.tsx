@@ -1,11 +1,13 @@
-import { bAsset, Rate, u, UST } from '@anchor-protocol/types';
 import {
   prettifyBAssetSymbol,
-  useBorrowBorrowerQuery,
-  useBorrowMarketQuery,
   vectorizeOraclePrices,
   vectorizeOverseerCollaterals,
-} from '@anchor-protocol/webapp-provider';
+} from '@anchor-protocol/app-fns';
+import {
+  useBorrowBorrowerQuery,
+  useBorrowMarketQuery,
+} from '@anchor-protocol/app-provider';
+import { bAsset, Rate, u, UST } from '@anchor-protocol/types';
 import { sum, vectorMultiply } from '@libs/big-math';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big } from 'big.js';

@@ -1,22 +1,22 @@
 import { Terra, Walletconnect } from '@anchor-protocol/icons';
-import { useAirdropCheckQuery } from '@anchor-protocol/webapp-provider';
-import { ClickAwayListener } from '@material-ui/core';
+import { useAirdropCheckQuery } from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
+import { ClickAwayListener } from '@material-ui/core';
 import {
   ConnectType,
   useWallet,
   WalletStatus,
 } from '@terra-money/wallet-provider';
 import { IconOnlyWalletButton } from 'components/Header/desktop/IconOnlyWalletButton';
-import { useBank } from 'contexts/bank';
 import { useBuyUstDialog } from 'pages/earn/components/useBuyUstDialog';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import React, { useCallback, useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
-import { useRouteMatch } from 'react-router-dom';
+import { useRouteMatch, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { AirdropContent } from '../airdrop/AirdropContent';
 import { WalletDetailContent } from '../wallet/WalletDetailContent';
@@ -47,7 +47,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
 
   const isSmallScreen = useMediaQuery({ query: '(max-width: 1000px)' });
 
-  const bank = useBank();
+  const bank = useAnchorBank();
 
   const { data: airdrop, isLoading: airdropIsLoading } = useAirdropCheckQuery();
   //const airdrop = useMemo<Airdrop | 'in-progress' | null>(
@@ -229,6 +229,11 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                         </BorderButton>
                       </Tooltip>
                     )}
+
+                    <TermsMessage>
+                      By connecting, I accept Anchor's{' '}
+                      <Link to="/terms">Terms of Service</Link>
+                    </TermsMessage>
                   </ConnectTypeContent>
                 </DropdownBox>
               </DropdownContainer>
@@ -291,6 +296,20 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
       ) : null;
   }
 }
+
+const TermsMessage = styled.p`
+  margin-top: 1.5em;
+
+  font-size: 11px;
+  line-height: 1.5;
+
+  color: ${({ theme }) => theme.dimTextColor};
+
+  a {
+    text-decoration: underline;
+    color: ${({ theme }) => theme.colors.positive};
+  }
+`;
 
 export const WalletSelector = styled(WalletSelectorBase)`
   display: inline-block;

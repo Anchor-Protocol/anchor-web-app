@@ -1,3 +1,8 @@
+import { BorrowBorrower, BorrowMarket } from '@anchor-protocol/app-fns';
+import {
+  useBorrowBorrowForm,
+  useBorrowBorrowTx,
+} from '@anchor-protocol/app-provider';
 import {
   formatUST,
   formatUSTInput,
@@ -5,27 +10,6 @@ import {
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { Rate, u, UST } from '@anchor-protocol/types';
-import {
-  AnchorTax,
-  AnchorTokenBalances,
-  BorrowBorrower,
-  BorrowMarket,
-  computeBorrowAmountToLtv,
-  computeBorrowAPR,
-  computeBorrowMax,
-  computeBorrowNextLtv,
-  computeBorrowReceiveAmount,
-  computeBorrowSafeMax,
-  computeBorrowTxFee,
-  computeCurrentLtv,
-  computeLtvToBorrowAmount,
-  useAnchorWebapp,
-  useBorrowBorrowerQuery,
-  useBorrowBorrowTx,
-  useBorrowMarketQuery,
-  validateBorrowAmount,
-  validateTxFee,
-} from '@anchor-protocol/webapp-provider';
 import { demicrofy, formatRate } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
@@ -35,20 +19,18 @@ import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
 import { useConfirm } from '@libs/neumorphism-ui/components/useConfirm';
 import type { DialogProps, OpenDialog } from '@libs/use-dialog';
 import { useDialog } from '@libs/use-dialog';
-import { useBank } from '@libs/webapp-provider';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import big, { Big, BigSource } from 'big.js';
+import { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
+import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { EstimatedLiquidationPrice } from 'pages/borrow/components/EstimatedLiquidationPrice';
-import { estimateLiquidationPrice } from 'pages/borrow/logics/estimateLiquidationPrice';
 import type { ChangeEvent, ReactNode } from 'react';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
+import { EstimatedLiquidationPrice } from './EstimatedLiquidationPrice';
 import { LTVGraph } from './LTVGraph';
 
 interface FormParams {
@@ -79,187 +61,28 @@ function ComponentBase({
 
   const [openConfirm, confirmElement] = useConfirm();
 
-  const {
-    constants: { fixedGas, blocksPerYear },
-  } = useAnchorWebapp();
+  const [postTx, txResult] = useBorrowBorrowTx();
 
-  const [borrow, borrowResult] = useBorrowBorrowTx();
-
-  // ---------------------------------------------
-  // states
-  // ---------------------------------------------
-  const [borrowAmount, setBorrowAmount] = useState<UST>('' as UST);
-
-  // ---------------------------------------------
-  // queries
-  // ---------------------------------------------
-  const { tokenBalances, tax } = useBank<AnchorTokenBalances, AnchorTax>();
-
-  const {
-    data: {
-      borrowRate,
-      oraclePrices,
-      bAssetLtvsAvg,
-      overseerWhitelist,
-      //bLunaOraclePrice,
-      //bLunaMaxLtv = '0.5' as Rate,
-      //bLunaSafeLtv = '0.3' as Rate,
-    } = fallbackBorrowMarket,
-  } = useBorrowMarketQuery();
-
-  const {
-    data: {
-      marketBorrowerInfo,
-      overseerCollaterals,
-      //bLunaCustodyBorrower: borrowInfo,
-    } = fallbackBorrowBorrower,
-  } = useBorrowBorrowerQuery();
-
-  // ---------------------------------------------
-  // calculate
-  // ---------------------------------------------
-  const amountToLtv = useMemo(
-    () =>
-      computeBorrowAmountToLtv(
-        marketBorrowerInfo,
-        overseerCollaterals,
-        oraclePrices,
-      ),
-    [marketBorrowerInfo, overseerCollaterals, oraclePrices],
+  const [input, states] = useBorrowBorrowForm(
+    fallbackBorrowMarket,
+    fallbackBorrowBorrower,
   );
-
-  const ltvToAmount = useMemo(
-    () =>
-      computeLtvToBorrowAmount(
-        marketBorrowerInfo,
-        overseerCollaterals,
-        oraclePrices,
-      ),
-    [marketBorrowerInfo, overseerCollaterals, oraclePrices],
-  );
-
-  // ---------------------------------------------
-  // logics
-  // ---------------------------------------------
-  const { currentLtv, userMaxLtv, apr, safeMax, max, invalidTxFee } =
-    useMemo(() => {
-      const currentLtv = computeCurrentLtv(
-        marketBorrowerInfo,
-        overseerCollaterals,
-        oraclePrices,
-      );
-
-      const userMaxLtv = big(bAssetLtvsAvg.max).minus(0.1) as Rate<BigSource>;
-
-      const apr = computeBorrowAPR(borrowRate, blocksPerYear);
-
-      const safeMax = computeBorrowSafeMax(
-        marketBorrowerInfo,
-        overseerCollaterals,
-        oraclePrices,
-        bAssetLtvsAvg.safe,
-        currentLtv,
-      );
-
-      const max = computeBorrowMax(
-        marketBorrowerInfo,
-        overseerCollaterals,
-        oraclePrices,
-        bAssetLtvsAvg.max,
-      );
-
-      const invalidTxFee =
-        !!connectedWallet && validateTxFee(tokenBalances.uUST, fixedGas);
-      return {
-        currentLtv,
-        userMaxLtv,
-        apr,
-        safeMax,
-        max,
-        invalidTxFee,
-      };
-    }, [
-      bAssetLtvsAvg.max,
-      bAssetLtvsAvg.safe,
-      blocksPerYear,
-      borrowRate,
-      connectedWallet,
-      fixedGas,
-      marketBorrowerInfo,
-      oraclePrices,
-      overseerCollaterals,
-      tokenBalances.uUST,
-    ]);
-
-  const {
-    nextLtv,
-    txFee,
-    receiveAmount,
-    estimatedLiqPrice,
-    invalidBorrowAmount,
-    invalidOver40Ltv,
-    invalidOverSafeLtv,
-  } = useMemo(() => {
-    const nextLtv = computeBorrowNextLtv(borrowAmount, currentLtv, amountToLtv);
-
-    const txFee = computeBorrowTxFee(borrowAmount, tax, fixedGas);
-
-    console.log('useBorrowDialog.tsx..()', overseerCollaterals.collaterals);
-
-    const estimatedLiqPrice = nextLtv
-      ? estimateLiquidationPrice(
-          nextLtv,
-          overseerWhitelist,
-          overseerCollaterals,
-          oraclePrices,
-        )
-      : null;
-
-    const receiveAmount = computeBorrowReceiveAmount(borrowAmount, txFee);
-
-    const invalidBorrowAmount = validateBorrowAmount(borrowAmount, max);
-
-    const invalidOver40Ltv = nextLtv?.gt(userMaxLtv)
-      ? `Cannot borrow when LTV is above ${formatRate(userMaxLtv)}%.`
-      : undefined;
-
-    const invalidOverSafeLtv = nextLtv?.gt(bAssetLtvsAvg.safe)
-      ? 'WARNING: Are you sure you want to borrow above the recommended LTV? Crypto markets can be very volatile and you may be subject to liquidation in events of downward price swings of the bAsset.'
-      : undefined;
-
-    return {
-      nextLtv,
-      txFee,
-      receiveAmount,
-      estimatedLiqPrice,
-      invalidBorrowAmount,
-      invalidOver40Ltv,
-      invalidOverSafeLtv,
-    };
-  }, [
-    amountToLtv,
-    bAssetLtvsAvg.safe,
-    borrowAmount,
-    currentLtv,
-    fixedGas,
-    max,
-    oraclePrices,
-    overseerCollaterals,
-    overseerWhitelist,
-    tax,
-    userMaxLtv,
-  ]);
 
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
-  const updateBorrowAmount = useCallback((nextBorrowAmount: string) => {
-    setBorrowAmount(nextBorrowAmount as UST);
-  }, []);
+  const updateBorrowAmount = useCallback(
+    (nextBorrowAmount: string) => {
+      input({
+        borrowAmount: nextBorrowAmount as UST,
+      });
+    },
+    [input],
+  );
 
   const proceed = useCallback(
     async (borrowAmount: UST, txFee: u<UST>, confirm: ReactNode) => {
-      if (!connectedWallet || !borrow) {
+      if (!connectedWallet || !postTx) {
         return;
       }
 
@@ -275,31 +98,22 @@ function ComponentBase({
         }
       }
 
-      borrow({ borrowAmount, txFee });
+      postTx({ borrowAmount, txFee });
     },
-    [borrow, connectedWallet, openConfirm],
+    [postTx, connectedWallet, openConfirm],
   );
 
   const onLtvChange = useCallback(
     (nextLtv: Rate<Big>) => {
+      const ltvToAmount = states.ltvToAmount;
       try {
         const nextAmount = ltvToAmount(nextLtv);
-        updateBorrowAmount(formatUSTInput(demicrofy(nextAmount)));
+        input({
+          borrowAmount: formatUSTInput(demicrofy(nextAmount)),
+        });
       } catch {}
     },
-    [ltvToAmount, updateBorrowAmount],
-  );
-
-  const ltvStepFunction = useCallback(
-    (draftLtv: Rate<Big>): Rate<Big> => {
-      try {
-        const draftAmount = ltvToAmount(draftLtv);
-        return amountToLtv(draftAmount);
-      } catch {
-        return draftLtv;
-      }
-    },
-    [ltvToAmount, amountToLtv],
+    [input, states.ltvToAmount],
   );
 
   // ---------------------------------------------
@@ -310,7 +124,7 @@ function ComponentBase({
       Borrow{' '}
       <p>
         <IconSpan>
-          Borrow APR : {formatRate(apr)}%{' '}
+          Borrow APR : {formatRate(states.apr)}%{' '}
           <InfoTooltip>
             Current rate of annualized borrowing interest applied for this
             stablecoin
@@ -321,14 +135,14 @@ function ComponentBase({
   );
 
   if (
-    borrowResult?.status === StreamStatus.IN_PROGRESS ||
-    borrowResult?.status === StreamStatus.DONE
+    txResult?.status === StreamStatus.IN_PROGRESS ||
+    txResult?.status === StreamStatus.DONE
   ) {
     return (
       <Modal open disableBackdropClick disableEnforceFocus>
         <Dialog className={className}>
           <TxResultRenderer
-            resultRendering={borrowResult.value}
+            resultRendering={txResult.value}
             onExit={closeDialog}
           />
         </Dialog>
@@ -341,15 +155,17 @@ function ComponentBase({
       <Dialog className={className} onClose={() => closeDialog()}>
         {title}
 
-        {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
+        {!!states.invalidTxFee && (
+          <MessageBox>{states.invalidTxFee}</MessageBox>
+        )}
 
         <NumberInput
           className="amount"
-          value={borrowAmount}
+          value={states.borrowAmount}
           maxIntegerPoinsts={UST_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="BORROW AMOUNT"
-          error={!!invalidBorrowAmount || !!invalidOver40Ltv}
+          error={!!states.invalidBorrowAmount || !!states.invalidOverMaxLtv}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             updateBorrowAmount(target.value)
           }
@@ -360,66 +176,69 @@ function ComponentBase({
 
         <div
           className="wallet"
-          aria-invalid={!!invalidBorrowAmount || !!invalidOver40Ltv}
+          aria-invalid={
+            !!states.invalidBorrowAmount || !!states.invalidOverMaxLtv
+          }
         >
-          <span>{invalidBorrowAmount ?? invalidOver40Ltv}</span>
+          <span>{states.invalidBorrowAmount ?? states.invalidOverMaxLtv}</span>
           <span>
-            {formatRate(bAssetLtvsAvg.safe)}% LTV:{' '}
+            {formatRate(states.bAssetLtvsAvg.safe)}% LTV:{' '}
             <span
               style={{
                 textDecoration: 'underline',
                 cursor: 'pointer',
               }}
               onClick={() =>
-                updateBorrowAmount(formatUSTInput(demicrofy(safeMax)))
+                updateBorrowAmount(formatUSTInput(demicrofy(states.safeMax)))
               }
             >
-              {formatUST(demicrofy(safeMax))} UST
+              {formatUST(demicrofy(states.safeMax))} UST
             </span>
           </span>
         </div>
 
         <figure className="graph">
           <LTVGraph
-            disabled={!connectedWallet || max.lte(0)}
-            maxLtv={bAssetLtvsAvg.max}
-            safeLtv={bAssetLtvsAvg.safe}
-            dangerLtv={userMaxLtv}
-            currentLtv={currentLtv}
-            nextLtv={nextLtv}
-            userMinLtv={currentLtv}
-            userMaxLtv={userMaxLtv}
-            onStep={ltvStepFunction}
+            disabled={!connectedWallet || states.max.lte(0)}
+            maxLtv={states.bAssetLtvsAvg.max}
+            safeLtv={states.bAssetLtvsAvg.safe}
+            dangerLtv={states.userMaxLtv}
+            currentLtv={states.currentLtv}
+            nextLtv={states.nextLtv}
+            userMinLtv={states.currentLtv}
+            userMaxLtv={states.userMaxLtv}
+            onStep={states.ltvStepFunction}
             onChange={onLtvChange}
           />
         </figure>
 
-        {nextLtv?.gt(bAssetLtvsAvg.safe) && (
+        {states.nextLtv?.gt(states.bAssetLtvsAvg.safe) && (
           <MessageBox
             level="error"
             hide={{ id: 'borrow-ltv', period: 1000 * 60 * 60 * 24 * 5 }}
             style={{ userSelect: 'none', fontSize: 12 }}
           >
-            Caution: Borrowing is available only up to {formatRate(userMaxLtv)}%
-            LTV. If the loan-to-value ratio (LTV) reaches the maximum (
-            {formatRate(bAssetLtvsAvg.max)}% LTV), a portion of your collateral
-            may be immediately liquidated to repay part of the loan.
+            Caution: Borrowing is available only up to{' '}
+            {formatRate(states.userMaxLtv)}% LTV. If the loan-to-value ratio
+            (LTV) reaches the maximum ({formatRate(states.bAssetLtvsAvg.max)}%
+            LTV), a portion of your collateral may be immediately liquidated to
+            repay part of the loan.
           </MessageBox>
         )}
 
-        {nextLtv?.gt(currentLtv ?? 0) && (
+        {states.nextLtv?.gt(states.currentLtv ?? 0) && (
           <EstimatedLiquidationPrice>
-            {estimatedLiqPrice}
+            {states.estimatedLiquidationPrice}
           </EstimatedLiquidationPrice>
         )}
 
-        {txFee && receiveAmount && (
+        {states.txFee && states.receiveAmount && (
           <TxFeeList className="receipt">
             <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
-              {formatUST(demicrofy(txFee))} UST
+              {formatUST(demicrofy(states.txFee))} UST
             </TxFeeListItem>
             <TxFeeListItem label="Receive Amount">
-              {formatUST(demicrofy(receiveAmount))} UST
+              {formatUST(demicrofy(states.receiveAmount))} UST
             </TxFeeListItem>
           </TxFeeList>
         )}
@@ -430,20 +249,15 @@ function ComponentBase({
             disabled={
               !connectedWallet ||
               !connectedWallet.availablePost ||
-              !borrow ||
-              borrowAmount.length === 0 ||
-              big(borrowAmount).lte(0) ||
-              big(receiveAmount ?? 0).lte(0) ||
-              !!invalidTxFee ||
-              !!invalidBorrowAmount ||
-              !!invalidOver40Ltv
+              !postTx ||
+              !states.availablePost
             }
             onClick={() =>
-              txFee &&
+              states.txFee &&
               proceed(
-                borrowAmount,
-                txFee.toFixed() as u<UST>,
-                invalidOverSafeLtv,
+                states.borrowAmount,
+                states.txFee.toFixed() as u<UST>,
+                states.warningOverSafeLtv,
               )
             }
           >

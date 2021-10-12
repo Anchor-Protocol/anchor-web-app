@@ -1,7 +1,7 @@
 import { useChainOptions } from '@terra-money/wallet-provider';
 import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
-import { AppProviders } from 'configurations/AppProviders';
+import { AppProviders } from 'configurations/app';
 import { NotificationProvider } from 'contexts/notification';
 import { JobsProvider } from 'jobs/Jobs';
 import { Airdrop } from 'pages/airdrop';
@@ -20,6 +20,7 @@ import { PollCreateSpendCommunityPool } from 'pages/gov/poll.create.spend-commun
 import { PollCreateTextProposal } from 'pages/gov/poll.create.text-proposal';
 import { PollDetail } from 'pages/gov/poll.detail';
 import { Mypage } from 'pages/mypage';
+import { TermsOfService } from 'pages/terms';
 import { ClaimAll } from 'pages/trade/claim.all';
 import { ClaimAncUstLp } from 'pages/trade/claim.anc-ust-lp';
 import { ClaimUstBorrow } from 'pages/trade/claim.ust-borrow';
@@ -121,6 +122,9 @@ export function App() {
 
                 {/* Mypage */}
                 <Route path="/mypage" component={Mypage} />
+
+                {/* TOS */}
+                <Route path="/terms" component={TermsOfService} />
 
                 <Redirect to="/" />
               </Switch>

@@ -1,20 +1,19 @@
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import {
-  AnchorTokenBalances,
   computeCurrentAPY,
   computeTotalDeposit,
-} from '@anchor-protocol/webapp-fns';
+} from '@anchor-protocol/app-fns';
 import {
   useAnchorWebapp,
   useEarnEpochStatesQuery,
-} from '@anchor-protocol/webapp-provider';
+} from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { demicrofy, formatRate } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { HorizontalScrollTable } from '@libs/neumorphism-ui/components/HorizontalScrollTable';
 import { Section } from '@libs/neumorphism-ui/components/Section';
-import { useBank } from '@libs/webapp-provider';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { fixHMR } from 'fix-hmr';
 import { useDepositDialog } from 'pages/earn/components/useDepositDialog';
@@ -40,7 +39,7 @@ function EarnBase({ className }: EarnProps) {
   // ---------------------------------------------
   const {
     tokenBalances: { uaUST },
-  } = useBank<AnchorTokenBalances>();
+  } = useAnchorBank();
 
   const { data: { moneyMarketEpochState } = {} } = useEarnEpochStatesQuery();
 

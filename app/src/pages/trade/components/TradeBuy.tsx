@@ -16,12 +16,13 @@ import {
   UST,
 } from '@anchor-protocol/types';
 import {
-  terraswapReverseSimulationQuery,
-  terraswapSimulationQuery,
   useAncBuyTx,
   useAnchorWebapp,
   useAncPriceQuery,
-} from '@anchor-protocol/webapp-provider';
+} from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
+import { terraswapSimulationQuery } from '@libs/app-fns';
+import { useFixedFee } from '@libs/app-provider';
 import { max, min } from '@libs/big-math';
 import { demicrofy, formatFluidDecimalPoints, microfy } from '@libs/formatter';
 import { isZero } from '@libs/is-zero';
@@ -30,7 +31,6 @@ import { NumberMuiInput } from '@libs/neumorphism-ui/components/NumberMuiInput';
 import { SelectAndTextInputContainer } from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
 import { useConfirm } from '@libs/neumorphism-ui/components/useConfirm';
 import { useResolveLast } from '@libs/use-resolve-last';
-import { useTerraWebapp } from '@libs/webapp-provider';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
@@ -38,10 +38,9 @@ import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { TxResultRenderer } from 'components/TxResultRenderer';
+import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { useBank } from 'contexts/bank';
-import { validateTxFee } from 'logics/validateTxFee';
+import { validateTxFee } from '@anchor-protocol/app-fns';
 import { buyFromSimulation } from 'pages/trade/logics/buyFromSimulation';
 import { buyToSimulation } from 'pages/trade/logics/buyToSimulation';
 import { TradeSimulation } from 'pages/trade/models/tradeSimulation';
@@ -66,18 +65,15 @@ export function TradeBuy() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { mantleEndpoint, mantleFetch } = useTerraWebapp();
-
   const connectedWallet = useConnectedWallet();
 
   const [openConfirm, confirmElement] = useConfirm();
 
-  const {
-    constants: { fixedGas },
-    contractAddress: address,
-  } = useAnchorWebapp();
+  const fixedFee = useFixedFee();
 
-  const bank = useBank();
+  const { queryClient, contractAddress: address } = useAnchorWebapp();
+
+  const bank = useAnchorBank();
 
   const [buy, buyResult] = useAncBuyTx();
 
@@ -107,7 +103,7 @@ export function TradeBuy() {
   const ustBalance = useMemo(() => {
     const txFee = min(
       max(
-        big(big(bank.userBalances.uUSD).minus(fixedGas)).div(
+        big(big(bank.tokenBalances.uUST).minus(fixedFee)).div(
           big(big(1).plus(bank.tax.taxRate)).mul(bank.tax.taxRate),
         ),
         0,
@@ -116,16 +112,19 @@ export function TradeBuy() {
     );
 
     return max(
-      big(bank.userBalances.uUSD)
-        .minus(txFee)
-        .minus(fixedGas * 3),
+      big(bank.tokenBalances.uUST).minus(txFee).minus(big(fixedFee).mul(3)),
       0,
     ) as u<UST<Big>>;
-  }, [bank.tax.maxTaxUUSD, bank.tax.taxRate, bank.userBalances.uUSD, fixedGas]);
+  }, [
+    bank.tax.maxTaxUUSD,
+    bank.tax.taxRate,
+    bank.tokenBalances.uUST,
+    fixedFee,
+  ]);
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
+    [bank, fixedFee, connectedWallet],
   );
 
   const invalidFromAmount = useMemo(() => {
@@ -134,16 +133,16 @@ export function TradeBuy() {
 
     return big(microfy(fromAmount))
       .plus(simulation.txFee)
-      .plus(fixedGas)
-      .gt(bank.userBalances.uUSD)
+      .plus(fixedFee)
+      .gt(bank.tokenBalances.uUST)
       ? 'Not enough assets'
       : undefined;
   }, [
     fromAmount,
     connectedWallet,
     simulation,
-    fixedGas,
-    bank.userBalances.uUSD,
+    fixedFee,
+    bank.tokenBalances.uUST,
   ]);
 
   // FIXME anc buy real tx fee is fixed_gas (simulation.txFee is no matter)
@@ -152,19 +151,19 @@ export function TradeBuy() {
       return undefined;
     }
 
-    const remainUUSD = big(bank.userBalances.uUSD)
+    const remainUUSD = big(bank.tokenBalances.uUST)
       .minus(microfy(fromAmount))
       .minus(simulation.txFee)
-      .minus(fixedGas);
+      .minus(fixedFee);
 
-    if (remainUUSD.lt(fixedGas)) {
+    if (remainUUSD.lt(fixedFee)) {
       return 'Leaving less UST in your account may lead to insufficient transaction fees for future transactions.';
     }
 
     return undefined;
   }, [
-    bank.userBalances.uUSD,
-    fixedGas,
+    bank.tokenBalances.uUST,
+    fixedFee,
     fromAmount,
     invalidFromAmount,
     simulation,
@@ -220,33 +219,24 @@ export function TradeBuy() {
         const amount = microfy(fromAmount).toString() as u<UST>;
 
         resolveSimulation(
-          terraswapSimulationQuery({
-            mantleEndpoint,
-            mantleFetch,
-            wasmQuery: {
-              simulation: {
-                contractAddress: address.terraswap.ancUstPair,
-                query: {
-                  simulation: {
-                    offer_asset: {
-                      info: {
-                        native_token: {
-                          denom: 'uusd' as NativeDenom,
-                        },
-                      },
-                      amount,
-                    },
-                  },
+          terraswapSimulationQuery(
+            address.terraswap.ancUstPair,
+            {
+              info: {
+                native_token: {
+                  denom: 'uusd' as NativeDenom,
                 },
               },
+              amount,
             },
-          }).then(({ simulation }) => {
+            queryClient,
+          ).then(({ simulation }) => {
             return simulation
               ? buyToSimulation(
                   simulation as terraswap.pair.SimulationResponse<ANC>,
                   amount,
                   bank.tax,
-                  fixedGas,
+                  fixedFee,
                 )
               : undefined;
           }),
@@ -256,9 +246,8 @@ export function TradeBuy() {
     [
       address.terraswap.ancUstPair,
       bank.tax,
-      fixedGas,
-      mantleEndpoint,
-      mantleFetch,
+      fixedFee,
+      queryClient,
       resolveSimulation,
     ],
   );
@@ -282,33 +271,24 @@ export function TradeBuy() {
         const amount = microfy(toAmount).toString() as u<ANC>;
 
         resolveSimulation(
-          terraswapReverseSimulationQuery({
-            mantleEndpoint,
-            mantleFetch,
-            wasmQuery: {
-              simulation: {
-                contractAddress: address.terraswap.ancUstPair,
-                query: {
-                  simulation: {
-                    offer_asset: {
-                      info: {
-                        token: {
-                          contract_addr: address.cw20.ANC,
-                        },
-                      },
-                      amount,
-                    },
-                  },
+          terraswapSimulationQuery(
+            address.terraswap.ancUstPair,
+            {
+              info: {
+                token: {
+                  contract_addr: address.cw20.ANC,
                 },
               },
+              amount,
             },
-          }).then(({ simulation }) => {
+            queryClient,
+          ).then(({ simulation }) => {
             return simulation
               ? buyFromSimulation(
                   simulation as terraswap.pair.SimulationResponse<ANC, UST>,
                   amount,
                   bank.tax,
-                  fixedGas,
+                  fixedFee,
                 )
               : undefined;
           }),
@@ -319,9 +299,8 @@ export function TradeBuy() {
       address.cw20.ANC,
       address.terraswap.ancUstPair,
       bank.tax,
-      fixedGas,
-      mantleEndpoint,
-      mantleFetch,
+      fixedFee,
+      queryClient,
       resolveSimulation,
     ],
   );
@@ -410,16 +389,16 @@ export function TradeBuy() {
                 onClick={() =>
                   updateFromAmount(
                     formatUSTInput(
-                      demicrofy(ustBalance ?? bank.userBalances.uUSD),
+                      demicrofy(ustBalance ?? bank.tokenBalances.uUST),
                     ),
                   )
                 }
               >
-                {formatUST(demicrofy(ustBalance ?? bank.userBalances.uUSD))}{' '}
+                {formatUST(demicrofy(ustBalance ?? bank.tokenBalances.uUST))}{' '}
                 {/*/{' '}*/}
-                {/*{formatUST(demicrofy(bank.userBalances.uUSD))}{' '}*/}
+                {/*{formatUST(demicrofy(bank.tokenBalances.uUST))}{' '}*/}
                 {/*={' '}*/}
-                {/*{formatUST(demicrofy(big(bank.userBalances.uUSD).minus(simulation?.txFee ?? 0).minus(ustBalance ?? 0) as u<UST<Big>>))}{' '}*/}
+                {/*{formatUST(demicrofy(big(bank.tokenBalances.uUST).minus(simulation?.txFee ?? 0).minus(ustBalance ?? 0) as u<UST<Big>>))}{' '}*/}
                 {fromCurrency.label}
               </span>
             </span>

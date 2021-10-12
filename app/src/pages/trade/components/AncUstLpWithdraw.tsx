@@ -9,10 +9,11 @@ import {
 import { ANC, AncUstLP, UST } from '@anchor-protocol/types';
 import {
   useAncAncUstLpWithdrawTx,
-  useAnchorWebapp,
   useAncPriceQuery,
   useRewardsAncUstLpRewardsQuery,
-} from '@anchor-protocol/webapp-provider';
+} from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
+import { useFixedFee } from '@libs/app-provider';
 import { demicrofy, microfy } from '@libs/formatter';
 import { isZero } from '@libs/is-zero';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
@@ -25,10 +26,9 @@ import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { TxResultRenderer } from 'components/TxResultRenderer';
+import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { useBank } from 'contexts/bank';
-import { validateTxFee } from 'logics/validateTxFee';
+import { validateTxFee } from '@anchor-protocol/app-fns';
 import { formatShareOfPool } from 'pages/gov/components/formatShareOfPool';
 import { ancUstLpLpSimulation } from 'pages/trade/logics/ancUstLpLpSimulation';
 import { AncUstLpSimulation } from 'pages/trade/models/ancUstLpSimulation';
@@ -40,9 +40,7 @@ export function AncUstLpWithdraw() {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const {
-    constants: { fixedGas },
-  } = useAnchorWebapp();
+  const fixedFee = useFixedFee();
 
   const [withdraw, withdrawResult] = useAncAncUstLpWithdrawTx();
 
@@ -58,7 +56,7 @@ export function AncUstLpWithdraw() {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const bank = useBank();
+  const bank = useAnchorBank();
 
   const { data: { ancPrice } = {} } = useAncPriceQuery();
 
@@ -68,17 +66,17 @@ export function AncUstLpWithdraw() {
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [connectedWallet, bank, fixedGas],
+    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
+    [connectedWallet, bank, fixedFee],
   );
 
   const invalidLpAmount = useMemo(() => {
     if (lpAmount.length === 0 || !connectedWallet) return undefined;
 
-    return big(microfy(lpAmount)).gt(bank.userBalances.uAncUstLP)
+    return big(microfy(lpAmount)).gt(bank.tokenBalances.uAncUstLP)
       ? 'Not enough assets'
       : undefined;
-  }, [bank.userBalances.uAncUstLP, lpAmount, connectedWallet]);
+  }, [bank.tokenBalances.uAncUstLP, lpAmount, connectedWallet]);
 
   const updateLpAmount = useCallback(
     (nextLpAmount: string) => {
@@ -96,14 +94,14 @@ export function AncUstLpWithdraw() {
         ancPrice,
         userLPBalance,
         nextLpAmount as AncUstLP,
-        fixedGas,
+        fixedFee,
         bank,
       );
 
       setLpAmount(nextLpAmount as AncUstLP);
       setSimulation(nextSimulation);
     },
-    [ancPrice, bank, fixedGas, userLPBalance],
+    [ancPrice, bank, fixedFee, userLPBalance],
   );
 
   const init = useCallback(() => {
@@ -189,11 +187,11 @@ export function AncUstLpWithdraw() {
             }}
             onClick={() =>
               updateLpAmount(
-                formatLPInput(demicrofy(bank.userBalances.uAncUstLP)),
+                formatLPInput(demicrofy(bank.tokenBalances.uAncUstLP)),
               )
             }
           >
-            {formatLP(demicrofy(bank.userBalances.uAncUstLP))} LP
+            {formatLP(demicrofy(bank.tokenBalances.uAncUstLP))} LP
           </span>
         </span>
       </div>

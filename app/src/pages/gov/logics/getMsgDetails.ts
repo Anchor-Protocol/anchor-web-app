@@ -1,15 +1,12 @@
 import { formatANC } from '@anchor-protocol/notation';
-import {
-  anchorToken,
-  ContractAddress,
-  moneyMarket,
-} from '@anchor-protocol/types';
+import { anchorToken, moneyMarket } from '@anchor-protocol/types';
+import { AnchorContractAddress } from '@anchor-protocol/app-provider';
 import { demicrofy, formatRate } from '@libs/formatter';
 import { AccountLink } from 'components/links/AccountLink';
 import { createElement, ReactNode } from 'react';
 
 export function getMsgDetails(
-  address: ContractAddress,
+  address: AnchorContractAddress,
   msg: anchorToken.gov.ParsedExecuteMsg | undefined | null,
 ): { name: string; value: ReactNode }[] {
   if (msg?.msg) {

@@ -1,3 +1,6 @@
+import { validateTxFee } from '@anchor-protocol/app-fns';
+import { useAnchorWebapp, useBondSwapTx } from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import {
   formatLuna,
   formatLunaInput,
@@ -7,12 +10,8 @@ import {
 } from '@anchor-protocol/notation';
 import type { bLuna, Luna, NativeDenom, Rate, u } from '@anchor-protocol/types';
 import { terraswap } from '@anchor-protocol/types';
-import {
-  terraswapSimulationQuery,
-  useAnchorWebapp,
-  useBondBLunaPriceQuery,
-  useBondSwapTx,
-} from '@anchor-protocol/webapp-provider';
+import { terraswapSimulationQuery } from '@libs/app-fns';
+import { useFixedFee } from '@libs/app-provider';
 import {
   demicrofy,
   formatExecuteMsgNumber,
@@ -24,18 +23,15 @@ import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { NumberMuiInput } from '@libs/neumorphism-ui/components/NumberMuiInput';
 import { SelectAndTextInputContainer } from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
 import { useResolveLast } from '@libs/use-resolve-last';
-import { useTerraWebapp } from '@libs/webapp-provider';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
+import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { TxResultRenderer } from 'components/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { useBank } from 'contexts/bank';
-import { validateTxFee } from 'logics/validateTxFee';
 import React, {
   ChangeEvent,
   useCallback,
@@ -64,11 +60,9 @@ export function Swap() {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const { mantleEndpoint, mantleFetch } = useTerraWebapp();
-  const {
-    constants: { fixedGas },
-    contractAddress: address,
-  } = useAnchorWebapp();
+  const { queryClient, contractAddress: address } = useAnchorWebapp();
+
+  const fixedFee = useFixedFee();
 
   const [swap, swapResult] = useBondSwapTx();
 
@@ -90,20 +84,14 @@ export function Swap() {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const bank = useBank();
-
-  const { data: { bLunaPrice } = {} } = useBondBLunaPriceQuery();
-
-  //const {
-  //  data: { terraswapPoolInfo: bLunaPrice },
-  //} = useTerraswapBLunaPrice();
+  const bank = useAnchorBank();
 
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
+    [bank, fixedFee, connectedWallet],
   );
 
   const invalidBurnAmount = useMemo(
@@ -162,27 +150,18 @@ export function Swap() {
         const amount = microfy(burnAmount).toString() as u<bLuna>;
 
         resolveSimulation(
-          terraswapSimulationQuery({
-            mantleEndpoint,
-            mantleFetch,
-            wasmQuery: {
-              simulation: {
-                contractAddress: address.terraswap.blunaLunaPair,
-                query: {
-                  simulation: {
-                    offer_asset: {
-                      info: {
-                        token: {
-                          contract_addr: address.cw20.bLuna,
-                        },
-                      },
-                      amount,
-                    },
-                  },
+          terraswapSimulationQuery(
+            address.terraswap.blunaLunaPair,
+            {
+              info: {
+                token: {
+                  contract_addr: address.cw20.bLuna,
                 },
               },
+              amount,
             },
-          }).then(({ simulation }) => {
+            queryClient,
+          ).then(({ simulation }) => {
             return simulation
               ? swapGetSimulation(
                   simulation as terraswap.pair.SimulationResponse<Luna>,
@@ -198,8 +177,7 @@ export function Swap() {
       address.cw20.bLuna,
       address.terraswap.blunaLunaPair,
       bank.tax,
-      mantleEndpoint,
-      mantleFetch,
+      queryClient,
       resolveSimulation,
     ],
   );
@@ -223,27 +201,18 @@ export function Swap() {
         const amount = microfy(getAmount).toString() as u<Luna>;
 
         resolveSimulation(
-          terraswapSimulationQuery({
-            mantleEndpoint,
-            mantleFetch,
-            wasmQuery: {
-              simulation: {
-                contractAddress: address.terraswap.blunaLunaPair,
-                query: {
-                  simulation: {
-                    offer_asset: {
-                      info: {
-                        native_token: {
-                          denom: 'uluna' as NativeDenom,
-                        },
-                      },
-                      amount,
-                    },
-                  },
+          terraswapSimulationQuery(
+            address.terraswap.blunaLunaPair,
+            {
+              info: {
+                native_token: {
+                  denom: 'uluna' as NativeDenom,
                 },
               },
+              amount,
             },
-          }).then(({ simulation }) => {
+            queryClient,
+          ).then(({ simulation }) => {
             return simulation
               ? swapBurnSimulation(
                   simulation as terraswap.pair.SimulationResponse<Luna>,
@@ -255,13 +224,7 @@ export function Swap() {
         );
       }
     },
-    [
-      address.terraswap.blunaLunaPair,
-      bank.tax,
-      mantleEndpoint,
-      mantleFetch,
-      resolveSimulation,
-    ],
+    [address.terraswap.blunaLunaPair, bank.tax, queryClient, resolveSimulation],
   );
 
   const init = useCallback(() => {
@@ -335,11 +298,11 @@ export function Swap() {
                 style={{ textDecoration: 'underline', cursor: 'pointer' }}
                 onClick={() =>
                   updateBurnAmount(
-                    formatLunaInput(demicrofy(bank.userBalances.ubLuna)),
+                    formatLunaInput(demicrofy(bank.tokenBalances.ubLuna)),
                   )
                 }
               >
-                {formatLuna(demicrofy(bank.userBalances.ubLuna))}{' '}
+                {formatLuna(demicrofy(bank.tokenBalances.ubLuna))}{' '}
                 {burnCurrency.label}
               </span>
             </span>
@@ -407,7 +370,7 @@ export function Swap() {
         />
       </SelectAndTextInputContainer>
 
-      {burnAmount.length > 0 && bLunaPrice && simulation && (
+      {burnAmount.length > 0 && simulation && (
         <TxFeeList className="receipt">
           <SwapListItem
             label="Price"
@@ -430,7 +393,7 @@ export function Swap() {
             {formatLuna(demicrofy(simulation.swapFee))} LUNA
           </TxFeeListItem>
           <TxFeeListItem label="Tx Fee">
-            {formatUST(demicrofy(fixedGas))} UST
+            {formatUST(demicrofy(fixedFee))} UST
           </TxFeeListItem>
         </TxFeeList>
       )}

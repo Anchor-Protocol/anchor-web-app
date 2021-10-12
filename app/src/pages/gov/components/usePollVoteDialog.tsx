@@ -7,11 +7,12 @@ import {
 } from '@anchor-protocol/notation';
 import { ANC, u } from '@anchor-protocol/types';
 import {
-  useAnchorWebapp,
   useGovVoteAvailableQuery,
   useGovVoteTx,
   useRewardsAncGovernanceRewardsQuery,
-} from '@anchor-protocol/webapp-provider';
+} from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
+import { useFixedFee } from '@libs/app-provider';
 import { demicrofy, microfy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
@@ -26,9 +27,8 @@ import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { TxResultRenderer } from 'components/TxResultRenderer';
-import { useBank } from 'contexts/bank';
-import { validateTxFee } from 'logics/validateTxFee';
+import { TxResultRenderer } from 'components/tx/TxResultRenderer';
+import { validateTxFee } from '@anchor-protocol/app-fns';
 import React, {
   ChangeEvent,
   ReactNode,
@@ -61,11 +61,9 @@ function ComponentBase({
 
   const connectedWallet = useConnectedWallet();
 
-  const {
-    constants: { fixedGas },
-  } = useAnchorWebapp();
+  const fixedFee = useFixedFee();
 
-  const bank = useBank();
+  const bank = useAnchorBank();
 
   const { data: { userGovStakingInfo } = {} } =
     useRewardsAncGovernanceRewardsQuery();
@@ -84,8 +82,8 @@ function ComponentBase({
   }, [userGovStakingInfo]);
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
+    [bank, fixedFee, connectedWallet],
   );
 
   const invalidAmount = useMemo(() => {
@@ -96,7 +94,7 @@ function ComponentBase({
     return maxVote && uanc.gt(maxVote) ? 'Not enough assets' : undefined;
   }, [amount, maxVote, connectedWallet]);
 
-  const txFee = fixedGas;
+  const txFee = fixedFee;
 
   const submit = useCallback(
     (voteFor: 'yes' | 'no', amount: ANC) => {

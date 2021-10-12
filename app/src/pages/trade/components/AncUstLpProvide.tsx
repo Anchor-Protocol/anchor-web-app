@@ -13,9 +13,10 @@ import {
 import { ANC, u, UST } from '@anchor-protocol/types';
 import {
   useAncAncUstLpProvideTx,
-  useAnchorWebapp,
   useAncPriceQuery,
-} from '@anchor-protocol/webapp-provider';
+} from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
+import { useFixedFee } from '@libs/app-provider';
 import { max, min } from '@libs/big-math';
 import { demicrofy, microfy } from '@libs/formatter';
 import { isZero } from '@libs/is-zero';
@@ -29,10 +30,9 @@ import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { TxResultRenderer } from 'components/TxResultRenderer';
+import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { useBank } from 'contexts/bank';
-import { validateTxFee } from 'logics/validateTxFee';
+import { validateTxFee } from '@anchor-protocol/app-fns';
 import { formatShareOfPool } from 'pages/gov/components/formatShareOfPool';
 import { ancUstLpAncSimulation } from 'pages/trade/logics/ancUstLpAncSimulation';
 import { ancUstLpUstSimulation } from 'pages/trade/logics/ancUstLpUstSimulation';
@@ -53,9 +53,7 @@ export function AncUstLpProvide() {
 
   const [openConfirm, confirmElement] = useConfirm();
 
-  const {
-    constants: { fixedGas },
-  } = useAnchorWebapp();
+  const fixedFee = useFixedFee();
 
   // ---------------------------------------------
   // states
@@ -70,7 +68,7 @@ export function AncUstLpProvide() {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const bank = useBank();
+  const bank = useAnchorBank();
 
   const { data: { ancPrice } = {} } = useAncPriceQuery();
 
@@ -85,7 +83,7 @@ export function AncUstLpProvide() {
   const ustBalance = useMemo(() => {
     const txFee = min(
       max(
-        big(big(bank.userBalances.uUSD).minus(fixedGas)).div(
+        big(big(bank.tokenBalances.uUST).minus(fixedFee)).div(
           big(big(1).plus(bank.tax.taxRate)).mul(bank.tax.taxRate),
         ),
         0,
@@ -94,25 +92,28 @@ export function AncUstLpProvide() {
     );
 
     return max(
-      big(bank.userBalances.uUSD)
-        .minus(txFee)
-        .minus(fixedGas * 3),
+      big(bank.tokenBalances.uUST).minus(txFee).minus(big(fixedFee).mul(3)),
       0,
     ) as u<UST<Big>>;
-  }, [bank.tax.maxTaxUUSD, bank.tax.taxRate, bank.userBalances.uUSD, fixedGas]);
+  }, [
+    bank.tax.maxTaxUUSD,
+    bank.tax.taxRate,
+    bank.tokenBalances.uUST,
+    fixedFee,
+  ]);
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
+    [bank, fixedFee, connectedWallet],
   );
 
   const invalidAncAmount = useMemo(() => {
     if (ancAmount.length === 0 || !connectedWallet) return undefined;
 
-    return big(microfy(ancAmount)).gt(bank.userBalances.uANC)
+    return big(microfy(ancAmount)).gt(bank.tokenBalances.uANC)
       ? 'Not enough assets'
       : undefined;
-  }, [ancAmount, bank.userBalances.uANC, connectedWallet]);
+  }, [ancAmount, bank.tokenBalances.uANC, connectedWallet]);
 
   const invalidUstAmount = useMemo(() => {
     if (ustAmount.length === 0 || !connectedWallet || !simulation)
@@ -120,14 +121,14 @@ export function AncUstLpProvide() {
 
     return big(microfy(ustAmount))
       .plus(simulation.txFee)
-      .plus(fixedGas)
-      .gt(bank.userBalances.uUSD)
+      .plus(fixedFee)
+      .gt(bank.tokenBalances.uUST)
       ? 'Not enough assets'
       : undefined;
   }, [
-    bank.userBalances.uUSD,
+    bank.tokenBalances.uUST,
     connectedWallet,
-    fixedGas,
+    fixedFee,
     simulation,
     ustAmount,
   ]);
@@ -138,18 +139,18 @@ export function AncUstLpProvide() {
       return undefined;
     }
 
-    const remainUUSD = big(bank.userBalances.uUSD)
+    const remainUUSD = big(bank.tokenBalances.uUST)
       .minus(microfy(ustAmount))
       .minus(simulation.txFee);
 
-    if (remainUUSD.lt(big(fixedGas).mul(2))) {
+    if (remainUUSD.lt(big(fixedFee).mul(2))) {
       return 'Leaving less UST in your account may lead to insufficient transaction fees for future transactions.';
     }
 
     return undefined;
   }, [
-    bank.userBalances.uUSD,
-    fixedGas,
+    bank.tokenBalances.uUST,
+    fixedFee,
     invalidUstAmount,
     simulation,
     ustAmount,
@@ -172,7 +173,7 @@ export function AncUstLpProvide() {
       const { ustAmount, ...nextSimulation } = ancUstLpAncSimulation(
         ancPrice,
         nextAncAmount as ANC,
-        fixedGas,
+        fixedFee,
         bank,
       );
 
@@ -180,7 +181,7 @@ export function AncUstLpProvide() {
       ustAmount && setUstAmount(formatUSTInput(ustAmount));
       setSimulation(nextSimulation);
     },
-    [ancPrice, bank, fixedGas],
+    [ancPrice, bank, fixedFee],
   );
 
   const updateUstAmount = useCallback(
@@ -200,7 +201,7 @@ export function AncUstLpProvide() {
       const { ancAmount, ...nextSimulation } = ancUstLpUstSimulation(
         ancPrice,
         nextUstAmount as UST,
-        fixedGas,
+        fixedFee,
         bank,
       );
 
@@ -208,7 +209,7 @@ export function AncUstLpProvide() {
       setUstAmount(nextUstAmount as UST);
       setSimulation(nextSimulation);
     },
-    [ancPrice, bank, fixedGas],
+    [ancPrice, bank, fixedFee],
   );
 
   const init = useCallback(() => {
@@ -314,10 +315,12 @@ export function AncUstLpProvide() {
               cursor: 'pointer',
             }}
             onClick={() =>
-              updateAncAmount(formatANCInput(demicrofy(bank.userBalances.uANC)))
+              updateAncAmount(
+                formatANCInput(demicrofy(bank.tokenBalances.uANC)),
+              )
             }
           >
-            {formatANC(demicrofy(bank.userBalances.uANC))} ANC
+            {formatANC(demicrofy(bank.tokenBalances.uANC))} ANC
           </span>
         </span>
       </div>
@@ -356,15 +359,17 @@ export function AncUstLpProvide() {
             }}
             onClick={() =>
               updateUstAmount(
-                formatUSTInput(demicrofy(ustBalance ?? bank.userBalances.uUSD)),
+                formatUSTInput(
+                  demicrofy(ustBalance ?? bank.tokenBalances.uUST),
+                ),
               )
             }
           >
-            {formatUST(demicrofy(ustBalance ?? bank.userBalances.uUSD))} UST
+            {formatUST(demicrofy(ustBalance ?? bank.tokenBalances.uUST))} UST
             {/*/{' '}*/}
-            {/*{formatUST(demicrofy(bank.userBalances.uUSD))}{' '}*/}
+            {/*{formatUST(demicrofy(bank.tokenBalances.uUST))}{' '}*/}
             {/*={' '}*/}
-            {/*{formatUST(demicrofy(big(bank.userBalances.uUSD).minus(simulation?.txFee ?? 0).minus(ustBalance ?? 0) as u<UST<Big>>))}{' '}*/}
+            {/*{formatUST(demicrofy(big(bank.tokenBalances.uUST).minus(simulation?.txFee ?? 0).minus(ustBalance ?? 0) as u<UST<Big>>))}{' '}*/}
           </span>
         </span>
       </div>

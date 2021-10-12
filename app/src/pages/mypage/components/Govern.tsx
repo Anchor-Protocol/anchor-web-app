@@ -1,5 +1,5 @@
 import { formatANC } from '@anchor-protocol/notation';
-import { useGovMyPollsQuery } from '@anchor-protocol/webapp-provider';
+import { useGovMyPollsQuery } from '@anchor-protocol/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { HorizontalScrollTable } from '@libs/neumorphism-ui/components/HorizontalScrollTable';

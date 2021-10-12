@@ -1,4 +1,4 @@
-import { useLastSyncedHeightQuery } from '@anchor-protocol/webapp-provider';
+import { useLastSyncedHeightQuery } from '@anchor-protocol/app-provider';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { HorizontalScrollTable } from '@libs/neumorphism-ui/components/HorizontalScrollTable';
 import { Section } from '@libs/neumorphism-ui/components/Section';

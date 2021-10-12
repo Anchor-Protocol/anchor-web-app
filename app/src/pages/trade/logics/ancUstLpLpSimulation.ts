@@ -1,8 +1,8 @@
 import { ANC, AncUstLP, cw20, Rate, u, UST } from '@anchor-protocol/types';
+import { AnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { max, min } from '@libs/big-math';
 import { demicrofy, microfy } from '@libs/formatter';
 import big, { Big, BigSource } from 'big.js';
-import { Bank } from 'contexts/bank';
 import { AncPrice } from 'pages/trade/models/ancPrice';
 import { AncUstLpSimulation } from 'pages/trade/models/ancUstLpSimulation';
 
@@ -11,7 +11,7 @@ export function ancUstLpLpSimulation(
   userLpBalance: cw20.BalanceResponse<AncUstLP> | undefined,
   lpAmount: AncUstLP,
   fixedGas: u<UST<BigSource>>,
-  bank: Bank,
+  bank: AnchorBank,
 ): AncUstLpSimulation<Big> {
   if (lpAmount.length === 0) {
     throw new Error(`Can't not be lpAmount is empty string`);

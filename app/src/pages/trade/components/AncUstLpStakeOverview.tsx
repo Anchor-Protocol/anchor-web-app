@@ -4,7 +4,7 @@ import {
   useAncLpStakingStateQuery,
   useAncPriceQuery,
   useRewardsClaimableAncUstLpRewardsQuery,
-} from '@anchor-protocol/webapp-provider';
+} from '@anchor-protocol/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { TooltipLabel } from '@libs/neumorphism-ui/components/TooltipLabel';
 import { rulerLightColor, rulerShadowColor } from '@libs/styled-neumorphism';

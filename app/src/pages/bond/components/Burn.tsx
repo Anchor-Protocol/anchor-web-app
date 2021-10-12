@@ -7,10 +7,11 @@ import {
 } from '@anchor-protocol/notation';
 import type { bLuna, Luna } from '@anchor-protocol/types';
 import {
-  useAnchorWebapp,
   useBondBLunaExchangeRateQuery,
   useBondBurnTx,
-} from '@anchor-protocol/webapp-provider';
+} from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
+import { useFixedFee } from '@libs/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
@@ -23,10 +24,9 @@ import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { TxResultRenderer } from 'components/TxResultRenderer';
+import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { useBank } from 'contexts/bank';
-import { validateTxFee } from 'logics/validateTxFee';
+import { validateTxFee } from '@anchor-protocol/app-fns';
 import { pegRecovery } from 'pages/bond/logics/pegRecovery';
 import { validateBurnAmount } from 'pages/bond/logics/validateBurnAmount';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
@@ -45,9 +45,7 @@ export function Burn() {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const {
-    constants: { fixedGas },
-  } = useAnchorWebapp();
+  const fixedFee = useFixedFee();
 
   const [burn, burnResult] = useBondBurnTx();
 
@@ -67,7 +65,7 @@ export function Burn() {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const bank = useBank();
+  const bank = useAnchorBank();
 
   const { data: { state: exchangeRate, parameters } = {} } =
     useBondBLunaExchangeRateQuery();
@@ -81,8 +79,8 @@ export function Burn() {
   );
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank, fixedGas),
-    [bank, fixedGas, connectedWallet],
+    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
+    [bank, fixedFee, connectedWallet],
   );
 
   const invalidBurnAmount = useMemo(
@@ -235,11 +233,11 @@ export function Burn() {
                 style={{ textDecoration: 'underline', cursor: 'pointer' }}
                 onClick={() =>
                   updateBurnAmount(
-                    formatLunaInput(demicrofy(bank.userBalances.ubLuna)),
+                    formatLunaInput(demicrofy(bank.tokenBalances.ubLuna)),
                   )
                 }
               >
-                {formatLuna(demicrofy(bank.userBalances.ubLuna))}{' '}
+                {formatLuna(demicrofy(bank.tokenBalances.ubLuna))}{' '}
                 {burnCurrency.label}
               </span>
             </span>
@@ -328,7 +326,7 @@ export function Burn() {
         )}
         {burnAmount.length > 0 && (
           <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
-            {formatUST(demicrofy(fixedGas))} UST
+            {formatUST(demicrofy(fixedFee))} UST
           </TxFeeListItem>
         )}
       </TxFeeList>
