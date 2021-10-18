@@ -1,4 +1,5 @@
 import { bAsset, JSDateTime, u, UST } from '@anchor-protocol/types';
+import { dedupeTimestamp } from './utils/dedupeTimestamp';
 
 export interface MarketCollateralsHistory {
   timestamp: JSDateTime;
@@ -35,6 +36,6 @@ export async function marketCollateralsQuery({
 
   return {
     now,
-    history,
+    history: dedupeTimestamp(history, 'timestamp'),
   };
 }

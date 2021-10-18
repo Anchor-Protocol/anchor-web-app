@@ -1,5 +1,6 @@
 import { ANC } from '@anchor-protocol/types';
 import { JSDateTime, u, UST } from '@libs/types';
+import { dedupeTimestamp } from './utils/dedupeTimestamp';
 
 export interface MarketAncHistory {
   anc_price: UST;
@@ -46,6 +47,6 @@ export async function marketAncQuery({
 
   return {
     now,
-    history,
+    history: dedupeTimestamp(history, 'timestamp'),
   };
 }

@@ -1,4 +1,5 @@
 import { JSDateTime, u, UST } from '@anchor-protocol/types';
+import { dedupeTimestamp } from './utils/dedupeTimestamp';
 
 interface MarketDepositRaw {
   total_ust_deposits: u<UST>;
@@ -75,19 +76,21 @@ export async function marketDepositAndBorrowQuery({
     timestamp: Date.now() as JSDateTime,
   };
 
+  const combined = [
+    ...depositHistory.total_ust_deposits
+      .map(({ deposit, timestamp }, i) => {
+        return {
+          total_ust_deposits: deposit,
+          total_borrowed: borrowHistory[i].total_borrowed,
+          timestamp,
+        };
+      })
+      .reverse(),
+    now,
+  ];
+
   return {
     now,
-    history: [
-      ...depositHistory.total_ust_deposits
-        .map(({ deposit, timestamp }, i) => {
-          return {
-            total_ust_deposits: deposit,
-            total_borrowed: borrowHistory[i].total_borrowed,
-            timestamp,
-          };
-        })
-        .reverse(),
-      now,
-    ],
+    history: dedupeTimestamp(combined, 'timestamp'),
   };
 }
