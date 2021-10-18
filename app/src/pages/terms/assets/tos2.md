@@ -28,13 +28,21 @@ We reserve the right, in our sole discretion, to modify this Agreement from time
 
 ### 5. Proprietary Rights
 
-We own all intellectual property and other rights in the Interface and its contents, including (but not limited to) software, text, images, trademarks, service marks, copyrights, patents, and designs. Unless expressly authorized by us, you may not copy, modify, adapt, rent, license, sell, publish, distribute, or otherwise permit any third party to access or use the Interface or any of its contents. Provided that you are eligible, you are hereby granted a single, personal, limited license to access and use the Interface. This license is non-exclusive, non-transferable, and freely revocable by us at any time without notice or cause. Use of the Interface or its contents for any purpose not expressly permitted by this Agreement is strictly prohibited. Unlike the Interface, the Protocol is comprised entirely of open-source software running on the public Terra blockchain and is not our proprietary property.
+The HTML and other software code and text used in the Site is available at [GITHUB](https://github.com/Anchor-Protocol) and is freely licensed under [Apache License v2](https://www.apache.org/licenses/LICENSE-2.0.txt).
 
-### 6. Privacy
+### 6. Marks, Logos and Branding
+
+All Anchor-related marks, logos, and branding used on the Site are non-proprietary and freely licensed under the [Creative Commons Attribution-ShareAlike 4.0 International Public License](https://creativecommons.org/licenses/by/4.0/). All other marks, logos and branding appearing on the Site (including token names, symbols and logos that may be identified on the Site) are the property of their respective owners.
+
+### 7. Anchor Smart Contract Protocol
+
+The Anchor Smart Contract Protocol is comprised entirely of open-source software running on the public Terra blockchain and is not our proprietary property. The Anchor Smart Contract Protocol is available at [GITHUB](https://github.com/Anchor-Protocol) and is freely licensed under [Apache License v2](https://www.apache.org/licenses/LICENSE-2.0.txt).
+
+### 8. Privacy
 
 Your privacy is important to us. Although we do not collect your data, we cannot guarantee that unauthorized third parties will never be able to obtain or use your data or aggregate data for improper purposes. By accessing and using the Interface, you acknowledge that we are not responsible for any of these variables or risks, do not own or control the Protocol, and cannot be held liable for any improperly accessed data, whether resulting in losses that you experience while accessing or using the Interface or otherwise.
 
-### 7. Prohibited Activity
+### 9. Prohibited Activity
 
 You agree not to engage in, or attempt to engage in, any of the following categories of prohibited activity in relation to your access and use of the Interface:
 
@@ -45,7 +53,7 @@ You agree not to engage in, or attempt to engage in, any of the following catego
 - _Other Harmful Acts_. Attempts to engage in or engage in, any potentially harmful acts that are directed against Terraform Labs, including but not limited to violating or attempting to violate any security features of Terraform Labs, using manual or automated software or other means to access, “scrape,” “crawl” or “spider” any pages contained in or on the Interface, introducing viruses, worms, or similar harmful code into the Interface, or interfering or attempting to interfere with use of the Interface by any other user, host or network, including by means of overloading, “flooding,” “spamming,” “mail bombing,” or “crashing” the Interface or any other Terraform Lab properties.
 - _Any Other Unlawful Conduct_. Activity that violates any applicable Law, including, without limitation, any relevant and applicable anti-money laundering and anti-terrorist financing laws and any relevant and applicable privacy and data collection laws, in each case as may be amended.
 
-### 8. No Professional Advice
+### 10. No Professional Advice
 
 All information provided by the Interface is for informational purposes only and should not be construed as professional advice. In particular, the content and materials available on the Interface does not constitute any form of advice or recommendation by us, should not be regarded as an offer, solicitation, invitation or recommendation to buy or sell investments, securities or any other financial services and is not intended to be relied upon by you in making any specific investment or other decisions. You should not take, or refrain from taking, any action based on any information contained in the Interface. Before you make any financial, legal, or other decisions involving the Interface, you should seek independent professional advice from an individual who is licensed and qualified in the area for which such advice would be appropriate.
 
@@ -59,19 +67,19 @@ The Rate is not a promise, guarantee, or undertaking on the part of any person o
 
 Even if the Rate is achieved as projected, you may still suffer a financial loss in fiat-denominated terms if the fiat-denominated value of the relevant tokens (your deposit and any tokens allocated or distributed to you pursuant to the Rate) declines during the deposit period.
 
-### 9. Third-Party Links
+### 11. Third-Party Links
 
 The Interface may contain hyperlinks or references to third party websites. Any such hyperlinks or references are provided for your information and convenience only. We have no control over third party websites and accept no legal responsibility for any content, material or information contained in them. The display of any hyperlink and reference to any third-party website does not mean that we endorse that third party's website, products or services. Your use of a third-party site may be governed by the terms and conditions of that third-party site.
 
-### 10. No Warranties
+### 12. No Warranties
 
 The Interface is provided on an “AS IS” and “AS AVAILABLE” basis. To the fullest extent permitted by law, we disclaim any representations and warranties of any kind, whether express, implied, or statutory, including (but not limited to) the warranties of merchantability and fitness for a particular purpose. You acknowledge and agree that your use of the Interface is at your own risk. We do not represent or warrant that access to the Interface will be continuous, uninterrupted, timely, or secure; that the information contained in the Interface will be accurate, reliable, complete, or current; or that the Interface will be free from errors, defects, viruses, or other harmful elements. No advice, information, or statement that we make should be treated as creating any warranty concerning the Interface. We do not endorse, guarantee, or assume responsibility for any advertisements, offers, or statements made by third parties concerning the Interface.
 
-### 11. No Fiduciary Duties
+### 13. No Fiduciary Duties
 
 This Agreement is not intended to, and does not, create or impose any fiduciary duties on us. To the fullest extent permitted by law, you acknowledge and agree that we owe no fiduciary duties or liabilities to you or any other party, and that to the extent any such duties or liabilities may exist at law or in equity, those duties and liabilities are hereby irrevocably disclaimed, waived, and eliminated. You further agree that the only duties and obligations that we owe you are those set out expressly in this Agreement.
 
-### 12. Assumption of Risk
+### 14. Assumption of Risk
 
 By accessing and using the Interface, you represent that you understand the inherent risks associated with using cryptographic and blockchain-based systems, and that you have a working knowledge of the usage and intricacies of digital assets. You further understand that the markets for these digital assets are highly volatile due to factors including (but not limited to) adoption, speculation, technology, security, and regulation. You acknowledge that the cost and speed of transacting with cryptographic and blockchain-based systems are variable and may increase dramatically at any time. You further acknowledge the risk that your digital assets may lose some or all of their value while they are supplied to the Protocol. If you borrow digital assets from the Protocol, you will have to supply digital assets of your own as collateral. If your collateral declines in value such that it is no longer sufficient to secure the amount that you borrowed, others may interact with the Protocol to seize your collateral in a liquidation event. You further acknowledge that we are not responsible for any of these variables or risks, do not own or control the Protocol, and cannot be held liable for any resulting losses that you experience while accessing or using the Interface.
 
@@ -81,19 +89,19 @@ We do not store, send, or receive digital assets or funds. This is because digit
 
 Accordingly, you understand and agree to assume full responsibility for all of the risks of accessing and using the Interface and interacting with the Protocol.
 
-### 13. Release of Claims
+### 15. Release of Claims
 
 You expressly agree that you assume all risks in connection with your access and use of the Interface and your interaction with the Protocol. You further expressly waive and release us from any and all liability, claims, causes of action, or damages arising from or in any way relating to your use of the Interface and your interaction with the Protocol. If you are a California resident, you waive the benefits and protections of California Civil Code § 1542, which provides: “\[a] general release does not extend to claims that the creditor or releasing party does not know or suspect to exist in his or her favor at the time of executing the release and that, if known by him or her, would have materially affected his or her settlement with the debtor or released party.”
 
-### 14. Indemnity
+### 16. Indemnity
 
 You agree to hold harmless, release, defend, and indemnify us and our officers, directors, employees, contractors, agents, affiliates, and subsidiaries from and against all claims, damages, obligations, losses, liabilities, costs, and expenses arising from: (a) your access and use of the Interface; (b) your violation of any term or condition of this Agreement, the right of any third party, or any other applicable law, rule, or regulation; and (c) any other party’s access and use of the Interface with your assistance or using any device or account that you own or control.
 
-### 15. Limitation of Liability
+### 17. Limitation of Liability
 
 Under no circumstances shall we or any of our officers, directors, employees, contractors, agents, affiliates, or subsidiaries be liable to you for any indirect, punitive, incidental, special, consequential, or exemplary damages, including (but not limited to) damages for loss of profits, goodwill, use, data, or other intangible property, arising out of or relating to any access or use of the Interface, nor will we be responsible for any damage, loss, or injury resulting from hacking, tampering, or other unauthorized access or use of the Interface or the information contained within it. We assume no liability or responsibility for any: (a) errors, mistakes, or inaccuracies of content; (b) personal injury or property damage, of any nature whatsoever, resulting from any access or use of the Interface; (c) unauthorized access or use of any secure server or database in our control, or the use of any information or data stored therein; (d) interruption or cessation of function related to the Interface; (e) bugs, viruses, trojan horses, or the like that may be transmitted to or through the Interface; (f) errors or omissions in, or loss or damage incurred as a result of the use of, any content made available through the Interface; and (g) the defamatory, offensive, or illegal conduct of any third party. Under no circumstances shall we or any of our officers, directors, employees, contractors, agents, affiliates, or subsidiaries be liable to you for any claims, proceedings, liabilities, obligations, damages, losses, or costs in an amount exceeding the amount you paid to us in exchange for access to and use of the Interface, or $100.00, whichever is greater. This limitation of liability applies regardless of whether the alleged liability is based on contract, tort, negligence, strict liability, or any other basis, and even if we have been advised of the possibility of such liability. Some jurisdictions do not allow the exclusion of certain warranties or the limitation or exclusion of certain liabilities and damages. Accordingly, some of the disclaimers and limitations set forth in this Agreement may not apply to you. This limitation of liability shall apply to the fullest extent permitted by law.
 
-### 16. Dispute Resolution
+### 18. Dispute Resolution
 
 We will use our best efforts to resolve any potential disputes through informal, good faith negotiations. If a potential dispute arises, you must contact us by sending an email to legal@anchorprotocol.com so that we can attempt to resolve it without resorting to formal dispute resolution. If we aren’t able to reach an informal resolution within sixty days of your email, then you and we both agree to resolve the potential dispute according to the process set forth below.
 
@@ -103,15 +111,15 @@ You understand that you are required to resolve all Disputes by binding arbitrat
 
 Unless we agree otherwise, the arbitrator may not consolidate your claims with those of any other party. Any judgment on the award rendered by the arbitrator may be entered in any court of competent jurisdiction.
 
-### 17. Class Action and Jury Trial Waiver
+### 19. Class Action and Jury Trial Waiver
 
 You must bring any and all Disputes against us in your individual capacity and not as a plaintiff in or member of any purported class action, collective action, private attorney general action, or other representative proceeding. This provision applies to class arbitration. You and we both agree to waive the right to demand a trial by jury.
 
-### 18. Governing Law
+### 20. Governing Law
 
 You agree that the laws of Singapore, without regard to principles of conflict of laws, govern this Agreement and any Dispute between you and us. You further agree that the Interface shall be deemed to be based solely in Singapore, and that although the Interface may be available in other jurisdictions, its availability does not give rise to general or specific personal jurisdiction in any forum outside of Singapore.
 
-### 19. Miscellaneous
+### 21. Miscellaneous
 
 We may perform any of our obligations, and exercise any of the rights granted to us under this Agreement, through a third-party. We may assign any or all our rights and obligations under this Agreement to any third-party.
 
@@ -123,10 +131,10 @@ If any of the provisions in this Agreement is found to be illegal, invalid or un
 
 All disclaimers, indemnities and exclusions in this Agreement shall survive termination of the Agreement and shall continue to apply during any suspension or any period during which the Interface is not available for you to use for any reason whatsoever.
 
-### 20. About Us
+### 22. About Us
 
 Terraform Labs PTE, LTD is a company incorporated in Singapore, with a registered office and principal place of business at 80 Raffles Place #32-01, Singapore 048624.
 
-### 21. Contacting Us
+### 23. Contacting Us
 
 If you have any question about this Agreement, or if you wish to contact us for any reason whatsoever, please send us an email at <legal@anchorprotocol.com>.
