@@ -143,12 +143,12 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                 <DropdownBox>
                   <ConnectTypeContent>
                     {availableConnectTypes.some(
-                      (connectType) => connectType === ConnectType.WEBEXTENSION,
+                      (connectType) => connectType === ConnectType.WEB_CONNECT,
                     ) ? (
                       <FlatButton
                         className="connect-chrome-extension"
                         onClick={() => {
-                          connect(ConnectType.WEBEXTENSION);
+                          connect(ConnectType.WEB_CONNECT);
                           setOpenDropdown(false);
                         }}
                       >
@@ -274,7 +274,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                     connectType={wallets[0].connectType}
                     bank={bank}
                     availablePost={
-                      wallets[0].connectType === ConnectType.WEBEXTENSION ||
+                      wallets[0].connectType === ConnectType.WEB_CONNECT ||
                       wallets[0].connectType === ConnectType.CHROME_EXTENSION ||
                       wallets[0].connectType === ConnectType.WALLETCONNECT
                     }

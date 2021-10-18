@@ -37,10 +37,10 @@ __metadata:
     "@storybook/preset-create-react-app": ^3.2.0
     "@storybook/react": ^6.3.4
     "@storybook/theming": ^6.3.4
-    "@terra-dev/use-wallet": ^2.2.0
-    "@terra-dev/wallet-types": ^2.2.0
+    "@terra-dev/use-wallet": ^2.3.0-alpha.1
+    "@terra-dev/wallet-types": ^2.3.0-alpha.1
     "@terra-money/terra.js": ^2.0.14
-    "@terra-money/wallet-provider": ^2.2.0
+    "@terra-money/wallet-provider": ^2.3.0-alpha.3
     "@testing-library/jest-dom": ^5.14.1
     "@testing-library/react": ^12.0.0
     "@testing-library/react-hooks": ^7.0.1
@@ -4794,95 +4794,95 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@terra-dev/browser-check@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "@terra-dev/browser-check@npm:2.2.0"
+"@terra-dev/browser-check@npm:^2.3.0-alpha.1":
+  version: 2.3.0-alpha.1
+  resolution: "@terra-dev/browser-check@npm:2.3.0-alpha.1"
   dependencies:
     bowser: ^2.11.0
     mobile-detect: ^1.4.5
-  checksum: 4a2b1bc1cdc647bae666ba676b433619a2856835d1eb0ec02df5dcc4765f883cc3f4816d783db6ae3c1171a6bdbb7e1c57b145a2d12a725afc961f0a4d682f44
+  checksum: 172c85df0ec8519d64c178292d5363a52338ee313d927edb8a865e4325a761c80ef5d47e01f1bfa3097692741ffde52770789bd0f3d98572b28cd6abff80e692
   languageName: node
   linkType: hard
 
-"@terra-dev/chrome-extension@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "@terra-dev/chrome-extension@npm:2.2.0"
+"@terra-dev/chrome-extension@npm:^2.3.0-alpha.1":
+  version: 2.3.0-alpha.1
+  resolution: "@terra-dev/chrome-extension@npm:2.3.0-alpha.1"
   dependencies:
-    "@terra-dev/browser-check": ^2.2.0
-    "@terra-dev/wallet-types": ^2.2.0
+    "@terra-dev/browser-check": ^2.3.0-alpha.1
+    "@terra-dev/wallet-types": ^2.3.0-alpha.1
     "@terra-money/terra.js": ^2.0.0
     rxjs: ^7.3.0
-  checksum: 0ee82ec5e42764c0dd8f5645ac356c0deeb78aff86ba36f0e948c2e78d7d122adf46d9549cec58fd6844eae713ebaba902f179af8850d8e0e71beac0ad9aa8f7
+  checksum: 12a517f41416d2d862dd496e49da998574cdc7aca68f83172b2a3ad2aa155172183cfbb3de77c23963747a4dd5160c8e4a275ef08fa1ff5bb331aeb6c725da05
   languageName: node
   linkType: hard
 
-"@terra-dev/readonly-wallet-modal@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "@terra-dev/readonly-wallet-modal@npm:2.2.0"
+"@terra-dev/readonly-wallet-modal@npm:^2.3.0-alpha.1":
+  version: 2.3.0-alpha.1
+  resolution: "@terra-dev/readonly-wallet-modal@npm:2.3.0-alpha.1"
   dependencies:
-    "@terra-dev/readonly-wallet": ^2.2.0
-    "@terra-dev/wallet-types": ^2.2.0
+    "@terra-dev/readonly-wallet": ^2.3.0-alpha.1
+    "@terra-dev/wallet-types": ^2.3.0-alpha.1
     "@terra-money/terra.js": ^2.0.0
     styled-components: ^5.0.0
   peerDependencies:
     react: ^17.0.0
     react-dom: ^17.0.0
-  checksum: 7831fe895f3023a35e68ce65c2a3477e9c50ce101065e055ff4c90e58349d0b3281b878e4f2d266858f929e1576792a2c4af08aed135da912482fa5112ffc7d1
+  checksum: b4a959912725c5b1f6962121aeab9145568c48522cfda53d2b8cfd2aba20d76587c9ddeb6774d959a73b15ebb20a42ff5771a9ba9964eab45432feb07900e1cc
   languageName: node
   linkType: hard
 
-"@terra-dev/readonly-wallet@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "@terra-dev/readonly-wallet@npm:2.2.0"
+"@terra-dev/readonly-wallet@npm:^2.3.0-alpha.1":
+  version: 2.3.0-alpha.1
+  resolution: "@terra-dev/readonly-wallet@npm:2.3.0-alpha.1"
   dependencies:
-    "@terra-dev/wallet-types": ^2.2.0
+    "@terra-dev/wallet-types": ^2.3.0-alpha.1
     "@terra-money/terra.js": ^2.0.0
-  checksum: 64577bb2c43c027af19405dc020422f750c9d92dbe576f334ac45aa4ea6b0be2318ceabd4a28b237ee42eae0c9d07490c8567968bb55ae40a336a9d278963f5b
+  checksum: e8bc7f913c174cb294bd9b411251c0819ab263b6f7c573288999a57a78a85072d6f768b1236f90695a7dbfd7baac55db25b63d009b66c5672ef08379d560a4b1
   languageName: node
   linkType: hard
 
-"@terra-dev/use-wallet@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "@terra-dev/use-wallet@npm:2.2.0"
+"@terra-dev/use-wallet@npm:^2.3.0-alpha.1":
+  version: 2.3.0-alpha.1
+  resolution: "@terra-dev/use-wallet@npm:2.3.0-alpha.1"
   dependencies:
-    "@terra-dev/wallet-types": ^2.2.0
+    "@terra-dev/wallet-types": ^2.3.0-alpha.1
     "@terra-money/terra.js": ^2.0.0
   peerDependencies:
     react: ^17.0.0
-  checksum: 51b479f4348a46a1c12559d292015ad79349f95e51b0ce250238c3169a204cbdf0c1dc21ce2ff26321ce43ad9f87658da62f6642c4983c454ea6eadb5e192cbd
+  checksum: 870c5caffa0507149a9362a76ce7f9bb5ab00e635b1f04bbbd28a0befcae7993571fd4dd0ff161d957c283641cd1c04b54712008827b03dbdc311912f0e89f27
   languageName: node
   linkType: hard
 
-"@terra-dev/wallet-types@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "@terra-dev/wallet-types@npm:2.2.0"
+"@terra-dev/wallet-types@npm:^2.3.0-alpha.1":
+  version: 2.3.0-alpha.1
+  resolution: "@terra-dev/wallet-types@npm:2.3.0-alpha.1"
   dependencies:
     "@terra-money/terra.js": ^2.0.0
-  checksum: 0901f7c9e03ac91a180a6e9d8ce66bb466a652f93d096385c5d7dcc740a138d39f163821dc8f0b40b8e37db17b919e6c5faaa815da773ae386e59e3caa6d4b43
+  checksum: 6690632c6400bb72505867bb319303267a54747ba216a18030f931919f1f96aa66daaa4eed001892be408a5cddd5a512e001a34e71230615218b113cd95f9089
   languageName: node
   linkType: hard
 
-"@terra-dev/walletconnect-qrcode-modal@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "@terra-dev/walletconnect-qrcode-modal@npm:2.2.0"
+"@terra-dev/walletconnect-qrcode-modal@npm:^2.3.0-alpha.1":
+  version: 2.3.0-alpha.1
+  resolution: "@terra-dev/walletconnect-qrcode-modal@npm:2.3.0-alpha.1"
   dependencies:
-    "@terra-dev/browser-check": ^2.2.0
+    "@terra-dev/browser-check": ^2.3.0-alpha.1
     "@walletconnect/types": ^1.6.1
     qrcode.react: ^1.0.1
     styled-components: ^5.0.0
   peerDependencies:
     react: ^17.0.0
     react-dom: ^17.0.0
-  checksum: 6787776d8f4d082e4989863d1a59ff3ae0b04e7dd988007f7a082ce14095322b983aa9b132b1949db4fc7ee6972a95b75fd118f5714f2b98b0834003fd7bb67b
+  checksum: 9e9dfb44a944fe7b216ec329f613be6f70275a2f0a8b819cd19c85dbca6055f3de9bdc1e8534f4489820cda27b635ca4579c12780b481094ee0f3a4239c36721
   languageName: node
   linkType: hard
 
-"@terra-dev/walletconnect@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "@terra-dev/walletconnect@npm:2.2.0"
+"@terra-dev/walletconnect@npm:^2.3.0-alpha.1":
+  version: 2.3.0-alpha.1
+  resolution: "@terra-dev/walletconnect@npm:2.3.0-alpha.1"
   dependencies:
-    "@terra-dev/browser-check": ^2.2.0
-    "@terra-dev/walletconnect-qrcode-modal": ^2.2.0
+    "@terra-dev/browser-check": ^2.3.0-alpha.1
+    "@terra-dev/walletconnect-qrcode-modal": ^2.3.0-alpha.1
     "@terra-money/terra.js": ^2.0.0
     "@walletconnect/core": ^1.6.1
     "@walletconnect/iso-crypto": ^1.6.1
@@ -4890,18 +4890,29 @@ __metadata:
     "@walletconnect/utils": ^1.6.1
     rxjs: ^7.3.0
     ws: ^7.5.3
-  checksum: e38da4558565409d7089bd274f1fc42f4c0caf2396e77c9aef6ac248c8735c6759659d32c9d36dd5baa416efd7537a968e4eea214dab6435a9a62a558d563fa3
+  checksum: d8dad92f5d13274f95f6f88a4951e85a3c9d85c484ab3219744eaa4917c759b062c85bef5635995ca9ec84009dcccda48caefae5fbd9c3d47770b4a57e65b400
   languageName: node
   linkType: hard
 
-"@terra-dev/web-extension@npm:^0.6.0":
-  version: 0.6.0
-  resolution: "@terra-dev/web-extension@npm:0.6.0"
+"@terra-dev/web-connector-controller@npm:^0.7.0-alpha.3":
+  version: 0.7.0-alpha.3
+  resolution: "@terra-dev/web-connector-controller@npm:0.7.0-alpha.3"
   dependencies:
-    "@terra-money/terra.js": ^1.8.0 || ^2.0.0
+    "@terra-dev/web-connector-interface": ^0.7.0-alpha.3
+    "@terra-money/terra.js": ^2.0.14
     bowser: ^2.11.0
     rxjs: ^7.3.0
-  checksum: fa00e52b65647763f164c580ffd4b03acf2aca3c3343d522ee644ebe5f85db4260d5bacf33cdcfb25dc2ad5f49e6388004158a858a4294c416f9c567bc6eade5
+  checksum: 422d9625a4a28e8e00335abf8441e5fb6a3f30da501311acd4be96293d92c14fbadb43087b08d4acc53be17f750c1f3fda127a53660bd96f612927862b3a27dd
+  languageName: node
+  linkType: hard
+
+"@terra-dev/web-connector-interface@npm:^0.7.0-alpha.3":
+  version: 0.7.0-alpha.3
+  resolution: "@terra-dev/web-connector-interface@npm:0.7.0-alpha.3"
+  dependencies:
+    "@terra-money/terra.js": ^2.0.14
+    rxjs: ^7.3.0
+  checksum: 967c2afb63d2f907f86f65cf4db382c27e23c487b36504733e2fc22790236db5d19cda3eac36062930baf3538f09e44b0cbf6f5d0959f6d141bf66bf49b4b25b
   languageName: node
   linkType: hard
 
@@ -4925,18 +4936,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@terra-money/wallet-provider@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "@terra-money/wallet-provider@npm:2.2.0"
+"@terra-money/wallet-provider@npm:^2.3.0-alpha.3":
+  version: 2.3.0-alpha.3
+  resolution: "@terra-money/wallet-provider@npm:2.3.0-alpha.3"
   dependencies:
-    "@terra-dev/browser-check": ^2.2.0
-    "@terra-dev/chrome-extension": ^2.2.0
-    "@terra-dev/readonly-wallet": ^2.2.0
-    "@terra-dev/readonly-wallet-modal": ^2.2.0
-    "@terra-dev/use-wallet": ^2.2.0
-    "@terra-dev/wallet-types": ^2.2.0
-    "@terra-dev/walletconnect": ^2.2.0
-    "@terra-dev/web-extension": ^0.6.0
+    "@terra-dev/browser-check": ^2.3.0-alpha.1
+    "@terra-dev/chrome-extension": ^2.3.0-alpha.1
+    "@terra-dev/readonly-wallet": ^2.3.0-alpha.1
+    "@terra-dev/readonly-wallet-modal": ^2.3.0-alpha.1
+    "@terra-dev/use-wallet": ^2.3.0-alpha.1
+    "@terra-dev/wallet-types": ^2.3.0-alpha.1
+    "@terra-dev/walletconnect": ^2.3.0-alpha.1
+    "@terra-dev/web-connector-controller": ^0.7.0-alpha.3
+    "@terra-dev/web-connector-interface": ^0.7.0-alpha.3
     "@terra-money/terra.js": ^2.0.0
     fast-deep-equal: ^3.1.3
     rxjs: ^7.3.0
@@ -4945,7 +4957,7 @@ __metadata:
   peerDependenciesMeta:
     react-router-dom:
       optional: true
-  checksum: c4563e3bd871aa665b636621fdd1f8e590ea6800d6de154a90c13b2e969124e77e7c75ccc37f32703fe5a0535ec6ae178a770a4e16dbc7659fd0c2f21b92e826
+  checksum: 20986dd49b901b2a60f101817c24bccb7e2b669ae032c663327daae23717de813977910aa0729db990849418bcaebd2f9d84419bdeb55e15ddc98d86114edf7d
   languageName: node
   linkType: hard
 
@@ -6009,27 +6021,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/browser-utils@npm:^1.6.2":
-  version: 1.6.2
-  resolution: "@walletconnect/browser-utils@npm:1.6.2"
+"@walletconnect/browser-utils@npm:^1.6.6":
+  version: 1.6.6
+  resolution: "@walletconnect/browser-utils@npm:1.6.6"
   dependencies:
     "@walletconnect/safe-json": 1.0.0
-    "@walletconnect/types": ^1.6.2
+    "@walletconnect/types": ^1.6.6
     "@walletconnect/window-getters": 1.0.0
     "@walletconnect/window-metadata": 1.0.0
     detect-browser: 5.2.0
-  checksum: 675859ed4159ef79641e4d871f7a32b3b7aefc57da3f1484309726c11612799bf932cb62d32590f242198b977f9fd8f42d8616ab5f319abfa11739703a88a697
+  checksum: a62789ce8ac71c245f921cfda774c9ec8ebc1deaf49fc3fc7261b697ee29ec02584fe3be57db4f8f18f495e43fc045983829dbd289a4bb6d260271a4d29b52ec
   languageName: node
   linkType: hard
 
 "@walletconnect/core@npm:^1.6.1":
-  version: 1.6.2
-  resolution: "@walletconnect/core@npm:1.6.2"
+  version: 1.6.6
+  resolution: "@walletconnect/core@npm:1.6.6"
   dependencies:
-    "@walletconnect/socket-transport": ^1.6.2
-    "@walletconnect/types": ^1.6.2
-    "@walletconnect/utils": ^1.6.2
-  checksum: e9bc26367cd609f09f4b93dd66f188d1e48b9c1cfa950d827828badf35732bdfae959feb241c66676fa1a507da12b2660f3eba7f2d494680ce78adf5d3d77c07
+    "@walletconnect/socket-transport": ^1.6.6
+    "@walletconnect/types": ^1.6.6
+    "@walletconnect/utils": ^1.6.6
+  checksum: 43d15e8cb175a7e6d3c689ff42fcdbf760bcebfd2b08f04305b22b39cc85e1b018ef3b0cd5249bd23315d853429d4669b3f79562c16de79ae4289ab2e9c558d8
   languageName: node
   linkType: hard
 
@@ -6064,13 +6076,13 @@ __metadata:
   linkType: hard
 
 "@walletconnect/iso-crypto@npm:^1.6.1":
-  version: 1.6.2
-  resolution: "@walletconnect/iso-crypto@npm:1.6.2"
+  version: 1.6.6
+  resolution: "@walletconnect/iso-crypto@npm:1.6.6"
   dependencies:
     "@walletconnect/crypto": ^1.0.1
-    "@walletconnect/types": ^1.6.2
-    "@walletconnect/utils": ^1.6.2
-  checksum: d2e2a9b3b10527196f1d3c8d39a84f3b35d2d509966eaebc3a6aa372d9dce4d3587c229a8fe86564272b37bc7eae2b6b166cbfd5af95bfd466af8e930b31cdee
+    "@walletconnect/types": ^1.6.6
+    "@walletconnect/utils": ^1.6.6
+  checksum: e48828411a6356a77d628a7cee0c7142229cdfcf22f88657534dfb4372f4907803ecd691d3fbda94962044c509c8daa07f37263b4ebbcee0bee2ef24aa5d9b2a
   languageName: node
   linkType: hard
 
@@ -6111,36 +6123,36 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/socket-transport@npm:^1.6.2":
-  version: 1.6.2
-  resolution: "@walletconnect/socket-transport@npm:1.6.2"
+"@walletconnect/socket-transport@npm:^1.6.6":
+  version: 1.6.6
+  resolution: "@walletconnect/socket-transport@npm:1.6.6"
   dependencies:
-    "@walletconnect/types": ^1.6.2
-    "@walletconnect/utils": ^1.6.2
+    "@walletconnect/types": ^1.6.6
+    "@walletconnect/utils": ^1.6.6
     ws: 7.5.3
-  checksum: 00a85e48354c982065ad6afd430e376070fd38d6d23b57b22286b20b2111ad54c436ede645531ea59088a3f97ead349c970136462d2836ebf54771d77a9c0c24
+  checksum: 8a3b38c4b4e5c2f8095883926167b473a7165ae52c19b24b5f7956ab6748dba92d6520ffcc2036b96d8fa480c26c63d349bdc3ee3cca7ab8c058a6b8f326ff5d
   languageName: node
   linkType: hard
 
-"@walletconnect/types@npm:^1.6.1, @walletconnect/types@npm:^1.6.2":
-  version: 1.6.2
-  resolution: "@walletconnect/types@npm:1.6.2"
-  checksum: 88b0f4354fcce2a8b01c95cbd0a273c50701ffd9bf76b6fce6e73f3ce963fe65927f3c23edc1b8526d91a4133186086c90084238326eaaf56b55caa3bc4216ea
+"@walletconnect/types@npm:^1.6.1, @walletconnect/types@npm:^1.6.6":
+  version: 1.6.6
+  resolution: "@walletconnect/types@npm:1.6.6"
+  checksum: b4e47a8a34674bd7982fb4960289523845da945711a0f1914ef4e58e21a570e5167eaf57de95e3f0a751b01469c76eae3ce3284a6af74a5326caedd0536068b8
   languageName: node
   linkType: hard
 
-"@walletconnect/utils@npm:^1.6.1, @walletconnect/utils@npm:^1.6.2":
-  version: 1.6.2
-  resolution: "@walletconnect/utils@npm:1.6.2"
+"@walletconnect/utils@npm:^1.6.1, @walletconnect/utils@npm:^1.6.6":
+  version: 1.6.6
+  resolution: "@walletconnect/utils@npm:1.6.6"
   dependencies:
-    "@walletconnect/browser-utils": ^1.6.2
+    "@walletconnect/browser-utils": ^1.6.6
     "@walletconnect/encoding": ^1.0.0
     "@walletconnect/jsonrpc-utils": ^1.0.0
-    "@walletconnect/types": ^1.6.2
+    "@walletconnect/types": ^1.6.6
     bn.js: 4.11.8
     js-sha3: 0.8.0
     query-string: 6.13.5
-  checksum: 78e5217d9aab16be80deb8c426d5504a366cfadddacf4e1d244bfeed17030c63b74caf43ad11eec6b715e24e56070bb42c2c5761215b3588f1c7286fed6c8ed7
+  checksum: 6ea10e2944d8fb57a4cd77d546401e9387bac6a6f9891d8d328d3123e8882909b191acecd3fe71b590b6819f90bbaf6be215c9039d195b38c2837fa86d94a730
   languageName: node
   linkType: hard
 
@@ -24450,7 +24462,7 @@ resolve@^0.6.1:
   languageName: node
   linkType: hard
 
-"ws@npm:7.5.3, ws@npm:^7.4.2, ws@npm:^7.4.4, ws@npm:^7.5.3":
+"ws@npm:7.5.3, ws@npm:^7.4.2, ws@npm:^7.4.4":
   version: 7.5.3
   resolution: "ws@npm:7.5.3"
   peerDependencies:
@@ -24471,6 +24483,21 @@ resolve@^0.6.1:
   dependencies:
     async-limiter: ~1.0.0
   checksum: 82f7512bb74ad6e94002b5016944aee2aeefd1c480477b5f55a03ee010d4a1bd5bb4a688e07695f0a727227a0591a1a7c70e31f97baad826e3c48f85be4db6a9
+  languageName: node
+  linkType: hard
+
+"ws@npm:^7.5.3":
+  version: 7.5.5
+  resolution: "ws@npm:7.5.5"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ^5.0.2
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: bd2b437256012af526c69c03d6670a132e7ab0fe5853f3b7092826acea4203fad4ee2a8d0d9bd44834b2b968e747bf34f753ab535f4a3edf40d262da4b1d0805
   languageName: node
   linkType: hard
 
