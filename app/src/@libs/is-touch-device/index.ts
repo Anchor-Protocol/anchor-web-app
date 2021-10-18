@@ -3,6 +3,7 @@ export function isTouchDevice(): boolean {
     return (
       'ontouchstart' in document.documentElement ||
       navigator.maxTouchPoints > 0 ||
+      //@ts-ignore
       navigator.msMaxTouchPoints > 0
     );
   } catch (error) {
