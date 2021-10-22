@@ -34,7 +34,6 @@ import { RewardsAncUstLp } from 'pages/trade/rewards.anc-ust-lp';
 import { Trade } from 'pages/trade/trade';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import { WarnningBanner } from 'WarningBanner';
 import './configurations/chartjs';
 
 export function App() {
@@ -48,7 +47,6 @@ export function App() {
             <div>
               <GlobalStyle />
               <Header />
-              <WarnningBanner />
               <Switch>
                 {/* Dashboard */}
                 <Route path="/" exact component={Dashboard} />
