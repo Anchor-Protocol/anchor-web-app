@@ -1,4 +1,4 @@
-import { GasPrice, gasPriceCache, gasPriceQuery } from '@libs/app-fns';
+import { GasPrice, gasPriceQuery } from '@libs/app-fns';
 import { createQueryFn } from '@libs/react-query-utils';
 import { useQuery, UseQueryResult } from 'react-query';
 import { TERRA_QUERY_KEY } from '../env';
@@ -16,7 +16,6 @@ export function useGasPriceQuery(
     queryFn,
     {
       onError: queryErrorReporter,
-      placeholderData: () => gasPriceCache.get(gasPriceEndpoint),
     },
   );
 
