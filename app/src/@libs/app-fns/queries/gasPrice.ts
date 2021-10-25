@@ -1,16 +1,17 @@
-import { gasPriceCache } from '../caches/gasPrice';
 import { GasPrice } from '../models/gasPrice';
+
+let cache: GasPrice | null = null;
 
 export async function gasPriceQuery(
   gasPriceEndpoint: string,
 ): Promise<GasPrice> {
-  if (gasPriceCache.has(gasPriceEndpoint)) {
-    return gasPriceCache.get(gasPriceEndpoint)!;
+  if (cache) {
+    return cache;
   }
 
   const gasPrice = await fetch(gasPriceEndpoint).then((res) => res.json());
 
-  gasPriceCache.set(gasPriceEndpoint, gasPrice);
+  cache = gasPrice;
 
   return gasPrice;
 }
