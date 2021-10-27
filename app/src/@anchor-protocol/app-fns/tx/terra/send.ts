@@ -26,7 +26,7 @@ import {
   Dec,
   Int,
   MsgSend,
-  StdFee,
+  Fee,
 } from '@terra-money/terra.js';
 import { Observable } from 'rxjs';
 
@@ -65,7 +65,7 @@ export function terraSendTx($: {
                 ),
               ]),
             ],
-      fee: new StdFee($.gasFee, floor($.txFee) + 'uusd'),
+      fee: new Fee($.gasFee, floor($.txFee) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
       memo: $.memo,
     }),

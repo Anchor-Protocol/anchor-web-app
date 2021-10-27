@@ -23,7 +23,7 @@ import { demicrofy, formatFluidDecimalPoints } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
-import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
+import { CreateTxOptions, Fee } from '@terra-money/terra.js';
 import big, { Big, BigSource } from 'big.js';
 import { Observable } from 'rxjs';
 
@@ -45,7 +45,7 @@ export function bondSwapTx(
   return pipe(
     _createTxOptions({
       msgs: fabricateTerraswapSwapbLuna($)($.addressProvider),
-      fee: new StdFee($.gasFee, floor($.fixedGas) + 'uusd'),
+      fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),
     _postTx({ helper, ...$ }),

@@ -54,6 +54,6 @@
     "@material-ui/core": "4.11.3",
     "babel-loader": "8.1.0",
     "webpack": "4.44.2",
-    "@terra-money/terra.js": "2.0.14"
+    "@terra-money/terra.js": "2.1.19"
   }
 }

@@ -15,7 +15,7 @@ import { floor } from '@libs/big-math';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
-import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
+import { CreateTxOptions, Fee } from '@terra-money/terra.js';
 import { Observable } from 'rxjs';
 
 export function govCreatePollTx(
@@ -36,7 +36,7 @@ export function govCreatePollTx(
   return pipe(
     _createTxOptions({
       msgs: fabricateGovCreatePoll($)($.addressProvider),
-      fee: new StdFee($.gasFee, floor($.fixedGas) + 'uusd'),
+      fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),
     _postTx({ helper, ...$ }),

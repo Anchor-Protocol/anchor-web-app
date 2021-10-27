@@ -23,7 +23,7 @@ import { demicrofy, formatRate } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
 import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
-import { CreateTxOptions, StdFee } from '@terra-money/terra.js';
+import { CreateTxOptions, Fee } from '@terra-money/terra.js';
 import { QueryObserverResult } from 'react-query';
 import { Observable } from 'rxjs';
 import { computeCurrentLtv } from '../../logics/borrow/computeCurrentLtv';
@@ -57,7 +57,7 @@ export function borrowBorrowTx(
     _createTxOptions({
       msgs: fabricateMarketBorrow($)($.addressProvider),
       // FIXME borrow's txFee is fixed_gas
-      fee: new StdFee($.gasFee, floor($.fixedGas) + 'uusd'),
+      fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),
     _postTx({ helper, ...$ }),

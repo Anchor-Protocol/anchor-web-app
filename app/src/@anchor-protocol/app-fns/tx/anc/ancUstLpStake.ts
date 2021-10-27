@@ -28,7 +28,7 @@ import {
   Dec,
   Int,
   MsgExecuteContract,
-  StdFee,
+  Fee,
 } from '@terra-money/terra.js';
 import { Observable } from 'rxjs';
 
@@ -50,7 +50,7 @@ export function ancAncUstLpStakeTx(
   return pipe(
     _createTxOptions({
       msgs: fabricateStakingBond($)($.addressProvider),
-      fee: new StdFee($.gasFee, floor($.fixedGas) + 'uusd'),
+      fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),
     _postTx({ helper, ...$ }),

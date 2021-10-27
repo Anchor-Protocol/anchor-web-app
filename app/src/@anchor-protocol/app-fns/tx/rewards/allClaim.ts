@@ -29,7 +29,7 @@ import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
 import {
   CreateTxOptions,
   MsgExecuteContract,
-  StdFee,
+  Fee,
 } from '@terra-money/terra.js';
 import big, { Big } from 'big.js';
 import { Observable } from 'rxjs';
@@ -74,7 +74,7 @@ export function rewardsAllClaimTx($: {
   return pipe(
     _createTxOptions({
       msgs,
-      fee: new StdFee($.gasFee, floor($.fixedGas) + 'uusd'),
+      fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),
     _postTx({ helper, ...$ }),
