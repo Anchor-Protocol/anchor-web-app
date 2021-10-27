@@ -10,24 +10,24 @@ export const menus: RouteMenu[] = [
     exact: true,
     title: 'DASHBOARD',
   },
-  {
-    to: `/mypage`,
-    title: 'MYPAGE',
-  },
-  {
-    to: '/earn',
-    title: 'EARN',
-  },
-  {
-    to: '/borrow',
-    title: 'BORROW',
-  },
-  {
-    to: '/bond',
-    title: 'BOND',
-  },
-  {
-    to: `/gov`,
-    title: 'GOVERN',
-  },
+  // {
+  //   to: `/mypage`,
+  //   title: 'MYPAGE',
+  // },
+  // {
+  //   to: '/earn',
+  //   title: 'EARN',
+  // },
+  // {
+  //   to: '/borrow',
+  //   title: 'BORROW',
+  // },
+  // {
+  //   to: '/bond',
+  //   title: 'BOND',
+  // },
+  // {
+  //   to: `/gov`,
+  //   title: 'GOVERN',
+  // },
 ];

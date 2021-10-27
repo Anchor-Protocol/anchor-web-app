@@ -30,7 +30,7 @@
   "lint-staged": {
     "**/src/{**/*,*}.{ts,tsx}": [
       "prettier --write",
-      "eslint --max-warnings 0"
+      "eslint --max-warnings 100"
     ]
   },
   "devDependencies": {

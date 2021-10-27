@@ -4,8 +4,15 @@ import React from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
 import logoUrl from './assets/Logo.svg';
-import { DesktopNotification } from './desktop/DesktopNotification';
-import { WalletSelector } from './desktop/WalletSelector';
+// import { DesktopNotification } from './desktop/DesktopNotification';
+// import { WalletSelector } from './desktop/WalletSelector';
+
+import {
+  WalletModalProvider,
+  WalletDisconnectButton,
+  WalletMultiButton,
+} from '@solana/wallet-adapter-react-ui';
+import('@solana/wallet-adapter-react-ui/styles.css');
 
 export interface DesktopHeaderProps {
   className?: string;
@@ -31,10 +38,13 @@ function DesktopHeaderBase({ className }: DesktopHeaderProps) {
 
       <div />
 
-      <DesktopNotification className="notification" />
+      {/* <DesktopNotification className="notification" /> */}
 
       <section className="wallet">
-        <WalletSelector />
+        <WalletModalProvider>
+          <WalletMultiButton />
+          <WalletDisconnectButton />
+        </WalletModalProvider>
       </section>
 
       <GlobalStyle />
@@ -136,6 +146,7 @@ export const DesktopHeader = styled(DesktopHeaderBase)`
   }
 
   .wallet {
+    display: flex;
     padding-bottom: 8px;
     text-align: right;
   }

@@ -1,5 +1,4 @@
 import { Discord } from '@anchor-protocol/icons';
-import { useLastSyncedHeightQuery } from '@anchor-protocol/app-provider';
 import { IconButton } from '@material-ui/core';
 import {
   Brightness3,
@@ -10,7 +9,6 @@ import {
   Twitter,
 } from '@material-ui/icons';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
-import { useWallet } from '@terra-money/wallet-provider';
 import { useTheme } from 'contexts/theme';
 import { screen } from 'env';
 import c from 'color';
@@ -24,25 +22,18 @@ export interface FooterProps {
 }
 
 function FooterBase({ className, style }: FooterProps) {
-  const { network } = useWallet();
-  const { data: lastSyncedHeight = 0 } = useLastSyncedHeightQuery();
-
   const { themeColor, updateTheme } = useTheme();
 
   return (
     <footer className={className} style={style}>
       <div>
-        <a
-          href={`https://finder.terra.money/${network.chainID}/blocks/${lastSyncedHeight}`}
-          target="_blank"
-          rel="noreferrer"
-        >
+        <a href="" target="_blank" rel="noreferrer">
           <IconSpan>
             <FiberManualRecord className="point" />{' '}
-            {network.name.toLowerCase().indexOf('mainnet') !== 0 && (
+            {/* {network.name.toLowerCase().indexOf('mainnet') !== 0 && (
               <b>[{network.name.toUpperCase()}] </b>
-            )}
-            Latest Block: {lastSyncedHeight}
+            )} */}
+            {/* Latest Block: {lastSyncedHeight} */}
           </IconSpan>
         </a>
 

@@ -1,18 +1,8 @@
-import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
-import { u, UST } from '@anchor-protocol/types';
-import {
-  useAnchorWebapp,
-  useEarnEpochStatesQuery,
-} from '@anchor-protocol/app-provider';
-import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
-import { demicrofy } from '@libs/formatter';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { Tab } from '@libs/neumorphism-ui/components/Tab';
-import { AnimateNumber } from '@libs/ui';
-import big, { Big } from 'big.js';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 
 export interface ExpectedInterestSectionProps {
   className?: string;
@@ -47,45 +37,7 @@ const tabItems: Item[] = [
 export function ExpectedInterestSection({
   className,
 }: ExpectedInterestSectionProps) {
-  const { constants } = useAnchorWebapp();
-
   const [tab, setTab] = useState<Item>(() => tabItems[0]);
-
-  const {
-    tokenBalances: { uaUST },
-  } = useAnchorBank();
-
-  const { data: { moneyMarketEpochState, overseerEpochState } = {} } =
-    useEarnEpochStatesQuery();
-
-  const expectedInterest = useMemo(() => {
-    if (!moneyMarketEpochState || !overseerEpochState) {
-      return undefined;
-    }
-
-    const ustBalance = big(uaUST).mul(moneyMarketEpochState.exchange_rate);
-    const annualizedInterestRate = big(overseerEpochState.deposit_rate).mul(
-      constants.blocksPerYear,
-    );
-
-    return ustBalance
-      .mul(annualizedInterestRate)
-      .div(
-        tab.value === 'month'
-          ? 12
-          : tab.value === 'week'
-          ? 52
-          : tab.value === 'day'
-          ? 365
-          : 1,
-      ) as u<UST<Big>>;
-  }, [
-    constants.blocksPerYear,
-    moneyMarketEpochState,
-    overseerEpochState,
-    tab.value,
-    uaUST,
-  ]);
 
   return (
     <Section className={className}>
@@ -99,14 +51,7 @@ export function ExpectedInterestSection({
       </h2>
 
       <div className="amount">
-        <span>
-          <AnimateNumber format={formatUSTWithPostfixUnits}>
-            {expectedInterest
-              ? demicrofy(expectedInterest)
-              : (0 as UST<number>)}
-          </AnimateNumber>{' '}
-          UST
-        </span>
+        <span>50 UST</span>
       </div>
 
       <Tab

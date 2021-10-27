@@ -9,15 +9,21 @@ import { InsuranceCoverageButton } from './components/InsuranceCoverageButton';
 import { InterestSection } from './components/InterestSection';
 import { TotalDepositSection } from './components/TotalDepositSection';
 
+import { useWallet } from '@solana/wallet-adapter-react';
+
 export interface EarnProps {
   className?: string;
 }
 
 function EarnBase({ className }: EarnProps) {
+  const wallet = useWallet();
   return (
     <PaddedLayout className={className}>
       <FlexTitleContainer>
         <PageTitle title="EARN" docs={links.docs.earn} />
+        {!!wallet && !!wallet.connected && !!wallet.publicKey && (
+          <span>{wallet.publicKey.toString()}</span>
+        )}
         <Buttons>
           <InsuranceCoverageButton />
           <BuyUstButton />
