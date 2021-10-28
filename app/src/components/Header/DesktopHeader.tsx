@@ -12,7 +12,7 @@ import {
   WalletDisconnectButton,
   WalletMultiButton,
 } from '@solana/wallet-adapter-react-ui';
-import('@solana/wallet-adapter-react-ui/styles.css');
+import('./desktopHeader.css');
 
 export interface DesktopHeaderProps {
   className?: string;

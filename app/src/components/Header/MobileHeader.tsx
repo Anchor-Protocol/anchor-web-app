@@ -1,22 +1,25 @@
 import { Menu, MenuClose, MenuWallet } from '@anchor-protocol/icons';
-import { useAirdropCheckQuery } from '@anchor-protocol/app-provider';
+// import { useAirdropCheckQuery } from '@anchor-protocol/app-provider';
 import { IconToggleButton } from '@libs/neumorphism-ui/components/IconToggleButton';
-import {
-  ConnectType,
-  useWallet,
-  WalletStatus,
-} from '@terra-money/wallet-provider';
+// import {
+//   ConnectType,
+//   useWallet,
+//   WalletStatus,
+// } from '@terra-money/wallet-provider';
 import { menus, RouteMenu } from 'configurations/menu';
 import { mobileHeaderHeight } from 'env';
-import { useBuyUstDialog } from 'pages/earn/components/useBuyUstDialog';
-import { useSendDialog } from 'pages/send/useSendDialog';
 import React, { useCallback, useState } from 'react';
 import { NavLink, useRouteMatch } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
-import { AirdropContent } from './airdrop/AirdropContent';
+// import { AirdropContent } from './airdrop/AirdropContent';
 import logoUrl from './assets/Logo.svg';
-import { useWalletDetailDialog } from './mobile/useWalletDetailDialog';
-import { ViewAddressButton } from './mobile/ViewAddressButton';
+
+import {
+  WalletModalProvider,
+  WalletDisconnectButton,
+  WalletMultiButton,
+} from '@solana/wallet-adapter-react-ui';
+import('./mobileHeader.css');
 
 export interface MobileHeaderProps {
   className?: string;
@@ -27,15 +30,7 @@ let _airdropClosed: boolean = false;
 function MobileHeaderBase({ className }: MobileHeaderProps) {
   const [open, setOpen] = useState<boolean>(false);
 
-  const { status, connect, isChromeExtensionCompatibleBrowser } = useWallet();
-
-  const [openWalletDetail, walletDetailElement] = useWalletDetailDialog();
-
-  const [openSendDialog, sendDialogElement] = useSendDialog();
-
-  const [openBuyUstDialog, buyUstDialogElement] = useBuyUstDialog();
-
-  const { data: airdrop, isLoading: airdropIsLoading } = useAirdropCheckQuery();
+  // const { data: airdrop, isLoading: airdropIsLoading } = useAirdropCheckQuery();
   //const airdrop = useMemo<Airdrop | 'in-progress' | null>(
   //  () => ({
   //    createdAt: '',
@@ -53,45 +48,6 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
   //  [],
   //);
 
-  const matchAirdrop = useRouteMatch('/airdrop');
-
-  const [airdropClosed, setAirdropClosed] = useState(() => _airdropClosed);
-
-  const closeAirdrop = useCallback(() => {
-    setAirdropClosed(true);
-    _airdropClosed = true;
-  }, []);
-
-  const toggleWallet = useCallback(() => {
-    if (status === WalletStatus.WALLET_CONNECTED) {
-      openWalletDetail({
-        openSend: () => openSendDialog({}),
-        openBuyUst: () => openBuyUstDialog({}),
-      });
-    } else if (status === WalletStatus.WALLET_NOT_CONNECTED) {
-      connect(
-        isChromeExtensionCompatibleBrowser()
-          ? ConnectType.CHROME_EXTENSION
-          : ConnectType.WALLETCONNECT,
-      );
-    }
-  }, [
-    connect,
-    isChromeExtensionCompatibleBrowser,
-    openBuyUstDialog,
-    openSendDialog,
-    openWalletDetail,
-    status,
-  ]);
-
-  const viewAddress = useCallback(() => {
-    setOpen(false);
-
-    if (status === WalletStatus.WALLET_NOT_CONNECTED) {
-      connect(ConnectType.READONLY);
-    }
-  }, [connect, status]);
-
   return (
     <>
       <header className={className} data-open={open}>
@@ -104,10 +60,6 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
                 close={() => setOpen(false)}
               />
             ))}
-
-            {status === WalletStatus.WALLET_NOT_CONNECTED && (
-              <ViewAddressButton onClick={viewAddress} />
-            )}
           </nav>
         )}
         <section className="header">
@@ -123,12 +75,10 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
           <div />
 
           {/*<MobileNotification className="notification" />*/}
-
+          {/* 
           <IconToggleButton
-            on={!!walletDetailElement}
-            onChange={(open) => {
-              open && toggleWallet();
-            }}
+            on={!open}
+            onChange={() => { }}
             onIcon={MenuWallet}
             offIcon={MenuWallet}
           />
@@ -138,25 +88,19 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
             onChange={setOpen}
             onIcon={MenuClose}
             offIcon={Menu}
-          />
+          /> */}
+          <WalletModalProvider>
+            <WalletMultiButton />
+            <WalletDisconnectButton />
+          </WalletModalProvider>
         </section>
-
-        {!open &&
-          !airdropClosed &&
-          airdrop &&
-          !airdropIsLoading &&
-          !matchAirdrop && (
-            <section className="airdrop">
-              <AirdropContent onClose={closeAirdrop} isMobileLayout />
-            </section>
-          )}
       </header>
 
       {open && <div style={{ height: mobileHeaderHeight }} />}
 
-      {walletDetailElement}
+      {/* {walletDetailElement}
       {sendDialogElement}
-      {buyUstDialogElement}
+      {buyUstDialogElement} */}
     </>
   );
 }
