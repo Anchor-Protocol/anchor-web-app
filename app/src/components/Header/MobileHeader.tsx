@@ -19,7 +19,7 @@ import {
   WalletDisconnectButton,
   WalletMultiButton,
 } from '@solana/wallet-adapter-react-ui';
-import('./mobileHeader.css');
+import('./mobileHeader.scss');
 
 export interface MobileHeaderProps {
   className?: string;
@@ -62,7 +62,7 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
             ))}
           </nav>
         )}
-        <section className="header">
+        <section className="header mobile">
           <a
             className="logo"
             href="https://anchorprotocol.com"
