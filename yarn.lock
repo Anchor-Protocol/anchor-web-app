@@ -40,7 +40,7 @@ __metadata:
     "@terra-dev/use-wallet": ^2.4.0-alpha.3
     "@terra-dev/wallet-types": ^2.4.0-alpha.3
     "@terra-money/terra.js": ^2.1.19
-    "@terra-money/wallet-provider": ^2.4.0-alpha.3
+    "@terra-money/wallet-provider": ^2.4.0-alpha.4
     "@testing-library/jest-dom": ^5.14.1
     "@testing-library/react": ^12.0.0
     "@testing-library/react-hooks": ^7.0.1
@@ -4952,9 +4952,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@terra-money/wallet-provider@npm:^2.4.0-alpha.3":
-  version: 2.4.0-alpha.3
-  resolution: "@terra-money/wallet-provider@npm:2.4.0-alpha.3"
+"@terra-money/wallet-provider@npm:^2.4.0-alpha.4":
+  version: 2.4.0-alpha.4
+  resolution: "@terra-money/wallet-provider@npm:2.4.0-alpha.4"
   dependencies:
     "@terra-dev/browser-check": ^2.4.0-alpha.3
     "@terra-dev/chrome-extension": ^2.4.0-alpha.3
@@ -4973,7 +4973,7 @@ __metadata:
   peerDependenciesMeta:
     react-router-dom:
       optional: true
-  checksum: 75e8a8cf4b13ca823f51756cffe3c30829a1c040749536075db35a37764c6962436a00b5bc8ee899b1d20688c3e0f172b790f31602b6adb950bdcb65bd36575b
+  checksum: 3e57a80baa651cc90462f2c5e11f02b2b89ae72d3f9c2b7aa75fb0fe22ae908680fc699ffa9e8c3926f036bb364c7aef7c5aee1373632ccd66fc8e4d2eef4999
   languageName: node
   linkType: hard
 
