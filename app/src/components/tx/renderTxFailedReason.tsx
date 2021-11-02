@@ -231,11 +231,11 @@ function ErrorMessageView({
       ) : (
         children
       )}
-      {!(error instanceof Error && error.message.length > 0) && errorId && (
-        <p>
-          <b>Error ID</b>: {errorId}
-        </p>
-      )}
+      {/*{!(error instanceof Error && error.message.length > 0) && errorId && (*/}
+      {/*  <p>*/}
+      {/*    <b>Error ID</b>: {errorId}*/}
+      {/*  </p>*/}
+      {/*)}*/}
     </div>
   );
 }
