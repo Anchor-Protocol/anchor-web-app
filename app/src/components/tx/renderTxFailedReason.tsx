@@ -47,8 +47,8 @@ const createTxFailedMessage = (message: string) => (
       WebApp.
     </p>
     <p style={{ opacity: 0.7 }}>
-      If the problem still persists, please report your error ID to an admin
-      through any of the following channels.
+      If the problem still persists, please report the issue to admin through
+      any one of the following channels.
     </p>
 
     {channels}
@@ -63,8 +63,8 @@ const txUnspecifiedErrorMessage = (message: string | undefined | null) => (
       WebApp.
     </p>
     <p style={{ opacity: typeof message === 'string' ? 0.7 : undefined }}>
-      If the problem still persists, please report your error ID to an admin
-      through any of the following channels.
+      If the problem still persists, please report the issue to admin through
+      any one of the following channels.
     </p>
 
     {channels}
@@ -75,8 +75,8 @@ const uncaughtErrorMessage = (message: string | null | undefined) => (
   <div style={{ lineHeight: '1.8em' }}>
     {typeof message === 'string' && <p>{message}</p>}
     <p style={{ opacity: typeof message === 'string' ? 0.7 : undefined }}>
-      Please report your error ID to an admin through anyone of the following
-      channels.
+      If the problem still persists, please report the issue to admin through
+      any one of the following channels.
     </p>
 
     {channels}
