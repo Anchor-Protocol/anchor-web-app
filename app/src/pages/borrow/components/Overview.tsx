@@ -261,7 +261,7 @@ const StyledComponent = styled(Component)`
     h2 {
       flex: 1;
 
-      font-size: 12px;
+      font-size: 13px;
       font-weight: bold;
     }
 
