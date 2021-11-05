@@ -18,6 +18,8 @@ import { TooltipIconCircle } from '@libs/neumorphism-ui/components/TooltipIconCi
 import { AnimateNumber } from '@libs/ui';
 import { SubAmount } from 'components/primitives/SubAmount';
 import { screen } from 'env';
+import { fixHMR } from 'fix-hmr';
+import { LoanButtons } from 'pages/borrow/components/LoanButtons';
 import React from 'react';
 import styled from 'styled-components';
 import { useBorrowOverviewData } from '../logics/useBorrowOverviewData';
@@ -27,7 +29,7 @@ export interface OverviewProps {
   className?: string;
 }
 
-function OverviewBase({ className }: OverviewProps) {
+function Component({ className }: OverviewProps) {
   const {
     borrowAPR,
     borrowedValue,
@@ -45,6 +47,13 @@ function OverviewBase({ className }: OverviewProps) {
   // ---------------------------------------------
   return (
     <Section className={className}>
+      <header>
+        <h2>POSITION MANAGEMENT</h2>
+        <div className="loan-buttons">
+          <LoanButtons />
+        </div>
+      </header>
+
       <article>
         <div>
           <h3>
@@ -241,7 +250,33 @@ export const LabelAndCircle = styled.div`
   font-size: 13px;
 `;
 
-export const Overview = styled(OverviewBase)`
+const StyledComponent = styled(Component)`
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 16px;
+
+    h2 {
+      flex: 1;
+
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .loan-buttons {
+      display: flex;
+      gap: 16px;
+
+      button {
+        width: 180px;
+      }
+    }
+
+    margin-bottom: 60px;
+  }
+
   article > div {
     background: ${({ theme }) =>
       theme.palette.type === 'light' ? '#fcfcfc' : '#262940'};
@@ -272,9 +307,29 @@ export const Overview = styled(OverviewBase)`
     }
   }
 
+  @media (max-width: 700px) {
+    header {
+      flex-direction: column;
+      justify-content: start;
+      align-items: start;
+
+      .loan-buttons {
+        width: 100%;
+
+        button {
+          flex: 1;
+        }
+      }
+
+      margin-bottom: 30px;
+    }
+  }
+
   @media (max-width: ${screen.mobile.max}px) {
     article > div {
       padding: 20px;
     }
   }
 `;
+
+export const Overview = fixHMR(StyledComponent);
