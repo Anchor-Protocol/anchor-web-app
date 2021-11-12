@@ -105,6 +105,7 @@ __metadata:
     typescript: ^4.3.5
     use-resize-observer: ^7.0.0
     vite: ^2.4.4
+    vite-compatible-readable-stream: ^3.6.0
     vite-plugin-svgr: ^0.4.0
     vite-tsconfig-paths: ^3.3.13
     web-vitals: ^2.1.0
@@ -8953,10 +8954,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-util-is@npm:1.0.2, core-util-is@npm:~1.0.0":
+"core-util-is@npm:1.0.2":
   version: 1.0.2
   resolution: "core-util-is@npm:1.0.2"
   checksum: 7a4c925b497a2c91421e25bf76d6d8190f0b2359a9200dbeed136e63b2931d6294d3b1893eda378883ed363cd950f44a12a401384c609839ea616befb7927dab
+  languageName: node
+  linkType: hard
+
+"core-util-is@npm:~1.0.0":
+  version: 1.0.3
+  resolution: "core-util-is@npm:1.0.3"
+  checksum: 9de8597363a8e9b9952491ebe18167e3b36e7707569eed0ebf14f8bba773611376466ae34575bca8cfe3c767890c859c74056084738f09d4e4a6f902b2ad7d99
   languageName: node
   linkType: hard
 
@@ -20688,7 +20696,6 @@ resolve@^0.6.1:
     jest-bin: ^0.3.0
     lint-staged: ^11.0.0
     prettier: ^2.3.2
-    react-scripts: 4.0.3
   peerDependencies:
     eslint-config-react-app: 6.0.0
   languageName: unknown
@@ -23593,6 +23600,17 @@ resolve@^0.6.1:
     unist-util-stringify-position: ^3.0.0
     vfile-message: ^3.0.0
   checksum: f626578bfdff42bd38c4117ad1f43d2c4bebe2df9ca1a861ece542f4f42dfa415405cb96c4a01759fee1bdcf778281c936467497c71a0d097c73367e8c11f30a
+  languageName: node
+  linkType: hard
+
+"vite-compatible-readable-stream@npm:^3.6.0":
+  version: 3.6.0
+  resolution: "vite-compatible-readable-stream@npm:3.6.0"
+  dependencies:
+    inherits: ^2.0.3
+    string_decoder: ^1.1.1
+    util-deprecate: ^1.0.1
+  checksum: a2875806c268e9e79417c0218a3c61778e8d8bc99c95164a5c83b2400af4b6b6ac3a30c892cb3e9a9c2dc8932d44146b7f56f5679a3b272aa8f82e35d8667584
   languageName: node
   linkType: hard
 
