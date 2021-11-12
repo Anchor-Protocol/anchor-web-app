@@ -1,3 +1,4 @@
+import { LcdFault } from '../errors';
 import { WasmFetchBaseParams, WasmQueryData } from '../interface';
 import { defaultLcdFetcher, LcdFetcher, LcdResult } from './fetch';
 
@@ -33,7 +34,11 @@ export async function lcdFetch<WasmQueries>({
     const lcdResult = rawData[i];
 
     if (!('result' in lcdResult)) {
-      throw new Error('!!!!');
+      if ('error' in lcdResult) {
+        throw new LcdFault((lcdResult as any).error);
+      } else {
+        throw new LcdFault('Unknown error: ' + String(lcdResult));
+      }
     }
 
     //@ts-ignore
