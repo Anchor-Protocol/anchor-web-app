@@ -17,6 +17,7 @@ import { ReactComponent as ShieldPlusIcon } from './assets/ShieldPlus.svg';
 import { ReactComponent as TerraIcon } from './assets/Terra.svg';
 import { ReactComponent as WalletIcon } from './assets/Wallet.svg';
 import { ReactComponent as WalletconnectIcon } from './assets/Walletconnect.svg';
+import { ReactComponent as ParticipateInLiquidationsIcon } from './assets/ParticipateInLiquidations.svg';
 import { createMaterialIcon } from './createMaterialIcon';
 
 export const Discord = createMaterialIcon(DiscordIcon);
@@ -38,3 +39,6 @@ export const Walletconnect = createMaterialIcon(WalletconnectIcon);
 export const Terra = createMaterialIcon(TerraIcon);
 export const ShieldPlus = createMaterialIcon(ShieldPlusIcon);
 export const DollarCoin = createMaterialIcon(DollarCoinIcon);
+export const ParticipateInLiquidations = createMaterialIcon(
+  ParticipateInLiquidationsIcon,
+);

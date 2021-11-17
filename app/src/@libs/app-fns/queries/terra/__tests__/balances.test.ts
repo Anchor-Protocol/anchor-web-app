@@ -10,12 +10,14 @@ const assetInfos: terraswap.AssetInfo[] = [
   },
   {
     token: {
-      contract_addr: 'terra15tecrcm27fenchxaqde9f8ws8krfgjnqf2hhcv',
+      // bLuna
+      contract_addr: 'terra1u0t35drzyy0mujj8rkdyzhe264uls4ug3wdp3x',
     },
   },
   {
     token: {
-      contract_addr: 'terra1gkjll5uwqlwa8mrmtvzv435732tffpjql494fd',
+      // ANC
+      contract_addr: 'terra1747mad58h0w4y589y3sk84r5efqdev9q4r02pc',
     },
   },
 ] as any;
@@ -33,12 +35,12 @@ describe('terraBalancesQuery()', () => {
     });
     expect(result.balances[1].asset).toEqual({
       token: {
-        contract_addr: 'terra15tecrcm27fenchxaqde9f8ws8krfgjnqf2hhcv',
+        contract_addr: 'terra1u0t35drzyy0mujj8rkdyzhe264uls4ug3wdp3x',
       },
     });
     expect(result.balances[2].asset).toEqual({
       token: {
-        contract_addr: 'terra1gkjll5uwqlwa8mrmtvzv435732tffpjql494fd',
+        contract_addr: 'terra1747mad58h0w4y589y3sk84r5efqdev9q4r02pc',
       },
     });
     expect(+result.balances[0].balance).not.toBeNaN();

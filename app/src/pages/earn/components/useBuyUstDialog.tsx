@@ -9,6 +9,7 @@ import bitfinex from './assets/bitfinex.svg';
 import kucoin from './assets/kucoin.svg';
 import transak from './assets/transak.svg';
 import { dialogStyle } from './useInsuranceCoverageDialog';
+import okex from './assets/okex.svg';
 
 interface FormParams {
   className?: string;
@@ -68,6 +69,23 @@ function ComponentBase({
               <img src={kucoin} alt="KuCoin" />
             </i>
           </EmbossButton>
+
+          <EmbossButton
+            component="a"
+            href="https://www.okex.com/trade-spot/ust-usdt"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>
+              OKex{' '}
+              <sub>
+                <Launch />
+              </sub>
+            </span>
+            <i>
+              <img src={okex} alt="OKex" />
+            </i>
+          </EmbossButton>
         </section>
 
         <section>
@@ -99,4 +117,12 @@ const Component = styled(ComponentBase)`
   width: 458px;
 
   ${dialogStyle};
+
+  section {
+    i {
+      img {
+        max-width: 32px;
+      }
+    }
+  }
 `;

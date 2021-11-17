@@ -6,9 +6,17 @@ import { QueryRefetch } from '../types';
 function runRefetch(queryRefetch: string | QueryRefetch): Promise<string> {
   return new Promise<string>((resolve) => {
     if (typeof queryRefetch === 'string') {
-      resolve(queryRefetch);
+      //resolve(queryRefetch)
+      // FIXME <Ian Lee> Data that has not been updated
+      //  at the time of Query call immediately after Tx completion is coming.
+      //  In order to update the data normally, a delay of 200 ms is set.
+      setTimeout(() => {
+        resolve(queryRefetch);
+      }, 200);
     } else if (typeof queryRefetch.wait === 'number') {
-      setTimeout(() => resolve(queryRefetch.queryKey), queryRefetch.wait);
+      setTimeout(() => {
+        resolve(queryRefetch.queryKey);
+      }, queryRefetch.wait);
     } else {
       resolve(queryRefetch.queryKey);
     }

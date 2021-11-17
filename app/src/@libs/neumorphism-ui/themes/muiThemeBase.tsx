@@ -1,11 +1,13 @@
 export const muiThemeBase = {
   typography: {
     fontFamily:
-      "'Gotham SSm A', 'Gotham SSm B', BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
+      "'Gotham', BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
     fontWeightLight: 200,
     fontWeightRegular: 400,
     fontWeightMedium: 600,
     fontWeightBold: 700,
+    fontVariantNumeric: 'tabular-nums',
+    fontFeatureSettings: 'thum',
   },
   //overrides: {
   //  MuiTooltip: {

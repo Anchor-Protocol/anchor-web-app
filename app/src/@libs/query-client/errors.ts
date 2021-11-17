@@ -4,6 +4,17 @@ export interface HiveFetchErrorItem {
   path: Array<string>;
 }
 
+export class LcdFault extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'LcdFault';
+  }
+
+  toString = () => {
+    return `[${this.name} message="${this.message}"]`;
+  };
+}
+
 export class LcdFetchError extends Error {
   constructor(
     readonly code: number,

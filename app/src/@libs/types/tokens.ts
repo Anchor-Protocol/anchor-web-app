@@ -64,6 +64,31 @@ export type NativeToken<T = string> = T &
 // All currencies
 export type Token<T = string> = T & NominalType<string>;
 
+export const NATIVE_TOKEN_DENOMS = [
+  'uusd',
+  'uluna',
+  'uaud',
+  'ucad',
+  'uchf',
+  'ucny',
+  'udkk',
+  'ueur',
+  'ugbp',
+  'uhkd',
+  'uidr',
+  'uinr',
+  'ujpy',
+  'ukrw',
+  'umnt',
+  'unok',
+  'uphp',
+  'usdr',
+  'usek',
+  'usgd',
+  'uthb',
+  'ukrt',
+];
+
 // utility constants
 export const NATIVE_TOKEN_ASSET_INFOS: terraswap.AssetInfo[] = [
   { native_token: { denom: 'uusd' } },

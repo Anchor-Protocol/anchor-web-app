@@ -1,8 +1,8 @@
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
-import { PageTitle } from 'components/primitives/PageTitle';
+import { FlexTitleContainer, PageTitle } from 'components/primitives/PageTitle';
 import { links, screen } from 'env';
-import { LoanButtons } from 'pages/borrow/components/LoanButtons';
 import { Overview } from 'pages/borrow/components/Overview';
+import { ParticipateInLiquidationsButton } from 'pages/borrow/components/ParticipateInLiquidationsButton';
 import React from 'react';
 import styled from 'styled-components';
 import { CollateralList } from './components/CollateralList';
@@ -14,18 +14,30 @@ export interface BorrowProps {
 function BorrowBase({ className }: BorrowProps) {
   return (
     <PaddedLayout className={className}>
-      <div className="market">
+      <FlexTitleContainer>
         <PageTitle title="BORROW" docs={links.docs.borrow} />
-        <div className="loan-buttons">
-          <LoanButtons />
-        </div>
-      </div>
+        <Buttons>
+          <ParticipateInLiquidationsButton />
+        </Buttons>
+      </FlexTitleContainer>
 
       <Overview className="borrow" />
       <CollateralList className="collateral-list" />
     </PaddedLayout>
   );
 }
+
+const Buttons = styled.div`
+  display: flex;
+  gap: 10px;
+
+  @media (max-width: 700px) {
+    width: 100%;
+    gap: 0;
+    justify-content: stretch;
+    flex-direction: column;
+  }
+`;
 
 export const Borrow = styled(BorrowBase)`
   // ---------------------------------------------
