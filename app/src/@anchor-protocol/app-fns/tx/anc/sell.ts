@@ -29,7 +29,7 @@ import { floor } from '@libs/big-math';
 import { demicrofy, stripUUSD } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
-import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
+import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
 import {
   CreateTxOptions,
   Dec,

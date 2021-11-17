@@ -1,5 +1,5 @@
 import { QueryClient } from '@libs/query-client';
-import { TxResult } from '@terra-dev/wallet-types';
+import { TxResult } from '@terra-money/use-wallet';
 import { TxResultRendering, TxStreamPhase } from '../../models/tx';
 import { pollTxInfo, TxInfoData } from '../../queries/txInfo';
 import { TxHelper } from './TxHelper';

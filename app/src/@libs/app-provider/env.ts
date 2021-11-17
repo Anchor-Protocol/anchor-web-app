@@ -5,7 +5,7 @@ import {
   HiveQueryClient,
   LcdQueryClient,
 } from '@libs/query-client';
-import { NetworkInfo } from '@terra-dev/wallet-types';
+import { NetworkInfo } from '@terra-money/use-wallet';
 import { UseQueryResult } from 'react-query';
 
 export function DEFAULT_HIVE_WASM_CLIENT(

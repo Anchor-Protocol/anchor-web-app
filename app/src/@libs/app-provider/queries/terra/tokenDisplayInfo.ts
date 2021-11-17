@@ -1,6 +1,6 @@
 import { TokenDisplayInfo } from '@libs/app-fns';
 import { cw20, terraswap, Token } from '@libs/types';
-import { useWallet } from '@terra-dev/use-wallet';
+import { useWallet } from '@terra-money/use-wallet';
 import { useMemo } from 'react';
 import { useTokenDisplayInfosQuery } from './tokenDisplayInfos';
 import { useTerraTokenInfo } from './tokenInfo';

@@ -25,7 +25,7 @@ import { demicrofy } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { u, UST } from '@libs/types';
 import { pipe } from '@rx-stream/pipe';
-import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
+import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
 import {
   CreateTxOptions,
   MsgExecuteContract,

@@ -6,7 +6,7 @@ import {
 } from '@libs/app-fns';
 import { createQueryFn } from '@libs/react-query-utils';
 import { HumanAddr, NativeDenom, Token, u, UST } from '@libs/types';
-import { useConnectedWallet } from '@terra-dev/use-wallet';
+import { useConnectedWallet } from '@terra-money/use-wallet';
 import { useMemo } from 'react';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useApp } from '../../contexts/app';

@@ -11,9 +11,9 @@ import { useLongtimeNoSee } from '@libs/use-longtime-no-see';
 import { RouterScrollRestoration } from '@libs/use-router-scroll-restoration';
 import { RouterWalletStatusRecheck } from '@libs/use-router-wallet-status-recheck';
 import { captureException } from '@sentry/react';
-import { ReadonlyWalletSession } from '@terra-dev/readonly-wallet';
 import {
   NetworkInfo,
+  ReadonlyWalletSession,
   WalletControllerChainOptions,
   WalletProvider,
 } from '@terra-money/wallet-provider';

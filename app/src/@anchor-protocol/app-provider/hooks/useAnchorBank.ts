@@ -12,7 +12,7 @@ import {
   useTerraNativeBalances,
   useUstTax,
 } from '@libs/app-provider';
-import { useConnectedWallet } from '@terra-dev/use-wallet';
+import { useConnectedWallet } from '@terra-money/use-wallet';
 import { useMemo } from 'react';
 import { useAnchorWebapp } from '../contexts/context';
 

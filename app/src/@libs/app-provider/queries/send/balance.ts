@@ -1,6 +1,6 @@
 import { EMPTY_NATIVE_BALANCES, pickNativeBalance } from '@libs/app-fns';
 import { CW20Addr, HumanAddr, NativeDenom, Token, u } from '@libs/types';
-import { useConnectedWallet } from '@terra-dev/use-wallet';
+import { useConnectedWallet } from '@terra-money/use-wallet';
 import { useMemo } from 'react';
 import { useCW20BalanceQuery } from '../cw20/balance';
 import { useTerraNativeBalancesQuery } from '../terra/nativeBalances';

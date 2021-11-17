@@ -1,7 +1,7 @@
 import { TerraBalances, terraBalancesQuery } from '@libs/app-fns';
 import { createQueryFn } from '@libs/react-query-utils';
 import { HumanAddr, terraswap } from '@libs/types';
-import { useConnectedWallet } from '@terra-dev/use-wallet';
+import { useConnectedWallet } from '@terra-money/use-wallet';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useApp } from '../../contexts/app';
 import { TERRA_QUERY_KEY } from '../../env';
