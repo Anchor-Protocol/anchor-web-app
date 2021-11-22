@@ -4,7 +4,7 @@
   "extensions": {
     "endpoints": {
       "Development": {
-        "url": "https://tequila-mantle.anchorprotocol.com",
+        "url": "https://bombay-mantle.terra.dev",
         "headers": {
           "user-agent": "JS GraphQL"
         },

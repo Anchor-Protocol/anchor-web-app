@@ -23,7 +23,7 @@
     "landing:build": "yarn workspace @anchor-web-app/landing run build",
     "landing:test": "yarn workspace @anchor-web-app/landing run test",
     "landing:coverage": "yarn workspace @anchor-web-app/landing run coverage",
-    "graphql:download-schema": "npx apollo client:download-schema --endpoint \"https://tequila-mantle.anchorprotocol.com\" \"schema.graphql\"",
+    "graphql:download-schema": "apollo client:download-schema --endpoint \"https://bombay-mantle.terra.dev\" \"schema.graphql\"",
     "markdown:build": "markdown-source-import **/src/**/*.md",
     "postinstall": "husky install"
   },
@@ -38,6 +38,7 @@
     "@ssen/prettier-config": "^2.0.1",
     "@types/eslint": "^7.2.14",
     "@types/prettier": "^2.3.2",
+    "apollo": "^2.33.9",
     "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-config-react-app": "^6.0.0",
