@@ -1,5 +1,5 @@
-import { Menu, MenuClose, MenuWallet } from '@anchor-protocol/icons';
 import { useAirdropCheckQuery } from '@anchor-protocol/app-provider';
+import { Menu, MenuClose, MenuWallet } from '@anchor-protocol/icons';
 import { IconToggleButton } from '@libs/neumorphism-ui/components/IconToggleButton';
 import {
   ConnectType,
@@ -71,7 +71,7 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
     } else if (status === WalletStatus.WALLET_NOT_CONNECTED) {
       connect(
         isChromeExtensionCompatibleBrowser()
-          ? ConnectType.CHROME_EXTENSION
+          ? ConnectType.EXTENSION
           : ConnectType.WALLETCONNECT,
       );
     }

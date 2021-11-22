@@ -143,28 +143,12 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                 <DropdownBox>
                   <ConnectTypeContent>
                     {availableConnectTypes.some(
-                      (connectType) => connectType === ConnectType.WEB_CONNECT,
+                      (connectType) => connectType === ConnectType.EXTENSION,
                     ) ? (
                       <FlatButton
                         className="connect-chrome-extension"
                         onClick={() => {
-                          connect(ConnectType.WEB_CONNECT);
-                          setOpenDropdown(false);
-                        }}
-                      >
-                        <IconSpan>
-                          <Terra />
-                          Terra Station (extension)
-                        </IconSpan>
-                      </FlatButton>
-                    ) : availableConnectTypes.some(
-                        (connectType) =>
-                          connectType === ConnectType.CHROME_EXTENSION,
-                      ) ? (
-                      <FlatButton
-                        className="connect-chrome-extension"
-                        onClick={() => {
-                          connect(ConnectType.CHROME_EXTENSION);
+                          connect(ConnectType.EXTENSION);
                           setOpenDropdown(false);
                         }}
                       >
@@ -174,13 +158,12 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                         </IconSpan>
                       </FlatButton>
                     ) : availableInstallTypes.some(
-                        (connectType) =>
-                          connectType === ConnectType.CHROME_EXTENSION,
+                        (connectType) => connectType === ConnectType.EXTENSION,
                       ) ? (
                       <BorderButton
                         className="install-chrome-extension"
                         onClick={() => {
-                          install(ConnectType.CHROME_EXTENSION);
+                          install(ConnectType.EXTENSION);
                           setOpenDropdown(false);
                         }}
                       >
@@ -274,8 +257,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                     connectType={wallets[0].connectType}
                     bank={bank}
                     availablePost={
-                      wallets[0].connectType === ConnectType.WEB_CONNECT ||
-                      wallets[0].connectType === ConnectType.CHROME_EXTENSION ||
+                      wallets[0].connectType === ConnectType.EXTENSION ||
                       wallets[0].connectType === ConnectType.WALLETCONNECT
                     }
                     walletAddress={wallets[0].terraAddress}
