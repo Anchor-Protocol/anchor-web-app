@@ -36,8 +36,8 @@ __metadata:
     "@storybook/react": ^6.3.4
     "@storybook/theming": ^6.3.4
     "@terra-money/terra.js": ^3.0.1
-    "@terra-money/use-wallet": ^3.0.0-alpha.5
-    "@terra-money/wallet-provider": ^3.0.0-alpha.5
+    "@terra-money/use-wallet": ^3.0.0-alpha.6
+    "@terra-money/wallet-provider": ^3.0.0-alpha.6
     "@testing-library/jest-dom": ^5.14.1
     "@testing-library/react": ^12.0.0
     "@testing-library/react-hooks": ^7.0.1
@@ -5097,14 +5097,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@terra-dev/web-extension-interface@npm:^0.13.0":
-  version: 0.13.0
-  resolution: "@terra-dev/web-extension-interface@npm:0.13.0"
+"@terra-dev/web-extension-interface@npm:^0.14.0":
+  version: 0.14.0
+  resolution: "@terra-dev/web-extension-interface@npm:0.14.0"
   dependencies:
     rxjs: ^7.4.0
   peerDependencies:
     "@terra-money/terra.js": ^3.0.0
-  checksum: fc2d7f250b4a6522c6a14ff449f4b7da19d2ea3bab444fd57533cddc54a611d9da34ec06c823c40e0e074b35ab08a4cbbdd353fb94d028bee47a22bca9a49ff5
+  checksum: 7ceb2c8d6a24653ed54c547e505a7646e76bb098e64bb401388a0b629af7f024a6c1bc47166583cae72b74e06ba244c61e681be943a321c5fa613f6353ca6493
   languageName: node
   linkType: hard
 
@@ -5140,24 +5140,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@terra-money/use-wallet@npm:^3.0.0-alpha.5":
-  version: 3.0.0-alpha.5
-  resolution: "@terra-money/use-wallet@npm:3.0.0-alpha.5"
+"@terra-money/use-wallet@npm:^3.0.0-alpha.6":
+  version: 3.0.0-alpha.6
+  resolution: "@terra-money/use-wallet@npm:3.0.0-alpha.6"
   dependencies:
-    "@terra-dev/web-extension-interface": ^0.13.0
+    "@terra-dev/web-extension-interface": ^0.14.0
   peerDependencies:
     "@terra-money/terra.js": ^3.0.0
-    react: ^17.0.0
-  checksum: 09c6bf1cd3976831bb838e411578cb9b8fb96ea8a5ed2fdcd002ee076c5ec7e144ce16ef0385f0c629ad934646c56496c0bc14cfe38c1b840841ec7911477a9e
+    react: ">=17.0.0"
+  checksum: 0e52c60e15c8728e065419f1b934826216db2fa09f1a63d49bb46ada12be5309036355a709c52e014d81b661d8e67940aa045993011f881fbff59bc0b9c57d50
   languageName: node
   linkType: hard
 
-"@terra-money/wallet-provider@npm:^3.0.0-alpha.5":
-  version: 3.0.0-alpha.5
-  resolution: "@terra-money/wallet-provider@npm:3.0.0-alpha.5"
+"@terra-money/wallet-provider@npm:^3.0.0-alpha.6":
+  version: 3.0.0-alpha.6
+  resolution: "@terra-money/wallet-provider@npm:3.0.0-alpha.6"
   dependencies:
-    "@terra-dev/web-extension-interface": ^0.13.0
-    "@terra-money/use-wallet": ^3.0.0-alpha.5
+    "@terra-dev/web-extension-interface": ^0.14.0
+    "@terra-money/use-wallet": ^3.0.0-alpha.6
     "@walletconnect/core": ^1.6.6
     "@walletconnect/iso-crypto": ^1.6.6
     "@walletconnect/types": ^1.6.6
@@ -5165,16 +5165,18 @@ __metadata:
     bowser: ^2.11.0
     fast-deep-equal: ^3.1.3
     fix-hmr: ^1.0.2
+    jscrypto: ^1.0.0
     mobile-detect: ^1.4.5
     qrcode.react: ^1.0.1
     rxjs: ^7.4.0
+    secp256k1: ^4.0.0
     ws: ^7.5.5
   peerDependencies:
     "@terra-money/terra.js": ^3.0.0
-    react: ^17.0.0
-    react-dom: ^17.0.0
-    styled-components: ^5.0.0
-  checksum: 932dd6c832c6bc331368a72f721923690cbdf28399866bcc568a9c188d16239833c1fb40e19d198b2e7d762b999d10ecd057d039a05230f3847e9581c0e848b8
+    react: ">=17.0.0"
+    react-dom: ">=17.0.0"
+    styled-components: ">=5.0.0"
+  checksum: 0668a83c99055041358c717d47dea8ecd6be03c2b9a80be146d04ddd219dcb821444efa5bb78af2f8af9cdda36aed4f65ff5a3c4aab0fec81f8220524a1988e6
   languageName: node
   linkType: hard
 
@@ -15853,6 +15855,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"jscrypto@npm:^1.0.0":
+  version: 1.0.2
+  resolution: "jscrypto@npm:1.0.2"
+  bin:
+    jscrypto: bin/cli.js
+  checksum: 3179dd391ca35910cb7d2176d44f185eca62fb70dd0020baa621b288b7014ae860f43bab3370e58ef8c4b24e24c703738ed6afd00a495c9f894f8b04f10e8800
+  languageName: node
+  linkType: hard
+
 "jscrypto@npm:^1.0.1":
   version: 1.0.1
   resolution: "jscrypto@npm:1.0.1"
@@ -22269,7 +22280,7 @@ resolve@^0.6.1:
   languageName: node
   linkType: hard
 
-"secp256k1@npm:^4.0.2":
+"secp256k1@npm:^4.0.0, secp256k1@npm:^4.0.2":
   version: 4.0.2
   resolution: "secp256k1@npm:4.0.2"
   dependencies:
