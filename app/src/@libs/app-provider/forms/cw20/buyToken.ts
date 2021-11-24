@@ -5,7 +5,7 @@ import {
 } from '@libs/app-fns';
 import { CW20Addr, HumanAddr, Rate, Token, UST } from '@libs/types';
 import { useForm } from '@libs/use-form';
-import { useConnectedWallet } from '@terra-dev/use-wallet';
+import { useConnectedWallet } from '@terra-money/use-wallet';
 import { useApp } from '../../contexts/app';
 import { useFixedFee } from '../../hooks/useFixedFee';
 import { useUstBalance } from '../../queries/terra/nativeBalances';

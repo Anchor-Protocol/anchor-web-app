@@ -5,7 +5,7 @@ import {
 } from '@anchor-protocol/anchor.js/dist/address-provider/provider';
 import { CollateralType, CW20Addr } from '@anchor-protocol/types';
 import { App, useApp } from '@libs/app-provider';
-import { NetworkInfo } from '@terra-dev/wallet-types';
+import { NetworkInfo } from '@terra-money/use-wallet';
 import { useWallet } from '@terra-money/wallet-provider';
 import React, {
   Consumer,
@@ -160,5 +160,8 @@ class AddressProviderFromContractAddress implements AddressProvider {
   }
   teamLock() {
     return this.data.anchorToken.teamLock;
+  }
+  liquidationQueue(): string {
+    throw new Error('not implemented');
   }
 }

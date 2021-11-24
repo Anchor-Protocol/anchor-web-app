@@ -6,7 +6,7 @@ import {
 } from '@libs/app-fns';
 import { Token } from '@libs/types';
 import { useForm } from '@libs/use-form';
-import { useConnectedWallet } from '@terra-dev/use-wallet';
+import { useConnectedWallet } from '@terra-money/use-wallet';
 import { useApp } from '../../contexts/app';
 import { useFixedFee } from '../../hooks/useFixedFee';
 import { useSendBalanceQuery } from '../../queries/send/balance';

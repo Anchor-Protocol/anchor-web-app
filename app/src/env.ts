@@ -93,6 +93,7 @@ const BOMBAY_CONTRACT_ADDRESS = {
   mmCustody: 'terra1ltnkx0mv7lf2rca9f8w740ashu93ujughy4s7p',
   mmCustodyBEth: 'terra1j6fey5tl70k9fvrv7mea7ahfr8u2yv7l23w5e6',
   mmLiquidation: 'terra16vc4v9hhntswzkuunqhncs9yy30mqql3gxlqfe',
+  mmLiquidationQueue: '',
   mmDistributionModel: 'terra1u64cezah94sq3ye8y0ung28x3pxc37tv8fth7h',
   aTerra: 'terra1ajt556dpzvjwl0kl5tzku3fc3p3knkg9mkv8jl',
   terraswapblunaLunaPair: 'terra13e4jmcjnwrauvl2fnjdwex0exuzd8zrh5xk29v',
@@ -126,6 +127,7 @@ const COLUMNBUS_CONTRACT_ADDRESS = {
   mmCustodyBEth: 'terra10cxuzggyvvv44magvrh3thpdnk9cmlgk93gmx2',
   mmLiquidation: 'terra1w9ky73v4g7v98zzdqpqgf3kjmusnx4d4mvnac6',
   mmDistributionModel: 'terra14mufqpr5mevdfn92p4jchpkxp7xr46uyknqjwq',
+  mmLiquidationQueue: '',
   aTerra: 'terra1hzh9vpxhsk8253se0vv5jj6etdvxu3nv8z07zu',
   terraswapblunaLunaPair: 'terra1jxazgm67et0ce260kvrpfv50acuushpjsz2y0p',
   terraswapblunaLunaLPToken: 'terra1nuy34nwnsh53ygpc4xprlj263cztw7vc99leh2',
@@ -469,4 +471,4 @@ export const ANCHOR_TX_REFETCH_MAP: TxRefetchMap = {
   ],
 };
 
-// build: force re-build trigger - 21.11.12
+// build: force re-build trigger - 21.11.17

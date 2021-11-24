@@ -28,7 +28,7 @@ import { floor, min } from '@libs/big-math';
 import { demicrofy } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
-import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
+import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
 import {
   Coin,
   Coins,
@@ -36,7 +36,7 @@ import {
   Dec,
   Int,
   MsgExecuteContract,
-  StdFee,
+  Fee,
 } from '@terra-money/terra.js';
 import big, { Big } from 'big.js';
 import { Observable } from 'rxjs';
@@ -62,7 +62,7 @@ export function ancBuyTx(
   return pipe(
     _createTxOptions({
       msgs: fabricatebBuy($)($.addressProvider),
-      fee: new StdFee($.gasFee, floor($.txFee) + 'uusd'),
+      fee: new Fee($.gasFee, floor($.txFee) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),
     _postTx({ helper, ...$ }),

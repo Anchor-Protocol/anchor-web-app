@@ -3,9 +3,9 @@ import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
 import { NativeSelect } from '@libs/neumorphism-ui/components/NativeSelect';
 import { TextInput } from '@libs/neumorphism-ui/components/TextInput';
-import { ReadonlyWalletSession } from '@terra-dev/readonly-wallet';
+import { ReadonlyWalletSession } from '@terra-money/wallet-provider';
 import { DialogProps, OpenDialog, useDialog } from '@libs/use-dialog';
-import { NetworkInfo } from '@terra-dev/wallet-types';
+import { NetworkInfo } from '@terra-money/use-wallet';
 import { AccAddress } from '@terra-money/terra.js';
 import React, {
   ChangeEvent,

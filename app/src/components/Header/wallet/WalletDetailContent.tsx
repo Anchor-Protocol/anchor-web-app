@@ -12,7 +12,7 @@ import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
 import { Check, KeyboardArrowRight, Launch } from '@material-ui/icons';
-import { NetworkInfo } from '@terra-dev/wallet-types';
+import { NetworkInfo } from '@terra-money/use-wallet';
 import { ConnectType } from '@terra-money/wallet-provider';
 import big from 'big.js';
 import { BuyButton, BuyLink } from 'components/BuyButton';

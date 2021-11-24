@@ -19,14 +19,14 @@ import {
 import { floor } from '@libs/big-math';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
-import { NetworkInfo, TxResult } from '@terra-dev/wallet-types';
+import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
 import {
   Coin,
   CreateTxOptions,
   Dec,
   Int,
   MsgSend,
-  StdFee,
+  Fee,
 } from '@terra-money/terra.js';
 import { Observable } from 'rxjs';
 
@@ -65,7 +65,7 @@ export function terraSendTx($: {
                 ),
               ]),
             ],
-      fee: new StdFee($.gasFee, floor($.txFee) + 'uusd'),
+      fee: new Fee($.gasFee, floor($.txFee) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
       memo: $.memo,
     }),
