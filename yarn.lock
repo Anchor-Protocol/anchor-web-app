@@ -36,8 +36,8 @@ __metadata:
     "@storybook/react": ^6.3.4
     "@storybook/theming": ^6.3.4
     "@terra-money/terra.js": ^3.0.1
-    "@terra-money/use-wallet": ^3.0.0
-    "@terra-money/wallet-provider": ^3.0.0
+    "@terra-money/use-wallet": ^3.1.0
+    "@terra-money/wallet-provider": ^3.1.0
     "@testing-library/jest-dom": ^5.14.1
     "@testing-library/react": ^12.0.0
     "@testing-library/react-hooks": ^7.0.1
@@ -5140,24 +5140,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@terra-money/use-wallet@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@terra-money/use-wallet@npm:3.0.0"
+"@terra-money/use-wallet@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@terra-money/use-wallet@npm:3.1.0"
   dependencies:
     "@terra-dev/web-extension-interface": ^0.14.0
   peerDependencies:
     "@terra-money/terra.js": ^3.0.0
     react: ">=17.0.0"
-  checksum: 81ee9e93a1a2e75987614980176404475a1cb5adb43061c6539ca39381db7512a607f29aa154e397390e8bce45697f184ab60fd9ff8dfc55f8fb3c43de52bbc8
+  checksum: 673283b137f89bbde413f85d683f20a612fd958d7b5c3d5a45525660fd68446bd13c04e8641996977d444d5843f146f2404d1aeffc2fe11caa812e4041c62478
   languageName: node
   linkType: hard
 
-"@terra-money/wallet-provider@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@terra-money/wallet-provider@npm:3.0.0"
+"@terra-money/wallet-provider@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@terra-money/wallet-provider@npm:3.1.0"
   dependencies:
     "@terra-dev/web-extension-interface": ^0.14.0
-    "@terra-money/use-wallet": ^3.0.0
+    "@terra-money/use-wallet": ^3.1.0
     "@walletconnect/core": ^1.6.6
     "@walletconnect/iso-crypto": ^1.6.6
     "@walletconnect/types": ^1.6.6
@@ -5176,7 +5176,7 @@ __metadata:
     react: ">=17.0.0"
     react-dom: ">=17.0.0"
     styled-components: ">=5.0.0"
-  checksum: 1b9c92fc7e363d4a766975280a159b516b2282f3f6daf1fdf48e8507f2eb5f64457e5c7d037cec2c26976f4cda98a7c0cb74d7fa35669f7e70977562a84f2168
+  checksum: a981d2bb4527a772ff29c8cab4c770af3623ea8333175a77df79f64bf990c6d5e27633cf5cfdcf06390745a16beab4d997704ab32e0ee6e8f629a23ca69654ec
   languageName: node
   linkType: hard
 

@@ -1,4 +1,3 @@
-import { Terra, Walletconnect } from '@anchor-protocol/icons';
 import { useAirdropCheckQuery } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
@@ -16,7 +15,7 @@ import { useBuyUstDialog } from 'pages/earn/components/useBuyUstDialog';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import React, { useCallback, useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
-import { useRouteMatch, Link } from 'react-router-dom';
+import { Link, useRouteMatch } from 'react-router-dom';
 import styled from 'styled-components';
 import { AirdropContent } from '../airdrop/AirdropContent';
 import { WalletDetailContent } from '../wallet/WalletDetailContent';
@@ -39,10 +38,13 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
     status,
     connect,
     disconnect,
+    connection,
     wallets,
     network,
     availableConnectTypes,
     availableInstallTypes,
+    availableConnections,
+    supportFeatures,
   } = useWallet();
 
   const isSmallScreen = useMediaQuery({ query: '(max-width: 1000px)' });
@@ -142,67 +144,60 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
               <DropdownContainer>
                 <DropdownBox>
                   <ConnectTypeContent>
-                    {availableConnectTypes.some(
-                      (connectType) => connectType === ConnectType.EXTENSION,
-                    ) ? (
-                      <FlatButton
-                        className="connect-chrome-extension"
-                        onClick={() => {
-                          connect(ConnectType.EXTENSION);
-                          setOpenDropdown(false);
-                        }}
-                      >
-                        <IconSpan>
-                          <Terra />
-                          Terra Station (extension)
-                        </IconSpan>
-                      </FlatButton>
-                    ) : availableInstallTypes.some(
-                        (connectType) => connectType === ConnectType.EXTENSION,
-                      ) ? (
+                    <h1>Connect Wallet</h1>
+
+                    {availableInstallTypes.includes(ConnectType.EXTENSION) ? (
                       <BorderButton
-                        className="install-chrome-extension"
+                        className="install"
                         onClick={() => {
                           install(ConnectType.EXTENSION);
                           setOpenDropdown(false);
                         }}
                       >
                         <IconSpan>
-                          <Terra />
-                          Install Chrome Extension
+                          Install Terra Station
+                          <img
+                            src="https://assets.terra.money/icon/wallet-provider/station.svg"
+                            alt="Install Terra Station"
+                          />
                         </IconSpan>
                       </BorderButton>
                     ) : null}
 
-                    {availableConnectTypes.some(
-                      (connectType) =>
-                        connectType === ConnectType.WALLETCONNECT,
-                    ) && (
-                      <FlatButton
-                        className="connect-walletconnect"
-                        onClick={() => {
-                          connect(ConnectType.WALLETCONNECT);
-                          setOpenDropdown(false);
-                        }}
-                      >
-                        <IconSpan>
-                          <Walletconnect />
-                          Terra Station (mobile)
-                        </IconSpan>
-                      </FlatButton>
-                    )}
+                    {availableConnections
+                      .filter(({ type }) => type !== ConnectType.READONLY)
+                      .map(({ type, icon, name, identifier }) => (
+                        <FlatButton
+                          className="connect"
+                          onClick={() => {
+                            connect(type, identifier);
+                            setOpenDropdown(false);
+                          }}
+                        >
+                          <IconSpan>
+                            {name}
+                            <img
+                              src={
+                                icon ===
+                                'https://assets.terra.money/icon/station-extension/icon.png'
+                                  ? 'https://assets.terra.money/icon/wallet-provider/station.svg'
+                                  : icon
+                              }
+                              alt={name}
+                            />
+                          </IconSpan>
+                        </FlatButton>
+                      ))}
 
                     <hr />
 
-                    {availableConnectTypes.some(
-                      (connectType) => connectType === ConnectType.READONLY,
-                    ) && (
+                    {availableConnectTypes.includes(ConnectType.READONLY) && (
                       <Tooltip
                         title="Read-only mode for viewing information. Please connect through Terra Station (extension or mobile) to make transactions."
                         placement="bottom"
                       >
                         <BorderButton
-                          className="connect-readonly"
+                          className="readonly"
                           onClick={() => {
                             connect(ConnectType.READONLY);
                             setOpenDropdown(false);
@@ -254,12 +249,9 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
               <DropdownContainer>
                 <DropdownBox>
                   <WalletDetailContent
-                    connectType={wallets[0].connectType}
+                    connection={connection ?? availableConnections[0]}
                     bank={bank}
-                    availablePost={
-                      wallets[0].connectType === ConnectType.EXTENSION ||
-                      wallets[0].connectType === ConnectType.WALLETCONNECT
-                    }
+                    availablePost={supportFeatures.has('post')}
                     walletAddress={wallets[0].terraAddress}
                     network={network}
                     closePopup={() => setOpenDropdown(false)}
@@ -305,22 +297,41 @@ const ConnectTypeContent = styled.section`
   display: flex;
   flex-direction: column;
 
+  h1 {
+    font-size: 16px;
+    font-weight: bold;
+
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
   button {
     width: 100%;
     height: 32px;
 
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 500;
 
-    &.connect-chrome-extension,
-    &.install-chrome-extension {
+    > span {
+      width: 100%;
+      padding: 0 15px 1px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      img {
+        transform: scale(1.1);
+      }
+    }
+
+    &.connect,
+    &.install {
       margin-bottom: 8px;
     }
 
-    svg,
-    .MuiSvgIcon-root {
-      //transform: scale(1.2) translateY(0.13em);
-      margin-right: 0.4em;
+    img {
+      width: 1em;
+      height: 1em;
     }
   }
 
@@ -335,17 +346,21 @@ const ConnectTypeContent = styled.section`
           : 'rgba(255, 255, 255, 0.1)'};
   }
 
-  .connect-chrome-extension,
-  .connect-walletconnect {
-    background-color: ${({ theme }) => theme.colors.positive};
+  .connect {
+    background-color: ${({ theme }) =>
+      theme.palette.type === 'light' ? '#f4f4f5' : '#2a2a46'};
+
+    color: ${({ theme }) => theme.textColor};
   }
 
-  .install-chrome-extension {
-    border: 1px solid ${({ theme }) => theme.colors.positive};
-    color: ${({ theme }) => theme.colors.positive};
+  .install {
+    border: 1px solid
+      ${({ theme }) =>
+        theme.palette.type === 'light' ? '#e7e7e7' : 'rgba(231,231,231, 0.3)'};
+    color: ${({ theme }) => theme.textColor};
   }
 
-  .connect-readonly {
+  .readonly {
     border: 1px solid ${({ theme }) => theme.dimTextColor};
     color: ${({ theme }) => theme.dimTextColor};
   }
