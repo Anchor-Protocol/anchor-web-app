@@ -45,7 +45,7 @@ function ComponentBase({
       <Dialog className={className} onClose={() => closeDialog()}>
         {!!connectedWallet && (
           <WalletDetailContent
-            connectType={connectedWallet.connectType}
+            connection={connectedWallet.connection}
             availablePost={connectedWallet.availablePost}
             walletAddress={connectedWallet.walletAddress}
             network={connectedWallet.network}

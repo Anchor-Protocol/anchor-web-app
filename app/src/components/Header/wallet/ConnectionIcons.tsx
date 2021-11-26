@@ -1,35 +1,29 @@
-import { Terra, Wallet, Walletconnect } from '@anchor-protocol/icons';
-import { ConnectType } from '@terra-money/wallet-provider';
+import { Wallet } from '@anchor-protocol/icons';
+import { Connection, ConnectType } from '@terra-money/wallet-provider';
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
 
 export interface ConnectionIconsProps {
   className?: string;
-  connectType: ConnectType;
+  connection: Connection;
 }
 
-function ConnectionIconsBase({ className, connectType }: ConnectionIconsProps) {
+function ConnectionIconsBase({ className, connection }: ConnectionIconsProps) {
   return (
     <div className={className}>
-      {connectType === ConnectType.EXTENSION ? (
-        <Description>WEB EXTENSION</Description>
-      ) : connectType === ConnectType.WALLETCONNECT ? (
-        <Description>WALLETCONNECT</Description>
+      {connection.type !== ConnectType.READONLY ? (
+        <Description>{connection.name}</Description>
       ) : null}
 
       <Icon>
         <Wallet />
       </Icon>
 
-      {connectType !== ConnectType.READONLY && <Line />}
+      {connection.type !== ConnectType.READONLY && <Line />}
 
-      {connectType === ConnectType.EXTENSION ? (
+      {connection.type !== ConnectType.READONLY ? (
         <Icon>
-          <Terra />
-        </Icon>
-      ) : connectType === ConnectType.WALLETCONNECT ? (
-        <Icon>
-          <Walletconnect />
+          <img src={connection.icon} alt={connection.name} />
         </Icon>
       ) : null}
     </div>
@@ -42,6 +36,11 @@ export const ConnectionIcons = styled(ConnectionIconsBase)`
   align-items: center;
 
   position: relative;
+
+  img {
+    width: 16px;
+    height: 16px;
+  }
 `;
 
 const Description = styled.span`
@@ -56,6 +55,8 @@ const Description = styled.span`
 
   font-size: 9px;
   color: ${({ theme }) => theme.colors.positive};
+
+  text-transform: uppercase;
 `;
 
 const Icon = styled.div`

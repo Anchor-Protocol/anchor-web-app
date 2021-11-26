@@ -1,3 +1,4 @@
+import { AnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import {
   formatANC,
   formatAUSTWithPostfixUnits,
@@ -6,14 +7,13 @@ import {
   formatLuna,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
-import { AnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { demicrofy, truncate } from '@libs/formatter';
 import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
 import { Check, KeyboardArrowRight, Launch } from '@material-ui/icons';
 import { NetworkInfo } from '@terra-money/use-wallet';
-import { ConnectType } from '@terra-money/wallet-provider';
+import { Connection } from '@terra-money/wallet-provider';
 import big from 'big.js';
 import { BuyButton, BuyLink } from 'components/BuyButton';
 import React, { useCallback } from 'react';
@@ -30,7 +30,7 @@ interface WalletDetailContentProps {
   bank: AnchorBank;
   openSend: () => void;
   availablePost: boolean;
-  connectType: ConnectType;
+  connection: Connection;
   openBuyUst: () => void;
 }
 
@@ -44,7 +44,7 @@ export function WalletDetailContentBase({
   openSend,
   openBuyUst,
   availablePost,
-  connectType,
+  connection,
 }: WalletDetailContentProps) {
   const [isCopied, setCopied] = useClipboard(walletAddress, {
     successDuration: 1000 * 5,
@@ -60,7 +60,7 @@ export function WalletDetailContentBase({
   return (
     <div className={className}>
       <section>
-        <ConnectionIcons className="wallet-icon" connectType={connectType} />
+        <ConnectionIcons className="wallet-icon" connection={connection} />
 
         <h2 className="wallet-address">{truncate(walletAddress)}</h2>
 
