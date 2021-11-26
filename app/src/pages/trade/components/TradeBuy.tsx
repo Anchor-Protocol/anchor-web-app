@@ -1,3 +1,10 @@
+import { validateTxFee } from '@anchor-protocol/app-fns';
+import {
+  useAncBuyTx,
+  useAnchorWebapp,
+  useAncPriceQuery,
+} from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   formatANC,
@@ -15,12 +22,6 @@ import {
   u,
   UST,
 } from '@anchor-protocol/types';
-import {
-  useAncBuyTx,
-  useAnchorWebapp,
-  useAncPriceQuery,
-} from '@anchor-protocol/app-provider';
-import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { terraswapSimulationQuery } from '@libs/app-fns';
 import { useFixedFee } from '@libs/app-provider';
 import { max, min } from '@libs/big-math';
@@ -35,12 +36,13 @@ import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big } from 'big.js';
+import { DiscloseSlippageSelector } from 'components/DiscloseSlippageSelector';
 import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
-import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { SlippageSelectorNegativeHelpText } from 'components/SlippageSelector';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
+import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { validateTxFee } from '@anchor-protocol/app-fns';
 import { buyFromSimulation } from 'pages/trade/logics/buyFromSimulation';
 import { buyToSimulation } from 'pages/trade/logics/buyToSimulation';
 import { TradeSimulation } from 'pages/trade/models/tradeSimulation';
@@ -60,6 +62,8 @@ interface Item {
 
 const fromCurrencies: Item[] = [{ label: 'UST', value: 'ust' }];
 const toCurrencies: Item[] = [{ label: 'ANC', value: 'anc' }];
+
+const slippageValues = [0.001, 0.005, 0.01];
 
 export function TradeBuy() {
   // ---------------------------------------------
@@ -82,6 +86,8 @@ export function TradeBuy() {
   // ---------------------------------------------
   const [fromAmount, setFromAmount] = useState<UST>('' as UST);
   const [toAmount, setToAmount] = useState<ANC>('' as ANC);
+
+  const [slippage, setSlippage] = useState<number>(0.01);
 
   const [resolveSimulation, simulation] = useResolveLast<
     TradeSimulation<ANC, UST, Token> | undefined | null
@@ -202,7 +208,7 @@ export function TradeBuy() {
   }, []);
 
   const updateFromAmount = useCallback(
-    async (nextFromAmount: string) => {
+    async (nextFromAmount: string, maxSpread: number) => {
       if (nextFromAmount.trim().length === 0) {
         setToAmount('' as ANC);
         setFromAmount('' as UST);
@@ -237,6 +243,7 @@ export function TradeBuy() {
                   amount,
                   bank.tax,
                   fixedFee,
+                  maxSpread,
                 )
               : undefined;
           }),
@@ -253,7 +260,7 @@ export function TradeBuy() {
   );
 
   const updateToAmount = useCallback(
-    (nextToAmount: string) => {
+    (nextToAmount: string, maxSpread: number) => {
       if (nextToAmount.trim().length === 0) {
         setFromAmount('' as UST);
         setToAmount('' as ANC);
@@ -289,6 +296,7 @@ export function TradeBuy() {
                   amount,
                   bank.tax,
                   fixedFee,
+                  maxSpread,
                 )
               : undefined;
           }),
@@ -305,13 +313,26 @@ export function TradeBuy() {
     ],
   );
 
+  const updateSlippage = useCallback(
+    (nextSlippage: number) => {
+      setSlippage(nextSlippage);
+      updateFromAmount(fromAmount, nextSlippage);
+    },
+    [fromAmount, updateFromAmount],
+  );
+
   const init = useCallback(() => {
     setToAmount('' as ANC);
     setFromAmount('' as UST);
   }, []);
 
   const proceed = useCallback(
-    async (fromAmount: UST, txFee: u<UST>, confirm: ReactNode) => {
+    async (
+      fromAmount: UST,
+      txFee: u<UST>,
+      maxSpread: number,
+      confirm: ReactNode,
+    ) => {
       if (!connectedWallet || !buy) {
         return;
       }
@@ -331,6 +352,7 @@ export function TradeBuy() {
       buy({
         fromAmount,
         txFee,
+        maxSpread,
         onTxSucceed: () => {
           init();
         },
@@ -391,6 +413,7 @@ export function TradeBuy() {
                     formatUSTInput(
                       demicrofy(ustBalance ?? bank.tokenBalances.uUST),
                     ),
+                    slippage,
                   )
                 }
               >
@@ -424,7 +447,7 @@ export function TradeBuy() {
           maxIntegerPoinsts={UST_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
-            updateFromAmount(target.value)
+            updateFromAmount(target.value, slippage)
           }
         />
       </SelectAndTextInputContainer>
@@ -461,10 +484,24 @@ export function TradeBuy() {
           maxIntegerPoinsts={5}
           maxDecimalPoints={ANC_INPUT_MAXIMUM_DECIMAL_POINTS}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
-            updateToAmount(target.value)
+            updateToAmount(target.value, slippage)
           }
         />
       </SelectAndTextInputContainer>
+
+      <DiscloseSlippageSelector
+        className="slippage"
+        items={slippageValues}
+        value={slippage}
+        onChange={updateSlippage}
+        helpText={
+          slippage < 0.005 ? (
+            <SlippageSelectorNegativeHelpText>
+              Your transaction may fail
+            </SlippageSelectorNegativeHelpText>
+          ) : undefined
+        }
+      />
 
       {fromAmount.length > 0 && simulation && (
         <TxFeeList className="receipt">
@@ -529,7 +566,12 @@ export function TradeBuy() {
             connectedWallet &&
             ancPrice &&
             simulation &&
-            proceed(fromAmount, simulation.txFee, invalidNextTransaction)
+            proceed(
+              fromAmount,
+              simulation.txFee,
+              slippage,
+              invalidNextTransaction,
+            )
           }
         >
           Proceed

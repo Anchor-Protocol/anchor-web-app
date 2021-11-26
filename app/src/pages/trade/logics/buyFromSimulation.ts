@@ -3,7 +3,6 @@ import { terraswap } from '@anchor-protocol/types';
 import { AnchorTax } from '@anchor-protocol/app-fns';
 import { min } from '@libs/big-math';
 import big, { Big, BigSource } from 'big.js';
-import { MAX_SPREAD } from 'pages/trade/env';
 import { TradeSimulation } from 'pages/trade/models/tradeSimulation';
 
 export function buyFromSimulation(
@@ -11,6 +10,7 @@ export function buyFromSimulation(
   toAmount: u<ANC>,
   { taxRate, maxTaxUUSD }: AnchorTax,
   fixedGas: u<UST<BigSource>>,
+  maxSpread: number,
 ): TradeSimulation<ANC, UST, UST> | null {
   try {
     const beliefPrice = big(simulation.return_amount).div(toAmount);
@@ -24,7 +24,7 @@ export function buyFromSimulation(
       .div(beliefPrice)
       .minus(tax);
 
-    const rate = big(1).minus(MAX_SPREAD);
+    const rate = big(1).minus(maxSpread);
 
     return {
       ...simulation,

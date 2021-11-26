@@ -124,6 +124,10 @@ export const Trade = styled(TradeBase)`
     }
   }
 
+  .slippage {
+    margin-bottom: 40px;
+  }
+
   .receipt {
     margin-bottom: 40px;
   }
