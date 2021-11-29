@@ -10,7 +10,7 @@ import { ANCHOR_TX_KEY } from '../../env';
 export interface BondSwapTxParams {
   burnAmount: bLuna;
   beliefPrice: Rate;
-  maxSpread: Rate;
+  maxSpread: number;
   onTxSucceed?: () => void;
 }
 
@@ -36,7 +36,7 @@ export function useBondSwapTx() {
         // fabricateTerraswapSwapbLuna
         amount: burnAmount,
         belief_price: beliefPrice,
-        max_spread: maxSpread,
+        max_spread: maxSpread.toString(),
         address: connectedWallet.walletAddress,
         // post
         network: connectedWallet.network,

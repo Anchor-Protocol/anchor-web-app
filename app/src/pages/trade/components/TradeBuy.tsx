@@ -63,7 +63,7 @@ interface Item {
 const fromCurrencies: Item[] = [{ label: 'UST', value: 'ust' }];
 const toCurrencies: Item[] = [{ label: 'ANC', value: 'anc' }];
 
-const slippageValues = [0.001, 0.005, 0.01];
+const slippageValues = [0.01, 0.03, 0.05];
 
 export function TradeBuy() {
   // ---------------------------------------------
@@ -87,7 +87,7 @@ export function TradeBuy() {
   const [fromAmount, setFromAmount] = useState<UST>('' as UST);
   const [toAmount, setToAmount] = useState<ANC>('' as ANC);
 
-  const [slippage, setSlippage] = useState<number>(0.01);
+  const [slippage, setSlippage] = useState<number>(0.05);
 
   const [resolveSimulation, simulation] = useResolveLast<
     TradeSimulation<ANC, UST, Token> | undefined | null
