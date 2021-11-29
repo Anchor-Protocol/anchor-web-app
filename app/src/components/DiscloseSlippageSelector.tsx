@@ -40,6 +40,8 @@ function Component({
 
 const StyledComponent = styled(Component)`
   summary {
+    text-align: right;
+
     font-size: 13px;
     line-height: 1.2;
 
@@ -59,6 +61,9 @@ const StyledComponent = styled(Component)`
 
   .selector {
     margin-top: 10px;
+
+    display: flex;
+    justify-content: flex-end;
   }
 `;
 
