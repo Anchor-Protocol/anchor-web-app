@@ -30,10 +30,7 @@ import big from 'big.js';
 import { DiscloseSlippageSelector } from 'components/DiscloseSlippageSelector';
 import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
-import {
-  SlippageSelectorNegativeHelpText,
-  SlippageSelectorPositiveHelpText,
-} from 'components/SlippageSelector';
+import { SlippageSelectorNegativeHelpText } from 'components/SlippageSelector';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
@@ -405,9 +402,9 @@ export function Swap() {
               The transaction may fail
             </SlippageSelectorNegativeHelpText>
           ) : slippage > FRONTRUN_SLIPPAGE ? (
-            <SlippageSelectorPositiveHelpText>
+            <SlippageSelectorNegativeHelpText>
               The transaction may be frontrun
-            </SlippageSelectorPositiveHelpText>
+            </SlippageSelectorNegativeHelpText>
           ) : undefined
         }
       />

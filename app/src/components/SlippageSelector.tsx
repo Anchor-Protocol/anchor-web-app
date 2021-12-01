@@ -147,7 +147,7 @@ const StyledComponent = styled(Component)`
   footer {
     position: absolute;
     left: 0;
-    bottom: -20px;
+    bottom: -23px;
   }
 `;
 
@@ -155,12 +155,12 @@ export const SlippageSelector = fixHMR(StyledComponent);
 
 export const SlippageSelectorPositiveHelpText = styled.span`
   font-size: 12px;
-  font-weight: 500;
+  font-weight: normal;
   color: ${({ theme }) => theme.colors.positive};
 `;
 
 export const SlippageSelectorNegativeHelpText = styled.span`
   font-size: 12px;
-  font-weight: 500;
+  font-weight: normal;
   color: ${({ theme }) => theme.colors.negative};
 `;
