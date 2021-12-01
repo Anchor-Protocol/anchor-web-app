@@ -14,6 +14,7 @@ import { useAncPriceQuery } from '../../queries/anc/price';
 export interface AncBuyTxParams {
   fromAmount: UST;
   txFee: u<UST>;
+  maxSpread: number;
 
   onTxSucceed?: () => void;
 }
@@ -33,7 +34,7 @@ export function useAncBuyTx() {
   const { data: { ancPrice } = {} } = useAncPriceQuery();
 
   const stream = useCallback(
-    ({ fromAmount, txFee, onTxSucceed }: AncBuyTxParams) => {
+    ({ fromAmount, txFee, maxSpread, onTxSucceed }: AncBuyTxParams) => {
       if (!connectedWallet || !connectedWallet.availablePost || !ancPrice) {
         throw new Error('Can not post!');
       }
@@ -46,7 +47,7 @@ export function useAncBuyTx() {
         beliefPrice: formatExecuteMsgNumber(
           big(ancPrice.USTPoolSize).div(ancPrice.ANCPoolSize),
         ),
-        maxSpread: '0.1',
+        maxSpread: maxSpread.toString(),
         // post
         tax,
         network: connectedWallet.network,

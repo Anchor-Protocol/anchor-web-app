@@ -168,6 +168,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                       .filter(({ type }) => type !== ConnectType.READONLY)
                       .map(({ type, icon, name, identifier }) => (
                         <FlatButton
+                          key={'connection' + type + identifier}
                           className="connect"
                           onClick={() => {
                             connect(type, identifier);

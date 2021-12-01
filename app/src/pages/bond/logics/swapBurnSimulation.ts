@@ -3,16 +3,15 @@ import { terraswap } from '@anchor-protocol/types';
 import { AnchorTax } from '@anchor-protocol/app-fns';
 import { min } from '@libs/big-math';
 import big, { Big } from 'big.js';
-import { MAX_SPREAD } from 'pages/bond/env';
 import { SwapSimulation } from '../models/swapSimulation';
 
 export function swapBurnSimulation(
   simulation: terraswap.pair.SimulationResponse<Luna>,
   getAmount: u<Luna>,
   { taxRate, maxTaxUUSD }: AnchorTax,
+  maxSpread: number,
 ): SwapSimulation<Luna, bLuna> {
   const beliefPrice = big(1).div(big(simulation.return_amount).div(getAmount));
-  const maxSpread = MAX_SPREAD;
 
   const tax = min(
     big(getAmount)
@@ -32,7 +31,6 @@ export function swapBurnSimulation(
     minimumReceived,
     swapFee,
     beliefPrice: beliefPrice.toFixed() as Rate,
-    maxSpread: maxSpread.toString() as Rate,
 
     burnAmount: big(getAmount).div(beliefPrice).toString() as u<bLuna>,
   };

@@ -1,3 +1,10 @@
+import { validateTxFee } from '@anchor-protocol/app-fns';
+import {
+  useAnchorWebapp,
+  useAncPriceQuery,
+  useAncSellTx,
+} from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   ANC_INPUT_MAXIMUM_INTEGER_POINTS,
@@ -8,12 +15,6 @@ import {
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
 } from '@anchor-protocol/notation';
 import { ANC, NativeDenom, terraswap, u, UST } from '@anchor-protocol/types';
-import {
-  useAnchorWebapp,
-  useAncPriceQuery,
-  useAncSellTx,
-} from '@anchor-protocol/app-provider';
-import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { terraswapSimulationQuery } from '@libs/app-fns';
 import { useFixedFee } from '@libs/app-provider';
 import { demicrofy, formatFluidDecimalPoints, microfy } from '@libs/formatter';
@@ -26,12 +27,13 @@ import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
+import { DiscloseSlippageSelector } from 'components/DiscloseSlippageSelector';
 import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
-import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { SlippageSelectorNegativeHelpText } from 'components/SlippageSelector';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
+import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { validateTxFee } from '@anchor-protocol/app-fns';
 import { sellFromSimulation } from 'pages/trade/logics/sellFromSimulation';
 import { sellToSimulation } from 'pages/trade/logics/sellToSimulation';
 import { TradeSimulation } from 'pages/trade/models/tradeSimulation';
@@ -48,8 +50,12 @@ interface Item {
   value: string;
 }
 
-const fromCurrencies: Item[] = [{ label: 'ANC', value: 'anc' }];
-const toCurrencies: Item[] = [{ label: 'UST', value: 'ust' }];
+const FROM_CURRENCIES: Item[] = [{ label: 'ANC', value: 'anc' }];
+const TO_CURRENCIES: Item[] = [{ label: 'UST', value: 'ust' }];
+
+const SLIPPAGE_VALUES = [0.001, 0.005, 0.01];
+const LOW_SLIPPAGE = 0.005;
+const FRONTRUN_SLIPPAGE = 0.05;
 
 export function TradeSell() {
   // ---------------------------------------------
@@ -71,14 +77,16 @@ export function TradeSell() {
   const [fromAmount, setFromAmount] = useState<ANC>('' as ANC);
   const [toAmount, setToAmount] = useState<UST>('' as UST);
 
+  const [slippage, setSlippage] = useState<number>(0.01);
+
   const [resolveSimulation, simulation] = useResolveLast<
     TradeSimulation<UST, ANC, ANC> | undefined | null
   >(() => null);
 
   const [fromCurrency, setFromCurrency] = useState<Item>(
-    () => fromCurrencies[0],
+    () => FROM_CURRENCIES[0],
   );
-  const [toCurrency, setToCurrency] = useState<Item>(() => toCurrencies[0]);
+  const [toCurrency, setToCurrency] = useState<Item>(() => TO_CURRENCIES[0]);
 
   // ---------------------------------------------
   // queries
@@ -121,20 +129,20 @@ export function TradeSell() {
   // ---------------------------------------------
   const updateFromCurrency = useCallback((nextFromCurrencyValue: string) => {
     setFromCurrency(
-      fromCurrencies.find(({ value }) => nextFromCurrencyValue === value) ??
-        fromCurrencies[0],
+      FROM_CURRENCIES.find(({ value }) => nextFromCurrencyValue === value) ??
+        FROM_CURRENCIES[0],
     );
   }, []);
 
   const updateToCurrency = useCallback((nextToCurrencyValue: string) => {
     setToCurrency(
-      toCurrencies.find(({ value }) => nextToCurrencyValue === value) ??
-        toCurrencies[0],
+      TO_CURRENCIES.find(({ value }) => nextToCurrencyValue === value) ??
+        TO_CURRENCIES[0],
     );
   }, []);
 
   const updateFromAmount = useCallback(
-    async (nextFromAmount: string) => {
+    async (nextFromAmount: string, maxSpread: number) => {
       if (nextFromAmount.trim().length === 0) {
         setToAmount('' as UST);
         setFromAmount('' as ANC);
@@ -169,6 +177,7 @@ export function TradeSell() {
                   amount,
                   bank.tax,
                   fixedFee,
+                  maxSpread,
                 )
               : undefined;
           }),
@@ -186,7 +195,7 @@ export function TradeSell() {
   );
 
   const updateToAmount = useCallback(
-    (nextToAmount: string) => {
+    (nextToAmount: string, maxSpread: number) => {
       if (nextToAmount.trim().length === 0) {
         setFromAmount('' as ANC);
         setToAmount('' as UST);
@@ -221,6 +230,7 @@ export function TradeSell() {
                   amount,
                   bank.tax,
                   fixedFee,
+                  maxSpread,
                 )
               : undefined;
           }),
@@ -236,19 +246,28 @@ export function TradeSell() {
     ],
   );
 
+  const updateSlippage = useCallback(
+    (nextSlippage: number) => {
+      setSlippage(nextSlippage);
+      updateFromAmount(fromAmount, nextSlippage);
+    },
+    [fromAmount, updateFromAmount],
+  );
+
   const init = useCallback(() => {
     setToAmount('' as UST);
     setFromAmount('' as ANC);
   }, []);
 
   const proceed = useCallback(
-    (burnAmount: ANC) => {
+    (burnAmount: ANC, maxSpread: number) => {
       if (!connectedWallet || !sell) {
         return;
       }
 
       sell({
         burnAmount,
+        maxSpread,
         onTxSucceed: () => {
           init();
         },
@@ -307,6 +326,7 @@ export function TradeSell() {
                 onClick={() =>
                   updateFromAmount(
                     formatANCInput(demicrofy(bank.tokenBalances.uANC)),
+                    slippage,
                   )
                 }
               >
@@ -320,10 +340,12 @@ export function TradeSell() {
         <MuiNativeSelect
           value={fromCurrency}
           onChange={({ target }) => updateFromCurrency(target.value)}
-          IconComponent={fromCurrencies.length < 2 ? BlankComponent : undefined}
-          disabled={fromCurrencies.length < 2}
+          IconComponent={
+            FROM_CURRENCIES.length < 2 ? BlankComponent : undefined
+          }
+          disabled={FROM_CURRENCIES.length < 2}
         >
-          {fromCurrencies.map(({ label, value }) => (
+          {FROM_CURRENCIES.map(({ label, value }) => (
             <option key={value} value={value}>
               {label}
             </option>
@@ -336,7 +358,7 @@ export function TradeSell() {
           maxIntegerPoinsts={ANC_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={ANC_INPUT_MAXIMUM_DECIMAL_POINTS}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
-            updateFromAmount(target.value)
+            updateFromAmount(target.value, slippage)
           }
         />
       </SelectAndTextInputContainer>
@@ -357,10 +379,10 @@ export function TradeSell() {
         <MuiNativeSelect
           value={toCurrency}
           onChange={({ target }) => updateToCurrency(target.value)}
-          IconComponent={toCurrencies.length < 2 ? BlankComponent : undefined}
-          disabled={toCurrencies.length < 2}
+          IconComponent={TO_CURRENCIES.length < 2 ? BlankComponent : undefined}
+          disabled={TO_CURRENCIES.length < 2}
         >
-          {toCurrencies.map(({ label, value }) => (
+          {TO_CURRENCIES.map(({ label, value }) => (
             <option key={value} value={value}>
               {label}
             </option>
@@ -373,10 +395,28 @@ export function TradeSell() {
           maxIntegerPoinsts={5}
           maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
-            updateToAmount(target.value)
+            updateToAmount(target.value, slippage)
           }
         />
       </SelectAndTextInputContainer>
+
+      <DiscloseSlippageSelector
+        className="slippage"
+        items={SLIPPAGE_VALUES}
+        value={slippage}
+        onChange={updateSlippage}
+        helpText={
+          slippage < LOW_SLIPPAGE ? (
+            <SlippageSelectorNegativeHelpText>
+              The transaction may fail
+            </SlippageSelectorNegativeHelpText>
+          ) : slippage > FRONTRUN_SLIPPAGE ? (
+            <SlippageSelectorNegativeHelpText>
+              The transaction may be frontrun
+            </SlippageSelectorNegativeHelpText>
+          ) : undefined
+        }
+      />
 
       {fromAmount.length > 0 && simulation && (
         <TxFeeList className="receipt">
@@ -423,7 +463,7 @@ export function TradeSell() {
             !!invalidFromAmount ||
             big(simulation?.swapFee ?? 0).lte(0)
           }
-          onClick={() => proceed(fromAmount)}
+          onClick={() => proceed(fromAmount, slippage)}
         >
           Proceed
         </ActionButton>

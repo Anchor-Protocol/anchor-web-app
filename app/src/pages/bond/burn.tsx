@@ -86,6 +86,10 @@ export const Burn = styled(BurnBase)`
     }
   }
 
+  .slippage {
+    margin-bottom: 40px;
+  }
+
   .receipt {
     margin-bottom: 40px;
   }
