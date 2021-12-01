@@ -30,7 +30,10 @@ import big from 'big.js';
 import { DiscloseSlippageSelector } from 'components/DiscloseSlippageSelector';
 import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
-import { SlippageSelectorNegativeHelpText } from 'components/SlippageSelector';
+import {
+  SlippageSelectorNegativeHelpText,
+  SlippageSelectorPositiveHelpText,
+} from 'components/SlippageSelector';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
@@ -53,10 +56,12 @@ interface Item {
   value: string;
 }
 
-const burnCurrencies: Item[] = [{ label: 'bLUNA', value: 'bluna' }];
-const getCurrencies: Item[] = [{ label: 'LUNA', value: 'luna' }];
+const BURN_CURRENCIES: Item[] = [{ label: 'bLUNA', value: 'bluna' }];
+const GET_CURRENCIES: Item[] = [{ label: 'LUNA', value: 'luna' }];
 
-const slippageValues = [0.01, 0.03, 0.05];
+const SLIPPAGE_VALUES = [0.01, 0.03, 0.05];
+const LOW_SLIPPAGE = 0.03;
+const FRONTRUN_SLIPPAGE = 0.15;
 
 export function Swap() {
   // ---------------------------------------------
@@ -83,9 +88,9 @@ export function Swap() {
   >(() => null);
 
   const [burnCurrency, setBurnCurrency] = useState<Item>(
-    () => burnCurrencies[0],
+    () => BURN_CURRENCIES[0],
   );
-  const [getCurrency, setGetCurrency] = useState<Item>(() => getCurrencies[0]);
+  const [getCurrency, setGetCurrency] = useState<Item>(() => GET_CURRENCIES[0]);
 
   // ---------------------------------------------
   // queries
@@ -125,15 +130,15 @@ export function Swap() {
   // ---------------------------------------------
   const updateBurnCurrency = useCallback((nextBurnCurrencyValue: string) => {
     setBurnCurrency(
-      burnCurrencies.find(({ value }) => nextBurnCurrencyValue === value) ??
-        burnCurrencies[0],
+      BURN_CURRENCIES.find(({ value }) => nextBurnCurrencyValue === value) ??
+        BURN_CURRENCIES[0],
     );
   }, []);
 
   const updateGetCurrency = useCallback((nextGetCurrencyValue: string) => {
     setGetCurrency(
-      getCurrencies.find(({ value }) => nextGetCurrencyValue === value) ??
-        getCurrencies[0],
+      GET_CURRENCIES.find(({ value }) => nextGetCurrencyValue === value) ??
+        GET_CURRENCIES[0],
     );
   }, []);
 
@@ -329,10 +334,12 @@ export function Swap() {
         <MuiNativeSelect
           value={burnCurrency}
           onChange={({ target }) => updateBurnCurrency(target.value)}
-          IconComponent={burnCurrencies.length < 2 ? BlankComponent : undefined}
-          disabled={burnCurrencies.length < 2}
+          IconComponent={
+            BURN_CURRENCIES.length < 2 ? BlankComponent : undefined
+          }
+          disabled={BURN_CURRENCIES.length < 2}
         >
-          {burnCurrencies.map(({ label, value }) => (
+          {BURN_CURRENCIES.map(({ label, value }) => (
             <option key={value} value={value}>
               {label}
             </option>
@@ -366,10 +373,10 @@ export function Swap() {
         <MuiNativeSelect
           value={getCurrency}
           onChange={({ target }) => updateGetCurrency(target.value)}
-          IconComponent={getCurrencies.length < 2 ? BlankComponent : undefined}
-          disabled={getCurrencies.length < 2}
+          IconComponent={GET_CURRENCIES.length < 2 ? BlankComponent : undefined}
+          disabled={GET_CURRENCIES.length < 2}
         >
-          {getCurrencies.map(({ label, value }) => (
+          {GET_CURRENCIES.map(({ label, value }) => (
             <option key={value} value={value}>
               {label}
             </option>
@@ -389,14 +396,18 @@ export function Swap() {
 
       <DiscloseSlippageSelector
         className="slippage"
-        items={slippageValues}
+        items={SLIPPAGE_VALUES}
         value={slippage}
         onChange={updateSlippage}
         helpText={
-          slippage < 0.005 ? (
+          slippage < LOW_SLIPPAGE ? (
             <SlippageSelectorNegativeHelpText>
-              Your transaction may fail
+              The transaction may fail
             </SlippageSelectorNegativeHelpText>
+          ) : slippage > FRONTRUN_SLIPPAGE ? (
+            <SlippageSelectorPositiveHelpText>
+              The transaction may be frontrun
+            </SlippageSelectorPositiveHelpText>
           ) : undefined
         }
       />

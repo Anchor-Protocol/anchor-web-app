@@ -1,3 +1,5 @@
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { useLocalStorageJson } from '@libs/use-local-storage';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import big from 'big.js';
@@ -30,7 +32,14 @@ function Component({
         }}
       >
         {open ? <ExpandLess /> : <ExpandMore />}
-        Slippage Tolerance: {big(value).mul(100).toFixed()}%
+        <IconSpan>
+          Slippage Tolerance{' '}
+          <InfoTooltip>
+            The transaction will revert if the price changes by more than the
+            defined percentage.{' '}
+          </InfoTooltip>
+          : {big(value).mul(100).toFixed()}%
+        </IconSpan>
       </summary>
 
       <SlippageSelector value={value} {...selectorProps} className="selector" />
@@ -40,8 +49,6 @@ function Component({
 
 const StyledComponent = styled(Component)`
   summary {
-    text-align: right;
-
     font-size: 13px;
     line-height: 1.2;
 
@@ -61,9 +68,6 @@ const StyledComponent = styled(Component)`
 
   .selector {
     margin-top: 10px;
-
-    display: flex;
-    justify-content: flex-end;
   }
 `;
 
