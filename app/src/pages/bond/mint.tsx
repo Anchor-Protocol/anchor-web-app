@@ -1,8 +1,7 @@
-import { StakingValidator, validateTxFee } from '@anchor-protocol/app-fns';
+import { validateTxFee } from '@anchor-protocol/app-fns';
 import {
   useBondBLunaExchangeRateQuery,
   useBondMintTx,
-  useBondValidators,
 } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import {
@@ -18,7 +17,6 @@ import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { HorizontalHeavyRuler } from '@libs/neumorphism-ui/components/HorizontalHeavyRuler';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
-import { NativeSelect } from '@libs/neumorphism-ui/components/NativeSelect';
 import { NumberMuiInput } from '@libs/neumorphism-ui/components/NumberMuiInput';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
@@ -71,15 +69,10 @@ function MintBase({ className }: MintProps) {
     () => bAssetCurrencies[0],
   );
 
-  const [selectedValidator, setSelectedValidator] =
-    useState<StakingValidator | null>(null);
-
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
   const bank = useAnchorBank();
-
-  const { data: { whitelistedValidators } = {} } = useBondValidators();
 
   const { data: { state: exchangeRate, parameters } = {} } =
     useBondBLunaExchangeRateQuery();
@@ -158,18 +151,17 @@ function MintBase({ className }: MintProps) {
   const init = useCallback(() => {
     setBondAmount('' as Luna);
     setMintAmount('' as bLuna);
-    setSelectedValidator(null);
   }, []);
 
   const proceed = useCallback(
-    (bondAmount: Luna, selectedValidator: string) => {
+    (bondAmount: Luna) => {
       if (!connectedWallet || !mint) {
         return;
       }
 
       mint({
         bondAmount,
-        validator: selectedValidator,
+        validator: '',
         onTxSucceed: () => {
           init();
         },
@@ -318,28 +310,6 @@ function MintBase({ className }: MintProps) {
 
       <HorizontalHeavyRuler />
 
-      {/* Validators */}
-      <NativeSelect
-        className="validator"
-        data-selected-value={selectedValidator?.OperatorAddress ?? ''}
-        value={selectedValidator?.OperatorAddress ?? ''}
-        onChange={({ target }: ChangeEvent<HTMLSelectElement>) =>
-          setSelectedValidator(
-            whitelistedValidators?.find(
-              ({ OperatorAddress }) => target.value === OperatorAddress,
-            ) ?? null,
-          )
-        }
-        disabled={whitelistedValidators?.length === 0}
-      >
-        <option value="">Select validator</option>
-        {whitelistedValidators?.map(({ Description, OperatorAddress }) => (
-          <option key={OperatorAddress} value={OperatorAddress}>
-            {Description.Moniker}
-          </option>
-        ))}
-      </NativeSelect>
-
       <TxFeeList className="receipt">
         {exchangeRate && (
           <SwapListItem
@@ -373,13 +343,9 @@ function MintBase({ className }: MintProps) {
             bondAmount.length === 0 ||
             big(bondAmount).lte(0) ||
             !!invalidBondAmount ||
-            !!invalidTxFee ||
-            !selectedValidator
+            !!invalidTxFee
           }
-          onClick={() =>
-            selectedValidator &&
-            proceed(bondAmount, selectedValidator.OperatorAddress)
-          }
+          onClick={() => proceed(bondAmount)}
         >
           Mint
         </ActionButton>
@@ -416,15 +382,6 @@ export const Mint = styled(MintBase)`
 
   hr {
     margin: 40px 0;
-  }
-
-  .validator {
-    width: 100%;
-    margin-bottom: 40px;
-
-    &[data-selected-value=''] {
-      color: ${({ theme }) => theme.dimTextColor};
-    }
   }
 
   .receipt {
