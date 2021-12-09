@@ -18,4 +18,5 @@ export interface AppConstants {
   fixedGas: Gas;
   blocksPerYear: number;
   gasAdjustment: Rate<number>;
+  burnGasWanted: Gas;
 }
