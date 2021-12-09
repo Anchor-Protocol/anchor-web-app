@@ -36,7 +36,7 @@ export function useBondBurnTx() {
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: fixedFee,
-        gasFee: constants.gasWanted,
+        gasFee: constants.bondGasWanted,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
@@ -53,7 +53,7 @@ export function useBondBurnTx() {
     [
       connectedWallet,
       fixedFee,
-      constants.gasWanted,
+      constants.bondGasWanted,
       constants.gasAdjustment,
       addressProvider,
       queryClient,
