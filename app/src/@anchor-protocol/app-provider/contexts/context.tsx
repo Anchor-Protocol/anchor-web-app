@@ -84,6 +84,9 @@ class AddressProviderFromContractAddress implements AddressProvider {
   bLunaHub() {
     return this.data.bluna.hub;
   }
+  bLunaValidatorsRegistry() {
+    return this.data.bluna.validatorsRegistry;
+  }
   bLunaToken() {
     return this.data.cw20.bLuna;
   }

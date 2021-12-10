@@ -84,6 +84,7 @@ const BOMBAY_CONTRACT_ADDRESS = {
   bLunaHub: 'terra1fflas6wv4snv8lsda9knvq2w0cyt493r8puh2e',
   bLunaToken: 'terra1u0t35drzyy0mujj8rkdyzhe264uls4ug3wdp3x',
   bLunaReward: 'terra1ac24j6pdxh53czqyrkr6ygphdeftg7u3958tl2',
+  bLunaValidatorsRegistry: '',
   bLunaAirdrop: 'terra1334h20c9ewxguw9p9vdxzmr8994qj4qu77ux6q',
   bEthReward: 'terra1ja3snkedk4t0zp7z3ljd064hcln8dsv5x004na',
   bEthToken: 'terra19mkj9nec6e3y5754tlnuz4vem7lzh4n0lc2s3l',
@@ -118,6 +119,7 @@ const COLUMNBUS_CONTRACT_ADDRESS = {
   bLunaToken: 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp',
   bLunaReward: 'terra17yap3mhph35pcwvhza38c2lkj7gzywzy05h7l0',
   bLunaAirdrop: 'terra199t7hg7w5vymehhg834r6799pju2q3a0ya7ae9',
+  bLunaValidatorsRegistry: 'terra10wt548y4y3xeqfrqsgqlqh424lll8fqxp6dyed',
   bEthReward: 'terra1939tzfn4hn960ychpcsjshu8jds3zdwlp8jed9',
   bEthToken: 'terra1dzhzukyezv0etz22ud940z7adyv7xgcjkahuun',
   mmInterestModel: 'terra1kq8zzq5hufas9t0kjsjc62t2kucfnx8txf547n',
@@ -181,6 +183,8 @@ export const ANCHOR_CONTRACT_ADDRESS = (
       reward: addressProvider.bLunaReward() as HumanAddr,
       hub: addressProvider.bLunaHub() as HumanAddr,
       airdropRegistry: addressProvider.airdrop() as HumanAddr,
+      validatorsRegistry:
+        addressProvider.bLunaValidatorsRegistry() as HumanAddr,
     },
     beth: {
       reward: addressProvider.bEthReward() as HumanAddr,

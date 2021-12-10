@@ -9,7 +9,6 @@ import { ANCHOR_TX_KEY } from '../../env';
 
 export interface BondMintTxParams {
   bondAmount: Luna;
-  validator: string;
   onTxSucceed?: () => void;
 }
 
@@ -24,7 +23,7 @@ export function useBondMintTx() {
   const refetchQueries = useRefetchQueries();
 
   const stream = useCallback(
-    ({ bondAmount, validator, onTxSucceed }: BondMintTxParams) => {
+    ({ bondAmount, onTxSucceed }: BondMintTxParams) => {
       if (!connectedWallet || !connectedWallet.availablePost) {
         throw new Error('Can not post!');
       }
@@ -32,7 +31,6 @@ export function useBondMintTx() {
       return bondMintTx({
         // fabricatebAssetBond
         amount: bondAmount,
-        validator,
         address: connectedWallet.walletAddress,
         // post
         network: connectedWallet.network,

@@ -10,6 +10,8 @@ export interface AnchorContractAddress extends AppContractAddress {
     hub: HumanAddr;
     /** addressProvider.airdrop() */
     airdropRegistry: HumanAddr;
+    /** addressProvider.bLunaValidatorsRegistry() */
+    validatorsRegistry: HumanAddr;
   };
   beth: {
     /** addressProvider.bEthReward() */
