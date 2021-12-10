@@ -38,7 +38,7 @@ export function useBondMintTx() {
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: fixedFee,
-        gasFee: constants.gasWanted,
+        gasFee: constants.bondGasWanted,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
@@ -55,7 +55,7 @@ export function useBondMintTx() {
     [
       connectedWallet,
       fixedFee,
-      constants.gasWanted,
+      constants.bondGasWanted,
       constants.gasAdjustment,
       addressProvider,
       queryClient,

@@ -76,6 +76,7 @@ export function ANCHOR_CONSTANTS(network: NetworkInfo): AnchorConstants {
     gasAdjustment: 1.6 as Rate<number>,
     airdropGasWanted: 300_000 as Gas,
     airdropGas: 334_211 as Gas,
+    bondGasWanted: 1_600_000 as Gas,
   };
 }
 
