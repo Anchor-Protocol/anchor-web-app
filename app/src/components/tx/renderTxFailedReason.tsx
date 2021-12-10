@@ -1,4 +1,4 @@
-import { PollingTimeout } from '@libs/app-fns';
+import { PollingTimeout, TxErrorRendering } from '@libs/app-fns';
 import {
   CreateTxFailed,
   Timeout,
@@ -6,7 +6,6 @@ import {
   TxUnspecifiedError,
   UserDenied,
 } from '@terra-money/wallet-provider';
-import { TxErrorRendering } from '@libs/app-fns';
 import React, { ReactNode } from 'react';
 
 // ----------------------------------------------------------------
@@ -195,7 +194,7 @@ export function renderTxFailedReason({
   ) {
     return (
       <>
-        <h2>Transaction failed</h2>
+        <h2>Transaction failed (unspecified)</h2>
         <ErrorMessageView error={error} errorId={errorId}>
           {txUnspecifiedErrorMessage(error.message)}
         </ErrorMessageView>
@@ -227,7 +226,15 @@ function ErrorMessageView({
   return (
     <div>
       {error instanceof Error && error.message.length > 0 ? (
-        <div style={{ lineHeight: '1.8em' }}>{error.message}</div>
+        <div style={{ lineHeight: '1.8em' }}>
+          <details>
+            <summary>{error.message}</summary>
+            <ul style={{ fontSize: '0.8em' }}>
+              <li>Error type: {error.name}</li>
+              <li>Error stack: {error.stack}</li>
+            </ul>
+          </details>
+        </div>
       ) : (
         children
       )}
