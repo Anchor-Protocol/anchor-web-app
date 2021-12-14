@@ -6,7 +6,7 @@ import { Chart } from 'chart.js';
 import React, { Component, createRef } from 'react';
 import styled, { DefaultTheme } from 'styled-components';
 import { ChartTooltip } from './ChartTooltip';
-import { mediumDay, xTimestampAixs } from './internal/axisUtils';
+import { mediumDay, xTimestampAxis } from './internal/axisUtils';
 
 export interface ANCPriceChartProps {
   data: MarketAncHistory[];
@@ -51,7 +51,7 @@ export class ANCPriceChart extends Component<ANCPriceChartProps> {
 
   componentDidUpdate(prevProps: Readonly<ANCPriceChartProps>) {
     if (prevProps.data !== this.props.data) {
-      this.chart.data.labels = xTimestampAixs(
+      this.chart.data.labels = xTimestampAxis(
         this.props.data.map(({ timestamp }) => timestamp),
       );
       this.chart.data.datasets[0].data = this.props.data.map(({ anc_price }) =>
@@ -205,7 +205,7 @@ export class ANCPriceChart extends Component<ANCPriceChartProps> {
         },
       },
       data: {
-        labels: xTimestampAixs(
+        labels: xTimestampAxis(
           this.props.data.map(({ timestamp }) => timestamp),
         ),
         datasets: [

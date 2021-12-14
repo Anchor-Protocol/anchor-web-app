@@ -26,7 +26,7 @@ function checkTickPrint(i: number, length: number, timestamp: number): boolean {
   return false;
 }
 
-export function xTimestampAixs(datetimes: JSDateTime[]): string[] {
+export function xTimestampAxis(datetimes: JSDateTime[]): string[] {
   return datetimes.map((timestamp, i) => {
     return i === datetimes.length - 1
       ? 'Now'
