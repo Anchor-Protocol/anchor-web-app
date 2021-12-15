@@ -80,7 +80,7 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
         <AnimateNumber format={formatUSTWithPostfixUnits}>
           {demicrofy(totalDeposit)}
         </AnimateNumber>{' '}
-        UST
+        <span className="denom">UST</span>
         {totalDeposit.gt(MILLION * MICRO) && (
           <SubAmount style={{ fontSize: '16px' }}>
             <AnimateNumber format={formatUST}>

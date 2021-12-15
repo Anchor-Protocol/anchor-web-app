@@ -93,7 +93,8 @@ export const Borrow = styled(BorrowBase)`
           text-align: right;
 
           &:first-child {
-            font-weight: bold;
+            font-size: 12px;
+            font-weight: 500;
             color: ${({ theme }) => theme.textColor};
             text-align: left;
           }
@@ -106,12 +107,12 @@ export const Borrow = styled(BorrowBase)`
 
           .value,
           .coin {
-            font-size: 18px;
+            font-size: 16px;
           }
 
           .volatility,
           .name {
-            font-size: 13px;
+            font-size: 12px;
             color: ${({ theme }) => theme.dimTextColor};
           }
 
@@ -151,8 +152,11 @@ export const Borrow = styled(BorrowBase)`
 
           &:last-child {
             button {
-              padding-left: 20px;
-              padding-right: 20px;
+              height: 32px;
+              font-size: 12px;
+              font-weight: 500;
+
+              padding: 0 24px;
 
               &:not(:last-child) {
                 margin-right: 10px;

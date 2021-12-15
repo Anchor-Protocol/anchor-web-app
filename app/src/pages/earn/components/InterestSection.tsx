@@ -17,7 +17,6 @@ import { TooltipLabel } from '@libs/neumorphism-ui/components/TooltipLabel';
 import { AnimateNumber } from '@libs/ui';
 import big from 'big.js';
 import React, { useMemo } from 'react';
-import { useTheme } from 'styled-components';
 
 export interface InterestSectionProps {
   className?: string;
@@ -27,7 +26,7 @@ export function InterestSection({ className }: InterestSectionProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const theme = useTheme();
+  //const theme = useTheme();
 
   const { constants } = useAnchorWebapp();
 
@@ -83,7 +82,7 @@ export function InterestSection({ className }: InterestSectionProps) {
           className="name"
           title="Annual Percentage Yield"
           placement="top"
-          style={{ borderColor: theme.colors.positive }}
+          style={{ border: 'none' }}
         >
           APY
         </TooltipLabel>

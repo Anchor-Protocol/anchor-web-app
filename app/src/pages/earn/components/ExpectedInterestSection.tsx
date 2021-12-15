@@ -105,7 +105,7 @@ export function ExpectedInterestSection({
               ? demicrofy(expectedInterest)
               : (0 as UST<number>)}
           </AnimateNumber>{' '}
-          UST
+          <span className="denom">UST</span>
         </span>
       </div>
 

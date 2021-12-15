@@ -1,5 +1,5 @@
-import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
-import { UST } from '@anchor-protocol/types';
+import { formatToken } from '@libs/formatter';
+import { UST } from '@libs/types';
 import { AnimateNumber } from '@libs/ui';
 import React, { useCallback, useState } from 'react';
 
@@ -20,7 +20,7 @@ export const Basic = () => {
 
   return (
     <div>
-      <AnimateNumber format={formatUSTWithPostfixUnits}>{n}</AnimateNumber>
+      <AnimateNumber format={formatToken}>{n}</AnimateNumber>
       <div>
         <button onClick={updateNumber}>Update Number</button>
       </div>

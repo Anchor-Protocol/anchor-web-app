@@ -212,7 +212,7 @@ export const Circles = styled.div`
     display: flex;
     align-items: center;
 
-    font-size: 13px;
+    font-size: 12px;
     color: ${({ theme }) => theme.dimTextColor};
 
     word-break: keep-all;
@@ -225,6 +225,10 @@ export const Circles = styled.div`
 
     > :nth-child(odd) {
       margin-right: 10px;
+    }
+
+    > :nth-child(even) {
+      line-height: 18px;
     }
   }
 
@@ -261,8 +265,8 @@ const StyledComponent = styled(Component)`
     h2 {
       flex: 1;
 
-      font-size: 13px;
-      font-weight: bold;
+      font-size: 12px;
+      font-weight: 500;
     }
 
     .loan-buttons {
@@ -286,16 +290,16 @@ const StyledComponent = styled(Component)`
     height: auto;
 
     display: grid;
-    grid-template-rows: 20px 100px 1fr;
+    grid-template-rows: 30px 84px 1fr;
 
     h3 {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 500;
     }
 
     .value {
-      font-size: 40px;
-      font-weight: 300;
+      font-size: 32px;
+      font-weight: 500;
     }
 
     &.apy {

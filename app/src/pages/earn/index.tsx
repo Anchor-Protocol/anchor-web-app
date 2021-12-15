@@ -1,6 +1,7 @@
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { FlexTitleContainer, PageTitle } from 'components/primitives/PageTitle';
 import { links, screen } from 'env';
+import { fixHMR } from 'fix-hmr';
 import React from 'react';
 import styled from 'styled-components';
 import { BuyUstButton } from './components/BuyUstButton';
@@ -13,7 +14,7 @@ export interface EarnProps {
   className?: string;
 }
 
-function EarnBase({ className }: EarnProps) {
+function Component({ className }: EarnProps) {
   return (
     <PaddedLayout className={className}>
       <FlexTitleContainer>
@@ -44,13 +45,13 @@ const Buttons = styled.div`
   }
 `;
 
-export const Earn = styled(EarnBase)`
+const StyledComponent = styled(Component)`
   // ---------------------------------------------
   // style
   // ---------------------------------------------
   h2 {
     margin: 0;
-    font-size: 15px;
+    font-size: 12px;
     font-weight: 500;
     letter-spacing: -0.3px;
     color: ${({ theme }) => theme.textColor};
@@ -66,10 +67,14 @@ export const Earn = styled(EarnBase)`
 
   .total-deposit {
     .amount {
-      font-size: 50px;
-      font-weight: 200;
-      letter-spacing: -1.5px;
+      font-size: 32px;
+      font-weight: 500;
+      letter-spacing: -0.3px;
       color: ${({ theme }) => theme.textColor};
+
+      .denom {
+        font-size: 18px;
+      }
     }
 
     .total-deposit-buttons {
@@ -101,10 +106,14 @@ export const Earn = styled(EarnBase)`
 
   .expected-interest {
     .amount {
-      font-size: 50px;
-      font-weight: 200;
-      letter-spacing: -1.5px;
+      font-size: 32px;
+      font-weight: 500;
+      letter-spacing: -0.3px;
       color: ${({ theme }) => theme.textColor};
+
+      .denom {
+        font-size: 18px;
+      }
     }
 
     .tab {
@@ -237,3 +246,5 @@ export const Earn = styled(EarnBase)`
     }
   }
 `;
+
+export const Earn = fixHMR(StyledComponent);

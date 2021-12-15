@@ -23,9 +23,11 @@ export function ParticipateInLiquidationsButton(buttonProps: ButtonBaseProps) {
 }
 
 const Button = styled(BorderButton)`
-  padding: 0 20px;
+  padding: 0 10px;
 
-  font-size: 14px;
+  border: none !important;
+
+  font-size: 16px;
   height: 34px;
 
   svg {
