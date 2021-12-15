@@ -88,12 +88,13 @@ export const StyledTotalClaimableRewards = styled(TotalClaimableRewardsBase)`
 
   header {
     h4 {
-      font-size: 16px;
+      font-size: 12px;
+      font-weight: 500;
       margin-bottom: 10px;
     }
 
     p:nth-of-type(1) {
-      font-size: clamp(20px, 8vw, 36px);
+      font-size: clamp(20px, 8vw, 32px);
       font-weight: 500;
 
       sub {
@@ -113,14 +114,14 @@ export const StyledTotalClaimableRewards = styled(TotalClaimableRewardsBase)`
     margin-top: 40px;
 
     h5 {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 500;
     }
 
     p {
       margin-top: 6px;
 
-      font-size: 28px;
+      font-size: 24px;
       font-weight: 500;
 
       sub {

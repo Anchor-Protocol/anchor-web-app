@@ -816,8 +816,8 @@ const StyledDashboard = styled(DashboardBase)`
   color: ${({ theme }) => theme.textColor};
 
   h2 {
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 12px;
+    font-weight: 500;
 
     margin-bottom: 8px;
 
@@ -837,12 +837,12 @@ const StyledDashboard = styled(DashboardBase)`
 
   h3 {
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 500;
     color: ${({ theme }) => theme.dimTextColor};
   }
 
   .amount {
-    font-size: 36px;
+    font-size: 32px;
     font-weight: 500;
 
     span:last-child {
@@ -1033,7 +1033,7 @@ const StyledDashboard = styled(DashboardBase)`
 
           .value,
           .coin {
-            font-size: 18px;
+            font-size: 16px;
           }
 
           .volatility,

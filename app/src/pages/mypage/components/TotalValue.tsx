@@ -265,12 +265,13 @@ export const StyledTotalValue = styled(TotalValueBase)`
     justify-content: space-between;
 
     h4 {
-      font-size: 16px;
+      font-size: 12px;
+      font-weight: 500;
       margin-bottom: 10px;
     }
 
     p {
-      font-size: clamp(20px, 8vw, 36px);
+      font-size: clamp(20px, 8vw, 32px);
       font-weight: 500;
 
       sub {

@@ -25,6 +25,7 @@ import { AnimateNumber } from '@libs/ui';
 import { ChevronRight } from '@material-ui/icons';
 import big, { Big } from 'big.js';
 import { Circles } from 'components/primitives/Circles';
+import { Sub } from 'components/Sub';
 import { screen } from 'env';
 import { ancGovernancePathname, ancUstLpPathname } from 'pages/trade/env';
 import React, { useMemo } from 'react';
@@ -146,7 +147,7 @@ function OverviewBase({ className }: OverviewProps) {
           <AnimateNumber format={formatUSTWithPostfixUnits}>
             {ancPrice?.ANCPrice ?? ('0' as UST)}
           </AnimateNumber>{' '}
-          UST
+          <Sub>UST</Sub>
         </div>
       </Section>
       <Section className="total-staked">
@@ -162,12 +163,16 @@ function OverviewBase({ className }: OverviewProps) {
           <AnimateNumber format={formatUTokenDecimal2}>
             {totalStaked}
           </AnimateNumber>{' '}
-          ANC{' '}
-          <sub>
-            (
-            <AnimateNumber format={formatRate}>{totalStakedRate}</AnimateNumber>
-            %)
-          </sub>
+          <Sub>
+            UST{' '}
+            <span>
+              (
+              <AnimateNumber format={formatRate}>
+                {totalStakedRate}
+              </AnimateNumber>
+              %)
+            </span>
+          </Sub>
         </div>
       </Section>
       <Section className="staking">
@@ -284,20 +289,23 @@ export const Overview = styled(OverviewBase)`
     }
 
     h2 {
-      font-size: 13px;
-      font-weight: 700;
+      font-size: 12px;
+      font-weight: 500;
 
       margin-bottom: 10px;
     }
 
     div {
-      font-size: 36px;
-      font-weight: 300;
+      font-size: 32px;
+      font-weight: 500;
 
       sub {
         font-size: 18px;
         vertical-align: middle;
-        color: ${({ theme }) => theme.dimTextColor};
+
+        span {
+          color: ${({ theme }) => theme.dimTextColor};
+        }
       }
     }
   }
@@ -369,7 +377,7 @@ export const Overview = styled(OverviewBase)`
     display: grid;
 
     grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(3, 200px);
+    grid-template-rows: repeat(3, 188px);
     grid-gap: 40px;
 
     .anc-price {
@@ -401,7 +409,7 @@ export const Overview = styled(OverviewBase)`
     display: grid;
 
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, 200px);
+    grid-template-rows: repeat(2, 188px);
     grid-gap: 40px;
 
     .anc-price {
