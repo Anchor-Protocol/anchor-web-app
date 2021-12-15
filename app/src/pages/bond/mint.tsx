@@ -1,5 +1,6 @@
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import {
+  useAnchorWebapp,
   useBondBLunaExchangeRateQuery,
   useBondMintTx,
 } from '@anchor-protocol/app-provider';
@@ -11,9 +12,10 @@ import {
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { bLuna, Luna } from '@anchor-protocol/types';
-import { useFixedFee } from '@libs/app-provider';
-import { demicrofy } from '@libs/formatter';
+import { bLuna, Gas, Luna, u, UST } from '@anchor-protocol/types';
+import { useEstimateFee, useFixedFee } from '@libs/app-provider';
+import { floor } from '@libs/big-math';
+import { demicrofy, MICRO } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { NumberMuiInput } from '@libs/neumorphism-ui/components/NumberMuiInput';
@@ -21,6 +23,7 @@ import { Section } from '@libs/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
+import { MsgExecuteContract } from '@terra-money/terra.js';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
@@ -30,7 +33,13 @@ import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { pegRecovery } from 'pages/bond/logics/pegRecovery';
 import { validateBondAmount } from 'pages/bond/logics/validateBondAmount';
-import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import React, {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import styled from 'styled-components';
 
 export interface MintProps {
@@ -51,7 +60,11 @@ function MintBase({ className }: MintProps) {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
+  const { contractAddress, gasPrice, constants } = useAnchorWebapp();
+
   const fixedFee = useFixedFee();
+
+  const estimateFee = useEstimateFee(connectedWallet?.walletAddress);
 
   const [mint, mintResult] = useBondMintTx();
 
@@ -60,6 +73,11 @@ function MintBase({ className }: MintProps) {
   // ---------------------------------------------
   const [bondAmount, setBondAmount] = useState<Luna>('' as Luna);
   const [mintAmount, setMintAmount] = useState<bLuna>('' as bLuna);
+
+  const [estimatedGasWanted, setEstimatedGasWanted] = useState<Gas>(
+    constants.bondGasWanted,
+  );
+  const [estimatedFee, setEstimatedFee] = useState<u<UST>>(fixedFee);
 
   const [bondCurrency, setBondCurrency] = useState<Item>(
     () => assetCurrencies[0],
@@ -93,6 +111,46 @@ function MintBase({ className }: MintProps) {
     () => !!connectedWallet && validateBondAmount(bondAmount, bank),
     [bank, bondAmount, connectedWallet],
   );
+
+  // ---------------------------------------------
+  // effects
+  // ---------------------------------------------
+  useEffect(() => {
+    if (!connectedWallet || bondAmount.length === 0) {
+      return;
+    }
+
+    estimateFee([
+      new MsgExecuteContract(
+        connectedWallet.terraAddress,
+        contractAddress.bluna.hub,
+        {
+          bond: {},
+        },
+        {
+          uluna: floor(big(bondAmount).mul(MICRO)).toFixed(),
+        },
+      ),
+    ]).then((estimated) => {
+      if (estimated) {
+        setEstimatedGasWanted(estimated.gasWanted);
+        setEstimatedFee(
+          big(estimated.txFee).mul(gasPrice.uusd).toFixed() as u<UST>,
+        );
+      } else {
+        setEstimatedGasWanted(constants.bondGasWanted);
+        setEstimatedFee(fixedFee);
+      }
+    });
+  }, [
+    bondAmount,
+    connectedWallet,
+    constants.bondGasWanted,
+    contractAddress.bluna.hub,
+    estimateFee,
+    fixedFee,
+    gasPrice.uusd,
+  ]);
 
   // ---------------------------------------------
   // callbacks
@@ -153,13 +211,15 @@ function MintBase({ className }: MintProps) {
   }, []);
 
   const proceed = useCallback(
-    (bondAmount: Luna) => {
+    (bondAmount: Luna, gasWanted: Gas, txFee: u<UST>) => {
       if (!connectedWallet || !mint) {
         return;
       }
 
       mint({
         bondAmount,
+        gasWanted,
+        txFee,
         onTxSucceed: () => {
           init();
         },
@@ -322,8 +382,8 @@ function MintBase({ className }: MintProps) {
           </TxFeeListItem>
         )}
         {bondAmount.length > 0 && (
-          <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
-            {formatUST(demicrofy(fixedFee))} UST
+          <TxFeeListItem label={<IconSpan>Estimated Tx Fee</IconSpan>}>
+            ≈ {formatUST(demicrofy(estimatedFee))} UST
           </TxFeeListItem>
         )}
       </TxFeeList>
@@ -341,7 +401,7 @@ function MintBase({ className }: MintProps) {
             !!invalidBondAmount ||
             !!invalidTxFee
           }
-          onClick={() => proceed(bondAmount)}
+          onClick={() => proceed(bondAmount, estimatedGasWanted, estimatedFee)}
         >
           Mint
         </ActionButton>

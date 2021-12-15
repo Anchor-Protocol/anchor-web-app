@@ -1,3 +1,11 @@
+import { createHookMsg } from '@anchor-protocol/anchor.js/dist/utils/cw20/create-hook-msg';
+import { validateTxFee } from '@anchor-protocol/app-fns';
+import {
+  useAnchorWebapp,
+  useBondBLunaExchangeRateQuery,
+  useBondBurnTx,
+} from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import {
   formatLuna,
   formatLunaInput,
@@ -6,30 +14,33 @@ import {
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import type { bLuna, Luna } from '@anchor-protocol/types';
-import {
-  useBondBLunaExchangeRateQuery,
-  useBondBurnTx,
-} from '@anchor-protocol/app-provider';
-import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
-import { useFixedFee } from '@libs/app-provider';
-import { demicrofy } from '@libs/formatter';
+import { Gas, u, UST } from '@anchor-protocol/types';
+import { useEstimateFee, useFixedFee } from '@libs/app-provider';
+import { floor } from '@libs/big-math';
+import { demicrofy, MICRO } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { NumberMuiInput } from '@libs/neumorphism-ui/components/NumberMuiInput';
 import { SelectAndTextInputContainer } from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
+import { MsgExecuteContract } from '@terra-money/terra.js';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
-import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
+import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { validateTxFee } from '@anchor-protocol/app-fns';
 import { pegRecovery } from 'pages/bond/logics/pegRecovery';
 import { validateBurnAmount } from 'pages/bond/logics/validateBurnAmount';
-import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import React, {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 interface Item {
   label: string;
@@ -45,7 +56,11 @@ export function Burn() {
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
+  const { contractAddress, gasPrice, constants } = useAnchorWebapp();
+
   const fixedFee = useFixedFee();
+
+  const estimateFee = useEstimateFee(connectedWallet?.walletAddress);
 
   const [burn, burnResult] = useBondBurnTx();
 
@@ -54,6 +69,11 @@ export function Burn() {
   // ---------------------------------------------
   const [burnAmount, setBurnAmount] = useState<bLuna>('' as bLuna);
   const [getAmount, setGetAmount] = useState<Luna>('' as Luna);
+
+  const [estimatedGasWanted, setEstimatedGasWanted] = useState<Gas>(
+    constants.bondGasWanted,
+  );
+  const [estimatedFee, setEstimatedFee] = useState<u<UST>>(fixedFee);
 
   const [burnCurrency, setBurnCurrency] = useState<Item>(
     () => bAssetCurrencies[0],
@@ -87,6 +107,50 @@ export function Burn() {
     () => !!connectedWallet && validateBurnAmount(burnAmount, bank),
     [bank, burnAmount, connectedWallet],
   );
+
+  // ---------------------------------------------
+  // effects
+  // ---------------------------------------------
+  useEffect(() => {
+    if (!connectedWallet || burnAmount.length === 0) {
+      return;
+    }
+
+    estimateFee([
+      new MsgExecuteContract(
+        connectedWallet.terraAddress,
+        contractAddress.cw20.bLuna,
+        {
+          send: {
+            contract: contractAddress.bluna.hub,
+            amount: floor(big(burnAmount).mul(MICRO)).toFixed(),
+            msg: createHookMsg({
+              unbond: {},
+            }),
+          },
+        },
+      ),
+    ]).then((estimated) => {
+      if (estimated) {
+        setEstimatedGasWanted(estimated.gasWanted);
+        setEstimatedFee(
+          big(estimated.txFee).mul(gasPrice.uusd).toFixed() as u<UST>,
+        );
+      } else {
+        setEstimatedGasWanted(constants.bondGasWanted);
+        setEstimatedFee(fixedFee);
+      }
+    });
+  }, [
+    burnAmount,
+    connectedWallet,
+    constants.bondGasWanted,
+    contractAddress.bluna.hub,
+    contractAddress.cw20.bLuna,
+    estimateFee,
+    fixedFee,
+    gasPrice.uusd,
+  ]);
 
   // ---------------------------------------------
   // callbacks
@@ -147,13 +211,15 @@ export function Burn() {
   }, []);
 
   const proceed = useCallback(
-    (burnAmount: bLuna) => {
+    (burnAmount: bLuna, gasWanted: Gas, txFee: u<UST>) => {
       if (!connectedWallet || !burn) {
         return;
       }
 
       burn({
         burnAmount,
+        gasWanted,
+        txFee,
         onTxSucceed: () => {
           init();
         },
@@ -325,8 +391,8 @@ export function Burn() {
           </TxFeeListItem>
         )}
         {burnAmount.length > 0 && (
-          <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
-            {formatUST(demicrofy(fixedFee))} UST
+          <TxFeeListItem label={<IconSpan>Estimated Tx Fee</IconSpan>}>
+            ≈ {formatUST(demicrofy(estimatedFee))} UST
           </TxFeeListItem>
         )}
       </TxFeeList>
@@ -344,7 +410,7 @@ export function Burn() {
             !!invalidTxFee ||
             !!invalidBurnAmount
           }
-          onClick={() => proceed(burnAmount)}
+          onClick={() => proceed(burnAmount, estimatedGasWanted, estimatedFee)}
         >
           Burn
         </ActionButton>

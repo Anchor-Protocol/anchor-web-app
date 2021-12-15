@@ -6,6 +6,7 @@ export * from './contexts/app';
 export * from './forms/cw20/buyToken';
 export * from './forms/cw20/sellToken';
 export * from './forms/send/send';
+export * from './hooks/useEstimateFee';
 export * from './hooks/useFixedFee';
 export * from './hooks/useGasPrice';
 export * from './hooks/useRefetchQueries';
