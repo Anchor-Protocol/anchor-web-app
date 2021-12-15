@@ -365,7 +365,7 @@ export const PollDetail = styled(PollDetailBase)`
             ${({ theme }) =>
               rulerLightColor({
                 intensity: theme.intensity,
-                color: theme.backgroundColor,
+                color: theme.sectionBackgroundColor,
               })};
         }
 
@@ -374,7 +374,7 @@ export const PollDetail = styled(PollDetailBase)`
             ${({ theme }) =>
               rulerShadowColor({
                 intensity: theme.intensity,
-                color: theme.backgroundColor,
+                color: theme.sectionBackgroundColor,
               })};
         }
       }
@@ -404,7 +404,7 @@ export const PollDetail = styled(PollDetailBase)`
               ${({ theme }) =>
                 rulerLightColor({
                   intensity: theme.intensity,
-                  color: theme.backgroundColor,
+                  color: theme.sectionBackgroundColor,
                 })};
           }
 
@@ -414,7 +414,7 @@ export const PollDetail = styled(PollDetailBase)`
               ${({ theme }) =>
                 rulerShadowColor({
                   intensity: theme.intensity,
-                  color: theme.backgroundColor,
+                  color: theme.sectionBackgroundColor,
                 })};
           }
         }

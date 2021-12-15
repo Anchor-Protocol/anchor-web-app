@@ -79,7 +79,7 @@ const StyledComponent = styled(Component)`
       font-weight: 500;
 
       color: ${({ theme }) => theme.textColor};
-      background-color: ${({ theme }) => theme.backgroundColor};
+      background-color: ${({ theme }) => theme.sectionBackgroundColor};
       border: 1px solid ${({ theme }) => theme.dimTextColor};
 
       &:hover {

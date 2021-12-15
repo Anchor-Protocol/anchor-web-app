@@ -97,7 +97,7 @@ export const SelectAndTextInputContainer = styled(
         props['aria-readonly'] === true
           ? theme.backgroundColor
           : theme.textInput.backgroundColor,
-      backgroundColor: theme.backgroundColor,
+      backgroundColor: theme.sectionBackgroundColor,
       distance: 1,
       intensity: theme.intensity * 2,
     })};

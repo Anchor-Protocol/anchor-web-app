@@ -789,7 +789,7 @@ const hHeavyRuler = css`
 
   ${({ theme }) =>
     pressed({
-      color: theme.backgroundColor,
+      color: theme.sectionBackgroundColor,
       distance: 1,
       intensity: theme.intensity,
     })};
@@ -798,7 +798,7 @@ const hHeavyRuler = css`
 const hRuler = css`
   ${({ theme }) =>
     horizontalRuler({
-      color: theme.backgroundColor,
+      color: theme.sectionBackgroundColor,
       intensity: theme.intensity,
     })};
 `;
@@ -806,7 +806,7 @@ const hRuler = css`
 const vRuler = css`
   ${({ theme }) =>
     verticalRuler({
-      color: theme.backgroundColor,
+      color: theme.sectionBackgroundColor,
       intensity: theme.intensity,
     })};
 `;

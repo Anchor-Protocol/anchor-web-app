@@ -198,13 +198,13 @@ export const HorizontalScrollTable = styled(HorizontalScrollTableBase)`
               ${({ theme }) =>
                 rulerLightColor({
                   intensity: theme.intensity,
-                  color: theme.backgroundColor,
+                  color: theme.sectionBackgroundColor,
                 })};
             border-bottom: 1px solid
               ${({ theme }) =>
                 rulerShadowColor({
                   intensity: theme.intensity,
-                  color: theme.backgroundColor,
+                  color: theme.sectionBackgroundColor,
                 })};
           }
 
@@ -240,7 +240,7 @@ export const HorizontalScrollTable = styled(HorizontalScrollTableBase)`
 
     ${({ theme }) =>
       pressed({
-        color: theme.backgroundColor,
+        color: theme.sectionBackgroundColor,
         distance: 1,
         intensity: theme.intensity,
       })};

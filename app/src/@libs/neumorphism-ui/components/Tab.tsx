@@ -138,9 +138,10 @@ export const Tab: <T>(props: TabProps<T>) => ReactElement<TabProps<T>> = styled(
 
   ${({ theme }) =>
     softPressed({
-      color: theme.backgroundColor,
+      color: theme.sectionBackgroundColor,
+      backgroundColor: theme.backgroundColor,
       intensity: theme.intensity,
-      distance: 2,
+      distance: 1,
     })};
 
   position: relative;
@@ -203,9 +204,9 @@ export const Tab: <T>(props: TabProps<T>) => ReactElement<TabProps<T>> = styled(
 
       ${({ theme }) =>
         flat({
-          color: theme.backgroundColor,
+          color: theme.sectionBackgroundColor,
           backgroundColor: theme.textInput.backgroundColor,
-          distance: 3,
+          distance: 2,
           intensity: theme.intensity,
         })};
 

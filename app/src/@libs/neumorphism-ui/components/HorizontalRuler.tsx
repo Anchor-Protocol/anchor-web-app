@@ -7,7 +7,7 @@ import styled from 'styled-components';
 export const HorizontalRuler = styled.hr`
   ${({ theme }) =>
     horizontalRuler({
-      color: theme.backgroundColor,
+      color: theme.sectionBackgroundColor,
       intensity: theme.intensity,
     })};
 `;

@@ -13,7 +13,8 @@ export const lightTheme: DefaultTheme = {
 
   intensity: 0.1,
 
-  backgroundColor: '#f4f4f5',
+  backgroundColor: '#efefef',
+  sectionBackgroundColor: '#f4f4f5',
   highlightBackgroundColor: '#ffffff',
   hoverBackgroundColor: 'rgba(37, 117, 164, 0.05)',
 

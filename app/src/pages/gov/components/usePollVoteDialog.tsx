@@ -265,7 +265,7 @@ const Component = styled(ComponentBase)`
 
       ${({ theme }) =>
         flat({
-          color: theme.backgroundColor,
+          color: theme.sectionBackgroundColor,
           intensity: theme.intensity,
           distance: 6,
         })};

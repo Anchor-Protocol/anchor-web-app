@@ -121,7 +121,7 @@ export const AncUstLpStakeOverview = styled(AncUstLpStakeOverviewBase)`
         ${({ theme }) =>
           rulerShadowColor({
             intensity: theme.intensity,
-            color: theme.backgroundColor,
+            color: theme.sectionBackgroundColor,
           })};
     }
 
@@ -130,7 +130,7 @@ export const AncUstLpStakeOverview = styled(AncUstLpStakeOverviewBase)`
         ${({ theme }) =>
           rulerLightColor({
             intensity: theme.intensity,
-            color: theme.backgroundColor,
+            color: theme.sectionBackgroundColor,
           })};
     }
   }
@@ -160,7 +160,7 @@ export const AncUstLpStakeOverview = styled(AncUstLpStakeOverviewBase)`
           ${({ theme }) =>
             rulerShadowColor({
               intensity: theme.intensity,
-              color: theme.backgroundColor,
+              color: theme.sectionBackgroundColor,
             })};
       }
 
@@ -170,7 +170,7 @@ export const AncUstLpStakeOverview = styled(AncUstLpStakeOverviewBase)`
           ${({ theme }) =>
             rulerLightColor({
               intensity: theme.intensity,
-              color: theme.backgroundColor,
+              color: theme.sectionBackgroundColor,
             })};
       }
     }

@@ -25,6 +25,7 @@ export interface NeumorphismTheme extends Theme {
 
   // colors
   backgroundColor: string;
+  sectionBackgroundColor: string;
   highlightBackgroundColor: string;
   hoverBackgroundColor: string;
 

@@ -13,8 +13,10 @@ export const TextInput: ComponentType<TextFieldProps> = styled(TextField)`
 
   ${({ theme, readOnly }) =>
     softPressed({
-      color: readOnly ? theme.backgroundColor : theme.textInput.backgroundColor,
-      backgroundColor: theme.backgroundColor,
+      color: readOnly
+        ? theme.sectionBackgroundColor
+        : theme.textInput.backgroundColor,
+      backgroundColor: theme.sectionBackgroundColor,
       distance: 1,
       intensity: theme.intensity * 2,
     })};

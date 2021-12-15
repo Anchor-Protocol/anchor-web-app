@@ -250,7 +250,7 @@ export const MobileHeader = styled(MobileHeaderBase)`
 
   .airdrop {
     padding-bottom: 20px;
-    background-color: ${({ theme }) => theme.backgroundColor};
+    background-color: ${({ theme }) => theme.sectionBackgroundColor};
   }
 
   // ---------------------------------------------

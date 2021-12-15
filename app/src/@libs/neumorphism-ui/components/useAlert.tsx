@@ -15,7 +15,7 @@ import { ActionButton } from './ActionButton';
 export const useAlertStyles = makeStyles((theme: NeumorphismTheme) =>
   createStyles({
     paper: {
-      backgroundColor: theme.backgroundColor,
+      backgroundColor: theme.sectionBackgroundColor,
       padding: 10,
     },
   }),

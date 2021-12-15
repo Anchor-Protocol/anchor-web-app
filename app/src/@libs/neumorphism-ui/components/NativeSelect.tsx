@@ -23,7 +23,7 @@ export const NativeSelect = styled(MuiNativeSelect)`
   ${({ theme }) =>
     flat({
       color: theme.selector.backgroundColor,
-      backgroundColor: theme.backgroundColor,
+      backgroundColor: theme.sectionBackgroundColor,
       distance: 1,
       intensity: theme.intensity,
     })};

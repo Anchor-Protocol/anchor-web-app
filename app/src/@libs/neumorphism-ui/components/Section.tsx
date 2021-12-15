@@ -30,8 +30,9 @@ export const Section = styled(SectionBase)`
 
   ${({ theme }) =>
     flat({
-      color: theme.backgroundColor,
-      distance: 6,
+      color: theme.sectionBackgroundColor,
+      backgroundColor: theme.sectionBackgroundColor,
+      distance: 1,
       intensity: theme.intensity,
     })};
 

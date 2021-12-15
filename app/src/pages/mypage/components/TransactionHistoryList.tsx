@@ -99,7 +99,7 @@ export const StyledTransactionHistoryList = styled(TransactionHistoryListBase)`
         ${({ theme }) =>
           rulerLightColor({
             intensity: theme.intensity,
-            color: theme.backgroundColor,
+            color: theme.sectionBackgroundColor,
           })};
     }
 
@@ -108,7 +108,7 @@ export const StyledTransactionHistoryList = styled(TransactionHistoryListBase)`
         ${({ theme }) =>
           rulerShadowColor({
             intensity: theme.intensity,
-            color: theme.backgroundColor,
+            color: theme.sectionBackgroundColor,
           })};
     }
 

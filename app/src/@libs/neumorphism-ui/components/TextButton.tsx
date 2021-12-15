@@ -16,7 +16,7 @@ export const TextButton = styled(ButtonBase).attrs({ disableRipple: true })`
 
   ${({ theme }) =>
     flat({
-      color: theme.backgroundColor,
+      color: theme.sectionBackgroundColor,
       distance: 0.1,
       intensity: theme.intensity,
     })};
@@ -24,7 +24,7 @@ export const TextButton = styled(ButtonBase).attrs({ disableRipple: true })`
   &:hover {
     ${({ theme }) =>
       flat({
-        color: theme.backgroundColor,
+        color: theme.sectionBackgroundColor,
         distance: 1,
         intensity: theme.intensity,
       })};
@@ -34,7 +34,7 @@ export const TextButton = styled(ButtonBase).attrs({ disableRipple: true })`
   &:active {
     ${({ theme }) =>
       pressed({
-        color: theme.backgroundColor,
+        color: theme.sectionBackgroundColor,
         distance: 1,
         intensity: theme.intensity,
       })};

@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const IconCircle = styled.div`
   border-radius: 50%;
-  background-color: ${({ theme }) => theme.backgroundColor};
+  background-color: ${({ theme }) => theme.sectionBackgroundColor};
   display: inline-grid;
   min-width: 56px;
   max-width: 56px;

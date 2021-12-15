@@ -21,13 +21,13 @@ export const ChartTooltip = styled.div`
       margin-bottom: 3px;
       min-width: 40px;
       background-color: ${({ theme }) => theme.textColor};
-      color: ${({ theme }) => theme.backgroundColor};
+      color: ${({ theme }) => theme.sectionBackgroundColor};
       padding: 5px 10px;
       border-radius: 14px;
       font-size: 11px;
 
       span {
-        color: ${({ theme }) => theme.backgroundColor};
+        color: ${({ theme }) => theme.sectionBackgroundColor};
         opacity: 0.7;
         margin-left: 10px;
       }

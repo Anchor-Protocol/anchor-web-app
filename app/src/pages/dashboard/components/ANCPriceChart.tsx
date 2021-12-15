@@ -104,7 +104,7 @@ export class ANCPriceChart extends Component<ANCPriceChartProps> {
               const y = yScale.getPixelForTick(i);
               ctx.strokeStyle = rulerShadowColor({
                 intensity: this.props.theme.intensity,
-                color: this.props.theme.backgroundColor,
+                color: this.props.theme.sectionBackgroundColor,
               });
               ctx.lineWidth = 1;
               ctx.beginPath();
@@ -113,7 +113,7 @@ export class ANCPriceChart extends Component<ANCPriceChartProps> {
               ctx.stroke();
               ctx.strokeStyle = rulerLightColor({
                 intensity: this.props.theme.intensity,
-                color: this.props.theme.backgroundColor,
+                color: this.props.theme.sectionBackgroundColor,
               });
               ctx.lineWidth = 1;
               ctx.beginPath();

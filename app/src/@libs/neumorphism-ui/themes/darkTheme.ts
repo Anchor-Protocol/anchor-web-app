@@ -21,7 +21,8 @@ export const darkTheme: DefaultTheme = {
 
   intensity: 0.45,
 
-  backgroundColor: '#1f2237',
+  backgroundColor: '#1b1e31',
+  sectionBackgroundColor: '#1f2237',
   highlightBackgroundColor: '#363c5f',
   hoverBackgroundColor: 'rgba(37, 117, 164, 0.05)',
 
