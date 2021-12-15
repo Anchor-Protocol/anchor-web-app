@@ -6,7 +6,7 @@ import { Chart } from 'chart.js';
 import React, { Component, createRef } from 'react';
 import styled, { DefaultTheme } from 'styled-components';
 import { ChartTooltip } from './ChartTooltip';
-import { mediumDay, xTimestampAixs } from './internal/axisUtils';
+import { mediumDay, xTimestampAxis } from './internal/axisUtils';
 
 export interface StablecoinChartProps {
   data: MarketDepositAndBorrow[];
@@ -54,7 +54,7 @@ export class StablecoinChart extends Component<StablecoinChartProps> {
 
   componentDidUpdate(prevProps: Readonly<StablecoinChartProps>) {
     if (prevProps.data !== this.props.data) {
-      this.chart.data.labels = xTimestampAixs(
+      this.chart.data.labels = xTimestampAxis(
         this.props.data.map(({ timestamp }) => timestamp),
       );
       this.chart.data.datasets[0].data = this.props.data.map(
@@ -170,7 +170,7 @@ export class StablecoinChart extends Component<StablecoinChartProps> {
         },
       },
       data: {
-        labels: xTimestampAixs(
+        labels: xTimestampAxis(
           this.props.data.map(({ timestamp }) => timestamp),
         ),
         datasets: [
