@@ -30,7 +30,7 @@ function ComponentBase({
   return (
     <Modal open onClose={() => closeDialog()}>
       <Dialog className={className} onClose={() => closeDialog()}>
-        <h1>Get Insurance Coverage</h1>
+        <h1>Protect Your Deposit</h1>
 
         <section>
           <h2>UST Peg</h2>
