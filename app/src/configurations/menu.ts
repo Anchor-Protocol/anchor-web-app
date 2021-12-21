@@ -12,7 +12,7 @@ export const menus: RouteMenu[] = [
   },
   {
     to: `/mypage`,
-    title: 'MYPAGE',
+    title: 'MY PAGE',
   },
   {
     to: '/earn',

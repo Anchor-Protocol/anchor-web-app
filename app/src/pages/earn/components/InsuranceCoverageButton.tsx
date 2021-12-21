@@ -12,7 +12,7 @@ export function InsuranceCoverageButton(buttonProps: ButtonBaseProps) {
   return (
     <>
       <Button {...buttonProps} onClick={() => openInsuranceCoverage({})}>
-        <ShieldPlus /> Get Insurance Coverage
+        <ShieldPlus /> Protect Your Deposit
       </Button>
       {insuranceCoverageElement}
     </>
