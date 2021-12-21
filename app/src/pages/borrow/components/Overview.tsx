@@ -58,7 +58,7 @@ function Component({ className }: OverviewProps) {
         <div>
           <h3>
             <IconSpan>
-              Collateral Value{' '}
+              COLLATERAL VALUE{' '}
               <InfoTooltip>
                 The sum of all collaterals deposited by the user, in USD
               </InfoTooltip>
@@ -90,7 +90,7 @@ function Component({ className }: OverviewProps) {
         <div>
           <h3>
             <IconSpan>
-              Borrowed Value{' '}
+              BORROWED VALUE{' '}
               <InfoTooltip>
                 The sum of all loans borrowed by the user, in USD
               </InfoTooltip>
@@ -131,7 +131,7 @@ function Component({ className }: OverviewProps) {
         <div className="apy">
           <h3>
             <IconSpan>
-              Net APR{' '}
+              NET APR{' '}
               <InfoTooltip>
                 Distribution APR - Borrow APR. When the net APR is a positive
                 number, ANC rewards distributed to borrowers are greater than

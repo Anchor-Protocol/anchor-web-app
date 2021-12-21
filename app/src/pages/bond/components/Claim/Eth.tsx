@@ -116,7 +116,7 @@ function ClaimEthBase({ className }: ClaimEthProps) {
       <RewardLayout>
         <h4>
           <IconSpan>
-            Claimable Rewards{' '}
+            CLAIMABLE REWARDS{' '}
             <InfoTooltip>
               Claim staking rewards from minted bAssets that have not been
               provided as collateral. If the user's claimable reward is smaller

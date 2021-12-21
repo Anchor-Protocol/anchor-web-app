@@ -57,7 +57,7 @@ function TotalCollateralValueBase({
       <header ref={ref}>
         <h4>
           <IconSpan>
-            Total Collateral Value{' '}
+            TOTAL COLLATERAL VALUE{' '}
             <InfoTooltip>
               The total value of bAsset collaterals locked in Anchor
             </InfoTooltip>

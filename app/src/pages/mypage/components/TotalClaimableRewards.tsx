@@ -32,7 +32,7 @@ function TotalClaimableRewardsBase({ className }: TotalClaimableRewardsProps) {
       <header>
         <h4>
           <IconSpan>
-            Total Claimable Rewards{' '}
+            TOTAL CLAIMABLE REWARDS{' '}
             <InfoTooltip>
               Total number of claimable ANC from UST Borrow and LP staking
             </InfoTooltip>

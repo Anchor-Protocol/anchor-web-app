@@ -205,7 +205,7 @@ function TotalValueBase({ className }: TotalValueProps) {
         <div>
           <h4>
             <IconSpan>
-              Total Value{' '}
+              TOTAL VALUE{' '}
               <InfoTooltip>
                 Total value of deposits, borrowing, holdings, withdrawable
                 liquidity, rewards, staked ANC, and UST held

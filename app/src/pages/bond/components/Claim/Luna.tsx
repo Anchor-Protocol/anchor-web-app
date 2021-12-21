@@ -183,7 +183,7 @@ function ClaimLunaBase({ className }: ClaimLunaProps) {
       <RewardLayout>
         <h4>
           <IconSpan>
-            Claimable Rewards{' '}
+            CLAIMABLE REWARDS{' '}
             <InfoTooltip>
               Claim staking rewards from minted bAssets that have not been
               provided as collateral. If the user's claimable reward is smaller
@@ -237,7 +237,7 @@ function ClaimLunaBase({ className }: ClaimLunaProps) {
       <RewardLayout>
         <h4>
           <IconSpan>
-            Withdrawable Amount{' '}
+            WITHDRAWABLE AMOUNT{' '}
             <InfoTooltip>
               bAssets that have been burned and have surpassed the undelegation
               period can be withdrawn. Because burn requests are processed in
