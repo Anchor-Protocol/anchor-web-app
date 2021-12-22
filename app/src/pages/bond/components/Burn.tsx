@@ -246,7 +246,14 @@ export function Burn() {
         });
       } else {
         await openAlert({
-          description: `Gas estimation is failed`,
+          description: (
+            <>
+              Broadcasting failed,
+              <br />
+              please retry after some time.
+            </>
+          ),
+          agree: 'OK',
         });
       }
     },
