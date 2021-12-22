@@ -22,6 +22,7 @@ import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { NumberMuiInput } from '@libs/neumorphism-ui/components/NumberMuiInput';
 import { SelectAndTextInputContainer } from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
+import { useAlert } from '@libs/neumorphism-ui/components/useAlert';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
 import { MsgExecuteContract } from '@terra-money/terra.js';
@@ -64,16 +65,18 @@ export function Burn() {
 
   const [burn, burnResult] = useBondBurnTx();
 
+  const [openAlert, alertElement] = useAlert();
+
   // ---------------------------------------------
   // states
   // ---------------------------------------------
   const [burnAmount, setBurnAmount] = useState<bLuna>('' as bLuna);
   const [getAmount, setGetAmount] = useState<Luna>('' as Luna);
 
-  const [estimatedGasWanted, setEstimatedGasWanted] = useState<Gas>(
-    constants.bondGasWanted,
+  const [estimatedGasWanted, setEstimatedGasWanted] = useState<Gas | null>(
+    null,
   );
-  const [estimatedFee, setEstimatedFee] = useState<u<UST>>(fixedFee);
+  const [estimatedFee, setEstimatedFee] = useState<u<UST> | null>(null);
 
   const [burnCurrency, setBurnCurrency] = useState<Item>(
     () => bAssetCurrencies[0],
@@ -137,8 +140,8 @@ export function Burn() {
           big(estimated.txFee).mul(gasPrice.uusd).toFixed() as u<UST>,
         );
       } else {
-        setEstimatedGasWanted(constants.bondGasWanted);
-        setEstimatedFee(fixedFee);
+        setEstimatedGasWanted(null);
+        setEstimatedFee(null);
       }
     });
   }, [
@@ -211,21 +214,52 @@ export function Burn() {
   }, []);
 
   const proceed = useCallback(
-    (burnAmount: bLuna, gasWanted: Gas, txFee: u<UST>) => {
+    async (burnAmount: bLuna) => {
       if (!connectedWallet || !burn) {
         return;
       }
 
-      burn({
-        burnAmount,
-        gasWanted,
-        txFee,
-        onTxSucceed: () => {
-          init();
-        },
-      });
+      const estimated = await estimateFee([
+        new MsgExecuteContract(
+          connectedWallet.terraAddress,
+          contractAddress.cw20.bLuna,
+          {
+            send: {
+              contract: contractAddress.bluna.hub,
+              amount: floor(big(burnAmount).mul(MICRO)).toFixed(),
+              msg: createHookMsg({
+                unbond: {},
+              }),
+            },
+          },
+        ),
+      ]);
+
+      if (estimated) {
+        burn({
+          burnAmount,
+          gasWanted: estimated.gasWanted,
+          txFee: big(estimated.txFee).mul(gasPrice.uusd).toFixed() as u<UST>,
+          onTxSucceed: () => {
+            init();
+          },
+        });
+      } else {
+        await openAlert({
+          description: `Gas estimation is failed`,
+        });
+      }
     },
-    [burn, connectedWallet, init],
+    [
+      burn,
+      connectedWallet,
+      contractAddress.bluna.hub,
+      contractAddress.cw20.bLuna,
+      estimateFee,
+      gasPrice.uusd,
+      init,
+      openAlert,
+    ],
   );
 
   // ---------------------------------------------
@@ -390,7 +424,7 @@ export function Burn() {
             {formatLuna(demicrofy(pegRecoveryFee(getAmount)))} LUNA
           </TxFeeListItem>
         )}
-        {burnAmount.length > 0 && (
+        {burnAmount.length > 0 && estimatedFee && (
           <TxFeeListItem label={<IconSpan>Estimated Tx Fee</IconSpan>}>
             ≈ {formatUST(demicrofy(estimatedFee))} UST
           </TxFeeListItem>
@@ -408,13 +442,17 @@ export function Burn() {
             burnAmount.length === 0 ||
             big(burnAmount).lte(0) ||
             !!invalidTxFee ||
-            !!invalidBurnAmount
+            !!invalidBurnAmount ||
+            estimatedGasWanted === null ||
+            estimatedFee === null
           }
-          onClick={() => proceed(burnAmount, estimatedGasWanted, estimatedFee)}
+          onClick={() => proceed(burnAmount)}
         >
           Burn
         </ActionButton>
       </ViewAddressWarning>
+
+      {alertElement}
     </>
   );
 }

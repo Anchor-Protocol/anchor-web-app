@@ -21,6 +21,7 @@ import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { NumberMuiInput } from '@libs/neumorphism-ui/components/NumberMuiInput';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { SelectAndTextInputContainer } from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
+import { useAlert } from '@libs/neumorphism-ui/components/useAlert';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
 import { MsgExecuteContract } from '@terra-money/terra.js';
@@ -68,16 +69,18 @@ function MintBase({ className }: MintProps) {
 
   const [mint, mintResult] = useBondMintTx();
 
+  const [openAlert, alertElement] = useAlert();
+
   // ---------------------------------------------
   // states
   // ---------------------------------------------
   const [bondAmount, setBondAmount] = useState<Luna>('' as Luna);
   const [mintAmount, setMintAmount] = useState<bLuna>('' as bLuna);
 
-  const [estimatedGasWanted, setEstimatedGasWanted] = useState<Gas>(
-    constants.bondGasWanted,
+  const [estimatedGasWanted, setEstimatedGasWanted] = useState<Gas | null>(
+    null,
   );
-  const [estimatedFee, setEstimatedFee] = useState<u<UST>>(fixedFee);
+  const [estimatedFee, setEstimatedFee] = useState<u<UST> | null>(null);
 
   const [bondCurrency, setBondCurrency] = useState<Item>(
     () => assetCurrencies[0],
@@ -138,8 +141,8 @@ function MintBase({ className }: MintProps) {
           big(estimated.txFee).mul(gasPrice.uusd).toFixed() as u<UST>,
         );
       } else {
-        setEstimatedGasWanted(constants.bondGasWanted);
-        setEstimatedFee(fixedFee);
+        setEstimatedGasWanted(null);
+        setEstimatedFee(null);
       }
     });
   }, [
@@ -211,21 +214,48 @@ function MintBase({ className }: MintProps) {
   }, []);
 
   const proceed = useCallback(
-    (bondAmount: Luna, gasWanted: Gas, txFee: u<UST>) => {
+    async (bondAmount: Luna) => {
       if (!connectedWallet || !mint) {
         return;
       }
 
-      mint({
-        bondAmount,
-        gasWanted,
-        txFee,
-        onTxSucceed: () => {
-          init();
-        },
-      });
+      const estimated = await estimateFee([
+        new MsgExecuteContract(
+          connectedWallet.terraAddress,
+          contractAddress.bluna.hub,
+          {
+            bond: {},
+          },
+          {
+            uluna: floor(big(bondAmount).mul(MICRO)).toFixed(),
+          },
+        ),
+      ]);
+
+      if (estimated) {
+        mint({
+          bondAmount,
+          gasWanted: estimated.gasWanted,
+          txFee: big(estimated.txFee).mul(gasPrice.uusd).toFixed() as u<UST>,
+          onTxSucceed: () => {
+            init();
+          },
+        });
+      } else {
+        await openAlert({
+          description: `Gas estimation is failed`,
+        });
+      }
     },
-    [connectedWallet, init, mint],
+    [
+      connectedWallet,
+      contractAddress.bluna.hub,
+      estimateFee,
+      gasPrice.uusd,
+      init,
+      mint,
+      openAlert,
+    ],
   );
 
   // ---------------------------------------------
@@ -381,7 +411,7 @@ function MintBase({ className }: MintProps) {
             {formatLuna(demicrofy(pegRecoveryFee(mintAmount)))} bLUNA
           </TxFeeListItem>
         )}
-        {bondAmount.length > 0 && (
+        {bondAmount.length > 0 && estimatedFee && (
           <TxFeeListItem label={<IconSpan>Estimated Tx Fee</IconSpan>}>
             ≈ {formatUST(demicrofy(estimatedFee))} UST
           </TxFeeListItem>
@@ -399,13 +429,17 @@ function MintBase({ className }: MintProps) {
             bondAmount.length === 0 ||
             big(bondAmount).lte(0) ||
             !!invalidBondAmount ||
-            !!invalidTxFee
+            !!invalidTxFee ||
+            estimatedGasWanted === null ||
+            estimatedFee === null
           }
-          onClick={() => proceed(bondAmount, estimatedGasWanted, estimatedFee)}
+          onClick={() => proceed(bondAmount)}
         >
           Mint
         </ActionButton>
       </ViewAddressWarning>
+
+      {alertElement}
     </Section>
   );
 }
