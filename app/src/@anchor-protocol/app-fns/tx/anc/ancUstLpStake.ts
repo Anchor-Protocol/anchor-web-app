@@ -104,7 +104,7 @@ export const fabricateStakingBond =
   (addressProvider: AddressProvider): MsgExecuteContract[] => {
     validateInput([validateAddress(address)]);
 
-    const anchorToken = addressProvider.terraswapAncUstLPToken();
+    const anchorToken = addressProvider.ancUstLPToken();
 
     return [
       new MsgExecuteContract(address, anchorToken, {

@@ -40,7 +40,7 @@
     ]
   },
   "dependencies": {
-    "@anchor-protocol/anchor.js": "^3.0.1-alpha2",
+    "@anchor-protocol/anchor.js": "^4.0.0-alpha.4",
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
     "@rocket-scripts/utils": "^3.2.0",

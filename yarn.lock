@@ -5,10 +5,10 @@ __metadata:
   version: 5
   cacheKey: 8
 
-"@anchor-protocol/anchor.js@npm:^3.0.1-alpha2":
-  version: 3.0.1-alpha2
-  resolution: "@anchor-protocol/anchor.js@npm:3.0.1-alpha2"
-  checksum: 15a9567450f3e76a6e477cde14717ee4b1ade1a5b10e1469b56213e1b554205e48c25f3d6f9d348b65b0833c0d9adfe1b5f3d4e3fce575fd37d8802ab050e63f
+"@anchor-protocol/anchor.js@npm:^4.0.0-alpha.4":
+  version: 4.0.0-alpha.4
+  resolution: "@anchor-protocol/anchor.js@npm:4.0.0-alpha.4"
+  checksum: 4b608e4f2f86ebb51b85cde85b693efa156cf70e64f5ab4e61cc0a35d6f38decbb4f5b3ed104bad86558c34f3c34c700535553865a55e07b4fb54b6c00a50385
   languageName: node
   linkType: hard
 
@@ -16,7 +16,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@anchor-web-app/app@workspace:app"
   dependencies:
-    "@anchor-protocol/anchor.js": ^3.0.1-alpha2
+    "@anchor-protocol/anchor.js": ^4.0.0-alpha.4
     "@material-ui/core": ^4.11.3
     "@material-ui/icons": ^4.11.2
     "@peculiar/webcrypto": ^1.1.7

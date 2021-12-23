@@ -125,19 +125,19 @@ class AddressProviderFromContractAddress implements AddressProvider {
   liquidation() {
     return this.data.liquidation.liquidationContract;
   }
-  terraswapblunaLunaPair() {
+  bLunaLunaPair() {
     return this.data.terraswap.blunaLunaPair;
   }
-  terraswapblunaLunaLPToken() {
+  bLunaLunaLPToken() {
     return this.data.cw20.bLunaLunaLP;
   }
   gov() {
     return this.data.anchorToken.gov;
   }
-  terraswapAncUstPair() {
+  ancUstPair() {
     return this.data.terraswap.ancUstPair;
   }
-  terraswapAncUstLPToken() {
+  ancUstLPToken() {
     return this.data.cw20.AncUstLP;
   }
   collector() {

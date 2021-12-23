@@ -1,6 +1,6 @@
 import {
   AddressProvider,
-  fabricateTerraswapWithdrawLiquidityANC,
+  fabricateExchangeWithdrawLiquidityANC,
 } from '@anchor-protocol/anchor.js';
 import {
   formatANCWithPostfixUnits,
@@ -32,7 +32,7 @@ import big, { Big } from 'big.js';
 import { Observable } from 'rxjs';
 
 export function ancAncUstLpWithdrawTx(
-  $: Parameters<typeof fabricateTerraswapWithdrawLiquidityANC>[0] & {
+  $: Parameters<typeof fabricateExchangeWithdrawLiquidityANC>[0] & {
     gasFee: Gas;
     gasAdjustment: Rate<number>;
     fixedGas: u<UST>;
@@ -48,7 +48,7 @@ export function ancAncUstLpWithdrawTx(
 
   return pipe(
     _createTxOptions({
-      msgs: fabricateTerraswapWithdrawLiquidityANC($)($.addressProvider),
+      msgs: fabricateExchangeWithdrawLiquidityANC($)($.addressProvider),
       fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),

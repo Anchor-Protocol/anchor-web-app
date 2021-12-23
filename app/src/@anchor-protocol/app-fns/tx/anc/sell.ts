@@ -166,7 +166,7 @@ export const fabricatebSell =
     ]);
 
     const ancTokenAddress = addressProvider.ANC();
-    const pairAddress = addressProvider.terraswapAncUstPair();
+    const pairAddress = addressProvider.ancUstPair();
 
     return [
       new MsgExecuteContract(address, ancTokenAddress, {

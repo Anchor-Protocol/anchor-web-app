@@ -1,6 +1,6 @@
 import {
   AddressProvider,
-  fabricateTerraswapProvideLiquidityANC,
+  fabricateExchangeProvideLiquidityANC,
 } from '@anchor-protocol/anchor.js';
 import {
   formatANCWithPostfixUnits,
@@ -34,7 +34,7 @@ import { AncPrice } from '../../queries/anc/price';
 import { AnchorTax } from '../../types';
 
 export function ancAncUstLpProvideTx(
-  $: Parameters<typeof fabricateTerraswapProvideLiquidityANC>[0] & {
+  $: Parameters<typeof fabricateExchangeProvideLiquidityANC>[0] & {
     ancPrice: AncPrice | undefined;
     tax: AnchorTax;
     gasFee: Gas;
@@ -53,7 +53,7 @@ export function ancAncUstLpProvideTx(
 
   return pipe(
     _createTxOptions({
-      msgs: fabricateTerraswapProvideLiquidityANC($)($.addressProvider),
+      msgs: fabricateExchangeProvideLiquidityANC($)($.addressProvider),
       fee: new Fee($.gasFee, floor($.txFee) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),
