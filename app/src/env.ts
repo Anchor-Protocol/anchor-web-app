@@ -230,14 +230,11 @@ export const ANCHOR_CONTRACT_ADDRESS = (
 };
 
 export const ANCHOR_INDEXER_API_ENDPOINTS = (network: NetworkInfo): string => {
-  //if (network.chainID.startsWith('bombay')) {
-  //  return 'https://tequila-api.anchorprotocol.com/api/v1';
-  //} else {
-  //  return 'https://api.anchorprotocol.com/api/v1';
-  //}
-
-  // TODO restore testnet api endpoint
-  return 'https://api.anchorprotocol.com/api/v1';
+  if (network.chainID.startsWith('bombay')) {
+    return 'https://tequila-anchor-services.vercel.app/api/v1';
+  } else {
+    return 'https://api.anchorprotocol.com/api/v1';
+  }
 };
 
 // ---------------------------------------------
