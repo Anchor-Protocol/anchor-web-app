@@ -138,8 +138,7 @@ function OverviewBase({ className }: OverviewProps) {
           <IconSpan>
             ANC PRICE{' '}
             <InfoTooltip>
-              Terraswap price of ANC that is determined by the current pool
-              ratio
+              AMM price of ANC that is determined by the current pool ratio
             </InfoTooltip>
           </IconSpan>
         </h2>
