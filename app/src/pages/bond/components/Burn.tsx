@@ -25,7 +25,7 @@ import { SelectAndTextInputContainer } from '@libs/neumorphism-ui/components/Sel
 import { useAlert } from '@libs/neumorphism-ui/components/useAlert';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { MsgExecuteContract } from '@terra-money/terra.js';
+import { Msg, MsgExecuteContract } from '@terra-money/terra.js';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
@@ -33,6 +33,7 @@ import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import debounce from 'lodash.debounce';
 import { pegRecovery } from 'pages/bond/logics/pegRecovery';
 import { validateBurnAmount } from 'pages/bond/logics/validateBurnAmount';
 import React, {
@@ -114,42 +115,68 @@ export function Burn() {
   // ---------------------------------------------
   // effects
   // ---------------------------------------------
+  const estimate = useMemo(() => {
+    return debounce((msgs: Msg[] | null) => {
+      if (!msgs) {
+        setEstimatedGasWanted(null);
+        setEstimatedFee(null);
+        return;
+      }
+
+      estimateFee(msgs).then((estimated) => {
+        if (estimated) {
+          setEstimatedGasWanted(estimated.gasWanted);
+          setEstimatedFee(
+            big(estimated.txFee).mul(gasPrice.uusd).toFixed() as u<UST>,
+          );
+        } else {
+          setEstimatedGasWanted(null);
+          setEstimatedFee(null);
+        }
+      });
+    }, 500);
+  }, [estimateFee, gasPrice.uusd]);
+
   useEffect(() => {
     if (!connectedWallet || burnAmount.length === 0) {
+      setEstimatedGasWanted(null);
+      setEstimatedFee(null);
+      estimate(null);
       return;
     }
 
-    estimateFee([
+    const amount = floor(big(burnAmount).mul(MICRO));
+
+    if (amount.lt(0) || amount.gt(bank.tokenBalances.ubLuna ?? 0)) {
+      setEstimatedGasWanted(null);
+      setEstimatedFee(null);
+      estimate(null);
+      return;
+    }
+
+    estimate([
       new MsgExecuteContract(
         connectedWallet.terraAddress,
         contractAddress.cw20.bLuna,
         {
           send: {
             contract: contractAddress.bluna.hub,
-            amount: floor(big(burnAmount).mul(MICRO)).toFixed(),
+            amount: amount.toFixed(),
             msg: createHookMsg({
               unbond: {},
             }),
           },
         },
       ),
-    ]).then((estimated) => {
-      if (estimated) {
-        setEstimatedGasWanted(estimated.gasWanted);
-        setEstimatedFee(
-          big(estimated.txFee).mul(gasPrice.uusd).toFixed() as u<UST>,
-        );
-      } else {
-        setEstimatedGasWanted(null);
-        setEstimatedFee(null);
-      }
-    });
+    ]);
   }, [
+    bank.tokenBalances.ubLuna,
     burnAmount,
     connectedWallet,
     constants.bondGasWanted,
     contractAddress.bluna.hub,
     contractAddress.cw20.bLuna,
+    estimate,
     estimateFee,
     fixedFee,
     gasPrice.uusd,
