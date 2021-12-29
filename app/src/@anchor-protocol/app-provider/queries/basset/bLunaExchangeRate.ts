@@ -1,27 +1,30 @@
-import { BondValidators, bondValidatorsQuery } from '@anchor-protocol/app-fns';
+import {
+  BondBLunaExchangeRate,
+  bondBLunaExchangeRateQuery,
+} from '@anchor-protocol/app-fns';
 import { createQueryFn } from '@libs/react-query-utils';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = createQueryFn(bondValidatorsQuery);
+const queryFn = createQueryFn(bondBLunaExchangeRateQuery);
 
-export function useBondValidators(): UseQueryResult<
-  BondValidators | undefined
+export function useBLunaExchangeRateQuery(): UseQueryResult<
+  BondBLunaExchangeRate | undefined
 > {
-  const { hiveQueryClient, queryErrorReporter } = useAnchorWebapp();
+  const { queryClient, queryErrorReporter } = useAnchorWebapp();
 
   const { contractAddress } = useAnchorWebapp();
 
   return useQuery(
     [
-      ANCHOR_QUERY_KEY.BOND_VALIDATORS,
+      ANCHOR_QUERY_KEY.BOND_BLUNA_EXCHANGE_RATE,
       contractAddress.bluna.hub,
-      hiveQueryClient,
+      queryClient,
     ],
     queryFn,
     {
-      refetchInterval: 1000 * 60 * 10,
+      refetchInterval: 1000 * 60 * 5,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },

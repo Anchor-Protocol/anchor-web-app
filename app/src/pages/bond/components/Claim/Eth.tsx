@@ -1,7 +1,8 @@
 import { COLLATERAL_DENOMS } from '@anchor-protocol/anchor.js';
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import {
-  useBondBEthClaimableRewards,
+  useAnchorWebapp,
+  useBAssetClaimableRewards,
   useBondClaimTx,
 } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
@@ -41,12 +42,16 @@ function ClaimEthBase({ className }: ClaimEthProps) {
 
   const [claim, claimResult] = useBondClaimTx(COLLATERAL_DENOMS.UBETH);
 
+  const { contractAddress } = useAnchorWebapp();
+
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
   const { tokenBalances } = useAnchorBank();
 
-  const { data: { claimableReward } = {} } = useBondBEthClaimableRewards();
+  const { data: { claimableReward } = {} } = useBAssetClaimableRewards(
+    contractAddress.beth.reward,
+  );
 
   // ---------------------------------------------
   // logics

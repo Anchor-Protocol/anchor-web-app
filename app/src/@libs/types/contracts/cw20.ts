@@ -42,4 +42,13 @@ export namespace cw20 {
     symbol: string;
     total_supply: u<T>;
   }
+
+  export interface Minter {
+    minter: {};
+  }
+
+  export interface MinterResponse {
+    minter: HumanAddr;
+    cap: null;
+  }
 }

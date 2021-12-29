@@ -1,6 +1,6 @@
 import {
-  BondWithdrawableAmount,
-  bondWithdrawableAmountQuery,
+  BLunaClaimableRewards,
+  bLunaClaimableRewardsQuery,
 } from '@anchor-protocol/app-fns';
 import { EMPTY_QUERY_RESULT } from '@libs/app-provider';
 import { createQueryFn } from '@libs/react-query-utils';
@@ -9,10 +9,10 @@ import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = createQueryFn(bondWithdrawableAmountQuery);
+const queryFn = createQueryFn(bLunaClaimableRewardsQuery);
 
-export function useBondWithdrawableAmount(): UseQueryResult<
-  BondWithdrawableAmount | undefined
+export function useBLunaClaimableRewards(): UseQueryResult<
+  BLunaClaimableRewards | undefined
 > {
   const connectedWallet = useConnectedWallet();
 
@@ -21,9 +21,9 @@ export function useBondWithdrawableAmount(): UseQueryResult<
 
   const result = useQuery(
     [
-      ANCHOR_QUERY_KEY.BOND_WITHDRAWABLE_AMOUNT,
+      ANCHOR_QUERY_KEY.BOND_CLAIMABLE_REWARDS,
       connectedWallet?.walletAddress,
-      contractAddress.bluna.hub,
+      contractAddress.bluna.reward,
       queryClient,
     ],
     queryFn,

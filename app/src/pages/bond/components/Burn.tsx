@@ -2,7 +2,7 @@ import { createHookMsg } from '@anchor-protocol/anchor.js/dist/utils/cw20/create
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import {
   useAnchorWebapp,
-  useBondBLunaExchangeRateQuery,
+  useBLunaExchangeRateQuery,
   useBondBurnTx,
 } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
@@ -92,7 +92,7 @@ export function Burn() {
   const bank = useAnchorBank();
 
   const { data: { state: exchangeRate, parameters } = {} } =
-    useBondBLunaExchangeRateQuery();
+    useBLunaExchangeRateQuery();
 
   // ---------------------------------------------
   // logics

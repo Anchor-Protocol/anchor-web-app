@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`bAssetInfoQuery should get result from query 1`] = `
+Object {
+  "cap": null,
+  "minter": "terra1skc56hrrg92zj8xxj6lyjlt2l2m8q8sf832sqm",
+}
+`;
+
+exports[`bAssetInfoQuery should get result from query 2`] = `
+Object {
+  "basset_info": Object {
+    "decimals": 6,
+    "name": "Bonded ETH",
+    "symbol": "BETH",
+  },
+  "collateral_token": "terra19mkj9nec6e3y5754tlnuz4vem7lzh4n0lc2s3l",
+  "liquidation_contract": "terra18j0wd0f62afcugw2rx5y8e6j5qjxd7d6qsc87r",
+  "market_contract": "terra15dwd5mj8v59wpj0wvt233mf5efdff808c5tkal",
+  "overseer_contract": "terra1qljxd0y3j3gk97025qvl3lgq8ygup4gsksvaxv",
+  "owner": "terra16ckeuu7c6ggu52a8se005mg5c0kd2kmuun63cu",
+  "reward_contract": "terra1ja3snkedk4t0zp7z3ljd064hcln8dsv5x004na",
+  "stable_denom": "uusd",
+}
+`;
+
+exports[`bAssetInfoQuery should get result from query 3`] = `
+Object {
+  "anchor_token_address": "terra19mkj9nec6e3y5754tlnuz4vem7lzh4n0lc2s3l",
+  "owner": "terra1pgsdhcc584ms5ncwp9qelyxycgaef5swt2fwue",
+  "wormhole_token_address": "terra1d74gfj8gs6rskcuu80x3deus7gut77udhdajv7",
+}
+`;

@@ -1,9 +1,9 @@
 import { COLLATERAL_DENOMS } from '@anchor-protocol/anchor.js';
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import {
-  useBondClaimableRewards,
+  useBLunaClaimableRewards,
+  useBLunaWithdrawableAmount,
   useBondClaimTx,
-  useBondWithdrawableAmount,
   useBondWithdrawTx,
 } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
@@ -55,7 +55,7 @@ function ClaimLunaBase({ className }: ClaimLunaProps) {
   const { tokenBalances } = useAnchorBank();
 
   const { data: { rewardState, claimableReward } = {} } =
-    useBondClaimableRewards(COLLATERAL_DENOMS.UBLUNA);
+    useBLunaClaimableRewards();
 
   const {
     data: {
@@ -65,7 +65,7 @@ function ClaimLunaBase({ className }: ClaimLunaProps) {
       allHistory,
       parameters,
     } = {},
-  } = useBondWithdrawableAmount();
+  } = useBLunaWithdrawableAmount();
 
   // ---------------------------------------------
   // logics

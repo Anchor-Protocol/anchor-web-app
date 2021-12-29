@@ -6,23 +6,24 @@ import {
   WasmQueryData,
 } from '@libs/query-client';
 
-interface BondClaimableRewardsWasmQuery {
+interface BLunaClaimableRewardsWasmQuery {
   rewardState: WasmQuery<bluna.reward.State, bluna.reward.StateResponse>;
   claimableReward: WasmQuery<bluna.reward.Holder, bluna.reward.HolderResponse>;
 }
 
-export type BondClaimableRewards = WasmQueryData<BondClaimableRewardsWasmQuery>;
+export type BLunaClaimableRewards =
+  WasmQueryData<BLunaClaimableRewardsWasmQuery>;
 
-export async function bondClaimableRewardsQuery(
+export async function bLunaClaimableRewardsQuery(
   walletAddr: HumanAddr | undefined,
   bAssetRewardContract: HumanAddr,
   queryClient: QueryClient,
-): Promise<BondClaimableRewards | undefined> {
+): Promise<BLunaClaimableRewards | undefined> {
   if (!walletAddr) {
     return undefined;
   }
 
-  return wasmFetch<BondClaimableRewardsWasmQuery>({
+  return wasmFetch<BLunaClaimableRewardsWasmQuery>({
     ...queryClient,
     id: `bond--claimable-rewards`,
     wasmQuery: {

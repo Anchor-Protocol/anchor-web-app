@@ -27,6 +27,10 @@ export const menus: RouteMenu[] = [
     title: 'BOND',
   },
   {
+    to: '/basset',
+    title: 'bASSET',
+  },
+  {
     to: `/gov`,
     title: 'GOVERN',
   },

@@ -3,11 +3,11 @@ import {
   TEST_WALLET_ADDRESS,
 } from '@anchor-protocol/app-fns/test-env';
 import { TEST_LCD_CLIENT } from '@libs/app-fns/test-env';
-import { bondBEthClaimableRewardsQuery } from '../bEthClaimableRewards';
+import { bAssetClaimableRewardsQuery } from '../bAssetClaimableRewards';
 
-describe('queries/bEthClaimableRewards', () => {
+describe('queries/bAssetClaimableRewards', () => {
   test('should get result from query', async () => {
-    const result = await bondBEthClaimableRewardsQuery(
+    const result = await bAssetClaimableRewardsQuery(
       TEST_WALLET_ADDRESS,
       TEST_ADDRESSES.beth.reward,
       TEST_LCD_CLIENT,

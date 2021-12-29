@@ -22,22 +22,22 @@ interface WithdrawableHistoryWasmQuery {
   parameters: WasmQuery<bluna.hub.Parameters, bluna.hub.ParametersResponse>;
 }
 
-type BondWithdrawableAmountWasmQuery = WithdrawableAmountWasmQuery &
+type BLunaWithdrawableAmountWasmQuery = WithdrawableAmountWasmQuery &
   WithdrawableHistoryWasmQuery;
 
-export type BondWithdrawableAmount = Omit<
-  WasmQueryData<BondWithdrawableAmountWasmQuery>,
+export type BLunaWithdrawableAmount = Omit<
+  WasmQueryData<BLunaWithdrawableAmountWasmQuery>,
   'parameters'
 > & {
   unbondedRequestsStartFrom: number;
   parameters?: bluna.hub.ParametersResponse;
 };
 
-export async function bondWithdrawableAmountQuery(
+export async function bLunaWithdrawableAmountQuery(
   walletAddr: HumanAddr | undefined,
   bLunaHubContract: HumanAddr,
   queryClient: QueryClient,
-): Promise<BondWithdrawableAmount | undefined> {
+): Promise<BLunaWithdrawableAmount | undefined> {
   if (!walletAddr) {
     return undefined;
   }

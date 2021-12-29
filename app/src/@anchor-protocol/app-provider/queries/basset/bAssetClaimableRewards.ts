@@ -1,32 +1,29 @@
-import { COLLATERAL_DENOMS } from '@anchor-protocol/anchor.js';
 import {
-  BondClaimableRewards,
-  bondClaimableRewardsQuery,
+  BAssetClaimableRewards,
+  bAssetClaimableRewardsQuery,
 } from '@anchor-protocol/app-fns';
 import { EMPTY_QUERY_RESULT } from '@libs/app-provider';
 import { createQueryFn } from '@libs/react-query-utils';
+import { HumanAddr } from '@libs/types';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = createQueryFn(bondClaimableRewardsQuery);
+const queryFn = createQueryFn(bAssetClaimableRewardsQuery);
 
-export function useBondClaimableRewards(
-  rewardDenom: COLLATERAL_DENOMS,
-): UseQueryResult<BondClaimableRewards | undefined> {
+export function useBAssetClaimableRewards(
+  rewardAddr: HumanAddr,
+): UseQueryResult<BAssetClaimableRewards | undefined> {
   const connectedWallet = useConnectedWallet();
 
-  const { queryClient, queryErrorReporter, contractAddress } =
-    useAnchorWebapp();
+  const { queryClient, queryErrorReporter } = useAnchorWebapp();
 
   const result = useQuery(
     [
-      ANCHOR_QUERY_KEY.BOND_CLAIMABLE_REWARDS,
+      ANCHOR_QUERY_KEY.BOND_BETH_CLAIMABLE_REWARDS,
       connectedWallet?.walletAddress,
-      rewardDenom === COLLATERAL_DENOMS.UBETH
-        ? contractAddress.beth.reward
-        : contractAddress.bluna.reward,
+      rewardAddr,
       queryClient,
     ],
     queryFn,

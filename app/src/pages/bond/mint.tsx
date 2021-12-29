@@ -1,7 +1,7 @@
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import {
   useAnchorWebapp,
-  useBondBLunaExchangeRateQuery,
+  useBLunaExchangeRateQuery,
   useBondMintTx,
 } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
@@ -96,7 +96,7 @@ function MintBase({ className }: MintProps) {
   const bank = useAnchorBank();
 
   const { data: { state: exchangeRate, parameters } = {} } =
-    useBondBLunaExchangeRateQuery();
+    useBLunaExchangeRateQuery();
 
   // ---------------------------------------------
   // logics
