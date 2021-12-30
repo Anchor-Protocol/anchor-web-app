@@ -7,7 +7,7 @@ import { useCallback } from 'react';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 
-export interface BondClaimTxParams {
+export interface BAssetClaimTxParams {
   rewardAddrs: HumanAddr[];
   onTxSucceed?: () => void;
 }
@@ -23,7 +23,7 @@ export function useBAssetClaimTx() {
   const refetchQueries = useRefetchQueries();
 
   const stream = useCallback(
-    ({ onTxSucceed, rewardAddrs }: BondClaimTxParams) => {
+    ({ onTxSucceed, rewardAddrs }: BAssetClaimTxParams) => {
       if (!connectedWallet || !connectedWallet.availablePost) {
         throw new Error('Can not post!');
       }

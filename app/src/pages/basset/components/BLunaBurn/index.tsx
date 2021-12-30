@@ -37,7 +37,6 @@ function Component({ className }: BLunaBurnProps) {
           setGetAmount={setGetAmount}
           connectedWallet={connectedWallet}
           fixedFee={fixedFee}
-          mode={mode}
           setMode={setMode}
         />
       ) : (
@@ -48,7 +47,6 @@ function Component({ className }: BLunaBurnProps) {
           setGetAmount={setGetAmount}
           connectedWallet={connectedWallet}
           fixedFee={fixedFee}
-          mode={mode}
           setMode={setMode}
         />
       )}
