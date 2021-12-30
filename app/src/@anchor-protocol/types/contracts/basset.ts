@@ -1,4 +1,4 @@
-import { HumanAddr, u, UST } from '@libs/types';
+import { CW20Addr, HumanAddr, u, UST } from '@libs/types';
 
 export namespace basset {
   export namespace converter {
@@ -8,8 +8,8 @@ export namespace basset {
 
     export interface ConfigResponse {
       owner: HumanAddr;
-      anchor_token_address: HumanAddr | null;
-      wormhole_token_address: HumanAddr | null;
+      anchor_token_address: CW20Addr | null;
+      wormhole_token_address: CW20Addr | null;
     }
   }
 

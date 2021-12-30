@@ -19,9 +19,13 @@ function Component({ className }: BAssetMainProps) {
       <hr />
 
       <ul>
+        <AssetCard to="/basset/bluna">Luna</AssetCard>
         {bAssetInfoList.map(({ bAsset, custodyConfig }) => (
-          <AssetCard key={custodyConfig.collateral_token}>
-            {bAsset.name} ???
+          <AssetCard
+            key={custodyConfig.collateral_token}
+            to={`/basset/wh/${bAsset.collateral_token}`}
+          >
+            {bAsset.name}
           </AssetCard>
         ))}
       </ul>

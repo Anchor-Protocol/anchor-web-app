@@ -1,4 +1,11 @@
-import { basset, cw20, HumanAddr, moneyMarket } from '@anchor-protocol/types';
+import {
+  basset,
+  cw20,
+  HumanAddr,
+  moneyMarket,
+  Token,
+} from '@anchor-protocol/types';
+import { cw20TokenInfoQuery } from '@libs/app-fns';
 import {
   QueryClient,
   wasmFetch,
@@ -25,6 +32,7 @@ export type BAssetInfo = WasmQueryData<
   InfoWasmQuery & WormholeTokenWasmQuery
 > & {
   bAsset: moneyMarket.overseer.WhitelistResponse['elems'][number];
+  wormholeTokenInfo: cw20.TokenInfoResponse<Token>;
 };
 
 export async function bAssetInfoQuery(
@@ -72,10 +80,16 @@ export async function bAssetInfoQuery(
     },
   });
 
+  const { tokenInfo: wormholeTokenInfo } = await cw20TokenInfoQuery(
+    converterConfig.wormhole_token_address!,
+    queryClient,
+  );
+
   return {
     bAsset,
     minter,
     custodyConfig,
     converterConfig,
+    wormholeTokenInfo,
   };
 }
