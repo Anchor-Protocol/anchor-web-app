@@ -64,6 +64,7 @@ export * from './tx/anc/buy';
 export * from './tx/anc/governanceStake';
 export * from './tx/anc/governanceUnstake';
 export * from './tx/anc/sell';
+export * from './tx/basset/claim';
 export * from './tx/bond/burn';
 export * from './tx/bond/claim';
 export * from './tx/bond/mint';

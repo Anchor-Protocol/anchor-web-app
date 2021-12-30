@@ -1,8 +1,8 @@
-import { AddressProvider, COLLATERAL_DENOMS } from '@anchor-protocol/anchor.js';
+import { AddressProvider } from '@anchor-protocol/anchor.js';
 import { validateInput } from '@anchor-protocol/anchor.js/dist/utils/validate-input';
 import { validateAddress } from '@anchor-protocol/anchor.js/dist/utils/validation/address';
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
-import { Gas, Rate, u, UST } from '@anchor-protocol/types';
+import { Gas, HumanAddr, Rate, u, UST } from '@anchor-protocol/types';
 import {
   pickAttributeValue,
   pickEvent,
@@ -21,16 +21,16 @@ import { floor } from '@libs/big-math';
 import { demicrofy, stripUUSD } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
-import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
 import {
   CreateTxOptions,
-  MsgExecuteContract,
   Fee,
+  MsgExecuteContract,
 } from '@terra-money/terra.js';
+import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
 import big, { Big } from 'big.js';
 import { Observable } from 'rxjs';
 
-export function bondClaimTx(
+export function bAssetClaimTx(
   $: Parameters<typeof fabricatebAssetClaimRewards>[0] & {
     gasFee: Gas;
     gasAdjustment: Rate<number>;
@@ -65,6 +65,8 @@ export function bondClaimTx(
       if (!transfer) {
         return helper.failedToFindEvents('transfer');
       }
+
+      // https://finder.terra.money/bombay-12/tx/343E30771368EBB96CAE04E8260EF0E96949D2569DDAA3356B2C09AB75B65F73
 
       try {
         const claimedReward = pickAttributeValue<string>(transfer, 5);
@@ -105,25 +107,19 @@ export function bondClaimTx(
 
 interface Option {
   address: string;
-  recipient?: string;
-  rewardDenom: COLLATERAL_DENOMS;
+  rewardAddrs: HumanAddr[];
 }
 
-const fabricatebAssetClaimRewards =
-  ({ address, recipient, rewardDenom }: Option) =>
+export const fabricatebAssetClaimRewards =
+  ({ address, rewardAddrs }: Option) =>
   (addressProvider: AddressProvider) => {
     validateInput([validateAddress(address)]);
 
-    const rewardAddress =
-      rewardDenom === COLLATERAL_DENOMS.UBETH
-        ? addressProvider.bEthReward()
-        : addressProvider.bLunaReward();
-
-    return [
-      new MsgExecuteContract(address, rewardAddress, {
+    return rewardAddrs.map((rewardAddr) => {
+      return new MsgExecuteContract(address, rewardAddr, {
         claim_rewards: {
-          recipient, // always
+          recipient: undefined,
         },
-      }),
-    ];
+      });
+    });
   };
