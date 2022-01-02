@@ -19,5 +19,5 @@ export interface MarketBEthQueryParams {
 export function marketBEthQuery({
   endpoint,
 }: MarketBEthQueryParams): Promise<MarketBEthData> {
-  return fetch(`${endpoint}/bassets/beth`).then((res) => res.json());
+  return fetch(`${endpoint}/v1/bassets/beth`).then((res) => res.json());
 }

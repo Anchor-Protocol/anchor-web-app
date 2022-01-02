@@ -12,10 +12,10 @@ const queryFn = createQueryFn(rewardsAnchorLpRewardsQuery);
 export function useRewardsAnchorLpRewardsQuery(): UseQueryResult<
   RewardsAnchorLpRewardsData | undefined
 > {
-  const { queryErrorReporter } = useAnchorWebapp();
+  const { queryErrorReporter, indexerApiEndpoint } = useAnchorWebapp();
 
   const result = useQuery(
-    [ANCHOR_QUERY_KEY.REWARDS_ANCHOR_LP_REWARDS],
+    [ANCHOR_QUERY_KEY.REWARDS_ANCHOR_LP_REWARDS, indexerApiEndpoint],
     queryFn,
     {
       refetchInterval: 1000 * 60 * 5,
