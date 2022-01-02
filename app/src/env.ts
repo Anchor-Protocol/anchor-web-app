@@ -473,4 +473,4 @@ export const ANCHOR_TX_REFETCH_MAP: TxRefetchMap = {
   ],
 };
 
-// build: force re-build trigger - 21.12.28
+// build: force re-build trigger - 22.01.02
