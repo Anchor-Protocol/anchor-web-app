@@ -1,3 +1,4 @@
+import { floor } from '@libs/big-math';
 import { NoMicro, Token, u } from '@libs/types';
 import big, { BigSource } from 'big.js';
 import { demicrofy, MICRO } from './currency';
@@ -98,9 +99,9 @@ export function formatTokenInteger(n: u<Token<BigSource>>): string {
 
 export function formatTokenInput(n: Token<BigSource>): string {
   const bn = big(n).mul(MICRO);
-  return iFormatter(bn);
+  return floor(bn).toFixed();
 }
 
 export function formatUTokenInput(n: u<Token<BigSource>>): string {
-  return iFormatter(n);
+  return floor(n).toFixed();
 }
