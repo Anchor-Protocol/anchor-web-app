@@ -1,13 +1,19 @@
 import {
-  AddressProvider,
-  fabricateExchangeWithdrawLiquidityANC,
-} from '@anchor-protocol/anchor.js';
-import {
   formatANCWithPostfixUnits,
   formatLP,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
-import { ANC, AncUstLP, Gas, Rate, u, UST } from '@anchor-protocol/types';
+import {
+  ANC,
+  AncUstLP,
+  cw20,
+  CW20Addr,
+  Gas,
+  HumanAddr,
+  Rate,
+  u,
+  UST,
+} from '@anchor-protocol/types';
 import {
   pickAttributeValueByKey,
   pickEvent,
@@ -20,35 +26,52 @@ import {
   _createTxOptions,
   _pollTxInfo,
   _postTx,
+  createHookMsg,
   TxHelper,
 } from '@libs/app-fns/tx/internal';
 import { floor } from '@libs/big-math';
-import { demicrofy, stripUUSD } from '@libs/formatter';
+import { demicrofy, formatTokenInput, stripUUSD } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
+import {
+  CreateTxOptions,
+  Fee,
+  MsgExecuteContract,
+} from '@terra-money/terra.js';
 import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
-import { CreateTxOptions, Fee } from '@terra-money/terra.js';
 import big, { Big } from 'big.js';
 import { Observable } from 'rxjs';
 
-export function ancAncUstLpWithdrawTx(
-  $: Parameters<typeof fabricateExchangeWithdrawLiquidityANC>[0] & {
-    gasFee: Gas;
-    gasAdjustment: Rate<number>;
-    fixedGas: u<UST>;
-    network: NetworkInfo;
-    addressProvider: AddressProvider;
-    queryClient: QueryClient;
-    post: (tx: CreateTxOptions) => Promise<TxResult>;
-    txErrorReporter?: (error: unknown) => string;
-    onTxSucceed?: () => void;
-  },
-): Observable<TxResultRendering> {
+export function ancAncUstLpWithdrawTx($: {
+  walletAddr: HumanAddr;
+  lpAmount: AncUstLP;
+  ancUstLpTokenAddr: CW20Addr;
+  ancUstPairAddr: HumanAddr;
+
+  gasFee: Gas;
+  gasAdjustment: Rate<number>;
+  fixedGas: u<UST>;
+  network: NetworkInfo;
+  queryClient: QueryClient;
+  post: (tx: CreateTxOptions) => Promise<TxResult>;
+  txErrorReporter?: (error: unknown) => string;
+  onTxSucceed?: () => void;
+}): Observable<TxResultRendering> {
   const helper = new TxHelper({ ...$, txFee: $.fixedGas });
 
   return pipe(
     _createTxOptions({
-      msgs: fabricateExchangeWithdrawLiquidityANC($)($.addressProvider),
+      msgs: [
+        new MsgExecuteContract($.walletAddr, $.ancUstLpTokenAddr, {
+          send: {
+            contract: $.ancUstPairAddr,
+            amount: formatTokenInput($.lpAmount),
+            msg: createHookMsg({
+              withdraw_liquidity: {},
+            }),
+          },
+        } as cw20.Send<AncUstLP>),
+      ],
       fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),

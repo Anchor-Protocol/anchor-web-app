@@ -1,5 +1,5 @@
-import { AncUstLP } from '@anchor-protocol/types';
 import { ancAncUstLpUnstakeTx } from '@anchor-protocol/app-fns';
+import { AncUstLP } from '@anchor-protocol/types';
 import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
@@ -15,7 +15,7 @@ export interface AncAncUstLpUnstakeTxParams {
 export function useAncAncUstLpUnstakeTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { queryClient, txErrorReporter, addressProvider, constants } =
+  const { queryClient, txErrorReporter, contractAddress, constants } =
     useAnchorWebapp();
 
   const fixedFee = useFixedFee();
@@ -30,15 +30,16 @@ export function useAncAncUstLpUnstakeTx() {
 
       return ancAncUstLpUnstakeTx({
         // fabricateStakingUnbond
-        address: connectedWallet.walletAddress,
-        amount: lpAmount,
+        walletAddr: connectedWallet.walletAddress,
+        lpAmount: lpAmount,
+        stakingAddr: contractAddress.anchorToken.staking,
+        ancUstLpTokenAddr: contractAddress.cw20.AncUstLP,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: fixedFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         // query
         queryClient,
         // error
@@ -52,10 +53,11 @@ export function useAncAncUstLpUnstakeTx() {
     },
     [
       connectedWallet,
+      contractAddress.anchorToken.staking,
+      contractAddress.cw20.AncUstLP,
       fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,
-      addressProvider,
       queryClient,
       txErrorReporter,
       refetchQueries,

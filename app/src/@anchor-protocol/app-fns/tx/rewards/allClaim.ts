@@ -1,9 +1,3 @@
-import {
-  AddressProvider,
-  fabricateMarketClaimRewards,
-  fabricateStakingWithdraw,
-  MARKET_DENOMS,
-} from '@anchor-protocol/anchor.js';
 import { formatANC } from '@anchor-protocol/notation';
 import { ANC, Gas, HumanAddr, Rate } from '@anchor-protocol/types';
 import {
@@ -25,24 +19,26 @@ import { demicrofy } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { u, UST } from '@libs/types';
 import { pipe } from '@rx-stream/pipe';
-import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
 import {
   CreateTxOptions,
-  MsgExecuteContract,
   Fee,
+  MsgExecuteContract,
 } from '@terra-money/terra.js';
+import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
 import big, { Big } from 'big.js';
 import { Observable } from 'rxjs';
 
 export function rewardsAllClaimTx($: {
-  address: HumanAddr;
+  walletAddr: HumanAddr;
+  stakingAddr: HumanAddr;
+  marketAddr: HumanAddr;
+
   claimAncUstLp: boolean;
   claimUstBorrow: boolean;
   gasFee: Gas;
   gasAdjustment: Rate<number>;
   fixedGas: u<UST>;
   network: NetworkInfo;
-  addressProvider: AddressProvider;
   queryClient: QueryClient;
   post: (tx: CreateTxOptions) => Promise<TxResult>;
   txErrorReporter?: (error: unknown) => string;
@@ -58,16 +54,17 @@ export function rewardsAllClaimTx($: {
 
   if ($.claimAncUstLp) {
     msgs.push(
-      ...fabricateStakingWithdraw({ address: $.address })($.addressProvider),
+      new MsgExecuteContract($.walletAddr, $.stakingAddr, {
+        withdraw: {},
+      }),
     );
   }
 
   if ($.claimUstBorrow) {
     msgs.push(
-      ...fabricateMarketClaimRewards({
-        address: $.address,
-        market: MARKET_DENOMS.UUSD,
-      })($.addressProvider),
+      new MsgExecuteContract($.walletAddr, $.marketAddr, {
+        claim_rewards: {},
+      }),
     );
   }
 

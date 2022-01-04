@@ -17,7 +17,7 @@ export interface BondBurnTxParams {
 export function useBondBurnTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { queryClient, txErrorReporter, addressProvider, constants } =
+  const { queryClient, txErrorReporter, contractAddress, constants } =
     useAnchorWebapp();
 
   const refetchQueries = useRefetchQueries();
@@ -30,15 +30,16 @@ export function useBondBurnTx() {
 
       return bondBurnTx({
         // fabricatebAssetUnbond
-        amount: burnAmount,
-        address: connectedWallet.walletAddress,
+        burnAmount,
+        walletAddr: connectedWallet.walletAddress,
+        bAssetTokenAddr: contractAddress.cw20.bLuna,
+        bAssetHubAddr: contractAddress.bluna.hub,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: txFee,
         gasFee: gasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         // query
         queryClient,
         // error
@@ -52,8 +53,9 @@ export function useBondBurnTx() {
     },
     [
       connectedWallet,
+      contractAddress.cw20.bLuna,
+      contractAddress.bluna.hub,
       constants.gasAdjustment,
-      addressProvider,
       queryClient,
       txErrorReporter,
       refetchQueries,

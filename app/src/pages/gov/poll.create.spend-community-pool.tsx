@@ -1,4 +1,4 @@
-import { ExecuteMsg } from '@anchor-protocol/anchor.js';
+import { ExecuteMsg } from '@anchor-protocol/app-fns';
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   ANC_INPUT_MAXIMUM_INTEGER_POINTS,

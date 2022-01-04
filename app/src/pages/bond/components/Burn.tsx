@@ -1,4 +1,3 @@
-import { createHookMsg } from '@anchor-protocol/anchor.js/dist/utils/cw20/create-hook-msg';
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import {
   useAnchorWebapp,
@@ -15,6 +14,7 @@ import {
 } from '@anchor-protocol/notation';
 import type { bLuna, Luna } from '@anchor-protocol/types';
 import { Gas, u, UST } from '@anchor-protocol/types';
+import { createHookMsg } from '@libs/app-fns/tx/internal';
 import { useEstimateFee, useFixedFee } from '@libs/app-provider';
 import { floor } from '@libs/big-math';
 import { demicrofy, MICRO } from '@libs/formatter';

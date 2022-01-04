@@ -13,7 +13,7 @@ export interface RewardsAncUstLpClaimTxParams {
 export function useRewardsAncUstLpClaimTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { queryClient, txErrorReporter, addressProvider, constants } =
+  const { queryClient, txErrorReporter, contractAddress, constants } =
     useAnchorWebapp();
 
   const refetchQueries = useRefetchQueries();
@@ -28,14 +28,14 @@ export function useRewardsAncUstLpClaimTx() {
 
       return rewardsAncUstLpClaimTx({
         // fabricateStakingWithdraw
-        address: connectedWallet.walletAddress,
+        walletAddr: connectedWallet.walletAddress,
+        stakingAddr: contractAddress.anchorToken.staking,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: fixedFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         // query
         queryClient,
         // error
@@ -49,10 +49,10 @@ export function useRewardsAncUstLpClaimTx() {
     },
     [
       connectedWallet,
+      contractAddress.anchorToken.staking,
       fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,
-      addressProvider,
       queryClient,
       txErrorReporter,
       refetchQueries,

@@ -1,5 +1,5 @@
 import { ancSellTx } from '@anchor-protocol/app-fns';
-import { ANC } from '@anchor-protocol/types';
+import { ANC, Rate, UST } from '@anchor-protocol/types';
 import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { formatExecuteMsgNumber } from '@libs/formatter';
 import { useStream } from '@rx-stream/react';
@@ -20,7 +20,7 @@ export interface AncSellTxParams {
 export function useAncSellTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { queryClient, txErrorReporter, addressProvider, constants } =
+  const { queryClient, txErrorReporter, contractAddress, constants } =
     useAnchorWebapp();
 
   const fixedFee = useFixedFee();
@@ -37,19 +37,20 @@ export function useAncSellTx() {
 
       return ancSellTx({
         // fabricatebSell
-        address: connectedWallet.walletAddress,
-        amount: burnAmount,
+        walletAddr: connectedWallet.walletAddress,
+        burnAmount,
         beliefPrice: formatExecuteMsgNumber(
           big(ancPrice.ANCPoolSize).div(ancPrice.USTPoolSize),
-        ),
-        maxSpread: maxSpread.toString(),
+        ) as UST,
+        maxSpread: maxSpread.toString() as Rate,
+        ancTokenAddr: contractAddress.cw20.ANC,
+        ancUstPairAddr: contractAddress.terraswap.ancUstPair,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: fixedFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         // query
         queryClient,
         // error
@@ -64,10 +65,11 @@ export function useAncSellTx() {
     [
       connectedWallet,
       ancPrice,
+      contractAddress.cw20.ANC,
+      contractAddress.terraswap.ancUstPair,
       fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,
-      addressProvider,
       queryClient,
       txErrorReporter,
       refetchQueries,

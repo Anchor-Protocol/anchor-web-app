@@ -1,6 +1,7 @@
-import { PollStatus } from '@anchor-protocol/anchor.js';
-
-export const pollStatusLabels: Record<PollStatus, string> = {
+export const pollStatusLabels: Record<
+  'in_progress' | 'passed' | 'rejected' | 'executed',
+  string
+> = {
   in_progress: 'In Progress',
   executed: 'Executed',
   passed: 'Passed',

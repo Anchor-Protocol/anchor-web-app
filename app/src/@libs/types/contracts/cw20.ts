@@ -1,4 +1,4 @@
-import { HumanAddr, Token, u } from '@libs/types';
+import { CW20Addr, HumanAddr, Token, u } from '@libs/types';
 
 export namespace cw20 {
   // ---------------------------------------------
@@ -6,8 +6,9 @@ export namespace cw20 {
   // ---------------------------------------------
   export interface IncreaseAllowance {
     increase_allowance: {
-      spender: HumanAddr;
+      spender: CW20Addr;
       amount: u<Token>;
+      expires?: { at_height: number } | { at_time: number } | { never: {} };
     };
   }
 

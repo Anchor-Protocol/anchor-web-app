@@ -17,7 +17,7 @@ export interface BondMintTxParams {
 export function useBondMintTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { queryClient, txErrorReporter, addressProvider, constants } =
+  const { queryClient, txErrorReporter, contractAddress, constants } =
     useAnchorWebapp();
 
   const refetchQueries = useRefetchQueries();
@@ -30,15 +30,15 @@ export function useBondMintTx() {
 
       return bondMintTx({
         // fabricatebAssetBond
-        amount: bondAmount,
-        address: connectedWallet.walletAddress,
+        bondAmount,
+        walletAddr: connectedWallet.walletAddress,
+        bAssetHubAddr: contractAddress.bluna.hub,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: txFee,
         gasFee: gasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         // query
         queryClient,
         // error
@@ -52,8 +52,8 @@ export function useBondMintTx() {
     },
     [
       connectedWallet,
+      contractAddress.bluna.hub,
       constants.gasAdjustment,
-      addressProvider,
       queryClient,
       txErrorReporter,
       refetchQueries,

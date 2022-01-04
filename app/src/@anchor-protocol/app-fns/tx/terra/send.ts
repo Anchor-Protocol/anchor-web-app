@@ -1,4 +1,3 @@
-import { fabricateCw20Transfer } from '@anchor-protocol/anchor.js';
 import {
   CW20Addr,
   Gas,
@@ -17,17 +16,17 @@ import {
   TxHelper,
 } from '@libs/app-fns/tx/internal';
 import { floor } from '@libs/big-math';
+import { formatTokenInput } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
-import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
 import {
   Coin,
   CreateTxOptions,
-  Dec,
-  Int,
-  MsgSend,
   Fee,
+  MsgExecuteContract,
+  MsgSend,
 } from '@terra-money/terra.js';
+import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
 import { Observable } from 'rxjs';
 
 export function terraSendTx($: {
@@ -51,17 +50,29 @@ export function terraSendTx($: {
     _createTxOptions({
       msgs:
         'cw20Contract' in $.currency
-          ? fabricateCw20Transfer({
-              amount: $.amount,
-              address: $.myWalletAddress,
-              contract_address: $.currency.cw20Contract,
-              recipient: $.toWalletAddress,
-            })
+          ? //? fabricateCw20Transfer({
+            //    amount: $.amount,
+            //    address: $.myWalletAddress,
+            //    contract_address: $.currency.cw20Contract,
+            //    recipient: $.toWalletAddress,
+            //  })
+            [
+              new MsgExecuteContract(
+                $.myWalletAddress,
+                $.currency.cw20Contract,
+                {
+                  transfer: {
+                    recipient: $.toWalletAddress,
+                    amount: formatTokenInput($.amount),
+                  },
+                },
+              ),
+            ]
           : [
               new MsgSend($.myWalletAddress, $.toWalletAddress, [
                 new Coin(
                   `u${$.currency.tokenDenom}`,
-                  new Int(new Dec($.amount).mul(1000000)).toString(),
+                  formatTokenInput($.amount),
                 ),
               ]),
             ],

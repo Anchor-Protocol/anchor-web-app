@@ -1,4 +1,3 @@
-import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import { earnDepositTx } from '@anchor-protocol/app-fns';
 import { u, UST } from '@anchor-protocol/types';
 import { useRefetchQueries } from '@libs/app-provider';
@@ -17,7 +16,7 @@ export interface EarnDepositTxParams {
 export function useEarnDepositTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { addressProvider, constants, txErrorReporter, queryClient } =
+  const { constants, txErrorReporter, queryClient, contractAddress } =
     useAnchorWebapp();
 
   const refetchQueries = useRefetchQueries();
@@ -30,16 +29,15 @@ export function useEarnDepositTx() {
 
       return earnDepositTx({
         // fabricateMarketDepositStableCoin
-        address: connectedWallet.walletAddress,
-        market: MARKET_DENOMS.UUSD,
-        amount: depositAmount,
+        walletAddr: connectedWallet.walletAddress,
+        marketAddr: contractAddress.moneyMarket.market,
+        depositAmount,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         txFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         // query
         queryClient,
         // error
@@ -53,9 +51,9 @@ export function useEarnDepositTx() {
     },
     [
       connectedWallet,
+      contractAddress.moneyMarket.market,
       constants.gasWanted,
       constants.gasAdjustment,
-      addressProvider,
       queryClient,
       txErrorReporter,
       refetchQueries,

@@ -1,4 +1,3 @@
-import { createHookMsg } from '@anchor-protocol/anchor.js/dist/utils/cw20/create-hook-msg';
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import {
   useAnchorBank,
@@ -14,6 +13,7 @@ import {
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { bLuna } from '@anchor-protocol/types';
+import { createHookMsg } from '@libs/app-fns/tx/internal';
 import { useEstimateFee } from '@libs/app-provider';
 import { floor } from '@libs/big-math';
 import { demicrofy, MICRO } from '@libs/formatter';

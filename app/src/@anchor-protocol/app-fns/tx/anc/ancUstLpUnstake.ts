@@ -1,9 +1,13 @@
-import {
-  AddressProvider,
-  fabricateStakingUnbond,
-} from '@anchor-protocol/anchor.js';
 import { formatLP } from '@anchor-protocol/notation';
-import { AncUstLP, Gas, Rate, u, UST } from '@anchor-protocol/types';
+import {
+  AncUstLP,
+  CW20Addr,
+  Gas,
+  HumanAddr,
+  Rate,
+  u,
+  UST,
+} from '@anchor-protocol/types';
 import {
   pickAttributeValueByKey,
   pickEvent,
@@ -19,31 +23,44 @@ import {
   TxHelper,
 } from '@libs/app-fns/tx/internal';
 import { floor } from '@libs/big-math';
-import { demicrofy } from '@libs/formatter';
+import { demicrofy, formatTokenInput } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
+import {
+  CreateTxOptions,
+  Fee,
+  MsgExecuteContract,
+} from '@terra-money/terra.js';
 import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
-import { CreateTxOptions, Fee } from '@terra-money/terra.js';
 import { Observable } from 'rxjs';
 
-export function ancAncUstLpUnstakeTx(
-  $: Parameters<typeof fabricateStakingUnbond>[0] & {
-    gasFee: Gas;
-    gasAdjustment: Rate<number>;
-    fixedGas: u<UST>;
-    network: NetworkInfo;
-    addressProvider: AddressProvider;
-    queryClient: QueryClient;
-    post: (tx: CreateTxOptions) => Promise<TxResult>;
-    txErrorReporter?: (error: unknown) => string;
-    onTxSucceed?: () => void;
-  },
-): Observable<TxResultRendering> {
+export function ancAncUstLpUnstakeTx($: {
+  walletAddr: HumanAddr;
+  stakingAddr: HumanAddr;
+  ancUstLpTokenAddr: CW20Addr;
+  lpAmount: AncUstLP;
+
+  gasFee: Gas;
+  gasAdjustment: Rate<number>;
+  fixedGas: u<UST>;
+  network: NetworkInfo;
+  queryClient: QueryClient;
+  post: (tx: CreateTxOptions) => Promise<TxResult>;
+  txErrorReporter?: (error: unknown) => string;
+  onTxSucceed?: () => void;
+}): Observable<TxResultRendering> {
   const helper = new TxHelper({ ...$, txFee: $.fixedGas });
 
   return pipe(
     _createTxOptions({
-      msgs: fabricateStakingUnbond($)($.addressProvider),
+      msgs: [
+        new MsgExecuteContract($.walletAddr, $.stakingAddr, {
+          unbond: {
+            amount: formatTokenInput($.lpAmount),
+          },
+        }),
+        // TODO execute_msg type
+      ],
       fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),

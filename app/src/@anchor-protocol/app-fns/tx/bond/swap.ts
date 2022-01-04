@@ -1,9 +1,14 @@
-import {
-  AddressProvider,
-  fabricateExchangeSwapbLuna,
-} from '@anchor-protocol/anchor.js';
 import { formatLuna } from '@anchor-protocol/notation';
-import { bLuna, Gas, Luna, Rate, u, UST } from '@anchor-protocol/types';
+import {
+  bLuna,
+  CW20Addr,
+  Gas,
+  HumanAddr,
+  Luna,
+  Rate,
+  u,
+  UST,
+} from '@anchor-protocol/types';
 import {
   pickAttributeValue,
   pickEvent,
@@ -16,35 +21,61 @@ import {
   _createTxOptions,
   _pollTxInfo,
   _postTx,
+  createHookMsg,
   TxHelper,
 } from '@libs/app-fns/tx/internal';
 import { floor } from '@libs/big-math';
-import { demicrofy, formatFluidDecimalPoints } from '@libs/formatter';
+import {
+  demicrofy,
+  formatFluidDecimalPoints,
+  formatTokenInput,
+} from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
+import {
+  CreateTxOptions,
+  Fee,
+  MsgExecuteContract,
+} from '@terra-money/terra.js';
 import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
-import { CreateTxOptions, Fee } from '@terra-money/terra.js';
 import big, { Big, BigSource } from 'big.js';
 import { Observable } from 'rxjs';
 
-export function bondSwapTx(
-  $: Parameters<typeof fabricateExchangeSwapbLuna>[0] & {
-    gasFee: Gas;
-    gasAdjustment: Rate<number>;
-    fixedGas: u<UST>;
-    network: NetworkInfo;
-    addressProvider: AddressProvider;
-    queryClient: QueryClient;
-    post: (tx: CreateTxOptions) => Promise<TxResult>;
-    txErrorReporter?: (error: unknown) => string;
-    onTxSucceed?: () => void;
-  },
-): Observable<TxResultRendering> {
+export function bondSwapTx($: {
+  walletAddr: HumanAddr;
+  bAssetTokenAddr: CW20Addr;
+  bAssetPairAddr: HumanAddr;
+  burnAmount: bLuna;
+  beliefPrice: Rate;
+  maxSpread: Rate;
+
+  gasFee: Gas;
+  gasAdjustment: Rate<number>;
+  fixedGas: u<UST>;
+  network: NetworkInfo;
+  queryClient: QueryClient;
+  post: (tx: CreateTxOptions) => Promise<TxResult>;
+  txErrorReporter?: (error: unknown) => string;
+  onTxSucceed?: () => void;
+}): Observable<TxResultRendering> {
   const helper = new TxHelper({ ...$, txFee: $.fixedGas });
 
   return pipe(
     _createTxOptions({
-      msgs: fabricateExchangeSwapbLuna($)($.addressProvider),
+      msgs: [
+        new MsgExecuteContract($.walletAddr, $.bAssetTokenAddr, {
+          send: {
+            contract: $.bAssetPairAddr,
+            amount: formatTokenInput($.burnAmount),
+            msg: createHookMsg({
+              swap: {
+                belief_price: $.beliefPrice,
+                max_spread: $.maxSpread,
+              },
+            }),
+          },
+        }),
+      ],
       fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),

@@ -1,16 +1,17 @@
-import { AddressProvider } from '@anchor-protocol/anchor.js';
-import { createHookMsg } from '@anchor-protocol/anchor.js/dist/utils/cw20/create-hook-msg';
-import { validateInput } from '@anchor-protocol/anchor.js/dist/utils/validate-input';
-import { validateAddress } from '@anchor-protocol/anchor.js/dist/utils/validation/address';
-import {
-  validateIsGreaterThanZero,
-  validateIsNumber,
-} from '@anchor-protocol/anchor.js/dist/utils/validation/number';
 import {
   formatANCWithPostfixUnits,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
-import { ANC, Gas, Rate, u, UST } from '@anchor-protocol/types';
+import {
+  ANC,
+  cw20,
+  CW20Addr,
+  Gas,
+  HumanAddr,
+  Rate,
+  u,
+  UST,
+} from '@anchor-protocol/types';
 import {
   pickAttributeValueByKey,
   pickEvent,
@@ -23,41 +24,57 @@ import {
   _createTxOptions,
   _pollTxInfo,
   _postTx,
+  createHookMsg,
   TxHelper,
 } from '@libs/app-fns/tx/internal';
 import { floor } from '@libs/big-math';
-import { demicrofy, stripUUSD } from '@libs/formatter';
+import { demicrofy, formatTokenInput, stripUUSD } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
-import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
 import {
   CreateTxOptions,
-  Dec,
-  Int,
-  MsgExecuteContract,
   Fee,
+  MsgExecuteContract,
 } from '@terra-money/terra.js';
+import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
 import big, { Big } from 'big.js';
 import { Observable } from 'rxjs';
 
-export function ancSellTx(
-  $: Parameters<typeof fabricatebSell>[0] & {
-    gasFee: Gas;
-    gasAdjustment: Rate<number>;
-    fixedGas: u<UST>;
-    network: NetworkInfo;
-    addressProvider: AddressProvider;
-    queryClient: QueryClient;
-    post: (tx: CreateTxOptions) => Promise<TxResult>;
-    txErrorReporter?: (error: unknown) => string;
-    onTxSucceed?: () => void;
-  },
-): Observable<TxResultRendering> {
+export function ancSellTx($: {
+  walletAddr: HumanAddr;
+  burnAmount: ANC;
+  ancTokenAddr: CW20Addr;
+  ancUstPairAddr: HumanAddr;
+  maxSpread: Rate;
+  beliefPrice: UST;
+
+  gasFee: Gas;
+  gasAdjustment: Rate<number>;
+  fixedGas: u<UST>;
+  network: NetworkInfo;
+  queryClient: QueryClient;
+  post: (tx: CreateTxOptions) => Promise<TxResult>;
+  txErrorReporter?: (error: unknown) => string;
+  onTxSucceed?: () => void;
+}): Observable<TxResultRendering> {
   const helper = new TxHelper({ ...$, txFee: $.fixedGas });
 
   return pipe(
     _createTxOptions({
-      msgs: fabricatebSell($)($.addressProvider),
+      msgs: [
+        new MsgExecuteContract($.walletAddr, $.ancTokenAddr, {
+          send: {
+            contract: $.ancUstPairAddr,
+            amount: formatTokenInput($.burnAmount),
+            msg: createHookMsg({
+              swap: {
+                belief_price: $.beliefPrice,
+                max_spread: $.maxSpread,
+              },
+            }),
+          },
+        } as cw20.Send<ANC>),
+      ],
       fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),
@@ -147,40 +164,3 @@ export function ancSellTx(
     },
   )().pipe(_catchTxError({ helper, ...$ }));
 }
-
-interface Option {
-  address: string;
-  amount: string;
-  to?: string;
-  beliefPrice?: string;
-  maxSpread?: string;
-}
-
-export const fabricatebSell =
-  ({ address, amount, to, beliefPrice, maxSpread }: Option) =>
-  (addressProvider: AddressProvider): MsgExecuteContract[] => {
-    validateInput([
-      validateAddress(address),
-      validateIsNumber(amount),
-      validateIsGreaterThanZero(+amount),
-    ]);
-
-    const ancTokenAddress = addressProvider.ANC();
-    const pairAddress = addressProvider.ancUstPair();
-
-    return [
-      new MsgExecuteContract(address, ancTokenAddress, {
-        send: {
-          contract: pairAddress,
-          amount: new Int(new Dec(amount).mul(1000000)).toString(),
-          msg: createHookMsg({
-            swap: {
-              belief_price: beliefPrice,
-              max_spread: maxSpread,
-              to: to,
-            },
-          }),
-        },
-      }),
-    ];
-  };

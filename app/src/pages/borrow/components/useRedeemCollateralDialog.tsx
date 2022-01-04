@@ -67,7 +67,7 @@ function ComponentBase({
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const [postTx, txResult] = useBorrowRedeemCollateralTx();
+  const [postTx, txResult] = useBorrowRedeemCollateralTx(collateralToken);
 
   const [input, states] = useBorrowRedeemCollateralForm(
     collateralToken,
@@ -87,16 +87,15 @@ function ComponentBase({
 
   const proceed = useCallback(
     (redeemAmount: bAsset) => {
-      if (!connectedWallet || !postTx || !states.collateralDenom) {
+      if (!connectedWallet || !postTx) {
         return;
       }
 
       postTx({
         redeemAmount: redeemAmount.length > 0 ? redeemAmount : ('0' as bAsset),
-        collateralDenom: states.collateralDenom,
       });
     },
-    [connectedWallet, postTx, states.collateralDenom],
+    [connectedWallet, postTx],
   );
 
   const onLtvChange = useCallback(

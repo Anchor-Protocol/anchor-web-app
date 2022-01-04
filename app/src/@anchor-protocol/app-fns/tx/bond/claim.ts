@@ -1,8 +1,5 @@
-import { AddressProvider, COLLATERAL_DENOMS } from '@anchor-protocol/anchor.js';
-import { validateInput } from '@anchor-protocol/anchor.js/dist/utils/validate-input';
-import { validateAddress } from '@anchor-protocol/anchor.js/dist/utils/validation/address';
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
-import { Gas, Rate, u, UST } from '@anchor-protocol/types';
+import { Gas, HumanAddr, Rate, u, UST } from '@anchor-protocol/types';
 import {
   pickAttributeValue,
   pickEvent,
@@ -21,33 +18,39 @@ import { floor } from '@libs/big-math';
 import { demicrofy, stripUUSD } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
-import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
 import {
   CreateTxOptions,
-  MsgExecuteContract,
   Fee,
+  MsgExecuteContract,
 } from '@terra-money/terra.js';
+import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
 import big, { Big } from 'big.js';
 import { Observable } from 'rxjs';
 
-export function bondClaimTx(
-  $: Parameters<typeof fabricatebAssetClaimRewards>[0] & {
-    gasFee: Gas;
-    gasAdjustment: Rate<number>;
-    fixedGas: u<UST>;
-    network: NetworkInfo;
-    addressProvider: AddressProvider;
-    queryClient: QueryClient;
-    post: (tx: CreateTxOptions) => Promise<TxResult>;
-    txErrorReporter?: (error: unknown) => string;
-    onTxSucceed?: () => void;
-  },
-): Observable<TxResultRendering> {
+export function bondClaimTx($: {
+  walletAddr: HumanAddr;
+  bAssetRewardAddr: HumanAddr;
+
+  gasFee: Gas;
+  gasAdjustment: Rate<number>;
+  fixedGas: u<UST>;
+  network: NetworkInfo;
+  queryClient: QueryClient;
+  post: (tx: CreateTxOptions) => Promise<TxResult>;
+  txErrorReporter?: (error: unknown) => string;
+  onTxSucceed?: () => void;
+}): Observable<TxResultRendering> {
   const helper = new TxHelper({ ...$, txFee: $.fixedGas });
 
   return pipe(
     _createTxOptions({
-      msgs: fabricatebAssetClaimRewards($)($.addressProvider),
+      msgs: [
+        new MsgExecuteContract($.walletAddr, $.bAssetRewardAddr, {
+          // @see https://github.com/Anchor-Protocol/anchor-bAsset-contracts/blob/master/contracts/anchor_basset_reward/src/msg.rs#L46
+          // @see https://github.com/Anchor-Protocol/anchor-bAsset-contracts/blob/master/contracts/anchor_basset_reward/src/user.rs#L16
+          claim_rewards: {},
+        }),
+      ],
       fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),
@@ -102,28 +105,3 @@ export function bondClaimTx(
     },
   )().pipe(_catchTxError({ helper, ...$ }));
 }
-
-interface Option {
-  address: string;
-  recipient?: string;
-  rewardDenom: COLLATERAL_DENOMS;
-}
-
-const fabricatebAssetClaimRewards =
-  ({ address, recipient, rewardDenom }: Option) =>
-  (addressProvider: AddressProvider) => {
-    validateInput([validateAddress(address)]);
-
-    const rewardAddress =
-      rewardDenom === COLLATERAL_DENOMS.UBETH
-        ? addressProvider.bEthReward()
-        : addressProvider.bLunaReward();
-
-    return [
-      new MsgExecuteContract(address, rewardAddress, {
-        claim_rewards: {
-          recipient, // always
-        },
-      }),
-    ];
-  };

@@ -15,7 +15,7 @@ import {
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { bAsset, bLuna, CW20Addr, Rate } from '@anchor-protocol/types';
+import { bAsset, CW20Addr, Rate } from '@anchor-protocol/types';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
@@ -67,7 +67,7 @@ function ComponentBase({
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
 
-  const [postTx, txResult] = useBorrowProvideCollateralTx();
+  const [postTx, txResult] = useBorrowProvideCollateralTx(collateralToken);
 
   const [input, states] = useBorrowProvideCollateralForm(
     collateralToken,
@@ -80,23 +80,22 @@ function ComponentBase({
   // ---------------------------------------------
   const updateDepositAmount = useCallback(
     (nextDepositAmount: string) => {
-      input({ depositAmount: nextDepositAmount as bLuna });
+      input({ depositAmount: nextDepositAmount as bAsset });
     },
     [input],
   );
 
   const proceed = useCallback(
     (depositAmount: bAsset) => {
-      if (!connectedWallet || !postTx || !states.collateralDenom) {
+      if (!connectedWallet || !postTx) {
         return;
       }
 
       postTx({
         depositAmount,
-        collateralDenom: states.collateralDenom,
       });
     },
-    [connectedWallet, postTx, states.collateralDenom],
+    [connectedWallet, postTx],
   );
 
   const onLtvChange = useCallback(

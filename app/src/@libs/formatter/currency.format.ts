@@ -95,3 +95,12 @@ export function formatUTokenInteger(n: u<Token<BigSource>>): string {
 export function formatTokenInteger(n: u<Token<BigSource>>): string {
   return iFormatter(n);
 }
+
+export function formatTokenInput(n: Token<BigSource>): string {
+  const bn = big(n).mul(MICRO);
+  return iFormatter(bn);
+}
+
+export function formatUTokenInput(n: u<Token<BigSource>>): string {
+  return iFormatter(n);
+}

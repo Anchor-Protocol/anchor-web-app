@@ -1,9 +1,14 @@
-import {
-  AddressProvider,
-  fabricatebAssetUnbond,
-} from '@anchor-protocol/anchor.js';
 import { formatLuna } from '@anchor-protocol/notation';
-import { bLuna, Gas, Luna, Rate, u, UST } from '@anchor-protocol/types';
+import {
+  bLuna,
+  CW20Addr,
+  Gas,
+  HumanAddr,
+  Luna,
+  Rate,
+  u,
+  UST,
+} from '@anchor-protocol/types';
 import {
   pickAttributeValueByKey,
   pickEvent,
@@ -16,35 +21,57 @@ import {
   _createTxOptions,
   _pollTxInfo,
   _postTx,
+  createHookMsg,
   TxHelper,
 } from '@libs/app-fns/tx/internal';
 import { floor } from '@libs/big-math';
-import { demicrofy, formatFluidDecimalPoints } from '@libs/formatter';
+import {
+  demicrofy,
+  formatFluidDecimalPoints,
+  formatTokenInput,
+} from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
+import {
+  CreateTxOptions,
+  Fee,
+  MsgExecuteContract,
+} from '@terra-money/terra.js';
 import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
-import { CreateTxOptions, Fee } from '@terra-money/terra.js';
 import big, { BigSource } from 'big.js';
 import { Observable } from 'rxjs';
 
-export function bondBurnTx(
-  $: Parameters<typeof fabricatebAssetUnbond>[0] & {
-    gasFee: Gas;
-    gasAdjustment: Rate<number>;
-    fixedGas: u<UST>;
-    network: NetworkInfo;
-    addressProvider: AddressProvider;
-    queryClient: QueryClient;
-    post: (tx: CreateTxOptions) => Promise<TxResult>;
-    txErrorReporter?: (error: unknown) => string;
-    onTxSucceed?: () => void;
-  },
-): Observable<TxResultRendering> {
+export function bondBurnTx($: {
+  walletAddr: HumanAddr;
+  bAssetTokenAddr: CW20Addr;
+  bAssetHubAddr: HumanAddr;
+  burnAmount: bLuna;
+
+  gasFee: Gas;
+  gasAdjustment: Rate<number>;
+  fixedGas: u<UST>;
+  network: NetworkInfo;
+  queryClient: QueryClient;
+  post: (tx: CreateTxOptions) => Promise<TxResult>;
+  txErrorReporter?: (error: unknown) => string;
+  onTxSucceed?: () => void;
+}): Observable<TxResultRendering> {
   const helper = new TxHelper({ ...$, txFee: $.fixedGas });
 
   return pipe(
     _createTxOptions({
-      msgs: fabricatebAssetUnbond($)($.addressProvider),
+      msgs: [
+        new MsgExecuteContract($.walletAddr, $.bAssetTokenAddr, {
+          // @see https://github.com/Anchor-Protocol/anchor-bAsset-contracts/blob/cce41e707c67ee2852c4929e17fb1472dbd2aa35/contracts/anchor_basset_token/src/handler.rs#L101
+          send: {
+            contract: $.bAssetHubAddr,
+            amount: formatTokenInput($.burnAmount),
+            msg: createHookMsg({
+              unbond: {},
+            }),
+          },
+        }),
+      ],
       fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),

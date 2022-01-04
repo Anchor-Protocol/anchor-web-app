@@ -1,4 +1,3 @@
-import { COLLATERAL_DENOMS } from '@anchor-protocol/anchor.js';
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import {
   useBLunaClaimableRewards,
@@ -45,7 +44,7 @@ function ClaimLunaBase({ className }: ClaimLunaProps) {
 
   const { taxRate, maxTax } = useUstTax();
 
-  const [claim, claimResult] = useBondClaimTx(COLLATERAL_DENOMS.UBLUNA);
+  const [claim, claimResult] = useBondClaimTx();
 
   const [withdraw, withdrawResult] = useBondWithdrawTx();
 

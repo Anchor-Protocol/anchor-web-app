@@ -1,5 +1,3 @@
-import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
-import { u, UST } from '@anchor-protocol/types';
 import {
   computeCollateralsTotalUST,
   computeTotalDeposit,
@@ -7,12 +5,15 @@ import {
 import {
   useAnchorWebapp,
   useAncPriceQuery,
+  useBAssetInfoAndBalanceTotalQuery,
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
   useEarnEpochStatesQuery,
   useRewardsAncGovernanceRewardsQuery,
 } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
+import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
+import { u, UST } from '@anchor-protocol/types';
 import { sum } from '@libs/big-math';
 import { demicrofy } from '@libs/formatter';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
@@ -76,6 +77,8 @@ function TotalValueBase({ className }: TotalValueProps) {
   const { data: { marketBorrowerInfo, overseerCollaterals } = {} } =
     useBorrowBorrowerQuery();
 
+  const { data: bAssetBalanceTotal } = useBAssetInfoAndBalanceTotalQuery();
+
   const [focusedIndex, setFocusedIndex] = useState(-1);
 
   const { ref, width = 400 } = useResizeObserver();
@@ -104,6 +107,7 @@ function TotalValueBase({ className }: TotalValueProps) {
       ancPrice,
       contractAddress,
       oraclePrices,
+      bAssetBalanceTotal,
     );
     const pool =
       ancUstLp && ancPrice
@@ -176,6 +180,7 @@ function TotalValueBase({ className }: TotalValueProps) {
   }, [
     ancPrice,
     ancUstLp,
+    bAssetBalanceTotal,
     connectedWallet,
     contractAddress,
     marketBorrowerInfo,

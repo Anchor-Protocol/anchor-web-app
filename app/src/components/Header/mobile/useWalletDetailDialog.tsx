@@ -1,3 +1,4 @@
+import { useBAssetInfoAndBalanceTotalQuery } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { buttonBaseStyle } from '@libs/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
@@ -34,6 +35,8 @@ function ComponentBase({
 
   const bank = useAnchorBank();
 
+  const { data: bAssetBalancesTotal } = useBAssetInfoAndBalanceTotalQuery();
+
   const disconnectWallet = useCallback(() => {
     disconnect();
     closeDialog();
@@ -54,6 +57,7 @@ function ComponentBase({
             bank={bank}
             openSend={openSend}
             openBuyUst={openBuyUst}
+            bAssetBalanceTotal={bAssetBalancesTotal}
           />
         )}
       </Dialog>

@@ -1,6 +1,3 @@
-import { AddressProvider } from '@anchor-protocol/anchor.js';
-import { validateInput } from '@anchor-protocol/anchor.js/dist/utils/validate-input';
-import { validateAddress } from '@anchor-protocol/anchor.js/dist/utils/validation/address';
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
 import { Gas, HumanAddr, Rate, u, UST } from '@anchor-protocol/types';
 import {
@@ -30,24 +27,30 @@ import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
 import big, { Big } from 'big.js';
 import { Observable } from 'rxjs';
 
-export function bAssetClaimTx(
-  $: Parameters<typeof fabricatebAssetClaimRewards>[0] & {
-    gasFee: Gas;
-    gasAdjustment: Rate<number>;
-    fixedGas: u<UST>;
-    network: NetworkInfo;
-    addressProvider: AddressProvider;
-    queryClient: QueryClient;
-    post: (tx: CreateTxOptions) => Promise<TxResult>;
-    txErrorReporter?: (error: unknown) => string;
-    onTxSucceed?: () => void;
-  },
-): Observable<TxResultRendering> {
+export function bAssetClaimTx($: {
+  walletAddr: HumanAddr;
+  rewardAddrs: HumanAddr[];
+
+  gasFee: Gas;
+  gasAdjustment: Rate<number>;
+  fixedGas: u<UST>;
+  network: NetworkInfo;
+  queryClient: QueryClient;
+  post: (tx: CreateTxOptions) => Promise<TxResult>;
+  txErrorReporter?: (error: unknown) => string;
+  onTxSucceed?: () => void;
+}): Observable<TxResultRendering> {
   const helper = new TxHelper({ ...$, txFee: $.fixedGas });
 
   return pipe(
     _createTxOptions({
-      msgs: fabricatebAssetClaimRewards($)($.addressProvider),
+      msgs: $.rewardAddrs.map((rewardAddr) => {
+        return new MsgExecuteContract($.walletAddr, rewardAddr, {
+          claim_rewards: {
+            recipient: undefined,
+          },
+        });
+      }),
       fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),
@@ -104,22 +107,3 @@ export function bAssetClaimTx(
     },
   )().pipe(_catchTxError({ helper, ...$ }));
 }
-
-interface Option {
-  address: string;
-  rewardAddrs: HumanAddr[];
-}
-
-export const fabricatebAssetClaimRewards =
-  ({ address, rewardAddrs }: Option) =>
-  (addressProvider: AddressProvider) => {
-    validateInput([validateAddress(address)]);
-
-    return rewardAddrs.map((rewardAddr) => {
-      return new MsgExecuteContract(address, rewardAddr, {
-        claim_rewards: {
-          recipient: undefined,
-        },
-      });
-    });
-  };

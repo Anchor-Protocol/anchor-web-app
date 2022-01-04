@@ -15,8 +15,7 @@ export interface BAssetClaimTxParams {
 export function useBAssetClaimTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { queryClient, txErrorReporter, addressProvider, constants } =
-    useAnchorWebapp();
+  const { queryClient, txErrorReporter, constants } = useAnchorWebapp();
 
   const fixedFee = useFixedFee();
 
@@ -30,7 +29,7 @@ export function useBAssetClaimTx() {
 
       return bAssetClaimTx({
         // fabricatebAssetClaimRewards
-        address: connectedWallet.walletAddress,
+        walletAddr: connectedWallet.walletAddress,
         rewardAddrs,
         // post
         network: connectedWallet.network,
@@ -38,7 +37,6 @@ export function useBAssetClaimTx() {
         fixedGas: fixedFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         // query
         queryClient,
         // error
@@ -55,7 +53,6 @@ export function useBAssetClaimTx() {
       fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,
-      addressProvider,
       queryClient,
       txErrorReporter,
       refetchQueries,

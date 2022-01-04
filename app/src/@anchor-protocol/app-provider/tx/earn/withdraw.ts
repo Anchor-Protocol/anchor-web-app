@@ -1,4 +1,3 @@
-import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import { earnWithdrawTx } from '@anchor-protocol/app-fns';
 import { aUST, u, UST } from '@anchor-protocol/types';
 import { useRefetchQueries } from '@libs/app-provider';
@@ -17,7 +16,7 @@ export interface EarnWithdrawTxParams {
 export function useEarnWithdrawTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { addressProvider, constants, queryClient, txErrorReporter } =
+  const { constants, queryClient, txErrorReporter, contractAddress } =
     useAnchorWebapp();
 
   const refetchQueries = useRefetchQueries();
@@ -30,16 +29,16 @@ export function useEarnWithdrawTx() {
 
       return earnWithdrawTx({
         // fabricateMarketReedeemStableCoin
-        address: connectedWallet.walletAddress,
-        market: MARKET_DENOMS.UUSD,
-        amount: withdrawAmount,
+        walletAddr: connectedWallet.walletAddress,
+        withdrawAmount,
+        marketAddr: contractAddress.moneyMarket.market,
+        aUstTokenAddr: contractAddress.cw20.aUST,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         txFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         // query
         queryClient,
         // error
@@ -53,9 +52,10 @@ export function useEarnWithdrawTx() {
     },
     [
       connectedWallet,
+      contractAddress.moneyMarket.market,
+      contractAddress.cw20.aUST,
       constants.gasWanted,
       constants.gasAdjustment,
-      addressProvider,
       queryClient,
       txErrorReporter,
       refetchQueries,

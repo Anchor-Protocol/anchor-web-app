@@ -1,5 +1,5 @@
-import { ANC } from '@anchor-protocol/types';
 import { govVoteTx } from '@anchor-protocol/app-fns';
+import { ANC } from '@anchor-protocol/types';
 import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
@@ -18,7 +18,7 @@ export interface GovVoteTxParams {
 export function useGovVoteTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { queryClient, txErrorReporter, addressProvider, constants } =
+  const { queryClient, txErrorReporter, contractAddress, constants } =
     useAnchorWebapp();
 
   const refetchQueries = useRefetchQueries();
@@ -33,17 +33,17 @@ export function useGovVoteTx() {
 
       return govVoteTx({
         // fabricateGovCastVote
-        address: connectedWallet.walletAddress,
+        walletAddr: connectedWallet.walletAddress,
         amount,
-        vote: voteFor,
-        poll_id: pollId,
+        voteFor,
+        pollId,
+        govAddr: contractAddress.anchorToken.gov,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: fixedFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         // query
         queryClient,
         // error
@@ -57,10 +57,10 @@ export function useGovVoteTx() {
     },
     [
       connectedWallet,
+      contractAddress.anchorToken.gov,
       fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,
-      addressProvider,
       queryClient,
       txErrorReporter,
       refetchQueries,

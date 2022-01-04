@@ -1,5 +1,5 @@
-import { bLuna, Rate } from '@anchor-protocol/types';
 import { bondSwapTx } from '@anchor-protocol/app-fns';
+import { bLuna, Rate } from '@anchor-protocol/types';
 import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
@@ -17,7 +17,7 @@ export interface BondSwapTxParams {
 export function useBondSwapTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { queryClient, txErrorReporter, addressProvider, constants } =
+  const { queryClient, txErrorReporter, contractAddress, constants } =
     useAnchorWebapp();
 
   const refetchQueries = useRefetchQueries();
@@ -34,17 +34,18 @@ export function useBondSwapTx() {
 
       return bondSwapTx({
         // fabricateTerraswapSwapbLuna
-        amount: burnAmount,
-        belief_price: beliefPrice,
-        max_spread: maxSpread.toString(),
-        address: connectedWallet.walletAddress,
+        burnAmount,
+        beliefPrice,
+        maxSpread: maxSpread.toString() as Rate,
+        walletAddr: connectedWallet.walletAddress,
+        bAssetTokenAddr: contractAddress.cw20.bLuna,
+        bAssetPairAddr: contractAddress.terraswap.blunaLunaPair,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: fixedFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         // query
         queryClient,
         // error
@@ -58,10 +59,11 @@ export function useBondSwapTx() {
     },
     [
       connectedWallet,
+      contractAddress.cw20.bLuna,
+      contractAddress.terraswap.blunaLunaPair,
       fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,
-      addressProvider,
       queryClient,
       txErrorReporter,
       refetchQueries,

@@ -1,4 +1,3 @@
-import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import { rewardsUstBorrowClaimTx } from '@anchor-protocol/app-fns';
 import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
@@ -14,7 +13,7 @@ export interface RewardsUstBorrowClaimTxParams {
 export function useRewardsUstBorrowClaimTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { queryClient, txErrorReporter, addressProvider, constants } =
+  const { queryClient, txErrorReporter, contractAddress, constants } =
     useAnchorWebapp();
 
   const refetchQueries = useRefetchQueries();
@@ -29,15 +28,14 @@ export function useRewardsUstBorrowClaimTx() {
 
       return rewardsUstBorrowClaimTx({
         // fabricateMarketClaimRewards
-        address: connectedWallet.walletAddress,
-        market: MARKET_DENOMS.UUSD,
+        walletAddr: connectedWallet.walletAddress,
+        marketAddr: contractAddress.moneyMarket.market,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: fixedFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         // query
         queryClient,
         // error
@@ -51,10 +49,10 @@ export function useRewardsUstBorrowClaimTx() {
     },
     [
       connectedWallet,
+      contractAddress.moneyMarket.market,
       fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,
-      addressProvider,
       queryClient,
       txErrorReporter,
       refetchQueries,
