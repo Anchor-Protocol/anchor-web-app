@@ -42,17 +42,16 @@ function DesktopHeaderBase({ className }: DesktopHeaderProps) {
         <WalletSelector />
       </section>
 
-      <div>
-        <IconButton
-          onClick={() => updateTheme(themeColor === 'light' ? 'dark' : 'light')}
-        >
-          {themeColor === 'light' ? (
-            <Brightness2 style={{ fill: 'white' }} />
-          ) : (
-            <Brightness5 style={{ fill: 'white' }} />
-          )}
-        </IconButton>
-      </div>
+      <IconButton
+        style={{ top: '3px' }}
+        onClick={() => updateTheme(themeColor === 'light' ? 'dark' : 'light')}
+      >
+        {themeColor === 'light' ? (
+          <Brightness2 style={{ fill: 'white' }} />
+        ) : (
+          <Brightness5 style={{ fill: 'white' }} />
+        )}
+      </IconButton>
 
       <GlobalStyle />
     </header>
