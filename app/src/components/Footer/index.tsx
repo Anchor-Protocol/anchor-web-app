@@ -86,7 +86,7 @@ function FooterBase({ className, style }: FooterProps) {
         <IconButton
           onClick={() => updateTheme(themeColor === 'light' ? 'dark' : 'light')}
         >
-          {themeColor === 'light' ? <Brightness5 /> : <Brightness3 />}
+          {themeColor === 'light' ? <Brightness3 /> : <Brightness5 />}
         </IconButton>
       </div>
     </footer>
