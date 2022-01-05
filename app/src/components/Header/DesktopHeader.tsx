@@ -6,12 +6,17 @@ import styled, { createGlobalStyle } from 'styled-components';
 import logoUrl from './assets/Logo.svg';
 import { DesktopNotification } from './desktop/DesktopNotification';
 import { WalletSelector } from './desktop/WalletSelector';
+import { IconButton } from '@material-ui/core';
+import { Brightness2, Brightness5 } from '@material-ui/icons';
+import { useTheme } from 'contexts/theme';
 
 export interface DesktopHeaderProps {
   className?: string;
 }
 
 function DesktopHeaderBase({ className }: DesktopHeaderProps) {
+  const { themeColor, updateTheme } = useTheme();
+
   return (
     <header className={className}>
       <a
@@ -36,6 +41,18 @@ function DesktopHeaderBase({ className }: DesktopHeaderProps) {
       <section className="wallet">
         <WalletSelector />
       </section>
+
+      <div>
+        <IconButton
+          onClick={() => updateTheme(themeColor === 'light' ? 'dark' : 'light')}
+        >
+          {themeColor === 'light' ? (
+            <Brightness2 style={{ fill: 'white' }} />
+          ) : (
+            <Brightness5 style={{ fill: 'white' }} />
+          )}
+        </IconButton>
+      </div>
 
       <GlobalStyle />
     </header>
