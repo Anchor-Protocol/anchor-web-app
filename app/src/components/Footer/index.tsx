@@ -49,6 +49,13 @@ function FooterBase({ className, style }: FooterProps) {
         <Link to="/terms" style={{ marginLeft: 28 }}>
           Terms
         </Link>
+
+        <IconButton
+          style={{ marginLeft: 28 }}
+          onClick={() => updateTheme(themeColor === 'light' ? 'dark' : 'light')}
+        >
+          {themeColor === 'light' ? <Brightness3 /> : <Brightness5 />}
+        </IconButton>
       </div>
       <div>
         <IconButton
@@ -82,11 +89,6 @@ function FooterBase({ className, style }: FooterProps) {
           rel="noreferrer"
         >
           <GitHub />
-        </IconButton>
-        <IconButton
-          onClick={() => updateTheme(themeColor === 'light' ? 'dark' : 'light')}
-        >
-          {themeColor === 'light' ? <Brightness3 /> : <Brightness5 />}
         </IconButton>
       </div>
     </footer>
