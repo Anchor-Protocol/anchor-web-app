@@ -1,5 +1,5 @@
 import { bAssetExportTx } from '@anchor-protocol/app-fns';
-import { bAsset } from '@anchor-protocol/types';
+import { bAsset, HumanAddr } from '@anchor-protocol/types';
 import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { CW20Addr } from '@libs/types';
 import { useStream } from '@rx-stream/react';
@@ -36,9 +36,14 @@ export function useBAssetExportTx(tokenAddr: CW20Addr | undefined) {
         throw new Error('Can not post!');
       }
 
+      // TODO change to
+      //const converterContract = minter.minter
+      const converterContract =
+        'terra1g68g7l3xkpm4hvadrqrfc53vtnfhl4dlnjm45u' as HumanAddr;
+
       return bAssetExportTx({
         walletAddr: connectedWallet.walletAddress,
-        converterAddr: bAssetInfo.minter.minter,
+        converterAddr: converterContract,
         bAssetTokenAddr: bAssetInfo.converterConfig.anchor_token_address,
         bAssetTokenAmount: amount,
         // post
