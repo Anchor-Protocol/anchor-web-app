@@ -11,6 +11,17 @@ export namespace basset {
       anchor_token_address: CW20Addr | null;
       wormhole_token_address: CW20Addr | null;
     }
+
+    // ---------------------------------------------
+    // CW20 hooks
+    // ---------------------------------------------
+    export interface ConvertWormholeToAnchor {
+      convert_wormhole_to_anchor: {};
+    }
+
+    export interface ConvertAnchorToWormhole {
+      convert_anchor_to_wormhole: {};
+    }
   }
 
   export namespace reward {

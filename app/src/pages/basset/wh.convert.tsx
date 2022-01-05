@@ -26,12 +26,12 @@ interface Item {
 }
 
 function Component({ className, match, history }: WormholeConvertProps) {
-  const { data: { bAsset } = {} } = useBAssetInfoByTokenAddrQuery(
+  const { data: bAssetInfo } = useBAssetInfoByTokenAddrQuery(
     match.params.tokenAddr,
   );
 
   const tabItems = useMemo<Item[]>(() => {
-    const symbol = bAsset?.symbol.substr(1) ?? 'ASSET';
+    const symbol = bAssetInfo?.bAsset.symbol.substr(1) ?? 'ASSET';
 
     return [
       {
@@ -45,7 +45,7 @@ function Component({ className, match, history }: WormholeConvertProps) {
         tooltip: 'Burn previously minted bAssets to unbond your assets',
       },
     ];
-  }, [bAsset?.symbol]);
+  }, [bAssetInfo?.bAsset.symbol]);
 
   const pageMatch = useRouteMatch<{ page: string }>(`${match.url}/:page`);
 
@@ -76,8 +76,12 @@ function Component({ className, match, history }: WormholeConvertProps) {
 
       <Switch>
         <Redirect exact path={`${match.url}/`} to={`${match.url}/import`} />
-        <Route path={`${match.url}/import`} component={WhImport} />
-        <Route path={`${match.url}/export`} component={WhExport} />
+        <Route path={`${match.url}/import`}>
+          {bAssetInfo && <WhImport bAssetInfo={bAssetInfo} />}
+        </Route>
+        <Route path={`${match.url}/export`}>
+          {bAssetInfo && <WhExport bAssetInfo={bAssetInfo} />}
+        </Route>
         <Redirect path={`${match.url}/*`} to={`${match.url}/import`} />
       </Switch>
     </div>

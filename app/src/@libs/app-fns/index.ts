@@ -6,6 +6,7 @@ export * from './caches/cw20TokenInfoCache';
 export * from './forms/cw20/buyToken';
 export * from './forms/cw20/sellToken';
 export * from './forms/cw20/send';
+export * from './forms/cw20/swap';
 export * from './forms/cw20/tokens';
 export * from './logics/computeMaxUstBalanceForUstTransfer';
 export * from './models/gasPrice';

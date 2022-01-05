@@ -23,7 +23,7 @@ interface WhitelistWasmQuery {
   >;
 }
 
-interface BAssetInfoAndBalanceWithOracle extends BAssetInfoAndBalance {
+export interface BAssetInfoAndBalanceWithOracle extends BAssetInfoAndBalance {
   oraclePrice: moneyMarket.oracle.PricesResponse['prices'][number];
   ustValue: u<UST>;
 }
