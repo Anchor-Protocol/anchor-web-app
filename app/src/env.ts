@@ -70,8 +70,8 @@ export function ANCHOR_QUERY_CLIENT(network: NetworkInfo): 'lcd' | 'hive' {
 
 export function ANCHOR_CONSTANTS(network: NetworkInfo): AnchorConstants {
   return {
-    gasWanted: 1_000_000 as Gas,
-    fixedGas: 1_671_053 as Gas,
+    gasWanted: 1_300_000 as Gas,
+    fixedGas: 1_971_053 as Gas,
     blocksPerYear: 4_656_810,
     gasAdjustment: 1.6 as Rate<number>,
     airdropGasWanted: 300_000 as Gas,
@@ -114,6 +114,7 @@ const COLUMNBUS_CONTRACT_ADDRESS = {
   investor_vesting: 'terra1pm54pmw3ej0vfwn3gtn6cdmaqxt0x37e9jt0za',
   team_vesting: 'terra10evq9zxk2m86n3n3xnpw28jpqwp628c6dzuq42',
   terraswapFactory: 'terra1ulgw0td86nvs4wtpsc80thv6xelk76ut7a7apj',
+  astroportGenerator: 'terra1ps5rk4h9nyvxcyqhg6d920ahsp9n4z7nnld0ca',
 };
 
 const BOMBAY_CONTRACT_ADDRESS = {
@@ -148,6 +149,7 @@ const BOMBAY_CONTRACT_ADDRESS = {
   investor_vesting: 'not available in testnet',
   team_vesting: 'not available in testnet',
   terraswapFactory: 'terra18qpjm4zkvqnpjpw0zn0tdr8gdzvt8au35v45xf',
+  astroportGenerator: 'terra1ps5rk4h9nyvxcyqhg6d920ahsp9n4z7nnld0ca',
 };
 
 export const ANCHOR_CONTRACT_ADDRESS = (
@@ -219,6 +221,9 @@ export const ANCHOR_CONTRACT_ADDRESS = (
       factory: addressMap.terraswapFactory as HumanAddr,
       blunaLunaPair: addressProvider.bLunaLunaPair() as HumanAddr,
       ancUstPair: addressProvider.ancUstPair() as HumanAddr,
+    },
+    astroport: {
+      generator: addressMap.astroportGenerator as HumanAddr,
     },
     cw20: {
       bLuna: addressProvider.bLunaToken() as CW20Addr,
@@ -357,6 +362,7 @@ export const ANCHOR_TX_REFETCH_MAP: TxRefetchMap = {
     TERRA_QUERY_KEY.CW20_BALANCE,
     TERRA_QUERY_KEY.TERRA_BALANCES,
     TERRA_QUERY_KEY.TERRA_NATIVE_BALANCES,
+    TERRA_QUERY_KEY.ASTROPORT_DEPOSIT,
     ANCHOR_QUERY_KEY.ANC_BALANCE,
     ANCHOR_QUERY_KEY.REWARDS_ANC_UST_LP_REWARDS,
     ANCHOR_QUERY_KEY.ANC_LP_STAKING_STATE,
@@ -367,6 +373,7 @@ export const ANCHOR_TX_REFETCH_MAP: TxRefetchMap = {
     TERRA_QUERY_KEY.CW20_BALANCE,
     TERRA_QUERY_KEY.TERRA_BALANCES,
     TERRA_QUERY_KEY.TERRA_NATIVE_BALANCES,
+    TERRA_QUERY_KEY.ASTROPORT_DEPOSIT,
     ANCHOR_QUERY_KEY.ANC_BALANCE,
     ANCHOR_QUERY_KEY.REWARDS_ANC_UST_LP_REWARDS,
     ANCHOR_QUERY_KEY.ANC_LP_STAKING_STATE,

@@ -23,4 +23,7 @@ export const TEST_CONTRACT_ADDRESS = {
   terraswap: {
     factory: 'terra18qpjm4zkvqnpjpw0zn0tdr8gdzvt8au35v45xf' as HumanAddr,
   },
+  astroport: {
+    generator: 'terra1ps5rk4h9nyvxcyqhg6d920ahsp9n4z7nnld0ca' as HumanAddr,
+  },
 };

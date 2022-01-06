@@ -1,10 +1,12 @@
-import { formatANCWithPostfixUnits, formatLP } from '@anchor-protocol/notation';
-import { ANC, u, UST } from '@anchor-protocol/types';
 import {
+  useAnchorWebapp,
   useAncLpStakingStateQuery,
   useAncPriceQuery,
   useRewardsClaimableAncUstLpRewardsQuery,
 } from '@anchor-protocol/app-provider';
+import { formatANCWithPostfixUnits, formatLP } from '@anchor-protocol/notation';
+import { ANC, AncUstLP, u, UST } from '@anchor-protocol/types';
+import { useAstroportDepositQuery } from '@libs/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { TooltipLabel } from '@libs/neumorphism-ui/components/TooltipLabel';
 import { rulerLightColor, rulerShadowColor } from '@libs/styled-neumorphism';
@@ -17,6 +19,8 @@ export interface AncUstLpStakeOverviewProps {
 }
 
 function AncUstLpStakeOverviewBase({ className }: AncUstLpStakeOverviewProps) {
+  const { contractAddress } = useAnchorWebapp();
+
   const { data: { ancPrice } = {} } = useAncPriceQuery();
 
   const { data: { lpStakingState } = {} } = useAncLpStakingStateQuery();
@@ -24,6 +28,10 @@ function AncUstLpStakeOverviewBase({ className }: AncUstLpStakeOverviewProps) {
   const {
     data: { lPBalance: userLPBalance, lPStakerInfo: userLPStakingInfo } = {},
   } = useRewardsClaimableAncUstLpRewardsQuery();
+
+  const { data: { deposit } = {} } = useAstroportDepositQuery<AncUstLP>(
+    contractAddress.cw20.AncUstLP,
+  );
 
   const ancUstLp = useMemo(() => {
     if (!ancPrice || !lpStakingState || !userLPStakingInfo || !userLPBalance) {
@@ -43,14 +51,14 @@ function AncUstLpStakeOverviewBase({ className }: AncUstLpStakeOverviewProps) {
         .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare) as u<UST<Big>>,
     };
 
-    const staked = userLPStakingInfo.bond_amount;
+    const staked = deposit;
 
     const stakable = userLPBalance.balance;
 
     const reward = userLPStakingInfo.pending_reward;
 
     return { withdrawableAssets, staked, stakable, reward };
-  }, [ancPrice, lpStakingState, userLPBalance, userLPStakingInfo]);
+  }, [ancPrice, deposit, lpStakingState, userLPBalance, userLPStakingInfo]);
 
   return (
     <ul className={className}>

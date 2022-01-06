@@ -1,9 +1,14 @@
-import {
-  AddressProvider,
-  fabricateStakingUnbond,
-} from '@anchor-protocol/anchor.js';
+import { AddressProvider } from '@anchor-protocol/anchor.js';
 import { formatLP } from '@anchor-protocol/notation';
-import { AncUstLP, Gas, Rate, u, UST } from '@anchor-protocol/types';
+import {
+  AncUstLP,
+  CW20Addr,
+  Gas,
+  HumanAddr,
+  Rate,
+  u,
+  UST,
+} from '@anchor-protocol/types';
 import {
   pickAttributeValueByKey,
   pickEvent,
@@ -22,28 +27,44 @@ import { floor } from '@libs/big-math';
 import { demicrofy } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
+import {
+  CreateTxOptions,
+  Dec,
+  Fee,
+  Int,
+  MsgExecuteContract,
+} from '@terra-money/terra.js';
 import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
-import { CreateTxOptions, Fee } from '@terra-money/terra.js';
 import { Observable } from 'rxjs';
 
-export function ancAncUstLpUnstakeTx(
-  $: Parameters<typeof fabricateStakingUnbond>[0] & {
-    gasFee: Gas;
-    gasAdjustment: Rate<number>;
-    fixedGas: u<UST>;
-    network: NetworkInfo;
-    addressProvider: AddressProvider;
-    queryClient: QueryClient;
-    post: (tx: CreateTxOptions) => Promise<TxResult>;
-    txErrorReporter?: (error: unknown) => string;
-    onTxSucceed?: () => void;
-  },
-): Observable<TxResultRendering> {
+export function ancAncUstLpUnstakeTx($: {
+  walletAddr: HumanAddr;
+  generatorAddr: HumanAddr;
+  ancUstLpTokenAddr: CW20Addr;
+  amount: AncUstLP;
+
+  gasFee: Gas;
+  gasAdjustment: Rate<number>;
+  fixedGas: u<UST>;
+  network: NetworkInfo;
+  addressProvider: AddressProvider;
+  queryClient: QueryClient;
+  post: (tx: CreateTxOptions) => Promise<TxResult>;
+  txErrorReporter?: (error: unknown) => string;
+  onTxSucceed?: () => void;
+}): Observable<TxResultRendering> {
   const helper = new TxHelper({ ...$, txFee: $.fixedGas });
 
   return pipe(
     _createTxOptions({
-      msgs: fabricateStakingUnbond($)($.addressProvider),
+      msgs: [
+        new MsgExecuteContract($.walletAddr, $.generatorAddr, {
+          withdraw: {
+            lp_token: $.ancUstLpTokenAddr,
+            amount: new Int(new Dec($.amount).mul(1000000)).toString(),
+          },
+        }),
+      ],
       fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),

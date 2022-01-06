@@ -11,6 +11,9 @@ export interface AppContractAddress {
   terraswap: {
     factory: HumanAddr;
   };
+  astroport: {
+    generator: HumanAddr;
+  };
 }
 
 export interface AppConstants {
