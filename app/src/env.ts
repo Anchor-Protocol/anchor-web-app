@@ -99,12 +99,10 @@ const COLUMNBUS_CONTRACT_ADDRESS = {
   mmDistributionModel: 'terra14mufqpr5mevdfn92p4jchpkxp7xr46uyknqjwq',
   mmLiquidationQueue: '',
   aTerra: 'terra1hzh9vpxhsk8253se0vv5jj6etdvxu3nv8z07zu',
-  // TODO change to columbus astroport address
-  bLunaLunaPair: 'terra1jxazgm67et0ce260kvrpfv50acuushpjsz2y0p',
+  bLunaLunaPair: 'terra1j66jatn3k50hjtg2xemnjm8s7y8dws9xqa5y8w',
   bLunaLunaLPToken: 'terra1nuy34nwnsh53ygpc4xprlj263cztw7vc99leh2',
-  ancUstPair: 'terra1gm5p3ner9x9xpwugn9sp6gvhd0lwrtkyrecdn3',
-  ancUstLPToken: 'terra1gecs98vcuktyfkrve9czrpgtg0m3aq586x6gzm',
-  // TODO end
+  ancUstPair: 'terra1qr2k6yjjd5p2kaewqvg93ag74k6gyjr7re37fs',
+  ancUstLPToken: 'terra1wmaty65yt7mjw6fjfymkd9zsm6atsq82d9arcd',
   gov: 'terra1f32xyep306hhcxxxf7mlyh0ucggc00rm2s9da5',
   distributor: 'terra1mxf7d5updqxfgvchd7lv6575ehhm8qfdttuqzz',
   collector: 'terra14ku9pgw5ld90dexlyju02u4rn6frheexr5f96h',
