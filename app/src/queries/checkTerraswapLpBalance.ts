@@ -1,5 +1,5 @@
 import { useAnchorWebapp } from '@anchor-protocol/app-provider';
-import { anchorToken, AncUstLP, cw20 } from '@anchor-protocol/types';
+import { ANC, anchorToken, AncUstLP, cw20 } from '@anchor-protocol/types';
 import {
   QueryClient,
   wasmFetch,
@@ -67,6 +67,48 @@ export function useCheckTerraswapLpBalance() {
         setBalances({
           lpBalance: result.userLPBalance.balance,
           lpStaked: result.userLPStakingInfo.bond_amount,
+        });
+      }
+    });
+  }, [connectedWallet, queryClient]);
+
+  return balances;
+}
+
+export function useCheckTerraswapLpRewards() {
+  const connectedWallet = useConnectedWallet();
+
+  const { queryClient } = useAnchorWebapp();
+
+  const [balances, setBalances] = useState<{
+    lpRewards: u<ANC>;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!connectedWallet) {
+      return;
+    }
+
+    const { terraswapAncUstLPToken, staking } =
+      address[
+        connectedWallet.network.chainID === 'columnbus-5'
+          ? 'columnbus-5'
+          : 'bombay-12'
+      ];
+
+    rewardsAncUstLpRewardsQuery(
+      connectedWallet.walletAddress,
+      staking,
+      terraswapAncUstLPToken,
+      queryClient,
+    ).then((result) => {
+      if (!result) {
+        setBalances(null);
+      } else if (big(result.userLPStakingInfo.pending_reward).lte(0.01)) {
+        setBalances(null);
+      } else {
+        setBalances({
+          lpRewards: result.userLPStakingInfo.pending_reward,
         });
       }
     });

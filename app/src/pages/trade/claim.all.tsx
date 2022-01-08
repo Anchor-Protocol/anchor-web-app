@@ -23,6 +23,7 @@ import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { MINIMUM_CLAIM_BALANCE } from 'pages/trade/env';
+import { useCheckTerraswapLpRewards } from 'queries/checkTerraswapLpBalance';
 import React, { useCallback, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
@@ -53,6 +54,8 @@ function ClaimAllBase({ className }: ClaimAllProps) {
 
   const { data: { userLPPendingToken } = {} } =
     useRewardsAncUstLpRewardsQuery();
+
+  const rewards = useCheckTerraswapLpRewards();
 
   // ---------------------------------------------
   // logics
@@ -130,6 +133,28 @@ function ClaimAllBase({ className }: ClaimAllProps) {
 
   return (
     <CenteredLayout className={className} maxWidth={800}>
+      {rewards && (
+        <MessageBox level="info">
+          To claim rewards earned on the previous LP staking contract,{' '}
+          <a
+            href="https://terraswap-app.anchorprotocol.com/claim/anc-ust-lp"
+            target="_blank"
+            rel="noreferrer"
+          >
+            click here
+          </a>
+          <br />
+          <br />
+          <a
+            href="https://terraswap-app.anchorprotocol.com/claim/anc-ust-lp"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Your ANC-UST LP Rewards: {formatUToken(rewards.lpRewards)} ANC
+          </a>
+        </MessageBox>
+      )}
+
       <Section>
         <h1>Claim All Rewards</h1>
 
