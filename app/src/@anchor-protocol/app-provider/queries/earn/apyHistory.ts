@@ -12,11 +12,15 @@ const queryFn = createQueryFn(earnAPYHistoryQuery);
 export function useEarnAPYHistoryQuery(): UseQueryResult<
   EarnAPYHistoryData | undefined
 > {
-  const { queryErrorReporter } = useAnchorWebapp();
+  const { queryErrorReporter, indexerApiEndpoint } = useAnchorWebapp();
 
-  return useQuery([ANCHOR_QUERY_KEY.EARN_APY_HISTORY], queryFn, {
-    refetchInterval: 1000 * 60 * 60,
-    keepPreviousData: true,
-    onError: queryErrorReporter,
-  });
+  return useQuery(
+    [ANCHOR_QUERY_KEY.EARN_APY_HISTORY, indexerApiEndpoint],
+    queryFn,
+    {
+      refetchInterval: 1000 * 60 * 60,
+      keepPreviousData: true,
+      onError: queryErrorReporter,
+    },
+  );
 }

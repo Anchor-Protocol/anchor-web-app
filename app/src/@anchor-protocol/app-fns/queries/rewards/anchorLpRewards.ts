@@ -8,8 +8,10 @@ export interface RewardsAnchorLpRewardsData {
   }>;
 }
 
-export async function rewardsAnchorLpRewardsQuery(): Promise<RewardsAnchorLpRewardsData> {
-  return fetch('https://api.anchorprotocol.com/api/v2/ust-lp-reward')
+export async function rewardsAnchorLpRewardsQuery(
+  endpoint: string,
+): Promise<RewardsAnchorLpRewardsData> {
+  return fetch(`${endpoint}/v2/ust-lp-reward`)
     .then((res) => res.json())
     .then(
       ({

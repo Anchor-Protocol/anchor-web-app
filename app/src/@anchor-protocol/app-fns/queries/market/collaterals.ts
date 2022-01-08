@@ -19,7 +19,9 @@ export type MarketCollateralsQueryParams = {
 export async function marketCollateralsQuery({
   endpoint,
 }: MarketCollateralsQueryParams): Promise<MarketCollateralsData> {
-  const now: MarketCollateralsHistory = await fetch(`${endpoint}/collaterals`)
+  const now: MarketCollateralsHistory = await fetch(
+    `${endpoint}/v1/collaterals`,
+  )
     .then((res) => res.json())
     .then((data: MarketCollateralsHistory) => ({
       ...data,
@@ -27,7 +29,7 @@ export async function marketCollateralsQuery({
     }));
 
   const history: MarketCollateralsHistory[] = await fetch(
-    `${endpoint}/collaterals/1d`,
+    `${endpoint}/v1/collaterals/1d`,
   )
     .then((res) => res.json())
     .then((data: MarketCollateralsHistory[]) => {
