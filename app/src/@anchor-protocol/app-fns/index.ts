@@ -69,7 +69,6 @@ export * from './queries/anc/tokenInfo';
 export * from './queries/bond/bEthClaimableRewards';
 export * from './queries/bond/bLunaExchangeRate';
 export * from './queries/bond/claimableRewards';
-export * from './queries/bond/validators';
 export * from './queries/bond/withdrawableAmount';
 export * from './queries/borrow/apy';
 export * from './queries/borrow/borrower';
