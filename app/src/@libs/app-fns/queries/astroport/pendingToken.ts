@@ -7,35 +7,35 @@ import {
 import { CW20Addr, HumanAddr, Token } from '@libs/types';
 import { astroport } from '@libs/types/contracts/astroport';
 
-interface AstroportDepositQuery<T extends Token> {
-  deposit: WasmQuery<
-    astroport.QueryMsg.Deposit,
-    astroport.QueryMsg.DepositResponse<T>
+interface AstroportPendingTokenQuery<T extends Token> {
+  pendingToken: WasmQuery<
+    astroport.QueryMsg.PendingToken,
+    astroport.QueryMsg.PendingTokenResponse<T>
   >;
 }
 
-export type AstroportDeposit<T extends Token> = WasmQueryData<
-  AstroportDepositQuery<T>
+export type AstroportPendingToken<T extends Token> = WasmQueryData<
+  AstroportPendingTokenQuery<T>
 >;
 
-export async function astroportDepositQuery<T extends Token>(
+export async function astroportPendingTokenQuery<T extends Token>(
   walletAddr: HumanAddr | undefined,
   lpTokenAddr: CW20Addr,
   generatorAddr: HumanAddr,
   queryClient: QueryClient,
-): Promise<AstroportDeposit<T> | undefined> {
+): Promise<AstroportPendingToken<T> | undefined> {
   if (!walletAddr) {
     return undefined;
   }
 
-  const result = await wasmFetch<AstroportDepositQuery<T>>({
+  const result = await wasmFetch<AstroportPendingTokenQuery<T>>({
     ...queryClient,
-    id: `astroport--deposit=${walletAddr}&lp=${lpTokenAddr}`,
+    id: `astroport--pending-token=${walletAddr}&lp=${lpTokenAddr}`,
     wasmQuery: {
-      deposit: {
+      pendingToken: {
         contractAddress: generatorAddr,
         query: {
-          deposit: {
+          pending_token: {
             lp_token: lpTokenAddr,
             user: walletAddr,
           },

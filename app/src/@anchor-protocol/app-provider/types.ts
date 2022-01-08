@@ -86,4 +86,5 @@ export interface AnchorConstants extends AppConstants {
   airdropGasWanted: Gas;
   airdropGas: Gas;
   bondGasWanted: Gas;
+  astroportGasWanted: Gas;
 }

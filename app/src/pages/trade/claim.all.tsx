@@ -1,16 +1,17 @@
+import { validateTxFee } from '@anchor-protocol/app-fns';
+import {
+  useRewardsAllClaimTx,
+  useRewardsAncUstLpRewardsQuery,
+  useRewardsClaimableUstBorrowRewardsQuery,
+} from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import {
   formatANCWithPostfixUnits,
   formatUST,
 } from '@anchor-protocol/notation';
 import { ANC, u } from '@anchor-protocol/types';
-import {
-  useRewardsAllClaimTx,
-  useRewardsClaimableAncUstLpRewardsQuery,
-  useRewardsClaimableUstBorrowRewardsQuery,
-} from '@anchor-protocol/app-provider';
-import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
-import { demicrofy } from '@libs/formatter';
+import { demicrofy, formatUToken } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { StreamStatus } from '@rx-stream/react';
@@ -18,10 +19,9 @@ import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big } from 'big.js';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { MessageBox } from 'components/MessageBox';
-import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
+import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { validateTxFee } from '@anchor-protocol/app-fns';
 import { MINIMUM_CLAIM_BALANCE } from 'pages/trade/env';
 import React, { useCallback, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -51,8 +51,8 @@ function ClaimAllBase({ className }: ClaimAllProps) {
   const { data: { borrowerInfo, userANCBalance } = {} } =
     useRewardsClaimableUstBorrowRewardsQuery();
 
-  const { data: { lPStakerInfo: userLPStakingInfo } = {} } =
-    useRewardsClaimableAncUstLpRewardsQuery();
+  const { data: { userLPPendingToken } = {} } =
+    useRewardsAncUstLpRewardsQuery();
 
   // ---------------------------------------------
   // logics
@@ -62,23 +62,23 @@ function ClaimAllBase({ className }: ClaimAllProps) {
     return big(borrowerInfo.pending_rewards) as u<ANC<Big>>;
   }, [borrowerInfo]);
 
-  const claimingLpStaingInfoPendingRewards = useMemo(() => {
-    if (!userLPStakingInfo) return undefined;
-    return big(userLPStakingInfo.pending_reward) as u<ANC<Big>>;
-  }, [userLPStakingInfo]);
+  const claimingLpStakingInfoPendingRewards = useMemo(() => {
+    if (!userLPPendingToken) return undefined;
+    return big(userLPPendingToken.pending_on_proxy) as u<ANC<Big>>;
+  }, [userLPPendingToken]);
 
   const claiming = useMemo(() => {
     if (
       !claimingBorrowerInfoPendingRewards ||
-      !claimingLpStaingInfoPendingRewards
+      !claimingLpStakingInfoPendingRewards
     ) {
       return undefined;
     }
 
-    return claimingLpStaingInfoPendingRewards.plus(
+    return claimingLpStakingInfoPendingRewards.plus(
       claimingBorrowerInfoPendingRewards,
     ) as u<ANC<Big>>;
-  }, [claimingBorrowerInfoPendingRewards, claimingLpStaingInfoPendingRewards]);
+  }, [claimingBorrowerInfoPendingRewards, claimingLpStakingInfoPendingRewards]);
 
   const ancAfterTx = useMemo(() => {
     if (!claiming || !userANCBalance) return undefined;
@@ -138,6 +138,11 @@ function ClaimAllBase({ className }: ClaimAllProps) {
         <TxFeeList className="receipt">
           <TxFeeListItem label="Claiming">
             {claiming ? formatANCWithPostfixUnits(demicrofy(claiming)) : 0} ANC
+            {' + '}
+            {userLPPendingToken
+              ? formatUToken(userLPPendingToken.pending)
+              : 0}{' '}
+            ASTRO
           </TxFeeListItem>
           <TxFeeListItem label="ANC After Tx">
             {ancAfterTx ? formatANCWithPostfixUnits(demicrofy(ancAfterTx)) : 0}{' '}
@@ -155,18 +160,18 @@ function ClaimAllBase({ className }: ClaimAllProps) {
               !connectedWallet ||
               !connectedWallet.availablePost ||
               !claim ||
-              !claimingLpStaingInfoPendingRewards ||
+              !claimingLpStakingInfoPendingRewards ||
               !claimingBorrowerInfoPendingRewards ||
               !claiming ||
               (claimingBorrowerInfoPendingRewards.lt(MINIMUM_CLAIM_BALANCE) &&
-                claimingLpStaingInfoPendingRewards.lt(MINIMUM_CLAIM_BALANCE))
+                claimingLpStakingInfoPendingRewards.lt(MINIMUM_CLAIM_BALANCE))
             }
             onClick={() =>
               claimingBorrowerInfoPendingRewards &&
-              claimingLpStaingInfoPendingRewards &&
+              claimingLpStakingInfoPendingRewards &&
               proceed(
                 claimingBorrowerInfoPendingRewards.gte(MINIMUM_CLAIM_BALANCE),
-                claimingLpStaingInfoPendingRewards.gte(MINIMUM_CLAIM_BALANCE),
+                claimingLpStakingInfoPendingRewards.gte(MINIMUM_CLAIM_BALANCE),
               )
             }
           >

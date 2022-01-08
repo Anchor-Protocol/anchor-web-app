@@ -1,7 +1,7 @@
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import {
   useRewardsAncUstLpClaimTx,
-  useRewardsClaimableAncUstLpRewardsQuery,
+  useRewardsAncUstLpRewardsQuery,
   useRewardsClaimableUstBorrowRewardsQuery,
 } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
@@ -11,7 +11,7 @@ import {
 } from '@anchor-protocol/notation';
 import { ANC, u } from '@anchor-protocol/types';
 import { useFixedFee } from '@libs/app-provider';
-import { demicrofy } from '@libs/formatter';
+import { demicrofy, formatUToken } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { StreamStatus } from '@rx-stream/react';
@@ -51,16 +51,16 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
   const { data: { userANCBalance } = {} } =
     useRewardsClaimableUstBorrowRewardsQuery();
 
-  const { data: { lPStakerInfo: userLPStakingInfo } = {} } =
-    useRewardsClaimableAncUstLpRewardsQuery();
+  const { data: { userLPPendingToken } = {} } =
+    useRewardsAncUstLpRewardsQuery();
 
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
   const claiming = useMemo(() => {
-    if (!userLPStakingInfo) return undefined;
-    return big(userLPStakingInfo.pending_reward) as u<ANC<Big>>;
-  }, [userLPStakingInfo]);
+    if (!userLPPendingToken) return undefined;
+    return big(userLPPendingToken.pending_on_proxy) as u<ANC<Big>>;
+  }, [userLPPendingToken]);
 
   const ancAfterTx = useMemo(() => {
     if (!claiming || !userANCBalance) return undefined;
@@ -117,6 +117,11 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
         <TxFeeList className="receipt">
           <TxFeeListItem label="Claiming">
             {claiming ? formatANCWithPostfixUnits(demicrofy(claiming)) : 0} ANC
+            {' + '}
+            {userLPPendingToken
+              ? formatUToken(userLPPendingToken.pending)
+              : 0}{' '}
+            ASTRO
           </TxFeeListItem>
           <TxFeeListItem label="ANC After Tx">
             {ancAfterTx ? formatANCWithPostfixUnits(demicrofy(ancAfterTx)) : 0}{' '}

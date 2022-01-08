@@ -31,6 +31,9 @@ export type THB<T = string> = T & NominalType<'thb'>;
 export type KRT<T = string> = T & NominalType<'krt'>;
 export type Luna<T = string> = T & NominalType<'luna'>;
 
+// Astroport currencies
+export type Astro<T = string> = T & NominalType<'astro'>;
+
 // LP currencies
 export type LP<T = string> = T & NominalType<'lp'>;
 

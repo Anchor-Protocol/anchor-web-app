@@ -43,7 +43,7 @@ export function useAncAncUstLpUnstakeTx() {
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: fixedFee,
-        gasFee: constants.gasWanted,
+        gasFee: constants.astroportGasWanted,
         gasAdjustment: constants.gasAdjustment,
         addressProvider,
         // query
@@ -62,7 +62,7 @@ export function useAncAncUstLpUnstakeTx() {
       contractAddress.cw20.AncUstLP,
       contractAddress.astroport.generator,
       fixedFee,
-      constants.gasWanted,
+      constants.astroportGasWanted,
       constants.gasAdjustment,
       addressProvider,
       queryClient,

@@ -48,7 +48,6 @@ export * from './queries/mypage/txHistory';
 export * from './queries/rewards/ancGovernanceRewards';
 export * from './queries/rewards/anchorLpRewards';
 export * from './queries/rewards/ancUstLpRewards';
-export * from './queries/rewards/claimableAncUstLpRewards';
 export * from './queries/rewards/claimableUstBorrowRewards';
 export * from './queries/rewards/ustBorrowRewards';
 export * from './queries/terra/lastSyncedHeight';

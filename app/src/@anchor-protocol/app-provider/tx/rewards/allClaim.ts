@@ -15,7 +15,7 @@ export interface RewardsAllClaimTxParams {
 export function useRewardsAllClaimTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { addressProvider, constants, queryClient, txErrorReporter } =
+  const { constants, queryClient, contractAddress, txErrorReporter } =
     useAnchorWebapp();
 
   const refetchQueries = useRefetchQueries();
@@ -33,16 +33,18 @@ export function useRewardsAllClaimTx() {
       }
 
       return rewardsAllClaimTx({
-        address: connectedWallet.walletAddress,
+        walletAddr: connectedWallet.walletAddress,
+        lpTokenAddr: contractAddress.cw20.AncUstLP,
+        marketAddr: contractAddress.moneyMarket.market,
+        generatorAddr: contractAddress.astroport.generator,
         claimUstBorrow,
         claimAncUstLp,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: fixedFee,
-        gasFee: constants.gasWanted,
+        gasFee: constants.astroportGasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         // query
         queryClient,
         // error
@@ -56,10 +58,12 @@ export function useRewardsAllClaimTx() {
     },
     [
       connectedWallet,
+      contractAddress.cw20.AncUstLP,
+      contractAddress.moneyMarket.market,
+      contractAddress.astroport.generator,
       fixedFee,
-      constants.gasWanted,
+      constants.astroportGasWanted,
       constants.gasAdjustment,
-      addressProvider,
       queryClient,
       txErrorReporter,
       refetchQueries,

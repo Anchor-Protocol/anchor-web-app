@@ -57,6 +57,7 @@ function OverviewBase({ className }: OverviewProps) {
   );
   const { data: { ancBalance: distributorANCBalance } = {} } =
     useAncBalanceQuery(contractAddress.anchorToken.distributor);
+  // FIXME remain lp total staked
   const { data: { ancBalance: lpStakingANCBalance } = {} } = useAncBalanceQuery(
     contractAddress.anchorToken.staking,
   );

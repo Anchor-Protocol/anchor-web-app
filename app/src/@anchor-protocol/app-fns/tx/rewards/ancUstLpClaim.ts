@@ -1,9 +1,14 @@
-import {
-  AddressProvider,
-  fabricateStakingWithdraw,
-} from '@anchor-protocol/anchor.js';
 import { formatANCWithPostfixUnits } from '@anchor-protocol/notation';
-import { ANC, Gas, Rate, u, UST } from '@anchor-protocol/types';
+import {
+  ANC,
+  Astro,
+  CW20Addr,
+  Gas,
+  HumanAddr,
+  Rate,
+  u,
+  UST,
+} from '@anchor-protocol/types';
 import {
   pickAttributeValueByKey,
   pickEvent,
@@ -19,31 +24,43 @@ import {
   TxHelper,
 } from '@libs/app-fns/tx/internal';
 import { floor } from '@libs/big-math';
-import { demicrofy } from '@libs/formatter';
+import { demicrofy, formatUToken } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
+import {
+  CreateTxOptions,
+  Fee,
+  MsgExecuteContract,
+} from '@terra-money/terra.js';
 import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
-import { CreateTxOptions, Fee } from '@terra-money/terra.js';
 import { Observable } from 'rxjs';
 
-export function rewardsAncUstLpClaimTx(
-  $: Parameters<typeof fabricateStakingWithdraw>[0] & {
-    gasFee: Gas;
-    gasAdjustment: Rate<number>;
-    fixedGas: u<UST>;
-    network: NetworkInfo;
-    addressProvider: AddressProvider;
-    queryClient: QueryClient;
-    post: (tx: CreateTxOptions) => Promise<TxResult>;
-    txErrorReporter?: (error: unknown) => string;
-    onTxSucceed?: () => void;
-  },
-): Observable<TxResultRendering> {
+export function rewardsAncUstLpClaimTx($: {
+  walletAddr: HumanAddr;
+  generatorAddr: HumanAddr;
+  lpTokenAddr: CW20Addr;
+
+  gasFee: Gas;
+  gasAdjustment: Rate<number>;
+  fixedGas: u<UST>;
+  network: NetworkInfo;
+  queryClient: QueryClient;
+  post: (tx: CreateTxOptions) => Promise<TxResult>;
+  txErrorReporter?: (error: unknown) => string;
+  onTxSucceed?: () => void;
+}): Observable<TxResultRendering> {
   const helper = new TxHelper({ ...$, txFee: $.fixedGas });
 
   return pipe(
     _createTxOptions({
-      msgs: fabricateStakingWithdraw($)($.addressProvider),
+      msgs: [
+        new MsgExecuteContract($.walletAddr, $.generatorAddr, {
+          withdraw: {
+            lp_token: $.lpTokenAddr,
+            amount: '0',
+          },
+        }),
+      ],
       fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),
@@ -63,10 +80,16 @@ export function rewardsAncUstLpClaimTx(
       }
 
       try {
-        const claimed = pickAttributeValueByKey<u<ANC>>(
+        const claimedANC = pickAttributeValueByKey<u<ANC>>(
           fromContract,
           'amount',
           (attrs) => attrs.reverse()[0],
+        );
+
+        const claimedAstro = pickAttributeValueByKey<u<Astro>>(
+          fromContract,
+          'amount',
+          (attrs) => attrs.reverse()[1],
         );
 
         return {
@@ -74,9 +97,13 @@ export function rewardsAncUstLpClaimTx(
 
           phase: TxStreamPhase.SUCCEED,
           receipts: [
-            claimed && {
-              name: 'Claimed',
-              value: formatANCWithPostfixUnits(demicrofy(claimed)) + ' ANC',
+            claimedANC && {
+              name: 'Claimed ANC',
+              value: formatANCWithPostfixUnits(demicrofy(claimedANC)) + ' ANC',
+            },
+            claimedAstro && {
+              name: 'Claimed ASTRO',
+              value: formatUToken(claimedAstro) + ' ASTRO',
             },
             helper.txHashReceipt(),
             helper.txFeeReceipt(),

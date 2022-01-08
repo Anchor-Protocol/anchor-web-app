@@ -256,6 +256,7 @@ export namespace anchorToken {
       distribution_schedule: Array<[number, number, u<ANC>]>;
     }
 
+    // TODO remove after terraswap
     /**
      * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/anchor-token/staking#stakerinfo
      */
@@ -275,6 +276,7 @@ export namespace anchorToken {
       bond_amount: u<AncUstLP>;
       pending_reward: u<ANC>;
     }
+    // TODO /
 
     /**
      * @see https://anchor-protocol.gitbook.io/anchor-2/smart-contracts/anchor-token/staking#state
