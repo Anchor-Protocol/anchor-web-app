@@ -163,7 +163,7 @@ function OverviewBase({ className }: OverviewProps) {
             {totalStaked}
           </AnimateNumber>{' '}
           <Sub>
-            UST{' '}
+            ANC{' '}
             <span>
               (
               <AnimateNumber format={formatRate}>

@@ -54,20 +54,20 @@ export interface MarketDepositAndBorrowQueryParams {
 export async function marketDepositAndBorrowQuery({
   endpoint,
 }: MarketDepositAndBorrowQueryParams): Promise<MarketDepositAndBorrowData> {
-  const deposit: MarketDepositRaw = await fetch(`${endpoint}/deposit`).then(
+  const deposit: MarketDepositRaw = await fetch(`${endpoint}/v1/deposit`).then(
     (res) => res.json(),
   );
 
   const depositHistory: MarketDepositHistoryRaw = await fetch(
-    `${endpoint}/deposit/1d`,
+    `${endpoint}/v1/deposit/1d`,
   ).then((res) => res.json());
 
-  const borrow: MarketBorrowRaw = await fetch(`${endpoint}/borrow`).then(
+  const borrow: MarketBorrowRaw = await fetch(`${endpoint}/v1/borrow`).then(
     (res) => res.json(),
   );
 
   const borrowHistory: MarketBorrowHistoryRaw = await fetch(
-    `${endpoint}/borrow/1d`,
+    `${endpoint}/v1/borrow/1d`,
   ).then((res) => res.json());
 
   const now = {

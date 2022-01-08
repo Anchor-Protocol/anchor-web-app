@@ -34,14 +34,14 @@ export interface MarketAncQueryParams {
 export async function marketAncQuery({
   endpoint,
 }: MarketAncQueryParams): Promise<MarketAncData> {
-  const now: MarketAncHistory = await fetch(`${endpoint}/anc`)
+  const now: MarketAncHistory = await fetch(`${endpoint}/v1/anc`)
     .then((res) => res.json())
     .then((data: MarketAncHistory) => ({
       ...data,
       timestamp: Date.now() as JSDateTime,
     }));
 
-  const history: MarketAncHistory[] = await fetch(`${endpoint}/anc/1d`)
+  const history: MarketAncHistory[] = await fetch(`${endpoint}/v1/anc/1d`)
     .then((res) => res.json())
     .then((data: MarketAncHistory[]) => [...data.reverse(), now]);
 

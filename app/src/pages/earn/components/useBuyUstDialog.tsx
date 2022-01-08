@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import bitfinex from './assets/bitfinex.svg';
 import kucoin from './assets/kucoin.svg';
 import transak from './assets/transak.svg';
+import binance from './assets/binance.svg';
 import { dialogStyle } from './useInsuranceCoverageDialog';
 import okex from './assets/okex.svg';
 
@@ -35,6 +36,23 @@ function ComponentBase({
 
         <section>
           <h2>Exchanges</h2>
+
+          <EmbossButton
+            component="a"
+            href="https://www.binance.com/en/trade/UST_USDT"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>
+              Binance{' '}
+              <sub>
+                <Launch />
+              </sub>
+            </span>
+            <i>
+              <img src={binance} alt="Binance" />
+            </i>
+          </EmbossButton>
 
           <EmbossButton
             component="a"
