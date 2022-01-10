@@ -12,7 +12,7 @@ import big from 'big.js';
 import { useEffect, useState } from 'react';
 
 const address = {
-  'columnbus-5': {
+  'columbus-5': {
     terraswapAncUstPair:
       'terra1gm5p3ner9x9xpwugn9sp6gvhd0lwrtkyrecdn3' as HumanAddr,
     terraswapAncUstLPToken:
@@ -45,10 +45,12 @@ export function useCheckTerraswapLpBalance() {
 
     const { terraswapAncUstLPToken, staking } =
       address[
-        connectedWallet.network.chainID === 'columnbus-5'
-          ? 'columnbus-5'
+        connectedWallet.network.chainID === 'columbus-5'
+          ? 'columbus-5'
           : 'bombay-12'
       ];
+
+    //console.log('checkTerraswapLpBalance.ts..()', connectedWallet.network.chainID === 'columbus-5', connectedWallet.network.chainID, terraswapAncUstLPToken, staking);
 
     rewardsAncUstLpRewardsQuery(
       connectedWallet.walletAddress,
@@ -91,8 +93,8 @@ export function useCheckTerraswapLpRewards() {
 
     const { terraswapAncUstLPToken, staking } =
       address[
-        connectedWallet.network.chainID === 'columnbus-5'
-          ? 'columnbus-5'
+        connectedWallet.network.chainID === 'columbus-5'
+          ? 'columbus-5'
           : 'bombay-12'
       ];
 
