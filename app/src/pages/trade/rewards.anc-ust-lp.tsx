@@ -141,7 +141,7 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
           </a>
           . To claim rewards earned on the previous LP staking contract,{' '}
           <a
-            href="https://terraswap-app.anchorprotocol.com/anc-ust-lp/unstake"
+            href="https://terraswap-app.anchorprotocol.com/claim/anc-ust-lp"
             target="_blank"
             rel="noreferrer"
           >
