@@ -167,7 +167,7 @@ export const fabricatebBuy =
     const coins = new Coins([
       new Coin(denom, new Int(new Dec(amount).mul(1000000)).toString()),
     ]);
-    const pairAddress = addressProvider.terraswapAncUstPair();
+    const pairAddress = addressProvider.ancUstPair();
     return [
       new MsgExecuteContract(
         address,

@@ -1,6 +1,7 @@
 import {
-  anchorToken,
+  ANC,
   AncUstLP,
+  astroport,
   cw20,
   CW20Addr,
   HumanAddr,
@@ -14,9 +15,13 @@ import {
 
 interface RewardsAncUstLpRewardsWasmQuery {
   userLPBalance: WasmQuery<cw20.Balance, cw20.BalanceResponse<AncUstLP>>;
-  userLPStakingInfo: WasmQuery<
-    anchorToken.staking.StakerInfo,
-    anchorToken.staking.StakerInfoResponse
+  userLPDeposit: WasmQuery<
+    astroport.QueryMsg.Deposit,
+    astroport.QueryMsg.DepositResponse<AncUstLP>
+  >;
+  userLPPendingToken: WasmQuery<
+    astroport.QueryMsg.PendingToken,
+    astroport.QueryMsg.PendingTokenResponse<ANC>
   >;
 }
 
@@ -27,6 +32,7 @@ export async function rewardsAncUstLpRewardsQuery(
   walletAddr: HumanAddr | undefined,
   stakingContract: HumanAddr,
   ancUstLpContract: CW20Addr,
+  astroportGeneratorAddr: HumanAddr,
   queryClient: QueryClient,
 ): Promise<RewardsAncUstLpRewards | undefined> {
   if (!walletAddr) {
@@ -45,11 +51,21 @@ export async function rewardsAncUstLpRewardsQuery(
           },
         },
       },
-      userLPStakingInfo: {
-        contractAddress: stakingContract,
+      userLPDeposit: {
+        contractAddress: astroportGeneratorAddr,
         query: {
-          staker_info: {
-            staker: walletAddr,
+          deposit: {
+            lp_token: ancUstLpContract,
+            user: walletAddr,
+          },
+        },
+      },
+      userLPPendingToken: {
+        contractAddress: astroportGeneratorAddr,
+        query: {
+          pending_token: {
+            lp_token: ancUstLpContract,
+            user: walletAddr,
           },
         },
       },

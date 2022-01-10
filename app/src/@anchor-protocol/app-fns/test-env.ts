@@ -64,12 +64,15 @@ export const TEST_ADDRESSES = {
     blunaLunaPair: 'terra13e4jmcjnwrauvl2fnjdwex0exuzd8zrh5xk29v' as HumanAddr,
     ancUstPair: 'terra1wfvczps2865j0awnurk9m04u7wdmd6qv3fdnvz' as HumanAddr,
   },
+  astroport: {
+    generator: 'terra1gjm7d9nmewn27qzrvqyhda8zsfl40aya7tvaw5' as HumanAddr,
+  },
   cw20: {
     bLuna: 'terra1u0t35drzyy0mujj8rkdyzhe264uls4ug3wdp3x' as CW20Addr,
     bEth: 'terra19mkj9nec6e3y5754tlnuz4vem7lzh4n0lc2s3l' as CW20Addr,
     aUST: 'terra1ajt556dpzvjwl0kl5tzku3fc3p3knkg9mkv8jl' as CW20Addr,
     ANC: 'terra1747mad58h0w4y589y3sk84r5efqdev9q4r02pc' as CW20Addr,
-    AncUstLP: 'terra1vg0qyq92ky9z9dp0j9fv5rmr2s80sg605dah6f' as CW20Addr,
+    AncUstLP: 'terra1agu2qllktlmf0jdkuhcheqtchnkppzrl4759y6' as CW20Addr,
     bLunaLunaLP: 'terra1tj4pavqjqjfm0wh73sh7yy9m4uq3m2cpmgva6n' as CW20Addr,
   },
 };

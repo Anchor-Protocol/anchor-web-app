@@ -1,3 +1,9 @@
+import { validateTxFee } from '@anchor-protocol/app-fns';
+import {
+  useAncAncUstLpProvideTx,
+  useAncPriceQuery,
+} from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { Plus } from '@anchor-protocol/icons';
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
@@ -11,11 +17,6 @@ import {
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { ANC, u, UST } from '@anchor-protocol/types';
-import {
-  useAncAncUstLpProvideTx,
-  useAncPriceQuery,
-} from '@anchor-protocol/app-provider';
-import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
 import { max, min } from '@libs/big-math';
 import { demicrofy, microfy } from '@libs/formatter';
@@ -29,10 +30,9 @@ import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
-import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
+import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { validateTxFee } from '@anchor-protocol/app-fns';
 import { formatShareOfPool } from 'pages/gov/components/formatShareOfPool';
 import { ancUstLpAncSimulation } from 'pages/trade/logics/ancUstLpAncSimulation';
 import { ancUstLpUstSimulation } from 'pages/trade/logics/ancUstLpUstSimulation';
@@ -81,6 +81,10 @@ export function AncUstLpProvide() {
   // logics
   // ---------------------------------------------
   const ustBalance = useMemo(() => {
+    if (big(bank.tax.taxRate).lte(0)) {
+      return big(bank.tokenBalances.uUST).minus(fixedFee) as u<UST<Big>>;
+    }
+
     const txFee = min(
       max(
         big(big(bank.tokenBalances.uUST).minus(fixedFee)).div(

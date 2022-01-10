@@ -1,6 +1,6 @@
 import {
   AddressProvider,
-  fabricateTerraswapWithdrawLiquidityANC,
+  fabricateExchangeWithdrawLiquidityANC,
 } from '@anchor-protocol/anchor.js';
 import {
   formatANCWithPostfixUnits,
@@ -26,13 +26,12 @@ import { floor } from '@libs/big-math';
 import { demicrofy, stripUUSD } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
-import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
 import { CreateTxOptions, Fee } from '@terra-money/terra.js';
-import big, { Big } from 'big.js';
+import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
 import { Observable } from 'rxjs';
 
 export function ancAncUstLpWithdrawTx(
-  $: Parameters<typeof fabricateTerraswapWithdrawLiquidityANC>[0] & {
+  $: Parameters<typeof fabricateExchangeWithdrawLiquidityANC>[0] & {
     gasFee: Gas;
     gasAdjustment: Rate<number>;
     fixedGas: u<UST>;
@@ -48,7 +47,7 @@ export function ancAncUstLpWithdrawTx(
 
   return pipe(
     _createTxOptions({
-      msgs: fabricateTerraswapWithdrawLiquidityANC($)($.addressProvider),
+      msgs: fabricateExchangeWithdrawLiquidityANC($)($.addressProvider),
       fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),
@@ -86,14 +85,14 @@ export function ancAncUstLpWithdrawTx(
         );
         const receivedUst = !!receivedUusd && stripUUSD(receivedUusd);
 
-        const transferAmount = pickAttributeValueByKey<string>(
-          transfer,
-          'amount',
-        );
-        const transferFee = transferAmount && stripUUSD(transferAmount);
+        //const transferAmount = pickAttributeValueByKey<string>(
+        //  transfer,
+        //  'amount',
+        //);
+        //const transferFee = transferAmount && stripUUSD(transferAmount);
 
-        const txFee =
-          !!transferFee && (big($.fixedGas).plus(transferFee) as u<UST<Big>>);
+        const txFee = undefined;
+        //!!transferFee && (big($.fixedGas).plus(transferFee) as u<UST<Big>>);
 
         return {
           value: null,

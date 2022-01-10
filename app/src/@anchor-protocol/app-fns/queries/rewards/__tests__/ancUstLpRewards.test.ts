@@ -8,10 +8,13 @@ describe('queries/rewardsAncUstLp', () => {
       TEST_WALLET_ADDRESS,
       TEST_ADDRESSES.anchorToken.staking,
       TEST_ADDRESSES.cw20.AncUstLP,
+      TEST_ADDRESSES.astroport.generator,
       TEST_LCD_CLIENT,
     );
 
     expect(typeof result?.userLPBalance?.balance).toBe('string');
-    expect(typeof result?.userLPStakingInfo?.bond_amount).toBe('string');
+    expect(typeof result?.userLPDeposit).toBe('string');
+    expect(typeof result?.userLPPendingToken.pending).toBe('string');
+    expect(typeof result?.userLPPendingToken.pending_on_proxy).toBe('string');
   });
 });

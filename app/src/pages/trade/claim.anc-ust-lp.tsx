@@ -1,16 +1,17 @@
+import { validateTxFee } from '@anchor-protocol/app-fns';
+import {
+  useRewardsAncUstLpClaimTx,
+  useRewardsAncUstLpRewardsQuery,
+  useRewardsClaimableUstBorrowRewardsQuery,
+} from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import {
   formatANCWithPostfixUnits,
   formatUST,
 } from '@anchor-protocol/notation';
 import { ANC, u } from '@anchor-protocol/types';
-import {
-  useRewardsAncUstLpClaimTx,
-  useRewardsClaimableAncUstLpRewardsQuery,
-  useRewardsClaimableUstBorrowRewardsQuery,
-} from '@anchor-protocol/app-provider';
-import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
-import { demicrofy } from '@libs/formatter';
+import { demicrofy, formatUToken } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { StreamStatus } from '@rx-stream/react';
@@ -18,11 +19,11 @@ import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big } from 'big.js';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { MessageBox } from 'components/MessageBox';
-import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
+import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { validateTxFee } from '@anchor-protocol/app-fns';
 import { MINIMUM_CLAIM_BALANCE } from 'pages/trade/env';
+import { useCheckTerraswapLpRewards } from 'queries/checkTerraswapLpBalance';
 import React, { useCallback, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
@@ -51,16 +52,18 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
   const { data: { userANCBalance } = {} } =
     useRewardsClaimableUstBorrowRewardsQuery();
 
-  const { data: { lPStakerInfo: userLPStakingInfo } = {} } =
-    useRewardsClaimableAncUstLpRewardsQuery();
+  const { data: { userLPPendingToken } = {} } =
+    useRewardsAncUstLpRewardsQuery();
+
+  const rewards = useCheckTerraswapLpRewards();
 
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
   const claiming = useMemo(() => {
-    if (!userLPStakingInfo) return undefined;
-    return big(userLPStakingInfo.pending_reward) as u<ANC<Big>>;
-  }, [userLPStakingInfo]);
+    if (!userLPPendingToken) return undefined;
+    return big(userLPPendingToken.pending_on_proxy) as u<ANC<Big>>;
+  }, [userLPPendingToken]);
 
   const ancAfterTx = useMemo(() => {
     if (!claiming || !userANCBalance) return undefined;
@@ -109,6 +112,28 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
 
   return (
     <CenteredLayout className={className} maxWidth={800}>
+      {rewards && (
+        <MessageBox level="info">
+          To claim rewards earned on the previous LP staking contract,{' '}
+          <a
+            href="https://terraswap-app.anchorprotocol.com/claim/anc-ust-lp"
+            target="_blank"
+            rel="noreferrer"
+          >
+            click here
+          </a>
+          <br />
+          <br />
+          <a
+            href="https://terraswap-app.anchorprotocol.com/claim/anc-ust-lp"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Your ANC-UST LP Rewards: {formatUToken(rewards.lpRewards)} ANC
+          </a>
+        </MessageBox>
+      )}
+
       <Section>
         <h1>ANC-UST LP Claim</h1>
 
@@ -117,6 +142,11 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
         <TxFeeList className="receipt">
           <TxFeeListItem label="Claiming">
             {claiming ? formatANCWithPostfixUnits(demicrofy(claiming)) : 0} ANC
+            {' + '}
+            {userLPPendingToken
+              ? formatUToken(userLPPendingToken.pending)
+              : 0}{' '}
+            ASTRO
           </TxFeeListItem>
           <TxFeeListItem label="ANC After Tx">
             {ancAfterTx ? formatANCWithPostfixUnits(demicrofy(ancAfterTx)) : 0}{' '}

@@ -1,9 +1,15 @@
 import { AddressProvider } from '@anchor-protocol/anchor.js';
 import { createHookMsg } from '@anchor-protocol/anchor.js/dist/utils/cw20/create-hook-msg';
-import { validateInput } from '@anchor-protocol/anchor.js/dist/utils/validate-input';
-import { validateAddress } from '@anchor-protocol/anchor.js/dist/utils/validation/address';
 import { formatLP } from '@anchor-protocol/notation';
-import { AncUstLP, Gas, Rate, u, UST } from '@anchor-protocol/types';
+import {
+  AncUstLP,
+  CW20Addr,
+  Gas,
+  HumanAddr,
+  Rate,
+  u,
+  UST,
+} from '@anchor-protocol/types';
 import {
   pickAttributeValueByKey,
   pickEvent,
@@ -22,34 +28,47 @@ import { floor } from '@libs/big-math';
 import { demicrofy } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
-import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
 import {
   CreateTxOptions,
   Dec,
+  Fee,
   Int,
   MsgExecuteContract,
-  Fee,
 } from '@terra-money/terra.js';
+import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
 import { Observable } from 'rxjs';
 
-export function ancAncUstLpStakeTx(
-  $: Parameters<typeof fabricateStakingBond>[0] & {
-    gasFee: Gas;
-    gasAdjustment: Rate<number>;
-    fixedGas: u<UST>;
-    network: NetworkInfo;
-    addressProvider: AddressProvider;
-    queryClient: QueryClient;
-    post: (tx: CreateTxOptions) => Promise<TxResult>;
-    txErrorReporter?: (error: unknown) => string;
-    onTxSucceed?: () => void;
-  },
-): Observable<TxResultRendering> {
+export function ancAncUstLpStakeTx($: {
+  walletAddr: HumanAddr;
+  generatorAddr: HumanAddr;
+  ancUstLpTokenAddr: CW20Addr;
+  amount: AncUstLP;
+
+  gasFee: Gas;
+  gasAdjustment: Rate<number>;
+  fixedGas: u<UST>;
+  network: NetworkInfo;
+  addressProvider: AddressProvider;
+  queryClient: QueryClient;
+  post: (tx: CreateTxOptions) => Promise<TxResult>;
+  txErrorReporter?: (error: unknown) => string;
+  onTxSucceed?: () => void;
+}): Observable<TxResultRendering> {
   const helper = new TxHelper({ ...$, txFee: $.fixedGas });
 
   return pipe(
     _createTxOptions({
-      msgs: fabricateStakingBond($)($.addressProvider),
+      msgs: [
+        new MsgExecuteContract($.walletAddr, $.ancUstLpTokenAddr, {
+          send: {
+            contract: $.generatorAddr,
+            amount: new Int(new Dec($.amount).mul(1000000)).toString(),
+            msg: createHookMsg({
+              deposit: {},
+            }),
+          },
+        }),
+      ],
       fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),
@@ -93,28 +112,3 @@ export function ancAncUstLpStakeTx(
     },
   )().pipe(_catchTxError({ helper, ...$ }));
 }
-
-interface Option {
-  address: string;
-  amount: string;
-}
-
-export const fabricateStakingBond =
-  ({ address, amount }: Option) =>
-  (addressProvider: AddressProvider): MsgExecuteContract[] => {
-    validateInput([validateAddress(address)]);
-
-    const anchorToken = addressProvider.terraswapAncUstLPToken();
-
-    return [
-      new MsgExecuteContract(address, anchorToken, {
-        send: {
-          contract: addressProvider.staking(),
-          amount: new Int(new Dec(amount).mul(1000000)).toString(),
-          msg: createHookMsg({
-            bond: {},
-          }),
-        },
-      }),
-    ];
-  };

@@ -109,6 +109,10 @@ export function TradeBuy() {
   // logics
   // ---------------------------------------------
   const ustBalance = useMemo(() => {
+    if (big(bank.tax.taxRate).lte(0)) {
+      return big(bank.tokenBalances.uUST).minus(fixedFee) as u<UST<Big>>;
+    }
+
     const txFee = min(
       max(
         big(big(bank.tokenBalances.uUST).minus(fixedFee)).div(

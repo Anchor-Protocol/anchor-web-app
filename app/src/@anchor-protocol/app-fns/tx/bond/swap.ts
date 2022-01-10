@@ -1,6 +1,6 @@
 import {
   AddressProvider,
-  fabricateTerraswapSwapbLuna,
+  fabricateExchangeSwapbLuna,
 } from '@anchor-protocol/anchor.js';
 import { formatLuna } from '@anchor-protocol/notation';
 import { bLuna, Gas, Luna, Rate, u, UST } from '@anchor-protocol/types';
@@ -28,7 +28,7 @@ import big, { Big, BigSource } from 'big.js';
 import { Observable } from 'rxjs';
 
 export function bondSwapTx(
-  $: Parameters<typeof fabricateTerraswapSwapbLuna>[0] & {
+  $: Parameters<typeof fabricateExchangeSwapbLuna>[0] & {
     gasFee: Gas;
     gasAdjustment: Rate<number>;
     fixedGas: u<UST>;
@@ -44,7 +44,7 @@ export function bondSwapTx(
 
   return pipe(
     _createTxOptions({
-      msgs: fabricateTerraswapSwapbLuna($)($.addressProvider),
+      msgs: fabricateExchangeSwapbLuna($)($.addressProvider),
       fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),

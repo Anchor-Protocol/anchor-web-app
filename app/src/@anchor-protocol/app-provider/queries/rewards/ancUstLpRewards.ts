@@ -25,6 +25,7 @@ export function useRewardsAncUstLpRewardsQuery(): UseQueryResult<
       connectedWallet?.walletAddress,
       contractAddress.anchorToken.staking,
       contractAddress.cw20.AncUstLP,
+      contractAddress.astroport.generator,
       queryClient,
     ],
     queryFn,

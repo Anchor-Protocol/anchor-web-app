@@ -1,3 +1,9 @@
+import { validateTxFee } from '@anchor-protocol/app-fns';
+import {
+  useAncAncUstLpUnstakeTx,
+  useAnchorWebapp,
+} from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   ANC_INPUT_MAXIMUM_INTEGER_POINTS,
@@ -6,12 +12,7 @@ import {
   formatUST,
 } from '@anchor-protocol/notation';
 import { AncUstLP } from '@anchor-protocol/types';
-import {
-  useAncAncUstLpUnstakeTx,
-  useRewardsAncUstLpRewardsQuery,
-} from '@anchor-protocol/app-provider';
-import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
-import { useFixedFee } from '@libs/app-provider';
+import { useAstroportDepositQuery, useFixedFee } from '@libs/app-provider';
 import { demicrofy, microfy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
@@ -20,10 +21,9 @@ import { StreamStatus } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
 import { MessageBox } from 'components/MessageBox';
-import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
+import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { validateTxFee } from '@anchor-protocol/app-fns';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 export function AncUstLpUnstake() {
@@ -33,6 +33,8 @@ export function AncUstLpUnstake() {
   const connectedWallet = useConnectedWallet();
 
   const fixedFee = useFixedFee();
+
+  const { contractAddress } = useAnchorWebapp();
 
   const [unstake, unstakeResult] = useAncAncUstLpUnstakeTx();
 
@@ -46,7 +48,9 @@ export function AncUstLpUnstake() {
   // ---------------------------------------------
   const bank = useAnchorBank();
 
-  const { data: { userLPStakingInfo } = {} } = useRewardsAncUstLpRewardsQuery();
+  const { data: { deposit } = {} } = useAstroportDepositQuery<AncUstLP>(
+    contractAddress.cw20.AncUstLP,
+  );
 
   // ---------------------------------------------
   // logics
@@ -57,12 +61,10 @@ export function AncUstLpUnstake() {
   );
 
   const invalidLpAmount = useMemo(() => {
-    if (lpAmount.length === 0 || !userLPStakingInfo) return undefined;
+    if (lpAmount.length === 0 || !deposit) return undefined;
 
-    return big(microfy(lpAmount)).gt(userLPStakingInfo.bond_amount)
-      ? 'Not enough assets'
-      : undefined;
-  }, [lpAmount, userLPStakingInfo]);
+    return big(microfy(lpAmount)).gt(deposit) ? 'Not enough assets' : undefined;
+  }, [deposit, lpAmount]);
 
   const init = useCallback(() => {
     setLpAmount('' as AncUstLP);
@@ -139,16 +141,10 @@ export function AncUstLpUnstake() {
               cursor: 'pointer',
             }}
             onClick={() =>
-              userLPStakingInfo &&
-              setLpAmount(
-                formatLPInput(demicrofy(userLPStakingInfo.bond_amount)),
-              )
+              deposit && setLpAmount(formatLPInput(demicrofy(deposit)))
             }
           >
-            {userLPStakingInfo
-              ? formatLP(demicrofy(userLPStakingInfo.bond_amount))
-              : 0}{' '}
-            LP
+            {deposit ? formatLP(demicrofy(deposit)) : 0} LP
           </span>
         </span>
       </div>
