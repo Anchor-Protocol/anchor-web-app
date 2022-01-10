@@ -71,7 +71,7 @@ export function ANCHOR_QUERY_CLIENT(network: NetworkInfo): 'lcd' | 'hive' {
 export function ANCHOR_CONSTANTS(network: NetworkInfo): AnchorConstants {
   return {
     gasWanted: 1_000_000 as Gas,
-    fixedGas: 1_971_053 as Gas,
+    fixedGas: 1_671_053 as Gas,
     blocksPerYear: 4_656_810,
     gasAdjustment: 1.6 as Rate<number>,
     airdropGasWanted: 300_000 as Gas,
