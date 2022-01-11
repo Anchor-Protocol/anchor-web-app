@@ -36,7 +36,7 @@ import { Observable } from 'rxjs';
 
 export function ancAncUstLpUnstakeTx($: {
   walletAddr: HumanAddr;
-  stakingAddr: HumanAddr;
+  generatorAddr: HumanAddr;
   ancUstLpTokenAddr: CW20Addr;
   lpAmount: AncUstLP;
 
@@ -54,8 +54,9 @@ export function ancAncUstLpUnstakeTx($: {
   return pipe(
     _createTxOptions({
       msgs: [
-        new MsgExecuteContract($.walletAddr, $.stakingAddr, {
-          unbond: {
+        new MsgExecuteContract($.walletAddr, $.generatorAddr, {
+          withdraw: {
+            lp_token: $.ancUstLpTokenAddr,
             amount: formatTokenInput($.lpAmount),
           },
         }),

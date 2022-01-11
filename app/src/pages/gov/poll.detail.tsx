@@ -48,6 +48,11 @@ function PollDetailBase({ className, match }: PollDetailProps) {
 
   const { data: { poll } = {} } = useGovPollQuery(+match.params.id);
 
+  if (poll?.id === 11) {
+    poll.link =
+      'https://forum.anchorprotocol.com/t/proposal-redirect-remaining-anc-lp-incentives-anc-buybacks-to-astroport/1971';
+  }
+
   const { data: { ancBalance: govANCBalance } = {} } = useAncBalanceQuery(
     contractAddress.anchorToken.gov,
   );

@@ -1,12 +1,12 @@
-import { ANC, u, UST } from '@anchor-protocol/types';
 import {
   useAncLpStakingStateQuery,
   useAncPriceQuery,
   useBorrowAPYQuery,
   useRewardsAncGovernanceRewardsQuery,
-  useRewardsClaimableAncUstLpRewardsQuery,
+  useRewardsAncUstLpRewardsQuery,
   useRewardsClaimableUstBorrowRewardsQuery,
 } from '@anchor-protocol/app-provider';
+import { ANC, u, UST } from '@anchor-protocol/types';
 import big, { Big } from 'big.js';
 import { useMemo } from 'react';
 
@@ -18,9 +18,8 @@ export function useRewards() {
 
   const { data: { lpStakingState } = {} } = useAncLpStakingStateQuery();
 
-  const {
-    data: { lPBalance: userLPBalance, lPStakerInfo: userLPStakingInfo } = {},
-  } = useRewardsClaimableAncUstLpRewardsQuery();
+  const { data: { userLPBalance, userLPPendingToken, userLPDeposit } = {} } =
+    useRewardsAncUstLpRewardsQuery();
 
   const { data: { userANCBalance, userGovStakingInfo } = {} } =
     useRewardsAncGovernanceRewardsQuery();
@@ -35,13 +34,17 @@ export function useRewards() {
   // logics
   // ---------------------------------------------
   const ancUstLp = useMemo(() => {
-    if (!ancPrice || !lpStakingState || !userLPStakingInfo || !userLPBalance) {
+    if (
+      !ancPrice ||
+      !lpStakingState ||
+      !userLPPendingToken ||
+      !userLPBalance ||
+      !userLPDeposit
+    ) {
       return undefined;
     }
 
-    const totalUserLPHolding = big(userLPBalance.balance).plus(
-      userLPStakingInfo.bond_amount,
-    );
+    const totalUserLPHolding = big(userLPBalance.balance).plus(userLPDeposit);
 
     const LPValue = big(ancPrice.USTPoolSize)
       .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare)
@@ -65,13 +68,13 @@ export function useRewards() {
         .div(ancPrice.LPShare === '0' ? 1 : ancPrice.LPShare) as u<UST<Big>>,
     };
 
-    const staked = userLPStakingInfo.bond_amount;
+    const staked = userLPDeposit;
     const stakedValue = big(staked).mul(LPValue) as u<UST<Big>>;
 
     const stakable = userLPBalance.balance;
     const stakableValue = big(stakable).mul(LPValue) as u<UST<Big>>;
 
-    const reward = userLPStakingInfo.pending_reward;
+    const reward = userLPPendingToken.pending_on_proxy;
     const rewardValue = big(reward).mul(ancPrice.ANCPrice) as u<UST<Big>>;
 
     return {
@@ -85,7 +88,13 @@ export function useRewards() {
       reward,
       rewardValue,
     };
-  }, [ancPrice, lpStakingState, userLPBalance, userLPStakingInfo]);
+  }, [
+    ancPrice,
+    lpStakingState,
+    userLPBalance,
+    userLPDeposit,
+    userLPPendingToken,
+  ]);
 
   const govGorvernance = useMemo(() => {
     if (!userGovStakingInfo || !userANCBalance || !ancPrice) {

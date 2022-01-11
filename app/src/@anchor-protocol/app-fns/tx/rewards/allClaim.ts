@@ -1,5 +1,5 @@
 import { formatANC } from '@anchor-protocol/notation';
-import { ANC, Gas, HumanAddr, Rate } from '@anchor-protocol/types';
+import { ANC, CW20Addr, Gas, HumanAddr, Rate } from '@anchor-protocol/types';
 import {
   pickAttributeValueByKey,
   pickEvent,
@@ -30,8 +30,9 @@ import { Observable } from 'rxjs';
 
 export function rewardsAllClaimTx($: {
   walletAddr: HumanAddr;
-  stakingAddr: HumanAddr;
+  generatorAddr: HumanAddr;
   marketAddr: HumanAddr;
+  lpTokenAddr: CW20Addr;
 
   claimAncUstLp: boolean;
   claimUstBorrow: boolean;
@@ -54,8 +55,11 @@ export function rewardsAllClaimTx($: {
 
   if ($.claimAncUstLp) {
     msgs.push(
-      new MsgExecuteContract($.walletAddr, $.stakingAddr, {
-        withdraw: {},
+      new MsgExecuteContract($.walletAddr, $.generatorAddr, {
+        withdraw: {
+          lp_token: $.lpTokenAddr,
+          amount: '0',
+        },
       }),
     );
   }

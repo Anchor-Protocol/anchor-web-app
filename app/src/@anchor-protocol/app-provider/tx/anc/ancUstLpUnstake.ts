@@ -32,13 +32,13 @@ export function useAncAncUstLpUnstakeTx() {
         // fabricateStakingUnbond
         walletAddr: connectedWallet.walletAddress,
         lpAmount: lpAmount,
-        stakingAddr: contractAddress.anchorToken.staking,
+        generatorAddr: contractAddress.astroport.generator,
         ancUstLpTokenAddr: contractAddress.cw20.AncUstLP,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: fixedFee,
-        gasFee: constants.gasWanted,
+        gasFee: constants.astroportGasWanted,
         gasAdjustment: constants.gasAdjustment,
         // query
         queryClient,
@@ -53,10 +53,10 @@ export function useAncAncUstLpUnstakeTx() {
     },
     [
       connectedWallet,
-      contractAddress.anchorToken.staking,
       contractAddress.cw20.AncUstLP,
+      contractAddress.astroport.generator,
       fixedFee,
-      constants.gasWanted,
+      constants.astroportGasWanted,
       constants.gasAdjustment,
       queryClient,
       txErrorReporter,

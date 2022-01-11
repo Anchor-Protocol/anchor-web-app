@@ -16,5 +16,5 @@ export function marketBuybackQuery({
   endpoint,
   time,
 }: MarketBuybackQueryParams): Promise<MarketBuybackData> {
-  return fetch(`${endpoint}/anc/buyback/${time}`).then((res) => res.json());
+  return fetch(`${endpoint}/v1/anc/buyback/${time}`).then((res) => res.json());
 }

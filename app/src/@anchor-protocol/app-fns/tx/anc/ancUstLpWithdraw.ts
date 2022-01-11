@@ -39,7 +39,6 @@ import {
   MsgExecuteContract,
 } from '@terra-money/terra.js';
 import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
-import big, { Big } from 'big.js';
 import { Observable } from 'rxjs';
 
 export function ancAncUstLpWithdrawTx($: {
@@ -109,14 +108,14 @@ export function ancAncUstLpWithdrawTx($: {
         );
         const receivedUst = !!receivedUusd && stripUUSD(receivedUusd);
 
-        const transferAmount = pickAttributeValueByKey<string>(
-          transfer,
-          'amount',
-        );
-        const transferFee = transferAmount && stripUUSD(transferAmount);
+        //const transferAmount = pickAttributeValueByKey<string>(
+        //  transfer,
+        //  'amount',
+        //);
+        //const transferFee = transferAmount && stripUUSD(transferAmount);
 
-        const txFee =
-          !!transferFee && (big($.fixedGas).plus(transferFee) as u<UST<Big>>);
+        const txFee = undefined;
+        //!!transferFee && (big($.fixedGas).plus(transferFee) as u<UST<Big>>);
 
         return {
           value: null,

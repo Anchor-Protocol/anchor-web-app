@@ -28,8 +28,8 @@ __metadata:
     "@storybook/react": ^6.3.4
     "@storybook/theming": ^6.3.4
     "@terra-money/terra.js": ^3.0.2
-    "@terra-money/use-wallet": ^3.6.3
-    "@terra-money/wallet-provider": ^3.6.5
+    "@terra-money/use-wallet": ^3.7.0-alpha.1
+    "@terra-money/wallet-provider": ^3.7.0-alpha.1
     "@testing-library/jest-dom": ^5.14.1
     "@testing-library/react": ^12.0.0
     "@testing-library/react-hooks": ^7.0.1
@@ -5091,12 +5091,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@terra-dev/wallet-types@npm:^3.6.0":
-  version: 3.6.0
-  resolution: "@terra-dev/wallet-types@npm:3.6.0"
+"@terra-dev/wallet-types@npm:^3.7.0-alpha.1":
+  version: 3.7.0-alpha.1
+  resolution: "@terra-dev/wallet-types@npm:3.7.0-alpha.1"
   peerDependencies:
     "@terra-money/terra.js": ^3.0.0
-  checksum: 84f7659cfb46d5312184e2a7d35a47d84e1089f44c17a6ed4e635af796bca57a0954fffda687350268232e38199e4d2bd43c96d32bff71af602ad4d50047ae15
+  checksum: 41582d55066628638e80503ae5b0f05a324b8e3b2d8e59579d669fe6e9a505c52eab17c8cb6d487c33efb63991cac00f00a62ce0effc8dfa3b9f19ddb116427d
   languageName: node
   linkType: hard
 
@@ -5143,23 +5143,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@terra-money/use-wallet@npm:^3.6.3":
-  version: 3.6.3
-  resolution: "@terra-money/use-wallet@npm:3.6.3"
+"@terra-money/use-wallet@npm:^3.7.0-alpha.1":
+  version: 3.7.0-alpha.1
+  resolution: "@terra-money/use-wallet@npm:3.7.0-alpha.1"
   dependencies:
-    "@terra-dev/wallet-types": ^3.6.0
+    "@terra-dev/wallet-types": ^3.7.0-alpha.1
   peerDependencies:
     "@terra-money/terra.js": ^3.0.0
     react: ">=17.0.0"
-  checksum: 56dbabc83bd5face9ef120b9180601c8cd574db91a697e775233837c42382376541b7a2d7f10a77d83e0cb9fd5d40791c14dcd586d5a342461960601f67d0df2
+  checksum: ea086e121558870f495c80988f7eb199cbd1b05cb59c941db8cc5b3a1d136610cad29d2aaeca860ca08fa47941543d6fb1095e47c27014f2c3bc124ef4939711
   languageName: node
   linkType: hard
 
-"@terra-money/wallet-controller@npm:^3.6.5":
-  version: 3.6.5
-  resolution: "@terra-money/wallet-controller@npm:3.6.5"
+"@terra-money/wallet-controller@npm:^3.7.0-alpha.1":
+  version: 3.7.0-alpha.1
+  resolution: "@terra-money/wallet-controller@npm:3.7.0-alpha.1"
   dependencies:
-    "@terra-dev/wallet-types": ^3.6.0
+    "@terra-dev/wallet-types": ^3.7.0-alpha.1
     "@terra-dev/web-extension-interface": ^0.14.0
     "@walletconnect/core": ^1.6.6
     "@walletconnect/iso-crypto": ^1.6.6
@@ -5175,20 +5175,20 @@ __metadata:
     ws: ^7.5.5
   peerDependencies:
     "@terra-money/terra.js": ^3.0.0
-  checksum: 2cfb47d81d8c5d5a4116431e25f341234aaf040beb4b0b21b5ebaafe694668909929203f83f6de1e94d56a282139ad25c898eecd244ffe607987a3ce1ff95249
+  checksum: a5d274fc4628c8d7542ffcc01c14fc4d9578d0d994154583b8add4bea274d37d931d3b7a09b7feee72d9987ecad90a9b51f9f3ea3e8d3f62de59cd49fc1ed8a4
   languageName: node
   linkType: hard
 
-"@terra-money/wallet-provider@npm:^3.6.5":
-  version: 3.6.5
-  resolution: "@terra-money/wallet-provider@npm:3.6.5"
+"@terra-money/wallet-provider@npm:^3.7.0-alpha.1":
+  version: 3.7.0-alpha.1
+  resolution: "@terra-money/wallet-provider@npm:3.7.0-alpha.1"
   dependencies:
     "@terra-dev/web-extension-interface": ^0.14.0
-    "@terra-money/use-wallet": ^3.6.3
-    "@terra-money/wallet-controller": ^3.6.5
+    "@terra-money/use-wallet": ^3.7.0-alpha.1
+    "@terra-money/wallet-controller": ^3.7.0-alpha.1
   peerDependencies:
     react: ">=17.0.0"
-  checksum: ade17f8a8d0b7b6bfbf9deb9d322dd38cd23b46afefd388afa38fd2adfe2606e182728d18ace0e782c5a33f040dfdd7505f9a0cbe7542b77b0c9c6d5ef59c1b1
+  checksum: 1fe7010a998e790d21184650536cae978d18687258f7289a1d44294b875b45ec70b027b47bbfd43ff06f3a2162ca5ea81ee118d3500088f19b9b6dca2c056236
   languageName: node
   linkType: hard
 

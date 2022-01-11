@@ -34,15 +34,16 @@ export function useRewardsAllClaimTx() {
 
       return rewardsAllClaimTx({
         walletAddr: connectedWallet.walletAddress,
-        stakingAddr: contractAddress.anchorToken.staking,
+        lpTokenAddr: contractAddress.cw20.AncUstLP,
         marketAddr: contractAddress.moneyMarket.market,
+        generatorAddr: contractAddress.astroport.generator,
         claimUstBorrow,
         claimAncUstLp,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: fixedFee,
-        gasFee: constants.gasWanted,
+        gasFee: constants.astroportGasWanted,
         gasAdjustment: constants.gasAdjustment,
         // query
         queryClient,
@@ -57,10 +58,11 @@ export function useRewardsAllClaimTx() {
     },
     [
       connectedWallet,
-      contractAddress.anchorToken.staking,
+      contractAddress.cw20.AncUstLP,
       contractAddress.moneyMarket.market,
+      contractAddress.astroport.generator,
       fixedFee,
-      constants.gasWanted,
+      constants.astroportGasWanted,
       constants.gasAdjustment,
       queryClient,
       txErrorReporter,

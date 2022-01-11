@@ -20,9 +20,9 @@ export interface BorrowAPYData {
   }>;
 }
 
-export async function borrowAPYQuery(): Promise<BorrowAPYData> {
+export async function borrowAPYQuery(endpoint: string): Promise<BorrowAPYData> {
   const borrowerDistributionAPYs = await fetch(
-    'https://api.anchorprotocol.com/api/v2/distribution-apy',
+    `${endpoint}/v2/distribution-apy`,
   )
     .then((res) => res.json())
     .then(
@@ -43,9 +43,7 @@ export async function borrowAPYQuery(): Promise<BorrowAPYData> {
       },
     );
 
-  const govRewards = await fetch(
-    'https://api.anchorprotocol.com/api/v2/gov-reward',
-  )
+  const govRewards = await fetch(`${endpoint}/v2/gov-reward`)
     .then((res) => res.json())
     .then(
       ({
@@ -65,9 +63,7 @@ export async function borrowAPYQuery(): Promise<BorrowAPYData> {
       },
     );
 
-  const lpRewards = await fetch(
-    'https://api.anchorprotocol.com/api/v2/ust-lp-reward',
-  )
+  const lpRewards = await fetch(`${endpoint}/v2/ust-lp-reward`)
     .then((res) => res.json())
     .then(
       ({

@@ -1,7 +1,6 @@
 import { formatLP } from '@anchor-protocol/notation';
 import {
   AncUstLP,
-  cw20,
   CW20Addr,
   Gas,
   HumanAddr,
@@ -38,7 +37,7 @@ import { Observable } from 'rxjs';
 
 export function ancAncUstLpStakeTx($: {
   walletAddr: HumanAddr;
-  stakingAddr: HumanAddr;
+  generatorAddr: HumanAddr;
   ancUstLpTokenAddr: CW20Addr;
   lpAmount: AncUstLP;
 
@@ -58,13 +57,13 @@ export function ancAncUstLpStakeTx($: {
       msgs: [
         new MsgExecuteContract($.walletAddr, $.ancUstLpTokenAddr, {
           send: {
-            contract: $.stakingAddr,
+            contract: $.generatorAddr,
             amount: formatTokenInput($.lpAmount),
             msg: createHookMsg({
-              bond: {},
+              deposit: {},
             }),
           },
-        } as cw20.Send<AncUstLP>),
+        }),
       ],
       fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,

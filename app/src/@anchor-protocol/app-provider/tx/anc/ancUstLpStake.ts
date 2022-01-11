@@ -30,15 +30,15 @@ export function useAncAncUstLpStakeTx() {
 
       return ancAncUstLpStakeTx({
         // fabricateStakingBond
-        walletAddr: connectedWallet.walletAddress,
         lpAmount: lpAmount,
-        stakingAddr: contractAddress.anchorToken.staking,
+        walletAddr: connectedWallet.walletAddress,
         ancUstLpTokenAddr: contractAddress.cw20.AncUstLP,
+        generatorAddr: contractAddress.astroport.generator,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: fixedFee,
-        gasFee: constants.gasWanted,
+        gasFee: constants.astroportGasWanted,
         gasAdjustment: constants.gasAdjustment,
         // query
         queryClient,
@@ -53,10 +53,10 @@ export function useAncAncUstLpStakeTx() {
     },
     [
       connectedWallet,
-      contractAddress.anchorToken.staking,
       contractAddress.cw20.AncUstLP,
+      contractAddress.astroport.generator,
       fixedFee,
-      constants.gasWanted,
+      constants.astroportGasWanted,
       constants.gasAdjustment,
       queryClient,
       txErrorReporter,

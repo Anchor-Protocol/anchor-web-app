@@ -66,6 +66,9 @@ export interface AnchorContractAddress extends AppContractAddress {
     /** addressProvider.terraswapbAncUstPair() */
     ancUstPair: HumanAddr;
   };
+  astroport: {
+    generator: HumanAddr;
+  };
   cw20: {
     /** addressProvider.bLunaToken() */
     bLuna: CW20Addr;
@@ -88,4 +91,5 @@ export interface AnchorConstants extends AppConstants {
   airdropGasWanted: Gas;
   airdropGas: Gas;
   bondGasWanted: Gas;
+  astroportGasWanted: Gas;
 }

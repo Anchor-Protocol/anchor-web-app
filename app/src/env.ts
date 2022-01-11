@@ -66,6 +66,7 @@ export function ANCHOR_CONSTANTS(network: NetworkInfo): AnchorConstants {
     airdropGasWanted: 300_000 as Gas,
     airdropGas: 334_211 as Gas,
     bondGasWanted: 1_600_000 as Gas,
+    astroportGasWanted: 1_600_000 as Gas,
   };
 }
 
@@ -87,22 +88,21 @@ const COLUMNBUS_CONTRACT_ADDRESS = {
   mmDistributionModel: 'terra14mufqpr5mevdfn92p4jchpkxp7xr46uyknqjwq',
   mmLiquidationQueue: '',
   aTerra: 'terra1hzh9vpxhsk8253se0vv5jj6etdvxu3nv8z07zu',
-  // TODO change to columbus astroport address
-  bLunaLunaPair: 'terra1jxazgm67et0ce260kvrpfv50acuushpjsz2y0p',
-  bLunaLunaLPToken: 'terra1nuy34nwnsh53ygpc4xprlj263cztw7vc99leh2',
-  ancUstPair: 'terra1gm5p3ner9x9xpwugn9sp6gvhd0lwrtkyrecdn3',
-  ancUstLPToken: 'terra1gecs98vcuktyfkrve9czrpgtg0m3aq586x6gzm',
-  // TODO end
+  bLunaLunaPair: 'terra1j66jatn3k50hjtg2xemnjm8s7y8dws9xqa5y8w',
+  bLunaLunaLPToken: 'terra1htw7hm40ch0hacm8qpgd24sus4h0tq3hsseatl',
+  ancUstPair: 'terra1qr2k6yjjd5p2kaewqvg93ag74k6gyjr7re37fs',
+  ancUstLPToken: 'terra1wmaty65yt7mjw6fjfymkd9zsm6atsq82d9arcd',
   gov: 'terra1f32xyep306hhcxxxf7mlyh0ucggc00rm2s9da5',
   distributor: 'terra1mxf7d5updqxfgvchd7lv6575ehhm8qfdttuqzz',
   collector: 'terra14ku9pgw5ld90dexlyju02u4rn6frheexr5f96h',
   community: 'terra12wk8dey0kffwp27l5ucfumczlsc9aned8rqueg',
-  staking: 'terra1897an2xux840p9lrh6py3ryankc6mspw49xse3',
+  staking: 'terra1h3mf22jm68ddueryuv2yxwfmqxxadvjceuaqz6',
   ANC: 'terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76',
   airdrop: 'terra146ahqn6d3qgdvmj8cj96hh03dzmeedhsf0kxqm',
   investor_vesting: 'terra1pm54pmw3ej0vfwn3gtn6cdmaqxt0x37e9jt0za',
   team_vesting: 'terra10evq9zxk2m86n3n3xnpw28jpqwp628c6dzuq42',
   terraswapFactory: 'terra1ulgw0td86nvs4wtpsc80thv6xelk76ut7a7apj',
+  astroportGenerator: 'terra1zgrx9jjqrfye8swykfgmd6hpde60j0nszzupp9',
 };
 
 const BOMBAY_CONTRACT_ADDRESS = {
@@ -137,6 +137,7 @@ const BOMBAY_CONTRACT_ADDRESS = {
   investor_vesting: 'not available in testnet',
   team_vesting: 'not available in testnet',
   terraswapFactory: 'terra18qpjm4zkvqnpjpw0zn0tdr8gdzvt8au35v45xf',
+  astroportGenerator: 'terra1gjm7d9nmewn27qzrvqyhda8zsfl40aya7tvaw5',
 };
 
 export const ANCHOR_CONTRACT_ADDRESS = (
@@ -206,6 +207,9 @@ export const ANCHOR_CONTRACT_ADDRESS = (
       blunaLunaPair: addressMap.bLunaLunaPair as HumanAddr,
       ancUstPair: addressMap.ancUstPair as HumanAddr,
     },
+    astroport: {
+      generator: addressMap.astroportGenerator as HumanAddr,
+    },
     cw20: {
       bLuna: addressMap.bLunaToken as CW20Addr,
       //bEth: addressMap.bEthToken as CW20Addr,
@@ -219,9 +223,9 @@ export const ANCHOR_CONTRACT_ADDRESS = (
 
 export const ANCHOR_INDEXER_API_ENDPOINTS = (network: NetworkInfo): string => {
   if (network.chainID.startsWith('bombay')) {
-    return 'https://api-testnet.anchorprotocol.com/api/v1';
+    return 'https://api-testnet.anchorprotocol.com/api';
   } else {
-    return 'https://api.anchorprotocol.com/api/v1';
+    return 'https://api.anchorprotocol.com/api';
   }
 };
 
@@ -355,20 +359,20 @@ export const ANCHOR_TX_REFETCH_MAP: TxRefetchMap = {
     TERRA_QUERY_KEY.CW20_BALANCE,
     TERRA_QUERY_KEY.TERRA_BALANCES,
     TERRA_QUERY_KEY.TERRA_NATIVE_BALANCES,
+    TERRA_QUERY_KEY.ASTROPORT_DEPOSIT,
     ANCHOR_QUERY_KEY.ANC_BALANCE,
     ANCHOR_QUERY_KEY.REWARDS_ANC_UST_LP_REWARDS,
     ANCHOR_QUERY_KEY.ANC_LP_STAKING_STATE,
-    ANCHOR_QUERY_KEY.REWARDS_CLAIMABLE_ANC_UST_LP_REWARDS,
   ],
   [ANCHOR_TX_KEY.ANC_ANC_UST_LP_UNSTAKE]: [
     TERRA_QUERY_KEY.TOKEN_BALANCES,
     TERRA_QUERY_KEY.CW20_BALANCE,
     TERRA_QUERY_KEY.TERRA_BALANCES,
     TERRA_QUERY_KEY.TERRA_NATIVE_BALANCES,
+    TERRA_QUERY_KEY.ASTROPORT_DEPOSIT,
     ANCHOR_QUERY_KEY.ANC_BALANCE,
     ANCHOR_QUERY_KEY.REWARDS_ANC_UST_LP_REWARDS,
     ANCHOR_QUERY_KEY.ANC_LP_STAKING_STATE,
-    ANCHOR_QUERY_KEY.REWARDS_CLAIMABLE_ANC_UST_LP_REWARDS,
   ],
   [ANCHOR_TX_KEY.ANC_BUY]: [
     TERRA_QUERY_KEY.TOKEN_BALANCES,
@@ -428,7 +432,6 @@ export const ANCHOR_TX_REFETCH_MAP: TxRefetchMap = {
     ANCHOR_QUERY_KEY.REWARDS_ANC_GOVERNANCE_REWARDS,
     ANCHOR_QUERY_KEY.REWARDS_ANCHOR_LP_REWARDS,
     ANCHOR_QUERY_KEY.REWARDS_ANC_UST_LP_REWARDS,
-    ANCHOR_QUERY_KEY.REWARDS_CLAIMABLE_ANC_UST_LP_REWARDS,
     ANCHOR_QUERY_KEY.REWARDS_CLAIMABLE_UST_BORROW_REWARDS,
     ANCHOR_QUERY_KEY.REWARDS_UST_BORROW_REWARDS,
   ],
@@ -441,7 +444,6 @@ export const ANCHOR_TX_REFETCH_MAP: TxRefetchMap = {
     ANCHOR_QUERY_KEY.REWARDS_ANC_GOVERNANCE_REWARDS,
     ANCHOR_QUERY_KEY.REWARDS_ANCHOR_LP_REWARDS,
     ANCHOR_QUERY_KEY.REWARDS_ANC_UST_LP_REWARDS,
-    ANCHOR_QUERY_KEY.REWARDS_CLAIMABLE_ANC_UST_LP_REWARDS,
     ANCHOR_QUERY_KEY.REWARDS_CLAIMABLE_UST_BORROW_REWARDS,
     ANCHOR_QUERY_KEY.REWARDS_UST_BORROW_REWARDS,
   ],
@@ -454,7 +456,6 @@ export const ANCHOR_TX_REFETCH_MAP: TxRefetchMap = {
     ANCHOR_QUERY_KEY.REWARDS_ANC_GOVERNANCE_REWARDS,
     ANCHOR_QUERY_KEY.REWARDS_ANCHOR_LP_REWARDS,
     ANCHOR_QUERY_KEY.REWARDS_ANC_UST_LP_REWARDS,
-    ANCHOR_QUERY_KEY.REWARDS_CLAIMABLE_ANC_UST_LP_REWARDS,
     ANCHOR_QUERY_KEY.REWARDS_CLAIMABLE_UST_BORROW_REWARDS,
     ANCHOR_QUERY_KEY.REWARDS_UST_BORROW_REWARDS,
   ],
@@ -473,4 +474,4 @@ export const ANCHOR_TX_REFETCH_MAP: TxRefetchMap = {
   ],
 };
 
-// build: force re-build trigger - 21.12.28
+// build: force re-build trigger - 22.01.03-1

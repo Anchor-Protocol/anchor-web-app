@@ -8,8 +8,10 @@ export interface EarnAPYHistoryData {
   }[];
 }
 
-export async function earnAPYHistoryQuery(): Promise<EarnAPYHistoryData> {
-  return fetch('https://api.anchorprotocol.com/api/v2/deposit-rate')
+export async function earnAPYHistoryQuery(
+  endpoint: string,
+): Promise<EarnAPYHistoryData> {
+  return fetch(`${endpoint}/v2/deposit-rate`)
     .then((res) => res.json())
     .then(
       (

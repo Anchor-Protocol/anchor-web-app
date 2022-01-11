@@ -12,6 +12,8 @@ export * from './logics/computeMaxUstBalanceForUstTransfer';
 export * from './models/gasPrice';
 export * from './models/tokenDisplayInfo';
 export * from './models/tx';
+export * from './queries/astroport/deposit';
+export * from './queries/astroport/pendingToken';
 export * from './queries/chains';
 export * from './queries/cw20/balance';
 export * from './queries/cw20/minter';

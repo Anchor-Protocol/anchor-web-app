@@ -1,4 +1,5 @@
 import { useChainOptions } from '@terra-money/wallet-provider';
+import { AstroportGuideBanner } from 'components/AstroportGuideBanner';
 import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
 import { AppProviders } from 'configurations/app';
@@ -52,6 +53,7 @@ export function App() {
             <div>
               <GlobalStyle />
               <Header />
+              <AstroportGuideBanner />
               <Switch>
                 {/* Dashboard */}
                 <Route path="/" exact component={Dashboard} />

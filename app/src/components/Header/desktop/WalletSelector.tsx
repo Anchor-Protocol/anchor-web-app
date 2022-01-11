@@ -37,7 +37,6 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   // dependencies
   // ---------------------------------------------
   const {
-    install,
     status,
     connect,
     disconnect,
@@ -45,8 +44,8 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
     wallets,
     network,
     availableConnectTypes,
-    availableInstallTypes,
     availableConnections,
+    availableInstallations,
     supportFeatures,
   } = useWallet();
 
@@ -151,24 +150,6 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                   <ConnectTypeContent>
                     <h1>Connect Wallet</h1>
 
-                    {availableInstallTypes.includes(ConnectType.EXTENSION) ? (
-                      <BorderButton
-                        className="install"
-                        onClick={() => {
-                          install(ConnectType.EXTENSION);
-                          setOpenDropdown(false);
-                        }}
-                      >
-                        <IconSpan>
-                          Install Terra Station
-                          <img
-                            src="https://assets.terra.money/icon/wallet-provider/station.svg"
-                            alt="Install Terra Station"
-                          />
-                        </IconSpan>
-                      </BorderButton>
-                    ) : null}
-
                     {availableConnections
                       .filter(({ type }) => type !== ConnectType.READONLY)
                       .map(({ type, icon, name, identifier }) => (
@@ -193,6 +174,27 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                             />
                           </IconSpan>
                         </FlatButton>
+                      ))}
+
+                    {availableInstallations
+                      .filter(({ type }) => type === ConnectType.EXTENSION)
+                      .map(({ type, identifier, name, icon, url }) => (
+                        <BorderButton
+                          key={'installation' + type + identifier}
+                          className="install"
+                          component="a"
+                          href={url}
+                          target="_blank"
+                          rel="noreferrer"
+                          onClick={() => {
+                            setOpenDropdown(false);
+                          }}
+                        >
+                          <IconSpan>
+                            Install {name}
+                            <img src={icon} alt={`Install ${name}`} />
+                          </IconSpan>
+                        </BorderButton>
                       ))}
 
                     <hr />
@@ -312,7 +314,8 @@ const ConnectTypeContent = styled.section`
     margin-bottom: 16px;
   }
 
-  button {
+  button,
+  a {
     width: 100%;
     height: 32px;
 

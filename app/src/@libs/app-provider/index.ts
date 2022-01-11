@@ -11,6 +11,7 @@ export * from './hooks/useFixedFee';
 export * from './hooks/useGasPrice';
 export * from './hooks/useRefetchQueries';
 export * from './hooks/useTokenSearch';
+export * from './queries/astroport/deposit';
 export * from './queries/cw20/balance';
 export * from './queries/cw20/poolInfo';
 export * from './queries/cw20/tokenDisplayInfos';

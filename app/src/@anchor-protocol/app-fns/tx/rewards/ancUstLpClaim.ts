@@ -1,5 +1,14 @@
 import { formatANCWithPostfixUnits } from '@anchor-protocol/notation';
-import { ANC, Gas, HumanAddr, Rate, u, UST } from '@anchor-protocol/types';
+import {
+  ANC,
+  Astro,
+  CW20Addr,
+  Gas,
+  HumanAddr,
+  Rate,
+  u,
+  UST,
+} from '@anchor-protocol/types';
 import {
   pickAttributeValueByKey,
   pickEvent,
@@ -15,7 +24,7 @@ import {
   TxHelper,
 } from '@libs/app-fns/tx/internal';
 import { floor } from '@libs/big-math';
-import { demicrofy } from '@libs/formatter';
+import { demicrofy, formatUToken } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
 import {
@@ -28,7 +37,8 @@ import { Observable } from 'rxjs';
 
 export function rewardsAncUstLpClaimTx($: {
   walletAddr: HumanAddr;
-  stakingAddr: HumanAddr;
+  generatorAddr: HumanAddr;
+  lpTokenAddr: CW20Addr;
 
   gasFee: Gas;
   gasAdjustment: Rate<number>;
@@ -44,8 +54,11 @@ export function rewardsAncUstLpClaimTx($: {
   return pipe(
     _createTxOptions({
       msgs: [
-        new MsgExecuteContract($.walletAddr, $.stakingAddr, {
-          withdraw: {},
+        new MsgExecuteContract($.walletAddr, $.generatorAddr, {
+          withdraw: {
+            lp_token: $.lpTokenAddr,
+            amount: '0',
+          },
         }),
       ],
       fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
@@ -67,10 +80,16 @@ export function rewardsAncUstLpClaimTx($: {
       }
 
       try {
-        const claimed = pickAttributeValueByKey<u<ANC>>(
+        const claimedANC = pickAttributeValueByKey<u<ANC>>(
           fromContract,
           'amount',
           (attrs) => attrs.reverse()[0],
+        );
+
+        const claimedAstro = pickAttributeValueByKey<u<Astro>>(
+          fromContract,
+          'amount',
+          (attrs) => attrs.reverse()[1],
         );
 
         return {
@@ -78,9 +97,13 @@ export function rewardsAncUstLpClaimTx($: {
 
           phase: TxStreamPhase.SUCCEED,
           receipts: [
-            claimed && {
-              name: 'Claimed',
-              value: formatANCWithPostfixUnits(demicrofy(claimed)) + ' ANC',
+            claimedANC && {
+              name: 'Claimed ANC',
+              value: formatANCWithPostfixUnits(demicrofy(claimedANC)) + ' ANC',
+            },
+            claimedAstro && {
+              name: 'Claimed ASTRO',
+              value: formatUToken(claimedAstro) + ' ASTRO',
             },
             helper.txHashReceipt(),
             helper.txFeeReceipt(),

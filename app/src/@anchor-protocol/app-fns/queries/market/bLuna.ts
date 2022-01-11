@@ -30,5 +30,5 @@ export interface MarketBLunaQueryParams {
 export function marketBLunaQuery({
   endpoint,
 }: MarketBLunaQueryParams): Promise<MarketBLunaData> {
-  return fetch(`${endpoint}/bassets/bluna`).then((res) => res.json());
+  return fetch(`${endpoint}/v1/bassets/bluna`).then((res) => res.json());
 }

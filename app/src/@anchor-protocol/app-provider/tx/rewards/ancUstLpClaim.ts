@@ -27,9 +27,9 @@ export function useRewardsAncUstLpClaimTx() {
       }
 
       return rewardsAncUstLpClaimTx({
-        // fabricateStakingWithdraw
         walletAddr: connectedWallet.walletAddress,
-        stakingAddr: contractAddress.anchorToken.staking,
+        lpTokenAddr: contractAddress.cw20.AncUstLP,
+        generatorAddr: contractAddress.astroport.generator,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
@@ -49,7 +49,8 @@ export function useRewardsAncUstLpClaimTx() {
     },
     [
       connectedWallet,
-      contractAddress.anchorToken.staking,
+      contractAddress.cw20.AncUstLP,
+      contractAddress.astroport.generator,
       fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,

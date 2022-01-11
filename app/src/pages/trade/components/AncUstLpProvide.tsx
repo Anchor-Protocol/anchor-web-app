@@ -18,6 +18,7 @@ import {
 } from '@anchor-protocol/notation';
 import { ANC, u, UST } from '@anchor-protocol/types';
 import { useFixedFee } from '@libs/app-provider';
+import { max, min } from '@libs/big-math';
 import { demicrofy, microfy } from '@libs/formatter';
 import { isZero } from '@libs/is-zero';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
@@ -80,8 +81,30 @@ export function AncUstLpProvide() {
   // logics
   // ---------------------------------------------
   const ustBalance = useMemo(() => {
-    return big(bank.tokenBalances.uUST).minus(fixedFee) as u<UST<Big>>;
-  }, [bank.tokenBalances.uUST, fixedFee]);
+    if (big(bank.tax.taxRate).lte(0)) {
+      return big(bank.tokenBalances.uUST).minus(fixedFee) as u<UST<Big>>;
+    }
+
+    const txFee = min(
+      max(
+        big(big(bank.tokenBalances.uUST).minus(fixedFee)).div(
+          big(big(1).plus(bank.tax.taxRate)).mul(bank.tax.taxRate),
+        ),
+        0,
+      ),
+      bank.tax.maxTaxUUSD,
+    );
+
+    return max(
+      big(bank.tokenBalances.uUST).minus(txFee).minus(big(fixedFee).mul(3)),
+      0,
+    ) as u<UST<Big>>;
+  }, [
+    bank.tax.maxTaxUUSD,
+    bank.tax.taxRate,
+    bank.tokenBalances.uUST,
+    fixedFee,
+  ]);
 
   const invalidTxFee = useMemo(
     () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
