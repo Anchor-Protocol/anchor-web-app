@@ -2,9 +2,8 @@ import { anc80gif, GifIcon, TokenIcon } from '@anchor-protocol/token-icons';
 import { RulerTab } from '@libs/neumorphism-ui/components/RulerTab';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { Tab } from '@libs/neumorphism-ui/components/Tab';
-import { MessageBox } from 'components/MessageBox';
-import { Circles } from 'components/primitives/Circles';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
+import { Circles } from 'components/primitives/Circles';
 import { screen } from 'env';
 import { AncUstLpProvide } from 'pages/trade/components/AncUstLpProvide';
 import { AncUstLpStake } from 'pages/trade/components/AncUstLpStake';
@@ -12,7 +11,6 @@ import { AncUstLpStakeOverview } from 'pages/trade/components/AncUstLpStakeOverv
 import { AncUstLpUnstake } from 'pages/trade/components/AncUstLpUnstake';
 import { AncUstLpWithdraw } from 'pages/trade/components/AncUstLpWithdraw';
 import { ancUstLpPathname } from 'pages/trade/env';
-import { useCheckTerraswapLpBalance } from 'queries/checkTerraswapLpBalance';
 import React, { ReactNode, useCallback, useMemo } from 'react';
 import {
   Redirect,
@@ -22,7 +20,6 @@ import {
   useRouteMatch,
 } from 'react-router-dom';
 import styled from 'styled-components';
-import { formatUToken } from '@libs/formatter';
 
 export interface RewardsAncUstLpProps {
   className?: string;
@@ -118,58 +115,8 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
     [history],
   );
 
-  const terraswapLpBalances = useCheckTerraswapLpBalance();
-
   return (
     <CenteredLayout className={className}>
-      {terraswapLpBalances && (
-        <MessageBox level="info">
-          Anchor protocol has migrated to use Astroport and new LP token staking
-          contracts.
-          <br />
-          To use Astroport, users should go through a one-time process to
-          migrate liquidity and claim unclaimed rewards.
-          <br />
-          To withdraw liquidity on Terraswap /Unstake LP tokens from previous
-          staking contract,{' '}
-          <a
-            href="https://terraswap-app.anchorprotocol.com/anc-ust-lp/withdraw"
-            target="_blank"
-            rel="noreferrer"
-          >
-            click here
-          </a>
-          . To claim rewards earned on the previous LP staking contract,{' '}
-          <a
-            href="https://terraswap-app.anchorprotocol.com/claim/anc-ust-lp"
-            target="_blank"
-            rel="noreferrer"
-          >
-            click here
-          </a>
-          .
-          <br />
-          <br />
-          <a
-            href="https://terraswap-app.anchorprotocol.com/anc-ust-lp/withdraw"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Your ANC-UST LP Balance :{' '}
-            {formatUToken(terraswapLpBalances.lpBalance)}
-          </a>
-          ,{' '}
-          <a
-            href="https://terraswap-app.anchorprotocol.com/anc-ust-lp/unstake"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Your ANC-UST LP Staked :{' '}
-            {formatUToken(terraswapLpBalances.lpStaked)}
-          </a>
-        </MessageBox>
-      )}
-
       <header>
         <h1>
           <Circles radius={24} backgroundColors={['#ffffff', '#2C2C2C']}>

@@ -78,4 +78,8 @@ export const MessageBox = styled(MessageBoxBase)`
     cursor: pointer;
     margin-left: 1em;
   }
+
+  a {
+    ${({ theme }) => (theme.palette.type === 'dark' ? 'color: skyblue' : '')};
+  }
 `;

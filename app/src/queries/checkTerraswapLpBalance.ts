@@ -36,6 +36,7 @@ export function useCheckTerraswapLpBalance() {
   const [balances, setBalances] = useState<{
     lpBalance: u<AncUstLP>;
     lpStaked: u<AncUstLP>;
+    lpRewards: u<ANC>;
   } | null>(null);
 
   useEffect(() => {
@@ -62,13 +63,15 @@ export function useCheckTerraswapLpBalance() {
         setBalances(null);
       } else if (
         big(result.userLPBalance.balance).lte(0.01) &&
-        big(result.userLPStakingInfo.bond_amount).lte(0.01)
+        big(result.userLPStakingInfo.bond_amount).lte(0.01) &&
+        big(result.userLPStakingInfo.pending_reward).lte(0.01)
       ) {
         setBalances(null);
       } else {
         setBalances({
           lpBalance: result.userLPBalance.balance,
           lpStaked: result.userLPStakingInfo.bond_amount,
+          lpRewards: result.userLPStakingInfo.pending_reward,
         });
       }
     });
