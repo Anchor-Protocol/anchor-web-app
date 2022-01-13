@@ -79,7 +79,7 @@ export const StyledWithdrawHistory = styled(WithdrawHistoryBase)`
   ${({ theme }) =>
     pressed({
       color: theme.selector.backgroundColor,
-      distance: 1,
+      distance: 0.3,
       intensity: theme.intensity,
     })};
 

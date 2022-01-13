@@ -10,11 +10,14 @@ import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
+import { Section } from '@libs/neumorphism-ui/components/Section';
 import { Luna, u } from '@libs/types';
 import { StreamStatus } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big } from 'big.js';
+import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { MessageBox } from 'components/MessageBox';
+import { Sub } from 'components/Sub';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
@@ -93,84 +96,115 @@ function Component({ className }: BlunaWithdrawProps) {
     withdrawResult?.status === StreamStatus.DONE
   ) {
     return (
-      <div className={className}>
-        <TxResultRenderer
-          resultRendering={withdrawResult.value}
-          onExit={() => {
-            switch (withdrawResult.status) {
-              case StreamStatus.IN_PROGRESS:
-                withdrawResult.abort();
-                break;
-              case StreamStatus.DONE:
-                withdrawResult.clear();
-                break;
-            }
-          }}
-        />
-      </div>
+      <CenteredLayout className={className} maxWidth={720}>
+        <Section>
+          <TxResultRenderer
+            resultRendering={withdrawResult.value}
+            onExit={() => {
+              switch (withdrawResult.status) {
+                case StreamStatus.IN_PROGRESS:
+                  withdrawResult.abort();
+                  break;
+                case StreamStatus.DONE:
+                  withdrawResult.clear();
+                  break;
+              }
+            }}
+          />
+        </Section>
+      </CenteredLayout>
     );
   }
 
   return (
-    <div className={className}>
-      {!!invalidTxFee && withdrawableAmount.gt(0) && (
-        <MessageBox>{invalidTxFee}</MessageBox>
-      )}
+    <CenteredLayout className={className} maxWidth={720}>
+      <Section>
+        <h1>
+          <IconSpan>
+            Withdrawable Luna{' '}
+            <InfoTooltip>
+              bAssets that have been burned and have surpassed the undelegation
+              period can be withdrawn. Because burn requests are processed in
+              3-day batches, requests that are not yet included in a batch are
+              shown as pending.
+            </InfoTooltip>
+          </IconSpan>
+        </h1>
 
-      <h4>
-        <IconSpan>
-          WITHDRAWABLE AMOUNT{' '}
-          <InfoTooltip>
-            bAssets that have been burned and have surpassed the undelegation
-            period can be withdrawn. Because burn requests are processed in
-            3-day batches, requests that are not yet included in a batch are
-            shown as pending.
-          </InfoTooltip>
-        </IconSpan>
-      </h4>
-
-      <p>
-        {withdrawableAmount.gt(0) ? (
-          <>
-            {formatLuna(demicrofy(withdrawableAmount))}
-            <span>LUNA</span>
-          </>
-        ) : (
-          '-'
+        {!!invalidTxFee && withdrawableAmount.gt(0) && (
+          <MessageBox>{invalidTxFee}</MessageBox>
         )}
-      </p>
 
-      <ViewAddressWarning>
-        <ActionButton
-          className="submit"
-          disabled={
-            !connectedWallet ||
-            !connectedWallet.availablePost ||
-            !withdraw ||
-            !!invalidTxFee ||
-            withdrawableAmount.lte(0)
-          }
-          onClick={() => proceedWithdraw()}
-        >
-          Withdraw
-        </ActionButton>
-      </ViewAddressWarning>
+        <div className="amount">
+          {withdrawableAmount.gt(0) ? (
+            <>
+              {formatLuna(demicrofy(withdrawableAmount))} <Sub>LUNA</Sub>
+            </>
+          ) : (
+            '-'
+          )}
+        </div>
 
-      {withdrawableAmount.gt(0) && (
-        <TxFeeList className="withdraw-receipt">
-          <TxFeeListItem label="Tx Fee">
-            {formatUST(demicrofy(fixedFee))} UST
-          </TxFeeListItem>
-        </TxFeeList>
-      )}
+        <WithdrawHistory withdrawHistory={withdrawHistory} />
 
-      <WithdrawHistory withdrawHistory={withdrawHistory} />
-    </div>
+        {withdrawableAmount.gt(0) && (
+          <TxFeeList className="receipt">
+            <TxFeeListItem label="Tx Fee">
+              {formatUST(demicrofy(fixedFee))} UST
+            </TxFeeListItem>
+          </TxFeeList>
+        )}
+
+        <ViewAddressWarning>
+          <ActionButton
+            className="proceed"
+            disabled={
+              !connectedWallet ||
+              !connectedWallet.availablePost ||
+              !withdraw ||
+              !!invalidTxFee ||
+              withdrawableAmount.lte(0)
+            }
+            onClick={() => proceedWithdraw()}
+          >
+            Withdraw
+          </ActionButton>
+        </ViewAddressWarning>
+      </Section>
+    </CenteredLayout>
   );
 }
 
 const StyledComponent = styled(Component)`
-  // TODO
+  h1 {
+    font-size: 27px;
+    text-align: center;
+    font-weight: 300;
+
+    margin-bottom: 50px;
+  }
+
+  .amount {
+    font-size: 32px;
+    font-weight: normal;
+    text-align: center;
+
+    sub {
+      font-size: 18px;
+      font-weight: 500;
+    }
+  }
+
+  .receipt {
+    margin-top: 40px;
+  }
+
+  .proceed {
+    margin-top: 40px;
+
+    width: 100%;
+    height: 60px;
+  }
 `;
 
 export const BlunaWithdraw = fixHMR(StyledComponent);
