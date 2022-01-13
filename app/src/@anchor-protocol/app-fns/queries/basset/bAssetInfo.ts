@@ -1,10 +1,4 @@
-import {
-  basset,
-  cw20,
-  HumanAddr,
-  moneyMarket,
-  Token,
-} from '@anchor-protocol/types';
+import { basset, cw20, moneyMarket, Token } from '@anchor-protocol/types';
 import { cw20TokenInfoQuery } from '@libs/app-fns';
 import {
   QueryClient,
@@ -62,10 +56,7 @@ export async function bAssetInfoQuery(
     },
   });
 
-  // TODO change to
-  //const converterContract = minter.minter
-  const converterContract =
-    'terra1g68g7l3xkpm4hvadrqrfc53vtnfhl4dlnjm45u' as HumanAddr;
+  const converterContract = minter.minter;
 
   const { converterConfig } = await wasmFetch<WormholeTokenWasmQuery>({
     ...queryClient,
