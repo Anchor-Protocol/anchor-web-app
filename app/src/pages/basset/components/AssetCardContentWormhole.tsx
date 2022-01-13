@@ -32,20 +32,24 @@ export function AssetCardContentWormhole({
 
   return (
     <table>
-      <tr>
-        <th>{whAssetSymbol}</th>
-        <td>{formatUToken(whAssetBalance)}</td>
-      </tr>
-      <tr>
-        <th>{bAssetSymbol}</th>
-        <td>{formatUToken(bAssetBalance)}</td>
-      </tr>
-      <tr>
-        <th>Reward</th>
-        <td>
-          {claimableReward ? formatUST(demicrofy(claimableReward.rewards)) : 0}
-        </td>
-      </tr>
+      <tbody>
+        <tr>
+          <th>{whAssetSymbol}</th>
+          <td>{formatUToken(whAssetBalance)}</td>
+        </tr>
+        <tr>
+          <th>{bAssetSymbol}</th>
+          <td>{formatUToken(bAssetBalance)}</td>
+        </tr>
+        <tr>
+          <th>Reward</th>
+          <td>
+            {claimableReward
+              ? formatUST(demicrofy(claimableReward.rewards))
+              : 0}
+          </td>
+        </tr>
+      </tbody>
     </table>
   );
 }

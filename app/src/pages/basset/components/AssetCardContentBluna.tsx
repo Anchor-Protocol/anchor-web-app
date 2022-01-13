@@ -31,22 +31,24 @@ export function AssetCardContentBluna() {
 
   return (
     <table>
-      <tr>
-        <th>LUNA</th>
-        <td>{formatUToken(tokenBalances.uLuna)}</td>
-      </tr>
-      <tr>
-        <th>bLUNA</th>
-        <td>{formatUToken(tokenBalances.ubLuna)}</td>
-      </tr>
-      <tr>
-        <th>Withdrawable</th>
-        <td>{formatUToken(withdrawableLuna)}</td>
-      </tr>
-      <tr>
-        <th>Reward</th>
-        <td>{formatUST(demicrofy(claimableRewards))}</td>
-      </tr>
+      <tbody>
+        <tr>
+          <th>LUNA</th>
+          <td>{formatUToken(tokenBalances.uLuna)}</td>
+        </tr>
+        <tr>
+          <th>bLUNA</th>
+          <td>{formatUToken(tokenBalances.ubLuna)}</td>
+        </tr>
+        <tr>
+          <th>Withdrawable</th>
+          <td>{formatUToken(withdrawableLuna)}</td>
+        </tr>
+        <tr>
+          <th>Reward</th>
+          <td>{formatUST(demicrofy(claimableRewards))}</td>
+        </tr>
+      </tbody>
     </table>
   );
 }
