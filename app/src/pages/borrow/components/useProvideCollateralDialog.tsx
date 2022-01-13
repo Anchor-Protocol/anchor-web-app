@@ -1,7 +1,7 @@
 import {
   BorrowBorrower,
   BorrowMarket,
-  prettifyBAssetSymbol,
+  prettifySymbol,
 } from '@anchor-protocol/app-fns';
 import {
   useBorrowProvideCollateralForm,
@@ -161,7 +161,7 @@ function ComponentBase({
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                {prettifyBAssetSymbol(states.collateral.symbol)}
+                {prettifySymbol(states.collateral.symbol)}
               </InputAdornment>
             ),
           }}
@@ -183,7 +183,7 @@ function ComponentBase({
               }
             >
               {formatBAsset(demicrofy(states.userBAssetBalance))}{' '}
-              {prettifyBAssetSymbol(states.collateral.symbol)}
+              {prettifySymbol(states.collateral.symbol)}
             </span>
           </span>
         </div>

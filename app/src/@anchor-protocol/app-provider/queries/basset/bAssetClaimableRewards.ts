@@ -12,7 +12,7 @@ import { ANCHOR_QUERY_KEY } from '../../env';
 
 const queryFn = createQueryFn(bAssetClaimableRewardsQuery);
 
-export function useBAssetClaimableRewards(
+export function useBAssetClaimableRewardsQuery(
   rewardAddr: HumanAddr,
 ): UseQueryResult<BAssetClaimableRewards | undefined> {
   const connectedWallet = useConnectedWallet();

@@ -30,6 +30,10 @@ import ust from './assets/ust.svg';
 import ust2x from './assets/ust@2x.png';
 import ust3x from './assets/ust@3x.png';
 import ust4x from './assets/ust@4x.png';
+import wheth from './assets/wheth.svg';
+import wheth2x from './assets/wheth@2x.png';
+import wheth3x from './assets/wheth@3x.png';
+import wheth4x from './assets/wheth@4x.png';
 
 export { anc80gif, anc160gif };
 
@@ -41,6 +45,7 @@ export const tokens = [
   'luna',
   'bluna',
   'beth',
+  'wheth',
 ] as const;
 export const variants = ['svg', '@2x', '@3x', '@4x'] as const;
 
@@ -97,6 +102,12 @@ export const tokenImages: Record<Tokens, Record<IconVariant, TokenImage>> = {
     '@2x': convert(beth2x),
     '@3x': convert(beth3x),
     '@4x': convert(beth4x),
+  },
+  wheth: {
+    'svg': convert(wheth),
+    '@2x': convert(wheth2x),
+    '@3x': convert(wheth3x),
+    '@4x': convert(wheth4x),
   },
 };
 
