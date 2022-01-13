@@ -1,4 +1,8 @@
-import { BAssetInfo, validateTxFee } from '@anchor-protocol/app-fns';
+import {
+  BAssetInfo,
+  prettifySymbol,
+  validateTxFee,
+} from '@anchor-protocol/app-fns';
 import {
   useAnchorBank,
   useBAssetExportTx,
@@ -142,13 +146,14 @@ export function WhExport({ bAssetInfo }: WhExportProps) {
                   setAmount(formatUInput(balance) as bAsset)
                 }
               >
-                {formatUToken(balance)} {bAssetInfo.bAsset.symbol}
+                {formatUToken(balance)}{' '}
+                {prettifySymbol(bAssetInfo.bAsset.symbol)}
               </span>
             </span>
           )
         }
       >
-        <div>{bAssetInfo.bAsset.symbol}</div>
+        <div>{prettifySymbol(bAssetInfo.bAsset.symbol)}</div>
         <NumberMuiInput
           placeholder="0.00"
           value={amount}
@@ -168,7 +173,12 @@ export function WhExport({ bAssetInfo }: WhExportProps) {
       </div>
 
       <SelectAndTextInputContainer className="to" gridColumns={[120, '1fr']}>
-        <div>{bAssetInfo.wormholeTokenInfo.symbol}</div>
+        <div>
+          {prettifySymbol(
+            bAssetInfo.wormholeTokenInfo.symbol,
+            bAssetInfo.wormholeTokenInfo,
+          )}
+        </div>
         <NumberMuiInput
           placeholder="0.00"
           value={amount}
@@ -184,8 +194,11 @@ export function WhExport({ bAssetInfo }: WhExportProps) {
         <TxFeeList className="receipt">
           <SwapListItem
             label="Price"
-            currencyA={bAssetInfo.wormholeTokenInfo.symbol}
-            currencyB={bAssetInfo.bAsset.symbol}
+            currencyA={prettifySymbol(
+              bAssetInfo.wormholeTokenInfo.symbol,
+              bAssetInfo.wormholeTokenInfo,
+            )}
+            currencyB={prettifySymbol(bAssetInfo.bAsset.symbol)}
             exchangeRateAB={1}
             initialDirection="b/a"
             formatExchangeRate={() => '1'}

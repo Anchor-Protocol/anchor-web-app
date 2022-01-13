@@ -1,3 +1,4 @@
+import { prettifySymbol } from '@anchor-protocol/app-fns';
 import { useBAssetInfoByTokenAddrQuery } from '@anchor-protocol/app-provider';
 import { Tab } from '@libs/neumorphism-ui/components/Tab';
 import { CW20Addr } from '@libs/types';
@@ -31,21 +32,29 @@ function Component({ className, match, history }: WormholeConvertProps) {
   );
 
   const tabItems = useMemo<Item[]>(() => {
-    const symbol = bAssetInfo?.bAsset.symbol.substr(1) ?? 'ASSET';
+    const bAssetSymbol = bAssetInfo
+      ? prettifySymbol(bAssetInfo.bAsset.symbol)
+      : 'ASSET';
+    const whAssetSymbol = bAssetInfo
+      ? prettifySymbol(
+          bAssetInfo.wormholeTokenInfo.symbol,
+          bAssetInfo.wormholeTokenInfo,
+        )
+      : 'whASSET';
 
     return [
       {
-        label: `to b${symbol}`,
+        label: `to ${bAssetSymbol}`,
         value: 'to-basset',
         tooltip: 'Bond assets to mint bAssets',
       },
       {
-        label: `to web${symbol}`,
+        label: `to ${whAssetSymbol}`,
         value: 'to-wbasset',
         tooltip: 'Burn previously minted bAssets to unbond your assets',
       },
     ];
-  }, [bAssetInfo?.bAsset.symbol]);
+  }, [bAssetInfo]);
 
   const pageMatch = useRouteMatch<{ page: string }>(`${match.url}/:page`);
 

@@ -41,6 +41,7 @@ export function useBAssetImportTx(tokenAddr: CW20Addr | undefined) {
         converterAddr: bAssetInfo.minter.minter,
         wormholeTokenAddr: bAssetInfo.converterConfig.wormhole_token_address,
         wormholeTokenAmount: amount,
+        wormholeTokenInfo: bAssetInfo.wormholeTokenInfo,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,

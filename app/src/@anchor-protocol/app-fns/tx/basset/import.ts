@@ -1,3 +1,4 @@
+import { exportCW20Decimals } from '@anchor-protocol/app-fns/functions/cw20Decimals';
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
 import {
   basset,
@@ -7,6 +8,7 @@ import {
   Gas,
   HumanAddr,
   Rate,
+  Token,
   u,
   UST,
 } from '@anchor-protocol/types';
@@ -43,6 +45,7 @@ export function bAssetImportTx($: {
   converterAddr: HumanAddr;
   wormholeTokenAddr: CW20Addr;
   wormholeTokenAmount: bAsset;
+  wormholeTokenInfo: cw20.TokenInfoResponse<Token>;
 
   gasFee: Gas;
   gasAdjustment: Rate<number>;
@@ -61,7 +64,10 @@ export function bAssetImportTx($: {
         new MsgExecuteContract($.walletAddr, $.wormholeTokenAddr, {
           send: {
             contract: $.converterAddr,
-            amount: formatTokenInput($.wormholeTokenAmount),
+            amount: exportCW20Decimals<bAsset>(
+              formatTokenInput($.wormholeTokenAmount) as u<bAsset>,
+              $.wormholeTokenInfo,
+            ),
             msg: createHookMsg({
               convert_wormhole_to_anchor: {},
             } as basset.converter.ConvertWormholeToAnchor),

@@ -1,4 +1,8 @@
-import { BAssetInfo, validateTxFee } from '@anchor-protocol/app-fns';
+import {
+  BAssetInfo,
+  prettifySymbol,
+  validateTxFee,
+} from '@anchor-protocol/app-fns';
 import {
   useAnchorBank,
   useBAssetImportTx,
@@ -134,8 +138,7 @@ export function WhImport({ bAssetInfo }: WhImportProps) {
         error={!!invalidAmount}
         leftHelperText={invalidAmount}
         rightHelperText={
-          !!connectedWallet &&
-          big(balance).gt(0) && (
+          !!connectedWallet && (
             <span>
               Balance:{' '}
               <span
@@ -145,13 +148,22 @@ export function WhImport({ bAssetInfo }: WhImportProps) {
                   setAmount(formatUInput(balance) as bAsset)
                 }
               >
-                {formatUToken(balance)} {bAssetInfo.wormholeTokenInfo.symbol}
+                {formatUToken(balance)}{' '}
+                {prettifySymbol(
+                  bAssetInfo.wormholeTokenInfo.symbol,
+                  bAssetInfo.wormholeTokenInfo,
+                )}
               </span>
             </span>
           )
         }
       >
-        <div>{bAssetInfo.wormholeTokenInfo.symbol}</div>
+        <div>
+          {prettifySymbol(
+            bAssetInfo.wormholeTokenInfo.symbol,
+            bAssetInfo.wormholeTokenInfo,
+          )}
+        </div>
         <NumberMuiInput
           placeholder="0.00"
           value={amount}
@@ -171,7 +183,7 @@ export function WhImport({ bAssetInfo }: WhImportProps) {
       </div>
 
       <SelectAndTextInputContainer className="to" gridColumns={[120, '1fr']}>
-        <div>{bAssetInfo.bAsset.symbol}</div>
+        <div>{prettifySymbol(bAssetInfo.bAsset.symbol)}</div>
         <NumberMuiInput
           placeholder="0.00"
           value={amount}
@@ -187,8 +199,11 @@ export function WhImport({ bAssetInfo }: WhImportProps) {
         <TxFeeList className="receipt">
           <SwapListItem
             label="Price"
-            currencyA={bAssetInfo.wormholeTokenInfo.symbol}
-            currencyB={bAssetInfo.bAsset.symbol}
+            currencyA={prettifySymbol(
+              bAssetInfo.wormholeTokenInfo.symbol,
+              bAssetInfo.wormholeTokenInfo,
+            )}
+            currencyB={prettifySymbol(bAssetInfo.bAsset.symbol)}
             exchangeRateAB={1}
             initialDirection="a/b"
             formatExchangeRate={() => '1'}
