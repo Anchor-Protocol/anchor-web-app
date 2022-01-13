@@ -36,12 +36,12 @@ function Component({ className, match, history }: WormholeConvertProps) {
     return [
       {
         label: `to b${symbol}`,
-        value: 'import',
+        value: 'to-basset',
         tooltip: 'Bond assets to mint bAssets',
       },
       {
         label: `to web${symbol}`,
-        value: 'export',
+        value: 'to-wbasset',
         tooltip: 'Burn previously minted bAssets to unbond your assets',
       },
     ];
@@ -75,14 +75,14 @@ function Component({ className, match, history }: WormholeConvertProps) {
       />
 
       <Switch>
-        <Redirect exact path={`${match.url}/`} to={`${match.url}/import`} />
-        <Route path={`${match.url}/import`}>
+        <Redirect exact path={`${match.url}/`} to={`${match.url}/to-basset`} />
+        <Route path={`${match.url}/to-basset`}>
           {bAssetInfo && <WhImport bAssetInfo={bAssetInfo} />}
         </Route>
-        <Route path={`${match.url}/export`}>
+        <Route path={`${match.url}/to-wbasset`}>
           {bAssetInfo && <WhExport bAssetInfo={bAssetInfo} />}
         </Route>
-        <Redirect path={`${match.url}/*`} to={`${match.url}/import`} />
+        <Redirect path={`${match.url}/*`} to={`${match.url}/to-basset`} />
       </Switch>
     </div>
   );
