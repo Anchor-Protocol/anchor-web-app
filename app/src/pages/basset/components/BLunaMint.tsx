@@ -12,6 +12,7 @@ import {
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
+import { TokenIcon } from '@anchor-protocol/token-icons';
 import { bLuna, Gas, u, UST } from '@anchor-protocol/types';
 import { useEstimateFee, useFixedFee } from '@libs/app-provider';
 import { floor } from '@libs/big-math';
@@ -20,7 +21,10 @@ import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { NumberMuiInput } from '@libs/neumorphism-ui/components/NumberMuiInput';
 import { Section } from '@libs/neumorphism-ui/components/Section';
-import { SelectAndTextInputContainer } from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
+import {
+  SelectAndTextInputContainer,
+  SelectAndTextInputContainerLabel,
+} from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
 import { useAlert } from '@libs/neumorphism-ui/components/useAlert';
 import { Luna } from '@libs/types';
 import { StreamStatus } from '@rx-stream/react';
@@ -34,6 +38,10 @@ import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { fixHMR } from 'fix-hmr';
 import debounce from 'lodash.debounce';
+import {
+  ConvertSymbols,
+  ConvertSymbolsContainer,
+} from 'pages/basset/components/ConvertSymbols';
 import { pegRecovery } from 'pages/bond/logics/pegRecovery';
 import { validateBondAmount } from 'pages/bond/logics/validateBondAmount';
 import React, {
@@ -306,6 +314,15 @@ function Component({ className }: BLunaMintProps) {
         </MessageBox>
       )}
 
+      <ConvertSymbolsContainer>
+        <ConvertSymbols
+          className="symbols"
+          view="mint"
+          fromIcon={<TokenIcon token="luna" />}
+          toIcon={<TokenIcon token="bluna" />}
+        />
+      </ConvertSymbolsContainer>
+
       {/* Bond (Asset) */}
       <div className="bond-description">
         <p>I want to bond</p>
@@ -335,7 +352,9 @@ function Component({ className }: BLunaMintProps) {
           )
         }
       >
-        <div>Luna</div>
+        <SelectAndTextInputContainerLabel>
+          <TokenIcon token="luna" /> Luna
+        </SelectAndTextInputContainerLabel>
         <NumberMuiInput
           placeholder="0.00"
           error={!!invalidBondAmount}
@@ -361,7 +380,9 @@ function Component({ className }: BLunaMintProps) {
         gridColumns={[120, '1fr']}
         error={!!invalidBondAmount}
       >
-        <div>bLuna</div>
+        <SelectAndTextInputContainerLabel>
+          <TokenIcon token="bluna" /> bLuna
+        </SelectAndTextInputContainerLabel>
         <NumberMuiInput
           placeholder="0.00"
           error={!!invalidBondAmount}

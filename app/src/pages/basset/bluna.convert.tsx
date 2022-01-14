@@ -1,4 +1,6 @@
 import { Tab } from '@libs/neumorphism-ui/components/Tab';
+import { CenteredLayout } from 'components/layouts/CenteredLayout';
+import { CenteredTitleLayout } from 'components/layouts/CenteredTitleLayout';
 import { fixHMR } from 'fix-hmr';
 import { BLunaBurn } from 'pages/basset/components/BLunaBurn';
 import { BLunaMint } from 'pages/basset/components/BLunaMint';
@@ -48,29 +50,33 @@ function Component({ className, match, history }: BlunaConvertProps) {
   );
 
   return (
-    <div className={className}>
-      <Tab
-        className="tab"
-        items={tabItems}
-        selectedItem={tab ?? tabItems[0]}
-        onChange={tabChange}
-        labelFunction={({ label }) => label}
-        keyFunction={({ value }) => value}
-        tooltipFunction={({ tooltip }) => tooltip}
-      />
+    <CenteredTitleLayout title="MINT & BURN" className={className}>
+      <CenteredLayout maxWidth={800}>
+        <Tab
+          className="tab"
+          items={tabItems}
+          selectedItem={tab ?? tabItems[0]}
+          onChange={tabChange}
+          labelFunction={({ label }) => label}
+          keyFunction={({ value }) => value}
+          tooltipFunction={({ tooltip }) => tooltip}
+        />
 
-      <Switch>
-        <Redirect exact path={`${match.path}/`} to={`${match.path}/mint`} />
-        <Route path={`${match.path}/mint`} component={BLunaMint} />
-        <Route path={`${match.path}/burn`} component={BLunaBurn} />
-        <Redirect path={`${match.path}/*`} to={`${match.path}/mint`} />
-      </Switch>
-    </div>
+        <Switch>
+          <Redirect exact path={`${match.path}/`} to={`${match.path}/mint`} />
+          <Route path={`${match.path}/mint`} component={BLunaMint} />
+          <Route path={`${match.path}/burn`} component={BLunaBurn} />
+          <Redirect path={`${match.path}/*`} to={`${match.path}/mint`} />
+        </Switch>
+      </CenteredLayout>
+    </CenteredTitleLayout>
   );
 }
 
 const StyledComponent = styled(Component)`
-  // TODO
+  .tab {
+    margin-bottom: 40px;
+  }
 `;
 
 export const BlunaConvert = fixHMR(StyledComponent);

@@ -220,3 +220,15 @@ const RightHelperText = styled.span`
     color: ${({ theme }) => theme.colors.negative};
   }
 `;
+
+export const SelectAndTextInputContainerLabel = styled.div`
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+
+  img {
+    transform: scale(2);
+    margin-right: 14px;
+  }
+`;

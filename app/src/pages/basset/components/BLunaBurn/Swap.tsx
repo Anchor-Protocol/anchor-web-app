@@ -11,6 +11,7 @@ import {
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
+import { TokenIcon } from '@anchor-protocol/token-icons';
 import { bLuna, NativeDenom, Rate, terraswap, u } from '@anchor-protocol/types';
 import { terraswapSimulationQuery } from '@libs/app-fns';
 import {
@@ -21,10 +22,15 @@ import {
 } from '@libs/formatter';
 import { isZero } from '@libs/is-zero';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { HorizontalHeavyRuler } from '@libs/neumorphism-ui/components/HorizontalHeavyRuler';
 import { NumberMuiInput } from '@libs/neumorphism-ui/components/NumberMuiInput';
-import { SelectAndTextInputContainer } from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
+import {
+  SelectAndTextInputContainer,
+  SelectAndTextInputContainerLabel,
+} from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
 import { Luna } from '@libs/types';
 import { useResolveLast } from '@libs/use-resolve-last';
+import { InfoOutlined } from '@material-ui/icons';
 import { StreamStatus } from '@rx-stream/react';
 import big from 'big.js';
 import { DiscloseSlippageSelector } from 'components/DiscloseSlippageSelector';
@@ -34,6 +40,11 @@ import { SlippageSelectorNegativeHelpText } from 'components/SlippageSelector';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { BurnSwitch } from 'pages/basset/components/BurnSwitch';
+import {
+  ConvertSymbols,
+  ConvertSymbolsContainer,
+} from 'pages/basset/components/ConvertSymbols';
 import { swapBurnSimulation } from 'pages/bond/logics/swapBurnSimulation';
 import { swapGetSimulation } from 'pages/bond/logics/swapGetSimulation';
 import { validateBurnAmount } from 'pages/bond/logics/validateBurnAmount';
@@ -291,6 +302,15 @@ export function Swap({
     <>
       {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
 
+      <ConvertSymbolsContainer>
+        <ConvertSymbols
+          className="symbols"
+          view="burn"
+          fromIcon={<TokenIcon token="bluna" />}
+          toIcon={<TokenIcon token="luna" />}
+        />
+      </ConvertSymbolsContainer>
+
       {/* Burn (bAsset) */}
       <div className="burn-description">
         <p>I want to burn</p>
@@ -321,7 +341,9 @@ export function Swap({
           )
         }
       >
-        <div>bLuna</div>
+        <SelectAndTextInputContainerLabel>
+          <TokenIcon token="bluna" /> bLuna
+        </SelectAndTextInputContainerLabel>
         <NumberMuiInput
           placeholder="0.00"
           error={!!invalidBurnAmount}
@@ -347,7 +369,9 @@ export function Swap({
         gridColumns={[120, '1fr']}
         error={!!invalidBurnAmount}
       >
-        <div>Luna</div>
+        <SelectAndTextInputContainerLabel>
+          <TokenIcon token="luna" /> Luna
+        </SelectAndTextInputContainerLabel>
         <NumberMuiInput
           placeholder="0.00"
           error={!!invalidBurnAmount}
@@ -359,6 +383,15 @@ export function Swap({
           }
         />
       </SelectAndTextInputContainer>
+
+      <HorizontalHeavyRuler />
+
+      <BurnSwitch
+        className="switch"
+        style={{ marginBottom: 20 }}
+        mode="swap"
+        onChange={(mode) => mode === 'burn' && setMode('burn')}
+      />
 
       <DiscloseSlippageSelector
         className="slippage"
@@ -378,8 +411,16 @@ export function Swap({
         }
       />
 
-      <div>
-        <button onClick={() => setMode('burn')}>Burn</button>
+      <div className="guide" style={{ marginBottom: 40 }}>
+        <h4>
+          <InfoOutlined /> Instant burn
+        </h4>
+        <ul>
+          <li>
+            Instant burn may lead to additional fees, resulting in less Luna
+            received.
+          </li>
+        </ul>
       </div>
 
       {burnAmount.length > 0 && simulation && (

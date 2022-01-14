@@ -12,17 +12,23 @@ import {
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
+import { TokenIcon } from '@anchor-protocol/token-icons';
 import { bLuna } from '@anchor-protocol/types';
 import { createHookMsg } from '@libs/app-fns/tx/internal';
 import { useEstimateFee } from '@libs/app-provider';
 import { floor } from '@libs/big-math';
 import { demicrofy, MICRO } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { HorizontalHeavyRuler } from '@libs/neumorphism-ui/components/HorizontalHeavyRuler';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { NumberMuiInput } from '@libs/neumorphism-ui/components/NumberMuiInput';
-import { SelectAndTextInputContainer } from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
+import {
+  SelectAndTextInputContainer,
+  SelectAndTextInputContainerLabel,
+} from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
 import { useAlert } from '@libs/neumorphism-ui/components/useAlert';
 import { Gas, Luna, u, UST } from '@libs/types';
+import { InfoOutlined } from '@material-ui/icons';
 import { StreamStatus } from '@rx-stream/react';
 import { Msg, MsgExecuteContract } from '@terra-money/terra.js';
 import big, { Big } from 'big.js';
@@ -32,6 +38,11 @@ import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import debounce from 'lodash.debounce';
+import { BurnSwitch } from 'pages/basset/components/BurnSwitch';
+import {
+  ConvertSymbols,
+  ConvertSymbolsContainer,
+} from 'pages/basset/components/ConvertSymbols';
 import { pegRecovery } from 'pages/bond/logics/pegRecovery';
 import { validateBurnAmount } from 'pages/bond/logics/validateBurnAmount';
 import React, {
@@ -316,17 +327,14 @@ export function Burn({
         </MessageBox>
       )}
 
-      <MessageBox
-        level="info"
-        hide={{ id: 'burn', period: 1000 * 60 * 60 * 24 * 7 }}
-      >
-        Default bLuna redemptions take at least 21 days to process.
-        <br />
-        Slashing events during the 21 days may affect the final amount
-        withdrawn.
-        <br />
-        Redemptions are processed in 3-day batches and may take up to 24 days.
-      </MessageBox>
+      <ConvertSymbolsContainer>
+        <ConvertSymbols
+          className="symbols"
+          view="burn"
+          fromIcon={<TokenIcon token="bluna" />}
+          toIcon={<TokenIcon token="luna" />}
+        />
+      </ConvertSymbolsContainer>
 
       {/* Burn (bAsset) */}
       <div className="burn-description">
@@ -357,7 +365,9 @@ export function Burn({
           )
         }
       >
-        <div>bLuna</div>
+        <SelectAndTextInputContainerLabel>
+          <TokenIcon token="bluna" /> bLuna
+        </SelectAndTextInputContainerLabel>
         <NumberMuiInput
           placeholder="0.00"
           error={!!invalidBurnAmount}
@@ -383,7 +393,9 @@ export function Burn({
         gridColumns={[120, '1fr']}
         error={!!invalidBurnAmount}
       >
-        <div>Luna</div>
+        <SelectAndTextInputContainerLabel>
+          <TokenIcon token="luna" /> Luna
+        </SelectAndTextInputContainerLabel>
         <NumberMuiInput
           placeholder="0.00"
           error={!!invalidBurnAmount}
@@ -396,8 +408,29 @@ export function Burn({
         />
       </SelectAndTextInputContainer>
 
-      <div>
-        <button onClick={() => setMode('swap')}>Instant Burn</button>
+      <HorizontalHeavyRuler />
+
+      <BurnSwitch
+        className="switch"
+        style={{ marginBottom: 40 }}
+        mode="burn"
+        onChange={(mode) => mode === 'swap' && setMode('swap')}
+      />
+
+      <div className="guide" style={{ marginBottom: 40 }}>
+        <h4>
+          <InfoOutlined /> Burn
+        </h4>
+        <ul>
+          <li>
+            Default bLuna redemptions take at least 21 days to process. Slashing
+            events during the 21 days may affect the final amount withdrawn.
+          </li>
+          <li>
+            Redemptions are processed in 3-day batches and may take up to 24
+            days.
+          </li>
+        </ul>
       </div>
 
       <TxFeeList className="receipt">
