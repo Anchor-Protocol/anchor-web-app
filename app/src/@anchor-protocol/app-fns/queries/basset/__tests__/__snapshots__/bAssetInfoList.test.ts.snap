@@ -3,6 +3,13 @@
 exports[`queries/bAssetInfoList should get result from query 1`] = `
 Array [
   Object {
+    "bAsset": Object {
+      "collateral_token": "terra19mkj9nec6e3y5754tlnuz4vem7lzh4n0lc2s3l",
+      "custody_contract": "terra1j6fey5tl70k9fvrv7mea7ahfr8u2yv7l23w5e6",
+      "max_ltv": "0.6",
+      "name": "Bonded ETH",
+      "symbol": "BETH",
+    },
     "converterConfig": Object {
       "anchor_token_address": "terra19mkj9nec6e3y5754tlnuz4vem7lzh4n0lc2s3l",
       "owner": "terra1pgsdhcc584ms5ncwp9qelyxycgaef5swt2fwue",
@@ -24,7 +31,13 @@ Array [
     },
     "minter": Object {
       "cap": null,
-      "minter": "terra1skc56hrrg92zj8xxj6lyjlt2l2m8q8sf832sqm",
+      "minter": "terra1g68g7l3xkpm4hvadrqrfc53vtnfhl4dlnjm45u",
+    },
+    "wormholeTokenInfo": Object {
+      "decimals": 8,
+      "name": "bETH (Wormhole)",
+      "symbol": "bETH",
+      "total_supply": "9584693599",
     },
   },
 ]
