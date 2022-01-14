@@ -12,12 +12,17 @@ import {
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
+import { TokenIcon } from '@anchor-protocol/token-icons';
 import { bAsset } from '@anchor-protocol/types';
 import { useCW20Balance, useFixedFee } from '@libs/app-provider';
 import { demicrofy, formatUInput, formatUToken } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { NumberMuiInput } from '@libs/neumorphism-ui/components/NumberMuiInput';
-import { SelectAndTextInputContainer } from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
+import { Section } from '@libs/neumorphism-ui/components/Section';
+import {
+  SelectAndTextInputContainer,
+  SelectAndTextInputContainerLabel,
+} from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
 import { StreamStatus } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
@@ -26,13 +31,21 @@ import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { fixHMR } from 'fix-hmr';
+import {
+  ConvertSymbols,
+  ConvertSymbolsContainer,
+} from 'pages/basset/components/ConvertSymbols';
+import { symbolToTokenIcon } from 'pages/basset/symbolToTokenIcon';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import styled from 'styled-components';
 
 export interface WhImportProps {
+  className?: string;
   bAssetInfo: BAssetInfo;
 }
 
-export function WhImport({ bAssetInfo }: WhImportProps) {
+function Component({ className, bAssetInfo }: WhImportProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
@@ -101,31 +114,53 @@ export function WhImport({ bAssetInfo }: WhImportProps) {
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
+  const whSymbol = useMemo(() => {
+    return prettifySymbol(
+      bAssetInfo.wormholeTokenInfo.symbol,
+      bAssetInfo.wormholeTokenInfo,
+    );
+  }, [bAssetInfo.wormholeTokenInfo]);
+
+  const bSymbol = useMemo(() => {
+    return prettifySymbol(bAssetInfo.bAsset.symbol);
+  }, [bAssetInfo.bAsset.symbol]);
+
   if (
     convertResult?.status === StreamStatus.IN_PROGRESS ||
     convertResult?.status === StreamStatus.DONE
   ) {
     return (
-      <TxResultRenderer
-        resultRendering={convertResult.value}
-        onExit={() => {
-          init();
-          switch (convertResult.status) {
-            case StreamStatus.IN_PROGRESS:
-              convertResult.abort();
-              break;
-            case StreamStatus.DONE:
-              convertResult.clear();
-              break;
-          }
-        }}
-      />
+      <Section className={className}>
+        <TxResultRenderer
+          resultRendering={convertResult.value}
+          onExit={() => {
+            init();
+            switch (convertResult.status) {
+              case StreamStatus.IN_PROGRESS:
+                convertResult.abort();
+                break;
+              case StreamStatus.DONE:
+                convertResult.clear();
+                break;
+            }
+          }}
+        />
+      </Section>
     );
   }
 
   return (
-    <>
+    <Section className={className}>
       {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
+
+      <ConvertSymbolsContainer>
+        <ConvertSymbols
+          className="symbols"
+          view="import"
+          fromIcon={<TokenIcon token={symbolToTokenIcon(whSymbol)} />}
+          toIcon={<TokenIcon token={symbolToTokenIcon(bSymbol)} />}
+        />
+      </ConvertSymbolsContainer>
 
       <div className="from-description">
         <p>From</p>
@@ -148,22 +183,15 @@ export function WhImport({ bAssetInfo }: WhImportProps) {
                   setAmount(formatUInput(balance) as bAsset)
                 }
               >
-                {formatUToken(balance)}{' '}
-                {prettifySymbol(
-                  bAssetInfo.wormholeTokenInfo.symbol,
-                  bAssetInfo.wormholeTokenInfo,
-                )}
+                {formatUToken(balance)} {whSymbol}
               </span>
             </span>
           )
         }
       >
-        <div>
-          {prettifySymbol(
-            bAssetInfo.wormholeTokenInfo.symbol,
-            bAssetInfo.wormholeTokenInfo,
-          )}
-        </div>
+        <SelectAndTextInputContainerLabel>
+          <TokenIcon token={symbolToTokenIcon(whSymbol)} /> {whSymbol}
+        </SelectAndTextInputContainerLabel>
         <NumberMuiInput
           placeholder="0.00"
           value={amount}
@@ -183,7 +211,9 @@ export function WhImport({ bAssetInfo }: WhImportProps) {
       </div>
 
       <SelectAndTextInputContainer className="to" gridColumns={[120, '1fr']}>
-        <div>{prettifySymbol(bAssetInfo.bAsset.symbol)}</div>
+        <SelectAndTextInputContainerLabel>
+          <TokenIcon token={symbolToTokenIcon(bSymbol)} /> {bSymbol}
+        </SelectAndTextInputContainerLabel>
         <NumberMuiInput
           placeholder="0.00"
           value={amount}
@@ -199,11 +229,8 @@ export function WhImport({ bAssetInfo }: WhImportProps) {
         <TxFeeList className="receipt">
           <SwapListItem
             label="Price"
-            currencyA={prettifySymbol(
-              bAssetInfo.wormholeTokenInfo.symbol,
-              bAssetInfo.wormholeTokenInfo,
-            )}
-            currencyB={prettifySymbol(bAssetInfo.bAsset.symbol)}
+            currencyA={whSymbol}
+            currencyB={bSymbol}
             exchangeRateAB={1}
             initialDirection="a/b"
             formatExchangeRate={() => '1'}
@@ -232,6 +259,44 @@ export function WhImport({ bAssetInfo }: WhImportProps) {
           Convert
         </ActionButton>
       </ViewAddressWarning>
-    </>
+    </Section>
   );
 }
+
+const StyledComponent = styled(Component)`
+  .from-description,
+  .to-description {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    font-size: 16px;
+    color: ${({ theme }) => theme.dimTextColor};
+
+    > :last-child {
+      font-size: 12px;
+    }
+
+    margin-bottom: 12px;
+  }
+
+  .from,
+  .to {
+    margin-bottom: 30px;
+  }
+
+  hr {
+    margin: 40px 0;
+  }
+
+  .receipt {
+    margin-bottom: 40px;
+  }
+
+  .submit {
+    width: 100%;
+    height: 60px;
+  }
+`;
+
+export const WhImport = fixHMR(StyledComponent);

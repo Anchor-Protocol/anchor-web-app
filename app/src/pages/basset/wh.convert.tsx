@@ -2,6 +2,8 @@ import { prettifySymbol } from '@anchor-protocol/app-fns';
 import { useBAssetInfoByTokenAddrQuery } from '@anchor-protocol/app-provider';
 import { Tab } from '@libs/neumorphism-ui/components/Tab';
 import { CW20Addr } from '@libs/types';
+import { CenteredLayout } from 'components/layouts/CenteredLayout';
+import { CenteredTitleLayout } from 'components/layouts/CenteredTitleLayout';
 import { fixHMR } from 'fix-hmr';
 import React, { useCallback, useMemo } from 'react';
 import {
@@ -72,33 +74,41 @@ function Component({ className, match, history }: WormholeConvertProps) {
   );
 
   return (
-    <div className={className}>
-      <Tab
-        className="tab"
-        items={tabItems}
-        selectedItem={tab ?? tabItems[0]}
-        onChange={tabChange}
-        labelFunction={({ label }) => label}
-        keyFunction={({ value }) => value}
-        tooltipFunction={({ tooltip }) => tooltip}
-      />
+    <CenteredTitleLayout title="CONVERT" className={className}>
+      <CenteredLayout maxWidth={800}>
+        <Tab
+          className="tab"
+          items={tabItems}
+          selectedItem={tab ?? tabItems[0]}
+          onChange={tabChange}
+          labelFunction={({ label }) => label}
+          keyFunction={({ value }) => value}
+          tooltipFunction={({ tooltip }) => tooltip}
+        />
 
-      <Switch>
-        <Redirect exact path={`${match.url}/`} to={`${match.url}/to-basset`} />
-        <Route path={`${match.url}/to-basset`}>
-          {bAssetInfo && <WhImport bAssetInfo={bAssetInfo} />}
-        </Route>
-        <Route path={`${match.url}/to-wbasset`}>
-          {bAssetInfo && <WhExport bAssetInfo={bAssetInfo} />}
-        </Route>
-        <Redirect path={`${match.url}/*`} to={`${match.url}/to-basset`} />
-      </Switch>
-    </div>
+        <Switch>
+          <Redirect
+            exact
+            path={`${match.url}/`}
+            to={`${match.url}/to-basset`}
+          />
+          <Route path={`${match.url}/to-basset`}>
+            {bAssetInfo && <WhImport bAssetInfo={bAssetInfo} />}
+          </Route>
+          <Route path={`${match.url}/to-wbasset`}>
+            {bAssetInfo && <WhExport bAssetInfo={bAssetInfo} />}
+          </Route>
+          <Redirect path={`${match.url}/*`} to={`${match.url}/to-basset`} />
+        </Switch>
+      </CenteredLayout>
+    </CenteredTitleLayout>
   );
 }
 
 const StyledComponent = styled(Component)`
-  // TODO
+  .tab {
+    margin-bottom: 40px;
+  }
 `;
 
 export const WormholeConvert = fixHMR(StyledComponent);
