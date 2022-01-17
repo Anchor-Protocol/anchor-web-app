@@ -77,8 +77,8 @@ export function TerraApp() {
                   component={WormholeConvert}
                 />
 
-                {/* Airdrop */}
-                <Route path="/airdrop" component={Airdrop} />
+            {/* Airdrop */}
+            <Route path="/airdrop" component={Airdrop} />
 
                 <Route
                   exact={true}
