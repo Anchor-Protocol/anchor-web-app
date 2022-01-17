@@ -1,5 +1,5 @@
+import { useTerraWalletAddress } from '@anchor-protocol/app-provider';
 import { ClickAwayListener } from '@material-ui/core';
-import { useWallet, WalletStatus } from '@terra-money/wallet-provider';
 import { useNotification } from 'contexts/notification';
 import { useJobs } from 'jobs/Jobs';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -14,7 +14,7 @@ export interface DesktopNotificationProps {
 }
 
 function DesktopNotificationBase({ className }: DesktopNotificationProps) {
-  const { status } = useWallet();
+  const walletAddress = useTerraWalletAddress();
   const { permission } = useNotification();
   const { liquidationAlert } = useJobs();
 
@@ -29,8 +29,8 @@ function DesktopNotificationBase({ className }: DesktopNotificationProps) {
   }, []);
 
   const visible = useMemo(() => {
-    return status === WalletStatus.WALLET_CONNECTED && permission === 'granted';
-  }, [permission, status]);
+    return walletAddress && permission === 'granted';
+  }, [permission, walletAddress]);
 
   return visible ? (
     <ClickAwayListener onClickAway={onClickAway}>
