@@ -2,7 +2,7 @@ import { useChainOptions } from '@terra-money/wallet-provider';
 import { AstroportGuideBanner } from 'components/AstroportGuideBanner';
 import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
-import { AppProviders } from 'configurations/app';
+import { TerraAppProviders } from 'configurations/app';
 import { NotificationProvider } from 'contexts/notification';
 import { JobsProvider } from 'jobs/Jobs';
 import { Airdrop } from 'pages/airdrop';
@@ -46,7 +46,7 @@ export function TerraApp() {
 
   return (
     chainOptions && (
-      <AppProviders {...chainOptions}>
+      <TerraAppProviders {...chainOptions}>
         <NotificationProvider>
           <JobsProvider>
             <div>
@@ -152,7 +152,7 @@ export function TerraApp() {
             </div>
           </JobsProvider>
         </NotificationProvider>
-      </AppProviders>
+      </TerraAppProviders>
     )
   );
 }
