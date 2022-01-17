@@ -1,20 +1,21 @@
+import React from 'react';
 import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
 import { EvmAppProviders } from 'configurations/evm';
-import React from 'react';
+import { Dashboard } from 'pages/dashboard';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import './configurations/chartjs';
 
 export function EvmApp() {
   return (
     <EvmAppProviders>
       <div>
-        EVM
         <GlobalStyle />
         <Header />
-        {/* <Switch>
+        <Switch>
           <Route path="/" exact component={Dashboard} />
           <Redirect to="/" />
-        </Switch> */}
+        </Switch>
       </div>
     </EvmAppProviders>
   );

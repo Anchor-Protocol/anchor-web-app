@@ -1,3 +1,4 @@
+import { DeploymentSwitch } from 'components/layouts/DeploymentSwitch';
 import { menus, RouteMenu } from 'configurations/menu';
 import { screen } from 'env';
 import React from 'react';
@@ -5,7 +6,8 @@ import { Link, useRouteMatch } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
 import logoUrl from './assets/Logo.svg';
 import { DesktopNotification } from './desktop/DesktopNotification';
-import { WalletSelector } from './desktop/WalletSelector';
+import { TerraWalletSelector } from './desktop/TerraWalletSelector2';
+import { EvmWalletSelector } from './desktop/EvmWalletSelector';
 
 export interface DesktopHeaderProps {
   className?: string;
@@ -34,7 +36,10 @@ function DesktopHeaderBase({ className }: DesktopHeaderProps) {
       <DesktopNotification className="notification" />
 
       <section className="wallet">
-        <WalletSelector />
+        <DeploymentSwitch
+          terra={() => <TerraWalletSelector />}
+          ethereum={() => <EvmWalletSelector />}
+        />
       </section>
 
       <GlobalStyle />

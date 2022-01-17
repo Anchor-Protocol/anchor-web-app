@@ -1,0 +1,199 @@
+import React, { Dispatch, SetStateAction, useCallback, useState } from 'react';
+import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
+import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
+import {
+  ConnectType,
+  useWallet,
+  WalletStatus,
+} from '@terra-money/wallet-provider';
+import {
+  useAnchorBank,
+  useTerraWalletAddress,
+} from '@anchor-protocol/app-provider';
+import { ConnectionTypeList } from './ConnectionTypeList';
+import { TermsMessage } from './TermsMessage';
+import { WalletSelector } from './WalletSelector';
+import { useBuyUstDialog } from 'pages/earn/components/useBuyUstDialog';
+import { useSendDialog } from 'pages/send/useSendDialog';
+import { WalletDetailContent } from '../wallet/WalletDetailContent';
+
+interface WalletConnectionListFooterProps {
+  includesReadonly: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+}
+
+const WalletConnectionListFooter = ({
+  setOpen,
+  includesReadonly,
+}: WalletConnectionListFooterProps) => {
+  const { connect } = useWallet();
+  return (
+    <>
+      {includesReadonly && (
+        <Tooltip
+          title="Read-only mode for viewing information. Please connect through Terra Station (extension or mobile) to make transactions."
+          placement="bottom"
+        >
+          <BorderButton
+            className="readonly"
+            onClick={() => {
+              connect(ConnectType.READONLY);
+              setOpen(false);
+            }}
+          >
+            View an address
+          </BorderButton>
+        </Tooltip>
+      )}
+      <TermsMessage />
+    </>
+  );
+};
+
+interface WalletConnectionListProps {
+  setOpen: Dispatch<SetStateAction<boolean>>;
+}
+
+const WalletConnectionList = ({ setOpen }: WalletConnectionListProps) => {
+  const {
+    connect,
+    availableConnectTypes,
+    availableConnections,
+    availableInstallations,
+  } = useWallet();
+
+  return (
+    <ConnectionTypeList
+      footer={
+        <WalletConnectionListFooter
+          setOpen={setOpen}
+          includesReadonly={availableConnectTypes.includes(
+            ConnectType.READONLY,
+          )}
+        />
+      }
+    >
+      {availableConnections
+        .filter(({ type }) => type !== ConnectType.READONLY)
+        .map(({ type, icon, name, identifier }) => (
+          <FlatButton
+            key={'connection' + type + identifier}
+            className="connect"
+            onClick={() => {
+              connect(type, identifier);
+              setOpen(false);
+            }}
+          >
+            <IconSpan>
+              {name}
+              <img
+                src={
+                  icon ===
+                  'https://assets.terra.money/icon/station-extension/icon.png'
+                    ? 'https://assets.terra.money/icon/wallet-provider/station.svg'
+                    : icon
+                }
+                alt={name}
+              />
+            </IconSpan>
+          </FlatButton>
+        ))}
+
+      {availableInstallations
+        .filter(({ type }) => type === ConnectType.EXTENSION)
+        .map(({ type, identifier, name, icon, url }) => (
+          <BorderButton
+            key={'installation' + type + identifier}
+            className="install"
+            component="a"
+            href={url}
+            target="_blank"
+            rel="noreferrer"
+            onClick={() => {
+              setOpen(false);
+            }}
+          >
+            <IconSpan>
+              Install {name}
+              <img src={icon} alt={`Install ${name}`} />
+            </IconSpan>
+          </BorderButton>
+        ))}
+    </ConnectionTypeList>
+  );
+};
+
+const TerraWalletSelector = () => {
+  const {
+    status,
+    connect,
+    disconnect,
+    connection,
+    wallets,
+    network,
+    availableConnectTypes,
+    availableConnections,
+    supportFeatures,
+  } = useWallet();
+
+  const walletAddress = useTerraWalletAddress();
+
+  const bank = useAnchorBank();
+
+  const [open, setOpen] = useState(false);
+
+  // TODO: the current implementation doesn't allow the modal
+  // elements to be appended to the list
+
+  //const [openSendDialog, _sendDialogElement] = useSendDialog();
+  const [openSendDialog] = useSendDialog();
+
+  //const [openBuyUstDialog, _buyUstDialogElement] = useBuyUstDialog();
+  const [openBuyUstDialog] = useBuyUstDialog();
+
+  const connectWallet = useCallback(() => {
+    if (availableConnectTypes.length > 1) {
+      setOpen(true);
+    } else if (availableConnectTypes.length === 1) {
+      connect(availableConnectTypes[0]);
+    }
+  }, [availableConnectTypes, connect]);
+
+  const disconnectWallet = useCallback(() => {
+    disconnect();
+    setOpen(false);
+  }, [disconnect]);
+
+  const onClose = useCallback(() => {
+    setOpen(false);
+  }, []);
+
+  return (
+    <WalletSelector
+      initializing={status === WalletStatus.INITIALIZING}
+      open={open}
+      onClick={connectWallet}
+      onClose={onClose}
+    >
+      {!walletAddress ? (
+        <WalletConnectionList setOpen={setOpen} />
+      ) : (
+        <WalletDetailContent
+          connection={connection ?? availableConnections[0]}
+          bank={bank}
+          availablePost={supportFeatures.has('post')}
+          walletAddress={wallets[0].terraAddress}
+          network={network}
+          closePopup={() => setOpen(false)}
+          disconnectWallet={disconnectWallet}
+          openSend={() => openSendDialog({})}
+          openBuyUst={() => openBuyUstDialog({})}
+        />
+      )}
+    </WalletSelector>
+  );
+};
+
+export { TerraWalletSelector };
