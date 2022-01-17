@@ -1,3 +1,5 @@
+import { GlobalStyle } from 'components/GlobalStyle';
+import { Header } from 'components/Header';
 import { EvmAppProviders } from 'configurations/evm';
 import React from 'react';
 import './configurations/chartjs';
@@ -7,9 +9,9 @@ export function EvmApp() {
     <EvmAppProviders>
       <div>
         EVM
-        {/* <GlobalStyle />
+        <GlobalStyle />
         <Header />
-        <Switch>
+        {/* <Switch>
           <Route path="/" exact component={Dashboard} />
           <Redirect to="/" />
         </Switch> */}

@@ -1,7 +1,9 @@
 import { Rate } from '@anchor-protocol/types';
-import { useAnchorWebapp } from '@anchor-protocol/app-provider';
+import {
+  useAnchorWebapp,
+  useTerraWalletAddress,
+} from '@anchor-protocol/app-provider';
 import { formatRate } from '@libs/formatter';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big } from 'big.js';
 import { useNotification } from 'contexts/notification';
 import { useCallback, useEffect, useRef } from 'react';
@@ -15,19 +17,19 @@ export interface LiquidationAlert {
 
 export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
   const { hiveQueryClient, contractAddress: address } = useAnchorWebapp();
-  const connectedWallet = useConnectedWallet();
+  const walletAddress = useTerraWalletAddress();
   const { permission, create } = useNotification();
 
   const history = useHistory();
 
   const jobCallback = useCallback(async () => {
-    if (!connectedWallet || permission !== 'granted') {
+    if (!walletAddress || permission !== 'granted') {
       return;
     }
 
     try {
       const ltv = await userLtvQuery({
-        walletAddress: connectedWallet.walletAddress,
+        walletAddress,
         address,
         hiveQueryClient,
       });
@@ -56,7 +58,7 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
     } catch {}
   }, [
     address,
-    connectedWallet,
+    walletAddress,
     create,
     history,
     hiveQueryClient,
@@ -71,7 +73,7 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
   }, [jobCallback]);
 
   useEffect(() => {
-    if (connectedWallet && permission === 'granted' && enabled) {
+    if (walletAddress && permission === 'granted' && enabled) {
       //console.log('LIQUIDATION ALERT: ON');
       const intervalId = setInterval(() => {
         jobCallbackRef.current();
@@ -84,5 +86,5 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
       };
     }
     //console.log('LIQUIDATION ALERT: OFF');
-  }, [connectedWallet, enabled, permission]);
+  }, [walletAddress, enabled, permission]);
 }
