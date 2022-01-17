@@ -5,7 +5,7 @@ type RenderFn = () => ReactNode;
 
 interface DeploymentSwitchProps {
   terra?: RenderFn;
-  ethereum?: () => RenderFn;
+  ethereum?: RenderFn;
 }
 
 const render = (fn?: RenderFn): ReactNode => {
