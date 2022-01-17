@@ -23,10 +23,6 @@ export const menus: RouteMenu[] = [
     title: 'BORROW',
   },
   {
-    to: '/bond',
-    title: 'BOND',
-  },
-  {
     to: '/basset',
     title: 'bASSET',
   },

@@ -22,7 +22,7 @@ import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { fixHMR } from 'fix-hmr';
-import { claimableRewards as _claimableRewards } from 'pages/bond/logics/claimableRewards';
+import { claimableRewards as _claimableRewards } from 'pages/basset/logics/claimableRewards';
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 

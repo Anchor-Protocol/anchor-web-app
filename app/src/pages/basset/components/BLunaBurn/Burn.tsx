@@ -38,13 +38,6 @@ import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import debounce from 'lodash.debounce';
-import { BurnSwitch } from 'pages/basset/components/BurnSwitch';
-import {
-  ConvertSymbols,
-  ConvertSymbolsContainer,
-} from 'pages/basset/components/ConvertSymbols';
-import { pegRecovery } from 'pages/bond/logics/pegRecovery';
-import { validateBurnAmount } from 'pages/bond/logics/validateBurnAmount';
 import React, {
   ChangeEvent,
   useCallback,
@@ -52,6 +45,10 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { pegRecovery } from '../../logics/pegRecovery';
+import { validateBurnAmount } from '../../logics/validateBurnAmount';
+import { BurnSwitch } from '../BurnSwitch';
+import { ConvertSymbols, ConvertSymbolsContainer } from '../ConvertSymbols';
 import { BurnComponent } from './types';
 
 export interface BurnProps extends BurnComponent {}

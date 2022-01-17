@@ -32,13 +32,10 @@ import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { fixHMR } from 'fix-hmr';
-import {
-  ConvertSymbols,
-  ConvertSymbolsContainer,
-} from 'pages/basset/components/ConvertSymbols';
-import { symbolToTokenIcon } from 'pages/basset/symbolToTokenIcon';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { symbolToTokenIcon } from '../symbolToTokenIcon';
+import { ConvertSymbols, ConvertSymbolsContainer } from './ConvertSymbols';
 
 export interface WhExportProps {
   className?: string;

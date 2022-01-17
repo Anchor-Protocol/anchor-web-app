@@ -7,8 +7,8 @@ import { formatUST } from '@anchor-protocol/notation';
 import { demicrofy, formatUToken } from '@libs/formatter';
 import { Luna, u } from '@libs/types';
 import big, { Big } from 'big.js';
-import { claimableRewards as _claimableRewards } from 'pages/bond/logics/claimableRewards';
 import React, { useMemo } from 'react';
+import { claimableRewards as _claimableRewards } from '../logics/claimableRewards';
 
 export function AssetCardContentBluna() {
   const { tokenBalances } = useAnchorBank();

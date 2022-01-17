@@ -40,15 +40,6 @@ import { SlippageSelectorNegativeHelpText } from 'components/SlippageSelector';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { BurnSwitch } from 'pages/basset/components/BurnSwitch';
-import {
-  ConvertSymbols,
-  ConvertSymbolsContainer,
-} from 'pages/basset/components/ConvertSymbols';
-import { swapBurnSimulation } from 'pages/bond/logics/swapBurnSimulation';
-import { swapGetSimulation } from 'pages/bond/logics/swapGetSimulation';
-import { validateBurnAmount } from 'pages/bond/logics/validateBurnAmount';
-import { SwapSimulation } from 'pages/bond/models/swapSimulation';
 import React, {
   ChangeEvent,
   useCallback,
@@ -56,6 +47,12 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { swapBurnSimulation } from '../../logics/swapBurnSimulation';
+import { swapGetSimulation } from '../../logics/swapGetSimulation';
+import { validateBurnAmount } from '../../logics/validateBurnAmount';
+import { SwapSimulation } from '../../models/swapSimulation';
+import { BurnSwitch } from '../BurnSwitch';
+import { ConvertSymbols, ConvertSymbolsContainer } from '../ConvertSymbols';
 import { BurnComponent } from './types';
 
 export interface SwapProps extends BurnComponent {}

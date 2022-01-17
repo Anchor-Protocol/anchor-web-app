@@ -38,12 +38,6 @@ import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { fixHMR } from 'fix-hmr';
 import debounce from 'lodash.debounce';
-import {
-  ConvertSymbols,
-  ConvertSymbolsContainer,
-} from 'pages/basset/components/ConvertSymbols';
-import { pegRecovery } from 'pages/bond/logics/pegRecovery';
-import { validateBondAmount } from 'pages/bond/logics/validateBondAmount';
 import React, {
   ChangeEvent,
   useCallback,
@@ -52,6 +46,9 @@ import React, {
   useState,
 } from 'react';
 import styled from 'styled-components';
+import { pegRecovery } from '../logics/pegRecovery';
+import { validateBondAmount } from '../logics/validateBondAmount';
+import { ConvertSymbols, ConvertSymbolsContainer } from './ConvertSymbols';
 
 export interface BLunaMintProps {
   className?: string;

@@ -16,7 +16,7 @@ import { fixHMR } from 'fix-hmr';
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
-import { claimableRewards as _claimableRewards } from '../../bond/logics/claimableRewards';
+import { claimableRewards as _claimableRewards } from '../logics/claimableRewards';
 
 export interface ClaimableProps {
   className?: string;

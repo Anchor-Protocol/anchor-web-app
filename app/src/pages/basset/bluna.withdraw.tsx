@@ -22,8 +22,9 @@ import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { fixHMR } from 'fix-hmr';
-import { WithdrawHistory } from 'pages/bond/components/Claim/WithdrawHistory';
-import { withdrawAllHistory } from 'pages/bond/logics/withdrawAllHistory';
+import { BLunaBurnProcess } from 'pages/basset/components/BLunaBurnProcess';
+import { WithdrawHistory } from 'pages/basset/components/WithdrawHistory';
+import { withdrawAllHistory } from 'pages/basset/logics/withdrawAllHistory';
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 
@@ -147,6 +148,8 @@ function Component({ className }: BlunaWithdrawProps) {
 
         <WithdrawHistory withdrawHistory={withdrawHistory} />
 
+        <BLunaBurnProcess style={{ marginTop: 20 }} />
+
         {withdrawableAmount.gt(0) && (
           <TxFeeList className="receipt">
             <TxFeeListItem label="Tx Fee">
@@ -205,6 +208,15 @@ const StyledComponent = styled(Component)`
     width: 100%;
     height: 60px;
   }
+
+  --pending-color: ${({ theme }) =>
+    theme.palette.type === 'dark' ? '#6bbd7e' : '#38D938'};
+
+  --unbonding-color: ${({ theme }) =>
+    theme.palette.type === 'dark' ? '#228323' : '#36A337'};
+
+  --withdrawable-color: ${({ theme }) =>
+    theme.palette.type === 'dark' ? '#d3d3d3' : '#1A1A1A'};
 `;
 
 export const BlunaWithdraw = fixHMR(StyledComponent);

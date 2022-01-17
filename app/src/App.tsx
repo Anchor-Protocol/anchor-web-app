@@ -11,7 +11,6 @@ import { BlunaWithdraw } from 'pages/basset/bluna.withdraw';
 import { BAssetClaim } from 'pages/basset/claim';
 import { BAssetMain } from 'pages/basset/main';
 import { WormholeConvert } from 'pages/basset/wh.convert';
-import { BAsset } from 'pages/bond';
 import { Borrow } from 'pages/borrow';
 import { Dashboard } from 'pages/dashboard';
 import { Earn } from 'pages/earn';
@@ -64,9 +63,7 @@ export function App() {
                 {/* Borrow */}
                 <Route path="/borrow" component={Borrow} />
 
-                {/* Bond - TODO remove */}
-                <Route path="/bond" component={BAsset} />
-
+                {/* bAsset */}
                 <Route exact path="/basset" component={BAssetMain} />
 
                 <Route path="/basset/bluna" component={BlunaConvert} />
