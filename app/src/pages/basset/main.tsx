@@ -33,6 +33,7 @@ function Component({ className }: BAssetMainProps) {
           title="LUNA/bLUNA"
           bAssetIcon={<TokenIcon token="bluna" />}
           originAssetIcon={<TokenIcon token="luna" />}
+          hoverText="MINT & BURN"
         >
           <AssetCardContentBluna />
         </AssetCard>
@@ -51,6 +52,7 @@ function Component({ className }: BAssetMainProps) {
                 title={`${bAssetSymbol}/${whAssetSymbol}`}
                 bAssetIcon={<TokenIcon token="beth" />}
                 originAssetIcon={<TokenIcon token="wheth" />}
+                hoverText="CONVERT"
               >
                 <AssetCardContentWormhole
                   bAssetTokenAddr={bAsset.collateral_token}

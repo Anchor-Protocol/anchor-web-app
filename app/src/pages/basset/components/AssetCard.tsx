@@ -3,6 +3,7 @@ import { fixHMR } from 'fix-hmr';
 import React, { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { ReactComponent as Icon } from '../assets/convert.svg';
 
 export interface AssetCardProps {
   className?: string;
@@ -12,6 +13,8 @@ export interface AssetCardProps {
   title: ReactNode;
   originAssetIcon: ReactNode;
   bAssetIcon: ReactNode;
+
+  hoverText: ReactNode;
 }
 
 function Component({
@@ -21,6 +24,7 @@ function Component({
   title,
   originAssetIcon,
   bAssetIcon,
+  hoverText,
 }: AssetCardProps) {
   return (
     <li className={className}>
@@ -35,11 +39,18 @@ function Component({
 
         <div>{children}</div>
       </Link>
+
+      <div className="hover">
+        <Icon />
+        <p>{hoverText}</p>
+      </div>
     </li>
   );
 }
 
 const StyledComponent = styled(Component)`
+  position: relative;
+
   border-radius: 20px;
 
   ${({ theme }) =>
@@ -112,11 +123,49 @@ const StyledComponent = styled(Component)`
     }
   }
 
-  transition: box-shadow 0.2s ease-out, transform 0.1s ease-in;
+  .hover {
+    pointer-events: none;
+    user-select: none;
+
+    opacity: 0;
+    border-radius: 20px;
+
+    position: absolute;
+
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    background-color: ${({ theme }) =>
+      theme.palette.type === 'dark'
+        ? 'rgba(255, 255, 255, 0.1)'
+        : 'rgba(255, 255, 255, 0.5)'};
+    color: ${({ theme }) => theme.colors.positive};
+
+    font-size: 16px;
+    font-weight: 500;
+
+    display: grid;
+    place-content: center;
+
+    transition: opacity 0.2s ease-out;
+
+    svg {
+      margin-bottom: 8px;
+      justify-self: center;
+    }
+  }
+
+  transition: transform 0.1s ease-in;
 
   &:hover {
     box-shadow: 2px 2px 31px 5px rgba(0, 0, 0, 0.11);
     transform: translateY(-0.1em);
+
+    .hover {
+      opacity: 1;
+    }
   }
 `;
 
