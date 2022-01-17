@@ -1,5 +1,8 @@
 import { Discord } from '@anchor-protocol/icons';
-import { useLastSyncedHeightQuery } from '@anchor-protocol/app-provider';
+import {
+  useLastSyncedHeightQuery,
+  useTerraNetwork,
+} from '@anchor-protocol/app-provider';
 import { IconButton } from '@material-ui/core';
 import {
   Brightness3,
@@ -10,7 +13,6 @@ import {
   Twitter,
 } from '@material-ui/icons';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
-import { useWallet } from '@terra-money/wallet-provider';
 import { useTheme } from 'contexts/theme';
 import { screen } from 'env';
 import c from 'color';
@@ -24,7 +26,7 @@ export interface FooterProps {
 }
 
 function FooterBase({ className, style }: FooterProps) {
-  const { network } = useWallet();
+  const network = useTerraNetwork();
   const { data: lastSyncedHeight = 0 } = useLastSyncedHeightQuery();
 
   const { themeColor, updateTheme } = useTheme();

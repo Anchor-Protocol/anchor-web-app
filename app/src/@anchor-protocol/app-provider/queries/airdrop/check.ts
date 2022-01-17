@@ -1,8 +1,9 @@
 import { Airdrop, airdropCheckQuery } from '@anchor-protocol/app-fns';
 import { airdropStageCache } from '@anchor-protocol/app-fns/caches/airdropStage';
+import { useTerraNetwork } from '@anchor-protocol/app-provider';
 import { EMPTY_QUERY_RESULT } from '@libs/app-provider';
 import { createQueryFn } from '@libs/react-query-utils';
-import { useConnectedWallet, useWallet } from '@terra-money/wallet-provider';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
@@ -15,7 +16,7 @@ export function useAirdropCheckQuery(): UseQueryResult<Airdrop | undefined> {
 
   const connectedWallet = useConnectedWallet();
 
-  const { network } = useWallet();
+  const network = useTerraNetwork();
 
   const result = useQuery(
     [

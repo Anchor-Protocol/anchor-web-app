@@ -10,7 +10,8 @@ export interface DeploymentOptions {
 }
 
 const useDeploymentTarget = (): DeploymentOptions => {
-  // TODO: this probably needs to be updated from the env variables?
+  // TODO: this probably needs to be updated from the env variables or from
+  // a UI option that allows switching the chain
   return {
     chain: Chain.Terra,
     isNative: true,

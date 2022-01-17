@@ -9,7 +9,6 @@ import { patchReactQueryFocusRefetching } from '@libs/patch-react-query-focus-re
 import { SnackbarProvider } from '@libs/snackbar';
 import { useLongtimeNoSee } from '@libs/use-longtime-no-see';
 import { RouterScrollRestoration } from '@libs/use-router-scroll-restoration';
-import { RouterWalletStatusRecheck } from '@libs/use-router-wallet-status-recheck';
 import { captureException } from '@sentry/react';
 import { useRequestReloadDialog } from 'components/dialogs/useRequestReloadDialog';
 import { SnackbarContainer } from 'components/SnackbarContainer';
@@ -74,7 +73,7 @@ export function AppProviders({
   dialogs,
 }: {
   children: ReactNode;
-  dialogs: ReactNode;
+  dialogs?: ReactNode;
 }) {
   const [_openRequestReload, requestReloadElement] = useRequestReloadDialog();
 
@@ -92,8 +91,6 @@ export function AppProviders({
       {/* Router Actions ======================== */}
       {/** Scroll Restore every Router's basepath changed */}
       <RouterScrollRestoration />
-      {/** Re-Check Terra Station Wallet Status every Router's pathname changed */}
-      <RouterWalletStatusRecheck />
       {/* Theme ================================= */}
       {/** Styled-Components Global CSS */}
       <GlobalStyle />

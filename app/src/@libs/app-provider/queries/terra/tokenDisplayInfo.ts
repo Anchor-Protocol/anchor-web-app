@@ -1,6 +1,6 @@
+import { useTerraNetwork } from '@anchor-protocol/app-provider';
 import { TokenDisplayInfo } from '@libs/app-fns';
 import { cw20, terraswap, Token } from '@libs/types';
-import { useWallet } from '@terra-money/use-wallet';
 import { useMemo } from 'react';
 import { useTokenDisplayInfosQuery } from './tokenDisplayInfos';
 import { useTerraTokenInfo } from './tokenInfo';
@@ -14,7 +14,7 @@ export function useTerraTokenDisplayInfo(
   assetInfo: terraswap.AssetInfo,
   networkName?: string,
 ): DisplayInfo {
-  const { network } = useWallet();
+  const network = useTerraNetwork();
 
   const { data: tokenInfo } = useTerraTokenInfo(assetInfo);
   const { data: tokenDisplayInfos } = useTokenDisplayInfosQuery(
