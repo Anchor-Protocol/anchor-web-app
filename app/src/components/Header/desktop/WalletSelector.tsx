@@ -231,7 +231,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
             ) : (
               <ConnectedButton
                 walletAddress={wallets[0].terraAddress}
-                bank={bank}
+                totalUST={bank.tokenBalances.uUST}
                 onClick={toggleOpen}
               />
             )}
