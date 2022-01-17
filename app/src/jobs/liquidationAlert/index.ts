@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Rate } from '@anchor-protocol/types';
-import { useAnchorWebapp } from '@anchor-protocol/app-provider';
+import {
+  useAnchorWebapp,
+} from '@anchor-protocol/app-provider';
 import { formatRate } from '@libs/formatter';
 import { useAccount } from 'contexts/account';
 import big, { Big } from 'big.js';
