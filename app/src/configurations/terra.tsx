@@ -1,3 +1,4 @@
+import { RouterWalletStatusRecheck } from '@libs/use-router-wallet-status-recheck';
 import {
   NetworkInfo,
   ReadonlyWalletSession,
@@ -34,6 +35,8 @@ export function TerraAppProviders({
       createReadonlyWalletSession={createReadonlyWalletSession}
     >
       <AppProviders dialogs={readonlyWalletSelectorElement}>
+        {/** Re-Check Terra Station Wallet Status every Router's pathname changed */}
+        <RouterWalletStatusRecheck />
         {children}
       </AppProviders>
     </WalletProvider>

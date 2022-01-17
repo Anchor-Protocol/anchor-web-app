@@ -6,7 +6,6 @@ import {
 import { CollateralType, CW20Addr } from '@anchor-protocol/types';
 import { App, useApp } from '@libs/app-provider';
 import { NetworkInfo } from '@terra-money/use-wallet';
-import { useWallet } from '@terra-money/wallet-provider';
 import React, {
   Consumer,
   Context,
@@ -15,6 +14,7 @@ import React, {
   useContext,
   useMemo,
 } from 'react';
+import { useTerraNetwork } from '..';
 import { AnchorConstants, AnchorContractAddress } from '../types';
 
 export interface AnchorWebappProviderProps {
@@ -36,7 +36,7 @@ export function AnchorWebappProvider({
   children,
   indexerApiEndpoints,
 }: AnchorWebappProviderProps) {
-  const { network } = useWallet();
+  const network = useTerraNetwork();
 
   const { contractAddress } = useApp<AnchorContractAddress>();
 

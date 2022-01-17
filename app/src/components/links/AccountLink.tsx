@@ -1,5 +1,5 @@
+import { useTerraNetwork } from '@anchor-protocol/app-provider';
 import { truncate as _truncate } from '@libs/formatter';
-import { useWallet } from '@terra-money/wallet-provider';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -11,7 +11,7 @@ export interface AccountLinkProps {
 }
 
 function AccountLinkBase({ address, truncate, className }: AccountLinkProps) {
-  const { network } = useWallet();
+  const network = useTerraNetwork();
 
   return (
     <a
