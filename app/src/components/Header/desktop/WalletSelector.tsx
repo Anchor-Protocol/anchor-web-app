@@ -1,10 +1,10 @@
-import { useEvmWallet } from '@libs/web3-react';
 import { ClickAwayListener } from '@material-ui/core';
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';
 import { DropdownBox, DropdownContainer } from './DropdownContainer';
-import { u, UST } from '@anchor-protocol/types';
 import { ConnectWalletButton } from './ConnectWalletButton';
+import { useTokenBalances } from 'contexts/balances';
+import { useTerraWalletAddress } from '@anchor-protocol/app-provider';
 
 export interface WalletSelectorProps {
   className?: string;
@@ -29,14 +29,14 @@ function WalletSelectorBase({
   // dependencies
   // ---------------------------------------------
 
-  const { address, isActivating } = useEvmWallet();
-  const totalUST = '999999000' as u<UST>;
+  const walletAddress = useTerraWalletAddress();
+  const tokenBalances = useTokenBalances();
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
 
-  if (isActivating) {
+  if (initializing) {
     return (
       <div className={className}>
         <ConnectWalletButton initializing={true} onClick={onClick} />
@@ -44,7 +44,7 @@ function WalletSelectorBase({
     );
   }
 
-  if (!address) {
+  if (!walletAddress) {
     return (
       <ClickAwayListener onClickAway={onClose}>
         <div className={className}>
@@ -63,8 +63,8 @@ function WalletSelectorBase({
     <ClickAwayListener onClickAway={onClose}>
       <div className={className}>
         <ConnectWalletButton
-          walletAddress={address}
-          totalUST={totalUST}
+          walletAddress={walletAddress}
+          totalUST={tokenBalances.uUST}
           onClick={onClick}
         />
         {open && (

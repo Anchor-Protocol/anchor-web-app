@@ -2,8 +2,8 @@ import { useChainOptions } from '@terra-money/wallet-provider';
 import { AstroportGuideBanner } from 'components/AstroportGuideBanner';
 import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
-import { TerraAppProviders } from 'configurations/terra';
 import { Airdrop } from 'pages/airdrop';
+import { Claim } from 'pages/anc/vesting';
 import { BlunaConvert } from 'pages/basset/bluna.convert';
 import { BlunaWithdraw } from 'pages/basset/bluna.withdraw';
 import { BAssetClaim } from 'pages/basset/claim';
@@ -35,7 +35,7 @@ import {
 import { RewardsAncGovernance } from 'pages/trade/rewards.anc-governance';
 import { RewardsAncUstLp } from 'pages/trade/rewards.anc-ust-lp';
 import { Trade } from 'pages/trade/trade';
-import { Claim as AncVestingClaim } from 'pages/anc/vesting';
+import { TerraAppProviders } from 'providers/terra/TerraAppProviders';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
@@ -79,7 +79,7 @@ export function TerraApp() {
                 <Route
                   exact={true}
                   path={`/anc/vesting/claim`}
-                  component={AncVestingClaim}
+                  component={Claim}
                 />
 
                 {/* Governance */}
