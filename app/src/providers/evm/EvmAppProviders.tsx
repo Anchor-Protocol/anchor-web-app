@@ -1,12 +1,15 @@
 import { UIElementProps } from '@libs/ui';
 import { AppProviders } from 'configurations/app';
-import { EvmTokenBalancesProvider } from 'providers/evm/EvmTokenBalancesProvider';
+import { EvmAccountProvider } from './EvmAccountProvider';
+import { EvmTokenBalancesProvider } from './EvmTokenBalancesProvider';
 import React from 'react';
 
 export function EvmAppProviders({ children }: UIElementProps) {
   return (
     <AppProviders>
-      <EvmTokenBalancesProvider>{children}</EvmTokenBalancesProvider>
+      <EvmAccountProvider>
+        <EvmTokenBalancesProvider>{children}</EvmTokenBalancesProvider>
+      </EvmAccountProvider>
     </AppProviders>
   );
 }

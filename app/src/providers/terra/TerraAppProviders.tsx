@@ -8,7 +8,8 @@ import {
 } from '@terra-money/wallet-provider';
 import { useReadonlyWalletDialog } from 'components/dialogs/useReadonlyWalletDialog';
 import { AppProviders } from 'configurations/app';
-import { TerraTokenBalancesProvider } from 'providers/terra/TerraTokenBalancesProvider';
+import { TerraAccountProvider } from './TerraAccountProvider';
+import { TerraTokenBalancesProvider } from './TerraTokenBalancesProvider';
 import React, { useCallback } from 'react';
 
 export function TerraAppProviders({
@@ -37,11 +38,13 @@ export function TerraAppProviders({
       createReadonlyWalletSession={createReadonlyWalletSession}
     >
       <AppProviders dialogs={readonlyWalletSelectorElement}>
-        <TerraTokenBalancesProvider>
-          {/** Re-Check Terra Station Wallet Status every Router's pathname changed */}
-          <RouterWalletStatusRecheck />
-          {children}
-        </TerraTokenBalancesProvider>
+        <TerraAccountProvider>
+          <TerraTokenBalancesProvider>
+            {/** Re-Check Terra Station Wallet Status every Router's pathname changed */}
+            <RouterWalletStatusRecheck />
+            {children}
+          </TerraTokenBalancesProvider>
+        </TerraAccountProvider>
       </AppProviders>
     </WalletProvider>
   );

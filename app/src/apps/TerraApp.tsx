@@ -38,6 +38,7 @@ import { Trade } from 'pages/trade/trade';
 import { TerraAppProviders } from 'providers/terra/TerraAppProviders';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
+import '../configurations/chartjs';
 
 export function TerraApp() {
   const chainOptions = useChainOptions();
