@@ -2,7 +2,6 @@ import { useChainOptions } from '@terra-money/wallet-provider';
 import { AstroportGuideBanner } from 'components/AstroportGuideBanner';
 import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
-import { TerraAppProviders } from 'configurations/terra';
 import { Airdrop } from 'pages/airdrop';
 import { BAsset } from 'pages/bond';
 import { Borrow } from 'pages/borrow';
@@ -31,6 +30,7 @@ import {
 import { RewardsAncGovernance } from 'pages/trade/rewards.anc-governance';
 import { RewardsAncUstLp } from 'pages/trade/rewards.anc-ust-lp';
 import { Trade } from 'pages/trade/trade';
+import { TerraAppProviders } from 'providers/terra/TerraAppProviders';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import './configurations/chartjs';

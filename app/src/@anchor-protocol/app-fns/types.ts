@@ -44,6 +44,17 @@ export interface AnchorTokenBalances {
   ubLunaLunaLP: u<bLunaLunaLP>;
 }
 
+export const DefaultAnchorTokenBalances = {
+  uUST: '0' as u<UST>,
+  uLuna: '0' as u<Luna>,
+  uaUST: '0' as u<aUST>,
+  ubLuna: '0' as u<bLuna>,
+  ubEth: '0' as u<bEth>,
+  uANC: '0' as u<ANC>,
+  uAncUstLP: '0' as u<AncUstLP>,
+  ubLunaLunaLP: '0' as u<bLunaLunaLP>,
+};
+
 /**
  * You can cast the tax values as nominal types
  *

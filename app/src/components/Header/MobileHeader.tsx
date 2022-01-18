@@ -6,7 +6,7 @@ import {
   useWallet,
   WalletStatus,
 } from '@terra-money/wallet-provider';
-import { menus, RouteMenu } from 'configurations/menu';
+import { useMenus, RouteMenu } from 'configurations/menu';
 import { mobileHeaderHeight } from 'env';
 import { useBuyUstDialog } from 'pages/earn/components/useBuyUstDialog';
 import { useSendDialog } from 'pages/send/useSendDialog';
@@ -25,6 +25,8 @@ export interface MobileHeaderProps {
 let _airdropClosed: boolean = false;
 
 function MobileHeaderBase({ className }: MobileHeaderProps) {
+  const menus = useMenus();
+
   const [open, setOpen] = useState<boolean>(false);
 
   const { status, connect, isChromeExtensionCompatibleBrowser } = useWallet();

@@ -3,8 +3,8 @@ import { ClickAwayListener } from '@material-ui/core';
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';
 import { DropdownBox, DropdownContainer } from './DropdownContainer';
-import { u, UST } from '@anchor-protocol/types';
 import { ConnectWalletButton } from './ConnectWalletButton';
+import { useTokenBalances } from 'contexts/balances';
 
 export interface WalletSelectorProps {
   className?: string;
@@ -30,7 +30,7 @@ function WalletSelectorBase({
   // ---------------------------------------------
 
   const walletAddress = useTerraWalletAddress();
-  const totalUST = '999999000' as u<UST>;
+  const tokenBalances = useTokenBalances();
 
   // ---------------------------------------------
   // presentation
@@ -64,7 +64,7 @@ function WalletSelectorBase({
       <div className={className}>
         <ConnectWalletButton
           walletAddress={walletAddress}
-          totalUST={totalUST}
+          totalUST={tokenBalances.uUST}
           onClick={onClick}
         />
         {open && (

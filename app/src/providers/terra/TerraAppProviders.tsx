@@ -1,3 +1,4 @@
+import { UIElementProps } from '@libs/ui';
 import { RouterWalletStatusRecheck } from '@libs/use-router-wallet-status-recheck';
 import {
   NetworkInfo,
@@ -6,14 +7,15 @@ import {
   WalletProvider,
 } from '@terra-money/wallet-provider';
 import { useReadonlyWalletDialog } from 'components/dialogs/useReadonlyWalletDialog';
-import React, { ReactNode, useCallback } from 'react';
-import { AppProviders } from './app';
+import { AppProviders } from 'configurations/app';
+import { TerraTokenBalancesProvider } from 'providers/terra/TerraTokenBalancesProvider';
+import React, { useCallback } from 'react';
 
 export function TerraAppProviders({
   children,
   walletConnectChainIds,
   defaultNetwork,
-}: { children: ReactNode } & WalletControllerChainOptions) {
+}: UIElementProps & WalletControllerChainOptions) {
   const [openReadonlyWalletSelector, readonlyWalletSelectorElement] =
     useReadonlyWalletDialog();
 
@@ -35,9 +37,11 @@ export function TerraAppProviders({
       createReadonlyWalletSession={createReadonlyWalletSession}
     >
       <AppProviders dialogs={readonlyWalletSelectorElement}>
-        {/** Re-Check Terra Station Wallet Status every Router's pathname changed */}
-        <RouterWalletStatusRecheck />
-        {children}
+        <TerraTokenBalancesProvider>
+          {/** Re-Check Terra Station Wallet Status every Router's pathname changed */}
+          <RouterWalletStatusRecheck />
+          {children}
+        </TerraTokenBalancesProvider>
       </AppProviders>
     </WalletProvider>
   );
