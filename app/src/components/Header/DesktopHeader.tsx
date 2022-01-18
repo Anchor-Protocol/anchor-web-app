@@ -1,12 +1,12 @@
 import { DeploymentSwitch } from 'components/layouts/DeploymentSwitch';
-import { menus, RouteMenu } from 'configurations/menu';
+import { useMenus, RouteMenu } from 'configurations/menu';
 import { screen } from 'env';
 import React from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
 import logoUrl from './assets/Logo.svg';
 import { DesktopNotification } from './desktop/DesktopNotification';
-import { TerraWalletSelector } from './desktop/TerraWalletSelector2';
+import { TerraWalletSelector } from './desktop/TerraWalletSelector';
 import { EvmWalletSelector } from './desktop/EvmWalletSelector';
 
 export interface DesktopHeaderProps {
@@ -14,6 +14,7 @@ export interface DesktopHeaderProps {
 }
 
 function DesktopHeaderBase({ className }: DesktopHeaderProps) {
+  const menus = useMenus();
   return (
     <header className={className}>
       <a

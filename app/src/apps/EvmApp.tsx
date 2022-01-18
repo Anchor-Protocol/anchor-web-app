@@ -1,10 +1,11 @@
 import React from 'react';
 import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
-import { EvmAppProviders } from 'configurations/evm';
 import { Dashboard } from 'pages/dashboard';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import './configurations/chartjs';
+import { EvmAppProviders } from 'providers/evm/EvmAppProviders';
+import { Earn } from 'pages/earn';
+import '../configurations/chartjs';
 
 export function EvmApp() {
   return (
@@ -14,6 +15,7 @@ export function EvmApp() {
         <Header />
         <Switch>
           <Route path="/" exact component={Dashboard} />
+          <Route path="/earn" component={Earn} />
           <Redirect to="/" />
         </Switch>
       </div>

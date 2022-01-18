@@ -3,6 +3,7 @@ import {
   ANC,
   AncUstLP,
   aUST,
+  Eth,
   bEth,
   bLuna,
   bLunaLunaLP,
@@ -32,17 +33,28 @@ import {
  * ```
  */
 export interface AnchorTokenBalances {
-  // native tokens
   uUST: u<UST>;
-  uLuna: u<Luna>;
-  // cw20 tokens
   uaUST: u<aUST>;
+  uLuna: u<Luna>;
   ubLuna: u<bLuna>;
+  uEth: u<Eth>;
   ubEth: u<bEth>;
   uANC: u<ANC>;
   uAncUstLP: u<AncUstLP>;
   ubLunaLunaLP: u<bLunaLunaLP>;
 }
+
+export const DefaultAnchorTokenBalances = {
+  uUST: '0' as u<UST>,
+  uaUST: '0' as u<aUST>,
+  uLuna: '0' as u<Luna>,
+  ubLuna: '0' as u<bLuna>,
+  uEth: '0' as u<Eth>,
+  ubEth: '0' as u<bEth>,
+  uANC: '0' as u<ANC>,
+  uAncUstLP: '0' as u<AncUstLP>,
+  ubLunaLunaLP: '0' as u<bLunaLunaLP>,
+};
 
 /**
  * You can cast the tax values as nominal types
