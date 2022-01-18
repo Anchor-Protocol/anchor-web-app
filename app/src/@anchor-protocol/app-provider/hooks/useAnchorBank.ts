@@ -18,8 +18,6 @@ import { useAnchorWebapp } from '../contexts/context';
 export interface AnchorBank {
   tax: AnchorTax;
   tokenBalances: AnchorTokenBalances;
-  refetchTax: () => void;
-  refetchUserBalances: () => void;
 }
 
 export function useAnchorBank(): AnchorBank {
@@ -73,8 +71,6 @@ export function useAnchorBank(): AnchorBank {
         ubLunaLunaLP,
         uLuna,
       },
-      refetchTax: () => {},
-      refetchUserBalances: () => {},
     };
   }, [
     maxTax,
