@@ -6,7 +6,7 @@ import { AppProviders } from 'configurations/app';
 import { NotificationProvider } from 'contexts/notification';
 import { JobsProvider } from 'jobs/Jobs';
 import { Airdrop } from 'pages/airdrop';
-import { BAsset } from 'pages/bond';
+import { BAssetMain } from 'pages/basset/main';
 import { Borrow } from 'pages/borrow';
 import { Dashboard } from 'pages/dashboard';
 import { Earn } from 'pages/earn';
@@ -60,7 +60,7 @@ export function TerraApp() {
                 <Route path="/borrow" component={Borrow} />
 
                 {/* Bond */}
-                <Route path="/bond" component={BAsset} />
+                <Route path="/bond" component={BAssetMain} />
 
                 {/* Airdrop */}
                 <Route path="/airdrop" component={Airdrop} />
