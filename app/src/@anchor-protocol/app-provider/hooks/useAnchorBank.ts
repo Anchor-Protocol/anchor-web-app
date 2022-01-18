@@ -1,4 +1,8 @@
-import { AnchorTax, AnchorTokenBalances } from '@anchor-protocol/app-fns';
+import {
+  AnchorTax,
+  AnchorTokenBalances,
+  DefaultAnchorTokenBalances,
+} from '@anchor-protocol/app-fns';
 import {
   ANC,
   AncUstLP,
@@ -69,6 +73,7 @@ export function useAnchorBank(): AnchorBank {
         maxTaxUUSD: maxTax,
       },
       tokenBalances: {
+        ...DefaultAnchorTokenBalances,
         uUST,
         uANC,
         uAncUstLP,
