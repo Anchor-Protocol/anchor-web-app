@@ -5,7 +5,7 @@ import { TermsMessage } from './TermsMessage';
 import { WalletSelector } from './WalletSelector';
 
 const EvmWalletConnectionList = () => {
-  return <ConnectionTypeList footer={<TermsMessage />}></ConnectionTypeList>;
+  return <ConnectionTypeList footer={<TermsMessage />}><span /></ConnectionTypeList>;
 };
 
 const EvmWalletSelector = () => {
