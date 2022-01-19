@@ -39,3 +39,4 @@ export * from './tx/cw20/buyToken';
 export * from './tx/cw20/sellToken';
 export * from './tx/send/send';
 export * from './tx/TxCommonParams';
+export * from './queries/evm/nativeBalance';
