@@ -6,11 +6,12 @@ import { HumanAddr } from '@libs/types';
 const EvmAccountProvider = ({ children }: UIElementProps) => {
   const account = useMemo<Account>(() => {
     return {
-      nativeWalletAddress: undefined,
+      nativeWalletAddress: '0xABC' as HumanAddr,
       terraWalletAddress:
         'terra1k529hl5nvrvavnzv4jm3um2lllxujrshpn5um2' as HumanAddr,
-      connected: false,
-      readonly: true,
+      connected: true,
+      readonly: false,
+      availablePost: true,
     };
   }, []);
   return (

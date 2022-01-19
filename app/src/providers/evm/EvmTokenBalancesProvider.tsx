@@ -5,12 +5,13 @@ import {
   AnchorTokenBalances,
   DefaultAnchorTokenBalances,
 } from '@anchor-protocol/app-fns';
-import { u, UST, Eth } from '@anchor-protocol/types';
+import { u, UST, aUST, Eth } from '@anchor-protocol/types';
 
 const EvmTokenBalancesProvider = ({ children }: UIElementProps) => {
   const tokenBalances: AnchorTokenBalances = {
     ...DefaultAnchorTokenBalances,
-    uUST: '123456' as u<UST>,
+    uUST: '12345600' as u<UST>,
+    uaUST: '876543' as u<aUST>,
     uEth: '654321' as u<Eth>,
   };
   return (

@@ -6,6 +6,7 @@ export interface Account {
   terraWalletAddress?: HumanAddr;
   connected: boolean;
   readonly: boolean;
+  availablePost: boolean;
 }
 
 export const AccountContext = createContext<Account | undefined>(undefined);
