@@ -1,4 +1,4 @@
-import { useEvmWallet } from '@libs/web3-react';
+import { useEvmWallet } from '@libs/web3';
 import { ClickAwayListener } from '@material-ui/core';
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';

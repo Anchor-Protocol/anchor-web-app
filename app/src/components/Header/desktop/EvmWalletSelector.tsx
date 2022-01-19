@@ -1,7 +1,6 @@
-import { ConnectType } from '@terra-money/wallet-provider';
 import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
-import { useEvmWallet } from '@libs/web3-react';
+import { useEvmWallet } from '@libs/web3';
 import React, { useCallback, useState } from 'react';
 import { ConnectionTypeList } from './ConnectionTypeList';
 import { TermsMessage } from './TermsMessage';
@@ -13,42 +12,39 @@ const EvmWalletConnectionList = ({
 }: {
   setOpen: (open: boolean) => void;
 }) => {
-  const { connector } = useEvmWallet();
+  const { actions, availableConnections } = useEvmWallet();
 
   return (
     <ConnectionTypeList footer={<TermsMessage />}>
-      <FlatButton
-        className="connect"
-        onClick={() => {
-          connector.activate();
-          setOpen(false);
-        }}
-      >
-        <IconSpan>
-          Metamask
-          <img
-            src={
-              'https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg'
-            }
-            alt="Metamask"
-          />
-        </IconSpan>
-      </FlatButton>
+      {availableConnections.map(({ icon, name, type }) => (
+        <FlatButton
+          key={type}
+          className="connect"
+          onClick={() => {
+            actions.activate(type);
+            setOpen(false);
+          }}
+        >
+          <IconSpan>
+            {name}
+            <img src={icon} alt={name} />
+          </IconSpan>
+        </FlatButton>
+      ))}
     </ConnectionTypeList>
   );
 };
 
 const EvmWalletSelector = () => {
-  const { address, chainId } = useEvmWallet();
+  const { actions, address, chainId, connection } = useEvmWallet();
   const [open, setOpen] = useState(false);
   const onClick = useCallback(() => setOpen((prev) => !prev), []);
   const onClose = useCallback(() => setOpen(false), []);
 
   const disconnectWallet = useCallback(() => {
     onClose();
-
-    // if (connector) connector?.deactivate();
-  }, [onClose]);
+    actions.deactivate();
+  }, [actions, onClose]);
 
   return (
     <WalletSelector
@@ -57,14 +53,10 @@ const EvmWalletSelector = () => {
       onClick={onClick}
       onClose={onClose}
     >
-      {address && chainId ? (
+      {address && chainId && connection ? (
         <EvmWalletDetailContent
           chainId={chainId}
-          connection={{
-            type: ConnectType.EXTENSION,
-            name: 'Metamask',
-            icon: 'https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg',
-          }}
+          connection={connection}
           disconnectWallet={disconnectWallet}
           walletAddress={address}
           // availablePost={}
