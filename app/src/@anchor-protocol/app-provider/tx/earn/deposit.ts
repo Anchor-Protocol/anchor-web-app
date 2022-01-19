@@ -3,6 +3,8 @@ import { u, UST } from '@anchor-protocol/types';
 import { useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
+import { useAccount } from 'contexts/account';
+import { useAnchorApi, AnchorDepositParams } from 'contexts/api';
 import { useCallback } from 'react';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
@@ -63,4 +65,21 @@ export function useEarnDepositTx() {
   const streamReturn = useStream(stream);
 
   return connectedWallet ? streamReturn : [null, null];
+}
+
+export function useEarnDepositTx2() {
+  const { connected } = useAccount();
+
+  const { deposit } = useAnchorApi();
+
+  const stream = useCallback(
+    (params: AnchorDepositParams) => {
+      return deposit(params);
+    },
+    [deposit],
+  );
+
+  const streamReturn = useStream(stream);
+
+  return connected ? streamReturn : [null, null];
 }

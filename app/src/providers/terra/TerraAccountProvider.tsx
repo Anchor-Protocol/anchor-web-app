@@ -13,6 +13,7 @@ const TerraAccountProvider = ({ children }: UIElementProps) => {
       connected: !!wallet,
       readonly:
         wallet === undefined || wallet.connectType === ConnectType.READONLY,
+      availablePost: !!wallet && wallet.availablePost,
     };
   }, [wallet]);
 

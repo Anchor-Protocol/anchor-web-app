@@ -5,9 +5,10 @@ import {
   AnchorTokenBalances,
   DefaultAnchorTokenBalances,
 } from '@anchor-protocol/app-fns';
-import { UST, EVMAddr } from '@anchor-protocol/types';
+import { EVMAddr } from '@anchor-protocol/types';
 import { useEvmNativeBalance } from '../../@libs/app-provider/queries/evm/nativeBalances';
 import { useERC20Balance } from '../../@libs/app-provider/queries/erc20/balanceOf';
+import { u, UST, aUST } from '@anchor-protocol/types';
 
 const EvmTokenBalancesProvider = ({ children }: UIElementProps) => {
   const ethBalance = useEvmNativeBalance();
@@ -21,6 +22,7 @@ const EvmTokenBalancesProvider = ({ children }: UIElementProps) => {
     ...DefaultAnchorTokenBalances,
     uUST: ustBalance,
     uEth: ethBalance,
+    uaUST: '876543' as u<aUST>,
   };
   return (
     <TokenBalancesContext.Provider value={tokenBalances}>

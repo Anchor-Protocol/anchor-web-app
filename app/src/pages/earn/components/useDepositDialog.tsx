@@ -6,8 +6,7 @@ import {
 } from '@anchor-protocol/notation';
 import { u, UST } from '@anchor-protocol/types';
 import {
-  useEarnDepositForm,
-  useEarnDepositTx,
+  useEarnDepositForm, useEarnDepositTx,
 } from '@anchor-protocol/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
@@ -19,7 +18,6 @@ import type { DialogProps, OpenDialog } from '@libs/use-dialog';
 import { useDialog } from '@libs/use-dialog';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
@@ -29,6 +27,7 @@ import React, { ChangeEvent, useCallback } from 'react';
 import styled from 'styled-components';
 import { AmountSlider } from './AmountSlider';
 import { BigSource } from 'big.js';
+import { useAccount } from 'contexts/account';
 
 interface FormParams {
   className?: string;
@@ -50,7 +49,7 @@ function ComponentBase({
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const connectedWallet = useConnectedWallet();
+  const account = useAccount();
 
   const [openConfirm, confirmElement] = useConfirm();
 
@@ -80,7 +79,7 @@ function ComponentBase({
       txFee: u<UST<BigSource>> | undefined,
       confirm: ReactNode,
     ) => {
-      if (!connectedWallet || !deposit) {
+      if (!account.connected || !deposit) {
         return;
       }
 
@@ -101,7 +100,7 @@ function ComponentBase({
         txFee: txFee!.toString() as u<UST>,
       });
     },
-    [connectedWallet, deposit, openConfirm],
+    [account.connected, deposit, openConfirm],
   );
 
   // ---------------------------------------------
@@ -170,7 +169,7 @@ function ComponentBase({
         {txFee && (
           <figure className="graph">
             <AmountSlider
-              disabled={!connectedWallet}
+              disabled={!account.connected}
               max={Number(formatUSTInput(demicrofy(maxAmount)))}
               txFee={Number(formatUST(demicrofy(txFee)))}
               value={Number(depositAmount)}
@@ -209,8 +208,8 @@ function ComponentBase({
                 : undefined
             }
             disabled={
-              !connectedWallet ||
-              !connectedWallet.availablePost ||
+              !account.connected ||
+              !account.availablePost ||
               !deposit ||
               !availablePost
             }

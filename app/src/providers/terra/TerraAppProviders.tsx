@@ -11,6 +11,7 @@ import { AppProviders } from 'configurations/app';
 import { TerraAccountProvider } from './TerraAccountProvider';
 import { TerraTokenBalancesProvider } from './TerraTokenBalancesProvider';
 import React, { useCallback } from 'react';
+import { TerraAnchorApiProvider } from './TerraAnchorApiProvider';
 
 export function TerraAppProviders({
   children,
@@ -39,11 +40,13 @@ export function TerraAppProviders({
     >
       <AppProviders dialogs={readonlyWalletSelectorElement}>
         <TerraAccountProvider>
-          <TerraTokenBalancesProvider>
-            {/** Re-Check Terra Station Wallet Status every Router's pathname changed */}
-            <RouterWalletStatusRecheck />
-            {children}
-          </TerraTokenBalancesProvider>
+          <TerraAnchorApiProvider>
+            <TerraTokenBalancesProvider>
+              {/** Re-Check Terra Station Wallet Status every Router's pathname changed */}
+              <RouterWalletStatusRecheck />
+              {children}
+            </TerraTokenBalancesProvider>
+          </TerraAnchorApiProvider>
         </TerraAccountProvider>
       </AppProviders>
     </WalletProvider>

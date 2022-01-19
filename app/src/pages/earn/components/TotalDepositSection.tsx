@@ -1,6 +1,5 @@
 import { computeTotalDeposit } from '@anchor-protocol/app-fns';
 import { useEarnEpochStatesQuery } from '@anchor-protocol/app-provider';
-import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import {
   formatUST,
   formatUSTWithPostfixUnits,
@@ -13,8 +12,9 @@ import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { AnimateNumber } from '@libs/ui';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { SubAmount } from 'components/primitives/SubAmount';
+import { useAccount } from 'contexts/account';
+import { useTokenBalances } from 'contexts/balances';
 import React, { useCallback, useMemo } from 'react';
 import { useDepositDialog } from './useDepositDialog';
 import { useWithdrawDialog } from './useWithdrawDialog';
@@ -27,14 +27,12 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const connectedWallet = useConnectedWallet();
+  const { connected } = useAccount();
 
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const {
-    tokenBalances: { uaUST },
-  } = useAnchorBank();
+  const { uaUST } = useTokenBalances();
 
   const { data: { moneyMarketEpochState } = {} } = useEarnEpochStatesQuery();
 
@@ -93,13 +91,13 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
 
       <aside className="total-deposit-buttons">
         <ActionButton
-          disabled={!connectedWallet || !moneyMarketEpochState}
+          disabled={!connected || !moneyMarketEpochState}
           onClick={openDeposit}
         >
           Deposit
         </ActionButton>
         <BorderButton
-          disabled={!connectedWallet || !moneyMarketEpochState}
+          disabled={!connected || !moneyMarketEpochState}
           onClick={openWithdraw}
         >
           Withdraw

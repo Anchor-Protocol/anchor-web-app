@@ -1,5 +1,5 @@
 import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
-import { ConnectType, useConnectedWallet } from '@terra-money/wallet-provider';
+import { useAccount } from 'contexts/account';
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';
 
@@ -8,9 +8,9 @@ export interface ViewAddressStrikeProps {
 }
 
 export function ViewAddressWarning({ children }: ViewAddressStrikeProps) {
-  const connectedWallet = useConnectedWallet();
+  const { readonly } = useAccount();
 
-  return connectedWallet?.connectType === ConnectType.READONLY ? (
+  return readonly ? (
     <Tooltip
       title="Currently in “View an Address” mode. To make transactions, please disconnect and reconnect using Terra Station (extension or mobile)."
       placement="bottom"
