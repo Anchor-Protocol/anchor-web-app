@@ -20,7 +20,8 @@ import {
   // Launch
 } from '@material-ui/icons';
 // import { NetworkInfo } from '@terra-money/use-wallet';
-import { Connection } from '@terra-money/wallet-provider';
+import { Connection as TerraConnection } from '@terra-money/wallet-provider';
+import { Connection } from '@libs/web3';
 // import big from 'big.js';
 // import { BuyButton, BuyLink } from 'components/BuyButton';
 import React from 'react';
@@ -67,7 +68,10 @@ EvmWalletDetailContentProps) {
   return (
     <div className={className}>
       <section>
-        <ConnectionIcons className="wallet-icon" connection={connection} />
+        <ConnectionIcons
+          className="wallet-icon"
+          connection={connection as unknown as TerraConnection}
+        />
 
         <h2 className="wallet-address">{truncate(walletAddress)}</h2>
 
@@ -220,11 +224,9 @@ EvmWalletDetailContentProps) {
         */}
       </section>
 
-      {/*
       <button className="disconnect" onClick={disconnectWallet}>
         Disconnect
       </button>
-      */}
     </div>
   );
 }
