@@ -2,6 +2,7 @@ import { prettifySymbol } from '@anchor-protocol/app-fns';
 import { useBAssetInfoListQuery } from '@anchor-protocol/app-provider';
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
+import { MessageBox } from 'components/MessageBox';
 import { PageTitle, TitleContainer } from 'components/primitives/PageTitle';
 import { links } from 'env';
 import { fixHMR } from 'fix-hmr';
@@ -24,6 +25,16 @@ function Component({ className }: BAssetMainProps) {
       <TitleContainer>
         <PageTitle title="bASSET" docs={links.docs.bond} />
       </TitleContainer>
+
+      <MessageBox
+        className="message-box"
+        level="info"
+        hide={{ id: 'basset_transfer', period: 1000 * 60 * 60 * 24 * 7 }}
+      >
+        bAssets that have been transferred to Terra through wormhole(webATOM,
+        webETH) must go through the convert operation to be used as collateral
+        on Anchor.
+      </MessageBox>
 
       <Claimable className="claimable-section" />
 
@@ -48,7 +59,7 @@ function Component({ className }: BAssetMainProps) {
             return (
               <AssetCard
                 key={custodyConfig.collateral_token}
-                to={`/basset/wh/${bAsset.collateral_token}`}
+                to={`/basset/wh/${bAsset.symbol.toLowerCase()}`}
                 title={`${bAssetSymbol}/${whAssetSymbol}`}
                 bAssetIcon={<TokenIcon token="beth" />}
                 originAssetIcon={<TokenIcon token="wheth" />}
@@ -73,6 +84,10 @@ function Component({ className }: BAssetMainProps) {
 const StyledComponent = styled(Component)`
   .claimable-section {
     margin-bottom: 40px;
+  }
+
+  .message-box {
+    margin: 20px 0 20px 0;
   }
 
   .asset-list {

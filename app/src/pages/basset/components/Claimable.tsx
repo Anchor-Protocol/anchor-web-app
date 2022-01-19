@@ -7,6 +7,8 @@ import { formatUTokenDecimal2 } from '@libs/formatter';
 import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { horizontalRuler, verticalRuler } from '@libs/styled-neumorphism';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { Luna, u, UST } from '@libs/types';
 import { AnimateNumber } from '@libs/ui';
 import big, { Big } from 'big.js';
@@ -17,6 +19,17 @@ import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import { claimableRewards as _claimableRewards } from '../logics/claimableRewards';
+
+const Heading = (props: { title: string; tooltip: string }) => {
+  const { title, tooltip } = props;
+  return (
+    <h2>
+      <IconSpan>
+        {title} <InfoTooltip>{tooltip}</InfoTooltip>
+      </IconSpan>
+    </h2>
+  );
+};
 
 export interface ClaimableProps {
   className?: string;
@@ -48,7 +61,10 @@ function Component({ className }: ClaimableProps) {
     <Section className={className}>
       <div>
         <div>
-          <h2>CLAIMABLE REWARDS</h2>
+          <Heading
+            title="CLAIMABLE REWARDS"
+            tooltip="Claim staking rewards from minted bAssets that have not been provided as collateral. If the user’s claimable reward is smaller than the tx fee, the rewards are not claimable."
+          />
           <p>
             <AnimateNumber format={formatUTokenDecimal2}>
               {claimableRewards}
@@ -63,7 +79,10 @@ function Component({ className }: ClaimableProps) {
       <hr />
       <div>
         <div>
-          <h2>WITHDRAWABLE LUNA</h2>
+          <Heading
+            title="WITHDRAWABLE LUNA"
+            tooltip="bLuna that has been burned and has surpassed the undelegation period can be withdrawn. Because burn requests are processed in 3-day batches, requests that are not yet included in a batch are shown as pending."
+          />
           <p>
             <AnimateNumber format={formatUTokenDecimal2}>
               {withdrawableLuna}

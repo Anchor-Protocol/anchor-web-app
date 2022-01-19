@@ -1,5 +1,4 @@
 import { exportCW20Decimals } from '@anchor-protocol/app-fns/functions/cw20Decimals';
-import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
 import {
   basset,
   bAsset,
@@ -28,25 +27,25 @@ import {
   TxHelper,
 } from '@libs/app-fns/tx/internal';
 import { floor } from '@libs/big-math';
-import { demicrofy, formatTokenInput, stripUUSD } from '@libs/formatter';
+import { formatTokenInput, formatNumeric } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
 import {
   CreateTxOptions,
   Fee,
+  Int,
   MsgExecuteContract,
 } from '@terra-money/terra.js';
 import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
-import big, { Big } from 'big.js';
 import { Observable } from 'rxjs';
 
 export function bAssetImportTx($: {
   walletAddr: HumanAddr;
+  //bAssetInfo: BAssetInfo;
   converterAddr: HumanAddr;
   wormholeTokenAddr: CW20Addr;
   wormholeTokenAmount: bAsset;
   wormholeTokenInfo: cw20.TokenInfoResponse<Token>;
-
   gasFee: Gas;
   gasAdjustment: Rate<number>;
   fixedGas: u<UST>;
@@ -86,42 +85,45 @@ export function bAssetImportTx($: {
         return helper.failedToFindRawLog();
       }
 
-      const transfer = pickEvent(rawLog, 'transfer');
+      const fromContract = pickEvent(rawLog, 'from_contract');
 
-      if (!transfer) {
-        return helper.failedToFindEvents('transfer');
+      if (!fromContract) {
+        return helper.failedToFindEvents('from_contract');
       }
 
-      // https://finder.terra.money/bombay-12/tx/343E30771368EBB96CAE04E8260EF0E96949D2569DDAA3356B2C09AB75B65F73
+      // TODO: need to fix this to pull the asset symbols, names, and decimals
+      // from the Terra asset info
 
       try {
-        const claimedReward = pickAttributeValue<string>(transfer, 5);
+        const amount = pickAttributeValue<u<bAsset>>(fromContract, 4);
+        const mintedAmount = pickAttributeValue<u<bAsset>>(fromContract, 8);
 
-        const txFee = pickAttributeValue<string>(transfer, 2);
+        const exchangeRate = new Int(mintedAmount).div(new Int(amount));
 
         return {
           value: null,
-
           phase: TxStreamPhase.SUCCEED,
           receipts: [
-            !!claimedReward && {
-              name: 'Claimed Reward',
-              value:
-                formatUSTWithPostfixUnits(demicrofy(stripUUSD(claimedReward))) +
-                ' UST',
+            amount && {
+              name: 'Provided amount',
+              // value:
+              //   formatBAsset(demicrofy(burnAmount)) +
+              //   ` ${$.bAssetInfo.wormholeTokenInfo.symbol}`,
+              value: formatNumeric(amount, 8) + ` webETH`,
+            },
+            mintedAmount && {
+              name: 'Converted amount',
+              // value:
+              //   formatBAsset(demicrofy(returnAmount)) +
+              //   ` ${$.bAssetInfo.bAsset.symbol}`,
+              value: formatNumeric(mintedAmount) + ` bETH`,
+            },
+            exchangeRate && {
+              name: 'Exchange rate',
+              value: `${exchangeRate} webETH per bETH`,
             },
             helper.txHashReceipt(),
-            {
-              name: 'Tx Fee',
-              value:
-                formatUSTWithPostfixUnits(
-                  demicrofy(
-                    big(txFee ? stripUUSD(txFee) : '0').plus($.fixedGas) as u<
-                      UST<Big>
-                    >,
-                  ),
-                ) + ' UST',
-            },
+            helper.txFeeReceipt(),
           ],
         } as TxResultRendering;
       } catch (error) {

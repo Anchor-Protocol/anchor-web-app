@@ -73,7 +73,7 @@ export function App() {
                 <Route path="/basset/claim" component={BAssetClaim} />
 
                 <Route
-                  path="/basset/wh/:tokenAddr"
+                  path="/basset/wh/:tokenSymbol"
                   component={WormholeConvert}
                 />
 

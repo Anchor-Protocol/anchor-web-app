@@ -33,76 +33,80 @@ function WithdrawHistoryBase({
 
   return (
     <ul className={className}>
-      {withdrawHistory?.map(
-        ({ blunaAmount, lunaAmount, requestTime, claimableTime }, index) => {
-          const status: 'PENDING' | 'UNBONDING' | 'WITHDRAWABLE' =
-            !claimableTime
-              ? 'PENDING'
-              : claimableTime > currentDate
-              ? 'WITHDRAWABLE'
-              : 'UNBONDING';
-
+      {withdrawHistory
+        ?.sort((a: History, b: History) => {
           return (
-            <li key={`withdraw-history-${index}`} data-status={status}>
-              <h5>{status}</h5>
-              <div>
-                <p>{formatLuna(demicrofy(blunaAmount))} bLUNA</p>
-
-                {!!requestTime && status !== 'PENDING' ? (
-                  <p>
-                    Requested time:{' '}
-                    <time>
-                      {requestTime.toLocaleString('en-US', {
-                        weekday: 'short',
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                      }) +
-                        ', ' +
-                        requestTime.toLocaleTimeString('en-US')}
-                    </time>
-                  </p>
-                ) : (
-                  <p>-</p>
-                )}
-
-                <p>
-                  {lunaAmount
-                    ? `${formatLuna(demicrofy(lunaAmount))} LUNA`
-                    : ''}
-                </p>
-
-                {!!claimableTime && status !== 'PENDING' ? (
-                  <p>
-                    Claimable time:{' '}
-                    <time>
-                      {claimableTime.toLocaleString('en-US', {
-                        weekday: 'short',
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                      }) +
-                        ', ' +
-                        claimableTime.toLocaleTimeString('en-US')}
-                    </time>
-                  </p>
-                ) : (
-                  <p>-</p>
-                )}
-              </div>
-            </li>
+            (a.claimableTime ?? new Date(0)).getTime() -
+            (b.claimableTime ?? new Date(0)).getTime()
           );
-        },
-      )}
+        })
+        .map(
+          ({ blunaAmount, lunaAmount, requestTime, claimableTime }, index) => {
+            const status: 'PENDING' | 'UNBONDING' | 'WITHDRAWABLE' =
+              !claimableTime
+                ? 'PENDING'
+                : claimableTime <= currentDate
+                ? 'WITHDRAWABLE'
+                : 'UNBONDING';
+
+            return (
+              <li key={`withdraw-history-${index}`} data-status={status}>
+                <h5>{status}</h5>
+                <div>
+                  <p>{formatLuna(demicrofy(blunaAmount))} bLUNA</p>
+
+                  {!!requestTime && status !== 'PENDING' ? (
+                    <p>
+                      Requested time:{' '}
+                      <time>
+                        {requestTime.toLocaleString('en-US', {
+                          weekday: 'short',
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        }) +
+                          ', ' +
+                          requestTime.toLocaleTimeString('en-US')}
+                      </time>
+                    </p>
+                  ) : (
+                    <p>-</p>
+                  )}
+
+                  <p>
+                    {lunaAmount
+                      ? `${formatLuna(demicrofy(lunaAmount))} LUNA`
+                      : ''}
+                  </p>
+
+                  {!!claimableTime && status !== 'PENDING' ? (
+                    <p>
+                      Claimable time:{' '}
+                      <time>
+                        {claimableTime.toLocaleString('en-US', {
+                          weekday: 'short',
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        }) +
+                          ', ' +
+                          claimableTime.toLocaleTimeString('en-US')}
+                      </time>
+                    </p>
+                  ) : (
+                    <p>-</p>
+                  )}
+                </div>
+              </li>
+            );
+          },
+        )}
     </ul>
   );
 }
 
 export const StyledWithdrawHistory = styled(WithdrawHistoryBase)`
   margin-top: 40px;
-
-  max-height: 185px;
-  overflow-y: auto;
 
   list-style: none;
   padding: 20px;

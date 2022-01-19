@@ -65,6 +65,17 @@ export function formatUTokenWithPostfixUnits(n: u<Token<BigSource>>): string {
   return bn.gte(M) ? d3Formatter(bn.div(M)) + 'M' : formatToken(bn);
 }
 
+export function formatNumeric(
+  n: u<Token<BigSource>>,
+  decimals: number = 6,
+): string {
+  const formatter = formatDemimal({
+    decimalPoints: decimals,
+    delimiter: true,
+  });
+  return formatter(big(n).div(Math.pow(10, decimals)));
+}
+
 // ---------------------------------------------
 // unspecific format functions
 // ---------------------------------------------

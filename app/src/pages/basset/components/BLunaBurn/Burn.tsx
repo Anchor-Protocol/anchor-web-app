@@ -328,8 +328,8 @@ export function Burn({
         <ConvertSymbols
           className="symbols"
           view="burn"
-          fromIcon={<TokenIcon token="bluna" />}
-          toIcon={<TokenIcon token="luna" />}
+          fromIcon={<TokenIcon token="luna" />}
+          toIcon={<TokenIcon token="bluna" />}
         />
       </ConvertSymbolsContainer>
 

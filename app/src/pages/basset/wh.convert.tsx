@@ -1,9 +1,8 @@
 import { prettifySymbol } from '@anchor-protocol/app-fns';
-import { useBAssetInfoByTokenAddrQuery } from '@anchor-protocol/app-provider';
+import { useBAssetInfoByTokenSymbolQuery } from '@anchor-protocol/app-provider';
 import { Tab } from '@libs/neumorphism-ui/components/Tab';
-import { CW20Addr } from '@libs/types';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
-import { CenteredTitleLayout } from 'components/layouts/CenteredTitleLayout';
+import { PageTitle, TitleContainer } from 'components/primitives/PageTitle';
 import { fixHMR } from 'fix-hmr';
 import React, { useCallback, useMemo } from 'react';
 import {
@@ -18,7 +17,7 @@ import { WhExport } from './components/WhExport';
 import { WhImport } from './components/WhImport';
 
 export interface WormholeConvertProps
-  extends RouteComponentProps<{ tokenAddr: CW20Addr | undefined }> {
+  extends RouteComponentProps<{ tokenSymbol: string | undefined }> {
   className?: string;
 }
 
@@ -29,8 +28,8 @@ interface Item {
 }
 
 function Component({ className, match, history }: WormholeConvertProps) {
-  const { data: bAssetInfo } = useBAssetInfoByTokenAddrQuery(
-    match.params.tokenAddr,
+  const { data: bAssetInfo } = useBAssetInfoByTokenSymbolQuery(
+    match.params.tokenSymbol,
   );
 
   const tabItems = useMemo<Item[]>(() => {
@@ -48,12 +47,13 @@ function Component({ className, match, history }: WormholeConvertProps) {
       {
         label: `to ${bAssetSymbol}`,
         value: 'to-basset',
-        tooltip: 'Bond assets to mint bAssets',
+        tooltip:
+          'Convert wormhole tokens into bAssets that are useable on Anchor.',
       },
       {
         label: `to ${whAssetSymbol}`,
         value: 'to-wbasset',
-        tooltip: 'Burn previously minted bAssets to unbond your assets',
+        tooltip: 'Convert bAssets useable on Anchor into wormhole tokens.',
       },
     ];
   }, [bAssetInfo]);
@@ -74,34 +74,34 @@ function Component({ className, match, history }: WormholeConvertProps) {
   );
 
   return (
-    <CenteredTitleLayout title="CONVERT" className={className}>
-      <CenteredLayout maxWidth={800}>
-        <Tab
-          className="tab"
-          items={tabItems}
-          selectedItem={tab ?? tabItems[0]}
-          onChange={tabChange}
-          labelFunction={({ label }) => label}
-          keyFunction={({ value }) => value}
-          tooltipFunction={({ tooltip }) => tooltip}
+    <CenteredLayout className={className} maxWidth={800}>
+      <TitleContainer>
+        <PageTitle
+          title="CONVERT"
+          tooltip="Tokens transferred to the terra chain through wormhole must be converted to bAssets useable on Anchor to be deposited as collateral."
         />
+      </TitleContainer>
+      <Tab
+        className="tab"
+        items={tabItems}
+        selectedItem={tab ?? tabItems[0]}
+        onChange={tabChange}
+        labelFunction={({ label }) => label}
+        keyFunction={({ value }) => value}
+        tooltipFunction={({ tooltip }) => tooltip}
+      />
 
-        <Switch>
-          <Redirect
-            exact
-            path={`${match.url}/`}
-            to={`${match.url}/to-basset`}
-          />
-          <Route path={`${match.url}/to-basset`}>
-            {bAssetInfo && <WhImport bAssetInfo={bAssetInfo} />}
-          </Route>
-          <Route path={`${match.url}/to-wbasset`}>
-            {bAssetInfo && <WhExport bAssetInfo={bAssetInfo} />}
-          </Route>
-          <Redirect path={`${match.url}/*`} to={`${match.url}/to-basset`} />
-        </Switch>
-      </CenteredLayout>
-    </CenteredTitleLayout>
+      <Switch>
+        <Redirect exact path={`${match.url}/`} to={`${match.url}/to-basset`} />
+        <Route path={`${match.url}/to-basset`}>
+          {bAssetInfo && <WhImport bAssetInfo={bAssetInfo} />}
+        </Route>
+        <Route path={`${match.url}/to-wbasset`}>
+          {bAssetInfo && <WhExport bAssetInfo={bAssetInfo} />}
+        </Route>
+        <Redirect path={`${match.url}/*`} to={`${match.url}/to-basset`} />
+      </Switch>
+    </CenteredLayout>
   );
 }
 

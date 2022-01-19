@@ -36,12 +36,11 @@ export function useBAssetExportTx(tokenAddr: CW20Addr | undefined) {
         throw new Error('Can not post!');
       }
 
-      const converterContract = bAssetInfo.minter.minter;
-
       return bAssetExportTx({
         walletAddr: connectedWallet.walletAddress,
-        converterAddr: converterContract,
-        bAssetTokenAddr: bAssetInfo.converterConfig.anchor_token_address,
+        bAssetInfo,
+        // converterAddr: converterContract,
+        // bAssetTokenAddr: bAssetInfo.converterConfig.anchor_token_address,
         bAssetTokenAmount: amount,
         // post
         network: connectedWallet.network,

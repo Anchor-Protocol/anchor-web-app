@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 export interface CenteredTitleLayoutProps {
   className?: string;
-  title: ReactNode;
+  title: string;
   children: ReactNode;
 }
 
@@ -13,7 +13,6 @@ function Component({ className, title, children }: CenteredTitleLayoutProps) {
   return (
     <div className={className}>
       <h1>{title}</h1>
-
       {children}
     </div>
   );
@@ -27,8 +26,8 @@ const StyledComponent = styled(Component)`
     margin-top: 60px;
     padding: 0 20px;
 
-    font-size: 40px;
-    font-weight: 500;
+    font-size: 44px;
+    font-weight: 900;
     line-height: 1.2;
     letter-spacing: -0.3px;
   }

@@ -21,6 +21,7 @@ export * from './queries/basset/bAssetInfo';
 export * from './queries/basset/bAssetInfoAndBalanceByTokenAddr';
 export * from './queries/basset/bAssetInfoAndBalanceTotal';
 export * from './queries/basset/bAssetInfoByTokenAddr';
+export * from './queries/basset/bAssetInfoByTokenSymbol';
 export * from './queries/basset/bAssetInfoList';
 export * from './queries/basset/bLunaClaimableRewards';
 export * from './queries/basset/bLunaExchangeRate';

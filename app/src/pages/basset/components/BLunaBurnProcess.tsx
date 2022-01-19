@@ -43,7 +43,6 @@ const StyledComponent = styled(Component)`
     margin-top: 20px;
 
     font-size: 12px;
-    max-width: 500px;
 
     svg {
       max-width: 100%;
@@ -68,13 +67,7 @@ export const BLunaBurnProcess = fixHMR(StyledComponent);
 function Content() {
   return (
     <article>
-      <svg
-        width="459"
-        height="44"
-        viewBox="0 0 459 44"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
+      <svg viewBox="0 0 459 44" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
           d="M0 8H54C57.3137 8 60 10.6863 60 14C60 17.3137 57.3137 20 54 20H0V8Z"
           fill="var(--pending-color)"

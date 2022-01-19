@@ -10,11 +10,13 @@ interface WhitelistWasmQuery {
   >;
 }
 
-export async function bAssetInfoByTokenAddrQuery(
+type WhitelistElement = moneyMarket.overseer.WhitelistResponse['elems'][0];
+
+async function bAssetInfoByTokenQuery(
   overseerContract: HumanAddr,
-  tokenAddr: CW20Addr | undefined,
   queryClient: QueryClient,
-): Promise<BAssetInfo | undefined> {
+  predicate: (elem: WhitelistElement) => boolean,
+): Promise<WhitelistElement | undefined> {
   const { whitelist } = await wasmFetch<WhitelistWasmQuery>({
     ...queryClient,
     id: 'basset--list',
@@ -27,13 +29,40 @@ export async function bAssetInfoByTokenAddrQuery(
       },
     },
   });
+  return whitelist.elems.find(predicate);
+}
 
-  const bAsset = whitelist.elems.find(
+export async function bAssetInfoByTokenAddrQuery(
+  overseerContract: HumanAddr,
+  tokenAddr: CW20Addr | undefined,
+  queryClient: QueryClient,
+): Promise<BAssetInfo | undefined> {
+  const bAsset = await bAssetInfoByTokenQuery(
+    overseerContract,
+    queryClient,
     ({ collateral_token }) => tokenAddr === collateral_token,
   );
 
   if (!bAsset) {
     throw new Error(`Can't find bAssetInfo of "${tokenAddr}"`);
+  }
+
+  return bAssetInfoQuery(bAsset, queryClient);
+}
+
+export async function bAssetInfoByTokenSymbolQuery(
+  overseerContract: HumanAddr,
+  tokenSymbol: string | undefined,
+  queryClient: QueryClient,
+): Promise<BAssetInfo | undefined> {
+  const bAsset = await bAssetInfoByTokenQuery(
+    overseerContract,
+    queryClient,
+    ({ symbol }) => symbol?.toLowerCase() === tokenSymbol?.toLowerCase(),
+  );
+
+  if (!bAsset) {
+    throw new Error(`Can't find bAssetInfo of "${tokenSymbol}"`);
   }
 
   return bAssetInfoQuery(bAsset, queryClient);
