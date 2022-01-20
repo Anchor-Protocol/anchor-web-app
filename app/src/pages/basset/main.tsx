@@ -31,9 +31,9 @@ function Component({ className }: BAssetMainProps) {
         level="info"
         hide={{ id: 'basset_transfer', period: 1000 * 60 * 60 * 24 * 7 }}
       >
-        bAssets that have been transferred to Terra through wormhole(webATOM,
-        webETH) must go through the convert operation to be used as collateral
-        on Anchor.
+        bAssets that have been transferred to Terra through Wormhole (webETH)
+        must go through the convert operation to be used as collateral on
+        Anchor.
       </MessageBox>
 
       <Claimable className="claimable-section" />

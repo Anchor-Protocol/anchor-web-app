@@ -10,6 +10,8 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { WithdrawHistory as History } from '../logics/withdrawAllHistory';
 
+const MAX_DATE = new Date(8640000000000000);
+
 export interface WithdrawHistoryProps {
   className?: string;
   withdrawHistory: History[] | undefined;
@@ -34,10 +36,11 @@ function WithdrawHistoryBase({
   return (
     <ul className={className}>
       {withdrawHistory
-        ?.sort((a: History, b: History) => {
+        ?.slice()
+        .sort((a: History, b: History) => {
           return (
-            (a.claimableTime ?? new Date(0)).getTime() -
-            (b.claimableTime ?? new Date(0)).getTime()
+            (b.claimableTime ?? MAX_DATE).getTime() -
+            (a.claimableTime ?? MAX_DATE).getTime()
           );
         })
         .map(
