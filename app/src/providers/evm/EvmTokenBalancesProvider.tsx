@@ -5,7 +5,7 @@ import {
   AnchorBalances,
   DefaultAnchorTokenBalances,
 } from '@anchor-protocol/app-fns';
-import { u, UST, Eth, Native } from '@anchor-protocol/types';
+import { u, UST, Native } from '@anchor-protocol/types';
 
 const EvmTokenBalancesProvider = ({ children }: UIElementProps) => {
   const tokenBalances: AnchorBalances = {

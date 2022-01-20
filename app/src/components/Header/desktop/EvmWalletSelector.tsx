@@ -11,6 +11,7 @@ const EvmWalletConnectionList = () => {
 const EvmWalletSelector = () => {
   const { nativeWalletAddress } = useAccount();
 
+  //eslint-disable-next-line
   const [open, setOpen] = useState(false);
 
   const onClick = useCallback(() => {
