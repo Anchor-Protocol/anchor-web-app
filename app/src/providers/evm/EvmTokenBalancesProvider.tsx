@@ -5,13 +5,22 @@ import {
   AnchorTokenBalances,
   DefaultAnchorTokenBalances,
 } from '@anchor-protocol/app-fns';
-import { u, UST, Eth } from '@anchor-protocol/types';
+import { UST, EVMAddr } from '@anchor-protocol/types';
+import { useEvmNativeBalance } from '../../@libs/app-provider/queries/evm/nativeBalances';
+import { useERC20Balance } from '../../@libs/app-provider/queries/erc20/balanceOf';
 
 const EvmTokenBalancesProvider = ({ children }: UIElementProps) => {
+  const ethBalance = useEvmNativeBalance();
+  // TODO: Implement EVM address provider
+  // UST in ropsten
+  const ustBalance = useERC20Balance<UST>(
+    '0x6ca13a4ab78dd7d657226b155873a04db929a3a4' as EVMAddr,
+  );
+
   const tokenBalances: AnchorTokenBalances = {
     ...DefaultAnchorTokenBalances,
-    uUST: '123456' as u<UST>,
-    uEth: '654321' as u<Eth>,
+    uUST: ustBalance,
+    uEth: ethBalance,
   };
   return (
     <TokenBalancesContext.Provider value={tokenBalances}>
