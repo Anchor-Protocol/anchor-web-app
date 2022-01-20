@@ -5,9 +5,9 @@ import {
   AnchorTokenBalances,
   DefaultAnchorTokenBalances,
 } from '@anchor-protocol/app-fns';
-import { UST, EVMAddr } from '@anchor-protocol/types';
 import { useEvmNativeBalance } from '../../@libs/app-provider/queries/evm/nativeBalances';
 import { useERC20Balance } from '../../@libs/app-provider/queries/erc20/balanceOf';
+import { UST, EVMAddr } from '@anchor-protocol/types';
 
 const EvmTokenBalancesProvider = ({ children }: UIElementProps) => {
   const ethBalance = useEvmNativeBalance();

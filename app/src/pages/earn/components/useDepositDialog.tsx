@@ -7,7 +7,7 @@ import {
 import { u, UST } from '@anchor-protocol/types';
 import {
   useEarnDepositForm,
-  useEarnDepositTx,
+  useEarnDepositTx2,
 } from '@anchor-protocol/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
@@ -19,7 +19,6 @@ import type { DialogProps, OpenDialog } from '@libs/use-dialog';
 import { useDialog } from '@libs/use-dialog';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
@@ -28,6 +27,7 @@ import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import type { ReactNode } from 'react';
 import React, { ChangeEvent, useCallback } from 'react';
 import styled from 'styled-components';
+import { useAccount } from 'contexts/account';
 
 interface FormParams {
   className?: string;
@@ -49,11 +49,11 @@ function ComponentBase({
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const connectedWallet = useConnectedWallet();
+  const account = useAccount();
 
   const [openConfirm, confirmElement] = useConfirm();
 
-  const [deposit, depositResult] = useEarnDepositTx();
+  const [deposit, depositResult] = useEarnDepositTx2();
 
   // ---------------------------------------------
   // states
@@ -79,7 +79,7 @@ function ComponentBase({
       txFee: u<UST<BigSource>> | undefined,
       confirm: ReactNode,
     ) => {
-      if (!connectedWallet || !deposit) {
+      if (!account.connected || !deposit) {
         return;
       }
 
@@ -100,7 +100,7 @@ function ComponentBase({
         txFee: txFee!.toString() as u<UST>,
       });
     },
-    [connectedWallet, deposit, openConfirm],
+    [account.connected, deposit, openConfirm],
   );
 
   // ---------------------------------------------
@@ -195,8 +195,8 @@ function ComponentBase({
                 : undefined
             }
             disabled={
-              !connectedWallet ||
-              !connectedWallet.availablePost ||
+              !account.connected ||
+              !account.availablePost ||
               !deposit ||
               !availablePost
             }
