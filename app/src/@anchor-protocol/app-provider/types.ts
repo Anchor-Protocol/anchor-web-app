@@ -55,6 +55,8 @@ export interface AnchorContractAddress extends AppContractAddress {
     teamLock: HumanAddr;
     /** addressProvider.collector() */
     collector: HumanAddr;
+    /** addressProvider.vesting() */
+    vesting: HumanAddr;
   };
   terraswap: {
     factory: HumanAddr;
