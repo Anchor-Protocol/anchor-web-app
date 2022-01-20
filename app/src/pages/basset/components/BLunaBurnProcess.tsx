@@ -197,7 +197,7 @@ function Content() {
           x2="60.5"
           y2="28"
           stroke="var(--unbonding-color)"
-          stroke-dasharray="2 2"
+          strokeDasharray="2 2"
         />
       </svg>
 

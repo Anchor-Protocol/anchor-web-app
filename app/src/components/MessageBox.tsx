@@ -6,6 +6,7 @@ const key = (id: string) => `__anchor_hide_message_${id}__`;
 
 export interface MessageBoxProps {
   className?: string;
+  icon?: ReactNode;
   children: ReactNode;
   style?: CSSProperties;
   level?: 'error' | 'info';
@@ -15,7 +16,13 @@ export interface MessageBoxProps {
   };
 }
 
-function MessageBoxBase({ className, style, children, hide }: MessageBoxProps) {
+function MessageBoxBase({
+  className,
+  icon,
+  style,
+  children,
+  hide,
+}: MessageBoxProps) {
   const [hidden, setHidden] = useState<boolean>(() => {
     if (!hide) {
       return false;
@@ -42,7 +49,8 @@ function MessageBoxBase({ className, style, children, hide }: MessageBoxProps) {
 
   return !hidden ? (
     <article className={className} style={style}>
-      <p>{children}</p>
+      {icon}
+      <p className={icon ? 'padded' : ''}>{children}</p>
       {!!hide && <Close className="close" onClick={updateHidden} />}
     </article>
   ) : null;
@@ -71,6 +79,9 @@ export const MessageBox = styled(MessageBoxBase)`
     text-align: center;
     word-break: break-word;
     white-space: break-spaces;
+    &.padded {
+      margin-left: 4px;
+    }
   }
 
   > svg {
