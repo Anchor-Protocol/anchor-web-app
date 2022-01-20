@@ -2,15 +2,16 @@ import { evmNativeBalancesQuery, ZERO_ETH_BALANCE } from '@libs/app-fns';
 import { createQueryFn } from '@libs/react-query-utils';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useApp } from '../../contexts/app';
-import { EVM_QUERY_KEY } from '../../env';
-import { useEvmWallet } from '../../../web3-react';
-import { u } from '../../../types';
+import { EVM_QUERY_KEY, REFETCH_INTERVAL } from '../../env';
+import { EVMAddr, u } from '../../../types';
 import { Eth } from '../../../../@anchor-protocol/types';
+import { useEvmWallet } from '../../../web3';
+import { BigNumber } from '@ethersproject/bignumber';
 
 const queryFn = createQueryFn(evmNativeBalancesQuery);
 
 export function useEvmNativeBalanceQuery(
-  walletAddress?: string,
+  walletAddress?: EVMAddr,
 ): UseQueryResult<u<Eth> | undefined> {
   const { queryErrorReporter } = useApp();
 
@@ -19,8 +20,8 @@ export function useEvmNativeBalanceQuery(
   return useQuery(
     [
       EVM_QUERY_KEY.EVM_NATIVE_BALANCES,
-      walletAddress ?? address,
-      (walletAddress: string) => {
+      walletAddress ?? (address as EVMAddr),
+      (walletAddress: EVMAddr): Promise<BigNumber> | undefined => {
         if (!provider) {
           return;
         }
@@ -29,15 +30,14 @@ export function useEvmNativeBalanceQuery(
     ],
     queryFn,
     {
-      refetchInterval: !!provider && 1000 * 60 * 5,
+      refetchInterval: REFETCH_INTERVAL,
       keepPreviousData: true,
       onError: queryErrorReporter,
-      placeholderData: () => ZERO_ETH_BALANCE,
     },
   );
 }
 
-export function useEvmNativeBalance(walletAddress?: string): u<Eth> {
+export function useEvmNativeBalance(walletAddress?: EVMAddr): u<Eth> {
   const { data: nativeBalance = ZERO_ETH_BALANCE } =
     useEvmNativeBalanceQuery(walletAddress);
 
