@@ -55,5 +55,8 @@
     "babel-loader": "8.1.0",
     "webpack": "4.44.2",
     "@terra-money/terra.js": "3.0.2"
+  },
+  "dependencies": {
+    "@ethersproject/contracts": "^5.5.0"
   }
 }
