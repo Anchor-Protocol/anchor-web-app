@@ -1,22 +1,23 @@
 import React from 'react';
 import { UIElementProps } from '@libs/ui';
-import { TokenBalancesContext } from 'contexts/balances';
+import { BalancesContext } from 'contexts/balances';
 import {
-  AnchorTokenBalances,
+  AnchorBalances,
   DefaultAnchorTokenBalances,
 } from '@anchor-protocol/app-fns';
-import { u, UST, Eth } from '@anchor-protocol/types';
+import { u, UST, Eth, Native } from '@anchor-protocol/types';
 
 const EvmTokenBalancesProvider = ({ children }: UIElementProps) => {
-  const tokenBalances: AnchorTokenBalances = {
+  const tokenBalances: AnchorBalances = {
     ...DefaultAnchorTokenBalances,
     uUST: '123456' as u<UST>,
-    uEth: '654321' as u<Eth>,
+    uNative: '123124' as u<Native>
   };
+
   return (
-    <TokenBalancesContext.Provider value={tokenBalances}>
+    <BalancesContext.Provider value={tokenBalances}>
       {children}
-    </TokenBalancesContext.Provider>
+    </BalancesContext.Provider>
   );
 };
 
