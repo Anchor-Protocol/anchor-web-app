@@ -72,7 +72,7 @@ export const VestingClaimNotification = styled(VestingClaimNotificationBase)`
     font-weight: 400;
     line-height: 20px;
     text-align: left;
-    color: ${({ theme }) => theme.dimTextColor};
+    color: ${({ theme }) => theme.textColor};
   }
 
   .ignore {
