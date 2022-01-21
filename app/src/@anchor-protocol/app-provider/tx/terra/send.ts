@@ -13,7 +13,6 @@ export interface TerraSendTxParams {
   memo?: string;
   amount: Token;
   txFee: u<UST>;
-
   onTxSucceed?: () => void;
 }
 

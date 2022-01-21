@@ -1,3 +1,4 @@
+import { formatUST } from '@anchor-protocol/notation';
 import {
   CW20Addr,
   Gas,
@@ -86,9 +87,15 @@ export function terraSendTx($: {
       try {
         return {
           value: null,
-
           phase: TxStreamPhase.SUCCEED,
-          receipts: [helper.txHashReceipt()],
+          receipts: [
+            {
+              name: 'Amount',
+              value: formatUST($.amount as u<UST>) + ' UST',
+            },
+            helper.txHashReceipt(),
+            helper.txFeeReceipt(),
+          ],
         } as TxResultRendering;
       } catch (error) {
         return helper.failedToParseTxResult();
