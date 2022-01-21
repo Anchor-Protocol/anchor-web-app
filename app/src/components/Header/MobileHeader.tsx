@@ -17,6 +17,7 @@ import { AirdropContent } from './airdrop/AirdropContent';
 import logoUrl from './assets/Logo.svg';
 import { useWalletDetailDialog } from './mobile/useWalletDetailDialog';
 import { ViewAddressButton } from './mobile/ViewAddressButton';
+import { useVestingClaimNotification } from './vesting/VestingClaimNotification';
 
 export interface MobileHeaderProps {
   className?: string;
@@ -56,6 +57,8 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
   const matchAirdrop = useRouteMatch('/airdrop');
 
   const [airdropClosed, setAirdropClosed] = useState(() => _airdropClosed);
+
+  const [vestingClaimNotification] = useVestingClaimNotification();
 
   const closeAirdrop = useCallback(() => {
     setAirdropClosed(true);
@@ -150,6 +153,7 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
               <AirdropContent onClose={closeAirdrop} isMobileLayout />
             </section>
           )}
+        {vestingClaimNotification}
       </header>
 
       {open && <div style={{ height: mobileHeaderHeight }} />}

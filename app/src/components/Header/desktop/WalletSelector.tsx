@@ -1,13 +1,10 @@
 import { useAirdropCheckQuery } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
-import { useAncVestingAccountQuery } from '@anchor-protocol/app-provider/queries/anc/vestingClaim';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
-import { useLocalStorage } from '@libs/use-local-storage';
 import { ClickAwayListener } from '@material-ui/core';
-import { Dec } from '@terra-money/terra.js';
 import {
   ConnectType,
   useWallet,
@@ -21,53 +18,11 @@ import { useMediaQuery } from 'react-responsive';
 import { Link, useRouteMatch } from 'react-router-dom';
 import styled from 'styled-components';
 import { AirdropContent } from '../airdrop/AirdropContent';
-import { VestingClaimNotification } from '../vesting/VestingClaimNotification';
+import { useVestingClaimNotification } from '../vesting/VestingClaimNotification';
 import { WalletDetailContent } from '../wallet/WalletDetailContent';
 import { ConnectedButton } from './ConnectedButton';
 import { DropdownBox, DropdownContainer } from './DropdownContainer';
 import { NotConnectedButton } from './NotConnectedButton';
-
-function useVestingClaimNotification() {
-  const { data: { vestingAccount } = {} } = useAncVestingAccountQuery();
-
-  const matchAncVestingClaim = useRouteMatch('/anc/vesting/claim');
-
-  const [open, setOpen] = useState(true);
-
-  const [ignore, setIgnore] = useLocalStorage(
-    '__anchor_ignore_vesting_claim',
-    () => {
-      const yesterday = new Date(new Date().getTime() - 86400000);
-      return yesterday.toISOString();
-    },
-  );
-
-  const showNotification =
-    open &&
-    !matchAncVestingClaim &&
-    vestingAccount &&
-    new Dec(vestingAccount.accrued_anc).gt(0) &&
-    new Date(ignore) < new Date();
-
-  return [
-    showNotification && (
-      <DropdownContainer>
-        <DropdownBox>
-          <VestingClaimNotification
-            onClose={(ignored) => {
-              setOpen(false);
-              if (ignored) {
-                setIgnore(
-                  new Date(new Date().getTime() + 86400000).toISOString(),
-                );
-              }
-            }}
-          />
-        </DropdownBox>
-      </DropdownContainer>
-    ),
-  ];
-}
 
 export interface WalletSelectorProps {
   className?: string;
