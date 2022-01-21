@@ -150,7 +150,7 @@ const BOMBAY_CONTRACT_ADDRESS = {
   team_vesting: 'not available in testnet',
   terraswapFactory: 'terra18qpjm4zkvqnpjpw0zn0tdr8gdzvt8au35v45xf',
   astroportGenerator: 'terra1gjm7d9nmewn27qzrvqyhda8zsfl40aya7tvaw5',
-  vesting: 'terra103wwf2suje2888gpencshlrze8z34h870vxfw7',
+  vesting: 'terra15rq8j7auyyd6ydcfkktm3kdagcg56228uclkzy',
 };
 
 export const ANCHOR_CONTRACT_ADDRESS = (
