@@ -6,7 +6,8 @@ import {
 } from '@anchor-protocol/notation';
 import { u, UST } from '@anchor-protocol/types';
 import {
-  useEarnDepositForm, useEarnDepositTx,
+  useEarnDepositForm,
+  useEarnDepositTx,
 } from '@anchor-protocol/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
