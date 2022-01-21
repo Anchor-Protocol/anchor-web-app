@@ -6,7 +6,7 @@ import { EVM_QUERY_KEY, REFETCH_INTERVAL } from '../../env';
 import { erc2020BalanceQuery } from '../../../app-fns/queries/erc20/balanceOf';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
-import { useEvmWallet } from '../../../web3';
+import { useEvmWallet } from '../../../evm-wallet';
 import ERC20ABI from '../../../../abi/erc20.json';
 
 const queryFn = createQueryFn(erc2020BalanceQuery);

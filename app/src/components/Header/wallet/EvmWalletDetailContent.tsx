@@ -21,7 +21,7 @@ import {
 } from '@material-ui/icons';
 // import { NetworkInfo } from '@terra-money/use-wallet';
 import { Connection as TerraConnection } from '@terra-money/wallet-provider';
-import { Connection } from '@libs/web3';
+import { Connection } from '@libs/evm-wallet';
 // import big from 'big.js';
 // import { BuyButton, BuyLink } from 'components/BuyButton';
 import React from 'react';
