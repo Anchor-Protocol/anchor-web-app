@@ -7,7 +7,7 @@ import {
 import { u, UST } from '@anchor-protocol/types';
 import {
   useEarnDepositForm,
-  useEarnDepositTx2,
+  useEarnDepositTx,
 } from '@anchor-protocol/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
@@ -53,7 +53,7 @@ function ComponentBase({
 
   const [openConfirm, confirmElement] = useConfirm();
 
-  const [deposit, depositResult] = useEarnDepositTx2();
+  const [deposit, depositResult] = useEarnDepositTx();
 
   // ---------------------------------------------
   // states
