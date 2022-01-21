@@ -23,7 +23,8 @@ const EvmWalletSelector = () => {
 
   return (
     <WalletSelector
-      initializing={false}
+      walletAddress={address}
+      initializing={status === 'initialization'}
       open={open}
       onClick={onClick}
       onClose={onClose}
