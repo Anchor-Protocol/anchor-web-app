@@ -9,7 +9,7 @@ import { patchReactQueryFocusRefetching } from '@libs/patch-react-query-focus-re
 import { SnackbarProvider } from '@libs/snackbar';
 import { useLongtimeNoSee } from '@libs/use-longtime-no-see';
 import { RouterScrollRestoration } from '@libs/use-router-scroll-restoration';
-import { Web3Provider } from '@libs/web3';
+import { EvmWalletProvider } from '@libs/evm-wallet';
 import { captureException } from '@sentry/react';
 import { useRequestReloadDialog } from 'components/dialogs/useRequestReloadDialog';
 import { SnackbarContainer } from 'components/SnackbarContainer';
@@ -49,7 +49,7 @@ function Providers({ children }: { children: ReactNode }) {
           <AnchorWebappProvider
             indexerApiEndpoints={ANCHOR_INDEXER_API_ENDPOINTS}
           >
-            <Web3Provider>
+            <EvmWalletProvider>
               {/** Theme Providing to Styled-Components and Material-UI */}
               <ThemeProvider initialTheme="light">
                 {/** Snackbar Provider :: useSnackbar() */}
@@ -62,7 +62,7 @@ function Providers({ children }: { children: ReactNode }) {
                   </NotificationProvider>
                 </SnackbarProvider>
               </ThemeProvider>
-            </Web3Provider>
+            </EvmWalletProvider>
           </AnchorWebappProvider>
         </AppProvider>
       </QueryClientProvider>
