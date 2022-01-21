@@ -9,6 +9,7 @@ import { patchReactQueryFocusRefetching } from '@libs/patch-react-query-focus-re
 import { SnackbarProvider } from '@libs/snackbar';
 import { useLongtimeNoSee } from '@libs/use-longtime-no-see';
 import { RouterScrollRestoration } from '@libs/use-router-scroll-restoration';
+import { Web3Provider } from '@libs/web3';
 import { captureException } from '@sentry/react';
 import { useRequestReloadDialog } from 'components/dialogs/useRequestReloadDialog';
 import { SnackbarContainer } from 'components/SnackbarContainer';
@@ -49,18 +50,20 @@ function Providers({ children }: { children: ReactNode }) {
           <AnchorWebappProvider
             indexerApiEndpoints={ANCHOR_INDEXER_API_ENDPOINTS}
           >
-            {/** Theme Providing to Styled-Components and Material-UI */}
-            <ThemeProvider initialTheme="light">
-              {/** Snackbar Provider :: useSnackbar() */}
-              <SnackbarProvider>
-                <NotificationProvider>
-                  <JobsProvider>
-                    {/** Application Layout */}
-                    {children}
-                  </JobsProvider>
-                </NotificationProvider>
-              </SnackbarProvider>
-            </ThemeProvider>
+            <Web3Provider>
+              {/** Theme Providing to Styled-Components and Material-UI */}
+              <ThemeProvider initialTheme="light">
+                {/** Snackbar Provider :: useSnackbar() */}
+                <SnackbarProvider>
+                  <NotificationProvider>
+                    <JobsProvider>
+                      {/** Application Layout */}
+                      {children}
+                    </JobsProvider>
+                  </NotificationProvider>
+                </SnackbarProvider>
+              </ThemeProvider>
+            </Web3Provider>
           </AnchorWebappProvider>
         </AppProvider>
       </QueryClientProvider>

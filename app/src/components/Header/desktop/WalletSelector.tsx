@@ -1,4 +1,4 @@
-import { useTerraWalletAddress } from '@anchor-protocol/app-provider';
+import { useEvmWallet } from '@libs/web3';
 import { ClickAwayListener } from '@material-ui/core';
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';
@@ -29,14 +29,14 @@ function WalletSelectorBase({
   // dependencies
   // ---------------------------------------------
 
-  const walletAddress = useTerraWalletAddress();
+  const { address, isActivating } = useEvmWallet();
   const tokenBalances = useTokenBalances();
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
 
-  if (initializing) {
+  if (isActivating) {
     return (
       <div className={className}>
         <ConnectWalletButton initializing={true} onClick={onClick} />
@@ -44,7 +44,7 @@ function WalletSelectorBase({
     );
   }
 
-  if (!walletAddress) {
+  if (!address) {
     return (
       <ClickAwayListener onClickAway={onClose}>
         <div className={className}>
@@ -63,7 +63,7 @@ function WalletSelectorBase({
     <ClickAwayListener onClickAway={onClose}>
       <div className={className}>
         <ConnectWalletButton
-          walletAddress={walletAddress}
+          walletAddress={address}
           totalUST={tokenBalances.uUST}
           onClick={onClick}
         />
