@@ -4,10 +4,10 @@ import styled from 'styled-components';
 import { DropdownBox, DropdownContainer } from './DropdownContainer';
 import { ConnectWalletButton } from './ConnectWalletButton';
 import { useTokenBalances } from 'contexts/balances';
-import { useTerraWalletAddress } from '@anchor-protocol/app-provider';
 
 export interface WalletSelectorProps {
   className?: string;
+  walletAddress?: string;
   initializing: boolean;
   open: boolean;
   onClick: () => void;
@@ -18,8 +18,9 @@ export interface WalletSelectorProps {
 //let _airdropClosed: boolean = false;
 
 function WalletSelectorBase({
-  className,
+  walletAddress,
   initializing,
+  className,
   open,
   onClick,
   onClose,
@@ -29,7 +30,6 @@ function WalletSelectorBase({
   // dependencies
   // ---------------------------------------------
 
-  const walletAddress = useTerraWalletAddress();
   const tokenBalances = useTokenBalances();
 
   // ---------------------------------------------

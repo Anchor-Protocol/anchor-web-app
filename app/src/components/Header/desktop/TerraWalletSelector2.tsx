@@ -172,6 +172,7 @@ const TerraWalletSelector = () => {
 
   return (
     <WalletSelector
+      walletAddress={walletAddress}
       initializing={status === WalletStatus.INITIALIZING}
       open={open}
       onClick={connectWallet}

@@ -1,6 +1,6 @@
 import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
-import { useEvmWallet } from '@libs/web3';
+import { useEvmWallet } from '@libs/evm-wallet';
 import React, { useCallback, useState } from 'react';
 import { ConnectionTypeList } from './ConnectionTypeList';
 import { TermsMessage } from './TermsMessage';
@@ -36,7 +36,7 @@ const EvmWalletConnectionList = ({
 };
 
 const EvmWalletSelector = () => {
-  const { actions, address, chainId, connection } = useEvmWallet();
+  const { actions, address, chainId, connection, status } = useEvmWallet();
   const [open, setOpen] = useState(false);
   const onClick = useCallback(() => setOpen((prev) => !prev), []);
   const onClose = useCallback(() => setOpen(false), []);
@@ -48,7 +48,8 @@ const EvmWalletSelector = () => {
 
   return (
     <WalletSelector
-      initializing={false}
+      walletAddress={address}
+      initializing={status === 'initialization'}
       open={open}
       onClick={onClick}
       onClose={onClose}

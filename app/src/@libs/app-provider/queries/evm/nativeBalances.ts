@@ -5,7 +5,7 @@ import { useApp } from '../../contexts/app';
 import { EVM_QUERY_KEY, REFETCH_INTERVAL } from '../../env';
 import { EVMAddr, u } from '../../../types';
 import { Eth } from '../../../../@anchor-protocol/types';
-import { useEvmWallet } from '../../../web3';
+import { useEvmWallet } from '../../../evm-wallet';
 import { BigNumber } from '@ethersproject/bignumber';
 
 const queryFn = createQueryFn(evmNativeBalancesQuery);
