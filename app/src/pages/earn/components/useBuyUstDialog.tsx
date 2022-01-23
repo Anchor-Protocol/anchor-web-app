@@ -125,6 +125,20 @@ function ComponentBase({
               <img src={transak} alt="Transak" />
             </i>
           </EmbossButton>
+
+          <EmbossButton
+            component="a"
+            href="https://www.moonpay.com/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>
+              MoonPay{' '}
+              <sub>
+                <Launch />
+              </sub>
+            </span>
+          </EmbossButton>
         </section>
       </Dialog>
     </Modal>
