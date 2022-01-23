@@ -11,6 +11,7 @@ import transak from './assets/transak.svg';
 import binance from './assets/binance.svg';
 import { dialogStyle } from './useInsuranceCoverageDialog';
 import okex from './assets/okex.svg';
+import moonpay from './assets/moonpay.svg';
 
 interface FormParams {
   className?: string;
@@ -138,6 +139,9 @@ function ComponentBase({
                 <Launch />
               </sub>
             </span>
+            <i>
+              <img src={moonpay} alt="MoonPay" />
+            </i>
           </EmbossButton>
         </section>
       </Dialog>
