@@ -1,4 +1,5 @@
 import { ancSellTx } from '@anchor-protocol/app-fns';
+import { useAnchorBank } from '@anchor-protocol/app-provider';
 import { ANC, Rate, UST } from '@anchor-protocol/types';
 import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { formatExecuteMsgNumber } from '@libs/formatter';
@@ -22,6 +23,8 @@ export function useAncSellTx() {
 
   const { queryClient, txErrorReporter, contractAddress, constants } =
     useAnchorWebapp();
+
+  const bank = useAnchorBank();
 
   const fixedFee = useFixedFee();
 
@@ -49,6 +52,7 @@ export function useAncSellTx() {
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: fixedFee,
+        tax: bank.tax,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
         // query
@@ -68,6 +72,7 @@ export function useAncSellTx() {
       contractAddress.cw20.ANC,
       contractAddress.terraswap.ancUstPair,
       fixedFee,
+      bank.tax,
       constants.gasWanted,
       constants.gasAdjustment,
       queryClient,

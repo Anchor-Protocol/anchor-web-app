@@ -48,7 +48,6 @@ export function ancSellTx($: {
   ancUstPairAddr: HumanAddr;
   maxSpread: Rate;
   beliefPrice: UST;
-
   gasFee: Gas;
   gasAdjustment: Rate<number>;
   fixedGas: u<UST>;
