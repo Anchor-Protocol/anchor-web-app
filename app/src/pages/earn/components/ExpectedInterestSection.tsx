@@ -1,5 +1,5 @@
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
-import { u, UST } from '@anchor-protocol/types';
+import { aUST, u, UST } from '@anchor-protocol/types';
 import {
   useAnchorWebapp,
   useEarnEpochStatesQuery,
@@ -51,7 +51,7 @@ export function ExpectedInterestSection({
 
   const [tab, setTab] = useState<Item>(() => tabItems[0]);
 
-  const { uaUST } = useTokenBalances();
+  const { uaUST = '0' as u<aUST> } = useTokenBalances();
 
   const { data: { moneyMarketEpochState, overseerEpochState } = {} } =
     useEarnEpochStatesQuery();
@@ -60,6 +60,8 @@ export function ExpectedInterestSection({
     if (!moneyMarketEpochState || !overseerEpochState) {
       return undefined;
     }
+
+    console.log('uaUST=', uaUST);
 
     const ustBalance = big(uaUST).mul(moneyMarketEpochState.exchange_rate);
     const annualizedInterestRate = big(overseerEpochState.deposit_rate).mul(

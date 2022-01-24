@@ -4,7 +4,6 @@ import {
   useEarnWithdrawForm,
   useEarnWithdrawTx,
 } from '@anchor-protocol/app-provider';
-import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import {
   formatUST,
   formatUSTInput,
@@ -21,7 +20,6 @@ import type { DialogProps, OpenDialog } from '@libs/use-dialog';
 import { useDialog } from '@libs/use-dialog';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
@@ -30,6 +28,8 @@ import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import type { ReactNode } from 'react';
 import React, { ChangeEvent, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
+import { useTokenBalances } from 'contexts/balances';
+import { useAccount } from 'contexts/account';
 
 interface FormParams {
   className?: string;
@@ -51,7 +51,7 @@ function ComponentBase({
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const connectedWallet = useConnectedWallet();
+  const account = useAccount();
 
   const [withdraw, withdrawResult] = useEarnWithdrawTx();
 
@@ -71,9 +71,7 @@ function ComponentBase({
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const {
-    tokenBalances: { uaUST },
-  } = useAnchorBank();
+  const { uaUST } = useTokenBalances();
 
   const { data } = useEarnEpochStatesQuery();
 
@@ -91,7 +89,7 @@ function ComponentBase({
   // ---------------------------------------------
   const proceed = useCallback(
     async (withdrawAmount: UST, txFee: u<UST<BigSource>> | undefined) => {
-      if (!connectedWallet || !withdraw || !data) {
+      if (!account.connected || !withdraw || !data) {
         return;
       }
 
@@ -102,7 +100,7 @@ function ComponentBase({
         txFee: txFee!.toString() as u<UST>,
       });
     },
-    [connectedWallet, data, withdraw],
+    [account.connected, data, withdraw],
   );
 
   // ---------------------------------------------
@@ -180,8 +178,8 @@ function ComponentBase({
           <ActionButton
             className="proceed"
             disabled={
-              !connectedWallet ||
-              !connectedWallet.availablePost ||
+              !account.connected ||
+              !account.availablePost ||
               !withdraw ||
               !availablePost
             }
