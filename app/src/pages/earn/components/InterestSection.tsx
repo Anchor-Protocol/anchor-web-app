@@ -48,8 +48,8 @@ export function InterestSection({ className }: InterestSectionProps) {
     const history = apyHistory
       ?.map(({ Timestamp, DepositRate }) => ({
         date: new Date(Timestamp * 1000),
-        value: (parseFloat(DepositRate) *
-          constants.blocksPerYear) as Rate<number>,
+        value: (Math.pow(parseFloat(DepositRate) + 1, constants.blocksPerYear) -
+          1) as Rate<number>,
       }))
       .reverse();
 
@@ -58,9 +58,10 @@ export function InterestSection({ className }: InterestSectionProps) {
           ...history,
           {
             date: new Date(),
-            value: big(overseerEpochState.deposit_rate)
-              .mul(constants.blocksPerYear)
-              .toNumber() as Rate<number>,
+            value: (Math.pow(
+              big(overseerEpochState.deposit_rate).add(1).toNumber(),
+              constants.blocksPerYear,
+            ) - 1) as Rate<number>,
           },
         ]
       : undefined;

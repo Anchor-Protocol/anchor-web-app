@@ -64,21 +64,26 @@ export function ExpectedInterestSection({
     }
 
     const ustBalance = big(uaUST).mul(moneyMarketEpochState.exchange_rate);
-    const annualizedInterestRate = big(overseerEpochState.deposit_rate).mul(
-      constants.blocksPerYear,
-    );
 
-    return ustBalance
-      .mul(annualizedInterestRate)
-      .div(
-        tab.value === 'month'
-          ? 12
-          : tab.value === 'week'
-          ? 52
-          : tab.value === 'day'
-          ? 365
-          : 1,
-      ) as u<UST<Big>>;
+    const blockApr = parseFloat(overseerEpochState.deposit_rate) + 1;
+    const dayInterestRate = big(Math.pow(blockApr, constants.blocksPerYear))
+      .sub(1)
+      .div(365);
+
+    return ustBalance.mul(
+      dayInterestRate
+        .add(1)
+        .pow(
+          tab.value === 'month'
+            ? 30
+            : tab.value === 'week'
+            ? 7
+            : tab.value === 'day'
+            ? 1
+            : 365,
+        )
+        .sub(1),
+    ) as u<UST<Big>>;
   }, [
     constants.blocksPerYear,
     moneyMarketEpochState,
