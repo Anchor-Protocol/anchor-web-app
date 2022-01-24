@@ -61,6 +61,8 @@ export function ExpectedInterestSection({
       return undefined;
     }
 
+    console.log('uaUST=', uaUST);
+
     const ustBalance = big(uaUST).mul(moneyMarketEpochState.exchange_rate);
     const annualizedInterestRate = big(overseerEpochState.deposit_rate).mul(
       constants.blocksPerYear,

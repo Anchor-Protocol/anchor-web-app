@@ -1,4 +1,4 @@
-import { u, UST } from '@anchor-protocol/types';
+import { aUST, u, UST } from '@anchor-protocol/types';
 import { TxResultRendering } from '@libs/app-fns';
 import { createContext, useContext } from 'react';
 import { Observable } from 'rxjs';
@@ -9,8 +9,15 @@ export interface AnchorDepositParams {
   onTxSucceed?: () => void;
 }
 
+export interface AnchorWithdrawParams {
+  withdrawAmount: aUST;
+  txFee: u<UST>;
+  onTxSucceed?: () => void;
+}
+
 export interface AnchorApi {
   deposit: (params: AnchorDepositParams) => Observable<TxResultRendering>;
+  withdraw: (params: AnchorWithdrawParams) => Observable<TxResultRendering>;
 }
 
 const AnchorApiContext = createContext<AnchorApi | undefined>(undefined);
