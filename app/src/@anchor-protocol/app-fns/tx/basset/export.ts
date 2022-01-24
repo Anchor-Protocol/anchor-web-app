@@ -31,7 +31,6 @@ import { pipe } from '@rx-stream/pipe';
 import {
   CreateTxOptions,
   Fee,
-  Int,
   MsgExecuteContract,
 } from '@terra-money/terra.js';
 import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
@@ -90,17 +89,12 @@ export function bAssetExportTx($: {
       // from the Terra asset info
 
       try {
-        // const returnAmount = new Int(
-        //   pickAttributeValue<u<bAsset>>(fromContract, 16),
-        // ).div(100);
-        // const burnAmount = new Int(
-        //   pickAttributeValue<u<bAsset>>(fromContract, 17),
-        // );
-
         const returnAmount = pickAttributeValue<u<bAsset>>(fromContract, 16);
         const burnAmount = pickAttributeValue<u<bAsset>>(fromContract, 17);
 
-        const exchangeRate = new Int(burnAmount).div(new Int(returnAmount));
+        // const exchangeRate = new Int(burnAmount).div(
+        //   new Int(returnAmount).div(100),
+        // );
 
         return {
           value: null,
@@ -120,9 +114,9 @@ export function bAssetExportTx($: {
               //   ` ${$.bAssetInfo.bAsset.symbol}`,
               value: formatNumeric(returnAmount as u<any>, 8) + ` webETH`,
             },
-            exchangeRate && {
+            {
               name: 'Exchange rate',
-              value: `${exchangeRate} bETH per webETH`,
+              value: `1 bETH per webETH`,
             },
             helper.txHashReceipt(),
             helper.txFeeReceipt(),

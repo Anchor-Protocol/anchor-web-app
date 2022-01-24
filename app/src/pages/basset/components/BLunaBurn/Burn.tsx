@@ -434,8 +434,9 @@ export function Burn({
         {exchangeRate && (
           <SwapListItem
             label="Price"
-            currencyA="bLuna"
-            currencyB="Luna"
+            currencyA="Luna"
+            currencyB="bLuna"
+            initialDirection="a/b"
             exchangeRateAB={exchangeRate.exchange_rate}
             formatExchangeRate={(ratio) => formatLuna(ratio as Luna<Big>)}
           />

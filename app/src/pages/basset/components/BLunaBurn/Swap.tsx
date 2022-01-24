@@ -424,8 +424,8 @@ export function Swap({
         <TxFeeList className="receipt">
           <SwapListItem
             label="Price"
-            currencyA="LUNA"
-            currencyB="bLUNA"
+            currencyA="bLUNA"
+            currencyB="LUNA"
             exchangeRateAB={simulation.beliefPrice}
             initialDirection="a/b"
             formatExchangeRate={(price) =>

@@ -1,3 +1,4 @@
+import { AnchorTax } from '@anchor-protocol/app-fns';
 import {
   formatANCWithPostfixUnits,
   formatUSTWithPostfixUnits,
@@ -27,8 +28,8 @@ import {
   createHookMsg,
   TxHelper,
 } from '@libs/app-fns/tx/internal';
-import { floor } from '@libs/big-math';
-import { demicrofy, formatTokenInput, stripUUSD } from '@libs/formatter';
+import { floor, min } from '@libs/big-math';
+import { demicrofy, formatTokenInput } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
 import {
@@ -51,6 +52,7 @@ export function ancSellTx($: {
   gasFee: Gas;
   gasAdjustment: Rate<number>;
   fixedGas: u<UST>;
+  tax: AnchorTax;
   network: NetworkInfo;
   queryClient: QueryClient;
   post: (tx: CreateTxOptions) => Promise<TxResult>;
@@ -113,13 +115,6 @@ export function ancSellTx($: {
           fromContract,
           'commission_amount',
         );
-        const transfer_amount = stripUUSD(
-          pickAttributeValueByKey<u<UST>>(
-            transfer,
-            'amount',
-            (attrs) => attrs[0],
-          ) ?? '0uusd',
-        );
 
         const pricePerANC =
           return_amount && offer_amount
@@ -129,7 +124,12 @@ export function ancSellTx($: {
           spread_amount && commission_amount
             ? (big(spread_amount).plus(commission_amount) as u<UST<Big>>)
             : undefined;
-        const txFee = big($.fixedGas).plus(transfer_amount) as u<UST<Big>>;
+
+        const txFee = offer_amount
+          ? (big($.fixedGas).plus(
+              min(big(offer_amount).mul($.tax.taxRate), $.tax.maxTaxUUSD),
+            ) as u<UST<Big>>)
+          : undefined;
 
         return {
           value: null,
