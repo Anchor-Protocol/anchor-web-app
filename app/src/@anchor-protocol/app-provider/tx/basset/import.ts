@@ -31,7 +31,8 @@ export function useBAssetImportTx(tokenAddr: CW20Addr | undefined) {
         !connectedWallet ||
         !connectedWallet.availablePost ||
         !bAssetInfo ||
-        !bAssetInfo.converterConfig.wormhole_token_address
+        !bAssetInfo.converterConfig.wormhole_token_address ||
+        !bAssetInfo.wormholeTokenInfo
       ) {
         throw new Error('Can not post!');
       }

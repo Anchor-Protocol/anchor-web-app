@@ -26,7 +26,7 @@ export type BAssetInfo = WasmQueryData<
   InfoWasmQuery & WormholeTokenWasmQuery
 > & {
   bAsset: moneyMarket.overseer.WhitelistResponse['elems'][number];
-  wormholeTokenInfo: cw20.TokenInfoResponse<Token>;
+  wormholeTokenInfo?: cw20.TokenInfoResponse<Token>;
 };
 
 export async function bAssetInfoQuery(
@@ -71,16 +71,23 @@ export async function bAssetInfoQuery(
     },
   });
 
-  const { tokenInfo: wormholeTokenInfo } = await cw20TokenInfoQuery(
-    converterConfig.wormhole_token_address!,
-    queryClient,
-  );
-
-  return {
+  const bAssetInfo = {
     bAsset,
     minter,
     custodyConfig,
     converterConfig,
-    wormholeTokenInfo,
   };
+
+  if (converterConfig.wormhole_token_address) {
+    const { tokenInfo: wormholeTokenInfo } = await cw20TokenInfoQuery(
+      converterConfig.wormhole_token_address!,
+      queryClient,
+    );
+    return {
+      ...bAssetInfo,
+      wormholeTokenInfo,
+    };
+  }
+
+  return bAssetInfo;
 }

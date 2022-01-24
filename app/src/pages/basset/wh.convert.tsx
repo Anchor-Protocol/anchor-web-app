@@ -38,7 +38,7 @@ function Component({ className, match, history }: WormholeConvertProps) {
       : 'ASSET';
     const whAssetSymbol = bAssetInfo
       ? prettifySymbol(
-          bAssetInfo.wormholeTokenInfo.symbol,
+          bAssetInfo.wormholeTokenInfo!.symbol,
           bAssetInfo.wormholeTokenInfo,
         )
       : 'whASSET';

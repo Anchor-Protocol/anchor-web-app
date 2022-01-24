@@ -113,7 +113,7 @@ function Component({ className, bAssetInfo }: WhImportProps) {
   // ---------------------------------------------
   const whSymbol = useMemo(() => {
     return prettifySymbol(
-      bAssetInfo.wormholeTokenInfo.symbol,
+      bAssetInfo.wormholeTokenInfo!.symbol,
       bAssetInfo.wormholeTokenInfo,
     );
   }, [bAssetInfo.wormholeTokenInfo]);

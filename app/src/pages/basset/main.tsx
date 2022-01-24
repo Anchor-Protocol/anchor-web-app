@@ -50,34 +50,36 @@ function Component({ className }: BAssetMainProps) {
         >
           <AssetCardContentBluna />
         </AssetCard>
-        {bAssetInfoList.map(
-          ({ bAsset, custodyConfig, wormholeTokenInfo, converterConfig }) => {
-            const bAssetSymbol = prettifySymbol(bAsset.symbol);
-            const whAssetSymbol = prettifySymbol(
-              wormholeTokenInfo.symbol,
-              wormholeTokenInfo,
-            );
+        {bAssetInfoList
+          .filter((asset) => asset.wormholeTokenInfo !== undefined)
+          .map(
+            ({ bAsset, custodyConfig, wormholeTokenInfo, converterConfig }) => {
+              const bAssetSymbol = prettifySymbol(bAsset.symbol);
+              const whAssetSymbol = prettifySymbol(
+                wormholeTokenInfo!.symbol,
+                wormholeTokenInfo,
+              );
 
-            return (
-              <AssetCard
-                key={custodyConfig.collateral_token}
-                to={`/basset/wh/${bAsset.symbol.toLowerCase()}`}
-                title={`${bAssetSymbol}/${whAssetSymbol}`}
-                bAssetIcon={<TokenIcon token="beth" />}
-                originAssetIcon={<TokenIcon token="wheth" />}
-                hoverText="CONVERT"
-              >
-                <AssetCardContentWormhole
-                  bAssetTokenAddr={bAsset.collateral_token}
-                  whAssetTokenAddr={converterConfig.wormhole_token_address}
-                  bAssetSymbol={bAssetSymbol}
-                  whAssetSymbol={whAssetSymbol}
-                  rewardAddr={custodyConfig.reward_contract}
-                />
-              </AssetCard>
-            );
-          },
-        )}
+              return (
+                <AssetCard
+                  key={custodyConfig.collateral_token}
+                  to={`/basset/wh/${bAsset.symbol.toLowerCase()}`}
+                  title={`${bAssetSymbol}/${whAssetSymbol}`}
+                  bAssetIcon={<TokenIcon token="beth" />}
+                  originAssetIcon={<TokenIcon token="wheth" />}
+                  hoverText="CONVERT"
+                >
+                  <AssetCardContentWormhole
+                    bAssetTokenAddr={bAsset.collateral_token}
+                    whAssetTokenAddr={converterConfig.wormhole_token_address}
+                    bAssetSymbol={bAssetSymbol}
+                    whAssetSymbol={whAssetSymbol}
+                    rewardAddr={custodyConfig.reward_contract}
+                  />
+                </AssetCard>
+              );
+            },
+          )}
       </ul>
     </CenteredLayout>
   );
