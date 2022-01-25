@@ -1,5 +1,5 @@
 import { bondMintTx } from '@anchor-protocol/app-fns';
-import { Gas, Luna, u, UST } from '@anchor-protocol/types';
+import { Gas, Luna, Rate, u, UST } from '@anchor-protocol/types';
 import { useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
@@ -11,6 +11,7 @@ export interface BondMintTxParams {
   bondAmount: Luna;
   gasWanted: Gas;
   txFee: u<UST>;
+  exchangeRate: Rate<string>;
   onTxSucceed?: () => void;
 }
 
@@ -23,7 +24,13 @@ export function useBondMintTx() {
   const refetchQueries = useRefetchQueries();
 
   const stream = useCallback(
-    ({ bondAmount, gasWanted, txFee, onTxSucceed }: BondMintTxParams) => {
+    ({
+      bondAmount,
+      gasWanted,
+      txFee,
+      exchangeRate,
+      onTxSucceed,
+    }: BondMintTxParams) => {
       if (!connectedWallet || !connectedWallet.availablePost) {
         throw new Error('Can not post!');
       }
@@ -37,6 +44,7 @@ export function useBondMintTx() {
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: txFee,
+        exchangeRate,
         gasFee: gasWanted,
         gasAdjustment: constants.gasAdjustment,
         // query

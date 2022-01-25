@@ -34,6 +34,7 @@ import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
 import {
   CreateTxOptions,
+  Dec,
   Fee,
   MsgExecuteContract,
 } from '@terra-money/terra.js';
@@ -95,11 +96,15 @@ export function bondBurnTx($: {
           'amount',
           (attrs) => attrs[0],
         );
-        const expectedAmount = pickAttributeValueByKey<u<bLuna>>(
-          fromContract,
-          'amount',
-          (attrs) => attrs.reverse()[0],
-        );
+        // const expectedAmount = pickAttributeValueByKey<u<bLuna>>(
+        //   fromContract,
+        //   'amount',
+        //   (attrs) => attrs.reverse()[0],
+        // );
+
+        const expectedAmount = new Dec(burnedAmount)
+          .mul($.exchangeRate)
+          .toString() as u<Luna>;
 
         // const exchangeRate =
         //   burnedAmount &&
@@ -112,7 +117,6 @@ export function bondBurnTx($: {
 
         return {
           value: null,
-
           phase: TxStreamPhase.SUCCEED,
           receipts: [
             burnedAmount && {

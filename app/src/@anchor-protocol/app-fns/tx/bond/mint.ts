@@ -36,17 +36,16 @@ import {
   MsgExecuteContract,
 } from '@terra-money/terra.js';
 import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
-import big, { BigSource } from 'big.js';
 import { Observable } from 'rxjs';
 
 export function bondMintTx($: {
   walletAddr: HumanAddr;
   bAssetHubAddr: HumanAddr;
   bondAmount: Luna;
-
   gasFee: Gas;
   gasAdjustment: Rate<number>;
   fixedGas: u<UST>;
+  exchangeRate: Rate<string>;
   network: NetworkInfo;
   queryClient: QueryClient;
   post: (tx: CreateTxOptions) => Promise<TxResult>;
@@ -94,10 +93,10 @@ export function bondMintTx($: {
 
         const mintedAmount = pickAttributeValue<u<bLuna>>(fromContract, 4);
 
-        const exchangeRate =
-          bondedAmount &&
-          mintedAmount &&
-          (big(bondedAmount).div(mintedAmount) as Rate<BigSource> | undefined);
+        // const exchangeRate =
+        //   bondedAmount &&
+        //   mintedAmount &&
+        //   (big(bondedAmount).div(mintedAmount) as Rate<BigSource> | undefined);
 
         return {
           value: null,
@@ -112,9 +111,9 @@ export function bondMintTx($: {
               name: 'Minted Amount',
               value: formatLuna(demicrofy(mintedAmount)) + ' bLUNA',
             },
-            exchangeRate && {
+            {
               name: 'Exchange Rate',
-              value: formatFluidDecimalPoints(exchangeRate, 6),
+              value: formatFluidDecimalPoints($.exchangeRate, 6),
             },
             helper.txHashReceipt(),
             helper.txFeeReceipt(),

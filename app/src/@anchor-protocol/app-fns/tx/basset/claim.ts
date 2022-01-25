@@ -1,9 +1,9 @@
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
 import { Gas, HumanAddr, Rate, u, UST } from '@anchor-protocol/types';
 import {
-  pickAttributeValue,
+  pickAttributeValueByKey,
   pickEvent,
-  pickRawLog,
+  pickRawLogs,
   TxResultRendering,
   TxStreamPhase,
 } from '@libs/app-fns';
@@ -15,16 +15,16 @@ import {
   TxHelper,
 } from '@libs/app-fns/tx/internal';
 import { floor } from '@libs/big-math';
-import { demicrofy, stripUUSD } from '@libs/formatter';
+import { demicrofy } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
 import {
   CreateTxOptions,
+  Dec,
   Fee,
   MsgExecuteContract,
 } from '@terra-money/terra.js';
 import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
-import big, { Big } from 'big.js';
 import { Observable } from 'rxjs';
 
 export function bAssetClaimTx($: {
@@ -57,48 +57,47 @@ export function bAssetClaimTx($: {
     _postTx({ helper, ...$ }),
     _pollTxInfo({ helper, ...$ }),
     ({ value: txInfo }) => {
-      const rawLog = pickRawLog(txInfo, 0);
+      const rawLogs = pickRawLogs(txInfo);
 
-      if (!rawLog) {
-        return helper.failedToFindRawLog();
-      }
+      // for now just aggregate the total rewards, but we can split
+      // these in the receipts if we can map the contract addresses
+      const total = rawLogs.reduce((previous, current) => {
+        const wasm = pickEvent(current, 'wasm');
+        if (wasm) {
+          const rewards = pickAttributeValueByKey<string>(wasm, 'rewards');
+          if (rewards) {
+            return previous.add(rewards);
+          }
+        }
+        return previous;
+      }, new Dec(0));
 
-      const transfer = pickEvent(rawLog, 'transfer');
+      // const rawLog = pickRawLog(txInfo, 0);
 
-      if (!transfer) {
-        return helper.failedToFindEvents('transfer');
-      }
+      // if (!rawLog) {
+      //   return helper.failedToFindRawLog();
+      // }
 
-      // https://finder.terra.money/bombay-12/tx/343E30771368EBB96CAE04E8260EF0E96949D2569DDAA3356B2C09AB75B65F73
+      // const wasm = pickEvent(rawLog, 'wasm');
+
+      // if (!wasm) {
+      //   return helper.failedToFindEvents('wasm');
+      // }
 
       try {
-        const claimedReward = pickAttributeValue<string>(transfer, 5);
-
-        const txFee = pickAttributeValue<string>(transfer, 2);
-
         return {
           value: null,
-
           phase: TxStreamPhase.SUCCEED,
           receipts: [
-            !!claimedReward && {
-              name: 'Claimed Reward',
-              value:
-                formatUSTWithPostfixUnits(demicrofy(stripUUSD(claimedReward))) +
-                ' UST',
-            },
-            helper.txHashReceipt(),
-            {
-              name: 'Tx Fee',
+            total && {
+              name: 'Claimed Rewards',
               value:
                 formatUSTWithPostfixUnits(
-                  demicrofy(
-                    big(txFee ? stripUUSD(txFee) : '0').plus($.fixedGas) as u<
-                      UST<Big>
-                    >,
-                  ),
+                  demicrofy(total.toString() as u<UST>),
                 ) + ' UST',
             },
+            helper.txHashReceipt(),
+            helper.txFeeReceipt(),
           ],
         } as TxResultRendering;
       } catch (error) {

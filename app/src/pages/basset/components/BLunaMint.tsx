@@ -26,7 +26,7 @@ import {
   SelectAndTextInputContainerLabel,
 } from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
 import { useAlert } from '@libs/neumorphism-ui/components/useAlert';
-import { Luna } from '@libs/types';
+import { Luna, Rate } from '@libs/types';
 import { StreamStatus } from '@rx-stream/react';
 import { Msg, MsgExecuteContract } from '@terra-money/terra.js';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
@@ -241,6 +241,9 @@ function Component({ className }: BLunaMintProps) {
           bondAmount,
           gasWanted: estimated.gasWanted,
           txFee: big(estimated.txFee).mul(gasPrice.uusd).toFixed() as u<UST>,
+          exchangeRate: big(1)
+            .div(exchangeRate?.exchange_rate ?? '1')
+            .toString() as Rate<string>,
           onTxSucceed: () => {
             init();
           },
@@ -262,6 +265,7 @@ function Component({ className }: BLunaMintProps) {
       connectedWallet,
       contractAddress.bluna.hub,
       estimateFee,
+      exchangeRate,
       gasPrice.uusd,
       init,
       mint,
