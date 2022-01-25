@@ -1,8 +1,8 @@
 import { computeTotalDeposit } from '@anchor-protocol/app-fns';
 import {
+  useAnchorApiTx,
   useEarnEpochStatesQuery,
   useEarnWithdrawForm,
-  useEarnWithdrawTx,
 } from '@anchor-protocol/app-provider';
 import {
   formatUST,
@@ -54,7 +54,7 @@ function ComponentBase({
   // ---------------------------------------------
   const account = useAccount();
 
-  const [withdraw, withdrawResult] = useEarnWithdrawTx();
+  const [withdraw, withdrawResult] = useAnchorApiTx((api) => api.withdraw);
 
   // ---------------------------------------------
   // states
