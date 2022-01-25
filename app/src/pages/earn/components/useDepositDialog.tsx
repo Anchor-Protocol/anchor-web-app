@@ -6,8 +6,8 @@ import {
 } from '@anchor-protocol/notation';
 import { u, UST } from '@anchor-protocol/types';
 import {
+  useAnchorApiTx,
   useEarnDepositForm,
-  useEarnDepositTx,
 } from '@anchor-protocol/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
@@ -53,7 +53,7 @@ function ComponentBase({
 
   const [openConfirm, confirmElement] = useConfirm();
 
-  const [deposit, depositResult] = useEarnDepositTx();
+  const [deposit, depositResult] = useAnchorApiTx((api) => api.deposit);
 
   // ---------------------------------------------
   // states
