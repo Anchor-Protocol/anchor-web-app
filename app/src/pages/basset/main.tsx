@@ -94,7 +94,7 @@ const StyledComponent = styled(Component)`
 
   .message-box {
     font-size: 13px;
-    margin: 10px 0 0 0;
+    margin: 20px 0 20px 0;
   }
 
   .asset-list {
