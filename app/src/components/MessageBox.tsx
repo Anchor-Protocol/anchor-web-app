@@ -8,6 +8,8 @@ export interface MessageBoxProps {
   className?: string;
   icon?: ReactNode;
   children: ReactNode;
+  variant?: 'normal' | 'highlight';
+  textAlign?: 'center' | 'left';
   style?: CSSProperties;
   level?: 'error' | 'info';
   hide?: {
@@ -21,6 +23,8 @@ function MessageBoxBase({
   icon,
   style,
   children,
+  variant = 'normal',
+  textAlign = 'center',
   hide,
 }: MessageBoxProps) {
   const [hidden, setHidden] = useState<boolean>(() => {
@@ -48,7 +52,12 @@ function MessageBoxBase({
   }, [hide]);
 
   return !hidden ? (
-    <article className={className} style={style}>
+    <article
+      className={className}
+      style={style}
+      data-variant={variant}
+      data-textalign={textAlign}
+    >
       {icon}
       <p className={icon ? 'padded' : ''}>{children}</p>
       {!!hide && <Close className="close" onClick={updateHidden} />}
@@ -70,9 +79,20 @@ export const MessageBox = styled(MessageBoxBase)`
   color: ${textColor};
   padding: 10px;
   margin: 20px 0;
-
   display: flex;
   align-items: center;
+
+  &[data-variant='highlight'] {
+    border: solid 1px #4bdb4b;
+    background-color: rgba(75, 219, 75, 0.1);
+    color: #285e28;
+  }
+
+  &[data-textalign='left'] {
+    > p {
+      text-align: left;
+    }
+  }
 
   > p {
     flex: 1;

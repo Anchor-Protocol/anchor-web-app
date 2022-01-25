@@ -38,7 +38,6 @@ import {
   MsgExecuteContract,
 } from '@terra-money/terra.js';
 import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
-import big, { BigSource } from 'big.js';
 import { Observable } from 'rxjs';
 
 export function bondBurnTx($: {
@@ -46,10 +45,10 @@ export function bondBurnTx($: {
   bAssetTokenAddr: CW20Addr;
   bAssetHubAddr: HumanAddr;
   burnAmount: bLuna;
-
   gasFee: Gas;
   gasAdjustment: Rate<number>;
   fixedGas: u<UST>;
+  exchangeRate: Rate<string>;
   network: NetworkInfo;
   queryClient: QueryClient;
   post: (tx: CreateTxOptions) => Promise<TxResult>;
@@ -102,12 +101,14 @@ export function bondBurnTx($: {
           (attrs) => attrs.reverse()[0],
         );
 
-        const exchangeRate =
-          burnedAmount &&
-          expectedAmount &&
-          (big(expectedAmount).div(burnedAmount) as
-            | Rate<BigSource>
-            | undefined);
+        // const exchangeRate =
+        //   burnedAmount &&
+        //   expectedAmount &&
+        //   (big(expectedAmount).div(burnedAmount) as
+        //     | Rate<BigSource>
+        //     | undefined);
+
+        //     exchangeRate
 
         return {
           value: null,
@@ -122,9 +123,9 @@ export function bondBurnTx($: {
               name: 'Expected Amount',
               value: formatLuna(demicrofy(expectedAmount)) + ' LUNA',
             },
-            exchangeRate && {
+            {
               name: 'Exchange Rate',
-              value: formatFluidDecimalPoints(exchangeRate, 6),
+              value: formatFluidDecimalPoints($.exchangeRate, 6),
             },
             helper.txHashReceipt(),
             helper.txFeeReceipt(),

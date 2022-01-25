@@ -30,6 +30,8 @@ function Component({ className }: BAssetMainProps) {
       <MessageBox
         className="message-box"
         icon={<InfoIcon />}
+        variant="highlight"
+        textAlign="left"
         level="info"
         hide={{ id: 'basset_transfer', period: 1000 * 60 * 60 * 24 * 7 }}
       >
@@ -91,13 +93,8 @@ const StyledComponent = styled(Component)`
   }
 
   .message-box {
-    margin: 20px 0 20px 0;
-    border: solid 1px #4bdb4b;
-    background-color: rgba(75, 219, 75, 0.1);
-    color: #285e28;
-    p {
-      text-align: left;
-    }
+    font-size: 13px;
+    margin: 10px 0 0 0;
   }
 
   .asset-list {

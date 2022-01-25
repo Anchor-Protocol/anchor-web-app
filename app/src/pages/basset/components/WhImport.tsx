@@ -166,7 +166,7 @@ function Component({ className, bAssetInfo }: WhImportProps) {
 
       <SelectAndTextInputContainer
         className="from"
-        gridColumns={[120, '1fr']}
+        gridColumns={[140, '1fr']}
         error={!!invalidAmount}
         leftHelperText={invalidAmount}
         rightHelperText={
@@ -207,7 +207,7 @@ function Component({ className, bAssetInfo }: WhImportProps) {
         <p />
       </div>
 
-      <SelectAndTextInputContainer className="to" gridColumns={[120, '1fr']}>
+      <SelectAndTextInputContainer className="to" gridColumns={[140, '1fr']}>
         <SelectAndTextInputContainerLabel>
           <TokenIcon token={symbolToTokenIcon(bSymbol)} /> {bSymbol}
         </SelectAndTextInputContainerLabel>

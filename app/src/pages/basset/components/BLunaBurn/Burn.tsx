@@ -27,7 +27,7 @@ import {
   SelectAndTextInputContainerLabel,
 } from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
 import { useAlert } from '@libs/neumorphism-ui/components/useAlert';
-import { Gas, Luna, u, UST } from '@libs/types';
+import { Gas, Luna, Rate, u, UST } from '@libs/types';
 import { InfoOutlined } from '@material-ui/icons';
 import { StreamStatus } from '@rx-stream/react';
 import { Msg, MsgExecuteContract } from '@terra-money/terra.js';
@@ -200,6 +200,7 @@ export function Burn({
           burnAmount,
           gasWanted: estimated.gasWanted,
           txFee: big(estimated.txFee).mul(gasPrice.uusd).toFixed() as u<UST>,
+          exchangeRate: exchangeRate?.exchange_rate ?? ('1' as Rate<string>),
           onTxSucceed: () => {
             init();
           },
@@ -222,6 +223,7 @@ export function Burn({
       connectedWallet,
       contractAddress.bluna.hub,
       contractAddress.cw20.bLuna,
+      exchangeRate,
       estimateFee,
       gasPrice.uusd,
       init,
