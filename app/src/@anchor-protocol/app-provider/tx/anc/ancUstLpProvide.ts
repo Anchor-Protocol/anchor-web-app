@@ -44,7 +44,7 @@ export function useAncAncUstLpProvideTx() {
       return ancAncUstLpProvideTx({
         // fabricateTerraswapProvideLiquidityANC
         ancTokenAddr: contractAddress.cw20.ANC,
-        ancUstPairAddr: contractAddress.cw20.AncUstLP,
+        ancUstPairAddr: contractAddress.terraswap.ancUstPair,
         walletAddr: connectedWallet.walletAddress,
         ancAmount,
         ustAmount,
@@ -74,7 +74,7 @@ export function useAncAncUstLpProvideTx() {
       connectedWallet,
       ancPrice,
       contractAddress.cw20.ANC,
-      contractAddress.cw20.AncUstLP,
+      contractAddress.terraswap.ancUstPair,
       tax,
       fixedFee,
       constants.gasWanted,

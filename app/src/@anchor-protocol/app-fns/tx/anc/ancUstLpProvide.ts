@@ -48,7 +48,7 @@ import { AnchorTax } from '../../types';
 
 export function ancAncUstLpProvideTx($: {
   walletAddr: HumanAddr;
-  ancUstPairAddr: CW20Addr;
+  ancUstPairAddr: HumanAddr;
   ancTokenAddr: CW20Addr;
   ancAmount: ANC;
   ustAmount: UST;
