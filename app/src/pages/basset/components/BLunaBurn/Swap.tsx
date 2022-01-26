@@ -54,14 +54,19 @@ import { SwapSimulation } from '../../models/swapSimulation';
 import { BurnSwitch } from '../BurnSwitch';
 import { ConvertSymbols, ConvertSymbolsContainer } from '../ConvertSymbols';
 import { BurnComponent } from './types';
+import styled from 'styled-components';
+import { fixHMR } from 'fix-hmr';
 
-export interface SwapProps extends BurnComponent {}
+export interface SwapProps extends BurnComponent {
+  className?: string;
+}
 
 const SLIPPAGE_VALUES = [0.01, 0.03, 0.05];
 const LOW_SLIPPAGE = 0.03;
 const FRONTRUN_SLIPPAGE = 0.15;
 
-export function Swap({
+export function Component({
+  className,
   burnAmount,
   getAmount,
   setGetAmount,
@@ -296,7 +301,7 @@ export function Swap({
   }
 
   return (
-    <>
+    <div className={className}>
       {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
 
       <ConvertSymbolsContainer>
@@ -316,7 +321,7 @@ export function Swap({
 
       <SelectAndTextInputContainer
         className="burn"
-        gridColumns={[120, '1fr']}
+        gridColumns={[140, '1fr']}
         error={!!invalidBurnAmount}
         leftHelperText={invalidBurnAmount}
         rightHelperText={
@@ -363,7 +368,7 @@ export function Swap({
 
       <SelectAndTextInputContainer
         className="gett"
-        gridColumns={[120, '1fr']}
+        gridColumns={[140, '1fr']}
         error={!!invalidBurnAmount}
       >
         <SelectAndTextInputContainerLabel>
@@ -470,6 +475,18 @@ export function Swap({
           Burn
         </ActionButton>
       </ViewAddressWarning>
-    </>
+    </div>
   );
 }
+
+const StyledComponent = styled(Component)`
+  .burn,
+  .gett {
+    display: none;
+    img {
+      font-size: 12px;
+    }
+  }
+`;
+
+export const Swap = fixHMR(StyledComponent);

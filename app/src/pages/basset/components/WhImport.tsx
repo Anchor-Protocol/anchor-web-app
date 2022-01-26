@@ -280,6 +280,9 @@ const StyledComponent = styled(Component)`
   .from,
   .to {
     margin-bottom: 30px;
+    img {
+      font-size: 12px;
+    }
   }
 
   hr {

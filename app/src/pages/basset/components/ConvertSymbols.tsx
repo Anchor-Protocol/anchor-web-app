@@ -162,8 +162,8 @@ const colors = (theme: DefaultTheme) => {
 
 const StyledComponent = styled(Component)`
   position: relative;
-
   display: inline-block;
+  font-size: 12px;
 
   ${({ theme }) => colors(theme)};
 

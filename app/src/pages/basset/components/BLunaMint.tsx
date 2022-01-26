@@ -332,7 +332,7 @@ function Component({ className }: BLunaMintProps) {
 
       <SelectAndTextInputContainer
         className="bond"
-        gridColumns={[120, '1fr']}
+        gridColumns={[140, '1fr']}
         error={!!invalidBondAmount}
         leftHelperText={invalidBondAmount}
         rightHelperText={
@@ -378,7 +378,7 @@ function Component({ className }: BLunaMintProps) {
 
       <SelectAndTextInputContainer
         className="mint"
-        gridColumns={[120, '1fr']}
+        gridColumns={[140, '1fr']}
         error={!!invalidBondAmount}
       >
         <SelectAndTextInputContainerLabel>
@@ -464,6 +464,9 @@ const StyledComponent = styled(Component)`
   .bond,
   .mint {
     margin-bottom: 30px;
+    img {
+      font-size: 12px;
+    }
   }
 
   hr {

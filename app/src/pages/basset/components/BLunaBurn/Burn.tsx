@@ -50,10 +50,15 @@ import { validateBurnAmount } from '../../logics/validateBurnAmount';
 import { BurnSwitch } from '../BurnSwitch';
 import { ConvertSymbols, ConvertSymbolsContainer } from '../ConvertSymbols';
 import { BurnComponent } from './types';
+import styled from 'styled-components';
+import { fixHMR } from 'fix-hmr';
 
-export interface BurnProps extends BurnComponent {}
+export interface BurnProps extends BurnComponent {
+  className?: string;
+}
 
-export function Burn({
+export function Component({
+  className,
   burnAmount,
   getAmount,
   setGetAmount,
@@ -312,7 +317,7 @@ export function Burn({
   }
 
   return (
-    <>
+    <div className={className}>
       {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
 
       {pegRecoveryFee && (
@@ -343,7 +348,7 @@ export function Burn({
 
       <SelectAndTextInputContainer
         className="burn"
-        gridColumns={[120, '1fr']}
+        gridColumns={[140, '1fr']}
         error={!!invalidBurnAmount}
         leftHelperText={invalidBurnAmount}
         rightHelperText={
@@ -389,7 +394,7 @@ export function Burn({
 
       <SelectAndTextInputContainer
         className="gett"
-        gridColumns={[120, '1fr']}
+        gridColumns={[140, '1fr']}
         error={!!invalidBurnAmount}
       >
         <SelectAndTextInputContainerLabel>
@@ -477,6 +482,17 @@ export function Burn({
       </ViewAddressWarning>
 
       {alertElement}
-    </>
+    </div>
   );
 }
+
+const StyledComponent = styled(Component)`
+  .burn,
+  .gett {
+    img {
+      font-size: 12px;
+    }
+  }
+`;
+
+export const Burn = fixHMR(StyledComponent);
