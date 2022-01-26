@@ -15,7 +15,7 @@ export interface RewardsAllClaimTxParams {
 export function useRewardsAllClaimTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { constants, queryClient, contractAddress, txErrorReporter } =
+  const { contractAddress, constants, queryClient, txErrorReporter } =
     useAnchorWebapp();
 
   const refetchQueries = useRefetchQueries();

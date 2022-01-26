@@ -1,3 +1,4 @@
+import { BAssetInfoAndBalancesTotal } from '@anchor-protocol/app-fns';
 import { AnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import {
   formatANC,
@@ -32,6 +33,7 @@ interface WalletDetailContentProps {
   availablePost: boolean;
   connection: Connection;
   openBuyUst: () => void;
+  bAssetBalanceTotal: BAssetInfoAndBalancesTotal | undefined;
 }
 
 export function WalletDetailContentBase({
@@ -45,6 +47,7 @@ export function WalletDetailContentBase({
   openBuyUst,
   availablePost,
   connection,
+  bAssetBalanceTotal,
 }: WalletDetailContentProps) {
   const [isCopied, setCopied] = useClipboard(walletAddress, {
     successDuration: 1000 * 5,
@@ -109,21 +112,40 @@ export function WalletDetailContentBase({
               <span>{formatLuna(demicrofy(bank.tokenBalances.ubLuna))}</span>
             </li>
           )}
-          {big(bank.tokenBalances.ubEth).gt(0) && (
-            <li>
-              <span>
-                bETH{' '}
-                <BuyLink
-                  href="https://anchor.lido.fi/"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  GET <Launch />
-                </BuyLink>
-              </span>
-              <span>{formatBAsset(demicrofy(bank.tokenBalances.ubEth))}</span>
-            </li>
-          )}
+          {bAssetBalanceTotal?.infoAndBalances
+            .filter(({ balance }) => big(balance.balance).gt(0))
+            .map(({ bAsset, balance }) => (
+              <li key={'basset-' + bAsset.symbol}>
+                <span>
+                  {bAsset.symbol}{' '}
+                  {bAsset.symbol.toLowerCase() === 'beth' && (
+                    <BuyLink
+                      href="https://anchor.lido.fi/"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      GET <Launch />
+                    </BuyLink>
+                  )}
+                </span>
+                <span>{formatBAsset(demicrofy(balance.balance))}</span>
+              </li>
+            ))}
+          {/*{big(bank.tokenBalances.ubEth).gt(0) && (*/}
+          {/*  <li>*/}
+          {/*    <span>*/}
+          {/*      bETH{' '}*/}
+          {/*      <BuyLink*/}
+          {/*        href="https://anchor.lido.fi/"*/}
+          {/*        target="_blank"*/}
+          {/*        rel="noreferrer"*/}
+          {/*      >*/}
+          {/*        GET <Launch />*/}
+          {/*      </BuyLink>*/}
+          {/*    </span>*/}
+          {/*    <span>{formatBAsset(demicrofy(bank.tokenBalances.ubEth))}</span>*/}
+          {/*  </li>*/}
+          {/*)}*/}
           {big(bank.tokenBalances.uANC).gt(0) && (
             <li>
               <span>ANC</span>

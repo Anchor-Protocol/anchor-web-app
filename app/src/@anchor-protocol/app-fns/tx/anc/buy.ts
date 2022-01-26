@@ -1,15 +1,16 @@
-import { AddressProvider } from '@anchor-protocol/anchor.js';
-import { validateInput } from '@anchor-protocol/anchor.js/dist/utils/validate-input';
-import { validateAddress } from '@anchor-protocol/anchor.js/dist/utils/validation/address';
-import {
-  validateIsGreaterThanZero,
-  validateIsNumber,
-} from '@anchor-protocol/anchor.js/dist/utils/validation/number';
 import {
   formatANCWithPostfixUnits,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
-import { ANC, Gas, Rate, u, UST } from '@anchor-protocol/types';
+import {
+  ANC,
+  Gas,
+  HumanAddr,
+  Rate,
+  terraswap,
+  u,
+  UST,
+} from '@anchor-protocol/types';
 import {
   pickAttributeValueByKey,
   pickEvent,
@@ -25,43 +26,64 @@ import {
   TxHelper,
 } from '@libs/app-fns/tx/internal';
 import { floor, min } from '@libs/big-math';
-import { demicrofy } from '@libs/formatter';
+import { demicrofy, formatTokenInput } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
-import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
 import {
   Coin,
   Coins,
   CreateTxOptions,
-  Dec,
-  Int,
-  MsgExecuteContract,
   Fee,
+  MsgExecuteContract,
 } from '@terra-money/terra.js';
+import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
 import big, { Big } from 'big.js';
 import { Observable } from 'rxjs';
 import { AnchorTax } from '../../types';
 
-export function ancBuyTx(
-  $: Parameters<typeof fabricatebBuy>[0] & {
-    gasFee: Gas;
-    gasAdjustment: Rate<number>;
-    txFee: u<UST>;
-    fixedGas: u<UST>;
-    tax: AnchorTax;
-    network: NetworkInfo;
-    addressProvider: AddressProvider;
-    queryClient: QueryClient;
-    post: (tx: CreateTxOptions) => Promise<TxResult>;
-    txErrorReporter?: (error: unknown) => string;
-    onTxSucceed?: () => void;
-  },
-): Observable<TxResultRendering> {
+export function ancBuyTx($: {
+  fromAmount: UST;
+  maxSpread: Rate;
+  beliefPrice: UST;
+  walletAddr: HumanAddr;
+  ancUstPairAddr: HumanAddr;
+
+  gasFee: Gas;
+  gasAdjustment: Rate<number>;
+  txFee: u<UST>;
+  fixedGas: u<UST>;
+  tax: AnchorTax;
+  network: NetworkInfo;
+  queryClient: QueryClient;
+  post: (tx: CreateTxOptions) => Promise<TxResult>;
+  txErrorReporter?: (error: unknown) => string;
+  onTxSucceed?: () => void;
+}): Observable<TxResultRendering> {
   const helper = new TxHelper($);
 
   return pipe(
     _createTxOptions({
-      msgs: fabricatebBuy($)($.addressProvider),
+      msgs: [
+        new MsgExecuteContract(
+          $.walletAddr,
+          $.ancUstPairAddr,
+          {
+            swap: {
+              offer_asset: {
+                info: {
+                  native_token: {
+                    denom: 'uusd',
+                  },
+                },
+                amount: formatTokenInput($.fromAmount) as u<UST>,
+              },
+              belief_price: $.beliefPrice,
+              max_spread: $.maxSpread,
+            },
+          } as terraswap.pair.Swap<UST>,
+          new Coins([new Coin('uusd', formatTokenInput($.fromAmount))]),
+        ),
+      ],
       fee: new Fee($.gasFee, floor($.txFee) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),
@@ -145,49 +167,3 @@ export function ancBuyTx(
     },
   )().pipe(_catchTxError({ helper, ...$ }));
 }
-
-interface Option {
-  address: string;
-  amount: string;
-  denom: string;
-  to?: string;
-  beliefPrice?: string;
-  maxSpread?: string;
-}
-
-export const fabricatebBuy =
-  ({ address, amount, to, beliefPrice, maxSpread, denom }: Option) =>
-  (addressProvider: AddressProvider): MsgExecuteContract[] => {
-    validateInput([
-      validateAddress(address),
-      validateIsNumber(amount),
-      validateIsGreaterThanZero(+amount),
-    ]);
-
-    const coins = new Coins([
-      new Coin(denom, new Int(new Dec(amount).mul(1000000)).toString()),
-    ]);
-    const pairAddress = addressProvider.ancUstPair();
-    return [
-      new MsgExecuteContract(
-        address,
-        pairAddress,
-        {
-          swap: {
-            offer_asset: {
-              info: {
-                native_token: {
-                  denom: denom,
-                },
-              },
-              amount: new Int(new Dec(amount).mul(1000000)).toString(),
-            },
-            belief_price: beliefPrice,
-            max_spread: maxSpread,
-            to: to,
-          },
-        },
-        coins,
-      ),
-    ];
-  };

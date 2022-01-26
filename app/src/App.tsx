@@ -6,7 +6,11 @@ import { AppProviders } from 'configurations/app';
 import { NotificationProvider } from 'contexts/notification';
 import { JobsProvider } from 'jobs/Jobs';
 import { Airdrop } from 'pages/airdrop';
-import { BAsset } from 'pages/bond';
+import { BlunaConvert } from 'pages/basset/bluna.convert';
+import { BlunaWithdraw } from 'pages/basset/bluna.withdraw';
+import { BAssetClaim } from 'pages/basset/claim';
+import { BAssetMain } from 'pages/basset/main';
+import { WormholeConvert } from 'pages/basset/wh.convert';
 import { Borrow } from 'pages/borrow';
 import { Dashboard } from 'pages/dashboard';
 import { Earn } from 'pages/earn';
@@ -59,8 +63,19 @@ export function App() {
                 {/* Borrow */}
                 <Route path="/borrow" component={Borrow} />
 
-                {/* Bond */}
-                <Route path="/bond" component={BAsset} />
+                {/* bAsset */}
+                <Route exact path="/basset" component={BAssetMain} />
+
+                <Route path="/basset/bluna" component={BlunaConvert} />
+
+                <Route path="/basset/withdraw" component={BlunaWithdraw} />
+
+                <Route path="/basset/claim" component={BAssetClaim} />
+
+                <Route
+                  path="/basset/wh/:tokenSymbol"
+                  component={WormholeConvert}
+                />
 
                 {/* Airdrop */}
                 <Route path="/airdrop" component={Airdrop} />

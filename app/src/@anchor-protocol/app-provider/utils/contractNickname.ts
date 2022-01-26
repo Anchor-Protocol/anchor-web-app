@@ -1,10 +1,19 @@
-import { CollateralType, CW20Addr, HumanAddr } from '@anchor-protocol/types';
+import { CW20Addr, HumanAddr } from '@anchor-protocol/types';
 import { useAnchorWebapp } from '../contexts/context';
+import { useBAssetInfoListQuery } from '../queries/basset/bAssetInfoList';
 
 export function useContractNickname(): (addr: HumanAddr | CW20Addr) => string {
   const { contractAddress: address } = useAnchorWebapp();
 
+  const { data: bAssetInfoList = [] } = useBAssetInfoListQuery();
+
   return (addr: HumanAddr | CW20Addr) => {
+    for (const { bAsset } of bAssetInfoList) {
+      if (addr === bAsset.custody_contract) {
+        return `Money Market / ${bAsset.symbol} Custody`;
+      }
+    }
+
     switch (addr) {
       case address.bluna.reward:
         return `bLUNA / Reward`;
@@ -12,10 +21,12 @@ export function useContractNickname(): (addr: HumanAddr | CW20Addr) => string {
         return `bLUNA / Hub`;
       case address.moneyMarket.market:
         return `Money Market / Market`;
-      case address.moneyMarket.collaterals[CollateralType.bLuna].custody:
+      case address.bluna.custody:
         return `Money Market / bLUNA Custody`;
-      case address.moneyMarket.collaterals[CollateralType.bEth].custody:
-        return `Money Market / bETH Custody`;
+      //case address.moneyMarket.collaterals[CollateralType.bLuna].custody:
+      //  return `Money Market / bLUNA Custody`;
+      //case address.moneyMarket.collaterals[CollateralType.bEth].custody:
+      //  return `Money Market / bETH Custody`;
       case address.moneyMarket.overseer:
         return `Money Market / Overseer`;
       case address.moneyMarket.oracle:
@@ -49,7 +60,7 @@ export function useContractNickname(): (addr: HumanAddr | CW20Addr) => string {
       case address.cw20.bLunaLunaLP:
         return `bLUNA-LUNA-LP`;
       default:
-        return '';
+        return '-';
     }
   };
 }

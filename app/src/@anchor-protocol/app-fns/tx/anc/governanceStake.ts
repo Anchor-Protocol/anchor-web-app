@@ -1,9 +1,14 @@
-import {
-  AddressProvider,
-  fabricateGovStakeVoting,
-} from '@anchor-protocol/anchor.js';
 import { formatANCWithPostfixUnits } from '@anchor-protocol/notation';
-import { ANC, Gas, Rate, u, UST } from '@anchor-protocol/types';
+import {
+  ANC,
+  cw20,
+  CW20Addr,
+  Gas,
+  HumanAddr,
+  Rate,
+  u,
+  UST,
+} from '@anchor-protocol/types';
 import {
   pickAttributeValueByKey,
   pickEvent,
@@ -16,34 +21,51 @@ import {
   _createTxOptions,
   _pollTxInfo,
   _postTx,
+  createHookMsg,
   TxHelper,
 } from '@libs/app-fns/tx/internal';
 import { floor } from '@libs/big-math';
-import { demicrofy } from '@libs/formatter';
+import { demicrofy, formatTokenInput } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
+import {
+  CreateTxOptions,
+  Fee,
+  MsgExecuteContract,
+} from '@terra-money/terra.js';
 import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
-import { CreateTxOptions, Fee } from '@terra-money/terra.js';
 import { Observable } from 'rxjs';
 
-export function ancGovernanceStakeTx(
-  $: Parameters<typeof fabricateGovStakeVoting>[0] & {
-    gasFee: Gas;
-    gasAdjustment: Rate<number>;
-    fixedGas: u<UST>;
-    network: NetworkInfo;
-    addressProvider: AddressProvider;
-    queryClient: QueryClient;
-    post: (tx: CreateTxOptions) => Promise<TxResult>;
-    txErrorReporter?: (error: unknown) => string;
-    onTxSucceed?: () => void;
-  },
-): Observable<TxResultRendering> {
+export function ancGovernanceStakeTx($: {
+  ancAmount: ANC;
+  walletAddr: HumanAddr;
+  ancTokenAddr: CW20Addr;
+  govAddr: HumanAddr;
+
+  gasFee: Gas;
+  gasAdjustment: Rate<number>;
+  fixedGas: u<UST>;
+  network: NetworkInfo;
+  queryClient: QueryClient;
+  post: (tx: CreateTxOptions) => Promise<TxResult>;
+  txErrorReporter?: (error: unknown) => string;
+  onTxSucceed?: () => void;
+}): Observable<TxResultRendering> {
   const helper = new TxHelper({ ...$, txFee: $.fixedGas });
 
   return pipe(
     _createTxOptions({
-      msgs: fabricateGovStakeVoting($)($.addressProvider),
+      msgs: [
+        new MsgExecuteContract($.walletAddr, $.ancTokenAddr, {
+          send: {
+            contract: $.govAddr,
+            amount: formatTokenInput($.ancAmount),
+            msg: createHookMsg({
+              stake_voting_tokens: {},
+            }),
+          },
+        } as cw20.Send<ANC>),
+      ],
       fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),

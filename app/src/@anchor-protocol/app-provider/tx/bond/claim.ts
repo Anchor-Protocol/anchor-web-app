@@ -1,4 +1,3 @@
-import { COLLATERAL_DENOMS } from '@anchor-protocol/anchor.js';
 import { bondClaimTx } from '@anchor-protocol/app-fns';
 import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
@@ -11,10 +10,10 @@ export interface BondClaimTxParams {
   onTxSucceed?: () => void;
 }
 
-export function useBondClaimTx(rewardDenom: COLLATERAL_DENOMS) {
+export function useBondClaimTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { queryClient, txErrorReporter, addressProvider, constants } =
+  const { queryClient, txErrorReporter, contractAddress, constants } =
     useAnchorWebapp();
 
   const fixedFee = useFixedFee();
@@ -29,15 +28,14 @@ export function useBondClaimTx(rewardDenom: COLLATERAL_DENOMS) {
 
       return bondClaimTx({
         // fabricatebAssetClaimRewards
-        address: connectedWallet.walletAddress,
-        rewardDenom,
+        walletAddr: connectedWallet.walletAddress,
+        bAssetRewardAddr: contractAddress.bluna.reward,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: fixedFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         // query
         queryClient,
         // error
@@ -51,11 +49,10 @@ export function useBondClaimTx(rewardDenom: COLLATERAL_DENOMS) {
     },
     [
       connectedWallet,
-      rewardDenom,
+      contractAddress.bluna.reward,
       fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,
-      addressProvider,
       queryClient,
       txErrorReporter,
       refetchQueries,

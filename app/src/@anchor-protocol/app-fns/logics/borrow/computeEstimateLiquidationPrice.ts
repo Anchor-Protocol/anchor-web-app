@@ -2,7 +2,7 @@ import { formatUST } from '@anchor-protocol/notation';
 import type { Rate, UST } from '@anchor-protocol/types';
 import { CW20Addr, moneyMarket } from '@anchor-protocol/types';
 import big, { Big } from 'big.js';
-import { prettifyBAssetSymbol } from '../../functions/prettifyBAssetSymbol';
+import { prettifySymbol } from '@anchor-protocol/app-fns/functions/prettifySymbol';
 
 export function computeEstimateLiquidationPrice(
   nextLtv: Rate<Big>,
@@ -39,7 +39,7 @@ export function computeEstimateLiquidationPrice(
     const liqPrice = big(oracle.price).mul(
       big(nextLtv).div(whitelist.max_ltv),
     ) as UST<Big>;
-    return `Estimated ${prettifyBAssetSymbol(
+    return `Estimated ${prettifySymbol(
       whitelist.symbol,
     )} liquidation price: ${formatUST(liqPrice)}`;
   }

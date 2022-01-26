@@ -1,41 +1,79 @@
 import {
-  AddressProvider,
-  fabricateGovCreatePoll,
-} from '@anchor-protocol/anchor.js';
-import { Gas, Rate, u, UST } from '@anchor-protocol/types';
+  ANC,
+  CW20Addr,
+  Gas,
+  HumanAddr,
+  Rate,
+  u,
+  UST,
+} from '@anchor-protocol/types';
 import { TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import {
   _catchTxError,
   _createTxOptions,
   _pollTxInfo,
   _postTx,
+  createHookMsg,
   TxHelper,
 } from '@libs/app-fns/tx/internal';
 import { floor } from '@libs/big-math';
+import { formatTokenInput } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
+import {
+  CreateTxOptions,
+  Fee,
+  MsgExecuteContract,
+} from '@terra-money/terra.js';
 import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
-import { CreateTxOptions, Fee } from '@terra-money/terra.js';
 import { Observable } from 'rxjs';
 
-export function govCreatePollTx(
-  $: Parameters<typeof fabricateGovCreatePoll>[0] & {
-    gasFee: Gas;
-    gasAdjustment: Rate<number>;
-    fixedGas: u<UST>;
-    network: NetworkInfo;
-    addressProvider: AddressProvider;
-    queryClient: QueryClient;
-    post: (tx: CreateTxOptions) => Promise<TxResult>;
-    txErrorReporter?: (error: unknown) => string;
-    onTxSucceed?: () => void;
-  },
-): Observable<TxResultRendering> {
+export interface ExecuteMsg {
+  order: number;
+  contract: string;
+  msg: string;
+}
+
+export function govCreatePollTx($: {
+  walletAddr: HumanAddr;
+  ancTokenAddr: CW20Addr;
+  govAddr: HumanAddr;
+
+  amount: ANC;
+  title: string;
+  description: string;
+  link: string | undefined;
+  executeMsgs: ExecuteMsg[] | undefined;
+
+  gasFee: Gas;
+  gasAdjustment: Rate<number>;
+  fixedGas: u<UST>;
+  network: NetworkInfo;
+  queryClient: QueryClient;
+  post: (tx: CreateTxOptions) => Promise<TxResult>;
+  txErrorReporter?: (error: unknown) => string;
+  onTxSucceed?: () => void;
+}): Observable<TxResultRendering> {
   const helper = new TxHelper({ ...$, txFee: $.fixedGas });
 
   return pipe(
     _createTxOptions({
-      msgs: fabricateGovCreatePoll($)($.addressProvider),
+      msgs: [
+        new MsgExecuteContract($.walletAddr, $.ancTokenAddr, {
+          send: {
+            contract: $.govAddr,
+            amount: formatTokenInput($.amount),
+            msg: createHookMsg({
+              create_poll: {
+                title: $.title,
+                description: $.description,
+                link: $.link,
+                execute_msgs: $.executeMsgs,
+              },
+            }),
+          },
+        }),
+      ],
       fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),

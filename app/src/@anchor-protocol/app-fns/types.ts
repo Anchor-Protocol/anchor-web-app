@@ -1,9 +1,7 @@
-import { AddressMap } from '@anchor-protocol/anchor.js';
 import {
   ANC,
   AncUstLP,
   aUST,
-  bEth,
   bLuna,
   bLunaLunaLP,
   Luna,
@@ -38,7 +36,7 @@ export interface AnchorTokenBalances {
   // cw20 tokens
   uaUST: u<aUST>;
   ubLuna: u<bLuna>;
-  ubEth: u<bEth>;
+  //ubEth: u<bEth>;
   uANC: u<ANC>;
   uAncUstLP: u<AncUstLP>;
   ubLunaLunaLP: u<bLunaLunaLP>;
@@ -58,6 +56,6 @@ export interface AnchorTax {
   maxTaxUUSD: u<UST>;
 }
 
-export interface ExpandAddressMap extends AddressMap {
-  terraswapFactory: string;
-}
+//export interface ExpandAddressMap extends AddressMap {
+//  terraswapFactory: string;
+//}

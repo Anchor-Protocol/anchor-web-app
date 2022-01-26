@@ -1,4 +1,4 @@
-import { ExecuteMsg } from '@anchor-protocol/anchor.js';
+import { ExecuteMsg } from '@anchor-protocol/app-fns';
 import { CW20Addr, HumanAddr, moneyMarket, Rate } from '@anchor-protocol/types';
 import { useAnchorWebapp } from '@anchor-protocol/app-provider';
 import { InputAdornment } from '@material-ui/core';

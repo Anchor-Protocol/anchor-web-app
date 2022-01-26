@@ -1,21 +1,10 @@
 import {
-  AddressProvider,
-  AddressProviderFromJson,
-  COLLATERAL_DENOMS,
-  MARKET_DENOMS,
-} from '@anchor-protocol/anchor.js';
-import {
   ANCHOR_QUERY_KEY,
   ANCHOR_TX_KEY,
   AnchorConstants,
   AnchorContractAddress,
 } from '@anchor-protocol/app-provider';
-import {
-  CollateralInfo,
-  CollateralType,
-  CW20Addr,
-  HumanAddr,
-} from '@anchor-protocol/types';
+import { CW20Addr, HumanAddr } from '@anchor-protocol/types';
 import { TERRA_QUERY_KEY, TxRefetchMap } from '@libs/app-provider';
 import { Gas, Rate } from '@libs/types';
 import { NetworkInfo } from '@terra-money/wallet-provider';
@@ -87,8 +76,8 @@ const COLUMNBUS_CONTRACT_ADDRESS = {
   bLunaReward: 'terra17yap3mhph35pcwvhza38c2lkj7gzywzy05h7l0',
   bLunaAirdrop: 'terra199t7hg7w5vymehhg834r6799pju2q3a0ya7ae9',
   bLunaValidatorsRegistry: 'terra10wt548y4y3xeqfrqsgqlqh424lll8fqxp6dyed',
-  bEthReward: 'terra1939tzfn4hn960ychpcsjshu8jds3zdwlp8jed9',
-  bEthToken: 'terra1dzhzukyezv0etz22ud940z7adyv7xgcjkahuun',
+  //bEthReward: 'terra1939tzfn4hn960ychpcsjshu8jds3zdwlp8jed9',
+  //bEthToken: 'terra1dzhzukyezv0etz22ud940z7adyv7xgcjkahuun',
   mmInterestModel: 'terra1kq8zzq5hufas9t0kjsjc62t2kucfnx8txf547n',
   mmOracle: 'terra1cgg6yef7qcdm070qftghfulaxmllgmvk77nc7t',
   mmMarket: 'terra1sepfj7s0aeg5967uxnfk4thzlerrsktkpelm5s',
@@ -122,8 +111,8 @@ const BOMBAY_CONTRACT_ADDRESS = {
   bLunaReward: 'terra1ac24j6pdxh53czqyrkr6ygphdeftg7u3958tl2',
   bLunaValidatorsRegistry: '',
   bLunaAirdrop: 'terra1334h20c9ewxguw9p9vdxzmr8994qj4qu77ux6q',
-  bEthReward: 'terra1ja3snkedk4t0zp7z3ljd064hcln8dsv5x004na',
-  bEthToken: 'terra19mkj9nec6e3y5754tlnuz4vem7lzh4n0lc2s3l',
+  //bEthReward: 'terra1ja3snkedk4t0zp7z3ljd064hcln8dsv5x004na',
+  //bEthToken: 'terra19mkj9nec6e3y5754tlnuz4vem7lzh4n0lc2s3l',
   mmInterestModel: 'terra1m25aqupscdw2kw4tnq5ql6hexgr34mr76azh5x',
   mmOracle: 'terra1p4gg3p2ue6qy2qfuxtrmgv2ec3f4jmgqtazum8',
   mmMarket: 'terra15dwd5mj8v59wpj0wvt233mf5efdff808c5tkal',
@@ -157,80 +146,77 @@ export const ANCHOR_CONTRACT_ADDRESS = (
   const addressMap = network.chainID.startsWith('bombay')
     ? BOMBAY_CONTRACT_ADDRESS
     : COLUMNBUS_CONTRACT_ADDRESS;
-  const addressProvider: AddressProvider = new AddressProviderFromJson(
-    addressMap,
-  );
-
-  const bLunaCollateral: CollateralInfo = {
-    type: CollateralType.bLuna,
-    denom: COLLATERAL_DENOMS.UBLUNA,
-    custody: addressProvider.custody(
-      MARKET_DENOMS.UUSD,
-      COLLATERAL_DENOMS.UBLUNA,
-    ) as HumanAddr,
-    token: addressProvider.bLunaToken() as CW20Addr,
-  };
-
-  const bEthCollateral: CollateralInfo = {
-    type: CollateralType.bEth,
-    denom: COLLATERAL_DENOMS.UBETH,
-    custody: addressProvider.custody(
-      MARKET_DENOMS.UUSD,
-      COLLATERAL_DENOMS.UBETH,
-    ) as HumanAddr,
-    token: addressProvider.bEthToken() as CW20Addr,
-  };
+  //const addressProvider: AddressProvider = new AddressProviderFromJson(
+  //  addressMap,
+  //);
+  //
+  //const bLunaCollateral: CollateralInfo = {
+  //  type: CollateralType.bLuna,
+  //  denom: COLLATERAL_DENOMS.UBLUNA,
+  //  custody: addressProvider.custody(
+  //    MARKET_DENOMS.UUSD,
+  //    COLLATERAL_DENOMS.UBLUNA,
+  //  ) as HumanAddr,
+  //  token: addressProvider.bLunaToken() as CW20Addr,
+  //};
+  //
+  //const bEthCollateral: CollateralInfo = {
+  //  type: CollateralType.bEth,
+  //  denom: COLLATERAL_DENOMS.UBETH,
+  //  custody: addressProvider.custody(
+  //    MARKET_DENOMS.UUSD,
+  //    COLLATERAL_DENOMS.UBETH,
+  //  ) as HumanAddr,
+  //  token: addressProvider.bEthToken() as CW20Addr,
+  //};
 
   return {
     bluna: {
-      reward: addressProvider.bLunaReward() as HumanAddr,
-      hub: addressProvider.bLunaHub() as HumanAddr,
-      airdropRegistry: addressProvider.airdrop() as HumanAddr,
-      validatorsRegistry:
-        addressProvider.bLunaValidatorsRegistry() as HumanAddr,
-    },
-    beth: {
-      reward: addressProvider.bEthReward() as HumanAddr,
+      reward: addressMap.bLunaReward as HumanAddr,
+      hub: addressMap.bLunaHub as HumanAddr,
+      airdropRegistry: addressMap.airdrop as HumanAddr,
+      validatorsRegistry: addressMap.bLunaValidatorsRegistry as HumanAddr,
+      custody: addressMap.mmCustody as HumanAddr,
     },
     moneyMarket: {
-      market: addressProvider.market(MARKET_DENOMS.UUSD) as HumanAddr,
-      collaterals: {
-        [CollateralType.bLuna]: bLunaCollateral,
-        [CollateralType.bEth]: bEthCollateral,
-      },
-      collateralsArray: [bLunaCollateral, bEthCollateral],
-      overseer: addressProvider.overseer(MARKET_DENOMS.UUSD) as HumanAddr,
-      oracle: addressProvider.oracle() as HumanAddr,
-      interestModel: addressProvider.interest() as HumanAddr,
+      market: addressMap.mmMarket as HumanAddr,
+      //collaterals: {
+      //  [CollateralType.bLuna]: bLunaCollateral,
+      //  [CollateralType.bEth]: bEthCollateral,
+      //},
+      //collateralsArray: [bLunaCollateral, bEthCollateral],
+      overseer: addressMap.mmOverseer as HumanAddr,
+      oracle: addressMap.mmOracle as HumanAddr,
+      interestModel: addressMap.mmInterestModel as HumanAddr,
       distributionModel: addressMap.mmDistributionModel as HumanAddr,
     },
     liquidation: {
-      liquidationContract: addressProvider.liquidation() as HumanAddr,
+      liquidationContract: addressMap.mmLiquidation as HumanAddr,
     },
     anchorToken: {
-      gov: addressProvider.gov() as HumanAddr,
-      staking: addressProvider.staking() as HumanAddr,
-      community: addressProvider.community() as HumanAddr,
-      distributor: addressProvider.distributor() as HumanAddr,
-      investorLock: addressProvider.investorLock() as HumanAddr,
-      teamLock: addressProvider.teamLock() as HumanAddr,
-      collector: addressProvider.collector() as HumanAddr,
+      gov: addressMap.gov as HumanAddr,
+      staking: addressMap.staking as HumanAddr,
+      community: addressMap.community as HumanAddr,
+      distributor: addressMap.distributor as HumanAddr,
+      investorLock: addressMap.investor_vesting as HumanAddr,
+      teamLock: addressMap.team_vesting as HumanAddr,
+      collector: addressMap.collector as HumanAddr,
     },
     terraswap: {
       factory: addressMap.terraswapFactory as HumanAddr,
-      blunaLunaPair: addressProvider.bLunaLunaPair() as HumanAddr,
-      ancUstPair: addressProvider.ancUstPair() as HumanAddr,
+      blunaLunaPair: addressMap.bLunaLunaPair as HumanAddr,
+      ancUstPair: addressMap.ancUstPair as HumanAddr,
     },
     astroport: {
       generator: addressMap.astroportGenerator as HumanAddr,
     },
     cw20: {
-      bLuna: addressProvider.bLunaToken() as CW20Addr,
-      bEth: addressProvider.bEthToken() as CW20Addr,
-      aUST: addressProvider.aTerra(MARKET_DENOMS.UUSD) as CW20Addr,
-      ANC: addressProvider.ANC() as CW20Addr,
-      AncUstLP: addressProvider.ancUstLPToken() as CW20Addr,
-      bLunaLunaLP: addressProvider.bLunaLunaLPToken() as CW20Addr,
+      bLuna: addressMap.bLunaToken as CW20Addr,
+      //bEth: addressMap.bEthToken as CW20Addr,
+      aUST: addressMap.aTerra as CW20Addr,
+      ANC: addressMap.ANC as CW20Addr,
+      AncUstLP: addressMap.ancUstLPToken as CW20Addr,
+      bLunaLunaLP: addressMap.bLunaLunaLPToken as CW20Addr,
     },
   };
 };
@@ -308,6 +294,18 @@ export const ANCHOR_TX_REFETCH_MAP: TxRefetchMap = {
     ANCHOR_QUERY_KEY.BORROW_BORROWER,
     ANCHOR_QUERY_KEY.BORROW_APY,
     ANCHOR_QUERY_KEY.BORROW_COLLATERAL_BORROWER,
+  ],
+  [ANCHOR_TX_KEY.BASSET_IMPORT]: [
+    TERRA_QUERY_KEY.TOKEN_BALANCES,
+    TERRA_QUERY_KEY.CW20_BALANCE,
+    TERRA_QUERY_KEY.TERRA_BALANCES,
+    TERRA_QUERY_KEY.TERRA_NATIVE_BALANCES,
+  ],
+  [ANCHOR_TX_KEY.BASSET_EXPORT]: [
+    TERRA_QUERY_KEY.TOKEN_BALANCES,
+    TERRA_QUERY_KEY.CW20_BALANCE,
+    TERRA_QUERY_KEY.TERRA_BALANCES,
+    TERRA_QUERY_KEY.TERRA_NATIVE_BALANCES,
   ],
   [ANCHOR_TX_KEY.BOND_MINT]: [
     TERRA_QUERY_KEY.TOKEN_BALANCES,

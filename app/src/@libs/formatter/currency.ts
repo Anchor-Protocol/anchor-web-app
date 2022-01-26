@@ -14,6 +14,7 @@ export function microfy<T extends Token<BigSource>>(
 
 export function demicrofy<T extends Token<BigSource>>(
   amount: u<T>,
+  decimals: number = 6,
 ): T extends NominalType<infer N> ? Big & NominalType<N> : T {
-  return big(amount).div(MICRO) as any;
+  return big(amount).div(Math.pow(10, decimals)) as any;
 }

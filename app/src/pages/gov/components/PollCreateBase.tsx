@@ -1,4 +1,4 @@
-import { ExecuteMsg } from '@anchor-protocol/anchor.js';
+import { ExecuteMsg } from '@anchor-protocol/app-fns';
 import {
   formatANC,
   formatUSTWithPostfixUnits,

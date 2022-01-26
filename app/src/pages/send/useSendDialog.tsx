@@ -1,3 +1,13 @@
+import { validateTxFee } from '@anchor-protocol/app-fns';
+import {
+  useAnchorWebapp,
+  useBAssetInfoAndBalanceTotalQuery,
+  useTerraSendTx,
+} from '@anchor-protocol/app-provider';
+import {
+  AnchorBank,
+  useAnchorBank,
+} from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   ANC_INPUT_MAXIMUM_INTEGER_POINTS,
@@ -15,11 +25,6 @@ import {
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { HumanAddr, Token, u, UST } from '@anchor-protocol/types';
-import { useAnchorWebapp, useTerraSendTx } from '@anchor-protocol/app-provider';
-import {
-  AnchorBank,
-  useAnchorBank,
-} from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
 import { min } from '@libs/big-math';
 import { demicrofy, microfy } from '@libs/formatter';
@@ -37,10 +42,9 @@ import { AccAddress } from '@terra-money/terra.js';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big, BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
-import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
+import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { validateTxFee } from '@anchor-protocol/app-fns';
 import { CurrencyInfo } from 'pages/send/models/currency';
 import React, {
   ChangeEvent,
@@ -78,6 +82,9 @@ function ComponentBase({
   const {
     contractAddress: { cw20 },
   } = useAnchorWebapp();
+
+  const { data: { infoAndBalances = [] } = {} } =
+    useBAssetInfoAndBalanceTotalQuery();
 
   const [send, sendResult] = useTerraSendTx();
 
@@ -146,16 +153,26 @@ function ComponentBase({
           formatLunaInput(demicrofy(bank.tokenBalances.ubLuna)),
         cw20Address: cw20.bLuna,
       },
-      {
-        label: 'bETH',
-        value: 'beth',
+      ...infoAndBalances.map(({ bAsset, balance }) => ({
+        label: bAsset.symbol,
+        value: bAsset.symbol,
         integerPoints: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
-        getWithdrawable: (bank: AnchorBank) => bank.tokenBalances.ubEth,
-        getFormatWithdrawable: (bank: AnchorBank) =>
-          formatBAssetInput(demicrofy(bank.tokenBalances.ubEth)),
-        cw20Address: cw20.bEth,
-      },
+        getWithdrawable: () => balance.balance,
+        getFormatWithdrawable: () =>
+          formatBAssetInput(demicrofy(balance.balance)),
+        cw20Address: bAsset.collateral_token,
+      })),
+      //{
+      //  label: 'bETH',
+      //  value: 'beth',
+      //  integerPoints: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
+      //  decimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
+      //  getWithdrawable: (bank: AnchorBank) => bank.tokenBalances.ubEth,
+      //  getFormatWithdrawable: (bank: AnchorBank) =>
+      //    formatBAssetInput(demicrofy(bank.tokenBalances.ubEth)),
+      //  cw20Address: cw20.bEth,
+      //},
       {
         label: 'ANC',
         value: 'anc',
@@ -167,7 +184,7 @@ function ComponentBase({
         cw20Address: cw20.ANC,
       },
     ],
-    [cw20.ANC, cw20.aUST, cw20.bEth, cw20.bLuna],
+    [cw20.ANC, cw20.aUST, cw20.bLuna, infoAndBalances],
   );
 
   // ---------------------------------------------

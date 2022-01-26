@@ -1,9 +1,13 @@
-import {
-  AddressProvider,
-  fabricatebAssetBond,
-} from '@anchor-protocol/anchor.js';
 import { formatLuna } from '@anchor-protocol/notation';
-import { bLuna, Gas, Luna, Rate, u, UST } from '@anchor-protocol/types';
+import {
+  bLuna,
+  Gas,
+  HumanAddr,
+  Luna,
+  Rate,
+  u,
+  UST,
+} from '@anchor-protocol/types';
 import {
   pickAttributeValue,
   pickEvent,
@@ -19,32 +23,53 @@ import {
   TxHelper,
 } from '@libs/app-fns/tx/internal';
 import { floor } from '@libs/big-math';
-import { demicrofy, formatFluidDecimalPoints } from '@libs/formatter';
+import {
+  demicrofy,
+  formatFluidDecimalPoints,
+  formatTokenInput,
+} from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
+import {
+  CreateTxOptions,
+  Fee,
+  MsgExecuteContract,
+} from '@terra-money/terra.js';
 import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
-import { CreateTxOptions, Fee } from '@terra-money/terra.js';
-import big, { BigSource } from 'big.js';
 import { Observable } from 'rxjs';
 
-export function bondMintTx(
-  $: Parameters<typeof fabricatebAssetBond>[0] & {
-    gasFee: Gas;
-    gasAdjustment: Rate<number>;
-    fixedGas: u<UST>;
-    network: NetworkInfo;
-    addressProvider: AddressProvider;
-    queryClient: QueryClient;
-    post: (tx: CreateTxOptions) => Promise<TxResult>;
-    txErrorReporter?: (error: unknown) => string;
-    onTxSucceed?: () => void;
-  },
-): Observable<TxResultRendering> {
+export function bondMintTx($: {
+  walletAddr: HumanAddr;
+  bAssetHubAddr: HumanAddr;
+  bondAmount: Luna;
+  gasFee: Gas;
+  gasAdjustment: Rate<number>;
+  fixedGas: u<UST>;
+  exchangeRate: Rate<string>;
+  network: NetworkInfo;
+  queryClient: QueryClient;
+  post: (tx: CreateTxOptions) => Promise<TxResult>;
+  txErrorReporter?: (error: unknown) => string;
+  onTxSucceed?: () => void;
+}): Observable<TxResultRendering> {
   const helper = new TxHelper({ ...$, txFee: $.fixedGas });
 
   return pipe(
     _createTxOptions({
-      msgs: fabricatebAssetBond($)($.addressProvider),
+      msgs: [
+        new MsgExecuteContract(
+          $.walletAddr,
+          $.bAssetHubAddr,
+          {
+            bond: {},
+          },
+
+          // send native token
+          {
+            uluna: formatTokenInput($.bondAmount),
+          },
+        ),
+      ],
       fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),
@@ -68,10 +93,10 @@ export function bondMintTx(
 
         const mintedAmount = pickAttributeValue<u<bLuna>>(fromContract, 4);
 
-        const exchangeRate =
-          bondedAmount &&
-          mintedAmount &&
-          (big(bondedAmount).div(mintedAmount) as Rate<BigSource> | undefined);
+        // const exchangeRate =
+        //   bondedAmount &&
+        //   mintedAmount &&
+        //   (big(bondedAmount).div(mintedAmount) as Rate<BigSource> | undefined);
 
         return {
           value: null,
@@ -86,9 +111,9 @@ export function bondMintTx(
               name: 'Minted Amount',
               value: formatLuna(demicrofy(mintedAmount)) + ' bLUNA',
             },
-            exchangeRate && {
+            {
               name: 'Exchange Rate',
-              value: formatFluidDecimalPoints(exchangeRate, 6),
+              value: formatFluidDecimalPoints($.exchangeRate, 6),
             },
             helper.txHashReceipt(),
             helper.txFeeReceipt(),
