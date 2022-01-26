@@ -78,14 +78,29 @@ export async function bAssetInfoQuery(
     converterConfig,
   };
 
+  console.log(
+    'bAssetInfo:wormhole_token_address',
+    converterConfig.wormhole_token_address,
+  );
+
   if (converterConfig.wormhole_token_address) {
     const { tokenInfo: wormholeTokenInfo } = await cw20TokenInfoQuery(
       converterConfig.wormhole_token_address!,
       queryClient,
     );
+    //console.log('bAssetInfo:tokenInfo', wormholeTokenInfo);
+
+    const symbol =
+      wormholeTokenInfo.symbol === 'whbETH'
+        ? 'webETH'
+        : wormholeTokenInfo.symbol;
+
     return {
       ...bAssetInfo,
-      wormholeTokenInfo,
+      wormholeTokenInfo: {
+        ...wormholeTokenInfo,
+        symbol,
+      },
     };
   }
 
