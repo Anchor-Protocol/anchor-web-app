@@ -78,11 +78,6 @@ export async function bAssetInfoQuery(
     converterConfig,
   };
 
-  console.log(
-    'bAssetInfo:wormhole_token_address',
-    converterConfig.wormhole_token_address,
-  );
-
   if (converterConfig.wormhole_token_address) {
     const { tokenInfo: wormholeTokenInfo } = await cw20TokenInfoQuery(
       converterConfig.wormhole_token_address!,
