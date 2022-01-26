@@ -5,7 +5,8 @@ import {
   AnchorDepositParams,
   AnchorWithdrawParams,
 } from 'contexts/api';
-import { Observable } from 'rxjs';
+import { interval, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { pipe } from '@rx-stream/pipe';
 import { TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 
@@ -15,19 +16,35 @@ import { TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 const deposit = (
   params: AnchorDepositParams,
 ): Observable<TxResultRendering> => {
-  const observable = pipe<void, TxResultRendering>(() => {
-    return {
-      value: null,
-      phase: TxStreamPhase.SUCCEED,
-      receipts: [
-        {
-          name: 'Deposit Amount',
-          value: '123.456 UST',
-        },
-      ],
-    };
-  });
-  return observable();
+  // const observable = pipe<void, TxResultRendering>(() => {
+  //   return {
+  //     value: null,
+  //     phase: TxStreamPhase.SUCCEED,
+  //     receipts: [
+  //       {
+  //         name: 'Deposit Amount',
+  //         value: '123.456 UST',
+  //       },
+  //     ],
+  //   };
+  // });
+  // return observable();
+
+  const observable = interval(1000).pipe<TxResultRendering>(
+    map((i) => {
+      return {
+        value: null,
+        phase: TxStreamPhase.BROADCAST,
+        receipts: [
+          {
+            name: 'Time taken',
+            value: `${i} seconds`,
+          },
+        ],
+      };
+    }),
+  );
+  return observable;
 };
 
 const withdraw = (
