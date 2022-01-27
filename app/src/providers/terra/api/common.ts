@@ -1,8 +1,10 @@
 import { Observable } from 'rxjs';
 import { TxResultRendering } from '@libs/app-fns';
 import { ConnectedWallet } from '@terra-money/use-wallet';
-import { AnchorConstants } from '@anchor-protocol/app-provider';
-import { AddressProvider } from '@anchor-protocol/anchor.js';
+import {
+  AnchorConstants,
+  AnchorContractAddress,
+} from '@anchor-protocol/app-provider';
 import { QueryClient } from '@libs/query-client';
 
 export type TxObservableFn<AnchorParams> = (
@@ -12,7 +14,7 @@ export type TxObservableFn<AnchorParams> = (
 export type TxObservableFnDependencies = {
   constants: AnchorConstants;
   connectedWallet: ConnectedWallet | undefined;
-  addressProvider: AddressProvider;
+  contractAddress: AnchorContractAddress;
   queryClient: QueryClient;
   txErrorReporter?: (error: unknown) => string;
   refetchQueries: (key: string) => void;

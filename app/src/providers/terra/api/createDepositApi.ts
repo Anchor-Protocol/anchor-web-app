@@ -1,4 +1,3 @@
-import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import { earnDepositTx } from '@anchor-protocol/app-fns';
 import { ANCHOR_TX_KEY } from '@anchor-protocol/app-provider';
 import { AnchorDepositParams } from 'contexts/api';
@@ -10,7 +9,7 @@ export const createDepositApi = (
   const {
     constants,
     connectedWallet,
-    addressProvider,
+    contractAddress,
     queryClient,
     txErrorReporter,
     refetchQueries,
@@ -21,15 +20,14 @@ export const createDepositApi = (
     }
     const { depositAmount, txFee, onTxSucceed } = params;
     return earnDepositTx({
-      address: connectedWallet.walletAddress,
-      market: MARKET_DENOMS.UUSD,
-      amount: depositAmount,
+      walletAddr: connectedWallet.walletAddress,
+      marketAddr: contractAddress.moneyMarket.market,
+      depositAmount,
       network: connectedWallet.network,
       post: connectedWallet.post,
       txFee,
       gasFee: constants.gasWanted,
       gasAdjustment: constants.gasAdjustment,
-      addressProvider,
       queryClient,
       txErrorReporter,
       onTxSucceed: () => {

@@ -1,4 +1,3 @@
-import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
 import { earnWithdrawTx } from '@anchor-protocol/app-fns';
 import { AnchorWithdrawParams } from 'contexts/api';
 import { ANCHOR_TX_KEY } from '@anchor-protocol/app-provider';
@@ -10,7 +9,7 @@ export const createWithdrawApi = (
   const {
     constants,
     connectedWallet,
-    addressProvider,
+    contractAddress,
     queryClient,
     txErrorReporter,
     refetchQueries,
@@ -22,16 +21,16 @@ export const createWithdrawApi = (
     const { withdrawAmount, txFee, onTxSucceed } = params;
     return earnWithdrawTx({
       // fabricateMarketReedeemStableCoin
-      address: connectedWallet.walletAddress,
-      market: MARKET_DENOMS.UUSD,
-      amount: withdrawAmount,
+      walletAddr: connectedWallet.walletAddress,
+      withdrawAmount,
+      marketAddr: contractAddress.moneyMarket.market,
+      aUstTokenAddr: contractAddress.cw20.aUST,
       // post
       network: connectedWallet.network,
       post: connectedWallet.post,
       txFee,
       gasFee: constants.gasWanted,
       gasAdjustment: constants.gasAdjustment,
-      addressProvider,
       // query
       queryClient,
       // error
