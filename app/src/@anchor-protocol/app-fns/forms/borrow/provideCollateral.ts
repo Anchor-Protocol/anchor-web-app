@@ -1,4 +1,3 @@
-import { COLLATERAL_DENOMS } from '@anchor-protocol/anchor.js';
 import {
   bAsset,
   CW20Addr,
@@ -16,7 +15,6 @@ import { computeLtvToDepositAmount } from '../../logics/borrow/computeLtvToDepos
 import { computeProvideCollateralBorrowLimit } from '../../logics/borrow/computeProvideCollateralBorrowLimit';
 import { computeProvideCollateralNextLtv } from '../../logics/borrow/computeProvideCollateralNextLtv';
 import { pickCollateral } from '../../logics/borrow/pickCollateral';
-import { pickCollateralDenom } from '../../logics/borrow/pickCollateralDenom';
 import { validateDepositAmount } from '../../logics/borrow/validateDepositAmount';
 import { validateTxFee } from '../../logics/common/validateTxFee';
 import { BAssetLtv, BAssetLtvs } from '../../queries/borrow/market';
@@ -49,7 +47,7 @@ export interface BorrowProvideCollateralFormStates
 
   dangerLtv: Rate<Big>;
   collateral: moneyMarket.overseer.WhitelistResponse['elems'][number];
-  collateralDenom: COLLATERAL_DENOMS | undefined;
+  //collateralDenom: COLLATERAL_DENOMS | undefined;
 
   txFee: u<UST>;
   currentLtv: Rate<Big> | undefined;
@@ -108,7 +106,7 @@ export const borrowProvideCollateralForm = ({
 
   const collateral = pickCollateral(collateralToken, overseerWhitelist);
 
-  const collateralDenom = pickCollateralDenom(collateral);
+  //const collateralDenom = pickCollateralDenom(collateral);
 
   const invalidTxFee = connected
     ? validateTxFee(userUSTBalance, fixedFee)
@@ -157,7 +155,7 @@ export const borrowProvideCollateralForm = ({
         depositAmount,
         collateral,
         borrowLimit,
-        collateralDenom,
+        //collateralDenom,
         currentLtv,
         amountToLtv,
         dangerLtv,

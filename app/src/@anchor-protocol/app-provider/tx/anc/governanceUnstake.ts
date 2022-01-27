@@ -1,5 +1,5 @@
-import { ANC } from '@anchor-protocol/types';
 import { ancGovernanceUnstakeTx } from '@anchor-protocol/app-fns';
+import { ANC } from '@anchor-protocol/types';
 import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
@@ -16,7 +16,7 @@ export interface AncGovernanceUnstakeTxParams {
 export function useAncGovernanceUnstakeTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { queryClient, txErrorReporter, addressProvider, constants } =
+  const { queryClient, txErrorReporter, contractAddress, constants } =
     useAnchorWebapp();
 
   const fixedFee = useFixedFee();
@@ -31,15 +31,15 @@ export function useAncGovernanceUnstakeTx() {
 
       return ancGovernanceUnstakeTx({
         // fabricateGovStakeVoting
-        address: connectedWallet.walletAddress,
-        amount: ancAmount,
+        walletAddr: connectedWallet.walletAddress,
+        ancAmount,
+        govAddr: contractAddress.anchorToken.gov,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: fixedFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         // query
         queryClient,
         // error
@@ -53,10 +53,10 @@ export function useAncGovernanceUnstakeTx() {
     },
     [
       connectedWallet,
+      contractAddress.anchorToken.gov,
       fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,
-      addressProvider,
       queryClient,
       txErrorReporter,
       refetchQueries,

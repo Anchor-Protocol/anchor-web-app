@@ -1,4 +1,7 @@
-import { useAirdropCheckQuery } from '@anchor-protocol/app-provider';
+import {
+  useAirdropCheckQuery,
+  useBAssetInfoAndBalanceTotalQuery,
+} from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
@@ -77,6 +80,8 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   const [openSendDialog, sendDialogElement] = useSendDialog();
 
   const [openBuyUstDialog, buyUstDialogElement] = useBuyUstDialog();
+
+  const { data: bAssetBalancesTotal } = useBAssetInfoAndBalanceTotalQuery();
 
   // ---------------------------------------------
   // states
@@ -267,6 +272,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                     disconnectWallet={disconnectWallet}
                     openSend={() => openSendDialog({})}
                     openBuyUst={() => openBuyUstDialog({})}
+                    bAssetBalanceTotal={bAssetBalancesTotal}
                   />
                 </DropdownBox>
               </DropdownContainer>

@@ -15,13 +15,8 @@ export interface AncAncUstLpStakeTxParams {
 export function useAncAncUstLpStakeTx() {
   const connectedWallet = useConnectedWallet();
 
-  const {
-    queryClient,
-    txErrorReporter,
-    addressProvider,
-    contractAddress,
-    constants,
-  } = useAnchorWebapp();
+  const { queryClient, txErrorReporter, contractAddress, constants } =
+    useAnchorWebapp();
 
   const fixedFee = useFixedFee();
 
@@ -35,17 +30,16 @@ export function useAncAncUstLpStakeTx() {
 
       return ancAncUstLpStakeTx({
         // fabricateStakingBond
+        lpAmount: lpAmount,
         walletAddr: connectedWallet.walletAddress,
         ancUstLpTokenAddr: contractAddress.cw20.AncUstLP,
         generatorAddr: contractAddress.astroport.generator,
-        amount: lpAmount,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: fixedFee,
         gasFee: constants.astroportGasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         // query
         queryClient,
         // error
@@ -64,7 +58,6 @@ export function useAncAncUstLpStakeTx() {
       fixedFee,
       constants.astroportGasWanted,
       constants.gasAdjustment,
-      addressProvider,
       queryClient,
       txErrorReporter,
       refetchQueries,

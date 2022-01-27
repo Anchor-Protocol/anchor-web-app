@@ -1,6 +1,5 @@
-import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
-import { u, UST } from '@anchor-protocol/types';
 import { borrowBorrowTx } from '@anchor-protocol/app-fns';
+import { u, UST } from '@anchor-protocol/types';
 import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
@@ -19,7 +18,7 @@ export interface BorrowBorrowTxParams {
 export function useBorrowBorrowTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { queryClient, txErrorReporter, addressProvider, constants } =
+  const { queryClient, txErrorReporter, contractAddress, constants } =
     useAnchorWebapp();
 
   const { refetch: borrowMarketQuery } = useBorrowMarketQuery();
@@ -36,16 +35,15 @@ export function useBorrowBorrowTx() {
       }
 
       return borrowBorrowTx({
-        address: connectedWallet.walletAddress,
-        market: MARKET_DENOMS.UUSD,
-        amount: borrowAmount,
+        walletAddr: connectedWallet.walletAddress,
+        marketAddr: contractAddress.moneyMarket.market,
+        borrowAmount,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         txFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         fixedGas: fixedFee,
         // query
         queryClient,
@@ -61,12 +59,12 @@ export function useBorrowBorrowTx() {
       });
     },
     [
-      addressProvider,
       borrowBorrowerQuery,
       borrowMarketQuery,
       connectedWallet,
       constants.gasAdjustment,
       constants.gasWanted,
+      contractAddress.moneyMarket.market,
       fixedFee,
       queryClient,
       refetchQueries,

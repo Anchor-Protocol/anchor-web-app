@@ -1,9 +1,14 @@
-import {
-  AddressProvider,
-  fabricateRedeemCollateral,
-} from '@anchor-protocol/anchor.js';
 import { formatLuna } from '@anchor-protocol/notation';
-import { bLuna, Gas, Rate, u, UST } from '@anchor-protocol/types';
+import {
+  bAsset,
+  bLuna,
+  CW20Addr,
+  Gas,
+  HumanAddr,
+  Rate,
+  u,
+  UST,
+} from '@anchor-protocol/types';
 import {
   pickAttributeValue,
   pickEvent,
@@ -19,43 +24,68 @@ import {
   TxHelper,
 } from '@libs/app-fns/tx/internal';
 import { floor } from '@libs/big-math';
-import { demicrofy, formatRate } from '@libs/formatter';
+import { demicrofy, formatRate, formatTokenInput } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
+import {
+  CreateTxOptions,
+  Fee,
+  MsgExecuteContract,
+} from '@terra-money/terra.js';
 import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
-import { CreateTxOptions, Fee } from '@terra-money/terra.js';
 import { QueryObserverResult } from 'react-query';
 import { Observable } from 'rxjs';
-import { getCollateralSymbol } from '../../functions/getCollateralSymbol';
 import { computeCurrentLtv } from '../../logics/borrow/computeCurrentLtv';
 import { BorrowBorrower } from '../../queries/borrow/borrower';
 import { BorrowMarket } from '../../queries/borrow/market';
 import { _fetchBorrowData } from './_fetchBorrowData';
 
-export function borrowRedeemCollateralTx(
-  $: Parameters<typeof fabricateRedeemCollateral>[0] & {
-    gasFee: Gas;
-    gasAdjustment: Rate<number>;
-    fixedGas: u<UST>;
-    network: NetworkInfo;
-    addressProvider: AddressProvider;
-    queryClient: QueryClient;
-    post: (tx: CreateTxOptions) => Promise<TxResult>;
-    txErrorReporter?: (error: unknown) => string;
-    borrowMarketQuery: () => Promise<
-      QueryObserverResult<BorrowMarket | undefined>
-    >;
-    borrowBorrowerQuery: () => Promise<
-      QueryObserverResult<BorrowBorrower | undefined>
-    >;
-    onTxSucceed?: () => void;
-  },
-): Observable<TxResultRendering> {
+export function borrowRedeemCollateralTx($: {
+  walletAddr: HumanAddr;
+  redeemAmount: bAsset;
+  overseerAddr: HumanAddr;
+  bAssetTokenAddr: CW20Addr;
+  bAssetCustodyAddr: HumanAddr;
+  bAssetSymbol: string;
+
+  gasFee: Gas;
+  gasAdjustment: Rate<number>;
+  fixedGas: u<UST>;
+  network: NetworkInfo;
+  queryClient: QueryClient;
+  post: (tx: CreateTxOptions) => Promise<TxResult>;
+  txErrorReporter?: (error: unknown) => string;
+  borrowMarketQuery: () => Promise<
+    QueryObserverResult<BorrowMarket | undefined>
+  >;
+  borrowBorrowerQuery: () => Promise<
+    QueryObserverResult<BorrowBorrower | undefined>
+  >;
+  onTxSucceed?: () => void;
+}): Observable<TxResultRendering> {
   const helper = new TxHelper({ ...$, txFee: $.fixedGas });
 
   return pipe(
     _createTxOptions({
-      msgs: fabricateRedeemCollateral($)($.addressProvider),
+      msgs: [
+        // unlock collateral
+        new MsgExecuteContract($.walletAddr, $.overseerAddr, {
+          // @see https://github.com/Anchor-Protocol/money-market-contracts/blob/master/contracts/overseer/src/msg.rs#L78
+          unlock_collateral: {
+            collaterals: [
+              [$.bAssetTokenAddr, formatTokenInput($.redeemAmount)],
+            ],
+          },
+        }),
+
+        // withdraw from custody
+        new MsgExecuteContract($.walletAddr, $.bAssetCustodyAddr, {
+          // @see https://github.com/Anchor-Protocol/money-market-contracts/blob/master/contracts/custody/src/msg.rs#L69
+          withdraw_collateral: {
+            amount: formatTokenInput($.redeemAmount),
+          },
+        }),
+      ],
       fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),
@@ -98,9 +128,9 @@ export function borrowRedeemCollateralTx(
           receipts: [
             redeemedAmount && {
               name: 'Redeemed Amount',
-              value: `${formatLuna(
-                demicrofy(redeemedAmount),
-              )} ${getCollateralSymbol($.collateral)}`,
+              value: `${formatLuna(demicrofy(redeemedAmount))} ${
+                $.bAssetSymbol
+              }`,
             },
             newLtv && {
               name: 'New LTV',

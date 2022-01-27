@@ -1,4 +1,4 @@
-import { CollateralInfo, CollateralType, Gas } from '@anchor-protocol/types';
+import { Gas } from '@anchor-protocol/types';
 import { AppConstants, AppContractAddress } from '@libs/app-provider';
 import { CW20Addr, HumanAddr } from '@libs/types';
 
@@ -12,17 +12,20 @@ export interface AnchorContractAddress extends AppContractAddress {
     airdropRegistry: HumanAddr;
     /** addressProvider.bLunaValidatorsRegistry() */
     validatorsRegistry: HumanAddr;
+    /** addressProvider.custody() */
+    custody: HumanAddr;
   };
-  beth: {
-    /** addressProvider.bEthReward() */
-    reward: HumanAddr;
-  };
+  //beth: {
+  //  /** addressProvider.bEthReward() */
+  //  reward: HumanAddr;
+  //};
   moneyMarket: {
     /** addressProvider.market() */
     market: HumanAddr;
 
-    collaterals: Record<CollateralType, CollateralInfo>;
-    collateralsArray: CollateralInfo[];
+    //collaterals: Record<CollateralType, CollateralInfo>;
+    //collateralsArray: CollateralInfo[];
+
     ///** addressProvider.custody() */
     //bLunaCustody: HumanAddr;
     ///** addressProvider.custody() */
@@ -71,8 +74,10 @@ export interface AnchorContractAddress extends AppContractAddress {
   cw20: {
     /** addressProvider.bLunaToken() */
     bLuna: CW20Addr;
-    /** addressProvider.bEthToken() */
-    bEth: CW20Addr;
+
+    ///** addressProvider.bEthToken() */
+    //bEth: CW20Addr;
+
     /** addressProvider.aTerra() */
     aUST: CW20Addr;
     /** addressProvider.ANC() */

@@ -1,9 +1,9 @@
-import { ExecuteMsg } from '@anchor-protocol/anchor.js';
-import { ANC, moneyMarket, Rate, u } from '@anchor-protocol/types';
+import { ExecuteMsg } from '@anchor-protocol/app-fns';
 import {
   useAnchorWebapp,
   useGovDistributionModelUpdateConfigQuery,
 } from '@anchor-protocol/app-provider';
+import { ANC, moneyMarket, Rate, u } from '@anchor-protocol/types';
 import {
   formatExecuteMsgNumber,
   MAX_EXECUTE_MSG_DECIMALS,

@@ -1,6 +1,5 @@
-import { ExecuteMsg } from '@anchor-protocol/anchor.js';
+import { ExecuteMsg, govCreatePollTx } from '@anchor-protocol/app-fns';
 import { ANC } from '@anchor-protocol/types';
-import { govCreatePollTx } from '@anchor-protocol/app-fns';
 import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
@@ -21,7 +20,7 @@ export interface GovCreatePollTxParams {
 export function useGovCreatePollTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { queryClient, txErrorReporter, addressProvider, constants } =
+  const { queryClient, txErrorReporter, contractAddress, constants } =
     useAnchorWebapp();
 
   const refetchQueries = useRefetchQueries();
@@ -43,19 +42,20 @@ export function useGovCreatePollTx() {
 
       return govCreatePollTx({
         // fabricateGovCreatePoll
-        address: connectedWallet.walletAddress,
+        walletAddr: connectedWallet.walletAddress,
         amount,
         title,
         description,
         link,
-        execute_msgs: executeMsgs,
+        executeMsgs,
+        govAddr: contractAddress.anchorToken.gov,
+        ancTokenAddr: contractAddress.cw20.ANC,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: fixedFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         // query
         queryClient,
         // error
@@ -69,10 +69,11 @@ export function useGovCreatePollTx() {
     },
     [
       connectedWallet,
+      contractAddress.anchorToken.gov,
+      contractAddress.cw20.ANC,
       fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,
-      addressProvider,
       queryClient,
       txErrorReporter,
       refetchQueries,

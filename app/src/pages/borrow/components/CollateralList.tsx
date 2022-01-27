@@ -1,6 +1,6 @@
 import {
   computeLiquidationPrice,
-  prettifyBAssetSymbol,
+  prettifySymbol,
 } from '@anchor-protocol/app-fns';
 import {
   useBorrowBorrowerQuery,
@@ -79,7 +79,7 @@ export function CollateralList({ className }: CollateralListProps) {
           ),
           token: collateral_token,
           name,
-          symbol: prettifyBAssetSymbol(symbol),
+          symbol: prettifySymbol(symbol),
           price: oracle?.price ?? ('0' as UST),
           liquidationPrice:
             borrowBorrower &&

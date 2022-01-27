@@ -1,4 +1,3 @@
-import { COLLATERAL_DENOMS } from '@anchor-protocol/anchor.js';
 import {
   bAsset,
   CW20Addr,
@@ -16,7 +15,6 @@ import { computeRedeemCollateralBorrowLimit } from '../../logics/borrow/computeR
 import { computeRedeemCollateralNextLtv } from '../../logics/borrow/computeRedeemCollateralNextLtv';
 import { computeRedeemCollateralWithdrawableAmount } from '../../logics/borrow/computeRedeemCollateralWithdrawableAmount';
 import { pickCollateral } from '../../logics/borrow/pickCollateral';
-import { pickCollateralDenom } from '../../logics/borrow/pickCollateralDenom';
 import { validateRedeemAmount } from '../../logics/borrow/validateRedeemAmount';
 import { validateTxFee } from '../../logics/common/validateTxFee';
 import { BAssetLtv, BAssetLtvs } from '../../queries/borrow/market';
@@ -48,7 +46,7 @@ export interface BorrowRedeemCollateralFormStates
   bAssetLtvsAvg: BAssetLtv;
 
   collateral: moneyMarket.overseer.WhitelistResponse['elems'][number];
-  collateralDenom: COLLATERAL_DENOMS | undefined;
+  //collateralDenom: COLLATERAL_DENOMS | undefined;
 
   userMaxLtv: Rate<Big>;
   txFee: u<UST>;
@@ -81,7 +79,7 @@ export const borrowRedeemCollateralForm = ({
 }: BorrowRedeemCollateralFormDependency) => {
   const collateral = pickCollateral(collateralToken, overseerWhitelist);
 
-  const collateralDenom = pickCollateralDenom(collateral);
+  //const collateralDenom = pickCollateralDenom(collateral);
 
   const amountToLtv = computeRedeemAmountToLtv(
     collateralToken,
@@ -163,7 +161,7 @@ export const borrowRedeemCollateralForm = ({
       {
         amountToLtv,
         borrowLimit,
-        collateralDenom,
+        //collateralDenom,
         currentLtv,
         collateral,
         invalidRedeemAmount,

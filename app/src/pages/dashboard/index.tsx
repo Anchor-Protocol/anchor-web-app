@@ -7,15 +7,7 @@ import {
   formatUTokenIntegerWithoutPostfixUnits,
 } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
-import {
-  bAsset,
-  bEth,
-  bLuna,
-  Luna,
-  Rate,
-  u,
-  UST,
-} from '@anchor-protocol/types';
+import { bAsset, bLuna, Luna, Rate, u, UST } from '@anchor-protocol/types';
 import {
   useAnchorWebapp,
   useEarnEpochStatesQuery,
@@ -218,7 +210,7 @@ function DashboardBase({ className }: DashboardProps) {
         : '0') as u<UST<BigSource>>,
       bEthPrice: marketBEth.beth_price,
       bEthPriceDiff: 'TODO: API not ready...',
-      bEthTotalCollateral: (bEthCollateral?.collateral ?? '0') as u<bEth>,
+      bEthTotalCollateral: (bEthCollateral?.collateral ?? '0') as u<bAsset>,
       bEthTotalCollateralValue: (bEthCollateral
         ? big(bEthCollateral.collateral).mul(bEthCollateral.price)
         : '0') as u<UST<BigSource>>,

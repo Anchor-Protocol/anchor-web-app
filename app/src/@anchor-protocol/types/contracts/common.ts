@@ -1,17 +1,19 @@
-import { COLLATERAL_DENOMS } from '@anchor-protocol/anchor.js';
-import { CW20Addr, HumanAddr } from '@libs/types';
+//import { COLLATERAL_DENOMS } from '@anchor-protocol/anchor.js';
+//import { CW20Addr, HumanAddr } from '@libs/types';
 
-export enum CollateralType {
-  bLuna = 'bLuna',
-  bEth = 'bEth',
-}
+export const __foo__ = 'bar';
 
-export interface CollateralInfo {
-  type: CollateralType;
-  denom: COLLATERAL_DENOMS;
-  custody: HumanAddr;
-  token: CW20Addr;
-}
+//export enum CollateralType {
+//  bLuna = 'bLuna',
+//  bEth = 'bEth',
+//}
+//
+//export interface CollateralInfo {
+//  type: CollateralType;
+//  denom: COLLATERAL_DENOMS;
+//  custody: HumanAddr;
+//  token: CW20Addr;
+//}
 
 //export interface ContractAddress {
 //  bluna: {

@@ -1,9 +1,5 @@
-import {
-  AddressProvider,
-  fabricateMarketRepay,
-} from '@anchor-protocol/anchor.js';
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
-import { Gas, Rate, u, UST } from '@anchor-protocol/types';
+import { Gas, HumanAddr, Rate, u, UST } from '@anchor-protocol/types';
 import {
   pickAttributeValue,
   pickEvent,
@@ -19,11 +15,17 @@ import {
   TxHelper,
 } from '@libs/app-fns/tx/internal';
 import { floor } from '@libs/big-math';
-import { demicrofy, formatRate } from '@libs/formatter';
+import { demicrofy, formatRate, formatTokenInput } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
+import {
+  Coin,
+  Coins,
+  CreateTxOptions,
+  Fee,
+  MsgExecuteContract,
+} from '@terra-money/terra.js';
 import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
-import { CreateTxOptions, Fee } from '@terra-money/terra.js';
 import { QueryObserverResult } from 'react-query';
 import { Observable } from 'rxjs';
 import { computeCurrentLtv } from '../../logics/borrow/computeCurrentLtv';
@@ -31,30 +33,42 @@ import { BorrowBorrower } from '../../queries/borrow/borrower';
 import { BorrowMarket } from '../../queries/borrow/market';
 import { _fetchBorrowData } from './_fetchBorrowData';
 
-export function borrowRepayTx(
-  $: Parameters<typeof fabricateMarketRepay>[0] & {
-    gasFee: Gas;
-    gasAdjustment: Rate<number>;
-    txFee: u<UST>;
-    network: NetworkInfo;
-    addressProvider: AddressProvider;
-    queryClient: QueryClient;
-    post: (tx: CreateTxOptions) => Promise<TxResult>;
-    txErrorReporter?: (error: unknown) => string;
-    borrowMarketQuery: () => Promise<
-      QueryObserverResult<BorrowMarket | undefined>
-    >;
-    borrowBorrowerQuery: () => Promise<
-      QueryObserverResult<BorrowBorrower | undefined>
-    >;
-    onTxSucceed?: () => void;
-  },
-): Observable<TxResultRendering> {
+export function borrowRepayTx($: {
+  walletAddr: HumanAddr;
+  marketAddr: HumanAddr;
+  repayAmount: UST;
+
+  gasFee: Gas;
+  gasAdjustment: Rate<number>;
+  txFee: u<UST>;
+  network: NetworkInfo;
+  queryClient: QueryClient;
+  post: (tx: CreateTxOptions) => Promise<TxResult>;
+  txErrorReporter?: (error: unknown) => string;
+  borrowMarketQuery: () => Promise<
+    QueryObserverResult<BorrowMarket | undefined>
+  >;
+  borrowBorrowerQuery: () => Promise<
+    QueryObserverResult<BorrowBorrower | undefined>
+  >;
+  onTxSucceed?: () => void;
+}): Observable<TxResultRendering> {
   const helper = new TxHelper($);
 
   return pipe(
     _createTxOptions({
-      msgs: fabricateMarketRepay($)($.addressProvider),
+      msgs: [
+        new MsgExecuteContract(
+          $.walletAddr,
+          $.marketAddr,
+          {
+            // @see https://github.com/Anchor-Protocol/money-market-contracts/blob/master/contracts/market/src/msg.rs#L74
+            repay_stable: {},
+          },
+          // sending stablecoin
+          new Coins([new Coin('uusd', formatTokenInput($.repayAmount))]),
+        ),
+      ],
       // FIXME repay's txFee is not fixed_gas (user ust transfer)
       fee: new Fee($.gasFee, floor($.txFee) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
