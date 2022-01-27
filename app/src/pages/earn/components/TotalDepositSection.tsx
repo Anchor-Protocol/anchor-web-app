@@ -30,6 +30,8 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
   // ---------------------------------------------
   const { connected } = useAccount();
 
+  console.log('connected', connected);
+
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
