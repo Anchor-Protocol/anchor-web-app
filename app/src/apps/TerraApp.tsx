@@ -60,19 +60,16 @@ export function TerraApp() {
             {/* Borrow */}
             <Route path="/borrow" component={Borrow} />
 
-                {/* bAsset */}
-                <Route exact path="/basset" component={BAssetMain} />
+            {/* bAsset */}
+            <Route exact path="/basset" component={BAssetMain} />
 
-                <Route path="/basset/bluna" component={BlunaConvert} />
+            <Route path="/basset/bluna" component={BlunaConvert} />
 
-                <Route path="/basset/withdraw" component={BlunaWithdraw} />
+            <Route path="/basset/withdraw" component={BlunaWithdraw} />
 
-                <Route path="/basset/claim" component={BAssetClaim} />
+            <Route path="/basset/claim" component={BAssetClaim} />
 
-                <Route
-                  path="/basset/wh/:tokenSymbol"
-                  component={WormholeConvert}
-                />
+            <Route path="/basset/wh/:tokenSymbol" component={WormholeConvert} />
 
             {/* Airdrop */}
             <Route path="/airdrop" component={Airdrop} />
