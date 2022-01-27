@@ -1,10 +1,12 @@
 // THIS FILE IS AUTO CREATED
 // @see ~/scripts/create-index.ts
 export * from './errors';
+export * from './caches/cw20MinterCache';
 export * from './caches/cw20TokenInfoCache';
 export * from './forms/cw20/buyToken';
 export * from './forms/cw20/sellToken';
 export * from './forms/cw20/send';
+export * from './forms/cw20/swap';
 export * from './forms/cw20/tokens';
 export * from './logics/computeMaxUstBalanceForUstTransfer';
 export * from './models/gasPrice';
@@ -14,6 +16,7 @@ export * from './queries/astroport/deposit';
 export * from './queries/astroport/pendingToken';
 export * from './queries/chains';
 export * from './queries/cw20/balance';
+export * from './queries/cw20/minter';
 export * from './queries/cw20/nativeTokenInfo';
 export * from './queries/cw20/poolInfo';
 export * from './queries/cw20/tokenDisplayInfos';

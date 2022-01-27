@@ -28,9 +28,9 @@ const borrow: RouteMenu = {
   title: 'BORROW',
 };
 
-const bond: RouteMenu = {
-  to: '/bond',
-  title: 'BOND',
+const bAsset: RouteMenu = {
+  to: '/basset',
+  title: 'bASSET',
 };
 
 const govern: RouteMenu = {
@@ -43,7 +43,7 @@ const useMenus = (): RouteMenu[] => {
   return useMemo(() => {
     switch (chain) {
       case Chain.Terra:
-        return [dashboard, myPage, earn, borrow, bond, govern];
+        return [dashboard, myPage, earn, borrow, bAsset, govern];
       case Chain.Ethereum:
         //return [dashboard, myPage, earn, borrow];
         return [dashboard, earn];

@@ -1,5 +1,5 @@
 import { ancBuyTx } from '@anchor-protocol/app-fns';
-import { u, UST } from '@anchor-protocol/types';
+import { Rate, u, UST } from '@anchor-protocol/types';
 import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { formatExecuteMsgNumber } from '@libs/formatter';
 import { useStream } from '@rx-stream/react';
@@ -13,8 +13,8 @@ import { useAncPriceQuery } from '../../queries/anc/price';
 
 export interface AncBuyTxParams {
   fromAmount: UST;
-  txFee: u<UST>;
   maxSpread: number;
+  txFee: u<UST>;
 
   onTxSucceed?: () => void;
 }
@@ -22,7 +22,7 @@ export interface AncBuyTxParams {
 export function useAncBuyTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { queryClient, txErrorReporter, addressProvider, constants } =
+  const { queryClient, txErrorReporter, contractAddress, constants } =
     useAnchorWebapp();
 
   const { tax } = useAnchorBank();
@@ -41,13 +41,13 @@ export function useAncBuyTx() {
 
       return ancBuyTx({
         // fabricatebBuy
-        address: connectedWallet.walletAddress,
-        amount: fromAmount,
-        denom: 'uusd',
+        walletAddr: connectedWallet.walletAddress,
+        fromAmount,
+        ancUstPairAddr: contractAddress.terraswap.ancUstPair,
         beliefPrice: formatExecuteMsgNumber(
           big(ancPrice.USTPoolSize).div(ancPrice.ANCPoolSize),
-        ),
-        maxSpread: maxSpread.toString(),
+        ) as UST,
+        maxSpread: maxSpread.toString() as Rate,
         // post
         tax,
         network: connectedWallet.network,
@@ -56,7 +56,6 @@ export function useAncBuyTx() {
         fixedGas: fixedFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         // query
         queryClient,
         // error
@@ -71,11 +70,11 @@ export function useAncBuyTx() {
     [
       connectedWallet,
       ancPrice,
+      contractAddress.terraswap.ancUstPair,
       tax,
       fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,
-      addressProvider,
       queryClient,
       txErrorReporter,
       refetchQueries,

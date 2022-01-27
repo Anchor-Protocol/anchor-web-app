@@ -36,6 +36,7 @@ export const tokens = [
   'luna',
   'bluna',
   'beth',
+  'wheth',
 ] as const;
 
 export const variants = ['svg', '@2x', '@3x', '@4x'] as const;

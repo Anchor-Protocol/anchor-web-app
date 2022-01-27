@@ -13,7 +13,7 @@ export interface BondWithdrawTxParams {
 export function useBondWithdrawTx() {
   const connectedWallet = useConnectedWallet();
 
-  const { queryClient, txErrorReporter, addressProvider, constants } =
+  const { queryClient, txErrorReporter, contractAddress, constants } =
     useAnchorWebapp();
 
   const fixedFee = useFixedFee();
@@ -28,14 +28,14 @@ export function useBondWithdrawTx() {
 
       return bondWithdrawTx({
         // fabricatebAssetWithdrawUnbonded
-        address: connectedWallet.walletAddress,
+        walletAddr: connectedWallet.walletAddress,
+        bAssetHubAddr: contractAddress.bluna.hub,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: fixedFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         // query
         queryClient,
         // error
@@ -49,10 +49,10 @@ export function useBondWithdrawTx() {
     },
     [
       connectedWallet,
+      contractAddress.bluna.hub,
       fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,
-      addressProvider,
       queryClient,
       txErrorReporter,
       refetchQueries,

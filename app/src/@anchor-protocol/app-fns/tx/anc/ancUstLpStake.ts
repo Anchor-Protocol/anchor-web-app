@@ -1,5 +1,3 @@
-import { AddressProvider } from '@anchor-protocol/anchor.js';
-import { createHookMsg } from '@anchor-protocol/anchor.js/dist/utils/cw20/create-hook-msg';
 import { formatLP } from '@anchor-protocol/notation';
 import {
   AncUstLP,
@@ -22,17 +20,16 @@ import {
   _createTxOptions,
   _pollTxInfo,
   _postTx,
+  createHookMsg,
   TxHelper,
 } from '@libs/app-fns/tx/internal';
 import { floor } from '@libs/big-math';
-import { demicrofy } from '@libs/formatter';
+import { demicrofy, formatTokenInput } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
 import {
   CreateTxOptions,
-  Dec,
   Fee,
-  Int,
   MsgExecuteContract,
 } from '@terra-money/terra.js';
 import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
@@ -42,13 +39,12 @@ export function ancAncUstLpStakeTx($: {
   walletAddr: HumanAddr;
   generatorAddr: HumanAddr;
   ancUstLpTokenAddr: CW20Addr;
-  amount: AncUstLP;
+  lpAmount: AncUstLP;
 
   gasFee: Gas;
   gasAdjustment: Rate<number>;
   fixedGas: u<UST>;
   network: NetworkInfo;
-  addressProvider: AddressProvider;
   queryClient: QueryClient;
   post: (tx: CreateTxOptions) => Promise<TxResult>;
   txErrorReporter?: (error: unknown) => string;
@@ -62,7 +58,7 @@ export function ancAncUstLpStakeTx($: {
         new MsgExecuteContract($.walletAddr, $.ancUstLpTokenAddr, {
           send: {
             contract: $.generatorAddr,
-            amount: new Int(new Dec($.amount).mul(1000000)).toString(),
+            amount: formatTokenInput($.lpAmount),
             msg: createHookMsg({
               deposit: {},
             }),

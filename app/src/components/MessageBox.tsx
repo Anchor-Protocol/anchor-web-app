@@ -6,7 +6,10 @@ const key = (id: string) => `__anchor_hide_message_${id}__`;
 
 export interface MessageBoxProps {
   className?: string;
+  icon?: ReactNode;
   children: ReactNode;
+  variant?: 'normal' | 'highlight';
+  textAlign?: 'center' | 'left';
   style?: CSSProperties;
   level?: 'error' | 'info';
   hide?: {
@@ -15,7 +18,15 @@ export interface MessageBoxProps {
   };
 }
 
-function MessageBoxBase({ className, style, children, hide }: MessageBoxProps) {
+function MessageBoxBase({
+  className,
+  icon,
+  style,
+  children,
+  variant = 'normal',
+  textAlign = 'center',
+  hide,
+}: MessageBoxProps) {
   const [hidden, setHidden] = useState<boolean>(() => {
     if (!hide) {
       return false;
@@ -41,8 +52,14 @@ function MessageBoxBase({ className, style, children, hide }: MessageBoxProps) {
   }, [hide]);
 
   return !hidden ? (
-    <article className={className} style={style}>
-      <p>{children}</p>
+    <article
+      className={className}
+      style={style}
+      data-variant={variant}
+      data-textalign={textAlign}
+    >
+      {icon}
+      <p className={icon ? 'padded' : ''}>{children}</p>
       {!!hide && <Close className="close" onClick={updateHidden} />}
     </article>
   ) : null;
@@ -62,15 +79,29 @@ export const MessageBox = styled(MessageBoxBase)`
   color: ${textColor};
   padding: 10px;
   margin: 20px 0;
-
   display: flex;
   align-items: center;
+
+  &[data-variant='highlight'] {
+    border: solid 1px #4bdb4b;
+    background-color: rgba(75, 219, 75, 0.1);
+    color: #285e28;
+  }
+
+  &[data-textalign='left'] {
+    > p {
+      text-align: left;
+    }
+  }
 
   > p {
     flex: 1;
     text-align: center;
     word-break: break-word;
     white-space: break-spaces;
+    &.padded {
+      margin-left: 4px;
+    }
   }
 
   > svg {

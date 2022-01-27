@@ -1,8 +1,4 @@
-import {
-  AddressProvider,
-  fabricateGovCastVote,
-} from '@anchor-protocol/anchor.js';
-import { Gas, Rate, u, UST } from '@anchor-protocol/types';
+import { ANC, Gas, HumanAddr, Rate, u, UST } from '@anchor-protocol/types';
 import { TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import {
   _catchTxError,
@@ -12,30 +8,46 @@ import {
   TxHelper,
 } from '@libs/app-fns/tx/internal';
 import { floor } from '@libs/big-math';
+import { formatTokenInput } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
+import {
+  CreateTxOptions,
+  Fee,
+  MsgExecuteContract,
+} from '@terra-money/terra.js';
 import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
-import { CreateTxOptions, Fee } from '@terra-money/terra.js';
 import { Observable } from 'rxjs';
 
-export function govVoteTx(
-  $: Parameters<typeof fabricateGovCastVote>[0] & {
-    gasFee: Gas;
-    gasAdjustment: Rate<number>;
-    fixedGas: u<UST>;
-    network: NetworkInfo;
-    addressProvider: AddressProvider;
-    queryClient: QueryClient;
-    post: (tx: CreateTxOptions) => Promise<TxResult>;
-    txErrorReporter?: (error: unknown) => string;
-    onTxSucceed?: () => void;
-  },
-): Observable<TxResultRendering> {
+export function govVoteTx($: {
+  walletAddr: HumanAddr;
+  govAddr: HumanAddr;
+  amount: ANC;
+  voteFor: 'yes' | 'no';
+  pollId: number;
+
+  gasFee: Gas;
+  gasAdjustment: Rate<number>;
+  fixedGas: u<UST>;
+  network: NetworkInfo;
+  queryClient: QueryClient;
+  post: (tx: CreateTxOptions) => Promise<TxResult>;
+  txErrorReporter?: (error: unknown) => string;
+  onTxSucceed?: () => void;
+}): Observable<TxResultRendering> {
   const helper = new TxHelper({ ...$, txFee: $.fixedGas });
 
   return pipe(
     _createTxOptions({
-      msgs: fabricateGovCastVote($)($.addressProvider),
+      msgs: [
+        new MsgExecuteContract($.walletAddr, $.govAddr, {
+          cast_vote: {
+            poll_id: $.pollId,
+            vote: $.voteFor,
+            amount: formatTokenInput($.amount),
+          },
+        }),
+      ],
       fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),

@@ -7,7 +7,6 @@ import {
   ANC,
   AncUstLP,
   aUST,
-  bEth,
   bLuna,
   bLunaLunaLP,
 } from '@anchor-protocol/types';
@@ -51,11 +50,6 @@ export function useAnchorBank(): AnchorBank {
     connectedWallet?.walletAddress,
   );
 
-  const ubEth = useCW20Balance<bEth>(
-    contractAddress.cw20.bEth,
-    connectedWallet?.walletAddress,
-  );
-
   const ubLuna = useCW20Balance<bLuna>(
     contractAddress.cw20.bLuna,
     connectedWallet?.walletAddress,
@@ -78,7 +72,6 @@ export function useAnchorBank(): AnchorBank {
         uANC,
         uAncUstLP,
         uaUST,
-        ubEth,
         ubLuna,
         ubLunaLunaLP,
         uLuna,
@@ -92,7 +85,6 @@ export function useAnchorBank(): AnchorBank {
     uLuna,
     uUST,
     uaUST,
-    ubEth,
     ubLuna,
     ubLunaLunaLP,
   ]);
