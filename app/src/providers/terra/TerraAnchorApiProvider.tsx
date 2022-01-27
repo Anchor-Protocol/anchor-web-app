@@ -10,7 +10,7 @@ import { createWithdrawApi } from './api/createWithdrawApi';
 const TerraAnchorApiProvider = ({ children }: UIElementProps) => {
   const connectedWallet = useConnectedWallet();
 
-  const { addressProvider, constants, txErrorReporter, queryClient } =
+  const { contractAddress, constants, txErrorReporter, queryClient } =
     useAnchorWebapp();
 
   const refetchQueries = useRefetchQueries();
@@ -18,7 +18,7 @@ const TerraAnchorApiProvider = ({ children }: UIElementProps) => {
   const api = useMemo(() => {
     const dependencies = {
       connectedWallet,
-      addressProvider,
+      contractAddress,
       constants,
       queryClient,
       txErrorReporter,
@@ -30,7 +30,7 @@ const TerraAnchorApiProvider = ({ children }: UIElementProps) => {
     };
   }, [
     connectedWallet,
-    addressProvider,
+    contractAddress,
     constants,
     txErrorReporter,
     queryClient,
