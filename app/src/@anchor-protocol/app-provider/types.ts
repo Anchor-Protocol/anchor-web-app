@@ -15,6 +15,9 @@ export interface AnchorContractAddress extends AppContractAddress {
     /** addressProvider.custody() */
     custody: HumanAddr;
   };
+  crossAnchor: {
+    core: HumanAddr;
+  };
   //beth: {
   //  /** addressProvider.bEthReward() */
   //  reward: HumanAddr;

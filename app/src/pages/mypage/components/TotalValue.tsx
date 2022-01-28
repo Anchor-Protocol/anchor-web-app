@@ -11,7 +11,6 @@ import {
   useEarnEpochStatesQuery,
   useRewardsAncGovernanceRewardsQuery,
 } from '@anchor-protocol/app-provider';
-import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
 import { u, UST } from '@anchor-protocol/types';
 import { sum } from '@libs/big-math';
@@ -22,9 +21,10 @@ import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { AnimateNumber } from '@libs/ui';
 import { Send } from '@material-ui/icons';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big, BigSource } from 'big.js';
 import { Sub } from 'components/Sub';
+import { useAccount } from 'contexts/account';
+import { useTokenBalances } from 'contexts/balances';
 import { fixHMR } from 'fix-hmr';
 import { computeHoldings } from 'pages/mypage/logics/computeHoldings';
 import { useRewards } from 'pages/mypage/logics/useRewards';
@@ -55,9 +55,9 @@ interface Item {
 }
 
 function TotalValueBase({ className }: TotalValueProps) {
-  const connectedWallet = useConnectedWallet();
+  const { connected } = useAccount();
 
-  const { tokenBalances } = useAnchorBank();
+  const tokenBalances = useTokenBalances();
 
   const { data: { moneyMarketEpochState } = {} } = useEarnEpochStatesQuery();
 
@@ -87,7 +87,7 @@ function TotalValueBase({ className }: TotalValueProps) {
     totalValue: u<UST<BigSource>>;
     data: Item[];
   }>(() => {
-    if (!connectedWallet) {
+    if (!connected) {
       return { totalValue: '0' as u<UST>, data: [] };
     }
 
@@ -181,7 +181,7 @@ function TotalValueBase({ className }: TotalValueProps) {
     ancPrice,
     ancUstLp,
     bAssetBalanceTotal,
-    connectedWallet,
+    connected,
     contractAddress,
     marketBorrowerInfo,
     moneyMarketEpochState,
@@ -225,10 +225,7 @@ function TotalValueBase({ className }: TotalValueProps) {
           </p>
         </div>
         <div>
-          <BorderButton
-            onClick={() => openSend({})}
-            disabled={!connectedWallet}
-          >
+          <BorderButton onClick={() => openSend({})} disabled={!connected}>
             <Send />
             Send
           </BorderButton>

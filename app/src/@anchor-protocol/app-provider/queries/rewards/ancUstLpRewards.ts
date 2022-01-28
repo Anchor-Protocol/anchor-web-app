@@ -4,7 +4,7 @@ import {
 } from '@anchor-protocol/app-fns';
 import { EMPTY_QUERY_RESULT } from '@libs/app-provider';
 import { createQueryFn } from '@libs/react-query-utils';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
+import { useAccount } from 'contexts/account';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
@@ -17,12 +17,12 @@ export function useRewardsAncUstLpRewardsQuery(): UseQueryResult<
   const { queryClient, contractAddress, queryErrorReporter } =
     useAnchorWebapp();
 
-  const connectedWallet = useConnectedWallet();
+  const { connected, terraWalletAddress } = useAccount();
 
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.REWARDS_ANC_UST_LP_REWARDS,
-      connectedWallet?.walletAddress,
+      terraWalletAddress,
       contractAddress.anchorToken.staking,
       contractAddress.cw20.AncUstLP,
       contractAddress.astroport.generator,
@@ -31,11 +31,11 @@ export function useRewardsAncUstLpRewardsQuery(): UseQueryResult<
     queryFn,
     {
       refetchInterval: 1000 * 60 * 5,
-      enabled: !!connectedWallet,
+      enabled: connected,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },
   );
 
-  return connectedWallet ? result : EMPTY_QUERY_RESULT;
+  return connected ? result : EMPTY_QUERY_RESULT;
 }
