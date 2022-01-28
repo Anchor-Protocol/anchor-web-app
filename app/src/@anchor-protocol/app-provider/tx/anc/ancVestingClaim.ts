@@ -14,13 +14,8 @@ export interface AncVestingClaimTxParams {
 export function useAncVestingClaimTx() {
   const connectedWallet = useConnectedWallet();
 
-  const {
-    queryClient,
-    txErrorReporter,
-    contractAddress,
-    addressProvider,
-    constants,
-  } = useAnchorWebapp();
+  const { queryClient, txErrorReporter, contractAddress, constants } =
+    useAnchorWebapp();
 
   const { tax } = useAnchorBank();
 
@@ -35,8 +30,8 @@ export function useAncVestingClaimTx() {
       }
       return vestingClaimTx({
         // fabricatebBuy
-        address: connectedWallet.walletAddress,
-        vestingAddress: contractAddress.anchorToken.vesting,
+        walletAddr: connectedWallet.walletAddress,
+        vestingContractAddr: contractAddress.anchorToken.vesting,
         // post
         tax,
         network: connectedWallet.network,
@@ -44,7 +39,6 @@ export function useAncVestingClaimTx() {
         fixedGas: fixedFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         // query
         queryClient,
         // error
@@ -63,7 +57,6 @@ export function useAncVestingClaimTx() {
       fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,
-      addressProvider,
       queryClient,
       txErrorReporter,
       refetchQueries,

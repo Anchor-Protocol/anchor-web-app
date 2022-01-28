@@ -1,8 +1,5 @@
-import { AddressProvider } from '@anchor-protocol/anchor.js';
-import { validateInput } from '@anchor-protocol/anchor.js/dist/utils/validate-input';
-import { validateAddress } from '@anchor-protocol/anchor.js/dist/utils/validation/address';
 import { formatANCWithPostfixUnits } from '@anchor-protocol/notation';
-import { Gas, Rate, u, UST, ANC } from '@anchor-protocol/types';
+import { Gas, Rate, u, UST, ANC, HumanAddr } from '@anchor-protocol/types';
 import {
   pickAttributeValueByKey,
   pickEvent,
@@ -30,24 +27,32 @@ import {
 import { Observable } from 'rxjs';
 import { AnchorTax } from '../../types';
 
-export function vestingClaimTx(
-  $: Parameters<typeof fabricateVestingClaim>[0] & {
-    gasFee: Gas;
-    gasAdjustment: Rate<number>;
-    fixedGas: u<UST>;
-    tax: AnchorTax;
-    network: NetworkInfo;
-    addressProvider: AddressProvider;
-    queryClient: QueryClient;
-    post: (tx: CreateTxOptions) => Promise<TxResult>;
-    txErrorReporter?: (error: unknown) => string;
-    onTxSucceed?: () => void;
-  },
-): Observable<TxResultRendering> {
+export function vestingClaimTx($: {
+  walletAddr: HumanAddr;
+  vestingContractAddr: HumanAddr;
+  gasFee: Gas;
+  gasAdjustment: Rate<number>;
+  fixedGas: u<UST>;
+  tax: AnchorTax;
+  network: NetworkInfo;
+  queryClient: QueryClient;
+  post: (tx: CreateTxOptions) => Promise<TxResult>;
+  txErrorReporter?: (error: unknown) => string;
+  onTxSucceed?: () => void;
+}): Observable<TxResultRendering> {
   const helper = new TxHelper({ ...$, txFee: $.fixedGas });
   return pipe(
     _createTxOptions({
-      msgs: fabricateVestingClaim($)($.addressProvider),
+      msgs: [
+        new MsgExecuteContract(
+          $.walletAddr,
+          $.vestingContractAddr,
+          {
+            claim: {},
+          },
+          [],
+        ),
+      ],
       fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),
@@ -89,25 +94,3 @@ export function vestingClaimTx(
     },
   )().pipe(_catchTxError({ helper, ...$ }));
 }
-
-interface Option {
-  address: string;
-  vestingAddress: string;
-}
-
-export const fabricateVestingClaim =
-  ({ address, vestingAddress }: Option) =>
-  (_: AddressProvider): MsgExecuteContract[] => {
-    validateInput([validateAddress(address)]);
-
-    return [
-      new MsgExecuteContract(
-        address,
-        vestingAddress,
-        {
-          claim: {},
-        },
-        [],
-      ),
-    ];
-  };
