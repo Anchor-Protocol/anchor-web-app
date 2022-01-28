@@ -3,17 +3,27 @@ import { TxResultRendering } from '@libs/app-fns';
 import { createContext, useContext } from 'react';
 import { Observable } from 'rxjs';
 
-export interface AnchorDepositParams {
-  depositAmount: UST;
+interface AnchorOperationParams {
   txFee: u<UST>;
   onTxSucceed?: () => void;
 }
 
-export interface AnchorWithdrawParams {
-  withdrawAmount: aUST;
-  txFee: u<UST>;
-  onTxSucceed?: () => void;
+export interface AnchorDepositParams extends AnchorOperationParams {
+  depositAmount: UST;
 }
+
+export interface AnchorWithdrawParams extends AnchorOperationParams {
+  withdrawAmount: aUST;
+}
+
+// export interface TerraSendTxParams extends AnchorOperationParams {
+//   toWalletAddress: HumanAddr;
+//   currency: { cw20Contract: CW20Addr } | { tokenDenom: string };
+//   memo?: string;
+//   amount: Token;
+//   txFee: u<UST>;
+//   onTxSucceed?: () => void;
+// }
 
 export interface AnchorApi {
   deposit: (params: AnchorDepositParams) => Observable<TxResultRendering>;
