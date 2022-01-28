@@ -6,23 +6,23 @@ import { HorizontalScrollTable } from '@libs/neumorphism-ui/components/Horizonta
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@libs/neumorphism-ui/components/Section';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { fixHMR } from 'fix-hmr';
 import { EmptySection } from 'pages/mypage/components/EmptySection';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { useAccount } from 'contexts/account';
 
 export interface GovernProps {
   className?: string;
 }
 
 function GovernBase({ className }: GovernProps) {
-  const connectedWallet = useConnectedWallet();
+  const { connected } = useAccount();
 
   const { data: myPolls = [] } = useGovMyPollsQuery();
 
-  if (!connectedWallet || myPolls.length === 0) {
+  if (!connected || myPolls.length === 0) {
     return <EmptySection to="/poll/create">Create Poll</EmptySection>;
   }
 

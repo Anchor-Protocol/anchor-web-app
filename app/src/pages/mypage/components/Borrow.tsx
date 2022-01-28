@@ -9,8 +9,8 @@ import {
 } from '@anchor-protocol/app-provider';
 import { bAsset, Rate, u, UST } from '@anchor-protocol/types';
 import { sum, vectorMultiply } from '@libs/big-math';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big } from 'big.js';
+import { useAccount } from 'contexts/account';
 import { useBorrowOverviewData } from 'pages/borrow/logics/useBorrowOverviewData';
 import { BorrowedValue } from 'pages/mypage/components/BorrowedValue';
 import { EmptySection } from 'pages/mypage/components/EmptySection';
@@ -19,7 +19,7 @@ import styled from 'styled-components';
 import { CollateralItem, TotalCollateralValue } from './TotalCollateralValue';
 
 export function Borrow() {
-  const connectedWallet = useConnectedWallet();
+  const { connected } = useAccount();
 
   const { data: { oraclePrices, overseerWhitelist } = {} } =
     useBorrowMarketQuery();
@@ -70,12 +70,12 @@ export function Borrow() {
   }, [oraclePrices, overseerCollaterals, overseerWhitelist]);
 
   const isEmptyData = useMemo(() => {
-    if (!connectedWallet) {
+    if (!connected) {
       return true;
     }
 
     return big(totalCollateralValue).lte(0) && borrowedValue.lte(0);
-  }, [borrowedValue, connectedWallet, totalCollateralValue]);
+  }, [borrowedValue, connected, totalCollateralValue]);
 
   if (isEmptyData) {
     return <EmptySection to="/borrow">Go to Borrow</EmptySection>;

@@ -5,6 +5,8 @@ import {
   bLuna,
   bLunaLunaLP,
   Luna,
+  Eth,
+  bEth,
   Rate,
   u,
   UST,
@@ -34,7 +36,8 @@ export interface AnchorTokenBalances {
   uaUST: u<aUST>;
   uLuna: u<Luna>;
   ubLuna: u<bLuna>;
-  //ubEth: u<bEth>;
+  uEth: u<Eth>;
+  ubEth: u<bEth>;
   uANC: u<ANC>;
   uAncUstLP: u<AncUstLP>;
   ubLunaLunaLP: u<bLunaLunaLP>;

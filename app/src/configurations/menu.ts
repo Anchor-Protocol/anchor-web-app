@@ -46,7 +46,7 @@ const useMenus = (): RouteMenu[] => {
         return [dashboard, myPage, earn, borrow, bAsset, govern];
       case Chain.Ethereum:
         //return [dashboard, myPage, earn, borrow];
-        return [dashboard, earn];
+        return [dashboard, myPage, earn];
     }
   }, [chain]);
 };

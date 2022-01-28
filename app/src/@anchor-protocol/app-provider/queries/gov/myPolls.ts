@@ -1,6 +1,6 @@
 import { govMyPollsQuery, MyPoll } from '@anchor-protocol/app-fns';
 import { createQueryFn } from '@libs/react-query-utils';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
+import { useAccount } from 'contexts/account';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
@@ -8,7 +8,7 @@ import { ANCHOR_QUERY_KEY } from '../../env';
 const queryFn = createQueryFn(govMyPollsQuery);
 
 export function useGovMyPollsQuery(): UseQueryResult<MyPoll[]> {
-  const connectedWallet = useConnectedWallet();
+  const { terraWalletAddress } = useAccount();
 
   const { queryClient, contractAddress, queryErrorReporter } =
     useAnchorWebapp();
@@ -16,7 +16,7 @@ export function useGovMyPollsQuery(): UseQueryResult<MyPoll[]> {
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.GOV_MYPOLLS,
-      connectedWallet?.walletAddress,
+      terraWalletAddress,
       contractAddress.anchorToken.gov,
       queryClient,
     ],
