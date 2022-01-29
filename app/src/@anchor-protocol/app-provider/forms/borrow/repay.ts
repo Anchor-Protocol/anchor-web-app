@@ -6,7 +6,7 @@ import {
 import { useFixedFee } from '@libs/app-provider';
 import { UST } from '@libs/types';
 import { useForm } from '@libs/use-form';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { useAnchorBank } from '../../hooks/useAnchorBank';
 import { useBorrowBorrowerQuery } from '../../queries/borrow/borrower';
@@ -16,7 +16,7 @@ export function useBorrowRepayForm(
   fallbackBorrowMarket: BorrowMarket,
   fallbackBorrowBorrower: BorrowBorrower,
 ) {
-  const connectedWallet = useConnectedWallet();
+  const { connected } = useAccount();
 
   const fixedFee = useFixedFee();
 
@@ -50,7 +50,7 @@ export function useBorrowRepayForm(
       maxTaxUUSD: tax.maxTaxUUSD,
       taxRate: tax.taxRate,
       userUSTBalance: tokenBalances.uUST,
-      connected: !!connectedWallet,
+      connected,
       oraclePrices,
       borrowRate,
       overseerCollaterals,

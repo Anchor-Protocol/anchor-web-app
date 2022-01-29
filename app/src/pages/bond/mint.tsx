@@ -25,13 +25,13 @@ import { useAlert } from '@libs/neumorphism-ui/components/useAlert';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
 import { Msg, MsgExecuteContract } from '@terra-money/terra.js';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { useAccount } from 'contexts/account';
 import debounce from 'lodash.debounce';
 import { pegRecovery } from 'pages/bond/logics/pegRecovery';
 import { validateBondAmount } from 'pages/bond/logics/validateBondAmount';
@@ -60,13 +60,13 @@ function MintBase({ className }: MintProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const connectedWallet = useConnectedWallet();
+  const { availablePost, connected, terraWalletAddress } = useAccount();
 
   const { contractAddress, gasPrice, constants } = useAnchorWebapp();
 
   const fixedFee = useFixedFee();
 
-  const estimateFee = useEstimateFee(connectedWallet?.walletAddress);
+  const estimateFee = useEstimateFee(terraWalletAddress);
 
   const [mint, mintResult] = useBondMintTx();
 
@@ -107,13 +107,13 @@ function MintBase({ className }: MintProps) {
   );
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
-    [bank, fixedFee, connectedWallet],
+    () => connected && validateTxFee(bank.tokenBalances.uUST, fixedFee),
+    [bank, fixedFee, connected],
   );
 
   const invalidBondAmount = useMemo(
-    () => !!connectedWallet && validateBondAmount(bondAmount, bank),
-    [bank, bondAmount, connectedWallet],
+    () => connected && validateBondAmount(bondAmount, bank),
+    [bank, bondAmount, connected],
   );
 
   // ---------------------------------------------
@@ -142,7 +142,7 @@ function MintBase({ className }: MintProps) {
   }, [estimateFee, gasPrice.uusd]);
 
   useEffect(() => {
-    if (!connectedWallet || bondAmount.length === 0) {
+    if (!connected || bondAmount.length === 0) {
       setEstimatedGasWanted(null);
       setEstimatedFee(null);
       estimate(null);
@@ -160,7 +160,7 @@ function MintBase({ className }: MintProps) {
 
     estimate([
       new MsgExecuteContract(
-        connectedWallet.terraAddress,
+        terraWalletAddress,
         contractAddress.bluna.hub,
         {
           bond: {},
@@ -173,13 +173,14 @@ function MintBase({ className }: MintProps) {
   }, [
     bank.tokenBalances.uLuna,
     bondAmount,
-    connectedWallet,
+    connected,
     constants.bondGasWanted,
     contractAddress.bluna.hub,
     estimate,
     estimateFee,
     fixedFee,
     gasPrice.uusd,
+    terraWalletAddress,
   ]);
 
   // ---------------------------------------------
@@ -242,13 +243,13 @@ function MintBase({ className }: MintProps) {
 
   const proceed = useCallback(
     async (bondAmount: Luna) => {
-      if (!connectedWallet || !mint) {
+      if (!connected || !mint) {
         return;
       }
 
       const estimated = await estimateFee([
         new MsgExecuteContract(
-          connectedWallet.terraAddress,
+          terraWalletAddress,
           contractAddress.bluna.hub,
           {
             bond: {},
@@ -282,13 +283,14 @@ function MintBase({ className }: MintProps) {
       }
     },
     [
-      connectedWallet,
+      connected,
       contractAddress.bluna.hub,
       estimateFee,
       gasPrice.uusd,
       init,
       mint,
       openAlert,
+      terraWalletAddress,
     ],
   );
 
@@ -346,7 +348,7 @@ function MintBase({ className }: MintProps) {
         error={!!invalidBondAmount}
         leftHelperText={invalidBondAmount}
         rightHelperText={
-          !!connectedWallet && (
+          connected && (
             <span>
               Balance:{' '}
               <span
@@ -457,8 +459,8 @@ function MintBase({ className }: MintProps) {
         <ActionButton
           className="submit"
           disabled={
-            !connectedWallet ||
-            !connectedWallet.availablePost ||
+            !availablePost ||
+            !connected ||
             !mint ||
             bondAmount.length === 0 ||
             big(bondAmount).lte(0) ||

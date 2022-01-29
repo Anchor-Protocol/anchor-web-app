@@ -4,6 +4,7 @@ import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 
@@ -15,6 +16,8 @@ export interface BondSwapTxParams {
 }
 
 export function useBondSwapTx() {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const { queryClient, txErrorReporter, addressProvider, constants } =
@@ -28,7 +31,7 @@ export function useBondSwapTx() {
 
   const stream = useCallback(
     ({ burnAmount, beliefPrice, maxSpread, onTxSucceed }: BondSwapTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost) {
+      if (!availablePost || !connected || !connectedWallet) {
         throw new Error('Can not post!');
       }
 
@@ -37,7 +40,7 @@ export function useBondSwapTx() {
         amount: burnAmount,
         belief_price: beliefPrice,
         max_spread: maxSpread.toString(),
-        address: connectedWallet.walletAddress,
+        address: terraWalletAddress,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
@@ -57,7 +60,10 @@ export function useBondSwapTx() {
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
+      terraWalletAddress,
       fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,

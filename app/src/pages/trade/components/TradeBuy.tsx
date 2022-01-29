@@ -34,7 +34,6 @@ import { useConfirm } from '@libs/neumorphism-ui/components/useConfirm';
 import { useResolveLast } from '@libs/use-resolve-last';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big } from 'big.js';
 import { DiscloseSlippageSelector } from 'components/DiscloseSlippageSelector';
 import { MessageBox } from 'components/MessageBox';
@@ -43,6 +42,7 @@ import { SlippageSelectorNegativeHelpText } from 'components/SlippageSelector';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { useAccount } from 'contexts/account';
 import { buyFromSimulation } from 'pages/trade/logics/buyFromSimulation';
 import { buyToSimulation } from 'pages/trade/logics/buyToSimulation';
 import { TradeSimulation } from 'pages/trade/models/tradeSimulation';
@@ -71,7 +71,7 @@ export function TradeBuy() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const connectedWallet = useConnectedWallet();
+  const { availablePost, connected } = useAccount();
 
   const [openConfirm, confirmElement] = useConfirm();
 
@@ -135,13 +135,12 @@ export function TradeBuy() {
   ]);
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
-    [bank, fixedFee, connectedWallet],
+    () => connected && validateTxFee(bank.tokenBalances.uUST, fixedFee),
+    [bank, fixedFee, connected],
   );
 
   const invalidFromAmount = useMemo(() => {
-    if (fromAmount.length === 0 || !connectedWallet || !simulation)
-      return undefined;
+    if (fromAmount.length === 0 || !connected || !simulation) return undefined;
 
     return big(microfy(fromAmount))
       .plus(simulation.txFee)
@@ -149,13 +148,7 @@ export function TradeBuy() {
       .gt(bank.tokenBalances.uUST)
       ? 'Not enough assets'
       : undefined;
-  }, [
-    fromAmount,
-    connectedWallet,
-    simulation,
-    fixedFee,
-    bank.tokenBalances.uUST,
-  ]);
+  }, [fromAmount, connected, simulation, fixedFee, bank.tokenBalances.uUST]);
 
   // FIXME anc buy real tx fee is fixed_gas (simulation.txFee is no matter)
   const invalidNextTransaction = useMemo(() => {
@@ -339,7 +332,7 @@ export function TradeBuy() {
       maxSpread: number,
       confirm: ReactNode,
     ) => {
-      if (!connectedWallet || !buy) {
+      if (!connected || !buy) {
         return;
       }
 
@@ -364,7 +357,7 @@ export function TradeBuy() {
         },
       });
     },
-    [buy, connectedWallet, init, openConfirm],
+    [buy, connected, init, openConfirm],
   );
 
   // ---------------------------------------------
@@ -409,7 +402,7 @@ export function TradeBuy() {
         error={!!invalidFromAmount}
         leftHelperText={invalidFromAmount}
         rightHelperText={
-          !!connectedWallet && (
+          connected && (
             <span>
               Balance:{' '}
               <span
@@ -563,8 +556,8 @@ export function TradeBuy() {
               : undefined
           }
           disabled={
-            !connectedWallet ||
-            !connectedWallet.availablePost ||
+            !availablePost ||
+            !connected ||
             !buy ||
             !ancPrice ||
             fromAmount.length === 0 ||
@@ -575,7 +568,7 @@ export function TradeBuy() {
             big(simulation?.swapFee ?? 0).lte(0)
           }
           onClick={() =>
-            connectedWallet &&
+            connected &&
             ancPrice &&
             simulation &&
             proceed(

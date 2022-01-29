@@ -21,12 +21,12 @@ import type { DialogProps, OpenDialog } from '@libs/use-dialog';
 import { useDialog } from '@libs/use-dialog';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { useAccount } from 'contexts/account';
 import type { ReactNode } from 'react';
 import React, { ChangeEvent, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
@@ -51,7 +51,7 @@ function ComponentBase({
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const connectedWallet = useConnectedWallet();
+  const { connected } = useAccount();
 
   const [withdraw, withdrawResult] = useEarnWithdrawTx();
 
@@ -91,7 +91,7 @@ function ComponentBase({
   // ---------------------------------------------
   const proceed = useCallback(
     async (withdrawAmount: UST, txFee: u<UST<BigSource>> | undefined) => {
-      if (!connectedWallet || !withdraw || !data) {
+      if (!connected || !withdraw || !data) {
         return;
       }
 
@@ -102,7 +102,7 @@ function ComponentBase({
         txFee: txFee!.toString() as u<UST>,
       });
     },
-    [connectedWallet, data, withdraw],
+    [connected, data, withdraw],
   );
 
   // ---------------------------------------------
@@ -180,10 +180,7 @@ function ComponentBase({
           <ActionButton
             className="proceed"
             disabled={
-              !connectedWallet ||
-              !connectedWallet.availablePost ||
-              !withdraw ||
-              !availablePost
+              !availablePost || !connected || !withdraw || !availablePost
             }
             onClick={() => proceed(withdrawAmount, txFee)}
           >

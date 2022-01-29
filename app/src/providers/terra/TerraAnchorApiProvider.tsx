@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { UIElementProps } from '@libs/ui';
 import { AnchorApiContext, AnchorDepositParams } from 'contexts/api';
+import { useAccount } from 'contexts/account';
 import { Observable } from 'rxjs';
 import { TxResultRendering } from '@libs/app-fns';
 import { earnDepositTx } from '@anchor-protocol/app-fns';
@@ -39,12 +40,14 @@ const createDepositApi = (
     refetchQueries,
   } = dependencies;
   return (params: AnchorDepositParams) => {
-    if (!connectedWallet || connectedWallet.availablePost === false) {
+    const { availablePost, connected, terraWalletAddress } = useAccount();
+
+    if (!availablePost || !connected || !connectedWallet) {
       throw new Error('Can not post!');
     }
     const { depositAmount, txFee, onTxSucceed } = params;
     return earnDepositTx({
-      address: connectedWallet.walletAddress,
+      address: terraWalletAddress,
       market: MARKET_DENOMS.UUSD,
       amount: depositAmount,
       network: connectedWallet.network,

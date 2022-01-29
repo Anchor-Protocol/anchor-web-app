@@ -25,7 +25,6 @@ import { SelectAndTextInputContainer } from '@libs/neumorphism-ui/components/Sel
 import { useResolveLast } from '@libs/use-resolve-last';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
 import { DiscloseSlippageSelector } from 'components/DiscloseSlippageSelector';
 import { MessageBox } from 'components/MessageBox';
@@ -34,6 +33,7 @@ import { SlippageSelectorNegativeHelpText } from 'components/SlippageSelector';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { useAccount } from 'contexts/account';
 import React, {
   ChangeEvent,
   useCallback,
@@ -64,7 +64,7 @@ export function Swap() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const connectedWallet = useConnectedWallet();
+  const { availablePost, connected } = useAccount();
 
   const { queryClient, contractAddress: address } = useAnchorWebapp();
 
@@ -98,13 +98,13 @@ export function Swap() {
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
-    [bank, fixedFee, connectedWallet],
+    () => connected && validateTxFee(bank.tokenBalances.uUST, fixedFee),
+    [bank, fixedFee, connected],
   );
 
   const invalidBurnAmount = useMemo(
-    () => !!connectedWallet && validateBurnAmount(burnAmount, bank),
-    [bank, burnAmount, connectedWallet],
+    () => connected && validateBurnAmount(burnAmount, bank),
+    [bank, burnAmount, connected],
   );
 
   // ---------------------------------------------
@@ -252,7 +252,7 @@ export function Swap() {
 
   const proceed = useCallback(
     (burnAmount: bLuna, beliefPrice: Rate, maxSpread: number) => {
-      if (!connectedWallet || !swap) {
+      if (!connected || !swap) {
         return;
       }
 
@@ -265,7 +265,7 @@ export function Swap() {
         },
       });
     },
-    [connectedWallet, swap, init],
+    [connected, swap, init],
   );
 
   // ---------------------------------------------
@@ -309,7 +309,7 @@ export function Swap() {
         error={!!invalidBurnAmount}
         leftHelperText={invalidBurnAmount}
         rightHelperText={
-          !!connectedWallet && (
+          connected && (
             <span>
               Balance:{' '}
               <span
@@ -442,8 +442,8 @@ export function Swap() {
         <ActionButton
           className="submit"
           disabled={
-            !connectedWallet ||
-            !connectedWallet.availablePost ||
+            !availablePost ||
+            !connected ||
             !swap ||
             !simulation ||
             burnAmount.length === 0 ||

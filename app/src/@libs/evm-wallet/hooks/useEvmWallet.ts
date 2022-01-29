@@ -1,8 +1,8 @@
 import { useContext } from 'react';
 
-import { EvmWalletContext } from '../providers/EvmWalletProvider';
+import { EvmWalletContext, EvmWallet } from '../providers/EvmWalletProvider';
 
-export function useEvmWallet() {
+export function useEvmWallet(): EvmWallet {
   const context = useContext(EvmWalletContext);
 
   if (context === undefined) {

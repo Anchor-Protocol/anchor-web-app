@@ -10,8 +10,8 @@ import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { AnimateNumber } from '@libs/ui';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { Sub } from 'components/Sub';
+import { useAccount } from 'contexts/account';
 import { fixHMR } from 'fix-hmr';
 import { useRewards } from 'pages/mypage/logics/useRewards';
 import React from 'react';
@@ -23,7 +23,7 @@ export interface TotalClaimableRewardsProps {
 }
 
 function TotalClaimableRewardsBase({ className }: TotalClaimableRewardsProps) {
-  const connectedWallet = useConnectedWallet();
+  const { connected } = useAccount();
 
   const { total, ancPrice } = useRewards();
 
@@ -70,7 +70,7 @@ function TotalClaimableRewardsBase({ className }: TotalClaimableRewardsProps) {
         className="claim"
         component={Link}
         to={`/claim/all`}
-        disabled={!connectedWallet}
+        disabled={!connected}
       >
         Claim All Rewards
       </ActionButton>

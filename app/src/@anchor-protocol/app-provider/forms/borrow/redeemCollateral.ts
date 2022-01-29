@@ -10,14 +10,14 @@ import { bAsset } from '@anchor-protocol/types';
 import { useCW20Balance, useFixedFee } from '@libs/app-provider';
 import { CW20Addr } from '@libs/types';
 import { useForm } from '@libs/use-form';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
+import { useAccount } from 'contexts/account';
 
 export function useBorrowRedeemCollateralForm(
   collateralToken: CW20Addr,
   fallbackBorrowMarket: BorrowMarket,
   fallbackBorrowBorrower: BorrowBorrower,
 ) {
-  const connectedWallet = useConnectedWallet();
+  const { connected, terraWalletAddress } = useAccount();
 
   const fixedFee = useFixedFee();
 
@@ -25,7 +25,7 @@ export function useBorrowRedeemCollateralForm(
 
   const ubAssetBalance = useCW20Balance<bAsset>(
     collateralToken,
-    connectedWallet?.walletAddress,
+    terraWalletAddress,
   );
 
   const {
@@ -47,7 +47,7 @@ export function useBorrowRedeemCollateralForm(
       collateralToken,
       userBAssetBalance: ubAssetBalance,
       userUSTBalance: tokenBalances.uUST,
-      connected: !!connectedWallet,
+      connected,
       oraclePrices,
       overseerCollaterals,
       marketBorrowerInfo,

@@ -4,6 +4,7 @@ import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 import { useAnchorBank } from '../../hooks/useAnchorBank';
@@ -17,6 +18,8 @@ export interface AncAncUstLpProvideTxParams {
 }
 
 export function useAncAncUstLpProvideTx() {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const { queryClient, txErrorReporter, addressProvider, constants } =
@@ -37,13 +40,13 @@ export function useAncAncUstLpProvideTx() {
       txFee,
       onTxSucceed,
     }: AncAncUstLpProvideTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost || !ancPrice) {
+      if (!availablePost || !connected || !connectedWallet || !ancPrice) {
         throw new Error('Can not post!');
       }
 
       return ancAncUstLpProvideTx({
         // fabricateTerraswapProvideLiquidityANC
-        address: connectedWallet.walletAddress,
+        address: terraWalletAddress,
         token_amount: ancAmount,
         native_amount: ustAmount,
         slippage_tolerance: '0.01',
@@ -71,8 +74,11 @@ export function useAncAncUstLpProvideTx() {
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
       ancPrice,
+      terraWalletAddress,
       tax,
       fixedFee,
       constants.gasWanted,

@@ -6,6 +6,7 @@ import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 import { useAnchorBank } from '../../hooks/useAnchorBank';
@@ -20,6 +21,8 @@ export interface AncBuyTxParams {
 }
 
 export function useAncBuyTx() {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const { queryClient, txErrorReporter, addressProvider, constants } =
@@ -35,13 +38,13 @@ export function useAncBuyTx() {
 
   const stream = useCallback(
     ({ fromAmount, txFee, maxSpread, onTxSucceed }: AncBuyTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost || !ancPrice) {
+      if (!availablePost || !connected || !connectedWallet || !ancPrice) {
         throw new Error('Can not post!');
       }
 
       return ancBuyTx({
         // fabricatebBuy
-        address: connectedWallet.walletAddress,
+        address: terraWalletAddress,
         amount: fromAmount,
         denom: 'uusd',
         beliefPrice: formatExecuteMsgNumber(
@@ -69,8 +72,11 @@ export function useAncBuyTx() {
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
       ancPrice,
+      terraWalletAddress,
       tax,
       fixedFee,
       constants.gasWanted,

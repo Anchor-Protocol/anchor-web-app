@@ -5,8 +5,8 @@ import {
 } from '@anchor-protocol/app-fns';
 import { EMPTY_QUERY_RESULT } from '@libs/app-provider';
 import { createQueryFn } from '@libs/react-query-utils';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useQuery, UseQueryResult } from 'react-query';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
@@ -15,7 +15,7 @@ const queryFn = createQueryFn(borrowCollateralBorrowerQuery);
 export function useBorrowCollateralBorrowerQuery(
   collateralToken: CW20Addr,
 ): UseQueryResult<BorrowCollateralBorrower | undefined> {
-  const connectedWallet = useConnectedWallet();
+  const { connected, terraWalletAddress } = useAccount();
 
   const { queryClient, queryErrorReporter, contractAddress } =
     useAnchorWebapp();
@@ -23,7 +23,7 @@ export function useBorrowCollateralBorrowerQuery(
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.BORROW_COLLATERAL_BORROWER,
-      connectedWallet?.walletAddress,
+      terraWalletAddress,
       contractAddress.moneyMarket.collateralsArray.find(
         ({ token }) => token === collateralToken,
       )!.custody,
@@ -31,12 +31,12 @@ export function useBorrowCollateralBorrowerQuery(
     ],
     queryFn,
     {
-      refetchInterval: !!connectedWallet && 1000 * 60 * 5,
-      enabled: !!connectedWallet,
+      refetchInterval: connected && 1000 * 60 * 5,
+      enabled: connected,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },
   );
 
-  return connectedWallet ? result : EMPTY_QUERY_RESULT;
+  return connected ? result : EMPTY_QUERY_RESULT;
 }

@@ -4,6 +4,7 @@ import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 
@@ -13,6 +14,8 @@ export interface AncAncUstLpUnstakeTxParams {
 }
 
 export function useAncAncUstLpUnstakeTx() {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const {
@@ -29,13 +32,13 @@ export function useAncAncUstLpUnstakeTx() {
 
   const stream = useCallback(
     ({ lpAmount, onTxSucceed }: AncAncUstLpUnstakeTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost) {
+      if (!availablePost || !connected || !connectedWallet) {
         throw new Error('Can not post!');
       }
 
       return ancAncUstLpUnstakeTx({
         // fabricateStakingUnbond
-        walletAddr: connectedWallet.walletAddress,
+        walletAddr: terraWalletAddress,
         ancUstLpTokenAddr: contractAddress.cw20.AncUstLP,
         generatorAddr: contractAddress.astroport.generator,
         amount: lpAmount,
@@ -58,7 +61,10 @@ export function useAncAncUstLpUnstakeTx() {
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
+      terraWalletAddress,
       contractAddress.cw20.AncUstLP,
       contractAddress.astroport.generator,
       fixedFee,

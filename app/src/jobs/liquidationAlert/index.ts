@@ -1,13 +1,11 @@
-import { Rate } from '@anchor-protocol/types';
-import {
-  useAnchorWebapp,
-  useTerraWalletAddress,
-} from '@anchor-protocol/app-provider';
-import { formatRate } from '@libs/formatter';
-import big from 'big.js';
-import { useNotification } from 'contexts/notification';
 import { useCallback, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
+import big from 'big.js';
+import { Rate } from '@anchor-protocol/types';
+import { useAnchorWebapp } from '@anchor-protocol/app-provider';
+import { formatRate } from '@libs/formatter';
+import { useAccount } from 'contexts/account';
+import { useNotification } from 'contexts/notification';
 import { userLtvQuery } from './userLtv';
 
 export interface LiquidationAlert {
@@ -17,25 +15,25 @@ export interface LiquidationAlert {
 
 export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
   const { hiveQueryClient, contractAddress: address } = useAnchorWebapp();
-  const walletAddress = useTerraWalletAddress();
+  const { terraWalletAddress } = useAccount();
   const { permission, create } = useNotification();
 
   const history = useHistory();
 
   const jobCallback = useCallback(async () => {
-    if (!walletAddress || permission !== 'granted') {
+    if (!terraWalletAddress || permission !== 'granted') {
       return;
     }
 
     try {
       const ltv = await userLtvQuery({
-        walletAddress,
+        walletAddress: terraWalletAddress,
         address,
         hiveQueryClient,
       });
 
       if (ltv && big(ltv).gte(ratio)) {
-        const noti = create(`LTV is ${formatRate(ltv as Rate)}%`, {
+        const noti = create(`LTV is ${formatRate(ltv as unknown as Rate)}%`, {
           body: `Lower borrow LTV on Anchor webapp to prevent liquidation.`,
           icon: '/logo.png',
         });
@@ -55,12 +53,12 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
     } catch {}
   }, [
     address,
-    walletAddress,
     create,
     history,
     hiveQueryClient,
     permission,
     ratio,
+    terraWalletAddress,
   ]);
 
   const jobCallbackRef = useRef(jobCallback);
@@ -70,7 +68,7 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
   }, [jobCallback]);
 
   useEffect(() => {
-    if (walletAddress && permission === 'granted' && enabled) {
+    if (terraWalletAddress && permission === 'granted' && enabled) {
       //console.log('LIQUIDATION ALERT: ON');
       const intervalId = setInterval(() => {
         jobCallbackRef.current();
@@ -83,5 +81,5 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
       };
     }
     //console.log('LIQUIDATION ALERT: OFF');
-  }, [walletAddress, enabled, permission]);
+  }, [enabled, permission, terraWalletAddress]);
 }

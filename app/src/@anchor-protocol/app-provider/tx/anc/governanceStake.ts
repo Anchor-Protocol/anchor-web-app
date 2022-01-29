@@ -4,6 +4,7 @@ import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 
@@ -14,6 +15,8 @@ export interface AncGovernanceStakeTxParams {
 }
 
 export function useAncGovernanceStakeTx() {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const { queryClient, txErrorReporter, addressProvider, constants } =
@@ -25,13 +28,13 @@ export function useAncGovernanceStakeTx() {
 
   const stream = useCallback(
     ({ ancAmount, onTxSucceed }: AncGovernanceStakeTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost) {
+      if (!availablePost || !connected || !connectedWallet) {
         throw new Error('Can not post!');
       }
 
       return ancGovernanceStakeTx({
         // fabricateGovStakeVoting
-        address: connectedWallet.walletAddress,
+        address: terraWalletAddress,
         amount: ancAmount,
         // post
         network: connectedWallet.network,
@@ -52,7 +55,10 @@ export function useAncGovernanceStakeTx() {
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
+      terraWalletAddress,
       fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,

@@ -4,6 +4,7 @@ import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 
@@ -12,6 +13,8 @@ export interface BondClaimTxParams {
 }
 
 export function useBondClaimTx(rewardDenom: COLLATERAL_DENOMS) {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const { queryClient, txErrorReporter, addressProvider, constants } =
@@ -23,13 +26,13 @@ export function useBondClaimTx(rewardDenom: COLLATERAL_DENOMS) {
 
   const stream = useCallback(
     ({ onTxSucceed }: BondClaimTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost) {
+      if (!availablePost || !connected || !connectedWallet) {
         throw new Error('Can not post!');
       }
 
       return bondClaimTx({
         // fabricatebAssetClaimRewards
-        address: connectedWallet.walletAddress,
+        address: terraWalletAddress,
         rewardDenom,
         // post
         network: connectedWallet.network,
@@ -50,7 +53,10 @@ export function useBondClaimTx(rewardDenom: COLLATERAL_DENOMS) {
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
+      terraWalletAddress,
       rewardDenom,
       fixedFee,
       constants.gasWanted,

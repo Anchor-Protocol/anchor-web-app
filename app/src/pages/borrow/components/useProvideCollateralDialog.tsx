@@ -27,13 +27,13 @@ import type { DialogProps, OpenDialog } from '@libs/use-dialog';
 import { useDialog } from '@libs/use-dialog';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big, BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { useAccount } from 'contexts/account';
 import type { ChangeEvent, ReactNode } from 'react';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
@@ -65,7 +65,7 @@ function ComponentBase({
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const connectedWallet = useConnectedWallet();
+  const { availablePost, connected } = useAccount();
 
   const [postTx, txResult] = useBorrowProvideCollateralTx();
 
@@ -87,7 +87,7 @@ function ComponentBase({
 
   const proceed = useCallback(
     (depositAmount: bAsset) => {
-      if (!connectedWallet || !postTx || !states.collateralDenom) {
+      if (!connected || !postTx || !states.collateralDenom) {
         return;
       }
 
@@ -96,7 +96,7 @@ function ComponentBase({
         collateralDenom: states.collateralDenom,
       });
     },
-    [connectedWallet, postTx, states.collateralDenom],
+    [connected, postTx, states.collateralDenom],
   );
 
   const onLtvChange = useCallback(
@@ -211,7 +211,7 @@ function ComponentBase({
         {big(states.currentLtv ?? 0).gt(0) && (
           <figure className="graph">
             <LTVGraph
-              disabled={!connectedWallet}
+              disabled={!connected}
               maxLtv={states.bAssetLtvsAvg.max}
               safeLtv={states.bAssetLtvsAvg.safe}
               dangerLtv={states.dangerLtv}
@@ -237,10 +237,7 @@ function ComponentBase({
           <ActionButton
             className="proceed"
             disabled={
-              !connectedWallet ||
-              !connectedWallet.availablePost ||
-              !postTx ||
-              !states.availablePost
+              !availablePost || !connected || !postTx || !states.availablePost
             }
             onClick={() => proceed(states.depositAmount)}
           >

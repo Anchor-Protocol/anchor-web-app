@@ -22,12 +22,12 @@ import {
 } from '@libs/use-string-bytes-length';
 import { InputAdornment } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { useAccount } from 'contexts/account';
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import React, {
   ChangeEvent,
@@ -56,7 +56,7 @@ export function PollCreateBase({
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const connectedWallet = useConnectedWallet();
+  const { availablePost, connected } = useAccount();
 
   const fixedFee = useFixedFee();
 
@@ -86,8 +86,8 @@ export function PollCreateBase({
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
-    [bank, fixedFee, connectedWallet],
+    () => connected && validateTxFee(bank.tokenBalances.uUST, fixedFee),
+    [bank, fixedFee, connected],
   );
 
   const invalidTitleBytes = useValidateStringBytes(title, 4, 64);
@@ -99,14 +99,14 @@ export function PollCreateBase({
   const invalidLinkProtocol = useMemo(() => validateLinkAddress(link), [link]);
 
   const invalidUserANCBalance = useMemo(() => {
-    if (!pollConfig || !connectedWallet) {
+    if (!pollConfig || !connected) {
       return undefined;
     }
 
     return big(bank.tokenBalances.uANC).lt(pollConfig.proposal_deposit)
       ? `Not enough ANC`
       : undefined;
-  }, [bank.tokenBalances.uANC, pollConfig, connectedWallet]);
+  }, [bank.tokenBalances.uANC, pollConfig, connected]);
 
   // ---------------------------------------------
   // callbacks
@@ -123,7 +123,7 @@ export function PollCreateBase({
       link: string,
       amount: ANC,
     ) => {
-      if (!connectedWallet || !createPoll) {
+      if (!connected || !createPoll) {
         return;
       }
 
@@ -141,7 +141,7 @@ export function PollCreateBase({
         executeMsgs,
       });
     },
-    [connectedWallet, createPoll, onCreateMsgs],
+    [connected, createPoll, onCreateMsgs],
   );
 
   // ---------------------------------------------
@@ -275,8 +275,8 @@ export function PollCreateBase({
             className="proceed"
             disabled={
               submitDisabled ||
-              !connectedWallet ||
-              !connectedWallet.availablePost ||
+              !availablePost ||
+              !connected ||
               !createPoll ||
               title.length === 0 ||
               description.length === 0 ||

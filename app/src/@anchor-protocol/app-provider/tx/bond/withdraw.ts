@@ -3,6 +3,7 @@ import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 
@@ -11,6 +12,8 @@ export interface BondWithdrawTxParams {
 }
 
 export function useBondWithdrawTx() {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const { queryClient, txErrorReporter, addressProvider, constants } =
@@ -22,13 +25,13 @@ export function useBondWithdrawTx() {
 
   const stream = useCallback(
     ({ onTxSucceed }: BondWithdrawTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost) {
+      if (!availablePost || !connected || !connectedWallet) {
         throw new Error('Can not post!');
       }
 
       return bondWithdrawTx({
         // fabricatebAssetWithdrawUnbonded
-        address: connectedWallet.walletAddress,
+        address: terraWalletAddress,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
@@ -48,7 +51,10 @@ export function useBondWithdrawTx() {
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
+      terraWalletAddress,
       fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,

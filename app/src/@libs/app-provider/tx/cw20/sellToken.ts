@@ -5,6 +5,7 @@ import { CW20Addr, HumanAddr, Rate, Token, u, UST } from '@libs/types';
 import { useConnectedWallet } from '@terra-money/use-wallet';
 import big from 'big.js';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useApp } from '../../contexts/app';
 import { TERRA_TX_KEYS } from '../../env';
 import { useRefetchQueries } from '../../hooks/useRefetchQueries';
@@ -24,6 +25,8 @@ export function useCW20SellTokenTx<T extends Token>(
   tokenUstPairAddr: HumanAddr,
   tokenSymbol: string,
 ) {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const { queryClient, txErrorReporter, constants } = useApp();
@@ -44,11 +47,7 @@ export function useCW20SellTokenTx<T extends Token>(
       maxSpread,
       onTxSucceed,
     }: CW20SellTokenTxParams<T>) => {
-      if (
-        !connectedWallet ||
-        !connectedWallet.availablePost ||
-        !terraswapPool
-      ) {
+      if (!availablePost || !connected || !connectedWallet || !terraswapPool) {
         throw new Error(`Can't post!`);
       }
 
@@ -67,7 +66,7 @@ export function useCW20SellTokenTx<T extends Token>(
         taxRate,
         maxTaxUUSD: maxTax,
         maxSpread,
-        sellerAddr: connectedWallet.walletAddress,
+        sellerAddr: terraWalletAddress,
         fixedFee,
         gasWanted: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
@@ -82,19 +81,22 @@ export function useCW20SellTokenTx<T extends Token>(
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
-      constants.gasAdjustment,
-      constants.gasWanted,
-      fixedFee,
-      maxTax,
-      refetchQueries,
-      taxRate,
       terraswapPool,
       tokenAddr,
-      tokenSymbol,
       tokenUstPairAddr,
-      txErrorReporter,
+      tokenSymbol,
+      taxRate,
+      maxTax,
+      terraWalletAddress,
+      fixedFee,
+      constants.gasWanted,
+      constants.gasAdjustment,
       queryClient,
+      txErrorReporter,
+      refetchQueries,
     ],
   );
 

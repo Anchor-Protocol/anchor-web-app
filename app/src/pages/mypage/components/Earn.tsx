@@ -14,8 +14,8 @@ import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { HorizontalScrollTable } from '@libs/neumorphism-ui/components/HorizontalScrollTable';
 import { Section } from '@libs/neumorphism-ui/components/Section';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { fixHMR } from 'fix-hmr';
+import { useAccount } from 'contexts/account';
 import { useDepositDialog } from 'pages/earn/components/useDepositDialog';
 import { useWithdrawDialog } from 'pages/earn/components/useWithdrawDialog';
 import { EmptySection } from 'pages/mypage/components/EmptySection';
@@ -30,7 +30,7 @@ function EarnBase({ className }: EarnProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const connectedWallet = useConnectedWallet();
+  const { connected } = useAccount();
 
   const { constants } = useAnchorWebapp();
 
@@ -73,7 +73,7 @@ function EarnBase({ className }: EarnProps) {
     await openWithdrawDialog({});
   }, [openWithdrawDialog]);
 
-  if (!connectedWallet || totalDeposit.lte(0)) {
+  if (!connected || totalDeposit.lte(0)) {
     return <EmptySection to="/earn">Go to Earn</EmptySection>;
   }
 
@@ -111,13 +111,13 @@ function EarnBase({ className }: EarnProps) {
             <td>{formatUSTWithPostfixUnits(demicrofy(totalDeposit))} UST</td>
             <td>
               <ActionButton
-                disabled={!connectedWallet || !moneyMarketEpochState}
+                disabled={!connected || !moneyMarketEpochState}
                 onClick={openDeposit}
               >
                 Deposit
               </ActionButton>
               <BorderButton
-                disabled={!connectedWallet || !moneyMarketEpochState}
+                disabled={!connected || !moneyMarketEpochState}
                 onClick={openWithdraw}
               >
                 Withdraw

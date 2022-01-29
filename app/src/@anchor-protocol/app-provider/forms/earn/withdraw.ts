@@ -6,8 +6,8 @@ import {
 import { UST } from '@anchor-protocol/types';
 import { useFixedFee } from '@libs/app-provider';
 import { useForm } from '@libs/use-form';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback, useMemo } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorBank } from '../../hooks/useAnchorBank';
 import { useEarnEpochStatesQuery } from '../../queries/earn/epochStates';
 
@@ -16,7 +16,7 @@ export interface EarnWithdrawFormReturn extends EarnWithdrawFormStates {
 }
 
 export function useEarnWithdrawForm(): EarnWithdrawFormReturn {
-  const connectedWallet = useConnectedWallet();
+  const { connected } = useAccount();
 
   const fixedFee = useFixedFee();
 
@@ -36,7 +36,7 @@ export function useEarnWithdrawForm(): EarnWithdrawFormReturn {
   const [input, states] = useForm(
     earnWithdrawForm,
     {
-      isConnected: !!connectedWallet,
+      isConnected: connected,
       fixedGas: fixedFee,
       userUUSTBalance: tokenBalances.uUST,
       totalDeposit: totalDeposit,

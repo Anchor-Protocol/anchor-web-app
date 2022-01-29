@@ -34,12 +34,12 @@ import { Modal, NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { Warning } from '@material-ui/icons';
 import { StreamStatus } from '@rx-stream/react';
 import { AccAddress } from '@terra-money/terra.js';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big, BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { useAccount } from 'contexts/account';
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import { CurrencyInfo } from 'pages/send/models/currency';
 import React, {
@@ -71,7 +71,7 @@ function ComponentBase({
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const connectedWallet = useConnectedWallet();
+  const { connected } = useAccount();
 
   const fixedFee = useFixedFee();
 
@@ -230,8 +230,8 @@ function ComponentBase({
   }, [amount, bank.tax.maxTaxUUSD, bank.tax.taxRate, currency.value, fixedFee]);
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, txFee),
-    [bank, connectedWallet, txFee],
+    () => connected && validateTxFee(bank.tokenBalances.uUST, txFee),
+    [bank, connected, txFee],
   );
 
   const invalidAddress = useMemo(() => {
@@ -262,7 +262,7 @@ function ComponentBase({
       txFee: u<UST>,
       memo: string,
     ) => {
-      if (!connectedWallet || !send) {
+      if (!connected || !send) {
         return;
       }
 
@@ -276,7 +276,7 @@ function ComponentBase({
         memo,
       });
     },
-    [connectedWallet, send],
+    [connected, send],
   );
 
   if (
@@ -408,7 +408,7 @@ function ComponentBase({
           <ActionButton
             className="send"
             disabled={
-              !connectedWallet ||
+              !connected ||
               !send ||
               address.length === 0 ||
               amount.length === 0 ||

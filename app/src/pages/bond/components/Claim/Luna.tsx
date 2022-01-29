@@ -16,12 +16,12 @@ import { HorizontalHeavyRuler } from '@libs/neumorphism-ui/components/Horizontal
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { StreamStatus } from '@rx-stream/react';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { useAccount } from 'contexts/account';
 import { fixHMR } from 'fix-hmr';
 import { RewardLayout } from 'pages/bond/components/Claim/RewardLayout';
 import { estimatedAmountOfClaimBAsset } from 'pages/bond/logics/estimatedAmountOfClaimBAsset';
@@ -39,7 +39,7 @@ function ClaimLunaBase({ className }: ClaimLunaProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const connectedWallet = useConnectedWallet();
+  const { availablePost, connected } = useAccount();
 
   const fixedFee = useFixedFee();
 
@@ -71,8 +71,8 @@ function ClaimLunaBase({ className }: ClaimLunaProps) {
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(tokenBalances.uUST, fixedFee),
-    [connectedWallet, tokenBalances.uUST, fixedFee],
+    () => connected && validateTxFee(tokenBalances.uUST, fixedFee),
+    [connected, tokenBalances.uUST, fixedFee],
   );
 
   const claimableRewards = useMemo(
@@ -109,20 +109,20 @@ function ClaimLunaBase({ className }: ClaimLunaProps) {
   // callbacks
   // ---------------------------------------------
   const proceedClaim = useCallback(() => {
-    if (!connectedWallet || !claim) {
+    if (!connected || !claim) {
       return;
     }
 
     claim({});
-  }, [claim, connectedWallet]);
+  }, [claim, connected]);
 
   const proceedWithdraw = useCallback(() => {
-    if (!connectedWallet || !withdraw) {
+    if (!connected || !withdraw) {
       return;
     }
 
     withdraw({});
-  }, [connectedWallet, withdraw]);
+  }, [connected, withdraw]);
 
   // ---------------------------------------------
   // presentation
@@ -207,8 +207,8 @@ function ClaimLunaBase({ className }: ClaimLunaProps) {
           <ActionButton
             className="submit"
             disabled={
-              !connectedWallet ||
-              !connectedWallet.availablePost ||
+              !availablePost ||
+              !connected ||
               !claim ||
               !!invalidTxFee ||
               claimableRewards.lte(fixedFee)
@@ -262,8 +262,8 @@ function ClaimLunaBase({ className }: ClaimLunaProps) {
           <ActionButton
             className="submit"
             disabled={
-              !connectedWallet ||
-              !connectedWallet.availablePost ||
+              !availablePost ||
+              !connected ||
               !withdraw ||
               !!invalidTxFee ||
               withdrawableAmount.lte(0)

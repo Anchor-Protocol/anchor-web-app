@@ -2,8 +2,8 @@ import {
   MypageTxHistory,
   mypageTxHistoryQuery,
 } from '@anchor-protocol/app-fns';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback, useEffect, useState } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 
 interface TxHistoryReturn {
@@ -15,7 +15,7 @@ interface TxHistoryReturn {
 }
 
 export function useMypageTxHistoryQuery(): TxHistoryReturn {
-  const connectedWallet = useConnectedWallet();
+  const { connected, terraWalletAddress } = useAccount();
 
   const { indexerApiEndpoint: endpoint } = useAnchorWebapp();
 
@@ -30,7 +30,7 @@ export function useMypageTxHistoryQuery(): TxHistoryReturn {
     setHistory([]);
     setNext(null);
 
-    if (!connectedWallet) {
+    if (!connected) {
       setInProgress(false);
       return;
     }
@@ -40,7 +40,7 @@ export function useMypageTxHistoryQuery(): TxHistoryReturn {
     mypageTxHistoryQuery({
       endpoint,
       //walletAddress: 'terra1vz0k2glwuhzw3yjau0su5ejk3q9z2zj4ess86s',
-      walletAddress: connectedWallet.walletAddress,
+      walletAddress: terraWalletAddress,
       offset: null,
     })
       .then(({ history, next }) => {
@@ -54,16 +54,16 @@ export function useMypageTxHistoryQuery(): TxHistoryReturn {
         setNext(null);
         setInProgress(false);
       });
-  }, [connectedWallet, endpoint]);
+  }, [connected, endpoint, terraWalletAddress]);
 
   const loadMore = useCallback(() => {
-    if (history.length > 0 && !!next && connectedWallet) {
+    if (history.length > 0 && !!next && connected) {
       setInProgress(true);
 
       mypageTxHistoryQuery({
         endpoint,
         //walletAddress: 'terra1vz0k2glwuhzw3yjau0su5ejk3q9z2zj4ess86s',
-        walletAddress: connectedWallet.walletAddress,
+        walletAddress: terraWalletAddress,
         offset: next,
       }).then(({ history, next }) => {
         setHistory((prev) => {
@@ -77,7 +77,7 @@ export function useMypageTxHistoryQuery(): TxHistoryReturn {
         setInProgress(false);
       });
     }
-  }, [connectedWallet, endpoint, history.length, next]);
+  }, [connected, endpoint, history.length, next, terraWalletAddress]);
 
   useEffect(() => {
     load();

@@ -1,9 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import {
-  ConnectType,
-  useWallet,
-  WalletStatus,
-} from '@terra-money/wallet-provider';
+import { ConnectType, useWallet } from '@terra-money/wallet-provider';
+import { useAccount } from 'contexts/account';
 import { useBuyUstDialog } from 'pages/earn/components/useBuyUstDialog';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import { useWalletDetailDialog } from './mobile/useWalletDetailDialog';
@@ -13,18 +10,19 @@ import { useAirdropElement } from './airdrop';
 
 export function TerraMobileHeader() {
   const [open, setOpen] = useState<boolean>(false);
-  const { status, connect, isChromeExtensionCompatibleBrowser } = useWallet();
+  const { status } = useAccount();
+  const { connect, isChromeExtensionCompatibleBrowser } = useWallet();
   const [openWalletDetail, walletDetailElement] = useWalletDetailDialog();
   const [openSendDialog, sendDialogElement] = useSendDialog();
   const [openBuyUstDialog, buyUstDialogElement] = useBuyUstDialog();
 
   const toggleWallet = useCallback(() => {
-    if (status === WalletStatus.WALLET_CONNECTED) {
+    if (status === 'connected') {
       openWalletDetail({
         openSend: () => openSendDialog({}),
         openBuyUst: () => openBuyUstDialog({}),
       });
-    } else if (status === WalletStatus.WALLET_NOT_CONNECTED) {
+    } else if (status === 'disconnected') {
       connect(
         isChromeExtensionCompatibleBrowser()
           ? ConnectType.EXTENSION
@@ -45,16 +43,14 @@ export function TerraMobileHeader() {
   const viewAddress = useCallback(() => {
     setOpen(false);
 
-    if (status === WalletStatus.WALLET_NOT_CONNECTED) {
+    if (status === 'disconnected') {
       connect(ConnectType.READONLY);
     }
   }, [connect, status]);
 
   const viewAddressButtonElement = useMemo(() => {
     return (
-      status === WalletStatus.WALLET_NOT_CONNECTED && (
-        <ViewAddressButton onClick={viewAddress} />
-      )
+      status === 'disconnected' && <ViewAddressButton onClick={viewAddress} />
     );
   }, [status, viewAddress]);
 

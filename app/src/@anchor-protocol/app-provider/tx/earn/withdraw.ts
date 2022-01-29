@@ -5,6 +5,7 @@ import { useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 
@@ -15,6 +16,8 @@ export interface EarnWithdrawTxParams {
 }
 
 export function useEarnWithdrawTx() {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const { addressProvider, constants, queryClient, txErrorReporter } =
@@ -24,13 +27,13 @@ export function useEarnWithdrawTx() {
 
   const stream = useCallback(
     ({ withdrawAmount, txFee, onTxSucceed }: EarnWithdrawTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost) {
+      if (!availablePost || !connected || !connectedWallet) {
         throw new Error('Can not post!');
       }
 
       return earnWithdrawTx({
         // fabricateMarketReedeemStableCoin
-        address: connectedWallet.walletAddress,
+        address: terraWalletAddress,
         market: MARKET_DENOMS.UUSD,
         amount: withdrawAmount,
         // post
@@ -52,7 +55,10 @@ export function useEarnWithdrawTx() {
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
+      terraWalletAddress,
       constants.gasWanted,
       constants.gasAdjustment,
       addressProvider,

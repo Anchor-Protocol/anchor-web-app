@@ -5,6 +5,7 @@ import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 import { useBorrowBorrowerQuery } from '../../queries/borrow/borrower';
@@ -17,6 +18,8 @@ export interface BorrowRedeemCollateralTxParams {
 }
 
 export function useBorrowRedeemCollateralTx() {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const { queryClient, txErrorReporter, addressProvider, constants } =
@@ -35,12 +38,12 @@ export function useBorrowRedeemCollateralTx() {
       collateralDenom,
       onTxSucceed,
     }: BorrowRedeemCollateralTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost) {
+      if (!availablePost || !connected || !connectedWallet) {
         throw new Error('Can not post!');
       }
 
       return borrowRedeemCollateralTx({
-        address: connectedWallet.walletAddress,
+        address: terraWalletAddress,
         amount: redeemAmount,
         market: MARKET_DENOMS.UUSD,
         collateral: collateralDenom,
@@ -66,14 +69,17 @@ export function useBorrowRedeemCollateralTx() {
     },
     [
       addressProvider,
+      availablePost,
       borrowBorrowerQuery,
       borrowMarketQuery,
+      connected,
       connectedWallet,
       constants.gasAdjustment,
       constants.gasWanted,
       fixedFee,
       queryClient,
       refetchQueries,
+      terraWalletAddress,
       txErrorReporter,
     ],
   );
