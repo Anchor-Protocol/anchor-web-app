@@ -5,12 +5,9 @@ import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
 import { ClickAwayListener } from '@material-ui/core';
-import {
-  ConnectType,
-  useWallet,
-  WalletStatus,
-} from '@terra-money/wallet-provider';
+import { ConnectType, useWallet } from '@terra-money/wallet-provider';
 import { IconOnlyWalletButton } from 'components/Header/desktop/IconOnlyWalletButton';
+import { useAccount } from 'contexts/account';
 import { useBuyUstDialog } from 'pages/earn/components/useBuyUstDialog';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import React, { useCallback, useState } from 'react';
@@ -33,12 +30,12 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
+  const { connected, status, terraWalletAddress } = useAccount();
+
   const {
-    status,
     connect,
     disconnect,
     connection,
-    wallets,
     network,
     availableConnectTypes,
     availableConnections,
@@ -115,7 +112,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   // presentation
   // ---------------------------------------------
   switch (status) {
-    case WalletStatus.INITIALIZING:
+    case 'initialization':
       return (
         <div className={className}>
           {isSmallScreen ? (
@@ -127,7 +124,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
           )}
         </div>
       );
-    case WalletStatus.WALLET_NOT_CONNECTED:
+    case 'disconnected':
       return (
         <ClickAwayListener onClickAway={onClickAway}>
           <div className={className}>
@@ -222,15 +219,15 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
           </div>
         </ClickAwayListener>
       );
-    case WalletStatus.WALLET_CONNECTED:
-      return wallets.length > 0 ? (
+    case 'connected':
+      return connected ? (
         <ClickAwayListener onClickAway={onClickAway}>
           <div className={className}>
             {isSmallScreen ? (
               <IconOnlyWalletButton onClick={toggleOpen} connected />
             ) : (
               <ConnectedButton
-                walletAddress={wallets[0].terraAddress}
+                walletAddress={terraWalletAddress}
                 totalUST={bank.tokenBalances.uUST}
                 onClick={toggleOpen}
               />
@@ -255,7 +252,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                     connection={connection ?? availableConnections[0]}
                     bank={bank}
                     availablePost={supportFeatures.has('post')}
-                    walletAddress={wallets[0].terraAddress}
+                    walletAddress={terraWalletAddress}
                     network={network}
                     closePopup={() => setOpenDropdown(false)}
                     disconnectWallet={disconnectWallet}

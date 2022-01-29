@@ -12,7 +12,6 @@ export * from './forms/earn/withdraw';
 export * from './hooks/useAnchorBank';
 export * from './hooks/useDeploymentTarget';
 export * from './hooks/useTerraNetwork';
-export * from './hooks/useTerraWalletAddress';
 export * from './queries/airdrop/check';
 export * from './queries/anc/balance';
 export * from './queries/anc/lpStakingState';

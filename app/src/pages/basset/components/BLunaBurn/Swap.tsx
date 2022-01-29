@@ -81,7 +81,7 @@ export function Component({
   const { availablePost, connected } = useAccount();
 
   const { queryClient, contractAddress: address } = useAnchorWebapp();
-
+  const { connected, availablePost } = useAccount();
   const [swap, swapResult] = useBondSwapTx();
 
   // ---------------------------------------------

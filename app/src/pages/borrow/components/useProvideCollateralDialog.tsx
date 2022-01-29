@@ -35,6 +35,7 @@ import { ChangeEvent, ReactNode } from 'react';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { LTVGraph } from './LTVGraph';
+import { useAccount } from 'contexts/account';
 
 interface FormParams {
   className?: string;

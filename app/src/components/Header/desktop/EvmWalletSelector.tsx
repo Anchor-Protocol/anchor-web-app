@@ -1,4 +1,4 @@
-import { useTerraWalletAddress } from '@anchor-protocol/app-provider';
+import { useAccount } from 'contexts/account';
 import React, { useCallback, useState } from 'react';
 import { ConnectionTypeList } from './ConnectionTypeList';
 import { TermsMessage } from './TermsMessage';
@@ -9,7 +9,7 @@ const EvmWalletConnectionList = () => {
 };
 
 const EvmWalletSelector = () => {
-  const walletAddress = useTerraWalletAddress();
+  const { nativeWalletAddress } = useAccount();
 
   const [open, setOpen] = useState(false);
 
@@ -23,13 +23,12 @@ const EvmWalletSelector = () => {
 
   return (
     <WalletSelector
-      walletAddress={address}
-      initializing={status === 'initialization'}
-      open={open}
+      walletAddress={nativeWalletAddress}
+      initializing={false}
       onClick={onClick}
       onClose={onClose}
     >
-      {walletAddress ? <EvmWalletConnectionList /> : <div></div>}
+      {nativeWalletAddress ? <EvmWalletConnectionList /> : <div></div>}
     </WalletSelector>
   );
 };
