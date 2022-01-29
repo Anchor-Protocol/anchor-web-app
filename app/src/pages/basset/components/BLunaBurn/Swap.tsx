@@ -482,7 +482,6 @@ export function Component({
 const StyledComponent = styled(Component)`
   .burn,
   .gett {
-    display: none;
     img {
       font-size: 12px;
     }
