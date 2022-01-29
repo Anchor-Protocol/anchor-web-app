@@ -2,8 +2,8 @@ import {
   MypageTxHistory,
   mypageTxHistoryQuery,
 } from '@anchor-protocol/app-fns';
-import { useAccount } from 'contexts/account';
 import { useCallback, useEffect, useState } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 
 interface TxHistoryReturn {

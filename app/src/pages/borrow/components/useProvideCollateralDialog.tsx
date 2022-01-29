@@ -35,6 +35,7 @@ import { ChangeEvent, ReactNode } from 'react';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { LTVGraph } from './LTVGraph';
+import { useAccount } from 'contexts/account';
 
 interface FormParams {
   className?: string;
@@ -62,6 +63,7 @@ function ComponentBase({
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
+  const { availablePost, connected } = useAccount();
   const connectedWallet = useConnectedWallet();
 
   const [postTx, txResult] = useBorrowProvideCollateralTx(collateralToken);
@@ -229,10 +231,7 @@ function ComponentBase({
           <ActionButton
             className="proceed"
             disabled={
-              !connectedWallet ||
-              !connectedWallet.availablePost ||
-              !postTx ||
-              !states.availablePost
+              !availablePost || !connected || !postTx || !states.availablePost
             }
             onClick={() => proceed(states.depositAmount)}
           >

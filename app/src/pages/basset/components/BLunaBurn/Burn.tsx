@@ -37,6 +37,7 @@ import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { useAccount } from 'contexts/account';
 import debounce from 'lodash.debounce';
 import React, {
   ChangeEvent,
@@ -70,6 +71,7 @@ export function Component({
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
+  const { availablePost, connected, terraWalletAddress } = useAccount();
   const { contractAddress, gasPrice, constants } = useAnchorWebapp();
 
   const estimateFee = useEstimateFee(connectedWallet?.walletAddress);
@@ -103,13 +105,13 @@ export function Component({
   );
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
-    [bank, fixedFee, connectedWallet],
+    () => connected && validateTxFee(bank.tokenBalances.uUST, fixedFee),
+    [bank, fixedFee, connected],
   );
 
   const invalidBurnAmount = useMemo(
-    () => !!connectedWallet && validateBurnAmount(burnAmount, bank),
-    [bank, burnAmount, connectedWallet],
+    () => connected && validateBurnAmount(burnAmount, bank),
+    [bank, burnAmount, connected],
   );
 
   const estimate = useMemo(() => {
@@ -180,24 +182,20 @@ export function Component({
 
   const proceed = useCallback(
     async (burnAmount: bLuna) => {
-      if (!connectedWallet || !burn) {
+      if (!connected || !burn) {
         return;
       }
 
       const estimated = await estimateFee([
-        new MsgExecuteContract(
-          connectedWallet.terraAddress,
-          contractAddress.cw20.bLuna,
-          {
-            send: {
-              contract: contractAddress.bluna.hub,
-              amount: floor(big(burnAmount).mul(MICRO)).toFixed(),
-              msg: createHookMsg({
-                unbond: {},
-              }),
-            },
+        new MsgExecuteContract(terraWalletAddress, contractAddress.cw20.bLuna, {
+          send: {
+            contract: contractAddress.bluna.hub,
+            amount: floor(big(burnAmount).mul(MICRO)).toFixed(),
+            msg: createHookMsg({
+              unbond: {},
+            }),
           },
-        ),
+        }),
       ]);
 
       if (estimated) {
@@ -225,7 +223,7 @@ export function Component({
     },
     [
       burn,
-      connectedWallet,
+      connected,
       contractAddress.bluna.hub,
       contractAddress.cw20.bLuna,
       exchangeRate,
@@ -233,6 +231,7 @@ export function Component({
       gasPrice.uusd,
       init,
       openAlert,
+      terraWalletAddress,
     ],
   );
 
@@ -352,7 +351,7 @@ export function Component({
         error={!!invalidBurnAmount}
         leftHelperText={invalidBurnAmount}
         rightHelperText={
-          !!connectedWallet && (
+          connected && (
             <span>
               Balance:{' '}
               <span
@@ -465,8 +464,8 @@ export function Component({
         <ActionButton
           className="submit"
           disabled={
-            !connectedWallet ||
-            !connectedWallet.availablePost ||
+            !availablePost ||
+            !connected ||
             !burn ||
             burnAmount.length === 0 ||
             big(burnAmount).lte(0) ||

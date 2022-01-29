@@ -22,12 +22,12 @@ import type { DialogProps, OpenDialog } from '@libs/use-dialog';
 import { useDialog } from '@libs/use-dialog';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { useAccount } from 'contexts/account';
 import type { ChangeEvent, ReactNode } from 'react';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
@@ -58,7 +58,7 @@ function ComponentBase({
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const connectedWallet = useConnectedWallet();
+  const { availablePost, connected } = useAccount();
 
   const [openConfirm, confirmElement] = useConfirm();
 
@@ -83,7 +83,7 @@ function ComponentBase({
 
   const proceed = useCallback(
     async (borrowAmount: UST, txFee: u<UST>, confirm: ReactNode) => {
-      if (!connectedWallet || !postTx) {
+      if (!connected || !postTx) {
         return;
       }
 
@@ -101,7 +101,7 @@ function ComponentBase({
 
       postTx({ borrowAmount, txFee });
     },
-    [postTx, connectedWallet, openConfirm],
+    [postTx, connected, openConfirm],
   );
 
   const onLtvChange = useCallback(
@@ -200,7 +200,7 @@ function ComponentBase({
 
         <figure className="graph">
           <LTVGraph
-            disabled={!connectedWallet || states.max.lte(0)}
+            disabled={!connected || states.max.lte(0)}
             borrowLimit={states.borrowLimit}
             start={states.currentLtv?.toNumber() ?? 0}
             end={ANCHOR_DANGER_RATIO}
@@ -243,10 +243,7 @@ function ComponentBase({
           <ActionButton
             className="proceed"
             disabled={
-              !connectedWallet ||
-              !connectedWallet.availablePost ||
-              !postTx ||
-              !states.availablePost
+              !availablePost || !connected || !postTx || !states.availablePost
             }
             onClick={() =>
               states.txFee &&

@@ -7,6 +7,7 @@ import { Modal } from '@material-ui/core';
 import { useConnectedWallet, useWallet } from '@terra-money/wallet-provider';
 import React, { ReactNode, useCallback } from 'react';
 import styled from 'styled-components';
+import { useAccount } from 'contexts/account';
 import { WalletDetailContent } from '../wallet/WalletDetailContent';
 
 interface FormParams {
@@ -31,6 +32,7 @@ function ComponentBase({
   openBuyUst,
 }: DialogProps<FormParams, FormReturn>) {
   const { disconnect } = useWallet();
+  const { availablePost, connected, terraWalletAddress } = useAccount();
   const connectedWallet = useConnectedWallet();
 
   const bank = useAnchorBank();
@@ -46,11 +48,11 @@ function ComponentBase({
   return (
     <Modal open onClose={() => closeDialog()}>
       <Dialog className={className} onClose={() => closeDialog()}>
-        {!!connectedWallet && (
+        {connected && !!connectedWallet && (
           <WalletDetailContent
             connection={connectedWallet.connection}
-            availablePost={connectedWallet.availablePost}
-            walletAddress={connectedWallet.walletAddress}
+            availablePost={availablePost}
+            walletAddress={terraWalletAddress}
             network={connectedWallet.network}
             closePopup={closeDialog}
             disconnectWallet={disconnectWallet}

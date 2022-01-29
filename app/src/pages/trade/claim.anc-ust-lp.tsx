@@ -15,13 +15,13 @@ import { demicrofy, formatUToken } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { StreamStatus } from '@rx-stream/react';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big } from 'big.js';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { MessageBox } from 'components/MessageBox';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { useAccount } from 'contexts/account';
 import { MINIMUM_CLAIM_BALANCE } from 'pages/trade/env';
 import React, { useCallback, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -35,7 +35,7 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const connectedWallet = useConnectedWallet();
+  const { availablePost, connected } = useAccount();
 
   const fixedFee = useFixedFee();
 
@@ -70,17 +70,17 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
   }, [claiming, userANCBalance]);
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
-    [bank, fixedFee, connectedWallet],
+    () => connected && validateTxFee(bank.tokenBalances.uUST, fixedFee),
+    [bank, fixedFee, connected],
   );
 
   const proceed = useCallback(() => {
-    if (!connectedWallet || !claim) {
+    if (!connected || !claim) {
       return;
     }
 
     claim({});
-  }, [claim, connectedWallet]);
+  }, [claim, connected]);
 
   // ---------------------------------------------
   // presentation
@@ -138,8 +138,8 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
           <ActionButton
             className="proceed"
             disabled={
-              !connectedWallet ||
-              !connectedWallet.availablePost ||
+              !availablePost ||
+              !connected ||
               !claim ||
               !claiming ||
               claiming.lte(MINIMUM_CLAIM_BALANCE)

@@ -21,12 +21,12 @@ import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
 import { InputAdornment } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { useAccount } from 'contexts/account';
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
@@ -34,7 +34,7 @@ export function AncGovernanceUnstake() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const connectedWallet = useConnectedWallet();
+  const { availablePost, connected } = useAccount();
 
   const fixedFee = useFixedFee();
 
@@ -79,8 +79,8 @@ export function AncGovernanceUnstake() {
   }, [govANCBalance, govState, userGovStakingInfo]);
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
-    [bank, fixedFee, connectedWallet],
+    () => connected && validateTxFee(bank.tokenBalances.uUST, fixedFee),
+    [bank, fixedFee, connected],
   );
 
   const invalidANCAmount = useMemo(() => {
@@ -97,7 +97,7 @@ export function AncGovernanceUnstake() {
 
   const proceed = useCallback(
     async (ancAmount: ANC) => {
-      if (!connectedWallet || !unstake) {
+      if (!connected || !unstake) {
         return;
       }
 
@@ -108,7 +108,7 @@ export function AncGovernanceUnstake() {
         },
       });
     },
-    [connectedWallet, init, unstake],
+    [connected, init, unstake],
   );
 
   // ---------------------------------------------
@@ -189,8 +189,8 @@ export function AncGovernanceUnstake() {
         <ActionButton
           className="submit"
           disabled={
-            !connectedWallet ||
-            !connectedWallet.availablePost ||
+            !availablePost ||
+            !connected ||
             !unstake ||
             ancAmount.length === 0 ||
             big(ancAmount).lte(0) ||

@@ -1,7 +1,8 @@
+import React, { useCallback, useState } from 'react';
+import { useEvmWallet } from '@libs/evm-wallet';
 import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
-import { useEvmWallet } from '@libs/evm-wallet';
-import React, { useCallback, useState } from 'react';
+import { useAccount } from 'contexts/account';
 import { ConnectionTypeList } from './ConnectionTypeList';
 import { TermsMessage } from './TermsMessage';
 import { WalletSelector } from './WalletSelector';
@@ -36,7 +37,8 @@ const EvmWalletConnectionList = ({
 };
 
 const EvmWalletSelector = () => {
-  const { actions, address, chainId, connection, status } = useEvmWallet();
+  const { nativeWalletAddress } = useAccount();
+  const { actions, chainId, connection, status } = useEvmWallet();
   const [open, setOpen] = useState(false);
   const onClick = useCallback(() => setOpen((prev) => !prev), []);
   const onClose = useCallback(() => setOpen(false), []);
@@ -48,18 +50,18 @@ const EvmWalletSelector = () => {
 
   return (
     <WalletSelector
-      walletAddress={address}
+      walletAddress={nativeWalletAddress}
       initializing={status === 'initialization'}
       open={open}
       onClick={onClick}
       onClose={onClose}
     >
-      {address && chainId && connection ? (
+      {chainId && connection && nativeWalletAddress ? (
         <EvmWalletDetailContent
           chainId={chainId}
           connection={connection}
           disconnectWallet={disconnectWallet}
-          walletAddress={address}
+          walletAddress={nativeWalletAddress}
           // availablePost={}
           // bank={}
           // closePopup={() => setOpen(false)}

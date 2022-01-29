@@ -3,6 +3,7 @@ import { useFixedFee } from '@libs/app-provider/hooks/useFixedFee';
 import { HumanAddr, terraswap, Token, u, UST } from '@libs/types';
 import { useConnectedWallet } from '@terra-money/use-wallet';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useApp } from '../../contexts/app';
 import { TERRA_TX_KEYS } from '../../env';
 import { useRefetchQueries } from '../../hooks/useRefetchQueries';
@@ -19,6 +20,8 @@ export interface SendTxParams {
 }
 
 export function useSendTx() {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const { queryClient, txErrorReporter, constants } = useApp();
@@ -31,7 +34,7 @@ export function useSendTx() {
 
   const stream = useCallback(
     ({ asset, memo, toAddr, amount, txFee, onTxSucceed }: SendTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost) {
+      if (!availablePost || !connected || !connectedWallet) {
         throw new Error(`Can't post!`);
       }
 
@@ -41,7 +44,7 @@ export function useSendTx() {
         memo,
         toAddr,
         amount,
-        walletAddr: connectedWallet.walletAddress,
+        walletAddr: terraWalletAddress,
         taxRate,
         maxTaxUUSD: maxTax,
         fixedFee,
@@ -58,15 +61,18 @@ export function useSendTx() {
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
-      constants.gasAdjustment,
-      constants.gasWanted,
-      fixedFee,
-      maxTax,
-      refetchQueries,
+      terraWalletAddress,
       taxRate,
-      txErrorReporter,
+      maxTax,
+      fixedFee,
+      constants.gasWanted,
+      constants.gasAdjustment,
       queryClient,
+      txErrorReporter,
+      refetchQueries,
     ],
   );
 

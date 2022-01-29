@@ -6,10 +6,10 @@ import {
 import { UST } from '@anchor-protocol/types';
 import { useFixedFee } from '@libs/app-provider';
 import { useForm } from '@libs/use-form';
-import { useAccount } from 'contexts/account';
-import { useTokenBalances } from 'contexts/balances';
 import { useCallback, useMemo } from 'react';
+import { useAccount } from 'contexts/account';
 import { useEarnEpochStatesQuery } from '../../queries/earn/epochStates';
+import { useTokenBalances } from 'contexts/balances';
 
 export interface EarnWithdrawFormReturn extends EarnWithdrawFormStates {
   updateWithdrawAmount: (withdrawAmount: UST) => void;

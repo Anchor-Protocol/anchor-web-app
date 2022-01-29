@@ -2,8 +2,6 @@ import {
   ANC,
   AncUstLP,
   aUST,
-  Eth,
-  bEth,
   bLuna,
   bLunaLunaLP,
   Luna,

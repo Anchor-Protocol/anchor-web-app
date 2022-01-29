@@ -4,6 +4,7 @@ import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 
@@ -16,6 +17,8 @@ export interface GovVoteTxParams {
 }
 
 export function useGovVoteTx() {
+  const { availablePost, connected } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const { queryClient, txErrorReporter, contractAddress, constants } =
@@ -27,7 +30,7 @@ export function useGovVoteTx() {
 
   const stream = useCallback(
     ({ amount, voteFor, pollId, onTxSucceed }: GovVoteTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost) {
+      if (!availablePost || !connected || !connectedWallet) {
         throw new Error('Can not post!');
       }
 
@@ -56,6 +59,8 @@ export function useGovVoteTx() {
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
       contractAddress.anchorToken.gov,
       fixedFee,

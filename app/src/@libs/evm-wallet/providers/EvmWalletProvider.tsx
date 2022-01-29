@@ -4,7 +4,7 @@ import { ConnectorData, useConnectors } from '../connectors';
 import { Connection, ConnectType, WalletStatus } from '../types';
 import { availableConnectTypes, availableConnections } from '../constants';
 
-type EvmWallet = {
+export type EvmWallet = {
   actions: {
     activate: (connectType: ConnectType) => Promise<void>;
     deactivate: () => Promise<void>;

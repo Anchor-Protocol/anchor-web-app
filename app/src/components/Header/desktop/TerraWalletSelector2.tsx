@@ -3,15 +3,9 @@ import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
-import {
-  ConnectType,
-  useWallet,
-  WalletStatus,
-} from '@terra-money/wallet-provider';
-import {
-  useAnchorBank,
-  useTerraWalletAddress,
-} from '@anchor-protocol/app-provider';
+import { ConnectType, useWallet } from '@terra-money/wallet-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider';
+import { useAccount } from 'contexts/account';
 import { ConnectionTypeList } from './ConnectionTypeList';
 import { TermsMessage } from './TermsMessage';
 import { WalletSelector } from './WalletSelector';
@@ -126,19 +120,17 @@ const WalletConnectionList = ({ setOpen }: WalletConnectionListProps) => {
 };
 
 const TerraWalletSelector = () => {
+  const { terraWalletAddress, status } = useAccount();
+
   const {
-    status,
     connect,
     disconnect,
     connection,
-    wallets,
     network,
     availableConnectTypes,
     availableConnections,
     supportFeatures,
   } = useWallet();
-
-  const walletAddress = useTerraWalletAddress();
 
   const bank = useAnchorBank();
 
@@ -172,20 +164,20 @@ const TerraWalletSelector = () => {
 
   return (
     <WalletSelector
-      walletAddress={walletAddress}
-      initializing={status === WalletStatus.INITIALIZING}
+      walletAddress={terraWalletAddress}
+      initializing={status === 'initialization'}
       open={open}
       onClick={connectWallet}
       onClose={onClose}
     >
-      {!walletAddress ? (
+      {!terraWalletAddress ? (
         <WalletConnectionList setOpen={setOpen} />
       ) : (
         <WalletDetailContent
           connection={connection ?? availableConnections[0]}
           bank={bank}
           availablePost={supportFeatures.has('post')}
-          walletAddress={wallets[0].terraAddress}
+          walletAddress={terraWalletAddress}
           network={network}
           closePopup={() => setOpen(false)}
           disconnectWallet={disconnectWallet}

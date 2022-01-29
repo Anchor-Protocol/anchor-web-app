@@ -18,19 +18,19 @@ import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
 import { InputAdornment } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { useAccount } from 'contexts/account';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 export function AncUstLpUnstake() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const connectedWallet = useConnectedWallet();
+  const { availablePost, connected } = useAccount();
 
   const fixedFee = useFixedFee();
 
@@ -56,8 +56,8 @@ export function AncUstLpUnstake() {
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
-    [bank, fixedFee, connectedWallet],
+    () => connected && validateTxFee(bank.tokenBalances.uUST, fixedFee),
+    [bank, fixedFee, connected],
   );
 
   const invalidLpAmount = useMemo(() => {
@@ -72,7 +72,7 @@ export function AncUstLpUnstake() {
 
   const proceed = useCallback(
     (lpAmount: AncUstLP) => {
-      if (!connectedWallet || !unstake) {
+      if (!connected || !unstake) {
         return;
       }
 
@@ -83,7 +83,7 @@ export function AncUstLpUnstake() {
         },
       });
     },
-    [connectedWallet, init, unstake],
+    [connected, init, unstake],
   );
 
   // ---------------------------------------------
@@ -162,8 +162,8 @@ export function AncUstLpUnstake() {
         <ActionButton
           className="submit"
           disabled={
-            !connectedWallet ||
-            !connectedWallet.availablePost ||
+            !availablePost ||
+            !connected ||
             !unstake ||
             lpAmount.length === 0 ||
             big(lpAmount).lte(0) ||
