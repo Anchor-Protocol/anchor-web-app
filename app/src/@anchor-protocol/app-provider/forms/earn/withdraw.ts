@@ -6,9 +6,9 @@ import {
 import { UST } from '@anchor-protocol/types';
 import { useFixedFee } from '@libs/app-provider';
 import { useForm } from '@libs/use-form';
-import { useAccount } from 'contexts/account';
 import { useBalances } from 'contexts/balances';
 import { useCallback, useMemo } from 'react';
+import { useAccount } from 'contexts/account';
 import { useEarnEpochStatesQuery } from '../../queries/earn/epochStates';
 
 export interface EarnWithdrawFormReturn extends EarnWithdrawFormStates {

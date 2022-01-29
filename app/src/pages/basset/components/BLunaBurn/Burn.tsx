@@ -72,9 +72,7 @@ export function Component({
   // dependencies
   // ---------------------------------------------
   const { availablePost, connected, terraWalletAddress } = useAccount();
-
   const { contractAddress, gasPrice, constants } = useAnchorWebapp();
-  const { connected, terraWalletAddress, availablePost } = useAccount();
 
   const estimateFee = useEstimateFee(terraWalletAddress);
 

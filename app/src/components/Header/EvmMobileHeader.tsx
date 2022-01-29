@@ -1,4 +1,5 @@
 import { useEvmWallet } from '@libs/evm-wallet';
+import { useAccount } from 'contexts/account';
 import { useBuyUstDialog } from 'pages/earn/components/useBuyUstDialog';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import React, { useCallback, useState } from 'react';
@@ -7,7 +8,8 @@ import { MobileHeader } from './MobileHeader';
 
 export function EvmMobileHeader() {
   const [open, setOpen] = useState<boolean>(false);
-  const { actions, status } = useEvmWallet();
+  const { status } = useAccount();
+  const { actions } = useEvmWallet();
   const [openWalletDetail, walletDetailElement] = useWalletDetailDialog();
   const [openSendDialog, sendDialogElement] = useSendDialog();
   const [openBuyUstDialog, buyUstDialogElement] = useBuyUstDialog();
