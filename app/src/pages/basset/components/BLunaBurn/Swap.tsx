@@ -308,8 +308,8 @@ export function Component({
         <ConvertSymbols
           className="symbols"
           view="burn"
-          fromIcon={<TokenIcon token="bluna" />}
-          toIcon={<TokenIcon token="luna" />}
+          fromIcon={<TokenIcon token="luna" />}
+          toIcon={<TokenIcon token="bluna" />}
         />
       </ConvertSymbolsContainer>
 
@@ -482,7 +482,6 @@ export function Component({
 const StyledComponent = styled(Component)`
   .burn,
   .gett {
-    display: none;
     img {
       font-size: 12px;
     }
