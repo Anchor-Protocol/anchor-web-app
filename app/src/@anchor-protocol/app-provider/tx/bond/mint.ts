@@ -4,6 +4,7 @@ import { useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 
@@ -16,6 +17,8 @@ export interface BondMintTxParams {
 }
 
 export function useBondMintTx() {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const { queryClient, txErrorReporter, contractAddress, constants } =
@@ -31,14 +34,19 @@ export function useBondMintTx() {
       exchangeRate,
       onTxSucceed,
     }: BondMintTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost) {
+      if (
+        !connected ||
+        !availablePost ||
+        !terraWalletAddress ||
+        !connectedWallet
+      ) {
         throw new Error('Can not post!');
       }
 
       return bondMintTx({
         // fabricatebAssetBond
         bondAmount,
-        walletAddr: connectedWallet.walletAddress,
+        walletAddr: terraWalletAddress,
         bAssetHubAddr: contractAddress.bluna.hub,
         // post
         network: connectedWallet.network,
@@ -59,8 +67,11 @@ export function useBondMintTx() {
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
       contractAddress.bluna.hub,
+      terraWalletAddress,
       constants.gasAdjustment,
       queryClient,
       txErrorReporter,

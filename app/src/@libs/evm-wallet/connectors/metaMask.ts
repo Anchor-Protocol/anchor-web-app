@@ -6,7 +6,7 @@ const [connector, hooks] = initializeConnector<MetaMask>(
   (actions) => new MetaMask(actions),
 );
 
-function useData(): ConnectorData {
+function useConnectorData(): ConnectorData {
   return {
     address: hooks.useAccount(),
     chainId: hooks.useChainId(),
@@ -17,4 +17,4 @@ function useData(): ConnectorData {
   };
 }
 
-export { connector, useData };
+export { connector, useConnectorData };

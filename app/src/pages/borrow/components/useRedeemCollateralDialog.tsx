@@ -27,13 +27,13 @@ import type { DialogProps, OpenDialog } from '@libs/use-dialog';
 import { useDialog } from '@libs/use-dialog';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { useAccount } from 'contexts/account';
 import type { ReactNode } from 'react';
 import React, { ChangeEvent, useCallback } from 'react';
 import styled from 'styled-components';
@@ -65,7 +65,7 @@ function ComponentBase({
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const connectedWallet = useConnectedWallet();
+  const { availablePost, connected } = useAccount();
 
   const [postTx, txResult] = useBorrowRedeemCollateralTx(collateralToken);
 
@@ -87,7 +87,7 @@ function ComponentBase({
 
   const proceed = useCallback(
     (redeemAmount: bAsset) => {
-      if (!connectedWallet || !postTx) {
+      if (!connected || !postTx) {
         return;
       }
 
@@ -95,7 +95,7 @@ function ComponentBase({
         redeemAmount: redeemAmount.length > 0 ? redeemAmount : ('0' as bAsset),
       });
     },
-    [connectedWallet, postTx],
+    [connected, postTx],
   );
 
   const onLtvChange = useCallback(
@@ -209,7 +209,7 @@ function ComponentBase({
 
         <figure className="graph">
           <LTVGraph
-            disabled={!connectedWallet}
+            disabled={!connected}
             maxLtv={states.bAssetLtvsAvg.max}
             safeLtv={states.bAssetLtvsAvg.safe}
             dangerLtv={states.userMaxLtv}
@@ -251,10 +251,7 @@ function ComponentBase({
           <ActionButton
             className="proceed"
             disabled={
-              !connectedWallet ||
-              !connectedWallet.availablePost ||
-              !postTx ||
-              !states.availablePost
+              !availablePost || !connected || !postTx || !states.availablePost
             }
             onClick={() => proceed(states.redeemAmount)}
           >

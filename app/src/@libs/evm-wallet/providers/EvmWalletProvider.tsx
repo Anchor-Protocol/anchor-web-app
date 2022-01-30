@@ -1,43 +1,42 @@
 import { useLocalStorage } from '@libs/use-local-storage';
 import React, { createContext, ReactNode, useCallback, useMemo } from 'react';
-import { ConnectorData, useConnectors } from './connectors';
-import { availableConnections, availableConnectTypes } from './constants';
-import { Connection, ConnectType } from './types';
+import { ConnectorData, useConnectors } from '../connectors';
+import { Connection, ConnectType, WalletStatus } from '../types';
+import { availableConnectTypes, availableConnections } from '../constants';
 
-interface Web3ContextValue extends ConnectorData {
+export type EvmWallet = {
   actions: {
     activate: (connectType: ConnectType) => Promise<void>;
     deactivate: () => Promise<void>;
   };
+  availableConnectTypes: ConnectType[];
   availableConnections: Connection[];
   connection: Connection | null;
-}
+  status: WalletStatus;
+} & Omit<ConnectorData, 'isActive' | 'isActivating'>;
 
-export const Web3Context = createContext<Web3ContextValue>(null!);
+export const EvmWalletContext = createContext<EvmWallet>(undefined!);
 
-export function Web3Provider({ children }: { children: ReactNode }) {
+export function EvmWalletProvider({ children }: { children: ReactNode }) {
   const [connectType, setConnectType] = useLocalStorage<ConnectType | 'null'>(
-    '__anchor_wallet_connect_type__',
+    '__anchor_evm_wallet_connect_type__',
     () => 'null',
-  );
-
-  const isConnected = (availableConnectTypes as ReadonlyArray<string>).includes(
-    connectType,
   );
 
   const connectors = useConnectors();
   const { data } =
-    connectType !== 'null' ? connectors[connectType] : { data: null };
+    connectType !== 'null' ? connectors[connectType] : { data: undefined };
   const address = data ? data.address : undefined;
   const chainId = data ? data.chainId : undefined;
   const error = data ? data.error : undefined;
+  const provider = data ? data.provider : undefined;
   const isActivating = data ? data.isActivating : false;
   const isActive = data ? data.isActive : false;
-  const provider = data ? data.provider : undefined;
-
-  const connection = isConnected
-    ? availableConnections.find(({ type }) => type === connectType) || null
-    : null;
+  const status: WalletStatus = isActivating
+    ? 'initialization'
+    : isActive
+    ? 'connected'
+    : 'disconnected';
 
   const activate = useCallback(
     (connectType: ConnectType) => {
@@ -60,31 +59,40 @@ export function Web3Provider({ children }: { children: ReactNode }) {
     return Promise.resolve();
   }, [connectType, connectors, setConnectType]);
 
-  const contextValue = useMemo(() => {
+  const evmWallet = useMemo(() => {
+    const isConnected = (
+      availableConnectTypes as ReadonlyArray<string>
+    ).includes(connectType);
+
+    const connection = isConnected
+      ? availableConnections.find(({ type }) => type === connectType) || null
+      : null;
+
     return {
       actions: { activate, deactivate },
       address,
+      availableConnectTypes: availableConnectTypes as unknown as ConnectType[], // TODO
       availableConnections,
       chainId,
       connection,
       error,
-      isActivating,
-      isActive,
       provider,
+      status,
     };
   }, [
     activate,
     address,
     chainId,
-    connection,
+    connectType,
     deactivate,
     error,
-    isActivating,
-    isActive,
     provider,
+    status,
   ]);
 
   return (
-    <Web3Context.Provider value={contextValue}>{children}</Web3Context.Provider>
+    <EvmWalletContext.Provider value={evmWallet}>
+      {children}
+    </EvmWalletContext.Provider>
   );
 }

@@ -4,6 +4,7 @@ import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 
@@ -13,6 +14,8 @@ export interface AncAncUstLpWithdrawTxParams {
 }
 
 export function useAncAncUstLpWithdrawTx() {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const { queryClient, txErrorReporter, contractAddress, constants } =
@@ -24,13 +27,18 @@ export function useAncAncUstLpWithdrawTx() {
 
   const stream = useCallback(
     ({ lpAmount, onTxSucceed }: AncAncUstLpWithdrawTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost) {
+      if (
+        !availablePost ||
+        !connected ||
+        !connectedWallet ||
+        !terraWalletAddress
+      ) {
         throw new Error('Can not post!');
       }
 
       return ancAncUstLpWithdrawTx({
         // fabricateTerraswapWithdrawLiquidityANC
-        walletAddr: connectedWallet.walletAddress,
+        walletAddr: terraWalletAddress,
         lpAmount,
         ancUstPairAddr: contractAddress.terraswap.ancUstPair,
         ancUstLpTokenAddr: contractAddress.cw20.AncUstLP,
@@ -52,9 +60,12 @@ export function useAncAncUstLpWithdrawTx() {
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
       contractAddress.terraswap.ancUstPair,
       contractAddress.cw20.AncUstLP,
+      terraWalletAddress,
       fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,

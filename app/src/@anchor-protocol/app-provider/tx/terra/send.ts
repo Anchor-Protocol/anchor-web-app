@@ -4,6 +4,7 @@ import { useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 
@@ -17,6 +18,8 @@ export interface TerraSendTxParams {
 }
 
 export function useTerraSendTx() {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const { queryClient, txErrorReporter, constants } = useAnchorWebapp();
@@ -32,12 +35,12 @@ export function useTerraSendTx() {
       txFee,
       onTxSucceed,
     }: TerraSendTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost) {
+      if (!availablePost || !connected || !connectedWallet) {
         throw new Error('Can not post!');
       }
 
       return terraSendTx({
-        myWalletAddress: connectedWallet.walletAddress,
+        myWalletAddress: terraWalletAddress,
         toWalletAddress,
         amount,
         currency,
@@ -60,7 +63,10 @@ export function useTerraSendTx() {
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
+      terraWalletAddress,
       constants.gasWanted,
       constants.gasAdjustment,
       queryClient,

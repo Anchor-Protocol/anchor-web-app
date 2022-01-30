@@ -7,11 +7,11 @@ import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { fixHMR } from 'fix-hmr';
+import { useAccount } from 'contexts/account';
 import { EmptySection } from 'pages/mypage/components/EmptySection';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { useAccount } from 'contexts/account';
 
 export interface GovernProps {
   className?: string;

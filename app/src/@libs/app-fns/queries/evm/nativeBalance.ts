@@ -9,7 +9,7 @@ export type NativeBalanceFetcher = (
 ) => Promise<BigNumber> | undefined;
 
 export async function evmNativeBalancesQuery(
-  walletAddress: EVMAddr,
+  walletAddress: EVMAddr | undefined,
   fetcher: NativeBalanceFetcher,
 ): Promise<u<Eth> | undefined> {
   if (!walletAddress || !fetcher) {

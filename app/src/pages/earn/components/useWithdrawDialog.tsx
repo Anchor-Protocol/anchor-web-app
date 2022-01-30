@@ -25,11 +25,11 @@ import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { useAccount } from 'contexts/account';
 import type { ReactNode } from 'react';
 import React, { ChangeEvent, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { useTokenBalances } from 'contexts/balances';
-import { useAccount } from 'contexts/account';
 
 interface FormParams {
   className?: string;
@@ -51,7 +51,7 @@ function ComponentBase({
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const account = useAccount();
+  const { connected } = useAccount();
 
   const [withdraw, withdrawResult] = useAnchorApiTx((api) => api.withdraw);
 
@@ -89,7 +89,7 @@ function ComponentBase({
   // ---------------------------------------------
   const proceed = useCallback(
     async (withdrawAmount: UST, txFee: u<UST<BigSource>> | undefined) => {
-      if (!account.connected || !withdraw || !data) {
+      if (!connected || !withdraw || !data) {
         return;
       }
 
@@ -100,7 +100,7 @@ function ComponentBase({
         txFee: txFee!.toString() as u<UST>,
       });
     },
-    [account.connected, data, withdraw],
+    [connected, data, withdraw],
   );
 
   // ---------------------------------------------
@@ -178,10 +178,7 @@ function ComponentBase({
           <ActionButton
             className="proceed"
             disabled={
-              !account.connected ||
-              !account.availablePost ||
-              !withdraw ||
-              !availablePost
+              !availablePost || !connected || !withdraw || !availablePost
             }
             onClick={() => proceed(withdrawAmount, txFee)}
           >

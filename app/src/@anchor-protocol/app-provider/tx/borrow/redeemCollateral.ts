@@ -4,6 +4,7 @@ import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 import { useBAssetInfoByTokenAddrQuery } from '../../queries/basset/bAssetInfoByTokenAddr';
@@ -16,6 +17,8 @@ export interface BorrowRedeemCollateralTxParams {
 }
 
 export function useBorrowRedeemCollateralTx(bAssetTokenAddr: CW20Addr) {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const { queryClient, txErrorReporter, contractAddress, constants } =
@@ -33,12 +36,18 @@ export function useBorrowRedeemCollateralTx(bAssetTokenAddr: CW20Addr) {
 
   const stream = useCallback(
     ({ redeemAmount, onTxSucceed }: BorrowRedeemCollateralTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost || !bAsset) {
+      if (
+        !connectedWallet ||
+        !connected ||
+        !availablePost ||
+        !terraWalletAddress ||
+        !bAsset
+      ) {
         throw new Error('Can not post!');
       }
 
       return borrowRedeemCollateralTx({
-        walletAddr: connectedWallet.walletAddress,
+        walletAddr: terraWalletAddress,
         redeemAmount,
         bAssetTokenAddr,
         overseerAddr: contractAddress.moneyMarket.overseer,
@@ -68,6 +77,8 @@ export function useBorrowRedeemCollateralTx(bAssetTokenAddr: CW20Addr) {
       bAssetTokenAddr,
       borrowBorrowerQuery,
       borrowMarketQuery,
+      availablePost,
+      connected,
       connectedWallet,
       constants.gasAdjustment,
       constants.gasWanted,
@@ -75,6 +86,7 @@ export function useBorrowRedeemCollateralTx(bAssetTokenAddr: CW20Addr) {
       fixedFee,
       queryClient,
       refetchQueries,
+      terraWalletAddress,
       txErrorReporter,
     ],
   );

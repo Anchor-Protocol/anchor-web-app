@@ -11,4 +11,6 @@ export type Connection = {
   type: ConnectType;
 };
 
+export type WalletStatus = 'initialization' | 'connected' | 'disconnected';
+
 export type ConnectType = typeof availableConnectTypes[number];

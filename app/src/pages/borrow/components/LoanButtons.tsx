@@ -8,9 +8,9 @@ import {
 } from '@anchor-protocol/app-provider';
 import { u, UST } from '@anchor-protocol/types';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
 import React, { useMemo } from 'react';
+import { useAccount } from 'contexts/account';
 import { useBorrowDialog } from './useBorrowDialog';
 import { useRepayDialog } from './useRepayDialog';
 
@@ -22,7 +22,7 @@ export function LoanButtons() {
 
   const { data: borrowBorrower } = useBorrowBorrowerQuery();
 
-  const connectedWallet = useConnectedWallet();
+  const { connected } = useAccount();
 
   const [openBorrowDialog, borrowDialogElement] = useBorrowDialog();
   const [openRepayDialog, repayDialogElement] = useRepayDialog();
@@ -48,7 +48,7 @@ export function LoanButtons() {
     <>
       <ActionButton
         disabled={
-          !connectedWallet ||
+          !connected ||
           !borrowMarket ||
           !borrowBorrower ||
           big(collateralsValue).lte(0)
@@ -66,10 +66,7 @@ export function LoanButtons() {
       </ActionButton>
       <ActionButton
         disabled={
-          !connectedWallet ||
-          !borrowMarket ||
-          !borrowBorrower ||
-          borrowed.lte(0)
+          !connected || !borrowMarket || !borrowBorrower || borrowed.lte(0)
         }
         onClick={() =>
           borrowMarket &&
