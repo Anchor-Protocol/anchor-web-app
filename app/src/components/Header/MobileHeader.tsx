@@ -13,7 +13,6 @@ import { useSendDialog } from 'pages/send/useSendDialog';
 import React, { useCallback, useState } from 'react';
 import { NavLink, useRouteMatch } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
-import { AirdropContent } from './airdrop/AirdropContent';
 import logoUrl from './assets/Logo.svg';
 import { useWalletDetailDialog } from './mobile/useWalletDetailDialog';
 import { ViewAddressButton } from './mobile/ViewAddressButton';
@@ -21,8 +20,6 @@ import { ViewAddressButton } from './mobile/ViewAddressButton';
 export interface MobileHeaderProps {
   className?: string;
 }
-
-let _airdropClosed: boolean = false;
 
 function MobileHeaderBase({ className }: MobileHeaderProps) {
   const [open, setOpen] = useState<boolean>(false);
@@ -35,32 +32,13 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
 
   const [openBuyUstDialog, buyUstDialogElement] = useBuyUstDialog();
 
-  const { data: airdrop, isLoading: airdropIsLoading } = useAirdropCheckQuery();
-  //const airdrop = useMemo<Airdrop | 'in-progress' | null>(
-  //  () => ({
-  //    createdAt: '',
-  //    id: 1,
-  //    stage: 1,
-  //    address: '',
-  //    staked: '100000000' as uANC,
-  //    total: '100000000' as uANC,
-  //    rate: '0.1' as Rate,
-  //    amount: '100000000' as uANC,
-  //    proof: '',
-  //    merkleRoot: '',
-  //    claimable: true,
-  //  }),
-  //  [],
-  //);
+  const { data: airdrop } = useAirdropCheckQuery();
 
-  const matchAirdrop = useRouteMatch('/airdrop');
+  const airdropItemMenu = menus.find((itemMenu) =>
+    itemMenu.to.includes('/airdrop'),
+  );
 
-  const [airdropClosed, setAirdropClosed] = useState(() => _airdropClosed);
-
-  const closeAirdrop = useCallback(() => {
-    setAirdropClosed(true);
-    _airdropClosed = true;
-  }, []);
+  if (airdropItemMenu) airdropItemMenu.highlighted = !!airdrop;
 
   const toggleWallet = useCallback(() => {
     if (status === WalletStatus.WALLET_CONNECTED) {
@@ -140,16 +118,6 @@ function MobileHeaderBase({ className }: MobileHeaderProps) {
             offIcon={Menu}
           />
         </section>
-
-        {!open &&
-          !airdropClosed &&
-          airdrop &&
-          !airdropIsLoading &&
-          !matchAirdrop && (
-            <section className="airdrop">
-              <AirdropContent onClose={closeAirdrop} isMobileLayout />
-            </section>
-          )}
       </header>
 
       {open && <div style={{ height: mobileHeaderHeight }} />}
@@ -165,6 +133,7 @@ function NavMenu({
   to,
   exact,
   title,
+  highlighted,
   close,
 }: RouteMenu & {
   close: () => void;
@@ -175,7 +144,7 @@ function NavMenu({
   });
 
   return (
-    <div data-active={!!match}>
+    <div data-active={!!match} className={!!highlighted ? 'highlighted' : ''}>
       <NavLink to={to} exact={exact} onClick={close}>
         {title}
       </NavLink>
@@ -230,6 +199,12 @@ export const MobileHeader = styled(MobileHeaderBase)`
     > div {
       display: flex;
       align-items: center;
+
+      &.highlighted {
+        a {
+          color: ${({ theme }) => theme.colors.positive};
+        }
+      }
 
       a {
         flex: 1;

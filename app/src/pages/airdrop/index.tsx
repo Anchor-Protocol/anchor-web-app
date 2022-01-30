@@ -24,7 +24,7 @@ import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import React, { useCallback, useMemo } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { SwishSpinner } from 'react-spinners-kit';
 import styled from 'styled-components';
 
@@ -100,9 +100,6 @@ function AirdropBase({ className }: AirdropProps) {
           <EmptyMessage>
             <SwishSpinner />
           </EmptyMessage>
-          <ActionButton className="proceed" component={Link} to={`/earn`}>
-            Exit
-          </ActionButton>
         </Section>
       </CenteredLayout>
     );
@@ -113,9 +110,6 @@ function AirdropBase({ className }: AirdropProps) {
       <CenteredLayout className={className} maxWidth={800}>
         <Section>
           <EmptyMessage>No Airdrop</EmptyMessage>
-          <ActionButton className="proceed" component={Link} to={`/earn`}>
-            Exit
-          </ActionButton>
         </Section>
       </CenteredLayout>
     );

@@ -1,3 +1,4 @@
+import { useAirdropCheckQuery } from '@anchor-protocol/app-provider';
 import { menus, RouteMenu } from 'configurations/menu';
 import { screen } from 'env';
 import React from 'react';
@@ -12,6 +13,14 @@ export interface DesktopHeaderProps {
 }
 
 function DesktopHeaderBase({ className }: DesktopHeaderProps) {
+  const { data: airdrop } = useAirdropCheckQuery();
+
+  const airdropItemMenu = menus.find((itemMenu) =>
+    itemMenu.to.includes('/airdrop'),
+  );
+
+  if (airdropItemMenu) airdropItemMenu.highlighted = !!airdrop;
+
   return (
     <header className={className}>
       <a
@@ -42,14 +51,14 @@ function DesktopHeaderBase({ className }: DesktopHeaderProps) {
   );
 }
 
-function NavMenu({ to, exact, title }: RouteMenu) {
+function NavMenu({ to, exact, title, highlighted }: RouteMenu) {
   const match = useRouteMatch({
     path: to,
     exact,
   });
 
   return (
-    <div data-active={!!match}>
+    <div data-active={!!match} className={!!highlighted ? 'highlighted' : ''}>
       <Link to={to}>{title}</Link>
     </div>
   );
@@ -79,6 +88,8 @@ export const DesktopHeader = styled(DesktopHeaderBase)`
   .menu {
     > div {
       padding: 6px 12px;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
 
       display: flex;
       align-items: center;
@@ -91,9 +102,15 @@ export const DesktopHeader = styled(DesktopHeaderBase)`
         text-decoration: none;
       }
 
+      &.highlighted {
+        background-color: ${({ theme }) => theme.colors.positive};
+
+        a {
+          color: ${({ theme }) => theme.textColor};
+        }
+      }
+
       &[data-active='true'] {
-        border-top-left-radius: 10px;
-        border-top-right-radius: 10px;
         background: ${({ theme }) => theme.backgroundColor};
 
         opacity: 1;
@@ -109,7 +126,6 @@ export const DesktopHeader = styled(DesktopHeaderBase)`
   // layout
   // ---------------------------------------------
   display: flex;
-  //justify-content: space-between;
   align-items: flex-end;
 
   height: 88px;
@@ -169,9 +185,5 @@ export const DesktopHeader = styled(DesktopHeaderBase)`
     .logo {
       left: 40px;
     }
-
-    //.wallet {
-    //  display: none;
-    //}
   }
 `;

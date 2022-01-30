@@ -1,7 +1,4 @@
-import {
-  useAirdropCheckQuery,
-  useBAssetInfoAndBalanceTotalQuery,
-} from '@anchor-protocol/app-provider';
+import { useBAssetInfoAndBalanceTotalQuery } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
@@ -18,9 +15,8 @@ import { useBuyUstDialog } from 'pages/earn/components/useBuyUstDialog';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import React, { useCallback, useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { AirdropContent } from '../airdrop/AirdropContent';
 import { WalletDetailContent } from '../wallet/WalletDetailContent';
 import { ConnectedButton } from './ConnectedButton';
 import { DropdownBox, DropdownContainer } from './DropdownContainer';
@@ -29,8 +25,6 @@ import { NotConnectedButton } from './NotConnectedButton';
 export interface WalletSelectorProps {
   className?: string;
 }
-
-let _airdropClosed: boolean = false;
 
 function WalletSelectorBase({ className }: WalletSelectorProps) {
   // ---------------------------------------------
@@ -53,26 +47,6 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
 
   const bank = useAnchorBank();
 
-  const { data: airdrop, isLoading: airdropIsLoading } = useAirdropCheckQuery();
-  //const airdrop = useMemo<Airdrop | 'in-progress' | null>(
-  //  () => ({
-  //    createdAt: '',
-  //    id: 1,
-  //    stage: 1,
-  //    address: '',
-  //    staked: '100000000' as uANC,
-  //    total: '100000000' as uANC,
-  //    rate: '0.1' as Rate,
-  //    amount: '100000000' as uANC,
-  //    proof: '',
-  //    merkleRoot: '',
-  //    claimable: true,
-  //  }),
-  //  [],
-  //);
-
-  const matchAirdrop = useRouteMatch('/airdrop');
-
   const [openSendDialog, sendDialogElement] = useSendDialog();
 
   const [openBuyUstDialog, buyUstDialogElement] = useBuyUstDialog();
@@ -83,13 +57,6 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   // states
   // ---------------------------------------------
   const [openDropdown, setOpenDropdown] = useState<boolean>(false);
-
-  const [airdropClosed, setAirdropClosed] = useState(() => _airdropClosed);
-
-  const closeAirdrop = useCallback(() => {
-    setAirdropClosed(true);
-    _airdropClosed = true;
-  }, []);
 
   // ---------------------------------------------
   // callbacks
@@ -240,18 +207,6 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                 onClick={toggleOpen}
               />
             )}
-
-            {!airdropClosed &&
-              airdrop &&
-              !airdropIsLoading &&
-              !openDropdown &&
-              !matchAirdrop && (
-                <DropdownContainer>
-                  <DropdownBox>
-                    <AirdropContent onClose={closeAirdrop} />
-                  </DropdownBox>
-                </DropdownContainer>
-              )}
 
             {openDropdown && (
               <DropdownContainer>

@@ -1,7 +1,8 @@
 export interface RouteMenu {
   to: string;
-  exact?: boolean;
   title: string;
+  exact?: boolean;
+  highlighted?: boolean;
 }
 
 export const menus: RouteMenu[] = [
@@ -29,5 +30,9 @@ export const menus: RouteMenu[] = [
   {
     to: `/gov`,
     title: 'GOVERN',
+  },
+  {
+    to: `/airdrop`,
+    title: 'AIRDROPS',
   },
 ];
