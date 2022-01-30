@@ -4,6 +4,7 @@ import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 
@@ -18,6 +19,8 @@ export interface GovCreatePollTxParams {
 }
 
 export function useGovCreatePollTx() {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const { queryClient, txErrorReporter, contractAddress, constants } =
@@ -36,13 +39,18 @@ export function useGovCreatePollTx() {
       executeMsgs,
       onTxSucceed,
     }: GovCreatePollTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost) {
+      if (
+        !availablePost ||
+        !connected ||
+        !connectedWallet ||
+        !terraWalletAddress
+      ) {
         throw new Error('Can not post!');
       }
 
       return govCreatePollTx({
         // fabricateGovCreatePoll
-        walletAddr: connectedWallet.walletAddress,
+        walletAddr: terraWalletAddress,
         amount,
         title,
         description,
@@ -68,9 +76,12 @@ export function useGovCreatePollTx() {
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
       contractAddress.anchorToken.gov,
       contractAddress.cw20.ANC,
+      terraWalletAddress,
       fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,

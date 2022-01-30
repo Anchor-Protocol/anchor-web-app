@@ -1,4 +1,3 @@
-import { useEvmWallet } from '@libs/web3';
 import { ClickAwayListener } from '@material-ui/core';
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';
@@ -8,6 +7,7 @@ import { useTokenBalances } from 'contexts/balances';
 
 export interface WalletSelectorProps {
   className?: string;
+  walletAddress?: string;
   initializing: boolean;
   open: boolean;
   onClick: () => void;
@@ -18,8 +18,9 @@ export interface WalletSelectorProps {
 //let _airdropClosed: boolean = false;
 
 function WalletSelectorBase({
-  className,
+  walletAddress,
   initializing,
+  className,
   open,
   onClick,
   onClose,
@@ -29,14 +30,13 @@ function WalletSelectorBase({
   // dependencies
   // ---------------------------------------------
 
-  const { address, isActivating } = useEvmWallet();
   const tokenBalances = useTokenBalances();
 
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
 
-  if (isActivating) {
+  if (initializing) {
     return (
       <div className={className}>
         <ConnectWalletButton initializing={true} onClick={onClick} />
@@ -44,7 +44,7 @@ function WalletSelectorBase({
     );
   }
 
-  if (!address) {
+  if (!walletAddress) {
     return (
       <ClickAwayListener onClickAway={onClose}>
         <div className={className}>
@@ -63,7 +63,7 @@ function WalletSelectorBase({
     <ClickAwayListener onClickAway={onClose}>
       <div className={className}>
         <ConnectWalletButton
-          walletAddress={address}
+          walletAddress={walletAddress}
           totalUST={tokenBalances.uUST}
           onClick={onClick}
         />

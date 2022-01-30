@@ -4,6 +4,7 @@ import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 import { useBAssetInfoByTokenAddrQuery } from '../../queries/basset/bAssetInfoByTokenAddr';
@@ -17,6 +18,8 @@ export interface BorrowProvideCollateralTxParams {
 }
 
 export function useBorrowProvideCollateralTx(bAssetTokenAddr: CW20Addr) {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const { queryClient, txErrorReporter, contractAddress, constants } =
@@ -34,12 +37,18 @@ export function useBorrowProvideCollateralTx(bAssetTokenAddr: CW20Addr) {
 
   const stream = useCallback(
     ({ depositAmount, onTxSucceed }: BorrowProvideCollateralTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost || !bAsset) {
+      if (
+        !connectedWallet ||
+        !connected ||
+        !availablePost ||
+        !bAsset ||
+        !terraWalletAddress
+      ) {
         throw new Error('Can not post!');
       }
 
       return borrowProvideCollateralTx({
-        walletAddr: connectedWallet.walletAddress,
+        walletAddr: terraWalletAddress,
         depositAmount,
         bAssetTokenAddr,
         overseerAddr: contractAddress.moneyMarket.overseer,
@@ -67,8 +76,10 @@ export function useBorrowProvideCollateralTx(bAssetTokenAddr: CW20Addr) {
     [
       bAsset,
       bAssetTokenAddr,
+      availablePost,
       borrowBorrowerQuery,
       borrowMarketQuery,
+      connected,
       connectedWallet,
       constants.gasAdjustment,
       constants.gasWanted,
@@ -76,6 +87,7 @@ export function useBorrowProvideCollateralTx(bAssetTokenAddr: CW20Addr) {
       fixedFee,
       queryClient,
       refetchQueries,
+      terraWalletAddress,
       txErrorReporter,
     ],
   );

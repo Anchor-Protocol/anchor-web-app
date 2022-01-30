@@ -29,7 +29,6 @@ import { useAlert } from '@libs/neumorphism-ui/components/useAlert';
 import { Luna, Rate } from '@libs/types';
 import { StreamStatus } from '@rx-stream/react';
 import { Msg, MsgExecuteContract } from '@terra-money/terra.js';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
@@ -37,6 +36,7 @@ import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { fixHMR } from 'fix-hmr';
+import { useAccount } from 'contexts/account';
 import debounce from 'lodash.debounce';
 import React, {
   ChangeEvent,
@@ -58,13 +58,13 @@ function Component({ className }: BLunaMintProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const connectedWallet = useConnectedWallet();
+  const { availablePost, connected, terraWalletAddress } = useAccount();
 
   const { contractAddress, gasPrice, constants } = useAnchorWebapp();
 
   const fixedFee = useFixedFee();
 
-  const estimateFee = useEstimateFee(connectedWallet?.walletAddress);
+  const estimateFee = useEstimateFee(terraWalletAddress);
 
   const [mint, mintResult] = useBondMintTx();
 
@@ -98,13 +98,13 @@ function Component({ className }: BLunaMintProps) {
   );
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
-    [bank, fixedFee, connectedWallet],
+    () => connected && validateTxFee(bank.tokenBalances.uUST, fixedFee),
+    [bank, fixedFee, connected],
   );
 
   const invalidBondAmount = useMemo(
-    () => !!connectedWallet && validateBondAmount(bondAmount, bank),
-    [bank, bondAmount, connectedWallet],
+    () => connected && validateBondAmount(bondAmount, bank),
+    [bank, bondAmount, connected],
   );
 
   // ---------------------------------------------
@@ -133,7 +133,7 @@ function Component({ className }: BLunaMintProps) {
   }, [estimateFee, gasPrice.uusd]);
 
   useEffect(() => {
-    if (!connectedWallet || bondAmount.length === 0) {
+    if (!connected || !terraWalletAddress || bondAmount.length === 0) {
       setEstimatedGasWanted(null);
       setEstimatedFee(null);
       estimate(null);
@@ -151,7 +151,7 @@ function Component({ className }: BLunaMintProps) {
 
     estimate([
       new MsgExecuteContract(
-        connectedWallet.terraAddress,
+        terraWalletAddress,
         contractAddress.bluna.hub,
         {
           bond: {},
@@ -164,13 +164,14 @@ function Component({ className }: BLunaMintProps) {
   }, [
     bank.tokenBalances.uLuna,
     bondAmount,
-    connectedWallet,
+    connected,
     constants.bondGasWanted,
     contractAddress.bluna.hub,
     estimate,
     estimateFee,
     fixedFee,
     gasPrice.uusd,
+    terraWalletAddress,
   ]);
 
   // ---------------------------------------------
@@ -219,13 +220,13 @@ function Component({ className }: BLunaMintProps) {
 
   const proceed = useCallback(
     async (bondAmount: Luna) => {
-      if (!connectedWallet || !mint) {
+      if (!connected || !terraWalletAddress || !mint) {
         return;
       }
 
       const estimated = await estimateFee([
         new MsgExecuteContract(
-          connectedWallet.terraAddress,
+          terraWalletAddress,
           contractAddress.bluna.hub,
           {
             bond: {},
@@ -262,7 +263,7 @@ function Component({ className }: BLunaMintProps) {
       }
     },
     [
-      connectedWallet,
+      connected,
       contractAddress.bluna.hub,
       estimateFee,
       exchangeRate,
@@ -270,6 +271,7 @@ function Component({ className }: BLunaMintProps) {
       init,
       mint,
       openAlert,
+      terraWalletAddress,
     ],
   );
 
@@ -336,7 +338,7 @@ function Component({ className }: BLunaMintProps) {
         error={!!invalidBondAmount}
         leftHelperText={invalidBondAmount}
         rightHelperText={
-          !!connectedWallet && (
+          connected && (
             <span>
               Balance:{' '}
               <span
@@ -423,8 +425,8 @@ function Component({ className }: BLunaMintProps) {
         <ActionButton
           className="submit"
           disabled={
-            !connectedWallet ||
-            !connectedWallet.availablePost ||
+            !availablePost ||
+            !connected ||
             !mint ||
             bondAmount.length === 0 ||
             big(bondAmount).lte(0) ||

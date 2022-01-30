@@ -4,6 +4,7 @@ import { useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 
@@ -16,6 +17,8 @@ export interface BondBurnTxParams {
 }
 
 export function useBondBurnTx() {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const { queryClient, txErrorReporter, contractAddress, constants } =
@@ -31,14 +34,19 @@ export function useBondBurnTx() {
       exchangeRate,
       onTxSucceed,
     }: BondBurnTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost) {
+      if (
+        !connected ||
+        !availablePost ||
+        !terraWalletAddress ||
+        !connectedWallet
+      ) {
         throw new Error('Can not post!');
       }
 
       return bondBurnTx({
         // fabricatebAssetUnbond
         burnAmount,
-        walletAddr: connectedWallet.walletAddress,
+        walletAddr: terraWalletAddress,
         bAssetTokenAddr: contractAddress.cw20.bLuna,
         bAssetHubAddr: contractAddress.bluna.hub,
         // post
@@ -60,9 +68,12 @@ export function useBondBurnTx() {
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
       contractAddress.cw20.bLuna,
       contractAddress.bluna.hub,
+      terraWalletAddress,
       constants.gasAdjustment,
       queryClient,
       txErrorReporter,

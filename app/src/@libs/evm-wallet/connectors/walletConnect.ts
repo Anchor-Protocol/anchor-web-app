@@ -5,11 +5,11 @@ import { ConnectorData } from './types';
 const [connector, hooks] = initializeConnector<WalletConnect>(
   (actions) =>
     new WalletConnect(actions, {
-      infuraId: process.env.INFURA_KEY,
+      infuraId: process.env.INFURA_KEY, // TODO
     }),
 );
 
-function useData(): ConnectorData {
+function useConnectorData(): ConnectorData {
   return {
     address: hooks.useAccount(),
     chainId: hooks.useChainId(),
@@ -20,4 +20,4 @@ function useData(): ConnectorData {
   };
 }
 
-export { connector, useData };
+export { connector, useConnectorData };

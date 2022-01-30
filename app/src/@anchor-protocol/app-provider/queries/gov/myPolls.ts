@@ -1,7 +1,7 @@
 import { govMyPollsQuery, MyPoll } from '@anchor-protocol/app-fns';
 import { createQueryFn } from '@libs/react-query-utils';
-import { useAccount } from 'contexts/account';
 import { useQuery, UseQueryResult } from 'react-query';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 

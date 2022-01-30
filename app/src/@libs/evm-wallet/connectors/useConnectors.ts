@@ -1,11 +1,11 @@
 import { ConnectType } from '../types';
 import {
   connector as metaMaskConnector,
-  useData as useMetaMaskData,
+  useConnectorData as useMetaMaskConnectorData,
 } from './metaMask';
 import {
   connector as walletConnectConnector,
-  useData as useWalletConnectData,
+  useConnectorData as useWalletConnectConnectorData,
 } from './walletConnect';
 import { Connector } from './types';
 
@@ -18,11 +18,11 @@ export function useConnectors(): UseConnectorsReturnType {
   return {
     METAMASK: {
       connector: metaMaskConnector,
-      data: useMetaMaskData(),
+      data: useMetaMaskConnectorData(),
     },
     WALLETCONNECT: {
       connector: walletConnectConnector,
-      data: useWalletConnectData(),
+      data: useWalletConnectConnectorData(),
     },
   };
 }

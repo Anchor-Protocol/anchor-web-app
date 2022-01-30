@@ -10,6 +10,7 @@ import { CW20Addr, HumanAddr, u } from '@libs/types';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
 import { useEffect, useState } from 'react';
+import { useAccount } from 'contexts/account';
 
 const address = {
   'columbus-5': {
@@ -29,6 +30,8 @@ const address = {
 } as const;
 
 export function useCheckTerraswapLpBalance() {
+  const { connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const { queryClient } = useAnchorWebapp();
@@ -40,7 +43,7 @@ export function useCheckTerraswapLpBalance() {
   } | null>(null);
 
   useEffect(() => {
-    if (!connectedWallet) {
+    if (!connected || !connectedWallet) {
       return;
     }
 
@@ -54,7 +57,7 @@ export function useCheckTerraswapLpBalance() {
     //console.log('checkTerraswapLpBalance.ts..()', connectedWallet.network.chainID === 'columbus-5', connectedWallet.network.chainID, terraswapAncUstLPToken, staking);
 
     rewardsAncUstLpRewardsQuery(
-      connectedWallet.walletAddress,
+      terraWalletAddress,
       staking,
       terraswapAncUstLPToken,
       queryClient,
@@ -75,12 +78,14 @@ export function useCheckTerraswapLpBalance() {
         });
       }
     });
-  }, [connectedWallet, queryClient]);
+  }, [connected, connectedWallet, queryClient, terraWalletAddress]);
 
   return balances;
 }
 
 export function useCheckTerraswapLpRewards() {
+  const { connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const { queryClient } = useAnchorWebapp();
@@ -90,7 +95,7 @@ export function useCheckTerraswapLpRewards() {
   } | null>(null);
 
   useEffect(() => {
-    if (!connectedWallet) {
+    if (!connected || !connectedWallet) {
       return;
     }
 
@@ -102,7 +107,7 @@ export function useCheckTerraswapLpRewards() {
       ];
 
     rewardsAncUstLpRewardsQuery(
-      connectedWallet.walletAddress,
+      terraWalletAddress,
       staking,
       terraswapAncUstLPToken,
       queryClient,
@@ -117,7 +122,7 @@ export function useCheckTerraswapLpRewards() {
         });
       }
     });
-  }, [connectedWallet, queryClient]);
+  }, [connected, connectedWallet, queryClient, terraWalletAddress]);
 
   return balances;
 }
