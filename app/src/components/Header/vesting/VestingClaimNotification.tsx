@@ -1,7 +1,7 @@
 import { IconButton } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
 import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import styled from 'styled-components';
 import { UIElementProps } from 'components/layouts/UIElementProps';
@@ -11,7 +11,9 @@ import { useLocalStorage } from '@libs/use-local-storage';
 import { Dec } from '@terra-money/terra.js';
 import { DropdownContainer, DropdownBox } from '../desktop/DropdownContainer';
 
-export function useVestingClaimNotification() {
+type VestingClaimNotificationReturn = [JSX.Element | undefined, () => void];
+
+export function useVestingClaimNotification(): VestingClaimNotificationReturn {
   const { data: { vestingAccount } = {} } = useAncVestingAccountQuery();
 
   const matchAncVestingClaim = useRouteMatch('/anc/vesting/claim');
@@ -26,6 +28,10 @@ export function useVestingClaimNotification() {
     },
   );
 
+  const ignoreNotificationFor24Hours = useCallback(() => {
+    setIgnore(new Date(new Date().getTime() + 86400000).toISOString());
+  }, [setIgnore]);
+
   const showNotification =
     open &&
     !matchAncVestingClaim &&
@@ -34,22 +40,21 @@ export function useVestingClaimNotification() {
     new Date(ignore) < new Date();
 
   return [
-    showNotification && (
+    showNotification ? (
       <DropdownContainer>
         <DropdownBox>
           <VestingClaimNotification
             onClose={(ignored) => {
               setOpen(false);
               if (ignored) {
-                setIgnore(
-                  new Date(new Date().getTime() + 86400000).toISOString(),
-                );
+                ignoreNotificationFor24Hours();
               }
             }}
           />
         </DropdownBox>
       </DropdownContainer>
-    ),
+    ) : undefined,
+    ignoreNotificationFor24Hours,
   ];
 }
 
@@ -75,17 +80,6 @@ function VestingClaimNotificationBase(props: VestingClaimNotificationProps) {
           This account has been affected by the oracle feeder issue on Dec. 9th
           and is eligible for reimbursement.
         </p>
-        {/* <div className="ignore">
-          <div className="checkbox">
-            <input
-              type="checkbox"
-              checked={ignore}
-              onChange={() => setIgnore((value) => !value)}
-            />
-            <span className="checkmark" />
-          </div>
-          <span className="label">Don't show for 24 hours</span>
-        </div> */}
         <Checkbox
           checked={ignore}
           onChange={() => setIgnore((value) => !value)}

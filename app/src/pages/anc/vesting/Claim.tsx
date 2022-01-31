@@ -23,6 +23,7 @@ import { useAncVestingAccountQuery } from '@anchor-protocol/app-provider/queries
 import { ANC, u } from '@anchor-protocol/types';
 import { useConnectedWallet } from '@terra-money/use-wallet';
 import { Dec } from '@terra-money/terra.js';
+import { useVestingClaimNotification } from 'components/Header/vesting/VestingClaimNotification';
 
 interface ClaimableListProps {
   totalVestedAmount: u<ANC>;
@@ -66,6 +67,8 @@ function ClaimBase(props: UIElementProps) {
   const { data: { vestingAccount } = {} } = useAncVestingAccountQuery();
 
   const [vestingClaim, vestingClaimResult] = useAncVestingClaimTx();
+
+  const [, ignoreVestingClaim] = useVestingClaimNotification();
 
   if (
     vestingClaimResult?.status === StreamStatus.IN_PROGRESS ||
@@ -132,7 +135,10 @@ function ClaimBase(props: UIElementProps) {
               !hasAccruedAnc
             }
             onClick={() => {
-              vestingClaim && vestingClaim({});
+              vestingClaim &&
+                vestingClaim({
+                  onTxSucceed: ignoreVestingClaim,
+                });
             }}
           >
             Claim ANC
