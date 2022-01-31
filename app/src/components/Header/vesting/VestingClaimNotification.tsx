@@ -20,7 +20,7 @@ export function useVestingClaimNotification(): VestingClaimNotificationReturn {
 
   const [open, setOpen] = useState(true);
 
-  const [ignore, setIgnore] = useLocalStorage(
+  const [ignoreUntil, setIgnoreUntil] = useLocalStorage(
     '__anchor_ignore_vesting_claim',
     () => {
       const yesterday = new Date(new Date().getTime() - 86400000);
@@ -28,9 +28,16 @@ export function useVestingClaimNotification(): VestingClaimNotificationReturn {
     },
   );
 
-  const ignoreNotificationFor24Hours = useCallback(() => {
-    setIgnore(new Date(new Date().getTime() + 86400000).toISOString());
-  }, [setIgnore]);
+  const setIgnore = useCallback(() => {
+    const timestamp = new Date(new Date().getTime() + 86400000).toISOString();
+    setIgnoreUntil(timestamp);
+
+    // this is not the best idea but saves having to split out the vesting
+    // claim into a provider/context pattern and its short term anyway
+    (window as any).__anchor_ignore_vesting_claim = timestamp;
+  }, [setIgnoreUntil]);
+
+  const ignore = (window as any).__anchor_ignore_vesting_claim ?? ignoreUntil;
 
   const showNotification =
     open &&
@@ -47,14 +54,14 @@ export function useVestingClaimNotification(): VestingClaimNotificationReturn {
             onClose={(ignored) => {
               setOpen(false);
               if (ignored) {
-                ignoreNotificationFor24Hours();
+                ignore();
               }
             }}
           />
         </DropdownBox>
       </DropdownContainer>
     ) : undefined,
-    ignoreNotificationFor24Hours,
+    setIgnore,
   ];
 }
 
