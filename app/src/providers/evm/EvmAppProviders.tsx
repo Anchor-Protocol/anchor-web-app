@@ -8,14 +8,14 @@ import { EvmTokenBalancesProvider } from './EvmTokenBalancesProvider';
 
 export function EvmAppProviders({ children }: UIElementProps) {
   return (
-    <AppProviders>
-      <EvmWalletProvider>
-        <EvmAccountProvider>
+    <EvmWalletProvider>
+      <EvmAccountProvider>
+        <AppProviders>
           <EvmAnchorApiProvider>
             <EvmTokenBalancesProvider>{children}</EvmTokenBalancesProvider>
           </EvmAnchorApiProvider>
-        </EvmAccountProvider>
-      </EvmWalletProvider>
-    </AppProviders>
+        </AppProviders>
+      </EvmAccountProvider>
+    </EvmWalletProvider>
   );
 }

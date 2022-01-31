@@ -1,12 +1,11 @@
 import React, { useMemo } from 'react';
 import { UIElementProps } from '@libs/ui';
-import { AccountContext, Account, useAccount } from 'contexts/account';
+import { AccountContext, Account } from 'contexts/account';
 import { HumanAddr } from '@libs/types';
 import { useEvmWallet } from '@libs/evm-wallet';
 
 const EvmAccountProvider = ({ children }: UIElementProps) => {
-  const { status } = useAccount();
-  const { address } = useEvmWallet();
+  const { address, status } = useEvmWallet();
 
   const account = useMemo<Account>(() => {
     return {
