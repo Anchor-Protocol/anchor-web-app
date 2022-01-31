@@ -218,6 +218,9 @@ export const ANCHOR_CONTRACT_ADDRESS = (
       AncUstLP: addressMap.ancUstLPToken as CW20Addr,
       bLunaLunaLP: addressMap.bLunaLunaLPToken as CW20Addr,
     },
+    crossAnchor: {
+      core: '' as HumanAddr,
+    },
   };
 };
 
