@@ -3,6 +3,7 @@ import { AstroportGuideBanner } from 'components/AstroportGuideBanner';
 import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
 import { Airdrop } from 'pages/airdrop';
+import { Claim as AncVestingClaim } from 'pages/anc/vesting';
 import { BlunaConvert } from 'pages/basset/bluna.convert';
 import { BlunaWithdraw } from 'pages/basset/bluna.withdraw';
 import { BAssetClaim } from 'pages/basset/claim';
@@ -72,6 +73,12 @@ export function TerraApp() {
 
             {/* Airdrop */}
             <Route path="/airdrop" component={Airdrop} />
+
+            <Route
+              exact={true}
+              path={`/anc/vesting/claim`}
+              component={AncVestingClaim}
+            />
 
             {/* Governance */}
             <Route exact path={`/gov/`} component={GovernanceMain} />

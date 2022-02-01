@@ -39,7 +39,7 @@ const createTx = () => (_: void | TxResultRendering<CrossAnchorTx>) => {
 const deposit = (
   params: AnchorDepositParams,
 ): Observable<TxResultRendering<CrossAnchorTx>> => {
-  const observable = pipe(createTx(), pollTx(3));
+  const observable = pipe(createTx(), pollTx());
   return observable().pipe(catchTxError({}));
 };
 

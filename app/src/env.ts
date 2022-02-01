@@ -103,6 +103,7 @@ const COLUMNBUS_CONTRACT_ADDRESS = {
   team_vesting: 'terra10evq9zxk2m86n3n3xnpw28jpqwp628c6dzuq42',
   terraswapFactory: 'terra1ulgw0td86nvs4wtpsc80thv6xelk76ut7a7apj',
   astroportGenerator: 'terra1zgrx9jjqrfye8swykfgmd6hpde60j0nszzupp9',
+  vesting: 'terra13v4ln23tmfs2zk4nh5dw5mzufckekp4fpafpcy',
 };
 
 const BOMBAY_CONTRACT_ADDRESS = {
@@ -138,6 +139,7 @@ const BOMBAY_CONTRACT_ADDRESS = {
   team_vesting: 'not available in testnet',
   terraswapFactory: 'terra18qpjm4zkvqnpjpw0zn0tdr8gdzvt8au35v45xf',
   astroportGenerator: 'terra1gjm7d9nmewn27qzrvqyhda8zsfl40aya7tvaw5',
+  vesting: 'terra15rq8j7auyyd6ydcfkktm3kdagcg56228uclkzy',
 };
 
 export const ANCHOR_CONTRACT_ADDRESS = (
@@ -201,6 +203,7 @@ export const ANCHOR_CONTRACT_ADDRESS = (
       investorLock: addressMap.investor_vesting as HumanAddr,
       teamLock: addressMap.team_vesting as HumanAddr,
       collector: addressMap.collector as HumanAddr,
+      vesting: addressMap.vesting as HumanAddr,
     },
     terraswap: {
       factory: addressMap.terraswapFactory as HumanAddr,

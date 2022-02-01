@@ -15,6 +15,7 @@ import { useMediaQuery } from 'react-responsive';
 import { Link, useRouteMatch } from 'react-router-dom';
 import styled from 'styled-components';
 import { AirdropContent } from '../airdrop/AirdropContent';
+import { useVestingClaimNotification } from '../vesting/VestingClaimNotification';
 import { WalletDetailContent } from '../wallet/WalletDetailContent';
 import { ConnectedButton } from './ConnectedButton';
 import { DropdownBox, DropdownContainer } from './DropdownContainer';
@@ -66,6 +67,8 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   //);
 
   const matchAirdrop = useRouteMatch('/airdrop');
+
+  const [vestingClaimNotificationElement] = useVestingClaimNotification();
 
   const [openSendDialog, sendDialogElement] = useSendDialog();
 
@@ -227,7 +230,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
               <IconOnlyWalletButton onClick={toggleOpen} connected />
             ) : (
               <ConnectedButton
-                walletAddress={terraWalletAddress}
+                walletAddress={terraWalletAddress!}
                 totalUST={bank.tokenBalances.uUST}
                 onClick={toggleOpen}
               />
@@ -245,6 +248,8 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                 </DropdownContainer>
               )}
 
+            {vestingClaimNotificationElement}
+
             {openDropdown && (
               <DropdownContainer>
                 <DropdownBox>
@@ -252,7 +257,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                     connection={connection ?? availableConnections[0]}
                     bank={bank}
                     availablePost={supportFeatures.has('post')}
-                    walletAddress={terraWalletAddress}
+                    walletAddress={terraWalletAddress!}
                     network={network}
                     closePopup={() => setOpenDropdown(false)}
                     disconnectWallet={disconnectWallet}

@@ -33,7 +33,7 @@ interface WalletDetailContentProps {
   availablePost: boolean;
   connection: Connection;
   openBuyUst: () => void;
-  bAssetBalanceTotal: BAssetInfoAndBalancesTotal | undefined;
+  bAssetBalanceTotal?: BAssetInfoAndBalancesTotal;
 }
 
 export function WalletDetailContentBase({

@@ -13,6 +13,7 @@ export interface MobileHeaderProps {
   isActive: boolean;
   toggleWallet: () => void;
   airdropElement?: ReactNode;
+  vestingClaimNotificationElement?: ReactNode;
   viewAddressButtonElement?: ReactNode;
   className?: string;
 }
@@ -23,6 +24,7 @@ function MobileHeaderBase({
   isActive,
   toggleWallet,
   airdropElement,
+  vestingClaimNotificationElement,
   className,
   viewAddressButtonElement,
 }: MobileHeaderProps) {
@@ -76,6 +78,7 @@ function MobileHeaderBase({
         {airdropElement && (
           <section className="airdrop">{airdropElement}</section>
         )}
+        {vestingClaimNotificationElement}
       </header>
 
       {open && <div style={{ height: mobileHeaderHeight }} />}
