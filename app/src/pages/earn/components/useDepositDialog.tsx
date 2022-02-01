@@ -1,3 +1,4 @@
+import { CircleSpinner } from 'react-spinners-kit';
 import {
   formatUST,
   formatUSTInput,
@@ -53,6 +54,10 @@ function ComponentBase({
 
   const [openConfirm, confirmElement] = useConfirm();
 
+  const [approveDeposit, approveDepositResult] = useAnchorApiTx(
+    (api) => api.approveDeposit!, // TODO: think about API architecture
+  );
+
   const [deposit, depositResult] = useAnchorApiTx((api) => api.deposit);
 
   // ---------------------------------------------
@@ -73,6 +78,20 @@ function ComponentBase({
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
+  const approve = useCallback(
+    async (
+      depositAmount: UST,
+      // txFee: u<UST<BigSource>> | undefined, // TODO
+    ) => {
+      if (!account.connected) {
+        return;
+      }
+
+      approveDeposit?.(depositAmount);
+    },
+    [account.connected, approveDeposit],
+  );
+
   const proceed = useCallback(
     async (
       depositAmount: UST,
@@ -185,6 +204,28 @@ function ComponentBase({
         )}
 
         <ViewAddressWarning>
+          {approveDepositResult?.status === StreamStatus.IN_PROGRESS && (
+            <CircleSpinner />
+          )}
+          <ActionButton
+            className="proceed"
+            style={
+              invalidNextTxFee
+                ? {
+                    backgroundColor: '#c12535',
+                  }
+                : undefined
+            }
+            disabled={
+              !account.connected ||
+              !account.availablePost ||
+              approveDepositResult?.status === StreamStatus.IN_PROGRESS
+              // || !availablePost
+            }
+            onClick={() => approve(depositAmount)}
+          >
+            Approve UST
+          </ActionButton>
           <ActionButton
             className="proceed"
             style={

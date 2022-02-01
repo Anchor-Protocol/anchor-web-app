@@ -5,16 +5,19 @@ import { AppProviders } from 'configurations/app';
 import { EvmAccountProvider } from './EvmAccountProvider';
 import { EvmAnchorApiProvider } from './EvmAnchorApiProvider';
 import { EvmTokenBalancesProvider } from './EvmTokenBalancesProvider';
+import { EvmContractsProvider } from './EvmContractsProvider';
 
 export function EvmAppProviders({ children }: UIElementProps) {
   return (
     <EvmWalletProvider>
       <EvmAccountProvider>
-        <AppProviders>
-          <EvmAnchorApiProvider>
-            <EvmTokenBalancesProvider>{children}</EvmTokenBalancesProvider>
-          </EvmAnchorApiProvider>
-        </AppProviders>
+        <EvmContractsProvider>
+          <AppProviders>
+            <EvmAnchorApiProvider>
+              <EvmTokenBalancesProvider>{children}</EvmTokenBalancesProvider>
+            </EvmAnchorApiProvider>
+          </AppProviders>
+        </EvmContractsProvider>
       </EvmAccountProvider>
     </EvmWalletProvider>
   );
