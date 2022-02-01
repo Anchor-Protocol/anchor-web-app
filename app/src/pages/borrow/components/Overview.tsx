@@ -23,7 +23,8 @@ import { LoanButtons } from 'pages/borrow/components/LoanButtons';
 import React from 'react';
 import styled from 'styled-components';
 import { useBorrowOverviewData } from '../logics/useBorrowOverviewData';
-import { BorrowLimitGraph } from './BorrowLimitGraph';
+//import { BorrowLimitGraph } from './BorrowLimitGraph';
+import { BorrowUsageGraph } from './BorrowUsageGraph';
 
 export interface OverviewProps {
   className?: string;
@@ -38,7 +39,7 @@ function Component({ className }: OverviewProps) {
     bAssetLtvsAvg,
     netAPR,
     currentLtv,
-    dangerLtv,
+    //dangerLtv,
     borrowerDistributionAPYs,
   } = useBorrowOverviewData();
 
@@ -183,13 +184,14 @@ function Component({ className }: OverviewProps) {
 
       {currentLtv && bAssetLtvsAvg && borrowLimit && (
         <figure>
-          <BorrowLimitGraph
+          {/* <BorrowLimitGraph
             currentLtv={currentLtv}
             safeLtv={bAssetLtvsAvg.safe}
             maxLtv={bAssetLtvsAvg.max}
             dangerLtv={dangerLtv}
             borrowLimit={borrowLimit}
-          />
+          /> */}
+          <BorrowUsageGraph />
         </figure>
       )}
     </Section>
