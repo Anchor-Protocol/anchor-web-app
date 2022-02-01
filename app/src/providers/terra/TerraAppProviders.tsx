@@ -38,8 +38,8 @@ export function TerraAppProviders({
       connectorOpts={{ bridge: 'https://walletconnect.terra.dev/' }}
       createReadonlyWalletSession={createReadonlyWalletSession}
     >
-      <AppProviders dialogs={readonlyWalletSelectorElement}>
-        <TerraAccountProvider>
+      <TerraAccountProvider>
+        <AppProviders dialogs={readonlyWalletSelectorElement}>
           <TerraAnchorApiProvider>
             <TerraTokenBalancesProvider>
               {/** Re-Check Terra Station Wallet Status every Router's pathname changed */}
@@ -47,8 +47,8 @@ export function TerraAppProviders({
               {children}
             </TerraTokenBalancesProvider>
           </TerraAnchorApiProvider>
-        </TerraAccountProvider>
-      </AppProviders>
+        </AppProviders>
+      </TerraAccountProvider>
     </WalletProvider>
   );
 }
