@@ -296,4 +296,29 @@ export namespace anchorToken {
       global_reward_index: Num;
     }
   }
+
+  export namespace vesting {
+    export interface VestingAccount {
+      vesting_account: {
+        address: HumanAddr;
+      };
+    }
+
+    export interface VestingSchedule {
+      start_time: number;
+      end_time: number;
+      amount: u<ANC>;
+    }
+
+    export interface VestingInfo {
+      schedules: Array<VestingSchedule>;
+      last_claim_time: Num;
+    }
+
+    export interface VestingAccountResponse {
+      address: HumanAddr;
+      info: VestingInfo;
+      accrued_anc: u<ANC>;
+    }
+  }
 }

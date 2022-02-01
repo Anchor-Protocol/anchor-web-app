@@ -21,6 +21,7 @@ import { useMediaQuery } from 'react-responsive';
 import { Link, useRouteMatch } from 'react-router-dom';
 import styled from 'styled-components';
 import { AirdropContent } from '../airdrop/AirdropContent';
+import { useVestingClaimNotification } from '../vesting/VestingClaimNotification';
 import { WalletDetailContent } from '../wallet/WalletDetailContent';
 import { ConnectedButton } from './ConnectedButton';
 import { DropdownBox, DropdownContainer } from './DropdownContainer';
@@ -54,6 +55,7 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   const bank = useAnchorBank();
 
   const { data: airdrop, isLoading: airdropIsLoading } = useAirdropCheckQuery();
+
   //const airdrop = useMemo<Airdrop | 'in-progress' | null>(
   //  () => ({
   //    createdAt: '',
@@ -72,6 +74,8 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
   //);
 
   const matchAirdrop = useRouteMatch('/airdrop');
+
+  const [vestingClaimNotification] = useVestingClaimNotification();
 
   const [openSendDialog, sendDialogElement] = useSendDialog();
 
@@ -252,6 +256,8 @@ function WalletSelectorBase({ className }: WalletSelectorProps) {
                   </DropdownBox>
                 </DropdownContainer>
               )}
+
+            {vestingClaimNotification}
 
             {openDropdown && (
               <DropdownContainer>

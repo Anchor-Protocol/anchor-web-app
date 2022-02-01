@@ -37,6 +37,7 @@ import {
 import { RewardsAncGovernance } from 'pages/trade/rewards.anc-governance';
 import { RewardsAncUstLp } from 'pages/trade/rewards.anc-ust-lp';
 import { Trade } from 'pages/trade/trade';
+import { Claim as AncVestingClaim } from 'pages/anc/vesting';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import './configurations/chartjs';
@@ -79,6 +80,12 @@ export function App() {
 
                 {/* Airdrop */}
                 <Route path="/airdrop" component={Airdrop} />
+
+                <Route
+                  exact={true}
+                  path={`/anc/vesting/claim`}
+                  component={AncVestingClaim}
+                />
 
                 {/* Governance */}
                 <Route exact path={`/gov/`} component={GovernanceMain} />
