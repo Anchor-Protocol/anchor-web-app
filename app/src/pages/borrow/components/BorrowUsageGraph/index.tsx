@@ -2,13 +2,11 @@ import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
 import { Rate, u, UST } from '@anchor-protocol/types';
 import { demicrofy, formatRate } from '@libs/formatter';
 import { HorizontalGraphBar } from '@libs/neumorphism-ui/components/HorizontalGraphBar';
-import { HorizontalGraphSliderThumb } from '@libs/neumorphism-ui/components/HorizontalGraphSlider';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import big, { BigSource } from 'big.js';
 import React from 'react';
-import { Rect } from './HorizontalGraphBar';
-import styled, { useTheme } from 'styled-components';
+import { useTheme } from 'styled-components';
 import { FootnoteLabel } from './FootnoteLabel';
 import {
   colorFunction,
@@ -81,72 +79,52 @@ export function BorrowUsageGraph(props: BorrowUsageGraphProps) {
       valueFunction={valueFunction}
       labelRenderer={labelRenderer}
     >
-      {({ coordinateSpace, min, max }) => {
-        const value = borrowRatio.mul(100).toNumber();
-        const position = Math.max(
-          Math.min(
-            ((value - min) / (max - min)) * coordinateSpace.width,
-            coordinateSpace.width,
-          ),
-          0,
-        );
-        return (
-          <>
-            <ThumbContainer
-              coordinateSpace={coordinateSpace}
-              position={position}
-            />
-            <FootnoteLabel style={{ right: 0 }}>
-              <IconSpan>
-                Borrow Limit: $
-                {formatUSTWithPostfixUnits(demicrofy(borrowLimit))}{' '}
-                <InfoTooltip>
-                  The maximum amount of liability permitted from deposited
-                  collaterals
-                </InfoTooltip>
-              </IconSpan>
-            </FootnoteLabel>
-          </>
-        );
-      }}
+      <FootnoteLabel style={{ right: 0 }}>
+        <IconSpan>
+          Borrow Limit: ${formatUSTWithPostfixUnits(demicrofy(borrowLimit))}{' '}
+          <InfoTooltip>
+            The maximum amount of liability permitted from deposited collaterals
+          </InfoTooltip>
+        </IconSpan>
+      </FootnoteLabel>
     </HorizontalGraphBar>
   );
 }
 
-const ThumbContainerBase = ({
-  className,
-  position,
-}: {
-  className?: string;
-  coordinateSpace: Rect;
-  position: number;
-}) => {
-  return (
-    <div className={className}>
-      <div style={{ left: position }}>
-        <HorizontalGraphSliderThumb />
-      </div>
-    </div>
-  );
-};
+// const ThumbContainerBase = ({
+//   className,
+//   position,
+// }: {
+//   className?: string;
+//   coordinateSpace: Rect;
+//   position: number;
+// }) => {
+//   return (
+//     <div className={className}>
+//       <div style={{ left: position }}>
+//         <HorizontalGraphSliderThumb />
+//       </div>
+//     </div>
+//   );
+// };
 
-const ThumbContainer = styled(ThumbContainerBase)`
-  position: absolute;
+// const ThumbContainer = styled(ThumbContainerBase)`
+//   position: absolute;
 
-  left: ${({ coordinateSpace }) => coordinateSpace.x}px;
-  top: ${({ coordinateSpace }) => coordinateSpace.y}px;
-  width: ${({ coordinateSpace }) => coordinateSpace.width}px;
-  height: ${({ coordinateSpace }) => coordinateSpace.height}px;
+//   left: ${({ coordinateSpace }) => coordinateSpace.x}px;
+//   top: ${({ coordinateSpace }) => coordinateSpace.y}px;
+//   width: ${({ coordinateSpace }) => coordinateSpace.width}px;
+//   height: ${({ coordinateSpace }) => coordinateSpace.height}px;
 
-  > :first-child {
-    width: ${({ coordinateSpace }) => coordinateSpace.height}px;
-    height: ${({ coordinateSpace }) => coordinateSpace.height}px;
-    transform: translateX(
-      -${({ coordinateSpace }) => coordinateSpace.height / 2}px
-    );
+//   > :first-child {
+//     width: ${({ coordinateSpace }) => coordinateSpace.height}px;
+//     height: ${({ coordinateSpace }) => coordinateSpace.height}px;
+//     transform: translateX(
+//       -${({ coordinateSpace }) => coordinateSpace.height / 2}px
+//     );
 
-    position: absolute;
-    display: grid;
-    place-content: center;
-  }
-`;
+//     position: absolute;
+//     display: grid;
+//     place-content: center;
+//   }
+// `;
