@@ -280,7 +280,7 @@ export const Slider = () => {
         );
       }}
     >
-      {(coordinateSpace) => (
+      {({ coordinateSpace }) => (
         <>
           <HorizontalGraphSlider
             coordinateSpace={coordinateSpace}
@@ -328,7 +328,7 @@ export const SliderStep = () => {
         );
       }}
     >
-      {(coordinateSpace) => (
+      {({ coordinateSpace }) => (
         <>
           <HorizontalGraphSlider
             coordinateSpace={coordinateSpace}

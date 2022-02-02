@@ -89,7 +89,10 @@ function BorrowedValueBase({
             maxLtv={bAssetLtvsAvg.max}
             borrowLimit={borrowLimit}
           /> */}
-          <BorrowUsageGraph />
+          <BorrowUsageGraph
+            borrowedValue={borrowedValue}
+            borrowLimit={borrowLimit}
+          />
         </figure>
       )}
     </Section>
