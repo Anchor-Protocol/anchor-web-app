@@ -23,7 +23,6 @@ import { LoanButtons } from 'pages/borrow/components/LoanButtons';
 import React from 'react';
 import styled from 'styled-components';
 import { useBorrowOverviewData } from '../logics/useBorrowOverviewData';
-//import { BorrowLimitGraph } from './BorrowLimitGraph';
 import { BorrowUsageGraph } from './BorrowUsageGraph';
 
 export interface OverviewProps {
@@ -184,14 +183,18 @@ function Component({ className }: OverviewProps) {
 
       {currentLtv && bAssetLtvsAvg && borrowLimit && (
         <figure>
-          {/* <BorrowLimitGraph
-            currentLtv={currentLtv}
-            safeLtv={bAssetLtvsAvg.safe}
-            maxLtv={bAssetLtvsAvg.max}
-            dangerLtv={dangerLtv}
+          <h3>
+            <IconSpan>
+              BORROW USAGE{' '}
+              <InfoTooltip>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              </InfoTooltip>
+            </IconSpan>
+          </h3>
+          <BorrowUsageGraph
+            borrowedValue={borrowedValue}
             borrowLimit={borrowLimit}
-          /> */}
-          <BorrowUsageGraph />
+          />
         </figure>
       )}
     </Section>
@@ -283,6 +286,20 @@ const StyledComponent = styled(Component)`
     margin-bottom: 60px;
   }
 
+  article,
+  figure {
+    h3 {
+      font-size: 12px;
+      font-weight: 500;
+    }
+  }
+
+  figure {
+    h3 {
+      margin-bottom: 20px;
+    }
+  }
+
   article > div {
     background: ${({ theme }) =>
       theme.palette.type === 'light' ? '#fcfcfc' : '#262940'};
@@ -293,11 +310,6 @@ const StyledComponent = styled(Component)`
 
     display: grid;
     grid-template-rows: 30px 84px 1fr;
-
-    h3 {
-      font-size: 12px;
-      font-weight: 500;
-    }
 
     .value {
       font-size: 32px;

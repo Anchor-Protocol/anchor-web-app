@@ -19,9 +19,13 @@ export const GraphMarkerTick = styled.span<{
         ? `translateX(-100%)`
         : ''};
 
+    sup {
+      margin-left: 4px;
+    }
+
     &::before {
       content: '';
-      height: 35px;
+      height: 30px;
       border-left: dotted 1px currentColor;
       position: absolute;
       left: ${({ textAlign = 'center' }) =>

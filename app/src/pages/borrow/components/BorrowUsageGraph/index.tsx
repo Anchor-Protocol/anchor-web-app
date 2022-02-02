@@ -1,109 +1,152 @@
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
-import { u, UST } from '@anchor-protocol/types';
-import { demicrofy } from '@libs/formatter';
+import { Rate, u, UST } from '@anchor-protocol/types';
+import { demicrofy, formatRate } from '@libs/formatter';
 import { HorizontalGraphBar } from '@libs/neumorphism-ui/components/HorizontalGraphBar';
+import { HorizontalGraphSliderThumb } from '@libs/neumorphism-ui/components/HorizontalGraphSlider';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
-import big from 'big.js';
-import { UIElementProps } from 'components/layouts/UIElementProps';
-import { fixHMR } from 'fix-hmr';
+import big, { BigSource } from 'big.js';
 import React from 'react';
-// import { useMediaQuery } from 'react-responsive';
-import styled from 'styled-components';
-import { GraphLabel } from './GraphLabel';
+import { Rect } from './HorizontalGraphBar';
+import styled, { useTheme } from 'styled-components';
+import { FootnoteLabel } from './FootnoteLabel';
 import {
   colorFunction,
   labelRenderer,
   RenderData,
   valueFunction,
 } from './render';
+import {
+  ANCHOR_SAFE_RATIO,
+  ANCHOR_DANGER_RATIO,
+} from '@anchor-protocol/app-fns';
 
-function BorrowUsageGraphBase({ className }: UIElementProps) {
-  const borrowLimit = '1234567890' as u<UST>;
+export interface BorrowUsageGraphProps {
+  borrowedValue: u<UST<BigSource>>;
+  borrowLimit: u<UST<BigSource>>;
+}
+
+export function BorrowUsageGraph(props: BorrowUsageGraphProps) {
+  const theme = useTheme();
+
+  const { borrowedValue, borrowLimit } = props;
+
+  const borrowRatio = big(borrowedValue).div(borrowLimit);
 
   const data: RenderData[] = [
-    // {
-    //   position: 'top-marker',
-    //   label: `${formatRate(maxLtv)}% LTV${isSmallScreen ? '' : ' (MAX)'}`,
-    //   color: 'rgba(0, 0, 0, 0)',
-    //   textAlign: 'right',
-    //   value: maxLtv.toNumber(),
-    //   tooltip:
-    //     'Maximum allowed loan to value (LTV) ratio, collaterals will be liquidated when the LTV is bigger than this value.',
-    // },
-    // {
-    //   position: 'top-marker',
-    //   label: `${formatRate(safeLtv)}% LTV`,
-    //   color: 'rgba(0, 0, 0, 0)',
-    //   textAlign: 'right',
-    //   value: big(safeLtv).toNumber(),
-    //   tooltip: 'Recommended LTV',
-    // }
-
     {
-      position: 'top-marker',
-      label: `75%`,
+      variant: 'marker',
+      label: `${formatRate(ANCHOR_SAFE_RATIO)}%`,
       color: 'rgba(0, 0, 0, 0)',
       textAlign: 'center',
-      value: big(75).toNumber(),
-      tooltip: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+      value: big(ANCHOR_SAFE_RATIO).mul(100).toNumber(),
+      tooltip: 'Recommended LTV',
     },
     {
-      position: 'top-marker',
+      variant: 'marker',
       label: `100%`,
       color: 'rgba(0, 0, 0, 0)',
-      textAlign: 'right',
+      textAlign: 'center',
       value: big(100).toNumber(),
       tooltip: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     },
-    {
-      position: 'top',
-      label: '',
-      color: 'red',
-      value: 30,
-      tooltip: undefined,
-    },
+    big(borrowedValue).gt(0)
+      ? {
+          variant: 'label',
+          label: `${formatRate(borrowRatio as Rate<BigSource>)}%`,
+          color: borrowRatio.gte(ANCHOR_DANGER_RATIO)
+            ? theme.colors.negative
+            : borrowRatio.gte(ANCHOR_SAFE_RATIO)
+            ? theme.colors.warning
+            : theme.colors.positive,
+          value: borrowRatio.mul(100).toNumber(),
+          tooltip: undefined,
+        }
+      : {
+          variant: 'label',
+          label: '',
+          color: theme.colors.positive,
+          value: 0,
+          tooltip: undefined,
+        },
   ];
 
   return (
-    <div className={className}>
-      <h3>
-        <IconSpan>
-          BORROW USAGE{' '}
-          <InfoTooltip>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-          </InfoTooltip>
-        </IconSpan>
-      </h3>
-      <HorizontalGraphBar<RenderData>
-        min={0}
-        max={100}
-        animate
-        data={data}
-        colorFunction={colorFunction}
-        valueFunction={valueFunction}
-        labelRenderer={labelRenderer}
-      >
-        <GraphLabel style={{ right: 0 }}>
-          <IconSpan>
-            Borrow Limit: ${formatUSTWithPostfixUnits(demicrofy(borrowLimit))}{' '}
-            <InfoTooltip>
-              The maximum amount of liability permitted from deposited
-              collaterals
-            </InfoTooltip>
-          </IconSpan>
-        </GraphLabel>
-      </HorizontalGraphBar>
-    </div>
+    <HorizontalGraphBar<RenderData>
+      min={0}
+      max={100}
+      animate
+      data={data}
+      colorFunction={colorFunction}
+      valueFunction={valueFunction}
+      labelRenderer={labelRenderer}
+    >
+      {({ coordinateSpace, min, max }) => {
+        const value = borrowRatio.mul(100).toNumber();
+        const position = Math.max(
+          Math.min(
+            ((value - min) / (max - min)) * coordinateSpace.width,
+            coordinateSpace.width,
+          ),
+          0,
+        );
+        return (
+          <>
+            <ThumbContainer
+              coordinateSpace={coordinateSpace}
+              position={position}
+            />
+            <FootnoteLabel style={{ right: 0 }}>
+              <IconSpan>
+                Borrow Limit: $
+                {formatUSTWithPostfixUnits(demicrofy(borrowLimit))}{' '}
+                <InfoTooltip>
+                  The maximum amount of liability permitted from deposited
+                  collaterals
+                </InfoTooltip>
+              </IconSpan>
+            </FootnoteLabel>
+          </>
+        );
+      }}
+    </HorizontalGraphBar>
   );
 }
 
-const StyledComponent = styled(BorrowUsageGraphBase)`
-  h3 {
-    font-size: 12px;
-    font-weight: 500;
-    margin-bottom: 12px;
+const ThumbContainerBase = ({
+  className,
+  position,
+}: {
+  className?: string;
+  coordinateSpace: Rect;
+  position: number;
+}) => {
+  return (
+    <div className={className}>
+      <div style={{ left: position }}>
+        <HorizontalGraphSliderThumb />
+      </div>
+    </div>
+  );
+};
+
+const ThumbContainer = styled(ThumbContainerBase)`
+  position: absolute;
+
+  left: ${({ coordinateSpace }) => coordinateSpace.x}px;
+  top: ${({ coordinateSpace }) => coordinateSpace.y}px;
+  width: ${({ coordinateSpace }) => coordinateSpace.width}px;
+  height: ${({ coordinateSpace }) => coordinateSpace.height}px;
+
+  > :first-child {
+    width: ${({ coordinateSpace }) => coordinateSpace.height}px;
+    height: ${({ coordinateSpace }) => coordinateSpace.height}px;
+    transform: translateX(
+      -${({ coordinateSpace }) => coordinateSpace.height / 2}px
+    );
+
+    position: absolute;
+    display: grid;
+    place-content: center;
   }
 `;
-
-export const BorrowUsageGraph = fixHMR(StyledComponent);
