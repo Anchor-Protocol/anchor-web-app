@@ -300,6 +300,10 @@ const StyledComponent = styled(Component)`
     }
   }
 
+  article {
+    margin-bottom: 44px !important;
+  }
+
   article > div {
     background: ${({ theme }) =>
       theme.palette.type === 'light' ? '#fcfcfc' : '#262940'};

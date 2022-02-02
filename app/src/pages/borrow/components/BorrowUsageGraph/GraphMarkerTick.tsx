@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { rulerLightColor, rulerShadowColor } from '@libs/styled-neumorphism';
 
 export const GraphMarkerTick = styled.span<{
   textAlign?: 'left' | 'center' | 'right';
@@ -26,7 +27,18 @@ export const GraphMarkerTick = styled.span<{
     &::before {
       content: '';
       height: 30px;
-      border-left: dotted 1px currentColor;
+      border-left: 1px solid
+        ${({ theme }) =>
+          rulerShadowColor({
+            intensity: theme.intensity,
+            color: theme.sectionBackgroundColor,
+          })};
+      border-right: 1px solid
+        ${({ theme }) =>
+          rulerLightColor({
+            intensity: theme.intensity,
+            color: theme.sectionBackgroundColor,
+          })};
       position: absolute;
       left: ${({ textAlign = 'center' }) =>
         textAlign === 'center'

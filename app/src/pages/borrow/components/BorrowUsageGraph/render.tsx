@@ -1,13 +1,13 @@
+import React from 'react';
 import { InfoOutlined } from '@material-ui/icons';
 import { Rect } from '@libs/neumorphism-ui/components/HorizontalGraphBar';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
-import React from 'react';
 import { GraphMarkerTick } from './GraphMarkerTick';
 import { GraphLabel } from './GraphLabel';
 
 export interface RenderData {
-  variant: 'marker' | 'bottom' | 'label';
+  variant: 'marker' | 'label';
   label: string;
   value: number;
   color: string;
@@ -35,7 +35,7 @@ export const labelRenderer = (
     >
       <span>{label}</span>
     </GraphLabel>
-  ) : variant === 'marker' ? (
+  ) : (
     <GraphMarkerTick
       key={'label' + i}
       textAlign={textAlign}
@@ -59,9 +59,5 @@ export const labelRenderer = (
         )}
       </span>
     </GraphMarkerTick>
-  ) : (
-    <GraphLabel key={'label' + i} style={{ left: rect.x + rect.width }}>
-      {label}
-    </GraphLabel>
   );
 };
