@@ -42,12 +42,10 @@ export function useBAssetInfoListQuery(): UseQueryResult<
 
   const tokenDisplayInfoMap = tokenDisplayInfos.data ?? {};
 
-  const result = {
+  return {
     ...bAssetInfos,
     data: bAssetInfos.data.map((b) =>
       addTokenDisplay(b, tokenDisplayInfoMap[network.name]),
     ),
   } as UseQueryResult<BAssetInfoWithDisplay[] | undefined>;
-
-  return result;
 }

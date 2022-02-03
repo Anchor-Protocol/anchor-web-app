@@ -58,7 +58,7 @@ export function useBorrowMarketQuery(): UseQueryResult<
     ? tokenDisplayInfos.data[network.name]
     : {};
 
-  const result = {
+  return {
     ...borrowMarket,
     data: {
       ...borrowMarket.data,
@@ -71,6 +71,4 @@ export function useBorrowMarketQuery(): UseQueryResult<
       },
     },
   } as UseQueryResult<BorrowMarketWithDisplay | undefined>;
-
-  return result;
 }

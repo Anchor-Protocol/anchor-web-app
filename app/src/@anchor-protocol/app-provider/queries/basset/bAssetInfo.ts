@@ -37,10 +37,8 @@ export function useBAssetInfoQuery(
 
   const tokenDisplayInfoMap = tokenDisplayInfos.data ?? {};
 
-  const result = {
+  return {
     ...bAssetInfo,
     data: addTokenDisplay(bAssetInfo.data, tokenDisplayInfoMap[network.name]),
   } as UseQueryResult<BAssetInfoWithDisplay | undefined>;
-
-  return result;
 }
