@@ -1,7 +1,4 @@
-import {
-  computeLiquidationPrice,
-  prettifySymbol,
-} from '@anchor-protocol/app-fns';
+import { computeLiquidationPrice } from '@anchor-protocol/app-fns';
 import {
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
@@ -63,7 +60,7 @@ export function CollateralList({ className }: CollateralListProps) {
     }
 
     return borrowMarket.overseerWhitelist.elems.map(
-      ({ collateral_token, name, symbol }) => {
+      ({ collateral_token, name, symbol, tokenDisplay }) => {
         const oracle = borrowMarket.oraclePrices.prices.find(
           ({ asset }) => collateral_token === asset,
         );
@@ -79,7 +76,7 @@ export function CollateralList({ className }: CollateralListProps) {
           ),
           token: collateral_token,
           name,
-          symbol: prettifySymbol(symbol),
+          symbol: tokenDisplay.symbol,
           price: oracle?.price ?? ('0' as UST),
           liquidationPrice:
             borrowBorrower &&

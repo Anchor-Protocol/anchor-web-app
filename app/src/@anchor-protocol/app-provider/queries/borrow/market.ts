@@ -1,18 +1,39 @@
 import { BorrowMarket, borrowMarketQuery } from '@anchor-protocol/app-fns';
+import { CW20TokenDisplayInfo } from '@libs/app-fns';
+import {
+  EMPTY_QUERY_RESULT,
+  useCW20TokenDisplayInfosQuery,
+} from '@libs/app-provider';
 import { createQueryFn } from '@libs/react-query-utils';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
+import { useWallet } from '@terra-money/use-wallet';
+import { moneyMarket } from '@anchor-protocol/types';
 
 const queryFn = createQueryFn(borrowMarketQuery);
 
+type OverseerWhilelistElem = moneyMarket.overseer.WhitelistResponse['elems'][0];
+export type OverseerWhitelistWithDisplay = {
+  elems: Array<OverseerWhilelistElem & { tokenDisplay: CW20TokenDisplayInfo }>;
+};
+
+export type BorrowMarketWithDisplay = Omit<
+  BorrowMarket,
+  'overseerWhitelist'
+> & {
+  overseerWhitelist: OverseerWhitelistWithDisplay;
+};
+
 export function useBorrowMarketQuery(): UseQueryResult<
-  BorrowMarket | undefined
+  BorrowMarketWithDisplay | undefined
 > {
+  const { network } = useWallet();
+  const tokenDisplayInfos = useCW20TokenDisplayInfosQuery();
   const { contractAddress, hiveQueryClient, queryErrorReporter } =
     useAnchorWebapp();
 
-  return useQuery(
+  const borrowMarket = useQuery(
     [
       ANCHOR_QUERY_KEY.BORROW_MARKET,
       contractAddress.moneyMarket.market,
@@ -28,4 +49,28 @@ export function useBorrowMarketQuery(): UseQueryResult<
       onError: queryErrorReporter,
     },
   );
+
+  if (!borrowMarket.data) {
+    return EMPTY_QUERY_RESULT;
+  }
+
+  const tokenDisplayInfoMap = tokenDisplayInfos.data
+    ? tokenDisplayInfos.data[network.name]
+    : {};
+
+  const result = {
+    ...borrowMarket,
+    data: {
+      ...borrowMarket.data,
+      overseerWhitelist: {
+        ...borrowMarket.data.overseerWhitelist,
+        elems: borrowMarket.data.overseerWhitelist.elems.map((elem) => ({
+          ...elem,
+          tokenDisplay: tokenDisplayInfoMap[elem.collateral_token],
+        })),
+      },
+    },
+  } as UseQueryResult<BorrowMarketWithDisplay | undefined>;
+
+  return result;
 }

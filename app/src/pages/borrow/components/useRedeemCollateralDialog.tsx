@@ -1,10 +1,6 @@
+import { ANCHOR_SAFE_RATIO, BorrowBorrower } from '@anchor-protocol/app-fns';
 import {
-  BorrowBorrower,
-  BorrowMarket,
-  prettifySymbol,
-  ANCHOR_SAFE_RATIO,
-} from '@anchor-protocol/app-fns';
-import {
+  BorrowMarketWithDisplay,
   useBorrowRedeemCollateralForm,
   useBorrowRedeemCollateralTx,
 } from '@anchor-protocol/app-provider';
@@ -43,7 +39,7 @@ import { LTVGraph } from './LTVGraph';
 interface FormParams {
   className?: string;
   collateralToken: CW20Addr;
-  fallbackBorrowMarket: BorrowMarket;
+  fallbackBorrowMarket: BorrowMarketWithDisplay;
   fallbackBorrowBorrower: BorrowBorrower;
 }
 
@@ -160,7 +156,7 @@ function ComponentBase({
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                {prettifySymbol(states.collateral.symbol)}
+                {states.collateral.tokenDisplay.symbol}
               </InputAdornment>
             ),
           }}
@@ -185,7 +181,7 @@ function ComponentBase({
               {states.withdrawableAmount
                 ? formatBAsset(demicrofy(states.withdrawableAmount))
                 : 0}{' '}
-              {prettifySymbol(states.collateral.symbol)}
+              {states.collateral.tokenDisplay.symbol}
             </span>
           </span>
         </div>

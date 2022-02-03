@@ -19,6 +19,7 @@ import { computeRepayTxFee } from '../../logics/borrow/computeRepayTxFee';
 import { validateRepayAmount } from '../../logics/borrow/validateRepayAmount';
 import { validateTxFee } from '../../logics/common/validateTxFee';
 import { BAssetLtv, BAssetLtvs } from '../../queries/borrow/market';
+import { OverseerWhitelistWithDisplay } from '@anchor-protocol/app-provider';
 
 export interface BorrowRepayFormInput {
   repayAmount: UST;
@@ -32,7 +33,7 @@ export interface BorrowRepayFormDependency {
   oraclePrices: moneyMarket.oracle.PricesResponse;
   borrowRate: moneyMarket.interestModel.BorrowRateResponse;
   marketState: moneyMarket.market.StateResponse;
-  overseerWhitelist: moneyMarket.overseer.WhitelistResponse;
+  overseerWhitelist: OverseerWhitelistWithDisplay;
   bAssetLtvsAvg: BAssetLtv;
   bAssetLtvs: BAssetLtvs;
   blocksPerYear: number;

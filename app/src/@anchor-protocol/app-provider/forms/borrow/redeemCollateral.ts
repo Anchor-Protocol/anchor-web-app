@@ -1,11 +1,13 @@
 import {
   BorrowBorrower,
-  BorrowMarket,
   borrowRedeemCollateralForm,
 } from '@anchor-protocol/app-fns';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { useBorrowBorrowerQuery } from '@anchor-protocol/app-provider/queries/borrow/borrower';
-import { useBorrowMarketQuery } from '@anchor-protocol/app-provider/queries/borrow/market';
+import {
+  BorrowMarketWithDisplay,
+  useBorrowMarketQuery,
+} from '@anchor-protocol/app-provider/queries/borrow/market';
 import { bAsset } from '@anchor-protocol/types';
 import { useCW20Balance, useFixedFee } from '@libs/app-provider';
 import { CW20Addr } from '@libs/types';
@@ -14,7 +16,7 @@ import { useConnectedWallet } from '@terra-money/wallet-provider';
 
 export function useBorrowRedeemCollateralForm(
   collateralToken: CW20Addr,
-  fallbackBorrowMarket: BorrowMarket,
+  fallbackBorrowMarket: BorrowMarketWithDisplay,
   fallbackBorrowBorrower: BorrowBorrower,
 ) {
   const connectedWallet = useConnectedWallet();
