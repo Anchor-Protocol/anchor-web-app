@@ -3,8 +3,8 @@ import { InfoOutlined } from '@material-ui/icons';
 import { Rect } from '@libs/neumorphism-ui/components/HorizontalGraphBar';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
-import { GraphMarkerTick } from './GraphMarkerTick';
-import { GraphLabel } from './GraphLabel';
+import { Marker } from './Marker';
+import { Label } from './Label';
 
 export interface RenderData {
   variant: 'marker' | 'label';
@@ -25,7 +25,7 @@ export const labelRenderer = (
   i: number,
 ) => {
   return variant === 'label' ? (
-    <GraphLabel
+    <Label
       key={'label' + i}
       style={{
         transform: `translateX(${rect.x + rect.width}px)`,
@@ -34,11 +34,10 @@ export const labelRenderer = (
       }}
     >
       <span>{label}</span>
-    </GraphLabel>
+    </Label>
   ) : (
-    <GraphMarkerTick
+    <Marker
       key={'label' + i}
-      textAlign={textAlign}
       style={{
         transform: `translateX(${rect.x + rect.width}px)`,
         opacity: label.length === 0 ? 0 : 1,
@@ -48,16 +47,16 @@ export const labelRenderer = (
         {tooltip ? (
           <Tooltip title={tooltip} placement="top">
             <IconSpan style={{ cursor: 'help', letterSpacing: '-0.5px' }}>
-              {label}
               <sup>
                 <InfoOutlined />
               </sup>{' '}
+              <span className="text">{label}</span>
             </IconSpan>
           </Tooltip>
         ) : (
           label
         )}
       </span>
-    </GraphMarkerTick>
+    </Marker>
   );
 };

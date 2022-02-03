@@ -3,7 +3,6 @@ import {
   computeBorrowedAmount,
   computeBorrowLimit,
   computeCollateralsTotalUST,
-  computeCurrentLtv,
   computeNetAPR,
 } from '@anchor-protocol/app-fns';
 import {
@@ -45,14 +44,14 @@ export function useBorrowOverviewData() {
           ? computeCollateralsTotalUST(overseerCollaterals, oraclePrices)
           : (big(0) as u<UST<Big>>);
 
-      const currentLtv =
-        marketBorrowerInfo && overseerCollaterals && oraclePrices
-          ? computeCurrentLtv(
-              marketBorrowerInfo,
-              overseerCollaterals,
-              oraclePrices,
-            )
-          : undefined;
+      // const currentLtv =
+      //   marketBorrowerInfo && overseerCollaterals && oraclePrices
+      //     ? computeCurrentLtv(
+      //         marketBorrowerInfo,
+      //         overseerCollaterals,
+      //         oraclePrices,
+      //       )
+      //     : undefined;
 
       const borrowAPR = computeBorrowAPR(borrowRate, blocksPerYear);
 
@@ -62,6 +61,10 @@ export function useBorrowOverviewData() {
         overseerCollaterals && oraclePrices && bAssetLtvs
           ? computeBorrowLimit(overseerCollaterals, oraclePrices, bAssetLtvs)
           : undefined;
+
+      const currentLtv = (
+        borrowLimit && borrowLimit.gt(0) ? borrowedValue.div(borrowLimit) : 0
+      ) as Rate<big>;
 
       return {
         currentLtv,

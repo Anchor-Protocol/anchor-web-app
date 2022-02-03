@@ -191,10 +191,7 @@ function Component({ className }: OverviewProps) {
               </InfoTooltip>
             </IconSpan>
           </h3>
-          <BorrowUsageGraph
-            borrowedValue={borrowedValue}
-            borrowLimit={borrowLimit}
-          />
+          <BorrowUsageGraph currentLtv={currentLtv} borrowLimit={borrowLimit} />
         </figure>
       )}
     </Section>

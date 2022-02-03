@@ -4,10 +4,10 @@ import { demicrofy, formatRate } from '@libs/formatter';
 import { HorizontalGraphBar } from '@libs/neumorphism-ui/components/HorizontalGraphBar';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
-import big, { BigSource } from 'big.js';
+import big, { Big, BigSource } from 'big.js';
 import React from 'react';
 import { useTheme } from 'styled-components';
-import { FootnoteLabel } from './FootnoteLabel';
+import { Footnote } from './Footnote';
 import {
   colorFunction,
   labelRenderer,
@@ -20,16 +20,14 @@ import {
 } from '@anchor-protocol/app-fns';
 
 export interface BorrowUsageGraphProps {
-  borrowedValue: u<UST<BigSource>>;
-  borrowLimit: u<UST<BigSource>>;
+  currentLtv: Rate<Big>;
+  borrowLimit: u<UST<Big>>;
 }
 
 export function BorrowUsageGraph(props: BorrowUsageGraphProps) {
   const theme = useTheme();
 
-  const { borrowedValue, borrowLimit } = props;
-
-  const borrowRatio = big(borrowedValue).div(borrowLimit);
+  const { currentLtv, borrowLimit } = props;
 
   const data: RenderData[] = [
     {
@@ -37,7 +35,7 @@ export function BorrowUsageGraph(props: BorrowUsageGraphProps) {
       label: `${formatRate(ANCHOR_SAFE_RATIO)}%`,
       color: 'rgba(0, 0, 0, 0)',
       textAlign: 'center',
-      value: big(ANCHOR_SAFE_RATIO).mul(100).toNumber(),
+      value: ANCHOR_SAFE_RATIO,
       tooltip: 'Recommended LTV',
     },
     {
@@ -45,19 +43,19 @@ export function BorrowUsageGraph(props: BorrowUsageGraphProps) {
       label: `100%`,
       color: 'rgba(0, 0, 0, 0)',
       textAlign: 'center',
-      value: big(100).toNumber(),
+      value: 1,
       tooltip: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     },
-    big(borrowedValue).gt(0)
+    big(currentLtv).gt(0)
       ? {
           variant: 'label',
-          label: `${formatRate(borrowRatio as Rate<BigSource>)}%`,
-          color: borrowRatio.gte(ANCHOR_DANGER_RATIO)
+          label: `${formatRate(currentLtv as Rate<BigSource>)}%`,
+          color: currentLtv.gte(ANCHOR_DANGER_RATIO)
             ? theme.colors.negative
-            : borrowRatio.gte(ANCHOR_SAFE_RATIO)
+            : currentLtv.gte(ANCHOR_SAFE_RATIO)
             ? theme.colors.warning
             : theme.colors.positive,
-          value: borrowRatio.mul(100).toNumber(),
+          value: currentLtv.toNumber(),
           tooltip: undefined,
         }
       : {
@@ -72,21 +70,21 @@ export function BorrowUsageGraph(props: BorrowUsageGraphProps) {
   return (
     <HorizontalGraphBar<RenderData>
       min={0}
-      max={100}
+      max={1}
       animate
       data={data}
       colorFunction={colorFunction}
       valueFunction={valueFunction}
       labelRenderer={labelRenderer}
     >
-      <FootnoteLabel style={{ right: 0 }}>
+      <Footnote style={{ right: 0 }}>
         <IconSpan>
           Borrow Limit: ${formatUSTWithPostfixUnits(demicrofy(borrowLimit))}{' '}
           <InfoTooltip>
             The maximum amount of liability permitted from deposited collaterals
           </InfoTooltip>
         </IconSpan>
-      </FootnoteLabel>
+      </Footnote>
     </HorizontalGraphBar>
   );
 }

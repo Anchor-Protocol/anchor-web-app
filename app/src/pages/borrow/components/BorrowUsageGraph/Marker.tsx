@@ -1,9 +1,7 @@
 import styled from 'styled-components';
 import { rulerLightColor, rulerShadowColor } from '@libs/styled-neumorphism';
 
-export const GraphMarkerTick = styled.span<{
-  textAlign?: 'left' | 'center' | 'right';
-}>`
+export const Marker = styled.span`
   top: -50px;
 
   > span {
@@ -13,20 +11,20 @@ export const GraphMarkerTick = styled.span<{
     font-weight: 300;
     color: ${({ theme }) => theme.dimTextColor};
 
-    transform: ${({ textAlign = 'center' }) =>
-      textAlign === 'center'
-        ? `translateX(-50%)`
-        : textAlign === 'right'
-        ? `translateX(-100%)`
-        : ''};
+    transform: translateX(-100%);
 
     sup {
       margin-left: 4px;
     }
 
+    .text {
+      margin: 0 10px 0 0;
+      padding: 0;
+    }
+
     &::before {
       content: '';
-      height: 30px;
+      height: 50px;
       border-left: 1px solid
         ${({ theme }) =>
           rulerShadowColor({
@@ -40,12 +38,7 @@ export const GraphMarkerTick = styled.span<{
             color: theme.sectionBackgroundColor,
           })};
       position: absolute;
-      left: ${({ textAlign = 'center' }) =>
-        textAlign === 'center'
-          ? `calc(50% - 1px)`
-          : textAlign === 'right'
-          ? `calc(100% - 1px)`
-          : ''};
+      left: calc(100% - 1px);
       bottom: -35px;
       z-index: 1;
     }

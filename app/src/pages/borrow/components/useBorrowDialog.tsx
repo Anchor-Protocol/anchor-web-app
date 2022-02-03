@@ -1,4 +1,8 @@
-import { BorrowBorrower, BorrowMarket } from '@anchor-protocol/app-fns';
+import {
+  BorrowBorrower,
+  BorrowMarket,
+  ANCHOR_SAFE_RATIO,
+} from '@anchor-protocol/app-fns';
 import {
   useBorrowBorrowForm,
   useBorrowBorrowTx,
@@ -182,7 +186,7 @@ function ComponentBase({
         >
           <span>{states.invalidBorrowAmount ?? states.invalidOverMaxLtv}</span>
           <span>
-            {formatRate(states.bAssetLtvsAvg.safe)}% LTV:{' '}
+            {formatRate(ANCHOR_SAFE_RATIO as Rate<number>)}% LTV:{' '}
             <span
               style={{
                 textDecoration: 'underline',
@@ -200,13 +204,15 @@ function ComponentBase({
         <figure className="graph">
           <LTVGraph
             disabled={!connectedWallet || states.max.lte(0)}
-            maxLtv={states.bAssetLtvsAvg.max}
-            safeLtv={states.bAssetLtvsAvg.safe}
-            dangerLtv={states.userMaxLtv}
+            // maxLtv={states.bAssetLtvsAvg.max}
+            // safeLtv={states.bAssetLtvsAvg.safe}
+            // dangerLtv={states.userMaxLtv}
+            borrowLimit={states.borrowLimit}
             currentLtv={states.currentLtv}
             nextLtv={states.nextLtv}
-            userMinLtv={states.currentLtv}
-            userMaxLtv={states.userMaxLtv}
+            // userMinLtv={states.currentLtv}
+            // userMaxLtv={states.userMaxLtv}
+            // borrowedValue={states.borrowedValue}
             onStep={states.ltvStepFunction}
             onChange={onLtvChange}
           />
@@ -232,7 +238,7 @@ function ComponentBase({
           </EstimatedLiquidationPrice>
         )}
 
-        {states.txFee && states.receiveAmount && (
+        {states.txFee && states.receiveAmount && states.receiveAmount.gt(0) && (
           <TxFeeList className="receipt">
             <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
               {formatUST(demicrofy(states.txFee))} UST
@@ -307,11 +313,10 @@ const Component = styled(ComponentBase)`
     &[aria-invalid='true'] {
       color: ${({ theme }) => theme.colors.negative};
     }
-
-    margin-bottom: 45px;
   }
 
   .graph {
+    margin-top: 80px;
     margin-bottom: 40px;
   }
 

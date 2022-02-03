@@ -1,7 +1,8 @@
 import styled from 'styled-components';
 
-export const FootnoteLabel = styled.span`
-  font-size: 13px;
+export const Footnote = styled.span`
+  font-size: 12px;
   color: ${({ theme }) => theme.textColor};
   top: 24px;
+  user-select: none;
 `;

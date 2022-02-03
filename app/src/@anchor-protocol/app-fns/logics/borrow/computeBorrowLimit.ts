@@ -1,6 +1,6 @@
 import { moneyMarket, u, UST } from '@anchor-protocol/types';
 import { sum, vectorMultiply } from '@libs/big-math';
-import { Big, BigSource } from 'big.js';
+import { Big } from 'big.js';
 import { BAssetLtvs } from '../../queries/borrow/market';
 import { vectorizeBAssetMaxLtvs } from './vectorizeBAssetLtvs';
 import { vectorizeOraclePrices } from './vectorizeOraclePrices';
@@ -10,7 +10,7 @@ export function computeBorrowLimit(
   overseerCollaterals: moneyMarket.overseer.CollateralsResponse,
   oraclePrices: moneyMarket.oracle.PricesResponse,
   bAssetLtvs: BAssetLtvs,
-): u<UST<BigSource>> {
+): u<UST<Big>> {
   const vector = oraclePrices.prices.map(({ asset }) => asset);
   const lockedAmounts = vectorizeOverseerCollaterals(
     vector,
