@@ -1,5 +1,6 @@
 import { bAssetInfoByTokenSymbolQuery } from '@anchor-protocol/app-fns';
 import { createQueryFn } from '@libs/react-query-utils';
+import { useWallet } from '@terra-money/use-wallet';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
