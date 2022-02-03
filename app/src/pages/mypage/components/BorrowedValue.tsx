@@ -23,7 +23,7 @@ export interface BorrowedValueProps {
   currentLtv: Rate<Big> | undefined;
   dangerLtv: Rate<Big> | undefined;
   bAssetLtvsAvg: BAssetLtv | undefined;
-  borrowLimit: u<UST<BigSource>> | undefined;
+  borrowLimit: u<UST<Big>> | undefined;
 }
 
 function BorrowedValueBase({
@@ -81,10 +81,7 @@ function BorrowedValueBase({
 
       {currentLtv && bAssetLtvsAvg && dangerLtv && borrowLimit && (
         <figure>
-          <BorrowUsageGraph
-            borrowedValue={borrowedValue}
-            borrowLimit={borrowLimit}
-          />
+          <BorrowUsageGraph currentLtv={currentLtv} borrowLimit={borrowLimit} />
         </figure>
       )}
     </Section>

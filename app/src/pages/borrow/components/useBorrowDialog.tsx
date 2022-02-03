@@ -204,15 +204,9 @@ function ComponentBase({
         <figure className="graph">
           <LTVGraph
             disabled={!connectedWallet || states.max.lte(0)}
-            // maxLtv={states.bAssetLtvsAvg.max}
-            // safeLtv={states.bAssetLtvsAvg.safe}
-            // dangerLtv={states.userMaxLtv}
             borrowLimit={states.borrowLimit}
             currentLtv={states.currentLtv}
             nextLtv={states.nextLtv}
-            // userMinLtv={states.currentLtv}
-            // userMaxLtv={states.userMaxLtv}
-            // borrowedValue={states.borrowedValue}
             onStep={states.ltvStepFunction}
             onChange={onLtvChange}
           />

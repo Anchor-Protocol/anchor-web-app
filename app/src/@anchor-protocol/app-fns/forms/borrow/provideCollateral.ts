@@ -47,12 +47,11 @@ export interface BorrowProvideCollateralFormStates
 
   dangerLtv: Rate<Big>;
   collateral: moneyMarket.overseer.WhitelistResponse['elems'][number];
-  //collateralDenom: COLLATERAL_DENOMS | undefined;
 
   txFee: u<UST>;
   currentLtv: Rate<Big> | undefined;
   nextLtv: Rate<Big> | undefined;
-  borrowLimit: u<UST<Big>> | undefined;
+  borrowLimit: u<UST<Big>>;
   invalidTxFee: string | undefined;
   invalidDepositAmount: string | undefined;
 

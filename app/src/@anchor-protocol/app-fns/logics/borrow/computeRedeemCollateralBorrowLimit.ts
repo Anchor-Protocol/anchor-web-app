@@ -17,9 +17,9 @@ export function computeRedeemCollateralBorrowLimit(
   overseerCollaterals: moneyMarket.overseer.CollateralsResponse,
   oraclePrices: moneyMarket.oracle.PricesResponse,
   bAssetLtvs: BAssetLtvs,
-): u<UST<Big>> | undefined {
+): u<UST<Big>> {
   if (redeemAmount.length === 0 || big(redeemAmount).lte(0)) {
-    return undefined;
+    return big(0) as u<UST<Big>>;
   }
 
   const vector = oraclePrices.prices.map(({ asset }) => asset);
@@ -38,17 +38,8 @@ export function computeRedeemCollateralBorrowLimit(
   const ustAmounts = vectorMultiply(newLockedAmounts, prices);
   const borrowLimits = vectorMultiply(ustAmounts, maxLtvs);
 
-  const borrowLimit = sum(...borrowLimits);
+  const borrowLimit = sum(...borrowLimits) ?? big(0);
 
-  return borrowLimit.lte(0) ? undefined : (borrowLimit as u<UST<Big>>);
-
-  //const borrowLimit = big(
-  //  big(
-  //    big(borrower.balance)
-  //      .minus(borrower.spendable)
-  //      .minus(microfy(redeemAmount)),
-  //  ).mul(oracle.rate),
-  //).mul(bLunaMaxLtv) as uUST<Big>;
-  //
-  //return borrowLimit.lt(0) ? undefined : borrowLimit;
+  return borrowLimit as u<UST<Big>>;
+  //return borrowLimit.lte(0) ? undefined : (borrowLimit as u<UST<Big>>);
 }

@@ -54,7 +54,7 @@ export interface BorrowRedeemCollateralFormStates
   nextLtv: Rate<Big> | undefined;
   withdrawableAmount: u<bAsset<Big>>;
   withdrawableMaxAmount: u<bAsset<Big>>;
-  borrowLimit: u<UST<Big>> | undefined;
+  borrowLimit: u<UST<Big>>;
   invalidTxFee: string | undefined;
   invalidRedeemAmount: string | undefined;
 

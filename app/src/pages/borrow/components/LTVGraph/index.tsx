@@ -30,16 +30,9 @@ export interface Data {
 }
 
 export interface LTVGraphProps {
-  // maxLtv: Rate<BigSource>;
-  // safeLtv: Rate<BigSource>;
-  // dangerLtv: Rate<BigSource>;
   borrowLimit: u<UST<Big>>;
   currentLtv: Rate<Big> | undefined;
   nextLtv: Rate<Big> | undefined;
-  // // draftLtv => (fix with amount format 0.000 -> fixed ltv)
-  // userMinLtv: Rate<BigSource> | undefined;
-  // userMaxLtv: Rate<BigSource> | undefined;
-  // borrowedValue: u<UST<Big>>;
   onStep: (draftLtv: Rate<Big>) => Rate<Big>;
   onChange: (nextLtv: Rate<Big>) => void;
   disabled?: boolean;

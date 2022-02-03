@@ -42,6 +42,7 @@ export interface BorrowRepayFormStates extends BorrowRepayFormInput {
   ltvToAmount: (ltv: Rate<Big>) => u<UST<Big>>;
   ltvStepFunction: (draftLtv: Rate<Big>) => Rate<Big>;
 
+  borrowLimit: u<UST<Big>>;
   currentLtv: Rate<Big> | undefined;
   apr: Rate<Big>;
   maxRepayingAmount: u<UST<Big>>;
@@ -122,6 +123,8 @@ export const borrowRepayForm = ({
 
   const dangerLtv = big(bAssetLtvsAvg.max).minus(0.1) as Rate<Big>;
 
+  const borrowLimit = big(0) as u<UST<Big>>;
+
   return ({
     repayAmount,
   }: BorrowRepayFormInput): FormReturn<
@@ -179,6 +182,7 @@ export const borrowRepayForm = ({
         invalidRepayAmount,
         totalOutstandingLoan,
         bAssetLtvsAvg,
+        borrowLimit,
         currentLtv,
         dangerLtv,
       },

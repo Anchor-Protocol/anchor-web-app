@@ -21,7 +21,7 @@ import { useDialog } from '@libs/use-dialog';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { Big, BigSource } from 'big.js';
+import { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
@@ -180,13 +180,9 @@ function ComponentBase({
         <figure className="graph">
           <LTVGraph
             disabled={!connectedWallet}
-            maxLtv={states.bAssetLtvsAvg.max}
-            safeLtv={states.bAssetLtvsAvg.safe}
-            dangerLtv={states.dangerLtv}
+            borrowLimit={states.borrowLimit}
             currentLtv={states.currentLtv}
             nextLtv={states.nextLtv}
-            userMinLtv={0 as Rate<BigSource>}
-            userMaxLtv={states.currentLtv}
             onStep={states.ltvStepFunction}
             onChange={onLtvChange}
           />
