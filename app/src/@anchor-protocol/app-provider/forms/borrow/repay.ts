@@ -7,7 +7,9 @@ import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useAnchorWebapp } from '../../contexts/context';
 import { useAnchorBank } from '../../hooks/useAnchorBank';
 import { useBorrowBorrowerQuery } from '../../queries/borrow/borrower';
-import { useBorrowMarketQuery } from '../../queries/borrow/market';
+import {
+  useBorrowMarketQuery,
+} from '../../queries/borrow/market';
 
 export function useBorrowRepayForm(
   fallbackBorrowMarket: BorrowMarketWithDisplay,

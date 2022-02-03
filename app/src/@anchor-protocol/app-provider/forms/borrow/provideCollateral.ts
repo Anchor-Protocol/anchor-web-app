@@ -10,7 +10,9 @@ import { useForm } from '@libs/use-form';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useAnchorBank } from '../../hooks/useAnchorBank';
 import { useBorrowBorrowerQuery } from '../../queries/borrow/borrower';
-import { useBorrowMarketQuery } from '../../queries/borrow/market';
+import {
+  useBorrowMarketQuery,
+} from '../../queries/borrow/market';
 
 export function useBorrowProvideCollateralForm(
   collateralToken: CW20Addr,
