@@ -23,6 +23,7 @@ function App() {
 
 ```tsx
 export function TokenIconBase({
+  tokenDisplay,
   token,
   variant = 'svg',
   ...imgProps
@@ -36,7 +37,6 @@ export const tokens = [
   'luna',
   'bluna',
   'beth',
-  'wheth',
 ] as const;
 
 export const variants = ['svg', '@2x', '@3x', '@4x'] as const;
@@ -50,7 +50,8 @@ export interface IconProps
     DetailedHTMLProps<ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement>,
     'src'
   > {
-  token: Tokens;
+  token?: Tokens;
+  tokenDisplay?: CW20TokenDisplayInfo;
   variant?: IconVariant;
 }
 

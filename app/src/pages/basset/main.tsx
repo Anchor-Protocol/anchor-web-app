@@ -1,4 +1,3 @@
-import { prettifySymbol } from '@anchor-protocol/app-fns';
 import { useBAssetInfoListQuery } from '@anchor-protocol/app-provider';
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
@@ -54,34 +53,28 @@ function Component({ className }: BAssetMainProps) {
         </AssetCard>
         {bAssetInfoList
           .filter((asset) => asset.wormholeTokenInfo !== undefined)
-          .map(
-            ({ bAsset, custodyConfig, wormholeTokenInfo, converterConfig }) => {
-              const bAssetSymbol = prettifySymbol(bAsset.symbol);
-              const whAssetSymbol = prettifySymbol(
-                wormholeTokenInfo!.symbol,
-                wormholeTokenInfo,
-              );
-
-              return (
-                <AssetCard
-                  key={custodyConfig.collateral_token}
-                  to={`/basset/wh/${bAsset.symbol.toLowerCase()}`}
-                  title={`${bAssetSymbol}/${whAssetSymbol}`}
-                  bAssetIcon={<TokenIcon token="beth" />}
-                  originAssetIcon={<TokenIcon token="wheth" />}
-                  hoverText="CONVERT"
-                >
-                  <AssetCardContentWormhole
-                    bAssetTokenAddr={bAsset.collateral_token}
-                    whAssetTokenAddr={converterConfig.wormhole_token_address}
-                    bAssetSymbol={bAssetSymbol}
-                    whAssetSymbol={whAssetSymbol}
-                    rewardAddr={custodyConfig.reward_contract}
-                  />
-                </AssetCard>
-              );
-            },
-          )}
+          .map(({ bAsset, custodyConfig, converterConfig, tokenDisplay }) => {
+            return (
+              <AssetCard
+                key={custodyConfig.collateral_token}
+                to={`/basset/wh/${bAsset.symbol.toLowerCase()}`}
+                title={`${tokenDisplay.anchor.symbol}/${tokenDisplay.wormhole.symbol}`}
+                bAssetIcon={<TokenIcon token="beth" />}
+                originAssetIcon={
+                  <TokenIcon tokenDisplay={tokenDisplay.anchor} />
+                }
+                hoverText="CONVERT"
+              >
+                <AssetCardContentWormhole
+                  bAssetTokenAddr={bAsset.collateral_token}
+                  whAssetTokenAddr={converterConfig.wormhole_token_address}
+                  bAssetSymbol={tokenDisplay.anchor.symbol}
+                  whAssetSymbol={tokenDisplay.wormhole.symbol}
+                  rewardAddr={custodyConfig.reward_contract}
+                />
+              </AssetCard>
+            );
+          })}
       </ul>
     </CenteredLayout>
   );

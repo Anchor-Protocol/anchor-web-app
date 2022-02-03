@@ -36,7 +36,7 @@ Object {
     "decimals": 8,
     "name": "bETH (Wormhole)",
     "symbol": "bETH",
-    "total_supply": "9828799988",
+    "total_supply": "9846799988",
   },
 }
 `;
