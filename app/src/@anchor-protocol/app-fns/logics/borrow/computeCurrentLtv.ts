@@ -1,4 +1,4 @@
-import type { Rate } from '@anchor-protocol/types';
+import type { Rate, u, UST } from '@anchor-protocol/types';
 import { moneyMarket } from '@anchor-protocol/types';
 import big, { Big } from 'big.js';
 import { computeCollateralsTotalUST } from './computeCollateralsTotalUST';
@@ -20,4 +20,14 @@ export function computeCurrentLtv(
   } catch {
     return undefined;
   }
+}
+
+export function computeCurrentLtv2(
+  borrowLimit: u<UST<Big>>,
+  borrowedAmount: u<UST<Big>>,
+): Rate<Big> {
+  if (borrowLimit.lte(0)) {
+    return big(0) as Rate<big>;
+  }
+  return borrowedAmount.div(borrowLimit) as Rate<big>;
 }

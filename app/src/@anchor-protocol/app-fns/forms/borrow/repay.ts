@@ -1,9 +1,13 @@
+import {
+  computeBorrowedAmount,
+  computeBorrowLimit,
+} from '@anchor-protocol/app-fns';
 import { moneyMarket, Rate } from '@anchor-protocol/types';
 import { u, UST } from '@libs/types';
 import { FormReturn } from '@libs/use-form';
 import big, { Big } from 'big.js';
 import { computeBorrowAPR } from '../../logics/borrow/computeBorrowAPR';
-import { computeCurrentLtv } from '../../logics/borrow/computeCurrentLtv';
+import { computeCurrentLtv2 } from '../../logics/borrow/computeCurrentLtv';
 import { computeEstimateLiquidationPrice } from '../../logics/borrow/computeEstimateLiquidationPrice';
 import { computeLtvToRepayAmount } from '../../logics/borrow/computeLtvToRepayAmount';
 import { computeMaxRepayingAmount } from '../../logics/borrow/computeMaxRepayingAmount';
@@ -14,7 +18,7 @@ import { computeRepayTotalOutstandingLoan } from '../../logics/borrow/computeRep
 import { computeRepayTxFee } from '../../logics/borrow/computeRepayTxFee';
 import { validateRepayAmount } from '../../logics/borrow/validateRepayAmount';
 import { validateTxFee } from '../../logics/common/validateTxFee';
-import { BAssetLtv } from '../../queries/borrow/market';
+import { BAssetLtv, BAssetLtvs } from '../../queries/borrow/market';
 
 export interface BorrowRepayFormInput {
   repayAmount: UST;
@@ -30,6 +34,7 @@ export interface BorrowRepayFormDependency {
   marketState: moneyMarket.market.StateResponse;
   overseerWhitelist: moneyMarket.overseer.WhitelistResponse;
   bAssetLtvsAvg: BAssetLtv;
+  bAssetLtvs: BAssetLtvs;
   blocksPerYear: number;
   blockHeight: number;
   taxRate: Rate;
@@ -40,7 +45,6 @@ export interface BorrowRepayFormDependency {
 export interface BorrowRepayFormStates extends BorrowRepayFormInput {
   amountToLtv: (repayAmount: u<UST>) => Rate<Big>;
   ltvToAmount: (ltv: Rate<Big>) => u<UST<Big>>;
-  ltvStepFunction: (draftLtv: Rate<Big>) => Rate<Big>;
 
   borrowLimit: u<UST<Big>>;
   currentLtv: Rate<Big> | undefined;
@@ -77,25 +81,22 @@ export const borrowRepayForm = ({
   taxRate,
   maxTaxUUSD,
   bAssetLtvsAvg,
+  bAssetLtvs,
   connected,
 }: BorrowRepayFormDependency) => {
-  const amountToLtv = computeRepayAmountToLtv(
-    marketBorrowerInfo,
+  const borrowedAmount = computeBorrowedAmount(marketBorrowerInfo);
+
+  const borrowLimit = computeBorrowLimit(
     overseerCollaterals,
     oraclePrices,
+    bAssetLtvs,
   );
 
-  const ltvToAmount = computeLtvToRepayAmount(
-    marketBorrowerInfo,
-    overseerCollaterals,
-    oraclePrices,
-  );
+  const amountToLtv = computeRepayAmountToLtv(borrowLimit, borrowedAmount);
 
-  const currentLtv = computeCurrentLtv(
-    marketBorrowerInfo,
-    overseerCollaterals,
-    oraclePrices,
-  );
+  const ltvToAmount = computeLtvToRepayAmount(borrowLimit, borrowedAmount);
+
+  const currentLtv = computeCurrentLtv2(borrowLimit, borrowedAmount);
 
   const apr = computeBorrowAPR(borrowRate, blocksPerYear);
 
@@ -112,18 +113,7 @@ export const borrowRepayForm = ({
     ? validateTxFee(userUSTBalance, fixedFee)
     : undefined;
 
-  const ltvStepFunction = (draftLtv: Rate<Big>): Rate<Big> => {
-    try {
-      const draftAmount = ltvToAmount(draftLtv);
-      return amountToLtv(draftAmount);
-    } catch {
-      return draftLtv;
-    }
-  };
-
   const dangerLtv = big(bAssetLtvsAvg.max).minus(0.1) as Rate<Big>;
-
-  const borrowLimit = big(0) as u<UST<Big>>;
 
   return ({
     repayAmount,
@@ -169,7 +159,6 @@ export const borrowRepayForm = ({
       {
         amountToLtv,
         ltvToAmount,
-        ltvStepFunction,
         repayAmount,
         apr,
         invalidTxFee,

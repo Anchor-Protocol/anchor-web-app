@@ -3,22 +3,22 @@ import {
   computeBorrowLimit,
   ANCHOR_SAFE_RATIO,
   ANCHOR_DANGER_RATIO,
+  computeCurrentLtv2,
+  computeBorrowAmountToLtv,
+  computeLtvToBorrowAmount,
+  computeBorrowMax,
+  computeBorrowSafeMax,
 } from '@anchor-protocol/app-fns';
 import { moneyMarket, Rate } from '@anchor-protocol/types';
 import { formatRate } from '@libs/formatter';
 import { u, UST } from '@libs/types';
 import { FormReturn } from '@libs/use-form';
 import big, { Big, BigSource } from 'big.js';
-//import { computeBorrowAmountToLtv } from '../../logics/borrow/computeBorrowAmountToLtv';
 import { computeBorrowAPR } from '../../logics/borrow/computeBorrowAPR';
-//import { computeBorrowMax } from '../../logics/borrow/computeBorrowMax';
 import { computeBorrowNextLtv } from '../../logics/borrow/computeBorrowNextLtv';
 import { computeBorrowReceiveAmount } from '../../logics/borrow/computeBorrowReceiveAmount';
-//import { computeBorrowSafeMax } from '../../logics/borrow/computeBorrowSafeMax';
 import { computeBorrowTxFee } from '../../logics/borrow/computeBorrowTxFee';
-//import { computeCurrentLtv } from '../../logics/borrow/computeCurrentLtv';
 import { computeEstimateLiquidationPrice } from '../../logics/borrow/computeEstimateLiquidationPrice';
-//import { computeLtvToBorrowAmount } from '../../logics/borrow/computeLtvToBorrowAmount';
 import { validateBorrowAmount } from '../../logics/borrow/validateBorrowAmount';
 import { validateTxFee } from '../../logics/common/validateTxFee';
 import { BAssetLtv, BAssetLtvs } from '../../queries/borrow/market';
@@ -46,7 +46,7 @@ export interface BorrowBorrowFormDependency {
 export interface BorrowBorrowFormStates extends BorrowBorrowFormInput {
   amountToLtv: (borrowAmount: u<UST>) => Rate<Big>;
   ltvToAmount: (ltv: Rate<Big>) => u<UST<Big>>;
-  ltvStepFunction: (draftLtv: Rate<Big>) => Rate<Big>;
+  //ltvStepFunction: (draftLtv: Rate<Big>) => Rate<Big>;
 
   borrowLimit: u<UST<Big>>;
   currentLtv: Rate<Big> | undefined;
@@ -87,26 +87,7 @@ export const borrowBorrowForm = ({
   maxTaxUUSD,
   connected,
 }: BorrowBorrowFormDependency) => {
-  // const amountToLtv = computeBorrowAmountToLtv(
-  //   marketBorrowerInfo,
-  //   overseerCollaterals,
-  //   oraclePrices,
-  // );
-
-  // const ltvToAmount = computeLtvToBorrowAmount(
-  //   marketBorrowerInfo,
-  //   overseerCollaterals,
-  //   oraclePrices,
-  // );
-
   const borrowedAmount = computeBorrowedAmount(marketBorrowerInfo);
-  //const borrowedValue = big(0) as u<UST<big>>;
-
-  // const borrowLimit =
-  //   overseerCollaterals && oraclePrices && bAssetLtvs
-  //     ? computeBorrowLimit(overseerCollaterals, oraclePrices, bAssetLtvs)
-  //     : (big(0) as u<UST<Big>>);
-  //const borrowLimit = big(0) as u<UST<big>>;
 
   const borrowLimit = computeBorrowLimit(
     overseerCollaterals,
@@ -114,76 +95,30 @@ export const borrowBorrowForm = ({
     bAssetLtvs,
   );
 
-  const amountToLtv = (borrowAmount: u<UST<BigSource>>): Rate<Big> => {
-    //return big(1) as Rate<Big>;
-    return borrowedAmount.plus(borrowAmount).div(borrowLimit) as Rate<big>;
-  };
+  const currentLtv = computeCurrentLtv2(borrowLimit, borrowedAmount);
 
-  //(ltv: Rate<BigSource>): u<UST<Big>>
-  const ltvToAmount = (ltv: Rate<BigSource>): u<UST<Big>> => {
-    // return big(ltv)
-    //   .mul(collateralsVaue)
-    //   .minus(marketBorrowerInfo.loan_amount) as u<UST<Big>
-    return big(ltv).mul(borrowLimit).minus(borrowedAmount) as u<UST<Big>>;
-  };
+  const amountToLtv = computeBorrowAmountToLtv(borrowLimit, borrowedAmount);
 
-  // const currentLtv = computeCurrentLtv(
-  //   marketBorrowerInfo,
-  //   overseerCollaterals,
-  //   oraclePrices,
-  // ); as Rate<big>
-  const currentLtv = borrowedAmount.div(borrowLimit) as Rate<big>;
-  // const currentLtv = (
-  //   borrowLimit.gte(0) ? borrowedValue.div(borrowLimit) : 0
-  // ) as Rate<Big>;
-
-  //const userMaxLtv = big(bAssetLtvsAvg.max).minus(0.1) as Rate<BigSource>;
-  //const userMaxLtv = big(ANCHOR_DANGER_RATIO) as Rate<BigSource>;
+  const ltvToAmount = computeLtvToBorrowAmount(borrowLimit, borrowedAmount);
 
   const apr = computeBorrowAPR(borrowRate, blocksPerYear);
 
-  // const safeMax = computeBorrowSafeMax(
-  //   marketBorrowerInfo,
-  //   overseerCollaterals,
-  //   oraclePrices,
-  //   bAssetLtvsAvg.safe,
-  //   currentLtv,
-  // );
+  const safeMax = computeBorrowSafeMax(borrowLimit, borrowedAmount);
 
-  // const max = computeBorrowMax(
-  //   marketBorrowerInfo,
-  //   overseerCollaterals,
-  //   oraclePrices,
-  //   bAssetLtvsAvg.max,
-  // );
-  // console.log('max', max.toString());
-  const max = borrowLimit.minus(borrowedAmount) as u<UST<Big>>;
-
-  const safeMax = borrowLimit.mul(ANCHOR_SAFE_RATIO).minus(borrowedAmount) as u<
-    UST<Big>
-  >;
-
-  // console.log('compute::currentLtv', currentLtv?.toString());
-  // console.log('compute::borrowedValue', borrowedValue.toString());
-  // console.log('compute::borrowLimit', borrowLimit?.toString());
-  // console.log(
-  //   'compute::borrowRatio',
-  //   borrowedValue.div(borrowLimit ?? 0)?.toString(),
-  // );
+  const max = computeBorrowMax(borrowLimit, borrowedAmount);
 
   const invalidTxFee = connected
     ? validateTxFee(userUSTBalance, fixedFee)
     : undefined;
 
-  const ltvStepFunction = (draftLtv: Rate<Big>): Rate<Big> => {
-    console.log('ltvStepFunction');
-    try {
-      const draftAmount = ltvToAmount(draftLtv);
-      return amountToLtv(draftAmount);
-    } catch {
-      return draftLtv;
-    }
-  };
+  // const ltvStepFunction = (draftLtv: Rate<Big>): Rate<Big> => {
+  //   try {
+  //     const draftAmount = ltvToAmount(draftLtv);
+  //     return amountToLtv(draftAmount);
+  //   } catch {
+  //     return draftLtv;
+  //   }
+  // };
 
   return ({
     borrowAmount,
@@ -233,7 +168,7 @@ export const borrowBorrowForm = ({
       {
         amountToLtv,
         ltvToAmount,
-        ltvStepFunction,
+        //ltvStepFunction,
         borrowLimit,
         currentLtv,
         userMaxLtv: ANCHOR_DANGER_RATIO,

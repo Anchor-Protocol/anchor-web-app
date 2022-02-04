@@ -181,9 +181,9 @@ function ComponentBase({
           <LTVGraph
             disabled={!connectedWallet}
             borrowLimit={states.borrowLimit}
-            currentLtv={states.currentLtv}
-            nextLtv={states.nextLtv}
-            onStep={states.ltvStepFunction}
+            start={0}
+            end={states.currentLtv?.toNumber() ?? 0}
+            value={states.nextLtv}
             onChange={onLtvChange}
           />
         </figure>

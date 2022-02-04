@@ -29,15 +29,6 @@ export interface Data {
   tooltip?: string;
 }
 
-export interface LTVGraphProps {
-  borrowLimit: u<UST<Big>>;
-  currentLtv: Rate<Big> | undefined;
-  nextLtv: Rate<Big> | undefined;
-  onStep: (draftLtv: Rate<Big>) => Rate<Big>;
-  onChange: (nextLtv: Rate<Big>) => void;
-  disabled?: boolean;
-}
-
 const colorFunction = ({ color }: Data) => color;
 
 const valueFunction = ({ value }: Data) => value;
@@ -69,10 +60,21 @@ const labelRenderer = (
   );
 };
 
+export interface LTVGraphProps {
+  borrowLimit: u<UST<Big>>;
+  value: Rate<Big> | undefined;
+  start: number;
+  end: number;
+  onStep?: (draftLtv: Rate<Big>) => Rate<Big>;
+  onChange: (nextLtv: Rate<Big>) => void;
+  disabled?: boolean;
+}
+
 export function LTVGraph({
   borrowLimit,
-  currentLtv,
-  nextLtv,
+  value,
+  start,
+  end,
   onChange,
   onStep,
   disabled,
@@ -83,7 +85,7 @@ export function LTVGraph({
 
   const step = useCallback(
     (draftLtv: number) => {
-      return onStep(big(draftLtv) as Rate<Big>).toNumber();
+      return onStep ? onStep(big(draftLtv) as Rate<Big>).toNumber() : draftLtv;
     },
     [onStep],
   );
@@ -116,16 +118,14 @@ export function LTVGraph({
         },
         {
           variant: 'value',
-          label: nextLtv
-            ? `${nextLtv.lt(1) ? formatRate(nextLtv) : '>100'}%`
-            : '',
-          color: nextLtv?.gte(ANCHOR_DANGER_RATIO)
+          label: value ? `${value.lt(1) ? formatRate(value) : '>100'}%` : '',
+          color: value?.gte(ANCHOR_DANGER_RATIO)
             ? theme.colors.negative
-            : nextLtv?.gte(ANCHOR_SAFE_RATIO)
+            : value?.gte(ANCHOR_SAFE_RATIO)
             ? theme.colors.warning
             : theme.colors.positive,
-          value: nextLtv
-            ? Math.max(Math.min(nextLtv.toNumber(), big(1).toNumber()), 0)
+          value: value
+            ? Math.max(Math.min(value.toNumber(), big(1).toNumber()), 0)
             : 0,
         },
       ]}
@@ -140,9 +140,9 @@ export function LTVGraph({
               coordinateSpace={coordinateSpace}
               min={0}
               max={1}
-              start={currentLtv?.toNumber() ?? 0}
-              end={ANCHOR_DANGER_RATIO}
-              value={nextLtv?.toNumber() ?? 0}
+              start={start}
+              end={end}
+              value={value?.toNumber() ?? 0}
               onChange={change}
               stepFunction={step}
             />

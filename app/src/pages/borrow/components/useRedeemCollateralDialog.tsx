@@ -2,6 +2,7 @@ import {
   BorrowBorrower,
   BorrowMarket,
   prettifySymbol,
+  ANCHOR_DANGER_RATIO,
 } from '@anchor-protocol/app-fns';
 import {
   useBorrowRedeemCollateralForm,
@@ -211,9 +212,9 @@ function ComponentBase({
           <LTVGraph
             disabled={!connectedWallet}
             borrowLimit={states.borrowLimit}
-            currentLtv={states.currentLtv}
-            nextLtv={states.nextLtv}
-            onStep={states.ltvStepFunction}
+            start={states.currentLtv?.toNumber() ?? 0}
+            end={ANCHOR_DANGER_RATIO}
+            value={states.nextLtv}
             onChange={onLtvChange}
           />
         </figure>

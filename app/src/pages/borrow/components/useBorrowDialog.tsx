@@ -2,6 +2,7 @@ import {
   BorrowBorrower,
   BorrowMarket,
   ANCHOR_SAFE_RATIO,
+  ANCHOR_DANGER_RATIO,
 } from '@anchor-protocol/app-fns';
 import {
   useBorrowBorrowForm,
@@ -205,9 +206,9 @@ function ComponentBase({
           <LTVGraph
             disabled={!connectedWallet || states.max.lte(0)}
             borrowLimit={states.borrowLimit}
-            currentLtv={states.currentLtv}
-            nextLtv={states.nextLtv}
-            onStep={states.ltvStepFunction}
+            start={states.currentLtv?.toNumber() ?? 0}
+            end={ANCHOR_DANGER_RATIO}
+            value={states.nextLtv}
             onChange={onLtvChange}
           />
         </figure>
