@@ -154,8 +154,7 @@ function Component({ className, bAssetInfo }: WhExportProps) {
         error={!!invalidAmount}
         leftHelperText={invalidAmount}
         rightHelperText={
-          !!connectedWallet &&
-          big(balance).gt(0) && (
+          !!connectedWallet && (
             <span>
               Balance:{' '}
               <span
