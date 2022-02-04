@@ -54,7 +54,7 @@ export function useVestingClaimNotification(): VestingClaimNotificationReturn {
             onClose={(ignored) => {
               setOpen(false);
               if (ignored) {
-                ignore();
+                setIgnore();
               }
             }}
           />
