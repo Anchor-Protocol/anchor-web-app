@@ -10,6 +10,7 @@ import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 import { useWallet } from '@terra-money/use-wallet';
 import { moneyMarket } from '@anchor-protocol/types';
+import { useMemo } from 'react';
 
 const queryFn = createQueryFn(borrowMarketQuery);
 
@@ -50,25 +51,25 @@ export function useBorrowMarketQuery(): UseQueryResult<
     },
   );
 
-  if (!borrowMarket.data) {
-    return EMPTY_QUERY_RESULT;
-  }
+  return useMemo(() => {
+    if (!borrowMarket.data || !tokenDisplayInfos.data) {
+      return EMPTY_QUERY_RESULT;
+    }
 
-  const tokenDisplayInfoMap = tokenDisplayInfos.data
-    ? tokenDisplayInfos.data[network.name]
-    : {};
-
-  return {
-    ...borrowMarket,
-    data: {
-      ...borrowMarket.data,
-      overseerWhitelist: {
-        ...borrowMarket.data.overseerWhitelist,
-        elems: borrowMarket.data.overseerWhitelist.elems.map((elem) => ({
-          ...elem,
-          tokenDisplay: tokenDisplayInfoMap[elem.collateral_token],
-        })),
+    return {
+      ...borrowMarket,
+      data: {
+        ...borrowMarket.data,
+        overseerWhitelist: {
+          ...borrowMarket.data.overseerWhitelist,
+          elems: borrowMarket.data.overseerWhitelist.elems.map((elem) => ({
+            ...elem,
+            tokenDisplay:
+              tokenDisplayInfos.data[network.name][elem.collateral_token],
+          })),
+        },
       },
-    },
-  } as UseQueryResult<BorrowMarketWithDisplay | undefined>;
+    } as UseQueryResult<BorrowMarketWithDisplay | undefined>;
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [borrowMarket.data, tokenDisplayInfos.data, network.name]);
 }

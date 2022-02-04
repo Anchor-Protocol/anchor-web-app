@@ -5,6 +5,7 @@ import {
 } from '@libs/app-provider';
 import { createQueryFn } from '@libs/react-query-utils';
 import { useWallet } from '@terra-money/use-wallet';
+import { useMemo } from 'react';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
@@ -36,16 +37,17 @@ export function useBAssetInfoListQuery(): UseQueryResult<
     },
   );
 
-  if (!bAssetInfos.data || bAssetInfos.data.length === 0) {
-    return EMPTY_QUERY_RESULT;
-  }
+  return useMemo(() => {
+    if (!bAssetInfos.data || !tokenDisplayInfos.data) {
+      return EMPTY_QUERY_RESULT;
+    }
 
-  const tokenDisplayInfoMap = tokenDisplayInfos.data ?? {};
-
-  return {
-    ...bAssetInfos,
-    data: bAssetInfos.data.map((b) =>
-      addTokenDisplay(b, tokenDisplayInfoMap[network.name]),
-    ),
-  } as UseQueryResult<BAssetInfoWithDisplay[] | undefined>;
+    return {
+      ...bAssetInfos,
+      data: bAssetInfos.data.map((b) =>
+        addTokenDisplay(b, tokenDisplayInfos.data[network.name]),
+      ),
+    } as UseQueryResult<BAssetInfoWithDisplay[] | undefined>;
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bAssetInfos.data, tokenDisplayInfos.data, network.name]);
 }
