@@ -1,4 +1,5 @@
 import { BorrowBorrower, borrowBorrowForm } from '@anchor-protocol/app-fns';
+import { BorrowMarketWithDisplay } from '@anchor-protocol/app-provider/queries/borrow/utils/tokenDisplay';
 import { useFixedFee } from '@libs/app-provider';
 import { UST } from '@libs/types';
 import { useForm } from '@libs/use-form';
@@ -6,10 +7,7 @@ import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useAnchorWebapp } from '../../contexts/context';
 import { useAnchorBank } from '../../hooks/useAnchorBank';
 import { useBorrowBorrowerQuery } from '../../queries/borrow/borrower';
-import {
-  BorrowMarketWithDisplay,
-  useBorrowMarketQuery,
-} from '../../queries/borrow/market';
+import { useBorrowMarketQuery } from '../../queries/borrow/market';
 
 export function useBorrowBorrowForm(
   fallbackBorrowMarket: BorrowMarketWithDisplay,

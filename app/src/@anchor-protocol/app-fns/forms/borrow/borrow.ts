@@ -1,5 +1,5 @@
 import { ANCHOR_DANGER_RATIO, ANCHOR_SAFE_RATIO, computeBorrowAmountToLtv, computeBorrowedAmount, computeBorrowLimit, computeBorrowMax, computeBorrowSafeMax, computeLtv, computeLtvToBorrowAmount } from '@anchor-protocol/app-fns';
-import { OverseerWhitelistWithDisplay } from '@anchor-protocol/app-provider';
+import { OverseerWhitelistWithDisplay } from '@anchor-protocol/app-provider/queries/borrow/utils/tokenDisplay';
 import { moneyMarket, Rate } from '@anchor-protocol/types';
 import { formatRate } from '@libs/formatter';
 import { u, UST } from '@libs/types';

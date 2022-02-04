@@ -2,6 +2,7 @@ import {
   BorrowBorrower,
   borrowProvideCollateralForm,
 } from '@anchor-protocol/app-fns';
+import { BorrowMarketWithDisplay } from '@anchor-protocol/app-provider/queries/borrow/utils/tokenDisplay';
 import { bAsset } from '@anchor-protocol/types';
 import { useCW20Balance, useFixedFee } from '@libs/app-provider';
 import { CW20Addr } from '@libs/types';
@@ -9,10 +10,7 @@ import { useForm } from '@libs/use-form';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useAnchorBank } from '../../hooks/useAnchorBank';
 import { useBorrowBorrowerQuery } from '../../queries/borrow/borrower';
-import {
-  BorrowMarketWithDisplay,
-  useBorrowMarketQuery,
-} from '../../queries/borrow/market';
+import { useBorrowMarketQuery } from '../../queries/borrow/market';
 
 export function useBorrowProvideCollateralForm(
   collateralToken: CW20Addr,

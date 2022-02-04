@@ -1,4 +1,4 @@
-import { BAssetInfoWithDisplay } from '@anchor-protocol/app-provider';
+import { BAssetInfoWithDisplay } from '@anchor-protocol/app-provider/queries/basset/utils/tokenDisplay';
 import {
   basset,
   bAsset,

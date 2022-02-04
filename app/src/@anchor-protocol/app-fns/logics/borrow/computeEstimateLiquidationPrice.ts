@@ -1,4 +1,4 @@
-import { OverseerWhitelistWithDisplay } from '@anchor-protocol/app-provider';
+import { OverseerWhitelistWithDisplay } from '@anchor-protocol/app-provider/queries/borrow/utils/tokenDisplay';
 import { formatUST } from '@anchor-protocol/notation';
 import type { Rate, UST } from '@anchor-protocol/types';
 import { CW20Addr, moneyMarket } from '@anchor-protocol/types';

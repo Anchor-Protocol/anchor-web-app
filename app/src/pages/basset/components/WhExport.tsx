@@ -1,9 +1,9 @@
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import {
-  BAssetInfoWithDisplay,
   useAnchorBank,
   useBAssetExportTx,
 } from '@anchor-protocol/app-provider';
+import { BAssetInfoWithDisplay } from '@anchor-protocol/app-provider/queries/basset/utils/tokenDisplay';
 import {
   formatUST,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,

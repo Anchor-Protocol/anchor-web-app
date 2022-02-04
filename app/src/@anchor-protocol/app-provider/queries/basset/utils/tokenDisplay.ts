@@ -1,18 +1,20 @@
 import { BAssetInfo } from '@anchor-protocol/app-fns';
 import { CW20TokenDisplayInfo } from '@libs/app-fns';
+import { TokenDisplayInfoByAddr } from '../../utils/tokenDisplay';
 
-type TokenDisplayInfoByAddr = { [tokenAddr: string]: CW20TokenDisplayInfo };
-export type TokenDisplay = {
+export type BAssetInfoTokenDisplay = {
   tokenDisplay: {
     anchor: CW20TokenDisplayInfo;
     wormhole: CW20TokenDisplayInfo;
   };
 };
 
-export const addTokenDisplay = <T extends BAssetInfo>(
-  bAssetInfo: T,
+export type BAssetInfoWithDisplay = BAssetInfo & BAssetInfoTokenDisplay;
+
+export const withTokenDisplay = (
+  bAssetInfo: BAssetInfo,
   tokenDisplayInfoByAddr: TokenDisplayInfoByAddr,
-): T & TokenDisplay => ({
+): BAssetInfoWithDisplay => ({
   ...bAssetInfo,
   tokenDisplay: {
     anchor:

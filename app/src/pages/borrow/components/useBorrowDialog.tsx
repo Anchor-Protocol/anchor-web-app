@@ -1,9 +1,9 @@
 import { ANCHOR_DANGER_RATIO, ANCHOR_SAFE_RATIO, BorrowBorrower } from '@anchor-protocol/app-fns';
 import {
-  BorrowMarketWithDisplay,
   useBorrowBorrowForm,
   useBorrowBorrowTx,
 } from '@anchor-protocol/app-provider';
+import { BorrowMarketWithDisplay } from '@anchor-protocol/app-provider/queries/borrow/utils/tokenDisplay';
 import {
   formatUST,
   formatUSTInput,
