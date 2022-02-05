@@ -152,7 +152,7 @@ export const borrowBorrowForm = ({
       : undefined;
 
     const warningOverSafeLtv = nextLtv?.gt(ANCHOR_SAFE_RATIO)
-      ? 'WARNING: Are you sure you want to borrow above the recommended LTV? Crypto markets can be very volatile and you may be subject to liquidation in events of downward price swings of the bAsset.'
+      ? 'Caution: As current borrow usage is above the recommended amount, fluctuations in collateral value may trigger immediate liquidations. It is strongly recommended to keep the borrow usage below the maximum by repaying loans with stablecoins or providing additional collateral.'
       : undefined;
 
     const availablePost =
