@@ -107,14 +107,15 @@ export function LTVGraph({
           label: `${formatRate(ANCHOR_SAFE_RATIO)}%`,
           color: 'rgba(0, 0, 0, 0)',
           value: ANCHOR_SAFE_RATIO,
-          tooltip: 'Recommended LTV',
+          tooltip: 'Recommended borrow usage',
         },
         {
           variant: 'label',
           label: '100%',
           color: 'rgba(0, 0, 0, 0)',
           value: 1,
-          tooltip: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+          tooltip:
+            'When the Borrow usage reaches 100%, liquidations can occur at anytime',
         },
         {
           variant: 'value',

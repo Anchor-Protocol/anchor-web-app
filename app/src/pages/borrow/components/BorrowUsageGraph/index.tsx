@@ -36,7 +36,7 @@ export function BorrowUsageGraph(props: BorrowUsageGraphProps) {
       color: 'rgba(0, 0, 0, 0)',
       textAlign: 'center',
       value: ANCHOR_SAFE_RATIO,
-      tooltip: 'Recommended LTV',
+      tooltip: 'Recommended borrow usage',
     },
     {
       variant: 'marker',
@@ -44,7 +44,8 @@ export function BorrowUsageGraph(props: BorrowUsageGraphProps) {
       color: 'rgba(0, 0, 0, 0)',
       textAlign: 'center',
       value: 1,
-      tooltip: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+      tooltip:
+        'When the Borrow usage reaches 100%, liquidations can occur at anytime',
     },
     big(currentLtv).gt(0)
       ? {

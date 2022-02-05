@@ -3,6 +3,7 @@ import {
   BorrowMarket,
   prettifySymbol,
   ANCHOR_DANGER_RATIO,
+  ANCHOR_SAFE_RATIO,
 } from '@anchor-protocol/app-fns';
 import {
   useBorrowRedeemCollateralForm,
@@ -219,7 +220,7 @@ function ComponentBase({
           />
         </figure>
 
-        {states.nextLtv?.gt(states.bAssetLtvsAvg.safe) && (
+        {states.nextLtv?.gt(ANCHOR_SAFE_RATIO) && (
           <MessageBox
             level="error"
             hide={{
