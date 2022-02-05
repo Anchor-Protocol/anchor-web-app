@@ -1,8 +1,4 @@
 import {
-  computeBorrowedAmount,
-  computeBorrowLimit,
-} from '@anchor-protocol/app-fns';
-import {
   bAsset,
   CW20Addr,
   moneyMarket,
@@ -12,12 +8,11 @@ import {
 } from '@anchor-protocol/types';
 import { FormReturn } from '@libs/use-form';
 import big, { Big, BigSource } from 'big.js';
-import { computeCurrentLtv2 } from '../../logics/borrow/computeCurrentLtv';
+import { computeCurrentLtv } from '../../logics/borrow/computeCurrentLtv';
 import { computeLtvToRedeemAmount } from '../../logics/borrow/computeLtvToRedeemAmount';
 import { computeRedeemAmountToLtv } from '../../logics/borrow/computeRedeemAmountToLtv';
 import { computeRedeemCollateralBorrowLimit } from '../../logics/borrow/computeRedeemCollateralBorrowLimit';
 import { computeRedeemCollateralNextLtv } from '../../logics/borrow/computeRedeemCollateralNextLtv';
-//import { computeRedeemCollateralWithdrawableAmount } from '../../logics/borrow/computeRedeemCollateralWithdrawableAmount';
 import { pickCollateral } from '../../logics/borrow/pickCollateral';
 import { validateRedeemAmount } from '../../logics/borrow/validateRedeemAmount';
 import { validateTxFee } from '../../logics/common/validateTxFee';
@@ -45,12 +40,11 @@ export interface BorrowRedeemCollateralFormStates
   extends BorrowRedeemCollateralFormInput {
   amountToLtv: (redeemAmount: u<bAsset>) => Rate<Big>;
   ltvToAmount: (ltv: Rate<Big>) => u<bAsset<Big>>;
-  //ltvStepFunction: (draftLtv: Rate<Big>) => Rate<Big>;
+  ltvStepFunction: (draftLtv: Rate<Big>) => Rate<Big>;
 
   bAssetLtvsAvg: BAssetLtv;
 
   collateral: moneyMarket.overseer.WhitelistResponse['elems'][number];
-  //collateralDenom: COLLATERAL_DENOMS | undefined;
 
   userMaxLtv: Rate<Big>;
   txFee: u<UST>;
@@ -101,21 +95,11 @@ export const borrowRedeemCollateralForm = ({
 
   const userMaxLtv = big(bAssetLtvsAvg.max).minus(0.1) as Rate<Big>;
 
-  // const currentLtv = computeCurrentLtv(
-  //   marketBorrowerInfo,
-  //   overseerCollaterals,
-  //   oraclePrices,
-  // );
-
-  const borrowedAmount = computeBorrowedAmount(marketBorrowerInfo);
-
-  const borrowLimit = computeBorrowLimit(
+  const currentLtv = computeCurrentLtv(
+    marketBorrowerInfo,
     overseerCollaterals,
     oraclePrices,
-    bAssetLtvs,
   );
-
-  const currentLtv = computeCurrentLtv2(borrowLimit, borrowedAmount);
 
   return ({
     redeemAmount,
@@ -128,15 +112,6 @@ export const borrowRedeemCollateralForm = ({
       currentLtv,
       amountToLtv,
     );
-
-    // const { withdrawableAmount, withdrawableMaxAmount } =
-    //   computeRedeemCollateralWithdrawableAmount(
-    //     collateralToken,
-    //     marketBorrowerInfo,
-    //     overseerCollaterals,
-    //     oraclePrices,
-    //     bAssetLtvs,
-    //   );
 
     const withdrawableAmount = ltvToAmount(0.75 as Rate<BigSource>);
 
@@ -159,14 +134,14 @@ export const borrowRedeemCollateralForm = ({
       withdrawableMaxAmount,
     );
 
-    // const ltvStepFunction = (draftLtv: Rate<Big>): Rate<Big> => {
-    //   try {
-    //     const draftAmount = ltvToAmount(draftLtv);
-    //     return amountToLtv(draftAmount);
-    //   } catch {
-    //     return draftLtv;
-    //   }
-    // };
+    const ltvStepFunction = (draftLtv: Rate<Big>): Rate<Big> => {
+      try {
+        const draftAmount = ltvToAmount(draftLtv);
+        return amountToLtv(draftAmount);
+      } catch {
+        return draftLtv;
+      }
+    };
 
     const availablePost =
       connected &&
@@ -186,7 +161,7 @@ export const borrowRedeemCollateralForm = ({
         availablePost,
         redeemAmount,
         ltvToAmount,
-        //ltvStepFunction,
+        ltvStepFunction,
         bAssetLtvsAvg,
         invalidTxFee,
         nextLtv,

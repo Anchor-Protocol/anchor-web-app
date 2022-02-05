@@ -2,7 +2,6 @@ import {
   BorrowBorrower,
   BorrowMarket,
   prettifySymbol,
-  ANCHOR_DANGER_RATIO,
   ANCHOR_SAFE_RATIO,
 } from '@anchor-protocol/app-fns';
 import {
@@ -212,11 +211,11 @@ function ComponentBase({
         <figure className="graph">
           <LTVGraph
             disabled={!connectedWallet}
-            borrowLimit={states.borrowLimit}
             start={states.currentLtv?.toNumber() ?? 0}
-            end={ANCHOR_DANGER_RATIO}
+            end={1}
             value={states.nextLtv}
             onChange={onLtvChange}
+            onStep={states.ltvStepFunction}
           />
         </figure>
 

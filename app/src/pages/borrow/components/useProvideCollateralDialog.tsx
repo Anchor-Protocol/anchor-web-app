@@ -211,11 +211,11 @@ function ComponentBase({
           <figure className="graph">
             <LTVGraph
               disabled={!connectedWallet}
-              borrowLimit={states.borrowLimit}
               start={0}
               end={states.currentLtv?.toNumber() ?? 0}
               value={states.nextLtv}
               onChange={onLtvChange}
+              onStep={states.ltvStepFunction}
             />
           </figure>
         )}

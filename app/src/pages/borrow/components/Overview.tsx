@@ -181,7 +181,7 @@ function Component({ className }: OverviewProps) {
         </div>
       </article>
 
-      {currentLtv && bAssetLtvsAvg && borrowLimit && (
+      {currentLtv && bAssetLtvsAvg && borrowLimit ? (
         <figure>
           <h3>
             <IconSpan>
@@ -193,7 +193,7 @@ function Component({ className }: OverviewProps) {
           </h3>
           <BorrowUsageGraph currentLtv={currentLtv} borrowLimit={borrowLimit} />
         </figure>
-      )}
+      ) : null}
     </Section>
   );
 }

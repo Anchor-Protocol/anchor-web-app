@@ -3,7 +3,7 @@ import {
   computeBorrowLimit,
   ANCHOR_SAFE_RATIO,
   ANCHOR_DANGER_RATIO,
-  computeCurrentLtv2,
+  computeLtv,
   computeBorrowAmountToLtv,
   computeLtvToBorrowAmount,
   computeBorrowMax,
@@ -46,7 +46,7 @@ export interface BorrowBorrowFormDependency {
 export interface BorrowBorrowFormStates extends BorrowBorrowFormInput {
   amountToLtv: (borrowAmount: u<UST>) => Rate<Big>;
   ltvToAmount: (ltv: Rate<Big>) => u<UST<Big>>;
-  //ltvStepFunction: (draftLtv: Rate<Big>) => Rate<Big>;
+  ltvStepFunction: (draftLtv: Rate<Big>) => Rate<Big>;
 
   borrowLimit: u<UST<Big>>;
   currentLtv: Rate<Big> | undefined;
@@ -95,7 +95,7 @@ export const borrowBorrowForm = ({
     bAssetLtvs,
   );
 
-  const currentLtv = computeCurrentLtv2(borrowLimit, borrowedAmount);
+  const currentLtv = computeLtv(borrowLimit, borrowedAmount);
 
   const amountToLtv = computeBorrowAmountToLtv(borrowLimit, borrowedAmount);
 
@@ -111,14 +111,14 @@ export const borrowBorrowForm = ({
     ? validateTxFee(userUSTBalance, fixedFee)
     : undefined;
 
-  // const ltvStepFunction = (draftLtv: Rate<Big>): Rate<Big> => {
-  //   try {
-  //     const draftAmount = ltvToAmount(draftLtv);
-  //     return amountToLtv(draftAmount);
-  //   } catch {
-  //     return draftLtv;
-  //   }
-  // };
+  const ltvStepFunction = (draftLtv: Rate<Big>): Rate<Big> => {
+    try {
+      const draftAmount = ltvToAmount(draftLtv);
+      return amountToLtv(draftAmount);
+    } catch {
+      return draftLtv;
+    }
+  };
 
   return ({
     borrowAmount,
@@ -168,7 +168,7 @@ export const borrowBorrowForm = ({
       {
         amountToLtv,
         ltvToAmount,
-        //ltvStepFunction,
+        ltvStepFunction,
         borrowLimit,
         currentLtv,
         userMaxLtv: ANCHOR_DANGER_RATIO,

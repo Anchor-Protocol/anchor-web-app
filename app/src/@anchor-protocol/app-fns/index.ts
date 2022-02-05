@@ -26,6 +26,7 @@ export * from './logics/borrow/computeDepositAmountToBorrowLimit';
 export * from './logics/borrow/computeDepositAmountToLtv';
 export * from './logics/borrow/computeEstimateLiquidationPrice';
 export * from './logics/borrow/computeLiquidationPrice';
+export * from './logics/borrow/computeLtv';
 export * from './logics/borrow/computeLtvToBorrowAmount';
 export * from './logics/borrow/computeLtvToDepositAmount';
 export * from './logics/borrow/computeLtvToRedeemAmount';

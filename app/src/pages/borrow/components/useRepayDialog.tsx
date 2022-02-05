@@ -185,6 +185,7 @@ function ComponentBase({
             end={states.currentLtv?.toNumber() ?? 0}
             value={states.nextLtv}
             onChange={onLtvChange}
+            onStep={states.ltvStepFunction}
           />
         </figure>
 
@@ -279,6 +280,7 @@ const Component = styled(ComponentBase)`
   }
 
   .graph {
+    margin-top: 70px;
     margin-bottom: 40px;
   }
 

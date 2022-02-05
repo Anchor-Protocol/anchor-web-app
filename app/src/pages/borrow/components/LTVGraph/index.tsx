@@ -61,7 +61,7 @@ const labelRenderer = (
 };
 
 export interface LTVGraphProps {
-  borrowLimit: u<UST<Big>>;
+  borrowLimit?: u<UST<Big>>;
   value: Rate<Big> | undefined;
   start: number;
   end: number;
@@ -148,15 +148,18 @@ export function LTVGraph({
               stepFunction={step}
             />
           )}
-          <Footnote style={{ right: 0 }}>
-            <IconSpan>
-              Borrow Limit: ${formatUSTWithPostfixUnits(demicrofy(borrowLimit))}{' '}
-              <InfoTooltip>
-                The maximum amount of liability permitted from deposited
-                collaterals
-              </InfoTooltip>
-            </IconSpan>
-          </Footnote>
+          {borrowLimit && (
+            <Footnote style={{ right: 0 }}>
+              <IconSpan>
+                Borrow Limit: $
+                {formatUSTWithPostfixUnits(demicrofy(borrowLimit))}{' '}
+                <InfoTooltip>
+                  The maximum amount of liability permitted from deposited
+                  collaterals
+                </InfoTooltip>
+              </IconSpan>
+            </Footnote>
+          )}
         </>
       )}
     </HorizontalGraphBar>

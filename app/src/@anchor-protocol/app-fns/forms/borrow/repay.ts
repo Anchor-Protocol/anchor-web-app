@@ -7,7 +7,7 @@ import { u, UST } from '@libs/types';
 import { FormReturn } from '@libs/use-form';
 import big, { Big } from 'big.js';
 import { computeBorrowAPR } from '../../logics/borrow/computeBorrowAPR';
-import { computeCurrentLtv2 } from '../../logics/borrow/computeCurrentLtv';
+import { computeLtv } from '../../logics/borrow/computeLtv';
 import { computeEstimateLiquidationPrice } from '../../logics/borrow/computeEstimateLiquidationPrice';
 import { computeLtvToRepayAmount } from '../../logics/borrow/computeLtvToRepayAmount';
 import { computeMaxRepayingAmount } from '../../logics/borrow/computeMaxRepayingAmount';
@@ -45,6 +45,7 @@ export interface BorrowRepayFormDependency {
 export interface BorrowRepayFormStates extends BorrowRepayFormInput {
   amountToLtv: (repayAmount: u<UST>) => Rate<Big>;
   ltvToAmount: (ltv: Rate<Big>) => u<UST<Big>>;
+  ltvStepFunction: (draftLtv: Rate<Big>) => Rate<Big>;
 
   borrowLimit: u<UST<Big>>;
   currentLtv: Rate<Big> | undefined;
@@ -96,7 +97,7 @@ export const borrowRepayForm = ({
 
   const ltvToAmount = computeLtvToRepayAmount(borrowLimit, borrowedAmount);
 
-  const currentLtv = computeCurrentLtv2(borrowLimit, borrowedAmount);
+  const currentLtv = computeLtv(borrowLimit, borrowedAmount);
 
   const apr = computeBorrowAPR(borrowRate, blocksPerYear);
 
@@ -114,6 +115,15 @@ export const borrowRepayForm = ({
     : undefined;
 
   const dangerLtv = big(bAssetLtvsAvg.max).minus(0.1) as Rate<Big>;
+
+  const ltvStepFunction = (draftLtv: Rate<Big>): Rate<Big> => {
+    try {
+      const draftAmount = ltvToAmount(draftLtv);
+      return amountToLtv(draftAmount);
+    } catch {
+      return draftLtv;
+    }
+  };
 
   return ({
     repayAmount,
@@ -159,6 +169,7 @@ export const borrowRepayForm = ({
       {
         amountToLtv,
         ltvToAmount,
+        ltvStepFunction,
         repayAmount,
         apr,
         invalidTxFee,
