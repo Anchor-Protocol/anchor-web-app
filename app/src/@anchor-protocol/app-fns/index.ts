@@ -125,7 +125,7 @@ export * from './tx/bond/withdraw';
 export * from './tx/borrow/_fetchBorrowData';
 export * from './tx/borrow/borrow';
 export * from './tx/borrow/provideCollateral';
-export * from './tx/borrow/reddemCollateral';
+export * from './tx/borrow/redeemCollateral';
 export * from './tx/borrow/repay';
 export * from './tx/earn/deposit';
 export * from './tx/earn/withdraw';
