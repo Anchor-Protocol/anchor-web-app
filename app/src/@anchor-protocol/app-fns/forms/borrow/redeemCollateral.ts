@@ -1,4 +1,9 @@
 import {
+  computeBorrowedAmount,
+  computeBorrowLimit,
+  computeLtv,
+} from '@anchor-protocol/app-fns';
+import {
   bAsset,
   CW20Addr,
   moneyMarket,
@@ -8,7 +13,6 @@ import {
 } from '@anchor-protocol/types';
 import { FormReturn } from '@libs/use-form';
 import big, { Big, BigSource } from 'big.js';
-import { computeCurrentLtv } from '../../logics/borrow/computeCurrentLtv';
 import { computeLtvToRedeemAmount } from '../../logics/borrow/computeLtvToRedeemAmount';
 import { computeRedeemAmountToLtv } from '../../logics/borrow/computeRedeemAmountToLtv';
 import { computeRedeemCollateralBorrowLimit } from '../../logics/borrow/computeRedeemCollateralBorrowLimit';
@@ -95,10 +99,9 @@ export const borrowRedeemCollateralForm = ({
 
   const userMaxLtv = big(bAssetLtvsAvg.max).minus(0.1) as Rate<Big>;
 
-  const currentLtv = computeCurrentLtv(
-    marketBorrowerInfo,
-    overseerCollaterals,
-    oraclePrices,
+  const currentLtv = computeLtv(
+    computeBorrowLimit(overseerCollaterals, oraclePrices, bAssetLtvs),
+    computeBorrowedAmount(marketBorrowerInfo),
   );
 
   return ({
