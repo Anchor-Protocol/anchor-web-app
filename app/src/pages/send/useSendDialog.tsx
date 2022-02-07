@@ -153,8 +153,8 @@ function ComponentBase({
           formatLunaInput(demicrofy(bank.tokenBalances.ubLuna)),
         cw20Address: cw20.bLuna,
       },
-      ...infoAndBalances.map(({ bAsset, balance }) => ({
-        label: bAsset.symbol,
+      ...infoAndBalances.map(({ bAsset, balance, tokenDisplay }) => ({
+        label: tokenDisplay.symbol,
         value: bAsset.symbol,
         integerPoints: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,

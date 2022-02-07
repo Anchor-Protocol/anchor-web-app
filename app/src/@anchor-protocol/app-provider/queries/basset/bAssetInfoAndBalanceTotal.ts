@@ -1,17 +1,19 @@
-import {
-  BAssetInfoAndBalancesTotal,
-  bAssetInfoAndBalanceTotalQuery,
-} from '@anchor-protocol/app-fns';
+import { bAssetInfoAndBalanceTotalQuery } from '@anchor-protocol/app-fns';
 import { createQueryFn } from '@libs/react-query-utils';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
+import { useQueryWithTokenDisplay } from '../utils';
+import {
+  BAssetInfoAndBalancesTotalWithDisplay,
+  withBAssetInfoAndBalancesTotalTokenDisplay,
+} from './utils';
 
 const queryFn = createQueryFn(bAssetInfoAndBalanceTotalQuery);
 
 export function useBAssetInfoAndBalanceTotalQuery(): UseQueryResult<
-  BAssetInfoAndBalancesTotal | undefined
+  BAssetInfoAndBalancesTotalWithDisplay | undefined
 > {
   const connectedWallet = useConnectedWallet();
 
@@ -35,5 +37,8 @@ export function useBAssetInfoAndBalanceTotalQuery(): UseQueryResult<
     },
   );
 
-  return result;
+  return useQueryWithTokenDisplay(
+    result,
+    withBAssetInfoAndBalancesTotalTokenDisplay,
+  );
 }

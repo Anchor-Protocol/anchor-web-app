@@ -1,5 +1,7 @@
-import { BAssetInfoAndBalancesTotal } from '@anchor-protocol/app-fns';
-import { AnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
+import {
+  BAssetInfoAndBalancesTotalWithDisplay,
+  AnchorBank,
+} from '@anchor-protocol/app-provider';
 import {
   formatANC,
   formatAUSTWithPostfixUnits,
@@ -33,7 +35,7 @@ interface WalletDetailContentProps {
   availablePost: boolean;
   connection: Connection;
   openBuyUst: () => void;
-  bAssetBalanceTotal: BAssetInfoAndBalancesTotal | undefined;
+  bAssetBalanceTotal: BAssetInfoAndBalancesTotalWithDisplay | undefined;
 }
 
 export function WalletDetailContentBase({
@@ -114,11 +116,11 @@ export function WalletDetailContentBase({
           )}
           {bAssetBalanceTotal?.infoAndBalances
             .filter(({ balance }) => big(balance.balance).gt(0))
-            .map(({ bAsset, balance }) => (
+            .map(({ bAsset, balance, tokenDisplay }) => (
               <li key={'basset-' + bAsset.symbol}>
                 <span>
-                  {bAsset.symbol}{' '}
-                  {bAsset.symbol.toLowerCase() === 'beth' && (
+                  {tokenDisplay.symbol}{' '}
+                  {tokenDisplay.symbol.toLowerCase() === 'beth' && (
                     <BuyLink
                       href="https://anchor.lido.fi/"
                       target="_blank"
