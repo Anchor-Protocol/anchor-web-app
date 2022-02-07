@@ -16,6 +16,9 @@ const EvmTokenBalancesProvider = ({ children }: UIElementProps) => {
   const ustBalance = useERC20Balance<UST>(
     '0x67d574b0218DcA2eB790b5922C5dA6A7b77E25a5' as EVMAddr,
   );
+
+  console.log('ustBalance', ustBalance);
+
   // aUST in ropsten
   const aUstBalance = useERC20Balance<aUST>(
     '0x78D8036EB3Dcb4d8F099E9497d02CDaE202EA358' as EVMAddr,

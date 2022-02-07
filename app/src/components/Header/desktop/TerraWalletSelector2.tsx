@@ -4,14 +4,15 @@ import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
 import { ConnectType, useWallet } from '@terra-money/wallet-provider';
-import { useAnchorBank } from '@anchor-protocol/app-provider';
+//import { useAnchorBank } from '@anchor-protocol/app-provider';
 import { useAccount } from 'contexts/account';
 import { ConnectionTypeList } from './ConnectionTypeList';
 import { TermsMessage } from './TermsMessage';
 import { WalletSelector } from './WalletSelector';
-import { useBuyUstDialog } from 'pages/earn/components/useBuyUstDialog';
-import { useSendDialog } from 'pages/send/useSendDialog';
-import { WalletDetailContent } from '../wallet/WalletDetailContent';
+//import { useBuyUstDialog } from 'pages/earn/components/useBuyUstDialog';
+//import { useSendDialog } from 'pages/send/useSendDialog';
+//import { WalletDetailContent } from '../wallet/WalletDetailContent';
+import { WalletContent } from '../wallet/WalletContent';
 
 interface WalletConnectionListFooterProps {
   includesReadonly: boolean;
@@ -125,25 +126,25 @@ const TerraWalletSelector = () => {
   const {
     connect,
     disconnect,
-    connection,
-    network,
+    // connection,
+    // network,
     availableConnectTypes,
-    availableConnections,
-    supportFeatures,
+    // availableConnections,
+    // supportFeatures,
   } = useWallet();
 
-  const bank = useAnchorBank();
+  //const bank = useAnchorBank();
 
   const [open, setOpen] = useState(false);
 
   // TODO: the current implementation doesn't allow the modal
   // elements to be appended to the list
 
-  //const [openSendDialog, _sendDialogElement] = useSendDialog();
-  const [openSendDialog] = useSendDialog();
+  // //const [openSendDialog, _sendDialogElement] = useSendDialog();
+  // const [openSendDialog] = useSendDialog();
 
-  //const [openBuyUstDialog, _buyUstDialogElement] = useBuyUstDialog();
-  const [openBuyUstDialog] = useBuyUstDialog();
+  // //const [openBuyUstDialog, _buyUstDialogElement] = useBuyUstDialog();
+  // const [openBuyUstDialog] = useBuyUstDialog();
 
   const connectWallet = useCallback(() => {
     if (availableConnectTypes.length > 1) {
@@ -173,17 +174,21 @@ const TerraWalletSelector = () => {
       {!terraWalletAddress ? (
         <WalletConnectionList setOpen={setOpen} />
       ) : (
-        <WalletDetailContent
-          connection={connection ?? availableConnections[0]}
-          bank={bank}
-          availablePost={supportFeatures.has('post')}
+        // <WalletDetailContent
+        //   connection={connection ?? availableConnections[0]}
+        //   bank={bank}
+        //   availablePost={supportFeatures.has('post')}
+        //   walletAddress={terraWalletAddress}
+        //   network={network}
+        //   closePopup={() => setOpen(false)}
+        //   disconnectWallet={disconnectWallet}
+        //   openSend={() => openSendDialog({})}
+        //   openBuyUst={() => openBuyUstDialog({})}
+        // />
+        <WalletContent
           walletAddress={terraWalletAddress}
-          network={network}
-          closePopup={() => setOpen(false)}
-          disconnectWallet={disconnectWallet}
-          openSend={() => openSendDialog({})}
-          openBuyUst={() => openBuyUstDialog({})}
-        />
+          onDisconnectWallet={disconnectWallet}
+        ></WalletContent>
       )}
     </WalletSelector>
   );
