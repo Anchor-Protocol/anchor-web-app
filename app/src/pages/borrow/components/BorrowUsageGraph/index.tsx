@@ -14,10 +14,7 @@ import {
   RenderData,
   valueFunction,
 } from './render';
-import {
-  ANCHOR_SAFE_RATIO,
-  ANCHOR_DANGER_RATIO,
-} from '@anchor-protocol/app-fns';
+import { ANCHOR_SAFE_RATIO } from '@anchor-protocol/app-fns';
 
 export interface BorrowUsageGraphProps {
   currentLtv: Rate<Big>;
@@ -51,7 +48,7 @@ export function BorrowUsageGraph(props: BorrowUsageGraphProps) {
       ? {
           variant: 'label',
           label: `${formatRate(currentLtv as Rate<BigSource>)}%`,
-          color: currentLtv.gte(ANCHOR_DANGER_RATIO)
+          color: currentLtv.gte(0.9)
             ? theme.colors.negative
             : currentLtv.gte(ANCHOR_SAFE_RATIO)
             ? theme.colors.warning

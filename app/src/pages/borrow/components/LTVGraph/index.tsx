@@ -1,7 +1,4 @@
-import {
-  ANCHOR_SAFE_RATIO,
-  ANCHOR_DANGER_RATIO,
-} from '@anchor-protocol/app-fns';
+import { ANCHOR_SAFE_RATIO } from '@anchor-protocol/app-fns';
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
 import type { Rate, u, UST } from '@anchor-protocol/types';
 import { demicrofy, formatRate } from '@libs/formatter';
@@ -120,7 +117,7 @@ export function LTVGraph({
         {
           variant: 'value',
           label: value ? `${value.lt(1) ? formatRate(value) : '>100'}%` : '',
-          color: value?.gte(ANCHOR_DANGER_RATIO)
+          color: value?.gte(0.9)
             ? theme.colors.negative
             : value?.gte(ANCHOR_SAFE_RATIO)
             ? theme.colors.warning
