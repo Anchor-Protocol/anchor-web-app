@@ -187,7 +187,7 @@ function ComponentBase({
         >
           <span>{states.invalidBorrowAmount ?? states.invalidOverMaxLtv}</span>
           <span>
-            {formatRate(ANCHOR_SAFE_RATIO as Rate<number>)}% LTV:{' '}
+            {formatRate(ANCHOR_SAFE_RATIO as Rate<number>)}% Borrow Usage:{' '}
             <span
               style={{
                 textDecoration: 'underline',

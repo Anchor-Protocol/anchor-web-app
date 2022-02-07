@@ -115,7 +115,7 @@ export function LTVGraph({
           color: 'rgba(0, 0, 0, 0)',
           value: 1,
           tooltip:
-            'When the Borrow usage reaches 100%, liquidations can occur at anytime',
+            'When the borrow usage reaches 100%, liquidations can occur at anytime',
         },
         {
           variant: 'value',

@@ -45,7 +45,7 @@ export function BorrowUsageGraph(props: BorrowUsageGraphProps) {
       textAlign: 'center',
       value: 1,
       tooltip:
-        'When the Borrow usage reaches 100%, liquidations can occur at anytime',
+        'When the borrow usage reaches 100%, liquidations can occur at anytime',
     },
     big(currentLtv).gt(0)
       ? {

@@ -187,7 +187,8 @@ function Component({ className }: OverviewProps) {
             <IconSpan>
               BORROW USAGE{' '}
               <InfoTooltip>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                The percentage of the borrow limit used. The borrow limit and
+                usage may fluctuate depending on the collateral value.
               </InfoTooltip>
             </IconSpan>
           </h3>
