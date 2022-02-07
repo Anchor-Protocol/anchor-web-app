@@ -109,9 +109,9 @@ export function bondSwapTx($: {
           fromContract,
           'spread_amount',
         );
-        const comissionAmount = pickAttributeValueByKey<u<Luna>>(
+        const commissionAmount = pickAttributeValueByKey<u<Luna>>(
           fromContract,
-          'comission_amount',
+          'commission_amount',
         );
 
         const exchangeRate =
@@ -120,13 +120,12 @@ export function bondSwapTx($: {
           (big(boughtAmount).div(paidAmount) as Rate<BigSource> | undefined);
 
         const tradingFee =
-          comissionAmount &&
+          commissionAmount &&
           spreadAmount &&
-          (big(comissionAmount).plus(spreadAmount) as u<Luna<Big>>);
+          (big(commissionAmount).plus(spreadAmount) as u<Luna<Big>>);
 
         return {
           value: null,
-
           phase: TxStreamPhase.SUCCEED,
           receipts: [
             paidAmount && {
@@ -147,7 +146,7 @@ export function bondSwapTx($: {
             helper.txHashReceipt(),
             tradingFee && {
               name: 'Trading Fee',
-              value: formatLuna(demicrofy(tradingFee)) + ' Luna',
+              value: formatLuna(demicrofy(tradingFee)) + ' LUNA',
             },
             helper.txFeeReceipt(),
           ],

@@ -85,14 +85,14 @@ export function airdropClaimTx($: {
         fromContract,
         'spread_amount',
       );
-      const comissionAmount = pickAttributeValueByKey<u<ANC>>(
+      const commissionAmount = pickAttributeValueByKey<u<ANC>>(
         fromContract,
-        'comission_amount',
+        'commission_amount',
       );
       const tradingFee =
-        comissionAmount &&
+        commissionAmount &&
         spreadAmount &&
-        (big(comissionAmount).plus(spreadAmount) as u<ANC<Big>>);
+        (big(commissionAmount).plus(spreadAmount) as u<ANC<Big>>);
 
       try {
         // FIXME cache claimed stages
