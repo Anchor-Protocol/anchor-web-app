@@ -1,5 +1,5 @@
 import { exportCW20Decimals } from '@anchor-protocol/app-fns/functions/cw20Decimals';
-import { BAssetInfoWithDisplay } from '@anchor-protocol/app-provider/queries/basset/utils/tokenDisplay';
+import { BAssetInfoWithDisplay } from '@anchor-protocol/app-provider';
 import {
   basset,
   bAsset,

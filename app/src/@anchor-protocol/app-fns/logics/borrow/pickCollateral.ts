@@ -1,4 +1,4 @@
-import { OverseerWhitelistWithDisplay } from '@anchor-protocol/app-provider/queries/borrow/utils/tokenDisplay';
+import { OverseerWhitelistWithDisplay } from '@anchor-protocol/app-provider';
 import { CW20Addr } from '@anchor-protocol/types';
 
 export function pickCollateral(

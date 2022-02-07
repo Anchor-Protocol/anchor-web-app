@@ -5,7 +5,7 @@ import {
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { useBorrowBorrowerQuery } from '@anchor-protocol/app-provider/queries/borrow/borrower';
 import { useBorrowMarketQuery } from '@anchor-protocol/app-provider/queries/borrow/market';
-import { BorrowMarketWithDisplay } from '@anchor-protocol/app-provider/queries/borrow/utils/tokenDisplay';
+import { BorrowMarketWithDisplay } from '@anchor-protocol/app-provider';
 import { bAsset } from '@anchor-protocol/types';
 import { useCW20Balance, useFixedFee } from '@libs/app-provider';
 import { CW20Addr } from '@libs/types';

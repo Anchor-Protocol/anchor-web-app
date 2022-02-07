@@ -11,7 +11,7 @@ export type BAssetInfoTokenDisplay = {
 
 export type BAssetInfoWithDisplay = BAssetInfo & BAssetInfoTokenDisplay;
 
-export const withTokenDisplay = (
+export const withBAssetInfoTokenDisplay = (
   bAssetInfo: BAssetInfo,
   tokenDisplayInfoByAddr: TokenDisplayInfoByAddr,
 ): BAssetInfoWithDisplay => ({

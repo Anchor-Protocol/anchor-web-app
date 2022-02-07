@@ -5,7 +5,10 @@ import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 import { useQueryWithTokenDisplay } from '../utils/tokenDisplay';
-import { BAssetInfoWithDisplay, withTokenDisplay } from './utils/tokenDisplay';
+import {
+  BAssetInfoWithDisplay,
+  withBAssetInfoTokenDisplay,
+} from './utils/tokenDisplay';
 
 const queryFn = createQueryFn(bAssetInfoQuery);
 
@@ -24,5 +27,5 @@ export function useBAssetInfoQuery(
     },
   );
 
-  return useQueryWithTokenDisplay(bAssetInfo, withTokenDisplay);
+  return useQueryWithTokenDisplay(bAssetInfo, withBAssetInfoTokenDisplay);
 }

@@ -1,4 +1,4 @@
-import { OverseerWhitelistWithDisplay } from '@anchor-protocol/app-provider/queries/borrow/utils/tokenDisplay';
+import { OverseerWhitelistWithDisplay } from '@anchor-protocol/app-provider';
 import { moneyMarket, Rate } from '@anchor-protocol/types';
 import { u, UST } from '@libs/types';
 import { FormReturn } from '@libs/use-form';

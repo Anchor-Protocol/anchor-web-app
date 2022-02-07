@@ -3,7 +3,7 @@ import {
   useAnchorBank,
   useBAssetImportTx,
 } from '@anchor-protocol/app-provider';
-import { BAssetInfoWithDisplay } from '@anchor-protocol/app-provider/queries/basset/utils/tokenDisplay';
+import { BAssetInfoWithDisplay } from '@anchor-protocol/app-provider';
 import {
   formatUST,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,

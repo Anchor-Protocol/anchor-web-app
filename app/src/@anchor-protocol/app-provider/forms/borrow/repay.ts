@@ -1,5 +1,5 @@
 import { BorrowBorrower, borrowRepayForm } from '@anchor-protocol/app-fns';
-import { BorrowMarketWithDisplay } from '@anchor-protocol/app-provider/queries/borrow/utils/tokenDisplay';
+import { BorrowMarketWithDisplay } from '@anchor-protocol/app-provider';
 import { useFixedFee } from '@libs/app-provider';
 import { UST } from '@libs/types';
 import { useForm } from '@libs/use-form';

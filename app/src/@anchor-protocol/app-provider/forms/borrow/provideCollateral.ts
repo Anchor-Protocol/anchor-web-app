@@ -2,7 +2,7 @@ import {
   BorrowBorrower,
   borrowProvideCollateralForm,
 } from '@anchor-protocol/app-fns';
-import { BorrowMarketWithDisplay } from '@anchor-protocol/app-provider/queries/borrow/utils/tokenDisplay';
+import { BorrowMarketWithDisplay } from '@anchor-protocol/app-provider';
 import { bAsset } from '@anchor-protocol/types';
 import { useCW20Balance, useFixedFee } from '@libs/app-provider';
 import { CW20Addr } from '@libs/types';

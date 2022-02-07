@@ -3,7 +3,7 @@ import {
   useBorrowBorrowForm,
   useBorrowBorrowTx,
 } from '@anchor-protocol/app-provider';
-import { BorrowMarketWithDisplay } from '@anchor-protocol/app-provider/queries/borrow/utils/tokenDisplay';
+import { BorrowMarketWithDisplay } from '@anchor-protocol/app-provider';
 import {
   formatUST,
   formatUSTInput,

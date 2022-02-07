@@ -5,7 +5,7 @@ import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 import {
   BorrowMarketWithDisplay,
-  withTokenDisplay,
+  withBorrowMarketTokenDisplay,
 } from './utils/tokenDisplay';
 import { useQueryWithTokenDisplay } from '../utils/tokenDisplay';
 
@@ -34,5 +34,5 @@ export function useBorrowMarketQuery(): UseQueryResult<
     },
   );
 
-  return useQueryWithTokenDisplay(borrowMarket, withTokenDisplay);
+  return useQueryWithTokenDisplay(borrowMarket, withBorrowMarketTokenDisplay);
 }

@@ -19,7 +19,7 @@ export type OverseerWhitelistTokenDisplay = {
   tokenDisplay: CW20TokenDisplayInfo;
 };
 
-export const withTokenDisplay = (
+export const withBorrowMarketTokenDisplay = (
   borrowMarket: BorrowMarket,
   tokenDisplayInfoByAddr: TokenDisplayInfoByAddr,
 ): BorrowMarketWithDisplay => ({
