@@ -96,24 +96,10 @@ export function bondBurnTx($: {
           'amount',
           (attrs) => attrs[0],
         );
-        // const expectedAmount = pickAttributeValueByKey<u<bLuna>>(
-        //   fromContract,
-        //   'amount',
-        //   (attrs) => attrs.reverse()[0],
-        // );
 
         const expectedAmount = new Dec(burnedAmount)
           .mul($.exchangeRate)
           .toString() as u<Luna>;
-
-        // const exchangeRate =
-        //   burnedAmount &&
-        //   expectedAmount &&
-        //   (big(expectedAmount).div(burnedAmount) as
-        //     | Rate<BigSource>
-        //     | undefined);
-
-        //     exchangeRate
 
         return {
           value: null,
@@ -121,15 +107,18 @@ export function bondBurnTx($: {
           receipts: [
             burnedAmount && {
               name: 'Burned Amount',
-              value: formatLuna(demicrofy(burnedAmount)) + ' bLUNA',
+              value: `${formatLuna(demicrofy(burnedAmount))} bLUNA`,
             },
             expectedAmount && {
               name: 'Expected Amount',
-              value: formatLuna(demicrofy(expectedAmount)) + ' LUNA',
+              value: `${formatLuna(demicrofy(expectedAmount))} LUNA`,
             },
             {
               name: 'Exchange Rate',
-              value: formatFluidDecimalPoints($.exchangeRate, 6),
+              value: `${formatFluidDecimalPoints(
+                $.exchangeRate,
+                6,
+              )} LUNA per bLUNA`,
             },
             helper.txHashReceipt(),
             helper.txFeeReceipt(),

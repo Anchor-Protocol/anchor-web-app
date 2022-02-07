@@ -10,7 +10,7 @@ import {
   UST,
 } from '@anchor-protocol/types';
 import {
-  pickAttributeValue,
+  pickAttributeValueByKey,
   pickEvent,
   pickRawLog,
   TxResultRendering,
@@ -95,15 +95,34 @@ export function bondSwapTx($: {
       }
 
       try {
-        const boughtAmount = pickAttributeValue<u<Luna>>(fromContract, 18);
-        const paidAmount = pickAttributeValue<u<bLuna>>(fromContract, 17);
-        const tradingFee1 = pickAttributeValue<u<Luna>>(fromContract, 20);
-        const tradingFee2 = pickAttributeValue<u<Luna>>(fromContract, 21);
+        console.log(fromContract);
+
+        const boughtAmount = pickAttributeValueByKey<u<Luna>>(
+          fromContract,
+          'return_amount',
+        );
+        const paidAmount = pickAttributeValueByKey<u<bLuna>>(
+          fromContract,
+          'offer_amount',
+        );
+        const spreadAmount = pickAttributeValueByKey<u<Luna>>(
+          fromContract,
+          'spread_amount',
+        );
+        const comissionAmount = pickAttributeValueByKey<u<Luna>>(
+          fromContract,
+          'comission_amount',
+        );
 
         const exchangeRate =
           boughtAmount &&
           paidAmount &&
           (big(boughtAmount).div(paidAmount) as Rate<BigSource> | undefined);
+
+        const tradingFee =
+          comissionAmount &&
+          spreadAmount &&
+          (big(comissionAmount).plus(spreadAmount) as u<Luna<Big>>);
 
         return {
           value: null,
@@ -112,27 +131,24 @@ export function bondSwapTx($: {
           receipts: [
             paidAmount && {
               name: 'Paid Amount',
-              value: formatLuna(demicrofy(paidAmount)) + ' bLUNA',
+              value: `${formatLuna(demicrofy(paidAmount))} bLUNA`,
             },
             boughtAmount && {
               name: 'Bought Amount',
-              value: formatLuna(demicrofy(boughtAmount)) + ' LUNA',
+              value: `${formatLuna(demicrofy(boughtAmount))} LUNA`,
             },
             exchangeRate && {
               name: 'Exchange Rate',
-              value: formatFluidDecimalPoints(exchangeRate, 6),
+              value: `${formatFluidDecimalPoints(
+                exchangeRate,
+                6,
+              )} LUNA per bLUNA`,
             },
             helper.txHashReceipt(),
-            tradingFee1 &&
-              tradingFee2 && {
-                name: 'Trading Fee',
-                value:
-                  formatLuna(
-                    demicrofy(
-                      big(tradingFee1).plus(tradingFee2) as u<Luna<Big>>,
-                    ),
-                  ) + ' Luna',
-              },
+            tradingFee && {
+              name: 'Trading Fee',
+              value: formatLuna(demicrofy(tradingFee)) + ' Luna',
+            },
             helper.txFeeReceipt(),
           ],
         } as TxResultRendering;

@@ -93,11 +93,6 @@ export function bondMintTx($: {
 
         const mintedAmount = pickAttributeValue<u<bLuna>>(fromContract, 4);
 
-        // const exchangeRate =
-        //   bondedAmount &&
-        //   mintedAmount &&
-        //   (big(bondedAmount).div(mintedAmount) as Rate<BigSource> | undefined);
-
         return {
           value: null,
 
@@ -105,15 +100,18 @@ export function bondMintTx($: {
           receipts: [
             bondedAmount && {
               name: 'Bonded Amount',
-              value: formatLuna(demicrofy(bondedAmount)) + ' LUNA',
+              value: `${formatLuna(demicrofy(bondedAmount))} LUNA`,
             },
             mintedAmount && {
               name: 'Minted Amount',
-              value: formatLuna(demicrofy(mintedAmount)) + ' bLUNA',
+              value: `${formatLuna(demicrofy(mintedAmount))} bLUNA`,
             },
             {
               name: 'Exchange Rate',
-              value: formatFluidDecimalPoints($.exchangeRate, 6),
+              value: `${formatFluidDecimalPoints(
+                $.exchangeRate,
+                6,
+              )} bLUNA per LUNA`,
             },
             helper.txHashReceipt(),
             helper.txFeeReceipt(),
