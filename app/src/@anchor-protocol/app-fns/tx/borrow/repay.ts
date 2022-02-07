@@ -1,3 +1,8 @@
+import {
+  computeLtv,
+  computeBorrowLimit,
+  computeBorrowedAmount,
+} from '@anchor-protocol/app-fns';
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
 import { Gas, HumanAddr, Rate, u, UST } from '@anchor-protocol/types';
 import {
@@ -28,7 +33,6 @@ import {
 import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
 import { QueryObserverResult } from 'react-query';
 import { Observable } from 'rxjs';
-import { computeCurrentLtv } from '../../logics/borrow/computeCurrentLtv';
 import { BorrowBorrower } from '../../queries/borrow/borrower';
 import { BorrowMarket } from '../../queries/borrow/market';
 import { _fetchBorrowData } from './_fetchBorrowData';
@@ -98,12 +102,14 @@ export function borrowRepayTx($: {
       try {
         const repaidAmount = pickAttributeValue<u<UST>>(fromContract, 3);
 
-        const newLtv =
-          computeCurrentLtv(
-            borrowBorrower.marketBorrowerInfo,
+        const ltv = computeLtv(
+          computeBorrowLimit(
             borrowBorrower.overseerCollaterals,
             borrowMarket.oraclePrices,
-          ) ?? ('0' as Rate);
+            borrowMarket.bAssetLtvs,
+          ),
+          computeBorrowedAmount(borrowBorrower.marketBorrowerInfo),
+        );
 
         const outstandingLoan = borrowBorrower.marketBorrowerInfo.loan_amount;
 
@@ -117,9 +123,9 @@ export function borrowRepayTx($: {
               value:
                 formatUSTWithPostfixUnits(demicrofy(repaidAmount)) + ' UST',
             },
-            newLtv && {
-              name: 'New LTV',
-              value: formatRate(newLtv) + ' %',
+            ltv && {
+              name: 'New Borrow Usage',
+              value: formatRate(ltv) + ' %',
             },
             outstandingLoan && {
               name: 'Outstanding Loan',

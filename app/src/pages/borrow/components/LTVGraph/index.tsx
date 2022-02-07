@@ -1,89 +1,88 @@
-import type { Rate } from '@anchor-protocol/types';
-import { formatRate } from '@libs/formatter';
+import { ANCHOR_SAFE_RATIO } from '@anchor-protocol/app-fns';
+import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
+import type { Rate, u, UST } from '@anchor-protocol/types';
+import { demicrofy, formatRate } from '@libs/formatter';
 import {
   HorizontalGraphBar,
   Rect,
 } from '@libs/neumorphism-ui/components/HorizontalGraphBar';
 import { HorizontalGraphSlider } from '@libs/neumorphism-ui/components/HorizontalGraphSlider';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
 import { InfoOutlined } from '@material-ui/icons';
-import big, { Big, BigSource } from 'big.js';
-import React, { useCallback, useMemo } from 'react';
-import { useMediaQuery } from 'react-responsive';
+import big, { Big } from 'big.js';
+import React, { useCallback } from 'react';
 import { useTheme } from 'styled-components';
-import { GraphLabel } from './GraphLabel';
-import { GraphTick } from './GraphTick';
+import { Footnote } from './Footnote';
+import { Label } from './Label';
+import { Marker } from './Marker';
 
 export interface Data {
-  position: 'top' | 'bottom';
+  variant: 'label' | 'value';
   label: string;
   value: number;
   color: string;
   tooltip?: string;
 }
 
-export interface LTVGraphProps {
-  maxLtv: Rate<BigSource>;
-  safeLtv: Rate<BigSource>;
-  dangerLtv: Rate<BigSource>;
-  currentLtv: Rate<Big> | undefined;
-  nextLtv: Rate<Big> | undefined;
-  // draftLtv => (fix with amount format 0.000 -> fixed ltv)
-  userMinLtv: Rate<BigSource> | undefined;
-  userMaxLtv: Rate<BigSource> | undefined;
-  onStep: (draftLtv: Rate<Big>) => Rate<Big>;
-  onChange: (nextLtv: Rate<Big>) => void;
-  disabled?: boolean;
-}
-
 const colorFunction = ({ color }: Data) => color;
+
 const valueFunction = ({ value }: Data) => value;
+
 const labelRenderer = (
-  { position, label, tooltip, color }: Data,
+  { variant, label, tooltip, color }: Data,
   rect: Rect,
   i: number,
 ) => {
-  return position === 'top' ? (
-    <GraphTick key={'label' + i} style={{ left: rect.x + rect.width }}>
+  return variant === 'label' ? (
+    <Marker key={'label' + i} style={{ left: rect.x + rect.width }}>
       {tooltip ? (
         <Tooltip title={tooltip} placement="top">
           <IconSpan style={{ cursor: 'help' }}>
             <sup>
               <InfoOutlined />
             </sup>{' '}
-            {label}
+            <span className="text">{label}</span>
           </IconSpan>
         </Tooltip>
       ) : (
         label
       )}
-    </GraphTick>
+    </Marker>
   ) : (
-    <GraphLabel key={'label' + i} style={{ left: rect.x + rect.width, color }}>
-      {label}
-    </GraphLabel>
+    <Label key={'label' + i} style={{ left: rect.x + rect.width, color }}>
+      <span>{label}</span>
+    </Label>
   );
 };
 
+export interface LTVGraphProps {
+  borrowLimit?: u<UST<Big>>;
+  value: Rate<Big> | undefined;
+  start: number;
+  end: number;
+  onStep?: (draftLtv: Rate<Big>) => Rate<Big>;
+  onChange: (nextLtv: Rate<Big>) => void;
+  disabled?: boolean;
+}
+
 export function LTVGraph({
-  maxLtv,
-  safeLtv,
-  nextLtv,
-  dangerLtv,
-  userMaxLtv,
-  userMinLtv,
+  borrowLimit,
+  value,
+  start,
+  end,
   onChange,
   onStep,
   disabled,
 }: LTVGraphProps) {
   const theme = useTheme();
 
-  const isSmallScreen = useMediaQuery({ maxWidth: 700 });
+  //const isSmallScreen = useMediaQuery({ maxWidth: 700 });
 
   const step = useCallback(
     (draftLtv: number) => {
-      return onStep(big(draftLtv) as Rate<Big>).toNumber();
+      return onStep ? onStep(big(draftLtv) as Rate<Big>).toNumber() : draftLtv;
     },
     [onStep],
   );
@@ -95,59 +94,36 @@ export function LTVGraph({
     [onChange],
   );
 
-  const color = useMemo(() => {
-    return nextLtv?.gte(dangerLtv)
-      ? theme.colors.negative
-      : nextLtv?.gte(safeLtv)
-      ? theme.colors.warning
-      : theme.colors.positive;
-  }, [
-    dangerLtv,
-    nextLtv,
-    safeLtv,
-    theme.colors.negative,
-    theme.colors.positive,
-    theme.colors.warning,
-  ]);
-
   return (
     <HorizontalGraphBar<Data>
       min={0}
-      max={big(maxLtv).toNumber()}
+      max={1}
       data={[
         {
-          position: 'top',
-          label: `${formatRate(maxLtv)}% LTV${isSmallScreen ? '' : ' (MAX)'}`,
+          variant: 'label',
+          label: `${formatRate(ANCHOR_SAFE_RATIO)}%`,
           color: 'rgba(0, 0, 0, 0)',
-          value: big(maxLtv).toNumber(),
+          value: ANCHOR_SAFE_RATIO,
+          tooltip: 'Recommended borrow usage',
+        },
+        {
+          variant: 'label',
+          label: '100%',
+          color: 'rgba(0, 0, 0, 0)',
+          value: 1,
           tooltip:
-            'Maximum allowed loan to value (LTV) ratio, collaterals will be liquidated when the LTV is bigger than this value.',
+            'When the borrow usage reaches 100%, liquidations can occur at anytime',
         },
         {
-          position: 'top',
-          label: `${formatRate(safeLtv)}% LTV`,
-          color: 'rgba(0, 0, 0, 0)',
-          value: big(safeLtv).toNumber(),
-          tooltip: 'Recommended LTV',
-        },
-        //{
-        //  position: 'top',
-        //  label: ltvs.current
-        //    ? `CURRENT LTV: ${formatPercentage(ltvs.safe.mul(100))}%`
-        //    : '',
-        //  color: 'rgba(0, 0, 0, 0)',
-        //  value: ltvs.current
-        //    ? Math.max(Math.min(ltvs.safe.toNumber(), ltvs.max.toNumber()), 0)
-        //    : 0,
-        //},
-        {
-          position: 'bottom',
-          label: nextLtv
-            ? `${nextLtv.lt(1) ? formatRate(nextLtv) : '>100'}%`
-            : '',
-          color,
-          value: nextLtv
-            ? Math.max(Math.min(nextLtv.toNumber(), big(maxLtv).toNumber()), 0)
+          variant: 'value',
+          label: value ? `${value.lt(1) ? formatRate(value) : '>100'}%` : '',
+          color: value?.gte(0.9)
+            ? theme.colors.negative
+            : value?.gte(ANCHOR_SAFE_RATIO)
+            ? theme.colors.warning
+            : theme.colors.positive,
+          value: value
+            ? Math.max(Math.min(value.toNumber(), big(1).toNumber()), 0)
             : 0,
         },
       ]}
@@ -155,20 +131,34 @@ export function LTVGraph({
       valueFunction={valueFunction}
       labelRenderer={labelRenderer}
     >
-      {(coordinateSpace) =>
-        disabled === true ? null : (
-          <HorizontalGraphSlider
-            coordinateSpace={coordinateSpace}
-            min={0}
-            max={big(maxLtv).toNumber()}
-            start={big(userMinLtv ?? 0).toNumber()}
-            end={big(userMaxLtv ?? maxLtv).toNumber()}
-            value={big(nextLtv ?? 0).toNumber()}
-            onChange={change}
-            stepFunction={step}
-          />
-        )
-      }
+      {(coordinateSpace) => (
+        <>
+          {disabled === true ? null : (
+            <HorizontalGraphSlider
+              coordinateSpace={coordinateSpace}
+              min={0}
+              max={1}
+              start={start}
+              end={end}
+              value={value?.toNumber() ?? 0}
+              onChange={change}
+              stepFunction={step}
+            />
+          )}
+          {borrowLimit && (
+            <Footnote style={{ right: 0 }}>
+              <IconSpan>
+                Borrow Limit: $
+                {formatUSTWithPostfixUnits(demicrofy(borrowLimit))}{' '}
+                <InfoTooltip>
+                  The maximum amount of liability permitted from deposited
+                  collaterals
+                </InfoTooltip>
+              </IconSpan>
+            </Footnote>
+          )}
+        </>
+      )}
     </HorizontalGraphBar>
   );
 }

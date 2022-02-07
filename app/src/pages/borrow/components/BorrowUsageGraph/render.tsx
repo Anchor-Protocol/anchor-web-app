@@ -1,14 +1,13 @@
+import React from 'react';
 import { InfoOutlined } from '@material-ui/icons';
 import { Rect } from '@libs/neumorphism-ui/components/HorizontalGraphBar';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
-import React from 'react';
-import { GraphLabel } from './GraphLabel';
-import { GraphMarkerTick } from './GraphMarkerTick';
-import { GraphTick } from './GraphTick';
+import { Marker } from './Marker';
+import { Label } from './Label';
 
 export interface RenderData {
-  position: 'top' | 'top-marker' | 'bottom';
+  variant: 'marker' | 'label';
   label: string;
   value: number;
   color: string;
@@ -17,39 +16,28 @@ export interface RenderData {
 }
 
 export const colorFunction = ({ color }: RenderData) => color;
+
 export const valueFunction = ({ value }: RenderData) => value;
+
 export const labelRenderer = (
-  { position, label, tooltip, textAlign = 'center' }: RenderData,
+  { variant, label, tooltip, textAlign = 'center', color }: RenderData,
   rect: Rect,
   i: number,
 ) => {
-  return position === 'top' ? (
-    <GraphTick
+  return variant === 'label' ? (
+    <Label
       key={'label' + i}
       style={{
         transform: `translateX(${rect.x + rect.width}px)`,
         opacity: label.length === 0 ? 0 : 1,
+        color,
       }}
     >
-      <span>
-        {tooltip ? (
-          <Tooltip title={tooltip} placement="top">
-            <IconSpan style={{ cursor: 'help' }}>
-              <sup>
-                <InfoOutlined />
-              </sup>{' '}
-              {label}
-            </IconSpan>
-          </Tooltip>
-        ) : (
-          label
-        )}
-      </span>
-    </GraphTick>
-  ) : position === 'top-marker' ? (
-    <GraphMarkerTick
+      <span>{label}</span>
+    </Label>
+  ) : (
+    <Marker
       key={'label' + i}
-      textAlign={textAlign}
       style={{
         transform: `translateX(${rect.x + rect.width}px)`,
         opacity: label.length === 0 ? 0 : 1,
@@ -62,17 +50,13 @@ export const labelRenderer = (
               <sup>
                 <InfoOutlined />
               </sup>{' '}
-              {label}
+              <span className="text">{label}</span>
             </IconSpan>
           </Tooltip>
         ) : (
           label
         )}
       </span>
-    </GraphMarkerTick>
-  ) : (
-    <GraphLabel key={'label' + i} style={{ left: rect.x + rect.width }}>
-      {label}
-    </GraphLabel>
+    </Marker>
   );
 };

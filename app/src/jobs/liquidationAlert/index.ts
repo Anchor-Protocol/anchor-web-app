@@ -2,7 +2,7 @@ import { Rate } from '@anchor-protocol/types';
 import { useAnchorWebapp } from '@anchor-protocol/app-provider';
 import { formatRate } from '@libs/formatter';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import big from 'big.js';
+import big, { Big } from 'big.js';
 import { useNotification } from 'contexts/notification';
 import { useCallback, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -33,20 +33,23 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
       });
 
       if (ltv && big(ltv).gte(ratio)) {
-        const noti = create(`LTV is ${formatRate(ltv as Rate)}%`, {
-          body: `Lower borrow LTV on Anchor webapp to prevent liquidation.`,
-          icon: '/logo.png',
-        });
+        const notification = create(
+          `Borrow Usage is ${formatRate(ltv as Rate<Big>)}%`,
+          {
+            body: `Lower borrow usage on Anchor webapp to prevent liquidation.`,
+            icon: '/logo.png',
+          },
+        );
 
-        if (noti) {
+        if (notification) {
           const click = () => {
             history.push('/borrow');
           };
 
-          noti.addEventListener('click', click);
+          notification.addEventListener('click', click);
 
           setTimeout(() => {
-            noti.removeEventListener('click', click);
+            notification.removeEventListener('click', click);
           }, 1000 * 10);
         }
       }

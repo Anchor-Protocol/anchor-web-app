@@ -2,7 +2,9 @@ import { HumanAddr } from '@anchor-protocol/types';
 import {
   borrowBorrowerQuery,
   borrowMarketQuery,
-  computeCurrentLtv,
+  computeBorrowedAmount,
+  computeBorrowLimit,
+  computeLtv,
 } from '@anchor-protocol/app-fns';
 import { AnchorContractAddress } from '@anchor-protocol/app-provider';
 import { lastSyncedHeightQuery } from '@libs/app-fns';
@@ -19,7 +21,7 @@ export async function userLtvQuery({
   address,
   hiveQueryClient,
 }: UserLtvQueryParams) {
-  const [{ oraclePrices }, borrowerResult] = await Promise.all([
+  const [{ oraclePrices, bAssetLtvs }, borrowerResult] = await Promise.all([
     borrowMarketQuery(
       address.moneyMarket.market,
       address.moneyMarket.interestModel,
@@ -42,9 +44,13 @@ export async function userLtvQuery({
 
   const { marketBorrowerInfo, overseerCollaterals } = borrowerResult;
 
-  return computeCurrentLtv(
-    marketBorrowerInfo,
+  const borrowLimit = computeBorrowLimit(
     overseerCollaterals,
     oraclePrices,
+    bAssetLtvs,
   );
+
+  const borrowAmount = computeBorrowedAmount(marketBorrowerInfo);
+
+  return computeLtv(borrowLimit, borrowAmount);
 }
