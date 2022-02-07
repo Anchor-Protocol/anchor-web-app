@@ -139,7 +139,7 @@ export function borrowRedeemCollateralTx($: {
               }`,
             },
             ltv && {
-              name: 'New LTV',
+              name: 'New Borrow Usage',
               value: formatRate(ltv) + ' %',
             },
             helper.txHashReceipt(),

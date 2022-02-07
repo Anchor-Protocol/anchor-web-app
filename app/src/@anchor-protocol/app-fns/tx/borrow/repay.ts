@@ -124,7 +124,7 @@ export function borrowRepayTx($: {
                 formatUSTWithPostfixUnits(demicrofy(repaidAmount)) + ' UST',
             },
             ltv && {
-              name: 'New LTV',
+              name: 'New Borrow Usage',
               value: formatRate(ltv) + ' %',
             },
             outstandingLoan && {
