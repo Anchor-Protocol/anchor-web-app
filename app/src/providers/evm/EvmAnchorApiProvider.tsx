@@ -2,46 +2,55 @@ import React, { useMemo } from 'react';
 import { UIElementProps } from '@libs/ui';
 import {
   AnchorApiContext,
-  AnchorDepositParams,
+  // AnchorDepositParams,
   AnchorWithdrawParams,
 } from 'contexts/api';
-import { Observable } from 'rxjs';
+import {
+  // interval,
+  Observable,
+} from 'rxjs';
+// import { map } from 'rxjs/operators';
 import { pipe } from '@rx-stream/pipe';
 import { TxResultRendering, TxStreamPhase } from '@libs/app-fns';
-import {
-  catchTxError,
-  CrossAnchorTx,
-  pollTx,
-} from '../../@anchor-protocol/cross-anchor';
-import { truncate } from '@libs/formatter';
+import { useDeposit } from './api/useDeposit';
+import { useApproveDeposit } from './api/useApproveDeposit';
 
 // TODO: will relocate this functionality somewhere once
 // we get a better idea of how it will all fit together
 
-const createTx = () => (_: void | TxResultRendering<CrossAnchorTx>) => {
-  const txHash =
-    '0x8ad143b5bee3ac2a1578032cdcdc4beb65588ced58b6483728156c9443c704d1';
-  return {
-    value: {
-      txHash,
-      chainId: 123,
-    },
-    phase: TxStreamPhase.BROADCAST,
-    receipts: [
-      {
-        name: `Tx Hash`,
-        value: truncate(txHash, [10, 10]),
-      },
-    ],
-  };
-};
-
-const deposit = (
-  params: AnchorDepositParams,
-): Observable<TxResultRendering<CrossAnchorTx>> => {
-  const observable = pipe(createTx(), pollTx(3));
-  return observable().pipe(catchTxError({}));
-};
+// const deposit = (
+//   params: AnchorDepositParams,
+// ): Observable<TxResultRendering> => {
+//   // const observable = pipe<void, TxResultRendering>(() => {
+//   //   return {
+//   //     value: null,
+//   //     phase: TxStreamPhase.SUCCEED,
+//   //     receipts: [
+//   //       {
+//   //         name: 'Deposit Amount',
+//   //         value: '123.456 UST',
+//   //       },
+//   //     ],
+//   //   };
+//   // });
+//   // return observable();
+//
+//   const observable = interval(1000).pipe<TxResultRendering>(
+//     map((i) => {
+//       return {
+//         value: null,
+//         phase: TxStreamPhase.BROADCAST,
+//         receipts: [
+//           {
+//             name: 'Time taken',
+//             value: `${i} seconds`,
+//           },
+//         ],
+//       };
+//     }),
+//   );
+//   return observable;
+// };
 
 const withdraw = (
   params: AnchorWithdrawParams,
@@ -62,9 +71,13 @@ const withdraw = (
 };
 
 const EvmAnchorApiProvider = ({ children }: UIElementProps) => {
+  const deposit = useDeposit();
+  const approveDeposit = useApproveDeposit();
+
   const api = useMemo(() => {
-    return { deposit, withdraw };
-  }, []);
+    return { approveDeposit, deposit, withdraw };
+  }, [approveDeposit, deposit]);
+
   return (
     <AnchorApiContext.Provider value={api}>
       {children}
