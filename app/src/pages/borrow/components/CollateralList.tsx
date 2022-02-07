@@ -173,17 +173,17 @@ export function CollateralList({ className }: CollateralListProps) {
                     {formatUSTWithPostfixUnits(price)} UST
                   </div>
                   <p className="volatility">
-                    {liquidationPrice &&
-                      formatUSTWithPostfixUnits(liquidationPrice) + ' UST'}
+                    {Boolean(Number(liquidationPrice)) &&
+                      formatUSTWithPostfixUnits(liquidationPrice!) + ' UST'}
                   </p>
                 </td>
                 <td>
                   <div className="value">
-                    {formatUSTWithPostfixUnits(demicrofy(lockedAmountInUST))}{' '}
-                    UST
+                    {formatBAsset(demicrofy(lockedAmount))} {symbol}
                   </div>
                   <p className="volatility">
-                    {formatBAsset(demicrofy(lockedAmount))} {symbol}
+                    {formatUSTWithPostfixUnits(demicrofy(lockedAmountInUST))}{' '}
+                    UST
                   </p>
                 </td>
                 <td>
