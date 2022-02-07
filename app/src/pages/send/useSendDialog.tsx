@@ -286,9 +286,7 @@ function ComponentBase({
       send({
         toWalletAddress: toAddress as HumanAddr,
         amount,
-        currency: currency.cw20Address
-          ? { cw20Contract: currency.cw20Address }
-          : { tokenDenom: currency.value },
+        currency,
         txFee,
         memo,
       });
@@ -505,6 +503,10 @@ const Component = styled(ComponentBase)`
 
   .amount {
     margin-bottom: 20px;
+
+    select {
+      padding-right: 10px;
+    }
   }
 
   .memo-warning {
