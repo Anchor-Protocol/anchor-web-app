@@ -28,14 +28,6 @@ const padding: number = 2;
 const defaultBarHeight: number = 14;
 const defaultBoxRadius: number = 7;
 
-interface ChildrenRendererProps {
-  coordinateSpace: Rect;
-  min: number;
-  max: number;
-}
-
-type ChildrenRenderer = (props: ChildrenRendererProps) => ReactNode;
-
 export interface HorizontalGraphBarProps<T>
   extends Omit<
     DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>,
@@ -64,7 +56,7 @@ export interface HorizontalGraphBarProps<T>
   /** Get the color code from the value */
   colorFunction: (value: T) => string;
 
-  children?: ReactNode | ChildrenRenderer;
+  children?: ReactNode | ((coordinateSpace: Rect) => ReactNode);
 
   barHeight?: number;
   boxRadius?: number;
@@ -197,9 +189,7 @@ function HorizontalGraphBarBase<T>({
           graphRects.map((rect, i) => labelRenderer(data[i], rect as Rect, i))}
       </div>
 
-      {typeof children === 'function'
-        ? children({ coordinateSpace, min, max })
-        : children}
+      {typeof children === 'function' ? children(coordinateSpace) : children}
     </div>
   );
 }

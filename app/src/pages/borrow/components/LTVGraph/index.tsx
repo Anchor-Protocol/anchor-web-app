@@ -131,7 +131,7 @@ export function LTVGraph({
       valueFunction={valueFunction}
       labelRenderer={labelRenderer}
     >
-      {({ coordinateSpace }) => (
+      {(coordinateSpace) => (
         <>
           {disabled === true ? null : (
             <HorizontalGraphSlider
