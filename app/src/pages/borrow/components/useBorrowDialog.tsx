@@ -214,17 +214,15 @@ function ComponentBase({
           />
         </figure>
 
-        {states.nextLtv?.gt(states.bAssetLtvsAvg.safe) && (
+        {states.nextLtv?.gt(ANCHOR_SAFE_RATIO) && (
           <MessageBox
             level="error"
             hide={{ id: 'borrow-ltv', period: 1000 * 60 * 60 * 24 * 5 }}
             style={{ userSelect: 'none', fontSize: 12 }}
           >
-            Caution: Borrowing is available only up to{' '}
-            {formatRate(states.userMaxLtv)}% LTV. If the loan-to-value ratio
-            (LTV) reaches the maximum ({formatRate(states.bAssetLtvsAvg.max)}%
-            LTV), a portion of your collateral may be immediately liquidated to
-            repay part of the loan.
+            Caution: Borrowing is available only up to 95% borrow usage. If the
+            borrow usage reaches the maximum (100%), a portion of your
+            collateral may be immediately liquidated to repay part of the loan.
           </MessageBox>
         )}
 

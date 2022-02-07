@@ -228,11 +228,11 @@ function ComponentBase({
             }}
             style={{ userSelect: 'none', fontSize: 12 }}
           >
-            Caution: As current LTV is above recommended LTV, there is an
-            increased probability fluctuations in collateral value may trigger
-            immediate liquidations. It is strongly recommended to keep the LTV
-            below the maximum by repaying loans with stablecoins or providing
-            additional collateral.
+            Caution: As current borrow usage is above the recommended amount,
+            fluctuations in collateral value may trigger immediate liquidations.
+            It is strongly recommended to keep the borrow usage below the
+            maximum by repaying loans with stablecoins or providing additional
+            collateral.
           </MessageBox>
         )}
 
