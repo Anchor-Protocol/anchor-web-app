@@ -3,11 +3,18 @@ import { UIElementProps } from '@libs/ui';
 import {
   AnchorApiContext,
   AnchorDepositParams,
+  // AnchorDepositParams,
   AnchorWithdrawParams,
 } from 'contexts/api';
-import { Observable } from 'rxjs';
+import {
+  // interval,
+  Observable,
+} from 'rxjs';
+// import { map } from 'rxjs/operators';
 import { pipe } from '@rx-stream/pipe';
 import { TxResultRendering, TxStreamPhase } from '@libs/app-fns';
+import { useDeposit } from './api/useDeposit';
+import { useApproveDeposit } from './api/useApproveDeposit';
 
 // TODO: will relocate this functionality somewhere once
 // we get a better idea of how it will all fit together
@@ -49,9 +56,13 @@ const withdraw = (
 };
 
 const EvmAnchorApiProvider = ({ children }: UIElementProps) => {
+  const deposit = useDeposit();
+  const approveDeposit = useApproveDeposit();
+
   const api = useMemo(() => {
-    return { deposit, withdraw };
-  }, []);
+    return { approveDeposit, deposit, withdraw };
+  }, [approveDeposit, deposit]);
+
   return (
     <AnchorApiContext.Provider value={api}>
       {children}
