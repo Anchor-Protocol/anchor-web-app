@@ -28,6 +28,9 @@ export interface AnchorWithdrawParams extends AnchorOperationParams {
 export interface AnchorApi {
   deposit: (params: AnchorDepositParams) => Observable<TxResultRendering>;
   withdraw: (params: AnchorWithdrawParams) => Observable<TxResultRendering>;
+  approveDeposit?: (
+    depositAmount: AnchorDepositParams['depositAmount'],
+  ) => Observable<TxResultRendering>;
 }
 
 const AnchorApiContext = createContext<AnchorApi | undefined>(undefined);
