@@ -1,5 +1,12 @@
-import { Gas, HumanAddr, Rate, u, UST } from '@anchor-protocol/types';
-import { TxResultRendering, TxStreamPhase } from '@libs/app-fns';
+import { ANC, Gas, HumanAddr, Rate, u, UST } from '@anchor-protocol/types';
+import {
+  pickAttributeValueByKey,
+  pickEvent,
+  pickRawLog,
+  TxResultRendering,
+  TxStreamPhase,
+} from '@libs/app-fns';
+import big, { Big } from 'big.js';
 import {
   _catchTxError,
   _createTxOptions,
@@ -19,6 +26,8 @@ import {
 import { Observable } from 'rxjs';
 import { airdropStageCache } from '../../caches/airdropStage';
 import { Airdrop } from '../../queries/airdrop/check';
+import { formatANC } from '@anchor-protocol/notation';
+import { demicrofy } from '@libs/formatter';
 
 export function airdropClaimTx($: {
   airdrop: Airdrop;
@@ -55,7 +64,36 @@ export function airdropClaimTx($: {
     }),
     _postTx({ helper, ...$ }),
     _pollTxInfo({ helper, ...$ }),
-    () => {
+    ({ value: txInfo }) => {
+      const rawLog = pickRawLog(txInfo, 0);
+
+      if (!rawLog) {
+        return helper.failedToFindRawLog();
+      }
+
+      const fromContract = pickEvent(rawLog, 'from_contract');
+
+      if (!fromContract) {
+        return helper.failedToFindEvents('from_contract');
+      }
+
+      const claimedAmount = pickAttributeValueByKey<u<ANC>>(
+        fromContract,
+        'claimed_amount',
+      );
+      const spreadAmount = pickAttributeValueByKey<u<ANC>>(
+        fromContract,
+        'spread_amount',
+      );
+      const comissionAmount = pickAttributeValueByKey<u<ANC>>(
+        fromContract,
+        'comission_amount',
+      );
+      const tradingFee =
+        comissionAmount &&
+        spreadAmount &&
+        (big(comissionAmount).plus(spreadAmount) as u<ANC<Big>>);
+
       try {
         // FIXME cache claimed stages
         const claimedStages = airdropStageCache.get($.walletAddress) ?? [];
@@ -66,9 +104,19 @@ export function airdropClaimTx($: {
 
         return {
           value: null,
-
           phase: TxStreamPhase.SUCCEED,
-          receipts: [helper.txHashReceipt()],
+          receipts: [
+            claimedAmount && {
+              name: 'Claimed amount',
+              value: `${formatANC(demicrofy(claimedAmount))} ANC`,
+            },
+            helper.txHashReceipt(),
+            tradingFee && {
+              name: 'Trading Fee',
+              value: `${formatANC(demicrofy(tradingFee))} ANC`,
+            },
+            helper.txFeeReceipt(),
+          ],
         } as TxResultRendering;
       } catch (error) {
         return helper.failedToParseTxResult();
