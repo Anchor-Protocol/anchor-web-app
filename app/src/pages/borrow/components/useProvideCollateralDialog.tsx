@@ -102,15 +102,7 @@ function ComponentBase({
     (nextLtv: Rate<Big>) => {
       const ltvToAmount = states.ltvToAmount;
       try {
-        //console.log('onLtvChange:states.currentLtv', states.currentLtv?.toString())
-        //console.log('onLtvChange:states.nextLtv', states.nextLtv?.toString())
-        //console.log('onLtvChange:nextLtv', nextLtv.toString())
-
-        //console.log("30%", ltvToAmount(Big(0.3) as Rate<Big>).toString())
-
         const nextAmount = ltvToAmount(nextLtv);
-        //console.log('onLtvChange:nextAmount', nextAmount.toString())
-        //console.log('onLtvChange:depositAmount', formatBAssetInput(demicrofy(nextAmount)).toString())
         input({ depositAmount: formatBAssetInput(demicrofy(nextAmount)) });
       } catch {}
     },

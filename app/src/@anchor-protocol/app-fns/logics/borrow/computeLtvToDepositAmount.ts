@@ -17,17 +17,10 @@ export const computeLtvToDepositAmount =
     bAssetLtvs: BAssetLtvs,
   ) =>
   (ltv: Rate<BigSource>): u<bAsset<Big>> => {
-    console.log('computeLtvToDepositAmount:ltv', ltv.toString());
-
     const borrowLimit = computeBorrowLimit(
       overseerCollaterals,
       oraclePrices,
       bAssetLtvs,
-    );
-
-    console.log(
-      'computeLtvToDepositAmount:borrowLimit',
-      borrowLimit.toString(),
     );
 
     const prices = vectorizeOraclePrices(
@@ -35,16 +28,11 @@ export const computeLtvToDepositAmount =
       oraclePrices.prices,
     );
 
-    console.log('computeLtvToDepositAmount:prices', prices);
-
     const borrowedAmount = computeBorrowedAmount(marketBorrowerInfo);
-
-    console.log(
-      'computeLtvToDepositAmount:borrowedAmount',
-      borrowedAmount.toString(),
-    );
 
     const increasedAmount = borrowedAmount.div(ltv).minus(borrowLimit);
 
-    return increasedAmount.div(prices[0]) as u<bAsset<Big>>;
+    const maxLtv = bAssetLtvs.get(collateralToken)?.max ?? 0;
+
+    return increasedAmount.div(Big(prices[0]).mul(maxLtv)) as u<bAsset<Big>>;
   };
