@@ -42,6 +42,11 @@ export const computeLtvToRedeemAmount =
         [{ amount: Big(0), price: Big(0), maxLtv: Big(0) }, Big(0)],
       );
 
+    if (Big(maxLtv).lte(0)) {
+      // the entire collateral position was removed
+      return Big(0) as u<bAsset<Big>>;
+    }
+
     const loanAmount = Big(marketBorrowerInfo.loan_amount);
 
     const minAmount = min(total.mul(ltv), loanAmount);
