@@ -32,9 +32,6 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
         hiveQueryClient,
       });
 
-      console.log('useLiquidationAlert:ltv', ltv?.toString());
-      console.log('useLiquidationAlert:ratio', ratio?.toString());
-
       if (ltv && big(ltv).gte(ratio)) {
         const notification = create(`LTV is ${formatRate(ltv as Rate<Big>)}%`, {
           body: `Lower borrow LTV on Anchor webapp to prevent liquidation.`,
