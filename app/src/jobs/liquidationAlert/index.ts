@@ -33,10 +33,13 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
       });
 
       if (ltv && big(ltv).gte(ratio)) {
-        const notification = create(`LTV is ${formatRate(ltv as Rate<Big>)}%`, {
-          body: `Lower borrow LTV on Anchor webapp to prevent liquidation.`,
-          icon: '/logo.png',
-        });
+        const notification = create(
+          `Borrow Usage is ${formatRate(ltv as Rate<Big>)}%`,
+          {
+            body: `Lower borrow usage on Anchor webapp to prevent liquidation.`,
+            icon: '/logo.png',
+          },
+        );
 
         if (notification) {
           const click = () => {
