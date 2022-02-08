@@ -1,15 +1,9 @@
+import { computeBorrowLimit } from '@anchor-protocol/app-fns';
 import type { bAsset, CW20Addr, u, UST } from '@anchor-protocol/types';
 import { moneyMarket } from '@anchor-protocol/types';
-import { sum, vectorMinus, vectorMultiply } from '@libs/big-math';
 import { microfy } from '@libs/formatter';
-import big, { Big } from 'big.js';
+import big, { Big, BigSource } from 'big.js';
 import { BAssetLtvs } from '../../queries/borrow/market';
-import { vectorizeBAssetMaxLtvs } from './vectorizeBAssetLtvs';
-import { vectorizeOraclePrices } from './vectorizeOraclePrices';
-import { vectorizeOverseerCollaterals } from './vectorizeOverseerCollaterals';
-import { vectorizeVariations } from './vectorizeVariations';
-
-// New Borrow Limit = ((Borrow_info.balance - Borrow_info.spendable - redeemed_collateral) * Oracleprice) * Max_LTV
 
 export function computeRedeemCollateralBorrowLimit(
   collateralToken: CW20Addr,
@@ -17,38 +11,12 @@ export function computeRedeemCollateralBorrowLimit(
   overseerCollaterals: moneyMarket.overseer.CollateralsResponse,
   oraclePrices: moneyMarket.oracle.PricesResponse,
   bAssetLtvs: BAssetLtvs,
-): u<UST<Big>> | undefined {
-  if (redeemAmount.length === 0 || big(redeemAmount).lte(0)) {
-    return undefined;
+): u<UST<Big>> {
+  if (redeemAmount.length <= 0) {
+    return big(0) as u<UST<Big>>;
   }
-
-  const vector = oraclePrices.prices.map(({ asset }) => asset);
-
-  const lockedAmounts = vectorizeOverseerCollaterals(
-    vector,
-    overseerCollaterals.collaterals,
-  );
-  const variations = vectorizeVariations(vector, [
-    [collateralToken, microfy(redeemAmount)],
+  return computeBorrowLimit(overseerCollaterals, oraclePrices, bAssetLtvs, [
+    collateralToken,
+    big(microfy(redeemAmount)).mul(-1) as u<bAsset<BigSource>>,
   ]);
-  const prices = vectorizeOraclePrices(vector, oraclePrices.prices);
-  const maxLtvs = vectorizeBAssetMaxLtvs(vector, Array.from(bAssetLtvs));
-
-  const newLockedAmounts = vectorMinus(lockedAmounts, variations);
-  const ustAmounts = vectorMultiply(newLockedAmounts, prices);
-  const borrowLimits = vectorMultiply(ustAmounts, maxLtvs);
-
-  const borrowLimit = sum(...borrowLimits);
-
-  return borrowLimit.lte(0) ? undefined : (borrowLimit as u<UST<Big>>);
-
-  //const borrowLimit = big(
-  //  big(
-  //    big(borrower.balance)
-  //      .minus(borrower.spendable)
-  //      .minus(microfy(redeemAmount)),
-  //  ).mul(oracle.rate),
-  //).mul(bLunaMaxLtv) as uUST<Big>;
-  //
-  //return borrowLimit.lt(0) ? undefined : borrowLimit;
 }

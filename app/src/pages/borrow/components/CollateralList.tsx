@@ -209,10 +209,7 @@ export function CollateralList({ className }: CollateralListProps) {
                       !connected ||
                       !borrowMarket ||
                       !borrowBorrower ||
-                      (big(lockedAmount).lte(0) &&
-                        big(borrowBorrower.marketBorrowerInfo.loan_amount).lte(
-                          0,
-                        ))
+                      big(lockedAmount).lte(0)
                     }
                     onClick={() =>
                       borrowMarket &&

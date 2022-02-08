@@ -1,4 +1,9 @@
-import { BorrowBorrower, BorrowMarket } from '@anchor-protocol/app-fns';
+import {
+  BorrowBorrower,
+  BorrowMarket,
+  ANCHOR_SAFE_RATIO,
+  ANCHOR_DANGER_RATIO,
+} from '@anchor-protocol/app-fns';
 import {
   useBorrowBorrowForm,
   useBorrowBorrowTx,
@@ -182,7 +187,7 @@ function ComponentBase({
         >
           <span>{states.invalidBorrowAmount ?? states.invalidOverMaxLtv}</span>
           <span>
-            {formatRate(states.bAssetLtvsAvg.safe)}% LTV:{' '}
+            {formatRate(ANCHOR_SAFE_RATIO as Rate<number>)}% Borrow Usage:{' '}
             <span
               style={{
                 textDecoration: 'underline',
@@ -200,29 +205,24 @@ function ComponentBase({
         <figure className="graph">
           <LTVGraph
             disabled={!connected || states.max.lte(0)}
-            maxLtv={states.bAssetLtvsAvg.max}
-            safeLtv={states.bAssetLtvsAvg.safe}
-            dangerLtv={states.userMaxLtv}
-            currentLtv={states.currentLtv}
-            nextLtv={states.nextLtv}
-            userMinLtv={states.currentLtv}
-            userMaxLtv={states.userMaxLtv}
-            onStep={states.ltvStepFunction}
+            borrowLimit={states.borrowLimit}
+            start={states.currentLtv?.toNumber() ?? 0}
+            end={ANCHOR_DANGER_RATIO}
+            value={states.nextLtv}
             onChange={onLtvChange}
+            onStep={states.ltvStepFunction}
           />
         </figure>
 
-        {states.nextLtv?.gt(states.bAssetLtvsAvg.safe) && (
+        {states.nextLtv?.gt(ANCHOR_SAFE_RATIO) && (
           <MessageBox
             level="error"
             hide={{ id: 'borrow-ltv', period: 1000 * 60 * 60 * 24 * 5 }}
             style={{ userSelect: 'none', fontSize: 12 }}
           >
-            Caution: Borrowing is available only up to{' '}
-            {formatRate(states.userMaxLtv)}% LTV. If the loan-to-value ratio
-            (LTV) reaches the maximum ({formatRate(states.bAssetLtvsAvg.max)}%
-            LTV), a portion of your collateral may be immediately liquidated to
-            repay part of the loan.
+            Caution: Borrowing is available only up to 95% borrow usage. If the
+            borrow usage reaches the maximum (100%), a portion of your
+            collateral may be immediately liquidated to repay part of the loan.
           </MessageBox>
         )}
 
@@ -232,7 +232,7 @@ function ComponentBase({
           </EstimatedLiquidationPrice>
         )}
 
-        {states.txFee && states.receiveAmount && (
+        {states.txFee && states.receiveAmount && states.receiveAmount.gt(0) && (
           <TxFeeList className="receipt">
             <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
               {formatUST(demicrofy(states.txFee))} UST
@@ -304,11 +304,10 @@ const Component = styled(ComponentBase)`
     &[aria-invalid='true'] {
       color: ${({ theme }) => theme.colors.negative};
     }
-
-    margin-bottom: 45px;
   }
 
   .graph {
+    margin-top: 80px;
     margin-bottom: 40px;
   }
 

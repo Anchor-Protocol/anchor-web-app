@@ -20,7 +20,7 @@ import type { DialogProps, OpenDialog } from '@libs/use-dialog';
 import { useDialog } from '@libs/use-dialog';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { Big, BigSource } from 'big.js';
+import { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
@@ -180,15 +180,12 @@ function ComponentBase({
         <figure className="graph">
           <LTVGraph
             disabled={!connected}
-            maxLtv={states.bAssetLtvsAvg.max}
-            safeLtv={states.bAssetLtvsAvg.safe}
-            dangerLtv={states.dangerLtv}
-            currentLtv={states.currentLtv}
-            nextLtv={states.nextLtv}
-            userMinLtv={0 as Rate<BigSource>}
-            userMaxLtv={states.currentLtv}
-            onStep={states.ltvStepFunction}
+            borrowLimit={states.borrowLimit}
+            start={0}
+            end={states.currentLtv?.toNumber() ?? 0}
+            value={states.nextLtv}
             onChange={onLtvChange}
+            onStep={states.ltvStepFunction}
           />
         </figure>
 
@@ -280,6 +277,7 @@ const Component = styled(ComponentBase)`
   }
 
   .graph {
+    margin-top: 70px;
     margin-bottom: 40px;
   }
 

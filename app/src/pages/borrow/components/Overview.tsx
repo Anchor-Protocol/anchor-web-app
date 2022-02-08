@@ -23,7 +23,7 @@ import { LoanButtons } from 'pages/borrow/components/LoanButtons';
 import React from 'react';
 import styled from 'styled-components';
 import { useBorrowOverviewData } from '../logics/useBorrowOverviewData';
-import { BorrowLimitGraph } from './BorrowLimitGraph';
+import { BorrowUsageGraph } from './BorrowUsageGraph';
 
 export interface OverviewProps {
   className?: string;
@@ -38,7 +38,7 @@ function Component({ className }: OverviewProps) {
     bAssetLtvsAvg,
     netAPR,
     currentLtv,
-    dangerLtv,
+    //dangerLtv,
     borrowerDistributionAPYs,
   } = useBorrowOverviewData();
 
@@ -181,17 +181,20 @@ function Component({ className }: OverviewProps) {
         </div>
       </article>
 
-      {currentLtv && bAssetLtvsAvg && borrowLimit && (
+      {currentLtv && bAssetLtvsAvg && borrowLimit ? (
         <figure>
-          <BorrowLimitGraph
-            currentLtv={currentLtv}
-            safeLtv={bAssetLtvsAvg.safe}
-            maxLtv={bAssetLtvsAvg.max}
-            dangerLtv={dangerLtv}
-            borrowLimit={borrowLimit}
-          />
+          <h3>
+            <IconSpan>
+              BORROW USAGE{' '}
+              <InfoTooltip>
+                The percentage of the borrow limit used. The borrow limit and
+                usage may fluctuate depending on the collateral value.
+              </InfoTooltip>
+            </IconSpan>
+          </h3>
+          <BorrowUsageGraph currentLtv={currentLtv} borrowLimit={borrowLimit} />
         </figure>
-      )}
+      ) : null}
     </Section>
   );
 }
@@ -281,6 +284,24 @@ const StyledComponent = styled(Component)`
     margin-bottom: 60px;
   }
 
+  article,
+  figure {
+    h3 {
+      font-size: 12px;
+      font-weight: 500;
+    }
+  }
+
+  figure {
+    h3 {
+      margin-bottom: 20px;
+    }
+  }
+
+  article {
+    margin-bottom: 44px !important;
+  }
+
   article > div {
     background: ${({ theme }) =>
       theme.palette.type === 'light' ? '#fcfcfc' : '#262940'};
@@ -291,11 +312,6 @@ const StyledComponent = styled(Component)`
 
     display: grid;
     grid-template-rows: 30px 84px 1fr;
-
-    h3 {
-      font-size: 12px;
-      font-weight: 500;
-    }
 
     .value {
       font-size: 32px;

@@ -10,11 +10,11 @@ import { AnimateNumber } from '@libs/ui';
 import { Big, BigSource } from 'big.js';
 import { Sub } from 'components/Sub';
 import { fixHMR } from 'fix-hmr';
-import { BorrowLimitGraph } from 'pages/borrow/components/BorrowLimitGraph';
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import useResizeObserver from 'use-resize-observer/polyfilled';
+import { BorrowUsageGraph } from 'pages/borrow/components/BorrowUsageGraph';
 
 export interface BorrowedValueProps {
   className?: string;
@@ -23,7 +23,7 @@ export interface BorrowedValueProps {
   currentLtv: Rate<Big> | undefined;
   dangerLtv: Rate<Big> | undefined;
   bAssetLtvsAvg: BAssetLtv | undefined;
-  borrowLimit: u<UST<BigSource>> | undefined;
+  borrowLimit: u<UST<Big>> | undefined;
 }
 
 function BorrowedValueBase({
@@ -81,13 +81,7 @@ function BorrowedValueBase({
 
       {currentLtv && bAssetLtvsAvg && dangerLtv && borrowLimit && (
         <figure>
-          <BorrowLimitGraph
-            currentLtv={currentLtv}
-            dangerLtv={dangerLtv}
-            safeLtv={bAssetLtvsAvg.safe}
-            maxLtv={bAssetLtvsAvg.max}
-            borrowLimit={borrowLimit}
-          />
+          <BorrowUsageGraph currentLtv={currentLtv} borrowLimit={borrowLimit} />
         </figure>
       )}
     </Section>

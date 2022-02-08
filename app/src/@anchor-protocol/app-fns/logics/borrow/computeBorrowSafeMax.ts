@@ -1,28 +1,13 @@
-import type { Rate, u, UST } from '@anchor-protocol/types';
-import { moneyMarket } from '@anchor-protocol/types';
-import big, { Big, BigSource } from 'big.js';
-import { computeCollateralsTotalUST } from './computeCollateralsTotalUST';
-
-// If user_ltv >= 0.35 or user_ltv == Null:
-//   SafeMax = 0
-// else:
-//   safemax = 0.35 * (balance - spendable) * oracle_price - loan_amount
+import { ANCHOR_SAFE_RATIO } from '@anchor-protocol/app-fns';
+import type { u, UST } from '@anchor-protocol/types';
+import { max } from '@libs/big-math';
+import { Big } from 'big.js';
 
 export function computeBorrowSafeMax(
-  marketBorrowerInfo: moneyMarket.market.BorrowerInfoResponse,
-  overseerCollaterals: moneyMarket.overseer.CollateralsResponse,
-  oraclePrices: moneyMarket.oracle.PricesResponse,
-  safeLtv: Rate<BigSource>,
-  currentLtv: Rate<Big> | undefined,
+  borrowLimit: u<UST<Big>>,
+  borrowedAmount: u<UST<Big>>,
 ): u<UST<Big>> {
-  const collateralsVaue = computeCollateralsTotalUST(
-    overseerCollaterals,
-    oraclePrices,
-  );
-
-  return !currentLtv || currentLtv.gte(safeLtv)
-    ? (big(0) as u<UST<Big>>)
-    : (big(safeLtv)
-        .mul(collateralsVaue)
-        .minus(marketBorrowerInfo.loan_amount) as u<UST<Big>>);
+  return max(0, borrowLimit.mul(ANCHOR_SAFE_RATIO).minus(borrowedAmount)) as u<
+    UST<Big>
+  >;
 }

@@ -27,14 +27,14 @@ import type { DialogProps, OpenDialog } from '@libs/use-dialog';
 import { useDialog } from '@libs/use-dialog';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import big, { Big, BigSource } from 'big.js';
+import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useAccount } from 'contexts/account';
-import type { ChangeEvent, ReactNode } from 'react';
+import { ChangeEvent, ReactNode } from 'react';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { LTVGraph } from './LTVGraph';
@@ -211,15 +211,11 @@ function ComponentBase({
           <figure className="graph">
             <LTVGraph
               disabled={!connected}
-              maxLtv={states.bAssetLtvsAvg.max}
-              safeLtv={states.bAssetLtvsAvg.safe}
-              dangerLtv={states.dangerLtv}
-              currentLtv={states.currentLtv}
-              nextLtv={states.nextLtv}
-              userMinLtv={0 as Rate<BigSource>}
-              userMaxLtv={states.currentLtv}
-              onStep={states.ltvStepFunction}
+              start={0}
+              end={states.currentLtv?.toNumber() ?? 0}
+              value={states.nextLtv}
               onChange={onLtvChange}
+              onStep={states.ltvStepFunction}
             />
           </figure>
         )}
