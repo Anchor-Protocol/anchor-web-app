@@ -86,7 +86,7 @@ const bLunaRewardBreakdown = (
     tokenDisplay: tokenDisplayInfos[contractAddress.cw20.bLuna],
     tokenRewardUST,
     tokenPriceUST,
-    tokenReward: (tokenPriceUST.toString() !== '0'
+    tokenReward: (!tokenPriceUST.eq(big(0))
       ? tokenRewardUST.div(tokenPriceUST)
       : big(0)) as u<bAsset<big>>,
   };
@@ -115,7 +115,7 @@ const bAssetRewardsBreakdown = (
       tokenDisplay: b.tokenDisplay.anchor,
       tokenRewardUST,
       tokenPriceUST,
-      tokenReward: (tokenPriceUST.toString() !== '0'
+      tokenReward: (!tokenPriceUST.eq(0)
         ? tokenRewardUST.div(tokenPriceUST)
         : big(0)) as u<bAsset<big>>,
     };
