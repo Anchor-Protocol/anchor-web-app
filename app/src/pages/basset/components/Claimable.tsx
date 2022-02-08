@@ -1,15 +1,20 @@
 import {
+  AnchorContractAddress,
+  BAssetInfoWithDisplay,
+  useAnchorWebapp,
   useBAssetClaimableRewardsTotalQuery,
+  useBAssetInfoListQuery,
   useBLunaClaimableRewards,
   useBLunaWithdrawableAmount,
+  useBorrowMarketQuery,
 } from '@anchor-protocol/app-provider';
-import { formatUTokenDecimal2 } from '@libs/formatter';
+import { demicrofy, formatUTokenDecimal2 } from '@libs/formatter';
 import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { horizontalRuler, verticalRuler } from '@libs/styled-neumorphism';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
-import { Luna, u, UST } from '@libs/types';
+import { HumanAddr, Luna, u, UST } from '@libs/types';
 import { AnimateNumber } from '@libs/ui';
 import big, { Big } from 'big.js';
 import { Sub } from 'components/Sub';
@@ -19,6 +24,15 @@ import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import { claimableRewards as _claimableRewards } from '../logics/claimableRewards';
+import {
+  BAssetClaimableRewards,
+  BLunaClaimableRewards,
+} from '@anchor-protocol/app-fns';
+import { CW20TokenDisplayInfo, CW20TokenDisplayInfos } from '@libs/app-fns';
+import { useCW20TokenDisplayInfosQuery } from '@libs/app-provider';
+import { useWallet } from '@terra-money/use-wallet';
+import { bAsset, moneyMarket } from '@anchor-protocol/types';
+import { formatBAsset, formatUST } from '@anchor-protocol/notation';
 
 const Heading = (props: { title: string; tooltip: string }) => {
   const { title, tooltip } = props;
@@ -35,22 +49,138 @@ export interface ClaimableProps {
   className?: string;
 }
 
-function Component({ className }: ClaimableProps) {
-  const { data: { claimableReward, rewardState } = {} } =
-    useBLunaClaimableRewards();
+type BAssetClaimableRewardsPayload = [
+  contract: HumanAddr,
+  rewards: BAssetClaimableRewards,
+];
 
-  const { data: { total } = {} } = useBAssetClaimableRewardsTotalQuery();
+type RewardBreakdown = {
+  tokenDisplay: CW20TokenDisplayInfo;
+  tokenRewardUST: u<UST<big>>;
+  tokenReward: u<bAsset<big>>;
+  tokenPriceUST: u<UST<big>>;
+};
+
+type RewardsBreakdown = {
+  totalRewardsUST: u<UST<big>>;
+  rewardBreakdowns: RewardBreakdown[];
+};
+
+const bLunaRewardBreakdown = (
+  oraclePrices: moneyMarket.oracle.PricesResponse['prices'],
+  contractAddress: AnchorContractAddress,
+  tokenDisplayInfos: { [addr: string]: CW20TokenDisplayInfo },
+  claimableRewards?: BLunaClaimableRewards,
+): RewardBreakdown => {
+  const tokenPriceUST = big(
+    oraclePrices.find((p) => p.asset === contractAddress.cw20.bLuna)?.price ??
+      0,
+  ) as u<UST<big>>;
+
+  const tokenRewardUST = _claimableRewards(
+    claimableRewards?.claimableReward,
+    claimableRewards?.rewardState,
+  );
+
+  return {
+    tokenDisplay: tokenDisplayInfos[contractAddress.cw20.bLuna],
+    tokenRewardUST,
+    tokenPriceUST,
+    tokenReward: (tokenPriceUST.toString() !== '0'
+      ? tokenRewardUST.div(tokenPriceUST)
+      : big(0)) as u<bAsset<big>>,
+  };
+};
+
+const bAssetRewardsBreakdown = (
+  oraclePrices: moneyMarket.oracle.PricesResponse['prices'],
+  bAssetInfoList: BAssetInfoWithDisplay[],
+  bAssetRewards: BAssetClaimableRewardsPayload[],
+): RewardBreakdown[] => {
+  return bAssetInfoList.map((b) => {
+    const rewardPayload = bAssetRewards.find(
+      (r) => r[0] === b.custodyConfig.reward_contract,
+    );
+
+    const tokenRewardUST = big(
+      rewardPayload ? rewardPayload[1].claimableReward.rewards : 0,
+    ) as u<UST<big>>;
+
+    const tokenPriceUST = big(
+      oraclePrices.find((p) => p.asset === b.bAsset.collateral_token)?.price ??
+        0,
+    ) as u<UST<big>>;
+
+    return {
+      tokenDisplay: b.tokenDisplay.anchor,
+      tokenRewardUST,
+      tokenPriceUST,
+      tokenReward: (tokenPriceUST.toString() !== '0'
+        ? tokenRewardUST.div(tokenPriceUST)
+        : big(0)) as u<bAsset<big>>,
+    };
+  });
+};
+
+const useRewardsBreakdown = (
+  oraclePrices: moneyMarket.oracle.PricesResponse['prices'],
+  tokenDisplayInfos: CW20TokenDisplayInfos,
+): RewardsBreakdown => {
+  const { data: bAssetInfoList = [] } = useBAssetInfoListQuery();
+  const { data: { rewards: bAssetRewards = [] } = {} } =
+    useBAssetClaimableRewardsTotalQuery();
+
+  const { network } = useWallet();
+  const { contractAddress } = useAnchorWebapp();
+  const { data: bLunaClaimableRewards } = useBLunaClaimableRewards();
+
+  const bLunaBreakdown = useMemo(
+    () =>
+      bLunaRewardBreakdown(
+        oraclePrices,
+        contractAddress,
+        tokenDisplayInfos[network.name] ?? {},
+        bLunaClaimableRewards,
+      ),
+    [
+      oraclePrices,
+      contractAddress,
+      tokenDisplayInfos,
+      network,
+      bLunaClaimableRewards,
+    ],
+  );
+
+  const bAssetBreakdown = useMemo(
+    () => bAssetRewardsBreakdown(oraclePrices, bAssetInfoList, bAssetRewards),
+    [oraclePrices, bAssetInfoList, bAssetRewards],
+  );
+
+  return useMemo(() => {
+    const rewardBreakdowns = [bLunaBreakdown, ...bAssetBreakdown];
+
+    return {
+      totalRewardsUST: rewardBreakdowns
+        .map((r) => r.tokenRewardUST)
+        .reduce((acc, curr) => acc.plus(curr), big(0)) as u<UST<big>>,
+      rewardBreakdowns: rewardBreakdowns.filter(
+        (r) => r.tokenRewardUST.toString() !== '0',
+      ),
+    };
+  }, [bAssetBreakdown, bLunaBreakdown]);
+};
+
+function Component({ className }: ClaimableProps) {
+  const { data: { oraclePrices } = {} } = useBorrowMarketQuery();
+  const { data: tokenDisplayInfos = {} } = useCW20TokenDisplayInfosQuery();
+
+  const rewardsBreakdown = useRewardsBreakdown(
+    oraclePrices?.prices ?? [],
+    tokenDisplayInfos,
+  );
 
   const { data: { withdrawableUnbonded: _withdrawableAmount } = {} } =
     useBLunaWithdrawableAmount();
-
-  const claimableRewards = useMemo(
-    () =>
-      _claimableRewards(claimableReward, rewardState).plus(total ?? '0') as u<
-        UST<Big>
-      >,
-    [claimableReward, rewardState, total],
-  );
 
   const withdrawableLuna = useMemo(
     () => big(_withdrawableAmount?.withdrawable ?? 0) as u<Luna<Big>>,
@@ -67,10 +197,26 @@ function Component({ className }: ClaimableProps) {
           />
           <p>
             <AnimateNumber format={formatUTokenDecimal2}>
-              {claimableRewards}
+              {rewardsBreakdown.totalRewardsUST}
             </AnimateNumber>{' '}
             <Sub>UST</Sub>
           </p>
+          <div className="rewardBreakdowns">
+            {rewardsBreakdown.rewardBreakdowns.map((rewardBreakdown) => (
+              <div
+                className="rewardBreakdown"
+                key={rewardBreakdown.tokenDisplay.symbol}
+              >
+                <div className="tokenReward">
+                  {formatBAsset(demicrofy(rewardBreakdown.tokenReward))}{' '}
+                  {rewardBreakdown.tokenDisplay.symbol}
+                </div>
+                <div className="ustReward">
+                  ≈ {formatUST(demicrofy(rewardBreakdown.tokenRewardUST))} UST
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
         <FlatButton component={Link} to="/basset/claim">
           Claim Rewards
@@ -119,6 +265,30 @@ const vRuler = css`
 `;
 
 const StyledComponent = styled(Component)`
+  .rewardBreakdowns {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: column;
+
+    .rewardBreakdown {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding-top: 5px;
+      font-size: 14px;
+
+      .tokenReward {
+        padding-right: 10px;
+        color: gray;
+      }
+
+      .ustReward {
+        color: gray;
+      }
+    }
+  }
+
   > .NeuSection-content {
     padding: 50px 40px;
 
