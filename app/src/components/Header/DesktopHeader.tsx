@@ -6,7 +6,7 @@ import { Link, useRouteMatch } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
 import logoUrl from './assets/Logo.svg';
 import { DesktopNotification } from './desktop/DesktopNotification';
-import { TerraWalletSelector } from './desktop/TerraWalletSelector2';
+import { TerraWalletSelector } from './wallet/terra/TerraWalletSelector';
 import { EvmWalletSelector } from './desktop/EvmWalletSelector';
 
 export interface DesktopHeaderProps {

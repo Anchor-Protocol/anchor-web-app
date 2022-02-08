@@ -1,7 +1,6 @@
 import { ClickAwayListener } from '@material-ui/core';
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';
-import { DropdownBox, DropdownContainer } from './DropdownContainer';
 import { ConnectWalletButton } from './ConnectWalletButton';
 import { useTokenBalances } from 'contexts/balances';
 
@@ -9,26 +8,14 @@ export interface WalletSelectorProps {
   className?: string;
   walletAddress?: string;
   initializing: boolean;
-  open: boolean;
   onClick: () => void;
   onClose: () => void;
   children: ReactNode;
 }
 
-//let _airdropClosed: boolean = false;
-
-function WalletSelectorBase({
-  walletAddress,
-  initializing,
-  className,
-  open,
-  onClick,
-  onClose,
-  children,
-}: WalletSelectorProps) {
-  // ---------------------------------------------
-  // dependencies
-  // ---------------------------------------------
+function WalletSelectorBase(props: WalletSelectorProps) {
+  const { walletAddress, initializing, className, onClick, onClose, children } =
+    props;
 
   const tokenBalances = useTokenBalances();
 
@@ -49,11 +36,7 @@ function WalletSelectorBase({
       <ClickAwayListener onClickAway={onClose}>
         <div className={className}>
           <ConnectWalletButton onClick={onClick} />
-          {open && (
-            <DropdownContainer>
-              <DropdownBox>{children}</DropdownBox>
-            </DropdownContainer>
-          )}
+          {children}
         </div>
       </ClickAwayListener>
     );
@@ -67,11 +50,7 @@ function WalletSelectorBase({
           totalUST={tokenBalances.uUST}
           onClick={onClick}
         />
-        {open && (
-          <DropdownContainer>
-            <DropdownBox>{children}</DropdownBox>
-          </DropdownContainer>
-        )}
+        {children}
       </div>
     </ClickAwayListener>
   );
