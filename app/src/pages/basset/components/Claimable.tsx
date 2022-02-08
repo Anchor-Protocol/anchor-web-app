@@ -163,7 +163,7 @@ const useRewardsBreakdown = (
         .map((r) => r.tokenRewardUST)
         .reduce((acc, curr) => acc.plus(curr), big(0)) as u<UST<big>>,
       rewardBreakdowns: rewardBreakdowns.filter(
-        (r) => r.tokenRewardUST.toString() !== '0',
+        (r) => !r.tokenRewardUST.eq(big(0)),
       ),
     };
   }, [bAssetBreakdown, bLunaBreakdown]);
