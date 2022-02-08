@@ -48,14 +48,17 @@ function Component({ className }: BlunaWithdrawProps) {
   const { tokenBalances } = useAnchorBank();
 
   const {
-    data: {
-      withdrawableUnbonded: _withdrawableAmount,
-      unbondedRequests: withdrawRequests,
-      unbondedRequestsStartFrom,
-      allHistory,
-      parameters,
-    } = {},
+    data: bLunaWithdrawableAmount,
+    refetch: refetchBLunaWithdrawableAmount,
   } = useBLunaWithdrawableAmount();
+
+  const {
+    withdrawableUnbonded: _withdrawableAmount,
+    unbondedRequests: withdrawRequests,
+    unbondedRequestsStartFrom,
+    allHistory,
+    parameters,
+  } = bLunaWithdrawableAmount || {};
 
   // ---------------------------------------------
   // logics
@@ -78,7 +81,15 @@ function Component({ className }: BlunaWithdrawProps) {
         allHistory,
         parameters,
       ),
-    [allHistory, parameters, unbondedRequestsStartFrom, withdrawRequests],
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      allHistory,
+      parameters,
+      unbondedRequestsStartFrom,
+      withdrawRequests,
+      bLunaWithdrawableAmount,
+      withdrawResult?.status,
+    ],
   );
 
   const proceedWithdraw = useCallback(() => {
@@ -107,6 +118,7 @@ function Component({ className }: BlunaWithdrawProps) {
                   withdrawResult.abort();
                   break;
                 case StreamStatus.DONE:
+                  refetchBLunaWithdrawableAmount();
                   withdrawResult.clear();
                   break;
               }

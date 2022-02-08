@@ -79,7 +79,7 @@ export function airdropClaimTx($: {
 
       const claimedAmount = pickAttributeValueByKey<u<ANC>>(
         fromContract,
-        'claimed_amount',
+        'amount',
       );
       const spreadAmount = pickAttributeValueByKey<u<ANC>>(
         fromContract,
