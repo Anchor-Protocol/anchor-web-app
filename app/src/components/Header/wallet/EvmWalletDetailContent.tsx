@@ -20,14 +20,12 @@ import {
   // Launch
 } from '@material-ui/icons';
 // import { NetworkInfo } from '@terra-money/use-wallet';
-import { Connection as TerraConnection } from '@terra-money/wallet-provider';
 import { Connection } from '@libs/evm-wallet';
 // import big from 'big.js';
 // import { BuyButton, BuyLink } from 'components/BuyButton';
 import React from 'react';
 import useClipboard from 'react-use-clipboard';
 import styled from 'styled-components';
-import { ConnectionIcons } from './ConnectionIcons';
 
 interface EvmWalletDetailContentProps {
   chainId: number;
@@ -68,10 +66,10 @@ EvmWalletDetailContentProps) {
   return (
     <div className={className}>
       <section>
-        <ConnectionIcons
+        {/* <ConnectionIcons
           className="wallet-icon"
           connection={connection as unknown as TerraConnection}
-        />
+        /> */}
 
         <h2 className="wallet-address">{truncate(walletAddress)}</h2>
 
