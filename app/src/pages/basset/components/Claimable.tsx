@@ -8,7 +8,7 @@ import {
   useBLunaWithdrawableAmount,
   useBorrowMarketQuery,
 } from '@anchor-protocol/app-provider';
-import { demicrofy, formatUTokenDecimal2 } from '@libs/formatter';
+import { formatUTokenDecimal2 } from '@libs/formatter';
 import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { horizontalRuler, verticalRuler } from '@libs/styled-neumorphism';
@@ -32,7 +32,6 @@ import { CW20TokenDisplayInfo, CW20TokenDisplayInfos } from '@libs/app-fns';
 import { useCW20TokenDisplayInfosQuery } from '@libs/app-provider';
 import { useWallet } from '@terra-money/use-wallet';
 import { bAsset, moneyMarket } from '@anchor-protocol/types';
-import { formatBAsset, formatUST } from '@anchor-protocol/notation';
 
 const Heading = (props: { title: string; tooltip: string }) => {
   const { title, tooltip } = props;
@@ -208,11 +207,11 @@ function Component({ className }: ClaimableProps) {
                 key={rewardBreakdown.tokenDisplay.symbol}
               >
                 <div className="tokenReward">
-                  {formatBAsset(demicrofy(rewardBreakdown.tokenReward))}{' '}
+                  {formatUTokenDecimal2(rewardBreakdown.tokenReward)}{' '}
                   {rewardBreakdown.tokenDisplay.symbol}
                 </div>
                 <div className="ustReward">
-                  ≈ {formatUST(demicrofy(rewardBreakdown.tokenRewardUST))} UST
+                  ≈ {formatUTokenDecimal2(rewardBreakdown.tokenRewardUST)} UST
                 </div>
               </div>
             ))}
