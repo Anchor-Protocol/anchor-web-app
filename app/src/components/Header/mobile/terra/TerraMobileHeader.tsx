@@ -3,23 +3,23 @@ import { ConnectType, useWallet } from '@terra-money/wallet-provider';
 import { useAccount } from 'contexts/account';
 import { useBuyUstDialog } from 'pages/earn/components/useBuyUstDialog';
 import { useSendDialog } from 'pages/send/useSendDialog';
-import { useWalletDetailDialog } from './mobile/useWalletDetailDialog';
-import { ViewAddressButton } from './mobile/ViewAddressButton';
-import { MobileHeader } from './MobileHeader';
-import { useAirdropElement } from './airdrop';
-import { useVestingClaimNotification } from './vesting/VestingClaimNotification';
+import { useWalletDialog } from './useWalletDialog';
+import { useAirdropElement } from 'components/Header/airdrop';
+import { useVestingClaimNotification } from 'components/Header/vesting/VestingClaimNotification';
+import { ViewAddressButton } from '../ViewAddressButton';
+import { MobileHeader } from '../MobileHeader';
 
 export function TerraMobileHeader() {
   const [open, setOpen] = useState<boolean>(false);
   const { status } = useAccount();
   const { connect, isChromeExtensionCompatibleBrowser } = useWallet();
-  const [openWalletDetail, walletDetailElement] = useWalletDetailDialog();
+  const [openWalletDialog, walletDialogElement] = useWalletDialog();
   const [openSendDialog, sendDialogElement] = useSendDialog();
   const [openBuyUstDialog, buyUstDialogElement] = useBuyUstDialog();
 
   const toggleWallet = useCallback(() => {
     if (status === 'connected') {
-      openWalletDetail({
+      openWalletDialog({
         openSend: () => openSendDialog({}),
         openBuyUst: () => openBuyUstDialog({}),
       });
@@ -35,7 +35,7 @@ export function TerraMobileHeader() {
     isChromeExtensionCompatibleBrowser,
     openBuyUstDialog,
     openSendDialog,
-    openWalletDetail,
+    openWalletDialog,
     status,
   ]);
 
@@ -62,13 +62,13 @@ export function TerraMobileHeader() {
       <MobileHeader
         open={open}
         setOpen={setOpen}
-        isActive={!!walletDetailElement}
+        isActive={!!walletDialogElement}
         toggleWallet={toggleWallet}
         airdropElement={airdropElement}
         vestingClaimNotificationElement={vestingClaimNotificationElement}
         viewAddressButtonElement={viewAddressButtonElement}
       />
-      {walletDetailElement}
+      {walletDialogElement}
       {sendDialogElement}
       {buyUstDialogElement}
     </>

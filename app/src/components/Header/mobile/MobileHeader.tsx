@@ -5,7 +5,7 @@ import { mobileHeaderHeight } from 'env';
 import React, { ReactNode } from 'react';
 import { NavLink, useRouteMatch } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
-import logoUrl from './assets/Logo.svg';
+import logoUrl from '../assets/Logo.svg';
 
 export interface MobileHeaderProps {
   open: boolean;
