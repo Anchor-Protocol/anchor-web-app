@@ -28,8 +28,8 @@ const itemStyle = css`
       font-size: 14px;
       line-height: 1.5;
       max-width: 90%;
-
-      word-break: break-all;
+      word-break: normal;
+      text-align: justify;
       white-space: break-spaces;
     }
   }
