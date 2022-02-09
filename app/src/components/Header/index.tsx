@@ -1,9 +1,9 @@
 import React from 'react';
 import { useMediaQuery } from 'react-responsive';
 import { DesktopHeader } from './DesktopHeader';
-import { TerraMobileHeader } from './TerraMobileHeader';
-import { EvmMobileHeader } from './EvmMobileHeader';
 import { DeploymentSwitch } from '../layouts/DeploymentSwitch';
+import { TerraMobileHeader } from './mobile/terra/TerraMobileHeader';
+import { EvmMobileHeader } from './mobile/evm/EvmMobileHeader';
 
 export function Header() {
   const isMobile = useMediaQuery({ maxWidth: 900 });

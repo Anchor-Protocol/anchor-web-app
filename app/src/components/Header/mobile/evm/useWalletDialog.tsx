@@ -1,65 +1,47 @@
-import { useBAssetInfoAndBalanceTotalQuery } from '@anchor-protocol/app-provider';
-import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { buttonBaseStyle } from '@libs/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
 import { DialogProps, OpenDialog, useDialog } from '@libs/use-dialog';
 import { Modal } from '@material-ui/core';
-import { useConnectedWallet, useWallet } from '@terra-money/wallet-provider';
 import React, { ReactNode, useCallback } from 'react';
 import styled from 'styled-components';
 import { useAccount } from 'contexts/account';
-import { WalletDetailContent } from '../wallet/WalletDetailContent';
+import { Content } from '../../wallet/evm/Content';
+import { useEvmWallet } from '@libs/evm-wallet';
+
+// TODO: see if this can be merged with useWalletDialog on the Terra side
 
 interface FormParams {
   className?: string;
-  openSend: () => void;
-  openBuyUst: () => void;
 }
 
 type FormReturn = void;
 
-export function useWalletDetailDialog(): [
+export function useWalletDialog(): [
   OpenDialog<FormParams, FormReturn>,
   ReactNode,
 ] {
   return useDialog(Component);
 }
 
-function ComponentBase({
-  className,
-  closeDialog,
-  openSend,
-  openBuyUst,
-}: DialogProps<FormParams, FormReturn>) {
-  const { disconnect } = useWallet();
-  const { availablePost, connected, terraWalletAddress } = useAccount();
-  const connectedWallet = useConnectedWallet();
-
-  const bank = useAnchorBank();
-
-  const { data: bAssetBalancesTotal } = useBAssetInfoAndBalanceTotalQuery();
+function ComponentBase(props: DialogProps<FormParams, FormReturn>) {
+  const { className, closeDialog } = props;
+  const { actions, connection } = useEvmWallet();
+  const { connected, terraWalletAddress } = useAccount();
 
   const disconnectWallet = useCallback(() => {
-    disconnect();
+    actions.deactivate();
     closeDialog();
-    //window.location.reload();
-  }, [closeDialog, disconnect]);
+  }, [closeDialog, actions]);
 
   return (
     <Modal open onClose={() => closeDialog()}>
       <Dialog className={className} onClose={() => closeDialog()}>
-        {connected && !!connectedWallet && (
-          <WalletDetailContent
-            connection={connectedWallet.connection}
-            availablePost={availablePost}
-            walletAddress={terraWalletAddress}
-            network={connectedWallet.network}
-            closePopup={closeDialog}
-            disconnectWallet={disconnectWallet}
-            bank={bank}
-            openSend={openSend}
-            openBuyUst={openBuyUst}
-            bAssetBalanceTotal={bAssetBalancesTotal}
+        {connected && connection && (
+          <Content
+            walletAddress={terraWalletAddress!}
+            connection={connection}
+            onClose={closeDialog}
+            onDisconnectWallet={disconnectWallet}
           />
         )}
       </Dialog>
