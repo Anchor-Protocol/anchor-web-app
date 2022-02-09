@@ -1,8 +1,8 @@
-//import { formatUST } from '@anchor-protocol/notation';
-import type { Rate } from '@anchor-protocol/types';
+import { formatUST } from '@anchor-protocol/notation';
+import type { Rate, UST } from '@anchor-protocol/types';
 import { CW20Addr, moneyMarket } from '@anchor-protocol/types';
 import { Big } from 'big.js';
-//import { prettifySymbol } from '@anchor-protocol/app-fns/functions/prettifySymbol';
+import { prettifySymbol } from '@anchor-protocol/app-fns/functions/prettifySymbol';
 
 export function computeEstimateLiquidationPrice(
   nextLtv: Rate<Big>,
@@ -17,34 +17,33 @@ export function computeEstimateLiquidationPrice(
     return 'Estimated liquidation price not available for composite loans';
   }
 
+  const collateral = overseerCollaterals.collaterals[0];
+
+  if (targetToken && collateral[0] !== targetToken) {
+    return null;
+  }
+
+  const whitelist = overseerWhitelist.elems.find(
+    ({ collateral_token }) => collateral_token === collateral[0],
+  );
+  const oracle = oraclePrices.prices.find(
+    ({ asset }) => asset === collateral[0],
+  );
+
+  if (!whitelist || !oracle) {
+    return null;
+  }
+
+  // formula: oracle price * (nextLtv / maxLtv)
+  if (nextLtv) {
+    // const liqPrice = Big(oracle.price).mul(
+    //   Big(nextLtv).div(whitelist.max_ltv),
+    // ) as UST<Big>;
+    const liqPrice = Big(oracle.price).mul(Big(nextLtv)) as UST<Big>;
+    return `Estimated ${prettifySymbol(
+      whitelist.symbol,
+    )} liquidation price: ${formatUST(liqPrice)}`;
+  }
+
   return null;
-
-  // const collateral = overseerCollaterals.collaterals[0];
-
-  // if (targetToken && collateral[0] !== targetToken) {
-  //   return null;
-  // }
-
-  // const whitelist = overseerWhitelist.elems.find(
-  //   ({ collateral_token }) => collateral_token === collateral[0],
-  // );
-  // const oracle = oraclePrices.prices.find(
-  //   ({ asset }) => asset === collateral[0],
-  // );
-
-  // if (!whitelist || !oracle) {
-  //   return null;
-  // }
-
-  // // formula: oracle price * (nextLtv / maxLtv)
-  // if (nextLtv) {
-  //   const liqPrice = big(oracle.price).mul(
-  //     big(nextLtv).div(whitelist.max_ltv),
-  //   ) as UST<Big>;
-  //   return `Estimated ${prettifySymbol(
-  //     whitelist.symbol,
-  //   )} liquidation price: ${formatUST(liqPrice)}`;
-  // }
-
-  // return null;
 }
