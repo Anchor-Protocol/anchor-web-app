@@ -20,7 +20,7 @@ type Action = () => void;
 
 interface TokenListProps extends UIElementProps {
   onClose: Action;
-  onBuyUST: Action;
+  onBuyUST?: Action;
 }
 
 export function TokenListBase(props: TokenListProps) {
@@ -34,14 +34,16 @@ export function TokenListBase(props: TokenListProps) {
         <li>
           <span>
             UST{' '}
-            <BuyButton
-              onClick={() => {
-                onBuyUST();
-                onClose();
-              }}
-            >
-              BUY <Launch />
-            </BuyButton>
+            {onBuyUST && (
+              <BuyButton
+                onClick={() => {
+                  onBuyUST();
+                  onClose();
+                }}
+              >
+                BUY <Launch />
+              </BuyButton>
+            )}
           </span>
           <span>
             {formatUSTWithPostfixUnits(demicrofy(tokenBalances.uUST))}
