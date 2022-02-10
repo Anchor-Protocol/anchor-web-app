@@ -1,18 +1,23 @@
-import { BAssetInfo, bAssetInfoQuery } from '@anchor-protocol/app-fns';
+import { bAssetInfoQuery } from '@anchor-protocol/app-fns';
 import { moneyMarket } from '@anchor-protocol/types';
 import { createQueryFn } from '@libs/react-query-utils';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
+import { useQueryWithTokenDisplay } from '../utils/tokenDisplay';
+import {
+  BAssetInfoWithDisplay,
+  withBAssetInfoTokenDisplay,
+} from './utils/tokenDisplay';
 
 const queryFn = createQueryFn(bAssetInfoQuery);
 
 export function useBAssetInfoQuery(
   bAsset: moneyMarket.overseer.WhitelistResponse['elems'][number] | undefined,
-): UseQueryResult<BAssetInfo | undefined> {
+): UseQueryResult<BAssetInfoWithDisplay | undefined> {
   const { queryClient, queryErrorReporter } = useAnchorWebapp();
 
-  const result = useQuery(
+  const bAssetInfo = useQuery(
     [ANCHOR_QUERY_KEY.BASSET_INFO, bAsset, queryClient],
     queryFn,
     {
@@ -22,5 +27,5 @@ export function useBAssetInfoQuery(
     },
   );
 
-  return result;
+  return useQueryWithTokenDisplay(bAssetInfo, withBAssetInfoTokenDisplay);
 }

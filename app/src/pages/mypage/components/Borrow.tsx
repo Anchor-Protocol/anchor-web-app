@@ -1,5 +1,4 @@
 import {
-  prettifySymbol,
   vectorizeOraclePrices,
   vectorizeOverseerCollaterals,
 } from '@anchor-protocol/app-fns';
@@ -58,7 +57,7 @@ export function Borrow() {
       collaterals: ustAmounts.map(
         (ustAmount, i) =>
           ({
-            label: prettifySymbol(overseerWhitelist.elems[i].symbol),
+            label: overseerWhitelist.elems[i].tokenDisplay.symbol,
             ratio: (totalCollateralValue.gt(0)
               ? big(ustAmount).div(totalCollateralValue).toFixed()
               : '0') as Rate,

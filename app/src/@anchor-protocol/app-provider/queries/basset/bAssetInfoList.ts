@@ -1,16 +1,23 @@
-import { BAssetInfo, bAssetInfoListQuery } from '@anchor-protocol/app-fns';
+import { bAssetInfoListQuery } from '@anchor-protocol/app-fns';
 import { createQueryFn } from '@libs/react-query-utils';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
+import { useQueryWithTokenDisplay } from '../utils/tokenDisplay';
+import {
+  BAssetInfoWithDisplay,
+  withBAssetInfoTokenDisplay,
+} from './utils/tokenDisplay';
 
 const queryFn = createQueryFn(bAssetInfoListQuery);
 
-export function useBAssetInfoListQuery(): UseQueryResult<BAssetInfo[]> {
+export function useBAssetInfoListQuery(): UseQueryResult<
+  BAssetInfoWithDisplay[] | undefined
+> {
   const { queryClient, queryErrorReporter, contractAddress } =
     useAnchorWebapp();
 
-  const result = useQuery(
+  const bAssetInfos = useQuery(
     [
       ANCHOR_QUERY_KEY.BASSET_INFO_LIST,
       contractAddress.moneyMarket.overseer,
@@ -24,5 +31,11 @@ export function useBAssetInfoListQuery(): UseQueryResult<BAssetInfo[]> {
     },
   );
 
-  return result;
+  return useQueryWithTokenDisplay(
+    bAssetInfos,
+    (bAssets, tokenDisplayByInfoAddr) =>
+      bAssets.map((bAsset) =>
+        withBAssetInfoTokenDisplay(bAsset, tokenDisplayByInfoAddr),
+      ),
+  );
 }

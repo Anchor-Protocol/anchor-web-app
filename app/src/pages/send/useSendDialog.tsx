@@ -153,8 +153,8 @@ function ComponentBase({
           formatLunaInput(demicrofy(bank.tokenBalances.ubLuna)),
         cw20Address: cw20.bLuna,
       },
-      ...infoAndBalances.map(({ bAsset, balance }) => ({
-        label: bAsset.symbol,
+      ...infoAndBalances.map(({ bAsset, balance, tokenDisplay }) => ({
+        label: tokenDisplay.symbol,
         value: bAsset.symbol,
         integerPoints: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
@@ -286,9 +286,7 @@ function ComponentBase({
       send({
         toWalletAddress: toAddress as HumanAddr,
         amount,
-        currency: currency.cw20Address
-          ? { cw20Contract: currency.cw20Address }
-          : { tokenDenom: currency.value },
+        currency,
         txFee,
         memo,
       });
@@ -505,6 +503,10 @@ const Component = styled(ComponentBase)`
 
   .amount {
     margin-bottom: 20px;
+
+    select {
+      padding-right: 10px;
+    }
   }
 
   .memo-warning {

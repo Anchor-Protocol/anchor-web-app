@@ -5,6 +5,7 @@ export type CW20TokenDisplayInfo = {
   symbol: string;
   token: CW20Addr;
   icon: string;
+  decimals?: number;
 };
 
 export type CW20TokenDisplayInfos = {

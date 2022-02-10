@@ -1,19 +1,21 @@
-import {
-  bAssetInfoAndBalanceByTokenAddrQuery,
-  BAssetInfoAndBalanceWithOracle,
-} from '@anchor-protocol/app-fns';
+import { bAssetInfoAndBalanceByTokenAddrQuery } from '@anchor-protocol/app-fns';
 import { createQueryFn } from '@libs/react-query-utils';
 import { CW20Addr } from '@libs/types';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
+import { useQueryWithTokenDisplay } from '../utils';
+import {
+  BAssetInfoAndBalanceWithOracleWithDisplay,
+  withBAssetInfoAndBalanceWithOracleTokenDisplay,
+} from './utils';
 
 const queryFn = createQueryFn(bAssetInfoAndBalanceByTokenAddrQuery);
 
 export function useBAssetInfoAndBalanceByTokenAddrQuery(
   tokenAddr: CW20Addr | undefined,
-): UseQueryResult<BAssetInfoAndBalanceWithOracle | undefined> {
+): UseQueryResult<BAssetInfoAndBalanceWithOracleWithDisplay | undefined> {
   const connectedWallet = useConnectedWallet();
 
   const { queryClient, queryErrorReporter, contractAddress } =
@@ -37,5 +39,8 @@ export function useBAssetInfoAndBalanceByTokenAddrQuery(
     },
   );
 
-  return result;
+  return useQueryWithTokenDisplay(
+    result,
+    withBAssetInfoAndBalanceWithOracleTokenDisplay,
+  );
 }

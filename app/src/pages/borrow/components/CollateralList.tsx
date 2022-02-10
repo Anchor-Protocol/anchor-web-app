@@ -1,7 +1,4 @@
-import {
-  computeLiquidationPrice,
-  prettifySymbol,
-} from '@anchor-protocol/app-fns';
+import { computeLiquidationPrice } from '@anchor-protocol/app-fns';
 import {
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
@@ -63,7 +60,7 @@ export function CollateralList({ className }: CollateralListProps) {
     }
 
     return borrowMarket.overseerWhitelist.elems.map(
-      ({ collateral_token, name, symbol }) => {
+      ({ collateral_token, name, symbol, tokenDisplay }) => {
         const oracle = borrowMarket.oraclePrices.prices.find(
           ({ asset }) => collateral_token === asset,
         );
@@ -79,7 +76,7 @@ export function CollateralList({ className }: CollateralListProps) {
           ),
           token: collateral_token,
           name,
-          symbol: prettifySymbol(symbol),
+          symbol: tokenDisplay.symbol,
           price: oracle?.price ?? ('0' as UST),
           liquidationPrice:
             borrowBorrower &&
@@ -176,17 +173,17 @@ export function CollateralList({ className }: CollateralListProps) {
                     {formatUSTWithPostfixUnits(price)} UST
                   </div>
                   <p className="volatility">
-                    {liquidationPrice &&
-                      formatUSTWithPostfixUnits(liquidationPrice) + ' UST'}
+                    {Boolean(Number(liquidationPrice)) &&
+                      formatUSTWithPostfixUnits(liquidationPrice!) + ' UST'}
                   </p>
                 </td>
                 <td>
                   <div className="value">
-                    {formatUSTWithPostfixUnits(demicrofy(lockedAmountInUST))}{' '}
-                    UST
+                    {formatBAsset(demicrofy(lockedAmount))} {symbol}
                   </div>
                   <p className="volatility">
-                    {formatBAsset(demicrofy(lockedAmount))} {symbol}
+                    {formatUSTWithPostfixUnits(demicrofy(lockedAmountInUST))}{' '}
+                    UST
                   </p>
                 </td>
                 <td>

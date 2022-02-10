@@ -1,8 +1,5 @@
-import {
-  BorrowBorrower,
-  BorrowMarket,
-  borrowRepayForm,
-} from '@anchor-protocol/app-fns';
+import { BorrowBorrower, borrowRepayForm } from '@anchor-protocol/app-fns';
+import { BorrowMarketWithDisplay } from '@anchor-protocol/app-provider';
 import { useFixedFee } from '@libs/app-provider';
 import { UST } from '@libs/types';
 import { useForm } from '@libs/use-form';
@@ -13,7 +10,7 @@ import { useBorrowBorrowerQuery } from '../../queries/borrow/borrower';
 import { useBorrowMarketQuery } from '../../queries/borrow/market';
 
 export function useBorrowRepayForm(
-  fallbackBorrowMarket: BorrowMarket,
+  fallbackBorrowMarket: BorrowMarketWithDisplay,
   fallbackBorrowBorrower: BorrowBorrower,
 ) {
   const connectedWallet = useConnectedWallet();
