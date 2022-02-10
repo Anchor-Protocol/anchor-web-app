@@ -1,13 +1,16 @@
-import { CW20Addr, u, UST } from '@libs/types';
+import { CW20Addr, HumanAddr, u, UST } from '@libs/types';
 import big, { Big } from 'big.js';
 import { bAsset } from '@anchor-protocol/types';
-import { RewardBreakdown, RewardsBreakdown } from './Claimable';
 import React, { useMemo } from 'react';
 import { d2Formatter, formatUTokenDecimal2 } from '@libs/formatter';
 import { AnimateNumber } from '@libs/ui';
 import { DoughnutChart } from 'pages/dashboard/components/DoughnutChart';
 import styled from 'styled-components';
 import { fixHMR } from 'fix-hmr';
+import {
+  RewardBreakdown,
+  RewardsBreakdown,
+} from '../hooks/useRewardsBreakdown';
 
 type ClaimableRewardsBreakdownProps = {
   rewardsBreakdown: RewardsBreakdown;
@@ -31,6 +34,7 @@ const defaultRewardBreakdown = (symbol: string): RewardBreakdown => ({
   tokenPriceUST: big(0) as u<UST<Big>>,
   tokenReward: big(0) as u<bAsset<Big>>,
   tokenRewardUST: big(0) as u<UST<Big>>,
+  rewardAddr: '' as HumanAddr,
 });
 
 const Component = ({
