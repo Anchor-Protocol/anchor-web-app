@@ -17,6 +17,7 @@ import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { fixHMR } from 'fix-hmr';
 import React, { useCallback, useMemo } from 'react';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { useClaimableRewardsBreakdown } from './hooks/useRewardsBreakdown';
 
@@ -29,6 +30,7 @@ function Component({ className }: BAssetClaimProps) {
   // dependencies
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
+  const history = useHistory();
 
   const fixedFee = useFixedFee();
 
@@ -92,6 +94,7 @@ function Component({ className }: BAssetClaimProps) {
                   break;
                 case StreamStatus.DONE:
                   claimResult.clear();
+                  history.push('/basset');
                   break;
               }
             }}
