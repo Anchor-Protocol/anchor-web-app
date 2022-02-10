@@ -158,7 +158,9 @@ function Component({ className }: BlunaWithdrawProps) {
           )}
         </div>
 
-        <WithdrawHistory withdrawHistory={withdrawHistory} />
+        {withdrawHistory && withdrawHistory.length > 0 && (
+          <WithdrawHistory withdrawHistory={withdrawHistory} />
+        )}
 
         <BLunaBurnProcess style={{ marginTop: 20 }} />
 
