@@ -9,6 +9,7 @@ import {
 import {
   // interval,
   Observable,
+  of,
 } from 'rxjs';
 // import { map } from 'rxjs/operators';
 import { pipe } from '@rx-stream/pipe';
@@ -54,12 +55,16 @@ const withdraw = (
 };
 
 const EvmAnchorApiProvider = ({ children }: UIElementProps) => {
-  const deposit = useDeposit();
-  const approveDeposit = useApproveDeposit();
+  // const deposit = useDeposit();
+  // const approveDeposit = useApproveDeposit();
+
+  // const api = useMemo(() => {
+  //   return { approveDeposit, deposit, withdraw };
+  // }, [approveDeposit, deposit]);
 
   const api = useMemo(() => {
-    return { approveDeposit, deposit, withdraw };
-  }, [approveDeposit, deposit]);
+    return { deposit, withdraw };
+  }, []);
 
   return (
     <AnchorApiContext.Provider value={api}>
