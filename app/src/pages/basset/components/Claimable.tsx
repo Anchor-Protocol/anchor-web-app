@@ -8,7 +8,7 @@ import {
   useBLunaWithdrawableAmount,
   useBorrowMarketQuery,
 } from '@anchor-protocol/app-provider';
-import { formatUTokenDecimal2 } from '@libs/formatter';
+import { d2Formatter, formatUTokenDecimal2 } from '@libs/formatter';
 import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { horizontalRuler, verticalRuler } from '@libs/styled-neumorphism';
@@ -251,7 +251,12 @@ function Component({ className }: ClaimableProps) {
                 <div className="rewardBreakdown" key={descriptor.label}>
                   <i style={{ backgroundColor: descriptor.color }} />
                   <span className="rewardLabel">{descriptor.label}</span>
-                  <span className="rewardValue">{descriptor.value} UST</span>
+                  <span className="rewardValue">
+                    <AnimateNumber format={d2Formatter}>
+                      {descriptor.value}
+                    </AnimateNumber>{' '}
+                    UST
+                  </span>
                 </div>
               ))}
             </div>
