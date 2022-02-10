@@ -33,12 +33,20 @@ export class DoughnutChart extends Component<DoughnutChartProps> {
 
   componentDidUpdate(prevProps: Readonly<DoughnutChartProps>) {
     if (this.props.descriptors !== prevProps.descriptors) {
-      this.chart.data.datasets[0].data = this.props.descriptors.map(
-        (d) => d.value,
-      );
-      this.chart.data.datasets[0].backgroundColor = this.props.descriptors.map(
-        (d) => d.color,
-      );
+      const noValuePresent =
+        this.props.descriptors.filter((d) => d.value !== 0).length === 0;
+
+      if (noValuePresent) {
+        this.chart.data.labels = ['blank'];
+        this.chart.data.datasets[0].data = [1];
+        this.chart.data.datasets[0].backgroundColor = ['#c2c2c2'];
+      } else {
+        this.chart.data.datasets[0].data = this.props.descriptors.map(
+          (d) => d.value,
+        );
+        this.chart.data.datasets[0].backgroundColor =
+          this.props.descriptors.map((d) => d.color);
+      }
     }
 
     this.chart.update();
