@@ -2,55 +2,44 @@ import React, { useMemo } from 'react';
 import { UIElementProps } from '@libs/ui';
 import {
   AnchorApiContext,
+  AnchorDepositParams,
   // AnchorDepositParams,
   AnchorWithdrawParams,
 } from 'contexts/api';
 import {
   // interval,
   Observable,
+  of,
 } from 'rxjs';
 // import { map } from 'rxjs/operators';
 import { pipe } from '@rx-stream/pipe';
 import { TxResultRendering, TxStreamPhase } from '@libs/app-fns';
-import { useDeposit } from './api/useDeposit';
-import { useApproveDeposit } from './api/useApproveDeposit';
+// import { useDeposit } from './api/useDeposit';
+// import { useApproveDeposit } from './api/useApproveDeposit';
+import {
+  catchTxError,
+  CrossAnchorTx,
+  pollCrossAnchorTx,
+} from '@anchor-protocol/cross-anchor';
+import { pollEvmTx } from './api/pollEvmTx';
+import { createEvmTx } from './api/createEvmtx';
 
-// TODO: will relocate this functionality somewhere once
-// we get a better idea of how it will all fit together
+const deposit = (
+  params: AnchorDepositParams,
+): Observable<TxResultRendering<CrossAnchorTx>> => {
+  const observable = pipe(
+    createEvmTx(),
+    pollEvmTx(),
+    pollCrossAnchorTx(),
+    (source: TxResultRendering<CrossAnchorTx>) =>
+      of({
+        ...source,
+        phase: TxStreamPhase.SUCCEED,
+      }),
+  );
 
-// const deposit = (
-//   params: AnchorDepositParams,
-// ): Observable<TxResultRendering> => {
-//   // const observable = pipe<void, TxResultRendering>(() => {
-//   //   return {
-//   //     value: null,
-//   //     phase: TxStreamPhase.SUCCEED,
-//   //     receipts: [
-//   //       {
-//   //         name: 'Deposit Amount',
-//   //         value: '123.456 UST',
-//   //       },
-//   //     ],
-//   //   };
-//   // });
-//   // return observable();
-//
-//   const observable = interval(1000).pipe<TxResultRendering>(
-//     map((i) => {
-//       return {
-//         value: null,
-//         phase: TxStreamPhase.BROADCAST,
-//         receipts: [
-//           {
-//             name: 'Time taken',
-//             value: `${i} seconds`,
-//           },
-//         ],
-//       };
-//     }),
-//   );
-//   return observable;
-// };
+  return observable().pipe(catchTxError({}));
+};
 
 const withdraw = (
   params: AnchorWithdrawParams,
@@ -71,12 +60,16 @@ const withdraw = (
 };
 
 const EvmAnchorApiProvider = ({ children }: UIElementProps) => {
-  const deposit = useDeposit();
-  const approveDeposit = useApproveDeposit();
+  // const deposit = useDeposit();
+  // const approveDeposit = useApproveDeposit();
+
+  // const api = useMemo(() => {
+  //   return { approveDeposit, deposit, withdraw };
+  // }, [approveDeposit, deposit]);
 
   const api = useMemo(() => {
-    return { approveDeposit, deposit, withdraw };
-  }, [approveDeposit, deposit]);
+    return { deposit, withdraw };
+  }, []);
 
   return (
     <AnchorApiContext.Provider value={api}>
