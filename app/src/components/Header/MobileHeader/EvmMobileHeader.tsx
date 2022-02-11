@@ -3,8 +3,8 @@ import { useAccount } from 'contexts/account';
 import { useBuyUstDialog } from 'pages/earn/components/useBuyUstDialog';
 import { useSendDialog } from 'pages/send/useSendDialog';
 import React, { useCallback, useState } from 'react';
-import { useWalletDetailDialog } from './mobile/useWalletDetailDialog';
-import { MobileHeader } from './MobileHeader';
+import { useWalletDetailDialog } from '../mobile/useWalletDetailDialog';
+import { CommonMobileHeader } from './CommonMobileHeader';
 
 export function EvmMobileHeader() {
   const [open, setOpen] = useState<boolean>(false);
@@ -37,7 +37,7 @@ export function EvmMobileHeader() {
 
   return (
     <>
-      <MobileHeader
+      <CommonMobileHeader
         open={open}
         setOpen={setOpen}
         isActive={!!walletDetailElement}

@@ -1,11 +1,11 @@
 import { ClickAwayListener } from '@material-ui/core';
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';
-import { DropdownBox, DropdownContainer } from './DropdownContainer';
-import { ConnectWalletButton } from './ConnectWalletButton';
+import { DropdownBox, DropdownContainer } from '../DropdownContainer';
+import { ConnectWalletButton } from '../ConnectWalletButton';
 import { useTokenBalances } from 'contexts/balances';
 
-export interface WalletSelectorProps {
+export interface CommonWalletSelectorProps {
   className?: string;
   walletAddress?: string;
   initializing: boolean;
@@ -17,7 +17,7 @@ export interface WalletSelectorProps {
 
 //let _airdropClosed: boolean = false;
 
-function WalletSelectorBase({
+function CommonWalletSelectorBase({
   walletAddress,
   initializing,
   className,
@@ -25,7 +25,7 @@ function WalletSelectorBase({
   onClick,
   onClose,
   children,
-}: WalletSelectorProps) {
+}: CommonWalletSelectorProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
@@ -77,7 +77,7 @@ function WalletSelectorBase({
   );
 }
 
-export const WalletSelector = styled(WalletSelectorBase)`
+export const CommonWalletSelector = styled(CommonWalletSelectorBase)`
   display: inline-block;
   position: relative;
   text-align: left;

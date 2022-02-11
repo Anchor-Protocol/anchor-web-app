@@ -7,7 +7,7 @@ import { EvmAppProviders } from 'providers/evm/EvmAppProviders';
 import { Earn } from 'pages/earn';
 import { TermsOfService } from 'pages/terms';
 import { Mypage } from 'pages/mypage';
-import '../configurations/chartjs';
+import '../../configurations/chartjs';
 
 export function EvmApp() {
   return (

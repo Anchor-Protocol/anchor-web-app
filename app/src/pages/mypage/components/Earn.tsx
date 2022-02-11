@@ -15,7 +15,7 @@ import { HorizontalScrollTable } from '@libs/neumorphism-ui/components/Horizonta
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { fixHMR } from 'fix-hmr';
 import { useAccount } from 'contexts/account';
-import { useDepositDialog } from 'pages/earn/components/useDepositDialog';
+import { useDepositDialog } from 'pages/earn/components/useDepositDialog/useDepositDialog';
 import { useWithdrawDialog } from 'pages/earn/components/useWithdrawDialog';
 import { EmptySection } from 'pages/mypage/components/EmptySection';
 import React, { useCallback, useMemo } from 'react';

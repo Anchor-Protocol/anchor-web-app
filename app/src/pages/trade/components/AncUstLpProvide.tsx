@@ -130,7 +130,7 @@ export function AncUstLpProvide() {
       : undefined;
   }, [bank.tokenBalances.uUST, connected, fixedFee, simulation, ustAmount]);
 
-  // FIXME anc-ust lp withdraw real tx fee is fixed_gas (simulation.txFee is no matter)
+  // FIXME anc-ust lp withdraw real txs fee is fixed_gas (simulation.txFee is no matter)
   const invalidNextTransaction = useMemo(() => {
     if (ustAmount.length === 0 || !simulation || !!invalidUstAmount) {
       return undefined;

@@ -5,9 +5,9 @@ import { mobileHeaderHeight } from 'env';
 import React, { ReactNode } from 'react';
 import { NavLink, useRouteMatch } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
-import logoUrl from './assets/Logo.svg';
+import logoUrl from '../assets/Logo.svg';
 
-export interface MobileHeaderProps {
+export interface CommonMobileHeaderProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   isActive: boolean;
@@ -17,7 +17,7 @@ export interface MobileHeaderProps {
   className?: string;
 }
 
-function MobileHeaderBase({
+function CommonMobileHeaderBase({
   open,
   setOpen,
   isActive,
@@ -25,7 +25,7 @@ function MobileHeaderBase({
   airdropElement,
   className,
   viewAddressButtonElement,
-}: MobileHeaderProps) {
+}: CommonMobileHeaderProps) {
   const menus = useMenus();
 
   return (
@@ -117,7 +117,7 @@ const slide = keyframes`
   }
 `;
 
-export const MobileHeader = styled(MobileHeaderBase)`
+export const CommonMobileHeader = styled(CommonMobileHeaderBase)`
   // ---------------------------------------------
   // style
   // ---------------------------------------------

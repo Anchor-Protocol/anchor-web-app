@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import { IERC20, CrossAnchorBridge } from '@libs/typechain-types';
+import { IERC20, CrossAnchorBridge } from '@libs/evm-contracts';
 
 export interface Contracts {
   crossAnchorBridgeContract: CrossAnchorBridge;

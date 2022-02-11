@@ -3,10 +3,10 @@ import { useEvmWallet } from '@libs/evm-wallet';
 import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { useAccount } from 'contexts/account';
-import { ConnectionTypeList } from './ConnectionTypeList';
-import { TermsMessage } from './TermsMessage';
-import { WalletSelector } from './WalletSelector';
-import { EvmWalletDetailContent } from '../wallet/EvmWalletDetailContent';
+import { ConnectionTypeList } from '../ConnectionTypeList';
+import { TermsMessage } from '../TermsMessage';
+import { CommonWalletSelector } from './CommonWalletSelector';
+import { EvmWalletDetailContent } from '../../wallet/EvmWalletDetailContent';
 
 const EvmWalletConnectionList = ({
   setOpen,
@@ -49,7 +49,7 @@ const EvmWalletSelector = () => {
   }, [actions, onClose]);
 
   return (
-    <WalletSelector
+    <CommonWalletSelector
       walletAddress={nativeWalletAddress}
       initializing={status === 'initialization'}
       open={open}
@@ -71,7 +71,7 @@ const EvmWalletSelector = () => {
       ) : (
         <EvmWalletConnectionList setOpen={setOpen} />
       )}
-    </WalletSelector>
+    </CommonWalletSelector>
   );
 };
 

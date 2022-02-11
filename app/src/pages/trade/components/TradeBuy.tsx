@@ -150,7 +150,7 @@ export function TradeBuy() {
       : undefined;
   }, [fromAmount, connected, simulation, fixedFee, bank.tokenBalances.uUST]);
 
-  // FIXME anc buy real tx fee is fixed_gas (simulation.txFee is no matter)
+  // FIXME anc buy real txs fee is fixed_gas (simulation.txFee is no matter)
   const invalidNextTransaction = useMemo(() => {
     if (fromAmount.length === 0 || !simulation || !!invalidFromAmount) {
       return undefined;

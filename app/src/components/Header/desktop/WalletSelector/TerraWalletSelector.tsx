@@ -14,11 +14,11 @@ import React, { useCallback, useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import { Link, useRouteMatch } from 'react-router-dom';
 import styled from 'styled-components';
-import { AirdropContent } from '../airdrop/AirdropContent';
-import { WalletDetailContent } from '../wallet/WalletDetailContent';
-import { ConnectedButton } from './ConnectedButton';
-import { DropdownBox, DropdownContainer } from './DropdownContainer';
-import { NotConnectedButton } from './NotConnectedButton';
+import { AirdropContent } from '../../airdrop/AirdropContent';
+import { WalletDetailContent } from '../../wallet/WalletDetailContent';
+import { ConnectedButton } from '../ConnectedButton';
+import { DropdownBox, DropdownContainer } from '../DropdownContainer';
+import { NotConnectedButton } from '../NotConnectedButton';
 
 export interface WalletSelectorProps {
   className?: string;

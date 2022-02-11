@@ -16,7 +16,7 @@ import { SubAmount } from 'components/primitives/SubAmount';
 import { useAccount } from 'contexts/account';
 import { useTokenBalances } from 'contexts/balances';
 import React, { useCallback, useMemo } from 'react';
-import { useDepositDialog } from './useDepositDialog';
+import { useDepositDialog } from './useDepositDialog/useDepositDialog';
 import { useWithdrawDialog } from './useWithdrawDialog';
 
 export interface TotalDepositSectionProps {

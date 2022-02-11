@@ -3,10 +3,10 @@ import { ConnectType, useWallet } from '@terra-money/wallet-provider';
 import { useAccount } from 'contexts/account';
 import { useBuyUstDialog } from 'pages/earn/components/useBuyUstDialog';
 import { useSendDialog } from 'pages/send/useSendDialog';
-import { useWalletDetailDialog } from './mobile/useWalletDetailDialog';
-import { ViewAddressButton } from './mobile/ViewAddressButton';
-import { MobileHeader } from './MobileHeader';
-import { useAirdropElement } from './airdrop';
+import { useWalletDetailDialog } from '../mobile/useWalletDetailDialog';
+import { ViewAddressButton } from '../mobile/ViewAddressButton';
+import { useAirdropElement } from '../airdrop';
+import { CommonMobileHeader } from './CommonMobileHeader';
 
 export function TerraMobileHeader() {
   const [open, setOpen] = useState<boolean>(false);
@@ -56,7 +56,7 @@ export function TerraMobileHeader() {
 
   return (
     <>
-      <MobileHeader
+      <CommonMobileHeader
         open={open}
         setOpen={setOpen}
         isActive={!!walletDetailElement}

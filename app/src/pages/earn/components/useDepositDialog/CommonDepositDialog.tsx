@@ -1,4 +1,3 @@
-import { CircleSpinner } from 'react-spinners-kit';
 import {
   formatUST,
   formatUSTInput,
@@ -6,63 +5,49 @@ import {
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { u, UST } from '@anchor-protocol/types';
-import {
-  useAnchorApiTx,
-  useEarnDepositForm,
-} from '@anchor-protocol/app-provider';
+import { useEarnDepositForm } from '@anchor-protocol/app-provider';
 import { demicrofy } from '@libs/formatter';
-import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
 import { useConfirm } from '@libs/neumorphism-ui/components/useConfirm';
-import type { DialogProps, OpenDialog } from '@libs/use-dialog';
-import { useDialog } from '@libs/use-dialog';
+import type { DialogProps } from '@libs/use-dialog';
 import { InputAdornment, Modal } from '@material-ui/core';
-import { StreamStatus } from '@rx-stream/react';
 import { BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import type { ReactNode } from 'react';
 import React, { ChangeEvent, useCallback } from 'react';
 import styled from 'styled-components';
 import { useAccount } from 'contexts/account';
+import { FormParams, FormReturn } from './types';
 
-interface FormParams {
-  className?: string;
+interface SubmitDepositCallback {
+  (depositAmount: UST, txFee: u<UST<BigSource>> | undefined): void;
 }
 
-type FormReturn = void;
-
-export function useDepositDialog(): [
-  OpenDialog<FormParams, FormReturn>,
-  ReactNode,
-] {
-  return useDialog(Component);
+interface SubmitDeposit {
+  (callback: SubmitDepositCallback): void;
 }
 
-function ComponentBase({
+interface CommonDepositDialogBaseProps
+  extends DialogProps<FormParams, FormReturn> {
+  children: (
+    isHighlighted: boolean,
+    isValid: boolean,
+    submitDeposit: SubmitDeposit,
+  ) => ReactNode;
+}
+
+function CommonDepositDialogBase({
   className,
   closeDialog,
-}: DialogProps<FormParams, FormReturn>) {
-  // ---------------------------------------------
-  // dependencies
-  // ---------------------------------------------
-  const account = useAccount();
-
+  children,
+}: CommonDepositDialogBaseProps) {
+  const { connected, availablePost } = useAccount();
   const [openConfirm, confirmElement] = useConfirm();
 
-  const [approveDeposit, approveDepositResult] = useAnchorApiTx(
-    (api) => api.approveDeposit!, // TODO: think about API architecture
-  );
-
-  const [deposit, depositResult] = useAnchorApiTx((api) => api.deposit);
-
-  // ---------------------------------------------
-  // states
-  // ---------------------------------------------
   const {
     depositAmount,
     txFee,
@@ -72,39 +57,18 @@ function ComponentBase({
     invalidNextTxFee,
     invalidDepositAmount,
     updateDepositAmount,
-    availablePost,
+    availablePost: availableSubmit,
   } = useEarnDepositForm();
 
-  // ---------------------------------------------
-  // callbacks
-  // ---------------------------------------------
-  const approve = useCallback(
-    async (
-      depositAmount: UST,
-      // txFee: u<UST<BigSource>> | undefined, // TODO
-    ) => {
-      if (!account.connected) {
+  const submitDeposit = useCallback<SubmitDeposit>(
+    async (callback) => {
+      if (!connected) {
         return;
       }
 
-      approveDeposit?.(depositAmount);
-    },
-    [account.connected, approveDeposit],
-  );
-
-  const proceed = useCallback(
-    async (
-      depositAmount: UST,
-      txFee: u<UST<BigSource>> | undefined,
-      confirm: ReactNode,
-    ) => {
-      if (!account.connected || !deposit) {
-        return;
-      }
-
-      if (confirm) {
+      if (invalidNextTxFee) {
         const userConfirm = await openConfirm({
-          description: confirm,
+          description: invalidNextTxFee,
           agree: 'Proceed',
           disagree: 'Cancel',
         });
@@ -114,32 +78,10 @@ function ComponentBase({
         }
       }
 
-      deposit({
-        depositAmount,
-        txFee: txFee!.toString() as u<UST>,
-      });
+      callback(depositAmount, txFee);
     },
-    [account.connected, deposit, openConfirm],
+    [connected, openConfirm, depositAmount, txFee, invalidNextTxFee],
   );
-
-  // ---------------------------------------------
-  // presentation
-  // ---------------------------------------------
-  if (
-    depositResult?.status === StreamStatus.IN_PROGRESS ||
-    depositResult?.status === StreamStatus.DONE
-  ) {
-    return (
-      <Modal open disableBackdropClick disableEnforceFocus>
-        <Dialog className={className}>
-          <TxResultRenderer
-            resultRendering={depositResult.value}
-            onExit={closeDialog}
-          />
-        </Dialog>
-      </Modal>
-    );
-  }
 
   return (
     <Modal open onClose={() => closeDialog()}>
@@ -204,47 +146,11 @@ function ComponentBase({
         )}
 
         <ViewAddressWarning>
-          {approveDepositResult?.status === StreamStatus.IN_PROGRESS && (
-            <CircleSpinner />
+          {children(
+            !!invalidNextTxFee,
+            !connected || !availablePost || availableSubmit,
+            submitDeposit,
           )}
-          <ActionButton
-            className="proceed"
-            style={
-              invalidNextTxFee
-                ? {
-                    backgroundColor: '#c12535',
-                  }
-                : undefined
-            }
-            disabled={
-              !account.connected ||
-              !account.availablePost ||
-              approveDepositResult?.status === StreamStatus.IN_PROGRESS
-              // || !availablePost
-            }
-            onClick={() => approve(depositAmount)}
-          >
-            Approve UST
-          </ActionButton>
-          <ActionButton
-            className="proceed"
-            style={
-              invalidNextTxFee
-                ? {
-                    backgroundColor: '#c12535',
-                  }
-                : undefined
-            }
-            disabled={
-              !account.connected ||
-              !account.availablePost ||
-              !deposit ||
-              !availablePost
-            }
-            onClick={() => proceed(depositAmount, txFee, invalidNextTxFee)}
-          >
-            Proceed
-          </ActionButton>
         </ViewAddressWarning>
 
         {confirmElement}
@@ -253,7 +159,7 @@ function ComponentBase({
   );
 }
 
-const Component = styled(ComponentBase)`
+export const CommonDepositDialog = styled(CommonDepositDialogBase)`
   width: 720px;
 
   h1 {
@@ -287,13 +193,5 @@ const Component = styled(ComponentBase)`
 
   .receipt {
     margin-top: 30px;
-  }
-
-  .proceed {
-    margin-top: 45px;
-
-    width: 100%;
-    height: 60px;
-    border-radius: 30px;
   }
 `;

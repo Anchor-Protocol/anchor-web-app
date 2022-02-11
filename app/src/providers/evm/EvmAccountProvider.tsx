@@ -5,20 +5,33 @@ import { HumanAddr } from '@libs/types';
 import { useEvmWallet } from '@libs/evm-wallet';
 
 const EvmAccountProvider = ({ children }: UIElementProps) => {
-  const { address, status } = useEvmWallet();
+  const { address, status, chainId, connection } = useEvmWallet();
 
   const account = useMemo<Account>(() => {
-    return {
-      status,
+    const common = {
       availablePost: true,
-      connected: (status === 'connected') as true, // Cast to "true" to fix discriminated union
-      nativeWalletAddress: address as HumanAddr,
-      network: 'evm',
       readonly: false,
-      terraWalletAddress:
-        'terra1k529hl5nvrvavnzv4jm3um2lllxujrshpn5um2' as HumanAddr,
     };
-  }, [address, status]);
+
+    return chainId && connection
+      ? {
+          ...common,
+          chainId,
+          connected: true,
+          status: 'connected',
+          nativeWalletAddress: address as HumanAddr,
+          terraWalletAddress:
+            'terra1k529hl5nvrvavnzv4jm3um2lllxujrshpn5um2' as HumanAddr,
+        }
+      : {
+          ...common,
+          chainId: undefined,
+          connected: false,
+          status: status === 'disconnected' ? 'disconnected' : 'initialization',
+          nativeWalletAddress: undefined,
+          terraWalletAddress: undefined,
+        };
+  }, [address, chainId, connection, status]);
 
   return (
     <AccountContext.Provider value={account}>

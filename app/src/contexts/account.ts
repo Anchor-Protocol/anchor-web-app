@@ -4,21 +4,27 @@ import { createContext, useContext } from 'react';
 interface AccountCommon {
   availablePost: boolean;
   readonly: boolean;
-  network: 'terra' | 'evm';
-  status: 'initialization' | 'connected' | 'disconnected';
-  // TODO
-  // connect: (connectType: 'extension' | 'walletconnect' | 'readonly') => void;
-  // disconnect: () => void;
 }
 
 interface AccountConnected extends AccountCommon {
+  chainId: number | string;
   connected: true;
+  // connection: {
+  //   chainId: number | string;
+  //   name: string;
+  //   network: 'terra' | 'evm';
+  //   type: 'METAMASK' | 'WALLETCONNECT';
+  // };
+  status: 'connected';
   nativeWalletAddress: HumanAddr;
   terraWalletAddress: HumanAddr;
 }
 
 interface AccountDisconnected extends AccountCommon {
+  chainId: undefined;
   connected: false;
+  // connection: undefined;
+  status: 'initialization' | 'disconnected';
   nativeWalletAddress: undefined;
   terraWalletAddress: undefined;
 }

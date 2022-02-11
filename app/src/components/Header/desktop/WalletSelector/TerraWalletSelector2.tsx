@@ -6,12 +6,12 @@ import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
 import { ConnectType, useWallet } from '@terra-money/wallet-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider';
 import { useAccount } from 'contexts/account';
-import { ConnectionTypeList } from './ConnectionTypeList';
-import { TermsMessage } from './TermsMessage';
-import { WalletSelector } from './WalletSelector';
+import { ConnectionTypeList } from '../ConnectionTypeList';
+import { TermsMessage } from '../TermsMessage';
+import { CommonWalletSelector } from './CommonWalletSelector';
 import { useBuyUstDialog } from 'pages/earn/components/useBuyUstDialog';
 import { useSendDialog } from 'pages/send/useSendDialog';
-import { WalletDetailContent } from '../wallet/WalletDetailContent';
+import { WalletDetailContent } from '../../wallet/WalletDetailContent';
 
 interface WalletConnectionListFooterProps {
   includesReadonly: boolean;
@@ -163,7 +163,7 @@ const TerraWalletSelector = () => {
   }, []);
 
   return (
-    <WalletSelector
+    <CommonWalletSelector
       walletAddress={terraWalletAddress}
       initializing={status === 'initialization'}
       open={open}
@@ -185,7 +185,7 @@ const TerraWalletSelector = () => {
           openBuyUst={() => openBuyUstDialog({})}
         />
       )}
-    </WalletSelector>
+    </CommonWalletSelector>
   );
 };
 

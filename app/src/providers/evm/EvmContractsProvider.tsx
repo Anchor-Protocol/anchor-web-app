@@ -6,7 +6,7 @@ import { useEvmWallet } from '@libs/evm-wallet';
 import {
   IERC20__factory,
   CrossAnchorBridge__factory,
-} from '@libs/typechain-types';
+} from '@libs/evm-contracts';
 import { getAddress } from 'configurations/addresses';
 
 const EvmContractsProvider = ({ children }: UIElementProps) => {
