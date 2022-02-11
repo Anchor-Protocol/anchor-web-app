@@ -43,8 +43,7 @@ export const earnDepositForm =
     EarnDepositFormStates,
     EarnDepositFormAsyncStates
   > => {
-    const depositAmountExists =
-      depositAmount.length > 0 && depositAmount !== '0';
+    const depositAmountExists = depositAmount.length > 0;
 
     // txFee
     const txFee = (() => {
