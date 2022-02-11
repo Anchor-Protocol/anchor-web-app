@@ -1,6 +1,6 @@
 import { CrossAnchorTx } from '@anchor-protocol/cross-anchor';
 import { TxResultRendering, TxStreamPhase } from '@libs/app-fns';
-import { truncate } from '@libs/formatter';
+import { truncateEvm } from '@libs/formatter';
 
 export const createEvmTx =
   () => (_: void | TxResultRendering<CrossAnchorTx>) => {
@@ -18,7 +18,7 @@ export const createEvmTx =
       receipts: [
         {
           name: `Tx Hash`,
-          value: truncate(txHash, [10, 10]),
+          value: truncateEvm(txHash),
         },
       ],
     };
