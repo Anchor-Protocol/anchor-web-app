@@ -120,7 +120,8 @@ class HorizontalGraphSliderBase extends Component<
 
   thumbLeft = () => {
     return (
-      this.boundedValue(this.props.value) * this.props.coordinateSpace.width
+      this.boundedRatio(this.props.value / this.valueRange()) *
+      this.props.coordinateSpace.width
     );
   };
 
@@ -167,6 +168,7 @@ export const HorizontalGraphSliderThumb = withTheme(
 
 export const HorizontalGraphSlider = styled(HorizontalGraphSliderBase)`
   position: absolute;
+  cursor: pointer;
 
   left: ${({ coordinateSpace }) => coordinateSpace.x}px;
   top: ${({ coordinateSpace }) => coordinateSpace.y}px;
