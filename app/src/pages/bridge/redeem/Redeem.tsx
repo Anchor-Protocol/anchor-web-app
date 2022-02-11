@@ -9,8 +9,9 @@ import { truncateEvm } from '@libs/formatter';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
 import { GuardSpinner } from 'react-spinners-kit';
-import { useWormholeSignedVAA } from './useWormholeSignedVAA';
+//import { useWormholeSignedVAA } from './useWormholeSignedVAA';
 import { HorizontalDashedRuler } from '@libs/neumorphism-ui/components/HorizontalDashedRuler';
+//import { useWormholeParseVAA } from './useWormholeParseVAA';
 
 interface RedemptionSummaryListProps {
   sequence: string;
@@ -52,7 +53,21 @@ function RedeemBase(props: UIElementProps) {
 
   const { sequence } = useParams<URLParams>();
 
-  const wormhole = useWormholeSignedVAA(1, 1);
+  //const parseVAA = useWormholeParseVAA();
+
+  const wormhole = useWormholeSignedVAA(1, '365');
+
+  // const payload = useMemo(() => {
+  //   if (parseVAA && wormhole.vaaBytes) {
+  //     console.log('has parser');
+  //     const parsedVAA = parseVAA(wormhole.vaaBytes);
+  //     // const payload = parseTransferPayload(
+  //     //   Buffer.from(new Uint8Array(parsedVAA.payload)),
+  //     // );
+  //     // console.log(payload);
+  //   }
+  // },
+  // [wormhole.vaaBytes, parseVAA]);
 
   // if (
   //   txResult?.status === StreamStatus.IN_PROGRESS ||
