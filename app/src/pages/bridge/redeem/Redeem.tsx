@@ -4,13 +4,14 @@ import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { UIElementProps } from 'components/layouts/UIElementProps';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { truncateEvm } from '@libs/formatter';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
 import { GuardSpinner } from 'react-spinners-kit';
 import { useWormholeSignedVAA } from './useWormholeSignedVAA';
 import { HorizontalDashedRuler } from '@libs/neumorphism-ui/components/HorizontalDashedRuler';
+import { importCoreWasm } from '@certusone/wormhole-sdk/lib/cjs/solana/wasm';
 //import { useWormholeParseVAA } from './useWormholeParseVAA';
 
 interface RedemptionSummaryListProps {
@@ -55,7 +56,20 @@ function RedeemBase(props: UIElementProps) {
 
   //const parseVAA = useWormholeParseVAA();
 
-  const wormhole = useWormholeSignedVAA(1, '365');
+  const { loading, vaaBytes } = useWormholeSignedVAA(1, '365');
+
+  useEffect(() => {
+    if (vaaBytes) {
+      (async () => {
+        console.log('loading', vaaBytes);
+        const { parse_vaa } = await importCoreWasm();
+        console.log(parse_vaa);
+        const payload = parse_vaa(vaaBytes);
+        console.log(payload);
+      })();
+    }
+    return undefined;
+  }, [vaaBytes]);
 
   // const payload = useMemo(() => {
   //   if (parseVAA && wormhole.vaaBytes) {
@@ -99,15 +113,11 @@ function RedeemBase(props: UIElementProps) {
           arcu, porttitor sed mollis at, pulvinar at lectus. Nam semper dui at
           quam sollicitudin, sit amet lacinia ligula eleifend.
         </p>
-        {wormhole.loading ? (
-          <Loading />
-        ) : (
-          <RedemptionSummaryList sequence={sequence!} />
-        )}
+        {loading ? <Loading /> : <RedemptionSummaryList sequence={sequence!} />}
         <ViewAddressWarning>
           <ActionButton
             className="submit"
-            disabled={wormhole.loading}
+            disabled={loading}
             onClick={() => {
               console.log('Redeeming');
             }}
