@@ -1,14 +1,14 @@
 import { bAssetClaimTx } from '@anchor-protocol/app-fns';
 import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
-import { HumanAddr } from '@libs/types';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
+import { RewardBreakdown } from 'pages/basset/hooks/useRewardsBreakdown';
 import { useCallback } from 'react';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 
 export interface BAssetClaimTxParams {
-  rewardAddrs: HumanAddr[];
+  rewardBreakdowns: RewardBreakdown[];
   onTxSucceed?: () => void;
 }
 
@@ -22,7 +22,7 @@ export function useBAssetClaimTx() {
   const refetchQueries = useRefetchQueries();
 
   const stream = useCallback(
-    ({ onTxSucceed, rewardAddrs }: BAssetClaimTxParams) => {
+    ({ onTxSucceed, rewardBreakdowns }: BAssetClaimTxParams) => {
       if (!connectedWallet || !connectedWallet.availablePost) {
         throw new Error('Can not post!');
       }
@@ -30,7 +30,7 @@ export function useBAssetClaimTx() {
       return bAssetClaimTx({
         // fabricatebAssetClaimRewards
         walletAddr: connectedWallet.walletAddress,
-        rewardAddrs,
+        rewardBreakdowns,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
