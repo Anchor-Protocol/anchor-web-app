@@ -9,7 +9,7 @@ import { truncateEvm } from '@libs/formatter';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
 import { GuardSpinner } from 'react-spinners-kit';
-//import { useWormholeSignedVAA } from './useWormholeSignedVAA';
+import { useWormholeSignedVAA } from './useWormholeSignedVAA';
 import { HorizontalDashedRuler } from '@libs/neumorphism-ui/components/HorizontalDashedRuler';
 //import { useWormholeParseVAA } from './useWormholeParseVAA';
 
