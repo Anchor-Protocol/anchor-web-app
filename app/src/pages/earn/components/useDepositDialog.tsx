@@ -20,7 +20,6 @@ import { useDialog } from '@libs/use-dialog';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
@@ -28,6 +27,8 @@ import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import type { ReactNode } from 'react';
 import React, { ChangeEvent, useCallback } from 'react';
 import styled from 'styled-components';
+import { AmountSlider } from './AmountSlider';
+import { BigSource } from 'big.js';
 
 interface FormParams {
   className?: string;
@@ -166,6 +167,19 @@ function ComponentBase({
             </span>
           </span>
         </div>
+        {txFee && (
+          <figure className="graph">
+            <AmountSlider
+              disabled={!connectedWallet}
+              max={Number(formatUSTInput(demicrofy(maxAmount)))}
+              txFee={Number(formatUST(demicrofy(txFee)))}
+              value={Number(depositAmount)}
+              onChange={(value) => {
+                updateDepositAmount(formatUSTInput(value.toString() as UST));
+              }}
+            />
+          </figure>
+        )}
 
         {txFee && sendAmount && (
           <TxFeeList className="receipt">
@@ -214,6 +228,7 @@ function ComponentBase({
 
 const Component = styled(ComponentBase)`
   width: 720px;
+  touch-action: none;
 
   h1 {
     font-size: 27px;
@@ -242,6 +257,11 @@ const Component = styled(ComponentBase)`
     &[aria-invalid='true'] {
       color: ${({ theme }) => theme.colors.negative};
     }
+  }
+
+  .graph {
+    margin-top: 80px;
+    margin-bottom: 40px;
   }
 
   .receipt {

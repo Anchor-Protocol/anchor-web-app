@@ -261,6 +261,7 @@ function ComponentBase({
 
 const Component = styled(ComponentBase)`
   width: 720px;
+  touch-action: none;
 
   h1 {
     font-size: 27px;
