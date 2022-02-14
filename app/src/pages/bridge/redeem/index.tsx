@@ -22,8 +22,8 @@ import {
 import { StreamStatus } from '@rx-stream/react';
 import { useWormholeRedeemTx } from '@anchor-protocol/wormhole/useWormholeRedeemTx';
 import { useAccount } from 'contexts/account';
-import { Error } from './Error';
-import { TxRendering } from './TxRenderer';
+import { Error } from './components/Error';
+import { TxRendering } from './components/TxRenderer';
 
 type WormholePayloadType = ReturnType<typeof parseTransferPayload> & {
   timestamp: number;
