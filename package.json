@@ -57,6 +57,8 @@
     "@terra-money/terra.js": "3.0.2"
   },
   "dependencies": {
-    "@ethersproject/contracts": "^5.5.0"
+    "@certusone/wormhole-sdk": "^0.2.0",
+    "@ethersproject/contracts": "^5.5.0",
+    "@improbable-eng/grpc-web-node-http-transport": "^0.15.0"
   }
 }
