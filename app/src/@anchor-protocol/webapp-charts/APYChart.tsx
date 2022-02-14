@@ -1,7 +1,7 @@
 import { Rate } from '@anchor-protocol/types';
 import { formatRate } from '@libs/formatter';
-import { darkTheme } from '@libs/neumorphism-ui/themes/darkTheme';
-import { lightTheme } from '@libs/neumorphism-ui/themes/lightTheme';
+import { darkTheme } from '@libs/neumorphism-ui/themes/terra/darkTheme';
+import { lightTheme } from '@libs/neumorphism-ui/themes/terra/lightTheme';
 import { scaleLinear } from 'd3-scale';
 import { curveNatural, line } from 'd3-shape';
 import { format } from 'date-fns';

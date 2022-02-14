@@ -7,7 +7,7 @@ import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import React, { useState, useEffect } from 'react';
 import { truncateEvm } from '@libs/formatter';
 import styled from 'styled-components';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { GuardSpinner } from 'react-spinners-kit';
 import { HorizontalDashedRuler } from '@libs/neumorphism-ui/components/HorizontalDashedRuler';
 import {
@@ -19,10 +19,11 @@ import {
   useWormholeAsset,
   parseVAA,
 } from '@anchor-protocol/wormhole';
-import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { StreamStatus } from '@rx-stream/react';
 import { useWormholeRedeemTx } from '@anchor-protocol/wormhole/useWormholeRedeemTx';
 import { useAccount } from 'contexts/account';
+import { Error } from './Error';
+import { TxRendering } from './TxRenderer';
 
 type WormholePayloadType = ReturnType<typeof parseTransferPayload> & {
   timestamp: number;
@@ -95,8 +96,6 @@ function RedeemBase(props: UIElementProps) {
 
   const { sequence = '' } = useParams<URLParams>();
 
-  const history = useHistory();
-
   const { loading, vaaBytes } = useWormholeSignedVAA(sequence);
 
   const [payload, setPayload] = useState<WormholePayloadType | undefined>();
@@ -117,21 +116,11 @@ function RedeemBase(props: UIElementProps) {
     redeemTxResult?.status === StreamStatus.IN_PROGRESS ||
     redeemTxResult?.status === StreamStatus.DONE
   ) {
-    const onExit =
-      redeemTxResult.status === StreamStatus.DONE
-        ? () => history.push('/mypage')
-        : () => {};
+    return <TxRendering className={className} txResult={redeemTxResult} />;
+  }
 
-    return (
-      <CenteredLayout className={className} maxWidth={800}>
-        <Section>
-          <TxResultRenderer
-            resultRendering={redeemTxResult.value}
-            onExit={onExit}
-          />
-        </Section>
-      </CenteredLayout>
-    );
+  if (!loading && vaaBytes === null) {
+    return <Error className={className} sequence={sequence} />;
   }
 
   return (
@@ -201,13 +190,45 @@ export const Redeem = styled(RedeemBase)`
   }
 
   .receipt,
+  .error,
   .loading {
     margin: 30px 0 40px 0;
   }
 
+  .error,
   .loading {
     display: flex;
     flex-direction: column;
+  }
+
+  .error {
+    h2 {
+      font-weight: 500;
+      font-size: 1.3em;
+      text-align: center;
+      margin-top: 1em;
+      margin-bottom: 1.2em;
+    }
+    .icon {
+      color: ${({ theme }) => theme.colors.negative};
+      margin: 0 auto;
+      width: 6em;
+      height: 6em;
+      border-radius: 50%;
+      border: 3px solid currentColor;
+      display: grid;
+      place-content: center;
+      svg {
+        font-size: 3em;
+      }
+    }
+    .text {
+      text-align: center;
+      margin-top: 20px;
+    }
+  }
+
+  .loading {
     .spinner {
       margin: 15px auto;
     }
