@@ -4,30 +4,65 @@ import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { UIElementProps } from 'components/layouts/UIElementProps';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { truncateEvm } from '@libs/formatter';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
 import { GuardSpinner } from 'react-spinners-kit';
-import { useWormholeSignedVAA } from './useWormholeSignedVAA';
 import { HorizontalDashedRuler } from '@libs/neumorphism-ui/components/HorizontalDashedRuler';
-import { importCoreWasm } from '@certusone/wormhole-sdk/lib/cjs/solana/wasm';
-//import { useWormholeParseVAA } from './useWormholeParseVAA';
+import {
+  hexToNativeString,
+  parseTransferPayload,
+} from '@certusone/wormhole-sdk';
+import {
+  useWormholeSignedVAA,
+  useWormholeAsset,
+  parseVAA,
+} from '@anchor-protocol/wormhole';
+
+type WormholePayloadType = ReturnType<typeof parseTransferPayload> & {
+  timestamp: number;
+};
+
+const formatDate = (date: Date): string => {
+  return `${date.toLocaleDateString('en-US', {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })} ${date.toLocaleTimeString('en-US')}`;
+};
 
 interface RedemptionSummaryListProps {
   sequence: string;
+  payload: WormholePayloadType;
 }
 
 const RedemptionSummaryList = (props: RedemptionSummaryListProps) => {
-  const { sequence } = props;
+  const {
+    sequence,
+    payload: {
+      timestamp,
+      amount,
+      originChain,
+      originAddress,
+      targetChain,
+      targetAddress,
+    },
+  } = props;
+
+  const { formatter } = useWormholeAsset(originAddress, originChain);
+
   return (
     <TxFeeList className="receipt">
       <TxFeeListItem label="Sequence">{sequence}</TxFeeListItem>
-      <TxFeeListItem label="Timestamp">9th Feb 2022 9:30am</TxFeeListItem>
-      <TxFeeListItem label="Target Address">
-        {truncateEvm('0x29c46471b286A3769f786ee089fDDE63Bdb2480C')}
+      <TxFeeListItem label="Timestamp">
+        {formatDate(new Date(timestamp * 1000))}
       </TxFeeListItem>
-      <TxFeeListItem label="Amount">250 UST</TxFeeListItem>
+      <TxFeeListItem label="Target Address">
+        {truncateEvm(hexToNativeString(targetAddress, targetChain))}
+      </TxFeeListItem>
+      <TxFeeListItem label="Amount">{formatter(amount)}</TxFeeListItem>
     </TxFeeList>
   );
 };
@@ -52,36 +87,23 @@ interface URLParams {
 function RedeemBase(props: UIElementProps) {
   const { className } = props;
 
-  const { sequence } = useParams<URLParams>();
+  const { chainId = '', sequence = '' } = useParams<URLParams>();
 
-  //const parseVAA = useWormholeParseVAA();
+  const { loading, vaaBytes } = useWormholeSignedVAA(chainId, sequence);
 
-  const { loading, vaaBytes } = useWormholeSignedVAA(1, '365');
+  const [payload, setPayload] = useState<WormholePayloadType | undefined>();
 
   useEffect(() => {
+    let value: WormholePayloadType | undefined = undefined;
     if (vaaBytes) {
-      (async () => {
-        console.log('loading', vaaBytes);
-        const { parse_vaa } = await importCoreWasm();
-        console.log(parse_vaa);
-        const payload = parse_vaa(vaaBytes);
-        console.log(payload);
-      })();
+      const vaa = parseVAA(vaaBytes);
+      value = {
+        timestamp: vaa.timestamp,
+        ...parseTransferPayload(vaa.payload),
+      };
     }
-    return undefined;
+    setPayload(value);
   }, [vaaBytes]);
-
-  // const payload = useMemo(() => {
-  //   if (parseVAA && wormhole.vaaBytes) {
-  //     console.log('has parser');
-  //     const parsedVAA = parseVAA(wormhole.vaaBytes);
-  //     // const payload = parseTransferPayload(
-  //     //   Buffer.from(new Uint8Array(parsedVAA.payload)),
-  //     // );
-  //     // console.log(payload);
-  //   }
-  // },
-  // [wormhole.vaaBytes, parseVAA]);
 
   // if (
   //   txResult?.status === StreamStatus.IN_PROGRESS ||
@@ -113,7 +135,11 @@ function RedeemBase(props: UIElementProps) {
           arcu, porttitor sed mollis at, pulvinar at lectus. Nam semper dui at
           quam sollicitudin, sit amet lacinia ligula eleifend.
         </p>
-        {loading ? <Loading /> : <RedemptionSummaryList sequence={sequence!} />}
+        {loading || !payload ? (
+          <Loading />
+        ) : (
+          <RedemptionSummaryList sequence={sequence!} payload={payload} />
+        )}
         <ViewAddressWarning>
           <ActionButton
             className="submit"
