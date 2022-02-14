@@ -15,7 +15,7 @@ export type EvmWallet = {
   status: WalletStatus;
 } & Omit<ConnectorData, 'isActive' | 'isActivating'>;
 
-export const EvmWalletContext = createContext<EvmWallet>(undefined!);
+export const EvmWalletContext = createContext<EvmWallet | undefined>(undefined);
 
 export function EvmWalletProvider({ children }: { children: ReactNode }) {
   const [connectType, setConnectType] = useLocalStorage<ConnectType | 'null'>(
