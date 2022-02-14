@@ -7,7 +7,7 @@ import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import React, { useState, useEffect } from 'react';
 import { truncateEvm } from '@libs/formatter';
 import styled from 'styled-components';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { GuardSpinner } from 'react-spinners-kit';
 import { HorizontalDashedRuler } from '@libs/neumorphism-ui/components/HorizontalDashedRuler';
 import {
@@ -19,6 +19,10 @@ import {
   useWormholeAsset,
   parseVAA,
 } from '@anchor-protocol/wormhole';
+import { TxResultRenderer } from 'components/tx/TxResultRenderer';
+import { StreamStatus } from '@rx-stream/react';
+import { useWormholeRedeemTx } from '@anchor-protocol/wormhole/useWormholeRedeemTx';
+import { useAccount } from 'contexts/account';
 
 type WormholePayloadType = ReturnType<typeof parseTransferPayload> & {
   timestamp: number;
@@ -87,44 +91,48 @@ interface URLParams {
 function RedeemBase(props: UIElementProps) {
   const { className } = props;
 
-  const { chainId = '', sequence = '' } = useParams<URLParams>();
+  const { connected } = useAccount();
 
-  const { loading, vaaBytes } = useWormholeSignedVAA(chainId, sequence);
+  const { sequence = '' } = useParams<URLParams>();
+
+  const history = useHistory();
+
+  const { loading, vaaBytes } = useWormholeSignedVAA(sequence);
 
   const [payload, setPayload] = useState<WormholePayloadType | undefined>();
 
+  const [redeem, redeemTxResult] = useWormholeRedeemTx();
+
   useEffect(() => {
-    let value: WormholePayloadType | undefined = undefined;
     if (vaaBytes) {
       const vaa = parseVAA(vaaBytes);
-      value = {
+      setPayload({
         timestamp: vaa.timestamp,
         ...parseTransferPayload(vaa.payload),
-      };
+      });
     }
-    setPayload(value);
   }, [vaaBytes]);
 
-  // if (
-  //   txResult?.status === StreamStatus.IN_PROGRESS ||
-  //   txResult?.status === StreamStatus.DONE
-  // ) {
-  //   const onExit =
-  //     txResult.status === StreamStatus.DONE
-  //       ? () => history.push('/mypage')
-  //       : () => {};
+  if (
+    redeemTxResult?.status === StreamStatus.IN_PROGRESS ||
+    redeemTxResult?.status === StreamStatus.DONE
+  ) {
+    const onExit =
+      redeemTxResult.status === StreamStatus.DONE
+        ? () => history.push('/mypage')
+        : () => {};
 
-  //   return (
-  //     <CenteredLayout className={className} maxWidth={800}>
-  //       <Section>
-  //         <TxResultRenderer
-  //           resultRendering={txResult.value}
-  //           onExit={onExit}
-  //         />
-  //       </Section>
-  //     </CenteredLayout>
-  //   );
-  // }
+    return (
+      <CenteredLayout className={className} maxWidth={800}>
+        <Section>
+          <TxResultRenderer
+            resultRendering={redeemTxResult.value}
+            onExit={onExit}
+          />
+        </Section>
+      </CenteredLayout>
+    );
+  }
 
   return (
     <CenteredLayout className={className} maxWidth={800}>
@@ -143,9 +151,9 @@ function RedeemBase(props: UIElementProps) {
         <ViewAddressWarning>
           <ActionButton
             className="submit"
-            disabled={loading}
+            disabled={!connected || loading || !payload}
             onClick={() => {
-              console.log('Redeeming');
+              vaaBytes && redeem && redeem(vaaBytes);
             }}
           >
             Redeem

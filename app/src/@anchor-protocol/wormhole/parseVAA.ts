@@ -1,9 +1,6 @@
 import Big from 'big.js';
 
 const skipHeader = (buffer: Buffer): Buffer => {
-  // const _version = buffer.readInt8();
-  // const _guardianSetIndex = buffer.readUInt32BE();
-
   const VERSION_LEN = 1;
   const GAURDIAN_SET_INDEX_LEN = 4;
 

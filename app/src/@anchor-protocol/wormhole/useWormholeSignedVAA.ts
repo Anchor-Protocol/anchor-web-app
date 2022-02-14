@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import {
   CHAIN_ID_TERRA,
   getEmitterAddressTerra,
-  //getTokenBridgeAddressForChain,
   getSignedVAAWithRetry,
 } from '@certusone/wormhole-sdk';
 
@@ -16,22 +15,13 @@ type WormholeSignedVAAReturn = {
 const EMITTER_ADDRESS = 'terra1pseddrv0yfsn76u4zxrjmtf45kdlmalswdv39a';
 const WORMHOLE_RPC_HOSTS = ['https://wormhole-v2-testnet-api.certus.one'];
 
-const useWormholeSignedVAA = (
-  chainId: string,
-  sequence: string,
-): WormholeSignedVAAReturn => {
+const useWormholeSignedVAA = (sequence: string): WormholeSignedVAAReturn => {
   const [response, setResponse] = useState<WormholeSignedVAAReturn>({
     loading: true,
   });
 
-  // console.log(
-  //   'getTokenBridgeAddressForChain',
-  //   getTokenBridgeAddressForChain(CHAIN_ID_TERRA),
-  // );
-
   useEffect(() => {
     (async () => {
-      //const emitterAddress = getEmitterAddressTerra(getTokenBridgeAddressForChain(CHAIN_ID_TERRA));
       const emitterAddress = await getEmitterAddressTerra(EMITTER_ADDRESS);
       const vaa = await getSignedVAAWithRetry(
         WORMHOLE_RPC_HOSTS,
@@ -47,7 +37,7 @@ const useWormholeSignedVAA = (
         vaaBytes: vaa.vaaBytes,
       });
     })();
-  }, [chainId, sequence]);
+  }, [sequence]);
 
   return response;
 };

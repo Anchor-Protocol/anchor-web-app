@@ -21,7 +21,7 @@ export function EvmApp() {
           <Route path="/earn" component={Earn} />
           <Route path="/mypage" component={Mypage} />
           <Route path="/terms" component={TermsOfService} />
-          <Route path="/bridge/redeem/:chainId/:sequence" component={Redeem} />
+          <Route path="/bridge/redeem/:sequence" component={Redeem} />
           <Redirect to="/" />
         </Switch>
       </div>
