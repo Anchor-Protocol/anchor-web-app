@@ -189,7 +189,7 @@ function ComponentBase({
         {txFee && (
           <figure className="graph">
             <AmountSlider
-              disabled={!connectedWallet}
+              disabled={!account.connected}
               max={Number(formatUSTInput(demicrofy(maxAmount)))}
               txFee={Number(formatUST(demicrofy(txFee)))}
               value={Number(depositAmount)}
