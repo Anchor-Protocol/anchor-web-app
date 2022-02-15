@@ -30,6 +30,7 @@ import type { ReactNode } from 'react';
 import React, { ChangeEvent, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { useTokenBalances } from 'contexts/balances';
+import { AmountSlider } from './AmountSlider';
 
 interface FormParams {
   className?: string;
@@ -163,6 +164,20 @@ function ComponentBase({
           </span>
         </div>
 
+        {txFee && (
+          <figure className="graph">
+            <AmountSlider
+              disabled={!connectedWallet}
+              max={Number(formatUSTInput(demicrofy(totalDeposit)))}
+              txFee={Number(formatUST(demicrofy(txFee)))}
+              value={Number(withdrawAmount)}
+              onChange={(value) => {
+                updateWithdrawAmount(formatUSTInput(value.toString() as UST));
+              }}
+            />
+          </figure>
+        )}
+
         {txFee && receiveAmount && (
           <TxFeeList className="receipt">
             <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
@@ -220,6 +235,11 @@ const Component = styled(ComponentBase)`
     &[aria-invalid='true'] {
       color: ${({ theme }) => theme.colors.negative};
     }
+  }
+
+  .graph {
+    margin-top: 80px;
+    margin-bottom: 40px;
   }
 
   .receipt {

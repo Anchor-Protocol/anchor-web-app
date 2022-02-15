@@ -1,9 +1,6 @@
+import { validateTxFee } from '@anchor-protocol/app-fns';
 import {
-  BAssetInfo,
-  prettifySymbol,
-  validateTxFee,
-} from '@anchor-protocol/app-fns';
-import {
+  BAssetInfoWithDisplay,
   useAnchorBank,
   useBAssetImportTx,
 } from '@anchor-protocol/app-provider';
@@ -34,12 +31,11 @@ import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { fixHMR } from 'fix-hmr';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { symbolToTokenIcon } from '../symbolToTokenIcon';
 import { ConvertSymbols, ConvertSymbolsContainer } from './ConvertSymbols';
 
 export interface WhImportProps {
   className?: string;
-  bAssetInfo: BAssetInfo;
+  bAssetInfo: BAssetInfoWithDisplay;
 }
 
 function Component({ className, bAssetInfo }: WhImportProps) {
@@ -111,17 +107,6 @@ function Component({ className, bAssetInfo }: WhImportProps) {
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
-  const whSymbol = useMemo(() => {
-    return prettifySymbol(
-      bAssetInfo.wormholeTokenInfo!.symbol,
-      bAssetInfo.wormholeTokenInfo,
-    );
-  }, [bAssetInfo.wormholeTokenInfo]);
-
-  const bSymbol = useMemo(() => {
-    return prettifySymbol(bAssetInfo.bAsset.symbol);
-  }, [bAssetInfo.bAsset.symbol]);
-
   if (
     convertResult?.status === StreamStatus.IN_PROGRESS ||
     convertResult?.status === StreamStatus.DONE
@@ -154,8 +139,10 @@ function Component({ className, bAssetInfo }: WhImportProps) {
         <ConvertSymbols
           className="symbols"
           view="import"
-          fromIcon={<TokenIcon token={symbolToTokenIcon(whSymbol)} />}
-          toIcon={<TokenIcon token={symbolToTokenIcon(bSymbol)} />}
+          fromIcon={
+            <TokenIcon tokenDisplay={bAssetInfo.tokenDisplay.wormhole} />
+          }
+          toIcon={<TokenIcon tokenDisplay={bAssetInfo.tokenDisplay.anchor} />}
         />
       </ConvertSymbolsContainer>
 
@@ -180,14 +167,16 @@ function Component({ className, bAssetInfo }: WhImportProps) {
                   setAmount(formatUInput(balance) as bAsset)
                 }
               >
-                {formatUToken(balance)} {whSymbol}
+                {formatUToken(balance)}{' '}
+                {bAssetInfo.tokenDisplay.wormhole.symbol}
               </span>
             </span>
           )
         }
       >
         <SelectAndTextInputContainerLabel>
-          <TokenIcon token={symbolToTokenIcon(whSymbol)} /> {whSymbol}
+          <TokenIcon tokenDisplay={bAssetInfo.tokenDisplay.wormhole} />{' '}
+          {bAssetInfo.tokenDisplay.wormhole.symbol}
         </SelectAndTextInputContainerLabel>
         <NumberMuiInput
           placeholder="0.00"
@@ -209,7 +198,8 @@ function Component({ className, bAssetInfo }: WhImportProps) {
 
       <SelectAndTextInputContainer className="to" gridColumns={[140, '1fr']}>
         <SelectAndTextInputContainerLabel>
-          <TokenIcon token={symbolToTokenIcon(bSymbol)} /> {bSymbol}
+          <TokenIcon tokenDisplay={bAssetInfo.tokenDisplay.anchor} />{' '}
+          {bAssetInfo.tokenDisplay.anchor.symbol}
         </SelectAndTextInputContainerLabel>
         <NumberMuiInput
           placeholder="0.00"
@@ -226,8 +216,8 @@ function Component({ className, bAssetInfo }: WhImportProps) {
         <TxFeeList className="receipt">
           <SwapListItem
             label="Price"
-            currencyA={whSymbol}
-            currencyB={bSymbol}
+            currencyA={bAssetInfo.tokenDisplay.wormhole.symbol}
+            currencyB={bAssetInfo.tokenDisplay.anchor.symbol}
             exchangeRateAB={1}
             initialDirection="a/b"
             formatExchangeRate={() => '1'}

@@ -29,6 +29,7 @@ import type { ReactNode } from 'react';
 import React, { ChangeEvent, useCallback } from 'react';
 import styled from 'styled-components';
 import { useAccount } from 'contexts/account';
+import { AmountSlider } from './AmountSlider';
 
 interface FormParams {
   className?: string;
@@ -185,6 +186,19 @@ function ComponentBase({
             </span>
           </span>
         </div>
+        {txFee && (
+          <figure className="graph">
+            <AmountSlider
+              disabled={!connectedWallet}
+              max={Number(formatUSTInput(demicrofy(maxAmount)))}
+              txFee={Number(formatUST(demicrofy(txFee)))}
+              value={Number(depositAmount)}
+              onChange={(value) => {
+                updateDepositAmount(formatUSTInput(value.toString() as UST));
+              }}
+            />
+          </figure>
+        )}
 
         {txFee && sendAmount && (
           <TxFeeList className="receipt">
@@ -255,6 +269,7 @@ function ComponentBase({
 
 const Component = styled(ComponentBase)`
   width: 720px;
+  touch-action: none;
 
   h1 {
     font-size: 27px;
@@ -283,6 +298,11 @@ const Component = styled(ComponentBase)`
     &[aria-invalid='true'] {
       color: ${({ theme }) => theme.colors.negative};
     }
+  }
+
+  .graph {
+    margin-top: 80px;
+    margin-bottom: 40px;
   }
 
   .receipt {

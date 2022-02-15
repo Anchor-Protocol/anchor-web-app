@@ -1,3 +1,4 @@
+import { CW20TokenDisplayInfo } from '@libs/app-fns';
 import React, { DetailedHTMLProps, ImgHTMLAttributes } from 'react';
 import styled from 'styled-components';
 import akrt from './assets/akrt.svg';
@@ -30,10 +31,6 @@ import ust from './assets/ust.svg';
 import ust2x from './assets/ust@2x.png';
 import ust3x from './assets/ust@3x.png';
 import ust4x from './assets/ust@4x.png';
-// import wheth from './assets/wheth.svg';
-// import wheth2x from './assets/wheth@2x.png';
-// import wheth3x from './assets/wheth@3x.png';
-// import wheth4x from './assets/wheth@4x.png';
 
 export { anc80gif, anc160gif };
 
@@ -45,7 +42,6 @@ export const tokens = [
   'luna',
   'bluna',
   'beth',
-  'wheth',
 ] as const;
 export const variants = ['svg', '@2x', '@3x', '@4x'] as const;
 
@@ -103,18 +99,6 @@ export const tokenImages: Record<Tokens, Record<IconVariant, TokenImage>> = {
     '@3x': convert(beth3x),
     '@4x': convert(beth4x),
   },
-
-  // TODO: need to load all of his from the terra assets as opposed to including here
-  wheth: {
-    // 'svg': convert(wheth),
-    // '@2x': convert(wheth2x),
-    // '@3x': convert(wheth3x),
-    // '@4x': convert(wheth4x),
-    'svg': { src: 'https://static.lido.fi/bETH_Wormhole/bETH_Wormhole.svg' },
-    '@2x': { src: 'https://static.lido.fi/bETH_Wormhole/bETH_Wormhole.svg' },
-    '@3x': { src: 'https://static.lido.fi/bETH_Wormhole/bETH_Wormhole.svg' },
-    '@4x': { src: 'https://static.lido.fi/bETH_Wormhole/bETH_Wormhole.svg' },
-  },
 };
 
 export interface IconProps
@@ -122,16 +106,34 @@ export interface IconProps
     DetailedHTMLProps<ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement>,
     'src'
   > {
-  token: Tokens;
+  token?: Tokens;
+  tokenDisplay?: CW20TokenDisplayInfo;
   variant?: IconVariant;
 }
 
+const displayTokenIconAsPredefined = (
+  variant: IconVariant,
+  tokenDisplay?: CW20TokenDisplayInfo,
+) =>
+  tokenDisplay &&
+  tokenDisplay.symbol.toLowerCase() in tokens &&
+  tokenImages[tokenDisplay.symbol.toLowerCase() as Tokens][variant].src;
+
+const displayPredefinedIcon = (token: Tokens, variant: IconVariant) =>
+  tokenImages[token][variant].src;
+
 export function TokenIconBase({
+  tokenDisplay,
   token,
   variant = 'svg',
   ...imgProps
 }: IconProps) {
-  return <img alt="" {...imgProps} src={tokenImages[token][variant].src} />;
+  const predefinedIcon = token
+    ? displayPredefinedIcon(token, variant)
+    : displayTokenIconAsPredefined(variant, tokenDisplay);
+  const icon = predefinedIcon || tokenDisplay!.icon;
+
+  return <img alt="" {...imgProps} src={icon} />;
 }
 
 export const TokenIcon = styled(TokenIconBase)`

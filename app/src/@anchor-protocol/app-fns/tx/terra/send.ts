@@ -1,13 +1,4 @@
-import { formatUST } from '@anchor-protocol/notation';
-import {
-  CW20Addr,
-  Gas,
-  HumanAddr,
-  Rate,
-  Token,
-  u,
-  UST,
-} from '@anchor-protocol/types';
+import { Gas, HumanAddr, Rate, Token, u, UST } from '@anchor-protocol/types';
 import { TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import {
   _catchTxError,
@@ -28,12 +19,13 @@ import {
   MsgSend,
 } from '@terra-money/terra.js';
 import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
+import { CurrencyInfo } from 'pages/send/models/currency';
 import { Observable } from 'rxjs';
 
 export function terraSendTx($: {
   myWalletAddress: HumanAddr;
   toWalletAddress: HumanAddr;
-  currency: { cw20Contract: CW20Addr } | { tokenDenom: string };
+  currency: CurrencyInfo;
   memo?: string;
   amount: Token;
   gasFee: Gas;
@@ -47,36 +39,30 @@ export function terraSendTx($: {
 }): Observable<TxResultRendering> {
   const helper = new TxHelper($);
 
+  console.log($);
+
   return pipe(
     _createTxOptions({
-      msgs:
-        'cw20Contract' in $.currency
-          ? //? fabricateCw20Transfer({
-            //    amount: $.amount,
-            //    address: $.myWalletAddress,
-            //    contract_address: $.currency.cw20Contract,
-            //    recipient: $.toWalletAddress,
-            //  })
-            [
-              new MsgExecuteContract(
-                $.myWalletAddress,
-                $.currency.cw20Contract,
-                {
-                  transfer: {
-                    recipient: $.toWalletAddress,
-                    amount: formatTokenInput($.amount),
-                  },
-                },
-              ),
-            ]
-          : [
-              new MsgSend($.myWalletAddress, $.toWalletAddress, [
-                new Coin(
-                  `u${$.currency.tokenDenom}`,
-                  formatTokenInput($.amount),
-                ),
-              ]),
-            ],
+      msgs: $.currency.cw20Address
+        ? //? fabricateCw20Transfer({
+          //    amount: $.amount,
+          //    address: $.myWalletAddress,
+          //    contract_address: $.currency.cw20Contract,
+          //    recipient: $.toWalletAddress,
+          //  })
+          [
+            new MsgExecuteContract($.myWalletAddress, $.currency.cw20Address, {
+              transfer: {
+                recipient: $.toWalletAddress,
+                amount: formatTokenInput($.amount),
+              },
+            }),
+          ]
+        : [
+            new MsgSend($.myWalletAddress, $.toWalletAddress, [
+              new Coin(`u${$.currency.value}`, formatTokenInput($.amount)),
+            ]),
+          ],
       fee: new Fee($.gasFee, floor($.txFee) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
       memo: $.memo,
@@ -91,7 +77,7 @@ export function terraSendTx($: {
           receipts: [
             {
               name: 'Amount',
-              value: formatUST($.amount as u<UST>) + ' UST',
+              value: `${$.amount} ${$.currency.label}`,
             },
             helper.txHashReceipt(),
             helper.txFeeReceipt(),

@@ -1,4 +1,3 @@
-import { prettifySymbol } from '@anchor-protocol/app-fns';
 import { useBAssetInfoByTokenSymbolQuery } from '@anchor-protocol/app-provider';
 import { Tab } from '@libs/neumorphism-ui/components/Tab';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
@@ -34,13 +33,10 @@ function Component({ className, match, history }: WormholeConvertProps) {
 
   const tabItems = useMemo<Item[]>(() => {
     const bAssetSymbol = bAssetInfo
-      ? prettifySymbol(bAssetInfo.bAsset.symbol)
+      ? bAssetInfo.tokenDisplay.anchor.symbol
       : 'ASSET';
     const whAssetSymbol = bAssetInfo
-      ? prettifySymbol(
-          bAssetInfo.wormholeTokenInfo!.symbol,
-          bAssetInfo.wormholeTokenInfo,
-        )
+      ? bAssetInfo.tokenDisplay.wormhole.symbol
       : 'whASSET';
 
     return [

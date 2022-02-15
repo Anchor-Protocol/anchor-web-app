@@ -1,5 +1,6 @@
-import { BorrowBorrower, BorrowMarket } from '@anchor-protocol/app-fns';
+import { BorrowBorrower } from '@anchor-protocol/app-fns';
 import {
+  BorrowMarketWithDisplay,
   useBorrowRepayForm,
   useBorrowRepayTx,
 } from '@anchor-protocol/app-provider';
@@ -34,7 +35,7 @@ import { LTVGraph } from './LTVGraph';
 
 interface FormParams {
   className?: string;
-  fallbackBorrowMarket: BorrowMarket;
+  fallbackBorrowMarket: BorrowMarketWithDisplay;
   fallbackBorrowBorrower: BorrowBorrower;
 }
 
@@ -233,6 +234,7 @@ function ComponentBase({
 
 const Component = styled(ComponentBase)`
   width: 720px;
+  touch-action: none;
 
   h1 {
     font-size: 27px;

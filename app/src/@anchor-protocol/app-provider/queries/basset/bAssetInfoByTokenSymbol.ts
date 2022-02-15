@@ -1,21 +1,23 @@
-import {
-  BAssetInfo,
-  bAssetInfoByTokenSymbolQuery,
-} from '@anchor-protocol/app-fns';
+import { bAssetInfoByTokenSymbolQuery } from '@anchor-protocol/app-fns';
 import { createQueryFn } from '@libs/react-query-utils';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
+import { useQueryWithTokenDisplay } from '../utils/tokenDisplay';
+import {
+  BAssetInfoWithDisplay,
+  withBAssetInfoTokenDisplay,
+} from './utils/tokenDisplay';
 
 const queryFn = createQueryFn(bAssetInfoByTokenSymbolQuery);
 
 export function useBAssetInfoByTokenSymbolQuery(
   tokenSymbol: string | undefined,
-): UseQueryResult<BAssetInfo | undefined> {
+): UseQueryResult<BAssetInfoWithDisplay | undefined> {
   const { queryClient, queryErrorReporter, contractAddress } =
     useAnchorWebapp();
 
-  const result = useQuery(
+  const bAssetInfo = useQuery(
     [
       ANCHOR_QUERY_KEY.ANCHOR_QUERY_BASSET_INFO_BY_TOKEN_SYMBOL,
       contractAddress.moneyMarket.overseer,
@@ -30,5 +32,5 @@ export function useBAssetInfoByTokenSymbolQuery(
     },
   );
 
-  return result;
+  return useQueryWithTokenDisplay(bAssetInfo, withBAssetInfoTokenDisplay);
 }
