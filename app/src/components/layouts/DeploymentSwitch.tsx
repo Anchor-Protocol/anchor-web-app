@@ -1,33 +1,25 @@
 import { Chain, useDeploymentTarget } from '@anchor-protocol/app-provider';
-import React, { ReactNode } from 'react';
-
-type RenderFn = () => ReactNode;
+import React, { FunctionComponent, ReactNode } from 'react';
 
 interface DeploymentSwitchProps {
-  terra?: RenderFn;
-  ethereum?: RenderFn;
+  terra: FunctionComponent | ReactNode;
+  ethereum: FunctionComponent | ReactNode;
 }
 
-const render = (fn?: RenderFn): ReactNode => {
-  return fn && fn();
-};
-
-const DeploymentSwitch = (props: DeploymentSwitchProps) => {
-  const { terra, ethereum } = props;
-
+export function DeploymentSwitch({ terra, ethereum }: DeploymentSwitchProps) {
   const { chain } = useDeploymentTarget();
+  let content: ReactNode;
 
-  return (
-    <>
-      {chain === Chain.Terra ? (
-        render(terra)
-      ) : chain === Chain.Ethereum ? (
-        render(ethereum)
-      ) : (
-        <></>
-      )}
-    </>
-  );
-};
+  switch (chain) {
+    case Chain.Terra:
+      content = terra;
+      break;
+    case Chain.Ethereum:
+      content = ethereum;
+      break;
+    default:
+      content = <></>;
+  }
 
-export { DeploymentSwitch };
+  return typeof content === 'function' ? content() : content;
+}
