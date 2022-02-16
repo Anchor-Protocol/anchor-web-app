@@ -1,3 +1,4 @@
+import React, { useCallback, useMemo } from 'react';
 import { computeTotalDeposit } from '@anchor-protocol/app-fns';
 import { useEarnEpochStatesQuery } from '@anchor-protocol/app-provider';
 import {
@@ -15,9 +16,9 @@ import { AnimateNumber } from '@libs/ui';
 import { SubAmount } from 'components/primitives/SubAmount';
 import { useAccount } from 'contexts/account';
 import { useTokenBalances } from 'contexts/balances';
-import React, { useCallback, useMemo } from 'react';
 import { useDepositDialog } from './useDepositDialog';
 import { useWithdrawDialog } from './useWithdrawDialog';
+import Big from 'big.js';
 
 export interface TotalDepositSectionProps {
   className?: string;
@@ -53,11 +54,11 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
   const [openWithdrawDialog, withdrawDialogElement] = useWithdrawDialog();
 
   const openDeposit = useCallback(async () => {
-    await openDepositDialog({});
+    await openDepositDialog();
   }, [openDepositDialog]);
 
   const openWithdraw = useCallback(async () => {
-    await openWithdrawDialog({});
+    await openWithdrawDialog();
   }, [openWithdrawDialog]);
 
   // ---------------------------------------------
@@ -97,7 +98,7 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
           Deposit
         </ActionButton>
         <BorderButton
-          disabled={!connected || !moneyMarketEpochState}
+          disabled={!connected || !moneyMarketEpochState || Big(uaUST).lte(0)}
           onClick={openWithdraw}
         >
           Withdraw

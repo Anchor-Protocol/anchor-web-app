@@ -1,3 +1,8 @@
+import { computeTotalDeposit } from '@anchor-protocol/app-fns';
+import {
+  useEarnEpochStatesQuery,
+  EarnWithdrawFormReturn,
+} from '@anchor-protocol/app-provider';
 import {
   formatUST,
   formatUSTInput,
@@ -5,7 +10,6 @@ import {
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { UST } from '@anchor-protocol/types';
-import { EarnDepositFormReturn } from '@anchor-protocol/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
@@ -16,38 +20,50 @@ import { StreamResult, StreamStatus } from '@rx-stream/react';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
-import React, { ChangeEvent } from 'react';
-import styled from 'styled-components';
 import { useAccount } from 'contexts/account';
+import React, { ChangeEvent, useMemo } from 'react';
+import styled from 'styled-components';
+import { useTokenBalances } from 'contexts/balances';
 import { AmountSlider } from './AmountSlider';
-import { UIElementProps } from '@libs/ui';
 import { TxResultRendering } from '@libs/app-fns';
+import { UIElementProps } from '@libs/ui';
 
-interface DepositDialogParams extends UIElementProps, EarnDepositFormReturn {
+interface WithdrawDialogParams extends UIElementProps, EarnWithdrawFormReturn {
   txResult: StreamResult<TxResultRendering> | null;
 }
 
-type DepositDialogReturn = void;
+type WithdrawDialogReturn = void;
 
-type DepositDialogProps = DialogProps<DepositDialogParams, DepositDialogReturn>;
+type WithdrawDialogProps = DialogProps<
+  WithdrawDialogParams,
+  WithdrawDialogReturn
+>;
 
-function DepositDialogBase(props: DepositDialogProps) {
+function WithdrawDialogBase(props: WithdrawDialogProps) {
   const {
     className,
     children,
     txResult,
     closeDialog,
-    depositAmount,
+    withdrawAmount,
+    receiveAmount,
     txFee,
-    sendAmount,
-    maxAmount,
     invalidTxFee,
-    invalidNextTxFee,
-    invalidDepositAmount,
-    updateDepositAmount,
+    invalidWithdrawAmount,
+    updateWithdrawAmount,
   } = props;
 
-  const account = useAccount();
+  const { connected } = useAccount();
+
+  const { uaUST } = useTokenBalances();
+
+  const { data } = useEarnEpochStatesQuery();
+
+  const { totalDeposit } = useMemo(() => {
+    return {
+      totalDeposit: computeTotalDeposit(uaUST, data?.moneyMarketEpochState),
+    };
+  }, [data?.moneyMarketEpochState, uaUST]);
 
   if (
     txResult?.status === StreamStatus.IN_PROGRESS ||
@@ -68,76 +84,67 @@ function DepositDialogBase(props: DepositDialogProps) {
   return (
     <Modal open onClose={() => closeDialog()}>
       <Dialog className={className} onClose={() => closeDialog()}>
-        <h1>Deposit</h1>
+        <h1>Withdraw</h1>
 
         {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
 
         <NumberInput
           className="amount"
-          value={depositAmount}
+          value={withdrawAmount}
           maxIntegerPoinsts={UST_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={UST_INPUT_MAXIMUM_DECIMAL_POINTS}
           label="AMOUNT"
-          error={!!invalidDepositAmount}
+          error={!!invalidWithdrawAmount}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
-            updateDepositAmount(target.value as UST)
+            updateWithdrawAmount(target.value as UST)
           }
           InputProps={{
             endAdornment: <InputAdornment position="end">UST</InputAdornment>,
           }}
         />
 
-        <div className="wallet" aria-invalid={!!invalidDepositAmount}>
-          <span>{invalidDepositAmount}</span>
+        <div className="wallet" aria-invalid={!!invalidWithdrawAmount}>
+          <span>{invalidWithdrawAmount}</span>
           <span>
             Max:{' '}
             <span
-              style={
-                maxAmount
-                  ? {
-                      textDecoration: 'underline',
-                      cursor: 'pointer',
-                    }
-                  : undefined
-              }
+              style={{
+                textDecoration: 'underline',
+                cursor: 'pointer',
+              }}
               onClick={() =>
-                maxAmount &&
-                updateDepositAmount(formatUSTInput(demicrofy(maxAmount)))
+                totalDeposit.gt(0) &&
+                updateWithdrawAmount(formatUSTInput(demicrofy(totalDeposit)))
               }
             >
-              {maxAmount ? formatUST(demicrofy(maxAmount)) : 0} UST
+              {formatUST(demicrofy(totalDeposit))} UST
             </span>
           </span>
         </div>
+
         {txFee && (
           <figure className="graph">
             <AmountSlider
-              disabled={!account.connected}
-              max={Number(formatUSTInput(demicrofy(maxAmount)))}
+              disabled={!connected}
+              max={Number(formatUSTInput(demicrofy(totalDeposit)))}
               txFee={Number(formatUST(demicrofy(txFee)))}
-              value={Number(depositAmount)}
+              value={Number(withdrawAmount)}
               onChange={(value) => {
-                updateDepositAmount(formatUSTInput(value.toString() as UST));
+                updateWithdrawAmount(formatUSTInput(value.toString() as UST));
               }}
             />
           </figure>
         )}
 
-        {txFee && sendAmount && (
+        {txFee && receiveAmount && (
           <TxFeeList className="receipt">
             <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
               {formatUST(demicrofy(txFee))} UST
             </TxFeeListItem>
-            <TxFeeListItem label="Send Amount">
-              {formatUST(demicrofy(sendAmount))} UST
+            <TxFeeListItem label="Receive Amount">
+              {formatUST(demicrofy(receiveAmount))} UST
             </TxFeeListItem>
           </TxFeeList>
-        )}
-
-        {invalidNextTxFee && maxAmount && (
-          <MessageBox style={{ marginTop: 30, marginBottom: 0 }}>
-            {invalidNextTxFee}
-          </MessageBox>
         )}
 
         {children}
@@ -146,9 +153,8 @@ function DepositDialogBase(props: DepositDialogProps) {
   );
 }
 
-export const DepositDialog = styled(DepositDialogBase)`
+export const WithdrawDialog = styled(WithdrawDialogBase)`
   width: 720px;
-  touch-action: none;
 
   h1 {
     font-size: 27px;
@@ -189,7 +195,7 @@ export const DepositDialog = styled(DepositDialogBase)`
   }
 
   .button {
-    margin-top: 45px;
+    margin-top: 65px;
 
     width: 100%;
     height: 60px;

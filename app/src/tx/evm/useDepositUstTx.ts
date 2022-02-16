@@ -2,12 +2,12 @@ import { useMockTx } from './useMockTx';
 import { TxResultRendering } from '@libs/app-fns';
 import { StreamReturn } from '@rx-stream/react';
 
-export interface DepositTxProps {
+export interface DepositUstTxProps {
   depositAmount: string;
 }
 
-export function useDepositTx():
-  | StreamReturn<DepositTxProps, TxResultRendering>
+export function useDepositUstTx():
+  | StreamReturn<DepositUstTxProps, TxResultRendering>
   | [null, null] {
-  return useMockTx<DepositTxProps>(10);
+  return useMockTx<DepositUstTxProps>(10);
 }
