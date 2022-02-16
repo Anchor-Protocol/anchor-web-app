@@ -29,9 +29,9 @@ interface DepositDialogParams extends UIElementProps, EarnDepositFormReturn {
 
 type DepositDialogReturn = void;
 
-type DepositDialogProps = DialogProps<DepositDialogParams, DepositDialogReturn>;
-
-function DepositDialogBase(props: DepositDialogProps) {
+function DepositDialogBase(
+  props: DialogProps<DepositDialogParams, DepositDialogReturn>,
+) {
   const {
     className,
     children,

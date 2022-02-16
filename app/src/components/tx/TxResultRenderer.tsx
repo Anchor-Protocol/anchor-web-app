@@ -11,7 +11,7 @@ import { renderTxFailedReason } from './renderTxFailedReason';
 
 export interface TxResultRendererProps {
   resultRendering: TxResultRendering;
-  onExit: () => void;
+  onExit?: () => void;
 }
 
 export function TxResultRenderer({
