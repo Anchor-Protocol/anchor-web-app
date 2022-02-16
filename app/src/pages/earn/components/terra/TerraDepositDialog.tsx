@@ -8,10 +8,10 @@ import type { ReactNode } from 'react';
 import React, { useCallback } from 'react';
 import { useAccount } from 'contexts/account';
 import { useEarnDepositTx } from '@anchor-protocol/app-provider/tx/earn/deposit';
-import { FormParams } from '../types';
 import { DepositDialog } from '../DepositDialog';
+import { DialogProps } from '@libs/use-dialog';
 
-export function TerraDepositDialog(props: FormParams) {
+export function TerraDepositDialog(props: DialogProps<{}, void>) {
   const account = useAccount();
 
   const [openConfirm, confirmElement] = useConfirm();

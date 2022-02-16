@@ -3,16 +3,15 @@ import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import React from 'react';
 import { useAccount } from 'contexts/account';
-import { FormParams } from '../types';
 import { DepositDialog } from '../DepositDialog';
 import { StreamStatus } from '@rx-stream/react';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
+import { DialogProps } from '@libs/use-dialog';
 import { Modal } from '@material-ui/core';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
-import { useApproveUstTx } from 'tx/evm/useApproveUstTx';
-import { useDepositTx } from 'tx/evm/useDepositTx';
+import { useApproveUstTx, useDepositUstTx } from 'tx/evm';
 
-export function EvmDepositDialog(props: FormParams) {
+export function EvmDepositDialog(props: DialogProps<{}, void>) {
   const account = useAccount();
 
   const state = useEarnDepositForm();
@@ -21,7 +20,7 @@ export function EvmDepositDialog(props: FormParams) {
 
   const [approve, approveTxResult] = useApproveUstTx();
 
-  const [deposit, depositTxResult] = useDepositTx();
+  const [deposit, depositTxResult] = useDepositUstTx();
 
   return (
     <DepositDialog {...props} {...state} txResult={depositTxResult}>
