@@ -11,7 +11,6 @@ import { AppProviders } from 'configurations/app';
 import { TerraAccountProvider } from './TerraAccountProvider';
 import { TerraTokenBalancesProvider } from './TerraTokenBalancesProvider';
 import React, { useCallback } from 'react';
-import { TerraAnchorApiProvider } from './TerraAnchorApiProvider';
 
 export function TerraAppProviders({
   children,
@@ -31,7 +30,6 @@ export function TerraAppProviders({
   );
 
   return (
-    /** Terra Station Wallet Address :: useWallet() */
     <WalletProvider
       defaultNetwork={defaultNetwork}
       walletConnectChainIds={walletConnectChainIds}
@@ -40,13 +38,10 @@ export function TerraAppProviders({
     >
       <TerraAccountProvider>
         <AppProviders dialogs={readonlyWalletSelectorElement}>
-          <TerraAnchorApiProvider>
-            <TerraTokenBalancesProvider>
-              {/** Re-Check Terra Station Wallet Status every Router's pathname changed */}
-              <RouterWalletStatusRecheck />
-              {children}
-            </TerraTokenBalancesProvider>
-          </TerraAnchorApiProvider>
+          <TerraTokenBalancesProvider>
+            <RouterWalletStatusRecheck />
+            {children}
+          </TerraTokenBalancesProvider>
         </AppProviders>
       </TerraAccountProvider>
     </WalletProvider>
