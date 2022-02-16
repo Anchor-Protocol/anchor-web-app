@@ -28,6 +28,7 @@ const createMockObservable = (
       };
     }),
   );
+
   return concat(
     of({
       value: null,
