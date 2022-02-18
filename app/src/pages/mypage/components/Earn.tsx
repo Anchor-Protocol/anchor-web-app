@@ -19,8 +19,7 @@ import { useWithdrawDialog } from 'pages/earn/components/useWithdrawDialog';
 import { EmptySection } from 'pages/mypage/components/EmptySection';
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
-import { useAccount } from 'contexts/account';
-import { useTokenBalances } from 'contexts/balances';
+import { useBalances } from 'contexts/balances';
 
 export interface EarnProps {
   className?: string;
@@ -37,7 +36,7 @@ function EarnBase({ className }: EarnProps) {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const { uaUST } = useTokenBalances();
+  const { uaUST } = useBalances();
 
   const { data: { moneyMarketEpochState } = {} } = useEarnEpochStatesQuery();
 
@@ -64,11 +63,11 @@ function EarnBase({ className }: EarnProps) {
   const [openWithdrawDialog, withdrawDialogElement] = useWithdrawDialog();
 
   const openDeposit = useCallback(async () => {
-    await openDepositDialog({});
+    await openDepositDialog();
   }, [openDepositDialog]);
 
   const openWithdraw = useCallback(async () => {
-    await openWithdrawDialog({});
+    await openWithdrawDialog();
   }, [openWithdrawDialog]);
 
   if (!connected || totalDeposit.lte(0)) {

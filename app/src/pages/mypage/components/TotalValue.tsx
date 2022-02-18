@@ -3,7 +3,7 @@ import {
   computeTotalDeposit,
 } from '@anchor-protocol/app-fns';
 import {
-  useAnchorWebapp,
+  //useAnchorWebapp,
   useAncPriceQuery,
   useBAssetInfoAndBalanceTotalQuery,
   useBorrowBorrowerQuery,
@@ -25,7 +25,7 @@ import { Send } from '@material-ui/icons';
 import big, { Big, BigSource } from 'big.js';
 import { Sub } from 'components/Sub';
 import { useAccount } from 'contexts/account';
-import { useTokenBalances } from 'contexts/balances';
+import { useBalances } from 'contexts/balances';
 import { fixHMR } from 'fix-hmr';
 import { computeHoldings } from 'pages/mypage/logics/computeHoldings';
 import { useRewards } from 'pages/mypage/logics/useRewards';
@@ -60,7 +60,7 @@ function TotalValueBase({ className }: TotalValueProps) {
 
   const { connected } = useAccount();
 
-  const tokenBalances = useTokenBalances();
+  const tokenBalances = useBalances();
 
   const { data: { moneyMarketEpochState } = {} } = useEarnEpochStatesQuery();
 
@@ -70,7 +70,7 @@ function TotalValueBase({ className }: TotalValueProps) {
 
   const { data: { ancPrice } = {} } = useAncPriceQuery();
 
-  const { contractAddress } = useAnchorWebapp();
+  //const { contractAddress } = useAnchorWebapp();
 
   const { data: { userGovStakingInfo } = {} } =
     useRewardsAncGovernanceRewardsQuery();
@@ -108,7 +108,6 @@ function TotalValueBase({ className }: TotalValueProps) {
     const holdings = computeHoldings(
       tokenBalances,
       ancPrice,
-      contractAddress,
       oraclePrices,
       bAssetBalanceTotal,
     );
@@ -185,7 +184,7 @@ function TotalValueBase({ className }: TotalValueProps) {
     ancUstLp,
     bAssetBalanceTotal,
     connected,
-    contractAddress,
+    //contractAddress,
     marketBorrowerInfo,
     moneyMarketEpochState,
     oraclePrices,

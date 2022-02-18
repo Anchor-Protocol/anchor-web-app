@@ -6,7 +6,7 @@ import { UST } from '@anchor-protocol/types';
 import { useFixedFee, useUstTax } from '@libs/app-provider';
 import { useForm } from '@libs/use-form';
 import { useAccount } from 'contexts/account';
-import { useTokenBalances } from 'contexts/balances';
+import { useBalances } from 'contexts/balances';
 import { useCallback } from 'react';
 
 export interface EarnDepositFormReturn extends EarnDepositFormStates {
@@ -18,7 +18,7 @@ export function useEarnDepositForm(): EarnDepositFormReturn {
 
   const fixedFee = useFixedFee();
 
-  const tokenBalances = useTokenBalances();
+  const { uUST } = useBalances();
 
   const { taxRate, maxTax } = useUstTax();
 
@@ -29,7 +29,7 @@ export function useEarnDepositForm(): EarnDepositFormReturn {
       fixedGas: fixedFee,
       taxRate: taxRate,
       maxTaxUUSD: maxTax,
-      userUUSTBalance: tokenBalances.uUST,
+      userUUSTBalance: uUST,
     },
     () => ({ depositAmount: '0' as UST }),
   );

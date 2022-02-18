@@ -1,8 +1,10 @@
 import { NominalType } from './common';
 import { terraswap } from './contracts';
 
-export type u<T = string> = T & { __micro: true };
+export type Micro = { __micro: true };
 export type NoMicro = { __micro?: false };
+
+export type u<T = string> = T & Micro;
 
 // Gas
 export type Gas<T = number> = T & NominalType<'gas'>;

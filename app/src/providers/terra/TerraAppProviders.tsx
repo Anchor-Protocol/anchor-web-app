@@ -1,3 +1,4 @@
+import React, { useCallback } from 'react';
 import { UIElementProps } from '@libs/ui';
 import { RouterWalletStatusRecheck } from '@libs/use-router-wallet-status-recheck';
 import {
@@ -9,8 +10,7 @@ import {
 import { useReadonlyWalletDialog } from 'components/dialogs/useReadonlyWalletDialog';
 import { AppProviders } from 'configurations/app';
 import { TerraAccountProvider } from './TerraAccountProvider';
-import { TerraTokenBalancesProvider } from './TerraTokenBalancesProvider';
-import React, { useCallback } from 'react';
+import { TerraBalancesProvider } from './TerraBalancesProvider';
 
 export function TerraAppProviders({
   children,
@@ -38,10 +38,10 @@ export function TerraAppProviders({
     >
       <TerraAccountProvider>
         <AppProviders dialogs={readonlyWalletSelectorElement}>
-          <TerraTokenBalancesProvider>
+          <TerraBalancesProvider>
             <RouterWalletStatusRecheck />
             {children}
-          </TerraTokenBalancesProvider>
+          </TerraBalancesProvider>
         </AppProviders>
       </TerraAccountProvider>
     </WalletProvider>

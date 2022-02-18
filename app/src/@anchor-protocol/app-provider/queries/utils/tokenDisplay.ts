@@ -1,9 +1,9 @@
+import { useTerraNetwork } from '@anchor-protocol/app-provider';
 import { CW20TokenDisplayInfo } from '@libs/app-fns';
 import {
   EMPTY_QUERY_RESULT,
   useCW20TokenDisplayInfosQuery,
 } from '@libs/app-provider';
-import { useWallet } from '@terra-money/use-wallet';
 import { useMemo } from 'react';
 import { UseQueryResult } from 'react-query';
 
@@ -22,7 +22,7 @@ export const useQueryWithTokenDisplay = <Data, DataWithTokenDisplay>(
 ): UseQueryResult<
   UnitOrArrayWithTokenDisplay<Data, DataWithTokenDisplay> | undefined
 > => {
-  const { network } = useWallet();
+  const network = useTerraNetwork();
   const tokenDisplayInfos = useCW20TokenDisplayInfosQuery();
 
   return useMemo(() => {

@@ -2,19 +2,19 @@ import React, { useMemo } from 'react';
 import { VoidSigner } from '@ethersproject/abstract-signer';
 import { UIElementProps } from '@libs/ui';
 import { ContractsContext, Contracts } from 'contexts/evm/contracts';
-import { useEvmWallet } from '@libs/evm-wallet';
+import { useEvmWallet, EvmChainId } from '@libs/evm-wallet';
 import {
   IERC20__factory,
   CrossAnchorBridge__factory,
 } from '@libs/typechain-types';
-import { getAddress } from 'configurations/addresses';
+import { getAddress } from 'configurations/evm/addresses';
 
 const EvmContractsProvider = ({ children }: UIElementProps) => {
-  const { chainId, provider } = useEvmWallet();
+  const { chainId = EvmChainId.ETHEREUM_ROPSTEN, provider } = useEvmWallet();
 
   const contracts = useMemo<Contracts>(() => {
-    const crossAnchorBridgeAddress = getAddress('crossAnchorBridge', chainId);
-    const ustAddress = getAddress('ust', chainId);
+    const crossAnchorBridgeAddress = getAddress(chainId, 'crossAnchorBridge');
+    const ustAddress = getAddress(chainId, 'UST');
 
     return {
       crossAnchorBridgeContract: CrossAnchorBridge__factory.connect(

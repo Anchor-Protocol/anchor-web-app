@@ -1,8 +1,10 @@
 import { availableConnectTypes } from './constants';
 
-export enum ChainId {
+export enum EvmChainId {
   ETHEREUM_MAINNET = 1,
-  ETHEREUM_TESTNET = 3,
+  ETHEREUM_ROPSTEN = 3,
+  // AVALANCHE_FUJI_TESTNET = 43143,
+  // AVALANCHE_MAINNET = 43144,
 }
 
 export type Connection = {

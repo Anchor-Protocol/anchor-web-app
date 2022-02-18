@@ -1,10 +1,10 @@
 import { Wallet } from '@anchor-protocol/icons';
-import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
-import { demicrofy, truncate } from '@libs/formatter';
+import { truncate } from '@libs/formatter';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import React, { ButtonHTMLAttributes, DetailedHTMLProps } from 'react';
 import styled from 'styled-components';
 import { u, UST } from '@anchor-protocol/types';
+import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 
 interface ConnectedButtonProps
   extends Omit<
@@ -23,6 +23,7 @@ function ConnectedButtonBase({
   totalUST,
   ...buttonProps
 }: ConnectedButtonProps) {
+  const formatters = useFormatters();
   return (
     <button {...buttonProps}>
       <IconSpan>
@@ -31,7 +32,9 @@ function ConnectedButtonBase({
         </span>
         <span className="wallet-address">{truncate(walletAddress)}</span>
         <div className="wallet-balance">
-          {formatUSTWithPostfixUnits(demicrofy(totalUST))} UST
+          {`${formatters.ust(formatters.ust.demicrofy(totalUST))} ${
+            formatters.ust.symbol
+          }`}
         </div>
       </IconSpan>
     </button>

@@ -2,6 +2,7 @@ import { NominalType } from '@libs/types';
 
 // currencies
 export type aUST<T = string> = T & NominalType<'aust'>;
+export type Native<T = string> = T & NominalType<'native'>;
 export type ANC<T = string> = T & NominalType<'anc'>;
 export type bLuna<T = string> = T & NominalType<'bluna'>;
 export type Eth<T = string> = T & NominalType<'eth'>;

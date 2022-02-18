@@ -1,16 +1,16 @@
-import { AnchorTokenBalances } from '@anchor-protocol/app-fns';
+import { AnchorBalances } from '@anchor-protocol/app-fns';
 import { createContext, useContext } from 'react';
 
-export const TokenBalancesContext = createContext<
-  AnchorTokenBalances | undefined
->(undefined);
+export const BalancesContext = createContext<AnchorBalances | undefined>(
+  undefined,
+);
 
-const useTokenBalances = (): AnchorTokenBalances => {
-  const context = useContext(TokenBalancesContext);
+const useBalances = (): AnchorBalances => {
+  const context = useContext(BalancesContext);
   if (context === undefined) {
-    throw new Error('The TokenBalancesContext has not been defined.');
+    throw new Error('The BalancesContext has not been defined.');
   }
   return context;
 };
 
-export { useTokenBalances };
+export { useBalances };

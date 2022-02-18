@@ -23,7 +23,7 @@ import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { useAccount } from 'contexts/account';
 import React, { ChangeEvent, useMemo } from 'react';
 import styled from 'styled-components';
-import { useTokenBalances } from 'contexts/balances';
+import { useBalances } from 'contexts/balances';
 import { AmountSlider } from './AmountSlider';
 import { TxResultRendering } from '@libs/app-fns';
 import { UIElementProps } from '@libs/ui';
@@ -55,7 +55,7 @@ function WithdrawDialogBase(props: WithdrawDialogProps) {
 
   const { connected } = useAccount();
 
-  const { uaUST } = useTokenBalances();
+  const { uaUST } = useBalances();
 
   const { data } = useEarnEpochStatesQuery();
 
