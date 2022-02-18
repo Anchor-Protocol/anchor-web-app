@@ -7,7 +7,7 @@ import { UST } from '@anchor-protocol/types';
 import { useFixedFee } from '@libs/app-provider';
 import { useForm } from '@libs/use-form';
 import { useAccount } from 'contexts/account';
-import { useTokenBalances } from 'contexts/balances';
+import { useBalances } from 'contexts/balances';
 import { useCallback, useMemo } from 'react';
 import { useEarnEpochStatesQuery } from '../../queries/earn/epochStates';
 
@@ -20,25 +20,22 @@ export function useEarnWithdrawForm(): EarnWithdrawFormReturn {
 
   const fixedFee = useFixedFee();
 
-  const tokenBalances = useTokenBalances();
+  const { uUST, uaUST } = useBalances();
 
   const { data } = useEarnEpochStatesQuery();
 
   const { totalDeposit } = useMemo(() => {
     return {
-      totalDeposit: computeTotalDeposit(
-        tokenBalances.uaUST,
-        data?.moneyMarketEpochState,
-      ),
+      totalDeposit: computeTotalDeposit(uaUST, data?.moneyMarketEpochState),
     };
-  }, [data?.moneyMarketEpochState, tokenBalances.uaUST]);
+  }, [data?.moneyMarketEpochState, uaUST]);
 
   const [input, states] = useForm(
     earnWithdrawForm,
     {
       isConnected: connected,
       fixedGas: fixedFee,
-      userUUSTBalance: tokenBalances.uUST,
+      userUUSTBalance: uUST,
       totalDeposit: totalDeposit,
     },
     () => ({ withdrawAmount: '0' as UST }),

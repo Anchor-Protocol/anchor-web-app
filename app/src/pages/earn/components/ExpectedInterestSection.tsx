@@ -12,7 +12,7 @@ import { Tab } from '@libs/neumorphism-ui/components/Tab';
 import { AnimateNumber } from '@libs/ui';
 import big, { Big } from 'big.js';
 import React, { useMemo, useState } from 'react';
-import { useTokenBalances } from 'contexts/balances';
+import { useBalances } from 'contexts/balances';
 
 export interface ExpectedInterestSectionProps {
   className?: string;
@@ -51,7 +51,7 @@ export function ExpectedInterestSection({
 
   const [tab, setTab] = useState<Item>(() => tabItems[0]);
 
-  const { uaUST = '0' as u<aUST> } = useTokenBalances();
+  const { uaUST = '0' as u<aUST> } = useBalances();
 
   const { data: { moneyMarketEpochState, overseerEpochState } = {} } =
     useEarnEpochStatesQuery();

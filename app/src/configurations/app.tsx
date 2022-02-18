@@ -35,7 +35,6 @@ const errorReporter =
 
 function Providers({ children }: { children: ReactNode }) {
   return (
-    /** React App routing :: <Link>, <NavLink>, useLocation(), useRouteMatch()... */
     <Router>
       <QueryClientProvider client={queryClient}>
         <AppProvider<AnchorContractAddress, AnchorConstants>
@@ -88,17 +87,10 @@ export function AppProviders({
 
   return (
     <Providers>
-      {/* Router Actions ======================== */}
-      {/** Scroll Restore every Router's basepath changed */}
       <RouterScrollRestoration />
-      {/* Theme ================================= */}
-      {/** Styled-Components Global CSS */}
       <GlobalStyle />
-      {/* Layout ================================ */}
       {children}
-      {/* Portal ================================ */}
       <SnackbarContainer />
-
       {dialogs}
       {requestReloadElement}
     </Providers>

@@ -15,7 +15,7 @@ import { Section } from '@libs/neumorphism-ui/components/Section';
 import { AnimateNumber } from '@libs/ui';
 import { SubAmount } from 'components/primitives/SubAmount';
 import { useAccount } from 'contexts/account';
-import { useTokenBalances } from 'contexts/balances';
+import { useBalances } from 'contexts/balances';
 import { useDepositDialog } from './useDepositDialog';
 import { useWithdrawDialog } from './useWithdrawDialog';
 import Big from 'big.js';
@@ -33,7 +33,7 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const { uaUST } = useTokenBalances();
+  const { uaUST } = useBalances();
 
   const { data: { moneyMarketEpochState } = {} } = useEarnEpochStatesQuery();
 

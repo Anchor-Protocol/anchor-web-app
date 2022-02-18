@@ -2,7 +2,7 @@ import { ClickAwayListener } from '@material-ui/core';
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';
 import { ConnectWalletButton } from './ConnectWalletButton';
-import { useTokenBalances } from 'contexts/balances';
+import { useBalances } from 'contexts/balances';
 
 export interface WalletSelectorProps {
   className?: string;
@@ -17,7 +17,7 @@ function WalletSelectorBase(props: WalletSelectorProps) {
   const { walletAddress, initializing, className, onClick, onClose, children } =
     props;
 
-  const tokenBalances = useTokenBalances();
+  const { uUST } = useBalances();
 
   // ---------------------------------------------
   // presentation
@@ -47,7 +47,7 @@ function WalletSelectorBase(props: WalletSelectorProps) {
       <div className={className}>
         <ConnectWalletButton
           walletAddress={walletAddress}
-          totalUST={tokenBalances.uUST}
+          totalUST={uUST}
           onClick={onClick}
         />
         {children}
