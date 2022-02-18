@@ -77,7 +77,7 @@ export function useBorrowRepayTx() {
       refetchQueries,
       terraWalletAddress,
       txErrorReporter,
-      availablePost
+      availablePost,
     ],
   );
 

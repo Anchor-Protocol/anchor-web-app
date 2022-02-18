@@ -12,7 +12,6 @@ import { EmptySection } from 'pages/mypage/components/EmptySection';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { useAccount } from 'contexts/account';
 
 export interface GovernProps {
   className?: string;

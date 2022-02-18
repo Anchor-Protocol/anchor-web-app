@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { UIElementProps } from '@libs/ui';
-import { AccountContext, Account, useAccount } from 'contexts/account';
+import { AccountContext, Account } from 'contexts/account';
 import { HumanAddr } from '@libs/types';
 import { useEvmWallet } from '@libs/evm-wallet';
 

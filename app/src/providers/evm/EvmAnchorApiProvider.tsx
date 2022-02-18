@@ -9,7 +9,6 @@ import {
 import {
   // interval,
   Observable,
-  of,
 } from 'rxjs';
 // import { map } from 'rxjs/operators';
 import { pipe } from '@rx-stream/pipe';
