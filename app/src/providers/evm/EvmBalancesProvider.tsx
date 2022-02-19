@@ -1,10 +1,7 @@
 import React, { useMemo } from 'react';
 import { UIElementProps } from '@libs/ui';
 import { BalancesContext } from 'contexts/balances';
-import {
-  AnchorBalances,
-  DefaultAnchorBalances,
-} from '@anchor-protocol/app-fns';
+import { AnchorBalances } from '@anchor-protocol/app-fns';
 import { useEvmNativeBalance } from '../../@libs/app-provider/queries/evm/nativeBalances';
 import { useERC20Balance } from '../../@libs/app-provider/queries/erc20/balanceOf';
 import { u, UST, aUST, Native, ANC } from '@anchor-protocol/types';
@@ -24,7 +21,6 @@ const EvmBalancesProvider = ({ children }: UIElementProps) => {
 
   const balances = useMemo<AnchorBalances>(() => {
     return {
-      ...DefaultAnchorBalances,
       uNative: eth.toString() as u<Native>,
       uUST: ust,
       uaUST: aUST,

@@ -57,5 +57,5 @@ export function useERC20Balance<T extends Token>(
     walletAddress,
   );
 
-  return balance as u<T>;
+  return balance ? (balance as u<T>) : ('0' as u<T>);
 }

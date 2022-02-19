@@ -1,8 +1,11 @@
-import { AnchorBalances } from '@anchor-protocol/app-fns';
+import {
+  AnchorBalances,
+  DefaultAnchorBalances,
+} from '@anchor-protocol/app-fns';
 import { createContext, useContext } from 'react';
 
-export const BalancesContext = createContext<AnchorBalances | undefined>(
-  undefined,
+export const BalancesContext = createContext<AnchorBalances>(
+  DefaultAnchorBalances,
 );
 
 const useBalances = (): AnchorBalances => {
