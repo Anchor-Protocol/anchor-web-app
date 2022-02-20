@@ -4,13 +4,13 @@ import {
   useEarnWithdrawForm,
 } from '@anchor-protocol/app-provider';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
-import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useAccount } from 'contexts/account';
 import { WithdrawDialog } from '../WithdrawDialog';
 import { aUST } from '@anchor-protocol/types';
 import { Big } from 'big.js';
 import { useWithdrawUstTx } from 'tx/evm';
 import { DialogProps } from '@libs/use-dialog';
+import { Container } from 'components/primitives/Container';
 
 export function EvmWithdrawDialog(props: DialogProps<{}, void>) {
   const { connected } = useAccount();
@@ -25,7 +25,7 @@ export function EvmWithdrawDialog(props: DialogProps<{}, void>) {
 
   return (
     <WithdrawDialog {...props} {...state} txResult={withdrawTxResult}>
-      <ViewAddressWarning>
+      <Container direction="row" gap={10}>
         <ActionButton
           className="button"
           disabled={
@@ -41,7 +41,7 @@ export function EvmWithdrawDialog(props: DialogProps<{}, void>) {
         >
           Proceed
         </ActionButton>
-      </ViewAddressWarning>
+      </Container>
     </WithdrawDialog>
   );
 }

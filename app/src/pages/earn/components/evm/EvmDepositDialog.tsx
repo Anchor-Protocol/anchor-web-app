@@ -1,7 +1,6 @@
+import React from 'react';
 import { useEarnDepositForm } from '@anchor-protocol/app-provider';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
-import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import React from 'react';
 import { useAccount } from 'contexts/account';
 import { DepositDialog } from '../DepositDialog';
 import { StreamStatus } from '@rx-stream/react';
@@ -10,6 +9,7 @@ import { DialogProps } from '@libs/use-dialog';
 import { Modal } from '@material-ui/core';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { useApproveUstTx, useDepositUstTx } from 'tx/evm';
+import { Container } from 'components/primitives/Container';
 
 export function EvmDepositDialog(props: DialogProps<{}, void>) {
   const account = useAccount();
@@ -25,7 +25,7 @@ export function EvmDepositDialog(props: DialogProps<{}, void>) {
   return (
     <DepositDialog {...props} {...state} txResult={depositTxResult}>
       <>
-        <ViewAddressWarning>
+        <Container direction="row" gap={10}>
           <ActionButton
             className="button"
             disabled={
@@ -54,7 +54,7 @@ export function EvmDepositDialog(props: DialogProps<{}, void>) {
           >
             Proceed
           </ActionButton>
-        </ViewAddressWarning>
+        </Container>
 
         {approveTxResult?.status === StreamStatus.IN_PROGRESS && (
           <Modal open disableBackdropClick disableEnforceFocus>
