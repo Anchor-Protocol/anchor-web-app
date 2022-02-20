@@ -4,13 +4,10 @@ import {
   EarnWithdrawFormReturn,
 } from '@anchor-protocol/app-provider';
 import {
-  formatUST,
-  formatUSTInput,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { UST } from '@anchor-protocol/types';
-import { demicrofy } from '@libs/formatter';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
@@ -27,6 +24,7 @@ import { useBalances } from 'contexts/balances';
 import { AmountSlider } from './AmountSlider';
 import { TxResultRendering } from '@libs/app-fns';
 import { UIElementProps } from '@libs/ui';
+import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 
 interface WithdrawDialogParams extends UIElementProps, EarnWithdrawFormReturn {
   txResult: StreamResult<TxResultRendering> | null;
@@ -56,6 +54,10 @@ function WithdrawDialogBase(props: WithdrawDialogProps) {
   const { connected } = useAccount();
 
   const { uaUST } = useBalances();
+
+  const {
+    ust: { formatOutput, formatInput, demicrofy, symbol },
+  } = useFormatters();
 
   const { data } = useEarnEpochStatesQuery();
 
@@ -99,7 +101,9 @@ function WithdrawDialogBase(props: WithdrawDialogProps) {
             updateWithdrawAmount(target.value as UST)
           }
           InputProps={{
-            endAdornment: <InputAdornment position="end">UST</InputAdornment>,
+            endAdornment: (
+              <InputAdornment position="end">{symbol}</InputAdornment>
+            ),
           }}
         />
 
@@ -114,10 +118,11 @@ function WithdrawDialogBase(props: WithdrawDialogProps) {
               }}
               onClick={() =>
                 totalDeposit.gt(0) &&
-                updateWithdrawAmount(formatUSTInput(demicrofy(totalDeposit)))
+                updateWithdrawAmount(formatInput(demicrofy(totalDeposit)))
               }
             >
-              {formatUST(demicrofy(totalDeposit))} UST
+              {formatOutput(demicrofy(totalDeposit))}
+              {` ${symbol}`}
             </span>
           </span>
         </div>
@@ -126,11 +131,11 @@ function WithdrawDialogBase(props: WithdrawDialogProps) {
           <figure className="graph">
             <AmountSlider
               disabled={!connected}
-              max={Number(formatUSTInput(demicrofy(totalDeposit)))}
-              txFee={Number(formatUST(demicrofy(txFee)))}
+              max={Number(formatInput(demicrofy(totalDeposit)))}
+              txFee={Number(formatOutput(demicrofy(txFee)))}
               value={Number(withdrawAmount)}
               onChange={(value) => {
-                updateWithdrawAmount(formatUSTInput(value.toString() as UST));
+                updateWithdrawAmount(formatInput(value.toString() as UST));
               }}
             />
           </figure>
@@ -139,10 +144,12 @@ function WithdrawDialogBase(props: WithdrawDialogProps) {
         {txFee && receiveAmount && (
           <TxFeeList className="receipt">
             <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
-              {formatUST(demicrofy(txFee))} UST
+              {formatOutput(demicrofy(txFee))}
+              {` ${symbol}`}
             </TxFeeListItem>
             <TxFeeListItem label="Receive Amount">
-              {formatUST(demicrofy(receiveAmount))} UST
+              {formatOutput(demicrofy(receiveAmount))}
+              {` ${symbol}`}
             </TxFeeListItem>
           </TxFeeList>
         )}

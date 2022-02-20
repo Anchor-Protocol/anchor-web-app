@@ -23,7 +23,9 @@ function ConnectedButtonBase({
   totalUST,
   ...buttonProps
 }: ConnectedButtonProps) {
-  const formatters = useFormatters();
+  const {
+    ust: { formatOutput, demicrofy, symbol },
+  } = useFormatters();
   return (
     <button {...buttonProps}>
       <IconSpan>
@@ -32,9 +34,7 @@ function ConnectedButtonBase({
         </span>
         <span className="wallet-address">{truncate(walletAddress)}</span>
         <div className="wallet-balance">
-          {`${formatters.ust(formatters.ust.demicrofy(totalUST))} ${
-            formatters.ust.symbol
-          }`}
+          {`${formatOutput(demicrofy(totalUST))} ${symbol}`}
         </div>
       </IconSpan>
     </button>

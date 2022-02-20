@@ -1,12 +1,9 @@
 import {
-  formatUST,
-  formatUSTInput,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { UST } from '@anchor-protocol/types';
 import { EarnDepositFormReturn } from '@anchor-protocol/app-provider';
-import { demicrofy } from '@libs/formatter';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
@@ -22,6 +19,7 @@ import { useAccount } from 'contexts/account';
 import { AmountSlider } from './AmountSlider';
 import { UIElementProps } from '@libs/ui';
 import { TxResultRendering } from '@libs/app-fns';
+import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 
 interface DepositDialogParams extends UIElementProps, EarnDepositFormReturn {
   txResult: StreamResult<TxResultRendering> | null;
@@ -48,6 +46,10 @@ function DepositDialogBase(props: DepositDialogProps) {
   } = props;
 
   const account = useAccount();
+
+  const {
+    ust: { formatOutput, formatInput, demicrofy, symbol },
+  } = useFormatters();
 
   if (
     txResult?.status === StreamStatus.IN_PROGRESS ||
@@ -102,10 +104,10 @@ function DepositDialogBase(props: DepositDialogProps) {
               }
               onClick={() =>
                 maxAmount &&
-                updateDepositAmount(formatUSTInput(demicrofy(maxAmount)))
+                updateDepositAmount(formatInput(demicrofy(maxAmount)))
               }
             >
-              {maxAmount ? formatUST(demicrofy(maxAmount)) : 0} UST
+              {maxAmount ? formatOutput(demicrofy(maxAmount)) : 0} {symbol}
             </span>
           </span>
         </div>
@@ -113,11 +115,11 @@ function DepositDialogBase(props: DepositDialogProps) {
           <figure className="graph">
             <AmountSlider
               disabled={!account.connected}
-              max={Number(formatUSTInput(demicrofy(maxAmount)))}
-              txFee={Number(formatUST(demicrofy(txFee)))}
+              max={Number(formatInput(demicrofy(maxAmount)))}
+              txFee={Number(formatOutput(demicrofy(txFee)))}
               value={Number(depositAmount)}
               onChange={(value) => {
-                updateDepositAmount(formatUSTInput(value.toString() as UST));
+                updateDepositAmount(formatInput(value.toString() as UST));
               }}
             />
           </figure>
@@ -126,10 +128,10 @@ function DepositDialogBase(props: DepositDialogProps) {
         {txFee && sendAmount && (
           <TxFeeList className="receipt">
             <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
-              {formatUST(demicrofy(txFee))} UST
+              {`${formatOutput(demicrofy(txFee))} ${symbol}`}
             </TxFeeListItem>
             <TxFeeListItem label="Send Amount">
-              {formatUST(demicrofy(sendAmount))} UST
+              {`${formatOutput(demicrofy(sendAmount))} ${symbol}`}
             </TxFeeListItem>
           </TxFeeList>
         )}

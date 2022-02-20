@@ -38,25 +38,35 @@ export function TokenListBase(props: TokenListProps) {
               </BuyButton>
             )}
           </span>
-          <span>{formatters.ust(formatters.ust.demicrofy(uUST))}</span>
+          <span>
+            {formatters.ust.formatOutput(formatters.ust.demicrofy(uUST))}
+          </span>
         </li>
       )}
       {big(uaUST).gt(0) && (
         <li>
           <span>{formatters.aUST.symbol}</span>
-          <span>{formatters.aUST(formatters.aUST.demicrofy(uaUST))}</span>
+          <span>
+            {formatters.aUST.formatOutput(formatters.aUST.demicrofy(uaUST))}
+          </span>
         </li>
       )}
       {big(uNative).gt(0) && (
         <li>
           <span>{formatters.native.symbol}</span>
-          <span>{formatters.native(formatters.native.demicrofy(uNative))}</span>
+          <span>
+            {formatters.native.formatOutput(
+              formatters.native.demicrofy(uNative),
+            )}
+          </span>
         </li>
       )}
       {big(uANC).gt(0) && (
         <li>
           <span>{formatters.anc.symbol}</span>
-          <span>{formatters.anc(formatters.anc.demicrofy(uANC))}</span>
+          <span>
+            {formatters.anc.formatOutput(formatters.anc.demicrofy(uANC))}
+          </span>
         </li>
       )}
     </ul>
