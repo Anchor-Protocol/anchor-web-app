@@ -28,7 +28,12 @@ export function useAirdropClaimTx() {
 
   const stream = useCallback(
     ({ airdrop, onTxSucceed }: AirdropClaimTxParams) => {
-      if (!availablePost || !connected || !connectedWallet) {
+      if (
+        !availablePost ||
+        !connected ||
+        !connectedWallet ||
+        !terraWalletAddress
+      ) {
         throw new Error('Can not post!');
       }
 

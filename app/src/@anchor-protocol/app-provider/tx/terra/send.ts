@@ -19,7 +19,7 @@ export interface TerraSendTxParams {
 }
 
 export function useTerraSendTx() {
-  const { availablePost, connected, terraWalletAddress } = useAccount();
+  const { availablePost, connected } = useAccount();
 
   const connectedWallet = useConnectedWallet();
 
@@ -41,7 +41,7 @@ export function useTerraSendTx() {
       }
 
       return terraSendTx({
-        myWalletAddress: terraWalletAddress,
+        myWalletAddress: connectedWallet.walletAddress,
         toWalletAddress,
         amount,
         currency,
@@ -67,7 +67,6 @@ export function useTerraSendTx() {
       availablePost,
       connected,
       connectedWallet,
-      terraWalletAddress,
       constants.gasWanted,
       constants.gasAdjustment,
       queryClient,

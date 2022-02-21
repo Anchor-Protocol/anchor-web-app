@@ -25,7 +25,7 @@ export function useCW20SellTokenTx<T extends Token>(
   tokenUstPairAddr: HumanAddr,
   tokenSymbol: string,
 ) {
-  const { availablePost, connected, terraWalletAddress } = useAccount();
+  const { availablePost, connected } = useAccount();
 
   const connectedWallet = useConnectedWallet();
 
@@ -66,7 +66,7 @@ export function useCW20SellTokenTx<T extends Token>(
         taxRate,
         maxTaxUUSD: maxTax,
         maxSpread,
-        sellerAddr: terraWalletAddress,
+        sellerAddr: connectedWallet.walletAddress,
         fixedFee,
         gasWanted: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
@@ -90,7 +90,6 @@ export function useCW20SellTokenTx<T extends Token>(
       tokenSymbol,
       taxRate,
       maxTax,
-      terraWalletAddress,
       fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,

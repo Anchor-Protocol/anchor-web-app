@@ -20,7 +20,7 @@ export interface SendTxParams {
 }
 
 export function useSendTx() {
-  const { availablePost, connected, terraWalletAddress } = useAccount();
+  const { availablePost, connected } = useAccount();
 
   const connectedWallet = useConnectedWallet();
 
@@ -44,7 +44,7 @@ export function useSendTx() {
         memo,
         toAddr,
         amount,
-        walletAddr: terraWalletAddress,
+        walletAddr: connectedWallet.walletAddress,
         taxRate,
         maxTaxUUSD: maxTax,
         fixedFee,
@@ -64,7 +64,6 @@ export function useSendTx() {
       availablePost,
       connected,
       connectedWallet,
-      terraWalletAddress,
       taxRate,
       maxTax,
       fixedFee,

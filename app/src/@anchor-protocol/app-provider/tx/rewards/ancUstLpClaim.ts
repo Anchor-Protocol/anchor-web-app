@@ -12,7 +12,7 @@ export interface RewardsAncUstLpClaimTxParams {
 }
 
 export function useRewardsAncUstLpClaimTx() {
-  const { availablePost, connected, terraWalletAddress } = useAccount();
+  const { availablePost, connected } = useAccount();
 
   const connectedWallet = useConnectedWallet();
 
@@ -30,7 +30,7 @@ export function useRewardsAncUstLpClaimTx() {
       }
 
       return rewardsAncUstLpClaimTx({
-        walletAddr: terraWalletAddress,
+        walletAddr: connectedWallet.walletAddress,
         lpTokenAddr: contractAddress.cw20.AncUstLP,
         generatorAddr: contractAddress.astroport.generator,
         // post
@@ -54,7 +54,6 @@ export function useRewardsAncUstLpClaimTx() {
       availablePost,
       connected,
       connectedWallet,
-      terraWalletAddress,
       contractAddress.cw20.AncUstLP,
       contractAddress.astroport.generator,
       fixedFee,
