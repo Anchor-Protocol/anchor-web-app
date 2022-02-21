@@ -10,6 +10,7 @@
     "start:multiple-wallets": "TS_NODE_PROJECT=tsconfig.script.json node -r ts-node/register -r tsconfig-paths/register scripts/start.multiple-wallets.ts",
     "build": "tsc --noEmit && vite build",
     "test": "react-scripts test --colors",
+    "test:update": "react-scripts test -u",
     "coverage": "react-scripts test --colors --coverage",
     "storybook": "start-storybook -h localhost -p 6006 -s public",
     "build-storybook": "build-storybook -s public"
