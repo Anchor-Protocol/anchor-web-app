@@ -3,7 +3,6 @@ import {
   computeTotalDeposit,
 } from '@anchor-protocol/app-fns';
 import {
-  //useAnchorWebapp,
   useAncPriceQuery,
   useBAssetInfoAndBalanceTotalQuery,
   useBorrowBorrowerQuery,
@@ -12,10 +11,9 @@ import {
   useEarnEpochStatesQuery,
   useRewardsAncGovernanceRewardsQuery,
 } from '@anchor-protocol/app-provider';
-import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
+import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { u, UST } from '@anchor-protocol/types';
 import { sum } from '@libs/big-math';
-import { demicrofy } from '@libs/formatter';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
@@ -26,6 +24,7 @@ import big, { Big, BigSource } from 'big.js';
 import { Sub } from 'components/Sub';
 import { useAccount } from 'contexts/account';
 import { useBalances } from 'contexts/balances';
+import { useTheme } from 'contexts/theme';
 import { fixHMR } from 'fix-hmr';
 import { computeHoldings } from 'pages/mypage/logics/computeHoldings';
 import { useRewards } from 'pages/mypage/logics/useRewards';
@@ -39,16 +38,6 @@ export interface TotalValueProps {
   className?: string;
 }
 
-const colors = [
-  '#4bdb4b',
-  '#36a337',
-  '#2d832d',
-  '#246d25',
-  '#174f1a',
-  '#0e3311',
-  '#101010',
-];
-
 interface Item {
   label: string;
   tooltip: string;
@@ -58,9 +47,15 @@ interface Item {
 function TotalValueBase({ className }: TotalValueProps) {
   const { isNative } = useDeploymentTarget();
 
+  const { theme } = useTheme();
+
   const { connected } = useAccount();
 
   const tokenBalances = useBalances();
+
+  const {
+    ust: { formatOutput, demicrofy, symbol },
+  } = useFormatters();
 
   const { data: { moneyMarketEpochState } = {} } = useEarnEpochStatesQuery();
 
@@ -69,8 +64,6 @@ function TotalValueBase({ className }: TotalValueProps) {
   const { ancUstLp, ustBorrow } = useRewards();
 
   const { data: { ancPrice } = {} } = useAncPriceQuery();
-
-  //const { contractAddress } = useAnchorWebapp();
 
   const { data: { userGovStakingInfo } = {} } =
     useRewardsAncGovernanceRewardsQuery();
@@ -184,7 +177,6 @@ function TotalValueBase({ className }: TotalValueProps) {
     ancUstLp,
     bAssetBalanceTotal,
     connected,
-    //contractAddress,
     marketBorrowerInfo,
     moneyMarketEpochState,
     oraclePrices,
@@ -202,9 +194,9 @@ function TotalValueBase({ className }: TotalValueProps) {
     return data.map(({ label, amount }, i) => ({
       label,
       value: +amount,
-      color: colors[i % colors.length],
+      color: theme.chart[i % theme.chart.length],
     }));
-  }, [data]);
+  }, [data, theme.chart]);
 
   return (
     <Section className={className} data-small-layout={isSmallLayout}>
@@ -220,7 +212,7 @@ function TotalValueBase({ className }: TotalValueProps) {
             </IconSpan>
           </h4>
           <p>
-            <AnimateNumber format={formatUSTWithPostfixUnits}>
+            <AnimateNumber format={formatOutput}>
               {demicrofy(totalValue)}
             </AnimateNumber>
             <Sub> UST</Sub>
@@ -241,7 +233,7 @@ function TotalValueBase({ className }: TotalValueProps) {
           {data.map(({ label, tooltip, amount }, i) => (
             <li
               key={label}
-              style={{ color: colors[i] }}
+              style={{ color: theme.chart[i] }}
               data-focus={i === focusedIndex}
             >
               <i />
@@ -250,7 +242,10 @@ function TotalValueBase({ className }: TotalValueProps) {
                   {label} <InfoTooltip>{tooltip}</InfoTooltip>
                 </IconSpan>
               </p>
-              <p>{formatUSTWithPostfixUnits(demicrofy(amount))} UST</p>
+              <p>
+                {formatOutput(demicrofy(amount))}
+                {` ${symbol}`}
+              </p>
             </li>
           ))}
         </ul>

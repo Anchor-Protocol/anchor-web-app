@@ -23,23 +23,12 @@ export interface InterestSectionProps {
 }
 
 export function InterestSection({ className }: InterestSectionProps) {
-  // ---------------------------------------------
-  // dependencies
-  // ---------------------------------------------
-  //const theme = useTheme();
-
   const { constants } = useAnchorWebapp();
 
-  // ---------------------------------------------
-  // queries
-  // ---------------------------------------------
   const { data: { apyHistory } = {} } = useEarnAPYHistoryQuery();
 
   const { data: { overseerEpochState } = {} } = useEarnEpochStatesQuery();
 
-  // ---------------------------------------------
-  // computes
-  // ---------------------------------------------
   const apy = useMemo(() => {
     return computeCurrentAPY(overseerEpochState, constants.blocksPerYear);
   }, [constants.blocksPerYear, overseerEpochState]);
@@ -66,9 +55,6 @@ export function InterestSection({ className }: InterestSectionProps) {
       : undefined;
   }, [apyHistory, constants.blocksPerYear, overseerEpochState]);
 
-  // ---------------------------------------------
-  // presentation
-  // ---------------------------------------------
   return (
     <Section className={className}>
       <h2>

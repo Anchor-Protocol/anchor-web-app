@@ -49,11 +49,11 @@ export const NotConnectedButton = styled(NotConnectedButtonBase)`
     }
   }
 
-  color: ${({ theme }) => theme.colors.positive};
-  border-color: ${({ theme }) => theme.colors.positive};
+  color: ${({ theme }) => theme.colors.secondary};
+  border-color: ${({ theme }) => theme.colors.secondary};
 
   &:hover {
-    color: ${({ theme }) => theme.colors.positive};
-    border-color: ${({ theme }) => theme.colors.positive};
+    color: ${({ theme }) => theme.colors.secondary};
+    border-color: ${({ theme }) => theme.colors.secondary};
   }
 `;

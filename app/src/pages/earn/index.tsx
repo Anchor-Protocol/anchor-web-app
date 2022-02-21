@@ -93,7 +93,7 @@ const StyledComponent = styled(Component)`
       .value {
         font-size: 50px;
         font-weight: 500;
-        color: ${({ theme }) => theme.colors.positive};
+        color: ${({ theme }) => theme.colors.secondary};
         margin-bottom: 50px;
       }
 

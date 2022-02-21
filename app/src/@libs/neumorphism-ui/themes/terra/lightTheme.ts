@@ -25,12 +25,26 @@ export const lightTheme: DefaultTheme = {
     positive: '#4BDB4B',
     negative: '#e95979',
     warning: '#ff9a63',
+    primary: '#4BDB4B',
+    primaryDark: '#4BDB4B',
+    secondary: '#4BDB4B',
+    secondaryDark: '#4BDB4B',
   },
 
   //errorTextColor: '#e95979',
   //positiveTextColor: '#4BDB4B',
   //
   //pointColor: '#4BDB4B',
+
+  chart: [
+    '#4bdb4b',
+    '#36a337',
+    '#2d832d',
+    '#246d25',
+    '#174f1a',
+    '#0e3311',
+    '#101010',
+  ],
 
   header: {
     backgroundColor: '#000000',
@@ -46,6 +60,7 @@ export const lightTheme: DefaultTheme = {
     backgroundColor: '#2c2c2c',
     backgroundHoverColor: '#1c1c1c',
     textColor: '#ffffff',
+    hoverTextColor: '#ffffff',
   },
 
   textButton: {

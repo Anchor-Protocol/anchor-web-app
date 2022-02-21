@@ -33,11 +33,25 @@ export const darkTheme: DefaultTheme = {
     positive: '#15cc93',
     negative: '#e95979',
     warning: '#ff9a63',
+    primary: '#15cc93',
+    primaryDark: '#15cc93',
+    secondary: '#15cc93',
+    secondaryDark: '#15cc93',
   },
 
   header: {
     backgroundColor: '#000000',
   },
+
+  chart: [
+    '#4bdb4b',
+    '#36a337',
+    '#2d832d',
+    '#246d25',
+    '#174f1a',
+    '#0e3311',
+    '#101010',
+  ],
 
   //errorTextColor: '#ac2b45',
   //positiveTextColor: '#15cc93',
@@ -53,6 +67,7 @@ export const darkTheme: DefaultTheme = {
     backgroundColor: '#363c5f',
     backgroundHoverColor: '#404872',
     textColor: '#ffffff',
+    hoverTextColor: '#ffffff',
   },
 
   textButton: {

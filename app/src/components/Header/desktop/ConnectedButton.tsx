@@ -57,8 +57,8 @@ export const ConnectedButton = styled(ConnectedButtonBase)`
     }
   }
 
-  color: ${({ theme }) => theme.colors.positive};
-  border: 1px solid ${({ theme }) => theme.colors.positive};
+  color: ${({ theme }) => theme.colors.secondary};
+  border: 1px solid ${({ theme }) => theme.colors.secondary};
   outline: none;
   background-color: transparent;
 
@@ -87,7 +87,7 @@ export const ConnectedButton = styled(ConnectedButtonBase)`
   }
 
   &:hover {
-    border: 1px solid ${({ theme }) => theme.colors.positive};
+    border: 1px solid ${({ theme }) => theme.colors.secondary};
     background-color: rgba(255, 255, 255, 0.04);
   }
 
