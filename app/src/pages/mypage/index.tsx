@@ -1,4 +1,3 @@
-import { useDeploymentTarget } from '@anchor-protocol/app-provider';
 import { Tab } from '@libs/neumorphism-ui/components/Tab';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { PageTitle, TitleContainer } from 'components/primitives/PageTitle';
@@ -32,8 +31,6 @@ const tabItems: Item[] = [
 ];
 
 function MypageBase({ className }: MypageProps) {
-  const { isNative } = useDeploymentTarget();
-
   const isSmallLayout = useMediaQuery({ query: '(max-width: 1000px)' });
 
   const [tab, setTab] = useState<Item>(() => tabItems[0]);
@@ -46,7 +43,7 @@ function MypageBase({ className }: MypageProps) {
 
       <OverviewRow>
         <TotalValue />
-        {isNative && <TotalClaimableRewards />}
+        <TotalClaimableRewards />
       </OverviewRow>
 
       {!isSmallLayout && (

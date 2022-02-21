@@ -162,7 +162,7 @@ export const lightTheme: DefaultTheme = {
 
   tooltip: {
     normal: {
-      backgroundColor: '#94f3b8',
+      backgroundColor: PRIMARY_200,
       textColor: '#1f1f1f',
     },
     warning: {
