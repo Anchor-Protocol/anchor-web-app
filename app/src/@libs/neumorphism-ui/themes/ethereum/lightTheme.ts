@@ -18,8 +18,8 @@ export const lightTheme: DefaultTheme = {
   highlightBackgroundColor: '#ffffff',
   hoverBackgroundColor: 'rgba(37, 117, 164, 0.05)',
 
-  textColor: '#1f1f1f',
-  dimTextColor: '#999999',
+  textColor: '#3E4060',
+  dimTextColor: '#9E9FB3',
 
   colors: {
     positive: '#4BDB4B',
@@ -27,10 +27,9 @@ export const lightTheme: DefaultTheme = {
     warning: '#ff9a63',
   },
 
-  //errorTextColor: '#e95979',
-  //positiveTextColor: '#4BDB4B',
-  //
-  //pointColor: '#4BDB4B',
+  header: {
+    backgroundColor: '#3E4060',
+  },
 
   label: {
     backgroundColor: '#ffffff',
@@ -39,8 +38,8 @@ export const lightTheme: DefaultTheme = {
   },
 
   actionButton: {
-    backgroundColor: '#2c2c2c',
-    backgroundHoverColor: '#1c1c1c',
+    backgroundColor: '#3E4060',
+    backgroundHoverColor: '#5B5E80',
     textColor: '#ffffff',
   },
 
@@ -49,9 +48,10 @@ export const lightTheme: DefaultTheme = {
   },
 
   borderButton: {
-    borderColor: '#2c2c2c',
-    borderHoverColor: '#1c1c1c',
-    textColor: '#1f1f1f',
+    borderColor: '#3E4060',
+    borderHoverColor: '#5B5E80',
+    textColor: '#3E4060',
+    hoverTextColor: '#5B5E80',
   },
 
   selector: {

@@ -32,6 +32,10 @@ export const lightTheme: DefaultTheme = {
   //
   //pointColor: '#4BDB4B',
 
+  header: {
+    backgroundColor: '#000000',
+  },
+
   label: {
     backgroundColor: '#ffffff',
     textColor: '#1f1f1f',
@@ -52,6 +56,7 @@ export const lightTheme: DefaultTheme = {
     borderColor: '#2c2c2c',
     borderHoverColor: '#1c1c1c',
     textColor: '#1f1f1f',
+    hoverTextColor: '#ffffff',
   },
 
   selector: {

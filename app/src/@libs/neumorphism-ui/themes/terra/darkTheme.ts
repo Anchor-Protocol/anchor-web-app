@@ -35,6 +35,10 @@ export const darkTheme: DefaultTheme = {
     warning: '#ff9a63',
   },
 
+  header: {
+    backgroundColor: '#000000',
+  },
+
   //errorTextColor: '#ac2b45',
   //positiveTextColor: '#15cc93',
   //pointColor: '#15cc93',
@@ -59,6 +63,7 @@ export const darkTheme: DefaultTheme = {
     borderColor: '#363c5f',
     borderHoverColor: '#404872',
     textColor: '#ffffff',
+    hoverTextColor: '#ffffff',
   },
 
   selector: {

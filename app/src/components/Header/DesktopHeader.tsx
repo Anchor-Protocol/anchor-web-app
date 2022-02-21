@@ -76,7 +76,7 @@ export const DesktopHeader = styled(DesktopHeaderBase)`
   // ---------------------------------------------
   // style
   // ---------------------------------------------
-  background-color: #000000;
+  background-color: ${({ theme }) => theme.header.backgroundColor};
 
   a {
     text-decoration: none;

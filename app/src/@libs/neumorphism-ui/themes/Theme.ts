@@ -32,6 +32,10 @@ export interface NeumorphismTheme extends Theme {
   textColor: string;
   dimTextColor: string;
 
+  header: {
+    backgroundColor: string;
+  };
+
   //errorTextColor: string;
   //positiveTextColor: string;
   //pointColor: string;
@@ -67,6 +71,7 @@ export interface NeumorphismTheme extends Theme {
     borderColor: string;
     borderHoverColor: string;
     textColor: string;
+    hoverTextColor: string;
   };
 
   // selector
