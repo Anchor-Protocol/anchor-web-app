@@ -71,7 +71,7 @@ export function EvmWalletProvider({ children }: { children: ReactNode }) {
 
     return {
       actions: { activate, deactivate },
-      connectType,
+      connectType: connectType as ConnectType,
       address,
       availableConnectTypes: availableConnectTypes as unknown as ConnectType[], // TODO
       availableConnections,

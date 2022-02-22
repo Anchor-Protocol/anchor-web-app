@@ -6,6 +6,8 @@ import { ConnectType } from '@libs/evm-wallet';
 
 const decimals = 6;
 
+export const TX_GAS_LIMIT = 2100000;
+
 // TODO: replace fromWei and toWei with proper formatting functions
 export function fromWei(value: BigNumberish): string {
   return formatUnits(value, decimals);
