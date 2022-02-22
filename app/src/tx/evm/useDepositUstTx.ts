@@ -4,6 +4,8 @@ import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
 import { useTx } from './useTx';
 import { renderEvent, toWei } from './utils';
+import { Subject } from 'rxjs';
+import { useCallback } from 'react';
 
 export interface DepositUstTxProps {
   depositAmount: string;
@@ -15,19 +17,24 @@ export function useDepositUstTx():
   const { provider, address, connection, connectType } = useEvmWallet();
   const ethSdk = useEthCrossAnchorSdk('testnet', provider);
 
-  const result = useTx<DepositUstTxProps>((params, eventStream) => {
-    return ethSdk.depositStable(
-      ethSdk.ustContract.address,
-      toWei(params.depositAmount),
-      address!,
-      2100000,
-      (event) => {
-        console.log(event, 'eventEmitted');
+  const depositTx = useCallback(
+    (params: DepositUstTxProps, eventStream: Subject<TxResultRendering>) => {
+      return ethSdk.depositStable(
+        ethSdk.ustContract.address,
+        toWei(params.depositAmount),
+        address!,
+        2100000,
+        (event) => {
+          console.log(event, 'eventEmitted');
 
-        eventStream.next(renderEvent(event, connectType));
-      },
-    );
-  });
+          eventStream.next(renderEvent(event, connectType));
+        },
+      );
+    },
+    [address, connectType, ethSdk],
+  );
 
-  return connection && address ? result : [null, null];
+  const depositTxStream = useTx(depositTx);
+
+  return connection && address ? depositTxStream : [null, null];
 }

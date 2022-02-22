@@ -4,6 +4,8 @@ import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
 import { useTx } from './useTx';
 import { renderEvent, toWei } from './utils';
+import { Subject } from 'rxjs';
+import { useCallback } from 'react';
 
 export interface WithdrawUstTxProps {
   withdrawAmount: string;
@@ -15,19 +17,24 @@ export function useWithdrawUstTx():
   const { provider, address, connection, connectType } = useEvmWallet();
   const ethSdk = useEthCrossAnchorSdk('testnet', provider);
 
-  const result = useTx<WithdrawUstTxProps>((params, eventStream) => {
-    return ethSdk.redeemStable(
-      ethSdk.ustContract.address,
-      toWei(params.withdrawAmount),
-      address!,
-      2100000,
-      (event) => {
-        console.log(event, 'eventEmitted');
+  const withdrawTx = useCallback(
+    (params: WithdrawUstTxProps, eventStream: Subject<TxResultRendering>) => {
+      return ethSdk.redeemStable(
+        ethSdk.ustContract.address,
+        toWei(params.withdrawAmount),
+        address!,
+        2100000,
+        (event) => {
+          console.log(event, 'eventEmitted');
 
-        eventStream.next(renderEvent(event, connectType));
-      },
-    );
-  });
+          eventStream.next(renderEvent(event, connectType));
+        },
+      );
+    },
+    [ethSdk, address, connectType],
+  );
 
-  return connection && address ? result : [null, null];
+  const withdrawTxStream = useTx(withdrawTx);
+
+  return connection && address ? withdrawTxStream : [null, null];
 }
