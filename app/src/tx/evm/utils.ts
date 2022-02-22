@@ -15,19 +15,16 @@ export function toWei(value: BigNumberish): string {
   return parseUnits(String(value), decimals).toString();
 }
 
-export const renderEvent = (
-  event: CrossChainEvent,
-  connnectType: ConnectType,
-) => {
+export const txResult = (event: CrossChainEvent, connnectType: ConnectType) => {
   return {
     value: null,
-    message: renderMessage(event, connnectType),
+    message: txResultMessage(event, connnectType),
     phase: TxStreamPhase.BROADCAST,
     receipts: [],
   };
 };
 
-const renderMessage = (event: CrossChainEvent, connnectType: ConnectType) => {
+const txResultMessage = (event: CrossChainEvent, connnectType: ConnectType) => {
   switch (event.kind) {
     case CrossChainEventKind.CrossChainTxCompleted:
       return 'Cross chain transaction completed.';

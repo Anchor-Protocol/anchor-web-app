@@ -14,12 +14,12 @@ import { TxReceipt, TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import { UserDenied } from '@terra-money/use-wallet';
 import { truncateEvm } from '@libs/formatter';
 
-export const useTx = <Params>(
+export const useTx = <TxParams>(
   sendTx: (
-    params: Params,
-    eventStream: Subject<TxResultRendering>,
+    txParams: TxParams,
+    renderTxResults: Subject<TxResultRendering>,
   ) => Promise<ContractReceipt>,
-): StreamReturn<Params, TxResultRendering> => {
+): StreamReturn<TxParams, TxResultRendering> => {
   const sdkEvents = useMemo(
     () =>
       new BehaviorSubject<TxResultRendering>({
@@ -32,9 +32,9 @@ export const useTx = <Params>(
   );
 
   const txCallback = useCallback(
-    (params: Params) => {
+    (txParams: TxParams) => {
       return merge(
-        from(sendTx(params, sdkEvents))
+        from(sendTx(txParams, sdkEvents))
           .pipe(
             map((tx) => {
               return {
