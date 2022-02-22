@@ -8,6 +8,7 @@ import { Earn } from 'pages/earn';
 import { TermsOfService } from 'pages/terms';
 import { Redeem } from 'pages/bridge/redeem';
 import { Mypage } from 'pages/mypage';
+import { ClaimAll } from 'pages/trade/claim.all';
 import '../configurations/chartjs';
 
 export function EvmApp() {
@@ -22,6 +23,7 @@ export function EvmApp() {
           <Route path="/mypage" component={Mypage} />
           <Route path="/terms" component={TermsOfService} />
           <Route path="/bridge/redeem/:sequence" component={Redeem} />
+          <Route path={`/claim/all`} component={ClaimAll} />
           <Redirect to="/" />
         </Switch>
       </div>
