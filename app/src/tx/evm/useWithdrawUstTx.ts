@@ -3,7 +3,7 @@ import { useEthCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
 import { useTx } from './useTx';
-import { toWei, txResult } from './utils';
+import { toWei, txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 
@@ -26,7 +26,7 @@ export function useWithdrawUstTx():
         ethSdk.ustContract.address,
         toWei(txParams.withdrawAmount),
         address!,
-        2100000,
+        TX_GAS_LIMIT,
         (event) => {
           console.log(event, 'eventEmitted');
 
