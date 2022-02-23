@@ -23,7 +23,6 @@ export function useDepositUstTx():
       renderTxResults: Subject<TxResultRendering>,
     ) => {
       return ethSdk.depositStable(
-        ethSdk.ustContract.address,
         toWei(txParams.depositAmount),
         address!,
         TX_GAS_LIMIT,

@@ -7,23 +7,23 @@ import { toWei, txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 
-export interface WithdrawUstTxProps {
-  withdrawAmount: string;
+export interface RepayUstTxProps {
+  amount: string;
 }
 
-export function useWithdrawUstTx():
-  | StreamReturn<WithdrawUstTxProps, TxResultRendering>
+export function useRepayUstTx():
+  | StreamReturn<RepayUstTxProps, TxResultRendering>
   | [null, null] {
   const { provider, address, connection, connectType } = useEvmWallet();
   const ethSdk = useEthCrossAnchorSdk('testnet', provider);
 
-  const withdrawTx = useCallback(
+  const repayTx = useCallback(
     (
-      txParams: WithdrawUstTxProps,
+      txParams: RepayUstTxProps,
       renderTxResults: Subject<TxResultRendering>,
     ) => {
-      return ethSdk.redeemStable(
-        toWei(txParams.withdrawAmount),
+      return ethSdk.repayStable(
+        toWei(txParams.amount),
         address!,
         TX_GAS_LIMIT,
         (event) => {
@@ -36,7 +36,7 @@ export function useWithdrawUstTx():
     [ethSdk, address, connectType],
   );
 
-  const withdrawTxStream = useTx(withdrawTx);
+  const repayTxStream = useTx(repayTx);
 
-  return connection && address ? withdrawTxStream : [null, null];
+  return connection && address ? repayTxStream : [null, null];
 }
