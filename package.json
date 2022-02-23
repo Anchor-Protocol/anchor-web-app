@@ -57,7 +57,7 @@
     "@terra-money/terra.js": "3.0.2"
   },
   "dependencies": {
-    "@anchor-protocol/crossanchor-sdk": "^0.1.2-1",
+    "@anchor-protocol/crossanchor-sdk": "^0.1.2-3",
     "@ethersproject/contracts": "^5.5.0"
   }
 }
