@@ -1,6 +1,6 @@
 import { useTerraNetwork } from '@anchor-protocol/app-provider';
 import { Web3Provider } from '@ethersproject/providers';
-import { Network, EthCrossAnchorSdk } from '@crossanchor/sdk';
+import { Network, EthCrossAnchorSdk } from '@anchor-protocol/crossanchor-sdk';
 import { LCDClient } from '@terra-money/terra.js';
 import { useMemo } from 'react';
 

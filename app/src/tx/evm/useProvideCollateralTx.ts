@@ -6,7 +6,7 @@ import { useTx } from './useTx';
 import { toWei, txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
-import { Collateral } from '@crossanchor/sdk';
+import { Collateral } from '@anchor-protocol/crossanchor-sdk';
 
 export interface ProvideCollateralTxProps {
   collateral: Collateral;

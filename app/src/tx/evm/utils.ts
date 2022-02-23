@@ -1,4 +1,7 @@
-import { CrossChainEvent, CrossChainEventKind } from '@crossanchor/sdk';
+import {
+  CrossChainEvent,
+  CrossChainEventKind,
+} from '@anchor-protocol/crossanchor-sdk';
 import { TxStreamPhase } from '@libs/app-fns';
 import { formatUnits, parseUnits } from '@ethersproject/units';
 import { BigNumberish } from 'ethers';
