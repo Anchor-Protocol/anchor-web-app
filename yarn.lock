@@ -14,15 +14,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@anchor-protocol/crossanchor-sdk@npm:^0.1.2-5":
-  version: 0.1.2-alpha.5
-  resolution: "@anchor-protocol/crossanchor-sdk@npm:0.1.2-alpha.5"
+"@anchor-protocol/crossanchor-sdk@npm:^0.1.2-6":
+  version: 0.1.2-alpha.6
+  resolution: "@anchor-protocol/crossanchor-sdk@npm:0.1.2-alpha.6"
   dependencies:
     "@certusone/wormhole-sdk": ^0.2.0
     "@terra-money/terra.js": ^3.0.2
     big.js: ^6.1.1
     ethers: ^5.5.4
-  checksum: 7858d012a6d4efa45ba97a8d6fce2f78d27f5ce6f7f3baab824deace98f70bd5b7e0ee9436203f8d297dbd19eacb7ea8829be7df97a1b0bef620b5aa998a2277
+  checksum: a2d68f34a88dab9e2236a3694ca8bcf7d68eea6a451dcf3ca1daf493c55ce4e61c2a6964b3beed276e31d3475a0ceadf87685bd058ed1f4d275343fb0f32aa3d
   languageName: node
   linkType: hard
 
@@ -23408,7 +23408,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
-    "@anchor-protocol/crossanchor-sdk": ^0.1.2-5
+    "@anchor-protocol/crossanchor-sdk": ^0.1.2-6
     "@ethersproject/contracts": ^5.5.0
     "@handbook/markdown-source-import": ^1.1.0
     "@ssen/prettier-config": ^2.0.1
