@@ -91,7 +91,7 @@ function RedeemBase(props: UIElementProps) {
   const { connected } = useAccount();
 
   const { sequence = '' } = useParams<URLParams>();
-  const redemptionPayload = useRedemptionPayload(Number(sequence));
+  const { redemptionPayload, loading } = useRedemptionPayload(Number(sequence));
   const [redeemTokens, redeemTxResult] = useRedeemTokensTx(redemptionPayload);
 
   if (
@@ -101,7 +101,7 @@ function RedeemBase(props: UIElementProps) {
     return <TxRendering className={className} txResult={redeemTxResult} />;
   }
 
-  if (redeemTxResult === null) {
+  if (!loading && !redemptionPayload) {
     return <Error className={className} sequence={sequence} />;
   }
 
