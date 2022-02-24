@@ -30,6 +30,8 @@ export interface TxResultRendering<T = unknown> {
    */
   value: T;
 
+  message?: string;
+
   phase: TxStreamPhase;
 
   /**

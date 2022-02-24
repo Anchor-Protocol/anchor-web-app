@@ -6,26 +6,26 @@ import { useTx } from './useTx';
 import { toWei, txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
-import { ContractReceipt } from 'ethers';
 import { CrossChainTxResponse } from '@anchor-protocol/crossanchor-sdk';
+import { ContractReceipt } from 'ethers';
 
 type TxResult = CrossChainTxResponse<ContractReceipt> | null;
 type TxRender = TxResultRendering<TxResult>;
 
-export interface WithdrawUstTxProps {
-  withdrawAmount: string;
+export interface BorrowUstTxProps {
+  amount: string;
 }
 
-export function useWithdrawUstTx():
-  | StreamReturn<WithdrawUstTxProps, TxRender>
+export function useBorrowUstTx():
+  | StreamReturn<BorrowUstTxProps, TxRender>
   | [null, null] {
   const { provider, address, connection, connectType } = useEvmWallet();
   const ethSdk = useEthCrossAnchorSdk('testnet', provider);
 
-  const withdrawTx = useCallback(
-    (txParams: WithdrawUstTxProps, renderTxResults: Subject<TxRender>) => {
-      return ethSdk.redeemStable(
-        toWei(txParams.withdrawAmount),
+  const borrowTx = useCallback(
+    (txParams: BorrowUstTxProps, renderTxResults: Subject<TxRender>) => {
+      return ethSdk.borrowStable(
+        toWei(txParams.amount),
         address!,
         TX_GAS_LIMIT,
         (event) => {
@@ -35,10 +35,10 @@ export function useWithdrawUstTx():
         },
       );
     },
-    [ethSdk, address, connectType],
+    [address, connectType, ethSdk],
   );
 
-  const withdrawTxStream = useTx(withdrawTx, (resp) => resp.tx, null);
+  const borrowTxStream = useTx(borrowTx, (resp) => resp.tx, null);
 
-  return connection && address ? withdrawTxStream : [null, null];
+  return connection && address ? borrowTxStream : [null, null];
 }

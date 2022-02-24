@@ -4,7 +4,7 @@ import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { UIElementProps } from 'components/layouts/UIElementProps';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { truncateEvm } from '@libs/formatter';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
@@ -14,16 +14,12 @@ import {
   hexToNativeString,
   parseTransferPayload,
 } from '@certusone/wormhole-sdk';
-import {
-  useWormholeSignedVAA,
-  useWormholeAsset,
-  parseVAA,
-} from '@anchor-protocol/wormhole';
+import { useWormholeAsset } from '@anchor-protocol/wormhole';
 import { StreamStatus } from '@rx-stream/react';
-import { useWormholeRedeemTx } from '@anchor-protocol/wormhole/useWormholeRedeemTx';
 import { useAccount } from 'contexts/account';
 import { Error } from './components/Error';
 import { TxRendering } from './components/TxRenderer';
+import { useRedeemTokensTx, useRedemptionPayload } from 'tx/evm';
 
 type WormholePayloadType = ReturnType<typeof parseTransferPayload> & {
   timestamp: number;
@@ -85,8 +81,8 @@ const Loading = () => {
 };
 
 interface URLParams {
-  chainId?: string;
-  sequence?: string;
+  chainId: string;
+  sequence: string;
 }
 
 function RedeemBase(props: UIElementProps) {
@@ -95,22 +91,8 @@ function RedeemBase(props: UIElementProps) {
   const { connected } = useAccount();
 
   const { sequence = '' } = useParams<URLParams>();
-
-  const { loading, vaaBytes } = useWormholeSignedVAA(sequence);
-
-  const [payload, setPayload] = useState<WormholePayloadType | undefined>();
-
-  const [redeem, redeemTxResult] = useWormholeRedeemTx();
-
-  useEffect(() => {
-    if (vaaBytes) {
-      const vaa = parseVAA(vaaBytes);
-      setPayload({
-        timestamp: vaa.timestamp,
-        ...parseTransferPayload(vaa.payload),
-      });
-    }
-  }, [vaaBytes]);
+  const { redemptionPayload, loading } = useRedemptionPayload(Number(sequence));
+  const [redeemTokens, redeemTxResult] = useRedeemTokensTx(redemptionPayload);
 
   if (
     redeemTxResult?.status === StreamStatus.IN_PROGRESS ||
@@ -119,7 +101,7 @@ function RedeemBase(props: UIElementProps) {
     return <TxRendering className={className} txResult={redeemTxResult} />;
   }
 
-  if (!loading && vaaBytes === null) {
+  if (!loading && !redemptionPayload) {
     return <Error className={className} sequence={sequence} />;
   }
 
@@ -132,17 +114,20 @@ function RedeemBase(props: UIElementProps) {
           arcu, porttitor sed mollis at, pulvinar at lectus. Nam semper dui at
           quam sollicitudin, sit amet lacinia ligula eleifend.
         </p>
-        {loading || !payload ? (
+        {!redemptionPayload ? (
           <Loading />
         ) : (
-          <RedemptionSummaryList sequence={sequence!} payload={payload} />
+          <RedemptionSummaryList
+            sequence={sequence!}
+            payload={redemptionPayload}
+          />
         )}
         <ViewAddressWarning>
           <ActionButton
             className="submit"
-            disabled={!connected || loading || !payload}
+            disabled={!connected || !redemptionPayload}
             onClick={() => {
-              vaaBytes && redeem && redeem(vaaBytes);
+              redeemTokens!({});
             }}
           >
             Redeem

@@ -29,7 +29,7 @@ export function TxResultRenderer({
               <PushSpinner color={dimTextColor} />
             </figure>
 
-            <h2>Waiting for Terra Station...</h2>
+            <h2>{resultRendering.message ?? 'Waiting for Terra Station...'}</h2>
 
             <Receipts resultRendering={resultRendering} />
 
@@ -46,7 +46,7 @@ export function TxResultRenderer({
             </figure>
 
             <h2>
-              <span>Waiting for receipt...</span>
+              <span>{resultRendering.message ?? 'Waiting for receipt...'}</span>
               <p>
                 Transaction broadcasted. There is no need to send another until
                 it has been complete.

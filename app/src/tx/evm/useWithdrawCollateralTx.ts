@@ -6,26 +6,34 @@ import { useTx } from './useTx';
 import { toWei, txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
+import {
+  Collateral,
+  CrossChainTxResponse,
+} from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from 'ethers';
-import { CrossChainTxResponse } from '@anchor-protocol/crossanchor-sdk';
 
 type TxResult = CrossChainTxResponse<ContractReceipt> | null;
 type TxRender = TxResultRendering<TxResult>;
 
-export interface WithdrawUstTxProps {
-  withdrawAmount: string;
+export interface WithdrawCollateralTxProps {
+  collateral: Collateral;
+  amount: string;
 }
 
-export function useWithdrawUstTx():
-  | StreamReturn<WithdrawUstTxProps, TxRender>
+export function useWithdrawCollateralTx():
+  | StreamReturn<WithdrawCollateralTxProps, TxRender>
   | [null, null] {
   const { provider, address, connection, connectType } = useEvmWallet();
   const ethSdk = useEthCrossAnchorSdk('testnet', provider);
 
   const withdrawTx = useCallback(
-    (txParams: WithdrawUstTxProps, renderTxResults: Subject<TxRender>) => {
-      return ethSdk.redeemStable(
-        toWei(txParams.withdrawAmount),
+    (
+      txParams: WithdrawCollateralTxProps,
+      renderTxResults: Subject<TxRender>,
+    ) => {
+      return ethSdk.unlockCollateral(
+        txParams.collateral,
+        toWei(txParams.amount),
         address!,
         TX_GAS_LIMIT,
         (event) => {

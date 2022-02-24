@@ -9,6 +9,7 @@ import { useAccount } from 'contexts/account';
 import Big from 'big.js';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { useClaimRewardsTx } from 'tx/evm/useClaimRewardsTx';
 
 export const EvmClaimAll = () => {
   const { connected, availablePost } = useAccount();
@@ -19,8 +20,10 @@ export const EvmClaimAll = () => {
 
   const anc = Big(1234567800) as u<ANC<Big>>;
 
+  const [claimRewards, claimRewardsTxResult] = useClaimRewardsTx();
+
   return (
-    <ClaimAll txResult={null}>
+    <ClaimAll txResult={claimRewardsTxResult}>
       <Section>
         <h1>Claim All Rewards</h1>
         <TxFeeList className="receipt">
@@ -35,7 +38,7 @@ export const EvmClaimAll = () => {
             disabled={
               !availablePost || !connected || anc.lt(MINIMUM_CLAIM_BALANCE)
             }
-            onClick={() => console.log('clicking, doing nothing...')}
+            onClick={() => claimRewards!({})}
           >
             Claim
           </ActionButton>

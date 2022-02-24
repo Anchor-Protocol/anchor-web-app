@@ -13,6 +13,7 @@ export type EvmWallet = {
   availableConnections: Connection[];
   connection: Connection | null;
   status: WalletStatus;
+  connectType: ConnectType;
 } & Omit<ConnectorData, 'isActive' | 'isActivating'>;
 
 export const EvmWalletContext = createContext<EvmWallet | undefined>(undefined);
@@ -70,6 +71,7 @@ export function EvmWalletProvider({ children }: { children: ReactNode }) {
 
     return {
       actions: { activate, deactivate },
+      connectType: connectType as ConnectType,
       address,
       availableConnectTypes: availableConnectTypes as unknown as ConnectType[], // TODO
       availableConnections,
