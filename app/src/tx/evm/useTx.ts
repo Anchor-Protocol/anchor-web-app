@@ -14,33 +14,33 @@ import { TxReceipt, TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import { UserDenied } from '@terra-money/use-wallet';
 import { truncateEvm } from '@libs/formatter';
 
-export const useTx = <TxParams>(
+export const useTx = <TxParams, TxResult>(
   sendTx: (
     txParams: TxParams,
-    renderTxResults: Subject<TxResultRendering>,
-  ) => Promise<ContractReceipt>,
-): StreamReturn<TxParams, TxResultRendering> => {
-  const sdkEvents = useMemo(
-    () =>
-      new BehaviorSubject<TxResultRendering>({
-        value: null,
-        message: 'Processing transaction...',
-        phase: TxStreamPhase.BROADCAST,
-        receipts: [],
-      }),
-    [],
-  );
+    renderTxResults: Subject<TxResultRendering<TxResult>>,
+  ) => Promise<TxResult>,
+  parseTx: (txResult: NonNullable<TxResult>) => ContractReceipt,
+  emptyTxResult: TxResult,
+): StreamReturn<TxParams, TxResultRendering<TxResult>> => {
+  const sdkEvents = useMemo(() => {
+    return new BehaviorSubject<TxResultRendering<TxResult>>({
+      value: emptyTxResult,
+      message: 'Processing transaction...',
+      phase: TxStreamPhase.BROADCAST,
+      receipts: [],
+    });
+  }, [emptyTxResult]);
 
   const txCallback = useCallback(
     (txParams: TxParams) => {
       return merge(
         from(sendTx(txParams, sdkEvents))
           .pipe(
-            map((tx) => {
+            map((txResult) => {
               return {
-                value: null,
+                value: emptyTxResult,
                 phase: TxStreamPhase.SUCCEED,
-                receipts: [txReceipt(tx)],
+                receipts: [txReceipt(parseTx(txResult!))],
               };
             }),
           )
@@ -56,7 +56,7 @@ export const useTx = <TxParams>(
         }),
       );
     },
-    [sdkEvents, sendTx],
+    [sdkEvents, sendTx, emptyTxResult, parseTx],
   );
 
   return useStream(txCallback);

@@ -18,7 +18,11 @@ export const useEthCrossAnchorSdk = (
   }, [terra.chainID, terra.lcd]);
 
   return useMemo(
-    () => new EthCrossAnchorSdk(network, lcd, provider),
+    () =>
+      new EthCrossAnchorSdk(network, lcd, provider, {
+        skipRedemption: true,
+        unlimitedAllowance: false,
+      }),
     [network, provider, lcd],
   );
 };

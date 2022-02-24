@@ -6,7 +6,14 @@ import { useTx } from './useTx';
 import { toWei, txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
-import { Collateral } from '@anchor-protocol/crossanchor-sdk';
+import {
+  Collateral,
+  CrossChainTxResponse,
+} from '@anchor-protocol/crossanchor-sdk';
+import { ContractReceipt } from 'ethers';
+
+type TxResult = CrossChainTxResponse<ContractReceipt> | null;
+type TxRender = TxResultRendering<TxResult>;
 
 export interface WithdrawCollateralTxProps {
   collateral: Collateral;
@@ -14,7 +21,7 @@ export interface WithdrawCollateralTxProps {
 }
 
 export function useWithdrawCollateralTx():
-  | StreamReturn<WithdrawCollateralTxProps, TxResultRendering>
+  | StreamReturn<WithdrawCollateralTxProps, TxRender>
   | [null, null] {
   const { provider, address, connection, connectType } = useEvmWallet();
   const ethSdk = useEthCrossAnchorSdk('testnet', provider);
@@ -22,7 +29,7 @@ export function useWithdrawCollateralTx():
   const withdrawTx = useCallback(
     (
       txParams: WithdrawCollateralTxProps,
-      renderTxResults: Subject<TxResultRendering>,
+      renderTxResults: Subject<TxRender>,
     ) => {
       return ethSdk.unlockCollateral(
         txParams.collateral,
@@ -39,7 +46,7 @@ export function useWithdrawCollateralTx():
     [ethSdk, address, connectType],
   );
 
-  const withdrawTxStream = useTx(withdrawTx);
+  const withdrawTxStream = useTx(withdrawTx, (resp) => resp.tx, null);
 
   return connection && address ? withdrawTxStream : [null, null];
 }

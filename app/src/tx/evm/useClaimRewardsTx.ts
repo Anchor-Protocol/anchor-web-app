@@ -6,6 +6,11 @@ import { useTx } from './useTx';
 import { txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
+import { ContractReceipt } from 'ethers';
+import { CrossChainTxResponse } from '@anchor-protocol/crossanchor-sdk';
+
+type TxResult = CrossChainTxResponse<ContractReceipt> | null;
+type TxRender = TxResultRendering<TxResult>;
 
 export interface ClaimRewardsTxProps {}
 
@@ -16,10 +21,7 @@ export function useClaimRewardsTx():
   const ethSdk = useEthCrossAnchorSdk('testnet', provider);
 
   const claimRewards = useCallback(
-    (
-      _txParams: ClaimRewardsTxProps,
-      renderTxResults: Subject<TxResultRendering>,
-    ) => {
+    (_txParams: ClaimRewardsTxProps, renderTxResults: Subject<TxRender>) => {
       return ethSdk.claimRewards(address!, TX_GAS_LIMIT, (event) => {
         console.log(event, 'eventEmitted');
 
@@ -29,7 +31,7 @@ export function useClaimRewardsTx():
     [address, connectType, ethSdk],
   );
 
-  const claimRewardsStream = useTx(claimRewards);
+  const claimRewardsStream = useTx(claimRewards, (resp) => resp.tx, null);
 
   return connection && address ? claimRewardsStream : [null, null];
 }

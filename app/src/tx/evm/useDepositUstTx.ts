@@ -6,22 +6,24 @@ import { useTx } from './useTx';
 import { toWei, txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
+import { ContractReceipt } from 'ethers';
+import { CrossChainTxResponse } from '@anchor-protocol/crossanchor-sdk';
+
+type TxResult = CrossChainTxResponse<ContractReceipt> | null;
+type TxRender = TxResultRendering<TxResult>;
 
 export interface DepositUstTxProps {
   depositAmount: string;
 }
 
 export function useDepositUstTx():
-  | StreamReturn<DepositUstTxProps, TxResultRendering>
+  | StreamReturn<DepositUstTxProps, TxRender>
   | [null, null] {
   const { provider, address, connection, connectType } = useEvmWallet();
   const ethSdk = useEthCrossAnchorSdk('testnet', provider);
 
   const depositTx = useCallback(
-    (
-      txParams: DepositUstTxProps,
-      renderTxResults: Subject<TxResultRendering>,
-    ) => {
+    (txParams: DepositUstTxProps, renderTxResults: Subject<TxRender>) => {
       return ethSdk.depositStable(
         toWei(txParams.depositAmount),
         address!,
@@ -36,7 +38,7 @@ export function useDepositUstTx():
     [address, connectType, ethSdk],
   );
 
-  const depositTxStream = useTx(depositTx);
+  const depositTxStream = useTx(depositTx, (resp) => resp.tx, null);
 
   return connection && address ? depositTxStream : [null, null];
 }
