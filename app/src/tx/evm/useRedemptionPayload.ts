@@ -1,7 +1,7 @@
 import { useEthCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { useEffect, useState } from 'react';
-import { RedemptionPayload } from '@anchor-protocol/crossanchor-sdk/lib/esm/crossanchor/base/wormhole';
+import { RedemptionPayload } from '@anchor-protocol/crossanchor-sdk';
 
 type RedemptionPayloadResponse = {
   redemptionPayload: RedemptionPayload | undefined;

@@ -16,20 +16,18 @@ export function EvmAppProviders({ children }: UIElementProps) {
     <EvmWalletProvider>
       <EvmNetworkProvider>
         <EvmAccountProvider>
-          <AppProviders>
-            <EvmBalancesProvider>
-              <ThemeProvider
-                initialTheme="light"
-                lightTheme={
-                  chain === Chain.Ethereum
-                    ? ethereumLightTheme
-                    : avalancheLightTheme
-                }
-              >
-                {children}
-              </ThemeProvider>
-            </EvmBalancesProvider>
-          </AppProviders>
+          <ThemeProvider
+            initialTheme="light"
+            lightTheme={
+              chain === Chain.Ethereum
+                ? ethereumLightTheme
+                : avalancheLightTheme
+            }
+          >
+            <AppProviders>
+              <EvmBalancesProvider>{children}</EvmBalancesProvider>
+            </AppProviders>
+          </ThemeProvider>
         </EvmAccountProvider>
       </EvmNetworkProvider>
     </EvmWalletProvider>

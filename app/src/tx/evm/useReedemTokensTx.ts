@@ -4,8 +4,8 @@ import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
 import { useTx } from './useTx';
 import { useCallback } from 'react';
-import { RedemptionPayload } from '@anchor-protocol/crossanchor-sdk/lib/esm/crossanchor/base/wormhole';
 import { ContractReceipt } from '@ethersproject/contracts';
+import { RedemptionPayload } from '@anchor-protocol/crossanchor-sdk';
 
 type TxResult = ContractReceipt | null;
 type TxRender = TxResultRendering<TxResult>;
