@@ -80,11 +80,6 @@ const Loading = () => {
   );
 };
 
-// interface URLParams {
-//   chainId: string;
-//   sequence: string;
-// }
-
 function RedeemBase(props: UIElementProps) {
   const { className } = props;
 
