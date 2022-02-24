@@ -31,7 +31,9 @@ export function useBorrowUstTx():
         (event) => {
           console.log(event, 'eventEmitted');
 
-          renderTxResults.next(txResult(event, connectType));
+          renderTxResults.next(
+            txResult(event, connectType, 'ethereum', 'borrow'),
+          );
         },
       );
     },

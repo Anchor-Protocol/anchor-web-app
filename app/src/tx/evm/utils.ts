@@ -1,4 +1,5 @@
 import {
+  Chain,
   CrossChainEvent,
   CrossChainEventKind,
 } from '@anchor-protocol/crossanchor-sdk';
@@ -20,39 +21,51 @@ export function toWei(value: BigNumberish): string {
   return parseUnits(String(value), decimals).toString();
 }
 
-export const txResult = (event: CrossChainEvent, connnectType: ConnectType) => {
+export const txResult = (
+  event: CrossChainEvent,
+  connnectType: ConnectType,
+  chain: Chain,
+  action: string,
+) => {
   return {
     value: null,
-    message: txResultMessage(event, connnectType),
+    message: txResultMessage(event, connnectType, chain, action),
     phase: TxStreamPhase.BROADCAST,
     receipts: [],
   };
 };
 
-const txResultMessage = (event: CrossChainEvent, connnectType: ConnectType) => {
+const txResultMessage = (
+  event: CrossChainEvent,
+  connnectType: ConnectType,
+  chain: Chain,
+  action: string,
+) => {
   switch (event.kind) {
     case CrossChainEventKind.CrossChainTxCompleted:
-      return 'Cross chain transaction completed.';
+      return `Cross chain transaction completed.`;
     case CrossChainEventKind.RemoteChainTxRequested:
-      return `Deposit requested. ${capitalize(
+      return `${capitalize(action)} requested. ${capitalize(
         connnectType,
-      )} notification should appear soon.`;
+      )} notification should appear soon...`;
     case CrossChainEventKind.RemoteChainTxExecuted:
-      return 'Ethereum transaction successful, waiting for Wormhole bridge...';
+      return `${capitalize(
+        chain,
+      )} transaction successful, waiting for Wormhole bridge...`;
     case CrossChainEventKind.RemoteChainWormholeEntered:
-      return 'Entering Wormhole bridge on Ethereum...';
+      return `Entering Wormhole bridge on ${capitalize(chain)}...`;
     case CrossChainEventKind.TerraWormholeEntered:
-      return 'Exiting Wormhole bridge on Ethereum, entering Terra...';
+      return `Entering Terra, executing ${action} action...`;
     case CrossChainEventKind.TerraWormholeExited:
-      return 'Terra action executed, exiting Wormhole bridge on Terra...';
+      return `Terra action executed, exiting Wormhole bridge on Terra...`;
     case CrossChainEventKind.RemoteChainTxSubmitted:
-      return 'Waiting for deposit transaction on Ethereum...';
+      return `Waiting for ${action} transaction on ${capitalize(chain)}...`;
     case CrossChainEventKind.RemoteChainApprovalRequested:
       return `Allowance requested. ${capitalize(
         connnectType,
-      )} notification should appear soon.`;
+      )} notification should appear soon...`;
     case CrossChainEventKind.RemoteChainApprovalSubmitted:
-      return 'Waiting for approval transaction on Ethereum...';
+      return `Waiting for approval transaction on ${capitalize(chain)}...`;
   }
 };
 

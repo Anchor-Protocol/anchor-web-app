@@ -25,7 +25,9 @@ export function useClaimRewardsTx():
       return ethSdk.claimRewards(address!, TX_GAS_LIMIT, (event) => {
         console.log(event, 'eventEmitted');
 
-        renderTxResults.next(txResult(event, connectType));
+        renderTxResults.next(
+          txResult(event, connectType, 'ethereum', 'claim rewards'),
+        );
       });
     },
     [address, connectType, ethSdk],

@@ -39,7 +39,9 @@ export function useWithdrawCollateralTx():
         (event) => {
           console.log(event, 'eventEmitted');
 
-          renderTxResults.next(txResult(event, connectType));
+          renderTxResults.next(
+            txResult(event, connectType, 'ethereum', 'withdraw'),
+          );
         },
       );
     },
