@@ -2,12 +2,12 @@ import { StreamReturn } from '@rx-stream/react';
 import { useEthCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
-import { useTx } from './useTx';
 import { toWei, txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { ContractReceipt } from 'ethers';
 import { CrossChainTxResponse } from '@anchor-protocol/crossanchor-sdk';
+import { useRedeemableTx } from './useRedeemableTx';
 
 type TxResult = CrossChainTxResponse<ContractReceipt> | null;
 type TxRender = TxResultRendering<TxResult>;
@@ -40,7 +40,7 @@ export function useDepositUstTx():
     [address, connectType, ethSdk],
   );
 
-  const depositTxStream = useTx(depositTx, (resp) => resp.tx, null);
+  const depositTxStream = useRedeemableTx(depositTx, (resp) => resp.tx, null);
 
   return connection && address ? depositTxStream : [null, null];
 }

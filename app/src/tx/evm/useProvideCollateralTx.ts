@@ -2,7 +2,6 @@ import { StreamReturn } from '@rx-stream/react';
 import { useEthCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
-import { useTx } from './useTx';
 import { toWei, txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
@@ -11,6 +10,7 @@ import {
   CrossChainTxResponse,
 } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from '@ethersproject/contracts';
+import { useRedeemableTx } from './useRedeemableTx';
 
 type TxResult = CrossChainTxResponse<ContractReceipt> | null;
 type TxRender = TxResultRendering<TxResult>;
@@ -47,7 +47,7 @@ export function useProvideCollateralTx():
     [ethSdk, address, connectType],
   );
 
-  const provideTxStream = useTx(provideTx, (resp) => resp.tx, null);
+  const provideTxStream = useRedeemableTx(provideTx, (resp) => resp.tx, null);
 
   return connection && address ? provideTxStream : [null, null];
 }

@@ -2,12 +2,12 @@ import { StreamReturn } from '@rx-stream/react';
 import { useEthCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
-import { useTx } from './useTx';
 import { txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { ContractReceipt } from 'ethers';
 import { CrossChainTxResponse } from '@anchor-protocol/crossanchor-sdk';
+import { useRedeemableTx } from './useRedeemableTx';
 
 type TxResult = CrossChainTxResponse<ContractReceipt> | null;
 type TxRender = TxResultRendering<TxResult>;
@@ -33,7 +33,11 @@ export function useClaimRewardsTx():
     [address, connectType, ethSdk],
   );
 
-  const claimRewardsStream = useTx(claimRewards, (resp) => resp.tx, null);
+  const claimRewardsStream = useRedeemableTx(
+    claimRewards,
+    (resp) => resp.tx,
+    null,
+  );
 
   return connection && address ? claimRewardsStream : [null, null];
 }
