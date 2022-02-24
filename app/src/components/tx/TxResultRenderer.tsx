@@ -18,7 +18,10 @@ export function TxResultRenderer({
   resultRendering,
   onExit,
 }: TxResultRendererProps) {
-  const { dimTextColor } = useTheme();
+  const {
+    dimTextColor,
+    colors: { primary },
+  } = useTheme();
 
   switch (resultRendering.phase) {
     case TxStreamPhase.POST:
@@ -42,7 +45,7 @@ export function TxResultRenderer({
         <Layout>
           <article>
             <figure data-state={resultRendering.phase}>
-              <GuardSpinner />
+              <GuardSpinner frontColor={primary} />
             </figure>
 
             <h2>
