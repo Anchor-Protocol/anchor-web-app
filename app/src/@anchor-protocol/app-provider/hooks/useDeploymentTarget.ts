@@ -1,7 +1,26 @@
 export enum Chain {
   Terra = 'terra',
   Ethereum = 'ethereum',
+  Avalanche = 'avalanche',
 }
+
+const DEPLOYMENT_OPTIONS = {
+  [Chain.Terra]: {
+    chain: Chain.Terra,
+    isNative: true,
+    isEVM: false,
+  },
+  [Chain.Ethereum]: {
+    chain: Chain.Ethereum,
+    isNative: false,
+    isEVM: true,
+  },
+  [Chain.Avalanche]: {
+    chain: Chain.Avalanche,
+    isNative: false,
+    isEVM: true,
+  },
+};
 
 export interface DeploymentOptions {
   chain: Chain;
@@ -10,18 +29,7 @@ export interface DeploymentOptions {
 }
 
 const useDeploymentTarget = (): DeploymentOptions => {
-  // TODO: this probably needs to be updated from the env variables or from
-  // a UI option that allows switching the chain
-  // return {
-  //   chain: Chain.Terra,
-  //   isNative: true,
-  //   isEVM: false,
-  // };
-  return {
-    chain: Chain.Ethereum,
-    isNative: false,
-    isEVM: true,
-  };
+  return DEPLOYMENT_OPTIONS[Chain.Ethereum];
 };
 
 export { useDeploymentTarget };

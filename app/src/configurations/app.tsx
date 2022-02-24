@@ -13,7 +13,6 @@ import { captureException } from '@sentry/react';
 import { useRequestReloadDialog } from 'components/dialogs/useRequestReloadDialog';
 import { SnackbarContainer } from 'components/SnackbarContainer';
 import { NotificationProvider } from 'contexts/notification';
-import { ThemeProvider } from 'contexts/theme';
 import {
   ANCHOR_CONSTANTS,
   ANCHOR_CONTRACT_ADDRESS,
@@ -48,18 +47,11 @@ function Providers({ children }: { children: ReactNode }) {
           <AnchorWebappProvider
             indexerApiEndpoints={ANCHOR_INDEXER_API_ENDPOINTS}
           >
-            {/** Theme Providing to Styled-Components and Material-UI */}
-            <ThemeProvider initialTheme="light">
-              {/** Snackbar Provider :: useSnackbar() */}
-              <SnackbarProvider>
-                <NotificationProvider>
-                  <JobsProvider>
-                    {/** Application Layout */}
-                    {children}
-                  </JobsProvider>
-                </NotificationProvider>
-              </SnackbarProvider>
-            </ThemeProvider>
+            <SnackbarProvider>
+              <NotificationProvider>
+                <JobsProvider>{children}</JobsProvider>
+              </NotificationProvider>
+            </SnackbarProvider>
           </AnchorWebappProvider>
         </AppProvider>
       </QueryClientProvider>

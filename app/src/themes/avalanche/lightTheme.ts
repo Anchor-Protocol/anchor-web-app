@@ -1,6 +1,6 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 import type { DefaultTheme } from 'styled-components';
-import { muiThemeBase } from '../muiThemeBase';
+import { muiThemeBase } from '@libs/neumorphism-ui/themes/muiThemeBase';
 
 /* eslint-disable */
 const PRIMARY_1000 = '#48386A';
@@ -36,7 +36,7 @@ const BLACK = '#000000';
 const WHITE = '#FFFFFF';
 /* eslint-enable */
 
-export const darkTheme: DefaultTheme = {
+export const lightTheme: DefaultTheme = {
   ...createMuiTheme({
     ...muiThemeBase,
 
@@ -162,7 +162,7 @@ export const darkTheme: DefaultTheme = {
 
   tooltip: {
     normal: {
-      backgroundColor: '#94f3b8',
+      backgroundColor: PRIMARY_200,
       textColor: '#1f1f1f',
     },
     warning: {

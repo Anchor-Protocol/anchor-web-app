@@ -1,6 +1,6 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 import type { DefaultTheme } from 'styled-components';
-import { muiThemeBase } from '../muiThemeBase';
+import { muiThemeBase } from '@libs/neumorphism-ui/themes/muiThemeBase';
 
 /* eslint-disable */
 const PRIMARY_1000 = '#48386A';

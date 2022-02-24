@@ -29,7 +29,7 @@ function FooterBase({ className, style }: FooterProps) {
   const network = useNetwork();
   const { data: lastSyncedHeight = 0 } = useLastSyncedHeightQuery();
 
-  const { themeColor, updateTheme } = useTheme();
+  const { themeColor, switchable, updateTheme } = useTheme();
 
   return (
     <footer className={className} style={style}>
@@ -85,11 +85,15 @@ function FooterBase({ className, style }: FooterProps) {
         >
           <GitHub />
         </IconButton>
-        <IconButton
-          onClick={() => updateTheme(themeColor === 'light' ? 'dark' : 'light')}
-        >
-          {themeColor === 'light' ? <Brightness5 /> : <Brightness3 />}
-        </IconButton>
+        {switchable && (
+          <IconButton
+            onClick={() =>
+              updateTheme(themeColor === 'light' ? 'dark' : 'light')
+            }
+          >
+            {themeColor === 'light' ? <Brightness5 /> : <Brightness3 />}
+          </IconButton>
+        )}
       </div>
     </footer>
   );

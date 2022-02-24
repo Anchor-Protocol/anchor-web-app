@@ -4,9 +4,11 @@ import React, { FunctionComponent, ReactNode } from 'react';
 interface DeploymentSwitchProps {
   terra: FunctionComponent | ReactNode;
   ethereum: FunctionComponent | ReactNode;
+  avalanche?: FunctionComponent | ReactNode;
 }
 
-export function DeploymentSwitch({ terra, ethereum }: DeploymentSwitchProps) {
+export function DeploymentSwitch(props: DeploymentSwitchProps) {
+  const { terra, ethereum, avalanche } = props;
   const { chain } = useDeploymentTarget();
   let content: ReactNode;
 
@@ -16,6 +18,9 @@ export function DeploymentSwitch({ terra, ethereum }: DeploymentSwitchProps) {
       break;
     case Chain.Ethereum:
       content = ethereum;
+      break;
+    case Chain.Avalanche:
+      content = avalanche ?? ethereum;
       break;
     default:
       content = <></>;

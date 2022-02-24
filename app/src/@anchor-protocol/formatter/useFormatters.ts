@@ -47,20 +47,26 @@ const createFormatter = <T>(
 const useFormatters = (): Formatters => {
   const { chain } = useDeploymentTarget();
   return useMemo<Formatters>(() => {
+    const tokens = {
+      ust: createFormatter<UST>('UST', 6),
+      aUST: createFormatter<aUST>('aUST', 6),
+      anc: createFormatter<ANC>('ANC', 6),
+    };
     switch (chain) {
       case Chain.Terra:
         return {
+          ...tokens,
           native: createFormatter<Native>('LUNA', 6),
-          ust: createFormatter<UST>('UST', 6),
-          aUST: createFormatter<aUST>('aUST', 6),
-          anc: createFormatter<ANC>('ANC', 6),
         };
       case Chain.Ethereum:
         return {
+          ...tokens,
           native: createFormatter<Native>('ETH', 18),
-          ust: createFormatter<UST>('UST', 6),
-          aUST: createFormatter<aUST>('aUST', 6),
-          anc: createFormatter<ANC>('ANC', 6),
+        };
+      case Chain.Avalanche:
+        return {
+          ...tokens,
+          native: createFormatter<Native>('AVAX', 18),
         };
     }
   }, [chain]);

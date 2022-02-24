@@ -12,6 +12,8 @@ import { AppProviders } from 'configurations/app';
 import { TerraAccountProvider } from './TerraAccountProvider';
 import { TerraBalancesProvider } from './TerraBalancesProvider';
 import { TerraNetworkProvider } from './TerraNetworkProvider';
+import { ThemeProvider } from 'contexts/theme';
+import { lightTheme, darkTheme } from 'themes/terra';
 
 export function TerraAppProviders({
   children,
@@ -41,8 +43,14 @@ export function TerraAppProviders({
         <TerraAccountProvider>
           <AppProviders dialogs={readonlyWalletSelectorElement}>
             <TerraBalancesProvider>
-              <RouterWalletStatusRecheck />
-              {children}
+              <ThemeProvider
+                initialTheme="light"
+                lightTheme={lightTheme}
+                darkTheme={darkTheme}
+              >
+                <RouterWalletStatusRecheck />
+                {children}
+              </ThemeProvider>
             </TerraBalancesProvider>
           </AppProviders>
         </TerraAccountProvider>

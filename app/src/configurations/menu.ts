@@ -1,4 +1,4 @@
-import { useDeploymentTarget, Chain } from '@anchor-protocol/app-provider';
+import { useDeploymentTarget } from '@anchor-protocol/app-provider';
 import { useMemo } from 'react';
 
 export interface RouteMenu {
@@ -37,16 +37,13 @@ const govern: RouteMenu = {
 };
 
 const useMenus = (): RouteMenu[] => {
-  const { chain } = useDeploymentTarget();
+  const { isEVM } = useDeploymentTarget();
   return useMemo(() => {
-    switch (chain) {
-      case Chain.Terra:
-        return [dashboard, myPage, earn, borrow, bAsset, govern];
-      case Chain.Ethereum:
-        //return [dashboard, myPage, earn, borrow];
-        return [dashboard, myPage, earn];
+    if (isEVM) {
+      return [dashboard, myPage, earn];
     }
-  }, [chain]);
+    return [dashboard, myPage, earn, borrow, bAsset, govern];
+  }, [isEVM]);
 };
 
 export { useMenus };

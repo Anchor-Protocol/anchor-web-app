@@ -1,6 +1,6 @@
+import { muiThemeBase } from '@libs/neumorphism-ui/themes/muiThemeBase';
 import { createMuiTheme } from '@material-ui/core/styles';
 import type { DefaultTheme } from 'styled-components';
-import { muiThemeBase } from '../muiThemeBase';
 
 export const lightTheme: DefaultTheme = {
   ...createMuiTheme({
