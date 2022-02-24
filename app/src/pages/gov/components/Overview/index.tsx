@@ -29,7 +29,7 @@ import { Sub } from 'components/Sub';
 import { screen } from 'env';
 import { ancGovernancePathname, ancUstLpPathname } from 'pages/trade/env';
 import React, { useMemo } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 export interface OverviewProps {
@@ -46,7 +46,7 @@ function OverviewBase({ className }: OverviewProps) {
   const { data: { anchorLpRewards: apyLPRewards } = {} } =
     useRewardsAnchorLpRewardsQuery();
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const { data: { ancTokenInfo } = {} } = useAncTokenInfoQuery();
   const { data: { ancBalance: govANCBalance } = {} } = useAncBalanceQuery(
@@ -218,7 +218,7 @@ function OverviewBase({ className }: OverviewProps) {
       </Section>
       <Section
         className="lp"
-        onClick={() => history.push(`/${ancUstLpPathname}/provide`)}
+        onClick={() => navigate(`/${ancUstLpPathname}/provide`)}
       >
         <Circles backgroundColors={['#ffffff', '#2C2C2C']}>
           <TokenIcon token="ust" style={{ fontSize: '1.1em' }} />

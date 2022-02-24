@@ -24,7 +24,7 @@ import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useAccount } from 'contexts/account';
 import { MINIMUM_CLAIM_BALANCE } from 'pages/trade/env';
 import React, { useCallback, useMemo } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 export interface ClaimAncUstLpProps {
@@ -41,7 +41,7 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
 
   const [claim, claimResult] = useRewardsAncUstLpClaimTx();
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   // ---------------------------------------------
   // queries
@@ -94,7 +94,7 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
   ) {
     const onExit =
       claimResult.status === StreamStatus.DONE
-        ? () => history.push('/mypage')
+        ? () => navigate('/mypage')
         : () => {};
 
     return (

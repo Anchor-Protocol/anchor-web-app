@@ -4,11 +4,13 @@ import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
 import { Airdrop } from 'pages/airdrop';
 import { Claim as AncVestingClaim } from 'pages/anc/vesting';
-import { BlunaConvert } from 'pages/basset/bluna.convert';
+import { BlunaConvert, BLunaMint, BLunaBurn } from 'pages/basset/bluna.convert';
 import { BlunaWithdraw } from 'pages/basset/bluna.withdraw';
 import { BAssetClaim } from 'pages/basset/claim';
 import { BAssetMain } from 'pages/basset/main';
 import { WormholeConvert } from 'pages/basset/wh.convert';
+import { WormholeConvertToBAsset } from 'pages/basset/wh.convert.to-basset';
+import { WormholeConvertToWBAsset } from 'pages/basset/wh.convert.to-wbasset';
 import { Borrow } from 'pages/borrow';
 import { Dashboard } from 'pages/dashboard';
 import { Earn } from 'pages/earn';
@@ -37,7 +39,7 @@ import { RewardsAncUstLp } from 'pages/trade/rewards.anc-ust-lp';
 import { Trade } from 'pages/trade/trade';
 import { TerraAppProviders } from 'providers/terra/TerraAppProviders';
 import React from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import '../configurations/chartjs';
 
 export function TerraApp() {
@@ -50,96 +52,92 @@ export function TerraApp() {
           <GlobalStyle />
           <Header />
           <AstroportGuideBanner />
-          <Switch>
-            {/* Dashboard */}
-            <Route path="/" exact component={Dashboard} />
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
 
-            {/* Earn */}
-            <Route path="/earn" component={Earn} />
+            <Route path="/earn" element={<Earn />} />
 
-            {/* Borrow */}
-            <Route path="/borrow" component={Borrow} />
+            <Route path="/borrow" element={<Borrow />} />
 
-            {/* bAsset */}
-            <Route exact path="/basset" component={BAssetMain} />
+            <Route path="/basset" element={<BAssetMain />} />
 
-            <Route path="/basset/bluna" component={BlunaConvert} />
+            <Route path="/basset/bluna" element={<BlunaConvert />}>
+              <Route path="" element={<Navigate to="mint" />} />
+              <Route path="mint" element={<BLunaMint />} />
+              <Route path="burnt" element={<BLunaBurn />} />
+              <Route path="*" element={<Navigate to="mint" />} />
+            </Route>
 
-            <Route path="/basset/withdraw" component={BlunaWithdraw} />
+            <Route path="/basset/withdraw" element={<BlunaWithdraw />} />
 
-            <Route path="/basset/claim" component={BAssetClaim} />
+            <Route path="/basset/claim" element={<BAssetClaim />} />
 
-            <Route path="/basset/wh/:tokenSymbol" component={WormholeConvert} />
+            <Route path="/basset/wh/:tokenSymbol" element={<WormholeConvert />}>
+              <Route path="" element={<Navigate to="to-basset" />} />
+              <Route path="to-basset" element={<WormholeConvertToBAsset />} />
+              <Route path="to-wbasset" element={<WormholeConvertToWBAsset />} />
+              <Route path="*" element={<Navigate to="to-basset" />} />
+            </Route>
 
-            {/* Airdrop */}
-            <Route path="/airdrop" component={Airdrop} />
+            <Route path="/airdrop" element={<Airdrop />} />
 
-            <Route
-              exact={true}
-              path={`/anc/vesting/claim`}
-              component={AncVestingClaim}
-            />
+            <Route path={`/anc/vesting/claim`} element={<AncVestingClaim />} />
 
-            {/* Governance */}
-            <Route exact path={`/gov/`} component={GovernanceMain} />
+            <Route path={`/gov/`} element={<GovernanceMain />} />
 
-            {/* Poll */}
-            <Route exact path={`/poll/create`} component={PollCreate} />
+            <Route path={`/poll/create`} element={<PollCreate />} />
             <Route
               path={`/poll/create/modify-anc-distribution`}
-              component={PollCreateModifyANCDistribution}
+              element={<PollCreateModifyANCDistribution />}
             />
             <Route
               path={`/poll/create/modify-borrow-interest`}
-              component={PollCreateModifyBorrowInterest}
+              element={<PollCreateModifyBorrowInterest />}
             />
             <Route
               path={`/poll/create/modify-collateral-attribute`}
-              component={PollCreateModifyCollateralAttribute}
+              element={<PollCreateModifyCollateralAttribute />}
             />
             <Route
               path={`/poll/create/modify-market-parameters`}
-              component={PollCreateModifyMarketParameters}
+              element={<PollCreateModifyMarketParameters />}
             />
             <Route
               path={`/poll/create/spend-community-pool`}
-              component={PollCreateSpendCommunityPool}
+              element={<PollCreateSpendCommunityPool />}
             />
             <Route
               path={`/poll/create/text-proposal`}
-              component={PollCreateTextProposal}
+              element={<PollCreateTextProposal />}
             />
             <Route
               path={`/poll/create/register-collateral-attributes`}
-              component={PollCreateRegisterCollateralAttributes}
+              element={<PollCreateRegisterCollateralAttributes />}
             />
-            <Route path={`/poll/:id`} component={PollDetail} />
-
-            {/* Trade */}
-            <Route path={`/trade`} component={Trade} />
-            <Route path={`/${ancUstLpPathname}`} component={RewardsAncUstLp} />
+            <Route path={`/poll/:id`} element={<PollDetail />} />
+            <Route path={`/trade`} element={<Trade />} />
+            <Route
+              path={`/${ancUstLpPathname}`}
+              element={<RewardsAncUstLp />}
+            />
             <Route
               path={`/${ancGovernancePathname}`}
-              component={RewardsAncGovernance}
+              element={<RewardsAncGovernance />}
             />
-            <Route path={`/claim/all`} component={ClaimAll} />
+            <Route path={`/claim/all`} element={ClaimAll} />
             <Route
               path={`/claim/${ancUstLpPathname}`}
-              component={ClaimAncUstLp}
+              element={<ClaimAncUstLp />}
             />
             <Route
               path={`/claim/${ustBorrowPathname}`}
-              component={ClaimUstBorrow}
+              element={<ClaimUstBorrow />}
             />
+            <Route path="/mypage" element={<Mypage />} />
+            <Route path="/terms" element={<TermsOfService />} />
 
-            {/* Mypage */}
-            <Route path="/mypage" component={Mypage} />
-
-            {/* TOS */}
-            <Route path="/terms" component={TermsOfService} />
-
-            <Redirect to="/" />
-          </Switch>
+            <Route element={<Navigate to="/" replace />} />
+          </Routes>
         </div>
       </TerraAppProviders>
     )

@@ -36,7 +36,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { validateLinkAddress } from '../logics/validateLinkAddress';
 import { FormLayout } from './FormLayout';
 
@@ -60,7 +60,7 @@ export function PollCreateBase({
 
   const fixedFee = useFixedFee();
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [createPoll, createPollResult] = useGovCreatePollTx();
 
@@ -112,8 +112,8 @@ export function PollCreateBase({
   // callbacks
   // ---------------------------------------------
   const goToGov = useCallback(() => {
-    history.push('/gov');
-  }, [history]);
+    navigate('/gov');
+  }, [navigate]);
 
   const submit = useCallback(
     (

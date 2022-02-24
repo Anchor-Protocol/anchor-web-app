@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Rate } from '@anchor-protocol/types';
 import { useAnchorWebapp } from '@anchor-protocol/app-provider';
 import { formatRate } from '@libs/formatter';
@@ -18,7 +18,7 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
   const { terraWalletAddress } = useAccount();
   const { permission, create } = useNotification();
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const jobCallback = useCallback(async () => {
     if (!terraWalletAddress || permission !== 'granted') {
@@ -43,7 +43,7 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
 
         if (notification) {
           const click = () => {
-            history.push('/borrow');
+            navigate('/borrow');
           };
 
           notification.addEventListener('click', click);
@@ -57,10 +57,10 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
   }, [
     address,
     create,
-    history,
     hiveQueryClient,
     permission,
     ratio,
+    navigate,
     terraWalletAddress,
   ]);
 

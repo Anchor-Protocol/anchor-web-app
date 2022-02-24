@@ -23,7 +23,7 @@ import { useAccount } from 'contexts/account';
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import { MINIMUM_CLAIM_BALANCE } from 'pages/trade/env';
 import React, { useCallback, useMemo } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 export interface ClaimUstBorrowProps {
@@ -40,7 +40,7 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
 
   const [claim, claimResult] = useRewardsUstBorrowClaimTx();
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   // ---------------------------------------------
   // queries
@@ -85,7 +85,7 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
   ) {
     const onExit =
       claimResult.status === StreamStatus.DONE
-        ? () => history.push('/mypage')
+        ? () => navigate('/mypage')
         : () => {};
 
     return (

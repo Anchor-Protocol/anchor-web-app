@@ -105,6 +105,7 @@ export const EMPTY_QUERY_RESULT: UseQueryResult<undefined> = {
   isPlaceholderData: false,
   isPreviousData: false,
   isFetching: false,
+  isRefetching: false,
   isRefetchError: false,
   isSuccess: true,
   isStale: false,

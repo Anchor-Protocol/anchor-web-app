@@ -2,7 +2,7 @@ import { DeploymentSwitch } from 'components/layouts/DeploymentSwitch';
 import { useMenus, RouteMenu } from 'configurations/menu';
 import { screen } from 'env';
 import React from 'react';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link, useMatch } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
 import logoUrl from './assets/Logo.svg';
 import { DesktopNotification } from './desktop/DesktopNotification';
@@ -48,10 +48,9 @@ function DesktopHeaderBase({ className }: DesktopHeaderProps) {
   );
 }
 
-function NavMenu({ to, exact, title }: RouteMenu) {
-  const match = useRouteMatch({
+function NavMenu({ to, title }: RouteMenu) {
+  const match = useMatch({
     path: to,
-    exact,
   });
 
   return (

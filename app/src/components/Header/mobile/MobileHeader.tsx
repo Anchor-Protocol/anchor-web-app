@@ -3,7 +3,7 @@ import { IconToggleButton } from '@libs/neumorphism-ui/components/IconToggleButt
 import { useMenus, RouteMenu } from 'configurations/menu';
 import { mobileHeaderHeight } from 'env';
 import React, { ReactNode } from 'react';
-import { NavLink, useRouteMatch } from 'react-router-dom';
+import { NavLink, useMatch } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 import logoUrl from '../assets/Logo.svg';
 
@@ -88,20 +88,18 @@ function MobileHeaderBase({
 
 function NavMenu({
   to,
-  exact,
   title,
   close,
 }: RouteMenu & {
   close: () => void;
 }) {
-  const match = useRouteMatch({
+  const match = useMatch({
     path: to,
-    exact,
   });
 
   return (
     <div data-active={!!match}>
-      <NavLink to={to} exact={exact} onClick={close}>
+      <NavLink to={to} onClick={close}>
         {title}
       </NavLink>
     </div>

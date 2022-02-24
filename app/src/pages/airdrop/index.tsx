@@ -24,7 +24,7 @@ import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useAccount } from 'contexts/account';
 import React, { useCallback, useMemo } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { SwishSpinner } from 'react-spinners-kit';
 import styled from 'styled-components';
 
@@ -41,7 +41,7 @@ function AirdropBase({ className }: AirdropProps) {
   // ---------------------------------------------
   const { availablePost, connected } = useAccount();
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const { data: airdrop, isLoading } = useAirdropCheckQuery();
 
@@ -62,8 +62,8 @@ function AirdropBase({ className }: AirdropProps) {
   );
 
   const exit = useCallback(() => {
-    history.push('/earn');
-  }, [history]);
+    navigate('/earn');
+  }, [navigate]);
 
   const proceed = useCallback(
     (airdrop: AirdropData) => {

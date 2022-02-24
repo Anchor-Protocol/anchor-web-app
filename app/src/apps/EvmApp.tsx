@@ -2,7 +2,7 @@ import React from 'react';
 import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
 import { Dashboard } from 'pages/dashboard';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import { EvmAppProviders } from 'providers/evm/EvmAppProviders';
 import { Earn } from 'pages/earn';
 import { TermsOfService } from 'pages/terms';
@@ -17,15 +17,15 @@ export function EvmApp() {
       <div>
         <GlobalStyle />
         <Header />
-        <Switch>
-          <Route path="/" exact component={Dashboard} />
-          <Route path="/earn" component={Earn} />
-          <Route path="/mypage" component={Mypage} />
-          <Route path="/terms" component={TermsOfService} />
-          <Route path="/bridge/redeem/:sequence" component={Redeem} />
-          <Route path={`/claim/all`} component={ClaimAll} />
-          <Redirect to="/" />
-        </Switch>
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/earn" element={<Earn />} />
+          <Route path="/mypage" element={<Mypage />} />
+          <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/bridge/redeem/:sequence" element={<Redeem />} />
+          <Route path={`/claim/all`} element={<ClaimAll />} />
+          <Route element={<Navigate to="/" replace />} />
+        </Routes>
       </div>
     </EvmAppProviders>
   );

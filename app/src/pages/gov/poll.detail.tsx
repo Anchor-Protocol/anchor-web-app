@@ -36,17 +36,16 @@ import { usePollVoteDialog } from 'pages/gov/components/usePollVoteDialog';
 import { extractPollDetail } from 'pages/gov/logics/extractPollDetail';
 import { isLinkHttp } from 'pages/gov/logics/isLinkHttp';
 import React, { useMemo } from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import { UIElementProps } from '@libs/ui';
 
-export interface PollDetailProps extends RouteComponentProps<{ id: string }> {
-  className?: string;
-}
-
-function PollDetailBase({ className, match }: PollDetailProps) {
+function PollDetailBase({ className }: UIElementProps) {
   const { contractAddress } = useAnchorWebapp();
 
-  const { data: { poll } = {} } = useGovPollQuery(+match.params.id);
+  const { id = '0' } = useParams();
+
+  const { data: { poll } = {} } = useGovPollQuery(+id);
 
   if (poll?.id === 11) {
     poll.link =
@@ -112,7 +111,7 @@ function PollDetailBase({ className, match }: PollDetailProps) {
               poll.status !== 'in_progress' ||
               poll.end_height < lastSyncedHeight
             }
-            onClick={() => openVoteDialog({ pollId: +match.params.id })}
+            onClick={() => openVoteDialog({ pollId: +id })}
           >
             Vote
           </ActionButton>

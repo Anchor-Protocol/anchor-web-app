@@ -80,17 +80,18 @@ const Loading = () => {
   );
 };
 
-interface URLParams {
-  chainId: string;
-  sequence: string;
-}
+// interface URLParams {
+//   chainId: string;
+//   sequence: string;
+// }
 
 function RedeemBase(props: UIElementProps) {
   const { className } = props;
 
+  const { sequence = '' } = useParams();
+
   const { connected } = useAccount();
 
-  const { sequence = '' } = useParams<URLParams>();
   const { redemptionPayload, loading } = useRedemptionPayload(Number(sequence));
   const [redeemTokens, redeemTxResult] = useRedeemTokensTx(redemptionPayload);
 

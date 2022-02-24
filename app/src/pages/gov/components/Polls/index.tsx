@@ -16,7 +16,7 @@ import { links } from 'env';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
 import { SubHeader } from 'pages/gov/components/SubHeader';
 import React, { ChangeEvent, useCallback, useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { Grid as GridView } from './Grid';
 import { List as ListView } from './List';
@@ -38,7 +38,7 @@ const options: Item[] = [
 ];
 
 function PollsBase({ className }: PollsProps) {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const { contractAddress } = useAnchorWebapp();
 
@@ -61,9 +61,9 @@ function PollsBase({ className }: PollsProps) {
 
   const onPollClick = useCallback(
     (poll: anchorToken.gov.PollResponse) => {
-      history.push(`/poll/${poll.id}`);
+      navigate(`/poll/${poll.id}`);
     },
-    [history],
+    [navigate],
   );
 
   return (

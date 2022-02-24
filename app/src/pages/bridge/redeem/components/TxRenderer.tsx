@@ -2,7 +2,7 @@ import React from 'react';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { UIElementProps } from 'components/layouts/UIElementProps';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { StreamStatus, StreamInProgress, StreamDone } from '@rx-stream/react';
 import { TxResultRendering } from '@libs/app-fns';
@@ -16,11 +16,11 @@ interface LoadingProps extends UIElementProps {
 function TxRendering(props: LoadingProps) {
   const { className, txResult } = props;
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const onExit =
     txResult.status === StreamStatus.DONE
-      ? () => history.push('/mypage')
+      ? () => navigate('/mypage')
       : () => {};
 
   return (

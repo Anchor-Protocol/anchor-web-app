@@ -13,11 +13,11 @@ import { AncUstLpWithdraw } from 'pages/trade/components/AncUstLpWithdraw';
 import { ancUstLpPathname } from 'pages/trade/env';
 import React, { ReactNode, useCallback, useMemo } from 'react';
 import {
-  Redirect,
+  Navigate,
   Route,
-  Switch,
-  useHistory,
-  useRouteMatch,
+  Routes,
+  useNavigate,
+  useMatch,
 } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -64,11 +64,9 @@ const stakeItems: Item[] = [
 ];
 
 function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
-  const history = useHistory();
+  const navigate = useNavigate();
 
-  const pageMatch = useRouteMatch<{ view: string }>(
-    `/${ancUstLpPathname}/:view`,
-  );
+  const pageMatch = useMatch(`/${ancUstLpPathname}/:view`);
 
   const tab = useMemo<Item | undefined>(() => {
     switch (pageMatch?.params.view) {
@@ -83,14 +81,13 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
 
   const tabChange = useCallback(
     (nextTab: Item) => {
-      history.push({
-        pathname:
-          nextTab.value === 'stake'
-            ? `/${ancUstLpPathname}/stake`
-            : `/${ancUstLpPathname}/provide`,
-      });
+      navigate(
+        nextTab.value === 'stake'
+          ? `/${ancUstLpPathname}/stake`
+          : `/${ancUstLpPathname}/provide`,
+      );
     },
-    [history],
+    [navigate],
   );
 
   const subTab = useMemo<Item | undefined>(() => {
@@ -108,11 +105,9 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
 
   const subTabChange = useCallback(
     (nextTab: Item) => {
-      history.push({
-        pathname: `/${ancUstLpPathname}/${nextTab.value}`,
-      });
+      navigate(`/${ancUstLpPathname}/${nextTab.value}`);
     },
-    [history],
+    [navigate],
   );
 
   return (
@@ -156,33 +151,32 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
         <div className="form">
           {tab?.value === 'stake' && <AncUstLpStakeOverview />}
 
-          <Switch>
+          <Routes>
             <Route
               path={`/${ancUstLpPathname}/provide`}
-              component={AncUstLpProvide}
+              element={AncUstLpProvide}
             />
             <Route
               path={`/${ancUstLpPathname}/withdraw`}
-              component={AncUstLpWithdraw}
+              element={AncUstLpWithdraw}
             />
             <Route
               path={`/${ancUstLpPathname}/stake`}
-              component={AncUstLpStake}
+              element={AncUstLpStake}
             />
             <Route
               path={`/${ancUstLpPathname}/unstake`}
-              component={AncUstLpUnstake}
+              element={AncUstLpUnstake}
             />
-            <Redirect
-              exact
+            <Route
               path={`/${ancUstLpPathname}`}
-              to={`/${ancUstLpPathname}/provide`}
+              element={<Navigate to={`/${ancUstLpPathname}/provide`} />}
             />
-            <Redirect
+            <Route
               path={`/${ancUstLpPathname}/*`}
-              to={`/${ancUstLpPathname}/provide`}
+              element={<Navigate to={`/${ancUstLpPathname}/provide`} />}
             />
-          </Switch>
+          </Routes>
         </div>
       </Section>
     </CenteredLayout>

@@ -2,7 +2,7 @@ import { IconButton } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
 import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
 import React, { useCallback, useState } from 'react';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link, useMatch } from 'react-router-dom';
 import styled from 'styled-components';
 import { UIElementProps } from 'components/layouts/UIElementProps';
 import errorImage from '../assets/error.svg';
@@ -16,7 +16,7 @@ type VestingClaimNotificationReturn = [JSX.Element | undefined, () => void];
 export function useVestingClaimNotification(): VestingClaimNotificationReturn {
   const { data: { vestingAccount } = {} } = useAncVestingAccountQuery();
 
-  const matchAncVestingClaim = useRouteMatch('/anc/vesting/claim');
+  const matchAncVestingClaim = useMatch('/anc/vesting/claim');
 
   const [open, setOpen] = useState(true);
 

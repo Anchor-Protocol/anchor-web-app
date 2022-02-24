@@ -3,13 +3,11 @@ import { useMemo } from 'react';
 
 export interface RouteMenu {
   to: string;
-  exact?: boolean;
   title: string;
 }
 
 const dashboard: RouteMenu = {
   to: '/',
-  exact: true,
   title: 'DASHBOARD',
 };
 

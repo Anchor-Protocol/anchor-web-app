@@ -5,7 +5,7 @@ import { UIElementProps } from '@libs/ui';
 import { StreamResult, StreamStatus } from '@rx-stream/react';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 interface ClaimAllProps extends UIElementProps {
@@ -15,7 +15,7 @@ interface ClaimAllProps extends UIElementProps {
 function ClaimAllBase(props: ClaimAllProps) {
   const { className, children, txResult } = props;
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   if (
     txResult?.status === StreamStatus.IN_PROGRESS ||
@@ -23,7 +23,7 @@ function ClaimAllBase(props: ClaimAllProps) {
   ) {
     const onExit =
       txResult.status === StreamStatus.DONE
-        ? () => history.push('/mypage')
+        ? () => navigate('/mypage')
         : () => {};
 
     return (
