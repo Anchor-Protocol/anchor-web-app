@@ -1,4 +1,4 @@
-import { useTerraNetwork } from '@anchor-protocol/app-provider';
+import { useNetwork } from '@anchor-protocol/app-provider';
 import { truncate as _truncate } from '@libs/formatter';
 import React from 'react';
 import styled from 'styled-components';
@@ -11,7 +11,7 @@ export interface AccountLinkProps {
 }
 
 function AccountLinkBase({ address, truncate, className }: AccountLinkProps) {
-  const network = useTerraNetwork();
+  const network = useNetwork();
 
   return (
     <a

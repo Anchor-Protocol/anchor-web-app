@@ -1,4 +1,4 @@
-import { useTerraNetwork } from '@anchor-protocol/app-provider';
+import { useNetwork } from '@anchor-protocol/app-provider';
 import { lastSyncedHeightQuery } from '@libs/app-fns';
 import { QueryClient } from '@libs/query-client';
 import { createQueryFn } from '@libs/react-query-utils';
@@ -17,7 +17,7 @@ const queryFn = createQueryFn((queryClient: QueryClient, chainID: string) => {
 });
 
 export function useLastSyncedHeightQuery(): UseQueryResult<number> {
-  const network = useTerraNetwork();
+  const network = useNetwork();
   const { queryClient, queryErrorReporter } = useAnchorWebapp();
 
   const result = useQuery(

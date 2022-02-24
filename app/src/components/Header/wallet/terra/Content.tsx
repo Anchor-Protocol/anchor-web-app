@@ -8,7 +8,7 @@ import { KeyboardArrowRight, Launch } from '@material-ui/icons';
 import { UIElementProps } from '@libs/ui';
 import { HumanAddr } from '@libs/types';
 import styled from 'styled-components';
-import { useTerraNetwork } from '@anchor-protocol/app-provider';
+import { useNetwork } from '@anchor-protocol/app-provider';
 import { TokenList } from '../TokenList';
 
 type Action = () => void;
@@ -35,7 +35,7 @@ const ContentBase = (props: ContentProps) => {
 
   const { availablePost } = useAccount();
 
-  const network = useTerraNetwork();
+  const network = useNetwork();
 
   const viewOnTerraFinder = useCallback(() => {
     window.open(

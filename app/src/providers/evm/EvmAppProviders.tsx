@@ -5,17 +5,20 @@ import { AppProviders } from 'configurations/app';
 import { EvmAccountProvider } from './EvmAccountProvider';
 import { EvmContractsProvider } from './EvmContractsProvider';
 import { EvmBalancesProvider } from './EvmBalancesProvider';
+import { EvmNetworkProvider } from './EvmNetworkProvider';
 
 export function EvmAppProviders({ children }: UIElementProps) {
   return (
     <EvmWalletProvider>
-      <EvmAccountProvider>
-        <EvmContractsProvider>
-          <AppProviders>
-            <EvmBalancesProvider>{children}</EvmBalancesProvider>
-          </AppProviders>
-        </EvmContractsProvider>
-      </EvmAccountProvider>
+      <EvmNetworkProvider>
+        <EvmAccountProvider>
+          <EvmContractsProvider>
+            <AppProviders>
+              <EvmBalancesProvider>{children}</EvmBalancesProvider>
+            </AppProviders>
+          </EvmContractsProvider>
+        </EvmAccountProvider>
+      </EvmNetworkProvider>
     </EvmWalletProvider>
   );
 }

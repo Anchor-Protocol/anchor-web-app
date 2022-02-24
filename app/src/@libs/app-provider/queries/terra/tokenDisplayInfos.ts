@@ -1,4 +1,4 @@
-import { useTerraNetwork } from '@anchor-protocol/app-provider';
+import { useNetwork } from '@anchor-protocol/app-provider';
 import { TokenDisplayInfo, tokenDisplayInfosQuery } from '@libs/app-fns';
 import { createQueryFn } from '@libs/react-query-utils';
 import { useQuery, UseQueryResult } from 'react-query';
@@ -10,7 +10,7 @@ const queryFn = createQueryFn(tokenDisplayInfosQuery);
 export function useTokenDisplayInfosQuery(
   networkName?: string,
 ): UseQueryResult<TokenDisplayInfo[]> {
-  const network = useTerraNetwork();
+  const network = useNetwork();
   const { queryErrorReporter } = useApp();
 
   const result = useQuery(

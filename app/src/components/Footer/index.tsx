@@ -1,7 +1,7 @@
 import { Discord } from '@anchor-protocol/icons';
 import {
   useLastSyncedHeightQuery,
-  useTerraNetwork,
+  useNetwork,
 } from '@anchor-protocol/app-provider';
 import { IconButton } from '@material-ui/core';
 import {
@@ -26,7 +26,7 @@ export interface FooterProps {
 }
 
 function FooterBase({ className, style }: FooterProps) {
-  const network = useTerraNetwork();
+  const network = useNetwork();
   const { data: lastSyncedHeight = 0 } = useLastSyncedHeightQuery();
 
   const { themeColor, updateTheme } = useTheme();

@@ -7,7 +7,7 @@ import React, {
   useContext,
   useMemo,
 } from 'react';
-import { useTerraNetwork } from '..';
+import { useNetwork } from '..';
 import { AnchorConstants, AnchorContractAddress } from '../types';
 
 export interface AnchorWebappProviderProps {
@@ -28,7 +28,7 @@ export function AnchorWebappProvider({
   children,
   indexerApiEndpoints,
 }: AnchorWebappProviderProps) {
-  const network = useTerraNetwork();
+  const network = useNetwork();
 
   //const { contractAddress } = useApp<AnchorContractAddress>();
 

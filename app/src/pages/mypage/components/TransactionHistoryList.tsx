@@ -4,7 +4,7 @@ import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import useResizeObserver from 'use-resize-observer/polyfilled';
 import { CallMade } from '@material-ui/icons';
-import { useTerraNetwork } from '@anchor-protocol/app-provider';
+import { useNetwork } from '@anchor-protocol/app-provider';
 
 export interface TransactionHistoryListProps {
   className?: string;
@@ -18,7 +18,7 @@ function TransactionHistoryListBase({
   breakpoint = 700,
 }: TransactionHistoryListProps) {
   const { ref, width = 1000 } = useResizeObserver();
-  const network = useTerraNetwork();
+  const network = useNetwork();
 
   return (
     <ul className={className} ref={ref} data-break={width < breakpoint}>

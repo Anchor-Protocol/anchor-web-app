@@ -1,4 +1,4 @@
-import { useTerraNetwork } from '@anchor-protocol/app-provider';
+import { useNetwork } from '@anchor-protocol/app-provider';
 import { CW20TokenDisplayInfo } from '@libs/app-fns';
 import {
   EMPTY_QUERY_RESULT,
@@ -22,7 +22,7 @@ export const useQueryWithTokenDisplay = <Data, DataWithTokenDisplay>(
 ): UseQueryResult<
   UnitOrArrayWithTokenDisplay<Data, DataWithTokenDisplay> | undefined
 > => {
-  const network = useTerraNetwork();
+  const network = useNetwork();
   const tokenDisplayInfos = useCW20TokenDisplayInfosQuery();
 
   return useMemo(() => {

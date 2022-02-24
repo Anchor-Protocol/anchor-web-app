@@ -1,4 +1,4 @@
-import { useTerraNetwork } from '@anchor-protocol/app-provider';
+import { useNetwork } from '@anchor-protocol/app-provider';
 import { truncate } from '@libs/formatter';
 import React from 'react';
 
@@ -7,7 +7,7 @@ export interface TxHashProps {
 }
 
 export function TxHashLink({ txHash }: TxHashProps) {
-  const network = useTerraNetwork();
+  const network = useNetwork();
 
   return (
     <a

@@ -1,4 +1,4 @@
-import { useTerraNetwork } from '@anchor-protocol/app-provider';
+import { useNetwork } from '@anchor-protocol/app-provider';
 import { Web3Provider } from '@ethersproject/providers';
 import { Network, EthCrossAnchorSdk } from '@anchor-protocol/crossanchor-sdk';
 import { LCDClient } from '@terra-money/terra.js';
@@ -8,7 +8,7 @@ export const useEthCrossAnchorSdk = (
   network: Network,
   provider?: Web3Provider,
 ) => {
-  const terra = useTerraNetwork();
+  const terra = useNetwork();
 
   const lcd = useMemo(() => {
     return new LCDClient({

@@ -1,5 +1,4 @@
 import { useContext } from 'react';
-
 import { EvmWalletContext, EvmWallet } from '../providers/EvmWalletProvider';
 
 export function useEvmWallet(): EvmWallet {

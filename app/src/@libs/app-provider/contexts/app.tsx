@@ -1,4 +1,4 @@
-import { useTerraNetwork } from '@anchor-protocol/app-provider';
+import { useNetwork } from '@anchor-protocol/app-provider';
 import { GasPrice, lastSyncedHeightQuery } from '@libs/app-fns';
 import {
   HiveQueryClient,
@@ -100,7 +100,7 @@ export function AppProvider<
   txErrorReporter,
   refetchMap,
 }: AppProviderProps<ContractAddress, Constants>) {
-  const network = useTerraNetwork();
+  const network = useNetwork();
 
   const networkBoundStates = useMemo<
     Pick<

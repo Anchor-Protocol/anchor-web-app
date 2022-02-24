@@ -11,6 +11,7 @@ import { useReadonlyWalletDialog } from 'components/dialogs/useReadonlyWalletDia
 import { AppProviders } from 'configurations/app';
 import { TerraAccountProvider } from './TerraAccountProvider';
 import { TerraBalancesProvider } from './TerraBalancesProvider';
+import { TerraNetworkProvider } from './TerraNetworkProvider';
 
 export function TerraAppProviders({
   children,
@@ -36,14 +37,16 @@ export function TerraAppProviders({
       connectorOpts={{ bridge: 'https://walletconnect.terra.dev/' }}
       createReadonlyWalletSession={createReadonlyWalletSession}
     >
-      <TerraAccountProvider>
-        <AppProviders dialogs={readonlyWalletSelectorElement}>
-          <TerraBalancesProvider>
-            <RouterWalletStatusRecheck />
-            {children}
-          </TerraBalancesProvider>
-        </AppProviders>
-      </TerraAccountProvider>
+      <TerraNetworkProvider>
+        <TerraAccountProvider>
+          <AppProviders dialogs={readonlyWalletSelectorElement}>
+            <TerraBalancesProvider>
+              <RouterWalletStatusRecheck />
+              {children}
+            </TerraBalancesProvider>
+          </AppProviders>
+        </TerraAccountProvider>
+      </TerraNetworkProvider>
     </WalletProvider>
   );
 }

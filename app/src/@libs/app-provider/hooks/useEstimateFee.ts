@@ -1,4 +1,4 @@
-import { useTerraNetwork } from '@anchor-protocol/app-provider';
+import { useNetwork } from '@anchor-protocol/app-provider';
 import { Gas, HumanAddr } from '@libs/types';
 import { LCDClient, Msg } from '@terra-money/terra.js';
 import big from 'big.js';
@@ -13,7 +13,7 @@ export interface EstimatedFee {
 export function useEstimateFee(
   walletAddress: HumanAddr | undefined,
 ): (msgs: Msg[]) => Promise<EstimatedFee | undefined> {
-  const network = useTerraNetwork();
+  const network = useNetwork();
   const { gasPrice, constants } = useApp();
 
   const lcd = useMemo(() => {

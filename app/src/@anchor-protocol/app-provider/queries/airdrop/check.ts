@@ -1,6 +1,6 @@
 import { Airdrop, airdropCheckQuery } from '@anchor-protocol/app-fns';
 import { airdropStageCache } from '@anchor-protocol/app-fns/caches/airdropStage';
-import { useTerraNetwork } from '@anchor-protocol/app-provider';
+import { useNetwork } from '@anchor-protocol/app-provider';
 import { EMPTY_QUERY_RESULT } from '@libs/app-provider';
 import { createQueryFn } from '@libs/react-query-utils';
 import { useQuery, UseQueryResult } from 'react-query';
@@ -16,7 +16,7 @@ export function useAirdropCheckQuery(): UseQueryResult<Airdrop | undefined> {
 
   const { connected, terraWalletAddress } = useAccount();
 
-  const network = useTerraNetwork();
+  const network = useNetwork();
 
   const result = useQuery(
     [
