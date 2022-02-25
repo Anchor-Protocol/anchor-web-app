@@ -6,7 +6,7 @@ import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import React from 'react';
 import { truncateEvm } from '@libs/formatter';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import { useParams } from 'react-router-dom';
 import { GuardSpinner } from 'react-spinners-kit';
 import { HorizontalDashedRuler } from '@libs/neumorphism-ui/components/HorizontalDashedRuler';
@@ -69,11 +69,14 @@ const RedemptionSummaryList = (props: RedemptionSummaryListProps) => {
 };
 
 const Loading = () => {
+  const {
+    colors: { primary },
+  } = useTheme();
   return (
     <figure className="loading">
       <HorizontalDashedRuler />
       <div className="spinner">
-        <GuardSpinner />
+        <GuardSpinner frontColor={primary} />
       </div>
       <HorizontalDashedRuler />
     </figure>
