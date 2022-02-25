@@ -39,13 +39,13 @@ function ComponentBase({
             rel="noreferrer"
           >
             <span>
-              Lighthouse{' '}
+              Lighthouse Defi{' '}
               <sub>
                 <Launch />
               </sub>
             </span>
             <i>
-              <img src={lighthouse} alt="Lighthouse" />
+              <img src={lighthouse} alt="Lighthouse Defi" />
             </i>
           </EmbossButton>
           <EmbossButton
@@ -78,7 +78,7 @@ function ComponentBase({
               </sub>
             </span>
             <i>
-              <img src={freewilly} alt="Terra Toolbox" />
+              <img src={freewilly} alt="Terra Toolbox" id="free-willy" />
             </i>
           </EmbossButton>
         </section>
@@ -140,6 +140,12 @@ export const dialogStyle = css`
     &:not(:first-of-type) {
       margin-top: 16px;
     }
+  }
+
+  img,
+  #free-willy {
+    width: 32px;
+    height: 32px;
   }
 `;
 
