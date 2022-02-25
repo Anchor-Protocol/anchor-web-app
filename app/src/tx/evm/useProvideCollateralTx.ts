@@ -1,5 +1,5 @@
 import { StreamReturn } from '@rx-stream/react';
-import { useEthCrossAnchorSdk } from 'crossanchor';
+import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
 import { toWei, txResult, TX_GAS_LIMIT } from './utils';
@@ -23,14 +23,14 @@ export function useProvideCollateralTx():
   | StreamReturn<ProvideCollateralTxProps, TxRender>
   | [null, null] {
   const { provider, address, connection, connectType } = useEvmWallet();
-  const ethSdk = useEthCrossAnchorSdk('testnet', provider);
+  const evmSdk = useEvmCrossAnchorSdk('testnet', provider);
 
   const provideTx = useCallback(
     (
       txParams: ProvideCollateralTxProps,
       renderTxResults: Subject<TxRender>,
     ) => {
-      return ethSdk.lockCollateral(
+      return evmSdk.lockCollateral(
         txParams.collateral,
         toWei(txParams.amount),
         address!,
@@ -44,7 +44,7 @@ export function useProvideCollateralTx():
         },
       );
     },
-    [ethSdk, address, connectType],
+    [evmSdk, address, connectType],
   );
 
   const provideTxStream = useRedeemableTx(provideTx, (resp) => resp.tx, null);

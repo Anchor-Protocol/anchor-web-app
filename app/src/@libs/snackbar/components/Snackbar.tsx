@@ -26,7 +26,7 @@ export class SnackbarBase extends Component<SnackbarProps, SnackbarState> {
         onMouseLeave={this.onMouseLeave}
       >
         {React.cloneElement(this.props.children, {
-          close: this.onClose,
+          onClose: this.onClose,
         })}
       </div>
     );

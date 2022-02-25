@@ -1,4 +1,4 @@
-import { useEthCrossAnchorSdk } from 'crossanchor';
+import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { useEffect, useState } from 'react';
 import { RedemptionPayload } from '@anchor-protocol/crossanchor-sdk';
@@ -15,16 +15,16 @@ export function useRedemptionPayload(
     useState<RedemptionPayload>();
   const [loading, setLoading] = useState<boolean>(false);
   const { provider, connection } = useEvmWallet();
-  const ethSdk = useEthCrossAnchorSdk('testnet', provider);
+  const evmSdk = useEvmCrossAnchorSdk('testnet', provider);
 
   useEffect(() => {
     setLoading(true);
 
-    ethSdk
+    evmSdk
       .redemptionPayload(outgoingSequence)
       .then((payload) => setRedemptionPayload(payload))
       .finally(() => setLoading(false));
-  }, [ethSdk, outgoingSequence]);
+  }, [evmSdk, outgoingSequence]);
 
   const result = (connection && redemptionPayload) ?? undefined;
 

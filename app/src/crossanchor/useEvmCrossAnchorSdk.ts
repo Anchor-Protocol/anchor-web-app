@@ -1,10 +1,10 @@
 import { useNetwork } from '@anchor-protocol/app-provider';
 import { Web3Provider } from '@ethersproject/providers';
-import { Network, EthCrossAnchorSdk } from '@anchor-protocol/crossanchor-sdk';
+import { Network, EvmCrossAnchorSdk } from '@anchor-protocol/crossanchor-sdk';
 import { LCDClient } from '@terra-money/terra.js';
 import { useMemo } from 'react';
 
-export const useEthCrossAnchorSdk = (
+export const useEvmCrossAnchorSdk = (
   network: Network,
   provider?: Web3Provider,
 ) => {
@@ -19,7 +19,7 @@ export const useEthCrossAnchorSdk = (
 
   return useMemo(
     () =>
-      new EthCrossAnchorSdk(network, lcd, provider, {
+      new EvmCrossAnchorSdk(network, lcd, provider, {
         skipRedemption: true,
         unlimitedAllowance: false,
       }),

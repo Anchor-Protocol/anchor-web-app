@@ -1,5 +1,5 @@
 import { StreamReturn } from '@rx-stream/react';
-import { useEthCrossAnchorSdk } from 'crossanchor';
+import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
 import { txResult, TX_GAS_LIMIT } from './utils';
@@ -18,11 +18,11 @@ export function useClaimRewardsTx():
   | StreamReturn<ClaimRewardsTxProps, TxResultRendering>
   | [null, null] {
   const { provider, address, connection, connectType } = useEvmWallet();
-  const ethSdk = useEthCrossAnchorSdk('testnet', provider);
+  const evmSdk = useEvmCrossAnchorSdk('testnet', provider);
 
   const claimRewards = useCallback(
     (_txParams: ClaimRewardsTxProps, renderTxResults: Subject<TxRender>) => {
-      return ethSdk.claimRewards(address!, TX_GAS_LIMIT, (event) => {
+      return evmSdk.claimRewards(address!, TX_GAS_LIMIT, (event) => {
         console.log(event, 'eventEmitted');
 
         renderTxResults.next(
@@ -30,7 +30,7 @@ export function useClaimRewardsTx():
         );
       });
     },
-    [address, connectType, ethSdk],
+    [address, connectType, evmSdk],
   );
 
   const claimRewardsStream = useRedeemableTx(
