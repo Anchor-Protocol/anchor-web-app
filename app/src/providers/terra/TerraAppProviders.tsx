@@ -41,18 +41,18 @@ export function TerraAppProviders({
     >
       <TerraNetworkProvider>
         <TerraAccountProvider>
-          <AppProviders dialogs={readonlyWalletSelectorElement}>
-            <TerraBalancesProvider>
-              <ThemeProvider
-                initialTheme="light"
-                lightTheme={lightTheme}
-                darkTheme={darkTheme}
-              >
+          <ThemeProvider
+            initialTheme="light"
+            lightTheme={lightTheme}
+            darkTheme={darkTheme}
+          >
+            <AppProviders dialogs={readonlyWalletSelectorElement}>
+              <TerraBalancesProvider>
                 <RouterWalletStatusRecheck />
                 {children}
-              </ThemeProvider>
-            </TerraBalancesProvider>
-          </AppProviders>
+              </TerraBalancesProvider>
+            </AppProviders>
+          </ThemeProvider>
         </TerraAccountProvider>
       </TerraNetworkProvider>
     </WalletProvider>

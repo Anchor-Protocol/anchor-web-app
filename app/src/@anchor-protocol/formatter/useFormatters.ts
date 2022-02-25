@@ -45,7 +45,9 @@ const createFormatter = <T>(
 };
 
 const useFormatters = (): Formatters => {
-  const { chain } = useDeploymentTarget();
+  const {
+    target: { chain },
+  } = useDeploymentTarget();
   return useMemo<Formatters>(() => {
     const tokens = {
       ust: createFormatter<UST>('UST', 6),

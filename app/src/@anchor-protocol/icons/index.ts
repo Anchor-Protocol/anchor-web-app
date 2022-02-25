@@ -18,6 +18,7 @@ import { ReactComponent as TerraIcon } from './assets/Terra.svg';
 import { ReactComponent as WalletIcon } from './assets/Wallet.svg';
 import { ReactComponent as WalletconnectIcon } from './assets/Walletconnect.svg';
 import { ReactComponent as ParticipateInLiquidationsIcon } from './assets/ParticipateInLiquidations.svg';
+import { ReactComponent as SettingsIcon } from './assets/Settings.svg';
 import { createMaterialIcon } from './createMaterialIcon';
 
 export const Discord = createMaterialIcon(DiscordIcon);
@@ -42,3 +43,4 @@ export const DollarCoin = createMaterialIcon(DollarCoinIcon);
 export const ParticipateInLiquidations = createMaterialIcon(
   ParticipateInLiquidationsIcon,
 );
+export const Settings = createMaterialIcon(SettingsIcon);

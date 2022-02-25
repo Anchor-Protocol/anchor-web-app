@@ -11,7 +11,9 @@ import { lightTheme as avalancheLightTheme } from 'themes/avalanche/lightTheme';
 import { Chain, useDeploymentTarget } from '@anchor-protocol/app-provider';
 
 export function EvmAppProviders({ children }: UIElementProps) {
-  const { chain } = useDeploymentTarget();
+  const {
+    target: { chain },
+  } = useDeploymentTarget();
   return (
     <EvmWalletProvider>
       <EvmNetworkProvider>

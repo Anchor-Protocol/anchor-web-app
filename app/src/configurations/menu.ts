@@ -37,7 +37,9 @@ const govern: RouteMenu = {
 };
 
 const useMenus = (): RouteMenu[] => {
-  const { isEVM } = useDeploymentTarget();
+  const {
+    target: { isEVM },
+  } = useDeploymentTarget();
   return useMemo(() => {
     if (isEVM) {
       return [dashboard, myPage, earn];

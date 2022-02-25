@@ -45,7 +45,9 @@ interface Item {
 }
 
 function TotalValueBase({ className }: TotalValueProps) {
-  const { isNative } = useDeploymentTarget();
+  const {
+    target: { isNative },
+  } = useDeploymentTarget();
 
   const { theme } = useTheme();
 

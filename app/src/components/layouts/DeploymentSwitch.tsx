@@ -9,7 +9,9 @@ interface DeploymentSwitchProps {
 
 export function DeploymentSwitch(props: DeploymentSwitchProps) {
   const { terra, ethereum, avalanche } = props;
-  const { chain } = useDeploymentTarget();
+  const {
+    target: { chain },
+  } = useDeploymentTarget();
   let content: ReactNode;
 
   switch (chain) {

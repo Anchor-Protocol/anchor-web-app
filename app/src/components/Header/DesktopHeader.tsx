@@ -5,6 +5,7 @@ import React from 'react';
 import { Link, useMatch } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
 import logoUrl from './assets/Logo.svg';
+import { ChainSelector } from './chain/ChainSelector';
 import { DesktopNotification } from './desktop/DesktopNotification';
 import { EvmWalletSelector } from './wallet/evm/EvmWalletSelector';
 import { TerraWalletSelector } from './wallet/terra/TerraWalletSelector';
@@ -37,6 +38,7 @@ function DesktopHeaderBase({ className }: DesktopHeaderProps) {
       <DesktopNotification className="notification" />
 
       <section className="wallet">
+        <ChainSelector className="chain-selector" />
         <DeploymentSwitch
           terra={() => <TerraWalletSelector />}
           ethereum={() => <EvmWalletSelector />}
@@ -143,6 +145,10 @@ export const DesktopHeader = styled(DesktopHeaderBase)`
   .wallet {
     padding-bottom: 8px;
     text-align: right;
+
+    .chain-selector {
+      margin-right: 5px;
+    }
   }
 
   .logo {
