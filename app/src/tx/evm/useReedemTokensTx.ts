@@ -1,5 +1,5 @@
 import { StreamReturn } from '@rx-stream/react';
-import { useEthCrossAnchorSdk } from 'crossanchor';
+import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
 import { useTx } from './useTx';
@@ -16,11 +16,11 @@ export function useRedeemTokensTx(
   redemptionPayload?: RedemptionPayload,
 ): StreamReturn<RedeemTokensTxProps, TxRender> | [null, null] {
   const { provider, connection } = useEvmWallet();
-  const ethSdk = useEthCrossAnchorSdk('testnet', provider);
+  const evmSdk = useEvmCrossAnchorSdk('testnet', provider);
 
   const redeemTx = useCallback(() => {
-    return ethSdk.redeemTokens(redemptionPayload!);
-  }, [ethSdk, redemptionPayload]);
+    return evmSdk.redeemTokens(redemptionPayload!);
+  }, [evmSdk, redemptionPayload]);
 
   const redeemTxStream = useTx(redeemTx, (resp) => resp, null);
 

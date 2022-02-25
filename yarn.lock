@@ -14,15 +14,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@anchor-protocol/crossanchor-sdk@npm:^0.1.2-8":
-  version: 0.1.2-alpha.8
-  resolution: "@anchor-protocol/crossanchor-sdk@npm:0.1.2-alpha.8"
+"@anchor-protocol/crossanchor-sdk@npm:^0.1.2-11":
+  version: 0.1.2-alpha.11
+  resolution: "@anchor-protocol/crossanchor-sdk@npm:0.1.2-alpha.11"
   dependencies:
     "@certusone/wormhole-sdk": ^0.2.0
     "@terra-money/terra.js": ^3.0.2
     big.js: ^6.1.1
     ethers: ^5.5.4
-  checksum: 04fc6d55cf201085b813b3354ec22659b7be66d58c98cb9bff33ffa27607f87f1137982bf87a8a949de49bcaf89aa501d88589b2fc99c3578faa35a195b62fd3
+  checksum: b2c18869a13fb710ec66d34c64b39cf11fca71000e16bff054541d183133c3db61f078a02949188569bdc3f35beef7948c193784915a622fa8dd87dd06d94e2e
   languageName: node
   linkType: hard
 
@@ -23328,7 +23328,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
-    "@anchor-protocol/crossanchor-sdk": ^0.1.2-8
+    "@anchor-protocol/crossanchor-sdk": ^0.1.2-11
     "@ethersproject/contracts": ^5.5.0
     "@handbook/markdown-source-import": ^1.1.0
     "@ssen/prettier-config": ^2.0.1

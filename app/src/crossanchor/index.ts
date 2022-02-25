@@ -1,1 +1,1 @@
-export * from './useEthCrossAnchorSdk';
+export * from './useEvmCrossAnchorSdk';

@@ -1,5 +1,5 @@
 import { StreamReturn } from '@rx-stream/react';
-import { useEthCrossAnchorSdk } from 'crossanchor';
+import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
 import { toWei, txResult, TX_GAS_LIMIT } from './utils';
@@ -20,11 +20,11 @@ export function useBorrowUstTx():
   | StreamReturn<BorrowUstTxProps, TxRender>
   | [null, null] {
   const { provider, address, connection, connectType } = useEvmWallet();
-  const ethSdk = useEthCrossAnchorSdk('testnet', provider);
+  const evmSdk = useEvmCrossAnchorSdk('testnet', provider);
 
   const borrowTx = useCallback(
     (txParams: BorrowUstTxProps, renderTxResults: Subject<TxRender>) => {
-      return ethSdk.borrowStable(
+      return evmSdk.borrowStable(
         toWei(txParams.amount),
         address!,
         TX_GAS_LIMIT,
@@ -37,7 +37,7 @@ export function useBorrowUstTx():
         },
       );
     },
-    [address, connectType, ethSdk],
+    [address, connectType, evmSdk],
   );
 
   const borrowTxStream = useRedeemableTx(borrowTx, (resp) => resp.tx, null);

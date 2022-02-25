@@ -1,5 +1,4 @@
 import {
-  Chain,
   CrossChainEvent,
   CrossChainEventKind,
 } from '@anchor-protocol/crossanchor-sdk';
@@ -24,7 +23,7 @@ export function toWei(value: BigNumberish): string {
 export const txResult = (
   event: CrossChainEvent,
   connnectType: ConnectType,
-  chain: Chain,
+  chain: string,
   action: string,
 ) => {
   return {
@@ -38,7 +37,7 @@ export const txResult = (
 const txResultMessage = (
   event: CrossChainEvent,
   connnectType: ConnectType,
-  chain: Chain,
+  chain: string,
   action: string,
 ) => {
   switch (event.kind) {
