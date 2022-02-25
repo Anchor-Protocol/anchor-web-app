@@ -6,6 +6,7 @@ import { Launch } from '@material-ui/icons';
 import React, { ReactNode } from 'react';
 import styled, { css } from 'styled-components';
 import kujira from './assets/kujira.png';
+import lighthouse from './assets/lighthouse.png';
 
 interface FormParams {
   className?: string;
@@ -30,6 +31,22 @@ function ComponentBase({
         <h1>Participate in Liquidations</h1>
 
         <section>
+          <EmbossButton
+            component="a"
+            href="https://app.lighthousedefi.com/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>
+              Lighthouse{' '}
+              <sub>
+                <Launch />
+              </sub>
+            </span>
+            <i>
+              <img src={lighthouse} alt="Lighthouse" />
+            </i>
+          </EmbossButton>
           <EmbossButton
             component="a"
             href="https://orca.kujira.app/"
