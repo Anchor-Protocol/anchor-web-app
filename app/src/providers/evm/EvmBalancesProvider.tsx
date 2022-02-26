@@ -11,7 +11,7 @@ import { getAddress } from 'configurations/evm/addresses';
 const EvmBalancesProvider = ({ children }: UIElementProps) => {
   const { chainId = EvmChainId.ETHEREUM_ROPSTEN } = useEvmWallet();
 
-  const eth = useEvmNativeBalance();
+  const native = useEvmNativeBalance();
 
   const ust = useERC20Balance<UST>(getAddress(chainId, 'UST'));
 
@@ -21,12 +21,12 @@ const EvmBalancesProvider = ({ children }: UIElementProps) => {
 
   const balances = useMemo<AnchorBalances>(() => {
     return {
-      uNative: eth.toString() as u<Native>,
+      uNative: native.toString() as u<Native>,
       uUST: ust,
       uaUST: aUST,
       uANC: ANC,
     };
-  }, [eth, ust, aUST, ANC]);
+  }, [native, ust, aUST, ANC]);
 
   return (
     <BalancesContext.Provider value={balances}>
