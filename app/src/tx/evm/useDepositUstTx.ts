@@ -19,8 +19,8 @@ export interface DepositUstTxProps {
 export function useDepositUstTx():
   | StreamReturn<DepositUstTxProps, TxRender>
   | [null, null] {
-  const { provider, address, connection, connectType } = useEvmWallet();
-  const evmSdk = useEvmCrossAnchorSdk('testnet', provider);
+  const { address, connection, connectType } = useEvmWallet();
+  const evmSdk = useEvmCrossAnchorSdk();
 
   const depositTx = useCallback(
     (txParams: DepositUstTxProps, renderTxResults: Subject<TxRender>) => {

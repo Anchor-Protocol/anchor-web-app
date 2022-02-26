@@ -19,8 +19,8 @@ export interface WithdrawUstTxProps {
 export function useWithdrawUstTx():
   | StreamReturn<WithdrawUstTxProps, TxRender>
   | [null, null] {
-  const { provider, address, connection, connectType } = useEvmWallet();
-  const evmSdk = useEvmCrossAnchorSdk('testnet', provider);
+  const { address, connection, connectType } = useEvmWallet();
+  const evmSdk = useEvmCrossAnchorSdk();
 
   const withdrawTx = useCallback(
     (txParams: WithdrawUstTxProps, renderTxResults: Subject<TxRender>) => {

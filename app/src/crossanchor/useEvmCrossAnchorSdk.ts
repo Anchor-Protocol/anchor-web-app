@@ -1,14 +1,14 @@
 import { useNetwork } from '@anchor-protocol/app-provider';
-import { Web3Provider } from '@ethersproject/providers';
-import { Network, EvmCrossAnchorSdk } from '@anchor-protocol/crossanchor-sdk';
+import { EvmCrossAnchorSdk } from '@anchor-protocol/crossanchor-sdk';
 import { LCDClient } from '@terra-money/terra.js';
 import { useMemo } from 'react';
+import { EvmChainId, useEvmWallet } from '@libs/evm-wallet';
+import { isEvmTestnet } from 'utils/evm';
 
-export const useEvmCrossAnchorSdk = (
-  network: Network,
-  provider?: Web3Provider,
-) => {
+export const useEvmCrossAnchorSdk = () => {
   const terra = useNetwork();
+
+  const { provider, chainId = EvmChainId.ETHEREUM_ROPSTEN } = useEvmWallet();
 
   const lcd = useMemo(() => {
     return new LCDClient({
@@ -17,12 +17,12 @@ export const useEvmCrossAnchorSdk = (
     });
   }, [terra.chainID, terra.lcd]);
 
-  return useMemo(
-    () =>
-      new EvmCrossAnchorSdk(network, lcd, provider, {
-        skipRedemption: true,
-        unlimitedAllowance: false,
-      }),
-    [network, provider, lcd],
-  );
+  return useMemo(() => {
+    const network = isEvmTestnet(chainId) ? 'testnet' : 'mainnet';
+
+    return new EvmCrossAnchorSdk(network, lcd, provider, {
+      skipRedemption: false,
+      unlimitedAllowance: false,
+    });
+  }, [chainId, provider, lcd]);
 };

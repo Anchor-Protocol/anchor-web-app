@@ -19,8 +19,8 @@ export interface BorrowUstTxProps {
 export function useBorrowUstTx():
   | StreamReturn<BorrowUstTxProps, TxRender>
   | [null, null] {
-  const { provider, address, connection, connectType } = useEvmWallet();
-  const evmSdk = useEvmCrossAnchorSdk('testnet', provider);
+  const { address, connection, connectType } = useEvmWallet();
+  const evmSdk = useEvmCrossAnchorSdk();
 
   const borrowTx = useCallback(
     (txParams: BorrowUstTxProps, renderTxResults: Subject<TxRender>) => {

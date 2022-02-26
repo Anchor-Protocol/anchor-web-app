@@ -14,8 +14,8 @@ export function useRedemptionPayload(
   const [redemptionPayload, setRedemptionPayload] =
     useState<RedemptionPayload>();
   const [loading, setLoading] = useState<boolean>(false);
-  const { provider, connection } = useEvmWallet();
-  const evmSdk = useEvmCrossAnchorSdk('testnet', provider);
+  const { connection } = useEvmWallet();
+  const evmSdk = useEvmCrossAnchorSdk();
 
   useEffect(() => {
     setLoading(true);

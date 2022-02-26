@@ -14,15 +14,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@anchor-protocol/crossanchor-sdk@npm:^0.1.2-11":
-  version: 0.1.2-alpha.11
-  resolution: "@anchor-protocol/crossanchor-sdk@npm:0.1.2-alpha.11"
+"@anchor-protocol/crossanchor-sdk@npm:^0.1.2-alpha.23":
+  version: 0.1.2-alpha.23
+  resolution: "@anchor-protocol/crossanchor-sdk@npm:0.1.2-alpha.23"
   dependencies:
     "@certusone/wormhole-sdk": ^0.2.0
     "@terra-money/terra.js": ^3.0.2
     big.js: ^6.1.1
     ethers: ^5.5.4
-  checksum: b2c18869a13fb710ec66d34c64b39cf11fca71000e16bff054541d183133c3db61f078a02949188569bdc3f35beef7948c193784915a622fa8dd87dd06d94e2e
+  checksum: 05b3d3eb3444d870f9681f87927cfb1a2252614794d7be0572abd0d0dae5994eb19f8c0797c445d5c8896b937245374f8d78d96c3f95adc6177f171f65a0ea21
   languageName: node
   linkType: hard
 
@@ -30,7 +30,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@anchor-web-app/app@workspace:app"
   dependencies:
+    "@anchor-protocol/crossanchor-sdk": ^0.1.2-alpha.23
     "@certusone/wormhole-sdk": ^0.2.0
+    "@ethersproject/contracts": ^5.5.0
     "@material-ui/core": ^4.11.3
     "@material-ui/icons": ^4.11.2
     "@originjs/vite-plugin-commonjs": ^1.0.2
@@ -23328,8 +23330,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
-    "@anchor-protocol/crossanchor-sdk": ^0.1.2-11
-    "@ethersproject/contracts": ^5.5.0
     "@handbook/markdown-source-import": ^1.1.0
     "@ssen/prettier-config": ^2.0.1
     "@types/eslint": ^7.2.14

@@ -91,6 +91,7 @@ function RedeemBase(props: UIElementProps) {
   const { connected } = useAccount();
 
   const { redemptionPayload, loading } = useRedemptionPayload(Number(sequence));
+
   const [redeemTokens, redeemTxResult] = useRedeemTokensTx(redemptionPayload);
 
   if (

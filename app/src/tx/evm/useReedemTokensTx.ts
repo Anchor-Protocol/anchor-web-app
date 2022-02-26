@@ -15,8 +15,8 @@ export interface RedeemTokensTxProps {}
 export function useRedeemTokensTx(
   redemptionPayload?: RedemptionPayload,
 ): StreamReturn<RedeemTokensTxProps, TxRender> | [null, null] {
-  const { provider, connection } = useEvmWallet();
-  const evmSdk = useEvmCrossAnchorSdk('testnet', provider);
+  const { connection } = useEvmWallet();
+  const evmSdk = useEvmCrossAnchorSdk();
 
   const redeemTx = useCallback(() => {
     return evmSdk.redeemTokens(redemptionPayload!);

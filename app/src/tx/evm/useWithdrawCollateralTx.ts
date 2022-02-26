@@ -23,8 +23,8 @@ export interface WithdrawCollateralTxProps {
 export function useWithdrawCollateralTx():
   | StreamReturn<WithdrawCollateralTxProps, TxRender>
   | [null, null] {
-  const { provider, address, connection, connectType } = useEvmWallet();
-  const evmSdk = useEvmCrossAnchorSdk('testnet', provider);
+  const { address, connection, connectType } = useEvmWallet();
+  const evmSdk = useEvmCrossAnchorSdk();
 
   const withdrawTx = useCallback(
     (

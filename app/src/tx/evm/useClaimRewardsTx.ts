@@ -17,8 +17,8 @@ export interface ClaimRewardsTxProps {}
 export function useClaimRewardsTx():
   | StreamReturn<ClaimRewardsTxProps, TxResultRendering>
   | [null, null] {
-  const { provider, address, connection, connectType } = useEvmWallet();
-  const evmSdk = useEvmCrossAnchorSdk('testnet', provider);
+  const { address, connection, connectType } = useEvmWallet();
+  const evmSdk = useEvmCrossAnchorSdk();
 
   const claimRewards = useCallback(
     (_txParams: ClaimRewardsTxProps, renderTxResults: Subject<TxRender>) => {

@@ -19,8 +19,8 @@ export interface RepayUstTxProps {
 export function useRepayUstTx():
   | StreamReturn<RepayUstTxProps, TxRender>
   | [null, null] {
-  const { provider, address, connection, connectType } = useEvmWallet();
-  const evmSdk = useEvmCrossAnchorSdk('testnet', provider);
+  const { address, connection, connectType } = useEvmWallet();
+  const evmSdk = useEvmCrossAnchorSdk();
 
   const repayTx = useCallback(
     (txParams: RepayUstTxProps, renderTxResults: Subject<TxRender>) => {

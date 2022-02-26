@@ -22,8 +22,8 @@ export interface ProvideCollateralTxProps {
 export function useProvideCollateralTx():
   | StreamReturn<ProvideCollateralTxProps, TxRender>
   | [null, null] {
-  const { provider, address, connection, connectType } = useEvmWallet();
-  const evmSdk = useEvmCrossAnchorSdk('testnet', provider);
+  const { address, connection, connectType } = useEvmWallet();
+  const evmSdk = useEvmCrossAnchorSdk();
 
   const provideTx = useCallback(
     (
