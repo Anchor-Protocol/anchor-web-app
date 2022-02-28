@@ -23,8 +23,8 @@ const addresses: Record<EvmChainId, Addresses> = {
   },
   [EvmChainId.AVALANCHE]: {
     crossAnchorBridge: '0x6BC753dDDa20488767ad501B06382398587df251' as EVMAddr, // TODO
-    UST: '0x67d574b0218DcA2eB790b5922C5dA6A7b77E25a5' as EVMAddr,
-    aUST: '0x67d574b0218DcA2eB790b5922C5dA6A7b77E25a5' as EVMAddr,
+    UST: '0xb599c3590F42f8F995ECfa0f85D2980B76862fc1' as EVMAddr,
+    aUST: '0xaB9A04808167C170A9EC4f8a87a0cD781ebcd55e' as EVMAddr,
     ANC: '0x67d574b0218DcA2eB790b5922C5dA6A7b77E25a5' as EVMAddr,
   },
   [EvmChainId.AVALANCHE_FUJI_TESTNET]: {
