@@ -11,7 +11,7 @@ import { useLongtimeNoSee } from '@libs/use-longtime-no-see';
 import { RouterScrollRestoration } from '@libs/use-router-scroll-restoration';
 import { captureException } from '@sentry/react';
 import { useRequestReloadDialog } from 'components/dialogs/useRequestReloadDialog';
-import { RedemptionSnackbar } from 'components/RedemptionSnackbar';
+//import { RedemptionSnackbar } from 'components/RedemptionSnackbar';
 import { SnackbarContainer } from 'components/SnackbarContainer';
 import { NotificationProvider } from 'contexts/notification';
 import {
@@ -81,7 +81,7 @@ export function AppProviders({
   // const { redemptions } = useRedemptionStorage();
 
   // TODO: hardcode for now, add real redemptions once bot is unstuck
-  const redemptions = [1];
+  //const redemptions = [1];
 
   return (
     <Providers>
@@ -89,9 +89,9 @@ export function AppProviders({
       <GlobalStyle />
       {children}
       <SnackbarContainer>
-        {redemptions.map((r) => (
+        {/* {redemptions.map((r) => (
           <RedemptionSnackbar key={r} redemption={r} />
-        ))}
+        ))} */}
       </SnackbarContainer>
       {dialogs}
       {requestReloadElement}

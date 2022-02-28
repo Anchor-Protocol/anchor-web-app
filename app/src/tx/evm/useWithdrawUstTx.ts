@@ -24,6 +24,7 @@ export function useWithdrawUstTx():
 
   const withdrawTx = useCallback(
     (txParams: WithdrawUstTxProps, renderTxResults: Subject<TxRender>) => {
+      console.log('widthdrawing');
       return evmSdk.redeemStable(
         toWei(txParams.withdrawAmount),
         address!,
