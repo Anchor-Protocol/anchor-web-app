@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import { formatDistance } from 'date-fns';
 import { Snackbar } from '@libs/snackbar';
 import { SnackbarContent } from '@libs/neumorphism-ui/components/Snackbar';
-import { RedemptionPayload } from '@anchor-protocol/crossanchor-sdk';
+//import { RedemptionPayload } from '@anchor-protocol/crossanchor-sdk';
 import { useNavigate } from 'react-router-dom';
 
 export const RedemptionSnackbar = (props: { redemption: number }) => {
@@ -52,7 +52,7 @@ export const RedemptionSnackbar = (props: { redemption: number }) => {
 const RedemptionDetailsComponent = (props: {
   className?: string;
   redemptionSequence: number;
-  redemptionPayload: RedemptionPayload;
+  redemptionPayload: any;
 }) => {
   const navigate = useNavigate();
 
