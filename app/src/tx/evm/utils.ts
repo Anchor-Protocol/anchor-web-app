@@ -2,18 +2,17 @@ import {
   CrossChainEvent,
   CrossChainEventKind,
 } from '@anchor-protocol/crossanchor-sdk';
-import { TxStreamPhase } from '@libs/app-fns';
+import { TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import { ConnectType, EvmChainId } from '@libs/evm-wallet';
-import { floor } from '@libs/big-math';
-import big from 'big.js';
+import { StreamReturn } from '@rx-stream/react';
 
 export const TX_GAS_LIMIT = 250000;
 
 export const toWei = (str: string) => str;
 
-export function formatInput(value: string): string {
-  return floor(big(value)).toFixed();
-}
+export type UseTxReturn<T, V> =
+  | StreamReturn<T, TxResultRendering<V>>
+  | [null, null];
 
 export const txResult = (
   event: CrossChainEvent,
@@ -25,7 +24,9 @@ export const txResult = (
     value: null,
     message: txResultMessage(event, connnectType, chainId, action),
     phase: TxStreamPhase.BROADCAST,
-    receipts: [],
+    receipts: [
+      //{ name: "Status", value: txResultMessage(event, connnectType, chainId, action) }
+    ],
   };
 };
 

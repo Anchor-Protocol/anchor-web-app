@@ -7,53 +7,6 @@ import { truncateEvm } from '@libs/formatter';
 import { catchTxError } from './catchTxError';
 import { useAnchorWebapp } from '@anchor-protocol/app-provider';
 
-// export const useTx = <TxParams, TxResult>(
-//   sendTx: (
-//     txParams: TxParams,
-//     renderTxResults: Subject<TxResultRendering<TxResult>>,
-//   ) => Promise<TxResult>,
-//   parseTx: (txResult: NonNullable<TxResult>) => ContractReceipt,
-//   emptyTxResult: TxResult,
-// ): StreamReturn<TxParams, TxResultRendering<TxResult>> => {
-
-//   const { txErrorReporter } = useAnchorWebapp();
-
-//   const sdkEvents = useMemo(() => {
-//     return new BehaviorSubject<TxResultRendering<TxResult>>({
-//       value: emptyTxResult,
-//       message: 'Processing transaction...',
-//       phase: TxStreamPhase.BROADCAST,
-//       receipts: [],
-//     });
-//   }, [emptyTxResult]);
-
-//   const txCallback = useCallback(
-//     (txParams: TxParams) => {
-//       return merge(
-//         from(sendTx(txParams, sdkEvents))
-//           .pipe(
-//             map((txResult) => {
-//               return {
-//                 value: emptyTxResult,
-//                 phase: TxStreamPhase.SUCCEED,
-//                 receipts: [txReceipt(parseTx(txResult!))],
-//               };
-//             }),
-//           )
-//           .pipe(catchTxError<TxResult>({ txErrorReporter })),
-//         sdkEvents,
-//       ).pipe(
-//         tap((tx) => {
-//           console.log('stream emitted', tx);
-//         }),
-//       );
-//     },
-//     [sdkEvents, sendTx, emptyTxResult, parseTx],
-//   );
-
-//   return useStream(txCallback);
-// };
-
 export const useTx = <TxParams, TxResult>(
   sendTx: (
     txParams: TxParams,

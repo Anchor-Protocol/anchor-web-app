@@ -1,8 +1,7 @@
-import { StreamReturn } from '@rx-stream/react';
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { EvmChainId, useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
-import { txResult, TX_GAS_LIMIT } from './utils';
+import { txResult, TX_GAS_LIMIT, UseTxReturn } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { ContractReceipt } from 'ethers';
@@ -12,17 +11,14 @@ import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { getAddress } from 'configurations/evm/addresses';
 
 type TxResult = CrossChainTxResponse<ContractReceipt> | null;
+
 type TxRender = TxResultRendering<TxResult>;
 
 export interface WithdrawUstTxProps {
   withdrawAmount: string;
 }
 
-type UseWithdrawUstTxReturn =
-  | StreamReturn<WithdrawUstTxProps, TxRender>
-  | [null, null];
-
-export function useWithdrawUstTx(): UseWithdrawUstTxReturn {
+export function useWithdrawUstTx(): UseTxReturn<WithdrawUstTxProps, TxResult> {
   const {
     address,
     connection,

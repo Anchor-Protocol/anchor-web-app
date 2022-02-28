@@ -32,6 +32,8 @@ export interface TxResultRendering<T = unknown> {
 
   message?: string;
 
+  description?: string;
+
   phase: TxStreamPhase;
 
   /**

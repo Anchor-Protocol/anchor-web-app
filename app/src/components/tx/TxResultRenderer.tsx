@@ -23,16 +23,23 @@ export function TxResultRenderer({
     colors: { primary },
   } = useTheme();
 
-  switch (resultRendering.phase) {
+  const {
+    phase,
+    message = 'Waiting for Terra Station...',
+    description = 'Transaction broadcasted. There is no need to send another until it has been complete.',
+    failedReason,
+  } = resultRendering;
+
+  switch (phase) {
     case TxStreamPhase.POST:
       return (
         <Layout>
           <article>
-            <figure data-state={resultRendering.phase}>
+            <figure data-state={phase}>
               <PushSpinner color={dimTextColor} />
             </figure>
 
-            <h2>{resultRendering.message ?? 'Waiting for Terra Station...'}</h2>
+            <h2>{message}</h2>
 
             <Receipts resultRendering={resultRendering} />
 
@@ -44,16 +51,13 @@ export function TxResultRenderer({
       return (
         <Layout>
           <article>
-            <figure data-state={resultRendering.phase}>
+            <figure data-state={phase}>
               <GuardSpinner frontColor={primary} />
             </figure>
 
             <h2>
-              <span>{resultRendering.message ?? 'Waiting for receipt...'}</span>
-              <p>
-                Transaction broadcasted. There is no need to send another until
-                it has been complete.
-              </p>
+              <span>{message}</span>
+              <p>{description}</p>
             </h2>
 
             <Receipts resultRendering={resultRendering} />
@@ -64,7 +68,7 @@ export function TxResultRenderer({
       return (
         <Layout>
           <article>
-            <figure data-state={resultRendering.phase}>
+            <figure data-state={phase}>
               <DoneIcon />
             </figure>
 
@@ -80,18 +84,17 @@ export function TxResultRenderer({
       return (
         <Layout>
           <article>
-            {resultRendering.failedReason?.error instanceof PollingTimeout ? (
+            {failedReason?.error instanceof PollingTimeout ? (
               <figure data-state={TxStreamPhase.SUCCEED}>
                 <AccessTime />
               </figure>
             ) : (
-              <figure data-state={resultRendering.phase}>
+              <figure data-state={phase}>
                 <Close />
               </figure>
             )}
 
-            {resultRendering.failedReason &&
-              renderTxFailedReason(resultRendering.failedReason)}
+            {failedReason && renderTxFailedReason(failedReason)}
 
             <Receipts resultRendering={resultRendering} />
 
