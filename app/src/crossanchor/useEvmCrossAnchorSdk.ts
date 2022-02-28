@@ -22,7 +22,7 @@ export const useEvmCrossAnchorSdk = () => {
 
     return new EvmCrossAnchorSdk(network, lcd, provider, {
       skipRedemption: false,
-      unlimitedAllowance: false,
+      unlimitedAllowance: true,
     });
   }, [chainId, provider, lcd]);
 };

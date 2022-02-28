@@ -21,7 +21,7 @@ export const useTx = <TxParams, TxResult>(
     (txParams: TxParams) => {
       const sdkEvents = new BehaviorSubject<TxResultRendering<TxResult>>({
         value: emptyTxResult,
-        message: 'Processing transaction..',
+        message: 'Processing transaction...',
         phase: TxStreamPhase.BROADCAST,
         receipts: [],
       });
