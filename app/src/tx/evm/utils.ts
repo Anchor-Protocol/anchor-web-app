@@ -3,32 +3,27 @@ import {
   CrossChainEventKind,
 } from '@anchor-protocol/crossanchor-sdk';
 import { TxStreamPhase } from '@libs/app-fns';
-import { formatUnits, parseUnits } from '@ethersproject/units';
-import { BigNumberish } from 'ethers';
-import { ConnectType } from '@libs/evm-wallet';
-
-const decimals = 6;
+import { ConnectType, EvmChainId } from '@libs/evm-wallet';
+import { floor } from '@libs/big-math';
+import big from 'big.js';
 
 export const TX_GAS_LIMIT = 250000;
 
-// TODO: replace fromWei and toWei with proper formatting functions
-export function fromWei(value: BigNumberish): string {
-  return formatUnits(value, decimals);
-}
+export const toWei = (str: string) => str;
 
-export function toWei(value: BigNumberish): string {
-  return parseUnits(String(value), decimals).toString();
+export function formatInput(value: string): string {
+  return floor(big(value)).toFixed();
 }
 
 export const txResult = (
   event: CrossChainEvent,
   connnectType: ConnectType,
-  chain: string,
+  chainId: EvmChainId,
   action: string,
 ) => {
   return {
     value: null,
-    message: txResultMessage(event, connnectType, chain, action),
+    message: txResultMessage(event, connnectType, chainId, action),
     phase: TxStreamPhase.BROADCAST,
     receipts: [],
   };
@@ -37,7 +32,7 @@ export const txResult = (
 const txResultMessage = (
   event: CrossChainEvent,
   connnectType: ConnectType,
-  chain: string,
+  chainId: EvmChainId,
   action: string,
 ) => {
   switch (event.kind) {
@@ -49,26 +44,48 @@ const txResultMessage = (
       )} notification should appear soon...`;
     case CrossChainEventKind.RemoteChainTxExecuted:
       return `${capitalize(
-        chain,
+        chain(chainId),
       )} transaction successful, waiting for Wormhole bridge...`;
     case CrossChainEventKind.RemoteChainWormholeEntered:
-      return `Entering Wormhole bridge on ${capitalize(chain)}...`;
+      return `Entering Wormhole bridge on ${capitalize(chain(chainId))}...`;
     case CrossChainEventKind.TerraWormholeEntered:
       return `Entering Terra, executing ${action} action...`;
     case CrossChainEventKind.TerraWormholeExited:
       return `Terra action executed, exiting Wormhole bridge on Terra...`;
     case CrossChainEventKind.RemoteChainTxSubmitted:
-      return `Waiting for ${action} transaction on ${capitalize(chain)}...`;
+      return `Waiting for ${action} transaction on ${capitalize(
+        chain(chainId),
+      )}...`;
     case CrossChainEventKind.RemoteChainApprovalRequested:
       return `Allowance requested. ${capitalize(
         connnectType,
       )} notification should appear soon...`;
     case CrossChainEventKind.RemoteChainApprovalSubmitted:
-      return `Waiting for approval transaction on ${capitalize(chain)}...`;
+      return `Waiting for approval transaction on ${capitalize(
+        chain(chainId),
+      )}...`;
+    case CrossChainEventKind.RemoteChainReturnTxRequested:
+      return `${capitalize(action)} requested. ${capitalize(
+        connnectType,
+      )} notification should appear soon...`;
+    case CrossChainEventKind.RemoteChainReturnTxSubmitted:
+      return `Waiting for ${action} transaction on ${capitalize(
+        chain(chainId),
+      )}...`;
   }
 };
 
 const capitalize = (word: string) => {
   const str = word.toLowerCase();
   return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+const chain = (chainId: EvmChainId) => {
+  switch (chainId) {
+    case EvmChainId.AVALANCHE:
+    case EvmChainId.AVALANCHE_FUJI_TESTNET:
+      return 'Avalanche';
+    default:
+      return 'Ethereum';
+  }
 };

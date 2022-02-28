@@ -115,8 +115,8 @@ function DepositDialogBase(props: DepositDialogProps) {
           <figure className="graph">
             <AmountSlider
               disabled={!account.connected}
-              max={Number(formatInput(demicrofy(maxAmount)))}
-              txFee={Number(formatOutput(demicrofy(txFee)))}
+              max={Number(demicrofy(maxAmount))}
+              txFee={Number(demicrofy(txFee))}
               value={Number(depositAmount)}
               onChange={(value) => {
                 updateDepositAmount(formatInput(value.toString() as UST));

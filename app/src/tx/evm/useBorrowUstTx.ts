@@ -19,7 +19,7 @@ export interface BorrowUstTxProps {
 export function useBorrowUstTx():
   | StreamReturn<BorrowUstTxProps, TxRender>
   | [null, null] {
-  const { address, connection, connectType } = useEvmWallet();
+  const { address, connection, connectType, chainId } = useEvmWallet();
   const evmSdk = useEvmCrossAnchorSdk();
 
   const borrowTx = useCallback(
@@ -32,15 +32,15 @@ export function useBorrowUstTx():
           console.log(event, 'eventEmitted');
 
           renderTxResults.next(
-            txResult(event, connectType, 'ethereum', 'borrow'),
+            txResult(event, connectType, chainId!, 'borrow'),
           );
         },
       );
     },
-    [address, connectType, evmSdk],
+    [address, connectType, evmSdk, chainId],
   );
 
   const borrowTxStream = useRedeemableTx(borrowTx, (resp) => resp.tx, null);
 
-  return connection && address ? borrowTxStream : [null, null];
+  return chainId && connection && address ? borrowTxStream : [null, null];
 }

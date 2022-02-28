@@ -19,7 +19,7 @@ export interface RepayUstTxProps {
 export function useRepayUstTx():
   | StreamReturn<RepayUstTxProps, TxRender>
   | [null, null] {
-  const { address, connection, connectType } = useEvmWallet();
+  const { address, connection, connectType, chainId } = useEvmWallet();
   const evmSdk = useEvmCrossAnchorSdk();
 
   const repayTx = useCallback(
@@ -31,16 +31,14 @@ export function useRepayUstTx():
         (event) => {
           console.log(event, 'eventEmitted');
 
-          renderTxResults.next(
-            txResult(event, connectType, 'ethereum', 'repay'),
-          );
+          renderTxResults.next(txResult(event, connectType, chainId!, 'repay'));
         },
       );
     },
-    [evmSdk, address, connectType],
+    [evmSdk, address, connectType, chainId],
   );
 
   const repayTxStream = useRedeemableTx(repayTx, (resp) => resp.tx, null);
 
-  return connection && address ? repayTxStream : [null, null];
+  return chainId && connection && address ? repayTxStream : [null, null];
 }

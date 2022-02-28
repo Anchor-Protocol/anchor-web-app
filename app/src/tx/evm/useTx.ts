@@ -46,6 +46,7 @@ export const useTx = <TxParams, TxResult>(
           )
           .pipe(
             catchError((error) => {
+              console.log('useTx error', error);
               throw error.code === 4001 ? new UserDenied() : error;
             }),
           ),

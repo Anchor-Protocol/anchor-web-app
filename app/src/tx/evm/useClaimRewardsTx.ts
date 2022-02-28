@@ -17,7 +17,7 @@ export interface ClaimRewardsTxProps {}
 export function useClaimRewardsTx():
   | StreamReturn<ClaimRewardsTxProps, TxResultRendering>
   | [null, null] {
-  const { address, connection, connectType } = useEvmWallet();
+  const { address, connection, connectType, chainId } = useEvmWallet();
   const evmSdk = useEvmCrossAnchorSdk();
 
   const claimRewards = useCallback(
@@ -26,11 +26,11 @@ export function useClaimRewardsTx():
         console.log(event, 'eventEmitted');
 
         renderTxResults.next(
-          txResult(event, connectType, 'ethereum', 'claim rewards'),
+          txResult(event, connectType, chainId!, 'claim rewards'),
         );
       });
     },
-    [address, connectType, evmSdk],
+    [address, connectType, evmSdk, chainId],
   );
 
   const claimRewardsStream = useRedeemableTx(
@@ -39,5 +39,5 @@ export function useClaimRewardsTx():
     null,
   );
 
-  return connection && address ? claimRewardsStream : [null, null];
+  return chainId && connection && address ? claimRewardsStream : [null, null];
 }

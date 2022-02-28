@@ -19,7 +19,7 @@ import { StreamStatus } from '@rx-stream/react';
 import { useAccount } from 'contexts/account';
 import { Error } from './components/Error';
 import { TxRendering } from './components/TxRenderer';
-import { useRedeemTokensTx, useRedemptionPayload } from 'tx/evm';
+import { useRedeemTokensTx, useRedemption } from 'tx/evm';
 
 type WormholePayloadType = ReturnType<typeof parseTransferPayload> & {
   timestamp: number;
@@ -90,9 +90,9 @@ function RedeemBase(props: UIElementProps) {
 
   const { connected } = useAccount();
 
-  const { redemptionPayload, loading } = useRedemptionPayload(Number(sequence));
+  const { redemption, loading } = useRedemption(Number(sequence));
 
-  const [redeemTokens, redeemTxResult] = useRedeemTokensTx(redemptionPayload);
+  const [redeemTokens, redeemTxResult] = useRedeemTokensTx(redemption);
 
   if (
     redeemTxResult?.status === StreamStatus.IN_PROGRESS ||
@@ -101,7 +101,7 @@ function RedeemBase(props: UIElementProps) {
     return <TxRendering className={className} txResult={redeemTxResult} />;
   }
 
-  if (!loading && !redemptionPayload) {
+  if (!loading && !redemption) {
     return <Error className={className} sequence={sequence} />;
   }
 
@@ -114,18 +114,18 @@ function RedeemBase(props: UIElementProps) {
           arcu, porttitor sed mollis at, pulvinar at lectus. Nam semper dui at
           quam sollicitudin, sit amet lacinia ligula eleifend.
         </p>
-        {!redemptionPayload ? (
+        {!redemption ? (
           <Loading />
         ) : (
           <RedemptionSummaryList
             sequence={sequence!}
-            payload={redemptionPayload}
+            payload={redemption as any}
           />
         )}
         <ViewAddressWarning>
           <ActionButton
             className="submit"
-            disabled={!connected || !redemptionPayload}
+            disabled={!connected || !redemption}
             onClick={() => {
               redeemTokens!({});
             }}
