@@ -5,7 +5,7 @@ import { TxResultRendering } from '@libs/app-fns';
 import { useTx } from './useTx';
 import { useCallback } from 'react';
 import { ContractReceipt } from '@ethersproject/contracts';
-import { RedemptionPayload } from '@anchor-protocol/crossanchor-sdk';
+import { Redemption } from '@anchor-protocol/crossanchor-sdk';
 
 type TxResult = ContractReceipt | null;
 type TxRender = TxResultRendering<TxResult>;
@@ -13,16 +13,16 @@ type TxRender = TxResultRendering<TxResult>;
 export interface RedeemTokensTxProps {}
 
 export function useRedeemTokensTx(
-  redemptionPayload?: RedemptionPayload,
+  redemption?: Redemption,
 ): StreamReturn<RedeemTokensTxProps, TxRender> | [null, null] {
   const { connection } = useEvmWallet();
   const evmSdk = useEvmCrossAnchorSdk();
 
   const redeemTx = useCallback(() => {
-    return evmSdk.redeemTokens(redemptionPayload!);
-  }, [evmSdk, redemptionPayload]);
+    return evmSdk.redeemTokens(redemption!);
+  }, [evmSdk, redemption]);
 
   const redeemTxStream = useTx(redeemTx, (resp) => resp, null);
 
-  return connection && redemptionPayload ? redeemTxStream : [null, null];
+  return connection && redemption ? redeemTxStream : [null, null];
 }

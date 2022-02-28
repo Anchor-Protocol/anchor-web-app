@@ -22,34 +22,6 @@ type UseWithdrawUstTxReturn =
   | StreamReturn<WithdrawUstTxProps, TxRender>
   | [null, null];
 
-// export function useWithdrawUstTx(): UseWithdrawUstTxReturn {
-//   const { address, connection, connectType } = useEvmWallet();
-//   const evmSdk = useEvmCrossAnchorSdk();
-
-//   const { aUST: { formatInput, microfy } } = useFormatters();
-
-//   const withdrawTx = useCallback(
-//     (txParams: WithdrawUstTxProps, renderTxResults: Subject<TxRender>) => {
-//       const withdrawAmount = microfy(formatInput(txParams.withdrawAmount));
-//       return evmSdk.redeemStable(
-//         toWei(withdrawAmount),
-//         address!,
-//         TX_GAS_LIMIT,
-//         (event) => {
-//           renderTxResults.next(
-//             txResult(event, connectType, 'ethereum', 'withdraw'),
-//           );
-//         },
-//       );
-//     },
-//     [evmSdk, address, connectType],
-//   );
-
-//   const withdrawTxStream = useRedeemableTx(withdrawTx, (resp) => resp.tx, null);
-
-//   return connection && address ? withdrawTxStream : [null, null];
-// }
-
 export function useWithdrawUstTx(): UseWithdrawUstTxReturn {
   const {
     address,
@@ -80,7 +52,7 @@ export function useWithdrawUstTx(): UseWithdrawUstTxReturn {
         TX_GAS_LIMIT,
         (event) => {
           renderTxResults.next(
-            txResult(event, connectType, 'ethereum', 'withdraw'),
+            txResult(event, connectType, chainId, 'withdraw'),
           );
         },
       );
@@ -91,7 +63,7 @@ export function useWithdrawUstTx(): UseWithdrawUstTxReturn {
         TX_GAS_LIMIT,
         (event) => {
           renderTxResults.next(
-            txResult(event, connectType, 'ethereum', 'withdraw'),
+            txResult(event, connectType, chainId, 'withdraw'),
           );
         },
       );
@@ -101,5 +73,5 @@ export function useWithdrawUstTx(): UseWithdrawUstTxReturn {
 
   const withdrawTxStream = useRedeemableTx(withdrawTx, (resp) => resp.tx, null);
 
-  return connection && address ? withdrawTxStream : [null, null];
+  return chainId && connection && address ? withdrawTxStream : [null, null];
 }

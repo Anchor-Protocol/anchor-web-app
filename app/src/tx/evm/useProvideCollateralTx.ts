@@ -22,7 +22,7 @@ export interface ProvideCollateralTxProps {
 export function useProvideCollateralTx():
   | StreamReturn<ProvideCollateralTxProps, TxRender>
   | [null, null] {
-  const { address, connection, connectType } = useEvmWallet();
+  const { address, connection, connectType, chainId } = useEvmWallet();
   const evmSdk = useEvmCrossAnchorSdk();
 
   const provideTx = useCallback(
@@ -39,15 +39,15 @@ export function useProvideCollateralTx():
           console.log(event, 'eventEmitted');
 
           renderTxResults.next(
-            txResult(event, connectType, 'ethereum', 'lock collateral'),
+            txResult(event, connectType, chainId!, 'lock collateral'),
           );
         },
       );
     },
-    [evmSdk, address, connectType],
+    [evmSdk, address, connectType, chainId],
   );
 
   const provideTxStream = useRedeemableTx(provideTx, (resp) => resp.tx, null);
 
-  return connection && address ? provideTxStream : [null, null];
+  return chainId && connection && address ? provideTxStream : [null, null];
 }

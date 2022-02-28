@@ -23,7 +23,7 @@ export interface WithdrawCollateralTxProps {
 export function useWithdrawCollateralTx():
   | StreamReturn<WithdrawCollateralTxProps, TxRender>
   | [null, null] {
-  const { address, connection, connectType } = useEvmWallet();
+  const { address, connection, connectType, chainId } = useEvmWallet();
   const evmSdk = useEvmCrossAnchorSdk();
 
   const withdrawTx = useCallback(
@@ -40,15 +40,15 @@ export function useWithdrawCollateralTx():
           console.log(event, 'eventEmitted');
 
           renderTxResults.next(
-            txResult(event, connectType, 'ethereum', 'withdraw'),
+            txResult(event, connectType, chainId!, 'withdraw'),
           );
         },
       );
     },
-    [evmSdk, address, connectType],
+    [evmSdk, address, connectType, chainId],
   );
 
   const withdrawTxStream = useRedeemableTx(withdrawTx, (resp) => resp.tx, null);
 
-  return connection && address ? withdrawTxStream : [null, null];
+  return chainId && connection && address ? withdrawTxStream : [null, null];
 }

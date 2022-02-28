@@ -131,8 +131,8 @@ function WithdrawDialogBase(props: WithdrawDialogProps) {
           <figure className="graph">
             <AmountSlider
               disabled={!connected}
-              max={Number(formatInput(demicrofy(totalDeposit)))}
-              txFee={Number(formatOutput(demicrofy(txFee)))}
+              max={Number(demicrofy(totalDeposit))}
+              txFee={Number(demicrofy(txFee))}
               value={Number(withdrawAmount)}
               onChange={(value) => {
                 updateWithdrawAmount(formatInput(value.toString() as UST));
