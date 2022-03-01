@@ -40,7 +40,7 @@ const txResultMessage = (
     case CrossChainEventKind.RemoteChainTxRequested:
       return `${capitalize(action)} requested. ${capitalize(
         connnectType,
-      )} notification should appear soon...`;
+      )} notification should appear soon..`;
     case CrossChainEventKind.RemoteChainTxExecuted:
       return `${capitalize(
         chain(chainId),
