@@ -41,7 +41,7 @@ export function useRepayUstTx():
       );
 
       return xAnchor.repayStable(amount, address!, TX_GAS_LIMIT, (event) => {
-        console.log(event, 'eventEmitted');
+        console.log(event, 'eventEmitted ');
 
         renderTxResults.next(txResult(event, connectType, chainId!, 'repay'));
       });
