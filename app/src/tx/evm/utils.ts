@@ -8,8 +8,6 @@ import { StreamReturn } from '@rx-stream/react';
 
 export const TX_GAS_LIMIT = 250000;
 
-export const toWei = (str: string) => str;
-
 export type UseTxReturn<T, V> =
   | StreamReturn<T, TxResultRendering<V>>
   | [null, null];
