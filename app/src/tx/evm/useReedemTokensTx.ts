@@ -19,7 +19,7 @@ export function useRedeemTokensTx(
   const evmSdk = useEvmCrossAnchorSdk();
 
   const redeemTx = useCallback(() => {
-    return evmSdk.redeemTokens(redemption!);
+    return evmSdk.redeemTokens(redemption!.outgoingSequence);
   }, [evmSdk, redemption]);
 
   const redeemTxStream = useTx(redeemTx, (resp) => resp, null);

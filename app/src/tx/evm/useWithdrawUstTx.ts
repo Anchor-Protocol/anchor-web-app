@@ -8,7 +8,6 @@ import { ContractReceipt } from 'ethers';
 import { CrossChainTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { useRedeemableTx } from './useRedeemableTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
-import { getAddress } from 'configurations/evm/addresses';
 
 type TxResult = CrossChainTxResponse<ContractReceipt> | null;
 
@@ -42,9 +41,9 @@ export function useWithdrawUstTx(): UseTxReturn<WithdrawUstTxProps, TxResult> {
       ).toString();
 
       await xAnchor.approveLimit(
-        getAddress(chainId, 'aUST'),
-        address!,
+        'aust',
         withdrawAmount,
+        address!,
         TX_GAS_LIMIT,
         (event) => {
           renderTxResults.next(

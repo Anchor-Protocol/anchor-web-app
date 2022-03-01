@@ -26,7 +26,7 @@ export function useDepositUstTx():
     connectType,
     chainId = EvmChainId.ETHEREUM_ROPSTEN,
   } = useEvmWallet();
-  const evmSdk = useEvmCrossAnchorSdk();
+  const xAnchor = useEvmCrossAnchorSdk();
   const {
     ust: { microfy, formatInput },
   } = useFormatters();
@@ -37,7 +37,21 @@ export function useDepositUstTx():
         formatInput(txParams.depositAmount),
       ).toString();
 
-      return evmSdk.depositStable(
+      console.log('depositAmount', depositAmount);
+
+      await xAnchor.approveLimit(
+        'ust',
+        depositAmount,
+        address!,
+        TX_GAS_LIMIT,
+        (event) => {
+          renderTxResults.next(
+            txResult(event, connectType, chainId, 'deposit'),
+          );
+        },
+      );
+
+      return xAnchor.depositStable(
         depositAmount,
         address!,
         TX_GAS_LIMIT,
@@ -50,7 +64,7 @@ export function useDepositUstTx():
         },
       );
     },
-    [address, connectType, evmSdk, chainId, microfy, formatInput],
+    [address, connectType, xAnchor, chainId, microfy, formatInput],
   );
 
   const depositTxStream = useRedeemableTx(depositTx, (resp) => resp.tx, null);
