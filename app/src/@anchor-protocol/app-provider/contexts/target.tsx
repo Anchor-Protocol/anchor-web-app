@@ -2,7 +2,7 @@ import React from 'react';
 import { UIElementProps } from '@libs/ui';
 import { createContext, useContext } from 'react';
 import { useMemo, useState } from 'react';
-import { useLocalStorage } from '@libs/use-local-storage';
+import { useLocalStorage } from 'usehooks-ts';
 
 export enum Chain {
   Terra = 'Terra',
@@ -60,7 +60,7 @@ const DeploymentTargetProvider = (props: UIElementProps) => {
 
   const [chain, setChain] = useLocalStorage<string>(
     '__anchor_deployment_target__',
-    () => DEPLOYMENT_TARGETS[0].chain,
+    DEPLOYMENT_TARGETS[0].chain,
   );
 
   const [target, updateTarget] = useState(

@@ -16,7 +16,7 @@ type Redemptions = { [key: OutgoingSequence]: Redemption };
 export const useRedemptionStorage = () => {
   const [redemptions, setRedemptions] = useLocalStorage<Redemptions>(
     REDEMPTIONS_STORAGE_KEY,
-    [],
+    {},
   );
 
   const saveRedemption = useCallback(

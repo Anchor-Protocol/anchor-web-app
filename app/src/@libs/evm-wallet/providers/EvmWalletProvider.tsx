@@ -1,8 +1,8 @@
-import { useLocalStorage } from '@libs/use-local-storage';
 import React, { createContext, ReactNode, useCallback, useMemo } from 'react';
 import { ConnectorData, useConnectors } from '../connectors';
 import { Connection, ConnectType, WalletStatus } from '../types';
 import { availableConnectTypes, availableConnections } from '../constants';
+import { useLocalStorage } from 'usehooks-ts';
 
 export type EvmWallet = {
   actions: {
@@ -21,7 +21,7 @@ export const EvmWalletContext = createContext<EvmWallet | undefined>(undefined);
 export function EvmWalletProvider({ children }: { children: ReactNode }) {
   const [connectType, setConnectType] = useLocalStorage<ConnectType | 'null'>(
     '__anchor_evm_wallet_connect_type__',
-    () => 'null',
+    'null',
   );
 
   const connectors = useConnectors();
