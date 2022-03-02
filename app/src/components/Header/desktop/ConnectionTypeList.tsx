@@ -14,12 +14,6 @@ function ConnectionTypeListBase({
   children,
 }: ConnectionTypeListProps) {
   return (
-    // <section className={className}>
-    //   <h1>Connect Wallet</h1>
-    //   {children}
-    //   {footer && <hr />}
-    //   {footer}
-    // </section>
     <ButtonList className={className} title="Connect Wallet" footer={footer}>
       {children}
     </ButtonList>

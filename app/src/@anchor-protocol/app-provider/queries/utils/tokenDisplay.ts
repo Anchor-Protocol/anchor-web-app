@@ -29,7 +29,6 @@ export const useQueryWithTokenDisplay = <Data, DataWithTokenDisplay>(
     if (!queryResult.data || !tokenDisplayInfos.data) {
       return EMPTY_QUERY_RESULT;
     }
-
     return {
       ...queryResult,
       data: withTokenDisplay(

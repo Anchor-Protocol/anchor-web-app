@@ -29,7 +29,7 @@ export function useBorrowMarketQuery(): UseQueryResult<
     queryFn,
     {
       refetchInterval: 1000 * 60 * 5,
-      keepPreviousData: true,
+      keepPreviousData: false,
       onError: queryErrorReporter,
     },
   );

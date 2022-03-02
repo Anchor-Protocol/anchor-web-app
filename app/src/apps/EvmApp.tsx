@@ -5,6 +5,7 @@ import { Dashboard } from 'pages/dashboard';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { EvmAppProviders } from 'providers/evm/EvmAppProviders';
 import { Earn } from 'pages/earn';
+import { Borrow } from 'pages/borrow';
 import { TermsOfService } from 'pages/terms';
 import { Redeem } from 'pages/bridge/redeem';
 import { Mypage } from 'pages/mypage';
@@ -19,8 +20,9 @@ export function EvmApp() {
         <Header />
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/earn" element={<Earn />} />
           <Route path="/mypage" element={<Mypage />} />
+          <Route path="/earn" element={<Earn />} />
+          <Route path="/borrow" element={<Borrow />} />
           <Route path="/terms" element={<TermsOfService />} />
           <Route path="/bridge/redeem/:sequence" element={<Redeem />} />
           <Route path={`/claim/all`} element={<ClaimAll />} />

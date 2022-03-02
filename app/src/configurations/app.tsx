@@ -2,6 +2,7 @@ import {
   AnchorConstants,
   AnchorContractAddress,
   AnchorWebappProvider,
+  useNetwork,
 } from '@anchor-protocol/app-provider';
 import { AppProvider } from '@libs/app-provider';
 import { GlobalStyle } from '@libs/neumorphism-ui/themes/GlobalStyle';
@@ -22,7 +23,7 @@ import {
   ANCHOR_TX_REFETCH_MAP,
 } from 'env';
 import { JobsProvider } from 'jobs/Jobs';
-import React, { ReactNode, useCallback } from 'react';
+import React, { ReactNode, useCallback, useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter as Router } from 'react-router-dom';
 
@@ -34,6 +35,11 @@ const errorReporter =
   process.env.NODE_ENV === 'production' ? captureException : undefined;
 
 function Providers({ children }: { children: ReactNode }) {
+  const network = useNetwork();
+  useEffect(() => {
+    queryClient.invalidateQueries();
+  }, [network.chainID]);
+
   return (
     <Router>
       <QueryClientProvider client={queryClient}>

@@ -42,7 +42,7 @@ const useMenus = (): RouteMenu[] => {
   } = useDeploymentTarget();
   return useMemo(() => {
     if (isEVM) {
-      return [dashboard, myPage, earn];
+      return [dashboard, myPage, earn, borrow];
     }
     return [dashboard, myPage, earn, borrow, bAsset, govern];
   }, [isEVM]);
