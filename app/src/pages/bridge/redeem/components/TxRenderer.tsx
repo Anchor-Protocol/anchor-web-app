@@ -4,7 +4,7 @@ import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { UIElementProps } from 'components/layouts/UIElementProps';
 import { useNavigate } from 'react-router-dom';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
-import { StreamStatus, StreamInProgress, StreamDone } from '@rx-stream/react';
+import { StreamInProgress, StreamDone } from '@rx-stream/react';
 import { TxResultRendering } from '@libs/app-fns';
 
 interface LoadingProps extends UIElementProps {
@@ -18,15 +18,13 @@ function TxRendering(props: LoadingProps) {
 
   const navigate = useNavigate();
 
-  const onExit =
-    txResult.status === StreamStatus.DONE
-      ? () => navigate('/mypage')
-      : () => {};
-
   return (
     <CenteredLayout className={className} maxWidth={800}>
       <Section>
-        <TxResultRenderer resultRendering={txResult.value} onExit={onExit} />
+        <TxResultRenderer
+          resultRendering={txResult.value}
+          onExit={() => navigate('/mypage')}
+        />
       </Section>
     </CenteredLayout>
   );

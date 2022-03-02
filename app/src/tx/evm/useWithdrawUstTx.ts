@@ -5,9 +5,13 @@ import { txResult, TX_GAS_LIMIT, UseTxReturn } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { ContractReceipt } from 'ethers';
-import { CrossChainTxResponse } from '@anchor-protocol/crossanchor-sdk';
+import {
+  CrossChainEventHandler,
+  CrossChainTxResponse,
+} from '@anchor-protocol/crossanchor-sdk';
 import { useRedeemableTx } from './useRedeemableTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
+import { aUST } from '@anchor-protocol/types';
 
 type TxResult = CrossChainTxResponse<ContractReceipt> | null;
 
@@ -28,13 +32,14 @@ export function useWithdrawUstTx(): UseTxReturn<WithdrawUstTxProps, TxResult> {
   const xAnchor = useEvmCrossAnchorSdk();
 
   const {
-    aUST: { formatInput, microfy },
+    aUST: { formatInput, microfy, formatOutput },
   } = useFormatters();
 
   const withdrawTx = useCallback(
     async (
       txParams: WithdrawUstTxProps,
       renderTxResults: Subject<TxRender>,
+      handleEvent: CrossChainEventHandler,
     ) => {
       const withdrawAmount = microfy(
         formatInput(txParams.withdrawAmount),
@@ -49,6 +54,7 @@ export function useWithdrawUstTx(): UseTxReturn<WithdrawUstTxProps, TxResult> {
           renderTxResults.next(
             txResult(event, connectType, chainId, 'withdraw'),
           );
+          handleEvent(event);
         },
       );
 
@@ -60,13 +66,22 @@ export function useWithdrawUstTx(): UseTxReturn<WithdrawUstTxProps, TxResult> {
           renderTxResults.next(
             txResult(event, connectType, chainId, 'withdraw'),
           );
+          handleEvent(event);
         },
       );
     },
     [xAnchor, address, connectType, formatInput, microfy, chainId],
   );
 
-  const withdrawTxStream = useRedeemableTx(withdrawTx, (resp) => resp.tx, null);
+  const withdrawTxStream = useRedeemableTx(
+    withdrawTx,
+    (resp) => resp.tx,
+    null,
+    (txParams) => ({
+      action: 'redeemStable',
+      amount: `${formatOutput(txParams.withdrawAmount as aUST)} aUST`,
+    }),
+  );
 
   return chainId && connection && address ? withdrawTxStream : [null, null];
 }

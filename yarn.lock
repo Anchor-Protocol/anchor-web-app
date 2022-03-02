@@ -14,16 +14,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@anchor-protocol/crossanchor-sdk@npm:^0.1.2-alpha.50":
-  version: 0.1.2-alpha.50
-  resolution: "@anchor-protocol/crossanchor-sdk@npm:0.1.2-alpha.50"
+"@anchor-protocol/crossanchor-sdk@npm:^0.1.2-alpha.60":
+  version: 0.1.2-alpha.60
+  resolution: "@anchor-protocol/crossanchor-sdk@npm:0.1.2-alpha.60"
   dependencies:
     "@certusone/wormhole-sdk": ^0.2.0
     "@terra-money/terra.js": ^3.0.2
     big.js: ^6.1.1
     ethers: ^5.5.4
     toml: ^3.0.0
-  checksum: bbc3d53e1002d4621c7e1ab4cd341db02c6b22cb0aaed2a10fceeb6380aca0c1a21afcddae28b3914f92a2827f701fe3df40c99415d3b832dd83863d0fc5f606
+  checksum: acefd2e6db793ebddefa1bd1870f58dd78437f2e2a24b1546f8f6e5e41d1277124482b159bf2a8d6d051ae40f1a881224764c894d2d60b6c232ed9500fbb77e4
   languageName: node
   linkType: hard
 
@@ -31,7 +31,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@anchor-web-app/app@workspace:app"
   dependencies:
-    "@anchor-protocol/crossanchor-sdk": ^0.1.2-alpha.50
+    "@anchor-protocol/crossanchor-sdk": ^0.1.2-alpha.60
     "@certusone/wormhole-sdk": ^0.2.0
     "@ethersproject/contracts": ^5.5.0
     "@material-ui/core": ^4.11.3
@@ -126,6 +126,7 @@ __metadata:
     tsconfig-paths: ^3.10.1
     typescript: 4.5.5
     use-resize-observer: ^7.0.0
+    usehooks-ts: ^2.4.2
     vite: ^2.4.4
     vite-compatible-readable-stream: ^3.6.0
     vite-plugin-svgr: ^0.4.0
@@ -26246,6 +26247,15 @@ __metadata:
   version: 3.1.1
   resolution: "use@npm:3.1.1"
   checksum: 08a130289f5238fcbf8f59a18951286a6e660d17acccc9d58d9b69dfa0ee19aa038e8f95721b00b432c36d1629a9e32a464bf2e7e0ae6a244c42ddb30bdd8b33
+  languageName: node
+  linkType: hard
+
+"usehooks-ts@npm:^2.4.2":
+  version: 2.4.2
+  resolution: "usehooks-ts@npm:2.4.2"
+  peerDependencies:
+    react: ">=16.8.0"
+  checksum: 6dd14bb5301f80061443c5ab00b07779e0186c8c3b022138fb23431e05cb5067a266f82b39585dce262d66e5fc4a174032d4e47c7f5428bfd90f601ec624800e
   languageName: node
   linkType: hard
 

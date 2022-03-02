@@ -6,14 +6,17 @@ import { TxReceipt, TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import { truncateEvm } from '@libs/formatter';
 import { catchTxError } from './catchTxError';
 import { useAnchorWebapp } from '@anchor-protocol/app-provider';
+import { CrossChainEventHandler } from '@anchor-protocol/crossanchor-sdk';
 
 export const useTx = <TxParams, TxResult>(
   sendTx: (
     txParams: TxParams,
     renderTxResults: Subject<TxResultRendering<TxResult>>,
+    handleEvent: CrossChainEventHandler,
   ) => Promise<TxResult>,
   parseTx: (txResult: NonNullable<TxResult>) => ContractReceipt,
   emptyTxResult: TxResult,
+  onTxEvent: CrossChainEventHandler = () => {},
 ): StreamReturn<TxParams, TxResultRendering<TxResult>> => {
   const { txErrorReporter } = useAnchorWebapp();
 
@@ -27,9 +30,11 @@ export const useTx = <TxParams, TxResult>(
       });
 
       return merge(
-        from(sendTx(txParams, sdkEvents))
+        from(sendTx(txParams, sdkEvents, onTxEvent))
           .pipe(
             map((txResult) => {
+              sdkEvents.complete();
+
               return {
                 value: emptyTxResult,
                 phase: TxStreamPhase.SUCCEED,
@@ -45,7 +50,7 @@ export const useTx = <TxParams, TxResult>(
         }),
       );
     },
-    [sendTx, emptyTxResult, parseTx, txErrorReporter],
+    [sendTx, emptyTxResult, parseTx, txErrorReporter, onTxEvent],
   );
 
   return useStream(txCallback);

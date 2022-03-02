@@ -7,11 +7,13 @@ import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import {
   Collateral,
+  CrossChainEventHandler,
   CrossChainTxResponse,
 } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from '@ethersproject/contracts';
 import { useRedeemableTx } from './useRedeemableTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
+import { UST } from '@libs/types';
 
 type TxResult = CrossChainTxResponse<ContractReceipt> | null;
 type TxRender = TxResultRendering<TxResult>;
@@ -27,13 +29,14 @@ export function useProvideCollateralTx():
   const { address, connection, connectType, chainId } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
   const {
-    ust: { microfy, formatInput },
+    ust: { microfy, formatInput, formatOutput },
   } = useFormatters();
 
   const provideTx = useCallback(
     async (
       txParams: ProvideCollateralTxProps,
       renderTxResults: Subject<TxRender>,
+      handleEvent: CrossChainEventHandler,
     ) => {
       const amount = microfy(formatInput(txParams.amount)).toString();
 
@@ -47,6 +50,7 @@ export function useProvideCollateralTx():
           renderTxResults.next(
             txResult(event, connectType, chainId!, 'lock collateral'),
           );
+          handleEvent(event);
         },
       );
 
@@ -61,13 +65,22 @@ export function useProvideCollateralTx():
           renderTxResults.next(
             txResult(event, connectType, chainId!, 'lock collateral'),
           );
+          handleEvent(event);
         },
       );
     },
     [xAnchor, address, connectType, chainId, formatInput, microfy],
   );
 
-  const provideTxStream = useRedeemableTx(provideTx, (resp) => resp.tx, null);
+  const provideTxStream = useRedeemableTx(
+    provideTx,
+    (resp) => resp.tx,
+    null,
+    (txParams) => ({
+      action: 'lockCollateral',
+      amount: `${formatOutput(txParams.amount as UST)} UST`,
+    }),
+  );
 
   return chainId && connection && address ? provideTxStream : [null, null];
 }

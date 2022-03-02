@@ -4,19 +4,11 @@ import styled from 'styled-components';
 
 export interface SnackbarContainerProps {
   className?: string;
-  children: any;
 }
 
-function SnackbarContainerBase({
-  className,
-  children,
-}: SnackbarContainerProps) {
+function SnackbarContainerBase({ className }: SnackbarContainerProps) {
   const { snackbarContainerRef } = useSnackbar();
-  return (
-    <div ref={snackbarContainerRef} className={className}>
-      {children}
-    </div>
-  );
+  return <div ref={snackbarContainerRef} className={className} />;
 }
 
 export const SnackbarContainer = styled(SnackbarContainerBase)`

@@ -10,20 +10,14 @@ import styled, { useTheme } from 'styled-components';
 import { useParams } from 'react-router-dom';
 import { GuardSpinner } from 'react-spinners-kit';
 import { HorizontalDashedRuler } from '@libs/neumorphism-ui/components/HorizontalDashedRuler';
-import {
-  hexToNativeString,
-  parseTransferPayload,
-} from '@certusone/wormhole-sdk';
+import { hexToNativeString } from '@certusone/wormhole-sdk';
 import { useWormholeAsset } from '@anchor-protocol/wormhole';
 import { StreamStatus } from '@rx-stream/react';
 import { useAccount } from 'contexts/account';
 import { Error } from './components/Error';
 import { TxRendering } from './components/TxRenderer';
 import { useRedeemTokensTx, useRedemption } from 'tx/evm';
-
-type WormholePayloadType = ReturnType<typeof parseTransferPayload> & {
-  timestamp: number;
-};
+import { Redemption } from 'tx/evm/storage/useRedemptionStorage';
 
 const formatDate = (date: Date): string => {
   return `${date.toLocaleDateString('en-US', {
@@ -35,27 +29,26 @@ const formatDate = (date: Date): string => {
 };
 
 interface RedemptionSummaryListProps {
-  sequence: string;
-  payload: WormholePayloadType;
+  redemption: Redemption;
 }
 
 const RedemptionSummaryList = (props: RedemptionSummaryListProps) => {
   const {
-    sequence,
-    payload: {
+    display,
+    tokenTransferVAA: {
+      sequence,
       timestamp,
-      amount,
-      originChain,
-      originAddress,
-      targetChain,
-      targetAddress,
+      payload: { amount, targetAddress, targetChain },
     },
-  } = props;
+  } = props.redemption;
 
-  const { formatter } = useWormholeAsset(originAddress, originChain);
+  const { formatter } = useWormholeAsset(targetAddress, targetChain);
 
   return (
     <TxFeeList className="receipt">
+      {display?.action && (
+        <TxFeeListItem label="Action">{display.action}</TxFeeListItem>
+      )}
       <TxFeeListItem label="Sequence">{sequence}</TxFeeListItem>
       <TxFeeListItem label="Timestamp">
         {formatDate(new Date(timestamp * 1000))}
@@ -63,7 +56,9 @@ const RedemptionSummaryList = (props: RedemptionSummaryListProps) => {
       <TxFeeListItem label="Target Address">
         {truncateEvm(hexToNativeString(targetAddress, targetChain))}
       </TxFeeListItem>
-      <TxFeeListItem label="Amount">{formatter(amount)}</TxFeeListItem>
+      <TxFeeListItem label="Amount">
+        {display?.amount ?? formatter(amount.toString())}
+      </TxFeeListItem>
     </TxFeeList>
   );
 };
@@ -110,17 +105,14 @@ function RedeemBase(props: UIElementProps) {
       <Section>
         <h1>Redeem</h1>
         <p className="text">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec odio
-          arcu, porttitor sed mollis at, pulvinar at lectus. Nam semper dui at
-          quam sollicitudin, sit amet lacinia ligula eleifend.
+          Due to asynchronous nature of bridges, cross-chain transactions
+          require users to manually redeem thier tokens after a transaction is
+          processed on Anchor and sent back to the origin chain.
         </p>
         {!redemption ? (
           <Loading />
         ) : (
-          <RedemptionSummaryList
-            sequence={sequence!}
-            payload={redemption as any}
-          />
+          <RedemptionSummaryList redemption={redemption} />
         )}
         <ViewAddressWarning>
           <ActionButton
