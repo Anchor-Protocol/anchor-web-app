@@ -6,9 +6,13 @@ import { txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { ContractReceipt } from 'ethers';
-import { CrossChainTxResponse } from '@anchor-protocol/crossanchor-sdk';
+import {
+  CrossChainEventHandler,
+  CrossChainTxResponse,
+} from '@anchor-protocol/crossanchor-sdk';
 import { useRedeemableTx } from './useRedeemableTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
+import { UST } from '@libs/types';
 
 type TxResult = CrossChainTxResponse<ContractReceipt> | null;
 type TxRender = TxResultRendering<TxResult>;
@@ -28,11 +32,15 @@ export function useDepositUstTx():
   } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
   const {
-    ust: { microfy, formatInput },
+    ust: { microfy, formatInput, formatOutput },
   } = useFormatters();
 
   const depositTx = useCallback(
-    async (txParams: DepositUstTxProps, renderTxResults: Subject<TxRender>) => {
+    async (
+      txParams: DepositUstTxProps,
+      renderTxResults: Subject<TxRender>,
+      handleEvent: CrossChainEventHandler,
+    ) => {
       const depositAmount = microfy(
         formatInput(txParams.depositAmount),
       ).toString();
@@ -48,6 +56,7 @@ export function useDepositUstTx():
           renderTxResults.next(
             txResult(event, connectType, chainId, 'deposit'),
           );
+          handleEvent(event);
         },
       );
 
@@ -61,13 +70,22 @@ export function useDepositUstTx():
           renderTxResults.next(
             txResult(event, connectType, chainId, 'deposit'),
           );
+          handleEvent(event);
         },
       );
     },
     [address, connectType, xAnchor, chainId, microfy, formatInput],
   );
 
-  const depositTxStream = useRedeemableTx(depositTx, (resp) => resp.tx, null);
+  const depositTxStream = useRedeemableTx(
+    depositTx,
+    (resp) => resp.tx,
+    null,
+    (txParams) => ({
+      action: 'depositStable',
+      amount: `${formatOutput(txParams.depositAmount as UST)} UST`,
+    }),
+  );
 
   return chainId && connection && address ? depositTxStream : [null, null];
 }

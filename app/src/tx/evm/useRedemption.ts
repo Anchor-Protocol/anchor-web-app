@@ -1,7 +1,10 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { useEffect, useState } from 'react';
-import { Redemption } from '@anchor-protocol/crossanchor-sdk';
+import {
+  Redemption,
+  useRedemptionStorage,
+} from './storage/useRedemptionStorage';
 
 type RedemptionResponse = {
   redemption: Redemption | undefined;
@@ -9,7 +12,10 @@ type RedemptionResponse = {
 };
 
 export function useRedemption(outgoingSequence: number): RedemptionResponse {
-  const [redemption, setRedemption] = useState<Redemption>();
+  const { redemptions } = useRedemptionStorage();
+  const [redemption, setRedemption] = useState<Redemption | undefined>(
+    redemptions.find((r) => r.outgoingSequence === outgoingSequence),
+  );
   const [loading, setLoading] = useState<boolean>(false);
   const { connection } = useEvmWallet();
   const evmSdk = useEvmCrossAnchorSdk();
@@ -19,9 +25,9 @@ export function useRedemption(outgoingSequence: number): RedemptionResponse {
 
     evmSdk
       .redemption(outgoingSequence)
-      .then((payload) => setRedemption(payload))
+      .then((resp) => setRedemption({ ...redemption, ...resp }))
       .finally(() => setLoading(false));
-  }, [evmSdk, outgoingSequence]);
+  }, [evmSdk, outgoingSequence, redemption]);
 
   const result = (connection && redemption) ?? undefined;
 

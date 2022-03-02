@@ -9,13 +9,14 @@ const catchTxError = <TxResult>(
   params: CatchTxErrorParams,
 ): OperatorFunction<TxResultRendering<TxResult>, any> => {
   const { txErrorReporter } = params;
+
   return catchError((error) => {
     const errorId = txErrorReporter ? txErrorReporter(error) : error.message;
 
     return Promise.resolve<TxResultRendering>({
       value: null,
       phase: TxStreamPhase.FAILED,
-      failedReason: { error, errorId },
+      failedReason: { error: error.data.message, errorId },
       receipts: [],
     });
   });

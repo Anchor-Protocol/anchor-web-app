@@ -1,45 +1,54 @@
-import { Redemption } from '@anchor-protocol/crossanchor-sdk';
-import { useLocalStorageJson } from '@libs/use-local-storage';
-import { useCallback } from 'react';
+import { Redemption as CrossChainRedemption } from '@anchor-protocol/crossanchor-sdk';
+import { useCallback, useMemo } from 'react';
+import { useLocalStorage } from 'usehooks-ts';
 
 const REDEMPTIONS_STORAGE_KEY = '__anchor_cross_chain_redemptions';
 
+export type RedemptionDisplay = {
+  action: string;
+  amount?: string;
+};
+
 type OutgoingSequence = number;
+export type Redemption = CrossChainRedemption & { display?: RedemptionDisplay };
 type Redemptions = { [key: OutgoingSequence]: Redemption };
 
 export const useRedemptionStorage = () => {
-  const [redemptions, setRedemptions] = useLocalStorageJson<Redemptions>(
+  const [redemptions, setRedemptions] = useLocalStorage<Redemptions>(
     REDEMPTIONS_STORAGE_KEY,
-    () => [],
-  );
-
-  const redemptionSaved = useCallback(
-    (redemption: Redemption) =>
-      Boolean(redemptions[redemption.outgoingSequence]),
-    [redemptions],
+    [],
   );
 
   const saveRedemption = useCallback(
     (redemption: Redemption) => {
-      if (!redemptionSaved(redemption)) {
-        setRedemptions({
-          ...redemptions,
-          [redemption.outgoingSequence]: redemption,
-        });
-      }
+      setRedemptions({
+        ...redemptions,
+        [redemption.outgoingSequence]: redemption,
+      });
     },
-    [redemptions, setRedemptions, redemptionSaved],
+    [redemptions, setRedemptions],
   );
 
   const removeRedemption = useCallback(
-    (redemption: Redemption) => {
-      if (redemptionSaved(redemption)) {
-        delete redemptions[redemption.outgoingSequence];
-        setRedemptions(redemptions);
-      }
+    (outgoingSequence: OutgoingSequence) => {
+      const { [outgoingSequence]: omit, ...rest } = redemptions;
+      setRedemptions(rest);
     },
-    [redemptions, setRedemptions, redemptionSaved],
+    [redemptions, setRedemptions],
   );
 
-  return { redemptions, saveRedemption, removeRedemption };
+  const result = useMemo(
+    () =>
+      Object.values(redemptions).sort(
+        (r1, r2) =>
+          r2.tokenTransferVAA.timestamp - r1.tokenTransferVAA.timestamp,
+      ),
+    [redemptions],
+  );
+
+  return {
+    redemptions: result,
+    saveRedemption,
+    removeRedemption,
+  };
 };

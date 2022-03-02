@@ -7,11 +7,13 @@ import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import {
   Collateral,
+  CrossChainEventHandler,
   CrossChainTxResponse,
 } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from 'ethers';
 import { useRedeemableTx } from './useRedeemableTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
+import { UST } from '@libs/types';
 
 type TxResult = CrossChainTxResponse<ContractReceipt> | null;
 type TxRender = TxResultRendering<TxResult>;
@@ -28,13 +30,14 @@ export function useWithdrawCollateralTx():
   const { address, connection, connectType, chainId } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
   const {
-    ust: { microfy, formatInput },
+    ust: { microfy, formatInput, formatOutput },
   } = useFormatters();
 
   const withdrawTx = useCallback(
     async (
       txParams: WithdrawCollateralTxProps,
       renderTxResults: Subject<TxRender>,
+      handleEvent: CrossChainEventHandler,
     ) => {
       const amount = microfy(formatInput(txParams.amount)).toString();
 
@@ -47,6 +50,7 @@ export function useWithdrawCollateralTx():
           renderTxResults.next(
             txResult(event, connectType, chainId!, 'withdraw'),
           );
+          handleEvent(event);
         },
       );
 
@@ -61,13 +65,22 @@ export function useWithdrawCollateralTx():
           renderTxResults.next(
             txResult(event, connectType, chainId!, 'withdraw'),
           );
+          handleEvent(event);
         },
       );
     },
     [xAnchor, address, connectType, chainId, formatInput, microfy],
   );
 
-  const withdrawTxStream = useRedeemableTx(withdrawTx, (resp) => resp.tx, null);
+  const withdrawTxStream = useRedeemableTx(
+    withdrawTx,
+    (resp) => resp.tx,
+    null,
+    (txParams) => ({
+      action: 'unlockCollateral',
+      amount: `${formatOutput(txParams.amount as UST)} UST`,
+    }),
+  );
 
   return chainId && connection && address ? withdrawTxStream : [null, null];
 }
