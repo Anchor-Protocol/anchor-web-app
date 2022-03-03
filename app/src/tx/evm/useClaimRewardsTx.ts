@@ -6,11 +6,9 @@ import { txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { ContractReceipt } from 'ethers';
-import {
-  CrossChainEventHandler,
-  CrossChainTxResponse,
-} from '@anchor-protocol/crossanchor-sdk';
+import { CrossChainTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { useRedeemableTx } from './useRedeemableTx';
+import { TxEventHandler } from './useTx';
 
 type TxResult = CrossChainTxResponse<ContractReceipt> | null;
 type TxRender = TxResultRendering<TxResult>;
@@ -21,24 +19,24 @@ export function useClaimRewardsTx():
   | StreamReturn<ClaimRewardsTxProps, TxResultRendering>
   | [null, null] {
   const { address, connection, connectType, chainId } = useEvmWallet();
-  const evmSdk = useEvmCrossAnchorSdk();
+  const xAnchor = useEvmCrossAnchorSdk();
 
   const claimRewards = useCallback(
     (
-      _txParams: ClaimRewardsTxProps,
+      txParams: ClaimRewardsTxProps,
       renderTxResults: Subject<TxRender>,
-      handleEvent: CrossChainEventHandler,
+      handleEvent: TxEventHandler<ClaimRewardsTxProps>,
     ) => {
-      return evmSdk.claimRewards(address!, TX_GAS_LIMIT, (event) => {
+      return xAnchor.claimRewards(address!, TX_GAS_LIMIT, (event) => {
         console.log(event, 'eventEmitted');
 
         renderTxResults.next(
           txResult(event, connectType, chainId!, 'claim rewards'),
         );
-        handleEvent(event);
+        handleEvent(event, txParams);
       });
     },
-    [address, connectType, evmSdk, chainId],
+    [address, connectType, xAnchor, chainId],
   );
 
   const claimRewardsStream = useRedeemableTx(

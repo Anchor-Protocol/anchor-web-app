@@ -1,7 +1,8 @@
 import React, { DOMAttributes } from 'react';
 import { UIElementProps } from '@libs/ui';
-import styled from 'styled-components';
-import { useRedemptionStorage } from 'tx/evm/storage/useRedemptionStorage';
+import styled, { useTheme } from 'styled-components';
+import { useRedemptions } from 'tx/evm/storage/useRedemptions';
+import { CircleSpinner } from 'react-spinners-kit';
 
 interface RedemptionButtonProps
   extends UIElementProps,
@@ -9,11 +10,13 @@ interface RedemptionButtonProps
 
 const RedemptionButtonBase = (props: RedemptionButtonProps) => {
   const { className, onClick } = props;
-  const { redemptions } = useRedemptionStorage();
+  const { redemptions } = useRedemptions();
+  const theme = useTheme();
 
   return (
     <button className={className} onClick={onClick}>
-      <div>{redemptions.length} redemption pending</div>
+      <div className="note">{redemptions.length} transaction</div>
+      <CircleSpinner size={15} color={theme.colors.secondary} />
     </button>
   );
 };
@@ -29,4 +32,15 @@ export const RedemptionButton = styled(RedemptionButtonBase)`
   border: 1px solid ${({ theme }) => theme.colors.secondary};
   outline: none;
   background-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .note {
+    margin-right: 10px;
+  }
+
+  .gurPHt {
+    border-width: 2px;
+  }
 `;

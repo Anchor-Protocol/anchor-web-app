@@ -3,7 +3,7 @@ import { UIElementProps } from '@libs/ui';
 import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
 import { ButtonList } from '../shared';
 import styled from 'styled-components';
-import { useRedemptionStorage } from 'tx/evm/storage/useRedemptionStorage';
+import { useRedemptions } from 'tx/evm/storage/useRedemptions';
 import { useNavigate } from 'react-router-dom';
 import { formatDistance, fromUnixTime } from 'date-fns';
 
@@ -13,11 +13,11 @@ interface RedemptionListProps extends UIElementProps {
 
 function RedemptionListBase(props: RedemptionListProps) {
   const { className, onClose } = props;
-  const { redemptions } = useRedemptionStorage();
+  const { redemptions } = useRedemptions();
   const navigate = useNavigate();
 
   return (
-    <ButtonList className={className} title="Redeemable transfers">
+    <ButtonList className={className} title="Redeemable transactions">
       {redemptions.map((redemption) => (
         <div className="redemption" key={redemption.outgoingSequence}>
           <div className="details">

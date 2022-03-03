@@ -4,5 +4,5 @@ export * from './useBorrowUstTx';
 export * from './useRepayUstTx';
 export * from './useProvideCollateralTx';
 export * from './useWithdrawCollateralTx';
-export * from './useRedemption';
+export * from './storage';
 export * from './useReedemTokensTx';
