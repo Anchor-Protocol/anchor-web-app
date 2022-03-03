@@ -8,6 +8,8 @@ export type LPAddr = string & NominalType<'LPAddr'>;
 export type EVMAddr = string & NominalType<'EVMAddr'>;
 export type ERC20Addr = string & NominalType<'ERC20Addr'>;
 
+export type CollateralAddr = CW20Addr | ERC20Addr;
+
 export type NativeDenom =
   | 'uusd'
   | 'uust' // some nebula contract uses denom by uust

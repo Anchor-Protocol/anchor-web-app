@@ -21,7 +21,7 @@ import { computeRedeemCollateralNextLtv } from '../../logics/borrow/computeRedee
 import { pickCollateral } from '../../logics/borrow/pickCollateral';
 import { validateRedeemAmount } from '../../logics/borrow/validateRedeemAmount';
 import { validateTxFee } from '../../logics/common/validateTxFee';
-import { BAssetLtv, BAssetLtvs } from '../../queries/borrow/market';
+import { BAssetLtvs } from '../../queries/borrow/market';
 import { computebAssetLtvsAvg } from '@anchor-protocol/app-fns/logics/borrow/computebAssetLtvsAvg';
 
 export interface BorrowRedeemCollateralFormInput {
@@ -36,7 +36,6 @@ export interface BorrowRedeemCollateralFormDependency {
   oraclePrices: moneyMarket.oracle.PricesResponse;
   overseerWhitelist: OverseerWhitelistWithDisplay;
   bAssetLtvs: BAssetLtvs;
-  bAssetLtvsAvg: BAssetLtv;
   marketBorrowerInfo: moneyMarket.market.BorrowerInfoResponse;
   overseerCollaterals: moneyMarket.overseer.CollateralsResponse;
   connected: boolean;
