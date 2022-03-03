@@ -14,7 +14,7 @@ export function useTerraTokenDisplayInfo(
   assetInfo: terraswap.AssetInfo,
   networkName?: string,
 ): DisplayInfo {
-  const network = useNetwork();
+  const { network } = useNetwork();
 
   const { data: tokenInfo } = useTerraTokenInfo(assetInfo);
   const { data: tokenDisplayInfos } = useTokenDisplayInfosQuery(

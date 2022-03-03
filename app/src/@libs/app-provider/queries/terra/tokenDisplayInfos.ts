@@ -10,7 +10,7 @@ const queryFn = createQueryFn(tokenDisplayInfosQuery);
 export function useTokenDisplayInfosQuery(
   networkName?: string,
 ): UseQueryResult<TokenDisplayInfo[]> {
-  const network = useNetwork();
+  const { network } = useNetwork();
   const { queryErrorReporter } = useApp();
 
   const result = useQuery(

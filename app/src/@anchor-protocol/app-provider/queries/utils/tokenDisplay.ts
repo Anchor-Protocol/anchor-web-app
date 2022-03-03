@@ -22,7 +22,7 @@ export const useQueryWithTokenDisplay = <Data, DataWithTokenDisplay>(
 ): UseQueryResult<
   UnitOrArrayWithTokenDisplay<Data, DataWithTokenDisplay> | undefined
 > => {
-  const network = useNetwork();
+  const { network } = useNetwork();
   const tokenDisplayInfos = useCW20TokenDisplayInfosQuery();
 
   return useMemo(() => {

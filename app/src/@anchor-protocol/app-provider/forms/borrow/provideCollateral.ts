@@ -39,7 +39,6 @@ export function useBorrowProvideCollateralForm(
     data: {
       oraclePrices,
       bAssetLtvs,
-      bAssetLtvsAvg,
       overseerWhitelist,
     } = fallbackBorrowMarket,
   } = useBorrowMarketQuery();
@@ -60,7 +59,6 @@ export function useBorrowProvideCollateralForm(
       marketBorrowerInfo,
       overseerWhitelist,
       fixedFee,
-      bAssetLtvsAvg,
       bAssetLtvs,
     },
     () => ({ depositAmount: '' as bAsset }),

@@ -16,7 +16,7 @@ export function useAirdropCheckQuery(): UseQueryResult<Airdrop | undefined> {
 
   const { connected, terraWalletAddress } = useAccount();
 
-  const network = useNetwork();
+  const { network } = useNetwork();
 
   const result = useQuery(
     [

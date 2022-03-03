@@ -7,7 +7,7 @@ export interface TxHashProps {
 }
 
 export function TxHashLink({ txHash }: TxHashProps) {
-  const network = useNetwork();
+  const { network } = useNetwork();
 
   return (
     <a

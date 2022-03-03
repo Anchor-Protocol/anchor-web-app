@@ -10,6 +10,7 @@ export * from './forms/borrow/repay';
 export * from './forms/earn/deposit';
 export * from './forms/earn/withdraw';
 export * from './functions/cw20Decimals';
+export * from './logics/borrow/computebAssetLtvsAvg';
 export * from './logics/borrow/computeBorrowAmountToLtv';
 export * from './logics/borrow/computeBorrowAPR';
 export * from './logics/borrow/computeBorrowedAmount';

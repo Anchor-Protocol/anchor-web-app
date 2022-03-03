@@ -11,7 +11,7 @@ export interface AccountLinkProps {
 }
 
 function AccountLinkBase({ address, truncate, className }: AccountLinkProps) {
-  const network = useNetwork();
+  const { network } = useNetwork();
 
   return (
     <a

@@ -56,6 +56,8 @@ export function CollateralList({ className }: CollateralListProps) {
     ust: { formatOutput, demicrofy },
   } = useFormatters();
 
+  console.log(borrowMarket);
+
   const collaterals = useMemo<CollateralInfo[]>(() => {
     if (!borrowMarket) {
       return [];

@@ -32,7 +32,6 @@ export function useBorrowRedeemCollateralForm(
     data: {
       oraclePrices,
       bAssetLtvs,
-      bAssetLtvsAvg,
       overseerWhitelist,
     } = fallbackBorrowMarket,
   } = useBorrowMarketQuery();
@@ -53,7 +52,6 @@ export function useBorrowRedeemCollateralForm(
       marketBorrowerInfo,
       overseerWhitelist,
       fixedFee,
-      bAssetLtvsAvg,
       bAssetLtvs,
     },
     () => ({ redeemAmount: '' as bAsset }),
