@@ -3,13 +3,11 @@ import {
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
 } from '@anchor-protocol/app-provider';
-import {
-  formatBAsset,
-  formatUSTWithPostfixUnits,
-} from '@anchor-protocol/notation';
+import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
+import { formatBAsset } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import { bAsset, CW20Addr, u, UST } from '@anchor-protocol/types';
-import { demicrofy } from '@libs/formatter';
+import { demicrofy as demicrofybAsset } from '@libs/formatter';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { HorizontalScrollTable } from '@libs/neumorphism-ui/components/HorizontalScrollTable';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
@@ -53,6 +51,10 @@ export function CollateralList({ className }: CollateralListProps) {
 
   const [openRedeemCollateralDialog, redeemCollateralDialogElement] =
     useRedeemCollateralDialog();
+
+  const {
+    ust: { formatOutput, demicrofy },
+  } = useFormatters();
 
   const collaterals = useMemo<CollateralInfo[]>(() => {
     if (!borrowMarket) {
@@ -169,21 +171,18 @@ export function CollateralList({ className }: CollateralListProps) {
                   </div>
                 </td>
                 <td>
-                  <div className="value">
-                    {formatUSTWithPostfixUnits(price)} UST
-                  </div>
+                  <div className="value">{formatOutput(price)} UST</div>
                   <p className="volatility">
                     {Boolean(Number(liquidationPrice)) &&
-                      formatUSTWithPostfixUnits(liquidationPrice!) + ' UST'}
+                      formatOutput(liquidationPrice!) + ' UST'}
                   </p>
                 </td>
                 <td>
                   <div className="value">
-                    {formatBAsset(demicrofy(lockedAmount))} {symbol}
+                    {formatBAsset(demicrofybAsset(lockedAmount))} {symbol}
                   </div>
                   <p className="volatility">
-                    {formatUSTWithPostfixUnits(demicrofy(lockedAmountInUST))}{' '}
-                    UST
+                    {formatOutput(demicrofy(lockedAmountInUST))} UST
                   </p>
                 </td>
                 <td>

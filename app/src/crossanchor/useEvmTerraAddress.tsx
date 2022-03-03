@@ -12,10 +12,14 @@ export const useEvmTerraAddress = () => {
     if (!address) {
       return;
     }
-
-    evmSdk.terraAddress(address).then((addr) => {
-      setTerraAddress(addr);
-    });
+    evmSdk
+      .terraAddress(address)
+      .then((addr) => {
+        setTerraAddress(addr);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, [evmSdk, address]);
 
   return terraAddress;
