@@ -5,6 +5,7 @@ import {
 import { TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import { ConnectType, EvmChainId } from '@libs/evm-wallet';
 import { StreamReturn } from '@rx-stream/react';
+import { ContractReceipt } from 'ethers';
 
 export const TX_GAS_LIMIT = 250000;
 
@@ -13,7 +14,7 @@ export type UseTxReturn<T, V> =
   | [null, null];
 
 export const txResult = (
-  event: CrossChainEvent,
+  event: CrossChainEvent<ContractReceipt>,
   connnectType: ConnectType,
   chainId: EvmChainId,
   action: string,
@@ -29,7 +30,7 @@ export const txResult = (
 };
 
 const txResultMessage = (
-  event: CrossChainEvent,
+  event: CrossChainEvent<ContractReceipt>,
   connnectType: ConnectType,
   chainId: EvmChainId,
   action: string,
@@ -64,22 +65,22 @@ const txResultMessage = (
         chain(chainId),
       )}...`;
     case CrossChainEventKind.RemoteChainReturnTxRequested:
-      return `${capitalize(action)} requested. ${capitalize(
+      return `Deposit requested. ${capitalize(
         connnectType,
       )} notification should appear soon...`;
     case CrossChainEventKind.RemoteChainReturnTxSubmitted:
-      return `Waiting for ${action} transaction on ${capitalize(
+      return `Waiting for deposit transaction on ${capitalize(
         chain(chainId),
       )}...`;
   }
 };
 
-const capitalize = (word: string) => {
+export const capitalize = (word: string) => {
   const str = word.toLowerCase();
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
-const chain = (chainId: EvmChainId) => {
+export const chain = (chainId: EvmChainId) => {
   switch (chainId) {
     case EvmChainId.AVALANCHE:
     case EvmChainId.AVALANCHE_FUJI_TESTNET:

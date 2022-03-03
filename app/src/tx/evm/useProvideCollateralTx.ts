@@ -7,13 +7,13 @@ import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import {
   Collateral,
-  CrossChainEventHandler,
   CrossChainTxResponse,
 } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from '@ethersproject/contracts';
 import { useRedeemableTx } from './useRedeemableTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { UST } from '@libs/types';
+import { TxEventHandler } from './useTx';
 
 type TxResult = CrossChainTxResponse<ContractReceipt> | null;
 type TxRender = TxResultRendering<TxResult>;
@@ -22,7 +22,6 @@ export interface ProvideCollateralTxProps {
   amount: string;
 }
 
-// TODO: parametrize by collateral
 export function useProvideCollateralTx():
   | StreamReturn<ProvideCollateralTxProps, TxRender>
   | [null, null] {
@@ -36,13 +35,13 @@ export function useProvideCollateralTx():
     async (
       txParams: ProvideCollateralTxProps,
       renderTxResults: Subject<TxRender>,
-      handleEvent: CrossChainEventHandler,
+      handleEvent: TxEventHandler<ProvideCollateralTxProps>,
     ) => {
       const amount = microfy(formatInput(txParams.amount)).toString();
 
       // TODO: approve correct collateral
       await xAnchor.approveLimit(
-        'ust',
+        'bluna',
         amount,
         address!,
         TX_GAS_LIMIT,
@@ -50,7 +49,7 @@ export function useProvideCollateralTx():
           renderTxResults.next(
             txResult(event, connectType, chainId!, 'lock collateral'),
           );
-          handleEvent(event);
+          handleEvent(event, txParams);
         },
       );
 
@@ -65,7 +64,7 @@ export function useProvideCollateralTx():
           renderTxResults.next(
             txResult(event, connectType, chainId!, 'lock collateral'),
           );
-          handleEvent(event);
+          handleEvent(event, txParams);
         },
       );
     },

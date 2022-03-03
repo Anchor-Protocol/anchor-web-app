@@ -6,13 +6,13 @@ export const useEvmTerraAddress = () => {
   const { address } = useEvmWallet();
   const [terraAddress, setTerraAddress] = useState<string>();
 
-  const evmSdk = useEvmCrossAnchorSdk();
+  const xAnchor = useEvmCrossAnchorSdk();
 
   useEffect(() => {
     if (!address) {
       return;
     }
-    evmSdk
+    xAnchor
       .terraAddress(address)
       .then((addr) => {
         setTerraAddress(addr);
@@ -20,7 +20,7 @@ export const useEvmTerraAddress = () => {
       .catch((error) => {
         console.log(error);
       });
-  }, [evmSdk, address]);
+  }, [xAnchor, address]);
 
   return terraAddress;
 };

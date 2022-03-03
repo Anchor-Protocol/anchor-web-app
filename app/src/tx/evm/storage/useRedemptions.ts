@@ -1,4 +1,5 @@
 import { Redemption as CrossChainRedemption } from '@anchor-protocol/crossanchor-sdk';
+import { ContractReceipt } from 'ethers';
 import { useCallback, useMemo } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
@@ -10,13 +11,16 @@ export type RedemptionDisplay = {
 };
 
 type OutgoingSequence = number;
-export type Redemption = CrossChainRedemption & { display?: RedemptionDisplay };
+export type Redemption = CrossChainRedemption & {
+  display?: RedemptionDisplay;
+  tx: ContractReceipt;
+};
 type Redemptions = { [key: OutgoingSequence]: Redemption };
 
-export const useRedemptionStorage = () => {
+export const useRedemptions = () => {
   const [redemptions, setRedemptions] = useLocalStorage<Redemptions>(
     REDEMPTIONS_STORAGE_KEY,
-    [],
+    {},
   );
 
   const saveRedemption = useCallback(

@@ -6,10 +6,8 @@ import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import React from 'react';
 import { truncateEvm } from '@libs/formatter';
-import styled, { useTheme } from 'styled-components';
+import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
-import { GuardSpinner } from 'react-spinners-kit';
-import { HorizontalDashedRuler } from '@libs/neumorphism-ui/components/HorizontalDashedRuler';
 import { hexToNativeString } from '@certusone/wormhole-sdk';
 import { useWormholeAsset } from '@anchor-protocol/wormhole';
 import { StreamStatus } from '@rx-stream/react';
@@ -17,7 +15,7 @@ import { useAccount } from 'contexts/account';
 import { Error } from './components/Error';
 import { TxRendering } from './components/TxRenderer';
 import { useRedeemTokensTx, useRedemption } from 'tx/evm';
-import { Redemption } from 'tx/evm/storage/useRedemptionStorage';
+import { Redemption } from 'tx/evm/storage/useRedemptions';
 
 const formatDate = (date: Date): string => {
   return `${date.toLocaleDateString('en-US', {
@@ -63,21 +61,6 @@ const RedemptionSummaryList = (props: RedemptionSummaryListProps) => {
   );
 };
 
-const Loading = () => {
-  const {
-    colors: { primary },
-  } = useTheme();
-  return (
-    <figure className="loading">
-      <HorizontalDashedRuler />
-      <div className="spinner">
-        <GuardSpinner frontColor={primary} />
-      </div>
-      <HorizontalDashedRuler />
-    </figure>
-  );
-};
-
 function RedeemBase(props: UIElementProps) {
   const { className } = props;
 
@@ -85,19 +68,19 @@ function RedeemBase(props: UIElementProps) {
 
   const { connected } = useAccount();
 
-  const { redemption, loading } = useRedemption(Number(sequence));
+  const redemption = useRedemption(Number(sequence));
 
   const [redeemTokens, redeemTxResult] = useRedeemTokensTx(redemption);
+
+  if (!redemption) {
+    return <Error className={className} sequence={sequence} />;
+  }
 
   if (
     redeemTxResult?.status === StreamStatus.IN_PROGRESS ||
     redeemTxResult?.status === StreamStatus.DONE
   ) {
     return <TxRendering className={className} txResult={redeemTxResult} />;
-  }
-
-  if (!loading && !redemption) {
-    return <Error className={className} sequence={sequence} />;
   }
 
   return (
@@ -109,11 +92,7 @@ function RedeemBase(props: UIElementProps) {
           require users to manually redeem thier tokens after a transaction is
           processed on Anchor and sent back to the origin chain.
         </p>
-        {!redemption ? (
-          <Loading />
-        ) : (
-          <RedemptionSummaryList redemption={redemption} />
-        )}
+        <RedemptionSummaryList redemption={redemption} />
         <ViewAddressWarning>
           <ActionButton
             className="submit"

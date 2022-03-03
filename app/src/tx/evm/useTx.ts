@@ -6,17 +6,22 @@ import { TxReceipt, TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import { truncateEvm } from '@libs/formatter';
 import { catchTxError } from './catchTxError';
 import { useAnchorWebapp } from '@anchor-protocol/app-provider';
-import { CrossChainEventHandler } from '@anchor-protocol/crossanchor-sdk';
+import { CrossChainEvent } from '@anchor-protocol/crossanchor-sdk';
+
+export type TxEventHandler<TxParams> = (
+  event: CrossChainEvent<ContractReceipt>,
+  txParams: TxParams,
+) => void;
 
 export const useTx = <TxParams, TxResult>(
   sendTx: (
     txParams: TxParams,
     renderTxResults: Subject<TxResultRendering<TxResult>>,
-    handleEvent: CrossChainEventHandler,
+    handleEvent: TxEventHandler<TxParams>,
   ) => Promise<TxResult>,
   parseTx: (txResult: NonNullable<TxResult>) => ContractReceipt,
   emptyTxResult: TxResult,
-  onTxEvent: CrossChainEventHandler = () => {},
+  onTxEvent: TxEventHandler<TxParams> = () => {},
 ): StreamReturn<TxParams, TxResultRendering<TxResult>> => {
   const { txErrorReporter } = useAnchorWebapp();
 

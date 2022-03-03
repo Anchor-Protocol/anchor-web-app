@@ -5,13 +5,11 @@ import { txResult, TX_GAS_LIMIT, UseTxReturn } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { ContractReceipt } from 'ethers';
-import {
-  CrossChainEventHandler,
-  CrossChainTxResponse,
-} from '@anchor-protocol/crossanchor-sdk';
+import { CrossChainTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { useRedeemableTx } from './useRedeemableTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { aUST } from '@anchor-protocol/types';
+import { TxEventHandler } from './useTx';
 
 type TxResult = CrossChainTxResponse<ContractReceipt> | null;
 
@@ -39,7 +37,7 @@ export function useWithdrawUstTx(): UseTxReturn<WithdrawUstTxProps, TxResult> {
     async (
       txParams: WithdrawUstTxProps,
       renderTxResults: Subject<TxRender>,
-      handleEvent: CrossChainEventHandler,
+      handleEvent: TxEventHandler<WithdrawUstTxProps>,
     ) => {
       const withdrawAmount = microfy(
         formatInput(txParams.withdrawAmount),
@@ -54,7 +52,7 @@ export function useWithdrawUstTx(): UseTxReturn<WithdrawUstTxProps, TxResult> {
           renderTxResults.next(
             txResult(event, connectType, chainId, 'withdraw'),
           );
-          handleEvent(event);
+          handleEvent(event, txParams);
         },
       );
 
@@ -66,7 +64,7 @@ export function useWithdrawUstTx(): UseTxReturn<WithdrawUstTxProps, TxResult> {
           renderTxResults.next(
             txResult(event, connectType, chainId, 'withdraw'),
           );
-          handleEvent(event);
+          handleEvent(event, txParams);
         },
       );
     },

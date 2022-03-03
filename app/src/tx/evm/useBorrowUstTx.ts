@@ -5,14 +5,12 @@ import { TxResultRendering } from '@libs/app-fns';
 import { txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
-import {
-  CrossChainEventHandler,
-  CrossChainTxResponse,
-} from '@anchor-protocol/crossanchor-sdk';
+import { CrossChainTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from 'ethers';
 import { useRedeemableTx } from './useRedeemableTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { UST } from '@libs/types';
+import { TxEventHandler } from './useTx';
 
 type TxResult = CrossChainTxResponse<ContractReceipt> | null;
 type TxRender = TxResultRendering<TxResult>;
@@ -34,7 +32,7 @@ export function useBorrowUstTx():
     async (
       txParams: BorrowUstTxProps,
       renderTxResults: Subject<TxRender>,
-      handleEvent: CrossChainEventHandler,
+      handleEvent: TxEventHandler<BorrowUstTxProps>,
     ) => {
       const amount = microfy(formatInput(txParams.amount)).toString();
 
@@ -47,7 +45,7 @@ export function useBorrowUstTx():
           renderTxResults.next(
             txResult(event, connectType, chainId!, 'borrow'),
           );
-          handleEvent(event);
+          handleEvent(event, txParams);
         },
       );
 
@@ -55,7 +53,7 @@ export function useBorrowUstTx():
         console.log(event, 'eventEmitted');
 
         renderTxResults.next(txResult(event, connectType, chainId!, 'borrow'));
-        handleEvent(event);
+        handleEvent(event, txParams);
       });
     },
     [address, connectType, xAnchor, chainId, microfy, formatInput],
