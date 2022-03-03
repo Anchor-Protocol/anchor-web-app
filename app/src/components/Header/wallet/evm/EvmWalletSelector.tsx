@@ -8,8 +8,9 @@ import {
 import { useEvmWallet } from '@libs/evm-wallet';
 import { ConnectionList } from './ConnectionList';
 import { Content } from './Content';
+import styled from 'styled-components';
 
-const EvmWalletSelector = () => {
+const EvmWalletSelectorBase = ({ className }: { className: string }) => {
   const { nativeWalletAddress } = useAccount();
 
   const { actions, connection, status } = useEvmWallet();
@@ -27,6 +28,7 @@ const EvmWalletSelector = () => {
 
   return (
     <WalletSelector
+      className={className}
       walletAddress={nativeWalletAddress}
       initializing={status === 'initialization'}
       onClick={onClick}
@@ -53,5 +55,27 @@ const EvmWalletSelector = () => {
     </WalletSelector>
   );
 };
+
+const EvmWalletSelector = styled(EvmWalletSelectorBase)`
+  .restore-tx {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    font-weight: 500;
+    color: ${({ theme }) => theme.dimTextColor};
+    margin-bottom: 10px;
+  }
+
+  .restore-tx-inner {
+    width: auto;
+  }
+
+  .link {
+    cursor: pointer;
+    color: ${({ theme }) => theme.colors.secondaryDark};
+  }
+`;
 
 export { EvmWalletSelector };

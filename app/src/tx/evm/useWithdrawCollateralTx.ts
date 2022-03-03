@@ -7,13 +7,13 @@ import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import {
   Collateral,
-  CrossChainEventHandler,
   CrossChainTxResponse,
 } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from 'ethers';
 import { useRedeemableTx } from './useRedeemableTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { UST } from '@libs/types';
+import { TxEventHandler } from './useTx';
 
 type TxResult = CrossChainTxResponse<ContractReceipt> | null;
 type TxRender = TxResultRendering<TxResult>;
@@ -23,7 +23,6 @@ export interface WithdrawCollateralTxProps {
   amount: string;
 }
 
-// TODO: parametrize by collateral
 export function useWithdrawCollateralTx():
   | StreamReturn<WithdrawCollateralTxProps, TxRender>
   | [null, null] {
@@ -37,12 +36,12 @@ export function useWithdrawCollateralTx():
     async (
       txParams: WithdrawCollateralTxProps,
       renderTxResults: Subject<TxRender>,
-      handleEvent: CrossChainEventHandler,
+      handleEvent: TxEventHandler<WithdrawCollateralTxProps>,
     ) => {
       const amount = microfy(formatInput(txParams.amount)).toString();
 
       await xAnchor.approveLimit(
-        'ust',
+        'bluna',
         amount,
         address!,
         TX_GAS_LIMIT,
@@ -50,7 +49,7 @@ export function useWithdrawCollateralTx():
           renderTxResults.next(
             txResult(event, connectType, chainId!, 'withdraw'),
           );
-          handleEvent(event);
+          handleEvent(event, txParams);
         },
       );
 
@@ -65,7 +64,7 @@ export function useWithdrawCollateralTx():
           renderTxResults.next(
             txResult(event, connectType, chainId!, 'withdraw'),
           );
-          handleEvent(event);
+          handleEvent(event, txParams);
         },
       );
     },

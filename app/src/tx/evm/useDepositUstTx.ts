@@ -6,13 +6,11 @@ import { txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { ContractReceipt } from 'ethers';
-import {
-  CrossChainEventHandler,
-  CrossChainTxResponse,
-} from '@anchor-protocol/crossanchor-sdk';
+import { CrossChainTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { useRedeemableTx } from './useRedeemableTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { UST } from '@libs/types';
+import { TxEventHandler } from './useTx';
 
 type TxResult = CrossChainTxResponse<ContractReceipt> | null;
 type TxRender = TxResultRendering<TxResult>;
@@ -39,7 +37,7 @@ export function useDepositUstTx():
     async (
       txParams: DepositUstTxProps,
       renderTxResults: Subject<TxRender>,
-      handleEvent: CrossChainEventHandler,
+      handleEvent: TxEventHandler<DepositUstTxProps>,
     ) => {
       const depositAmount = microfy(
         formatInput(txParams.depositAmount),
@@ -56,7 +54,7 @@ export function useDepositUstTx():
           renderTxResults.next(
             txResult(event, connectType, chainId, 'deposit'),
           );
-          handleEvent(event);
+          handleEvent(event, txParams);
         },
       );
 
@@ -70,7 +68,7 @@ export function useDepositUstTx():
           renderTxResults.next(
             txResult(event, connectType, chainId, 'deposit'),
           );
-          handleEvent(event);
+          handleEvent(event, txParams);
         },
       );
     },

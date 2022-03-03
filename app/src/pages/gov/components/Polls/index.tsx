@@ -11,7 +11,6 @@ import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { NativeSelect } from '@libs/neumorphism-ui/components/NativeSelect';
-import { useLocalStorage } from '@libs/use-local-storage';
 import { links } from 'env';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
 import { SubHeader } from 'pages/gov/components/SubHeader';
@@ -20,6 +19,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { Grid as GridView } from './Grid';
 import { List as ListView } from './List';
+import { useLocalStorage } from 'usehooks-ts';
 
 export interface PollsProps {
   className?: string;
@@ -56,7 +56,7 @@ function PollsBase({ className }: PollsProps) {
 
   const [view, setView] = useLocalStorage<'grid' | 'list'>(
     '__anchor_polls_view__',
-    () => 'grid',
+    'grid',
   );
 
   const onPollClick = useCallback(
