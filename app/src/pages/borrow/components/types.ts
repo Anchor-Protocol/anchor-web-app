@@ -9,3 +9,8 @@ export interface ProvideCollateralFormParams extends UIElementProps {
   fallbackBorrowMarket: BorrowMarketWithDisplay;
   fallbackBorrowBorrower: BorrowBorrower;
 }
+
+export interface BorrowFormParams extends UIElementProps {
+  fallbackBorrowMarket: BorrowMarketWithDisplay;
+  fallbackBorrowBorrower: BorrowBorrower;
+}

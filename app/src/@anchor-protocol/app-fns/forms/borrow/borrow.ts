@@ -9,7 +9,10 @@ import {
   computeLtv,
   computeLtvToBorrowAmount,
 } from '@anchor-protocol/app-fns';
-import { OverseerWhitelistWithDisplay } from '@anchor-protocol/app-provider';
+import {
+  DeploymentTarget,
+  OverseerWhitelistWithDisplay,
+} from '@anchor-protocol/app-provider';
 import { moneyMarket, Rate } from '@anchor-protocol/types';
 import { formatRate } from '@libs/formatter';
 import { u, UST } from '@libs/types';
@@ -29,6 +32,7 @@ export interface BorrowBorrowFormInput {
 }
 
 export interface BorrowBorrowFormDependency {
+  target: DeploymentTarget;
   fixedFee: u<UST>;
   userUSTBalance: u<UST>;
   marketBorrowerInfo: moneyMarket.market.BorrowerInfoResponse;
@@ -67,6 +71,7 @@ export interface BorrowBorrowFormStates extends BorrowBorrowFormInput {
 export interface BorrowBorrowFormAsyncStates {}
 
 export const borrowBorrowForm = ({
+  target,
   fixedFee,
   userUSTBalance,
   marketBorrowerInfo,
@@ -100,9 +105,10 @@ export const borrowBorrowForm = ({
 
   const max = computeBorrowMax(borrowLimit, borrowedAmount);
 
-  const invalidTxFee = connected
-    ? validateTxFee(userUSTBalance, fixedFee)
-    : undefined;
+  const invalidTxFee =
+    connected && target.isNative
+      ? validateTxFee(userUSTBalance, fixedFee)
+      : undefined;
 
   const ltvStepFunction = (draftLtv: Rate<Big>): Rate<Big> => {
     try {
@@ -121,11 +127,9 @@ export const borrowBorrowForm = ({
   > => {
     const nextLtv = computeBorrowNextLtv(borrowAmount, currentLtv, amountToLtv);
 
-    const txFee = computeBorrowTxFee(
-      borrowAmount,
-      { taxRate, maxTaxUUSD },
-      fixedFee,
-    );
+    const txFee = target.isNative
+      ? computeBorrowTxFee(borrowAmount, { taxRate, maxTaxUUSD }, fixedFee)
+      : (Big(0) as u<UST<Big>>);
 
     const estimatedLiquidationPrice = nextLtv
       ? computeEstimateLiquidationPrice(

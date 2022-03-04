@@ -1,5 +1,8 @@
 import { BorrowBorrower, borrowBorrowForm } from '@anchor-protocol/app-fns';
-import { BorrowMarketWithDisplay } from '@anchor-protocol/app-provider';
+import {
+  BorrowMarketWithDisplay,
+  useDeploymentTarget,
+} from '@anchor-protocol/app-provider';
 import { useFixedFee } from '@libs/app-provider';
 import { UST } from '@libs/types';
 import { useForm } from '@libs/use-form';
@@ -13,6 +16,8 @@ export function useBorrowBorrowForm(
   fallbackBorrowMarket: BorrowMarketWithDisplay,
   fallbackBorrowBorrower: BorrowBorrower,
 ) {
+  const { target } = useDeploymentTarget();
+
   const { connected } = useAccount();
 
   const fixedFee = useFixedFee();
@@ -39,6 +44,7 @@ export function useBorrowBorrowForm(
   return useForm(
     borrowBorrowForm,
     {
+      target,
       maxTaxUUSD: tax.maxTaxUUSD,
       taxRate: tax.taxRate,
       userUSTBalance: tokenBalances.uUST,

@@ -13,10 +13,11 @@ import { UST } from '@libs/types';
 import { TxEventHandler } from './useTx';
 
 type TxResult = CrossChainTxResponse<ContractReceipt> | null;
+
 type TxRender = TxResultRendering<TxResult>;
 
 export interface BorrowUstTxProps {
-  amount: string;
+  amount: UST;
 }
 
 export function useBorrowUstTx():
