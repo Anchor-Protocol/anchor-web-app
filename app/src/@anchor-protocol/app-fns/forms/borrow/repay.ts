@@ -1,4 +1,7 @@
-import { OverseerWhitelistWithDisplay } from '@anchor-protocol/app-provider';
+import {
+  DeploymentTarget,
+  OverseerWhitelistWithDisplay,
+} from '@anchor-protocol/app-provider';
 import { moneyMarket, Rate } from '@anchor-protocol/types';
 import { u, UST } from '@libs/types';
 import { FormReturn } from '@libs/use-form';
@@ -27,6 +30,7 @@ export interface BorrowRepayFormInput {
 }
 
 export interface BorrowRepayFormDependency {
+  target: DeploymentTarget;
   fixedFee: u<UST>;
   userUSTBalance: u<UST>;
   marketBorrowerInfo: moneyMarket.market.BorrowerInfoResponse;
@@ -65,6 +69,7 @@ export interface BorrowRepayFormStates extends BorrowRepayFormInput {
 export interface BorrowRepayFormAsyncStates {}
 
 export const borrowRepayForm = ({
+  target,
   fixedFee,
   userUSTBalance,
   marketBorrowerInfo,
@@ -105,9 +110,10 @@ export const borrowRepayForm = ({
     fixedFee,
   );
 
-  const invalidTxFee = connected
-    ? validateTxFee(userUSTBalance, fixedFee)
-    : undefined;
+  const invalidTxFee =
+    connected && target.isNative
+      ? validateTxFee(userUSTBalance, fixedFee)
+      : undefined;
 
   const bAssetLtvsAvg = computebAssetLtvsAvg(bAssetLtvs);
 
@@ -139,11 +145,9 @@ export const borrowRepayForm = ({
         )
       : null;
 
-    const txFee = computeRepayTxFee(
-      repayAmount,
-      { taxRate, maxTaxUUSD },
-      fixedFee,
-    );
+    const txFee = target.isNative
+      ? computeRepayTxFee(repayAmount, { taxRate, maxTaxUUSD }, fixedFee)
+      : (Big(0) as u<UST<Big>>);
 
     const totalOutstandingLoan = computeRepayTotalOutstandingLoan(
       repayAmount,

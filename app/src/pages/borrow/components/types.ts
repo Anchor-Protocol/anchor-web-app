@@ -14,3 +14,8 @@ export interface BorrowFormParams extends UIElementProps {
   fallbackBorrowMarket: BorrowMarketWithDisplay;
   fallbackBorrowBorrower: BorrowBorrower;
 }
+
+export interface RepayFormParams extends UIElementProps {
+  fallbackBorrowMarket: BorrowMarketWithDisplay;
+  fallbackBorrowBorrower: BorrowBorrower;
+}
