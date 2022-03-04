@@ -9,8 +9,9 @@ import { useEvmWallet } from '@libs/evm-wallet';
 import { ConnectionList } from './ConnectionList';
 import { Content } from './Content';
 import styled from 'styled-components';
+import { UIElementProps } from '@libs/ui';
 
-const EvmWalletSelectorBase = ({ className }: { className: string }) => {
+const EvmWalletSelectorBase = ({ className }: UIElementProps) => {
   const { nativeWalletAddress } = useAccount();
 
   const { actions, connection, status } = useEvmWallet();
