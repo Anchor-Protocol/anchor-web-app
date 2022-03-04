@@ -1,4 +1,4 @@
-import { BorrowProvideCollateralFormReturn } from '@anchor-protocol/app-provider';
+import { useBorrowProvideCollateralForm } from '@anchor-protocol/app-provider';
 import {
   formatBAsset,
   formatBAssetInput,
@@ -7,7 +7,7 @@ import {
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { bAsset, Rate } from '@anchor-protocol/types';
+import { bAsset, Rate, u } from '@anchor-protocol/types';
 import { demicrofy } from '@libs/formatter';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
@@ -29,14 +29,17 @@ import styled from 'styled-components';
 import { LTVGraph } from './LTVGraph';
 import { UIElementProps } from '@libs/ui';
 import { TxResultRendering } from '@libs/app-fns';
+import { ProvideCollateralFormParams } from './types';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { ViewAddressWarning } from 'components/ViewAddressWarning';
 
 export interface ProvideCollateralDialogParams
   extends UIElementProps,
-    BorrowProvideCollateralFormReturn {
+    ProvideCollateralFormParams {
   txResult: StreamResult<TxResultRendering> | null;
-  // tokenBalance: u<bAsset>;
-  // proceedable: boolean;
-  // onProceed: (amount: bAsset) => void;
+  uTokenBalance: u<bAsset>;
+  proceedable: boolean;
+  onProceed: (amount: bAsset) => void;
 }
 
 export type ProvideCollateralDialogProps =
@@ -46,8 +49,18 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
   const {
     className,
     closeDialog,
-    children,
     txResult,
+    proceedable,
+    onProceed,
+    collateralToken,
+    uTokenBalance,
+    fallbackBorrowMarket,
+    fallbackBorrowBorrower,
+  } = props;
+
+  const { connected, availablePost: accountAvailablePost } = useAccount();
+
+  const {
     updateDepositAmount,
     invalidTxFee,
     depositAmount,
@@ -57,12 +70,16 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
     borrowLimit,
     currentLtv,
     nextLtv,
+    availablePost,
     ltvToAmount,
     ltvStepFunction,
     txFee,
-  } = props;
-
-  const { connected } = useAccount();
+  } = useBorrowProvideCollateralForm(
+    collateralToken,
+    uTokenBalance,
+    fallbackBorrowMarket,
+    fallbackBorrowBorrower,
+  );
 
   const onLtvChange = useCallback(
     (nextLtv: Rate<Big>) => {
@@ -180,7 +197,20 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
           </TxFeeList>
         )}
 
-        {children}
+        <ViewAddressWarning>
+          <ActionButton
+            className="proceed"
+            disabled={
+              !accountAvailablePost ||
+              !connected ||
+              !availablePost ||
+              !proceedable
+            }
+            onClick={() => onProceed(depositAmount)}
+          >
+            Proceed
+          </ActionButton>
+        </ViewAddressWarning>
       </Dialog>
     </Modal>
   );
