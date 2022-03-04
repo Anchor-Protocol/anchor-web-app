@@ -19,14 +19,13 @@ export type EvmWallet = {
 export const EvmWalletContext = createContext<EvmWallet | undefined>(undefined);
 
 export function EvmWalletProvider({ children }: { children: ReactNode }) {
-  const [connectType, setConnectType] = useLocalStorage<ConnectType | 'null'>(
+  const [connectType, setConnectType] = useLocalStorage<ConnectType | null>(
     '__anchor_evm_wallet_connect_type__',
-    'null',
+    null,
   );
 
   const connectors = useConnectors();
-  const { data } =
-    connectType !== 'null' ? connectors[connectType] : { data: undefined };
+  const { data } = connectType ? connectors[connectType] : { data: undefined };
   const address = data ? data.address : undefined;
   const chainId = data ? data.chainId : undefined;
   const error = data ? data.error : undefined;
@@ -49,9 +48,9 @@ export function EvmWalletProvider({ children }: { children: ReactNode }) {
   );
 
   const deactivate = useCallback(() => {
-    setConnectType('null');
+    setConnectType(null);
 
-    if (connectType !== 'null') {
+    if (connectType) {
       return (
         connectors[connectType].connector.deactivate?.() || Promise.resolve()
       );
@@ -61,9 +60,8 @@ export function EvmWalletProvider({ children }: { children: ReactNode }) {
   }, [connectType, connectors, setConnectType]);
 
   const evmWallet = useMemo(() => {
-    const isConnected = (
-      availableConnectTypes as ReadonlyArray<string>
-    ).includes(connectType);
+    const isConnected =
+      connectType && availableConnectTypes.includes(connectType);
 
     const connection = isConnected
       ? availableConnections.find(({ type }) => type === connectType) || null
@@ -73,7 +71,7 @@ export function EvmWalletProvider({ children }: { children: ReactNode }) {
       actions: { activate, deactivate },
       connectType: connectType as ConnectType,
       address,
-      availableConnectTypes: availableConnectTypes as unknown as ConnectType[], // TODO
+      availableConnectTypes: [...availableConnectTypes],
       availableConnections,
       chainId,
       connection,
