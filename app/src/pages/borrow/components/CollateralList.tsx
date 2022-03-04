@@ -17,6 +17,7 @@ import { Launch } from '@material-ui/icons';
 import big, { Big, BigSource } from 'big.js';
 import { BuyLink } from 'components/BuyButton';
 import { useAccount } from 'contexts/account';
+import { useBridgeAssetsQuery } from 'queries/bridge/useBridgeAssetsQuery';
 import React, { ReactNode, useMemo } from 'react';
 import { useProvideCollateralDialog } from './useProvideCollateralDialog';
 import { useRedeemCollateralDialog } from './useRedeemCollateralDialog';
@@ -37,9 +38,6 @@ interface CollateralInfo {
 }
 
 export function CollateralList({ className }: CollateralListProps) {
-  // ---------------------------------------------
-  // dependencies
-  // ---------------------------------------------
   const { connected } = useAccount();
 
   const { data: borrowMarket } = useBorrowMarketQuery();
@@ -52,18 +50,24 @@ export function CollateralList({ className }: CollateralListProps) {
   const [openRedeemCollateralDialog, redeemCollateralDialogElement] =
     useRedeemCollateralDialog();
 
+  const { data: bridgeAssets } = useBridgeAssetsQuery(
+    borrowMarket?.overseerWhitelist.elems,
+  );
+
   const {
     ust: { formatOutput, demicrofy },
   } = useFormatters();
 
-  console.log(borrowMarket);
-
   const collaterals = useMemo<CollateralInfo[]>(() => {
-    if (!borrowMarket) {
+    if (!borrowMarket || !bridgeAssets) {
       return [];
     }
 
-    return borrowMarket.overseerWhitelist.elems.map(
+    const whiltelist = borrowMarket.overseerWhitelist.elems.filter((elem) => {
+      return bridgeAssets.has(elem.collateral_token);
+    });
+
+    return whiltelist.map(
       ({ collateral_token, name, symbol, tokenDisplay }) => {
         const oracle = borrowMarket.oraclePrices.prices.find(
           ({ asset }) => collateral_token === asset,
@@ -102,7 +106,7 @@ export function CollateralList({ className }: CollateralListProps) {
         };
       },
     );
-  }, [borrowBorrower, borrowMarket]);
+  }, [borrowBorrower, borrowMarket, bridgeAssets]);
 
   // ---------------------------------------------
   // presentation

@@ -5,8 +5,8 @@ import {
 } from '@anchor-protocol/app-fns';
 import { BorrowMarketWithDisplay } from '@anchor-protocol/app-provider';
 import { bAsset } from '@anchor-protocol/types';
-import { useCW20Balance, useFixedFee } from '@libs/app-provider';
-import { CW20Addr } from '@libs/types';
+import { useFixedFee } from '@libs/app-provider';
+import { CW20Addr, u } from '@libs/types';
 import { useForm } from '@libs/use-form';
 import { useAccount } from 'contexts/account';
 import { useBalances } from 'contexts/balances';
@@ -21,21 +21,20 @@ export interface BorrowProvideCollateralFormReturn
 
 export function useBorrowProvideCollateralForm(
   collateralToken: CW20Addr,
+  balance: u<bAsset>,
   fallbackBorrowMarket: BorrowMarketWithDisplay,
   fallbackBorrowBorrower: BorrowBorrower,
 ) {
-  const { connected, terraWalletAddress } = useAccount();
+  const { connected } = useAccount();
 
   const fixedFee = useFixedFee();
 
   const { uUST } = useBalances();
 
-  const ubAssetBalance = useCW20Balance<bAsset>(
-    collateralToken as CW20Addr,
-    terraWalletAddress,
-  );
-
-  //const ubAssetBalance = '12000000' as u<bAsset>;
+  // const ubAssetBalance = useCW20Balance<bAsset>(
+  //   collateralToken as CW20Addr,
+  //   terraWalletAddress,
+  // );
 
   const {
     data: {
@@ -53,7 +52,7 @@ export function useBorrowProvideCollateralForm(
     borrowProvideCollateralForm,
     {
       collateralToken,
-      userBAssetBalance: ubAssetBalance,
+      userBAssetBalance: balance,
       userUSTBalance: uUST,
       connected,
       oraclePrices,

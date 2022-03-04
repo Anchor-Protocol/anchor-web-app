@@ -3,6 +3,7 @@ import {
   useBorrowProvideCollateralTx,
 } from '@anchor-protocol/app-provider';
 import { bAsset } from '@anchor-protocol/types';
+import { useCW20Balance } from '@libs/app-provider';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import type { DialogProps } from '@libs/use-dialog';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
@@ -18,10 +19,16 @@ export const TerraProvideCollateralDialog = (
   const { collateralToken, fallbackBorrowMarket, fallbackBorrowBorrower } =
     props;
 
-  const { availablePost, connected } = useAccount();
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
+  const ubAssetBalance = useCW20Balance<bAsset>(
+    collateralToken,
+    terraWalletAddress,
+  );
 
   const states = useBorrowProvideCollateralForm(
     collateralToken,
+    ubAssetBalance,
     fallbackBorrowMarket,
     fallbackBorrowBorrower,
   );

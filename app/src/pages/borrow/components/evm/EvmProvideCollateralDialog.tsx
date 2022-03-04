@@ -1,6 +1,6 @@
 import React from 'react';
 import { useBorrowProvideCollateralForm } from '@anchor-protocol/app-provider';
-import { bAsset } from '@anchor-protocol/types';
+import { bAsset, u } from '@anchor-protocol/types';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import type { DialogProps } from '@libs/use-dialog';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
@@ -20,6 +20,7 @@ export const EvmProvideCollateralDialog = (
 
   const states = useBorrowProvideCollateralForm(
     collateralToken,
+    '12000000' as u<bAsset>,
     fallbackBorrowMarket,
     fallbackBorrowBorrower,
   );
