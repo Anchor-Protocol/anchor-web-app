@@ -1,12 +1,19 @@
 import { Chain, DeploymentTarget } from '@anchor-protocol/app-provider';
 import { CW20Addr, ERC20Addr, moneyMarket } from '@anchor-protocol/types';
 import {
+  ChainId,
+  CHAIN_ID_AVAX,
+  CHAIN_ID_ETH,
+  CHAIN_ID_ETHEREUM_ROPSTEN,
   CHAIN_ID_TERRA,
   getEmitterAddressTerra,
   getForeignAssetEth,
+  getOriginalAssetTerra,
   hexToUint8Array,
+  uint8ArrayToNative,
 } from '@certusone/wormhole-sdk';
 import { EvmChainId } from '@libs/evm-wallet';
+import { LCDClient } from '@terra-money/terra.js';
 import { NetworkInfo } from '@terra-money/use-wallet';
 import { ethers } from 'ethers';
 
@@ -50,33 +57,71 @@ async function bridgeEvmAssetsQuery(
   target: DeploymentTarget,
   network: NetworkInfo,
 ): Promise<BridgeAssets> {
+  const ETH_ADDR_ZERO = '0x0000000000000000000000000000000000000000';
+
+  const lcd = new LCDClient({
+    URL: 'https://bombay-lcd.terra.dev',
+    chainID: 'bombay-12',
+  });
+
   const provider = ethers.getDefaultProvider(getEvmChainId(target, network));
+
+  const wormholeChainId = getWormholeChainId(target, network);
 
   const map = new Map<CW20Addr, CW20Addr | ERC20Addr>();
 
   for (let collateral of whitelist) {
-    //console.log('collateral', collateral)
-
-    const foreignAsset = await getForeignAssetEth(
-      // TODO: this needs to be updated to match the network
-      '0x61E44E506Ca5659E6c0bba9b678586fA2d729756',
-      provider,
-      CHAIN_ID_TERRA,
-      hexToUint8Array(
-        await getEmitterAddressTerra(collateral.collateral_token),
-      ),
+    const wormhole = await getOriginalAssetTerra(
+      lcd,
+      collateral.collateral_token,
     );
-    //console.log('collateral:foreignAsset', foreignAsset)
-    if (
-      foreignAsset &&
-      foreignAsset !== '0x0000000000000000000000000000000000000000'
-    ) {
-      map.set(collateral.collateral_token, foreignAsset as ERC20Addr);
+    if (wormhole.isWrapped) {
+      // the token is wrapped on terra which means this
+      // the information we get back is the original
+      if (wormhole.chainId === wormholeChainId) {
+        map.set(
+          collateral.collateral_token,
+          uint8ArrayToNative(
+            wormhole.assetAddress,
+            wormhole.chainId,
+          ) as ERC20Addr,
+        );
+      }
+    } else {
+      // the token is on Terra so need to check if
+      // it is wrapped onto our selected chain
+      const foreignAsset = await getForeignAssetEth(
+        // TODO: this needs to be updated to match the network
+        '0x61E44E506Ca5659E6c0bba9b678586fA2d729756',
+        provider,
+        CHAIN_ID_TERRA,
+        hexToUint8Array(
+          await getEmitterAddressTerra(collateral.collateral_token),
+        ),
+      );
+      if (foreignAsset && foreignAsset !== ETH_ADDR_ZERO) {
+        map.set(collateral.collateral_token, foreignAsset as ERC20Addr);
+      }
     }
   }
 
   return map;
 }
+
+const getWormholeChainId = (
+  target: DeploymentTarget,
+  network: NetworkInfo,
+): ChainId => {
+  switch (target.chain) {
+    case Chain.Ethereum:
+      return network.name === 'testnet'
+        ? CHAIN_ID_ETHEREUM_ROPSTEN
+        : CHAIN_ID_ETH;
+    case Chain.Avalanche:
+      return CHAIN_ID_AVAX;
+  }
+  return CHAIN_ID_ETH;
+};
 
 const getEvmChainId = (
   target: DeploymentTarget,

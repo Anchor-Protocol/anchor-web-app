@@ -128,7 +128,8 @@ function RedeemCollateralDialogBase(props: RedeemCollateralDialogProps) {
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                {states.collateral.tokenDisplay.symbol}
+                {states.collateral.tokenDisplay?.symbol ??
+                  states.collateral.symbol}
               </InputAdornment>
             ),
           }}
@@ -153,7 +154,8 @@ function RedeemCollateralDialogBase(props: RedeemCollateralDialogProps) {
               {states.withdrawableAmount
                 ? formatBAsset(demicrofy(states.withdrawableAmount))
                 : 0}{' '}
-              {states.collateral.tokenDisplay.symbol}
+              {states.collateral.tokenDisplay?.symbol ??
+                states.collateral.symbol}
             </span>
           </span>
         </div>

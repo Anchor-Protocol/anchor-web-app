@@ -133,7 +133,8 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                {states.collateral.tokenDisplay.symbol}
+                {states.collateral.tokenDisplay?.symbol ??
+                  states.collateral.symbol}
               </InputAdornment>
             ),
           }}
@@ -155,7 +156,8 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
               }
             >
               {formatBAsset(demicrofy(states.userBAssetBalance))}{' '}
-              {states.collateral.tokenDisplay.symbol}
+              {states.collateral.tokenDisplay?.symbol ??
+                states.collateral.symbol}
             </span>
           </span>
         </div>
