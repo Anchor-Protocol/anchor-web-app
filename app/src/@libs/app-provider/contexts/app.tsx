@@ -100,7 +100,7 @@ export function AppProvider<
   txErrorReporter,
   refetchMap,
 }: AppProviderProps<ContractAddress, Constants>) {
-  const network = useNetwork();
+  const { network } = useNetwork();
 
   const networkBoundStates = useMemo<
     Pick<

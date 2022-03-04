@@ -1,47 +1,40 @@
-import {
-  useBorrowProvideCollateralForm,
-  useBorrowProvideCollateralTx,
-} from '@anchor-protocol/app-provider';
-import { bAsset } from '@anchor-protocol/types';
-import { useCW20Balance } from '@libs/app-provider';
+import React from 'react';
+import { useBorrowProvideCollateralForm } from '@anchor-protocol/app-provider';
+import { bAsset, u } from '@anchor-protocol/types';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import type { DialogProps } from '@libs/use-dialog';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useAccount } from 'contexts/account';
-import React from 'react';
 import { useCallback } from 'react';
+import { useProvideCollateralTx } from 'tx/evm';
 import { ProvideCollateralDialog } from '../ProvideCollateralDialog';
 import { ProvideCollateralFormParams } from '../types';
 
-export const TerraProvideCollateralDialog = (
+export const EvmProvideCollateralDialog = (
   props: DialogProps<ProvideCollateralFormParams>,
 ) => {
   const { collateralToken, fallbackBorrowMarket, fallbackBorrowBorrower } =
     props;
 
-  const { availablePost, connected, terraWalletAddress } = useAccount();
-
-  const ubAssetBalance = useCW20Balance<bAsset>(
-    collateralToken,
-    terraWalletAddress,
-  );
+  const { availablePost, connected } = useAccount();
 
   const states = useBorrowProvideCollateralForm(
     collateralToken,
-    ubAssetBalance,
+    '12000000' as u<bAsset>,
     fallbackBorrowMarket,
     fallbackBorrowBorrower,
   );
 
-  const [postTx, txResult] = useBorrowProvideCollateralTx(collateralToken);
+  const [postTx, txResult] = useProvideCollateralTx();
 
   const proceed = useCallback(
-    (depositAmount: bAsset) => {
+    (amount: bAsset) => {
       if (!connected || !postTx) {
         return;
       }
       postTx({
-        depositAmount,
+        collateral: 'bluna', //states.collateral,
+        amount,
       });
     },
     [connected, postTx],

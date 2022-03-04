@@ -28,7 +28,7 @@ export function AnchorWebappProvider({
   children,
   indexerApiEndpoints,
 }: AnchorWebappProviderProps) {
-  const network = useNetwork();
+  const { network } = useNetwork();
 
   //const { contractAddress } = useApp<AnchorContractAddress>();
 

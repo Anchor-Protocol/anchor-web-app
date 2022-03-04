@@ -18,7 +18,7 @@ function TransactionHistoryListBase({
   breakpoint = 700,
 }: TransactionHistoryListProps) {
   const { ref, width = 1000 } = useResizeObserver();
-  const network = useNetwork();
+  const { network } = useNetwork();
 
   return (
     <ul className={className} ref={ref} data-break={width < breakpoint}>

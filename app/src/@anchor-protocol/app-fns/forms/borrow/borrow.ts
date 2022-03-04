@@ -22,7 +22,7 @@ import { computeBorrowTxFee } from '../../logics/borrow/computeBorrowTxFee';
 import { computeEstimateLiquidationPrice } from '../../logics/borrow/computeEstimateLiquidationPrice';
 import { validateBorrowAmount } from '../../logics/borrow/validateBorrowAmount';
 import { validateTxFee } from '../../logics/common/validateTxFee';
-import { BAssetLtv, BAssetLtvs } from '../../queries/borrow/market';
+import { BAssetLtvs } from '../../queries/borrow/market';
 
 export interface BorrowBorrowFormInput {
   borrowAmount: UST;
@@ -36,7 +36,6 @@ export interface BorrowBorrowFormDependency {
   oraclePrices: moneyMarket.oracle.PricesResponse;
   borrowRate: moneyMarket.interestModel.BorrowRateResponse;
   overseerWhitelist: OverseerWhitelistWithDisplay;
-  bAssetLtvsAvg: BAssetLtv;
   bAssetLtvs: BAssetLtvs;
   blocksPerYear: number;
   taxRate: Rate;
@@ -48,7 +47,6 @@ export interface BorrowBorrowFormStates extends BorrowBorrowFormInput {
   amountToLtv: (borrowAmount: u<UST>) => Rate<Big>;
   ltvToAmount: (ltv: Rate<Big>) => u<UST<Big>>;
   ltvStepFunction: (draftLtv: Rate<Big>) => Rate<Big>;
-
   borrowLimit: u<UST<Big>>;
   currentLtv: Rate<Big> | undefined;
   userMaxLtv: Rate<BigSource>;
@@ -56,18 +54,13 @@ export interface BorrowBorrowFormStates extends BorrowBorrowFormInput {
   safeMax: u<UST<Big>>;
   max: u<UST<Big>>;
   invalidTxFee: string | undefined;
-
   nextLtv: Rate<Big> | undefined;
   txFee: u<UST<Big>> | undefined;
   estimatedLiquidationPrice: string | null;
-
   receiveAmount: u<UST<Big>> | undefined;
   invalidBorrowAmount: string | undefined;
   invalidOverMaxLtv: string | undefined;
   warningOverSafeLtv: string | undefined;
-
-  bAssetLtvsAvg: BAssetLtv;
-
   availablePost: boolean;
 }
 
@@ -81,7 +74,6 @@ export const borrowBorrowForm = ({
   oraclePrices,
   borrowRate,
   overseerWhitelist,
-  bAssetLtvsAvg,
   bAssetLtvs,
   blocksPerYear,
   taxRate,
@@ -185,7 +177,6 @@ export const borrowBorrowForm = ({
         invalidOverMaxLtv,
         warningOverSafeLtv,
         borrowAmount,
-        bAssetLtvsAvg,
         availablePost,
       },
       undefined,

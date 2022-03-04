@@ -21,7 +21,8 @@ import { computeRedeemCollateralNextLtv } from '../../logics/borrow/computeRedee
 import { pickCollateral } from '../../logics/borrow/pickCollateral';
 import { validateRedeemAmount } from '../../logics/borrow/validateRedeemAmount';
 import { validateTxFee } from '../../logics/common/validateTxFee';
-import { BAssetLtv, BAssetLtvs } from '../../queries/borrow/market';
+import { BAssetLtvs } from '../../queries/borrow/market';
+import { computebAssetLtvsAvg } from '@anchor-protocol/app-fns/logics/borrow/computebAssetLtvsAvg';
 
 export interface BorrowRedeemCollateralFormInput {
   redeemAmount: bAsset;
@@ -35,7 +36,6 @@ export interface BorrowRedeemCollateralFormDependency {
   oraclePrices: moneyMarket.oracle.PricesResponse;
   overseerWhitelist: OverseerWhitelistWithDisplay;
   bAssetLtvs: BAssetLtvs;
-  bAssetLtvsAvg: BAssetLtv;
   marketBorrowerInfo: moneyMarket.market.BorrowerInfoResponse;
   overseerCollaterals: moneyMarket.overseer.CollateralsResponse;
   connected: boolean;
@@ -46,12 +46,7 @@ export interface BorrowRedeemCollateralFormStates
   amountToLtv: (redeemAmount: u<bAsset>) => Rate<Big>;
   ltvToAmount: (ltv: Rate<Big>) => u<bAsset<Big>>;
   ltvStepFunction: (draftLtv: Rate<Big>) => Rate<Big>;
-
-  bAssetLtvsAvg: BAssetLtv;
-
   collateral: OverseerWhitelistWithDisplay['elems'][0];
-  //collateralDenom: COLLATERAL_DENOMS | undefined;
-
   userMaxLtv: Rate<Big>;
   txFee: u<UST>;
   currentLtv: Rate<Big> | undefined;
@@ -61,7 +56,6 @@ export interface BorrowRedeemCollateralFormStates
   borrowLimit: u<UST<Big>>;
   invalidTxFee: string | undefined;
   invalidRedeemAmount: string | undefined;
-
   userBAssetBalance: u<bAsset>;
   availablePost: boolean;
 }
@@ -76,7 +70,6 @@ export const borrowRedeemCollateralForm = ({
   oraclePrices,
   overseerWhitelist,
   bAssetLtvs,
-  bAssetLtvsAvg,
   marketBorrowerInfo,
   overseerCollaterals,
   connected,
@@ -98,6 +91,8 @@ export const borrowRedeemCollateralForm = ({
     oraclePrices,
     bAssetLtvs,
   );
+
+  const bAssetLtvsAvg = computebAssetLtvsAvg(bAssetLtvs);
 
   const userMaxLtv = big(bAssetLtvsAvg.max).minus(0.1) as Rate<Big>;
 
@@ -159,7 +154,6 @@ export const borrowRedeemCollateralForm = ({
       {
         amountToLtv,
         borrowLimit,
-        //collateralDenom,
         currentLtv,
         collateral,
         invalidRedeemAmount,
@@ -167,7 +161,6 @@ export const borrowRedeemCollateralForm = ({
         redeemAmount,
         ltvToAmount,
         ltvStepFunction,
-        bAssetLtvsAvg,
         invalidTxFee,
         nextLtv,
         txFee: fixedFee,

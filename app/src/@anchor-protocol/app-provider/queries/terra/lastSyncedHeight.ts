@@ -17,7 +17,7 @@ const queryFn = createQueryFn((queryClient: QueryClient, chainID: string) => {
 });
 
 export function useLastSyncedHeightQuery(): UseQueryResult<number> {
-  const network = useNetwork();
+  const { network } = useNetwork();
   const { queryClient, queryErrorReporter } = useAnchorWebapp();
 
   const result = useQuery(

@@ -35,7 +35,7 @@ const ContentBase = (props: ContentProps) => {
 
   const { availablePost } = useAccount();
 
-  const network = useNetwork();
+  const { network } = useNetwork();
 
   const viewOnTerraFinder = useCallback(() => {
     window.open(

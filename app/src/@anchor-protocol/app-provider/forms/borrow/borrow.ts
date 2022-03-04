@@ -27,7 +27,6 @@ export function useBorrowBorrowForm(
     data: {
       borrowRate,
       oraclePrices,
-      bAssetLtvsAvg,
       bAssetLtvs,
       overseerWhitelist,
     } = fallbackBorrowMarket,
@@ -46,7 +45,6 @@ export function useBorrowBorrowForm(
       connected,
       oraclePrices,
       borrowRate,
-      bAssetLtvsAvg,
       bAssetLtvs,
       overseerCollaterals,
       blocksPerYear,

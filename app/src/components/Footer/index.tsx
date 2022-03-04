@@ -26,7 +26,7 @@ export interface FooterProps {
 }
 
 function FooterBase({ className, style }: FooterProps) {
-  const network = useNetwork();
+  const { network } = useNetwork();
   const { data: lastSyncedHeight = 0 } = useLastSyncedHeightQuery();
 
   const { themeColor, switchable, updateTheme } = useTheme();

@@ -34,7 +34,7 @@ const errorReporter =
   process.env.NODE_ENV === 'production' ? captureException : undefined;
 
 function Providers({ children }: { children: ReactNode }) {
-  const network = useNetwork();
+  const { network } = useNetwork();
   useEffect(() => {
     queryClient.invalidateQueries();
   }, [network.chainID]);

@@ -35,7 +35,6 @@ function Component({ className }: OverviewProps) {
     borrowedValue,
     collateralValue,
     borrowLimit,
-    bAssetLtvsAvg,
     netAPR,
     currentLtv,
     //dangerLtv,
@@ -181,7 +180,7 @@ function Component({ className }: OverviewProps) {
         </div>
       </article>
 
-      {currentLtv && bAssetLtvsAvg && borrowLimit ? (
+      {currentLtv && borrowLimit ? (
         <figure>
           <h3>
             <IconSpan>

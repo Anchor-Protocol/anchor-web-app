@@ -22,7 +22,8 @@ import { computeProvideCollateralNextLtv } from '../../logics/borrow/computeProv
 import { pickCollateral } from '../../logics/borrow/pickCollateral';
 import { validateDepositAmount } from '../../logics/borrow/validateDepositAmount';
 import { validateTxFee } from '../../logics/common/validateTxFee';
-import { BAssetLtv, BAssetLtvs } from '../../queries/borrow/market';
+import { BAssetLtvs } from '../../queries/borrow/market';
+import { computebAssetLtvsAvg } from '@anchor-protocol/app-fns/logics/borrow/computebAssetLtvsAvg';
 
 export interface BorrowProvideCollateralFormInput {
   depositAmount: bAsset;
@@ -36,7 +37,6 @@ export interface BorrowProvideCollateralFormDependency {
   oraclePrices: moneyMarket.oracle.PricesResponse;
   overseerWhitelist: OverseerWhitelistWithDisplay;
   bAssetLtvs: BAssetLtvs;
-  bAssetLtvsAvg: BAssetLtv;
   marketBorrowerInfo: moneyMarket.market.BorrowerInfoResponse;
   overseerCollaterals: moneyMarket.overseer.CollateralsResponse;
   connected: boolean;
@@ -47,20 +47,14 @@ export interface BorrowProvideCollateralFormStates
   amountToLtv: (depositAmount: u<bAsset>) => Rate<Big>;
   ltvToAmount: (ltv: Rate<Big>) => u<bAsset<Big>>;
   ltvStepFunction: (draftLtv: Rate<Big>) => Rate<Big>;
-
-  bAssetLtvsAvg: BAssetLtv;
-
   dangerLtv: Rate<Big>;
   collateral: OverseerWhitelistWithDisplay['elems'][0];
-  //collateralDenom: COLLATERAL_DENOMS | undefined;
-
   txFee: u<UST>;
   currentLtv: Rate<Big> | undefined;
   nextLtv: Rate<Big> | undefined;
   borrowLimit: u<UST<Big>>;
   invalidTxFee: string | undefined;
   invalidDepositAmount: string | undefined;
-
   userBAssetBalance: u<bAsset>;
   availablePost: boolean;
 }
@@ -73,7 +67,6 @@ export const borrowProvideCollateralForm = ({
   userUSTBalance,
   userBAssetBalance,
   bAssetLtvs,
-  bAssetLtvsAvg,
   overseerWhitelist,
   overseerCollaterals,
   oraclePrices,
@@ -112,6 +105,8 @@ export const borrowProvideCollateralForm = ({
   );
 
   const currentLtv = computeLtv(borrowLimit, borrowedAmount);
+
+  const bAssetLtvsAvg = computebAssetLtvsAvg(bAssetLtvs);
 
   const dangerLtv = big(bAssetLtvsAvg.max).minus(0.1) as Rate<Big>;
 
@@ -174,7 +169,6 @@ export const borrowProvideCollateralForm = ({
         ltvToAmount,
         userBAssetBalance,
         availablePost,
-        bAssetLtvsAvg,
         txFee: fixedFee,
       },
       undefined,

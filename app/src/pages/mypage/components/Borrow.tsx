@@ -25,14 +25,8 @@ export function Borrow() {
 
   const { data: { overseerCollaterals } = {} } = useBorrowBorrowerQuery();
 
-  const {
-    borrowedValue,
-    netAPR,
-    currentLtv,
-    bAssetLtvsAvg,
-    borrowLimit,
-    dangerLtv,
-  } = useBorrowOverviewData();
+  const { borrowedValue, netAPR, currentLtv, borrowLimit, dangerLtv } =
+    useBorrowOverviewData();
 
   const { totalCollateralValue, collaterals } = useMemo(() => {
     if (!overseerCollaterals || !oraclePrices || !overseerWhitelist) {
@@ -91,7 +85,6 @@ export function Borrow() {
         netAPR={netAPR}
         currentLtv={currentLtv}
         dangerLtv={dangerLtv}
-        bAssetLtvsAvg={bAssetLtvsAvg}
         borrowLimit={borrowLimit}
       />
     </BorrowRow>
