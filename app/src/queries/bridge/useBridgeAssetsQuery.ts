@@ -27,7 +27,6 @@ export function useBridgeAssetsQuery(
     [ANCHOR_QUERY_KEY.BRIDGE_ASSETS, whitelist, target, network],
     queryFn,
     {
-      //refetchInterval: 1000 * 60 * 5,
       keepPreviousData: false,
       onError: queryErrorReporter,
     },

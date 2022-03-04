@@ -55,6 +55,8 @@ async function bridgeEvmAssetsQuery(
   const map = new Map<CW20Addr, CW20Addr | ERC20Addr>();
 
   for (let collateral of whitelist) {
+    //console.log('collateral', collateral)
+
     const foreignAsset = await getForeignAssetEth(
       // TODO: this needs to be updated to match the network
       '0x61E44E506Ca5659E6c0bba9b678586fA2d729756',
@@ -64,6 +66,7 @@ async function bridgeEvmAssetsQuery(
         await getEmitterAddressTerra(collateral.collateral_token),
       ),
     );
+    //console.log('collateral:foreignAsset', foreignAsset)
     if (
       foreignAsset &&
       foreignAsset !== '0x0000000000000000000000000000000000000000'

@@ -10,6 +10,13 @@ export interface ProvideCollateralFormParams extends UIElementProps {
   fallbackBorrowBorrower: BorrowBorrower;
 }
 
+export interface RedeemCollateralFormParams extends UIElementProps {
+  collateralToken: CW20Addr;
+  token: CW20Addr | ERC20Addr;
+  fallbackBorrowMarket: BorrowMarketWithDisplay;
+  fallbackBorrowBorrower: BorrowBorrower;
+}
+
 export interface BorrowFormParams extends UIElementProps {
   fallbackBorrowMarket: BorrowMarketWithDisplay;
   fallbackBorrowBorrower: BorrowBorrower;

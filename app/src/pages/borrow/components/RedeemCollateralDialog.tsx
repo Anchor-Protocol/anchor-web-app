@@ -1,4 +1,5 @@
-import { useBorrowProvideCollateralForm } from '@anchor-protocol/app-provider';
+import { ANCHOR_SAFE_RATIO } from '@anchor-protocol/app-fns';
+import { useBorrowRedeemCollateralForm } from '@anchor-protocol/app-provider';
 import {
   formatBAsset,
   formatBAssetInput,
@@ -8,84 +9,80 @@ import {
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
 import { bAsset, Rate, u } from '@anchor-protocol/types';
+import { TxResultRendering } from '@libs/app-fns';
 import { demicrofy } from '@libs/formatter';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
 import { TextInput } from '@libs/neumorphism-ui/components/TextInput';
+import { UIElementProps } from '@libs/ui';
 import type { DialogProps } from '@libs/use-dialog';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { StreamResult, StreamStatus } from '@rx-stream/react';
-import big, { Big } from 'big.js';
+import { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useAccount } from 'contexts/account';
-import { ChangeEvent } from 'react';
-import React, { useCallback } from 'react';
+import React, { ChangeEvent, useCallback } from 'react';
 import styled from 'styled-components';
 import { LTVGraph } from './LTVGraph';
-import { UIElementProps } from '@libs/ui';
-import { TxResultRendering } from '@libs/app-fns';
-import { ProvideCollateralFormParams } from './types';
-import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
-import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { RedeemCollateralFormParams } from './types';
 
-export interface ProvideCollateralDialogParams
+export interface RedeemCollateralDialogParams
   extends UIElementProps,
-    ProvideCollateralFormParams {
+    RedeemCollateralFormParams {
   txResult: StreamResult<TxResultRendering> | null;
   uTokenBalance: u<bAsset>;
   proceedable: boolean;
   onProceed: (amount: bAsset) => void;
 }
 
-export type ProvideCollateralDialogProps =
-  DialogProps<ProvideCollateralDialogParams>;
+export type RedeemCollateralDialogProps =
+  DialogProps<RedeemCollateralDialogParams>;
 
-function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
+function RedeemCollateralDialogBase(props: RedeemCollateralDialogProps) {
   const {
     className,
     closeDialog,
-    txResult,
-    proceedable,
-    onProceed,
     collateralToken,
-    uTokenBalance,
     fallbackBorrowMarket,
     fallbackBorrowBorrower,
+    txResult,
+    uTokenBalance,
+    proceedable,
+    onProceed,
   } = props;
 
-  const { connected, availablePost } = useAccount();
+  const { availablePost, connected } = useAccount();
 
-  const [input, states] = useBorrowProvideCollateralForm(
+  const [input, states] = useBorrowRedeemCollateralForm(
     collateralToken,
     uTokenBalance,
     fallbackBorrowMarket,
     fallbackBorrowBorrower,
   );
 
-  const updateDepositAmount = useCallback(
-    (depositAmount: bAsset) => {
-      input({
-        depositAmount,
-      });
+  const updateRedeemAmount = useCallback(
+    (nextRedeemAmount: string) => {
+      input({ redeemAmount: nextRedeemAmount as bAsset });
     },
     [input],
   );
 
-  const { ltvToAmount } = states;
-
   const onLtvChange = useCallback(
     (nextLtv: Rate<Big>) => {
+      const ltvToAmount = states.ltvToAmount;
       try {
         const nextAmount = ltvToAmount(nextLtv);
-        updateDepositAmount(formatBAssetInput(demicrofy(nextAmount)));
+        input({ redeemAmount: formatBAssetInput(demicrofy(nextAmount)) });
       } catch {}
     },
-    [updateDepositAmount, ltvToAmount],
+    [input, states.ltvToAmount],
   );
 
   if (
@@ -109,10 +106,8 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
       <Dialog className={className} onClose={() => closeDialog()}>
         <h1>
           <IconSpan>
-            Provide Collateral{' '}
-            <InfoTooltip>
-              Provide bAssets as collateral to borrow stablecoins
-            </InfoTooltip>
+            Withdraw Collateral{' '}
+            <InfoTooltip>Withdraw bAsset to your wallet</InfoTooltip>
           </IconSpan>
         </h1>
 
@@ -122,13 +117,13 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
 
         <NumberInput
           className="amount"
-          value={states.depositAmount}
+          value={states.redeemAmount}
           maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
           maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
-          label="DEPOSIT AMOUNT"
-          error={!!states.invalidDepositAmount}
+          label="WITHDRAW AMOUNT"
+          error={!!states.invalidRedeemAmount}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
-            updateDepositAmount(target.value as bAsset)
+            updateRedeemAmount(target.value)
           }
           InputProps={{
             endAdornment: (
@@ -139,22 +134,25 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
           }}
         />
 
-        <div className="wallet" aria-invalid={!!states.invalidDepositAmount}>
-          <span>{states.invalidDepositAmount}</span>
+        <div className="wallet" aria-invalid={!!states.invalidRedeemAmount}>
+          <span>{states.invalidRedeemAmount}</span>
           <span>
-            Wallet:{' '}
+            Withdrawable:{' '}
             <span
               style={{
                 textDecoration: 'underline',
                 cursor: 'pointer',
               }}
               onClick={() =>
-                updateDepositAmount(
-                  formatBAssetInput(demicrofy(states.userBAssetBalance)),
+                states.withdrawableAmount &&
+                updateRedeemAmount(
+                  formatBAssetInput(demicrofy(states.withdrawableAmount)),
                 )
               }
             >
-              {formatBAsset(demicrofy(states.userBAssetBalance))}{' '}
+              {states.withdrawableAmount
+                ? formatBAsset(demicrofy(states.withdrawableAmount))
+                : 0}{' '}
               {states.collateral.tokenDisplay.symbol}
             </span>
           </span>
@@ -174,25 +172,39 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
           InputProps={{
             readOnly: true,
             endAdornment: <InputAdornment position="end">UST</InputAdornment>,
-            inputMode: 'numeric',
           }}
           style={{ pointerEvents: 'none' }}
         />
 
-        {big(states.currentLtv ?? 0).gt(0) && (
-          <figure className="graph">
-            <LTVGraph
-              disabled={!connected}
-              start={0}
-              end={states.currentLtv?.toNumber() ?? 0}
-              value={states.nextLtv}
-              onChange={onLtvChange}
-              onStep={states.ltvStepFunction}
-            />
-          </figure>
+        <figure className="graph">
+          <LTVGraph
+            disabled={!connected}
+            start={states.currentLtv?.toNumber() ?? 0}
+            end={1}
+            value={states.nextLtv}
+            onChange={onLtvChange}
+            onStep={states.ltvStepFunction}
+          />
+        </figure>
+
+        {states.nextLtv?.gt(ANCHOR_SAFE_RATIO) && (
+          <MessageBox
+            level="error"
+            hide={{
+              id: 'redeem-collateral-ltv',
+              period: 1000 * 60 * 60 * 24 * 5,
+            }}
+            style={{ userSelect: 'none', fontSize: 12 }}
+          >
+            Caution: As current borrow usage is above the recommended amount,
+            fluctuations in collateral value may trigger immediate liquidations.
+            It is strongly recommended to keep the borrow usage below the
+            maximum by repaying loans with stablecoins or providing additional
+            collateral.
+          </MessageBox>
         )}
 
-        {states.depositAmount.length > 0 && (
+        {states.redeemAmount.length > 0 && (
           <TxFeeList className="receipt">
             <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
               {formatUST(demicrofy(states.txFee))} UST
@@ -209,7 +221,13 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
               !states.availablePost ||
               !proceedable
             }
-            onClick={() => onProceed(states.depositAmount)}
+            onClick={() =>
+              onProceed(
+                states.redeemAmount.length > 0
+                  ? states.redeemAmount
+                  : ('0' as bAsset),
+              )
+            }
           >
             Proceed
           </ActionButton>
@@ -219,7 +237,7 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
   );
 }
 
-export const ProvideCollateralDialog = styled(ProvideCollateralDialogBase)`
+export const RedeemCollateralDialog = styled(RedeemCollateralDialogBase)`
   width: 720px;
   touch-action: none;
 

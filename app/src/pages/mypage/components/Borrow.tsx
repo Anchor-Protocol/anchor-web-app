@@ -51,7 +51,9 @@ export function Borrow() {
       collaterals: ustAmounts.map(
         (ustAmount, i) =>
           ({
-            label: overseerWhitelist.elems[i].tokenDisplay.symbol,
+            label:
+              overseerWhitelist.elems[i].tokenDisplay?.symbol ??
+              overseerWhitelist.elems[i].symbol,
             ratio: (totalCollateralValue.gt(0)
               ? big(ustAmount).div(totalCollateralValue).toFixed()
               : '0') as Rate,
