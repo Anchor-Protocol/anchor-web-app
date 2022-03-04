@@ -6,7 +6,7 @@ import {
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { formatBAsset } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
-import { bAsset, CW20Addr, u, UST } from '@anchor-protocol/types';
+import { bAsset, CW20Addr, EVMAddr, u, UST } from '@anchor-protocol/types';
 import { demicrofy as demicrofybAsset } from '@libs/formatter';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { HorizontalScrollTable } from '@libs/neumorphism-ui/components/HorizontalScrollTable';
@@ -28,7 +28,8 @@ export interface CollateralListProps {
 
 interface CollateralInfo {
   icon: ReactNode;
-  token: CW20Addr;
+  collateralToken: CW20Addr;
+  token: CW20Addr | EVMAddr;
   name: string;
   symbol: string;
   price: UST;
@@ -82,7 +83,8 @@ export function CollateralList({ className }: CollateralListProps) {
               token={symbol.toLowerCase() === 'beth' ? 'beth' : 'bluna'}
             />
           ),
-          token: collateral_token,
+          collateralToken: collateral_token,
+          token: bridgeAssets.get(collateral_token)!,
           name,
           symbol: tokenDisplay.symbol,
           price: oracle?.price ?? ('0' as UST),
@@ -147,7 +149,7 @@ export function CollateralList({ className }: CollateralListProps) {
         <tbody>
           {collaterals.map(
             ({
-              token,
+              collateralToken,
               icon,
               name,
               symbol,
@@ -156,7 +158,7 @@ export function CollateralList({ className }: CollateralListProps) {
               lockedAmount,
               lockedAmountInUST,
             }) => (
-              <tr key={token}>
+              <tr key={collateralToken}>
                 <td>
                   <i>{icon}</i>
                   <div>
@@ -198,7 +200,7 @@ export function CollateralList({ className }: CollateralListProps) {
                       borrowMarket &&
                       borrowBorrower &&
                       openProvideCollateralDialog({
-                        collateralToken: token,
+                        collateralToken,
                         fallbackBorrowMarket: borrowMarket,
                         fallbackBorrowBorrower: borrowBorrower,
                       })
@@ -217,7 +219,7 @@ export function CollateralList({ className }: CollateralListProps) {
                       borrowMarket &&
                       borrowBorrower &&
                       openRedeemCollateralDialog({
-                        collateralToken: token,
+                        collateralToken,
                         fallbackBorrowMarket: borrowMarket,
                         fallbackBorrowBorrower: borrowBorrower,
                       })
