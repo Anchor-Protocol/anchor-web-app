@@ -17,12 +17,12 @@ export const DEPLOYMENT_TARGETS = [
     isNative: true,
     isEVM: false,
   },
-  // {
-  //   chain: Chain.Ethereum,
-  //   icon: 'https://assets.terra.money/icon/wallet-provider/walletconnect.svg',
-  //   isNative: false,
-  //   isEVM: true,
-  // },
+  {
+    chain: Chain.Ethereum,
+    icon: 'https://assets.terra.money/icon/wallet-provider/walletconnect.svg',
+    isNative: false,
+    isEVM: true,
+  },
   {
     chain: Chain.Avalanche,
     icon: 'https://assets.terra.money/icon/wallet-provider/walletconnect.svg',
