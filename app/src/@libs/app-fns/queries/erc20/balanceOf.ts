@@ -2,13 +2,13 @@ import { ERC20Addr, EVMAddr, Token, u } from '@libs/types';
 import { BigNumber } from '@ethersproject/bignumber';
 
 export type BalanceOfFetcher = (
-  tokenAddress: EVMAddr,
-  walletAddress: ERC20Addr,
+  tokenAddress: ERC20Addr,
+  walletAddress: EVMAddr,
 ) => Promise<BigNumber>;
 
 export async function erc2020BalanceQuery<T extends Token>(
-  tokenAddress: EVMAddr | undefined,
-  walletAddress: ERC20Addr | undefined,
+  tokenAddress: ERC20Addr | undefined,
+  walletAddress: EVMAddr | undefined,
   fetcher: BalanceOfFetcher,
 ): Promise<T | undefined> {
   if (!walletAddress || !tokenAddress || !fetcher) {

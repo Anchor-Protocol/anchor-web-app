@@ -31,11 +31,6 @@ export function useBorrowProvideCollateralForm(
 
   const { uUST } = useBalances();
 
-  // const ubAssetBalance = useCW20Balance<bAsset>(
-  //   collateralToken as CW20Addr,
-  //   terraWalletAddress,
-  // );
-
   const {
     data: {
       oraclePrices,

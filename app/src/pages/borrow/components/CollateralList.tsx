@@ -6,7 +6,7 @@ import {
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { formatBAsset } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
-import { bAsset, CW20Addr, EVMAddr, u, UST } from '@anchor-protocol/types';
+import { bAsset, CW20Addr, ERC20Addr, u, UST } from '@anchor-protocol/types';
 import { demicrofy as demicrofybAsset } from '@libs/formatter';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { HorizontalScrollTable } from '@libs/neumorphism-ui/components/HorizontalScrollTable';
@@ -29,7 +29,7 @@ export interface CollateralListProps {
 interface CollateralInfo {
   icon: ReactNode;
   collateralToken: CW20Addr;
-  token: CW20Addr | EVMAddr;
+  token: CW20Addr | ERC20Addr;
   name: string;
   symbol: string;
   price: UST;
@@ -150,6 +150,7 @@ export function CollateralList({ className }: CollateralListProps) {
           {collaterals.map(
             ({
               collateralToken,
+              token,
               icon,
               name,
               symbol,
@@ -201,6 +202,7 @@ export function CollateralList({ className }: CollateralListProps) {
                       borrowBorrower &&
                       openProvideCollateralDialog({
                         collateralToken,
+                        token,
                         fallbackBorrowMarket: borrowMarket,
                         fallbackBorrowBorrower: borrowBorrower,
                       })
@@ -220,6 +222,7 @@ export function CollateralList({ className }: CollateralListProps) {
                       borrowBorrower &&
                       openRedeemCollateralDialog({
                         collateralToken,
+                        token,
                         fallbackBorrowMarket: borrowMarket,
                         fallbackBorrowBorrower: borrowBorrower,
                       })

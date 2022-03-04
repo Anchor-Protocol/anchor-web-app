@@ -12,7 +12,7 @@ import {
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { bAsset, CW20Addr, Rate } from '@anchor-protocol/types';
+import { bAsset, CW20Addr, ERC20Addr, Rate } from '@anchor-protocol/types';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
@@ -39,6 +39,7 @@ import { LTVGraph } from './LTVGraph';
 interface FormParams {
   className?: string;
   collateralToken: CW20Addr;
+  token: CW20Addr | ERC20Addr;
   fallbackBorrowMarket: BorrowMarketWithDisplay;
   fallbackBorrowBorrower: BorrowBorrower;
 }

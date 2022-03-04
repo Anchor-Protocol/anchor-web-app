@@ -34,6 +34,9 @@ export interface ProvideCollateralDialogParams
   extends UIElementProps,
     BorrowProvideCollateralFormReturn {
   txResult: StreamResult<TxResultRendering> | null;
+  // tokenBalance: u<bAsset>;
+  // proceedable: boolean;
+  // onProceed: (amount: bAsset) => void;
 }
 
 export type ProvideCollateralDialogProps =

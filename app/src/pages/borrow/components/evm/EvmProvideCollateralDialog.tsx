@@ -1,6 +1,6 @@
 import React from 'react';
 import { useBorrowProvideCollateralForm } from '@anchor-protocol/app-provider';
-import { bAsset, u } from '@anchor-protocol/types';
+import { bAsset, ERC20Addr } from '@anchor-protocol/types';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import type { DialogProps } from '@libs/use-dialog';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
@@ -9,18 +9,25 @@ import { useCallback } from 'react';
 import { useProvideCollateralTx } from 'tx/evm';
 import { ProvideCollateralDialog } from '../ProvideCollateralDialog';
 import { ProvideCollateralFormParams } from '../types';
+import { useERC20Balance } from '@libs/app-provider/queries/erc20/balanceOf';
 
 export const EvmProvideCollateralDialog = (
   props: DialogProps<ProvideCollateralFormParams>,
 ) => {
-  const { collateralToken, fallbackBorrowMarket, fallbackBorrowBorrower } =
-    props;
+  const {
+    collateralToken,
+    token,
+    fallbackBorrowMarket,
+    fallbackBorrowBorrower,
+  } = props;
 
   const { availablePost, connected } = useAccount();
 
+  const uTokenBalance = useERC20Balance<bAsset>(token as ERC20Addr);
+
   const states = useBorrowProvideCollateralForm(
     collateralToken,
-    '12000000' as u<bAsset>,
+    uTokenBalance,
     fallbackBorrowMarket,
     fallbackBorrowBorrower,
   );

@@ -57,26 +57,6 @@ const EvmWalletSelectorBase = ({ className }: UIElementProps) => {
   );
 };
 
-const EvmWalletSelector = styled(EvmWalletSelectorBase)`
-  .restore-tx {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 8px;
-    font-weight: 500;
-    color: ${({ theme }) => theme.dimTextColor};
-    margin-bottom: 10px;
-  }
-
-  .restore-tx-inner {
-    width: auto;
-  }
-
-  .link {
-    cursor: pointer;
-    color: ${({ theme }) => theme.colors.secondaryDark};
-  }
-`;
+const EvmWalletSelector = styled(EvmWalletSelectorBase)``;
 
 export { EvmWalletSelector };

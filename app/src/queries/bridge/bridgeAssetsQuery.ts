@@ -1,5 +1,5 @@
 import { Chain, DeploymentTarget } from '@anchor-protocol/app-provider';
-import { CW20Addr, EVMAddr, moneyMarket } from '@anchor-protocol/types';
+import { CW20Addr, ERC20Addr, moneyMarket } from '@anchor-protocol/types';
 import {
   CHAIN_ID_TERRA,
   getEmitterAddressTerra,
@@ -10,7 +10,7 @@ import { EvmChainId } from '@libs/evm-wallet';
 import { NetworkInfo } from '@terra-money/use-wallet';
 import { ethers } from 'ethers';
 
-export type BridgeAssets = Map<CW20Addr, CW20Addr | EVMAddr>;
+export type BridgeAssets = Map<CW20Addr, CW20Addr | ERC20Addr>;
 
 export type WhiltelistCollateral =
   moneyMarket.overseer.WhitelistResponse['elems'][0];
@@ -40,7 +40,7 @@ export function bridgeAssetsQuery(
 function bridgeTerraAssetsQuery(
   whitelist: WhiltelistCollateral[],
 ): BridgeAssets {
-  return new Map<CW20Addr, CW20Addr | EVMAddr>(
+  return new Map<CW20Addr, CW20Addr | ERC20Addr>(
     whitelist.map((elem) => [elem.collateral_token, elem.collateral_token]),
   );
 }
@@ -52,7 +52,7 @@ async function bridgeEvmAssetsQuery(
 ): Promise<BridgeAssets> {
   const provider = ethers.getDefaultProvider(getEvmChainId(target, network));
 
-  const map = new Map<CW20Addr, CW20Addr | EVMAddr>();
+  const map = new Map<CW20Addr, CW20Addr | ERC20Addr>();
 
   for (let collateral of whitelist) {
     const foreignAsset = await getForeignAssetEth(
@@ -68,7 +68,7 @@ async function bridgeEvmAssetsQuery(
       foreignAsset &&
       foreignAsset !== '0x0000000000000000000000000000000000000000'
     ) {
-      map.set(collateral.collateral_token, foreignAsset as EVMAddr);
+      map.set(collateral.collateral_token, foreignAsset as ERC20Addr);
     }
   }
 

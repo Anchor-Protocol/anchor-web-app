@@ -32,7 +32,7 @@ const ContentBase = (props: ContentProps) => {
       <TokenList onClose={onClose} />
       <div className="restore-tx">
         <div className="restore-tx-inner">
-          <div>Having transaction issues?</div>
+          <p>Having transaction issues?</p>
           <Link className="link" to="/bridge/restore">
             Restore transaction
           </Link>
@@ -48,22 +48,22 @@ export const Content = styled(ContentBase)`
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 500;
     color: ${({ theme }) => theme.dimTextColor};
     margin-bottom: 10px;
-  }
 
-  .restore-tx-inner {
-    width: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+    .restore-tx-inner {
+      width: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-  .link {
-    margin-top: 5px;
-    cursor: pointer;
-    color: ${({ theme }) => theme.colors.secondaryDark};
+    .link {
+      margin-top: 5px;
+      cursor: pointer;
+      color: ${({ theme }) => theme.colors.secondaryDark};
+    }
   }
 `;
