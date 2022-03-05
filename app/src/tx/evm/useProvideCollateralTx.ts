@@ -5,10 +5,7 @@ import { TxResultRendering } from '@libs/app-fns';
 import { txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
-import {
-  Collateral,
-  CrossChainTxResponse,
-} from '@anchor-protocol/crossanchor-sdk';
+import { CrossChainTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from '@ethersproject/contracts';
 import { useRedeemableTx } from './useRedeemableTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
@@ -18,7 +15,7 @@ import { TxEventHandler } from './useTx';
 type TxResult = CrossChainTxResponse<ContractReceipt> | null;
 type TxRender = TxResultRendering<TxResult>;
 export interface ProvideCollateralTxProps {
-  collateral: Collateral;
+  collateralContract: string;
   amount: string;
 }
 
@@ -37,36 +34,40 @@ export function useProvideCollateralTx():
       renderTxResults: Subject<TxRender>,
       handleEvent: TxEventHandler<ProvideCollateralTxProps>,
     ) => {
-      const amount = microfy(formatInput(txParams.amount)).toString();
+      try {
+        const amount = microfy(formatInput(txParams.amount)).toString();
 
-      // TODO: approve correct collateral
-      await xAnchor.approveLimit(
-        'bluna',
-        amount,
-        address!,
-        TX_GAS_LIMIT,
-        (event) => {
-          renderTxResults.next(
-            txResult(event, connectType, chainId!, 'lock collateral'),
-          );
-          handleEvent(event, txParams);
-        },
-      );
+        await xAnchor.approveLimit(
+          { contract: txParams.collateralContract },
+          amount,
+          address!,
+          TX_GAS_LIMIT,
+          (event) => {
+            renderTxResults.next(
+              txResult(event, connectType, chainId!, 'lock collateral'),
+            );
+            handleEvent(event, txParams);
+          },
+        );
 
-      return xAnchor.lockCollateral(
-        txParams.collateral,
-        amount,
-        address!,
-        TX_GAS_LIMIT,
-        (event) => {
-          console.log(event, 'eventEmitted');
+        return xAnchor.lockCollateral(
+          { contract: txParams.collateralContract },
+          amount,
+          address!,
+          TX_GAS_LIMIT,
+          (event) => {
+            console.log(event, 'eventEmitted');
 
-          renderTxResults.next(
-            txResult(event, connectType, chainId!, 'lock collateral'),
-          );
-          handleEvent(event, txParams);
-        },
-      );
+            renderTxResults.next(
+              txResult(event, connectType, chainId!, 'lock collateral'),
+            );
+            handleEvent(event, txParams);
+          },
+        );
+      } catch (err) {
+        console.log(err);
+        throw err;
+      }
     },
     [xAnchor, address, connectType, chainId, formatInput, microfy],
   );

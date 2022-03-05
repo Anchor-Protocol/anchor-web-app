@@ -13,6 +13,18 @@ const catchTxError = <TxResult>(
   return catchError((error) => {
     const errorId = txErrorReporter ? txErrorReporter(error) : error.message;
 
+    if (
+      error.data.message.includes(
+        'execution reverted: transfer info already processed',
+      )
+    ) {
+      return Promise.resolve<TxResultRendering>({
+        value: null,
+        phase: TxStreamPhase.SUCCEED,
+        receipts: [],
+      });
+    }
+
     return Promise.resolve<TxResultRendering>({
       value: null,
       phase: TxStreamPhase.FAILED,

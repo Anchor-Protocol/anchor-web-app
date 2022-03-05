@@ -23,12 +23,12 @@ export const EvmProvideCollateralDialog = (
     (amount: bAsset) => {
       if (connected && postTx) {
         postTx({
-          collateral: 'bluna', //token
+          collateralContract: token,
           amount,
         });
       }
     },
-    [connected, postTx],
+    [connected, postTx, token],
   );
 
   return (

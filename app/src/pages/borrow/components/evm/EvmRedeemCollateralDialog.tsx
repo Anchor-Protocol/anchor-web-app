@@ -11,7 +11,7 @@ import { useERC20Balance } from '@libs/app-provider/queries/erc20/balanceOf';
 export const EvmRedeemCollateralDialog = (
   props: DialogProps<RedeemCollateralFormParams>,
 ) => {
-  const { token } = props;
+  const { token, collateralToken } = props;
 
   const { connected } = useAccount();
 
@@ -23,12 +23,13 @@ export const EvmRedeemCollateralDialog = (
     (amount: bAsset) => {
       if (connected && postTx) {
         postTx({
-          collateral: 'bluna', //token
+          collateralContractEvm: token,
+          collateralContractTerra: collateralToken,
           amount,
         });
       }
     },
-    [connected, postTx],
+    [connected, postTx, token, collateralToken],
   );
 
   return (
