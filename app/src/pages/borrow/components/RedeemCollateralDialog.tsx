@@ -3,7 +3,7 @@ import { useBorrowRedeemCollateralForm } from '@anchor-protocol/app-provider';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import {
   // formatBAsset,
-  formatBAssetInput,
+  // formatBAssetInput,
   formatUST,
   formatUSTInput,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
@@ -75,18 +75,20 @@ function RedeemCollateralDialogBase(props: RedeemCollateralDialogProps) {
     [input],
   );
 
+  const { native } = useFormatters();
+
   const onLtvChange = useCallback(
     (nextLtv: Rate<Big>) => {
       const ltvToAmount = states.ltvToAmount;
       try {
         const nextAmount = ltvToAmount(nextLtv);
-        input({ redeemAmount: formatBAssetInput(demicrofy(nextAmount)) });
+        input({
+          redeemAmount: native.formatInput(native.demicrofy(nextAmount)) as any,
+        });
       } catch {}
     },
-    [input, states.ltvToAmount],
+    [input, states.ltvToAmount, native],
   );
-
-  const { native } = useFormatters();
 
   if (
     txResult?.status === StreamStatus.IN_PROGRESS ||

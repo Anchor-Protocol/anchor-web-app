@@ -1,7 +1,7 @@
 import { useBorrowProvideCollateralForm } from '@anchor-protocol/app-provider';
 import {
   // formatBAsset,
-  formatBAssetInput,
+  // formatBAssetInput,
   formatUST,
   formatUSTInput,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
@@ -85,10 +85,12 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
     (nextLtv: Rate<Big>) => {
       try {
         const nextAmount = ltvToAmount(nextLtv);
-        updateDepositAmount(formatBAssetInput(demicrofy(nextAmount)));
+        updateDepositAmount(
+          native.formatInput(native.demicrofy(nextAmount)) as any,
+        );
       } catch {}
     },
-    [updateDepositAmount, ltvToAmount],
+    [updateDepositAmount, ltvToAmount, native],
   );
 
   if (
