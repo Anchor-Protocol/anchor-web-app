@@ -43,10 +43,8 @@ export function useDepositUstTx():
         formatInput(txParams.depositAmount),
       ).toString();
 
-      console.log('depositAmount', depositAmount);
-
       await xAnchor.approveLimit(
-        'ust',
+        { token: 'ust' },
         depositAmount,
         address!,
         TX_GAS_LIMIT,

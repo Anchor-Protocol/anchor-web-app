@@ -78,11 +78,7 @@ export function CollateralList({ className }: CollateralListProps) {
         );
 
         return {
-          icon: (
-            <TokenIcon
-              token={symbol.toLowerCase() === 'beth' ? 'beth' : 'bluna'}
-            />
-          ),
+          icon: tokenDisplay && <TokenIcon tokenDisplay={tokenDisplay} />,
           collateralToken: collateral_token,
           token: bridgeAssets.get(collateral_token)!,
           name,

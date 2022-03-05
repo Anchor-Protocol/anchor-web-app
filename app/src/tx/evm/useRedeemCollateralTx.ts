@@ -5,10 +5,7 @@ import { TxResultRendering } from '@libs/app-fns';
 import { txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
-import {
-  Collateral,
-  CrossChainTxResponse,
-} from '@anchor-protocol/crossanchor-sdk';
+import { CrossChainTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from '@ethersproject/contracts';
 import { useRedeemableTx } from './useRedeemableTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
@@ -20,7 +17,8 @@ type TxResult = CrossChainTxResponse<ContractReceipt> | null;
 type TxRender = TxResultRendering<TxResult>;
 
 export interface RedeemCollateralTxProps {
-  collateral: Collateral;
+  collateralContractEvm: string;
+  collateralContractTerra: string;
   amount: string;
 }
 
@@ -41,9 +39,8 @@ export function useRedeemCollateralTx():
     ) => {
       const amount = microfy(formatInput(txParams.amount)).toString();
 
-      // TODO: approve correct collateral
       await xAnchor.approveLimit(
-        'bluna',
+        { contract: txParams.collateralContractEvm },
         amount,
         address!,
         TX_GAS_LIMIT,
@@ -56,7 +53,7 @@ export function useRedeemCollateralTx():
       );
 
       return xAnchor.unlockCollateral(
-        txParams.collateral,
+        { contract: txParams.collateralContractTerra },
         amount,
         address!,
         TX_GAS_LIMIT,

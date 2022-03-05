@@ -38,7 +38,7 @@ export function useBorrowUstTx():
       const amount = microfy(formatInput(txParams.amount)).toString();
 
       await xAnchor.approveLimit(
-        'ust',
+        { token: 'ust' },
         amount,
         address!,
         TX_GAS_LIMIT,

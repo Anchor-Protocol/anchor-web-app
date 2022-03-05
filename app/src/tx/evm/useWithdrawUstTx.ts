@@ -44,7 +44,7 @@ export function useWithdrawUstTx(): UseTxReturn<WithdrawUstTxProps, TxResult> {
       ).toString();
 
       await xAnchor.approveLimit(
-        'aust',
+        { token: 'aust' },
         withdrawAmount,
         address!,
         TX_GAS_LIMIT,
