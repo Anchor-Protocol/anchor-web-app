@@ -1,7 +1,8 @@
 import { ANCHOR_SAFE_RATIO } from '@anchor-protocol/app-fns';
 import { useBorrowRedeemCollateralForm } from '@anchor-protocol/app-provider';
+import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import {
-  formatBAsset,
+  // formatBAsset,
   formatBAssetInput,
   formatUST,
   formatUSTInput,
@@ -85,6 +86,8 @@ function RedeemCollateralDialogBase(props: RedeemCollateralDialogProps) {
     [input, states.ltvToAmount],
   );
 
+  const { native } = useFormatters();
+
   if (
     txResult?.status === StreamStatus.IN_PROGRESS ||
     txResult?.status === StreamStatus.DONE
@@ -147,12 +150,16 @@ function RedeemCollateralDialogBase(props: RedeemCollateralDialogProps) {
               onClick={() =>
                 states.withdrawableAmount &&
                 updateRedeemAmount(
-                  formatBAssetInput(demicrofy(states.withdrawableAmount)),
+                  native.formatInput(
+                    native.demicrofy(states.withdrawableAmount),
+                  ),
                 )
               }
             >
               {states.withdrawableAmount
-                ? formatBAsset(demicrofy(states.withdrawableAmount))
+                ? native.formatOutput(
+                    native.demicrofy(states.withdrawableAmount),
+                  )
                 : 0}{' '}
               {states.collateral.tokenDisplay?.symbol ??
                 states.collateral.symbol}

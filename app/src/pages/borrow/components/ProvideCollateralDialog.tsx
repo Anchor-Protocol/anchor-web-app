@@ -1,6 +1,6 @@
 import { useBorrowProvideCollateralForm } from '@anchor-protocol/app-provider';
 import {
-  formatBAsset,
+  // formatBAsset,
   formatBAssetInput,
   formatUST,
   formatUSTInput,
@@ -32,6 +32,7 @@ import { TxResultRendering } from '@libs/app-fns';
 import { ProvideCollateralFormParams } from './types';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 
 export interface ProvideCollateralDialogParams
   extends UIElementProps,
@@ -66,6 +67,8 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
     fallbackBorrowMarket,
     fallbackBorrowBorrower,
   );
+
+  const { native } = useFormatters();
 
   const updateDepositAmount = useCallback(
     (depositAmount: bAsset) => {
@@ -151,11 +154,13 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
               }}
               onClick={() =>
                 updateDepositAmount(
-                  formatBAssetInput(demicrofy(states.userBAssetBalance)),
+                  native.formatInput(
+                    native.demicrofy(states.userBAssetBalance),
+                  ) as any,
                 )
               }
             >
-              {formatBAsset(demicrofy(states.userBAssetBalance))}{' '}
+              {native.formatOutput(native.demicrofy(states.userBAssetBalance))}{' '}
               {states.collateral.tokenDisplay?.symbol ??
                 states.collateral.symbol}
             </span>

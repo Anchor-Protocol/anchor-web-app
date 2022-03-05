@@ -4,10 +4,11 @@ import {
   useBorrowMarketQuery,
 } from '@anchor-protocol/app-provider';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
-import { formatBAsset } from '@anchor-protocol/notation';
+// import { formatBAsset } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import { bAsset, CW20Addr, ERC20Addr, u, UST } from '@anchor-protocol/types';
-import { demicrofy as demicrofybAsset } from '@libs/formatter';
+import { CW20TokenDisplayInfo } from '@libs/app-fns';
+// import { demicrofy as demicrofybAsset } from '@libs/formatter';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { HorizontalScrollTable } from '@libs/neumorphism-ui/components/HorizontalScrollTable';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
@@ -36,6 +37,7 @@ interface CollateralInfo {
   liquidationPrice: UST | undefined;
   lockedAmount: u<bAsset>;
   lockedAmountInUST: u<UST<BigSource>>;
+  tokenDisplay?: CW20TokenDisplayInfo;
 }
 
 export function CollateralList({ className }: CollateralListProps) {
@@ -57,6 +59,7 @@ export function CollateralList({ className }: CollateralListProps) {
 
   const {
     ust: { formatOutput, demicrofy },
+    native,
   } = useFormatters();
 
   const collaterals = useMemo<CollateralInfo[]>(() => {
@@ -64,46 +67,49 @@ export function CollateralList({ className }: CollateralListProps) {
       return [];
     }
 
-    const whiltelist = borrowMarket.overseerWhitelist.elems.filter((elem) => {
+    const whitelist = borrowMarket.overseerWhitelist.elems.filter((elem) => {
       return bridgeAssets.has(elem.collateral_token);
     });
 
-    return whiltelist.map(
-      ({ collateral_token, name, symbol, tokenDisplay }) => {
-        const oracle = borrowMarket.oraclePrices.prices.find(
-          ({ asset }) => collateral_token === asset,
-        );
-        const collateral = borrowBorrower?.overseerCollaterals.collaterals.find(
-          ([collateralToken]) => collateral_token === collateralToken,
-        );
+    return whitelist.map(({ collateral_token, name, symbol, tokenDisplay }) => {
+      const oracle = borrowMarket.oraclePrices.prices.find(
+        ({ asset }) => collateral_token === asset,
+      );
+      const collateral = borrowBorrower?.overseerCollaterals.collaterals.find(
+        ([collateralToken]) => collateral_token === collateralToken,
+      );
 
-        return {
-          icon: tokenDisplay && <TokenIcon tokenDisplay={tokenDisplay} />,
-          collateralToken: collateral_token,
-          token: bridgeAssets.get(collateral_token)!,
-          name,
-          symbol: tokenDisplay?.symbol ?? symbol,
-          price: oracle?.price ?? ('0' as UST),
-          liquidationPrice:
-            borrowBorrower &&
-            borrowBorrower.overseerCollaterals.collaterals.length === 1 &&
-            collateral
-              ? computeLiquidationPrice(
-                  collateral_token,
-                  borrowBorrower.marketBorrowerInfo,
-                  borrowBorrower.overseerBorrowLimit,
-                  borrowBorrower.overseerCollaterals,
-                  borrowMarket.overseerWhitelist,
-                  borrowMarket.oraclePrices,
-                )
-              : undefined,
-          lockedAmount: collateral?.[1] ?? ('0' as u<bAsset>),
-          lockedAmountInUST: big(collateral?.[1] ?? 0).mul(
-            oracle?.price ?? 1,
-          ) as u<UST<Big>>,
-        };
-      },
-    );
+      return {
+        icon: tokenDisplay ? (
+          <TokenIcon tokenDisplay={tokenDisplay} />
+        ) : (
+          <TokenIcon token="bluna" />
+        ),
+        tokenDisplay,
+        collateralToken: collateral_token,
+        token: bridgeAssets.get(collateral_token)!,
+        name,
+        symbol: tokenDisplay?.symbol ?? symbol,
+        price: oracle?.price ?? ('0' as UST),
+        liquidationPrice:
+          borrowBorrower &&
+          borrowBorrower.overseerCollaterals.collaterals.length === 1 &&
+          collateral
+            ? computeLiquidationPrice(
+                collateral_token,
+                borrowBorrower.marketBorrowerInfo,
+                borrowBorrower.overseerBorrowLimit,
+                borrowBorrower.overseerCollaterals,
+                borrowMarket.overseerWhitelist,
+                borrowMarket.oraclePrices,
+              )
+            : undefined,
+        lockedAmount: collateral?.[1] ?? ('0' as u<bAsset>),
+        lockedAmountInUST: big(collateral?.[1] ?? 0).mul(
+          oracle?.price ?? 1,
+        ) as u<UST<Big>>,
+      };
+    });
   }, [borrowBorrower, borrowMarket, bridgeAssets]);
 
   // ---------------------------------------------
@@ -154,6 +160,7 @@ export function CollateralList({ className }: CollateralListProps) {
               liquidationPrice,
               lockedAmount,
               lockedAmountInUST,
+              tokenDisplay,
             }) => (
               <tr key={collateralToken}>
                 <td>
@@ -184,7 +191,8 @@ export function CollateralList({ className }: CollateralListProps) {
                 </td>
                 <td>
                   <div className="value">
-                    {formatBAsset(demicrofybAsset(lockedAmount))} {symbol}
+                    {native.formatOutput(native.demicrofy(lockedAmount))}{' '}
+                    {symbol}
                   </div>
                   <p className="volatility">
                     {formatOutput(demicrofy(lockedAmountInUST))} UST
@@ -201,6 +209,7 @@ export function CollateralList({ className }: CollateralListProps) {
                         token,
                         fallbackBorrowMarket: borrowMarket,
                         fallbackBorrowBorrower: borrowBorrower,
+                        tokenDisplay,
                       })
                     }
                   >
@@ -221,6 +230,7 @@ export function CollateralList({ className }: CollateralListProps) {
                         token,
                         fallbackBorrowMarket: borrowMarket,
                         fallbackBorrowBorrower: borrowBorrower,
+                        tokenDisplay,
                       })
                     }
                   >

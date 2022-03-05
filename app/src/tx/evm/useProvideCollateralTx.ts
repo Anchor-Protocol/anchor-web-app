@@ -1,7 +1,7 @@
 import { StreamReturn } from '@rx-stream/react';
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
-import { TxResultRendering } from '@libs/app-fns';
+import { CW20TokenDisplayInfo, TxResultRendering } from '@libs/app-fns';
 import { txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
@@ -9,14 +9,15 @@ import { CrossChainTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from '@ethersproject/contracts';
 import { useRedeemableTx } from './useRedeemableTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
-import { UST } from '@libs/types';
 import { TxEventHandler } from './useTx';
+import { Native } from '@anchor-protocol/types';
 
 type TxResult = CrossChainTxResponse<ContractReceipt> | null;
 type TxRender = TxResultRendering<TxResult>;
 export interface ProvideCollateralTxProps {
   collateralContract: string;
   amount: string;
+  tokenDisplay?: CW20TokenDisplayInfo;
 }
 
 export function useProvideCollateralTx():
@@ -25,7 +26,7 @@ export function useProvideCollateralTx():
   const { address, connection, connectType, chainId } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
   const {
-    ust: { microfy, formatInput, formatOutput },
+    native: { microfy, formatInput, formatOutput },
   } = useFormatters();
 
   const provideTx = useCallback(
@@ -35,6 +36,12 @@ export function useProvideCollateralTx():
       handleEvent: TxEventHandler<ProvideCollateralTxProps>,
     ) => {
       try {
+        console.log('txParams.amount', txParams.amount);
+        console.log(
+          'txParams.amountInput',
+          microfy(formatInput(txParams.amount)).toString(),
+        );
+
         const amount = microfy(formatInput(txParams.amount)).toString();
 
         await xAnchor.approveLimit(
@@ -78,7 +85,9 @@ export function useProvideCollateralTx():
     null,
     (txParams) => ({
       action: 'lockCollateral',
-      amount: `${formatOutput(txParams.amount as UST)} UST`,
+      amount: `${formatOutput(txParams.amount as Native)} ${
+        (txParams.tokenDisplay && txParams.tokenDisplay.symbol) ?? 'UST'
+      }`,
     }),
   );
 

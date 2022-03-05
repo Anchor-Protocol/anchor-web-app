@@ -1,7 +1,7 @@
 import { StreamReturn } from '@rx-stream/react';
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
-import { TxResultRendering } from '@libs/app-fns';
+import { CW20TokenDisplayInfo, TxResultRendering } from '@libs/app-fns';
 import { txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
@@ -9,8 +9,8 @@ import { CrossChainTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from '@ethersproject/contracts';
 import { useRedeemableTx } from './useRedeemableTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
-import { UST } from '@libs/types';
 import { TxEventHandler } from './useTx';
+import { Native } from '@anchor-protocol/types';
 
 type TxResult = CrossChainTxResponse<ContractReceipt> | null;
 
@@ -20,6 +20,7 @@ export interface RedeemCollateralTxProps {
   collateralContractEvm: string;
   collateralContractTerra: string;
   amount: string;
+  tokenDisplay?: CW20TokenDisplayInfo;
 }
 
 export function useRedeemCollateralTx():
@@ -28,7 +29,7 @@ export function useRedeemCollateralTx():
   const { address, connection, connectType, chainId } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
   const {
-    ust: { microfy, formatInput, formatOutput },
+    native: { microfy, formatInput, formatOutput },
   } = useFormatters();
 
   const redeemTx = useCallback(
@@ -38,19 +39,6 @@ export function useRedeemCollateralTx():
       handleEvent: TxEventHandler<RedeemCollateralTxProps>,
     ) => {
       const amount = microfy(formatInput(txParams.amount)).toString();
-
-      await xAnchor.approveLimit(
-        { contract: txParams.collateralContractEvm },
-        amount,
-        address!,
-        TX_GAS_LIMIT,
-        (event) => {
-          renderTxResults.next(
-            txResult(event, connectType, chainId!, 'unlock collateral'),
-          );
-          handleEvent(event, txParams);
-        },
-      );
 
       return xAnchor.unlockCollateral(
         { contract: txParams.collateralContractTerra },
@@ -76,7 +64,9 @@ export function useRedeemCollateralTx():
     null,
     (txParams) => ({
       action: 'unlockCollateral',
-      amount: `${formatOutput(txParams.amount as UST)} UST`,
+      amount: `${formatOutput(txParams.amount as Native)} ${
+        (txParams.tokenDisplay && txParams.tokenDisplay.symbol) ?? 'UST'
+      }`,
     }),
   );
 
