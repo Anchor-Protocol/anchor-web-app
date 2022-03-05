@@ -196,7 +196,7 @@ export function CollateralList({ className }: CollateralListProps) {
                 </td>
                 <td>
                   <BorderButton
-                    disabled={!connected || !borrowMarket || !borrowBorrower}
+                    disabled={!connected || !borrowMarket}
                     onClick={() =>
                       borrowMarket &&
                       borrowBorrower &&
