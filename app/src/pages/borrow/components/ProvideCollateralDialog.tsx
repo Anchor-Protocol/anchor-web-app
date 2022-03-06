@@ -1,7 +1,7 @@
 import { useBorrowProvideCollateralForm } from '@anchor-protocol/app-provider';
 import {
-  formatBAsset,
-  formatBAssetInput,
+  // formatBAsset,
+  // formatBAssetInput,
   formatUST,
   formatUSTInput,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
@@ -32,6 +32,7 @@ import { TxResultRendering } from '@libs/app-fns';
 import { ProvideCollateralFormParams } from './types';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 
 export interface ProvideCollateralDialogParams
   extends UIElementProps,
@@ -67,6 +68,8 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
     fallbackBorrowBorrower,
   );
 
+  const { native } = useFormatters();
+
   const updateDepositAmount = useCallback(
     (depositAmount: bAsset) => {
       input({
@@ -82,10 +85,12 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
     (nextLtv: Rate<Big>) => {
       try {
         const nextAmount = ltvToAmount(nextLtv);
-        updateDepositAmount(formatBAssetInput(demicrofy(nextAmount)));
+        updateDepositAmount(
+          native.formatInput(native.demicrofy(nextAmount)) as any,
+        );
       } catch {}
     },
-    [updateDepositAmount, ltvToAmount],
+    [updateDepositAmount, ltvToAmount, native],
   );
 
   if (
@@ -151,11 +156,13 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
               }}
               onClick={() =>
                 updateDepositAmount(
-                  formatBAssetInput(demicrofy(states.userBAssetBalance)),
+                  native.formatInput(
+                    native.demicrofy(states.userBAssetBalance),
+                  ) as any,
                 )
               }
             >
-              {formatBAsset(demicrofy(states.userBAssetBalance))}{' '}
+              {native.formatOutput(native.demicrofy(states.userBAssetBalance))}{' '}
               {states.collateral.tokenDisplay?.symbol ??
                 states.collateral.symbol}
             </span>

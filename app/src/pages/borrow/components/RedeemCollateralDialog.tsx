@@ -1,8 +1,9 @@
 import { ANCHOR_SAFE_RATIO } from '@anchor-protocol/app-fns';
 import { useBorrowRedeemCollateralForm } from '@anchor-protocol/app-provider';
+import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import {
-  formatBAsset,
-  formatBAssetInput,
+  // formatBAsset,
+  // formatBAssetInput,
   formatUST,
   formatUSTInput,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
@@ -74,15 +75,19 @@ function RedeemCollateralDialogBase(props: RedeemCollateralDialogProps) {
     [input],
   );
 
+  const { native } = useFormatters();
+
   const onLtvChange = useCallback(
     (nextLtv: Rate<Big>) => {
       const ltvToAmount = states.ltvToAmount;
       try {
         const nextAmount = ltvToAmount(nextLtv);
-        input({ redeemAmount: formatBAssetInput(demicrofy(nextAmount)) });
+        input({
+          redeemAmount: native.formatInput(native.demicrofy(nextAmount)) as any,
+        });
       } catch {}
     },
-    [input, states.ltvToAmount],
+    [input, states.ltvToAmount, native],
   );
 
   if (
@@ -147,12 +152,16 @@ function RedeemCollateralDialogBase(props: RedeemCollateralDialogProps) {
               onClick={() =>
                 states.withdrawableAmount &&
                 updateRedeemAmount(
-                  formatBAssetInput(demicrofy(states.withdrawableAmount)),
+                  native.formatInput(
+                    native.demicrofy(states.withdrawableAmount),
+                  ),
                 )
               }
             >
               {states.withdrawableAmount
-                ? formatBAsset(demicrofy(states.withdrawableAmount))
+                ? native.formatOutput(
+                    native.demicrofy(states.withdrawableAmount),
+                  )
                 : 0}{' '}
               {states.collateral.tokenDisplay?.symbol ??
                 states.collateral.symbol}

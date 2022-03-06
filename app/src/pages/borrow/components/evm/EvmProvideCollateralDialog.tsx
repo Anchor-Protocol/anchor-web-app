@@ -11,7 +11,7 @@ import { useERC20Balance } from '@libs/app-provider/queries/erc20/balanceOf';
 export const EvmProvideCollateralDialog = (
   props: DialogProps<ProvideCollateralFormParams>,
 ) => {
-  const { token } = props;
+  const { token, tokenDisplay } = props;
 
   const { connected } = useAccount();
 
@@ -25,10 +25,11 @@ export const EvmProvideCollateralDialog = (
         postTx({
           collateralContract: token,
           amount,
+          tokenDisplay,
         });
       }
     },
-    [connected, postTx, token],
+    [connected, postTx, token, tokenDisplay],
   );
 
   return (

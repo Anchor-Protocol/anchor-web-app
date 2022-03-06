@@ -77,7 +77,7 @@ async function bridgeEvmAssetsQuery(
 
   for (let collateral of whitelist) {
     const wormhole = await getOriginalAssetTerra(
-      lcd,
+      lcd as any,
       collateral.collateral_token,
     );
     if (wormhole.isWrapped) {
