@@ -1,44 +1,41 @@
-name: TEST
+name: CI/CD
 
 on:
+  pull_request:
   push:
     branches:
       - master
       - develop
-  pull_request:
-    branches:
-      - master
-      - develop
+      - "release/*"
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+" # Push events to matching v*, i.e. v1.0, v20.15.10
+      - "v[0-9]+.[0-9]+.[0-9]+-rc*" # Push events to matching v*, i.e. v1.0-rc1, v20.15.10-rc5
 
 env:
-  NPM_TOKEN: ${{secrets.NPM_TOKEN}}
+  NODE_VERSION: 14
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
 jobs:
   test:
-    name: Node ${{ matrix.node }} on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+    name: Test
+    runs-on: ubuntu-latest
     timeout-minutes: 30
 
-    strategy:
-      fail-fast: false
-      matrix:
-        node: [ 14 ]
-        os: [ ubuntu-latest ]
-
     steps:
-      - name: Clone repository
+      - name: Checkout repository
         uses: actions/checkout@v2
 
       - name: Set Node.js version
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node }}
+          node-version: ${{ env.NODE_VERSION }}
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
 
-      - uses: actions/cache@v2
+      - name: Cache dependencies
+        uses: actions/cache@v2
         id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
