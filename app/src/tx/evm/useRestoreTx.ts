@@ -1,6 +1,7 @@
 import {
   CrossChainEvent,
   CrossChainEventKind,
+  CrossChainTxResponse,
 } from '@anchor-protocol/crossanchor-sdk';
 import { TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import { ConnectType, EvmChainId, useEvmWallet } from '@libs/evm-wallet';
@@ -11,10 +12,10 @@ import { Subject } from 'rxjs';
 import { TxEventHandler, useTx } from './useTx';
 import { capitalize, chain } from './utils';
 
-type TxResult = ContractReceipt | null;
+type TxResult = CrossChainTxResponse<ContractReceipt> | null;
 type TxRender = TxResultRendering<TxResult>;
 
-export interface RestoreTxProps {
+export interface RestoreTxParams {
   txHash: string;
 }
 
@@ -24,9 +25,9 @@ export const useRestoreTx = () => {
 
   const restoreTx = useCallback(
     async (
-      txParams: RestoreTxProps,
+      txParams: RestoreTxParams,
       renderTxResults: Subject<TxRender>,
-      handleEvent: TxEventHandler<RestoreTxProps>,
+      handleEvent: TxEventHandler<RestoreTxParams>,
     ) => {
       try {
         const tx = await provider!.getTransaction(txParams.txHash);
@@ -46,7 +47,7 @@ export const useRestoreTx = () => {
     [xAnchor, provider, chainId, connectType],
   );
 
-  const restoreTxStream = useTx(restoreTx, (resp) => resp, null);
+  const restoreTxStream = useTx(restoreTx, (resp) => resp.tx, null);
 
   return connection && provider && connectType && chainId
     ? restoreTxStream

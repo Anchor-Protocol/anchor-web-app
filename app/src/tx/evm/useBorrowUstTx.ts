@@ -1,28 +1,26 @@
-import { StreamReturn } from '@rx-stream/react';
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
 import { txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
-import { CrossChainTxResponse } from '@anchor-protocol/crossanchor-sdk';
+import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from 'ethers';
-import { useRedeemableTx } from './useRedeemableTx';
+import { PersistedTxResult, usePersistedTx } from './usePersistedTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { UST } from '@libs/types';
 import { TxEventHandler } from './useTx';
 
-type TxResult = CrossChainTxResponse<ContractReceipt> | null;
+type BorrowUstTxResult = TwoWayTxResponse<ContractReceipt> | null;
+type BorrowUstTxRender = TxResultRendering<BorrowUstTxResult>;
 
-type TxRender = TxResultRendering<TxResult>;
-
-export interface BorrowUstTxProps {
+export interface BorrowUstTxParams {
   amount: UST;
 }
 
 export function useBorrowUstTx():
-  | StreamReturn<BorrowUstTxProps, TxRender>
-  | [null, null] {
+  | PersistedTxResult<BorrowUstTxParams, BorrowUstTxResult>
+  | undefined {
   const { address, connection, connectType, chainId } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
   const {
@@ -31,9 +29,9 @@ export function useBorrowUstTx():
 
   const borrowTx = useCallback(
     async (
-      txParams: BorrowUstTxProps,
-      renderTxResults: Subject<TxRender>,
-      handleEvent: TxEventHandler<BorrowUstTxProps>,
+      txParams: BorrowUstTxParams,
+      renderTxResults: Subject<BorrowUstTxRender>,
+      handleEvent: TxEventHandler<BorrowUstTxParams>,
     ) => {
       const amount = microfy(formatInput(txParams.amount)).toString();
 
@@ -60,15 +58,19 @@ export function useBorrowUstTx():
     [address, connectType, xAnchor, chainId, microfy, formatInput],
   );
 
-  const borrowTxStream = useRedeemableTx(
+  const persistedTxResult = usePersistedTx<
+    BorrowUstTxParams,
+    BorrowUstTxResult
+  >(
     borrowTx,
-    (resp) => resp.tx,
+    (resp) => resp.tokenTransfer,
     null,
     (txParams) => ({
       action: 'borrowStable',
       amount: `${formatOutput(txParams.amount as UST)} UST`,
+      timestamp: Date.now(),
     }),
   );
 
-  return chainId && connection && address ? borrowTxStream : [null, null];
+  return chainId && connection && address ? persistedTxResult : undefined;
 }

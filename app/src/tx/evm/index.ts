@@ -5,4 +5,5 @@ export * from './useRepayUstTx';
 export * from './useProvideCollateralTx';
 export * from './useRedeemCollateralTx';
 export * from './storage';
-export * from './useReedemTokensTx';
+export * from './useRestoreTx';
+export * from './useBackgroundTx';

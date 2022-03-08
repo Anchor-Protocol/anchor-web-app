@@ -17,7 +17,8 @@ export const EvmProvideCollateralDialog = (
 
   const uTokenBalance = useERC20Balance<bAsset>(token as ERC20Addr);
 
-  const [postTx, txResult] = useProvideCollateralTx();
+  const provideCollateralTx = useProvideCollateralTx();
+  const [postTx, txResult] = provideCollateralTx?.stream ?? [null, null];
 
   const proceed = useCallback(
     (amount: bAsset) => {

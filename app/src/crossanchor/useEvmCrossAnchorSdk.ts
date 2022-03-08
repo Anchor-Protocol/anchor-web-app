@@ -13,7 +13,6 @@ export const useEvmCrossAnchorSdk = () => {
     const network = isEvmTestnet(chainId) ? 'testnet' : 'mainnet';
 
     return new EvmCrossAnchorSdk(network, lcdClient, provider, {
-      skipRedemption: false,
       unlimitedAllowance: true,
     });
   }, [chainId, provider, lcdClient]);

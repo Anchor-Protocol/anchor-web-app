@@ -1,22 +1,20 @@
-import { StreamReturn } from '@rx-stream/react';
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { CW20TokenDisplayInfo, TxResultRendering } from '@libs/app-fns';
 import { txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
-import { CrossChainTxResponse } from '@anchor-protocol/crossanchor-sdk';
+import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from '@ethersproject/contracts';
-import { useRedeemableTx } from './useRedeemableTx';
+import { PersistedTxResult, usePersistedTx } from './usePersistedTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { TxEventHandler } from './useTx';
 import { Native } from '@anchor-protocol/types';
 
-type TxResult = CrossChainTxResponse<ContractReceipt> | null;
+type RedeemCollateralTxResult = TwoWayTxResponse<ContractReceipt> | null;
+type RedeemCollateralTxRender = TxResultRendering<RedeemCollateralTxResult>;
 
-type TxRender = TxResultRendering<TxResult>;
-
-export interface RedeemCollateralTxProps {
+export interface RedeemCollateralTxParams {
   collateralContractEvm: string;
   collateralContractTerra: string;
   amount: string;
@@ -24,8 +22,8 @@ export interface RedeemCollateralTxProps {
 }
 
 export function useRedeemCollateralTx():
-  | StreamReturn<RedeemCollateralTxProps, TxRender>
-  | [null, null] {
+  | PersistedTxResult<RedeemCollateralTxParams, RedeemCollateralTxResult>
+  | undefined {
   const { address, connection, connectType, chainId } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
   const {
@@ -34,9 +32,9 @@ export function useRedeemCollateralTx():
 
   const redeemTx = useCallback(
     async (
-      txParams: RedeemCollateralTxProps,
-      renderTxResults: Subject<TxRender>,
-      handleEvent: TxEventHandler<RedeemCollateralTxProps>,
+      txParams: RedeemCollateralTxParams,
+      renderTxResults: Subject<RedeemCollateralTxRender>,
+      handleEvent: TxEventHandler<RedeemCollateralTxParams>,
     ) => {
       const amount = microfy(formatInput(txParams.amount)).toString();
 
@@ -58,7 +56,10 @@ export function useRedeemCollateralTx():
     [xAnchor, address, connectType, chainId, formatInput, microfy],
   );
 
-  const provideTxStream = useRedeemableTx(
+  const persistedTxResult = usePersistedTx<
+    RedeemCollateralTxParams,
+    RedeemCollateralTxResult
+  >(
     redeemTx,
     (resp) => resp.tx,
     null,
@@ -67,8 +68,9 @@ export function useRedeemCollateralTx():
       amount: `${formatOutput(txParams.amount as Native)} ${
         (txParams.tokenDisplay && txParams.tokenDisplay.symbol) ?? 'UST'
       }`,
+      timestamp: Date.now(),
     }),
   );
 
-  return chainId && connection && address ? provideTxStream : [null, null];
+  return chainId && connection && address ? persistedTxResult : undefined;
 }

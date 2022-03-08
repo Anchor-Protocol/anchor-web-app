@@ -1,4 +1,3 @@
-import { StreamReturn } from '@rx-stream/react';
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { EvmChainId, useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
@@ -6,22 +5,22 @@ import { txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { ContractReceipt } from 'ethers';
-import { CrossChainTxResponse } from '@anchor-protocol/crossanchor-sdk';
-import { useRedeemableTx } from './useRedeemableTx';
+import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
+import { PersistedTxResult, usePersistedTx } from './usePersistedTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { UST } from '@libs/types';
 import { TxEventHandler } from './useTx';
 
-type TxResult = CrossChainTxResponse<ContractReceipt> | null;
-type TxRender = TxResultRendering<TxResult>;
+type DepositUstTxResult = TwoWayTxResponse<ContractReceipt> | null;
+type DepositUstTxRender = TxResultRendering<DepositUstTxResult>;
 
-export interface DepositUstTxProps {
+export interface DepositUstTxParams {
   depositAmount: string;
 }
 
 export function useDepositUstTx():
-  | StreamReturn<DepositUstTxProps, TxRender>
-  | [null, null] {
+  | PersistedTxResult<DepositUstTxParams, DepositUstTxResult>
+  | undefined {
   const {
     address,
     connection,
@@ -35,9 +34,9 @@ export function useDepositUstTx():
 
   const depositTx = useCallback(
     async (
-      txParams: DepositUstTxProps,
-      renderTxResults: Subject<TxRender>,
-      handleEvent: TxEventHandler<DepositUstTxProps>,
+      txParams: DepositUstTxParams,
+      renderTxResults: Subject<DepositUstTxRender>,
+      handleEvent: TxEventHandler<DepositUstTxParams>,
     ) => {
       const depositAmount = microfy(
         formatInput(txParams.depositAmount),
@@ -73,15 +72,19 @@ export function useDepositUstTx():
     [address, connectType, xAnchor, chainId, microfy, formatInput],
   );
 
-  const depositTxStream = useRedeemableTx(
+  const persistedTxResult = usePersistedTx<
+    DepositUstTxParams,
+    DepositUstTxResult
+  >(
     depositTx,
     (resp) => resp.tx,
     null,
     (txParams) => ({
       action: 'depositStable',
       amount: `${formatOutput(txParams.depositAmount as UST)} UST`,
+      timestamp: Date.now(),
     }),
   );
 
-  return chainId && connection && address ? depositTxStream : [null, null];
+  return chainId && connection && address ? persistedTxResult : undefined;
 }

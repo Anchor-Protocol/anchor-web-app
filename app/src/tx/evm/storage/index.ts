@@ -1,2 +1,1 @@
-export * from './useRedemption';
-export * from './useRedemptions';
+export * from './useTransactions';

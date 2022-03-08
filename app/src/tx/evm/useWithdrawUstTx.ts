@@ -1,25 +1,26 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { EvmChainId, useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
-import { txResult, TX_GAS_LIMIT, UseTxReturn } from './utils';
+import { txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { ContractReceipt } from 'ethers';
-import { CrossChainTxResponse } from '@anchor-protocol/crossanchor-sdk';
-import { useRedeemableTx } from './useRedeemableTx';
+import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
+import { PersistedTxResult, usePersistedTx } from './usePersistedTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { aUST } from '@anchor-protocol/types';
 import { TxEventHandler } from './useTx';
 
-type TxResult = CrossChainTxResponse<ContractReceipt> | null;
+type WithdrawUstTxResult = TwoWayTxResponse<ContractReceipt> | null;
+type WithdrawUstTxRender = TxResultRendering<WithdrawUstTxResult>;
 
-type TxRender = TxResultRendering<TxResult>;
-
-export interface WithdrawUstTxProps {
+export interface WithdrawUstTxParams {
   withdrawAmount: string;
 }
 
-export function useWithdrawUstTx(): UseTxReturn<WithdrawUstTxProps, TxResult> {
+export function useWithdrawUstTx():
+  | PersistedTxResult<WithdrawUstTxParams, WithdrawUstTxResult>
+  | undefined {
   const {
     address,
     connection,
@@ -35,9 +36,9 @@ export function useWithdrawUstTx(): UseTxReturn<WithdrawUstTxProps, TxResult> {
 
   const withdrawTx = useCallback(
     async (
-      txParams: WithdrawUstTxProps,
-      renderTxResults: Subject<TxRender>,
-      handleEvent: TxEventHandler<WithdrawUstTxProps>,
+      txParams: WithdrawUstTxParams,
+      renderTxResults: Subject<WithdrawUstTxRender>,
+      handleEvent: TxEventHandler<WithdrawUstTxParams>,
     ) => {
       const withdrawAmount = microfy(
         formatInput(txParams.withdrawAmount),
@@ -71,15 +72,19 @@ export function useWithdrawUstTx(): UseTxReturn<WithdrawUstTxProps, TxResult> {
     [xAnchor, address, connectType, formatInput, microfy, chainId],
   );
 
-  const withdrawTxStream = useRedeemableTx(
+  const persistedTxResult = usePersistedTx<
+    WithdrawUstTxParams,
+    WithdrawUstTxResult
+  >(
     withdrawTx,
     (resp) => resp.tx,
     null,
     (txParams) => ({
       action: 'redeemStable',
       amount: `${formatOutput(txParams.withdrawAmount as aUST)} aUST`,
+      timestamp: Date.now(),
     }),
   );
 
-  return chainId && connection && address ? withdrawTxStream : [null, null];
+  return chainId && connection && address ? persistedTxResult : undefined;
 }

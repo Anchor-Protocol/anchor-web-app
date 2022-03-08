@@ -14,7 +14,8 @@ export function EvmDepositDialog(props: DialogProps<{}, void>) {
 
   const { depositAmount, availablePost } = state;
 
-  const [deposit, depositTxResult] = useDepositUstTx();
+  const depositUstTx = useDepositUstTx();
+  const [deposit, depositTxResult] = depositUstTx?.stream ?? [null, null];
 
   return (
     <DepositDialog {...props} {...state} txResult={depositTxResult}>
