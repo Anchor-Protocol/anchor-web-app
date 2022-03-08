@@ -3,12 +3,14 @@ import {
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
 } from '@anchor-protocol/app-provider';
-import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
-// import { formatBAsset } from '@anchor-protocol/notation';
+import {
+  useFormatters,
+  formatOutput,
+  demicrofy,
+} from '@anchor-protocol/formatter';
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import { bAsset, CW20Addr, ERC20Addr, u, UST } from '@anchor-protocol/types';
 import { CW20TokenDisplayInfo } from '@libs/app-fns';
-// import { demicrofy as demicrofybAsset } from '@libs/formatter';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { HorizontalScrollTable } from '@libs/neumorphism-ui/components/HorizontalScrollTable';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
@@ -33,6 +35,7 @@ interface CollateralInfo {
   token: CW20Addr | ERC20Addr;
   name: string;
   symbol: string;
+  decimals: number;
   price: UST;
   liquidationPrice: UST | undefined;
   lockedAmount: u<bAsset>;
@@ -58,8 +61,7 @@ export function CollateralList({ className }: CollateralListProps) {
   );
 
   const {
-    ust: { formatOutput, demicrofy },
-    native,
+    ust: { formatOutput: formatUSTOutput, demicrofy: demicrofyUST },
   } = useFormatters();
 
   const collaterals = useMemo<CollateralInfo[]>(() => {
@@ -90,6 +92,7 @@ export function CollateralList({ className }: CollateralListProps) {
         token: bridgeAssets.get(collateral_token)!,
         name,
         symbol: tokenDisplay?.symbol ?? symbol,
+        decimals: tokenDisplay?.decimals ?? 8,
         price: oracle?.price ?? ('0' as UST),
         liquidationPrice:
           borrowBorrower &&
@@ -156,6 +159,7 @@ export function CollateralList({ className }: CollateralListProps) {
               icon,
               name,
               symbol,
+              decimals,
               price,
               liquidationPrice,
               lockedAmount,
@@ -183,19 +187,21 @@ export function CollateralList({ className }: CollateralListProps) {
                   </div>
                 </td>
                 <td>
-                  <div className="value">{formatOutput(price)} UST</div>
+                  <div className="value">{formatUSTOutput(price)} UST</div>
                   <p className="volatility">
                     {Boolean(Number(liquidationPrice)) &&
-                      formatOutput(liquidationPrice!) + ' UST'}
+                      formatUSTOutput(liquidationPrice!) + ' UST'}
                   </p>
                 </td>
                 <td>
                   <div className="value">
-                    {native.formatOutput(native.demicrofy(lockedAmount))}{' '}
+                    {formatOutput(demicrofy(lockedAmount, decimals), {
+                      decimals,
+                    })}{' '}
                     {symbol}
                   </div>
                   <p className="volatility">
-                    {formatOutput(demicrofy(lockedAmountInUST))} UST
+                    {formatUSTOutput(demicrofyUST(lockedAmountInUST))} UST
                   </p>
                 </td>
                 <td>

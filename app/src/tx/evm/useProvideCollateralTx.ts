@@ -36,12 +36,6 @@ export function useProvideCollateralTx():
       handleEvent: TxEventHandler<ProvideCollateralTxParams>,
     ) => {
       try {
-        console.log('txParams.amount', txParams.amount);
-        console.log(
-          'txParams.amountInput',
-          microfy(formatInput(txParams.amount)).toString(),
-        );
-
         const amount = microfy(formatInput(txParams.amount)).toString();
 
         await xAnchor.approveLimit(

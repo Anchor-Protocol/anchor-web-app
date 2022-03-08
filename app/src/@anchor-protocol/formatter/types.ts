@@ -16,7 +16,7 @@ export interface Formatter<T> {
   formatOutput(amount: T & NoMicro, options?: FormatterOutputOptions): string;
 
   // format the given input into a valid output
-  formatInput(amount: BigSource, options?: FormatterOptions): T;
+  formatInput(amount: BigSource): T;
 
   // microfy the amount
   microfy(amount: T & NoMicro): u<T>;

@@ -60,14 +60,9 @@ async function bridgeEvmAssetsQuery(
   const ETH_ADDR_ZERO = '0x0000000000000000000000000000000000000000';
 
   const lcd = new LCDClient({
-    URL: 'https://bombay-lcd.terra.dev',
-    chainID: 'bombay-12',
+    URL: network.lcd,
+    chainID: network.chainID,
   });
-
-  // const lcd = new LCDClient({
-  //   URL: 'https://lcd.terra.dev',
-  //   chainID: 'columbus-5',
-  // });
 
   const provider = ethers.getDefaultProvider(getEvmChainId(target, network));
 
@@ -96,9 +91,10 @@ async function bridgeEvmAssetsQuery(
       // the token is on Terra so need to check if
       // it is wrapped onto our selected chain
       const foreignAsset = await getForeignAssetEth(
-        // TODO: this needs to be updated to match the network
-        '0x61E44E506Ca5659E6c0bba9b678586fA2d729756',
-        //'0x0e082F06FF657D94310cB8cE8B0D9a04541d8052',
+        // TODO: need a better way to handle this
+        network.chainID === 'bombay-12'
+          ? '0x61E44E506Ca5659E6c0bba9b678586fA2d729756'
+          : '0x0e082F06FF657D94310cB8cE8B0D9a04541d8052',
         provider,
         CHAIN_ID_TERRA,
         hexToUint8Array(
