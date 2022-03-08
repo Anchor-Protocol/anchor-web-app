@@ -7,7 +7,8 @@ export const BackgroundTransactions = () => {
 
   useEffect(() => {
     minimizeAll();
-  }, [minimizedTransactions, minimizeAll]);
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
