@@ -7,9 +7,9 @@ import { useCallback } from 'react';
 import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from '@ethersproject/contracts';
 import { PersistedTxResult, usePersistedTx } from './usePersistedTx';
-import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
+import { formatOutput, microfy, demicrofy } from '@anchor-protocol/formatter';
 import { TxEventHandler } from './useTx';
-import { Native } from '@anchor-protocol/types';
+import { bAsset, NoMicro } from '@anchor-protocol/types';
 
 type RedeemCollateralTxResult = TwoWayTxResponse<ContractReceipt> | null;
 type RedeemCollateralTxRender = TxResultRendering<RedeemCollateralTxResult>;
@@ -17,18 +17,17 @@ type RedeemCollateralTxRender = TxResultRendering<RedeemCollateralTxResult>;
 export interface RedeemCollateralTxParams {
   collateralContractEvm: string;
   collateralContractTerra: string;
-  amount: string;
+  amount: bAsset & NoMicro;
   tokenDisplay?: CW20TokenDisplayInfo;
 }
 
-export function useRedeemCollateralTx():
+export function useRedeemCollateralTx(
+  erc20Decimals: number,
+):
   | PersistedTxResult<RedeemCollateralTxParams, RedeemCollateralTxResult>
   | undefined {
   const { address, connection, connectType, chainId } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
-  const {
-    native: { microfy, formatInput, formatOutput },
-  } = useFormatters();
 
   const redeemTx = useCallback(
     async (
@@ -36,7 +35,7 @@ export function useRedeemCollateralTx():
       renderTxResults: Subject<RedeemCollateralTxRender>,
       handleEvent: TxEventHandler<RedeemCollateralTxParams>,
     ) => {
-      const amount = microfy(formatInput(txParams.amount)).toString();
+      const amount = microfy(txParams.amount, erc20Decimals).toString();
 
       return xAnchor.unlockCollateral(
         { contract: txParams.collateralContractTerra },
@@ -53,7 +52,7 @@ export function useRedeemCollateralTx():
         },
       );
     },
-    [xAnchor, address, connectType, chainId, formatInput, microfy],
+    [xAnchor, address, connectType, chainId, erc20Decimals],
   );
 
   const persistedTxResult = usePersistedTx<
@@ -63,13 +62,20 @@ export function useRedeemCollateralTx():
     redeemTx,
     (resp) => resp.tx,
     null,
-    (txParams) => ({
-      action: 'unlockCollateral',
-      amount: `${formatOutput(txParams.amount as Native)} ${
-        (txParams.tokenDisplay && txParams.tokenDisplay.symbol) ?? 'UST'
-      }`,
-      timestamp: Date.now(),
-    }),
+    (txParams) => {
+      const { amount, tokenDisplay } = txParams;
+
+      const decimals = tokenDisplay?.decimals ?? 6;
+      const symbol = tokenDisplay?.symbol ?? 'UST';
+
+      return {
+        action: 'unlockCollateral',
+        amount: `${formatOutput(demicrofy(amount, decimals), {
+          decimals,
+        })} ${symbol}`,
+        timestamp: Date.now(),
+      };
+    },
   );
 
   return chainId && connection && address ? persistedTxResult : undefined;

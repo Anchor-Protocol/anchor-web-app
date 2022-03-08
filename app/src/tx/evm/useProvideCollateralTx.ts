@@ -7,10 +7,9 @@ import { useCallback } from 'react';
 import { OneWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from '@ethersproject/contracts';
 import { PersistedTxResult, usePersistedTx } from './usePersistedTx';
-import { formatOutput, demicrofy } from '@anchor-protocol/formatter';
+import { formatOutput, microfy, demicrofy } from '@anchor-protocol/formatter';
 import { TxEventHandler } from './useTx';
 import { bAsset, NoMicro } from '@anchor-protocol/types';
-import { microfy } from '@libs/formatter';
 
 type ProvideCollateralTxResult = OneWayTxResponse<ContractReceipt> | null;
 type ProvideCollateralTxRender = TxResultRendering<ProvideCollateralTxResult>;

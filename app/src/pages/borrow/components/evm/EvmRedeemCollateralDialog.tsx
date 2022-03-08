@@ -27,7 +27,7 @@ export const EvmRedeemCollateralDialog = (
     tokenDisplay?.decimals ?? 6,
   );
 
-  const redeemCollateralTx = useRedeemCollateralTx();
+  const redeemCollateralTx = useRedeemCollateralTx(erc20Decimals);
 
   const [postTx, txResult] = redeemCollateralTx?.stream ?? [null, null];
 
