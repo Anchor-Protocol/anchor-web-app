@@ -7,6 +7,7 @@ import { useRedeemCollateralTx } from 'tx/evm';
 import { RedeemCollateralDialog } from '../RedeemCollateralDialog';
 import { RedeemCollateralFormParams } from '../types';
 import { useERC20Balance } from '@libs/app-provider/queries/erc20/balanceOf';
+import { normalize } from '@anchor-protocol/formatter';
 
 export const EvmRedeemCollateralDialog = (
   props: DialogProps<RedeemCollateralFormParams>,
@@ -15,9 +16,19 @@ export const EvmRedeemCollateralDialog = (
 
   const { connected } = useAccount();
 
-  const uTokenBalance = useERC20Balance<bAsset>(token as ERC20Addr);
+  const erc20TokenBalance = useERC20Balance<bAsset>(token as ERC20Addr);
+
+  // TODO: where do we get this from?
+  const erc20Decimals = tokenDisplay?.symbol === 'bLuna' ? 6 : 18;
+
+  const uTokenBalance = normalize(
+    erc20TokenBalance,
+    erc20Decimals,
+    tokenDisplay?.decimals ?? 6,
+  );
 
   const redeemCollateralTx = useRedeemCollateralTx();
+
   const [postTx, txResult] = redeemCollateralTx?.stream ?? [null, null];
 
   const proceed = useCallback(

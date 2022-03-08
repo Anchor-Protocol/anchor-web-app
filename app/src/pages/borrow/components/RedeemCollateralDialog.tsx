@@ -1,17 +1,11 @@
 import { ANCHOR_SAFE_RATIO } from '@anchor-protocol/app-fns';
 import { useBorrowRedeemCollateralForm } from '@anchor-protocol/app-provider';
-import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import {
-  // formatBAsset,
-  // formatBAssetInput,
-  formatUST,
-  formatUSTInput,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { bAsset, Rate, u } from '@anchor-protocol/types';
+import { bAsset, NoMicro, Rate, u } from '@anchor-protocol/types';
 import { TxResultRendering } from '@libs/app-fns';
-import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
@@ -33,6 +27,12 @@ import React, { ChangeEvent, useCallback } from 'react';
 import styled from 'styled-components';
 import { LTVGraph } from './LTVGraph';
 import { RedeemCollateralFormParams } from './types';
+import {
+  formatInput,
+  formatOutput,
+  demicrofy,
+  useFormatters,
+} from '@anchor-protocol/formatter';
 
 export interface RedeemCollateralDialogParams
   extends UIElementProps,
@@ -40,7 +40,7 @@ export interface RedeemCollateralDialogParams
   txResult: StreamResult<TxResultRendering> | null;
   uTokenBalance: u<bAsset>;
   proceedable: boolean;
-  onProceed: (amount: bAsset) => void;
+  onProceed: (amount: bAsset & NoMicro) => void;
 }
 
 export type RedeemCollateralDialogProps =
@@ -55,11 +55,20 @@ function RedeemCollateralDialogBase(props: RedeemCollateralDialogProps) {
     fallbackBorrowBorrower,
     txResult,
     uTokenBalance,
+    tokenDisplay,
     proceedable,
     onProceed,
   } = props;
 
   const { availablePost, connected } = useAccount();
+
+  const {
+    ust: {
+      formatInput: formatUSTInput,
+      formatOutput: formatUSTOutput,
+      demicrofy: demicrofyUST,
+    },
+  } = useFormatters();
 
   const [input, states] = useBorrowRedeemCollateralForm(
     collateralToken,
@@ -69,13 +78,13 @@ function RedeemCollateralDialogBase(props: RedeemCollateralDialogProps) {
   );
 
   const updateRedeemAmount = useCallback(
-    (nextRedeemAmount: string) => {
-      input({ redeemAmount: nextRedeemAmount as bAsset });
+    (nextRedeemAmount: bAsset & NoMicro) => {
+      input({ redeemAmount: nextRedeemAmount });
     },
     [input],
   );
 
-  const { native } = useFormatters();
+  const decimals = tokenDisplay?.decimals ?? 6;
 
   const onLtvChange = useCallback(
     (nextLtv: Rate<Big>) => {
@@ -83,11 +92,14 @@ function RedeemCollateralDialogBase(props: RedeemCollateralDialogProps) {
       try {
         const nextAmount = ltvToAmount(nextLtv);
         input({
-          redeemAmount: native.formatInput(native.demicrofy(nextAmount)) as any,
+          redeemAmount: formatInput<bAsset>(
+            demicrofy(nextAmount, decimals),
+            decimals,
+          ) as any,
         });
       } catch {}
     },
-    [input, states.ltvToAmount, native],
+    [input, states.ltvToAmount, decimals],
   );
 
   if (
@@ -128,7 +140,7 @@ function RedeemCollateralDialogBase(props: RedeemCollateralDialogProps) {
           label="WITHDRAW AMOUNT"
           error={!!states.invalidRedeemAmount}
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
-            updateRedeemAmount(target.value)
+            updateRedeemAmount(target.value as bAsset)
           }
           InputProps={{
             endAdornment: (
@@ -152,16 +164,17 @@ function RedeemCollateralDialogBase(props: RedeemCollateralDialogProps) {
               onClick={() =>
                 states.withdrawableAmount &&
                 updateRedeemAmount(
-                  native.formatInput(
-                    native.demicrofy(states.withdrawableAmount),
+                  formatInput(
+                    demicrofy(states.withdrawableAmount, decimals),
+                    decimals,
                   ),
                 )
               }
             >
               {states.withdrawableAmount
-                ? native.formatOutput(
-                    native.demicrofy(states.withdrawableAmount),
-                  )
+                ? formatOutput(demicrofy(states.withdrawableAmount, decimals), {
+                    decimals,
+                  })
                 : 0}{' '}
               {states.collateral.tokenDisplay?.symbol ??
                 states.collateral.symbol}
@@ -175,7 +188,7 @@ function RedeemCollateralDialogBase(props: RedeemCollateralDialogProps) {
           className="limit"
           value={
             states.borrowLimit
-              ? formatUSTInput(demicrofy(states.borrowLimit))
+              ? formatUSTInput(demicrofyUST(states.borrowLimit))
               : ''
           }
           label="NEW BORROW LIMIT"
@@ -218,7 +231,7 @@ function RedeemCollateralDialogBase(props: RedeemCollateralDialogProps) {
         {states.redeemAmount.length > 0 && (
           <TxFeeList className="receipt">
             <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
-              {formatUST(demicrofy(states.txFee))} UST
+              {formatUSTOutput(demicrofyUST(states.txFee))} UST
             </TxFeeListItem>
           </TxFeeList>
         )}
