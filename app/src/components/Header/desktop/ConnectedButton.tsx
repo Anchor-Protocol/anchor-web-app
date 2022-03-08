@@ -5,6 +5,7 @@ import { demicrofy, truncate } from '@libs/formatter';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import React, { ButtonHTMLAttributes, DetailedHTMLProps } from 'react';
 import styled from 'styled-components';
+import { useTnsReverseRecord } from '@libs/use-tns-reverse-record';
 
 interface ConnectedButtonProps
   extends Omit<
@@ -23,13 +24,17 @@ function ConnectedButtonBase({
   bank,
   ...buttonProps
 }: ConnectedButtonProps) {
+  const reverseRecord = useTnsReverseRecord(walletAddress);
+
   return (
     <button {...buttonProps}>
       <IconSpan>
         <span className="wallet-icon">
           <Wallet />
         </span>
-        <span className="wallet-address">{truncate(walletAddress)}</span>
+        <span className="wallet-address">
+          {reverseRecord || truncate(walletAddress)}
+        </span>
         <div className="wallet-balance">
           {formatUSTWithPostfixUnits(demicrofy(bank.tokenBalances.uUST))} UST
         </div>

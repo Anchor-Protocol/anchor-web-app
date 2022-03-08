@@ -1,5 +1,6 @@
 import { BAssetInfoAndBalancesTotal } from '@anchor-protocol/app-fns';
 import { AnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
+import { useTnsReverseRecord } from '@libs/use-tns-reverse-record';
 import {
   formatANC,
   formatAUSTWithPostfixUnits,
@@ -60,12 +61,16 @@ export function WalletDetailContentBase({
     );
   }, [network.chainID, walletAddress]);
 
+  const reverseRecord = useTnsReverseRecord(walletAddress);
+
   return (
     <div className={className}>
       <section>
         <ConnectionIcons className="wallet-icon" connection={connection} />
 
-        <h2 className="wallet-address">{truncate(walletAddress)}</h2>
+        <h2 className="wallet-address">
+          {reverseRecord || truncate(walletAddress)}
+        </h2>
 
         <button className="copy-wallet-address" onClick={setCopied}>
           <IconSpan>COPY ADDRESS {isCopied && <Check />}</IconSpan>
