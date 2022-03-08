@@ -10,7 +10,8 @@ import { useBorrowUstTx } from 'tx/evm';
 export const EvmBorrowDialog = (props: DialogProps<BorrowFormParams>) => {
   const { connected } = useAccount();
 
-  const [postTx, txResult] = useBorrowUstTx();
+  const borrowUstTx = useBorrowUstTx();
+  const [postTx, txResult] = borrowUstTx?.stream ?? [null, null];
 
   const proceed = useCallback(
     (amount: UST, _txFee: u<UST>) => {

@@ -20,7 +20,11 @@ export const EvmClaimAll = () => {
 
   const anc = Big(1234567800) as u<ANC<Big>>;
 
-  const [claimRewards, claimRewardsTxResult] = useClaimRewardsTx();
+  const claimRewardsTx = useClaimRewardsTx();
+  const [claimRewards, claimRewardsTxResult] = claimRewardsTx?.stream ?? [
+    null,
+    null,
+  ];
 
   return (
     <ClaimAll txResult={claimRewardsTxResult}>

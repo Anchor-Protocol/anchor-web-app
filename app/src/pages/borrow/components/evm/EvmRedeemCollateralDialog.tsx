@@ -17,7 +17,8 @@ export const EvmRedeemCollateralDialog = (
 
   const uTokenBalance = useERC20Balance<bAsset>(token as ERC20Addr);
 
-  const [postTx, txResult] = useRedeemCollateralTx();
+  const redeemCollateralTx = useRedeemCollateralTx();
+  const [postTx, txResult] = redeemCollateralTx?.stream ?? [null, null];
 
   const proceed = useCallback(
     (amount: bAsset) => {

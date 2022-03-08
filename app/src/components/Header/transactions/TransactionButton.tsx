@@ -1,27 +1,27 @@
 import React, { DOMAttributes } from 'react';
 import { UIElementProps } from '@libs/ui';
 import styled, { useTheme } from 'styled-components';
-import { useRedemptions } from 'tx/evm/storage/useRedemptions';
 import { CircleSpinner } from 'react-spinners-kit';
+import { useTransactions } from 'tx/evm/storage/useTransactions';
 
-interface RedemptionButtonProps
+interface TransactionButtonProps
   extends UIElementProps,
     Pick<DOMAttributes<HTMLButtonElement>, 'onClick'> {}
 
-const RedemptionButtonBase = (props: RedemptionButtonProps) => {
+const TransactionButtonBase = (props: TransactionButtonProps) => {
   const { className, onClick } = props;
-  const { redemptions } = useRedemptions();
+  const { transactions } = useTransactions();
   const theme = useTheme();
 
   return (
     <button className={className} onClick={onClick}>
-      <div className="note">{redemptions.length} transaction</div>
+      <div className="note">{transactions.length} transaction</div>
       <CircleSpinner size={15} color={theme.colors.secondary} />
     </button>
   );
 };
 
-export const RedemptionButton = styled(RedemptionButtonBase)`
+export const TransactionButton = styled(TransactionButtonBase)`
   height: 26px;
   border-radius: 20px;
   padding: 4px 17px;

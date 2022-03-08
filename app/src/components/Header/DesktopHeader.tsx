@@ -7,7 +7,7 @@ import styled, { createGlobalStyle } from 'styled-components';
 import logoUrl from './assets/Logo.svg';
 import { ChainSelector } from './chain/ChainSelector';
 import { DesktopNotification } from './desktop/DesktopNotification';
-import { RedemptionWidget } from './redemption/RedemptionWidget';
+import { TransactionWidget } from './transactions/TransactionWidget';
 import { EvmWalletSelector } from './wallet/evm/EvmWalletSelector';
 import { TerraWalletSelector } from './wallet/terra/TerraWalletSelector';
 
@@ -39,7 +39,7 @@ function DesktopHeaderBase({ className }: DesktopHeaderProps) {
       <DesktopNotification className="notification" />
 
       <section className="wallet">
-        <RedemptionWidget className="redemption-widget" />
+        <TransactionWidget className="transaction-widget" />
         <ChainSelector className="chain-selector" />
         <DeploymentSwitch
           terra={() => <TerraWalletSelector />}
@@ -152,7 +152,7 @@ export const DesktopHeader = styled(DesktopHeaderBase)`
       margin-right: 5px;
     }
 
-    .redemption-widget {
+    .transaction-widget {
       margin-right: 5px;
     }
   }

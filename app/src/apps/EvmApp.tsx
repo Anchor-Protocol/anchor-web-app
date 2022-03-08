@@ -7,11 +7,11 @@ import { EvmAppProviders } from 'providers/evm/EvmAppProviders';
 import { Earn } from 'pages/earn';
 import { Borrow } from 'pages/borrow';
 import { TermsOfService } from 'pages/terms';
-import { Redeem } from 'pages/bridge/redeem';
 import { Restore } from 'pages/bridge/restore';
 import { Mypage } from 'pages/mypage';
 import { ClaimAll } from 'pages/trade/claim.all';
 import '../configurations/chartjs';
+import { BackgroundTransactions } from 'components/Header/transactions/BackgroundTransactions';
 
 export function EvmApp() {
   return (
@@ -25,12 +25,12 @@ export function EvmApp() {
           <Route path="/earn" element={<Earn />} />
           <Route path="/borrow" element={<Borrow />} />
           <Route path="/terms" element={<TermsOfService />} />
-          <Route path="/bridge/redeem/:sequence" element={<Redeem />} />
           <Route path="/bridge/restore" element={<Restore />} />
           <Route path={`/claim/all`} element={<ClaimAll />} />
           <Route element={<Navigate to="/" replace />} />
         </Routes>
       </div>
+      <BackgroundTransactions />
     </EvmAppProviders>
   );
 }

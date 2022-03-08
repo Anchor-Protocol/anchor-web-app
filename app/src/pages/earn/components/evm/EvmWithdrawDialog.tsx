@@ -19,7 +19,8 @@ export function EvmWithdrawDialog(props: DialogProps<{}, void>) {
 
   const state = useEarnWithdrawForm();
 
-  const [withdraw, withdrawTxResult] = useWithdrawUstTx();
+  const withdrawUstTx = useWithdrawUstTx();
+  const [withdraw, withdrawTxResult] = withdrawUstTx?.stream ?? [null, null];
 
   const { withdrawAmount, availablePost } = state;
 
