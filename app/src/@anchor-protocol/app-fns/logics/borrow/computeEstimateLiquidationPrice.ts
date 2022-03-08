@@ -26,6 +26,7 @@ export function computeEstimateLiquidationPrice(
   const whitelist = overseerWhitelist.elems.find(
     ({ collateral_token }) => collateral_token === collateral[0],
   );
+
   const oracle = oraclePrices.prices.find(
     ({ asset }) => asset === collateral[0],
   );
@@ -36,12 +37,9 @@ export function computeEstimateLiquidationPrice(
 
   // formula: oracle price * (nextLtv / maxLtv)
   if (nextLtv) {
-    // const liqPrice = Big(oracle.price).mul(
-    //   Big(nextLtv).div(whitelist.max_ltv),
-    // ) as UST<Big>;
     const liqPrice = Big(oracle.price).mul(Big(nextLtv)) as UST<Big>;
     return `Estimated ${
-      whitelist.tokenDisplay.symbol
+      whitelist?.tokenDisplay?.symbol ?? '???'
     } liquidation price: ${formatUST(liqPrice)}`;
   }
 

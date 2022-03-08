@@ -3,12 +3,12 @@ import {
   BorrowMarketWithDisplay,
   useDeploymentTarget,
 } from '@anchor-protocol/app-provider';
-import { useFixedFee } from '@libs/app-provider';
+import { useFixedFee, useUstTax } from '@libs/app-provider';
 import { UST } from '@libs/types';
 import { useForm } from '@libs/use-form';
 import { useAccount } from 'contexts/account';
+import { useBalances } from 'contexts/balances';
 import { useAnchorWebapp } from '../../contexts/context';
-import { useAnchorBank } from '../../hooks/useAnchorBank';
 import { useBorrowBorrowerQuery } from '../../queries/borrow/borrower';
 import { useBorrowMarketQuery } from '../../queries/borrow/market';
 
@@ -26,7 +26,9 @@ export function useBorrowBorrowForm(
     constants: { blocksPerYear },
   } = useAnchorWebapp();
 
-  const { tokenBalances, tax } = useAnchorBank();
+  const { uUST } = useBalances();
+
+  const { taxRate, maxTax } = useUstTax();
 
   const {
     data: {
@@ -45,9 +47,9 @@ export function useBorrowBorrowForm(
     borrowBorrowForm,
     {
       target,
-      maxTaxUUSD: tax.maxTaxUUSD,
-      taxRate: tax.taxRate,
-      userUSTBalance: tokenBalances.uUST,
+      maxTaxUUSD: maxTax,
+      taxRate: taxRate,
+      userUSTBalance: uUST,
       connected,
       oraclePrices,
       borrowRate,

@@ -1,14 +1,9 @@
 import { useBorrowProvideCollateralForm } from '@anchor-protocol/app-provider';
 import {
-  // formatBAsset,
-  // formatBAssetInput,
-  formatUST,
-  formatUSTInput,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { bAsset, Rate, u } from '@anchor-protocol/types';
-import { demicrofy } from '@libs/formatter';
+import { bAsset, NoMicro, Rate, u } from '@anchor-protocol/types';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
@@ -32,7 +27,12 @@ import { TxResultRendering } from '@libs/app-fns';
 import { ProvideCollateralFormParams } from './types';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
-import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
+import {
+  formatInput,
+  formatOutput,
+  demicrofy,
+  useFormatters,
+} from '@anchor-protocol/formatter';
 
 export interface ProvideCollateralDialogParams
   extends UIElementProps,
@@ -40,7 +40,7 @@ export interface ProvideCollateralDialogParams
   txResult: StreamResult<TxResultRendering> | null;
   uTokenBalance: u<bAsset>;
   proceedable: boolean;
-  onProceed: (amount: bAsset) => void;
+  onProceed: (amount: bAsset & NoMicro) => void;
 }
 
 export type ProvideCollateralDialogProps =
@@ -55,6 +55,7 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
     onProceed,
     collateralToken,
     uTokenBalance,
+    tokenDisplay,
     fallbackBorrowMarket,
     fallbackBorrowBorrower,
   } = props;
@@ -68,10 +69,18 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
     fallbackBorrowBorrower,
   );
 
-  const { native } = useFormatters();
+  const decimals = tokenDisplay?.decimals ?? 6;
+
+  const {
+    ust: {
+      formatInput: formatUSTInput,
+      formatOutput: formatUSTOutput,
+      demicrofy: demicrofyUST,
+    },
+  } = useFormatters();
 
   const updateDepositAmount = useCallback(
-    (depositAmount: bAsset) => {
+    (depositAmount: bAsset & NoMicro) => {
       input({
         depositAmount,
       });
@@ -86,11 +95,11 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
       try {
         const nextAmount = ltvToAmount(nextLtv);
         updateDepositAmount(
-          native.formatInput(native.demicrofy(nextAmount)) as any,
+          formatInput<bAsset>(demicrofy(nextAmount, decimals), decimals),
         );
       } catch {}
     },
-    [updateDepositAmount, ltvToAmount, native],
+    [updateDepositAmount, ltvToAmount, decimals],
   );
 
   if (
@@ -156,13 +165,16 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
               }}
               onClick={() =>
                 updateDepositAmount(
-                  native.formatInput(
-                    native.demicrofy(states.userBAssetBalance),
+                  formatInput(
+                    demicrofy(states.userBAssetBalance, decimals),
+                    decimals,
                   ) as any,
                 )
               }
             >
-              {native.formatOutput(native.demicrofy(states.userBAssetBalance))}{' '}
+              {formatOutput(demicrofy(states.userBAssetBalance, decimals), {
+                decimals,
+              })}{' '}
               {states.collateral.tokenDisplay?.symbol ??
                 states.collateral.symbol}
             </span>
@@ -175,7 +187,7 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
           className="limit"
           value={
             states.borrowLimit
-              ? formatUSTInput(demicrofy(states.borrowLimit))
+              ? formatUSTInput(demicrofyUST(states.borrowLimit))
               : ''
           }
           label="NEW BORROW LIMIT"
@@ -204,7 +216,7 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
         {states.depositAmount.length > 0 && (
           <TxFeeList className="receipt">
             <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
-              {formatUST(demicrofy(states.txFee))} UST
+              {formatUSTOutput(demicrofyUST(states.txFee))} UST
             </TxFeeListItem>
           </TxFeeList>
         )}

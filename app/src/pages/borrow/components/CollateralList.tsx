@@ -92,7 +92,7 @@ export function CollateralList({ className }: CollateralListProps) {
         token: bridgeAssets.get(collateral_token)!,
         name,
         symbol: tokenDisplay?.symbol ?? symbol,
-        decimals: tokenDisplay?.decimals ?? 8,
+        decimals: tokenDisplay?.decimals ?? 6,
         price: oracle?.price ?? ('0' as UST),
         liquidationPrice:
           borrowBorrower &&
