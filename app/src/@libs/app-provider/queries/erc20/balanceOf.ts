@@ -6,9 +6,7 @@ import { useAccount } from 'contexts/account';
 import { useApp } from '../../contexts/app';
 import { EVM_QUERY_KEY, REFETCH_INTERVAL } from '../../env';
 import { erc2020BalanceQuery } from '../../../app-fns/queries/erc20/balanceOf';
-import { BigNumber } from '@ethersproject/bignumber';
-import { Contract } from '@ethersproject/contracts';
-import ERC20ABI from '../../../../abi/erc20.json';
+import { useEvmCrossAnchorSdk } from 'crossanchor';
 
 const queryFn = createQueryFn(erc2020BalanceQuery);
 
@@ -20,6 +18,7 @@ export function useERC20BalanceQuery<T extends Token>(
 
   const { nativeWalletAddress } = useAccount();
   const { provider } = useEvmWallet();
+  const xAnchor = useEvmCrossAnchorSdk();
 
   return useQuery(
     [
@@ -29,14 +28,12 @@ export function useERC20BalanceQuery<T extends Token>(
       (
         tokenAddress: ERC20Addr,
         walletAddress: EVMAddr,
-      ): Promise<BigNumber> | undefined => {
+      ): Promise<string> | undefined => {
         if (!provider) {
           return;
         }
 
-        // TODO: Use Factory in future
-        const contract = new Contract(tokenAddress, ERC20ABI, provider);
-        return contract.balanceOf(walletAddress);
+        return xAnchor.balance(tokenAddress, walletAddress);
       },
     ],
     queryFn as any,

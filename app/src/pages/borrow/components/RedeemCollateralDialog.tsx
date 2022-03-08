@@ -95,7 +95,7 @@ function RedeemCollateralDialogBase(props: RedeemCollateralDialogProps) {
           redeemAmount: formatInput<bAsset>(
             demicrofy(nextAmount, decimals),
             decimals,
-          ) as any,
+          ),
         });
       } catch {}
     },

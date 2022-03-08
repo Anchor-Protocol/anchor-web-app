@@ -165,10 +165,10 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
               }}
               onClick={() =>
                 updateDepositAmount(
-                  formatInput(
+                  formatInput<bAsset>(
                     demicrofy(states.userBAssetBalance, decimals),
                     decimals,
-                  ) as any,
+                  ),
                 )
               }
             >

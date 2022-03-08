@@ -8,6 +8,7 @@ import { ProvideCollateralDialog } from '../ProvideCollateralDialog';
 import { ProvideCollateralFormParams } from '../types';
 import { useERC20Balance } from '@libs/app-provider/queries/erc20/balanceOf';
 import { normalize } from '@anchor-protocol/formatter';
+import { useERC20Decimals } from '@libs/app-provider/queries/erc20/decimals';
 
 export const EvmProvideCollateralDialog = (
   props: DialogProps<ProvideCollateralFormParams>,
@@ -18,8 +19,7 @@ export const EvmProvideCollateralDialog = (
 
   const erc20TokenBalance = useERC20Balance<bAsset>(token as ERC20Addr);
 
-  // TODO: where do we get this from?
-  const erc20Decimals = tokenDisplay?.symbol === 'bLuna' ? 6 : 18;
+  const erc20Decimals = useERC20Decimals(token);
 
   const uTokenBalance = normalize(
     erc20TokenBalance,
