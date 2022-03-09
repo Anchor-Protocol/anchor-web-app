@@ -2,6 +2,7 @@ import { moneyMarket } from '@anchor-protocol/types';
 import { QueryClient, wasmFetch, WasmQuery } from '@libs/query-client';
 import { HumanAddr } from '@libs/types';
 import { BAssetInfo, bAssetInfoQuery } from './bAssetInfo';
+import { isBAsset } from './isBAsset';
 
 interface WhitelistWasmQuery {
   whitelist: WasmQuery<
@@ -29,14 +30,7 @@ export async function bAssetInfoListQuery(
 
   const bAssetInfos = await Promise.all(
     whitelist.elems
-      .filter(({ symbol }) => {
-        // we are using a naming convention and also getting rid of "bAssets"
-        // at some point so this should be an ok thing to do temporarily
-        return (
-          symbol.toLowerCase().startsWith('b') &&
-          symbol.toLowerCase() !== 'bluna'
-        );
-      })
+      .filter(({ symbol }) => isBAsset(symbol))
       .map((el) => bAssetInfoQuery(el, queryClient)),
   ).then((list) => {
     return list.filter(

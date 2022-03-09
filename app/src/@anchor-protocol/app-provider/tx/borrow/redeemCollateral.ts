@@ -7,9 +7,9 @@ import { useCallback } from 'react';
 import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
-import { useBAssetInfoByTokenAddrQuery } from '../../queries/basset/bAssetInfoByTokenAddr';
 import { useBorrowBorrowerQuery } from '../../queries/borrow/borrower';
 import { useBorrowMarketQuery } from '../../queries/borrow/market';
+import { useCollateralByTokenAddrQuery } from '@anchor-protocol/app-provider/queries/collateral/useCollateralByTokenAddrQuery';
 
 export interface BorrowRedeemCollateralTxParams {
   redeemAmount: bAsset;
@@ -24,8 +24,7 @@ export function useBorrowRedeemCollateralTx(bAssetTokenAddr: CW20Addr) {
   const { queryClient, txErrorReporter, contractAddress, constants } =
     useAnchorWebapp();
 
-  const { data: { bAsset } = {} } =
-    useBAssetInfoByTokenAddrQuery(bAssetTokenAddr);
+  const { data: collateral } = useCollateralByTokenAddrQuery(bAssetTokenAddr);
 
   const { refetch: borrowMarketQuery } = useBorrowMarketQuery();
   const { refetch: borrowBorrowerQuery } = useBorrowBorrowerQuery();
@@ -41,7 +40,7 @@ export function useBorrowRedeemCollateralTx(bAssetTokenAddr: CW20Addr) {
         !connected ||
         !availablePost ||
         !terraWalletAddress ||
-        !bAsset
+        !collateral
       ) {
         throw new Error('Can not post!');
       }
@@ -51,8 +50,8 @@ export function useBorrowRedeemCollateralTx(bAssetTokenAddr: CW20Addr) {
         redeemAmount,
         bAssetTokenAddr,
         overseerAddr: contractAddress.moneyMarket.overseer,
-        bAssetCustodyAddr: bAsset.custody_contract,
-        bAssetSymbol: bAsset.symbol,
+        bAssetCustodyAddr: collateral.custody_contract,
+        bAssetSymbol: collateral.symbol,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
@@ -73,7 +72,7 @@ export function useBorrowRedeemCollateralTx(bAssetTokenAddr: CW20Addr) {
       });
     },
     [
-      bAsset,
+      collateral,
       bAssetTokenAddr,
       borrowBorrowerQuery,
       borrowMarketQuery,

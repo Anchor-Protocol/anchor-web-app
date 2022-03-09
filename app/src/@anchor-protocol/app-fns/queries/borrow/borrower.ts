@@ -76,8 +76,6 @@ export async function borrowBorrowerQuery(
     marketBorrowerInfo,
     overseerCollaterals,
     overseerBorrowLimit,
-    //bLunaCustodyBorrower,
-    //bEthCustodyBorrower,
     blockHeight: blockHeight + 1,
   };
 }

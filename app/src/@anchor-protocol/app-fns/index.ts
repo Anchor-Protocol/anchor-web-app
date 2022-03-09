@@ -79,6 +79,7 @@ export * from './queries/borrow/apy';
 export * from './queries/borrow/borrower';
 export * from './queries/borrow/collateralBorrower';
 export * from './queries/borrow/market';
+export * from './queries/collateral/collateralByTokenAddrQuery';
 export * from './queries/earn/apyHistory';
 export * from './queries/earn/epochStates';
 export * from './queries/gov/config';
