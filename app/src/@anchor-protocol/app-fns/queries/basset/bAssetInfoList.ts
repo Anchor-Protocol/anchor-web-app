@@ -29,7 +29,14 @@ export async function bAssetInfoListQuery(
 
   const bAssetInfos = await Promise.all(
     whitelist.elems
-      .filter(({ symbol }) => symbol.toLowerCase() !== 'bluna')
+      .filter(({ symbol }) => {
+        // we are using a naming convention and also getting rid of "bAssets"
+        // at some point so this should be an ok thing to do temporarily
+        return (
+          symbol.toLowerCase().startsWith('b') &&
+          symbol.toLowerCase() !== 'bluna'
+        );
+      })
       .map((el) => bAssetInfoQuery(el, queryClient)),
   ).then((list) => {
     return list.filter(

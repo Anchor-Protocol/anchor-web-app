@@ -12,7 +12,7 @@ import {
 
 const queryFn = createQueryFn(bAssetInfoQuery);
 
-export function useBAssetInfoQuery(
+export function useBAssetInfoQuery2(
   bAsset: moneyMarket.overseer.WhitelistResponse['elems'][number] | undefined,
 ): UseQueryResult<BAssetInfoWithDisplay | undefined> {
   const { queryClient, queryErrorReporter } = useAnchorWebapp();
