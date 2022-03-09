@@ -14,6 +14,7 @@ import {
   Routes,
   useNavigate,
   useMatch,
+  Outlet,
 } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -82,23 +83,18 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
 
         <div className="form">
           <Routes>
+            <Route path="/stake" element={<AncGovernanceStake />} />
+            <Route path="unstake" element={<AncGovernanceUnstake />} />
             <Route
-              path={`/${ancGovernancePathname}/stake`}
-              element={AncGovernanceStake}
-            />
-            <Route
-              path={`/${ancGovernancePathname}/unstake`}
-              element={AncGovernanceUnstake}
-            />
-            <Route
-              path={`/${ancGovernancePathname}`}
+              index={true}
               element={<Navigate to={`/${ancGovernancePathname}/stake`} />}
             />
             <Route
-              path={`/${ancGovernancePathname}/*`}
+              path="*"
               element={<Navigate to={`/${ancGovernancePathname}/stake`} />}
             />
           </Routes>
+          <Outlet />
         </div>
       </Section>
     </CenteredLayout>

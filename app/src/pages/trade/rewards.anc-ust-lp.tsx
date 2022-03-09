@@ -18,6 +18,7 @@ import {
   Routes,
   useNavigate,
   useMatch,
+  Outlet,
 } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -152,31 +153,21 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
           {tab?.value === 'stake' && <AncUstLpStakeOverview />}
 
           <Routes>
+            <Route path={`/provide`} element={<AncUstLpProvide />} />
+            <Route path={`/withdraw`} element={<AncUstLpWithdraw />} />
+            <Route path={`/stake`} element={<AncUstLpStake />} />
+            <Route path={`/unstake`} element={<AncUstLpUnstake />} />
             <Route
-              path={`/${ancUstLpPathname}/provide`}
-              element={AncUstLpProvide}
-            />
-            <Route
-              path={`/${ancUstLpPathname}/withdraw`}
-              element={AncUstLpWithdraw}
-            />
-            <Route
-              path={`/${ancUstLpPathname}/stake`}
-              element={AncUstLpStake}
-            />
-            <Route
-              path={`/${ancUstLpPathname}/unstake`}
-              element={AncUstLpUnstake}
-            />
-            <Route
-              path={`/${ancUstLpPathname}`}
+              path={``}
               element={<Navigate to={`/${ancUstLpPathname}/provide`} />}
             />
             <Route
-              path={`/${ancUstLpPathname}/*`}
+              path={`*`}
               element={<Navigate to={`/${ancUstLpPathname}/provide`} />}
             />
           </Routes>
+
+          <Outlet />
         </div>
       </Section>
     </CenteredLayout>

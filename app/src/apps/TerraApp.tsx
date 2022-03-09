@@ -115,13 +115,16 @@ export function TerraApp() {
               element={<PollCreateRegisterCollateralAttributes />}
             />
             <Route path={`/poll/:id`} element={<PollDetail />} />
-            <Route path={`/trade`} element={<Trade />} />
+
+            <Route path={`/trade/*`} element={<Trade />} />
+
             <Route
-              path={`/${ancUstLpPathname}`}
+              path={`/${ancUstLpPathname}/*`}
               element={<RewardsAncUstLp />}
             />
+
             <Route
-              path={`/${ancGovernancePathname}`}
+              path={`/${ancGovernancePathname}/*`}
               element={<RewardsAncGovernance />}
             />
             <Route path={`/claim/all`} element={<ClaimAll />} />

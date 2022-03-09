@@ -10,6 +10,7 @@ import {
   Routes,
   useNavigate,
   useMatch,
+  Outlet,
 } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -75,11 +76,12 @@ function TradeBase({ className }: RewardsPoolProps) {
 
       <Section>
         <Routes>
-          <Route path={`/trade/buy`} element={TradeBuy} />
-          <Route path={`/trade/sell`} element={TradeSell} />
-          <Route path="/trade" element={<Navigate to={`/trade/buy`} />} />
-          <Route path="/trade/*" element={<Navigate to={`/trade/buy`} />} />
+          <Route path="" element={<Navigate to="/trade/buy" />} />
+          <Route path="/buy" element={<TradeBuy />} />
+          <Route path="/sell" element={<TradeSell />} />
+          <Route path="*" element={<Navigate to="/trade/buy" />} />
         </Routes>
+        <Outlet />
       </Section>
     </CenteredLayout>
   );
