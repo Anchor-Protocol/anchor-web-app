@@ -154,7 +154,7 @@ function ComponentBase({
         cw20Address: cw20.bLuna,
       },
       ...infoAndBalances.map(({ bAsset, balance, tokenDisplay }) => ({
-        label: tokenDisplay.symbol,
+        label: tokenDisplay?.symbol ?? bAsset.symbol,
         value: bAsset.symbol,
         integerPoints: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
@@ -163,16 +163,6 @@ function ComponentBase({
           formatBAssetInput(demicrofy(balance.balance)),
         cw20Address: bAsset.collateral_token,
       })),
-      //{
-      //  label: 'bETH',
-      //  value: 'beth',
-      //  integerPoints: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
-      //  decimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
-      //  getWithdrawable: (bank: AnchorBank) => bank.tokenBalances.ubEth,
-      //  getFormatWithdrawable: (bank: AnchorBank) =>
-      //    formatBAssetInput(demicrofy(bank.tokenBalances.ubEth)),
-      //  cw20Address: cw20.bEth,
-      //},
       {
         label: 'ANC',
         value: 'anc',

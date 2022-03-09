@@ -19,8 +19,6 @@ export * from './queries/anc/price';
 export * from './queries/anc/tokenInfo';
 export * from './queries/basset/bAssetClaimableRewards';
 export * from './queries/basset/bAssetClaimableRewardsTotal';
-export * from './queries/basset/bAssetInfo';
-export * from './queries/basset/bAssetInfoAndBalanceByTokenAddr';
 export * from './queries/basset/bAssetInfoAndBalanceTotal';
 export * from './queries/basset/bAssetInfoByTokenAddr';
 export * from './queries/basset/bAssetInfoByTokenSymbol';

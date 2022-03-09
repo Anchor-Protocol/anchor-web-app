@@ -111,7 +111,7 @@ export function bAssetClaimTx($: {
           phase: TxStreamPhase.SUCCEED,
           receipts: [
             ...rewardLogsWithDisplay.map((rewardLog) => ({
-              name: `${rewardLog.tokenDisplay.symbol} Reward`,
+              name: `${rewardLog.tokenDisplay.symbol ?? '???'} Reward`,
               value:
                 formatUSTWithPostfixUnits(
                   demicrofy(rewardLog.rewards as u<UST>),
